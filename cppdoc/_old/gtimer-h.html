@@ -1,0 +1,122 @@
+<html>
+<head>
+<title>../include/gtimer.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: gtimer.h
+ * --------------
+ * This file defines the GTimer class, which implements a general interval
+ * timer.
+ */
+</scan>
+#ifndef _gtimer_h
+#define _gtimer_h
+
+#include &lt;string&gt;
+
+<a name="Friend type:GTimerData"><scan class=comment>/*
+ * Friend type: GTimerData
+ * -----------------------
+ * This type maintains a reference count to determine when it is possible
+ * to free the timer.  The address of this block is used as the timer id.
+ */
+</scan>
+struct GTimerData {
+   int refCount;
+};
+
+<a name="Class:GTimer"><scan class=comment>/*
+ * Class: GTimer
+ * -------------
+ * This class implements a simple interval timer that generates a
+ * GTimerEvent with a specified frequency.  Copying a GTimer object is
+ * legal and creates an object that refers to the same internal timer.
+ */
+</scan>
+class GTimer {
+
+public:
+
+<a name="Constructor:GTimer"><scan class=comment>/*
+ * Constructor: GTimer
+ * Usage: GTimer timer(milliseconds);
+ * ----------------------------------
+ * Creates a timer object that generates a GTimerEvent each time the
+ * specified number of milliseconds has elapsed.  No events are generated
+ * until the client calls start on the timer.  For more details on using
+ * timers, see the documentation for the GTimerEvent class.
+ */
+</scan>
+   GTimer(double milliseconds);
+
+<a name="Destructor:~GTimer"><scan class=comment>/*
+ * Destructor: ~GTimer
+ * -------------------
+ * Frees the resources associated with the timer.
+ */
+</scan>
+   virtual ~GTimer();
+
+<a name="Method:start"><scan class=comment>/*
+ * Method: start
+ * Usage: timer.start();
+ * ---------------------
+ * Starts the timer.  A timer continues to generate timer events until it
+ * is stopped; to achieve the effect of a one-shot timer, the simplest
+ * approach is to call the stop method inside the event handler.
+ */
+</scan>
+   void start();
+
+<a name="Method:stop"><scan class=comment>/*
+ * Method: stop
+ * Usage: timer.stop();
+ * --------------------
+ * Stops the timer so that it stops generating events until it is
+ * restarted.
+ */
+</scan>
+   void stop();
+
+<a name="Friend operator:=="><scan class=comment>/*
+ * Friend operator: ==
+ * Usage: if (t1 == t2) ...
+ * ------------------------
+ * Checks whether the two objects refer to the same timer.
+ */
+</scan>
+   bool operator==(GTimer t2);
+
+<a name="Friend operator:!="><scan class=comment>/*
+ * Friend operator: !=
+ * Usage: if (t1 != t2) ...
+ * ------------------------
+ * Checks whether the two objects refer to the different timers.
+ */
+</scan>
+   bool operator!=(GTimer t2);
+
+<scan class=comment>/* Private section */</scan>
+
+   GTimer(GTimerData *gtd);
+   GTimer(const GTimer &amp; src);
+   GTimer &amp; operator=(const GTimer &amp; src);
+
+private:
+
+<scan class=comment>/* Instance variables */</scan>
+
+   GTimerData *gtd;
+
+   friend class Platform;
+   friend class GTimerEvent;
+
+};
+
+#endif
+</pre>
+</body>
+</html>

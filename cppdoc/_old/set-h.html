@@ -1,0 +1,609 @@
+<html>
+<head>
+<title>../include/set.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: set.h
+ * -----------
+ * This file exports the Set class, which implements a collection for
+ * storing a set of distinct elements.
+ */
+</scan>
+#ifndef _set_h
+#define _set_h
+
+#include &lt;iostream&gt;
+#include "map.h"
+#include "vector.h"
+
+<a name="Class:Set<ValueType>"><scan class=comment>/*
+ * Class: Set&lt;ValueType&gt;
+ * ---------------------
+ * This class stores a collection of distinct elements.
+ */
+</scan>
+template &lt;typename ValueType&gt;
+class Set {
+
+public:
+
+<a name="Constructor:Set"><scan class=comment>/*
+ * Constructor: Set
+ * Usage: Set&lt;ValueType&gt; set;
+ * --------------------------
+ * Creates an empty set of the specified element type.
+ */
+</scan>
+   Set();
+
+<a name="Destructor:~Set"><scan class=comment>/*
+ * Destructor: ~Set
+ * ----------------
+ * Frees any heap storage associated with this set.
+ */
+</scan>
+   virtual ~Set();
+
+<a name="Method:size"><scan class=comment>/*
+ * Method: size
+ * Usage: count = set.size();
+ * --------------------------
+ * Returns the number of elements in this set.
+ */
+</scan>
+   int size() const;
+
+<a name="Method:isEmpty"><scan class=comment>/*
+ * Method: isEmpty
+ * Usage: if (set.isEmpty()) ...
+ * -----------------------------
+ * Returns true if this set contains no elements.
+ */
+</scan>
+   bool isEmpty() const;
+
+<a name="Method:add"><scan class=comment>/*
+ * Method: add
+ * Usage: set.add(value);
+ * ----------------------
+ * Adds an element to this set, if it was not already there.  For
+ * compatibility with the STL set class, this method is also exported as
+ * insert.
+ */
+</scan>
+   void add(const ValueType &amp; value);
+   void insert(const ValueType &amp; value);
+
+<a name="Method:remove"><scan class=comment>/*
+ * Method: remove
+ * Usage: set.remove(value);
+ * -------------------------
+ * Removes an element from this set.  If the value was not contained in the
+ * set, no error is generated and the set remains unchanged.
+ */
+</scan>
+   void remove(const ValueType &amp; value);
+
+<a name="Method:contains"><scan class=comment>/*
+ * Method: contains
+ * Usage: if (set.contains(value)) ...
+ * -----------------------------------
+ * Returns true if the specified value is in this set.
+ */
+</scan>
+   bool contains(const ValueType &amp; value) const;
+
+<a name="Method:isSubsetOf"><scan class=comment>/*
+ * Method: isSubsetOf
+ * Usage: if (set.isSubsetOf(set2)) ...
+ * ------------------------------------
+ * Implements the subset relation on sets.  It returns true if every
+ * element of this set is contained in set2.
+ */
+</scan>
+   bool isSubsetOf(const Set &amp; set2) const;
+
+<a name="Method:clear"><scan class=comment>/*
+ * Method: clear
+ * Usage: set.clear();
+ * -------------------
+ * Removes all elements from this set.
+ */
+</scan>
+   void clear();
+
+<a name="Operator:=="><scan class=comment>/*
+ * Operator: ==
+ * Usage: set1 == set2
+ * -------------------
+ * Returns true if set1 and set2 contain the same elements.
+ */
+</scan>
+   bool operator==(const Set &amp; set2) const;
+
+<a name="Operator:!="><scan class=comment>/*
+ * Operator: !=
+ * Usage: set1 != set2
+ * -------------------
+ * Returns true if set1 and set2 are different.
+ */
+</scan>
+   bool operator!=(const Set &amp; set2) const;
+
+<a name="Operator:+"><scan class=comment>/*
+ * Operator: +
+ * Usage: set1 + set2
+ *        set1 + element
+ * ---------------------
+ * Returns the union of sets set1 and set2, which is the set of elements
+ * that appear in at least one of the two sets.  The right hand set can be
+ * replaced by an element of the value type, in which case the operator
+ * returns a new set formed by adding that element.
+ */
+</scan>
+   Set operator+(const Set &amp; set2) const;
+   Set operator+(const ValueType &amp; element) const;
+
+<a name="Operator:*"><scan class=comment>/*
+ * Operator: *
+ * Usage: set1 * set2
+ * ------------------
+ * Returns the intersection of sets set1 and set2, which is the set of all
+ * elements that appear in both.
+ */
+</scan>
+   Set operator*(const Set &amp; set2) const;
+
+<a name="Operator:-"><scan class=comment>/*
+ * Operator: -
+ * Usage: set1 - set2
+ *        set1 - element
+ * ---------------------
+ * Returns the difference of sets set1 and set2, which is all of the
+ * elements that appear in set1 but not set2.  The right hand set can be
+ * replaced by an element of the value type, in which case the operator
+ * returns a new set formed by removing that element.
+ */
+</scan>
+   Set operator-(const Set &amp; set2) const;
+   Set operator-(const ValueType &amp; element) const;
+
+<a name="Operator:+="><scan class=comment>/*
+ * Operator: +=
+ * Usage: set1 += set2;
+ *        set1 += value;
+ * ---------------------
+ * Adds all of the elements from set2 (or the single specified value) to
+ * set1.  As a convenience, the Set package also overloads the comma
+ * operator so that it is possible to initialize a set like this:
+ *
+ *    Set digits;
+ *    digits += 0, 1, 2, 3, 4, 5, 6, 7, 8, 9;
+ */
+</scan>
+   Set &amp; operator+=(const Set &amp; set2);
+   Set &amp; operator+=(const ValueType &amp; value);
+
+<a name="Operator:*="><scan class=comment>/*
+ * Operator: *=
+ * Usage: set1 *= set2;
+ * --------------------
+ * Removes any elements from set1 that are not present in set2.
+ */
+</scan>
+   Set &amp; operator*=(const Set &amp; set2);
+
+<a name="Operator:-="><scan class=comment>/*
+ * Operator: -=
+ * Usage: set1 -= set2;
+ *        set1 -= value;
+ * ---------------------
+ * Removes the elements from set2 (or the single specified value) from
+ * set1.  As a convenience, the Set package also overloads the comma
+ * operator so that it is possible to remove multiple elements from a set
+ * like this:
+ *
+ *    digits -= 0, 2, 4, 6, 8;
+ *
+ * which removes the values 0, 2, 4, 6, and 8 from the set digits.
+ */
+</scan>
+   Set &amp; operator-=(const Set &amp; set2);
+   Set &amp; operator-=(const ValueType &amp; value);
+
+<a name="Method:first"><scan class=comment>/*
+ * Method: first
+ * Usage: ValueType value = set.first();
+ * -------------------------------------
+ * Returns the first value in the set in the order established by the
+ * foreach macro.  If the set is empty, first generates an error.
+ */
+</scan>
+   ValueType first() const;
+
+<a name="Method:toString"><scan class=comment>/*
+ * Method: toString
+ * Usage: string str = set.toString();
+ * -----------------------------------
+ * Converts the set to a printable string representation.
+ */
+</scan>
+   std::string toString();
+
+<a name="Method:mapAll"><scan class=comment>/*
+ * Method: mapAll
+ * Usage: set.mapAll(fn);
+ * ----------------------
+ * Iterates through the elements of the set and calls fn(value) for each
+ * one.  The values are processed in ascending order, as defined by the
+ * comparison function.
+ */
+</scan>
+   void mapAll(void (*fn)(ValueType)) const;
+   void mapAll(void (*fn)(const ValueType &amp;)) const;
+
+   template &lt;typename FunctorType&gt;
+   void mapAll(FunctorType fn) const;
+
+<scan class=comment>/*
+ * Additional Set operations
+ * -------------------------
+ * In addition to the methods listed in this interface, the Set class
+ * supports the following operations:
+ *
+ *   - Stream I/O using the &lt;&lt; and &gt;&gt; operators
+ *   - Deep copying for the copy constructor and assignment operator
+ *   - Iteration using the range-based for statement and STL iterators
+ *
+ * The iteration forms process the Set in ascending order.
+ */
+</scan>
+<scan class=comment>/* Private section */</scan>
+
+<scan class=comment>/**********************************************************************/</scan>
+<scan class=comment>/* Note: Everything below this point in the file is logically part    */</scan>
+<scan class=comment>/* of the implementation and should not be of interest to clients.    */</scan>
+<scan class=comment>/**********************************************************************/</scan>
+
+private:
+
+   Map&lt;ValueType,bool&gt; map;            <scan class=comment>/* Map used to store the element     */</scan>
+   bool removeFlag;                    <scan class=comment>/* Flag to differentiate += and -=   */</scan>
+
+public:
+
+<scan class=comment>/*
+ * Hidden features
+ * ---------------
+ * The remainder of this file consists of the code required to support the
+ * comma operator, deep copying, and iteration.  Including these methods in
+ * the public interface would make that interface more difficult to
+ * understand for the average client.
+ */
+</scan>
+<scan class=comment>/* Extended constructors */</scan>
+
+   template &lt;typename CompareType&gt;
+   explicit Set(CompareType cmp) : map(Map&lt;ValueType,bool&gt;(cmp)) {
+      <scan class=comment>/* Empty */</scan>
+   }
+
+   Set &amp; operator,(const ValueType &amp; value) {
+      if (this-&gt;removeFlag) {
+         this-&gt;remove(value);
+      } else {
+         this-&gt;add(value);
+      }
+      return *this;
+   }
+
+<scan class=comment>/*
+ * Iterator support
+ * ----------------
+ * The classes in the StanfordCPPLib collection implement input iterators
+ * so that they work symmetrically with respect to the corresponding STL
+ * classes.
+ */
+</scan>
+   class iterator : public std::iterator&lt;std::input_iterator_tag,ValueType&gt; {
+
+   private:
+
+      typename Map&lt;ValueType,bool&gt;::iterator mapit;  <scan class=comment>/* Iterator for the map */</scan>
+
+   public:
+
+                iterator() {
+              <scan class=comment>/* Empty */</scan>
+      }
+
+      iterator(typename Map&lt;ValueType,bool&gt;::iterator it) : mapit(it) {
+         <scan class=comment>/* Empty */</scan>
+      }
+
+      iterator(const iterator &amp; it) {
+         mapit = it.mapit;
+      }
+
+      iterator &amp; operator++() {
+         ++mapit;
+         return *this;
+      }
+
+      iterator operator++(int) {
+         iterator copy(*this);
+         operator++();
+         return copy;
+      }
+
+      bool operator==(const iterator &amp; rhs) {
+         return mapit == rhs.mapit;
+      }
+
+      bool operator!=(const iterator &amp; rhs) {
+         return !(*this == rhs);
+      }
+
+      ValueType operator*() {
+         return *mapit;
+      }
+
+      ValueType *operator-&gt;() {
+         return mapit;
+      }
+   };
+
+   iterator begin() const {
+      return iterator(map.begin());
+   }
+
+   iterator end() const {
+      return iterator(map.end());
+   }
+
+};
+
+extern void error(std::string msg);
+
+template &lt;typename ValueType&gt;
+Set&lt;ValueType&gt;::Set() {
+   <scan class=comment>/* Empty */</scan>
+}
+
+template &lt;typename ValueType&gt;
+Set&lt;ValueType&gt;::~Set() {
+   <scan class=comment>/* Empty */</scan>
+}
+
+template &lt;typename ValueType&gt;
+int Set&lt;ValueType&gt;::size() const {
+   return map.size();
+}
+
+template &lt;typename ValueType&gt;
+bool Set&lt;ValueType&gt;::isEmpty() const {
+   return map.isEmpty();
+}
+
+template &lt;typename ValueType&gt;
+void Set&lt;ValueType&gt;::add(const ValueType &amp; value) {
+   map.put(value, true);
+}
+
+template &lt;typename ValueType&gt;
+void Set&lt;ValueType&gt;::insert(const ValueType &amp; value) {
+   map.put(value, true);
+}
+
+template &lt;typename ValueType&gt;
+void Set&lt;ValueType&gt;::remove(const ValueType &amp; value) {
+   map.remove(value);
+}
+
+template &lt;typename ValueType&gt;
+bool Set&lt;ValueType&gt;::contains(const ValueType &amp; value) const {
+   return map.containsKey(value);
+}
+
+template &lt;typename ValueType&gt;
+void Set&lt;ValueType&gt;::clear() {
+   map.clear();
+}
+
+template &lt;typename ValueType&gt;
+bool Set&lt;ValueType&gt;::isSubsetOf(const Set &amp; set2) const {
+   iterator it = begin();
+   iterator end = this-&gt;end();
+   while (it != end) {
+      if (!set2.map.containsKey(*it)) return false;
+      ++it;
+   }
+   return true;
+}
+
+<a name="Implementation notes:set operators"><scan class=comment>/*
+ * Implementation notes: set operators
+ * -----------------------------------
+ * The implementations for the set operators use iteration to walk over the
+ * elements in one or both sets.
+ */
+</scan>
+template &lt;typename ValueType&gt;
+bool Set&lt;ValueType&gt;::operator==(const Set &amp; set2) const {
+   if (size() != set2.map.size()) return false;
+   iterator it1 = begin();
+   iterator it2 = set2.map.begin();
+   iterator end = this-&gt;end();
+   while (it1 != end) {
+      if (map.compareKeys(*it1, *it2) != 0) return false;
+      ++it1;
+      ++it2;
+   }
+   return true;
+}
+
+template &lt;typename ValueType&gt;
+bool Set&lt;ValueType&gt;::operator!=(const Set &amp; set2) const {
+   return !(*this == set2);
+}
+
+template &lt;typename ValueType&gt;
+Set&lt;ValueType&gt; Set&lt;ValueType&gt;::operator+(const Set &amp; set2) const {
+   Set&lt;ValueType&gt; set = *this;
+   foreach (ValueType value in set2) {
+      set.add(value);
+   }
+   return set;
+}
+
+template &lt;typename ValueType&gt;
+Set&lt;ValueType&gt; Set&lt;ValueType&gt;::operator+(const ValueType &amp; element) const {
+   Set&lt;ValueType&gt; set = *this;
+   set.add(element);
+   return set;
+}
+
+template &lt;typename ValueType&gt;
+Set&lt;ValueType&gt; Set&lt;ValueType&gt;::operator*(const Set &amp; set2) const {
+   Set&lt;ValueType&gt; set = *this;
+   set.clear();
+   foreach (ValueType value in *this) {
+      if (set2.contains(value)) set.add(value);
+   }
+   return set;
+}
+
+template &lt;typename ValueType&gt;
+Set&lt;ValueType&gt; Set&lt;ValueType&gt;::operator-(const Set &amp; set2) const {
+   Set&lt;ValueType&gt; set = *this;
+   foreach (ValueType value in set2) {
+      set.remove(value);
+   }
+   return set;
+}
+
+template &lt;typename ValueType&gt;
+Set&lt;ValueType&gt; Set&lt;ValueType&gt;::operator-(const ValueType &amp; element) const {
+   Set&lt;ValueType&gt; set = *this;
+   set.remove(element);
+   return set;
+}
+
+template &lt;typename ValueType&gt;
+Set&lt;ValueType&gt; &amp; Set&lt;ValueType&gt;::operator+=(const Set &amp; set2) {
+   foreach (ValueType value in set2) {
+      this-&gt;add(value);
+   }
+   return *this;
+}
+
+template &lt;typename ValueType&gt;
+Set&lt;ValueType&gt; &amp; Set&lt;ValueType&gt;::operator+=(const ValueType &amp; value) {
+   this-&gt;add(value);
+   this-&gt;removeFlag = false;
+   return *this;
+}
+
+template &lt;typename ValueType&gt;
+Set&lt;ValueType&gt; &amp; Set&lt;ValueType&gt;::operator*=(const Set &amp; set2) {
+   Vector&lt;ValueType&gt; toRemove;
+   foreach (ValueType value in *this) {
+      if (!set2.map.containsKey(value)) toRemove.add(value);
+   }
+   foreach (ValueType value in toRemove) {
+      this-&gt;remove(value);
+   }
+   return *this;
+}
+
+template &lt;typename ValueType&gt;
+Set&lt;ValueType&gt; &amp; Set&lt;ValueType&gt;::operator-=(const Set &amp; set2) {
+   Vector&lt;ValueType&gt; toRemove;
+   foreach (ValueType value in *this) {
+      if (set2.map.containsKey(value)) toRemove.add(value);
+   }
+   foreach (ValueType value in toRemove) {
+      this-&gt;remove(value);
+   }
+   return *this;
+}
+
+template &lt;typename ValueType&gt;
+Set&lt;ValueType&gt; &amp; Set&lt;ValueType&gt;::operator-=(const ValueType &amp; value) {
+   this-&gt;remove(value);
+   this-&gt;removeFlag = true;
+   return *this;
+}
+
+template &lt;typename ValueType&gt;
+ValueType Set&lt;ValueType&gt;::first() const {
+   if (isEmpty()) error("first: set is empty");
+   return *begin();
+}
+
+template &lt;typename ValueType&gt;
+std::string Set&lt;ValueType&gt;::toString() {
+   ostringstream os;
+   os &lt;&lt; *this;
+   return os.str();
+}
+
+template &lt;typename ValueType&gt;
+void Set&lt;ValueType&gt;::mapAll(void (*fn)(ValueType)) const {
+   map.mapAll(fn);
+}
+
+template &lt;typename ValueType&gt;
+void Set&lt;ValueType&gt;::mapAll(void (*fn)(const ValueType &amp;)) const {
+   map.mapAll(fn);
+}
+
+template &lt;typename ValueType&gt;
+template &lt;typename FunctorType&gt;
+void Set&lt;ValueType&gt;::mapAll(FunctorType fn) const {
+   map.mapAll(fn);
+}
+
+template &lt;typename ValueType&gt;
+std::ostream &amp; operator&lt;&lt;(std::ostream &amp; os, const Set&lt;ValueType&gt; &amp; set) {
+   os &lt;&lt; "{";
+   bool started = false;
+   foreach (ValueType value in set) {
+      if (started) os &lt;&lt; ", ";
+      writeGenericValue(os, value, true);
+      started = true;
+   }
+   os &lt;&lt; "}";
+   return os;
+}
+
+template &lt;typename ValueType&gt;
+std::istream &amp; operator&gt;&gt;(std::istream &amp; is, Set&lt;ValueType&gt; &amp; set) {
+   char ch;
+   is &gt;&gt; ch;
+   if (ch != '{') error("operator &gt;&gt;: Missing {");
+   set.clear();
+   is &gt;&gt; ch;
+   if (ch != '}') {
+      is.unget();
+      while (true) {
+         ValueType value;
+         readGenericValue(is, value);
+         set += value;
+         is &gt;&gt; ch;
+         if (ch == '}') break;
+         if (ch != ',') {
+            error(std::string("operator &gt;&gt;: Unexpected character ") + ch);
+         }
+      }
+   }
+   return is;
+}
+
+#endif
+</pre>
+</body>
+</html>

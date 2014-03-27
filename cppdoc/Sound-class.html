@@ -1,0 +1,70 @@
+<html>
+<head>
+<title>Sound</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="sound.html">#include "sound.h"</a></div>
+<h1 class=header><code>class Sound</code></h1>
+This class encapsulates a sound file.  The sound file is specified in the
+constructor and must be a file in either the current directory or a
+subdirectory named <code>sounds</code>.
+
+<p>The following code, for example, plays the sound file
+<code>ringtone.wav</code>:
+
+<pre>
+   Sound ringtone("ringtone.wav");
+   ringtone.play();
+</pre>
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Constructor</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:Sound">Sound()</a><br><a href="#Constructor:Sound">Sound(filename)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>Sound</code> object.</td></tr>
+<tr><td class=indexHead colspan=2>Method</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:play">play()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Starts playing the sound.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:Sound"></a>
+<pre class=detailCode>
+Sound(string filename);
+</pre>
+<div class=detailHTML>
+Creates a <code>Sound</code> object.  The default constructor
+creates an empty sound that cannot be played.  The second form
+initializes the sound by reading in the contents of the specified
+file.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Sound sound;
+Sound sound(filename);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:play"></a>
+<pre class=detailCode>
+void play();
+</pre>
+<div class=detailHTML>
+Starts playing the sound.  This call returns immediately without waiting
+for the sound to finish.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sound.play();
+</pre>
+<hr>
+</table>
+</body>
+</html>

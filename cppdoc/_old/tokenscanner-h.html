@@ -1,0 +1,335 @@
+<html>
+<head>
+<title>../include/tokenscanner.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: tokenscanner.h
+ * --------------------
+ * This file exports a TokenScanner class that divides a string into
+ * individual logical units called tokens.
+ */
+</scan>
+#ifndef _tokenscanner_h
+#define _tokenscanner_h
+
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+<a name="Type:TokenType"><scan class=comment>/*
+ * Type: TokenType
+ * ---------------
+ * This enumerated type defines the values of the getTokenType method.
+ */
+</scan>
+enum TokenType { SEPARATOR, WORD, NUMBER, STRING, OPERATOR };
+
+<a name="Class:TokenScanner"><scan class=comment>/*
+ * Class: TokenScanner
+ * -------------------
+ * This class divides a string into individual tokens.  The typical use of
+ * the TokenScanner class is illustrated by the following pattern, which
+ * reads the tokens in the string variable input:
+ *
+ *    TokenScanner scanner(input);
+ *    while (scanner.hasMoreTokens()) {
+ *       string token = scanner.nextToken();
+ *       ... process the token ...
+ *    }
+ *
+ * The TokenScanner class exports several additional methods that give
+ * clients more control over its behavior.  Those methods are described
+ * individually in the documentation.
+ */
+</scan>
+class TokenScanner {
+
+public:
+
+<a name="Constructor:TokenScanner"><scan class=comment>/*
+ * Constructor: TokenScanner
+ * Usage: TokenScanner scanner;
+ *        TokenScanner scanner(str);
+ *        TokenScanner scanner(infile);
+ * ------------------------------------
+ * Initializes a scanner object.  The initial token stream comes from the
+ * specified string or input stream, if supplied.  The default constructor
+ * creates a scanner with an empty token stream.
+ */
+</scan>
+   TokenScanner();
+   TokenScanner(std::string str);
+   TokenScanner(std::istream &amp; infile);
+
+<a name="Destructor:~TokenScanner"><scan class=comment>/*
+ * Destructor: ~TokenScanner
+ * -------------------------
+ * Deallocates the storage associated with this scanner.
+ */
+</scan>
+   virtual ~TokenScanner();
+
+<a name="Method:setInput"><scan class=comment>/*
+ * Method: setInput
+ * Usage: scanner.setInput(str);
+ *        scanner.setInput(infile);
+ * --------------------------------
+ * Sets the token stream for this scanner to the specified string or input
+ * stream.  Any previous token stream is discarded.
+ */
+</scan>
+   void setInput(std::string str);
+   void setInput(std::istream &amp; infile);
+
+<a name="Method:hasMoreTokens"><scan class=comment>/*
+ * Method: hasMoreTokens
+ * Usage: if (scanner.hasMoreTokens()) ...
+ * ---------------------------------------
+ * Returns true if there are additional tokens for this scanner to read.
+ */
+</scan>
+   bool hasMoreTokens();
+
+<a name="Method:nextToken"><scan class=comment>/*
+ * Method: nextToken
+ * Usage: token = scanner.nextToken();
+ * -----------------------------------
+ * Returns the next token from this scanner.  If nextToken is called when
+ * no tokens are available, it returns the empty string.
+ */
+</scan>
+   std::string nextToken();
+
+<a name="Method:saveToken"><scan class=comment>/*
+ * Method: saveToken
+ * Usage: scanner.saveToken(token);
+ * --------------------------------
+ * Pushes the specified token back into this scanner's input stream.  On
+ * the next call to nextToken, the scanner will return the saved token
+ * without reading any additional characters from the token stream.
+ */
+</scan>
+   void saveToken(std::string token);
+
+<a name="Method:getPosition"><scan class=comment>/*
+ * Method: getPosition
+ * Usage: int pos = scanner.getPosition();
+ * ---------------------------------------
+ * Returns the current position of the scanner in the input stream.  If
+ * saveToken has been called, this position corresponds to the beginning of
+ * the saved token.  If saveToken is called more than once, getPosition
+ * returns -1.
+ */
+</scan>
+   int getPosition() const;
+
+<a name="Method:ignoreWhitespace"><scan class=comment>/*
+ * Method: ignoreWhitespace
+ * Usage: scanner.ignoreWhitespace();
+ * ----------------------------------
+ * Tells the scanner to ignore whitespace characters.  By default, the
+ * nextToken method treats whitespace characters (typically spaces and
+ * tabs) just like any other punctuation mark and returns them as
+ * single-character tokens.  Calling
+ *
+ *    scanner.ignoreWhitespace();
+ *
+ * changes this behavior so that the scanner ignore whitespace characters.
+ */
+</scan>
+   void ignoreWhitespace();
+
+<a name="Method:ignoreComments"><scan class=comment>/*
+ * Method: ignoreComments
+ * Usage: scanner.ignoreComments();
+ * --------------------------------
+ * Tells the scanner to ignore comments.  The scanner package recognizes
+ * both the slash-star and slash-slash comment format from the C-based
+ * family of languages.  Calling
+ *
+ *    scanner.ignoreComments();
+ *
+ * sets the parser to ignore comments.
+ */
+</scan>
+   void ignoreComments();
+
+<a name="Method:scanNumbers"><scan class=comment>/*
+ * Method: scanNumbers
+ * Usage: scanner.scanNumbers();
+ * -----------------------------
+ * Controls how the scanner treats tokens that begin with a digit.  By
+ * default, the nextToken method treats numbers and letters identically and
+ * therefore does not provide any special processing for numbers.  Calling
+ *
+ *    scanner.scanNumbers();
+ *
+ * changes this behavior so that nextToken returns the longest substring
+ * that can be interpreted as a real number.
+ */
+</scan>
+   void scanNumbers();
+
+<a name="Method:scanStrings"><scan class=comment>/*
+ * Method: scanStrings
+ * Usage: scanner.scanStrings();
+ * -----------------------------
+ * Controls how the scanner treats tokens enclosed in quotation marks.  By
+ * default, quotation marks (either single or double) are treated just like
+ * any other punctuation character.  Calling
+ *
+ *    scanner.scanStrings();
+ *
+ * changes this assumption so that nextToken returns a single token
+ * consisting of all characters through the matching quotation mark.  The
+ * quotation marks are returned as part of the scanned token so that
+ * clients can differentiate strings from other token types.
+ */
+</scan>
+   void scanStrings();
+
+<a name="Method:addWordCharacters"><scan class=comment>/*
+ * Method: addWordCharacters
+ * Usage: scanner.addWordCharacters(str);
+ * --------------------------------------
+ * Adds the characters in str to the set of characters legal in a WORD
+ * token.  For example, calling addWordCharacters("_") adds the underscore
+ * to the set of characters that are accepted as part of a word.
+ */
+</scan>
+   void addWordCharacters(std::string str);
+
+<a name="Method:isWordCharacter"><scan class=comment>/*
+ * Method: isWordCharacter
+ * Usage: if (scanner.isWordCharacter(ch)) ...
+ * -------------------------------------------
+ * Returns true if the character is valid in a word.
+ */
+</scan>
+   bool isWordCharacter(char ch) const;
+
+<a name="Method:addOperator"><scan class=comment>/*
+ * Method: addOperator
+ * Usage: scanner.addOperator(op);
+ * -------------------------------
+ * Defines a new multicharacter operator.  Whenever you call nextToken when
+ * the input stream contains operator characters, the scanner returns the
+ * longest possible operator string that can be read at that point.
+ */
+</scan>
+   void addOperator(std::string op);
+
+<a name="Method:verifyToken"><scan class=comment>/*
+ * Method: verifyToken
+ * Usage: scanner.verifyToken(expected);
+ * -------------------------------------
+ * Reads the next token and makes sure it matches the string expected.  If
+ * it does not, verifyToken throws an error.
+ */
+</scan>
+   void verifyToken(std::string expected);
+
+<a name="Method:getTokenType"><scan class=comment>/*
+ * Method: getTokenType
+ * Usage: TokenType type = scanner.getTokenType(token);
+ * ----------------------------------------------------
+ * Returns the type of this token.  This type will match one of the
+ * following enumerated type constants: EOF, SEPARATOR, WORD, NUMBER,
+ * STRING, or OPERATOR.
+ */
+</scan>
+TokenType getTokenType(std::string token) const;
+
+<a name="Method:getChar"><scan class=comment>/*
+ * Method: getChar
+ * Usage: int ch = scanner.getChar();
+ * ----------------------------------
+ * Reads the next character from the scanner input stream.
+ */
+</scan>
+int getChar();
+
+<a name="Method:ungetChar"><scan class=comment>/*
+ * Method: ungetChar
+ * Usage: scanner.ungetChar(ch);
+ * -----------------------------
+ * Pushes the character ch back into the scanner stream.  The character
+ * must match the one that was read.
+ */
+</scan>
+void ungetChar(int ch);
+
+<a name="Method:getStringValue"><scan class=comment>/*
+ * Method: getStringValue
+ * Usage: string str = scanner.getStringValue(token);
+ * --------------------------------------------------
+ * Returns the string value of a token.  This value is formed by removing
+ * any surrounding quotation marks and replacing escape sequences by the
+ * appropriate characters.
+ */
+</scan>
+   std::string getStringValue(std::string token) const;
+
+<scan class=comment>/* Private section */</scan>
+
+<scan class=comment>/**********************************************************************/</scan>
+<scan class=comment>/* Note: Everything below this point in the file is logically part    */</scan>
+<scan class=comment>/* of the implementation and should not be of interest to clients.    */</scan>
+<scan class=comment>/**********************************************************************/</scan>
+
+private:
+
+<a name="Private type:StringCell"><scan class=comment>/*
+ * Private type: StringCell
+ * ------------------------
+ * This type is used to construct linked lists of cells, which are used to
+ * represent both the stack of saved tokens and the set of defined
+ * operators.  These types cannot use the Stack and Lexicon classes
+ * directly because tokenscanner.h is an extremely low-level interface, and
+ * doing so would create circular dependencies in the .h files.
+ */
+</scan>
+   struct StringCell {
+      std::string str;
+      StringCell *link;
+   };
+
+   enum NumberScannerState {
+      INITIAL_STATE,
+      BEFORE_DECIMAL_POINT,
+      AFTER_DECIMAL_POINT,
+      STARTING_EXPONENT,
+      FOUND_EXPONENT_SIGN,
+      SCANNING_EXPONENT,
+      FINAL_STATE
+   };
+
+   std::string buffer;              <scan class=comment>/* The original argument string */</scan>
+   std::istream *isp;               <scan class=comment>/* The input stream for tokens  */</scan>
+   bool stringInputFlag;            <scan class=comment>/* Flag indicating string input */</scan>
+   bool ignoreWhitespaceFlag;       <scan class=comment>/* Scanner ignores whitespace   */</scan>
+   bool ignoreCommentsFlag;         <scan class=comment>/* Scanner ignores comments     */</scan>
+   bool scanNumbersFlag;            <scan class=comment>/* Scanner parses numbers       */</scan>
+   bool scanStringsFlag;            <scan class=comment>/* Scanner parses strings       */</scan>
+   std::string wordChars;           <scan class=comment>/* Additional word characters   */</scan>
+   StringCell *savedTokens;         <scan class=comment>/* Stack of saved tokens        */</scan>
+   StringCell *operators;           <scan class=comment>/* List of multichar operators  */</scan>
+
+<scan class=comment>/* Private method prototypes */</scan>
+
+   void initScanner();
+   void skipSpaces();
+   std::string scanWord();
+   std::string scanNumber();
+   std::string scanString();
+   bool isOperator(std::string op);
+   bool isOperatorPrefix(std::string op);
+
+};
+
+#endif
+</pre>
+</body>
+</html>

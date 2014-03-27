@@ -1,0 +1,787 @@
+<html>
+<head>
+<title>The Stanford C++ Libraries -- Rationale Version 1.3</title>
+<link rel="stylesheet" type="text/css" href="rationale.css" />
+</head>
+<body>
+<p>
+<h1>The Stanford C++ Libraries -- Rationale Version 1.3</h1>
+<table width=100%>
+<tr><td align=left>Eric Roberts</td><td align=right>October 3, 2012</td></tr>
+</table>
+<hr>
+This document is the latest in a series of design documents outlining
+changes in the Stanford C++ libraries used for CS&nbsp;106B and
+CS&nbsp;106X.
+The original design document appeared on July 26, 2011, and has since
+been modified after a series of discussions with Keith Schwarz, Steve
+Cooper, and Jerry Cain, as well as with the experience of teaching these
+courses several times in the interim.
+
+<h2>1. Overall philosophy</h2>
+
+Over the years, I&rsquo;ve become convinced that most CS
+instructors&mdash;for reasons that are not by any means impossible to
+understand&mdash;are so hostile to the idea of externally developed
+libraries that they will choose a demonstrably unsuccessful standard
+approach over a nonstandard one, no matter how successful the
+nonstandard approach has been.
+I am therefore trying to walk a fine line in the textbook.
+My goal is to make it <i>appear</i> standard even as I provide
+instructors with the tools they need to solve the pedagogical problems
+associated with trying to teach in a purely standard way.
+The programs in Chapter&nbsp;1 follow reasonably standard conventions
+For example, the <code>HelloWorld.cpp</code> program looks pretty much
+as it would in any traditional C++ textbook:
+
+<pre class=codefigure>
+<span class=comment>/*
+ * File: HelloWorld.cpp
+ * --------------------
+ * This file is adapted from the example
+ * on page 1 of Kernighan and Ritchie's
+ * book The C Programming Language.
+ */</span>
+
+#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+   cout &lt;&lt; "hello, world" &lt;&lt; endl;
+   return 0;
+}
+</pre>
+
+I then introduce the various libraries at different points in the text.
+Whenever possible, I introduce each new library by defining and
+implementing at least a part of its interface.
+For example, Chapter&nbsp;2 defines and implements the interfaces
+<a href="error.html"><code>error.h</code></a> (in a slightly simpler
+form that doesn&rsquo;t involve exceptions),
+<a href="random.html"><code>random.h</code></a>, and
+<a href="gmath.html"><code>gmath.h</code></a>.
+Once I&rsquo;ve introduced each new library interface, I can then use it
+in programs throughout the rest of the book.
+
+<p>The advantage of this strategy is twofold.
+First, given that they&rsquo;ve seen how the library works, students
+(and, of course, potential adopters) get a sense that the library is not
+something magical that they&rsquo;ve been given but instead something
+that they could have built on their own.
+Second, building only part of a library provides a ready supply of
+exercises, because you can ask students to complete the implementation
+of the interface.
+
+<p>Unfortunately, I can&rsquo;t apply this strategy to every library
+interface.
+The significant exceptions are the collection classes and the graphics
+libraries.
+The success of the Stanford approach in recent years is due, at least in
+part, to the fact that we teach students to use the collection classes
+as clients before looking at the various possible implementations.
+It is therefore important <i>not</i> to develop implementations of these
+classes before students have a chance to understand how to use them
+effectively.
+The graphics libraries, by contrast, are beyond the scope of the textbook.
+It&rsquo;s great to have them in order to create more exciting
+assignments, but it is unrealistic to think that students in
+<nobr>CS<font size=-3>&nbsp;</font>106B</nobr> can develop them on their
+own.
+
+<p>In light of the fact that collection classes and the graphics
+libraries represent departures from the strategies used for the rest of
+the library packages, I&rsquo;ve separated out the discussion of these
+packages.
+Section&nbsp;2 outlines the changes in the other library packages,
+section&nbsp;3 covers the collection classes, and section&nbsp;4 looks
+at the graphics libraries.
+
+<h2>2. Changes in the basic libraries</h2>
+
+This section and the individual subsections that follow outline the
+changes I&rsquo;ve made in the library packages other than the
+collection classes.
+
+<p>One change that I&rsquo;ve made systematically is to standardize the
+naming conventions for identifiers.
+In the old versions of the libraries, the names of methods began with
+lowercase letters, but free functions started with uppercase letters.
+In the new versions of the libraries, all function and method names
+begin with a lowercase letter, which follows what seems to have become
+standard practice.
+Similarly, constant names were sometimes spelled entirely in uppercase
+and sometimes in mixed case.
+In the new libraries, all constant names&mdash;including the names of
+enumerated constants&mdash;are in uppercase.
+
+<p>I&rsquo;ve also abandoned the suffix-<code>T</code> convention I
+used to use for type names below the level of classes.
+In the new version of the textbook, I use initial-uppercase names for all
+defined types.
+Thus, instead of the enumerated type <code>directionT</code>, I now use
+<code>Direction</code>.
+Similarly, in the implementation of linked lists and trees, I use the
+type names <code>Cell</code> and <code>Node</code> in place of
+<code>cellT</code> and <code>nodeT</code>.
+
+<p>While there may be a semantic loss here, I decided it was hard to
+justify naming structs one way and classes another, given that the two
+facilities are implemented in essentially the same way in modern C++ (a
+<code>struct</code> is simply a <code>class</code> in which the default
+visibility is <code>public</code>).
+Once I took structs out of the picture, having a distinct naming
+convention for enumerated types seemed wrong.
+
+<p>Since version 1.1, I have also made the
+libraries <code>const</code>-correct.
+This change makes them much more efficient, but also makes it possible
+for instructors who want to introduce <code>const</code> early to do so.
+The textbook now introduces <code>const</code> (other than to identify
+constant values) in Chapter 14 and then uses it in the remaining chapters.
+
+<h3>2.1 The elimination of <code>genlib.h</code></h3>
+
+One of the critical steps I needed to take in order to make the textbook
+more attractive to potential adopters was eliminating the need to have a
+nonstandard library in <i>every</i> piece of code, which is true
+for <code>genlib.h</code> under the old model.
+I&rsquo;ve adopted the simplest possible expedient in this regard and
+have eliminated the <code>genlib.h</code> interface entirely.
+In practical terms, the only effect on students is that they now have to
+include the line
+
+<pre>
+    using namespace std;
+</pre>
+
+after their imports.
+I have thus exchanged one required line for another.
+The difference is that the new line is part of the C++ standard.
+
+<p>One of the most difficult decisions in this design, however, has been
+that of where to place the
+
+<pre>
+    using namespace std;
+</pre>
+
+directive.
+Most C++ programmers write this <i>after</i> the library inclusions.
+The text follows that convention.
+
+<p>Unfortunately, the cost of this decision is that the <code>.h</code>
+files the students write must explicitly qualify any identifiers that come
+from the <code>std</code> namespace.  For example, <code>.h</code>
+files need to refer to <code>std::string</code> instead of the
+unqualified type name <code>string</code>.  Students, however, write
+fewer interfaces than implementations.
+As a result, it seems wiser to make the implementations appear more
+standard even if doing so adds some complexity to the interfaces.
+
+<p>A more subtle issue that arises in eliminating <code>genlib.h</code>
+is that <code>genlib.h</code> also redefined <code>main</code> so as to
+execute special initialization code before calling the student&rsquo;s
+program, such as bringing up the console and responding to uncaught
+error exceptions.
+That redefinition is now distributed across the header files that need
+it, including <code>console.h</code>, <code>gwindow.h</code>, and
+<code>error.h</code>.
+If you include any of these header files, <code>main</code> gets
+redefined so that the right things happen.
+
+<h3>2.2 The <code>simpio.h</code> library</h3>
+
+The <a href="simpio.html"><code>simpio.h</code></a> library has been
+with us since 1992, when it was necessary to get around the many
+problems in C&rsquo;s <code>scanf</code> function.
+Given my goal of avoiding libraries until I can build them, I
+don&rsquo;t use <code>simpio.h</code> in the first two chapters of the
+book, and instead use the C++ extraction operator, as in the
+<code>Average3</code> program from Chapter&nbsp;1:
+
+<pre class=codefigure>
+<span class=comment>/*
+ * File: Average3.cpp
+ * ------------------
+ * This program averages three integers.
+ */</span>
+
+#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+   int n1, n2, n3;
+   cout &lt;&lt; "This program averages three integers." &lt;&lt; endl;
+   cout &lt;&lt; "1st integer: ";
+   cin &gt;&gt; n1;
+   cout &lt;&lt; "2nd integer: ";
+   cin &gt;&gt; n2;
+   cout &lt;&lt; "3rd integer: ";
+   cin &gt;&gt; n3;
+   double average = (n1 + n2 + n3) / 3.0;
+   cout &lt;&lt; "The average is " &lt;&lt; average &lt;&lt; endl;
+   return 0;
+}
+</pre>
+
+Using the <code>&gt;&gt;</code> operator, however, raises many of the
+old <code>scanf</code> issues.
+For one thing, <code>&gt;&gt;</code> provides no error checking and
+recovery in the way that the <code>simpio.h</code> functions do.
+Perhaps more critically, the treatment of whitespace is extremely
+confusing, and students have a great deal of trouble understanding why
+<code>line</code> always ends up as the empty string after executing the
+following code:
+
+<pre>
+    int n;
+    string line;
+    cout &lt;&lt; "Enter an integer: ";
+    cin &gt;&gt; n;
+    cout &lt;&lt; "Enter a line: ";
+    cin &gt;&gt; line;
+</pre>
+
+Using <code>simpio.h</code> makes it possible to shorten this code
+considerably, as follows:
+
+<pre>
+    int n = getInteger("Enter an integer: ");
+    string line = getLine("Enter a line: ");
+</pre>
+
+This version also solves the problem of checking the numeric input for
+validity, because <code>getInteger</code> performs that checking internally.
+
+<p>My guess, however, is that most adopters won&rsquo;t use
+<code>simpio.h</code> even after I build it in Chapter&nbsp;4.
+In that chapter, I talk about the problems in the use of the
+<code>&gt;&gt;</code> operator and then build <code>simpio.h</code> as a
+fix.
+I plan to stick with that strategy, but not to push the point too
+firmly.
+
+<h3>2.3 The <code>strlib.h</code> interface</h3>
+
+In addition to renaming this interface from <code>strutils.h</code> to
+<a href="strlib.html"><code>strlib.h</code></a> to promote greater
+uniformity in my naming conventions, I&rsquo;ve also added several new
+functions from Java&rsquo;s string libraries that I can no longer live
+without (most notably <code>startsWith</code> and
+<code>endsWith</code>).
+I&rsquo;ve also shortened the names of the case-conversion functions so
+that they match their Java counterparts (<code>toUpperCase</code> and
+<code>toLowerCase</code>).
+In the Version&nbsp;1.0 document, I had proposed having
+<code>strlib.h</code> export the functions
+<code>toUpperCaseInPlace</code> and <code>toLowerCaseInPlace</code> that
+changed their arguments rather than returning a new string.
+Several people recommended I leave these out of the interface, and I
+have done so.
+
+<p>As most of you know, we&rsquo;ve occasionally experienced some odd
+problems with the numeric conversion functions like
+<code>stringToInteger</code> and <code>integerToString</code> that have
+proven impossible to track down.
+The problems occur only on the Macintosh and are characterized by a
+memory smash inside the code for these functions that happens
+<i>before</i> the student&rsquo;s main program even starts.
+I&rsquo;m suspicious that the problem has something to do with the
+extremely clever template-based strategy used to implement these
+methods.
+The new version of the library reimplements these functions in a way
+that students will easily be able to understand based on the discussion
+of strings and streams in Chapters&nbsp;3 and 4.
+We used this implementation in the winter and spring of last year, and
+the memory smashes indeed seemed to have disappeared.
+
+<h3>2.4 The <code>random.h</code> library</h3>
+
+I&rsquo;ve left most of the
+<a href="random.html"><code>random.h</code></a> interface alone, but
+have decided to make a rather significant semantic change in the form of
+eliminating the <code>randomize</code> function.
+Given that so many of our students come with prior knowledge of Java, it
+is confusing for them to learn a different initialization model when
+they make the transition to C++.
+To fix this problem, I have changed the implementation so that the
+pseudorandom number generator is initialized by default to a random
+point in the sequence.
+Clients who want to work with a predictable sequence now need to call
+<code>setRandomSeed</code>.
+
+<p>In the interest of enhancing portability (and to avoid some serious
+problems in the implementation of <code>rand</code> on several
+platforms), I&rsquo;ve also rewritten <code>random.cpp</code> so that it
+includes its own 32-bit linear congruential generator.
+The effect is that the same seed now produces the same sequence on all
+platforms.
+
+<h3>2.5 The <code>TokenScanner</code> class</h3>
+
+I&rsquo;ve made a rather large number of changes in the existing
+<code>Scanner</code> class, starting with changing its name to
+<a href="TokenScanner-class.html"><code>TokenScanner</code></a>.
+The existing version has the following problems:
+
+<ol>
+<li>Students have to learn a new syntactic feature (the <code>::</code>
+operator) when they specify options like
+<code>Scanner::IgnoreSpaces</code> (although they have arguably seen this
+already in <code>string::npos</code>).  Particularly if I maintain
+my convention that enumerated constants should be uppercase, calls
+like
+
+<pre>
+    setSpaceOption(Scanner::IGNORE_SPACES);
+</pre>
+
+seem to shout across the screen.
+
+<p><li>The <code>setBracketOption</code> is a holdover from an ancient
+assignment and no longer seems relevant.
+
+<p><li>The current version lacks a number of features that we would like
+to use, such as multicharacter operators in the BASIC and Scheme
+assignments.
+</ol>
+
+What I&rsquo;ve done here is replace the <code>Scanner</code> class with
+a new <code>TokenScanner</code> class that I&rsquo;ve got running, with
+minor adjustments as required by the language, in C, Java, and
+JavaScript.
+This version provides simpler methods to specify the options, supports
+multicharacter operators, and incorporates several other features
+I&rsquo;ve needed to get language parsers running.
+What I have seems to work well for the applications I&rsquo;ve tried
+without being significantly more complicated than the current model.
+
+<p>The reason for the change in name is to make it possible to use
+the same class name in all the different languages.  The problem with
+<code>Scanner</code> is that it creates ambiguity in Java because there
+is already a <code>Scanner</code> class in <code>java.util</code>.
+
+<h3>2.6 The <code>filelib.h</code> interface</h3>
+
+There is no current counterpart to the
+<a href="filelib.html"><code>filelib.h</code></a> interface, but I have
+needed a place to save several of the file-handling functions I use in
+the text.
+Chapter&nbsp;4 (Streams), for example,
+introduces the functions <code>promptUserForFile</code> and
+<code>readEntireFile</code>.
+The primary purpose of <code>filelib.h</code> is to have an interface
+in which to put those functions.
+Once that interface exists, it seems useful to include other useful
+functions, many of which appear as exercises in Chapter&nbsp;4.
+
+<h2>3. The collection classes</h2>
+
+Given that it is intended for an introductory data-structures course in
+the style of <nobr>CS<font size=-3>&nbsp;</font>106B</nobr>, the
+textbook spends most of its time on the fundamental structures that make
+up the collection classes.
+The fact that the textbook uses Stanford versions of
+<a href="Vector-class.html"><code>Vector</code></a>,
+<a href="Stack-class.html"><code>Stack</code></a>,
+<a href="Queue-class.html"><code>Queue</code></a>,
+<a href="Map-class.html"><code>Map</code></a>, and
+<a href="Set-class.html"><code>Set</code></a>&mdash;as opposed to the
+equally serviceable classes in the Standard Template Library&mdash;is
+likely to represent a significant barrier to adoption for those who are
+looking for a standard approach.
+
+<p>In the early part of the summer, I played around with the idea of
+using the STL collection classes in the text.
+(The one extension I think is essential is <code>foreach</code>, but
+Keith and I got <code>foreach</code> working with the STL classes over a
+year ago.)
+In the end, I decided against that path, although the factors that
+turned out to pivotal in that decision were not the ones I had initially
+expected.
+I was willing to live with ungainly names like <code>push_back</code>
+for vectors or using the verbs <code>push</code> and <code>pop</code>
+for queues.
+I also figured out that I could hide the complexity of map iteration
+(iteration in the STL steps through pairs with a
+<code>first</code> and <code>second</code> component) by specializing
+<code>foreach</code> to iterate over the keys in an STL map, just as it
+does with our <code>Map</code> class.
+
+<p>For me, there were three problems that seemed to be showstoppers.
+First, the STL classes (at least by default) do very little checking
+to ensure that arguments are valid.  Removing those checks gains some
+efficiency, but can be disastrous for students.
+
+<p>The second problem is that so many of the STL classes require the
+use of iterators, even when no iteration is involved.  For example,
+inserting or deleting an element from a vector requires the client
+to use an iterator to indicate the position.  Similarly, the only way
+to check for the existence of a key in a map requires the use of an
+iterator.  Introducing iterators early represents a huge pedagogical
+problem.  Syntactically, iterators in C++ resemble pointers, and it
+therefore makes sense to introduce pointers before iterators, and therefore
+before introducting any collection class that depends on iterators.  That
+ordering, however, has proved to be problematic in the past.  When we
+introduced the details of memory before presenting the client view of
+collection classes, comprehension was dramatically lower than it has
+been in recent years.
+
+The third problem&mdash;and the one that actually pushed me over the
+edge&mdash;is the definition of <code>pop</code> in the
+<code>stack</code> and <code>queue</code> classes.
+To avoid having to copy the result, the STL defines <code>pop</code> as
+a procedure, forcing the client to read the value of <code>top</code>
+(or <code>front</code>) prior to popping the value.
+This design creates an asymmetry between <code>push</code> and
+<code>pop</code> and will almost certainly discourage students from
+thinking in terms of functional composition.
+
+<p>Given these problems, I decided to introduce the Stanford versions of
+the collection classes but to defend that decision on the grounds that
+these simplified versions are easier to implement, not that they are
+easier to understand.
+The primary focus of the book is on understanding the implementation of
+these structures, and I think I can convince instructors that there is
+no need to implement all the features provided by the STL.
+
+<p>As you can see in the individual descriptions that follow, I have
+taken some steps (most notably in the <code>Map</code> class) to make
+the STL and the Stanford versions more compatible, which should also
+decrease the resistance to using these classes.
+
+<p>In Version&nbsp;1.0 of this document, I asked whether anyone
+&ldquo;wanted to defend the idea that I should go with the
+standard STL plus <code>foreach</code>.&rdquo;
+The responses I received for the most part echoed my feeling that,
+although such an idea initially seems attractive, it would end up
+creating too many problems.
+Jerry Cain expressed this position particularly well:
+
+<blockquote>
+I actually started to defend the idea, and I changed my mind.
+:)  Even if you were to go with the standard templates, you'd probably
+want to avoid iterators and install <code>containsKey</code> and
+<code>contains</code> methods into the <code>map</code> and
+<code>set</code>, and that alone is enough of a breakaway from the STL
+mindset that you should just stick with the CS106 containers we know
+have worked so wonderfully for the last 9 years.
+</blockquote>
+
+<h3>3.1 The <code>Vector</code> class</h3>
+
+I&rsquo;ve made a few changes to the
+<a href="Vector-class.html"><code>Vector</code></a> class to bring it in
+line with the STL.
+First, I&rsquo;ve included <code>push_back</code> as a synonym for
+<code>add</code>.
+Traditionalists can therefore stick with the STL nomenclature.
+Second, I&rsquo;ve shortened the names <code>getAt</code> and
+<code>setAt</code> to <code>get</code> and <code>set</code>,
+as suggested by several of you reviewing this document.
+
+<p>More importantly, I&rsquo;ve changed the interpretation of the
+integer-argument constructor to match what the STL <code>vector</code>
+does, which is at odds with the interpretation in the existing Stanford
+libraries.
+In our old libraries, the declaration
+
+<pre>
+    Vector<int> vec(10);
+</pre>
+
+sets the <i>capacity</i> of the vector.
+In the STL version, this constructor performs the far more useful
+operation of setting the <i>size.</i>
+Each element of the vector is initialized to its default value or to a
+specific initial value passed as an optional second argument to the
+constructor.
+
+<p>Following on a suggestion from Keith Schwarz, I&rsquo;ve added to
+<code>Vector</code> the overloaded <code>+</code> and <code>+=</code>
+operators, which I had already added to the <code>Set</code> class.
+Perhaps more importantly, I&rsquo;ve overloaded the comma operator to
+implement Keith&rsquo;s suggestion for a new syntax for initialization
+of vectors:
+
+<pre>
+    Vector<int> digits;
+    digits += 0, 1, 2, 3, 4, 5, 6, 7, 8, 9;
+</pre>
+
+
+<h3>3.2 The <code>Stack</code> class</h3>
+
+The <a href="Stack-class.html"><code>Stack</code></a> class is
+essentially the same as it has been.
+The only change is that I&rsquo;ve added a <code>top</code> method that
+returns the top element on the stack by reference, just as the STL
+<code>top</code> method does.
+I don&rsquo;t plan to cover this method in the textbook (mostly because
+I think assigning to the top of the stack will confuse students about
+the limits of the abstraction boundary), but did want to keep it there
+for the traditionalists.
+Having <code>top</code> in the interface means that the STL idiom for
+popping a stack still works.
+
+<h3>3.3 The <code>Queue</code> class</h3>
+
+I&rsquo;ve made only a minor change to the
+<a href="Queue-class.html"><code>Queue</code></a> class, which is to add
+the <code>front</code> and <code>back</code> methods from STL queues.
+
+<p>Several people responded negatively to the idea of unifying the
+queue and priority queue constructs, so I&rsquo;ve separated them again.
+The priority queue is included in the <code>StanfordCPPLib</code>
+libraries as the class
+<a href="PriorityQueue-class.html"><code>PriorityQueue</code></a>,
+which is exported by the interface
+<a href="pqueue.html"><code>pqueue.h</code></a>.
+
+<h3>3.4 The <code>Map</code> class</h3>
+
+The biggest changes in the collection class libraries are in the
+<a href="Map-class.html"><code>Map</code></a> class.
+At Steve&rsquo;s suggestion, I&rsquo;ve restored the
+<code>KeyType</code> template parameter so that maps work with arbitrary
+keys, and not just strings.
+In the process, it made sense to change the underlying implementation
+from a hash table to a binary search tree (although I&rsquo;ve added
+separate <code>HashMap</code> and <code>HashSet</code> classes to the
+libraries as well).
+These changes bring our version of <code>Map</code> in line with the STL
+<code>map</code> class.
+
+<p>Making these changes to the <code>Map</code> class, however, has a
+significant effect on the presentation in the text.
+Unlike in the hash-table implementation, iterating over a map now
+processes the keys in order, which lets me throw away a fair chunk of
+the discussion of iterator order in Chapter&nbsp;5.
+More importantly, the later chapters now approach the implementation of
+the <code>Map</code> class through a series of approximations to the
+final behavior.
+The hash-table implementation offers constant time performance at the
+cost of unordered iterators; the binary-tree implementation restores the
+desired ordering constraint at the cost of making the time logarithmic.
+This difference makes it possible for me to discuss tradeoffs between
+these strategies in more detail.
+
+<h3>3.5 The <code>Set</code> class</h3>
+
+I&rsquo;ve left the low-level parts of the
+<a href="Set-class.html"><code>Set</code></a> class much as they were,
+although the implementation is now based on the <code>Map</code> class
+rather than <code>BST</code>, which no longer exists in the libraries as
+an exported template class.
+For compatibility with the STL, I&rsquo;ve added <code>insert</code> as
+a synonym for <code>add</code>.
+
+<p>Along the same lines as described for the <code>Vector</code> class
+earlier, I&rsquo;ve overloaded the comma operator so that it works with
+the <code>+=</code> to support a concise syntax for initializing sets:
+
+<pre>
+    Set<char> vowels;
+    vowels += 'a', 'e', 'i', 'o', 'u';
+</pre>
+
+For sets, I&rsquo;ve also extended <code>-=</code> to remove a comma-separated
+list of elements.
+
+<p>The changes that I&rsquo;ve made in the <code>Set</code> class are in
+the higher-level functions that I don&rsquo;t actually introduce until I
+talk about the implementation of sets in Chapter&nbsp;17.
+In the old version of the interface, these facilities were implemented
+as named methods: <code>equals</code>, <code>unionWith</code>,
+<code>intersectWith</code>, and <code>subtract</code>.
+Those names were good choices when the package worked with an ADT in C,
+but don&rsquo;t seem right for C++, where it seems more natural to use
+operators for that purpose.
+
+<p>I have therefore defined the following operators for the <code>Set</code>
+class:
+
+<div style="margin-left:3em;">
+<table>
+<tr>
+<td><i>s<sub><font size=-1>1</font></sub></i><code> == </code><i>s<sub><font size=-1>2</font></sub></i></td>
+<td>Set equality test</code></td>
+</tr>
+<tr>
+<td><i>s<sub><font size=-1>1</font></sub></i><code> != </code><i>s<sub><font size=-1>2</font></sub></i></td>
+<td>Set inequality test</code></td>
+</tr>
+<td><i>s<sub><font size=-1>1</font></sub></i><code> + </code><i>s<sub><font size=-1>2</font></sub></i></td>
+<td>Union</code></td>
+</tr>
+<tr>
+<td><i>s<sub><font size=-1>1</font></sub></i><code> * </code><i>s<sub><font size=-1>2</font></sub></i></td>
+<td>Intersection</code></td>
+</tr>
+<tr>
+<td><i>s<sub><font size=-1>1</font></sub></i><code> - </code><i>s<sub><font size=-1>2</font></sub></i></td>
+<td>Set difference</code></td>
+</tr>
+<tr>
+<td><i>s<sub><font size=-1>1</font></sub></i><code> += </code><i>s<sub><font size=-1>2</font></sub></i></td>
+<td>Union with</code></td>
+</tr>
+<tr>
+<td><i>s<sub><font size=-1>1</font></sub></i><code> *= </code><i>s<sub><font size=-1>2</font></sub></i></td>
+<td>Intersect with</code></td>
+</tr>
+<tr>
+<td><i>s<sub><font size=-1>1</font></sub></i><code> &ndash; </code><i>s<sub><font size=-1>2</font></sub></i></td>
+<td>Set difference</code></td>
+</tr>
+<tr>
+<td><i>s<sub><font size=-1>1</font></sub></i><code> += </code><i>element</i></td>
+<td>Add element</code></td>
+</tr>
+<tr>
+<td><i>s<sub><font size=-1>1</font></sub></i><code> &ndash;= </code><i>element</i>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td>Remove element</code></td>
+</tr>
+</table>
+</div>
+
+<h3>3.6 The <code>Grid</code> and <code>Lexicon</code> classes</h3>
+
+In terms of the facilities exported by their interfaces, the
+<a href="Grid-class.html"><code>Grid</code></a> and
+<a href="Lexicon-class.html"><code>Lexicon</code></a> classes have not
+changed in any significant way.
+What has changed is the presentation in the textbook.
+In the current version of the reader, each of these classes appears in
+its own section in Chapter&nbsp;5.
+This structure has always been slightly problematic because
+<code>Lexicon</code> is not a template class in the way that the others
+are.
+My bigger concern, however, is that foregrounding these
+classes&mdash;neither of which has a direct counterpart in the
+STL&mdash;will increase the likelihood that potential adopters will
+reject the presentation as nonstandard.
+At the same time, I think that both of these classes are worth having
+around, mostly because of the wonderful exercises that they enable.
+
+<p>I believe that I can mitigate this danger by organizing
+Chapter&nbsp;5 into five sections that individually cover the Stanford
+versions of the essential collection classes from the STL
+(<code>Vector</code>, <code>Stack</code>, <code>Queue</code>,
+<code>Map</code>, and <code>Set</code>).
+I then introduce <code>Grid</code> in the last subsection under
+<code>Vector</code> as a simplification of a vector of vectors and
+introduce <code>Lexicon</code> as a special enhancement of the
+<code>Set</code> idea.
+
+<h3>3.7 Iteration and <code>foreach</code></h3>
+
+In a revision I&rsquo;ve been planning to do for almost a year,
+I&rsquo;ve eliminated the <code>hasNext</code>/<code>next</code>
+iterator model from the Stanford collection types and replaced it with
+standard STL iterators.
+I&rsquo;ve also replaced my implementation of <code>foreach</code> with
+Keith&rsquo;s extension that also works with strings and statically
+initialized arrays.
+Students, of course, aren&rsquo;t likely to use the underlying iterators
+directly, although I do cover them in Chapter&nbsp;19.
+Making that change, however, simplifies <code>foreach</code> because the
+iterable types share a common model.
+It also means that all of the STL algorithms work on our classes just as
+they do on the standard ones.
+For example, you can sort a <code>Vector</code> like this:
+
+<pre>
+    sort(vec.begin(), vec.end());
+</pre>
+
+<h2>4. The graphics libraries</h2>
+
+<p>A graphics library serves several purposes in an introductory CS
+course and, as a result, must fit the needs of different audiences.
+On the one hand, students would like to build interactive graphical
+applications (such as Breakout) and therefore must be simple enough for
+them to use.
+On the other, we&rsquo;ve always been happy to build some scaffolding as
+part of an assignment (as in Yahtzee or Boggle) in which we, as
+instructors, use more advanced features of the graphics packages to
+design the user interface we want.
+Ideally, the graphics package will be able to satisfy both needs.
+
+
+<p>In Version 1.0 of this document, I had proposed replicating the Java
+<code>GObject</code> model in C++.
+Our experience in <nobr>CS<font size=-3>&nbsp;</font>106A</nobr> shows
+that the model works well pedagogically and is easy for students to
+understand.
+Having done it, I can also attest that the model is implementable in
+C++.
+The fact that it can be done, however, is not in itself sufficient
+reason to include it in the package.
+
+<p>Based on the comments that came back in response to my query in
+Version&nbsp;1.0, I&rsquo;ve decided to eliminate the entire
+<code>GObject</code> hierarchy on the grounds that
+
+<ol>
+<li>It introduces too many new classes.
+<li>Its use of Java-like object semantics create too much confusion.
+</ol>
+
+<p>In the revised version of the package, the graphical capabilities are
+exported through the <a href="gwindow.html"><code>gwindow.h</code></a> and
+<a href="gevents.html"><code>gevents.h</code></a> interfaces.
+The <code>GWindow</code> class uses a <i>persistent bitmap</i> to store
+the screen image.  Under this model, the student calls graphics primitives to
+draw on the canvas, and the implementation takes care of updating the
+screen image on calls to <code>repaint</code> (formerly called
+<code>updateDisplay</code>) or <code>pause</code>.
+This model is illustrated by the following graphical version of the
+&ldquo;hello,&nbsp;world&rdquo; program, which centers its message on a
+magenta oval at the center of the window:
+
+<pre class=codefigure>
+<span class=comment>/*
+ * File: HelloWorld.cpp
+ * --------------------
+ * This program draws the message "hello, world" on top of a
+ * magenta oval in the center of the graphics window.  This
+ * version uses the simple gwindow.h model that draws on a
+ * persistent canvas.
+ */</span>
+
+#include "gwindow.h"
+using namespace std;
+
+int main() {
+   GWindow gw;
+   double xc = gw.getWidth() / 2;
+   double yc = gw.getHeight() / 2;
+   string msg = "hello, world";
+   gw.setColor("MAGENTA");
+   gw.fillOval(xc - 100, yc - 50, 200, 100);
+   gw.setColor("BLACK");
+   gw.setFont("Helvetica-24");
+   gw.drawString(msg, xc - gw.getStringWidth(msg) / 2, yc + 0.40 * 24);
+   return 0;
+}
+</pre>
+
+When the student runs this program, the output looks like this:
+
+<p>
+<center>
+<img src="images/HelloWorld.png" width=50%>
+</center>
+
+<p>This model of a persistent-bitmap worked extremely well in the years
+that the <nobr>CS<font size=-3>&nbsp;</font>106</nobr> was in C.
+The biggest problem is that animation is problematic.
+The contents of the graphics window are painted on the offscreen buffer,
+so the strategy for animation is to erase the old image, draw the new
+one, and pause.
+That strategy is inadequate for any serious animation, but works well
+for drawing static pictures, which is mostly what I need for the
+<nobr>CS<font size=-3>&nbsp;</font>106B</nobr> book.
+</body>
+</html>

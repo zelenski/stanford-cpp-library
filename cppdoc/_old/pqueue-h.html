@@ -1,0 +1,355 @@
+<html>
+<head>
+<title>../include/pqueue.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: pqueue.h
+ * --------------
+ * This file exports the PriorityQueue class, a collection in which values
+ * are processed in priority order.
+ */
+</scan>
+#ifndef _pqueue_h
+#define _pqueue_h
+
+#include "vector.h"
+
+<a name="Class:PriorityQueue<ValueType>"><scan class=comment>/*
+ * Class: PriorityQueue&lt;ValueType&gt;
+ * -------------------------------
+ * This class models a structure called a priority queue in which values
+ * are processed in order of priority.  As in conventional English usage,
+ * lower priority numbers correspond to higher effective priorities, so
+ * that a priority 1 item takes precedence over a priority 2 item.
+ */
+</scan>
+template &lt;typename ValueType&gt;
+class PriorityQueue {
+
+public:
+
+<a name="Constructor:PriorityQueue"><scan class=comment>/*
+ * Constructor: PriorityQueue
+ * Usage: PriorityQueue&lt;ValueType&gt; pq;
+ * -----------------------------------
+ * Initializes a new priority queue, which is initially empty.
+ */
+</scan>
+   PriorityQueue();
+
+<a name="Destructor:~PriorityQueue"><scan class=comment>/*
+ * Destructor: ~PriorityQueue
+ * --------------------------
+ * Frees any heap storage associated with this priority queue.
+ */
+</scan>
+   virtual ~PriorityQueue();
+
+<a name="Method:size"><scan class=comment>/*
+ * Method: size
+ * Usage: int n = pq.size();
+ * -------------------------
+ * Returns the number of values in the priority queue.
+ */
+</scan>
+   int size() const;
+
+<a name="Method:isEmpty"><scan class=comment>/*
+ * Method: isEmpty
+ * Usage: if (pq.isEmpty()) ...
+ * ----------------------------
+ * Returns true if the priority queue contains no elements.
+ */
+</scan>
+   bool isEmpty() const;
+
+<a name="Method:clear"><scan class=comment>/*
+ * Method: clear
+ * Usage: pq.clear();
+ * ------------------
+ * Removes all elements from the priority queue.
+ */
+</scan>
+   void clear();
+
+<a name="Method:enqueue"><scan class=comment>/*
+ * Method: enqueue
+ * Usage: pq.enqueue(value, priority);
+ * -----------------------------------
+ * Adds value to the queue with the specified priority.  Lower priority
+ * numbers correspond to higher priorities, which means that all priority 1
+ * elements are dequeued before any priority 2 elements.
+ */
+</scan>
+   void enqueue(ValueType value, double priority);
+
+<a name="Method:dequeue"><scan class=comment>/*
+ * Method: dequeue
+ * Usage: ValueType first = pq.dequeue();
+ * --------------------------------------
+ * Removes and returns the highest priority value.  If multiple entries in
+ * the queue have the same priority, those values are dequeued in the same
+ * order in which they were enqueued.
+ */
+</scan>
+   ValueType dequeue();
+
+<a name="Method:peek"><scan class=comment>/*
+ * Method: peek
+ * Usage: ValueType first = pq.peek();
+ * -----------------------------------
+ * Returns the value of highest priority in the queue, without removing it.
+ */
+</scan>
+   ValueType peek() const;
+
+<a name="Method:peekPriority"><scan class=comment>/*
+ * Method: peekPriority
+ * Usage: double priority = pq.peekPriority();
+ * -------------------------------------------
+ * Returns the priority of the first element in the queue, without removing
+ * it.
+ */
+</scan>
+   double peekPriority() const;
+
+<a name="Method:front"><scan class=comment>/*
+ * Method: front
+ * Usage: ValueType first = pq.front();
+ * ------------------------------------
+ * Returns the first value in the queue by reference.
+ */
+</scan>
+   ValueType &amp; front();
+
+<a name="Method:back"><scan class=comment>/*
+ * Method: back
+ * Usage: ValueType last = pq.back();
+ * ----------------------------------
+ * Returns the last value in the queue by reference.
+ */
+</scan>
+   ValueType &amp; back();
+
+<a name="Method:toString"><scan class=comment>/*
+ * Method: toString
+ * Usage: string str = pq.toString();
+ * ----------------------------------
+ * Converts the queue to a printable string representation.
+ */
+</scan>
+   std::string toString();
+
+<scan class=comment>/* Private section */</scan>
+
+<scan class=comment>/**********************************************************************/</scan>
+<scan class=comment>/* Note: Everything below this point in the file is logically part    */</scan>
+<scan class=comment>/* of the implementation and should not be of interest to clients.    */</scan>
+<scan class=comment>/**********************************************************************/</scan>
+
+<a name="Implementation notes:PriorityQueue data structure"><scan class=comment>/*
+ * Implementation notes: PriorityQueue data structure
+ * --------------------------------------------------
+ * The PriorityQueue class is implemented using a data structure called a
+ * heap.
+ */
+</scan>
+private:
+
+<scan class=comment>/* Type used for each heap entry */</scan>
+
+   struct HeapEntry {
+      ValueType value;
+      double priority;
+      long sequence;
+   };
+
+<scan class=comment>/* Instance variables */</scan>
+
+   Vector&lt;HeapEntry&gt; heap;
+   long enqueueCount;
+   int backIndex;
+   int count;
+   int capacity;
+
+<scan class=comment>/* Private function prototypes */</scan>
+
+   void enqueueHeap(ValueType &amp; value, double priority);
+   ValueType dequeueHeap();
+   bool takesPriority(int i1, int i2);
+   void swapHeapEntries(int i1, int i2);
+
+};
+
+extern void error(std::string msg);
+
+template &lt;typename ValueType&gt;
+PriorityQueue&lt;ValueType&gt;::PriorityQueue() {
+   clear();
+}
+
+<a name="Implementation notes:~PriorityQueue destructor"><scan class=comment>/*
+ * Implementation notes: ~PriorityQueue destructor
+ * -----------------------------------------------
+ * All of the dynamic memory is allocated in the Vector class, so no work
+ * is required at this level.
+ */
+</scan>
+template &lt;typename ValueType&gt;
+PriorityQueue&lt;ValueType&gt;::~PriorityQueue() {
+   <scan class=comment>/* Empty */</scan>
+}
+
+template &lt;typename ValueType&gt;
+int PriorityQueue&lt;ValueType&gt;::size() const {
+   return count;
+}
+
+template &lt;typename ValueType&gt;
+bool PriorityQueue&lt;ValueType&gt;::isEmpty() const {
+   return count == 0;
+}
+
+template &lt;typename ValueType&gt;
+void PriorityQueue&lt;ValueType&gt;::clear() {
+   heap.clear();
+   count = 0;
+}
+
+template &lt;typename ValueType&gt;
+void PriorityQueue&lt;ValueType&gt;::enqueue(ValueType value, double priority) {
+   if (count == heap.size()) heap.add(HeapEntry());
+   int index = count++;
+   heap[index].value = value;
+   heap[index].priority = priority;
+   heap[index].sequence = enqueueCount++;
+   if (index == 0 || takesPriority(backIndex, index)) backIndex = index;
+   while (index &gt; 0) {
+      int parent = (index - 1) / 2;
+      if (takesPriority(parent, index)) break;
+      swapHeapEntries(parent, index);
+      index = parent;
+   }
+}
+
+<a name="Implementation notes:dequeue, peek, peekPriority"><scan class=comment>/*
+ * Implementation notes: dequeue, peek, peekPriority
+ * -------------------------------------------------
+ * These methods must check for an empty queue and report an error if there
+ * is no first element.
+ */
+</scan>
+template &lt;typename ValueType&gt;
+ValueType PriorityQueue&lt;ValueType&gt;::dequeue() {
+   if (count == 0) error("dequeue: Attempting to dequeue an empty queue");
+   count--;
+   bool wasBack = (backIndex == count);
+   ValueType value = heap[0].value;
+   swapHeapEntries(0, count);
+   int index = 0;
+   while (true) {
+      int left = 2 * index + 1;
+      int right = 2 * index + 2;
+      if (left &gt;= count) break;
+      int child = left;
+      if (right &lt; count &amp;&amp; takesPriority(right, left)) child = right;
+      if (takesPriority(index, child)) break;
+      swapHeapEntries(index, child);
+      index = child;
+   }
+   if (wasBack) backIndex = index;
+   return value;
+}
+
+template &lt;typename ValueType&gt;
+ValueType PriorityQueue&lt;ValueType&gt;::peek() const {
+   if (count == 0) error("peek: Attempting to peek at an empty queue");
+   return heap.get(0).value;
+}
+
+template &lt;typename ValueType&gt;
+double PriorityQueue&lt;ValueType&gt;::peekPriority() const {
+   if (count == 0) error("peekPriority: Attempting to peek at an empty queue");
+   return heap.get(0).priority;
+}
+
+template &lt;typename ValueType&gt;
+ValueType &amp; PriorityQueue&lt;ValueType&gt;::front() {
+   if (count == 0) error("front: Attempting to read front of an empty queue");
+   return heap.get(0).value;
+}
+
+template &lt;typename ValueType&gt;
+ValueType &amp; PriorityQueue&lt;ValueType&gt;::back() {
+   if (count == 0) error("back: Attempting to read back of an empty queue");
+   return heap.get(backIndex).value;
+}
+
+template &lt;typename ValueType&gt;
+bool PriorityQueue&lt;ValueType&gt;::takesPriority(int i1, int i2) {
+   if (heap[i1].priority &lt; heap[i2].priority) return true;
+   if (heap[i1].priority &gt; heap[i2].priority) return false;
+   return (heap[i1].sequence &lt; heap[i2].sequence);
+}
+
+template &lt;typename ValueType&gt;
+void PriorityQueue&lt;ValueType&gt;::swapHeapEntries(int i1, int i2) {
+   HeapEntry entry = heap[i1];
+   heap[i1] = heap[i2];
+   heap[i2] = entry;
+}
+
+template &lt;typename ValueType&gt;
+std::string PriorityQueue&lt;ValueType&gt;::toString() {
+   ostringstream os;
+   os &lt;&lt; *this;
+   return os.str();
+}
+
+template &lt;typename ValueType&gt;
+std::ostream &amp; operator&lt;&lt;(std::ostream &amp; os,
+                          const PriorityQueue&lt;ValueType&gt; &amp; pq) {
+   os &lt;&lt; "{";
+   PriorityQueue&lt;ValueType&gt; copy = pq;
+   int len = pq.size();
+   for (int i = 0; i &lt; len; i++) {
+      if (i &gt; 0) os &lt;&lt; ", ";
+      os &lt;&lt; copy.peekPriority() &lt;&lt; ":";
+      writeGenericValue(os, copy.dequeue(), true);
+   }
+   return os &lt;&lt; "}";
+}
+
+template &lt;typename ValueType&gt;
+std::istream &amp; operator&gt;&gt;(std::istream &amp; is, PriorityQueue&lt;ValueType&gt; &amp; pq) {
+   char ch;
+   is &gt;&gt; ch;
+   if (ch != '{') error("operator &gt;&gt;: Missing {");
+   pq.clear();
+   is &gt;&gt; ch;
+   if (ch != '}') {
+      is.unget();
+      while (true) {
+         double priority;
+         is &gt;&gt; priority &gt;&gt; ch;
+         if (ch != ':') error("operator &gt;&gt;: Missing colon after priority");
+         ValueType value;
+         readGenericValue(is, value);
+         pq.enqueue(value, priority);
+         is &gt;&gt; ch;
+         if (ch == '}') break;
+         if (ch != ',') {
+            error(std::string("operator &gt;&gt;: Unexpected character ") + ch);
+         }
+      }
+   }
+   return is;
+}
+
+#endif
+</pre>
+</body>
+</html>

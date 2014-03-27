@@ -1,0 +1,362 @@
+<html>
+<head>
+<title>../include/ginteractors.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: ginteractors.h
+ * --------------------
+ * This file exports a hierarchy of graphical interactors similar to those
+ * provided in the Java Swing libraries.
+ */
+</scan>
+#ifndef _ginteractors_h
+#define _ginteractors_h
+
+#include "gobjects.h"
+#include "gtypes.h"
+#include "gwindow.h"
+#include "vector.h"
+
+<a name="Class:GInteractor"><scan class=comment>/*
+ * Class: GInteractor
+ * ------------------
+ * This abstract class is the superclass for all graphical interactors.  In
+ * most applications, interactors will be added to a control strip along
+ * one of the sides of the GWindow, but they can also be placed in specific
+ * positions just like any other GObject.
+ */
+</scan>
+class GInteractor : public GObject {
+
+public:
+
+<a name="Method:setActionCommand"><scan class=comment>/*
+ * Method: setActionCommand
+ * Usage: interactor.setActionCommand(cmd);
+ * ----------------------------------------
+ * Sets the action command to the indicated string.  If the string is not
+ * empty, activating the interactor generates a GActionEvent.
+ */
+</scan>
+   void setActionCommand(std::string cmd);
+
+<a name="Method:getActionCommand"><scan class=comment>/*
+ * Method: getActionCommand
+ * Usage: string cmd = interactor.getActionCommand();
+ * --------------------------------------------------
+ * Returns the action command associated with the interactor.
+ */
+</scan>
+   std::string getActionCommand();
+
+<a name="Method:setSize"><scan class=comment>/*
+ * Method: setSize
+ * Usage: interactor.setSize(size);
+ *        interactor.setSize(width, height);
+ * -----------------------------------------
+ * Changes the size of the interactor to the specified width and height.
+ */
+</scan>
+   void setSize(const GDimension &amp; size);
+   void setSize(double width, double height);
+
+<a name="Method:setBounds"><scan class=comment>/*
+ * Method: setBounds
+ * Usage: interactor.setBounds(rect);
+ *        interactor.setBounds(x, y, width, height);
+ * -------------------------------------------------
+ * Changes the bounds of the interactor to the specified values.
+ */
+</scan>
+   void setBounds(const GRectangle &amp; size);
+   void setBounds(double x, double y, double width, double height);
+
+<scan class=comment>/* Prototypes for the virtual methods */</scan>
+
+   virtual GRectangle getBounds() const;
+
+protected:
+
+   GInteractor();
+
+   std::string actionCommand;
+
+};
+
+<a name="Class:GButton"><scan class=comment>/*
+ * Class: GButton
+ * --------------
+ * This interactor subclass represents an onscreen button.  The following
+ * program displays a button that, when pressed, generates the message
+ * Please do not press this button again (with thanks to Douglas Adamss
+ * Hitchhikers Guide to the Galaxy):
+ *
+ *    int main() {
+ *       GWindow gw;
+ *       GButton *button = new GButton("RED");
+ *       gw.addToRegion(button, "SOUTH");
+ *       while (true) {
+ *          GEvent e = waitForEvent(ACTION_EVENT | CLICK_EVENT);
+ *          if (e.getEventType() == MOUSE_CLICKED) break;
+ *          cout &lt;&lt; "Please do not press this button again." &lt;&lt; endl;
+ *       }
+ *       return 0;
+ *    }
+ */
+</scan>
+class GButton : public GInteractor {
+
+public:
+
+<a name="Constructor:GButton"><scan class=comment>/*
+ * Constructor: GButton
+ * Usage: GButton *button = new GButton(label);
+ * --------------------------------------------
+ * Creates a GButton with the specified label.  This constructor also sets
+ * the action command for the button to the label string.
+ */
+</scan>
+   GButton(std::string label);
+
+<scan class=comment>/* Prototypes for the virtual methods */</scan>
+
+   virtual std::string getType() const;
+   virtual std::string toString() const;
+
+private:
+   std::string label;
+
+};
+
+<a name="Class:GCheckBox"><scan class=comment>/*
+ * Class: GCheckBox
+ * ----------------
+ * This interactor subclass represents an onscreen check box.  Clicking
+ * once on the check box selects it; clicking again removes the selection. 
+ * If a GCheckBox has an action command, clicking on the box generates a
+ * GActionEvent.
+ */
+</scan>
+class GCheckBox : public GInteractor {
+
+public:
+
+<a name="Constructor:GCheckBox"><scan class=comment>/*
+ * Constructor: GCheckBox
+ * Usage: GCheckBox *chkbox = new GCheckBox(label);
+ * ------------------------------------------------
+ * Creates a GCheckBox with the specified label.  In contrast to the
+ * GButton constructor, this constructor does not set an action command.
+ */
+</scan>
+   GCheckBox(std::string label);
+
+<a name="Method:setSelected"><scan class=comment>/*
+ * Method: setSelected
+ * Usage: chkbox-&gt;setSelected(state);
+ * ----------------------------------
+ * Sets the state of the check box.
+ */
+</scan>
+   void setSelected(bool state);
+
+<a name="Method:isSelected"><scan class=comment>/*
+ * Method: isSelected
+ * Usage: if (chkbox-&gt;isSelected()) ...
+ * ------------------------------------
+ * Returns true if the check box is selected.
+ */
+</scan>
+   bool isSelected();
+
+<scan class=comment>/* Prototypes for the virtual methods */</scan>
+
+   virtual std::string getType() const;
+   virtual std::string toString() const;
+
+private:
+   std::string label;
+
+};
+
+<a name="Class:GSlider"><scan class=comment>/*
+ * Class: GSlider
+ * --------------
+ * This interactor subclass represents an onscreen slider.  Dragging the
+ * slider control generates an ActionEvent if the slider has a nonempty
+ * action command.
+ */
+</scan>
+class GSlider : public GInteractor {
+
+public:
+
+<a name="Constructor:GSlider"><scan class=comment>/*
+ * Constructor: GSlider
+ * Usage: GSlider *slider = new GSlider();
+ *        GSlider *slider = new GSlider(min, max, value);
+ * ------------------------------------------------------
+ * Creates a horizontal GSlider.  The second form allows the client to
+ * specify the minimum value, maximum value, and current value of the
+ * slider.  The first form is equivalent to calling GSlider(0, 100, 50). 
+ * Assigning an action command to the slider causes the slider to generate
+ * an action event whenever the slider value changes.
+ */
+</scan>
+   GSlider();
+   GSlider(int min, int max, int value);
+
+<a name="Method:setValue"><scan class=comment>/*
+ * Method: setValue
+ * Usage: slider-&gt;setValue(value);
+ * -------------------------------
+ * Sets the current value of the slider.
+ */
+</scan>
+   void setValue(int value);
+
+<a name="Method:getValue"><scan class=comment>/*
+ * Method: getValue
+ * Usage: int value = slider-&gt;getValue();
+ * --------------------------------------
+ * Returns the current value of the slider.
+ */
+</scan>
+   int getValue();
+
+<scan class=comment>/* Prototypes for the virtual methods */</scan>
+
+   virtual std::string getType() const;
+   virtual std::string toString() const;
+
+private:
+   void create(int min, int max, int value);
+   int min;
+   int max;
+
+};
+
+<a name="Class:GTextField"><scan class=comment>/*
+ * Class: GTextField
+ * -----------------
+ * This interactor subclass represents a text field for entering short text
+ * strings.  Hitting enter in a text field generates a GActionEvent if the
+ * text field has a nonempty action command.
+
+ */
+</scan>
+class GTextField : public GInteractor {
+
+public:
+
+<a name="Constructor:GTextField"><scan class=comment>/*
+ * Constructor: GTextField
+ * Usage: GTextField *field = new GTextField();
+ *        GTextField *field = new GTextField(nChars);
+ * --------------------------------------------------
+ * Creates a text field capable of holding nChars characters, which
+ * defaults to 10.  Assigning an action command to the text field causes it
+ * to generate an action event whenever the user types the ENTER key.
+ */
+</scan>
+   GTextField();
+   GTextField(int nChars);
+
+<a name="Method:setText"><scan class=comment>/*
+ * Method: setText
+ * Usage: field-&gt;setText(str);
+ * ---------------------------
+ * Sets the text of the field to the specified string.
+ */
+</scan>
+   void setText(std::string str);
+
+<a name="Method:getText"><scan class=comment>/*
+ * Method: getText
+ * Usage: string str = field-&gt;getText();
+ * -------------------------------------
+ * Returns the contents of the text field.
+ */
+</scan>
+   std::string getText();
+
+<scan class=comment>/* Prototypes for the virtual methods */</scan>
+
+   virtual std::string getType() const;
+   virtual std::string toString() const;
+
+};
+
+<a name="Class:GChooser"><scan class=comment>/*
+ * Class: GChooser
+ * ---------------
+ * This interactor subclass represents a selectable list.  The GChooser
+ * constructor creates an empty chooser.  Once the chooser has been
+ * created, clients can use addItem to add the options.  For example, the
+ * following code creates a GChooser containing the four strings "Small",
+ * "Medium", "Large", and "X-Large":
+ *
+ *    GChooser *sizeChooser = new GChooser();
+ *    sizeChooser-&gt;addItem("Small");
+ *    sizeChooser-&gt;addItem("Medium");
+ *    sizeChooser-&gt;addItem("Large");
+ *    sizeChooser-&gt;addItem("X-Large");
+ */
+</scan>
+class GChooser : public GInteractor {
+
+public:
+
+<a name="Constructor:GChooser"><scan class=comment>/*
+ * Constructor: GChooser
+ * Usage: GChooser *chooser = new GChooser();
+ * ------------------------------------------
+ * Creates a chooser that initially contains no items, which are added
+ * using the addItem method.  Assigning an action command to the chooser
+ * causes it to generate an action event whenever the user selects an item.
+ */
+</scan>
+   GChooser();
+
+<a name="Method:addItem"><scan class=comment>/*
+ * Method: addItem
+ * Usage: chooser-&gt;addItem(item);
+ * ------------------------------
+ * Adds a new item consisting of the specified string.
+ */
+</scan>
+   void addItem(std::string item);
+
+<a name="Method:setSelectedItem"><scan class=comment>/*
+ * Method: setSelectedItem
+ * Usage: chooser-&gt;setSelectedItem(item);
+ * --------------------------------------
+ * Sets the chooser so that it shows the specified item.  If the item does
+ * not exist in the chooser, no change occurs.
+ */
+</scan>
+   void setSelectedItem(std::string item);
+
+<a name="Method:getSelectedItem"><scan class=comment>/*
+ * Method: getSelectedItem
+ * Usage: string item = chooser-&gt;getSelectedItem();
+ * ------------------------------------------------
+ * Returns the current item selected in the chooser.
+ */
+</scan>
+   std::string getSelectedItem();
+
+<scan class=comment>/* Prototypes for the virtual methods */</scan>
+
+   virtual std::string getType() const;
+   virtual std::string toString() const;
+
+};
+
+#endif
+</pre>
+</body>
+</html>

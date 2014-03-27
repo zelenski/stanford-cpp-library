@@ -1,0 +1,210 @@
+<html>
+<head>
+<title>../include/strlib.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: strlib.h
+ * --------------
+ * This file exports several useful string functions that are not included
+ * in the C++ string library.
+ */
+</scan>
+#ifndef _strlib_h
+#define _strlib_h
+
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+<a name="Function:integerToString"><scan class=comment>/*
+ * Function: integerToString
+ * Usage: string s = integerToString(n);
+ * -------------------------------------
+ * Converts an integer into the corresponding string of digits.  For
+ * example, calling integerToString(123) returns the string "123".
+ */
+</scan>
+std::string integerToString(int n);
+
+<a name="Function:stringToInteger"><scan class=comment>/*
+ * Function: stringToInteger
+ * Usage: int n = stringToInteger(str);
+ * ------------------------------------
+ * Converts a string of digits into an integer.  If the string is not a
+ * legal integer or contains extraneous characters other than whitespace,
+ * stringToInteger calls error with an appropriate message.
+ */
+</scan>
+int stringToInteger(std::string str);
+
+<a name="Function:realToString"><scan class=comment>/*
+ * Function: realToString
+ * Usage: string s = realToString(d);
+ * ----------------------------------
+ * Converts a floating-point number into the corresponding string form. 
+ * For example, calling realToString(23.45) returns the string "23.45".
+ */
+</scan>
+std::string realToString(double d);
+
+<a name="Function:stringToReal"><scan class=comment>/*
+ * Function: stringToReal
+ * Usage: double d = stringToReal(str);
+ * ------------------------------------
+ * Converts a string representing a real number into its corresponding
+ * value.  If the string is not a legal floating-point number or contains
+ * extraneous characters other than whitespace, stringToReal calls error
+ * with an appropriate message.
+ */
+</scan>
+double stringToReal(std::string str);
+
+<a name="Function:toUpperCase"><scan class=comment>/*
+ * Function: toUpperCase
+ * Usage: string s = toUpperCase(str);
+ * -----------------------------------
+ * Returns a new string in which all lowercase characters have been
+ * converted into their uppercase equivalents.
+ */
+</scan>
+std::string toUpperCase(std::string str);
+
+<a name="Function:toLowerCase"><scan class=comment>/*
+ * Function: toLowerCase
+ * Usage: string s = toLowerCase(str);
+ * -----------------------------------
+ * Returns a new string in which all uppercase characters have been
+ * converted into their lowercase equivalents.
+ */
+</scan>
+std::string toLowerCase(std::string str);
+
+<a name="Function:equalsIgnoreCase"><scan class=comment>/*
+ * Function: equalsIgnoreCase
+ * Usage: if (equalsIgnoreCase(s1, s2)) ...
+ * ----------------------------------------
+ * Returns true if s1 and s2 are equal discounting differences in case.
+ */
+</scan>
+bool equalsIgnoreCase(std::string s1, std::string s2);
+
+<a name="Function:startsWith"><scan class=comment>/*
+ * Function: startsWith
+ * Usage: if (startsWith(str, prefix)) ...
+ * ---------------------------------------
+ * Returns true if the string str starts with the specified prefix, which
+ * may be either a string or a character.
+ */
+</scan>
+bool startsWith(std::string str, std::string prefix);
+bool startsWith(std::string str, char prefix);
+
+<a name="Function:endsWith"><scan class=comment>/*
+ * Function: endsWith
+ * Usage: if (endsWith(str, suffix)) ...
+ * -------------------------------------
+ * Returns true if the string str ends with the specified suffix, which may
+ * be either a string or a character.
+ */
+</scan>
+bool endsWith(std::string str, std::string suffix);
+bool endsWith(std::string str, char suffix);
+
+<a name="Function:trim"><scan class=comment>/*
+ * Function: trim
+ * Usage: string trimmed = trim(str);
+ * ----------------------------------
+ * Returns a new string after removing any whitespace characters from the
+ * beginning and end of the argument.
+ */
+</scan>
+std::string trim(std::string str);
+
+<scan class=comment>/* Private section */</scan>
+
+<scan class=comment>/**********************************************************************/</scan>
+<scan class=comment>/* Note: Everything below this point in the file is logically part    */</scan>
+<scan class=comment>/* of the implementation and should not be of interest to clients.    */</scan>
+<scan class=comment>/**********************************************************************/</scan>
+
+<a name="Friend function:writeQuotedString"><scan class=comment>/*
+ * Friend function: writeQuotedString
+ * Usage: writeQuotedString(outfile, str, forceQuotes);
+ * ----------------------------------------------------
+ * Writes the string str to outfile surrounded by double quotes, converting
+ * special characters to escape sequences, as necessary.  If the optional
+ * parameter forceQuotes is explicitly set to false, quotes are included in
+ * the output only if necessary.
+ */
+</scan>
+void writeQuotedString(std::ostream &amp; os, const std::string &amp; str,
+                       bool forceQuotes = true);
+
+<a name="Friend function:readQuotedString"><scan class=comment>/*
+ * Friend function: readQuotedString
+ * Usage: readQuotedString(infile, str);
+ * -------------------------------------
+ * Reads the next string from infile into the reference parameter str.  If
+ * the first character (other than whitespace) is either a single or a
+ * double quote, this function reads characters up to the matching quote,
+ * processing standard escape sequences as it goes.  If not, readString
+ * reads characters up to any of the characters in the string
+ * STRING_DELIMITERS in the implementation file.
+ */
+</scan>
+void readQuotedString(std::istream &amp; is, std::string &amp; str);
+
+<a name="Friend function:stringNeedsQuoting"><scan class=comment>/*
+ * Friend function: stringNeedsQuoting
+ * Usage: if (stringNeedsQuoting(str)) ...
+ * ---------------------------------------
+ * Checks whether the string needs quoting in order to be read correctly.
+ */
+</scan>
+bool stringNeedsQuoting(const std::string &amp; str);
+
+<a name="Friend function:writeGenericValue"><scan class=comment>/*
+ * Friend function: writeGenericValue
+ * Usage: writeGenericValue(os, value, forceQuotes);
+ * -------------------------------------------------
+ * Writes a generic value to the output stream.  If that value is a string,
+ * this function uses writeQuotedString to write the value.
+ */
+</scan>
+template &lt;typename ValueType&gt;
+void writeGenericValue(std::ostream &amp; os, const ValueType &amp; value,
+                       bool forceQuotes) {
+   os &lt;&lt; value;
+}
+
+template &lt;&gt;
+inline void writeGenericValue(std::ostream &amp; os, const std::string &amp; value,
+                              bool forceQuotes) {
+   writeQuotedString(os, value, forceQuotes);
+}
+
+<a name="Friend function:readGenericValue"><scan class=comment>/*
+ * Friend function: readGenericValue
+ * Usage: readGenericValue(is, value);
+ * -----------------------------------
+ * Reads a generic value from the input stream.  If that value is a string,
+ * this function uses readQuotedString to read the value.
+ */
+</scan>
+template &lt;typename ValueType&gt;
+void readGenericValue(std::istream &amp; is, ValueType &amp; value) {
+   is &gt;&gt; value;
+}
+
+template &lt;&gt;
+inline void readGenericValue(std::istream &amp; is, std::string &amp; value) {
+   readQuotedString(is, value);
+}
+
+
+#endif
+</pre>
+</body>
+</html>

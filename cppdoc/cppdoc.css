@@ -1,0 +1,119 @@
+body, h1, h2, h3, h4, h5, h6 {
+	font-family:"Candara", "Calibri", "Helvetica Neue", "Helvetica", "Arial", "sans-serif";
+}
+
+body {
+	font-size:100%;
+}
+
+h1 {
+	font-size:1.5em;
+	font-weight:bold;
+}
+
+h2 {
+	font-size:1.4em;
+	font-weight:bold;
+	margin-bottom:0px;
+}
+
+.header {
+	font-size:125%;
+}
+
+pre, code, .code, .indexKey, .include, .detailCode, .usageCode {
+	font-family:"Consolas", "Courier New", "Courier", "monospace";
+}
+
+pre, code, .code {
+	font-weight:bold;
+	font-size:90%;
+}
+
+.comment {
+	color:blue;
+}
+
+.it {
+	font-weight:normal;
+	font-style:italic;
+	font-size:90%;
+}
+	
+.banner {
+	border:0;
+}
+
+.bannerText {
+	font-size:1.6em;
+	font-weight:bold;
+}
+
+.index {
+	border-collapse:collapse;
+	margin-top:1px;
+}
+
+.index tr, .index td {
+	border-color: #9eadc0;
+}
+
+.index tr:nth-child(2N) {
+	background-color: #f6f6f6;
+}
+
+.index tbody tr:hover {
+	background-color: #ffffee !important;
+}
+
+.indexHead {
+	font-size:1.4em;
+	font-weight:bold;
+	padding-top:1em;
+}
+
+.indexKey {
+	border:1px solid black; 
+	padding:3px 5px;
+	font-weight:bold;
+	font-size:95%;
+	vertical-align: top;
+}
+
+.indexSynopsis {
+	border:1px solid black; 
+	padding:3px 5px;
+	vertical-align: top;
+}
+
+.include {
+	font-weight:bold;
+	font-size:100%;
+}
+
+.detailCode {
+	padding:0px;
+	font-weight:bold;
+	font-size:100%;
+}
+
+.detailHTML {
+	font-size:1em;
+	margin-left:20px;
+}
+
+.inset {
+	margin-left:36px;
+}
+
+.usageCode {
+	font-weight:bold;
+	font-size:90%;
+	margin-left:40px;
+}	
+
+.since {
+	font-style: italic;
+	color: #555;
+	font-size: 95%;
+}

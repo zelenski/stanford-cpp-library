@@ -1,0 +1,61 @@
+<html>
+<head>
+<title>../include/error.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: error.h
+ * -------------
+ * This file defines the ErrorException class and the error function.
+ */
+</scan>
+#ifndef _error_h
+#define _error_h
+
+#include &lt;string&gt;
+#include &lt;exception&gt;
+
+<a name="Class:ErrorException"><scan class=comment>/*
+ * Class: ErrorException
+ * ---------------------
+ * This exception is thrown by calls to the error function.  Typical code
+ * for catching errors looks like this:
+ *
+ *    try {
+ *       ... code in which an error might occur ...
+ *    } catch (ErrorException 
+ *       ... code to handle the error condition ...
+ *    }
+ *
+ * If an ErrorException is thrown at any point in the range of the try
+ * (including in functions called from that code), control will jump
+ * immediately to the error handler.
+ */
+</scan>
+class ErrorException : public std::exception {
+public:
+   ErrorException(std::string msg);
+   virtual ~ErrorException() throw ();
+   virtual std::string getMessage() const;
+   virtual const char *what() const throw ();
+
+private:
+   std::string msg;
+};
+
+<a name="Function:error"><scan class=comment>/*
+ * Function: error
+ * Usage: error(msg);
+ * ------------------
+ * Signals an error condition in a program by throwing an ErrorException
+ * with the specified message.
+ */
+</scan>
+void error(std::string msg);
+
+#endif
+</pre>
+</body>
+</html>

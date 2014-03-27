@@ -1,0 +1,107 @@
+<html>
+<head>
+<title>Point</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="point.html">#include "point.h"</a></div>
+<h1 class=header><code>class Point</code></h1>
+This class represents an <i>x</i>-<i>y</i> coordinate point on a
+two-dimensional integer grid.  If you need to work with real-valued points,
+you should use the <a href="gtypes.html"><code>gtypes.h</code></a>
+interface instead.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Constructor</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:Point">Point()</a><br><a href="#Constructor:Point">Point(x,&nbsp;y)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>Point</code> object with the specified x and y coordinates.</td></tr>
+<tr><td class=indexHead colspan=2>Methods</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getX">getX()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <i>x</i>-coordinate of the point.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getY">getY()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <i>y</i>-coordinate of the point.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a string representation of the <code>Point</code> in the form <code>"(x, y)"</code>.</td></tr>
+<tr><td class=indexHead colspan=2>Operator</td></tr>
+<tr><td class=indexKey><nobr><a href="#Operator:&lt;&lt;">cout << pt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Overloads the <code>&lt;&lt;</code> operator so that it is able to display <code>Point</code> values.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:Point"></a>
+<pre class=detailCode>
+Point();
+Point(int x, int y);
+</pre>
+<div class=detailHTML>
+Creates a <code>Point</code> object with the specified x and y coordinates.
+If the coordinates are not supplied, the default constructor sets these
+fields to 0.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Point origin;
+Point pt(x, y);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:getX"></a>
+<pre class=detailCode>
+int getX() const;
+</pre>
+<div class=detailHTML>
+Returns the <i>x</i>-coordinate of the point.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int x = pt.getX();
+</pre>
+<hr>
+<a name="Method:getY"></a>
+<pre class=detailCode>
+int getY() const;
+</pre>
+<div class=detailHTML>
+Returns the <i>y</i>-coordinate of the point.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int y = pt.getY();
+</pre>
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Returns a string representation of the <code>Point</code> in the form
+<code>"(x, y)"</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = pt.toString();
+</pre>
+<hr>
+</table>
+<h2>Operator detail</h2>
+<hr>
+<a name="Operator:<<"></a>
+<pre class=detailCode>
+ostream &amp; operator&lt;&lt;(ostream &amp; os, const Point &amp; pt);
+</pre>
+<div class=detailHTML>
+Overloads the <code>&lt;&lt;</code> operator so that it is able
+to display <code>Point</code> values.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+cout &lt;&lt; pt;
+</pre>
+<hr>
+</table>
+</body>
+</html>

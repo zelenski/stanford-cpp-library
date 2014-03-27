@@ -1,0 +1,250 @@
+<html>
+<head>
+<title>../include/stack.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: stack.h
+ * -------------
+ * This file exports the Stack class, which implements a collection that
+ * processes values in a last-in/first-out (LIFO) order.
+ */
+</scan>
+#ifndef _stack_h
+#define _stack_h
+
+#include "vector.h"
+
+<a name="Class:Stack<ValueType>"><scan class=comment>/*
+ * Class: Stack&lt;ValueType&gt;
+ * -----------------------
+ * This class models a linear structure called a stack in which values are
+ * added and removed only from one end.  This discipline gives rise to a
+ * last-in/first-out behavior (LIFO) that is the defining feature of
+ * stacks.  The fundamental stack operations are push (add to top) and pop
+ * (remove from top).
+ */
+</scan>
+template &lt;typename ValueType&gt;
+class Stack {
+
+public:
+
+<a name="Constructor:Stack"><scan class=comment>/*
+ * Constructor: Stack
+ * Usage: Stack&lt;ValueType&gt; stack;
+ * ------------------------------
+ * Initializes a new empty stack.
+ */
+</scan>
+   Stack();
+
+<a name="Destructor:~Stack"><scan class=comment>/*
+ * Destructor: ~Stack
+ * ------------------
+ * Frees any heap storage associated with this stack.
+ */
+</scan>
+   virtual ~Stack();
+
+<a name="Method:size"><scan class=comment>/*
+ * Method: size
+ * Usage: int n = stack.size();
+ * ----------------------------
+ * Returns the number of values in this stack.
+ */
+</scan>
+   int size() const;
+
+<a name="Method:isEmpty"><scan class=comment>/*
+ * Method: isEmpty
+ * Usage: if (stack.isEmpty()) ...
+ * -------------------------------
+ * Returns true if this stack contains no elements.
+ */
+</scan>
+   bool isEmpty() const;
+
+<a name="Method:clear"><scan class=comment>/*
+ * Method: clear
+ * Usage: stack.clear();
+ * ---------------------
+ * Removes all elements from this stack.
+ */
+</scan>
+   void clear();
+
+<a name="Method:push"><scan class=comment>/*
+ * Method: push
+ * Usage: stack.push(value);
+ * -------------------------
+ * Pushes the specified value onto this stack.
+ */
+</scan>
+   void push(ValueType value);
+
+<a name="Method:pop"><scan class=comment>/*
+ * Method: pop
+ * Usage: ValueType top = stack.pop();
+ * -----------------------------------
+ * Removes the top element from this stack and returns it.  This method
+ * signals an error if called on an empty stack.
+ */
+</scan>
+   ValueType pop();
+
+<a name="Method:peek"><scan class=comment>/*
+ * Method: peek
+ * Usage: ValueType top = stack.peek();
+ * ------------------------------------
+ * Returns the value of top element from this stack, without removing it. 
+ * This method signals an error if called on an empty stack.  For
+ * compatibility with the STL classes, this method is also exported under
+ * the name top, in which case it returns the value by reference.
+ */
+</scan>
+   ValueType peek() const;
+   ValueType &amp; top();
+
+<a name="Method:toString"><scan class=comment>/*
+ * Method: toString
+ * Usage: string str = stack.toString();
+ * -------------------------------------
+ * Converts the stack to a printable string representation.
+ */
+</scan>
+   std::string toString();
+
+<scan class=comment>/* Private section */</scan>
+
+<scan class=comment>/**********************************************************************/</scan>
+<scan class=comment>/* Note: Everything below this point in the file is logically part    */</scan>
+<scan class=comment>/* of the implementation and should not be of interest to clients.    */</scan>
+<scan class=comment>/**********************************************************************/</scan>
+
+<a name="Implementation notes:Stack data structure"><scan class=comment>/*
+ * Implementation notes: Stack data structure
+ * ------------------------------------------
+ * The easiest way to implement a stack is to store the elements in a
+ * Vector.  Doing so means that the problems of dynamic memory allocation
+ * and copy assignment are already solved by the implementation of the
+ * underlying Vector class.
+ */
+</scan>
+private:
+   Vector&lt;ValueType&gt; elements;
+
+};
+
+extern void error(std::string msg);
+
+<scan class=comment>/*
+ * Stack class implementation
+ * --------------------------
+ * The Stack is internally managed using a Vector.  This layered design
+ * makes the implementation extremely simple, to the point that most
+ * methods can be implemented in as single line.
+ */
+</scan>
+template &lt;typename ValueType&gt;
+Stack&lt;ValueType&gt;::Stack() {
+   <scan class=comment>/* Empty */</scan>
+}
+
+template &lt;typename ValueType&gt;
+Stack&lt;ValueType&gt;::~Stack() {
+   <scan class=comment>/* Empty */</scan>
+}
+
+template &lt;typename ValueType&gt;
+int Stack&lt;ValueType&gt;::size() const {
+   return elements.size();
+}
+
+template &lt;typename ValueType&gt;
+bool Stack&lt;ValueType&gt;::isEmpty() const {
+   return size() == 0;
+}
+
+template &lt;typename ValueType&gt;
+void Stack&lt;ValueType&gt;::push(ValueType value) {
+   elements.add(value);
+}
+
+template &lt;typename ValueType&gt;
+ValueType Stack&lt;ValueType&gt;::pop() {
+   if (isEmpty()) error("pop: Attempting to pop an empty stack");
+   ValueType top = elements[elements.size() - 1];
+   elements.remove(elements.size() - 1);
+   return top;
+}
+
+template &lt;typename ValueType&gt;
+ValueType Stack&lt;ValueType&gt;::peek() const {
+   if (isEmpty()) error("peek: Attempting to peek at an empty stack");
+   return elements.get(elements.size() - 1);
+}
+
+template &lt;typename ValueType&gt;
+ValueType &amp; Stack&lt;ValueType&gt;::top() {
+   if (isEmpty()) error("top: Attempting to read top of an empty stack");
+   return elements[elements.size() - 1];
+}
+
+template &lt;typename ValueType&gt;
+void Stack&lt;ValueType&gt;::clear() {
+   elements.clear();
+}
+
+template &lt;typename ValueType&gt;
+std::string Stack&lt;ValueType&gt;::toString() {
+   ostringstream os;
+   os &lt;&lt; *this;
+   return os.str();
+}
+
+template &lt;typename ValueType&gt;
+std::ostream &amp; operator&lt;&lt;(std::ostream &amp; os, const Stack&lt;ValueType&gt; &amp; stack) {
+   os &lt;&lt; "{";
+   Stack&lt;ValueType&gt; copy = stack;
+   Stack&lt;ValueType&gt; reversed;
+   while (!copy.isEmpty()) {
+      reversed.push(copy.pop());
+   }
+   int len = stack.size();
+   for (int i = 0; i &lt; len; i++) {
+      if (i &gt; 0) os &lt;&lt; ", ";
+      writeGenericValue(os, reversed.pop(), true);
+   }
+   return os &lt;&lt; "}";
+}
+
+template &lt;typename ValueType&gt;
+std::istream &amp; operator&gt;&gt;(std::istream &amp; is, Stack&lt;ValueType&gt; &amp; stack) {
+   char ch;
+   is &gt;&gt; ch;
+   if (ch != '{') error("operator &gt;&gt;: Missing {");
+   stack.clear();
+   is &gt;&gt; ch;
+   if (ch != '}') {
+      is.unget();
+      while (true) {
+         ValueType value;
+         readGenericValue(is, value);
+         stack.push(value);
+         is &gt;&gt; ch;
+         if (ch == '}') break;
+         if (ch != ',') {
+            error(std::string("operator &gt;&gt;: Unexpected character ") + ch);
+         }
+      }
+   }
+   return is;
+}
+
+#endif
+</pre>
+</body>
+</html>

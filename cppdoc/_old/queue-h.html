@@ -1,0 +1,334 @@
+<html>
+<head>
+<title>../include/queue.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: queue.h
+ * -------------
+ * This file exports the Queue class, a collection in which values are
+ * ordinarily processed in a first-in/first-out (FIFO) order.
+ */
+</scan>
+#ifndef _queue_h
+#define _queue_h
+
+#include "vector.h"
+
+<a name="Class:Queue<ValueType>"><scan class=comment>/*
+ * Class: Queue&lt;ValueType&gt;
+ * -----------------------
+ * This class models a linear structure called a queue in which values are
+ * added at one end and removed from the other.  This discipline gives rise
+ * to a first-in/first-out behavior (FIFO) that is the defining feature of
+ * queues.
+ */
+</scan>
+template &lt;typename ValueType&gt;
+class Queue {
+
+public:
+
+<a name="Constructor:Queue"><scan class=comment>/*
+ * Constructor: Queue
+ * Usage: Queue&lt;ValueType&gt; queue;
+ * ------------------------------
+ * Initializes a new empty queue.
+ */
+</scan>
+   Queue();
+
+<a name="Destructor:~Queue"><scan class=comment>/*
+ * Destructor: ~Queue
+ * ------------------
+ * Frees any heap storage associated with this queue.
+ */
+</scan>
+   virtual ~Queue();
+
+<a name="Method:size"><scan class=comment>/*
+ * Method: size
+ * Usage: int n = queue.size();
+ * ----------------------------
+ * Returns the number of values in the queue.
+ */
+</scan>
+   int size() const;
+
+<a name="Method:isEmpty"><scan class=comment>/*
+ * Method: isEmpty
+ * Usage: if (queue.isEmpty()) ...
+ * -------------------------------
+ * Returns true if the queue contains no elements.
+ */
+</scan>
+   bool isEmpty() const;
+
+<a name="Method:clear"><scan class=comment>/*
+ * Method: clear
+ * Usage: queue.clear();
+ * ---------------------
+ * Removes all elements from the queue.
+ */
+</scan>
+   void clear();
+
+<a name="Method:enqueue"><scan class=comment>/*
+ * Method: enqueue
+ * Usage: queue.enqueue(value);
+ * ----------------------------
+ * Adds value to the end of the queue.
+ */
+</scan>
+   void enqueue(ValueType value);
+
+<a name="Method:dequeue"><scan class=comment>/*
+ * Method: dequeue
+ * Usage: ValueType first = queue.dequeue();
+ * -----------------------------------------
+ * Removes and returns the first item in the queue.
+ */
+</scan>
+   ValueType dequeue();
+
+<a name="Method:peek"><scan class=comment>/*
+ * Method: peek
+ * Usage: ValueType first = queue.peek();
+ * --------------------------------------
+ * Returns the first value in the queue, without removing it.  For
+ * compatibility with the STL classes, this method is also exported under
+ * the name front, in which case it returns the value by reference.
+ */
+</scan>
+   ValueType peek() const;
+
+<a name="Method:front"><scan class=comment>/*
+ * Method: front
+ * Usage: ValueType first = queue.front();
+ * ---------------------------------------
+ * Returns the first value in the queue by reference.
+ */
+</scan>
+   ValueType &amp; front();
+
+<a name="Method:back"><scan class=comment>/*
+ * Method: back
+ * Usage: ValueType last = queue.back();
+ * -------------------------------------
+ * Returns the last value in the queue by reference.
+ */
+</scan>
+   ValueType &amp; back();
+
+<a name="Method:toString"><scan class=comment>/*
+ * Method: toString
+ * Usage: string str = queue.toString();
+ * -------------------------------------
+ * Converts the queue to a printable string representation.
+ */
+</scan>
+   std::string toString();
+
+<scan class=comment>/* Private section */</scan>
+
+<scan class=comment>/**********************************************************************/</scan>
+<scan class=comment>/* Note: Everything below this point in the file is logically part    */</scan>
+<scan class=comment>/* of the implementation and should not be of interest to clients.    */</scan>
+<scan class=comment>/**********************************************************************/</scan>
+
+<a name="Implementation notes:Queue data structure"><scan class=comment>/*
+ * Implementation notes: Queue data structure
+ * ------------------------------------------
+ * The Queue class is implemented using a ring buffer.
+ */
+</scan>
+private:
+
+<scan class=comment>/* Instance variables */</scan>
+
+   Vector&lt;ValueType&gt; ringBuffer;
+   int count;
+   int capacity;
+   int head;
+   int tail;
+
+<scan class=comment>/* Private functions */</scan>
+
+   void expandRingBufferCapacity();
+
+};
+
+extern void error(std::string msg);
+
+<a name="Implementation notes:Queue data structure"><scan class=comment>/*
+ * Implementation notes: Queue data structure
+ * ------------------------------------------
+ * The array-based queue stores the elements in successive index positions
+ * in a vector, just as a stack does.  What makes the queue structure more
+ * complex is the need to avoid shifting elements as the queue expands and
+ * contracts.  In the array model, this goal is achieved by keeping track
+ * of both the head and tail indices.  The tail index increases by one each
+ * time an element is enqueued, and the head index increases by one each
+ * time an element is dequeued.  Each index therefore marches toward the
+ * end of the allocated vector and will eventually reach the end.  Rather
+ * than allocate new memory, this implementation lets each index wrap
+ * around back to the beginning as if the ends of the array of elements
+ * were joined to form a circle.  This representation is called a ring
+ * buffer.
+ */
+</scan>
+const int INITIAL_CAPACITY = 10;
+
+<a name="Implementation notes:Queue constructor"><scan class=comment>/*
+ * Implementation notes: Queue constructor
+ * ---------------------------------------
+ * The constructor must allocate the array storage for the queue elements
+ * and initialize the fields of the object.
+ */
+</scan>
+template &lt;typename ValueType&gt;
+Queue&lt;ValueType&gt;::Queue() {
+   clear();
+}
+
+<a name="Implementation notes:~Queue destructor"><scan class=comment>/*
+ * Implementation notes: ~Queue destructor
+ * ---------------------------------------
+ * All of the dynamic memory is allocated in the Vector class, so no work
+ * is required at this level.
+ */
+</scan>
+template &lt;typename ValueType&gt;
+Queue&lt;ValueType&gt;::~Queue() {
+   <scan class=comment>/* Empty */</scan>
+}
+
+template &lt;typename ValueType&gt;
+int Queue&lt;ValueType&gt;::size() const {
+   return count;
+}
+
+template &lt;typename ValueType&gt;
+bool Queue&lt;ValueType&gt;::isEmpty() const {
+   return count == 0;
+}
+
+template &lt;typename ValueType&gt;
+void Queue&lt;ValueType&gt;::clear() {
+   capacity = INITIAL_CAPACITY;
+   ringBuffer = Vector&lt;ValueType&gt;(capacity);
+   head = 0;
+   tail = 0;
+   count = 0;
+}
+
+template &lt;typename ValueType&gt;
+void Queue&lt;ValueType&gt;::enqueue(ValueType value) {
+   if (count &gt;= capacity - 1) expandRingBufferCapacity();
+   ringBuffer[tail] = value;
+   tail = (tail + 1) % capacity;
+   count++;
+}
+
+<a name="Implementation notes:dequeue, peek"><scan class=comment>/*
+ * Implementation notes: dequeue, peek
+ * -----------------------------------
+ * These methods must check for an empty queue and report an error if there
+ * is no first element.
+ */
+</scan>
+template &lt;typename ValueType&gt;
+ValueType Queue&lt;ValueType&gt;::dequeue() {
+   if (count == 0) error("dequeue: Attempting to dequeue an empty queue");
+   ValueType result = ringBuffer[head];
+   head = (head + 1) % capacity;
+   count--;
+   return result;
+}
+
+template &lt;typename ValueType&gt;
+ValueType Queue&lt;ValueType&gt;::peek() const {
+   if (count == 0) error("peek: Attempting to peek at an empty queue");
+   return ringBuffer.get(head);
+}
+
+template &lt;typename ValueType&gt;
+ValueType &amp; Queue&lt;ValueType&gt;::front() {
+   if (count == 0) error("front: Attempting to read front of an empty queue");
+   return ringBuffer[head];
+}
+
+template &lt;typename ValueType&gt;
+ValueType &amp; Queue&lt;ValueType&gt;::back() {
+   if (count == 0) error("back: Attempting to read back of an empty queue");
+   return ringBuffer[(tail + capacity - 1) % capacity];
+}
+
+<a name="Implementation notes:expandRingBufferCapacity"><scan class=comment>/*
+ * Implementation notes: expandRingBufferCapacity
+ * ----------------------------------------------
+ * This private method doubles the capacity of the ringBuffer vector.  Note
+ * that this implementation also shifts all the elements back to the
+ * beginning of the vector.
+ */
+</scan>
+template &lt;typename ValueType&gt;
+void Queue&lt;ValueType&gt;::expandRingBufferCapacity() {
+   Vector&lt;ValueType&gt; copy = ringBuffer;
+   ringBuffer = Vector&lt;ValueType&gt;(2 * capacity);
+   for (int i = 0; i &lt; count; i++) {
+      ringBuffer[i] = copy[(head + i) % capacity];
+   }
+   head = 0;
+   tail = count;
+   capacity *= 2;
+}
+
+template &lt;typename ValueType&gt;
+std::string Queue&lt;ValueType&gt;::toString() {
+   ostringstream os;
+   os &lt;&lt; *this;
+   return os.str();
+}
+
+template &lt;typename ValueType&gt;
+std::ostream &amp; operator&lt;&lt;(std::ostream &amp; os, const Queue&lt;ValueType&gt; &amp; queue) {
+   os &lt;&lt; "{";
+   Queue&lt;ValueType&gt; copy = queue;
+   int len = queue.size();
+   for (int i = 0; i &lt; len; i++) {
+      if (i &gt; 0) os &lt;&lt; ", ";
+      writeGenericValue(os, copy.dequeue(), true);
+   }
+   return os &lt;&lt; "}";
+}
+
+template &lt;typename ValueType&gt;
+std::istream &amp; operator&gt;&gt;(std::istream &amp; is, Queue&lt;ValueType&gt; &amp; queue) {
+   char ch;
+   is &gt;&gt; ch;
+   if (ch != '{') error("operator &gt;&gt;: Missing {");
+   queue.clear();
+   is &gt;&gt; ch;
+   if (ch != '}') {
+      is.unget();
+      while (true) {
+         ValueType value;
+         readGenericValue(is, value);
+         queue.enqueue(value);
+         is &gt;&gt; ch;
+         if (ch == '}') break;
+         if (ch != ',') {
+            error(std::string("operator &gt;&gt;: Unexpected character ") + ch);
+         }
+      }
+   }
+   return is;
+}
+
+#endif
+</pre>
+</body>
+</html>

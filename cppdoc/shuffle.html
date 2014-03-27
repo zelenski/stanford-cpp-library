@@ -1,0 +1,82 @@
+<html>
+<head>
+<title>shuffle.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><code>shuffle.h</code></h1>
+This file exports functions for generating pseudorandom numbers.
+
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:shuffle1">shuffle(array, length)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Randomly rearranges the elements of the given array up to the given length.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:shuffle2">shuffle(array2d, rows, cols)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Randomly rearranges the elements of the given 2-D array up to the given number of rows and columns.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:shuffle3">shuffle(grid)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Randomly rearranges the elements of the given grid.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:shuffle4">shuffle(vector)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Randomly rearranges the elements of the given vector.</td></tr>
+</table>
+
+<h2>Function detail</h2>
+<hr>
+<a name="Function:shuffle1"></a>
+<pre class=detailCode>
+void shuffle(ValueType* array, int length);
+</pre>
+<div class=detailHTML>
+Randomly rearranges the elements of the given array up to the given length.
+Precondition: The array pointer points to a valid non-NULL array in memory,
+and that array contains at least 'length' elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+shuffle(a, len);
+</pre>
+<hr>
+<a name="Function:shuffle2"></a>
+<pre class=detailCode>
+void shuffle(ValueType** array2d, int rows, int cols);
+</pre>
+<div class=detailHTML>
+Randomly rearranges the elements of the given 2-D array up to the given number of rows and columns.
+Precondition: The array pointer points to a valid non-NULL 2-D array in
+memory, and that array contains at least the given number of rows/columns.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+shuffle(a2d, rows, cols);
+</pre>
+<hr>
+<a name="Function:shuffle3"></a>
+<pre class=detailCode>
+void shuffle(Grid&lt;ValueType&gt; grid);
+</pre>
+<div class=detailHTML>
+Randomly rearranges the elements of the given grid.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+shuffle(myGrid);
+</pre>
+<hr>
+<a name="Function:shuffle4"></a>
+<pre class=detailCode>
+void shuffle(Vector&lt;ValueType&gt; vector);
+</pre>
+<div class=detailHTML>
+Randomly rearranges the elements of the given vector.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+shuffle(myVector);
+</pre>
+<hr>
+</table>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<html>
+<head>
+<title>Queue&lt;ValueType&gt;</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="queue.html">#include "queue.h"</a></div>
+<h1 class=header><code>class Queue&lt;ValueType&gt;</code></h1>
+This class models a linear structure called a <b><i>queue</i></b>
+in which values are added at one end and removed from the other.
+This discipline gives rise to a first-in/first-out behavior (FIFO)
+that is the defining feature of queues.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Constructor</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:Queue">Queue()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Initializes a new empty queue.</td></tr>
+<tr><td class=indexHead colspan=2>Methods</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:back">back()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the last value in the queue by reference.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes all elements from the queue.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:dequeue">dequeue()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes and returns the first item in the queue.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:enqueue">enqueue(value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds <code>value</code> to the end of the queue.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:front">front()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the first value in the queue by reference.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the queue contains no elements.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:peek">peek()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the first value in the queue, without removing it.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of values in the queue.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts the queue to a printable string representation.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:Queue"></a>
+<pre class=detailCode>
+Queue();
+</pre>
+<div class=detailHTML>
+Initializes a new empty queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Queue&lt;ValueType&gt; queue;
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size() const;
+</pre>
+<div class=detailHTML>
+Returns the number of values in the queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int n = queue.size();
+</pre>
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty() const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the queue contains no elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (queue.isEmpty()) ...
+</pre>
+<hr>
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Removes all elements from the queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+queue.clear();
+</pre>
+<hr>
+<a name="Method:enqueue"></a>
+<pre class=detailCode>
+void enqueue(ValueType value);
+</pre>
+<div class=detailHTML>
+Adds <code>value</code> to the end of the queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+queue.enqueue(value);
+</pre>
+<hr>
+<a name="Method:dequeue"></a>
+<pre class=detailCode>
+ValueType dequeue();
+</pre>
+<div class=detailHTML>
+Removes and returns the first item in the queue.
+
+<p>If the queue is empty, this function signals an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType first = queue.dequeue();
+</pre>
+<hr>
+<a name="Method:peek"></a>
+<pre class=detailCode>
+ValueType peek() const;
+</pre>
+<div class=detailHTML>
+Returns the first value in the queue, without removing it.  For
+compatibility with the STL classes, this method is also exported
+under the name <code>front</code>, in which case it returns the
+value by reference.
+
+<p>If the queue is empty, this function signals an error.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType first = queue.peek();
+</pre>
+<hr>
+<a name="Method:front"></a>
+<pre class=detailCode>
+ValueType &amp; front();
+</pre>
+<div class=detailHTML>
+Returns the first value in the queue by reference.
+
+<p>If the queue is empty, this function signals an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType first = queue.front();
+</pre>
+<hr>
+<a name="Method:back"></a>
+<pre class=detailCode>
+ValueType &amp; back();
+</pre>
+<div class=detailHTML>
+Returns the last value in the queue by reference.
+
+<p>If the queue is empty, this function signals an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType last = queue.back();
+</pre>
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Converts the queue to a printable string representation, with the elements listed left-to-right from the front of the queue to the back, such as <code>&quot;{value1, value2, value3}&quot;</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = queue.toString();
+</pre>
+<hr>
+</table>
+</body>
+</html>

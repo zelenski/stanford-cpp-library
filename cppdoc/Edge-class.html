@@ -1,0 +1,99 @@
+<html>
+	<head>
+		<title>Edge</title>
+		<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+	</head>
+
+	<body>
+		<table class=banner>
+			<tr>
+				<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+				<td valign=middle><div class=bannerText>
+				The Stanford <code>cslib</code> package
+				</div></td>
+			</tr>
+		</table>
+		
+		<hr>
+		
+		<div class=include><a href="graph.html">#include "basicgraph.h"</a></div>
+		<h1 class=header>
+			<code>class Edge</code>
+		</h1>
+		
+		<p>
+			Each object of this class represents a single directed edge (or arc) in a graph.
+			The edge object itself stores some useful data fields that can be used in various graph algorithms.
+			In particular, an edge stores its cost, which is important for weighted graphs.
+		</p>
+
+		<p>
+			See also:
+			<a href="BasicGraph-class.html"><code>BasicGraph</code></a>,
+			<a href="Vertex-class.html"><code>Vertex</code></a>
+		</p>
+
+		<p class="since">
+			Available since: 2014/02/01 version of C++ library
+		</p>
+		
+		<table class=index width=100%>
+			<tr><td class=indexHead colspan=2>Constructor</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Constructor:Edge">Edge(start, finish)</a><br><a href="#Constructor:Edge">Edge(start, end, cost)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a edge between the given vertices.</td></tr>
+			<tr><td class=indexHead colspan=2>Methods</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Method:resetData">resetData()</a></td><td class=indexSynopsis width=100%>Sets the <code>visited</code> field back to its initial value.</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a></td><td class=indexSynopsis width=100%>Returns a string representation of this edge.</td></tr>
+			<tr><td class=indexHead colspan=2>Fields</td></tr>
+			<tr><td class=indexKey><nobr>double&nbsp;cost</nobr></td><td class=indexSynopsis width=100%>The cost or weight of this edge.</td></tr>
+			<tr><td class=indexKey><nobr>Vertex*&nbsp;finish</nobr></td><td class=indexSynopsis width=100%>A pointer to the finishing vertex touching this edge.</td></tr>
+			<tr><td class=indexKey><nobr>Vertex*&nbsp;start</nobr></td><td class=indexSynopsis width=100%>A pointer to the starting vertex touching this edge.</td></tr>
+			<tr><td class=indexKey><nobr>bool&nbsp;visited</nobr></td><td class=indexSynopsis width=100%>Whether or not this edge has currently been visited; initially <code>false</code>.</td></tr>
+		</table>
+
+		<h2>Constructor detail</h2>
+		<hr>
+		<a name="Constructor:Edge"></a>
+		<pre class=detailCode>
+Edge(Vertex* start, Vertex* finish, double cost = 0);
+</pre>
+		<div class=detailHTML>
+		Creates a edge between the given vertices.
+		A cost may be optionally passed to indicate a weighted edge; if no cost is passed, 0 is used.
+		<p>Usage:<br>
+		</div>
+		<pre class=usageCode>
+Edge e1(v1, v2);
+Edge e2(v2, v3, 4.5);
+</pre>
+		<hr>
+
+		<h2>Method detail</h2>
+		<hr>
+		<a name="Method:resetData"></a>
+		<pre class=detailCode>
+void resetData();
+</pre>
+		<div class=detailHTML>
+		Sets the <code>visited</code> field back to its initial value of <code>false</code>.
+		<p>Usage:<br>
+		</div>
+		<pre class=usageCode>
+e.resetData();
+</pre>
+		<hr>
+		
+		<a name="Method:toString"></a>
+		<pre class=detailCode>
+string toString() const;
+</pre>
+		<div class=detailHTML>
+		Returns a string representation of this edge, such as
+		<code>"Edge{start=r12c42, finish=r12c41, cost=0.75}"</code>.
+		<p>Usage:<br>
+		</div>
+		<pre class=usageCode>
+string str = e.toString();
+</pre>
+		<hr>
+	</body>
+</html>

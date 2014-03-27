@@ -1,0 +1,77 @@
+body {
+   font-size:100%;
+}
+
+h1 {
+   font-family:"Times New Roman", "Times", "serif";
+   font-size:1.5em;
+   font-weight:bold;
+   text-align:center;
+}
+
+h2 {
+   font-family:"Times New Roman", "Times", "serif";
+   font-size:1.4em;
+   font-weight:bold;
+   margin-bottom:2px;
+}
+
+h3 {
+   font-family:"Times New Roman", "Times", "serif";
+   font-size:1.2em;
+   font-weight:bold;
+   margin-bottom:2px;
+}
+
+pre, code, .code {
+   font-family:"Courier New", "Courier", "monospace";
+   font-weight:bold;
+   font-size:90%;
+}
+
+.question {
+   border:2px solid blue;
+   margin-top:0.8em;
+   margin-bottom:0.8em;
+   margin-left:4em;
+   margin-right:4em;
+   pad-top:5px;
+   pad-bottom:5px;
+   pad-left:0px
+   pad-right:5px;
+}
+
+.resolved {
+   border:2px solid green;
+   margin-top:0.8em;
+   margin-bottom:0.8em;
+   margin-left:4em;
+   margin-right:4em;
+   pad-top:5px;
+   pad-bottom:5px;
+   pad-left:0px
+   pad-right:5px;
+}
+
+.codefigure {
+   font-family:"Courier New", "Courier", "monospace";
+   font-weight:bold;
+   font-size:90%;
+   border:solid black 1px;
+   padding:6px;
+   margin-top:0.8em;
+   margin-bottom:0.8em;
+   margin-right:0.4em;
+}
+
+.caption {
+   font-family:"Helvetica Neue", "Helvetica", "sans-serif";
+   font-weight:bold;
+   font-size:100%;
+   margin-top:0.8em;
+   margin-bottom:2px;
+}
+
+.comment {
+   color:blue;
+}

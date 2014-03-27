@@ -1,0 +1,225 @@
+<html>
+<head>
+<title>PriorityQueue&lt;ValueType&gt;</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="pqueue.html">#include "pqueue.h"</a></div>
+<h1 class=header><code>class PriorityQueue&lt;ValueType&gt;</code></h1>
+This class models a structure called a <b><i>priority&nbsp;queue</i></b>
+in which values are processed in order of priority.  As in conventional
+English usage, lower priority numbers correspond to higher effective
+priorities, so that a priority 1 item takes precedence over a
+priority 2 item.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Constructor</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:PriorityQueue">PriorityQueue()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Initializes a new priority queue, which is initially empty.</td></tr>
+<tr><td class=indexHead colspan=2>Methods</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:back">back()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the last value in the queue by reference.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:changePriority">changePriority(value, newPriority)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adjusts an existing value in the queue to have a new specified priority.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes all elements from the priority queue.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:dequeue">dequeue()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes and returns the highest priority value.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:enqueue">enqueue(value,&nbsp;priority)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds <code>value</code> to the queue with the specified priority.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:front">front()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the first value in the queue by reference.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the priority queue contains no elements.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:peek">peek()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the value of highest priority in the queue, without removing it.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:peekPriority">peekPriority()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the priority of the first element in the queue, without removing it.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of values in the priority queue.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts the queue to a printable string representation.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:PriorityQueue"></a>
+<pre class=detailCode>
+PriorityQueue();
+</pre>
+<div class=detailHTML>
+Initializes a new priority queue, which is initially empty.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+PriorityQueue&lt;ValueType&gt; pq;
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size() const;
+</pre>
+<div class=detailHTML>
+Returns the number of values in the priority queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int n = pq.size();
+</pre>
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty() const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the priority queue contains no elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (pq.isEmpty()) ...
+</pre>
+<hr>
+<a name="Method:changePriority"></a>
+<pre class=detailCode>
+void changePriority(ValueType value, double newPriority);
+</pre>
+<div class=detailHTML>
+Adjusts <code>value</code> in the queue to now have the specified new priority,
+which must be at least as urgent as (&le;) that value's previous
+priority in the queue.
+
+<p>This function throws an error if the element value is not present in the queue, if the
+new priority passed is not at least as urgent as its current priority, or if NaN
+(not-a-number) is passed as the priority.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+pq.changePriority(value, newPriority);
+</pre>
+<hr>
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Removes all elements from the priority queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+pq.clear();
+</pre>
+<hr>
+<a name="Method:enqueue"></a>
+<pre class=detailCode>
+void enqueue(ValueType value, double priority);
+</pre>
+<div class=detailHTML>
+Adds <code>value</code> to the queue with the specified priority.
+Lower priority numbers correspond to higher priorities, which
+means that all priority 1 elements are dequeued before any
+priority 2 elements.
+
+<p>Negative priorities are allowed and are not treated differently from other values.
+That is, a priority of -1 comes before one of 0, which comes before 1, 2, 3, etc.
+
+<p>This function throws an error if NaN (not-a-number) is passed as the priority.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+pq.enqueue(value, priority);
+</pre>
+<hr>
+<a name="Method:dequeue"></a>
+<pre class=detailCode>
+ValueType dequeue();
+</pre>
+<div class=detailHTML>
+Removes and returns the highest priority value.  If multiple
+entries in the queue have the same priority, those values are
+dequeued in the same order in which they were enqueued.
+
+<p>This function throws an error if the queue is empty.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType first = pq.dequeue();
+</pre>
+<hr>
+<a name="Method:peek"></a>
+<pre class=detailCode>
+ValueType peek() const;
+</pre>
+<div class=detailHTML>
+Returns the value of highest priority in the queue, without
+removing it.
+
+<p>This function throws an error if the queue is empty.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType first = pq.peek();
+</pre>
+<hr>
+<a name="Method:peekPriority"></a>
+<pre class=detailCode>
+double peekPriority() const;
+</pre>
+<div class=detailHTML>
+Returns the priority of the first element in the queue, without
+removing it.
+
+<p>This function throws an error if the queue is empty.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double priority = pq.peekPriority();
+</pre>
+<hr>
+<a name="Method:front"></a>
+<pre class=detailCode>
+ValueType &amp; front();
+</pre>
+<div class=detailHTML>
+Returns the first value in the queue by reference.
+
+<p>This function throws an error if the queue is empty.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType first = pq.front();
+</pre>
+<hr>
+<a name="Method:back"></a>
+<pre class=detailCode>
+ValueType &amp; back();
+</pre>
+<div class=detailHTML>
+Returns the last value in the queue by reference.
+
+<p>This function throws an error if the queue is empty.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType last = pq.back();
+</pre>
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Converts the queue to a printable string representation.
+The elements are listed with their priorities first and are listed in increasing order of priority, such as <code>&quot;{pri1:value1, pri2:value2, pri3:value3}&quot;</code>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = pq.toString();
+</pre>
+<hr>
+</table>
+</body>
+</html>

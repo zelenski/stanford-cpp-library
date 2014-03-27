@@ -1,0 +1,214 @@
+<html>
+<head>
+<title>DawgLexicon</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="dawglexicon.html">#include "dawglexicon.h"</a></div>
+<h1 class=header><code>class DawgLexicon</code></h1>
+This class is used to represent a <b><i>lexicon,</i></b> or word list.
+The main difference between a lexicon and a dictionary is that
+a lexicon does not provide any mechanism for storing definitions;
+the lexicon contains only words, with no associated information.
+It is therefore similar to a set of strings, but with a more
+space-efficient internal representation.  The <code>DawgLexicon</code>
+class supports efficient lookup operations for words and prefixes.
+
+<p>As an example of the use of the <code>DawgLexicon</code> class, the
+following program lists all the two-letter words in the lexicon
+stored in <code>EnglishWords.dat</code>:
+
+<pre>
+   int main() {
+      DawgLexicon english(&quot;EnglishWords.dat&quot;);
+      foreach (string word in english) {
+         if (word.length() == 2) {
+            cout &lt;&lt; word &lt;&lt; endl;
+         }
+      }
+      return 0;
+   }
+</pre>
+
+<p>
+	NOTE: Unlike the standard <code>Lexicon</code> implementation, <code>DawgLexicon</code> is implemented internally using a directed acyclic word graph ("DAWG"), which allows it to have an efficient binary file representation.
+	The performance of this kind of lexicon is severely degraded if words are added to it individually.
+	If an entire binary DAWG file of words is added using the <code>addWordsFromFile</code> method, the words are represented efficiently as a directed acyclic word graph (DAWG).
+	But if words are added one at a time, or if the words come from a plain text input file, these are placed into a secondary internal backing <code>Set</code> which has much lower runtime performance, particularly for prefix-related operations like <code>containsPrefix</code>.
+	Also, because of its representation, this form of lexicon does not support certain operations such as <code>remove</code>.
+	If you want to be able to add words one-at-a-time or read from plain-text input files, or if you want to be able to remove words from your lexicon, consider using the <code>Lexicon</code> class rather than <code>DawgLexicon</code>.
+</p>
+
+<p class="since">
+	Available since: 2014/02/01 version of C++ library
+</p>
+
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Constructor</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:DawgLexicon">DawgLexicon()</a><br><a href="#Constructor:DawgLexicon">DawgLexicon(filename)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Initializes a new lexicon.</td></tr>
+<tr><td class=indexHead colspan=2>Methods</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:add">add(word)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds the specified word to the lexicon.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:addWordsFromFile">addWordsFromFile(filename)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads the file and adds all of its words to the lexicon.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes all words from the lexicon.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:contains">contains(word)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if <code>word</code> is contained in the lexicon.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:containsPrefix">containsPrefix(prefix)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns true if any words in the lexicon begin with <code>prefix</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the lexicon contains no words.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:mapAll">mapAll(fn)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Calls the specified function on each word in the lexicon.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of words contained in the lexicon.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts the lexicon to a printable string representation.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:DawgLexicon"></a>
+<pre class=detailCode>
+DawgLexicon();
+DawgLexicon(string filename);
+</pre>
+<div class=detailHTML>
+Initializes a new lexicon.  The default constructor creates an empty
+lexicon.  The second form reads in the contents of the lexicon from
+the specified data file.  The data file must be in one of two formats:
+(1) a space-efficient precompiled binary format or (2) a text file
+containing one word per line.  The Stanford library distribution
+includes a binary lexicon file named <code>EnglishWords.dat</code>
+containing a list of words in English.  The standard code pattern
+to initialize that lexicon looks like this:
+
+<pre>
+   DawgLexicon english("EnglishWords.dat");
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+DawgLexicon lex;
+DawgLexicon lex(filename);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size() const;
+</pre>
+<div class=detailHTML>
+Returns the number of words contained in the lexicon.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int n = lex.size();
+</pre>
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty() const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the lexicon contains no words.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (lex.isEmpty()) ...
+</pre>
+<hr>
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Removes all words from the lexicon.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+lex.clear();
+</pre>
+<hr>
+<a name="Method:add"></a>
+<pre class=detailCode>
+void add(string word);
+</pre>
+<div class=detailHTML>
+Adds the specified word to the lexicon.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+lex.add(word);
+</pre>
+<hr>
+<a name="Method:addWordsFromFile"></a>
+<pre class=detailCode>
+void addWordsFromFile(string filename);
+</pre>
+<div class=detailHTML>
+Reads the file and adds all of its words to the lexicon.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+lex.addWordsFromFile(filename);
+</pre>
+<hr>
+<a name="Method:contains"></a>
+<pre class=detailCode>
+bool contains(string word) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if <code>word</code> is contained in the
+lexicon.  In the <code>DawgLexicon</code> class, the case of letters is
+ignored, so "Zoo" is the same as "ZOO" or "zoo".
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (lex.contains(word)) ...
+</pre>
+<hr>
+<a name="Method:containsPrefix"></a>
+<pre class=detailCode>
+bool containsPrefix(string prefix) const;
+</pre>
+<div class=detailHTML>
+Returns true if any words in the lexicon begin with <code>prefix</code>.
+Like <code>containsWord</code>, this method ignores the case of letters
+so that "MO" is a prefix of "monkey" or "Monday".
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (lex.containsPrefix(prefix)) ...
+</pre>
+<hr>
+<a name="Method:mapAll"></a>
+<pre class=detailCode>
+void mapAll(void (*fn)(string)) const;
+void mapAll(void (*fn)(const string &amp;)) const;
+void mapAll(FunctorType fn) const;
+</pre>
+<div class=detailHTML>
+Calls the specified function on each word in the lexicon.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+lexicon.mapAll(fn);
+</pre>
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Converts the map to a printable string representation, such as <code>&quot;{word1, word2, word3}&quot;</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = lexicon.toString();
+</pre>
+<hr>
+</table>
+</body>
+</html>

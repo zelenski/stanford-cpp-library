@@ -1,0 +1,157 @@
+<html>
+	<head>
+		<title>ifbitstream class</title>
+		<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+	</head>
+
+	<body>
+		<table class=banner>
+			<tr>
+				<td valign=middle>
+					<image src="images/StanfordTreeLogo.png" height=32>
+				</td>
+				<td valign=middle>
+					<div class=bannerText>
+						The Stanford <code>cslib</code> package
+					</div>
+				</td>
+			</tr>
+		</table>
+		<hr>
+		
+		<div class=include>
+			<a href="bitstream.html">#include "bitstream.h"</a>
+		</div>
+
+		<h1 class=header>
+			<code>class ifbitstream : public <a href="ibitstream-class.html">ibitstream</a></code>
+		</h1>
+
+		<p>
+			This class reads bits of data from input files.
+			This class inherits from the <code>ibitstream</code> class.
+		</p>
+		
+		<p class="since">
+			Available since: 2014/02/01 version of C++ library
+		</p>
+		
+		<table class=index width=100%>
+			<tr>
+				<td class=indexHead colspan=2>
+					Constructors
+				</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Constructor:ifbitstream1">ifbitstream()</a>&nbsp;</nobr></td>
+				<td class=indexSynopsis width=100%>
+					Constructs a new bit stream that is not attached to any file.
+				</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Constructor:ifbitstream2">ifbitstream(filename)</a>&nbsp;</nobr></td>
+				<td class=indexSynopsis width=100%>
+					Constructs a new bit stream that reads the specified file.
+				</td>
+			</tr>
+			
+			<tr>
+				<td class=indexHead colspan=2>
+					Methods
+				</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:close">close()</a>&nbsp;</nobr></td>
+				<td class=indexSynopsis width=100%>
+					Closes the currently-opened file, if the stream is open.
+				</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:open">open(filename)</a>&nbsp;</nobr></td>
+				<td class=indexSynopsis width=100%>
+					Opens the specified file for reading.
+				</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:readBit">readBit()</a>&nbsp;</nobr></td>
+				<td class=indexSynopsis width=100%>
+					Reads a single bit from the bit stream and returns 0 or 1 depending on the bit value.
+				</td>
+			</tr>
+		</table>
+
+		<h2>Constructor detail</h2>
+		<hr>
+		<a name="Constructor:ifbitstream1"></a>
+		<pre class=detailCode>
+ifbitstream();
+</pre>
+		<div class=detailHTML>
+			Constructs a new bit stream that is not attached to any file.
+			You can open a file for reading using the <code>open</code> member function.
+			<p>Usage:<br>
+		</div>
+		<pre class=usageCode>
+ifbitstream stream;
+</pre>
+		<hr>
+		<a name="Constructor:ifbitstream2"></a>
+		<pre class=detailCode>
+ifbitstream(const char* filename);
+ifbitstream(string filename);
+</pre>
+		<div class=detailHTML>
+			Constructs a new bit stream that reads the specified file, if it exists.
+			If not, the stream enters an error state.
+			<p>Usage:<br>
+		</div>
+		<pre class=usageCode>
+ifbitstream stream(filename);
+</pre>
+		<hr>
+
+		<h2>Method detail</h2>
+		<hr>
+		<a name="Method:close"></a>
+		<pre class=detailCode>
+void close();
+</pre>
+		<div class=detailHTML>
+			Closes the currently-opened file, if the stream is open.
+			If the stream is not open, puts the stream into a fail state.
+			<p>Usage:<br>
+		</div>
+		<pre class=usageCode>
+stream.close();
+</pre>
+		<hr>
+		<a name="Method:open"></a>
+		<pre class=detailCode>
+void open(const char* filename);
+void open(string filename);
+</pre>
+		<div class=detailHTML>
+			Opens the specified file for reading.
+			If an error occurs, the stream enters a failure state, which can be detected by calling the <code>fail</code> member function.
+			<p>Usage:<br>
+		</div>
+		<pre class=usageCode>
+stream.open(filename);
+</pre>
+		<hr>
+		<a name="Method:readBit"></a>
+		<pre class=detailCode>
+int readBit();
+</pre>
+		<div class=detailHTML>
+			Reads a single bit from the ifbitstream and returns 0 or 1 depending on the bit value.
+			If the stream is exhausted, -1 is returned.
+			Raises an error if this bit stream has not been properly opened.
+			<p>Usage:<br>
+		</div>
+		<pre class=usageCode>
+int bit = stream.readBit();
+</pre>
+		<hr>
+	</body>
+</html>

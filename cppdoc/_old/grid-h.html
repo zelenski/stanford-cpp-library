@@ -1,0 +1,516 @@
+<html>
+<head>
+<title>../include/grid.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: grid.h
+ * ------------
+ * This file exports the Grid class, which offers a convenient abstraction
+ * for representing a two-dimensional array.
+ */
+</scan>
+#ifndef _grid_h
+#define _grid_h
+
+#include "strlib.h"
+#include "vector.h"
+
+<a name="Class:Grid<ValueType>"><scan class=comment>/*
+ * Class: Grid&lt;ValueType&gt;
+ * ----------------------
+ * This class stores an indexed, two-dimensional array.  The following
+ * code, for example, creates an identity matrix of size n, in which the
+ * elements are 1.0 along the main diagonal and 0.0 everywhere else:
+ *
+ *    Grid&lt;double&gt; createIdentityMatrix(int n) {
+ *       Grid&lt;double&gt; matrix(n, n);
+ *       for (int i = 0; i &lt; n; i++) {
+ *          matrix[i][i] = 1.0;
+ *       }
+ *       return matrix;
+ *    }
+ */
+</scan>
+template &lt;typename ValueType&gt;
+class Grid {
+
+public:
+
+<scan class=comment>/* Forward reference */</scan>
+   class GridRow;
+
+<a name="Constructor:Grid"><scan class=comment>/*
+ * Constructor: Grid
+ * Usage: Grid&lt;ValueType&gt; grid;
+ *        Grid&lt;ValueType&gt; grid(nRows, nCols);
+ * ------------------------------------------
+ * Initializes a new grid.  The second form of the constructor is more
+ * common and creates a grid with the specified number of rows and columns.
+ * Each element of the grid is initialized to the default value for the
+ * type.  The default constructor creates an empty grid for which the
+ * client must call resize to set the dimensions.
+ */
+</scan>
+   Grid();
+   Grid(int nRows, int nCols);
+
+<a name="Destructor:~Grid"><scan class=comment>/*
+ * Destructor: ~Grid
+ * -----------------
+ * Frees any heap storage associated with this grid.
+ */
+</scan>
+   virtual ~Grid();
+
+<a name="Method:numRows"><scan class=comment>/*
+ * Method: numRows
+ * Usage: int nRows = grid.numRows();
+ * ----------------------------------
+ * Returns the number of rows in the grid.
+ */
+</scan>
+   int numRows() const;
+
+<a name="Method:numCols"><scan class=comment>/*
+ * Method: numCols
+ * Usage: int nCols = grid.numCols();
+ * ----------------------------------
+ * Returns the number of columns in the grid.
+ */
+</scan>
+   int numCols() const;
+
+<a name="Method:resize"><scan class=comment>/*
+ * Method: resize
+ * Usage: grid.resize(nRows, nCols);
+ * ---------------------------------
+ * Reinitializes the grid to have the specified number of rows and columns.
+ * Any previous grid contents are discarded.
+ */
+</scan>
+   void resize(int nRows, int nCols);
+
+<a name="Method:inBounds"><scan class=comment>/*
+ * Method: inBounds
+ * Usage: if (grid.inBounds(row, col)) ...
+ * ---------------------------------------
+ * Returns true if the specified row and column position is inside the
+ * bounds of the grid.
+ */
+</scan>
+   bool inBounds(int row, int col) const;
+
+<a name="Method:get"><scan class=comment>/*
+ * Method: get
+ * Usage: ValueType value = grid.get(row, col);
+ * --------------------------------------------
+ * Returns the element at the specified row/col position in this grid. 
+ * This method signals an error if the row and col arguments are outside
+ * the grid boundaries.
+ */
+</scan>
+   ValueType get(int row, int col);
+   const ValueType &amp; get(int row, int col) const;
+
+<a name="Method:set"><scan class=comment>/*
+ * Method: set
+ * Usage: grid.set(row, col, value);
+ * ---------------------------------
+ * Replaces the element at the specified row/col location in this grid with
+ * a new value.  This method signals an error if the row and col arguments
+ * are outside the grid boundaries.
+ */
+</scan>
+   void set(int row, int col, ValueType value);
+
+<a name="Operator:[]"><scan class=comment>/*
+ * Operator: []
+ * Usage:  grid[row][col]
+ * ----------------------
+ * Overloads [] to select elements from this grid.  This extension enables
+ * the use of traditional array notation to get or set individual elements.
+ * This method signals an error if the row and col arguments are outside
+ * the grid boundaries.
+ */
+</scan>
+   GridRow operator[](int row);
+   const GridRow operator[](int row) const;
+
+<a name="Method:toString"><scan class=comment>/*
+ * Method: toString
+ * Usage: string str = grid.toString();
+ * ------------------------------------
+ * Converts the grid to a printable string representation.
+ */
+</scan>
+   std::string toString();
+
+<a name="Method:mapAll"><scan class=comment>/*
+ * Method: mapAll
+ * Usage: grid.mapAll(fn);
+ * -----------------------
+ * Calls the specified function on each element of the grid.  The elements
+ * are processed in row-major order, in which all the elements of row 0 are
+ * processed, followed by the elements in row 1, and so on.
+ */
+</scan>
+   void mapAll(void (*fn)(ValueType value)) const;
+   void mapAll(void (*fn)(const ValueType &amp; value)) const;
+
+   template &lt;typename FunctorType&gt;
+   void mapAll(FunctorType fn) const;
+
+<scan class=comment>/*
+ * Additional Grid operations
+ * --------------------------
+ * In addition to the methods listed in this interface, the Grid class
+ * supports the following operations:
+ *
+ *   - Stream I/O using the &lt;&lt; and &gt;&gt; operators
+ *   - Deep copying for the copy constructor and assignment operator
+ *   - Iteration using the range-based for statement and STL iterators
+ *
+ * The iteration forms process the grid in row-major order.
+ */
+</scan>
+<scan class=comment>/* Private section */</scan>
+
+<scan class=comment>/**********************************************************************/</scan>
+<scan class=comment>/* Note: Everything below this point in the file is logically part    */</scan>
+<scan class=comment>/* of the implementation and should not be of interest to clients.    */</scan>
+<scan class=comment>/**********************************************************************/</scan>
+
+<a name="Implementation notes:Grid data structure"><scan class=comment>/*
+ * Implementation notes: Grid data structure
+ * -----------------------------------------
+ * The Grid is internally managed as a dynamic array of elements.  The
+ * array itself is one-dimensional, the logical separation into rows and
+ * columns is done by arithmetic computation.  The layout is in row-major
+ * order, which is to say that the entire first row is laid out
+ * contiguously, followed by the entire second row, and so on.
+ */
+</scan>
+<scan class=comment>/* Instance variables */</scan>
+
+   ValueType *elements;  <scan class=comment>/* A dynamic array of the elements   */</scan>
+   int nRows;            <scan class=comment>/* The number of rows in the grid    */</scan>
+   int nCols;            <scan class=comment>/* The number of columns in the grid */</scan>
+
+<scan class=comment>/* Private method prototypes */</scan>
+
+   void checkRange(int row, int col);
+
+<scan class=comment>/*
+ * Hidden features
+ * ---------------
+ * The remainder of this file consists of the code required to support deep
+ * copying and iteration.  Including these methods in the public interface
+ * would make that interface more difficult to understand for the average
+ * client.
+ */
+</scan>
+<scan class=comment>/*
+ * Deep copying support
+ * --------------------
+ * This copy constructor and operator= are defined to make a deep copy,
+ * making it possible to pass/return grids by value and assign from one
+ * grid to another.  The entire contents of the grid, including all
+ * elements, are copied.  Each grid element is copied from the original
+ * grid to the copy using assignment (operator=).  Making copies is
+ * generally avoided because of the expense and thus, grids are typically
+ * passed by reference, however, when a copy is needed, these operations
+ * are supported.
+ */
+</scan>
+   void deepCopy(const Grid &amp; grid) {
+      int n = grid.nRows * grid.nCols;
+      elements = new ValueType[n];
+      for (int i = 0; i &lt; n; i++) {
+         elements[i] = grid.elements[i];
+      }
+      nRows = grid.nRows;
+      nCols = grid.nCols;
+   }
+
+public:
+
+   Grid &amp; operator=(const Grid &amp; src) {
+      if (this != &amp;src) {
+         delete[] elements;
+         deepCopy(src);
+      }
+      return *this;
+   }
+
+   Grid(const Grid &amp; src) {
+      deepCopy(src);
+   }
+
+<scan class=comment>/*
+ * Iterator support
+ * ----------------
+ * The classes in the StanfordCPPLib collection implement input iterators
+ * so that they work symmetrically with respect to the corresponding STL
+ * classes.
+ */
+</scan>
+   class iterator : public std::iterator&lt;std::input_iterator_tag, ValueType&gt; {
+
+   public:
+
+      iterator(const Grid *gp, int index) {
+         this-&gt;gp = gp;
+         this-&gt;index = index;
+      }
+
+      iterator(const iterator &amp; it) {
+         this-&gt;gp = it.gp;
+         this-&gt;index = it.index;
+      }
+
+      iterator &amp; operator++() {
+         index++;
+         return *this;
+      }
+
+      iterator operator++(int) {
+         iterator copy(*this);
+         operator++();
+         return copy;
+      }
+
+      bool operator==(const iterator &amp; rhs) {
+         return gp == rhs.gp &amp;&amp; index == rhs.index;
+      }
+
+      bool operator!=(const iterator &amp; rhs) {
+         return !(*this == rhs);
+      }
+
+      ValueType &amp; operator*() {
+         return gp-&gt;elements[index];
+      }
+
+      ValueType *operator-&gt;() {
+         return &amp;gp-&gt;elements[index];
+      }
+
+   private:
+      const Grid *gp;
+      int index;
+   };
+
+   iterator begin() const {
+      return iterator(this, 0);
+   }
+
+   iterator end() const {
+      return iterator(this, nRows * nCols);
+   }
+
+<a name="Private class:Grid<ValType>::GridRow"><scan class=comment>/*
+ * Private class: Grid&lt;ValType&gt;::GridRow
+ * -------------------------------------
+ * This section of the code defines a nested class within the Grid template
+ * that makes it possible to use traditional subscripting on Grid values.
+ */
+</scan>
+   class GridRow {
+   public:
+      GridRow() {
+         <scan class=comment>/* Empty */</scan>
+      }
+
+      ValueType &amp; operator[](int col) {
+         extern void error(std::string msg);
+         if (!gp-&gt;inBounds(row, col)) {
+            error("Grid index values out of range");
+         }
+         return gp-&gt;elements[(row * gp-&gt;nCols) + col];
+      }
+
+      ValueType operator[](int col) const {
+         extern void error(std::string msg);
+         if (!gp-&gt;inBounds(row, col)) {
+            error("Grid index values out of range");
+         }
+         return gp-&gt;elements[(row * gp-&gt;nCols) + col];
+      }
+
+   private:
+      GridRow(Grid *gridRef, int index) {
+         gp = gridRef;
+         row = index;
+      }
+
+      Grid *gp;
+      int row;
+      friend class Grid;
+   };
+   friend class GridRow;
+
+};
+
+extern void error(std::string msg);
+
+template &lt;typename ValueType&gt;
+Grid&lt;ValueType&gt;::Grid() {
+   elements = NULL;
+   nRows = 0;
+   nCols = 0;
+}
+
+template &lt;typename ValueType&gt;
+Grid&lt;ValueType&gt;::Grid(int nRows, int nCols) {
+   elements = NULL;
+   resize(nRows, nCols);
+}
+
+template &lt;typename ValueType&gt;
+Grid&lt;ValueType&gt;::~Grid() {
+   if (elements != NULL) delete[] elements;
+}
+
+template &lt;typename ValueType&gt;
+int Grid&lt;ValueType&gt;::numRows() const {
+   return nRows;
+}
+
+template &lt;typename ValueType&gt;
+int Grid&lt;ValueType&gt;::numCols() const {
+   return nCols;
+}
+
+template &lt;typename ValueType&gt;
+void Grid&lt;ValueType&gt;::resize(int nRows, int nCols) {
+   if (nRows &lt; 0 || nCols &lt; 0) {
+      error("Attempt to resize grid to invalid size ("
+            + integerToString(nRows) + ", "
+            + integerToString(nCols) + ")");
+   }
+   if (elements != NULL) delete[] elements;
+   this-&gt;nRows = nRows;
+   this-&gt;nCols = nCols;
+   elements = new ValueType[nRows * nCols];
+   ValueType value = ValueType();
+   for (int i = 0; i &lt; nRows * nCols; i++) {
+      elements[i] = value;
+   }
+}
+
+template &lt;typename ValueType&gt;
+bool Grid&lt;ValueType&gt;::inBounds(int row, int col) const {
+   return row &gt;= 0 &amp;&amp; col &gt;= 0 &amp;&amp; row &lt; nRows &amp;&amp; col &lt; nCols;
+}
+
+template &lt;typename ValueType&gt;
+ValueType Grid&lt;ValueType&gt;::get(int row, int col) {
+   if (!inBounds(row, col)) error("get: Grid indices out of bounds");
+   return elements[(row * nCols) + col];
+}
+
+template &lt;typename ValueType&gt;
+const ValueType &amp; Grid&lt;ValueType&gt;::get(int row, int col) const {
+   if (!inBounds(row, col)) error("get: Grid indices out of bounds");
+   return elements[(row * nCols) + col];
+}
+
+template &lt;typename ValueType&gt;
+void Grid&lt;ValueType&gt;::set(int row, int col, ValueType value) {
+   if (!inBounds(row, col)) error("set: Grid indices out of bounds");
+   elements[(row * nCols) + col] = value;
+}
+
+template &lt;typename ValueType&gt;
+typename Grid&lt;ValueType&gt;::GridRow Grid&lt;ValueType&gt;::operator[](int row) {
+   return GridRow(this, row);
+}
+
+template &lt;typename ValueType&gt;
+const typename Grid&lt;ValueType&gt;::GridRow
+               Grid&lt;ValueType&gt;::operator[](int row) const {
+   return GridRow(this, row);
+}
+
+template &lt;typename ValueType&gt;
+void Grid&lt;ValueType&gt;::mapAll(void (*fn)(ValueType value)) const {
+   for (int i = 0; i &lt; nRows; i++) {
+      for (int j = 0; j &lt; nCols; j++) {
+         fn(get(i, j));
+      }
+   }
+}
+
+template &lt;typename ValueType&gt;
+void Grid&lt;ValueType&gt;::mapAll(void (*fn)(const ValueType &amp; value)) const {
+   for (int i = 0; i &lt; nRows; i++) {
+      for (int j = 0; j &lt; nCols; j++) {
+         fn(get(i, j));
+      }
+   }
+}
+
+template &lt;typename ValueType&gt;
+template &lt;typename FunctorType&gt;
+void Grid&lt;ValueType&gt;::mapAll(FunctorType fn) const {
+   for (int i = 0; i &lt; nRows; i++) {
+      for (int j = 0; j &lt; nCols; j++) {
+         fn(get(i, j));
+      }
+   }
+}
+
+template &lt;typename ValueType&gt;
+std::string Grid&lt;ValueType&gt;::toString() {
+   ostringstream os;
+   os &lt;&lt; *this;
+   return os.str();
+}
+
+<a name="Implementation notes:<< and >>"><scan class=comment>/*
+ * Implementation notes: &lt;&lt; and &gt;&gt;
+ * -------------------------------
+ * The insertion and extraction operators use the template facilities in
+ * strlib.h to read and write generic values in a way that treats strings
+ * specially.
+ */
+</scan>
+template &lt;typename ValueType&gt;
+std::ostream &amp; operator&lt;&lt;(std::ostream &amp; os, const Grid&lt;ValueType&gt; &amp; grid) {
+   os &lt;&lt; "{";
+   int nRows = grid.numRows();
+   int nCols = grid.numCols();
+   for (int i = 0; i &lt; nRows; i++) {
+      if (i &gt; 0) os &lt;&lt; ", ";
+      os &lt;&lt; "{";
+      for (int j = 0; j &lt; nCols; j++) {
+         if (j &gt; 0) os &lt;&lt; ", ";
+         writeGenericValue(os, grid.get(i, j), true);
+      }
+      os &lt;&lt; "}";
+   }
+   return os &lt;&lt; "}";
+}
+
+template &lt;typename ValueType&gt;
+std::istream &amp; operator&gt;&gt;(std::istream &amp; is, Grid&lt;ValueType&gt; &amp; grid) {
+   Vector&lt; Vector&lt;ValueType&gt; &gt; vec2d;
+   is &gt;&gt; vec2d;
+   int nRows = vec2d.size();
+   int nCols = (nRows == 0) ? 0 : vec2d[0].size();
+   grid.resize(nRows, nCols);
+   for (int i = 0; i &lt; nRows; i++) {
+      for (int j = 0; j &lt; nCols; j++) {
+         grid[i][j] = vec2d[i][j];
+      }
+   }
+   return is;
+}
+
+#endif
+</pre>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<html>
+<head>
+<title>simpio.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><code>simpio.h</code></h1>
+This file exports a set of functions that simplify input/output
+operations in C++ and provide some error-checking on console input.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getInteger">getInteger(prompt)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a complete line from <code>cin</code> and scans it as an integer.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getLine">getLine(prompt)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a line of text from <code>cin</code> and returns that line as a string.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getReal">getReal(prompt)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a complete line from <code>cin</code> and scans it as a floating-point number.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getYesOrNo">getYesOrNo(prompt)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a complete line from <code>cin</code> and treats it as a yes-or-no answer to a question, returning a boolean value of <code>true</code> for yes and <code>false</code> for no.</td></tr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:getInteger"></a>
+<pre class=detailCode>
+int getInteger(string prompt = "");
+</pre>
+<div class=detailHTML>
+Reads a complete line from <code>cin</code> and scans it as an
+integer. If the scan succeeds, the integer value is returned. If
+the argument is not a legal integer or if extraneous characters
+(other than whitespace) appear in the string, the user is given
+a chance to reenter the value. If supplied, the optional
+<code>prompt</code> string is printed before reading the value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int n = getInteger(prompt);
+</pre>
+<hr>
+<a name="Function:getReal"></a>
+<pre class=detailCode>
+double getReal(string prompt = "");
+</pre>
+<div class=detailHTML>
+Reads a complete line from <code>cin</code> and scans it as a
+floating-point number. If the scan succeeds, the floating-point
+value is returned.  If the input is not a legal number or if
+extraneous characters (other than whitespace) appear in the string,
+the user is given a chance to reenter the value. If supplied, the
+optional <code>prompt</code> string is printed before reading the value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double x = getReal(prompt);
+</pre>
+<hr>
+<a name="Function:getLine"></a>
+<pre class=detailCode>
+string getLine(string prompt = "");
+</pre>
+<div class=detailHTML>
+Reads a line of text from <code>cin</code> and returns that line
+as a string.  The newline character that terminates the input is
+not stored as part of the return value.  If supplied, the optional
+<code>prompt</code> string is printed before reading the value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string line = getLine(prompt);
+</pre>
+<hr>
+<a name="Function:getYesOrNo"></a>
+<pre class=detailCode>
+bool getYesOrNo(string prompt = "");
+</pre>
+<div class=detailHTML>
+Reads a complete line from <code>cin</code> and treats it as a yes-or-no answer to a question.  Returns <code>true</code> if the line typed begins with a 'y' or 'Y', and returns <code>false</code> if it begins with a 'n' or 'N'.  Otherwise the user is given a chance to reenter the value.
+
+<p>If supplied, the optional <code>prompt</code> string is printed before reading the value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (getYesOrNo(prompt)) { ...
+</pre>
+<p class="since">
+	Available since: 2014/02/01 version of C++ library
+</p>
+<hr>
+</table>
+</body>
+</html>

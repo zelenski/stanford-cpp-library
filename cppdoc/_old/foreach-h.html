@@ -1,0 +1,222 @@
+<html>
+<head>
+<title>../include/foreach.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: foreach.h
+ * ---------------
+ * This file defines the foreach keyword, which implements a substitute for
+ * the range-based for loop from C++11.  All iterable classes in the
+ * Stanford libraries import this file, so clients don't ordinarily need to
+ * do so explicitly.  This version of foreach also supports C++ strings and
+ * arrays.
+ */
+</scan>
+#ifndef _foreach_h
+#define _foreach_h
+
+<a name="Statement:foreach"><scan class=comment>/*
+ * Statement: foreach
+ * Usage: foreach (type var in collection) { ... }
+ * -----------------------------------------------
+ * The foreach statement steps through the elements in a collection.  It
+ * works correctly with the collection classes in both the Standard
+ * Template Library and the Stanford C++ libraries, but can also be used
+ * with C++ strings and statically initialized arrays.
+ *
+ * The following code, for example, prints every element in the string
+ * vector lines:
+ *
+ *    foreach (string str in lines) {
+ *       cout &lt;&lt; str &lt;&lt; endl;
+ *    }
+ *
+ * Similarly, the following function calculates the sum of the character
+ * codes in a string:
+ *
+ *    int sumCharacterCodes(string str) {
+ *       int sum = 0;
+ *       foreach (char ch in str) sum += ch;
+ *       return sum;
+ *    }
+ *
+ * As a simplification when iterating over maps, the foreach macro iterates
+ * through the keys rather than the key/value pairs.
+ */
+</scan>
+<scan class=comment>/* Private section */</scan>
+
+<scan class=comment>/**********************************************************************/</scan>
+<scan class=comment>/* Note: Everything below this point in the file is logically part    */</scan>
+<scan class=comment>/* of the implementation and should not be of interest to clients.    */</scan>
+<scan class=comment>/**********************************************************************/</scan>
+
+#include &lt;iterator&gt;
+#include &lt;map&gt;
+#include &lt;cstddef&gt;
+#include &lt;cstring&gt;
+
+<scan class=comment>/* These #includes are for files that contain "in" as a token */</scan>
+
+#include &lt;ios&gt;
+#include &lt;fstream&gt;
+#include &lt;sstream&gt;
+using namespace std;
+
+<scan class=comment>/* Redefine the ios constants (one of which is "in") */</scan>
+
+static const ios::openmode IOS_APP = ios::app;
+static const ios::openmode IOS_ATE = ios::ate;
+static const ios::openmode IOS_BINARY = ios::binary;
+static const ios::openmode IOS_IN = ios::in;
+static const ios::openmode IOS_OUT = ios::out;
+static const ios::openmode IOS_TRUNC = ios::trunc;
+
+<scan class=comment>/* Private implementation namespace */</scan>
+
+namespace _fe {
+   struct Range {
+      virtual ~Range() { };
+   };
+
+   template &lt;typename T&gt;
+   struct ArrayRange : Range {
+      ArrayRange(const T *begin, const T *end) : iter(begin), end(end) { }
+      const T *iter;
+      const T *end;
+   };
+
+   template &lt;typename CType&gt;
+   struct CRange : Range {
+      CRange(const CType&amp; c) :
+         cont(c), iter(cont.begin()), end(cont.end()) { }
+      CType cont;
+      typename CType::iterator iter, end;
+   };
+
+   template &lt;typename KT, typename VT, typename CT, typename AT&gt;
+   struct MapRange : Range {
+      MapRange(const map&lt;KT,VT,CT,AT&gt; &amp; c) :
+         cont(c), iter(cont.begin()), end(cont.end()) { }
+      map&lt;KT,VT,CT,AT&gt; cont;
+      typename map&lt;KT,VT,CT,AT&gt;::iterator iter, end;
+   };
+
+<scan class=comment>/*
+ * The State struct glues together all of these pieces and
+ * stores all of the information throughout the loops.
+ */</scan>
+
+   struct State {
+      State() : state(0), itr(NULL) { }
+      ~State() { delete itr; }
+      int state;
+      Range *itr;
+   };
+
+<scan class=comment>/* General hook function */</scan>
+
+   template &lt;typename DowncastType, typename ValueType&gt;
+   ValueType HookImpl(State&amp; fe) {
+      DowncastType *ip = (DowncastType *) fe.itr;
+      if (ip-&gt;iter == ip-&gt;end) {
+         fe.state = 2;
+         return ValueType();
+      }
+      fe.state = 1;
+      ValueType vp = *ip-&gt;iter;     <scan class=comment>/* Subtle implementation note:    */</scan>
+      ++ip-&gt;iter;                   <scan class=comment>/* Using *ip-&gt;iter++ here would   */</scan>
+      return vp;                    <scan class=comment>/* require copying the iterator.  */</scan>
+   }
+
+<scan class=comment>/* Foreach implementation for containers */</scan>
+
+   template &lt;typename CType&gt;
+   CRange&lt;CType&gt; *Init(State &amp; fe, const CType &amp; collection) {
+      fe.itr = new CRange&lt;CType&gt;(collection);
+      return (CRange&lt;CType&gt;*) fe.itr;
+   }
+
+   template &lt;typename CType&gt;
+   typename iterator_traits&lt;typename CType::iterator&gt;::value_type
+   Hook(State &amp; fe, CRange&lt;CType&gt; *) {
+      return HookImpl&lt;CRange&lt;CType&gt;,
+         typename iterator_traits&lt;typename CType::iterator&gt;::value_type&gt;(fe);
+   }
+
+<scan class=comment>/* For maps */</scan>
+
+   template &lt;typename K, typename V, typename C, typename A&gt;
+   MapRange&lt;K,V,C,A&gt; *Init(State &amp; fe, const map&lt;K,V,C,A&gt; &amp; collection) {
+      fe.itr = new MapRange&lt;K,V,C,A&gt;(collection);
+      return (MapRange&lt;K,V,C,A&gt;*) fe.itr;
+   }
+
+   template &lt;typename DowncastType, typename ValueType&gt;
+   ValueType MapHookImpl(State &amp; fe) {
+      DowncastType *ip = (DowncastType *) fe.itr;
+      if (ip-&gt;iter == ip-&gt;end) {
+         fe.state = 2;
+         return ValueType();
+      }
+      fe.state = 1;
+      ValueType key = ip-&gt;iter-&gt;first;
+      ++ip-&gt;iter;
+      return key;
+   }
+
+   template &lt;typename K, typename V, typename C, typename A&gt;
+   K Hook(State &amp; fe, MapRange&lt;K,V,C,A&gt; *) {
+      return MapHookImpl&lt;MapRange&lt;K,V,C,A&gt;,K&gt;(fe);
+   }
+
+<scan class=comment>/* For C strings */</scan>
+
+   template &lt;size_t n&gt;
+   ArrayRange&lt;char&gt; *Init(State &amp; fe, char (&amp;str)[n]) {
+      fe.itr = new ArrayRange&lt;char&gt;(str, str + strlen(str));
+      return (ArrayRange&lt;char&gt;*) fe.itr;
+   }
+
+   template &lt;size_t n&gt;
+   ArrayRange&lt;char&gt; *Init(State &amp; fe, const char (&amp;str)[n]) {
+      fe.itr = new ArrayRange&lt;char&gt;(str, str + strlen(str));
+      return (ArrayRange&lt;char&gt;*) fe.itr;
+   }
+
+<scan class=comment>/* For arrays */</scan>
+
+   template &lt;typename T, size_t n&gt;
+   ArrayRange&lt;T&gt; *Init(State &amp; fe, T (&amp;arr)[n]) {
+      fe.itr = new ArrayRange&lt;T&gt;(arr, arr + n);
+      return (ArrayRange&lt;T&gt;*) fe.itr;
+   }
+
+   template &lt;typename T, size_t n&gt;
+   ArrayRange&lt;T&gt; *Init(State &amp; fe, const T (&amp;arr)[n]) {
+      fe.itr = new ArrayRange&lt;T&gt;(arr, arr + n);
+      return (ArrayRange&lt;T&gt;*) fe.itr;
+   }
+
+   template &lt;typename T&gt;
+   T Hook(State&amp; fe, ArrayRange&lt;T&gt;*) {
+      return HookImpl&lt;ArrayRange&lt;T&gt;, T&gt;(fe);
+   }
+
+}
+
+<scan class=comment>/* The actual foreach and in macros */</scan>
+
+#define foreach(arg) \
+   for (_fe::State _fe; _fe.state &lt; 2; ) \
+      for (arg)); _fe.state++ == 1; _fe.state = 0)
+
+#define in = _fe::Hook(_fe, _fe.state != 0 ? NULL : _fe::Init(_fe,
+
+#endif
+</pre>
+</body>
+</html>

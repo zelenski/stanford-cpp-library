@@ -1,0 +1,424 @@
+<html>
+	<head>
+		<title>BasicGraph</title>
+		<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+	</head>
+	
+	<body>
+		<table class=banner>
+			<tr>
+				<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+				<td valign=middle><div class=bannerText>
+				The Stanford <code>cslib</code> package
+				</div></td>
+			</tr>
+		</table>
+		
+		<hr>
+		
+		<div class=include><a href="graph.html">#include "basicgraph.h"</a></div>
+		<h1 class=header><code>class BasicGraph : <a href="Graph-class.html">Graph</a>&lt;<a href="Vertex-class.html">Vertex</a>, <a href="Edge-class.html">Edge</a>&gt;</code></h1>
+		
+		<p>
+			This class represents a simplified and expanded implementation of a directed, weighted graph.
+			Unlike with the <code>Graph</code> class, you do not need to supply the vertex and edge types via templates in <code>&lt; &gt;</code>.
+			The vertex / node type has been set to <code>Vertex</code> and the edge / arc type has been set to <code>Edge</code>.
+			These types contain fields that are useful for various path-searching algorithms
+			such as breadth-first search, Dijkstra's algorithm, and A*.
+		</p>
+		
+		<p>
+			The <code>BasicGraph</code> also chooses to use the terminology of 'vertex' and 'edge' rather than 'node' and 'arc' in member names, though the other terminology is still supported for backward compatibility.
+			Since <code>BasicGraph</code> is a subclass of <code>Graph</code>, it also contains all of the members of the <code>Graph</code> class, which clients can call in their code.
+			See the <a href="Graph-class.html">Graph class documentation</a> for more details.
+		</p>
+
+		<p>
+			See also:
+			<a href="Vertex-class.html"><code>Vertex</code></a>,
+			<a href="Edge-class.html"><code>Edge</code></a>
+		</p>
+
+		<p>
+			If you want to use this class to represent an undirected graph, doubly add each edge.
+			For example, every time you call <code>addEdge(a, b);</code>, also call <code>addEdge(b, a);</code>.
+			If you want to use this class to represent a weighted graph, set each edge's <code>cost</code> field and use it in your own graph algorithms.
+		</p>
+
+		<p>
+			The internal representation of this graph is an <em>adjacency list</em>, which is very efficient for iterating over neighbors of a given vertex, but less efficient for asking whether two given vertexes are neighbors.
+		</p>
+
+		<p>
+			If you perform a for-each loop over a <code>BasicGraph</code>, you will iterate over the vertexes of the graph.
+			You can loop over the edges by calling <code>getEdgeSet</code> on the <code>BasicGraph</code>.
+		</p>
+		
+		<p class="since">
+			Available since: 2014/02/01 version of C++ library
+		</p>
+
+		<table class=index width=100%>
+			<tr><td class=indexHead colspan=2>Constructor</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Constructor:BasicGraph">BasicGraph()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates an empty <code>BasicGraph</code> object.</td></tr>
+			<tr><td class=indexHead colspan=2>Methods</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Method:addEdge">addEdge(v1,&nbsp;v2)</a><br><a href="#Method:addEdge">addEdge(name1,&nbsp;name2)</a><br><a href="#Method:addEdge">addEdge(edge)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds an edge to the graph.</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Method:addVertex">addVertex(v)</a>&nbsp;<br><a href="#Method:addVertex">addVertex(name)</a></nobr></td><td class=indexSynopsis width=100%>Adds a vertex to the graph.</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Method:containsEdge">containsEdge(v1,&nbsp;v2)</a><br><a href="#Method:containsEdge">containsEdge(name1,&nbsp;name2)</a><br><a href="#Method:containsEdge">containsEdge(edge)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns whether the graph has an edge between the given two vertices.</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Method:containsVertex">containsVertex(v)</a><br><a href="#Method:containsVertex">containsVertex(name)</a></td><td class=indexSynopsis width=100%>Returns whether the graph has an edge between the given two vertices.</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reinitializes the graph to be empty, freeing any heap storage.</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Method:getEdge">getEdge(v1,&nbsp;v2)</a><br><a href="#Method:getEdge">getEdge(name1,&nbsp;name2)</a></td><td class=indexSynopsis width=100%>Returns the edge between the given two vertices.</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Method:getEdgeSet">getEdgeSet()</a><br><a href="#Method:getEdgeSet">getEdgeSet(v)</a><br><a href="#Method:getEdgeSet">getEdgeSet(name)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the set of all edges in the graph or, in the second and third forms, the edges that start at the specified vertex, which can be indicated either as a pointer or by name.</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Method:getNeighbors">getNeighbors(v)</a><br><a href="#Method:getNeighbors">getNeighbors(name)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the set of vertexes that are neighbors of the specified vertex, which can be indicated either as a pointer or by name.</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Method:getVertex">getVertex(name)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Looks up a vertex in the name table attached to the graph and returns a pointer to that vertex.</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Method:getVertexSet">getVertexSet()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the set of all vertexes in the graph.</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the graph contains no vertexes.</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Method:isNeighbor">isNeighbor(v1,&nbsp;v2)</a><br><a href="#Method:isNeighbor">isNeighbor(name1,&nbsp;name2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the graph contains an edge from <code>v1</code> to <code>v2</code>.</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Method:removeEdge">removeEdge(v1,&nbsp;v2)</a><br><a href="#Method:removeEdge">removeEdge(name1,&nbsp;name2)</a><br><a href="#Method:removeEdge">removeEdge(edge)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes an edge from the graph, where the edge can be specified in any of three ways: by the names of its endpoints, by the vertex pointers at its endpoints, or as an edge pointer.</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Method:removeVertex">removeVertex(vertex)</a>&nbsp;<br><a href="#Method:removeVertex">removeVertex(name)</a></nobr></td><td class=indexSynopsis width=100%>Removes a vertex from the graph, where the vertex can be specified either by its name or as a pointer value.</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Method:resetData">resetData()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Clears any temporary internal data stored at each vertex and edge.</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of vertexes in the graph.</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts the graph to a printable string representation.</td></tr>
+		</table>
+		
+		<h2>Constructor detail</h2>
+<hr>
+
+<a name="Constructor:BasicGraph"></a>
+<pre class=detailCode>
+BasicGraph();
+</pre>
+<div class=detailHTML>
+Creates an empty <code>BasicGraph</code> object.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+BasicGraph g;
+</pre>
+<hr>
+
+		<h2>Method detail</h2>
+<hr>
+
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size() const;
+</pre>
+<div class=detailHTML>
+Returns the number of vertexes in the graph.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int size = g.size();
+</pre>
+<hr>
+
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty() const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the graph contains no vertexes.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (g.isEmpty()) ...
+</pre>
+<hr>
+
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Reinitializes the graph to be empty of all vertexes and edges, freeing any heap storage.
+(The heap memory associated with all vertexes and edges that have been previously added
+to the graph will be freed.)
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+g.clear();
+</pre>
+<hr>
+<a name="Method:addVertex"></a>
+<pre class=detailCode>
+Vertex* addVertex(Vertex* vertex);
+Vertex* addVertex(string name);
+</pre>
+<div class=detailHTML>
+Adds a vertex to the graph.
+
+One version of this method accepts a string for the vertex's name,
+creates a new vertex of the appropriate type and initializes its
+fields; the other assumes that the client has already created
+the vertex and simply adds it to the graph.  Both versions of this
+method return a pointer to the vertex.
+<p>The vertexes in a graph must have unique names.  If this graph
+already contains a vertex with the given name, or if <code>NULL</code> is
+passed to the pointer version of this function,
+<code>addVertex</code> throws an error.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Vertex* vertex = g.addVertex(vertex);
+Vertex* vertex = g.addVertex(name);
+</pre>
+<hr>
+
+<a name="Method:removeVertex"></a>
+<pre class=detailCode>
+void removeVertex(Vertex* vertex);
+void removeVertex(string name);
+</pre>
+<div class=detailHTML>
+Removes a vertex from the graph, where the vertex can be specified
+either by its name or as a pointer value.  Removing a vertex also
+removes all edges that contain that vertex.
+
+<p>If <code>NULL</code> is passed to the pointer version of this function,
+or this graph does not contain the given vertex or a vertex with the given name,
+the function throws an error.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+g.removeVertex(name);
+g.removeVertex(vertex);
+</pre>
+<hr>
+
+<a name="Method:getVertex"></a>
+<pre class=detailCode>
+Vertex* getVertex(string name) const;
+</pre>
+<div class=detailHTML>
+Looks up a vertex in the name table attached to the graph and
+returns a pointer to that vertex.  If no vertex with the specified
+name exists, <code>getVertex</code> returns <code>NULL</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Vertex* vertex = g.getVertex(name);
+</pre>
+<hr>
+
+<a name="Method:containsVertex"></a>
+<pre class=detailCode>
+bool containsVertex(Vertex* vertex) const;
+bool containsVertex(string name) const;
+</pre>
+<div class=detailHTML>
+Returns whether the graph contains the given vertex.
+One version of this method looks up the vertex by name, and the other uses the
+information supplied in the provided pointer.
+<p>If <code>NULL</code> is passed to the pointer version of this function,
+<code>containsVertex</code> throws an error.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (g.containsVertex(vertex)) ...
+if (g.containsVertex(name)) ...
+</pre>
+<hr>
+
+<a name="Method:addEdge"></a>
+<pre class=detailCode>
+Edge* addEdge(Vertex* v1, Vertex* v2);
+Edge* addEdge(string name1, string name2);
+Edge* addEdge(Edge* edge);
+</pre>
+<div class=detailHTML>
+Adds an edge to the graph.  The endpoints of the edge can be specified
+either as strings indicating the names of the vertexes or as pointers
+to the vertex structures.  Alternatively, the client can create the edge
+structure explicitly and pass that pointer to the <code>addEdge</code>
+method.  All three of these versions return a pointer to the edge in
+case the client needs to capture this value.  Note that it is allowed
+to have multiple edges between the same pair of vertexes.
+
+<p>When calling either of the two-parameter versions of <code>addEdge</code>,
+if either of the vertexes supplied is <code>NULL</code> or is not found in the graph, the function will throw an error.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+g.addEdge(v1, v2);
+g.addEdge(name1, name2);
+g.addEdge(edge);
+</pre>
+<hr>
+<a name="Method:removeEdge"></a>
+<pre class=detailCode>
+void removeEdge(Vertex* v1, Vertex* v2);
+void removeEdge(string name1, string name2);
+void removeEdge(Edge* edge);
+</pre>
+<div class=detailHTML>
+Removes an edge from the graph, where the edge can be specified in any
+of three ways: by the names of its endpoints, by the vertex pointers
+at its endpoints, or as an edge pointer.
+
+<p>When calling the single-parameter version of <code>removeEdge</code>,
+only that single edge is removed.
+When calling either of the two-parameter versions of <code>removeEdge</code>,
+if more than one edge connects the specified endpoints, all of them are removed.
+
+<p>When calling the single-parameter version of <code>removeEdge</code>,
+if the edge supplied is <code>NULL</code> or is not found in the graph, calling this function will have no effect on the graph.
+
+<p>When calling either of the two-parameter versions of <code>removeEdge</code>,
+if either of the vertexes supplied is <code>NULL</code> or is not found in the graph, calling this function will have no effect on the graph.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+g.removeEdge(v1, v2);
+g.removeEdge(name1, name2);
+g.removeEdge(edge);
+</pre>
+<hr>
+
+<a name="Method:containsEdge"></a>
+<pre class=detailCode>
+bool containsEdge(Vertex* v1, Vertex* v2) const;
+bool containsEdge(string name1, string name2) const;
+bool containsEdge(Edge* edge) const;
+</pre>
+<div class=detailHTML>
+Returns whether the graph contains an edge between the given two vertexes.
+One version of this method looks up the edge by its start/finish vertexes, and the other uses the
+information supplied in the provided edge pointer.
+
+<p>When calling the single-parameter version of <code>removeEdge</code>,
+if the edge supplied is <code>NULL</code> or is not found in the graph, this function returns <code>false</code>.
+
+<p>When calling either of the two-parameter versions of <code>removeEdge</code>,
+if either of the vertexes supplied is <code>NULL</code> or is not found in the graph, this function returns <code>false</code>.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (g.containsEdge(v1, v2)) ...
+if (g.containsEdge(name1, name2)) ...
+if (g.containsEdge(edge)) ...
+</pre>
+<hr>
+
+<a name="Method:getEdge"></a>
+<pre class=detailCode>
+Edge* getEdge(Vertex* v1, Vertex* v2) const;
+Edge* getEdge(std::string v1, std::string v2) const;
+</pre>
+<div class=detailHTML>
+Returns the edge between the given pair of vertices in the graph.
+
+<p>If either of the vertexes supplied is <code>NULL</code> or is not found in the graph, the function will throw an error.
+
+<p>If there are multiple edges between the given pair of vertexes, which of the edges will be returned is unspecified.</p>
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Edge* e = g.getEdge(v1, v2);
+Edge* e = g.getEdge(name1, name2);
+</pre>
+<hr>
+
+<a name="Method:isNeighbor"></a>
+<pre class=detailCode>
+bool isNeighbor(Vertex* v1, Vertex* v2) const;
+bool isNeighbor(string name1, string name2) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the graph contains an edge from
+<code>v1</code> to <code>v2</code>.  As in the <code>addEdge</code>
+method, vertexes can be specified either as vertex pointers or by name.
+
+<p>If either of the vertexes supplied is <code>NULL</code> or is not found in the graph, the function will return <code>false</code>.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (g.isNeighbor(v1, v2)) ...
+if (g.isNeighbor(name1, name2)) ...
+</pre>
+<hr>
+<a name="Method:getVertexSet"></a>
+<pre class=detailCode>
+const Set&lt;Vertex*&gt; &amp; getVertexSet() const;
+</pre>
+<div class=detailHTML>
+Returns the set of all vertexes in the graph.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+for (Vertex* vertex : g.getVertexSet()) ...
+</pre>
+<hr>
+<a name="Method:getEdgeSet"></a>
+<pre class=detailCode>
+const Set&lt;Edge*&gt; &amp; getEdgeSet() const;
+const Set&lt;Edge*&gt; &amp; getEdgeSet(Vertex* vertex) const;
+const Set&lt;Edge*&gt; &amp; getEdgeSet(string name) const;
+</pre>
+<div class=detailHTML>
+Returns the set of all edges in the graph or, in the second and
+third forms, the edges that start at the specified vertex, which
+can be indicated either as a pointer or by name.
+
+<p>When calling the two versions of this function that accept a vertex parameter, if the vertex supplied is <code>NULL</code> or is not found in the graph, the function will throw an error.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+for (Edge* edge : g.getEdgeSet()) ...
+for (Edge* edge : g.getEdgeSet(vertex)) ...
+for (Edge* edge : g.getEdgeSet(name)) ...
+</pre>
+<hr>
+<a name="Method:getNeighbors"></a>
+<pre class=detailCode>
+const Set&lt;Vertex*&gt; getNeighbors(Vertex* vertex) const;
+const Set&lt;Vertex*&gt; getNeighbors(string vertex) const;
+</pre>
+<div class=detailHTML>
+Returns the set of vertexes that are neighbors of the specified
+vertex, which can be indicated either as a pointer or by name.
+
+<p>If the vertex supplied is <code>NULL</code> or is not found in the graph, the function will throw an error.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+for (Vertex* vertex : g.getNeighbors(vertex)) ...
+for (Vertex* vertex : g.getNeighbors(name)) ...
+</pre>
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Converts the graph to a printable string representation, listing all vertex names followed by the start/finish of all edges, such as <code>&quot;{A, B, C, D, E, A -&gt; B, C -&gt; A, D -&gt; E}&quot;</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = g.toString();
+</pre>
+<hr>
+		<a name="Method:resetData"></a>
+		<pre class=detailCode>
+void resetData();
+</pre>
+		<div class=detailHTML>
+		Sets the data stored in each vertex and edge back to its original value by calling <code>resetData</code> on every vertex and edge.
+		<p>Usage:<br>
+		</div>
+		<pre class=usageCode>
+v.resetData();
+</pre>
+</body>
+</html>

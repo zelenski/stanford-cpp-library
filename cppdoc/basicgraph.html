@@ -1,0 +1,30 @@
+<html>
+<head>
+<title>basicgraph.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><code>basicgraph.h</code></h1>
+This file exports a <code>BasicGraph</code> class used to represent <b><i>graphs,</i></b> which consist of a set of <b><i>vertexes</i></b> and a set of <b><i>edges</i></b>.
+This is a subclass of <code>Graph</code>.
+The <code>Graph</code> class is parameterized and asks the client to specify types for its nodes and arcs.
+<code>BasicGraph</code> removes the burden of doing this from the client by supplying basic default types called <code>Vertex</code> (aka (<code>Node</code>) and <code>Edge</code> (aka <code>Arc</code>).
+<code>BasicGraph</code> also supplies several convenience member functions that build on the members of <code>Graph</code> for common graph tasks like searching for the existence of a vertex or edge.
+The <code>BasicGraph</code> class also allows you to interchangeably use the names 'vertex' or 'node', and interchangeably use 'edge' or 'arc', both in member function names and class names.
+This is to provide compatibility with the more common graph terminology of vertexes and edges rather than nodes and arcs.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Classes</td></tr>
+<tr><td class=indexKey><nobr><a href="BasicGraph-class.html">BasicGraph</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents a graph with <code>Vertex</code> (aka <code>Node</code>) and <code>Edge</code> (aka <code>Arc</code>) and the specified vertex and edge types respectively.</td></tr>
+<tr><td class=indexKey><nobr><a href="Vertex-class.html">Vertex</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Each object of this class represents an individual vertex (node) in a graph.</td></tr>
+<tr><td class=indexKey><nobr><a href="Edge-class.html">Edge</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Each object of this class represents an individual edge (arc) in a graph.</td></tr>
+</table>
+</body>
+</html>

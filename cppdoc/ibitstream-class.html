@@ -1,0 +1,72 @@
+<html>
+	<head>
+		<title>ibitstream class</title>
+		<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+	</head>
+
+	<body>
+		<table class=banner>
+			<tr>
+				<td valign=middle>
+					<image src="images/StanfordTreeLogo.png" height=32>
+				</td>
+				<td valign=middle>
+					<div class=bannerText>
+						The Stanford <code>cslib</code> package
+					</div>
+				</td>
+			</tr>
+		</table>
+		<hr>
+		
+		<div class=include>
+			<a href="bitstream.html">#include "bitstream.h"</a>
+		</div>
+
+		<h1 class=header>
+			<code>class ibitstream : public <a target="_blank" href="http://en.cppreference.com/w/cpp/io/basic_istream">std::istream</a></code>
+		</h1>
+
+		<p>
+			This base class reads bits of data from various input sources.
+			This is an abstract base class that inherits from the standard C++ <code>istream</code> class.
+			You are not likely to want to construct an <code>ibitstream</code> directly.
+			Instead, you should probably construct an <code>ifbitstream</code> to read from a file, or an <code>istringbitstream</code> to read from the bytes of a string buffer.
+		</p>
+		
+		<p class="since">
+			Available since: 2014/02/01 version of C++ library
+		</p>
+		
+		<table class=index width=100%>
+			<tr>
+				<td class=indexHead colspan=2>
+					Methods
+				</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:readBit">readBit()</a>&nbsp;</nobr></td>
+				<td class=indexSynopsis width=100%>
+					Reads a single bit from the bit stream and returns 0 or 1 depending on the bit value.
+				</td>
+			</tr>
+		</table>
+
+		<h2>Method detail</h2>
+		<hr>
+		<a name="Method:readBit"></a>
+		<pre class=detailCode>
+int readBit();
+</pre>
+		<div class=detailHTML>
+			Reads a single bit from the bit stream and returns 0 or 1 depending on the bit value.
+			If the stream is exhausted, -1 is returned.
+			Raises an error if this bit stream has not been properly opened.
+			<p>Usage:<br>
+		</div>
+		<pre class=usageCode>
+int bit = stream.readBit();
+</pre>
+		<hr>
+	</body>
+</html>

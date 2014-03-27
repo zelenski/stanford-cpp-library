@@ -1,0 +1,237 @@
+<html>
+<head>
+<title>Map&lt;KeyType,ValueType&gt;</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="map.html">#include "map.h"</a></div>
+<h1 class=header><code>class Map&lt;KeyType,ValueType&gt;</code></h1>
+This class maintains an association between <b><i>keys</i></b> and
+<b><i>values</i></b>.  The types used for keys and values are
+specified using templates, which makes it possible to use
+this structure with any data type.
+
+<p>The map uses a binary search tree (BST) structure internally.
+Because of this choice of internal representation, the <code>KeyType</code> for the keys stored in a <code>Map</code> must define a natural ordering through a <a target="_blank" href="http://www.cplusplus.com/reference/functional/less/"><code>less</code> function</a> and/or <code>&lt;</code> operator so that the keys can be compared and ordered.  The <code>ValueType</code> does not need to provide any such natural ordering.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Constructor</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:Map">Map()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Initializes a new empty map that associates keys and values of the specified types.</td></tr>
+<tr><td class=indexHead colspan=2>Methods</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes all entries from this map.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:containsKey">containsKey(key)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if there is an entry for <code>key</code> in this map.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:get">get(key)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the value associated with <code>key</code> in this map.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if this map contains no entries.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:keys">keys()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a <code>Vector</code> copy of all keys in this map.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:mapAll">mapAll(fn)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Iterates through the map entries and calls <code>fn(key, value)</code> for each one.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:put">put(key,&nbsp;value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Associates <code>key</code> with <code>value</code> in this map.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:remove">remove(key)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes any entry for <code>key</code> from this map.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of entries in this map.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts the map to a printable string representation.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:values">values()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a <code>Vector</code> copy of all values in this map.</td></tr>
+<tr><td class=indexHead colspan=2>Operator</td></tr>
+<tr><td class=indexKey><nobr><a href="#Operator:[]">map[key]</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Selects the value associated with <code>key</code>.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:Map"></a>
+<pre class=detailCode>
+Map();
+</pre>
+<div class=detailHTML>
+Initializes a new empty map that associates keys and values of the
+specified types.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Map&lt;KeyType,ValueType&gt; map;
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size() const;
+</pre>
+<div class=detailHTML>
+Returns the number of entries in this map.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int nEntries = map.size();
+</pre>
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty() const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if this map contains no entries.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (map.isEmpty()) ...
+</pre>
+<hr>
+<a name="Method:keys"></a>
+<pre class=detailCode>
+Vector&lt;KeyType&gt; keys() const;
+</pre>
+<div class=detailHTML>
+Returns a <code>Vector</code> copy of all keys in this map.
+The elements will appear in the same order that a for-each loop over the map would produce them.
+Because a map cannot contain duplicate keys, the elements of the vector will be unique.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Vector&lt;KeyType&gt; keys = map.keys();
+</pre>
+
+<p class="since">
+	Available since: 2014/02/01 version of C++ library
+</p>
+<hr>
+<a name="Method:put"></a>
+<pre class=detailCode>
+void put(const KeyType &amp; key, const ValueType &amp; value);
+</pre>
+<div class=detailHTML>
+Associates <code>key</code> with <code>value</code> in this map.
+Any previous value associated with <code>key</code> is replaced
+by the new value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map.put(key, value);
+</pre>
+<hr>
+<a name="Method:get"></a>
+<pre class=detailCode>
+ValueType get(const KeyType &amp; key) const;
+</pre>
+<div class=detailHTML>
+Returns the value associated with <code>key</code> in this map.
+If <code>key</code> is not found, <code>get</code> returns the
+default value for <code>ValueType</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType value = map.get(key);
+</pre>
+<hr>
+<a name="Method:containsKey"></a>
+<pre class=detailCode>
+bool containsKey(const KeyType &amp; key) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if there is an entry for <code>key</code>
+in this map.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (map.containsKey(key)) ...
+</pre>
+<hr>
+<a name="Method:remove"></a>
+<pre class=detailCode>
+void remove(const KeyType &amp; key);
+</pre>
+<div class=detailHTML>
+Removes any entry for <code>key</code> from this map.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map.remove(key);
+</pre>
+<hr>
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Removes all entries from this map.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map.clear();
+</pre>
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Converts the map to a printable string representation, such as <code>&quot;{k1:v1, k2:v2, k3:v3}&quot;</code>.
+The key/value pairs will be listed in ascending order by key.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = map.toString();
+</pre>
+<hr>
+<a name="Method:values"></a>
+<pre class=detailCode>
+Vector&lt;ValueType&gt; values() const;
+</pre>
+<div class=detailHTML>
+Returns a <code>Vector</code> copy of all values in this map.
+The elements will appear in the same order that a for-each loop over the map would produce them.
+A map can contain duplicate values, so the elements of the vector are not guaranteed to be unique.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Vector&lt;ValueType&gt; values = map.values();
+</pre>
+
+<p class="since">
+	Available since: 2014/02/01 version of C++ library
+</p>
+<hr>
+<a name="Method:mapAll"></a>
+<pre class=detailCode>
+void mapAll(void (*fn)(KeyType, ValueType)) const;
+void mapAll(void (*fn)(const KeyType &amp;, const ValueType &amp;)) const;
+void mapAll(FunctorType fn) const;
+</pre>
+<div class=detailHTML>
+Iterates through the map entries and calls <code>fn(key, value)</code>
+for each one.  The keys are processed in ascending order, as defined
+by the comparison function.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map.mapAll(fn);
+</pre>
+<hr>
+</table>
+<h2>Operator detail</h2>
+<hr>
+<a name="Operator:[]"></a>
+<pre class=detailCode>
+ValueType &amp; operator[](const KeyType &amp; key);
+ValueType operator[](const KeyType &amp; key) const;
+</pre>
+<div class=detailHTML>
+Selects the value associated with <code>key</code>.  This syntax
+makes it easy to think of a map as an "associative array"
+indexed by the key type.  If <code>key</code> is already present
+in the map, this function returns a reference to its associated
+value.  If key is not present in the map, a new entry is created
+whose value is set to the default for the value type.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map[key]
+</pre>
+<hr>
+</table>
+</body>
+</html>

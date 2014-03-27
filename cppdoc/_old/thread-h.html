@@ -1,0 +1,271 @@
+<html>
+<head>
+<title>../include/thread.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: thread.h
+ * --------------
+ * This file exports a simple, platform-independent thread abstraction,
+ * along with simple tools for concurrency control.
+ */
+</scan>
+#ifndef _thread_h
+#define _thread_h
+
+#include &lt;string&gt;
+
+<scan class=comment>/* Forward definition */</scan>
+
+class Lock;
+
+<a name="Class:Thread"><scan class=comment>/*
+ * Class: Thread
+ * -------------
+ * This class encapsulates a lightweight process running in the same
+ * address space as the creator.  The class itself is opaque and is
+ * manipulated by top-level functions as illustrated in the following
+ * paradigm:
+ *
+ *    Thread child = fork(fn);
+ *    ... code for the parent thread ...
+ *    join(child);
+ *
+ * This code calls fn so that it runs in parallel with the parent code.
+ */
+</scan>
+class Thread {
+
+public:
+
+<a name="Constructor:Thread"><scan class=comment>/*
+ * Constructor: Thread
+ * Usage: Thread thread;
+ * ---------------------
+ * Creates an inactive thread variable that will typically be overwritten
+ * by the result of a fork call.
+ */
+</scan>
+   Thread();
+
+<a name="Destructor:~Thread"><scan class=comment>/*
+ * Destructor: ~Thread
+ * -------------------
+ * Frees any dynamic storage associated with the thread.
+ */
+</scan>
+   virtual ~Thread();
+
+<a name="Method:toString"><scan class=comment>/*
+ * Method: toString
+ * Usage: string str = thread.toString();
+ * --------------------------------------
+ * Converts the thread to a string.
+ */
+</scan>
+   std::string toString();
+
+<scan class=comment>/* Private section */</scan>
+
+<scan class=comment>/**********************************************************************/</scan>
+<scan class=comment>/* Note: Everything below this point in this class is logically part  */</scan>
+<scan class=comment>/* of the implementation and should not be of interest to clients.    */</scan>
+<scan class=comment>/**********************************************************************/</scan>
+
+   long id;   <scan class=comment>/* id linking this thread to the platform-specific data */</scan>
+
+};
+
+<a name="Function:fork"><scan class=comment>/*
+ * Function: fork
+ * Usage: Thread child = fork(fn);
+ *        Thread child = fork(fn, data);
+ * -------------------------------------
+ * Creates a child thread that calls fn in an address space shared with the
+ * current thread.  The second form makes it possible to pass an argument
+ * to fn, which may be of any type.
+ */
+</scan>
+Thread fork(void (*fn)());
+
+template &lt;typename ClientType&gt;
+Thread fork(void (*fn)(ClientType &amp; data), ClientType &amp; data);
+
+<a name="Function:join"><scan class=comment>/*
+ * Function: join
+ * Usage: join(thread);
+ * --------------------
+ * Waits for the specified thread to finish before proceeding.
+ */
+</scan>
+void join(Thread &amp; thread);
+
+<a name="Function:yield"><scan class=comment>/*
+ * Function: yield
+ * Usage: yield();
+ * ---------------
+ * Yields the processor to allow another thread to run.
+ */
+</scan>
+void yield();
+
+<a name="Function:getCurrentThread"><scan class=comment>/*
+ * Function: getCurrentThread
+ * Usage: Thread self = getCurrentThread();
+ * ----------------------------------------
+ * Returns the currently executing thread.
+ */
+</scan>
+Thread getCurrentThread();
+
+<a name="Class:Lock"><scan class=comment>/*
+ * Class: Lock
+ * -----------
+ * This class represents a simple lock used to control concurrency.  The
+ * usual strategy for using locks is to use the synchronized macro
+ * described later in this interface.
+ */
+</scan>
+class Lock {
+
+public:
+
+<a name="Constructor:Lock"><scan class=comment>/*
+ * Constructor: Lock
+ * Usage: Lock lock;
+ * -----------------
+ * Initializes a lock, which is initially in the unlocked state.
+ */
+</scan>
+   Lock();
+
+<a name="Destructor:~Lock"><scan class=comment>/*
+ * Destructor: ~Lock
+ * -----------------
+ * Frees any heap storage associated with the lock.
+ */
+</scan>
+   ~Lock();
+
+<a name="Method:wait"><scan class=comment>/*
+ * Method: wait
+ * Usage: lock.wait();
+ * -------------------
+ * Waits for some other thread to call signal on this lock.  This call
+ * requires that the lock be held by the calling thread.  The effect of the
+ * wait method is to release the lock and then wait until the desired
+ * signal operation occurs, at which point the lock is reacquired and
+ * control returns from the wait call.  The wait method is typically used
+ * inside a critical section containing a while loop to check for a
+ * specific condition.  The standard paradigm for using the waitThread
+ * function looks like this:
+ *
+ *    synchronized (lock) {
+ *       while (conditional test) {
+ *          lock.wait();
+ *       }
+ *       ... code to manipulate the locked resource ...
+ *    }
+ */
+</scan>
+   void wait();
+
+<a name="Method:signal"><scan class=comment>/*
+ * Method: signal
+ * Usage: lock.signal();
+ * ---------------------
+ * Signals all threads waiting on the lock so that they wake up and recheck
+ * the corresponding condition.
+ */
+</scan>
+   void signal();
+
+<scan class=comment>/**********************************************************************/</scan>
+<scan class=comment>/* Note: Everything below this point in this class is logically part  */</scan>
+<scan class=comment>/* of the implementation and should not be of interest to clients.    */</scan>
+<scan class=comment>/**********************************************************************/</scan>
+
+private:
+
+   long id;     <scan class=comment>/* id linking this lock to the platform-specific data */</scan>
+
+   friend class Lock_State;
+
+};
+
+<a name="Statement:synchronized"><scan class=comment>/*
+ * Statement: synchronized
+ * Usage: synchronized (lock) ...
+ * ------------------------------
+ * Defines a critical section protected by the specified lock.  The general
+ * strategy for using this facility is shown in the following paradigmatic
+ * pattern:
+ *
+ *    synchronized (lock) {
+ *       ... statements in the critical section ...
+ *    }
+ */
+</scan>
+void lockForPlatform(int id);
+void unlockForPlatform(int id);
+
+class Lock_State {
+public:
+
+   Lock_State(Lock &amp; lock) {
+      lp = &amp;lock;
+      finished = false;
+   }
+
+   bool advance() {
+      if (finished) {
+         unlockForPlatform(lp-&gt;id);
+         return false;
+      } else {
+         finished = true;
+         lockForPlatform(lp-&gt;id);
+         return true;
+      }
+   }
+
+private:
+   Lock *lp;
+   bool finished;
+
+};
+
+#define synchronized(lock) for (Lock_State ls(lock) ; ls.advance(); )
+
+int forkForPlatform(void (*fn)(void *), void *dp);
+
+struct StartWithVoid {
+   void (*fn)();
+};
+
+template &lt;typename ClientType&gt;
+struct StartWithClientData {
+   void (*fn)(ClientType &amp; data);
+   ClientType *dp;
+};
+
+template &lt;typename ClientType&gt;
+static void forkWithClientData(void *arg) {
+   StartWithClientData&lt;ClientType&gt; *startup =
+      (StartWithClientData&lt;ClientType&gt; *) arg;
+   startup-&gt;fn(*startup-&gt;dp);
+}
+
+template &lt;typename ClientType&gt;
+Thread fork(void (*fn)(ClientType &amp; data), ClientType &amp; data) {
+   StartWithClientData&lt;ClientType&gt; startup = { fn, &amp;data };
+   Thread thread;
+   thread.id = forkForPlatform(forkWithClientData&lt;ClientType&gt;, &amp;startup);
+   return thread;
+}
+
+#endif
+</pre>
+</body>
+</html>

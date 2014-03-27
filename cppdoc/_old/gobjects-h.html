@@ -1,0 +1,1406 @@
+<html>
+<head>
+<title>../include/gobjects.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: gobjects.h
+ * ----------------
+ * This file exports a hierarchy of graphical shapes based on the model
+ * developed for the ACM Java Graphics.
+ */
+</scan>
+#ifndef _gobjects_h
+#define _gobjects_h
+
+#include "gtypes.h"
+#include "gwindow.h"
+#include "vector.h"
+
+class GCompound;
+
+<a name="Class:GObject"><scan class=comment>/*
+ * Class: GObject
+ * --------------
+ * This class is the common superclass of all graphical objects that can be
+ * displayed on a graphical window.  The class GObject itself is an
+ * abstract class, which means that you are not allowed to construct a
+ * GObject directly but must instead construct one of the concrete
+ * subclasses.
+ *
+ * Most methods used for graphics take a pointer to a GObject rather than
+ * the GObject itself.  Applications that use GObject pointers therefore
+ * use the arrow operator (-&gt;) to apply methods to the object pointer.  For
+ * examples illustrating the use of the GObject class, see the descriptions
+ * of the individual subclasses.
+ */
+</scan>
+class GObject {
+
+public:
+
+<a name="Destructor:~GObject"><scan class=comment>/*
+ * Destructor: ~GObject
+ * --------------------
+ * Frees the storage for the object.
+ */
+</scan>
+   virtual ~GObject();
+
+<a name="Method:getX"><scan class=comment>/*
+ * Method: getX
+ * Usage: double x = gobj-&gt;getX();
+ * -------------------------------
+ * Returns the x-coordinate of the object.
+ */
+</scan>
+   double getX() const;
+
+<a name="Method:getY"><scan class=comment>/*
+ * Method: getY
+ * Usage: double y = gobj-&gt;getY();
+ * -------------------------------
+ * Returns the y-coordinate of the object.
+ */
+</scan>
+   double getY() const;
+
+<a name="Method:getLocation"><scan class=comment>/*
+ * Method: getLocation
+ * Usage: GPoint pt = gobj-&gt;getLocation();
+ * ---------------------------------------
+ * Returns the location of this object as a GPoint.
+ */
+</scan>
+   GPoint getLocation() const;
+
+<a name="Method:setLocation"><scan class=comment>/*
+ * Method: setLocation
+ * Usage: gobj-&gt;setLocation(pt);
+ *        gobj-&gt;setLocation(x, y);
+ * -------------------------------
+ * Sets the location of this object to the specified point.
+ */
+</scan>
+   void setLocation(const GPoint &amp; pt);
+   void setLocation(double x, double y);
+
+<a name="Method:move"><scan class=comment>/*
+ * Method: move
+ * Usage: gobj-&gt;move(dx, dy);
+ * --------------------------
+ * Moves the object on the screen using the displacements dx and dy.
+ */
+</scan>
+   void move(double dx, double dy);
+
+<a name="Method:getWidth"><scan class=comment>/*
+ * Method: getWidth
+ * Usage: double width = gobj-&gt;getWidth();
+ * ---------------------------------------
+ * Returns the width of this object, which is defined to be the width of
+ * the bounding box.
+ */
+</scan>
+   double getWidth() const;
+
+<a name="Method:getHeight"><scan class=comment>/*
+ * Method: getHeight
+ * Usage: double height = gobj-&gt;getHeight();
+ * -----------------------------------------
+ * Returns the height of this object, which is defined to be the height of
+ * the bounding box.
+ */
+</scan>
+   double getHeight() const;
+
+<a name="Method:getSize"><scan class=comment>/*
+ * Method: getSize
+ * Usage: GDimension size = gobj-&gt;getSize();
+ * -----------------------------------------
+ * Returns the size of the object as a GDimension.
+ */
+</scan>
+   GDimension getSize() const;
+
+<a name="Method:getBounds"><scan class=comment>/*
+ * Method: getBounds
+ * Usage: GRectangle rect = gobj-&gt;getBounds();
+ * -------------------------------------------
+ * Returns the bounding box of this object, which is defined to be the
+ * smallest rectangle that covers everything drawn by the figure.  The
+ * coordinates of this rectangle do not necessarily match the location
+ * returned by getLocation.  Given a GLabel object, for example,
+ * getLocation returns the coordinates of the point on the baseline at
+ * which the string begins; the getBounds method, by contrast, returns a
+ * rectangle that covers the entire window area occupied by the string.
+ */
+</scan>
+   virtual GRectangle getBounds() const = 0;
+
+<a name="Method:setColor"><scan class=comment>/*
+ * Method: setColor
+ * Usage: gobj-&gt;setColor(color);
+ * -----------------------------
+ * Sets the color used to display this object.  The color string is usually
+ * one of the predefined color names:
+ *
+ *    BLACK,
+ *    BLUE,
+ *    CYAN,
+ *    DARK_GRAY,
+ *    GRAY,
+ *    GREEN,
+ *    LIGHT_GRAY,
+ *    MAGENTA,
+ *    ORANGE,
+ *    PINK,
+ *    RED,
+ *    WHITE, and
+ *    YELLOW.
+ *
+ * The case of the individual letters in the color name is ignored, as are
+ * spaces and underscores, so that the color DARK_GRAY can be written as
+ * "Dark Gray".
+ *
+ * The color can also be specified as a string in the form "#rrggbb" where
+ * rr, gg, and bb are pairs of hexadecimal digits indicating the red,
+ * green, and blue components of the color, respectively.
+ */
+</scan>
+   void setColor(std::string color);
+   void setColor(int rgb);
+
+<a name="Method:getColor"><scan class=comment>/*
+ * Method: getColor
+ * Usage: string color = gobj-&gt;getColor();
+ * ---------------------------------------
+ * Returns the color used to display this object.  This color is always
+ * returned as a string in the form "#rrggbb", where rr, gg, and bb are the
+ * red, green, and blue components of the color, expressed as two-digit
+ * hexadecimal values.
+ */
+</scan>
+   std::string getColor() const;
+
+<a name="Method:setVisible"><scan class=comment>/*
+ * Method: setVisible
+ * Usage: gobj-&gt;setVisible(flag);
+ * ------------------------------
+ * Sets whether this object is visible.
+ */
+</scan>
+   void setVisible(bool flag);
+
+<a name="Method:isVisible"><scan class=comment>/*
+ * Method: isVisible
+ * Usage: if (gobj-&gt;isVisible()) ...
+ * ---------------------------------
+ * Returns true if this object is visible.
+ */
+</scan>
+   bool isVisible() const;
+
+<a name="Method:sendForward"><scan class=comment>/*
+ * Method: sendForward
+ * Usage: gobj-&gt;sendForward();
+ * ---------------------------
+ * Moves this object one step toward the front in the z dimension.  If it
+ * was already at the front of the stack, nothing happens.
+ */
+</scan>
+   void sendForward();
+
+<a name="Method:sendToFront"><scan class=comment>/*
+ * Method: sendToFront
+ * Usage: gobj-&gt;sendToFront();
+ * ---------------------------
+ * Moves this object to the front of the display in the z dimension.  By
+ * moving it to the front, this object will appear to be on top of the
+ * other graphical objects on the display and may hide any objects that are
+ * further back.
+ */
+</scan>
+   void sendToFront();
+
+<a name="Method:sendBackward"><scan class=comment>/*
+ * Method: sendBackward
+ * Usage: gobj-&gt;sendBackward();
+ * ----------------------------
+ * Moves this object one step toward the back in the z dimension.  If it
+ * was already at the back of the stack, nothing happens.
+ */
+</scan>
+   void sendBackward();
+
+<a name="Method:sendToBack"><scan class=comment>/*
+ * Method: sendToBack
+ * Usage: gobj-&gt;sendToBack();
+ * --------------------------
+ * Moves this object to the back of the display in the z dimension.  By
+ * moving it to the back, this object will appear to be behind the other
+ * graphical objects on the display and may be obscured by other objects in
+ * front.
+ */
+</scan>
+   void sendToBack();
+
+<a name="Method:contains"><scan class=comment>/*
+ * Method: contains
+ * Usage: if (gobj-&gt;contains(pt)) ...
+ *        if (gobj-&gt;contains(x, y)) ...
+ * ------------------------------------
+ * Returns true if the specified point is inside the object.
+ */
+</scan>
+   bool contains(GPoint pt) const;
+   virtual bool contains(double x, double y) const;
+
+<a name="Method:getType"><scan class=comment>/*
+ * Method: getType
+ * Usage: string type = gobj-&gt;getType();
+ * -------------------------------------
+ * Returns the concrete type of the object as a string, as in "GOval" or
+ * "GRect".
+ */
+</scan>
+   virtual std::string getType() const = 0;
+
+<a name="Method:toString"><scan class=comment>/*
+ * Method: toString
+ * Usage: gobj-&gt;toString();
+ * ------------------------
+ * Returns a printable representation of the object.
+ */
+</scan>
+   virtual std::string toString() const = 0;
+
+<a name="Method:getParent"><scan class=comment>/*
+ * Method: getParent
+ * Usage: GCompound *parent = gobj-&gt;getParent();
+ * ---------------------------------------------
+ * Returns a pointer to the GCompound that contains this object.  Every
+ * GWindow is initialized to contain a single GCompound that is aligned
+ * with the window.  Adding objects to the window adds them to that
+ * GCompound, which means that every object you add to the window has a
+ * parent.  Calling getParent on the top-level GCompound returns NULL.
+ */
+</scan>
+   GCompound *getParent() const;
+
+<scan class=comment>/* Private section */</scan>
+
+private:
+   const GObject &amp; operator=(const GObject &amp; src) { return *this; }
+   GObject(const GObject &amp; src) { }
+
+<scan class=comment>/* Instance variables */</scan>
+
+   double x;                       <scan class=comment>/* The x coordinate of the origin    */</scan>
+   double y;                       <scan class=comment>/* The y coordinate of the origin    */</scan>
+   std::string color;              <scan class=comment>/* The color of the object           */</scan>
+   bool visible;                   <scan class=comment>/* Indicates if object is visible    */</scan>
+   GCompound *parent;              <scan class=comment>/* Pointer to the parent             */</scan>
+
+protected:
+   GObject();
+
+   friend class GArc;
+   friend class GButton;
+   friend class GCheckBox;
+   friend class GChooser;
+   friend class GCompound;
+   friend class GImage;
+   friend class GInteractor;
+   friend class GLabel;
+   friend class GLine;
+   friend class GOval;
+   friend class GPolygon;
+   friend class GRect;
+   friend class GRoundRect;
+   friend class GSlider;
+   friend class GTextField;
+   friend class G3DRect;
+
+};
+
+<a name="Class:GRect"><scan class=comment>/*
+ * Class: GRect
+ * ------------
+ * This class represents a graphical object whose appearance consists of a
+ * rectangular box.  For example, the following code adds a filled, red
+ * 200x100 rectangle at the upper left corner of the graphics window:
+ *
+ *    int main() {
+ *       GWindow gw;
+ *       cout &lt;&lt; "This program draws a red rectangle at (0, 0)." &lt;&lt; endl;
+ *       GRect *rect = new GRect(0, 0, 200, 100);
+ *       rect-&gt;setFilled(true);
+ *       rect-&gt;setColor("RED");
+ *       gw.add(rect);
+ *       return 0;
+ *    }
+ */
+</scan>
+class GRect : public GObject {
+
+public:
+
+<a name="Constructor:GRect"><scan class=comment>/*
+ * Constructor: GRect
+ * Usage: GRect *rect = new GRect(width, height);
+ *        GRect *rect = new GRect(x, y, width, height);
+ * ----------------------------------------------------
+ * Constructs a rectangle with the specified width and height.  The first
+ * form is positioned at the origin; the second at the coordinates given by
+ * x and y.
+ */
+</scan>
+   GRect(double width, double height);
+   GRect(double x, double y, double width, double height);
+
+<a name="Destructor:~GRect"><scan class=comment>/*
+ * Destructor: ~GRect
+ * ------------------
+ * Frees any resources maintained by this object.
+ */
+</scan>
+   virtual ~GRect();
+
+<a name="Method:setSize"><scan class=comment>/*
+ * Method: setSize
+ * Usage: rect-&gt;setSize(size);
+ *        rect-&gt;setSize(width, height);
+ * ------------------------------------
+ * Changes the size of this rectangle to the specified width and height.
+ */
+</scan>
+   void setSize(const GDimension &amp; size);
+   void setSize(double width, double height);
+
+<a name="Method:setBounds"><scan class=comment>/*
+ * Method: setBounds
+ * Usage: rect-&gt;setBounds(rect);
+ *        rect-&gt;setBounds(x, y, width, height);
+ * --------------------------------------------
+ * Changes the bounds of this rectangle to the specified values.
+ */
+</scan>
+   void setBounds(const GRectangle &amp; size);
+   void setBounds(double x, double y, double width, double height);
+
+<a name="Method:setFilled"><scan class=comment>/*
+ * Method: setFilled
+ * Usage: rect-&gt;setFilled(flag);
+ * -----------------------------
+ * Sets the fill status for the rectangle, where false is outlined and true
+ * is filled.
+ */
+</scan>
+   void setFilled(bool flag);
+
+<a name="Method:isFilled"><scan class=comment>/*
+ * Method: isFilled
+ * Usage: if (rect-&gt;isFilled()) ...
+ * --------------------------------
+ * Returns true if the rectangle is filled.
+ */
+</scan>
+   bool isFilled() const;
+
+<a name="Method:setFillColor"><scan class=comment>/*
+ * Method: setFillColor
+ * Usage: rect-&gt;setFillColor(color);
+ * ---------------------------------
+ * Sets the color used to display the filled region of this rectangle.
+ */
+</scan>
+   void setFillColor(std::string color);
+   void setFillColor(int rgb);
+
+<a name="Method:getFillColor"><scan class=comment>/*
+ * Method: getFillColor
+ * Usage: string color = rect-&gt;getFillColor();
+ * -------------------------------------------
+ * Returns the color used to display the filled region of this rectangle. 
+ * If none has been set, getFillColor returns the empty string.
+ */
+</scan>
+   std::string getFillColor() const;
+
+<scan class=comment>/* Prototypes for the virtual methods */</scan>
+
+   virtual GRectangle getBounds() const;
+   virtual std::string getType() const;
+   virtual std::string toString() const;
+
+protected:
+
+<scan class=comment>/* Instance variables */</scan>
+
+   double width;           <scan class=comment>/* The width of the rectangle              */</scan>
+   double height;          <scan class=comment>/* The height of the rectangle             */</scan>
+   bool fillFlag;          <scan class=comment>/* Indicates whether the object is filled  */</scan>
+   std::string fillColor;  <scan class=comment>/* Color used to fill the object           */</scan>
+
+<scan class=comment>/* Protected methods */</scan>
+
+   GRect();
+   virtual void create(double width, double height);
+
+};
+
+<a name="Class:GRoundRect"><scan class=comment>/*
+ * Class: GRoundRect
+ * -----------------
+ * This class represents a graphical object whose appearance consists of a
+ * rectangular box with rounded corners.
+ */
+</scan>
+class GRoundRect : public GRect {
+
+public:
+
+<a name="Constructor:GRoundRect"><scan class=comment>/*
+ * Constructor: GRoundRect
+ * Usage: GRoundRect *rect = new GRoundRect(width, height);
+ *        GRoundRect *rect = new GRoundRect(width, height, corner);
+ *        GRoundRect *rect = new GRoundRect(x, y, width, height);
+ *        GRoundRect *rect = new GRoundRect(x, y, width, height, corner);
+ * ----------------------------------------------------------------------
+ * Constructs a new rectangle with the specified width and height.  If the
+ * x and y parameters are specified, they are used to specify the origin. 
+ * The corner parameter specifies the diameter of the arc forming the
+ * corner.
+ */
+</scan>
+   GRoundRect(double width, double height);
+   GRoundRect(double width, double height, double corner);
+   GRoundRect(double x, double y, double width, double height);
+   GRoundRect(double x, double y, double width, double height, double corner);
+
+<a name="Destructor:~GRoundRect"><scan class=comment>/*
+ * Destructor: ~GRoundRect
+ * -----------------------
+ * Frees any resources maintained by this object.
+ */
+</scan>
+   virtual ~GRoundRect();
+
+<scan class=comment>/* Prototypes for the virtual methods */</scan>
+
+   virtual std::string getType() const;
+   virtual std::string toString() const;
+
+protected:
+
+   double corner;
+
+<scan class=comment>/* Protected methods */</scan>
+
+   void create(double width, double height, double corner);
+
+};
+
+<a name="Class:G3DRect"><scan class=comment>/*
+ * Class: G3DRect
+ * --------------
+ * This graphical object subclass represents a rectangular box that can be
+ * raised or lowered.
+ */
+</scan>
+class G3DRect : public GRect {
+
+public:
+
+<a name="Constructor:G3DRect"><scan class=comment>/*
+ * Constructor: G3DRect
+ * Usage: G3DRect *rect = new G3DRect(width, height);
+ *        G3DRect *rect = new G3DRect(width, height, raised);
+ *        G3DRect *rect = new G3DRect(x, y, width, height);
+ *        G3DRect *rect = new G3DRect(x, y, width, height, raised);
+ * ----------------------------------------------------------------
+ * Constructs a new 3D rectangle with the specified width and height.  If
+ * the x and y parameters are specified, they are used to specify the
+ * origin.  The raised parameter determines whether the rectangle should be
+ * drawn with highlights that suggest that it is raised about the
+ * background.
+ */
+</scan>
+   G3DRect(double width, double height);
+   G3DRect(double width, double height, bool raised);
+   G3DRect(double x, double y, double width, double height);
+   G3DRect(double x, double y, double width, double height, bool raised);
+
+<a name="Destructor:~G3DRect"><scan class=comment>/*
+ * Destructor: ~G3DRect
+ * --------------------
+ * Frees any resources maintained by this object.
+ */
+</scan>
+   virtual ~G3DRect();
+
+<a name="Method:setRaised"><scan class=comment>/*
+ * Method: setRaised
+ * Usage: rect-&gt;setRaised(raised);
+ * -------------------------------
+ * Indicates whether this object appears raised.
+ */
+</scan>
+   void setRaised(bool raised);
+
+<a name="Method:isRaised"><scan class=comment>/*
+ * Method: isRaised
+ * Usage: if (rect-&gt;isRaised()) ...
+ * --------------------------------
+ * Returns true if this object appears raised.
+ */
+</scan>
+   bool isRaised() const;
+
+<scan class=comment>/* Prototypes for the virtual methods */</scan>
+
+   virtual std::string getType() const;
+   virtual std::string toString() const;
+
+protected:
+
+   bool raised;
+
+<scan class=comment>/* Protected methods */</scan>
+
+   void create(double width, double height, bool raised);
+
+};
+
+<a name="Class:GOval"><scan class=comment>/*
+ * Class: GOval
+ * ------------
+ * This graphical object subclass represents an oval inscribed in a
+ * rectangular box.  For example, the following code displays a filled
+ * green oval inscribed in the graphics window:
+ *
+ *    int main() {
+ *       GWindow gw;
+ *       cout &lt;&lt; "This program draws a green oval filling the window." &lt;&lt; endl;
+ *       GOval *oval = new GOval(gw.getWidth(), gw.getHeight());
+ *       oval-&gt;setFilled(true);
+ *       oval-&gt;setColor("GREEN");
+ *       gw.add(oval);
+ *       return 0;
+ *    }
+ */
+</scan>
+class GOval : public GObject {
+
+public:
+
+<a name="Constructor:GOval"><scan class=comment>/*
+ * Constructor: GOval
+ * Usage: GOval *oval = new GOval(width, height);
+ *        GOval *oval = new GOval(x, y, width, height);
+ * ----------------------------------------------------
+ * Constructs a new oval inscribed in the specified rectangle.  The first
+ * form is positioned at the origin; the second at the coordinates given by
+ * x and y.
+ */
+</scan>
+   GOval(double width, double height);
+   GOval(double x, double y, double width, double height);
+
+<a name="Destructor:~GOval"><scan class=comment>/*
+ * Destructor: ~GOval
+ * ------------------
+ * Frees any resources maintained by this object.
+ */
+</scan>
+   virtual ~GOval();
+
+<a name="Method:setSize"><scan class=comment>/*
+ * Method: setSize
+ * Usage: oval-&gt;setSize(size);
+ *        oval-&gt;setSize(width, height);
+ * ------------------------------------
+ * Changes the size of the bounding rectangle to the specified width and
+ * height.
+ */
+</scan>
+   void setSize(const GDimension &amp; size);
+   void setSize(double width, double height);
+
+<a name="Method:setBounds"><scan class=comment>/*
+ * Method: setBounds
+ * Usage: oval-&gt;setBounds(rect);
+ *        oval-&gt;setBounds(x, y, width, height);
+ * --------------------------------------------
+ * Changes the bounds of the oval to the specified values.
+ */
+</scan>
+   void setBounds(const GRectangle &amp; size);
+   void setBounds(double x, double y, double width, double height);
+
+<a name="Method:setFilled"><scan class=comment>/*
+ * Method: setFilled
+ * Usage: oval-&gt;setFilled(flag);
+ * -----------------------------
+ * Sets the fill status for the oval, where false is outlined and true is
+ * filled.
+ */
+</scan>
+   void setFilled(bool flag);
+
+<a name="Method:isFilled"><scan class=comment>/*
+ * Method: isFilled
+ * Usage: if (oval-&gt;isFilled()) ...
+ * --------------------------------
+ * Returns true if the oval is filled.
+ */
+</scan>
+   bool isFilled() const;
+
+<a name="Method:setFillColor"><scan class=comment>/*
+ * Method: setFillColor
+ * Usage: oval-&gt;setFillColor(color);
+ * ---------------------------------
+ * Sets the color used to display the filled region of this oval.
+ */
+</scan>
+   void setFillColor(std::string color);
+   void setFillColor(int rgb);
+
+<a name="Method:getFillColor"><scan class=comment>/*
+ * Method: getFillColor
+ * Usage: string color = oval-&gt;getFillColor();
+ * -------------------------------------------
+ * Returns the color used to display the filled region of this oval.  If
+ * none has been set, getFillColor returns the empty string.
+ */
+</scan>
+   std::string getFillColor() const;
+
+<scan class=comment>/* Prototypes for the virtual methods */</scan>
+
+   virtual GRectangle getBounds() const;
+   virtual bool contains(double x, double y) const;
+   virtual std::string getType() const;
+   virtual std::string toString() const;
+
+protected:
+
+<scan class=comment>/* Instance variables */</scan>
+
+   double width;           <scan class=comment>/* The width of the bounding oval          */</scan>
+   double height;          <scan class=comment>/* The height of the bounding oval         */</scan>
+   bool fillFlag;          <scan class=comment>/* Indicates whether the object is filled  */</scan>
+   std::string fillColor;  <scan class=comment>/* Color used to fill the object           */</scan>
+
+<scan class=comment>/* Protected methods */</scan>
+
+   void create(double width, double height);
+
+};
+
+<a name="Class:GArc"><scan class=comment>/*
+ * Class: GArc
+ * -----------
+ * This graphical object subclass represents an elliptical arc.  The arc is
+ * specified by the following parameters:
+ *
+ * 
+ *   The coordinates of the bounding rectangle (x,
+ *       y, width, height)
+ *   The angle at which the arc starts (start)
+ *   The number of degrees that the arc covers (sweep)
+ *
+ * All angles in a GArc description are measured in degrees moving
+ * counterclockwise from the +x axis.  Negative values for either start or
+ * sweep indicate motion in a clockwise direction.
+ */
+</scan>
+class GArc : public GObject {
+
+public:
+
+<a name="Constructor:GArc"><scan class=comment>/*
+ * Constructor: GArc
+ * Usage: GArc *arc = new GArc(width, height, start, sweep);
+ *        GArc *arc = new GArc(x, y, width, height, start, sweep);
+ * ---------------------------------------------------------------
+ * Creates a new GArc object consisting of an elliptical arc.  The first
+ * form creates a GArc whose origin is the point (0, 0); the second form
+ * positions the GArc at the point (x, y).
+ */
+</scan>
+   GArc(double width, double height, double start, double sweep);
+   GArc(double x, double y, double width, double height,
+                            double start, double sweep);
+
+<a name="Method:setStartAngle"><scan class=comment>/*
+ * Method: setStartAngle
+ * Usage: arc-&gt;setStartAngle(start);
+ * ---------------------------------
+ * Sets the starting angle for this GArc object.
+ */
+</scan>
+   void setStartAngle(double start);
+
+<a name="Method:getStartAngle"><scan class=comment>/*
+ * Method: getStartAngle
+ * Usage: double angle = arc-&gt;getStartAngle();
+ * -------------------------------------------
+ * Returns the starting angle for this GArc object.
+ */
+</scan>
+   double getStartAngle() const;
+
+<a name="Method:setSweepAngle"><scan class=comment>/*
+ * Method: setSweepAngle
+ * Usage: arc-&gt;setSweepAngle(start);
+ * ---------------------------------
+ * Sets the sweep angle for this GArc object.
+ */
+</scan>
+   void setSweepAngle(double start);
+
+<a name="Method:getSweepAngle"><scan class=comment>/*
+ * Method: getSweepAngle
+ * Usage: double angle = arc-&gt;getSweepAngle();
+ * -------------------------------------------
+ * Returns the sweep angle for this GArc object.
+ */
+</scan>
+   double getSweepAngle() const;
+
+<a name="Method:getStartPoint"><scan class=comment>/*
+ * Method: getStartPoint
+ * Usage: GPoint pt = arc-&gt;getStartPoint();
+ * ----------------------------------------
+ * Returns the point at which the arc starts.
+ */
+</scan>
+   GPoint getStartPoint() const;
+
+<a name="Method:getEndPoint"><scan class=comment>/*
+ * Method: getEndPoint
+ * Usage: GPoint pt = arc-&gt;getEndPoint();
+ * --------------------------------------
+ * Returns the point at which the arc ends.
+ */
+</scan>
+   GPoint getEndPoint() const;
+
+<a name="Method:setFrameRectangle"><scan class=comment>/*
+ * Method: setFrameRectangle
+ * Usage: arc-&gt;setFrameRectangle(rect);
+ *        arc-&gt;setFrameRectangle(x, y, width, height);
+ * ---------------------------------------------------
+ * Changes the boundaries of the rectangle used to frame the arc.
+ */
+</scan>
+   void setFrameRectangle(const GRectangle &amp; rect);
+   void setFrameRectangle(double x, double y, double width, double height);
+
+<a name="Method:getFrameRectangle"><scan class=comment>/*
+ * Method: getFrameRectangle
+ * Usage: GRectangle rect = arc-&gt;getFrameRectangle();
+ * --------------------------------------------------
+ * Returns the boundaries of the rectangle used to frame the arc.
+ */
+</scan>
+   GRectangle getFrameRectangle() const;
+
+<a name="Method:setFilled"><scan class=comment>/*
+ * Method: setFilled
+ * Usage: arc-&gt;setFilled(flag);
+ * ----------------------------
+ * Sets the fill status for the arc, where false is outlined and true is
+ * filled.  If a GArc is unfilled, the figure consists only of the arc
+ * itself.  If a GArc is filled, the figure consists of the pie-shaped
+ * wedge formed by connecting the endpoints of the arc to the center.  As
+ * an example, the following program draws a 270-degree arc starting at 45
+ * degrees, filled in yellow, much like the character in the PacMan video
+ * game:
+ *
+ *    int main() {
+ *       GWindow gw;
+ *       cout &lt;&lt; "This program draws the PacMan character." &lt;&lt; endl;
+ *       double cx = gw.getWidth() / 2;
+ *       double cy = gw.getHeight() / 2;
+ *       double r = 25;
+ *       GArc *pacman = new GArc(cx - r, cy - r, 2 * r, 2 * r, 45, 270);
+ *       pacman-&gt;setFilled(true);
+ *       pacman-&gt;setFillColor("YELLOW");
+ *       gw.add(pacman);
+ *       return 0;
+ *    }
+ */
+</scan>
+   void setFilled(bool flag);
+
+<a name="Method:isFilled"><scan class=comment>/*
+ * Method: isFilled
+ * Usage: if (arc-&gt;isFilled()) ...
+ * -------------------------------
+ * Returns true if the arc is filled.
+ */
+</scan>
+   bool isFilled() const;
+
+<a name="Method:setFillColor"><scan class=comment>/*
+ * Method: setFillColor
+ * Usage: arc-&gt;setFillColor(color);
+ * --------------------------------
+ * Sets the color used to display the filled region of this arc.  Colors
+ * are specified as strings as described in the notes for the setColor
+ * method.
+ */
+</scan>
+   void setFillColor(std::string color);
+   void setFillColor(int rgb);
+
+<a name="Method:getFillColor"><scan class=comment>/*
+ * Method: getFillColor
+ * Usage: string color = arc-&gt;getFillColor();
+ * ------------------------------------------
+ * Returns the color used to display the filled region of this arc.  If
+ * none has been set, getFillColor returns the empty string.
+ */
+</scan>
+   std::string getFillColor() const;
+
+<scan class=comment>/* Prototypes for the virtual methods */</scan>
+
+   virtual GRectangle getBounds() const;
+   virtual bool contains(double x, double y) const;
+   virtual std::string getType() const;
+   virtual std::string toString() const;
+
+private:
+
+   GPoint getArcPoint(double theta) const;
+   bool containsAngle(double theta) const;
+   void create(double width, double height, double start, double sweep);
+
+<scan class=comment>/* Instance variables */</scan>
+
+   double start;                   <scan class=comment>/* Starting angle of the arc       */</scan>
+   double sweep;                   <scan class=comment>/* How many degrees the arc runs   */</scan>
+   double frameWidth;              <scan class=comment>/* The width of the bounding box   */</scan>
+   double frameHeight;             <scan class=comment>/* The height of the bounding box  */</scan>
+   std::string fillColor;          <scan class=comment>/* The color of the interior       */</scan>
+   bool fillFlag;                  <scan class=comment>/* Indicates if the arc is filled  */</scan>
+
+};
+
+<a name="Class:GCompound"><scan class=comment>/*
+ * Class: GCompound
+ * ----------------
+ * This graphical object subclass consists of a collection of other
+ * graphical objects.  Once assembled, the internal objects can be
+ * manipulated as a unit.  The GCompound keeps track of its own position,
+ * and all items within it are drawn relative to that location.
+ */
+</scan>
+class GCompound : public GObject {
+
+public:
+
+<a name="Constructor:GCompound"><scan class=comment>/*
+ * Constructor: GCompound
+ * Usage: GCompound *comp = new GCompound();
+ * -----------------------------------------
+ * Creates a GCompound object with no internal components.
+ */
+</scan>
+   GCompound();
+
+<a name="Method:add"><scan class=comment>/*
+ * Method: add
+ * Usage: comp-&gt;add(gobj);
+ *        comp-&gt;add(gobj, x, y);
+ * -----------------------------
+ * Adds a new graphical object to the GCompound.  The second form moves the
+ * object to the point (x, y) first.
+ */
+</scan>
+   void add(GObject *gobj);
+   void add(GObject *gobj, double x, double y);
+
+<a name="Method:remove"><scan class=comment>/*
+ * Method: remove
+ * Usage: comp-&gt;remove(gobj);
+ * --------------------------
+ * Removes the specified object from the GCompound.
+ */
+</scan>
+   void remove(GObject *gobj);
+
+<a name="Method:removeAll"><scan class=comment>/*
+ * Method: removeAll
+ * Usage: comp-&gt;removeAll();
+ * -------------------------
+ * Removes all graphical objects from the GCompound.
+ */
+</scan>
+   void removeAll();
+
+<a name="Method:getElementCount"><scan class=comment>/*
+ * Method: getElementCount
+ * Usage: int n = comp-&gt;getElementCount();
+ * ---------------------------------------
+ * Returns the number of graphical objects stored in the GCompound.
+ */
+</scan>
+   int getElementCount();
+
+<a name="Method:getElement"><scan class=comment>/*
+ * Method: getElement
+ * Usage: GObject *gobj = comp-&gt;getElement(index);
+ * -----------------------------------------------
+ * Returns a pointer to the graphical object at the specified index,
+ * numbering from back to front in the the z dimension.
+ */
+</scan>
+   GObject *getElement(int index);
+
+<scan class=comment>/* Prototypes for the virtual methods */</scan>
+
+   virtual GRectangle getBounds() const;
+   virtual bool contains(double x, double y) const;
+   virtual std::string getType() const;
+   virtual std::string toString() const;
+
+private:
+   void sendForward(GObject *gobj);
+   void sendToFront(GObject *gobj);
+   void sendBackward(GObject *gobj);
+   void sendToBack(GObject *gobj);
+   int findGObject(GObject *gobj);
+   void removeAt(int index);
+
+<scan class=comment>/* Instance variables */</scan>
+
+   Vector&lt;GObject *&gt; contents;
+
+<scan class=comment>/* Friend declarations */</scan>
+
+   friend class GObject;
+
+};
+
+<a name="Class:GImage"><scan class=comment>/*
+ * Class: GImage
+ * -------------
+ * This graphical object subclass represents an image from a file.  For
+ * example, the following code displays a GImage containing the Stanford
+ * tree at the center of the window, assuming that the image file
+ * StanfordTree.png exists, either in the current directory or an images
+ * subdirectory:
+ *
+ *    int main() {
+ *       GWindow gw;
+ *       cout &lt;&lt; "This program draws the Stanford tree." &lt;&lt; endl;
+ *       GImage *tree = new GImage("StanfordTree.png");
+ *       double x = (gw.getWidth() - tree-&gt;getWidth()) / 2;
+ *       double y = (gw.getHeight() - tree-&gt;getHeight()) / 2;
+ *       gw.add(tree, x, y);
+ *       return 0;
+ *    }
+ */
+</scan>
+class GImage : public GObject {
+
+public:
+
+<a name="Constructor:GImage"><scan class=comment>/*
+ * Constructor: GImage
+ * Usage: GImage *image = new GImage(filename);
+ *        GImage *image = new GImage(filename, x, y);
+ * --------------------------------------------------
+ * Constructs a new image by loading the image from the specified file,
+ * which is either in the current directory or a subdirectory named images.
+ * By default, the upper left corner of the image appears at the origin;
+ * the second form automatically sets the location to the point (x, y).
+ */
+</scan>
+   GImage(std::string filename);
+   GImage(std::string filename, double x, double y);
+
+<scan class=comment>/* Prototypes for the virtual methods */</scan>
+
+   virtual GRectangle getBounds() const;
+   virtual std::string getType() const;
+   virtual std::string toString() const;
+
+private:
+   std::string filename;
+   double width;
+   double height;
+
+   void create(std::string filename);
+
+};
+
+<a name="Class:GLabel"><scan class=comment>/*
+ * Class: GLabel
+ * -------------
+ * This graphical object subclass represents a text string.  For example,
+ * the following code adds a GLabel containing the string "hello, world" to
+ * the center of the window:
+ *
+ *    int main() {
+ *       GWindow gw;
+ *       cout &lt;&lt; "This program draws the 'hello, world' message." &lt;&lt; endl;
+ *       GLabel *label = new GLabel("hello, world");
+ *       label-&gt;setFont("SansSerif-18");
+ *       double x = (gw.getWidth() - label-&gt;getWidth()) / 2;
+ *       double y = (gw.getHeight() + label-&gt;getFontAscent()) / 2;
+ *       gw.add(label, x, y);
+ *       return 0;
+ *    }
+ *
+ * Controlling the appearance and positioning of a GLabel depends on
+ * understanding the following terms:
+ *
+ * 
+ *   The baseline is the horizontal line on which the
+ *       characters rest.
+ *   The origin is the point on the baseline at which
+ *       the label begins.
+ *   The height is the distance that separate two
+ *       successive lines.
+ *   The ascent is the maximum distance a character
+ *       in this font extends above the baseline.
+ *   The descent is the maximum distance a character
+ *       in this font extends below the baseline.
+ */
+</scan>
+class GLabel : public GObject {
+
+public:
+
+<a name="Constructor:GLabel"><scan class=comment>/*
+ * Constructor: GLabel
+ * Usage: GLabel *label = new GLabel(str);
+ *        GLabel *label = new GLabel(str, x, y);
+ * ---------------------------------------------
+ * Creates a GLabel object containing the specified string.  By default,
+ * the baseline of the first character appears at the origin; the second
+ * form automatically resets the location of the GLabel to the point (x,
+ * y).
+ */
+</scan>
+   GLabel(std::string str);
+   GLabel(std::string str, double x, double y);
+
+<a name="Method:setFont"><scan class=comment>/*
+ * Method: setFont
+ * Usage: label-&gt;setFont(font);
+ * ----------------------------
+ * Changes the font used to display the GLabel as specified by the string
+ * font, which has the following format:
+ *
+ *    family-style-size
+ *
+ * where both style and size are optional.  If any of these elements are
+ * missing or specified as an asterisk, the existing value is retained.
+ */
+</scan>
+   void setFont(std::string font);
+
+<a name="Method:getFont"><scan class=comment>/*
+ * Method: getFont
+ * Usage: string font = label-&gt;getFont();
+ * --------------------------------------
+ * Returns the current font for the GLabel.
+ */
+</scan>
+   std::string getFont() const;
+
+<a name="Method:setLabel"><scan class=comment>/*
+ * Method: setLabel
+ * Usage: label-&gt;setLabel(str);
+ * ----------------------------
+ * Changes the string stored within the GLabel object, so that a new text
+ * string appears on the display.
+ */
+</scan>
+   void setLabel(std::string str);
+
+<a name="Method:getLabel"><scan class=comment>/*
+ * Method: getLabel
+ * Usage: string str = label-&gt;getLabel();
+ * --------------------------------------
+ * Returns the string displayed by this object.
+ */
+</scan>
+   std::string getLabel() const;
+
+<a name="Method:getFontAscent"><scan class=comment>/*
+ * Method: getFontAscent
+ * Usage: double ascent = label-&gt;getFontAscent();
+ * ----------------------------------------------
+ * Returns the maximum distance strings in this font extend above the
+ * baseline.
+ */
+</scan>
+   double getFontAscent() const;
+
+<a name="Method:getFontDescent"><scan class=comment>/*
+ * Method: getFontDescent
+ * Usage: double descent = label-&gt;getFontDescent();
+ * ------------------------------------------------
+ * Returns the maximum distance strings in this font descend below the
+ * baseline.
+ */
+</scan>
+   double getFontDescent() const;
+
+<scan class=comment>/* Prototypes for the virtual methods */</scan>
+
+   virtual GRectangle getBounds() const;
+   virtual std::string getType() const;
+   virtual std::string toString() const;
+
+private:
+
+<scan class=comment>/* Instance variables */</scan>
+
+   std::string str;                <scan class=comment>/* The string displayed by the label */</scan>
+   std::string font;               <scan class=comment>/* The font string of the label      */</scan>
+   double width;                   <scan class=comment>/* Width of the bounding box         */</scan>
+   double height;                  <scan class=comment>/* Height of the bounding box        */</scan>
+   double ascent;                  <scan class=comment>/* Font ascent                       */</scan>
+   double descent;                 <scan class=comment>/* Font descent                      */</scan>
+
+   void create(const std::string &amp; str);
+
+};
+
+<a name="Class:GLine"><scan class=comment>/*
+ * Class: GLine
+ * ------------
+ * This graphical object subclass represents a line segment.  For example,
+ * the following code adds lines that mark the diagonals of the graphics
+ * window:
+ *
+ *    int main() {
+ *       GWindow gw;
+ *       cout &lt;&lt; "This program draws the diagonals on the window." &lt;&lt; endl;
+ *       gw.add(new GLine(0, 0, gw.getWidth(), gw.getHeight()));
+ *       gw.add(new GLine(0, gw.getHeight(), gw.getWidth(), 0));
+ *       return 0;
+ *    }
+ */
+</scan>
+class GLine : public GObject {
+
+public:
+
+<a name="Constructor:GLine"><scan class=comment>/*
+ * Constructor: GLine
+ * Usage: GLine *gline = new GLine(x0, y0, x1, y1);
+ * ------------------------------------------------
+ * Constructs a line segment from its endpoints.  The point (x0, y0)
+ * defines the start of the line and the point (x1, y1) defines the end.
+ */
+</scan>
+   GLine(double x0, double y0, double x1, double y1);
+
+<a name="Method:setStartPoint"><scan class=comment>/*
+ * Method: setStartPoint
+ * Usage: line-&gt;setStartPoint(x, y);
+ * ---------------------------------
+ * Sets the initial point in the line to (x, y), leaving the end point
+ * unchanged.  This method is therefore different from setLocation, which
+ * moves both components of the line segment.
+ */
+</scan>
+   void setStartPoint(double x, double y);
+
+<a name="Method:getStartPoint"><scan class=comment>/*
+ * Method: getStartPoint
+ * Usage: GPoint pt = line-&gt;getStartPoint();
+ * -----------------------------------------
+ * Returns the point at which the line starts.
+ */
+</scan>
+   GPoint getStartPoint() const;
+
+<a name="Method:setEndPoint"><scan class=comment>/*
+ * Method: setEndPoint
+ * Usage: line-&gt;setEndPoint(x, y);
+ * -------------------------------
+ * Sets the end point in the line to (x, y), leaving the start point
+ * unchanged.  This method is therefore different from setLocation, which
+ * moves both components of the line segment.
+ */
+</scan>
+   void setEndPoint(double x, double y);
+
+<a name="Method:getEndPoint"><scan class=comment>/*
+ * Method: getEndPoint
+ * Usage: GPoint pt = line-&gt;getEndPoint();
+ * ---------------------------------------
+ * Returns the point at which the line ends.
+ */
+</scan>
+   GPoint getEndPoint() const;
+
+<scan class=comment>/* Prototypes for the virtual methods */</scan>
+
+   virtual GRectangle getBounds() const;
+   virtual bool contains(double x, double y) const;
+   virtual std::string getType() const;
+   virtual std::string toString() const;
+
+protected:
+
+<scan class=comment>/* Instance variables */</scan>
+
+   double dx;                   <scan class=comment>/* The x displacement of the line */</scan>
+   double dy;                   <scan class=comment>/* The y displacement of the line */</scan>
+
+};
+
+<a name="Class:GPolygon"><scan class=comment>/*
+ * Class: GPolygon
+ * ---------------
+ * This graphical object subclass represents a polygon bounded by line
+ * segments.  The GPolygon constructor creates an empty polygon.  To
+ * complete the figure, you need to add vertices to the polygon using the
+ * methods addVertex, addEdge, and addPolarEdge.  As an example, the
+ * following code adds a filled red octagon to the center of the window:
+ *
+ *    int main() {
+ *       GWindow gw;
+ *       cout &lt;&lt; "This program draws a red octagon." &lt;&lt; endl;
+ *       double edge = 75;
+ *       GPolygon *stopSign = new GPolygon();
+ *       stopSign-&gt;addVertex(-edge / 2, edge / 2 + edge / sqrt(2.0));
+ *       for (int i = 0; i &lt; 8; i++) {
+ *          stopSign-&gt;addPolarEdge(edge, 45 * i);
+ *       }
+ *       stopSign-&gt;setFilled(true);
+ *       stopSign-&gt;setColor("RED");
+ *       gw.add(stopSign, gw.getWidth() / 2, gw.getHeight() / 2);
+ *       return 0;
+ *    }
+ */
+</scan>
+class GPolygon : public GObject {
+
+public:
+
+<a name="Constructor:GPolygon"><scan class=comment>/*
+ * Constructor: GPolygon
+ * Usage: GPolygon *poly = new GPolygon();
+ * ---------------------------------------
+ * Constructs a new empty polygon at the origin.
+ */
+</scan>
+   GPolygon();
+
+<a name="Method:addVertex"><scan class=comment>/*
+ * Method: addVertex
+ * Usage: poly-&gt;addVertex(x, y);
+ * -----------------------------
+ * Adds a vertex at (x, y) relative to the polygon origin.
+ */
+</scan>
+   void addVertex(double x, double y);
+
+<a name="Method:addEdge"><scan class=comment>/*
+ * Method: addEdge
+ * Usage: poly-&gt;addEdge(dx, dy);
+ * -----------------------------
+ * Adds an edge to the polygon whose components are given by the
+ * displacements dx and dy from the last vertex.
+ */
+</scan>
+   void addEdge(double dx, double dy);
+
+<a name="Method:addPolarEdge"><scan class=comment>/*
+ * Method: addPolarEdge
+ * Usage: poly-&gt;addPolarEdge(r, theta);
+ * ------------------------------------
+ * Adds an edge to the polygon specified in polar coordinates.  The length
+ * of the edge is given by r, and the edge extends in direction theta,
+ * measured in degrees counterclockwise from the +x axis.
+ */
+</scan>
+   void addPolarEdge(double r, double theta);
+
+<a name="Method:getVertices"><scan class=comment>/*
+ * Method: getVertices
+ * Usage: Vector&lt;GPoint&gt; vec = poly-&gt;getVertices();
+ * ------------------------------------------------
+ * Returns a vector of the points in the polygon.
+ */
+</scan>
+   Vector&lt;GPoint&gt; getVertices() const;
+
+<a name="Method:setFilled"><scan class=comment>/*
+ * Method: setFilled
+ * Usage: poly-&gt;setFilled(flag);
+ * -----------------------------
+ * Sets the fill status for the polygon, where false is outlined and true
+ * is filled.
+ */
+</scan>
+   void setFilled(bool flag);
+
+<a name="Method:isFilled"><scan class=comment>/*
+ * Method: isFilled
+ * Usage: if (poly-&gt;isFilled()) ...
+ * --------------------------------
+ * Returns true if the polygon is filled.
+ */
+</scan>
+   bool isFilled() const;
+
+<a name="Method:setFillColor"><scan class=comment>/*
+ * Method: setFillColor
+ * Usage: poly-&gt;setFillColor(color);
+ * ---------------------------------
+ * Sets the color used to display the filled region of this polygon.
+ */
+</scan>
+   void setFillColor(std::string color);
+   void setFillColor(int rgb);
+
+<a name="Method:getFillColor"><scan class=comment>/*
+ * Method: getFillColor
+ * Usage: string color = poly-&gt;getFillColor();
+ * -------------------------------------------
+ * Returns the color used to display the filled region of this polygon.  If
+ * none has been set, getFillColor returns the empty string.
+ */
+</scan>
+   std::string getFillColor() const;
+
+<scan class=comment>/* Prototypes for the virtual methods */</scan>
+
+   virtual GRectangle getBounds() const;
+   virtual bool contains(double x, double y) const;
+   virtual std::string getType() const;
+   virtual std::string toString() const;
+
+private:
+
+<scan class=comment>/* Instance variables */</scan>
+
+   Vector&lt;GPoint&gt; vertices;        <scan class=comment>/* The vertices of the polygon   */</scan>
+   double cx;                      <scan class=comment>/* The most recent x coordinate  */</scan>
+   double cy;                      <scan class=comment>/* The most recent y coordinate  */</scan>
+   std::string fillColor;          <scan class=comment>/* The color of the interior     */</scan>
+   bool fillFlag;                  <scan class=comment>/* Indicates if object is filled */</scan>
+
+};
+
+#endif
+</pre>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<html>
+<head>
+<title>gevents.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><code>gevents.h</code></h1>
+This file defines the event types used in the StanfordCPPLib
+graphics libraries.  The structure of this package is adapted from
+the Java event model.
+The <code>GEvent</code> hierarchy looks like this:
+
+<p><div class=inset>
+<img src="images/GEventHierarchy-h.png"
+     width=558 usemap="#GEventMap" alt="GEventHierarchy">
+</div>
+<map name="GEventMap">
+  <area shape=rect coords="228,0,330,27" href="GEvent-class.html"
+        alt="GEvent">
+  <area shape=rect coords="0,132,102,159" href="GWindowEvent-class.html"
+        alt="GWindowEvent">
+  <area shape=rect coords="114,132,216,159" href="GActionEvent-class.html"
+        alt="GActionEvent">
+  <area shape=rect coords="228,132,330,159" href="GMouseEvent-class.html"
+        alt="GMouseEvent">
+  <area shape=rect coords="342,132,444,159" href="GKeyEvent-class.html"
+        alt="GKeyEvent">
+  <area shape=rect coords="456,132,558,159" href="GTimerEvent-class.html"
+        alt="GTimerEvent">
+</map>
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Classes</td></tr>
+<tr><td class=indexKey><nobr><a href="GActionEvent-class.html">GActionEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This event subclass represents an action event.</td></tr>
+<tr><td class=indexKey><nobr><a href="GEvent-class.html">GEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class is the root of the hierarchy for all events.</td></tr>
+<tr><td class=indexKey><nobr><a href="GKeyEvent-class.html">GKeyEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This event subclass represents a key event.</td></tr>
+<tr><td class=indexKey><nobr><a href="GMouseEvent-class.html">GMouseEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This event subclass represents a mouse event.</td></tr>
+<tr><td class=indexKey><nobr><a href="GTimerEvent-class.html">GTimerEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This event subclass represents a timer event.</td></tr>
+<tr><td class=indexKey><nobr><a href="GWindowEvent-class.html">GWindowEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This event subclass represents a window event.</td></tr>
+<tr><td class=indexHead colspan=2>Types</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:EventClassType">EventClassType</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This enumeration type defines the event classes.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:EventType">EventType</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This enumeration type defines the event types for all events.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:KeyCodes">KeyCodes</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type defines the names of the key codes returned in a key event.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:ModifierCodes">ModifierCodes</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This enumeration type defines a set of constants used to check whether modifiers are in effect.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getNextEvent">getNextEvent(mask)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Checks to see if there are any events of the desired type waiting on the event queue.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:waitForClick">waitForClick()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Waits for a mouse click in any window, discarding any other events.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:waitForEvent">waitForEvent(mask)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Dismisses the process until an event occurs whose type is covered by the event mask.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:EventClassType"></a>
+<pre class=detailCode>
+enum EventClassType {
+   NULL_EVENT  x000,
+   ACTION_EVENTx010,
+   KEY_EVENT   x020,
+   TIMER_EVENT x040,
+   WINDOW_EVENTx080,
+   MOUSE_EVENT x100,
+   CLICK_EVENT x200,
+   ANY_EVENT   x3F0
+};
+</pre>
+<div class=detailHTML>
+This enumeration type defines the event classes.  The element values
+are each a single bit and can be added or ORed together to generate
+an event mask.  The <code>CLICK_EVENT</code> class responds only to
+the MOUSE_CLICKED event type.  The <code>ANY_EVENT</code> class
+selects any event.
+</div>
+<hr>
+<a name="Type:EventType"></a>
+<pre class=detailCode>
+typedef enum {
+   WINDOW_CLOSED    = WINDOW_EVENT + 1,
+   WINDOW_RESIZED   = WINDOW_EVENT + 2,
+   ACTION_PERFORMED = ACTION_EVENT + 1,
+   MOUSE_CLICKED    = MOUSE_EVENT + 1,
+   MOUSE_PRESSED    = MOUSE_EVENT + 2,
+   MOUSE_RELEASED   = MOUSE_EVENT + 3,
+   MOUSE_MOVED      = MOUSE_EVENT + 4,
+   MOUSE_DRAGGED    = MOUSE_EVENT + 5,
+   KEY_PRESSED      = KEY_EVENT + 1,
+   KEY_RELEASED     = KEY_EVENT + 2,
+   KEY_TYPED        = KEY_EVENT + 3,
+   TIMER_TICKED     = TIMER_EVENT + 1,
+} EventType;
+</pre>
+<div class=detailHTML>
+This enumeration type defines the event types for all events.
+</div>
+<hr>
+<a name="Type:ModifierCodes"></a>
+<pre class=detailCode>
+enum ModifierCodes {
+   SHIFT_DOWN     = 1 &lt;&lt; 0,
+   CTRL_DOWN      = 1 &lt;&lt; 1,
+   META_DOWN      = 1 &lt;&lt; 2,
+   ALT_DOWN       = 1 &lt;&lt; 3,
+   ALT_GRAPH_DOWN = 1 &lt;&lt; 4,
+   BUTTON1_DOWN   = 1 &lt;&lt; 5,
+   BUTTON2_DOWN   = 1 &lt;&lt; 6,
+   BUTTON3_DOWN   = 1 &lt;&lt; 7
+};
+</pre>
+<div class=detailHTML>
+This enumeration type defines a set of constants used to check whether
+modifiers are in effect.
+</div>
+<hr>
+<a name="Type:KeyCodes"></a>
+<pre class=detailCode>
+enum KeyCodes {
+   BACKSPACE_KEY = 8,
+   TAB_KEY = 9,
+   ENTER_KEY = 10,
+   CLEAR_KEY = 12,
+   ESCAPE_KEY = 27,
+   PAGE_UP_KEY = 33,
+   PAGE_DOWN_KEY = 34,
+   END_KEY = 35,
+   HOME_KEY = 36,
+   LEFT_ARROW_KEY = 37,
+   UP_ARROW_KEY = 38,
+   RIGHT_ARROW_KEY = 39,
+   DOWN_ARROW_KEY = 40,
+   F1_KEY = 112,
+   F2_KEY = 113,
+   F3_KEY = 114,
+   F4_KEY = 115,
+   F5_KEY = 116,
+   F6_KEY = 117,
+   F7_KEY = 118,
+   F8_KEY = 119,
+   F9_KEY = 120,
+   F10_KEY = 121,
+   F11_KEY = 122,
+   F12_KEY = 123,
+   DELETE_KEY = 127,
+   HELP_KEY = 156
+};
+</pre>
+<div class=detailHTML>
+This type defines the names of the key codes returned in a key event.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:waitForClick"></a>
+<pre class=detailCode>
+void waitForClick();
+</pre>
+<div class=detailHTML>
+Waits for a mouse click in any window, discarding any other events.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+waitForClick();
+</pre>
+<hr>
+<a name="Function:waitForEvent"></a>
+<pre class=detailCode>
+GEvent waitForEvent(int mask = ANY_EVENT);
+</pre>
+<div class=detailHTML>
+Dismisses the process until an event occurs whose type is covered by
+the event mask.  The mask parameter is a combination of the events of
+interest.  For example, to wait for a mouse event or an action event,
+clients can use the following call:
+
+<pre>
+   e = waitForEvent(MOUSE_EVENT + ACTION_EVENT);
+</pre>
+
+The <code>mask</code> parameter is optional.  If it is missing,
+<code>waitForEvent</code> accepts any event.
+
+<p>As a more sophisticated example, the following code is the canonical
+event loop for an animated application that needs to respond to mouse,
+key, and timer events:
+
+<pre>
+   GTimer timer(ANIMATION_DELAY_IN_MILLISECONDS);
+   timer.start();
+   while (true) {
+      GEvent e = waitForEvent(TIMER_EVENT + MOUSE_EVENT + KEY_EVENT);
+      switch (e.getEventClass()) {
+       case TIMER_EVENT:
+         takeAnimationStep();
+         break;
+       case MOUSE_EVENT:
+         handleMouseEvent(GMouseEvent(e));
+         break;
+       case KEY_EVENT:
+         handleKeyEvent(GKeyEvent(e));
+         break;
+      }
+   }
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GEvent e = waitForEvent(mask);
+</pre>
+<hr>
+<a name="Function:getNextEvent"></a>
+<pre class=detailCode>
+GEvent getNextEvent(int mask = ANY_EVENT);
+</pre>
+<div class=detailHTML>
+Checks to see if there are any events of the desired type waiting on the
+event queue.  If so, this function returns the event in exactly the same
+fashion as <code>waitForEvent</code>; if not, <code>getNextEvent</code>
+returns an invalid event.  The <code>mask</code> parameter is optional.
+If it is missing, <code>getNextEvent</code> accepts any event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GEvent e = getNextEvent(mask);
+</pre>
+<hr>
+</table>
+</body>
+</html>
