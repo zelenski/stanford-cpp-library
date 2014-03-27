@@ -42,12 +42,17 @@ bool openFile(std::ofstream & stream, std::string filename);
  * the reference parameter <code>stream</code>, and the function
  * returns the name of the file.  If the requested file cannot be
  * opened, the user is given additional chances to enter a valid file.
+ *
  * The optional <code>prompt</code> argument provides an input prompt
  * for the user.
+ *
+ * The also optional <code>reprompt</code> argument provides an output message
+ * displayed each time if the user types a file that is not found.
+ * If no value is passed, defaults to, "Unable to open that file.  Try again.".
  */
 
-std::string promptUserForFile(std::ifstream & stream, std::string prompt = "");
-std::string promptUserForFile(std::ofstream & stream, std::string prompt = "");
+std::string promptUserForFile(std::ifstream & stream, std::string prompt = "", std::string reprompt = "");
+std::string promptUserForFile(std::ofstream & stream, std::string prompt = "", std::string reprompt = "");
 
 /*
  * Function: openFileDialog
@@ -65,11 +70,11 @@ std::string promptUserForFile(std::ofstream & stream, std::string prompt = "");
 std::string openFileDialog(std::ifstream & stream);
 std::string openFileDialog(std::ifstream & stream, std::string title);
 std::string openFileDialog(std::ifstream & stream, std::string title,
-                                                   std::string path);
+                           std::string path);
 std::string openFileDialog(std::ofstream & stream);
 std::string openFileDialog(std::ofstream & stream, std::string title);
 std::string openFileDialog(std::ofstream & stream, std::string title,
-                                                   std::string path);
+                           std::string path);
 
 /*
  * Function: readEntireFile
@@ -84,6 +89,30 @@ std::string openFileDialog(std::ofstream & stream, std::string title,
 
 void readEntireFile(std::istream & is, Vector<std::string> & lines);
 void readEntireFile(std::istream & is, std::vector<std::string> & lines);
+
+/*
+ * An overload of readEntireFile that just returns the whole file as a very
+ * long single string, rather than a vector of lines.
+ *
+ * The first version returns the entire file's text.
+ * It throws an error() if the file is not found or cannot be read.
+ *
+ * The second version fills an output reference with the text read.
+ * Returns true if the read was successful and false if the file was not found
+ * or unable to be opened for reading.
+ */
+std::string readEntireFile(std::string filename);
+bool readEntireFile(std::string filename, std::string& out);
+
+/*
+ * Opens the given file and writes the given text into it.
+ * Normally this function replaces any previous contents of the file, but
+ * if the optional 'append' parameter is passed, the given text is added
+ * at the end of the file, retaining any previous contents.
+ * Returns true if the write was successful and false if the file was unable
+ * to be opened for writing.
+ */
+bool writeEntireFile(std::string filename, std::string text, bool append = false);
 
 /*
  * Function: getRoot
@@ -171,9 +200,9 @@ std::string defaultExtension(std::string filename, std::string ext);
  */
 
 std::string openOnPath(std::ifstream & stream, std::string path,
-                                               std::string filename);
+                       std::string filename);
 std::string openOnPath(std::ofstream & stream, std::string path,
-                                               std::string filename);
+                       std::string filename);
 
 /*
  * Function: findOnPath
@@ -346,6 +375,12 @@ std::string getDirectoryPathSeparator();
  */
 
 std::string getSearchPathSeparator();
+
+/*
+ * Moves the given input stream back to its beginning, so that it can
+ * be read again from start to finish.
+ */
+void rewindStream(std::istream& input);
 
 #include "private/main.h"
 

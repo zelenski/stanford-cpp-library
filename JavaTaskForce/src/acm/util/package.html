@@ -1,0 +1,94 @@
+<html>
+<head>
+<title>The acm.util Package</title>
+</head>
+<body>
+This package includes several classes that are common to the ACM package
+suite.
+Novice users of the package will, in general, not need to use most of
+these classes.
+The following list provides a brief description of each of the
+<code><b>acm.util</code> classes, starting with the classes that are
+most likely to be of use:
+
+<p>
+<dl>
+<dt><a href="RandomGenerator.html"><code>RandomGenerator</code></a></dt>
+<dd>
+This class extends the <code>Random</code> class from
+<code>java.util</code> and offers a few useful simplifications
+for working with pseudorandom values.
+</dd>
+
+<br><dt><a href="MediaTools.html"><code>MediaTools</code></a></dt>
+<dd>
+This class includes several static methods that support the use of
+images and sounds.
+</dd>
+
+<br><dt><a href="SoundClip.html"><code>SoundClip</code></a></dt>
+<dd>
+This class represents a sound that can be played through the computer.
+</dd>
+
+<br><dt><a href="MovieClip.html"><code>MovieClip</code></a></dt>
+<dd>
+This class represents a QuickTime movie that can be played on the screen.
+</dd>
+
+<br><dt><a href="ErrorException.html"><code>ErrorException</code></a></dt>
+<dd>
+This class is used to signal errors anywhere in the ACM Java Library
+collection.  The primary advantage of <code>ErrorException</code>
+is that it is defined as a <code>RuntimeException</code> subclass
+and therefore does not need to be caught or declared in a
+<code>throws</code> clause.
+</dd>
+
+<br><dt><a href="CancelledException.html"><code>CancelledException</code></a></dt>
+<dd>
+This class allows a dialog to signal clients that it has been
+cancelled.
+</dd>
+
+<br><dt><a href="FileChooserFilter.html"><code>FileChooserFilter</code></a></dt>
+<dd>
+This class allows a dialog to signal clients that it has been
+cancelled.
+</dd>
+
+<br><dt><a href="Platform.html"><code>Platform</code></a></dt>
+<dd>
+This class contains several methods that support platform-specific code.
+</dd>
+
+<br><dt><a href="SwingTimer.html"><code>SwingTimer</code></a></dt>
+<dd>
+This class is equivalent to <code>javax.swing.Timer</code> and
+exists only to avoid the ambiguity that arises because there is
+also a <code>Timer</code> class in <code>java.util</code>.
+</dd>
+
+<br><dt><a href="FileChooserFilter.html"><code>FileChooserFilter</code></a></dt>
+<dd>
+This class provides a simple implementation of the abstract
+<code>FileFilter</code> class
+in <code>javax.swing.filechooser</code>.
+</dd>
+
+<br><dt><a href="OptionTable.html"><code>OptionTable</code></a></dt>
+<dd>
+This class implements a simple tool for parsing key/value pairs from
+a string.  Its primary use is for parsing the options used in the
+<code>TableLayout</code> class in the <code>acm.gui</code>
+package.
+</dd>
+
+<br><dt><a href="JTFTools.html"><code>JTFTools</code></a></dt>
+<dd>
+This class provides a collection of static utility methods
+that are used elsewhere in the ACM packages.
+</dd>
+</dl>
+</body>
+</html>

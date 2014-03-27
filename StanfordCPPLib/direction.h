@@ -11,7 +11,7 @@
 
 #include <iostream>
 #include <string>
-#include "foreach.h"
+#include "private/foreachpatch.h"
 
 /*
  * Type: Direction

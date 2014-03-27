@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <ctime>
+#include <queue>
 #include "random.h"
 #include "private/randompatch.h"
 using namespace std;
@@ -14,6 +15,25 @@ using namespace std;
 /* Private function prototype */
 
 static void initRandomSeed();
+
+namespace autograder {
+/* internal buffer of fixed random numbers to return; used by autograders */
+queue<int> fixedInts;
+queue<double> fixedReals;
+queue<bool> fixedBools;
+
+void randomFeedInteger(int value) {
+    fixedInts.push(value);
+}
+
+void randomFeedReal(double value) {
+    fixedReals.push(value);
+}
+
+void randomFeedBool(bool value) {
+    fixedBools.push(value);
+}
+}
 
 /*
  * Implementation notes: randomInteger
@@ -36,12 +56,16 @@ static void initRandomSeed();
  * can overflow the integer range.  These calculations must therefore be
  * performed using doubles instead of ints.
  */
-
 int randomInteger(int low, int high) {
-   initRandomSeed();
-   double d = rand() / (double(RAND_MAX) + 1);
-   double s = d * (double(high) - low + 1);
-   return int(floor(low + s));
+    if (!autograder::fixedInts.empty()) {
+        int top = autograder::fixedInts.front();
+        autograder::fixedInts.pop();
+        return top;
+    }
+    initRandomSeed();
+    double d = rand() / (double(RAND_MAX) + 1);
+    double s = d * (double(high) - low + 1);
+    return int(floor(low + s));
 }
 
 /*
@@ -50,12 +74,16 @@ int randomInteger(int low, int high) {
  * The code for randomReal is similar to that for randomInteger,
  * without the final conversion step.
  */
-
 double randomReal(double low, double high) {
-   initRandomSeed();
-   double d = rand() / (double(RAND_MAX) + 1);
-   double s = d * (high - low);
-   return low + s;
+    if (!autograder::fixedReals.empty()) {
+        double top = autograder::fixedReals.front();
+        autograder::fixedReals.pop();
+        return top;
+    }
+    initRandomSeed();
+    double d = rand() / (double(RAND_MAX) + 1);
+    double s = d * (high - low);
+    return low + s;
 }
 
 /*
@@ -64,10 +92,18 @@ double randomReal(double low, double high) {
  * The code for randomChance calls randomReal(0, 1) and then checks
  * whether the result is less than the requested probability.
  */
-
 bool randomChance(double p) {
-   initRandomSeed();
-   return randomReal(0, 1) < p;
+    if (!autograder::fixedBools.empty()) {
+        bool top = autograder::fixedBools.front();
+        autograder::fixedBools.pop();
+        return top;
+    }
+    initRandomSeed();
+    return randomReal(0, 1) < p;
+}
+
+bool randomBool() {
+    return randomChance(0.5);
 }
 
 /*
@@ -76,10 +112,9 @@ bool randomChance(double p) {
  * The setRandomSeed function simply forwards its argument to srand.
  * The call to initRandomSeed is required to set the initialized flag.
  */
-
 void setRandomSeed(int seed) {
-   initRandomSeed();
-   srand(seed);
+    initRandomSeed();
+    srand(seed);
 }
 
 /*
@@ -89,11 +124,10 @@ void setRandomSeed(int seed) {
  * of whether the seed has been initialized.  The first time initRandomSeed
  * is called, initialized is false, so the seed is set to the current time.
  */
-
 static void initRandomSeed() {
-   static bool initialized = false;
-   if (!initialized) {
-      srand(int(time(NULL)));
-      initialized = true;
-   }
+    static bool initialized = false;
+    if (!initialized) {
+        srand(int(time(NULL)));
+        initialized = true;
+    }
 }

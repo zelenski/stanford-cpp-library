@@ -19,16 +19,24 @@ using namespace std;
 
 int _mainFlags;
 
+#ifdef SPL_AUTOGRADER_MODE
+int mainWrapper(int /*argc*/, char** /*argv*/) {
+#else
 int mainWrapper(int argc, char **argv) {
-   extern int Main(int argc, char **argv);
-   try {
-      return Main(argc, argv);
-   } catch (ErrorException & ex) {
-      string msg = "Error: " + ex.getMessage();
-      cerr << msg << endl;
-#ifdef _MSC_VER
-      MessageBoxA(NULL, msg.c_str(), "Error!", MSC_ERROR_FLAGS);
 #endif
-      return EXIT_FAILURE;
-   }
+    extern int Main(int argc, char **argv);
+    try {
+#ifndef SPL_AUTOGRADER_MODE
+        return Main(argc, argv);
+#else
+        return 0;
+#endif
+    } catch (ErrorException & ex) {
+        string msg = "Error: " + ex.getMessage();
+        cerr << msg << endl;
+#ifdef _MSC_VER
+        MessageBoxA(NULL, msg.c_str(), "Error!", MSC_ERROR_FLAGS);
+#endif
+        return EXIT_FAILURE;
+    }
 }

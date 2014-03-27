@@ -7,6 +7,8 @@
 #ifndef _random_h
 #define _random_h
 
+#include <vector>
+
 /*
  * Function: randomInteger
  * Usage: int n = randomInteger(low, high);
@@ -14,7 +16,6 @@
  * Returns a random integer in the range <code>low</code> to
  * <code>high</code>, inclusive.
  */
-
 int randomInteger(int low, int high);
 
 /*
@@ -27,8 +28,15 @@ int randomInteger(int low, int high);
  * means that the result is always greater than or equal to
  * <code>low</code> but strictly less than <code>high</code>.
  */
-
 double randomReal(double low, double high);
+
+/*
+ * Function: randomBool
+ * Usage: if (randomBool()) ...
+ * -------------------------------
+ * Returns <code>true</code> with 50% probability.
+ */
+bool randomBool();
 
 /*
  * Function: randomChance
@@ -40,7 +48,6 @@ double randomReal(double low, double high);
  * <code>randomChance(.30)</code> returns <code>true</code> 30 percent
  * of the time.
  */
-
 bool randomChance(double p);
 
 /*
@@ -52,7 +59,27 @@ bool randomChance(double p);
  * pseudorandom sequence or to ensure that program behavior is
  * repeatable during the debugging phase.
  */
-
 void setRandomSeed(int seed);
+
+// extra functions to facilitate creation of autograder programs
+namespace autograder {
+/*
+ * Inserts the given integer to be returned by the random number generator,
+ * rather than truly random numbers.
+ */
+void randomFeedInteger(int value);
+
+/*
+ * Inserts the given real number to be returned by the random number generator,
+ * rather than truly random numbers.
+ */
+void randomFeedReal(double value);
+
+/*
+ * Inserts the given boolean value to be returned by the random number
+ * generator, rather than truly random choices.
+ */
+void randomFeedBool(bool value);
+}
 
 #endif

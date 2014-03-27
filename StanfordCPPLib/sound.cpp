@@ -18,14 +18,14 @@ using namespace std;
 static Platform *pp = getPlatform();
 
 Sound::Sound(string filename) {
-   pp->createSound(this, filename);
+    pp->sound_constructor(this, filename);
 }
 
 Sound::~Sound() {
-   pp->deleteSound(this);
+    pp->sound_delete(this);
 }
 
 void Sound::play() {
-   pp->playSound(this);
+    pp->sound_play(this);
 }
 

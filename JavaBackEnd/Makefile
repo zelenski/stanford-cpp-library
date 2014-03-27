@@ -3,7 +3,13 @@
 #****************************************************************
 
 JAR = spl.jar
-CP = acm.jar:.
+CP = "acm.jar:."
+ifeq ($(OS),Windows_NT)
+    CP = "acm.jar;."
+endif
+ifeq ($(OS),Cygwin)
+    CP = "acm.jar;."
+endif
 
 CLASSES = \
     stanford/spl/JavaBackEnd.class

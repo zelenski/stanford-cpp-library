@@ -3,7 +3,7 @@
  * ------------
  * This file renames the <code>main</code> method in the client's
  * program to <code>Main</code>, thereby allowing a custom
- * <code>main</code> method in the libraries to take control
+ * <code>main</code> function in the libraries to take control
  * before passing control back to the client program.  The main macro
  * also defines a function getMainFlags that returns an int whose bits
  * indicate which of the various interfaces have been loaded by this
@@ -11,6 +11,10 @@
  *
  * Note: This file can be loaded more than once and must therefore
  * check to see what has already been defined.
+ *
+ * If the SPL_AUTOGRADER_MODE is defined, main is instead renamed to studentMain,
+ * allowing an autograder program to become the real main that performs
+ * its own initialization code and then calls the student's main function.
  */
 
 #ifdef main
@@ -36,23 +40,30 @@
 
 #if CONSOLE_FLAG | GRAPHICS_FLAG
 
+#  ifdef SPL_AUTOGRADER_MODE
+#define main studentMain
+#  else  // not SPL_AUTOGRADER_MODE
 #define main main(int argc, char **argv) { \
                 extern int _mainFlags; \
                 _mainFlags = GRAPHICS_FLAG + CONSOLE_FLAG; \
                 return startupMain(argc, argv); \
              } \
              int Main
+#  endif  // SPL_AUTOGRADER_MODE
 
 extern int startupMain(int argc, char **argv);
 
-#else
+#else  // not CONSOLE_FLAG | GRAPHICS_FLAG
 
+#  ifdef SPL_AUTOGRADER_MODE
+#define main studentMain
+#  else  // not SPL_AUTOGRADER_MODE
 #define main main(int argc, char **argv) { \
                 extern int _mainFlags; \
                 _mainFlags = GRAPHICS_FLAG + CONSOLE_FLAG; \
                 return mainWrapper(argc, argv); } \
              int Main
-
+#  endif  // SPL_AUTOGRADER_MODE
 extern int mainWrapper(int argc, char **argv);
 
-#endif
+#endif  // CONSOLE_FLAG | GRAPHICS_FLAG

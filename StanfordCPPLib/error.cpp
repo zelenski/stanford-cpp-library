@@ -4,28 +4,32 @@
  * Implementation of the error function.
  */
 
+#include "error.h"
 #include <exception>
 #include <string>
 #include <iostream>
-#include "error.h"
 using namespace std;
 
 /* Definitions for the ErrorException class */
 
 ErrorException::ErrorException(string msg) {
-   this->msg = msg;
+    this->msg = msg;
 }
 
 ErrorException::~ErrorException() throw () {
-   /* Empty */
+    /* Empty */
 }
 
 string ErrorException::getMessage() const {
-   return msg;
+    return msg;
 }
 
 const char *ErrorException::what() const throw () {
-   return ("Error: " + msg).c_str();
+    // stepp : The original "Error: " prefix is commented out here,
+    // because in many error cases, the attempt to do the string concatenation
+    // ends up garbling the string and leading to garbage exception text
+    // return ("Error: " + msg).c_str();
+    return msg.c_str();
 }
 
 /*
@@ -38,5 +42,5 @@ const char *ErrorException::what() const throw () {
  */
 
 void error(string msg) {
-   throw ErrorException(msg);
+    throw ErrorException(msg);
 }

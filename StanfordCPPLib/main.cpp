@@ -7,8 +7,15 @@
  * supply one.
  */
 
-int Main(int, char *[]) {
-   extern int Main();
-   return Main();
-}
+#include <exception>
+#include <iostream>
+#include <string>
 
+using namespace std;
+
+#ifndef SPL_AUTOGRADER_MODE
+int Main(int, char *[]) {
+    extern int Main();
+    return Main();
+}
+#endif

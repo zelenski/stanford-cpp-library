@@ -21,15 +21,15 @@ using namespace std;
  */
 
 Direction leftFrom(Direction dir) {
-   return Direction((dir + 3) % 4);
+    return Direction((dir + 3) % 4);
 }
 
 Direction rightFrom(Direction dir) {
-   return Direction((dir + 1) % 4);
+    return Direction((dir + 1) % 4);
 }
 
 Direction opposite(Direction dir) {
-   return Direction((dir + 2) % 4);
+    return Direction((dir + 2) % 4);
 }
 
 /*
@@ -41,13 +41,13 @@ Direction opposite(Direction dir) {
  */
 
 string directionToString(Direction dir) {
-   switch (dir) {
+    switch (dir) {
     case NORTH: return "NORTH";
     case EAST: return "EAST";
     case SOUTH: return "SOUTH";
     case WEST: return "WEST";
     default: return "???";
-   }
+    }
 }
 
 /*
@@ -59,7 +59,7 @@ string directionToString(Direction dir) {
  */
 
 std::ostream & operator<<(std::ostream & os, const Direction & dir) {
-   return os << directionToString(dir);
+    return os << directionToString(dir);
 }
 
 /*
@@ -70,23 +70,23 @@ std::ostream & operator<<(std::ostream & os, const Direction & dir) {
  */
 
 std::istream & operator>>(std::istream & is, Direction & dir) {
-   TokenScanner scanner(is);
-   scanner.ignoreWhitespace();
-   string token = toUpperCase(scanner.nextToken());
-   if (token == "") {
-      dir = Direction(-1);
-   } else if (startsWith("NORTH", token)) {
-      dir = NORTH;
-   } else if (startsWith("EAST", token)) {
-      dir = EAST;
-   } else if (startsWith("SOUTH", token)) {
-      dir = SOUTH;
-   } else if (startsWith("WEST", token)) {
-      dir = WEST;
-   } else {
-      error("Direction: Unrecognized direction " + token);
-   }
-   return is;
+    TokenScanner scanner(is);
+    scanner.ignoreWhitespace();
+    string token = toUpperCase(scanner.nextToken());
+    if (token == "") {
+        dir = Direction(-1);
+    } else if (startsWith("NORTH", token)) {
+        dir = NORTH;
+    } else if (startsWith("EAST", token)) {
+        dir = EAST;
+    } else if (startsWith("SOUTH", token)) {
+        dir = SOUTH;
+    } else if (startsWith("WEST", token)) {
+        dir = WEST;
+    } else {
+        error("Direction: Unrecognized direction " + token);
+    }
+    return is;
 }
 
 /*
@@ -100,7 +100,7 @@ std::istream & operator>>(std::istream & is, Direction & dir) {
  */
 
 Direction operator++(Direction & dir, int) {
-   Direction old = dir;
-   dir = Direction(dir + 1);
-   return old;
+    Direction old = dir;
+    dir = Direction(dir + 1);
+    return old;
 }

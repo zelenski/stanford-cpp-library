@@ -101,4 +101,15 @@ double vectorDistance(double x, double y);
 double vectorAngle(const GPoint & pt);
 double vectorAngle(double x, double y);
 
+/*
+ * Returns the number of digits in the given integer in the given base.
+ * Defaults to base-10, decimal.
+ * For example:
+ *   countDigits(3456) returns 4.
+ *   countDigits(0)    returns 1.
+ *   countDigits(-778) returns 3.
+ * Throws an error if base is 0 or negative.
+ */
+int countDigits(int n, int base = 10);
+
 #endif

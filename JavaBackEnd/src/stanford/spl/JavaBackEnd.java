@@ -49,8 +49,10 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.BufferedReader;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
@@ -289,7 +291,7 @@ public class JavaBackEnd implements
 
    private void showConsole() {
       console.setPreferredSize(consoleWidth, consoleHeight);
-      consoleFrame = new JFrame("Console");
+      consoleFrame = new JFrame("CS 106B Console");
       consoleFrame.setLayout(new BorderLayout());
       consoleFrame.add(console);
       consoleFrame.pack();
@@ -427,6 +429,7 @@ public class JavaBackEnd implements
 /* KeyListener */
 
    public void keyPressed(KeyEvent e) {
+      javax.swing.JOptionPane.showMessageDialog(null, "JBE key pressed! " + e);
       if ((eventMask & KEY_EVENT) != 0) {
          printEvent("keyPressed", e);
          acknowledgeEvent();
@@ -478,6 +481,7 @@ public class JavaBackEnd implements
    }
 
    public void mousePressed(MouseEvent e) {
+      javax.swing.JOptionPane.showMessageDialog(null, "JBE mouse pressed! " + e);
       if ((eventMask & MOUSE_EVENT) != 0) {
          printEvent("mousePressed", e);
          acknowledgeEvent();
@@ -697,24 +701,19 @@ public class JavaBackEnd implements
    protected Clip getClip(String name) {
       Clip clip = clipTable.get(name);
       if (clip != null) return clip;
+      File file = new File(name);
       try {
          clip = AudioSystem.getClip();
-         File file = new File(name);
          if (!file.exists()) {
-            if (!name.startsWith("/") && !name.startsWith(".")) {
-               file = new File("sounds/" + name);
-            }
+            throw new ErrorException("getClip: File not found \"" + file.getAbsolutePath() + "\"");
          }
-         if (!file.exists()) {
-            throw new ErrorException("createClip: File not found");
-         }
-         FileInputStream is = new FileInputStream(file);
+         InputStream is = new BufferedInputStream(new FileInputStream(file));
          AudioInputStream ais = AudioSystem.getAudioInputStream(is);
          clip.open(ais);
       } catch (IOException ex) {
-         throw new ErrorException("getClip: File not found");
+         throw new ErrorException("getClip: File not found \"" + file.getAbsolutePath() + "\" " + ex.getMessage());
       } catch (Exception ex) {
-         throw new ErrorException("getClip: " + ex);
+         throw new ErrorException("getClip: Error opening \"" + file.getAbsolutePath() + "\" " + ex.getMessage());
       }
       clipTable.put(name, clip);
       return clip;

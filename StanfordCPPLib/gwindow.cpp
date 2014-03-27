@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include "console.h"
 #include "gevents.h"
 #include "gobjects.h"
 #include "gmath.h"
@@ -23,8 +24,33 @@ using namespace std;
 
 /* Constants */
 
-static const int DEFAULT_WIDTH = 500;
-static const int DEFAULT_HEIGHT = 300;
+// variables and functions for auditing calls to pause();
+// used to facilitate creation of autograde programs
+namespace autograder {
+static int gwindow_pauses = 0;
+static double gwindow_last_pauseMS = 0.0;
+static bool gwindow_pause_enabled = true;
+
+int gwindowGetNumPauses() {
+    return gwindow_pauses;
+}
+
+void gwindowResetNumPauses() {
+    gwindow_pauses = 0;
+}
+
+double gwindowGetLastPauseMS() {
+    return gwindow_last_pauseMS;
+}
+
+void gwindowResetLastPauseMS() {
+    gwindow_last_pauseMS = 0.0;
+}
+
+void gwindowSetPauseEnabled(bool value) {
+    gwindow_pause_enabled = value;
+}
+}
 
 /* Private function prototypes */
 
@@ -55,301 +81,521 @@ static Platform *pp = getPlatform();
 static Map<string,int> colorTable;
 
 GWindow::GWindow() {
-   initGWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, true);
+    initGWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, true);
 }
 
 GWindow::GWindow(bool visible) {
-   initGWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, visible);
+    initGWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, visible);
 }
 
 GWindow::GWindow(double width, double height) {
-   initGWindow(width, height, true);
+    initGWindow(width, height, true);
 }
 
 GWindow::GWindow(double width, double height, bool visible) {
-   initGWindow(width, height, visible);
+    initGWindow(width, height, visible);
 }
 
 void GWindow::initGWindow(double width, double height, bool visible) {
-   gwd = new GWindowData();
-   gwd->windowWidth = width;
-   gwd->windowHeight = height;
-   gwd->top = new GCompound();
-   pp->createGWindow(*this, width, height, gwd->top);
-   setColor("BLACK");
-   setVisible(visible);
-   pause(1000); // Temporary fix for race condition in back-end.
+    gwd = new GWindowData();
+    gwd->windowWidth = width;
+    gwd->windowHeight = height;
+    gwd->windowX = 0;
+    gwd->windowY = 0;
+    gwd->top = new GCompound();
+    gwd->closed = false;
+    gwd->exitOnClose = false;
+    gwd->repaintImmediately = true;
+    pp->gwindow_constructor(*this, width, height, gwd->top);
+    setColor("BLACK");
+    setVisible(visible);
+    pause(1000); // Temporary fix for race condition in back-end.
 }
 
 GWindow::~GWindow() {
-   /* Empty */
+    // commented out because for some reason it crashes to free this memory
+    //   if (gwd) {
+    //      if (gwd->top) {
+    //         delete gwd->top;
+    //         gwd->top = NULL;
+    //      }
+    //      delete gwd;
+    //   }
 }
 
 void GWindow::close() {
-   pp->close(*this);
-   pp->deleteGWindow(*this);
+    if (gwd) {
+        gwd->visible = false;
+        gwd->closed = true;
+    }
+    pp->gwindow_close(*this);
+    pp->gwindow_delete(*this);
+    if (gwd && gwd->exitOnClose) {
+        // I was closed by the student's program.
+        // I need to inform JBE so that it will shut down.
+        pp->gwindow_exitGraphics();   // calls exit(0);
+    }
+}
+
+void GWindow::notifyOfClose() {
+    if (gwd) {
+        gwd->visible = false;
+        gwd->closed = true;
+        if (gwd->exitOnClose) {
+            // JBE notified me that I was closed by the user.
+            // JBE is already going to shut itself down.
+            // I just have to shut down the C++ process.
+            exit(0);
+        }
+    }
+}
+
+string GWindow::getWindowData() const {
+    ostringstream os;
+    os << gwd;
+    return os.str();
+}
+
+void GWindow::setExitOnClose(bool value) {
+    if (gwd) {
+        gwd->exitOnClose = value;
+    }
+    pp->gwindow_setExitOnClose(*this, value);
+}
+
+bool GWindow::isRepaintImmediately() const {
+    return !gwd || gwd->repaintImmediately;
+}
+
+void GWindow::setRepaintImmediately(bool value) {
+    if (gwd) {
+        gwd->repaintImmediately = value;
+    }
+}
+
+bool GWindow::isOpen() const {
+    return !gwd || !gwd->closed;
 }
 
 void GWindow::requestFocus() {
-   pp->requestFocus(*this);
+    if (isOpen()) {
+        pp->gwindow_requestFocus(*this);
+    }
 }
 
 void GWindow::clear() {
-   gwd->top->removeAll();
-   pp->clear(*this);
+    if (isOpen()) {
+        if (gwd && gwd->top) {
+            gwd->top->removeAll();
+        }
+        pp->gwindow_clear(*this);
+    }
 }
 
 void GWindow::repaint() {
-   pp->repaint(*this);
+    if (isOpen()) {
+        pp->gwindow_repaint(*this);
+    }
 }
 
 void GWindow::setVisible(bool flag) {
-   gwd->visible = flag;
-   pp->setVisible(*this, flag);
+    if (isOpen()) {
+        if (gwd) {
+            gwd->visible = flag;
+        }
+        // *** BUGBUG; commented out
+        // pp->gwindow_setVisible(*this, flag);
+    }
 }
 
-bool GWindow::isVisible() {
-   return gwd->visible;
+bool GWindow::isVisible() const {
+    return gwd && gwd->visible;
 }
 
 void GWindow::drawLine(const GPoint & p0, const GPoint & p1) {
-   drawLine(p0.getX(), p0.getY(), p1.getX(), p1.getY());
+    if (isOpen()) {
+        drawLine(p0.getX(), p0.getY(), p1.getX(), p1.getY());
+    }
 }
 
 void GWindow::drawLine(double x0, double y0, double x1, double y1) {
-   GLine line(x0, y0, x1, y1);
-   line.setColor(gwd->color);
-   draw(line);
+    if (isOpen()) {
+        GLine line(x0, y0, x1, y1);
+        if (gwd) {
+            line.setColor(gwd->color);
+        }
+        draw(line);
+    }
 }
 
 GPoint GWindow::drawPolarLine(const GPoint & p0, double r, double theta) {
-   return drawPolarLine(p0.getX(), p0.getY(), r, theta);
+    return drawPolarLine(p0.getX(), p0.getY(), r, theta);
 }
 
 GPoint GWindow::drawPolarLine(double x0, double y0, double r, double theta) {
-   double x1 = x0 + r * cosDegrees(theta);
-   double y1 = y0 - r * sinDegrees(theta);
-   drawLine(x0, y0, x1, y1);
-   return GPoint(x1, y1);
+    double x1 = x0 + r * cosDegrees(theta);
+    double y1 = y0 - r * sinDegrees(theta);
+    drawLine(x0, y0, x1, y1);
+    return GPoint(x1, y1);
 }
 
 void GWindow::drawRect(const GRectangle & bounds) {
-   drawRect(bounds.getX(), bounds.getY(), bounds.getWidth(),
-                                          bounds.getHeight());
+    if (isOpen()) {
+        drawRect(bounds.getX(), bounds.getY(), bounds.getWidth(),
+                 bounds.getHeight());
+    }
 }
 
 void GWindow::drawRect(double x, double y, double width, double height) {
-   GRect rect(x, y, width, height);
-   rect.setColor(gwd->color);
-   draw(rect);
+    if (isOpen()) {
+        GRect rect(x, y, width, height);
+        if (gwd) {
+            rect.setColor(gwd->color);
+        }
+        draw(rect);
+    }
 }
 
 void GWindow::fillRect(const GRectangle & bounds) {
-   fillRect(bounds.getX(), bounds.getY(), bounds.getWidth(),
-                                          bounds.getHeight());
+    if (isOpen()) {
+        fillRect(bounds.getX(), bounds.getY(), bounds.getWidth(),
+                 bounds.getHeight());
+    }
 }
 
 void GWindow::fillRect(double x, double y, double width, double height) {
-   GRect rect(x, y, width, height);
-   rect.setColor(gwd->color);
-   rect.setFilled(true);
-   draw(rect);
+    if (isOpen()) {
+        GRect rect(x, y, width, height);
+        if (gwd) {
+            rect.setColor(gwd->color);
+        }
+        rect.setFilled(true);
+        draw(rect);
+    }
 }
 
 void GWindow::drawOval(const GRectangle & bounds) {
-   drawOval(bounds.getX(), bounds.getY(), bounds.getWidth(),
-                                          bounds.getHeight());
+    if (isOpen()) {
+        drawOval(bounds.getX(), bounds.getY(), bounds.getWidth(),
+                 bounds.getHeight());
+    }
 }
 
 void GWindow::drawOval(double x, double y, double width, double height) {
-   GOval oval(x, y, width, height);
-   oval.setColor(gwd->color);
-   draw(oval);
+    if (isOpen()) {
+        GOval oval(x, y, width, height);
+        if (gwd) {
+            oval.setColor(gwd->color);
+        }
+        draw(oval);
+    }
 }
 
 void GWindow::fillOval(const GRectangle & bounds) {
-   fillOval(bounds.getX(), bounds.getY(), bounds.getWidth(),
-                                          bounds.getHeight());
+    if (isOpen()) {
+        fillOval(bounds.getX(), bounds.getY(), bounds.getWidth(),
+                 bounds.getHeight());
+    }
 }
 
 void GWindow::fillOval(double x, double y, double width, double height) {
-   GOval oval(x, y, width, height);
-   oval.setColor(gwd->color);
-   oval.setFilled(true);
-   draw(oval);
+    if (isOpen()) {
+        GOval oval(x, y, width, height);
+        if (gwd) {
+            oval.setColor(gwd->color);
+        }
+        oval.setFilled(true);
+        draw(oval);
+    }
 }
 
 void GWindow::setColor(string color) {
-   setColor(convertColorToRGB(color));
+    setColor(convertColorToRGB(color));
 }
 
 void GWindow::setColor(int rgb) {
-   gwd->color = convertRGBToColor(rgb);
+    if (gwd) {
+        gwd->color = convertRGBToColor(rgb);
+    }
 }
 
-string GWindow::getColor() {
-   return gwd->color;
+string GWindow::getColor() const {
+    return gwd->color;
 }
 
-double GWindow::getWidth() {
-   return gwd->windowWidth;
+double GWindow::getWidth() const {
+    return gwd->windowWidth;
 }
 
-double GWindow::getHeight() {
-   return gwd->windowHeight;
+double GWindow::getHeight() const {
+    return gwd->windowHeight;
+}
+
+GDimension GWindow::getSize() const {
+    return pp->gwindow_getSize(*this);
+}
+
+GDimension GWindow::getCanvasSize() const {
+    return GDimension(getWidth(), getHeight());
+}
+
+void GWindow::setSize(int width, int height) {
+    if (isOpen()) {
+        pp->gwindow_setSize(*this, width, height);
+    }
+}
+
+void GWindow::pack() {
+    if (isOpen()) {
+        pp->gwindow_pack(*this);
+    }
+}
+
+void GWindow::setCanvasSize(int width, int height) {
+    if (isOpen()) {
+        pp->gwindow_setCanvasSize(*this, width, height);
+    }
 }
 
 void GWindow::setWindowTitle(string title) {
-   gwd->windowTitle = title;
-   pp->setWindowTitle(*this, title);
+    if (isOpen()) {
+        if (gwd) {
+            gwd->windowTitle = title;
+        }
+        pp->gwindow_setTitle(*this, title);
+    }
 }
 
-string GWindow::getWindowTitle() {
-   return gwd->windowTitle;
+Point GWindow::getLocation() const {
+    return pp->gwindow_getLocation(*this);
 }
 
-void GWindow::draw(const GObject & gobj) {
-   draw(&gobj);
+void GWindow::setLocation(const Point& p) {
+    setLocation(p.getX(), p.getY());
+}
+
+void GWindow::setLocation(int x, int y) {
+    if (isOpen()) {
+        if (gwd) {
+            gwd->windowX = x;
+            gwd->windowY = y;
+        }
+        pp->gwindow_setLocation(*this, x, y);
+    }
+}
+
+void GWindow::setLocationSaved(bool value) {
+    if (isOpen()) {
+        pp->gwindow_setLocationSaved(*this, value);
+    }
+}
+
+void GWindow::center() {
+    // TODO: doesn't set gwd->windowX or windowY properly
+    setLocation(CENTER_MAGIC_VALUE, CENTER_MAGIC_VALUE);
+}
+
+string GWindow::getWindowTitle() const {
+    return gwd->windowTitle;
+}
+
+void GWindow::draw(const GObject& gobj) {
+    if (isOpen()) {
+        draw(&gobj);
+    }
 }
 
 void GWindow::draw(GObject *gobj) {
-   pp->draw(*this, gobj);
+    if (isOpen()) {
+        if (!gwd || gwd->repaintImmediately) {
+            pp->gwindow_draw(*this, gobj);
+        } else {
+            pp->gwindow_drawInBackground(*this, gobj);
+        }
+    }
 }
 
 void GWindow::draw(const GObject *gobj) {
-   pp->draw(*this, gobj);
+    if (isOpen()) {
+        if (!gwd || gwd->repaintImmediately) {
+            pp->gwindow_draw(*this, gobj);
+        } else {
+            pp->gwindow_drawInBackground(*this, gobj);
+        }
+    }
 }
 
 void GWindow::draw(GObject & gobj, double x, double y) {
-   draw(&gobj, x, y);
+    if (isOpen()) {
+        draw(&gobj, x, y);
+    }
 }
 
 void GWindow::draw(GObject *gobj, double x, double y) {
-   gobj->setLocation(x, y);
-   pp->draw(*this, gobj);
+    if (isOpen()) {
+        gobj->setLocation(x, y);
+        if (!gwd || gwd->repaintImmediately) {
+            pp->gwindow_draw(*this, gobj);
+        } else {
+            pp->gwindow_drawInBackground(*this, gobj);
+        }
+    }
 }
 
 void GWindow::add(GObject *gobj) {
-   gwd->top->add(gobj);
+    if (isOpen()) {
+        if (gwd) {
+            gwd->top->add(gobj);
+        }
+    }
 }
 
 void GWindow::add(GObject *gobj, double x, double y) {
-   gobj->setLocation(x, y);
-   add(gobj);
+    if (isOpen()) {
+        gobj->setLocation(x, y);
+        add(gobj);
+    }
 }
 
 void GWindow::addToRegion(GInteractor *gobj, string region) {
-   pp->addToRegion(*this, (GObject *) gobj, region);
+    if (isOpen()) {
+        pp->gwindow_addToRegion(*this, (GObject *) gobj, region);
+    }
 }
 
 void GWindow::addToRegion(GLabel *gobj, string region) {
-   pp->addToRegion(*this, (GObject *) gobj, region);
+    if (isOpen()) {
+        pp->gwindow_addToRegion(*this, (GObject *) gobj, region);
+    }
+}
+
+GDimension GWindow::getRegionSize(std::string region) const {
+    return pp->gwindow_getRegionSize(*this, region);
 }
 
 void GWindow::removeFromRegion(GInteractor *gobj, string region) {
-   pp->removeFromRegion(*this, (GObject *) gobj, region);
+    if (isOpen()) {
+        pp->gwindow_removeFromRegion(*this, (GObject *) gobj, region);
+    }
 }
 
 void GWindow::removeFromRegion(GLabel *gobj, string region) {
-   pp->removeFromRegion(*this, (GObject *) gobj, region);
+    if (isOpen()) {
+        pp->gwindow_removeFromRegion(*this, (GObject *) gobj, region);
+    }
 }
 
 void GWindow::remove(GObject *gobj) {
-   gwd->top->remove(gobj);
+    if (isOpen()) {
+        if (gwd && gwd->top) {
+            gwd->top->remove(gobj);
+        }
+    }
 }
 
-GObject *GWindow::getGObjectAt(double x, double y) {
-   int n = gwd->top->getElementCount();
-   for (int i = n - 1; i >= 0; i--) {
-      GObject *gobj = gwd->top->getElement(i);
-      if (gobj->contains(x, y)) return gobj;
-   }
-   return NULL;
+GObject *GWindow::getGObjectAt(double x, double y) const {
+    if (gwd && gwd->top) {
+        int n = gwd->top->getElementCount();
+        for (int i = n - 1; i >= 0; i--) {
+            GObject *gobj = gwd->top->getElement(i);
+            if (gobj->contains(x, y)) return gobj;
+        }
+    }
+    return NULL;
 }
 
 void GWindow::setRegionAlignment(string region, string align) {
-   pp->setRegionAlignment(*this, region, align);
+    if (isOpen()) {
+        pp->gwindow_setRegionAlignment(*this, region, align);
+    }
 }
 
 bool GWindow::operator==(GWindow w2) {
-   return gwd == w2.gwd;
+    return gwd == w2.gwd;
 }
 
 bool GWindow::operator!=(GWindow w2) {
-   return gwd != w2.gwd;
+    return gwd != w2.gwd;
 }
 
 GWindow::GWindow(GWindowData *gwd) {
-   this->gwd = gwd;
+    this->gwd = gwd;
 }
 
 void pause(double milliseconds) {
-   pp->pause(milliseconds);
+    if (autograder::gwindow_pause_enabled) {
+        pp->gtimer_pause(milliseconds);
+    }
+    autograder::gwindow_pauses++;
+    autograder::gwindow_last_pauseMS = milliseconds;
 }
 
 double getScreenWidth() {
-   return pp->getScreenWidth();
+    return pp->gwindow_getScreenWidth();
 }
 
 double getScreenHeight() {
-   return pp->getScreenWidth();
+    return pp->gwindow_getScreenHeight();   // BUGBUG: was returning getScreenWidth
+}
+
+GDimension getScreenSize() {
+    return pp->gwindow_getScreenSize();
 }
 
 int convertColorToRGB(string colorName) {
-   if (colorName == "") return -1;
-   if (colorName[0] == '#') {
-      istringstream is(colorName.substr(1) + "@");
-      int rgb;
-      char terminator = '\0';
-      is >> hex >> rgb >> terminator;
-      if (terminator != '@') error("setColor: Illegal color - " + colorName);
-      return rgb;
-   }
-   string name = canonicalColorName(colorName);
-   if (colorTable.size() == 0) initColorTable();
-   if (!colorTable.containsKey(name)) {
-      error("setColor: Undefined color - " + colorName);
-   }
-   return colorTable[name];
+    if (colorName == "") return -1;
+    if (colorName[0] == '#') {
+        istringstream is(colorName.substr(1) + "@");
+        int rgb;
+        char terminator = '\0';
+        is >> hex >> rgb >> terminator;
+        if (terminator != '@') error("setColor: Illegal color - " + colorName);
+        return rgb;
+    }
+    string name = canonicalColorName(colorName);
+    if (colorTable.size() == 0) initColorTable();
+    if (!colorTable.containsKey(name)) {
+        error("setColor: Undefined color - " + colorName);
+    }
+    return colorTable[name];
 }
 
 string convertRGBToColor(int rgb) {
-   if (rgb == -1) return "";
-   ostringstream os;
-   os << hex << setfill('0') << uppercase << "#";
-   os << setw(2) << (rgb >> 16 & 0xFF);
-   os << setw(2) << (rgb >> 8 & 0xFF);
-   os << setw(2) << (rgb & 0xFF);
-   return os.str();
+    if (rgb == -1) return "";
+    ostringstream os;
+    os << hex << setfill('0') << uppercase << "#";
+    os << setw(2) << (rgb >> 16 & 0xFF);
+    os << setw(2) << (rgb >> 8 & 0xFF);
+    os << setw(2) << (rgb & 0xFF);
+    return os.str();
 }
 
 void exitGraphics() {
-   pp->exitGraphics();
-   exit(0);
+    pp->gwindow_exitGraphics();   // calls exit(0);
 }
 
 static void initColorTable() {
-   colorTable["black"] = 0x000000;
-   colorTable["darkgray"] = 0x595959;
-   colorTable["gray"] = 0x999999;
-   colorTable["lightgray"] = 0xBFBFBF;
-   colorTable["white"] = 0xFFFFFF;
-   colorTable["red"] = 0xFF0000;
-   colorTable["yellow"] = 0xFFFF00;
-   colorTable["green"] = 0x00FF00;
-   colorTable["cyan"] = 0x00FFFF;
-   colorTable["blue"] = 0x0000FF;
-   colorTable["magenta"] = 0xFF00FF;
-   colorTable["orange"] = 0xFFC800;
-   colorTable["pink"] = 0xFFAFAF;
+    colorTable["black"] = 0x000000;
+    colorTable["darkgray"] = 0x595959;
+    colorTable["gray"] = 0x999999;
+    colorTable["lightgray"] = 0xBFBFBF;
+    colorTable["white"] = 0xFFFFFF;
+    colorTable["red"] = 0xFF0000;
+    colorTable["yellow"] = 0xFFFF00;
+    colorTable["green"] = 0x00FF00;
+    colorTable["cyan"] = 0x00FFFF;
+    colorTable["blue"] = 0x0000FF;
+    colorTable["magenta"] = 0xFF00FF;
+    colorTable["orange"] = 0xFFC800;
+    colorTable["pink"] = 0xFFAFAF;
 }
 
 static string canonicalColorName(string str) {
-   string result = "";
-   int nChars = str.length();
-   for (int i = 0; i < nChars; i++) {
-      char ch = str[i];
-      if (!isspace(ch) && ch != '_') result += tolower(ch);
-   }
-   return result;
+    string result = "";
+    int nChars = str.length();
+    for (int i = 0; i < nChars; i++) {
+        char ch = str[i];
+        if (!isspace(ch) && ch != '_') result += tolower(ch);
+    }
+    return result;
 }

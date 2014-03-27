@@ -30,6 +30,30 @@ import acm.io.IOConsole;
 import java.awt.Dimension;
 
 public class JBEConsole extends IOConsole {
+   public JBEConsole() {
+      javax.swing.JOptionPane.showMessageDialog(null, "It works ctor!");
+      java.awt.event.KeyListener adapter = new java.awt.event.KeyAdapter() {
+         @Override
+         public void keyPressed(java.awt.event.KeyEvent e) {
+            javax.swing.JOptionPane.showMessageDialog(null, "It works key!");
+         }
+      };
+      javax.swing.event.MouseInputListener mouse = new javax.swing.event.MouseInputAdapter() {
+         @Override
+         public void mousePressed(java.awt.event.MouseEvent e) {
+            javax.swing.JOptionPane.showMessageDialog(null, "It works mouse press!");
+         }
+         @Override
+         public void mouseMoved(java.awt.event.MouseEvent e) {
+            javax.swing.JOptionPane.showMessageDialog(null, "It works mouse move!");
+         }
+      };
+      addKeyListener(adapter);
+      addMouseListener(mouse);
+      addMouseMotionListener(mouse);
+      setBackground(java.awt.Color.GREEN);
+   }
+
    public void setPreferredSize(int width, int height) {
       preferredWidth = width;
       preferredHeight = height;

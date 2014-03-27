@@ -32,14 +32,19 @@
 
 class ErrorException : public std::exception {
 public:
-   ErrorException(std::string msg);
-   virtual ~ErrorException() throw ();
-   virtual std::string getMessage() const;
-   virtual const char *what() const throw ();
+    ErrorException(std::string msg);
+    virtual ~ErrorException() throw ();
+    virtual std::string getMessage() const;
+    virtual const char *what() const throw ();
 
 private:
-   std::string msg;
+    std::string msg;
 };
+
+/*
+ * Thrown when a blocking I/O call is interrupted by closing the program.
+ */
+class InterruptedIOException : public std::exception {};
 
 /*
  * Function: error

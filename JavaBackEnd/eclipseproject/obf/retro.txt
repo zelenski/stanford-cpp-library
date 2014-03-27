@@ -1,0 +1,4 @@
+.class TestRunnerApplet public
+.class RunProgram public 
+.class Main public 
+.class CommandLineMain public 

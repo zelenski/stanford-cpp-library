@@ -23,16 +23,15 @@
  * the MOUSE_CLICKED event type.  The <code>ANY_EVENT</code> class
  * selects any event.
  */
-
 enum EventClassType {
-   NULL_EVENT   = 0x000,
-   ACTION_EVENT = 0x010,
-   KEY_EVENT    = 0x020,
-   TIMER_EVENT  = 0x040,
-   WINDOW_EVENT = 0x080,
-   MOUSE_EVENT  = 0x100,
-   CLICK_EVENT  = 0x200,
-   ANY_EVENT    = 0x3F0
+    NULL_EVENT   = 0x000,
+    ACTION_EVENT = 0x010,
+    KEY_EVENT    = 0x020,
+    TIMER_EVENT  = 0x040,
+    WINDOW_EVENT = 0x080,
+    MOUSE_EVENT  = 0x100,
+    CLICK_EVENT  = 0x200,
+    ANY_EVENT    = 0x3F0
 };
 
 /*
@@ -40,20 +39,20 @@ enum EventClassType {
  * ---------------
  * This enumeration type defines the event types for all events.
  */
-
 typedef enum {
-   WINDOW_CLOSED    = WINDOW_EVENT + 1,
-   WINDOW_RESIZED   = WINDOW_EVENT + 2,
-   ACTION_PERFORMED = ACTION_EVENT + 1,
-   MOUSE_CLICKED    = MOUSE_EVENT + 1,
-   MOUSE_PRESSED    = MOUSE_EVENT + 2,
-   MOUSE_RELEASED   = MOUSE_EVENT + 3,
-   MOUSE_MOVED      = MOUSE_EVENT + 4,
-   MOUSE_DRAGGED    = MOUSE_EVENT + 5,
-   KEY_PRESSED      = KEY_EVENT + 1,
-   KEY_RELEASED     = KEY_EVENT + 2,
-   KEY_TYPED        = KEY_EVENT + 3,
-   TIMER_TICKED     = TIMER_EVENT + 1,
+    WINDOW_CLOSED    = WINDOW_EVENT + 1,
+    WINDOW_RESIZED   = WINDOW_EVENT + 2,
+    CONSOLE_CLOSED   = WINDOW_EVENT + 3,
+    ACTION_PERFORMED = ACTION_EVENT + 1,
+    MOUSE_CLICKED    = MOUSE_EVENT + 1,
+    MOUSE_PRESSED    = MOUSE_EVENT + 2,
+    MOUSE_RELEASED   = MOUSE_EVENT + 3,
+    MOUSE_MOVED      = MOUSE_EVENT + 4,
+    MOUSE_DRAGGED    = MOUSE_EVENT + 5,
+    KEY_PRESSED      = KEY_EVENT + 1,
+    KEY_RELEASED     = KEY_EVENT + 2,
+    KEY_TYPED        = KEY_EVENT + 3,
+    TIMER_TICKED     = TIMER_EVENT + 1
 } EventType;
 
 /*
@@ -62,16 +61,15 @@ typedef enum {
  * This enumeration type defines a set of constants used to check whether
  * modifiers are in effect.
  */
-
 enum ModifierCodes {
-   SHIFT_DOWN     = 1 << 0,
-   CTRL_DOWN      = 1 << 1,
-   META_DOWN      = 1 << 2,
-   ALT_DOWN       = 1 << 3,
-   ALT_GRAPH_DOWN = 1 << 4,
-   BUTTON1_DOWN   = 1 << 5,
-   BUTTON2_DOWN   = 1 << 6,
-   BUTTON3_DOWN   = 1 << 7
+    SHIFT_DOWN     = 1 << 0,
+    CTRL_DOWN      = 1 << 1,
+    META_DOWN      = 1 << 2,
+    ALT_DOWN       = 1 << 3,
+    ALT_GRAPH_DOWN = 1 << 4,
+    BUTTON1_DOWN   = 1 << 5,
+    BUTTON2_DOWN   = 1 << 6,
+    BUTTON3_DOWN   = 1 << 7
 };
 
 /*
@@ -79,39 +77,37 @@ enum ModifierCodes {
  * --------------
  * This type defines the names of the key codes returned in a key event.
  */
-
 enum KeyCodes {
-   BACKSPACE_KEY = 8,
-   TAB_KEY = 9,
-   ENTER_KEY = 10,
-   CLEAR_KEY = 12,
-   ESCAPE_KEY = 27,
-   PAGE_UP_KEY = 33,
-   PAGE_DOWN_KEY = 34,
-   END_KEY = 35,
-   HOME_KEY = 36,
-   LEFT_ARROW_KEY = 37,
-   UP_ARROW_KEY = 38,
-   RIGHT_ARROW_KEY = 39,
-   DOWN_ARROW_KEY = 40,
-   F1_KEY = 112,
-   F2_KEY = 113,
-   F3_KEY = 114,
-   F4_KEY = 115,
-   F5_KEY = 116,
-   F6_KEY = 117,
-   F7_KEY = 118,
-   F8_KEY = 119,
-   F9_KEY = 120,
-   F10_KEY = 121,
-   F11_KEY = 122,
-   F12_KEY = 123,
-   DELETE_KEY = 127,
-   HELP_KEY = 156
+    BACKSPACE_KEY = 8,
+    TAB_KEY = 9,
+    ENTER_KEY = 10,
+    CLEAR_KEY = 12,
+    ESCAPE_KEY = 27,
+    PAGE_UP_KEY = 33,
+    PAGE_DOWN_KEY = 34,
+    END_KEY = 35,
+    HOME_KEY = 36,
+    LEFT_ARROW_KEY = 37,
+    UP_ARROW_KEY = 38,
+    RIGHT_ARROW_KEY = 39,
+    DOWN_ARROW_KEY = 40,
+    F1_KEY = 112,
+    F2_KEY = 113,
+    F3_KEY = 114,
+    F4_KEY = 115,
+    F5_KEY = 116,
+    F6_KEY = 117,
+    F7_KEY = 118,
+    F8_KEY = 119,
+    F9_KEY = 120,
+    F10_KEY = 121,
+    F11_KEY = 122,
+    F12_KEY = 123,
+    DELETE_KEY = 127,
+    HELP_KEY = 156
 };
 
 /* Forward definitions */
-
 class GWindowEvent;
 class GActionEvent;
 class GMouseEvent;
@@ -148,164 +144,145 @@ class GObject;
  */
 
 class GEvent {
-
 public:
 
-/*
- * Friend constructor: GEvent
- * Usage: GEvent event;
- * --------------------
- * Ensures that an event is properly initialized to a <code>NULL</code> event.
- */
+    /*
+     * Friend constructor: GEvent
+     * Usage: GEvent event;
+     * --------------------
+     * Ensures that an event is properly initialized to a <code>NULL</code> event.
+     */
+    GEvent();
 
-   GEvent();
+    /*
+     * Method: getEventClass
+     * Usage: EventClassType eventClass = e.getEventClass();
+     * -----------------------------------------------------
+     * Returns the enumerated type constant indicating the class of the
+     * event.
+     */
+    EventClassType getEventClass() const;
 
-/*
- * Method: getEventClass
- * Usage: EventClassType eventClass = e.getEventClass();
- * -----------------------------------------------------
- * Returns the enumerated type constant indicating the class of the
- * event.
- */
+    /*
+     * Method: getEventType
+     * Usage: EventType type = e.getEventType();
+     * -----------------------------------------
+     * Returns the enumerated type constant corresponding to the specific
+     * event type.
+     */
+    EventType getEventType() const;
 
-   EventClassType getEventClass() const;
+    /*
+     * Method: getEventTime
+     * Usage: double time = e.getEventTime();
+     * --------------------------------------
+     * Returns the system time in milliseconds at which the event occurred.
+     * To ensure portability among systems that represent time in different
+     * ways, the StanfordCPPLib packages use type <code>double</code> to
+     * represent time, which is always encoded as the number of milliseconds
+     * that have elapsed since 00:00:00 UTC on January 1, 1970, which is
+     * the conventional zero point for computer-based time systems.
+     */
+    double getEventTime() const;
 
-/*
- * Method: getEventType
- * Usage: EventType type = e.getEventType();
- * -----------------------------------------
- * Returns the enumerated type constant corresponding to the specific
- * event type.
- */
+    /*
+     * Method: getModifiers
+     * Usage: int modifiers = e.getModifiers();
+     * ----------------------------------------
+     * Returns an integer whose bits indicate what modifiers are in effect.
+     * To check whether the shift key is down, for example, one could use
+     * the following code:
+     *
+     *<pre>
+     *    if (e.getModifiers() & SHIFT_DOWN) ...
+     *</pre>
+     */
+    int getModifiers() const;
 
-   EventType getEventType() const;
+    /*
+     * Method: toString
+     * Usage: string str = e.toString();
+     * ---------------------------------
+     * Converts the event to a human-readable representation of the event.
+     */
+    virtual std::string toString() const;
 
-/*
- * Method: getEventTime
- * Usage: double time = e.getEventTime();
- * --------------------------------------
- * Returns the system time in milliseconds at which the event occurred.
- * To ensure portability among systems that represent time in different
- * ways, the StanfordCPPLib packages use type <code>double</code> to
- * represent time, which is always encoded as the number of milliseconds
- * that have elapsed since 00:00:00 UTC on January 1, 1970, which is
- * the conventional zero point for computer-based time systems.
- */
+    /*
+     * Method: isValid
+     * Usage: if (e.isValid()) ...
+     * ---------------------------
+     * Returns <code>true</code> if the event is valid.
+     */
+    bool isValid();
 
-   double getEventTime() const;
+    /* Private section */
 
-/*
- * Method: getModifiers
- * Usage: int modifiers = e.getModifiers();
- * ----------------------------------------
- * Returns an integer whose bits indicate what modifiers are in effect.
- * To check whether the shift key is down, for example, one could use
- * the following code:
- *
- *<pre>
- *    if (e.getModifiers() & SHIFT_DOWN) ...
- *</pre>
- */
+    /**********************************************************************/
+    /* Note: Everything below this point in the file is logically part    */
+    /* of the implementation and should not be of interest to clients.    */
+    /**********************************************************************/
 
-   int getModifiers() const;
+    /*
+     * Method: setEventTime
+     * Usage: e.setEventTime(time);
+     * ----------------------------
+     * Sets the event time field for this event.  The event system needs
+     * access to this method, but conventional clients don't.
+     */
+    void setEventTime(double time);
 
-/*
- * Method: toString
- * Usage: string str = e.toString();
- * ---------------------------------
- * Converts the event to a human-readable representation of the event.
- */
-
-   virtual std::string toString() const;
-
-/*
- * Method: isValid
- * Usage: if (e.isValid()) ...
- * ---------------------------
- * Returns <code>true</code> if the event is valid.
- */
-
-   bool isValid();
-
-/* Private section */
-
-/**********************************************************************/
-/* Note: Everything below this point in the file is logically part    */
-/* of the implementation and should not be of interest to clients.    */
-/**********************************************************************/
-
-/*
- * Method: setEventTime
- * Usage: e.setEventTime(time);
- * ----------------------------
- * Sets the event time field for this event.  The event system needs
- * access to this method, but conventional clients don't.
- */
-
-   void setEventTime(double time);
-
-/*
- * Method: setModifiers
- * Usage: e.setModifiers(modifiers);
- * ---------------------------------
- * Sets the modifiers field for this event.  The event system needs
- * access to this method, but conventional clients don't.
- */
-
-   void setModifiers(int modifiers);
+    /*
+     * Method: setModifiers
+     * Usage: e.setModifiers(modifiers);
+     * ---------------------------------
+     * Sets the modifiers field for this event.  The event system needs
+     * access to this method, but conventional clients don't.
+     */
+    void setModifiers(int modifiers);
 
 private:
+    /*
+     * Instance variables
+     * ------------------
+     * Implementation note: All the variables from the subclasses are included
+     * in the outer class to make it possible to convert between general events
+     * and the various subclasses.  By keeping all event classes the same size,
+     * this design avoids any issues of slicing off parts of the data during
+     * such conversions.
+     */
 
-/*
- * Instance variables
- * ------------------
- * Implementation note: All the variables from the subclasses are included
- * in the outer class to make it possible to convert between general events
- * and the various subclasses.  By keeping all event classes the same size,
- * this design avoids any issues of slicing off parts of the data during
- * such conversions.
- */
+    /* General events */
+    EventClassType eventClass;
+    int eventType;
+    int modifiers;
+    double eventTime;
+    bool valid;
+    std::string sourceKey;
 
-/* General events */
+    /* Window, mouse, and key events */
+    GWindowData *gwd;
 
-   EventClassType eventClass;
-   int eventType;
-   int modifiers;
-   double eventTime;
-   bool valid;
-   std::string sourceKey;
+    /* Action events */
+    GObject *source;
+    std::string actionCommand;
 
-/* Window, mouse, and key events */
+    /* Mouse events */
+    double x;
+    double y;
 
-   GWindowData *gwd;
+    /* Key events */
+    int keyChar;
+    int keyCode;
 
-/* Action events */
+    /* Timer events */
+    GTimerData *gtd;
 
-   GObject *source;
-   std::string actionCommand;
-
-/* Mouse events */
-
-   double x;
-   double y;
-
-/* Key events */
-
-   int keyChar;
-   int keyCode;
-
-/* Timer events */
-
-   GTimerData *gtd;
-
-/* Friend specifications */
-
-friend class GWindowEvent;
-friend class GActionEvent;
-friend class GMouseEvent;
-friend class GKeyEvent;
-friend class GTimerEvent;
-
+    /* Friend specifications */
+    friend class GWindowEvent;
+    friend class GActionEvent;
+    friend class GMouseEvent;
+    friend class GKeyEvent;
+    friend class GTimerEvent;
 };
 
 /*
@@ -313,9 +290,9 @@ friend class GTimerEvent;
  * Usage: waitForClick();
  * ----------------------
  * Waits for a mouse click in any window, discarding any other events.
+ * Returns the mouse event that occurred.
  */
-
-void waitForClick();
+GMouseEvent waitForClick();
 
 /*
  * Function: waitForEvent
@@ -356,7 +333,6 @@ void waitForClick();
  *    }
  *</pre>
  */
-
 GEvent waitForEvent(int mask = ANY_EVENT);
 
 /*
@@ -369,7 +345,6 @@ GEvent waitForEvent(int mask = ANY_EVENT);
  * returns an invalid event.  The <code>mask</code> parameter is optional.
  * If it is missing, <code>getNextEvent</code> accepts any event.
  */
-
 GEvent getNextEvent(int mask = ANY_EVENT);
 
 /*
@@ -380,43 +355,35 @@ GEvent getNextEvent(int mask = ANY_EVENT);
  * (<code>WINDOW_CLOSED</code>, <code>WINDOW_RESIZED</code>) along
  * with the identity of the window.
  */
-
 class GWindowEvent : public GEvent {
-
 public:
+    /*
+     * Constructor: GWindowEvent
+     * Usage: GWindowEvent windowEvent(type, gw);
+     * ------------------------------------------
+     * Creates a <code>GWindowEvent</code> using the specified parameters.
+     */
+    GWindowEvent(EventType type, const GWindow & gw);
 
-/*
- * Constructor: GWindowEvent
- * Usage: GWindowEvent windowEvent(type, gw);
- * ------------------------------------------
- * Creates a <code>GWindowEvent</code> using the specified parameters.
- */
+    /*
+     * Method: getGWindow
+     * Usage: GWindow gw = e.getGWindow();
+     * -----------------------------------
+     * Returns the graphics window in which this event occurred.
+     */
+    GWindow getGWindow() const;
 
-   GWindowEvent(EventType type, const GWindow & gw);
+    /*
+     * Method: toString
+     * Usage: string str = e.toString();
+     * ---------------------------------
+     * Converts the event to a human-readable representation of the event.
+     */
+    std::string toString() const;
 
-/*
- * Method: getGWindow
- * Usage: GWindow gw = e.getGWindow();
- * -----------------------------------
- * Returns the graphics window in which this event occurred.
- */
-
-   GWindow getGWindow() const;
-
-/*
- * Method: toString
- * Usage: string str = e.toString();
- * ---------------------------------
- * Converts the event to a human-readable representation of the event.
- */
-
-   std::string toString() const;
-
-/* Private section */
-
-   GWindowEvent();
-   GWindowEvent(GEvent e);
-
+    /* Private section */
+    GWindowEvent();
+    GWindowEvent(GEvent e);
 };
 
 /*
@@ -445,52 +412,43 @@ public:
  *    }
  *</pre>
  */
-
 class GActionEvent : public GEvent {
-
 public:
+    /*
+     * Constructor: GActionEvent
+     * Usage: GActionEvent actionEvent(type, source, actionCommand);
+     * -------------------------------------------------------------
+     * Creates a <code>GActionEvent</code> using the specified parameters.
+     */
+    GActionEvent(EventType type, GObject *source, std::string actionCommand);
 
-/*
- * Constructor: GActionEvent
- * Usage: GActionEvent actionEvent(type, source, actionCommand);
- * -------------------------------------------------------------
- * Creates a <code>GActionEvent</code> using the specified parameters.
- */
+    /*
+     * Method: getSource
+     * Usage: GObject *gobj = e.getSource();
+     * -------------------------------------
+     * Returns a pointer to the <code>GObject</code> that generated this event.
+     */
+    GObject *getSource() const;
 
-   GActionEvent(EventType type, GObject *source, std::string actionCommand);
+    /*
+     * Method: getActionCommand
+     * Usage: string cmd = e.getActionCommand();
+     * -----------------------------------------
+     * Returns the action command associated with this event.
+     */
+    std::string getActionCommand() const;
 
-/*
- * Method: getSource
- * Usage: GObject *gobj = e.getSource();
- * -------------------------------------
- * Returns a pointer to the <code>GObject</code> that generated this event.
- */
+    /*
+     * Method: toString
+     * Usage: string str = e.toString();
+     * ---------------------------------
+     * Converts the event to a human-readable representation of the event.
+     */
+    std::string toString() const;
 
-   GObject *getSource() const;
-
-/*
- * Method: getActionCommand
- * Usage: string cmd = e.getActionCommand();
- * -----------------------------------------
- * Returns the action command associated with this event.
- */
-
-   std::string getActionCommand() const;
-
-/*
- * Method: toString
- * Usage: string str = e.toString();
- * ---------------------------------
- * Converts the event to a human-readable representation of the event.
- */
-
-   std::string toString() const;
-
-/* Private section */
-
-   GActionEvent();
-   GActionEvent(GEvent e);
-
+    /* Private section */
+    GActionEvent();
+    GActionEvent(GEvent e);
 };
 
 /*
@@ -538,61 +496,67 @@ public:
  */
 
 class GMouseEvent : public GEvent {
-
 public:
+    /*
+     * Constructor: GMouseEvent
+     * Usage: GMouseEvent mouseEvent(type, gw, x, y);
+     * ----------------------------------------------
+     * Creates a <code>GMouseEvent</code> using the specified parameters.
+     */
+    GMouseEvent(EventType type, const GWindow & gw, double x, double y);
 
-/*
- * Constructor: GMouseEvent
- * Usage: GMouseEvent mouseEvent(type, gw, x, y);
- * ----------------------------------------------
- * Creates a <code>GMouseEvent</code> using the specified parameters.
- */
+    /*
+     * Method: getGWindow
+     * Usage: GWindow gw = e.getGWindow();
+     * -----------------------------------
+     * Returns the graphics window in which this event occurred.
+     */
+    GWindow getGWindow() const;
 
-   GMouseEvent(EventType type, const GWindow & gw, double x, double y);
+    /*
+     * Method: getX
+     * Usage: double x = getX();
+     * -------------------------
+     * Returns the <i>x</i> coordinate at which the event occurred relative
+     * to the window origin at the upper left corner of the window.
+     */
+    double getX() const;
 
-/*
- * Method: getGWindow
- * Usage: GWindow gw = e.getGWindow();
- * -----------------------------------
- * Returns the graphics window in which this event occurred.
- */
+    /*
+     * Method: getY
+     * Usage: double y = getY();
+     * -------------------------
+     * Returns the <i>y</i> coordinate at which the event occurred relative
+     * to the window origin at the upper left corner of the window.
+     */
+    double getY() const;
 
-   GWindow getGWindow() const;
+    /*
+     * Returns true if the user pressed the left mouse button.
+     */
+    bool isLeftClick() const;
 
-/*
- * Method: getX
- * Usage: double x = getX();
- * -------------------------
- * Returns the <i>x</i> coordinate at which the event occurred relative
- * to the window origin at the upper left corner of the window.
- */
+    /*
+     * Returns true if the user pressed the right mouse button.
+     */
+    bool isRightClick() const;
 
-   double getX() const;
+    /*
+     * Returns true if the user pressed the middle mouse button.
+     */
+    bool isMiddleClick() const;
 
-/*
- * Method: getY
- * Usage: double y = getY();
- * -------------------------
- * Returns the <i>y</i> coordinate at which the event occurred relative
- * to the window origin at the upper left corner of the window.
- */
+    /*
+     * Method: toString
+     * Usage: string str = e.toString();
+     * ---------------------------------
+     * Converts the event to a human-readable representation of the event.
+     */
+    std::string toString() const;
 
-   double getY() const;
-
-/*
- * Method: toString
- * Usage: string str = e.toString();
- * ---------------------------------
- * Converts the event to a human-readable representation of the event.
- */
-
-   std::string toString() const;
-
-/* Private section */
-
-   GMouseEvent();
-   GMouseEvent(GEvent e);
-
+    /* Private section */
+    GMouseEvent();
+    GMouseEvent(GEvent e);
 };
 
 /*
@@ -607,65 +571,55 @@ public:
  * The codes return by <code>getKeyCode</code> are listed in the
  * <code>KeyCodes</code> enumeration.
  */
-
 class GKeyEvent : public GEvent {
-
 public:
+    /*
+     * Constructor: GKeyEvent
+     * Usage: GKeyEvent keyEvent(type, gw, keyChar, keyCode);
+     * ------------------------------------------------------
+     * Creates a <code>GKeyEvent</code> using the specified parameters.
+     */
+    GKeyEvent(EventType type, const GWindow & gw, int keyChar, int keyCode);
 
-/*
- * Constructor: GKeyEvent
- * Usage: GKeyEvent keyEvent(type, gw, keyChar, keyCode);
- * ------------------------------------------------------
- * Creates a <code>GKeyEvent</code> using the specified parameters.
- */
+    /*
+     * Method: getGWindow
+     * Usage: GWindow gw = e.getGWindow();
+     * -----------------------------------
+     * Returns the graphics window in which this event occurred.
+     */
+    GWindow getGWindow() const;
 
-   GKeyEvent(EventType type, const GWindow & gw, int keyChar, int keyCode);
+    /*
+     * Method: getKeyChar
+     * Usage: char ch = e.getKeyChar();
+     * --------------------------------
+     * Returns the character represented by the keystroke, taking the modifier
+     * keys into account.  For example, if the user types the <code>'a'</code>
+     * key with the shift key down, <code>getKeyChar</code> will return
+     * <code>'A'</code>.  If the key code in the event does not correspond
+     * to a character, <code>getKeyChar</code> returns the null character.
+     */
+    char getKeyChar() const;
 
-/*
- * Method: getGWindow
- * Usage: GWindow gw = e.getGWindow();
- * -----------------------------------
- * Returns the graphics window in which this event occurred.
- */
+    /*
+     * Method: getKeyCode
+     * Usage: int key = getKeyCode();
+     * ------------------------------
+     * Returns the integer code associated with the key in the event.
+     */
+    int getKeyCode() const;
 
-   GWindow getGWindow() const;
+    /*
+     * Method: toString
+     * Usage: string str = e.toString();
+     * ---------------------------------
+     * Converts the event to a human-readable representation of the event.
+     */
+    std::string toString() const;
 
-/*
- * Method: getKeyChar
- * Usage: char ch = e.getKeyChar();
- * --------------------------------
- * Returns the character represented by the keystroke, taking the modifier
- * keys into account.  For example, if the user types the <code>'a'</code>
- * key with the shift key down, <code>getKeyChar</code> will return
- * <code>'A'</code>.  If the key code in the event does not correspond
- * to a character, <code>getKeyChar</code> returns the null character.
- */
-
-   char getKeyChar() const;
-
-/*
- * Method: getKeyCode
- * Usage: int key = getKeyCode();
- * ------------------------------
- * Returns the integer code associated with the key in the event.
- */
-
-   int getKeyCode() const;
-
-/*
- * Method: toString
- * Usage: string str = e.toString();
- * ---------------------------------
- * Converts the event to a human-readable representation of the event.
- */
-
-   std::string toString() const;
-
-/* Private section */
-
-   GKeyEvent();
-   GKeyEvent(GEvent e);
-
+    /* Private section */
+    GKeyEvent();
+    GKeyEvent(GEvent e);
 };
 
 /*
@@ -692,43 +646,35 @@ public:
  *    }
  *</pre>
  */
-
 class GTimerEvent : public GEvent {
-
 public:
+    /*
+     * Constructor: GTimerEvent
+     * Usage: GTimerEvent timerEvent(type, timer);
+     * -------------------------------------------
+     * Creates a <code>GTimerEvent</code> for the specified timer.
+     */
+    GTimerEvent(EventType type, const GTimer & timer);
 
-/*
- * Constructor: GTimerEvent
- * Usage: GTimerEvent timerEvent(type, timer);
- * -------------------------------------------
- * Creates a <code>GTimerEvent</code> for the specified timer.
- */
+    /*
+     * Method: getGTimer
+     * Usage: GTimer timer = e.getGTimer();
+     * ------------------------------------
+     * Returns the timer that generated this event.
+     */
+    GTimer getGTimer() const;
 
-   GTimerEvent(EventType type, const GTimer & timer);
+    /*
+     * Method: toString
+     * Usage: string str = e.toString();
+     * ---------------------------------
+     * Converts the event to a human-readable representation of the event.
+     */
+    std::string toString() const;
 
-/*
- * Method: getGTimer
- * Usage: GTimer timer = e.getGTimer();
- * ------------------------------------
- * Returns the timer that generated this event.
- */
-
-   GTimer getGTimer() const;
-
-/*
- * Method: toString
- * Usage: string str = e.toString();
- * ---------------------------------
- * Converts the event to a human-readable representation of the event.
- */
-
-   std::string toString() const;
-
-/* Private section */
-
-   GTimerEvent();
-   GTimerEvent(GEvent e);
-
+    /* Private section */
+    GTimerEvent();
+    GTimerEvent(GEvent e);
 };
 
 #endif

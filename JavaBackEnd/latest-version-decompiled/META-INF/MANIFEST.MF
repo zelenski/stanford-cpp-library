@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Created-By: 1.6.0_51 (Apple Inc.)
+Main-Class: stanford.spl.JavaBackEnd
+
