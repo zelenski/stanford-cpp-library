@@ -79,7 +79,7 @@ public:
      * Removes all elements from this vector.
      */
     void clear();
-    
+
     /*
      * Method: equals
      * Usage: if (vec.equals(v2)) ...
@@ -89,7 +89,7 @@ public:
      * Identical in behavior to the == operator.
      */
     bool equals(const Vector<ValueType>& v) const;
-    
+
     /*
      * Method: get
      * Usage: ValueType val = vec.get(index);
@@ -98,7 +98,7 @@ public:
      * method signals an error if the index is not in the array range.
      */
     const ValueType& get(int index) const;
-    
+
     /*
      * Method: insert
      * Usage: vec.insert(0, value);
@@ -117,7 +117,7 @@ public:
      * Returns <code>true</code> if this vector contains no elements.
      */
     bool isEmpty() const;
-    
+
     /*
      * Method: mapAll
      * Usage: vec.mapAll(fn);
@@ -130,7 +130,7 @@ public:
 
     template <typename FunctorType>
     void mapAll(FunctorType fn) const;
-    
+
     /*
      * Method: push_back
      * Usage: vec.push_back(value);
@@ -150,7 +150,7 @@ public:
      * method signals an error if the index is outside the array range.
      */
     void remove(int index);
-    
+
     /*
      * Method: set
      * Usage: vec.set(index, value);
@@ -160,7 +160,7 @@ public:
      * This method signals an error if the index is not in the array range.
      */
     void set(int index, const ValueType& value);
-    
+
     /*
      * Method: size
      * Usage: int nElems = vec.size();
@@ -506,6 +506,7 @@ Vector<ValueType>& Vector<ValueType>::addAll(const Vector<ValueType>& v) {
     __foreach__ (ValueType value __in__ v) {
         add(value);
     }
+    return *this;   // BUGFIX 2004/04/27
 }
 
 template <typename ValueType>
