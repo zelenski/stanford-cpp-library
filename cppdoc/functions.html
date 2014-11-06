@@ -1,0 +1,215 @@
+<html>
+<head>
+<title>Global Function List</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+
+<script src="sorttable.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+(function() {
+	// Put functions NOT to list in the table here.
+	// These may be ones that Marty hasn't documented yet, or ones that
+	// are 'internal' and not meant to be called by students.
+	var UNDOCUMENTED_FUNCTIONS = {
+		"setConsoleEventOnClose": true,
+		"setConsoleLocationSaved": true,
+		"getConsoleEventOnClose": true,
+		"getConsoleLocationSaved": true,
+	}
+
+	/*
+	*/
+
+	var FUNCTION_MAP = {
+		"boolToString": "strlib.h",
+		"charToString": "strlib.h",
+		"clearConsole": "console.h",
+		"convertColorToRGB": "gwindow.h",
+		"convertRGBToColor": "gwindow.h",
+		"cosDegrees": "gmath.h",
+		"countDigits": "gmath.h",
+		"createDirectory": "filelib.h",
+		"createDirectoryPath": "filelib.h",
+		"defaultExtension": "filelib.h",
+		"deleteFile": "filelib.h",
+		"directionToString": "direction.h",
+		"endsWith": "strlib.h",
+		"equalsIgnoreCase": "strlib.h",
+		"error": "error.h",
+		"exitGraphics": "gwindow.h",
+		"expandPathname": "filelib.h",
+		"fileExists": "filelib.h",
+		"findOnPath": "filelib.h",
+		"getConsoleEcho": "console.h",
+		"getConsoleEventOnClose": "console.h",
+		"getConsoleExitProgramOnClose": "console.h",
+		"getConsoleLocationSaved": "console.h",
+		"getConsolePrintExceptions": "console.h",
+		"getCurrentDirectory": "filelib.h",
+		"getDirectoryPathSeparator": "filelib.h",
+		"getExtension": "filelib.h",
+		"getHead": "filelib.h",
+		"getInteger": "simpio.h",
+		"getLine": "simpio.h",
+		"getNextEvent": "gevents.h",
+		"getPlatform": "platform.h",
+		"getReal": "simpio.h",
+		"getRoot": "filelib.h",
+		"getScreenHeight": "gwindow.h",
+		"getScreenSize": "gwindow.h",
+		"getScreenWidth": "gwindow.h",
+		"getSearchPathSeparator": "filelib.h",
+		"getTail": "filelib.h",
+		"getYesOrNo": "simpio.h",
+		"integerToString": "strlib.h",
+		"isDirectory": "filelib.h",
+		"isFile": "filelib.h",
+		"isSymbolicLink": "filelib.h",
+		"leftFrom": "direction.h",
+		"listDirectory": "filelib.h",
+		"matchFilenamePattern": "filelib.h",
+		"openFile": "filelib.h",
+		"openFileDialog": "filelib.h",
+		"openOnPath": "filelib.h",
+		"opposite": "direction.h",
+		"pause": "gwindow.h",
+		"promptUserForFile": "filelib.h",
+		"randomBool": "random.h",
+		"randomChance": "random.h",
+		"randomInteger": "random.h",
+		"randomReal": "random.h",
+		"readEntireFile": "filelib.h",
+		"readEntireFile": "filelib.h",
+		"realToString": "strlib.h",
+		"regexMatch": "regexpr.h",
+		"regexMatchCount": "regexpr.h",
+		"regexReplace": "regexpr.h",
+		"renameFile": "filelib.h",
+		"repaint": "gwindow.h",
+		"rewindStream": "filelib.h",
+		"rightFrom": "direction.h",
+		"setConsoleEcho": "console.h",
+		"setConsoleEventOnClose": "console.h",
+		"setConsoleExitProgramOnClose": "console.h",
+		"setConsoleFont": "console.h",
+		"setConsoleLocation": "console.h",
+		"setConsoleLocationSaved": "console.h",
+		"setConsolePrintExceptions": "console.h",
+		"setConsoleSize": "console.h",
+		"setCurrentDirectory": "filelib.h",
+		"setRandomSeed": "random.h",
+		"sinDegrees": "gmath.h",
+		"startsWith": "strlib.h",
+		"stringContains": "strlib.h",
+		"stringIndexOf": "strlib.h",
+		"stringIsInteger": "strlib.h",
+		"stringIsReal": "strlib.h",
+		"stringJoin": "strlib.h",
+		"stringLastIndexOf": "strlib.h",
+		"stringReplace": "strlib.h",
+		"stringSplit": "strlib.h",
+		"stringToBool": "strlib.h",
+		"stringToChar": "strlib.h",
+		"stringToInteger": "strlib.h",
+		"stringToReal": "strlib.h",
+		"tanDegrees": "gmath.h",
+		"toDegrees": "gmath.h",
+		"toLowerCase": "strlib.h",
+		"toRadians": "gmath.h",
+		"toUpperCase": "strlib.h",
+		"trim": "strlib.h",
+		"trimEnd": "strlib.h",
+		"trimStart": "strlib.h",
+		"urlDecode": "strlib.h",
+		"urlEncode": "strlib.h",
+		"vectorAngle": "gmath.h",
+		"vectorDistance": "gmath.h",
+		"waitForClick": "gevents.h",
+		"waitForClick": "gwindow.h",
+		"waitForEvent": "gevents.h",
+		"writeEntireFile": "filelib.h"
+	};
+
+	window.addEventListener("load", function() {
+		var funcListTable = document.getElementById("functionlisttable");
+		var funcTemplate = document.getElementById("functionlisttemplate");
+
+		for (var functionName in FUNCTION_MAP) {
+			if (!FUNCTION_MAP.hasOwnProperty(functionName)) { continue; }
+			if (UNDOCUMENTED_FUNCTIONS[functionName]) { continue; }
+
+			var fileName = FUNCTION_MAP[functionName];
+			var fileURL = fileName.replace(".h", ".html") + "#Function:" + functionName;
+
+			var funcSpan = funcTemplate.cloneNode(true);
+			funcSpan.style.display = "";
+			funcSpan.querySelector(".templatefuncname").innerHTML = functionName;
+			funcSpan.querySelector(".templatefuncfile").innerHTML = fileName;
+			funcSpan.querySelector(".templatefunclink").href = fileURL;
+			funcListTable.appendChild(funcSpan);
+		}
+	});
+})();
+</script>
+
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford C++ Libraries
+</div></td>
+</tr></table>
+<hr>
+
+<noscript>
+	<p>
+		<strong>This page requires JavaScript to function properly.</strong>
+		Please enable JavaScript in your browser.
+	</p>
+</noscript>
+
+<table>
+	<tr><td class=indexHead>Global Functions</td></tr>
+	<tr><td>
+	<p>
+		This section lists every global function exported by the Stanford C++ libraries, along with the name of the header file that must be included to use that function.
+		Note that this page lists only functions that are exported into the default global namespace, not every method of every class, and not methods that are exported into any other namespaces.
+	</p>
+
+	<p>
+		You can click each column heading to sort the table by that column.
+		For detailed documentation about a given function, click the link for that header file.
+	</p>
+
+	<p>
+		&nbsp;
+	</p>
+	</td></tr>
+</table>
+
+<table class="index sorttable">
+	<thead>
+		<tr>
+			<th>Function Name</th>
+			<th>Header File</th>
+		</tr>
+	</thead>
+
+	<tbody id="functionlisttable">
+		<!-- this is a template piece of HTML that is cloned in JS for each function exported. -->
+		<tr id="functionlisttemplate" style="display: none">
+			<td class=indexKey>
+				<code class="templatefuncname"></code>
+			</td>
+			<td class=indexSynopsis>
+				<a class="templatefunclink" href=""><code class="templatefuncfile"></code></a>
+			</td>
+		</tr>
+	<tbody>
+</table>
+
+
+</body>
+</html>

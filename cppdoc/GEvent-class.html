@@ -41,15 +41,15 @@ graphics window:
 <pre>
    int main() {
       GWindow gw;
-      GLine *line;
-      cout << "This program lets the user draw lines by dragging." << endl;
+      GLine* line;
+      cout &lt;&lt; &quot;This program lets the user draw lines by dragging.&quot; &lt;&lt; endl;
       while (true) {
          GMouseEvent e = waitForEvent(MOUSE_EVENT);
          if (e.getEventType() == MOUSE_PRESSED) {
             line = new GLine(e.getX(), e.getY(), e.getX(), e.getY());
             gw.add(line);
          } else if (e.getEventType() == MOUSE_DRAGGED) {
-            line->setEndPoint(e.getX(), e.getY());
+            line-&gt;setEndPoint(e.getX(), e.getY());
          }
       }
    }
@@ -61,13 +61,13 @@ graphics window:
 <tr><td class=indexKey><nobr><a href="#Method:getEventType">getEventType()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the enumerated type constant corresponding to the specific event type.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getModifiers">getModifiers()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns an integer whose bits indicate what modifiers are in effect.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:isValid">isValid()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the event is valid.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setEventTime">setEventTime(time)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the event time field for this event.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setModifiers">setModifiers(modifiers)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the modifiers field for this event.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setEventTime">setEventTime(<var>time</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the event time field for this event.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setModifiers">setModifiers(<var>modifiers</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the modifiers field for this event.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts the event to a human-readable representation of the event.</td></tr>
 <tr><td class=indexHead colspan=2>Functions</td></tr>
-<tr><td class=indexKey><nobr><a href="#Function:getNextEvent">getNextEvent(mask)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Checks to see if there are any events of the desired type waiting on the event queue.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getNextEvent">getNextEvent(<var>mask</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Checks to see if there are any events of the desired type waiting on the event queue.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:waitForClick">waitForClick()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Waits for a mouse click in any window, discarding any other events.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Function:waitForEvent">waitForEvent(mask)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Dismisses the process until an event occurs whose type is covered by the event mask.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:waitForEvent">waitForEvent(<var>mask</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Dismisses the process until an event occurs whose type is covered by the event mask.</td></tr>
 </table>
 <h2>Method detail</h2>
 <hr>

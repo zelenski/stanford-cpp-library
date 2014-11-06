@@ -1,0 +1,475 @@
+<html>
+<head>
+<title>SparseGrid</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="grid.html">#include "sparsegrid.h"</a></div>
+<h1 class=header><code>class SparseGrid&lt;<var>ValueType</var>&gt;</code></h1>
+This class stores an indexed, two-dimensional array.
+Rows and columns of the grid are accessed by 0-based indexes.
+
+Unlike <code>Grid</code>, a <code>SparseGrid</code> is optimized for grids in which most of the cells are empty.  Rather than being implemented using an internal array structure, which occupies full memory for all of its rows and columns from the start, a <code>SparseGrid</code> is implemented internally using nested <code>Map</code>s and therefore only uses as much memory as the cells that have been assigned to store actual data; empty unassigned cells consume no memory.  But if the grid is expected to be mostly full of meaningful data, better performance and better memory usage will be achieved by using <code>Grid</code> rather than <code>SparseGrid</code>.
+
+<p>The following code, for example, creates an identity matrix of size <code>n</code>, in which the elements are 1.0 along the main diagonal and 0.0 everywhere else:
+
+<pre>
+   SparseGrid&lt;double&gt; createIdentityMatrix(int n) {
+      SparseGrid&lt;double&gt; matrix(n, n);
+      for (int i = 0; i &lt; n; i++) {
+         matrix[i][i] = 1.0;
+      }
+      return matrix;
+   }
+</pre>
+
+<p class="since">
+	Available since: 2014/07/09 version of C++ library
+</p>
+
+<table class=index width=100%>
+	<tr>
+		<td class=indexHead colspan=3>Constructor</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Constructor:SparseGrid">SparseGrid()</a></nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Initializes a new empty 0x0 grid.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Constructor:SparseGrid">SparseGrid(<var>nRows</var>,&nbsp;<var>nCols</var>)</a></nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Initializes a new grid of the given size.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Constructor:SparseGrid">SparseGrid(<var>nRows</var>,&nbsp;<var>nCols</var>,&nbsp;<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Initializes a new grid of the given size, with every cell set to the given value.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Methods</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:equals">equals(<var>grid</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the two grids contain the same elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:fill">fill(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Sets every grid element to the given value.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:get">get(<var>row</var>,&nbsp;<var>col</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O((log N)<sup>2</sup>)</td>
+		<td class=indexSynopsis width=100%>Returns the element at the specified <code>row</code>/<code>col</code> position in this grid.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:height">height()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the grid's height, that is, the number of rows in the grid.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:inBounds">inBounds(<var>row</var>,&nbsp;<var>col</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the specified row and column position is inside the bounds of the grid.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:isSet">isSet(<var>row</var>,&nbsp;<var>col</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the specified row and column position stores data.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns true if the grid has 0 rows and/or 0 columns.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:mapAll">mapAll(<var>fn</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Calls the specified function on each element of the grid.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:numCols">numCols()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the number of columns in the grid.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:numRows">numRows()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the number of rows in the grid.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:resize">resize(<var>nRows</var>,&nbsp;<var>nCols</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Reinitializes the grid to have the specified number of rows and columns.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:set">set(<var>row</var>,&nbsp;<var>col</var>,&nbsp;<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O((log N)<sup>2</sup>)</td>
+		<td class=indexSynopsis width=100%>Replaces the element at the specified <code>row</code>/<code>col</code> location in this grid with a new value.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the total number of elements in the grid.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Converts the grid to a printable string representation.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:toString2D">toString2D()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Converts the grid to a printable 2-D string representation.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:width">width()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the grid's width, that is, the number of columns in the grid.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Operator</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:[]"><var>grid</var>[<var>row</var>][<var>col</var>]</a>&nbsp;</nobr></td>
+		<td class="bigoh">O((log N)<sup>2</sup>)</td>
+		<td class=indexSynopsis width=100%>Overloads <code>[]</code> to select elements from this grid.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:=="><var>grid1</var> == <var>grid1</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N (log N)<sup>2</sup>)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>grid1</code> and <code>grid2</code> contain the same elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:!="><var>grid1</var> != <var>grid2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N (log N)<sup>2</sup>)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>grid1</code> and <code>grid2</code> are different.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><var>ostream</var>&nbsp;&lt;&lt;&nbsp;<var>grid</var></nobr></td>
+		<td class="bigoh">O(N (log N)<sup>2</sup>)</td>
+		<td class=indexSynopsis width=100%>Outputs the contents of the grid to the given output stream.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><var>istream</var>&nbsp;&gt;&gt;&nbsp;<var>grid</var></nobr></td>
+		<td class="bigoh">O(N (log N)<sup>2</sup>)</td>
+		<td class=indexSynopsis width=100%>Reads the contents of the given input stream into the grid.</td>
+	</tr>
+</table>
+
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:SparseGrid"></a>
+<pre class=detailCode>
+SparseGrid();
+SparseGrid(int nRows, int nCols);
+</pre>
+<div class=detailHTML>
+Initializes a new grid.
+The first form of the constructor creates an empty grid that
+contains zero rows and columns.
+
+<p>The second form of the constructor is
+more common and creates a grid with the specified number of rows
+and columns.  Each element of the grid is initialized to the
+default value for the type.  The default constructor creates an
+empty grid for which the client must call <code>resize</code> to
+set the dimensions.
+
+<p>The third form also fills every cell of the grid with the given value.
+
+<p>The second and third constructors signal an error if a negative number of rows or columns is passed.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+SparseGrid&lt;ValueType&gt; grid;
+SparseGrid&lt;ValueType&gt; grid(nRows, nCols);
+SparseGrid&lt;ValueType&gt; grid(nRows, nCols, value);
+</pre>
+<hr>
+</table>
+
+<h2>Method detail</h2>
+
+<hr>
+<a name="Method:equals"></a>
+<pre class=detailCode>
+bool equals(const SparseGrid&amp; grid) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the two grids are the same size and contain exactly the same element values.
+Identical in behavior to the <code>==</code> operator.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (grid.equals(grid2)) ...
+</pre>
+
+<hr>
+<a name="Method:fill"></a>
+<pre class=detailCode>
+void fill(ValueType value) const;
+</pre>
+<div class=detailHTML>
+Sets every grid element to the given value.
+The entire contents of the grid are replaced with this value in every cell.
+Note that using this method on a <code>SparseGrid</code> could be considered an anti-pattern.
+That is, if you are planning to fill the entire grid, <code>SparseGrid</code> may be a poor choice for your usage.
+<code>Grid</code> is better than <code>SparseGrid</code> for full non-sparse data.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+grid.fill(value);
+</pre>
+
+<hr>
+<a name="Method:numRows"></a>
+<pre class=detailCode>
+int numRows() const;
+</pre>
+<div class=detailHTML>
+Returns the number of rows in the grid.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int nRows = grid.numRows();
+</pre>
+
+<hr>
+<a name="Method:numCols"></a>
+<pre class=detailCode>
+int numCols() const;
+</pre>
+<div class=detailHTML>
+Returns the number of columns in the grid.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int nCols = grid.numCols();
+</pre>
+
+<hr>
+<a name="Method:height"></a>
+<pre class=detailCode>
+int height() const;
+</pre>
+<div class=detailHTML>
+Returns the grid's height, that is, the number of rows in the grid.
+This is equivalent to <code>numRows</code> and both are provided for convenience.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int nRows = grid.height();
+</pre>
+
+<hr>
+<a name="Method:width"></a>
+<pre class=detailCode>
+int width() const;
+</pre>
+<div class=detailHTML>
+Returns the grid's width, that is, the number of columns in the grid.
+This is equivalent to <code>numCols</code> and both are provided for convenience.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int nCols = grid.numCols();
+</pre>
+
+<hr>
+<a name="Method:resize"></a>
+<pre class=detailCode>
+void resize(int nRows, int nCols);
+</pre>
+<div class=detailHTML>
+Reinitializes the grid to have the specified number of rows
+and columns.  Each element of the newly resized grid is empty.
+Any previous grid contents are discarded.
+
+<p>This function signals an error if a negative number of rows or columns is passed.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+grid.resize(nRows, nCols);
+</pre>
+<hr>
+<a name="Method:inBounds"></a>
+<pre class=detailCode>
+bool inBounds(int row, int col) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the specified row and column position
+is inside the bounds of the grid.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (grid.inBounds(row, col)) ...
+</pre>
+<hr>
+<a name="Method:isSet"></a>
+<pre class=detailCode>
+bool isSet(int row, int col) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the specified row and column position
+stores meaningful data; in other words, if it has had a value placed
+there by a previous call to <code>fill</code>, <code>set</code>, <code>[]</code>, etc.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (grid.isSet(row, col)) ...
+</pre>
+<hr>
+<a name="Method:get"></a>
+<pre class=detailCode>
+ValueType get(int row, int col);
+const ValueType&amp; get(int row, int col) const;
+</pre>
+<div class=detailHTML>
+Returns the element at the specified <code>row</code>/<code>col</code>
+position in this grid.
+If no data was set at the given row/column position, this method returns
+a default value for the grid's value type.
+This method signals an error if the
+<code>row</code> and <code>col</code> arguments are outside
+the grid boundaries.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType value = grid.get(row, col);
+</pre>
+<hr>
+<a name="Method:set"></a>
+<pre class=detailCode>
+void set(int row, int col, ValueType value);
+</pre>
+<div class=detailHTML>
+Replaces the element at the specified <code>row</code>/<code>col</code>
+location in this grid with a new value.  This method signals an error
+if the <code>row</code> and <code>col</code> arguments are outside
+the grid boundaries.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+grid.set(row, col, value);
+</pre>
+
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size() const;
+</pre>
+<div class=detailHTML>
+Returns the total number of elements in the grid,
+which is equal to the number of rows times the number of columns.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int sz = grid.size();
+</pre>
+
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty() const;
+</pre>
+<div class=detailHTML>
+Returns the total number of elements in the grid,
+which is equal to the number of rows times the number of columns.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int sz = grid.size();
+</pre>
+
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Converts the grid to a printable string representation, such as <code>&quot;{0:{0:r0c0, 1:r0c1, 2:r0c2}, 1:{0:r1c0, 1:r1c1, 2:r1c2}}&quot;</code> for a 2x3 grid.
+Note that the format is slightly different than the format for a normal <code>Grid</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = grid.toString();
+</pre>
+<hr>
+
+<a name="Method:toString2D"></a>
+<pre class=detailCode>
+string toString2D() const;
+</pre>
+<div class=detailHTML>
+Converts the grid to a printable 2-D string representation, such as the following for a 4x3 grid:
+
+<pre>
+&quot;{{r0c0, r0c1, r0c2},\n
+  {r1c0, r1c1, r1c2},\n
+  {r2c0, r2c1, r2c2},\n
+  {r3c0, r3c1, r3c2}}&quot;
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = grid.toString2D();
+</pre>
+<hr>
+
+<a name="Method:mapAll"></a>
+<pre class=detailCode>
+void mapAll(void (*fn)(ValueType value)) const;
+void mapAll(void (*fn)(const ValueType&amp; value)) const;
+void mapAll(FunctorType fn) const;
+</pre>
+<div class=detailHTML>
+Calls the specified function on each element of the grid.  The
+elements are processed in <b><i>row-major order,</i></b> in which
+all the elements of row 0 are processed, followed by the elements
+in row 1, and so on.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+grid.mapAll(fn);
+</pre>
+<hr>
+</table>
+<h2>Operator detail</h2>
+<hr>
+<a name="Operator:[]"></a>
+<pre class=detailCode>
+SparseGridRow operator[](int row);
+const SparseGridRow operator[](int row) const;
+</pre>
+<div class=detailHTML>
+Overloads <code>[]</code> to select elements from this grid.
+This extension enables the use of traditional array notation to
+get or set individual elements.
+
+If no data was set at the given row/column position, this method returns
+a default value for the grid's value type.
+
+This method signals an error if
+the <code>row</code> and <code>col</code> arguments are outside
+the grid boundaries.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+grid[row][col]
+</pre>
+<hr>
+</table>
+</body>
+</html>

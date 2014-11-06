@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>GPolygon : public <a href="GObject-class.html">GObject</a></title>
+<title>GPolygon</title>
 <link rel="stylesheet" type="text/css" href="cppdoc.css" />
 </head>
 <body>
@@ -27,15 +27,15 @@ the center of the window:
 <pre>
    int main() {
       GWindow gw;
-      cout << "This program draws a red octagon." << endl;
+      cout &lt;&lt; &quot;This program draws a red octagon.&quot; &lt;&lt; endl;
       double edge = 75;
-      GPolygon *stopSign = new GPolygon();
-      stopSign->addVertex(-edge / 2, edge / 2 + edge / sqrt(2.0));
-      for (int i = 0; i < 8; i++) {
-         stopSign->addPolarEdge(edge, 45 * i);
+      GPolygon* stopSign = new GPolygon();
+      stopSign-&gt;addVertex(-edge / 2, edge / 2 + edge / sqrt(2.0));
+      for (int i = 0; i &lt; 8; i++) {
+         stopSign-&gt;addPolarEdge(edge, 45 * i);
       }
-      stopSign->setFilled(true);
-      stopSign->setColor("RED");
+      stopSign-&gt;setFilled(true);
+      stopSign-&gt;setColor(&quot;RED&quot;);
       gw.add(stopSign, gw.getWidth() / 2, gw.getHeight() / 2);
       return 0;
    }
@@ -49,14 +49,14 @@ the center of the window:
 <tr><td class=indexHead colspan=2>Constructor</td></tr>
 <tr><td class=indexKey><nobr><a href="#Constructor:GPolygon">GPolygon()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Constructs a new empty polygon at the origin.</td></tr>
 <tr><td class=indexHead colspan=2>Methods</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:addEdge">addEdge(dx,&nbsp;dy)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds an edge to the polygon whose components are given by the displacements <code>dx</code> and <code>dy</code> from the last vertex.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:addPolarEdge">addPolarEdge(r,&nbsp;theta)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds an edge to the polygon specified in polar coordinates.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:addVertex">addVertex(x,&nbsp;y)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds a vertex at (<code>x</code>, <code>y</code>) relative to the polygon origin.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:addEdge">addEdge(<var>dx</var>,&nbsp;<var>dy</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds an edge to the polygon whose components are given by the displacements <code>dx</code> and <code>dy</code> from the last vertex.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:addPolarEdge">addPolarEdge(<var>r</var>,&nbsp;<var>theta</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds an edge to the polygon specified in polar coordinates.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:addVertex">addVertex(<var>x</var>,&nbsp;<var>y</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds a vertex at (<code>x</code>, <code>y</code>) relative to the polygon origin.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getFillColor">getFillColor()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the color used to display the filled region of this polygon.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getVertices">getVertices()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a vector of the points in the polygon.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:isFilled">isFilled()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the polygon is filled.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setFillColor">setFillColor(color)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the color used to display the filled region of this polygon.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setFilled">setFilled(flag)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the fill status for the polygon, where <code>false</code> is outlined and <code>true</code> is filled.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setFillColor">setFillColor(<var>color</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the color used to display the filled region of this polygon.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setFilled">setFilled(<var>flag</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the fill status for the polygon, where <code>false</code> is outlined and <code>true</code> is filled.</td></tr>
 </table>
 <h2>Constructor detail</h2>
 <hr>
@@ -69,7 +69,7 @@ Constructs a new empty polygon at the origin.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-GPolygon *poly = new GPolygon();
+GPolygon* poly = new GPolygon();
 </pre>
 <hr>
 </table>

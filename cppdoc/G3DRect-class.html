@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>G3DRect : public <a href="GRect-class.html">GRect</a></title>
+<title>G3DRect</title>
 <link rel="stylesheet" type="text/css" href="cppdoc.css" />
 </head>
 <body>
@@ -18,10 +18,13 @@ This graphical object subclass represents a rectangular box that can
 be raised or lowered.
 <table class=index width=100%>
 <tr><td class=indexHead colspan=2>Constructor</td></tr>
-<tr><td class=indexKey><nobr><a href="#Constructor:G3DRect">G3DRect(width,&nbsp;height)</a><br><a href="#Constructor:G3DRect">G3DRect(width,&nbsp;height,&nbsp;raised)</a><br><a href="#Constructor:G3DRect">G3DRect(x,&nbsp;y,&nbsp;width,&nbsp;height)</a><br><a href="#Constructor:G3DRect">G3DRect(x,&nbsp;y,&nbsp;width,&nbsp;height,&nbsp;raised)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Constructs a new 3D rectangle with the specified width and height.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:G3DRect">G3DRect(<var>width</var>,&nbsp;<var>height</var>)</a><br>
+<a href="#Constructor:G3DRect">G3DRect(<var>width</var>,&nbsp;<var>height</var>,&nbsp;<var>raised</var>)</a><br>
+<a href="#Constructor:G3DRect">G3DRect(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>width</var>,&nbsp;<var>height</var>)</a><br>
+<a href="#Constructor:G3DRect">G3DRect(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>width</var>,&nbsp;<var>height</var>,&nbsp;<var>raised</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Constructs a new 3D rectangle with the specified width and height.</td></tr>
 <tr><td class=indexHead colspan=2>Methods</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:isRaised">isRaised()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if this object appears raised.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setRaised">setRaised(raised)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Indicates whether this object appears raised.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setRaised">setRaised(<var>raised</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Indicates whether this object appears raised.</td></tr>
 </table>
 <h2>Constructor detail</h2>
 <hr>
@@ -41,10 +44,10 @@ suggest that it is raised about the background.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-G3DRect *rect = new G3DRect(width, height);
-G3DRect *rect = new G3DRect(width, height, raised);
-G3DRect *rect = new G3DRect(x, y, width, height);
-G3DRect *rect = new G3DRect(x, y, width, height, raised);
+G3DRect* rect = new G3DRect(width, height);
+G3DRect* rect = new G3DRect(width, height, raised);
+G3DRect* rect = new G3DRect(x, y, width, height);
+G3DRect* rect = new G3DRect(x, y, width, height, raised);
 </pre>
 <hr>
 </table>

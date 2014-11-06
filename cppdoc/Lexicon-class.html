@@ -29,7 +29,7 @@ stored in <code>EnglishWords.txt</code>:
 <pre>
    int main() {
       Lexicon english("EnglishWords.txt");
-      foreach (string word in english) {
+      for (string word : english) {
          if (word.length() == 2) {
             cout &lt;&lt; word &lt;&lt; endl;
          }
@@ -39,25 +39,111 @@ stored in <code>EnglishWords.txt</code>:
 </pre>
 
 <p>
-	This version of <code>Lexicon</code> is implemented internally using a data structure called a <em>prefix tree</em> or <em>trie</em> ("try"), which allows for efficient prefix and word searching.
+	This version of <code>Lexicon</code> is implemented internally using a data structure called a <em>prefix tree</em> or <em>trie</em> (pronounced "try"), which allows for efficient prefix and word searching.
 </p>
 
 <table class=index width=100%>
-<tr><td class=indexHead colspan=2>Constructor</td></tr>
-<tr><td class=indexKey><nobr><a href="#Constructor:Lexicon">Lexicon()</a><br><a href="#Constructor:Lexicon">Lexicon(filename)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Initializes a new lexicon.</td></tr>
-<tr><td class=indexHead colspan=2>Methods</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:add">add(word)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds the specified word to the lexicon.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:addWordsFromFile">addWordsFromFile(filename)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads the file and adds all of its words to the lexicon.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes all words from the lexicon.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:contains">contains(word)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if <code>word</code> is contained in the lexicon.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:containsPrefix">containsPrefix(prefix)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns true if any words in the lexicon begin with <code>prefix</code>.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the lexicon contains no words.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:mapAll">mapAll(fn)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Calls the specified function on each word in the lexicon.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:remove">remove(word)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes the specified word from the lexicon.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:removePrefix">removePrefix(prefix)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes all words that begin with the specified prefix from the lexicon.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of words contained in the lexicon.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts the lexicon to a printable string representation.</td></tr>
+	<tr>
+		<td class=indexHead colspan=3>Constructor</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Constructor:Lexicon">Lexicon()</a></nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Initializes a new empty lexicon.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Constructor:Lexicon">Lexicon(<var>filename</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N log N)</td>
+		<td class=indexSynopsis width=100%>Initializes a new lexicon that reads words from the given file.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Methods</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:add">add(<var>word</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(log N)</td>
+		<td class=indexSynopsis width=100%>Adds the specified word to the lexicon.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:addWordsFromFile">addWordsFromFile(<var>filename</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N log N)</td>
+		<td class=indexSynopsis width=100%>Reads the file and adds all of its words to the lexicon.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Removes all words from the lexicon.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:contains">contains(<var>word</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(log N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>word</code> is contained in the lexicon.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:containsPrefix">containsPrefix(<var>prefix</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(log N)</td>
+		<td class=indexSynopsis width=100%>Returns true if any words in the lexicon begin with <code>prefix</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:equals">equals(<var>lex</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N log N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the two lexicons contain the same words.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the lexicon contains no words.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:mapAll">mapAll(<var>fn</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Calls the specified function on each word in the lexicon.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:remove">remove(<var>word</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(log N)</td>
+		<td class=indexSynopsis width=100%>Removes the specified word from the lexicon.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:removePrefix">removePrefix(<var>prefix</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(log N)</td>
+		<td class=indexSynopsis width=100%>Removes all words that begin with the specified prefix from the lexicon.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the number of words contained in the lexicon.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Converts the lexicon to a printable string representation.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Operators</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:=="><var>lex1</var> == <var>lex1</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N log N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>lex1</code> and <code>lex2</code> contain the same elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:!="><var>lex1</var> != <var>lex2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N log N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>lex1</code> and <code>lex2</code> are different.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><var>ostream</var>&nbsp;&lt;&lt;&nbsp;<var>lex</var></nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Outputs the contents of the lexicon to the given output stream.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><var>istream</var>&nbsp;&gt;&gt;&nbsp;<var>lex</var></nobr></td>
+		<td class="bigoh">O(N log N)</td>
+		<td class=indexSynopsis width=100%>Reads the contents of the given input stream into the lexicon.</td>
+	</tr>
 </table>
+
 <h2>Constructor detail</h2>
 <hr>
 <a name="Constructor:Lexicon"></a>
@@ -74,7 +160,6 @@ containing one word per line.  The Stanford library distribution
 includes a binary lexicon file named <code>EnglishWords.dat</code>
 containing a list of words in English.  The standard code pattern
 to initialize that lexicon looks like this:
-
 <pre>
    Lexicon english("EnglishWords.dat");
 </pre>
@@ -86,43 +171,9 @@ Lexicon lex(filename);
 </pre>
 <hr>
 </table>
+
 <h2>Method detail</h2>
-<hr>
-<a name="Method:size"></a>
-<pre class=detailCode>
-int size() const;
-</pre>
-<div class=detailHTML>
-Returns the number of words contained in the lexicon.
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-int n = lex.size();
-</pre>
-<hr>
-<a name="Method:isEmpty"></a>
-<pre class=detailCode>
-bool isEmpty() const;
-</pre>
-<div class=detailHTML>
-Returns <code>true</code> if the lexicon contains no words.
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-if (lex.isEmpty()) ...
-</pre>
-<hr>
-<a name="Method:clear"></a>
-<pre class=detailCode>
-void clear();
-</pre>
-<div class=detailHTML>
-Removes all words from the lexicon.
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-lex.clear();
-</pre>
+
 <hr>
 <a name="Method:add"></a>
 <pre class=detailCode>
@@ -135,6 +186,7 @@ Adds the specified word to the lexicon.
 <pre class=usageCode>
 lex.add(word);
 </pre>
+
 <hr>
 <a name="Method:addWordsFromFile"></a>
 <pre class=detailCode>
@@ -147,6 +199,20 @@ Reads the file and adds all of its words to the lexicon.
 <pre class=usageCode>
 lex.addWordsFromFile(filename);
 </pre>
+
+<hr>
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Removes all words from the lexicon.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+lex.clear();
+</pre>
+
 <hr>
 <a name="Method:contains"></a>
 <pre class=detailCode>
@@ -161,6 +227,7 @@ ignored, so "Zoo" is the same as "ZOO" or "zoo".
 <pre class=usageCode>
 if (lex.contains(word)) ...
 </pre>
+
 <hr>
 <a name="Method:containsPrefix"></a>
 <pre class=detailCode>
@@ -175,11 +242,39 @@ so that "MO" is a prefix of "monkey" or "Monday".
 <pre class=usageCode>
 if (lex.containsPrefix(prefix)) ...
 </pre>
+
+<hr>
+<a name="Method:equals"></a>
+<pre class=detailCode>
+bool equals(const Lexicon&amp; lex) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the two lexicons contain exactly the same set of words.
+Identical in behavior to the <code>==</code> operator.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (lex.equals(lex2)) ...
+</pre>
+
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty() const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the lexicon contains no words.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (lex.isEmpty()) ...
+</pre>
+
 <hr>
 <a name="Method:mapAll"></a>
 <pre class=detailCode>
 void mapAll(void (*fn)(string)) const;
-void mapAll(void (*fn)(const string &amp;)) const;
+void mapAll(void (*fn)(const string&amp;)) const;
 void mapAll(FunctorType fn) const;
 </pre>
 <div class=detailHTML>
@@ -189,6 +284,7 @@ Calls the specified function on each word in the lexicon.
 <pre class=usageCode>
 lexicon.mapAll(fn);
 </pre>
+
 <hr>
 <a name="Method:remove"></a>
 <pre class=detailCode>
@@ -205,6 +301,7 @@ empty string to this method returns <code>false</code>.
 <pre class=usageCode>
 lex.remove(word);
 </pre>
+
 <hr>
 <a name="Method:removePrefix"></a>
 <pre class=detailCode>
@@ -219,6 +316,20 @@ If the empty string is passed, since all words begin with the empty string, all 
 <pre class=usageCode>
 lex.removePrefix(prefix);
 </pre>
+
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size() const;
+</pre>
+<div class=detailHTML>
+Returns the number of words contained in the lexicon.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int n = lex.size();
+</pre>
+
 <hr>
 <a name="Method:toString"></a>
 <pre class=detailCode>
@@ -231,6 +342,7 @@ Converts the map to a printable string representation, such as <code>&quot;{word
 <pre class=usageCode>
 string str = lexicon.toString();
 </pre>
+
 <hr>
 </table>
 </body>

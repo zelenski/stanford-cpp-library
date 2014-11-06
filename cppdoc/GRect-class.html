@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>GRect : public <a href="GObject-class.html">GObject</a></title>
+<title>GRect</title>
 <link rel="stylesheet" type="text/css" href="cppdoc.css" />
 </head>
 <body>
@@ -22,24 +22,27 @@ at the upper left corner of the graphics window:
 <pre>
    int main() {
       GWindow gw;
-      cout << "This program draws a red rectangle at (0, 0)." << endl;
-      GRect *rect = new GRect(0, 0, 200, 100);
-      rect->setFilled(true);
-      rect->setColor("RED");
+      cout &lt;&lt; &quot;This program draws a red rectangle at (0, 0).&quot; &lt;&lt; endl;
+      GRect* rect = new GRect(0, 0, 200, 100);
+      rect-&gt;setFilled(true);
+      rect-&gt;setColor(&quot;RED&quot;);
       gw.add(rect);
       return 0;
    }
 </pre>
 <table class=index width=100%>
 <tr><td class=indexHead colspan=2>Constructor</td></tr>
-<tr><td class=indexKey><nobr><a href="#Constructor:GRect">GRect(width,&nbsp;height)</a><br><a href="#Constructor:GRect">GRect(x,&nbsp;y,&nbsp;width,&nbsp;height)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Constructs a rectangle with the specified width and height.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GRect">GRect(<var>width</var>,&nbsp;<var>height</var>)</a><br>
+<a href="#Constructor:GRect">GRect(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>width</var>,&nbsp;<var>height</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Constructs a rectangle with the specified width and height.</td></tr>
 <tr><td class=indexHead colspan=2>Methods</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getFillColor">getFillColor()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the color used to display the filled region of this rectangle.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:isFilled">isFilled()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the rectangle is filled.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setBounds">setBounds(rect)</a><br><a href="#Method:setBounds">setBounds(x,&nbsp;y,&nbsp;width,&nbsp;height)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the bounds of this rectangle to the specified values.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setFillColor">setFillColor(color)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the color used to display the filled region of this rectangle.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setFilled">setFilled(flag)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the fill status for the rectangle, where <code>false</code> is outlined and <code>true</code> is filled.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setSize">setSize(size)</a><br><a href="#Method:setSize">setSize(width,&nbsp;height)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the size of this rectangle to the specified width and height.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setBounds">setBounds(<var>rect</var>)</a><br>
+<a href="#Method:setBounds">setBounds(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>width</var>,&nbsp;<var>height</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the bounds of this rectangle to the specified values.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setFillColor">setFillColor(<var>color</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the color used to display the filled region of this rectangle.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setFilled">setFilled(<var>flag</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the fill status for the rectangle, where <code>false</code> is outlined and <code>true</code> is filled.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setSize">setSize(<var>size</var>)</a><br>
+<a href="#Method:setSize">setSize(<var>width</var>,&nbsp;<var>height</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the size of this rectangle to the specified width and height.</td></tr>
 </table>
 <h2>Constructor detail</h2>
 <hr>
@@ -55,8 +58,8 @@ given by <code>x</code> and <code>y</code>.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-GRect *rect = new GRect(width, height);
-GRect *rect = new GRect(x, y, width, height);
+GRect* rect = new GRect(width, height);
+GRect* rect = new GRect(x, y, width, height);
 </pre>
 <hr>
 </table>
@@ -64,7 +67,7 @@ GRect *rect = new GRect(x, y, width, height);
 <hr>
 <a name="Method:setSize"></a>
 <pre class=detailCode>
-void setSize(const GDimension &amp; size);
+void setSize(const GDimension&amp; size);
 void setSize(double width, double height);
 </pre>
 <div class=detailHTML>
@@ -78,7 +81,7 @@ rect-&gt;setSize(width, height);
 <hr>
 <a name="Method:setBounds"></a>
 <pre class=detailCode>
-void setBounds(const GRectangle &amp; size);
+void setBounds(const GRectangle&amp; size);
 void setBounds(double x, double y, double width, double height);
 </pre>
 <div class=detailHTML>

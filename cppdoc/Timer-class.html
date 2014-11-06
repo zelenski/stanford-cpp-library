@@ -25,6 +25,11 @@ Typical usage of this class looks like this:
    cout &lt;&lt; &quot;The code took &quot; &lt;&lt; tim.elapsed() &lt;&lt; &quot;ms to finish.&quot; &lt;&lt; endl;
 </pre>
 
+<p>
+	This class distinguishes itself from <code>GTimer</code> in that it is more of a stopwatch that can tell you how much time has elapsed since a given starting point,
+	while <code>GTimer</code> is a class meant for use in graphical applications that generates timer events at specified intervals.
+</p>
+
 <p class="since">
 	Available since: 2014/02/01 version of C++ library
 </p>
@@ -32,7 +37,7 @@ Typical usage of this class looks like this:
 <table class=index width=100%>
 <tr><td class=indexHead colspan=2>Constructor</td></tr>
 <tr><td class=indexKey><nobr><a href="#Constructor:Timer">Timer()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a timer object that has not yet been started.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Constructor:Timer2">Timer(autostart)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a timer object and optionally starts it.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:Timer2">Timer(<var>autostart</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a timer object and optionally starts it.</td></tr>
 <tr><td class=indexHead colspan=2>Methods</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:elapsed">elapsed()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of milliseconds since the timer was started.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:isStarted">isStarted()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns whether the timer has been started.</td></tr>

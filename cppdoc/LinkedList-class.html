@@ -1,0 +1,426 @@
+<html>
+<head>
+<title>LinkedList</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="linkedlist.html">#include "linkedlist.h"</a></div>
+<h1 class=header><code>class LinkedList&lt;<var>ValueType</var>&gt;</code></h1>
+This class stores an ordered list of values similar to an array.
+It supports traditional array selection using square brackets, but
+also supports inserting and deleting elements.  It is similar in
+function to the STL <code>list</code> type.
+
+<p class="since">
+	Available since: 2014/07/01 version of C++ library
+</p>
+
+<table class=index width=100%>
+	<tr>
+		<td class=indexHead colspan=3>Constructor</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Constructor:LinkedList">LinkedList()</a></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Initializes a new empty list.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Methods</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:add">add(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Adds a new value to the end of this list.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Removes all elements from this list.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:equals">equals(<var>list</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the two lists contain the same elements in the same order.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:get">get(<var>index</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns the element at the specified index in this list.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:insert">insert(<var>index</var>,&nbsp;<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Inserts the element into this list before the specified index.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if this list contains no elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:mapAll">mapAll(<var>fn</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Calls the specified function on each element of the linkedlist in ascending index order.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:remove">remove(<var>index</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Removes the element at the specified index from this list.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:set">set(<var>index</var>,&nbsp;<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Replaces the element at the specified index in this list with a new value.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the number of elements in this list.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:subList">subList(<var>start</var>, <var>length</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns a new list containing elements from a sub-range of this list.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Converts the list to a printable string representation.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Operators</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:[]"><var>list</var>[<var>index</var>]</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Overloads <code>[]</code> to select elements from this list.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:+"><var>list1</var>&nbsp;+&nbsp;<var>list2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Concatenates two lists.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:+="><var>list1</var>&nbsp;+=&nbsp;<var>list2</var>;</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Adds all of the elements from <code>list2</code> to <code>list1</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:+="><var>list</var>&nbsp;+=&nbsp;<var>value</var>;</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Adds the single specified value to the list.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:,"><var>list</var>&nbsp;+=&nbsp;<var>a</var>,&nbsp;<var>b</var>,&nbsp;<var>c</var>;</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Adds multiple values to the list.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:=="><var>list1</var> == <var>list1</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>list1</code> and <code>list2</code> contain the same elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:!="><var>list1</var> != <var>list2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>list1</code> and <code>list2</code> are different.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><var>ostream</var>&nbsp;&lt;&lt;&nbsp;<var>list</var></nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Outputs the contents of the list to the given output stream.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><var>istream</var>&nbsp;&gt;&gt;&nbsp;<var>list</var></nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Reads the contents of the given input stream into the list.</td>
+	</tr>
+</table>
+
+<h2>Constructor detail</h2>
+
+<hr>
+<a name="Constructor:LinkedList"></a>
+<pre class=detailCode>
+LinkedList();
+</pre>
+<div class=detailHTML>
+Initializes a new list.  The default constructor creates an empty list.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+LinkedList&lt;ValueType&gt; list;
+</pre>
+<hr>
+</table>
+
+<h2>Method detail</h2>
+
+<hr>
+<a name="Method:add"></a>
+<pre class=detailCode>
+void add(ValueType value);
+void push_back(ValueType value);
+</pre>
+<div class=detailHTML>
+Adds a new value to the end of this list.  To ensure compatibility
+with the <code>list</code> class in the Standard Template Library,
+this method is also called <code>push_back</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+list.add(value);
+</pre>
+
+<hr>
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Removes all elements from this list.
+<p>O(N) because it must loop over the underlying list nodes to free their memory.</p>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+list.clear();
+</pre>
+
+<hr>
+<a name="Method:equals"></a>
+<pre class=detailCode>
+bool equals(const LinkedList&amp; list) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the two lists contain exactly the same element values in the same order.
+Identical in behavior to the <code>==</code> operator.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (list.equals(list2)) ...
+</pre>
+
+<hr>
+<a name="Method:get"></a>
+<pre class=detailCode>
+const ValueType&amp; get(int index) const;
+</pre>
+<div class=detailHTML>
+Returns the element at the specified index in this list.  This
+method signals an error if the index is not in the array range.
+<p>O(1) at front or end of list; O(N) average/worst case.</p>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType val = list.get(index);
+</pre>
+
+<hr>
+<a name="Method:insert"></a>
+<pre class=detailCode>
+void insert(int index, ValueType value);
+</pre>
+<div class=detailHTML>
+Inserts the element into this list before the specified index.
+All subsequent elements are shifted one position to the right.  This
+method signals an error if the index is outside the range from 0
+up to and including the length of the list.
+<p>O(1) at front or end of list; O(N) average/worst case.</p>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+list.insert(0, value);
+</pre>
+
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty() const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if this list contains no elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (list.isEmpty()) ...
+</pre>
+
+<hr>
+<a name="Method:mapAll"></a>
+<pre class=detailCode>
+void mapAll(void (*fn)(ValueType)) const;
+void mapAll(void (*fn)(const ValueType&amp;)) const;
+void mapAll(FunctorType fn) const;
+</pre>
+<div class=detailHTML>
+Calls the specified function on each element of the list in
+ascending index order.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+list.mapAll(fn);
+</pre>
+
+<hr>
+<a name="Method:remove"></a>
+<pre class=detailCode>
+void remove(int index);
+</pre>
+<div class=detailHTML>
+Removes the element at the specified index from this list.
+All subsequent elements are shifted one position to the left.  This
+method signals an error if the index is outside the array range.
+<p>O(1) at front or end of list; O(N) average/worst case.</p>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+list.remove(index);
+</pre>
+
+<hr>
+<a name="Method:set"></a>
+<pre class=detailCode>
+void set(int index, ValueType value);
+</pre>
+<div class=detailHTML>
+Replaces the element at the specified index in this list with
+a new value.  The previous value at that index is overwritten.
+This method signals an error if the index is not in the array range.
+<p>O(1) at front or end of list; O(N) average/worst case.</p>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+list.set(index, value);
+</pre>
+
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size() const;
+</pre>
+<div class=detailHTML>
+Returns the number of elements in this list.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int nElems = list.size();
+</pre>
+
+<hr>
+<a name="Method:subList"></a>
+<pre class=detailCode>
+LinkedList subList(int start, int length) const;
+</pre>
+<div class=detailHTML>
+Returns a new list containing elements from a sub-range of this list.
+For example, the call of subList(2, 4) would return a new list containing elements 2-5 of the original list in its indexes 0-3.
+Throws an error if the range [start, start+length) is not contained within the range [0, size()].
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+LinkedList&lt;ValueType&gt; sub = list.subList(start, length);
+</pre>
+<p class="since">
+	Available since: 2014/10/20 version of C++ library
+</p>
+
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Converts the list to a printable string representation, such as <code>&quot;{value1, value2, value3}&quot;</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = list.toString();
+</pre>
+
+<hr>
+</table>
+<h2>Operator detail</h2>
+
+<hr>
+<a name="Operator:[]"></a>
+<pre class=detailCode>
+ValueType&amp; operator[](int index);
+const ValueType&amp; operator[](int index) const;
+</pre>
+<div class=detailHTML>
+Overloads <code>[]</code> to select elements from this list.
+This extension enables the use of traditional array notation to
+get or set individual elements.  This method signals an error if
+the index is outside the array range.  The file supports two
+versions of this operator, one for <code>const</code> lists and
+one for mutable lists.
+
+<p>O(1) at front or end of list; O(N) average/worst case.</p>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+vec[index]
+</pre>
+
+<hr>
+<a name="Operator:+"></a>
+<pre class=detailCode>
+LinkedList operator+(const LinkedList&amp; v2) const;
+</pre>
+<div class=detailHTML>
+Concatenates two lists.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+v1 + v2
+</pre>
+
+<hr>
+<a name="Operator:+="></a>
+<pre class=detailCode>
+LinkedList&amp; operator+=(const LinkedList&amp; list2);
+LinkedList&amp; operator+=(ValueType value);
+</pre>
+<div class=detailHTML>
+Adds all of the elements from <code>v2</code> (or the single
+specified value) to <code>v1</code>.  As a convenience, the
+<code>LinkedList</code> package also overloads the comma operator so
+that it is possible to initialize a list like this:
+
+<pre>
+   LinkedList&lt;int&gt; digits;
+   digits += 0, 1, 2, 3, 4, 5, 6, 7, 8, 9;
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+list1 += list2;
+list1 += value;
+</pre>
+
+<hr>
+<a name="Operator:,"></a>
+<pre class=detailCode>
+LinkedList&amp; operator,(ValueType value);
+</pre>
+<div class=detailHTML>
+Adds an element to the list passed as the left-hand operatand.
+This form makes it easier to initialize lists in old versions of C++.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+list.mapAll(fn);
+</pre>
+
+<hr>
+</table>
+</body>
+</html>

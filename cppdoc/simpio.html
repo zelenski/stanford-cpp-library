@@ -17,16 +17,16 @@ This file exports a set of functions that simplify input/output
 operations in C++ and provide some error-checking on console input.
 <table class=index width=100%>
 <tr><td class=indexHead colspan=2>Functions</td></tr>
-<tr><td class=indexKey><nobr><a href="#Function:getInteger">getInteger(prompt)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a complete line from <code>cin</code> and scans it as an integer.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Function:getLine">getLine(prompt)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a line of text from <code>cin</code> and returns that line as a string.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Function:getReal">getReal(prompt)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a complete line from <code>cin</code> and scans it as a floating-point number.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Function:getYesOrNo">getYesOrNo(prompt)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a complete line from <code>cin</code> and treats it as a yes-or-no answer to a question, returning a boolean value of <code>true</code> for yes and <code>false</code> for no.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getInteger">getInteger(<var>prompt</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a complete line from <code>cin</code> and scans it as an integer.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getLine">getLine(<var>prompt</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a line of text from <code>cin</code> and returns that line as a string.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getReal">getReal(<var>prompt</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a complete line from <code>cin</code> and scans it as a floating-point number.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getYesOrNo">getYesOrNo(<var>prompt</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a complete line from <code>cin</code> and treats it as a yes-or-no answer to a question, returning a boolean value of <code>true</code> for yes and <code>false</code> for no.</td></tr>
 </table>
 <h2>Function detail</h2>
 <hr>
 <a name="Function:getInteger"></a>
 <pre class=detailCode>
-int getInteger(string prompt = "");
+int getInteger(string prompt = "", string reprompt = "");
 </pre>
 <div class=detailHTML>
 Reads a complete line from <code>cin</code> and scans it as an
@@ -35,6 +35,11 @@ the argument is not a legal integer or if extraneous characters
 (other than whitespace) appear in the string, the user is given
 a chance to reenter the value. If supplied, the optional
 <code>prompt</code> string is printed before reading the value.
+
+<p>The also optional <code>reprompt</code> argument provides an output message
+displayed each time if the user types a file that is not found.
+If no value is passed, defaults to, "Illegal integer format. Try again.".
+
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
@@ -43,7 +48,7 @@ int n = getInteger(prompt);
 <hr>
 <a name="Function:getReal"></a>
 <pre class=detailCode>
-double getReal(string prompt = "");
+double getReal(string prompt = "", string reprompt = "");
 </pre>
 <div class=detailHTML>
 Reads a complete line from <code>cin</code> and scans it as a
@@ -52,6 +57,11 @@ value is returned.  If the input is not a legal number or if
 extraneous characters (other than whitespace) appear in the string,
 the user is given a chance to reenter the value. If supplied, the
 optional <code>prompt</code> string is printed before reading the value.
+
+<p>The also optional <code>reprompt</code> argument provides an output message
+displayed each time if the user types a file that is not found.
+If no value is passed, defaults to, "Illegal numeric format. Try again.".
+
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
@@ -67,6 +77,7 @@ Reads a line of text from <code>cin</code> and returns that line
 as a string.  The newline character that terminates the input is
 not stored as part of the return value.  If supplied, the optional
 <code>prompt</code> string is printed before reading the value.
+
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
@@ -75,12 +86,18 @@ string line = getLine(prompt);
 <hr>
 <a name="Function:getYesOrNo"></a>
 <pre class=detailCode>
-bool getYesOrNo(string prompt = "");
+bool getYesOrNo(string prompt = "", string reprompt = "");
 </pre>
 <div class=detailHTML>
 Reads a complete line from <code>cin</code> and treats it as a yes-or-no answer to a question.  Returns <code>true</code> if the line typed begins with a 'y' or 'Y', and returns <code>false</code> if it begins with a 'n' or 'N'.  Otherwise the user is given a chance to reenter the value.
 
 <p>If supplied, the optional <code>prompt</code> string is printed before reading the value.
+
+<p>The also optional <code>reprompt</code> argument provides an output message
+displayed each time if the user types a file that is not found.
+If no value is passed, defaults to,
+"Please type a word that starts with 'Y' or 'N'.".
+
 <p>Usage:<br>
 </div>
 <pre class=usageCode>

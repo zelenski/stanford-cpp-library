@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>GMouseEvent : public <a href="GEvent-class.html">GEvent</a></title>
+<title>GMouseEvent</title>
 <link rel="stylesheet" type="text/css" href="cppdoc.css" />
 </head>
 <body>
@@ -31,8 +31,8 @@ dimensions of the rectangle are positive.
 <pre>
    int main() {
       GWindow gw;
-      cout << "This program lets the user draw rectangles." << endl;
-      GRect *rect;
+      cout &lt;&lt; &quot;This program lets the user draw rectangles.&quot; &lt;&lt; endl;
+      GRect* rect;
       double startX;
       double startY;
       while (true) {
@@ -41,21 +41,21 @@ dimensions of the rectangle are positive.
             startX = e.getX();
             startY = e.getY();
             rect = new GRect(startX, startY, 0, 0);
-            rect->setFilled(true);
+            rect-&gt;setFilled(true);
             gw.add(rect);
          } else if (e.getEventType() == MOUSE_DRAGGED) {
             double x = min(e.getX(), startX);
             double y = min(e.getY(), startY);
             double width = abs(e.getX() - startX);
             double height = abs(e.getY() - startY);
-            rect->setBounds(x, y, width, height);
+            rect-&gt;setBounds(x, y, width, height);
          }
       }
    }
 </pre>
 <table class=index width=100%>
 <tr><td class=indexHead colspan=2>Constructor</td></tr>
-<tr><td class=indexKey><nobr><a href="#Constructor:GMouseEvent">GMouseEvent(type,&nbsp;gw,&nbsp;x,&nbsp;y)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GMouseEvent</code> using the specified parameters.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GMouseEvent">GMouseEvent(<var>type</var>,&nbsp;<var>gw</var>,&nbsp;<var>x</var>,&nbsp;<var>y</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GMouseEvent</code> using the specified parameters.</td></tr>
 <tr><td class=indexHead colspan=2>Methods</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getGWindow">getGWindow()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the graphics window in which this event occurred.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getX">getX()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <i>x</i> coordinate at which the event occurred relative to the window origin at the upper left corner of the window.</td></tr>
@@ -66,7 +66,7 @@ dimensions of the rectangle are positive.
 <hr>
 <a name="Constructor:GMouseEvent"></a>
 <pre class=detailCode>
-GMouseEvent(EventType type, const GWindow &amp; gw, double x, double y);
+GMouseEvent(EventType type, const GWindow&amp; gw, double x, double y);
 </pre>
 <div class=detailHTML>
 Creates a <code>GMouseEvent</code> using the specified parameters.

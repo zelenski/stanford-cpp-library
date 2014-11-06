@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>GActionEvent : public <a href="GEvent-class.html">GEvent</a></title>
+<title>GActionEvent</title>
 <link rel="stylesheet" type="text/css" href="cppdoc.css" />
 </head>
 <body>
@@ -26,19 +26,19 @@ Guide to the Galaxy</i>):
 <pre>
    int main() {
       GWindow gw;
-      GButton *button = new GButton("RED");
+      GButton* button = new GButton("RED");
       gw.addToRegion(button, "SOUTH");
       while (true) {
          GEvent e = waitForEvent(ACTION_EVENT | CLICK_EVENT);
          if (e.getEventType() == MOUSE_CLICKED) break;
-         cout << "Please do not press this button again." << endl;
+         cout &lt;&lt; &quot;Please do not press this button again.&quot; &lt;&lt; endl;
       }
       return 0;
    }
 </pre>
 <table class=index width=100%>
 <tr><td class=indexHead colspan=2>Constructor</td></tr>
-<tr><td class=indexKey><nobr><a href="#Constructor:GActionEvent">GActionEvent(type,&nbsp;source,&nbsp;actionCommand)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GActionEvent</code> using the specified parameters.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GActionEvent">GActionEvent(<var>type</var>,&nbsp;<var>source</var>,&nbsp;<var>actionCommand</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GActionEvent</code> using the specified parameters.</td></tr>
 <tr><td class=indexHead colspan=2>Methods</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getActionCommand">getActionCommand()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the action command associated with this event.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getSource">getSource()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a pointer to the <code>GObject</code> that generated this event.</td></tr>
@@ -48,7 +48,7 @@ Guide to the Galaxy</i>):
 <hr>
 <a name="Constructor:GActionEvent"></a>
 <pre class=detailCode>
-GActionEvent(EventType type, GObject *source, string actionCommand);
+GActionEvent(EventType type, GObject* source, string actionCommand);
 </pre>
 <div class=detailHTML>
 Creates a <code>GActionEvent</code> using the specified parameters.
@@ -63,7 +63,7 @@ GActionEvent actionEvent(type, source, actionCommand);
 <hr>
 <a name="Method:getSource"></a>
 <pre class=detailCode>
-GObject *getSource() const;
+GObject* getSource() const;
 </pre>
 <div class=detailHTML>
 Returns a pointer to the <code>GObject</code> that generated this event.

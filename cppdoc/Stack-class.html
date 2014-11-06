@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Stack&lt;ValueType&gt;</title>
+<title>Stack</title>
 <link rel="stylesheet" type="text/css" href="cppdoc.css" />
 </head>
 <body>
@@ -13,26 +13,93 @@ The Stanford <code>cslib</code> package
 </tr></table>
 <hr>
 <div class=include><a href="stack.html">#include "stack.h"</a></div>
-<h1 class=header><code>class Stack&lt;ValueType&gt;</code></h1>
+<h1 class=header><code>class Stack&lt;<var>ValueType</var>&gt;</code></h1>
 This class models a linear structure called a <b><i>stack</i></b>
 in which values are added and removed only from one end.
 This discipline gives rise to a last-in/first-out behavior (LIFO)
 that is the defining feature of stacks.  The fundamental stack
 operations are <code>push</code> (add to top) and <code>pop</code>
 (remove from top).
+
 <table class=index width=100%>
-<tr><td class=indexHead colspan=2>Constructor</td></tr>
-<tr><td class=indexKey><nobr><a href="#Constructor:Stack">Stack()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Initializes a new empty stack.</td></tr>
-<tr><td class=indexHead colspan=2>Methods</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes all elements from this stack.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if this stack contains no elements.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:peek">peek()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the value of top element from this stack, without removing it.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:pop">pop()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes the top element from this stack and returns it.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:push">push(value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Pushes the specified value onto this stack.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of values in this stack.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts the stack to a printable string representation.</td></tr>
+	<tr>
+		<td class=indexHead colspan=3>Constructor</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Constructor:Stack">Stack()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Initializes a new empty stack.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Methods</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Removes all elements from this stack.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:equals">equals(<var>stack</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the two stacks contain the same elements in the same order.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if this stack contains no elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:peek">peek()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the value of top element from this stack, without removing it.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:pop">pop()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Removes the top element from this stack and returns it.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:push">push(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Pushes the specified value onto this stack.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the number of values in this stack.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Converts the stack to a printable string representation.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Operators</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:=="><var>stack1</var> == <var>stack1</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>stack1</code> and <code>stack2</code> contain the same elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:!="><var>stack1</var> != <var>stack2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>stack1</code> and <code>stack2</code> are different.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><var>ostream</var>&nbsp;&lt;&lt;&nbsp;<var>stack</var></nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Outputs the contents of the stack to the given output stream.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><var>istream</var>&nbsp;&gt;&gt;&nbsp;<var>stack</var></nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Reads the contents of the given input stream into the stack.</td>
+	</tr>
 </table>
+
 <h2>Constructor detail</h2>
+
 <hr>
 <a name="Constructor:Stack"></a>
 <pre class=detailCode>
@@ -45,33 +112,11 @@ Initializes a new empty stack.
 <pre class=usageCode>
 Stack&lt;ValueType&gt; stack;
 </pre>
+
 <hr>
 </table>
 <h2>Method detail</h2>
-<hr>
-<a name="Method:size"></a>
-<pre class=detailCode>
-int size() const;
-</pre>
-<div class=detailHTML>
-Returns the number of values in this stack.
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-int n = stack.size();
-</pre>
-<hr>
-<a name="Method:isEmpty"></a>
-<pre class=detailCode>
-bool isEmpty() const;
-</pre>
-<div class=detailHTML>
-Returns <code>true</code> if this stack contains no elements.
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-if (stack.isEmpty()) ...
-</pre>
+
 <hr>
 <a name="Method:clear"></a>
 <pre class=detailCode>
@@ -84,18 +129,52 @@ Removes all elements from this stack.
 <pre class=usageCode>
 stack.clear();
 </pre>
+
 <hr>
-<a name="Method:push"></a>
+<a name="Method:equals"></a>
 <pre class=detailCode>
-void push(ValueType value);
+bool equals(const Stack&amp; stack) const;
 </pre>
 <div class=detailHTML>
-Pushes the specified value onto this stack.
+Returns <code>true</code> if the two stacks contain exactly the same element values in the same order.
+Identical in behavior to the <code>==</code> operator.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-stack.push(value);
+if (stack.equals(stack2)) ...
 </pre>
+
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty() const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if this stack contains no elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (stack.isEmpty()) ...
+</pre>
+
+<hr>
+<a name="Method:peek"></a>
+<pre class=detailCode>
+ValueType peek() const;
+ValueType&amp; top();
+</pre>
+<div class=detailHTML>
+Returns the value of top element from this stack, without removing
+it.  This method signals an error if called on an empty stack.  For
+compatibility with the STL classes, this method is also exported
+under the name <code>top</code>, in which case it returns the value
+by reference.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType top = stack.peek();
+</pre>
+
 <hr>
 <a name="Method:pop"></a>
 <pre class=detailCode>
@@ -109,23 +188,33 @@ method signals an error if called on an empty stack.
 <pre class=usageCode>
 ValueType top = stack.pop();
 </pre>
+
 <hr>
-<a name="Method:peek"></a>
+<a name="Method:push"></a>
 <pre class=detailCode>
-ValueType peek() const;
-ValueType &amp; top();
+void push(ValueType value);
 </pre>
 <div class=detailHTML>
-Returns the value of top element from this stack, without removing
-it.  This method signals an error if called on an empty stack.  For
-compatibility with the STL classes, this method is also exported
-under the name <code>top</code>, in which case it returns the value
-by reference.
+Pushes the specified value onto this stack.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-ValueType top = stack.peek();
+stack.push(value);
 </pre>
+
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size() const;
+</pre>
+<div class=detailHTML>
+Returns the number of values in this stack.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int n = stack.size();
+</pre>
+
 <hr>
 <a name="Method:toString"></a>
 <pre class=detailCode>
@@ -138,6 +227,7 @@ Converts the stack to a printable string representation, with the elements liste
 <pre class=usageCode>
 string str = stack.toString();
 </pre>
+
 <hr>
 </table>
 </body>

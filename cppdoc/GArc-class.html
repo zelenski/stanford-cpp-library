@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>GArc : public <a href="GObject-class.html">GObject</a></title>
+<title>GArc</title>
 <link rel="stylesheet" type="text/css" href="cppdoc.css" />
 </head>
 <body>
@@ -36,7 +36,8 @@ for the arc shown in <font color=red>red</font>:
 </div>
 <table class=index width=100%>
 <tr><td class=indexHead colspan=2>Constructor</td></tr>
-<tr><td class=indexKey><nobr><a href="#Constructor:GArc">GArc(width,&nbsp;height,&nbsp;start,&nbsp;sweep)</a><br><a href="#Constructor:GArc">GArc(x,&nbsp;y,&nbsp;width,&nbsp;height,&nbsp;start,&nbsp;sweep)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a new <code>GArc</code> object consisting of an elliptical arc.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GArc">GArc(<var>width</var>,&nbsp;<var>height</var>,&nbsp;<var>start</var>,&nbsp;<var>sweep</var>)</a><br>
+<a href="#Constructor:GArc">GArc(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>width</var>,&nbsp;<var>height</var>,&nbsp;<var>start</var>,&nbsp;<var>sweep</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a new <code>GArc</code> object consisting of an elliptical arc.</td></tr>
 <tr><td class=indexHead colspan=2>Methods</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getEndPoint">getEndPoint()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the point at which the arc ends.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getFillColor">getFillColor()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the color used to display the filled region of this arc.</td></tr>
@@ -45,11 +46,12 @@ for the arc shown in <font color=red>red</font>:
 <tr><td class=indexKey><nobr><a href="#Method:getStartPoint">getStartPoint()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the point at which the arc starts.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getSweepAngle">getSweepAngle()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the sweep angle for this <code>GArc</code> object.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:isFilled">isFilled()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the arc is filled.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setFillColor">setFillColor(color)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the color used to display the filled region of this arc.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setFilled">setFilled(flag)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the fill status for the arc, where <code>false</code> is outlined and <code>true</code> is filled.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setFrameRectangle">setFrameRectangle(rect)</a><br><a href="#Method:setFrameRectangle">setFrameRectangle(x,&nbsp;y,&nbsp;width,&nbsp;height)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the boundaries of the rectangle used to frame the arc.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setStartAngle">setStartAngle(start)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the starting angle for this <code>GArc</code> object.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setSweepAngle">setSweepAngle(start)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the sweep angle for this <code>GArc</code> object.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setFillColor">setFillColor(<var>color</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the color used to display the filled region of this arc.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setFilled">setFilled(<var>flag</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the fill status for the arc, where <code>false</code> is outlined and <code>true</code> is filled.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setFrameRectangle">setFrameRectangle(<var>rect</var>)</a><br>
+<a href="#Method:setFrameRectangle">setFrameRectangle(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>width</var>,&nbsp;<var>height</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the boundaries of the rectangle used to frame the arc.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setStartAngle">setStartAngle(<var>start</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the starting angle for this <code>GArc</code> object.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setSweepAngle">setSweepAngle(<var>start</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the sweep angle for this <code>GArc</code> object.</td></tr>
 </table>
 <h2>Constructor detail</h2>
 <hr>
@@ -77,8 +79,8 @@ are the coordinates of the center or the window.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-GArc *arc = new GArc(width, height, start, sweep);
-GArc *arc = new GArc(x, y, width, height, start, sweep);
+GArc* arc = new GArc(width, height, start, sweep);
+GArc* arc = new GArc(x, y, width, height, start, sweep);
 </pre>
 <hr>
 </table>
@@ -203,9 +205,9 @@ in the PacMan video game:
       double cx = gw.getWidth() / 2;
       double cy = gw.getHeight() / 2;
       double r = 25;
-      GArc *pacman = new GArc(cx - r, cy - r, 2 * r, 2 * r, 45, 270);
-      pacman->setFilled(true);
-      pacman->setFillColor("YELLOW");
+      GArc* pacman = new GArc(cx - r, cy - r, 2 * r, 2 * r, 45, 270);
+      pacman-&gt;setFilled(true);
+      pacman-&gt;setFillColor(&quot;YELLOW&quot;);
       gw.add(pacman);
       return 0;
    }

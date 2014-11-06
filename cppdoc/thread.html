@@ -20,18 +20,18 @@ along with simple tools for concurrency control.
 <tr><td class=indexKey><nobr><a href="Lock-class.html">Lock</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents a simple lock used to control concurrency.</td></tr>
 <tr><td class=indexKey><nobr><a href="Thread-class.html">Thread</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class encapsulates a lightweight process running in the same address space as the creator.</td></tr>
 <tr><td class=indexHead colspan=2>Statement</td></tr>
-<tr><td class=indexKey><nobr><a href="#Statement:synchronized">synchronized(lock)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Defines a critical section protected by the specified lock.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Statement:synchronized">synchronized&nbsp;(<var>lock</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Defines a critical section protected by the specified lock.</td></tr>
 <tr><td class=indexHead colspan=2>Functions</td></tr>
-<tr><td class=indexKey><nobr><a href="#Function:fork">fork(fn)</a><br><a href="#Function:fork">fork(fn,&nbsp;data)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a child thread that calls <code>fn</code> in an address space shared with the current thread.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:fork">fork(<var>fn</var>)</a><br><a href="#Function:fork">fork(fn,&nbsp;data)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a child thread that calls <code>fn</code> in an address space shared with the current thread.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:getCurrentThread">getCurrentThread()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the currently executing thread.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Function:join">join(thread)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Waits for the specified thread to finish before proceeding.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:join">join(<var>thread</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Waits for the specified thread to finish before proceeding.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:yield">yield()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Yields the processor to allow another thread to run.</td></tr>
 </table>
 <h2>Statement detail</h2>
 <hr>
 <a name="Statement:synchronized"></a>
 <pre class=detailCode>
-synchronized (lock) ...
+synchronized (<var>lock</var>) ...
 </pre>
 <div class=detailHTML>
 Defines a critical section protected by the specified lock.  The
@@ -51,7 +51,7 @@ paradigmatic pattern:<p>
 <a name="Function:fork"></a>
 <pre class=detailCode>
 Thread fork(void (*fn)());
-Thread fork(void (*fn)(ClientType &amp; data), ClientType &amp; data);
+Thread fork(void (*fn)(ClientType&amp; data), ClientType&amp; data);
 </pre>
 <div class=detailHTML>
 Creates a child thread that calls <code>fn</code> in an address space
@@ -66,7 +66,7 @@ Thread child = fork(fn, data);
 <hr>
 <a name="Function:join"></a>
 <pre class=detailCode>
-void join(Thread &amp; thread);
+void join(Thread&amp; thread);
 </pre>
 <div class=detailHTML>
 Waits for the specified thread to finish before proceeding.

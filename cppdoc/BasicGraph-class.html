@@ -3,7 +3,7 @@
 		<title>BasicGraph</title>
 		<link rel="stylesheet" type="text/css" href="cppdoc.css" />
 	</head>
-	
+
 	<body>
 		<table class=banner>
 			<tr>
@@ -13,12 +13,12 @@
 				</div></td>
 			</tr>
 		</table>
-		
+
 		<hr>
-		
+
 		<div class=include><a href="graph.html">#include "basicgraph.h"</a></div>
 		<h1 class=header><code>class BasicGraph : <a href="Graph-class.html">Graph</a>&lt;<a href="Vertex-class.html">Vertex</a>, <a href="Edge-class.html">Edge</a>&gt;</code></h1>
-		
+
 		<p>
 			This class represents a simplified and expanded implementation of a directed, weighted graph.
 			Unlike with the <code>Graph</code> class, you do not need to supply the vertex and edge types via templates in <code>&lt; &gt;</code>.
@@ -26,7 +26,7 @@
 			These types contain fields that are useful for various path-searching algorithms
 			such as breadth-first search, Dijkstra's algorithm, and A*.
 		</p>
-		
+
 		<p>
 			The <code>BasicGraph</code> also chooses to use the terminology of 'vertex' and 'edge' rather than 'node' and 'arc' in member names, though the other terminology is still supported for backward compatibility.
 			Since <code>BasicGraph</code> is a subclass of <code>Graph</code>, it also contains all of the members of the <code>Graph</code> class, which clients can call in their code.
@@ -49,38 +49,166 @@
 			The internal representation of this graph is an <em>adjacency list</em>, which is very efficient for iterating over neighbors of a given vertex, but less efficient for asking whether two given vertexes are neighbors.
 		</p>
 
-		<p>
-			If you perform a for-each loop over a <code>BasicGraph</code>, you will iterate over the vertexes of the graph.
-			You can loop over the edges by calling <code>getEdgeSet</code> on the <code>BasicGraph</code>.
+		<p>Until the 2014/10/20 version of the library, unlike with several of the other collections, you could not directly perform a for-each loop over a <code>BasicGraph</code>.
+		You can, however, for-each over the vertexes by calling <code>getVertexSet</code> on the <code>BasicGraph</code>, or over the edges by calling <code>getEdgeSet</code> on the <code>BasicGraph</code>.
+		Since 2014/10/20 version of the library, performing a for-each loop over a <code>BasicGraph</code> is supported and is equivalent to looping over the vertex set.
 		</p>
-		
+
+		<p>
+			For the purposes of Big-Oh listing, some members are proportional to the number of vertexes V, and some are proportional to the number of edges E.
+		</p>
+
 		<p class="since">
 			Available since: 2014/02/01 version of C++ library
 		</p>
 
 		<table class=index width=100%>
-			<tr><td class=indexHead colspan=2>Constructor</td></tr>
-			<tr><td class=indexKey><nobr><a href="#Constructor:BasicGraph">BasicGraph()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates an empty <code>BasicGraph</code> object.</td></tr>
-			<tr><td class=indexHead colspan=2>Methods</td></tr>
-			<tr><td class=indexKey><nobr><a href="#Method:addEdge">addEdge(v1,&nbsp;v2)</a><br><a href="#Method:addEdge">addEdge(name1,&nbsp;name2)</a><br><a href="#Method:addEdge">addEdge(edge)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds an edge to the graph.</td></tr>
-			<tr><td class=indexKey><nobr><a href="#Method:addVertex">addVertex(v)</a>&nbsp;<br><a href="#Method:addVertex">addVertex(name)</a></nobr></td><td class=indexSynopsis width=100%>Adds a vertex to the graph.</td></tr>
-			<tr><td class=indexKey><nobr><a href="#Method:containsEdge">containsEdge(v1,&nbsp;v2)</a><br><a href="#Method:containsEdge">containsEdge(name1,&nbsp;name2)</a><br><a href="#Method:containsEdge">containsEdge(edge)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns whether the graph has an edge between the given two vertices.</td></tr>
-			<tr><td class=indexKey><nobr><a href="#Method:containsVertex">containsVertex(v)</a><br><a href="#Method:containsVertex">containsVertex(name)</a></td><td class=indexSynopsis width=100%>Returns whether the graph has an edge between the given two vertices.</td></tr>
-			<tr><td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reinitializes the graph to be empty, freeing any heap storage.</td></tr>
-			<tr><td class=indexKey><nobr><a href="#Method:getEdge">getEdge(v1,&nbsp;v2)</a><br><a href="#Method:getEdge">getEdge(name1,&nbsp;name2)</a></td><td class=indexSynopsis width=100%>Returns the edge between the given two vertices.</td></tr>
-			<tr><td class=indexKey><nobr><a href="#Method:getEdgeSet">getEdgeSet()</a><br><a href="#Method:getEdgeSet">getEdgeSet(v)</a><br><a href="#Method:getEdgeSet">getEdgeSet(name)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the set of all edges in the graph or, in the second and third forms, the edges that start at the specified vertex, which can be indicated either as a pointer or by name.</td></tr>
-			<tr><td class=indexKey><nobr><a href="#Method:getNeighbors">getNeighbors(v)</a><br><a href="#Method:getNeighbors">getNeighbors(name)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the set of vertexes that are neighbors of the specified vertex, which can be indicated either as a pointer or by name.</td></tr>
-			<tr><td class=indexKey><nobr><a href="#Method:getVertex">getVertex(name)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Looks up a vertex in the name table attached to the graph and returns a pointer to that vertex.</td></tr>
-			<tr><td class=indexKey><nobr><a href="#Method:getVertexSet">getVertexSet()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the set of all vertexes in the graph.</td></tr>
-			<tr><td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the graph contains no vertexes.</td></tr>
-			<tr><td class=indexKey><nobr><a href="#Method:isNeighbor">isNeighbor(v1,&nbsp;v2)</a><br><a href="#Method:isNeighbor">isNeighbor(name1,&nbsp;name2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the graph contains an edge from <code>v1</code> to <code>v2</code>.</td></tr>
-			<tr><td class=indexKey><nobr><a href="#Method:removeEdge">removeEdge(v1,&nbsp;v2)</a><br><a href="#Method:removeEdge">removeEdge(name1,&nbsp;name2)</a><br><a href="#Method:removeEdge">removeEdge(edge)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes an edge from the graph, where the edge can be specified in any of three ways: by the names of its endpoints, by the vertex pointers at its endpoints, or as an edge pointer.</td></tr>
-			<tr><td class=indexKey><nobr><a href="#Method:removeVertex">removeVertex(vertex)</a>&nbsp;<br><a href="#Method:removeVertex">removeVertex(name)</a></nobr></td><td class=indexSynopsis width=100%>Removes a vertex from the graph, where the vertex can be specified either by its name or as a pointer value.</td></tr>
-			<tr><td class=indexKey><nobr><a href="#Method:resetData">resetData()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Clears any temporary internal data stored at each vertex and edge.</td></tr>
-			<tr><td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of vertexes in the graph.</td></tr>
-			<tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts the graph to a printable string representation.</td></tr>
+			<tr>
+				<td class=indexHead colspan=3>Constructor</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Constructor:BasicGraph">BasicGraph()</a>&nbsp;</nobr></td>
+				<td class="bigoh">O(1)</td>
+				<td class=indexSynopsis width=100%>Creates an empty <code>BasicGraph</code> object.</td>
+			</tr>
+			<tr>
+				<td class=indexHead colspan=3>Methods</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:addEdge">addEdge(<var>v1</var>,&nbsp;<var>v2</var>)</a><br>
+					<a href="#Method:addEdge">addEdge(<var>name1</var>,&nbsp;<var>name2</var>)</a><br>
+					<a href="#Method:addEdge">addEdge(<var>edge</var>)</a>&nbsp;</nobr></td>
+				<td class="bigoh">O(log V + log E)</td>
+				<td class=indexSynopsis width=100%>Adds an edge to the graph.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:addVertex">addVertex(<var>v</var>)</a>&nbsp;<br>
+					<a href="#Method:addVertex">addVertex(<var>name</var>)</a></nobr></td>
+				<td class="bigoh">O(log V)</td>
+				<td class=indexSynopsis width=100%>Adds a vertex to the graph.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td>
+				<td class="bigoh">O(V + E)</td>
+				<td class=indexSynopsis width=100%>Removes all vertexes and edges from the graph.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:clearEdges">clearEdges()</a></nobr></td>
+				<td class="bigoh">O(E)</td>
+				<td class=indexSynopsis width=100%>Removes all edges from the graph.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:containsEdge">containsEdge(<var>v1</var>,&nbsp;<var>v2</var>)</a><br>
+					<a href="#Method:containsEdge">containsEdge(<var>name1</var>,&nbsp;<var>name2</var>)</a><br>
+					<a href="#Method:containsEdge">containsEdge(<var>edge</var>)</a>&nbsp;</nobr></td>
+				<td class="bigoh">O(log E)</td>
+				<td class=indexSynopsis width=100%>Returns whether the graph has an edge between the given two vertexes.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:containsVertex">containsVertex(<var>v</var>)</a><br>
+					<a href="#Method:containsVertex">containsVertex(<var>name</var>)</a></td>
+				<td class="bigoh">O(log V)</td>
+				<td class=indexSynopsis width=100%>Returns whether the graph has an edge between the given two vertexes.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:getEdge">getEdge(<var>v1</var>,&nbsp;<var>v2</var>)</a><br>
+			<a href="#Method:getEdge">getEdge(<var>name1</var>,&nbsp;<var>name2</var>)</a></td>
+				<td class="bigoh">O(log V + log E)</td>
+				<td class=indexSynopsis width=100%>Returns the edge between the given two vertexes.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:getEdgeSet">getEdgeSet()</a></nobr></td>
+				<td class="bigoh">O(1)</td>
+				<td class=indexSynopsis width=100%>Returns the set of all edges in the graph.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:getEdgeSet">getEdgeSet(<var>v</var>)</a><br>
+					<a href="#Method:getEdgeSet">getEdgeSet(<var>name</var>)</a>&nbsp;</nobr></td>
+				<td class="bigoh">O(log V)</td>
+				<td class=indexSynopsis width=100%>Returns the set of all edges that start at the specified vertex.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:getNeighbors">getNeighbors(<var>v</var>)</a><br>
+					<a href="#Method:getNeighbors">getNeighbors(<var>name</var>)</a>&nbsp;</nobr></td>
+				<td class="bigoh">O(log V)</td>
+				<td class=indexSynopsis width=100%>Returns the set of vertexes that are neighbors of the specified vertex, which can be indicated either as a pointer or by name.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:getVertex">getVertex(<var>name</var>)</a>&nbsp;</nobr></td>
+				<td class="bigoh">O(log V)</td>
+				<td class=indexSynopsis width=100%>Looks up a vertex in the name table attached to the graph and returns a pointer to that vertex.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:getVertexSet">getVertexSet()</a>&nbsp;</nobr></td>
+				<td class="bigoh">O(1)</td>
+				<td class=indexSynopsis width=100%>Returns the set of all vertexes in the graph.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td>
+				<td class="bigoh">O(1)</td>
+				<td class=indexSynopsis width=100%>Returns <code>true</code> if the graph contains no vertexes or edges.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:isNeighbor">isNeighbor(<var>v1</var>,&nbsp;<var>v2</var>)</a><br>
+					<a href="#Method:isNeighbor">isNeighbor(<var>name1</var>,&nbsp;<var>name2</var>)</a>&nbsp;</nobr></td>
+				<td class="bigoh">O(log V)</td>
+				<td class=indexSynopsis width=100%>Returns <code>true</code> if the graph contains an edge from <code>v1</code> to <code>v2</code>.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:removeEdge">removeEdge(<var>v1</var>,&nbsp;<var>v2</var>)</a><br>
+					<a href="#Method:removeEdge">removeEdge(<var>name1</var>,&nbsp;<var>name2</var>)</a><br>
+					<a href="#Method:removeEdge">removeEdge(<var>edge</var>)</a>&nbsp;</nobr></td>
+				<td class="bigoh">O(E + log V)</td>
+				<td class=indexSynopsis width=100%>Removes an edge from the graph, where the edge can be specified in any of three ways: by the names of its endpoints, by the vertex pointers at its endpoints, or as an edge pointer.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:removeVertex">removeVertex(<var>vertex</var>)</a>&nbsp;<br>
+					<a href="#Method:removeVertex">removeVertex(<var>name</var>)</a></nobr></td>
+				<td class="bigoh">O(E + log V)</td>
+				<td class=indexSynopsis width=100%>Removes a vertex from the graph, where the vertex can be specified either by its name or as a pointer value.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:resetData">resetData()</a>&nbsp;</nobr></td>
+				<td class="bigoh">O(V + E)</td>
+				<td class=indexSynopsis width=100%>Clears any temporary internal data stored at each vertex and edge.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td>
+				<td class="bigoh">O(1)</td>
+				<td class=indexSynopsis width=100%>Returns the number of vertexes in the graph.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td>
+				<td class="bigoh">O(V + E)</td>
+				<td class=indexSynopsis width=100%>Converts the graph to a printable string representation.</td>
+			</tr>
+			<tr>
+				<td class=indexHead colspan=3>Operators</td>
+			</tr>
+			<!--
+			<tr>
+				<td class=indexKey><nobr><a href="#Operator:=="><var>pq1</var> == <var>pq1</var></a>&nbsp;</nobr></td>
+				<td class="bigoh">O(N)</td>
+				<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>pq1</code> and <code>pq2</code> contain the same elements.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Operator:!="><var>pq1</var> != <var>pq2</var></a>&nbsp;</nobr></td>
+				<td class="bigoh">O(N)</td>
+				<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>pq1</code> and <code>pq2</code> are different.</td>
+			</tr>
+			-->
+			<tr>
+				<td class=indexKey><nobr><var>ostream</var>&nbsp;&lt;&lt;&nbsp;<var>graph</var></nobr></td>
+				<td class="bigoh">O(V + E)</td>
+				<td class=indexSynopsis width=100%>Outputs the contents of the graph to the given output stream.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><var>istream</var>&nbsp;&gt;&gt;&nbsp;<var>graph</var></nobr></td>
+				<td class="bigoh">O(V log V + E log E)</td>
+				<td class=indexSynopsis width=100%>Reads the contents of the given input stream into the graph.</td>
+			</tr>
 		</table>
-		
+
 		<h2>Constructor detail</h2>
 <hr>
 
@@ -97,7 +225,7 @@ BasicGraph g;
 </pre>
 <hr>
 
-		<h2>Method detail</h2>
+<h2>Method detail</h2>
 <hr>
 
 <a name="Method:size"></a>
@@ -139,6 +267,21 @@ to the graph will be freed.)
 </div>
 <pre class=usageCode>
 g.clear();
+</pre>
+<hr>
+
+<a name="Method:clearEdges"></a>
+<pre class=detailCode>
+void clearEdges();
+</pre>
+<div class=detailHTML>
+Reinitializes the graph to be empty of all edges, freeing their heap storage.
+(The vertexes in the graph will remain.  If you want to clear the vertexes as well, use the <code>clear</code> method.)
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+g.clearEdges();
 </pre>
 <hr>
 <a name="Method:addVertex"></a>
@@ -313,7 +456,7 @@ Edge* getEdge(Vertex* v1, Vertex* v2) const;
 Edge* getEdge(std::string v1, std::string v2) const;
 </pre>
 <div class=detailHTML>
-Returns the edge between the given pair of vertices in the graph.
+Returns the edge between the given pair of vertexes in the graph.
 
 <p>If either of the vertexes supplied is <code>NULL</code> or is not found in the graph, the function will throw an error.
 

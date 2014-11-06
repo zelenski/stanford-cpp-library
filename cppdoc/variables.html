@@ -1,0 +1,175 @@
+<html>
+<head>
+<title>Global Variable/Macro List</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+
+<script src="sorttable.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+(function() {
+	var GLOBAL_VARIABLE_MAP = {
+		"ACTION_EVENT": "gevents.h",
+		"ACTION_PERFORMED": "gevents.h",
+		"ALT_DOWN": "gevents.h",
+		"ALT_GRAPH_DOWN": "gevents.h",
+		"ANY_EVENT": "gevents.h",
+		"BACKSPACE_KEY": "gevents.h",
+		"BUTTON1_DOWN": "gevents.h",
+		"BUTTON2_DOWN": "gevents.h",
+		"BUTTON3_DOWN": "gevents.h",
+		"CLEAR_KEY": "gevents.h",
+		"CLICK_EVENT": "gevents.h",
+		"CONSOLE_CLOSED": "gevents.h",
+		"CTRL_DOWN": "gevents.h",
+		"DELETE_KEY": "gevents.h",
+		"DOWN_ARROW_KEY": "gevents.h",
+		"E": "gmath.h",
+		"EAST": "direction.h",
+		"END_KEY": "gevents.h",
+		"ENTER_KEY": "gevents.h",
+		"ESCAPE_KEY": "gevents.h",
+		"F10_KEY": "gevents.h",
+		"F11_KEY": "gevents.h",
+		"F12_KEY": "gevents.h",
+		"F1_KEY": "gevents.h",
+		"F2_KEY": "gevents.h",
+		"F3_KEY": "gevents.h",
+		"F4_KEY": "gevents.h",
+		"F5_KEY": "gevents.h",
+		"F6_KEY": "gevents.h",
+		"F7_KEY": "gevents.h",
+		"F8_KEY": "gevents.h",
+		"F9_KEY": "gevents.h",
+		"GOPTIONPANE_CANCEL": "goptionpane.h",
+		"GOPTIONPANE_ERROR": "goptionpane.h",
+		"GOPTIONPANE_NO": "goptionpane.h",
+		"GOPTIONPANE_OK": "goptionpane.h",
+		"GOPTIONPANE_YES": "goptionpane.h",
+		"HELP_KEY": "gevents.h",
+		"HOME_KEY": "gevents.h",
+		"IOS_APP": "foreach.h",
+		"IOS_ATE": "foreach.h",
+		"IOS_BINARY": "foreach.h",
+		"IOS_IN": "foreach.h",
+		"IOS_OUT": "foreach.h",
+		"IOS_TRUNC": "foreach.h",
+		"KEY_EVENT": "gevents.h",
+		"KEY_PRESSED": "gevents.h",
+		"KEY_RELEASED": "gevents.h",
+		"KEY_TYPED": "gevents.h",
+		"LEFT_ARROW_KEY": "gevents.h",
+		"META_DOWN": "gevents.h",
+		"MOUSE_CLICKED": "gevents.h",
+		"MOUSE_DRAGGED": "gevents.h",
+		"MOUSE_EVENT": "gevents.h",
+		"MOUSE_MOVED": "gevents.h",
+		"MOUSE_PRESSED": "gevents.h",
+		"MOUSE_RELEASED": "gevents.h",
+		"NORTH": "direction.h",
+		"NOT_A_CHAR": "bitstream.h",
+		"NULL_EVENT": "gevents.h",
+		"NUMBER": "tokenscanner.h",
+		"OPERATOR": "tokenscanner.h",
+		"PAGE_DOWN_KEY": "gevents.h",
+		"PAGE_UP_KEY": "gevents.h",
+		"PI": "gmath.h",
+		"PSEUDO_EOF": "bitstream.h",
+		"RIGHT_ARROW_KEY": "gevents.h",
+		"SEPARATOR": "tokenscanner.h",
+		"SHIFT_DOWN": "gevents.h",
+		"SOUTH": "direction.h",
+		"STRING": "tokenscanner.h",
+		"TAB_KEY": "gevents.h",
+		"TIMER_EVENT": "gevents.h",
+		"TIMER_TICKED": "gevents.h",
+		"UP_ARROW_KEY": "gevents.h",
+		"WEST": "direction.h",
+		"WINDOW_CLOSED": "gevents.h",
+		"WINDOW_EVENT": "gevents.h",
+		"WINDOW_RESIZED": "gevents.h",
+		"WORD": "tokenscanner.h"
+	};
+
+	window.addEventListener("load", function() {
+		var varListTable = document.getElementById("variablelisttable");
+		var varTemplate = document.getElementById("variablelisttemplate");
+
+		for (var variableName in GLOBAL_VARIABLE_MAP) {
+			if (!GLOBAL_VARIABLE_MAP.hasOwnProperty(variableName)) { continue; }
+
+			var fileName = GLOBAL_VARIABLE_MAP[variableName];
+			var fileURL = fileName.replace(".h", ".html") + "#variable:" + variableName;
+
+			var varSpan = varTemplate.cloneNode(true);
+			varSpan.style.display = "";
+			varSpan.querySelector(".templatevarname").innerHTML = variableName;
+			varSpan.querySelector(".templatevarfile").innerHTML = fileName;
+			varSpan.querySelector(".templatevarlink").href = fileURL;
+			varListTable.appendChild(varSpan);
+		}
+	});
+})();
+</script>
+
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford C++ Libraries
+</div></td>
+</tr></table>
+<hr>
+
+<noscript>
+	<p>
+		<strong>This page requires JavaScript to function properly.</strong>
+		Please enable JavaScript in your browser.
+	</p>
+</noscript>
+
+<table>
+	<tr><td class=indexHead>Global Variables and Macros</td></tr>
+	<tr><td>
+	<p>
+		This section lists every global variable, enum constant, and macro constant value exported by the Stanford C++ libraries, along with the name of the header file that must be included to use that value.
+		Note that this page lists only variables that are exported into the default global namespace, not every constant member variable of every class, and not variables that are exported into any other namespaces.
+		This also does not include overloaded operators.
+	</p>
+
+	<p>
+		You can click each column heading to sort the table by that column.
+		For detailed documentation about a given variable, click the link for that header file.
+	</p>
+
+	<p>
+		&nbsp;
+	</p>
+	</td></tr>
+</table>
+
+
+<table class="index sorttable">
+	<thead>
+		<tr>
+			<th>Variable Name</th>
+			<th>Header File</th>
+		</tr>
+	</thead>
+
+	<tbody id="variablelisttable">
+		<!-- this is a template piece of HTML that is cloned in JS for each variable exported. -->
+		<tr id="variablelisttemplate" style="display: none">
+			<td class=indexKey>
+				<code class="templatevarname"></code>
+			</td>
+			<td class=indexSynopsis>
+				<a class="templatevarlink" href=""><code class="templatevarfile"></code></a>
+			</td>
+		</tr>
+	<tbody>
+</table>
+
+</body>
+</html>

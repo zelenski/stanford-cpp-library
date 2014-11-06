@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>GTimerEvent : public <a href="GEvent-class.html">GEvent</a></title>
+<title>GTimerEvent</title>
 <link rel="stylesheet" type="text/css" href="cppdoc.css" />
 </head>
 <body>
@@ -23,7 +23,7 @@ somewhere in the window:
 
 <pre>
    int main() {
-      cout << "This program generates timer events." << endl;
+      cout &lt;&lt; &quot;This program generates timer events.&quot; &lt;&lt; endl;
       GTimer timer(2000);
       timer.start();
       while (true) {
@@ -36,7 +36,7 @@ somewhere in the window:
 </pre>
 <table class=index width=100%>
 <tr><td class=indexHead colspan=2>Constructor</td></tr>
-<tr><td class=indexKey><nobr><a href="#Constructor:GTimerEvent">GTimerEvent(type,&nbsp;timer)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GTimerEvent</code> for the specified timer.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GTimerEvent">GTimerEvent(<var>type</var>,&nbsp;<var>timer</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GTimerEvent</code> for the specified timer.</td></tr>
 <tr><td class=indexHead colspan=2>Methods</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getGTimer">getGTimer()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the timer that generated this event.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts the event to a human-readable representation of the event.</td></tr>
@@ -45,7 +45,7 @@ somewhere in the window:
 <hr>
 <a name="Constructor:GTimerEvent"></a>
 <pre class=detailCode>
-GTimerEvent(EventType type, const GTimer &amp; timer);
+GTimerEvent(EventType type, const GTimer&amp; timer);
 </pre>
 <div class=detailHTML>
 Creates a <code>GTimerEvent</code> for the specified timer.

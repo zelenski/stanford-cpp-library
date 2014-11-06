@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Queue&lt;ValueType&gt;</title>
+<title>Queue</title>
 <link rel="stylesheet" type="text/css" href="cppdoc.css" />
 </head>
 <body>
@@ -13,26 +13,104 @@ The Stanford <code>cslib</code> package
 </tr></table>
 <hr>
 <div class=include><a href="queue.html">#include "queue.h"</a></div>
-<h1 class=header><code>class Queue&lt;ValueType&gt;</code></h1>
+<h1 class=header><code>class Queue&lt;<var>ValueType</var>&gt;</code></h1>
 This class models a linear structure called a <b><i>queue</i></b>
 in which values are added at one end and removed from the other.
 This discipline gives rise to a first-in/first-out behavior (FIFO)
 that is the defining feature of queues.
+The fundamental queue operations are <code>enqueue</code> (add to back)
+and <code>dequeue</code> (remove from front).
+
 <table class=index width=100%>
-<tr><td class=indexHead colspan=2>Constructor</td></tr>
-<tr><td class=indexKey><nobr><a href="#Constructor:Queue">Queue()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Initializes a new empty queue.</td></tr>
-<tr><td class=indexHead colspan=2>Methods</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:back">back()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the last value in the queue by reference.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes all elements from the queue.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:dequeue">dequeue()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes and returns the first item in the queue.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:enqueue">enqueue(value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds <code>value</code> to the end of the queue.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:front">front()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the first value in the queue by reference.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the queue contains no elements.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:peek">peek()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the first value in the queue, without removing it.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of values in the queue.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts the queue to a printable string representation.</td></tr>
+	<tr>
+		<td class=indexHead colspan=3>Constructor</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Constructor:Queue">Queue()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Initializes a new empty queue.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Methods</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:back">back()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the last value in the queue by reference.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Removes all elements from the queue.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:dequeue">dequeue()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Removes and returns the first item in the queue.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:enqueue">enqueue(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Adds <code>value</code> to the end of the queue.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:equals">equals(<var>q</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the two queues contain the same elements in the same order.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:front">front()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the first value in the queue by reference.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the queue contains no elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:peek">peek()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the first value in the queue, without removing it.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the number of values in the queue.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Converts the queue to a printable string representation.</td>
+	<tr>
+
+	<tr>
+		<td class=indexHead colspan=3>Operators</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:=="><var>queue1</var> == <var>queue1</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>queue1</code> and <code>queue2</code> contain the same elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:!="><var>queue1</var> != <var>queue2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>queue1</code> and <code>queue2</code> are different.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><var>ostream</var>&nbsp;&lt;&lt;&nbsp;<var>queue</var></nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Outputs the contents of the queue to the given output stream.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><var>istream</var>&nbsp;&gt;&gt;&nbsp;<var>queue</var></nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Reads the contents of the given input stream into the queue.</td>
+	</tr>
 </table>
+
 <h2>Constructor detail</h2>
+
 <hr>
 <a name="Constructor:Queue"></a>
 <pre class=detailCode>
@@ -45,33 +123,26 @@ Initializes a new empty queue.
 <pre class=usageCode>
 Queue&lt;ValueType&gt; queue;
 </pre>
+
 <hr>
 </table>
 <h2>Method detail</h2>
+
 <hr>
-<a name="Method:size"></a>
+<a name="Method:back"></a>
 <pre class=detailCode>
-int size() const;
+ValueType&amp; back();
 </pre>
 <div class=detailHTML>
-Returns the number of values in the queue.
+Returns the last value in the queue by reference.
+
+<p>If the queue is empty, this function signals an error.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-int n = queue.size();
+ValueType last = queue.back();
 </pre>
-<hr>
-<a name="Method:isEmpty"></a>
-<pre class=detailCode>
-bool isEmpty() const;
-</pre>
-<div class=detailHTML>
-Returns <code>true</code> if the queue contains no elements.
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-if (queue.isEmpty()) ...
-</pre>
+
 <hr>
 <a name="Method:clear"></a>
 <pre class=detailCode>
@@ -84,6 +155,21 @@ Removes all elements from the queue.
 <pre class=usageCode>
 queue.clear();
 </pre>
+
+<hr>
+<a name="Method:dequeue"></a>
+<pre class=detailCode>
+ValueType dequeue();
+</pre>
+<div class=detailHTML>
+Removes and returns the first item in the queue.
+<p>If the queue is empty, this function signals an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType first = queue.dequeue();
+</pre>
+
 <hr>
 <a name="Method:enqueue"></a>
 <pre class=detailCode>
@@ -96,20 +182,48 @@ Adds <code>value</code> to the end of the queue.
 <pre class=usageCode>
 queue.enqueue(value);
 </pre>
+
 <hr>
-<a name="Method:dequeue"></a>
+<a name="Method:equals"></a>
 <pre class=detailCode>
-ValueType dequeue();
+bool equals(const Queue&amp; q) const;
 </pre>
 <div class=detailHTML>
-Removes and returns the first item in the queue.
+Returns <code>true</code> if the two queues contain exactly the same element values in the same order.
+Identical in behavior to the <code>==</code> operator.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (q.equals(q2)) ...
+</pre>
 
+<hr>
+<a name="Method:front"></a>
+<pre class=detailCode>
+ValueType&amp; front();
+</pre>
+<div class=detailHTML>
+Returns the first value in the queue by reference.
 <p>If the queue is empty, this function signals an error.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-ValueType first = queue.dequeue();
+ValueType first = queue.front();
 </pre>
+
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty() const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the queue contains no elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (queue.isEmpty()) ...
+</pre>
+
 <hr>
 <a name="Method:peek"></a>
 <pre class=detailCode>
@@ -120,42 +234,26 @@ Returns the first value in the queue, without removing it.  For
 compatibility with the STL classes, this method is also exported
 under the name <code>front</code>, in which case it returns the
 value by reference.
-
 <p>If the queue is empty, this function signals an error.
-
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
 ValueType first = queue.peek();
 </pre>
+
 <hr>
-<a name="Method:front"></a>
+<a name="Method:size"></a>
 <pre class=detailCode>
-ValueType &amp; front();
+int size() const;
 </pre>
 <div class=detailHTML>
-Returns the first value in the queue by reference.
-
-<p>If the queue is empty, this function signals an error.
+Returns the number of values in the queue.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-ValueType first = queue.front();
+int n = queue.size();
 </pre>
-<hr>
-<a name="Method:back"></a>
-<pre class=detailCode>
-ValueType &amp; back();
-</pre>
-<div class=detailHTML>
-Returns the last value in the queue by reference.
 
-<p>If the queue is empty, this function signals an error.
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-ValueType last = queue.back();
-</pre>
 <hr>
 <a name="Method:toString"></a>
 <pre class=detailCode>
@@ -168,6 +266,7 @@ Converts the queue to a printable string representation, with the elements liste
 <pre class=usageCode>
 string str = queue.toString();
 </pre>
+
 <hr>
 </table>
 </body>

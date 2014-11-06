@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>GLabel : public <a href="GObject-class.html">GObject</a></title>
+<title>GLabel</title>
 <link rel="stylesheet" type="text/css" href="cppdoc.css" />
 </head>
 <body>
@@ -21,9 +21,9 @@ the string <code>"hello, world"</code> to the center of the window:
 <pre>
    int main() {
       GWindow gw;
-      cout << "This program draws the 'hello, world' message." << endl;
-      GLabel *label = new GLabel("hello, world");
-      label->setFont("SansSerif-18");
+      cout &lt;&lt; &quot;This program draws the 'hello, world' message.&quot; &lt;&lt; endl;
+      GLabel* label = new GLabel(&quot;hello, world&quot;);
+      label-&gt;setFont(&quot;SansSerif-18&quot;);
       double x = (gw.getWidth() - label->getWidth()) / 2;
       double y = (gw.getHeight() + label->getFontAscent()) / 2;
       gw.add(label, x, y);
@@ -53,14 +53,15 @@ depends on understanding the following terms:
 </div>
 <table class=index width=100%>
 <tr><td class=indexHead colspan=2>Constructor</td></tr>
-<tr><td class=indexKey><nobr><a href="#Constructor:GLabel">GLabel(str)</a><br><a href="#Constructor:GLabel">GLabel(str,&nbsp;x,&nbsp;y)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GLabel</code> object containing the specified string.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GLabel">GLabel(<var>str</var>)</a><br>
+<a href="#Constructor:GLabel">GLabel(<var>str</var>,&nbsp;<var>x</var>,&nbsp;<var>y</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GLabel</code> object containing the specified string.</td></tr>
 <tr><td class=indexHead colspan=2>Methods</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getFont">getFont()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the current font for the <code>GLabel</code>.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getFontAscent">getFontAscent()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the maximum distance strings in this font extend above the baseline.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getFontDescent">getFontDescent()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the maximum distance strings in this font descend below the baseline.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getLabel">getLabel()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the string displayed by this object.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setFont">setFont(font)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the font used to display the <code>GLabel</code> as specified by the string <code>font</code>, which has the following format:  <pre>    family-style-size </pre>  where both <code>style</code> and <code>size</code> are optional.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setLabel">setLabel(str)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the string stored within the <code>GLabel</code> object, so that a new text string appears on the display.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setFont">setFont(<var>font</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the font used to display the <code>GLabel</code> as specified by the string <code>font</code>, which has the following format:  <pre>    family-style-size </pre>  where both <code>style</code> and <code>size</code> are optional.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setLabel">setLabel(<var>str</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the string stored within the <code>GLabel</code> object, so that a new text string appears on the display.</td></tr>
 </table>
 <h2>Constructor detail</h2>
 <hr>
@@ -77,8 +78,8 @@ the second form automatically resets the location of the
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-GLabel *label = new GLabel(str);
-GLabel *label = new GLabel(str, x, y);
+GLabel* label = new GLabel(str);
+GLabel* label = new GLabel(str, x, y);
 </pre>
 <hr>
 </table>

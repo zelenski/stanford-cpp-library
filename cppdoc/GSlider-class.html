@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>GSlider : public <a href="GInteractor-class.html">GInteractor</a></title>
+<title>GSlider</title>
 <link rel="stylesheet" type="text/css" href="cppdoc.css" />
 </head>
 <body>
@@ -20,7 +20,7 @@ slider has a nonempty action command.
 <p>The display image of a slider is machine-dependent, but the declaration
 
 <pre>
-    GSlider *slider = new GSlider();
+    GSlider* slider = new GSlider();
 </pre>
 
 typically produces a slider that looks something like this:
@@ -30,10 +30,11 @@ typically produces a slider that looks something like this:
 </div>
 <table class=index width=100%>
 <tr><td class=indexHead colspan=2>Constructor</td></tr>
-<tr><td class=indexKey><nobr><a href="#Constructor:GSlider">GSlider()</a><br><a href="#Constructor:GSlider">GSlider(min,&nbsp;max,&nbsp;value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a horizontal <code>GSlider</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GSlider">GSlider()</a><br>
+<a href="#Constructor:GSlider">GSlider(<var>min</var>,&nbsp;<var>max</var>,&nbsp;<var>value</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a horizontal <code>GSlider</code>.</td></tr>
 <tr><td class=indexHead colspan=2>Methods</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getValue">getValue()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the current value of the slider.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setValue">setValue(value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the current value of the slider.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setValue">setValue(<var>value</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the current value of the slider.</td></tr>
 </table>
 <h2>Constructor detail</h2>
 <hr>
@@ -52,8 +53,8 @@ the slider value changes.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-GSlider *slider = new GSlider();
-GSlider *slider = new GSlider(min, max, value);
+GSlider* slider = new GSlider();
+GSlider* slider = new GSlider(min, max, value);
 </pre>
 <hr>
 </table>

@@ -56,7 +56,8 @@ For examples illustrating the use of the <code>GObject</code> class, see
 the descriptions of the individual subclasses.
 <table class=index width=100%>
 <tr><td class=indexHead colspan=2>Methods</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:contains">contains(pt)</a><br><a href="#Method:contains">contains(x,&nbsp;y)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the specified point is inside the object.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:contains">contains(<var>pt</var>)</a><br>
+<a href="#Method:contains">contains(<var>x</var>,&nbsp;<var>y</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the specified point is inside the object.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getBounds">getBounds()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the bounding box of this object, which is defined to be the smallest rectangle that covers everything drawn by the figure.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getColor">getColor()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the color used to display this object.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getHeight">getHeight()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the height of this object, which is defined to be the height of the bounding box.</td></tr>
@@ -68,14 +69,15 @@ the descriptions of the individual subclasses.
 <tr><td class=indexKey><nobr><a href="#Method:getX">getX()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <i>x</i>-coordinate of the object.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getY">getY()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <i>y</i>-coordinate of the object.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:isVisible">isVisible()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if this object is visible.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:move">move(dx,&nbsp;dy)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Moves the object on the screen using the displacements <code>dx</code> and <code>dy</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:move">move(<var>dx</var>,&nbsp;<var>dy</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Moves the object on the screen using the displacements <code>dx</code> and <code>dy</code>.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:sendBackward">sendBackward()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Moves this object one step toward the back in the <i>z</i> dimension.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:sendForward">sendForward()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Moves this object one step toward the front in the <i>z</i> dimension.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:sendToBack">sendToBack()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Moves this object to the back of the display in the <i>z</i> dimension.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:sendToFront">sendToFront()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Moves this object to the front of the display in the <i>z</i> dimension.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setColor">setColor(color)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the color used to display this object.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setLocation">setLocation(pt)</a><br><a href="#Method:setLocation">setLocation(x,&nbsp;y)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the location of this object to the specified point.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setVisible">setVisible(flag)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets whether this object is visible.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setColor">setColor(<var>color</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the color used to display this object.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setLocation">setLocation(<var>pt</var>)</a><br>
+<a href="#Method:setLocation">setLocation(<var>x</var>,&nbsp;<var>y</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the location of this object to the specified point.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setVisible">setVisible(<var>flag</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets whether this object is visible.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a printable representation of the object.</td></tr>
 </table>
 <h2>Method detail</h2>
@@ -118,7 +120,7 @@ GPoint pt = gobj-&gt;getLocation();
 <hr>
 <a name="Method:setLocation"></a>
 <pre class=detailCode>
-void setLocation(const GPoint &amp; pt);
+void setLocation(const GPoint&amp; pt);
 void setLocation(double x, double y);
 </pre>
 <div class=detailHTML>
@@ -374,7 +376,7 @@ gobj-&gt;toString();
 <hr>
 <a name="Method:getParent"></a>
 <pre class=detailCode>
-GCompound *getParent() const;
+GCompound* getParent() const;
 </pre>
 <div class=detailHTML>
 Returns a pointer to the <code>GCompound</code> that contains this
@@ -387,7 +389,7 @@ returns <code>NULL</code>.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-GCompound *parent = gobj-&gt;getParent();
+GCompound* parent = gobj-&gt;getParent();
 </pre>
 <hr>
 </table>

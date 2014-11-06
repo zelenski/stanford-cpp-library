@@ -13,20 +13,27 @@ The Stanford <code>cslib</code> package
 </tr></table>
 <hr>
 <h1 class=header><code>foreach.h</code></h1>
+
 This file defines the <code>foreach</code> keyword, which implements
 a substitute for the range-based <code>for</code> loop from C++11.
 All iterable classes in the Stanford libraries import this file, so
 clients don't ordinarily need to do so explicitly.  This version of
 <code>foreach</code> also supports C++ strings and arrays.
+
+<p>
+	NOTE: If you are using a compiler that supports C++11, you should not
+	need to include this header nor use its associated <code>foreach</code> syntax.
+	You should favor using the standard for-each loop included in C++11.
+</p>
 <table class=index width=100%>
 <tr><td class=indexHead colspan=2>Statement</td></tr>
-<tr><td class=indexKey><nobr><a href="#Statement:foreach">foreach(type&nbsp;var&nbsp;in&nbsp;collection)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>The <code>foreach</code> statement steps through the elements in a collection.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Statement:foreach">foreach(<var>type</var>&nbsp;<var>var</var>&nbsp;in&nbsp;<var>collection</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>The <code>foreach</code> statement steps through the elements in a collection.</td></tr>
 </table>
 <h2>Statement detail</h2>
 <hr>
 <a name="Statement:foreach"></a>
 <pre class=detailCode>
-foreach (type var in collection) { ... }
+foreach (<var>type</var> <var>var</var> in <var>collection</var>) { ... }
 </pre>
 <div class=detailHTML>
 The <code>foreach</code> statement steps through the elements in

@@ -1,17 +1,39 @@
 <html>
 <head>
-<title>The Stanford cslib package</title>
+<title>The Stanford C++ Libraries</title>
 <link rel="stylesheet" type="text/css" href="cppdoc.css" />
+
 </head>
 <body>
 <table class=banner>
 <tr>
 <td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
 <td valign=middle><div class=bannerText>
-The Stanford <code>cslib</code> package
+The Stanford C++ Libraries
 </div></td>
 </tr></table>
 <hr>
+
+<p>
+	The Stanford C++ libraries were originally developed by Stanford Professor <strong>Eric Roberts</strong>, with the assistance of Julie Zelenski, Keith Schwarz, and other Stanford colleagues.
+	This documentation describes an unofficial modified version of the Stanford C++ libraries that is currently being used in Stanford's CS 106B/X courses.
+	This unofficial modified version is written and maintained by <strong>Marty Stepp</strong> (stepp AT stanford DOT edu).
+	Download the latest version of the modified C++ library here:
+</p>
+
+<ul>
+	<li>
+		<a href="StanfordCPPLib.zip"><img src="images/icon_zip.gif" width=16 height=16 />
+		StanfordCPPLib.zip</a> (last updated: Wed 2014/08/16)
+	</li>
+	<li>
+		<img src="images/icon_zip.gif" width=16 height=16 style="visibility: hidden" />
+		<a href="modifications.html">Complete list of changes</a> made to the libraries by their current maintainer <em>(coming soon; not yet available)</em>
+	</li>
+</ul>
+
+<hr>
+
 The <code>StanfordCPPLib</code> package defines a set of libraries that
 make it easier to write programs in C++.  The facilities provided by
 these libraries can be broken down into the following groups:
@@ -23,13 +45,25 @@ Several of the interfaces
 <a href="direction.html"><code>direction.h</code></a>,
 <a href="error.html"><code>error.h</code></a>,
 <a href="filelib.html"><code>filelib.h</code></a>,
+<!--
 <a href="foreach.html"><code>foreach.h</code></a>,
+-->
 <a href="gmath.html"><code>gmath.h</code></a>,
 <a href="random.html"><code>random.h</code></a>,
+<a href="regexpr.html"><code>regexpr.h</code></a>,
 <a href="simpio.html"><code>simpio.h</code></a>,
 <a href="strlib.html"><code>strlib.h</code></a>,
 <a href="thread.html"><code>thread.h</code></a>) export collections
 of free functions instead of classes.
+
+<ul>
+	<li>
+		<a href="functions.html">Complete list of global functions</a>, by file header <span class="new">(NEW!)</span>
+	</li>
+	<li>
+		<a href="variables.html">Complete list of global variables/macros</a>, by file header <span class="new">(NEW!)</span>
+	</li>
+</ul>
 
 <p><li><b><i>Collection classes.</i></b>
 Several of the classes
@@ -40,10 +74,12 @@ Several of the classes
 <a href="HashMap-class.html"><code>HashMap</code></a>,
 <a href="HashSet-class.html"><code>HashSet</code></a>,
 <a href="Lexicon-class.html"><code>Lexicon</code></a>,
+<a href="LinkedList-class.html"><code>LinkedList</code></a>,
 <a href="Map-class.html"><code>Map</code></a>,
 <a href="PriorityQueue-class.html"><code>PriorityQueue</code></a>,
 <a href="Queue-class.html"><code>Queue</code></a>,
 <a href="Set-class.html"><code>Set</code></a>,
+<a href="SparseGrid-class.html"><code>SparseGrid</code></a>,
 <a href="Stack-class.html"><code>Stack</code></a>,
 <a href="Vector-class.html"><code>Vector</code></a>)
 represent collections of other objects.
@@ -62,6 +98,7 @@ which represents a window that appears on the display screen
 <li>A collection of graphics objects, each of which is a subclass of
 <a href="GObject-class.html"><code>GObject</code></a>
 (<a href="GArc-class.html"><code>GArc</code></a>,
+<a href="GBufferedImage-class.html"><code>GBufferedImage</code></a>,
 <a href="GCompound-class.html"><code>GCompound</code></a>,
 <a href="GImage-class.html"><code>GImage</code></a>,
 <a href="GLabel-class.html"><code>GLabel</code></a>,
@@ -73,11 +110,12 @@ which represents a window that appears on the display screen
 <a href="GRoundRect-class.html"><code>GRoundRect</code></a>)
 
 <li>A set of onscreen interactors
+<a href="GButton-class.html"><code>GButton</code></a>),
 (<a href="GCheckBox-class.html"><code>GCheckBox</code></a>,
 <a href="GChooser-class.html"><code>GChooser</code></a>,
+<a href="GOptionPane-class.html"><code>GOptionPane</code></a>),
 <a href="GSlider-class.html"><code>GSlider</code></a>,
-<a href="GTextField-class.html"><code>GTextField</code></a>,
-<a href="GButton-class.html"><code>GButton</code></a>)
+<a href="GTextField-class.html"><code>GTextField</code></a>
 
 <li>A hierarchical set of classes for fielding events
 (<a href="GEvent-class.html"><code>GEvent</code></a>,
@@ -115,6 +153,7 @@ classes, along with sample code.
 <tr><td class=indexKey><nobr><a href="G3DRect-class.html">G3DRect</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This graphical object subclass represents a rectangular box that can be raised or lowered.</td></tr>
 <tr><td class=indexKey><nobr><a href="GActionEvent-class.html">GActionEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This event subclass represents an action event.</td></tr>
 <tr><td class=indexKey><nobr><a href="GArc-class.html">GArc</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This graphical object subclass represents an elliptical arc.</td></tr>
+<tr><td class=indexKey><nobr><a href="GBufferedImage-class.html">GBufferedImage</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class implements a 2D region of colored pixels that can be read/set individually.</td></tr>
 <tr><td class=indexKey><nobr><a href="GButton-class.html">GButton</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subclass represents an onscreen button.</td></tr>
 <tr><td class=indexKey><nobr><a href="GCheckBox-class.html">GCheckBox</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subclass represents an onscreen check box.</td></tr>
 <tr><td class=indexKey><nobr><a href="GChooser-class.html">GChooser</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subclass represents a selectable list.</td></tr>
@@ -128,13 +167,14 @@ classes, along with sample code.
 <tr><td class=indexKey><nobr><a href="GLine-class.html">GLine</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This graphical object subclass represents a line segment.</td></tr>
 <tr><td class=indexKey><nobr><a href="GMouseEvent-class.html">GMouseEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This event subclass represents a mouse event.</td></tr>
 <tr><td class=indexKey><nobr><a href="GObject-class.html">GObject</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class is the common superclass of all graphical objects that can be displayed on a graphical window.</td></tr>
+<tr><td class=indexKey><nobr><a href="GOptionPane-class.html">GOptionPane</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents graphical input/output dialog boxes that can be popped up on the screen.</td></tr>
 <tr><td class=indexKey><nobr><a href="GOval-class.html">GOval</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This graphical object subclass represents an oval inscribed in a rectangular box.</td></tr>
 <tr><td class=indexKey><nobr><a href="GPoint-class.html">GPoint</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class contains real-valued x and y fields.</td></tr>
 <tr><td class=indexKey><nobr><a href="GPolygon-class.html">GPolygon</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This graphical object subclass represents a polygon bounded by line segments.</td></tr>
-<tr><td class=indexKey><nobr><a href="Graph-class.html">Graph&lt;NodeType,ArcType&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents a graph with the specified node and arc types.</td></tr>
+<tr><td class=indexKey><nobr><a href="Graph-class.html">Graph&lt;<var>NodeType</var>,&nbsp;<var>ArcType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents a graph with the specified node and arc types.</td></tr>
 <tr><td class=indexKey><nobr><a href="GRect-class.html">GRect</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents a graphical object whose appearance consists of a rectangular box.</td></tr>
 <tr><td class=indexKey><nobr><a href="GRectangle-class.html">GRectangle</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type contains real-valued x, y, width, and height fields.</td></tr>
-<tr><td class=indexKey><nobr><a href="Grid-class.html">Grid&lt;ValueType&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class stores an indexed, two-dimensional array.</td></tr>
+<tr><td class=indexKey><nobr><a href="Grid-class.html">Grid&lt;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class stores an indexed, two-dimensional array.</td></tr>
 <tr><td class=indexKey><nobr><a href="GRoundRect-class.html">GRoundRect</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents a graphical object whose appearance consists of a rectangular box with rounded corners.</td></tr>
 <tr><td class=indexKey><nobr><a href="GSlider-class.html">GSlider</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subclass represents an onscreen slider.</td></tr>
 <tr><td class=indexKey><nobr><a href="GTextField-class.html">GTextField</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subclass represents a text field for entering short text strings.</td></tr>
@@ -142,43 +182,48 @@ classes, along with sample code.
 <tr><td class=indexKey><nobr><a href="GTimerEvent-class.html">GTimerEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This event subclass represents a timer event.</td></tr>
 <tr><td class=indexKey><nobr><a href="GWindow-class.html">GWindow</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents a graphics window that supports simple graphics.</td></tr>
 <tr><td class=indexKey><nobr><a href="GWindowEvent-class.html">GWindowEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This event subclass represents a window event.</td></tr>
-<tr><td class=indexKey><nobr><a href="HashMap-class.html">HashMap&lt;KeyType,ValueType&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class implements an efficient association between <b><i>keys</i></b> and <b><i>values</i></b>.</td></tr>
-<tr><td class=indexKey><nobr><a href="HashSet-class.html">HashSet&lt;ValueType&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class implements an efficient abstraction for storing sets of distinct elements.</td></tr>
+<tr><td class=indexKey><nobr><a href="HashMap-class.html">HashMap&lt;<var>KeyType</var>,&nbsp;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class implements an efficient association between <b><i>keys</i></b> and <b><i>values</i></b>.</td></tr>
+<tr><td class=indexKey><nobr><a href="HashSet-class.html">HashSet&lt;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class implements an efficient abstraction for storing sets of distinct elements.</td></tr>
 <tr><td class=indexKey><nobr><a href="ibitstream-class.html">ibitstream</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This base class reads bits of data from various input sources.</td></tr>
 <tr><td class=indexKey><nobr><a href="ifbitstream-class.html">ifbitstream</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class reads bits of data from input files.</td></tr>
 <tr><td class=indexKey><nobr><a href="istringbitstream-class.html">istringbitstream</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class reads bits of data from the characters of a string.</td></tr>
 <tr><td class=indexKey><nobr><a href="Lexicon-class.html">Lexicon</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class is used to represent a <b><i>lexicon,</i></b> or word list.</td></tr>
+<tr><td class=indexKey><nobr><a href="LinkedList-class.html">LinkedList&lt;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class stores an ordered list of values similar to an array or vector.</td></tr>
 <tr><td class=indexKey><nobr><a href="Lock-class.html">Lock</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents a simple lock used to control concurrency.</td></tr>
-<tr><td class=indexKey><nobr><a href="Map-class.html">Map&lt;KeyType,ValueType&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class maintains an association between <b><i>keys</i></b> and <b><i>values</i></b>.</td></tr>
+<tr><td class=indexKey><nobr><a href="Map-class.html">Map&lt;<var>KeyType</var>,&nbsp;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class maintains an association between <b><i>keys</i></b> and <b><i>values</i></b>.</td></tr>
 <tr><td class=indexKey><nobr><a href="obitstream-class.html">obitstream</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This base class writes bits of data to various output sources.</td></tr>
 <tr><td class=indexKey><nobr><a href="ofbitstream-class.html">ofbitstream</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class writes bits of data to output files.</td></tr>
 <tr><td class=indexKey><nobr><a href="ostringbitstream-class.html">ostringbitstream</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class writes bits of data into an internal string buffer.</td></tr>
 <tr><td class=indexKey><nobr><a href="Point-class.html">Point</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents an <i>x</i>-<i>y</i> coordinate point on a two-dimensional integer grid.</td></tr>
-<tr><td class=indexKey><nobr><a href="PriorityQueue-class.html">PriorityQueue&lt;ValueType&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class models a structure called a <b><i>priority&nbsp;queue</i></b> in which values are processed in order of priority.</td></tr>
-<tr><td class=indexKey><nobr><a href="Queue-class.html">Queue&lt;ValueType&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class models a linear structure called a <b><i>queue</i></b> in which values are added at one end and removed from the other.</td></tr>
-<tr><td class=indexKey><nobr><a href="Set-class.html">Set&lt;ValueType&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class stores a collection of distinct elements.</td></tr>
+<tr><td class=indexKey><nobr><a href="PriorityQueue-class.html">PriorityQueue&lt;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class models a structure called a <b><i>priority&nbsp;queue</i></b> in which values are processed in order of priority.</td></tr>
+<tr><td class=indexKey><nobr><a href="Queue-class.html">Queue&lt;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class models a linear structure called a <b><i>queue</i></b> in which values are added at one end and removed from the other.</td></tr>
+<tr><td class=indexKey><nobr><a href="Set-class.html">Set&lt;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class stores a collection of distinct elements.</td></tr>
 <tr><td class=indexKey><nobr><a href="Sound-class.html">Sound</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class encapsulates a sound file.</td></tr>
-<tr><td class=indexKey><nobr><a href="Stack-class.html">Stack&lt;ValueType&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class models a linear structure called a <b><i>stack</i></b> in which values are added and removed only from one end.</td></tr>
+<tr><td class=indexKey><nobr><a href="SparseGrid-class.html">SparseGrid&lt;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class stores an indexed, two-dimensional array.</td></tr>
+<tr><td class=indexKey><nobr><a href="Stack-class.html">Stack&lt;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class models a linear structure called a <b><i>stack</i></b> in which values are added and removed only from one end.</td></tr>
 <tr><td class=indexKey><nobr><a href="Thread-class.html">Thread</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class encapsulates a lightweight process running in the same address space as the creator.</td></tr>
 <tr><td class=indexKey><nobr><a href="Timer-class.html">Timer</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class measures intervals of time while a program is running.</td></tr>
 <tr><td class=indexKey><nobr><a href="TokenScanner-class.html">TokenScanner</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class divides a string into individual tokens.</td></tr>
-<tr><td class=indexKey><nobr><a href="Vector-class.html">Vector&lt;ValueType&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class stores an ordered list of values similar to an array.</td></tr>
+<tr><td class=indexKey><nobr><a href="Vector-class.html">Vector&lt;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class stores an ordered list of values similar to an array.</td></tr>
 <tr><td class=indexKey><nobr><a href="Vertex-class.html">Vertex</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents vertices (nodes) in a graph.</td></tr>
 </table>
+
 <table class=index width=100%>
 <tr><td class=indexHead colspan=2>Interface files</td></tr>
-<tr><td class=indexKey><nobr><a href="basicgraph.html">basicgraph.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports a parameterized <code>Graph</code> class used to represent basic <b><i>graphs,</i></b> which consist of a set of <b><i>vertexes</i></b> and a set of <b><i>edges</i></b>.</td></tr>
+<tr><td class=indexKey><nobr><a href="basicgraph.html">basicgraph.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports a parameterized <code>BasicGraph</code> class used to represent basic <b><i>graphs,</i></b> which consist of a set of <b><i>vertexes</i></b> and a set of <b><i>edges</i></b>.</td></tr>
 <tr><td class=indexKey><nobr><a href="bitstream.html">bitstream.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports the bit I/O stream classes, including <code>ibitstream</code>, <code>ifbitstream</code>, <code>istringbitstream</code>, <code>obitstream</code>, <code>ofbitstream</code>, and <code>ostringbitstream</code>.</td></tr>
 <tr><td class=indexKey><nobr><a href="console.html">console.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file redirects the <code>cin</code>, <code>cout</code>, and <code>cerr</code> channels to use a console window.</td></tr>
 <tr><td class=indexKey><nobr><a href="dawglexicon.html">dawglexicon.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports the <code>DawgLexicon</code> class, which is a compact structure for storing a list of words.</td></tr>
 <tr><td class=indexKey><nobr><a href="direction.html">direction.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports an enumerated type called <code>Direction</code> whose elements are the four compass points: <code>NORTH</code>, <code>EAST</code>, <code>SOUTH</code>, and <code>WEST</code>.</td></tr>
 <tr><td class=indexKey><nobr><a href="error.html">error.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file defines the <code>ErrorException</code> class and the <code>error</code> function.</td></tr>
 <tr><td class=indexKey><nobr><a href="filelib.html">filelib.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports a standardized set of tools for working with files.</td></tr>
-<tr><td class=indexKey><nobr><a href="foreach.html">foreach.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file defines the <code>foreach</code> keyword, which implements a substitute for the range-based <code>for</code> loop from C++11.</td></tr>
+<tr class="deprecated"><td class=indexKey><nobr><a href="foreach.html">foreach.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%><em>Deprecated.</em>  This file defines the <code>foreach</code> keyword, which implements a substitute for the range-based <code>for</code> loop from C++11.  We do not recommend that you include this header in current programs.</td></tr>
+<tr><td class=indexKey><nobr><a href="gbufferedimage.html">gbufferedimage.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports the <code>GBufferedImage</code> class for 2D images of pixels.</td></tr>
 <tr><td class=indexKey><nobr><a href="gevents.html">gevents.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file defines the event types used in the StanfordCPPLib graphics libraries.</td></tr>
 <tr><td class=indexKey><nobr><a href="ginteractors.html">ginteractors.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports a hierarchy of graphical interactors similar to those provided in the Java Swing libraries.</td></tr>
 <tr><td class=indexKey><nobr><a href="gmath.html">gmath.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports several functions for working with graphical geometry along with the mathematical constants <code>PI</code> and <code>E</code>.</td></tr>
 <tr><td class=indexKey><nobr><a href="gobjects.html">gobjects.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports a hierarchy of graphical shapes based on the model developed for the ACM Java Graphics.</td></tr>
+<tr><td class=indexKey><nobr><a href="goptionpane.html">goptionpane.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports the <code>GOptionPane</code> class for graphical input/output dialog boxes.</td></tr>
 <tr><td class=indexKey><nobr><a href="graph.html">graph.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports a parameterized <code>Graph</code> class used to represent <b><i>graphs,</i></b> which consist of a set of <b><i>nodes</i></b> and a set of <b><i>arcs</i></b>.</td></tr>
 <tr><td class=indexKey><nobr><a href="grid.html">grid.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports the <code>Grid</code> class, which offers a convenient abstraction for representing a two-dimensional array.</td></tr>
 <tr><td class=indexKey><nobr><a href="gtimer.html">gtimer.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file defines the <code>GTimer</code> class, which implements a general interval timer.</td></tr>
@@ -187,15 +232,18 @@ classes, along with sample code.
 <tr><td class=indexKey><nobr><a href="hashmap.html">hashmap.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports the <code>HashMap</code> class, which stores a set of <i>key</i>-<i>value</i> pairs.</td></tr>
 <tr><td class=indexKey><nobr><a href="hashset.html">hashset.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports the <code>HashSet</code> class, which implements an efficient abstraction for storing sets of values.</td></tr>
 <tr><td class=indexKey><nobr><a href="lexicon.html">lexicon.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports the <code>Lexicon</code> class, which is a compact structure for storing a list of words.</td></tr>
+<tr><td class=indexKey><nobr><a href="linkedlist.html">linkedlist.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports the <code>LinkedList</code> class, which provides an efficient, safe, convenient replacement for the array type in C++.</td></tr>
 <tr><td class=indexKey><nobr><a href="map.html">map.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports the template class <code>Map</code>, which maintains a collection of <i>key</i>-<i>value</i> pairs.</td></tr>
 <tr><td class=indexKey><nobr><a href="point.html">point.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports a class representing an integer-valued <i>x</i>-<i>y</i> pair.</td></tr>
 <tr><td class=indexKey><nobr><a href="pqueue.html">pqueue.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports the <code>PriorityQueue</code> class, a collection in which values are processed in priority order.</td></tr>
 <tr><td class=indexKey><nobr><a href="queue.html">queue.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports the <code>Queue</code> class, a collection in which values are ordinarily processed in a first-in/first-out (FIFO) order.</td></tr>
 <tr><td class=indexKey><nobr><a href="random.html">random.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports functions for generating pseudorandom numbers.</td></tr>
+<tr><td class=indexKey><nobr><a href="regexpr.html">regexpr.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports functions for processing regular expressions operations on C++ strings.</td></tr>
 <tr><td class=indexKey><nobr><a href="set.html">set.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports the <code>Set</code> class, which implements a collection for storing a set of distinct elements.</td></tr>
 <tr><td class=indexKey><nobr><a href="shuffle.html">shuffle.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports a set of functions that randomly rearrange arrays, grids, and vectors.</td></tr>
 <tr><td class=indexKey><nobr><a href="simpio.html">simpio.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports a set of functions that simplify input/output operations in C++ and provide some error-checking on console input.</td></tr>
 <tr><td class=indexKey><nobr><a href="sound.html">sound.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file defines a class that represents a sound.</td></tr>
+<tr><td class=indexKey><nobr><a href="sparsegrid.html">sparsegrid.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports the <code>SparseGrid</code> class, which offers a convenient abstraction for representing a two-dimensional array.</td></tr>
 <tr><td class=indexKey><nobr><a href="stack.html">stack.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports the <code>Stack</code> class, which implements a collection that processes values in a last-in/first-out (LIFO) order.</td></tr>
 <tr><td class=indexKey><nobr><a href="strlib.html">strlib.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports several useful string functions that are not included in the C++ string library.</td></tr>
 <tr><td class=indexKey><nobr><a href="thread.html">thread.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports a simple, platform-independent thread abstraction, along with simple tools for concurrency control.</td></tr>
@@ -203,5 +251,6 @@ classes, along with sample code.
 <tr><td class=indexKey><nobr><a href="tokenscanner.html">tokenscanner.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports a <code>TokenScanner</code> class that divides a string into individual logical units called <b><i>tokens</i></b>.</td></tr>
 <tr><td class=indexKey><nobr><a href="vector.html">vector.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports the <code>Vector</code> class, which provides an efficient, safe, convenient replacement for the array type in C++.</td></tr>
 </table>
+
 </body>
 </html>

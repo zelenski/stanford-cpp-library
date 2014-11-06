@@ -20,13 +20,14 @@ you should use the <a href="gtypes.html"><code>gtypes.h</code></a>
 interface instead.
 <table class=index width=100%>
 <tr><td class=indexHead colspan=2>Constructor</td></tr>
-<tr><td class=indexKey><nobr><a href="#Constructor:Point">Point()</a><br><a href="#Constructor:Point">Point(x,&nbsp;y)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>Point</code> object with the specified x and y coordinates.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:Point">Point()</a><br>
+<a href="#Constructor:Point">Point(<var>x</var>,&nbsp;<var>y</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>Point</code> object with the specified x and y coordinates.</td></tr>
 <tr><td class=indexHead colspan=2>Methods</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getX">getX()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <i>x</i>-coordinate of the point.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getY">getY()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <i>y</i>-coordinate of the point.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a string representation of the <code>Point</code> in the form <code>"(x, y)"</code>.</td></tr>
 <tr><td class=indexHead colspan=2>Operator</td></tr>
-<tr><td class=indexKey><nobr><a href="#Operator:&lt;&lt;">cout << pt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Overloads the <code>&lt;&lt;</code> operator so that it is able to display <code>Point</code> values.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Operator:&lt;&lt;">cout &lt;&lt; pt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Overloads the <code>&lt;&lt;</code> operator so that it is able to display <code>Point</code> values.</td></tr>
 </table>
 <h2>Constructor detail</h2>
 <hr>
@@ -91,7 +92,7 @@ string str = pt.toString();
 <hr>
 <a name="Operator:<<"></a>
 <pre class=detailCode>
-ostream &amp; operator&lt;&lt;(ostream &amp; os, const Point &amp; pt);
+ostream&amp; operator&lt;&lt;(ostream&amp; os, const Point&amp; pt);
 </pre>
 <div class=detailHTML>
 Overloads the <code>&lt;&lt;</code> operator so that it is able

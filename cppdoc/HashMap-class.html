@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>HashMap&lt;KeyType,ValueType&gt;</title>
+<title>HashMap</title>
 <link rel="stylesheet" type="text/css" href="cppdoc.css" />
 </head>
 <body>
@@ -13,7 +13,7 @@ The Stanford <code>cslib</code> package
 </tr></table>
 <hr>
 <div class=include><a href="hashmap.html">#include "hashmap.h"</a></div>
-<h1 class=header><code>class HashMap&lt;KeyType,ValueType&gt;</code></h1>
+<h1 class=header><code>class HashMap&lt;<var>KeyType</var>,&nbsp;<var>ValueType</var>&gt;</code></h1>
 This class implements an efficient association between
 <b><i>keys</i></b> and <b><i>values</i></b>.  This class is
 identical to the <a href="Map-class.html"><code>Map</code></a> class
@@ -21,24 +21,109 @@ except for the fact that it uses a hash table as its underlying
 representation.  Although the <code>HashMap</code> class operates in
 constant time, the iterator for <code>HashMap</code> returns the
 values in a seemingly random order.
+
 <table class=index width=100%>
-<tr><td class=indexHead colspan=2>Constructor</td></tr>
-<tr><td class=indexKey><nobr><a href="#Constructor:HashMap">HashMap()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Initializes a new empty map that associates keys and values of the specified types.</td></tr>
-<tr><td class=indexHead colspan=2>Methods</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes all entries from this map.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:containsKey">containsKey(key)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if there is an entry for <code>key</code> in this map.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:get">get(key)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the value associated with <code>key</code> in this map.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if this map contains no entries.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:keys">keys()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a <code>Vector</code> copy of all keys in this map.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:mapAll">mapAll(fn)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Iterates through the map entries and calls <code>fn(key, value)</code> for each one.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:put">put(key,&nbsp;value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Associates <code>key</code> with <code>value</code> in this map.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:remove">remove(key)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes any entry for <code>key</code> from this map.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of entries in this map.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts the map to a printable string representation.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:values">values()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a <code>Vector</code> copy of all values in this map.</td></tr>
-<tr><td class=indexHead colspan=2>Operator</td></tr>
-<tr><td class=indexKey><nobr><a href="#Operator:[]">map[key]</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Selects the value associated with <code>key</code>.</td></tr>
+	<tr>
+		<td class=indexHead colspan=3>Constructor</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Constructor:HashMap">HashMap()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Initializes a new empty map that associates keys and values of the specified types.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Methods</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Removes all entries from this map.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:containsKey">containsKey(<var>key</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if there is an entry for <code>key</code> in this map.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:equals">equals(<var>map</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N log N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the two maps contain the same elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:get">get(<var>key</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the value associated with <code>key</code> in this map.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if this map contains no entries.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:keys">keys()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns a <code>Vector</code> copy of all keys in this map.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:mapAll">mapAll(<var>fn</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Iterates through the map entries and calls <code>fn(key, value)</code> for each one.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:put">put(<var>key</var>,&nbsp;<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Associates <code>key</code> with <code>value</code> in this map.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:remove">remove(<var>key</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Removes any entry for <code>key</code> from this map.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the number of entries in this map.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Converts the map to a printable string representation.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:values">values()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns a <code>Vector</code> copy of all values in this map.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Operators</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:[]"><var>map</var>[<var>key</var>]</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Selects the value associated with <code>key</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:=="><var>map1</var> == <var>map1</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>map1</code> and <code>map2</code> contain the same elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:!="><var>map1</var> != <var>map2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>map1</code> and <code>map2</code> are different.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><var>ostream</var>&nbsp;&lt;&lt;&nbsp;<var>map</var></nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Outputs the contents of the map to the given output stream.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><var>istream</var>&nbsp;&gt;&gt;&nbsp;<var>map</var></nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Reads the contents of the given input stream into the map.</td>
+	</tr>
 </table>
+
 <h2>Constructor detail</h2>
 <hr>
 <a name="Constructor:HashMap"></a>
@@ -52,7 +137,7 @@ the <code>==</code> operator, and there must be a free function
 with the following signature:
 
 <pre>
-   int hashCode(KeyType key);
+    int hashCode(KeyType key);
 </pre>
 
 that returns a positive integer determined by the key.  This interface
@@ -61,23 +146,69 @@ the C++ primitive types.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-HashMap&lt;KeyType,ValueType&gt; map;
+HashMap&lt;KeyType, ValueType&gt; map;
 </pre>
 <hr>
 </table>
+
 <h2>Method detail</h2>
+
 <hr>
-<a name="Method:size"></a>
+<a name="Method:clear"></a>
 <pre class=detailCode>
-int size() const;
+void clear();
 </pre>
 <div class=detailHTML>
-Returns the number of entries in this map.
+Removes all entries from this map.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-int nEntries = map.size();
+map.clear();
 </pre>
+
+<hr>
+<a name="Method:containsKey"></a>
+<pre class=detailCode>
+bool containsKey(KeyType key) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if there is an entry for <code>key</code>
+in this map.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (map.containsKey(key)) ...
+</pre>
+
+<hr>
+<a name="Method:equals"></a>
+<pre class=detailCode>
+bool equals(const HashMap&amp; map) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the two maps contain exactly the same set of key/value pairs.
+Identical in behavior to the <code>==</code> operator.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (map.equals(map2)) ...
+</pre>
+
+<hr>
+<a name="Method:get"></a>
+<pre class=detailCode>
+ValueType get(KeyType key) const;
+</pre>
+<div class=detailHTML>
+Returns the value associated with <code>key</code> in this map.
+If <code>key</code> is not found, <code>get</code> returns the
+default value for <code>ValueType</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType value = map.get(key);
+</pre>
+
 <hr>
 <a name="Method:isEmpty"></a>
 <pre class=detailCode>
@@ -90,6 +221,8 @@ Returns <code>true</code> if this map contains no entries.
 <pre class=usageCode>
 if (map.isEmpty()) ...
 </pre>
+
+<hr>
 <a name="Method:keys"></a>
 <pre class=detailCode>
 Vector&lt;KeyType&gt; keys() const;
@@ -106,6 +239,23 @@ Vector&lt;KeyType&gt; keys = map.keys();
 <p class="since">
 	Available since: 2014/02/01 version of C++ library
 </p>
+
+<hr>
+<a name="Method:mapAll"></a>
+<pre class=detailCode>
+void mapAll(void (*fn)(KeyType, ValueType)) const;
+void mapAll(void (*fn)(const KeyType&amp;, const ValueType&amp;)) const;
+void mapAll(FunctorType fn) const;
+</pre>
+<div class=detailHTML>
+Iterates through the map entries and calls <code>fn(key, value)</code>
+for each one.  The keys are processed in an undetermined order.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map.mapAll(fn);
+</pre>
+
 <hr>
 <a name="Method:put"></a>
 <pre class=detailCode>
@@ -120,33 +270,7 @@ by the new value.
 <pre class=usageCode>
 map.put(key, value);
 </pre>
-<hr>
-<a name="Method:get"></a>
-<pre class=detailCode>
-ValueType get(KeyType key) const;
-</pre>
-<div class=detailHTML>
-Returns the value associated with <code>key</code> in this map.
-If <code>key</code> is not found, <code>get</code> returns the
-default value for <code>ValueType</code>.
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-ValueType value = map.get(key);
-</pre>
-<hr>
-<a name="Method:containsKey"></a>
-<pre class=detailCode>
-bool containsKey(KeyType key) const;
-</pre>
-<div class=detailHTML>
-Returns <code>true</code> if there is an entry for <code>key</code>
-in this map.
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-if (map.containsKey(key)) ...
-</pre>
+
 <hr>
 <a name="Method:remove"></a>
 <pre class=detailCode>
@@ -159,18 +283,20 @@ Removes any entry for <code>key</code> from this map.
 <pre class=usageCode>
 map.remove(key);
 </pre>
+
 <hr>
-<a name="Method:clear"></a>
+<a name="Method:size"></a>
 <pre class=detailCode>
-void clear();
+int size() const;
 </pre>
 <div class=detailHTML>
-Removes all entries from this map.
+Returns the number of entries in this map.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-map.clear();
+int nEntries = map.size();
 </pre>
+
 <hr>
 <a name="Method:toString"></a>
 <pre class=detailCode>
@@ -184,6 +310,7 @@ The key/value pairs appear in an unpredictable order.
 <pre class=usageCode>
 string str = map.toString();
 </pre>
+
 <hr>
 <a name="Method:values"></a>
 <pre class=detailCode>
@@ -201,28 +328,15 @@ Vector&lt;ValueType&gt; values = map.values();
 <p class="since">
 	Available since: 2014/02/01 version of C++ library
 </p>
-<hr>
-<a name="Method:mapAll"></a>
-<pre class=detailCode>
-void mapAll(void (*fn)(KeyType, ValueType)) const;
-void mapAll(void (*fn)(const KeyType &amp;, const ValueType &amp;)) const;
-void mapAll(FunctorType fn) const;
-</pre>
-<div class=detailHTML>
-Iterates through the map entries and calls <code>fn(key, value)</code>
-for each one.  The keys are processed in an undetermined order.
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-map.mapAll(fn);
-</pre>
+
 <hr>
 </table>
 <h2>Operator detail</h2>
+
 <hr>
 <a name="Operator:[]"></a>
 <pre class=detailCode>
-ValueType &amp; operator[](KeyType key);
+ValueType&amp; operator[](KeyType key);
 ValueType operator[](KeyType key) const;
 </pre>
 <div class=detailHTML>
@@ -237,6 +351,7 @@ whose value is set to the default for the value type.
 <pre class=usageCode>
 map[key]
 </pre>
+
 <hr>
 </table>
 </body>

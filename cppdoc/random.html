@@ -16,10 +16,11 @@ The Stanford <code>cslib</code> package
 This file exports functions for generating pseudorandom numbers.
 <table class=index width=100%>
 <tr><td class=indexHead colspan=2>Functions</td></tr>
-<tr><td class=indexKey><nobr><a href="#Function:randomChance">randomChance(p)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> with the probability indicated by <code>p</code>.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Function:randomInteger">randomInteger(low,&nbsp;high)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a random integer in the range <code>low</code> to <code>high</code>, inclusive.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Function:randomReal">randomReal(low,&nbsp;high)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a random real number in the half-open interval [<code>low</code>&nbsp;..&nbsp;<code>high</code>).</td></tr>
-<tr><td class=indexKey><nobr><a href="#Function:setRandomSeed">setRandomSeed(seed)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the internal random number seed to the specified value.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:randomBool">randomBool()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> or <code>false</code> with 50% probability.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:randomChance">randomChance(<var>p</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> with the probability indicated by <code>p</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:randomInteger">randomInteger(<var>low</var>,&nbsp;<var>high</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a random integer in the range <code>low</code> to <code>high</code>, inclusive.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:randomReal">randomReal(<var>low</var>,&nbsp;<var>high</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a random real number in the half-open interval [<code>low</code>&nbsp;..&nbsp;<code>high</code>).</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setRandomSeed">setRandomSeed(<var>seed</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the internal random number seed to the specified value.</td></tr>
 </table>
 <h2>Function detail</h2>
 <hr>
@@ -52,6 +53,21 @@ means that the result is always greater than or equal to
 double d = randomReal(low, high);
 </pre>
 <hr>
+
+<a name="Function:randomBool"></a>
+<pre class=detailCode>
+bool randomBool();
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> or <code>false</code> with 50% probability each.
+This is equivalent to calling <code>randomChance(0.5)</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (randomBool()) ...
+</pre>
+<hr>
+
 <a name="Function:randomChance"></a>
 <pre class=detailCode>
 bool randomChance(double p);
@@ -68,6 +84,7 @@ of the time.
 if (randomChance(p)) ...
 </pre>
 <hr>
+
 <a name="Function:setRandomSeed"></a>
 <pre class=detailCode>
 void setRandomSeed(int seed);

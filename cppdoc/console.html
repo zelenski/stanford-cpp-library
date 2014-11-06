@@ -16,15 +16,24 @@ The Stanford <code>cslib</code> package
 This file redirects the <code>cin</code>, <code>cout</code>,
 and <code>cerr</code> channels to use a console window.  This file
 must be included in the source file that contains the <code>main</code>
-method, although it may be included in other source files as well.
+function, although it may be included in other source files as well.
 <table class=index width=100%>
 <tr><td class=indexHead colspan=2>Functions</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:clearConsole">clearConsole()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Erases the contents of the console window.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Function:setConsoleFont">setConsoleFont(font)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the font used for the console.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Function:setConsoleSize">setConsoleSize(width,&nbsp;height)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the size of the console to the specified dimensions, measured in pixels.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getConsoleEcho">getConsoleEcho()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns whether console output is also sent to the plain text console.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getConsoleExitProgramOnClose">getConsoleExitProgramOnClose()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns whether console should shut down the entire program when it is closed.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getConsolePrintExceptions">getConsolePrintExceptions()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns whether console should catch and display exceptions that occur when the program is running.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setConsoleEcho">setConsoleEcho(<var>echo</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes whether console output is also sent to the plain text console.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setConsoleExitProgramOnClose">setConsoleExitProgramOnClose()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes whether console should shut down the entire program when it is closed.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setConsoleFont">setConsoleFont(<var>font</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the font used for the console.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setConsoleLocation">setConsoleLocation(<var>x</var>,&nbsp;<var>y</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the x/y position of the console on screen.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setConsolePrintExceptions">setConsolePrintExceptions()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes whether console should catch and display exceptions that occur when the program is running.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setConsoleSize">setConsoleSize(<var>width</var>,&nbsp;<var>height</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the size of the console to the specified dimensions, measured in pixels.</td></tr>
 </table>
+
 <h2>Function detail</h2>
 <hr>
+
 <a name="Function:clearConsole"></a>
 <pre class=detailCode>
 void clearConsole();
@@ -37,9 +46,115 @@ Erases the contents of the console window.
 clearConsole();
 </pre>
 <hr>
+
+<a name="Function:getConsoleEcho"></a>
+<pre class=detailCode>
+bool getConsoleEcho();
+</pre>
+<div class=detailHTML>
+Returns whether console output is also sent to the plain text console.
+The Stanford graphical console window takes over the standard output streams <code>cin</code>, <code>cout</code>, and <code>cerr</code>, but the old plain-text versions are still available, usually as a pane at the bottom of your development environment (IDE).
+If the console echo is <code>true</code>, any messages sent to the graphical console are also sent to the old plain text console.
+This is generally used to assist in capturing or comparing output.
+
+<p>The console echo is initially <code>false</code> but can be changed to <code>true</code> by calling <code>setConsoleEcho</code> and/or by defining the compiler flag <code>SPL_CONSOLE_ECHO</code>.</p>
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+bool echo = getConsoleEcho();
+</pre>
+<p class="since">
+	Available since: 2014/02/01 version of C++ library
+</p>
+<hr>
+
+<a name="Function:getConsoleExitProgramOnClose"></a>
+<pre class=detailCode>
+bool getConsoleExitProgramOnClose();
+</pre>
+<div class=detailHTML>
+Returns whether console should shut down the entire program when it is closed.
+
+<p>This value is initially <code>false</code> but can be changed to <code>true</code> by calling <code>setConsoleExitProgramOnClose</code> and/or by defining the compiler flag <code>SPL_CONSOLE_EXIT_ON_CLOSE</code>.</p>
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+bool exit = getConsoleExitProgramOnClose();
+</pre>
+<p class="since">
+	Available since: 2014/02/01 version of C++ library
+</p>
+<hr>
+
+<a name="Function:getConsolePrintExceptions"></a>
+<pre class=detailCode>
+bool getConsolePrintExceptions();
+</pre>
+<div class=detailHTML>
+Returns whether console should catch and display exceptions that occur when the program is running.
+If <code>true</code>, the console enables a top-level terminate signal handler that will catch and display any exception that is about to otherwise terminate the program.
+Information about the exception will be emitted to <code>cerr</code>.
+This is typically useful for new programmers to help them diagnose the cause of a program crash.
+The same information could be gathered by running the program in a debugger, but many new programmers are not experienced with the debugger or are unwilling to use it, so this feature provides a middle ground.
+
+<p>This value is initially <code>false</code> but can be changed to <code>true</code> by calling <code>setConsolePrintExceptions</code> and/or by defining the compiler flag <code>SPL_CONSOLE_PRINT_EXCEPTIONS</code>.</p>
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+bool exit = getConsolePrintExceptions();
+</pre>
+<p class="since">
+	Available since: 2014/02/01 version of C++ library
+</p>
+<hr>
+
+<a name="Function:setConsoleEcho"></a>
+<pre class=detailCode>
+void setConsoleEcho(bool echo);
+</pre>
+<div class=detailHTML>
+Changes whether console output is also sent to the plain text console.
+The Stanford graphical console window takes over the standard output streams <code>cin</code>, <code>cout</code>, and <code>cerr</code>, but the old plain-text versions are still available, usually as a pane at the bottom of your development environment (IDE).
+If the console echo is <code>true</code>, any messages sent to the graphical console are also sent to the old plain text console.
+This is generally used to assist in capturing or comparing output.
+
+<p>The console echo is initially <code>false</code> but can be changed to <code>true</code> by calling this function and/or by defining the compiler flag <code>SPL_CONSOLE_ECHO</code>.</p>
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setConsoleEcho(echo);
+</pre>
+<p class="since">
+	Available since: 2014/02/01 version of C++ library
+</p>
+<hr>
+
+<a name="Function:setConsoleExitProgramOnClose"></a>
+<pre class=detailCode>
+void setConsoleExitProgramOnClose(bool exit);
+</pre>
+<div class=detailHTML>
+Changes whether console should shut down the entire program when it is closed.
+
+<p>This value is initially <code>false</code> but can be changed to <code>true</code> by calling this function and/or by defining the compiler flag <code>SPL_CONSOLE_EXIT_ON_CLOSE</code>.</p>
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setConsoleExitProgramOnClose(exit);
+</pre>
+<p class="since">
+	Available since: 2014/02/01 version of C++ library
+</p>
+<hr>
+
 <a name="Function:setConsoleFont"></a>
 <pre class=detailCode>
-void setConsoleFont(const string &amp; font);
+void setConsoleFont(const string&amp; font);
 </pre>
 <div class=detailHTML>
 Changes the font used for the console.  The <code>font</code> parameter
@@ -59,6 +174,46 @@ first available font on the system is used.
 setConsoleFont(font);
 </pre>
 <hr>
+
+<a name="Function:setConsoleLocation"></a>
+<pre class=detailCode>
+void setConsoleLocation(int x, int y);
+</pre>
+<div class=detailHTML>
+Changes the top/left corner of the console window to be located at the specified (x, y) pixel position.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setConsoleLocation(x, y);
+</pre>
+<p class="since">
+	Available since: 2014/02/01 version of C++ library
+</p>
+<hr>
+
+<a name="Function:setConsolePrintExceptions"></a>
+<pre class=detailCode>
+void setConsolePrintExceptions(bool print);
+</pre>
+<div class=detailHTML>
+Changes whether console should catch and display exceptions that occur when the program is running.
+If <code>true</code>, the console enables a top-level terminate signal handler that will catch and display any exception that is about to otherwise terminate the program.
+Information about the exception will be emitted to <code>cerr</code>.
+This is typically useful for new programmers to help them diagnose the cause of a program crash.
+The same information could be gathered by running the program in a debugger, but many new programmers are not experienced with the debugger or are unwilling to use it, so this feature provides a middle ground.
+
+<p>This value is initially <code>false</code> but can be changed to <code>true</code> by calling this function and/or by defining the compiler flag <code>SPL_CONSOLE_PRINT_EXCEPTIONS</code>.</p>
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setConsolePrintExceptions(exit);
+</pre>
+<p class="since">
+	Available since: 2014/02/01 version of C++ library
+</p>
+<hr>
+
 <a name="Function:setConsoleSize"></a>
 <pre class=detailCode>
 void setConsoleSize(double width, double height);

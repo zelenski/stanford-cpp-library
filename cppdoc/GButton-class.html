@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>GButton : public <a href="GInteractor-class.html">GInteractor</a></title>
+<title>GButton</title>
 <link rel="stylesheet" type="text/css" href="cppdoc.css" />
 </head>
 <body>
@@ -23,19 +23,19 @@ Guide to the Galaxy</i>):
 <pre>
    int main() {
       GWindow gw;
-      GButton *button = new GButton("RED");
+      GButton* button = new GButton("RED");
       gw.addToRegion(button, "SOUTH");
       while (true) {
          GEvent e = waitForEvent(ACTION_EVENT | CLICK_EVENT);
          if (e.getEventType() == MOUSE_CLICKED) break;
-         cout << "Please do not press this button again." << endl;
+         cout &lt;&lt; &quot;Please do not press this button again.&quot; &lt;&lt; endl;
       }
       return 0;
    }
 </pre>
 <table class=index width=100%>
 <tr><td class=indexHead colspan=2>Constructor</td></tr>
-<tr><td class=indexKey><nobr><a href="#Constructor:GButton">GButton(label)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GButton</code> with the specified label.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GButton">GButton(<var>label</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GButton</code> with the specified label.</td></tr>
 </table>
 <h2>Constructor detail</h2>
 <hr>
@@ -50,7 +50,7 @@ label string.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-GButton *button = new GButton(label);
+GButton* button = new GButton(label);
 </pre>
 <hr>
 </table>

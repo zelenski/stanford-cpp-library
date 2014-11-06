@@ -1,0 +1,105 @@
+<html>
+<head>
+<title>regexpr.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><code>regexpr.h</code></h1>
+This file exports functions for performing regular expression operations on C++ strings.
+It will be unnecessary once the C++11 <code>regex</code> library is widely available, but as of this writing the regex library is not supported on gcc and some other major C++ compilers.
+
+<p>
+Here is a short example usage of the functions in this library:
+</p>
+
+<pre>
+string s = "aaaaaab";
+if (regexMatch(s, "a*b")) {
+    s = regexReplace(s, "a{3}b", "X");   // returns "aaaX"
+}
+...
+</pre>
+
+<p>
+The regular expression functions here are implemented by sending the strings and regexes to the Java Back-End to run the operations in Java.
+This is a bit kludgy but we don't want to write our own regex parser from scratch.
+Using Java's is a compromise for now.
+Note that the performance of this implementation is slow and should not be relied upon in tight loops or performance-critical code.
+</p>
+
+<p>
+The syntax of regular expressions accepted is the same as that accepted by Java's <code>java.util.regex.Pattern</code> class and as described at the following URL:
+</p>
+
+<ul>
+	<li>
+		<a class="popup" target="_blank" href="http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html">Java API Specification: <code>java.util.regex.Pattern</code></a>
+	</li>
+</ul>
+
+<p class="since">
+	Available since: 2014/03/01 version of C++ library
+</p>
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:regexMatch">regexMatch(<var>s</var>, <var>regexp</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the given string matches the given regular expression as a substring.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:regexMatchCount">regexMatchCount(<var>s</var>, <var>regexp</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of times the given regular expression is found inside the given string.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:regexReplace">regexReplace(<var>s</var>, <var>regexp</var>, <var>replacement</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Replaces all occurrences of the given regular expression in the given string with the given replacement text, and returns the resulting string.</td></tr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:regexMatch"></a>
+<pre class=detailCode>
+bool regexMatch(string s, string regexp);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the given string matches the given regular expression as a substring.
+If the regular expression is not matched, returns <code>false</code>.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (regexMatch(s, regexp)) {
+    ...
+}
+</pre>
+<hr>
+<a name="Function:regexMatchCount"></a>
+<pre class=detailCode>
+int regexMatchCount(string s, string regexp);
+</pre>
+<div class=detailHTML>
+Returns the number of times the given regular expression is found inside the given string.
+Returns <code>0</code> if there are no matches for the regular expression.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int count = regexMatchCount(s, regexp);
+</pre>
+<hr>
+
+<a name="Function:regexReplace"></a>
+<pre class=detailCode>
+string regexReplace(string s, string regexp, string replacement);
+</pre>
+<div class=detailHTML>
+Replaces all occurrences of the given regular expression in the given string with the given replacement text, and returns the resulting string.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+s = regexReplace(s, regexp, replacement);
+</pre>
+<hr>
+</table>
+</body>
+</html>

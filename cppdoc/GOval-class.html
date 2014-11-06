@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>GOval : public <a href="GObject-class.html">GObject</a></title>
+<title>GOval</title>
 <link rel="stylesheet" type="text/css" href="cppdoc.css" />
 </head>
 <body>
@@ -21,24 +21,27 @@ filled green oval inscribed in the graphics window:
 <pre>
    int main() {
       GWindow gw;
-      cout << "This program draws a green oval filling the window." << endl;
-      GOval *oval = new GOval(gw.getWidth(), gw.getHeight());
-      oval->setFilled(true);
-      oval->setColor("GREEN");
+      cout &lt;&lt; &quot;This program draws a green oval filling the window.&quot; &lt;&lt; endl;
+      GOval* oval = new GOval(gw.getWidth(), gw.getHeight());
+      oval-&gt;setFilled(true);
+      oval-&gt;setColor(&quot;GREEN&quot;);
       gw.add(oval);
       return 0;
    }
 </pre>
 <table class=index width=100%>
 <tr><td class=indexHead colspan=2>Constructor</td></tr>
-<tr><td class=indexKey><nobr><a href="#Constructor:GOval">GOval(width,&nbsp;height)</a><br><a href="#Constructor:GOval">GOval(x,&nbsp;y,&nbsp;width,&nbsp;height)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Constructs a new oval inscribed in the specified rectangle.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GOval">GOval(<var>width</var>,&nbsp;<var>height</var>)</a><br>
+<a href="#Constructor:GOval">GOval(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>width</var>,&nbsp;<var>height</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Constructs a new oval inscribed in the specified rectangle.</td></tr>
 <tr><td class=indexHead colspan=2>Methods</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getFillColor">getFillColor()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the color used to display the filled region of this oval.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:isFilled">isFilled()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the oval is filled.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setBounds">setBounds(rect)</a><br><a href="#Method:setBounds">setBounds(x,&nbsp;y,&nbsp;width,&nbsp;height)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the bounds of the oval to the specified values.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setFillColor">setFillColor(color)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the color used to display the filled region of this oval.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setFilled">setFilled(flag)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the fill status for the oval, where <code>false</code> is outlined and <code>true</code> is filled.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setSize">setSize(size)</a><br><a href="#Method:setSize">setSize(width,&nbsp;height)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the size of the bounding rectangle to the specified width and height.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setBounds">setBounds(<var>rect</var>)</a><br>
+<a href="#Method:setBounds">setBounds(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>width</var>,&nbsp;<var>height</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the bounds of the oval to the specified values.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setFillColor">setFillColor(<var>color</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the color used to display the filled region of this oval.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setFilled">setFilled(<var>flag</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the fill status for the oval, where <code>false</code> is outlined and <code>true</code> is filled.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setSize">setSize(<var>size</var>)</a><br>
+<a href="#Method:setSize">setSize(<var>width</var>,&nbsp;<var>height</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the size of the bounding rectangle to the specified width and height.</td></tr>
 </table>
 <h2>Constructor detail</h2>
 <hr>
@@ -54,8 +57,8 @@ given by <code>x</code> and <code>y</code>.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-GOval *oval = new GOval(width, height);
-GOval *oval = new GOval(x, y, width, height);
+GOval* oval = new GOval(width, height);
+GOval* oval = new GOval(x, y, width, height);
 </pre>
 <hr>
 </table>
@@ -63,7 +66,7 @@ GOval *oval = new GOval(x, y, width, height);
 <hr>
 <a name="Method:setSize"></a>
 <pre class=detailCode>
-void setSize(const GDimension &amp; size);
+void setSize(const GDimension&amp; size);
 void setSize(double width, double height);
 </pre>
 <div class=detailHTML>
@@ -78,7 +81,7 @@ oval-&gt;setSize(width, height);
 <hr>
 <a name="Method:setBounds"></a>
 <pre class=detailCode>
-void setBounds(const GRectangle &amp; size);
+void setBounds(const GRectangle&amp; size);
 void setBounds(double x, double y, double width, double height);
 </pre>
 <div class=detailHTML>

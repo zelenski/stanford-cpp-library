@@ -21,6 +21,11 @@ h2 {
 	font-size:125%;
 }
 
+.new {
+	color: #cc0000;
+	font-weight: bold;
+}
+
 pre, code, .code, .indexKey, .include, .detailCode, .usageCode {
 	font-family:"Consolas", "Courier New", "Courier", "monospace";
 }
@@ -32,6 +37,17 @@ pre, code, .code {
 
 .comment {
 	color:blue;
+}
+
+.detailCode {
+	padding:0px;
+	font-weight:bold;
+	font-size:100%;
+}
+
+.detailHTML {
+	font-size:1em;
+	margin-left:20px;
 }
 
 .it {
@@ -66,6 +82,12 @@ pre, code, .code {
 	background-color: #ffffee !important;
 }
 
+.index td.bigoh {
+	border:1px solid #9eadc0;
+	vertical-align: top;
+	white-space: nowrap;
+}
+
 .indexHead {
 	font-size:1.4em;
 	font-weight:bold;
@@ -75,9 +97,14 @@ pre, code, .code {
 .indexKey {
 	border:1px solid black; 
 	padding:3px 5px;
-	font-weight:bold;
+	/* font-weight:bold; */
 	font-size:95%;
 	vertical-align: top;
+}
+
+.indexKey var {
+	font-style: italic;
+	font-weight: bold;
 }
 
 .indexSynopsis {
@@ -91,17 +118,6 @@ pre, code, .code {
 	font-size:100%;
 }
 
-.detailCode {
-	padding:0px;
-	font-weight:bold;
-	font-size:100%;
-}
-
-.detailHTML {
-	font-size:1em;
-	margin-left:20px;
-}
-
 .inset {
 	margin-left:36px;
 }
@@ -113,7 +129,10 @@ pre, code, .code {
 }	
 
 .since {
-	font-style: italic;
+	background-color: #ffffee;
+	border: 1px dotted #bbbbff;
 	color: #555;
 	font-size: 95%;
+	font-style: italic;
+	padding: 0.2em 0.5em;
 }

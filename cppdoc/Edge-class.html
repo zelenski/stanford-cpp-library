@@ -13,14 +13,14 @@
 				</div></td>
 			</tr>
 		</table>
-		
+
 		<hr>
-		
+
 		<div class=include><a href="graph.html">#include "basicgraph.h"</a></div>
 		<h1 class=header>
 			<code>class Edge</code>
 		</h1>
-		
+
 		<p>
 			Each object of this class represents a single directed edge (or arc) in a graph.
 			The edge object itself stores some useful data fields that can be used in various graph algorithms.
@@ -36,18 +36,21 @@
 		<p class="since">
 			Available since: 2014/02/01 version of C++ library
 		</p>
-		
+
 		<table class=index width=100%>
 			<tr><td class=indexHead colspan=2>Constructor</td></tr>
-			<tr><td class=indexKey><nobr><a href="#Constructor:Edge">Edge(start, finish)</a><br><a href="#Constructor:Edge">Edge(start, end, cost)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a edge between the given vertices.</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Constructor:Edge">Edge(<var>start</var>,&nbsp;<var>finish</var>)</a><br>
+			<a href="#Constructor:Edge">Edge(<var>start</var>,&nbsp;<var>end</var>,&nbsp;<var>cost</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a edge between the given vertices.</td></tr>
 			<tr><td class=indexHead colspan=2>Methods</td></tr>
 			<tr><td class=indexKey><nobr><a href="#Method:resetData">resetData()</a></td><td class=indexSynopsis width=100%>Sets the <code>visited</code> field back to its initial value.</td></tr>
 			<tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a></td><td class=indexSynopsis width=100%>Returns a string representation of this edge.</td></tr>
 			<tr><td class=indexHead colspan=2>Fields</td></tr>
 			<tr><td class=indexKey><nobr>double&nbsp;cost</nobr></td><td class=indexSynopsis width=100%>The cost or weight of this edge.</td></tr>
+			<tr><td class=indexKey><nobr>Vertex*&amp;&nbsp;end</nobr></td><td class=indexSynopsis width=100%>A pointer to the finishing vertex touching this edge (alias for <code>finish</code>).</td></tr>
 			<tr><td class=indexKey><nobr>Vertex*&nbsp;finish</nobr></td><td class=indexSynopsis width=100%>A pointer to the finishing vertex touching this edge.</td></tr>
 			<tr><td class=indexKey><nobr>Vertex*&nbsp;start</nobr></td><td class=indexSynopsis width=100%>A pointer to the starting vertex touching this edge.</td></tr>
 			<tr><td class=indexKey><nobr>bool&nbsp;visited</nobr></td><td class=indexSynopsis width=100%>Whether or not this edge has currently been visited; initially <code>false</code>.</td></tr>
+			<tr><td class=indexKey><nobr>double&amp;&nbsp;weight</nobr></td><td class=indexSynopsis width=100%>The cost or weight of this edge (alias for <code>cost</code>).</td></tr>
 		</table>
 
 		<h2>Constructor detail</h2>
@@ -81,7 +84,7 @@ void resetData();
 e.resetData();
 </pre>
 		<hr>
-		
+
 		<a name="Method:toString"></a>
 		<pre class=detailCode>
 string toString() const;

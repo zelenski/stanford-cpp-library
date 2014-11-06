@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Set&lt;ValueType&gt;</title>
+<title>Set</title>
 <link rel="stylesheet" type="text/css" href="cppdoc.css" />
 </head>
 <body>
@@ -13,36 +13,156 @@ The Stanford <code>cslib</code> package
 </tr></table>
 <hr>
 <div class=include><a href="set.html">#include "set.h"</a></div>
-<h1 class=header><code>class Set&lt;ValueType&gt;</code></h1>
+<h1 class=header><code>class Set&lt;<var>ValueType</var>&gt;</code></h1>
 This class stores a collection of distinct elements.
 
 <p>The set uses a binary search tree (BST) structure internally.
 Because of this choice of internal representation, the <code>ValueType</code> for the type of elements stored in a <code>Set</code> must define a natural ordering through a <a target="_blank" href="http://www.cplusplus.com/reference/functional/less/"><code>less</code> function</a> and/or <code>&lt;</code> operator so that the elements can be compared and ordered.
+
 <table class=index width=100%>
-<tr><td class=indexHead colspan=2>Constructor</td></tr>
-<tr><td class=indexKey><nobr><a href="#Constructor:Set">Set()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates an empty set of the specified element type.</td></tr>
-<tr><td class=indexHead colspan=2>Methods</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:add">add(value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds an element to this set, if it was not already there.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes all elements from this set.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:contains">contains(value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the specified value is in this set.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:first">first()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the first value in the set in the order established by the <code>foreach</code> macro.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if this set contains no elements.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:isSubsetOf">isSubsetOf(set2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Implements the subset relation on sets.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:mapAll">mapAll(fn)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Iterates through the elements of the set and calls <code>fn(value)</code> for each one.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:remove">remove(value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes an element from this set.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of elements in this set.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts the set to a printable string representation.</td></tr>
-<tr><td class=indexHead colspan=2>Operators</td></tr>
-<tr><td class=indexKey><nobr><a href="#Operator:!=">set1 != set2</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if <code>set1</code> and <code>set2</code> are different.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Operator:*">set1 * set2</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the intersection of sets <code>set1</code> and <code>set2</code>, which is the set of all elements that appear in both.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Operator:*=">set1 *= set2;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes any elements from <code>set1</code> that are not present in <code>set2</code>.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Operator:+">set1 + set2</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the union of sets <code>set1</code> and <code>set2</code>, which is the set of elements that appear in at least one of the two sets.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Operator:+=">set1 += set2;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds all of the elements from <code>set2</code> (or the single specified value) to <code>set1</code>.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Operator:-">set1 - set2</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the difference of sets <code>set1</code> and <code>set2</code>, which is all of the elements that appear in <code>set1</code> but not <code>set2</code>.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Operator:-=">set1 -= set2;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes the elements from <code>set2</code> (or the single specified value) from <code>set1</code>.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Operator:==">set1 == set2</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if <code>set1</code> and <code>set2</code> contain the same elements.</td></tr>
+	<tr>
+		<td class=indexHead colspan=3>Constructor</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Constructor:Set">Set()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Creates an empty set of the specified element type.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Methods</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:add">add(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(log N)</td>
+		<td class=indexSynopsis width=100%>Adds an element to this set, if it was not already there.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Removes all elements from this set.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:contains">contains(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(log N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the specified value is in this set.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:equals">equals(<var>set</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the two sets contain the same elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:first">first()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(log N)</td>
+		<td class=indexSynopsis width=100%>Returns the first value in the set in the order established by a for-each loop.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if this set contains no elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:isSubsetOf">isSubsetOf(<var>set2</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Implements the subset relation on sets.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:mapAll">mapAll(<var>fn</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Iterates through the elements of the set and calls <code>fn(value)</code> for each one.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:remove">remove(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(log N)</td>
+		<td class=indexSynopsis width=100%>Removes an element from this set.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the number of elements in this set.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Converts the set to a printable string representation.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Operators</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:=="><var>set1</var> == <var>set2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>set1</code> and <code>set2</code> contain the same elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:!="><var>set1</var> != <var>set2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>set1</code> and <code>set2</code> are different.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:+"><var>set1</var> + <var>set2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns the union of sets <code>set1</code> and <code>set2</code>, which is the set of elements that appear in at least one of the two sets.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:+"><var>set</var> + <var>value</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns the union of set <code>set1</code> and individual value <code>value</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:+="><var>set1</var> += <var>set2</var>;</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Adds all of the elements from <code>set2</code> (or the single specified value) to <code>set1</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:+="><var>set</var> += <var>value</var>;</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(log N)</td>
+		<td class=indexSynopsis width=100%>Adds the single specified value to the set.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:-"><var>set1</var> - <var>set2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns the difference of sets <code>set1</code> and <code>set2</code>, which is all of the elements that appear in <code>set1</code> but not <code>set2</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:-"><var>set</var> - <var>value</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns the set <code>set</code> with <code>value</code> removed.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:-="><var>set1</var> -= <var>set2</var>;</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Removes the elements from <code>set2</code> (or the single specified value) from <code>set1</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:-="><var>set</var> -= <var>value</var>;</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(log N)</td>
+		<td class=indexSynopsis width=100%>Removes the single specified value from the set.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:*"><var>set1</var> * <var>set2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns the intersection of sets <code>set1</code> and <code>set2</code>, which is the set of all elements that appear in both.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:*="><var>set1</var> *= <var>set2</var>;</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Removes any elements from <code>set1</code> that are not present in <code>set2</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><var>ostream</var>&nbsp;&lt;&lt;&nbsp;<var>set</var></nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Outputs the contents of the set to the given output stream.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><var>istream</var>&nbsp;&gt;&gt;&nbsp;<var>set</var></nobr></td>
+		<td class="bigoh">O(N log N)</td>
+		<td class=indexSynopsis width=100%>Reads the contents of the given input stream into the set.</td>
+	</tr>
 </table>
+
 <h2>Constructor detail</h2>
+
 <hr>
 <a name="Constructor:Set"></a>
 <pre class=detailCode>
@@ -55,38 +175,16 @@ Creates an empty set of the specified element type.
 <pre class=usageCode>
 Set&lt;ValueType&gt; set;
 </pre>
+
 <hr>
 </table>
 <h2>Method detail</h2>
-<hr>
-<a name="Method:size"></a>
-<pre class=detailCode>
-int size() const;
-</pre>
-<div class=detailHTML>
-Returns the number of elements in this set.
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-count = set.size();
-</pre>
-<hr>
-<a name="Method:isEmpty"></a>
-<pre class=detailCode>
-bool isEmpty() const;
-</pre>
-<div class=detailHTML>
-Returns <code>true</code> if this set contains no elements.
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-if (set.isEmpty()) ...
-</pre>
+
 <hr>
 <a name="Method:add"></a>
 <pre class=detailCode>
-void add(const ValueType &amp; value);
-void insert(const ValueType &amp; value);
+void add(ValueType value);
+void insert(ValueType value);
 </pre>
 <div class=detailHTML>
 Adds an element to this set, if it was not already there.  For
@@ -97,46 +195,7 @@ is also exported as <code>insert</code>.
 <pre class=usageCode>
 set.add(value);
 </pre>
-<hr>
-<a name="Method:remove"></a>
-<pre class=detailCode>
-void remove(const ValueType &amp; value);
-</pre>
-<div class=detailHTML>
-Removes an element from this set.  If the value was not
-contained in the set, no error is generated and the set
-remains unchanged.
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-set.remove(value);
-</pre>
-<hr>
-<a name="Method:contains"></a>
-<pre class=detailCode>
-bool contains(const ValueType &amp; value) const;
-</pre>
-<div class=detailHTML>
-Returns <code>true</code> if the specified value is in this set.
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-if (set.contains(value)) ...
-</pre>
-<hr>
-<a name="Method:isSubsetOf"></a>
-<pre class=detailCode>
-bool isSubsetOf(const Set &amp; set2) const;
-</pre>
-<div class=detailHTML>
-Implements the subset relation on sets.  It returns
-<code>true</code> if every element of this set is
-contained in <code>set2</code>.
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-if (set.isSubsetOf(set2)) ...
-</pre>
+
 <hr>
 <a name="Method:clear"></a>
 <pre class=detailCode>
@@ -149,20 +208,122 @@ Removes all elements from this set.
 <pre class=usageCode>
 set.clear();
 </pre>
+
+<hr>
+<a name="Method:contains"></a>
+<pre class=detailCode>
+bool contains(ValueType value) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the specified value is in this set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (set.contains(value)) ...
+</pre>
+
+<hr>
+<a name="Method:equals"></a>
+<pre class=detailCode>
+bool equals(const Set&amp; grid) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the two sets contain exactly the same element values.
+Identical in behavior to the <code>==</code> operator.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (set.equals(set2)) ...
+</pre>
+
 <hr>
 <a name="Method:first"></a>
 <pre class=detailCode>
 ValueType first() const;
 </pre>
 <div class=detailHTML>
-Returns the first value in the set in the order established by the
-<code>foreach</code> macro.  If the set is empty, <code>first</code>
+Returns the first value in the set in the order established by
+a for-each loop.  If the set is empty, <code>first</code>
 generates an error.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
 ValueType value = set.first();
 </pre>
+
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty() const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if this set contains no elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (set.isEmpty()) ...
+</pre>
+
+<hr>
+<a name="Method:isSubsetOf"></a>
+<pre class=detailCode>
+bool isSubsetOf(const Set&amp; set2) const;
+</pre>
+<div class=detailHTML>
+Implements the subset relation on sets.  It returns
+<code>true</code> if every element of this set is
+contained in <code>set2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (set.isSubsetOf(set2)) ...
+</pre>
+
+<hr>
+<a name="Method:mapAll"></a>
+<pre class=detailCode>
+void mapAll(void (*fn)(ValueType)) const;
+void mapAll(void (*fn)(const ValueType&amp;)) const;
+void mapAll(FunctorType fn) const;
+</pre>
+<div class=detailHTML>
+Iterates through the elements of the set and calls <code>fn(value)</code>
+for each one.  The values are processed in ascending order, as defined
+by the comparison function.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set.mapAll(fn);
+</pre>
+
+<hr>
+<a name="Method:remove"></a>
+<pre class=detailCode>
+void remove(ValueType value);
+</pre>
+<div class=detailHTML>
+Removes an element from this set.  If the value was not
+contained in the set, no error is generated and the set
+remains unchanged.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set.remove(value);
+</pre>
+
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size() const;
+</pre>
+<div class=detailHTML>
+Returns the number of elements in this set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+count = set.size();
+</pre>
+
 <hr>
 <a name="Method:toString"></a>
 <pre class=detailCode>
@@ -176,29 +337,15 @@ The values will be listed in ascending order.
 <pre class=usageCode>
 string str = set.toString();
 </pre>
-<hr>
-<a name="Method:mapAll"></a>
-<pre class=detailCode>
-void mapAll(void (*fn)(ValueType)) const;
-void mapAll(void (*fn)(const ValueType &amp;)) const;
-void mapAll(FunctorType fn) const;
-</pre>
-<div class=detailHTML>
-Iterates through the elements of the set and calls <code>fn(value)</code>
-for each one.  The values are processed in ascending order, as defined
-by the comparison function.
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-set.mapAll(fn);
-</pre>
+
 <hr>
 </table>
 <h2>Operator detail</h2>
+
 <hr>
 <a name="Operator:=="></a>
 <pre class=detailCode>
-bool operator==(const Set &amp; set2) const;
+bool operator==(const Set&amp; set2) const;
 </pre>
 <div class=detailHTML>
 Returns <code>true</code> if <code>set1</code> and <code>set2</code>
@@ -208,10 +355,11 @@ contain the same elements.
 <pre class=usageCode>
 set1 == set2
 </pre>
+
 <hr>
 <a name="Operator:!="></a>
 <pre class=detailCode>
-bool operator!=(const Set &amp; set2) const;
+bool operator!=(const Set&amp; set2) const;
 </pre>
 <div class=detailHTML>
 Returns <code>true</code> if <code>set1</code> and <code>set2</code>
@@ -221,11 +369,12 @@ are different.
 <pre class=usageCode>
 set1 != set2
 </pre>
+
 <hr>
 <a name="Operator:+"></a>
 <pre class=detailCode>
-Set operator+(const Set &amp; set2) const;
-Set operator+(const ValueType &amp; element) const;
+Set operator+(const Set&amp; set2) const;
+Set operator+(ValueType element) const;
 </pre>
 <div class=detailHTML>
 Returns the union of sets <code>set1</code> and <code>set2</code>, which
@@ -238,10 +387,11 @@ case the operator returns a new set formed by adding that element.
 set1 + set2
 set1 + element
 </pre>
+
 <hr>
 <a name="Operator:*"></a>
 <pre class=detailCode>
-Set operator*(const Set &amp; set2) const;
+Set operator*(const Set&amp; set2) const;
 </pre>
 <div class=detailHTML>
 Returns the intersection of sets <code>set1</code> and <code>set2</code>,
@@ -251,11 +401,12 @@ which is the set of all elements that appear in both.
 <pre class=usageCode>
 set1 * set2
 </pre>
+
 <hr>
 <a name="Operator:-"></a>
 <pre class=detailCode>
-Set operator-(const Set &amp; set2) const;
-Set operator-(const ValueType &amp; element) const;
+Set operator-(const Set&amp; set2) const;
+Set operator-(ValueType element) const;
 </pre>
 <div class=detailHTML>
 Returns the difference of sets <code>set1</code> and <code>set2</code>,
@@ -269,11 +420,12 @@ set formed by removing that element.
 set1 - set2
 set1 - element
 </pre>
+
 <hr>
 <a name="Operator:+="></a>
 <pre class=detailCode>
-Set &amp; operator+=(const Set &amp; set2);
-Set &amp; operator+=(const ValueType &amp; value);
+Set&amp; operator+=(const Set&amp; set2);
+Set&amp; operator+=(ValueType value);
 </pre>
 <div class=detailHTML>
 Adds all of the elements from <code>set2</code> (or the single
@@ -282,7 +434,7 @@ specified value) to <code>set1</code>.  As a convenience, the
 that it is possible to initialize a set like this:
 
 <pre>
-   Set<int> digits;
+   Set&lt;int&gt; digits;
    digits += 0, 1, 2, 3, 4, 5, 6, 7, 8, 9;
 </pre>
 <p>Usage:<br>
@@ -291,10 +443,11 @@ that it is possible to initialize a set like this:
 set1 += set2;
 set1 += value;
 </pre>
+
 <hr>
 <a name="Operator:*="></a>
 <pre class=detailCode>
-Set &amp; operator*=(const Set &amp; set2);
+Set&amp; operator*=(const Set&amp; set2);
 </pre>
 <div class=detailHTML>
 Removes any elements from <code>set1</code> that are not present in
@@ -304,11 +457,12 @@ Removes any elements from <code>set1</code> that are not present in
 <pre class=usageCode>
 set1 *= set2;
 </pre>
+
 <hr>
 <a name="Operator:-="></a>
 <pre class=detailCode>
-Set &amp; operator-=(const Set &amp; set2);
-Set &amp; operator-=(const ValueType &amp; value);
+Set&amp; operator-=(const Set&amp; set2);
+Set&amp; operator-=(ValueType value);
 </pre>
 <div class=detailHTML>
 Removes the elements from <code>set2</code> (or the single
@@ -329,6 +483,7 @@ which removes the values 0, 2, 4, 6, and 8 from the set
 set1 -= set2;
 set1 -= value;
 </pre>
+
 <hr>
 </table>
 </body>

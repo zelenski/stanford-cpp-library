@@ -17,24 +17,26 @@ This file exports the <code>HashMap</code> class, which stores
 a set of <i>key</i>-<i>value</i> pairs.
 <table class=index width=100%>
 <tr><td class=indexHead colspan=2>Class</td></tr>
-<tr><td class=indexKey><nobr><a href="HashMap-class.html">HashMap&lt;KeyType,ValueType&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class implements an efficient association between <b><i>keys</i></b> and <b><i>values</i></b>.</td></tr>
+<tr><td class=indexKey><nobr><a href="HashMap-class.html">HashMap&lt;<var>KeyType</var>,&nbsp;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class implements an efficient association between <b><i>keys</i></b> and <b><i>values</i></b>.</td></tr>
 <tr><td class=indexHead colspan=2>Function</td></tr>
-<tr><td class=indexKey><nobr><a href="#Function:hashCode">hashCode(key)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a hash code for the specified key, which is always a nonnegative integer.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:hashCode">hashCode(<var>key</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a hash code for the specified key, which is always a nonnegative integer.</td></tr>
 </table>
 <h2>Function detail</h2>
 <hr>
 <a name="Function:hashCode"></a>
 <pre class=detailCode>
-int hashCode(const string &amp; key);
+int hashCode(const string&amp; key);
 int hashCode(int key);
 int hashCode(char key);
 int hashCode(long key);
 int hashCode(double key);
+int hashCode(void* key);
 </pre>
 <div class=detailHTML>
 Returns a hash code for the specified key, which is always a
 nonnegative integer.  This function is overloaded to support
-all of the primitive types and the C++ <code>string</code> type.
+all of the primitive types, the C++ <code>string</code> type,
+and pointers.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>

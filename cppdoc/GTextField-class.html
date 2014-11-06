@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>GTextField : public <a href="GInteractor-class.html">GInteractor</a></title>
+<title>GTextField</title>
 <link rel="stylesheet" type="text/css" href="cppdoc.css" />
 </head>
 <body>
@@ -20,10 +20,11 @@ text strings.  Hitting enter in a text field generates a
 
 <table class=index width=100%>
 <tr><td class=indexHead colspan=2>Constructor</td></tr>
-<tr><td class=indexKey><nobr><a href="#Constructor:GTextField">GTextField()</a><br><a href="#Constructor:GTextField">GTextField(nChars)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a text field capable of holding <code>nChars</code> characters, which defaults to 10.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GTextField">GTextField()</a><br>
+<a href="#Constructor:GTextField">GTextField(<var>nChars</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a text field capable of holding <code>nChars</code> characters, which defaults to 10.</td></tr>
 <tr><td class=indexHead colspan=2>Methods</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getText">getText()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the contents of the text field.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Method:setText">setText(str)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the text of the field to the specified string.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setText">setText(<var>str</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the text of the field to the specified string.</td></tr>
 </table>
 <h2>Constructor detail</h2>
 <hr>
@@ -40,8 +41,8 @@ ENTER key.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-GTextField *field = new GTextField();
-GTextField *field = new GTextField(nChars);
+GTextField* field = new GTextField();
+GTextField* field = new GTextField(nChars);
 </pre>
 <hr>
 </table>

@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>GKeyEvent : public <a href="GEvent-class.html">GEvent</a></title>
+<title>GKeyEvent</title>
 <link rel="stylesheet" type="text/css" href="cppdoc.css" />
 </head>
 <body>
@@ -24,7 +24,7 @@ The codes return by <code>getKeyCode</code> are listed in the
 <code>KeyCodes</code> enumeration.
 <table class=index width=100%>
 <tr><td class=indexHead colspan=2>Constructor</td></tr>
-<tr><td class=indexKey><nobr><a href="#Constructor:GKeyEvent">GKeyEvent(type,&nbsp;gw,&nbsp;keyChar,&nbsp;keyCode)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GKeyEvent</code> using the specified parameters.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GKeyEvent">GKeyEvent(<var>type</var>,&nbsp;<var>gw</var>,&nbsp;<var>keyChar</var>,&nbsp;<var>keyCode</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GKeyEvent</code> using the specified parameters.</td></tr>
 <tr><td class=indexHead colspan=2>Methods</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getGWindow">getGWindow()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the graphics window in which this event occurred.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:getKeyChar">getKeyChar()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the character represented by the keystroke, taking the modifier keys into account.</td></tr>
@@ -35,7 +35,7 @@ The codes return by <code>getKeyCode</code> are listed in the
 <hr>
 <a name="Constructor:GKeyEvent"></a>
 <pre class=detailCode>
-GKeyEvent(EventType type, const GWindow &amp; gw, int keyChar, int keyCode);
+GKeyEvent(EventType type, const GWindow&amp; gw, int keyChar, int keyCode);
 </pre>
 <div class=detailHTML>
 Creates a <code>GKeyEvent</code> using the specified parameters.
