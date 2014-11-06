@@ -3,6 +3,10 @@
  * --------------------
  * This file defines the <code>GFileChooser</code> class which supports
  * popping up graphical dialog boxes to select file names.
+ * 
+ * @author Marty Stepp
+ * @version 2014/07/09
+ * @since 2014/07/09
  */
 
 #ifndef _gfilechooser_h

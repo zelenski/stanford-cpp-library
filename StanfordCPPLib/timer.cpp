@@ -4,8 +4,8 @@
  * Implementation of the Timer class as declared in timer.h.
  */
 
-#include <sys/time.h>
 #include "timer.h"
+#include <sys/time.h>
 #include "error.h"
 
 Timer::Timer(bool autostart) {

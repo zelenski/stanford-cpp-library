@@ -3,6 +3,16 @@
  * --------------
  * This file exports the <code>Vector</code> class, which provides an
  * efficient, safe, convenient replacement for the array type in C++.
+ *
+ * @version 2014/10/19
+ * - added subList method
+ * @version 2014/10/10
+ * - removed usage of __foreach macro
+ * 2014/07/09
+ * - changed checkVectorIndex range checking function into a private member
+ *   function to avoid unused-function errors on some newer compilers
+ * 2014/04/27
+ * - fixed bug in addAll method that was not returning reference properly.
  */
 
 #ifndef _vector_h
@@ -13,12 +23,9 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "private/foreachpatch.h"
 #include "error.h"
 #include "random.h"
 #include "strlib.h"
-
-static void checkVectorIndex(int index, int min, int max, string prefix);
 
 /*
  * Class: Vector<ValueType>
@@ -79,17 +86,18 @@ public:
      * Removes all elements from this vector.
      */
     void clear();
-
+    
     /*
      * Method: equals
      * Usage: if (vec.equals(v2)) ...
      * ------------------------------
+     * Compares two vectors for equality.
      * Returns <code>true</code> if this vector contains exactly the same
      * values as the given other vector.
      * Identical in behavior to the == operator.
      */
     bool equals(const Vector<ValueType>& v) const;
-
+    
     /*
      * Method: get
      * Usage: ValueType val = vec.get(index);
@@ -98,7 +106,7 @@ public:
      * method signals an error if the index is not in the array range.
      */
     const ValueType& get(int index) const;
-
+    
     /*
      * Method: insert
      * Usage: vec.insert(0, value);
@@ -117,7 +125,7 @@ public:
      * Returns <code>true</code> if this vector contains no elements.
      */
     bool isEmpty() const;
-
+    
     /*
      * Method: mapAll
      * Usage: vec.mapAll(fn);
@@ -130,7 +138,7 @@ public:
 
     template <typename FunctorType>
     void mapAll(FunctorType fn) const;
-
+    
     /*
      * Method: push_back
      * Usage: vec.push_back(value);
@@ -150,7 +158,7 @@ public:
      * method signals an error if the index is outside the array range.
      */
     void remove(int index);
-
+    
     /*
      * Method: set
      * Usage: vec.set(index, value);
@@ -160,7 +168,7 @@ public:
      * This method signals an error if the index is not in the array range.
      */
     void set(int index, const ValueType& value);
-
+    
     /*
      * Method: size
      * Usage: int nElems = vec.size();
@@ -168,6 +176,17 @@ public:
      * Returns the number of elements in this vector.
      */
     int size() const;
+    
+    /*
+     * Method: subList
+     * Usage: Vector<ValueType> sub = v.subList(start, length);
+     * --------------------------------------------------------
+     * Returns a new vector containing the given subset range of elements
+     * from this vector. The new vector is a deep copy, not linked to this one.
+     * Throws an error if the range (start .. start + length) is not contained
+     * within the bounds of this vector, or if length is negative.
+     */
+    Vector<ValueType> subList(int start, int length) const;
 
     /*
      * Returns an STL vector object with the same elements as this Vector.
@@ -274,6 +293,17 @@ private:
     int count;                  /* The number of elements in use     */
 
     /* Private methods */
+
+    /*
+     * Throws an ErrorException if the given index is not within the range of
+     * [min..max] inclusive.
+     * This is a consolidated error handler for all various Vector members that
+     * accept index parameters.
+     * The prefix parameter represents a text string to place at the start of
+     * the error message, generally to help indicate which member threw the error.
+     */
+    void checkIndex(int index, int min, int max, std::string prefix) const;
+
     void expandCapacity();
     void deepCopy(const Vector& src);
 
@@ -321,6 +351,7 @@ public:
     public:
         iterator() {
             this->vp = NULL;
+            this->index = 0;
         }
 
         iterator(const iterator& it) {
@@ -503,10 +534,10 @@ void Vector<ValueType>::add(const ValueType& value) {
 
 template <typename ValueType>
 Vector<ValueType>& Vector<ValueType>::addAll(const Vector<ValueType>& v) {
-    __foreach__ (ValueType value __in__ v) {
+    for (ValueType value : v) {
         add(value);
     }
-    return *this;   // BUGFIX 2004/04/27
+    return *this;   // BUGFIX 2014/04/27
 }
 
 template <typename ValueType>
@@ -520,7 +551,10 @@ void Vector<ValueType>::clear() {
 
 template <typename ValueType>
 bool Vector<ValueType>::equals(const Vector<ValueType>& v) const {
-    if (size() != v.size()) {
+    if (this == &v) {
+		return true;
+	}
+	if (size() != v.size()) {
         return false;
     }
     for (int i = 0, sz = size(); i < sz; i++) {
@@ -539,7 +573,7 @@ bool Vector<ValueType>::equals(const Vector<ValueType>& v) const {
  */
 template <typename ValueType>
 void Vector<ValueType>::expandCapacity() {
-    capacity = max(1, capacity * 2);
+    capacity = std::max(1, capacity * 2);
     ValueType *array = new ValueType[capacity];
     for (int i = 0; i < count; i++) {
         array[i] = elements[i];
@@ -550,7 +584,7 @@ void Vector<ValueType>::expandCapacity() {
 
 template <typename ValueType>
 const ValueType& Vector<ValueType>::get(int index) const {
-    checkVectorIndex(index, 0, count-1, "get");
+    checkIndex(index, 0, count-1, "get");
     return elements[index];
 }
 
@@ -563,7 +597,7 @@ const ValueType& Vector<ValueType>::get(int index) const {
  */
 template <typename ValueType>
 void Vector<ValueType>::insert(int index, const ValueType& value) {
-    checkVectorIndex(index, 0, count, "insert");
+    checkIndex(index, 0, count, "insert");
     if (count == capacity) expandCapacity();
     for (int i = count; i > index; i--) {
         elements[i] = elements[i - 1];
@@ -612,7 +646,7 @@ void Vector<ValueType>::push_back(const ValueType& value) {
 
 template <typename ValueType>
 void Vector<ValueType>::remove(int index) {
-    checkVectorIndex(index, 0, count-1, "remove");
+    checkIndex(index, 0, count-1, "remove");
     for (int i = index; i < count - 1; i++) {
         elements[i] = elements[i + 1];
     }
@@ -621,13 +655,27 @@ void Vector<ValueType>::remove(int index) {
 
 template <typename ValueType>
 void Vector<ValueType>::set(int index, const ValueType& value) {
-    checkVectorIndex(index, 0, count-1, "set");
+    checkIndex(index, 0, count-1, "set");
     elements[index] = value;
 }
 
 template <typename ValueType>
 int Vector<ValueType>::size() const {
     return count;
+}
+
+template <typename ValueType>
+Vector<ValueType> Vector<ValueType>::subList(int start, int length) const {
+    checkIndex(start, 0, count, "subList");
+    checkIndex(start + length, 0, count, "subList");
+    if (length < 0) {
+        error("Vector::subList: length cannot be negative");
+    }
+    Vector<ValueType> result;
+    for (int i = start; i < start + length; i++) {
+        result.add(get(i));
+    }
+    return result;
 }
 
 template <typename ValueType>
@@ -641,7 +689,7 @@ std::vector<ValueType> Vector<ValueType>::toStlVector() const {
 
 template <typename ValueType>
 std::string Vector<ValueType>::toString() const {
-    ostringstream os;
+    std::ostringstream os;
     os << *this;
     return os.str();
 }
@@ -654,12 +702,12 @@ std::string Vector<ValueType>::toString() const {
  */
 template <typename ValueType>
 ValueType& Vector<ValueType>::operator [](int index) {
-    checkVectorIndex(index, 0, count-1, "operator []");
+    checkIndex(index, 0, count-1, "operator []");
     return elements[index];
 }
 template <typename ValueType>
 const ValueType& Vector<ValueType>::operator [](int index) const {
-    checkVectorIndex(index, 0, count-1, "operator []");
+    checkIndex(index, 0, count-1, "operator []");
     return elements[index];
 }
 
@@ -687,7 +735,7 @@ bool Vector<ValueType>::operator ==(const Vector& v2) const {
 
 template <typename ValueType>
 bool Vector<ValueType>::operator !=(const Vector& v2) const {
-    return !(*this == v2);
+    return !equals(v2);
 }
 
 template <typename ValueType>
@@ -699,6 +747,22 @@ Vector<ValueType> & Vector<ValueType>::operator =(const Vector& src) {
         deepCopy(src);
     }
     return *this;
+}
+
+template <typename ValueType>
+void Vector<ValueType>::checkIndex(int index, int min, int max, std::string prefix) const {
+    if (index < min || index > max) {
+        std::ostringstream out;
+        out << "Vector::" << prefix << ": index of " << index
+            << " is outside of valid range [";
+        if (min < max) {
+            out << min << ".." << max;
+        } else if (min == max) {
+            out << min;
+        } // else min > max, no range, empty vector
+        out << "]";
+        error(out.str());
+    }
 }
 
 template <typename ValueType>
@@ -745,7 +809,7 @@ std::ostream& operator <<(std::ostream& os, const Vector<ValueType>& vec) {
 
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, Vector<ValueType>& vec) {
-    char ch;
+    char ch = '\0';
     is >> ch;
     if (ch != '{') {
         error("Vector::operator >>: Missing {");
@@ -788,29 +852,6 @@ void shuffle(Vector<T>& v) {
             v[i] = v[j];
             v[j] = temp;
         }
-    }
-}
-
-/*
- * Throws an ErrorException if the given index is not within the range of
- * [min..max] inclusive.
- * This is a consolidated error handler for all various Vector members that
- * accept index parameters.
- * The prefix parameter represents a text string to place at the start of
- * the error message, generally to help indicate which member threw the error.
- */
-static void checkVectorIndex(int index, int min, int max, string prefix) {
-    if (index < min || index > max) {
-        ostringstream out;
-        out << "Vector::" << prefix << ": index of " << index
-            << " is outside of valid range [";
-        if (min < max) {
-            out << min << ".." << max;
-        } else if (min == max) {
-            out << min;
-        } // else min > max, no range, empty vector
-        out << "]";
-        error(out.str());
     }
 }
 

@@ -2,14 +2,18 @@
  * File: gobjects.cpp
  * ------------------
  * This file implements the gobjects.h interface.
+ * 
+ * @version 2014/10/08
+ * - removed 'using namespace' statement
  */
 
+#include "gobjects.h"
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <sstream>
 #include "gevents.h"
 #include "gmath.h"
-#include "gobjects.h"
 #include "gtypes.h"
 #include "gwindow.h"
 #include "platform.h"
@@ -20,7 +24,7 @@ static Platform *pp = getPlatform();
 const double LINE_TOLERANCE = 1.5;
 const double ARC_TOLERANCE = 2.5;
 const double DEFAULT_CORNER = 10;
-const string DEFAULT_GLABEL_FONT = "Dialog-13";
+const std::string DEFAULT_GLABEL_FONT = "Dialog-13";
 
 static double dsq(double x0, double y0, double x1, double y1);
 
@@ -76,7 +80,7 @@ double GObject::getLineWidth() const {
     return lineWidth;
 }
 
-void GObject::setColor(string color) {
+void GObject::setColor(std::string color) {
     setColor(convertColorToRGB(color));
 }
 
@@ -85,7 +89,7 @@ void GObject::setColor(int rgb) {
     pp->gobject_setColor(this, this->color);
 }
 
-string GObject::getColor() const {
+std::string GObject::getColor() const {
     return color;
 }
 
@@ -154,6 +158,7 @@ GObject::GObject() {
     lineWidth = 1.0;
     transformed = false;
     visible = true;
+    parent = NULL;
 }
 
 GObject::~GObject() {
@@ -214,7 +219,7 @@ bool GRect::isFilled() const {
     return fillFlag;
 }
 
-void GRect::setFillColor(string color) {
+void GRect::setFillColor(std::string color) {
     fillColor = color;
     if (fillColor != "") {
         fillColor = convertRGBToColor(convertColorToRGB(color));
@@ -227,22 +232,22 @@ void GRect::setFillColor(int rgb) {
     pp->gobject_setFillColor(this, fillColor);
 }
 
-string GRect::getFillColor() const {
+std::string GRect::getFillColor() const {
     return fillColor;
 }
 
-string GRect::getType() const {
+std::string GRect::getType() const {
     return "GRect";
 }
 
-string GRect::toString() const {
-    ostringstream oss;
+std::string GRect::toString() const {
+    std::ostringstream oss;
     oss << "GRect(" << x << ", " << y << ", "
         << width << ", " << height << ")";
     return oss.str();
 }
 
-GRect::GRect() {
+GRect::GRect() : width(0), height(0), fillFlag(false) {
     /* Called only by the GRoundRect and G3DRect subclasses */
 }
 
@@ -285,12 +290,12 @@ GRoundRect::~GRoundRect() {
     /* Empty */
 }
 
-string GRoundRect::getType() const {
+std::string GRoundRect::getType() const {
     return "GRoundRect";
 }
 
-string GRoundRect::toString() const {
-    ostringstream oss;
+std::string GRoundRect::toString() const {
+    std::ostringstream oss;
     oss << "GRoundRect(" << x << ", " << y << ", "
         << width << ", " << height << ", " << corner << ")";
     return oss.str();
@@ -345,13 +350,13 @@ bool G3DRect::isRaised() const {
     return raised;
 }
 
-string G3DRect::getType() const {
+std::string G3DRect::getType() const {
     return "G3DRect";
 }
 
-string G3DRect::toString() const {
-    ostringstream oss;
-    oss << boolalpha << "G3DRect(" << x << ", " << y << ", "
+std::string G3DRect::toString() const {
+    std::ostringstream oss;
+    oss << std::boolalpha << "G3DRect(" << x << ", " << y << ", "
         << width << ", " << height << ", " << raised << ")";
     return oss.str();
 }
@@ -425,7 +430,7 @@ bool GOval::isFilled() const {
     return fillFlag;
 }
 
-void GOval::setFillColor(string color) {
+void GOval::setFillColor(std::string color) {
     fillColor = color;
     if (fillColor != "") {
         fillColor = convertRGBToColor(convertColorToRGB(color));
@@ -438,16 +443,16 @@ void GOval::setFillColor(int color) {
     pp->gobject_setFillColor(this, fillColor);
 }
 
-string GOval::getFillColor() const {
+std::string GOval::getFillColor() const {
     return fillColor;
 }
 
-string GOval::getType() const {
+std::string GOval::getType() const {
     return "GOval";
 }
 
-string GOval::toString() const {
-    ostringstream oss;
+std::string GOval::toString() const {
+    std::ostringstream oss;
     oss << "GOval(" << x << ", " << y << ", "
         << width << ", " << height << ")";
     return oss.str();
@@ -527,7 +532,7 @@ bool GArc::isFilled() const {
     return fillFlag;
 }
 
-void GArc::setFillColor(string color) {
+void GArc::setFillColor(std::string color) {
     fillColor = color;
     if (fillColor != "") {
         fillColor = convertRGBToColor(convertColorToRGB(color));
@@ -540,7 +545,7 @@ void GArc::setFillColor(int color) {
     pp->gobject_setFillColor(this, fillColor);
 }
 
-string GArc::getFillColor() const {
+std::string GArc::getFillColor() const {
     return fillColor;
 }
 
@@ -556,19 +561,19 @@ GRectangle GArc::getBounds() const {
     double p1y = cy - sin(startRadians) * ry;
     double p2x = cx + cos(startRadians + sweepRadians) * rx;
     double p2y = cy - sin(startRadians + sweepRadians) * ry;
-    double xMin = min(p1x, p2x);
-    double xMax = max(p1x, p2x);
-    double yMin = min(p1y, p2y);
-    double yMax = max(p1y, p2y);
+    double xMin = std::min(p1x, p2x);
+    double xMax = std::max(p1x, p2x);
+    double yMin = std::min(p1y, p2y);
+    double yMax = std::max(p1y, p2y);
     if (containsAngle(0)) xMax = cx + rx;
     if (containsAngle(90)) yMin = cy - ry;
     if (containsAngle(180)) xMin = cx - rx;
     if (containsAngle(270)) yMax = cy + ry;
     if (isFilled()) {
-        xMin = min(xMin, cx);
-        yMin = min(yMin, cy);
-        xMax = max(xMax, cx);
-        yMax = max(yMax, cy);
+        xMin = std::min(xMin, cx);
+        yMin = std::min(yMin, cy);
+        xMax = std::max(xMax, cx);
+        yMax = std::max(yMax, cy);
     }
     return GRectangle(xMin, yMin, xMax - xMin, yMax - yMin);
 }
@@ -590,12 +595,12 @@ bool GArc::contains(double x, double y) const {
     return containsAngle(atan2(-dy, dx) * 180 / PI);
 }
 
-string GArc::getType() const {
+std::string GArc::getType() const {
     return "GArc";
 }
 
-string GArc::toString() const {
-    ostringstream oss;
+std::string GArc::toString() const {
+    std::ostringstream oss;
     oss << "GArc(" << x << ", " << y << ", " << frameWidth << ", "
         << frameHeight << ", " << start << ", " << sweep << ")";
     return oss.str();
@@ -611,8 +616,8 @@ GPoint GArc::getArcPoint(double theta) const {
 }
 
 bool GArc::containsAngle(double theta) const {
-    double start = min(this->start, this->start + this->sweep);
-    double sweep = abs(this->sweep);
+    double start = std::min(this->start, this->start + this->sweep);
+    double sweep = std::abs(this->sweep);
     if (sweep >= 360) return true;
     theta = (theta < 0) ? 360 - fmod(-theta, 360) : fmod(theta, 360);
     start = (start < 0) ? 360 - fmod(-start, 360) : fmod(start, 360);
@@ -677,10 +682,10 @@ GRectangle GCompound::getBounds() const {
     double yMax = -1E20;
     for (int i = 0; i < contents.size(); i++) {
         GRectangle bounds = contents.get(i)->getBounds();
-        xMin = min(xMin, bounds.getX());
-        yMin = min(yMin, bounds.getY());
-        xMax = max(xMax, bounds.getX());
-        yMin = min(yMax, bounds.getY());
+        xMin = std::min(xMin, bounds.getX());
+        yMin = std::min(yMin, bounds.getY());
+        xMax = std::max(xMax, bounds.getX());
+        yMin = std::min(yMax, bounds.getY());
     }
     return GRectangle(xMin, yMin, xMax - xMin, yMax - yMin);
 }
@@ -693,11 +698,11 @@ bool GCompound::contains(double x, double y) const {
     return false;
 }
 
-string GCompound::getType() const {
+std::string GCompound::getType() const {
     return "GCompound";
 }
 
-string GCompound::toString() const {
+std::string GCompound::toString() const {
     return "GCompound(...)";
 }
 
@@ -756,11 +761,11 @@ void GCompound::removeAt(int index) {
     gobj->parent = NULL;
 }
 
-GImage::GImage(string filename) {
+GImage::GImage(std::string filename) {
     createGImage(filename);
 }
 
-GImage::GImage(string filename, double x, double y) {
+GImage::GImage(std::string filename, double x, double y) {
     createGImage(filename);
     setLocation(x, y);
 }
@@ -770,15 +775,15 @@ GRectangle GImage::getBounds() const {
     return GRectangle(x, y, width, height);
 }
 
-string GImage::getType() const {
+std::string GImage::getType() const {
     return "GImage";
 }
 
-string GImage::toString() const {
+std::string GImage::toString() const {
     return "GImage(\"" + filename + "\")";
 }
 
-void GImage::createGImage(string filename) {
+void GImage::createGImage(std::string filename) {
     this->filename = filename;
     GDimension size = pp->gimage_constructor(this, filename);
     width = size.getWidth();
@@ -790,16 +795,16 @@ void GImage::createGImage(string filename) {
  * ----------------------------------
  */
 
-GLabel::GLabel(string str) {
+GLabel::GLabel(std::string str) {
     createGLabel(str);
 }
 
-GLabel::GLabel(string str, double x, double y) {
+GLabel::GLabel(std::string str, double x, double y) {
     createGLabel(str);
     setLocation(x, y);
 }
 
-void GLabel::createGLabel(const string & str) {
+void GLabel::createGLabel(const std::string& str) {
     this->str = str;
     pp->glabel_constructor(this, str);
     setFont(DEFAULT_GLABEL_FONT);
@@ -810,7 +815,7 @@ void GLabel::createGLabel(const string & str) {
     descent = pp->glabel_getFontDescent(this);
 }
 
-void GLabel::setFont(string font) {
+void GLabel::setFont(std::string font) {
     this->font = font;
     pp->glabel_setFont(this, font);
     GDimension size = pp->glabel_getSize(this);
@@ -820,11 +825,11 @@ void GLabel::setFont(string font) {
     descent = pp->glabel_getFontDescent(this);
 }
 
-string GLabel::getFont() const {
+std::string GLabel::getFont() const {
     return font;
 }
 
-void GLabel::setLabel(string str) {
+void GLabel::setLabel(std::string str) {
     this->str = str;
     pp->glabel_setLabel(this, str);
     GDimension size = pp->glabel_getSize(this);
@@ -832,7 +837,7 @@ void GLabel::setLabel(string str) {
     height = size.getHeight();
 }
 
-string GLabel::getLabel() const {
+std::string GLabel::getLabel() const {
     return str;
 }
 
@@ -849,11 +854,11 @@ GRectangle GLabel::getBounds() const {
     return GRectangle(x, y - ascent, width, height);
 }
 
-string GLabel::getType() const {
+std::string GLabel::getType() const {
     return "GLabel";
 }
 
-string GLabel::toString() const {
+std::string GLabel::toString() const {
     return "GLabel(\"" + str + "\")";
 }
 
@@ -908,22 +913,22 @@ bool GLine::contains(double x, double y) const {
     double tSquared = LINE_TOLERANCE * LINE_TOLERANCE;
     if (dsq(x, y, x0, y0) < tSquared) return true;
     if (dsq(x, y, x1, y1) < tSquared) return true;
-    if (x < min(x0, x1) - LINE_TOLERANCE) return false;
-    if (x > max(x0, x1) + LINE_TOLERANCE) return false;
-    if (y < min(y0, y1) - LINE_TOLERANCE) return false;
-    if (y > max(y0, y1) + LINE_TOLERANCE) return false;
+    if (x < std::min(x0, x1) - LINE_TOLERANCE) return false;
+    if (x > std::max(x0, x1) + LINE_TOLERANCE) return false;
+    if (y < std::min(y0, y1) - LINE_TOLERANCE) return false;
+    if (y > std::max(y0, y1) + LINE_TOLERANCE) return false;
     if ((float) (x0 - x1) == 0 && (float) (y0 - y1) == 0) return false;
     double u = ((x - x0) * (x1 - x0) + (y - y0) * (y1 - y0))
             / dsq(x0, y0, x1, y1);
     return dsq(x, y, x0 + u * (x1 - x0), y0 + u * (y1 - y0)) < tSquared;
 }
 
-string GLine::getType() const {
+std::string GLine::getType() const {
     return "GLine";
 }
 
-string GLine::toString() const {
-    ostringstream oss;
+std::string GLine::toString() const {
+    std::ostringstream oss;
     oss << "GLine(" << x << ", " << y << ", "
         << (x + dx) << ", " << (y + dy) << ")";
     return oss.str();
@@ -968,7 +973,7 @@ bool GPolygon::isFilled() const {
     return fillFlag;
 }
 
-void GPolygon::setFillColor(string color) {
+void GPolygon::setFillColor(std::string color) {
     fillColor = color;
     if (fillColor != "") {
         fillColor = convertRGBToColor(convertColorToRGB(color));
@@ -981,7 +986,7 @@ void GPolygon::setFillColor(int rgb) {
     pp->gobject_setFillColor(this, fillColor);
 }
 
-string GPolygon::getFillColor() const {
+std::string GPolygon::getFillColor() const {
     return fillColor;
 }
 
@@ -1022,12 +1027,12 @@ bool GPolygon::contains(double x, double y) const {
     return (crossings % 2 == 1);
 }
 
-string GPolygon::getType() const {
+std::string GPolygon::getType() const {
     return "GPolygon";
 }
 
-string GPolygon::toString() const {
-    ostringstream oss;
+std::string GPolygon::toString() const {
+    std::ostringstream oss;
     oss << "GPolygon(" << vertices.size() << " vertices)";
     return oss.str();
 }

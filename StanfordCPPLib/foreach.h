@@ -6,6 +6,9 @@
  * All iterable classes in the Stanford libraries import this file, so
  * clients don't ordinarily need to do so explicitly.  This version of
  * <code>foreach</code> also supports C++ strings and arrays.
+ * 
+ * @version 2014/10/08
+ * - removed 'using namespace' statement
  */
 
 #ifndef _foreach_h
@@ -62,16 +65,16 @@
 #include <ios>
 #include <fstream>
 #include <sstream>
-using namespace std;
+#include "private/foreachpatch.h"
 
 /* Redefine the ios constants (one of which is "in") */
 
-static const ios::openmode IOS_APP = ios::app;
-static const ios::openmode IOS_ATE = ios::ate;
-static const ios::openmode IOS_BINARY = ios::binary;
-static const ios::openmode IOS_IN = ios::in;
-static const ios::openmode IOS_OUT = ios::out;
-static const ios::openmode IOS_TRUNC = ios::trunc;
+static const std::ios::openmode IOS_APP = std::ios::app;
+static const std::ios::openmode IOS_ATE = std::ios::ate;
+static const std::ios::openmode IOS_BINARY = std::ios::binary;
+const std::ios::openmode IOS_IN = std::ios::in;
+static const std::ios::openmode IOS_OUT = std::ios::out;
+static const std::ios::openmode IOS_TRUNC = std::ios::trunc;
 
 /* Private implementation namespace */
 
@@ -97,10 +100,10 @@ struct CRange : Range {
 
 template <typename KT, typename VT, typename CT, typename AT>
 struct MapRange : Range {
-    MapRange(const map<KT,VT,CT,AT> & c) :
+    MapRange(const std::map<KT,VT,CT,AT> & c) :
         cont(c), iter(cont.begin()), end(cont.end()) { }
-    map<KT,VT,CT,AT> cont;
-    typename map<KT,VT,CT,AT>::iterator iter, end;
+    std::map<KT,VT,CT,AT> cont;
+    typename std::map<KT,VT,CT,AT>::iterator iter, end;
 };
 
 /*
@@ -139,16 +142,16 @@ CRange<CType> *Init(State & fe, const CType & collection) {
 }
 
 template <typename CType>
-typename iterator_traits<typename CType::iterator>::value_type
+typename std::iterator_traits<typename CType::iterator>::value_type
 Hook(State & fe, CRange<CType> *) {
     return HookImpl<CRange<CType>,
-            typename iterator_traits<typename CType::iterator>::value_type>(fe);
+            typename std::iterator_traits<typename CType::iterator>::value_type>(fe);
 }
 
 /* For maps */
 
 template <typename K, typename V, typename C, typename A>
-MapRange<K,V,C,A> *Init(State & fe, const map<K,V,C,A> & collection) {
+MapRange<K,V,C,A> *Init(State & fe, const std::map<K,V,C,A> & collection) {
     fe.itr = new MapRange<K,V,C,A>(collection);
     return (MapRange<K,V,C,A>*) fe.itr;
 }
@@ -213,16 +216,5 @@ T Hook(State& fe, ArrayRange<T>*) {
     for (arg)); _fe.state++ == 1; _fe.state = 0)
 
 #define in = _fe::Hook(_fe, _fe.state != 0 ? NULL : _fe::Init(_fe,
-
-/*
- * mirror macros '__foreach__' and '__in__' to be used internally
- * (words 'foreach' and 'in' are sacred cows to some C++ IDEs;
- *  let's not clobber them in the global name space if we don't have to)
- */
-#define __foreach__(arg) \
-    for (_fe::State _fe; _fe.state < 2; ) \
-    for (arg)); _fe.state++ == 1; _fe.state = 0)
-
-#define __in__ = _fe::Hook(_fe, _fe.state != 0 ? NULL : _fe::Init(_fe,
 
 #endif

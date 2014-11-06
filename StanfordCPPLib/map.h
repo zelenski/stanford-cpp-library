@@ -3,6 +3,9 @@
  * -----------
  * This file exports the template class <code>Map</code>, which
  * maintains a collection of <i>key</i>-<i>value</i> pairs.
+ * 
+ * @version 2014/10/10
+ * - removed usage of __foreach macro
  */
 
 #ifndef _map_h
@@ -10,7 +13,6 @@
 
 #include <cstdlib>
 #include <map>
-#include "private/foreachpatch.h"
 #include "error.h"
 #include "stack.h"
 #include "vector.h"
@@ -373,8 +375,6 @@ private:
     BSTNode*root;                   /* Pointer to the root of the tree */
     int nodeCount;                  /* Number of entries in the map    */
     Comparator* cmpp;               /* Pointer to the comparator       */
-
-    int (*cmpFn)(const KeyType&, const KeyType&);
 
     /* Private methods */
 
@@ -783,7 +783,7 @@ public:
         }
 
     public:
-        iterator() {
+        iterator() : mp(NULL), index(0) {
             /* Empty */
         }
 
@@ -850,11 +850,11 @@ public:
     };
 
     iterator begin() const {
-        return iterator(this, false);
+        return iterator(this, /* end */ false);
     }
 
     iterator end() const {
-        return iterator(this, true);
+        return iterator(this, /* end */ true);
     }
 };
 
@@ -862,7 +862,7 @@ template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>::Map() {
     root = NULL;
     nodeCount = 0;
-    cmpp = new TemplateComparator<less<KeyType> >(less<KeyType>());
+    cmpp = new TemplateComparator<std::less<KeyType> >(std::less<KeyType>());
 }
 
 template <typename KeyType, typename ValueType>
@@ -887,6 +887,9 @@ bool Map<KeyType, ValueType>::containsKey(const KeyType& key) const {
 
 template <typename KeyType, typename ValueType>
 bool Map<KeyType, ValueType>::equals(const Map<KeyType, ValueType>& map2) const {
+    if (this == &map2) {
+		return true;
+	}
     if (size() != map2.size()) {
         return false;
     }
@@ -922,7 +925,7 @@ bool Map<KeyType, ValueType>::isEmpty() const {
 template <typename KeyType,typename ValueType>
 Vector<KeyType> Map<KeyType, ValueType>::keys() const {
     Vector<KeyType> keyset;
-    __foreach__ (KeyType key __in__ *this) {
+    for (KeyType key : *this) {
         keyset.add(key);
     }
     return keyset;
@@ -997,7 +1000,7 @@ int Map<KeyType, ValueType>::size() const {
 template <typename KeyType, typename ValueType>
 std::map<KeyType, ValueType> Map<KeyType, ValueType>::toStlMap() const {
     std::map<KeyType, ValueType> result;
-    __foreach__ (KeyType key __in__ *this) {
+    for (KeyType key : *this) {
         result[key] = this->get(key);
     }
     return result;
@@ -1005,7 +1008,7 @@ std::map<KeyType, ValueType> Map<KeyType, ValueType>::toStlMap() const {
 
 template <typename KeyType, typename ValueType>
 std::string Map<KeyType, ValueType>::toString() const {
-    ostringstream os;
+    std::ostringstream os;
     os << *this;
     return os.str();
 }
@@ -1013,7 +1016,7 @@ std::string Map<KeyType, ValueType>::toString() const {
 template <typename KeyType,typename ValueType>
 Vector<ValueType> Map<KeyType, ValueType>::values() const {
     Vector<ValueType> values;
-    __foreach__ (KeyType key __in__ *this) {
+    for (KeyType key : *this) {
         values.add(this->get(key));
     }
     return values;
@@ -1101,7 +1104,7 @@ std::ostream& operator <<(std::ostream& os,
 
 template <typename KeyType, typename ValueType>
 std::istream& operator >>(std::istream& is, Map<KeyType,ValueType>& map) {
-    char ch;
+    char ch = '\0';
     is >> ch;
     if (ch != '{') {
         error("Map::operator >>: Missing {");

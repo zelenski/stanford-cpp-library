@@ -3,12 +3,14 @@
  * -----------------
  * This file implements the wrapper for main that allows for
  * system initialization and error handling.
+ * 
+ * @version 2014/10/08
+ * - removed 'using namespace' statement
  */
 
 #include <cstdlib>
 #include <iostream>
 #include "error.h"
-using namespace std;
 
 #if defined (_MSC_VER) && (_MSC_VER >= 1200)
 #  include <windows.h>
@@ -32,8 +34,8 @@ int mainWrapper(int argc, char **argv) {
         return 0;
 #endif
     } catch (ErrorException & ex) {
-        string msg = "Error: " + ex.getMessage();
-        cerr << msg << endl;
+        std::string msg = "Error: " + ex.getMessage();
+        std::cerr << msg << std::endl;
 #ifdef _MSC_VER
         MessageBoxA(NULL, msg.c_str(), "Error!", MSC_ERROR_FLAGS);
 #endif

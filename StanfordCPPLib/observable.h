@@ -6,8 +6,8 @@
  * notified when some part of the state of the observable object changes.
  * This is an example of the classic Observer/Observable design pattern.
  *
- * Author: Marty Stepp
- * Version: 2014/03/09
+ * @author Marty Stepp
+ * @version 2014/03/09
  */
 
 #ifndef _observable_h

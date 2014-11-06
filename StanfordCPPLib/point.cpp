@@ -2,12 +2,14 @@
  * File: point.cpp
  * ---------------
  * This file implements the point.h interface.
+ * 
+ * @version 2014/10/08
+ * - removed 'using namespace' statement
  */
 
-#include <string>
 #include "point.h"
+#include <string>
 #include "strlib.h"
-using namespace std;
 
 Point::Point() {
     x = 0;
@@ -27,7 +29,7 @@ int Point::getY() const {
     return y;
 }
 
-string Point::toString() const {
+std::string Point::toString() const {
     return "(" + integerToString(x) + "," + integerToString(y) + ")";
 }
 
@@ -39,7 +41,7 @@ bool Point::operator!=(const Point & p2) const {
     return (x != p2.x) || (y != p2.y);
 }
 
-ostream & operator<<(ostream & os, const Point & pt) {
+std::ostream & operator<<(std::ostream & os, const Point & pt) {
     return os << pt.toString();
 }
 

@@ -314,8 +314,13 @@ public:
 
     /* Private section */
 private:
-    const GObject & operator=(const GObject &) { return *this; }
-    GObject(const GObject &) { }
+    const GObject& operator=(const GObject &) {
+        return *this;
+    }
+    
+    GObject(const GObject&) {
+        // empty
+    }
 
     /* Instance variables */
 protected:

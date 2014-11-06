@@ -7,6 +7,8 @@
 #ifndef _sound_h
 #define _sound_h
 
+#include <string>
+
 /*
  * Class: Sound
  * ------------

@@ -1,4 +1,6 @@
 /*
+ * File: basicgraph.cpp
+ * --------------------
  * This file contains the implementation of some useful graph types,
  * specifically the Vertex and Edge structures used in the typical graph.
  * together in lecture.  We also implement BasicGraph, an instantiation of
@@ -6,8 +8,16 @@
  *
  * See BasicGraph.h for documentation of each member.
  *
- * Author: Marty Stepp
- * Version: 2014/03/01
+ * @author Marty Stepp
+ * @version 2014/10/31
+ * - bug fix: extraData was being NULLed accidentally in Vertex::resetData()
+ * @version 2014/10/23
+ * - bug fixes based on cppcheck lint output
+ * @version 2014/10/20
+ * - converted functions to accept const string& rather than string for speed
+ * @version 2014/08/16
+ * - added Vertex 'weight' alias for 'cost'
+ * - added Edge 'weight' alias for 'cost, and 'end' alias for 'finish'
  */
 
 #include "basicgraph.h"
@@ -16,41 +26,41 @@
 /*
  * Vertex member implementations
  */
-Vertex::Vertex(string name) : edges(arcs) {
-    this->name = name;
-    this->resetData();
+Vertex::Vertex(const std::string& name) : name(name), edges(arcs), weight(cost), extraData(NULL) {
+    resetData();
 }
 
 Vertex::Vertex(const Vertex &other) : name(other.name), arcs(other.arcs),
-        edges(arcs), cost(other.cost), visited(other.visited),
-        previous(other.previous), extraData(other.extraData) {
+        edges(arcs), cost(other.cost), weight(cost), visited(other.visited),
+        previous(other.previous), extraData(other.extraData), m_color(other.m_color) {
     // empty
 }
 
 Vertex::~Vertex() {
-    if (this->extraData != NULL) {
-        // delete this->extraData;
+    if (extraData != NULL) {
+        // delete extraData;
     }
 }
 
 int Vertex::getColor() const {
-    return this->m_color;
+    return m_color;
 }
 
 void Vertex::resetData() {
-    this->cost = 0.0;
-    this->previous = NULL;
-    this->visited = false;
-    this->m_color = /* UNCOLORED */ 0;
+    cost = 0.0;
+    previous = NULL;
+    visited = false;
+    m_color = /* UNCOLORED */ 0;
+    // extraData = NULL;
 }
 
 void Vertex::setColor(int c) {
-    this->m_color = c;
-    this->notifyObservers();
+    m_color = c;
+    notifyObservers();
 }
 
-string Vertex::toString() const {
-    ostringstream out;
+std::string Vertex::toString() const {
+    std::ostringstream out;
     out << *this;
     return out.str();
 }
@@ -62,6 +72,7 @@ Vertex& Vertex::operator =(const Vertex& other) {
     visited = other.visited;
     previous = other.previous;
     extraData = other.extraData;
+    m_color = other.m_color;
     return *this;
 }
 
@@ -72,21 +83,22 @@ Vertex& Vertex::operator =(Vertex&& other) {
     visited = other.visited;
     previous = other.previous;
     extraData = other.extraData;
+    m_color = other.m_color;
     return *this;
 }
 
-ostream& operator<<(ostream& out, const Vertex& v) {
+std::ostream& operator<<(std::ostream& out, const Vertex& v) {
     out << "Vertex{name=" << v.name;
     if (v.cost != 0.0) {
         out << ", cost=" << v.cost;
     }
     out << ", cost=" << v.cost;
     out << ", visited=" << (v.visited ? "true" : "false");
-    out << ", previous=" << (v.previous == NULL ? string("NULL") : v.previous->name);
+    out << ", previous=" << (v.previous == NULL ? std::string("NULL") : v.previous->name);
 
     out << ", neighbors={";
     int i = 0;
-    __foreach__ (Edge* edge __in__ v.edges) {
+    for (Edge* edge : v.edges) {
         if (i > 0) {
             out << ", ";
         }
@@ -106,10 +118,8 @@ ostream& operator<<(ostream& out, const Vertex& v) {
 /*
  * Edge member implementations
  */
-Edge::Edge(Vertex* start, Vertex* finish, double cost) {
-    this->start = start;
-    this->finish = finish;
-    this->cost = cost;
+Edge::Edge(Vertex* start, Vertex* finish, double cost)
+        : start(start), finish(finish), end(finish), cost(cost), weight(cost) {
     this->extraData = NULL;
     this->resetData();
 }
@@ -124,24 +134,24 @@ void Edge::resetData() {
     this->visited = false;
 }
 
-string Edge::toString() const {
-    ostringstream out;
+std::string Edge::toString() const {
+    std::ostringstream out;
     out << *this;
     return out.str();
 }
 
-ostream& operator<<(ostream& out, const Edge& edge) {
+std::ostream& operator<<(std::ostream& out, const Edge& edge) {
     out << "Edge{start=";
     if (edge.start == NULL) {
-        cout << "NULL";
+        out << "NULL";
     } else {
-        cout << edge.start->name;
+        out << edge.start->name;
     }
-    cout << ", finish=";
+    out << ", finish=";
     if (edge.finish == NULL) {
-        cout << "NULL";
+        out << "NULL";
     } else {
-        cout << edge.finish->name;
+        out << edge.finish->name;
     }
     if (edge.cost != 0.0) {
         out << ", cost=" << edge.cost;
@@ -176,7 +186,7 @@ bool BasicGraph::containsArc(Vertex* v1, Vertex* v2) const {
     return this->getArc(v1, v2) != NULL;
 }
 
-bool BasicGraph::containsArc(string v1, string v2) const {
+bool BasicGraph::containsArc(const std::string& v1, const std::string& v2) const {
     return this->getArc(v1, v2) != NULL;
 }
 
@@ -192,7 +202,7 @@ bool BasicGraph::containsEdge(Vertex* v1, Vertex* v2) const {
     return this->containsArc(v1, v2);
 }
 
-bool BasicGraph::containsEdge(string v1, string v2) const {
+bool BasicGraph::containsEdge(const std::string& v1, const std::string& v2) const {
     return this->containsArc(v1, v2);
 }
 
@@ -200,7 +210,7 @@ bool BasicGraph::containsEdge(Edge* edge) const {
     return this->containsArc(edge);
 }
 
-bool BasicGraph::containsNode(string name) const {
+bool BasicGraph::containsNode(const std::string& name) const {
     return this->getNode(name) != NULL;
 }
 
@@ -212,7 +222,7 @@ bool BasicGraph::containsNode(Vertex* v) const {
     }
 }
 
-bool BasicGraph::containsVertex(string name) const {
+bool BasicGraph::containsVertex(const std::string& name) const {
     return this->containsNode(name);
 }
 
@@ -221,7 +231,7 @@ bool BasicGraph::containsVertex(Vertex* v) const {
 }
 
 Edge* BasicGraph::getArc(Vertex* v1, Vertex* v2) const {
-    __foreach__ (Edge* edge __in__ this->getEdgeSet(v1)) {
+    for (Edge* edge : this->getEdgeSet(v1)) {
         if (edge->finish == v2) {
             return edge;
         }
@@ -229,7 +239,7 @@ Edge* BasicGraph::getArc(Vertex* v1, Vertex* v2) const {
     return NULL;
 }
 
-Edge* BasicGraph::getArc(string v1, string v2) const {
+Edge* BasicGraph::getArc(const std::string& v1, const std::string& v2) const {
     return this->getArc(this->getVertex(v1), this->getVertex(v2));
 }
 
@@ -237,7 +247,7 @@ Edge* BasicGraph::getEdge(Vertex* v1, Vertex* v2) const {
     return this->getArc(v1, v2);
 }
 
-Edge* BasicGraph::getEdge(string v1, string v2) const {
+Edge* BasicGraph::getEdge(const std::string& v1, const std::string& v2) const {
     return this->getArc(v1, v2);
 }
 
@@ -249,12 +259,12 @@ Edge* BasicGraph::getInverseEdge(Edge* edge) const {
     return this->getInverseArc(edge);
 }
 
-bool BasicGraph::isNeighbor(string v1, string v2) const {
+bool BasicGraph::isNeighbor(const std::string& v1, const std::string& v2) const {
     return this->isNeighbor(this->getVertex(v1), this->getVertex(v2));
 }
 
 bool BasicGraph::isNeighbor(Vertex* v1, Vertex* v2) const {
-    __foreach__ (Edge* edge __in__ this->getEdgeSet(v1)) {
+    for (Edge* edge : this->getEdgeSet(v1)) {
         if (edge->finish == v2) {
             return true;
         }
@@ -264,10 +274,10 @@ bool BasicGraph::isNeighbor(Vertex* v1, Vertex* v2) const {
 
 void BasicGraph::resetData() {
     if (m_resetEnabled) {
-        __foreach__ (Vertex* v __in__ getVertexSet()) {
+        for (Vertex* v : getVertexSet()) {
             v->resetData();
         }
-        __foreach__ (Edge* e __in__ getEdgeSet()) {
+        for (Edge* e : getEdgeSet()) {
             e->resetData();
         }
     }
@@ -279,7 +289,7 @@ void BasicGraph::setResetEnabled(bool enabled) {
 
 // members below are just mirrors of ones from Graph
 
-Edge* BasicGraph::addEdge(string v1, string v2, double cost, bool directed) {
+Edge* BasicGraph::addEdge(const std::string& v1, const std::string& v2, double cost, bool directed) {
     return this->addEdge(getVertex(v1), getVertex(v2), cost, directed);
 }
 
@@ -297,7 +307,7 @@ Edge* BasicGraph::addEdge(Edge* e, bool directed) {
     return result;
 }
 
-Vertex* BasicGraph::addVertex(string name) {
+Vertex* BasicGraph::addVertex(const std::string& name) {
     return this->addNode(name);
 }
 
@@ -313,11 +323,11 @@ const Set<Edge*>& BasicGraph::getEdgeSet(Vertex* v) const {
     return this->getArcSet(v);
 }
 
-const Set<Edge*>& BasicGraph::getEdgeSet(string v) const {
+const Set<Edge*>& BasicGraph::getEdgeSet(const std::string& v) const {
     return this->getArcSet(v);
 }
 
-Vertex* BasicGraph::getVertex(string name) const {
+Vertex* BasicGraph::getVertex(const std::string& name) const {
     return this->getNode(name);
 }
 
@@ -325,7 +335,7 @@ const Set<Vertex*>& BasicGraph::getVertexSet() const {
     return this->getNodeSet();
 }
 
-void BasicGraph::removeEdge(string v1, string v2, bool directed) {
+void BasicGraph::removeEdge(const std::string& v1, const std::string& v2, bool directed) {
     this->removeEdge(this->getVertex(v1), this->getVertex(v2), directed);
 }
 
@@ -343,7 +353,7 @@ void BasicGraph::removeEdge(Edge* e, bool directed) {
     }
 }
 
-void BasicGraph::removeVertex(string name) {
+void BasicGraph::removeVertex(const std::string& name) {
     this->removeNode(name);
 }
 
@@ -352,9 +362,9 @@ void BasicGraph::removeVertex(Vertex* v) {
 }
 
 void BasicGraph::scanArcData(TokenScanner& scanner, Edge* edge, Edge* inverse) {
-    string colon = scanner.nextToken();   // ":", skip over
+    std::string colon = scanner.nextToken();   // ":", skip over
     if (colon == ":") {
-        string costStr = scanner.nextToken();
+        std::string costStr = scanner.nextToken();
         edge->cost = stringToReal(costStr);
         if (inverse != NULL) {
             inverse->cost = edge->cost;
@@ -366,7 +376,7 @@ void BasicGraph::scanArcData(TokenScanner& scanner, Edge* edge, Edge* inverse) {
     }
 }
 
-void BasicGraph::writeArcData(ostream& out, Edge* edge) const {
+void BasicGraph::writeArcData(std::ostream& out, Edge* edge) const {
     if (edge->cost != 0) {
         out << " : ";
         out << edge->cost;

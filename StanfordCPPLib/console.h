@@ -5,6 +5,12 @@
  * and <code>cerr</code> channels to use a console window.  This file
  * must be included in the source file that contains the <code>main</code>
  * method, although it may be included in other source files as well.
+ * 
+ * @version 2014/11/05
+ * - moved exception / stack-trace code out to exceptions.h/cpp
+ * @version 2014/10/14
+ * - removed some autograder code, moved into autograder/ioutils.{h,cpp}
+ * - exposed 'clear enabled' functions rather than 'autograder mode'
  */
 
 #ifndef _console_h
@@ -21,6 +27,16 @@
 void clearConsole();
 
 /*
+ * Function: getConsoleClearEnabled
+ * Usage: bool mode = getConsoleClearEnabled();
+ * --------------------------------------------
+ * Returns whether the console's "clear" function should be enabled.
+ * Default true.  If false, clear() will just print a message
+ * rather than actually clearing the console.
+ */
+bool getConsoleClearEnabled();
+
+/*
  * Function: getConsoleEcho
  * Usage: bool echo = getConsoleEcho();
  * ----------------------------
@@ -32,6 +48,24 @@ void clearConsole();
 bool getConsoleEcho();
 
 /*
+ * Returns whether an event should be generated if the console
+ * window is closed.  By default this is false initially.
+ */
+bool getConsoleEventOnClose();
+
+/*
+ * Returns whether the overall C++ program will terminate if the console
+ * window is closed.  By default this is false initially.
+ */
+bool getConsoleExitProgramOnClose();
+
+/*
+ * Returns whether the location of the console window should be remembered and
+ * restored between runs of the program.  Initially false.
+ */
+bool getConsoleLocationSaved();
+
+/*
  * Function: getConsolePrintExceptions
  * Usage: bool ex = getConsolePrintExceptions();
  * ----------------------------
@@ -40,6 +74,23 @@ bool getConsoleEcho();
  * Disabled (false) by default.
  */
 bool getConsolePrintExceptions();
+
+/*
+ * Returns whether functions like setConsoleFont or setConsoleSize
+ * are currently ignored.  See setConsoleSettingsLocked.
+ */
+bool getConsoleSettingsLocked();
+
+/*
+ * Function: setConsoleClearEnabled
+ * Usage: setConsoleClearEnabled(true);
+ * ------------------------------------
+ * Returns whether the console's "clear" function should be enabled.
+ * Default true.  If false, clear() will just print a message
+ * rather than actually clearing the console.
+ * This is sometimes used to facilitate creation of auto-grading scripts.
+ */
+void setConsoleClearEnabled(bool value);
 
 /*
  * Function: setConsoleEcho
@@ -65,30 +116,6 @@ void setConsoleEventOnClose(bool eventOnClose);
 void setConsoleExitProgramOnClose(bool exitOnClose);
 
 /*
- * Sets whether the location of the console window should be remembered and
- * restored between runs of the program.  Default false.
- */
-void setConsoleLocationSaved(bool value);
-
-/*
- * Returns whether the location of the console window should be remembered and
- * restored between runs of the program.  Initially false.
- */
-bool getConsoleLocationSaved();
-
-/*
- * Returns whether the overall C++ program will terminate if the console
- * window is closed.  By default this is false initially.
- */
-bool getConsoleExitProgramOnClose();
-
-/*
- * Returns whether an event should be generated if the console
- * window is closed.  By default this is false initially.
- */
-bool getConsoleEventOnClose();
-
-/*
  * Function: setConsoleFont
  * Usage: setConsoleFont(font);
  * ----------------------------
@@ -104,7 +131,22 @@ bool getConsoleEventOnClose();
  * such specifications separated by semicolons, in which case the
  * first available font on the system is used.
  */
-void setConsoleFont(const std::string & font);
+void setConsoleFont(const std::string& font);
+
+/*
+ * Function: setConsoleLocation
+ * Usage: setConsoleLocation(x, y);
+ * --------------------------------
+ * Changes the (x, y) pixel position of the console to the specified
+ * coordinates, relative to the top/left of the screen.
+ */
+void setConsoleLocation(int x, int y);
+
+/*
+ * Sets whether the location of the console window should be remembered and
+ * restored between runs of the program.  Default false.
+ */
+void setConsoleLocationSaved(bool value);
 
 /*
  * Function: setConsolePrintExceptions
@@ -119,6 +161,13 @@ void setConsoleFont(const std::string & font);
 void setConsolePrintExceptions(bool printExceptions);
 
 /*
+ * If set to true, disables functions like setConsoleFont or setConsoleSize,
+ * to facilitate autograder construction by negating any such calls in the
+ * student's main program.  Initially false.
+ */
+void setConsoleSettingsLocked(bool value);
+
+/*
  * Function: setConsoleSize
  * Usage: setConsoleSize(width, height);
  * -------------------------------------
@@ -126,113 +175,6 @@ void setConsolePrintExceptions(bool printExceptions);
  * in pixels.
  */
 void setConsoleSize(double width, double height);
-
-/*
- * Function: setConsoleLocation
- * Usage: setConsoleLocation(x, y);
- * -------------------------------------
- * Changes the (x, y) pixel position of the console to the specified
- * coordinates, relative to the top/left of the screen.
- */
-void setConsoleLocation(int x, int y);
-
-
-// extra functions to facilitate creation of autograder programs
-namespace autograder {
-/*
- * Function: getConsoleEchoUserInput
- * Usage: bool echo = getConsoleEchoUserInput();
- * ----------------------------
- * Returns whether or not the input from the Stanford graphical
- * console window is being echoed onto the standard operating system terminal
- * window. Initially this is false unless set to true by a previous call to
- * setConsoleEchoUserInput(true).
- */
-bool getConsoleEchoUserInput();
-
-/*
- * Function: getConsoleLogFile
- * Usage: string consoleLogFile = getConsoleLogFile();
- * ----------------------------
- * Returns the file name, if any, that was set by a previous call to
- * setConsoleLogFile into which console in/output is being logged.
- * If setConsoleLogFile has not been called yet by this program, returns
- * an empty string ("").
- */
-std::string getConsoleLogFile();
-
-/*
- * Function: isConsoleAutograderMode
- * Usage: bool mode = isConsoleAutograderMode();
- * -------------------------------------
- * Returns whether the console is in "autograder mode".
- * Initially the console is not in autograder mode unless the function
- * setConsoleAutograderMode has been called.
- */
-bool isConsoleAutograderMode();
-
-/*
- * Function: setConsoleAutograderMode
- * Usage: setConsoleAutograderMode(true);
- * -------------------------------------
- * Puts the console in/out of "autograder mode", a mode where various changes
- * occur such as not actually clearing the console on a clearConsole() call.
- * This mode is used to facilitate creation of auto-grading scripts.
- */
-void setConsoleAutograderMode(bool value);
-
-/*
- * Function: setConsoleEchoUserInput
- * Usage: setConsoleEchoUserInput(true);
- * ----------------------------
- * Enables or disables echoing the input from the Stanford
- * console window onto the standard operating system terminal window.
- * Normally you don't need this echoing, but if you want to be able to copy
- * and paste your console interaction into another window, it is useful.
- */
-void setConsoleEchoUserInput(bool echo);
-
-/*
- * Function: setConsoleLog
- * Usage: setConsoleLog("myoutput.txt");
- * ----------------------------
- * Begins dumping a copy of all future console in/output to the given file name.
- * Useful for capturing output logs and writing auto-grader scripts.
- * If you are logging to a file, the output still also appears on the console.
- * By default, logging is not initially enabled.
- * Log text is appended to any existing content in the file as it is printed.
- * If you pass the name of an invalid file, or one that the current user does
- * not have permission to write, a file I/O error will occur the next time
- * your program performs a console I/O operation to cout or cin.
- * Set to an empty string ("") to disable logging.
- */
-void setConsoleLogFile(const std::string & filename);
-
-/*
- * If set to true, disables functions like setConsoleFont or setConsoleSize, to
- * facilitate autograder construction by negating any such calls in the
- * student's main program.  Initially false.
- */
-void setConsoleSettingsLocked(bool value);
-
-/*
- * Returns whether functions like setConsoleFont or setConsoleSize are currently
- * ignored.  See setConsoleSettingsLocked.
- */
-bool isConsoleSettingsLocked();
-
-/*
- * Adds/removes an input window button for auto-inserting autograder inputs.
- */
-void addInputButton(const std::string& text, const std::string& input);
-void removeInputButton(const std::string& text);
-
-/*
- * Adds/removes an input category containing related autograder input buttons.
- */
-void addInputCategory(const std::string& name);
-void removeInputCategory(const std::string& name);
-}
 
 #include "private/main.h"
 

@@ -3,13 +3,19 @@
  * -------------------
  * This file exports the <code>DawgLexicon</code> class, which is a
  * compact structure for storing a list of words.
+ * 
+ * @version 2014/10/10
+ * - added equals method
+ * - added comparison operators ==, !=
+ * - added toStlSet method
+ * - fixed inclusion of foreach macro to avoid errors
  */
 
 #ifndef _dawglexicon_h
 #define _dawglexicon_h
 
+#include <set>
 #include <string>
-#include "private/foreachpatch.h"
 #include "set.h"
 #include "stack.h"
 
@@ -67,7 +73,7 @@ public:
      *</pre>
      */
     DawgLexicon();
-    DawgLexicon(std::string filename);
+    DawgLexicon(const std::string& filename);
 
     /*
      * Destructor: ~DawgLexicon
@@ -82,7 +88,7 @@ public:
      * ---------------------
      * Adds the specified word to the lexicon.
      */
-    void add(std::string word);
+    void add(const std::string& word);
     
     /*
      * Method: addWordsFromFile
@@ -90,7 +96,7 @@ public:
      * --------------------------------------
      * Reads the file and adds all of its words to the lexicon.
      */
-    void addWordsFromFile(std::string filename);
+    void addWordsFromFile(const std::string& filename);
     
     /*
      * Method: clear
@@ -108,7 +114,7 @@ public:
      * lexicon.  In the <code>DawgLexicon</code> class, the case of letters is
      * ignored, so "Zoo" is the same as "ZOO" or "zoo".
      */
-    bool contains(std::string word) const;
+    bool contains(const std::string& word) const;
     
     /*
      * Method: containsPrefix
@@ -118,7 +124,18 @@ public:
      * Like <code>containsWord</code>, this method ignores the case of letters
      * so that "MO" is a prefix of "monkey" or "Monday".
      */
-    bool containsPrefix(std::string prefix) const;
+    bool containsPrefix(const std::string& prefix) const;
+    
+    /*
+     * Method: equals
+     * Usage: if (lex1.equals(lex2)) ...
+     * ---------------------------------
+     * Compares two lexicons for equality.
+     * Returns <code>true</code> if this lexicon contains exactly the same
+     * values as the given other lexicon.
+     * Identical in behavior to the == operator.
+     */
+    bool equals(const DawgLexicon& lex2) const;
     
     /*
      * Method: isEmpty
@@ -157,6 +174,24 @@ public:
      * a large number of words.
      */
     std::string toString() const;
+    
+    /*
+     * Returns an STL set object with the same elements as this lexicon.
+     */
+    std::set<std::string> toStlSet() const;
+    
+    /*
+     * Operators: ==, !=
+     * Usage: if (lex1 == lex2) ...
+     * Usage: if (lex1 != lex2) ...
+     * ...
+     * ----------------------------
+     * Relational operators to compare two lexicons to see if they have the same elements.
+     * The ==, != operators require that the ValueType has a == operator
+     * so that the elements can be tested for equality.
+     */
+    bool operator ==(const DawgLexicon& lex2) const;
+    bool operator !=(const DawgLexicon& lex2) const;
 
     /*
      * Additional DawgLexicon operations
@@ -245,8 +280,8 @@ public:
         void advanceToNextEdge();
 
     public:
-        iterator() {
-            this->lp = NULL;
+        iterator() : lp(NULL), index(0), edgePtr(NULL) {
+            /* empty */
         }
 
         iterator(const DawgLexicon* lp, bool endFlag) {
@@ -338,7 +373,7 @@ public:
 private:
     Edge* findEdgeForChar(Edge* children, char ch) const;
     Edge* traceToLastEdge(const std::string& s) const;
-    void readBinaryFile(std::string filename);
+    void readBinaryFile(const std::string& filename);
     void deepCopy(const DawgLexicon& src);
     int countDawgWords(Edge* start) const;
 
@@ -353,13 +388,13 @@ private:
 
 template <typename FunctorType>
 void DawgLexicon::mapAll(FunctorType fn) const {
-    __foreach__ (std::string word __in__ *this) {
+    for (std::string word : *this) {
         fn(word);
     }
 }
 
-// hashing functions for lexicons;  defined in hashmap.cpp
-int hashCode(const DawgLexicon& l);
+// hashing functions for lexicons; defined in hashmap.cpp
+int hashCode(const DawgLexicon& lex);
 
 std::ostream& operator <<(std::ostream& os, const DawgLexicon& lex);
 

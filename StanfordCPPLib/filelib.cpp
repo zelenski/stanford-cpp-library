@@ -3,8 +3,16 @@
  * -----------------
  * This file implements the filelib.h interface.  All platform dependencies
  * are managed through the platform interface.
+ * 
+ * @version 2014/10/19
+ * - alphabetized function declarations
+ * - converted many funcs to take const string& rather than string for efficiency
+ * - added listDirectory overload that returns a Vector
+ * @version 2014/10/08
+ * - removed 'using namespace' statement
  */
 
+#include "filelib.h"
 #include <algorithm>
 #include <cctype>
 #include <cstdio>
@@ -12,175 +20,37 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "private/foreachpatch.h"
-#include "filelib.h"
 #include "platform.h"
 #include "strlib.h"
 #include "vector.h"
-using namespace std;
-
-namespace autograder {
-extern bool getConsoleEchoUserInput();
-}
 
 static Platform *pp = getPlatform();
 
 /* Prototypes */
 
-static void splitPath(string path, Vector<string> list);
-static bool recursiveMatch(string str, int sx, string pattern, int px);
-static void appendSpace(string& prompt);
+static void splitPath(const std::string& path, Vector<std::string> list);
+static bool recursiveMatch(const std::string& str, int sx, const std::string& pattern, int px);
+static void appendSpace(std::string& prompt);
 
 /* Implementations */
 
-bool openFile(ifstream & stream, string filename) {
-    stream.clear();
-    stream.open(expandPathname(filename).c_str());
-    return !stream.fail();
+void createDirectory(const std::string& path) {
+    return pp->filelib_createDirectory(path);
 }
 
-bool openFile(ofstream & stream, string filename) {
-    stream.clear();
-    stream.open(expandPathname(filename).c_str());
-    return !stream.fail();
-}
-
-string promptUserForFile(ifstream & stream, string prompt, string reprompt) {
-    if (reprompt == "") {
-        reprompt = "Unable to open that file.  Try again.";
+void createDirectoryPath(const std::string& path) {
+    size_t cp = 1;
+    if (path == "") return;
+    while ((cp = path.find('/', cp + 1)) != std::string::npos) {
+        createDirectory(path.substr(0, cp - 1));
     }
-    while (true) {
-        cout << prompt;
-        string filename;
-        getline(cin, filename);
-        if (autograder::getConsoleEchoUserInput()) {
-            cout << filename << endl;
-        }
-        if (!filename.empty()) {
-            openFile(stream, filename);
-            if (!stream.fail()) return filename;
-            stream.clear();
-        }
-        cout << reprompt << endl;
-        if (prompt == "") prompt = "Input file: ";
-    }
+    createDirectory(path);
 }
 
-string promptUserForFile(ofstream & stream, string prompt, string reprompt) {
-    if (reprompt == "") {
-        reprompt = "Unable to open that file.  Try again.";
-    }
-    appendSpace(prompt);
-    while (true) {
-        cout << prompt;
-        string filename;
-        getline(cin, filename);
-        if (autograder::getConsoleEchoUserInput()) {
-            cout << filename << endl;
-        }
-        if (!filename.empty()) {
-            openFile(stream, filename);
-            if (!stream.fail()) return filename;
-            stream.clear();
-        }
-        cout << reprompt << endl;
-        if (prompt == "") prompt = "Output file: ";
-    }
-}
-
-string openFileDialog(ifstream & stream) {
-    return openFileDialog(stream, "Open File", "");
-}
-
-string openFileDialog(ifstream & stream, string title) {
-    return openFileDialog(stream, title, "");
-}
-
-string openFileDialog(ifstream & stream, string title, string path) {
-    string filename = pp->file_openFileDialog(title, "load", path);
-    if (filename == "") return "";
-    stream.open(filename.c_str());
-    return (stream.fail()) ? "" : filename;
-}
-
-string openFileDialog(ofstream & stream) {
-    return openFileDialog(stream, "Open File", "");
-}
-
-string openFileDialog(ofstream & stream, string title) {
-    return openFileDialog(stream, title, "");
-}
-
-string openFileDialog(ofstream & stream, string title, string path) {
-    string filename = pp->file_openFileDialog(title, "save", path);
-    if (filename == "") return "";
-    stream.open(filename.c_str());
-    return (stream.fail()) ? "" : filename;
-}
-
-void readEntireFile(istream & is, Vector<string> & lines) {
-    lines.clear();
-    while (true) {
-        string line;
-        getline(is, line);
-        if (is.fail()) break;
-        lines.add(line);
-    }
-}
-
-void readEntireFile(istream & is, vector<string> & lines) {
-    lines.clear();
-    while (true) {
-        string line;
-        getline(is, line);
-        if (is.fail()) break;
-        lines.push_back(line);
-    }
-}
-
-string readEntireFile(string filename) {
-    string out;
-    if (readEntireFile(filename, out)) {
-        return out;
-    } else {
-        error(string("input file not found or cannot be opened: ") + filename);
-        return "";
-    }
-}
-
-bool readEntireFile(string filename, string& out) {
-    ifstream input;
-    input.open(filename.c_str());
-    if (input.fail()) {
-        return false;
-    }
-    ostringstream output;
-    while (true) {
-        int ch = input.get();
-        if (input.fail()) break;
-        output << (char) ch;
-    }
-    input.close();
-    out = output.str();
-    return true;
-}
-
-bool writeEntireFile(string filename, string text, bool append) {
-    ofstream output;
-    if (append) {
-        output.open(filename.c_str(), ios_base::out | ios_base::app);
-    } else {
-        output.open(filename.c_str());
-    }
-    if (output.fail()) {
-        return false;
-    }
-    output << text;
-    output.close();
-    return !output.fail();
-}
-
-string getRoot(string filename) {
+std::string defaultExtension(const std::string& filename, const std::string& ext) {
+    std::string extCopy = ext;
+    bool force = (extCopy[0] == '*');
+    if (force) extCopy = extCopy.substr(1);
     int dot = -1;
     int len = filename.length();
     for (int i = 0; i < len; i++) {
@@ -189,13 +59,44 @@ string getRoot(string filename) {
         if (ch == '/' || ch == '\\') dot = -1;
     }
     if (dot == -1) {
-        return filename;
+        force = true;
+        dot = len;
+    }
+    if (force) {
+        return filename.substr(0, dot) + extCopy;
     } else {
-        return filename.substr(0, dot);
+        return filename;
     }
 }
 
-string getExtension(string filename) {
+void deleteFile(const std::string& filename) {
+    remove(expandPathname(filename).c_str());
+}
+
+std::string expandPathname(const std::string& filename) {
+    return pp->filelib_expandPathname(filename);
+}
+
+bool fileExists(const std::string& filename) {
+    return pp->filelib_fileExists(filename);
+}
+
+std::string findOnPath(const std::string& path, const std::string& filename) {
+    std::ifstream stream;
+    std::string result = openOnPath(stream, path, filename);
+    if (result != "") stream.close();
+    return result;
+}
+
+std::string getCurrentDirectory() {
+    return pp->filelib_getCurrentDirectory();
+}
+
+std::string getDirectoryPathSeparator() {
+    return pp->filelib_getDirectoryPathSeparator();
+}
+
+std::string getExtension(const std::string& filename) {
     int dot = -1;
     int len = filename.length();
     for (int i = 0; i < len; i++) {
@@ -210,14 +111,14 @@ string getExtension(string filename) {
     }
 }
 
-string getHead(string filename) {
-    size_t slash = string::npos;
+std::string getHead(const std::string& filename) {
+    size_t slash = std::string::npos;
     size_t len = filename.length();
     for (size_t i = 0; i < len; i++) {
         char ch = filename[i];
         if (ch == '/' || ch == '\\') slash = i;
     }
-    if (slash == string::npos) {
+    if (slash == std::string::npos) {
         return "";
     } else if (slash == 0) {
         return "/";
@@ -226,23 +127,7 @@ string getHead(string filename) {
     }
 }
 
-string getTail(string filename) {
-    size_t slash = string::npos;
-    size_t len = filename.length();
-    for (size_t i = 0; i < len; i++) {
-        char ch = filename[i];
-        if (ch == '/' || ch == '\\') slash = i;
-    }
-    if (slash == string::npos) {
-        return filename;
-    } else {
-        return filename.substr(slash + 1);
-    }
-}
-
-string defaultExtension(string filename, string ext) {
-    bool force = (ext[0] == '*');
-    if (force) ext = ext.substr(1);
+std::string getRoot(const std::string& filename) {
     int dot = -1;
     int len = filename.length();
     for (int i = 0; i < len; i++) {
@@ -251,141 +136,284 @@ string defaultExtension(string filename, string ext) {
         if (ch == '/' || ch == '\\') dot = -1;
     }
     if (dot == -1) {
-        force = true;
-        dot = len;
-    }
-    if (force) {
-        return filename.substr(0, dot) + ext;
-    } else {
         return filename;
+    } else {
+        return filename.substr(0, dot);
     }
 }
 
-string openOnPath(ifstream & stream, string path, string filename) {
-    Vector<string> paths;
-    splitPath(path, paths);
-    __foreach__ (string dir __in__ paths) {
-        string pathname = dir + "/" + filename;
-        if (openFile(stream, pathname)) return pathname;
-    }
-    return "";
-}
-
-string openOnPath(ofstream & stream, string path, string filename) {
-    Vector<string> paths;
-    splitPath(path, paths);
-    __foreach__ (string dir __in__ paths) {
-        string pathname = dir + "/" + filename;
-        if (openFile(stream, pathname)) return pathname;
-    }
-    return "";
-}
-
-string findOnPath(string path, string filename) {
-    ifstream stream;
-    string result = openOnPath(stream, path, filename);
-    if (result != "") stream.close();
-    return result;
-}
-
-void deleteFile(string filename) {
-    remove(expandPathname(filename).c_str());
-}
-
-void renameFile(string oldname, string newname) {
-    oldname = expandPathname(oldname);
-    newname = expandPathname(newname);
-    rename(oldname.c_str(), newname.c_str());
-}
-
-void createDirectoryPath(string path) {
-    size_t cp = 1;
-    if (path == "") return;
-    while ((cp = path.find('/', cp + 1)) != string::npos) {
-        createDirectory(path.substr(0, cp - 1));
-    }
-    createDirectory(path);
-}
-
-bool matchFilenamePattern(string filename, string pattern) {
-    return recursiveMatch(filename, 0, pattern, 0);
-}
-
-bool fileExists(string filename) {
-    return pp->filelib_fileExists(filename);
-}
-
-bool isFile(string filename) {
-    return pp->filelib_isFile(filename);
-}
-
-bool isSymbolicLink(string filename) {
-    return pp->filelib_isSymbolicLink(filename);
-}
-
-bool isDirectory(string filename) {
-    return pp->filelib_isDirectory(filename);
-}
-
-void setCurrentDirectory(string path) {
-    return pp->filelib_setCurrentDirectory(path);
-}
-
-string getCurrentDirectory() {
-    return pp->filelib_getCurrentDirectory();
-}
-
-void createDirectory(string path) {
-    return pp->filelib_createDirectory(path);
-}
-
-string getDirectoryPathSeparator() {
-    return pp->filelib_getDirectoryPathSeparator();
-}
-
-string getSearchPathSeparator() {
+std::string getSearchPathSeparator() {
     return pp->filelib_getSearchPathSeparator();
 }
 
-string expandPathname(string filename) {
-    return pp->filelib_expandPathname(filename);
+std::string getTail(const std::string& filename) {
+    size_t slash = std::string::npos;
+    size_t len = filename.length();
+    for (size_t i = 0; i < len; i++) {
+        char ch = filename[i];
+        if (ch == '/' || ch == '\\') slash = i;
+    }
+    if (slash == std::string::npos) {
+        return filename;
+    } else {
+        return filename.substr(slash + 1);
+    }
 }
 
-void listDirectory(string path, Vector<string> & list) {
-    vector<string> vec;
+std::string getTempDirectory() {
+    return pp->filelib_getTempDirectory();
+}
+
+bool isDirectory(const std::string& filename) {
+    return pp->filelib_isDirectory(filename);
+}
+
+bool isFile(const std::string& filename) {
+    return pp->filelib_isFile(filename);
+}
+
+bool isSymbolicLink(const std::string& filename) {
+    return pp->filelib_isSymbolicLink(filename);
+}
+
+void listDirectory(const std::string& path, Vector<std::string>& list) {
+    std::vector<std::string> vec;
     listDirectory(path, vec);
     list.clear();
-    __foreach__ (string file __in__ vec) {
+    for (std::string file : vec) {
         list.add(file);
     }
 }
 
-void listDirectory(string path, vector<string> & list) {
+void listDirectory(const std::string& path, std::vector<std::string>& list) {
     return pp->filelib_listDirectory(path, list);
 }
 
-void rewindStream(istream& input) {
-    input.clear();             // removes any current eof/failure flags
-    input.seekg(0, ios::beg);  // tells the stream to seek back to the beginning
+Vector<std::string> listDirectory(const std::string& path) {
+    std::vector<std::string> vec;
+    listDirectory(path, vec);
+    Vector<std::string> v(vec);
+    return v;
+}
+
+bool matchFilenamePattern(const std::string& filename, const std::string& pattern) {
+    return recursiveMatch(filename, 0, pattern, 0);
+}
+
+bool openFile(std::ifstream& stream, const std::string& filename) {
+    stream.clear();
+    stream.open(expandPathname(filename).c_str());
+    return !stream.fail();
+}
+
+bool openFile(std::ofstream& stream, const std::string& filename) {
+    stream.clear();
+    stream.open(expandPathname(filename).c_str());
+    return !stream.fail();
+}
+
+std::string openFileDialog(std::ifstream& stream) {
+    return openFileDialog(stream, "Open File", "");
+}
+
+std::string openFileDialog(std::ifstream& stream,
+                           const std::string& title) {
+    return openFileDialog(stream, title, "");
+}
+
+std::string openFileDialog(std::ifstream& stream,
+                           const std::string& title,
+                           const std::string& path) {
+    std::string filename = pp->file_openFileDialog(title, "load", path);
+    if (filename == "") return "";
+    stream.open(filename.c_str());
+    return (stream.fail()) ? "" : filename;
+}
+
+std::string openFileDialog(std::ofstream& stream) {
+    return openFileDialog(stream, "Open File", "");
+}
+
+std::string openFileDialog(std::ofstream& stream,
+                           const std::string& title) {
+    return openFileDialog(stream, title, "");
+}
+
+std::string openFileDialog(std::ofstream& stream,
+                           const std::string& title,
+                           const std::string& path) {
+    std::string filename = pp->file_openFileDialog(title, "save", path);
+    if (filename == "") return "";
+    stream.open(filename.c_str());
+    return (stream.fail()) ? "" : filename;
+}
+
+std::string openOnPath(std::ifstream& stream,
+                       const std::string& path,
+                       const std::string& filename) {
+    Vector<std::string> paths;
+    splitPath(path, paths);
+    for (std::string dir : paths) {
+        std::string pathname = dir + "/" + filename;
+        if (openFile(stream, pathname)) return pathname;
+    }
+    return "";
+}
+
+std::string openOnPath(std::ofstream& stream,
+                       const std::string& path,
+                       const std::string& filename) {
+    Vector<std::string> paths;
+    splitPath(path, paths);
+    for (std::string dir : paths) {
+        std::string pathname = dir + "/" + filename;
+        if (openFile(stream, pathname)) return pathname;
+    }
+    return "";
+}
+
+std::string promptUserForFile(std::ifstream& stream,
+                              const std::string& prompt,
+                              const std::string& reprompt) {
+    std::string promptCopy = prompt;
+    std::string repromptCopy = reprompt;
+    if (reprompt == "") {
+        repromptCopy = "Unable to open that file.  Try again.";
+    }
+    appendSpace(promptCopy);
+    while (true) {
+        std::cout << promptCopy;
+        std::string filename;
+        getline(std::cin, filename);
+        if (!filename.empty()) {
+            openFile(stream, filename);
+            if (!stream.fail()) return filename;
+            stream.clear();
+        }
+        std::cout << repromptCopy << std::endl;
+        if (promptCopy == "") promptCopy = "Input file: ";
+    }
+}
+
+std::string promptUserForFile(std::ofstream& stream,
+                              const std::string& prompt,
+                              const std::string& reprompt) {
+    std::string promptCopy = prompt;
+    std::string repromptCopy = reprompt;
+    if (reprompt == "") {
+        repromptCopy = "Unable to open that file.  Try again.";
+    }
+    appendSpace(promptCopy);
+    while (true) {
+        std::cout << promptCopy;
+        std::string filename;
+        getline(std::cin, filename);
+        if (!filename.empty()) {
+            openFile(stream, filename);
+            if (!stream.fail()) return filename;
+            stream.clear();
+        }
+        std::cout << repromptCopy << std::endl;
+        if (promptCopy == "") promptCopy = "Output file: ";
+    }
+}
+
+void readEntireFile(std::istream& is, Vector<std::string>& lines) {
+    lines.clear();
+    while (true) {
+        std::string line;
+        getline(is, line);
+        if (is.fail()) break;
+        lines.add(line);
+    }
+}
+
+void readEntireFile(std::istream& is, std::vector<std::string>& lines) {
+    lines.clear();
+    while (true) {
+        std::string line;
+        getline(is, line);
+        if (is.fail()) break;
+        lines.push_back(line);
+    }
+}
+
+std::string readEntireFile(const std::string& filename) {
+    std::string out;
+    if (readEntireFile(filename, out)) {
+        return out;
+    } else {
+        error(std::string("input file not found or cannot be opened: ") + filename);
+        return "";
+    }
+}
+
+bool readEntireFile(const std::string& filename, std::string& out) {
+    std::ifstream input;
+    input.open(filename.c_str());
+    if (input.fail()) {
+        return false;
+    }
+    std::ostringstream output;
+    while (true) {
+        int ch = input.get();
+        if (input.fail()) break;
+        output << (char) ch;
+    }
+    input.close();
+    out = output.str();
+    return true;
+}
+
+void renameFile(const std::string& oldname, const std::string& newname) {
+    std::string oldExpand = expandPathname(oldname);
+    std::string newExpand = expandPathname(newname);
+    rename(oldExpand.c_str(), newExpand.c_str());
+}
+
+void rewindStream(std::istream& input) {
+    input.clear();                  // removes any current eof/failure flags
+    input.seekg(0, std::ios::beg);  // tells the stream to seek back to the beginning
+}
+
+void setCurrentDirectory(const std::string& path) {
+    return pp->filelib_setCurrentDirectory(path);
+}
+
+bool writeEntireFile(const std::string& filename,
+                     const std::string& text,
+                     bool append) {
+    std::ofstream output;
+    if (append) {
+        output.open(filename.c_str(), std::ios_base::out | std::ios_base::app);
+    } else {
+        output.open(filename.c_str());
+    }
+    if (output.fail()) {
+        return false;
+    }
+    output << text;
+    output.close();
+    return !output.fail();
 }
 
 /* Private functions */
 
-static void splitPath(string path, Vector<string> list) {
-    char sep = (path.find(';') == string::npos) ? ':' : ';';
-    path += sep;
+static void splitPath(const std::string& path, Vector<std::string> list) {
+    char sep = (path.find(';') == std::string::npos) ? ':' : ';';
+    std::string pathCopy = path + sep;
     size_t start = 0;
     while (true) {
-        size_t finish = path.find(sep, start);
-        if (finish == string::npos) break;
+        size_t finish = pathCopy.find(sep, start);
+        if (finish == std::string::npos) break;
         if (finish > start + 1) {
-            list.add(path.substr(start, finish - start - 1));
+            list.add(pathCopy.substr(start, finish - start - 1));
         }
         start = finish + 1;
     }
 }
 
-static bool recursiveMatch(string str, int sx, string pattern, int px) {
+static bool recursiveMatch(const std::string& str, int sx, const std::string& pattern, int px) {
     int slen = str.length();
     int plen = pattern.length();
     if (px == plen) return (sx == slen);
@@ -428,7 +456,7 @@ static bool recursiveMatch(string str, int sx, string pattern, int px) {
     return recursiveMatch(str, sx + 1, pattern, px + 1);
 }
 
-static void appendSpace(string& prompt) {
+static void appendSpace(std::string& prompt) {
     if (!prompt.empty() && !isspace(prompt[prompt.length() - 1])) {
         prompt += ' ';
     }

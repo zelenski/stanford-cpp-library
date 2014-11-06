@@ -3,6 +3,13 @@
  * --------------
  * This file exports the <code>PriorityQueue</code> class, a
  * collection in which values are processed in priority order.
+ * 
+ * @version 2014/10/20
+ * - added equals method, ==, != operators
+ * @version 2014/10/10
+ * - removed usage of __foreach macro
+ * 2014/02/01
+ * - added changePriority member to raise a given value's priority
  */
 
 #ifndef _pqueue_h
@@ -89,6 +96,17 @@ public:
     void enqueue(const ValueType& value, double priority);
     
     /*
+     * Method: equals
+     * Usage: if (pq.equals(pq2)) ...
+     * ------------------------------
+     * Compares two priority queues for equality.
+     * Returns <code>true</code> if this queue contains exactly the same
+     * values and priorities as the given other queue.
+     * Identical in behavior to the == operator.
+     */
+    bool equals(const PriorityQueue<ValueType>& pq2) const;
+    
+    /*
      * Method: front
      * Usage: ValueType first = pq.front();
      * ------------------------------------
@@ -137,6 +155,17 @@ public:
      * Converts the queue to a printable string representation.
      */
     std::string toString() const;
+    
+    /*
+     * Operators: ==, !=
+     * Usage: if (pq1 == pq2) ...
+     * --------------------------
+     * Relational operators to compare two queues to see if they have the same elements.
+     * The ==, != operators require that the ValueType has a == operator
+     * so that the elements can be tested for equality.
+     */
+    bool operator ==(const PriorityQueue& pq2) const;
+    bool operator !=(const PriorityQueue& pq2) const;
 
     /* Private section */
 
@@ -167,8 +196,6 @@ private:
     int capacity;
 
     /* Private function prototypes */
-    void enqueueHeap(ValueType& value, double priority);
-    ValueType dequeueHeap();
     bool takesPriority(int i1, int i2);
     void swapHeapEntries(int i1, int i2);
 };
@@ -242,6 +269,7 @@ template <typename ValueType>
 void PriorityQueue<ValueType>::clear() {
     heap.clear();
     count = 0;
+    enqueueCount = 0;   // BUGFIX 2014/10/10: was previously using garbage unassigned value
 }
 
 /*
@@ -312,6 +340,28 @@ void PriorityQueue<ValueType>::enqueue(const ValueType& value, double priority) 
 }
 
 template <typename ValueType>
+bool PriorityQueue<ValueType>::equals(const PriorityQueue<ValueType>& pq2) const {
+    // optimization: if literally same pq, stop
+    if (this == &pq2) {
+        return true;
+    }
+    if (size() != pq2.size()) {
+        return false;
+    }
+    PriorityQueue<ValueType> backup1 = *this;
+    PriorityQueue<ValueType> backup2 = pq2;
+    while (!backup1.isEmpty() && !backup2.isEmpty()) {
+        if (backup1.peekPriority() != backup2.peekPriority()) {
+            return false;
+        }
+        if (backup1.dequeue() != backup2.dequeue()) {
+            return false;
+        }
+    }
+    return backup1.isEmpty() == backup2.isEmpty();
+}
+
+template <typename ValueType>
 ValueType & PriorityQueue<ValueType>::front() {
     if (count == 0) {
         error("PriorityQueue::front: Attempting to read front of an empty queue");
@@ -347,7 +397,7 @@ int PriorityQueue<ValueType>::size() const {
 
 template <typename ValueType>
 std::string PriorityQueue<ValueType>::toString() const {
-    ostringstream os;
+    std::ostringstream os;
     os << *this;
     return os.str();
 }
@@ -371,9 +421,20 @@ bool PriorityQueue<ValueType>::takesPriority(int i1, int i2) {
 }
 
 template <typename ValueType>
+bool PriorityQueue<ValueType>::operator ==(const PriorityQueue& pq2) const {
+    return equals(pq2);
+}
+
+template <typename ValueType>
+bool PriorityQueue<ValueType>::operator !=(const PriorityQueue& pq2) const {
+    return !equals(pq2);
+}
+
+template <typename ValueType>
 std::ostream& operator <<(std::ostream& os,
                           const PriorityQueue<ValueType>& pq) {
     os << "{";
+    // (slow, memory-inefficient) implementation: copy pq and print
     PriorityQueue<ValueType> copy = pq;
     int len = pq.size();
     for (int i = 0; i < len; i++) {
@@ -383,12 +444,14 @@ std::ostream& operator <<(std::ostream& os,
         os << copy.peekPriority() << ":";
         writeGenericValue(os, copy.dequeue(), true);
     }
+    // TODO: new, faster implementation: just loop over internal heap structure
+    // (won't print in sorted order, but much more efficient)
     return os << "}";
 }
 
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, PriorityQueue<ValueType>& pq) {
-    char ch;
+    char ch = '\0';
     is >> ch;
     if (ch != '{') {
         error("PriorityQueue::operator >>: Missing {");
@@ -398,7 +461,7 @@ std::istream& operator >>(std::istream& is, PriorityQueue<ValueType>& pq) {
     if (ch != '}') {
         is.unget();
         while (true) {
-            double priority;
+            double priority = 0.0;
             is >> priority >> ch;
             if (ch != ':') {
                 error("PriorityQueue::operator >>: Missing colon after priority");

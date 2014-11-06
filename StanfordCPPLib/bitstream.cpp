@@ -1,22 +1,24 @@
 /*
+ * File: bitstream.cpp
+ * -------------------
  * This file contains the implementation of ibitstream and obitstream classes.
  * These classes are patterned after (and, in fact, inherit from) the standard
  * ifstream and ofstream classes.  Please see bitstream.h for information about
  * how a client properly uses these classes.
  *
- * Authors: Keith Schwarz, Eric Roberts, Marty Stepp
- * Version: 2014/01/23
- * Last modified by: Marty Stepp
- *   - added slightly more descriptive error messages e.g. in writeBit
- *   - whitespace reformatting
+ * @author Keith Schwarz, Eric Roberts, Marty Stepp
+ * @version 2014/10/08
+ * - removed 'using namespace' statement
+ * 2014/01/23
+ * - added slightly more descriptive error messages e.g. in writeBit
+ * - whitespace reformatting
  * Previously last modified on Mon May 21 19:50:00 PST 2012 by Keith Schwarz
  */
 
-#include <iostream>
 #include "bitstream.h"
+#include <iostream>
 #include "error.h"
 #include "strlib.h"
-using namespace std;
 
 static const int NUM_BITS_IN_BYTE = 8;
 
@@ -31,7 +33,7 @@ inline void SetNthBit(int n, int & inByte) {
 /*
  * Returns a printable string for the given character.
  */
-static string toPrintable(int ch) {
+static std::string toPrintable(int ch) {
     if (ch == '\n') {
         return "'\\n'";
     } else if (ch == '\t') {
@@ -53,12 +55,12 @@ static string toPrintable(int ch) {
     } else if (!isgraph(ch)) {
         return "???";
     } else {
-        return string("'") + (char) ch + string("'");
+        return std::string("'") + (char) ch + std::string("'");
     }
 }
 
 /* Constructor ibitstream::ibitstream
- * ------------------------------
+ * ----------------------------------
  * Each ibitstream tracks 3 integers as private data.
  * "lastTell" is streampos of the last byte that was read (this is used
  * to detect when other non-readBit activity has changed the tell)
@@ -67,12 +69,12 @@ static string toPrintable(int ch) {
  * We set initial state for lastTell and curByte to 0, then pos is
  * set at 8 so that next readBit will trigger a fresh read.
  */
-ibitstream::ibitstream() : istream(NULL), lastTell(0), curByte(0), pos(NUM_BITS_IN_BYTE) {
+ibitstream::ibitstream() : std::istream(NULL), lastTell(0), curByte(0), pos(NUM_BITS_IN_BYTE) {
     this->fake = false;
 }
 
 /* Member function ibitstream::readBit
- * ---------------------------------
+ * -----------------------------------
  * If bits remain in curByte, retrieve next and increment pos
  * Else if end of curByte (or some other read happened), then read next byte
  * and start reading from bit position 0 of that byte.
@@ -80,7 +82,7 @@ ibitstream::ibitstream() : istream(NULL), lastTell(0), curByte(0), pos(NUM_BITS_
  */
 int ibitstream::readBit() {
     if (!is_open()) {
-        error("Cannot read a bit from a stream that is not open.");
+        error("ibitstream::readBit: Cannot read a bit from a stream that is not open.");
     }
 
     if (this->fake) {
@@ -107,16 +109,16 @@ int ibitstream::readBit() {
 }
 
 /* Member function ibitstream::rewind
- * ---------------------------------
+ * ----------------------------------
  * Simply seeks back to beginning of file, so reading begins again
  * from start.
  */
 void ibitstream::rewind() {
     if (!is_open()) {
-        error("Cannot rewind stream that is not open.");
+        error("ibitstream::rewind: Cannot rewind stream that is not open.");
     }
     clear();
-    seekg(0, ios::beg);
+    seekg(0, std::ios::beg);
 }
 
 void ibitstream::setFake(bool fake) {
@@ -124,25 +126,25 @@ void ibitstream::setFake(bool fake) {
 }
 
 /* Member function ibitstream::size
- * ------------------------------
+ * --------------------------------
  * Seek to file end and use tell to retrieve position.
  * In order to not disrupt reading, we also record cur streampos and
  * re-seek to there before returning.
  */
 long ibitstream::size() {
     if (!is_open()) {
-        error("Cannot get size of stream which is not open.");
+        error("ibitstream::size: Cannot get size of stream which is not open.");
     }
     clear();					// clear any error state
     streampos cur = tellg();	// save current streampos
-    seekg(0, ios::end);			// seek to end
+    seekg(0, std::ios::end);			// seek to end
     streampos end = tellg();	// get offset
     seekg(cur);					// seek back to original pos
     return long(end);
 }
 
 /* Member function ibitstream::is_open
- * -------------------------------------------
+ * -----------------------------------
  * Default implementation of is_open has the stream always
  * open.	Subclasses can customize this if they'd like.
  */
@@ -160,12 +162,12 @@ bool ibitstream::is_open() {
  * We set initial state for lastTell and curByte to 0, then pos is
  * set at 8 so that next writeBit will start a new byte.
  */
-obitstream::obitstream() : ostream(NULL), lastTell(0), curByte(0), pos(NUM_BITS_IN_BYTE) {
+obitstream::obitstream() : std::ostream(NULL), lastTell(0), curByte(0), pos(NUM_BITS_IN_BYTE) {
     this->fake = false;
 }
 
 /* Member function obitstream::writeBit
- * ----------------------------------
+ * ------------------------------------
  * If bits remain to be written in curByte, add bit into byte and increment pos
  * Else if end of curByte (or some other write happened), then start a fresh
  * byte at position 0.
@@ -176,11 +178,11 @@ obitstream::obitstream() : ostream(NULL), lastTell(0), curByte(0), pos(NUM_BITS_
  */
 void obitstream::writeBit(int bit) {
     if (bit != 0 && bit != 1) {
-        error(string("writeBit must be passed an integer argument of 0 or 1.  You passed the integer ")
+        error(std::string("obitstream::writeBit: must pass an integer argument of 0 or 1. You passed the integer ")
               + toPrintable(bit) + " (" + integerToString(bit) + ").");
     }
     if (!is_open()) {
-        error("Cannot writeBit to stream which is not open.");
+        error("obitstream::writeBit: stream is not open");
     }
 
     if (this->fake) {
@@ -199,7 +201,7 @@ void obitstream::writeBit(int bit) {
 
         if (pos == 0 || bit) {   // only write if first bit in byte or changing 0 to 1
             if (pos != 0) {
-                seekp(-1, ios::cur);   // back up to overwite if pos > 0
+                seekp(-1, std::ios::cur);   // back up to overwite if pos > 0
             }
             put(curByte);
         }
@@ -214,25 +216,25 @@ void obitstream::setFake(bool fake) {
 }
 
 /* Member function obitstream::size
- * ------------------------------
+ * --------------------------------
  * Seek to file end and use tell to retrieve position.
  * In order to not disrupt writing, we also record cur streampos and
  * re-seek to there before returning.
  */
 long obitstream::size() {
     if (!is_open()) {
-        error("Cannot get size of stream which is not open.");
+        error("obitstream::size: stream is not open");
     }
     clear();					// clear any error state
     streampos cur = tellp();	// save current streampos
-    seekp(0, ios::end);			// seek to end
+    seekp(0, std::ios::end);			// seek to end
     streampos end = tellp();	// get offset
     seekp(cur);					// seek back to original pos
     return long(end);
 }
 
 /* Member function obitstream::is_open
- * -------------------------------------------
+ * -----------------------------------
  * Default implementation of is_open has the stream always
  * open.	Subclasses can customize this if they'd like.
  */
@@ -241,7 +243,7 @@ bool obitstream::is_open() {
 }
 
 /* Constructor ifbitstream::ifbitstream
- * -------------------------------------------
+ * ------------------------------------
  * Wires up the stream class so that it knows to read data
  * from disk.
  */
@@ -250,7 +252,7 @@ ifbitstream::ifbitstream() {
 }
 
 /* Constructor ifbitstream::ifbitstream
- * -------------------------------------------
+ * ------------------------------------
  * Wires up the stream class so that it knows to read data
  * from disk, then opens the given file.
  */
@@ -258,28 +260,28 @@ ifbitstream::ifbitstream(const char* filename) {
     init(&fb);
     open(filename);
 }
-ifbitstream::ifbitstream(string filename) {
+ifbitstream::ifbitstream(const std::string& filename) {
     init(&fb);
     open(filename);
 }
 
 /* Member function ifbitstream::open
- * -------------------------------------------
+ * ---------------------------------
  * Attempts to open the specified file, failing if unable
  * to do so.
  */
 void ifbitstream::open(const char* filename) {
-    if (!fb.open(filename, ios::in | ios::binary)) {
-        setstate(ios::failbit);
+    if (!fb.open(filename, std::ios::in | std::ios::binary)) {
+        setstate(std::ios::failbit);
     }
 }
 
-void ifbitstream::open(string filename) {
+void ifbitstream::open(const std::string& filename) {
     open(filename.c_str());
 }
 
 /* Member function ifbitstream::is_open
- * -------------------------------------------
+ * ------------------------------------
  * Determines whether the file stream is open.
  */
 bool ifbitstream::is_open() {
@@ -287,17 +289,17 @@ bool ifbitstream::is_open() {
 }
 
 /* Member function ifbitstream::close
- * -------------------------------------------
+ * ----------------------------------
  * Closes the file stream, if one is open.
  */
 void ifbitstream::close() {
     if (!fb.close()) {
-        setstate(ios::failbit);
+        setstate(std::ios::failbit);
     }
 }
 
 /* Constructor ofbitstream::ofbitstream
- * -------------------------------------------
+ * ------------------------------------
  * Wires up the stream class so that it knows to write data
  * to disk.
  */
@@ -306,7 +308,7 @@ ofbitstream::ofbitstream() {
 }
 
 /* Constructor ofbitstream::ofbitstream
- * -------------------------------------------
+ * ------------------------------------
  * Wires up the stream class so that it knows to write data
  * to disk, then opens the given file.
  */
@@ -315,39 +317,38 @@ ofbitstream::ofbitstream(const char* filename) {
     open(filename);
 }
 
-ofbitstream::ofbitstream(string filename) {
+ofbitstream::ofbitstream(const std::string& filename) {
     init(&fb);
     open(filename);
 }
 
 /* Member function ofbitstream::open
- * -------------------------------------------
+ * ---------------------------------
  * Attempts to open the specified file, failing if unable
  * to do so.
  */
 void ofbitstream::open(const char* filename) {
-    /* Confirm we aren't about to do something that could potentially be a
-    * Very Bad Idea.
-    */
+    // Confirm we aren't about to do something that could potentially be a
+    // Very Bad Idea.
     if (endsWith(filename, ".cpp") || endsWith(filename, ".h") ||
             endsWith(filename, ".hh") || endsWith(filename, ".cc")) {
-        error(string("It is potentially dangerous to write to file ")
+        error(std::string("ofbitstream::open: It is potentially dangerous to write to file ")
               + filename + ", because that might be your own source code.  "
               + "We are explicitly disallowing this operation.  Please choose a "
               + "different filename.");
-        setstate(ios::failbit);
+        setstate(std::ios::failbit);
     } else {
-        if (!fb.open(filename, ios::out | ios::binary)) {
-            setstate(ios::failbit);
+        if (!fb.open(filename, std::ios::out | std::ios::binary)) {
+            setstate(std::ios::failbit);
         }
     }
 }
-void ofbitstream::open(string filename) {
+void ofbitstream::open(const std::string& filename) {
     open(filename.c_str());
 }
 
 /* Member function ofbitstream::is_open
- * -------------------------------------------
+ * ------------------------------------
  * Determines whether the file stream is open.
  */
 bool ofbitstream::is_open() {
@@ -355,36 +356,36 @@ bool ofbitstream::is_open() {
 }
 
 /* Member function ofbitstream::close
- * -------------------------------------------
+ * ----------------------------------
  * Closes the given file.
  */
 void ofbitstream::close() {
     if (!fb.close()) {
-        setstate(ios::failbit);
+        setstate(std::ios::failbit);
     }
 }
 
 /* Constructor istringbitstream::istringbitstream
- * -------------------------------------------
+ * ----------------------------------------------
  * Sets the stream to use the string buffer, then sets
  * the initial string to the specified value.
  */
-istringbitstream::istringbitstream(string s) {
+istringbitstream::istringbitstream(const std::string& s) {
     init(&sb);
     sb.str(s);
 }
 
 /* Member function istringbitstream::str
- * -------------------------------------------
+ * -------------------------------------
  * Sets the underlying string in the buffer to the
  * specified string.
  */
-void istringbitstream::str(string s) {
+void istringbitstream::str(const std::string& s) {
     sb.str(s);
 }
 
 /* Member function ostringbitstream::ostringbitstream
- * -------------------------------------------
+ * --------------------------------------------------
  * Sets the stream to use the string buffer.
  */
 ostringbitstream::ostringbitstream() {
@@ -392,9 +393,9 @@ ostringbitstream::ostringbitstream() {
 }
 
 /* Member function ostringbitstream::str
- * -------------------------------------------
+ * -------------------------------------
  * Retrives the underlying string data.
  */
-string ostringbitstream::str() {
+std::string ostringbitstream::str() {
     return sb.str();
 }

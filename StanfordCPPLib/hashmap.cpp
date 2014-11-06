@@ -3,19 +3,29 @@
  * -----------------
  * This file contains the hash functions that are used in conjunction
  * with the HashMap class.
+ *
+ * @version 2014/10/31
+ * - commented out primitive hashCodes in favor of hashcode.h/cpp
+ * @version 2014/10/14
+ * - removed 'using namespace' statement
+ * 2014/10/10
+ * - removed usage of __foreach macro
+ * - added DawgLexicon hashCode implementation
+ * - added LinkedList hashCode implementations
  */
 
+#include "hashmap.h"
 #include <iostream>
 #include <string>
+#include "dawglexicon.h"
 #include "grid.h"
-#include "hashmap.h"
 #include "hashset.h"
 #include "lexicon.h"
+#include "linkedlist.h"
 #include "queue.h"
 #include "set.h"
 #include "stack.h"
 #include "vector.h"
-using namespace std;
 
 /*
  * Implementation notes: hashCode
@@ -29,11 +39,12 @@ using namespace std;
  * Professor of Mathematics at the University of Illinois at Chicago.
  */
 
+#ifdef _DISABLE_THESE_FOR_NOW
 const int HASH_SEED = 5381;               /* Starting point for first cycle */
 const int HASH_MULTIPLIER = 33;           /* Multiplier for each cycle      */
 const int HASH_MASK = unsigned(-1) >> 1;  /* All 1 bits except the sign     */
 
-int hashCode(const string& str) {
+int hashCode(const std::string& str) {
     unsigned hash = HASH_SEED;
     int n = str.length();
     for (int i = 0; i < n; i++) {
@@ -66,15 +77,23 @@ int hashCode(double key) {
 int hashCode(void* key) {
     return hashCode(reinterpret_cast<long>(key));
 }
-
+#endif
 
 // hashCode functions for various collections;
 // added by Marty Stepp to allow compound collections.
 // I'm a bit ashamed to have to rewrite so many prototypes, one for each
 // element type; but I can't get it to compile with a template.
+int hashCode(const DawgLexicon& l) {
+    int code = HASH_SEED;
+    for (std::string n : l) {
+        code = HASH_MULTIPLIER * code + hashCode(n);
+    }
+    return int(code & HASH_MASK);
+}
+
 int hashCode(const Grid<int>& g) {
     int code = HASH_SEED;
-    __foreach__ (int n __in__ g) {
+    for (int n : g) {
         code = HASH_MULTIPLIER * code + hashCode(n);
     }
     return int(code & HASH_MASK);
@@ -82,7 +101,7 @@ int hashCode(const Grid<int>& g) {
 
 int hashCode(const Grid<double>& g) {
     int code = HASH_SEED;
-    __foreach__ (double n __in__ g) {
+    for (double n : g) {
         code = HASH_MULTIPLIER * code + hashCode(n);
     }
     return int(code & HASH_MASK);
@@ -90,7 +109,7 @@ int hashCode(const Grid<double>& g) {
 
 int hashCode(const Grid<char>& g) {
     int code = HASH_SEED;
-    __foreach__ (char n __in__ g) {
+    for (char n : g) {
         code = HASH_MULTIPLIER * code + hashCode(n);
     }
     return int(code & HASH_MASK);
@@ -98,15 +117,15 @@ int hashCode(const Grid<char>& g) {
 
 int hashCode(const Grid<long>& g) {
     int code = HASH_SEED;
-    __foreach__ (long n __in__ g) {
+    for (long n : g) {
         code = HASH_MULTIPLIER * code + hashCode(n);
     }
     return int(code & HASH_MASK);
 }
 
-int hashCode(const Grid<string>& g) {
+int hashCode(const Grid<std::string>& g) {
     int code = HASH_SEED;
-    __foreach__ (string n __in__ g) {
+    for (std::string n : g) {
         code = HASH_MULTIPLIER * code + hashCode(n);
     }
     return int(code & HASH_MASK);
@@ -114,7 +133,7 @@ int hashCode(const Grid<string>& g) {
 
 int hashCode(const HashSet<int>& s) {
     int code = HASH_SEED;
-    __foreach__ (int n __in__ s) {
+    for (int n : s) {
         code = HASH_MULTIPLIER * code + hashCode(n);
     }
     return int(code & HASH_MASK);
@@ -122,7 +141,7 @@ int hashCode(const HashSet<int>& s) {
 
 int hashCode(const HashSet<double>& s) {
     int code = HASH_SEED;
-    __foreach__ (double n __in__ s) {
+    for (double n : s) {
         code = HASH_MULTIPLIER * code + hashCode(n);
     }
     return int(code & HASH_MASK);
@@ -130,7 +149,7 @@ int hashCode(const HashSet<double>& s) {
 
 int hashCode(const HashSet<char>& s) {
     int code = HASH_SEED;
-    __foreach__ (char n __in__ s) {
+    for (char n : s) {
         code = HASH_MULTIPLIER * code + hashCode(n);
     }
     return int(code & HASH_MASK);
@@ -138,7 +157,7 @@ int hashCode(const HashSet<char>& s) {
 
 int hashCode(const HashSet<long>& s) {
     int code = HASH_SEED;
-    __foreach__ (long n __in__ s) {
+    for (long n : s) {
         code = HASH_MULTIPLIER * code + hashCode(n);
     }
     return int(code & HASH_MASK);
@@ -146,7 +165,7 @@ int hashCode(const HashSet<long>& s) {
 
 int hashCode(const HashSet<std::string>& s) {
     int code = HASH_SEED;
-    __foreach__ (std::string n __in__ s) {
+    for (std::string n : s) {
         code = HASH_MULTIPLIER * code + hashCode(n);
     }
     return int(code & HASH_MASK);
@@ -154,8 +173,49 @@ int hashCode(const HashSet<std::string>& s) {
 
 int hashCode(const Lexicon& l) {
     int code = HASH_SEED;
-    __foreach__ (std::string n __in__ l) {
+    for (std::string n : l) {
         code = HASH_MULTIPLIER * code + hashCode(n);
+    }
+    return int(code & HASH_MASK);
+}
+
+
+int hashCode(const LinkedList<int>& list) {
+    int code = HASH_SEED;
+    for (int element : list) {
+        code = HASH_MULTIPLIER * code + hashCode(element);
+    }
+    return int(code & HASH_MASK);
+}
+
+int hashCode(const LinkedList<double>& list) {
+    int code = HASH_SEED;
+    for (double element : list) {
+        code = HASH_MULTIPLIER * code + hashCode(element);
+    }
+    return int(code & HASH_MASK);
+}
+
+int hashCode(const LinkedList<char>& list) {
+    int code = HASH_SEED;
+    for (char element : list) {
+        code = HASH_MULTIPLIER * code + hashCode(element);
+    }
+    return int(code & HASH_MASK);
+}
+
+int hashCode(const LinkedList<long>& list) {
+    int code = HASH_SEED;
+    for (long element : list) {
+        code = HASH_MULTIPLIER * code + hashCode(element);
+    }
+    return int(code & HASH_MASK);
+}
+
+int hashCode(const LinkedList<std::string>& list) {
+    int code = HASH_SEED;
+    for (std::string element : list) {
+        code = HASH_MULTIPLIER * code + hashCode(element);
     }
     return int(code & HASH_MASK);
 }
@@ -207,7 +267,7 @@ int hashCode(const Queue<std::string>& q) {
 
 int hashCode(const Set<int>& s) {
     int code = HASH_SEED;
-    __foreach__ (int n __in__ s) {
+    for (int n : s) {
         code = HASH_MULTIPLIER * code + hashCode(n);
     }
     return int(code & HASH_MASK);
@@ -215,7 +275,7 @@ int hashCode(const Set<int>& s) {
 
 int hashCode(const Set<double>& s) {
     int code = HASH_SEED;
-    __foreach__ (double n __in__ s) {
+    for (double n : s) {
         code = HASH_MULTIPLIER * code + hashCode(n);
     }
     return int(code & HASH_MASK);
@@ -223,7 +283,7 @@ int hashCode(const Set<double>& s) {
 
 int hashCode(const Set<char>& s) {
     int code = HASH_SEED;
-    __foreach__ (char n __in__ s) {
+    for (char n : s) {
         code = HASH_MULTIPLIER * code + hashCode(n);
     }
     return int(code & HASH_MASK);
@@ -231,7 +291,7 @@ int hashCode(const Set<char>& s) {
 
 int hashCode(const Set<long>& s) {
     int code = HASH_SEED;
-    __foreach__ (long n __in__ s) {
+    for (long n : s) {
         code = HASH_MULTIPLIER * code + hashCode(n);
     }
     return int(code & HASH_MASK);
@@ -239,7 +299,7 @@ int hashCode(const Set<long>& s) {
 
 int hashCode(const Set<std::string>& s) {
     int code = HASH_SEED;
-    __foreach__ (std::string n __in__ s) {
+    for (std::string n : s) {
         code = HASH_MULTIPLIER * code + hashCode(n);
     }
     return int(code & HASH_MASK);
@@ -329,12 +389,3 @@ int hashCode(const Vector<std::string>& v) {
     }
     return int(code & HASH_MASK);
 }
-
-//template <typename ValueType>
-//int hashCode(const Vector<ValueType>& v) {
-//    int code = 0;
-//    for (int i = 0, size = v.size(); i < size; i++) {
-//        code = 31 * code + hashCode(v[i]);
-//    }
-//    return code;
-//}

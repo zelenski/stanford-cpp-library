@@ -1,8 +1,28 @@
-/*
+﻿/*
  * File: platform.cpp
  * ------------------
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
+ * 
+ * @version 2014/11/05
+ * - added ability to see cerr messages in red on graphical console window
+ * @version 2014/10/31
+ * - added functions for graphical style checker
+ * - added functions to get/check versions of cpp/Java/project
+ * @version 2014/10/27
+ * - added functions for graphical autograder unit tests
+ * - added setVisible for autograder input panel
+ * @version 2014/10/14
+ * - removed unused fileLogConsole functionality
+ * - added code to verify backend spl.jar version compatibility
+ * @version 2014/10/08
+ * - removed 'using namespace' statement
+ * - fixed bug in GBufferedImage.fillRegion back-end call (missing ", " token)
+ * - bug fix for filelib openFileDialog call
+ * - implemented backend of filelib getTempDirectory
+ * - implemented backend of GBufferedImage resize
+ * - fixed/completed backend of GOptionPane functions
+ * - implemented backend of URL download for iurlstream
  */
 
 #ifdef _WIN32
@@ -26,10 +46,12 @@ static int pin;
 static int pout;
 #endif
 
+#include "platform.h"
 #include <algorithm>
 #include <cctype>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -45,48 +67,42 @@ static int pout;
 #include "gtypes.h"
 #include "hashmap.h"
 #include "queue.h"
-#include "platform.h"
 #include "stack.h"
 #include "strlib.h"
 #include "tokenscanner.h"
 #include "vector.h"
 
-using namespace std;
-
 // internal flag to emit a dump of every message sent to the Java back-end;
 // used for debugging purposes
-static const bool PIPE_DEBUG = false;
+// #define PIPE_DEBUG true
 
-static string getLineConsole();
-static void putConsole(const string& str);
-static void endLineConsole();
-static void echoConsole(const string& str);
-static void fileLogConsole(const string& str);
+// related: similar constant in Java back-end stanford.spl.SplPipeDecoder.java
+static const size_t PIPE_MAX_COMMAND_LENGTH = 4096;
+
+static std::string getLineConsole();
+static void putConsole(const std::string& str, bool isStderr = false);
+static void endLineConsole(bool isStderr = false);
+static void echoConsole(const std::string& str, bool isStderr = false);
 static int scanInt(TokenScanner& scanner);
 static double scanDouble(TokenScanner& scanner);
-static GDimension scanDimension(const string& str);
-static Point scanPoint(const string& str);
-static GRectangle scanRectangle(const string& str);
+static GDimension scanDimension(const std::string& str);
+static Point scanPoint(const std::string& str);
+static GRectangle scanRectangle(const std::string& str);
 static void setConsoleProperties();
 void startupMainDontRunMain(int argc, char** argv);
 //static void abortAllConsoleIO();
 
-class ConsoleStreambuf : public streambuf {
-
+class ConsoleStreambuf : public std::streambuf {
 private:
-
     /* Constants */
-
-    static const int BUFFER_SIZE = 1024;
+    static const int BUFFER_SIZE = 4096;
 
     /* Instance variables */
-
     char inBuffer[BUFFER_SIZE];
     char outBuffer[BUFFER_SIZE];
     int blocked;
 
 public:
-
     ConsoleStreambuf() {
         setg(inBuffer, inBuffer, inBuffer);
         setp(outBuffer, outBuffer + BUFFER_SIZE);
@@ -104,11 +120,11 @@ public:
     virtual int underflow() {
         // Allow long strings at some point
         blocked++;
-        string line = getLineConsole();
+        std::string line = getLineConsole();
         blocked--;
         int n = line.length();
         if (n + 1 >= BUFFER_SIZE) {
-            error("String too long");
+            error("ConsoleStreambuf::underflow: String too long");
         }
         for (int i = 0; i < n; i++) {
             inBuffer[i] = line[i];
@@ -120,18 +136,22 @@ public:
     }
 
     virtual int overflow(int ch = EOF) {
-        string line = "";
+        return overflow(ch, false);
+    }
+        
+    virtual int overflow(int ch, bool isStderr) {
+        std::string line = "";
         for (char *cp = pbase(); cp < pptr(); cp++) {
             if (*cp == '\n') {
-                putConsole(line);
-                endLineConsole();
+                putConsole(line, isStderr);
+                endLineConsole(isStderr);
                 line = "";
             } else {
                 line += *cp;
             }
         }
         if (line != "") {
-            putConsole(line);
+            putConsole(line, isStderr);
         }
         setp(outBuffer, outBuffer + BUFFER_SIZE);
         if (ch != EOF) {
@@ -140,41 +160,112 @@ public:
         }
         return ch != EOF;
     }
-
+    
     virtual int sync() {
         return overflow();
+    }
+    
+    virtual int sync(bool isStderr) {
+        return overflow(EOF, isStderr);
+    }
+};
+
+/*
+ * A stream buffer that just "wraps" another stream buffer.
+ * This is used here to distinguish cout (black text) from cerr (red text).
+ */
+class ForwardingStreambuf : public std::streambuf {
+private:
+    ConsoleStreambuf& delegate;
+    bool isStderr;
+    
+public:
+    ForwardingStreambuf(ConsoleStreambuf& del, bool err = false)
+            : delegate(del), isStderr(err) {
+        // empty
+    }
+    
+    virtual int underflow() {
+        return delegate.underflow();
+    }
+    
+    virtual int overflow(int ch = EOF) {
+        return delegate.overflow(ch, isStderr);
+    }
+    
+    virtual int sync() {
+        return delegate.sync(isStderr);
+    }
+    
+    // functions below are overridden for completeness,
+    // but all just delegate to underlying ConsoleStreambuf
+    std::streamsize in_avail() {
+        return delegate.in_avail();
+    }
+    
+    int snextc() {
+        return delegate.snextc();
+    }
+    
+    int sbumpc() {
+        return delegate.sbumpc();
+    }
+    
+    int sgetc() {
+        return delegate.sgetc();
+    }
+    
+    std::streamsize sgetn(char* s, std::streamsize n) {
+        return delegate.sgetn(s, n);
+    }
+    
+    int sputbackc(char c) {
+        return delegate.sputbackc(c);
+    }
+    
+    int sungetc() {
+        return delegate.sungetc();
+    }
+    
+    int sputc(char c) {
+        return delegate.sputc(c);
+    }
+    
+    std::streamsize sputn(const char* s, std::streamsize n) {
+        return delegate.sputn(s, n);
     }
 };
 
 /* Private data */
 
 static Queue<GEvent> eventQueue;
-static HashMap<string, GTimerData*> timerTable;
-static HashMap<string, GWindowData*> windowTable;
-static HashMap<string, GObject*> sourceTable;
-static HashMap<string, string> optionTable;
-static string programName;
-static ofstream logfile;
-static streambuf* cin_old_buf;
-static streambuf* cout_old_buf;
+static HashMap<std::string, GTimerData*> timerTable;
+static HashMap<std::string, GWindowData*> windowTable;
+static HashMap<std::string, GObject*> sourceTable;
+static HashMap<std::string, std::string> optionTable;
+static std::string programName;
+static std::ofstream logfile;
 static ConsoleStreambuf* cinout_new_buf;
-
 
 #ifdef _WIN32
 static HANDLE rdFromJBE = NULL;
 static HANDLE wrFromJBE = NULL;
 static HANDLE rdToJBE = NULL;
 static HANDLE wrToJBE = NULL;
+#else
+static pid_t cppLibPid;
+static pid_t javaBackEndPid;
 #endif
 
 /* Prototypes */
 
 static void initPipe();
-static void putPipe(string line);
-static string getPipe();
-static string getResult(bool consumeAcks = false);
+static void putPipe(std::string line);
+static void putPipeLongString(std::string line);
+static std::string getPipe();
+static std::string getResult(bool consumeAcks = false, const std::string& caller = "");
 static void getStatus();
-static GEvent parseEvent(string line);
+static GEvent parseEvent(std::string line);
 static GEvent parseMouseEvent(TokenScanner& scanner, EventType type);
 static GEvent parseKeyEvent(TokenScanner& scanner, EventType type);
 static GEvent parseTimerEvent(TokenScanner& scanner, EventType type);
@@ -195,70 +286,83 @@ Platform::~Platform() {
 
 #ifndef _WIN32
 
-bool Platform::filelib_fileExists(string filename) {
+bool Platform::filelib_fileExists(std::string filename) {
     struct stat fileInfo;
     return stat(filename.c_str(), &fileInfo) == 0;
 }
 
-bool Platform::filelib_isFile(string filename) {
+bool Platform::filelib_isFile(std::string filename) {
     struct stat fileInfo;
     if (stat(filename.c_str(), &fileInfo) != 0) return false;
     return S_ISREG(fileInfo.st_mode) != 0;
 }
 
-bool Platform::filelib_isSymbolicLink(string filename) {
+bool Platform::filelib_isSymbolicLink(std::string filename) {
     struct stat fileInfo;
     if (stat(filename.c_str(), &fileInfo) != 0) return false;
     return S_ISLNK(fileInfo.st_mode) != 0;
 }
 
-bool Platform::filelib_isDirectory(string filename) {
+bool Platform::filelib_isDirectory(std::string filename) {
     struct stat fileInfo;
     if (stat(filename.c_str(), &fileInfo) != 0) return false;
     return S_ISDIR(fileInfo.st_mode) != 0;
 }
 
-void Platform::filelib_setCurrentDirectory(string path) {
+void Platform::filelib_setCurrentDirectory(std::string path) {
     if (chdir(path.c_str()) == 0) {
-        string msg = "setCurrentDirectory: ";
-        string err = string(strerror(errno));
+        std::string msg = "setCurrentDirectory: ";
+        std::string err = std::string(strerror(errno));
         error(msg + err);
     }
 }
 
-string Platform::filelib_getCurrentDirectory() {
+std::string Platform::filelib_getCurrentDirectory() {
     char *cwd = getcwd(NULL, 0);
     if (cwd == NULL) {
-        string msg = "getCurrentDirectory: ";
-        string err = string(strerror(errno));
+        std::string msg = "getCurrentDirectory: ";
+        std::string err = std::string(strerror(errno));
         error(msg + err);
+        return "";
+    } else {
+        std::string result = std::string(cwd);
+        free(cwd);
+        return result;
     }
-    string result = string(cwd);
-    free(cwd);
-    return result;
 }
 
-void Platform::filelib_createDirectory(string path) {
+// http://stackoverflow.com/questions/8087805/
+// how-to-get-system-or-user-temp-folder-in-unix-and-windows
+std::string Platform::filelib_getTempDirectory() {
+    char* dir = getenv("TMPDIR");
+    if (!dir) dir = getenv("TMP");
+    if (!dir) dir = getenv("TEMP");
+    if (!dir) dir = getenv("TEMPDIR");
+    if (!dir) return "/tmp";
+    return dir;
+}
+
+void Platform::filelib_createDirectory(std::string path) {
     if (endsWith(path, "/")) {
         path = path.substr(0, path.length() - 2);
     }
     if (mkdir(path.c_str(), 0777) != 0) {
         if (errno == EEXIST && filelib_isDirectory(path)) return;
-        string msg = "createDirectory: ";
-        string err = string(strerror(errno));
+        std::string msg = "createDirectory: ";
+        std::string err = std::string(strerror(errno));
         error(msg + err);
     }
 }
 
-string Platform::filelib_getDirectoryPathSeparator() {
+std::string Platform::filelib_getDirectoryPathSeparator() {
     return "/";
 }
 
-string Platform::filelib_getSearchPathSeparator() {
+std::string Platform::filelib_getSearchPathSeparator() {
     return ":";
 }
 
-string Platform::filelib_expandPathname(string filename) {
+std::string Platform::filelib_expandPathname(std::string filename) {
     if (filename == "") return "";
     int len = filename.length();
     if (filename[0] == '~') {
@@ -269,13 +373,18 @@ string Platform::filelib_expandPathname(string filename) {
         char *homedir = NULL;
         if (spos == 1) {
             homedir = getenv("HOME");
-            if (homedir == NULL) homedir = getpwuid(getuid())->pw_dir;
+            if (homedir == NULL) {
+                homedir = getpwuid(getuid())->pw_dir;
+            }
         } else {
             struct passwd *pw = getpwnam(filename.substr(1, spos - 1).c_str());
-            if (pw == NULL) error("expandPathname: No such user");
-            homedir = pw->pw_dir;
+            if (pw == NULL) {
+                error("expandPathname: No such user");
+            } else {
+                homedir = pw->pw_dir;
+            }
         }
-        filename = string(homedir) + filename.substr(spos);
+        filename = std::string(homedir) + filename.substr(spos);
         len = filename.length();
     }
     for (int i = 0; i < len; i++) {
@@ -284,15 +393,15 @@ string Platform::filelib_expandPathname(string filename) {
     return filename;
 }
 
-void Platform::filelib_listDirectory(string path, vector<string>& list) {
+void Platform::filelib_listDirectory(std::string path, std::vector<std::string>& list) {
     if (path == "") path = ".";
     DIR *dir = opendir(path.c_str());
-    if (dir == NULL) error(string("listDirectory: Can't open ") + path);
+    if (dir == NULL) error(std::string("listDirectory: Can't open ") + path);
     list.clear();
     while (true) {
         struct dirent *ep = readdir(dir);
         if (ep == NULL) break;
-        string name = string(ep->d_name);
+        std::string name = std::string(ep->d_name);
         if (name != "." && name != "..") list.push_back(name);
     }
     closedir(dir);
@@ -301,53 +410,59 @@ void Platform::filelib_listDirectory(string path, vector<string>& list) {
 
 #else
 
-bool Platform::filelib_fileExists(string filename) {
+bool Platform::filelib_fileExists(std::string filename) {
     return GetFileAttributesA(filename.c_str()) != INVALID_FILE_ATTRIBUTES;
 }
 
-bool Platform::filelib_isFile(string filename) {
+bool Platform::filelib_isFile(std::string filename) {
     DWORD attr = GetFileAttributesA(filename.c_str());
     return attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_NORMAL);
 }
 
-bool Platform::filelib_isSymbolicLink(string filename) {
+bool Platform::filelib_isSymbolicLink(std::string filename) {
     DWORD attr = GetFileAttributesA(filename.c_str());
     return attr != INVALID_FILE_ATTRIBUTES
             && (attr & FILE_ATTRIBUTE_REPARSE_POINT);
 }
 
-bool Platform::filelib_isDirectory(string filename) {
+bool Platform::filelib_isDirectory(std::string filename) {
     DWORD attr = GetFileAttributesA(filename.c_str());
     return attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_DIRECTORY);
 }
 
-void Platform::filelib_setCurrentDirectory(string path) {
+void Platform::filelib_setCurrentDirectory(std::string path) {
     if (!filelib_isDirectory(path) || !SetCurrentDirectoryA(path.c_str())) {
         error("setCurrentDirectory: Can't change to " + path);
     }
 }
 
-string Platform::filelib_getCurrentDirectory() {
+std::string Platform::filelib_getCurrentDirectory() {
     char path[MAX_PATH + 1];
     int n = GetCurrentDirectoryA(MAX_PATH + 1, path);
-    return string(path, n);
+    return std::string(path, n);
 }
 
-void Platform::filelib_createDirectory(string path) {
+std::string Platform::filelib_getTempDirectory() {
+    char path[MAX_PATH + 1];
+    int n = GetTempPathA(MAX_PATH + 1, path);
+    return std::string(path, n);
+}
+
+void Platform::filelib_createDirectory(std::string path) {
     if (!CreateDirectoryA(path.c_str(), NULL)) {
         error("createDirectory: Can't create " + path);
     }
 }
 
-string Platform::filelib_getDirectoryPathSeparator() {
+std::string Platform::filelib_getDirectoryPathSeparator() {
     return "\\";
 }
 
-string Platform::filelib_getSearchPathSeparator() {
+std::string Platform::filelib_getSearchPathSeparator() {
     return ";";
 }
 
-string Platform::filelib_expandPathname(string filename) {
+std::string Platform::filelib_expandPathname(std::string filename) {
     if (filename == "") return "";
     int len = filename.length();
     for (int i = 0; i < len; i++) {
@@ -356,9 +471,9 @@ string Platform::filelib_expandPathname(string filename) {
     return filename;
 }
 
-void Platform::filelib_listDirectory(string path, vector<string> & list) {
+void Platform::filelib_listDirectory(std::string path, std::vector<std::string> & list) {
     if (path == "") path = ".";
-    string pattern = path + "\\*.*";
+    std::string pattern = path + "\\*.*";
     WIN32_FIND_DATAA fd;
     HANDLE h = FindFirstFileA(pattern.c_str(), &fd);
     if (h == INVALID_HANDLE_VALUE) {
@@ -366,7 +481,7 @@ void Platform::filelib_listDirectory(string path, vector<string> & list) {
     }
     list.clear();
     while (true) {
-        string name = string(fd.cFileName);
+        std::string name = std::string(fd.cFileName);
         if (name != "." && name != "..") list.push_back(name);
         if (!FindNextFileA(h, &fd)) break;
     }
@@ -409,8 +524,12 @@ void Platform::setStackSize(unsigned int stackSize) {
             result = setrlimit(RLIMIT_STACK, &rl);
 #endif
             if (result != 0) {
-                cerr << "Warning: Unable to increase system stack size to "
-                     << stackSize << endl;
+                fputs("\n", stderr);
+                fputs("***\n", stderr);
+                fputs("*** STANFORD C++ LIBRARY\n", stderr);
+                fputs("*** Warning: Unable to increase system stack size\n", stderr);
+                fputs("***\n", stderr);
+                fputs("\n", stderr);
             }
         }
     }
@@ -418,32 +537,32 @@ void Platform::setStackSize(unsigned int stackSize) {
 }
 
 
-bool Platform::regex_match(string s, string regexp) {
-    ostringstream os;
+bool Platform::regex_match(std::string s, std::string regexp) {
+    std::ostringstream os;
     os << "Regex.match(";
     writeQuotedString(os, urlEncode(s));
     os << ",";
     writeQuotedString(os, urlEncode(regexp));
     os << ")";
     putPipe(os.str());
-    string result = getResult();
+    std::string result = getResult();
     return (result == "true");
 }
 
-int Platform::regex_matchCount(string s, string regexp) {
-    ostringstream os;
+int Platform::regex_matchCount(std::string s, std::string regexp) {
+    std::ostringstream os;
     os << "Regex.matchCount(";
     writeQuotedString(os, urlEncode(s));
     os << ",";
     writeQuotedString(os, urlEncode(regexp));
     os << ")";
     putPipe(os.str());
-    string result = getResult();
+    std::string result = getResult();
     return stringToInteger(result);
 }
 
-int Platform::regex_matchCountWithLines(string s, string regexp, string& linesOut) {
-    ostringstream os;
+int Platform::regex_matchCountWithLines(std::string s, std::string regexp, std::string& linesOut) {
+    std::ostringstream os;
     os << "Regex.matchCountWithLines(";
     writeQuotedString(os, urlEncode(s));
     os << ",";
@@ -451,7 +570,7 @@ int Platform::regex_matchCountWithLines(string s, string regexp, string& linesOu
     os << ")";
     putPipe(os.str());
     linesOut = getResult();       // "count:line,line,line,...,line"
-    string countStr = "";
+    std::string countStr = "";
     while (linesOut[0] != ':') {
         countStr += linesOut[0];
         linesOut = linesOut.substr(1);
@@ -460,8 +579,8 @@ int Platform::regex_matchCountWithLines(string s, string regexp, string& linesOu
     return stringToInteger(countStr);
 }
 
-string Platform::regex_replace(string s, string regexp, string replacement, int /* limit */) {
-    ostringstream os;
+std::string Platform::regex_replace(std::string s, std::string regexp, std::string replacement, int /* limit */) {
+    std::ostringstream os;
     os << "Regex.replace(";
     writeQuotedString(os, urlEncode(s));
     os << ",";
@@ -470,15 +589,21 @@ string Platform::regex_replace(string s, string regexp, string replacement, int 
     writeQuotedString(os, urlEncode(replacement));
     os << ")";
     putPipe(os.str());
-    string result = getResult();
+    std::string result = getResult();
     return urlDecode(result);
 }
 
-string Platform::file_openFileDialog(string title, string mode, string path) {
-    ostringstream os;
+std::string Platform::file_openFileDialog(std::string title, std::string mode, std::string path) {
+    std::ostringstream os;
     os << "File.openFileDialog(";
     writeQuotedString(os, title);
     os << ", \"" << mode << "\", ";
+    
+    // BUGFIX: (2014/10/09) wasn't working if dirs didn't have slashes at end
+    std::string sep = getDirectoryPathSeparator();
+    if (isDirectory(path) && !endsWith(path, sep)) {
+        path += sep;
+    }
     writeQuotedString(os, path);
     os << ")";
     putPipe(os.str());
@@ -486,22 +611,22 @@ string Platform::file_openFileDialog(string title, string mode, string path) {
 }
 
 void Platform::gwindow_constructor(const GWindow& gw, double width, double height,
-                             GObject *topCompound) {
-    ostringstream os;
+                             GObject *topCompound, bool visible) {
+    std::ostringstream os;
     os << gw.gwd;
-    string id = os.str();
+    std::string id = os.str();
     windowTable.put(id, gw.gwd);
     os.str("");
     os << "GWindow.create(\"" << id << "\", " << width << ", " << height
-       << ", \"" << topCompound << "\")";
+       << ", \"" << topCompound << "\", " << std::boolalpha << visible << ")";
     putPipe(os.str());
     getStatus();
 }
 
 void Platform::gwindow_delete(const GWindow& gw) {
-    ostringstream os;
+    std::ostringstream os;
     os << gw.gwd;
-    string id = os.str();
+    std::string id = os.str();
     windowTable.remove(id);
     os.str("");
     os << "GWindow.delete(\"" << gw.gwd << "\")";
@@ -509,57 +634,63 @@ void Platform::gwindow_delete(const GWindow& gw) {
 }
 
 void Platform::gwindow_close(const GWindow& gw) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GWindow.close(\"" << gw.gwd << "\")";
     putPipe(os.str());
 }
 
 void Platform::gwindow_requestFocus(const GWindow& gw) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GWindow.requestFocus(\"" << gw.gwd << "\")";
     putPipe(os.str());
 }
 
 void Platform::gwindow_setExitOnClose(const GWindow& gw, bool value) {
-    ostringstream os;
-    os << "GWindow.setExitOnClose(\"" << gw.gwd << "\", " << boolalpha << value << ")";
+    std::ostringstream os;
+    os << "GWindow.setExitOnClose(\"" << gw.gwd << "\", " << std::boolalpha << value << ")";
     putPipe(os.str());
 }
 
 void Platform::gwindow_clear(const GWindow& gw) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GWindow.clear(\"" << gw.gwd << "\")";
     putPipe(os.str());
 }
 
 void Platform::gwindow_repaint(const GWindow& gw) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GWindow.repaint(\"" << gw.gwd << "\")";
     putPipe(os.str());
 }
 
 void Platform::gwindow_setSize(const GWindow& gw, int width, int height) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GWindow.setSize(\"" << gw.gwd << "\", " << width << ", " << height
        << ")";
     putPipe(os.str());
 }
 
 void Platform::gwindow_setCanvasSize(const GWindow& gw, int width, int height) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GWindow.setCanvasSize(\"" << gw.gwd << "\", " << width << ", "
        << height << ")";
     putPipe(os.str());
 }
 
+void Platform::gwindow_minimize(const GWindow& gw) {
+    std::ostringstream os;
+    os << "GWindow.minimize(\"" << gw.gwd << "\")";
+    putPipe(os.str());
+}
+
 void Platform::gwindow_pack(const GWindow& gw) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GWindow.pack(\"" << gw.gwd << "\")";
     putPipe(os.str());
 }
 
-void Platform::gwindow_setTitle(const GWindow& gw, string title) {
-    ostringstream os;
+void Platform::gwindow_setTitle(const GWindow& gw, std::string title) {
+    std::ostringstream os;
     os << "GWindow.setTitle(\"" << gw.gwd << "\", ";
     writeQuotedString(os, title);
     os << ")";
@@ -567,15 +698,21 @@ void Platform::gwindow_setTitle(const GWindow& gw, string title) {
 }
 
 void Platform::gwindow_setLocation(const GWindow& gw, int x, int y) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GWindow.setLocation(\"" << gw.gwd << "\", " << x << ", " << y << ")";
     putPipe(os.str());
 }
 
 void Platform::gwindow_setLocationSaved(const GWindow& gw, bool value) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GWindow.setLocationSaved(\"" << gw.gwd << "\", "
-       << boolalpha << value << ")";
+       << std::boolalpha << value << ")";
+    putPipe(os.str());
+}
+
+void Platform::gwindow_toFront(const GWindow& gw) {
+    std::ostringstream os;
+    os << "GWindow.toFront(\"" << gw.gwd << "\")";
     putPipe(os.str());
 }
 
@@ -586,8 +723,8 @@ double Platform::gwindow_getScreenHeight() {
 
 GDimension Platform::gwindow_getScreenSize() {
     putPipe("GWindow.getScreenSize()");
-    string result = getResult();
-    if (!startsWith(result, "GDimension(")) error(result);
+    std::string result = getResult();
+    if (!startsWith(result, "GDimension(")) error("GWindow::getScreenSize: " + result);
     return scanDimension(result);
 }
 
@@ -597,16 +734,16 @@ double Platform::gwindow_getScreenWidth() {
 }
 
 void Platform::gtimer_pause(double milliseconds) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GTimer.pause(" << milliseconds << ")";
     putPipe(os.str());
     getStatus();
 }
 
 void Platform::gtimer_constructor(const GTimer& timer, double delay) {
-    ostringstream os;
+    std::ostringstream os;
     os << timer.gtd;
-    string id = os.str();
+    std::string id = os.str();
     timerTable.put(id, timer.gtd);
     os.str("");
     os << "GTimer.create(\"" << id << "\", " << delay << ")";
@@ -614,9 +751,9 @@ void Platform::gtimer_constructor(const GTimer& timer, double delay) {
 }
 
 void Platform::gtimer_delete(const GTimer& timer) {
-    ostringstream os;
+    std::ostringstream os;
     os << timer.gtd;
-    string id = os.str();
+    std::string id = os.str();
     timerTable.remove(id);
     os.str("");
     os << "GTimer.deleteTimer(\"" << id << "\")";
@@ -624,19 +761,19 @@ void Platform::gtimer_delete(const GTimer& timer) {
 }
 
 void Platform::gtimer_start(const GTimer& timer) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GTimer.startTimer(\"" << timer.gtd << "\")";
     putPipe(os.str());
 }
 
 void Platform::gtimer_stop(const GTimer& timer) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GTimer.stopTimer(\"" << timer.gtd << "\")";
     putPipe(os.str());
 }
 
-void Platform::sound_constructor(Sound *sound, string filename) {
-    ostringstream os;
+void Platform::sound_constructor(Sound *sound, std::string filename) {
+    std::ostringstream os;
     os << "Sound.create(\"" << sound << "\", ";
     writeQuotedString(os, filename);
     os << ")";
@@ -645,158 +782,170 @@ void Platform::sound_constructor(Sound *sound, string filename) {
 }
 
 void Platform::sound_delete(Sound *sound) {
-    ostringstream os;
+    std::ostringstream os;
     os << "Sound.delete(\"" << sound << "\")";
     putPipe(os.str());
 }
 
 void Platform::sound_play(Sound *sound) {
-    ostringstream os;
+    std::ostringstream os;
     os << "Sound.play(\"" << sound << "\")";
     putPipe(os.str());
 }
 
+int Platform::url_download(std::string url, std::string filename) {
+    std::ostringstream os;
+    os << "URL.download(";
+    writeQuotedString(os, urlEncode(url));
+    os << ",";
+    writeQuotedString(os, urlEncode(filename));
+    os << ")";
+    putPipe(os.str());
+    std::string result = getResult();
+    return stringToInteger(result);
+}
+
 void Platform::gobject_delete(GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GObject.delete(\"" << gobj << "\")";
     putPipe(os.str());
 }
 
 void Platform::gcompound_add(GObject *compound, GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GCompound.add(\"" << compound << "\", \"" << gobj << "\")";
     putPipe(os.str());
 }
 
 void Platform::gobject_remove(GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GObject.remove(\"" << gobj << "\")";
     putPipe(os.str());
 }
 
-void Platform::gwindow_setRegionAlignment(const GWindow& gw, string region,
-                                  string align) {
-    ostringstream os;
+void Platform::gwindow_setRegionAlignment(const GWindow& gw, std::string region,
+                                  std::string align) {
+    std::ostringstream os;
     os << "GWindow.setRegionAlignment(\"" << gw.gwd << "\", \"" << region
        << "\", \"" << align << "\")";
     putPipe(os.str());
 }
 
 void Platform::gwindow_setResizable(const GWindow& gw, bool value) {
-    ostringstream os;
-    os << "GWindow.setResizable(\"" << gw.gwd << "\", " << boolalpha << value << ")";
+    std::ostringstream os;
+    os << "GWindow.setResizable(\"" << gw.gwd << "\", " << std::boolalpha << value << ")";
     putPipe(os.str());
 }
 
-void Platform::gwindow_addToRegion(const GWindow& gw, GObject* gobj, string region) {
-    ostringstream os;
+void Platform::gwindow_addToRegion(const GWindow& gw, GObject* gobj, std::string region) {
+    std::ostringstream os;
     os << "GWindow.addToRegion(\"" << gw.gwd << "\", \"" << gobj << "\", \""
        << region << "\")";
     putPipe(os.str());
 }
 
 Point Platform::gwindow_getLocation(const GWindow& gw) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GWindow.getLocation(\"" << gw.gwd << "\")";
     putPipe(os.str());
-    string result = getResult();
+    std::string result = getResult();
     if (!startsWith(result, "Point(")) {
-        error(result);
+        error("GWindow::getLocation: " + result);
     }
     return scanPoint(result);
 }
 
-GDimension Platform::gwindow_getRegionSize(const GWindow& gw, string region) {
-    ostringstream os;
+GDimension Platform::gwindow_getRegionSize(const GWindow& gw, std::string region) {
+    std::ostringstream os;
     os << "GWindow.getRegionSize(\"" << gw.gwd << "\", \"" << region << "\")";
     putPipe(os.str());
-    string result = getResult();
+    std::string result = getResult();
     if (!startsWith(result, "GDimension(")) {
-        error(result);
+        error("GWindow::getRegionSize: " + result);
     }
     return scanDimension(result);
 }
 
 void Platform::gwindow_removeFromRegion(const GWindow& gw, GObject* gobj,
-                                string region) {
-    ostringstream os;
+                                std::string region) {
+    std::ostringstream os;
     os << "GWindow.removeFromRegion(\"" << gw.gwd << "\", \""
        << gobj << "\", \"" << region << "\")";
     putPipe(os.str());
 }
 
 GDimension Platform::gwindow_getSize(const GWindow& gw) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GWindow.getSize(\"" << gw.gwd << "\")";
     putPipe(os.str());
-    string result = getResult();
+    std::string result = getResult();
     if (!startsWith(result, "GDimension(")) {
-        error(result);
+        error("GWindow::getSize: " + result);
     }
     return scanDimension(result);
 }
 
 GDimension Platform::gwindow_getCanvasSize(const GWindow& gw) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GWindow.getCanvasSize(\"" << gw.gwd << "\")";
     putPipe(os.str());
-    string result = getResult();
+    std::string result = getResult();
     if (!startsWith(result, "GDimension(")) {
-        error(result);
+        error("GWindow::getCanvasSize: " + result);
     }
     return scanDimension(result);
 }
 
 void Platform::gobject_sendForward(GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GObject.sendForward(\"" << gobj << "\")";
     putPipe(os.str());
 }
 
 void Platform::gobject_sendToFront(GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GObject.sendToFront(\"" << gobj << "\")";
     putPipe(os.str());
 }
 
 void Platform::gobject_sendBackward(GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GObject.sendBackward(\"" << gobj << "\")";
     putPipe(os.str());
 }
 
 void Platform::gobject_sendToBack(GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GObject.sendToBack(\"" << gobj << "\")";
     putPipe(os.str());
 }
 
 void Platform::gobject_setVisible(GObject* gobj, bool flag) {
-    ostringstream os;
-    os << boolalpha << "GObject.setVisible(\"" << gobj << "\", " << flag << ")";
+    std::ostringstream os;
+    os << "GObject.setVisible(\"" << gobj << "\", " << std::boolalpha << flag << ")";
     putPipe(os.str());
 }
 
 void Platform::gwindow_setVisible(const GWindow& gw, bool flag) {
-    ostringstream os;
-    os << boolalpha << "GWindow.setVisible(\"" << gw.gwd << "\", " << flag << ")";
+    std::ostringstream os;
+    os << "GWindow.setVisible(\"" << gw.gwd << "\", " << std::boolalpha << flag << ")";
     putPipe(os.str());
 }
 
-void Platform::gobject_setColor(GObject* gobj, string color) {
-    ostringstream os;
+void Platform::gobject_setColor(GObject* gobj, std::string color) {
+    std::ostringstream os;
     os << "GObject.setColor(\"" << gobj << "\", \"" << color << "\")";
     putPipe(os.str());
 }
 
 void Platform::gobject_scale(GObject* gobj, double sx, double sy) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GObject.scale(\"" << gobj << "\", " << sx << ", " << sy << ")";
     putPipe(os.str());
 }
 
 void Platform::gobject_rotate(GObject* gobj, double theta) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GObject.rotate(\"" << gobj << "\", " << theta << ")";
     putPipe(os.str());
 }
@@ -804,7 +953,7 @@ void Platform::gobject_rotate(GObject* gobj, double theta) {
 // Move this computation into gobjects.cpp
 
 bool Platform::gobject_contains(const GObject* gobj, double x, double y) {
-    ostringstream os;
+    std::ostringstream os;
     if (x >= 0 && y >= 0) {
         os << "GObject.contains(\"" << gobj << "\", " << x << ", " << y << ")";
         putPipe(os.str());
@@ -817,95 +966,112 @@ bool Platform::gobject_contains(const GObject* gobj, double x, double y) {
 // Move this computation into gobjects.cpp
 
 GRectangle Platform::gobject_getBounds(const GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GObject.getBounds(\"" << gobj << "\")";
     putPipe(os.str());
-    string result = getResult();
+     std::string result = getResult();
     if (!startsWith(result, "GRectangle(")) error(result);
     return scanRectangle(result);
 }
 
 void Platform::gobject_setLineWidth(GObject* gobj, double lineWidth) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GObject.setLineWidth(\"" << gobj << "\", " << lineWidth << ")";
     putPipe(os.str());
 }
 
 void Platform::gobject_setLocation(GObject* gobj, double x, double y) {
-    ostringstream os;
+    std::ostringstream os;
     if (x >= 0 && y >= 0) {
         os << "GObject.setLocation(\"" << gobj << "\", " << x << ", " << y << ")";
         putPipe(os.str());
     } else {
-        error("Platform::setLocation: x and y must be non-negative");
+        error("GObject::setLocation: x and y must be non-negative");
     }
 }
 
 void Platform::gobject_setSize(GObject* gobj, double width, double height) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GObject.setSize(\"" << gobj << "\", " << width << ", "
        << height << ")";
     putPipe(os.str());
 }
 
 bool Platform::ginteractor_isEnabled(GObject* gint) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GInteractor.isEnabled(\"" << gint << ")";
     putPipe(os.str());
     return getResult() == "true";
 }
 
 void Platform::ginteractor_setEnabled(GObject* gint, bool value) {
-    ostringstream os;
-    os << "GInteractor.setEnabled(\"" << gint << "\", " << boolalpha << value << ")";
+    std::ostringstream os;
+    os << "GInteractor.setEnabled(\"" << gint << "\", " << std::boolalpha << value << ")";
+    putPipe(os.str());
+}
+
+void Platform::ginteractor_setIcon(GObject* gobj, std::string filename) {
+    std::ostringstream os;
+    os << "GInteractor.setIcon(\"" << gobj << "\", ";
+    writeQuotedString(os, filename);
+    os << ")";
+    putPipe(os.str());
+}
+
+void Platform::ginteractor_setTextPosition(GObject* gobj, int horizontal, int vertical) {
+    std::ostringstream os;
+    os << "GInteractor.setTextPosition("
+       << "\"" << gobj << "\""
+       << ", " << horizontal
+       << ", " << vertical << ")";
     putPipe(os.str());
 }
 
 void Platform::gobject_setAntialiasing(bool value) {
-    ostringstream os;
-    os << "GObject.setAntialiasing(" << boolalpha << value << ")";
+    std::ostringstream os;
+    os << "GObject.setAntialiasing(" << std::boolalpha << value << ")";
     putPipe(os.str());
 }
 
 void Platform::garc_setFrameRectangle(GObject* gobj, double x, double y,
                                  double width, double height) {
-    ostringstream os;
+    std::ostringstream os;
     if (x >= 0 && y >= 0 && width >= 0 && height >= 0) {
         os << "GArc.setFrameRectangle(\"" << gobj << "\", "
            << x << ", " << y << ", "
            << width << ", " << height << ")";
         putPipe(os.str());
     } else {
-        error("Platform::setFrameRectangle: x, y, w, h must all be non-negative");
+        error("GArc::setFrameRectangle: x, y, w, h must all be non-negative");
     }
 }
 
 void Platform::gwindow_draw(const GWindow& gw, const GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GWindow.draw(\"" << gw.gwd << "\", \"" << gobj << "\")";
     putPipe(os.str());
 }
 
 void Platform::gwindow_drawInBackground(const GWindow& gw, const GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GWindow.drawInBackground(\"" << gw.gwd << "\", \"" << gobj << "\")";
     putPipe(os.str());
 }
 
 void Platform::gobject_setFilled(GObject* gobj, bool flag) {
-    ostringstream os;
-    os << boolalpha << "GObject.setFilled(\"" << gobj << "\", " << flag << ")";
+    std::ostringstream os;
+    os << "GObject.setFilled(\"" << gobj << "\", " << std::boolalpha << flag << ")";
     putPipe(os.str());
 }
 
-void Platform::gobject_setFillColor(GObject* gobj, string color) {
-    ostringstream os;
+void Platform::gobject_setFillColor(GObject* gobj, std::string color) {
+    std::ostringstream os;
     os << "GObject.setFillColor(\"" << gobj << "\", \"" << color << "\")";
     putPipe(os.str());
 }
 
 void Platform::grect_constructor(GObject* gobj, double width, double height) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GRect.create(\"" << gobj << "\", " << width << ", "
        << height << ")";
     putPipe(os.str());
@@ -913,7 +1079,7 @@ void Platform::grect_constructor(GObject* gobj, double width, double height) {
 
 void Platform::groundrect_constructor(GObject* gobj, double width, double height,
                                 double corner) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GRoundRect.create(\"" << gobj << "\", " << width << ", " << height
        << ", " << corner << ")";
     putPipe(os.str());
@@ -921,21 +1087,21 @@ void Platform::groundrect_constructor(GObject* gobj, double width, double height
 
 void Platform::g3drect_constructor(GObject* gobj, double width, double height,
                              bool raised) {
-    ostringstream os;
-    os << boolalpha << "G3DRect.create(\"" << gobj << "\", "
-       << width << ", " << height << ", " << raised << ")";
+    std::ostringstream os;
+    os << "G3DRect.create(\"" << gobj << "\", "
+       << width << ", " << height << ", " << std::boolalpha << raised << ")";
     putPipe(os.str());
 }
 
 void Platform::g3drect_setRaised(GObject* gobj, bool raised) {
-    ostringstream os;
-    os << boolalpha << "G3DRect.setRaised(\"" << gobj << "\", "
-       << raised << ")";
+    std::ostringstream os;
+    os << "G3DRect.setRaised(\"" << gobj << "\", "
+       << std::boolalpha << raised << ")";
     putPipe(os.str());
 }
 
-void Platform::glabel_constructor(GObject* gobj, string label) {
-    ostringstream os;
+void Platform::glabel_constructor(GObject* gobj, std::string label) {
+    std::ostringstream os;
     // *** BUGBUG: must escape quotation marks in label string (Marty)
     os << "GLabel.create(\"" << gobj << "\", ";
     writeQuotedString(os, label);
@@ -945,86 +1111,143 @@ void Platform::glabel_constructor(GObject* gobj, string label) {
 
 void Platform::gline_constructor(GObject* gobj, double x1, double y1,
                            double x2, double y2) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GLine.create(\"" << gobj << "\", " << x1 << ", " << y1
        << ", " << x2 << ", " << y2 << ")";
     putPipe(os.str());
 }
 
 void Platform::gline_setStartPoint(GObject* gobj, double x, double y) {
-    ostringstream os;
+    std::ostringstream os;
     if (x >= 0 && y >= 0) {
         os << "GLine.setStartPoint(\"" << gobj << "\", " << x << ", " << y << ")";
         putPipe(os.str());
     } else {
-        error("Platform::setStartPoint: x and y must both be non-negative");
+        error("GLine::setStartPoint: x and y must both be non-negative");
     }
 }
 
 void Platform::gline_setEndPoint(GObject* gobj, double x, double y) {
-    ostringstream os;
+    std::ostringstream os;
     if (x >= 0 && y >= 0) {
         os << "GLine.setEndPoint(\"" << gobj << "\", " << x << ", " << y << ")";
         putPipe(os.str());
     } else {
-        error("Platform::setEndPoint: x and y must both be non-negative");
+        error("GLine::setEndPoint: x and y must both be non-negative");
     }
 }
 
 void Platform::garc_constructor(GObject* gobj, double width, double height,
                           double start, double sweep) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GArc.create(\"" << gobj << "\", " << width << ", " << height
        << ", " << start << ", " << sweep << ")";
     putPipe(os.str());
 }
 
 void Platform::garc_setStartAngle(GObject* gobj, double angle) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GArc.setStartAngle(\"" << gobj << "\", " << angle << ")";
     putPipe(os.str());
 }
 
 void Platform::garc_setSweepAngle(GObject* gobj, double angle) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GArc.setSweepAngle(\"" << gobj << "\", " << angle << ")";
     putPipe(os.str());
 }
 
-GDimension Platform::gimage_constructor(GObject* gobj, string filename) {
-    ostringstream os;
+void Platform::gbufferedimage_constructor(GObject* gobj, double x, double y,
+                                          double width, double height, int rgb) {
+    std::ostringstream os;
+    os << gobj;
+    sourceTable.put(os.str(), gobj);
+    os.str("");
+    os << "GBufferedImage.create(\"" << gobj << "\", " << (int) x << ", "
+       << (int) y << ", " << (int) width << ", " << (int) height << ", " << rgb << ")";
+    putPipe(os.str());
+}
+
+void Platform::gbufferedimage_fill(GObject* gobj, int rgb) {
+    std::ostringstream os;
+    os << "GBufferedImage.fill(\"" << gobj << "\", " << rgb << ")";
+    putPipe(os.str());
+}
+
+void Platform::gbufferedimage_fillRegion(GObject* gobj, double x, double y, double width, double height, int rgb) {
+    std::ostringstream os;
+    os << "GBufferedImage.fillRegion(\"" << gobj << "\", " << (int) x << ", "
+       << (int) y << ", " << (int) width << ", " << (int) height << ", " << rgb << ")";   // BUGBUG: was missing ", " token
+    putPipe(os.str());
+}
+
+std::string Platform::gbufferedimage_load(GObject* gobj, const std::string& filename) {
+    std::ostringstream os;
+    os << "GBufferedImage.load(\"" << gobj << "\", ";
+    writeQuotedString(os, filename);
+    os << ")";
+    putPipe(os.str());
+    return getResult();
+}
+
+void Platform::gbufferedimage_resize(GObject* gobj, double width, double height, bool retain) {
+    std::ostringstream os;
+    os << "GBufferedImage.resize(\"" << gobj << "\", " << (int) width << ", " << (int) height
+       << ", " << std::boolalpha << retain << ")";
+    putPipe(os.str());
+}
+
+std::string Platform::gbufferedimage_save(const GObject* const gobj, const std::string& filename) {
+    std::ostringstream os;
+    os << "GBufferedImage.save(\"" << gobj << "\", ";
+    writeQuotedString(os, filename);
+    os << ")";
+    putPipe(os.str());
+    return getResult();
+}
+
+void Platform::gbufferedimage_setRGB(GObject* gobj, double x, double y,
+                                     int rgb) {
+    std::ostringstream os;
+    os << "GBufferedImage.setRGB(\"" << gobj << "\", " << (int) x << ", "
+       << (int) y << ", " << rgb << ")";
+    putPipe(os.str());
+}
+
+GDimension Platform::gimage_constructor(GObject* gobj, std::string filename) {
+    std::ostringstream os;
     os << "GImage.create(\"" << gobj << "\", \"" << filename << "\")";
     putPipe(os.str());
-    string result = getResult();
-    if (!startsWith(result, "GDimension(")) error(result);
+    std::string result = getResult();
+    if (!startsWith(result, "GDimension(")) error("GImage::constructor: " + result);
     return scanDimension(result);
 }
 
 void Platform::gpolygon_constructor(GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GPolygon.create(\"" << gobj << "\")";
     putPipe(os.str());
 }
 
 void Platform::gpolygon_addVertex(GObject* gobj, double x, double y) {
-    ostringstream os;
+    std::ostringstream os;
     if (x >= 0 && y >= 0) {
         os << "GPolygon.addVertex(\"" << gobj << "\", " << x << ", " << y << ")";
         putPipe(os.str());
     } else {
-        error("Platform::addVertex: x and y must both be non-negative");
+        error("GPolygon::addVertex: x and y must both be non-negative");
     }
 }
 
 void Platform::goval_constructor(GObject* gobj, double width, double height) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GOval.create(\"" << gobj << "\", " << width << ", "
        << height << ")";
     putPipe(os.str());
 }
 
-void Platform::ginteractor_setActionCommand(GObject* gobj, string cmd) {
-    ostringstream os;
+void Platform::ginteractor_setActionCommand(GObject* gobj, std::string cmd) {
+    std::ostringstream os;
     os << "GInteractor.setActionCommand(\"" << gobj << "\", ";
     writeQuotedString(os, cmd);
     os << ")";
@@ -1032,14 +1255,14 @@ void Platform::ginteractor_setActionCommand(GObject* gobj, string cmd) {
 }
 
 GDimension Platform::ginteractor_getSize(GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GInteractor.getSize(\"" << gobj << "\")";
     putPipe(os.str());
     return scanDimension(getResult());
 }
 
-void Platform::gbutton_constructor(GObject* gobj, string label) {
-    ostringstream os;
+void Platform::gbutton_constructor(GObject* gobj, std::string label) {
+    std::ostringstream os;
     os << gobj;
     sourceTable.put(os.str(), gobj);
     os.str("");
@@ -1049,8 +1272,8 @@ void Platform::gbutton_constructor(GObject* gobj, string label) {
     putPipe(os.str());
 }
 
-void Platform::gcheckbox_constructor(GObject* gobj, string label) {
-    ostringstream os;
+void Platform::gcheckbox_constructor(GObject* gobj, std::string label) {
+    std::ostringstream os;
     os << gobj;
     sourceTable.put(os.str(), gobj);
     os.str("");
@@ -1061,21 +1284,21 @@ void Platform::gcheckbox_constructor(GObject* gobj, string label) {
 }
 
 bool Platform::gcheckbox_isSelected(GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GCheckBox.isSelected(\"" << gobj << "\")";
     putPipe(os.str());
     return getResult() == "true";
 }
 
 void Platform::gcheckbox_setSelected(GObject* gobj, bool state) {
-    ostringstream os;
-    os << boolalpha << "GCheckBox.setSelected(\"" << gobj << "\", "
-       << state << ")";
+    std::ostringstream os;
+    os << "GCheckBox.setSelected(\"" << gobj << "\", "
+       << std::boolalpha << state << ")";
     putPipe(os.str());
 }
 
 void Platform::gslider_constructor(GObject* gobj, int min, int max, int value) {
-    ostringstream os;
+    std::ostringstream os;
     os << gobj;
     sourceTable.put(os.str(), gobj);
     os.str("");
@@ -1085,85 +1308,85 @@ void Platform::gslider_constructor(GObject* gobj, int min, int max, int value) {
 }
 
 int Platform::gslider_getMajorTickSpacing(const GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GSlider.getMajorTickSpacing(\"" << gobj << "\")";
     putPipe(os.str());
     return stringToInteger(getResult());
 }
 
 int Platform::gslider_getMinorTickSpacing(const GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GSlider.getMinorTickSpacing(\"" << gobj << "\")";
     putPipe(os.str());
     return stringToInteger(getResult());
 }
 
 bool Platform::gslider_getPaintLabels(const GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GSlider.getPaintLabels(\"" << gobj << "\")";
     putPipe(os.str());
     return stringToBool(getResult());
 }
 
 bool Platform::gslider_getPaintTicks(const GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GSlider.getPaintTicks(\"" << gobj << "\")";
     putPipe(os.str());
     return stringToBool(getResult());
 }
 
 bool Platform::gslider_getSnapToTicks(const GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GSlider.getSnapToTicks(\"" << gobj << "\")";
     putPipe(os.str());
     return stringToBool(getResult());
 }
 
 int Platform::gslider_getValue(const GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GSlider.getValue(\"" << gobj << "\")";
     putPipe(os.str());
     return stringToInteger(getResult());
 }
 
 void Platform::gslider_setMajorTickSpacing(GObject* gobj, int value) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GSlider.setMajorTickSpacing(\"" << gobj << "\", " << value << ")";
     putPipe(os.str());
 }
 
 void Platform::gslider_setMinorTickSpacing(GObject* gobj, int value) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GSlider.setMinorTickSpacing(\"" << gobj << "\", " << value << ")";
     putPipe(os.str());
 }
 
 void Platform::gslider_setPaintLabels(GObject* gobj, bool value) {
-    ostringstream os;
-    os << "GSlider.setPaintLabels(\"" << gobj << "\", " << boolalpha << value << ")";
+    std::ostringstream os;
+    os << "GSlider.setPaintLabels(\"" << gobj << "\", " << std::boolalpha << value << ")";
     putPipe(os.str());
 }
 
 void Platform::gslider_setPaintTicks(GObject* gobj, bool value) {
-    ostringstream os;
-    os << "GSlider.setPaintTicks(\"" << gobj << "\", " << boolalpha << value << ")";
+    std::ostringstream os;
+    os << "GSlider.setPaintTicks(\"" << gobj << "\", " << std::boolalpha << value << ")";
     putPipe(os.str());
 }
 
 void Platform::gslider_setSnapToTicks(GObject* gobj, bool value) {
-    ostringstream os;
-    os << "GSlider.setSnapToTicks(\"" << gobj << "\", " << boolalpha << value << ")";
+    std::ostringstream os;
+    os << "GSlider.setSnapToTicks(\"" << gobj << "\", " << std::boolalpha << value << ")";
     putPipe(os.str());
 }
 
 void Platform::gslider_setValue(GObject* gobj, int value) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GSlider.setValue(\"" << gobj << "\", " << value << ")";
     putPipe(os.str());
 }
 
 void Platform::gtextfield_constructor(GObject* gobj, int nChars) {
-    ostringstream os;
+    std::ostringstream os;
     os << gobj;
     sourceTable.put(os.str(), gobj);
     os.str("");
@@ -1171,29 +1394,29 @@ void Platform::gtextfield_constructor(GObject* gobj, int nChars) {
     putPipe(os.str());
 }
 
-string Platform::gtextfield_getText(GObject* gobj) {
-    ostringstream os;
+std::string Platform::gtextfield_getText(GObject* gobj) {
+    std::ostringstream os;
     os << "GTextField.getText(\"" << gobj << "\")";
     putPipe(os.str());
     return getResult();
 }
 
 bool Platform::gtextfield_isEditable(const GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GTextField.isEditable(\"" << gobj << "\")";
     putPipe(os.str());
     return stringToBool(getResult());
 }
 
 void Platform::gtextfield_setEditable(GObject* gobj, bool value) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GTextField.setEditable(\"" << gobj << "\", "
-       << boolalpha << value << ")";
+       << std::boolalpha << value << ")";
     putPipe(os.str());
 }
 
-void Platform::gtextfield_setText(GObject* gobj, string str) {
-    ostringstream os;
+void Platform::gtextfield_setText(GObject* gobj, std::string str) {
+    std::ostringstream os;
     os << "GTextField.setText(\"" << gobj << "\", ";
     writeQuotedString(os, str);
     os << ")";
@@ -1201,7 +1424,7 @@ void Platform::gtextfield_setText(GObject* gobj, string str) {
 }
 
 void Platform::gchooser_constructor(GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << gobj;
     sourceTable.put(os.str(), gobj);
     os.str("");
@@ -1209,23 +1432,23 @@ void Platform::gchooser_constructor(GObject* gobj) {
     putPipe(os.str());
 }
 
-void Platform::gchooser_addItem(GObject* gobj, string item) {
-    ostringstream os;
+void Platform::gchooser_addItem(GObject* gobj, std::string item) {
+    std::ostringstream os;
     os << "GChooser.addItem(\"" << gobj << "\", ";
     writeQuotedString(os, item);
     os << ")";
     putPipe(os.str());
 }
 
-string Platform::gchooser_getSelectedItem(GObject* gobj) {
-    ostringstream os;
+std::string Platform::gchooser_getSelectedItem(GObject* gobj) {
+    std::ostringstream os;
     os << "GChooser.getSelectedItem(\"" << gobj << "\")";
     putPipe(os.str());
     return getResult();
 }
 
-void Platform::gchooser_setSelectedItem(GObject* gobj, string item) {
-    ostringstream os;
+void Platform::gchooser_setSelectedItem(GObject* gobj, std::string item) {
+    std::ostringstream os;
     os << "GChooser.setSelectedItem(\"" << gobj << "\", ";
     writeQuotedString(os, item);
     os << ")";
@@ -1233,19 +1456,19 @@ void Platform::gchooser_setSelectedItem(GObject* gobj, string item) {
 }
 
 void Platform::gcompound_constructor(GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GCompound.create(\"" << gobj << "\")";
     putPipe(os.str());
 }
 
-void Platform::glabel_setFont(GObject* gobj, string font) {
-    ostringstream os;
+void Platform::glabel_setFont(GObject* gobj, std::string font) {
+    std::ostringstream os;
     os << "GLabel.setFont(\"" << gobj << "\", \"" << font << "\")";
     putPipe(os.str());
 }
 
-void Platform::glabel_setLabel(GObject* gobj, string str) {
-    ostringstream os;
+void Platform::glabel_setLabel(GObject* gobj, std::string str) {
+    std::ostringstream os;
     os << "GLabel.setLabel(\"" << gobj << "\", ";
     writeQuotedString(os, str);
     os << ")";
@@ -1253,21 +1476,21 @@ void Platform::glabel_setLabel(GObject* gobj, string str) {
 }
 
 double Platform::glabel_getFontAscent(const GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GLabel.getFontAscent(\"" << gobj << "\")";
     putPipe(os.str());
     return stringToReal(getResult());
 }
 
 double Platform::glabel_getFontDescent(const GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GLabel.getFontDescent(\"" << gobj << "\")";
     putPipe(os.str());
     return stringToReal(getResult());
 }
 
 GDimension Platform::glabel_getSize(const GObject* gobj) {
-    ostringstream os;
+    std::ostringstream os;
     os << "GLabel.getGLabelSize(\"" << gobj << "\")";
     putPipe(os.str());
     return scanDimension(getResult());
@@ -1292,9 +1515,9 @@ GEvent Platform::gevent_waitForEvent(int mask) {
     }
 
     GEvent event = eventQueue.dequeue();
-    if (PIPE_DEBUG) {
-        fprintf(stderr, "Platform::waitForEvent returning event \"%s\"\n", event.toString().c_str());  fflush(stderr);
-    }
+#ifdef PIPE_DEBUG
+    fprintf(stderr, "Platform::waitForEvent returning event \"%s\"\n", event.toString().c_str());  fflush(stderr);
+#endif
     return event;
 }
 
@@ -1313,8 +1536,8 @@ void Platform::gwindow_exitGraphics(bool abortBlockedConsoleIO) {
     }
 }
 
-string Platform::gfilechooser_showOpenDialog(string currentDir) {
-    ostringstream os;
+std::string Platform::gfilechooser_showOpenDialog(std::string currentDir) {
+    std::ostringstream os;
     os << "GFileChooser.showOpenDialog(";
     writeQuotedString(os, currentDir);
     os << ")";
@@ -1322,8 +1545,8 @@ string Platform::gfilechooser_showOpenDialog(string currentDir) {
     return getResult();
 }
 
-string Platform::gfilechooser_showSaveDialog(string currentDir) {
-    ostringstream os;
+std::string Platform::gfilechooser_showSaveDialog(std::string currentDir) {
+    std::ostringstream os;
     os << "GFileChooser.showSaveDialog(";
     writeQuotedString(os, currentDir);
     os << ")";
@@ -1331,49 +1554,99 @@ string Platform::gfilechooser_showSaveDialog(string currentDir) {
     return getResult();
 }
 
-void Platform::goptionpane_showMessageDialog(string message) {
-    ostringstream os;
-    os << "GOptionPane.showMessageDialog(";
-    writeQuotedString(os, message);
+int Platform::goptionpane_showConfirmDialog(std::string message, std::string title, int type) {
+    std::ostringstream os;
+    os << "GOptionPane.showConfirmDialog(";
+    writeQuotedString(os, urlEncode(message));
+    os << ",";
+    writeQuotedString(os, urlEncode(title));
+    os << "," << type;
     os << ")";
     putPipe(os.str());
-}
-
-int Platform::goptionpane_showConfirmDialog(string message) {
-    ostringstream os;
-    os << "GOptionPane.showConfirmDialog(";
-    writeQuotedString(os, message);
-    os << ")";
     return stringToInteger(getResult());
 }
 
-string Platform::goptionpane_showInputDialog(string message) {
-    ostringstream os;
+std::string Platform::goptionpane_showInputDialog(std::string message, std::string title) {
+    std::ostringstream os;
     os << "GOptionPane.showInputDialog(";
-    writeQuotedString(os, message);
+    writeQuotedString(os, urlEncode(message));
+    os << ",";
+    writeQuotedString(os, urlEncode(title));
     os << ")";
-    return getResult();
+    putPipe(os.str());
+    return urlDecode(getResult());
 }
 
-string Platform::goptionpane_showOptionDialog(const vector<string>& options, string initiallySelected) {
-    ostringstream os;
-    os << "GOptionPane.showOptionDialog({";
+void Platform::goptionpane_showMessageDialog(std::string message, std::string title, int type) {
+    std::ostringstream os;
+    os << "GOptionPane.showMessageDialog(";
+    writeQuotedString(os, urlEncode(message));
+    os << ",";
+    writeQuotedString(os, urlEncode(title));
+    os << "," << type;
+    os << ")";
+    putPipe(os.str());
+    getResult();   // wait for dialog to close
+}
+
+int Platform::goptionpane_showOptionDialog(std::string message,
+                                           std::string title,
+                                           const std::vector<std::string>& options,
+                                           std::string initiallySelected) {
+    std::ostringstream os;
+    os << "GOptionPane.showOptionDialog(";
+    writeQuotedString(os, urlEncode(message));
+    os << ",";
+    writeQuotedString(os, urlEncode(title));
+    os << ",";
+    os << "{";
     if (!options.empty()) {
         writeQuotedString(os, options[0]);
         for (int i = 1, sz = options.size(); i < sz; ++i) {
             os << ", ";
-            writeQuotedString(os, options[i]);
+            writeQuotedString(os, urlEncode(options[i]));
         }
     }
-    os << "}, ";
-    writeQuotedString(os, initiallySelected);
+    os << "}";
+    os << ",";
+    writeQuotedString(os, urlEncode(initiallySelected));
     os << ")";
-    return getResult();
+    putPipe(os.str());
+    std::string result = getResult();
+    return stringToInteger(result);
+}
+
+void Platform::goptionpane_showTextFileDialog(std::string message,
+                                              std::string title,
+                                              int rows,
+                                              int cols) {
+    std::ostringstream os;
+    os << "GOptionPane.showTextFileDialog(";
+    writeQuotedString(os, urlEncode(message));
+    os << ",";
+    writeQuotedString(os, urlEncode(title));
+    os << "," << rows;
+    os << "," << cols;
+    os << ")";
+    putPipe(os.str());
+    getResult();   // wait for dialog to close
 }
 
 Platform *getPlatform() {
     static Platform gp;
     return &gp;
+}
+
+static void putPipeLongString(std::string line) {
+    // break into chunks
+    // precondition: line does not contain substring "LongCommand.end()"
+    putPipe("LongCommand.begin()");
+    size_t len = line.length();
+    for (size_t i = 0; i < len; i += PIPE_MAX_COMMAND_LENGTH) {
+        std::string chunk = line.substr(i, std::min(PIPE_MAX_COMMAND_LENGTH, len - i));
+        putPipe(chunk);
+    }
+    putPipe("LongCommand.end()");
 }
 
 #ifdef _WIN32
@@ -1395,7 +1668,13 @@ static WINBOOL WinCheck(WINBOOL result) {
                        /* dwSize */ 0,
                        /* arguments */ NULL);
         if (errorMsg) {
-            cerr << "Error from Java back-end subprocess: " << errorMsg << endl;
+            fputs("\n", stderr);
+            fputs("***\n", stderr);
+            fputs("*** STANFORD C++ LIBRARY\n", stderr);
+            fputs("*** Error from Java back-end subprocess:\n", stderr);
+            fprintf(stderr, "*** %s\n", errorMsg);
+            fputs("***\n", stderr);
+            fputs("\n", stderr);
         }
     }
     return result;
@@ -1418,14 +1697,13 @@ int startupMain(int argc, char **argv) {
  * This is used to facilitate the creation of autograder programs.
  */
 void startupMainDontRunMain(int /*argc*/, char** argv) {
-    string arg0 = argv[0];
+    std::string arg0 = argv[0];
     programName = getRoot(getTail(arg0));
     initPipe();
-    cin_old_buf = cin.rdbuf();
-    cout_old_buf = cout.rdbuf();
     cinout_new_buf = new ConsoleStreambuf();
-    cin.rdbuf(cinout_new_buf);
-    cout.rdbuf(cinout_new_buf);
+    std::cin.rdbuf(cinout_new_buf);
+    std::cout.rdbuf(cinout_new_buf);
+    std::cerr.rdbuf(new ForwardingStreambuf(*cinout_new_buf, true));
     ShowWindow(GetConsoleWindow(), SW_HIDE);
     getPlatform()->cpplib_setCppLibraryVersion();
     setConsoleProperties();
@@ -1437,23 +1715,23 @@ static void initPipe() {
     attr.bInheritHandle = true;
     attr.lpSecurityDescriptor = NULL;
     if (!CreatePipe(&rdFromJBE, &wrFromJBE, &attr, 0)) {
-        error("Can't create fromJBE");
+        error("Platform::initPipe: Can't create fromJBE");
     }
     if (!SetHandleInformation(rdFromJBE, HANDLE_FLAG_INHERIT, 0)) {
-        error("SetHandleInformation failed for fromJBE");
+        error("Platform::initPipe: SetHandleInformation failed for fromJBE");
     }
     if (!CreatePipe(&rdToJBE, &wrToJBE, &attr, 0)) {
-        error("Can't create toJBE");
+        error("Platform::initPipe: Can't create toJBE");
     }
     if (!SetHandleInformation(wrToJBE, HANDLE_FLAG_INHERIT, 0)) {
-        error("SetHandleInformation failed for toJBE");
+        error("Platform::initPipe: SetHandleInformation failed for toJBE");
     }
-    string cmd = "java";
-    if (PIPE_DEBUG) {
-        cmd += " -Dstanfordspl.debug=true";
-    }
+    std::string cmd = "java";
+#ifdef PIPE_DEBUG
+    cmd += " -Dstanfordspl.debug=true";
+#endif
     cmd += " -jar spl.jar";
-    cmd += string(" ") + programName;
+    cmd += std::string(" ") + programName;
     int n = cmd.length();
     char *cmdLine = new char[n + 1];
     for (int i = 0; i < n; i++) {
@@ -1472,36 +1750,43 @@ static void initPipe() {
     int ok = CreateProcessA(NULL, cmdLine, NULL, NULL, true, CREATE_NO_WINDOW,
                             NULL, NULL, &sInfo, &pInfo);
     if (!ok) {
-        DWORD err = GetLastError();
-        cerr << endl;
-        cerr << "ERROR: Stanford C++ library was unable to connect" << endl;
-        cerr << "       to its Java back-end to launch 'spl.jar'." << endl;
-        cerr << "       Please check your Java installation and make sure" << endl;
-        cerr << "       that spl.jar is properly attached to your project." << endl;
-        cerr << endl;
-        cerr << err << endl;
+        // DWORD err = GetLastError();
+        fputs("\n", stderr);
+        fputs("***\n", stderr);
+        fputs("*** STANFORD C++ LIBRARY ERROR:\n", stderr);
+        fputs("*** Unable to connect to Java back-end\n", stderr);
+        fputs("*** to launch 'spl.jar' command.\n", stderr);
+        fputs("*** Please check your Java installation and make sure\n", stderr);
+        fputs("*** that spl.jar is properly attached to your project.\n", stderr);
+        fputs("***\n", stderr);
+        fflush(stderr);
     } else {
         CloseHandle(pInfo.hProcess);
         CloseHandle(pInfo.hThread);
     }
 }
 
-static void putPipe(string line) {
-    DWORD nch;
-    if (PIPE_DEBUG) {
-        fprintf(stderr, "putPipe(\"%s\")\n", line.c_str());  fflush(stderr);
+static void putPipe(std::string line) {
+    if (line.length() > PIPE_MAX_COMMAND_LENGTH) {
+        putPipeLongString(line);
+        return;
     }
+    
+    DWORD nch;
+#ifdef PIPE_DEBUG
+    fprintf(stderr, "putPipe(\"%s\")\n", line.c_str());  fflush(stderr);
+#endif
     if (!WinCheck(WriteFile(wrToJBE, line.c_str(), line.length(), &nch, NULL))) return;
     if (!WinCheck(WriteFile(wrToJBE, "\n", 1, &nch, NULL))) return;
     WinCheck(FlushFileBuffers(wrToJBE));
 }
 
-static string getPipe() {
-    string line = "";
+static std::string getPipe() {
+    std::string line = "";
     DWORD nch;
-    if (PIPE_DEBUG) {
-        fprintf(stderr, "getPipe(): waiting ...\n");  fflush(stderr);
-    }
+#ifdef PIPE_DEBUG
+    fprintf(stderr, "getPipe(): waiting ...\n");  fflush(stderr);
+#endif
 
     int charsRead = 0;
     int charsReadMax = 1024*1024;
@@ -1518,9 +1803,9 @@ static string getPipe() {
         charsRead++;
     }
 
-    if (PIPE_DEBUG) {
-        fprintf(stderr, "getPipe(): returned \"%s\"\n", line.c_str());  fflush(stderr);
-    }
+#ifdef PIPE_DEBUG
+    fprintf(stderr, "getPipe(): returned \"%s\"\n", line.c_str());  fflush(stderr);
+#endif
     return line;
 }
 
@@ -1530,7 +1815,7 @@ static string getPipe() {
 
 static bool LinCheck(ssize_t result) {
     if (result == EPIPE) {
-        // cerr << "Error from Java back-end subprocess." << endl;
+        // fputs("Error from Java back-end subprocess.\n", stderr);
         // throw InterruptedIOException();
         return false;
     } else {
@@ -1541,15 +1826,15 @@ static bool LinCheck(ssize_t result) {
 static void scanOptions() {
     char *home = getenv("HOME");
     if (home != NULL) {
-        string filename = string() + home + "/.spl";
-        ifstream infile(filename.c_str());
+        std::string filename = std::string() + home + "/.spl";
+        std::ifstream infile(filename.c_str());
         if (!infile.fail()) {
-            string line;
+            std::string line;
             while (getline(infile, line)) {
                 size_t equals = line.find('=');
-                if (equals != string::npos) {
-                    string key = line.substr(0, equals);
-                    string value = line.substr(equals + 1);
+                if (equals != std::string::npos) {
+                    std::string key = line.substr(0, equals);
+                    std::string value = line.substr(equals + 1);
                     optionTable.put(key, value);
                 }
             }
@@ -1558,9 +1843,9 @@ static void scanOptions() {
     }
 }
 
-static string getOption(string key) {
+static std::string getOption(std::string key) {
     char *str = getenv(key.c_str());
-    if (str != NULL) return string(str);
+    if (str != NULL) return std::string(str);
     return optionTable.get(key);
 }
 
@@ -1570,20 +1855,20 @@ int startupMain(int /*argc*/, char** argv) {
 int startupMain(int argc, char **argv) {
     extern int Main(int argc, char **argv);
 #endif
-    string arg0 = argv[0];
+    std::string arg0 = argv[0];
     programName = getRoot(getTail(arg0));
     size_t ax = arg0.find(".app/Contents/");
-    if (ax != string::npos) {
+    if (ax != std::string::npos) {
         while (ax > 0 && arg0[ax] != '/') {
             ax--;
         }
         if (ax > 0) {
-            string cwd = arg0.substr(0, ax);
+            std::string cwd = arg0.substr(0, ax);
             chdir(cwd.c_str());
         }
     }
     char *noConsoleFlag = getenv("NOCONSOLE");
-    if (noConsoleFlag != NULL && startsWith(string(noConsoleFlag), "t")) {
+    if (noConsoleFlag != NULL && startsWith(std::string(noConsoleFlag), "t")) {
 #ifdef SPL_AUTOGRADER_MODE
         return 0;
 #else
@@ -1592,13 +1877,14 @@ int startupMain(int argc, char **argv) {
     }
     scanOptions();
     initPipe();
-    cin_old_buf = cin.rdbuf();
-    cout_old_buf = cout.rdbuf();
     cinout_new_buf = new ConsoleStreambuf();
-    cin.rdbuf(cinout_new_buf);
-    cout.rdbuf(cinout_new_buf);
-    string font = getOption("CPPFONT");
-    if (font != "") setConsoleFont(font);
+    std::cin.rdbuf(cinout_new_buf);
+    std::cout.rdbuf(cinout_new_buf);
+    std::cerr.rdbuf(new ForwardingStreambuf(*cinout_new_buf, true));
+    std::string font = getOption("CPPFONT");
+    if (font != "") {
+        setConsoleFont(font);
+    }
     getPlatform()->cpplib_setCppLibraryVersion();
     setConsoleProperties();
 
@@ -1615,36 +1901,38 @@ int startupMain(int argc, char **argv) {
  * This is used to facilitate the creation of autograder programs.
  */
 void startupMainDontRunMain(int /*argc*/, char** argv) {
-    string arg0 = argv[0];
+    std::string arg0 = argv[0];
     programName = getRoot(getTail(arg0));
     size_t ax = arg0.find(".app/Contents/");
-    if (ax != string::npos) {
+    if (ax != std::string::npos) {
         while (ax > 0 && arg0[ax] != '/') {
             ax--;
         }
         if (ax > 0) {
-            string cwd = arg0.substr(0, ax);
+            std::string cwd = arg0.substr(0, ax);
             chdir(cwd.c_str());
         }
     }
     scanOptions();
     initPipe();
-    cin_old_buf = cin.rdbuf();
-    cout_old_buf = cout.rdbuf();
     cinout_new_buf = new ConsoleStreambuf();
-    cin.rdbuf(cinout_new_buf);
-    cout.rdbuf(cinout_new_buf);
-    string font = getOption("CPPFONT");
-    if (font != "") setConsoleFont(font);
+    std::cin.rdbuf(cinout_new_buf);
+    std::cout.rdbuf(cinout_new_buf);
+    std::cerr.rdbuf(new ForwardingStreambuf(*cinout_new_buf, true));
+    std::string font = getOption("CPPFONT");
+    if (font != "") {
+        setConsoleFont(font);
+    }
     getPlatform()->cpplib_setCppLibraryVersion();
     setConsoleProperties();
 }
 
 static void sigPipeHandler(int /*signum*/) {
-    cerr << "***" << endl;
-    cerr << "*** STANFORD C++ LIBRARY" << endl;
-    cerr << "*** Prematurely exiting program because console window was closed." << endl;
-    cerr << "***" << endl;
+    fputs("***\n", stderr);
+    fputs("*** STANFORD C++ LIBRARY\n", stderr);
+    fputs("*** Prematurely exiting program because console window was closed.\n", stderr);
+    fputs("***\n", stderr);
+    fflush(stderr);
     exit(1);
 }
 
@@ -1652,32 +1940,75 @@ static void initPipe() {
     char *trace = getenv("JBETRACE");
     logfile.open("/dev/tty");
     tracePipe = trace != NULL && startsWith(toLowerCase(trace), "t");
+
+    std::string splHomeDir = "";
+    char *splHome = getenv("SPL_HOME");
+    if (splHome != NULL) {
+        splHomeDir = splHome;
+        // ensure that it ends with a trailing slash
+        if (!splHomeDir.empty() && splHomeDir[splHomeDir.length() - 1] != '/') {
+            splHomeDir += '/';
+        }
+    }
+    
+    // check whether spl.jar file exists (code taken from filelib_fileExists)
+    std::string jarName = splHomeDir + "spl.jar";
+    struct stat fileInfo;
+    if (stat(jarName.c_str(), &fileInfo) != 0) {
+        fputs("\n", stderr);
+        fputs("***\n", stderr);
+        fputs("*** STANFORD C++ LIBRARY ERROR:\n", stderr);
+        fputs("*** Unable to find the file 'spl.jar' for the Stanford\n", stderr);
+        fputs("*** C++ library's Java back-end process.\n", stderr);
+        fputs("*** Please make sure that spl.jar is properly attached to your project.\n", stderr);
+        fputs("*** If you are trying to run a stand-alone executable, place spl.jar\n", stderr);
+        fputs("*** in the same directory as your executable, or set the system\n", stderr);
+        fputs("*** environment variable SPL_HOME to a directory path containing spl.jar.\n", stderr);
+        fputs("***\n", stderr);
+        fflush(stderr);
+        exit(1);
+    }
+    
     int toJBE[2], fromJBE[2];
-    pipe(toJBE);
-    pipe(fromJBE);
+    if (pipe(toJBE) != 0) {
+        error("Unable to establish pipe to Java back-end; exiting.");
+    }
+    if (pipe(fromJBE) != 0) {
+        error("Unable to establish pipe from Java back-end; exiting.");
+    }
     int child = fork();
     if (child == 0) {
+        // we are the Java back-end process; launch external Java command
+        javaBackEndPid = getpid();
         dup2(toJBE[0], 0);
         close(toJBE[0]);
         close(toJBE[1]);
         dup2(fromJBE[1], 1);
         close(fromJBE[0]);
         close(fromJBE[1]);
+        
 #ifdef __APPLE__
-        string option = "-Xdock:name=" + programName;
-        execlp("java", "java", option.c_str(), "-jar", "spl.jar",
+        std::string option = "-Xdock:name=" + programName;
+        execlp("java", "java", option.c_str(), "-jar", jarName.c_str(),
                programName.c_str(), NULL);
 #else
-        execlp("java", "java", "-jar", "spl.jar", programName.c_str(), NULL);
+        execlp("java", "java", "-jar", jarName.c_str(), programName.c_str(), NULL);
 #endif
-        cerr << endl;
-        cerr << "ERROR: Stanford C++ library was unable to connect" << endl;
-        cerr << "       to its Java back-end to launch 'spl.jar'." << endl;
-        cerr << "       Please check your Java installation and make sure" << endl;
-        cerr << "       that spl.jar is properly attached to your project." << endl;
-        cerr << endl;
-        throw new ErrorException("Could not exec spl.jar");
+        
+        // if we get here, the execlp call failed, so show error message
+        fputs("\n", stderr);
+        fputs("***\n", stderr);
+        fputs("*** STANFORD C++ LIBRARY ERROR:\n", stderr);
+        fputs("*** Unable to connect to Java back-end\n", stderr);
+        fputs("*** to launch 'spl.jar' command.\n", stderr);
+        fputs("*** Please check your Java installation and make sure\n", stderr);
+        fputs("*** that spl.jar is properly attached to your project.\n", stderr);
+        fputs("***\n", stderr);
+        fflush(stderr);
+        error("Could not exec spl.jar");
     } else {
+        // we are the C++ process; connect pipe input/output
+        cppLibPid = getpid();
         pin = fromJBE[0];
         pout = toJBE[1];
         close(fromJBE[1]);
@@ -1688,22 +2019,26 @@ static void initPipe() {
     }
 }
 
-static void putPipe(string line) {
-    if (PIPE_DEBUG) {
-        fprintf(stderr, "putPipe(\"%s\")\n", line.c_str());  fflush(stderr);
+static void putPipe(std::string line) {
+    if (line.length() > PIPE_MAX_COMMAND_LENGTH) {
+        putPipeLongString(line);
+        return;
     }
+#ifdef PIPE_DEBUG
+    fprintf(stderr, "putPipe(\"%s\")\n", line.c_str());  fflush(stderr);
+#endif
     LinCheck(write(pout, line.c_str(), line.length()));
     LinCheck(write(pout, "\n", 1));
-    if (tracePipe) logfile << "-> " << line << endl;
+    if (tracePipe) logfile << "-> " << line << std::endl;
 }
 
-static string getPipe() {
-    if (PIPE_DEBUG) {
-        fprintf(stderr, "getPipe(): waiting ...\n");  fflush(stderr);
-    }
-    string line = "";
+static std::string getPipe() {
+#ifdef PIPE_DEBUG
+    fprintf(stderr, "getPipe(): waiting ...\n");  fflush(stderr);
+#endif
+    std::string line = "";
     int charsRead = 0;
-    int charsReadMax = 1024*1024;
+    int charsReadMax = PIPE_MAX_COMMAND_LENGTH + 100;
     while (charsRead < charsReadMax) {
         char ch;
         ssize_t result = read(pin, &ch, 1);
@@ -1715,39 +2050,40 @@ static string getPipe() {
         line += ch;
         charsRead++;
     }
-    if (PIPE_DEBUG) {
-        fprintf(stderr, "getPipe(): \"%s\"\n", line.c_str());  fflush(stderr);
-    }
-    if (tracePipe) logfile << "<- " << line << endl;
+#ifdef PIPE_DEBUG
+    fprintf(stderr, "getPipe(): \"%s\"\n", line.c_str());  fflush(stderr);
+#endif
+    if (tracePipe) logfile << "<- " << line << std::endl;
     return line;
 }
 
 #endif
 
-static string getResult(bool consumeAcks) {
+static std::string getResult(bool consumeAcks, const std::string& caller) {
     while (true) {
-        if (PIPE_DEBUG) {
-            fprintf(stderr, "getResult(): calling getPipe() ...\n");  fflush(stderr);
-        }
-        string line = getPipe();
+#ifdef PIPE_DEBUG
+        fprintf(stderr, "getResult(): calling getPipe() ...\n");  fflush(stderr);
+#endif
+        std::string line = getPipe();
         bool isResult = startsWith(line, "result:");
+        bool isResultLong = startsWith(line, "result_long:");
         bool isEvent  = startsWith(line, "event:");
         bool isAck    = startsWith(line, "result:___jbe___ack___");
-        bool hasACMException = line.find("acm.util.ErrorException") != string::npos;
-        bool hasException    = line.find("xception") != string::npos;
-        bool hasError        = line.find("Unexpected error") != string::npos;
+        bool hasACMException = line.find("acm.util.ErrorException") != std::string::npos;
+        bool hasException    = line.find("xception") != std::string::npos;
+        bool hasError        = line.find("Unexpected error") != std::string::npos;
 
         // added by Marty: if there is a back-end error, display it
         if (((isResult || isEvent) && hasACMException) ||
                 (!isResult && !isEvent && (hasException || hasError))) {
-            ostringstream out;
-            if (startsWith(line, "result:")) {
+            std::ostringstream out;
+            if (isResult) {
                 line = line.substr(7);
-            } else if (startsWith(line, "event:")) {
+            } else if (isEvent) {
                 line = line.substr(6);
             }
             out << "ERROR emitted from Stanford Java back-end process:"
-                << endl << line;
+                << std::endl << line;
             error(out.str());
         } else if (isResult) {
             if (!(consumeAcks && isAck)) {
@@ -1755,30 +2091,46 @@ static string getResult(bool consumeAcks) {
                 // not a real result of its own
                 return line.substr(7);
             }
+        } else if (isResultLong) {
+            // read a 'long' result (more than ~4096 chars; sent across multiple lines)
+            std::ostringstream os;
+            // os << line.substr(17);   // don't add first line "result_long:begin"
+            std::string nextLine = getPipe();
+            while (nextLine != "result_long:end") {
+                os << nextLine;
+                nextLine = getPipe();
+            }
+            return os.str();
         } else if (isEvent) {
-            eventQueue.enqueue(parseEvent(line.substr(6)));
+            GEvent event = parseEvent(line.substr(6));
+            eventQueue.enqueue(event);
+            if (event.getEventClass() == WINDOW_EVENT && event.getEventType() == CONSOLE_CLOSED
+                    && caller == "getLineConsole") {
+                return "";
+            }
         } else {
-            if (line.find("\tat ") != string::npos || line.find("   at ") != string::npos) {
+            if (line.find("\tat ") != std::string::npos || line.find("   at ") != std::string::npos) {
                 // part of a Java exception stack trace, so echo it
-                cerr << line << endl;
+                fprintf(stderr, "%s\n", line.c_str());
+                fflush(stderr);
             }
         }
     }
 }
 
 static void getStatus() {
-    string result = getResult();
+    std::string result = getResult();
     if (result != "ok") {
         error(result);
     }
 }
 
-static GEvent parseEvent(string line) {
+static GEvent parseEvent(std::string line) {
     TokenScanner scanner(line);
     scanner.ignoreWhitespace();
     scanner.scanNumbers();
     scanner.scanStrings();
-    string name = scanner.nextToken();
+    std::string name = scanner.nextToken();
     if (name == "mousePressed") {
         return parseMouseEvent(scanner, MOUSE_PRESSED);
     } else if (name == "mouseReleased") {
@@ -1814,12 +2166,13 @@ static GEvent parseEvent(string line) {
         extern bool getConsoleExitProgramOnClose();
         extern bool getConsoleEventOnClose();
         if (getConsoleExitProgramOnClose()) {
-            cerr << endl;
-            cerr << "***" << endl;
-            cerr << "*** STANFORD C++ LIBRARY" << endl;
-            cerr << "*** Prematurely exiting program because console window was closed." << endl;
-            cerr << "***" << endl;
-            cerr << endl;
+            fputs("\n", stderr);
+            fputs("***\n", stderr);
+            fputs("*** STANFORD C++ LIBRARY\n", stderr);
+            fputs("*** Prematurely exiting program because console window was closed\n", stderr);
+            fputs("***\n", stderr);
+            fputs("\n", stderr);
+            fflush(stderr);
 
             // if waiting for keyboard input, abort it
             if (cinout_new_buf && cinout_new_buf->isBlocked()) {
@@ -1846,7 +2199,7 @@ static GEvent parseEvent(string line) {
 
 static GEvent parseMouseEvent(TokenScanner& scanner, EventType type) {
     scanner.verifyToken("(");
-    string id = scanner.getStringValue(scanner.nextToken());
+    std::string id = scanner.getStringValue(scanner.nextToken());
     scanner.verifyToken(",");
     double time = scanDouble(scanner);
     scanner.verifyToken(",");
@@ -1864,7 +2217,7 @@ static GEvent parseMouseEvent(TokenScanner& scanner, EventType type) {
 
 static GEvent parseKeyEvent(TokenScanner& scanner, EventType type) {
     scanner.verifyToken("(");
-    string id = scanner.getStringValue(scanner.nextToken());
+    std::string id = scanner.getStringValue(scanner.nextToken());
     scanner.verifyToken(",");
     double time = scanDouble(scanner);
     scanner.verifyToken(",");
@@ -1882,7 +2235,7 @@ static GEvent parseKeyEvent(TokenScanner& scanner, EventType type) {
 
 static GEvent parseTimerEvent(TokenScanner& scanner, EventType type) {
     scanner.verifyToken("(");
-    string id = scanner.getStringValue(scanner.nextToken());
+    std::string id = scanner.getStringValue(scanner.nextToken());
     scanner.verifyToken(",");
     double time = scanDouble(scanner);
     scanner.verifyToken(")");
@@ -1893,7 +2246,7 @@ static GEvent parseTimerEvent(TokenScanner& scanner, EventType type) {
 
 static GEvent parseWindowEvent(TokenScanner& scanner, EventType type) {
     scanner.verifyToken("(");
-    string id = scanner.getStringValue(scanner.nextToken());
+    std::string id = scanner.getStringValue(scanner.nextToken());
     scanner.verifyToken(",");
     double time = scanDouble(scanner);
     scanner.verifyToken(")");
@@ -1904,9 +2257,9 @@ static GEvent parseWindowEvent(TokenScanner& scanner, EventType type) {
 
 static GEvent parseActionEvent(TokenScanner& scanner, EventType type) {
     scanner.verifyToken("(");
-    string id = scanner.getStringValue(scanner.nextToken());
+    std::string id = scanner.getStringValue(scanner.nextToken());
     scanner.verifyToken(",");
-    string action = scanner.getStringValue(scanner.nextToken());
+    std::string action = scanner.getStringValue(scanner.nextToken());
     scanner.verifyToken(",");
     double time = scanDouble(scanner);
     scanner.verifyToken(")");
@@ -1918,20 +2271,23 @@ static GEvent parseActionEvent(TokenScanner& scanner, EventType type) {
 /* Console code */
 
 void Platform::cpplib_setCppLibraryVersion() {
-    ostringstream out;
+    std::ostringstream out;
     out << "StanfordCppLib.setCppVersion(";
     writeQuotedString(out, STANFORD_CPP_LIB_VERSION);
     out << ")";
     putPipe(out.str());
 }
 
-string Platform::cpplib_getCppLibraryVersion() {
-    return STANFORD_CPP_LIB_VERSION;
-}
-
-string Platform::cpplib_getJavaBackEndVersion() {
+std::string Platform::cpplib_getJavaBackEndVersion() {
     putPipe("StanfordCppLib.getJbeVersion()");
-    string result = getResult();
+    std::string result = getResult();
+    // BUGFIX 2014/10/14: remove surrounding "" marks (pre-2014/10/16 JBE)
+    if (startsWith(result, '"')) {
+        result = result.substr(1);
+    }
+    if (endsWith(result, '"')) {
+        result = result.substr(0, result.length() - 1);
+    }
     return result;
 }
 
@@ -1939,14 +2295,18 @@ void Platform::jbeconsole_clear() {
     putPipe("JBEConsole.clear()");
 }
 
-void Platform::jbeconsole_setFont(const string & font) {
-    ostringstream os;
+void Platform::jbeconsole_minimize() {
+    putPipe("JBEConsole.minimize()");
+}
+
+void Platform::jbeconsole_setFont(const std::string & font) {
+    std::ostringstream os;
     os << "JBEConsole.setFont(\"" << font << "\")";
     putPipe(os.str());
 }
 
 void Platform::jbeconsole_setSize(double width, double height) {
-    ostringstream os;
+    std::ostringstream os;
     os << "JBEConsole.setSize(" << width << ", " << height << ")";
     putPipe(os.str());
 }
@@ -1955,130 +2315,166 @@ void Platform::jbeconsole_setSize(double width, double height) {
  * pass (-1, -1) to center
  */
 void Platform::jbeconsole_setLocation(int x, int y) {
-    ostringstream os;
+    std::ostringstream os;
     os << "JBEConsole.setLocation(" << x << ", " << y << ")";
     putPipe(os.str());
 }
 
 void Platform::jbeconsole_setExitProgramOnClose(bool value) {
-    ostringstream os;
-    os << "JBEConsole.setExitOnClose(" << boolalpha << value << ")";
+    std::ostringstream os;
+    os << "JBEConsole.setExitOnClose(" << std::boolalpha << value << ")";
     putPipe(os.str());
 }
 
 void Platform::jbeconsole_setLocationSaved(bool value) {
-    ostringstream os;
-    os << "JBEConsole.setLocationSaved(" << boolalpha << value << ")";
+    std::ostringstream os;
+    os << "JBEConsole.setLocationSaved(" << std::boolalpha << value << ")";
     putPipe(os.str());
 }
 
-void Platform::autograderinput_addButton(string text, string input) {
+void Platform::jbeconsole_toFront() {
+    putPipe("JBEConsole.toFront()");
+}
+
+void Platform::autograderinput_addButton(std::string text, std::string input) {
     if (input.empty()) {
         input = text;
     }
-    ostringstream out;
+    std::ostringstream out;
     out << "AutograderInput.addButton(";
-    writeQuotedString(out, text);
+    writeQuotedString(out, urlEncode(text));
     out << ", ";
-    writeQuotedString(out, input);
+    writeQuotedString(out, urlEncode(input));
     out << ")";
     putPipe(out.str());
 }
 
-void Platform::autograderinput_removeButton(string text) {
-    ostringstream out;
+void Platform::autograderinput_removeButton(std::string text) {
+    std::ostringstream out;
     out << "AutograderInput.removeButton(";
-    writeQuotedString(out, text);
+    writeQuotedString(out, urlEncode(text));
     out << ")";
     putPipe(out.str());
 }
 
-void Platform::autograderinput_addCategory(string name) {
-    ostringstream out;
+void Platform::autograderinput_addCategory(std::string name) {
+    std::ostringstream out;
     out << "AutograderInput.addCategory(";
-    writeQuotedString(out, name);
+    writeQuotedString(out, urlEncode(name));
     out << ")";
     putPipe(out.str());
 }
 
-void Platform::autograderinput_removeCategory(string name) {
-    ostringstream out;
+void Platform::autograderinput_removeCategory(std::string name) {
+    std::ostringstream out;
     out << "AutograderInput.removeCategory(";
-    writeQuotedString(out, name);
+    writeQuotedString(out, urlEncode(name));
     out << ")";
     putPipe(out.str());
 }
 
-static string getLineConsole() {
+void Platform::autograderinput_setVisible(bool value) {
+    std::ostringstream out;
+    out << "AutograderInput.setVisible(" << std::boolalpha << value << ")";
+    putPipe(out.str());
+}
+
+void Platform::autograderunittest_addTest(const std::string& testName, const std::string& category, bool styleCheck) {
+    std::ostringstream os;
+    os << "AutograderUnitTest.addTest(";
+    writeQuotedString(os, urlEncode(testName));
+    os << ",";
+    writeQuotedString(os, urlEncode(category));
+    os << "," << std::boolalpha << styleCheck << ")";
+    putPipe(os.str());
+}
+
+void Platform::autograderunittest_clearTests(bool styleCheck) {
+    std::ostringstream os;
+    os << "AutograderUnitTest.clearTests(" << std::boolalpha << styleCheck << ")";
+    putPipe(os.str());
+}
+
+void Platform::autograderunittest_setTestDetails(const std::string& testName, const std::string& details, bool styleCheck) {
+    std::ostringstream os;
+    os << "AutograderUnitTest.setTestDetails(";
+    writeQuotedString(os, urlEncode(testName));
+    os << ",";
+    writeQuotedString(os, urlEncode(details));
+    os << "," << std::boolalpha << styleCheck << ")";
+    putPipe(os.str());
+}
+
+void Platform::autograderunittest_setTestResult(const std::string& testName, const std::string& result, bool styleCheck) {
+    std::ostringstream os;
+    os << "AutograderUnitTest.setTestResult(";
+    writeQuotedString(os, urlEncode(testName));
+    os << ",";
+    writeQuotedString(os, urlEncode(result));
+    os << "," << std::boolalpha << styleCheck << ")";
+    putPipe(os.str());
+}
+
+void Platform::autograderunittest_setWindowDescriptionText(const std::string& text, bool styleCheck) {
+    std::ostringstream os;
+    os << "AutograderUnitTest.setWindowDescriptionText(";
+    writeQuotedString(os, urlEncode(text));
+    os << "," << std::boolalpha << styleCheck << ")";
+    putPipe(os.str());
+}
+
+static std::string getLineConsole() {
     putPipe("JBEConsole.getLine()");
-    string result = getResult(true);
+    std::string result = getResult(/* consumeAcks */ true, /* caller */ "getLineConsole");
     echoConsole(result + "\n");   // wrong for multiple inputs on one line
     return result;
 }
 
-static void putConsole(const string& str) {
-    ostringstream os;
+static void putConsole(const std::string& str, bool isStderr) {
+    std::ostringstream os;
     os << "JBEConsole.print(";
 
-    // BUGBUG: strings that end with \\ don't print because of back-end error;
+    // BUGFIX: strings that end with \\ don't print because of back-end error;
     //         kludge fix by appending an invisible space after it
     if (!str.empty() && str[str.length() - 1] == '\\') {
-        string str2 = str + ' ';
+        std::string str2 = str + ' ';
         writeQuotedString(os, str2);
     } else {
         writeQuotedString(os, str);
     }
     
-    os << ")";
+    os << "," << std::boolalpha << isStderr << ")";
     putPipe(os.str());
-    echoConsole(str);
+    echoConsole(str, isStderr);
 }
 
-static void echoConsole(const string& str) {
+static void echoConsole(const std::string& str, bool isStderr) {
     if (getConsoleEcho()) {
-        // write to the standard cout console for output copy/pasting
-        cin.rdbuf(cin_old_buf);
-        cout.rdbuf(cout_old_buf);
-        cout << str;
-        cout.flush();
-        cin.rdbuf(cinout_new_buf);
-        cout.rdbuf(cinout_new_buf);
-    }
-    fileLogConsole(str);
-}
-
-static void fileLogConsole(const string& str) {
-    string consoleLogFile = autograder::getConsoleLogFile();
-    if (consoleLogFile.length() > 0) {
-        // A bit inefficient; opens/writes/closes the file on each print
-        // statement.  But this enables fine-grained control and changing
-        // the log file in mid-execution with minimal code base change
-        ofstream outfile;
-        outfile.open(consoleLogFile.c_str(), fstream::out | fstream::app);
-        outfile << str;
-        outfile.flush();
-        outfile.close();
+        // write to the standard (non-graphical) cout console for output copy/pasting
+        fputs(str.c_str(), isStderr ? stderr : stdout);
+        fflush(stdout);   // flush both stdout and stderr
+        fflush(stderr);
     }
 }
 
-static void endLineConsole() {
+static void endLineConsole(bool isStderr) {
     putPipe("JBEConsole.println()");
-    echoConsole("\n");
+    echoConsole("\n", isStderr);
 }
 
 static int scanInt(TokenScanner& scanner) {
-    string token = scanner.nextToken();
+    std::string token = scanner.nextToken();
     if (token == "-") token += scanner.nextToken();
     return stringToInteger(token);
 }
 
 static double scanDouble(TokenScanner& scanner) {
-    string token = scanner.nextToken();
+    std::string token = scanner.nextToken();
     if (token == "-") token += scanner.nextToken();
     return stringToReal(token);
 }
 
-static GDimension scanDimension(const string& str) {
+static GDimension scanDimension(const std::string& str) {
     TokenScanner scanner(str);
     scanner.scanNumbers();
     scanner.ignoreWhitespace();
@@ -2091,7 +2487,7 @@ static GDimension scanDimension(const string& str) {
     return GDimension(width, height);
 }
 
-static Point scanPoint(const string& str) {
+static Point scanPoint(const std::string& str) {
     TokenScanner scanner(str);
     scanner.scanNumbers();
     scanner.ignoreWhitespace();
@@ -2104,7 +2500,7 @@ static Point scanPoint(const string& str) {
     return Point(x, y);
 }
 
-static GRectangle scanRectangle(const string& str) {
+static GRectangle scanRectangle(const std::string& str) {
     TokenScanner scanner(str);
     scanner.scanNumbers();
     scanner.ignoreWhitespace();
@@ -2127,7 +2523,7 @@ static GRectangle scanRectangle(const string& str) {
  */
 static void setConsoleProperties() {
 #if defined(SPL_CONSOLE_FONTSIZE)
-    string fontStr = string("Monospaced-Bold-") + integerToString(SPL_CONSOLE_FONTSIZE);
+    std::string fontStr = std::string("Monospaced-Bold-") + integerToString(SPL_CONSOLE_FONTSIZE);
     setConsoleFont(fontStr);
 #endif
 
@@ -2153,6 +2549,14 @@ static void setConsoleProperties() {
     
 #if defined(SPL_CONSOLE_LOCATION_SAVED)
     setConsoleLocationSaved(true);
+#endif
+    
+#if defined(SPL_VERIFY_JAVA_BACKEND_VERSION)
+    version::ensureJavaBackEndVersion();
+#endif
+    
+#if defined(SPL_VERIFY_PROJECT_VERSION) && defined(SPL_MINIMUM_PROJECT_VERSION)
+    version::ensureProjectVersion();
 #endif
 }
 

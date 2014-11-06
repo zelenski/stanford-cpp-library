@@ -3,6 +3,10 @@
  * ---------------
  * This file defines the <code>GWindow</code> class which supports
  * drawing graphical objects on the screen.
+ * 
+ * @version 2014/10/13
+ * - added gwindowSetExitGraphicsEnabled function for autograders
+ * - removed 'using namespace' statement
  */
 
 #ifndef _gwindow_h
@@ -110,7 +114,7 @@ public:
      */
     void close();
     void notifyOfClose();           // not to be called by students
-    string getWindowData() const;   // not to be called by students
+    std::string getWindowData() const;   // not to be called by students
 
     /*
      * Sets this window such that when it is closed, the program will shut down
@@ -346,13 +350,22 @@ public:
     void setCanvasSize(int width, int height);
 
     /*
+     * Method: setTitle
+     * Usage: gw.setTitle(title);
+     * --------------------------
+     * Sets the title of the graphics window.
+     * A synonym for setWindowTitle whose name more closely matches Java's.
+     */
+    void setTitle(std::string title);
+
+    /*
      * Method: setWindowTitle
      * Usage: gw.setWindowTitle(title);
      * --------------------------------
      * Sets the title of the graphics window.
      */
     void setWindowTitle(std::string title);
-    
+
     /*
      * Method: setLocation
      * Usage: gw.setLocation(x, y);
@@ -616,6 +629,7 @@ int gwindowGetNumPauses();
 void gwindowResetNumPauses();
 double gwindowGetLastPauseMS();
 void gwindowResetLastPauseMS();
+void gwindowSetExitGraphicsEnabled(bool value = true);
 void gwindowSetPauseEnabled(bool value = true);
 }
 

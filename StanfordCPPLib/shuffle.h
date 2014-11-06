@@ -4,7 +4,8 @@
  * This file contains implementation of a shuffling function that operates on
  * a 1-D and 2-D array, Vector, or Grid of any type.
  *
- * Author : Marty Stepp
+ * @author Marty Stepp
+ * @since 2014/02/01
  */
 
 #ifndef _shuffle_h

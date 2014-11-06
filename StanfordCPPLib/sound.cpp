@@ -2,22 +2,18 @@
  * File: sound.cpp
  * ---------------
  * Implementation of the Sound class.
+ * 
+ * @version 2014/10/08
+ * - removed 'using namespace' statement
+ * - removed unused include statements
  */
 
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
-#include "gevents.h"
-#include "gtypes.h"
 #include "sound.h"
-#include "vector.h"
 #include "platform.h"
-using namespace std;
 
 static Platform *pp = getPlatform();
 
-Sound::Sound(string filename) {
+Sound::Sound(std::string filename) {
     pp->sound_constructor(this, filename);
 }
 

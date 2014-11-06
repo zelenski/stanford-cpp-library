@@ -2,16 +2,19 @@
  * File: gtypes.cpp
  * ----------------
  * This file implements the classes in the gtypes.h interface.
+ * 
+ * @version 2014/10/08
+ * - removed 'using namespace' statement
  */
 
-#include <string>
-#include <cmath>
-#include "error.h"
 #include "gtypes.h"
+#include <cmath>
+#include <string>
+#include "error.h"
 #include "strlib.h"
-using namespace std;
 
-static const double PI = 3.14159265358979;
+// BUGFIX 2014/07/09: commenting out unused variable 'PI'
+// static const double PI = 3.14159265358979;
 static const int HASH_MASK = int(unsigned(-1) >> 1);
 
 /*
@@ -40,11 +43,11 @@ double GPoint::getY() const {
     return y;
 }
 
-string GPoint::toString() const {
+std::string GPoint::toString() const {
     return "(" + realToString(x) + ", " + realToString(y) + ")";
 }
 
-ostream & operator<<(ostream & os, const GPoint & pt) {
+std::ostream & operator<<(std::ostream & os, const GPoint & pt) {
     return os << pt.toString();
 }
 
@@ -90,11 +93,11 @@ double GDimension::getHeight() const {
     return height;
 }
 
-string GDimension::toString() const {
+std::string GDimension::toString() const {
     return "(" + realToString(width) + ", " + realToString(height) + ")";
 }
 
-ostream & operator<<(ostream & os, const GDimension & dim) {
+std::ostream & operator<<(std::ostream & os, const GDimension & dim) {
     return os << dim.toString();
 }
 
@@ -167,12 +170,12 @@ bool GRectangle::contains(GPoint pt) const {
     return contains(pt.getX(), pt.getY());
 }
 
-string GRectangle::toString() const {
+std::string GRectangle::toString() const {
     return "(" + realToString(x) + ", " + realToString(y) + ", "
             + realToString(width) + ", " + realToString(height) + ")";
 }
 
-ostream & operator<<(ostream & os, const GRectangle & rect) {
+std::ostream & operator<<(std::ostream & os, const GRectangle & rect) {
     return os << rect.toString();
 }
 

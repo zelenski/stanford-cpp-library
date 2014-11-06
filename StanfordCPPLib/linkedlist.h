@@ -1,9 +1,19 @@
 /*
- * File: LinkedList.h
- * --------------
+ * File: linkedlist.h
+ * ------------------
  * This file exports the <code>LinkedList</code> class, which provides an
  * implementation of a doubly-linked list of objects and provides the same
  * public interface of members as the <code>LinkedList</code> class.
+ *
+ * @version 2014/10/19
+ * - added subList method
+ * @version 2014/10/10
+ * - removed usage of __foreach macro
+ * 2014/07/10
+ *  - fixed compiler errors/bugs in initial implementation:
+ *    back(), front() members, etc.
+ *  - changed checkLinkedListIndex into a member function to avoid warnings
+ * @since 2014/07/10
  */
 
 #ifndef _linkedlist_h
@@ -15,12 +25,9 @@
 #include <string>
 #include <list>
 #include <vector>
-#include "private/foreachpatch.h"
 #include "error.h"
 #include "random.h"
 #include "strlib.h"
-
-static void checkLinkedListIndex(int index, int min, int max, string prefix);
 
 /*
  * Class: LinkedList<ValueType>
@@ -77,8 +84,8 @@ public:
      * Returns the element at the back of this LinkedList.
      * This method signals an error if the list is empty.
      */
-    ValueType& back(int index);
-    const ValueType& back(int index) const;
+    ValueType& back();
+    const ValueType& back() const;
 
     /*
      * Method: clear
@@ -105,8 +112,8 @@ public:
      * Returns the element at the front of this LinkedList.
      * This method signals an error if the list is empty.
      */
-    ValueType& front(int index);
-    const ValueType& front(int index) const;
+    ValueType& front();
+    const ValueType& front() const;
 
     /*
      * Method: get
@@ -219,6 +226,17 @@ public:
     int size() const;
     
     /*
+     * Method: subList
+     * Usage: LinkedList<ValueType> sub = list.subList(start, length);
+     * ---------------------------------------------------------------
+     * Returns a new list containing the given subset range of elements
+     * from this list. The new list is a deep copy, not linked to this one.
+     * Throws an error if the range (start .. start + length) is not contained
+     * within the bounds of this list, or if length is negative.
+     */
+    LinkedList<ValueType> subList(int start, int length) const;
+    
+    /*
      * Returns an STL list object with the same elements as this LinkedList.
      */
     std::list<ValueType> toStlList() const;
@@ -277,8 +295,9 @@ public:
     /*
      * Comparing LinkedLists for equality.
      */
-    bool operator ==(const LinkedList& l2);
-    bool operator !=(const LinkedList& l2);
+    bool operator ==(const LinkedList& list2) const;
+    bool operator !=(const LinkedList& list2) const;
+
 
     /*
      * Additional LinkedList operations
@@ -310,9 +329,20 @@ private:
      */
 
     /* Instance variables */
-    list<ValueType> m_elements;   // STL linked list as backing storage
+    std::list<ValueType> m_elements;   // STL linked list as backing storage
 
     /* Private methods */
+
+    /*
+     * Throws an ErrorException if the given index is not within the range of
+     * [min..max] inclusive.
+     * This is a consolidated error handler for all various LinkedList members that
+     * accept index parameters.
+     * The prefix parameter represents a text string to place at the start of
+     * the error message, generally to help indicate which member threw the error.
+     */
+    void checkIndex(int index, int min, int max, std::string prefix) const;
+
     void deepCopy(const LinkedList& src);
 
     /*
@@ -350,17 +380,17 @@ public:
      * iterators so that they work symmetrically with respect to the
      * corresponding STL classes.
      */
-    class iterator : public list<ValueType>::iterator {
+    class iterator : public std::list<ValueType>::iterator {
     public:
-        iterator() : list<ValueType>::iterator() {}
-        iterator(const iterator& it) : list<ValueType>::iterator(it) {}
-        iterator(const typename list<ValueType>::iterator& it) : list<ValueType>::iterator(it) {}
+        iterator() : std::list<ValueType>::iterator() {}
+        iterator(const iterator& it) : std::list<ValueType>::iterator(it) {}
+        iterator(const typename std::list<ValueType>::iterator& it) : std::list<ValueType>::iterator(it) {}
     };
-    class const_iterator : public list<ValueType>::const_iterator {
+    class const_iterator : public std::list<ValueType>::const_iterator {
     public:
-        const_iterator() : list<ValueType>::const_iterator() {}
-        const_iterator(const const_iterator& it) : list<ValueType>::const_iterator(it) {}
-        const_iterator(const typename list<ValueType>::const_iterator& it) : list<ValueType>::const_iterator(it) {}
+        const_iterator() : std::list<ValueType>::const_iterator() {}
+        const_iterator(const const_iterator& it) : std::list<ValueType>::const_iterator(it) {}
+        const_iterator(const typename std::list<ValueType>::const_iterator& it) : std::list<ValueType>::const_iterator(it) {}
     };
 
     /*
@@ -427,7 +457,7 @@ void LinkedList<ValueType>::add(ValueType value) {
 template <typename ValueType>
 LinkedList<ValueType>&
 LinkedList<ValueType>::addAll(const LinkedList<ValueType>& list) {
-    __foreach__ (ValueType value __in__ list) {
+    for (ValueType value : list) {
         add(value);
     }
 }
@@ -455,18 +485,7 @@ void LinkedList<ValueType>::clear() {
 
 template <typename ValueType>
 bool LinkedList<ValueType>::equals(const LinkedList<ValueType>& list2) const {
-    if (size() != list2.size()) {
-        return false;
-    }
-    for (auto itr1 = begin(), end1 = end(),
-              itr2 = list2.begin(), end2 = list2.end();
-         itr1 != end1 && itr != end2;
-         itr1++, itr2++) {
-        if (*itr1 != *itr2) {
-            return false;
-        }
-    }
-    return true;
+    return m_elements == list2.m_elements;
 }
 
 template <typename ValueType>
@@ -487,13 +506,17 @@ const ValueType& LinkedList<ValueType>::front() const {
 
 template <typename ValueType>
 const ValueType & LinkedList<ValueType>::get(int index) const {
-    checkLinkedListIndex(index, 0, size()-1, "get");
-    return m_elements[index];
+    checkIndex(index, 0, size()-1, "get");
+    auto itr = m_elements.begin();
+    for (int i = 0; i < index; i++) {
+        ++itr;
+    }
+    return *itr;
 }
 
 template <typename ValueType>
 void LinkedList<ValueType>::insert(int index, ValueType value) {
-    checkLinkedListIndex(index, 0, size(), "insert");
+    checkIndex(index, 0, size(), "insert");
     auto itr = m_elements.begin();
     std::advance(itr, index);
     m_elements.insert(itr, value);
@@ -564,13 +587,15 @@ void LinkedList<ValueType>::push_front(const ValueType& value) {
 
 template <typename ValueType>
 void LinkedList<ValueType>::remove(int index) {
-    checkLinkedListIndex(index, 0, size()-1, "remove");
-    m_elements.erase(m_elements.begin() + index, 1);
+    checkIndex(index, 0, size()-1, "remove");
+    auto itr = m_elements.begin();
+    advance(itr, index);
+    m_elements.erase(itr);
 }
 
 template <typename ValueType>
 void LinkedList<ValueType>::set(int index, const ValueType & value) {
-    checkLinkedListIndex(index, 0, size()-1, "set");
+    checkIndex(index, 0, size()-1, "set");
     m_elements[index] = value;
 }
 
@@ -580,13 +605,32 @@ int LinkedList<ValueType>::size() const {
 }
 
 template <typename ValueType>
+LinkedList<ValueType> LinkedList<ValueType>::subList(int start, int length) const {
+    checkIndex(start, 0, size(), "subList");
+    checkIndex(start + length, 0, size(), "subList");
+    if (length < 0) {
+        error("LinkedList::subList: length cannot be negative");
+    }
+    LinkedList<ValueType> result;
+    auto itr = begin();
+    for (int i = 0; i < start; i++) {
+        ++itr;
+    }
+    for (int i = 0; i < length; i++) {
+        result.add(*itr);
+        ++itr;
+    }
+    return result;
+}
+
+template <typename ValueType>
 std::list<ValueType> LinkedList<ValueType>::toStlList() const {
     return m_elements;
 }
 
 template <typename ValueType>
 std::string LinkedList<ValueType>::toString() const {
-    ostringstream os;
+    std::ostringstream os;
     os << *this;
     return os.str();
 }
@@ -599,13 +643,17 @@ std::string LinkedList<ValueType>::toString() const {
  */
 template <typename ValueType>
 ValueType& LinkedList<ValueType>::operator [](int index) {
-    checkLinkedListIndex(index, 0, size()-1, "operator []");
-    return m_elements[index];
+    checkIndex(index, 0, size()-1, "operator []");
+    auto itr = begin();
+    advance(itr, index);
+    return *itr;
 }
 template <typename ValueType>
 const ValueType& LinkedList<ValueType>::operator [](int index) const {
-    checkLinkedListIndex(index, 0, size()-1, "operator []");
-    return m_elements[index];
+    checkIndex(index, 0, size()-1, "operator []");
+    auto itr = begin();
+    advance(itr, index);
+    return *itr;
 }
 
 template <typename ValueType>
@@ -629,13 +677,13 @@ LinkedList<ValueType>::operator +=(const ValueType& value) {
 }
 
 template <typename ValueType>
-bool LinkedList<ValueType>::operator ==(const LinkedList& list2) {
-    return equals(list2);
+bool LinkedList<ValueType>::operator ==(const LinkedList& list2) const {
+    return m_elements == list2.m_elements;
 }
 
 template <typename ValueType>
-bool LinkedList<ValueType>::operator !=(const LinkedList& list2) {
-    return !(*this == list2);
+bool LinkedList<ValueType>::operator !=(const LinkedList& list2) const {
+    return m_elements != list2.m_elements;
 }
 
 /*
@@ -656,6 +704,22 @@ LinkedList<ValueType>::operator =(const LinkedList& src) {
         deepCopy(src);
     }
     return *this;
+}
+
+template <typename ValueType>
+void LinkedList<ValueType>::checkIndex(int index, int min, int max, std::string prefix) const {
+    if (index < min || index > max) {
+        std::ostringstream out;
+        out << "LinkedList::" << prefix << ": index of " << index
+            << " is outside of valid range [";
+        if (min < max) {
+            out << min << ".." << max;
+        } else if (min == max) {
+            out << min;
+        } // else min > max, no range, empty LinkedList
+        out << "]";
+        error(out.str());
+    }
 }
 
 template <typename ValueType>
@@ -702,7 +766,7 @@ std::ostream& operator <<(std::ostream& os, const LinkedList<ValueType>& list) {
 
 template <typename ValueType>
 std::istream& operator>>(std::istream& is, LinkedList<ValueType>& list) {
-    char ch;
+    char ch = '\0';
     is >> ch;
     if (ch != '{') {
         error("LinkedList::operator >>: Missing {");
@@ -735,13 +799,16 @@ int hashCode(const LinkedList<long>& v);
 int hashCode(const LinkedList<double>& v);
 
 /*
- * Randomly rearranges the elements of the given LinkedList.
+ * Randomly rearranges the elements of the given list.
+ * Because it is slow to arbitrarily access/modify indexes in a linked list,
+ * this function uses an auxiliary Vector to assist in its implementation,
+ * although doing so increases the memory consumption of the algorithm.
  */
 template <typename T>
 void shuffle(LinkedList<T>& list) {
     // actually shuffle a vector to avoid O(N^2) runtime
     // at the cost of O(N) extra memory usage
-    vector<T> vec;
+    std::vector<T> vec;
     for (T element : list) {
         vec.push_back(element);
     }
@@ -756,29 +823,6 @@ void shuffle(LinkedList<T>& list) {
     list.clear();
     for (T element : vec) {
         list.add(element);
-    }
-}
-
-/*
- * Throws an ErrorException if the given index is not within the range of
- * [min..max] inclusive.
- * This is a consolidated error handler for all various LinkedList members that
- * accept index parameters.
- * The prefix parameter represents a text string to place at the start of
- * the error message, generally to help indicate which member threw the error.
- */
-static void checkLinkedListIndex(int index, int min, int max, string prefix) {
-    if (index < min || index > max) {
-        ostringstream out;
-        out << "LinkedList::" << prefix << ": index of " << index
-            << " is outside of valid range [";
-        if (min < max) {
-            out << min << ".." << max;
-        } else if (min == max) {
-            out << min;
-        } // else min > max, no range, empty LinkedList
-        out << "]";
-        error(out.str());
     }
 }
 

@@ -4,6 +4,9 @@
  * This file implements the machine-independent functions for the classes
  * in the gevents.h interface.  The actual functions for receiving events
  * from the environment are implemented in the platform package.
+ * 
+ * @version 2014/10/08
+ * - removed 'using namespace' statement
  */
 
 /*
@@ -16,17 +19,16 @@
  * its subclasses.
  */
 
+#include "gevents.h"
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <cctype>
 #include "error.h"
-#include "gevents.h"
 #include "gtimer.h"
 #include "gtypes.h"
 #include "map.h"
 #include "platform.h"
-using namespace std;
 
 /* Global variables */
 
@@ -39,6 +41,14 @@ GEvent::GEvent() {
     eventType = 0;
     valid = false;
     modifiers = 0;
+    eventTime = 0.0;
+    gwd = NULL;
+    source = NULL;
+    gtd = NULL;
+    x = 0;
+    y = 0;
+    keyChar = 0;
+    keyCode = 0;
 }
 
 EventClassType GEvent::getEventClass() const {
@@ -57,7 +67,7 @@ int GEvent::getModifiers() const {
     return modifiers;
 }
 
-string GEvent::toString() const {
+std::string GEvent::toString() const {
     if (eventClass == 0) {
         return "GEvent(NULL)";
     } else if (eventClass == WINDOW_EVENT) {
@@ -118,9 +128,9 @@ GWindow GWindowEvent::getGWindow() const {
     return GWindow(gwd);
 }
 
-string GWindowEvent::toString() const {
+std::string GWindowEvent::toString() const {
     if (!valid) return "GWindowEvent(?)";
-    ostringstream os;
+    std::ostringstream os;
     os << "GWindowEvent:";
     switch (eventType) {
     case WINDOW_CLOSED:      os << "WINDOW_CLOSED";       break;
@@ -147,7 +157,7 @@ GActionEvent::GActionEvent(GEvent e) {
 }
 
 GActionEvent::GActionEvent(EventType type, GObject *source,
-                           string actionCommand) {
+                           std::string actionCommand) {
     this->eventClass = ACTION_EVENT;
     this->eventType = int(type);
     this->source = source;
@@ -159,14 +169,14 @@ GObject *GActionEvent::getSource() const {
     return source;
 }
 
-string GActionEvent::getActionCommand() const {
+std::string GActionEvent::getActionCommand() const {
     if (!valid) error("getActionCommand: Event is not valid");
     return actionCommand;
 }
 
-string GActionEvent::toString() const {
+std::string GActionEvent::toString() const {
     if (!valid) return "GActionEvent(?)";
-    ostringstream os;
+    std::ostringstream os;
     os << "GActionEvent:ACTION_PERFORMED(" << actionCommand << ")";
     return os.str();
 }
@@ -223,9 +233,9 @@ bool GMouseEvent::isMiddleClick() const {
     return getModifiers() & 8;
 }
 
-string GMouseEvent::toString() const {
+std::string GMouseEvent::toString() const {
     if (!valid) return "GMouseEvent(?)";
-    ostringstream os;
+    std::ostringstream os;
     os << "GMouseEvent:";
     switch (eventType) {
     case MOUSE_PRESSED:  os << "MOUSE_PRESSED";   break;
@@ -280,9 +290,9 @@ int GKeyEvent::getKeyCode() const {
     return keyCode;
 }
 
-string GKeyEvent::toString() const {
+std::string GKeyEvent::toString() const {
     if (!valid) return "GKeyEvent(?)";
-    ostringstream os;
+    std::ostringstream os;
     os << "GKeyEvent:";
     int ch = '\0';
     switch (eventType) {
@@ -293,7 +303,7 @@ string GKeyEvent::toString() const {
     if (isprint(ch)) {
         os << "('" << char(ch) << "')";
     } else {
-        os << oct << "('\\" << ch << "')";
+        os << std::oct << "('\\" << ch << "')";
     }
     return os.str();
 }
@@ -326,7 +336,7 @@ GTimer GTimerEvent::getGTimer() const {
     return GTimer(gtd);
 }
 
-string GTimerEvent::toString() const {
+std::string GTimerEvent::toString() const {
     if (!valid) return "GTimerEvent(?)";
     return "GTimerEvent:TIMER_TICKED()";
 }

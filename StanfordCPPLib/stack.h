@@ -49,6 +49,16 @@ public:
     void clear();
     
     /*
+     * Method: equals
+     * Usage: if (stack.equals(stack2)) ...
+     * ------------------------------------
+     * Returns <code>true</code> if this stack contains exactly the same values
+     * as the given other stack.
+     * Identical in behavior to the == operator.
+     */
+    bool equals(const Stack<ValueType>& stack2) const;
+    
+    /*
      * Method: isEmpty
      * Usage: if (stack.isEmpty()) ...
      * -------------------------------
@@ -78,7 +88,7 @@ public:
      * Method: push
      * Usage: stack.push(value);
      * -------------------------
-     * Pushes the specified value onto this stack.
+     * Pushes the specified value onto the top of this stack.
      */
     void push(const ValueType& value);
 
@@ -177,6 +187,22 @@ void Stack<ValueType>::clear() {
 }
 
 template <typename ValueType>
+bool Stack<ValueType>::equals(const Stack<ValueType>& stack2) const {
+    if (this == &stack2) {
+		return true;
+	}
+	if (size() != stack2.size()) {
+        return false;
+    }
+    for (int i = 0; i < size(); i++) {
+        if (elements[i] != stack2.elements[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+template <typename ValueType>
 bool Stack<ValueType>::isEmpty() const {
     return size() == 0;
 }
@@ -228,27 +254,19 @@ std::stack<ValueType> Stack<ValueType>::toStlStack() const {
 
 template <typename ValueType>
 std::string Stack<ValueType>::toString() const {
-    ostringstream os;
+    std::ostringstream os;
     os << *this;
     return os.str();
 }
 
 template <typename ValueType>
 bool Stack<ValueType>::operator ==(const Stack& stack2) const {
-    if (size() != stack2.size()) {
-        return false;
-    }
-    for (int i = 0; i < size(); i++) {
-        if (this->elements[i] != stack2.elements[i]) {
-            return false;
-        }
-    }
-    return true;
+	return equals(stack2);
 }
 
 template <typename ValueType>
 bool Stack<ValueType>::operator !=(const Stack & stack2) const {
-    return !(*this == stack2);
+    return !equals(stack2);
 }
 
 template <typename ValueType>
@@ -271,7 +289,7 @@ std::ostream& operator <<(std::ostream& os, const Stack<ValueType>& stack) {
 
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, Stack<ValueType>& stack) {
-    char ch;
+    char ch = '\0';
     is >> ch;
     if (ch != '{') {
         error("Stack::operator >>: Missing {");

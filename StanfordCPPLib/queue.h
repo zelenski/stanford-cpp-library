@@ -4,6 +4,10 @@
  * This file exports the <code>Queue</code> class, a collection
  * in which values are ordinarily processed in a first-in/first-out
  * (FIFO) order.
+ * 
+ * @version 2014/10/10
+ * - removed dependency on 'using namespace' statement
+ * - removed usage of __foreach macro
  */
 
 #ifndef _queue_h
@@ -71,6 +75,17 @@ public:
      * Adds <code>value</code> to the end of the queue.
      */
     void enqueue(const ValueType& value);
+    
+    /*
+     * Method: equals
+     * Usage: if (queue.equals(queue2)) ...
+     * ------------------------------------
+     * Compares two queues for equality.
+     * Returns <code>true</code> if this queue contains exactly the same
+     * values as the given other queue.
+     * Identical in behavior to the == operator.
+     */
+    bool equals(const Queue<ValueType>& queue2) const;
     
     /*
      * Method: front
@@ -206,7 +221,7 @@ Queue<ValueType>::Queue() {
  */
 template <typename ValueType>
 Queue<ValueType>::~Queue() {
-    /* Empty */
+    // empty
 }
 
 template <typename ValueType>
@@ -254,6 +269,24 @@ void Queue<ValueType>::enqueue(const ValueType& value) {
 }
 
 template <typename ValueType>
+bool Queue<ValueType>::equals(const Queue<ValueType>& queue2) const {
+    if (this == &queue2) {
+		return true;
+	}
+	if (size() != queue2.size()) {
+        return false;
+    }
+    Queue<ValueType> copy1 = *this;
+    Queue<ValueType> copy2 = queue2;
+    while (!copy1.isEmpty() && !copy2.isEmpty()) {
+        if (!(copy1.dequeue() == copy2.dequeue())) {
+            return false;
+        }
+    }
+    return copy1.isEmpty() == copy2.isEmpty();
+}
+
+template <typename ValueType>
 ValueType& Queue<ValueType>::front() {
     if (count == 0) {
         error("Queue::front: Attempting to read front of an empty queue");
@@ -282,8 +315,9 @@ int Queue<ValueType>::size() const {
 template <typename ValueType>
 std::queue<ValueType> Queue<ValueType>::toStlDeque() const {
     std::deque<ValueType> result;
-    for (ValueType value : *this) {
-        result.push(value);
+    Queue<ValueType> copy = *this;
+    while (!copy.isEmpty()) {
+        result.push_back(copy.dequeue());
     }
     return result;
 }
@@ -291,15 +325,16 @@ std::queue<ValueType> Queue<ValueType>::toStlDeque() const {
 template <typename ValueType>
 std::queue<ValueType> Queue<ValueType>::toStlQueue() const {
     std::queue<ValueType> result;
-    for (ValueType value : *this) {
-        result.push(value);
+    Queue<ValueType> copy = *this;
+    while (!copy.isEmpty()) {
+        result.push(copy.dequeue());
     }
     return result;
 }
 
 template <typename ValueType>
 std::string Queue<ValueType>::toString() const {
-    ostringstream os;
+    std::ostringstream os;
     os << *this;
     return os.str();
 }
@@ -325,22 +360,12 @@ void Queue<ValueType>::expandRingBufferCapacity() {
 
 template <typename ValueType>
 bool Queue<ValueType>::operator ==(const Queue& queue2) const {
-    if (size() != queue2.size()) {
-        return false;
-    }
-    Queue<ValueType> copy1 = *this;
-    Queue<ValueType> copy2 = queue2;
-    for (int i = 0; i < size(); i++) {
-        if (copy1.dequeue() != copy2.dequeue()) {
-            return false;
-        }
-    }
-    return true;
+	return equals(queue2);
 }
 
 template <typename ValueType>
 bool Queue<ValueType>::operator !=(const Queue& queue2) const {
-    return !(*this == queue2);
+    return !equals(queue2);
 }
 
 template <typename ValueType>
@@ -359,7 +384,7 @@ std::ostream& operator <<(std::ostream& os, const Queue<ValueType>& queue) {
 
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, Queue<ValueType>& queue) {
-    char ch;
+    char ch = '\0';
     is >> ch;
     if (ch != '{') {
         error("Queue::operator >>: Missing {");

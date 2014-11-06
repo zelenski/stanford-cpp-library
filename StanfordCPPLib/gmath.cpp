@@ -6,9 +6,9 @@
  * which makes detailed documentation unnecessary.
  */
 
+#include "gmath.h"
 #include <cmath>
 #include "error.h"
-#include "gmath.h"
 #include "gtypes.h"
 
 extern const double PI = 3.14159265358979323846;

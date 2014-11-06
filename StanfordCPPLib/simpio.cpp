@@ -2,21 +2,29 @@
  * File: simpio.cpp
  * ----------------
  * This file implements the simpio.h interface.
+ * 
+ * @version 2014/10/19
+ * - alphabetized functions
+ * - converted many funcs to take const string& rather than string for efficiency
+ * @version 2014/10/08
+ * - removed 'using namespace' statement
  */
 
+#include "simpio.h"
 #include <cctype>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
-#include "simpio.h"
-using namespace std;
 
-namespace autograder {
-extern bool getConsoleEchoUserInput();
-}
+static const std::string GETINTEGER_DEFAULT_PROMPT = "Enter an integer: ";
+static const std::string GETINTEGER_DEFAULT_REPROMPT = "Illegal integer format. Try again.";
+static const std::string GETREAL_DEFAULT_PROMPT = "Enter a number: ";
+static const std::string GETREAL_DEFAULT_REPROMPT = "Illegal numeric format. Try again.";
+static const std::string GETYESORNO_DEFAULT_PROMPT = "Try again: ";
+static const std::string GETYESORNO_DEFAULT_REPROMPT = "Please type a word that starts with 'Y' or 'N'.";
 
-static void appendSpace(string& prompt);
+static void appendSpace(std::string& prompt);
 
 /*
  * Implementation notes: getInteger, getReal
@@ -26,75 +34,24 @@ static void appendSpace(string& prompt);
  * If that fails, the implementation asks the user for a new value.
  */
 
-int getInteger(string prompt, string reprompt) {
-    if (reprompt == "") {
-        reprompt = "Illegal integer format. Try again.";
-    }
-    appendSpace(prompt);
+int getInteger(const std::string& prompt,
+               const std::string& reprompt) {
+    std::string promptCopy = prompt;
+    appendSpace(promptCopy);
     int value;
-    string line;
     while (true) {
-        cout << prompt;
-        getline(cin, line);
-        if (autograder::getConsoleEchoUserInput()) {
-            cout << line << endl;
+        std::cout << promptCopy;
+        std::string line;
+        getline(std::cin, line);
+        std::istringstream stream(line);
+        stream >> value >> std::ws;
+        if (!stream.fail() && stream.eof()) {
+            break;
         }
-        istringstream stream(line);
-        stream >> value >> ws;
-        if (!stream.fail() && stream.eof()) break;
-        cout << reprompt << endl;
-        if (prompt == "") prompt = "Enter an integer: ";
-    }
-    return value;
-}
-
-double getReal(string prompt, string reprompt) {
-    if (reprompt == "") {
-        reprompt = "Illegal numeric format. Try again.";
-    }
-    appendSpace(prompt);
-    double value;
-    string line;
-    while (true) {
-        cout << prompt;
-        getline(cin, line);
-        if (autograder::getConsoleEchoUserInput()) {
-            cout << line << endl;
+        std::cout << (reprompt.empty() ? GETINTEGER_DEFAULT_REPROMPT : reprompt) << std::endl;
+        if (promptCopy.empty()) {
+            promptCopy = GETINTEGER_DEFAULT_PROMPT;
         }
-        istringstream stream(line);
-        stream >> value >> ws;
-        if (!stream.fail() && stream.eof()) break;
-        cout << reprompt << endl;
-        if (prompt == "") prompt = "Enter a number: ";
-    }
-    return value;
-}
-
-bool getYesOrNo(string prompt, string reprompt) {
-    if (reprompt == "") {
-        reprompt = "Please type a word that starts with 'Y' or 'N'.";
-    }
-    appendSpace(prompt);
-    bool value;
-    string line;
-    while (true) {
-        cout << prompt;
-        getline(cin, line);
-        if (autograder::getConsoleEchoUserInput()) {
-            cout << line << endl;
-        }
-        if ((int) line.length() > 0) {
-            char first = tolower(line[0]);
-            if (first == 'y') {
-                value = true;
-                break;
-            } else if (first == 'n') {
-                value = false;
-                break;
-            }
-        }
-        cout << reprompt << endl;
-        if (prompt == "") prompt = "Try again: ";
     }
     return value;
 }
@@ -108,36 +65,79 @@ bool getYesOrNo(string prompt, string reprompt) {
  * that the process of reading integers, floating-point numbers, and
  * strings remains as consistent as possible.
  */
-
-string getLine(string prompt) {
-    appendSpace(prompt);
-    string line;
-    cout << prompt;
-    getline(cin, line);
-    if (autograder::getConsoleEchoUserInput()) {
-        cout << line << endl;
-    }
+std::string getLine(const std::string& prompt) {
+    std::string line;
+    getLine(prompt, line);
     return line;
 }
 
-void getLine(string prompt, string& out) {
-    appendSpace(prompt);
-    string line;
-    cout << prompt;
-    getline(cin, out);
-    if (autograder::getConsoleEchoUserInput()) {
-        cout << line << endl;
-    }
+void getLine(const std::string& prompt,
+             std::string& out) {
+    std::string promptCopy = prompt;
+    appendSpace(promptCopy);
+    std::cout << promptCopy;
+    getline(std::cin, out);
 }
 
-void getLine(istream& input, string& out) {
+void getLine(std::istream& input,
+             std::string& out) {
     getline(input, out);
-    if (autograder::getConsoleEchoUserInput() && input == cin) {
-        cout << out << endl;
-    }
 }
 
-static void appendSpace(string& prompt) {
+double getReal(const std::string& prompt,
+               const std::string& reprompt) {
+    std::string promptCopy = prompt;
+    appendSpace(promptCopy);
+    double value;
+    while (true) {
+        std::cout << promptCopy;
+        std::string line;
+        getline(std::cin, line);
+        std::istringstream stream(line);
+        stream >> value >> std::ws;
+        if (!stream.fail() && stream.eof()) {
+            break;
+        }
+        std::cout << (reprompt.empty() ? GETREAL_DEFAULT_REPROMPT : reprompt) << std::endl;
+        if (promptCopy.empty()) {
+            promptCopy = GETREAL_DEFAULT_PROMPT;
+        }
+    }
+    return value;
+}
+
+bool getYesOrNo(const std::string& prompt,
+                const std::string& reprompt,
+                const std::string& defaultValue) {
+    std::string promptCopy = prompt;
+    appendSpace(promptCopy);
+    bool value;
+    while (true) {
+        std::cout << promptCopy;
+        std::string line;
+        getline(std::cin, line);
+        if (line.empty()) {
+            line = defaultValue;
+        }
+        if ((int) line.length() > 0) {
+            char first = tolower(line[0]);
+            if (first == 'y') {
+                value = true;
+                break;
+            } else if (first == 'n') {
+                value = false;
+                break;
+            }
+        }
+        std::cout << (reprompt.empty() ? GETYESORNO_DEFAULT_REPROMPT : reprompt) << std::endl;
+        if (promptCopy.empty()) {
+            promptCopy = GETYESORNO_DEFAULT_PROMPT;
+        }
+    }
+    return value;
+}
+
+static void appendSpace(std::string& prompt) {
     if (!prompt.empty() && !isspace(prompt[prompt.length() - 1])) {
         prompt += ' ';
     }

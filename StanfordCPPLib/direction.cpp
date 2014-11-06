@@ -2,13 +2,15 @@
  * File: direction.cpp
  * -------------------
  * This file implements the direction.h interface.
+ * 
+ * @version 2014/10/08
+ * - removed 'using namespace' statement
  */
 
 #include "direction.h"
 #include "error.h"
 #include "strlib.h"
 #include "tokenscanner.h"
-using namespace std;
 
 /*
  * Implementation notes: leftFrom, rightFrom, opposite
@@ -40,13 +42,17 @@ Direction opposite(Direction dir) {
  * of the legal values.
  */
 
-string directionToString(Direction dir) {
+std::string directionToString(Direction dir) {
     switch (dir) {
-    case NORTH: return "NORTH";
-    case EAST: return "EAST";
-    case SOUTH: return "SOUTH";
-    case WEST: return "WEST";
-    default: return "???";
+    case NORTH:
+        return "NORTH";
+    case EAST:
+        return "EAST";
+    case SOUTH:
+        return "SOUTH";
+    default:
+    // case WEST:
+        return "WEST";   // BUGFIX 2014/07/09: removed unreachable 'default' case
     }
 }
 
@@ -72,7 +78,7 @@ std::ostream & operator<<(std::ostream & os, const Direction & dir) {
 std::istream & operator>>(std::istream & is, Direction & dir) {
     TokenScanner scanner(is);
     scanner.ignoreWhitespace();
-    string token = toUpperCase(scanner.nextToken());
+    std::string token = toUpperCase(scanner.nextToken());
     if (token == "") {
         dir = Direction(-1);
     } else if (startsWith("NORTH", token)) {
@@ -84,7 +90,7 @@ std::istream & operator>>(std::istream & is, Direction & dir) {
     } else if (startsWith("WEST", token)) {
         dir = WEST;
     } else {
-        error("Direction: Unrecognized direction " + token);
+        error("Direction::operator >>: Unrecognized direction \"" + token + "\"");
     }
     return is;
 }

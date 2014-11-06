@@ -2,12 +2,17 @@
  * File: gobjects.cpp
  * ------------------
  * This file implements the ginteractors.h interface.
+ * 
+ * @version 2014/10/31
+ * - added get/setIcon to GInteractor
+ * @version 2014/10/08
+ * - removed 'using namespace' statement
  */
 
+#include "ginteractors.h"
 #include <iostream>
 #include <sstream>
 #include "gevents.h"
-#include "ginteractors.h"
 #include "gobjects.h"
 #include "gtypes.h"
 #include "gwindow.h"
@@ -24,16 +29,16 @@ GInteractor::GInteractor() {
     actionCommand = "";
 }
 
-void GInteractor::setActionCommand(string cmd) {
+void GInteractor::setActionCommand(std::string cmd) {
     actionCommand = cmd;
     pp->ginteractor_setActionCommand(this, cmd);
 }
 
-string GInteractor::getActionCommand() {
+std::string GInteractor::getActionCommand() {
     return actionCommand;
 }
 
-void GInteractor::setSize(const GDimension & size) {
+void GInteractor::setSize(const GDimension& size) {
     setSize(size.getWidth(), size.getHeight());
 }
 
@@ -41,7 +46,7 @@ void GInteractor::setSize(double width, double height) {
     pp->gobject_setSize(this, width, height);
 }
 
-void GInteractor::setBounds(const GRectangle & rect) {
+void GInteractor::setBounds(const GRectangle& rect) {
     setLocation(rect.getX(), rect.getY());
     setSize(rect.getWidth(), rect.getHeight());
 }
@@ -64,22 +69,36 @@ void GInteractor::setEnabled(bool value) {
     pp->ginteractor_setEnabled(this, value);
 }
 
+std::string GInteractor::getIcon() const {
+    return icon;
+}
+
+void GInteractor::setIcon(std::string filename) {
+    this->icon = filename;
+    pp->ginteractor_setIcon(this, filename);
+}
+
+void GInteractor::setTextPosition(SwingConstants horizontal, SwingConstants vertical) {
+    pp->ginteractor_setTextPosition(this, horizontal, vertical);
+}
+
 /*
  * Implementation notes: GButton class
  * -----------------------------------
  */
 
-GButton::GButton(string label) {
+GButton::GButton(std::string label) {
     this->label = label;
+    this->icon = "";
     pp->gbutton_constructor(this, label);
 }
 
-string GButton::getType() const {
+std::string GButton::getType() const {
     return "GButton";
 }
 
-string GButton::toString() const {
-    ostringstream oss;
+std::string GButton::toString() const {
+    std::ostringstream oss;
     oss << "GButton(\"" << label << "\")";
     return oss.str();
 }
@@ -89,7 +108,7 @@ string GButton::toString() const {
  * -------------------------------------
  */
 
-GCheckBox::GCheckBox(string label) {
+GCheckBox::GCheckBox(std::string label) {
     this->label = label;
     pp->gcheckbox_constructor(this, label);
 }
@@ -102,12 +121,12 @@ void GCheckBox::setSelected(bool state) {
     pp->gcheckbox_setSelected(this, state);
 }
 
-string GCheckBox::getType() const {
+std::string GCheckBox::getType() const {
     return "GCheckBox";
 }
 
-string GCheckBox::toString() const {
-    ostringstream oss;
+std::string GCheckBox::toString() const {
+    std::ostringstream oss;
     oss << "GCheckBox(\"" << label << "\")";
     return oss.str();
 }
@@ -145,7 +164,7 @@ bool GSlider::getSnapToTicks() const {
     return pp->gslider_getSnapToTicks(this);
 }
 
-string GSlider::getType() const {
+std::string GSlider::getType() const {
     return "GSlider";
 }
 
@@ -177,8 +196,8 @@ void GSlider::setValue(int value) {
     pp->gslider_setValue(this, value);
 }
 
-string GSlider::toString() const {
-    ostringstream oss;
+std::string GSlider::toString() const {
+    std::ostringstream oss;
     oss << "GSlider()";
     return oss.str();
 }
@@ -202,7 +221,7 @@ GTextField::GTextField(int nChars) {
     pp->gtextfield_constructor(this, nChars);
 }
 
-string GTextField::getText() {
+std::string GTextField::getText() {
     return pp->gtextfield_getText(this);
 }
 
@@ -214,16 +233,16 @@ void GTextField::setEditable(bool value) {
     pp->gtextfield_setEditable(this, value);
 }
 
-void GTextField::setText(string str) {
+void GTextField::setText(std::string str) {
     pp->gtextfield_setText(this, str);
 }
 
-string GTextField::getType() const {
+std::string GTextField::getType() const {
     return "GTextField";
 }
 
-string GTextField::toString() const {
-    ostringstream oss;
+std::string GTextField::toString() const {
+    std::ostringstream oss;
     oss << "GTextField()";
     return oss.str();
 }
@@ -237,24 +256,24 @@ GChooser::GChooser() {
     pp->gchooser_constructor(this);
 }
 
-void GChooser::addItem(string item) {
+void GChooser::addItem(std::string item) {
     pp->gchooser_addItem(this, item);
 }
 
-string GChooser::getSelectedItem() {
+std::string GChooser::getSelectedItem() {
     return pp->gchooser_getSelectedItem(this);
 }
 
-void GChooser::setSelectedItem(string item) {
+void GChooser::setSelectedItem(std::string item) {
     pp->gchooser_setSelectedItem(this, item);
 }
 
-string GChooser::getType() const {
+std::string GChooser::getType() const {
     return "GChooser";
 }
 
-string GChooser::toString() const {
-    ostringstream oss;
+std::string GChooser::toString() const {
+    std::ostringstream oss;
     oss << "GChooser()";
     return oss.str();
 }

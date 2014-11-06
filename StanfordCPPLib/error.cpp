@@ -2,17 +2,19 @@
  * File: error.cpp
  * ---------------
  * Implementation of the error function.
+ * 
+ * @version 2014/10/08
+ * - removed 'using namespace' statement
  */
 
 #include "error.h"
 #include <exception>
 #include <string>
 #include <iostream>
-using namespace std;
 
 /* Definitions for the ErrorException class */
 
-ErrorException::ErrorException(string msg) {
+ErrorException::ErrorException(std::string msg) {
     this->msg = msg;
 }
 
@@ -20,7 +22,7 @@ ErrorException::~ErrorException() throw () {
     /* Empty */
 }
 
-string ErrorException::getMessage() const {
+std::string ErrorException::getMessage() const {
     return msg;
 }
 
@@ -41,6 +43,6 @@ const char *ErrorException::what() const throw () {
  * the errors are catchable.
  */
 
-void error(string msg) {
+void error(std::string msg) {
     throw ErrorException(msg);
 }

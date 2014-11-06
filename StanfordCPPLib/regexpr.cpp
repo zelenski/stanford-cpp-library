@@ -3,28 +3,28 @@
  * -----------------
  * Implementation of the functions in regexpr.h.
  * See regexpr.h for documentation of each function.
+ *
+ * @author Marty Stepp
+ * @version 2014/10/14
+ * - removed regexMatchCountWithLines for simplicity
+ * 2014/10/08
+ * - removed 'using namespace' statement
+ * @since 2014/03/01
  */
 
 #include "regexpr.h"
 #include "platform.h"
-using namespace std;
 
 static Platform *pp = getPlatform();
 
-bool regexMatch(string s, string regexp) {
+bool regexMatch(std::string s, std::string regexp) {
     return pp->regex_match(s, regexp);
 }
 
-int regexMatchCount(string s, string regexp) {
+int regexMatchCount(std::string s, std::string regexp) {
     return pp->regex_matchCount(s, regexp);
 }
 
-string regexReplace(string s, string regexp, string replacement, int limit) {
+std::string regexReplace(std::string s, std::string regexp, std::string replacement, int limit) {
     return pp->regex_replace(s, regexp, replacement, limit);
-}
-
-namespace autograder {
-int regexMatchCountWithLines(string s, string regexp, string& linesOut) {
-    return pp->regex_matchCountWithLines(s, regexp, linesOut);
-}
 }

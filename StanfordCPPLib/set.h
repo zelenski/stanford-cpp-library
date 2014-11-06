@@ -3,6 +3,9 @@
  * -----------
  * This file exports the <code>Set</code> class, which implements a
  * collection for storing a set of distinct elements.
+ * 
+ * @version 2014/10/10
+ * - removed use of __foreach macro
  */
 
 #ifndef _set_h
@@ -10,7 +13,6 @@
 
 #include <iostream>
 #include <set>
-#include "private/foreachpatch.h"
 #include "error.h"
 #include "map.h"
 #include "vector.h"
@@ -328,7 +330,7 @@ public:
     /* Extended constructors */
     template <typename CompareType>
     explicit Set(CompareType cmp) : map(Map<ValueType, bool>(cmp)) {
-        /* Empty */
+        removeFlag = false;
     }
 
     Set& operator ,(const ValueType& value) {
@@ -404,7 +406,7 @@ public:
 extern void error(std::string msg);
 
 template <typename ValueType>
-Set<ValueType>::Set() {
+Set<ValueType>::Set() : removeFlag(false) {
     /* Empty */
 }
 
@@ -420,7 +422,7 @@ void Set<ValueType>::add(const ValueType& value) {
 
 template <typename ValueType>
 Set<ValueType>& Set<ValueType>::addAll(const Set& set2) {
-    __foreach__ (ValueType value __in__ set2) {
+    for (ValueType value : set2) {
         this->add(value);
     }
     return *this;
@@ -438,6 +440,10 @@ bool Set<ValueType>::contains(const ValueType& value) const {
 
 template <typename ValueType>
 bool Set<ValueType>::equals(const Set<ValueType>& set2) const {
+    // optimization: if literally same set, stop
+    if (this == &set2) {
+        return true;
+    }
     if (size() != set2.size()) {
         return false;
     }
@@ -509,12 +515,12 @@ void Set<ValueType>::remove(const ValueType& value) {
 template <typename ValueType>
 Set<ValueType>& Set<ValueType>::removeAll(const Set& set2) {
     Vector<ValueType> toRemove;
-    __foreach__ (ValueType value __in__ *this) {
+    for (ValueType value : *this) {
         if (set2.map.containsKey(value)) {
             toRemove.add(value);
         }
     }
-    __foreach__ (ValueType value __in__ toRemove) {
+    for (ValueType value : toRemove) {
         this->remove(value);
     }
     return *this;
@@ -523,12 +529,12 @@ Set<ValueType>& Set<ValueType>::removeAll(const Set& set2) {
 template <typename ValueType>
 Set<ValueType>& Set<ValueType>::retainAll(const Set& set2) {
     Vector<ValueType> toRemove;
-    __foreach__ (ValueType value __in__ *this) {
+    for (ValueType value : *this) {
         if (!set2.map.containsKey(value)) {
             toRemove.add(value);
         }
     }
-    __foreach__ (ValueType value __in__ toRemove) {
+    for (ValueType value : toRemove) {
         this->remove(value);
     }
     return *this;
@@ -542,7 +548,7 @@ int Set<ValueType>::size() const {
 template <typename ValueType>
 std::set<ValueType> Set<ValueType>::toStlSet() const {
     std::set<ValueType> result;
-    __foreach__ (ValueType value __in__ *this) {
+    for (ValueType value : *this) {
         result.insert(value);
     }
     return result;
@@ -550,7 +556,7 @@ std::set<ValueType> Set<ValueType>::toStlSet() const {
 
 template <typename ValueType>
 std::string Set<ValueType>::toString() const {
-    ostringstream os;
+    std::ostringstream os;
     os << *this;
     return os.str();
 }
@@ -568,7 +574,7 @@ bool Set<ValueType>::operator ==(const Set& set2) const {
 
 template <typename ValueType>
 bool Set<ValueType>::operator !=(const Set& set2) const {
-    return !(*this == set2);
+    return !equals(set2);
 }
 
 template <typename ValueType>
@@ -637,7 +643,7 @@ template <typename ValueType>
 std::ostream& operator <<(std::ostream& os, const Set<ValueType>& set) {
     os << "{";
     bool started = false;
-    __foreach__ (ValueType value __in__ set) {
+    for (ValueType value : set) {
         if (started) {
             os << ", ";
         }
@@ -650,7 +656,7 @@ std::ostream& operator <<(std::ostream& os, const Set<ValueType>& set) {
 
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, Set<ValueType>& set) {
-    char ch;
+    char ch = '\0';
     is >> ch;
     if (ch != '{') {
         error("Set::operator >>: Missing {");

@@ -3,19 +3,28 @@
  * ------------
  * This file exports the <code>Grid</code> class, which offers a
  * convenient abstraction for representing a two-dimensional array.
+ *
+ * @version 2014/10/10
+ * - added resize(true) function with ability to retain old contents
+ * - made ==, != operators const as they should be
+ * - added comparison operators ==, !=
+ * 2014/08/16
+ * - added width, height functions; added mapAllColumnMajor
+ * 2014/07/09
+ * - changed checkGridIndexes range checking function into a private member
+ *   function to avoid unused-function errors on some newer compilers
  */
 
 #ifndef _grid_h
 #define _grid_h
 
-#include "private/foreachpatch.h"
+#include <iostream>
+#include <string>
+#include <sstream>
 #include "error.h"
 #include "random.h"
 #include "strlib.h"
 #include "vector.h"
-
-static void checkGridIndexes(int row, int col,
-                             int rowMax, int colMax, string prefix);
 
 /*
  * Class: Grid<ValueType>
@@ -75,7 +84,7 @@ public:
      * values as the given other grid.
      * Identical in behavior to the == operator.
      */
-    bool equals(const Grid<ValueType>& grid) const;
+    bool equals(const Grid<ValueType>& grid2) const;
     
     /*
      * Method: fill
@@ -96,7 +105,15 @@ public:
      */
     ValueType get(int row, int col);
     const ValueType& get(int row, int col) const;
-    
+
+    /*
+     * Method: height
+     * Usage: int nRows = grid.height();
+     * ---------------------------------
+     * Returns the grid's height, that is, the number of rows in the grid.
+     */
+    int height() const;
+
     /*
      * Method: inBounds
      * Usage: if (grid.inBounds(row, col)) ...
@@ -105,7 +122,7 @@ public:
      * is inside the bounds of the grid.
      */
     bool inBounds(int row, int col) const;
-    
+
     /*
      * Method: mapAll
      * Usage: grid.mapAll(fn);
@@ -120,12 +137,28 @@ public:
 
     template <typename FunctorType>
     void mapAll(FunctorType fn) const;
-    
+
+    /*
+     * Method: mapAllColumnMajor
+     * Usage: grid.mapAllColumnMajor(fn);
+     * ----------------------------------
+     * Calls the specified function on each element of the grid.  The
+     * elements are processed in <b><i>column-major order,</i></b> in which
+     * all the elements of column 0 are processed, followed by the elements
+     * in column 1, and so on.
+     */
+    void mapAllColumnMajor(void (*fn)(ValueType value)) const;
+    void mapAllColumnMajor(void (*fn)(const ValueType& value)) const;
+
+    template <typename FunctorType>
+    void mapAllColumnMajor(FunctorType fn) const;
+
     /*
      * Method: numCols
      * Usage: int nCols = grid.numCols();
      * ----------------------------------
      * Returns the number of columns in the grid.
+     * This is equal to the grid's width.
      */
     int numCols() const;
 
@@ -134,6 +167,7 @@ public:
      * Usage: int nRows = grid.numRows();
      * ----------------------------------
      * Returns the number of rows in the grid.
+     * This is equal to the grid's height.
      */
     int numRows() const;
 
@@ -142,9 +176,12 @@ public:
      * Usage: grid.resize(nRows, nCols);
      * ---------------------------------
      * Reinitializes the grid to have the specified number of rows
-     * and columns.  Any previous grid contents are discarded.
+     * and columns.  If the 'retain' parameter is true,
+     * the previous grid contents are retained as much as possible.
+     * If 'retain' is not passed or is false, any previous grid contents
+     * are discarded.
      */
-    void resize(int nRows, int nCols);
+    void resize(int nRows, int nCols, bool retain = false);
 
     /*
      * Method: set
@@ -162,8 +199,35 @@ public:
      * Usage: string str = grid.toString();
      * ------------------------------------
      * Converts the grid to a printable string representation.
+     * The string returned is a 1-dimensional representation such as:
+     * "{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}"
      */
     std::string toString() const;
+
+    /*
+     * Method: toString2D
+     * Usage: string str = grid.toString2D();
+     * --------------------------------------
+     * Converts the grid to a printable string representation.
+     * The string returned is a 2-dimensional representation such as:
+     * "{{1, 2, 3},\n
+     *   {4, 5, 6},\n
+     *   {7, 8, 9}}"
+     */
+    std::string toString2D(
+            std::string rowStart = "{",
+            std::string rowEnd = "}",
+            std::string colSeparator = ", ",
+            std::string rowSeparator = ",\n ") const;
+
+    /*
+     * Method: width
+     * Usage: int nCols = grid.width();
+     * --------------------------------
+     * Returns the grid's width, that is, the number of columns in the grid.
+     */
+    int width() const;
+
 
     /*
      * Operator: []
@@ -197,7 +261,7 @@ public:
      * ------------------------------
      * Compares two grids for equality.
      */
-    bool operator ==(const Grid& grid2);
+    bool operator ==(const Grid& grid2) const;
 
     /*
      * Operator: !=
@@ -205,7 +269,7 @@ public:
      * ------------------------------
      * Compares two grids for inequality.
      */
-    bool operator !=(const Grid& grid2);
+    bool operator !=(const Grid& grid2) const;
 
     /* Private section */
 
@@ -231,7 +295,18 @@ public:
     int nCols;            /* The number of columns in the grid */
 
     /* Private method prototypes */
-    void checkRange(int row, int col);
+
+    /*
+     * Throws an ErrorException if the given row/col are not within the range of
+     * (0,0) through (rowMax-1,colMax-1) inclusive.
+     * This is a consolidated error handler for all various Grid members that
+     * accept index parameters.
+     * The prefix parameter represents a text string to place at the start of
+     * the error message, generally to help indicate which member threw the error.
+     */
+    void checkIndexes(int row, int col,
+                      int rowMax, int colMax,
+                      std::string prefix) const;
 
     /*
      * Hidden features
@@ -345,18 +420,22 @@ public:
      */
     class GridRow {
     public:
-        GridRow() {
+        GridRow() : gp(NULL), row(0) {
             /* Empty */
         }
 
         ValueType& operator [](int col) {
-            checkGridIndexes(row, col, gp->nRows-1, gp->nCols-1, "operator [][]");
+            gp->checkIndexes(row, col, gp->nRows-1, gp->nCols-1, "operator [][]");
             return gp->elements[(row * gp->nCols) + col];
         }
 
         ValueType operator [](int col) const {
-            checkGridIndexes(row, col, gp->nRows-1, gp->nCols-1, "operator [][]");
+            gp->checkIndexes(row, col, gp->nRows-1, gp->nCols-1, "operator [][]");
             return gp->elements[(row * gp->nCols) + col];
+        }
+
+        int size() const {
+            return gp->width();
         }
 
     private:
@@ -373,13 +452,17 @@ public:
 
     class GridRowConst {
     public:
-        GridRowConst() {
+        GridRowConst() : gp(NULL), row(0) {
             /* Empty */
         }
 
         const ValueType operator [](int col) const {
-            checkGridIndexes(row, col, gp->nRows-1, gp->nCols-1, "operator [][]");
+            gp->checkIndexes(row, col, gp->nRows-1, gp->nCols-1, "operator [][]");
             return gp->elements[(row * gp->nCols) + col];
+        }
+
+        int size() const {
+            return gp->width();
         }
 
     private:
@@ -420,13 +503,18 @@ Grid<ValueType>::~Grid() {
 }
 
 template <typename ValueType>
-bool Grid<ValueType>::equals(const Grid<ValueType>& grid) const {
-    if (nRows != grid.nRows || nCols != grid.nCols) {
+bool Grid<ValueType>::equals(const Grid<ValueType>& grid2) const {
+    // optimization: if literally same grid, stop
+    if (this == &grid2) {
+        return true;
+    }
+    
+    if (nRows != grid2.nRows || nCols != grid2.nCols) {
         return false;
     }
     for (int row = 0; row < nRows; row++) {
         for (int col = 0; col < nCols; col++) {
-            if (get(row, col) != grid.get(row, col)) {
+            if (get(row, col) != grid2.get(row, col)) {
                 return false;
             }
         }
@@ -445,14 +533,19 @@ void Grid<ValueType>::fill(const ValueType& value) {
 
 template <typename ValueType>
 ValueType Grid<ValueType>::get(int row, int col) {
-    checkGridIndexes(row, col, nRows-1, nCols-1, "get");
+    checkIndexes(row, col, nRows-1, nCols-1, "get");
     return elements[(row * nCols) + col];
 }
 
 template <typename ValueType>
 const ValueType& Grid<ValueType>::get(int row, int col) const {
-    checkGridIndexes(row, col, nRows-1, nCols-1, "get");
+    checkIndexes(row, col, nRows-1, nCols-1, "get");
     return elements[(row * nCols) + col];
+}
+
+template <typename ValueType>
+int Grid<ValueType>::height() const {
+    return nRows;
 }
 
 template <typename ValueType>
@@ -489,6 +582,34 @@ void Grid<ValueType>::mapAll(FunctorType fn) const {
 }
 
 template <typename ValueType>
+void Grid<ValueType>::mapAllColumnMajor(void (*fn)(ValueType value)) const {
+    for (int j = 0; j < nCols; j++) {
+        for (int i = 0; i < nRows; i++) {
+            fn(get(i, j));
+        }
+    }
+}
+
+template <typename ValueType>
+void Grid<ValueType>::mapAllColumnMajor(void (*fn)(const ValueType& value)) const {
+    for (int j = 0; j < nCols; j++) {
+        for (int i = 0; i < nRows; i++) {
+            fn(get(i, j));
+        }
+    }
+}
+
+template <typename ValueType>
+template <typename FunctorType>
+void Grid<ValueType>::mapAllColumnMajor(FunctorType fn) const {
+    for (int j = 0; j < nCols; j++) {
+        for (int i = 0; i < nRows; i++) {
+            fn(get(i, j));
+        }
+    }
+}
+
+template <typename ValueType>
 int Grid<ValueType>::numCols() const {
     return nCols;
 }
@@ -499,36 +620,88 @@ int Grid<ValueType>::numRows() const {
 }
 
 template <typename ValueType>
-void Grid<ValueType>::resize(int nRows, int nCols) {
+void Grid<ValueType>::resize(int nRows, int nCols, bool retain) {
     if (nRows < 0 || nCols < 0) {
-        ostringstream out;
+        std::ostringstream out;
         out << "Grid::resize: Attempt to resize grid to invalid size ("
                << nRows << ", " << nCols << ")";
         error(out.str());
     }
-    if (elements != NULL) {
-        delete[] elements;
-    }
+    
+    // save backup of old array/size
+    ValueType* oldElements = elements;
+    int oldnRows = this->nRows;
+    int oldnCols = this->nCols;
+    
+    // create new empty array and set new size
     this->nRows = nRows;
     this->nCols = nCols;
     elements = new ValueType[nRows * nCols];
+    
+    // initialize to empty/default state
     ValueType value = ValueType();
     for (int i = 0; i < nRows * nCols; i++) {
         elements[i] = value;
+    }
+    
+    // possibly retain old contents
+    if (retain) {
+        int minRows = oldnRows < nRows ? oldnRows : nRows;
+        int minCols = oldnCols < nCols ? oldnCols : nCols;
+        for (int row = 0; row < minRows; row++) {
+            for (int col = 0; col < minCols; col++) {
+                elements[(row * nCols) + col] = oldElements[(row * oldnRows) + col];
+            }
+        }
+    }
+    
+    // free old array memory
+    if (oldElements != NULL) {
+        delete[] oldElements;
     }
 }
 
 template <typename ValueType>
 void Grid<ValueType>::set(int row, int col, const ValueType& value) {
-    checkGridIndexes(row, col, nRows-1, nCols-1, "set");
+    checkIndexes(row, col, nRows-1, nCols-1, "set");
     elements[(row * nCols) + col] = value;
 }
 
 template <typename ValueType>
 std::string Grid<ValueType>::toString() const {
-    ostringstream os;
+    std::ostringstream os;
     os << *this;
     return os.str();
+}
+
+template <typename ValueType>
+std::string Grid<ValueType>::toString2D(
+        std::string rowStart, std::string rowEnd,
+        std::string colSeparator, std::string rowSeparator) const {
+    std::ostringstream os;
+    os << rowStart;
+    int nRows = numRows();
+    int nCols = numCols();
+    for (int i = 0; i < nRows; i++) {
+        if (i > 0) {
+            os << rowSeparator;
+        }
+        os << rowStart;
+        for (int j = 0; j < nCols; j++) {
+            if (j > 0) {
+                os << colSeparator;
+            }
+            writeGenericValue(os, get(i, j), true);
+        }
+        os << rowEnd;
+    }
+    os << rowEnd;
+    return os.str();
+}
+
+template <typename ValueType>
+int Grid<ValueType>::width() const {
+    return nCols;
 }
 
 template <typename ValueType>
@@ -543,13 +716,34 @@ Grid<ValueType>::operator [](int row) const {
 }
 
 template <typename ValueType>
-bool Grid<ValueType>::operator ==(const Grid& grid2) {
+bool Grid<ValueType>::operator ==(const Grid& grid2) const {
     return equals(grid2);
 }
 
 template <typename ValueType>
-bool Grid<ValueType>::operator !=(const Grid& grid2) {
-    return !(*this == grid2);
+bool Grid<ValueType>::operator !=(const Grid& grid2) const {
+    return !equals(grid2);
+}
+
+template <typename ValueType>
+void Grid<ValueType>::checkIndexes(int row, int col,
+                                   int rowMax, int colMax,
+                                   std::string prefix) const {
+    const int rowMin = 0;
+    const int colMin = 0;
+    if (row < rowMin || row > rowMax || col < colMin || col > colMax) {
+        std::ostringstream out;
+        out << "Grid::" << prefix << ": (" << row << ", " << col << ")"
+            << " is outside of valid range [";
+        if (rowMin < rowMax && colMin < colMax) {
+            out << "(" << rowMin << ", " << colMin <<  ")..("
+                << rowMax << ", " << colMax << ")";
+        } else if (rowMin == rowMax && colMin == colMax) {
+            out << "(" << rowMin << ", " << colMin <<  ")";
+        } // else min > max, no range, empty grid
+        out << "]";
+        error(out.str());
+    }
 }
 
 /*
@@ -614,34 +808,6 @@ void shuffle(Grid<T>& grid) {
             grid[r1][c1] = grid[r2][c2];
             grid[r2][c2] = temp;
         }
-    }
-}
-
-/*
- * Throws an ErrorException if the given row/col are not within the range of
- * (0,0) through (rowMax-1,colMax-1) inclusive.
- * This is a consolidated error handler for all various Grid members that
- * accept index parameters.
- * The prefix parameter represents a text string to place at the start of
- * the error message, generally to help indicate which member threw the error.
- */
-static void checkGridIndexes(int row, int col,
-                         int rowMax, int colMax, std::string prefix) {
-    const int rowMin = 0;
-    const int colMin = 0;
-    if (row < rowMin || row > rowMax ||
-        col < colMin || col > colMax) {
-        ostringstream out;
-        out << "Grid::" << prefix << ": (" << row << ", " << col << ")"
-            << " is outside of valid range [";
-        if (rowMin < rowMax && colMin < colMax) {
-            out << "(" << rowMin << ", " << colMin <<  ")..("
-                << rowMax << ", " << colMax << ")";
-        } else if (rowMin == rowMax && colMin == colMax) {
-            out << "(" << rowMin << ", " << colMin <<  ")";
-        } // else min > max, no range, empty grid
-        out << "]";
-        error(out.str());
     }
 }
 

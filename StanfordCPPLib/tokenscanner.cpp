@@ -2,27 +2,29 @@
  * File: tokenscanner.cpp
  * ----------------------
  * Implementation for the TokenScanner class.
+ * 
+ * @version 2014/10/08
+ * - removed 'using namespace' statement
  */
 
+#include "tokenscanner.h"
 #include <cctype>
 #include <iostream>
 #include "error.h"
-#include "tokenscanner.h"
 #include "strlib.h"
 #include "stack.h"
-using namespace std;
 
 TokenScanner::TokenScanner() {
     initScanner();
     setInput("");
 }
 
-TokenScanner::TokenScanner(string str) {
+TokenScanner::TokenScanner(std::string str) {
     initScanner();
     setInput(str);
 }
 
-TokenScanner::TokenScanner(istream & infile) {
+TokenScanner::TokenScanner(std::istream & infile) {
     initScanner();
     setInput(infile);
 }
@@ -31,29 +33,29 @@ TokenScanner::~TokenScanner() {
     if (stringInputFlag) delete isp;
 }
 
-void TokenScanner::setInput(string str) {
+void TokenScanner::setInput(std::string str) {
     stringInputFlag = true;
     buffer = str;
-    isp = new istringstream(buffer);
+    isp = new std::istringstream(buffer);
     savedTokens = NULL;
 }
 
-void TokenScanner::setInput(istream & infile) {
+void TokenScanner::setInput(std::istream & infile) {
     stringInputFlag = false;
     isp = &infile;
     savedTokens = NULL;
 }
 
 bool TokenScanner::hasMoreTokens() {
-    string token = nextToken();
+    std::string token = nextToken();
     saveToken(token);
     return (token != "");
 }
 
-string TokenScanner::nextToken() {
+std::string TokenScanner::nextToken() {
     if (savedTokens != NULL) {
         StringCell *cp = savedTokens;
-        string token = cp->str;
+        std::string token = cp->str;
         savedTokens = cp->link;
         delete cp;
         return token;
@@ -94,7 +96,7 @@ string TokenScanner::nextToken() {
             isp->unget();
             return scanWord();
         }
-        string op = string(1, ch);
+        std::string op = std::string(1, ch);
         while (isOperatorPrefix(op)) {
             ch = isp->get();
             if (ch == EOF) break;
@@ -108,7 +110,7 @@ string TokenScanner::nextToken() {
     }
 }
 
-void TokenScanner::saveToken(string token) {
+void TokenScanner::saveToken(std::string token) {
     StringCell *cp = new StringCell;
     cp->str = token;
     cp->link = savedTokens;
@@ -131,11 +133,11 @@ void TokenScanner::scanStrings() {
     scanStringsFlag = true;
 }
 
-void TokenScanner::addWordCharacters(string str) {
+void TokenScanner::addWordCharacters(std::string str) {
     wordChars += str;
 }
 
-void TokenScanner::addOperator(string op) {
+void TokenScanner::addOperator(std::string op) {
     StringCell *cp = new StringCell;
     cp->str = op;
     cp->link = operators;
@@ -148,23 +150,21 @@ int TokenScanner::getPosition() const {
     } else {
         return int(isp->tellg()) - savedTokens->str.length();
     }
-    return -1;
 }
 
 bool TokenScanner::isWordCharacter(char ch) const {
-    return isalnum(ch) || wordChars.find(ch) != string::npos;
-};
+    return isalnum(ch) || wordChars.find(ch) != std::string::npos;
+}
 
-void TokenScanner::verifyToken(string expected) {
-    string token = nextToken();
+void TokenScanner::verifyToken(std::string expected) {
+    std::string token = nextToken();
     if (token != expected) {
-        string msg = "Found \"" + token + "\"" +
-                " when expecting \"" + expected + "\"";
-        error(msg);
+        error("TokenScanner::verifyToken: Found \"" + token + "\"" +
+              " when expecting \"" + expected + "\"");
     }
-};
+}
 
-TokenType TokenScanner::getTokenType(string token) const {
+TokenType TokenScanner::getTokenType(std::string token) const {
     if (token == "") return TokenType(EOF);
     char ch = token[0];
     if (isspace(ch)) return SEPARATOR;
@@ -174,8 +174,8 @@ TokenType TokenScanner::getTokenType(string token) const {
     return OPERATOR;
 };
 
-string TokenScanner::getStringValue(string token) const {
-    string str = "";
+std::string TokenScanner::getStringValue(std::string token) const {
+    std::string str = "";
     int start = 0;
     int finish = token.length();
     if (finish > 1 && (token[0] == '"' || token[0] == '\'')) {
@@ -272,8 +272,8 @@ void TokenScanner::skipSpaces() {
  * of word characters.
  */
 
-string TokenScanner::scanWord() {
-    string token = "";
+std::string TokenScanner::scanWord() {
+    std::string token = "";
     while (true) {
         int ch = isp->get();
         if (ch == EOF) break;
@@ -296,15 +296,15 @@ string TokenScanner::scanWord() {
  * determine what characters would be legal at this point in time.
  */
 
-string TokenScanner::scanNumber() {
-    string token = "";
+std::string TokenScanner::scanNumber() {
+    std::string token = "";
     NumberScannerState state = INITIAL_STATE;
     while (state != FINAL_STATE) {
         int ch = isp->get();
         switch (state) {
         case INITIAL_STATE:
             if (!isdigit(ch)) {
-                error("Internal error: illegal call to scanNumber");
+                error("TokenScanner::scanNumber: internal error: illegal call");
             }
             state = BEFORE_DECIMAL_POINT;
             break;
@@ -372,14 +372,14 @@ string TokenScanner::scanNumber() {
  * there is no closing quotation mark before the end of the input.
  */
 
-string TokenScanner::scanString() {
-    string token = "";
+std::string TokenScanner::scanString() {
+    std::string token = "";
     char delim = isp->get();
     token += delim;
     bool escape = false;
     while (true) {
         int ch = isp->get();
-        if (ch == EOF) error("TokenScanner found unterminated string");
+        if (ch == EOF) error("TokenScanner::scanString: found unterminated string");
         if (ch == delim && !escape) break;
         escape = (ch == '\\') && !escape;
         token += ch;
@@ -396,14 +396,14 @@ string TokenScanner::scanString() {
  * efficient by implementing operators as a trie.
  */
 
-bool TokenScanner::isOperator(string op) {
+bool TokenScanner::isOperator(std::string op) {
     for (StringCell *cp = operators; cp != NULL; cp = cp->link) {
         if (op == cp->str) return true;
     }
     return false;
 }
 
-bool TokenScanner::isOperatorPrefix(string op) {
+bool TokenScanner::isOperatorPrefix(std::string op) {
     for (StringCell *cp = operators; cp != NULL; cp = cp->link) {
         if (startsWith(cp->str, op)) return true;
     }

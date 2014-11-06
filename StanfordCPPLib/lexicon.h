@@ -3,6 +3,11 @@
  * ---------------
  * This file exports the <code>Lexicon</code> class, which is a
  * compact structure for storing a list of words.
+ *
+ * @author Marty Stepp
+ * @version 2014/10/10
+ * - added equals method, comparison operators ==, !=
+ * - fixed inclusion of foreach macro to avoid errors
  */
 
 #ifndef _lexicon_h
@@ -10,7 +15,6 @@
 
 #include <set>
 #include <string>
-#include "private/foreachpatch.h"
 #include "set.h"
 
 /*
@@ -62,7 +66,7 @@ public:
      *</pre>
      */
     Lexicon();
-    Lexicon(std::string filename);
+    Lexicon(const std::string& filename);
 
     /*
      * Destructor: ~Lexicon
@@ -76,22 +80,21 @@ public:
      * Usage: lex.add(word);
      * ---------------------
      * Adds the specified word to the lexicon, if not already present.
-     * The word is converted to lowercase and all non-alphabetic characters
-     * are stripped from it before adding it to the lexicon.
-     * Returns true if the word was not previously contained in the lexicon.
-     * The empty string cannot be added to a lexicon.
+     * The word is converted to lowercase before adding it to the lexicon.
+     * If the word contains any non-alphabetic characters (including whitespace),
+     * it will not be added. The empty string cannot be added to a lexicon.
+     * Returns true if the word was added successfully to the lexicon.
      */
-    bool add(std::string word);
+    bool add(const std::string& word);
 
     /*
      * Method: addWordsFromFile
      * Usage: lex.addWordsFromFile(filename);
      * --------------------------------------
      * Reads the file and adds all of its words to the lexicon.
-     * Each word from the file is converted to lowercase and all non-alphabetic
-     * characters are stripped from it before adding it to the lexicon.
+     * Each word from the file is converted to lowercase before adding it.
      */
-    void addWordsFromFile(std::string filename);
+    void addWordsFromFile(const std::string& filename);
 
     /*
      * Method: clear
@@ -108,9 +111,10 @@ public:
      * Returns <code>true</code> if <code>word</code> is contained in the
      * lexicon.  In the <code>Lexicon</code> class, the case of letters is
      * ignored, so "Zoo" is the same as "ZOO" or "zoo".
-     * The empty string cannot be contained in a lexicon.
+     * The empty string cannot be contained in a lexicon, nor can any word
+     * containing any non-alphabetic characters such as punctuation or whitespace.
      */
-    bool contains(std::string word) const;
+    bool contains(const std::string& word) const;
 
     /*
      * Method: containsPrefix
@@ -122,8 +126,16 @@ public:
      * The empty string is a prefix of every string, so this method returns
      * true when passed the empty string.
      */
-    bool containsPrefix(std::string prefix) const;
+    bool containsPrefix(const std::string& prefix) const;
 
+    /*
+     * Method: equals
+     * Usage: if (lex1.equals(lex2)) ...
+     * ---------------------------------
+     * Compares two lexicons for equality.
+     */
+    bool equals(const Lexicon& lex2) const;
+    
     /*
      * Method: isEmpty
      * Usage: if (lex.isEmpty()) ...
@@ -139,7 +151,7 @@ public:
      * Calls the specified function on each word in the lexicon.
      */
     void mapAll(void (*fn)(std::string)) const;
-    void mapAll(void (*fn)(const std::string &)) const;
+    void mapAll(void (*fn)(const std::string&)) const;
 
     template <typename FunctorType>
     void mapAll(FunctorType fn) const;
@@ -154,7 +166,7 @@ public:
      * The empty string cannot be contained in a lexicon, so passing the
      * empty string to this method returns false.
      */
-    bool remove(std::string word);
+    bool remove(const std::string& word);
 
     /*
      * Method: removePrefix
@@ -167,7 +179,7 @@ public:
      * string, all words will be removed and this method will
      * return true if the lexicon was non-empty prior to the call.
      */
-    bool removePrefix(std::string prefix);
+    bool removePrefix(const std::string& prefix);
 
     /*
      * Method: size
@@ -188,9 +200,20 @@ public:
     std::string toString() const;
 
     /*
-     * Returns an STL set object with the same elements as this Lexicon.
+     * Returns an STL set object with the same elements as this lexicon.
      */
     std::set<std::string> toStlSet() const;
+    
+    /*
+     * Operators: ==, !=
+     * Usage: if (lex1 == lex2) ...
+     * Usage: if (lex1 != lex2) ...
+     * ...
+     * ----------------------------
+     * Relational operators to compare two lexicons to see if they have the same elements.
+     */
+    bool operator ==(const Lexicon& lex2) const;
+    bool operator !=(const Lexicon& lex2) const;
 
     /*
      * Additional Lexicon operations
@@ -263,13 +286,13 @@ private:
      * private helper functions, including
      * recursive helpers to implement public add/contains/remove
      */
-    bool addHelper(TrieNode*& node, std::string word, const string& originalWord);
-    bool containsHelper(TrieNode* node, std::string word, bool isPrefix) const;
+    bool addHelper(TrieNode*& node, const std::string& word, const std::string& originalWord);
+    bool containsHelper(TrieNode* node, const std::string& word, bool isPrefix) const;
     void deepCopy(const Lexicon& src);
     void deleteTree(TrieNode* node);
-    void readBinaryFile(std::string filename);
-    bool removeHelper(TrieNode*& node, std::string word, const string& originalWord, bool isPrefix);
-    void removeSubtreeHelper(TrieNode*& node, const string& originalWord);
+    void readBinaryFile(const std::string& filename);
+    bool removeHelper(TrieNode*& node, const std::string& word, const std::string& originalWord, bool isPrefix);
+    void removeSubtreeHelper(TrieNode*& node, const std::string& originalWord);
     
     friend std::ostream& operator <<(std::ostream& os, const Lexicon& lex);
     friend std::istream& operator >>(std::istream& is, Lexicon& lex);
@@ -277,8 +300,8 @@ private:
     /* instance variables */
     TrieNode* m_root;
     int m_size;
-    Set<string> m_allWords;   // secondary structure of all words for foreach;
-                              // basically a cop-out so I can loop over words
+    Set<std::string> m_allWords;   // secondary structure of all words for foreach;
+                                   // basically a cop-out so I can loop over words
 
 public:
     /*
@@ -302,11 +325,11 @@ public:
      * iterators so that they work symmetrically with respect to the
      * corresponding STL classes.
      */
-    class iterator : public Set<string>::iterator {
+    class iterator : public Set<std::string>::iterator {
     public:
-        iterator() : Set<string>::iterator() {}
-        iterator(const iterator& it) : Set<string>::iterator(it) {}
-        iterator(const Set<string>::iterator& it) : Set<string>::iterator(it) {}
+        iterator() : Set<std::string>::iterator() {}
+        iterator(const iterator& it) : Set<std::string>::iterator(it) {}
+        iterator(const Set<std::string>::iterator& it) : Set<std::string>::iterator(it) {}
     };
 
     /*
@@ -326,7 +349,7 @@ public:
 
 template <typename FunctorType>
 void Lexicon::mapAll(FunctorType fn) const {
-    __foreach__ (std::string word __in__ *this) {
+    for (std::string word : *this) {
         fn(word);
     }
 }

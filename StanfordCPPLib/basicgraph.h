@@ -1,4 +1,6 @@
 /*
+ * File: basicgraph.h
+ * ------------------
  * This file contains the declaration of some useful graph types,
  * specifically the Vertex and Edge structures used in the typical graph.
  * together in lecture.  We also declare BasicGraph, an instantiation of
@@ -6,8 +8,12 @@
  *
  * See BasicGraph.cpp for implementation of each member.
  *
- * Author: Marty Stepp
- * Version: 2014/03/01
+ * @author Marty Stepp
+ * @version 2014/10/20
+ * - converted functions to accept const string& rather than string for speed
+ * @version 2014/08/16
+ * - added Vertex 'weight' alias for 'cost'
+ * - added Edge 'weight' alias for 'cost, and 'end' alias for 'finish'
  */
 
 #ifndef _basicgraph_h
@@ -42,6 +48,7 @@ public:
      * information related to the vertex
      */
     double cost;        // cost to reach this vertex (initially 0; you can set this)
+    double& weight;     // alias of cost; they are the same field
     bool visited;       // whether this vertex has been visited before (initally false; you can set this)
     Vertex* previous;   // vertex that comes before this one (initially NULL; you can set this)
 
@@ -54,7 +61,7 @@ public:
     /*
      * Constructs a vertex with the given name.
      */
-    Vertex(std::string name = "");
+    Vertex(const std::string& name = "");
 
     /*
      * Copy constructor (rule of three).
@@ -110,7 +117,7 @@ private:
  * Note that printing a vertex is not the same as printing a vertex pointer.
  * If you try to print a pointer, you will just see its address in hex.
  */
-ostream& operator<<(ostream& out, const Vertex& v);
+std::ostream& operator<<(std::ostream& out, const Vertex& v);
 
 /*
  * You can refer to a Vertex as a Node if you prefer.
@@ -125,7 +132,9 @@ struct Edge {
 public:
     Vertex* start;    // edge's starting vertex (required by Graph)
     Vertex* finish;   // edge's ending vertex (required by Graph)
+    Vertex*& end;     // alias of finish; they are the same field
     double cost;      // edge weight (required by Graph)
+    double& weight;   // alias of cost; they are the same field
     bool visited;     // whether this edge has been visited before (initally false; you can set this)
 
     /*
@@ -164,7 +173,7 @@ public:
  * Note that printing an arc is not the same as printing an arc pointer.
  * If you try to print a pointer, you will just see its address in hex.
  */
-ostream& operator<<(ostream& out, const Edge& edge);
+std::ostream& operator<<(std::ostream& out, const Edge& edge);
 
 /*
  * You can refer to an Edge as an Arc if you prefer.
@@ -195,47 +204,47 @@ public:
     void clearArcs();
     void clearEdges();
     bool containsArc(Vertex* v1, Vertex* v2) const;
-    bool containsArc(std::string v1, std::string v2) const;
+    bool containsArc(const std::string& v1, const std::string& v2) const;
     bool containsArc(Edge* edge) const;
     bool containsEdge(Vertex* v1, Vertex* v2) const;
-    bool containsEdge(std::string v1, std::string v2) const;
+    bool containsEdge(const std::string& v1, const std::string& v2) const;
     bool containsEdge(Edge* edge) const;
-    bool containsNode(std::string name) const;
+    bool containsNode(const std::string& name) const;
     bool containsNode(Vertex* v) const;
-    bool containsVertex(std::string name) const;
+    bool containsVertex(const std::string& name) const;
     bool containsVertex(Vertex* v) const;
     Edge* getArc(Vertex* v1, Vertex* v2) const;
-    Edge* getArc(std::string v1, std::string v2) const;
+    Edge* getArc(const std::string& v1, const std::string& v2) const;
     Edge* getEdge(Vertex* v1, Vertex* v2) const;
-    Edge* getEdge(std::string v1, std::string v2) const;
+    Edge* getEdge(const std::string& v1, const std::string& v2) const;
     Edge* getInverseArc(Edge* edge) const;
     Edge* getInverseEdge(Edge* edge) const;
-    bool isNeighbor(std::string v1, std::string v2) const;
+    bool isNeighbor(const std::string& v1, const std::string& v2) const;
     bool isNeighbor(Vertex* v1, Vertex* v2) const;
     void resetData();
     void setResetEnabled(bool enabled);
     virtual void scanArcData(TokenScanner& scanner, Edge* edge, Edge* inverse);
-    virtual void writeArcData(ostream& out, Edge* edge) const;
+    virtual void writeArcData(std::ostream& out, Edge* edge) const;
 
     /*
      * The members below are mirrors of ones from Graph but with 'Node' changed
      * to 'Vertex' and/or 'Arc' changed to 'Edge', with identical behavior,
      * and so they are not documented in detail.  See Graph documentation.
      */
-    Edge* addEdge(std::string v1, std::string v2, double cost = 0.0, bool directed = true);
+    Edge* addEdge(const std::string& v1, const std::string& v2, double cost = 0.0, bool directed = true);
     Edge* addEdge(Vertex* v1, Vertex* v2, double cost = 0.0, bool directed = true);
     Edge* addEdge(Edge* e, bool directed = true);
-    Vertex* addVertex(std::string name);
+    Vertex* addVertex(const std::string& name);
     Vertex* addVertex(Vertex* v);
     const Set<Edge*>& getEdgeSet() const;
     const Set<Edge*>& getEdgeSet(Vertex* v) const;
-    const Set<Edge*>& getEdgeSet(std::string v) const;
-    Vertex* getVertex(std::string name) const;
+    const Set<Edge*>& getEdgeSet(const std::string& v) const;
+    Vertex* getVertex(const std::string& name) const;
     const Set<Vertex*>& getVertexSet() const;
-    void removeEdge(std::string v1, std::string v2, bool directed = true);
+    void removeEdge(const std::string& v1, const std::string& v2, bool directed = true);
     void removeEdge(Vertex* v1, Vertex* v2, bool directed = true);
     void removeEdge(Edge* e, bool directed = true);
-    void removeVertex(std::string name);
+    void removeVertex(const std::string& name);
     void removeVertex(Vertex* v);
 
 private:

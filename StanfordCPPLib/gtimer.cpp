@@ -2,13 +2,14 @@
  * File: gtimer.cpp
  * ----------------
  * This file implements the gtimer.h interface.
+ * 
+ * @version 2014/10/08
+ * - removed 'using namespace' statement
+ * - removed unneeded include statements
  */
 
-#include <iostream>
-#include <sstream>
-#include <string>
+#include "gtimer.h"
 #include "platform.h"
-using namespace std;
 
 /* Global variables */
 

@@ -3,13 +3,15 @@
  * ---------------
  * This file exports the <code>HashSet</code> class, which
  * implements an efficient abstraction for storing sets of values.
+ * 
+ * @version 2014/10/10
+ * - removed foreach patch
  */
 
 #ifndef _hashset_h
 #define _hashset_h
 
 #include <iostream>
-#include "private/foreachpatch.h"
 #include "error.h"
 #include "hashmap.h"
 #include "vector.h"
@@ -393,7 +395,7 @@ public:
 };
 
 template <typename ValueType>
-HashSet<ValueType>::HashSet() {
+HashSet<ValueType>::HashSet() : removeFlag(false) {
     /* Empty */
 }
 
@@ -409,7 +411,7 @@ void HashSet<ValueType>::add(const ValueType& value) {
 
 template <typename ValueType>
 HashSet<ValueType>& HashSet<ValueType>::addAll(const HashSet& set2) {
-    __foreach__ (ValueType value __in__ set2) {
+    for (ValueType value : set2) {
         this->add(value);
     }
     return *this;
@@ -427,6 +429,15 @@ bool HashSet<ValueType>::contains(const ValueType& value) const {
 
 template <typename ValueType>
 bool HashSet<ValueType>::equals(const HashSet<ValueType>& set2) const {
+    // optimization: if literally same set, stop
+    if (this == &set2) {
+        return true;
+    }
+    
+    if (size() != set2.size()) {
+        return false;
+    }
+    
     return isSubsetOf(set2) && set2.isSubsetOf(*this);
 }
 
@@ -485,12 +496,12 @@ void HashSet<ValueType>::remove(const ValueType& value) {
 template <typename ValueType>
 HashSet<ValueType>& HashSet<ValueType>::removeAll(const HashSet& set2) {
     Vector<ValueType> toRemove;
-    __foreach__ (ValueType value __in__ *this) {
+    for (ValueType value : *this) {
         if (set2.map.containsKey(value)) {
             toRemove.add(value);
         }
     }
-    __foreach__ (ValueType value __in__ toRemove) {
+    for (ValueType value : toRemove) {
         this->remove(value);
     }
     return *this;
@@ -499,12 +510,12 @@ HashSet<ValueType>& HashSet<ValueType>::removeAll(const HashSet& set2) {
 template <typename ValueType>
 HashSet<ValueType>& HashSet<ValueType>::retainAll(const HashSet& set2) {
     Vector<ValueType> toRemove;
-    __foreach__ (ValueType value __in__ *this) {
+    for (ValueType value : *this) {
         if (!set2.map.containsKey(value)) {
             toRemove.add(value);
         }
     }
-    __foreach__ (ValueType value __in__ toRemove) {
+    for (ValueType value : toRemove) {
         this->remove(value);
     }
     return *this;
@@ -517,7 +528,7 @@ int HashSet<ValueType>::size() const {
 
 template <typename ValueType>
 std::string HashSet<ValueType>::toString() const {
-    ostringstream os;
+    std::ostringstream os;
     os << *this;
     return os.str();
 }
@@ -535,7 +546,7 @@ bool HashSet<ValueType>::operator ==(const HashSet& set2) const {
 
 template <typename ValueType>
 bool HashSet<ValueType>::operator !=(const HashSet& set2) const {
-    return !(*this == set2);
+    return !equals(set2);
 }
 
 template <typename ValueType>
@@ -606,7 +617,7 @@ template <typename ValueType>
 std::ostream& operator <<(std::ostream& os, const HashSet<ValueType>& set) {
     os << "{";
     bool started = false;
-    __foreach__ (ValueType value __in__ set) {
+    for (ValueType value : set) {
         if (started) {
             os << ", ";
         }
@@ -619,7 +630,7 @@ std::ostream& operator <<(std::ostream& os, const HashSet<ValueType>& set) {
 
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, HashSet<ValueType>& set) {
-    char ch;
+    char ch = '\0';
     is >> ch;
     if (ch != '{') {
         error("HashSet::operator >>: Missing {");

@@ -1,5 +1,5 @@
 /*
- * File: Lexicon.cpp
+ * File: lexicon.cpp
  * -----------------
  * A Lexicon is a word list. This Lexicon is backed by a data
  * structure called a prefix tree or trie ("try").
@@ -14,28 +14,33 @@
  * - It was optimized for space usage over ease of use and maintenance.
  *
  * The original DAWG implementation is retained as dawglexicon.h/cpp.
+ * 
+ * @version 2014/10/10
+ * - added comparison operators ==, !=
+ * - removed 'using namespace' statement
  */
 
+#include "lexicon.h"
 #include <cctype>
 #include <cstdlib>
+#include <cstring>
+#include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include "dawglexicon.h"
 #include "error.h"
-#include "lexicon.h"
 #include "strlib.h"
-using namespace std;
 
-static bool isDAWGFile(string filename);
-static void scrub(string& str);
+static bool isDAWGFile(const std::string& filename);
+static bool scrub(std::string& str);
 
 Lexicon::Lexicon() {
     m_root = NULL;
     m_size = 0;
 }
 
-Lexicon::Lexicon(string filename) {
+Lexicon::Lexicon(const std::string& filename) {
     m_root = NULL;
     m_size = 0;
     addWordsFromFile(filename);
@@ -51,25 +56,28 @@ Lexicon::~Lexicon() {
     clear();
 }
 
-bool Lexicon::add(string word) {
-    scrub(word);
+bool Lexicon::add(const std::string& word) {
     if (word.empty()) {
         return false;
     }
-    return addHelper(m_root, word, /* originalWord */ word);
+    std::string scrubbed = word;
+    if (!scrub(scrubbed)) {
+        return false;
+    }
+    return addHelper(m_root, scrubbed, /* originalWord */ scrubbed);
 }
 
-void Lexicon::addWordsFromFile(string filename) {
+void Lexicon::addWordsFromFile(const std::string& filename) {
     if (isDAWGFile(filename)) {
         readBinaryFile(filename);
     } else {
-        ifstream istr(filename.c_str());
+        std::ifstream istr(filename.c_str());
         if (istr.fail()) {
             error("Lexicon::addWordsFromFile: Couldn't open lexicon file " + filename);
         }
-        string line;
+        std::string line;
         while (getline(istr, line)) {
-            add(line);
+            add(trim(line));
         }
         istr.close();
     }
@@ -82,83 +90,114 @@ void Lexicon::clear() {
     m_root = NULL;
 }
 
-bool Lexicon::contains(string word) const {
-    scrub(word);
+bool Lexicon::contains(const std::string& word) const {
     if (word.empty()) {
         return false;
-    } else {
-        return containsHelper(m_root, word, /* isPrefix */ false);
     }
+    std::string scrubbed = word;
+    if (!scrub(scrubbed)) {
+        return false;
+    }
+    return containsHelper(m_root, scrubbed, /* isPrefix */ false);
 }
 
-bool Lexicon::containsPrefix(string prefix) const {
-    scrub(prefix);
+bool Lexicon::containsPrefix(const std::string& prefix) const {
     if (prefix.empty()) {
         return true;
-    } else {
-        return containsHelper(m_root, prefix, /* isPrefix */ true);
     }
+    std::string scrubbed = prefix;
+    if (!scrub(scrubbed)) {
+        return false;
+    }
+    return containsHelper(m_root, scrubbed, /* isPrefix */ true);
+}
+
+bool Lexicon::equals(const Lexicon& lex2) const {
+    // optimization: if literally same lexicon, stop
+    if (this == &lex2) {
+        return true;
+    }
+    if (size() != lex2.size()) {
+        return false;
+    }
+    return m_allWords == lex2.m_allWords;
 }
 
 bool Lexicon::isEmpty() const {
     return size() == 0;
 }
 
-void Lexicon::mapAll(void (*fn)(string)) const {
-    __foreach__ (string word __in__ this->m_allWords) {
+void Lexicon::mapAll(void (*fn)(std::string)) const {
+    for (std::string word : m_allWords) {
         fn(word);
     }
 }
 
-void Lexicon::mapAll(void (*fn)(const string &)) const {
-    __foreach__ (string word __in__ this->m_allWords) {
+void Lexicon::mapAll(void (*fn)(const std::string&)) const {
+    for (std::string word : m_allWords) {
         fn(word);
     }
 }
 
-bool Lexicon::remove(string word) {
-    scrub(word);
+bool Lexicon::remove(const std::string& word) {
     if (word.empty()) {
         return false;
-    } else {
-        return removeHelper(m_root, word, /* originalWord */ word, /* isPrefix */ false);
     }
+    std::string scrubbed = word;
+    if (!scrub(scrubbed)) {
+        return false;
+    }
+    return removeHelper(m_root, scrubbed, /* originalWord */ scrubbed, /* isPrefix */ false);
 }
 
-bool Lexicon::removePrefix(string prefix) {
-    scrub(prefix);
+bool Lexicon::removePrefix(const std::string& prefix) {
     if (prefix.empty()) {
         bool result = !isEmpty();
         clear();
         return result;
-    } else {
-        return removeHelper(m_root, prefix, /* originalWord */ prefix, /* isPrefix */ true);
     }
+    std::string scrubbed = prefix;
+    if (!scrub(scrubbed)) {
+        return false;
+    }
+    
+    return removeHelper(m_root, scrubbed, /* originalWord */ scrubbed, /* isPrefix */ true);
 }
 
 int Lexicon::size() const {
     return m_size;
 }
 
-string Lexicon::toString() const {
-    ostringstream out;
+std::string Lexicon::toString() const {
+    std::ostringstream out;
     out << *this;
     return out.str();
 }
 
-set<string> Lexicon::toStlSet() const {
-    set<string> result;
-    __foreach__ (string word __in__ this->m_allWords) {
+std::set<std::string> Lexicon::toStlSet() const {
+    std::set<std::string> result;
+    for (std::string word : m_allWords) {
         result.insert(word);
     }
     return result;
+}
+
+/*
+ * Operators
+ */
+bool Lexicon::operator ==(const Lexicon& lex2) const {
+    return equals(lex2);
+}
+
+bool Lexicon::operator !=(const Lexicon& lex2) const {
+    return !equals(lex2);
 }
 
 
 /* private helpers implementation */
 
 // pre: word is scrubbed to contain only lowercase a-z letters
-bool Lexicon::addHelper(TrieNode*& node, string word, const string& originalWord) {
+bool Lexicon::addHelper(TrieNode*& node, const std::string& word, const std::string& originalWord) {
     if (node == NULL) {
         // create nodes all the way down, one for each letter of the word
         node = new TrieNode();
@@ -182,7 +221,7 @@ bool Lexicon::addHelper(TrieNode*& node, string word, const string& originalWord
 }
 
 // pre: word is scrubbed to contain only lowercase a-z letters
-bool Lexicon::containsHelper(TrieNode* node, string word, bool isPrefix) const {
+bool Lexicon::containsHelper(TrieNode* node, const std::string& word, bool isPrefix) const {
     if (node == NULL) {
         // base case: no pointer down to here, so prefix must not exist
         return false;
@@ -200,7 +239,7 @@ bool Lexicon::containsHelper(TrieNode* node, string word, bool isPrefix) const {
 }
 
 // pre: word is scrubbed to contain only lowercase a-z letters
-bool Lexicon::removeHelper(TrieNode*& node, string word, const string& originalWord, bool isPrefix) {
+bool Lexicon::removeHelper(TrieNode*& node, const std::string& word, const std::string& originalWord, bool isPrefix) {
     if (node == NULL) {
         // base case: dead end; this word/prefix must not be contained
         return false;
@@ -232,7 +271,7 @@ bool Lexicon::removeHelper(TrieNode*& node, string word, const string& originalW
 }
 
 // remove/free this node and all descendents
-void Lexicon::removeSubtreeHelper(TrieNode*& node, const string& originalWord) {
+void Lexicon::removeSubtreeHelper(TrieNode*& node, const std::string& originalWord) {
     if (node != NULL) {
         for (char letter = 'a'; letter <= 'z'; letter++) {
             removeSubtreeHelper(node->child(letter), originalWord + letter);
@@ -247,7 +286,7 @@ void Lexicon::removeSubtreeHelper(TrieNode*& node, const string& originalWord) {
 }
 
 void Lexicon::deepCopy(const Lexicon& src) {
-    __foreach__ (string word __in__ src.m_allWords) {
+    for (std::string word : src.m_allWords) {
         add(word);
     }
 }
@@ -265,9 +304,9 @@ void Lexicon::deleteTree(TrieNode* node) {
  * We just delegate to DawgLexicon, the old implementation, to read a binary
  * lexicon data file, and then we extract its yummy data into our trie.
  */
-void Lexicon::readBinaryFile(string filename) {
+void Lexicon::readBinaryFile(const std::string& filename) {
     DawgLexicon ldawg(filename);
-    __foreach__ (string word __in__ ldawg) {
+    for (std::string word : ldawg) {
         add(word);
     }
 }
@@ -296,7 +335,7 @@ std::istream& operator >>(std::istream& is, Lexicon& lex) {
     if (ch != '}') {
         is.unget();
         while (true) {
-            string value;
+            std::string value;
             readGenericValue(is, value);
             lex.add(value);
             is >> ch;
@@ -309,13 +348,14 @@ std::istream& operator >>(std::istream& is, Lexicon& lex) {
     return is;
 }
 
+
 // returns true if the given file (probably) represents a
 // binary DAWG lexicon data file
-static bool isDAWGFile(string filename) {
+static bool isDAWGFile(const std::string& filename) {
     char firstFour[4], expected[] = "DAWG";
-    ifstream istr(filename.c_str());
+    std::ifstream istr(filename.c_str());
     if (istr.fail()) {
-        error(string("Lexicon::addWordsFromFile: Couldn't open lexicon file ") + filename);
+        error(std::string("Lexicon::addWordsFromFile: Couldn't open lexicon file ") + filename);
     }
     istr.read(firstFour, 4);
     bool result = strncmp(firstFour, expected, 4) == 0;
@@ -323,18 +363,20 @@ static bool isDAWGFile(string filename) {
     return result;
 }
 
-// lowercases the string and also scrubs out non-alphabetic characters,
-// such that it can be used as a Lexicon word
-static void scrub(string & str) {
+static bool scrub(std::string& str) {
     size_t nChars = str.length();
     size_t outIndex = 0;
     for (size_t i = 0; i < nChars; i++) {
-        string::value_type ch = tolower(str[i]);
-        if (ch >= 'a' && ch <= 'z') {
-            str[outIndex++] = ch;
-        } // else throw away
+        std::string::value_type ch = tolower(str[i]);
+        if (ch < 'a' || ch > 'z') {
+            return false;   // illegal string
+        } else {
+            str[outIndex] = ch;
+            outIndex++;
+        }
     }
     if (outIndex != nChars) {
         str.erase(outIndex, nChars - outIndex);
     }
+    return true;
 }

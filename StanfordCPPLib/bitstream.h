@@ -1,4 +1,6 @@
 /*
+ * File: bitstream.h
+ * -----------------
  * This file defines the ibitstream and obitstream classes which are basically
  * same as the ordinary istream and ostream classes, but add the
  * functionality to read and write one bit at a time.
@@ -16,8 +18,8 @@
  * obitstream class similarly has ofbitstream and ostringbitstream as
  * subclasses.
  *
- * Authors: Keith Schwarz, Eric Roberts, Marty Stepp
- * Version: 2014/01/23
+ * @author Keith Schwarz, Eric Roberts, Marty Stepp
+ * @version 2014/01/23
  * Last modified by: Marty Stepp
  * Previously last modified on Mon May 21 19:50:00 PST 2012 by Keith Schwarz
  */
@@ -209,7 +211,7 @@ public:
      * it exists.	 If not, the stream enters an error state.
      */
     ifbitstream(const char* filename);
-    ifbitstream(std::string filename);
+    ifbitstream(const std::string& filename);
 
     /*
      * Member function: open(const char* filename);
@@ -221,7 +223,7 @@ public:
      * ifb.fail().
      */
     void open(const char* filename);
-    void open(std::string filename);
+    void open(const std::string& filename);
 
     /*
      * Member function: is_open();
@@ -279,7 +281,7 @@ public:
      * the documentation on "open" for more details.
      */
     ofbitstream(const char* filename);
-    ofbitstream(std::string filename);
+    ofbitstream(const std::string& filename);
 
     /*
      * Member function: open(const char* filename);
@@ -292,7 +294,7 @@ public:
      * a source file), reports an error.
      */
     void open(const char* filename);
-    void open(std::string filename);
+    void open(const std::string& filename);
 
     /*
      * Member function: is_open();
@@ -333,14 +335,14 @@ public:
      * --------------------------
      * Constructs an istringbitstream reading the specified string.
      */
-    istringbitstream(std::string s = "");
+    istringbitstream(const std::string& s = "");
 
     /* Member Function: str(string s);
      * Usage: isb.str("This is some text!");
      * ---------------------------
      * Sets the underlying string of the istringbitstream.
      */
-    void str(std::string s);
+    void str(const std::string& s);
 private:
     /* The actual string buffer that does character storage. */
     std::stringbuf sb;

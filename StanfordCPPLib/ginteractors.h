@@ -4,6 +4,9 @@
  * This file exports a hierarchy of graphical interactors similar to those
  * provided in the Java Swing libraries.
  * <include src="pictures/ClassHierarchies/GInteractorHierarchy-h.html">
+ * 
+ * @version 2014/10/31
+ * - added get/setIcon to GInteractor
  */
 
 #ifndef _ginteractors_h
@@ -13,6 +16,17 @@
 #include "gtypes.h"
 #include "gwindow.h"
 #include "vector.h"
+
+/*
+ * Constants for alignments and icon positions.
+ */
+enum SwingConstants {
+    SWING_CENTER = 0,
+    SWING_TOP = 1,
+    SWING_LEFT = 2,
+    SWING_BOTTOM = 3,
+    SWING_RIGHT = 4
+};
 
 /*
  * Class: GInteractor
@@ -79,8 +93,12 @@ public:
      * -------------------------------------------------
      * Changes the bounds of the interactor to the specified values.
      */
-    void setBounds(const GRectangle & size);
+    void setBounds(const GRectangle& size);
     void setBounds(double x, double y, double width, double height);
+    
+    virtual std::string getIcon() const;
+    virtual void setIcon(std::string filename);
+    virtual void setTextPosition(SwingConstants horizontal, SwingConstants vertical);
 
     /* Prototypes for the virtual methods */
     virtual GRectangle getBounds() const;
@@ -88,6 +106,7 @@ public:
 protected:
     GInteractor();
     std::string actionCommand;
+    std::string icon;
 };
 
 /*
@@ -117,7 +136,6 @@ protected:
 class GButton : public GInteractor {
 
 public:
-
     /*
      * Constructor: GButton
      * Usage: GButton *button = new GButton(label);

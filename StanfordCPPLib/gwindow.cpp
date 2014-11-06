@@ -4,23 +4,26 @@
  * This file implements the GWindow class, passing most calls directly
  * to the appropriate methods in the Platform class, which is implemented
  * separately for each architecture.
+ * 
+ * @version 2014/10/13
+ * - added gwindowSetExitGraphicsEnabled function for autograders
+ * - removed 'using namespace' statement
  */
 
-#include <iostream>
+#include "gwindow.h"
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 #include <string>
 #include "console.h"
 #include "gevents.h"
-#include "gobjects.h"
 #include "gmath.h"
+#include "gobjects.h"
 #include "gtypes.h"
-#include "gwindow.h"
 #include "map.h"
+#include "platform.h"
 #include "strlib.h"
 #include "vector.h"
-#include "platform.h"
-using namespace std;
 
 /* Constants */
 
@@ -29,6 +32,7 @@ using namespace std;
 namespace autograder {
 static int gwindow_pauses = 0;
 static double gwindow_last_pauseMS = 0.0;
+static bool gwindow_exitGraphics_enabled = true;
 static bool gwindow_pause_enabled = true;
 
 int gwindowGetNumPauses() {
@@ -47,6 +51,10 @@ void gwindowResetLastPauseMS() {
     gwindow_last_pauseMS = 0.0;
 }
 
+void gwindowSetExitGraphicsEnabled(bool value) {
+    gwindow_exitGraphics_enabled = value;
+}
+
 void gwindowSetPauseEnabled(bool value) {
     gwindow_pause_enabled = value;
 }
@@ -55,7 +63,7 @@ void gwindowSetPauseEnabled(bool value) {
 /* Private function prototypes */
 
 static void initColorTable();
-static string canonicalColorName(string str);
+static std::string canonicalColorName(std::string str);
 
 /*
  * Global variable: pp
@@ -78,7 +86,7 @@ static Platform *pp = getPlatform();
  *     const string MAGENTA = "0xFF00FF";
  */
 
-static Map<string,int> colorTable;
+static Map<std::string,int> colorTable;
 
 GWindow::GWindow() {
     initGWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, true);
@@ -106,7 +114,7 @@ void GWindow::initGWindow(double width, double height, bool visible) {
     gwd->closed = false;
     gwd->exitOnClose = false;
     gwd->repaintImmediately = true;
-    pp->gwindow_constructor(*this, width, height, gwd->top);
+    pp->gwindow_constructor(*this, width, height, gwd->top, visible);
     setColor("BLACK");
     setVisible(visible);
     pause(1000); // Temporary fix for race condition in back-end.
@@ -133,7 +141,7 @@ void GWindow::close() {
     if (gwd && gwd->exitOnClose) {
         // I was closed by the student's program.
         // I need to inform JBE so that it will shut down.
-        pp->gwindow_exitGraphics();   // calls exit(0);
+        exitGraphics();   // calls exit(0);
     }
 }
 
@@ -150,13 +158,16 @@ void GWindow::notifyOfClose() {
     }
 }
 
-string GWindow::getWindowData() const {
-    ostringstream os;
+std::string GWindow::getWindowData() const {
+    std::ostringstream os;
     os << gwd;
     return os.str();
 }
 
 void GWindow::setExitOnClose(bool value) {
+    if (!autograder::gwindow_exitGraphics_enabled) {
+        return;
+    }
     if (gwd) {
         gwd->exitOnClose = value;
     }
@@ -309,7 +320,7 @@ void GWindow::fillOval(double x, double y, double width, double height) {
     }
 }
 
-void GWindow::setColor(string color) {
+void GWindow::setColor(std::string color) {
     setColor(convertColorToRGB(color));
 }
 
@@ -319,7 +330,7 @@ void GWindow::setColor(int rgb) {
     }
 }
 
-string GWindow::getColor() const {
+std::string GWindow::getColor() const {
     return gwd->color;
 }
 
@@ -357,7 +368,11 @@ void GWindow::setCanvasSize(int width, int height) {
     }
 }
 
-void GWindow::setWindowTitle(string title) {
+void GWindow::setTitle(std::string title) {
+    setWindowTitle(title);
+}
+
+void GWindow::setWindowTitle(std::string title) {
     if (isOpen()) {
         if (gwd) {
             gwd->windowTitle = title;
@@ -395,7 +410,7 @@ void GWindow::center() {
     setLocation(CENTER_MAGIC_VALUE, CENTER_MAGIC_VALUE);
 }
 
-string GWindow::getWindowTitle() const {
+std::string GWindow::getWindowTitle() const {
     return gwd->windowTitle;
 }
 
@@ -457,13 +472,13 @@ void GWindow::add(GObject *gobj, double x, double y) {
     }
 }
 
-void GWindow::addToRegion(GInteractor *gobj, string region) {
+void GWindow::addToRegion(GInteractor *gobj, std::string region) {
     if (isOpen()) {
         pp->gwindow_addToRegion(*this, (GObject *) gobj, region);
     }
 }
 
-void GWindow::addToRegion(GLabel *gobj, string region) {
+void GWindow::addToRegion(GLabel *gobj, std::string region) {
     if (isOpen()) {
         pp->gwindow_addToRegion(*this, (GObject *) gobj, region);
     }
@@ -473,13 +488,13 @@ GDimension GWindow::getRegionSize(std::string region) const {
     return pp->gwindow_getRegionSize(*this, region);
 }
 
-void GWindow::removeFromRegion(GInteractor *gobj, string region) {
+void GWindow::removeFromRegion(GInteractor *gobj, std::string region) {
     if (isOpen()) {
         pp->gwindow_removeFromRegion(*this, (GObject *) gobj, region);
     }
 }
 
-void GWindow::removeFromRegion(GLabel *gobj, string region) {
+void GWindow::removeFromRegion(GLabel *gobj, std::string region) {
     if (isOpen()) {
         pp->gwindow_removeFromRegion(*this, (GObject *) gobj, region);
     }
@@ -504,7 +519,7 @@ GObject *GWindow::getGObjectAt(double x, double y) const {
     return NULL;
 }
 
-void GWindow::setRegionAlignment(string region, string align) {
+void GWindow::setRegionAlignment(std::string region, std::string align) {
     if (isOpen()) {
         pp->gwindow_setRegionAlignment(*this, region, align);
     }
@@ -542,36 +557,38 @@ GDimension getScreenSize() {
     return pp->gwindow_getScreenSize();
 }
 
-int convertColorToRGB(string colorName) {
+int convertColorToRGB(std::string colorName) {
     if (colorName == "") return -1;
     if (colorName[0] == '#') {
-        istringstream is(colorName.substr(1) + "@");
+        std::istringstream is(colorName.substr(1) + "@");
         int rgb;
         char terminator = '\0';
-        is >> hex >> rgb >> terminator;
-        if (terminator != '@') error("setColor: Illegal color - " + colorName);
+        is >> std::hex >> rgb >> terminator;
+        if (terminator != '@') error("convertColorToRGB: Illegal color - " + colorName);
         return rgb;
     }
-    string name = canonicalColorName(colorName);
+    std::string name = canonicalColorName(colorName);
     if (colorTable.size() == 0) initColorTable();
     if (!colorTable.containsKey(name)) {
-        error("setColor: Undefined color - " + colorName);
+        error("convertColorToRGB: Undefined color - " + colorName);
     }
     return colorTable[name];
 }
 
-string convertRGBToColor(int rgb) {
+std::string convertRGBToColor(int rgb) {
     if (rgb == -1) return "";
-    ostringstream os;
-    os << hex << setfill('0') << uppercase << "#";
-    os << setw(2) << (rgb >> 16 & 0xFF);
-    os << setw(2) << (rgb >> 8 & 0xFF);
-    os << setw(2) << (rgb & 0xFF);
+    std::ostringstream os;
+    os << std::hex << std::setfill('0') << std::uppercase << "#";
+    os << std::setw(2) << (rgb >> 16 & 0xFF);
+    os << std::setw(2) << (rgb >> 8 & 0xFF);
+    os << std::setw(2) << (rgb & 0xFF);
     return os.str();
 }
 
 void exitGraphics() {
-    pp->gwindow_exitGraphics();   // calls exit(0);
+    if (autograder::gwindow_exitGraphics_enabled) {
+        pp->gwindow_exitGraphics();   // calls exit(0);
+    }
 }
 
 static void initColorTable() {
@@ -590,8 +607,8 @@ static void initColorTable() {
     colorTable["pink"] = 0xFFAFAF;
 }
 
-static string canonicalColorName(string str) {
-    string result = "";
+static std::string canonicalColorName(std::string str) {
+    std::string result = "";
     int nChars = str.length();
     for (int i = 0; i < nChars; i++) {
         char ch = str[i];
