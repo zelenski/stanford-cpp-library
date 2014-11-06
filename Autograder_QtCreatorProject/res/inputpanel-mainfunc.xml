@@ -1,0 +1,12 @@
+<inputpanel assignment="CS 106B Test">
+	<category name="General">
+		<button text="Yes" />
+		<button text="No" />
+		<button text="Enter" input="\n" />
+	</category>
+	
+	<category name="Other">
+		<button text="OK" />
+		<button text="Cancel" />
+	</category>
+</inputpanel>

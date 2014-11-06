@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stylecheck type="text" filename="mainfunc.cpp" omitonpass="false">
+	<pattern regex="INSTRUCTOR'S SOLUTION" count="0" showcounts="false" failtype="error" description="You're running the style checker on the instructor's solution!" />
+
+	<category name="General">
+		<pattern regex="double " maxcount="1" description="type double should not be used on this assignment" />
+		<pattern regex="Grid(:SPACES:)&lt;(:SPACES:)(?:int|double|string)(:SPACES:)&gt;" count="0" description="Grid of inappropriate type (int, double, string)" />
+		<pattern regex="\([^\)]*Grid(:SPACES:)&lt;(:SPACES:)(:IDENT:)(:SPACES:)&gt;(:SPACES:)(:IDENT:).*\)" count="0" description="passing Grid by value" />
+		<pattern regex="(?:[vV]ector|[sS]et|[mM]ap|HashSet|HashMap|Lexicon)(:SPACES:)&lt;(:SPACES:)(?:int|double|string)(:SPACES:)&gt;" count="0" description="using other collections besides Grid" />
+		<pattern regex="num(?:Rows|Cols)(:SPACES:)\((:SPACES:)\)(:SPACES:)[+](:SPACES:)2" count="0" description="possibly using the 'extra row/column around the edges' hack" />
+		<pattern regex="(?:int|double|char|string|bool|Grid(:SPACES:)&lt;(:SPACES:)(:IDENT:)(:SPACES:)&gt;)(:SPACES:)\*(:SPACES:)(:IDENT:)" count="0" description="using pointers" />
+	</category>
+	
+	<category name="Redundancy">
+		<pattern regex=".*nimate,(:SPACES:).*ick,(:SPACES:).*uit" maxcount="1" description="redundancy check: 'animate/tick/quit' prompt message" />
+		<pattern regex="[hH]ow many frames[?]" maxcount="1" description="redundancy check: 'How many frames' prompt message" />
+		<pattern regex="Invalid choice.*please try again" maxcount="1" description="redundancy check: 'Invalid choice' prompt message" />
+		<pattern regex="inBounds" maxcount="2" description="redundancy check: calling inBounds on a grid" />
+		<pattern regex="\.(:SPACES:)open(:SPACES:)\(" maxcount="1" description="redundancy check: calling open() on an ifstream" />
+		<pattern regex="\[[^\]]+\](:SPACES:)=(:SPACES:)(?:true|false|0|1|'X'|'-'|&quot;X&quot;|&quot;-&quot;)(:SPACES:);" maxcount="4" description="redundancy check: assigning literal values into grid cells (did they not use a for-loop around the 8 neighbors?)" />
+		<pattern regex="(?:printf)|(?:scanf)" count="0" description="calling C printf/scanf functions" />
+	</category>
+
+	<!-- aesthetics and formatting -->
+	<category name="Aesthetics and Formatting">
+		<pattern regex=".{101,}\n" count="0" description="long lines" />
+		<pattern regex=".*;.*;.*;" count="0" description="multiple statements on same line" />
+		<pattern regex="\r?\n(:SPACES:)\r?\n" mincount="6" description="blank lines; why don't they have any spacing in their program?" />
+		<pattern regex="(?:TODO: remove this comment header)|(?:TODO: Finish the program)" count="0" description="TODO comments from starter code" />
+	</category>
+	
+	<!-- decomposition -->
+	<category name="Procedural Decomposition">
+		<pattern regex="\n(:IDENT:)[^()\n]*(:IDENT:)(:SPACES:)\([^\)]*\)[ \t\n]{0,255}\{" mincount="4" description="functions (including main)" />
+		<pattern regex="\n(?:int|double|bool|Grid|Vector)[^()]+;" count="0" description="global variables" />
+		<pattern regex="[!=]=(:SPACES:)(true|false)" count="0" description="bad boolean zen (== true/false)" />
+		<pattern regex="else(:SPACES:)if" mincount="2" description="'else if' statement (are they always using if/if/if?  that's bad structure)" />
+	</category>
+
+	<!-- commenting -->
+	<category name="Comments">
+		<pattern regex="(\/\/.*)|(\/\*([^*]|([*][^\/])\r?\n?)*\*\/)" mincount="18" description="comments" list="false" />
+		<pattern regex="(?:a simulation originally conceived by)|(?:watching the bacteria grow over time)|(?:decomposing a large problem into smaller functions)|(?:computes successive generations of cells)|(?:cleaner abstraction of a 2-dimensional data set)" count="0" description="copying comments from spec (approximate)" />
+	</category>
+</stylecheck>
