@@ -1,12 +1,14 @@
+/*
+ * @version 2014/10/22
+ * - added Ctrl-Home, Ctrl-End, PgUp, PgDown hotkeys to scroll around in console
+ */
+
 package stanford.spl;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-
-import acm.io.IOConsole;
-import acm.program.ProgramMenuBar;
-
+import java.awt.event.*;
+import java.lang.reflect.*;
+import acm.io.*;
+import acm.program.*;
 import javax.swing.*;
 
 public class JBEMenuBar extends ProgramMenuBar implements ActionListener {
@@ -24,6 +26,12 @@ public class JBEMenuBar extends ProgramMenuBar implements ActionListener {
 	private KeyStroke COMMAND_W;
 	private KeyStroke ALT_F4;
 	private KeyStroke F1;
+	private KeyStroke PGUP;
+	private KeyStroke PGDN;
+	private KeyStroke CTRL_HOME;
+	private KeyStroke CTRL_END;
+	private KeyStroke COMMAND_HOME;
+	private KeyStroke COMMAND_END;
 	private JavaBackEnd javaBackEnd;
 
 	public JBEMenuBar(JavaBackEnd paramJavaBackEnd, IOConsole paramIOConsole) {
@@ -41,6 +49,12 @@ public class JBEMenuBar extends ProgramMenuBar implements ActionListener {
 		COMMAND_W = KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.META_DOWN_MASK);
 		ALT_F4 = KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK);
 		F1 = KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0);
+		PGUP = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0);
+		PGDN = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0);
+		CTRL_HOME = KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_END = KeyStroke.getKeyStroke(KeyEvent.VK_END, KeyEvent.CTRL_DOWN_MASK);
+		COMMAND_HOME = KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.META_DOWN_MASK);
+		COMMAND_END = KeyStroke.getKeyStroke(KeyEvent.VK_END, KeyEvent.META_DOWN_MASK);
 		super.addMenus();
 		addHelpMenu();
 	}
@@ -111,7 +125,51 @@ public class JBEMenuBar extends ProgramMenuBar implements ActionListener {
 			quitItem.doClick(0);
 		} else if (ks.equals(F1)) {
 			aboutItem.doClick(0);
+		} else if (ks.equals(CTRL_HOME) || ks.equals(COMMAND_HOME)) {
+			JScrollPane scroll = getScrollPane();
+			if (scroll != null && scroll.getVerticalScrollBar() != null) {
+				scroll.getVerticalScrollBar().setValue(scroll.getVerticalScrollBar().getMinimum());
+			}
+		} else if (ks.equals(CTRL_END) || ks.equals(COMMAND_END)) {
+			JScrollPane scroll = getScrollPane();
+			if (scroll != null && scroll.getVerticalScrollBar() != null) {
+				scroll.getVerticalScrollBar().setValue(scroll.getVerticalScrollBar().getMaximum());
+			}
+		} else if (ks.equals(PGUP)) {
+			JScrollPane scroll = getScrollPane();
+			if (scroll != null && scroll.getVerticalScrollBar() != null) {
+				int value = scroll.getVerticalScrollBar().getValue();
+				int height = scroll.getHeight();
+				int min = scroll.getVerticalScrollBar().getMinimum();
+				scroll.getVerticalScrollBar().setValue(Math.max(min, value - height));
+			}
+		} else if (ks.equals(PGDN)) {
+			JScrollPane scroll = getScrollPane();
+			if (scroll != null && scroll.getVerticalScrollBar() != null) {
+				int value = scroll.getVerticalScrollBar().getValue();
+				int height = scroll.getHeight();
+				int max = scroll.getVerticalScrollBar().getMaximum();
+				scroll.getVerticalScrollBar().setValue(Math.min(max, value + height));
+			}
 		}
 		return super.fireAccelerator(event);
+	}
+	
+	private JScrollPane getScrollPane() {
+		IOConsole console = getProgram().getConsole();
+		try {
+			Class<?> clazz = acm.io.IOConsole.class;
+			Field field = clazz.getDeclaredField("consoleModel");
+			field.setAccessible(true);
+			Object model = field.get(console);
+			Class<?> modClazz = Class.forName("acm.io.StandardConsoleModel");
+			Field scrollField = modClazz.getDeclaredField("scrollPane");
+			scrollField.setAccessible(true);
+			JScrollPane scrollPane = (JScrollPane) scrollField.get(model);
+			return scrollPane;
+		} catch (Exception e) {
+			// empty
+		}
+		return null;
 	}
 }

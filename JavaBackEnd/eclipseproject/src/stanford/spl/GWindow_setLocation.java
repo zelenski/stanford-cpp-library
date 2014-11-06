@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.Window;
+//import javax.swing.JOptionPane;
 
 import acm.util.TokenScanner;
 
@@ -41,6 +42,10 @@ class GWindow_setLocation extends JBECommand {
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 		int centerX = Math.max(0, (screen.width - windowWidth) / 2);
 		int centerY = Math.max(0, (screen.height - windowHeight) / 2);
+//		JOptionPane.showMessageDialog(null,
+//				"screen size: " + screen.width + " x " + screen.height + "\n"
+//				+ "window size: " + windowWidth + " x " + windowHeight + "\n"
+//				+ "center: (x=" + centerX + ", y=" + centerY + ")");
 		return new Point(centerX, centerY);
 	}
 }

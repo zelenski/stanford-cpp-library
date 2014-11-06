@@ -25,14 +25,10 @@ class Regex_matchCountWithLines extends JBECommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		// String s = nextString(paramTokenScanner);
-		String s = Regex_match.readEncodedString(paramTokenScanner);
-		if (DEBUG) System.err.println("s before pipeDecode: \"" + s + "\"");
-		s = Regex_match.pipeDecode(s);
+		String s = SplPipeDecoder.readAndDecode(paramTokenScanner);
 		if (DEBUG) System.err.println("s after pipeDecode: \"" + s + "\"");
 		paramTokenScanner.verifyToken(",");
-		// String regexp = nextString(paramTokenScanner);
-		String regexp = Regex_match.readEncodedString(paramTokenScanner);
-		regexp = Regex_match.pipeDecode(regexp);
+		String regexp = SplPipeDecoder.readAndDecode(paramTokenScanner);
 		paramTokenScanner.verifyToken(")");
 		Pattern pattern = Pattern.compile(regexp);
 		Matcher matcher = pattern.matcher(s);
@@ -54,8 +50,7 @@ class Regex_matchCountWithLines extends JBECommand {
 			}
 		}
 
-		System.out.println("result:" + count + ":" + linesStr);
-		System.out.flush();
+		SplPipeDecoder.writeResult(count + ":" + linesStr);
 	}
 	
 	// for testing only
@@ -64,7 +59,7 @@ class Regex_matchCountWithLines extends JBECommand {
 		testCode = testCode.replace("\\n", "\n");
 		testCode = testCode.replace("\\\"", "\"");
 		if (DEBUG) System.out.println("testCode before = \n" + testCode + "\n===================================");
-		testCode = Regex_match.pipeEncode(testCode);
+		testCode = SplPipeDecoder.encode(testCode);
 		System.out.println("testCode after  = \n" + testCode + "\n===================================");
 		
 		Regex_matchCountWithLines command = new Regex_matchCountWithLines();

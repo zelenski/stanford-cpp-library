@@ -1,7 +1,6 @@
 package stanford.spl;
 
 import java.awt.Point;
-
 import acm.util.TokenScanner;
 
 class JBEConsole_setLocation extends JBECommand {

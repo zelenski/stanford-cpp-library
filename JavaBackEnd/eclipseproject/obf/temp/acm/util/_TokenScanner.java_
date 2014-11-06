@@ -1,0 +1,446 @@
+package acm.util;
+
+import java.io.*;
+import java.util.*;
+
+public class TokenScanner {
+	public static final int EOF = -1;
+	public static final int SEPARATOR = 0;
+	public static final int WORD = 1;
+	public static final int NUMBER = 2;
+	public static final int STRING = 3;
+	public static final int OPERATOR = 4;
+	public static final int INITIAL_STATE = 0;
+	public static final int BEFORE_DECIMAL_POINT = 1;
+	public static final int AFTER_DECIMAL_POINT = 2;
+	public static final int STARTING_EXPONENT = 3;
+	public static final int FOUND_EXPONENT_SIGN = 4;
+	public static final int SCANNING_EXPONENT = 5;
+	public static final int FINAL_STATE = 6;
+	private Reader input;
+	private String wordChars;
+	private String savedChars;
+	private Stack<String> savedTokens;
+	private List<String> operators;
+	private int cpos;
+	private boolean ignoreWhitespaceFlag;
+	private boolean ignoreCommentsFlag;
+	private boolean scanNumbersFlag;
+	private boolean scanStringsFlag;
+
+	public TokenScanner() {
+		this.ignoreWhitespaceFlag = false;
+		this.ignoreCommentsFlag = false;
+		this.scanNumbersFlag = false;
+		this.scanStringsFlag = false;
+		this.cpos = 0;
+		this.input = null;
+		this.wordChars = "";
+		this.savedTokens = new Stack<String>();
+		this.operators = new ArrayList<String>();
+	}
+
+	public TokenScanner(String paramString) {
+		this();
+		setInput(paramString);
+	}
+
+	public TokenScanner(Reader paramReader) {
+		this();
+		setInput(paramReader);
+	}
+
+	public void setInput(String paramString) {
+		setInput(new StringReader(paramString));
+	}
+
+	public void setInput(Reader paramReader) {
+		this.savedChars = "";
+		this.savedTokens.clear();
+		this.cpos = 0;
+		this.input = paramReader;
+	}
+
+	public boolean hasMoreTokens() {
+		String str = nextToken();
+		saveToken(str);
+		return !str.isEmpty();
+	}
+
+	public String nextToken() {
+		if (!this.savedTokens.isEmpty()) {
+			return (String) this.savedTokens.pop();
+		}
+		return scanToken();
+	}
+
+	public void saveToken(String paramString) {
+		this.savedTokens.push(paramString);
+	}
+
+	public int getPosition() {
+		if (this.savedTokens.isEmpty()) {
+			return this.cpos;
+		}
+		return this.cpos - ((String) this.savedTokens.peek()).length();
+	}
+
+	public void ignoreWhitespace() {
+		this.ignoreWhitespaceFlag = true;
+	}
+
+	public void ignoreComments() {
+		this.ignoreCommentsFlag = true;
+	}
+
+	public void scanNumbers() {
+		this.scanNumbersFlag = true;
+	}
+
+	public void scanStrings() {
+		this.scanStringsFlag = true;
+	}
+
+	public void addWordCharacters(String paramString) {
+		for (int i = 0; i < paramString.length(); i++) {
+			char c = paramString.charAt(i);
+			if (this.wordChars.indexOf(c) == -1) {
+				this.wordChars += c;
+			}
+		}
+	}
+
+	public boolean isWordCharacter(int paramInt) {
+		if (paramInt == -1) {
+			return false;
+		}
+		return (Character.isLetterOrDigit(paramInt))
+				|| (this.wordChars.indexOf((char) paramInt) >= 0);
+	}
+
+	public void addOperator(String paramString) {
+		this.operators.add(paramString);
+	}
+
+	public void verifyToken(String paramString) {
+		String str1 = nextToken();
+		if (str1.equals(paramString)) {
+			return;
+		}
+		String str2 = "TokenScanner verifyToken found \"" + str1 + "\" when expecting \"" + paramString + "\"";
+		throw new ErrorException(str2);
+	}
+
+	public int getTokenType(String paramString) {
+		if ((paramString == null) || (paramString.length() == 0)) {
+			return -1;
+		}
+		char c = paramString.charAt(0);
+		if (Character.isWhitespace(c)) {
+			return 0;
+		}
+		if (Character.isDigit(c)) {
+			return 2;
+		}
+		if ((c == '"') || (c == '\'')) {
+			return 3;
+		}
+		if (isWordCharacter(c)) {
+			return 1;
+		}
+		return 4;
+	}
+
+	public int getChar() {
+		try {
+			this.cpos += 1;
+			if (!this.savedChars.isEmpty()) {
+				int i = this.savedChars.charAt(0);
+				this.savedChars = this.savedChars.substring(1);
+				return i;
+			}
+			return this.input.read();
+		} catch (IOException localIOException) {
+			throw new ErrorException(localIOException);
+		}
+	}
+
+	public void ungetChar(int paramInt) {
+		this.cpos -= 1;
+		if ((this.input instanceof PushbackReader)) {
+			try {
+				((PushbackReader) this.input).unread(paramInt);
+				return;
+			} catch (IOException localIOException) {
+			}
+		}
+		if (paramInt >= 0) {
+			this.savedChars = ((char) paramInt + this.savedChars);
+		}
+	}
+
+	public String getStringValue(String s) {
+		String str = "";
+		int i = 0;
+		int j = s.length();
+		if ((j > 1) && ((s.charAt(0) == '"') || (s.charAt(0) == '\''))) {
+			i = 1;
+			j--;
+		}
+		for (int k = i; k < j; k++) {
+			char c = s.charAt(k);
+			if (c == '\\') {
+				c = s.charAt(++k);
+				if ((Character.isDigit(c)) || (c == 'x')) {
+					int m = 8;
+					int n = 3;
+					if (c == 'x') {
+						m = 16;
+						n = 2;
+						k++;
+					}
+					int i1 = 0;
+					int i2 = 0;
+					int i3 = Math.min(j, k + n);
+					while (k < i3) {
+						c = s.charAt(k);
+						if (Character.isDigit(c)) {
+							i2 = c - '0';
+						} else if ((m == 16) && (c >= 'A') && (c <= 'F')) {
+							i2 = c - 'A' + 10;
+						} else {
+							if ((m != 16) || (c < 'a') || (c > 'f')) {
+								break;
+							}
+							i2 = c - 'a' + 10;
+						}
+						i1 = m * i1 + i2;
+						k++;
+					}
+					c = (char) i1;
+					k--;
+				} else {
+					switch (c) {
+					case 'a':
+						c = '\007';
+						break;
+					case 'b':
+						c = '\b';
+						break;
+					case 'f':
+						c = '\f';
+						break;
+					case 'n':
+						c = '\n';
+						break;
+					case 'r':
+						c = '\r';
+						break;
+					case 't':
+						c = '\t';
+						break;
+					case 'v':
+						c = '\013';
+						break;
+					case '"':
+						c = '"';
+						break;
+					case '\'':
+						c = '\'';
+						break;
+					case '\\':
+						c = '\\';
+					}
+				}
+			}
+			str = str + c;
+		}
+		return str;
+	}
+
+	private String scanToken() {
+		int i = scanChar();
+		if (i == -1) {
+			return "";
+		}
+		if ((this.scanNumbersFlag) && (Character.isDigit(i))) {
+			ungetChar(i);
+			return scanNumber();
+		}
+		if (isWordCharacter(i)) {
+			ungetChar(i);
+			return scanWord();
+		}
+		if ((this.scanStringsFlag) && ((i == 34) || (i == 39))) {
+			ungetChar(i);
+			return scanString();
+		}
+		String str = "" + (char) i;
+		while (isOperatorPrefix(str)) {
+			i = getChar();
+			if (i == -1) {
+				break;
+			}
+			str = str + (char) i;
+		}
+		while ((str.length() > 1) && (!isOperator(str))) {
+			ungetChar(str.charAt(str.length() - 1));
+			str = str.substring(0, str.length() - 1);
+		}
+		return str;
+	}
+
+	private int scanChar() {
+		int i = 0;
+		int j = 0;
+		int k;
+		int m;
+		for (;;) {
+			k = getChar();
+			if ((!this.ignoreWhitespaceFlag) || (!Character.isWhitespace(k))
+					|| (isOperator(Character.toString((char) k)))) {
+				if (i != 0) {
+					m = getChar();
+					if ((k == 42) && (m == 47)) {
+						i = 0;
+					} else {
+						ungetChar(m);
+					}
+				} else if (j != 0) {
+					if ((k == 10) || (k == 13)) {
+						j = 0;
+					}
+				} else {
+					if ((!this.ignoreCommentsFlag) || (k != 47)) {
+						return k;
+					}
+					m = getChar();
+					if (m == 42) {
+						i = 1;
+					} else {
+						if (m != 47) {
+							break;
+						}
+						j = 1;
+					}
+				}
+			}
+		}
+		ungetChar(m);
+
+		return k;
+	}
+
+	private String scanWord() {
+		String str = "";
+		int i = getChar();
+		while (isWordCharacter(i)) {
+			str = str + (char) i;
+			i = getChar();
+		}
+		ungetChar(i);
+		return str;
+	}
+
+	private String scanNumber() {
+		String str = "";
+		int i = 0;
+		int j = 69;
+		while (i != 6) {
+			int k = getChar();
+			switch (i) {
+			case 0:
+				if (k == 48) {
+					int m = getChar();
+					if ((m == 120) || (m == 88)) {
+						str = "0x";
+					} else {
+						ungetChar(m);
+					}
+				} else {
+					i = 1;
+				}
+				break;
+			case 1:
+				if (k == 46) {
+					i = 2;
+				} else if ((k == 69) || (k == 101)) {
+					i = 3;
+				} else if (!Character.isDigit(k)) {
+					i = 6;
+				}
+				break;
+			case 2:
+				if ((k == 69) || (k == 101)) {
+					j = k;
+					i = 3;
+				} else if (!Character.isDigit(k)) {
+					i = 6;
+				}
+				break;
+			case 3:
+				if ((k == 43) || (k == 45)) {
+					i = 4;
+				} else if (Character.isDigit(k)) {
+					i = 5;
+				} else {
+					i = 6;
+				}
+				break;
+			case 4:
+				if (Character.isDigit(k)) {
+					i = 5;
+				} else {
+					ungetChar(k);
+					k = j;
+					i = 6;
+				}
+				break;
+			case 5:
+				if (!Character.isDigit(k)) {
+					i = 6;
+				}
+			default:
+				if (i == 6) {
+					ungetChar(k);
+					return str;
+				}
+				str = str + (char) k;
+			}
+		}
+		return str;
+	}
+
+	private String scanString() {
+		int i = (char) getChar();
+		String str = "" + i;
+		int j = 0;
+		for (;;) {
+			int k = getChar();
+			if ((k == -1) || ((k == i) && (j != 92))) {
+				break;
+			}
+			str = str + (char) k;
+			j = k;
+		}
+		return str + i;
+	}
+
+	private boolean isOperator(String paramString) {
+		for (int i = 0; i < this.operators.size(); i++) {
+			if (((String) this.operators.get(i)).equals(paramString)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isOperatorPrefix(String paramString) {
+		for (int i = 0; i < this.operators.size(); i++) {
+			if (((String) this.operators.get(i)).startsWith(paramString)) {
+				return true;
+			}
+		}
+		return false;
+	}
+}

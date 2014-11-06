@@ -9,11 +9,9 @@ class Regex_matchCount extends JBECommand {
 	// "Regex.matchCount(\"hello abcd hi abcccd how abccd are abd you? abccccccd ^_^\", \"ab[c]+d\")")"
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
-		String s = Regex_match.readEncodedString(paramTokenScanner);
-		s = Regex_match.pipeDecode(s);
+		String s = SplPipeDecoder.readAndDecode(paramTokenScanner);
 		paramTokenScanner.verifyToken(",");
-		String regexp = Regex_match.readEncodedString(paramTokenScanner);
-		regexp = Regex_match.pipeDecode(regexp);
+		String regexp = SplPipeDecoder.readAndDecode(paramTokenScanner);
 		paramTokenScanner.verifyToken(")");
 		Pattern pattern = Pattern.compile(regexp);
 		Matcher matcher = pattern.matcher(s);
@@ -22,8 +20,7 @@ class Regex_matchCount extends JBECommand {
 			count++;
 		}
 
-		System.out.println("result:" + count);
-		System.out.flush();
+		SplPipeDecoder.writeResult(count);
 	}
 
 	
@@ -33,7 +30,7 @@ class Regex_matchCount extends JBECommand {
 		testCode = testCode.replace("\\n", "\n");
 		testCode = testCode.replace("\\\"", "\"");
 		System.out.println("testCode before = \n" + testCode + "\n===================================");
-		testCode = Regex_match.pipeEncode(testCode);
+		testCode = SplPipeDecoder.encode(testCode);
 		System.out.println("testCode after  = \n" + testCode + "\n===================================");
 		
 		Regex_matchCount command = new Regex_matchCount();

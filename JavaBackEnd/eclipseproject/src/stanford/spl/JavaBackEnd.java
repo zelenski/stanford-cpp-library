@@ -1,54 +1,25 @@
 package stanford.spl;
 
 import acm.graphics.GObject;
+import acm.io.*;
 import acm.util.ErrorException;
 import acm.util.JTFTools;
 import acm.util.Platform;
 import acm.util.TokenScanner;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Image;
-import java.awt.MediaTracker;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Date;
-import java.util.HashMap;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.lang.reflect.Field;
+import java.net.*;
+import java.util.*;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.UIManager;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.sound.sampled.*;
+import javax.swing.*;
+import javax.swing.event.*;
 
 public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionListener,
-		KeyListener, ActionListener, ComponentListener, ChangeListener {
+		KeyListener, ActionListener, ComponentListener, ChangeListener, Observer {
 	public static final int DEFAULT_CONSOLE_X = 10;
 	public static final int DEFAULT_CONSOLE_Y = 40;
 	public static final int DEFAULT_CONSOLE_WIDTH = 500;
@@ -83,9 +54,6 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	public static final int BUTTON1_DOWN = 32;
 	public static final int BUTTON2_DOWN = 64;
 	public static final int BUTTON3_DOWN = 128;
-	public static final String getLibraryVersion() {
-		return "2014/02/04";
-	}
 	private static final String DEBUG_PROPERTY = "stanfordspl.debug";
 	private static final String DEBUG_LOG_FILE = "stanfordspldebug.txt";
 	private static boolean DEBUG = false;
@@ -96,6 +64,8 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	private JBEConsole console;
 	private JFrame consoleFrame;
 	private boolean exitOnConsoleClose = false;
+	private static final Color ERROR_COLOR = new Color(192, 0, 0);   // slightly dark red
+	private static final int ERROR_STYLE = Font.BOLD;
 
 	public static void main(String[] paramArrayOfString) {
 		try {
@@ -104,6 +74,13 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		} catch (Exception e) {}
 		
 		new JavaBackEnd().run(paramArrayOfString);
+	}
+	
+	// called by AutograderInput; represents input the user wants to insert
+	public void update(Observable obs, Object arg) {
+		String input = (String) arg;
+		console.setInputScript(new BufferedReader(new StringReader(input)));
+		// console.println(text);   // WRONG WRONG WRONG *** TODO WRONG WRONG *** TODO
 	}
 	
 	public void setExitOnConsoleClose(boolean value) {
@@ -119,7 +96,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	}
 
 	public String getJbeVersion() {
-		return getLibraryVersion();
+		return Version.getLibraryVersion();
 	}
 	
 	public JBEConsole getJBEConsole() {
@@ -154,6 +131,11 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		this.eventPending = false;
 		this.activeWindowCount = 0;
 		this.console = new JBEConsole();
+		this.console.setErrorColor(ERROR_COLOR);
+		this.console.setErrorStyle(ERROR_STYLE);
+		
+		AutograderInput autograderInput = AutograderInput.getInstance();
+		autograderInput.addObserver(this);
 		
 		this.menuBar = new JBEMenuBar(this, this.console);
 		this.console.setMenuBar(this.menuBar);
@@ -171,11 +153,20 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 
 	protected void createWindow(String paramString, int paramInt1, int paramInt2,
 			TopCompound paramTopCompound) {
+		createWindow(paramString, paramInt1, paramInt2, paramTopCompound, true);
+	}
+	
+	protected void createWindow(String paramString, int paramInt1, int paramInt2,
+			TopCompound paramTopCompound, boolean visible) {
 		JBEWindow localJBEWindow = new JBEWindow(this, paramString, this.appName, paramInt1,
 				paramInt2);
 		this.windowTable.put(paramString, localJBEWindow);
-		this.consoleWidth = paramInt1;
-		this.consoleY = (50 + paramInt2);
+		
+		// commented out by Marty 2014/03/05;
+		// This code used to set console's size to the size of the last created window
+		// for some reason.  Why??  No.  Bad.  Turning this off.
+		// this.consoleWidth = paramInt1;
+		// this.consoleY = (50 + paramInt2);
 		localJBEWindow.pack();
 		localJBEWindow.setLocation(10, 10);
 		localJBEWindow.getCanvas().initOffscreenImage();
@@ -184,6 +175,9 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		localJBEWindow.setResizable(false);
 		localJBEWindow.setVisible(true);
 		waitForWindowActive(localJBEWindow);
+		if (!visible) {
+			localJBEWindow.setVisible(false);
+		}
 	}
 
 	public void deleteWindow(String paramString) {
@@ -232,6 +226,19 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		this.console.setFont(JTFTools.decodeFont(paramString));
 	}
 
+	protected void consoleMinimize() {
+		if (this.consoleFrame != null) {
+			this.consoleFrame.setState(JFrame.ICONIFIED);
+		}
+	}
+
+	protected void consoleToFront() {
+		if (this.consoleFrame != null) {
+			this.consoleFrame.setState(JFrame.NORMAL);
+			this.consoleFrame.toFront();
+		}
+	}
+
 	protected void setConsoleSize(int paramInt1, int paramInt2) {
 		this.consoleWidth = paramInt1;
 		this.consoleHeight = paramInt2;
@@ -258,18 +265,47 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		return this.console.readLine();
 	}
 
+	protected ConsoleModel getConsoleModel() {
+		try {
+			Class<?> clazz = acm.io.IOConsole.class;
+			Field field = clazz.getDeclaredField("consoleModel");
+			field.setAccessible(true);
+			return (ConsoleModel) field.get(console);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
 	protected void putConsole(String paramString) {
+		putConsole(paramString, false);
+	}
+	
+	protected void putConsole(String paramString, boolean isStderr) {
 		if (this.consoleFrame == null) {
 			showConsole();
 		}
-		this.console.print(paramString);
+		if (isStderr) {
+			ConsoleModel model = getConsoleModel();
+			model.print(paramString, ConsoleModel.ERROR_STYLE);
+		} else {
+			this.console.print(paramString);
+		}
 	}
 
 	protected void endLineConsole() {
+		endLineConsole(false);
+	}
+	
+	protected void endLineConsole(boolean isStderr) {
 		if (this.consoleFrame == null) {
 			showConsole();
 		}
-		this.console.println();
+//		if (isStderr) {
+//			ConsoleModel model = getConsoleModel();
+//			model.print("\n", ConsoleModel.ERROR_STYLE);
+//		} else {
+			this.console.println();
+//		}
 	}
 
 	protected double getEventTime() {
@@ -284,7 +320,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	}
 
 	protected void acknowledgeEvent(String eventText, Object... args) {
-		acknowledgeEvent(String.format(eventText, args));
+		acknowledgeEvent(String.format(Locale.US, eventText, args));
 	}
 	
 	protected void acknowledgeEvent(String eventText) {
@@ -337,6 +373,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	private void showConsole() {
 		this.console.setPreferredSize(this.consoleWidth, this.consoleHeight);
 		this.consoleFrame = new JFrame("Console");
+		this.consoleFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		this.consoleFrame.setLayout(new BorderLayout());
 		this.consoleFrame.add(this.console);
 		this.consoleFrame.pack();
@@ -427,23 +464,33 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		return i;
 	}
 
-	protected String openFileDialog(String paramString1, String paramString2, String paramString3) {
-		JBEFileFilter localJBEFileFilter = new JBEFileFilter(paramString3);
+	protected String openFileDialog(String title, String mode, String path) {
+		// BUGFIX: (2014/10/09) was crashing when null/default current dir was passed by C++ lib
+		if (path == null) {
+			path = "";
+		}
+		JBEFileFilter localJBEFileFilter = new JBEFileFilter(path);
 		JFileChooser localJFileChooser = new JFileChooser(localJBEFileFilter.getDirectory());
 		localJFileChooser.setFileFilter(localJBEFileFilter);
-		localJFileChooser.setDialogTitle(paramString1);
-		int i = 0;
-		if (paramString2.equalsIgnoreCase("load")) {
-			i = localJFileChooser.showOpenDialog(null);
-		} else if (paramString2.equalsIgnoreCase("save")) {
-			i = localJFileChooser.showSaveDialog(null);
+		localJFileChooser.setDialogTitle(title);
+		int result = 0;
+		Component parent = null;
+		if (console != null) {
+			parent = console;
+		}
+		if (mode.equalsIgnoreCase("load")) {
+			result = localJFileChooser.showOpenDialog(parent);
+		} else if (mode.equalsIgnoreCase("save")) {
+			result = localJFileChooser.showSaveDialog(parent);
 		} else {
 			return "";
 		}
-		if (i == 0) {
+		
+		if (result == JFileChooser.APPROVE_OPTION) {
 			return localJFileChooser.getSelectedFile().getAbsolutePath();
+		} else {
+			return "";
 		}
-		return "";
 	}
 
 	public void actionPerformed(ActionEvent paramActionEvent) {
@@ -452,17 +499,17 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		if ((localObject1 instanceof GTimer)) {
 			if ((this.eventMask & 0x40) != 0) {
 				localObject2 = (GTimer) paramActionEvent.getSource();
-				acknowledgeEvent("event:timerTicked(\"%s\", %f)",
-						((GTimer) localObject2).getId(), getEventTime());
+				acknowledgeEvent("event:timerTicked(\"%s\", %d)",
+						((GTimer) localObject2).getId(), (long) getEventTime());
 			}
 		} else if ((this.eventMask & 0x10) != 0) {
 			localObject2 = getSourceId((JComponent) localObject1);
 			GInteractor localGInteractor = (GInteractor) getGObject((String) localObject2);
 			String str = localGInteractor.getActionCommand();
 			if (!str.isEmpty()) {
-				acknowledgeEvent("event:actionPerformed(\"%s\", \"%s\", %f)",
+				acknowledgeEvent("event:actionPerformed(\"%s\", \"%s\", %d)",
 						(String) localObject2, str,
-						getEventTime());
+						(long) getEventTime());
 			}
 		}
 	}
@@ -487,8 +534,8 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 
 	private void printEvent(String type, KeyEvent paramKeyEvent) {
 		JBECanvas localJBECanvas = (JBECanvas) paramKeyEvent.getSource();
-		acknowledgeEvent("event:%s(\"%s\", %f, %d, %s, %d)",
-				type, localJBECanvas.getWindowId(), getEventTime(),
+		acknowledgeEvent("event:%s(\"%s\", %d, %d, %s, %d)",
+				type, localJBECanvas.getWindowId(), (long) getEventTime(),
 				convertModifiers(paramKeyEvent.getModifiersEx()),
 				paramKeyEvent.getKeyChar(), paramKeyEvent.getKeyCode());
 	}
@@ -532,8 +579,8 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 
 	private void printEvent(String type, MouseEvent paramMouseEvent) {
 		JBECanvas localJBECanvas = (JBECanvas) paramMouseEvent.getSource();
-		acknowledgeEvent("event:%s(\"%s\", %f, %d, %d, %d)",
-				type, localJBECanvas.getWindowId(), getEventTime(),
+		acknowledgeEvent("event:%s(\"%s\", %d, %d, %d, %d)",
+				type, localJBECanvas.getWindowId(), (long) getEventTime(),
 				convertModifiers(paramMouseEvent.getModifiersEx()),
 				paramMouseEvent.getX(), paramMouseEvent.getY());
 	}
@@ -555,10 +602,14 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 						} catch (InterruptedException ie) {}
 						try {
 							System.out.close();
-						} catch (Exception e) {}
+						} catch (Exception e) {
+							// empty
+						}
 						try {
 							System.in.close();
-						} catch (Exception e) {}
+						} catch (Exception e) {
+							// empty
+						}
 						System.exit(0);
 					}
 				}).start();
@@ -568,7 +619,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		} else {
 			JBEWindow localJBEWindow = (JBEWindow) paramWindowEvent.getSource();
 			if (this.windowTable.containsKey(localJBEWindow.getWindowId())) {
-				acknowledgeEvent("event:windowClosed(\"%s\", %f)", localJBEWindow.getWindowId(), getEventTime());
+				acknowledgeEvent("event:windowClosed(\"%s\", %d)", localJBEWindow.getWindowId(), (long) getEventTime());
 				this.windowTable.remove(localJBEWindow.getWindowId());
 			}
 		}
@@ -614,7 +665,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 			GInteractor localGInteractor = (GInteractor) getGObject(str1);
 			String str2 = localGInteractor.getActionCommand();
 			if (!str2.isEmpty()) {
-				acknowledgeEvent("event:actionPerformed(\"%s\", \"%s\", %f)", str1, str2, getEventTime());
+				acknowledgeEvent("event:actionPerformed(\"%s\", \"%s\", %d)", str1, str2, (long) getEventTime());
 			}
 		}
 	}
@@ -628,7 +679,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	public void componentResized(ComponentEvent paramComponentEvent) {
 		if ((this.eventMask & 0x80) != 0) {
 			JBECanvas localJBECanvas = (JBECanvas) paramComponentEvent.getSource();
-			acknowledgeEvent("event:windowResized(\"%s\", %f)", localJBECanvas.getWindowId(), getEventTime());
+			acknowledgeEvent("event:windowResized(\"%s\", %d)", localJBECanvas.getWindowId(), (long) getEventTime());
 		}
 	}
 
@@ -663,6 +714,10 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 					printLog(str1);
 				}
 				
+				if (str1.equals("LongCommand.begin()")) {
+					str1 = readLongCommand(localBufferedReader);
+				}
+				
 				localTokenScanner.setInput(str1);
 				String str2 = localTokenScanner.nextToken();
 				JBECommand localJBECommand = (JBECommand) this.cmdTable.get(str2);
@@ -679,6 +734,24 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 				printLog("Unexpected error: " + localException.getMessage());
 			}
 		}
+	}
+	
+	/*
+	 * Handle very long command strings in special way.
+	 */
+	private String readLongCommand(BufferedReader systemInReader) throws IOException {
+		// repeatedly read lines from System.in until long command is done
+		StringBuilder sb = new StringBuilder(65536);
+		while (true) {
+			String line = systemInReader.readLine();
+			if (line == null || line.equals("LongCommand.end()")) {
+				break;
+			}
+			sb.append(line);
+		}
+		
+		String cmd = sb.toString();
+		return cmd;
 	}
 
 	private void processArguments(String[] paramArrayOfString) {
@@ -703,7 +776,9 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		try {
+			UIManager.put("Slider.paintValue", false);
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			UIManager.put("Slider.paintValue", false);
 		} catch (Exception localException) {
 		}
 	}

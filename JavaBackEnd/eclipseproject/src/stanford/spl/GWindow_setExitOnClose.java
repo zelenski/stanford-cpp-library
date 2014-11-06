@@ -38,7 +38,7 @@ class GWindow_setExitOnClose extends JBECommand implements ActionListener, Windo
 		JBEWindow window = (JBEWindow) e.getSource();
 		String id = window.getWindowId();
 		if (windowsToMonitor.contains(id)) {
-			// shut down after a delay to flush out any messages
+			// shut down after a delay to let any messages print out
 			Timer tim = new Timer(500, this);
 			tim.start();
 		}

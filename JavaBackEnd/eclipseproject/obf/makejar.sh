@@ -19,7 +19,14 @@ cd ..
 
 echo "Creating JAR archive in $OUTFILE ..."
 cd temp
-cp -r ../../bin/stanford/spl/*.class stanford/spl/
-cp -r ../../bin/acm/graphics/*.class acm/graphics
-jar -cvmf ../MANIFEST ../$OUTFILE acm/*/*.class stanford/*/*.class
+#cp -r ../../bin/stanford/cs106/diff/*.class stanford/cs106/diff/
+#cp -r ../../bin/stanford/cs106/gui/*.class stanford/cs106/gui/
+#cp -r ../../bin/stanford/cs106/io/*.class stanford/cs106/io/
+#cp -r ../../bin/stanford/cs106/util/*.class stanford/cs106/util/
+#cp -r ../../bin/stanford/spl/*.class stanford/spl/
+#cp -r ../../bin/acm/graphics/*.class acm/graphics
+#cp -r ../../bin/acm/io/*.class acm/io
+#cp -r ../../bin/acm/util/*.class acm/util
+cp -r ../../bin/* .
+jar -cvmf ../MANIFEST ../$OUTFILE acm/*/*.class stanford/*/*.class stanford/*/*/*.class
 cd ..

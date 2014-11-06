@@ -14,7 +14,6 @@ class GInteractor_isEnabled extends JBECommand {
 		if (localGObject != null && localGObject instanceof GInteractor) {
 			result = ((GInteractor) localGObject).isEnabled();
 		}
-		System.out.println("result:" + result);
-		System.out.flush();
+		SplPipeDecoder.writeResult(result);
 	}
 }

@@ -1,0 +1,19 @@
+package stanford.spl;
+
+import acm.util.TokenScanner;
+
+class AutograderUnitTest_addTest extends JBECommand {
+
+	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
+		paramTokenScanner.verifyToken("(");
+		String testName = SplPipeDecoder.readAndDecode(paramTokenScanner);
+		paramTokenScanner.verifyToken(",");
+		String categoryName = SplPipeDecoder.readAndDecode(paramTokenScanner);
+		paramTokenScanner.verifyToken(",");
+		boolean isStyleCheck = nextBoolean(paramTokenScanner);
+		paramTokenScanner.verifyToken(")");
+		
+		AutograderUnitTestGUI gui = AutograderUnitTestGUI.getInstance(isStyleCheck);
+		gui.addTest(testName, categoryName);
+	}
+}

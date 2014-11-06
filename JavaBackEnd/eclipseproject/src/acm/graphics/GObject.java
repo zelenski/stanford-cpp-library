@@ -1,4 +1,4 @@
-98package acm.graphics;
+package acm.graphics;
 
 import acm.util.ErrorException;
 import acm.util.JTFTools;
