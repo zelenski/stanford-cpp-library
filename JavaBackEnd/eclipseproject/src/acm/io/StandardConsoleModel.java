@@ -324,7 +324,13 @@ class StandardConsoleModel implements KeyListener, FocusListener, ConsoleModel {
 	protected void printCallback(String paramString, int paramInt) {
 		insert(paramString, this.base, paramInt);
 		this.base += paramString.length();
-		setCaretPosition(this.base);
+		
+		// BUGFIX 2014/11/06: added try/catch because throwing NPE on Mac OS X for some reason
+		try {
+			setCaretPosition(this.base);
+		} catch (NullPointerException npe) {
+			// empty
+		}
 	}
 
 	protected String readLineCallback() {
