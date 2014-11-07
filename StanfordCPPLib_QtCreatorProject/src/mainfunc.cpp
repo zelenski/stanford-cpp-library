@@ -74,18 +74,30 @@ void coutCerrMixTest() {
     cout << endl;
 }
 
+void stackOverflowTest(int n = 0) {
+    if (n % 10000 == 0) {
+        cout << "stack overflow n=" << n << endl;
+    }
+    stackOverflowTest(n+1);
+}
+
+#include "platform.h"
+
 /*
  * This just needs to be here to become 'studentMain' so program will compile
  */
 int main() {
-    cout << "Hello, world! This is main!" << endl;
-    for (int i = 0; i < 100; i++) {
-        cout << "hello" << endl;
-    }
+//    cout << "Hello, world! This is main!" << endl;
+//    for (int i = 0; i < 100; i++) {
+//        cout << "hello" << endl;
+//    }
+
+    getPlatform()->setStackSize(1024*1024*128);
+    stackOverflowTest();
     
-    coutCerrMixTest();
+    //coutCerrMixTest();
     
-    exceptionTest();
+    //exceptionTest();
     
 //    string input = getLine("How are you doing? ");
 //    cout << "You said, \"" << input << "\"." << endl;

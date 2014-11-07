@@ -81,6 +81,14 @@ unix:!macx {
     LIBS += -ldl
 }
 
+# increase system stack size (helpful for recursive programs)
+win32 {
+    QMAKE_LFLAGS += -Wl,--stack,536870912
+}
+macx {
+    QMAKE_LFLAGS += -Wl,-stack_size,0x20000000
+}
+
 # set up flags used internally by the Stanford C++ libraries
 DEFINES += SPL_CONSOLE_X=999999
 DEFINES += SPL_CONSOLE_Y=999999
