@@ -69,13 +69,15 @@ QMAKE_CXXFLAGS += -Wno-missing-field-initializers
 QMAKE_CXXFLAGS += -Wno-sign-compare
 QMAKE_CXXFLAGS += -Wno-write-strings
 
+unix:!macx {
+    QMAKE_CXXFLAGS += -rdynamic
+    QMAKE_LFLAGS += -rdynamic
+    QMAKE_LFLAGS += -Wl,--export-dynamic
+}
 !win32 {
     QMAKE_CXXFLAGS += -Wno-dangling-field
     QMAKE_CXXFLAGS += -Wno-unused-const-variable
     QMAKE_CXXFLAGS += -Wl,--export-dynamic
-    QMAKE_CXXFLAGS += -rdynamic
-    QMAKE_LFLAGS += -rdynamic
-    QMAKE_LFLAGS += -Wl,--export-dynamic
     LIBS += -ldl
 }
 
@@ -141,7 +143,7 @@ CONFIG(debug, debug|release) {
     # and catch/print any uncaught exceptions thrown by the program
     QMAKE_CXXFLAGS += -O0
     QMAKE_CXXFLAGS += -g
-    DEFINES += SPL_CONSOLE_PRINT_EXCEPTIONS 
+    DEFINES += SPL_CONSOLE_PRINT_EXCEPTIONS
 }
 
 # This function copies the given files to the destination directory.
