@@ -18,7 +18,6 @@ package stanford.cs106.io;
 
 import java.io.*;
 import java.net.*;
-import java.util.*;
 
 public class ResourceUtils {
 	// set to true to see debugging messages when trying to load resources
