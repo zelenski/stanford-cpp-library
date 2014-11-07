@@ -73,11 +73,11 @@ unix:!macx {
     QMAKE_CXXFLAGS += -rdynamic
     QMAKE_LFLAGS += -rdynamic
     QMAKE_LFLAGS += -Wl,--export-dynamic
+    QMAKE_CXXFLAGS += -Wl,--export-dynamic
 }
 !win32 {
     QMAKE_CXXFLAGS += -Wno-dangling-field
     QMAKE_CXXFLAGS += -Wno-unused-const-variable
-    QMAKE_CXXFLAGS += -Wl,--export-dynamic
     LIBS += -ldl
 }
 
