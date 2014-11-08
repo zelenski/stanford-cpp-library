@@ -18,7 +18,6 @@
 #include "gtest-marty.h"
 #include "platform.h"
 #include "rapidxml.h"
-#include "rapidxml_utils.h"
 #include "regexpr.h"
 #include "stringutils.h"
 #include "strlib.h"

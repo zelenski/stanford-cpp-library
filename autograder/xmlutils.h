@@ -17,15 +17,14 @@
 #include <string>
 #include <vector>
 #include "rapidxml.h"
-#include "rapidxml_utils.h"
 
 namespace xmlutils {
-    int getAttributeInt(rapidxml::xml_node<>* node, std::string attrName, int defaultValue = 0);
-    bool getAttributeBool(rapidxml::xml_node<>* node, std::string attrName, bool defaultValue = false);
-    std::string getAttribute(rapidxml::xml_node<>* node, std::string attrName, std::string defaultValue = "");
-    std::vector<rapidxml::xml_node<>*> getChildNodes(rapidxml::xml_node<>* node, std::string nodeName = "*");
-    bool hasAttribute(rapidxml::xml_node<>* node, std::string attrName);
-    rapidxml::xml_node<>* openXmlDocument(std::string filename, std::string documentNode = "*");
+    int getAttributeInt(rapidxml::xml_node<>* node, const std::string& attrName, int defaultValue = 0);
+    bool getAttributeBool(rapidxml::xml_node<>* node, const std::string& attrName, bool defaultValue = false);
+    std::string getAttribute(rapidxml::xml_node<>* node, const std::string& attrName, const std::string& defaultValue = "");
+    std::vector<rapidxml::xml_node<>*> getChildNodes(rapidxml::xml_node<>* node, const std::string& nodeName = "*");
+    bool hasAttribute(rapidxml::xml_node<>* node, const std::string& attrName);
+    rapidxml::xml_node<>* openXmlDocument(const std::string& filename, const std::string& documentNode = "*");
 } // namespace xmlutils
 
 #endif

@@ -50,7 +50,7 @@ int execAndCapture(std::string cmd, std::string& output) {
     output = "";
     while (!feof(pipe)) {
         if (fgets(buffer, 1024, pipe) != NULL) {
-    		output += buffer;
+            output += buffer;
         }
     }
     return pclose(pipe);

@@ -12,10 +12,72 @@
 #endif // __GNUC__
 #include <stdlib.h>
 #include "call_stack.h"
+#include "exceptions.h"
+#include "strlib.h"
 
 #define MAX_DEPTH 32
 
 namespace stacktrace {
+
+/*
+ * Run a sub-process and capture its output.
+ */
+int execAndCapture(std::string cmd, std::string& output) {
+    cmd += " 2>&1";
+    FILE* pipe = popen(cmd.c_str(), "r");
+    if (!pipe) {
+        return -1;
+    }
+    char buffer[1024];
+    output = "";
+    while (!feof(pipe)) {
+        if (fgets(buffer, 1024, pipe) != NULL) {
+            output += buffer;
+        }
+    }
+    return pclose(pipe);
+}
+
+/*
+ * Resolve symbol name and source location given the path to the executable 
+ * and an address
+ */
+int addr2line(const void* const addr, std::string& line) {
+    char addr2line_cmd[1024] = {0};
+    
+    // have addr2line map the address to the relent line in the code
+#if defined(__APPLE__)
+    // Mac OS X version
+    // TODO: implement/test
+//    sprintf(addr2line_cmd, "atos -o %.256s %p", exceptions::getProgramNameForStackTrace().c_str(), addr); 
+//    return execAndCapture(addr2line_cmd, line);
+#elif defined(_WIN32)
+    // not implemented on Windows yet
+#else
+    // Linux
+    // -C would demangle function names
+    sprintf(addr2line_cmd, "addr2line -f -C -s -p -e %.256s %p", exceptions::getProgramNameForStackTrace().c_str(), addr); 
+    int result = execAndCapture(addr2line_cmd, line);
+    
+    // "_Z4Mainv at /home/stepp/.../FooProject/src/mainfunc.cpp:131"
+    
+    // strip directories from file path
+    if (line.find(" at ") != std::string::npos) {
+        line = line.substr(line.rfind(" at ") + 4);
+    }
+    if (line.find('/') != std::string::npos) {
+        line = line.substr(line.rfind('/') + 1);
+    }
+    
+    // strip extra parenthesized info from the end
+    if (line.find(" (") != std::string::npos) {
+        line = line.substr(0, line.rfind(" ("));
+    }
+    line = trim(line);
+    
+    return result;
+#endif
+}
 
 call_stack::call_stack (const size_t num_discard /*= 0*/) {
     using namespace abi;
@@ -44,6 +106,10 @@ call_stack::call_stack (const size_t num_discard /*= 0*/) {
             e.file     = dlinfo.dli_fname;
             e.line     = 0; // unsupported
             e.function = symname;
+            
+            // let's try to get the line number
+            addr2line(trace[i], e.lineStr);
+            
             stack.push_back(e);
         } else {
             continue; // skip last entries below main

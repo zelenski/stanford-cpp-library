@@ -571,9 +571,14 @@ int Platform::regex_matchCountWithLines(std::string s, std::string regexp, std::
     putPipe(os.str());
     linesOut = getResult();       // "count:line,line,line,...,line"
     std::string countStr = "";
-    while (linesOut[0] != ':') {
+    while (!linesOut.empty() && linesOut[0] != ':') {
         countStr += linesOut[0];
         linesOut = linesOut.substr(1);
+    }
+    if (linesOut.empty() || linesOut[0] != ':' || !stringIsInteger(countStr)) {
+        // error, invalid result string from server
+        // error("Platform::regex_matchCountWithLines: illegal result string from server");
+        return -1;
     }
     linesOut = linesOut.substr(1);    // remove the initial ':'
     return stringToInteger(countStr);

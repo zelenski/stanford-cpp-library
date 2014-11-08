@@ -45,7 +45,9 @@ void print_stack_trace() {
         
         // skip certain entries for clarity
         if (startsWith(entry.function, "__")
+                || entry.function.find("stacktrace::") != std::string::npos
                 || entry.function == "exceptions::print_stack_trace()"
+                || entry.function == "exceptions::stanfordCppLibTerminateHandler()"
                 || entry.function == "error(string)"
                 || entry.function == "startupMain(int, char**)") {
             continue;
@@ -57,8 +59,15 @@ void print_stack_trace() {
         }
         
         std::cerr << " ***     " << entry.function;
+        std::string lineStr = "";
         if (entry.line > 0) {
-            std::cerr << ", line " << entry.line;
+            lineStr = ", near line " + integerToString(entry.line);
+        } else if (!entry.lineStr.empty()) {
+            lineStr = ", near " + entry.lineStr;
+        }
+        
+        if (!lineStr.empty()) {
+            std::cerr << lineStr;
         }
         std::cerr << std::endl;
         

@@ -83,7 +83,7 @@ public:
         return result;
     }
 
-    virtual std::streambuf* setbuf(char* p, int len) {
+    virtual std::streambuf* setbuf(char* p, std::streamsize len) {
         return m_source->pubsetbuf(p, len);
     }
 
@@ -141,7 +141,7 @@ public:
         return m_source->pubsync();
     }
 
-    virtual std::streambuf* setbuf(char* p, int len) {
+    virtual std::streambuf* setbuf(char* p, std::streamsize len) {
         return m_source->pubsetbuf(p, len);
     }
 

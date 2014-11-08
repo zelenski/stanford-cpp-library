@@ -1,3 +1,8 @@
+/*
+ * @author see below; slight modifications made by Marty Stepp
+ * @version 2014/11/08
+ */
+
 // Copyright 2008, Google Inc.
 // All rights reserved.
 //
@@ -7911,8 +7916,8 @@ namespace internal {
 // of them.
 const char kPathSeparator = '\\';
 const char kAlternatePathSeparator = '/';
-const char kPathSeparatorString[] = "\\";
-const char kAlternatePathSeparatorString[] = "/";
+//const char kPathSeparatorString[] = "\\";   // commented out by Marty because unused (2014/11/08)
+//const char kAlternatePathSeparatorString[] = "/";   // commented out by Marty because unused (2014/11/08)
 # if GTEST_OS_WINDOWS_MOBILE
 // Windows CE doesn't have a current directory. You should not use
 // the current directory in tests on Windows CE, but this at least
@@ -7925,7 +7930,7 @@ const char kCurrentDirectoryString[] = ".\\";
 # endif  // GTEST_OS_WINDOWS_MOBILE
 #else
 const char kPathSeparator = '/';
-const char kPathSeparatorString[] = "/";
+//const char kPathSeparatorString[] = "/";   // commented out by Marty because unused (2014/11/08)
 const char kCurrentDirectoryString[] = "./";
 #endif  // GTEST_OS_WINDOWS
 

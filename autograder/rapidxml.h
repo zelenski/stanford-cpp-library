@@ -587,7 +587,7 @@ namespace rapidxml
             }
             else
             {
-                memory = new char[size];
+                memory = new char[size]();
 #ifdef RAPIDXML_NO_EXCEPTIONS
                 if (!memory)            // If exceptions are disabled, verify memory allocation, because new will not be able to throw bad_alloc
                     RAPIDXML_PARSE_ERROR("out of memory", 0);
@@ -657,6 +657,8 @@ namespace rapidxml
         xml_base()
             : m_name(0)
             , m_value(0)
+            , m_name_size(0)
+            , m_value_size(0)
             , m_parent(0)
         {
         }

@@ -17,35 +17,30 @@
 #include "strlib.h"
 
 namespace xmlutils {
-int getAttributeInt(rapidxml::xml_node<>* node, std::string attrName, int defaultValue) {
+int getAttributeInt(rapidxml::xml_node<>* node, const std::string& attrName, int defaultValue) {
+    std::string value = getAttribute(node, attrName, integerToString(defaultValue));
+    return stringToInteger(value);
+}
+
+bool getAttributeBool(rapidxml::xml_node<>* node, const std::string& attrName, bool defaultValue) {
+    std::string value = toLowerCase(getAttribute(node, attrName, boolToString(defaultValue)));
+    return value == "true" || value == "t" || value == "1" || value == "on";
+}
+
+std::string getAttribute(rapidxml::xml_node<>* node, const std::string& attrName, const std::string& defaultValue) {
     rapidxml::xml_attribute<>* attr = node->first_attribute(attrName.c_str());
     if (attr == NULL) {
         return defaultValue;
     } else {
-        return stringToInteger(attr->value());
+        // RapidXML stores its value strings in a funny way, as non-zero-terminated
+        // strings indexed into the original char buffer you passed it,
+        // along with a size field.
+        char* cstrVal = attr->value();
+        return std::string(cstrVal);
     }
 }
 
-bool getAttributeBool(rapidxml::xml_node<>* node, std::string attrName, bool defaultValue) {
-    rapidxml::xml_attribute<>* attr = node->first_attribute(attrName.c_str());
-    if (attr == NULL) {
-        return defaultValue;
-    } else {
-        std::string result = toLowerCase(std::string(attr->value()));
-        return result == "true" || result == "t" || result == "1" || result == "on";
-    }
-}
-
-std::string getAttribute(rapidxml::xml_node<>* node, std::string attrName, std::string defaultValue) {
-    rapidxml::xml_attribute<>* attr = node->first_attribute(attrName.c_str());
-    if (attr == NULL) {
-        return defaultValue;
-    } else {
-        return attr->value();
-    }
-}
-
-std::vector<rapidxml::xml_node<>*> getChildNodes(rapidxml::xml_node<>* node, std::string nodeName) {
+std::vector<rapidxml::xml_node<>*> getChildNodes(rapidxml::xml_node<>* node, const std::string& nodeName) {
     std::vector<rapidxml::xml_node<>*> v;
     for (rapidxml::xml_node<>* childNode = node->first_node(nodeName.c_str());
          childNode != NULL;
@@ -55,18 +50,19 @@ std::vector<rapidxml::xml_node<>*> getChildNodes(rapidxml::xml_node<>* node, std
     return v;
 }
 
-bool hasAttribute(rapidxml::xml_node<>* node, std::string attrName) {
+bool hasAttribute(rapidxml::xml_node<>* node, const std::string& attrName) {
     rapidxml::xml_attribute<>* attr = node->first_attribute(attrName.c_str());
     return (attr != NULL);
 }
 
-rapidxml::xml_node<>* openXmlDocument(std::string filename, std::string documentNode) {
+rapidxml::xml_node<>* openXmlDocument(const std::string& filename, const std::string& documentNode) {
     std::string xmlFileText = readEntireFile(filename);
-    char buf[xmlFileText.length() + 10];
+    char* buf = new char[xmlFileText.length() + 1024]();   // *** memory leak (but MUST be heap-allocated)
+    memset(buf, 0, xmlFileText.length() + 1024);
     strcpy(buf, xmlFileText.c_str());
-    rapidxml::xml_document<char> xmlDoc;
-    xmlDoc.parse<0>(buf);
-    rapidxml::xml_node<>* node = xmlDoc.first_node(documentNode.c_str());
+    rapidxml::xml_document<char>* xmlDoc = new rapidxml::xml_document<char>;   // *** memory leak (but MUST be heap-allocated)
+    xmlDoc->parse<0>(buf);
+    rapidxml::xml_node<>* node = xmlDoc->first_node(documentNode.c_str());
     return node;
 }
 }

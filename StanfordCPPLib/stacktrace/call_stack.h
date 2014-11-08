@@ -16,12 +16,19 @@ struct entry {
 
     std::string file;     ///< filename
     size_t      line;     ///< line number
+    std::string lineStr;  ///< line number string (not always set)
     std::string function; ///< name of function or method
 
     /** Serialize entry into a text string. */
-    std::string to_string () const {
+    std::string to_string() const {
         std::ostringstream os;
-        os << file << " (" << line << "): " << function;
+        os << file;
+        if (line > 0) {
+            os << " (" << line << ")";
+        } else if (!lineStr.empty()) {
+            os << " (" << lineStr << ")";
+        }
+        os << ": " << function;
         return os.str();
     }
 };
