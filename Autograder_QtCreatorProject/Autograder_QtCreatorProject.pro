@@ -69,14 +69,24 @@ QMAKE_CXXFLAGS += -Wno-missing-field-initializers
 QMAKE_CXXFLAGS += -Wno-sign-compare
 QMAKE_CXXFLAGS += -Wno-write-strings
 
-!win32 {
-    QMAKE_CXXFLAGS += -Wno-dangling-field
-    QMAKE_CXXFLAGS += -Wno-unused-const-variable
-    QMAKE_CXXFLAGS += -Wl,--export-dynamic
+unix:!macx {
     QMAKE_CXXFLAGS += -rdynamic
     QMAKE_LFLAGS += -rdynamic
     QMAKE_LFLAGS += -Wl,--export-dynamic
+    QMAKE_CXXFLAGS += -Wl,--export-dynamic
+}
+!win32 {
+    QMAKE_CXXFLAGS += -Wno-dangling-field
+    QMAKE_CXXFLAGS += -Wno-unused-const-variable
     LIBS += -ldl
+}
+
+# increase system stack size (helpful for recursive programs)
+win32 {
+    QMAKE_LFLAGS += -Wl,--stack,536870912
+}
+macx {
+    QMAKE_LFLAGS += -Wl,-stack_size,0x20000000
 }
 
 # set up flags used internally by the Stanford C++ libraries
@@ -141,7 +151,7 @@ CONFIG(debug, debug|release) {
     # and catch/print any uncaught exceptions thrown by the program
     QMAKE_CXXFLAGS += -O0
     QMAKE_CXXFLAGS += -g
-    DEFINES += SPL_CONSOLE_PRINT_EXCEPTIONS 
+    DEFINES += SPL_CONSOLE_PRINT_EXCEPTIONS
 }
 
 # This function copies the given files to the destination directory.

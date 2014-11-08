@@ -73,12 +73,20 @@ unix:!macx {
     QMAKE_CXXFLAGS += -rdynamic
     QMAKE_LFLAGS += -rdynamic
     QMAKE_LFLAGS += -Wl,--export-dynamic
+    QMAKE_CXXFLAGS += -Wl,--export-dynamic
 }
 !win32 {
     QMAKE_CXXFLAGS += -Wno-dangling-field
     QMAKE_CXXFLAGS += -Wno-unused-const-variable
-    QMAKE_CXXFLAGS += -Wl,--export-dynamic
     LIBS += -ldl
+}
+
+# increase system stack size (helpful for recursive programs)
+win32 {
+    QMAKE_LFLAGS += -Wl,--stack,536870912
+}
+macx {
+    QMAKE_LFLAGS += -Wl,-stack_size,0x20000000
 }
 
 # set up flags used internally by the Stanford C++ libraries
