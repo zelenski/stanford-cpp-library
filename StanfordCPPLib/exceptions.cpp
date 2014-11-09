@@ -37,7 +37,7 @@ void print_stack_trace() {
     std::cerr << " *** Stack trace:" << std::endl;
     stacktrace::call_stack trace;
     std::vector<stacktrace::entry> entries = trace.stack;
-    for (int i = 0; i < entries.size(); ++i) {
+    for (size_t i = 0; i < entries.size(); ++i) {
         stacktrace::entry entry = entries[i];
         entry.file = getTail(entry.file);
         

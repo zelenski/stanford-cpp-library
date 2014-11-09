@@ -10,6 +10,9 @@
 #include <execinfo.h>
 #include <dlfcn.h>
 #endif // __GNUC__
+#include <iomanip>
+#include <iostream>
+#include <sstream>
 #include <stdlib.h>
 #include "call_stack.h"
 #include "exceptions.h"
@@ -38,30 +41,8 @@ int execAndCapture(std::string cmd, std::string& output) {
     return pclose(pipe);
 }
 
-/*
- * Resolve symbol name and source location given the path to the executable 
- * and an address
- */
-int addr2line(const void* const addr, std::string& line) {
-    char addr2line_cmd[1024] = {0};
-    
-    // have addr2line map the address to the relent line in the code
-#if defined(__APPLE__)
-    // Mac OS X version
-    // TODO: implement/test
-//    sprintf(addr2line_cmd, "atos -o %.256s %p", exceptions::getProgramNameForStackTrace().c_str(), addr); 
-//    return execAndCapture(addr2line_cmd, line);
-#elif defined(_WIN32)
-    // not implemented on Windows yet
-#else
-    // Linux
-    // -C would demangle function names
-    sprintf(addr2line_cmd, "addr2line -f -C -s -p -e %.256s %p", exceptions::getProgramNameForStackTrace().c_str(), addr); 
-    int result = execAndCapture(addr2line_cmd, line);
-    
-    // "_Z4Mainv at /home/stepp/.../FooProject/src/mainfunc.cpp:131"
-    
-    // strip directories from file path
+// "_Z4Mainv at /home/stepp/.../FooProject/src/mainfunc.cpp:131"
+std::string addr2line_clean(std::string line) {
     if (line.find(" at ") != std::string::npos) {
         line = line.substr(line.rfind(" at ") + 4);
     }
@@ -74,9 +55,42 @@ int addr2line(const void* const addr, std::string& line) {
         line = line.substr(0, line.rfind(" ("));
     }
     line = trim(line);
+    return line;
+}
+
+int addr2line_all(void** addrs, int length, std::string& output) {
+    // have addr2line map the address to the relent line in the code
+#if defined(__APPLE__)
+    // Mac OS X version
+    // TODO: implement/test
+//    sprintf(addr2line_cmd, "atos -o %.256s %p", exceptions::getProgramNameForStackTrace().c_str(), addr); 
+//    return execAndCapture(addr2line_cmd, line);
+    return -1;
+#elif defined(_WIN32)
+    // not implemented on Windows yet
+    return -1;
+#else
+    // Linux
     
+    // make a space-separated string of all the addresses
+    std::ostringstream out;
+    out << "addr2line -f -C -s -p -e " << exceptions::getProgramNameForStackTrace();
+    for (int i = 0; i < length; i++) {
+        out << " " << std::hex << std::setfill('0') << addrs[i];
+    }
+    
+    int result = execAndCapture(out.str(), output);
     return result;
 #endif
+}
+
+/*
+ * Resolve symbol name and source location given the path to the executable 
+ * and an address
+ */
+int addr2line(void* addr, std::string& line) {
+    void* addrs[1] = {addr};
+    return addr2line_all(addrs, 1, line);
 }
 
 call_stack::call_stack (const size_t num_discard /*= 0*/) {
@@ -86,6 +100,14 @@ call_stack::call_stack (const size_t num_discard /*= 0*/) {
     void * trace[MAX_DEPTH];
     int stack_depth = backtrace(trace, MAX_DEPTH);
 
+    // let's also try to get the line numbers via an external process
+    std::string addr2lineOutput;
+    std::vector<std::string> addr2lineLines;
+    if (stack_depth > 0) {
+        addr2line_all(trace, stack_depth, addr2lineOutput);
+        addr2lineLines = stringSplit(addr2lineOutput, "\n");
+    }
+    
     for (int i = num_discard+1; i < stack_depth; i++) {
         Dl_info dlinfo;
         if(!dladdr(trace[i], &dlinfo))
@@ -108,7 +130,10 @@ call_stack::call_stack (const size_t num_discard /*= 0*/) {
             e.function = symname;
             
             // let's try to get the line number
-            addr2line(trace[i], e.lineStr);
+            // addr2line(trace[i], e.lineStr);
+            if (i < (int) addr2lineLines.size()) {
+                e.lineStr = addr2line_clean(addr2lineLines[i]);
+            }
             
             stack.push_back(e);
         } else {
