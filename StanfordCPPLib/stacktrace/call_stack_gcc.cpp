@@ -43,18 +43,33 @@ int execAndCapture(std::string cmd, std::string& output) {
 
 // "_Z4Mainv at /home/stepp/.../FooProject/src/mainfunc.cpp:131"
 std::string addr2line_clean(std::string line) {
+#if defined(_WIN32)
+    // TODO: implement on Windows
+#elif defined(__APPLE__)
+    // Mac OS X version (atos)
+    // "Vector<int>::checkIndex(int) const (in Autograder_QtCreatorProject) (vector.h:764)"
+    if (line.find(" (") != std::string::npos) {
+        line = line.substr(line.rfind(" (") + 2);
+    }
+    if (line.find(')') != std::string::npos) {
+        line = line.substr(0, line.rfind(')'));
+    }
+    line = trim(line);
+#elif defined(__GNUC__)
+    // Linux version
     if (line.find(" at ") != std::string::npos) {
         line = line.substr(line.rfind(" at ") + 4);
     }
     if (line.find('/') != std::string::npos) {
         line = line.substr(line.rfind('/') + 1);
     }
-    
+
     // strip extra parenthesized info from the end
     if (line.find(" (") != std::string::npos) {
         line = line.substr(0, line.rfind(" ("));
     }
     line = trim(line);
+#endif
     return line;
 }
 
@@ -65,7 +80,14 @@ int addr2line_all(void** addrs, int length, std::string& output) {
     // TODO: implement/test
 //    sprintf(addr2line_cmd, "atos -o %.256s %p", exceptions::getProgramNameForStackTrace().c_str(), addr); 
 //    return execAndCapture(addr2line_cmd, line);
-    return -1;
+    std::ostringstream out;
+    out << "atos -o " << exceptions::getProgramNameForStackTrace();
+    for (int i = 0; i < length; i++) {
+        out << " " << std::hex << std::setfill('0') << addrs[i];
+    }
+
+    int result = execAndCapture(out.str(), output);
+    return result;
 #elif defined(_WIN32)
     // not implemented on Windows yet
     return -1;
