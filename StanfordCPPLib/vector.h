@@ -754,13 +754,18 @@ void Vector<ValueType>::checkIndex(int index, int min, int max, std::string pref
     if (index < min || index > max) {
         std::ostringstream out;
         out << "Vector::" << prefix << ": index of " << index
-            << " is outside of valid range [";
-        if (min < max) {
-            out << min << ".." << max;
-        } else if (min == max) {
-            out << min;
-        } // else min > max, no range, empty vector
-        out << "]";
+            << " is outside of valid range ";
+        if (isEmpty()) {
+            out << " (empty vector)";
+        } else {
+            out << "[";
+            if (min < max) {
+                out << min << ".." << max;
+            } else if (min == max) {
+                out << min;
+            } // else min > max, no range, empty vector
+            out << "]";
+        }
         error(out.str());
     }
 }
