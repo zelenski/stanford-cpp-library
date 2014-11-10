@@ -66,94 +66,32 @@ void after() {
     cout << "THIS IS AFTER!" << endl;
 }
 
-namespace MyNS {
-    class LoL {
-    public:
-        static int cCcCc_cCcCc(int, char*, double, char, bool) {
-            cout << "function c start" << endl;
-            cout << endl;
-            // error("blargh!");
-            Vector<int> v;
-            v.get(42);  // lolol
-            cout << "function c end" << endl;
-            return 0;
-        }
-    };
-}
-
-void b() {
-    cout << "function b start" << endl;
-    MyNS::LoL::cCcCc_cCcCc(0, NULL, 0, 0, false);
-    cout << "function b end" << endl;
-}
-
-void a() {
-    cout << "function a start" << endl;
-    b();
-    cout << "function a end" << endl;
-}
-
-void exceptionTest() {
-    a();
-}
-
-void coutCerrMixTest() {
-    cout << "Hello, world! This is main!" << endl;
-    cerr << "This message comes from cerr" << endl;
-    cout << "Another one from cout!" << endl;
-    cerr << "This message ALSO comes from cerr" << endl;
-    cout << "A third one from cout!" << endl;
-    cerr << "HOW ";
-    cout << "about ";
-    cerr << "A ";
-    cout << "mixed ";
-    cerr << "LINE??";
-    cout << endl;
-}
-
-/*
- * This just needs to be here to become 'studentMain' so program will compile
- */
-int main() {
-    cout << "Hello, world! This is main!" << endl;
-    for (int i = 0; i < 100; i++) {
-        cout << "hello" << endl;
-    }
-    
-    coutCerrMixTest();
-    
-    exceptionTest();
-    
-//    string input = getLine("How are you doing? ");
-//    cout << "You said, \"" << input << "\"." << endl;
-//    cout << "The end." << endl;
-    
-    return 0;
-}
-
 void showMyInputTxt() {
     // empty
     autograder::showStudentTextFile("myinput.txt", /* maxWidth */ 75, /* maxHeight */ 30);
 }
 
-//#undef main
-//int main(int argc, char** argv) {
-//    studentMain();
+// this just needs to be here so that it will become studentMain()
+int main() {
+    return 0;
+}
+
+#undef main
+int main(int argc, char** argv) {
+    // autograder::setShowLateDays(true);    // this is the default
+    version::ensureProjectVersion("2014/10/31");
+    autograder::setAssignmentName("CS 106B Test");
+    autograder::setAboutMessage("TEST 1 2 3 \nHWX assignment auto-grader by Marty Stepp");
+    // autograder::setStudentProgramFileName("recursionproblems.cpp");
+    autograder::setShowInputPanel(true, "inputpanel-mainfunc.xml");
+    autograder::setGraphicalUI(true);
+    autograder::setTestNameWidth(std::string("test02_abc_oops_real_long_name_gonnaFail").length());
+    autograder::setStartMessage("my start message");
+    autograder::styleCheckAddFile("mainfunc.cpp");
     
-//    // autograder::setShowLateDays(true);    // this is the default
-//    version::ensureProjectVersion("2014/10/31");
-//    autograder::setAssignmentName("CS 106B Test");
-//    autograder::setAboutMessage("TEST 1 2 3 \nHWX assignment auto-grader by Marty Stepp");
-//    // autograder::setStudentProgramFileName("recursionproblems.cpp");
-//    autograder::setShowInputPanel(true, "inputpanel-mainfunc.xml");
-//    // autograder::setGraphicalUI(true);
-//    autograder::setTestNameWidth(std::string("test02_abc_oops_real_long_name_gonnaFail").length());
-//    autograder::setStartMessage("my start message");
-//    autograder::styleCheckAddFile("mainfunc.cpp");
+    autograder::addCallbackButton(showMyInputTxt, "View\nmyinput.txt", "textfile.gif");
+    // autograder::setCallbackStart(before);
+    // autograder::setCallbackEnd(after);
     
-//    autograder::addCallbackButton(showMyInputTxt, "View\nmyinput.txt", "textfile.gif");
-//    // autograder::setCallbackStart(before);
-//    // autograder::setCallbackEnd(after);
-    
-//    return autograder::autograderMain(argc, argv);
-//}
+    return autograder::autograderMain(argc, argv);
+}

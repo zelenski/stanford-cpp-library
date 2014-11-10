@@ -92,12 +92,12 @@ int main() {
 //        cout << "hello" << endl;
 //    }
 
-    getPlatform()->setStackSize(1024*1024*128);
-    stackOverflowTest();
+//    getPlatform()->setStackSize(1024*1024*128);
+//    stackOverflowTest();
     
-    //coutCerrMixTest();
+    coutCerrMixTest();
     
-    //exceptionTest();
+    exceptionTest();
     
 //    string input = getLine("How are you doing? ");
 //    cout << "You said, \"" << input << "\"." << endl;

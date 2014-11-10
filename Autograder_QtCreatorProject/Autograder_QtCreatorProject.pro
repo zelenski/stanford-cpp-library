@@ -98,7 +98,7 @@ DEFINES += SPL_CONSOLE_FONTSIZE=14
 DEFINES += SPL_CONSOLE_ECHO
 DEFINES += SPL_CONSOLE_EXIT_ON_CLOSE
 DEFINES += SPL_VERIFY_JAVA_BACKEND_VERSION
-DEFINES += SPL_PROJECT_VERSION=20141031
+DEFINES += SPL_PROJECT_VERSION=20141105
 
 # directories examined by Qt Creator when student writes an #include statement
 INCLUDEPATH += $$PWD/lib/StanfordCPPLib/
@@ -220,7 +220,7 @@ exists($$PWD/lib/autograder/*.cpp) {
     HEADERS += $$PWD/lib/autograder/*.h
     INCLUDEPATH += $$PWD/lib/StanfordCPPLib/private/
     INCLUDEPATH += $$PWD/lib/autograder/
-#    DEFINES += SPL_AUTOGRADER_MODE
+    DEFINES += SPL_AUTOGRADER_MODE
 
     # a check to ensure that required autograder resources are present in this project
     !exists($$PWD/res/autograder/pass.gif) {

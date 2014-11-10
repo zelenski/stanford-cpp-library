@@ -41,7 +41,6 @@ int execAndCapture(std::string cmd, std::string& output) {
     return pclose(pipe);
 }
 
-// "_Z4Mainv at /home/stepp/.../FooProject/src/mainfunc.cpp:131"
 std::string addr2line_clean(std::string line) {
 #if defined(_WIN32)
     // TODO: implement on Windows
@@ -56,7 +55,8 @@ std::string addr2line_clean(std::string line) {
     }
     line = trim(line);
 #elif defined(__GNUC__)
-    // Linux version
+    // Linux version (addr2line)
+    // "_Z4Mainv at /home/stepp/.../FooProject/src/mainfunc.cpp:131"
     if (line.find(" at ") != std::string::npos) {
         line = line.substr(line.rfind(" at ") + 4);
     }
