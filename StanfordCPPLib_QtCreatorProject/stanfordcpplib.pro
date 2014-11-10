@@ -84,6 +84,10 @@ unix:!macx {
 # increase system stack size (helpful for recursive programs)
 win32 {
     QMAKE_LFLAGS += -Wl,--stack,536870912
+    LIBS += -lDbghelp
+    LIBS += -lbfd
+    LIBS += -liberty
+    LIBS += -limagehlp
 }
 macx {
     QMAKE_LFLAGS += -Wl,-stack_size,0x20000000
