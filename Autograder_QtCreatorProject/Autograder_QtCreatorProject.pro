@@ -10,6 +10,8 @@
 # - re-open and "Configure" your project again.
 #
 # @author Marty Stepp, Reid Watson, Rasmus Rygaard, Jess Fisher, etc.
+# @version 2014/11/10
+# - fixes related to generating stack traces
 # @version 2014/11/05
 # - improved/fixed flags for exception-handling
 # @version 2014/10/31
@@ -84,6 +86,10 @@ unix:!macx {
 # increase system stack size (helpful for recursive programs)
 win32 {
     QMAKE_LFLAGS += -Wl,--stack,536870912
+    LIBS += -lDbghelp
+    LIBS += -lbfd
+    LIBS += -liberty
+    LIBS += -limagehlp
 }
 macx {
     QMAKE_LFLAGS += -Wl,-stack_size,0x20000000
@@ -98,7 +104,7 @@ DEFINES += SPL_CONSOLE_FONTSIZE=14
 DEFINES += SPL_CONSOLE_ECHO
 DEFINES += SPL_CONSOLE_EXIT_ON_CLOSE
 DEFINES += SPL_VERIFY_JAVA_BACKEND_VERSION
-DEFINES += SPL_PROJECT_VERSION=20141105
+DEFINES += SPL_PROJECT_VERSION=20141110
 
 # directories examined by Qt Creator when student writes an #include statement
 INCLUDEPATH += $$PWD/lib/StanfordCPPLib/
