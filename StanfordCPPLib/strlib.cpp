@@ -70,7 +70,17 @@ bool equalsIgnoreCase(const std::string& s1, const std::string& s2) {
  * ----------------------------------------
  * These functions use the <sstream> library to perform the conversion.
  */
+std::string doubleToString(double d) {
+    return realToString(d);
+}
+
 std::string integerToString(int n) {
+    std::ostringstream stream;
+    stream << n;
+    return stream.str();
+}
+
+std::string longToString(long n) {
     std::ostringstream stream;
     stream << n;
     return stream.str();
@@ -99,9 +109,20 @@ bool stringIsBool(const std::string& str) {
     return str == "true" || str == "false";
 }
 
+bool stringIsDouble(const std::string& str) {
+    return stringIsReal(str);
+}
+
 bool stringIsInteger(const std::string& str) {
     std::istringstream stream(str);
     int value;
+    stream >> value >> std::ws;
+    return !(stream.fail() || !stream.eof());
+}
+
+bool stringIsLong(const std::string& str) {
+    std::istringstream stream(str);
+    long value;
     stream >> value >> std::ws;
     return !(stream.fail() || !stream.eof());
 }
@@ -131,12 +152,26 @@ char stringToChar(const std::string& str) {
     return str2[0];
 }
 
+double stringToDouble(const std::string& str) {
+    return stringToReal(str);
+}
+
 int stringToInteger(const std::string& str) {
     std::istringstream stream(str);
     int value;
     stream >> value >> std::ws;
     if (stream.fail() || !stream.eof()) {
         error("stringToInteger: Illegal integer format (" + str + ")");
+    }
+    return value;
+}
+
+long stringToLong(const std::string& str) {
+    std::istringstream stream(str);
+    long value;
+    stream >> value >> std::ws;
+    if (stream.fail() || !stream.eof()) {
+        error("stringToInteger: Illegal long format (" + str + ")");
     }
     return value;
 }
@@ -236,8 +271,8 @@ bool stringContains(const std::string& s, const std::string& substring) {
     return s.find(substring) != std::string::npos;
 }
 
-int stringIndexOf(const std::string& s, const std::string& substring) {
-    size_t index = s.find(substring);
+int stringIndexOf(const std::string& s, const std::string& substring, int startIndex) {
+    size_t index = s.find(substring, (size_t) startIndex);
     if (index == std::string::npos) {
         return -1;
     } else {
@@ -245,8 +280,8 @@ int stringIndexOf(const std::string& s, const std::string& substring) {
     }
 }
 
-int stringLastIndexOf(const std::string& s, const std::string& substring) {
-    size_t index = s.rfind(substring);
+int stringLastIndexOf(const std::string& s, const std::string& substring, int startIndex) {
+    size_t index = s.rfind(substring, (size_t) startIndex);
     if (index == std::string::npos) {
         return -1;
     } else {

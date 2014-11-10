@@ -65,6 +65,16 @@ bool equalsIgnoreCase(const std::string& s1, const std::string& s2);
 std::string integerToString(int n);
 
 /*
+ * Function: longToString
+ * Usage: string s = longToString(n);
+ * ----------------------------------
+ * Converts an integer into the corresponding string of digits.
+ * For example, calling <code>longToString(123)</code> returns
+ * the string <code>"123"</code>.
+ */
+std::string longToString(long n);
+
+/*
  * Function: realToString
  * Usage: string s = realToString(d);
  * ----------------------------------
@@ -73,6 +83,7 @@ std::string integerToString(int n);
  * the string <code>"23.45"</code>.
  */
 std::string realToString(double d);
+std::string doubleToString(double d);   // alias
 
 /*
  * Function: startsWith
@@ -95,7 +106,7 @@ bool stringContains(const std::string& s, const std::string& substring);
  * This function is very similar to string.find, but find returns string::npos
  * when the string is not found.
  */
-int stringIndexOf(const std::string& s, const std::string& substring);
+int stringIndexOf(const std::string& s, const std::string& substring, int startIndex = 0);
 
 /*
  * Returns true if the given string is either "true" or "false".
@@ -110,11 +121,19 @@ bool stringIsBool(const std::string& str);
 bool stringIsInteger(const std::string& str);
 
 /*
+ * Returns true if the given string could be converted to a long
+ * successfully by the stringToLong function, which will be true if
+ * the string has the format of an integer such as "1234" or "-8".
+ */
+bool stringIsLong(const std::string& str);
+
+/*
  * Returns true if the given string could be converted to an real number
  * successfully by the stringToReal function, which will be true if
  * the string has the format of a real number such as "3.14" or "-46".
  */
 bool stringIsReal(const std::string& str);
+bool stringIsDouble(const std::string& str);   // alias
 
 /*
  * Combines the elements of the given STL vector into a single string,
@@ -130,7 +149,7 @@ std::string stringJoin(const std::vector<std::string>& v, const std::string& del
  * This function is very similar to string.rfind, but rfind returns string::npos
  * when the string is not found.
  */
-int stringLastIndexOf(const std::string& s, const std::string& substring);
+int stringLastIndexOf(const std::string& s, const std::string& substring, int startIndex = 0);
 
 /*
  * Returns a new string formed by replacing any occurrences of the given 'old'
@@ -177,6 +196,17 @@ char stringToChar(const std::string& str);
 int stringToInteger(const std::string& str);
 
 /*
+ * Function: stringToLong
+ * Usage: long n = stringToLong(str);
+ * ----------------------------------
+ * Converts a string of digits into a long.  If the string is not a
+ * legal long or contains extraneous characters other than whitespace,
+ * <code>stringToLong</code> calls <code>error</code> with an
+ * appropriate message.
+ */
+long stringToLong(const std::string& str);
+
+/*
  * Function: stringToReal
  * Usage: double d = stringToReal(str);
  * ------------------------------------
@@ -186,6 +216,7 @@ int stringToInteger(const std::string& str);
  * calls <code>error</code> with an appropriate message.
  */
 double stringToReal(const std::string& str);
+double stringToDouble(const std::string& str);   // alias
 
 /*
  * Function: toLowerCase
