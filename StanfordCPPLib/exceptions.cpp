@@ -1,6 +1,22 @@
+/*
+ * File: exceptions.cpp
+ * --------------------
+ * This file contains a top-level exception handler to print exceptions thrown
+ * by student code on the console.
+ * 
+ * @author Marty Stepp
+ * @version 2014/11/12
+ * - made printStackTrace function publicly available
+ * - added top-level signal handler (for null-pointer derefs etc.)
+ * @since 2014/11/05
+ */
+
+#include "exceptions.h"
+#include <csignal>
 #include <iomanip>
 #include <iostream>
 #include <string>
+#include <vector>
 #include "error.h"
 #include "filelib.h"
 #include "strlib.h"
@@ -13,7 +29,9 @@ namespace exceptions {
 static bool topLevelExceptionHandlerEnabled = false;
 static void (*old_terminate)() = NULL;
 static std::string PROGRAM_NAME = "";
+static std::vector<int> SIGNALS_HANDLED;
 
+static void stanfordCppLibSignalHandler(int sig);
 static void stanfordCppLibTerminateHandler();
 
 std::string getProgramNameForStackTrace() {
@@ -60,22 +78,42 @@ void setTopLevelExceptionHandlerEnabled(bool enabled) {
         //_CrtSetReportMode(_CRT_ASSERT, 0);
 
 #endif // _WIN32
+        
+        // also set up a signal handler for things like segfaults / null-pointer-dereferences
+        SIGNALS_HANDLED.clear();
+        SIGNALS_HANDLED.push_back(SIGSEGV);
+        SIGNALS_HANDLED.push_back(SIGILL);
+        SIGNALS_HANDLED.push_back(SIGFPE);
+        for (int sig : SIGNALS_HANDLED) {
+            signal(sig, stanfordCppLibSignalHandler);
+        }
     } else if (topLevelExceptionHandlerEnabled && !enabled) {
         std::set_terminate(old_terminate);
     }
     topLevelExceptionHandlerEnabled = enabled;
 }
 
+/*
+ * Some lines from the stack trace are filtered out because they come from
+ * private library code or OS code and would confuse the student.
+ */
 static bool shouldFilterOutFromStackTrace(const std::string& function) {
     return startsWith(function, "__")
             || function == "error(string)"
+            || function == "error"
             || function.find("stacktrace::") != std::string::npos
-            || function.find("print_stack_trace") != std::string::npos
+            || function.find("printStackTrace") != std::string::npos
+            || function.find("stanfordCppLibSignalHandler") != std::string::npos
             || function.find("stanfordCppLibTerminateHandler") != std::string::npos
             || function.find("InitializeExceptionChain") != std::string::npos
             || function.find("BaseThreadInitThunk") != std::string::npos
             || function.find("crtexe.c") != std::string::npos
+            || function.find("autograderMain") != std::string::npos
             || function == "startupMain(int, char**)";
+}
+
+void printStackTrace() {
+    printStackTrace(std::cerr);
 }
 
 void printStackTrace(std::ostream& out) {
@@ -181,6 +219,46 @@ void printStackTrace(std::ostream& out) {
     printStackTrace(out); \
     THROW_NOT_ON_WINDOWS(ex);
 
+/*
+ * A general handler for process signals.
+ * Prints details about the signal and then tries to print a stack trace.
+ */
+static void stanfordCppLibSignalHandler(int sig) {
+    // turn the signal handler off (should run only once; avoid infinite cycle)
+    for (int sig : SIGNALS_HANDLED) {
+        signal(sig, SIG_DFL);
+    }
+    
+    // tailor the error message to the kind of signal that occurred
+    std::string SIGNAL_KIND = "A fatal signal error";
+    std::string SIGNAL_DETAILS = "";
+    if (sig == SIGSEGV) {
+        SIGNAL_KIND = "A segmentation fault";
+        SIGNAL_DETAILS = "This typically happens when you try to dereference a pointer\n *** that is NULL or invalid.";
+    } else if (sig == SIGILL) {
+        SIGNAL_KIND = "An illegal instruction error";
+        SIGNAL_DETAILS = "This typically happens when you have corrupted your program's memory.";
+    } else if (sig == SIGFPE) {
+        SIGNAL_KIND = "An arithmetic error";
+        SIGNAL_DETAILS = "This typically happens when you divide by 0 or produce an overflow.";
+    }
+    
+    std::cerr << std::endl;
+    std::cerr << " ***" << std::endl;
+    std::cerr << " *** STANFORD C++ LIBRARY" << std::endl;
+    std::cerr << " *** " << SIGNAL_KIND << " occurred during program execution." << std::endl;
+    std::cerr << " *** " << SIGNAL_DETAILS << std::endl;;
+    std::cerr << " ***" << std::endl;;
+    
+    exceptions::printStackTrace();
+    std::cerr.flush();
+    raise(sig);
+}
+
+/*
+ * A general handler for any uncaught exception.
+ * Prints details about the exception and then tries to print a stack trace.
+ */
 static void stanfordCppLibTerminateHandler() {
     std::string DEFAULT_EXCEPTION_KIND = "An exception";
     std::string DEFAULT_EXCEPTION_DETAILS = "(unknown exception details)";

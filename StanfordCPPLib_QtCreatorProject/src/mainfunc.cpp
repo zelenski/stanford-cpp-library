@@ -1,6 +1,5 @@
 /*
  * Test file for verifying the Stanford C++ autograder lib functionality.
- * INSTRUCTOR'S SOLUTION, do not distribute!
  */
 
 #include <iostream>
@@ -9,6 +8,7 @@
 #include "platform.h"
 #include "simpio.h"
 #include "private/version.h"
+#include "exceptions.h"
 using namespace std;
 
 /*
@@ -81,6 +81,29 @@ void stackOverflowTest(int n = 0) {
     stackOverflowTest(n+1);
 }
 
+void segC() {
+    // divide by 0 (generate SIGFPE)
+    int a = 1;
+    int b = 0;
+    cout << (a/b) << endl;
+    
+    // dereference a NULL pointer (generate SIGSEGV)
+    int* foo = 0;
+    cout << *foo << endl;
+}
+
+void segB() {
+    segC();
+}
+
+void segA() {
+    segB();
+}
+
+void segfaultTest() {
+    segA();
+}
+
 #include "platform.h"
 
 /*
@@ -97,7 +120,9 @@ int main() {
     
     coutCerrMixTest();
     
-    exceptionTest();
+//  exceptionTest();
+    
+    segfaultTest();
     
 //    string input = getLine("How are you doing? ");
 //    cout << "You said, \"" << input << "\"." << endl;

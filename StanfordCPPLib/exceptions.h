@@ -8,7 +8,8 @@
  * 
  * @author Marty Stepp
  * @version 2014/11/12
- * - made print_stack_trace function publicly available
+ * - made printStackTrace function publicly available
+ * - added top-level signal handler (for null-pointer derefs etc.)
  * @since 2014/11/05
  */
 
@@ -37,7 +38,8 @@ bool getTopLevelExceptionHandlerEnabled();
  *  may not work perfectly on all platforms.  It has been tested to work
  *  on Linux with GCC/G++, Mac OS X with clang++, and Windows with MinGW.)
  */
-void printStackTrace(std::ostream& out = std::cerr);
+void printStackTrace();
+void printStackTrace(std::ostream& out);
 
 /*
  * Called by C++ lib's main wrapper so that the stack trace knows the program's name.
