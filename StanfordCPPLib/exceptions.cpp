@@ -78,7 +78,7 @@ static bool shouldFilterOutFromStackTrace(const std::string& function) {
             || function == "startupMain(int, char**)";
 }
 
-void print_stack_trace() {
+void printStackTrace(std::ostream& out) {
     stacktrace::call_stack trace;
     std::vector<stacktrace::entry> entries = trace.stack;
     
@@ -111,16 +111,16 @@ void print_stack_trace() {
     }
     
     if (lineStrLength > 0) {
-        std::cerr << " *** Stack trace (line numbers are approximate):" << std::endl;
+        out << " *** Stack trace (line numbers are approximate):" << std::endl;
         if (SHOW_TOP_BOTTOM_BARS) {
-            std::cerr << " *** "
+            out << " *** "
                       << std::setw(lineStrLength) << std::left
                       << "file:line" << "  " << "function" << std::endl;
-            std::cerr << " *** "
+            out << " *** "
                       << std::string(lineStrLength + 2 + funcNameLength, '=') << std::endl;
         }
     } else {
-        std::cerr << " *** Stack trace:" << std::endl;
+        out << " *** Stack trace:" << std::endl;
     }
     
     for (size_t i = 0; i < entries.size(); ++i) {
@@ -144,7 +144,7 @@ void print_stack_trace() {
             lineStr = "line " + integerToString(entry.line);
         }
         
-        std::cerr << " *** " << std::left << std::setw(lineStrLength) << lineStr
+        out << " *** " << std::left << std::setw(lineStrLength) << lineStr
                   << "  " << entry.function << std::endl;
         
         // don't show entries beneath the student's main() function, for simplicity
@@ -153,17 +153,17 @@ void print_stack_trace() {
         }
     }
     if (SHOW_TOP_BOTTOM_BARS && lineStrLength > 0) {
-        std::cerr << " *** "
+        out << " *** "
                   << std::string(lineStrLength + 2 + funcNameLength, '=') << std::endl;
     }
     
-//    std::cerr << " ***" << std::endl;
-//    std::cerr << " *** NOTE:" << std::endl;
-//    std::cerr << " *** Any line numbers listed above are approximate." << std::endl;
-//    std::cerr << " *** To learn more about why the program crashed, we" << std::endl;
-//    std::cerr << " *** suggest running your program under the debugger." << std::endl;
+//    out << " ***" << std::endl;
+//    out << " *** NOTE:" << std::endl;
+//    out << " *** Any line numbers listed above are approximate." << std::endl;
+//    out << " *** To learn more about why the program crashed, we" << std::endl;
+//    out << " *** suggest running your program under the debugger." << std::endl;
     
-    std::cerr << " ***" << std::endl;
+    out << " ***" << std::endl;
 }
 
 // macro to avoid lots of redundancy in catch statements below
@@ -178,7 +178,7 @@ void print_stack_trace() {
     if ((!std::string(desc).empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_DETAILS, (desc)); } \
     std::cout.flush(); \
     out << msg; \
-    print_stack_trace(); \
+    printStackTrace(out); \
     THROW_NOT_ON_WINDOWS(ex);
 
 static void stanfordCppLibTerminateHandler() {

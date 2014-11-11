@@ -7,12 +7,15 @@
  * exception is thrown, though it is hard to consistently do this on all platforms.
  * 
  * @author Marty Stepp
- * @version 2014/11/05
+ * @version 2014/11/12
+ * - made print_stack_trace function publicly available
  * @since 2014/11/05
  */
 
 #ifndef _exceptions_h
 #define _exceptions_h
+
+#include <iostream>
 
 namespace exceptions {
 /*
@@ -26,6 +29,15 @@ std::string getProgramNameForStackTrace();
  * Initially false.
  */
 bool getTopLevelExceptionHandlerEnabled();
+
+/*
+ * Prints a stack trace to the given output stream.
+ * Defaults to the system standard error console (cerr).
+ * (Stack traces are highly OS- and compiler-dependent, so this function
+ *  may not work perfectly on all platforms.  It has been tested to work
+ *  on Linux with GCC/G++, Mac OS X with clang++, and Windows with MinGW.)
+ */
+void printStackTrace(std::ostream& out = std::cerr);
 
 /*
  * Called by C++ lib's main wrapper so that the stack trace knows the program's name.
