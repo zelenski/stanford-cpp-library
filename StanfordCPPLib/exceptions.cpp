@@ -5,6 +5,9 @@
 #include "filelib.h"
 #include "strlib.h"
 #include "call_stack.h"
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 namespace exceptions {
 static bool topLevelExceptionHandlerEnabled = false;
@@ -25,13 +28,54 @@ void setProgramNameForStackTrace(char* programName) {
     PROGRAM_NAME = programName;
 }
 
+#ifdef _WIN32
+void myInvalidParameterHandler(const wchar_t* expression,
+   const wchar_t* function,
+   const wchar_t* file,
+   unsigned int line,
+   uintptr_t /*pReserved*/) {
+   wprintf(L"Invalid parameter detected in function %s."
+            L" File: %s Line: %d\n", function, file, line);
+   wprintf(L"Expression: %s\n", expression);
+}
+
+LONG WINAPI UnhandledException(LPEXCEPTION_POINTERS /*exceptionInfo*/) {
+    printf("In unhandled exception filter func\n");
+    fflush(stdout);
+    stanfordCppLibTerminateHandler();
+    return EXCEPTION_EXECUTE_HANDLER;
+}
+#endif // _WIN32
+
 void setTopLevelExceptionHandlerEnabled(bool enabled) {
     if (!topLevelExceptionHandlerEnabled && enabled) {
         old_terminate = std::set_terminate(stanfordCppLibTerminateHandler);
+#ifdef _WIN32
+
+        SetUnhandledExceptionFilter(UnhandledException);
+        _invalid_parameter_handler newHandler;
+        newHandler = myInvalidParameterHandler;
+        _set_invalid_parameter_handler(newHandler);
+        // Disable the message box for assertions.
+        //_CrtSetReportMode(_CRT_ASSERT, 0);
+
+#endif // _WIN32
     } else if (topLevelExceptionHandlerEnabled && !enabled) {
         std::set_terminate(old_terminate);
     }
     topLevelExceptionHandlerEnabled = enabled;
+}
+
+static bool shouldFilterOutFromStackTrace(const std::string& function) {
+    return startsWith(function, "__")
+            || function == "error(string)"
+            || function.find("stacktrace::") != std::string::npos
+            || function.find("print_stack_trace") != std::string::npos
+            || function.find("stanfordCppLibTerminateHandler") != std::string::npos
+            || function.find("InitializeExceptionChain") != std::string::npos
+            || function.find("BaseThreadInitThunk") != std::string::npos
+            || function.find("crtexe.c") != std::string::npos
+            || function == "startupMain(int, char**)";
 }
 
 void print_stack_trace() {
@@ -39,11 +83,11 @@ void print_stack_trace() {
     std::vector<stacktrace::entry> entries = trace.stack;
     
     // get longest line string length to line up stack traces
+    const bool SHOULD_FILTER = true;
+    const bool SHOW_TOP_BOTTOM_BARS = false;
     int funcNameLength = 0;
     int lineStrLength = 0;
     for (size_t i = 0; i < entries.size(); ++i) {
-        lineStrLength = std::max(lineStrLength, (int) entries[i].lineStr.length());
-        
         // remove references to std:: namespace
         stringReplaceInPlace(entries[i].function, "std::", "");
         
@@ -56,7 +100,10 @@ void print_stack_trace() {
             }
         }
         
-        funcNameLength = std::max(funcNameLength, (int) entries[i].function.length());
+        if (!SHOULD_FILTER || !shouldFilterOutFromStackTrace(entries[i].function)) {
+            lineStrLength = std::max(lineStrLength, (int) entries[i].lineStr.length());
+            funcNameLength = std::max(funcNameLength, (int) entries[i].function.length());
+        }
     }
     
     if (entries.empty()) {
@@ -65,11 +112,13 @@ void print_stack_trace() {
     
     if (lineStrLength > 0) {
         std::cerr << " *** Stack trace (line numbers are approximate):" << std::endl;
-        std::cerr << " *** "
-                  << std::setw(lineStrLength) << std::left
-                  << "file:line" << " function" << std::endl;
-        std::cerr << " *** "
-                  << std::string(lineStrLength + 1 + funcNameLength, '=') << std::endl;
+        if (SHOW_TOP_BOTTOM_BARS) {
+            std::cerr << " *** "
+                      << std::setw(lineStrLength) << std::left
+                      << "file:line" << "  " << "function" << std::endl;
+            std::cerr << " *** "
+                      << std::string(lineStrLength + 2 + funcNameLength, '=') << std::endl;
+        }
     } else {
         std::cerr << " *** Stack trace:" << std::endl;
     }
@@ -79,12 +128,7 @@ void print_stack_trace() {
         entry.file = getTail(entry.file);
         
         // skip certain entries for clarity
-        if (startsWith(entry.function, "__")
-                || entry.function.find("stacktrace::") != std::string::npos
-                || entry.function == "exceptions::print_stack_trace()"
-                || entry.function == "exceptions::stanfordCppLibTerminateHandler()"
-                || entry.function == "error(string)"
-                || entry.function == "startupMain(int, char**)") {
+        if (SHOULD_FILTER && shouldFilterOutFromStackTrace(entry.function)) {
             continue;
         }
         
@@ -94,27 +138,23 @@ void print_stack_trace() {
         }
         
         std::string lineStr = "";
-        if (entry.line > 0) {
-            lineStr = "line " + integerToString(entry.line);
-        } else if (!entry.lineStr.empty()) {
+        if (!entry.lineStr.empty()) {
             lineStr = entry.lineStr;
+        } else if (entry.line > 0) {
+            lineStr = "line " + integerToString(entry.line);
         }
         
-        std::cerr << " *** ";
-        if (!lineStr.empty()) {
-            std::cerr << std::left << std::setw(lineStrLength) << lineStr << " ";
-        }
-        std::cerr << entry.function;
-        std::cerr << std::endl;
+        std::cerr << " *** " << std::left << std::setw(lineStrLength) << lineStr
+                  << "  " << entry.function << std::endl;
         
         // don't show entries beneath the student's main() function, for simplicity
         if (entry.function == "main()") {
             break;
         }
     }
-    if (lineStrLength > 0) {
+    if (SHOW_TOP_BOTTOM_BARS && lineStrLength > 0) {
         std::cerr << " *** "
-                  << std::string(lineStrLength + 1 + funcNameLength, '=') << std::endl;
+                  << std::string(lineStrLength + 2 + funcNameLength, '=') << std::endl;
     }
     
 //    std::cerr << " ***" << std::endl;
@@ -127,13 +167,19 @@ void print_stack_trace() {
 }
 
 // macro to avoid lots of redundancy in catch statements below
+#ifdef _WIN32
+#define THROW_NOT_ON_WINDOWS(ex)
+#else
+#define THROW_NOT_ON_WINDOWS(ex) throw(ex)
+#endif // _WIN32
+
 #define FILL_IN_EXCEPTION_TRACE(ex, kind, desc) \
     if ((!std::string(kind).empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_KIND, (kind)); } \
     if ((!std::string(desc).empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_DETAILS, (desc)); } \
     std::cout.flush(); \
     out << msg; \
     print_stack_trace(); \
-    throw ex;
+    THROW_NOT_ON_WINDOWS(ex);
 
 static void stanfordCppLibTerminateHandler() {
     std::string DEFAULT_EXCEPTION_KIND = "An exception";

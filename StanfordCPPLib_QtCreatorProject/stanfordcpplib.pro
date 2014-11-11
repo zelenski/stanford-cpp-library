@@ -10,7 +10,7 @@
 # - re-open and "Configure" your project again.
 #
 # @author Marty Stepp, Reid Watson, Rasmus Rygaard, Jess Fisher, etc.
-# @version 2014/11/10
+# @version 2014/11/12
 # - fixes related to generating stack traces
 # @version 2014/11/05
 # - improved/fixed flags for exception-handling
@@ -37,6 +37,15 @@ CONFIG += no_include_pwd
     error(Exiting.)
 }
 
+win32 {
+    !exists($$PWD/lib/addr2line.exe) {
+        message(*** Stanford C++ library support file 'addr2line.exe' not found!)
+        message(*** Our library needs this file present to produce stack traces.)
+        message(*** Place that file into your lib/ folder and try again.)
+        error(Exiting.)
+    }
+}
+
 # include various source .cpp files and header .h files in the build process
 # (student's source code can be put into project root, or src/ subfolder)
 SOURCES += $$PWD/lib/StanfordCPPLib/*.cpp
@@ -61,7 +70,7 @@ exists($$PWD/*.h) {
 # set up flags for the C++ compiler
 # (In general, many warnings/errors are enabled to tighten compile-time checking.
 # A few overly pedantic/confusing errors are turned off for simplicity.)
-QMAKE_CXXFLAGS += -std=c++0x
+QMAKE_CXXFLAGS += -std=c++11
 QMAKE_CXXFLAGS += -Wall
 QMAKE_CXXFLAGS += -Wextra
 QMAKE_CXXFLAGS += -Wreturn-type
@@ -104,7 +113,7 @@ DEFINES += SPL_CONSOLE_FONTSIZE=14
 DEFINES += SPL_CONSOLE_ECHO
 DEFINES += SPL_CONSOLE_EXIT_ON_CLOSE
 DEFINES += SPL_VERIFY_JAVA_BACKEND_VERSION
-DEFINES += SPL_PROJECT_VERSION=20141110
+DEFINES += SPL_PROJECT_VERSION=20141112
 
 # directories examined by Qt Creator when student writes an #include statement
 INCLUDEPATH += $$PWD/lib/StanfordCPPLib/
@@ -156,7 +165,8 @@ CONFIG(debug, debug|release) {
     # make 'debug' target use no optimization, generate debugger symbols,
     # and catch/print any uncaught exceptions thrown by the program
     QMAKE_CXXFLAGS += -O0
-    QMAKE_CXXFLAGS += -g
+    QMAKE_CXXFLAGS += -g3
+    QMAKE_CXXFLAGS += -ggdb3
     DEFINES += SPL_CONSOLE_PRINT_EXCEPTIONS
 }
 
@@ -192,12 +202,16 @@ defineTest(copyToDestdir) {
 win32 {
     copyToDestdir($$PWD/res)
     copyToDestdir($$PWD/lib/*.jar)
+    copyToDestdir($$PWD/lib/addr2line.exe)
     exists($$PWD/*.txt) {
         copyToDestdir($$PWD/*.txt)
     }
 }
 
 copyResources.input += $$files($$PWD/lib/*.jar)
+win32 {
+    copyResources.input += $$files($$PWD/lib/addr2line.exe)
+}
 copyResources.input += $$files($$PWD/res/*)
 exists($$PWD/*.txt) {
     copyResources.input += $$files($$PWD/*.txt)

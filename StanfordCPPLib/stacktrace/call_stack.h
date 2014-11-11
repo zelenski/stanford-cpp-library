@@ -8,6 +8,11 @@
 
 namespace stacktrace {
 
+int execAndCapture(std::string cmd, std::string& output);
+int addr2line(void* addr, std::string& line);
+int addr2line_all(void** addrs, int length, std::string& output);
+std::string addr2line_clean(std::string line);
+
 /** Call-stack entry datastructure. */
 struct entry {
     /** Default constructor that clears all fields. */
