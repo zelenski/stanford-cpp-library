@@ -6,7 +6,16 @@
 #ifdef __GNUC__
 #include <stdio.h>
 #include <cxxabi.h>
-#ifndef _WIN32
+#ifdef _WIN32
+#include <windows.h>
+#include <tchar.h>
+#include <stdio.h>
+#include <strsafe.h>
+#  undef MOUSE_EVENT
+#  undef KEY_EVENT
+#  undef MOUSE_MOVED
+#  undef HELP_KEY
+#else
 #include <execinfo.h>
 #include <dlfcn.h>
 #endif // _WIN32
@@ -18,13 +27,91 @@
 #include "call_stack.h"
 #include "exceptions.h"
 #include "strlib.h"
+#include "platform.h"
 
 namespace stacktrace {
+static void* fakeCallStackPointer = NULL;
+
 /*
  * Run a sub-process and capture its output.
  */
 int execAndCapture(std::string cmd, std::string& output) {
-    cmd += " 2>&1";
+    // cmd += " 2>&1";
+
+#ifdef _WIN32
+    // Windows code for external process (ugly)
+    HANDLE g_hChildStd_IN_Rd = NULL;
+    HANDLE g_hChildStd_IN_Wr = NULL;
+    HANDLE g_hChildStd_OUT_Rd = NULL;
+    HANDLE g_hChildStd_OUT_Wr = NULL;
+    SECURITY_ATTRIBUTES saAttr;
+    saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
+    saAttr.bInheritHandle = TRUE;
+    saAttr.lpSecurityDescriptor = NULL;
+    if (!CreatePipe(&g_hChildStd_OUT_Rd, &g_hChildStd_OUT_Wr, &saAttr, 0)) {
+        return 1;   // fail
+    }
+    if (!SetHandleInformation(g_hChildStd_OUT_Rd, HANDLE_FLAG_INHERIT, 0)) {
+        return 1;   // fail
+    }
+    if (!CreatePipe(&g_hChildStd_IN_Rd, &g_hChildStd_IN_Wr, &saAttr, 0)) {
+        return 1;   // fail
+    }
+    if (!SetHandleInformation(g_hChildStd_IN_Wr, HANDLE_FLAG_INHERIT, 0) ) {
+        return 1;   // fail
+    }
+
+    // CreateChildProcess();
+    PROCESS_INFORMATION piProcInfo;
+    STARTUPINFOA siStartInfo;
+    ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
+    ZeroMemory( &siStartInfo, sizeof(STARTUPINFOA) );
+    siStartInfo.cb = sizeof(STARTUPINFO);
+    siStartInfo.hStdError = g_hChildStd_OUT_Wr;
+    siStartInfo.hStdOutput = g_hChildStd_OUT_Wr;
+    siStartInfo.hStdInput = g_hChildStd_IN_Rd;
+    siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
+
+    if (!CreateProcessA(
+            NULL,
+            (char*) cmd.c_str(),   // command line
+            NULL,                  // process security attributes
+            NULL,                  // primary thread security attributes
+            TRUE,                  // handles are inherited
+            CREATE_NO_WINDOW,      // creation flags
+            NULL,                  // use parent's environment
+            NULL,                  // use parent's current directory
+            &siStartInfo,          // STARTUPINFO pointer
+            &piProcInfo)) {        // receives PROCESS_INFORMATION
+        std::cerr << "CREATE PROCESS FAIL: " << getPlatform()->os_getLastError() << std::endl;
+        std::cerr << cmd << std::endl;
+        return 1;   // fail
+    }
+
+    // close the subprocess's handles (waits for it to finish)
+    WaitForSingleObject(piProcInfo.hProcess, INFINITE);
+    CloseHandle(piProcInfo.hProcess);
+    CloseHandle(piProcInfo.hThread);
+
+    // ReadFromPipe();
+    DWORD dwRead;
+    const int BUFSIZE = 65536;
+    CHAR chBuf[BUFSIZE] = {0};
+    if (!ReadFile(g_hChildStd_OUT_Rd, chBuf, BUFSIZE, &dwRead, NULL) || dwRead == 0) {
+        return 1;
+    }
+    std::ostringstream out;
+    for (int i = 0; i < (int) dwRead; i++) {
+        out.put(chBuf[i]);
+    }
+
+    output = out.str();
+    puts("OUTPUT = ");
+    puts(output.c_str());
+    return 0;
+
+#else
+    // Linux / Mac code for external process
     FILE* pipe = popen(cmd.c_str(), "r");
     if (!pipe) {
         return -1;
@@ -37,6 +124,7 @@ int execAndCapture(std::string cmd, std::string& output) {
         }
     }
     return pclose(pipe);
+#endif // _WIN32
 }
 
 std::string addr2line_clean(std::string line) {
@@ -72,6 +160,15 @@ std::string addr2line_clean(std::string line) {
     return line;
 }
 
+int addr2line_all(std::vector<void*> addrsVector, std::string& output) {
+    int length = (int) addrsVector.size();
+    void* addrs[length];
+    for (int i = 0; i < length; i++) {
+        addrs[i] = addrsVector[i];
+    }
+    return addr2line_all(addrs, length, output);
+}
+
 int addr2line_all(void** addrs, int length, std::string& output) {
     // turn the addresses into a space-separated string
     std::ostringstream out;
@@ -87,7 +184,8 @@ int addr2line_all(void** addrs, int length, std::string& output) {
     out << "atos -o " << exceptions::getProgramNameForStackTrace() << addrsStr;
 #elif defined(_WIN32)
     // Windows
-    out << "start /B /MIN /WAIT addr2line.exe -f -p -s -C -e " << exceptions::getProgramNameForStackTrace() << addrsStr;
+    // out << "start /min /B /wait cmd /C addr2line.exe -f -p -s -C -e " << exceptions::getProgramNameForStackTrace() << addrsStr;
+    out << "addr2line.exe -f -p -s -C -e " << exceptions::getProgramNameForStackTrace() << addrsStr;
 #else
     // Linux
     out << "addr2line -f -C -s -p -e " << exceptions::getProgramNameForStackTrace() << addrsStr;
@@ -105,6 +203,13 @@ int addr2line(void* addr, std::string& line) {
     return addr2line_all(addrs, 1, line);
 }
 
+void* getFakeCallStackPointer() {
+    return fakeCallStackPointer;
+}
+
+void setFakeCallStackPointer(void* ptr) {
+    fakeCallStackPointer = ptr;
+}
 } // namespace stacktrace
 
 
@@ -116,6 +221,7 @@ int addr2line(void* addr, std::string& line) {
 #define MAX_DEPTH 32
 
 namespace stacktrace {
+
 call_stack::call_stack (const size_t num_discard /*= 0*/) {
     using namespace abi;
 

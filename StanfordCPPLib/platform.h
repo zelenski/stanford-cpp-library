@@ -196,6 +196,7 @@ public:
     void jbeconsole_setLocation(int x, int y);
     void jbeconsole_setSize(double width, double height);
     void jbeconsole_toFront();
+    std::string os_getLastError();
     bool regex_match(std::string s, std::string regexp);
     int regex_matchCount(std::string s, std::string regexp);
     int regex_matchCountWithLines(std::string s, std::string regexp, std::string& linesOut);

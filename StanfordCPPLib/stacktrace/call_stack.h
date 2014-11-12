@@ -10,19 +10,28 @@ namespace stacktrace {
 
 int execAndCapture(std::string cmd, std::string& output);
 int addr2line(void* addr, std::string& line);
+int addr2line_all(std::vector<void*> addrsVector, std::string& output);
 int addr2line_all(void** addrs, int length, std::string& output);
 std::string addr2line_clean(std::string line);
+
+/*
+ * Functions to set a fake call stack pointer for use in printing a stack trace.
+ * Called on Windows only after a signal / SEH handler is invoked to get a stack pointer.
+ */
+void* getFakeCallStackPointer();
+void setFakeCallStackPointer(void* ptr);
 
 /** Call-stack entry datastructure. */
 struct entry {
     /** Default constructor that clears all fields. */
-    entry () : line(0) {
+    entry () : line(0), address(NULL) {
     }
 
     std::string file;     ///< filename
     size_t      line;     ///< line number
     std::string lineStr;  ///< line number string (not always set)
     std::string function; ///< name of function or method
+    void* address;        ///< memory address of stack pointer (not always set)
 
     /** Serialize entry into a text string. */
     std::string to_string() const {

@@ -75,7 +75,7 @@ void coutCerrMixTest() {
 }
 
 void stackOverflowTest(int n = 0) {
-    if (n % 10000 == 0) {
+    if (n % 100000 == 0) {
         cout << "stack overflow n=" << n << endl;
     }
     stackOverflowTest(n+1);
@@ -83,9 +83,9 @@ void stackOverflowTest(int n = 0) {
 
 void segC() {
     // divide by 0 (generate SIGFPE)
-    int a = 1;
-    int b = 0;
-    cout << (a/b) << endl;
+//     int a = 1;
+//     int b = 0;
+//     cout << (a/b) << endl;
     
     // dereference a NULL pointer (generate SIGSEGV)
     int* foo = 0;
@@ -101,6 +101,7 @@ void segA() {
 }
 
 void segfaultTest() {
+    cout << "Hello, world!" << endl;
     segA();
 }
 
@@ -116,14 +117,14 @@ int main() {
 //    }
 
 //    getPlatform()->setStackSize(1024*1024*128);
-//    stackOverflowTest();
     
-    coutCerrMixTest();
+//    coutCerrMixTest();
     
-//  exceptionTest();
+//    exceptionTest();
     
-    segfaultTest();
-    
+//    segfaultTest();
+    stackOverflowTest();
+
 //    string input = getLine("How are you doing? ");
 //    cout << "You said, \"" << input << "\"." << endl;
 //    cout << "The end." << endl;

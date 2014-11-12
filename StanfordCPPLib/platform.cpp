@@ -536,6 +536,30 @@ void Platform::setStackSize(unsigned int stackSize) {
 #endif // _WIN32
 }
 
+std::string Platform::os_getLastError() {
+#ifdef _WIN32
+    // Windows error-reporting code
+    DWORD lastErrorCode = ::GetLastError();
+    char* errorMsg = NULL;
+    // Ask Windows to prepare a standard message for a GetLastError() code:
+    ::FormatMessageA(
+                   /* dwFlags */ FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                   /* lpSource */ NULL,
+                   /* dwMessageId */ lastErrorCode,
+                   /* dwLanguageId */ LANG_NEUTRAL,
+                   /* lpBuffer */ (LPSTR) &errorMsg,
+                   /* dwSize */ 0,
+                   /* arguments */ NULL);
+    if (errorMsg) {
+        return std::string(errorMsg);
+    } else {
+        return "";
+    }
+#else
+    // Linux/Mac error-reporting code
+    return std::string(strerror(errno));
+#endif // _WIN32
+}
 
 bool Platform::regex_match(std::string s, std::string regexp) {
     std::ostringstream os;

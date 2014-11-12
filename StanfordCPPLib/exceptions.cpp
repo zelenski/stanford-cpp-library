@@ -23,14 +23,25 @@
 #include "call_stack.h"
 #ifdef _WIN32
 #include <windows.h>
+#  undef MOUSE_EVENT
+#  undef KEY_EVENT
+#  undef MOUSE_MOVED
+#  undef HELP_KEY
 #endif
+#include "platform.h"
 
 namespace exceptions {
+static const int SIGSTACK   = 0xdeadbeef;   // just some value that is not any existing signal
+static const int SIGUNKNOWN = 0xcafebabe;   // just some value that is not any existing signal
+static const bool STACK_TRACE_SHOULD_FILTER = true;
+static const bool STACK_TRACE_SHOW_TOP_BOTTOM_BARS = false;
 static bool topLevelExceptionHandlerEnabled = false;
 static void (*old_terminate)() = NULL;
 static std::string PROGRAM_NAME = "";
 static std::vector<int> SIGNALS_HANDLED;
 
+static void signalHandlerDisable();
+static void signalHandlerEnable();
 static void stanfordCppLibSignalHandler(int sig);
 static void stanfordCppLibTerminateHandler();
 
@@ -57,10 +68,26 @@ void myInvalidParameterHandler(const wchar_t* expression,
    wprintf(L"Expression: %s\n", expression);
 }
 
-LONG WINAPI UnhandledException(LPEXCEPTION_POINTERS /*exceptionInfo*/) {
-    printf("In unhandled exception filter func\n");
-    fflush(stdout);
-    stanfordCppLibTerminateHandler();
+LONG WINAPI UnhandledException(LPEXCEPTION_POINTERS exceptionInfo) {
+    if (exceptionInfo && exceptionInfo->ContextRecord && exceptionInfo->ContextRecord->Eip) {
+        // stacktrace::setFakeCallStackPointer((void*) exceptionInfo->ContextRecord->Eip);
+        stacktrace::setFakeCallStackPointer((void*) exceptionInfo);
+    }
+    DWORD code = exceptionInfo->ExceptionRecord->ExceptionCode;
+    if (code == EXCEPTION_STACK_OVERFLOW || code == EXCEPTION_FLT_STACK_CHECK) {
+        stanfordCppLibSignalHandler(SIGSTACK);
+    } else if (code == EXCEPTION_IN_PAGE_ERROR || code == EXCEPTION_ACCESS_VIOLATION) {
+        stanfordCppLibSignalHandler(SIGSEGV);
+    } else if (code == EXCEPTION_FLT_DENORMAL_OPERAND || code == EXCEPTION_FLT_DIVIDE_BY_ZERO
+               || code == EXCEPTION_FLT_INEXACT_RESULT || code == EXCEPTION_FLT_INVALID_OPERATION
+               || code == EXCEPTION_FLT_OVERFLOW || code == EXCEPTION_FLT_UNDERFLOW
+               || code == EXCEPTION_INT_DIVIDE_BY_ZERO || code == EXCEPTION_INT_OVERFLOW) {
+        stanfordCppLibSignalHandler(SIGFPE);
+    } else if (code == EXCEPTION_ILLEGAL_INSTRUCTION || code == EXCEPTION_PRIV_INSTRUCTION) {
+        stanfordCppLibSignalHandler(SIGILL);
+    } else {
+        stanfordCppLibSignalHandler(SIGUNKNOWN);
+    }
     return EXCEPTION_EXECUTE_HANDLER;
 }
 #endif // _WIN32
@@ -69,24 +96,20 @@ void setTopLevelExceptionHandlerEnabled(bool enabled) {
     if (!topLevelExceptionHandlerEnabled && enabled) {
         old_terminate = std::set_terminate(stanfordCppLibTerminateHandler);
 #ifdef _WIN32
-
+        // disabling this code for now because it messes with the
+        // newly added uncaught signal handler
+        // SetErrorMode(SEM_NOGPFAULTERRORBOX);
+        SetErrorMode(SEM_FAILCRITICALERRORS);
+        SetThreadErrorMode(SEM_FAILCRITICALERRORS, NULL);
         SetUnhandledExceptionFilter(UnhandledException);
-        _invalid_parameter_handler newHandler;
-        newHandler = myInvalidParameterHandler;
-        _set_invalid_parameter_handler(newHandler);
-        // Disable the message box for assertions.
-        //_CrtSetReportMode(_CRT_ASSERT, 0);
-
+        // _invalid_parameter_handler newHandler;
+        // newHandler = myInvalidParameterHandler;
+        // _set_invalid_parameter_handler(newHandler);
+        //_set_error_mode(_OUT_TO_STDERR);
 #endif // _WIN32
         
         // also set up a signal handler for things like segfaults / null-pointer-dereferences
-        SIGNALS_HANDLED.clear();
-        SIGNALS_HANDLED.push_back(SIGSEGV);
-        SIGNALS_HANDLED.push_back(SIGILL);
-        SIGNALS_HANDLED.push_back(SIGFPE);
-        for (int sig : SIGNALS_HANDLED) {
-            signal(sig, stanfordCppLibSignalHandler);
-        }
+        signalHandlerEnable();
     } else if (topLevelExceptionHandlerEnabled && !enabled) {
         std::set_terminate(old_terminate);
     }
@@ -99,17 +122,21 @@ void setTopLevelExceptionHandlerEnabled(bool enabled) {
  */
 static bool shouldFilterOutFromStackTrace(const std::string& function) {
     return startsWith(function, "__")
+            || function == "??"
             || function == "error(string)"
             || function == "error"
+            || function == "startupMain(int, char**)"
             || function.find("stacktrace::") != std::string::npos
             || function.find("printStackTrace") != std::string::npos
             || function.find("stanfordCppLibSignalHandler") != std::string::npos
             || function.find("stanfordCppLibTerminateHandler") != std::string::npos
             || function.find("InitializeExceptionChain") != std::string::npos
             || function.find("BaseThreadInitThunk") != std::string::npos
+            || function.find("GetProfileString") != std::string::npos
+            || function.find("KnownExceptionFilter") != std::string::npos
+            || function.find("UnhandledException") != std::string::npos
             || function.find("crtexe.c") != std::string::npos
-            || function.find("autograderMain") != std::string::npos
-            || function == "startupMain(int, char**)";
+            || function.find("autograderMain") != std::string::npos;
 }
 
 void printStackTrace() {
@@ -117,12 +144,14 @@ void printStackTrace() {
 }
 
 void printStackTrace(std::ostream& out) {
+    // constructing the following object jumps into fancy code in call_stack_gcc/windows.cpp
+    // to rebuild the stack trace; implementation differs for each operating system
     stacktrace::call_stack trace;
     std::vector<stacktrace::entry> entries = trace.stack;
     
     // get longest line string length to line up stack traces
-    const bool SHOULD_FILTER = true;
-    const bool SHOW_TOP_BOTTOM_BARS = false;
+    void* fakeStackPtr = stacktrace::getFakeCallStackPointer();
+    int entriesToShowCount = 0;
     int funcNameLength = 0;
     int lineStrLength = 0;
     for (size_t i = 0; i < entries.size(); ++i) {
@@ -138,19 +167,20 @@ void printStackTrace(std::ostream& out) {
             }
         }
         
-        if (!SHOULD_FILTER || !shouldFilterOutFromStackTrace(entries[i].function)) {
+        if (!STACK_TRACE_SHOULD_FILTER || !shouldFilterOutFromStackTrace(entries[i].function)) {
             lineStrLength = std::max(lineStrLength, (int) entries[i].lineStr.length());
             funcNameLength = std::max(funcNameLength, (int) entries[i].function.length());
+            entriesToShowCount++;
         }
     }
     
-    if (entries.empty()) {
-        return;   // couldn't get a stack trace  :-(
+    if (entries.empty() || entriesToShowCount == 0) {
+        return;   // couldn't get a stack trace, or had no useful data  :-(
     }
     
     if (lineStrLength > 0) {
         out << " *** Stack trace (line numbers are approximate):" << std::endl;
-        if (SHOW_TOP_BOTTOM_BARS) {
+        if (STACK_TRACE_SHOW_TOP_BOTTOM_BARS) {
             out << " *** "
                       << std::setw(lineStrLength) << std::left
                       << "file:line" << "  " << "function" << std::endl;
@@ -166,7 +196,7 @@ void printStackTrace(std::ostream& out) {
         entry.file = getTail(entry.file);
         
         // skip certain entries for clarity
-        if (SHOULD_FILTER && shouldFilterOutFromStackTrace(entry.function)) {
+        if (STACK_TRACE_SHOULD_FILTER && shouldFilterOutFromStackTrace(entry.function)) {
             continue;
         }
         
@@ -190,7 +220,11 @@ void printStackTrace(std::ostream& out) {
             break;
         }
     }
-    if (SHOW_TOP_BOTTOM_BARS && lineStrLength > 0) {
+    if (entries.size() > 0 && entries[0].address == fakeStackPtr) {
+        out << " *** (partial stack due to crash)" << std::endl;
+    }
+
+    if (STACK_TRACE_SHOW_TOP_BOTTOM_BARS && lineStrLength > 0) {
         out << " *** "
                   << std::string(lineStrLength + 2 + funcNameLength, '=') << std::endl;
     }
@@ -219,28 +253,49 @@ void printStackTrace(std::ostream& out) {
     printStackTrace(out); \
     THROW_NOT_ON_WINDOWS(ex);
 
+static void signalHandlerDisable() {
+    for (int sig : SIGNALS_HANDLED) {
+        signal(sig, SIG_DFL);
+    }
+}
+
+static void signalHandlerEnable() {
+    SIGNALS_HANDLED.clear();
+    SIGNALS_HANDLED.push_back(SIGSEGV);
+    SIGNALS_HANDLED.push_back(SIGILL);
+    SIGNALS_HANDLED.push_back(SIGFPE);
+    SIGNALS_HANDLED.push_back(SIGABRT);
+    for (int sig : SIGNALS_HANDLED) {
+        signal(sig, stanfordCppLibSignalHandler);
+    }
+}
+
 /*
  * A general handler for process signals.
  * Prints details about the signal and then tries to print a stack trace.
  */
 static void stanfordCppLibSignalHandler(int sig) {
     // turn the signal handler off (should run only once; avoid infinite cycle)
-    for (int sig : SIGNALS_HANDLED) {
-        signal(sig, SIG_DFL);
-    }
-    
+    signalHandlerDisable();
+
     // tailor the error message to the kind of signal that occurred
-    std::string SIGNAL_KIND = "A fatal signal error";
-    std::string SIGNAL_DETAILS = "";
+    std::string SIGNAL_KIND = "A fatal error";
+    std::string SIGNAL_DETAILS = "No details were provided about the error.";
     if (sig == SIGSEGV) {
         SIGNAL_KIND = "A segmentation fault";
         SIGNAL_DETAILS = "This typically happens when you try to dereference a pointer\n *** that is NULL or invalid.";
+    } else if (sig == SIGABRT) {
+        SIGNAL_KIND = "An abort error";
+        SIGNAL_DETAILS = "This error is thrown by system functions that detect corrupt state.";
     } else if (sig == SIGILL) {
         SIGNAL_KIND = "An illegal instruction error";
         SIGNAL_DETAILS = "This typically happens when you have corrupted your program's memory.";
     } else if (sig == SIGFPE) {
         SIGNAL_KIND = "An arithmetic error";
         SIGNAL_DETAILS = "This typically happens when you divide by 0 or produce an overflow.";
+    } else if (sig == SIGSTACK) {
+        SIGNAL_KIND = "A stack overflow";
+        SIGNAL_DETAILS = "This can happen when you have a function that calls itself infinitely.";
     }
     
     std::cerr << std::endl;
@@ -250,9 +305,16 @@ static void stanfordCppLibSignalHandler(int sig) {
     std::cerr << " *** " << SIGNAL_DETAILS << std::endl;;
     std::cerr << " ***" << std::endl;;
     
-    exceptions::printStackTrace();
+    if (sig != SIGSTACK) {
+        exceptions::printStackTrace();
+    } else {
+        std::string line;
+        stacktrace::addr2line(stacktrace::getFakeCallStackPointer(), line);
+        std::cerr << " *** (unable to print stack trace because of stack memory corruption.)" << std::endl;
+        std::cerr << " *** " << line << std::endl;
+    }
     std::cerr.flush();
-    raise(sig);
+    raise(sig == SIGSTACK ? SIGABRT : sig);
 }
 
 /*
@@ -260,6 +322,7 @@ static void stanfordCppLibSignalHandler(int sig) {
  * Prints details about the exception and then tries to print a stack trace.
  */
 static void stanfordCppLibTerminateHandler() {
+    signalHandlerDisable();   // don't want both a signal AND a terminate() call
     std::string DEFAULT_EXCEPTION_KIND = "An exception";
     std::string DEFAULT_EXCEPTION_DETAILS = "(unknown exception details)";
     
