@@ -23,12 +23,6 @@
 #include "set.h"
 #include "tokenscanner.h"
 
-static void verifyNotNull(void* p, const std::string& member) {
-    if (!p) {
-        error("Graph::" + member + ": parameter cannot be null");
-    }
-}
-
 /*
  * Class: Graph<NodeType, ArcType>
  * -------------------------------
@@ -466,6 +460,7 @@ private:
     bool isExistingArc(ArcType* arc) const;
     bool isExistingNode(NodeType* node) const;
     void verifyExistingNode(NodeType* node, const std::string& member = "") const;
+    void verifyNotNull(void* p, const std::string& member = "") const;
     NodeType* scanNode(TokenScanner& scanner);
 };
 
@@ -632,6 +627,13 @@ void Graph<NodeType, ArcType>::verifyExistingNode(NodeType* node, const std::str
     verifyNotNull(node, member);
     if (!isExistingNode(node)) {
         error("Graph::" + member + ": node not found in graph");
+    }
+}
+
+template <typename NodeType, typename ArcType>
+void Graph<NodeType, ArcType>::verifyNotNull(void* p, const std::string& member) const {
+    if (!p) {
+        error("Graph::" + member + ": parameter cannot be null");
     }
 }
 
