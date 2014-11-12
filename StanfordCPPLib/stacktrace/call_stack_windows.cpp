@@ -34,7 +34,7 @@ namespace stacktrace {
 static Platform* pp = getPlatform();
 
 const int WIN_STACK_FRAMES_TO_SKIP = 0;
-const int WIN_STACK_FRAMES_MAX = 50;
+const int WIN_STACK_FRAMES_MAX = 20;
 
 // line = "ZNK6VectorIiE3getEi at vector.h:587"
 //         <FUNCTION> at <LINESTR>

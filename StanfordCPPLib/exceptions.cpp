@@ -30,10 +30,15 @@
 #endif
 #include "platform.h"
 
+// uncomment the definition below to use an alternative 'signal stack'
+// which helps in handling stack overflow errors
+// (disabled because it currently breaks stack traces for other errors)
+// #define SHOULD_USE_SIGNAL_STACK
+
 namespace exceptions {
 static const int SIGSTACK   = 0xdeadbeef;   // just some value that is not any existing signal
 static const int SIGUNKNOWN = 0xcafebabe;   // just some value that is not any existing signal
-static const bool STACK_TRACE_SHOULD_FILTER = true;
+static const bool STACK_TRACE_SHOULD_FILTER = false;
 static const bool STACK_TRACE_SHOW_TOP_BOTTOM_BARS = false;
 static bool topLevelExceptionHandlerEnabled = false;
 static void (*old_terminate)() = NULL;
@@ -129,6 +134,7 @@ static bool shouldFilterOutFromStackTrace(const std::string& function) {
             || function.find("stacktrace::") != std::string::npos
             || function.find("printStackTrace") != std::string::npos
             || function.find("stanfordCppLibSignalHandler") != std::string::npos
+            || function.find("stanfordCppLibPosixSignalHandler") != std::string::npos
             || function.find("stanfordCppLibTerminateHandler") != std::string::npos
             || function.find("InitializeExceptionChain") != std::string::npos
             || function.find("BaseThreadInitThunk") != std::string::npos
@@ -220,7 +226,7 @@ void printStackTrace(std::ostream& out) {
             break;
         }
     }
-    if (entries.size() > 0 && entries[0].address == fakeStackPtr) {
+    if (entries.size() == 1 && entries[0].address == fakeStackPtr) {
         out << " *** (partial stack due to crash)" << std::endl;
     }
 
@@ -259,14 +265,52 @@ static void signalHandlerDisable() {
     }
 }
 
+#ifndef _WIN32
+void stanfordCppLibPosixSignalHandler(int sig, siginfo_t* /*siginfo*/, void* /*context*/) {
+    stanfordCppLibSignalHandler(sig);
+}
+#endif
+
 static void signalHandlerEnable() {
+    bool handled = false;
+#ifdef SHOULD_USE_SIGNAL_STACK
+#if !defined(_WIN32)
+    // alternate stack on Linux for stack overflows
+    static uint8_t alternate_stack[SIGSTKSZ];
+    stack_t ss = {};
+    ss.ss_sp = (void*) alternate_stack;
+    ss.ss_size = SIGSTKSZ;
+    ss.ss_flags = 0;
+    sigaltstack(&ss, NULL);
+    
+    struct sigaction sig_action = {};
+    sig_action.sa_sigaction = stanfordCppLibPosixSignalHandler;
+    sigemptyset(&sig_action.sa_mask);
+#ifdef __APPLE__
+    // backtrace() doesn't work on OS X when we use an alternate stack
+    sig_action.sa_flags = SA_SIGINFO;
+#else
+    sig_action.sa_flags = SA_SIGINFO | SA_ONSTACK;
+#endif // __APPLE__
+    sigaction(SIGSEGV, &sig_action, NULL);
+    sigaction(SIGFPE,  &sig_action, NULL);
+    // sigaction(SIGINT,  &sig_action, NULL);
+    sigaction(SIGILL,  &sig_action, NULL);
+    sigaction(SIGTERM, &sig_action, NULL);
+    sigaction(SIGABRT, &sig_action, NULL);
+    handled = true;
+#endif
+#endif // SHOULD_USE_SIGNAL_STACK
+
     SIGNALS_HANDLED.clear();
     SIGNALS_HANDLED.push_back(SIGSEGV);
     SIGNALS_HANDLED.push_back(SIGILL);
     SIGNALS_HANDLED.push_back(SIGFPE);
     SIGNALS_HANDLED.push_back(SIGABRT);
-    for (int sig : SIGNALS_HANDLED) {
-        signal(sig, stanfordCppLibSignalHandler);
+    if (!handled) {
+        for (int sig : SIGNALS_HANDLED) {
+            signal(sig, stanfordCppLibSignalHandler);
+        }
     }
 }
 
@@ -305,14 +349,14 @@ static void stanfordCppLibSignalHandler(int sig) {
     std::cerr << " *** " << SIGNAL_DETAILS << std::endl;;
     std::cerr << " ***" << std::endl;;
     
-    if (sig != SIGSTACK) {
+//    if (sig != SIGSTACK) {
         exceptions::printStackTrace();
-    } else {
-        std::string line;
-        stacktrace::addr2line(stacktrace::getFakeCallStackPointer(), line);
-        std::cerr << " *** (unable to print stack trace because of stack memory corruption.)" << std::endl;
-        std::cerr << " *** " << line << std::endl;
-    }
+//    } else {
+//        std::string line;
+//        stacktrace::addr2line(stacktrace::getFakeCallStackPointer(), line);
+//        std::cerr << " *** (unable to print stack trace because of stack memory corruption.)" << std::endl;
+//        std::cerr << " *** " << line << std::endl;
+//    }
     std::cerr.flush();
     raise(sig == SIGSTACK ? SIGABRT : sig);
 }

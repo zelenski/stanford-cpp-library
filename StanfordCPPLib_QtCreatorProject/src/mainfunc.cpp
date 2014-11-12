@@ -75,7 +75,8 @@ void coutCerrMixTest() {
 }
 
 void stackOverflowTest(int n = 0) {
-    if (n % 100000 == 0) {
+    int a[100] = {0};
+    if (a[0] || n % 1000 == 0) {
         cout << "stack overflow n=" << n << endl;
     }
     stackOverflowTest(n+1);
@@ -122,8 +123,8 @@ int main() {
     
 //    exceptionTest();
     
-//    segfaultTest();
-    stackOverflowTest();
+    segfaultTest();
+//    stackOverflowTest();
 
 //    string input = getLine("How are you doing? ");
 //    cout << "You said, \"" << input << "\"." << endl;

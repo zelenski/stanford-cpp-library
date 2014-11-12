@@ -36,8 +36,6 @@ static void* fakeCallStackPointer = NULL;
  * Run a sub-process and capture its output.
  */
 int execAndCapture(std::string cmd, std::string& output) {
-    // cmd += " 2>&1";
-
 #ifdef _WIN32
     // Windows code for external process (ugly)
     HANDLE g_hChildStd_IN_Rd = NULL;
@@ -106,20 +104,20 @@ int execAndCapture(std::string cmd, std::string& output) {
     }
 
     output = out.str();
-    puts("OUTPUT = ");
-    puts(output.c_str());
     return 0;
-
 #else
     // Linux / Mac code for external process
+    cmd += " 2>&1";
+    printf("CMD = %s\n", cmd.c_str());
+    fflush(stdout);
     FILE* pipe = popen(cmd.c_str(), "r");
     if (!pipe) {
         return -1;
     }
-    char buffer[1024];
+    char buffer[65536] = {0};
     output = "";
     while (!feof(pipe)) {
-        if (fgets(buffer, 1024, pipe) != NULL) {
+        if (fgets(buffer, 65536, pipe) != NULL) {
             output += buffer;
         }
     }
@@ -218,16 +216,16 @@ void setFakeCallStackPointer(void* ptr) {
  */
 #ifndef _WIN32
 
-#define MAX_DEPTH 32
-
 namespace stacktrace {
+const int WIN_STACK_FRAMES_TO_SKIP = 0;
+const int WIN_STACK_FRAMES_MAX = 20;
 
-call_stack::call_stack (const size_t num_discard /*= 0*/) {
+call_stack::call_stack(const size_t num_discard /*= 0*/) {
     using namespace abi;
 
     // retrieve call-stack
-    void * trace[MAX_DEPTH];
-    int stack_depth = backtrace(trace, MAX_DEPTH);
+    void* trace[WIN_STACK_FRAMES_MAX];
+    int stack_depth = backtrace(trace, WIN_STACK_FRAMES_MAX);
 
     // let's also try to get the line numbers via an external process
     std::string addr2lineOutput;
@@ -239,18 +237,18 @@ call_stack::call_stack (const size_t num_discard /*= 0*/) {
     
     for (int i = num_discard+1; i < stack_depth; i++) {
         Dl_info dlinfo;
-        if(!dladdr(trace[i], &dlinfo))
+        if (!dladdr(trace[i], &dlinfo)) {
             continue;
+        }
 
-        const char * symname = dlinfo.dli_sname;
+        const char* symname = dlinfo.dli_sname;
 
-        int    status;
-        char * demangled = abi::__cxa_demangle(symname, NULL, 0, &status);
-        if(status == 0 && demangled)
+        int   status;
+        char* demangled = abi::__cxa_demangle(symname, NULL, 0, &status);
+        if (status == 0 && demangled) {
             symname = demangled;
-
-        //printf("entry: %s, %s\n", dlinfo.dli_fname, symname);
-
+        }
+        
         // store entry to stack
         if (dlinfo.dli_fname && symname) {
             entry e;
@@ -269,8 +267,9 @@ call_stack::call_stack (const size_t num_discard /*= 0*/) {
             continue; // skip last entries below main
         }
 
-        if (demangled)
+        if (demangled) {
             free(demangled);
+        }
     }
 }
 
