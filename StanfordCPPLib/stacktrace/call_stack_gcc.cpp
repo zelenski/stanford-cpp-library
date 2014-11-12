@@ -220,7 +220,7 @@ namespace stacktrace {
 const int WIN_STACK_FRAMES_TO_SKIP = 0;
 const int WIN_STACK_FRAMES_MAX = 20;
 
-call_stack::call_stack(const size_t num_discard /*= 0*/) {
+call_stack::call_stack(const size_t /*num_discard = 0*/) {
     using namespace abi;
 
     // retrieve call-stack
@@ -235,7 +235,7 @@ call_stack::call_stack(const size_t num_discard /*= 0*/) {
         addr2lineLines = stringSplit(addr2lineOutput, "\n");
     }
     
-    for (int i = num_discard+1; i < stack_depth; i++) {
+    for (int i = WIN_STACK_FRAMES_TO_SKIP; i < stack_depth; i++) {
         Dl_info dlinfo;
         if (!dladdr(trace[i], &dlinfo)) {
             continue;

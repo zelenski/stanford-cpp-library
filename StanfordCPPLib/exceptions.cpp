@@ -36,9 +36,10 @@
 // #define SHOULD_USE_SIGNAL_STACK
 
 namespace exceptions {
-static const int SIGSTACK   = 0xdeadbeef;   // just some value that is not any existing signal
-static const int SIGUNKNOWN = 0xcafebabe;   // just some value that is not any existing signal
-static const bool STACK_TRACE_SHOULD_FILTER = false;
+// just some value that is not any existing signal
+#define SIGSTACK ((int) 0xdeadbeef)
+#define SIGUNKNOWN ((int) 0xcafebabe)
+static const bool STACK_TRACE_SHOULD_FILTER = true;
 static const bool STACK_TRACE_SHOW_TOP_BOTTOM_BARS = false;
 static bool topLevelExceptionHandlerEnabled = false;
 static void (*old_terminate)() = NULL;
@@ -142,6 +143,7 @@ static bool shouldFilterOutFromStackTrace(const std::string& function) {
             || function.find("KnownExceptionFilter") != std::string::npos
             || function.find("UnhandledException") != std::string::npos
             || function.find("crtexe.c") != std::string::npos
+            || function.find("_sigtramp") != std::string::npos
             || function.find("autograderMain") != std::string::npos;
 }
 
