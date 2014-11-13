@@ -38,6 +38,7 @@ static std::string macroIntegerToDate(int macroInteger) {
 static void ensureJavaBackEndVersionHelper(std::string minVersion) {
     std::string backendVersion = pp->cpplib_getJavaBackEndVersion();
     if (backendVersion < minVersion) {
+        // use stderr directly rather than cerr because graphical console is unreachable
         fputs("\n", stderr);
         fputs("***\n", stderr);
         fputs("*** STANFORD C++ LIBRARY ERROR:\n", stderr);

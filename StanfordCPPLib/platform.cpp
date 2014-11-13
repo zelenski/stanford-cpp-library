@@ -524,12 +524,12 @@ void Platform::setStackSize(unsigned int stackSize) {
             result = setrlimit(RLIMIT_STACK, &rl);
 #endif
             if (result != 0) {
-                fputs("\n", stderr);
-                fputs("***\n", stderr);
-                fputs("*** STANFORD C++ LIBRARY\n", stderr);
-                fputs("*** Warning: Unable to increase system stack size\n", stderr);
-                fputs("***\n", stderr);
-                fputs("\n", stderr);
+                std::cerr << std::endl;
+                std::cerr << " ***" << std::endl;
+                std::cerr << " *** STANFORD C++ LIBRARY" << std::endl;
+                std::cerr << " *** Warning: Unable to increase system stack size" << std::endl;
+                std::cerr << " ***" << std::endl;
+                std::cerr << std::endl;
             }
         }
     }
@@ -1697,6 +1697,7 @@ static WINBOOL WinCheck(WINBOOL result) {
                        /* dwSize */ 0,
                        /* arguments */ NULL);
         if (errorMsg) {
+            // use stderr directly rather than cerr because graphical console may be unreachable
             fputs("\n", stderr);
             fputs("***\n", stderr);
             fputs("*** STANFORD C++ LIBRARY\n", stderr);
@@ -1780,6 +1781,7 @@ static void initPipe() {
                             NULL, NULL, &sInfo, &pInfo);
     if (!ok) {
         // DWORD err = GetLastError();
+        // use stderr directly rather than cerr because graphical console is not connected
         fputs("\n", stderr);
         fputs("***\n", stderr);
         fputs("*** STANFORD C++ LIBRARY ERROR:\n", stderr);
@@ -1957,6 +1959,7 @@ void startupMainDontRunMain(int /*argc*/, char** argv) {
 }
 
 static void sigPipeHandler(int /*signum*/) {
+    // use stderr directly rather than cerr because graphical console may be unreachable
     fputs("***\n", stderr);
     fputs("*** STANFORD C++ LIBRARY\n", stderr);
     fputs("*** Prematurely exiting program because console window was closed.\n", stderr);
@@ -1984,6 +1987,7 @@ static void initPipe() {
     std::string jarName = splHomeDir + "spl.jar";
     struct stat fileInfo;
     if (stat(jarName.c_str(), &fileInfo) != 0) {
+        // use stderr directly rather than cerr because graphical console is unreachable
         fputs("\n", stderr);
         fputs("***\n", stderr);
         fputs("*** STANFORD C++ LIBRARY ERROR:\n", stderr);
@@ -2025,6 +2029,7 @@ static void initPipe() {
 #endif
         
         // if we get here, the execlp call failed, so show error message
+        // use stderr directly rather than cerr because graphical console is unreachable
         fputs("\n", stderr);
         fputs("***\n", stderr);
         fputs("*** STANFORD C++ LIBRARY ERROR:\n", stderr);
@@ -2195,6 +2200,7 @@ static GEvent parseEvent(std::string line) {
         extern bool getConsoleExitProgramOnClose();
         extern bool getConsoleEventOnClose();
         if (getConsoleExitProgramOnClose()) {
+            // use stderr directly rather than cerr because graphical console is unreachable
             fputs("\n", stderr);
             fputs("***\n", stderr);
             fputs("*** STANFORD C++ LIBRARY\n", stderr);
@@ -2487,7 +2493,7 @@ static void putConsole(const std::string& str, bool isStderr) {
 
 static void echoConsole(const std::string& str, bool isStderr) {
     if (getConsoleEcho()) {
-        // write to the standard (non-graphical) cout console for output copy/pasting
+        // write to the standard (non-graphical) console for output copy/pasting
         fputs(str.c_str(), isStderr ? stderr : stdout);
         fflush(stdout);   // flush both stdout and stderr
         fflush(stderr);
