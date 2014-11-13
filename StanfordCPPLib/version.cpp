@@ -6,7 +6,8 @@
  * file (.pro).
  *
  * @author Marty Stepp 
- * @version 2014/10/31
+ * @version 2014/11/13
+ * - ifdef'd out macroIntegerToDate function to remove unused function warning on some platforms
  * @since 2014/10/31
  */
 
@@ -20,6 +21,7 @@
 namespace version {
 static Platform* pp = getPlatform();
 
+#ifdef SPL_PROJECT_VERSION
 /*
  * converts an 8-digit into into a YYYY/MM/DD date,
  * e.g. 20141031 -> "2014/10/31"
@@ -34,6 +36,7 @@ static std::string macroIntegerToDate(int macroInteger) {
     out << (macroInteger % 100);           // 31
     return out.str();
 }
+#endif // SPL_PROJECT_VERSION
 
 static void ensureJavaBackEndVersionHelper(std::string minVersion) {
     std::string backendVersion = pp->cpplib_getJavaBackEndVersion();
