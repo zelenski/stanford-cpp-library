@@ -2,6 +2,7 @@
  * Test file for verifying the Stanford C++ autograder lib functionality.
  */
 
+#include <csignal>
 #include <iostream>
 #include <string>
 #include "console.h"
@@ -82,53 +83,70 @@ void stackOverflowTest(int n = 0) {
     stackOverflowTest(n+1);
 }
 
-void segC() {
-    // divide by 0 (generate SIGFPE)
-//     int a = 1;
-//     int b = 0;
-//     cout << (a/b) << endl;
-    
-    // dereference a NULL pointer (generate SIGSEGV)
-    int* foo = 0;
-    cout << *foo << endl;
+void segC_theOneThatActuallyThrows(int sig) {
+    if (sig == SIGFPE) {
+        // divide by 0 (generate SIGFPE)
+        int a = 1;
+        int b = 0;
+        cout << (a/b) << endl;
+    } else if (sig == SIGSEGV) {
+        // dereference a NULL pointer (generate SIGSEGV)
+        int* foo = 0;
+        cout << *foo << endl;
+    }
+    cout << "will never get here lol" << endl;
 }
 
-void segB() {
-    segC();
+void segB(int sig) {
+    segC_theOneThatActuallyThrows(sig);
 }
 
-void segA() {
-    segB();
+void segA(int sig) {
+    segB(sig);
 }
 
-void segfaultTest() {
+void segfaultTest(int sig) {
     cout << "Hello, world!" << endl;
-    segA();
+    segA(sig);
 }
 
-#include "platform.h"
+void cinOutTest() {
+    cout << "Hello, world! This is main!" << endl;
+    for (int i = 0; i < 100; i++) {
+        cout << "hello" << endl;
+    }
+    string input = getLine("How are you doing? ");
+    cout << "You said, \"" << input << "\"." << endl;
+    cout << "The end." << endl;
+}
 
 /*
  * This just needs to be here to become 'studentMain' so program will compile
  */
 int main() {
-//    cout << "Hello, world! This is main!" << endl;
-//    for (int i = 0; i < 100; i++) {
-//        cout << "hello" << endl;
-//    }
-
-//    getPlatform()->setStackSize(1024*1024*128);
-    
-//    coutCerrMixTest();
-    
-//    exceptionTest();
-    
-    segfaultTest();
-//    stackOverflowTest();
-
-//    string input = getLine("How are you doing? ");
-//    cout << "You said, \"" << input << "\"." << endl;
-//    cout << "The end." << endl;
+    setConsoleWindowTitle("Marty is great");
+    while (true) {
+        cout << "i) cin / cout" << endl;
+        cout << "e) cout / cerr mix" << endl;
+        cout << "t) throw exception" << endl;
+        cout << "n) segfault (NULL ptr)" << endl;
+        cout << "s) stack overflow" << endl;
+        string cmd = getLine("Command (Enter to quit)?");
+        if (cmd.empty()) {
+            break;
+        } else if (cmd == "i") {
+            cinOutTest();
+        } else if (cmd == "e") {
+            coutCerrMixTest();
+        } else if (cmd == "t") {
+            exceptionTest();
+        } else if (cmd == "n") {
+            segfaultTest(SIGSEGV);
+        } else if (cmd == "s") {
+            //getPlatform()->setStackSize(1024*1024*128);
+            stackOverflowTest();
+        }
+    }
     
     return 0;
 }
