@@ -12,6 +12,7 @@
 # @author Marty Stepp, Reid Watson, Rasmus Rygaard, Jess Fisher, etc.
 # @version 2014/11/13
 # - fixes related to generating stack traces
+# - support for putting testing files in a src/test/ folder (used in development)
 # @version 2014/11/05
 # - improved/fixed flags for exception-handling
 # @version 2014/10/31
@@ -50,6 +51,9 @@ win32 {
 # (student's source code can be put into project root, or src/ subfolder)
 SOURCES += $$PWD/lib/StanfordCPPLib/*.cpp
 SOURCES += $$PWD/lib/StanfordCPPLib/stacktrace/*.cpp
+exists($$PWD/src/test/*.cpp) {
+    SOURCES += $$PWD/src/test/*.cpp
+}
 exists($$PWD/src/*.cpp) {
     SOURCES += $$PWD/src/*.cpp
 }
@@ -62,6 +66,9 @@ HEADERS += $$PWD/lib/StanfordCPPLib/private/*.h
 HEADERS += $$PWD/lib/StanfordCPPLib/stacktrace/*.h
 exists($$PWD/src/*.h) {
     HEADERS += $$PWD/src/*.h
+}
+exists($$PWD/src/test/*.h) {
+    HEADERS += $$PWD/src/test/*.h
 }
 exists($$PWD/*.h) {
     HEADERS += $$PWD/*.h
@@ -121,6 +128,9 @@ INCLUDEPATH += $$PWD/lib/StanfordCPPLib/private/
 INCLUDEPATH += $$PWD/lib/StanfordCPPLib/stacktrace/
 INCLUDEPATH += $$PWD/src/
 INCLUDEPATH += $$PWD/
+exists($$PWD/src/test/*.h) {
+    INCLUDEPATH += $$PWD/src/test/*.h
+}
 
 # build-specific options (debug vs release)
 CONFIG(release, debug|release) {

@@ -5,6 +5,9 @@
  * compact structure for storing a list of words.
  *
  * @author Marty Stepp
+ * @version 2014/11/13
+ * - added comparison operators <, >= etc.
+ * - added hashCode function
  * @version 2014/10/10
  * - added equals method, comparison operators ==, !=
  * - fixed inclusion of foreach macro to avoid errors
@@ -13,8 +16,10 @@
 #ifndef _lexicon_h
 #define _lexicon_h
 
+#include <iterator>
 #include <set>
 #include <string>
+#include "hashcode.h"
 #include "set.h"
 
 /*
@@ -216,6 +221,18 @@ public:
     bool operator !=(const Lexicon& lex2) const;
 
     /*
+     * Operators: <, >, <=, >=
+     * Usage: if (lex1 <= lex2) ...
+     * ...
+     * ----------------------------
+     * Relational operators to compare two lexicons.
+     */
+    bool operator <(const Lexicon& lex2) const;
+    bool operator <=(const Lexicon& lex2) const;
+    bool operator >(const Lexicon& lex2) const;
+    bool operator >=(const Lexicon& lex2) const;
+
+    /*
      * Additional Lexicon operations
      * -----------------------------
      * In addition to the methods listed in this interface, the Lexicon
@@ -354,7 +371,9 @@ void Lexicon::mapAll(FunctorType fn) const {
     }
 }
 
-// hashing functions for lexicons;  defined in hashmap.cpp
+/*
+ * Hashing function for lexicons
+ */
 int hashCode(const Lexicon& l);
 
 /*

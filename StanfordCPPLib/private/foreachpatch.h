@@ -82,8 +82,9 @@ static const std::ios::openmode __IOS_APP__    = std::ios::app;
 static const std::ios::openmode __IOS_ATE__    = std::ios::ate;
 static const std::ios::openmode __IOS_BINARY__ = std::ios::binary;
 #ifdef _foreach_h
-extern const std::ios::openmode IOS_IN;
+//extern const std::ios::openmode IOS_IN;
 //static const std::ios::openmode __IOS_IN__     = IOS_IN;
+static const std::ios::openmode __IOS_IN__     = std::ios::in;
 #else
 static const std::ios::openmode __IOS_IN__     = std::ios::in;
 #endif

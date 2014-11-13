@@ -406,6 +406,9 @@ static void stanfordCppLibTerminateHandler() {
         FILL_IN_EXCEPTION_TRACE(b, "A bool exception", boolToString(b));
     } catch (double d) {
         FILL_IN_EXCEPTION_TRACE(d, "A bool exception", realToString(d));
+    } catch (...) {
+        std::string ex = "Unknown";
+        FILL_IN_EXCEPTION_TRACE(ex, "An exception", std::string());
     }
 }
 

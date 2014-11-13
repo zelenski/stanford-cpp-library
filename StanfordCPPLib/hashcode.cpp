@@ -52,7 +52,7 @@ int hashCode(long key) {
 
 int hashCode(const char* str) {
     unsigned hash = HASH_SEED;
-    for (int i = 0; str[i] != 0; i++) {
+    for (int i = 0; str && str[i] != 0; i++) {
         hash = HASH_MULTIPLIER * hash + str[i];
     }
     return int(hash & HASH_MASK);

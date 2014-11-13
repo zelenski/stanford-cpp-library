@@ -9,6 +9,9 @@
  * Grid is recommended for use over SparseGrid.
  * 
  * @author Marty Stepp
+ * @version 2014/11/13
+ * - added comparison operators <, >=, etc.
+ * - added template hashCode function
  * @version 2014/10/20
  * - added width(), height() methods to be consistent with Grid
  * @version 2014/10/10
@@ -22,6 +25,7 @@
 #define _sparsegrid_h
 
 #include "error.h"
+#include "hashcode.h"
 #include "map.h"
 #include "random.h"
 #include "strlib.h"
@@ -261,6 +265,19 @@ public:
      */
     bool operator !=(const SparseGrid& grid2) const;
 
+    /*
+     * Operators: <, >, <=, >=
+     * Usage: if (grid1 < grid2) ...
+     * -----------------------------
+     * Relational operators to compare two grids.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
+     */
+    bool operator <(const SparseGrid& grid2) const;
+    bool operator <=(const SparseGrid& grid2) const;
+    bool operator >(const SparseGrid& grid2) const;
+    bool operator >=(const SparseGrid& grid2) const;
+
     /* Private section */
 
     /**********************************************************************/
@@ -297,6 +314,7 @@ public:
     void checkIndexes(int row, int col,
                       int rowMax, int colMax,
                       std::string prefix) const;
+    int gridCompare(const SparseGrid& grid2) const;
 
     /*
      * Hidden features
@@ -697,6 +715,44 @@ void SparseGrid<ValueType>::checkIndexes(int row, int col,
 }
 
 template <typename ValueType>
+int SparseGrid<ValueType>::gridCompare(const SparseGrid& grid2) const {
+    int h1 = height();
+    int w1 = width();
+    int h2 = grid2.height();
+    int w2 = grid2.width();
+    int rows = h1 > h2 ? h1 : h2;
+    int cols = w1 > w2 ? w1 : w2;
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) {
+            if (r >= h1) {
+                return -1;
+            } else if (r >= h2) {
+                return 1;
+            }
+            
+            if (c >= w1) {
+                return -1;
+            } else if (c >= w2) {
+                return 1;
+            }
+            
+            if (!isSet(r, c) && grid2.isSet(r, c)) {
+                return -1;
+            } else if (isSet(r, c) && !grid2.isSet(r, c)) {
+                return 1;
+            }
+            
+            if (get(r, c) < grid2.get(r, c)) {
+                return -1;
+            } else if (grid2.get(r, c) < get(r, c)) {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+template <typename ValueType>
 typename SparseGrid<ValueType>::SparseGridRow SparseGrid<ValueType>::operator [](int row) {
     return SparseGridRow(this, row);
 }
@@ -715,6 +771,39 @@ bool SparseGrid<ValueType>::operator ==(const SparseGrid& grid2) const {
 template <typename ValueType>
 bool SparseGrid<ValueType>::operator !=(const SparseGrid& grid2) const {
     return !equals(grid2);
+}
+
+template <typename ValueType>
+bool SparseGrid<ValueType>::operator <(const SparseGrid& grid2) const {
+    return gridCompare(grid2) < 0;
+}
+
+template <typename ValueType>
+bool SparseGrid<ValueType>::operator <=(const SparseGrid& grid2) const {
+    return gridCompare(grid2) <= 0;
+}
+
+template <typename ValueType>
+bool SparseGrid<ValueType>::operator >(const SparseGrid& grid2) const {
+    return gridCompare(grid2) > 0;
+}
+
+template <typename ValueType>
+bool SparseGrid<ValueType>::operator >=(const SparseGrid& grid2) const {
+    return gridCompare(grid2) >= 0;
+}
+
+/*
+ * Template hash function for sparse grids.
+ * Requires the element type in the SparseGrid to have a hashCode function.
+ */
+template <typename T>
+int hashCode(const SparseGrid<T>& g) {
+    int code = HASH_SEED;
+    for (T n : g) {
+        code = HASH_MULTIPLIER * code + hashCode(n);
+    }
+    return int(code & HASH_MASK);
 }
 
 /*

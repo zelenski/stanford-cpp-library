@@ -4,6 +4,8 @@
  * This file exports the <code>HashSet</code> class, which
  * implements an efficient abstraction for storing sets of values.
  * 
+ * @version 2014/11/13
+ * - added template hashCode function
  * @version 2014/10/10
  * - removed foreach patch
  */
@@ -13,6 +15,7 @@
 
 #include <iostream>
 #include "error.h"
+#include "hashcode.h"
 #include "hashmap.h"
 #include "vector.h"
 
@@ -376,7 +379,7 @@ public:
             return !(*this == rhs);
         }
 
-        ValueType operator *() {
+        const ValueType& operator *() {
             return *mapit;
         }
 
@@ -655,11 +658,17 @@ std::istream& operator >>(std::istream& is, HashSet<ValueType>& set) {
     return is;
 }
 
-// hashing functions for hash sets;  defined in hashmap.cpp
-int hashCode(const HashSet<std::string>& s);
-int hashCode(const HashSet<int>& s);
-int hashCode(const HashSet<char>& s);
-int hashCode(const HashSet<long>& s);
-int hashCode(const HashSet<double>& s);
+/*
+ * Template hash function for hash sets.
+ * Requires the element type in the HashSet to have a hashCode function.
+ */
+template <typename T>
+int hashCode(const HashSet<T>& s) {
+    int code = HASH_SEED;
+    for (T n : s) {
+        code = HASH_MULTIPLIER * code + hashCode(n);
+    }
+    return int(code & HASH_MASK);
+}
 
 #endif

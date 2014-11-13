@@ -1,0 +1,419 @@
+	C++ libs
+		autograder
+			main method handling redo: change this:
+				#undef main
+				int main(int argc, char** argv) {
+			to something like this:
+				int autograderMain() {
+		
+			bug: "false negative" where earlier test fails but later one passes, leading to "failed" test but "equal/passing" results when you click for details
+		
+			input panel, buttons are too wide on OSX; shorten/narrow.  detect OSX in Java code?
+
+			runtime of each test in MS?
+
+		cpp docs
+			include <, >=, equals, hashCode, etc. for every collection
+			strlib: stringToLong, longToString, stringIsLong, stringToDouble, doubleToString, stringIsDouble
+		
+		BUG: weird line breaks in STDERR output on windows and in Debug mode
+			(probably related to redirecting stderr to graphical console window, flushing, \n insertion etc.)
+		
+		increase number/kind of warnings
+			https://gcc.gnu.org/onlinedocs/gcc-4.3.6/gcc/Warning-Options.html
+			-Wformat
+			-Winit-self
+			-Wmissing-braces
+			-Wparentheses
+			-Wswitch-enum
+			-Wunknown-pragmas
+		
+		move set prog name for stack trace to startupMain?
+		
+		
+		
+		MEMORY: fix memory leaks in various code
+			autograder xmlutils
+			stack trace stuff (e.g. demangle)
+		
+		MSVC C++ compiler on Windows
+			qt-project.org/downloads
+			MSVC 2012/2013
+		
+		pqueue operator <<: new, faster implementation: just loop over internal heap structure (won't print in sorted order, but much more efficient)
+		
+		generic toString function that uses ostringstream << if needed?
+		
+		"Info.plist" issue on Mac
+			http://qt-project.org/forums/viewthread/24811/
+			possible solution:
+				https://www.bountysource.com/issues/1012294-qmake-doesn-t-correctly-handle-qmake_info_plist
+		
+		problem: closing console window shuts down entire autograder
+			Can turn off, but then, if console is waiting for I/O, locks up whole event queue.
+			maybe have autograder I/O mode where closing window is disabled while I/O in progress?
+			modify getLineConsole in platform.cpp?
+			console as gwindow?
+		
+
+		need ability to interrupt a long-running test from autograder test run GUI window
+		
+		other interactors
+			radio button?
+			jlabel?
+			spinner?
+		
+		jbe console setVisible, not minimized, maximize, method?  bringToFront?
+			idea: special fake ptr to console window frame, then support any GWindow back-end methods that way rather than needing to double-include them?
+		
+		put inline asserts into unit test frame itself?
+		
+		some kind of 'signal' kill from Java -> C++ back-end for when a test case hangs?
+		
+		
+		
+		autograder lib
+			'docked' mode for input panel, inside console window frame?
+				same thing for other windows?  Boggle GUI?
+			is autograder crash related to mutable HashMap keys?
+				use a Queue or Vector as a key, but then add/remove from it?
+			idea: graphical side-by-side diff window for test case output?
+				test case printer, like the MartyPrinter
+				red/green pass/fail indicators for each test?
+		
+		graphical console: set rows/cols rather than px size?
+		
+		stringToInteger with a base parameter?
+		
+		fix stack-size-increase code?  didn't run on Mac?  (GET MAC AND DEBUG THIS;  ALSO WINDOWS, LINUX)
+->		GBufferedImage save(filename), load(filename) methods;  need back-end support
+			diffImage?
+		
+		make it so that you don't need to #include "console.h"
+			based on a flag in .pro file maybe?
+			all .h in stanford C++ lib manually include console.h if flag is set?
+			if you don't include it, it just uses the shitty normal console?
+		
+		[Dawg]Lexicon overload operators: +, +=, -, -= ?  like set?
+			same on any other collections?
+		
+~		reimplement collections using STL versions as underlying container?  (see _experimental)
+			HashMap
+			HashSet
+			Map
+			PriorityQueue
+			Set
+
+		pqueue comparison/hashCode is very slow because of unpredictable heap order
+		
+		shuffle for all reasonable collections?
+			shuffle a SparseGrid?
+		make arraylist.h, treeset.h, treemap.h, etc.
+			they just #define ArrayList Vector and similar, make names compatible with Java names
+			Also, I had a stack overflow error when the style checker was running on Naomi Latorraca's (nlatorra) code (for both parts of the assignment). I'm not sure why, but I'll tell you if I figure it out.
+		complete change list
+
+DONE:
+=======================================================================================================================
+		test signal handler on Mac  (must disable signal-stack?)
+			http://spin.atomicobject.com/2013/01/13/exceptions-stack-traces-c/
+			
+x		Vector/LinkedList: overload add(index, value) to match insert(index, value)
+x			other classes: add/remove rather than other names
+x		versioning issues
+x			sync up lib folder with hw2 autograder folder
+x			put new C++ lib .ZIP in web space
+x				-DSPL_VERIFY_JAVA_BACKEND_VERSION \
+x		private iterators need to 'friend' the compare function
+x		make hashCode()s into friend functions so that they're fast for stacks etc.?  don't make entire backup of collection, ick
+x			map?  hashmap?
+x			maybe cache inside the collection?
+x			some kind of superclass, superinterface that retains a hashcode and caches it?
+x			also equals, <</tostring
+x		run the libs through a linter?
+x			http://sourceforge.net/projects/cppcheck/
+-			https://github.com/facebook/flint
+-			http://www.aristeia.com/ddjpaper1.html
+x		change std to c++11? test on all platforms
+x			Linux
+x			Mac
+x			Windows
+x		check stack growing on all platforms
+x			Linux
+x			Mac
+x			Windows
+x		top-level uncaught exception handler:  catch (...) {
+x			http://efesx.com/2010/03/21/catching-uncaught-exceptions-within-terminate/
+x		stack trace on Mac, hide the first two here:
+x			*** stacktrace::call_stack::call_stack(unsigned long)
+x			*** exceptions::stanfordCppLibTerminateHandler()
+x			*** Vector<int>::checkIndex(int, int, int, string) const
+x		fix autograder crash bug on HashMap-of-Queues (Mac)
+x		get stack traces on all platforms
+x			Mac (clang)
+x			Windows (mingw)
+x			https://gist.github.com/jvranish/4441299
+x				http://spin.atomicobject.com/2013/01/13/exceptions-stack-traces-c/
+x			http://pisoft.ru/verstak/insider/cw_seh.htm
+x		iterators returning value vs const ref?
+x			Anyway, I had a minor issue with the iterators for Map, HashMap, Set, and HashSet. Right now, operator* returns ValueType (or KeyType), but it should probably return const ValueType& (or const KeyType&).
+x			Basically, the current iterator forces a copy even when you don't want one, which'll especially come up with a range-based for, such as:
+x				for (const std::string& movieName : mMovieToActorsMap) {
+x					// code
+x				}
+x			With the current versions of those four classes, this code gives you a const reference to a copy of the string, which is both wasteful and can cause real issue if you want to save this reference.
+-		check for how stack overflow works with signal handlers
+-		for each collection, add a static fromString method? (no; can't discern template's type)
+x		put addr2line.exe in lib/ folder to ensure that it is found and runnable?
+x		merge / get rid of _experimental folder
+x			.pro flag to enable compare < <= > >= operators on collections?
+x			compare < <= > >= operators on collections?
+x				BasicGraph
+x			x	DawgLexicon
+x			x	Deque
+x			x	Graph
+x				Grid
+-			x	HashMap
+-			-	HashSet
+x			x	Lexicon
+x			x	LinkedList
+x			x	Map
+x			x	PriorityQueue
+x					should they compare priorities, too?
+x					same for ==, !=, equals
+x			x	Queue
+x					need to fix <, <=, >, >= implementations to use ringbuffer or make deep copy
+x			x	Set
+x				SparseGrid
+x			x	Stack
+x			x	Vector
+x			generic hashCode for all collections
+x				BasicGraph
+x			x	DawgLexicon
+x			x	Deque
+x				Graph
+x				Grid
+x			x	HashMap
+x			x	HashSet
+x			x	Lexicon
+x			x	LinkedList
+x			x	Map
+x			~	PriorityQueue
+x					should it incorporate priorities, too?
+x			x	Queue
+x			x	Set
+x			x	SparseGrid
+x			x	Stack
+x			x	Vector
+-			what about reimplementations of collections using stl versions?
+x		fix other "Stanford C++ library" error messages as appropriate to print to console window
+x			grep for fprintf or fputs to stderr
+x		way to set title of Console window?  "Console" is too vague
+x			make it default to project name?
+-			make it say " (program has terminated)" on exit? (too unreliable, can't be sure on crashes, etc.)
+x		make stdlib project have menu of tests to run
+-		BUG: console never pops up if no output is printed before crash
+-			fix: print an empty string somewhere?
+x		SIGSEGV handler for segfaults?
+x~			can I get a stack trace here??
+x		xmlutils: string -> const string&
+x		refactor exception-throwing code terminate handler to avoid the same printlns over and over
+x		autograder compiler warnings on Mac
+x		fix autograder crash bug in Ngrams autograder
+x			rapidxml node m_valuesize should default to 0
+x			m_value is a nasty char*
+x			m_valuesize is actual strlen
+x			need to make into a real string in memory
+x		!!! uncomment this line in autograder/normal project file, line 213 !!!
+x			#    DEFINES += SPL_AUTOGRADER_MODE
+x		remove rapidxml_utils.* and rapidxml_print.* ?
+x		start using the GitHub properly
+x			check-in:
+x				git add --all .
+x				git commit
+x					(type descriptive commit message)
+x				git push
+x			removing unwanted files:
+x				git rm <FILE>
+x				remove a directory from remote only:
+x					git rm -r --cached <FILE>
+x		Esc should close diff / Unit Test / show-text-file window
+x		icons in TextFileDialog to match JOptionPane
+x		custom buttons (e.g. "show myinput.txt") shouldn't do-nothing on text UI
+x			for each one, present its text (e.g. "show myInput.txt" (Y/N)) and call if user says Y
+x		make cerr print on JBE Console?
+x		deployment script - deploy to all HWs
+x			test whether it works well in e.g. HW1, HW2, HW4, HW5, HW7, ...
+x			modify autograder code to include categories, new template, etc.
+x		test in non-graphical mode
+x			test setFailDetails in non-graphic test runner?
+-			flag for graphics in .pro file?
+x		move setIcon, setTextPosition up to GInteractor?
+x		graphical version of style checker?
+x		statically linked executables?
+x			look for spl.jar in some dir?  env variable?  SPL_HOME?
+x		scrollpane for unit tests
+x		graphical version of lateDays.txt
+x		goptionpane showtextfiledialog for large text files?
+x		overall GUI window with buttons for various options
+x			test cases
+x			manual testing
+x			late days
+x			style check
+x		GWindow set canvas size to 0
+x		button for myinput.txt etc., to show the file on click via callback function
+x		better icons for GUI buttons
+x		Categories for unit tests
+x			setCurrentCategory in autograder.cpp
+x		Categories for style checker
+x		graphical style checker
+x			"warn" vs "fail" (fail should be rare; e.g. instructor solution)
+x			XML with 'category' tag support
+x		setCallbackStartMessage should just store a string startMessage
+-		make width of test window be as wide as set by autograder::setTestNameWidth
+x		pop-up details of why a test failed
+x			simple asserts: inline
+x			complex asserts: pop up side-by-side diff window?
+x		autograder modal dialogs get stuck
+x			make thread for autograder unit test dialog?
+x		grep for "error(", improve error message strings?
+x		Graph should take const string& instead of string for node/arc names
+x		graphical console: make Ctrl-Home go to very top of scroll buffer?  PgUp, PgDown?
+x		docs: list operators on each collection
+x			ostream << collection
+x			istream >> collection
+x			==, !=
+-			hashCode?
+x			equals?
+-			(later) <, >=, etc.?
+x		idea: put Big-Oh on data structure methods
+x			BasicGraph
+x			DawgLexicon
+x			Graph
+x			Grid
+x			HashMap
+x			HashSet
+x			Lexicon
+x			LinkedList
+x			Map
+x			PriorityQueue
+x			Queue
+x			Set
+x			SparseGrid
+x			Stack
+x			Vector
+x		docs: list operators <<, >>, ==, != for every collection
+--			BasicGraph
+x			DawgLexicon
+--			Graph
+x			Grid
+x			HashMap
+x			HashSet
+x			Lexicon
+x			LinkedList
+x			Map
+x			PriorityQueue
+x			Queue
+x			Set
+x			SparseGrid
+x			Stack
+x			Vector
+x		docs: mention subList method of Vector, LinkedList
+x		docs: alphabetize members
+x		add for-each loop to Graph
+x		filelib listDirectory that -returns- Vector, rather than filling an existing one?
+x			not very C++ zen but who cares, the libs are slow
+-		pure virtual "interfaces" for the ADTs?
+x		check regexpr, other functions that take strings, change to const string& ?
+x		-	BasicGraph - didn't change because was worried about compatibility via inheritance signatures
+x		x	bitstream
+x		x	dawglexicon
+x		-	error - left for compatibility
+x		x	filelib
+x		x	lexicon
+x		x	simpio
+x		x	strlib
+x		alphabetize functions
+x		x	filelib
+x		x	random
+x		x	simpio
+x		x	strlib
+x		make toLowerCaseInPlace, toUpperCaseInPlace functions part of strlib, take out of other .h/cpp files
+x		'inPlace' versions of many string functions
+x		fix Lexicon stripping of non-alpha chars?  makes l.contains("par;") return true
+x		Vector subList method  (also in LinkedList?)
+x		URL stuff that sends to Java back-end and uses its URL class/streams
+-		URL auto-check for new versions?  put into menu of console?
+-		URL make sure it works for weird URLs like with ?#& in them (strip?)
+x		GBufferedImage::resize function  (on back-end)
+x			optional flag to retain existing contents?  always retain?
+x		fix 106B docs URL to redirect to new ~stepp URL !!!!!!
+x		c++ lib "input == cin" issue simpio.h:135
+x		grid
+x			resize but keep contents!  (pass 'true' flag?)
+-		make filelib isBinaryFile, isTextFile functions  (from hw6 autograder cpp)
+-			this test is very flawed; lots of complexity here and my functions work for HW6 but are too dumb for general use
+x		fix foreach.h; is foreach macro broken in my version of library?
+x			I just wanted to alert you to a potential issue with the autograder that I just uncovered. When a student's code has #include "foreach.h" in it, the autograder won't work. Changing her foreaches to be range-based and removing the #include seemed to work, but you may want to look into it or at least mention it on the Wiki.
+x		standardize Author: vs @author
+x		hashCode for graph, basicgraph, sparsegrid, etc.? hashset, hashmap, set, map? other types?
+x				map, hashmap, pqueue, queue, stack, grid, sparsegrid, etc.?
+x			requires ==, != on all collections
+x				equals
+x				equals should check this == &other
+x			make them friend functions so that they're fast for stacks etc.?  don't make entire backup of collection, ick
+x				stack
+x					also equals, <</tostring
+x				queue
+x					also equals, <</tostring
+x			does adding hashCode break ability to add things to a Grid, PQ, etc. that do not themselves have a hashCode function?
+x				e.g. PriorityQueue<Student>
+x				idea: optional compiler flag that enables such functionality?  included in my .pro, not by default?
+x			HashMap< HashSet<Vector<string> >, Vector<string> > N_gram;
+x		Deque class?
+~		reimplement Vector, etc. using STL versions as underlying container?
+x			Vector
+x			Stack
+x			Queue
+x			LinkedList
+x		strlib: always accept const string&   (also do this elsewhere?)
+x		go through all Foo.cpp, make sure foo.h is first include, to ensure that its includes are complete
+x		grep whole codebase for things without std::
+x		check headings for iostream, sstream, fstream, string
+x		figure out for: vs. __foreach__ in all collections
+x		provide add(), remove() for ALL collections
+x			map
+x			hashmap
+x			stack
+x			queue
+x			pq
+x		get rid of hashCode int, double, etc. forms, just have one template
+x		BUGBUG: GOptionPane can barf when you pass a message with , or other special chars?
+x		BUGBUG: File_openFileDialog crashes?  repro?  fix?
+x			test it with empty path  (NPEx?)
+x			test it with a complex path (does it handle /, \, :, etc.?)
+-		integrate Google Test and other autograder stuff into main lib build?
+-			pro:
+-				all one build, easier to keep track of / maintain
+-			con:
+-				licensing issues?
+-				takes longer to do a full rebuild?
+-				larger download?  MUCH longer
+-				security issues, students seeing autograder code?
+-				obligation to have cleaner, better commented code?
+-			conclusion:
+-				don't include; too messy and depends too much on GoogleTest
+		
+		docs: what's missing?
+			replace 'method' with 'function'
+			observable.h   - document
+			regexpr.h      - document
+			collection Javaey methods - document
+				addAll
+				removeAll
+				retainAll
+				operators: +, +=, ==, !=, etc.
+x			& on reference params, * on pointers
+x			<> in page titles
+x			gbufferedimage
+x		any old TODOs?

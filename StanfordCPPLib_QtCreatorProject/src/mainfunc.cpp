@@ -2,151 +2,55 @@
  * Test file for verifying the Stanford C++ autograder lib functionality.
  */
 
-#include <csignal>
-#include <iostream>
-#include <string>
 #include "console.h"
-#include "platform.h"
 #include "simpio.h"
+#include "test/testcases.h"
 #include "private/version.h"
-#include "exceptions.h"
+#include <iostream>
 using namespace std;
 
-/*
- * Code that autograderMain() runs before it starts the autograding test cases.
- */
-void before() {
-    cout << "THIS IS BEFORE!" << endl;
-    cout << "THIS IS BEFORE!" << endl;
-    cout << "THIS IS BEFORE!" << endl;
-}
-
-/*
- * Code that autograderMain() runs after it ends the autograding test cases.
- */
-void after() {
-    cout << "THIS IS AFTER!" << endl;
-    cout << "THIS IS AFTER!" << endl;
-    cout << "THIS IS AFTER!" << endl;
-}
-
-namespace MyNS {
-    class LoL {
-    public:
-        static int cCcCc_cCcCc(int, char*, double, char, bool) {
-            cout << "function c start" << endl;
-            cout << endl;
-            // error("blargh!");
-            Vector<int> v;
-            v.get(42);  // lolol
-            cout << "function c end" << endl;
-            return 0;
-        }
-    };
-}
-
-void b() {
-    cout << "function b start" << endl;
-    MyNS::LoL::cCcCc_cCcCc(0, NULL, 0, 0, false);
-    cout << "function b end" << endl;
-}
-
-void a() {
-    cout << "function a start" << endl;
-    b();
-    cout << "function a end" << endl;
-}
-
-void exceptionTest() {
-    a();
-}
-
-void coutCerrMixTest() {
-    cout << "Hello, world! This is main!" << endl;
-    cerr << "This message comes from cerr" << endl;
-    cout << "Another one from cout!" << endl;
-    cerr << "This message ALSO comes from cerr" << endl;
-    cout << "A third one from cout!" << endl;
-    cerr << "HOW ";
-    cout << "about ";
-    cerr << "A ";
-    cout << "mixed ";
-    cerr << "LINE??";
-    cout << endl;
-}
-
-void stackOverflowTest(int n = 0) {
-    int a[100] = {0};
-    if (a[0] || n % 1000 == 0) {
-        cout << "stack overflow n=" << n << endl;
-    }
-    stackOverflowTest(n+1);
-}
-
-void segC_theOneThatActuallyThrows(int sig) {
-    if (sig == SIGFPE) {
-        // divide by 0 (generate SIGFPE)
-        int a = 1;
-        int b = 0;
-        cout << (a/b) << endl;
-    } else if (sig == SIGSEGV) {
-        // dereference a NULL pointer (generate SIGSEGV)
-        int* foo = 0;
-        cout << *foo << endl;
-    }
-    cout << "will never get here lol" << endl;
-}
-
-void segB(int sig) {
-    segC_theOneThatActuallyThrows(sig);
-}
-
-void segA(int sig) {
-    segB(sig);
-}
-
-void segfaultTest(int sig) {
-    cout << "Hello, world!" << endl;
-    segA(sig);
-}
-
-void cinOutTest() {
-    cout << "Hello, world! This is main!" << endl;
-    for (int i = 0; i < 100; i++) {
-        cout << "hello" << endl;
-    }
-    string input = getLine("How are you doing? ");
-    cout << "You said, \"" << input << "\"." << endl;
-    cout << "The end." << endl;
-}
-
-/*
- * This just needs to be here to become 'studentMain' so program will compile
- */
 int main() {
+    setConsoleSize(1000, 600);
+    setConsoleLocation(-1, -1);
     setConsoleWindowTitle("Marty is great");
+    
     while (true) {
-        cout << "i) cin / cout" << endl;
+        cout << "c) collections" << endl;
         cout << "e) cout / cerr mix" << endl;
-        cout << "t) throw exception" << endl;
+        cout << "g) gui" << endl;
+        cout << "i) cin / cout" << endl;
         cout << "n) segfault (NULL ptr)" << endl;
+        cout << "p) pipe" << endl;
         cout << "s) stack overflow" << endl;
+        cout << "t) throw exception" << endl;
+        cout << "u) urlstream" << endl;
         string cmd = getLine("Command (Enter to quit)?");
         if (cmd.empty()) {
             break;
-        } else if (cmd == "i") {
-            cinOutTest();
+        } else if (cmd == "c") {
+            compareTest();
+            foreachTest();
+            hashCodeTest();
         } else if (cmd == "e") {
             coutCerrMixTest();
-        } else if (cmd == "t") {
-            exceptionTest();
+        } else if (cmd == "g") {
+            fileDialogTest();
+            gbufferedImageTest();
+            goptionpaneTest();
+        } else if (cmd == "i") {
+            cinOutTest();
         } else if (cmd == "n") {
-            segfaultTest(SIGSEGV);
+            segfaultTest();
         } else if (cmd == "s") {
             //getPlatform()->setStackSize(1024*1024*128);
             stackOverflowTest();
+        } else if (cmd == "t") {
+            exceptionTest();
+        } else if (cmd == "u") {
+            urlstreamTest();
         }
     }
     
+    std::cout << "Complete." << std::endl;
     return 0;
 }

@@ -5,6 +5,9 @@
  * implementation of a doubly-linked list of objects and provides the same
  * public interface of members as the <code>LinkedList</code> class.
  *
+ * @version 2014/11/13
+ * - added comparison operators <, >=, etc.
+ * - added template hashCode function
  * @version 2014/10/19
  * - added subList method
  * @version 2014/10/10
@@ -26,6 +29,7 @@
 #include <list>
 #include <vector>
 #include "error.h"
+#include "hashcode.h"
 #include "random.h"
 #include "strlib.h"
 
@@ -298,6 +302,20 @@ public:
     bool operator ==(const LinkedList& list2) const;
     bool operator !=(const LinkedList& list2) const;
 
+
+    /*
+     * Operators: <, >, <=, >=
+     * Usage: if (list1 == list2) ...
+     * ...
+     * -------------------------------
+     * Relational operators to compare two lists.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
+     */
+    bool operator <(const LinkedList& list2) const;
+    bool operator <=(const LinkedList& list2) const;
+    bool operator >(const LinkedList& list2) const;
+    bool operator >=(const LinkedList& list2) const;
 
     /*
      * Additional LinkedList operations
@@ -676,6 +694,10 @@ LinkedList<ValueType>::operator +=(const ValueType& value) {
     return *this;
 }
 
+/*
+ * Implementation notes: relational operators
+ * These operators just forward to the underlying STL list.
+ */
 template <typename ValueType>
 bool LinkedList<ValueType>::operator ==(const LinkedList& list2) const {
     return m_elements == list2.m_elements;
@@ -684,6 +706,26 @@ bool LinkedList<ValueType>::operator ==(const LinkedList& list2) const {
 template <typename ValueType>
 bool LinkedList<ValueType>::operator !=(const LinkedList& list2) const {
     return m_elements != list2.m_elements;
+}
+
+template <typename ValueType>
+bool LinkedList<ValueType>::operator <(const LinkedList& list2) const {
+    return m_elements < list2.m_elements;
+}
+
+template <typename ValueType>
+bool LinkedList<ValueType>::operator <=(const LinkedList& list2) const {
+    return m_elements <= list2.m_elements;
+}
+
+template <typename ValueType>
+bool LinkedList<ValueType>::operator >(const LinkedList& list2) const {
+    return m_elements > list2.m_elements;
+}
+
+template <typename ValueType>
+bool LinkedList<ValueType>::operator >=(const LinkedList& list2) const {
+    return this->m_elements >= list2.m_elements;
 }
 
 /*
@@ -791,12 +833,18 @@ std::istream& operator>>(std::istream& is, LinkedList<ValueType>& list) {
     return is;
 }
 
-// hashing functions for LinkedLists;  defined in hashmap.cpp
-int hashCode(const LinkedList<std::string>& v);
-int hashCode(const LinkedList<int>& v);
-int hashCode(const LinkedList<char>& v);
-int hashCode(const LinkedList<long>& v);
-int hashCode(const LinkedList<double>& v);
+/*
+ * Template hash function for linked lists.
+ * Requires the element type in the LinkedList to have a hashCode function.
+ */
+template <typename T>
+int hashCode(const LinkedList<T>& list) {
+    int code = HASH_SEED;
+    for (T element : list) {
+        code = HASH_MULTIPLIER * code + hashCode(element);
+    }
+    return int(code & HASH_MASK);
+}
 
 /*
  * Randomly rearranges the elements of the given list.

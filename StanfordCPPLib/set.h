@@ -4,6 +4,9 @@
  * This file exports the <code>Set</code> class, which implements a
  * collection for storing a set of distinct elements.
  * 
+ * @version 2014/11/13
+ * - added comparison operators <, >=, etc.
+ * - added template hashCode function
  * @version 2014/10/10
  * - removed use of __foreach macro
  */
@@ -13,7 +16,9 @@
 
 #include <iostream>
 #include <set>
+#include "compare.h"
 #include "error.h"
+#include "hashcode.h"
 #include "map.h"
 #include "vector.h"
 
@@ -210,6 +215,20 @@ public:
     bool operator !=(const Set& set2) const;
 
     /*
+     * Operators: <, >, <=, >=
+     * Usage: if (set1 <= set2) ...
+     * ...
+     * ----------------------------
+     * Relational operators to compare two sets.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
+     */
+    bool operator <(const Set& set2) const;
+    bool operator <=(const Set& set2) const;
+    bool operator >(const Set& set2) const;
+    bool operator >=(const Set& set2) const;
+    
+    /*
      * Operator: +
      * Usage: set1 + set2
      *        set1 + element
@@ -329,8 +348,8 @@ public:
 
     /* Extended constructors */
     template <typename CompareType>
-    explicit Set(CompareType cmp) : map(Map<ValueType, bool>(cmp)) {
-        removeFlag = false;
+    explicit Set(CompareType cmp) : map(Map<ValueType, bool>(cmp)), removeFlag(false) {
+        // Empty
     }
 
     Set& operator ,(const ValueType& value) {
@@ -385,7 +404,7 @@ public:
             return !(*this == rhs);
         }
 
-        ValueType operator *() {
+        const ValueType& operator *() {
             return *mapit;
         }
 
@@ -578,6 +597,26 @@ bool Set<ValueType>::operator !=(const Set& set2) const {
 }
 
 template <typename ValueType>
+bool Set<ValueType>::operator <(const Set& set2) const {
+    return compare::compare(*this, set2) < 0;
+}
+
+template <typename ValueType>
+bool Set<ValueType>::operator <=(const Set& set2) const {
+    return compare::compare(*this, set2) <= 0;
+}
+
+template <typename ValueType>
+bool Set<ValueType>::operator >(const Set& set2) const {
+    return compare::compare(*this, set2) > 0;
+}
+
+template <typename ValueType>
+bool Set<ValueType>::operator >=(const Set& set2) const {
+    return compare::compare(*this, set2) >= 0;
+}
+
+template <typename ValueType>
 Set<ValueType> Set<ValueType>::operator +(const Set& set2) const {
     Set<ValueType> set = *this;
     set.addAll(set2);
@@ -681,11 +720,17 @@ std::istream& operator >>(std::istream& is, Set<ValueType>& set) {
     return is;
 }
 
-// hashing functions for sets;  defined in hashmap.cpp
-int hashCode(const Set<std::string>& s);
-int hashCode(const Set<int>& s);
-int hashCode(const Set<char>& s);
-int hashCode(const Set<long>& s);
-int hashCode(const Set<double>& s);
+/*
+ * Template hash function for sets.
+ * Requires the element type in the Set to have a hashCode function.
+ */
+template <typename T>
+int hashCode(const Set<T>& s) {
+    int code = HASH_SEED;
+    for (T n : s) {
+        code = HASH_MULTIPLIER * code + hashCode(n);
+    }
+    return int(code & HASH_MASK);
+}
 
 #endif

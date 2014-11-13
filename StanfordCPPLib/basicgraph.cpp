@@ -140,6 +140,22 @@ std::string Edge::toString() const {
     return out.str();
 }
 
+Edge& Edge::operator =(const Edge& other) {
+    start = other.start;
+    finish = other.finish;
+    cost = other.cost;
+    visited = other.visited;
+    return *this;
+}
+
+Edge& Edge::operator =(Edge&& other) {
+    start = other.start;
+    finish = other.finish;
+    cost = other.cost;
+    visited = other.visited;
+    return *this;
+}
+
 std::ostream& operator<<(std::ostream& out, const Edge& edge) {
     out << "Edge{start=";
     if (edge.start == NULL) {

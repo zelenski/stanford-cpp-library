@@ -4,6 +4,9 @@
  * This file exports the <code>DawgLexicon</code> class, which is a
  * compact structure for storing a list of words.
  * 
+ * @version 2014/11/13
+ * - added comparison operators <, >=, etc.
+ * - added hashCode function
  * @version 2014/10/10
  * - added equals method
  * - added comparison operators ==, !=
@@ -192,6 +195,20 @@ public:
      */
     bool operator ==(const DawgLexicon& lex2) const;
     bool operator !=(const DawgLexicon& lex2) const;
+
+    /*
+     * Operators: <, >, <=, >=
+     * Usage: if (lex1 <= lex2) ...
+     * ...
+     * ----------------------------
+     * Relational operators to compare two lexicons to see if they have the same elements.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
+     */
+    bool operator <(const DawgLexicon& lex2) const;
+    bool operator <=(const DawgLexicon& lex2) const;
+    bool operator >(const DawgLexicon& lex2) const;
+    bool operator >=(const DawgLexicon& lex2) const;
 
     /*
      * Additional DawgLexicon operations
@@ -393,7 +410,9 @@ void DawgLexicon::mapAll(FunctorType fn) const {
     }
 }
 
-// hashing functions for lexicons; defined in hashmap.cpp
+/*
+ * hashing function for lexicons
+ */
 int hashCode(const DawgLexicon& lex);
 
 std::ostream& operator <<(std::ostream& os, const DawgLexicon& lex);

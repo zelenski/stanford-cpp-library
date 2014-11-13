@@ -3,13 +3,21 @@
  * -------------
  * This file exports the <code>Stack</code> class, which implements
  * a collection that processes values in a last-in/first-out (LIFO) order.
+ * 
+ * @version 2014/11/13
+ * - added add() method as synonym for push()
+ * - added remove() method as synonym for pop()
+ * - added comparison operators <, >=, etc.
+ * - added template hashCode function
  */
 
 #ifndef _stack_h
 #define _stack_h
 
+#include <iterator>
 #include <stack>
 #include "error.h"
+#include "hashcode.h"
 #include "vector.h"
 
 /*
@@ -39,6 +47,15 @@ public:
      * Frees any heap storage associated with this stack.
      */
     virtual ~Stack();
+    
+    /*
+     * Method: add
+     * Usage: stack.add(value);
+     * -------------------------
+     * Pushes the specified value onto the top of this stack.
+     * A synonym for the push method.
+     */
+    void add(const ValueType& value);
     
     /*
      * Method: clear
@@ -93,6 +110,15 @@ public:
     void push(const ValueType& value);
 
     /*
+     * Method: remove
+     * Usage: ValueType top = stack.remove();
+     * -----------------------------------
+     * Removes the top element from this stack and returns it.
+     * A synonym for the pop method.
+     */
+    ValueType remove();
+
+    /*
      * Method: size
      * Usage: int n = stack.size();
      * ----------------------------
@@ -143,6 +169,19 @@ public:
      */
     bool operator !=(const Stack& stack2) const;
 
+    /*
+     * Operators: <, >, <=, >=
+     * Usage: if (stack1 < stack2) ...
+     * -------------------------------
+     * Relational operators to compare two stacks.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
+     */
+    bool operator <(const Stack& stack2) const;
+    bool operator <=(const Stack& stack2) const;
+    bool operator >(const Stack& stack2) const;
+    bool operator >=(const Stack& stack2) const;
+
     /* Private section */
 
     /**********************************************************************/
@@ -159,8 +198,66 @@ public:
      * underlying Vector class.
      */
 
+    template <typename T>
+    friend int hashCode(const Stack<T>& s);
+    
+    template <typename T>
+    friend std::ostream& operator <<(std::ostream& os, const Stack<T>& stack);
+    
 private:
     Vector<ValueType> elements;
+
+    /*
+     * Iterator support
+     * ----------------
+     * The classes in the StanfordCPPLib collection implement input
+     * iterators so that they work symmetrically with respect to the
+     * corresponding STL classes.
+     */
+    class iterator : public Vector<ValueType>::iterator {
+    public:
+        iterator() : Vector<ValueType>::iterator() {}
+        iterator(const iterator& it) : Vector<ValueType>::iterator(it) {}
+        iterator(const typename Vector<ValueType>::iterator& it) : Vector<ValueType>::iterator(it) {}
+    };
+    
+    class const_iterator : public Vector<ValueType>::const_iterator {
+    public:
+        const_iterator() : Vector<ValueType>::const_iterator() {}
+        const_iterator(const const_iterator& it) : Vector<ValueType>::const_iterator(it) {}
+        const_iterator(const typename Vector<ValueType>::const_iterator& it) : Vector<ValueType>::const_iterator(it) {}
+    };
+    
+    /*
+     * Returns an iterator positioned at the first element of the list.
+     */
+    iterator begin() {
+        return iterator(elements.begin());
+    }
+
+    /*
+     * Returns an iterator positioned at the first element of the list.
+     */
+    const_iterator begin() const {
+        auto itr = elements.begin();
+        return const_iterator(itr);
+    }
+    
+    /*
+     * Returns an iterator positioned at the last element of the list.
+     */
+    iterator end() {
+        auto itr = elements.end();
+        return iterator(itr);
+    }
+    
+    /*
+     * Returns an iterator positioned at the last element of the list.
+     */
+    const_iterator end() const {
+        auto itr = elements.end();
+        return const_iterator(itr);
+    }
 };
 
 /*
@@ -179,6 +276,11 @@ Stack<ValueType>::Stack() {
 template <typename ValueType>
 Stack<ValueType>::~Stack() {
     /* Empty */
+}
+
+template <typename ValueType>
+void Stack<ValueType>::add(const ValueType& value) {
+    push(value);
 }
 
 template <typename ValueType>
@@ -231,6 +333,11 @@ void Stack<ValueType>::push(const ValueType& value) {
 }
 
 template <typename ValueType>
+ValueType Stack<ValueType>::remove() {
+    return pop();
+}
+
+template <typename ValueType>
 int Stack<ValueType>::size() const {
     return elements.size();
 }
@@ -261,30 +368,37 @@ std::string Stack<ValueType>::toString() const {
 
 template <typename ValueType>
 bool Stack<ValueType>::operator ==(const Stack& stack2) const {
-	return equals(stack2);
+    return elements == stack2.elements;
 }
 
 template <typename ValueType>
 bool Stack<ValueType>::operator !=(const Stack & stack2) const {
-    return !equals(stack2);
+    return elements != stack2.elements;
+}
+
+template <typename ValueType>
+bool Stack<ValueType>::operator <(const Stack & stack2) const {
+    return elements < stack2.elements;
+}
+
+template <typename ValueType>
+bool Stack<ValueType>::operator <=(const Stack & stack2) const {
+    return elements <= stack2.elements;
+}
+
+template <typename ValueType>
+bool Stack<ValueType>::operator >(const Stack & stack2) const {
+    return elements > stack2.elements;
+}
+
+template <typename ValueType>
+bool Stack<ValueType>::operator >=(const Stack & stack2) const {
+    return elements >= stack2.elements;
 }
 
 template <typename ValueType>
 std::ostream& operator <<(std::ostream& os, const Stack<ValueType>& stack) {
-    os << "{";
-    Stack<ValueType> copy = stack;
-    Stack<ValueType> reversed;
-    while (!copy.isEmpty()) {
-        reversed.push(copy.pop());
-    }
-    int len = stack.size();
-    for (int i = 0; i < len; i++) {
-        if (i > 0) {
-            os << ", ";
-        }
-        writeGenericValue(os, reversed.pop(), true);
-    }
-    return os << "}";
+    return os << stack.elements;
 }
 
 template <typename ValueType>
@@ -314,11 +428,13 @@ std::istream& operator >>(std::istream& is, Stack<ValueType>& stack) {
     return is;
 }
 
-// hashing functions for stacks;  defined in hashmap.cpp
-int hashCode(const Stack<std::string>& s);
-int hashCode(const Stack<int>& s);
-int hashCode(const Stack<char>& s);
-int hashCode(const Stack<long>& s);
-int hashCode(const Stack<double>& s);
+/*
+ * Template hash function for stacks.
+ * Requires the element type in the Stack to have a hashCode function.
+ */
+template <typename T>
+int hashCode(const Stack<T>& s) {
+    return hashCode(s.elements);
+}
 
 #endif

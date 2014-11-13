@@ -15,6 +15,9 @@
  * The DAWG builder code is quite a bit more intricate, see Julie Zelenski
  * if you need it.
  * 
+ * @version 2014/11/13
+ * - added comparison operators <, >=, etc.
+ * - added hashCode function
  * @version 2014/10/10
  * - removed 'using namespace' statement
  * - added equals method, ==, != operators
@@ -31,7 +34,9 @@
 #include <sstream>
 #include <stdint.h>
 #include <string>
+#include "compare.h"
 #include "error.h"
+#include "hashcode.h"
 #include "strlib.h"
 
 static uint32_t my_ntohl(uint32_t arg);
@@ -142,12 +147,7 @@ bool DawgLexicon::equals(const DawgLexicon& lex2) const {
     if (size() != lex2.size()) {
         return false;
     }
-	for (std::string word : lex2) {
-    	if (!contains(word)) {
-			return false;
-		}
-	}
-	return true;
+    return compare::compare(*this, lex2) == 0;
 }
 
 bool DawgLexicon::isEmpty() const {
@@ -193,6 +193,22 @@ bool DawgLexicon::operator ==(const DawgLexicon& lex2) const {
 
 bool DawgLexicon::operator !=(const DawgLexicon& lex2) const {
     return !equals(lex2);
+}
+
+bool DawgLexicon::operator <(const DawgLexicon& lex2) const {
+    return compare::compare(*this, lex2) < 0;
+}
+
+bool DawgLexicon::operator <=(const DawgLexicon& lex2) const {
+    return compare::compare(*this, lex2) <= 0;
+}
+
+bool DawgLexicon::operator >(const DawgLexicon& lex2) const {
+    return compare::compare(*this, lex2) > 0;
+}
+
+bool DawgLexicon::operator >=(const DawgLexicon& lex2) const {
+    return compare::compare(*this, lex2) >= 0;
 }
 
 /*
@@ -377,6 +393,14 @@ std::ostream& operator <<(std::ostream& out, const DawgLexicon& lex) {
     }
     out << "}";
     return out;
+}
+
+int hashCode(const DawgLexicon& lex) {
+    int code = HASH_SEED;
+    for (std::string n : lex) {
+        code = HASH_MULTIPLIER * code + hashCode(n);
+    }
+    return int(code & HASH_MASK);
 }
 
 /*

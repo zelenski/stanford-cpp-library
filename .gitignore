@@ -1,7 +1,6 @@
 *.pro.user
 .DS_Store
 deploy-*.pl
-todo-stanford-cpp-lib.txt
 Autograder_QtCreatorProject/lib/autograder
 Autograder_QtCreatorProject/lib/StanfordCPPLib
 build/
@@ -9,3 +8,4 @@ JavaBackEnd/eclipseproject/bin/
 JavaBackEnd/eclipseproject/obf/temp/
 Karel/
 StanfordCPPLib_QtCreatorProject/lib/StanfordCPPLib
+StanfordCPPLib_experimental/

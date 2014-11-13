@@ -4,6 +4,10 @@
  * This file exports the <code>HashMap</code> class, which stores
  * a set of <i>key</i>-<i>value</i> pairs.
  * 
+ * @version 2014/11/13
+ * - added add() method as synonym for put()
+ * - added template hashCode function
+ * - moved hashCode functions to hashcode.h/cpp
  * @version 2014/10/29
  * - moved hashCode functions out to hashcode.h
  * @version 2014/10/10
@@ -59,6 +63,15 @@ public:
      * Frees any heap storage associated with this map.
      */
     virtual ~HashMap();
+
+    /*
+     * Method: add
+     * Usage: map.add(key, value);
+     * ---------------------------
+     * Associates <code>key</code> with <code>value</code> in this map.
+     * A synonym for the put method.
+     */
+    void add(const KeyType& key, const ValueType& value);
 
     /*
      * Method: clear
@@ -518,7 +531,7 @@ public:
             return !(*this == rhs);
         }
 
-        KeyType operator *() {
+        const KeyType& operator *() {
             return cp->key;
         }
 
@@ -557,6 +570,11 @@ HashMap<KeyType, ValueType>::HashMap() {
 template <typename KeyType, typename ValueType>
 HashMap<KeyType, ValueType>::~HashMap() {
     deleteBuckets(buckets);
+}
+
+template <typename KeyType, typename ValueType>
+void HashMap<KeyType, ValueType>::add(const KeyType& key, const ValueType& value) {
+    put(key, value);
 }
 
 template <typename KeyType, typename ValueType>
@@ -786,6 +804,21 @@ bool HashMap<KeyType, ValueType>::operator ==(const HashMap& map2) const {
 template <typename KeyType, typename ValueType>
 bool HashMap<KeyType, ValueType>::operator !=(const HashMap& map2) const {
     return equals(map2);
+}
+
+/*
+ * Template hash function for hash maps.
+ * Requires the key and value types in the HashMap to have a hashCode function.
+ */
+template <typename K, typename V>
+int hashCode(const HashMap<K, V>& map) {
+    int code = HASH_SEED;
+    for (K k : map) {
+        code = HASH_MULTIPLIER * code + hashCode(k);
+        V v = map[k];
+        code = HASH_MULTIPLIER * code + hashCode(v);
+    }
+    return int(code & HASH_MASK);
 }
 
 /*

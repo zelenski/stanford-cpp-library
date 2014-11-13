@@ -15,6 +15,9 @@
  *
  * The original DAWG implementation is retained as dawglexicon.h/cpp.
  * 
+ * @version 2014/11/13
+ * - added comparison operators <, >=, etc.
+ * - added hashCode function
  * @version 2014/10/10
  * - added comparison operators ==, !=
  * - removed 'using namespace' statement
@@ -28,8 +31,10 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include "compare.h"
 #include "dawglexicon.h"
 #include "error.h"
+#include "hashcode.h"
 #include "strlib.h"
 
 static bool isDAWGFile(const std::string& filename);
@@ -193,6 +198,21 @@ bool Lexicon::operator !=(const Lexicon& lex2) const {
     return !equals(lex2);
 }
 
+bool Lexicon::operator <(const Lexicon& lex2) const {
+    return compare::compare(*this, lex2) < 0;
+}
+
+bool Lexicon::operator <=(const Lexicon& lex2) const {
+    return compare::compare(*this, lex2) <= 0;
+}
+
+bool Lexicon::operator >(const Lexicon& lex2) const {
+    return compare::compare(*this, lex2) > 0;
+}
+
+bool Lexicon::operator >=(const Lexicon& lex2) const {
+    return compare::compare(*this, lex2) >= 0;
+}
 
 /* private helpers implementation */
 
@@ -348,9 +368,21 @@ std::istream& operator >>(std::istream& is, Lexicon& lex) {
     return is;
 }
 
+/*
+ * Hash function for lexicons.
+ */
+int hashCode(const Lexicon& l) {
+    int code = HASH_SEED;
+    for (std::string n : l) {
+        code = HASH_MULTIPLIER * code + hashCode(n);
+    }
+    return int(code & HASH_MASK);
+}
 
-// returns true if the given file (probably) represents a
-// binary DAWG lexicon data file
+/*
+ * Returns true if the given file (probably) represents a
+ * binary DAWG lexicon data file.
+ */
 static bool isDAWGFile(const std::string& filename) {
     char firstFour[4], expected[] = "DAWG";
     std::ifstream istr(filename.c_str());

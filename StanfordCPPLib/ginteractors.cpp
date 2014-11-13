@@ -89,7 +89,6 @@ void GInteractor::setTextPosition(SwingConstants horizontal, SwingConstants vert
 
 GButton::GButton(std::string label) {
     this->label = label;
-    this->icon = "";
     pp->gbutton_constructor(this, label);
 }
 

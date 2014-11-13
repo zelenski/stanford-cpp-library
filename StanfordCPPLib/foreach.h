@@ -72,7 +72,7 @@
 static const std::ios::openmode IOS_APP = std::ios::app;
 static const std::ios::openmode IOS_ATE = std::ios::ate;
 static const std::ios::openmode IOS_BINARY = std::ios::binary;
-const std::ios::openmode IOS_IN = std::ios::in;
+static const std::ios::openmode IOS_IN = std::ios::in;
 static const std::ios::openmode IOS_OUT = std::ios::out;
 static const std::ios::openmode IOS_TRUNC = std::ios::trunc;
 

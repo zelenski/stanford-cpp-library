@@ -9,6 +9,12 @@
  * See BasicGraph.cpp for implementation of each member.
  *
  * @author Marty Stepp
+ * @version 2014/11/13
+ * - added iterator begin(), end() support so that students can directly
+ *   for-each over the vertices of a graph.
+ * - added comparison operators ==, !=, <, etc.
+ * - added template hashCode function
+ * - bug fix to Edge to add move/copy = operators
  * @version 2014/10/20
  * - converted functions to accept const string& rather than string for speed
  * @version 2014/08/16
@@ -165,6 +171,16 @@ public:
      * "Arc{start=r12c42, finish=r12c41, cost=0.75}".
      */
     std::string toString() const;
+    
+    /*
+     * Copy assignment operator (rule of three).
+     */
+    Edge& operator =(const Edge& other);
+
+    /*
+     * Move assignment operator (rule of three).
+     */
+    Edge& operator =(Edge&& other);
 };
 
 /*

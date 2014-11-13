@@ -4,6 +4,10 @@
  * This file exports the template class <code>Map</code>, which
  * maintains a collection of <i>key</i>-<i>value</i> pairs.
  * 
+ * @version 2014/11/13
+ * - added comparison operators <, >=, etc.
+ * - added add() method as synonym for put()
+ * - added template hashCode function
  * @version 2014/10/10
  * - removed usage of __foreach macro
  */
@@ -13,7 +17,9 @@
 
 #include <cstdlib>
 #include <map>
+#include "compare.h"
 #include "error.h"
+#include "hashcode.h"
 #include "stack.h"
 #include "vector.h"
 
@@ -43,6 +49,15 @@ public:
      * Frees any heap storage associated with this map.
      */
     virtual ~Map();
+    
+    /*
+     * Method: add
+     * Usage: map.add(key, value);
+     * ---------------------------
+     * Associates <code>key</code> with <code>value</code> in this map.
+     * A synonym for the put method.
+     */
+    void add(const KeyType& key, const ValueType& value);
     
     /*
      * Method: clear
@@ -223,6 +238,19 @@ public:
      * Compares two maps for inequality.
      */
     bool operator !=(const Map& map2) const;
+
+    /*
+     * Operators: <, <=, >, >=
+     * Usage: if (map1 < map2) ...
+     * ---------------------------
+     * Relational operators to compare two maps.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
+     */
+    bool operator <(const Map& map2) const;
+    bool operator <=(const Map& map2) const;
+    bool operator >(const Map& map2) const;
+    bool operator >=(const Map& map2) const;
 
     /*
      * Operator: +
@@ -838,7 +866,7 @@ public:
             return !(*this == rhs);
         }
 
-        KeyType operator *() {
+        const KeyType& operator *() {
             return stack.peek().np->key;
         }
 
@@ -871,6 +899,12 @@ Map<KeyType, ValueType>::~Map() {
         delete cmpp;
     }
     deleteTree(root);
+}
+
+template <typename KeyType, typename ValueType>
+void Map<KeyType, ValueType>::add(const KeyType& key,
+                                  const ValueType& value) {
+    put(key, value);
 }
 
 template <typename KeyType, typename ValueType>
@@ -1074,6 +1108,41 @@ bool Map<KeyType, ValueType>::operator ==(const Map& map2) const {
 template <typename KeyType, typename ValueType>
 bool Map<KeyType, ValueType>::operator !=(const Map& map2) const {
     return equals(map2);
+}
+
+template <typename KeyType, typename ValueType>
+bool Map<KeyType, ValueType>::operator <(const Map& map2) const {
+    return compare::compare(*this, map2) < 0;
+}
+
+template <typename KeyType, typename ValueType>
+bool Map<KeyType, ValueType>::operator <=(const Map& map2) const {
+    return compare::compare(*this, map2) <= 0;
+}
+
+template <typename KeyType, typename ValueType>
+bool Map<KeyType, ValueType>::operator >(const Map& map2) const {
+    return compare::compare(*this, map2) > 0;
+}
+
+template <typename KeyType, typename ValueType>
+bool Map<KeyType, ValueType>::operator >=(const Map& map2) const {
+    return compare::compare(*this, map2) >= 0;
+}
+
+/*
+ * Template hash function for maps.
+ * Requires the key and value types in the Map to have a hashCode function.
+ */
+template <typename K, typename V>
+int hashCode(const Map<K, V>& map) {
+    int code = HASH_SEED;
+    for (K k : map) {
+        code = HASH_MULTIPLIER * code + hashCode(k);
+        V v = map[k];
+        code = HASH_MULTIPLIER * code + hashCode(v);
+    }
+    return int(code & HASH_MASK);
 }
 
 /*

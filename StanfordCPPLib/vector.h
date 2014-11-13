@@ -4,6 +4,9 @@
  * This file exports the <code>Vector</code> class, which provides an
  * efficient, safe, convenient replacement for the array type in C++.
  *
+ * @version 2014/11/13
+ * - added comparison operators <, >=, etc.
+ * - added template hashCode function
  * @version 2014/10/19
  * - added subList method
  * @version 2014/10/10
@@ -23,7 +26,9 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include "compare.h"
 #include "error.h"
+#include "hashcode.h"
 #include "random.h"
 #include "strlib.h"
 
@@ -259,6 +264,19 @@ public:
     bool operator !=(const Vector& v2) const;
 
     /*
+     * Operators: <, >, <=, >=
+     * Usage: if (vec1 < vec2) ...
+     * ---------------------------
+     * Relational operators to compare two vectors.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
+     */
+    bool operator <(const Vector& v2) const;
+    bool operator <=(const Vector& v2) const;
+    bool operator >(const Vector& v2) const;
+    bool operator >=(const Vector& v2) const;
+
+    /*
      * Additional Vector operations
      * ----------------------------
      * In addition to the methods listed in this interface, the Vector
@@ -448,7 +466,7 @@ public:
             return index - rhs.index;
         }
 
-        ValueType& operator *() {
+        const ValueType& operator *() {
             return vp->elements[index];
         }
 
@@ -739,6 +757,26 @@ bool Vector<ValueType>::operator !=(const Vector& v2) const {
 }
 
 template <typename ValueType>
+bool Vector<ValueType>::operator <(const Vector& v2) const {
+    return compare::compare(*this, v2) < 0;
+}
+
+template <typename ValueType>
+bool Vector<ValueType>::operator <=(const Vector& v2) const {
+    return compare::compare(*this, v2) <= 0;
+}
+
+template <typename ValueType>
+bool Vector<ValueType>::operator >(const Vector& v2) const {
+    return compare::compare(*this, v2) > 0;
+}
+
+template <typename ValueType>
+bool Vector<ValueType>::operator >=(const Vector& v2) const {
+    return compare::compare(*this, v2) >= 0;
+}
+
+template <typename ValueType>
 Vector<ValueType> & Vector<ValueType>::operator =(const Vector& src) {
     if (this != &src) {
         if (elements != NULL) {
@@ -838,12 +876,18 @@ std::istream& operator >>(std::istream& is, Vector<ValueType>& vec) {
     return is;
 }
 
-// hashing functions for vectors;  defined in hashmap.cpp
-int hashCode(const Vector<std::string>& v);
-int hashCode(const Vector<int>& v);
-int hashCode(const Vector<char>& v);
-int hashCode(const Vector<long>& v);
-int hashCode(const Vector<double>& v);
+/*
+ * Template hash function for vectors.
+ * Requires the element type in the Vector to have a hashCode function.
+ */
+template <typename ValueType>
+int hashCode(const Vector<ValueType>& v) {
+    int code = HASH_SEED;
+    for (ValueType element : v) {
+        code = HASH_MULTIPLIER * code + hashCode(element);
+    }
+    return (code & HASH_MASK);
+}
 
 /*
  * Randomly rearranges the elements of the given vector.

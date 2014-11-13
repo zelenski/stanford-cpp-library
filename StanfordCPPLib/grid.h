@@ -4,6 +4,9 @@
  * This file exports the <code>Grid</code> class, which offers a
  * convenient abstraction for representing a two-dimensional array.
  *
+ * @version 2014/11/13
+ * - added comparison operators <, >=, etc.
+ * - added template hashCode function
  * @version 2014/10/10
  * - added resize(true) function with ability to retain old contents
  * - made ==, != operators const as they should be
@@ -22,6 +25,7 @@
 #include <string>
 #include <sstream>
 #include "error.h"
+#include "hashcode.h"
 #include "random.h"
 #include "strlib.h"
 #include "vector.h"
@@ -270,6 +274,19 @@ public:
      * Compares two grids for inequality.
      */
     bool operator !=(const Grid& grid2) const;
+    
+    /*
+     * Operators: <, >, <=, >=
+     * Usage: if (grid1 < grid2) ...
+     * -----------------------------
+     * Relational operators to compare two grids.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
+     */
+    bool operator <(const Grid& grid2) const;
+    bool operator <=(const Grid& grid2) const;
+    bool operator >(const Grid& grid2) const;
+    bool operator >=(const Grid& grid2) const;
 
     /* Private section */
 
@@ -307,6 +324,7 @@ public:
     void checkIndexes(int row, int col,
                       int rowMax, int colMax,
                       std::string prefix) const;
+    int gridCompare(const Grid& grid2) const;
 
     /*
      * Hidden features
@@ -726,6 +744,26 @@ bool Grid<ValueType>::operator !=(const Grid& grid2) const {
 }
 
 template <typename ValueType>
+bool Grid<ValueType>::operator <(const Grid& grid2) const {
+    return gridCompare(grid2) < 0;
+}
+
+template <typename ValueType>
+bool Grid<ValueType>::operator <=(const Grid& grid2) const {
+    return gridCompare(grid2) <= 0;
+}
+
+template <typename ValueType>
+bool Grid<ValueType>::operator >(const Grid& grid2) const {
+    return gridCompare(grid2) > 0;
+}
+
+template <typename ValueType>
+bool Grid<ValueType>::operator >=(const Grid& grid2) const {
+    return gridCompare(grid2) >= 0;
+}
+
+template <typename ValueType>
 void Grid<ValueType>::checkIndexes(int row, int col,
                                    int rowMax, int colMax,
                                    std::string prefix) const {
@@ -744,6 +782,38 @@ void Grid<ValueType>::checkIndexes(int row, int col,
         out << "]";
         error(out.str());
     }
+}
+
+template <typename ValueType>
+int Grid<ValueType>::gridCompare(const Grid& grid2) const {
+    int h1 = height();
+    int w1 = width();
+    int h2 = grid2.height();
+    int w2 = grid2.width();
+    int rows = h1 > h2 ? h1 : h2;
+    int cols = w1 > w2 ? w1 : w2;
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) {
+            if (r >= h1) {
+                return -1;
+            } else if (r >= h2) {
+                return 1;
+            }
+            
+            if (c >= w1) {
+                return -1;
+            } else if (c >= w2) {
+                return 1;
+            }
+            
+            if (get(r, c) < grid2.get(r, c)) {
+                return -1;
+            } else if (grid2.get(r, c) < get(r, c)) {
+                return 1;
+            }
+        }
+    }
+    return 0;
 }
 
 /*
@@ -787,6 +857,19 @@ std::istream& operator >>(std::istream& is, Grid<ValueType>& grid) {
         }
     }
     return is;
+}
+
+/*
+ * Template hash function for grids.
+ * Requires the element type in the Grid to have a hashCode function.
+ */
+template <typename T>
+int hashCode(const Grid<T>& g) {
+    int code = HASH_SEED;
+    for (T n : g) {
+        code = HASH_MULTIPLIER * code + hashCode(n);
+    }
+    return int(code & HASH_MASK);
 }
 
 /*

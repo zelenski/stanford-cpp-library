@@ -5,6 +5,12 @@
  * in which values are ordinarily processed in a first-in/first-out
  * (FIFO) order.
  * 
+ * @version 2014/11/13
+ * - added comparison operators ==, !=, <, etc.
+ * - added add() method as synonym for enqueue()
+ * - added remove() method as synonym for dequeue()
+ * - added template hashCode function
+ * - optimized some functions (operator <<, toStlQueue) to avoid making unneeded deep copy
  * @version 2014/10/10
  * - removed dependency on 'using namespace' statement
  * - removed usage of __foreach macro
@@ -16,6 +22,7 @@
 #include <deque>
 #include <queue>
 #include "error.h"
+#include "hashcode.h"
 #include "vector.h"
 
 /*
@@ -43,6 +50,15 @@ public:
      * Frees any heap storage associated with this queue.
      */
     virtual ~Queue();
+    
+    /*
+     * Method: add
+     * Usage: queue.add(value);
+     * ------------------------
+     * Adds <code>value</code> to the end of the queue.
+     * A synonym for the enqueue method.
+     */
+    void add(const ValueType& value);
 
     /*
      * Method: back
@@ -50,7 +66,7 @@ public:
      * -------------------------------------
      * Returns the last value in the queue by reference.
      */
-    ValueType& back();
+    const ValueType& back() const;
 
     /*
      * Method: clear
@@ -93,7 +109,7 @@ public:
      * ---------------------------------------
      * Returns the first value in the queue by reference.
      */
-    ValueType& front();
+    const ValueType& front() const;
 
     /*
      * Method: isEmpty
@@ -112,7 +128,16 @@ public:
      * under the name <code>front</code>, in which case it returns the
      * value by reference.
      */
-    ValueType peek() const;
+    const ValueType& peek() const;
+
+    /*
+     * Method: remove
+     * Usage: ValueType first = queue.remove();
+     * ----------------------------------------
+     * Removes and returns the first item in the queue.
+     * A synonym for the dequeue method.
+     */
+    ValueType remove();
 
     /*
      * Method: size
@@ -158,6 +183,25 @@ public:
      */
     bool operator !=(const Queue& queue2) const;
 
+    /*
+     * Operators: <, >, <=, >=
+     * Usage: queue1 < queue2 ...
+     * --------------------------
+     * Relational operators to compare two queues.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
+     */
+    bool operator <(const Queue& queue2) const;
+    bool operator <=(const Queue& queue2) const;
+    bool operator >(const Queue& queue2) const;
+    bool operator >=(const Queue& queue2) const;
+
+    template <typename T>
+    friend int hashCode(const Queue<T>& s);
+    
+    template <typename T>
+    friend std::ostream& operator <<(std::ostream& os, const Queue<T>& queue);
+    
     /* Private section */
 
     /**********************************************************************/
@@ -181,6 +225,7 @@ private:
 
     /* Private functions */
     void expandRingBufferCapacity();
+    int queueCompare(const Queue& queue2) const;
 };
 
 /*
@@ -225,7 +270,12 @@ Queue<ValueType>::~Queue() {
 }
 
 template <typename ValueType>
-ValueType& Queue<ValueType>::back() {
+void Queue<ValueType>::add(const ValueType& value) {
+    enqueue(value);
+}
+
+template <typename ValueType>
+const ValueType& Queue<ValueType>::back() const {
     if (count == 0) {
         error("Queue::back: Attempting to read back of an empty queue");
     }
@@ -271,9 +321,9 @@ void Queue<ValueType>::enqueue(const ValueType& value) {
 template <typename ValueType>
 bool Queue<ValueType>::equals(const Queue<ValueType>& queue2) const {
     if (this == &queue2) {
-		return true;
-	}
-	if (size() != queue2.size()) {
+        return true;
+    }
+    if (size() != queue2.size()) {
         return false;
     }
     Queue<ValueType> copy1 = *this;
@@ -287,7 +337,7 @@ bool Queue<ValueType>::equals(const Queue<ValueType>& queue2) const {
 }
 
 template <typename ValueType>
-ValueType& Queue<ValueType>::front() {
+const ValueType& Queue<ValueType>::front() const {
     if (count == 0) {
         error("Queue::front: Attempting to read front of an empty queue");
     }
@@ -300,11 +350,21 @@ bool Queue<ValueType>::isEmpty() const {
 }
 
 template <typename ValueType>
-ValueType Queue<ValueType>::peek() const {
+const ValueType& Queue<ValueType>::peek() const {
     if (count == 0) {
         error("Queue::peek: Attempting to peek at an empty queue");
     }
     return ringBuffer.get(head);
+}
+
+template <typename ValueType>
+ValueType Queue<ValueType>::remove() {
+    // this isEmpty check is also done in dequeue(), but we repeat it
+    // here so that the possible error message will be more descriptive.
+    if (isEmpty()) {
+        error("Queue::remove: Attempting to remove from an empty queue");
+    }
+    return dequeue();
 }
 
 template <typename ValueType>
@@ -315,9 +375,8 @@ int Queue<ValueType>::size() const {
 template <typename ValueType>
 std::queue<ValueType> Queue<ValueType>::toStlDeque() const {
     std::deque<ValueType> result;
-    Queue<ValueType> copy = *this;
-    while (!copy.isEmpty()) {
-        result.push_back(copy.dequeue());
+    for (int i = 0; i < count; i++) {
+        result.push_back(ringBuffer[(head + i) % capacity]);
     }
     return result;
 }
@@ -325,9 +384,8 @@ std::queue<ValueType> Queue<ValueType>::toStlDeque() const {
 template <typename ValueType>
 std::queue<ValueType> Queue<ValueType>::toStlQueue() const {
     std::queue<ValueType> result;
-    Queue<ValueType> copy = *this;
-    while (!copy.isEmpty()) {
-        result.push(copy.dequeue());
+    for (int i = 0; i < count; i++) {
+        result.push(ringBuffer[(head + i) % capacity]);
     }
     return result;
 }
@@ -359,6 +417,31 @@ void Queue<ValueType>::expandRingBufferCapacity() {
 }
 
 template <typename ValueType>
+int Queue<ValueType>::queueCompare(const Queue& queue2) const {
+    if (*this == queue2) {
+        return 0;
+    }
+    
+    for (int i1 = 0, i2 = 0;
+         i1 < count && i2 < queue2.count;
+         i1++, i2++) {
+        if (ringBuffer[(head + i1) % capacity] < queue2.ringBuffer[(queue2.head + i2) % queue2.capacity]) {
+            return -1;
+        } else if (queue2.ringBuffer[(queue2.head + i2) % queue2.capacity] < ringBuffer[(head + i1) % capacity]) {
+            return 1;
+        }
+    }
+    
+    if (count < queue2.count) {
+        return -1;
+    } else if (count > queue2.count) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+template <typename ValueType>
 bool Queue<ValueType>::operator ==(const Queue& queue2) const {
 	return equals(queue2);
 }
@@ -369,17 +452,37 @@ bool Queue<ValueType>::operator !=(const Queue& queue2) const {
 }
 
 template <typename ValueType>
+bool Queue<ValueType>::operator <(const Queue& queue2) const {
+    return queueCompare(queue2) < 0;
+}
+
+template <typename ValueType>
+bool Queue<ValueType>::operator <=(const Queue& queue2) const {
+    return queueCompare(queue2) <= 0;
+}
+
+template <typename ValueType>
+bool Queue<ValueType>::operator >(const Queue& queue2) const {
+    return queueCompare(queue2) > 0;
+}
+
+template <typename ValueType>
+bool Queue<ValueType>::operator >=(const Queue& queue2) const {
+    return queueCompare(queue2) >= 0;
+}
+
+template <typename ValueType>
 std::ostream& operator <<(std::ostream& os, const Queue<ValueType>& queue) {
     os << "{";
-    Queue<ValueType> copy = queue;
-    int len = queue.size();
-    for (int i = 0; i < len; i++) {
-        if (i > 0) {
+    if (!queue.isEmpty()) {
+        writeGenericValue(os, queue.ringBuffer[queue.head], false);
+        for (int i = 1; i < queue.count; i++) {
             os << ", ";
+            writeGenericValue(os, queue.ringBuffer[(queue.head + i) % queue.capacity], false);
         }
-        writeGenericValue(os, copy.dequeue(), true);
     }
-    return os << "}";
+    os << "}";
+    return os;
 }
 
 template <typename ValueType>
@@ -409,11 +512,17 @@ std::istream& operator >>(std::istream& is, Queue<ValueType>& queue) {
     return is;
 }
 
-// hashing functions for queues;  defined in hashmap.cpp
-int hashCode(const Queue<std::string>& q);
-int hashCode(const Queue<int>& q);
-int hashCode(const Queue<char>& q);
-int hashCode(const Queue<long>& q);
-int hashCode(const Queue<double>& q);
+/*
+ * Template hash function for queues.
+ * Requires the element type in the queue to have a hashCode function.
+ */
+template <typename T>
+int hashCode(const Queue<T>& q) {
+    int code = HASH_SEED;
+    for (int i = 0; i < q.count; i++) {
+        code = HASH_MULTIPLIER * code + hashCode(q.ringBuffer[(q.head + i) % q.capacity]);
+    }
+    return int(code & HASH_MASK);
+}
 
 #endif

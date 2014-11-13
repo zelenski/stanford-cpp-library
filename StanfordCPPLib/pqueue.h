@@ -4,6 +4,11 @@
  * This file exports the <code>PriorityQueue</code> class, a
  * collection in which values are processed in priority order.
  * 
+ * @version 2014/11/13
+ * - added comparison operators <, >=, etc.
+ * - added add() method as synonym for enqueue()
+ * - added remove() method as synonym for dequeue()
+ * - added template hashCode function
  * @version 2014/10/20
  * - added equals method, ==, != operators
  * @version 2014/10/10
@@ -15,7 +20,9 @@
 #ifndef _pqueue_h
 #define _pqueue_h
 
+#include "compare.h"
 #include "error.h"
+#include "hashcode.h"
 #include "vector.h"
 
 /*
@@ -45,6 +52,14 @@ public:
      * Frees any heap storage associated with this priority queue.
      */
     virtual ~PriorityQueue();
+    
+    /*
+     * Method: add
+     * Usage: pq.add(value, priority);
+     * -------------------------------
+     * A synonym for the enqueue method.
+     */
+    void add(const ValueType& value, double priority);
     
     /*
      * Method: back
@@ -141,6 +156,14 @@ public:
     double peekPriority() const;
 
     /*
+     * Method: remove
+     * Usage: ValueType first = pq.remove();
+     * --------------------------------------
+     * A synonym for the dequeue method.
+     */
+    ValueType remove();
+
+    /*
      * Method: size
      * Usage: int n = pq.size();
      * -------------------------
@@ -166,6 +189,19 @@ public:
      */
     bool operator ==(const PriorityQueue& pq2) const;
     bool operator !=(const PriorityQueue& pq2) const;
+
+    /*
+     * Operators: <, <=, >, >=
+     * Usage: if (pq1 < pq2) ...
+     * -------------------------
+     * Relational operators to compare two queues.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
+     */
+    bool operator <(const PriorityQueue& pq2) const;
+    bool operator <=(const PriorityQueue& pq2) const;
+    bool operator >(const PriorityQueue& pq2) const;
+    bool operator >=(const PriorityQueue& pq2) const;
 
     /* Private section */
 
@@ -196,8 +232,116 @@ private:
     int capacity;
 
     /* Private function prototypes */
+    const HeapEntry& heapGet(int index) const;
+    int pqCompare(const PriorityQueue& other) const;
     bool takesPriority(int i1, int i2);
     void swapHeapEntries(int i1, int i2);
+
+    /*
+     * Iterator support
+     * ----------------
+     * The classes in the StanfordCPPLib collection implement input
+     * iterators so that they work symmetrically with respect to the
+     * corresponding STL classes.
+     */
+    class pq_iterator : public std::iterator<std::input_iterator_tag, ValueType> {
+    public:
+        pq_iterator() {
+            // empty
+        }
+
+        pq_iterator(const PriorityQueue& pq, bool end) {
+            m_pq = &pq;
+            m_index = end ? m_pq->count : 0;
+        }
+
+        pq_iterator(const pq_iterator& it)
+                : m_pq(it.m_pq), m_index(it.m_index) {
+            // empty
+        }
+
+        pq_iterator& operator ++() {
+            // find 'next' element: one that is minimally higher pri/seq from last one
+            // (this is O(N) and inefficient, but we want to avoid making a deep copy)
+            if (m_index == m_pq->count) {
+                error("PriorityQueue::iterator::operator ++: Cannot call on an end() iterator");
+            }
+            double pri = m_pq->heapGet(m_index).priority;
+            int seq = m_pq->heapGet(m_index).sequence;
+            
+            // best new element/index we have seen so far (initially none)
+            int newIndex = m_pq->count;
+            double newPri;
+            int newSeq;
+            
+            for (int i = 0; i < m_pq->count; i++) {
+                if (i == m_index) {
+                    continue;
+                }
+                double ipri = m_pq->heapGet(i).priority;
+                int iseq = m_pq->heapGet(i).sequence;
+                if (ipri < pri || (ipri == pri && iseq < seq)) {
+                    continue;
+                } else if (newIndex == m_pq->count
+                           || ipri < newPri
+                           || (ipri == newPri && iseq < newSeq)) {
+                    newPri = ipri;
+                    newSeq = iseq;
+                    newIndex = i;
+                }
+            }
+            
+            // if no next element is found, newIndex will be count (end)
+            m_index = newIndex;
+            return *this;
+        }
+
+        pq_iterator operator ++(int) {
+            pq_iterator copy(*this);
+            operator++();
+            return copy;
+        }
+
+        bool operator ==(const pq_iterator& rhs) {
+            return m_pq == rhs.m_pq && m_index == rhs.m_index;
+        }
+
+        bool operator !=(const pq_iterator& rhs) {
+            return !(*this == rhs);
+        }
+
+        ValueType operator *() {
+            if (m_index == m_pq->count) {
+                error("PriorityQueue::iterator::operator *: Cannot call on an end() iterator");
+            }
+            return m_pq->heapGet(m_index).value;
+        }
+
+        ValueType* operator ->() {
+            if (m_index == m_pq->count) {
+                error("PriorityQueue::iterator::operator ->: Cannot call on an end() iterator");
+            }
+            return &m_pq->heapGet(m_index).value;
+        }
+
+        friend class PriorityQueue;
+        // friend struct HeapEntry;
+        
+    private:
+        const PriorityQueue* m_pq;
+        int m_index;
+    };
+    
+    pq_iterator begin() const {
+        return pq_iterator(*this, /* end */ false);
+    }
+
+    pq_iterator end() const {
+        return pq_iterator(*this, /* end */ true);
+    }
+    
+    template <typename Collection>
+    friend int compare::compare(const Collection& pq1, const Collection& pq2);
 };
 
 template <typename ValueType>
@@ -214,6 +358,11 @@ PriorityQueue<ValueType>::PriorityQueue() {
 template <typename ValueType>
 PriorityQueue<ValueType>::~PriorityQueue() {
     /* Empty */
+}
+
+template <typename ValueType>
+void PriorityQueue<ValueType>::add(const ValueType& value, double priority) {
+    enqueue(value, priority);
 }
 
 template <typename ValueType>
@@ -391,6 +540,11 @@ double PriorityQueue<ValueType>::peekPriority() const {
 }
 
 template <typename ValueType>
+ValueType PriorityQueue<ValueType>::remove() {
+    return dequeue();
+}
+
+template <typename ValueType>
 int PriorityQueue<ValueType>::size() const {
     return count;
 }
@@ -401,6 +555,53 @@ std::string PriorityQueue<ValueType>::toString() const {
     os << *this;
     return os.str();
 }
+
+template <typename ValueType>
+const typename PriorityQueue<ValueType>::HeapEntry&
+PriorityQueue<ValueType>::heapGet(int index) const {
+    return heap[index];
+}
+
+/*
+ * Implementation note: Due to the complexity and unpredictable heap ordering of the elements,
+ * this function sadly makes a deep copy of both PQs for comparing.
+ * Therefore it is recommended not to use PQs in a context where <, <=, etc. are being
+ * called on them frequently.
+ */
+template <typename ValueType>
+int PriorityQueue<ValueType>::pqCompare(const PriorityQueue& pq2) const {
+    if (this == &pq2) {
+        return true;
+    }
+    PriorityQueue<ValueType> backup1 = *this;
+    PriorityQueue<ValueType> backup2 = pq2;
+    while (!backup1.isEmpty() && !backup2.isEmpty()) {
+        if (backup1.peek() < backup2.peek()) {
+            return -1;
+        } else if (backup2.peek() < backup1.peek()) {
+            return 1;
+        }
+        
+        double pri1 = backup1.peekPriority();
+        double pri2 = backup2.peekPriority();
+        if (pri1 < pri2) {
+            return -1;
+        } else if (pri2 < pri1) {
+            return 1;
+        }
+        
+        backup1.dequeue();
+        backup2.dequeue();
+    }
+    if (backup1.size() < backup2.size()) {
+        return -1;
+    } else if (backup2.size() < backup1.size()) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 
 template <typename ValueType>
 void PriorityQueue<ValueType>::swapHeapEntries(int i1, int i2) {
@@ -431,6 +632,43 @@ bool PriorityQueue<ValueType>::operator !=(const PriorityQueue& pq2) const {
 }
 
 template <typename ValueType>
+bool PriorityQueue<ValueType>::operator <(const PriorityQueue& pq2) const {
+    return pqCompare(pq2) < 0;
+}
+
+template <typename ValueType>
+bool PriorityQueue<ValueType>::operator <=(const PriorityQueue& pq2) const {
+    return pqCompare(pq2) <= 0;
+}
+
+template <typename ValueType>
+bool PriorityQueue<ValueType>::operator >(const PriorityQueue& pq2) const {
+    return pqCompare(pq2) > 0;
+}
+
+template <typename ValueType>
+bool PriorityQueue<ValueType>::operator >=(const PriorityQueue& pq2) const {
+    return pqCompare(pq2) >= 0;
+}
+
+/*
+ * Template hash function for hash sets.
+ * Requires the element type in the HashSet to have a hashCode function.
+ */
+template <typename T>
+int hashCode(const PriorityQueue<T>& pq) {
+    // (slow, memory-inefficient) implementation: copy pq, dequeue all, and hash together
+    PriorityQueue<T> backup = pq;
+    int code = HASH_SEED;
+    while (!backup.isEmpty()) {
+        code = HASH_MULTIPLIER * code + hashCode(backup.peek());
+        code = HASH_MULTIPLIER * code + hashCode(backup.peekPriority());
+        backup.dequeue();
+    }
+    return int(code & HASH_MASK);
+}
+
+template <typename ValueType>
 std::ostream& operator <<(std::ostream& os,
                           const PriorityQueue<ValueType>& pq) {
     os << "{";
@@ -444,8 +682,6 @@ std::ostream& operator <<(std::ostream& os,
         os << copy.peekPriority() << ":";
         writeGenericValue(os, copy.dequeue(), true);
     }
-    // TODO: new, faster implementation: just loop over internal heap structure
-    // (won't print in sorted order, but much more efficient)
     return os << "}";
 }
 

@@ -5,6 +5,11 @@
  * to represent <b><i>graphs,</i></b> which consist of a set of
  * <b><i>nodes</i></b> (vertices) and a set of <b><i>arcs</i></b> (edges).
  * 
+ * @version 2014/11/13
+ * - added iterator begin(), end() support so that students can directly
+ *   for-each over the vertices of a graph.
+ * - added comparison operators ==, !=, <, etc.
+ * - added template hashCode function
  * @version 2014/10/20
  * - converted functions to accept const string& rather than string for speed
  * - added iterator/for-each support over nodes; begin() / end() members
@@ -18,7 +23,9 @@
 #define _graph_h
 
 #include <string>
+#include "compare.h"
 #include "error.h"
+#include "hashcode.h"
 #include "map.h"
 #include "set.h"
 #include "tokenscanner.h"
@@ -106,6 +113,17 @@ public:
      * Reinitializes the graph to be empty, freeing any heap storage.
      */
     void clear();
+    
+    /*
+     * Method: equals
+     * Usage: if (graph.equals(graph2)) ...
+     * ------------------------------------
+     * Compares two graphs for equality.
+     * Returns <code>true</code> if this graph contains exactly the same
+     * vertices, edges, and connections as the given other graph.
+     * Identical in behavior to the == operator.
+     */
+    bool equals(const Graph<NodeType, ArcType>& graph2) const;
     
     /*
      * Method: getArcSet
@@ -375,6 +393,26 @@ public:
         return graph_iterator(*this, /* end */ true);
     }
     
+    /*
+     * Operators: ==, !=, <, >, <=, >=
+     * Usage: if (graph1 == graph2) ...
+     * Usage: if (graph1 < graph2) ...
+     * ...
+     * --------------------------------
+     * Relational operators to compare two graphs.
+     * The ==, != operators require that the ValueType has a == operator
+     * so that the elements can be tested for equality.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
+     */
+    bool operator ==(const Graph& graph2) const;
+    bool operator !=(const Graph& graph2) const;
+    bool operator <(const Graph& graph2) const;
+    bool operator <=(const Graph& graph2) const;
+    bool operator >(const Graph& graph2) const;
+    bool operator >=(const Graph& graph2) const;
+
+    
     /* Private section */
 
     /**********************************************************************/
@@ -457,6 +495,7 @@ public:
 private:
     void deepCopy(const Graph& src);
     NodeType* getExistingNode(const std::string& name, const std::string& member = "") const;
+    int graphCompare(const Graph& graph2) const;
     bool isExistingArc(ArcType* arc) const;
     bool isExistingNode(NodeType* node) const;
     void verifyExistingNode(NodeType* node, const std::string& member = "") const;
@@ -583,6 +622,11 @@ void Graph<NodeType, ArcType>::clear() {
     arcs.clear();
     nodes.clear();
     nodeMap.clear();
+}
+
+template <typename NodeType, typename ArcType>
+bool Graph<NodeType, ArcType>::equals(const Graph<NodeType, ArcType>& graph2) const {
+    return *this == graph2;
 }
 
 template <typename NodeType, typename ArcType>
@@ -916,6 +960,124 @@ void Graph<NodeType, ArcType>::deepCopy(const Graph& src) {
     }
 }
 
+
+/*
+ * Compares two graphs for <, <=, ==, !=, >, >= relational operators.
+ * Vertices are compared, including their neighboring edges.
+ */
+template <typename NodeType, typename ArcType>
+int Graph<NodeType, ArcType>::graphCompare(const Graph<NodeType, ArcType>& graph2) const {
+    // optimization: if literally the same graph, return true
+    if (this == &graph2) {
+        return 0;
+    }
+    
+    auto itr1 = begin();
+    auto itr2 = graph2.begin();
+    auto g1end = end();
+    auto g2end = graph2.end();
+    
+    while (itr1 != g1end && itr2 != g2end) {
+        // compare each pair of elements from iterators
+        NodeType* node1 = *itr1;
+        NodeType* node2 = *itr2;
+        
+        // optimization: if literally same node, equal; don't compare
+        if (node1 != node2) {
+            // first check names
+            if (node1->name != node2->name) {
+                return node1->name.compare(node2->name);
+            }
+            
+            // then check all edges, pairwise
+            auto eitr1 = node1->arcs.begin();
+            auto eitr2 = node2->arcs.begin();
+            auto e1end = node1->arcs.end();
+            auto e2end = node2->arcs.end();
+            while (eitr1 != e1end && eitr2 != e2end) {
+                ArcType* arc1 = *eitr1;
+                ArcType* arc2 = *eitr2;
+                
+                // optimization: if literally same edge, equal; don't compare
+                if (arc1 != arc2) {
+                    // first check start vertex names, then end vertex names
+                    if (arc1->start->name != arc2->start->name) {
+                        return arc1->start->name.compare(arc2->start->name);
+                    } else if (arc1->finish->name != arc2->finish->name) {
+                        return arc1->finish->name.compare(arc2->finish->name);
+                    }
+                }
+                eitr1++;
+                eitr2++;
+            }
+            
+            // if we get here, everything from me matched graph2, so either edges equal,
+            // or one is shorter than the other (fewer edges) and is therefore less
+            if (eitr1 == e1end && eitr2 == e2end) {
+                // keep going
+            } else if (eitr1 == e1end) {
+                return -1;
+            } else {
+                return 1;
+            }
+        }
+        
+        // if we get here, those two vertices and their outbound edges
+        // were equal; so advance to next element
+        itr1++;
+        itr2++;
+    }
+    
+    // if we get here, everything from me matched graph2, so either equal,
+    // or one is shorter than the other (fewer vertices) and is therefore less
+    if (itr1 == g1end && itr2 == g2end) {
+        return 0;
+    } else if (itr1 == g1end) {
+        return -1;
+    } else {
+        return 1;
+    }
+}
+
+/*
+ * Operators
+ */
+template <typename NodeType, typename ArcType>
+bool Graph<NodeType, ArcType>::operator ==(const Graph& graph2) const {
+    // optimization: if sizes not same, graphs not equal
+    if (nodes.size() != graph2.nodes.size()
+            || arcs.size() != graph2.arcs.size()
+            || nodeMap.size() != graph2.nodeMap.size()) {
+        return false;
+    }
+    return graphCompare(graph2) == 0;
+}
+
+template <typename NodeType, typename ArcType>
+bool Graph<NodeType, ArcType>::operator !=(const Graph& graph2) const {
+    return !(*this == graph2);
+}
+
+template <typename NodeType, typename ArcType>
+bool Graph<NodeType, ArcType>::operator <(const Graph& graph2) const {
+    return graphCompare(graph2) < 0;
+}
+
+template <typename NodeType, typename ArcType>
+bool Graph<NodeType, ArcType>::operator <=(const Graph& graph2) const {
+    return graphCompare(graph2) <= 0;
+}
+
+template <typename NodeType, typename ArcType>
+bool Graph<NodeType, ArcType>::operator >(const Graph& graph2) const {
+    return graphCompare(graph2) > 0;
+}
+
+template <typename NodeType, typename ArcType>
+bool Graph<NodeType, ArcType>::operator >=(const Graph& graph2) const {
+    return graphCompare(graph2) >= 0;
+}
+
 /*
  * Implementation notes: << and >>
  * -------------------------------
@@ -972,6 +1134,22 @@ std::istream& operator >>(std::istream& is, Graph<NodeType, ArcType>& g) {
         error("Graph::operator >>: Missing }");
     }
     return is;
+}
+
+/*
+ * Template hash function for graphs.
+ */
+template <typename NodeType, typename ArcType>
+int hashCode(const Graph<NodeType, ArcType>& graph) {
+    int code = HASH_SEED;
+    for (NodeType* node : graph) {
+        code = HASH_MULTIPLIER * code + hashCode(node->name);
+    }
+    for (ArcType* arc : graph.getArcSet()) {
+        code = HASH_MULTIPLIER * code + hashCode(arc->start);
+        code = HASH_MULTIPLIER * code + hashCode(arc->finish);
+    }
+    return (code & HASH_MASK);
 }
 
 #endif
