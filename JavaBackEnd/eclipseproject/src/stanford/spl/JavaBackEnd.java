@@ -60,6 +60,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	private String appName;
 	private String exec;
 	private String cppVersion = "(unknown)";
+	private String consoleWindowTitle = "Console";
 	private JBEMenuBar menuBar;
 	private JBEConsole console;
 	private JFrame consoleFrame;
@@ -239,6 +240,13 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		}
 	}
 
+	protected void consoleSetTitle(String title) {
+		this.consoleWindowTitle = title;
+		if (this.consoleFrame != null) {
+			this.consoleFrame.setTitle(title);
+		}
+	}
+
 	protected void setConsoleSize(int paramInt1, int paramInt2) {
 		this.consoleWidth = paramInt1;
 		this.consoleHeight = paramInt2;
@@ -372,7 +380,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 
 	private void showConsole() {
 		this.console.setPreferredSize(this.consoleWidth, this.consoleHeight);
-		this.consoleFrame = new JFrame("Console");
+		this.consoleFrame = new JFrame(this.consoleWindowTitle);
 		this.consoleFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		this.consoleFrame.setLayout(new BorderLayout());
 		this.consoleFrame.add(this.console);

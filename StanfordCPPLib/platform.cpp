@@ -2340,6 +2340,14 @@ void Platform::jbeconsole_setSize(double width, double height) {
     putPipe(os.str());
 }
 
+void Platform::jbeconsole_setTitle(const std::string& title) {
+    std::ostringstream os;
+    os << "JBEConsole.setTitle(";
+    writeQuotedString(os, title);
+    os << ")";
+    putPipe(os.str());
+}
+
 /*
  * pass (-1, -1) to center
  */

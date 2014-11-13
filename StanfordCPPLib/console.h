@@ -6,6 +6,8 @@
  * must be included in the source file that contains the <code>main</code>
  * method, although it may be included in other source files as well.
  * 
+ * @version 2014/11/13
+ * - added setConsoleWindowTitle method
  * @version 2014/11/05
  * - moved exception / stack-trace code out to exceptions.h/cpp
  * @version 2014/10/14
@@ -175,6 +177,14 @@ void setConsoleSettingsLocked(bool value);
  * in pixels.
  */
 void setConsoleSize(double width, double height);
+
+/*
+ * Function: setConsoleWindowTitle
+ * Usage: setConsoleWindowTitle(title);
+ * ------------------------------------
+ * Changes the title bar text of the console window to the specified text.
+ */
+void setConsoleWindowTitle(const std::string& title);
 
 #include "private/main.h"
 

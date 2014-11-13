@@ -3,6 +3,8 @@
  * -----------------
  * This file implements the console.h interface.
  *
+ * @version 2014/11/13
+ * - added setConsoleWindowTitle method
  * @version 2014/11/05
  * - moved exception / stack-trace code out to exceptions.h/cpp
  * @version 2014/10/14
@@ -121,4 +123,9 @@ void setConsoleSettingsLocked(bool value) {
 void setConsoleSize(double width, double height) {
     if (consoleLocked) { return; }
     pp->jbeconsole_setSize(width, height);
+}
+
+void setConsoleWindowTitle(const std::string& title) {
+    if (consoleLocked) { return; }
+    pp->jbeconsole_setTitle(title);
 }

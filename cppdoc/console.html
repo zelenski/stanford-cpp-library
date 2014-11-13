@@ -29,6 +29,7 @@ function, although it may be included in other source files as well.
 <tr><td class=indexKey><nobr><a href="#Function:setConsoleLocation">setConsoleLocation(<var>x</var>,&nbsp;<var>y</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the x/y position of the console on screen.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:setConsolePrintExceptions">setConsolePrintExceptions()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes whether console should catch and display exceptions that occur when the program is running.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:setConsoleSize">setConsoleSize(<var>width</var>,&nbsp;<var>height</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the size of the console to the specified dimensions, measured in pixels.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setConsoleWindowTitle">setConsoleWindowTitle(<var>title</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the title bar text of the console window to the specified text.</td></tr>
 </table>
 
 <h2>Function detail</h2>
@@ -226,6 +227,22 @@ in pixels.
 <pre class=usageCode>
 setConsoleSize(width, height);
 </pre>
+<hr>
+
+<a name="Function:setConsoleWindowTitle"></a>
+<pre class=detailCode>
+void setConsoleWindowTitle(std::string title);
+</pre>
+<div class=detailHTML>
+Changes the title bar text of the console window to the specified text.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setConsoleWindowTitle(title);
+</pre>
+<p class="since">
+	Available since: 2014/11/13 version of C++ library
+</p>
 <hr>
 </table>
 </body>

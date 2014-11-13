@@ -156,6 +156,7 @@ public abstract class JBECommand {
 		localHashMap.put("JBEConsole.setLocation", new JBEConsole_setLocation());
 		localHashMap.put("JBEConsole.setLocationSaved", new JBEConsole_setLocationSaved());
 		localHashMap.put("JBEConsole.setSize", new JBEConsole_setSize());
+		localHashMap.put("JBEConsole.setTitle", new JBEConsole_setTitle());
 		localHashMap.put("JBEConsole.toFront", new JBEConsole_toFront());
 		localHashMap.put("Regex.matchCount", new Regex_matchCount());
 		localHashMap.put("Regex.matchCountWithLines", new Regex_matchCountWithLines());

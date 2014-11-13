@@ -195,6 +195,7 @@ public:
     void jbeconsole_setFont(const std::string& font);
     void jbeconsole_setLocation(int x, int y);
     void jbeconsole_setSize(double width, double height);
+    void jbeconsole_setTitle(const std::string& title);
     void jbeconsole_toFront();
     std::string os_getLastError();
     bool regex_match(std::string s, std::string regexp);
