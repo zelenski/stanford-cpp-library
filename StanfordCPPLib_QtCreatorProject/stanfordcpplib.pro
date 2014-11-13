@@ -129,7 +129,7 @@ INCLUDEPATH += $$PWD/lib/StanfordCPPLib/stacktrace/
 INCLUDEPATH += $$PWD/src/
 INCLUDEPATH += $$PWD/
 exists($$PWD/src/test/*.h) {
-    INCLUDEPATH += $$PWD/src/test/*.h
+    INCLUDEPATH += $$PWD/src/test/
 }
 
 # build-specific options (debug vs release)
