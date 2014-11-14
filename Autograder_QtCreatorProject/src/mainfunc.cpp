@@ -76,6 +76,9 @@ void showMyInputTxt() {
 
 // this just needs to be here so that it will become studentMain()
 int main() {
+    cout << "Hello, world!  This is main." << endl;
+    string line = getLine("Please type something: ");
+    cout << "You typed: " << line << endl;
     return 0;
 }
 

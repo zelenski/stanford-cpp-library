@@ -3,7 +3,10 @@ package stanford.spl;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+
 import javax.swing.*;
+
+import stanford.cs106.util.OperatingSystem;
 // import javax.swing.border.*;
 
 public class AutograderInput extends Observable implements ActionListener {
@@ -59,6 +62,11 @@ public class AutograderInput extends Observable implements ActionListener {
 				input += "\n";
 			}
 			JButton button = new JButton(text);
+			if (OperatingSystem.get() == OperatingSystem.MAC) {
+				// disable rounded button corners on Mac that make the buttons huge
+				button.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+				shrinkFont(button);
+			}
 			
 			// shrink font so more stuff can fit
 			shrinkFont(button);
