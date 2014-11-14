@@ -3,13 +3,10 @@ package stanford.spl;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-
 import javax.swing.*;
 import javax.swing.border.*;
-
 import stanford.cs106.diff.DiffGui;
-import stanford.cs106.gui.WindowCloseKeyListener;
-// import javax.swing.border.*;
+import stanford.cs106.gui.*;
 
 public class AutograderUnitTestGUI extends Observable implements ActionListener, MouseListener {
 	private static final int DIALOG_WIDTH = 500;   // px
@@ -71,7 +68,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		descriptionLabel = new JLabel("Autograder Tests");
 		descriptionLabel.setHorizontalAlignment(JLabel.CENTER);
 		descriptionLabel.setAlignmentX(0.5f);
-		shrinkFont(descriptionLabel);
+		GuiUtils.shrinkFont(descriptionLabel);
 		frame.add(descriptionLabel, BorderLayout.NORTH);
 		
 		contentPaneBox = Box.createVerticalBox();
@@ -138,13 +135,13 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		labelToTestName.put(testNameLabel, testName);
 		allTestDescriptions.put(testName, testNameLabel);
 		testNameLabel.setToolTipText("Click to see detailed results from this test.");
-		shrinkFont(testNameLabel);
+		GuiUtils.shrinkFont(testNameLabel);
 		testNameLabel.setFont(testNameLabel.getFont().deriveFont(Font.BOLD));
 		testPanel.add(testNameLabel, BorderLayout.CENTER);
 		testNameLabel.addMouseListener(this);
 		
 		JLabel resultIconLabel = new JLabel(new ImageIcon("running.gif"));
-		shrinkFont(resultIconLabel, 2);
+		GuiUtils.shrinkFont(resultIconLabel, 2);
 		resultIconLabel.setHorizontalTextPosition(SwingConstants.LEFT);
 		
 		resultIconLabel.setToolTipText("Click to see detailed results from this test.");
@@ -287,12 +284,6 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		}
 	}
 	
-//	private void boldFont(JComponent button) {
-//		Font font = button.getFont();
-//		font = font.deriveFont(Font.BOLD);
-//		button.setFont(font);
-//	}
-	
 	private void checkVisibility() {
 		contentPaneBox.revalidate();
 		scroll.revalidate();
@@ -402,16 +393,6 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		
 		setChanged();
 		notifyObservers(testName);
-	}
-	
-	private void shrinkFont(JComponent button) {
-		shrinkFont(button, 1);
-	}
-	
-	private void shrinkFont(JComponent button, int amount) {
-		Font font = button.getFont();
-		font = font.deriveFont((float) (font.getSize() - amount));
-		button.setFont(font);
 	}
 	
 	private void updateSouthText() {

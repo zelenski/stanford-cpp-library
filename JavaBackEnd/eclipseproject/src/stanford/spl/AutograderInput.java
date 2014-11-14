@@ -3,11 +3,9 @@ package stanford.spl;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-
 import javax.swing.*;
-
+import stanford.cs106.gui.GuiUtils;
 import stanford.cs106.util.OperatingSystem;
-// import javax.swing.border.*;
 
 public class AutograderInput extends Observable implements ActionListener {
 	private static final int MIN_WIDTH = 75;
@@ -65,11 +63,12 @@ public class AutograderInput extends Observable implements ActionListener {
 			if (OperatingSystem.get() == OperatingSystem.MAC) {
 				// disable rounded button corners on Mac that make the buttons huge
 				button.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-				shrinkFont(button);
+				// GuiUtils.shrinkFont(button);
+				GuiUtils.pad(button, 20, 10);
 			}
 			
 			// shrink font so more stuff can fit
-			shrinkFont(button);
+			GuiUtils.shrinkFont(button);
 			
 			button.setActionCommand(input);
 			button.addActionListener(this);
@@ -87,7 +86,7 @@ public class AutograderInput extends Observable implements ActionListener {
 		JLabel label = new JLabel(name + (name != null && !name.isEmpty() ? ": " : ""));
 		label.setFont(label.getFont().deriveFont(Font.BOLD));
 		label.setHorizontalAlignment(JLabel.RIGHT);
-		shrinkFont(label);
+		GuiUtils.shrinkFont(label);
 		allLabels.add(label);
 		currentCategory.add(label);
 		
@@ -169,15 +168,5 @@ public class AutograderInput extends Observable implements ActionListener {
 			frame.setSize(MIN_WIDTH, frame.getHeight());
 		}
 		frame.setVisible(!isEmpty());
-	}
-	
-	private void shrinkFont(JComponent button) {
-		shrinkFont(button, 1);
-	}
-	
-	private void shrinkFont(JComponent button, int amount) {
-		Font font = button.getFont();
-		font = font.deriveFont((float) (font.getSize() - amount));
-		button.setFont(font);
 	}
 }

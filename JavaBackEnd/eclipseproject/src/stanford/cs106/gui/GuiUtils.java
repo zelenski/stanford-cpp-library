@@ -146,6 +146,143 @@ public class GuiUtils {
 		return new ExtensionFileFilter(description, extensions);
 	}
 	
+	public static JLabel createLabel(String text, int width) {
+		return createLabel(text, width, /* rightAligned */ false);
+	}
+	
+	public static JLabel createLabel(String text, int width, boolean rightAligned) {
+		JLabel label = new JLabel(text);
+		Dimension size = label.getPreferredSize();
+		if (size.width < width) {
+			size.width = width;
+		}
+		if (rightAligned) {
+			label.setHorizontalAlignment(SwingConstants.RIGHT);
+		}
+		if (width > 0) {
+			label.setPreferredSize(size);
+		}
+		return label;
+	}
+	
+	public static Icon extractOptionPaneIcon(String text) {
+		JOptionPane opt = new JOptionPane("message", JOptionPane.INFORMATION_MESSAGE);
+		return extractHelper(opt, text);
+	}
+	
+	public static void forgetWindowLocation(final Frame window) {
+		for (ComponentListener listener : window.getComponentListeners()) {
+			if (listener instanceof WindowSettingsComponentAdapter) {
+				window.removeComponentListener(listener);
+				String title = window.getTitle();
+				props.remove(title + "-x");
+				props.remove(title + "-y");
+				props.remove(title + "-w");
+				props.remove(title + "-h");
+			}
+		}
+	}
+	
+	public static void growFont(JComponent button) {
+		growFont(button, 1);
+	}
+	
+	public static void growFont(JComponent button, int amount) {
+		Font font = button.getFont();
+		font = font.deriveFont((float) (font.getSize() + amount));
+		button.setFont(font);
+	}
+	
+	public static void loadWindowLocation(Frame window) {
+		synchronized (props) {
+			try {
+				String settingsFile = tempDir + "/" + SETTINGS_FILENAME;
+				if (new File(settingsFile).exists()) {
+					InputStream input = new FileInputStream(settingsFile);
+					props.load(input);
+				}
+			} catch (IOException ioe) {
+				System.err.println("I/O error trying to load window settings: " + ioe);
+			} catch (Exception e) {
+				System.err.println("Error trying to save window settings: " + e);
+			}
+		}
+		String title = window.getTitle(); 
+		if (props.containsKey(title + "-x") && props.containsKey(title + "-y")) {
+			int x = Integer.parseInt(props.getProperty(title + "-x"));
+			int y = Integer.parseInt(props.getProperty(title + "-y"));
+			window.setLocation(x, y);
+			// System.out.println("Loaded location of window \"" + window.getTitle() + "\".");
+		}
+		if (props.containsKey(title + "-w") && props.containsKey(title + "-h")) {
+			int w = Integer.parseInt(props.getProperty(title + "-w"));
+			int h = Integer.parseInt(props.getProperty(title + "-h"));
+			window.setSize(w, h);
+			// System.out.println("Loaded size of window \"" + window.getTitle() + "\".");
+		}
+	}
+	
+	public static void pad(JComponent component, int w, int h) {
+		Dimension size = component.getPreferredSize();
+		size.width += w;
+		size.height += h;
+		component.setPreferredSize(size);
+	}
+	
+	public static void rememberWindowLocation(final Frame window) {
+		window.addComponentListener(new WindowSettingsComponentAdapter());
+		loadWindowLocation(window);
+	}
+	
+	public static void shrinkFont(JComponent button) {
+		shrinkFont(button, 1);
+	}
+	
+	public static void shrinkFont(JComponent button, int amount) {
+		Font font = button.getFont();
+		font = font.deriveFont((float) (font.getSize() - amount));
+		button.setFont(font);
+	}
+
+	public static void heighten(JComponent component, int px) {
+		pad(component, 0, px);
+	}
+	
+	public static void widen(JComponent component, int px) {
+		pad(component, px, 0);
+	}
+	
+	/*
+	 * ...
+	 */
+	private GuiUtils() {
+		// empty
+	}
+	
+	private static Icon extractHelper(Component comp, String text) {
+		if (comp instanceof JButton) {
+			JButton button = (JButton) comp;
+			String buttonText = String.valueOf(button.getText());
+			if (buttonText.toUpperCase().contains(text.toUpperCase())) {
+				return button.getIcon();
+			}
+		} else if (comp instanceof JLabel) {
+			JLabel label = (JLabel) comp;
+			String labelText = String.valueOf(label.getText());
+			if (labelText.toUpperCase().contains(text.toUpperCase())) {
+				return label.getIcon();
+			}
+		} else if (comp instanceof Container) {
+			for (Component subcomp : ((Container) comp).getComponents()) {
+				Icon icon = extractHelper(subcomp, text);
+				if (icon != null) {
+					return icon;
+				}
+			}
+		}
+		return null;
+	}
+	
 	/*
 	 * ...
 	 */
@@ -187,102 +324,6 @@ public class GuiUtils {
 			return description;
 		}
 	}
-
-	
-	public static JLabel createLabel(String text, int width) {
-		return createLabel(text, width, /* rightAligned */ false);
-	}
-	
-	public static JLabel createLabel(String text, int width, boolean rightAligned) {
-		JLabel label = new JLabel(text);
-		Dimension size = label.getPreferredSize();
-		if (size.width < width) {
-			size.width = width;
-		}
-		if (rightAligned) {
-			label.setHorizontalAlignment(SwingConstants.RIGHT);
-		}
-		if (width > 0) {
-			label.setPreferredSize(size);
-		}
-		return label;
-	}
-	
-	public static Icon extractOptionPaneIcon(String text) {
-		JOptionPane opt = new JOptionPane("message", JOptionPane.INFORMATION_MESSAGE);
-		return extractHelper(opt, text);
-	}
-	
-	private static Icon extractHelper(Component comp, String text) {
-		if (comp instanceof JButton) {
-			JButton button = (JButton) comp;
-			String buttonText = String.valueOf(button.getText());
-			if (buttonText.toUpperCase().contains(text.toUpperCase())) {
-				return button.getIcon();
-			}
-		} else if (comp instanceof JLabel) {
-			JLabel label = (JLabel) comp;
-			String labelText = String.valueOf(label.getText());
-			if (labelText.toUpperCase().contains(text.toUpperCase())) {
-				return label.getIcon();
-			}
-		} else if (comp instanceof Container) {
-			for (Component subcomp : ((Container) comp).getComponents()) {
-				Icon icon = extractHelper(subcomp, text);
-				if (icon != null) {
-					return icon;
-				}
-			}
-		}
-		return null;
-	}
-	
-	public static void rememberWindowLocation(final Frame window) {
-		window.addComponentListener(new WindowSettingsComponentAdapter());
-		loadWindowLocation(window);
-	}
-	
-	public static void forgetWindowLocation(final Frame window) {
-		for (ComponentListener listener : window.getComponentListeners()) {
-			if (listener instanceof WindowSettingsComponentAdapter) {
-				window.removeComponentListener(listener);
-				String title = window.getTitle();
-				props.remove(title + "-x");
-				props.remove(title + "-y");
-				props.remove(title + "-w");
-				props.remove(title + "-h");
-			}
-		}
-	}
-	
-	public static void loadWindowLocation(Frame window) {
-		synchronized (props) {
-			try {
-				String settingsFile = tempDir + "/" + SETTINGS_FILENAME;
-				if (new File(settingsFile).exists()) {
-					InputStream input = new FileInputStream(settingsFile);
-					props.load(input);
-				}
-			} catch (IOException ioe) {
-				System.err.println("I/O error trying to load window settings: " + ioe);
-			} catch (Exception e) {
-				System.err.println("Error trying to save window settings: " + e);
-			}
-		}
-		String title = window.getTitle(); 
-		if (props.containsKey(title + "-x") && props.containsKey(title + "-y")) {
-			int x = Integer.parseInt(props.getProperty(title + "-x"));
-			int y = Integer.parseInt(props.getProperty(title + "-y"));
-			window.setLocation(x, y);
-			// System.out.println("Loaded location of window \"" + window.getTitle() + "\".");
-		}
-		if (props.containsKey(title + "-w") && props.containsKey(title + "-h")) {
-			int w = Integer.parseInt(props.getProperty(title + "-w"));
-			int h = Integer.parseInt(props.getProperty(title + "-h"));
-			window.setSize(w, h);
-			// System.out.println("Loaded size of window \"" + window.getTitle() + "\".");
-		}
-	}
 	
 	private static class WindowSettingsComponentAdapter extends ComponentAdapter {
 		public void componentMoved(ComponentEvent event) {
@@ -312,12 +353,5 @@ public class GuiUtils {
 				}
 			}
 		}
-	}
-
-	/*
-	 * ...
-	 */
-	private GuiUtils() {
-		// empty
 	}
 }

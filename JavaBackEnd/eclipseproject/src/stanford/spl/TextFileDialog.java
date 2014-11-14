@@ -67,8 +67,8 @@ public class TextFileDialog {
 		JButton ok = new JButton("OK");
 		ok.setIcon(GuiUtils.extractOptionPaneIcon("OK"));
 		ok.setMnemonic('O');
-		// growFont(ok, 2);
-		// widen(ok, 50);
+		// GuiUtils.growFont(ok, 2);
+		// GuiUtils.widen(ok, 50);
 		
 		ok.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
@@ -88,21 +88,5 @@ public class TextFileDialog {
 		
 		ok.requestFocus();
 		dialog.setVisible(true);
-	}
-	
-	static void growFont(JComponent button) {
-		growFont(button, 1);
-	}
-	
-	static void growFont(JComponent button, int amount) {
-		Font font = button.getFont();
-		font = font.deriveFont((float) (font.getSize() + amount));
-		button.setFont(font);
-	}
-	
-	static void widen(JComponent component, int px) {
-		Dimension size = component.getPreferredSize();
-		size.width += px;
-		component.setPreferredSize(size);
 	}
 }
