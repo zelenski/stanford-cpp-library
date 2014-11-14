@@ -19,6 +19,7 @@ public abstract class JBECommand {
 		localHashMap.put("AutograderUnitTest.clearTests", new AutograderUnitTest_clearTests());
 		localHashMap.put("AutograderUnitTest.setTestDetails", new AutograderUnitTest_setTestDetails());
 		localHashMap.put("AutograderUnitTest.setTestResult", new AutograderUnitTest_setTestResult());
+		localHashMap.put("AutograderUnitTest.setTestRuntime", new AutograderUnitTest_setTestRuntime());
 		localHashMap.put("AutograderUnitTest.setWindowDescriptionText", new AutograderUnitTest_setWindowDescriptionText());
 		localHashMap.put("File.openFileDialog", new File_openFileDialog());
 		localHashMap.put("File.getTempFolder", new File_getTempDirectory());

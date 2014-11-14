@@ -144,6 +144,8 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		testNameLabel.addMouseListener(this);
 		
 		JLabel resultIconLabel = new JLabel(new ImageIcon("running.gif"));
+		shrinkFont(resultIconLabel, 2);
+		resultIconLabel.setHorizontalTextPosition(SwingConstants.LEFT);
 		
 		resultIconLabel.setToolTipText("Click to see detailed results from this test.");
 		labelToTestName.put(resultIconLabel, testName);
@@ -213,6 +215,27 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		checkVisibility();
 	}
 	
+	private String getTestResult(String testName) {
+		JLabel testNameLabel = allTestDescriptions.get(testName);
+		if (testNameLabel == null) {
+			return "no such test";
+		} else if (testNameLabel.getForeground().equals(FAIL_COLOR)) {
+			return "fail";
+		} else if (testNameLabel.getForeground().equals(WARN_COLOR)) {
+			return "warn";
+		} else if (testNameLabel.getForeground().equals(PASS_COLOR)) {
+			return "pass";
+		} else {
+			if (allTestDetails.containsKey(testName)
+					&& allTestDetails.get(testName).containsKey("passed")) {
+				String passed = allTestDetails.get(testName).get("passed");
+				return passed.equalsIgnoreCase("true") ? "pass" : "fail";
+			} else {
+				return "unknown";
+			}
+		}
+	}
+	
 	public boolean setTestResult(String testName, String result) {
 		result = result.toLowerCase().intern();
 		if (result == "error") {
@@ -224,6 +247,13 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		if (testNameLabel == null || resultIconLabel == null) {
 			return false;
 		}
+		
+		// BUGFIX: if test already failed previously, don't set back to passed
+		String existingResult = getTestResult(testName).intern();
+		if ((existingResult == "fail" || existingResult == "warn") && result != "fail") {
+			return true;
+		}
+		
 		resultIconLabel.setIcon(new ImageIcon(result + ".gif"));   // pass, fail, running, warn
 		if (result == "pass") {
 			passCount++;
@@ -238,7 +268,23 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 	}
 	
 	public void setTestDetails(String testName, Map<String, String> details) {
+		// BUGFIX: don't replace test details if a test already failed here
+		String existingResult = getTestResult(testName).intern();
+		if (existingResult == "fail" || existingResult == "warn") {
+			return;
+		}
 		allTestDetails.put(testName, details);
+	}
+	
+	public boolean setTestRuntime(String testName, int runtimeMS) {
+		JLabel resultIconLabel = allTestResultLabels.get(testName);
+		if (resultIconLabel == null) {
+			return false;
+		} else {
+			String text = " (" + runtimeMS + "ms)";
+			resultIconLabel.setText(text);
+			return true;
+		}
 	}
 	
 //	private void boldFont(JComponent button) {

@@ -304,6 +304,7 @@ void MartyGraphicalTestResultPrinter::ensureCurrentTestAdded() {
 
 void MartyGraphicalTestResultPrinter::OnTestStart(const ::testing::TestInfo& test_info) {
     currentTestName = test_info.name();
+    testTimers[currentTestName] = Timer(true);   // starts timer
 }
 
 void MartyGraphicalTestResultPrinter::OnTestPartResult(const ::testing::TestPartResult& /*test_part_result*/) {
@@ -316,6 +317,14 @@ void MartyGraphicalTestResultPrinter::OnTestEnd(const ::testing::TestInfo& test_
         pp->autograderunittest_setTestResult(test_info.name(), "fail");
     } else {
         pp->autograderunittest_setTestResult(test_info.name(), "pass");
+    }
+    
+    if (testTimers.containsKey(currentTestName)) {
+        testTimers[currentTestName].stop();
+        int runtimeMS = (int) testTimers[currentTestName].elapsed();
+        if (runtimeMS > 0) {
+            pp->autograderunittest_setTestRuntime(test_info.name(), runtimeMS);
+        }
     }
 }
 

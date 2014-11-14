@@ -1,17 +1,15 @@
 	C++ libs
-		autograder
-			main method handling redo: change this:
-				#undef main
-				int main(int argc, char** argv) {
-			to something like this:
-				int autograderMain() {
-		
-			bug: "false negative" where earlier test fails but later one passes, leading to "failed" test but "equal/passing" results when you click for details
-		
-			input panel, buttons are too wide on OSX; shorten/narrow.  detect OSX in Java code?
+x		autograder bug: "false negative" where earlier test fails but later one passes, leading to "failed" test but "equal/passing" results when you click for details
+x		autograder runtime of each test in MS?
 
-			runtime of each test in MS?
+		autograder input panel, buttons are too wide on OSX; shorten/narrow.  detect OSX in Java code?
 
+x		autograder main method handling redo: change this:
+x			#undef main
+x			int main(int argc, char** argv) {
+x		to something like this:
+x			int autograderMain() {
+		
 		cpp docs
 			include <, >=, equals, hashCode, etc. for every collection
 			strlib: stringToLong, longToString, stringIsLong, stringToDouble, doubleToString, stringIsDouble

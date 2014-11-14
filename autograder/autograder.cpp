@@ -6,6 +6,8 @@
  * See autograder.h for documentation of each member.
  * 
  * @author Marty Stepp
+ * @version 2014/11/13
+ * - fixed bug with "false negative" tests where early assert failed then later assert passed
  * @version 2014/11/04
  * - made showLateDays dialog be 'plain' (no icon)
  * @version 2014/10/31
@@ -30,6 +32,10 @@
 #include "simpio.h"
 #include "stringutils.h"
 #include "stylecheck.h"
+#include "version.h"
+
+// to be written by TA/instructor for each assignment
+extern void autograderMain();
 
 namespace autograder {
 static const std::string DEFAULT_ABOUT_TEXT = "CS 106 B/X Autograder Framework\nDeveloped by Marty Stepp (stepp@cs.stanford.edu)";
@@ -152,7 +158,8 @@ std::string runAndCapture(int (* mainFunc)(),
 
 
 void setAboutMessage(const std::string& message) {
-    FLAGS.aboutText = DEFAULT_ABOUT_TEXT
+    FLAGS.aboutText = DEFAULT_ABOUT_TEXT + "\n"
+            + "Version: " + AUTOGRADER_LIB_VERSION
             + "\n==================================\n"
             + message;
 }
@@ -492,11 +499,11 @@ int autograderTextMain(int argc, char** argv) {
     std::cout << AUTOGRADER_OUTPUT_SEPARATOR << std::endl;
     
     // run any custom callbacks that the assignment's autograder added
-    for (CallbackButtonInfo& buttonInfo : FLAGS.callbackButtons) {
-        std::string buttonText = buttonInfo.text;
+    for (int i = 0; i < FLAGS.callbackButtons.size(); i++) {
+        std::string buttonText = FLAGS.callbackButtons[i].text;
         buttonText = stringReplace(buttonText, "\n", " ");   // GUI often uses multi-line button text strings; strip
         if (autograderYesOrNo(buttonText + " (Y/n)? ", "", "y")) {
-            buttonInfo.func();
+            FLAGS.callbackButtons[i].func();
         }
     }
     
@@ -553,8 +560,8 @@ int autograderGraphicalMain(int argc, char** argv) {
     std::string autogradeText = addAutograderButton(gui, "Automated\ntests", "check.gif");
     std::string manualText = addAutograderButton(gui, "Run\nmanually", "play.gif");
     std::string styleCheckText = addAutograderButton(gui, "Style\nchecker", "magnifier.gif");
-    for (CallbackButtonInfo& buttonInfo : FLAGS.callbackButtons) {
-        buttonInfo.text = addAutograderButton(gui, buttonInfo.text, buttonInfo.icon);
+    for (int i = 0; i < FLAGS.callbackButtons.size(); i++) {
+        FLAGS.callbackButtons[i].text = addAutograderButton(gui, FLAGS.callbackButtons[i].text, FLAGS.callbackButtons[i].icon);
     }
     std::string lateDayText = addAutograderButton(gui, "Late days\ninfo", "calendar.gif");
     std::string aboutText = addAutograderButton(gui, "About\nGrader", "help.gif");
@@ -611,17 +618,22 @@ int autograderGraphicalMain(int argc, char** argv) {
     
     return result;
 }
+#endif // SPL_AUTOGRADER_MODE
+} // namespace autograder
 
-int autograderMain(int argc, char** argv) {
+#undef main
+int main(int argc, char** argv) {
     // initialize Stanford libraries and graphical console
     _mainFlags = GRAPHICS_FLAG + CONSOLE_FLAG;
     startupMainDontRunMain(argc, argv);
     setConsoleLocationSaved(true);
-    if (FLAGS.graphicalUI) {
-        return autograderGraphicalMain(argc, argv);
+    
+    // your assignment-specific autograder main runs here
+    ::autograderMain();
+    
+    if (autograder::FLAGS.graphicalUI) {
+        return autograder::autograderGraphicalMain(argc, argv);
     } else {
-        return autograderTextMain(argc, argv);
+        return autograder::autograderTextMain(argc, argv);
     }
 }
-#endif // SPL_AUTOGRADER_MODE
-} // namespace autograder

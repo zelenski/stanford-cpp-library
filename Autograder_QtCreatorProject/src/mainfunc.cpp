@@ -21,11 +21,14 @@ TEST_F(TestTest, test01_ab) {
 }
 
 TEST_F(TestTest, test02_abc_oops_real_long_name_gonnaFail) {
-    assertEquals("some failed test", string("abc"), string("oops"));
+    assertEquals("some failed test 1", string("abc"), string("oops"));
+    assertEquals("some failed test 2", string("abc2"), string("oops2"));
+    assertEquals("some later test that passes 1", string("same1"), string("same1"));
+    assertEquals("some later test that passes 2", string("same2"), string("same2"));
 }
 
 TEST_F(TestTest, test03_near) {
-    pause(1000);
+    sleep(1);
     assertDoubleNear("hi there", 3.14, 3.1415, 0.1);
 }
 
@@ -35,7 +38,7 @@ TEST_F(TestTest, test04_def) {
 }
 
 TEST_F(TestTest, test05_anotherOne) {
-    pause(2000);
+    sleep(2);
     string exp = "expected 1\nexpected 2\nexpected 3";
     string stu = "expected 1\nstudent 2 oops\nexpected 3";
     assertDiff("some diffs", exp, stu);
@@ -76,8 +79,7 @@ int main() {
     return 0;
 }
 
-#undef main
-int main(int argc, char** argv) {
+void autograderMain() {
     // autograder::setShowLateDays(true);    // this is the default
     version::ensureProjectVersion("2014/10/31");
     autograder::setAssignmentName("CS 106B Test");
@@ -92,6 +94,4 @@ int main(int argc, char** argv) {
     autograder::addCallbackButton(showMyInputTxt, "View\nmyinput.txt", "textfile.gif");
     // autograder::setCallbackStart(before);
     // autograder::setCallbackEnd(after);
-    
-    return autograder::autograderMain(argc, argv);
 }
