@@ -593,8 +593,19 @@ int autograderGraphicalMain(int argc, char** argv) {
                 }
                 
                 // actually run the student's program
+                // (While program is running, if we close console, exit entire
+                // autograder program because we might be blocked on console I/O.
+                // But after it's done running, set behavior to just hide the
+                // console, since the grader will probabl ytry to close it and then
+                // proceed with more grading and tests afterward.
+                // A little wonky, but it avoids most of the surprise cases of
+                // "I closed the student's console and it killed the autograder".
+                pp->jbeconsole_clear();
+                pp->jbeconsole_setVisible(true);
                 pp->jbeconsole_toFront();
+                setConsoleCloseOperation(ConsoleCloseOperation::CONSOLE_EXIT_ON_CLOSE);
                 studentMain();
+                setConsoleCloseOperation(ConsoleCloseOperation::CONSOLE_HIDE_ON_CLOSE);
             } else if (cmd == styleCheckText) {
                 mainRunStyleChecker();
             } else if (cmd == lateDayText) {
@@ -627,6 +638,7 @@ int main(int argc, char** argv) {
     _mainFlags = GRAPHICS_FLAG + CONSOLE_FLAG;
     startupMainDontRunMain(argc, argv);
     setConsoleLocationSaved(true);
+    setConsoleCloseOperation(ConsoleCloseOperation::CONSOLE_HIDE_ON_CLOSE);
     
     // your assignment-specific autograder main runs here
     ::autograderMain();

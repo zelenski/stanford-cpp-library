@@ -152,12 +152,14 @@ public abstract class JBECommand {
 		localHashMap.put("JBEConsole.minimize", new JBEConsole_minimize());
 		localHashMap.put("JBEConsole.println", new JBEConsole_println());
 		localHashMap.put("JBEConsole.print", new JBEConsole_print());
+		localHashMap.put("JBEConsole.setCloseOperation", new JBEConsole_setCloseOperation());
 		localHashMap.put("JBEConsole.setExitOnClose", new JBEConsole_setExitOnClose());
 		localHashMap.put("JBEConsole.setFont", new JBEConsole_setFont());
 		localHashMap.put("JBEConsole.setLocation", new JBEConsole_setLocation());
 		localHashMap.put("JBEConsole.setLocationSaved", new JBEConsole_setLocationSaved());
 		localHashMap.put("JBEConsole.setSize", new JBEConsole_setSize());
 		localHashMap.put("JBEConsole.setTitle", new JBEConsole_setTitle());
+		localHashMap.put("JBEConsole.setVisible", new JBEConsole_setVisible());
 		localHashMap.put("JBEConsole.toFront", new JBEConsole_toFront());
 		localHashMap.put("Regex.matchCount", new Regex_matchCount());
 		localHashMap.put("Regex.matchCountWithLines", new Regex_matchCountWithLines());

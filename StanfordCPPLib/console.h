@@ -20,6 +20,13 @@
 
 #include <string>
 
+enum ConsoleCloseOperation {
+    CONSOLE_DO_NOTHING_ON_CLOSE = 0,
+    CONSOLE_HIDE_ON_CLOSE = 1,
+    CONSOLE_DISPOSE_ON_CLOSE = 2,
+    CONSOLE_EXIT_ON_CLOSE = 3
+};
+
 /*
  * Function: clearConsole
  * Usage: clearConsole();
@@ -37,6 +44,15 @@ void clearConsole();
  * rather than actually clearing the console.
  */
 bool getConsoleClearEnabled();
+
+/*
+ * Function: setConsoleCloseOperation();
+ * Usage: setConsoleCloseOperation(op);
+ * ------------------------------------
+ * Returns what the console will do when the user hits its "close" button.
+ * By default, this is CONSOLE_HIDE_ON_CLOSE unless set otherwise.
+ */
+ConsoleCloseOperation getConsoleCloseOperation();
 
 /*
  * Function: getConsoleEcho
@@ -93,6 +109,14 @@ bool getConsoleSettingsLocked();
  * This is sometimes used to facilitate creation of auto-grading scripts.
  */
 void setConsoleClearEnabled(bool value);
+
+/*
+ * Function: setConsoleCloseOperation();
+ * Usage: setConsoleCloseOperation(op);
+ * ------------------------------------
+ * Sets what the console should do when the user hits its "close" button.
+ */
+void setConsoleCloseOperation(ConsoleCloseOperation op);
 
 /*
  * Function: setConsoleEcho

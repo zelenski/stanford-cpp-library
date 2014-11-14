@@ -32,6 +32,7 @@ static bool consoleEventOnClose = false;
 static bool consoleExitProgramOnClose = false;
 static bool consoleLocationSaved = false;
 static bool consoleLocked = false;
+static ConsoleCloseOperation consoleCloseOperation = ConsoleCloseOperation::CONSOLE_HIDE_ON_CLOSE;
 
 void clearConsole() {
     std::string msg = "==================== (console cleared) ====================";
@@ -49,6 +50,10 @@ void clearConsole() {
 
 bool getConsoleClearEnabled() {
     return consoleClearEnabled;
+}
+
+ConsoleCloseOperation getConsoleCloseOperation() {
+    return consoleCloseOperation;
 }
 
 bool getConsoleEcho() {
@@ -77,6 +82,13 @@ bool getConsoleSettingsLocked() {
 
 void setConsoleClearEnabled(bool value) {
     consoleClearEnabled = value;
+}
+
+void setConsoleCloseOperation(ConsoleCloseOperation op) {
+    if (consoleLocked) { return; }
+    consoleCloseOperation = op;
+    consoleExitProgramOnClose = op == ConsoleCloseOperation::CONSOLE_EXIT_ON_CLOSE;
+    pp->jbeconsole_setCloseOperation(op);
 }
 
 void setConsoleEcho(bool echo) {

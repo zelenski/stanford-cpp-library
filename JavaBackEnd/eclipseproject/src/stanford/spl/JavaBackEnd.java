@@ -64,7 +64,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	private JBEMenuBar menuBar;
 	private JBEConsole console;
 	private JFrame consoleFrame;
-	private boolean exitOnConsoleClose = false;
+	private int consoleCloseOperation = JFrame.HIDE_ON_CLOSE;
 	private static final Color ERROR_COLOR = new Color(192, 0, 0);   // slightly dark red
 	private static final int ERROR_STYLE = Font.BOLD;
 
@@ -85,7 +85,11 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	}
 	
 	public void setExitOnConsoleClose(boolean value) {
-		exitOnConsoleClose = value;
+		if (value) {
+			setConsoleCloseOperation(JFrame.EXIT_ON_CLOSE);
+		} else {
+			setConsoleCloseOperation(JFrame.HIDE_ON_CLOSE);
+		}
 	}
 	
 	public void setCppVersion(String version) {
@@ -221,6 +225,10 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 
 	protected void clearConsole() {
 		this.console.clear();
+	}
+	
+	protected void setConsoleCloseOperation(int op) {
+		this.consoleCloseOperation = op;
 	}
 
 	protected void setConsoleFont(String paramString) {
@@ -381,7 +389,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	private void showConsole() {
 		this.console.setPreferredSize(this.consoleWidth, this.consoleHeight);
 		this.consoleFrame = new JFrame(this.consoleWindowTitle);
-		this.consoleFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		this.consoleFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.consoleFrame.setLayout(new BorderLayout());
 		this.consoleFrame.add(this.console);
 		this.consoleFrame.pack();
@@ -602,7 +610,9 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 
 	public void windowClosing(WindowEvent paramWindowEvent) {
 		if (paramWindowEvent.getSource() == this.consoleFrame) {
-			if (exitOnConsoleClose) {
+			if (consoleCloseOperation == JFrame.DO_NOTHING_ON_CLOSE) {
+				return;
+			} else if (consoleCloseOperation == JFrame.EXIT_ON_CLOSE) {
 				new Thread(new Runnable() {
 					public void run() {
 						try {
@@ -621,6 +631,8 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 						System.exit(0);
 					}
 				}).start();
+			} else if (consoleCloseOperation == JFrame.HIDE_ON_CLOSE) {
+				consoleFrame.setVisible(false);
 			}
 			
 			acknowledgeEvent("event:consoleWindowClosed()");

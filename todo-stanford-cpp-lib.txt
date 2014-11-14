@@ -1,15 +1,4 @@
 	C++ libs
-x		autograder bug: "false negative" where earlier test fails but later one passes, leading to "failed" test but "equal/passing" results when you click for details
-x		autograder runtime of each test in MS?
-
-		autograder input panel, buttons are too wide on OSX; shorten/narrow.  detect OSX in Java code?
-
-x		autograder main method handling redo: change this:
-x			#undef main
-x			int main(int argc, char** argv) {
-x		to something like this:
-x			int autograderMain() {
-		
 		cpp docs
 			include <, >=, equals, hashCode, etc. for every collection
 			strlib: stringToLong, longToString, stringIsLong, stringToDouble, doubleToString, stringIsDouble
@@ -46,12 +35,6 @@ x			int autograderMain() {
 			http://qt-project.org/forums/viewthread/24811/
 			possible solution:
 				https://www.bountysource.com/issues/1012294-qmake-doesn-t-correctly-handle-qmake_info_plist
-		
-		problem: closing console window shuts down entire autograder
-			Can turn off, but then, if console is waiting for I/O, locks up whole event queue.
-			maybe have autograder I/O mode where closing window is disabled while I/O in progress?
-			modify getLineConsole in platform.cpp?
-			console as gwindow?
 		
 
 		need ability to interrupt a long-running test from autograder test run GUI window
@@ -116,6 +99,19 @@ DONE:
 		test signal handler on Mac  (must disable signal-stack?)
 			http://spin.atomicobject.com/2013/01/13/exceptions-stack-traces-c/
 			
+x		problem: closing console window shuts down entire autograder
+x			Can turn off, but then, if console is waiting for I/O, locks up whole event queue.
+x			maybe have autograder I/O mode where closing window is disabled while I/O in progress?
+x			modify getLineConsole in platform.cpp?
+x			console as gwindow?
+x		autograder bug: "false negative" where earlier test fails but later one passes, leading to "failed" test but "equal/passing" results when you click for details
+x		autograder runtime of each test in MS?
+x		autograder input panel, buttons are too wide on OSX; shorten/narrow.  detect OSX in Java code?
+x		autograder main method handling redo: change this:
+x			#undef main
+x			int main(int argc, char** argv) {
+x		to something like this:
+x			int autograderMain() {
 x		Vector/LinkedList: overload add(index, value) to match insert(index, value)
 x			other classes: add/remove rather than other names
 x		versioning issues

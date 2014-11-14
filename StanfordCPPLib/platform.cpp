@@ -2365,6 +2365,12 @@ void Platform::jbeconsole_setLocation(int x, int y) {
     putPipe(os.str());
 }
 
+void Platform::jbeconsole_setCloseOperation(int value) {
+    std::ostringstream os;
+    os << "JBEConsole.setCloseOperation(" << value << ")";
+    putPipe(os.str());
+}
+
 void Platform::jbeconsole_setExitProgramOnClose(bool value) {
     std::ostringstream os;
     os << "JBEConsole.setExitOnClose(" << std::boolalpha << value << ")";
@@ -2374,6 +2380,12 @@ void Platform::jbeconsole_setExitProgramOnClose(bool value) {
 void Platform::jbeconsole_setLocationSaved(bool value) {
     std::ostringstream os;
     os << "JBEConsole.setLocationSaved(" << std::boolalpha << value << ")";
+    putPipe(os.str());
+}
+
+void Platform::jbeconsole_setVisible(bool value) {
+    std::ostringstream os;
+    os << "JBEConsole.setVisible(" << std::boolalpha << value << ")";
     putPipe(os.str());
 }
 

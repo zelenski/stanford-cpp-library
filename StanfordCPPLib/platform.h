@@ -193,12 +193,14 @@ public:
     void jbeconsole_clear();
     bool jbeconsole_isBlocked();
     void jbeconsole_minimize();
+    void jbeconsole_setCloseOperation(int value);
     void jbeconsole_setExitProgramOnClose(bool value);
     void jbeconsole_setLocationSaved(bool value);
     void jbeconsole_setFont(const std::string& font);
     void jbeconsole_setLocation(int x, int y);
     void jbeconsole_setSize(double width, double height);
     void jbeconsole_setTitle(const std::string& title);
+    void jbeconsole_setVisible(bool value);
     void jbeconsole_toFront();
     std::string os_getLastError();
     bool regex_match(std::string s, std::string regexp);
