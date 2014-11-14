@@ -18,6 +18,7 @@
 # @author Marty Stepp, Reid Watson, Rasmus Rygaard, Jess Fisher, etc.
 # @version 2014/11/13
 # - fixes related to generating stack traces
+# - support for putting testing files in a src/test/ folder (used in development)
 # @version 2014/11/05
 # - improved/fixed flags for exception-handling
 # @version 2014/10/31
@@ -32,7 +33,7 @@ CONFIG += no_include_pwd
 # Java back-end are both present in this project
 !exists($$PWD/../StanfordCPPLib/private/version.h) {
     message(*** Stanford C++ library not found!)
-    message(*** This project cannot run without the folder ../StanfordCPPLib/.)
+    message(*** This project cannot run without the folder lib/StanfordCPPLib/.)
     message(*** Place that folder into your project and try again.)
     error(Exiting.)
 }
@@ -59,6 +60,9 @@ SOURCES += $$PWD/../StanfordCPPLib/stacktrace/*.cpp
 exists($$PWD/src/*.cpp) {
     SOURCES += $$PWD/src/*.cpp
 }
+exists($$PWD/src/test/*.cpp) {
+    SOURCES += $$PWD/src/test/*.cpp
+}
 exists($$PWD/*.cpp) {
     SOURCES += $$PWD/*.cpp
 }
@@ -68,6 +72,9 @@ HEADERS += $$PWD/../StanfordCPPLib/private/*.h
 HEADERS += $$PWD/../StanfordCPPLib/stacktrace/*.h
 exists($$PWD/src/*.h) {
     HEADERS += $$PWD/src/*.h
+}
+exists($$PWD/src/test/*.h) {
+    HEADERS += $$PWD/src/test/*.h
 }
 exists($$PWD/*.h) {
     HEADERS += $$PWD/*.h
@@ -127,7 +134,9 @@ INCLUDEPATH += $$PWD/../StanfordCPPLib/private/
 INCLUDEPATH += $$PWD/../StanfordCPPLib/stacktrace/
 INCLUDEPATH += $$PWD/src/
 INCLUDEPATH += $$PWD/
-
+exists($$PWD/src/test/*.h) {
+    INCLUDEPATH += $$PWD/src/test/
+}
 # build-specific options (debug vs release)
 CONFIG(release, debug|release) {
     # make 'release' target be statically linked so it is a stand-alone executable
