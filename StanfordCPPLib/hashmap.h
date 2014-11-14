@@ -531,7 +531,7 @@ public:
             return !(*this == rhs);
         }
 
-        const KeyType& operator *() {
+        KeyType& operator *() {
             return cp->key;
         }
 

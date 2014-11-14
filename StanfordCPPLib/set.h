@@ -404,7 +404,7 @@ public:
             return !(*this == rhs);
         }
 
-        const ValueType& operator *() {
+        ValueType& operator *() {
             return *mapit;
         }
 

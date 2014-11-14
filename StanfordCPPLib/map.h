@@ -866,7 +866,7 @@ public:
             return !(*this == rhs);
         }
 
-        const KeyType& operator *() {
+        KeyType& operator *() {
             return stack.peek().np->key;
         }
 

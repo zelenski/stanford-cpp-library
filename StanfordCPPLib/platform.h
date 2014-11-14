@@ -5,6 +5,8 @@
  * the platform-specific parts of the StanfordCPPLib package.  This file is
  * logically part of the implementation and is not interesting to clients.
  *
+ * @version 2014/11/14
+ * - added method to set unit test runtime in MS
  * @version 2014/10/31
  * - added functions for graphical autograder unit tests
  * - added setVisible for autograder input panel
@@ -42,6 +44,7 @@ public:
     void autograderunittest_clearTests(bool styleCheck = false);
     void autograderunittest_setTestDetails(const std::string& testName, const std::string& details, bool styleCheck = false);
     void autograderunittest_setTestResult(const std::string& testName, const std::string& result, bool styleCheck = false);
+    void autograderunittest_setTestRuntime(const std::string& testName, int runtimeMS);
     void autograderunittest_setWindowDescriptionText(const std::string& text, bool styleCheck = false);
     std::string cpplib_getCppLibraryVersion();
     std::string cpplib_getJavaBackEndVersion();

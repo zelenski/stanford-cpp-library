@@ -466,7 +466,7 @@ public:
             return index - rhs.index;
         }
 
-        const ValueType& operator *() {
+        ValueType& operator *() {
             return vp->elements[index];
         }
 

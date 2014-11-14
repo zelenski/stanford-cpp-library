@@ -4,6 +4,8 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2014/11/14
+ * - added method to set unit test runtime in MS
  * @version 2014/11/05
  * - added ability to see cerr messages in red on graphical console window
  * @version 2014/10/31
@@ -2455,6 +2457,14 @@ void Platform::autograderunittest_setTestResult(const std::string& testName, con
     os << ",";
     writeQuotedString(os, urlEncode(result));
     os << "," << std::boolalpha << styleCheck << ")";
+    putPipe(os.str());
+}
+
+void Platform::autograderunittest_setTestRuntime(const std::string& testName, int runtimeMS) {
+    std::ostringstream os;
+    os << "AutograderUnitTest.setTestRuntime(";
+    writeQuotedString(os, urlEncode(testName));
+    os << "," << runtimeMS << ")";
     putPipe(os.str());
 }
 
