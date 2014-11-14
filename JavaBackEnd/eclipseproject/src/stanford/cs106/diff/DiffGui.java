@@ -210,7 +210,7 @@ public class DiffGui implements ActionListener, AdjustmentListener {
 	}
 	
 	private String htmlBodyWrap(String text) {
-		return "<html><body style=\"font-family: Consolas, 'Courier New', monospaced;\">" + text + "</body></html>";
+		return "<html><body style=\"font-family: monospaced;\">" + text + "</body></html>";
 	}
 	
 	private String colorOutput(String output) {
