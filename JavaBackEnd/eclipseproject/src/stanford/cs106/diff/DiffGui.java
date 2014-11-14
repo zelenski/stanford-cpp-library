@@ -209,30 +209,34 @@ public class DiffGui implements ActionListener, AdjustmentListener {
 		frame.setVisible(true);
 	}
 	
+	private String htmlBodyWrap(String text) {
+		return "<html><body style=\"font-family: Consolas, 'Courier New', monospaced;\">" + text + "</body></html>";
+	}
+	
 	private String colorOutput(String output) {
 		String[] lines = output.split("\r?\n");
 		for (int i = 0; i < lines.length; i++) {
 			lines[i] = lines[i].replaceAll("^([0-9]{1,4}[|])", "<font color='" + LINE_NUMBER_FG_COLOR + "' bgcolor='" + LINE_NUMBER_BG_COLOR + "'>$1</font>");
 		}
-		return StringUtils.join(lines, "<br>");
+		return htmlBodyWrap(StringUtils.join(lines, "<br>"));
 	}
 	
 	private String colorDiffs(String diffs) {
 		diffs = StringUtils.htmlEncode(diffs, /* replaceSpecialChars */ true, /* nbsp */ true);
 		diffs = diffs.replaceAll("(EXPECTED&nbsp;&lt;.{0,999})", "<font color='" + EXPECTED_COLOR + "'>$1</font>");
 		diffs = diffs.replaceAll("(STUDENT&nbsp;&nbsp;&gt;.{0,999})", "<font color='" + STUDENT_COLOR + "'>$1</font>");
-		return "<html><body>" + diffs + "</body></html>";
+		return htmlBodyWrap(diffs);
 	}
 	
 	private String colorSideBySideDiffs(String diffs) {
 		diffs = StringUtils.htmlEncode(diffs, /* replaceSpecialChars */ true, /* nbsp */ true);
-		return "<html><body>" + diffs + "</body></html>";
+		return htmlBodyWrap(diffs);
 	}
 
 	private JTextPane makeHtmlPane(String htmlText) {
 		JTextPane pane = new JTextPane();
 		Font font = pane.getFont();
-		font = new Font("Monospaced", Font.PLAIN, font.getSize());
+		font = new Font(Font.MONOSPACED, Font.PLAIN, font.getSize());
 		pane.setFont(font);
 		pane.setContentType("text/html");
 		pane.setText(htmlText);
