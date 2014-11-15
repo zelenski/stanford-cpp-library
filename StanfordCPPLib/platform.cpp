@@ -2457,7 +2457,11 @@ void Platform::autograderunittest_setTestDetails(const std::string& testName, co
     os << "AutograderUnitTest.setTestDetails(";
     writeQuotedString(os, urlEncode(testName));
     os << ",";
-    writeQuotedString(os, urlEncode(details));
+    std::string deets = details;
+    stringReplaceInPlace(deets, "\n", "\\n");
+    stringReplaceInPlace(deets, "\r", "\\r");
+    stringReplaceInPlace(deets, "\t", "\\t");
+    writeQuotedString(os, urlEncode(deets));
     os << "," << std::boolalpha << styleCheck << ")";
     putPipe(os.str());
 }

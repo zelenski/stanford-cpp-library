@@ -322,7 +322,7 @@ void MartyGraphicalTestResultPrinter::OnTestEnd(const ::testing::TestInfo& test_
     if (testTimers.containsKey(currentTestName)) {
         testTimers[currentTestName].stop();
         int runtimeMS = (int) testTimers[currentTestName].elapsed();
-        if (runtimeMS > 0) {
+        if (runtimeMS >= 10) {
             pp->autograderunittest_setTestRuntime(test_info.name(), runtimeMS);
         }
     }

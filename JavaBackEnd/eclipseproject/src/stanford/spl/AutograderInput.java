@@ -47,7 +47,7 @@ public class AutograderInput extends Observable implements ActionListener {
 	
 	public void addButton(String text, String input) {
 		if (currentCategory == null) {
-			FlowLayout layout = new FlowLayout(FlowLayout.LEFT, /* hgap */ 1, /* vgap */ 2);
+			FlowLayout layout = new FlowLayout(FlowLayout.LEFT, /* hgap */ 0, /* vgap */ 2);
 			currentCategory = new JPanel(layout);
 			// frame.add(Box.createVerticalGlue());
 			frame.add(currentCategory);

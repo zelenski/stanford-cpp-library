@@ -5,6 +5,8 @@
  * by student code on the console.
  * 
  * @author Marty Stepp
+ * @version 2014/11/14
+ * - fixed bug with SIGABRT handling in autograder mode (was muffling unit test failures)
  * @version 2014/11/12
  * - made printStackTrace function publicly available
  * - added top-level signal handler (for null-pointer derefs etc.)
@@ -133,6 +135,7 @@ static bool shouldFilterOutFromStackTrace(const std::string& function) {
             || function == "error"
             || function == "startupMain(int, char**)"
             || function.find("stacktrace::") != std::string::npos
+            || function.find("testing::") != std::string::npos
             || function.find("printStackTrace") != std::string::npos
             || function.find("stanfordCppLibSignalHandler") != std::string::npos
             || function.find("stanfordCppLibPosixSignalHandler") != std::string::npos
@@ -299,7 +302,9 @@ static void signalHandlerEnable() {
     // sigaction(SIGINT,  &sig_action, NULL);
     sigaction(SIGILL,  &sig_action, NULL);
     sigaction(SIGTERM, &sig_action, NULL);
+#ifndef SPL_AUTOGRADER_MODE
     sigaction(SIGABRT, &sig_action, NULL);
+#endif // SPL_AUTOGRADER_MODE
     handled = true;
 #endif
 #endif // SHOULD_USE_SIGNAL_STACK
@@ -308,7 +313,9 @@ static void signalHandlerEnable() {
     SIGNALS_HANDLED.push_back(SIGSEGV);
     SIGNALS_HANDLED.push_back(SIGILL);
     SIGNALS_HANDLED.push_back(SIGFPE);
+#ifndef SPL_AUTOGRADER_MODE
     SIGNALS_HANDLED.push_back(SIGABRT);
+#endif // SPL_AUTOGRADER_MODE
     if (!handled) {
         for (int sig : SIGNALS_HANDLED) {
             signal(sig, stanfordCppLibSignalHandler);

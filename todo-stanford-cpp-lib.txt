@@ -1,4 +1,27 @@
 	C++ libs
+		autograder lib: make it clear that some tests are still running / not done
+			spinning gif?
+			"in progress" vs "all tests complete" south text?
+			make it so that if you kill the autograder window while tests are running, it quits program, but if after, it just closes that window?  to abort out-of-control student progs
+		
+		autograder input panel: add key listener so that when I type keys on it, they'll forward to the console?
+		
+		make it so that you don't need to #include "console.h"
+			based on a flag in .pro file maybe?
+			all .h in stanford C++ lib manually include console.h if flag is set?
+			if you don't include it, it just uses the shitty normal console?
+			patch up:
+				main.cpp
+				platform.cpp
+				startup.cpp
+				private/main.h
+			global object
+				#include "console.h" -> dummy file, declares  (need to guard against multiple inclusion)
+					macro its variable name to be based on file name
+				-	old console.h becomes console impl
+				then, when you include "console.h" you get the console, if not you don't
+			mac os x app bundle folder, CD into it, look up platform specific function for doing so
+		
 		cpp docs
 			include <, >=, equals, hashCode, etc. for every collection
 			strlib: stringToLong, longToString, stringIsLong, stringToDouble, doubleToString, stringIsDouble
@@ -69,11 +92,6 @@
 		fix stack-size-increase code?  didn't run on Mac?  (GET MAC AND DEBUG THIS;  ALSO WINDOWS, LINUX)
 ->		GBufferedImage save(filename), load(filename) methods;  need back-end support
 			diffImage?
-		
-		make it so that you don't need to #include "console.h"
-			based on a flag in .pro file maybe?
-			all .h in stanford C++ lib manually include console.h if flag is set?
-			if you don't include it, it just uses the shitty normal console?
 		
 		[Dawg]Lexicon overload operators: +, +=, -, -= ?  like set?
 			same on any other collections?

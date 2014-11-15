@@ -6,6 +6,8 @@
  * See sylecheck.h for documentation of each function.
  * 
  * @author Marty Stepp
+ * @version 2014/11/15
+ * - added warning description to top of window if 'omitOnPass' is turned on
  * @version 2014/10/31
  * - added support for graphical style checker output
  * @since 2014/10/14
@@ -129,6 +131,10 @@ static bool processPatternNode(const std::string& codeFileName, rapidxml::xml_no
  * </stylecheck>
  */
 void styleCheck(std::string codeFileName, std::string styleXmlFileName, bool printWarning) {
+    std::string codeFileText = readEntireFile(codeFileName);
+    rapidxml::xml_node<>* styleCheckNode = xmlutils::openXmlDocument(styleXmlFileName, "stylecheck");
+    bool omitOnPass = xmlutils::getAttributeBool(styleCheckNode, "omitonpass", true);
+
     std::ostringstream out;
     out << "STYLE CHECK for " << codeFileName << " based on rules in "
         << styleXmlFileName << ":" << std::endl;
@@ -139,6 +145,10 @@ void styleCheck(std::string codeFileName, std::string styleXmlFileName, bool pri
         out << "         Please look at the student's code and don't penalize them" << std::endl;
         out << "         unless you actually see a problem with their coding style.)" << std::endl;
         out << std::endl;
+        if (omitOnPass) {
+            out << "<br><br>(Note: Showing only the output of style checks that fail. Passing checks are omitted.)" << std::endl;
+            out << std::endl;
+        }
         if (autograder::isGraphicalUI()) {
             pp->autograderunittest_clearTests(/* styleCheck */ true);
             pp->autograderunittest_setWindowDescriptionText(out.str(), /* styleCheck */ true);
@@ -159,10 +169,6 @@ void styleCheck(std::string codeFileName, std::string styleXmlFileName, bool pri
         autograder::showOutput(out);
         return;
     }
-
-    std::string codeFileText = readEntireFile(codeFileName);
-    rapidxml::xml_node<>* styleCheckNode = xmlutils::openXmlDocument(styleXmlFileName, "stylecheck");
-    bool omitOnPass = xmlutils::getAttributeBool(styleCheckNode, "omitonpass", true);
 
     // loop over each pattern node
     // handle each pattern node embedded directly within the document element of 'stylecheck'

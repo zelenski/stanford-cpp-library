@@ -377,6 +377,9 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 			htmlMessage += "<li><font style='font-family: monospaced' color='" + DiffGui.STUDENT_COLOR  + "'>student :</font>" + student  + "</li>";
 			htmlMessage += "</ul>";
 			htmlMessage += "</body></html>";
+			htmlMessage = htmlMessage.replace("\n", "\\n");
+			htmlMessage = htmlMessage.replace("\r", "\\r");
+			htmlMessage = htmlMessage.replace("\t", "\\t");
 			message = htmlMessage;
 		} else if (type == "ASSERT_DIFF") {
 			shouldShowJOptionPane = false;
