@@ -7,7 +7,7 @@ class AutograderInput_setVisible extends JBECommand {
 		paramTokenScanner.verifyToken("(");
 		boolean value = nextBoolean(paramTokenScanner);
 		paramTokenScanner.verifyToken(")");
-		AutograderInput autograderInput = AutograderInput.getInstance();
+		AutograderInput autograderInput = AutograderInput.getInstance(paramJavaBackEnd);
 		autograderInput.setVisible(value);
 	}
 }

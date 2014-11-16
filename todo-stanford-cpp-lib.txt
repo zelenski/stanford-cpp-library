@@ -1,11 +1,4 @@
 	C++ libs
-		autograder lib: make it clear that some tests are still running / not done
-			spinning gif?
-			"in progress" vs "all tests complete" south text?
-			make it so that if you kill the autograder window while tests are running, it quits program, but if after, it just closes that window?  to abort out-of-control student progs
-		
-		autograder input panel: add key listener so that when I type keys on it, they'll forward to the console?
-		
 		make it so that you don't need to #include "console.h"
 			based on a flag in .pro file maybe?
 			all .h in stanford C++ lib manually include console.h if flag is set?
@@ -50,7 +43,7 @@
 			qt-project.org/downloads
 			MSVC 2012/2013
 		
-		pqueue operator <<: new, faster implementation: just loop over internal heap structure (won't print in sorted order, but much more efficient)
+		PriorityQueue operator <<: new, faster implementation: just loop over internal heap structure (won't print in sorted order, but much more efficient)
 		
 		generic toString function that uses ostringstream << if needed?
 		
@@ -60,7 +53,7 @@
 				https://www.bountysource.com/issues/1012294-qmake-doesn-t-correctly-handle-qmake_info_plist
 		
 
-		need ability to interrupt a long-running test from autograder test run GUI window
+		need ability to interrupt a long-running test from autograder test run GUI window (use SIGINT?)
 		
 		other interactors
 			radio button?
@@ -117,6 +110,11 @@ DONE:
 		test signal handler on Mac  (must disable signal-stack?)
 			http://spin.atomicobject.com/2013/01/13/exceptions-stack-traces-c/
 			
+x		autograder lib: make it clear that some tests are still running / not done
+x			spinning gif?
+x			"in progress" vs "all tests complete" south text?
+x		autograder unit test runner: make it so that if you kill the autograder window while tests are running, it quits program, but if after, it just closes that window?  to abort out-of-control student progs
+x		autograder input panel: add key listener so that when I type keys on it, they'll forward to the console?
 x		problem: closing console window shuts down entire autograder
 x			Can turn off, but then, if console is waiting for I/O, locks up whole event queue.
 x			maybe have autograder I/O mode where closing window is disabled while I/O in progress?

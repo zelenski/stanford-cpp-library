@@ -11,7 +11,7 @@ class AutograderUnitTest_setTestRuntime extends JBECommand {
 		int runtime = nextInt(paramTokenScanner);
 		paramTokenScanner.verifyToken(")");
 		
-		AutograderUnitTestGUI gui = AutograderUnitTestGUI.getInstance();
+		AutograderUnitTestGUI gui = AutograderUnitTestGUI.getInstance(paramJavaBackEnd);
 		gui.setTestRuntime(testName, runtime);
 	}
 }

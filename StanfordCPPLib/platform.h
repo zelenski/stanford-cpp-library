@@ -43,8 +43,10 @@ public:
     void autograderunittest_addTest(const std::string& testName, const std::string& category = "", bool styleCheck = false);
     void autograderunittest_clearTests(bool styleCheck = false);
     void autograderunittest_setTestDetails(const std::string& testName, const std::string& details, bool styleCheck = false);
+    void autograderunittest_setTestingCompleted(bool completed = true, bool styleCheck = false);
     void autograderunittest_setTestResult(const std::string& testName, const std::string& result, bool styleCheck = false);
     void autograderunittest_setTestRuntime(const std::string& testName, int runtimeMS);
+    void autograderunittest_setVisible(bool visible = true, bool styleCheck = false);
     void autograderunittest_setWindowDescriptionText(const std::string& text, bool styleCheck = false);
     std::string cpplib_getCppLibraryVersion();
     std::string cpplib_getJavaBackEndVersion();

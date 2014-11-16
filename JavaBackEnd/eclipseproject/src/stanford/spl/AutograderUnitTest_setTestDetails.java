@@ -36,7 +36,7 @@ class AutograderUnitTest_setTestDetails extends JBECommand {
 			deetMap.put(parts[0], SplPipeDecoder.decode(parts[1]));
 		}
 		
-		AutograderUnitTestGUI gui = AutograderUnitTestGUI.getInstance(isStyleCheck);
+		AutograderUnitTestGUI gui = AutograderUnitTestGUI.getInstance(paramJavaBackEnd, isStyleCheck);
 		gui.setTestDetails(testName, deetMap);
 	}
 }

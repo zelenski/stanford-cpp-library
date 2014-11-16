@@ -2,16 +2,16 @@ package stanford.spl;
 
 import acm.util.TokenScanner;
 
-class AutograderUnitTest_setWindowDescriptionText extends JBECommand {
+class AutograderUnitTest_setVisible extends JBECommand {
 
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
-		String description = SplPipeDecoder.readAndDecode(paramTokenScanner);
+		boolean visible = nextBoolean(paramTokenScanner);
 		paramTokenScanner.verifyToken(",");
 		boolean isStyleCheck = nextBoolean(paramTokenScanner);
 		paramTokenScanner.verifyToken(")");
 		
 		AutograderUnitTestGUI gui = AutograderUnitTestGUI.getInstance(paramJavaBackEnd, isStyleCheck);
-		gui.setDescription(description);
+		gui.setVisible(visible);
 	}
 }

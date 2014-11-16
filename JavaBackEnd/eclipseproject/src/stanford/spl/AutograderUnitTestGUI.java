@@ -22,30 +22,31 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 	private static AutograderUnitTestGUI instance;             // singleton
 	private static AutograderUnitTestGUI styleCheckInstance;   // singleton
 	
-	public static synchronized AutograderUnitTestGUI getInstance() {
+	public static synchronized AutograderUnitTestGUI getInstance(JavaBackEnd javaBackEnd) {
 		if (instance == null) {
-			instance = new AutograderUnitTestGUI();
+			instance = new AutograderUnitTestGUI(javaBackEnd);
 			instance.frame.setTitle("Autograder Tests");
 		}
 		return instance;
 	}
 	
-	public static synchronized AutograderUnitTestGUI getInstance(boolean isStyleCheck) {
+	public static synchronized AutograderUnitTestGUI getInstance(JavaBackEnd javaBackEnd, boolean isStyleCheck) {
 		if (isStyleCheck) {
-			return getStyleCheckInstance();
+			return getStyleCheckInstance(javaBackEnd);
 		} else {
-			return getInstance();
+			return getInstance(javaBackEnd);
 		}
 	}
 	
-	public static synchronized AutograderUnitTestGUI getStyleCheckInstance() {
+	public static synchronized AutograderUnitTestGUI getStyleCheckInstance(JavaBackEnd javaBackEnd) {
 		if (styleCheckInstance == null) {
-			styleCheckInstance = new AutograderUnitTestGUI();
+			styleCheckInstance = new AutograderUnitTestGUI(javaBackEnd);
 			styleCheckInstance.frame.setTitle("Style Checker");
 		}
 		return styleCheckInstance;
 	}
 	
+	private JavaBackEnd javaBackEnd;
 	private JFrame frame = null;
 	private JScrollPane scroll = null;
 	private Box contentPaneBox = null;
@@ -59,11 +60,14 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 	private Map<String, Map<String, String>> allTestDetails = new LinkedHashMap<String, Map<String, String>>();
 	private int passCount = 0;
 	private int testCount = 0;
+	private boolean testingIsInProgress = true;
 	
-	public AutograderUnitTestGUI() {
+	public AutograderUnitTestGUI(JavaBackEnd javaBackEnd) {
+		this.javaBackEnd = javaBackEnd;
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		frame.setVisible(false);
+		frame.addWindowListener(new AutograderUnitTestGUIWindowAdapter());
 		
 		descriptionLabel = new JLabel("Autograder Tests");
 		descriptionLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -78,6 +82,8 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		frame.add(scroll, BorderLayout.CENTER);
 		
 		southLabel = new JLabel(" ");
+		southLabel.setIcon(new ImageIcon("progress.gif"));
+		southLabel.setHorizontalTextPosition(SwingConstants.LEFT);
 		southLabel.setHorizontalAlignment(JLabel.CENTER);
 		southLabel.setAlignmentX(0.5f);
 		frame.add(southLabel, BorderLayout.SOUTH);
@@ -167,6 +173,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		labelToTestName.clear();
 		passCount = 0;
 		testCount = 0;
+		testingIsInProgress = true;
 		contentPaneBox.removeAll();
 		contentPaneBox.validate();
 		scroll.validate();
@@ -273,6 +280,11 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		allTestDetails.put(testName, details);
 	}
 	
+	public void setTestingCompleted(boolean completed) {
+		testingIsInProgress = !completed;
+		updateSouthText();
+	}
+	
 	public boolean setTestRuntime(String testName, int runtimeMS) {
 		JLabel resultIconLabel = allTestResultLabels.get(testName);
 		if (resultIconLabel == null) {
@@ -282,6 +294,10 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 			resultIconLabel.setText(text);
 			return true;
 		}
+	}
+	
+	public void setVisible(boolean visible) {
+		frame.setVisible(visible);
 	}
 	
 	private void checkVisibility() {
@@ -399,6 +415,25 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 	}
 	
 	private void updateSouthText() {
-		southLabel.setText("passed " + passCount + " / " + testCount + " tests");
+		String text = "passed " + passCount + " / " + testCount + " tests";
+		if (testingIsInProgress) {
+			text += " (running ...)";
+			if (southLabel.getIcon() == null) {
+				southLabel.setIcon(new ImageIcon("progress.gif"));
+			}
+		} else {
+			text += " (complete)";
+			southLabel.setIcon(null);
+		}
+		southLabel.setText(text);
+	}
+	
+	private class AutograderUnitTestGUIWindowAdapter extends WindowAdapter {
+		public void windowClosing(WindowEvent event) {
+			if (testingIsInProgress) {
+				// probably a hung student test case; kill back-end
+				javaBackEnd.shutdownBackEnd(/* sendEvent */ true);
+			}
+		}
 	}
 }

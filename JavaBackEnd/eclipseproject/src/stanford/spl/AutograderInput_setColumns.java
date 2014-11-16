@@ -7,7 +7,7 @@ class AutograderInput_setColumns extends JBECommand {
 		paramTokenScanner.verifyToken("(");
 		int columns = nextInt(paramTokenScanner);
 		paramTokenScanner.verifyToken(")");
-		AutograderInput autograderInput = AutograderInput.getInstance();
+		AutograderInput autograderInput = AutograderInput.getInstance(paramJavaBackEnd);
 		autograderInput.setColumns(columns);
 	}
 }

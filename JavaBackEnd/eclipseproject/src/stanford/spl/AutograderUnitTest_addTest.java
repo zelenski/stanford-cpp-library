@@ -13,7 +13,7 @@ class AutograderUnitTest_addTest extends JBECommand {
 		boolean isStyleCheck = nextBoolean(paramTokenScanner);
 		paramTokenScanner.verifyToken(")");
 		
-		AutograderUnitTestGUI gui = AutograderUnitTestGUI.getInstance(isStyleCheck);
+		AutograderUnitTestGUI gui = AutograderUnitTestGUI.getInstance(paramJavaBackEnd, isStyleCheck);
 		gui.addTest(testName, categoryName);
 	}
 }

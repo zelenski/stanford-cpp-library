@@ -32,6 +32,19 @@ public class GuiUtils {
 	private static Properties props = new Properties();
 	private static String tempDir = System.getProperty("java.io.tmpdir");
 	
+	public static void addKeyListenerRecursive(Component component, KeyListener listener) {
+		if (component.isFocusable() || component instanceof Window) {
+			// javax.swing.JOptionPane.showMessageDialog(null, "attaching key listener to: " + component);
+			component.addKeyListener(listener);
+		}
+		if (component instanceof Container) {
+			Container container = (Container) component;
+			for (Component subcomponent : container.getComponents()) {
+				addKeyListenerRecursive(subcomponent, listener);
+			}
+		}
+	}
+	
 	/**
 	 * Sets up the given program so that its componentResized method will be
 	 * called whenever the window resizes.

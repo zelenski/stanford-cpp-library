@@ -11,9 +11,9 @@ public class AutograderInput extends Observable implements ActionListener {
 	private static final int MIN_WIDTH = 75;
 	private static AutograderInput instance;   // singleton
 	
-	public static synchronized AutograderInput getInstance() {
+	public static synchronized AutograderInput getInstance(JavaBackEnd javaBackEnd) {
 		if (instance == null) {
-			instance = new AutograderInput();
+			instance = new AutograderInput(javaBackEnd);
 		}
 		return instance;
 	}
@@ -23,11 +23,16 @@ public class AutograderInput extends Observable implements ActionListener {
 	private JPanel currentCategory;
 	private Map<String, JComponent> components;
 	private Set<JLabel> allLabels = new LinkedHashSet<JLabel>();
+	private KeyListener keyListener;
 	
-	public AutograderInput() {
+	public AutograderInput(JavaBackEnd javaBackEnd) {
 		frame = new JFrame();
 		frame.setTitle("Autograder Input Panel");
 		frame.setVisible(false);
+		// keyListener = new AutograderInputKeyListener();
+		keyListener = javaBackEnd.getConsoleKeyListener();
+		frame.addKeyListener(keyListener);
+		
 		Box box = Box.createVerticalBox();
 		frame.setContentPane(box);
 		// layout = new GridLayout(0, 1, 5, 5);
@@ -60,6 +65,7 @@ public class AutograderInput extends Observable implements ActionListener {
 				input += "\n";
 			}
 			JButton button = new JButton(text);
+			button.addKeyListener(keyListener);
 			if (OperatingSystem.get() == OperatingSystem.MAC) {
 				// disable rounded button corners on Mac that make the buttons huge
 				button.setBorder(BorderFactory.createLineBorder(Color.GRAY));

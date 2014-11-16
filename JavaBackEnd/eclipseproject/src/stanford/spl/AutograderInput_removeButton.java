@@ -7,7 +7,7 @@ class AutograderInput_removeButton extends JBECommand {
 		paramTokenScanner.verifyToken("(");
 		String text = SplPipeDecoder.readAndDecode(paramTokenScanner);
 		paramTokenScanner.verifyToken(")");
-		AutograderInput autograderInput = AutograderInput.getInstance();
+		AutograderInput autograderInput = AutograderInput.getInstance(paramJavaBackEnd);
 		autograderInput.removeButton(text);
 	}
 }

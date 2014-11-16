@@ -9,7 +9,7 @@ public class WindowCloseKeyListener implements KeyListener {
 	
 	public WindowCloseKeyListener(Window window) {
 		this.window = window;
-		addKeyListenerRecursive(window);
+		GuiUtils.addKeyListenerRecursive(window, this);
 	}
 	
 	public void keyPressed(KeyEvent e) {
@@ -27,18 +27,5 @@ public class WindowCloseKeyListener implements KeyListener {
 	
 	public void keyTyped(KeyEvent e) {
 		// empty
-	}
-	
-	private void addKeyListenerRecursive(Component component) {
-		if (component.isFocusable() || component instanceof Window) {
-			// javax.swing.JOptionPane.showMessageDialog(null, "attaching key listener to: " + component);
-			component.addKeyListener(this);
-		}
-		if (component instanceof Container) {
-			Container container = (Container) component;
-			for (Component subcomponent : container.getComponents()) {
-				addKeyListenerRecursive(subcomponent);
-			}
-		}
 	}
 }

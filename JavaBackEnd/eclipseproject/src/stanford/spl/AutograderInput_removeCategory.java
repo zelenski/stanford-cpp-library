@@ -7,7 +7,7 @@ class AutograderInput_removeCategory extends JBECommand {
 		paramTokenScanner.verifyToken("(");
 		String name = SplPipeDecoder.readAndDecode(paramTokenScanner);
 		paramTokenScanner.verifyToken(")");
-		AutograderInput autograderInput = AutograderInput.getInstance();
+		AutograderInput autograderInput = AutograderInput.getInstance(paramJavaBackEnd);
 		autograderInput.removeCategory(name);
 	}
 }

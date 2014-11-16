@@ -581,7 +581,9 @@ int autograderGraphicalMain(int argc, char** argv) {
                 }
                 
                 pp->autograderunittest_clearTests();
+                pp->autograderunittest_setVisible(true);
                 result = mainRunAutograderTestCases(argc, argv);
+                pp->autograderunittest_setTestingCompleted(true);
                 
                 if (FLAGS.callbackEnd) {
                     FLAGS.callbackEnd();

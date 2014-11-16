@@ -155,6 +155,7 @@ public class JBEMenuBar extends ProgramMenuBar implements ActionListener {
 		return super.fireAccelerator(event);
 	}
 	
+	// TODO: call JavaBackEnd getConsoleIOModel here to cut down on reflection code
 	private JScrollPane getScrollPane() {
 		IOConsole console = getProgram().getConsole();
 		try {

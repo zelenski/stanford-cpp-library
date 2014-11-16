@@ -2466,6 +2466,15 @@ void Platform::autograderunittest_setTestDetails(const std::string& testName, co
     putPipe(os.str());
 }
 
+void Platform::autograderunittest_setTestingCompleted(bool completed, bool styleCheck) {
+    std::ostringstream os;
+    os << "AutograderUnitTest.setTestingCompleted("
+       << std::boolalpha << completed
+       << "," << std::boolalpha << styleCheck
+       << ")";
+    putPipe(os.str());
+}
+
 void Platform::autograderunittest_setTestResult(const std::string& testName, const std::string& result, bool styleCheck) {
     std::ostringstream os;
     os << "AutograderUnitTest.setTestResult(";
@@ -2481,6 +2490,15 @@ void Platform::autograderunittest_setTestRuntime(const std::string& testName, in
     os << "AutograderUnitTest.setTestRuntime(";
     writeQuotedString(os, urlEncode(testName));
     os << "," << runtimeMS << ")";
+    putPipe(os.str());
+}
+
+void Platform::autograderunittest_setVisible(bool visible, bool styleCheck) {
+    std::ostringstream os;
+    os << "AutograderUnitTest.setVisible("
+       << std::boolalpha << visible
+       << "," << std::boolalpha << styleCheck
+       << ")";
     putPipe(os.str());
 }
 

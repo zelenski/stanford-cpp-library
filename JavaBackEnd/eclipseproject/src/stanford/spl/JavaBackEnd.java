@@ -139,7 +139,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		this.console.setErrorColor(ERROR_COLOR);
 		this.console.setErrorStyle(ERROR_STYLE);
 		
-		AutograderInput autograderInput = AutograderInput.getInstance();
+		AutograderInput autograderInput = AutograderInput.getInstance(this);
 		autograderInput.addObserver(this);
 		
 		this.menuBar = new JBEMenuBar(this, this.console);
@@ -608,29 +608,41 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		windowClosing(paramWindowEvent);
 	}
 
+	public void shutdownBackEnd(boolean sendEvent) {
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					Thread.sleep(200);
+				} catch (InterruptedException ie) {}
+				try {
+					System.out.close();
+				} catch (Exception e) {
+					// empty
+				}
+				try {
+					System.in.close();
+				} catch (Exception e) {
+					// empty
+				}
+				System.exit(0);
+			}
+		}).start();
+		
+		if (sendEvent) {
+			if (consoleFrame != null) {
+				consoleFrame.setVisible(false);
+			}
+			acknowledgeEvent("event:lastWindowGWindow_closed()");
+			acknowledgeEvent("event:consoleWindowClosed()");
+		}
+	}
+	
 	public void windowClosing(WindowEvent paramWindowEvent) {
 		if (paramWindowEvent.getSource() == this.consoleFrame) {
 			if (consoleCloseOperation == JFrame.DO_NOTHING_ON_CLOSE) {
 				return;
 			} else if (consoleCloseOperation == JFrame.EXIT_ON_CLOSE) {
-				new Thread(new Runnable() {
-					public void run() {
-						try {
-							Thread.sleep(200);
-						} catch (InterruptedException ie) {}
-						try {
-							System.out.close();
-						} catch (Exception e) {
-							// empty
-						}
-						try {
-							System.in.close();
-						} catch (Exception e) {
-							// empty
-						}
-						System.exit(0);
-					}
-				}).start();
+				shutdownBackEnd(/* sendEvent */ false);
 			} else if (consoleCloseOperation == JFrame.HIDE_ON_CLOSE) {
 				consoleFrame.setVisible(false);
 			}
@@ -866,6 +878,27 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		}
 		this.clipTable.put(paramString, localClip);
 		return localClip;
+	}
+	
+	public ConsoleModel getConsoleIOModel() {
+		try {
+			Class<?> clazz = acm.io.IOConsole.class;
+			Field field = clazz.getDeclaredField("consoleModel");
+			field.setAccessible(true);
+			ConsoleModel model = (ConsoleModel) field.get(console);
+			return model;
+		} catch (Exception e) {
+			// empty
+		}
+		return null;
+	}
+	
+	public KeyListener getConsoleKeyListener() {
+		ConsoleModel consoleModel = getConsoleIOModel();
+		if (consoleModel != null) {
+			return (KeyListener) consoleModel;   // StandardConsoleModel implements KeyListener
+		}
+		return null;
 	}
 
 	private int consoleX = 10;

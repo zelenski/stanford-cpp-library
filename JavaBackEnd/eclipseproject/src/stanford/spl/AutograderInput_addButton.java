@@ -9,7 +9,7 @@ class AutograderInput_addButton extends JBECommand {
 		paramTokenScanner.verifyToken(",");
 		String input = SplPipeDecoder.readAndDecode(paramTokenScanner);
 		paramTokenScanner.verifyToken(")");
-		AutograderInput autograderInput = AutograderInput.getInstance();
+		AutograderInput autograderInput = AutograderInput.getInstance(paramJavaBackEnd);
 		autograderInput.addButton(text, input);
 	}
 }
