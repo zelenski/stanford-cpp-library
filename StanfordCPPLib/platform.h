@@ -5,6 +5,8 @@
  * the platform-specific parts of the StanfordCPPLib package.  This file is
  * logically part of the implementation and is not interesting to clients.
  *
+ * @version 2014/11/15
+ * - improvements to autograder unit test GUI
  * @version 2014/11/14
  * - added method to set unit test runtime in MS
  * @version 2014/10/31

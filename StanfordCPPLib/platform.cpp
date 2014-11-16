@@ -4,6 +4,8 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2014/11/15
+ * - improvements to autograder unit test GUI
  * @version 2014/11/14
  * - added method to set unit test runtime in MS
  * @version 2014/11/05

@@ -6,6 +6,8 @@
  * See autograder.h for documentation of each member.
  * 
  * @author Marty Stepp
+ * @version 2014/11/15
+ * - improvements to autograder unit test GUI
  * @version 2014/11/13
  * - fixed bug with "false negative" tests where early assert failed then later assert passed
  * @version 2014/11/04

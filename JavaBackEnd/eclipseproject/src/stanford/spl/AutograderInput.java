@@ -1,3 +1,9 @@
+/*
+ * @author Marty Stepp
+ * @version 2014/11/15
+ * - key listener to forward to JBE Console
+ */
+
 package stanford.spl;
 
 import java.awt.*;

@@ -1,3 +1,10 @@
+/*
+ * @author Marty Stepp
+ * @version 2014/11/15
+ * - spinner GIF while tests are in progress
+ * - shut down JBE if window closed while tests are in progress
+ */
+
 package stanford.spl;
 
 import java.awt.*;
