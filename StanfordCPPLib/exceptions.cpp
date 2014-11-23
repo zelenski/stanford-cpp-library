@@ -5,6 +5,10 @@
  * by student code on the console.
  * 
  * @author Marty Stepp
+ * @version 2014/11/19
+ * - disabled SetThreadErrorMode to avoid compiler errors on Windows systems
+ * @version 2014/11/18
+ * - fixed minor bug with filtering out nested <> template args from stack traces
  * @version 2014/11/14
  * - fixed bug with SIGABRT handling in autograder mode (was muffling unit test failures)
  * @version 2014/11/12
@@ -108,7 +112,7 @@ void setTopLevelExceptionHandlerEnabled(bool enabled) {
         // newly added uncaught signal handler
         // SetErrorMode(SEM_NOGPFAULTERRORBOX);
         SetErrorMode(SEM_FAILCRITICALERRORS);
-        SetThreadErrorMode(SEM_FAILCRITICALERRORS, NULL);
+        // SetThreadErrorMode(SEM_FAILCRITICALERRORS, NULL);
         SetUnhandledExceptionFilter(UnhandledException);
         // _invalid_parameter_handler newHandler;
         // newHandler = myInvalidParameterHandler;
@@ -169,12 +173,36 @@ void printStackTrace(std::ostream& out) {
         // remove references to std:: namespace
         stringReplaceInPlace(entries[i].function, "std::", "");
         
+        // a few substitutions related to predefined types for simplicity
+        stringReplaceInPlace(entries[i].function, "basic_ostream", "ostream");
+        stringReplaceInPlace(entries[i].function, "basic_istream", "istream");
+        stringReplaceInPlace(entries[i].function, "basic_ofstream", "ofstream");
+        stringReplaceInPlace(entries[i].function, "basic_ifstream", "ifstream");
+        stringReplaceInPlace(entries[i].function, "basic_string", "string");
+        
         // remove template arguments
-        while (stringContains(entries[i].function, "<") && stringContains(entries[i].function, ">")) {
-            int lessThan = stringIndexOf(entries[i].function, "<");
-            int greaterThan = stringIndexOf(entries[i].function, ">", lessThan);
-            if (lessThan >= 0 && greaterThan > lessThan) {
+        // TODO: does not work well for nested templates
+        int lessThan = stringIndexOf(entries[i].function, "<");
+        while (lessThan >= 0) {
+            // see if there is a matching > for this <
+            int greaterThan = lessThan + 1;
+            int count = 1;
+            while (greaterThan < (int) entries[i].function.length()) {
+                if (entries[i].function[greaterThan] == '<') {
+                    count++;
+                } else if (entries[i].function[greaterThan] == '>') {
+                    count--;
+                    if (count == 0) {
+                        break;
+                    }
+                }
+                greaterThan++;
+            }
+            if (count == 0 && lessThan >= 0 && greaterThan > lessThan) {
                 entries[i].function.erase(lessThan, greaterThan - lessThan + 1);
+            } else {
+                // look for the next < in the string, if any, to see if it has a matching >
+                lessThan = stringIndexOf(entries[i].function, "<", lessThan + 1);
             }
         }
         
@@ -219,6 +247,9 @@ void printStackTrace(std::ostream& out) {
         std::string lineStr = "";
         if (!entry.lineStr.empty()) {
             lineStr = entry.lineStr;
+            if (lineStr == "?? ??:0") {
+                lineStr = "(unknown)";
+            }
         } else if (entry.line > 0) {
             lineStr = "line " + integerToString(entry.line);
         }
