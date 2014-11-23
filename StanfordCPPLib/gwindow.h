@@ -4,6 +4,10 @@
  * This file defines the <code>GWindow</code> class which supports
  * drawing graphical objects on the screen.
  * 
+ * @version 2014/11/20
+ * - added clearCanvas method
+ * @version 2014/11/18
+ * - added setResizable method
  * @version 2014/10/13
  * - added gwindowSetExitGraphicsEnabled function for autograders
  * - removed 'using namespace' statement
@@ -161,6 +165,15 @@ public:
      * Clears the contents of the window.
      */
     void clear();
+
+    /*
+     * Method: clearCanvas
+     * Usage: gw.clearCanvas();
+     * ------------------
+     * Clears the contents of the window's graphical canvas without
+     * removing any interactors in the window.
+     */
+    void clearCanvas();
 
     /*
      * Method: setVisible
@@ -501,6 +514,14 @@ public:
      */
     void setRegionAlignment(std::string region, std::string align);
 
+    /*
+     * Method: setResizable
+     * Usage: gw.setResizable(true);
+     * -----------------------------
+     * Sets whether the window can be resized by the user (default false).
+     */
+    void setResizable(bool resizable);  
+    
     /*
      * Operator: ==
      * Usage: if (w1 == w2) ...

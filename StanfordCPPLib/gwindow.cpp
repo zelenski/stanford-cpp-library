@@ -5,6 +5,10 @@
  * to the appropriate methods in the Platform class, which is implemented
  * separately for each architecture.
  * 
+ * @version 2014/11/20
+ * - added clearCanvas method
+ * @version 2014/11/18
+ * - added setResizable method
  * @version 2014/10/13
  * - added gwindowSetExitGraphicsEnabled function for autograders
  * - removed 'using namespace' statement
@@ -200,6 +204,12 @@ void GWindow::clear() {
             gwd->top->removeAll();
         }
         pp->gwindow_clear(*this);
+    }
+}
+
+void GWindow::clearCanvas() {
+    if (isOpen()) {
+        pp->gwindow_clearCanvas(*this);
     }
 }
 
@@ -522,6 +532,12 @@ GObject *GWindow::getGObjectAt(double x, double y) const {
 void GWindow::setRegionAlignment(std::string region, std::string align) {
     if (isOpen()) {
         pp->gwindow_setRegionAlignment(*this, region, align);
+    }
+}
+
+void GWindow::setResizable(bool resizable) {
+    if (isOpen()) {
+        pp->gwindow_setResizable(*this, resizable);
     }
 }
 

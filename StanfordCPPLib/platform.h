@@ -5,6 +5,8 @@
  * the platform-specific parts of the StanfordCPPLib package.  This file is
  * logically part of the implementation and is not interesting to clients.
  *
+ * @version 2014/11/20
+ * - added gwindow clearCanvas method
  * @version 2014/11/15
  * - improvements to autograder unit test GUI
  * @version 2014/11/14
@@ -165,6 +167,7 @@ public:
     void gtimer_stop(const GTimer& timer);
     void gwindow_addToRegion(const GWindow& gw, GObject* gobj, std::string region);
     void gwindow_clear(const GWindow& gw);
+    void gwindow_clearCanvas(const GWindow& gw);
     void gwindow_close(const GWindow& gw);
     void gwindow_constructor(const GWindow& gw, double width, double height,
                              GObject* topCompound, bool visible = true);

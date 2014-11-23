@@ -4,6 +4,8 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2014/11/20
+ * - added gwindow clearCanvas method
  * @version 2014/11/15
  * - improvements to autograder unit test GUI
  * @version 2014/11/14
@@ -690,6 +692,12 @@ void Platform::gwindow_clear(const GWindow& gw) {
     putPipe(os.str());
 }
 
+void Platform::gwindow_clearCanvas(const GWindow& gw) {
+    std::ostringstream os;
+    os << "GWindow.clearCanvas(\"" << gw.gwd << "\")";
+    putPipe(os.str());
+}
+
 void Platform::gwindow_repaint(const GWindow& gw) {
     std::ostringstream os;
     os << "GWindow.repaint(\"" << gw.gwd << "\")";
@@ -1015,12 +1023,8 @@ void Platform::gobject_setLineWidth(GObject* gobj, double lineWidth) {
 
 void Platform::gobject_setLocation(GObject* gobj, double x, double y) {
     std::ostringstream os;
-    if (x >= 0 && y >= 0) {
-        os << "GObject.setLocation(\"" << gobj << "\", " << x << ", " << y << ")";
-        putPipe(os.str());
-    } else {
-        error("GObject::setLocation: x and y must be non-negative");
-    }
+    os << "GObject.setLocation(\"" << gobj << "\", " << x << ", " << y << ")";
+    putPipe(os.str());
 }
 
 void Platform::gobject_setSize(GObject* gobj, double width, double height) {

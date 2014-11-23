@@ -755,7 +755,7 @@ int GCompound::findGObject(GObject *gobj) {
 }
 
 void GCompound::removeAt(int index) {
-    GObject *gobj = contents[index];
+    GObject* gobj = contents[index];
     contents.remove(index);
     pp->gobject_remove(gobj);
     gobj->parent = NULL;
