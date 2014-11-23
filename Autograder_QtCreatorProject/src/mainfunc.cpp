@@ -12,7 +12,7 @@
 #include "private/version.h"
 using namespace std;
 
-class TestTest01 : public autograder::TimeoutTest {
+class TestTest01 : public autograder::AutograderTest {
 public:
     static void SetUpTestCase() {
         autograder::setCurrentCategoryName("first category");
@@ -36,7 +36,7 @@ TEST_F(TestTest01, test03_near) {
 }
 
 
-class TestTest02 : public autograder::TimeoutTest {
+class TestTest02 : public autograder::AutograderTest {
 public:
     static void SetUpTestCase() {
         autograder::setCurrentCategoryName("second category");
@@ -60,7 +60,7 @@ TEST_F(TestTest02, test06_anotherOne) {
 }
 
 
-class TestTest03 : public autograder::TimeoutTest {
+class TestTest03 : public autograder::AutograderTest {
 public:
     static void SetUpTestCase() {
         autograder::setCurrentCategoryName("third category");

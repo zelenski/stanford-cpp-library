@@ -55,22 +55,22 @@ static void acceptAlarm(int /*sig*/) {
     error(msg);
 }
 
-const int TimeoutTest::DEFAULT_TIMEOUT_SEC = 5;
+const int AutograderTest::DEFAULT_TIMEOUT_SEC = 5;
 
-void TimeoutTest::setTestTimeout(int sec) {
+void AutograderTest::setTestTimeout(int sec) {
     timeoutSec = sec;
     signal(SIGALRM, acceptAlarm);
     alarm(timeoutSec);
 }
 
-void TimeoutTest::SetUp() {
+void AutograderTest::SetUp() {
     autograder::ensureCurrentTestCaseAdded();
     timeoutSec = DEFAULT_TIMEOUT_SEC;
     signal(SIGALRM, acceptAlarm);
     alarm(timeoutSec);
 }
  
-void TimeoutTest::TearDown() {
+void AutograderTest::TearDown() {
     alarm(0);   // cancel alarm
     signal(SIGALRM, SIG_IGN);
 }

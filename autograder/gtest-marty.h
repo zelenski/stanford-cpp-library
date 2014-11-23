@@ -23,7 +23,7 @@
 
 namespace autograder {
 
-class TimeoutTest : public testing::Test {
+class AutograderTest : public testing::Test {
 public:
     static const int DEFAULT_TIMEOUT_SEC;
     
