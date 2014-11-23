@@ -4,6 +4,8 @@
  * This file exports the <code>Grid</code> class, which offers a
  * convenient abstraction for representing a two-dimensional array.
  *
+ * @version 2014/11/20
+ * - minor bug fixes in member initializers
  * @version 2014/11/13
  * - added comparison operators <, >=, etc.
  * - added template hashCode function
@@ -494,21 +496,26 @@ public:
 };
 
 template <typename ValueType>
-Grid<ValueType>::Grid() {
-    elements = NULL;
-    nRows = 0;
-    nCols = 0;
+Grid<ValueType>::Grid()
+        : elements(NULL),
+          nRows(0),
+          nCols(0) {
+    // empty
 }
 
 template <typename ValueType>
-Grid<ValueType>::Grid(int nRows, int nCols) {
-    elements = NULL;
+Grid<ValueType>::Grid(int nRows, int nCols)
+    : elements(NULL),
+      nRows(0),
+      nCols(0) {
     resize(nRows, nCols);
 }
 
 template <typename ValueType>
-Grid<ValueType>::Grid(int nRows, int nCols, const ValueType& value) {
-    elements = NULL;
+Grid<ValueType>::Grid(int nRows, int nCols, const ValueType& value)
+    : elements(NULL),
+      nRows(0),
+      nCols(0) {
     resize(nRows, nCols);
     fill(value);
 }
@@ -517,6 +524,7 @@ template <typename ValueType>
 Grid<ValueType>::~Grid() {
     if (elements != NULL) {
         delete[] elements;
+        elements = NULL;
     }
 }
 
@@ -647,19 +655,19 @@ void Grid<ValueType>::resize(int nRows, int nCols, bool retain) {
     }
     
     // save backup of old array/size
-    ValueType* oldElements = elements;
+    ValueType* oldElements = this->elements;
     int oldnRows = this->nRows;
     int oldnCols = this->nCols;
     
     // create new empty array and set new size
     this->nRows = nRows;
     this->nCols = nCols;
-    elements = new ValueType[nRows * nCols];
+    this->elements = new ValueType[nRows * nCols];
     
     // initialize to empty/default state
     ValueType value = ValueType();
     for (int i = 0; i < nRows * nCols; i++) {
-        elements[i] = value;
+        this->elements[i] = value;
     }
     
     // possibly retain old contents
@@ -668,7 +676,7 @@ void Grid<ValueType>::resize(int nRows, int nCols, bool retain) {
         int minCols = oldnCols < nCols ? oldnCols : nCols;
         for (int row = 0; row < minRows; row++) {
             for (int col = 0; col < minCols; col++) {
-                elements[(row * nCols) + col] = oldElements[(row * oldnRows) + col];
+                this->elements[(row * nCols) + col] = oldElements[(row * oldnRows) + col];
             }
         }
     }
