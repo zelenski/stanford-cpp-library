@@ -5,6 +5,8 @@
  * See that file for documentation of each member.
  *
  * @author Marty Stepp
+ * @version 2014/11/18
+ * - fixes for bugs with resizing initially-size-0 buffered images
  * @version 2014/10/22
  * - added load, save methods
  * @version 2014/10/08
@@ -22,26 +24,46 @@
 
 static Platform* pp = getPlatform();
 
-GBufferedImage::GBufferedImage() {
+GBufferedImage::GBufferedImage()
+        : GInteractor(),
+          m_width(0),
+          m_height(0),
+          m_backgroundColor(0) {
     init(0, 0, 0, 0, 0x000000);
 }
 
-GBufferedImage::GBufferedImage(double width, double height) {
+GBufferedImage::GBufferedImage(double width, double height)
+    : GInteractor(),
+      m_width(width),
+      m_height(height),
+      m_backgroundColor(0) {
     init(0, 0, width, height, 0x000000);
 }
 
 GBufferedImage::GBufferedImage(double width, double height,
-                               int rgbBackground) {
+                               int rgbBackground)
+    : GInteractor(),
+      m_width(0),
+      m_height(0),
+      m_backgroundColor(rgbBackground) {
     init(0, 0, width, height, rgbBackground);
 }
 
 GBufferedImage::GBufferedImage(double x, double y, double width, double height,
-                               int rgbBackground) {
+                               int rgbBackground)
+    : GInteractor(),
+      m_width(width),
+      m_height(height),
+      m_backgroundColor(rgbBackground) {
     init(x, y, width, height, rgbBackground);
 }
 
 GBufferedImage::GBufferedImage(double x, double y, double width, double height,
-                               std::string rgbBackground) {
+                               std::string rgbBackground)
+    : GInteractor(),
+      m_width(width),
+      m_height(height),
+      m_backgroundColor(0) {
     init(x, y, width, height, convertColorToRGB(rgbBackground));
 }
 
@@ -189,12 +211,20 @@ void GBufferedImage::load(const std::string& filename) {
 }
 
 void GBufferedImage::resize(double width, double height, bool retain) {
+    bool wasZero = (this->m_width == 0 && this->m_height == 0);
     this->m_width = width;
     this->m_height = height;
-    pp->gbufferedimage_resize(this, width, height, retain);
-    this->m_pixels.resize((int) this->m_height, (int) this->m_width, retain);
-    if (!retain && m_backgroundColor != 0x0) {
-        this->m_pixels.fill(m_backgroundColor);
+    if (wasZero) {
+        if (width > 0 && height > 0) {
+            init(this->x, this->y, this->m_width, this->m_height, this->m_backgroundColor);
+        } // else still zero
+    } else {
+        // was non-zero
+        this->m_pixels.resize((int) this->m_height, (int) this->m_width, retain);
+        pp->gbufferedimage_resize(this, width, height, retain);
+        if (!retain && m_backgroundColor != 0x0) {
+            this->m_pixels.fill(m_backgroundColor);
+        }
     }
 }
 
@@ -245,15 +275,19 @@ void GBufferedImage::init(double x, double y, double width, double height,
     this->y = y;
     this->m_width = width;
     this->m_height = height;
-    this->m_pixels.resize((int) this->m_height, (int) this->m_width);
-    pp->gbufferedimage_constructor(this, x, y, width, height, rgb);
+    if (width > 0 && height > 0) {
+        this->m_pixels.resize((int) this->m_height, (int) this->m_width);
+        pp->gbufferedimage_constructor(this, x, y, width, height, rgb);
+    }
 
     if (x != 0 || y != 0) {
         setLocation(x, y);
     }
     
     this->m_backgroundColor = rgb;
-    if (rgb != 0) {
-        fill(rgb);
+    if (width > 0 && height > 0) {
+        if (rgb != 0) {
+            fill(rgb);
+        }
     }
 }

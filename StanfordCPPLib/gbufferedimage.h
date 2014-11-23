@@ -17,6 +17,7 @@
 #define _gbufferedimage_h
 
 #include "grid.h"
+#include "ginteractors.h"
 #include "gobjects.h"
 #include "gtypes.h"
 
@@ -70,7 +71,7 @@
     Available since: 2014/08/04 version of C++ library
 </p>
  */
-class GBufferedImage : public GObject {
+class GBufferedImage : public GInteractor {
 public:
     /*
      * Constructs an image with the specified location, size, and optional
@@ -89,7 +90,7 @@ public:
                    int rgbBackground = 0x000000);
     GBufferedImage(double x, double y, double width, double height,
                    std::string rgbBackground);
-
+    
     /* Prototypes for the virtual methods */
     virtual GRectangle getBounds() const;
     virtual std::string getType() const;
