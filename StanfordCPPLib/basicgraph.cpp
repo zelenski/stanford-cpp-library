@@ -9,6 +9,8 @@
  * See BasicGraph.h for documentation of each member.
  *
  * @author Marty Stepp
+ * @version 2014/11/21
+ * - bug fix: Edge weight reference was not properly pointing at cost field
  * @version 2014/10/31
  * - bug fix: extraData was being NULLed accidentally in Vertex::resetData()
  * @version 2014/10/23
@@ -119,7 +121,7 @@ std::ostream& operator<<(std::ostream& out, const Vertex& v) {
  * Edge member implementations
  */
 Edge::Edge(Vertex* start, Vertex* finish, double cost)
-        : start(start), finish(finish), end(finish), cost(cost), weight(cost) {
+        : start(start), finish(finish), end(finish), cost(cost), weight(this->cost) {
     this->extraData = NULL;
     this->resetData();
 }
