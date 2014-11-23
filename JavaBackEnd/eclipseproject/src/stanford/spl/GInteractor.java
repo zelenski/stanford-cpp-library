@@ -58,7 +58,11 @@ public abstract class GInteractor extends GObject implements GResizable {
 
 	public void setParent(GContainer paramGContainer) {
 		if (paramGContainer == null) {
-			this.interactor.getParent().remove(this.interactor);
+			java.awt.Container parent = this.interactor.getParent();
+			if (parent != null) {
+				parent.remove(this.interactor);
+				parent.validate();
+			}
 		} else if ((paramGContainer instanceof TopCompound)) {
 			TopCompound localTopCompound = (TopCompound) paramGContainer;
 			JBECanvas localJBECanvas = localTopCompound.getCanvas();

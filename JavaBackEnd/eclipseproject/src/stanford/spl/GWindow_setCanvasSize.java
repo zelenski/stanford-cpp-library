@@ -17,9 +17,10 @@ class GWindow_setCanvasSize extends JBECommand {
 		if (localJBEWindow != null) {
 			localJBEWindow.getCanvas().setPreferredSize(new Dimension(w, h));
 			localJBEWindow.getCanvas().validate();
+			localJBEWindow.getCanvas().setSize(new Dimension(w, h));
+			localJBEWindow.getContentPane().validate();
 			localJBEWindow.validate();
-			if (localJBEWindow.isShowing()) {
-				// localJBEWindow.getCanvas().setSize(new Dimension(w, h));
+			if (localJBEWindow.isVisible()) {
 				localJBEWindow.pack();
 			}
 		}

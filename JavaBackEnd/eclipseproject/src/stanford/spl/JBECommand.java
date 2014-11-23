@@ -121,6 +121,7 @@ public abstract class JBECommand {
 		localHashMap.put("GTimer.stopTimer", new GTimer_stopTimer());
 		localHashMap.put("GWindow.addToRegion", new GWindow_addToRegion());
 		localHashMap.put("GWindow.clear", new GWindow_clear());
+		localHashMap.put("GWindow.clearCanvas", new GWindow_clearCanvas());
 		localHashMap.put("GWindow.close", new GWindow_close());
 		localHashMap.put("GWindow.create", new GWindow_create());
 		localHashMap.put("GWindow.delete", new GWindow_delete());
@@ -136,6 +137,7 @@ public abstract class JBECommand {
 		localHashMap.put("GWindow.getSize", new GWindow_getSize());
 		localHashMap.put("GWindow.minimize", new GWindow_minimize());
 		localHashMap.put("GWindow.pack", new GWindow_pack());
+		localHashMap.put("GWindow.removeFromRegion", new GWindow_removeFromRegion());
 		localHashMap.put("GWindow.repaint", new GWindow_repaint());
 		localHashMap.put("GWindow.requestFocus", new GWindow_requestFocus());
 		localHashMap.put("GWindow.setCanvasSize", new GWindow_setCanvasSize());

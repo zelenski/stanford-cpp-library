@@ -310,7 +310,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 	private void checkVisibility() {
 		contentPaneBox.revalidate();
 		scroll.revalidate();
-		frame.revalidate();
+		// frame.revalidate();
 		frame.validate();
 		frame.pack();
 		frame.setSize(frame.getWidth() + 32, frame.getHeight());  // a bit of buffer for scrollbar

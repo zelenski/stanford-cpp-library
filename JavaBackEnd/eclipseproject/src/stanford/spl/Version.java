@@ -1,7 +1,7 @@
 package stanford.spl;
 
 public class Version {
-	private static final String JAVA_BACK_END_VERSION = "2014/11/15";
+	private static final String JAVA_BACK_END_VERSION = "2014/11/20";
 	
 	public static final String getLibraryVersion() {
 		return JAVA_BACK_END_VERSION;

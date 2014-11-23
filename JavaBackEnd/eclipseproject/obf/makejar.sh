@@ -5,12 +5,14 @@
 OUTFILE=spl.jar
 
 echo "Compiling code ..."
+rm -rf temp/*
+# ./compile.sh
+
+echo "Repacking library JARs ..."
 if [ -e "spl.jar" ]; then
 	rm spl.jar 2>&1 > /dev/null
 fi
 
-echo "Repacking library JARs ..."
-rm -rf temp/*
 cd temp
 for JAR in `ls -1 ../../lib/*.jar`; do
 	unzip -qo $JAR
