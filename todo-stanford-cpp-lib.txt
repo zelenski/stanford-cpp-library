@@ -1,4 +1,23 @@
 	C++ libs
+x		rebuild JBE with java -target 1.5 (1.6?) to find any stuff that is only since-1.7 (compile.sh)
+x		.pro flag to increase stack size on Linux?
+		
+x		sync up latest version with hw7 version
+		check into github
+		
+		clear console Edit menu item
+		
+		JBE console as GWindow so I can send JFrame commands to it?
+		
+		autograder: style checker should still show that there WERE other omitted tests, just not show their results
+		
+		autograder: way to individually turn on/off running individual categories of tests?
+			autograder pops up with all categories/tests already there, but just with no results?
+			can I get list of all test names/categories ahead of time in GTest framework?
+		
+		debug args thing so I can connect a debugger to the Java back-end
+			// #define DEBUG_ARGS "-agentlib:jdwp=transport=dt_socket,address=127.0.0.1:60106,server=y,suspend=y"
+		
 		make it so that you don't need to #include "console.h"
 			based on a flag in .pro file maybe?
 			all .h in stanford C++ lib manually include console.h if flag is set?
@@ -14,6 +33,8 @@
 				-	old console.h becomes console impl
 				then, when you include "console.h" you get the console, if not you don't
 			mac os x app bundle folder, CD into it, look up platform specific function for doing so
+		
+		BasicGraph::clearExtraData? (can't; don't know the type of the data)
 		
 		cpp docs
 			include <, >=, equals, hashCode, etc. for every collection
