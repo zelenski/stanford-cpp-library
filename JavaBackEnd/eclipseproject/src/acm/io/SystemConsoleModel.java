@@ -4,7 +4,7 @@ import acm.program.*;
 import java.awt.*;
 import java.io.*;
 
-class SystemConsoleModel implements ConsoleModel {
+public class SystemConsoleModel implements ConsoleModel {
 	private IOConsole console;
 	private BufferedReader inputScript;
 	private String text;

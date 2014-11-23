@@ -17,6 +17,7 @@ public abstract class JBECommand {
 		localHashMap.put("AutograderInput.setVisible", new AutograderInput_setVisible());
 		localHashMap.put("AutograderUnitTest.addTest", new AutograderUnitTest_addTest());
 		localHashMap.put("AutograderUnitTest.clearTests", new AutograderUnitTest_clearTests());
+		localHashMap.put("AutograderUnitTest.setTestCounts", new AutograderUnitTest_setTestCounts());
 		localHashMap.put("AutograderUnitTest.setTestDetails", new AutograderUnitTest_setTestDetails());
 		localHashMap.put("AutograderUnitTest.setTestingCompleted", new AutograderUnitTest_setTestingCompleted());
 		localHashMap.put("AutograderUnitTest.setTestResult", new AutograderUnitTest_setTestResult());

@@ -1,6 +1,5 @@
 /*
  * Test file for verifying the Stanford C++ autograder lib functionality.
- * INSTRUCTOR'S SOLUTION, do not distribute!
  */
 
 #include <iostream>
@@ -13,38 +12,62 @@
 #include "private/version.h"
 using namespace std;
 
-class TestTest : public ::testing::Test {};
+class TestTest01 : public autograder::TimeoutTest {
+public:
+    static void SetUpTestCase() {
+        autograder::setCurrentCategoryName("first category");
+    }
+};
 
-TEST_F(TestTest, test01_ab) {
-    autograder::setCurrentCategoryName("first category");
+TEST_F(TestTest01, test01_ab) {
     assertEquals("hi there", string("a"), string("a"));
 }
 
-TEST_F(TestTest, test02_abc_oops_real_long_name_gonnaFail) {
+TEST_F(TestTest01, test02_abc_oops_real_long_name_gonnaFail) {
     assertEquals("some failed test 1", string("abc"), string("oops"));
     assertEquals("some failed test 2", string("abc2"), string("oops2"));
     assertEquals("some later test that passes 1", string("same1"), string("same1"));
     assertEquals("some later test that passes 2", string("same2"), string("same2"));
 }
 
-TEST_F(TestTest, test03_near) {
-    sleep(1);
+TEST_F(TestTest01, test03_near) {
+    // sleep(1);
     assertDoubleNear("hi there", 3.14, 3.1415, 0.1);
 }
 
-TEST_F(TestTest, test04_def) {
-    autograder::setCurrentCategoryName("second category");
+
+class TestTest02 : public autograder::TimeoutTest {
+public:
+    static void SetUpTestCase() {
+        autograder::setCurrentCategoryName("second category");
+    }
+};
+
+TEST_F(TestTest02, test04_def) {
     assertEquals("hi there", string("a"), string("a"));
 }
 
-TEST_F(TestTest, test05_anotherOne) {
-    sleep(2);
+TEST_F(TestTest02, test05_infinite_loop) {
+    setTestTimeout(2);
+    while (1) { /* lolol */ }
+}
+
+TEST_F(TestTest02, test06_anotherOne) {
+    // sleep(2);
     string exp = "expected 1\nexpected 2\nexpected 3";
     string stu = "expected 1\nstudent 2 oops\nexpected 3";
     assertDiff("some diffs", exp, stu);
 }
 
-TEST_F(TestTest, test06_also_long_name_gonnaFail) {
+
+class TestTest03 : public autograder::TimeoutTest {
+public:
+    static void SetUpTestCase() {
+        autograder::setCurrentCategoryName("third category");
+    }
+};
+
+TEST_F(TestTest03, test07_also_long_name_gonnaFail) {
     assertEquals("some failed test", string("good1"), string("bad1"));
     assertEquals("some failed test", string("good2"), string("bad2"));
     assertEquals("some failed test", string("good3"), string("good3"));

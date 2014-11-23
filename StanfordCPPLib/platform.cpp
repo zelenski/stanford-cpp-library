@@ -2458,6 +2458,14 @@ void Platform::autograderunittest_clearTests(bool styleCheck) {
     putPipe(os.str());
 }
 
+void Platform::autograderunittest_setTestCounts(int passCount, int testCount, bool styleCheck) {
+    std::ostringstream os;
+    os << "AutograderUnitTest.setTestCounts("
+       << passCount << "," << testCount
+       << "," << std::boolalpha << styleCheck << ")";
+    putPipe(os.str());
+}
+
 void Platform::autograderunittest_setTestDetails(const std::string& testName, const std::string& details, bool styleCheck) {
     std::ostringstream os;
     os << "AutograderUnitTest.setTestDetails(";

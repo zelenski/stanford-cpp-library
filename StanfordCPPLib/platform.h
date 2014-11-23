@@ -46,6 +46,7 @@ public:
     void autograderinput_setVisible(bool value = true);
     void autograderunittest_addTest(const std::string& testName, const std::string& category = "", bool styleCheck = false);
     void autograderunittest_clearTests(bool styleCheck = false);
+    void autograderunittest_setTestCounts(int passCount, int testCount, bool styleCheck = false);
     void autograderunittest_setTestDetails(const std::string& testName, const std::string& details, bool styleCheck = false);
     void autograderunittest_setTestingCompleted(bool completed = true, bool styleCheck = false);
     void autograderunittest_setTestResult(const std::string& testName, const std::string& result, bool styleCheck = false);

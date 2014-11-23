@@ -6,9 +6,10 @@
 package stanford.spl;
 
 import java.awt.event.*;
-import java.lang.reflect.*;
+
 import acm.io.*;
 import acm.program.*;
+
 import javax.swing.*;
 
 public class JBEMenuBar extends ProgramMenuBar implements ActionListener {
@@ -17,6 +18,7 @@ public class JBEMenuBar extends ProgramMenuBar implements ActionListener {
 	private JMenuItem saveItem;
 	private JMenuItem quitItem;
 	private JMenuItem aboutItem;
+	private JMenuItem clearItem;
 	
 	private KeyStroke CTRL_S;
 	private KeyStroke COMMAND_S;
@@ -60,28 +62,31 @@ public class JBEMenuBar extends ProgramMenuBar implements ActionListener {
 	}
 
 	protected void addFileMenuItems(JMenu fileMenu) {
-//		saveItem = new JMenuItem("Save As");
 		saveItem = createStandardItem("Save As");
 		saveItem.setMnemonic('S');
 		saveItem.setAccelerator(CTRL_S);
 		fileMenu.add(saveItem);
 		
-//		quitItem = new JMenuItem("Quit");
-//		quitItem.setMnemonic('Q');
-		quitItem = createStandardItem("Quit");
-		quitItem.setMnemonic('Q');;
+		quitItem = createProgramItem("Quit");
+		quitItem.setMnemonic('Q');
 		// quitItem.setAccelerator(CTRL_W);
 		quitItem.setAccelerator(ALT_F4);
 		fileMenu.add(quitItem);
+	}
+	
+	protected void addEditMenuItems(JMenu jmenu) {
+		super.addEditMenuItems(jmenu);
+		jmenu.addSeparator();
+		
+		clearItem = createProgramItem("Clear Console");
+		jmenu.add(clearItem);
+		clearItem.addActionListener(this);
 	}
 
 	protected void addHelpMenu() {
 		JMenu helpMenu = new JMenu("Help");
 		helpMenu.setMnemonic('H');
 		
-//		aboutItem = new JMenuItem("About");
-//		aboutItem.setMnemonic('A');
-		// aboutItem = createProgramItem("About", 'A');
 		aboutItem = createProgramItem("About");
 		aboutItem.addActionListener(this);
 		aboutItem.setMnemonic('A');
@@ -101,9 +106,9 @@ public class JBEMenuBar extends ProgramMenuBar implements ActionListener {
 					/* message */
 					"Stanford C++ Library version " + javaBackEnd.getCppVersion() + "\n"
 					+ "Java Back-End (spl.jar) version " + javaBackEnd.getJbeVersion() + "\n\n"
-					+ "Libraries written by Eric Roberts,\n"
+					+ "Libraries originally written by Eric Roberts,\n"
 					+ "with assistance from Julie Zelenski, Keith Schwarz, et al.\n"
-					+ "Libraries currently unofficially maintained by Marty Stepp.",
+					+ "This version of the library is unofficially maintained by Marty Stepp.",
 					
 					/* title */
 					"About Stanford C++ Library",
@@ -111,6 +116,8 @@ public class JBEMenuBar extends ProgramMenuBar implements ActionListener {
 					/* type */
 					JOptionPane.INFORMATION_MESSAGE
 			);
+		} else if (event.getActionCommand().equals("Clear Console")) {
+			getProgram().getConsole().clear();
 		}
 	}
 	
@@ -155,22 +162,9 @@ public class JBEMenuBar extends ProgramMenuBar implements ActionListener {
 		return super.fireAccelerator(event);
 	}
 	
-	// TODO: call JavaBackEnd getConsoleIOModel here to cut down on reflection code
 	private JScrollPane getScrollPane() {
 		IOConsole console = getProgram().getConsole();
-		try {
-			Class<?> clazz = acm.io.IOConsole.class;
-			Field field = clazz.getDeclaredField("consoleModel");
-			field.setAccessible(true);
-			Object model = field.get(console);
-			Class<?> modClazz = Class.forName("acm.io.StandardConsoleModel");
-			Field scrollField = modClazz.getDeclaredField("scrollPane");
-			scrollField.setAccessible(true);
-			JScrollPane scrollPane = (JScrollPane) scrollField.get(model);
-			return scrollPane;
-		} catch (Exception e) {
-			// empty
-		}
-		return null;
+		StandardConsoleModel model = (StandardConsoleModel) console.getConsoleModel();
+		return model.getScrollPane();
 	}
 }

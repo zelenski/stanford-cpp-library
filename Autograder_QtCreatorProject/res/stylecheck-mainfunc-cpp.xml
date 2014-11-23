@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<stylecheck type="text" filename="mainfunc.cpp" omitonpass="false">
+<stylecheck type="text" filename="mainfunc.cpp" omitonpass="true">
 	<pattern regex="INSTRUCTOR'S SOLUTION" count="0" showcounts="false" failtype="error" description="You're running the style checker on the instructor's solution!" />
 
 	<category name="General">

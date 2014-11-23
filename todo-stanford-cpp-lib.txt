@@ -1,19 +1,27 @@
 	C++ libs
-x		rebuild JBE with java -target 1.5 (1.6?) to find any stuff that is only since-1.7 (compile.sh)
-x		.pro flag to increase stack size on Linux?
-		
-x		sync up latest version with hw7 version
-		check into github
-		
-		clear console Edit menu item
-		
-		JBE console as GWindow so I can send JFrame commands to it?
-		
-		autograder: style checker should still show that there WERE other omitted tests, just not show their results
+x		autograder: style checker should still show that there WERE other omitted tests, just not show their results
 		
 		autograder: way to individually turn on/off running individual categories of tests?
 			autograder pops up with all categories/tests already there, but just with no results?
 			can I get list of all test names/categories ahead of time in GTest framework?
+				gtest-all.cpp
+					:5750: FilterTests
+					:5808: GetMutableTestCase(test_index)->Run();
+					 ::testing::GTEST_FLAG(filter) = "*Counter*:*IsPrime*:*ListenersTest.DoesNotLeak*";//":-:*Counter*";
+					InitGoogleTest(&argc, argv);
+					RUN_ALL_TESTS();
+
+x		autograder: test cases with timeouts?
+			make it show the test name as it starts, not at end
+x			test on Linux
+			test on Mac
+			test on Windows
+			
+			refactor: move all timer start/stop, setting of tests in gui, out of result printer?
+		
+		refactor hw1-7 autograders to use multiple test classes, set category names that way
+		
+		JBE console as GWindow so I can send JFrame commands to it?
 		
 		debug args thing so I can connect a debugger to the Java back-end
 			// #define DEBUG_ARGS "-agentlib:jdwp=transport=dt_socket,address=127.0.0.1:60106,server=y,suspend=y"
@@ -128,9 +136,13 @@ x		sync up latest version with hw7 version
 
 DONE:
 =======================================================================================================================
-		test signal handler on Mac  (must disable signal-stack?)
-			http://spin.atomicobject.com/2013/01/13/exceptions-stack-traces-c/
-			
+x		test signal handler on Mac  (must disable signal-stack?)
+x			http://spin.atomicobject.com/2013/01/13/exceptions-stack-traces-c/
+x		rebuild JBE with java -target 1.5 (1.6?) to find any stuff that is only since-1.7 (compile.sh)
+x		.pro flag to increase stack size on Linux?
+x		sync up latest version with hw7 version
+x		check into github
+x		clear console Edit menu item
 x		autograder lib: make it clear that some tests are still running / not done
 x			spinning gif?
 x			"in progress" vs "all tests complete" south text?

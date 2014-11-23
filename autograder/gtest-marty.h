@@ -23,6 +23,18 @@
 
 namespace autograder {
 
+class TimeoutTest : public testing::Test {
+public:
+    static const int DEFAULT_TIMEOUT_SEC;
+    
+    virtual void setTestTimeout(int sec);
+    virtual void SetUp();
+    virtual void TearDown();
+
+private:
+    int timeoutSec;
+};
+
 // NOTE: must keep in sync with UNIT_TEST_TYPE_NAMES in gtest-marty.cpp
 enum UnitTestType {
     TEST_ASSERT_EQUALS = 0,
@@ -139,7 +151,6 @@ public:
     void setTestNameWidth(int width);
 
 private:
-    static std::string currentTestName;
     static std::string failMessage;
     bool testInProgress;
     int failCountThisTest;
@@ -147,7 +158,6 @@ private:
     int failCountToPrintPerTest;
     int testNameWidth;
     Map<std::string, bool> testsReported;
-    Map<std::string, Timer> testTimers;
 };
 
 /*
@@ -155,6 +165,7 @@ private:
  */
 class MartyGraphicalTestResultPrinter : public ::testing::EmptyTestEventListener {
 public:
+    static const int TEST_RUNTIME_MIN_TO_DISPLAY_MS = 10;
     static void setFailDetails(const UnitTestDetails& deets);
 
     MartyGraphicalTestResultPrinter();
@@ -180,11 +191,6 @@ public:
     virtual void OnTestProgramEnd(const ::testing::UnitTest& unit_test);
 
 private:
-    // static UnitTestDetails failDetails;
-    static std::string currentTestName;
-    Map<std::string, Set<std::string> > testsAdded;
-    Map<std::string, Timer> testTimers;
-    
     void ensureCurrentTestAdded();
 };
 

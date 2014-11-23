@@ -34,9 +34,9 @@ int main() {
         } else if (cmd == "e") {
             coutCerrMixTest();
         } else if (cmd == "g") {
-            fileDialogTest();
+            // fileDialogTest();
             gbufferedImageTest();
-            goptionpaneTest();
+            // goptionpaneTest();
         } else if (cmd == "i") {
             cinOutTest();
         } else if (cmd == "n") {

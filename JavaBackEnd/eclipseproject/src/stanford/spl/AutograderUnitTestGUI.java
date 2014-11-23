@@ -123,10 +123,10 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 	}
 	
 	public void addTest(String testName, String categoryName) {
+		testCount++;
 		currentCategory = addCategory(categoryName);
 		
 		// add a panel about this test
-		testCount++;
 		JPanel testPanel = new JPanel(new BorderLayout());
 		if (testCount % 2 == 0) {
 			testPanel.setBackground(ZEBRA_STRIPE_COLOR_1);
@@ -159,10 +159,6 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		
 		resultIconLabel.setToolTipText("Click to see detailed results from this test.");
 		labelToTestName.put(resultIconLabel, testName);
-//		resultIconLabel.setActionCommand(testName);
-//		resultIconLabel.addActionListener(this);
-//		resultIconLabel.setBorderPainted(false);
-//		resultIconLabel.setMargin(new Insets(0, 0, 0, 0));
 		resultIconLabel.addMouseListener(this);
 		allTestResultLabels.put(testName, resultIconLabel);
 		testPanel.add(resultIconLabel, BorderLayout.EAST);
@@ -186,6 +182,27 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		scroll.validate();
 		updateSouthText();
 		checkVisibility();
+	}
+	
+	private String getTestResult(String testName) {
+		JLabel testNameLabel = allTestDescriptions.get(testName);
+		if (testNameLabel == null) {
+			return "no such test";
+		} else if (testNameLabel.getForeground().equals(FAIL_COLOR)) {
+			return "fail";
+		} else if (testNameLabel.getForeground().equals(WARN_COLOR)) {
+			return "warn";
+		} else if (testNameLabel.getForeground().equals(PASS_COLOR)) {
+			return "pass";
+		} else {
+			if (allTestDetails.containsKey(testName)
+					&& allTestDetails.get(testName).containsKey("passed")) {
+				String passed = allTestDetails.get(testName).get("passed");
+				return passed.equalsIgnoreCase("true") ? "pass" : "fail";
+			} else {
+				return "unknown";
+			}
+		}
 	}
 	
 	public boolean isEmpty() {
@@ -226,25 +243,24 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		checkVisibility();
 	}
 	
-	private String getTestResult(String testName) {
-		JLabel testNameLabel = allTestDescriptions.get(testName);
-		if (testNameLabel == null) {
-			return "no such test";
-		} else if (testNameLabel.getForeground().equals(FAIL_COLOR)) {
-			return "fail";
-		} else if (testNameLabel.getForeground().equals(WARN_COLOR)) {
-			return "warn";
-		} else if (testNameLabel.getForeground().equals(PASS_COLOR)) {
-			return "pass";
-		} else {
-			if (allTestDetails.containsKey(testName)
-					&& allTestDetails.get(testName).containsKey("passed")) {
-				String passed = allTestDetails.get(testName).get("passed");
-				return passed.equalsIgnoreCase("true") ? "pass" : "fail";
-			} else {
-				return "unknown";
-			}
+	public void setTestCounts(int passCount, int testCount) {
+		this.passCount = passCount;
+		this.testCount = testCount;
+		updateSouthText();
+	}
+	
+	public void setTestDetails(String testName, Map<String, String> details) {
+		// BUGFIX: don't replace test details if a test already failed here
+		String existingResult = getTestResult(testName).intern();
+		if (existingResult == "fail" || existingResult == "warn") {
+			return;
 		}
+		allTestDetails.put(testName, details);
+	}
+	
+	public void setTestingCompleted(boolean completed) {
+		testingIsInProgress = !completed;
+		updateSouthText();
 	}
 	
 	public boolean setTestResult(String testName, String result) {
@@ -276,20 +292,6 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		}
 		updateSouthText();
 		return true;
-	}
-	
-	public void setTestDetails(String testName, Map<String, String> details) {
-		// BUGFIX: don't replace test details if a test already failed here
-		String existingResult = getTestResult(testName).intern();
-		if (existingResult == "fail" || existingResult == "warn") {
-			return;
-		}
-		allTestDetails.put(testName, details);
-	}
-	
-	public void setTestingCompleted(boolean completed) {
-		testingIsInProgress = !completed;
-		updateSouthText();
 	}
 	
 	public boolean setTestRuntime(String testName, int runtimeMS) {

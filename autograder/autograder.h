@@ -15,6 +15,9 @@
 
 #include <string>
 #include "gtest-marty.h"
+#include "map.h"
+#include "set.h"
+#include "vector.h"
 
 /*
  * forward declarations of needed code from Stanford C++ lib's private/main.h
@@ -47,6 +50,45 @@ extern int _mainFlags;
 #define MAX_STUDENT_OUTPUT 65536
 
 namespace autograder {
+
+/*
+ * A structure containing information about custom callback buttons in the graphical UI.
+ */
+struct CallbackButtonInfo {
+    void (* func)();    // function to call when button is clicked
+    std::string text;   // button text
+    std::string icon;   // button icon
+};
+
+/*
+ * A global structure containing state and flags and configuration for the autograder.
+ */
+struct AutograderFlags {
+public:
+    std::string assignmentName;
+    std::string studentProgramFileName;
+    std::string currentCategoryName;
+    std::string currentTestCaseName;
+    std::string inputPanelFilename;
+    std::string startMessage;
+    std::string aboutText;
+    Map<std::string, Set<std::string> > testsAdded;
+    Map<std::string, Timer> testTimers;
+
+    int failsToPrintPerTest;
+    int testNameWidth;
+    bool showInputPanel;
+    bool showLateDays;
+    bool graphicalUI;
+    Vector<std::string> styleCheckFiles;
+    Map<std::string, std::string> styleCheckFileMap;
+    void(* callbackStart)();
+    void(* callbackEnd)();
+    Vector<CallbackButtonInfo> callbackButtons;
+    
+    AutograderFlags();
+};
+
 void addCallbackButton(void (* func)(), const std::string& text, const std::string& icon = "");
 
 /*
@@ -66,12 +108,22 @@ void displayDiffs(const std::string& expectedOutput, const std::string& studentO
 /*
  * Called internally by autograder; do not use.
  */
+void ensureCurrentTestCaseAdded();
+
+/*
+ * Called internally by autograder; do not use.
+ */
 std::string getCurrentCategoryName();
 
 /*
  * Called internally by autograder; do not use.
  */
 std::string getCurrentTestCaseName();
+
+/*
+ * Called internally by autograder; do not use.
+ */
+AutograderFlags& getFlags();
 
 /*
  * Returns true if setGraphicalUI was called with value true.  Initially false.
@@ -162,6 +214,14 @@ void setStartMessage(const std::string& startMessage);
  * Useful if the assignment has only a single primary file of code.
  */
 void setStudentProgramFileName(const std::string& filename);
+
+/*
+ * Sets the number of tests that have been run and passed.
+ * This is kept track of automatically, but in certain cases,
+ * (most notably when the 'omit on pass' flag is set on a style checker),
+ * we want to override the currently visible counts.
+ */
+void setTestCounts(int passCount, int testCount, bool isStyleCheck);
 
 /*
  * Sets the number of characters in the longest test case name's width;

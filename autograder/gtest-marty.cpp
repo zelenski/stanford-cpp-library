@@ -13,6 +13,7 @@
 
 #include "gtest-marty.h"
 #include <algorithm>
+#include <csignal>
 #include "autograder.h"
 #include "stringutils.h"
 #include "filelib.h"
@@ -37,12 +38,42 @@ static std::string UNIT_TEST_TYPE_NAMES[11] = {
 static Platform* pp = getPlatform();
 
 namespace autograder {
-std::string MartyTestResultPrinter::currentTestName = "";
 std::string MartyTestResultPrinter::failMessage = "";
-std::string MartyGraphicalTestResultPrinter::currentTestName = "";
 
 static const int TEST_OUTPUT_INDENT = 8;
 static const std::string TEST_OUTPUT_INDENT_SPACES(TEST_OUTPUT_INDENT, ' ');
+
+static void acceptAlarm(int /*sig*/) {
+    signal(SIGALRM, SIG_IGN);
+    alarm(0);   // cancel alarm
+    // FAIL() << "test timed out! possible infinite loop";
+    // assertFail("test timed out! possible infinite loop");
+    std::string msg = "test timed out! possible infinite loop";
+    autograder::setFailDetails(autograder::UnitTestDetails(
+        autograder::UnitTestType::TEST_FAIL,
+        msg));
+    error(msg);
+}
+
+const int TimeoutTest::DEFAULT_TIMEOUT_SEC = 5;
+
+void TimeoutTest::setTestTimeout(int sec) {
+    timeoutSec = sec;
+    signal(SIGALRM, acceptAlarm);
+    alarm(timeoutSec);
+}
+
+void TimeoutTest::SetUp() {
+    autograder::ensureCurrentTestCaseAdded();
+    timeoutSec = DEFAULT_TIMEOUT_SEC;
+    signal(SIGALRM, acceptAlarm);
+    alarm(timeoutSec);
+}
+ 
+void TimeoutTest::TearDown() {
+    alarm(0);   // cancel alarm
+    signal(SIGALRM, SIG_IGN);
+}
 
 UnitTestDetails::UnitTestDetails()
     : testType(autograder::UnitTestType::TEST_ASSERT_EQUALS),
@@ -202,7 +233,7 @@ int MartyTestResultPrinter::getTestNameWidth() const {
 void MartyTestResultPrinter::OnTestStart(const ::testing::TestInfo& test_info) {
     testInProgress = true;
     testCount++;
-    testTimers[test_info.name()].start();
+    autograder::getFlags().currentTestCaseName = test_info.name();
     std::cout << std::setw(4) << std::right << testCount << ") "
          << std::setw(testNameWidth) << std::left << test_info.name() << " ... ";
     std::cout.flush();
@@ -231,8 +262,8 @@ void MartyTestResultPrinter::OnTestPartResult(const ::testing::TestPartResult& t
 }
 
 void MartyTestResultPrinter::OnTestEnd(const ::testing::TestInfo& test_info) {
-    if (testTimers[test_info.name()].isStarted()) {
-        testTimers[test_info.name()].stop();
+    if (autograder::getFlags().testTimers[test_info.name()].isStarted()) {
+        autograder::getFlags().testTimers[test_info.name()].stop();
     }
     if (test_info.result()->Failed()) {
         if (failCountToPrintPerTest > 0 && failCountThisTest > failCountToPrintPerTest) {
@@ -240,7 +271,7 @@ void MartyTestResultPrinter::OnTestEnd(const ::testing::TestInfo& test_info) {
             std::cout << TEST_OUTPUT_INDENT_SPACES << "(" << extraFails << " additional assertion failure(s) not printed)" << std::endl;
         }
     } else {
-        std::cout << "pass, " << std::setw(5) << std::right << testTimers[test_info.name()].elapsed() << "ms" << std::endl;
+        std::cout << "pass, " << std::setw(5) << std::right << autograder::getFlags().testTimers[test_info.name()].elapsed() << "ms" << std::endl;
     }
     testInProgress = false;
     failCountThisTest = 0;
@@ -286,44 +317,39 @@ void MartyTestResultPrinter::setTestNameWidth(int width) {
 
 // ===========================================================================
 
+const int MartyGraphicalTestResultPrinter::TEST_RUNTIME_MIN_TO_DISPLAY_MS = 10;
+
 void MartyGraphicalTestResultPrinter::setFailDetails(const UnitTestDetails& deets) {
-    pp->autograderunittest_setTestDetails(currentTestName, deets.toString());
+    pp->autograderunittest_setTestDetails(autograder::getCurrentTestCaseName(), deets.toString());
 }
 
 MartyGraphicalTestResultPrinter::MartyGraphicalTestResultPrinter() {
-    currentTestName = "";
-}
-
-void MartyGraphicalTestResultPrinter::ensureCurrentTestAdded() {
-    std::string category = autograder::getCurrentCategoryName();
-    if (!testsAdded[category].contains(currentTestName)) {
-        testsAdded[category].add(currentTestName);
-        pp->autograderunittest_addTest(currentTestName, category);
-    }
+    // empty
 }
 
 void MartyGraphicalTestResultPrinter::OnTestStart(const ::testing::TestInfo& test_info) {
-    currentTestName = test_info.name();
-    testTimers[currentTestName] = Timer(true);   // starts timer
+    autograder::getFlags().currentTestCaseName = test_info.name();
+    autograder::getFlags().testTimers[autograder::getFlags().currentTestCaseName].start();   // starts timer
 }
 
 void MartyGraphicalTestResultPrinter::OnTestPartResult(const ::testing::TestPartResult& /*test_part_result*/) {
-    ensureCurrentTestAdded();
+    autograder::ensureCurrentTestCaseAdded();
 }
 
 void MartyGraphicalTestResultPrinter::OnTestEnd(const ::testing::TestInfo& test_info) {
-    ensureCurrentTestAdded();
+    autograder::ensureCurrentTestCaseAdded();
+    std::string testName = test_info.name();
     if (test_info.result()->Failed()) {
-        pp->autograderunittest_setTestResult(test_info.name(), "fail");
+        pp->autograderunittest_setTestResult(testName, "fail");
     } else {
-        pp->autograderunittest_setTestResult(test_info.name(), "pass");
+        pp->autograderunittest_setTestResult(testName, "pass");
     }
     
-    if (testTimers.containsKey(currentTestName)) {
-        testTimers[currentTestName].stop();
-        int runtimeMS = (int) testTimers[currentTestName].elapsed();
-        if (runtimeMS >= 10) {
-            pp->autograderunittest_setTestRuntime(test_info.name(), runtimeMS);
+    if (autograder::getFlags().testTimers.containsKey(testName)) {
+        autograder::getFlags().testTimers[testName].stop();
+        int runtimeMS = (int) autograder::getFlags().testTimers[testName].elapsed();
+        if (runtimeMS >= TEST_RUNTIME_MIN_TO_DISPLAY_MS) {
+            pp->autograderunittest_setTestRuntime(testName, runtimeMS);
         }
     }
 }

@@ -189,6 +189,7 @@ void styleCheck(std::string codeFileName, std::string styleXmlFileName, bool pri
             if (processPatternNode(codeFileName, patternNode, categoryName, codeFileText, omitOnPass)) {
                 passCount++;
             }
+            autograder::setTestCounts(passCount, testCount, /* isStyleCheck */ true);
         }
     }
 

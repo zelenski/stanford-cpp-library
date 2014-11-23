@@ -27,7 +27,7 @@ import javax.swing.text.ElementIterator;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
-class StandardConsoleModel implements KeyListener, FocusListener, ConsoleModel {
+public class StandardConsoleModel implements KeyListener, FocusListener, ConsoleModel {
 	private static final int PRINT_MARGIN = 36;
 	private ActionListener actionListener;
 	private ConsoleOutputMonitor outputMonitor;
@@ -61,6 +61,10 @@ class StandardConsoleModel implements KeyListener, FocusListener, ConsoleModel {
 		this.errorAttributes = new SimpleAttributeSet();
 		this.buffer = new CharacterQueue();
 		this.base = 0;
+	}
+	
+	public JScrollPane getScrollPane() {
+		return scrollPane;
 	}
 
 	public void setConsole(IOConsole paramIOConsole) {

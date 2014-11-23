@@ -10,7 +10,6 @@ import acm.util.TokenScanner;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.lang.reflect.Field;
 import java.net.*;
 import java.util.*;
 
@@ -281,17 +280,6 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		return this.console.readLine();
 	}
 
-	protected ConsoleModel getConsoleModel() {
-		try {
-			Class<?> clazz = acm.io.IOConsole.class;
-			Field field = clazz.getDeclaredField("consoleModel");
-			field.setAccessible(true);
-			return (ConsoleModel) field.get(console);
-		} catch (Exception e) {
-			return null;
-		}
-	}
-	
 	protected void putConsole(String paramString) {
 		putConsole(paramString, false);
 	}
@@ -301,7 +289,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 			showConsole();
 		}
 		if (isStderr) {
-			ConsoleModel model = getConsoleModel();
+			ConsoleModel model = this.console.getConsoleModel();
 			model.print(paramString, ConsoleModel.ERROR_STYLE);
 		} else {
 			this.console.print(paramString);
@@ -316,12 +304,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		if (this.consoleFrame == null) {
 			showConsole();
 		}
-//		if (isStderr) {
-//			ConsoleModel model = getConsoleModel();
-//			model.print("\n", ConsoleModel.ERROR_STYLE);
-//		} else {
-			this.console.println();
-//		}
+		this.console.println();
 	}
 
 	protected double getEventTime() {
@@ -880,21 +863,8 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		return localClip;
 	}
 	
-	public ConsoleModel getConsoleIOModel() {
-		try {
-			Class<?> clazz = acm.io.IOConsole.class;
-			Field field = clazz.getDeclaredField("consoleModel");
-			field.setAccessible(true);
-			ConsoleModel model = (ConsoleModel) field.get(console);
-			return model;
-		} catch (Exception e) {
-			// empty
-		}
-		return null;
-	}
-	
 	public KeyListener getConsoleKeyListener() {
-		ConsoleModel consoleModel = getConsoleIOModel();
+		ConsoleModel consoleModel = this.console.getConsoleModel();
 		if (consoleModel != null) {
 			return (KeyListener) consoleModel;   // StandardConsoleModel implements KeyListener
 		}

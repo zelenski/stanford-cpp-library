@@ -46,49 +46,23 @@ namespace autograder {
 static const std::string DEFAULT_ABOUT_TEXT = "CS 106 B/X Autograder Framework\nDeveloped by Marty Stepp (stepp@cs.stanford.edu)";
 static Platform* pp = getPlatform();
 
-struct CallbackButtonInfo {
-    void (* func)();
-    std::string text;
-    std::string icon;
-};
+AutograderFlags::AutograderFlags() {
+    assignmentName = "";
+    studentProgramFileName = "";
+    currentCategoryName = "";
+    currentTestCaseName = "";
+    startMessage = "";
+    aboutText = DEFAULT_ABOUT_TEXT;
+    failsToPrintPerTest = 1;
+    testNameWidth = -1;
+    showInputPanel = true;
+    inputPanelFilename = INPUT_PANE_FILENAME;
+    showLateDays = true;
+    graphicalUI = false;
+    callbackStart = NULL;
+    callbackEnd = NULL;
+}
 
-struct AutograderFlags {
-public:
-    std::string assignmentName;
-    std::string studentProgramFileName;
-    std::string currentCategoryName;
-    std::string currentTestCaseName;
-    std::string inputPanelFilename;
-    std::string startMessage;
-    std::string aboutText;
-    int failsToPrintPerTest;
-    int testNameWidth;
-    bool showInputPanel;
-    bool showLateDays;
-    bool graphicalUI;
-    Vector<std::string> styleCheckFiles;
-    Map<std::string, std::string> styleCheckFileMap;
-    void(* callbackStart)();
-    void(* callbackEnd)();
-    Vector<CallbackButtonInfo> callbackButtons;
-    
-    AutograderFlags() {
-        assignmentName = "";
-        studentProgramFileName = "";
-        currentCategoryName = "";
-        currentTestCaseName = "";
-        startMessage = "";
-        aboutText = DEFAULT_ABOUT_TEXT;
-        failsToPrintPerTest = 1;
-        testNameWidth = -1;
-        showInputPanel = true;
-        inputPanelFilename = INPUT_PANE_FILENAME;
-        showLateDays = true;
-        graphicalUI = false;
-        callbackStart = NULL;
-        callbackEnd = NULL;
-    }
-};
 static AutograderFlags FLAGS;
 
 void addCallbackButton(void (* func)(), const std::string& text, const std::string& icon) {
@@ -124,12 +98,27 @@ void displayDiffs(const std::string& expectedOutput, const std::string& studentO
     }
 }
 
+void ensureCurrentTestCaseAdded() {
+    std::string& category = FLAGS.currentCategoryName;
+    std::string& test = FLAGS.currentTestCaseName;
+    if (!FLAGS.testsAdded[category].contains(test)) {
+        FLAGS.testsAdded[category].add(test);
+        if (FLAGS.graphicalUI) {
+            pp->autograderunittest_addTest(test, category);
+        }
+    }
+}
+
 std::string getCurrentCategoryName() {
     return FLAGS.currentCategoryName;
 }
 
 std::string getCurrentTestCaseName() {
     return FLAGS.currentTestCaseName;
+}
+
+AutograderFlags& getFlags() {
+    return FLAGS;
 }
 
 bool isGraphicalUI() {
@@ -229,6 +218,10 @@ void setStartMessage(const std::string& startMessage) {
 
 void setStudentProgramFileName(const std::string& filename) {
     FLAGS.studentProgramFileName = filename;
+}
+
+void setTestCounts(int passCount, int testCount, bool isStyleCheck) {
+    pp->autograderunittest_setTestCounts(passCount, testCount, isStyleCheck);
 }
 
 void setTestNameWidth(int width) {

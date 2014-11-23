@@ -12,6 +12,7 @@
 #include "goptionpane.h"
 #include "gtypes.h"
 #include "gwindow.h"
+#include "simpio.h"
 
 #include <csignal>
 #include <fstream>
@@ -70,12 +71,19 @@ void gbufferedImageTest() {
     GWindow gw;
     gw.setTitle("Test");
 
-    gw.add(new GLabel("test!"), 10, 10);
+    GButton* button1 = new GButton("Click Me 1");
+    gw.add(button1, 250, 80);
+    //GButton* button2 = new GButton("Click Me 2");
+    //gw.addToRegion(button2, "NORTH");
 
+    GLabel* label = new GLabel("test!");
+    gw.add(label, 10, 60);
+    
     std::cout << "About to construct GBufferedImage." << std::endl;
-    GBufferedImage* img = new GBufferedImage(10, 50, 200, 250);
+    GBufferedImage* img = new GBufferedImage(10, 80, 200, 250);
     std::cout << "Done constructing GBufferedImage." << std::endl;
     gw.add(img, 50, 50);
+    // gw.addToRegion(img, "SOUTH");
     gw.setVisible(true);
     pause(500);
 
@@ -109,4 +117,19 @@ void gbufferedImageTest() {
         }
     }
     border(img);
+    
+    std::cout << "About to remove other shit." << std::endl;
+    pause(200);
+    gw.remove(label);
+    gw.remove(button1);
+    //gw.removeFromRegion(button2, "NORTH");
+    pause(200);
+    
+    std::cout << "About to remove GBufferedImage." << std::endl;
+    pause(200);
+    gw.remove(img);
+    // gw.removeFromRegion(img, "SOUTH");
+    pause(200);
+    std::cout << "Test complete." << std::endl;
+    std::cout << std::endl;
 }
