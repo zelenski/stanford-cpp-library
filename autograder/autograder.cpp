@@ -6,6 +6,9 @@
  * See autograder.h for documentation of each member.
  * 
  * @author Marty Stepp
+ * @version 2014/11/20
+ * - bug fix with style checker spinner GIF image remaining at end
+ * - bug fix with date/time printing "2:0 PM"
  * @version 2014/11/15
  * - improvements to autograder unit test GUI
  * @version 2014/11/13
@@ -256,7 +259,7 @@ static std::string formatDate(const std::string& dateStr) {
     std::ostringstream out;
     out << date.getDayOfWeekName().substr(0, 3) << ", "
         << monthStr << " " << day << ", " << year << ", "
-        << hour << ":" << minute << " " << amPm;
+        << hour << ":" << std::setw(2) << std::setfill('0') << minute << " " << amPm;
     return out.str();
 }
 
@@ -455,6 +458,7 @@ static void mainRunStyleChecker() {
         }
         styleCheckCount++;
     }
+    pp->autograderunittest_setTestingCompleted(true, /* styleCheck */ true);
 }
 
 int autograderTextMain(int argc, char** argv) {
