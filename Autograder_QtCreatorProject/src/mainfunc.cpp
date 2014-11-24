@@ -68,9 +68,16 @@ public:
 };
 
 TEST_F(TestTest03, test07_also_long_name_gonnaFail) {
+    assertEquals("some passing test early, should be replaced by fail later", string("good1"), string("good1"));
     assertEquals("some failed test", string("good1"), string("bad1"));
     assertEquals("some failed test", string("good2"), string("bad2"));
     assertEquals("some failed test", string("good3"), string("good3"));
+}
+
+TEST_F(TestTest03, test08_moreTesting) {
+    string exp = "exp";
+    string stu = "exp";
+    assertDiff("a diff", exp, stu);
 }
 
 

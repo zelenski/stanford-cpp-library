@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <csignal>
 #include "autograder.h"
+#include "exceptions.h"
 #include "stringutils.h"
 #include "filelib.h"
 #include "platform.h"
@@ -37,15 +38,41 @@ static std::string UNIT_TEST_TYPE_NAMES[11] = {
 
 static Platform* pp = getPlatform();
 
-namespace autograder {
-std::string MartyTestResultPrinter::failMessage = "";
 
-static const int TEST_OUTPUT_INDENT = 8;
-static const std::string TEST_OUTPUT_INDENT_SPACES(TEST_OUTPUT_INDENT, ' ');
+static void cancelAlarm();
+static void setAlarm(int sec);
 
-static void acceptAlarm(int /*sig*/) {
+#ifdef _WIN32
+static void cancelAlarm() {
+    // TODO
+}
+
+static void setAlarm(int ms) {
+    if (ms == 0) {
+        cancelAlarm();
+    } else {
+        // TODO
+    }
+}
+#else
+static void handleAlarm(int /*sig*/);
+
+static void cancelAlarm() {
     signal(SIGALRM, SIG_IGN);
     alarm(0);   // cancel alarm
+}
+
+static void setAlarm(int ms) {
+    if (sec == 0) {
+        cancelAlarm();
+    } else {
+        signal(SIGALRM, handleAlarm);
+        alarm(ms / 1000);
+    }
+}
+
+static void handleAlarm(int /*sig*/) {
+    cancelAlarm();
     // FAIL() << "test timed out! possible infinite loop";
     // assertFail("test timed out! possible infinite loop");
     std::string msg = "test timed out! possible infinite loop";
@@ -54,25 +81,37 @@ static void acceptAlarm(int /*sig*/) {
         msg));
     error(msg);
 }
+#endif // _WIN32
 
-const int AutograderTest::DEFAULT_TIMEOUT_SEC = 5;
+namespace autograder {
+std::string MartyTestResultPrinter::failMessage = "";
 
-void AutograderTest::setTestTimeout(int sec) {
-    timeoutSec = sec;
-    signal(SIGALRM, acceptAlarm);
-    alarm(timeoutSec);
+static const int TEST_OUTPUT_INDENT = 8;
+static const std::string TEST_OUTPUT_INDENT_SPACES(TEST_OUTPUT_INDENT, ' ');
+
+const int AutograderTest::DEFAULT_TIMEOUT_MS = 5000;
+
+int AutograderTest::getTestTimeout() const {
+    return timeoutMS;
+}
+
+void AutograderTest::setTestTimeout(int ms) {
+    timeoutMS = ms;
+    setAlarm(timeoutMS);
 }
 
 void AutograderTest::SetUp() {
     autograder::ensureCurrentTestCaseAdded();
-    timeoutSec = DEFAULT_TIMEOUT_SEC;
-    signal(SIGALRM, acceptAlarm);
-    alarm(timeoutSec);
+    timeoutMS = DEFAULT_TIMEOUT_MS;
+    setAlarm(timeoutMS);
 }
  
 void AutograderTest::TearDown() {
-    alarm(0);   // cancel alarm
-    signal(SIGALRM, SIG_IGN);
+    cancelAlarm();
+}
+
+void AutograderTest::TestBody() {
+    // empty; override me
 }
 
 UnitTestDetails::UnitTestDetails()

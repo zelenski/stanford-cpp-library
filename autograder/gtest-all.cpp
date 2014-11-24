@@ -938,6 +938,10 @@ class GTEST_API_ UnitTestImpl {
   void SetTestPartResultReporterForCurrentThread(
       TestPartResultReporterInterface* reporter);
 
+  virtual int getTestTimeout() const {
+      return 0;   // override me
+  }
+
   // Gets the number of successful test cases.
   int successful_test_case_count() const;
 
@@ -3634,6 +3638,7 @@ void Test::Run() {
   internal::UnitTestImpl* const impl = internal::GetUnitTestImpl();
   impl->os_stack_trace_getter()->UponLeavingGTest();
   internal::HandleExceptionsInMethodIfSupported(this, &Test::SetUp, "SetUp()");
+
   // We will run the test only if SetUp() was successful.
   if (!HasFatalFailure()) {
     impl->os_stack_trace_getter()->UponLeavingGTest();

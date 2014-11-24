@@ -638,6 +638,7 @@ int main(int argc, char** argv) {
     // initialize Stanford libraries and graphical console
     _mainFlags = GRAPHICS_FLAG + CONSOLE_FLAG;
     startupMainDontRunMain(argc, argv);
+
     setConsoleLocationSaved(true);
     setConsoleCloseOperation(ConsoleCloseOperation::CONSOLE_HIDE_ON_CLOSE);
     

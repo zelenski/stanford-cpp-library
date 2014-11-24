@@ -7399,6 +7399,10 @@ class TestFactoryBase {
   // within TestInfoImpl::Run()
   virtual Test* CreateTest() = 0;
 
+  virtual int getTestTimeout() const {
+    return 0;   // override me
+  }
+
  protected:
   TestFactoryBase() {}
 
@@ -17811,6 +17815,10 @@ class GTEST_API_ Test {
   static void RecordProperty(const std::string& key, const std::string& value);
   static void RecordProperty(const std::string& key, int value);
 
+  virtual int getTestTimeout() const {
+      return 0;   // override me
+  }
+
  protected:
   // Creates a Test object.
   Test();
@@ -18190,6 +18198,10 @@ class GTEST_API_ TestCase {
 
   // Returns true if any test in this test case should run.
   bool should_run() const { return should_run_; }
+
+  virtual int getTestTimeout() const {
+      return 0;   // override me
+  }
 
   // Gets the number of successful tests in this test case.
   int successful_test_count() const;

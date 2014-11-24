@@ -25,14 +25,16 @@ namespace autograder {
 
 class AutograderTest : public testing::Test {
 public:
-    static const int DEFAULT_TIMEOUT_SEC;
+    static const int DEFAULT_TIMEOUT_MS;
     
-    virtual void setTestTimeout(int sec);
+    virtual int getTestTimeout() const;
+    virtual void setTestTimeout(int ms);
     virtual void SetUp();
     virtual void TearDown();
+    virtual void TestBody();   // override me
 
 private:
-    int timeoutSec;
+    int timeoutMS;
 };
 
 // NOTE: must keep in sync with UNIT_TEST_TYPE_NAMES in gtest-marty.cpp
@@ -165,7 +167,7 @@ private:
  */
 class MartyGraphicalTestResultPrinter : public ::testing::EmptyTestEventListener {
 public:
-    static const int TEST_RUNTIME_MIN_TO_DISPLAY_MS = 10;
+    static const int TEST_RUNTIME_MIN_TO_DISPLAY_MS;
     static void setFailDetails(const UnitTestDetails& deets);
 
     MartyGraphicalTestResultPrinter();
