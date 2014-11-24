@@ -67,6 +67,7 @@ static int pout;
 #include <vector>
 #include "private/version.h"
 #include "error.h"
+#include "exceptions.h"
 #include "filelib.h"
 #include "gevents.h"
 #include "gtimer.h"
@@ -1719,10 +1720,10 @@ static WINBOOL WinCheck(WINBOOL result) {
 }
 
 int startupMain(int argc, char **argv) {
-    extern int Main(int argc, char **argv);
     startupMainDontRunMain(argc, argv);
 
 #ifndef SPL_AUTOGRADER_MODE
+    extern int Main(int argc, char **argv);
     return Main(argc, argv);
 #else
     return 0;
@@ -1735,6 +1736,7 @@ int startupMain(int argc, char **argv) {
  * This is used to facilitate the creation of autograder programs.
  */
 void startupMainDontRunMain(int /*argc*/, char** argv) {
+    exceptions::setProgramNameForStackTrace(argv[0]);
     std::string arg0 = argv[0];
     programName = getRoot(getTail(arg0));
     initPipe();
@@ -1895,6 +1897,7 @@ int startupMain(int argc, char **argv) {
     extern int Main(int argc, char **argv);
 #endif
     std::string arg0 = argv[0];
+    exceptions::setProgramNameForStackTrace(argv[0]);
     programName = getRoot(getTail(arg0));
     size_t ax = arg0.find(".app/Contents/");
     if (ax != std::string::npos) {
@@ -1941,6 +1944,7 @@ int startupMain(int argc, char **argv) {
  */
 void startupMainDontRunMain(int /*argc*/, char** argv) {
     std::string arg0 = argv[0];
+    exceptions::setProgramNameForStackTrace(argv[0]);
     programName = getRoot(getTail(arg0));
     size_t ax = arg0.find(".app/Contents/");
     if (ax != std::string::npos) {

@@ -16,17 +16,7 @@
 #include <iostream>
 
 #ifndef SPL_AUTOGRADER_MODE
-namespace exceptions {
-extern void setProgramNameForStackTrace(char* programName);
-}
-
 int Main(int, char* argv[]) {
-    exceptions::setProgramNameForStackTrace(argv[0]);
-
-//    // this pops up the graphical console, if it is being used
-//    std::cout << "";
-//    std::cout.flush();
-
     extern int Main();
     return Main();
 }
