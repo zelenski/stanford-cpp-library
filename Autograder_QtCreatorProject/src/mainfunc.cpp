@@ -48,7 +48,7 @@ TEST_F(TestTest02, test04_def) {
 }
 
 TEST_F(TestTest02, test05_infinite_loop) {
-    setTestTimeout(2);
+    setTestTimeout(2000);
     while (1) { /* lolol */ }
 }
 

@@ -25,7 +25,8 @@ namespace autograder {
 
 class AutograderTest : public testing::Test {
 public:
-    static const int DEFAULT_TIMEOUT_MS;
+    static const int TIMEOUT_MS_DEFAULT;
+    static const int TIMEOUT_MS_MIN;
     
     virtual int getTestTimeout() const;
     virtual void setTestTimeout(int ms);

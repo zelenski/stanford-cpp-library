@@ -16,6 +16,13 @@ x		autograder: test cases with timeouts?
 x			test on Linux
 			test on Mac
 			test on Windows
+				need to run in different thread
+					gtest-all.cpp
+						:3641: calls TestBody
+						:3815: Test::Run();
+					gtest.h
+						:8116: TEST_F -> long TestBody macro
+						need to insert my own code around TestBody
 			
 			refactor: move all timer start/stop, setting of tests in gui, out of result printer?
 		

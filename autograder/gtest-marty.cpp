@@ -63,7 +63,7 @@ static void cancelAlarm() {
 }
 
 static void setAlarm(int ms) {
-    if (sec == 0) {
+    if (ms == 0) {
         cancelAlarm();
     } else {
         signal(SIGALRM, handleAlarm);
@@ -73,8 +73,6 @@ static void setAlarm(int ms) {
 
 static void handleAlarm(int /*sig*/) {
     cancelAlarm();
-    // FAIL() << "test timed out! possible infinite loop";
-    // assertFail("test timed out! possible infinite loop");
     std::string msg = "test timed out! possible infinite loop";
     autograder::setFailDetails(autograder::UnitTestDetails(
         autograder::UnitTestType::TEST_FAIL,
@@ -89,20 +87,28 @@ std::string MartyTestResultPrinter::failMessage = "";
 static const int TEST_OUTPUT_INDENT = 8;
 static const std::string TEST_OUTPUT_INDENT_SPACES(TEST_OUTPUT_INDENT, ' ');
 
-const int AutograderTest::DEFAULT_TIMEOUT_MS = 5000;
+const int AutograderTest::TIMEOUT_MS_DEFAULT = 5000;
+const int AutograderTest::TIMEOUT_MS_MIN = 100;
 
 int AutograderTest::getTestTimeout() const {
     return timeoutMS;
 }
 
 void AutograderTest::setTestTimeout(int ms) {
-    timeoutMS = ms;
-    setAlarm(timeoutMS);
+    if (timeoutMS > 0) {
+        timeoutMS = std::max(TIMEOUT_MS_MIN, ms);
+    } else {
+        timeoutMS = ms;
+    }
+    
+    if (timeoutMS > 0) {
+        setAlarm(timeoutMS);
+    }
 }
 
 void AutograderTest::SetUp() {
     autograder::ensureCurrentTestCaseAdded();
-    timeoutMS = DEFAULT_TIMEOUT_MS;
+    timeoutMS = TIMEOUT_MS_DEFAULT;
     setAlarm(timeoutMS);
 }
  
