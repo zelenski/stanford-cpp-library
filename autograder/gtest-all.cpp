@@ -43,6 +43,7 @@
 // when it's fused.
 #include "gtest.h"
 #include <iostream>
+#include "autogradertest.h"
 
 // The following lines pull in the real gtest *.cc files.
 // Copyright 2005, Google Inc.
@@ -3721,6 +3722,7 @@ TestInfo* MakeAndRegisterTestInfo(
       new TestInfo(test_case_name, name, type_param, value_param,
                    fixture_class_id, factory);
   GetUnitTestImpl()->AddTestInfo(set_up_tc, tear_down_tc, test_info);
+  autograder::AutograderTest::addTestToList(test_case_name, name);   // register test in list of names
   return test_info;
 }
 

@@ -45,6 +45,7 @@ namespace exceptions {
 // just some value that is not any existing signal
 #define SIGSTACK ((int) 0xdeadbeef)
 #define SIGUNKNOWN ((int) 0xcafebabe)
+#define SIGTIMEOUT ((int) 0xf00df00d)
 static const bool STACK_TRACE_SHOULD_FILTER = true;
 static const bool STACK_TRACE_SHOW_TOP_BOTTOM_BARS = false;
 static bool topLevelExceptionHandlerEnabled = false;

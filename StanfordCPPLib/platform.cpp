@@ -2481,7 +2481,8 @@ void Platform::autograderunittest_setTestDetails(const std::string& testName, co
     stringReplaceInPlace(deets, "\t", "\\t");
     writeQuotedString(os, urlEncode(deets));
     os << "," << std::boolalpha << styleCheck << ")";
-    putPipe(os.str());
+    std::string str = os.str();
+    putPipe(str);
 }
 
 void Platform::autograderunittest_setTestingCompleted(bool completed, bool styleCheck) {

@@ -23,21 +23,23 @@
 #include "autograder.h"
 #include <cstdio>
 #include "console.h"
-#include "date.h"
 #include "filelib.h"
 #include "gevents.h"
 #include "ginteractors.h"
 #include "goptionpane.h"
-#include "gtest-marty.h"
 #include "gwindow.h"
-#include "inputpanel.h"
-#include "ioutils.h"
 #include "map.h"
 #include "platform.h"
 #include "simpio.h"
+#include "version.h"
+
+#include "date.h"
+#include "gtest-marty.h"
+#include "inputpanel.h"
+#include "ioutils.h"
 #include "stringutils.h"
 #include "stylecheck.h"
-#include "version.h"
+#include "testresultprinter.h"
 
 // to be written by TA/instructor for each assignment
 extern void autograderMain();
@@ -95,17 +97,6 @@ void displayDiffs(const std::string& expectedOutput, const std::string& studentO
             diffsToShow = stringutils::trimToHeight(diffsToShow, truncateHeight);
         }
         std::cout << stringutils::indent(diffsToShow, 8) << std::endl;
-    }
-}
-
-void ensureCurrentTestCaseAdded() {
-    std::string& category = FLAGS.currentCategoryName;
-    std::string& test = FLAGS.currentTestCaseName;
-    if (!FLAGS.testsAdded[category].contains(test)) {
-        FLAGS.testsAdded[category].add(test);
-        if (FLAGS.graphicalUI) {
-            pp->autograderunittest_addTest(test, category);
-        }
     }
 }
 
@@ -421,6 +412,15 @@ static int mainRunAutograderTestCases(int argc, char** argv) {
         }
     }
     
+    // tell the GUI the names of all tests so that it can display them
+    pp->autograderunittest_setVisible(false);
+    for (std::string category : autograder::AutograderTest::getAllCategories()) {
+        for (std::string test : autograder::AutograderTest::getAllTests(category)) {
+            pp->autograderunittest_addTest(test, category);
+        }
+    }
+    pp->autograderunittest_setVisible(true);
+
     int result = RUN_ALL_TESTS();   // run Google Test framework now
 
     // un-lock-down
@@ -580,7 +580,6 @@ int autograderGraphicalMain(int argc, char** argv) {
                 }
                 
                 pp->autograderunittest_clearTests();
-                pp->autograderunittest_setVisible(true);
                 result = mainRunAutograderTestCases(argc, argv);
                 pp->autograderunittest_setTestingCompleted(true);
                 

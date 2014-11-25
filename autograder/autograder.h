@@ -14,10 +14,13 @@
 #define _autograder_h
 
 #include <string>
-#include "gtest-marty.h"
 #include "map.h"
 #include "set.h"
 #include "vector.h"
+
+#include "autogradertest.h"
+#include "gtest-marty.h"
+#include "unittestdetails.h"
 
 /*
  * forward declarations of needed code from Stanford C++ lib's private/main.h
@@ -104,11 +107,6 @@ int autograderMain(int argc = 0, char** argv = NULL);
 void displayDiffs(const std::string& expectedOutput, const std::string& studentOutput,
                   const std::string& diffs, const std::string& diffFile = "",
                   int truncateHeight = -1);
-
-/*
- * Called internally by autograder; do not use.
- */
-void ensureCurrentTestCaseAdded();
 
 /*
  * Called internally by autograder; do not use.
