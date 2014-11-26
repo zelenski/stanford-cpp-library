@@ -13,12 +13,11 @@
 #ifndef _autogradertest_h
 #define _autogradertest_h
 
+#include <map>
 #include <string>
+#include <vector>
 #include "gtest.h"
-#include "map.h"
-#include "set.h"
 #include "timer.h"
-#include "vector.h"
 
 namespace autograder {
 
@@ -35,8 +34,8 @@ public:
      * Used to enable/disable categories to run.
      */
     static void addTestToList(const std::string& categoryName, const std::string& testName);
-    static const Vector<std::string>& getAllCategories();
-    static const Vector<std::string>& getAllTests(const std::string& categoryName = "");
+    static const std::vector<std::string>& getAllCategories();
+    static const std::vector<std::string>& getAllTests(const std::string& categoryName = "");
 
     /*
      * get/set the default timeout values
@@ -46,16 +45,25 @@ public:
 
     virtual int getTestTimeout() const;
     virtual void setTestTimeout(int ms);
+    
+    virtual std::string getName() const;
+    virtual std::string getCategory() const;
+    
+    /*
+     * Whether this test case should run.
+     * Will be true unless unchecked in GUI test case list.
+     */
+    virtual bool shouldRun();
+    
     virtual void SetUp();
     virtual void TearDown();
     virtual void TestBody();   // override me
     virtual void TestRealBody();
 
-private:
-    static Vector<std::string> allCategories;
-    static Map<std::string, Vector<std::string> > allTests;
-
-    int timeoutMS;   // test's timeout in milliseconds (0 for none)
+protected:
+    std::string name;       // test's name
+    std::string category;   // test's category
+    int timeoutMS;          // test's timeout in milliseconds (0 for none)
 };
 
 } // namespace autograder

@@ -108,8 +108,6 @@ int execAndCapture(std::string cmd, std::string& output) {
 #else
     // Linux / Mac code for external process
     cmd += " 2>&1";
-    printf("CMD = %s\n", cmd.c_str());
-    fflush(stdout);
     FILE* pipe = popen(cmd.c_str(), "r");
     if (!pipe) {
         return -1;

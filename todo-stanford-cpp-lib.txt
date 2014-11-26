@@ -1,29 +1,11 @@
 	C++ libs
-x		autograder: style checker should still show that there WERE other omitted tests, just not show their results
-		
-		autograder: way to individually turn on/off running individual categories of tests?
-			autograder pops up with all categories/tests already there, but just with no results?
-			can I get list of all test names/categories ahead of time in GTest framework?
-				gtest-all.cpp
-					:5750: FilterTests
-					:5808: GetMutableTestCase(test_index)->Run();
-					 ::testing::GTEST_FLAG(filter) = "*Counter*:*IsPrime*:*ListenersTest.DoesNotLeak*";//":-:*Counter*";
-					InitGoogleTest(&argc, argv);
-					RUN_ALL_TESTS();
-
-x		autograder: test cases with timeouts?
-			make it show the test name as it starts, not at end
-x			test on Linux
-			test on Mac
-			test on Windows
-				need to run in different thread
-					gtest-all.cpp
-						:3641: calls TestBody
-						:3815: Test::Run();
-					gtest.h
-						:8116: TEST_F -> long TestBody macro
-						need to insert my own code around TestBody
-			
+		thread/signal stuff
+			test on Mac with pthread
+			while test running, set --> arrow? set spinner GIF?
+			turn normal program signal/terminate/exception handler back on if they run student program manually
+			when test case fails with exception/signal/segfault, catch error and print stack trace
+			print/dump stack trace on thread timeout?
+			refactor: move 'run this function with a given timeout' command to separate API? platform.h/cpp?
 			refactor: move all timer start/stop, setting of tests in gui, out of result printer?
 		
 		refactor hw1-7 autograders to use multiple test classes, set category names that way
@@ -143,6 +125,24 @@ x			test on Linux
 
 DONE:
 =======================================================================================================================
+x		autograder: style checker should still show that there WERE other omitted tests, just not show their results
+x		autograder: way to individually turn on/off running individual categories of tests?
+x			autograder pops up with all categories/tests already there, but just with no results?
+x			can I get list of all test names/categories ahead of time in GTest framework?
+x				gtest-all.cpp
+x					:5750: FilterTests
+x					:5808: GetMutableTestCase(test_index)->Run();
+x					 ::testing::GTEST_FLAG(filter) = "*Counter*:*IsPrime*:*ListenersTest.DoesNotLeak*";//":-:*Counter*";
+x					InitGoogleTest(&argc, argv);
+x					RUN_ALL_TESTS();
+x		autograder: test cases with timeouts?
+x			make it show the test name as it starts, not at end
+x			test on Linux
+x				multiple timeouts?  fails when done via signals;  use pthreads?
+x			test on Mac
+x			test on Windows
+x				need to run in different thread
+x					need to insert my own code around TestBody
 x		test signal handler on Mac  (must disable signal-stack?)
 x			http://spin.atomicobject.com/2013/01/13/exceptions-stack-traces-c/
 x		rebuild JBE with java -target 1.5 (1.6?) to find any stuff that is only since-1.7 (compile.sh)

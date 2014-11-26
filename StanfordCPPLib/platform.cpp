@@ -4,6 +4,8 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2014/11/25
+ * - added methods for checking and unchecking individual autograder test cases
  * @version 2014/11/20
  * - added gwindow clearCanvas method
  * @version 2014/11/15
@@ -2459,6 +2461,30 @@ void Platform::autograderunittest_addTest(const std::string& testName, const std
 void Platform::autograderunittest_clearTests(bool styleCheck) {
     std::ostringstream os;
     os << "AutograderUnitTest.clearTests(" << std::boolalpha << styleCheck << ")";
+    putPipe(os.str());
+}
+
+void Platform::autograderunittest_clearTestResults(bool styleCheck) {
+    std::ostringstream os;
+    os << "AutograderUnitTest.clearTestResults(" << std::boolalpha << styleCheck << ")";
+    putPipe(os.str());
+}
+
+bool Platform::autograderunittest_isChecked(const std::string& testName) {
+    std::ostringstream os;
+    os << "AutograderUnitTest.isChecked(";
+    writeQuotedString(os, urlEncode(testName));
+    os << ")";
+    putPipe(os.str());
+    std::string result = getResult();
+    return (result == "true");
+}
+
+void Platform::autograderunittest_setChecked(const std::string& testName, bool checked) {
+    std::ostringstream os;
+    os << "AutograderUnitTest.setChecked(";
+    writeQuotedString(os, urlEncode(testName));
+    os << "," << std::boolalpha << checked << ")";
     putPipe(os.str());
 }
 

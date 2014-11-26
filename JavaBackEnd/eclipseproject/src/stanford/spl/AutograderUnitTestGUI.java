@@ -24,15 +24,18 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 	private static final Color PASS_COLOR = new Color(0, 96, 0);
 	private static final Color FAIL_COLOR = new Color(96, 0, 0);
 	private static final Color WARN_COLOR = new Color(112, 112, 0);
+	private static Color NORMAL_COLOR = null;
 	
 	//private static final int MIN_WIDTH = 75;
 	private static AutograderUnitTestGUI instance;             // singleton
 	private static AutograderUnitTestGUI styleCheckInstance;   // singleton
 	
+	private static final String TESTS_TITLE = "Autograder Tests";
+	private static final String STYLE_CHECK_TITLE = "Autograder Tests";
+	
 	public static synchronized AutograderUnitTestGUI getInstance(JavaBackEnd javaBackEnd) {
 		if (instance == null) {
-			instance = new AutograderUnitTestGUI(javaBackEnd);
-			instance.frame.setTitle("Autograder Tests");
+			instance = new AutograderUnitTestGUI(javaBackEnd, TESTS_TITLE);
 		}
 		return instance;
 	}
@@ -47,36 +50,46 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 	
 	public static synchronized AutograderUnitTestGUI getStyleCheckInstance(JavaBackEnd javaBackEnd) {
 		if (styleCheckInstance == null) {
-			styleCheckInstance = new AutograderUnitTestGUI(javaBackEnd);
-			styleCheckInstance.frame.setTitle("Style Checker");
+			styleCheckInstance = new AutograderUnitTestGUI(javaBackEnd, STYLE_CHECK_TITLE);
 		}
 		return styleCheckInstance;
+	}
+	
+	private class TestInfo {
+		private String name;
+		private JCheckBox checked;
+		private JLabel description;
+		private JLabel result;
+		private Map<String, String> details = new LinkedHashMap<String, String>();
 	}
 	
 	private JavaBackEnd javaBackEnd;
 	private JFrame frame = null;
 	private JScrollPane scroll = null;
 	private Box contentPaneBox = null;
-	private Container currentCategory = null;
 	private JLabel descriptionLabel = null;
 	private JLabel southLabel = null;
+	
 	private Map<String, Container> allCategories = new LinkedHashMap<String, Container>();
-	private Map<String, JLabel> allTestDescriptions = new LinkedHashMap<String, JLabel>();
-	private Map<String, JLabel> allTestResultLabels = new LinkedHashMap<String, JLabel>();
-	private Map<JLabel, String> labelToTestName = new LinkedHashMap<JLabel, String>();
-	private Map<String, Map<String, String>> allTestDetails = new LinkedHashMap<String, Map<String, String>>();
+	private Container currentCategory = null;
+	private Map<Object, TestInfo> allTests = new LinkedHashMap<Object, TestInfo>();
+	
 	private int passCount = 0;
 	private int testCount = 0;
-	private boolean testingIsInProgress = true;
+	private boolean testingIsInProgress = false;
 	
-	public AutograderUnitTestGUI(JavaBackEnd javaBackEnd) {
+	public AutograderUnitTestGUI(JavaBackEnd javaBackEnd, String title) {
 		this.javaBackEnd = javaBackEnd;
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		frame.setTitle(title);
 		frame.setVisible(false);
 		frame.addWindowListener(new AutograderUnitTestGUIWindowAdapter());
 		
 		descriptionLabel = new JLabel("Autograder Tests");
+		if (NORMAL_COLOR == null) {
+			NORMAL_COLOR= descriptionLabel.getForeground();
+		}
 		descriptionLabel.setHorizontalAlignment(JLabel.CENTER);
 		descriptionLabel.setAlignmentX(0.5f);
 		GuiUtils.shrinkFont(descriptionLabel);
@@ -108,14 +121,44 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 	
 	public Container addCategory(String name) {
 		if (!allCategories.containsKey(name)) {
-			currentCategory = Box.createVerticalBox();
+			final Container category = Box.createVerticalBox();
+			currentCategory = category;
 			allCategories.put(name, currentCategory);
 			if (!name.isEmpty()) {
-				TitledBorder border = BorderFactory.createTitledBorder(name);
-				border.setTitleJustification(SwingConstants.CENTER);
+//				TitledBorder border = BorderFactory.createTitledBorder(name);
+//				border.setTitleJustification(SwingConstants.CENTER);
+				Border border = BorderFactory.createLineBorder(Color.DARK_GRAY);
 				((Box) currentCategory).setBorder(border);
 				currentCategory.setBackground(ZEBRA_STRIPE_COLOR_2);
 			}
+			
+			// top row of 'select/deselect all' buttons
+			JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT));
+			JButton selectAll = new JButton("All");
+			selectAll.setIcon(new ImageIcon("checkbox-checked.gif"));
+			GuiUtils.shrinkFont(selectAll, 2);
+			selectAll.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent event) {
+					selectAll(category, true);
+				}
+			});
+			JButton deselectAll = new JButton("None");
+			deselectAll.setIcon(new ImageIcon("checkbox-unchecked.gif"));
+			GuiUtils.shrinkFont(deselectAll, 2);
+			deselectAll.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent event) {
+					selectAll(category, false);
+				}
+			});
+			top.add(selectAll);
+			top.add(deselectAll);
+			if (!name.isEmpty()) {
+				JLabel nameLabel = new JLabel(name);
+				GuiUtils.shrinkFont(nameLabel, 1);
+				top.add(nameLabel);
+			}
+			category.add(top);
+			
 			contentPaneBox.add(currentCategory);
 			checkVisibility();
 		}
@@ -128,40 +171,50 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		
 		// add a panel about this test
 		JPanel testPanel = new JPanel(new BorderLayout());
-		if (testCount % 2 == 0) {
-			testPanel.setBackground(ZEBRA_STRIPE_COLOR_1);
-		} else {
-			testPanel.setBackground(ZEBRA_STRIPE_COLOR_2);
-		}
+		JPanel testWestPanel = new JPanel();
+		Color bgColor = (testCount % 2 == 0) ? ZEBRA_STRIPE_COLOR_1 : ZEBRA_STRIPE_COLOR_2;
+		testPanel.setBackground(bgColor);
+		testWestPanel.setBackground(bgColor);
+		
+		TestInfo testInfo = new TestInfo();
+		testInfo.name = testName;
+		allTests.put(testName, testInfo);
+		
+		testInfo.checked = new JCheckBox();
+		
+		// testInfo.checked.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
+		// testInfo.checked.setPreferredSize(new Dimension(10, 10));
+		
+		testInfo.checked.setSelected(true);
+		testWestPanel.add(testInfo.checked);
 		
 		JLabel testCountLabel = new JLabel(String.format("%3d. ", testCount));
-		labelToTestName.put(testCountLabel, testName);
+		allTests.put(testCountLabel, testInfo);
 		testCountLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		testCountLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		Font oldFont = testCountLabel.getFont();
 		testCountLabel.setFont(new Font("Monospaced", Font.BOLD, oldFont.getSize()));
 		// boldFont(testCountLabel);
-		testPanel.add(testCountLabel, BorderLayout.WEST);
+		testWestPanel.add(testCountLabel);
+		testPanel.add(testWestPanel, BorderLayout.WEST);
 		
 		String testNameShort = testName.replaceAll("Test_[0-9]{1,5}_", "");
-		JLabel testNameLabel = new JLabel(testNameShort);
-		labelToTestName.put(testNameLabel, testName);
-		allTestDescriptions.put(testName, testNameLabel);
-		testNameLabel.setToolTipText("Click to see detailed results from this test.");
-		GuiUtils.shrinkFont(testNameLabel);
-		testNameLabel.setFont(testNameLabel.getFont().deriveFont(Font.BOLD));
-		testPanel.add(testNameLabel, BorderLayout.CENTER);
-		testNameLabel.addMouseListener(this);
+		testInfo.description = new JLabel(testNameShort);
+		testInfo.description.setToolTipText("Click to see detailed results from this test.");
+		GuiUtils.shrinkFont(testInfo.description);
+		testInfo.description.setFont(testInfo.description.getFont().deriveFont(Font.BOLD));
+		testPanel.add(testInfo.description, BorderLayout.CENTER);
+		testInfo.description.addMouseListener(this);
+		allTests.put(testInfo.description, testInfo);
 		
-		JLabel resultIconLabel = new JLabel(new ImageIcon("running.gif"));
-		GuiUtils.shrinkFont(resultIconLabel, 2);
-		resultIconLabel.setHorizontalTextPosition(SwingConstants.LEFT);
-		
-		resultIconLabel.setToolTipText("Click to see detailed results from this test.");
-		labelToTestName.put(resultIconLabel, testName);
-		resultIconLabel.addMouseListener(this);
-		allTestResultLabels.put(testName, resultIconLabel);
-		testPanel.add(resultIconLabel, BorderLayout.EAST);
+		testInfo.result = new JLabel(new ImageIcon("running.gif"));
+		testInfo.result.setText("        ");
+		GuiUtils.shrinkFont(testInfo.result, 2);
+		testInfo.result.setHorizontalTextPosition(SwingConstants.LEFT);
+		testInfo.result.setToolTipText("Click to see detailed results from this test.");
+		testInfo.result.addMouseListener(this);
+		testPanel.add(testInfo.result, BorderLayout.EAST);
+		allTests.put(testInfo.result, testInfo);
 		
 		currentCategory.add(testPanel);
 		
@@ -171,9 +224,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 	public void clearTests() {
 		currentCategory = null;
 		allCategories.clear();
-		allTestDetails.clear();
-		allTestResultLabels.clear();
-		labelToTestName.clear();
+		allTests.clear();
 		passCount = 0;
 		testCount = 0;
 		testingIsInProgress = true;
@@ -184,20 +235,30 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		checkVisibility();
 	}
 	
+	public void clearTestResults() {
+		passCount = 0;
+		for (TestInfo testInfo : allTests.values()) {
+			testInfo.details.clear();
+			testInfo.description.setForeground(NORMAL_COLOR);
+			testInfo.result.setIcon(new ImageIcon("running.gif"));
+			testInfo.result.setText("");
+		}
+		updateSouthText();
+	}
+	
 	private String getTestResult(String testName) {
-		JLabel testNameLabel = allTestDescriptions.get(testName);
-		if (testNameLabel == null) {
+		TestInfo testInfo = allTests.get(testName);
+		if (testInfo == null) {
 			return "no such test";
-		} else if (testNameLabel.getForeground().equals(FAIL_COLOR)) {
+		} else if (testInfo.description.getForeground().equals(FAIL_COLOR)) {
 			return "fail";
-		} else if (testNameLabel.getForeground().equals(WARN_COLOR)) {
+		} else if (testInfo.description.getForeground().equals(WARN_COLOR)) {
 			return "warn";
-		} else if (testNameLabel.getForeground().equals(PASS_COLOR)) {
+		} else if (testInfo.description.getForeground().equals(PASS_COLOR)) {
 			return "pass";
 		} else {
-			if (allTestDetails.containsKey(testName)
-					&& allTestDetails.get(testName).containsKey("passed")) {
-				String passed = allTestDetails.get(testName).get("passed");
+			if (testInfo.details.containsKey("passed")) {
+				String passed = testInfo.details.get("passed");
 				return passed.equalsIgnoreCase("true") ? "pass" : "fail";
 			} else {
 				return "unknown";
@@ -205,13 +266,27 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		}
 	}
 	
+	public boolean isChecked(String testName) {
+		TestInfo testInfo = allTests.get(testName);
+		if (testInfo == null) {
+			return false;
+		} else {
+			return testInfo.checked.isSelected();
+		}
+	}
+	
 	public boolean isEmpty() {
 		return allCategories.isEmpty();
 	}
 	
+	public boolean isStyleCheck() {
+		return this == styleCheckInstance || frame.getTitle().equals(STYLE_CHECK_TITLE);
+	}
+	
 	public void mouseClicked(MouseEvent event) {
 		JLabel label = (JLabel) event.getSource();
-		String testName = labelToTestName.get(label);
+		TestInfo testInfo = allTests.get(label);
+		String testName = testInfo.name;
 		if (testName != null) {
 			showTestDetails(testName);
 		}
@@ -233,6 +308,13 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		// empty
 	}
 	
+	public void setChecked(String testName, boolean checked) {
+		TestInfo testInfo = allTests.get(testName);
+		if (testInfo != null) {
+			testInfo.checked.setSelected(checked);
+		}
+	}
+	
 	public void setDescription(String text) {
 		text = text.replaceAll("[ \t\r\n\f]+", " ");
 		text = text.replaceAll("Note:", "<b>Note:</b>");
@@ -250,12 +332,20 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 	}
 	
 	public void setTestDetails(String testName, Map<String, String> details) {
+		TestInfo testInfo = allTests.get(testName);
+		if (testInfo == null) {
+			return;
+		}
+
 		// BUGFIX: don't replace test details if a test already failed here
 		String existingResult = getTestResult(testName).intern();
 		if (existingResult == "fail" || existingResult == "warn") {
-			return;
+			if (!testInfo.details.isEmpty()) {
+				return;
+			}
 		}
-		allTestDetails.put(testName, details);
+		
+		testInfo.details = details;
 	}
 	
 	public void setTestingCompleted(boolean completed) {
@@ -269,9 +359,8 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 			result = "fail";  // synonyms
 		}
 		
-		JLabel testNameLabel = allTestDescriptions.get(testName);
-		JLabel resultIconLabel = allTestResultLabels.get(testName);
-		if (testNameLabel == null || resultIconLabel == null) {
+		TestInfo testInfo = allTests.get(testName);
+		if (testInfo == null) {
 			return false;
 		}
 		
@@ -281,26 +370,28 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 			return true;
 		}
 		
-		resultIconLabel.setIcon(new ImageIcon(result + ".gif"));   // pass, fail, running, warn
+		testInfo.result.setIcon(new ImageIcon(result + ".gif"));   // pass, fail, running, warn
 		if (result == "pass") {
 			passCount++;
-			testNameLabel.setForeground(PASS_COLOR);
+			testInfo.description.setForeground(PASS_COLOR);
 		} else if (result == "fail") {
-			testNameLabel.setForeground(FAIL_COLOR);
+			testInfo.description.setForeground(FAIL_COLOR);
 		} else if (result == "warn") {
-			testNameLabel.setForeground(WARN_COLOR);
+			testInfo.description.setForeground(WARN_COLOR);
+		} else if (result == "warn") {
+			testInfo.description.setForeground(NORMAL_COLOR);
 		}
 		updateSouthText();
 		return true;
 	}
 	
 	public boolean setTestRuntime(String testName, int runtimeMS) {
-		JLabel resultIconLabel = allTestResultLabels.get(testName);
-		if (resultIconLabel == null) {
+		TestInfo testInfo = allTests.get(testName);
+		if (testInfo == null) {
 			return false;
 		} else {
 			String text = " (" + runtimeMS + "ms)";
-			resultIconLabel.setText(text);
+			testInfo.result.setText(text);
 			return true;
 		}
 	}
@@ -315,13 +406,25 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		// frame.revalidate();
 		frame.validate();
 		frame.pack();
-		frame.setSize(frame.getWidth() + 32, frame.getHeight());  // a bit of buffer for scrollbar
-		if (frame.isVisible() != !isEmpty()) {
-			frame.setVisible(!isEmpty());
-		}
+		frame.setSize(frame.getWidth() + 32, frame.getHeight() + 10);  // a bit of buffer for scrollbar
+//		if (frame.isVisible() != !isEmpty()) {
+//			frame.setVisible(!isEmpty());
+//		}
 		
 		// scroll to bottom as new tests appear
-		scroll.getVerticalScrollBar().setValue(scroll.getVerticalScrollBar().getMaximum());
+		// scroll.getVerticalScrollBar().setValue(scroll.getVerticalScrollBar().getMaximum());
+	}
+	
+	private void selectAll(Container category, boolean selected) {
+		for (Component comp : category.getComponents()) {
+			if (comp instanceof JCheckBox) {
+				JCheckBox checkBox = (JCheckBox) comp;
+				checkBox.setSelected(selected);
+			} else if (comp instanceof Container) {
+				Container container = (Container) comp;
+				selectAll(container, selected);
+			}
+		}
 	}
 	
 	/*
@@ -339,19 +442,17 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		};
 	 */
 	private void showTestDetails(String testName) {
-		// TODO: better
-		// JOptionPane.showMessageDialog(null, "DETAILS: \"" + allTestDetails.get(testName) + "\"");
-		
 		// {testType=TEST_ASSERT_EQUALS,
 		//  message="......",
 		//  expected=foobarbaz,
 		//  actual=foobarbaz,
 		//  valueType=string,
 		//  passed=true}
-		Map<String, String> deets = allTestDetails.get(testName);
-		if (deets == null) {
+		TestInfo testInfo = allTests.get(testName);
+		if (testInfo == null) {
 			return;
 		}
+		Map<String, String> deets = testInfo.details;
 		
 		boolean passed = deets.containsKey("passed") && deets.get("passed").equalsIgnoreCase("true");
 		String type = deets.containsKey("testType") ? deets.get("testType").toUpperCase().intern() : "";
@@ -369,7 +470,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		} else if (type == "ASSERT_FALSE") {
 			message += " (must be false)";
 		} else if (type == "EXCEPTION") {
-			message += " (threw exception)";
+			// message += " (threw exception)";
 		} else if (type == "NOT_EXCEPTION") {
 			message += " (didn't throw expected exception)";
 		} else if (type == "PASS") {

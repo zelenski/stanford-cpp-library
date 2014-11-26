@@ -161,23 +161,27 @@ void MartyGraphicalTestResultPrinter::setFailDetails(const UnitTestDetails& deet
 }
 
 void MartyGraphicalTestResultPrinter::OnTestStart(const ::testing::TestInfo& test_info) {
-    autograder::getFlags().currentTestCaseName = test_info.name();
-    autograder::getFlags().testTimers[autograder::getFlags().currentTestCaseName].start();   // starts timer
+    if (autograder::currentTestShouldRun()) {
+        autograder::getFlags().currentTestCaseName = test_info.name();
+        autograder::getFlags().testTimers[autograder::getFlags().currentTestCaseName].start();   // starts timer
+    }
 }
 
 void MartyGraphicalTestResultPrinter::OnTestEnd(const ::testing::TestInfo& test_info) {
-    std::string testName = test_info.name();
-    if (test_info.result()->Failed()) {
-        pp->autograderunittest_setTestResult(testName, "fail");
-    } else {
-        pp->autograderunittest_setTestResult(testName, "pass");
-    }
-    
-    if (autograder::getFlags().testTimers.containsKey(testName)) {
-        autograder::getFlags().testTimers[testName].stop();
-        int runtimeMS = (int) autograder::getFlags().testTimers[testName].elapsed();
-        if (runtimeMS >= TEST_RUNTIME_MIN_TO_DISPLAY_MS) {
-            pp->autograderunittest_setTestRuntime(testName, runtimeMS);
+    if (autograder::currentTestShouldRun()) {
+        std::string testName = test_info.name();
+        if (test_info.result()->Failed()) {
+            pp->autograderunittest_setTestResult(testName, "fail");
+        } else {
+            pp->autograderunittest_setTestResult(testName, "pass");
+        }
+        
+        if (autograder::getFlags().testTimers.containsKey(testName)) {
+            autograder::getFlags().testTimers[testName].stop();
+            int runtimeMS = (int) autograder::getFlags().testTimers[testName].elapsed();
+            if (runtimeMS >= TEST_RUNTIME_MIN_TO_DISPLAY_MS) {
+                pp->autograderunittest_setTestRuntime(testName, runtimeMS);
+            }
         }
     }
 }

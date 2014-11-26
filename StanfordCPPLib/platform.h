@@ -45,7 +45,10 @@ public:
     void autograderinput_removeCategory(std::string name);
     void autograderinput_setVisible(bool value = true);
     void autograderunittest_addTest(const std::string& testName, const std::string& category = "", bool styleCheck = false);
+    bool autograderunittest_isChecked(const std::string& testName);
     void autograderunittest_clearTests(bool styleCheck = false);
+    void autograderunittest_clearTestResults(bool styleCheck = false);
+    void autograderunittest_setChecked(const std::string& testName, bool checked = true);
     void autograderunittest_setTestCounts(int passCount, int testCount, bool styleCheck = false);
     void autograderunittest_setTestDetails(const std::string& testName, const std::string& details, bool styleCheck = false);
     void autograderunittest_setTestingCompleted(bool completed = true, bool styleCheck = false);

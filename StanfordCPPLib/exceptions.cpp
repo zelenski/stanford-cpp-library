@@ -331,10 +331,11 @@ static void signalHandlerEnable() {
 #endif // __APPLE__
     sigaction(SIGSEGV, &sig_action, NULL);
     sigaction(SIGFPE,  &sig_action, NULL);
-    // sigaction(SIGINT,  &sig_action, NULL);
     sigaction(SIGILL,  &sig_action, NULL);
     sigaction(SIGTERM, &sig_action, NULL);
-#ifndef SPL_AUTOGRADER_MODE
+#ifdef SPL_AUTOGRADER_MODE
+    sigaction(SIGINT,  &sig_action, NULL);
+#else // not SPL_AUTOGRADER_MODE
     sigaction(SIGABRT, &sig_action, NULL);
 #endif // SPL_AUTOGRADER_MODE
     handled = true;
@@ -345,7 +346,9 @@ static void signalHandlerEnable() {
     SIGNALS_HANDLED.push_back(SIGSEGV);
     SIGNALS_HANDLED.push_back(SIGILL);
     SIGNALS_HANDLED.push_back(SIGFPE);
-#ifndef SPL_AUTOGRADER_MODE
+#ifdef SPL_AUTOGRADER_MODE
+    SIGNALS_HANDLED.push_back(SIGINT);
+#else // not SPL_AUTOGRADER_MODE
     SIGNALS_HANDLED.push_back(SIGABRT);
 #endif // SPL_AUTOGRADER_MODE
     if (!handled) {
@@ -378,6 +381,9 @@ static void stanfordCppLibSignalHandler(int sig) {
     } else if (sig == SIGFPE) {
         SIGNAL_KIND = "An arithmetic error";
         SIGNAL_DETAILS = "This typically happens when you divide by 0 or produce an overflow.";
+    } else if (sig == SIGINT) {
+        SIGNAL_KIND = "An interrupt error";
+        SIGNAL_DETAILS = "This typically happens when your code timed out because it was stuck in an infinite loop.";
     } else if (sig == SIGSTACK) {
         SIGNAL_KIND = "A stack overflow";
         SIGNAL_DETAILS = "This can happen when you have a function that calls itself infinitely.";
@@ -444,7 +450,7 @@ static void stanfordCppLibTerminateHandler() {
     } catch (bool b) {
         FILL_IN_EXCEPTION_TRACE(b, "A bool exception", boolToString(b));
     } catch (double d) {
-        FILL_IN_EXCEPTION_TRACE(d, "A bool exception", realToString(d));
+        FILL_IN_EXCEPTION_TRACE(d, "A double exception", realToString(d));
     } catch (...) {
         std::string ex = "Unknown";
         FILL_IN_EXCEPTION_TRACE(ex, "An exception", std::string());

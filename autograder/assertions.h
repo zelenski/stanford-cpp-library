@@ -69,6 +69,12 @@
         msg, a, b, "string", a == b)); \
     EXPECT_EQ(a, b)
 
+#define assertEqualsCString(msg, a, b) \
+    autograder::setFailDetails(autograder::UnitTestDetails( \
+        autograder::UnitTestType::TEST_ASSERT_EQUALS, \
+        msg, a, b, "string", std::string(a) == std::string(b))); \
+    EXPECT_EQ(a, b)
+
 #define assertEqualsInt(msg, a, b) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_EQUALS, \
@@ -161,7 +167,5 @@
 #define assertThrowsAny(msg, stmt)           EXPECT_ANY_THROW(stmt)
 #define assertThrows(msg, stmt, ex)          EXPECT_THROW(stmt, ex)
 #define assertNotThrows(msg, stmt, ex)       EXPECT_NO_THROW(stmt)
-#define assertCStringEquals(msg, a, b)       EXPECT_STREQ(a, b)
-#define assertCStringNotEquals(msg, a, b)    EXPECT_STRNE(a, b)
 
 #endif // _assertions_h

@@ -922,8 +922,8 @@ bool Map<KeyType, ValueType>::containsKey(const KeyType& key) const {
 template <typename KeyType, typename ValueType>
 bool Map<KeyType, ValueType>::equals(const Map<KeyType, ValueType>& map2) const {
     if (this == &map2) {
-		return true;
-	}
+        return true;
+    }
     if (size() != map2.size()) {
         return false;
     }

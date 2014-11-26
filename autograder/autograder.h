@@ -75,6 +75,7 @@ public:
     std::string inputPanelFilename;
     std::string startMessage;
     std::string aboutText;
+    bool currentTestShouldRun;
     Map<std::string, Set<std::string> > testsAdded;
     Map<std::string, Timer> testTimers;
 
@@ -117,6 +118,11 @@ std::string getCurrentCategoryName();
  * Called internally by autograder; do not use.
  */
 std::string getCurrentTestCaseName();
+
+/*
+ * Called internally by autograder; do not use.
+ */
+bool currentTestShouldRun();
 
 /*
  * Called internally by autograder; do not use.
@@ -168,6 +174,11 @@ void setCurrentCategoryName(const std::string& categoryName);
  * Called internally by autograder; do not use.
  */
 void setCurrentTestCaseName(const std::string& testName);
+
+/*
+ * Called internally by autograder; do not use.
+ */
+void setCurrentTestShouldRun(bool shouldRun);
 
 /*
  * Specifies details to show for a failed test case.

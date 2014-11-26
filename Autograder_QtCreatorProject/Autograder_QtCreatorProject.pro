@@ -81,6 +81,7 @@ unix:!macx {
     QMAKE_CXXFLAGS += -Wno-dangling-field
     QMAKE_CXXFLAGS += -Wno-unused-const-variable
     LIBS += -ldl
+    LIBS += -lpthread
 }
 
 # increase system stack size (helpful for recursive programs)

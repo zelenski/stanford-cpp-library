@@ -11,27 +11,34 @@
 
 #include "autogradertest.h"
 #include "autograder.h"
+#include "platform.h"
 
 namespace autograder {
 
 int AutograderTest::TIMEOUT_MS_DEFAULT = 10000;
 int AutograderTest::TIMEOUT_MS_MIN = 100;
-Vector<std::string> AutograderTest::allCategories;
-Map<std::string, Vector<std::string> > AutograderTest::allTests;
+static std::vector<std::string>& allCategories() {
+    static std::vector<std::string> v;
+    return v;
+}
+std::map<std::string, std::vector<std::string> >& allTests() {
+    static std::map<std::string, std::vector<std::string> > m;
+    return m;
+}
 
 void AutograderTest::addTestToList(const std::string& categoryName, const std::string& testName) {
-    if (!allTests.containsKey(categoryName)) {
-        allCategories.add(categoryName);
+    if (allTests().find(categoryName) == allTests().end()) {
+        allCategories().push_back(categoryName);
     }
-    allTests[categoryName] += testName;
+    allTests()[categoryName].push_back(testName);
 }
 
-const Vector<std::string>& AutograderTest::getAllCategories() {
-    return allCategories;
+const std::vector<std::string>& AutograderTest::getAllCategories() {
+    return allCategories();
 }
 
-const Vector<std::string>& AutograderTest::getAllTests(const std::string& categoryName) {
-    return allTests[categoryName];
+const std::vector<std::string>& AutograderTest::getAllTests(const std::string& categoryName) {
+    return allTests()[categoryName];
 }
 
 int AutograderTest::getDefaultTimeout() {
@@ -51,6 +58,22 @@ void AutograderTest::setTestTimeout(int ms) {
         timeoutMS = std::max(TIMEOUT_MS_MIN, ms);
     } else {
         timeoutMS = ms;
+    }
+}
+
+std::string AutograderTest::getName() const {
+    return this->name;
+}
+
+std::string AutograderTest::getCategory() const {
+    return this->category;
+}
+
+bool AutograderTest::shouldRun() {
+    if (autograder::isGraphicalUI()) {
+        return getPlatform()->autograderunittest_isChecked(this->name);
+    } else {
+        return true;
     }
 }
 

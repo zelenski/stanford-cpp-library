@@ -63,6 +63,7 @@ AutograderFlags::AutograderFlags() {
     graphicalUI = false;
     callbackStart = NULL;
     callbackEnd = NULL;
+    currentTestShouldRun = true;
 }
 
 static AutograderFlags FLAGS;
@@ -106,6 +107,10 @@ std::string getCurrentCategoryName() {
 
 std::string getCurrentTestCaseName() {
     return FLAGS.currentTestCaseName;
+}
+
+bool currentTestShouldRun() {
+    return FLAGS.currentTestShouldRun;
 }
 
 AutograderFlags& getFlags() {
@@ -167,6 +172,10 @@ void setCurrentCategoryName(const std::string& categoryName) {
 
 void setCurrentTestCaseName(const std::string& testName) {
     FLAGS.currentTestCaseName = testName;
+}
+
+void setCurrentTestShouldRun(bool shouldRun) {
+    FLAGS.currentTestShouldRun = shouldRun;
 }
 
 void setFailDetails(const autograder::UnitTestDetails& deets) {
@@ -412,15 +421,6 @@ static int mainRunAutograderTestCases(int argc, char** argv) {
         }
     }
     
-    // tell the GUI the names of all tests so that it can display them
-    pp->autograderunittest_setVisible(false);
-    for (std::string category : autograder::AutograderTest::getAllCategories()) {
-        for (std::string test : autograder::AutograderTest::getAllTests(category)) {
-            pp->autograderunittest_addTest(test, category);
-        }
-    }
-    pp->autograderunittest_setVisible(true);
-
     int result = RUN_ALL_TESTS();   // run Google Test framework now
 
     // un-lock-down
@@ -579,7 +579,10 @@ int autograderGraphicalMain(int argc, char** argv) {
                     FLAGS.callbackStart();
                 }
                 
-                pp->autograderunittest_clearTests();
+                // pp->autograderunittest_clearTests();
+                pp->autograderunittest_clearTestResults();
+                pp->autograderunittest_setTestingCompleted(false);
+                pp->autograderunittest_setVisible(true);
                 result = mainRunAutograderTestCases(argc, argv);
                 pp->autograderunittest_setTestingCompleted(true);
                 
@@ -596,7 +599,7 @@ int autograderGraphicalMain(int argc, char** argv) {
                 // (While program is running, if we close console, exit entire
                 // autograder program because we might be blocked on console I/O.
                 // But after it's done running, set behavior to just hide the
-                // console, since the grader will probabl ytry to close it and then
+                // console, since the grader will probably try to close it and then
                 // proceed with more grading and tests afterward.
                 // A little wonky, but it avoids most of the surprise cases of
                 // "I closed the student's console and it killed the autograder".
@@ -641,6 +644,15 @@ int main(int argc, char** argv) {
     setConsoleLocationSaved(true);
     setConsoleCloseOperation(ConsoleCloseOperation::CONSOLE_HIDE_ON_CLOSE);
     
+    // tell the GUI the names of all tests so that it can display them
+    getPlatform()->autograderunittest_setVisible(false);
+    for (std::string category : autograder::AutograderTest::getAllCategories()) {
+        for (std::string test : autograder::AutograderTest::getAllTests(category)) {
+            getPlatform()->autograderunittest_addTest(test, category);
+        }
+    }
+    getPlatform()->autograderunittest_setVisible(true);
+
     // your assignment-specific autograder main runs here
     ::autograderMain();
     

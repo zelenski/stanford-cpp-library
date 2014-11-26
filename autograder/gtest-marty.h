@@ -22,10 +22,17 @@
 #include "gtest.h"
 #include "threading.h"
 
+/*
+ * A big nasty macro that defines a subclass of AutograderTest to
+ * represent a single unit test.
+ */
 #define GTEST_TEST_TIMED(test_case_name, test_name, parent_class, timeoutMS, parent_id) \
     class GTEST_TEST_CLASS_NAME_(test_case_name, test_name) : public parent_class { \
     public: \
-        GTEST_TEST_CLASS_NAME_(test_case_name, test_name)() {} \
+        GTEST_TEST_CLASS_NAME_(test_case_name, test_name)() { \
+            this->name = #test_name; \
+            this->category = #test_case_name; \
+        } \
     private: \
         virtual void TestRealBody(); \
         virtual void TestBody(); \
@@ -42,9 +49,15 @@
             parent_class::TearDownTestCase, \
             new ::testing::internal::TestFactoryImpl<GTEST_TEST_CLASS_NAME_(test_case_name, test_name)>); \
     void GTEST_TEST_CLASS_NAME_(test_case_name, test_name)::TestBody() { \
+        autograder::setCurrentTestShouldRun(shouldRun()); \
+        if (!shouldRun()) { \
+            return; \
+        } \
         if (timeoutMS > 0) { \
             setTestTimeout(timeoutMS); \
             runTestWithTimeout(this); \
+        } else { \
+            TestRealBody(); \
         } \
     } \
     void GTEST_TEST_CLASS_NAME_(test_case_name, test_name)::TestRealBody()
