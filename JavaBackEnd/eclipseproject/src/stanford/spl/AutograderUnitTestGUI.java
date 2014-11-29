@@ -31,7 +31,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 	private static AutograderUnitTestGUI styleCheckInstance;   // singleton
 	
 	private static final String TESTS_TITLE = "Autograder Tests";
-	private static final String STYLE_CHECK_TITLE = "Autograder Tests";
+	private static final String STYLE_CHECK_TITLE = "Style Checker";
 	
 	public static synchronized AutograderUnitTestGUI getInstance(JavaBackEnd javaBackEnd) {
 		if (instance == null) {
@@ -125,39 +125,45 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 			currentCategory = category;
 			allCategories.put(name, currentCategory);
 			if (!name.isEmpty()) {
-//				TitledBorder border = BorderFactory.createTitledBorder(name);
-//				border.setTitleJustification(SwingConstants.CENTER);
-				Border border = BorderFactory.createLineBorder(Color.DARK_GRAY);
-				((Box) currentCategory).setBorder(border);
+				if (isStyleCheck()) {
+					TitledBorder border = BorderFactory.createTitledBorder(name);
+					border.setTitleJustification(SwingConstants.CENTER);
+					((Box) currentCategory).setBorder(border);
+				} else {
+					Border border = BorderFactory.createLineBorder(Color.DARK_GRAY);
+					((Box) currentCategory).setBorder(border);
+				}
 				currentCategory.setBackground(ZEBRA_STRIPE_COLOR_2);
 			}
 			
-			// top row of 'select/deselect all' buttons
-			JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT));
-			JButton selectAll = new JButton("All");
-			selectAll.setIcon(new ImageIcon("checkbox-checked.gif"));
-			GuiUtils.shrinkFont(selectAll, 2);
-			selectAll.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent event) {
-					selectAll(category, true);
+			if (!isStyleCheck()) {
+				// top row of 'select/deselect all' buttons
+				JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT));
+				JButton selectAll = new JButton("All");
+				selectAll.setIcon(new ImageIcon("checkbox-checked.gif"));
+				GuiUtils.shrinkFont(selectAll, 2);
+				selectAll.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent event) {
+						selectAll(category, true);
+					}
+				});
+				JButton deselectAll = new JButton("None");
+				deselectAll.setIcon(new ImageIcon("checkbox-unchecked.gif"));
+				GuiUtils.shrinkFont(deselectAll, 2);
+				deselectAll.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent event) {
+						selectAll(category, false);
+					}
+				});
+				top.add(selectAll);
+				top.add(deselectAll);
+				if (!name.isEmpty()) {
+					JLabel nameLabel = new JLabel(name);
+					GuiUtils.shrinkFont(nameLabel, 1);
+					top.add(nameLabel);
 				}
-			});
-			JButton deselectAll = new JButton("None");
-			deselectAll.setIcon(new ImageIcon("checkbox-unchecked.gif"));
-			GuiUtils.shrinkFont(deselectAll, 2);
-			deselectAll.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent event) {
-					selectAll(category, false);
-				}
-			});
-			top.add(selectAll);
-			top.add(deselectAll);
-			if (!name.isEmpty()) {
-				JLabel nameLabel = new JLabel(name);
-				GuiUtils.shrinkFont(nameLabel, 1);
-				top.add(nameLabel);
+				category.add(top);
 			}
-			category.add(top);
 			
 			contentPaneBox.add(currentCategory);
 			checkVisibility();
@@ -186,7 +192,9 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		// testInfo.checked.setPreferredSize(new Dimension(10, 10));
 		
 		testInfo.checked.setSelected(true);
-		testWestPanel.add(testInfo.checked);
+		if (!isStyleCheck()) {
+			testWestPanel.add(testInfo.checked);
+		}
 		
 		JLabel testCountLabel = new JLabel(String.format("%3d. ", testCount));
 		allTests.put(testCountLabel, testInfo);
@@ -453,6 +461,9 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 			return;
 		}
 		Map<String, String> deets = testInfo.details;
+		if (deets.isEmpty()) {
+			return;
+		}
 		
 		boolean passed = deets.containsKey("passed") && deets.get("passed").equalsIgnoreCase("true");
 		String type = deets.containsKey("testType") ? deets.get("testType").toUpperCase().intern() : "";

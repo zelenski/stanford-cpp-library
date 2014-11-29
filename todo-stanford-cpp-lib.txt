@@ -1,4 +1,21 @@
 	C++ libs
+x		refactor hw1-7 autograders to use multiple test classes, set category names that way
+x			hw1
+x			hw2
+x			hw3
+x			hw4
+x			hw5
+x			hw6
+->			hw7
+		
+		fix deploy script
+			doesn't really copy in res/autograder, spl.jar, etc.
+			combine the three scripts? copy in SCPPLib, then spl.jar, then autograder/ if found/needed?
+			add 'force' flag
+		
+		bugbug: when you start first test case later, veeeery long MS time elapsed
+		bugbug: first-run test case doesn't show any details when clicked?  :-/
+		
 		thread/signal stuff
 			test on Mac with pthread
 			while test running, set --> arrow? set spinner GIF?
@@ -7,8 +24,6 @@
 			print/dump stack trace on thread timeout?
 			refactor: move 'run this function with a given timeout' command to separate API? platform.h/cpp?
 			refactor: move all timer start/stop, setting of tests in gui, out of result printer?
-		
-		refactor hw1-7 autograders to use multiple test classes, set category names that way
 		
 		JBE console as GWindow so I can send JFrame commands to it?
 		

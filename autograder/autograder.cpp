@@ -6,6 +6,9 @@
  * See autograder.h for documentation of each member.
  * 
  * @author Marty Stepp
+ * @version 2014/11/27
+ * - bug fix with shutting down program during manual testing
+ * - bug fix with style checker not showing and having unwanted checkboxes
  * @version 2014/11/20
  * - bug fix with style checker spinner GIF image remaining at end
  * - bug fix with date/time printing "2:0 PM"
@@ -440,6 +443,7 @@ static int mainRunAutograderTestCases(int argc, char** argv) {
 
 static void mainRunStyleChecker() {
     pp->jbeconsole_toFront();
+    pp->autograderunittest_setVisible(true, /* styleCheck */ true);
     int styleCheckCount = 0;
     for (std::string filename : FLAGS.styleCheckFiles) {
         stylecheck::styleCheck(
@@ -607,7 +611,9 @@ int autograderGraphicalMain(int argc, char** argv) {
                 pp->jbeconsole_setVisible(true);
                 pp->jbeconsole_toFront();
                 setConsoleCloseOperation(ConsoleCloseOperation::CONSOLE_EXIT_ON_CLOSE);
+                autograder::gwindowSetExitGraphicsEnabled(false);
                 studentMain();
+                autograder::gwindowSetExitGraphicsEnabled(true);
                 setConsoleCloseOperation(ConsoleCloseOperation::CONSOLE_HIDE_ON_CLOSE);
             } else if (cmd == styleCheckText) {
                 mainRunStyleChecker();
