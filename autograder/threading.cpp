@@ -5,6 +5,8 @@
  * with a timeout, possibly in a separate thread depending on the platform.
  *
  * @author Marty Stepp
+ * @version 2014/11/29
+ * - fixes for Mac OS X's shitty implementation of pthread library
  * @version 2014/11/26
  * @since 2014/11/26
  */
@@ -65,7 +67,64 @@ void runTestWithTimeout(autograder::AutograderTest* test) {
 }
 
 #else // not _WIN32
+#ifdef __APPLE__
+#ifndef ETIMEDOUT
+#define ETIMEDOUT 110
+#endif
 
+/*
+ * I need this because Mac OS X doesn't include the function pthread_timedjoin_np.
+ * This code was shamelessly stolen from:
+ * http://stackoverflow.com/questions/11551188/alternative-to-pthread-timedjoin-np
+ */
+struct args {
+    int joined;
+    pthread_t td;
+    pthread_mutex_t mtx;
+    pthread_cond_t cond;
+    void** res;
+};
+
+static void* waiter(void* ap) {
+    struct args* args = (struct args*) ap;
+    pthread_join(args->td, args->res);
+    pthread_mutex_lock(&args->mtx);
+    pthread_mutex_unlock(&args->mtx);
+    args->joined = 1;
+    pthread_cond_signal(&args->cond);
+    return 0;
+}
+
+int pthread_timedjoin_np(pthread_t td, void** res, struct timespec* ts) {
+    pthread_t tmp;
+    int ret;
+    struct args args = {
+        .td = td,
+        .res = res
+    };
+
+    pthread_mutex_init(&args.mtx, 0);
+    pthread_cond_init(&args.cond, 0);
+    pthread_mutex_lock(&args.mtx);
+
+    ret = pthread_create(&tmp, 0, waiter, &args);
+    if (ret) {
+        return -1;
+    }
+
+    do {
+        ret = pthread_cond_timedwait(&args.cond, &args.mtx, ts);
+    } while (!args.joined && ret != ETIMEDOUT);
+
+    pthread_cancel(tmp);
+    pthread_join(tmp, 0);
+
+    pthread_cond_destroy(&args.cond);
+    pthread_mutex_destroy(&args.mtx);
+
+    return args.joined ? 0 : ETIMEDOUT;
+}
+#endif // __APPLE__
 #include <pthread.h>
 #include <sys/time.h>
 
@@ -91,7 +150,7 @@ static void failWithException(autograder::AutograderTest* test, std::string kind
  */
 static void* runTestInItsOwnThread(void* arg) {
     autograder::AutograderTest* test = (autograder::AutograderTest*) arg;
-    getPlatform()->autograderunittest_setTestResult(test->getName(), "progress");
+    // getPlatform()->autograderunittest_setTestResult(test->getName(), "progress");
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
     pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
     
@@ -130,14 +189,13 @@ void runTestWithTimeout(autograder::AutograderTest* test) {
         // create a new pthread and run the test in that thread
         pthread_t thread;
         pthread_create(&thread, NULL, &runTestInItsOwnThread, (void*) test);
-        std::cout << "runTestWithTimeout I created thread " << thread << std::endl;
 
         // convert the thread's timeout in ms into the needed timeval struct
         struct timeval now;
         struct timespec timeToWait;
         gettimeofday(&now,NULL);
         timeToWait.tv_sec = now.tv_sec + (timeoutMS / 1000);
-        timeToWait.tv_nsec = (now.tv_usec + 1000UL * (timeoutMS % 1000)) * 1000UL;
+        timeToWait.tv_nsec = ((now.tv_usec + 1000UL * (timeoutMS % 1000)) * 1000UL) % 1000000UL;
         
         // wait for the given timeout amount of time
         void* threadReturn = NULL;
