@@ -35,7 +35,7 @@ static void appendSpace(std::string& prompt);
  */
 
 int getInteger(const std::string& prompt,
-        const std::string& reprompt) {
+               const std::string& reprompt) {
     std::string promptCopy = prompt;
     appendSpace(promptCopy);
     int value;
@@ -76,7 +76,7 @@ std::string getLine(const std::string& prompt) {
 }
 
 void getLine(const std::string& prompt,
-        std::string& out) {
+             std::string& out) {
     std::string promptCopy = prompt;
     appendSpace(promptCopy);
     std::cout << promptCopy;
@@ -84,12 +84,12 @@ void getLine(const std::string& prompt,
 }
 
 void getLine(std::istream& input,
-        std::string& out) {
+             std::string& out) {
     getline(input, out);
 }
 
 double getReal(const std::string& prompt,
-        const std::string& reprompt) {
+               const std::string& reprompt) {
     std::string promptCopy = prompt;
     appendSpace(promptCopy);
     double value;
@@ -115,8 +115,8 @@ double getReal(const std::string& prompt,
 }
 
 bool getYesOrNo(const std::string& prompt,
-        const std::string& reprompt,
-        const std::string& defaultValue) {
+                const std::string& reprompt,
+                const std::string& defaultValue) {
     std::string promptCopy = prompt;
     appendSpace(promptCopy);
     bool value;
