@@ -61,9 +61,10 @@ stored in <code>EnglishWords.dat</code>:
 		<td class=indexSynopsis width=100%>Initializes a new empty lexicon.</td>
 	</tr>
 	<tr>
-		<td class=indexKey><nobr><a href="#Constructor:DawgLexicon">DawgLexicon(<var>filename</var>)</a>&nbsp;</nobr></td>
+		<td class=indexKey><nobr><a href="#Constructor:DawgLexicon">DawgLexicon(<var>filename</var>)</a>&nbsp;<br>
+			<a href="#Constructor:DawgLexicon">DawgLexicon(<var>istream</var>)</a></nobr></td>
 		<td class="bigoh">O(N log N)</td>
-		<td class=indexSynopsis width=100%>Initializes a new lexicon that reads words from the given file.</td>
+		<td class=indexSynopsis width=100%>Initializes a new lexicon that reads words from the given file or stream.</td>
 	</tr>
 	<tr>
 		<td class=indexHead colspan=3>Methods</td>
@@ -74,9 +75,10 @@ stored in <code>EnglishWords.dat</code>:
 		<td class=indexSynopsis width=100%>Adds the specified word to the lexicon.</td>
 	</tr>
 	<tr>
-		<td class=indexKey><nobr><a href="#Method:addWordsFromFile">addWordsFromFile(<var>filename</var>)</a>&nbsp;</nobr></td>
+		<td class=indexKey><nobr><a href="#Method:addWordsFromFile">addWordsFromFile(<var>filename</var>)</a>&nbsp;<br>
+			<a href="#Method:addWordsFromFile">addWordsFromFile(<var>istream</var>)</a></nobr></td>
 		<td class="bigoh">O(N log N)</td>
-		<td class=indexSynopsis width=100%>Reads the file and adds all of its words to the lexicon.</td>
+		<td class=indexSynopsis width=100%>Reads the given file/stream and adds all of its words to the lexicon.</td>
 	</tr>
 	<tr>
 		<td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td>
@@ -148,12 +150,14 @@ stored in <code>EnglishWords.dat</code>:
 <a name="Constructor:DawgLexicon"></a>
 <pre class=detailCode>
 DawgLexicon();
+DawgLexicon(istream&amp; input);
 DawgLexicon(string filename);
 </pre>
 <div class=detailHTML>
 Initializes a new lexicon.  The default constructor creates an empty
 lexicon.  The second form reads in the contents of the lexicon from
-the specified data file.  The data file must be in one of two formats:
+the specified data file or stream.
+The data file must be in one of two formats:
 (1) a space-efficient precompiled binary format or (2) a text file
 containing one word per line.  The Stanford library distribution
 includes a binary lexicon file named <code>EnglishWords.dat</code>
@@ -190,10 +194,11 @@ lex.add(word);
 <hr>
 <a name="Method:addWordsFromFile"></a>
 <pre class=detailCode>
+void addWordsFromFile(istream&amp; input);
 void addWordsFromFile(string filename);
 </pre>
 <div class=detailHTML>
-Reads the file and adds all of its words to the lexicon.
+Reads the given file/stream and adds all of its words to the lexicon.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>

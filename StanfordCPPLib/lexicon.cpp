@@ -34,15 +34,21 @@
 #include "compare.h"
 #include "dawglexicon.h"
 #include "error.h"
+#include "filelib.h"
 #include "hashcode.h"
 #include "strlib.h"
 
-static bool isDAWGFile(const std::string& filename);
 static bool scrub(std::string& str);
 
 Lexicon::Lexicon() {
     m_root = NULL;
     m_size = 0;
+}
+
+Lexicon::Lexicon(std::istream& input) {
+    m_root = NULL;
+    m_size = 0;
+    addWordsFromFile(input);
 }
 
 Lexicon::Lexicon(const std::string& filename) {
@@ -72,20 +78,29 @@ bool Lexicon::add(const std::string& word) {
     return addHelper(m_root, scrubbed, /* originalWord */ scrubbed);
 }
 
-void Lexicon::addWordsFromFile(const std::string& filename) {
-    if (isDAWGFile(filename)) {
-        readBinaryFile(filename);
+void Lexicon::addWordsFromFile(std::istream& input) {
+    bool isDAWG = isDAWGFile(input);
+    rewindStream(input);
+    if (isDAWG) {
+        readBinaryFile(input);
     } else {
-        std::ifstream istr(filename.c_str());
-        if (istr.fail()) {
-            error("Lexicon::addWordsFromFile: Couldn't open lexicon file " + filename);
+        if (input.fail()) {
+            error("Lexicon::addWordsFromFile: Couldn't read from input");
         }
         std::string line;
-        while (getline(istr, line)) {
+        while (getline(input, line)) {
             add(trim(line));
         }
-        istr.close();
     }
+}
+
+void Lexicon::addWordsFromFile(const std::string& filename) {
+    std::ifstream input(filename.c_str());
+    if (input.fail()) {
+        error("Lexicon::addWordsFromFile: Couldn't read from input file " + filename);
+    }
+    addWordsFromFile(input);
+    input.close();
 }
 
 void Lexicon::clear() {
@@ -321,6 +336,45 @@ void Lexicon::deleteTree(TrieNode* node) {
 }
 
 /*
+ * Returns true if the given file (probably) represents a
+ * binary DAWG lexicon data file.
+ */
+bool Lexicon::isDAWGFile(std::istream& input) const {
+    char firstFour[4], expected[] = "DAWG";
+    if (input.fail()) {
+        error(std::string("Lexicon::addWordsFromFile: Couldn't read input"));
+    }
+    input.read(firstFour, 4);
+    bool result = strncmp(firstFour, expected, 4) == 0;
+    return result;
+}
+
+/*
+ * Returns true if the given file (probably) represents a
+ * binary DAWG lexicon data file.
+ */
+bool Lexicon::isDAWGFile(const std::string& filename) const {
+    std::ifstream input(filename.c_str());
+    if (input.fail()) {
+        error(std::string("Lexicon::addWordsFromFile: Couldn't open lexicon file ") + filename);
+    }
+    bool result = isDAWGFile(input);
+    input.close();
+    return result;
+}
+
+/*
+ * We just delegate to DawgLexicon, the old implementation, to read a binary
+ * lexicon data file, and then we extract its yummy data into our trie.
+ */
+void Lexicon::readBinaryFile(std::istream& input) {
+    DawgLexicon ldawg(input);
+    for (std::string word : ldawg) {
+        add(word);
+    }
+}
+
+/*
  * We just delegate to DawgLexicon, the old implementation, to read a binary
  * lexicon data file, and then we extract its yummy data into our trie.
  */
@@ -377,22 +431,6 @@ int hashCode(const Lexicon& l) {
         code = HASH_MULTIPLIER * code + hashCode(n);
     }
     return int(code & HASH_MASK);
-}
-
-/*
- * Returns true if the given file (probably) represents a
- * binary DAWG lexicon data file.
- */
-static bool isDAWGFile(const std::string& filename) {
-    char firstFour[4], expected[] = "DAWG";
-    std::ifstream istr(filename.c_str());
-    if (istr.fail()) {
-        error(std::string("Lexicon::addWordsFromFile: Couldn't open lexicon file ") + filename);
-    }
-    istr.read(firstFour, 4);
-    bool result = strncmp(firstFour, expected, 4) == 0;
-    istr.close();
-    return result;
 }
 
 static bool scrub(std::string& str) {

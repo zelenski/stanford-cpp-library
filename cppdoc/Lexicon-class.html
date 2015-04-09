@@ -40,6 +40,7 @@ stored in <code>EnglishWords.txt</code>:
 
 <p>
 	This version of <code>Lexicon</code> is implemented internally using a data structure called a <em>prefix tree</em> or <em>trie</em> (pronounced "try"), which allows for efficient prefix and word searching.
+	Some runtimes below are expressed in terms of "W" where W represents the length of the word being added.
 </p>
 
 <table class=index width=100%>
@@ -52,22 +53,24 @@ stored in <code>EnglishWords.txt</code>:
 		<td class=indexSynopsis width=100%>Initializes a new empty lexicon.</td>
 	</tr>
 	<tr>
-		<td class=indexKey><nobr><a href="#Constructor:Lexicon">Lexicon(<var>filename</var>)</a>&nbsp;</nobr></td>
-		<td class="bigoh">O(N log N)</td>
-		<td class=indexSynopsis width=100%>Initializes a new lexicon that reads words from the given file.</td>
+		<td class=indexKey><nobr><a href="#Constructor:Lexicon">Lexicon(<var>filename</var>)</a>&nbsp;<br>
+			<a href="#Constructor:Lexicon">Lexicon(<var>istream</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(WN)</td>
+		<td class=indexSynopsis width=100%>Initializes a new lexicon that reads words from the given file or input stream.</td>
 	</tr>
 	<tr>
 		<td class=indexHead colspan=3>Methods</td>
 	</tr>
 	<tr>
 		<td class=indexKey><nobr><a href="#Method:add">add(<var>word</var>)</a>&nbsp;</nobr></td>
-		<td class="bigoh">O(log N)</td>
+		<td class="bigoh">O(W)</td>
 		<td class=indexSynopsis width=100%>Adds the specified word to the lexicon.</td>
 	</tr>
 	<tr>
-		<td class=indexKey><nobr><a href="#Method:addWordsFromFile">addWordsFromFile(<var>filename</var>)</a>&nbsp;</nobr></td>
-		<td class="bigoh">O(N log N)</td>
-		<td class=indexSynopsis width=100%>Reads the file and adds all of its words to the lexicon.</td>
+		<td class=indexKey><nobr><a href="#Method:addWordsFromFile">addWordsFromFile(<var>filename</var>)</a>&nbsp;<br>
+			<a href="#Method:addWordsFromFile">addWordsFromFile(<var>istream</var>)</a></nobr></td>
+		<td class="bigoh">O(WN)</td>
+		<td class=indexSynopsis width=100%>Reads the given file/stream and adds all of its words to the lexicon.</td>
 	</tr>
 	<tr>
 		<td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td>
@@ -76,17 +79,17 @@ stored in <code>EnglishWords.txt</code>:
 	</tr>
 	<tr>
 		<td class=indexKey><nobr><a href="#Method:contains">contains(<var>word</var>)</a>&nbsp;</nobr></td>
-		<td class="bigoh">O(log N)</td>
+		<td class="bigoh">O(W)</td>
 		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>word</code> is contained in the lexicon.</td>
 	</tr>
 	<tr>
 		<td class=indexKey><nobr><a href="#Method:containsPrefix">containsPrefix(<var>prefix</var>)</a>&nbsp;</nobr></td>
-		<td class="bigoh">O(log N)</td>
+		<td class="bigoh">O(W)</td>
 		<td class=indexSynopsis width=100%>Returns true if any words in the lexicon begin with <code>prefix</code>.</td>
 	</tr>
 	<tr>
 		<td class=indexKey><nobr><a href="#Method:equals">equals(<var>lex</var>)</a>&nbsp;</nobr></td>
-		<td class="bigoh">O(N log N)</td>
+		<td class="bigoh">O(WN)</td>
 		<td class=indexSynopsis width=100%>Returns <code>true</code> if the two lexicons contain the same words.</td>
 	</tr>
 	<tr>
@@ -101,12 +104,12 @@ stored in <code>EnglishWords.txt</code>:
 	</tr>
 	<tr>
 		<td class=indexKey><nobr><a href="#Method:remove">remove(<var>word</var>)</a>&nbsp;</nobr></td>
-		<td class="bigoh">O(log N)</td>
+		<td class="bigoh">O(W)</td>
 		<td class=indexSynopsis width=100%>Removes the specified word from the lexicon.</td>
 	</tr>
 	<tr>
 		<td class=indexKey><nobr><a href="#Method:removePrefix">removePrefix(<var>prefix</var>)</a>&nbsp;</nobr></td>
-		<td class="bigoh">O(log N)</td>
+		<td class="bigoh">O(W)</td>
 		<td class=indexSynopsis width=100%>Removes all words that begin with the specified prefix from the lexicon.</td>
 	</tr>
 	<tr>
@@ -124,12 +127,12 @@ stored in <code>EnglishWords.txt</code>:
 	</tr>
 	<tr>
 		<td class=indexKey><nobr><a href="#Operator:=="><var>lex1</var> == <var>lex1</var></a>&nbsp;</nobr></td>
-		<td class="bigoh">O(N log N)</td>
+		<td class="bigoh">O(WN)</td>
 		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>lex1</code> and <code>lex2</code> contain the same elements.</td>
 	</tr>
 	<tr>
 		<td class=indexKey><nobr><a href="#Operator:!="><var>lex1</var> != <var>lex2</var></a>&nbsp;</nobr></td>
-		<td class="bigoh">O(N log N)</td>
+		<td class="bigoh">O(WN)</td>
 		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>lex1</code> and <code>lex2</code> are different.</td>
 	</tr>
 	<tr>
@@ -139,7 +142,7 @@ stored in <code>EnglishWords.txt</code>:
 	</tr>
 	<tr>
 		<td class=indexKey><nobr><var>istream</var>&nbsp;&gt;&gt;&nbsp;<var>lex</var></nobr></td>
-		<td class="bigoh">O(N log N)</td>
+		<td class="bigoh">O(WN)</td>
 		<td class=indexSynopsis width=100%>Reads the contents of the given input stream into the lexicon.</td>
 	</tr>
 </table>
@@ -149,19 +152,21 @@ stored in <code>EnglishWords.txt</code>:
 <a name="Constructor:Lexicon"></a>
 <pre class=detailCode>
 Lexicon();
+Lexicon(istream&amp; input);
 Lexicon(string filename);
 </pre>
 <div class=detailHTML>
 Initializes a new lexicon.  The default constructor creates an empty
 lexicon.  The second form reads in the contents of the lexicon from
-the specified data file.  The data file must be in one of two formats:
+the specified data file or stream.
+The data file must be in one of two formats:
 (1) a space-efficient precompiled binary format or (2) a text file
 containing one word per line.  The Stanford library distribution
 includes a binary lexicon file named <code>EnglishWords.dat</code>
 containing a list of words in English.  The standard code pattern
 to initialize that lexicon looks like this:
 <pre>
-   Lexicon english("EnglishWords.dat");
+Lexicon english("EnglishWords.dat");
 </pre>
 <p>Usage:<br>
 </div>
@@ -190,10 +195,11 @@ lex.add(word);
 <hr>
 <a name="Method:addWordsFromFile"></a>
 <pre class=detailCode>
+void addWordsFromFile(istream&amp; input);
 void addWordsFromFile(string filename);
 </pre>
 <div class=detailHTML>
-Reads the file and adds all of its words to the lexicon.
+Reads the given file/stream and adds all of its words to the lexicon.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
