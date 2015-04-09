@@ -4,6 +4,9 @@
  * This file exports the <code>PriorityQueue</code> class, a
  * collection in which values are processed in priority order.
  * 
+ * @version 2014/12/04
+ * - moved comparison operators <, >=, etc. behind a (default-disabled)
+ *   compiler flag because implementation is inefficient
  * @version 2014/11/13
  * - added comparison operators <, >=, etc.
  * - added add() method as synonym for enqueue()
@@ -190,6 +193,7 @@ public:
     bool operator ==(const PriorityQueue& pq2) const;
     bool operator !=(const PriorityQueue& pq2) const;
 
+#ifdef PQUEUE_COMPARISON_OPERATORS_ENABLED
     /*
      * Operators: <, <=, >, >=
      * Usage: if (pq1 < pq2) ...
@@ -202,6 +206,7 @@ public:
     bool operator <=(const PriorityQueue& pq2) const;
     bool operator >(const PriorityQueue& pq2) const;
     bool operator >=(const PriorityQueue& pq2) const;
+#endif // PQUEUE_COMPARISON_OPERATORS_ENABLED
 
     /* Private section */
 
@@ -233,7 +238,9 @@ private:
 
     /* Private function prototypes */
     const HeapEntry& heapGet(int index) const;
+#ifdef PQUEUE_COMPARISON_OPERATORS_ENABLED
     int pqCompare(const PriorityQueue& other) const;
+#endif // PQUEUE_COMPARISON_OPERATORS_ENABLED
     bool takesPriority(int i1, int i2);
     void swapHeapEntries(int i1, int i2);
 
@@ -562,6 +569,7 @@ PriorityQueue<ValueType>::heapGet(int index) const {
     return heap[index];
 }
 
+#ifdef PQUEUE_COMPARISON_OPERATORS_ENABLED
 /*
  * Implementation note: Due to the complexity and unpredictable heap ordering of the elements,
  * this function sadly makes a deep copy of both PQs for comparing.
@@ -601,7 +609,7 @@ int PriorityQueue<ValueType>::pqCompare(const PriorityQueue& pq2) const {
         return 0;
     }
 }
-
+#endif // PQUEUE_COMPARISON_OPERATORS_ENABLED
 
 template <typename ValueType>
 void PriorityQueue<ValueType>::swapHeapEntries(int i1, int i2) {
@@ -631,6 +639,7 @@ bool PriorityQueue<ValueType>::operator !=(const PriorityQueue& pq2) const {
     return !equals(pq2);
 }
 
+#ifdef PQUEUE_COMPARISON_OPERATORS_ENABLED
 template <typename ValueType>
 bool PriorityQueue<ValueType>::operator <(const PriorityQueue& pq2) const {
     return pqCompare(pq2) < 0;
@@ -650,6 +659,7 @@ template <typename ValueType>
 bool PriorityQueue<ValueType>::operator >=(const PriorityQueue& pq2) const {
     return pqCompare(pq2) >= 0;
 }
+#endif // PQUEUE_COMPARISON_OPERATORS_ENABLED
 
 /*
  * Template hash function for hash sets.
