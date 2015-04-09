@@ -1,6 +1,4 @@
 /*
- * File: KarelWorldEditor.java
- * ---------------------------
  * This file contains classes that implement the world editor.
  * - 2015/03/31: Changed to use Swing graphical components.
  */
@@ -11,8 +9,88 @@ import acm.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+import javax.swing.*;
 
-class KarelWorldEditor extends Canvas implements MouseListener {
+class KarelWorldEditor extends JComponent implements MouseListener {
+	/* Private constants */
+	private static String[] BEEPER_BAG = {
+			"47494638396123002F00D52000CBFFCB66330066660099999999993397976498",
+			"3200986500CC9898323200CCCC98FFCC99CB9833CC9966333333643131643164",
+			"CC660098CC98993333996633976464CCCCCCFFCBCBCB6533CC6666CCCC664444",
+			"44646431DDDDDDCBFFFFFFFFCBEEEEEE777777888888AAAAAABBBBBB55555566",
+			"6666440000320000910000910000910000910000910000910000910000910000",
+			"9100009100009100009100009100009100009100009100009100009100009100",
+			"0091000091000091000091000021F9040100001E002C0000000023002F004506",
+			"FF408F70482C1A8FC8A4E7A3785428D007E7615228AF9F69E5C0E5620E182834",
+			"C40929411C28664D6178BF847537CCA08429A147D1F1B4830F19737E5D6F6C62",
+			"13254668057D62057F5E908415010A1F4A1F210E0E0F0E1B09280F2328091B0F",
+			"A79B24574A080F1413141C014E96AB450A288C0C61111107BE847762091C4705",
+			"097D727273070D6F0775116A150F0D441F01504F18056276616B5FE26C770561",
+			"B61622260E010207D40F090D15B6469A9B2256460A229B0E66F5865CE0402AC0",
+			"8904A71E0400C5E142402421BC75A300E221920F0A097561648082AA87253854",
+			"A8D04B1AB077E00C256095A68FC93F6E0865F8468100850A280014F9D0C0891A",
+			"FF68C19E11EA45E1801D07FA9630F2168E99A43FE40854C0A0F0929058DFA42E",
+			"53F32D523843154C402862210D856E66ED74FBA2319C9D2805AE2028F5202897",
+			"9169E23520D1C1A2DF800A4A7C4C42A244525B1D4A6C4A90C001070B23868070",
+			"C0785389BE8039209C95D0714262871F7E3041CC5582130B1398B0FA57C88527",
+			"136F3EE8E0B035916C8DF0D8BE75EA40802EB23820C0EC57C180BA810241ADF9",
+			"00C500D14DB670E915CC8E9BB08393609432154A0492D5C1BDD3A3448314EF50",
+			"BA482F0AC69BD107082A1A21512183390AD435561713A68283EC427400853985",
+			"1C500001EFF8C15618ED3DF14076596C33C824FA8DB3C613D4D023C40710A401",
+			"7F4E4D6C01156224604803450652B0868209DEE9E7A2206FD9F1C4064364E1CA",
+			"3723EE32E15D776C034E08AC51900D1436C978873031A9275101E4090182905C",
+			"39C2143336D55107060D04C0DA864E60F08459D22913941C0E2E90041E6671E0",
+			"CE8B771D80480900D93240028F04C0C12415A481406DB675308004769A105010",
+			"0021FF0B4D414347436F6E2004031039000000015772697474656E2062792047",
+			"4946436F6E76657274657220322E342E33206F66204D6F6E6461792C204D6179",
+			"2032352C2031393938003B" };
+	private static final int NORTH = KarelWorld.NORTH;
+	private static final int EAST = KarelWorld.EAST;
+	private static final int SOUTH = KarelWorld.SOUTH;
+	private static final int WEST = KarelWorld.WEST;
+	private static final int INFINITE = KarelWorld.INFINITE;
+	private static final int PLUS1 = KarelWorld.PLUS1;
+	private static final int MINUS1 = KarelWorld.MINUS1;
+	private static final int WALL_TOOL = 1;
+	private static final int COLOR_TOOL = 2;
+	private static final int ROBOT_TOOL = 3;
+	private static final int BEEPER_TOOL = 4;
+	private static final int BEEPER_BAG_TOOL = 5;
+	private static final int BIG_TOOL_SIZE = 20;
+	private static final int COLOR_TOOL_SIZE = 12;
+	private static final int KAREL_TOOL_SIZE = 28;
+	private static final int BEEPER_TOOL_SIZE = 28;
+	private static final int TOOL_SEP = 6;
+	private static final int TOOL_Y_DELTA = 8;
+	// private static final int TOOL_MARGIN = 20;
+	private static final int TOOL_X = 8;
+	private static final int TOOL_Y = 3;
+	// private static final int LABEL_SEP = 5;
+	// private static final int ROBOT_DELTA = 300;
+	// private static final int ROBOT_SIZE = 22;
+	// private static final int ROBOT_SEP = 15;
+	private static final int SELECTED_PIXELS = 3;
+	private static final int WALL_LENGTH = 12;
+	private static final int BEEPER_BAG_WIDTH = 35;
+	private static final int BEEPER_BAG_HEIGHT = 47;
+	private static final int BAG_LABEL_DELTA_Y = 28;
+	private static final int WIDTH = 7 * BIG_TOOL_SIZE + 10 * TOOL_SEP;
+	private static final int HEIGHT = 3
+			* (TOOL_Y + BIG_TOOL_SIZE + TOOL_Y_DELTA) + 3 * COLOR_TOOL_SIZE
+			+ TOOL_Y_DELTA;
+	private static final Color COLORS[] = { null, Color.BLACK, Color.DARK_GRAY,
+			Color.GRAY, Color.LIGHT_GRAY, Color.WHITE, Color.RED, Color.PINK,
+			Color.ORANGE, Color.YELLOW, Color.GREEN, Color.CYAN, Color.BLUE,
+			Color.MAGENTA };
+	private static final int NCOLORS = COLORS.length;
+
+	/* Private state */
+	private ArrayList<MapTool> tools;
+	private KarelWorld world;
+	private MapTool selectedTool;
+	private MapTool oldTool;
+	private MapTool beeperBagTool;
+	private Image beeperBagImage;
 
 	public KarelWorldEditor(KarelWorld world) {
 		this.world = world;
@@ -278,7 +356,12 @@ class KarelWorldEditor extends Canvas implements MouseListener {
 		}
 	}
 
-	public void paint(Graphics g) {
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		if (g instanceof Graphics2D) {
+			Graphics2D g2 = (Graphics2D) g;
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		}
 		drawTools(g);
 	}
 
@@ -324,111 +407,21 @@ class KarelWorldEditor extends Canvas implements MouseListener {
 		return null;
 	}
 
-	/* Private constants */
+	private static class MapTool {
+		public MapTool(int toolClass, int x, int y, int size) {
+			this.toolClass = toolClass;
+			this.x = x;
+			this.y = y;
+			this.size = size;
+		}
 
-	private static String[] BEEPER_BAG = {
-			"47494638396123002F00D52000CBFFCB66330066660099999999993397976498",
-			"3200986500CC9898323200CCCC98FFCC99CB9833CC9966333333643131643164",
-			"CC660098CC98993333996633976464CCCCCCFFCBCBCB6533CC6666CCCC664444",
-			"44646431DDDDDDCBFFFFFFFFCBEEEEEE777777888888AAAAAABBBBBB55555566",
-			"6666440000320000910000910000910000910000910000910000910000910000",
-			"9100009100009100009100009100009100009100009100009100009100009100",
-			"0091000091000091000091000021F9040100001E002C0000000023002F004506",
-			"FF408F70482C1A8FC8A4E7A3785428D007E7615228AF9F69E5C0E5620E182834",
-			"C40929411C28664D6178BF847537CCA08429A147D1F1B4830F19737E5D6F6C62",
-			"13254668057D62057F5E908415010A1F4A1F210E0E0F0E1B09280F2328091B0F",
-			"A79B24574A080F1413141C014E96AB450A288C0C61111107BE847762091C4705",
-			"097D727273070D6F0775116A150F0D441F01504F18056276616B5FE26C770561",
-			"B61622260E010207D40F090D15B6469A9B2256460A229B0E66F5865CE0402AC0",
-			"8904A71E0400C5E142402421BC75A300E221920F0A097561648082AA87253854",
-			"A8D04B1AB077E00C256095A68FC93F6E0865F8468100850A280014F9D0C0891A",
-			"FF68C19E11EA45E1801D07FA9630F2168E99A43FE40854C0A0F0929058DFA42E",
-			"53F32D523843154C402862210D856E66ED74FBA2319C9D2805AE2028F5202897",
-			"9169E23520D1C1A2DF800A4A7C4C42A244525B1D4A6C4A90C001070B23868070",
-			"C0785389BE8039209C95D0714262871F7E3041CC5582130B1398B0FA57C88527",
-			"136F3EE8E0B035916C8DF0D8BE75EA40802EB23820C0EC57C180BA810241ADF9",
-			"00C500D14DB670E915CC8E9BB08393609432154A0492D5C1BDD3A3448314EF50",
-			"BA482F0AC69BD107082A1A21512183390AD435561713A68283EC427400853985",
-			"1C500001EFF8C15618ED3DF14076596C33C824FA8DB3C613D4D023C40710A401",
-			"7F4E4D6C01156224604803450652B0868209DEE9E7A2206FD9F1C4064364E1CA",
-			"3723EE32E15D776C034E08AC51900D1436C978873031A9275101E4090182905C",
-			"39C2143336D55107060D04C0DA864E60F08459D22913941C0E2E90041E6671E0",
-			"CE8B771D80480900D93240028F04C0C12415A481406DB675308004769A105010",
-			"0021FF0B4D414347436F6E2004031039000000015772697474656E2062792047",
-			"4946436F6E76657274657220322E342E33206F66204D6F6E6461792C204D6179",
-			"2032352C2031393938003B" };
+		public boolean contains(Point pt) {
+			return (pt.x >= x && pt.x < x + size && pt.y >= y && pt.y < y + size);
+		}
 
-	private static final int NORTH = KarelWorld.NORTH;
-	private static final int EAST = KarelWorld.EAST;
-	private static final int SOUTH = KarelWorld.SOUTH;
-	private static final int WEST = KarelWorld.WEST;
-
-	private static final int INFINITE = KarelWorld.INFINITE;
-	private static final int PLUS1 = KarelWorld.PLUS1;
-	private static final int MINUS1 = KarelWorld.MINUS1;
-
-	private static final int WALL_TOOL = 1;
-	private static final int COLOR_TOOL = 2;
-	private static final int ROBOT_TOOL = 3;
-	private static final int BEEPER_TOOL = 4;
-	private static final int BEEPER_BAG_TOOL = 5;
-
-	private static final int BIG_TOOL_SIZE = 20;
-	private static final int COLOR_TOOL_SIZE = 12;
-	private static final int KAREL_TOOL_SIZE = 28;
-	private static final int BEEPER_TOOL_SIZE = 28;
-	private static final int TOOL_SEP = 6;
-	private static final int TOOL_Y_DELTA = 8;
-	// private static final int TOOL_MARGIN = 20;
-	private static final int TOOL_X = 8;
-	private static final int TOOL_Y = 3;
-	// private static final int LABEL_SEP = 5;
-	// private static final int ROBOT_DELTA = 300;
-	// private static final int ROBOT_SIZE = 22;
-	// private static final int ROBOT_SEP = 15;
-	private static final int SELECTED_PIXELS = 3;
-	private static final int WALL_LENGTH = 12;
-	private static final int BEEPER_BAG_WIDTH = 35;
-	private static final int BEEPER_BAG_HEIGHT = 47;
-	private static final int BAG_LABEL_DELTA_Y = 28;
-
-	private static final int WIDTH = 7 * BIG_TOOL_SIZE + 10 * TOOL_SEP;
-	private static final int HEIGHT = 3
-			* (TOOL_Y + BIG_TOOL_SIZE + TOOL_Y_DELTA) + 3 * COLOR_TOOL_SIZE
-			+ TOOL_Y_DELTA;
-
-	private static final Color COLORS[] = { null, Color.BLACK, Color.DARK_GRAY,
-			Color.GRAY, Color.LIGHT_GRAY, Color.WHITE, Color.RED, Color.PINK,
-			Color.ORANGE, Color.YELLOW, Color.GREEN, Color.CYAN, Color.BLUE,
-			Color.MAGENTA };
-	private static final int NCOLORS = COLORS.length;
-
-	/* Private state */
-
-	private ArrayList<MapTool> tools;
-	private KarelWorld world;
-	private MapTool selectedTool;
-	private MapTool oldTool;
-	private MapTool beeperBagTool;
-	private Image beeperBagImage;
-
-}
-
-class MapTool {
-	public MapTool(int toolClass, int x, int y, int size) {
-		this.toolClass = toolClass;
-		this.x = x;
-		this.y = y;
-		this.size = size;
+		public int toolClass;
+		public int x, y, dir, size, beeperDelta;
+		public String label;
+		public Color color;
 	}
-
-	public boolean contains(Point pt) {
-		return (pt.x >= x && pt.x < x + size && pt.y >= y && pt.y < y + size);
-	}
-
-	public int toolClass;
-	public int x, y, dir, size, beeperDelta;
-	public String label;
-	public Color color;
-
 }

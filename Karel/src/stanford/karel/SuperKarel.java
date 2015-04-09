@@ -1,6 +1,4 @@
 /*
- * File: SuperKarel.java
- * ---------------------
  * This class implements an extension of the basic Karel class that supports
  * more operations.
  * - 2015/03/31: Changed to use Swing graphical components.
@@ -10,13 +8,10 @@ package stanford.karel;
 
 import java.awt.*;
 
-/* Class: SuperKarel */
 /**
  * Extended Karel class . . .
  */
-
 public class SuperKarel extends Karel {
-
 	public static final Color BLACK = Color.BLACK;
 	public static final Color BLUE = Color.BLUE;
 	public static final Color CYAN = Color.CYAN;
@@ -121,5 +116,4 @@ public class SuperKarel extends Karel {
 			/* Empty */
 		}
 	}
-
 }

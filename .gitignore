@@ -6,6 +6,8 @@ Autograder_QtCreatorProject/lib/StanfordCPPLib
 build/
 JavaBackEnd/eclipseproject/bin/
 JavaBackEnd/eclipseproject/obf/temp/
-Karel/
+Karel/src/CollectNewspaper.java
+Karel/bin/
+Karel/.settings
 StanfordCPPLib_QtCreatorProject/lib/StanfordCPPLib
 StanfordCPPLib_experimental/

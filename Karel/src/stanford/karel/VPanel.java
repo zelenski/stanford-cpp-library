@@ -1,6 +1,4 @@
 /*
- * File: VPanel.java
- * -----------------
  * This file implements a Panel subclass that is useful for
  * creating a vertical assembly of components.  The details
  * of its operation are described in the HVLayout manager,

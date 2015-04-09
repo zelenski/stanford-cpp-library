@@ -1,6 +1,4 @@
 /*
- * File: HPanel.java
- * -----------------
  * This file implements a CSPanel subclass that is useful for
  * creating a horizontal assembly of components.  The details
  * of its operation are described in the HVLayout manager,
@@ -18,12 +16,12 @@ class HPanel extends JPanel {
 		setLayout(new HVLayout(HVLayout.HORIZONTAL));
 	}
 
-	public Component add(String constraint) {
-		return add(constraint, null);
-	}
-
 	public Component add(Component comp) {
 		return add("", comp);
+	}
+
+	public Component add(String constraint) {
+		return add(constraint, null);
 	}
 
 	public Component add(String constraint, Component comp) {
@@ -31,5 +29,4 @@ class HPanel extends JPanel {
 			comp = new EmptyCanvas();
 		return super.add(constraint, comp);
 	}
-
 }

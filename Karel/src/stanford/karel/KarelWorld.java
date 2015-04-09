@@ -1,10 +1,9 @@
 /*
- * File: KarelWorld.java
- * ---------------------
  * This file contains the class that implements Karel's world.
  * - 2015/03/31: Commented out unused method updateCorner.
  * - 2015/03/31: Commented out unused fields and local variables.
  * - 2015/03/31: Changed to use Swing graphical components.
+ * - 2015/04/05: Added Ms. Karel mode just for fun.
  */
 
 package stanford.karel;
@@ -18,12 +17,10 @@ import java.util.*;
 import javax.swing.*;
 
 public class KarelWorld extends JComponent {
-
 	public static final int NORTH = 0;
 	public static final int EAST = 1;
 	public static final int SOUTH = 2;
 	public static final int WEST = 3;
-
 	public static final int NORTHEAST = 10;
 	public static final int NORTHWEST = 11;
 	public static final int SOUTHEAST = 12;
@@ -44,6 +41,8 @@ public class KarelWorld extends JComponent {
 	public static final int CROSS_THRESHOLD = 11;
 	public static final int NUMBER_THRESHOLD = 15;
 	public static final Font NUMBER_FONT = new Font("SansSerif", Font.PLAIN, 13);
+	public static final Font BEEPER_NUMBER_FONT = new Font("SansSerif",
+			Font.PLAIN, 11);
 	public static final double WALL_FRACTION = 0.30;
 	public static final double WALL_TOLERANCE = 0.15;
 
@@ -67,8 +66,112 @@ public class KarelWorld extends JComponent {
 	public static final double BEEPER_FRACTION = 0.70;
 	public static final double SIMPLE_FRACTION = 0.70;
 
-	/* Constructor */
+	/* Private constants */
+	private static final String INFINITY[] = {
+			"47494638396109000600F70000FFFFFF98009833999998980011111122222200",
+			"0054CBFFCB0032980033660033CC0033FE003232663300666600006598009898",
+			"00CC9900FE99329800659800CC0099FE0098659898999999CC9900FE98009800",
+			"329800659900CC9800FE3399CB3399FF99993398986598320098650099339998",
+			"659833CB9833FF9999CC0099FE00336699656698CC9898FF9999323200336600",
+			"32003233006632009833339965009866339900663300983200666600986500CC",
+			"3300FE3200CC6600FE65CCCC98CCFF99FFCC99FFFF993300CC3200FE6600CC65",
+			"00FECC0033CC0066FE0032FE0065339933339966669933669865CC00CCCB00FE",
+			"FE00CBFE00FE6699CC6598FF9898CC9999FFCB9833CC9966FF9933FF98653333",
+			"33326532323265326565660033653232660066653265CC3300CC6600FE3200FE",
+			"65000066CC0099CC0066FE0098FE00CCCC00FECB00CCFE00FEFE33CC0033FE00",
+			"66CC0066FE00CB3398CC6699FF3399FF659866CC9965FF9898CC9899FF99CCCC",
+			"00CCFE00FECB00FEFE009933339966339933669865659833CB9966CC9933FF98",
+			"65FF33CBCB33FFCC33CCFF33FFFF99CB3399FF3399CC6698FF65CC98CCCCCCCC",
+			"CC99FFCBCBFFFF99CCFFCBCBFF99FFFFCBFF3333CB3366CB3333FF3366FF6533",
+			"CB6666CC6633FF6565FFCB3333CB6533CB3365CC6666FF3333FF6633FF3366FF",
+			"656533CB3333FF3333CB6633FF6666CB3366FF3366CC6665FF65CB33CBCC66CC",
+			"CC33FFCC65FFFF33CCFF65CCFF33FFFF65FF66CCCC65FFCC65CCFF65FFFF98CC",
+			"CC99FFCC99CCFF99FFFFCBCB33CCFF33CCCC66CCFF65FFCC33FFFF33FFCC65FF",
+			"FF65444444656532DDDDDDCBFFFFFFFFCBEEEEEE100000980000001000660000",
+			"000098000066777777888888AAAAAABBBBBB5555556666660000100000224400",
+			"005400000000CC0000DC0000EE0000FE00003200004400880000980000AA0000",
+			"BA0000CC0000DC0000EE0000FE00CC0000DC0000EE0000FE0000004400005400",
+			"006600007600220000320000AA0000BA00000022000032007600008800000000",
+			"AA0000BA00007600008800000021F90401000090002C0000000009000600C7FF",
+			"FFFF980098339999989800111111222222000054CBFFCB0032980033660033CC",
+			"0033FE00323266330066660000659800989800CC9900FE99329800659800CC00",
+			"99FE0098659898999999CC9900FE98009800329800659900CC9800FE3399CB33",
+			"99FF99993398986598320098650099339998659833CB9833FF9999CC0099FE00",
+			"336699656698CC9898FF99993232003366003200323300663200983333996500",
+			"9866339900663300983200666600986500CC3300FE3200CC6600FE65CCCC98CC",
+			"FF99FFCC99FFFF993300CC3200FE6600CC6500FECC0033CC0066FE0032FE0065",
+			"339933339966669933669865CC00CCCB00FEFE00CBFE00FE6699CC6598FF9898",
+			"CC9999FFCB9833CC9966FF9933FF986533333332653232326532656566003365",
+			"3232660066653265CC3300CC6600FE3200FE65000066CC0099CC0066FE0098FE",
+			"00CCCC00FECB00CCFE00FEFE33CC0033FE0066CC0066FE00CB3398CC6699FF33",
+			"99FF659866CC9965FF9898CC9899FF99CCCC00CCFE00FECB00FEFE0099333399",
+			"66339933669865659833CB9966CC9933FF9865FF33CBCB33FFCC33CCFF33FFFF",
+			"99CB3399FF3399CC6698FF65CC98CCCCCCCCCC99FFCBCBFFFF99CCFFCBCBFF99",
+			"FFFFCBFF3333CB3366CB3333FF3366FF6533CB6666CC6633FF6565FFCB3333CB",
+			"6533CB3365CC6666FF3333FF6633FF3366FF656533CB3333FF3333CB6633FF66",
+			"66CB3366FF3366CC6665FF65CB33CBCC66CCCC33FFCC65FFFF33CCFF65CCFF33",
+			"FFFF65FF66CCCC65FFCC65CCFF65FFFF98CCCC99FFCC99CCFF99FFFFCBCB33CC",
+			"FF33CCCC66CCFF65FFCC33FFFF33FFCC65FFFF65444444656532DDDDDDCBFFFF",
+			"FFFFCBEEEEEE100000980000001000660000000098000066777777888888AAAA",
+			"AABBBBBB5555556666660000100000224400005400000000CC0000DC0000EE00",
+			"00FE00003200004400880000980000AA0000BA0000CC0000DC0000EE0000FE00",
+			"CC0000DC0000EE0000FE0000004400005400006600007600220000320000AA00",
+			"00BA00000022000032007600008800000000AA0000BA00007600008800000008",
+			"190021091C4810D2BF7F06110A54C870E0C1840E174A2C4830200021FF0B4D41",
+			"4347436F6E2004031039000000015772697474656E20627920474946436F6E76",
+			"657274657220322E342E33206F66204D6F6E6461792C204D61792032352C2031",
+			"393938003B" };
 
+	private static final int KAREL_INSET = 6;             // px to shrink Karel size relative to his corner size 
+	private static final double BODY_OFFSET_X = -0.20;
+	private static final double BODY_OFFSET_Y = -0.33;
+	private static final double BODY_WIDTH = 0.60;        // fraction of corner width occupied by Karel's body outline
+	private static final double BODY_HEIGHT = 0.80;       // fraction of corner height occupied by Karel's body outline
+	private static final double UPPER_NOTCH = 0.15;       // what fraction of Karel's body is beveled on U/R edge?
+	private static final double LOWER_NOTCH = 0.10;       // what fraction of Karel's body is beveled on B/L edge?
+	private static final double SCREEN_OFFSET_X = -0.07;
+	private static final double SCREEN_OFFSET_Y = -0.05;
+	private static final double SCREEN_WIDTH = 0.30;
+	private static final double SCREEN_HEIGHT = 0.40;
+	private static final double SLOT_WIDTH = 0.15;        // fraction of body width used by Karel's "disk" slot line
+	private static final double FOOT_WIDTH = 0.08;        // size of Karel's feet relative to body 
+	private static final double FOOT_LENGTH = 0.20;
+	private static final double UPPER_ANKLE = 0.08;
+	private static final double LOWER_ANKLE = 0.08;
+
+	private static Image infinityImage;
+
+	private StreamTokenizer tokenizer;
+	private KarelWorldMonitor monitor;
+	private Karel activeKarel;
+	private Karel lastKarel;
+	private boolean repaintFlag;
+	private boolean displayFlag;
+	private boolean editMode;
+	private boolean numberSquaresFlag;
+	private boolean displayOneFlag;
+	private boolean msKarel;            // default false
+	private int cols;
+	private int rows;
+	private int sqSize;
+	private int forcedSize;
+	private int alignment;
+	private int width;
+	private int height;
+	private int leftMargin;
+	private int bottomMargin;
+	private String lastClick;
+	private String pathname;
+	private String title;
+	private Corner[][] map;
+	private int look;
+	private int lastBeeperCount;
+	private NumberFormat speedFormat;
+	private ArrayList<Karel> karels;
+	private Object sizeLock;
+	private Image offscreen;
+
+	/* Constructor */
 	public KarelWorld() {
 		sizeLock = new Object();
 		setTitle("Karel World");
@@ -85,6 +188,7 @@ public class KarelWorld extends JComponent {
 		forcedSize = 0;
 		numberSquaresFlag = true;
 		displayOneFlag = false;
+		msKarel = false;
 		look = FANCY;
 		alignment = CENTER;
 		karels = new ArrayList<Karel>();
@@ -481,7 +585,8 @@ public class KarelWorld extends JComponent {
 			return;
 		if (g instanceof Graphics2D) {
 			Graphics2D g2 = (Graphics2D) g;
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+					RenderingHints.VALUE_ANTIALIAS_ON);
 		}
 		synchronized (sizeLock) {
 			if (offscreen == null) {
@@ -491,7 +596,8 @@ public class KarelWorld extends JComponent {
 			Graphics osg = offscreen.getGraphics();
 			if (osg instanceof Graphics2D) {
 				Graphics2D g2 = (Graphics2D) osg;
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+						RenderingHints.VALUE_ANTIALIAS_ON);
 			}
 			drawEmptyWorld(osg);
 			for (int pass = 0; pass < 2; pass++) {
@@ -794,7 +900,7 @@ public class KarelWorld extends JComponent {
 			g.drawRect(x - 1, y - 1, width, height);
 		}
 		if (sqSize > NUMBER_THRESHOLD && numberSquaresFlag) {
-			g.setFont(NUMBER_FONT);
+			g.setFont(BEEPER_NUMBER_FONT);
 			FontMetrics fm = g.getFontMetrics();
 			x = leftMargin + sqSize / 2;
 			y = getSize().height - bottomMargin + 10;
@@ -867,7 +973,7 @@ public class KarelWorld extends JComponent {
 		if (size < MIN_FANCY || getLook() == SIMPLE) {
 			drawSimpleKarel(g, x, y, dir, size);
 		} else {
-			drawFancyKarel(g, x, y, dir, size);
+			drawFancyKarel(g, x, y, dir, size, msKarel);
 		}
 	}
 
@@ -900,17 +1006,30 @@ public class KarelWorld extends JComponent {
 		drawFancyKarel(g, x, y, dir, size - KAREL_INSET, Color.WHITE);
 	}
 
+	public void drawFancyKarel(Graphics g, int x, int y, int dir, int size, boolean msKarel) {
+		drawFancyKarel(g, x, y, dir, size - KAREL_INSET, Color.WHITE, msKarel);
+	}
+
 	public static void drawFancyKarel(Graphics g, int x, int y, int dir,
 			int size, Color color) {
-		if (g == null)
+		drawFancyKarel(g, x, y, dir, size, color, /* msKarel */ false);
+	}
+	
+	public static void drawFancyKarel(Graphics g, int x, int y, int dir,
+			int size, Color color, boolean msKarel) {
+		if (g == null) {
 			return;
+		}
 		for (int pass = 1; pass <= 2; pass++) {
 			KarelRegion r = new KarelRegion();
 			r.setOrigin(x, y, BODY_OFFSET_X * size, BODY_OFFSET_Y * size
 					+ LOWER_NOTCH * size, dir);
 			int sx = r.getCurrentX();
 			int sy = r.getCurrentY();
-			g.setColor((pass == 1) ? color : Color.BLACK);
+			
+			// Karel's body outline
+			Color bodyColor = (pass == 1) ? color : Color.BLACK;
+			g.setColor(bodyColor);
 			r.addVector(0, BODY_HEIGHT * size - LOWER_NOTCH * size, dir);
 			r.addVector(BODY_WIDTH * size - UPPER_NOTCH * size, 0, dir);
 			r.addVector(UPPER_NOTCH * size, -UPPER_NOTCH * size, dir);
@@ -929,6 +1048,8 @@ public class KarelWorld extends JComponent {
 						(SCREEN_OFFSET_Y - BODY_OFFSET_Y - LOWER_NOTCH) * size,
 						dir);
 			}
+			
+			// monitor outline
 			r.addVector(SCREEN_WIDTH * size, 0, dir);
 			r.addVector(0, SCREEN_HEIGHT * size, dir);
 			r.addVector(-SCREEN_WIDTH * size, 0, dir);
@@ -948,15 +1069,67 @@ public class KarelWorld extends JComponent {
 			} else {
 				g.drawPolygon(r.getPolygon());
 			}
+			
+			if (msKarel && pass == 2) {
+				KarelRegion bow = new KarelRegion(Color.BLACK, Color.RED);
+				int bowWidth = (int) (BODY_WIDTH * size / 4);
+				int bowHeight = (int) (BODY_WIDTH * size / 4);
+				double bowX = SCREEN_OFFSET_X * size + SCREEN_WIDTH/2 * size - bowWidth/2;
+				double bowY = (SCREEN_OFFSET_Y - BODY_OFFSET_Y) * size;
+				int triangleSize = bowWidth;
+				
+				bow.setOrigin(x, y, bowX, bowY, dir);
+				bow.addVector(bowWidth, 0, dir);
+				bow.addVector(0, bowHeight, dir);
+				bow.addVector(-bowWidth, 0, dir);
+				bow.addVector(0, -bowHeight, dir);
+				
+				KarelRegion triangle1 = new KarelRegion(Color.BLACK, Color.RED);
+				triangle1.setOrigin(x, y, bowX, bowY + bowHeight/2, dir);
+				triangle1.addVector(-triangleSize, -triangleSize/2, dir);
+				triangle1.addVector(0, triangleSize, dir);
+				triangle1.addVector(triangleSize, -triangleSize/2, dir);
+
+				KarelRegion triangle2 = new KarelRegion(Color.BLACK, Color.RED);
+				triangle2.setOrigin(x, y, bowX + bowWidth, bowY + bowHeight/2, dir);
+				triangle2.addVector(triangleSize, triangleSize/2, dir);
+				triangle2.addVector(0, -triangleSize, dir);
+				triangle2.addVector(-triangleSize, triangleSize/2, dir);
+
+				triangle1.draw(g);
+				triangle2.draw(g);
+				bow.draw(g);
+			}
 		}
-		g.setColor(Color.BLACK);
+		
+		// little line slot for disk
+		double SLOT_REAL_WIDTH = SLOT_WIDTH;
+		if (msKarel) {
+			// "lipstick"
+			double LIP_HEIGHT = 0.07;
+			SLOT_REAL_WIDTH *= 1.8;       // widen lips
+			
+			KarelRegion lips = new KarelRegion(Color.BLACK, Color.RED);
+			lips.setOrigin(x, y, SCREEN_OFFSET_X * size + SCREEN_WIDTH * size,
+					(SCREEN_OFFSET_Y * size + BODY_OFFSET_Y * size) / 2, dir);
+			lips.addVector(-SLOT_REAL_WIDTH * size/2, -LIP_HEIGHT * size, dir);
+			lips.addVector(-SLOT_REAL_WIDTH * size/2, LIP_HEIGHT * size, dir);
+			lips.addVector(SLOT_REAL_WIDTH * size/2, LIP_HEIGHT * size, dir);
+			lips.addVector(SLOT_REAL_WIDTH * size/2, -LIP_HEIGHT * size, dir);
+			lips.draw(g);
+		}
+		
 		KarelRegion r = new KarelRegion();
 		r.setOrigin(x, y, SCREEN_OFFSET_X * size + SCREEN_WIDTH * size,
 				(SCREEN_OFFSET_Y * size + BODY_OFFSET_Y * size) / 2, dir);
-		r.addVector(-SLOT_WIDTH * size, 0, dir);
+		r.addVector(-SLOT_REAL_WIDTH * size, 0, dir);
+		g.setColor(Color.BLACK);
 		g.drawPolygon(r.getPolygon());
+		
 		r = new KarelRegion();
 		r.setOrigin(x, y, BODY_OFFSET_X * size, SCREEN_OFFSET_Y * size, dir);
+		
+		// Karel's feet
 		r.addVector(-(UPPER_ANKLE * size + FOOT_WIDTH * size), 0, dir);
 		r.addVector(0, -FOOT_LENGTH * size, dir);
 		r.addVector(FOOT_WIDTH * size, 0, dir);
@@ -1057,7 +1230,7 @@ public class KarelWorld extends JComponent {
 			switch (label.length()) {
 			case 1:
 			case 2:
-				psz = 12;
+				psz = BEEPER_NUMBER_FONT.getSize();
 				break;
 			default:
 				psz = 8;
@@ -1315,6 +1488,11 @@ public class KarelWorld extends JComponent {
 			throw new ErrorException("I/O error reading map file");
 		}
 	}
+	
+	public void setMsKarel(boolean value) {
+		this.msKarel = value;
+		repaint();
+	}
 
 	private boolean readMapLine() {
 		int token = nextToken();
@@ -1563,280 +1741,159 @@ public class KarelWorld extends JComponent {
 		return ((token == '\n') ? StreamTokenizer.TT_EOL : token);
 	}
 
-	/* Private constants */
-
-	private static final String INFINITY[] = {
-			"47494638396109000600F70000FFFFFF98009833999998980011111122222200",
-			"0054CBFFCB0032980033660033CC0033FE003232663300666600006598009898",
-			"00CC9900FE99329800659800CC0099FE0098659898999999CC9900FE98009800",
-			"329800659900CC9800FE3399CB3399FF99993398986598320098650099339998",
-			"659833CB9833FF9999CC0099FE00336699656698CC9898FF9999323200336600",
-			"32003233006632009833339965009866339900663300983200666600986500CC",
-			"3300FE3200CC6600FE65CCCC98CCFF99FFCC99FFFF993300CC3200FE6600CC65",
-			"00FECC0033CC0066FE0032FE0065339933339966669933669865CC00CCCB00FE",
-			"FE00CBFE00FE6699CC6598FF9898CC9999FFCB9833CC9966FF9933FF98653333",
-			"33326532323265326565660033653232660066653265CC3300CC6600FE3200FE",
-			"65000066CC0099CC0066FE0098FE00CCCC00FECB00CCFE00FEFE33CC0033FE00",
-			"66CC0066FE00CB3398CC6699FF3399FF659866CC9965FF9898CC9899FF99CCCC",
-			"00CCFE00FECB00FEFE009933339966339933669865659833CB9966CC9933FF98",
-			"65FF33CBCB33FFCC33CCFF33FFFF99CB3399FF3399CC6698FF65CC98CCCCCCCC",
-			"CC99FFCBCBFFFF99CCFFCBCBFF99FFFFCBFF3333CB3366CB3333FF3366FF6533",
-			"CB6666CC6633FF6565FFCB3333CB6533CB3365CC6666FF3333FF6633FF3366FF",
-			"656533CB3333FF3333CB6633FF6666CB3366FF3366CC6665FF65CB33CBCC66CC",
-			"CC33FFCC65FFFF33CCFF65CCFF33FFFF65FF66CCCC65FFCC65CCFF65FFFF98CC",
-			"CC99FFCC99CCFF99FFFFCBCB33CCFF33CCCC66CCFF65FFCC33FFFF33FFCC65FF",
-			"FF65444444656532DDDDDDCBFFFFFFFFCBEEEEEE100000980000001000660000",
-			"000098000066777777888888AAAAAABBBBBB5555556666660000100000224400",
-			"005400000000CC0000DC0000EE0000FE00003200004400880000980000AA0000",
-			"BA0000CC0000DC0000EE0000FE00CC0000DC0000EE0000FE0000004400005400",
-			"006600007600220000320000AA0000BA00000022000032007600008800000000",
-			"AA0000BA00007600008800000021F90401000090002C0000000009000600C7FF",
-			"FFFF980098339999989800111111222222000054CBFFCB0032980033660033CC",
-			"0033FE00323266330066660000659800989800CC9900FE99329800659800CC00",
-			"99FE0098659898999999CC9900FE98009800329800659900CC9800FE3399CB33",
-			"99FF99993398986598320098650099339998659833CB9833FF9999CC0099FE00",
-			"336699656698CC9898FF99993232003366003200323300663200983333996500",
-			"9866339900663300983200666600986500CC3300FE3200CC6600FE65CCCC98CC",
-			"FF99FFCC99FFFF993300CC3200FE6600CC6500FECC0033CC0066FE0032FE0065",
-			"339933339966669933669865CC00CCCB00FEFE00CBFE00FE6699CC6598FF9898",
-			"CC9999FFCB9833CC9966FF9933FF986533333332653232326532656566003365",
-			"3232660066653265CC3300CC6600FE3200FE65000066CC0099CC0066FE0098FE",
-			"00CCCC00FECB00CCFE00FEFE33CC0033FE0066CC0066FE00CB3398CC6699FF33",
-			"99FF659866CC9965FF9898CC9899FF99CCCC00CCFE00FECB00FEFE0099333399",
-			"66339933669865659833CB9966CC9933FF9865FF33CBCB33FFCC33CCFF33FFFF",
-			"99CB3399FF3399CC6698FF65CC98CCCCCCCCCC99FFCBCBFFFF99CCFFCBCBFF99",
-			"FFFFCBFF3333CB3366CB3333FF3366FF6533CB6666CC6633FF6565FFCB3333CB",
-			"6533CB3365CC6666FF3333FF6633FF3366FF656533CB3333FF3333CB6633FF66",
-			"66CB3366FF3366CC6665FF65CB33CBCC66CCCC33FFCC65FFFF33CCFF65CCFF33",
-			"FFFF65FF66CCCC65FFCC65CCFF65FFFF98CCCC99FFCC99CCFF99FFFFCBCB33CC",
-			"FF33CCCC66CCFF65FFCC33FFFF33FFCC65FFFF65444444656532DDDDDDCBFFFF",
-			"FFFFCBEEEEEE100000980000001000660000000098000066777777888888AAAA",
-			"AABBBBBB5555556666660000100000224400005400000000CC0000DC0000EE00",
-			"00FE00003200004400880000980000AA0000BA0000CC0000DC0000EE0000FE00",
-			"CC0000DC0000EE0000FE0000004400005400006600007600220000320000AA00",
-			"00BA00000022000032007600008800000000AA0000BA00007600008800000008",
-			"190021091C4810D2BF7F06110A54C870E0C1840E174A2C4830200021FF0B4D41",
-			"4347436F6E2004031039000000015772697474656E20627920474946436F6E76",
-			"657274657220322E342E33206F66204D6F6E6461792C204D61792032352C2031",
-			"393938003B" };
-
-	private static final int KAREL_INSET = 6;
-	private static final double BODY_OFFSET_X = -0.20;
-	private static final double BODY_OFFSET_Y = -0.33;
-	private static final double BODY_WIDTH = 0.60;
-	private static final double BODY_HEIGHT = 0.80;
-	private static final double UPPER_NOTCH = 0.15;
-	private static final double LOWER_NOTCH = 0.10;
-	private static final double SCREEN_OFFSET_X = -0.07;
-	private static final double SCREEN_OFFSET_Y = -0.05;
-	private static final double SCREEN_WIDTH = 0.30;
-	private static final double SCREEN_HEIGHT = 0.40;
-	private static final double SLOT_WIDTH = 0.15;
-	private static final double FOOT_WIDTH = 0.08;
-	private static final double FOOT_LENGTH = 0.20;
-	private static final double UPPER_ANKLE = 0.08;
-	private static final double LOWER_ANKLE = 0.08;
-
-	private static Image infinityImage;
-
-	private StreamTokenizer tokenizer;
-	private KarelWorldMonitor monitor;
-	private Karel activeKarel;
-	private Karel lastKarel;
-	// private boolean running;
-	private boolean repaintFlag;
-	private boolean displayFlag;
-	private boolean editMode;
-	private boolean numberSquaresFlag;
-	private boolean displayOneFlag;
-	private int cols;
-	private int rows;
-	private int sqSize;
-	private int forcedSize;
-	private int alignment;
-	private int width;
-	private int height;
-	private int leftMargin;
-	private int bottomMargin;
-	private String lastClick;
-	private String pathname;
-	private String title;
-	private Corner[][] map;
-	private int look;
-	// private int beeperBag;
-	private int lastBeeperCount;
-	private NumberFormat speedFormat;
-	private ArrayList<Karel> karels;
-	private Object sizeLock;
-	private Image offscreen;
-}
-
-class Corner {
-	public Color color;
-	public boolean wallSouth;
-	public boolean wallWest;
-	public int nBeepers;
-}
-
-class KarelWorldListener implements MouseListener, MouseMotionListener,
-		ComponentListener {
-
-	public KarelWorldListener(KarelWorld world) {
-		this.world = world;
+	private static class Corner {
+		public Color color;
+		public boolean wallSouth;
+		public boolean wallWest;
+		public int nBeepers;
 	}
 
-	public void mousePressed(MouseEvent e) {
-		world.mousePressedHook(e);
-	}
+	private static class KarelRegion {
+		public static final double EPSILON = 0.00000000001;
 
-	public void mouseClicked(MouseEvent e) {
-	}
+		/* Private state */
+		private Polygon p;
+		private Color outline;
+		private Color fill;
+		private double x;
+		private double y;
 
-	public void mouseReleased(MouseEvent e) {
-	}
-
-	public void mouseEntered(MouseEvent e) {
-	}
-
-	public void mouseExited(MouseEvent e) {
-	}
-
-	public void mouseDragged(MouseEvent e) {
-		world.mouseDraggedHook(e);
-	}
-
-	public void mouseMoved(MouseEvent e) {
-	}
-
-	public void componentResized(ComponentEvent e) {
-		world.componentResizedHook();
-	}
-
-	public void componentMoved(ComponentEvent e) {
-	}
-
-	public void componentShown(ComponentEvent e) {
-	}
-
-	public void componentHidden(ComponentEvent e) {
-	}
-
-	private KarelWorld world;
-
-}
-
-class KarelRegion {
-	public static final double EPSILON = 0.00000000001;
-
-	public KarelRegion() {
-		p = new Polygon();
-		x = y = 0;
-	}
-
-	public Polygon getPolygon() {
-		return p;
-	}
-
-	public void setOrigin(int x, int y, double dx, double dy, int dir) {
-		if (p.npoints != 0) {
-			throw new ErrorException("setOrigin called on nonempty region");
+		public KarelRegion() {
+			p = new Polygon();
+			x = y = 0;
 		}
-		this.x = x;
-		this.y = y;
-		addVector(dx, dy, dir);
-	}
 
-	public void addVector(double dx, double dy, int dir) {
-		switch (dir) {
-		case KarelWorld.EAST:
-			x += dx;
-			y -= dy;
-			break;
-		case KarelWorld.NORTH:
-			x -= dy;
-			y -= dx;
-			break;
-		case KarelWorld.WEST:
-			x -= dx;
-			y += dy;
-			break;
-		case KarelWorld.SOUTH:
-			x += dy;
-			y += dx;
-			break;
+		public KarelRegion(Color outline, Color fill) {
+			this();
+			this.outline = outline;
+			this.fill = fill;
 		}
-		p.addPoint((int) Math.round(x + EPSILON), (int) Math.round(y + EPSILON));
+
+		public void draw(Graphics g) {
+			Color old = g.getColor();
+			if (fill != null) {
+				g.setColor(fill);
+				g.fillPolygon(p);
+			}
+			if (outline != null) {
+				g.setColor(outline);
+			}
+			g.drawPolygon(p);
+			g.setColor(old);
+		}
+		
+		public Polygon getPolygon() {
+			return p;
+		}
+
+		public void setOrigin(int x, int y) {
+			if (p.npoints != 0) {
+				throw new ErrorException("setOrigin called on nonempty region");
+			}
+			this.x = x;
+			this.y = y;
+		}
+
+		public void setOrigin(int x, int y, double dx, double dy, int dir) {
+			setOrigin(x, y);
+			addVector(dx, dy, dir);
+		}
+
+		public void addVector(double dx, double dy, int dir) {
+			x = getRotatedX(x, y, dx, dy, dir);
+			y = getRotatedY(x, y, dx, dy, dir);
+			p.addPoint((int) Math.round(x + EPSILON), (int) Math.round(y + EPSILON));
+		}
+		
+		public static double getRotatedX(double originX, double originY, double dx, double dy, int dir) {
+			switch (dir) {
+			case KarelWorld.EAST:
+				return originX + dx;
+			case KarelWorld.NORTH:
+				return originX - dy;
+			case KarelWorld.WEST:
+				return originX - dx;
+			case KarelWorld.SOUTH:
+				return originX + dy;
+			default:
+				return originX + dx;
+			}
+		}
+
+		public static double getRotatedY(double originX, double originY, double dx, double dy, int dir) {
+			switch (dir) {
+			case KarelWorld.EAST:
+				return originY - dy;
+			case KarelWorld.NORTH:
+				return originY - dx;
+			case KarelWorld.WEST:
+				return originY + dy;
+			case KarelWorld.SOUTH:
+				return originY + dx;
+			default:
+				return originY - dy;
+			}
+		}
+
+//		public static void rotatePoint(Point origin, Point delta, int dir) {
+//			int newX = (int) getRotatedX(origin.x, origin.y, delta.x, delta.y, dir);
+//			int newY = (int) getRotatedY(origin.x, origin.y, delta.x, delta.y, dir);
+//			delta.x = newX;
+//			delta.y = newY;
+//		}
+
+		public int getCurrentX() {
+			return p.xpoints[p.npoints - 1];
+		}
+
+		public int getCurrentY() {
+			return p.ypoints[p.npoints - 1];
+		}
 	}
 
-	public int getCurrentX() {
-		return p.xpoints[p.npoints - 1];
+	private static class KarelWorldListener implements MouseListener,
+			MouseMotionListener, ComponentListener {
+
+		private KarelWorld world;
+
+		public KarelWorldListener(KarelWorld world) {
+			this.world = world;
+		}
+
+		public void mousePressed(MouseEvent e) {
+			world.mousePressedHook(e);
+		}
+
+		public void mouseClicked(MouseEvent e) {
+		}
+
+		public void mouseReleased(MouseEvent e) {
+		}
+
+		public void mouseEntered(MouseEvent e) {
+		}
+
+		public void mouseExited(MouseEvent e) {
+		}
+
+		public void mouseDragged(MouseEvent e) {
+			world.mouseDraggedHook(e);
+		}
+
+		public void mouseMoved(MouseEvent e) {
+		}
+
+		public void componentResized(ComponentEvent e) {
+			world.componentResizedHook();
+		}
+
+		public void componentMoved(ComponentEvent e) {
+		}
+
+		public void componentShown(ComponentEvent e) {
+		}
+
+		public void componentHidden(ComponentEvent e) {
+		}
 	}
-
-	public int getCurrentY() {
-		return p.ypoints[p.npoints - 1];
-	}
-
-	/* Private state */
-
-	private Polygon p;
-	private double x;
-	private double y;
-
-}
-
-interface KarelWorldMonitor {
-
-	/*
-	 * Method: startWorldEdit Usage: startWorldEdit(); ------------------------
-	 * This action is invoked at the beginning of an editing session.
-	 */
-
-	public void startWorldEdit();
-
-	/* Method: endWorldEdit */
-	/**
-	 * This action is invoked at the end of an editing session.
-	 */
-
-	public void endWorldEdit();
-
-	/* Method: wallAction */
-	/**
-	 * This action is invoked when the mouse is clicked on a wall, which is the
-	 * wall in the indicated direction from the Karel coordinates given by pt.
-	 */
-
-	public void wallAction(Point pt, int dir);
-
-	/* Method: cornerAction */
-	/**
-	 * This action is invoked when the mouse is clicked on a corner, which is
-	 * the wall in the indicated direction from the given point.
-	 */
-
-	public void cornerAction(Point pt);
-
-	/* Method: trace */
-	/**
-	 * This action is invoked when karel executes an instruction.
-	 */
-
-	public void trace();
-
-	/* Method: setSpeed */
-	/**
-	 * This method is invoked when a world map file needs to set the simulation
-	 * speed.
-	 */
-
-	public void setSpeed(double speed);
-
-	/* Method: getSpeed */
-	/**
-	 * This method is invoked when the KarelWorld class needs to get the
-	 * simulation speed.
-	 */
-
-	public double getSpeed();
-
 }

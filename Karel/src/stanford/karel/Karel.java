@@ -1,6 +1,4 @@
 /*
- * File: Karel.java
- * ----------------
  * This class implements the basic Karel-the-Robot object.
  * - 2015/03/31: Fixed warning by closing resources.
  * - 2015/03/31: Commented out unused constant INFINITE.
@@ -18,7 +16,6 @@ import java.util.zip.*;
 
 import javax.swing.UIManager;
 
-/* Class: Karel */
 /**
  * The <code>Karel</code> class represents the simplest possible Karel the Robot
  * object. Each instance of the <code>Karel</code> class represents an
@@ -87,9 +84,24 @@ import javax.swing.UIManager;
  */
 
 public class Karel extends Program implements Runnable {
+	/* Private constants */
+	private static final int NORTH = KarelWorld.NORTH;
+	private static final int EAST = KarelWorld.EAST;
+	private static final int SOUTH = KarelWorld.SOUTH;
+	private static final int WEST = KarelWorld.WEST;
+	// private static final int INFINITE = KarelWorld.INFINITE;
+
+	/* List of jar files to skip */
+	private static final String[] SKIP_JARS = { "acm.jar", "karel.jar", };
+
+	/* Private instance variables */
+	private KarelWorld world;
+	private int x;
+	private int y;
+	private int dir;
+	private int beepers;
 
 	/* Constructor */
-
 	public Karel() {
 		x = 1;
 		y = 1;
@@ -233,7 +245,13 @@ public class Karel extends Program implements Runnable {
 
 	public static void main(String[] args) {
 		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			String lnf = UIManager.getSystemLookAndFeelClassName();
+			if (lnf == null || lnf.contains("MetalLookAndFeel")) {
+				// workaround because system L&F seems to fail on my Linux boxes
+				UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+			} else {
+				UIManager.setLookAndFeel(lnf);
+			}
 		} catch (Exception e) {
 			// empty
 		}
@@ -416,26 +434,4 @@ public class Karel extends Program implements Runnable {
 		}
 		return false;
 	}
-
-	/* Private constants */
-
-	private static final int NORTH = KarelWorld.NORTH;
-	private static final int EAST = KarelWorld.EAST;
-	private static final int SOUTH = KarelWorld.SOUTH;
-	private static final int WEST = KarelWorld.WEST;
-
-	// private static final int INFINITE = KarelWorld.INFINITE;
-
-	/* List of jar files to skip */
-
-	private static final String[] SKIP_JARS = { "acm.jar", "karel.jar", };
-
-	/* Private instance variables */
-
-	private KarelWorld world;
-	private int x;
-	private int y;
-	private int dir;
-	private int beepers;
-
 }

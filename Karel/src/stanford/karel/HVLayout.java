@@ -1,6 +1,4 @@
 /*
- * File: HVLayout.java
- * -------------------
  * This file implements a layout manager that simplifies the
  * task of creating component assemblies.  In general, clients
  * will create HPanels and VPanels, which use an HVLayout
@@ -85,34 +83,44 @@ import java.awt.*;
 import java.util.*;
 
 class HVLayout implements LayoutManager {
-
 	/* Constants */
-
 	public static final int DEFAULT_SPACE = 5;
-
 	public static final int HORIZONTAL = GridBagConstraints.HORIZONTAL;
 	public static final int VERTICAL = GridBagConstraints.VERTICAL;
 
-	/*
-	 * Constructor: HVLayout Usage: layout = new HVLayout(orientation);
-	 * ------------------------------------------ This method creates a new
-	 * HVLayout object that grows along the axis specified by orientation, which
-	 * must be HORIZONTAL or VERTICAL.
-	 */
+	/* Private constants */
+	private static final int MINIMUM = 0;
+	private static final int PREFERRED = 1;
+	private static final int CENTER = GridBagConstraints.CENTER;
+	private static final int NORTH = GridBagConstraints.NORTH;
+	private static final int NORTHEAST = GridBagConstraints.NORTHEAST;
+	private static final int EAST = GridBagConstraints.EAST;
+	private static final int SOUTHEAST = GridBagConstraints.SOUTHEAST;
+	private static final int SOUTH = GridBagConstraints.SOUTH;
+	private static final int SOUTHWEST = GridBagConstraints.SOUTHWEST;
+	private static final int WEST = GridBagConstraints.WEST;
+	private static final int NORTHWEST = GridBagConstraints.NORTHWEST;
+	private static final int NONE = GridBagConstraints.NONE;
+	private static final int BOTH = GridBagConstraints.BOTH;
 
+	/* Private variables */
+	private int orientation;
+	private HashMap<Component, OptionTable> constraintTable;
+
+	/*
+	 * This method creates a new HVLayout object that grows along the axis
+	 * specified by orientation, which must be HORIZONTAL or VERTICAL.
+	 */
 	public HVLayout(int orientation) {
 		this.orientation = orientation;
 		constraintTable = new HashMap<Component, OptionTable>();
 	}
 
 	/* LayoutManager interface */
-
 	/*
-	 * Method: addLayoutComponent Usage: (not ordinarily called by clients)
-	 * ----------------------------------------- This method adds the specified
-	 * component to the layout in the position specified by name.
+	 * This method adds the specified component to the layout in the position
+	 * specified by name.
 	 */
-
 	public void addLayoutComponent(String constraints, Component comp) {
 		synchronized (comp.getTreeLock()) {
 			constraintTable.put(comp,
@@ -121,21 +129,16 @@ class HVLayout implements LayoutManager {
 	}
 
 	/*
-	 * Method: removeLayoutComponent Usage: (not ordinarily called by clients)
-	 * ----------------------------------------- This method removes the
-	 * specified component from the layour.
+	 * This method removes the specified component from the layour.
 	 */
-
 	public void removeLayoutComponent(Component comp) {
 		constraintTable.remove(comp);
 	}
 
 	/*
-	 * Method: preferredLayoutSize Usage: (not ordinarily called by clients)
-	 * ----------------------------------------- This method calculates the
-	 * preferred layout size for the components contained in the parent.
+	 * This method calculates the preferred layout size for the components
+	 * contained in the parent.
 	 */
-
 	public Dimension preferredLayoutSize(Container parent) {
 		synchronized (parent.getTreeLock()) {
 			return getContainerSize(parent, PREFERRED);
@@ -143,11 +146,9 @@ class HVLayout implements LayoutManager {
 	}
 
 	/*
-	 * Method: minimumLayoutSize Usage: (not ordinarily called by clients)
-	 * ----------------------------------------- This method calculates the
-	 * minimum layout size for the components contained in the parent.
+	 * This method calculates the minimum layout size for the components
+	 * contained in the parent.
 	 */
-
 	public Dimension minimumLayoutSize(Container parent) {
 		synchronized (parent.getTreeLock()) {
 			return getContainerSize(parent, MINIMUM);
@@ -155,12 +156,9 @@ class HVLayout implements LayoutManager {
 	}
 
 	/*
-	 * Method: layoutContainer Usage: (not ordinarily called by clients)
-	 * ----------------------------------------- This method performs the actual
-	 * layout operations, resizing and repositioning the components in the
-	 * specified parent.
+	 * This method performs the actual layout operations, resizing and
+	 * repositioning the components in the specified parent.
 	 */
-
 	public void layoutContainer(Container parent) {
 		synchronized (parent.getTreeLock()) {
 			int nComponents = parent.getComponentCount();
@@ -191,14 +189,11 @@ class HVLayout implements LayoutManager {
 	}
 
 	/*
-	 * Private method: getContainerSize Usage: size =
-	 * layout.getContainerSize(parent, type);
-	 * ---------------------------------------------------- This method unifies
-	 * the calculation of the minimum and preferred sizes for the parent. The
-	 * type parameter must be one of the constants MINIMUM and PREFERRED. This
-	 * method assumes that the tree lock has been obtained by the caller.
+	 * This method unifies the calculation of the minimum and preferred sizes
+	 * for the parent. The type parameter must be one of the constants MINIMUM
+	 * and PREFERRED. This method assumes that the tree lock has been obtained
+	 * by the caller.
 	 */
-
 	private Dimension getContainerSize(Container parent, int type) {
 		Dimension result = new Dimension(0, 0);
 		int nComponents = parent.getComponentCount();
@@ -218,14 +213,11 @@ class HVLayout implements LayoutManager {
 	}
 
 	/*
-	 * Private method: getLayoutSize Usage: size = layout.getLayoutSize(comp,
-	 * options, type); --------------------------------------------------------
 	 * This method computes the minimum or preferred size of the specified
 	 * component according to the constraint specifications for the layout and
 	 * any size information set by the component class. The type parameter must
 	 * be one of the constants MINIMUM and PREFERRED.
 	 */
-
 	private Dimension getLayoutSize(Component comp, OptionTable options,
 			int type) {
 		Dimension size = new Dimension(0, 0);
@@ -242,12 +234,9 @@ class HVLayout implements LayoutManager {
 	}
 
 	/*
-	 * Private method: limitSize Usage: size = limitSize(size, comp);
-	 * ------------------------------------ This method returns a new Dimension
-	 * value that is within the limits set by the minimum and maximum sizes for
-	 * the component.
+	 * This method returns a new Dimension value that is within the limits set
+	 * by the minimum and maximum sizes for the component.
 	 */
-
 	private Dimension limitSize(Dimension size, Component comp) {
 		Dimension minSize = comp.getMinimumSize();
 		Dimension maxSize = comp.getMaximumSize();
@@ -259,13 +248,9 @@ class HVLayout implements LayoutManager {
 	}
 
 	/*
-	 * Private method: getInsetOption Usage: insets =
-	 * layout.getInsetOption(options);
-	 * ----------------------------------------------- This method returns the
-	 * Insets object specified by the options table, which comes from the /top,
-	 * /bottom, /left, /right, and /space options.
+	 * This method returns the Insets object specified by the options table,
+	 * which comes from the /top, /bottom, /left, /right, and /space options.
 	 */
-
 	private Insets getInsetOption(OptionTable options) {
 		Insets insets = new Insets(0, 0, 0, 0);
 		if (options.isSpecified("space")) {
@@ -294,13 +279,9 @@ class HVLayout implements LayoutManager {
 	}
 
 	/*
-	 * Private method: getStretchOption Usage: stretch =
-	 * layout.getStretchOption(options);
-	 * -------------------------------------------------- This method returns
-	 * the stretching style specified by the options table, which comes from the
-	 * /stretch and /fill options.
+	 * This method returns the stretching style specified by the options table,
+	 * which comes from the /stretch and /fill options.
 	 */
-
 	private int getStretchOption(OptionTable options) {
 		if (options.isSpecified("fill"))
 			return orientation;
@@ -319,13 +300,10 @@ class HVLayout implements LayoutManager {
 	}
 
 	/*
-	 * Private method: getAnchorOption Usage: anchor =
-	 * layout.getAnchorOption(options);
-	 * ------------------------------------------------ This method returns the
-	 * anchoring style specified by the options table, which comes from the
-	 * /anchor option, if specified, or from any of the anchoring constants.
+	 * This method returns the anchoring style specified by the options table,
+	 * which comes from the /anchor option, if specified, or from any of the
+	 * anchoring constants.
 	 */
-
 	private int getAnchorOption(OptionTable options) {
 		int anchor = CENTER;
 		if (options.isSpecified("anchor")) {
@@ -378,13 +356,9 @@ class HVLayout implements LayoutManager {
 	}
 
 	/*
-	 * Private method: getStretchCount Usage: nStretch =
-	 * layout.getStretchCount(parent);
-	 * ------------------------------------------------- This method counts the
-	 * number of stretchable components in the parent, considering only the axis
-	 * along which new components are added.
+	 * This method counts the number of stretchable components in the parent,
+	 * considering only the axis along which new components are added.
 	 */
-
 	private int getStretchCount(Container parent) {
 		int nComponents = parent.getComponentCount();
 		int nStretch = 0;
@@ -404,15 +378,11 @@ class HVLayout implements LayoutManager {
 	}
 
 	/*
-	 * Private method: getExtraSpace Usage: extra = layout.getExtraSpace(psize,
-	 * tsize, nStretch);
-	 * ------------------------------------------------------------ This method
-	 * returns the amount of extra space that must be added to each stretchable
-	 * component along the main axis. The psize parameter gives the size of the
-	 * parent, tsize is the total size of the components, and nStretch is the
-	 * number of components that stretch.
+	 * This method returns the amount of extra space that must be added to each
+	 * stretchable component along the main axis. The psize parameter gives the
+	 * size of the parent, tsize is the total size of the components, and
+	 * nStretch is the number of components that stretch.
 	 */
-
 	private int getExtraSpace(Dimension psize, Dimension tsize, int nStretch) {
 		if (nStretch == 0) {
 			return 0;
@@ -426,13 +396,9 @@ class HVLayout implements LayoutManager {
 	}
 
 	/*
-	 * Private method: applyStretching Usage: lsize =
-	 * layout.applyStretching(stretch, csize, psize, extra);
-	 * -------------------------------------------------------------------- This
-	 * method computes the dimensions of the layout box to account for the
+	 * This method computes the dimensions of the layout box to account for the
 	 * stretching of this component to fit into the available space.
 	 */
-
 	private Dimension applyStretching(int stretch, Dimension csize,
 			Dimension psize, int extra) {
 		int width = csize.width;
@@ -455,13 +421,9 @@ class HVLayout implements LayoutManager {
 	}
 
 	/*
-	 * Private method: getLayoutBounds Usage: layout.getLayoutBounds(options,
-	 * lsize, vsize, origin);
-	 * ------------------------------------------------------------- This method
-	 * returns the appropriate bounding box for the component that appears in
-	 * the specified layout area beginning at the specified origin.
+	 * This method returns the appropriate bounding box for the component that
+	 * appears in the specified layout area beginning at the specified origin.
 	 */
-
 	private Rectangle getLayoutBounds(OptionTable options, Dimension lsize,
 			Dimension vsize, Point origin) {
 		Insets insets = getInsetOption(options);
@@ -511,15 +473,11 @@ class HVLayout implements LayoutManager {
 	}
 
 	/*
-	 * Private method: getInitialOrigin Usage: origin =
-	 * layout.getInitialOrigin(parent, psize, tsize);
-	 * -------------------------------------------------------------- This
-	 * method returns the initial origin at which the layout begins and is
+	 * This method returns the initial origin at which the layout begins and is
 	 * called only if no components are stretchable along the main axis. The
 	 * anchor property of the first component is used to determine the
 	 * alignment.
 	 */
-
 	private Point getInitialOrigin(Container parent, Dimension psize,
 			Dimension tsize) {
 		int x = 0;
@@ -569,11 +527,8 @@ class HVLayout implements LayoutManager {
 	}
 
 	/*
-	 * Debugging method: anchorName Usage: name = anchorName(anchor);
-	 * --------------------------------- This method returns a readable name for
-	 * the anchor constant.
+	 * This method returns a readable name for the anchor constant.
 	 */
-
 	public String anchorName(int anchor) {
 		switch (anchor) {
 		case CENTER:
@@ -598,226 +553,4 @@ class HVLayout implements LayoutManager {
 			return "undefined";
 		}
 	}
-
-	/* Private constants */
-
-	private static final int MINIMUM = 0;
-	private static final int PREFERRED = 1;
-
-	private static final int CENTER = GridBagConstraints.CENTER;
-	private static final int NORTH = GridBagConstraints.NORTH;
-	private static final int NORTHEAST = GridBagConstraints.NORTHEAST;
-	private static final int EAST = GridBagConstraints.EAST;
-	private static final int SOUTHEAST = GridBagConstraints.SOUTHEAST;
-	private static final int SOUTH = GridBagConstraints.SOUTH;
-	private static final int SOUTHWEST = GridBagConstraints.SOUTHWEST;
-	private static final int WEST = GridBagConstraints.WEST;
-	private static final int NORTHWEST = GridBagConstraints.NORTHWEST;
-
-	private static final int NONE = GridBagConstraints.NONE;
-	private static final int BOTH = GridBagConstraints.BOTH;
-
-	/* Private variables */
-
-	private int orientation;
-	private HashMap<Component, OptionTable> constraintTable;
-
-}
-
-class OptionTable {
-
-	/*
-	 * Constructor: OptionTable Usage: options = new OptionTable(); options =
-	 * new OptionTable(options); ------------------------------------------ This
-	 * method creates an empty option table and initializes it from the
-	 * specified string, if any.
-	 */
-
-	public OptionTable() {
-		table = new HashMap<String, String>();
-	}
-
-	public OptionTable(String options) {
-		this();
-		parseOptions(options);
-	}
-
-	/*
-	 * Method: parseOptions Usage: options.parseOptions(options);
-	 * ------------------------------------- This method parses a string
-	 * consisting of option specifications in one of the two following forms:
-	 * 
-	 * /key /key:value
-	 */
-
-	public void parseOptions(String options) {
-		parseOptions(options, table);
-	}
-
-	/*
-	 * Method: isSpecified Usage: if (options.isSpecified(key)) . . .
-	 * ------------------------------------------ This method returns true if
-	 * the key has been specified in the option table.
-	 */
-
-	public boolean isSpecified(String key) {
-		return table.containsKey(key);
-	}
-
-	/*
-	 * Method: getOption Usage: value = options.getOption(key); value =
-	 * options.getOption(key, defValue);
-	 * ------------------------------------------------ This method looks up an
-	 * option key and returns the corresponding value. If the key is not
-	 * defined, getOption returns null unless a defValue parameter is used to
-	 * specify a different default.
-	 */
-
-	public String getOption(String key) {
-		return getOption(key, null);
-	}
-
-	public String getOption(String key, String defValue) {
-		String value = table.get(key.toLowerCase());
-		return (value == null || value.equals("")) ? defValue : value;
-	}
-
-	/*
-	 * Method: getIntOption Usage: value = options.getIntOption(key); value =
-	 * options.getIntOption(key, defValue);
-	 * --------------------------------------------------- This method looks up
-	 * an option key and returns the corresponding value, parsed as an integer.
-	 * If the key is not defined, the getIntOption method returns 0 unless a
-	 * defValue parameter is used to specify a different default.
-	 */
-
-	public int getIntOption(String key) {
-		return getIntOption(key, 0);
-	}
-
-	public int getIntOption(String key, int defValue) {
-		String value = getOption(key, null);
-		if (value == null || value.equals(""))
-			return defValue;
-		return (Integer.decode(value).intValue());
-	}
-
-	/*
-	 * Method: getDoubleOption Usage: value = options.getDoubleOption(key);
-	 * value = options.getDoubleOption(key, defValue);
-	 * ------------------------------------------------------ This method looks
-	 * up an option key and returns the corresponding value, parsed as a double.
-	 * If the key is not defined, the getDoubleOption method returns 0.0 unless
-	 * a defValue parameter is used to specify a different default.
-	 */
-
-	public double getDoubleOption(String key) {
-		return getDoubleOption(key, 0.0);
-	}
-
-	public double getDoubleOption(String key, double defValue) {
-		String value = getOption(key, null);
-		if (value == null || value.equals(""))
-			return defValue;
-		return (Double.valueOf(value).doubleValue());
-	}
-
-	/*
-	 * Method: getFlagOption Usage: flag = options.getFlagOption(key); flag =
-	 * options.getFlagOption(key, defValue);
-	 * --------------------------------------------------- This method looks up
-	 * an option key and returns a boolean whose value is true if the option
-	 * maps to "true", "t", or "on" and false if it maps to "false", "f", or
-	 * "off". A missing option defaults to false unless the option is specified
-	 * and empty, in which case it defaults to true.
-	 */
-
-	public boolean getFlagOption(String key) {
-		return getFlagOption(key, false);
-	}
-
-	public boolean getFlagOption(String key, boolean def) {
-		String value = table.get(key.toLowerCase());
-		if (value == null)
-			return def;
-		value = value.toLowerCase();
-		if (value.equals(""))
-			return true;
-		if (value.equals("true"))
-			return true;
-		if (value.equals("false"))
-			return false;
-		if (value.equals("t"))
-			return true;
-		if (value.equals("f"))
-			return false;
-		if (value.equals("on"))
-			return true;
-		if (value.equals("off"))
-			return false;
-		throw new IllegalArgumentException("parseOptions: Illegal flag value");
-	}
-
-	/* Private methods */
-
-	/*
-	 * Method: parseOptions Usage: CSOptions.parseOptions(options, table);
-	 * ---------------------------------------------- This method parses a
-	 * string consisting of option specifications in one of the two following
-	 * forms:
-	 * 
-	 * /key /key:value
-	 */
-
-	private static void parseOptions(String options, HashMap<String, String> map) {
-		StringTokenizer scanner = new StringTokenizer(options + "/", "/:", true);
-		String key = null;
-		String value = null;
-		int state = INITIAL_STATE;
-		while (scanner.hasMoreTokens()) {
-			String token = scanner.nextToken();
-			switch (state) {
-			case INITIAL_STATE:
-				if (!token.equals("/")) {
-					key = token.toLowerCase();
-					value = "";
-					state = KEY_SEEN;
-				}
-				break;
-			case KEY_SEEN:
-				if (token.equals("/")) {
-					map.put(key, value);
-					state = INITIAL_STATE;
-				} else if (token.equals(":")) {
-					state = COLON_SEEN;
-				}
-				break;
-			case COLON_SEEN:
-				value = token;
-				state = VALUE_SEEN;
-				break;
-			case VALUE_SEEN:
-				if (token.equals("/")) {
-					map.put(key, value);
-					state = INITIAL_STATE;
-				} else {
-					String msg = "parseOptions: Illegal option string";
-					throw new IllegalArgumentException(msg);
-				}
-				break;
-			}
-		}
-	}
-
-	/* Private instance variables */
-
-	private HashMap<String, String> table;
-
-	/* Constants used in the parseOptions finite-state machine */
-
-	private static final int INITIAL_STATE = 0;
-	private static final int KEY_SEEN = 1;
-	private static final int COLON_SEEN = 2;
-	private static final int VALUE_SEEN = 3;
-
 }
