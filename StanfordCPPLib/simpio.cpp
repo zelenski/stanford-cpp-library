@@ -44,9 +44,13 @@ int getInteger(const std::string& prompt,
         std::string line;
         getline(std::cin, line);
         std::istringstream stream(line);
-        stream >> value >> std::ws;
-        if (!stream.fail() && stream.eof()) {
-            break;
+        char junk;
+        stream >> value;
+        if (!stream.fail()) {
+            stream >> junk;
+            if (stream.fail()) {
+                break;
+            }
         }
         std::cout << (reprompt.empty() ? GETINTEGER_DEFAULT_REPROMPT : reprompt) << std::endl;
         if (promptCopy.empty()) {
@@ -94,9 +98,13 @@ double getReal(const std::string& prompt,
         std::string line;
         getline(std::cin, line);
         std::istringstream stream(line);
-        stream >> value >> std::ws;
-        if (!stream.fail() && stream.eof()) {
-            break;
+        char junk;
+        stream >> value;
+        if (!stream.fail()) {
+            stream >> junk;
+            if (stream.fail()) {
+                break;
+            }
         }
         std::cout << (reprompt.empty() ? GETREAL_DEFAULT_REPROMPT : reprompt) << std::endl;
         if (promptCopy.empty()) {

@@ -81,7 +81,7 @@ exists($$PWD/*.h) {
 # set up flags for the C++ compiler
 # (In general, many warnings/errors are enabled to tighten compile-time checking.
 # A few overly pedantic/confusing errors are turned off for simplicity.)
-QMAKE_CXXFLAGS += -std=c++11
+CONFIG += c++11
 QMAKE_CXXFLAGS += -Wall
 QMAKE_CXXFLAGS += -Wextra
 QMAKE_CXXFLAGS += -Wreturn-type
