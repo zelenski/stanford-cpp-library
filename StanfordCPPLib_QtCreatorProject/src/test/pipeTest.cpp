@@ -1,4 +1,5 @@
 #include "testcases.h"
+#include "error.h"
 #include "regexpr.h"
 #include "simpio.h"
 #include <iostream>
@@ -39,4 +40,16 @@ void longStringTest() {
     cout << "done with regex replace on long string (length " << slong.length() << ")." << endl;
     cout << slong.substr(0, 60) << " ..." << endl;
     cout << "done." << endl;
+}
+
+void killProcessTest() {
+    std::cout << "Try killing the Java process now. Does it quit gracefully?" << std::endl;
+    while (true) {
+        try {
+           std::string line = getLine();
+           std::cout << line << std::endl;
+        } catch (ErrorException& ex) {
+            std::cout << "Error: " << ex.getMessage() << std::endl;
+        }
+    }
 }

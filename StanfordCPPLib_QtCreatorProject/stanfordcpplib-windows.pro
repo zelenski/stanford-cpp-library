@@ -16,6 +16,8 @@
 # - re-open and "Configure" your project again.
 #
 # @author Marty Stepp, Reid Watson, Rasmus Rygaard, Jess Fisher, etc.
+# @version 2014/11/29
+# - added pthread library on Mac/Linux for running each test in its own thread
 # @version 2014/11/13
 # - fixes related to generating stack traces
 # - support for putting testing files in a src/test/ folder (used in development)
@@ -270,6 +272,7 @@ exists($$PWD/lib/autograder/*.cpp) {
     OTHER_FILES += $$files(res/autograder/*)
 
     !win32 {
+        LIBS += -lpthread
         copyToDestdir($$files($$PWD/res/autograder/*))
     }
     win32 {

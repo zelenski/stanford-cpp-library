@@ -10,8 +10,13 @@
 # - re-open and "Configure" your project again.
 #
 # @author Marty Stepp, Reid Watson, Rasmus Rygaard, Jess Fisher, etc.
+# @version 2015/04/09
+# - decreased Mac stack size to avoid sporatic crashes on Mac systems
+# @version 2014/11/29
+# - added pthread library on Mac/Linux for running each test in its own thread
 # @version 2014/11/13
 # - fixes related to generating stack traces
+# - support for putting testing files in a src/test/ folder (used in development)
 # @version 2014/11/05
 # - improved/fixed flags for exception-handling
 # @version 2014/10/31
@@ -37,12 +42,24 @@ CONFIG += no_include_pwd
     error(Exiting.)
 }
 
+win32 {
+    !exists($$PWD/lib/addr2line.exe) {
+        message(*** Stanford C++ library support file 'addr2line.exe' not found!)
+        message(*** Our library needs this file present to produce stack traces.)
+        message(*** Place that file into your lib/ folder and try again.)
+        error(Exiting.)
+    }
+}
+
 # include various source .cpp files and header .h files in the build process
 # (student's source code can be put into project root, or src/ subfolder)
 SOURCES += $$PWD/lib/StanfordCPPLib/*.cpp
 SOURCES += $$PWD/lib/StanfordCPPLib/stacktrace/*.cpp
 exists($$PWD/src/*.cpp) {
     SOURCES += $$PWD/src/*.cpp
+}
+exists($$PWD/src/test/*.cpp) {
+    SOURCES += $$PWD/src/test/*.cpp
 }
 exists($$PWD/*.cpp) {
     SOURCES += $$PWD/*.cpp
@@ -54,6 +71,9 @@ HEADERS += $$PWD/lib/StanfordCPPLib/stacktrace/*.h
 exists($$PWD/src/*.h) {
     HEADERS += $$PWD/src/*.h
 }
+exists($$PWD/src/test/*.h) {
+    HEADERS += $$PWD/src/test/*.h
+}
 exists($$PWD/*.h) {
     HEADERS += $$PWD/*.h
 }
@@ -61,7 +81,7 @@ exists($$PWD/*.h) {
 # set up flags for the C++ compiler
 # (In general, many warnings/errors are enabled to tighten compile-time checking.
 # A few overly pedantic/confusing errors are turned off for simplicity.)
-QMAKE_CXXFLAGS += -std=c++0x
+QMAKE_CXXFLAGS += -std=c++11
 QMAKE_CXXFLAGS += -Wall
 QMAKE_CXXFLAGS += -Wextra
 QMAKE_CXXFLAGS += -Wreturn-type
@@ -81,7 +101,6 @@ unix:!macx {
     QMAKE_CXXFLAGS += -Wno-dangling-field
     QMAKE_CXXFLAGS += -Wno-unused-const-variable
     LIBS += -ldl
-    LIBS += -lpthread
 }
 
 # increase system stack size (helpful for recursive programs)
@@ -93,7 +112,7 @@ win32 {
     LIBS += -limagehlp
 }
 macx {
-    QMAKE_LFLAGS += -Wl,-stack_size,0x20000000
+    QMAKE_LFLAGS += -Wl,-stack_size,0x2000000
 }
 
 # set up flags used internally by the Stanford C++ libraries
@@ -113,6 +132,9 @@ INCLUDEPATH += $$PWD/lib/StanfordCPPLib/private/
 INCLUDEPATH += $$PWD/lib/StanfordCPPLib/stacktrace/
 INCLUDEPATH += $$PWD/src/
 INCLUDEPATH += $$PWD/
+exists($$PWD/src/test/*.h) {
+    INCLUDEPATH += $$PWD/src/test/
+}
 
 # build-specific options (debug vs release)
 CONFIG(release, debug|release) {
@@ -157,7 +179,8 @@ CONFIG(debug, debug|release) {
     # make 'debug' target use no optimization, generate debugger symbols,
     # and catch/print any uncaught exceptions thrown by the program
     QMAKE_CXXFLAGS += -O0
-    QMAKE_CXXFLAGS += -g
+    QMAKE_CXXFLAGS += -g3
+    QMAKE_CXXFLAGS += -ggdb3
     DEFINES += SPL_CONSOLE_PRINT_EXCEPTIONS
 }
 
@@ -193,12 +216,16 @@ defineTest(copyToDestdir) {
 win32 {
     copyToDestdir($$PWD/res)
     copyToDestdir($$PWD/lib/*.jar)
+    copyToDestdir($$PWD/lib/addr2line.exe)
     exists($$PWD/*.txt) {
         copyToDestdir($$PWD/*.txt)
     }
 }
 
 copyResources.input += $$files($$PWD/lib/*.jar)
+win32 {
+    copyResources.input += $$files($$PWD/lib/addr2line.exe)
+}
 copyResources.input += $$files($$PWD/res/*)
 exists($$PWD/*.txt) {
     copyResources.input += $$files($$PWD/*.txt)
@@ -242,6 +269,7 @@ exists($$PWD/lib/autograder/*.cpp) {
     OTHER_FILES += $$files(res/autograder/*)
 
     !win32 {
+        LIBS += -lpthread
         copyToDestdir($$files($$PWD/res/autograder/*))
     }
     win32 {

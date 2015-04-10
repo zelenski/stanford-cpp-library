@@ -16,6 +16,10 @@
 # - re-open and "Configure" your project again.
 #
 # @author Marty Stepp, Reid Watson, Rasmus Rygaard, Jess Fisher, etc.
+# @version 2015/04/09
+# - decreased Mac stack size to avoid sporatic crashes on Mac systems
+# @version 2014/11/29
+# - added pthread library on Mac/Linux for running each test in its own thread
 # @version 2014/11/13
 # - fixes related to generating stack traces
 # - support for putting testing files in a src/test/ folder (used in development)
@@ -112,10 +116,9 @@ win32 {
     LIBS += -lbfd
     LIBS += -liberty
     LIBS += -limagehlp
-#    LIBS += -lwinmm
 }
 macx {
-    QMAKE_LFLAGS += -Wl,-stack_size,0x20000000
+    QMAKE_LFLAGS += -Wl,-stack_size,0x2000000
 }
 
 # set up flags used internally by the Stanford C++ libraries
@@ -138,6 +141,7 @@ INCLUDEPATH += $$PWD/
 exists($$PWD/src/test/*.h) {
     INCLUDEPATH += $$PWD/src/test/
 }
+
 # build-specific options (debug vs release)
 CONFIG(release, debug|release) {
     # make 'release' target be statically linked so it is a stand-alone executable
@@ -271,6 +275,7 @@ exists($$PWD/../autograder/*.cpp) {
     OTHER_FILES += $$files(res/autograder/*)
 
     !win32 {
+        LIBS += -lpthread
         copyToDestdir($$files($$PWD/res/autograder/*))
     }
     win32 {

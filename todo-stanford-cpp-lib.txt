@@ -1,35 +1,23 @@
 	C++ libs
-x		refactor hw1-7 autograders to use multiple test classes, set category names that way
-x			hw1
-x			hw2
-x			hw3
-x			hw4
-x			hw5
-x			hw6
+		Eric's comments
+x			remove operator < from some collections (esp. PQ)
+			remove autograder:: stuff from non-autograder files
+				console.cpp/h
+				exceptions.cpp/h
+				gwindow.cpp/h
+				platform.cpp/h
+				random.cpp/h
+			remove "Stanford-specific stuff"?
+			rename "changePriority" method of PQ?
+				issue: "reducePriority" hard to tell if + or -;  hard to tell if param is newPriority or deltaPriority
+			GOptionPane sucks
+				leave in, with different name/api?
+		
+x		compile with all warnings on, look for / fix warnings
+		
+		refactor hw1-7 autograders to use multiple test classes, set category names that way
 ->			hw7
-		
-		fix deploy script
-			doesn't really copy in res/autograder, spl.jar, etc.
-			combine the three scripts? copy in SCPPLib, then spl.jar, then autograder/ if found/needed?
-			add 'force' flag
-		
-		bugbug: when you start first test case later, veeeery long MS time elapsed
-		bugbug: first-run test case doesn't show any details when clicked?  :-/
-		
-		thread/signal stuff
-			test on Mac with pthread
-			while test running, set --> arrow? set spinner GIF?
-			turn normal program signal/terminate/exception handler back on if they run student program manually
-			when test case fails with exception/signal/segfault, catch error and print stack trace
-			print/dump stack trace on thread timeout?
-			refactor: move 'run this function with a given timeout' command to separate API? platform.h/cpp?
-			refactor: move all timer start/stop, setting of tests in gui, out of result printer?
-		
-		JBE console as GWindow so I can send JFrame commands to it?
-		
-		debug args thing so I can connect a debugger to the Java back-end
-			// #define DEBUG_ARGS "-agentlib:jdwp=transport=dt_socket,address=127.0.0.1:60106,server=y,suspend=y"
-		
+
 		make it so that you don't need to #include "console.h"
 			based on a flag in .pro file maybe?
 			all .h in stanford C++ lib manually include console.h if flag is set?
@@ -46,7 +34,10 @@ x			hw6
 				then, when you include "console.h" you get the console, if not you don't
 			mac os x app bundle folder, CD into it, look up platform specific function for doing so
 		
-		BasicGraph::clearExtraData? (can't; don't know the type of the data)
+		debug args thing so I can connect a debugger to the Java back-end
+			// #define DEBUG_ARGS "-agentlib:jdwp=transport=dt_socket,address=127.0.0.1:60106,server=y,suspend=y"
+		
+		BasicGraph::clearExtraData? (can't; don't know the type of the data; just set all to NULL?)
 		
 		cpp docs
 			include <, >=, equals, hashCode, etc. for every collection
@@ -54,6 +45,22 @@ x			hw6
 		
 		BUG: weird line breaks in STDERR output on windows and in Debug mode
 			(probably related to redirecting stderr to graphical console window, flushing, \n insertion etc.)
+		
+
+		autograder stuff
+			bugbug: when you start first test case later, veeeery long MS time elapsed
+			bugbug: first-run test case doesn't show any details when clicked?  :-/
+			
+			thread/signal stuff
+				test on Mac with pthread
+x				while test running, set --> arrow? set spinner GIF?
+				turn normal program signal/terminate/exception handler back on if they run student program manually
+				when test case fails with exception/signal/segfault, catch error and print stack trace
+				print/dump stack trace on thread timeout?
+				refactor: move 'run this function with a given timeout' command to separate API? platform.h/cpp?
+				refactor: move all timer start/stop, setting of tests in gui, out of result printer?
+		
+		JBE console as GWindow so I can send JFrame commands to it?
 		
 		increase number/kind of warnings
 			https://gcc.gnu.org/onlinedocs/gcc-4.3.6/gcc/Warning-Options.html
@@ -140,6 +147,17 @@ x			hw6
 
 DONE:
 =======================================================================================================================
+x		fix deploy script
+x			doesn't really copy in res/autograder, spl.jar, etc.
+x			combine the three scripts? copy in SCPPLib, then spl.jar, then autograder/ if found/needed?
+x			add 'force' flag
+x		refactor hw1-7 autograders to use multiple test classes, set category names that way
+x			hw1
+x			hw2
+x			hw3
+x			hw4
+x			hw5
+x			hw6
 x		autograder: style checker should still show that there WERE other omitted tests, just not show their results
 x		autograder: way to individually turn on/off running individual categories of tests?
 x			autograder pops up with all categories/tests already there, but just with no results?

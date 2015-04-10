@@ -20,6 +20,7 @@ void goptionpaneTest();
 void cinOutTest();
 void coutCerrMixTest();
 void longStringTest();
+void killProcessTest();
 
 // url tests
 void urlstreamTest();

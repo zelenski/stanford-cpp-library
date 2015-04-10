@@ -210,15 +210,16 @@ void compareTest() {
     pq4.add("a", 333);
     pq4.add("b", 111);
     pq4.add("x", 444);
-    compareTestHelper(pq, pq2, "PriorityQueue");
+    // does not compile; PQ comparison operators removed
+    // compareTestHelper(pq, pq2, "PriorityQueue");
 //    compareTestHelper(pq, pq3);
 //    compareTestHelper(pq2, pq3);
 //    compareTestHelper(pq3, pq4);
-    Set<PriorityQueue<std::string> > spq;
-    spq.add(pq);
-    spq.add(pq2);
-    spq.add(pq3);
-    std::cout << "spq: " << spq << std::endl;
+//    Set<PriorityQueue<std::string> > spq;
+//    spq.add(pq);
+//    spq.add(pq2);
+//    spq.add(pq3);
+//    std::cout << "spq: " << spq << std::endl;
     
     Queue<int> q1;
     q1.add(1);
@@ -665,6 +666,39 @@ void hashCodeTest() {
     vstud2.add(sam);
     std::cout << "stack of student: size " << vstud.size() << std::endl;
     
+    HashSet<HashSet<int>> hhset;
+    HashSet<int> hset1;
+    hset1.add(42);
+    hset1.add(17);
+    hset1.add(318);
+    hhset.add(hset1);
+    HashSet<int> hset2;
+    hset2.add(99);
+    hset2.add(19);
+    hset2.add(59);
+    hset2.add(999);
+    hhset.add(hset2);
+    std::cout << "hashset of hashset of int: " << hhset << std::endl;
+    
+    Vertex* v1 = new Vertex("v1");
+    Vertex* v2 = new Vertex("v2");
+    Vertex* v3 = new Vertex("v3");
+    Vertex* v4 = new Vertex("v4");
+    Vertex* v5 = new Vertex("v5");
+    Vertex* v6 = new Vertex("v6");
+    
+    HashSet<HashSet<Vertex*>> hhset2;
+    HashSet<Vertex*> hset3;
+    hset3.add(v1);
+    hset3.add(v2);
+    hset3.add(v3);
+    hhset2.add(hset3);
+    HashSet<Vertex*> hset4;
+    hset4.add(v4);
+    hset4.add(v5);
+    hset4.add(v6);
+    hhset2.add(hset4);
+    std::cout << "hashset of hashset of Vertex*: " << hhset2 << std::endl;
     
     std::cout << std::endl;
     HashMap< HashSet<Vector<std::string> >, Vector<std::string> > ngram;

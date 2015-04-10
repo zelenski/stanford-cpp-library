@@ -1,5 +1,5 @@
 /*
- * Test file for verifying the Stanford C++ autograder lib functionality.
+ * Test file for verifying the Stanford C++ lib functionality.
  */
 
 #include "console.h"
@@ -38,7 +38,8 @@ int main() {
             gbufferedImageTest();
             // goptionpaneTest();
         } else if (cmd == "i") {
-            cinOutTest();
+            // cinOutTest();
+            killProcessTest();
         } else if (cmd == "n") {
             segfaultTest();
         } else if (cmd == "s") {

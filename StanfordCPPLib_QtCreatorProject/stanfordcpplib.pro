@@ -10,6 +10,10 @@
 # - re-open and "Configure" your project again.
 #
 # @author Marty Stepp, Reid Watson, Rasmus Rygaard, Jess Fisher, etc.
+# @version 2015/04/09
+# - decreased Mac stack size to avoid sporatic crashes on Mac systems
+# @version 2014/11/29
+# - added pthread library on Mac/Linux for running each test in its own thread
 # @version 2014/11/13
 # - fixes related to generating stack traces
 # - support for putting testing files in a src/test/ folder (used in development)
@@ -51,11 +55,11 @@ win32 {
 # (student's source code can be put into project root, or src/ subfolder)
 SOURCES += $$PWD/lib/StanfordCPPLib/*.cpp
 SOURCES += $$PWD/lib/StanfordCPPLib/stacktrace/*.cpp
-exists($$PWD/src/test/*.cpp) {
-    SOURCES += $$PWD/src/test/*.cpp
-}
 exists($$PWD/src/*.cpp) {
     SOURCES += $$PWD/src/*.cpp
+}
+exists($$PWD/src/test/*.cpp) {
+    SOURCES += $$PWD/src/test/*.cpp
 }
 exists($$PWD/*.cpp) {
     SOURCES += $$PWD/*.cpp
@@ -108,7 +112,7 @@ win32 {
     LIBS += -limagehlp
 }
 macx {
-    QMAKE_LFLAGS += -Wl,-stack_size,0x20000000
+    QMAKE_LFLAGS += -Wl,-stack_size,0x2000000
 }
 
 # set up flags used internally by the Stanford C++ libraries
@@ -265,6 +269,7 @@ exists($$PWD/lib/autograder/*.cpp) {
     OTHER_FILES += $$files(res/autograder/*)
 
     !win32 {
+        LIBS += -lpthread
         copyToDestdir($$files($$PWD/res/autograder/*))
     }
     win32 {
