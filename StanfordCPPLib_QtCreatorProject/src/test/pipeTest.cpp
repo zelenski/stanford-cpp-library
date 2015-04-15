@@ -2,6 +2,7 @@
 #include "error.h"
 #include "regexpr.h"
 #include "simpio.h"
+#include "strlib.h"
 #include <iostream>
 #include <string>
 using namespace std;
@@ -28,6 +29,20 @@ void coutCerrMixTest() {
     cout << "mixed ";
     cerr << "LINE??";
     cout << endl;
+}
+
+void getIntegerTest() {
+    int n = getInteger("Type an int! ");
+    cout << "you typed " << n << endl;
+    while (true) {
+        std::string line = getLine("Type a string! ");
+        if (stringIsInteger(line)) {
+            cout << "an integer!" << endl;
+        } else {
+            cout << "not integer" << endl;
+        }
+        if (line == "") break;
+    }
 }
 
 void longStringTest() {

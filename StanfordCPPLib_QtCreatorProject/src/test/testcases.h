@@ -5,6 +5,7 @@
 void compareTest();
 void foreachTest();
 void hashCodeTest();
+void randomElementTest();
 
 // exception tests
 void exceptionTest();
@@ -19,6 +20,7 @@ void goptionpaneTest();
 // pipe tests
 void cinOutTest();
 void coutCerrMixTest();
+void getIntegerTest();
 void longStringTest();
 void killProcessTest();
 

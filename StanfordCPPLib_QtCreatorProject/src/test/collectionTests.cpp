@@ -61,6 +61,17 @@ static void compareTestHelper(const T& o1, const T& o2, const std::string& type 
     std::cout << std::endl;
 }
 
+void randomElementTest() {
+    Vector<std::string> v;
+    v += "a", "b", "c", "d", "e";
+    
+    for (int i = 0; i < 50; i++) {
+        std::string s = randomElement(v);
+        std::cout << s << " ";
+    }
+    std::cout << std::endl;
+}
+
 void compareTest() {
     std::cout << "BEGIN COMPARE TEST" << std::endl;
     

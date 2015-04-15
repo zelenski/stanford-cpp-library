@@ -4,6 +4,7 @@
 
 #include "console.h"
 #include "simpio.h"
+#include "strlib.h"
 #include "test/testcases.h"
 #include "private/version.h"
 #include <iostream>
@@ -28,6 +29,7 @@ int main() {
         if (cmd.empty()) {
             break;
         } else if (cmd == "c") {
+            randomElementTest();
             compareTest();
             foreachTest();
             hashCodeTest();
@@ -42,6 +44,12 @@ int main() {
             killProcessTest();
         } else if (cmd == "n") {
             segfaultTest();
+        } else if (cmd == "p") {
+            cinOutTest();
+            coutCerrMixTest();
+            getIntegerTest();
+            longStringTest();
+            // killProcessTest();
         } else if (cmd == "s") {
             //getPlatform()->setStackSize(1024*1024*128);
             stackOverflowTest();

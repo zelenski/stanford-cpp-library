@@ -11,6 +11,7 @@
  */
 
 #include "simpio.h"
+#include "strlib.h"
 #include <cctype>
 #include <fstream>
 #include <iostream>
@@ -43,8 +44,9 @@ int getInteger(const std::string& prompt,
         std::cout << promptCopy;
         std::string line;
         getline(std::cin, line);
+        trimInPlace(line);
         std::istringstream stream(line);
-        stream >> value >> std::ws;
+        stream >> value;
         if (!stream.fail() && stream.eof()) {
             break;
         }
@@ -93,8 +95,9 @@ double getReal(const std::string& prompt,
         std::cout << promptCopy;
         std::string line;
         getline(std::cin, line);
+        trimInPlace(line);
         std::istringstream stream(line);
-        stream >> value >> std::ws;
+        stream >> value;
         if (!stream.fail() && stream.eof()) {
             break;
         }

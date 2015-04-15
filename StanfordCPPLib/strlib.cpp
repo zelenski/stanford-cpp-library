@@ -114,30 +114,30 @@ bool stringIsDouble(const std::string& str) {
 }
 
 bool stringIsInteger(const std::string& str) {
-    std::istringstream stream(str);
+    std::istringstream stream(trim(str));
     int value;
-    stream >> value >> std::ws;
+    stream >> value;
     return !(stream.fail() || !stream.eof());
 }
 
 bool stringIsLong(const std::string& str) {
-    std::istringstream stream(str);
+    std::istringstream stream(trim(str));
     long value;
-    stream >> value >> std::ws;
+    stream >> value;
     return !(stream.fail() || !stream.eof());
 }
 
 bool stringIsReal(const std::string& str) {
-    std::istringstream stream(str);
+    std::istringstream stream(trim(str));
     double value;
-    stream >> value >> std::ws;
+    stream >> value;
     return !(stream.fail() || !stream.eof());
 }
 
 bool stringToBool(const std::string& str) {
-    std::istringstream stream(str);
+    std::istringstream stream(trim(str));
     bool value;
-    stream >> std::boolalpha >> value >> std::ws;
+    stream >> std::boolalpha >> value;
     if (stream.fail() || !stream.eof()) {
         error("stringToBool: Illegal bool format (" + str + ")");
     }
@@ -157,9 +157,9 @@ double stringToDouble(const std::string& str) {
 }
 
 int stringToInteger(const std::string& str) {
-    std::istringstream stream(str);
+    std::istringstream stream(trim(str));
     int value;
-    stream >> value >> std::ws;
+    stream >> value;
     if (stream.fail() || !stream.eof()) {
         error("stringToInteger: Illegal integer format (" + str + ")");
     }
@@ -167,9 +167,9 @@ int stringToInteger(const std::string& str) {
 }
 
 long stringToLong(const std::string& str) {
-    std::istringstream stream(str);
+    std::istringstream stream(trim(str));
     long value;
-    stream >> value >> std::ws;
+    stream >> value;
     if (stream.fail() || !stream.eof()) {
         error("stringToInteger: Illegal long format (" + str + ")");
     }
@@ -177,9 +177,9 @@ long stringToLong(const std::string& str) {
 }
 
 double stringToReal(const std::string& str) {
-    std::istringstream stream(str);
+    std::istringstream stream(trim(str));
     double value;
-    stream >> value >> std::ws;
+    stream >> value;
     if (stream.fail() || !stream.eof()) {
         error("stringToReal: Illegal floating-point format (" + str + ")");
     }
