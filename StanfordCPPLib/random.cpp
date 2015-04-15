@@ -58,6 +58,12 @@ bool randomChance(double p) {
     return randomReal(0, 1) < p;
 }
 
+//template <typename T>
+//T& randomElement(std::vector<T>& v) {
+//    int index = randomInteger(0, v.size() - 1);
+//    return v[index];
+//}
+
 /*
  * Implementation notes: randomInteger
  * -----------------------------------
@@ -131,6 +137,7 @@ static void initRandomSeed() {
     static bool initialized = false;
     if (!initialized) {
         srand(int(time(NULL)));
+        rand();   // BUGFIX: throwaway call to get randomness going
         initialized = true;
     }
 }

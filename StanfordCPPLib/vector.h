@@ -890,6 +890,18 @@ int hashCode(const Vector<ValueType>& v) {
 }
 
 /*
+ * Function: randomElement
+ * Usage: element = randomElement(v);
+ * ----------------------------------
+ * Returns a randomly chosen element of the given vector.
+ */
+template <typename T>
+T& randomElement(Vector<T>& v) {
+    int index = randomInteger(0, v.size() - 1);
+    return v[index];
+}
+
+/*
  * Randomly rearranges the elements of the given vector.
  */
 template <typename T>

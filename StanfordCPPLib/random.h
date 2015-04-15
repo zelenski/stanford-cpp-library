@@ -33,6 +33,16 @@ bool randomBool();
 bool randomChance(double p);
 
 /*
+ * Function: randomElement
+ * Usage: element = randomElement(v);
+ * ----------------------------------
+ * Returns a randomly chosen element of the given vector.
+ * Can be used with STL vectors or Stanford Vectors.
+ */
+//template <typename T>
+//T& randomElement(std::vector<T>& v);
+
+/*
  * Function: randomInteger
  * Usage: int n = randomInteger(low, high);
  * ----------------------------------------
