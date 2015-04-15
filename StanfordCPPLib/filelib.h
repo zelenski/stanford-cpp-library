@@ -8,6 +8,8 @@
  * contain separators in any of the supported styles, which usually
  * makes it possible to use the same code on different platforms.
  * 
+ * @version 2015/04/12
+ * - added promptUserForFile overload without stream parameter
  * @version 2014/10/19
  * - alphabetized function declarations
  * - converted many funcs to take const string& rather than string for efficiency
@@ -317,12 +319,17 @@ std::string openOnPath(std::ofstream& stream,
  * The also optional <code>reprompt</code> argument provides an output message
  * displayed each time if the user types a file that is not found.
  * If no value is passed, defaults to, "Unable to open that file.  Try again.".
+ * 
+ * If no stream reference is passed, it is up to you to create an ifstream
+ * object and open it upon return from this function.
  */
 std::string promptUserForFile(std::ifstream& stream,
                               const std::string& prompt = "",
                               const std::string& reprompt = "");
 std::string promptUserForFile(std::ofstream& stream,
                               const std::string& prompt = "",
+                              const std::string& reprompt = "");
+std::string promptUserForFile(const std::string& prompt = "",
                               const std::string& reprompt = "");
 
 /*

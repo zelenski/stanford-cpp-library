@@ -46,7 +46,7 @@ makes it possible to use the same code on different platforms.
 <a href="#Function:openFileDialog">openFileDialog(<var>stream</var>,&nbsp;<var>title</var>)</a><br>
 <a href="#Function:openFileDialog">openFileDialog(<var>stream</var>,&nbsp;<var>title</var>,&nbsp;<var>path</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Opens a dialog that allows the user to choose the file.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:openOnPath">openOnPath(<var>stream</var>,&nbsp;<var>path</var>,&nbsp;<var>filename</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Opens a file using a search path.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Function:promptUserForFile">promptUserForFile(<var>stream</var>,&nbsp;<var>prompt</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Asks the user for the name of a file.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:promptUserForFile">promptUserForFile(<var>stream</var>,&nbsp;<var>prompt</var>)</a>&nbsp;<br><a href="#Function:promptUserForFile">promptUserForFile(<var>prompt</var>)</a></nobr></td><td class=indexSynopsis width=100%>Asks the user for the name of a file.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:readEntireFile">readEntireFile(<var>is</var>,&nbsp;<var>lines</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads the entire contents of the specified input stream into the string vector <code>lines</code>.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:readEntireFile">readEntireFile(<var>filename</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads the entire contents of the specified file and returns them as a <code>string</code>.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:renameFile">renameFile(<var>oldname</var>,&nbsp;<var>newname</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Renames a file.</td></tr>
@@ -79,6 +79,7 @@ if (openFile(stream, filename)) ...
 <pre class=detailCode>
 string promptUserForFile(ifstream&amp; stream, string prompt = "", string reprompt = "");
 string promptUserForFile(ofstream&amp; stream, string prompt = "", string reprompt = "");
+string promptUserForFile(string prompt = "", string reprompt = "");
 </pre>
 <div class=detailHTML>
 Asks the user for the name of a file.  The file is opened using
@@ -92,6 +93,10 @@ for the user.
 
 <p>The also optional <code>reprompt</code> argument provides an output message displayed each time if the user types a file that is not found.
 If no value is passed it defaults to, "Unable to open that file.  Try again.".
+
+<p>If no stream reference is passed, it is up to you to create an ifstream
+object and open it upon return from this function.</p>
+
 <p>Usage:<br>
 </div>
 <pre class=usageCode>

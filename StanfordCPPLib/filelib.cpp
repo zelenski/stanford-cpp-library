@@ -4,6 +4,8 @@
  * This file implements the filelib.h interface.  All platform dependencies
  * are managed through the platform interface.
  * 
+ * @version 2015/04/12
+ * - added promptUserForFile overload without stream parameter
  * @version 2014/10/19
  * - alphabetized function declarations
  * - converted many funcs to take const string& rather than string for efficiency
@@ -315,6 +317,31 @@ std::string promptUserForFile(std::ofstream& stream,
         }
         std::cout << repromptCopy << std::endl;
         if (promptCopy == "") promptCopy = "Output file: ";
+    }
+}
+
+std::string promptUserForFile(const std::string& prompt,
+                              const std::string& reprompt) {
+    std::string promptCopy = prompt;
+    std::string repromptCopy = reprompt;
+    if (reprompt == "") {
+        repromptCopy = "Unable to open that file.  Try again.";
+    }
+    appendSpace(promptCopy);
+    while (true) {
+        std::cout << promptCopy;
+        std::string filename;
+        getline(std::cin, filename);
+        if (!filename.empty()) {
+            std::ifstream stream;
+            openFile(stream, filename);
+            if (!stream.fail()) {
+                stream.close();
+                return filename;
+            }
+        }
+        std::cout << repromptCopy << std::endl;
+        if (promptCopy == "") promptCopy = "Input file: ";
     }
 }
 
