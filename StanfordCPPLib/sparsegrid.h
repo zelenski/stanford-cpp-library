@@ -110,7 +110,7 @@ public:
      * Returns the grid's height, that is, the number of rows in the grid.
      */
     int height() const;
-
+    
     /*
      * Method: inBounds
      * Usage: if (grid.inBounds(row, col)) ...
@@ -119,6 +119,15 @@ public:
      * is inside the bounds of the grid.
      */
     bool inBounds(int row, int col) const;
+    
+    /*
+     * Method: isEmpty
+     * Usage: if (grid.isEmpty()) ...
+     * ---------------------------------------
+     * Returns <code>true</code> if the specified grid has 0 rows and/or columns,
+     * or if none of the individual cell values has been set yet.
+     */
+    bool isEmpty() const;
 
     /*
      * Method: isSet
@@ -439,7 +448,7 @@ public:
             return gp->elements[row][col];
         }
 
-        ValueType operator [](int col) const {
+        const ValueType& operator [](int col) const {
             gp->checkIndexes(row, col, gp->nRows-1, gp->nCols-1, "operator [][]");
             return gp->elements[row][col];
         }
@@ -557,6 +566,11 @@ int SparseGrid<ValueType>::height() const {
 template <typename ValueType>
 bool SparseGrid<ValueType>::inBounds(int row, int col) const {
     return row >= 0 && col >= 0 && row < nRows && col < nCols;
+}
+
+template <typename ValueType>
+bool SparseGrid<ValueType>::isEmpty() const {
+    return elements.isEmpty();
 }
 
 template <typename ValueType>
@@ -794,19 +808,6 @@ bool SparseGrid<ValueType>::operator >=(const SparseGrid& grid2) const {
 }
 
 /*
- * Template hash function for sparse grids.
- * Requires the element type in the SparseGrid to have a hashCode function.
- */
-template <typename T>
-int hashCode(const SparseGrid<T>& g) {
-    int code = HASH_SEED;
-    for (T n : g) {
-        code = HASH_MULTIPLIER * code + hashCode(n);
-    }
-    return int(code & HASH_MASK);
-}
-
-/*
  * Implementation notes: << and >>
  * -------------------------------
  * The insertion and extraction operators use the template facilities in
@@ -832,4 +833,36 @@ std::istream& operator >>(std::istream& is, SparseGrid<ValueType>& grid) {
     return is;
 }
 
-#endif // _grid_h
+/*
+ * Template hash function for sparse grids.
+ * Requires the element type in the SparseGrid to have a hashCode function.
+ */
+template <typename T>
+int hashCode(const SparseGrid<T>& g) {
+    int code = HASH_SEED;
+    for (T n : g) {
+        code = HASH_MULTIPLIER * code + hashCode(n);
+    }
+    return int(code & HASH_MASK);
+}
+
+/*
+ * Function: randomElement
+ * Usage: element = randomElement(grid);
+ * -------------------------------------
+ * Returns a randomly chosen element of the given grid.
+ * Throws an error if the grid is empty.
+ */
+template <typename T>
+const T& randomElement(const SparseGrid<T>& grid) {
+    if (grid.isEmpty()) {
+        error("randomElement: empty sparse grid was passed");
+    }
+    
+    // pick a non-empty row, then pick a random element from it
+    int row = randomKey(grid.elements);
+    int col = randomKey(grid.elements[row]);
+    return grid.get(row, col);
+}
+
+#endif // _sparsegrid_h

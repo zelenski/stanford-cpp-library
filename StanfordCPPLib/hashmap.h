@@ -807,21 +807,6 @@ bool HashMap<KeyType, ValueType>::operator !=(const HashMap& map2) const {
 }
 
 /*
- * Template hash function for hash maps.
- * Requires the key and value types in the HashMap to have a hashCode function.
- */
-template <typename K, typename V>
-int hashCode(const HashMap<K, V>& map) {
-    int code = HASH_SEED;
-    for (K k : map) {
-        code = HASH_MULTIPLIER * code + hashCode(k);
-        V v = map[k];
-        code = HASH_MULTIPLIER * code + hashCode(v);
-    }
-    return int(code & HASH_MASK);
-}
-
-/*
  * Implementation notes: << and >>
  * -------------------------------
  * The insertion and extraction operators use the template facilities in
@@ -879,6 +864,47 @@ std::istream& operator >>(std::istream& is,
         }
     }
     return is;
+}
+
+/*
+ * Template hash function for hash maps.
+ * Requires the key and value types in the HashMap to have a hashCode function.
+ */
+template <typename K, typename V>
+int hashCode(const HashMap<K, V>& map) {
+    int code = HASH_SEED;
+    for (K k : map) {
+        code = HASH_MULTIPLIER * code + hashCode(k);
+        V v = map[k];
+        code = HASH_MULTIPLIER * code + hashCode(v);
+    }
+    return int(code & HASH_MASK);
+}
+
+/*
+ * Function: randomKey
+ * Usage: element = randomKey(map);
+ * --------------------------------
+ * Returns a randomly chosen key of the given map.
+ * Throws an error if the map is empty.
+ */
+template <typename K, typename V>
+const K& randomKey(const HashMap<K, V>& map) {
+    if (map.isEmpty()) {
+        error("randomElement: empty hash map was passed");
+    }
+    int index = randomInteger(0, map.size() - 1);
+    int i = 0;
+    for (const K& key : map) {
+        if (i == index) {
+            return key;
+        }
+        i++;
+    }
+    
+    // this code will never be reached
+    static Vector<K> v = map.keys();
+    return v[0];
 }
 
 #endif

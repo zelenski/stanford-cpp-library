@@ -3,6 +3,7 @@
  */
 
 #include "console.h"
+#include "random.h"
 #include "simpio.h"
 #include "strlib.h"
 #include "test/testcases.h"
@@ -14,6 +15,10 @@ int main() {
     setConsoleSize(1000, 600);
     setConsoleLocation(-1, -1);
     setConsoleWindowTitle("Marty is great");
+    
+    cout << randomInteger(1, 10) << " "
+         << randomInteger(1, 10) << " "
+         << randomInteger(1, 10) << endl;
     
     while (true) {
         cout << "c) collections" << endl;

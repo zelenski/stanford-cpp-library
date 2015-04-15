@@ -733,4 +733,30 @@ int hashCode(const Set<T>& s) {
     return int(code & HASH_MASK);
 }
 
+/*
+ * Function: randomElement
+ * Usage: element = randomElement(set);
+ * ------------------------------------
+ * Returns a randomly chosen element of the given set.
+ * Throws an error if the set is empty.
+ */
+template <typename T>
+const T& randomElement(const Set<T>& set) {
+    if (set.isEmpty()) {
+        error("randomElement: empty set was passed");
+    }
+    int index = randomInteger(0, set.size() - 1);
+    int i = 0;
+    for (const T& element : set) {
+        if (i == index) {
+            return element;
+        }
+        i++;
+    }
+    
+    // this code will never be reached
+    static T unused = set.first();
+    return unused;
+}
+
 #endif

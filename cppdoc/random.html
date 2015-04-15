@@ -18,40 +18,17 @@ This file exports functions for generating pseudorandom numbers.
 <tr><td class=indexHead colspan=2>Functions</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:randomBool">randomBool()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> or <code>false</code> with 50% probability.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:randomChance">randomChance(<var>p</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> with the probability indicated by <code>p</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:randomElement">randomElement(<var>grid</var>)</a>&nbsp;<br>
+	<a href="#Function:randomElement">randomElement(<var>list</var>)</a>&nbsp;<br>
+	<a href="#Function:randomElement">randomElement(<var>set</var>)</a>&nbsp;
+	<a href="#Function:randomElement">randomElement(<var>v</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a randomly chosen element from the given collection.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:randomInteger">randomInteger(<var>low</var>,&nbsp;<var>high</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a random integer in the range <code>low</code> to <code>high</code>, inclusive.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:randomElement">randomKey(<var>map</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a randomly chosen key from the given map.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:randomReal">randomReal(<var>low</var>,&nbsp;<var>high</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a random real number in the half-open interval [<code>low</code>&nbsp;..&nbsp;<code>high</code>).</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:setRandomSeed">setRandomSeed(<var>seed</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the internal random number seed to the specified value.</td></tr>
 </table>
+
 <h2>Function detail</h2>
-<hr>
-<a name="Function:randomInteger"></a>
-<pre class=detailCode>
-int randomInteger(int low, int high);
-</pre>
-<div class=detailHTML>
-Returns a random integer in the range <code>low</code> to
-<code>high</code>, inclusive.
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-int n = randomInteger(low, high);
-</pre>
-<hr>
-<a name="Function:randomReal"></a>
-<pre class=detailCode>
-double randomReal(double low, double high);
-</pre>
-<div class=detailHTML>
-Returns a random real number in the half-open interval
-[<code>low</code>&nbsp;..&nbsp;<code>high</code>).  A half-open
-interval includes the first endpoint but not the second, which
-means that the result is always greater than or equal to
-<code>low</code> but strictly less than <code>high</code>.
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-double d = randomReal(low, high);
-</pre>
 <hr>
 
 <a name="Function:randomBool"></a>
@@ -82,6 +59,91 @@ of the time.
 </div>
 <pre class=usageCode>
 if (randomChance(p)) ...
+</pre>
+<hr>
+
+<a name="Function:randomElement"></a>
+<pre class=detailCode>
+template &lt;typename T&gt;
+const T&amp; randomElement(const Grid&lt;T&gt;&amp; grid)
+
+template &lt;typename T&gt;
+const T&amp; randomElement(const HashSet&lt;T&gt;&amp; set)
+
+template &lt;typename T&gt;
+const T&amp; randomElement(const LinkedList&lt;T&gt;&amp; list)
+
+template &lt;typename T&gt;
+const T&amp; randomElement(const Set&lt;T&gt;&amp; set)
+
+template &lt;typename T&gt;
+const T&amp; randomElement(const SparseGrid&lt;T&gt;&amp; grid)
+
+template &lt;typename T&gt;
+const T&amp; randomElement(const Vector&lt;T&gt;&amp; v)
+</pre>
+<div class=detailHTML>
+Returns a randomly chosen element of the given collection.
+Throws an error if the collection is empty.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+element = randomElement(v);
+</pre>
+<p class="since">
+	Available since: 2015/04/15 version of C++ library
+</p>
+<hr>
+
+<a name="Function:randomInteger"></a>
+<pre class=detailCode>
+int randomInteger(int low, int high);
+</pre>
+<div class=detailHTML>
+Returns a random integer in the range <code>low</code> to
+<code>high</code>, inclusive.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int n = randomInteger(low, high);
+</pre>
+<hr>
+
+<a name="Function:randomKey"></a>
+<pre class=detailCode>
+template &lt;typename K, typename V&gt;
+K randomKey(const HashMap&lt;K, V&gt;&amp; map)
+
+template &lt;typename K, typename V&gt;
+K randomKey(const Map&lt;K, V&gt;&amp; map)
+</pre>
+<div class=detailHTML>
+Returns a randomly chosen key of the given map.
+Throws an error if the map is empty.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+key = randomKey(map);
+</pre>
+<p class="since">
+	Available since: 2015/04/15 version of C++ library
+</p>
+<hr>
+
+<a name="Function:randomReal"></a>
+<pre class=detailCode>
+double randomReal(double low, double high);
+</pre>
+<div class=detailHTML>
+Returns a random real number in the half-open interval
+[<code>low</code>&nbsp;..&nbsp;<code>high</code>).  A half-open
+interval includes the first endpoint but not the second, which
+means that the result is always greater than or equal to
+<code>low</code> but strictly less than <code>high</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double d = randomReal(low, high);
 </pre>
 <hr>
 

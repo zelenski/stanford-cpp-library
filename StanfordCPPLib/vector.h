@@ -894,9 +894,13 @@ int hashCode(const Vector<ValueType>& v) {
  * Usage: element = randomElement(v);
  * ----------------------------------
  * Returns a randomly chosen element of the given vector.
+ * Throws an error if the vector is empty.
  */
 template <typename T>
-T& randomElement(Vector<T>& v) {
+const T& randomElement(const Vector<T>& v) {
+    if (v.isEmpty()) {
+        error("randomElement: empty Vector was passed");
+    }
     int index = randomInteger(0, v.size() - 1);
     return v[index];
 }

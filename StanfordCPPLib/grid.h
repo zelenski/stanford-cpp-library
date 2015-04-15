@@ -119,7 +119,7 @@ public:
      * Returns the grid's height, that is, the number of rows in the grid.
      */
     int height() const;
-
+    
     /*
      * Method: inBounds
      * Usage: if (grid.inBounds(row, col)) ...
@@ -128,6 +128,14 @@ public:
      * is inside the bounds of the grid.
      */
     bool inBounds(int row, int col) const;
+    
+    /*
+     * Method: isEmpty
+     * Usage: if (grid.isEmpty()) ...
+     * ---------------------------------------
+     * Returns <code>true</code> if the grid has 0 rows and/or 0 columns.
+     */
+    bool isEmpty() const;
 
     /*
      * Method: mapAll
@@ -580,6 +588,11 @@ bool Grid<ValueType>::inBounds(int row, int col) const {
 }
 
 template <typename ValueType>
+bool Grid<ValueType>::isEmpty() const {
+    return nRows == 0 || nCols == 0;
+}
+
+template <typename ValueType>
 void Grid<ValueType>::mapAll(void (*fn)(ValueType value)) const {
     for (int i = 0; i < nRows; i++) {
         for (int j = 0; j < nCols; j++) {
@@ -878,6 +891,23 @@ int hashCode(const Grid<T>& g) {
         code = HASH_MULTIPLIER * code + hashCode(n);
     }
     return int(code & HASH_MASK);
+}
+
+/*
+ * Function: randomElement
+ * Usage: element = randomElement(grid);
+ * -------------------------------------
+ * Returns a randomly chosen element of the given grid.
+ * Throws an error if the grid is empty.
+ */
+template <typename T>
+const T& randomElement(const Grid<T>& grid) {
+    if (grid.isEmpty()) {
+        error("randomElement: empty grid was passed");
+    }
+    int row = randomInteger(0, grid.numRows() - 1);
+    int col = randomInteger(0, grid.numCols() - 1);
+    return grid.get(row, col);
 }
 
 /*

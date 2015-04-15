@@ -847,6 +847,22 @@ int hashCode(const LinkedList<T>& list) {
 }
 
 /*
+ * Function: randomElement
+ * Usage: element = randomElement(list);
+ * -------------------------------------
+ * Returns a randomly chosen element of the given list.
+ * Throws an error if the list is empty.
+ */
+template <typename T>
+const T& randomElement(const LinkedList<T>& list) {
+    if (list.isEmpty()) {
+        error("randomElement: empty list was passed");
+    }
+    int index = randomInteger(0, list.size() - 1);
+    return list[index];
+}
+
+/*
  * Randomly rearranges the elements of the given list.
  * Because it is slow to arbitrarily access/modify indexes in a linked list,
  * this function uses an auxiliary Vector to assist in its implementation,

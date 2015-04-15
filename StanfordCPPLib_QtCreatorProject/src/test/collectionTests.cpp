@@ -62,14 +62,112 @@ static void compareTestHelper(const T& o1, const T& o2, const std::string& type 
 }
 
 void randomElementTest() {
-    Vector<std::string> v;
-    v += "a", "b", "c", "d", "e";
+    std::cout << "randomElement/Key test:" << std::endl;
+    Map<std::string, int> counts;
+    int RUNS = 200;
     
-    for (int i = 0; i < 50; i++) {
-        std::string s = randomElement(v);
+    std::cout << "Grid: ";
+    Grid<std::string> grid;
+    grid.resize(2, 3);
+    grid[0][0] = "a";
+    grid[0][1] = "b";
+    grid[0][2] = "c";
+    grid[1][0] = "d";
+    grid[1][1] = "e";
+    grid[1][2] = "f";
+    for (int i = 0; i < RUNS; i++) {
+        std::string s = randomElement(grid);
         std::cout << s << " ";
+        counts[s]++;
     }
     std::cout << std::endl;
+    
+    std::cout << "HashMap: ";
+    HashMap<std::string, int> hmap;
+    hmap["a"] = 50;
+    hmap["b"] = 40;
+    hmap["c"] = 30;
+    hmap["d"] = 20;
+    hmap["e"] = 10;
+    hmap["f"] =  0;
+    for (int i = 0; i < RUNS; i++) {
+        std::string s = randomKey(hmap);
+        std::cout << s << " ";
+        counts[s]++;
+    }
+    std::cout << std::endl;
+    
+    std::cout << "HashSet: ";
+    HashSet<std::string> hset;
+    hset += "a", "b", "c", "d", "e", "f";
+    for (int i = 0; i < RUNS; i++) {
+        std::string s = randomElement(hset);
+        std::cout << s << " ";
+        counts[s]++;
+    }
+    std::cout << std::endl;
+    
+    std::cout << "LinkedList: ";
+    LinkedList<std::string> list;
+    list += "a", "b", "c", "d", "e", "f";
+    for (int i = 0; i < RUNS; i++) {
+        std::string s = randomElement(list);
+        std::cout << s << " ";
+        counts[s]++;
+    }
+    std::cout << std::endl;
+    
+    std::cout << "Map: ";
+    Map<std::string, int> map;
+    map["a"] = 50;
+    map["b"] = 40;
+    map["c"] = 30;
+    map["d"] = 20;
+    map["e"] = 10;
+    map["f"] =  0;
+    for (int i = 0; i < RUNS; i++) {
+        std::string s = randomKey(map);
+        std::cout << s << " ";
+        counts[s]++;
+    }
+    std::cout << std::endl;
+    
+    std::cout << "Set: ";
+    Set<std::string> set;
+    set += "a", "b", "c", "d", "e", "f";
+    for (int i = 0; i < RUNS; i++) {
+        std::string s = randomElement(set);
+        std::cout << s << " ";
+        counts[s]++;
+    }
+    std::cout << std::endl;
+    
+    std::cout << "SparseGrid: ";
+    SparseGrid<std::string> sgrid;
+    sgrid.resize(4, 3);
+    sgrid[0][0] = "a";
+    sgrid[0][1] = "b";
+    sgrid[1][2] = "c";   // row 2 is blank
+    sgrid[3][0] = "d";
+    sgrid[1][1] = "e";
+    sgrid[1][2] = "f";
+    for (int i = 0; i < RUNS; i++) {
+        std::string s = randomElement(sgrid);
+        std::cout << s << " ";
+        counts[s]++;
+    }
+    std::cout << std::endl;
+
+    std::cout << "Vector: ";
+    Vector<std::string> v;
+    v += "a", "b", "c", "d", "e", "f";
+    for (int i = 0; i < RUNS; i++) {
+        std::string s = randomElement(v);
+        std::cout << s << " ";
+        counts[s]++;
+    }
+    std::cout << std::endl;
+    std::cout << "counts:" << counts << std::endl << std::endl;
 }
 
 void compareTest() {
