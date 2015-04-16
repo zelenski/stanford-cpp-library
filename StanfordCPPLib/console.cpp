@@ -3,6 +3,8 @@
  * -----------------
  * This file implements the console.h interface.
  *
+ * @version 2015/04/15
+ * - set consoleClearEnabled to true by default (why was it false?)
  * @version 2014/11/13
  * - added setConsoleWindowTitle method
  * @version 2014/11/05
@@ -26,7 +28,7 @@
 #include "platform.h"
 
 static Platform* pp = getPlatform();
-static bool consoleClearEnabled = false;
+static bool consoleClearEnabled = true;
 static bool consoleEcho = false;
 static bool consoleEventOnClose = false;
 static bool consoleExitProgramOnClose = false;
