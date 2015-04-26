@@ -1,28 +1,22 @@
 	C++ libs
-		base on Eric's Java back-end code (not ugly decompiled version)
-		
-		bring in acm.jar docs into my site
-		unify karel.jar
+		fix stack-size-increase code?  didn't run on Mac?  (GET MAC AND DEBUG THIS;  ALSO WINDOWS, LINUX)
 		unify spl.jar
 			look at NameSurfer version; A/B code both
 			fix look'n'feel on my Linux  (see 106A Karel lib code)
 		addr2line on directories with spaces?
 		indent() function for recursion?
 		Java console window on Windows: won't close on Alt-F4?
-x		GObject intersects(GObject) method
-x		C++ console setOutputColor
-x		GObject setX, setY methods (only has setLocation right now)
-x		A Java lib bug: GImage loading, crashes with NPE
-x			on windows
-x			load JPG from res/*.jpg
-x			crashes (exception)
-		update simple project ZIP, lecture ZIPs, ZIP in cppdoc web page
-		ability to have multiple mains and use flags to turn them on/off?
-		1 console window limit per program?  cut down on window clutter?
-		fix call_stack_gcc.cpp on Win/MSVC?
-		
+x		stringToInteger, stringToLong with a base parameter?
+		[Dawg]Lexicon overload operators: +, +=, -, -= ?  like set?
+			same on any other collections?
+		other interactors
+			radio button?
+			jlabel?
+			spinner?
+		cpp docs
+			include <, >=, equals, hashCode, etc. for every collection
+			strlib: stringToLong, longToString, stringIsLong, stringToDouble, doubleToString, stringIsDouble
 		Eric's comments
-x			remove operator < from some collections (esp. PQ)
 			remove autograder:: stuff from non-autograder files
 				console.cpp/h
 				exceptions.cpp/h
@@ -32,15 +26,35 @@ x			remove operator < from some collections (esp. PQ)
 			remove "Stanford-specific stuff"?
 			rename "changePriority" method of PQ?
 				issue: "reducePriority" hard to tell if + or -;  hard to tell if param is newPriority or deltaPriority
-			GOptionPane sucks
-				leave in, with different name/api?
+x			remove operator < from some collections (esp. PQ)
+-			GOptionPane sucks
+-				leave in, with different name/api?
+		
+		base on Eric's Java back-end code (not ugly decompiled version)
+		
+		bring in acm.jar docs into my site
+		
+x		unify karel.jar
+x		GObject intersects(GObject) method
+x		C++ console setOutputColor
+x		GObject setX, setY methods (only has setLocation right now)
+x		A Java lib bug: GImage loading, crashes with NPE
+x			on windows
+x			load JPG from res/*.jpg
+x			crashes (exception)
+		
+		update simple project ZIP, lecture ZIPs, ZIP in cppdoc web page
+		
+		C++: ability to have multiple mains and use flags to turn them on/off?
+		1 console window limit per program?  cut down on window clutter?
+		fix call_stack_gcc.cpp on Win/MSVC?
 		
 x		compile with all warnings on, look for / fix warnings
 		
-		refactor hw1-7 autograders to use multiple test classes, set category names that way
-->			hw7
+x		refactor hw1-7 autograders to use multiple test classes, set category names that way
+x			hw7
 
-		make it so that you don't need to #include "console.h"
+		make it so that you don't need to #include "console.h" (REID)
 			based on a flag in .pro file maybe?
 			all .h in stanford C++ lib manually include console.h if flag is set?
 			if you don't include it, it just uses the shitty normal console?
@@ -59,11 +73,7 @@ x		compile with all warnings on, look for / fix warnings
 		debug args thing so I can connect a debugger to the Java back-end
 			// #define DEBUG_ARGS "-agentlib:jdwp=transport=dt_socket,address=127.0.0.1:60106,server=y,suspend=y"
 		
-		BasicGraph::clearExtraData? (can't; don't know the type of the data; just set all to NULL?)
-		
-		cpp docs
-			include <, >=, equals, hashCode, etc. for every collection
-			strlib: stringToLong, longToString, stringIsLong, stringToDouble, doubleToString, stringIsDouble
+-		BasicGraph::clearExtraData? (can't; don't know the type of the data; just set all to NULL?)
 		
 		BUG: weird line breaks in STDERR output on windows and in Debug mode
 			(probably related to redirecting stderr to graphical console window, flushing, \n insertion etc.)
@@ -117,13 +127,8 @@ x				while test running, set --> arrow? set spinner GIF?
 
 		need ability to interrupt a long-running test from autograder test run GUI window (use SIGINT?)
 		
-		other interactors
-			radio button?
-			jlabel?
-			spinner?
-		
-		jbe console setVisible, not minimized, maximize, method?  bringToFront?
-			idea: special fake ptr to console window frame, then support any GWindow back-end methods that way rather than needing to double-include them?
+x		jbe console setVisible, not minimized, maximize, method?  bringToFront?
+x			idea: special fake ptr to console window frame, then support any GWindow back-end methods that way rather than needing to double-include them?
 		
 		put inline asserts into unit test frame itself?
 		
@@ -142,14 +147,8 @@ x				while test running, set --> arrow? set spinner GIF?
 		
 		graphical console: set rows/cols rather than px size?
 		
-		stringToInteger with a base parameter?
-		
-		fix stack-size-increase code?  didn't run on Mac?  (GET MAC AND DEBUG THIS;  ALSO WINDOWS, LINUX)
 ->		GBufferedImage save(filename), load(filename) methods;  need back-end support
 			diffImage?
-		
-		[Dawg]Lexicon overload operators: +, +=, -, -= ?  like set?
-			same on any other collections?
 		
 ~		reimplement collections using STL versions as underlying container?  (see _experimental)
 			HashMap

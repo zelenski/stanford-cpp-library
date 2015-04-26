@@ -113,15 +113,21 @@ bool stringIsDouble(const std::string& str) {
     return stringIsReal(str);
 }
 
-bool stringIsInteger(const std::string& str) {
+bool stringIsInteger(const std::string& str, int radix) {
     std::istringstream stream(trim(str));
+    if (radix != 10) {
+        stream >> std::setbase(radix);
+    }
     int value;
     stream >> value;
     return !(stream.fail() || !stream.eof());
 }
 
-bool stringIsLong(const std::string& str) {
+bool stringIsLong(const std::string& str, int radix) {
     std::istringstream stream(trim(str));
+    if (radix != 10) {
+        stream >> std::setbase(radix);
+    }
     long value;
     stream >> value;
     return !(stream.fail() || !stream.eof());
@@ -156,8 +162,11 @@ double stringToDouble(const std::string& str) {
     return stringToReal(str);
 }
 
-int stringToInteger(const std::string& str) {
+int stringToInteger(const std::string& str, int radix) {
     std::istringstream stream(trim(str));
+    if (radix != 10) {
+        stream >> std::setbase(radix);
+    }
     int value;
     stream >> value;
     if (stream.fail() || !stream.eof()) {
@@ -166,8 +175,11 @@ int stringToInteger(const std::string& str) {
     return value;
 }
 
-long stringToLong(const std::string& str) {
+long stringToLong(const std::string& str, int radix) {
     std::istringstream stream(trim(str));
+    if (radix != 10) {
+        stream >> std::setbase(radix);
+    }
     long value;
     stream >> value;
     if (stream.fail() || !stream.eof()) {

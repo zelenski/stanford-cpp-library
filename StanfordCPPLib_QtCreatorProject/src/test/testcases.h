@@ -25,6 +25,9 @@ void killProcessTest();
 void longStringTest();
 void outputColorTest();
 
+// string tests
+void stringToIntegerTest();
+
 // url tests
 void urlstreamTest();
 

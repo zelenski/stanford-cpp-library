@@ -26,8 +26,9 @@ int main() {
         cout << "g) gui" << endl;
         cout << "i) cin / cout" << endl;
         cout << "n) segfault (NULL ptr)" << endl;
+        cout << "o) stack overflow" << endl;
         cout << "p) pipe" << endl;
-        cout << "s) stack overflow" << endl;
+        cout << "s) strings" << endl;
         cout << "t) throw exception" << endl;
         cout << "u) urlstream" << endl;
         string cmd = getLine("Command (Enter to quit)?");
@@ -56,9 +57,11 @@ int main() {
             getIntegerTest();
             longStringTest();
             // killProcessTest();
-        } else if (cmd == "s") {
+        } else if (cmd == "o") {
             //getPlatform()->setStackSize(1024*1024*128);
             stackOverflowTest();
+        } else if (cmd == "s") {
+            stringToIntegerTest();
         } else if (cmd == "t") {
             exceptionTest();
         } else if (cmd == "u") {

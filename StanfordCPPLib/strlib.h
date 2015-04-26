@@ -117,15 +117,17 @@ bool stringIsBool(const std::string& str);
  * Returns true if the given string could be converted to an integer
  * successfully by the stringToInteger function, which will be true if
  * the string has the format of an integer such as "1234" or "-8".
+ * Optionally accepts a radix (base) parameter if base-10 is not desired.
  */
-bool stringIsInteger(const std::string& str);
+bool stringIsInteger(const std::string& str, int radix = 10);
 
 /*
  * Returns true if the given string could be converted to a long
  * successfully by the stringToLong function, which will be true if
  * the string has the format of an integer such as "1234" or "-8".
+ * Optionally accepts a radix (base) parameter if base-10 is not desired.
  */
-bool stringIsLong(const std::string& str);
+bool stringIsLong(const std::string& str, int radix = 10);
 
 /*
  * Returns true if the given string could be converted to an real number
@@ -192,8 +194,11 @@ char stringToChar(const std::string& str);
  * legal integer or contains extraneous characters other than whitespace,
  * <code>stringToInteger</code> calls <code>error</code> with an
  * appropriate message.
+ * The function accepts an optional radix (base); for example,
+ * stringToInteger("234", 16) assumes that the string is in base-16 and
+ * returns 2*16*16 + 3*16 + 4 = 564.
  */
-int stringToInteger(const std::string& str);
+int stringToInteger(const std::string& str, int radix = 10);
 
 /*
  * Function: stringToLong
@@ -203,8 +208,11 @@ int stringToInteger(const std::string& str);
  * legal long or contains extraneous characters other than whitespace,
  * <code>stringToLong</code> calls <code>error</code> with an
  * appropriate message.
+ * The function accepts an optional radix (base); for example,
+ * stringToLong("234", 16) assumes that the string is in base-16 and
+ * returns 2*16*16 + 3*16 + 4 = 564.
  */
-long stringToLong(const std::string& str);
+long stringToLong(const std::string& str, int radix = 10);
 
 /*
  * Function: stringToReal

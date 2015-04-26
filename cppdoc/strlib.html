@@ -27,7 +27,8 @@ included in the C++ string library.
 <tr><td class=indexKey><nobr><a href="#Function:startsWith">startsWith(<var>str</var>,&nbsp;<var>prefix</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the string <code>str</code> starts with the specified prefix, which may be either a string or a character.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:stringContains">stringContains(<var>str</var>,&nbsp;<var>substr</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns whether the given substring can be found in the given string.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:stringIndexOf">stringIndexOf(<var>str</var>,&nbsp;<var>substr</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the index of the start of the first occurrence of the given substring in the given string.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Function:stringIsInteger">stringIsInteger(<var>str</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns whether the given string can be successfully converted into an integer.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:stringIsInteger">stringIsInteger(<var>str</var>)</a>&nbsp;<br>
+<a href="#Function:stringIsInteger">stringIsInteger(<var>str</var>, <var>radix</var>)</a></nobr></td><td class=indexSynopsis width=100%>Returns whether the given string can be successfully converted into an integer.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:stringIsReal">stringIsReal(<var>str</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns whether the given string can be successfully converted into a real number.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:stringJoin">stringJoin(<var>v</var>,&nbsp;<var>delimiter</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Concatenates the given vector of strings into a single string using the given separator.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:stringLastIndexOf">stringLastIndexOf(<var>str</var>,&nbsp;<var>substr</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the index of the start of the last occurrence of the given substring in the given string.</td></tr>
@@ -35,7 +36,8 @@ included in the C++ string library.
 <tr><td class=indexKey><nobr><a href="#Function:stringSplit">stringSplit(<var>str</var>,&nbsp;<var>delimiter</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Breaks apart the given string using the given separator.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:stringToBool">stringToBool(<var>str</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts a string representing a boolean value into its corresponding value.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:stringToChar">stringToChar(<var>str</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts a single-character string into its corresponding char value.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Function:stringToInteger">stringToInteger(<var>str</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts a string of digits into an integer.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:stringToInteger">stringToInteger(<var>str</var>)</a><br>
+<a href="#Function:stringToInteger">stringToInteger(<var>str</var>, <var>radix</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts a string of digits into an integer.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:stringToReal">stringToReal(<var>str</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts a string representing a real number into its corresponding value.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:toLowerCase">toLowerCase(<var>str</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a new string in which all uppercase characters have been converted into their lowercase equivalents.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:toUpperCase">toUpperCase(<var>str</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a new string in which all lowercase characters have been converted into their uppercase equivalents.</td></tr>
@@ -67,25 +69,35 @@ string s = integerToString(n);
 <a name="Function:stringToInteger"></a>
 <pre class=detailCode>
 int stringToInteger(string str);
+int stringToInteger(string str, int radix);
 </pre>
 <div class=detailHTML>
 Converts a string of digits into an integer.  If the string is not a
 legal integer or contains extraneous characters other than whitespace,
 <code>stringToInteger</code> calls <code>error</code> with an
 appropriate message.
+The function accepts an optional radix (base); for example,
+<code>stringToInteger("234", 16)</code> assumes that the string is in base-16 and
+returns 2*16*16 + 3*16 + 4 = 564.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
 int n = stringToInteger(str);
+int n2 = stringToInteger(str, radix);
 </pre>
+<p class="since">
+	Second version of this function (with radix parameter) available since: 2015/04/26 version of C++ library
+</p>
 <hr>
 <a name="Function:stringIsInteger"></a>
 <pre class=detailCode>
 bool stringIsInteger(string str);
+bool stringIsInteger(string str, int radix);
 </pre>
 <div class=detailHTML>
 Returns <code>true</code> if the given string can be successfully converted into an integer; that is, if it consists of digits and an optional +/- sign at the front.
 It can be useful to call this function before calling <code>stringToInteger</code> to make sure that the conversion will not fail.
+Optionally accepts a radix (base) parameter if base-10 is not desired.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
@@ -93,6 +105,9 @@ if (stringIsInteger(str)) { ...
 </pre>
 <p class="since">
 	Available since: 2014/02/01 version of C++ library
+</p>
+<p class="since">
+	Second version of this function (with radix parameter) available since: 2015/04/26 version of C++ library
 </p>
 <hr>
 <a name="Function:stringIsReal"></a>
