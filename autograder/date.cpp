@@ -3,6 +3,8 @@
  * ========
  * This file provides the implementation of the bodies of the member functions,
  * constructor, and overloaded operators for the Date class declared in date.h.
+ * @version 2015/04/18
+ * - fixed year-wrap bug in nextDay
  */
 
 #include "date.h"
@@ -162,6 +164,7 @@ void Date::nextDay() {
         month++;
         if (month > DECEMBER) {
             month = JANUARY;     // wrap to next year, e.g. 12/31 -> 1/1
+            year++;
         }
     }
 }
