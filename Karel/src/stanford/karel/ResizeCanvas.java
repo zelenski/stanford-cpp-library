@@ -1,12 +1,7 @@
 package stanford.karel;
 
-import java.awt.Canvas;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import javax.swing.JPanel;
+import java.awt.*;
+import javax.swing.*;
 
 class ResizeCanvas extends JPanel {
 	private static final int SIZE = 102;

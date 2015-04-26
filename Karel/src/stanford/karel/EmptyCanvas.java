@@ -5,7 +5,6 @@
 
 package stanford.karel;
 
-import java.awt.*;
 import javax.swing.*;
 
 class EmptyCanvas extends JComponent {
