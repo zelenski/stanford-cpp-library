@@ -1,4 +1,20 @@
 	C++ libs
+		addr2line on directories with spaces?
+x		GObject setX, setY methods (only has setLocation right now)
+		indent() function for recursion?
+		Java console window on Windows: won't close on Alt-F4?
+		A Java lib bug: GImage loading, crashes with NPE
+			on windows
+			load JPG from res/*.jpg
+			crashes (exception)
+		unify spl.jar
+			look at NameSurfer version; A/B code both
+			fix look'n'feel on my Linux  (see 106A Karel lib code)
+		update simple project ZIP, lecture ZIPs, ZIP in cppdoc web page
+		ability to have multiple mains and use flags to turn them on/off?
+		1 console window limit per program?  cut down on window clutter?
+		fix call_stack_gcc.cpp on Win/MSVC?
+		
 		Eric's comments
 x			remove operator < from some collections (esp. PQ)
 			remove autograder:: stuff from non-autograder files

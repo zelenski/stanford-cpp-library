@@ -1001,7 +1001,7 @@ public abstract class Program extends JApplet
  * @return The newly allocated <code>Frame</code> object
  */
 	protected JFrame createProgramFrame() {
-		return new ProgramFrame(getTitle());
+		return programFrame = new ProgramFrame(getTitle());
 	}
 
 /* Factory method: createConsole() */
