@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 
 public abstract class GObject implements Cloneable, Serializable, GScalable {
 	private static boolean antialiasing = true;
-	
+
 	public static void setAntiAliasing(boolean value) {
 		antialiasing = value;
 	}
@@ -89,7 +89,7 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 	public double getY() {
 		return this.yc;
 	}
-	
+
 	// added by Marty Stepp 2015/04/21
 	public double getRightX() {
 		return getX() + getWidth();
@@ -103,6 +103,13 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 		setLocation(this.xc + paramDouble1, this.yc + paramDouble2);
 	}
 
+	// added by Marty Stepp 2015/04/26
+	public boolean intersects(GObject obj) {
+		return new java.awt.geom.Rectangle2D.Double(getX(), getY(), getWidth(),
+				getHeight()).intersects(obj.getX(), obj.getY(), obj.getWidth(),
+				obj.getHeight());
+	}
+
 	public final void movePolar(double paramDouble1, double paramDouble2) {
 		double d = paramDouble2 * 3.141592653589793D / 180.0D;
 		move(paramDouble1 * Math.cos(d), -paramDouble1 * Math.sin(d));
@@ -110,7 +117,8 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 
 	public GDimension getSize() {
 		GRectangle localGRectangle = getBounds();
-		return new GDimension(localGRectangle.getWidth(), localGRectangle.getHeight());
+		return new GDimension(localGRectangle.getWidth(),
+				localGRectangle.getHeight());
 	}
 
 	public double getWidth() {
@@ -137,9 +145,11 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 		} else if (this.transientParent != null) {
 			try {
 				Class<?> localClass = this.transientParent.getClass();
-				Class<?>[] arrayOfClass = { Class.forName("acm.graphics.GObject") };
+				Class<?>[] arrayOfClass = { Class
+						.forName("acm.graphics.GObject") };
 				Object[] arrayOfObject = { this };
-				Method localMethod = localClass.getMethod("sendToFront", arrayOfClass);
+				Method localMethod = localClass.getMethod("sendToFront",
+						arrayOfClass);
 				if (localMethod != null) {
 					localMethod.invoke(this.transientParent, arrayOfObject);
 				}
@@ -159,9 +169,11 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 		} else if (this.transientParent != null) {
 			try {
 				Class<?> localClass = this.transientParent.getClass();
-				Class<?>[] arrayOfClass = { Class.forName("acm.graphics.GObject") };
+				Class<?>[] arrayOfClass = { Class
+						.forName("acm.graphics.GObject") };
 				Object[] arrayOfObject = { this };
-				Method localMethod = localClass.getMethod("sendToBack", arrayOfClass);
+				Method localMethod = localClass.getMethod("sendToBack",
+						arrayOfClass);
 				if (localMethod != null) {
 					localMethod.invoke(this.transientParent, arrayOfObject);
 				}
@@ -181,9 +193,11 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 		} else if (this.transientParent != null) {
 			try {
 				Class<?> localClass = this.transientParent.getClass();
-				Class<?>[] arrayOfClass = { Class.forName("acm.graphics.GObject") };
+				Class<?>[] arrayOfClass = { Class
+						.forName("acm.graphics.GObject") };
 				Object[] arrayOfObject = { this };
-				Method localMethod = localClass.getMethod("sendForward", arrayOfClass);
+				Method localMethod = localClass.getMethod("sendForward",
+						arrayOfClass);
 				if (localMethod != null) {
 					localMethod.invoke(this.transientParent, arrayOfObject);
 				}
@@ -203,9 +217,11 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 		} else if (this.transientParent != null) {
 			try {
 				Class<?> localClass = this.transientParent.getClass();
-				Class<?>[] arrayOfClass = { Class.forName("acm.graphics.GObject") };
+				Class<?>[] arrayOfClass = { Class
+						.forName("acm.graphics.GObject") };
 				Object[] arrayOfObject = { this };
-				Method localMethod = localClass.getMethod("sendBackward", arrayOfClass);
+				Method localMethod = localClass.getMethod("sendBackward",
+						arrayOfClass);
 				if (localMethod != null) {
 					localMethod.invoke(this.transientParent, arrayOfObject);
 				}
@@ -285,7 +301,8 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 	}
 
 	public GContainer getParent() {
-		return this.compoundParent != null ? this.compoundParent : this.transientParent;
+		return this.compoundParent != null ? this.compoundParent
+				: this.transientParent;
 	}
 
 	public void pause(double paramDouble) {
@@ -293,34 +310,40 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 	}
 
 	public void addMouseListener(MouseListener paramMouseListener) {
-		this.mouseListener = AWTEventMulticaster.add(this.mouseListener, paramMouseListener);
+		this.mouseListener = AWTEventMulticaster.add(this.mouseListener,
+				paramMouseListener);
 		this.mouseListenersEnabled = true;
 		updateEnabledList();
 	}
 
 	public void removeMouseListener(MouseListener paramMouseListener) {
-		this.mouseListener = AWTEventMulticaster.remove(this.mouseListener, paramMouseListener);
+		this.mouseListener = AWTEventMulticaster.remove(this.mouseListener,
+				paramMouseListener);
 	}
 
-	public void addMouseMotionListener(MouseMotionListener paramMouseMotionListener) {
-		this.mouseMotionListener = AWTEventMulticaster.add(this.mouseMotionListener,
-				paramMouseMotionListener);
+	public void addMouseMotionListener(
+			MouseMotionListener paramMouseMotionListener) {
+		this.mouseMotionListener = AWTEventMulticaster.add(
+				this.mouseMotionListener, paramMouseMotionListener);
 
 		this.mouseListenersEnabled = true;
 		updateEnabledList();
 	}
 
-	public void removeMouseMotionListener(MouseMotionListener paramMouseMotionListener) {
-		this.mouseMotionListener = AWTEventMulticaster.remove(this.mouseMotionListener,
-				paramMouseMotionListener);
+	public void removeMouseMotionListener(
+			MouseMotionListener paramMouseMotionListener) {
+		this.mouseMotionListener = AWTEventMulticaster.remove(
+				this.mouseMotionListener, paramMouseMotionListener);
 	}
 
 	public void addActionListener(ActionListener paramActionListener) {
-		this.actionListener = AWTEventMulticaster.add(this.actionListener, paramActionListener);
+		this.actionListener = AWTEventMulticaster.add(this.actionListener,
+				paramActionListener);
 	}
 
 	public void removeActionListener(ActionListener paramActionListener) {
-		this.actionListener = AWTEventMulticaster.remove(this.actionListener, paramActionListener);
+		this.actionListener = AWTEventMulticaster.remove(this.actionListener,
+				paramActionListener);
 	}
 
 	public void fireActionEvent(String paramString) {
@@ -410,9 +433,11 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 		try {
 			Class<?> localClass1 = Class.forName("acm.program.GraphicsProgram");
 			Class<?> localClass2 = Class.forName("acm.graphics.GObject");
-			Class<?>[] arrayOfClass = { localClass2, paramArrayOfString.getClass() };
+			Class<?>[] arrayOfClass = { localClass2,
+					paramArrayOfString.getClass() };
 			Object[] arrayOfObject = { this, paramArrayOfString };
-			Method localMethod = localClass1.getMethod("startGraphicsProgram", arrayOfClass);
+			Method localMethod = localClass1.getMethod("startGraphicsProgram",
+					arrayOfClass);
 
 			localMethod.invoke(null, arrayOfObject);
 		} catch (Exception localException) {
@@ -445,7 +470,8 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 		} else {
 			localGraphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 					RenderingHints.VALUE_ANTIALIAS_OFF);
-			localGraphics2D.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+			localGraphics2D.setRenderingHint(
+					RenderingHints.KEY_TEXT_ANTIALIASING,
 					RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 		}
 		localGraphics2D.setRenderingHint(RenderingHints.KEY_RENDERING,
@@ -480,7 +506,7 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 		}
 		return str;
 	}
-	
+
 	protected static String colorName(Color paramColor) {
 		if (paramColor.equals(Color.BLACK)) {
 			return "BLACK";
@@ -530,7 +556,8 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 		while ((localGContainer instanceof GObject)) {
 			localGContainer = ((GObject) localGContainer).getParent();
 		}
-		return (localGContainer instanceof Component) ? (Component) localGContainer : null;
+		return (localGContainer instanceof Component) ? (Component) localGContainer
+				: null;
 	}
 
 	protected void updateEnabledList() {

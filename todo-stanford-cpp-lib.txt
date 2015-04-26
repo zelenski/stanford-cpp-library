@@ -1,4 +1,7 @@
 	C++ libs
+		base on Eric's Java back-end code (not ugly decompiled version)
+		
+		bring in acm.jar docs into my site
 		unify karel.jar
 		unify spl.jar
 			look at NameSurfer version; A/B code both
@@ -6,6 +9,7 @@
 		addr2line on directories with spaces?
 		indent() function for recursion?
 		Java console window on Windows: won't close on Alt-F4?
+x		GObject intersects(GObject) method
 x		C++ console setOutputColor
 x		GObject setX, setY methods (only has setLocation right now)
 x		A Java lib bug: GImage loading, crashes with NPE
