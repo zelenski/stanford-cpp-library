@@ -64,6 +64,16 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 		repaint();
 	}
 
+	public void setX(double x) {
+		this.xc = x;
+		repaint();
+	}
+
+	public void setY(double y) {
+		this.yc = y;
+		repaint();
+	}
+
 	public final void setLocation(GPoint paramGPoint) {
 		setLocation(paramGPoint.getX(), paramGPoint.getY());
 	}
@@ -78,6 +88,15 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 
 	public double getY() {
 		return this.yc;
+	}
+	
+	// added by Marty Stepp 2015/04/21
+	public double getRightX() {
+		return getX() + getWidth();
+	}
+
+	public double getBottomY() {
+		return getY() + getHeight();
 	}
 
 	public void move(double paramDouble1, double paramDouble2) {

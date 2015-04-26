@@ -13,6 +13,8 @@ public class StringUtils {
 	public static final int DEFAULT_TAB_WIDTH = 4;
 	public static final String TAB_STRING = "	";
 	
+	/** So that an object of this class cannot be constructed. */
+	private StringUtils() {}
 	
 	public static String escape(String s) {
 		s = String.valueOf(s);
@@ -60,7 +62,7 @@ public class StringUtils {
 		String[] lines = value.split("\n");
 		int width = 0;
 		for (int i = 0; i < lines.length; i++) {
-			width = Math.max(width, lines[i].length());
+			width = Math.max(width, untabify(lines[i]).length());
 		}
 		return width;
 	}
@@ -468,6 +470,10 @@ public class StringUtils {
 		return CollectionUtils.join(lines, "\n");
 	}
 
+	public static String trimEnd(String s) {
+		return trimR(s);
+	}
+	
 	public static String trimR(String s) {
 		s = String.valueOf(s);
 		int end = s.length() - 1;
@@ -495,6 +501,28 @@ public class StringUtils {
 		return s.replaceAll("\\s+\r?\n", "\n");
 	}
 	
+	/**
+	 * Trims the given string to be at most the given number of characters in length.
+	 * Similar to fitToWidth, but doesn't put ... at end.
+	 */
+	public static String truncate(String s, int length) {
+		if (s == null || s.length() <= length) {
+			return s;
+		} else {
+			return s.substring(0, length);
+		}
+	}
+	
+	/**
+	 * Looks at all lines of the given string, figuring out how 'indented' each
+	 * line is; then removes the longest common indentation prefix string that
+	 * occurs in all lines.
+	 * For example, if some lines are indented 8 spaces, some 16, and some 12,
+	 * then each line starts with at least 8 spaces; so those 8 are stripped from
+	 * each line to yield a string where some lines are indented 0 spaces,
+	 * some 8, and some 4.
+	 * @return null if s == null
+	 */
 	public static String unindent(String s) {
 		s = String.valueOf(s);
 		String[] lines = s.split("[\r]?\n");
@@ -550,5 +578,21 @@ public class StringUtils {
 			e.printStackTrace();
 			return s;
 		}
+	}
+	
+	public static String wrapLines(String s, int length) {
+		StringBuilder sb = new StringBuilder(s.length() + 256);
+		String[] lines = s.split("\r?\n");
+		for (String line : lines) {
+			while (line.length() > length) {
+				String sub = line.substring(0, length);
+				sb.append(sub);
+				sb.append('\n');
+				line = line.substring(length);
+			}
+			sb.append(line);
+			sb.append('\n');
+		}
+		return sb.toString();
 	}
 }

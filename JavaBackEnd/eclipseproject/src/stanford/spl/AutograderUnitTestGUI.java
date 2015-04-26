@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp
+ * @version 2015/04/21
+ * - made it work even if Java back-end is null
  * @version 2014/11/15
  * - spinner GIF while tests are in progress
  * - shut down JBE if window closed while tests are in progress
@@ -69,6 +71,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 	private Box contentPaneBox = null;
 	private JLabel descriptionLabel = null;
 	private JLabel southLabel = null;
+	private AutograderUnitTestGUIMouseAdapter mouseListener;
 	
 	private Map<String, Container> allCategories = new LinkedHashMap<String, Container>();
 	private Container currentCategory = null;
@@ -77,6 +80,8 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 	private int passCount = 0;
 	private int testCount = 0;
 	private boolean testingIsInProgress = false;
+	private int testPanelHeight = -1;
+	private boolean allCategoriesHidden = false;
 	
 	public AutograderUnitTestGUI(JavaBackEnd javaBackEnd, String title) {
 		this.javaBackEnd = javaBackEnd;
@@ -110,6 +115,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		updateSouthText();
 		
 		new WindowCloseKeyListener(frame);
+		mouseListener = new AutograderUnitTestGUIMouseAdapter();
 		
 		SPLWindowSettings.loadWindowLocation(frame);
 		SPLWindowSettings.saveWindowLocation(frame);
@@ -123,6 +129,9 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		if (!allCategories.containsKey(name)) {
 			final Container category = Box.createVerticalBox();
 			currentCategory = category;
+//			category.add(Box.createRigidArea(new Dimension(0, 0)));
+//			category.add(Box.createVerticalGlue());
+			category.setName("category");
 			allCategories.put(name, currentCategory);
 			if (!name.isEmpty()) {
 				if (isStyleCheck()) {
@@ -147,6 +156,9 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 						selectAll(category, true);
 					}
 				});
+				selectAll.addMouseListener(mouseListener);
+				selectAll.setToolTipText("Double-click to select all tests from all categories.");
+				
 				JButton deselectAll = new JButton("None");
 				deselectAll.setIcon(new ImageIcon("checkbox-unchecked.gif"));
 				GuiUtils.shrinkFont(deselectAll, 2);
@@ -155,8 +167,24 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 						selectAll(category, false);
 					}
 				});
+				deselectAll.addMouseListener(mouseListener);
+				deselectAll.setToolTipText("Double-click to deselect all tests from all categories.");
+				
+				JButton minimize = new JButton("Hide");
+				// minimize.setIcon(new ImageIcon("minus.gif"));
+				GuiUtils.shrinkFont(minimize, 2);
+				minimize.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent event) {
+						minimize(category);
+					}
+				});
+				minimize.addMouseListener(mouseListener);
+				minimize.setToolTipText("Double-click to minimize all categories.");
+				
 				top.add(selectAll);
 				top.add(deselectAll);
+				top.add(minimize);
+				
 				if (!name.isEmpty()) {
 					JLabel nameLabel = new JLabel(name);
 					GuiUtils.shrinkFont(nameLabel, 1);
@@ -177,6 +205,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		
 		// add a panel about this test
 		JPanel testPanel = new JPanel(new BorderLayout());
+		testPanel.setName("testPanel");
 		JPanel testWestPanel = new JPanel();
 		Color bgColor = (testCount % 2 == 0) ? ZEBRA_STRIPE_COLOR_1 : ZEBRA_STRIPE_COLOR_2;
 		testPanel.setBackground(bgColor);
@@ -423,6 +452,48 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		// scroll.getVerticalScrollBar().setValue(scroll.getVerticalScrollBar().getMaximum());
 	}
 	
+	/*
+	 * toggles minimized state
+	 */
+	private void minimize(Container category) {
+		minimize(category, !category.getName().contains("hidden"));
+	}
+	
+	private void minimize(Container category, boolean minimized) {
+		if (minimized) {
+			category.setName("category_hidden");
+		} else {
+			category.setName("category");
+		}
+		for (Component comp : category.getComponents()) {
+			if (comp instanceof JPanel) {
+				JPanel panel = (JPanel) comp;
+				String name = panel.getName();
+				if (name == null || !name.equals("testPanel")) {
+					continue;
+				}
+				Dimension size = panel.getPreferredSize();
+				if (testPanelHeight < 0) {
+					testPanelHeight = size.height;
+				}
+				
+				size.height = minimized ? 0 : testPanelHeight;
+				panel.setPreferredSize(size);
+				if (minimized) {
+					panel.setMaximumSize(size);
+				} else {
+					panel.setMaximumSize(null);
+				}
+				panel.invalidate();
+				category.invalidate();
+			}
+		}
+		category.validate();
+		contentPaneBox.validate();
+		scroll.validate();
+		frame.validate();
+	}
+	
 	private void selectAll(Container category, boolean selected) {
 		for (Component comp : category.getComponents()) {
 			if (comp instanceof JCheckBox) {
@@ -535,8 +606,19 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		notifyObservers(testName);
 	}
 	
+	private int getCheckedTestCount() {
+		int count = 0;
+		Set<TestInfo> tests = new HashSet<TestInfo>(allTests.values());
+		for (TestInfo info : tests) {
+			if (isChecked(info.name)) {
+				count++;
+			}
+		}
+		return count;
+	}
+	
 	private void updateSouthText() {
-		String text = "passed " + passCount + " / " + testCount + " tests";
+		String text = "passed " + passCount + " / " + getCheckedTestCount() + " tests";
 		if (testingIsInProgress) {
 			text += " (running ...)";
 			if (southLabel.getIcon() == null) {
@@ -553,7 +635,30 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		public void windowClosing(WindowEvent event) {
 			if (testingIsInProgress) {
 				// probably a hung student test case; kill back-end
-				javaBackEnd.shutdownBackEnd(/* sendEvent */ true);
+				if (javaBackEnd != null) {
+					javaBackEnd.shutdownBackEnd(/* sendEvent */ true);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Select/Deselect all on double-click.
+	 */
+	private class AutograderUnitTestGUIMouseAdapter extends MouseAdapter {
+		public void mouseClicked(MouseEvent event) {
+			if (event.getClickCount() == 2) {
+				JButton button = (JButton) event.getSource();
+				if (button.getText().contains("All")) {
+					selectAll(contentPaneBox, true);
+				} else if (button.getText().contains("None")) {
+					selectAll(contentPaneBox, false);
+				} else if (button.getText().contains("Hide")) {
+					allCategoriesHidden = !allCategoriesHidden;
+					for (Container category : allCategories.values()) {
+						minimize(category, allCategoriesHidden);
+					}
+				}
 			}
 		}
 	}

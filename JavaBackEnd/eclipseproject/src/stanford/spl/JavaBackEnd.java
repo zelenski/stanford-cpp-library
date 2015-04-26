@@ -788,12 +788,20 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 
 	private void initSystemProperties() {
 		System.setProperty("com.apple.mrj.application.apple.menu.about.name", this.appName);
-
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		try {
 			UIManager.put("Slider.paintValue", false);
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			UIManager.put("Slider.paintValue", false);
+			try {
+				String lnf = UIManager.getSystemLookAndFeelClassName();
+				if (lnf == null || lnf.contains("MetalLookAndFeel")) {
+					// workaround because system L&F seems to fail on Linux boxes
+					UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+				} else {
+					UIManager.setLookAndFeel(lnf);
+				}
+			} catch (Exception e) {
+				// empty
+			}
 		} catch (Exception localException) {
 		}
 	}

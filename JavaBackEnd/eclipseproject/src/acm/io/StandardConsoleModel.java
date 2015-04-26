@@ -45,6 +45,7 @@ public class StandardConsoleModel implements KeyListener, FocusListener, Console
 	private boolean hasFocus;
 	private IOConsole console;
 	private ProgramMenuBar menuBar;
+	private Color outputColor = Color.BLACK;
 
 	public StandardConsoleModel() {
 		this.outputMonitor = new ConsoleOutputMonitor(this);
@@ -270,6 +271,28 @@ public class StandardConsoleModel implements KeyListener, FocusListener, Console
 		}
 		this.errorAttributes
 				.addAttribute(StyleConstants.Foreground, paramColor);
+	}
+
+	public void setOutputStyle(int paramInt) {
+		this.outputAttributes.addAttribute(StyleConstants.Bold, new Boolean(
+				(paramInt & 0x1) != 0));
+		this.outputAttributes.addAttribute(StyleConstants.Italic, new Boolean(
+				(paramInt & 0x2) != 0));
+	}
+
+	public Color getOutputColor() {
+		return outputColor;
+	}
+	
+	public void setOutputColor(Color paramColor) {
+		if (paramColor == null || paramColor == Color.BLACK) {
+			this.outputAttributes.removeAttribute(StyleConstants.Foreground);
+			outputColor = Color.BLACK;
+		} else {
+			this.outputAttributes
+					.addAttribute(StyleConstants.Foreground, paramColor);
+			outputColor = paramColor;
+		}
 	}
 
 	public void requestFocus() {

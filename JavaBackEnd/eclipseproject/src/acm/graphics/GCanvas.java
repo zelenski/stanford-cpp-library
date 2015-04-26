@@ -99,11 +99,11 @@ public class GCanvas extends JComponent implements GContainer {
 		return getElementAt(gpoint.getX(), gpoint.getY());
 	}
 
-	public Iterator<?> iterator() {
+	public Iterator<GObject> iterator() {
 		return new GIterator(this, 0);
 	}
 
-	public Iterator<?> iterator(int i) {
+	public Iterator<GObject> iterator(int i) {
 		return new GIterator(this, i);
 	}
 
