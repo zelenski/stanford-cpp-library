@@ -1,0 +1,77 @@
+<html>
+<head>
+<title>The acm.program Package</title>
+</head>
+<body>
+This package provides a set of classes that simplify the creation of programs.
+The package includes five abstract classes, each of which uses a particular
+paradigm for input and output, as follows:
+
+<p><table border=0>
+<tr><td valign=top><a href="Program.html"><code>Program</code></a>&nbsp;&nbsp;</td>
+<td>This class is the root of the program hierachy and defines a program in which
+input and output are performed using the system console, which is redirected to
+the standard Java I/O streams <code>System.in</code> and <code>System.out</code>.</td></tr>
+
+<tr><td valign=top><a href="ConsoleProgram.html"><code>ConsoleProgram</code></a>&nbsp;&nbsp;</td>
+<td>This class is similar to <a href="Program.html"><code>Program</code></a> but
+fills the program frame with an interactive console (as defined in the
+<a href="../io/IOConsole.html"><code>IOConsole</code></a> class in the
+<a href="../io/package-summary.html"><code>acm.io</code></a> package).</td></tr>
+
+<tr><td valign=top><a href="DialogProgram.html"><code>DialogProgram</code></a>&nbsp;&nbsp;</td>
+<td>This class extends the basic functionality of the <a href="Program.html"><code>Program</code></a>
+class so that input operations are performed using the
+<a href="../io/IODialog.html"><code>IODialog</code></a> class in the
+<a href="../io/package-summary.html"><code>acm.io</code></a> package.</td></tr>
+
+<tr><td valign=top><a href="CommandLineProgram.html"><code>CommandLineProgram</code></a>&nbsp;&nbsp;</td>
+<td>This class is similar to
+<a href="ConsoleProgram.html"><code>ConsoleProgram</code></a>
+but uses <code>System.in</code> and <code>System.out</code> instead of
+an <code>IOConsole</code>.  This class is typically used only for Java
+programs that are invoked from a command line and make no use of Java&#146;s
+graphical capabilities.</td></tr>
+</table>
+
+<p>The principal advantages of using the <code>Program</code> class are:
+
+<ul>
+<li>The conventional pattern of use associated with the <code>acm.program</code> package moves
+students away from the imperative style of <code>public&nbsp;static&nbsp;void&nbsp;main</code>
+into a more pedagogically defensible framework in which students are always working in the
+context of an object.
+<li>The <code>Program</code> class allows Java applications to double as applets,
+thereby making it possible for intructors to use either paradigm in a consistent way.
+Even for those instructors that choose to focus on the application paradigm, using
+the <code>Program</code> class makes it much easier for students to make their code
+available on the web.  Moreover, because the <code>Program</code> class is defined
+to be a subclass of <code>Applet</code>, applications that run in that domain can
+take advantage of such applet-based features as loading audio clips and images from
+the code base.
+<li>The <code>Program</code> class includes several features that make instruction
+easier, such as the definition of standard menu bars that support operations like
+printing and running programs with a test script.
+<li>The classes in the <code>acm.program</code> package offer a compelling example
+of an inheritance hierarchy that introductory students can understand and appreciate
+right from the beginning of their first course.
+</ul>
+
+<p>In most environments, the only thing students need to do to create a new
+program is to define a <code>Program</code> subclass that implements a <code>run</code>
+method.  For example, the following class definition creates a traditional,
+stream-oriented program that reads in two integers and computes their sum:
+
+<p><pre><code>
+&nbsp;    public class Add2 extends ConsoleProgram {
+&nbsp;       public void run() {
+&nbsp;          println("This program adds two numbers.");
+&nbsp;          int n1 = readInt("Enter n1: ");
+&nbsp;          int n2 = readInt("Enter n2: ");
+&nbsp;          int total = n1 + n2;
+&nbsp;          println("The total is " + total + ".");
+&nbsp;       }
+&nbsp;    }
+</code></pre>
+</body>
+</html>
