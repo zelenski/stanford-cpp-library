@@ -1,8 +1,8 @@
 package stanford.spl;
 
 import acm.util.TokenScanner;
-
 import java.util.HashMap;
+import stanford.spl.pipecommand.*;
 
 public abstract class JBECommand {
 	public abstract void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd);
@@ -161,10 +161,12 @@ public abstract class JBECommand {
 		localHashMap.put("JBEConsole.println", new JBEConsole_println());
 		localHashMap.put("JBEConsole.print", new JBEConsole_print());
 		localHashMap.put("JBEConsole.setCloseOperation", new JBEConsole_setCloseOperation());
+		localHashMap.put("JBEConsole.setErrorColor", new JBEConsole_setErrorColor());
 		localHashMap.put("JBEConsole.setExitOnClose", new JBEConsole_setExitOnClose());
 		localHashMap.put("JBEConsole.setFont", new JBEConsole_setFont());
 		localHashMap.put("JBEConsole.setLocation", new JBEConsole_setLocation());
 		localHashMap.put("JBEConsole.setLocationSaved", new JBEConsole_setLocationSaved());
+		localHashMap.put("JBEConsole.setOutputColor", new JBEConsole_setOutputColor());
 		localHashMap.put("JBEConsole.setSize", new JBEConsole_setSize());
 		localHashMap.put("JBEConsole.setTitle", new JBEConsole_setTitle());
 		localHashMap.put("JBEConsole.setVisible", new JBEConsole_setVisible());

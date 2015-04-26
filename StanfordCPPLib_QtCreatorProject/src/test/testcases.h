@@ -21,8 +21,9 @@ void goptionpaneTest();
 void cinOutTest();
 void coutCerrMixTest();
 void getIntegerTest();
-void longStringTest();
 void killProcessTest();
+void longStringTest();
+void outputColorTest();
 
 // url tests
 void urlstreamTest();

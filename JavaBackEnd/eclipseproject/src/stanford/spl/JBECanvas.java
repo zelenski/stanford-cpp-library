@@ -27,7 +27,7 @@ public class JBECanvas extends GCanvas {
 		this.preferredHeight = paramInt2;
 	}
 
-	protected Graphics2D getOSG() {
+	public Graphics2D getOSG() {
 		return this.osg;
 	}
 

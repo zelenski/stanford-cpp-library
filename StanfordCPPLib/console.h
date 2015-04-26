@@ -6,6 +6,8 @@
  * must be included in the source file that contains the <code>main</code>
  * method, although it may be included in other source files as well.
  * 
+ * @version 2015/04/25
+ * - added methods to get/set console output color
  * @version 2014/11/13
  * - added setConsoleWindowTitle method
  * @version 2014/11/05
@@ -130,6 +132,12 @@ void setConsoleCloseOperation(ConsoleCloseOperation op);
 void setConsoleEcho(bool echo);   // added by Marty
 
 /*
+ * Sets the color used to display text in the console window.
+ * The color string passed should be in a hex format such as "#ffa32f";
+ */
+void setConsoleErrorColor(const std::string& color);
+
+/*
  * Sets whether an event should be generated if the console
  * window is closed.  By default this is false initially.
  */
@@ -173,6 +181,12 @@ void setConsoleLocation(int x, int y);
  * restored between runs of the program.  Default false.
  */
 void setConsoleLocationSaved(bool value);
+
+/*
+ * Sets the color used to display text in the console window.
+ * The color string passed should be in a hex format such as "#ffa32f";
+ */
+void setConsoleOutputColor(const std::string& color);
 
 /*
  * Function: setConsolePrintExceptions

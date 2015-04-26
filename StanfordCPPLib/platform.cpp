@@ -2383,6 +2383,14 @@ void Platform::jbeconsole_setCloseOperation(int value) {
     putPipe(os.str());
 }
 
+void Platform::jbeconsole_setErrorColor(const std::string& color) {
+    std::ostringstream os;
+    os << "JBEConsole.setErrorColor(";
+    writeQuotedString(os, color);
+    os << ")";
+    putPipe(os.str());
+}
+
 void Platform::jbeconsole_setExitProgramOnClose(bool value) {
     std::ostringstream os;
     os << "JBEConsole.setExitOnClose(" << std::boolalpha << value << ")";
@@ -2392,6 +2400,14 @@ void Platform::jbeconsole_setExitProgramOnClose(bool value) {
 void Platform::jbeconsole_setLocationSaved(bool value) {
     std::ostringstream os;
     os << "JBEConsole.setLocationSaved(" << std::boolalpha << value << ")";
+    putPipe(os.str());
+}
+
+void Platform::jbeconsole_setOutputColor(const std::string& color) {
+    std::ostringstream os;
+    os << "JBEConsole.setOutputColor(";
+    writeQuotedString(os, color);
+    os << ")";
     putPipe(os.str());
 }
 

@@ -1,4 +1,5 @@
 #include "testcases.h"
+#include "console.h"
 #include "error.h"
 #include "regexpr.h"
 #include "simpio.h"
@@ -45,6 +46,18 @@ void getIntegerTest() {
     }
 }
 
+void killProcessTest() {
+    std::cout << "Try killing the Java process now. Does it quit gracefully?" << std::endl;
+    while (true) {
+        try {
+           std::string line = getLine();
+           std::cout << line << std::endl;
+        } catch (ErrorException& ex) {
+            std::cout << "Error: " << ex.getMessage() << std::endl;
+        }
+    }
+}
+
 void longStringTest() {
     string slong = "abcbcde";
     while (slong.length() < 1024*64) {
@@ -57,14 +70,17 @@ void longStringTest() {
     cout << "done." << endl;
 }
 
-void killProcessTest() {
-    std::cout << "Try killing the Java process now. Does it quit gracefully?" << std::endl;
-    while (true) {
-        try {
-           std::string line = getLine();
-           std::cout << line << std::endl;
-        } catch (ErrorException& ex) {
-            std::cout << "Error: " << ex.getMessage() << std::endl;
-        }
-    }
+void outputColorTest() {
+    cout << "Output color test:" << endl;
+    setConsoleOutputColor("#ff00ff");
+    cout << "Purple line" << endl;
+    setConsoleOutputColor("#0000ff");
+    cout << "Blue line" << endl;
+    setConsoleOutputColor("#00ff33");
+    cout << "GREEN line" << endl;
+    setConsoleOutputColor("#666666");
+    cout << "GRAY LINE" << endl;
+    setConsoleOutputColor("#000000");
+    cout << "black line" << endl;
+    cout << endl;
 }

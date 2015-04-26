@@ -205,8 +205,10 @@ public:
     bool jbeconsole_isBlocked();
     void jbeconsole_minimize();
     void jbeconsole_setCloseOperation(int value);
+    void jbeconsole_setErrorColor(const std::string& color);
     void jbeconsole_setExitProgramOnClose(bool value);
     void jbeconsole_setLocationSaved(bool value);
+    void jbeconsole_setOutputColor(const std::string& color);
     void jbeconsole_setFont(const std::string& font);
     void jbeconsole_setLocation(int x, int y);
     void jbeconsole_setSize(double width, double height);

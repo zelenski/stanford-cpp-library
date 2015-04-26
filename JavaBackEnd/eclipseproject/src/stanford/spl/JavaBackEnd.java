@@ -155,12 +155,12 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		commandLoop();
 	}
 
-	protected void createWindow(String paramString, int paramInt1, int paramInt2,
+	public void createWindow(String paramString, int paramInt1, int paramInt2,
 			TopCompound paramTopCompound) {
 		createWindow(paramString, paramInt1, paramInt2, paramTopCompound, true);
 	}
 	
-	protected void createWindow(String paramString, int paramInt1, int paramInt2,
+	public void createWindow(String paramString, int paramInt1, int paramInt2,
 			TopCompound paramTopCompound, boolean visible) {
 		JBEWindow localJBEWindow = new JBEWindow(this, paramString, this.appName, paramInt1,
 				paramInt2);
@@ -188,15 +188,15 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		this.windowTable.remove(paramString);
 	}
 
-	protected void defineGObject(String paramString, GObject paramGObject) {
+	public void defineGObject(String paramString, GObject paramGObject) {
 		this.gobjTable.put(paramString, paramGObject);
 	}
 
-	protected void defineSource(JComponent paramJComponent, String paramString) {
+	public void defineSource(JComponent paramJComponent, String paramString) {
 		this.sourceTable.put(paramJComponent, paramString);
 	}
 
-	protected void deleteGObject(String paramString) {
+	public void deleteGObject(String paramString) {
 		this.gobjTable.remove(paramString);
 	}
 
@@ -204,11 +204,11 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		return (String) this.sourceTable.get(paramJComponent);
 	}
 
-	protected GObject getGObject(String paramString) {
+	public GObject getGObject(String paramString) {
 		return (GObject) this.gobjTable.get(paramString);
 	}
 
-	protected JComponent getInteractor(GObject paramGObject) {
+	public JComponent getInteractor(GObject paramGObject) {
 		if ((paramGObject instanceof GInteractor)) {
 			return ((GInteractor) paramGObject).getInteractor();
 		}
@@ -218,43 +218,43 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		return null;
 	}
 
-	protected JBEWindow getWindow(String paramString) {
+	public JBEWindow getWindow(String paramString) {
 		return (JBEWindow) this.windowTable.get(paramString);
 	}
 
-	protected void clearConsole() {
+	public void clearConsole() {
 		this.console.clear();
 	}
 	
-	protected void setConsoleCloseOperation(int op) {
+	public void setConsoleCloseOperation(int op) {
 		this.consoleCloseOperation = op;
 	}
 
-	protected void setConsoleFont(String paramString) {
+	public void setConsoleFont(String paramString) {
 		this.console.setFont(JTFTools.decodeFont(paramString));
 	}
 
-	protected void consoleMinimize() {
+	public void consoleMinimize() {
 		if (this.consoleFrame != null) {
 			this.consoleFrame.setState(JFrame.ICONIFIED);
 		}
 	}
 
-	protected void consoleToFront() {
+	public void consoleToFront() {
 		if (this.consoleFrame != null) {
 			this.consoleFrame.setState(JFrame.NORMAL);
 			this.consoleFrame.toFront();
 		}
 	}
 
-	protected void consoleSetTitle(String title) {
+	public void consoleSetTitle(String title) {
 		this.consoleWindowTitle = title;
 		if (this.consoleFrame != null) {
 			this.consoleFrame.setTitle(title);
 		}
 	}
 
-	protected void setConsoleSize(int paramInt1, int paramInt2) {
+	public void setConsoleSize(int paramInt1, int paramInt2) {
 		this.consoleWidth = paramInt1;
 		this.consoleHeight = paramInt2;
 //		if (this.console != null) {
@@ -265,7 +265,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 //		}
 	}
 
-	protected void setConsoleLocation(int x, int y) {
+	public void setConsoleLocation(int x, int y) {
 		this.consoleX = x;
 		this.consoleY = y;
 		if (this.consoleFrame != null) {
@@ -273,7 +273,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		}
 	}
 
-	protected String getConsole() {
+	public String getConsole() {
 		if (this.consoleFrame == null) {
 			showConsole();
 		}
@@ -284,7 +284,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		putConsole(paramString, false);
 	}
 	
-	protected void putConsole(String paramString, boolean isStderr) {
+	public void putConsole(String paramString, boolean isStderr) {
 		if (this.consoleFrame == null) {
 			showConsole();
 		}
@@ -311,7 +311,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		return new Date().getTime();
 	}
 
-	protected void println(String paramString) {
+	public void println(String paramString) {
 		synchronized (this.eventLock) {
 			System.out.println(paramString);
 			System.out.flush();
@@ -463,7 +463,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		return i;
 	}
 
-	protected String openFileDialog(String title, String mode, String path) {
+	public String openFileDialog(String title, String mode, String path) {
 		// BUGFIX: (2014/10/09) was crashing when null/default current dir was passed by C++ lib
 		if (path == null) {
 			path = "";

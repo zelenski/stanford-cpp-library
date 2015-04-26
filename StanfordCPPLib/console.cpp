@@ -3,6 +3,8 @@
  * -----------------
  * This file implements the console.h interface.
  *
+ * @version 2015/04/25
+ * - added methods to get/set console output color
  * @version 2015/04/15
  * - set consoleClearEnabled to true by default (why was it false?)
  * @version 2014/11/13
@@ -98,6 +100,12 @@ void setConsoleEcho(bool echo) {
     consoleEcho = echo;
 }
 
+void setConsoleErrorColor(const std::string& color) {
+    if (consoleLocked) { return; }
+    // consoleOutputColor = color;
+    pp->jbeconsole_setErrorColor(color);
+}
+
 void setConsoleEventOnClose(bool eventOnClose) {
     if (consoleLocked) { return; }
     consoleEventOnClose = eventOnClose;
@@ -123,6 +131,12 @@ void setConsoleLocationSaved(bool value) {
     if (consoleLocked) { return; }
     consoleLocationSaved = value;
     pp->jbeconsole_setLocationSaved(value);
+}
+
+void setConsoleOutputColor(const std::string& color) {
+    if (consoleLocked) { return; }
+    // consoleOutputColor = color;
+    pp->jbeconsole_setOutputColor(color);
 }
 
 void setConsolePrintExceptions(bool printExceptions) {

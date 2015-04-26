@@ -16,9 +16,9 @@ int main() {
     setConsoleLocation(-1, -1);
     setConsoleWindowTitle("Marty is great");
     
-    cout << randomInteger(1, 10) << " "
-         << randomInteger(1, 10) << " "
-         << randomInteger(1, 10) << endl;
+//    cout << randomInteger(1, 10) << " "
+//         << randomInteger(1, 10) << " "
+//         << randomInteger(1, 10) << endl;
     
     while (true) {
         cout << "c) collections" << endl;
@@ -50,6 +50,7 @@ int main() {
         } else if (cmd == "n") {
             segfaultTest();
         } else if (cmd == "p") {
+            outputColorTest();
             cinOutTest();
             coutCerrMixTest();
             getIntegerTest();
