@@ -36,12 +36,12 @@ public class ResourceUtils {
 		try {
 			URL url = filenameToURL(filename);
 			return url != null;
-		} catch (IOException ioe) {
+		} catch (IORuntimeException ioe) {
 			return false;
 		}
 	}
 	
-	public static URL filenameToURL(String filename) throws IOException {
+	public static URL filenameToURL(String filename) {
 		filename = filename.replace("\\", "/");
 		if (DEBUG) System.out.println(" - filenameToURL: trying to load \"" + filename + "\"");
 		
@@ -58,9 +58,12 @@ public class ResourceUtils {
 //					if (DEBUG) System.out.println(" - filenameToURL: found in up-level dir " + result);
 //				}
 			}
+		} catch (MalformedURLException mfurle) {
+			// running as an applet
+			throw new IORuntimeException(mfurle);
 		} catch (SecurityException sex) {
 			// running as an applet
-			sex.printStackTrace();
+			// sex.printStackTrace();
 		}
 
 		// fallback to using internal class URL (JAR or applet)
@@ -69,18 +72,22 @@ public class ResourceUtils {
 			if (DEBUG) System.out.println(" - filenameToURL: classLoader yields " + result);
 		}
 		if (result == null) {
-			throw new FileNotFoundException(filename);
+			throw new IORuntimeException(filename);
 		} else {
 			return result;
 		}
 	}
 	
-	public static InputStream openFile(String filename) throws IOException {
-		InputStream stream = filenameToURL(filename).openStream();
-		if (stream == null) {
-			throw new FileNotFoundException(filename);
-		} else {
-			return stream;
+	public static InputStream openFile(String filename) {
+		try {
+			InputStream stream = filenameToURL(filename).openStream();
+			if (stream == null) {
+				throw new IORuntimeException(filename);
+			} else {
+				return stream;
+			}
+		} catch (IOException ioe) {
+			throw new IORuntimeException("file not found: " + filename);
 		}
 	}
 }

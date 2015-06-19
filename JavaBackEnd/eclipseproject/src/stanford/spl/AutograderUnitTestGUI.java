@@ -1,5 +1,9 @@
 /*
  * @author Marty Stepp
+ * @version 2015/05/28
+ * - slight tweaks for ASSERT_NULL and ASSERT_NOT_NULL test failure display
+ * @version 2015/05/02
+ * - added JUnitListener functionality; use internal image icons from JAR
  * @version 2015/04/21
  * - made it work even if Java back-end is null
  * @version 2014/11/15
@@ -12,12 +16,18 @@ package stanford.spl;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+
 import javax.swing.*;
 import javax.swing.border.*;
+
 import stanford.cs106.diff.DiffGui;
 import stanford.cs106.gui.*;
+import stanford.cs106.io.ResourceUtils;
+import stanford.cs106.junit.*;
+import stanford.cs106.util.StringUtils;
 
-public class AutograderUnitTestGUI extends Observable implements ActionListener, MouseListener {
+public class AutograderUnitTestGUI extends Observable
+		implements ActionListener, JUnitListener, MouseListener {
 	private static final int DIALOG_WIDTH = 500;   // px
 	private static final Color ZEBRA_STRIPE_COLOR_1 = new Color(250, 250, 250);
 	private static final Color ZEBRA_STRIPE_COLOR_2 = new Color(235, 235, 235);
@@ -26,6 +36,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 	private static final Color PASS_COLOR = new Color(0, 96, 0);
 	private static final Color FAIL_COLOR = new Color(96, 0, 0);
 	private static final Color WARN_COLOR = new Color(112, 112, 0);
+	private static final int MAX_VALUE_DISPLAY_LENGTH = 120;
 	private static Color NORMAL_COLOR = null;
 	
 	//private static final int MIN_WIDTH = 75;
@@ -34,6 +45,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 	
 	private static final String TESTS_TITLE = "Autograder Tests";
 	private static final String STYLE_CHECK_TITLE = "Style Checker";
+	private static final String ICONS_FOLDER = "res/icons/";
 	
 	public static synchronized AutograderUnitTestGUI getInstance(JavaBackEnd javaBackEnd) {
 		if (instance == null) {
@@ -82,6 +94,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 	private boolean testingIsInProgress = false;
 	private int testPanelHeight = -1;
 	private boolean allCategoriesHidden = false;
+	private boolean checkboxesShown = true;
 	
 	public AutograderUnitTestGUI(JavaBackEnd javaBackEnd, String title) {
 		this.javaBackEnd = javaBackEnd;
@@ -107,7 +120,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		frame.add(scroll, BorderLayout.CENTER);
 		
 		southLabel = new JLabel(" ");
-		southLabel.setIcon(new ImageIcon("progress.gif"));
+		southLabel.setIcon(new ImageIcon(ResourceUtils.filenameToURL(ICONS_FOLDER + "progress.gif")));
 		southLabel.setHorizontalTextPosition(SwingConstants.LEFT);
 		southLabel.setHorizontalAlignment(JLabel.CENTER);
 		southLabel.setAlignmentX(0.5f);
@@ -149,7 +162,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 				// top row of 'select/deselect all' buttons
 				JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT));
 				JButton selectAll = new JButton("All");
-				selectAll.setIcon(new ImageIcon("checkbox-checked.gif"));
+				selectAll.setIcon(new ImageIcon(ResourceUtils.filenameToURL(ICONS_FOLDER + "checkbox-checked.gif")));
 				GuiUtils.shrinkFont(selectAll, 2);
 				selectAll.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
@@ -160,7 +173,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 				selectAll.setToolTipText("Double-click to select all tests from all categories.");
 				
 				JButton deselectAll = new JButton("None");
-				deselectAll.setIcon(new ImageIcon("checkbox-unchecked.gif"));
+				deselectAll.setIcon(new ImageIcon(ResourceUtils.filenameToURL(ICONS_FOLDER + "checkbox-unchecked.gif")));
 				GuiUtils.shrinkFont(deselectAll, 2);
 				deselectAll.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
@@ -171,7 +184,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 				deselectAll.setToolTipText("Double-click to deselect all tests from all categories.");
 				
 				JButton minimize = new JButton("Hide");
-				// minimize.setIcon(new ImageIcon("minus.gif"));
+				// minimize.setIcon(new ImageIcon(ResourceUtils.filenameToURL(ICONS_FOLDER + "minus.gif"));
 				GuiUtils.shrinkFont(minimize, 2);
 				minimize.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
@@ -181,8 +194,10 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 				minimize.addMouseListener(mouseListener);
 				minimize.setToolTipText("Double-click to minimize all categories.");
 				
-				top.add(selectAll);
-				top.add(deselectAll);
+				if (checkboxesShown) {
+					top.add(selectAll);
+					top.add(deselectAll);
+				}
 				top.add(minimize);
 				
 				if (!name.isEmpty()) {
@@ -190,6 +205,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 					GuiUtils.shrinkFont(nameLabel, 1);
 					top.add(nameLabel);
 				}
+				
 				category.add(top);
 			}
 			
@@ -221,7 +237,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		// testInfo.checked.setPreferredSize(new Dimension(10, 10));
 		
 		testInfo.checked.setSelected(true);
-		if (!isStyleCheck()) {
+		if (!isStyleCheck() && checkboxesShown) {
 			testWestPanel.add(testInfo.checked);
 		}
 		
@@ -244,7 +260,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		testInfo.description.addMouseListener(this);
 		allTests.put(testInfo.description, testInfo);
 		
-		testInfo.result = new JLabel(new ImageIcon("running.gif"));
+		testInfo.result = new JLabel(new ImageIcon(ResourceUtils.filenameToURL(ICONS_FOLDER + "running.gif")));
 		testInfo.result.setText("        ");
 		GuiUtils.shrinkFont(testInfo.result, 2);
 		testInfo.result.setHorizontalTextPosition(SwingConstants.LEFT);
@@ -277,7 +293,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		for (TestInfo testInfo : allTests.values()) {
 			testInfo.details.clear();
 			testInfo.description.setForeground(NORMAL_COLOR);
-			testInfo.result.setIcon(new ImageIcon("running.gif"));
+			testInfo.result.setIcon(new ImageIcon(ResourceUtils.filenameToURL(ICONS_FOLDER + "running.gif")));
 			testInfo.result.setText("");
 		}
 		updateSouthText();
@@ -303,6 +319,18 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		}
 	}
 	
+	public int getFailedCount() {
+		return getTestCount() - getPassedCount();
+	}
+	
+	public int getPassedCount() {
+		return passCount;
+	}
+	
+	public int getTestCount() {
+		return getCheckedTestCount();
+	}
+	
 	public boolean isChecked(String testName) {
 		TestInfo testInfo = allTests.get(testName);
 		if (testInfo == null) {
@@ -318,6 +346,10 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 	
 	public boolean isStyleCheck() {
 		return this == styleCheckInstance || frame.getTitle().equals(STYLE_CHECK_TITLE);
+	}
+	
+	public boolean isVisible() {
+		return frame != null && frame.isVisible();
 	}
 	
 	public void mouseClicked(MouseEvent event) {
@@ -368,6 +400,8 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		updateSouthText();
 	}
 	
+	// looking for a map with these keys:
+	// testType, message, ...
 	public void setTestDetails(String testName, Map<String, String> details) {
 		TestInfo testInfo = allTests.get(testName);
 		if (testInfo == null) {
@@ -383,6 +417,13 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		}
 		
 		testInfo.details = details;
+	}
+	
+	public void setTestDetailsMessage(String testName, String detailsMessage) {
+		Map<String, String> details = new TreeMap<String, String>();
+		details.put("testType", "MANUAL");
+		details.put("message", detailsMessage);
+		setTestDetails(testName, details);
 	}
 	
 	public void setTestingCompleted(boolean completed) {
@@ -407,7 +448,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 			return true;
 		}
 		
-		testInfo.result.setIcon(new ImageIcon(result + ".gif"));   // pass, fail, running, warn
+		testInfo.result.setIcon(new ImageIcon(ResourceUtils.filenameToURL(ICONS_FOLDER + result + ".gif")));   // pass, fail, running, warn
 		if (result == "pass") {
 			passCount++;
 			testInfo.description.setForeground(PASS_COLOR);
@@ -431,6 +472,10 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 			testInfo.result.setText(text);
 			return true;
 		}
+	}
+	
+	public void setCheckboxesShown(boolean shown) {
+		checkboxesShown = shown;
 	}
 	
 	public void setVisible(boolean visible) {
@@ -524,7 +569,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		// {testType=TEST_ASSERT_EQUALS,
 		//  message="......",
 		//  expected=foobarbaz,
-		//  actual=foobarbaz,
+		//  student=foobarbaz,
 		//  valueType=string,
 		//  passed=true}
 		TestInfo testInfo = allTests.get(testName);
@@ -551,6 +596,10 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 			message += " (must be true)";
 		} else if (type == "ASSERT_FALSE") {
 			message += " (must be false)";
+		} else if (type == "ASSERT_NULL") {
+			message += " (must be null)";
+		} else if (type == "ASSERT_NOT_NULL") {
+			message += " (must not be null)";
 		} else if (type == "EXCEPTION") {
 			// message += " (threw exception)";
 		} else if (type == "NOT_EXCEPTION") {
@@ -564,8 +613,8 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		}
 		
 		// simple expected/actual tests (show both as bullets)
-		String expected = deets.get("expected");
-		String student  = deets.get("student");
+		String expected = String.valueOf(deets.get("expected"));
+		String student  = String.valueOf(deets.get("student"));
 		String valueType = deets.containsKey("valueType") ? deets.get("valueType").toLowerCase().intern() : "";
 		if (valueType == "string") {
 			expected = "\"" + expected + "\"";
@@ -575,15 +624,29 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 			student  = "'" + student  + "'";
 		}
 		
+		String stack = "";
+		if (deets.containsKey("stackTrace")) {
+			stack = deets.get("stackTrace").replace("\n", "<br>").replace("\t", "  ");
+		}
+		
 		boolean shouldShowJOptionPane = true;
-		if (type == "ASSERT_EQUALS" || type == "ASSERT_NOT_EQUALS" || type == "ASSERT_NEAR" || type == "STYLE_CHECK") {
+		if (type == "ASSERT_EQUALS" || type == "ASSERT_NOT_EQUALS"
+				|| type == "ASSERT_NEAR" || type == "STYLE_CHECK"
+				|| type == "ASSERT_NULL" || type == "ASSERT_NOT_NULL") {
 			String htmlMessage = "";
+			String expectedTruncated = StringUtils.truncate(expected, MAX_VALUE_DISPLAY_LENGTH, " ...");
+			String studentTruncated  = StringUtils.truncate(student, MAX_VALUE_DISPLAY_LENGTH, " ...");
 			htmlMessage += "<html><body style='max-width: " + DIALOG_WIDTH + "px;'>";
 			htmlMessage += "<p>" + message + "</p>";
 			htmlMessage += "<ul>";
-			htmlMessage += "<li><font style='font-family: monospaced' color='" + DiffGui.EXPECTED_COLOR + "'>expected:</font>" + expected + "</li>";
-			htmlMessage += "<li><font style='font-family: monospaced' color='" + DiffGui.STUDENT_COLOR  + "'>student :</font>" + student  + "</li>";
+			htmlMessage += "<li><font style='font-family: monospaced' color='" + DiffGui.EXPECTED_COLOR + "'>expected:</font>" + expectedTruncated + "</li>";
+			htmlMessage += "<li><font style='font-family: monospaced' color='" + DiffGui.STUDENT_COLOR  + "'>student :</font>" + studentTruncated  + "</li>";
 			htmlMessage += "</ul>";
+			
+			if (!stack.isEmpty()) {
+				htmlMessage += "<div><b>Stack trace:</b></div><pre>" + stack + "</pre>";
+			}
+			
 			htmlMessage += "</body></html>";
 			htmlMessage = htmlMessage.replace("\n", "\\n");
 			htmlMessage = htmlMessage.replace("\r", "\\r");
@@ -592,6 +655,16 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		} else if (type == "ASSERT_DIFF") {
 			shouldShowJOptionPane = false;
 			new DiffGui("expected output", expected, "student output", student).show();
+		} else if (type == "MANUAL") {
+			shouldShowJOptionPane = true;
+			String htmlMessage = "";
+			htmlMessage += "<html><body style='max-width: " + DIALOG_WIDTH + "px;'>";
+			htmlMessage += "<pre>" + message + "</pre>";
+			htmlMessage += "</body></html>";
+			htmlMessage = htmlMessage.replace("\n", "<br>");
+			htmlMessage = htmlMessage.replace("\r", "");
+			htmlMessage = htmlMessage.replace("\t", "    ");
+			message = htmlMessage;
 		}
 		
 		if (shouldShowJOptionPane) {
@@ -622,7 +695,7 @@ public class AutograderUnitTestGUI extends Observable implements ActionListener,
 		if (testingIsInProgress) {
 			text += " (running ...)";
 			if (southLabel.getIcon() == null) {
-				southLabel.setIcon(new ImageIcon("progress.gif"));
+				southLabel.setIcon(new ImageIcon(ResourceUtils.filenameToURL(ICONS_FOLDER + "progress.gif")));
 			}
 		} else {
 			text += " (complete)";

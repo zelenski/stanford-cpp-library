@@ -17,18 +17,17 @@ cd temp
 for JAR in `ls -1 ../../lib/*.jar`; do
 	unzip -qo $JAR
 done
+cp -r ../../res/ .
 cd ..
 
 echo "Creating JAR archive in $OUTFILE ..."
 cd temp
-#cp -r ../../bin/stanford/cs106/diff/*.class stanford/cs106/diff/
-#cp -r ../../bin/stanford/cs106/gui/*.class stanford/cs106/gui/
-#cp -r ../../bin/stanford/cs106/io/*.class stanford/cs106/io/
-#cp -r ../../bin/stanford/cs106/util/*.class stanford/cs106/util/
-#cp -r ../../bin/stanford/spl/*.class stanford/spl/
-#cp -r ../../bin/acm/graphics/*.class acm/graphics
-#cp -r ../../bin/acm/io/*.class acm/io
-#cp -r ../../bin/acm/util/*.class acm/util
 cp -r ../../bin/* .
-jar -cvmf ../MANIFEST ../$OUTFILE acm/*/*.class stanford/*/*.class stanford/*/*/*.class
+
+find . > files.list
+jar -cvmf ../MANIFEST ../$OUTFILE @files.list
+
+# copy in the META-INF folder so mp3 files can play
 cd ..
+# zip -ru $OUTFILE META-INF/
+jar -uvf $OUTFILE META-INF/

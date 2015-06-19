@@ -1,14 +1,10 @@
-package stanford.spl.pipecommand;
+package stanford.spl;
 
 import acm.util.TokenScanner;
 
 import java.io.*;
 
 import javax.swing.*;
-
-import stanford.spl.JBECommand;
-import stanford.spl.JavaBackEnd;
-import stanford.spl.SplPipeDecoder;
 
 public class GFileChooser_showOpenDialog extends JBECommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {

@@ -1,13 +1,9 @@
-package stanford.spl.pipecommand;
+package stanford.spl;
 
 import acm.graphics.GObject;
 import acm.util.TokenScanner;
-import java.awt.Graphics2D;
 
-import stanford.spl.JBECanvas;
-import stanford.spl.JBECommand;
-import stanford.spl.JBEWindow;
-import stanford.spl.JavaBackEnd;
+import java.awt.Graphics2D;
 
 /*
  * same as GWindow_draw but doesn't repaint for speed

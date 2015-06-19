@@ -1,4 +1,11 @@
 /*
+ * @version 2015/05/09
+ * - added methods to control pause/tick functionality
+ * @version 2015/04/21
+ * - incorporated addMouse/KeyListeners automatically so they don't need to be called
+ */
+
+/*
  * @(#)GraphicsProgram.java   1.99.1 08/12/08
  */
 
@@ -253,7 +260,12 @@ public abstract class GraphicsProgram extends Program {
 	 *         <code>null</code> if no such object exists.
 	 */
 	public GObject getElementAt(double x, double y) {
-		return gc.getElementAt(x, y);
+		GObject result = gc.getElementAt(x, y);
+		if (result != null && invisibleObjects.contains(result)) {
+			return null;
+		} else {
+			return result;
+		}
 	}
 
 	public GObject getElementAt(double... coords) {

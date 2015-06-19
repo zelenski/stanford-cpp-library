@@ -1,11 +1,8 @@
-package stanford.spl.pipecommand;
+package stanford.spl;
 
 import javax.swing.JTextField;
 
 import stanford.spl.GTextField;
-import stanford.spl.JBECommand;
-import stanford.spl.JavaBackEnd;
-
 import acm.graphics.GObject;
 import acm.util.TokenScanner;
 

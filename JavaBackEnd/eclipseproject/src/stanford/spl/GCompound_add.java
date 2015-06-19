@@ -1,7 +1,5 @@
-package stanford.spl.pipecommand;
+package stanford.spl;
 
-import stanford.spl.JBECommand;
-import stanford.spl.JavaBackEnd;
 import stanford.spl.TopCompound;
 import acm.graphics.GObject;
 import acm.util.TokenScanner;

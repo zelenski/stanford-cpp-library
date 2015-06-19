@@ -1,6 +1,14 @@
+/*
+ * @author Marty Stepp
+ * @version 2015/05/28
+ * - added filterStackTrace
+ */
+
 package stanford.cs106.util;
 
 import java.io.*;
+
+import java.util.*;
 
 /**
  * This class contains utility code related to exceptions.
@@ -10,9 +18,30 @@ import java.io.*;
  * 
  * @author Marty Stepp
  */
+
 public class ExceptionUtils {
 	/** So that an object of this class cannot be constructed. */
-	private ExceptionUtils() {}
+	private ExceptionUtils() {
+		// empty
+	}
+	
+	public static String filterStackTrace(String stackTrace, String... packagesToStrip) {
+		String[] lines = stackTrace.split("\r?\n");
+		List<String> outLines = new ArrayList<String>();
+		for (String line : lines) {
+			boolean tainted = false;
+			for (String packageStr : packagesToStrip) {
+				if (line.contains("at " + packageStr)) {
+					tainted = true;
+					break;
+				}
+			}
+			if (!tainted) {
+				outLines.add(line);
+			}
+		}
+		return StringUtils.join(outLines, "\n");
+	}
 	
 	/**
 	 * The current stack trace as a multi-line String.

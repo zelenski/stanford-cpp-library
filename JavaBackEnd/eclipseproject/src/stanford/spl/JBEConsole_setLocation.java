@@ -1,9 +1,7 @@
-package stanford.spl.pipecommand;
+package stanford.spl;
 
 import java.awt.Point;
 
-import stanford.spl.JBECommand;
-import stanford.spl.JavaBackEnd;
 import acm.util.TokenScanner;
 
 public class JBEConsole_setLocation extends JBECommand {

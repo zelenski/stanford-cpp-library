@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 
 import acm.program.Program;
 
-class JBEDummyProgram extends Program {
+public class JBEDummyProgram extends Program {
 	private static final long serialVersionUID = 1L;
 
 	private JavaBackEnd jbe;
@@ -24,7 +24,9 @@ class JBEDummyProgram extends Program {
 			// give it a little time to make sure the message goes through
 			try {
 				Thread.sleep(100);
-			} catch (InterruptedException ie) {}
+			} catch (InterruptedException ie) {
+				// empty
+			}
 			System.exit(0);
 		}
 		return super.menuAction(event);

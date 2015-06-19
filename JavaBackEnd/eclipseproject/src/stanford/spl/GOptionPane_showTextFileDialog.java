@@ -1,9 +1,5 @@
-package stanford.spl.pipecommand;
+package stanford.spl;
 
-import stanford.spl.JBECommand;
-import stanford.spl.JavaBackEnd;
-import stanford.spl.SplPipeDecoder;
-import stanford.spl.TextFileDialog;
 import acm.util.TokenScanner;
 
 public class GOptionPane_showTextFileDialog extends JBECommand {

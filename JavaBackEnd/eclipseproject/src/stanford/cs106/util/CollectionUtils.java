@@ -152,6 +152,19 @@ public class CollectionUtils {
 	}
 	
 	/**
+	 * Returns the index of the given value in the given list,
+	 * using == to compare rather than .equals.
+	 */
+	public static <T> int indexOfSafe(List<T> list, T value) {
+		for (int i = 0; i < list.size(); i++) {
+			if (list.get(i) == value) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	/**
 	 * Combines the elements of the given collection into a string separated
 	 * by commas.
 	 */

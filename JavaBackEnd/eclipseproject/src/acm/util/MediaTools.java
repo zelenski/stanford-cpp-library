@@ -1,4 +1,6 @@
 /*
+ * @version: 2015/05/03
+ * - support for MP3 and other audio formats via new JavaZoom multimedia library
  * @version: 2015/04/23
  * - fixed minor bugs with image loading
  */
@@ -54,8 +56,10 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.net.*;
 import java.util.*;
+
 import javax.imageio.*;
 import javax.imageio.stream.*;
+import stanford.cs106.audio.*;
 
 /* Class: MediaTools */
 /**
@@ -549,6 +553,7 @@ public class MediaTools {
 				throw new ErrorException("loadAudioClip: Malformed URL");
 			}
 		}
+		
 		StringTokenizer tokenizer = new StringTokenizer(path, ":");
 		while (clip == null && tokenizer.hasMoreTokens()) {
 			String prefix = tokenizer.nextToken();
@@ -576,16 +581,21 @@ public class MediaTools {
 					}
 				}
 			}
-			if (url == null) {
-				try {
-					File file = new File(prefix + name);
-					if (file.canRead()) {
+			try {
+				File file = new File(prefix + name);
+				if (file.canRead()) {
+					// ADDED 2015/05/03:
+					// use the JavaZoom media library to enable playing MP3/WAV/OGG/etc.
+					if (SplClip.supportsFile(name)) {
+						clip = new SplClip(name);
+					} else {
 						clip = createAudioClip(new FileInputStream(file));
 					}
-				} catch (Exception ex) {
-					/* Empty */
 				}
-			} else {
+			} catch (Exception ex) {
+				/* Empty */
+			}
+			if (clip == null && url != null) {
 				clip = loadAudioClip(url, false);
 			}
 		}
@@ -722,7 +732,6 @@ public class MediaTools {
 	 *            A string of directories names separated by colons
 	 * @return A new <code>InputStream</code> open on the specified file
 	 */
-	@SuppressWarnings("resource")
 	public static InputStream openDataFile(String name, String path) {
 		InputStream in = null;
 		if (name.startsWith("http:")) {
@@ -992,6 +1001,8 @@ public class MediaTools {
 	private static HashMap<String, AudioClip> audioClipTable = new HashMap<String, AudioClip>();
 	private static HashMap<String, ImageSaver> suffixTable = new HashMap<String, ImageSaver>();
 	private static final Class<?> RESOURCE_CLASS = MediaTools.class;
+	
+	
 }
 
 /* Package class: HexInputStream */

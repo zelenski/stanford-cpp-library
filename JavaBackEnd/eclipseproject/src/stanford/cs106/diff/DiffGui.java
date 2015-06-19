@@ -216,6 +216,10 @@ public class DiffGui implements ActionListener, AdjustmentListener {
 	private String colorOutput(String output) {
 		String[] lines = output.split("\r?\n");
 		for (int i = 0; i < lines.length; i++) {
+			lines[i] = lines[i].replaceAll("[&]", "&amp;");
+			lines[i] = lines[i].replaceAll("[ ]", "&nbsp;");
+			lines[i] = lines[i].replaceAll("[<]", "&lt;");
+			lines[i] = lines[i].replaceAll("[>]", "&gt;");
 			lines[i] = lines[i].replaceAll("^([0-9]{1,4}[|])", "<font color='" + LINE_NUMBER_FG_COLOR + "' bgcolor='" + LINE_NUMBER_BG_COLOR + "'>$1</font>");
 		}
 		return htmlBodyWrap(StringUtils.join(lines, "<br>"));

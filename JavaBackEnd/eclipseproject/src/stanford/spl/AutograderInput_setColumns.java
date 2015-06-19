@@ -1,8 +1,5 @@
-package stanford.spl.pipecommand;
+package stanford.spl;
 
-import stanford.spl.AutograderInput;
-import stanford.spl.JBECommand;
-import stanford.spl.JavaBackEnd;
 import acm.util.TokenScanner;
 
 public class AutograderInput_setColumns extends JBECommand {

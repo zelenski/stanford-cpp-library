@@ -1,10 +1,6 @@
-package stanford.spl.pipecommand;
+package stanford.spl;
 
 import java.awt.*;
-
-import stanford.spl.JBECommand;
-import stanford.spl.JavaBackEnd;
-import stanford.spl.SplPipeDecoder;
 
 import acm.util.TokenScanner;
 

@@ -21,16 +21,26 @@ int main() {
 //         << randomInteger(1, 10) << endl;
     
     while (true) {
+        cout << "   DATA STRUCTURES::" << endl;
         cout << "c) collections" << endl;
+        
+        cout << "   STUFF RELATED TO INPUT/OUTPUT:" << endl;
         cout << "e) cout / cerr mix" << endl;
-        cout << "g) gui" << endl;
         cout << "i) cin / cout" << endl;
-        cout << "n) segfault (NULL ptr)" << endl;
-        cout << "o) stack overflow" << endl;
         cout << "p) pipe" << endl;
         cout << "s) strings" << endl;
-        cout << "t) throw exception" << endl;
         cout << "u) urlstream" << endl;
+        
+        cout << "   GRAPHICS:" << endl;
+        cout << "g) gui" << endl;
+        
+        cout << "   ERROR HANDLING AND STACK TRACES:" << endl;
+        cout << "   (Try all 3 to make sure stack trace prints.)" << endl;
+        cout << "   (Current configuration shows no trace on stack overflow.)" << endl;
+        cout << "n) segfault (NULL ptr)" << endl;
+        cout << "t) throw exception" << endl;
+        cout << "o) stack overflow" << endl;
+        cout << endl;
         string cmd = getLine("Command (Enter to quit)?");
         if (cmd.empty()) {
             break;

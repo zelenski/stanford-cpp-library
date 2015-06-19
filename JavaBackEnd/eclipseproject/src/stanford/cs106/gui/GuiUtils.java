@@ -1,10 +1,13 @@
 /*
- * CS 106A
+ * This class contains utility functions related to GUIs.
  *
- * This instructor-provided file contains utility functions related to GUIs.
- *
- * Author : Marty Stepp
- * Version: Tue 2014/06/05
+ * @author Marty Stepp
+ * @version 2014/05/26
+ * - added centerWindowWithin method
+ * @version 2014/05/22
+ * - added methods for creating radio buttons, sliders, etc.
+ * @version 2014/06/05
+ * - original version
  * 
  * This file and its contents are copyright (C) Stanford University and Marty Stepp,
  * licensed under Creative Commons Attribution 2.5 License.  All rights reserved.
@@ -22,6 +25,7 @@ import java.io.*;
 import java.util.*;
 
 import javax.swing.*;
+import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
 import acm.program.Program;
@@ -65,33 +69,43 @@ public class GuiUtils {
 		});
 	}
 	
-	/*
-	 * ...
-	 */
 	public static void centerWindow(Window window) {
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		window.setLocation(screenSize.width/2 - window.getWidth()/2,
-				screenSize.height/2 - window.getHeight()/2);
+		if (window != null) {
+			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+			window.setLocation(screenSize.width/2 - window.getWidth()/2,
+					screenSize.height/2 - window.getHeight()/2);
+		}
 	}
 
-	/*
-	 * ...
-	 */
+	public static void centerWindowWithin(Window window, Window parent) {
+		if (window != null && parent != null) {
+			window.setLocation(
+					parent.getX() + (parent.getWidth() - window.getWidth()) / 2,
+					parent.getY() + (parent.getHeight() - window.getHeight()) / 2);
+		}
+	}
+
 	public static JButton createButton(String text, char mnemonic, ActionListener listener) {
-		return createButton(text, null, null, mnemonic, listener);
+		return createButton(text, null, null, mnemonic, listener, /* container */ null);
 	}
 	
-	/*
-	 * ...
-	 */
+	public static JButton createButton(String text, char mnemonic, ActionListener listener, Container container) {
+		return createButton(text, null, null, mnemonic, listener, container);
+	}
+	
 	public static JButton createButton(String text, String actionCommand, char mnemonic, ActionListener listener) {
-		return createButton(text, actionCommand, null, mnemonic, listener);
+		return createButton(text, actionCommand, null, mnemonic, listener, /* container */ null);
 	}
 	
-	/*
-	 * ...
-	 */
+	public static JButton createButton(String text, String actionCommand, char mnemonic, ActionListener listener, Container container) {
+		return createButton(text, actionCommand, null, mnemonic, listener, container);
+	}
+	
 	public static JButton createButton(String text, String actionCommand, String icon, char mnemonic, ActionListener listener) {
+		return createButton(text, actionCommand, icon, mnemonic, listener, /* container */ null);
+	}
+		
+	public static JButton createButton(String text, String actionCommand, String icon, char mnemonic, ActionListener listener, Container container) {
 		JButton button = new JButton(text);
 		if (actionCommand == null || actionCommand.isEmpty()) {
 			actionCommand = text;
@@ -106,7 +120,7 @@ public class GuiUtils {
 			} catch (Exception e) {
 				try {
 					button.setIcon(new ImageIcon(ResourceUtils.filenameToURL(icon)));
-				} catch (IOException ioe) {
+				} catch (IORuntimeException ioe) {
 					// empty
 				}
 			}
@@ -117,7 +131,48 @@ public class GuiUtils {
 		}
 		
 		button.addActionListener(listener);
+		
+		if (container != null) {
+			container.add(button);
+		}
+		
 		return button;
+	}
+	
+	public static JCheckBox createCheckBox(String actionCommand, ActionListener listener) {
+		return createCheckBox(actionCommand, /* checked */ true, listener);
+	}
+	
+	public static JCheckBox createCheckBox(String actionCommand, boolean checked, ActionListener listener) {
+		char mnemonic = (actionCommand != null && !actionCommand.isEmpty() ? actionCommand.charAt(0) : '\0');
+		return createCheckBox(actionCommand, mnemonic, checked, listener);
+	}
+	
+	public static JCheckBox createCheckBox(String actionCommand, char mnemonic, boolean checked) {
+		return createCheckBox(actionCommand, mnemonic, checked, /* listener */ null);
+	}
+	
+	public static JCheckBox createCheckBox(String actionCommand, char mnemonic, boolean checked, ActionListener listener) {
+		return createCheckBox(actionCommand, mnemonic, checked, listener, /* container */ null);
+	}
+	
+	public static JCheckBox createCheckBox(String actionCommand, char mnemonic, ActionListener listener, Container container) {
+		return createCheckBox(actionCommand, mnemonic, /* checked */ false, listener, container);
+	}
+	
+	public static JCheckBox createCheckBox(String actionCommand, char mnemonic, boolean checked, ActionListener listener, Container container) {
+		JCheckBox box = new JCheckBox(actionCommand);
+		box.setSelected(checked);
+		if (mnemonic != '\0' && mnemonic != ' ') {
+			box.setMnemonic(mnemonic);
+		}
+		if (listener != null) {
+			box.addActionListener(listener);
+		}
+		if (container != null) {
+			container.add(box);
+		}
+		return box;
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -152,9 +207,41 @@ public class GuiUtils {
 		return panel;
 	}
 	
-	/*
-	 * ...
-	 */
+
+	/* Helper method to create a JRadioButton with the given properties. */
+	public static JRadioButton createRadioButton(String text, char mnemonic,
+			boolean selected, ButtonGroup group, ActionListener listen,
+			Container panel) {
+		JRadioButton button = new JRadioButton(text, selected);
+		if (mnemonic != '\0') {
+			button.setMnemonic(mnemonic);
+		}
+		button.addActionListener(listen);
+		if (panel != null) {
+			panel.add(button);
+		}
+		if (group != null) {
+			group.add(button);
+		}
+		return button;
+	}
+	
+	/* Helper method to create a JSlider with the given properties. */
+	public static JSlider createSlider(int min, int max, int initial,
+			int majorTick, int minorTick, ChangeListener listen, Container panel) {
+		JSlider slider = new JSlider(min, max, initial);
+		slider.setMajorTickSpacing(majorTick);
+		slider.setMinorTickSpacing(minorTick);
+		slider.setSnapToTicks(true);
+		slider.setPaintTicks(true);
+		// slider.setPaintLabels(true);
+		slider.addChangeListener(listen);
+		if (panel != null) {
+			panel.add(slider);
+		}
+		return slider;
+	}
+	
 	public static FileFilter getExtensionFileFilter(String description, String... extensions) {
 		return new ExtensionFileFilter(description, extensions);
 	}
@@ -178,6 +265,26 @@ public class GuiUtils {
 		return label;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static <JC extends JComponent> Set<JC> getDescendents(Container container, Class<JC> type) {
+		if (container == null) {
+			return null;
+		}
+		Set<JC> components = new HashSet<JC>();
+		for (Component component : container.getComponents()) {
+			if (component instanceof JComponent) {
+				if (type == null || type == component.getClass() || type.isAssignableFrom(component.getClass())) {
+					components.add((JC) component);
+				}
+			}
+			if (component instanceof Container) {
+				Set<JC> sub = getDescendents((Container) component, type);
+				components.addAll(sub);
+			}
+		}
+		return components;
+	}
+		
 	public static Icon extractOptionPaneIcon(String text) {
 		JOptionPane opt = new JOptionPane("message", JOptionPane.INFORMATION_MESSAGE);
 		return extractHelper(opt, text);
@@ -207,6 +314,9 @@ public class GuiUtils {
 	}
 	
 	public static void loadWindowLocation(Frame window) {
+		if (window == null) {
+			return;
+		}
 		synchronized (props) {
 			try {
 				String settingsFile = tempDir + "/" + SETTINGS_FILENAME;
@@ -243,8 +353,27 @@ public class GuiUtils {
 	}
 	
 	public static void rememberWindowLocation(final Frame window) {
-		window.addComponentListener(new WindowSettingsComponentAdapter());
-		loadWindowLocation(window);
+		if (window != null) {
+			window.addComponentListener(new WindowSettingsComponentAdapter());
+			loadWindowLocation(window);
+		}
+	}
+	
+	public static void setSystemLookAndFeel() {
+		try {
+			String lnf = UIManager.getSystemLookAndFeelClassName();
+			if (lnf == null || lnf.contains("MetalLookAndFeel")) {
+				// workaround because system L&F seems to fail on Linux boxes
+				UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+			} else {
+				UIManager.setLookAndFeel(lnf);
+			}
+			
+			UIManager.getLookAndFeelDefaults().put("Slider.paintValue", false);
+			UIManager.put("Slider.paintValue", false);
+		} catch (Exception e) {
+			// empty
+		}
 	}
 	
 	public static void shrinkFont(JComponent button) {
@@ -265,9 +394,6 @@ public class GuiUtils {
 		pad(component, px, 0);
 	}
 	
-	/*
-	 * ...
-	 */
 	private GuiUtils() {
 		// empty
 	}
@@ -296,24 +422,15 @@ public class GuiUtils {
 		return null;
 	}
 	
-	/*
-	 * ...
-	 */
 	private static class ExtensionFileFilter extends FileFilter {
 		private String description;
 		private String[] extensions;
 		
-		/*
-		 * ...
-		 */
 		public ExtensionFileFilter(String description, String[] extensions) {
 			this.description = description;
 			this.extensions = extensions;
 		}
 		
-		/*
-		 * ...
-		 */
 		@Override
 		public boolean accept(File file) {
 			if (file.isDirectory()) {
@@ -329,9 +446,6 @@ public class GuiUtils {
 			return false;
 		}
 		
-		/*
-		 * ...
-		 */
 		@Override
 		public String getDescription() {
 			return description;

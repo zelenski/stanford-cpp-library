@@ -63,9 +63,11 @@
 
 package acm.program;
 
+import acm.graphics.GObject;
 import acm.gui.*;
 import acm.io.*;
 import acm.util.*;
+
 import java.applet.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -74,6 +76,7 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.net.*;
 import java.util.*;
+
 import javax.swing.*;
 
 /* Class: Program */
@@ -91,8 +94,9 @@ import javax.swing.*;
  * for the standard implementation of <a href="#main(String[])"><code>main</code></a>.
  */
 public abstract class Program extends JApplet
-  implements IOModel, Runnable, MouseListener, MouseMotionListener,
-             KeyListener, ActionListener {
+    implements IOModel, Runnable,
+  			ActionListener, ComponentListener, KeyListener,
+  			MouseListener, MouseMotionListener {
 
 /** Constant specifying the north edge of the container */
 	public static final String NORTH = BorderLayout.NORTH;
@@ -130,6 +134,7 @@ public abstract class Program extends JApplet
 		myDialog.setAssociatedConsole(myConsole);
 		myMenuBar = createMenuBar();
 		myConsole.setMenuBar(myMenuBar);
+		addComponentListener(this);
 	}
 
 /* Method: run() */
@@ -256,7 +261,34 @@ public abstract class Program extends JApplet
 	public void println(String value) {
 		getOutputModel().println(value);
 	}
+	
+	/**
+	 * Writes a formatted string to this output stream using the specified format string and arguments.
+	 * @param format A format string as described in Java's Format string syntax.
+	 * @param args Arguments referenced by the format specifiers in the format string. If there are more arguments than format specifiers, the extra arguments are ignored. The number of arguments is variable and may be zero. The maximum number of arguments is limited by the maximum dimension of a Java array as defined by The Java™ Virtual Machine Specification. The behavior on a null argument depends on the conversion.
+	 * @throws IllegalFormatException If a format string contains an illegal syntax, a format specifier that is incompatible with the given arguments, insufficient arguments given the format string, or other illegal conditions.
+	 * @throws NullPointerException If the format is null
+	 */
+	public void printf(String format, Object... args) {
+		println(String.format(format, args));
+	}
 
+	/**
+	 * Writes a formatted string to this output stream using the specified format string and arguments.
+	 * @param format A format string as described in Java's Format string syntax.
+	 * @param args Arguments referenced by the format specifiers in the format string. If there are more arguments than format specifiers, the extra arguments are ignored. The number of arguments is variable and may be zero. The maximum number of arguments is limited by the maximum dimension of a Java array as defined by The Java™ Virtual Machine Specification. The behavior on a null argument depends on the conversion.
+	 * @throws IllegalFormatException If a format string contains an illegal syntax, a format specifier that is incompatible with the given arguments, insufficient arguments given the format string, or other illegal conditions.
+	 * @throws NullPointerException If the format is null
+	 */
+	// public void printf(String format, Color color, Object... args) {
+	// 	println(String.format(format, args), color);
+	// }
+
+	/**
+	 * Prints the given string in the given color and then advances the cursor to the beginning of the next line..
+	 * @param value The string to print.
+	 * @param color The color in which to draw the text. If null, draws in black.
+	 */
 	public void println(String value, Color color) {
 		Color old = getOutputColor();
 		setOutputColor(color);
@@ -264,6 +296,11 @@ public abstract class Program extends JApplet
 		setOutputColor(old);
 	}
 
+	/**
+	 * Prints the given string in the given color.
+	 * @param value The string to print.
+	 * @param color The color in which to draw the text. If null, draws in black.
+	 */
 	public void print(String value, Color color) {
 		Color old = getOutputColor();
 		setOutputColor(color);
@@ -271,6 +308,10 @@ public abstract class Program extends JApplet
 		setOutputColor(old);
 	}
 	
+	/**
+	 * Returns the current output color used to display output on the console.
+	 * If it has never been explicitly set, returns a default of Color.BLACK.
+	 */
 	public Color getOutputColor() {
 		IOModel model = getOutputModel();
 		if (model instanceof IOConsole) {
@@ -283,6 +324,10 @@ public abstract class Program extends JApplet
 		return Color.BLACK;
 	}
 	
+	/**
+	 * Sets the current output color used to display output on the console.
+	 * If null is passed, uses a default of Color.BLACK.
+	 */
 	public void setOutputColor(Color color) {
 		IOModel model = getOutputModel();
 		if (model instanceof IOConsole) {
@@ -797,6 +842,15 @@ public abstract class Program extends JApplet
 	public void addActionListeners(ActionListener listener) {
 		addActionListeners(getContentPane(), listener);
 	}
+	
+	/**
+	 * Sets the width and height of this program.
+	 * @param width the new width, in pixels (will be rounded down to nearest integer)
+	 * @param height the new height, in pixels (will be rounded down to nearest integer)
+	 */
+	public void setSize(double width, double height) {
+		super.setSize((int) width, (int) height);
+	}
 
 /* Method: setTitle(title) */
 /**
@@ -822,6 +876,19 @@ public abstract class Program extends JApplet
 		return myTitle;
 	}
 
+	/**
+	 * Sets the title of this program.  The title appears in the title bar
+	 * when the program is running as an application.
+	 *
+	 * @usage setTitle(title);
+	 * @param title The title for this program
+	 */
+		public void setResizable(boolean resizable) {
+			if (programFrame != null) {
+				programFrame.setResizable(resizable);
+			}
+		}
+	
 /* Method: getMenuBar() */
 /**
  * Returns the menu bar associated with this program.  Note that this menu bar
@@ -834,7 +901,31 @@ public abstract class Program extends JApplet
 	public ProgramMenuBar getMenuBar() {
 		return myMenuBar;
 	}
+	
+	protected void checkCompilerFlags() {
+		// empty; override me
+	}
 
+	/** Required methods of ComponentListener interface. */
+	public void componentHidden(ComponentEvent e) {
+		// empty
+	}
+
+	/** Required methods of ComponentListener interface. */
+	public void componentMoved(ComponentEvent e) {
+		// empty
+	}
+
+	/** Required methods of ComponentListener interface. */
+	public void componentResized(ComponentEvent e) {
+		// empty
+	}
+
+	/** Required methods of ComponentListener interface. */
+	public void componentShown(ComponentEvent e) {
+		// empty
+	}
+	
 /* Method: start(args) */
 /**
  * Starts the program using the specified argument list.
@@ -846,6 +937,7 @@ public abstract class Program extends JApplet
 		if (parameterTable == null) parameterTable = createParameterTable(args);
 		if (getParent() == null) initApplicationFrame();
 		validate();
+		checkCompilerFlags();
 		setVisible(true);
 		if (programFrame != null) {
 			programFrame.validate();
@@ -945,8 +1037,63 @@ public abstract class Program extends JApplet
  * @param milliseconds The sleep time in milliseconds
  */
 	public void pause(double milliseconds) {
-		JTFTools.pause(milliseconds);
+		// JTFTools.pause(milliseconds);
+		
+		checkKill();
+		if (pauseScaleFactor == 0.0) {
+			// pause indefinitely
+			while (pauseScaleFactor == 0.0) {
+				// if tick flag is set, break out;
+				// but on next pause() call, will pause indefinitely again
+				if (pauseTickFlag) {
+					pauseTickFlag = false;
+					break;
+				}
+				JTFTools.pause(250);
+			}
+		} else {
+			JTFTools.pause((int) (milliseconds * pauseScaleFactor));
+		}
 	}
+	
+	
+	/// BEGIN AUTOGRADER CODE FOR MANIPULATING PAUSES ///
+	private double pauseScaleFactor = 1.0;
+	private boolean pauseTickFlag = false;
+	private boolean kill = false;
+	protected Set<GObject> invisibleObjects = new HashSet<GObject>();
+
+	public void killMe() {
+		kill = true;
+	}
+
+	public void setInvisible(GObject obj, boolean invisible) {
+		if (invisible) {
+			invisibleObjects.add(obj);
+		} else {
+			invisibleObjects.remove(obj);
+		}
+	}
+	
+	public void setPauseScaleFactor(double factor) {
+		double oldFactor = pauseScaleFactor;
+		pauseScaleFactor = factor;
+		if (oldFactor == 0.0 && factor != 0.0) {
+			// time is going from 'stopped' to 'not stopped' state;
+			// wake up the program if needed
+		}
+	}
+
+	public void checkKill() {
+		if (kill) {
+			throw new Error("exit -1");
+		}
+	}
+
+	public void pauseTick() {
+		pauseTickFlag = true;
+	}
+	/// END AUTOGRADER CODE FOR MANIPULATING PAUSES ///
 
 /* Method: getCentralRegionSize() */
 /**
@@ -1278,6 +1425,7 @@ public abstract class Program extends JApplet
 		} else {
 			super.remove(comp);
 		}
+		invisibleObjects.remove(comp);
 	}
 
 /* Overridden method: removeAll() */
@@ -1434,7 +1582,7 @@ public abstract class Program extends JApplet
 		String cmd = e.getActionCommand();
 		if (cmd.equals("Quit")) {
 			exit();
-		} else if (cmd.equals("Print")) {
+		} else if (cmd.equals("Print") || cmd.equals("Print...")) {
 			Frame frame = JTFTools.getEnclosingFrame(this);
 			if (frame == null) return true;
 			PrintJob pj = frame.getToolkit().getPrintJob(frame, myTitle, null);

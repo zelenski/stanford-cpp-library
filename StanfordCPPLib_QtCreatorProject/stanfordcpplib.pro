@@ -112,7 +112,7 @@ win32 {
     LIBS += -limagehlp
 }
 macx {
-    QMAKE_LFLAGS += -Wl,-stack_size,0x2000000
+    #QMAKE_LFLAGS += -Wl,-stack_size,0x2000000
 }
 
 # set up flags used internally by the Stanford C++ libraries

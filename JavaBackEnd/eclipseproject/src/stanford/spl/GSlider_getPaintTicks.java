@@ -1,9 +1,5 @@
-package stanford.spl.pipecommand;
+package stanford.spl;
 
-import stanford.spl.GSlider;
-import stanford.spl.JBECommand;
-import stanford.spl.JavaBackEnd;
-import stanford.spl.SplPipeDecoder;
 import acm.graphics.GObject;
 import acm.util.TokenScanner;
 

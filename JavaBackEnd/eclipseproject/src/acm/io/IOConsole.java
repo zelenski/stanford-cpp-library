@@ -1,3 +1,9 @@
+/*
+ * @author Marty Stepp
+ * @version 2015/05/10
+ * - added a space after all readInt/Double/Line prompts
+ */
+
 package acm.io;
 
 import acm.program.ProgramMenuBar;
@@ -135,6 +141,7 @@ public class IOConsole extends Container implements IOModel {
 
 	public String readLine(String paramString) {
 		if (paramString != null) {
+			paramString = appendSpace(paramString);   // added by Marty 2015/05/10
 			print(paramString);
 		}
 		this.consoleModel.requestFocus();
@@ -243,6 +250,14 @@ public class IOConsole extends Container implements IOModel {
 				paramString1 = "Retry: ";
 			}
 		}
+	}
+	
+	protected String appendSpace(String s) {
+		s = String.valueOf(s);
+		if (!s.endsWith(" ")) {
+			s += " ";
+		}
+		return s;
 	}
 
 	public BufferedReader getReader() {
@@ -455,6 +470,10 @@ public class IOConsole extends Container implements IOModel {
 		}
 		if (str.equals("Print Console")) {
 			printConsole();
+			return true;
+		}
+		if (str.equals("Clear Console")) {
+			clear();
 			return true;
 		}
 		return false;

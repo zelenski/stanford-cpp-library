@@ -1,11 +1,7 @@
-package stanford.spl.pipecommand;
+package stanford.spl;
 
 import java.util.*;
 import java.util.regex.*;
-
-import stanford.spl.JBECommand;
-import stanford.spl.JavaBackEnd;
-import stanford.spl.SplPipeDecoder;
 
 import acm.util.TokenScanner;
 

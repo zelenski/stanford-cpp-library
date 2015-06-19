@@ -1,13 +1,10 @@
-package stanford.spl.pipecommand;
+package stanford.spl;
 
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.Window;
 
-import stanford.spl.JBECommand;
-import stanford.spl.JBEWindow;
-import stanford.spl.JavaBackEnd;
 //import javax.swing.JOptionPane;
 
 import acm.util.TokenScanner;

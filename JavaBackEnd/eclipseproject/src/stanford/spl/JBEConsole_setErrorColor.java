@@ -1,10 +1,8 @@
-package stanford.spl.pipecommand;
+package stanford.spl;
 
 import java.awt.Color;
 
-import stanford.spl.JBECommand;
 import stanford.spl.JBEConsole;
-import stanford.spl.JavaBackEnd;
 import acm.io.ConsoleModel;
 import acm.io.StandardConsoleModel;
 import acm.util.JTFTools;

@@ -21,6 +21,7 @@ public class Diff {
 	
 	public static final int FLAGS_DEFAULT = 0;
 	public static final int FLAGS_DEFAULT_LENIENT = IGNORE_TRAILING | IGNORE_WHITESPACE | IGNORE_BLANK_LINES | IGNORE_CASE;
+	public static final int FLAGS_DEFAULT_STRICT = IGNORE_TRAILING | IGNORE_BLANK_LINES;
 	
 	
 	public static List<Difference> diffAsList(String s1, String s2) {

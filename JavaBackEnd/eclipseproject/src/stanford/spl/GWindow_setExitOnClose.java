@@ -1,4 +1,4 @@
-package stanford.spl.pipecommand;
+package stanford.spl;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,10 +8,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.Timer;
-
-import stanford.spl.JBECommand;
-import stanford.spl.JBEWindow;
-import stanford.spl.JavaBackEnd;
 
 import acm.util.TokenScanner;
 

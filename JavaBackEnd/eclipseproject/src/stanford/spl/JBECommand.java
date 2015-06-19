@@ -1,8 +1,8 @@
 package stanford.spl;
 
 import acm.util.TokenScanner;
+
 import java.util.HashMap;
-import stanford.spl.pipecommand.*;
 
 public abstract class JBECommand {
 	public abstract void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd);

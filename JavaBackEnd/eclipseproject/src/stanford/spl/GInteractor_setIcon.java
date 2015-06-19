@@ -1,11 +1,9 @@
-package stanford.spl.pipecommand;
+package stanford.spl;
 
 import javax.swing.*;
 
 import stanford.spl.GButton;
 import stanford.spl.GCheckBox;
-import stanford.spl.JBECommand;
-import stanford.spl.JavaBackEnd;
 import acm.graphics.*;
 import acm.util.TokenScanner;
 

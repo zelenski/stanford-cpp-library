@@ -1,4 +1,11 @@
 /*
+ * @author Marty Stepp (current maintainer)
+ * @version 2015/05/12
+ * - added scroll__() methods for scrolling around in the console
+ *   (these are called by ProgramMenuBar but are made public in case clients want them)
+ */
+
+/*
  * @(#)ConsoleProgram.java   1.99.1 08/12/08
  */
 
@@ -24,12 +31,11 @@ import acm.io.*;
 import acm.util.*;
 import java.awt.*;
 import java.io.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
+import javax.swing.*;
+import stanford.cs106.gui.GuiUtils;
+import stanford.cs106.util.*;
 
 /* Class: ConsoleProgram() */
 /**
@@ -37,6 +43,7 @@ import java.util.List;
  * that installs a console in the window.
  */
 public abstract class ConsoleProgram extends Program {
+	private static final String DEFAULT_REPROMPT_MESSAGE = "Unable to open that file. Try again.";
 
 /* Constructor: ConsoleProgram() */
 /**
@@ -48,7 +55,36 @@ public abstract class ConsoleProgram extends Program {
 		add(getConsole(), CENTER);
 		validate();
 	}
-
+	
+	// looks for some settings that can be supplied in the project info.
+	protected void checkCompilerFlags() {
+		super.checkCompilerFlags();
+		if (SystemProperties.hasSystemProperty(ProgramStartupFlags.SPL_CONSOLE_FONTSIZE)) {
+			int size = SystemProperties.getSystemPropertyInt(ProgramStartupFlags.SPL_CONSOLE_FONTSIZE);
+			setFont("Monospaced-Bold-" + size);
+		}
+		
+		if (SystemProperties.hasSystemProperty(ProgramStartupFlags.SPL_CONSOLE_WIDTH)
+				&& SystemProperties.hasSystemProperty(ProgramStartupFlags.SPL_CONSOLE_HEIGHT)) {
+			int w = SystemProperties.getSystemPropertyInt(ProgramStartupFlags.SPL_CONSOLE_WIDTH);
+			int h = SystemProperties.getSystemPropertyInt(ProgramStartupFlags.SPL_CONSOLE_HEIGHT);
+			setSize(w, h);
+		}
+		
+		if (SystemProperties.hasSystemProperty(ProgramStartupFlags.SPL_CONSOLE_X)
+				&& SystemProperties.hasSystemProperty(ProgramStartupFlags.SPL_CONSOLE_Y)) {
+			int x = SystemProperties.getSystemPropertyInt(ProgramStartupFlags.SPL_CONSOLE_X);
+			int y = SystemProperties.getSystemPropertyInt(ProgramStartupFlags.SPL_CONSOLE_Y);
+			setLocation(x, y);
+		}
+		
+		if (SystemProperties.hasSystemProperty(ProgramStartupFlags.SPL_CONSOLE_LOCATION_SAVED)) {
+			if (SystemProperties.getSystemPropertyBoolean(ProgramStartupFlags.SPL_CONSOLE_LOCATION_SAVED)) {
+				GuiUtils.rememberWindowLocation(getJFrame());
+			}
+		}
+	}
+	
 /* Method: run() */
 /**
  * Specifies the code to be executed as the program runs.
@@ -258,7 +294,8 @@ public abstract class ConsoleProgram extends Program {
 	
 	/**
 	 * Asks the user to type a file name, re-prompting until the user types a
-	 * file that exists in the 'res' resources directory.
+	 * file that exists in the current directory.
+	 * The message "Unable to open that file. Try again." is shown every time a reprompt is necessary.
 	 * The file's full path is returned as a string.
 	 * @param prompt the text to display to the user
 	 * @param directory the working directory in which to look for files (e.g. "res/")
@@ -270,17 +307,31 @@ public abstract class ConsoleProgram extends Program {
 	
 	/**
 	 * Asks the user to type a file name, re-prompting until the user types a
-	 * file that exists in the current directory.
+	 * file that exists in the given directory.
+	 * The message "Unable to open that file. Try again." is shown every time a reprompt is necessary.
 	 * The file's full path is returned as a string.
 	 * @param prompt the text to display to the user
 	 * @param directory the working directory in which to look for files (e.g. "res/")
 	 * @return the file name typed by the user
 	 */
 	public String promptUserForFile(String prompt, String directory) {
+		return promptUserForFile(prompt, directory, DEFAULT_REPROMPT_MESSAGE);
+	}
+	
+	/**
+	 * Asks the user to type a file name, re-prompting until the user types a
+	 * file that exists in the given directory.
+	 * The given reprompt message is shown every time a reprompt is necessary.
+	 * The file's full path is returned as a string.
+	 * @param prompt the text to display to the user
+	 * @param directory the working directory in which to look for files (e.g. "res/")
+	 * @return the file name typed by the user
+	 */
+	public String promptUserForFile(String prompt, String directory, String reprompt) {
 		String filename = readLine(prompt);
-		while (!(new File(directory, filename).exists())) {
-			println("Unable to open that file. Try again.");
-			filename = readLine(prompt);
+		while (filename.isEmpty() || !(new File(directory, filename).exists())) {
+			println(reprompt);
+			filename = readLine(prompt).trim();
 		}
 		if (!directory.equals("")) {
 			// filename = new File(directory, filename).getAbsolutePath();
@@ -557,5 +608,77 @@ public abstract class ConsoleProgram extends Program {
 		private static final String commentBeginStr = "#";
 		private static final String echoCommentBeginStr = "#>";
 		
+	}
+	
+	private JScrollPane getScrollPane() {
+		IOConsole console = getConsole();
+		StandardConsoleModel model = (StandardConsoleModel) console.getConsoleModel();
+		return model.getScrollPane();
+	}
+	
+	private int scrollPageHeight() {
+		JScrollPane scroll = getScrollPane();
+		if (scroll != null && scroll.getVerticalScrollBar() != null) {
+			return scroll.getHeight();
+		} else {
+			return 0;
+		}
+	}
+	
+	private int scrollLineHeight() {
+		Font programFont = getFont();
+		FontMetrics fm = getFontMetrics(programFont);
+		return fm.getHeight();
+	}
+	
+	private void scrollBy(int dy) {
+		JScrollPane scroll = getScrollPane();
+		if (scroll == null) {
+			return;
+			
+		}
+		JScrollBar bar = scroll.getVerticalScrollBar();
+		if (bar == null) {
+			return;
+		}
+		
+		int y;
+		int min = scroll.getVerticalScrollBar().getMinimum();
+		int max = scroll.getVerticalScrollBar().getMaximum();
+		if (dy == Integer.MIN_VALUE) {
+			y = min;
+		} else if (dy == Integer.MAX_VALUE) {
+			y = max;
+		} else {
+			// shift y by dy, bounded between [min..max] inclusive
+			y = bar.getValue() + dy;
+			y = Math.max(min, y);
+			y = Math.min(max, y);
+		}
+		bar.setValue(y);
+	}
+	
+	public void scrollToTop() {
+		scrollBy(Integer.MIN_VALUE);
+	}
+	
+	public void scrollToBottom() {
+		scrollBy(Integer.MAX_VALUE);
+	}
+	
+	public void scrollPageUp() {
+		scrollBy(-scrollPageHeight());
+	}
+	
+	public void scrollPageDown() {
+		scrollBy(scrollPageHeight());
+	}
+	
+	public void scrollLineUp() {
+		scrollBy(-scrollLineHeight());
+	}
+	
+	public void scrollLineDown() {
+		scrollBy(scrollLineHeight());
 	}
 }

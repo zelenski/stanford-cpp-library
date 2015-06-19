@@ -341,7 +341,11 @@ public class StandardConsoleModel implements KeyListener, FocusListener, Console
 		if (this.menuBar != null) {
 			this.menuBar.fireAccelerator(paramKeyEvent);
 		}
-		paramKeyEvent.consume();
+		
+		// 2015/05/10 commented out by Marty because it blocks using Alt to open the menu bar
+		if (!paramKeyEvent.isAltDown()) {
+			paramKeyEvent.consume();
+		}
 	}
 
 	public void keyReleased(KeyEvent paramKeyEvent) {

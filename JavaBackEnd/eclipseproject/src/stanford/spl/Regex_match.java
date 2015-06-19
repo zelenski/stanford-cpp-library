@@ -1,8 +1,5 @@
-package stanford.spl.pipecommand;
+package stanford.spl;
 
-import stanford.spl.JBECommand;
-import stanford.spl.JavaBackEnd;
-import stanford.spl.SplPipeDecoder;
 import acm.util.TokenScanner;
 
 public class Regex_match extends JBECommand {

@@ -1,8 +1,5 @@
-package stanford.spl.pipecommand;
+package stanford.spl;
 
-import stanford.spl.JBECommand;
-import stanford.spl.JBEWindow;
-import stanford.spl.JavaBackEnd;
 import acm.util.TokenScanner;
 
 public class GWindow_setSize extends JBECommand {

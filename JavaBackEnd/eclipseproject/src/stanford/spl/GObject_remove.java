@@ -3,11 +3,8 @@
  * @version 2011/11/18
  */
 
-package stanford.spl.pipecommand;
+package stanford.spl;
 
-import stanford.spl.GInteractor;
-import stanford.spl.JBECommand;
-import stanford.spl.JavaBackEnd;
 import acm.graphics.GCompound;
 import acm.graphics.GObject;
 import acm.util.TokenScanner;

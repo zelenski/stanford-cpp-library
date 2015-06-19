@@ -1,7 +1,5 @@
-package stanford.spl.pipecommand;
+package stanford.spl;
 
-import stanford.spl.JBECommand;
-import stanford.spl.JavaBackEnd;
 import acm.util.TokenScanner;
 
 public class JBEConsole_setTitle extends JBECommand {

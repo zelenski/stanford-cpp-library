@@ -1,9 +1,7 @@
-package stanford.spl.pipecommand;
+package stanford.spl;
 
 import java.awt.Frame;
 
-import stanford.spl.JBECommand;
-import stanford.spl.JavaBackEnd;
 import acm.util.TokenScanner;
 
 public class JBEConsole_setVisible extends JBECommand {

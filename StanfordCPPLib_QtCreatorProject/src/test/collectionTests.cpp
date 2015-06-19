@@ -815,6 +815,32 @@ void hashCodeTest() {
     Vector<std::string> value;
     ngram.put(key, value);
     std::cout << "ngram is " << ngram << std::endl;
+    
+    
+    // hash code of hash collections after they are deep-copied
+    HashMap<int, int> hmapcode;
+    for (int i = 0; i < 99; i++) {
+        int rand = randomInteger(-9999, 9999);
+        hmapcode[rand] = i*i;
+    }
+    std::cout << "HashMap deep-copy hashCode tests:" << std::endl;
+    std::cout << "hashcode of copy 1 is " << hashCode(hmapcode) << std::endl;
+    HashMap<int, int> hmapcode2 = hmapcode;
+    std::cout << "hashcode of copy 2 is " << hashCode(hmapcode2) << std::endl;
+    std::cout << "map 1 equals map 2? " << std::boolalpha << (hmapcode == hmapcode2) << std::endl;
+    std::cout << "sizes: " << hmapcode.size() << ", " << hmapcode2.size() << std::endl;
+
+    HashSet<int> hsetcode;
+    for (int i = 0; i < 99; i++) {
+        int rand = randomInteger(-9999, 9999);
+        hsetcode.add(rand);
+    }
+    std::cout << std::endl << "HashSet deep-copy hashCode tests:" << std::endl;
+    std::cout << "hashcode of copy 1 is " << hashCode(hsetcode) << std::endl;
+    HashSet<int> hsetcode2 = hsetcode;
+    std::cout << "hashcode of copy 2 is " << hashCode(hsetcode2) << std::endl;
+    std::cout << "set 1 equals set 2? " << std::boolalpha << (hsetcode == hsetcode2) << std::endl;
+    std::cout << "sizes: " << hsetcode.size() << ", " << hsetcode2.size() << std::endl;
 
     std::cout << "================== END HASHCODE TESTS ==================" << std::endl;
 }

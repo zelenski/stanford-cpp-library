@@ -1,4 +1,6 @@
 /*
+ * @version: 2015/05/18
+ * - added inBounds() method
  * @version: 2015/04/23
  * - added fit(w, h) method for scaling while maintaining aspect ratio.
  */
@@ -289,6 +291,13 @@ public class GImage extends GObject implements GResizable, GScalable {
 		repaint();
 	}
 	
+	/**
+	 * Resizes the image to the largest size that fits within the given width/height
+	 * while maintaining the image's "aspect ratio" (not stretching the image's
+	 * relative width/height).
+	 * @param width maximum width, in pixels
+	 * @param height maximum height, in pixels
+	 */
 	public void fit(double width, double height) {
 		double aspectRatio = myWidth / myHeight;
 		double widthRatio = myWidth/width;
@@ -302,6 +311,20 @@ public class GImage extends GObject implements GResizable, GScalable {
 			myHeight = height;
 			myWidth = height * aspectRatio;
 		}
+	}
+	
+	/**
+	 * Returns whether the given x/y pixel position is within the bounds of the image,
+	 * in other words, whether it is between (0, 0) and (w, h).
+	 * @param x the pixel's x-coordinate
+	 * @param y the pixel's y-coordinate
+	 * @return true if the given x/y pixel position is between (0, 0) and (w, h)
+	 */
+	public boolean inBounds(double x, double y) {
+		int xx = (int) x;
+		int yy = (int) y;
+		return xx >= 0 && xx < getWidth()
+				&& yy >= 0 && yy < getHeight();
 	}
 
 /* Method: setSize(size) */
@@ -390,6 +413,15 @@ public class GImage extends GObject implements GResizable, GScalable {
  */
 	public int[][] getPixelArray() {
 		return MediaTools.getPixelArray(myImage);
+	}
+	
+	/**
+	 * Sets the image to use the given two-dimensional array of pixel values.
+	 *
+	 * @usage gimage.setPixelArray(array);
+	 */
+	public void setPixelArray(int[][] pixels) {
+		setImage(MediaTools.createImage(pixels));
 	}
 
 /* Static method: getAlpha(pixel) */

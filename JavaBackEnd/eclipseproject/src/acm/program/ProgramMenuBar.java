@@ -1,4 +1,14 @@
 /*
+ * @author Marty Stepp (current maintainer)
+ * @version 2015/05/21
+ * - fixed bug where Edit copy/paste options were disabled in SPL C++ JBEDummyProgram
+ * @version 2015/05/14
+ * - removed save, print options from GraphicsProgram menu bar
+ * @version 2015/05/12
+ * - added Ctrl-Home, Ctrl-End, PgUp, PgDown hotkeys to scroll around in console
+ */
+
+/*
  * @(#)ProgramMenuBar.java   1.99.1 08/12/08
  */
 
@@ -85,8 +95,39 @@ import javax.swing.event.*;
  * method in the <code>Program</code> object that created the menu bar.
  * </ul>
  */
-public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
+public class ProgramMenuBar extends JMenuBar
+		implements ActionListener, Iterable<JMenuItem> {
 
+	// key commands for navigating around in the console window
+	protected KeyStroke ALT_F4;
+	protected KeyStroke COMMAND_A;
+	protected KeyStroke COMMAND_C;
+	protected KeyStroke COMMAND_END;
+	protected KeyStroke COMMAND_HOME;
+	protected KeyStroke COMMAND_L;
+	protected KeyStroke COMMAND_P;
+	protected KeyStroke COMMAND_Q;
+	protected KeyStroke COMMAND_S;
+	protected KeyStroke COMMAND_V;
+	protected KeyStroke COMMAND_W;
+	protected KeyStroke COMMAND_X;
+	protected KeyStroke CTRL_A;
+	protected KeyStroke CTRL_C;
+	protected KeyStroke CTRL_END;
+	protected KeyStroke CTRL_HOME;
+	protected KeyStroke CTRL_L;
+	protected KeyStroke CTRL_P;
+	protected KeyStroke CTRL_Q;
+	protected KeyStroke CTRL_S;
+	protected KeyStroke CTRL_V;
+	protected KeyStroke CTRL_W;
+	protected KeyStroke CTRL_X;
+	protected KeyStroke DOWN_ARROW;
+	protected KeyStroke F1;
+	protected KeyStroke PGDN;
+	protected KeyStroke PGUP;
+	protected KeyStroke UP_ARROW;
+	
 /* Constant: SHIFT */
 /**
  * Constant indicating that an accelerator key requires the SHIFT modifier.
@@ -107,6 +148,34 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		accelerators = new HashMap<KeyStroke,JMenuItem>();
 		focusedItems = new HashSet<JMenuItem>();
 		macMenuBarFlag = true;
+
+		ALT_F4 = KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK);
+		COMMAND_A = KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.META_DOWN_MASK);
+		COMMAND_C = KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.META_DOWN_MASK);
+		COMMAND_END = KeyStroke.getKeyStroke(KeyEvent.VK_END, KeyEvent.META_DOWN_MASK);
+		COMMAND_HOME = KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.META_DOWN_MASK);
+		COMMAND_L = KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.META_DOWN_MASK);
+		COMMAND_P = KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.META_DOWN_MASK);
+		COMMAND_Q = KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.META_DOWN_MASK);
+		COMMAND_S = KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.META_DOWN_MASK);
+		COMMAND_V = KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.META_DOWN_MASK);
+		COMMAND_W = KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.META_DOWN_MASK);
+		CTRL_A = KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_C = KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_END = KeyStroke.getKeyStroke(KeyEvent.VK_END, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_HOME = KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_L = KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_P = KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_Q = KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_S = KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_V = KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_W = KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.CTRL_DOWN_MASK);
+		DOWN_ARROW = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0);
+		F1 = KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0);
+		PGDN = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0);
+		PGUP = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0);
+		UP_ARROW = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0);
+		
 		addMenus();
 	}
 
@@ -130,32 +199,41 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
  * @usage JMenuItem item = mbar.createStandardItem(action);
  * @param action The action command identifying the menu item to be created
  */
-	public JMenuItem createStandardItem(String action) {
+	public JMenuItem createStandardItem(String action, int mnemonic) {
+		return createStandardItem(action, mnemonic, /* keystroke */ null);
+	}
+	
+	public JMenuItem createStandardItem(String action, int mnemonic, KeyStroke keystroke) {
+		boolean mac = Platform.isMac();
 		JMenuItem item = null;
 		if (action.equals("Quit")) {
-			item = createProgramItem(action);
-			if (Platform.isMac()) {
+			item = createProgramItem(action, 'Q', mac ? COMMAND_Q : ALT_F4);
+			if (mac) {
 				setAccelerator(item, 'Q');
 			} else {
 				item.setName("Exit");
 			}
 		} else if (action.equals("Cut")) {
-			item = createFocusedItem(action, 'X');
-			if (!Platform.isMac()) item.setName("Cut (x)");
+			item = createFocusedItem(action, 'X', mac ? COMMAND_X : CTRL_X);
+			item.setMnemonic('t');
+			if (!mac) item.setName("Cut (x)");
 		} else if (action.equals("Copy")) {
-			item = createFocusedItem(action, 'C');
-			if (!Platform.isMac()) item.setName("Copy (c)");
+			item = createFocusedItem(action, 'C', mac ? COMMAND_C : CTRL_C);
+			if (!mac) item.setName("Copy (c)");
 		} else if (action.equals("Paste")) {
-			item = createFocusedItem(action, 'V');
-			if (!Platform.isMac()) item.setName("Paste (v)");
+			item = createFocusedItem(action, 'V', mac ? COMMAND_V : CTRL_V);
+			item.setMnemonic('P');
+			if (!mac) item.setName("Paste (v)");
+		} else if (action.equals("Clear Console")) {
+			item = createProgramItem(action, 'L', mac ? COMMAND_L : CTRL_L);
 		} else if (action.equals("Select All")) {
-			item = createFocusedItem(action, 'A');
+			item = createFocusedItem(action, 'A', mac ? COMMAND_A : CTRL_A);
 		} else if (action.equals("Save")) {
-			item = createFocusedItem(action, 'S');
-		} else if (action.equals("Save As")) {
-			item = createFocusedItem(action);
-		} else if (action.equals("Print")) {
-			item = createProgramItem(action, 'P');
+			item = createFocusedItem(action, 'S', mac ? COMMAND_S : CTRL_S);
+		} else if (action.equals("Save As...")) {
+			item = createFocusedItem(action, 'A');
+		} else if (action.equals("Print...")) {
+			item = createProgramItem(action, 'P', mac ? COMMAND_P : CTRL_P);
 			item.setName("Print...");
 		} else if (action.equals("Print Console")) {
 			item = createProgramItem(action);
@@ -170,6 +248,9 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 			item.setName("Submit Project...");
 		} else {
 			throw new ErrorException("Illegal standard menu item: " + action);
+		}
+		if (keystroke != null) {
+			item.setAccelerator(keystroke);
 		}
 		return item;
 	}
@@ -198,9 +279,17 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
  * @param action The action command generated by this menu item
  * @param key The integer value of the keystroke accelerator
  */
+	public JMenuItem createProgramItem(String action, int key, KeyStroke keystroke) {
+		JMenuItem item = createProgramItem(action, key);
+		item.setAccelerator(keystroke);
+		item.setMnemonic(key);
+		return item;
+	}
+	
 	public JMenuItem createProgramItem(String action, int key) {
 		JMenuItem item = createProgramItem(action);
 		setAccelerator(item, key);
+		item.setMnemonic(key);
 		return item;
 	}
 
@@ -226,8 +315,22 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
  * @param key The integer value of the keystroke accelerator
  */
 	public JMenuItem createFocusedItem(String action, int key) {
+		return createFocusedItem(action, key, /* keystroke */ null, /* shouldSetAccelerator */ false);
+	}
+	
+	public JMenuItem createFocusedItem(String action, int key, KeyStroke keystroke) {
+		return createFocusedItem(action, key, keystroke, /* shouldSetAccelerator */ true);
+	}
+	
+	public JMenuItem createFocusedItem(String action, int key, KeyStroke keystroke, boolean shouldSetAccelerator) {
 		JMenuItem item = createFocusedItem(action);
-		setAccelerator(item, key);
+		if (keystroke != null) {
+			item.setAccelerator(keystroke);
+			accelerators.put(keystroke, item);
+		} else if (shouldSetAccelerator && key != ' ' && key != '\0') {
+			setAccelerator(item, key);
+		}
+		item.setMnemonic(key);
 		return item;
 	}
 
@@ -366,9 +469,34 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 			item.doClick(0);
 			return true;
 		}
+		
+		//////
+		if (getProgram() instanceof ConsoleProgram) {
+			ConsoleProgram consoleProgram = (ConsoleProgram) getProgram();
+			if (stroke.equals(CTRL_HOME) || stroke.equals(COMMAND_HOME)) {
+				consoleProgram.scrollToTop();
+				return true;
+			} else if (stroke.equals(CTRL_END) || stroke.equals(COMMAND_END)) {
+				consoleProgram.scrollToBottom();
+				return true;
+			} else if (stroke.equals(PGUP)) {
+				consoleProgram.scrollPageUp();
+				return true;
+			} else if (stroke.equals(UP_ARROW)) {
+				consoleProgram.scrollLineUp();
+				return true;
+			} else if (stroke.equals(DOWN_ARROW)) {
+				consoleProgram.scrollLineDown();
+				return true;
+			} else if (stroke.equals(PGDN)) {
+				consoleProgram.scrollPageDown();
+				return true;
+			}
+		}
+		
 		return false;
 	}
-
+	
 /* Method: setFocusedListener(listener) */
 /**
  * Registers a listener that responds while the caller holds the keyboard
@@ -408,7 +536,12 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
  */
 	protected void addMenus() {
 		addFileMenu();
-		addEditMenu();
+		boolean isConsole = getProgram() instanceof ConsoleProgram
+				|| getProgram() instanceof stanford.spl.JBEDummyProgram;
+		if (isConsole) {
+			addEditMenu();
+		}
+		addHelpMenu();
 	}
 
 /* Protected method: addFileMenu() */
@@ -437,6 +570,41 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		add(editMenu);
 	}
 
+	protected void addHelpMenu() {
+		JMenu helpMenu = new JMenu("Help");
+		helpMenu.setMnemonic('H');
+		
+		JMenuItem aboutItem = new JMenuItem("About...");
+		aboutItem.addActionListener(this);
+		aboutItem.setAccelerator(F1);
+		accelerators.put(F1, aboutItem);
+		// setAccelerator(aboutItem, KeyEvent.VK_F1);
+		aboutItem.setMnemonic('A');
+		helpMenu.add(aboutItem);
+		
+		add(helpMenu);
+	}
+	
+	protected String getAboutMessage() {
+		String message = 
+			"Stanford Java Library (spl.jar) version " + stanford.spl.Version.getLibraryVersion() + "\n\n"
+			+ "Libraries originally written by Eric Roberts,\n"
+			+ "with assistance from Julie Zelenski, Keith Schwarz, et al.\n"
+			+ "This version of the library is unofficially maintained by Marty Stepp.";
+		return message;
+	}
+	
+	public void actionPerformed(ActionEvent event) {
+		if (event.getActionCommand().equals("About...")) {
+			JOptionPane.showMessageDialog(
+					getProgram().getConsole(),           // parent component
+					getAboutMessage(),                   // message
+					"About Stanford Java/C++ Library",   // title
+					JOptionPane.INFORMATION_MESSAGE      // type
+			);
+		}
+	}
+	
 /* Protected method: addFileMenuItems(menu) */
 /**
  * Adds the standard <code>File</code> items to the specified menu.  Subclasses
@@ -446,17 +614,20 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
  * @param menu The menu to which the <code>File</code> items are added
  */
 	protected void addFileMenuItems(JMenu menu) {
-		menu.add(createStandardItem("Save"));
-		menu.add(createStandardItem("Save As"));
-		menu.addSeparator();
-		menu.add(createStandardItem("Print"));
-		menu.add(createStandardItem("Print Console"));
-		menu.add(createStandardItem("Script"));
-		menu.addSeparator();
-		menu.add(createStandardItem("Export Applet"));
-		menu.add(createStandardItem("Submit Project"));
-		menu.addSeparator();
-		menu.add(createStandardItem("Quit"));
+		boolean isConsole = getProgram() instanceof ConsoleProgram;
+		if (isConsole) {
+			menu.add(createStandardItem("Save", 'S'));
+			menu.add(createStandardItem("Save As...", 'A'));
+			menu.addSeparator();
+			menu.add(createStandardItem("Print...", 'P'));
+//			menu.add(createStandardItem("Print Console"));
+//			menu.add(createStandardItem("Script"));
+			menu.addSeparator();
+		}
+//		menu.add(createStandardItem("Export Applet"));
+//		menu.add(createStandardItem("Submit Project"));
+//		menu.addSeparator();
+		menu.add(createStandardItem("Quit", 'Q'));
 	}
 
 /* Protected method: addEditMenuItems(menu) */
@@ -468,10 +639,12 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
  * @param menu The menu to which the <code>Edit</code> items are added
  */
 	protected void addEditMenuItems(JMenu menu) {
-		menu.add(createStandardItem("Cut"));
-		menu.add(createStandardItem("Copy"));
-		menu.add(createStandardItem("Paste"));
-		menu.add(createStandardItem("Select All"));
+		menu.add(createStandardItem("Cut", 'C'));
+		menu.add(createStandardItem("Copy", 'o'));
+		menu.add(createStandardItem("Paste", 'P'));
+		menu.add(createStandardItem("Select All", 'A'));
+		menu.addSeparator();
+		menu.add(createStandardItem("Clear Console", 'l'));
 	}
 
 /* Private method: addItemToList(itemList, item) */

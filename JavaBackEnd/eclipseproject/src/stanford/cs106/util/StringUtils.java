@@ -1,3 +1,9 @@
+/*
+ * @author Marty Stepp
+ * @version 2015/05/28
+ * - added truncate() with suffix string parameter
+ */
+
 package stanford.cs106.util;
 
 import java.awt.Point;
@@ -171,13 +177,22 @@ public class StringUtils {
 	}
 
 	public static String join(String[] tokens, String delimiter, int limit) {
-		if (tokens == null || tokens.length == 0 || limit <= 0) {
+		return join(tokens, delimiter, /* startIndex */ 0, limit);
+	}
+	
+	public static String join(String[] tokens, String delimiter, int startIndex, int limit) {
+		if (tokens == null || tokens.length == 0
+				|| startIndex < 0 || startIndex >= tokens.length) {
 			return "";
 		}
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(tokens[0]);
-		limit = Math.min(limit, tokens.length);
-		for (int i = 1; i < limit; i++) {
+		buffer.append(tokens[startIndex]);
+		if (limit == 0) {
+			limit = tokens.length;
+		} else {
+			limit = Math.min(limit, tokens.length);
+		}
+		for (int i = startIndex + 1; i < limit; i++) {
 			buffer.append(delimiter);
 			buffer.append(tokens[i]);
 		}
@@ -286,6 +301,24 @@ public class StringUtils {
 		s = String.valueOf(s);
 		while (s.length() < width) {
 			s += " ";
+		}
+		return s;
+	}
+	
+	public static String padNumber(int n, int length) {
+		return padNumber(n, length, false);
+	}
+
+	public static String padNumber(int n, int length, boolean html) {
+		String s = "" + n;
+		int len = s.length();
+		while (len < length) {
+			if (html) {
+				s = "&nbsp;" + s;
+			} else {
+				s = " " + s;
+			}
+			len++;
 		}
 		return s;
 	}
@@ -444,6 +477,10 @@ public class StringUtils {
 		}
 	}
 	
+	public static String toString(Point p) {
+	    return "(" + p.x + ", " + p.y + ")";
+	}
+
 	/**
 	 * Removes any blank lines (just \n or spaces/tabs followed by \n) from the
 	 * start/end of s.
@@ -506,10 +543,22 @@ public class StringUtils {
 	 * Similar to fitToWidth, but doesn't put ... at end.
 	 */
 	public static String truncate(String s, int length) {
+		return truncate(s, length, /* suffix */ "");
+	}
+	
+	/**
+	 * Trims the given string to be at most the given number of characters in length.
+	 * Similar to fitToWidth, but doesn't put ... at end.
+	 */
+	public static String truncate(String s, int length, String suffix) {
 		if (s == null || s.length() <= length) {
 			return s;
 		} else {
-			return s.substring(0, length);
+			s = s.substring(0, length);
+			if (suffix != null && !suffix.isEmpty()) {
+				s += suffix;
+			}
+			return s;
 		}
 	}
 	

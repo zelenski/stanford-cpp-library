@@ -1,9 +1,5 @@
-package stanford.spl.pipecommand;
+package stanford.spl;
 
-import stanford.spl.AutograderUnitTestGUI;
-import stanford.spl.JBECommand;
-import stanford.spl.JavaBackEnd;
-import stanford.spl.SplPipeDecoder;
 import acm.util.TokenScanner;
 
 public class AutograderUnitTest_addTest extends JBECommand {

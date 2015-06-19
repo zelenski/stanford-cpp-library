@@ -2,11 +2,8 @@
  * @version 2011/11/20
  */
 
-package stanford.spl.pipecommand;
+package stanford.spl;
 
-import stanford.spl.JBECommand;
-import stanford.spl.JBEWindow;
-import stanford.spl.JavaBackEnd;
 import acm.util.TokenScanner;
 
 public class GWindow_clearCanvas extends JBECommand {

@@ -1,11 +1,6 @@
-package stanford.spl.pipecommand;
+package stanford.spl;
 
 import java.awt.Dimension;
-
-import stanford.spl.JBECommand;
-import stanford.spl.JBEWindow;
-import stanford.spl.JavaBackEnd;
-import stanford.spl.SplPipeDecoder;
 
 import acm.util.TokenScanner;
 

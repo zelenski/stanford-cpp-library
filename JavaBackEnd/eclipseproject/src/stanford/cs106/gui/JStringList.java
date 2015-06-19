@@ -5,6 +5,8 @@
  * It is basically a wrapper around the (IMO) poorly designed JList class.
  *
  * Author : Marty Stepp
+ * Version: Tue 2015/05/18
+ * - added getSelectedValueColor() method
  * Version: Tue 2014/06/05
  * - Added various convenience methods: setItems, setColors, getColor, etc.
  *   to facilitate modification of an existing list's items and colors
@@ -189,6 +191,20 @@ public class JStringList extends JList {
 			selected = stripHTML(selected);
 		}
 		return selected;
+	}
+	
+	/**
+	 * Returns the color of the string that is currently selected in this list.
+	 * Initially, or if no string is selected, returns null.
+	 */
+	public Color getSelectedValueColor() {
+		// strip out HTML tags/colors
+		int index = super.getSelectedIndex();
+		if (index >= 0 && index < this.getItemCount()) {
+			return getColor(index);
+		} else {
+			return null;
+		}
 	}
 	
 	/**
