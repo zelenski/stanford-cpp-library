@@ -1,8 +1,16 @@
+/*
+ * File: base64.h
+ * --------------
+ * Linux/gcc implementation of the call_stack class.
+ *
+ * @author Marty Stepp, based on code from Fredrik Orderud
+ * @version 2015/05/28
+ */
+
 /* Copyright (c) 2009, Fredrik Orderud
    License: BSD licence (http://www.opensource.org/licenses/bsd-license.php)
    Based on: http://stupefydeveloper.blogspot.com/2008/10/cc-call-stack.html */
 
-/* Linux/gcc implementation of the call_stack class. */
 #ifdef __GNUC__
 #include <stdio.h>
 #include <cxxabi.h>
@@ -180,7 +188,7 @@ int addr2line_all(void** addrs, int length, std::string& output) {
     out << "atos -o " << exceptions::getProgramNameForStackTrace() << addrsStr;
 #elif defined(_WIN32)
     // Windows
-    out << "addr2line.exe -f -C -s -p -e " << exceptions::getProgramNameForStackTrace() << addrsStr;
+    out << "addr2line.exe -f -C -s -p -e \"" << exceptions::getProgramNameForStackTrace() << "\"" << addrsStr;
 #else
     // Linux
     out << "addr2line -f -C -s -p -e " << exceptions::getProgramNameForStackTrace() << addrsStr;

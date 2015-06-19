@@ -1,12 +1,43 @@
 	C++ libs
-		fix stack-size-increase code?  didn't run on Mac?  (GET MAC AND DEBUG THIS;  ALSO WINDOWS, LINUX)
-		unify spl.jar
-			look at NameSurfer version; A/B code both
-			fix look'n'feel on my Linux  (see 106A Karel lib code)
+		
+		karel, Reset button prints "filePath = null" and doesn't reset initially.  oops
+x		karel: broken in spl.jar?
+-		karel: bug, exception on startup of program?
+		karel: bug, placing beeper on Karel square, doesn't repaint?
+		karel: log of actions feature (through menu?)
+-		Karel: Stop button that forcibly stops their run method?
+
+x		Java libs: Ctrl-A does "About"
+x		Java libs: Ctrl-C doesn't do "Copy"
+x		playAudioClip doesn't work with non .au?  add in lib?  Clip vs AudioClip?
+x		playAudioClip remove that javazoom library?  doesn't play mp3s?  test as stand-alone?
+
+		GFilledObject interface so i can use setFillColor, setFilled, etc.?
+		Graph/BasicGraph collection library?
+		unit test lib on timeout/exception, show the exception and the stack trace
+		
+		insert pause(100); in HangmanProgram.java
+			same bug? A HW2 Pyramid "trinityc"  "Try putting a pause(1000) at the beginning of the pyramid program."
+	
+		Eclipse plugin
+			fix last-run thing after project is closed  (how to repro?)
+			figure out way to hide menus?
+			based on Purdue code?
+			make it close all projects when you exit Eclipse?
+
+		CS 198 site edits
+			fix 404 of https://cs198.stanford.edu/cs106/media/jquery.min.map
+			updateSection js code
+			make ^ v buttons non tabindexed
+
+		window size issue on setSize - should set canvas/central size?
+			Just a heads-up, the call to setSize(APPLICATION_WIDTH, APPLICATION_HEIGHT) screws up at least some versions of Windows because it will include the window frame in the 
+		show lateDays.txt contents  (steal B code?)  (already does this, but, button too?)
+		disable clearConsole during output capturing for better diffing
+		tablelayout bug: if not exactly (rows x cols) elements in it, mysteriously crashes
+		
 		addr2line on directories with spaces?
 		indent() function for recursion?
-		Java console window on Windows: won't close on Alt-F4?
-x		stringToInteger, stringToLong with a base parameter?
 		[Dawg]Lexicon overload operators: +, +=, -, -= ?  like set?
 			same on any other collections?
 		other interactors
@@ -34,14 +65,53 @@ x			remove operator < from some collections (esp. PQ)
 		
 		bring in acm.jar docs into my site
 		
-x		unify karel.jar
-x		GObject intersects(GObject) method
-x		C++ console setOutputColor
-x		GObject setX, setY methods (only has setLocation right now)
-x		A Java lib bug: GImage loading, crashes with NPE
-x			on windows
-x			load JPG from res/*.jpg
-x			crashes (exception)
+		Exception in thread "AWT-EventQueue-0" java.lang.ArrayIndexOutOfBoundsException
+				at java.lang.System.arraycopy(Native Method)
+				at javax.swing.text.BoxView.updateLayoutArray(Unknown Source)
+				at javax.swing.text.BoxView.replace(Unknown Source)
+				at javax.swing.text.View.append(Unknown Source)
+				at javax.swing.text.FlowView$FlowStrategy.layout(Unknown Source)
+				at javax.swing.text.FlowView.layout(Unknown Source)
+				at javax.swing.text.BoxView.setSize(Unknown Source)
+				at javax.swing.text.BoxView.updateChildSizes(Unknown Source)
+				at javax.swing.text.BoxView.setSpanOnAxis(Unknown Source)
+				at javax.swing.text.BoxView.layout(Unknown Source)
+				at javax.swing.text.BoxView.setSize(Unknown Source)
+				at javax.swing.plaf.basic.BasicTextUI$RootView.setSize(Unknown Source)
+				at javax.swing.plaf.basic.BasicTextUI.modelToView(Unknown Source)
+				at javax.swing.text.DefaultCaret.setVisible(Unknown Source)
+				at javax.swing.text.DefaultCaret.focusGained(Unknown Source)
+				at java.awt.AWTEventMulticaster.focusGained(Unknown Source)
+				at java.awt.AWTEventMulticaster.focusGained(Unknown Source)
+				at java.awt.Component.processFocusEvent(Unknown Source)
+				at java.awt.Component.processEvent(Unknown Source)
+				at java.awt.Container.processEvent(Unknown Source)
+				at java.awt.Component.dispatchEventImpl(Unknown Source)
+				at java.awt.Container.dispatchEventImpl(Unknown Source)
+				at java.awt.Component.dispatchEvent(Unknown Source)
+				at java.awt.KeyboardFocusManager.redispatchEvent(Unknown Source)
+				at java.awt.DefaultKeyboardFocusManager.typeAheadAssertions(Unknown Source)
+				at java.awt.DefaultKeyboardFocusManager.dispatchEvent(Unknown Source)
+				at java.awt.Component.dispatchEventImpl(Unknown Source)
+				at java.awt.Container.dispatchEventImpl(Unknown Source)
+				at java.awt.Component.dispatchEvent(Unknown Source)
+				at sun.awt.SunToolkit$1.run(Unknown Source)
+				at java.awt.event.InvocationEvent.dispatch(Unknown Source)
+				at java.awt.EventQueue.dispatchEventImpl(Unknown Source)
+				at java.awt.EventQueue.access$200(Unknown Source)
+				at java.awt.EventQueue$3.run(Unknown Source)
+				at java.awt.EventQueue$3.run(Unknown Source)
+				at java.security.AccessController.doPrivileged(Native Method)
+				at java.security.ProtectionDomain$1.doIntersectionPrivilege(Unknown Source)
+				at java.awt.EventQueue.dispatchEvent(Unknown Source)
+				at java.awt.EventDispatchThread.pumpOneEventForFilters(Unknown Source)
+				at java.awt.EventDispatchThread.pumpEventsForFilter(Unknown Source)
+				at java.awt.EventDispatchThread.pumpEventsForHierarchy(Unknown Source)
+				at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+				at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+				at java.awt.EventDispatchThread.run(Unknown Source)
+
+		fix stack-size-increase code?  didn't run on Mac?  (GET MAC AND DEBUG THIS;  ALSO WINDOWS, LINUX)
 		
 		update simple project ZIP, lecture ZIPs, ZIP in cppdoc web page
 		
@@ -49,11 +119,6 @@ x			crashes (exception)
 		1 console window limit per program?  cut down on window clutter?
 		fix call_stack_gcc.cpp on Win/MSVC?
 		
-x		compile with all warnings on, look for / fix warnings
-		
-x		refactor hw1-7 autograders to use multiple test classes, set category names that way
-x			hw7
-
 		make it so that you don't need to #include "console.h" (REID)
 			based on a flag in .pro file maybe?
 			all .h in stanford C++ lib manually include console.h if flag is set?
@@ -147,8 +212,8 @@ x			idea: special fake ptr to console window frame, then support any GWindow bac
 		
 		graphical console: set rows/cols rather than px size?
 		
-->		GBufferedImage save(filename), load(filename) methods;  need back-end support
-			diffImage?
+x		GBufferedImage save(filename), load(filename) methods;  need back-end support
+x			diffImage?
 		
 ~		reimplement collections using STL versions as underlying container?  (see _experimental)
 			HashMap
@@ -168,6 +233,28 @@ x			idea: special fake ptr to console window frame, then support any GWindow bac
 
 DONE:
 =======================================================================================================================
+x		Java libs: set default font somehow?  specified in project file?  Java compiler flag?
+x			use same flag as C++ lib:  SPL_CONSOLE_FONT
+x		Java console PgUp/Down
+x		Java ConsoleProgram printf
+x		Program setWidth/setSize take double, overload
+x		make readInt etc. in ConsoleProgram append a space to the prompt if absent
+x		Java console window on Windows: won't close on Alt-F4?
+x		unify spl.jar
+x			look at NameSurfer version; A/B code both
+x			fix look'n'feel on my Linux  (see 106A Karel lib code)
+x		stringToInteger, stringToLong with a base parameter?
+x		unify karel.jar
+x		GObject intersects(GObject) method
+x		C++ console setOutputColor
+x		GObject setX, setY methods (only has setLocation right now)
+x		A Java lib bug: GImage loading, crashes with NPE
+x			on windows
+x			load JPG from res/*.jpg
+x			crashes (exception)
+x		compile with all warnings on, look for / fix warnings
+x		refactor hw1-7 autograders to use multiple test classes, set category names that way
+x			hw7
 x		fix deploy script
 x			doesn't really copy in res/autograder, spl.jar, etc.
 x			combine the three scripts? copy in SCPPLib, then spl.jar, then autograder/ if found/needed?

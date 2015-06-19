@@ -21,6 +21,7 @@
 #include "filelib.h"
 #include "gwindow.h"
 #include "platform.h"
+#include "strlib.h"
 
 static Platform* pp = getPlatform();
 

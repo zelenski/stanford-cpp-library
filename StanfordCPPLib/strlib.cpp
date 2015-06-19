@@ -3,6 +3,10 @@
  * ----------------
  * This file implements the strlib.h interface.
  * 
+ * @version 2015/06/19
+ * - slight bug fix to make stringToInteger functions compile with int radix
+ * @version 2015/05/22
+ * - slight bug fix in stringToBool function
  * @version 2014/10/31
  * - fixed infinite loop bug in stringReplace function
  * @version 2014/10/19
@@ -115,9 +119,7 @@ bool stringIsDouble(const std::string& str) {
 
 bool stringIsInteger(const std::string& str, int radix) {
     std::istringstream stream(trim(str));
-    if (radix != 10) {
-        stream >> std::setbase(radix);
-    }
+    stream >> std::setbase(radix);
     int value;
     stream >> value;
     return !(stream.fail() || !stream.eof());
@@ -125,9 +127,7 @@ bool stringIsInteger(const std::string& str, int radix) {
 
 bool stringIsLong(const std::string& str, int radix) {
     std::istringstream stream(trim(str));
-    if (radix != 10) {
-        stream >> std::setbase(radix);
-    }
+    stream >> std::setbase(radix);
     long value;
     stream >> value;
     return !(stream.fail() || !stream.eof());
@@ -142,6 +142,11 @@ bool stringIsReal(const std::string& str) {
 
 bool stringToBool(const std::string& str) {
     std::istringstream stream(trim(str));
+    if (str == "true" || str == "1") {
+        return true;
+    } else if (str == "false" || str == "0") {
+        return false;
+    }
     bool value;
     stream >> std::boolalpha >> value;
     if (stream.fail() || !stream.eof()) {
@@ -164,9 +169,7 @@ double stringToDouble(const std::string& str) {
 
 int stringToInteger(const std::string& str, int radix) {
     std::istringstream stream(trim(str));
-    if (radix != 10) {
-        stream >> std::setbase(radix);
-    }
+    stream >> std::setbase(radix);
     int value;
     stream >> value;
     if (stream.fail() || !stream.eof()) {
@@ -177,13 +180,11 @@ int stringToInteger(const std::string& str, int radix) {
 
 long stringToLong(const std::string& str, int radix) {
     std::istringstream stream(trim(str));
-    if (radix != 10) {
-        stream >> std::setbase(radix);
-    }
+    stream >> std::setbase(radix);
     long value;
     stream >> value;
     if (stream.fail() || !stream.eof()) {
-        error("stringToInteger: Illegal long format (" + str + ")");
+        error("stringToLong: Illegal long format (" + str + ")");
     }
     return value;
 }

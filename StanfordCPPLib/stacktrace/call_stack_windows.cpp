@@ -1,4 +1,12 @@
-/* Windows implementation of the call_stack class. */
+/*
+ * File: base64.h
+ * --------------
+ * Windows implementation of the call_stack class.
+ *
+ * @author Marty Stepp
+ * @version 2015/05/28
+ */
+
 #ifdef _WIN32
 #include "call_stack.h"
 #include <windows.h>

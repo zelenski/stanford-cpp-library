@@ -5,6 +5,8 @@
  * by student code on the console.
  * 
  * @author Marty Stepp
+ * @version 2015/05/28
+ * - tiny bug fix to exception stack trace printing format on Windows
  * @version 2014/11/19
  * - disabled SetThreadErrorMode to avoid compiler errors on Windows systems
  * @version 2014/11/18
@@ -39,7 +41,7 @@
 // uncomment the definition below to use an alternative 'signal stack'
 // which helps in handling stack overflow errors
 // (disabled because it currently breaks stack traces for other errors)
-// #define SHOULD_USE_SIGNAL_STACK
+//#define SHOULD_USE_SIGNAL_STACK
 
 namespace exceptions {
 // just some value that is not any existing signal
@@ -247,7 +249,7 @@ void printStackTrace(std::ostream& out) {
         
         std::string lineStr = "";
         if (!entry.lineStr.empty()) {
-            lineStr = entry.lineStr;
+            lineStr = trimEnd(entry.lineStr);
             if (lineStr == "?? ??:0") {
                 lineStr = "(unknown)";
             }

@@ -3,6 +3,8 @@
  * ------------------
  * This file implements the gobjects.h interface.
  * 
+ * @version 2015/05/28
+ * - replaced some calls on 'abs' with 'fabs' to remove Mac compiler warnings
  * @version 2014/10/08
  * - removed 'using namespace' statement
  */
@@ -590,7 +592,7 @@ bool GArc::contains(double x, double y) const {
         if (r > 1.0) return false;
     } else {
         double t = ARC_TOLERANCE / ((rx + ry) / 2);
-        if (abs(1.0 - r) > t) return false;
+        if (fabs(1.0 - r) > t) return false;
     }
     return containsAngle(atan2(-dy, dx) * 180 / PI);
 }
@@ -901,7 +903,7 @@ GRectangle GLine::getBounds() const {
     if (transformed) return pp->gobject_getBounds(this);
     double x0 = (dx < 0) ? x + dx : x;
     double y0 = (dy < 0) ? y + dy : y;
-    return GRectangle(x0, y0, abs(dx), abs(dy));
+    return GRectangle(x0, y0, fabs(dx), fabs(dy));
 }
 
 bool GLine::contains(double x, double y) const {
