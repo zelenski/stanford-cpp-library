@@ -1,13 +1,17 @@
 /*
  * This file implements the KarelProgram class.
  * 
- * - 2015/03/31: Commented out unused field 'program'.
- * - 2015/03/31: Changed to use Swing graphical components.
- * - 2015/03/31: Improved error dialog to display program stack trace.
- * - 2015/03/31: Added setStatus method to display program state.
- * - 2015/04/01: Improved scrollbar appearance in error dialogs.
- * - 2015/04/01: Added "About" menu bar.
- * - 2015/04/05: Added "Options" menu bar for Ms. Karel mode.
+ * @author Marty Stepp (based on Eric Roberts version)
+ * @version 2015/04/05
+ * - added "Options" menu bar for Ms. Karel mode
+ * @version 2015/04/01
+ * - improved scrollbar appearance in error dialogs
+ * - added "About" menu bar
+ * @version 2015/03/31
+ * - commented out unused field 'program'
+ * - changed to use Swing graphical components
+ * - improved error dialog to display program stack trace
+ * - added setStatus method to display program state
  */
 
 package stanford.karel;
@@ -25,6 +29,12 @@ import javax.swing.*;
  * that runs a Karel program.
  */
 public class KarelProgram extends Program {
+	/** Directory where *.w Karel world files are found. */
+	public static final String WORLDS_DIRECTORY = "worlds";
+	
+	/** File extension for Karel worlds. */
+	public static final String WORLD_EXTENSION = ".w";
+	
 	public static final int NORTH = KarelWorld.NORTH;
 	public static final int EAST = KarelWorld.EAST;
 	public static final int SOUTH = KarelWorld.SOUTH;
@@ -131,8 +141,8 @@ public class KarelProgram extends Program {
 	 */
 	public static String getWorldDirectory() {
 		String dir = System.getProperty("user.dir");
-		if (new File(dir, "worlds").isDirectory()) {
-			dir += "/worlds";
+		if (new File(dir, WORLDS_DIRECTORY).isDirectory()) {
+			dir += File.separator + WORLDS_DIRECTORY;
 		}
 		return dir;
 	}
@@ -281,6 +291,26 @@ public class KarelProgram extends Program {
 			// empty
 		}
 	}
+	
+	public void loadInitialWorld() {
+		String karelClass = getParameter("karel");
+		if (karelClass == null) {
+			Karel karel = (Karel) getStartupObject();
+			karelClass = karel.getClass().getName();
+			karelClass = karelClass.substring(karelClass.lastIndexOf(".") + 1);
+		}
+
+		String worldName = getParameter("world");
+		if (worldName == null)
+			worldName = karelClass;
+		try {
+			URL url = new URL(getCodeBase(), WORLDS_DIRECTORY + File.separator + worldName + WORLD_EXTENSION);
+			URLConnection connection = url.openConnection();
+			world.load(new InputStreamReader(connection.getInputStream()));
+		} catch (Exception ex) {
+			/* Ignore this error */
+		}
+	}
 
 	protected void startRun() {
 		augmentMenuBar();
@@ -304,16 +334,7 @@ public class KarelProgram extends Program {
 		if (karel != null) {
 			world.add(karel);
 			setTitle(karelClass);
-			String worldName = getParameter("world");
-			if (worldName == null)
-				worldName = karelClass;
-			try {
-				URL url = new URL(getCodeBase(), "worlds/" + worldName + ".w");
-				URLConnection connection = url.openConnection();
-				world.load(new InputStreamReader(connection.getInputStream()));
-			} catch (Exception ex) {
-				/* Ignore this error */
-			}
+			loadInitialWorld();
 		}
 		world.setRepaintFlag(true);
 		world.setDisplayFlag(true);

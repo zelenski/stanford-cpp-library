@@ -3,6 +3,8 @@
  * ------------------
  * This file implements the ginteractors.h interface.
  * 
+ * @version 2015/06/20
+ * - added GRadioButton class
  * @version 2014/10/31
  * - added get/setIcon to GInteractor
  * @version 2014/10/08
@@ -127,6 +129,45 @@ std::string GCheckBox::getType() const {
 std::string GCheckBox::toString() const {
     std::ostringstream oss;
     oss << "GCheckBox(\"" << label << "\")";
+    return oss.str();
+}
+
+/*
+ * Implementation notes: GRadioButton class
+ * ----------------------------------------
+ */
+
+GRadioButton::GRadioButton(std::string label, std::string group, bool selected) {
+    this->label = label;
+    if (group.empty()) {
+        group = "default";
+    }
+    this->group = group;
+    pp->gradiobutton_constructor(this, label, group);
+    if (selected) {
+        setSelected(true);
+    }
+}
+
+bool GRadioButton::isSelected() {
+    return pp->gradiobutton_isSelected(this);
+}
+
+void GRadioButton::setSelected(bool state) {
+    pp->gradiobutton_setSelected(this, state);
+}
+
+std::string GRadioButton::getGroup() const {
+    return group;
+}
+
+std::string GRadioButton::getType() const {
+    return "GRadioButton";
+}
+
+std::string GRadioButton::toString() const {
+    std::ostringstream oss;
+    oss << "GRadioButton(\"" << group << "\", \"" << label << "\")";
     return oss.str();
 }
 

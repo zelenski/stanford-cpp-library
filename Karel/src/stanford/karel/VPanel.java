@@ -14,6 +14,7 @@ import javax.swing.*;
 class VPanel extends JPanel {
 	public VPanel() {
 		setLayout(new HVLayout(HVLayout.VERTICAL));
+		setOpaque(false);
 	}
 
 	public Component add(String constraint) {

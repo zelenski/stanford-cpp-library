@@ -14,6 +14,7 @@ import javax.swing.*;
 class HPanel extends JPanel {
 	public HPanel() {
 		setLayout(new HVLayout(HVLayout.HORIZONTAL));
+		setOpaque(false);
 	}
 
 	public Component add(Component comp) {

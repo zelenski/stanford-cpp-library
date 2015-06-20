@@ -181,6 +181,7 @@ CONFIG(debug, debug|release) {
     QMAKE_CXXFLAGS += -O0
     QMAKE_CXXFLAGS += -g3
     QMAKE_CXXFLAGS += -ggdb3
+    QMAKE_CXXFLAGS += -fno-inline
     DEFINES += SPL_CONSOLE_PRINT_EXCEPTIONS
 }
 

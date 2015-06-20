@@ -1,20 +1,36 @@
 	C++ libs
-		
-		karel, Reset button prints "filePath = null" and doesn't reset initially.  oops
+x		BUGBUG: pressing Up crashes JBE console!
+xx		libs: press Up to recall last console input line?  Up/down history?
+-		libs: ProgramHelper => ___Program
+x		libs: PgUp, PgDown don't work any more on C++ console?
+x		libs: hash bug (below)
+x		libs: include Lexicon from Boggle Java code
+x		libs: idea: if test doesn't have a 'TestCategory', infer B from test name a_B_c
+~		libs: check changes in to GitHub
+x	LIB HASH BUG: I think we found a bug in HashMap::deepCopy() in the LaIR today. The method looks like:
+x		void deepCopy(const HashMap& src) {
+x			createBuckets(src.nBuckets);
+x			for (int i = 0; i < src.nBuckets; i++) {
+x				for (Cell* cp = src.buckets.get(i); cp != NULL; cp = cp->next) {
+x					put(cp->key, cp->value);
+x				}
+x			}
+x		}
+x		For each bucket, it goes through its corresponding linked list in src, and inserts each element in the _front_ of the new list. So the new list is in reverse order. It's mostly fine since every element is still in the correct bucket, but the hash code for the old and the new maps are different, because hash code calculation depends on the order of the elements. So in the student's code, two HashMaps are equal but have different hash values. I manually copied the linked list in order, and the issue was resolved.
+x		karel, Reset button prints "filePath = null" and doesn't reset initially.  oops
 x		karel: broken in spl.jar?
 -		karel: bug, exception on startup of program?
-		karel: bug, placing beeper on Karel square, doesn't repaint?
+x		karel: bug, placing beeper on Karel square, doesn't repaint?
 		karel: log of actions feature (through menu?)
 -		Karel: Stop button that forcibly stops their run method?
-
 x		Java libs: Ctrl-A does "About"
 x		Java libs: Ctrl-C doesn't do "Copy"
 x		playAudioClip doesn't work with non .au?  add in lib?  Clip vs AudioClip?
 x		playAudioClip remove that javazoom library?  doesn't play mp3s?  test as stand-alone?
 
 		GFilledObject interface so i can use setFillColor, setFilled, etc.?
-		Graph/BasicGraph collection library?
-		unit test lib on timeout/exception, show the exception and the stack trace
+x		Graph/BasicGraph collection library?
+x		unit test lib on timeout/exception, show the exception and the stack trace
 		
 		insert pause(100); in HangmanProgram.java
 			same bug? A HW2 Pyramid "trinityc"  "Try putting a pause(1000) at the beginning of the pyramid program."
@@ -36,12 +52,12 @@ x		playAudioClip remove that javazoom library?  doesn't play mp3s?  test as stan
 		disable clearConsole during output capturing for better diffing
 		tablelayout bug: if not exactly (rows x cols) elements in it, mysteriously crashes
 		
-		addr2line on directories with spaces?
-		indent() function for recursion?
+x		addr2line on directories with spaces?
+x		indent() function for recursion?
 		[Dawg]Lexicon overload operators: +, +=, -, -= ?  like set?
 			same on any other collections?
-		other interactors
-			radio button?
+x		other interactors
+x			radio button?
 			jlabel?
 			spinner?
 		cpp docs

@@ -1,34 +1,24 @@
+/*
+ * @author Marty Stepp
+ * @version 2015/06/19
+ * - added support for up/down for history
+ */
+
 package acm.io;
 
-import acm.program.ProgramMenuBar;
-import acm.util.ErrorException;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.PrintJob;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Document;
-import javax.swing.text.Element;
-import javax.swing.text.ElementIterator;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
+import acm.program.*;
+import acm.util.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.util.*;
+import java.util.List;
+import javax.swing.*;
+import javax.swing.text.*;
 
 public class StandardConsoleModel implements KeyListener, FocusListener, ConsoleModel {
 	private static final int PRINT_MARGIN = 36;
+	private static final int MAX_PREVIOUS_INPUT_LINES = 100;
 	private ActionListener actionListener;
 	private ConsoleOutputMonitor outputMonitor;
 	private ConsoleInputMonitor inputMonitor;
@@ -46,6 +36,8 @@ public class StandardConsoleModel implements KeyListener, FocusListener, Console
 	private IOConsole console;
 	private ProgramMenuBar menuBar;
 	private Color outputColor = Color.BLACK;
+	private List<String> previousInputLines;
+	private int previousInputLinesIndex = 0;
 
 	public StandardConsoleModel() {
 		this.outputMonitor = new ConsoleOutputMonitor(this);
@@ -61,6 +53,7 @@ public class StandardConsoleModel implements KeyListener, FocusListener, Console
 		this.inputAttributes = new SimpleAttributeSet();
 		this.errorAttributes = new SimpleAttributeSet();
 		this.buffer = new CharacterQueue();
+		this.previousInputLines = new ArrayList<String>();
 		this.base = 0;
 	}
 	
@@ -76,12 +69,51 @@ public class StandardConsoleModel implements KeyListener, FocusListener, Console
 		return this.console;
 	}
 
+	public void historyDown() {
+		if (previousInputLinesIndex < previousInputLines.size()) {
+			previousInputLinesIndex++;
+		}
+		historyUpdate();
+	}
+	
+	public void historyUp() {
+		if (previousInputLinesIndex >= 0) {
+			previousInputLinesIndex--;
+		}
+		historyUpdate();
+	}
+	
+	private void historyUpdate() {
+		String line;
+		if (previousInputLinesIndex >= 0 && previousInputLinesIndex < previousInputLines.size()) {
+			line = previousInputLines.get(previousInputLinesIndex);
+		} else {
+			line = "";
+		}
+		java.lang.System.out.println("historyUpdate() line=\"" + line + "\"");
+		
+		// this.inputMonitor.readLine();
+		this.delete(this.base, this.getLength());
+		this.buffer.clear();
+		if (!line.isEmpty()) {
+			for (int i = 0; i < line.length(); i++) {
+				this.buffer.enqueue(line.charAt(i));
+			}
+		}
+	}
+
 	public void print(String paramString, int paramInt) {
 		this.outputMonitor.print(paramString, paramInt);
 	}
-
+	
 	public String readLine() {
-		return this.inputMonitor.readLine();
+		String line = this.inputMonitor.readLine();
+		if (previousInputLines.size() >= MAX_PREVIOUS_INPUT_LINES) {
+			previousInputLines.remove(0);
+		}
+		previousInputLines.add(line);
+		previousInputLinesIndex = previousInputLines.size();
+		return line;
 	}
 
 	public void setInputScript(BufferedReader paramBufferedReader) {
@@ -359,6 +391,8 @@ public class StandardConsoleModel implements KeyListener, FocusListener, Console
 		// BUGFIX 2014/11/06: added try/catch because throwing NPE on Mac OS X for some reason
 		try {
 			setCaretPosition(this.base);
+		} catch (IllegalArgumentException npe) {
+			this.base = this.getLength();
 		} catch (NullPointerException npe) {
 			// empty
 		}

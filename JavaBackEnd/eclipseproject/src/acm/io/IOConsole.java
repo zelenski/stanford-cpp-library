@@ -6,29 +6,13 @@
 
 package acm.io;
 
-import acm.program.ProgramMenuBar;
-import acm.util.ErrorException;
-import acm.util.JTFTools;
-import acm.util.Platform;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.FileDialog;
-import java.awt.Font;
-import java.awt.Frame;
-import java.awt.PrintJob;
-import java.awt.event.ActionEvent;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
-import java.util.Iterator;
-import javax.swing.JMenuItem;
+import acm.program.*;
+import acm.util.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.util.*;
+import javax.swing.*;
 
 public class IOConsole extends Container implements IOModel {
 	private static final long serialVersionUID = 0L;

@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp (current maintainer)
+ * @version 2015/06/19
+ * - fixed bug where some hotkeys (PgUp, PgDown) were not working in SPL C++ JBEDummyProgram
  * @version 2015/05/21
  * - fixed bug where Edit copy/paste options were disabled in SPL C++ JBEDummyProgram
  * @version 2015/05/14
@@ -42,9 +44,11 @@
 package acm.program;
 
 import acm.util.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+
 import javax.swing.*;
 import javax.swing.event.*;
 
@@ -471,8 +475,8 @@ public class ProgramMenuBar extends JMenuBar
 		}
 		
 		//////
-		if (getProgram() instanceof ConsoleProgram) {
-			ConsoleProgram consoleProgram = (ConsoleProgram) getProgram();
+		if (getProgram() instanceof AbstractConsoleProgram) {
+			AbstractConsoleProgram consoleProgram = (AbstractConsoleProgram) getProgram();
 			if (stroke.equals(CTRL_HOME) || stroke.equals(COMMAND_HOME)) {
 				consoleProgram.scrollToTop();
 				return true;
@@ -483,10 +487,12 @@ public class ProgramMenuBar extends JMenuBar
 				consoleProgram.scrollPageUp();
 				return true;
 			} else if (stroke.equals(UP_ARROW)) {
-				consoleProgram.scrollLineUp();
+				// consoleProgram.scrollLineUp();
+				consoleProgram.historyUp();
 				return true;
 			} else if (stroke.equals(DOWN_ARROW)) {
-				consoleProgram.scrollLineDown();
+				// consoleProgram.scrollLineDown();
+				consoleProgram.historyDown();
 				return true;
 			} else if (stroke.equals(PGDN)) {
 				consoleProgram.scrollPageDown();
@@ -536,8 +542,7 @@ public class ProgramMenuBar extends JMenuBar
  */
 	protected void addMenus() {
 		addFileMenu();
-		boolean isConsole = getProgram() instanceof ConsoleProgram
-				|| getProgram() instanceof stanford.spl.JBEDummyProgram;
+		boolean isConsole = getProgram() instanceof AbstractConsoleProgram;
 		if (isConsole) {
 			addEditMenu();
 		}

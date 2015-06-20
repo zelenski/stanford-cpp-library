@@ -14,7 +14,7 @@ class LoadWorldDialog extends FileDialog implements FilenameFilter {
 	}
 
 	public boolean accept(File dir, String name) {
-		return (name.endsWith(".w"));
+		return (name.endsWith(KarelProgram.WORLD_EXTENSION));
 	}
 }
 

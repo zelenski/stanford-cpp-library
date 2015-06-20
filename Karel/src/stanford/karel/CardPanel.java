@@ -20,6 +20,7 @@ class CardPanel extends JPanel {
 	public CardPanel() {
 		layout = new CardLayout();
 		setLayout(layout);
+		setOpaque(false);
 	}
 
 	/*

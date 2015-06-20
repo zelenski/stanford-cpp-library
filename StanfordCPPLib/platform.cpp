@@ -1337,6 +1337,33 @@ void Platform::gcheckbox_setSelected(GObject* gobj, bool state) {
     putPipe(os.str());
 }
 
+void Platform::gradiobutton_constructor(GObject* gobj, std::string label, std::string group) {
+    std::ostringstream os;
+    os << gobj;
+    sourceTable.put(os.str(), gobj);
+    os.str("");
+    os << "GRadioButton.create(\"" << gobj << "\", ";
+    writeQuotedString(os, label);
+    os << ",";
+    writeQuotedString(os, group);
+    os << ")";
+    putPipe(os.str());
+}
+
+bool Platform::gradiobutton_isSelected(GObject* gobj) {
+    std::ostringstream os;
+    os << "GRadioButton.isSelected(\"" << gobj << "\")";
+    putPipe(os.str());
+    return getResult() == "true";
+}
+
+void Platform::gradiobutton_setSelected(GObject* gobj, bool state) {
+    std::ostringstream os;
+    os << "GRadioButton.setSelected(\"" << gobj << "\", "
+       << std::boolalpha << state << ")";
+    putPipe(os.str());
+}
+
 void Platform::gslider_constructor(GObject* gobj, int min, int max, int value) {
     std::ostringstream os;
     os << gobj;

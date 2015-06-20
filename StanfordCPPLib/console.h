@@ -6,6 +6,8 @@
  * must be included in the source file that contains the <code>main</code>
  * method, although it may be included in other source files as well.
  * 
+ * @version 2015/06/20
+ * - added recursionIndent() function for pretty-printing indented recursive calls
  * @version 2015/04/25
  * - added methods to get/set console output color
  * @version 2014/11/13

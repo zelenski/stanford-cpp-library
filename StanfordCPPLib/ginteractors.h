@@ -5,6 +5,8 @@
  * provided in the Java Swing libraries.
  * <include src="pictures/ClassHierarchies/GInteractorHierarchy-h.html">
  * 
+ * @version 2015/06/20
+ * - added GRadioButton class
  * @version 2014/10/31
  * - added get/setIcon to GInteractor
  */
@@ -163,7 +165,6 @@ private:
  * generates a <code>GActionEvent</code>.
  * <include src="pictures/GInteractorDiagrams/GCheckBox.html">
  */
-
 class GCheckBox : public GInteractor {
 
 public:
@@ -199,6 +200,63 @@ public:
     virtual std::string toString() const;
 
 private:
+    std::string label;
+};
+
+/*
+ * Class: GRadioButton
+ * -------------------
+ * This interactor subclass represents an onscreen radio button.  Clicking
+ * once on the radio button selects it and deselects others in its group.
+ * If a <code>GRadioButton</code> has an action command, clicking on the box
+ * generates a <code>GActionEvent</code>.
+ */
+class GRadioButton : public GInteractor {
+public:
+    /*
+     * Constructor: GRadioButton
+     * Usage: GRadioButton* button = new GRadioButton(label, group);
+     * -------------------------------------------------------------
+     * Creates a <code>GRadioButton</code> with the specified label.  In contrast
+     * to the <code>GButton</code> constructor, this constructor does not set
+     * an action command.
+     * All radio buttons must be part of a named group.
+     * Only one radio button within a given group can be selected at any time.
+     * If no group name is provided, the button is placed into a default group.
+     * Button is not initially selected unless 'selected' of true is passed.
+     */
+    GRadioButton(std::string label, std::string group = "default", bool selected = false);
+
+    /*
+     * Method: setSelected
+     * Usage: button->setSelected(state);
+     * ----------------------------------
+     * Sets the state of the radio button.
+     */
+    void setSelected(bool state);
+
+    /*
+     * Method: isSelected
+     * Usage: if (button->isSelected()) ...
+     * ------------------------------------
+     * Returns <code>true</code> if the button is selected.
+     */
+    bool isSelected();
+
+    /*
+     * Method: getGroup
+     * Usage: string group = button->getGroup();
+     * -----------------------------------------
+     * Returns the name of the button group to which this radio button belongs.
+     */
+    std::string getGroup() const;
+
+    /* Prototypes for the virtual methods */
+    virtual std::string getType() const;
+    virtual std::string toString() const;
+
+private:
+    std::string group;
     std::string label;
 };
 

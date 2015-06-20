@@ -133,3 +133,22 @@ void gbufferedImageTest() {
     std::cout << "Test complete." << std::endl;
     std::cout << std::endl;
 }
+
+void radioButtonTest() {
+    GWindow gw;
+    gw.setTitle("Radio Button Test");
+    GRadioButton* rb1 = new GRadioButton("Red");
+    GRadioButton* rb2 = new GRadioButton("Green", "", true);
+    GRadioButton* rb3 = new GRadioButton("Blue");
+    gw.addToRegion(rb1, "SOUTH");
+    gw.addToRegion(rb2, "SOUTH");
+    gw.addToRegion(rb3, "SOUTH");
+
+    // a second group of buttons
+    GRadioButton* rb4 = new GRadioButton("Black", "N", true);
+    GRadioButton* rb5 = new GRadioButton("White", "N");
+    gw.addToRegion(rb4, "NORTH");
+    gw.addToRegion(rb5, "NORTH");
+    
+    gw.setVisible(true);
+}

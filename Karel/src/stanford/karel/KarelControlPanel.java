@@ -1,10 +1,16 @@
 /*
  * This class implements Karel's control panel.
- * - 2015/03/31: Commented out unused constants.
- * - 2015/03/31: Changed to use Swing graphical components.
- * - 2015/03/31: Changed speed bar to allow for slower speeds (500ms and 1000ms delay).
- * - 2015/03/31: Added mnemonics on main control panel buttons.
- * - 2015/04/02: Enables/disables buttons when program is running.
+ * 
+ * @author Marty Stepp (based on Eric Roberts version)
+ * @version 2015/06/20
+ * - fixed bugs in Reset button
+ * @version 2015/04/02
+ * - enables/disables buttons when program is running
+ * @version 2015/03/31
+ * - commented out unused constants
+ * - changed to use Swing graphical components
+ * - changed speed bar to allow for slower speeds (500ms and 1000ms delay)
+ * - added mnemonics on main control panel buttons
  */
 
 package stanford.karel;
@@ -18,7 +24,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.JButton;
@@ -260,12 +265,12 @@ public class KarelControlPanel extends CardPanel implements KarelWorldMonitor,
 			program.signalStarted();
 		} else if (source == resetButton) {
 			String filePath = world.getPathName();
-			System.out.println("filePath = " + filePath);
-			if (filePath != null) {
+			if (filePath == null) {
+				program.loadInitialWorld();
+			} else {
 				world.load(filePath);
-				program.setStatus("Loaded world from "
-						+ new File(filePath).getName() + ".");
 			}
+			program.setStatus("Reset to initial state.");
 		} else if (source == loadWorldButton) {
 			FileDialog dialog = new LoadWorldDialog(world);
 			dialog.setVisible(true);

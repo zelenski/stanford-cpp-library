@@ -98,6 +98,9 @@ public abstract class JBECommand {
 		localHashMap.put("GOval.create", new GOval_create());
 		localHashMap.put("GPolygon.addVertex", new GPolygon_addVertex());
 		localHashMap.put("GPolygon.create", new GPolygon_create());
+		localHashMap.put("GRadioButton.create", new GRadioButton_create());
+		localHashMap.put("GRadioButton.isSelected", new GRadioButton_isSelected());
+		localHashMap.put("GRadioButton.setSelected", new GRadioButton_setSelected());
 		localHashMap.put("GRect.create", new GRect_create());
 		localHashMap.put("GRoundRect.create", new GRoundRect_create());
 		localHashMap.put("GSlider.create", new GSlider_create());

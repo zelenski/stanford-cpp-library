@@ -1,9 +1,13 @@
 /*
- * This file contains the class that implements Karel's world.
- * - 2015/03/31: Commented out unused method updateCorner.
- * - 2015/03/31: Commented out unused fields and local variables.
- * - 2015/03/31: Changed to use Swing graphical components.
- * - 2015/04/05: Added Ms. Karel mode just for fun.
+ * This class implements Karel's world.
+ * 
+ * @author Marty Stepp (based on Eric Roberts version)
+ * @version 2015/04/05
+ * - added Ms. Karel mode
+ * @version 2015/03/31
+ * - commented out unused method updateCorner
+ * - commented out unused fields and local variables
+ * - changed to use Swing graphical components
  */
 
 package stanford.karel;
@@ -663,8 +667,12 @@ public class KarelWorld extends JComponent {
 				checkForWallClick(e.getX(), e.getY());
 			} else {
 				activeKarel = getKarelOnSquare(pt.x, pt.y);
-				if (activeKarel == null)
+				if (activeKarel == null) {
 					checkForCornerClick(pt);
+				} else {
+					// added by Marty to enable placing beepers on Karel's location
+					checkForCornerClick(pt);
+				}
 			}
 		}
 	}

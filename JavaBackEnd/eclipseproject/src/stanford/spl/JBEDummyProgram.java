@@ -1,10 +1,9 @@
 package stanford.spl;
 
-import java.awt.event.ActionEvent;
+import java.awt.event.*;
+import acm.program.*;
 
-import acm.program.Program;
-
-public class JBEDummyProgram extends Program {
+public class JBEDummyProgram extends AbstractConsoleProgram {
 	private static final long serialVersionUID = 1L;
 
 	private JavaBackEnd jbe;

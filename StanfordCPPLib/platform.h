@@ -144,6 +144,9 @@ public:
     void goval_constructor(GObject* gobj, double width, double height);
     void gpolygon_addVertex(GObject* gobj, double x, double y);
     void gpolygon_constructor(GObject* gobj);
+    void gradiobutton_constructor(GObject* gobj, std::string label, std::string group);
+    bool gradiobutton_isSelected(GObject* gobj);
+    void gradiobutton_setSelected(GObject* gobj, bool state);
     void grect_constructor(GObject* gobj, double width, double height);
     void groundrect_constructor(GObject* gobj, double width, double height, double corner);
     void gslider_constructor(GObject* gobj, int min, int max, int value);

@@ -9,6 +9,7 @@ void randomElementTest();
 
 // exception tests
 void exceptionTest();
+void recursionIndentTest();
 void segfaultTest(int sig = 0);
 void stackOverflowTest(int n = 0);
 
@@ -16,6 +17,7 @@ void stackOverflowTest(int n = 0);
 void fileDialogTest();
 void gbufferedImageTest();
 void goptionpaneTest();
+void radioButtonTest();
 
 // pipe tests
 void cinOutTest();

@@ -32,7 +32,10 @@ int main() {
         cout << "u) urlstream" << endl;
         
         cout << "   GRAPHICS:" << endl;
-        cout << "g) gui" << endl;
+        cout << "fd) file dialog" << endl;
+        cout << "bi) buffered image" << endl;
+        cout << "op) optionpane" << endl;
+        cout << "rb) radio buttons" << endl;
         
         cout << "   ERROR HANDLING AND STACK TRACES:" << endl;
         cout << "   (Try all 3 to make sure stack trace prints.)" << endl;
@@ -40,6 +43,7 @@ int main() {
         cout << "n) segfault (NULL ptr)" << endl;
         cout << "t) throw exception" << endl;
         cout << "o) stack overflow" << endl;
+        cout << "ri) recursion indent" << endl;
         cout << endl;
         string cmd = getLine("Command (Enter to quit)?");
         if (cmd.empty()) {
@@ -51,10 +55,14 @@ int main() {
             hashCodeTest();
         } else if (cmd == "e") {
             coutCerrMixTest();
-        } else if (cmd == "g") {
-            // fileDialogTest();
+        } else if (cmd == "fd") {
+            fileDialogTest();
+        } else if (cmd == "bi") {
             gbufferedImageTest();
-            // goptionpaneTest();
+        } else if (cmd == "op") {
+            goptionpaneTest();
+        } else if (cmd == "rb") {
+            radioButtonTest();
         } else if (cmd == "i") {
             // cinOutTest();
             killProcessTest();
@@ -70,6 +78,8 @@ int main() {
         } else if (cmd == "o") {
             //getPlatform()->setStackSize(1024*1024*128);
             stackOverflowTest();
+        } else if (cmd == "ri") {
+            recursionIndentTest();
         } else if (cmd == "s") {
             stringToIntegerTest();
         } else if (cmd == "t") {

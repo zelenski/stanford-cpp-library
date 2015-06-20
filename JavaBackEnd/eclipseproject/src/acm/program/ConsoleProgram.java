@@ -33,7 +33,6 @@ import java.awt.*;
 import java.io.*;
 import java.util.*;
 import java.util.List;
-import javax.swing.*;
 import stanford.cs106.gui.GuiUtils;
 import stanford.cs106.util.*;
 
@@ -42,7 +41,7 @@ import stanford.cs106.util.*;
  * This class is a standard subclass of <code><a href="Program.html">Program</a></code>
  * that installs a console in the window.
  */
-public abstract class ConsoleProgram extends Program {
+public abstract class ConsoleProgram extends AbstractConsoleProgram {
 	private static final String DEFAULT_REPROMPT_MESSAGE = "Unable to open that file. Try again.";
 
 /* Constructor: ConsoleProgram() */
@@ -608,77 +607,5 @@ public abstract class ConsoleProgram extends Program {
 		private static final String commentBeginStr = "#";
 		private static final String echoCommentBeginStr = "#>";
 		
-	}
-	
-	private JScrollPane getScrollPane() {
-		IOConsole console = getConsole();
-		StandardConsoleModel model = (StandardConsoleModel) console.getConsoleModel();
-		return model.getScrollPane();
-	}
-	
-	private int scrollPageHeight() {
-		JScrollPane scroll = getScrollPane();
-		if (scroll != null && scroll.getVerticalScrollBar() != null) {
-			return scroll.getHeight();
-		} else {
-			return 0;
-		}
-	}
-	
-	private int scrollLineHeight() {
-		Font programFont = getFont();
-		FontMetrics fm = getFontMetrics(programFont);
-		return fm.getHeight();
-	}
-	
-	private void scrollBy(int dy) {
-		JScrollPane scroll = getScrollPane();
-		if (scroll == null) {
-			return;
-			
-		}
-		JScrollBar bar = scroll.getVerticalScrollBar();
-		if (bar == null) {
-			return;
-		}
-		
-		int y;
-		int min = scroll.getVerticalScrollBar().getMinimum();
-		int max = scroll.getVerticalScrollBar().getMaximum();
-		if (dy == Integer.MIN_VALUE) {
-			y = min;
-		} else if (dy == Integer.MAX_VALUE) {
-			y = max;
-		} else {
-			// shift y by dy, bounded between [min..max] inclusive
-			y = bar.getValue() + dy;
-			y = Math.max(min, y);
-			y = Math.min(max, y);
-		}
-		bar.setValue(y);
-	}
-	
-	public void scrollToTop() {
-		scrollBy(Integer.MIN_VALUE);
-	}
-	
-	public void scrollToBottom() {
-		scrollBy(Integer.MAX_VALUE);
-	}
-	
-	public void scrollPageUp() {
-		scrollBy(-scrollPageHeight());
-	}
-	
-	public void scrollPageDown() {
-		scrollBy(scrollPageHeight());
-	}
-	
-	public void scrollLineUp() {
-		scrollBy(-scrollLineHeight());
-	}
-	
-	public void scrollLineDown() {
-		scrollBy(scrollLineHeight());
 	}
 }

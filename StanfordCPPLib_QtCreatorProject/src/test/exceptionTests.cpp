@@ -42,6 +42,21 @@ void exceptionTest() {
     a();
 }
 
+int rihelper(int k) {
+    std::cout << recursionIndent() << "riHelper(" << k << ")" << endl;
+    if (k <= 0) {
+        return k;
+    } else {
+        int a = rihelper(k - 1);
+        int b = rihelper(k - 2);
+        return a + b;
+    }
+}
+
+void recursionIndentTest() {
+    rihelper(3);
+}
+
 void stackOverflowTest(int n) {
     int a[100] = {0};
     if (a[0] || n % 1000 == 0) {

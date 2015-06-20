@@ -188,10 +188,10 @@ int addr2line_all(void** addrs, int length, std::string& output) {
     out << "atos -o " << exceptions::getProgramNameForStackTrace() << addrsStr;
 #elif defined(_WIN32)
     // Windows
-    out << "addr2line.exe -f -C -s -p -e \"" << exceptions::getProgramNameForStackTrace() << "\"" << addrsStr;
+    out << "addr2line.exe -f -i -C -s -p -e \"" << exceptions::getProgramNameForStackTrace() << "\"" << addrsStr;
 #else
     // Linux
-    out << "addr2line -f -C -s -p -e " << exceptions::getProgramNameForStackTrace() << addrsStr;
+    out << "addr2line -f -i -C -s -p -e " << exceptions::getProgramNameForStackTrace() << addrsStr;
 #endif
     std::string command = out.str();
     int result = execAndCapture(command, output);
