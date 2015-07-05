@@ -5,7 +5,7 @@
  * Stanford C++ library.
  *
  * @author Marty Stepp 
- * @version 2015/06/20
+ * @version 2015/06/22
  */
 
 #ifndef _version_h
@@ -17,7 +17,7 @@
  * NOTE: *MUST* be zero-padded to YYYY/MM/DD format;
  *       if month or day is < 10, insert a preceding 0
  */
-#define STANFORD_CPP_LIB_VERSION "2015/06/20"
+#define STANFORD_CPP_LIB_VERSION "2015/06/22"
 
 /*
  * Minimum version of Java back-end spl.jar that is supported.
