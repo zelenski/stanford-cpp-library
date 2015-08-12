@@ -12,3 +12,6 @@ Karel/bin/
 Karel/.settings
 StanfordCPPLib_QtCreatorProject/lib/StanfordCPPLib
 StanfordCPPLib_experimental/
+stanfordcpplib.cpp
+stanfordcpplib.h
+

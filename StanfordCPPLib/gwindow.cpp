@@ -5,6 +5,8 @@
  * to the appropriate methods in the Platform class, which is implemented
  * separately for each architecture.
  * 
+ * @version 2015/07/05
+ * - removed static global Platform variable, replaced by getPlatform as needed
  * @version 2014/11/20
  * - added clearCanvas method
  * @version 2014/11/18
@@ -70,14 +72,6 @@ static void initColorTable();
 static std::string canonicalColorName(std::string str);
 
 /*
- * Global variable: pp
- * -------------------
- * This variable points to a singleton of the Platform class.
- */
-
-static Platform *pp = getPlatform();
-
-/*
  * Global variable: colorTable
  * ---------------------------
  * This variable holds the translation table that maps colors into
@@ -90,7 +84,7 @@ static Platform *pp = getPlatform();
  *     const string MAGENTA = "0xFF00FF";
  */
 
-static Map<std::string,int> colorTable;
+static Map<std::string, int> colorTable;
 
 GWindow::GWindow() {
     initGWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, true);
@@ -118,7 +112,7 @@ void GWindow::initGWindow(double width, double height, bool visible) {
     gwd->closed = false;
     gwd->exitOnClose = false;
     gwd->repaintImmediately = true;
-    pp->gwindow_constructor(*this, width, height, gwd->top, visible);
+    getPlatform()->gwindow_constructor(*this, width, height, gwd->top, visible);
     setColor("BLACK");
     setVisible(visible);
     pause(1000); // Temporary fix for race condition in back-end.
@@ -140,8 +134,8 @@ void GWindow::close() {
         gwd->visible = false;
         gwd->closed = true;
     }
-    pp->gwindow_close(*this);
-    pp->gwindow_delete(*this);
+    getPlatform()->gwindow_close(*this);
+    getPlatform()->gwindow_delete(*this);
     if (gwd && gwd->exitOnClose) {
         // I was closed by the student's program.
         // I need to inform JBE so that it will shut down.
@@ -175,7 +169,7 @@ void GWindow::setExitOnClose(bool value) {
     if (gwd) {
         gwd->exitOnClose = value;
     }
-    pp->gwindow_setExitOnClose(*this, value);
+    getPlatform()->gwindow_setExitOnClose(*this, value);
 }
 
 bool GWindow::isRepaintImmediately() const {
@@ -194,7 +188,7 @@ bool GWindow::isOpen() const {
 
 void GWindow::requestFocus() {
     if (isOpen()) {
-        pp->gwindow_requestFocus(*this);
+        getPlatform()->gwindow_requestFocus(*this);
     }
 }
 
@@ -203,19 +197,19 @@ void GWindow::clear() {
         if (gwd && gwd->top) {
             gwd->top->removeAll();
         }
-        pp->gwindow_clear(*this);
+        getPlatform()->gwindow_clear(*this);
     }
 }
 
 void GWindow::clearCanvas() {
     if (isOpen()) {
-        pp->gwindow_clearCanvas(*this);
+        getPlatform()->gwindow_clearCanvas(*this);
     }
 }
 
 void GWindow::repaint() {
     if (isOpen()) {
-        pp->gwindow_repaint(*this);
+        getPlatform()->gwindow_repaint(*this);
     }
 }
 
@@ -225,7 +219,7 @@ void GWindow::setVisible(bool flag) {
             gwd->visible = flag;
         }
         // *** BUGBUG; commented out
-        // pp->gwindow_setVisible(*this, flag);
+        // getPlatform()->gwindow_setVisible(*this, flag);
     }
 }
 
@@ -353,7 +347,7 @@ double GWindow::getHeight() const {
 }
 
 GDimension GWindow::getSize() const {
-    return pp->gwindow_getSize(*this);
+    return getPlatform()->gwindow_getSize(*this);
 }
 
 GDimension GWindow::getCanvasSize() const {
@@ -362,19 +356,19 @@ GDimension GWindow::getCanvasSize() const {
 
 void GWindow::setSize(int width, int height) {
     if (isOpen()) {
-        pp->gwindow_setSize(*this, width, height);
+        getPlatform()->gwindow_setSize(*this, width, height);
     }
 }
 
 void GWindow::pack() {
     if (isOpen()) {
-        pp->gwindow_pack(*this);
+        getPlatform()->gwindow_pack(*this);
     }
 }
 
 void GWindow::setCanvasSize(int width, int height) {
     if (isOpen()) {
-        pp->gwindow_setCanvasSize(*this, width, height);
+        getPlatform()->gwindow_setCanvasSize(*this, width, height);
     }
 }
 
@@ -387,12 +381,12 @@ void GWindow::setWindowTitle(std::string title) {
         if (gwd) {
             gwd->windowTitle = title;
         }
-        pp->gwindow_setTitle(*this, title);
+        getPlatform()->gwindow_setTitle(*this, title);
     }
 }
 
 Point GWindow::getLocation() const {
-    return pp->gwindow_getLocation(*this);
+    return getPlatform()->gwindow_getLocation(*this);
 }
 
 void GWindow::setLocation(const Point& p) {
@@ -405,13 +399,13 @@ void GWindow::setLocation(int x, int y) {
             gwd->windowX = x;
             gwd->windowY = y;
         }
-        pp->gwindow_setLocation(*this, x, y);
+        getPlatform()->gwindow_setLocation(*this, x, y);
     }
 }
 
 void GWindow::setLocationSaved(bool value) {
     if (isOpen()) {
-        pp->gwindow_setLocationSaved(*this, value);
+        getPlatform()->gwindow_setLocationSaved(*this, value);
     }
 }
 
@@ -433,9 +427,9 @@ void GWindow::draw(const GObject& gobj) {
 void GWindow::draw(GObject *gobj) {
     if (isOpen()) {
         if (!gwd || gwd->repaintImmediately) {
-            pp->gwindow_draw(*this, gobj);
+            getPlatform()->gwindow_draw(*this, gobj);
         } else {
-            pp->gwindow_drawInBackground(*this, gobj);
+            getPlatform()->gwindow_drawInBackground(*this, gobj);
         }
     }
 }
@@ -443,9 +437,9 @@ void GWindow::draw(GObject *gobj) {
 void GWindow::draw(const GObject *gobj) {
     if (isOpen()) {
         if (!gwd || gwd->repaintImmediately) {
-            pp->gwindow_draw(*this, gobj);
+            getPlatform()->gwindow_draw(*this, gobj);
         } else {
-            pp->gwindow_drawInBackground(*this, gobj);
+            getPlatform()->gwindow_drawInBackground(*this, gobj);
         }
     }
 }
@@ -460,9 +454,9 @@ void GWindow::draw(GObject *gobj, double x, double y) {
     if (isOpen()) {
         gobj->setLocation(x, y);
         if (!gwd || gwd->repaintImmediately) {
-            pp->gwindow_draw(*this, gobj);
+            getPlatform()->gwindow_draw(*this, gobj);
         } else {
-            pp->gwindow_drawInBackground(*this, gobj);
+            getPlatform()->gwindow_drawInBackground(*this, gobj);
         }
     }
 }
@@ -484,29 +478,29 @@ void GWindow::add(GObject *gobj, double x, double y) {
 
 void GWindow::addToRegion(GInteractor *gobj, std::string region) {
     if (isOpen()) {
-        pp->gwindow_addToRegion(*this, (GObject *) gobj, region);
+        getPlatform()->gwindow_addToRegion(*this, (GObject *) gobj, region);
     }
 }
 
 void GWindow::addToRegion(GLabel *gobj, std::string region) {
     if (isOpen()) {
-        pp->gwindow_addToRegion(*this, (GObject *) gobj, region);
+        getPlatform()->gwindow_addToRegion(*this, (GObject *) gobj, region);
     }
 }
 
 GDimension GWindow::getRegionSize(std::string region) const {
-    return pp->gwindow_getRegionSize(*this, region);
+    return getPlatform()->gwindow_getRegionSize(*this, region);
 }
 
 void GWindow::removeFromRegion(GInteractor *gobj, std::string region) {
     if (isOpen()) {
-        pp->gwindow_removeFromRegion(*this, (GObject *) gobj, region);
+        getPlatform()->gwindow_removeFromRegion(*this, (GObject *) gobj, region);
     }
 }
 
 void GWindow::removeFromRegion(GLabel *gobj, std::string region) {
     if (isOpen()) {
-        pp->gwindow_removeFromRegion(*this, (GObject *) gobj, region);
+        getPlatform()->gwindow_removeFromRegion(*this, (GObject *) gobj, region);
     }
 }
 
@@ -531,13 +525,13 @@ GObject *GWindow::getGObjectAt(double x, double y) const {
 
 void GWindow::setRegionAlignment(std::string region, std::string align) {
     if (isOpen()) {
-        pp->gwindow_setRegionAlignment(*this, region, align);
+        getPlatform()->gwindow_setRegionAlignment(*this, region, align);
     }
 }
 
 void GWindow::setResizable(bool resizable) {
     if (isOpen()) {
-        pp->gwindow_setResizable(*this, resizable);
+        getPlatform()->gwindow_setResizable(*this, resizable);
     }
 }
 
@@ -555,22 +549,22 @@ GWindow::GWindow(GWindowData *gwd) {
 
 void pause(double milliseconds) {
     if (autograder::gwindow_pause_enabled) {
-        pp->gtimer_pause(milliseconds);
+        getPlatform()->gtimer_pause(milliseconds);
     }
     autograder::gwindow_pauses++;
     autograder::gwindow_last_pauseMS = milliseconds;
 }
 
 double getScreenWidth() {
-    return pp->gwindow_getScreenWidth();
+    return getPlatform()->gwindow_getScreenWidth();
 }
 
 double getScreenHeight() {
-    return pp->gwindow_getScreenHeight();   // BUGBUG: was returning getScreenWidth
+    return getPlatform()->gwindow_getScreenHeight();   // BUGBUG: was returning getScreenWidth
 }
 
 GDimension getScreenSize() {
-    return pp->gwindow_getScreenSize();
+    return getPlatform()->gwindow_getScreenSize();
 }
 
 int convertColorToRGB(std::string colorName) {
@@ -603,7 +597,7 @@ std::string convertRGBToColor(int rgb) {
 
 void exitGraphics() {
     if (autograder::gwindow_exitGraphics_enabled) {
-        pp->gwindow_exitGraphics();   // calls exit(0);
+        getPlatform()->gwindow_exitGraphics();   // calls exit(0);
     }
 }
 

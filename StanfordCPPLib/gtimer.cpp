@@ -3,6 +3,8 @@
  * ----------------
  * This file implements the gtimer.h interface.
  * 
+ * @version 2015/07/05
+ * - removed static global Platform variable, replaced by getPlatform as needed
  * @version 2014/10/08
  * - removed 'using namespace' statement
  * - removed unneeded include statements
@@ -11,16 +13,12 @@
 #include "gtimer.h"
 #include "platform.h"
 
-/* Global variables */
-
-static Platform *pp = getPlatform();
-
 /* Implementation of the GTimer class */
 
 GTimer::GTimer(double milliseconds) {
     gtd = new GTimerData();
     gtd->refCount = 1;
-    pp->gtimer_constructor(*this, milliseconds);
+    getPlatform()->gtimer_constructor(*this, milliseconds);
 }
 
 GTimer::~GTimer() {
@@ -28,11 +26,11 @@ GTimer::~GTimer() {
 }
 
 void GTimer::start() {
-    pp->gtimer_start(*this);
+    getPlatform()->gtimer_start(*this);
 }
 
 void GTimer::stop() {
-    pp->gtimer_stop(*this);
+    getPlatform()->gtimer_stop(*this);
 }
 
 bool GTimer::operator==(GTimer t2) {

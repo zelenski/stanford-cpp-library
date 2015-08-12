@@ -3,6 +3,8 @@
  * ----------------
  * This file implements the strlib.h interface.
  * 
+ * @version 2015/08/02
+ * - added htmlEncode/Decode functions (not 100% perfect but works for common cases)
  * @version 2015/06/19
  * - slight bug fix to make stringToInteger functions compile with int radix
  * @version 2015/05/22
@@ -67,6 +69,24 @@ bool equalsIgnoreCase(const std::string& s1, const std::string& s2) {
         if (tolower(s1[i]) != tolower(s2[i])) return false;
     }
     return true;
+}
+
+std::string htmlDecode(const std::string& s) {
+    std::string result = s;
+    stringReplaceInPlace(result, "&lt;", "<");
+    stringReplaceInPlace(result, "&gt;", ">");
+    stringReplaceInPlace(result, "&quot;", "\"");
+    stringReplaceInPlace(result, "&amp;", "&");
+    return result;
+}
+
+std::string htmlEncode(const std::string& s) {
+    std::string result = s;
+    stringReplaceInPlace(result, "&", "&amp;");
+    stringReplaceInPlace(result, "<", "&lt;");
+    stringReplaceInPlace(result, ">", "&gt;");
+    stringReplaceInPlace(result, "\"", "&quot;");
+    return result;
 }
 
 /*

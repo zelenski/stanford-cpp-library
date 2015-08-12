@@ -15,6 +15,8 @@
  * The DAWG builder code is quite a bit more intricate, see Julie Zelenski
  * if you need it.
  * 
+ * @version 2015/07/05
+ * - using global hashing functions rather than global variables
  * @version 2014/11/13
  * - added comparison operators <, >=, etc.
  * - added hashCode function
@@ -425,11 +427,11 @@ std::ostream& operator <<(std::ostream& out, const DawgLexicon& lex) {
 }
 
 int hashCode(const DawgLexicon& lex) {
-    int code = HASH_SEED;
+    int code = hashSeed();
     for (std::string n : lex) {
-        code = HASH_MULTIPLIER * code + hashCode(n);
+        code = hashMultiplier() * code + hashCode(n);
     }
-    return int(code & HASH_MASK);
+    return int(code & hashMask());
 }
 
 /*

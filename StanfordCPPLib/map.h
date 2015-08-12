@@ -4,6 +4,9 @@
  * This file exports the template class <code>Map</code>, which
  * maintains a collection of <i>key</i>-<i>value</i> pairs.
  * 
+ * @version 2015/07/05
+ * - using global hashing functions rather than global variables
+ * - fixed bug where string quotes would not show when map was printed
  * @version 2014/11/13
  * - added comparison operators <, >=, etc.
  * - added add() method as synonym for put()
@@ -1148,9 +1151,9 @@ std::ostream& operator <<(std::ostream& os,
         if (it != begin) {
             os << ", ";
         }
-        writeGenericValue(os, *it, false);
+        writeGenericValue(os, *it, true);
         os << ":";
-        writeGenericValue(os, map[*it], false);
+        writeGenericValue(os, map[*it], true);
         ++it;
     }
     return os << "}";
@@ -1195,13 +1198,13 @@ std::istream& operator >>(std::istream& is, Map<KeyType,ValueType>& map) {
  */
 template <typename K, typename V>
 int hashCode(const Map<K, V>& map) {
-    int code = HASH_SEED;
+    int code = hashSeed();
     for (K k : map) {
-        code = HASH_MULTIPLIER * code + hashCode(k);
+        code = hashMultiplier() * code + hashCode(k);
         V v = map[k];
-        code = HASH_MULTIPLIER * code + hashCode(v);
+        code = hashMultiplier() * code + hashCode(v);
     }
-    return int(code & HASH_MASK);
+    return int(code & hashMask());
 }
 
 /*

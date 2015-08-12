@@ -4,6 +4,8 @@
  * This file exports the <code>PriorityQueue</code> class, a
  * collection in which values are processed in priority order.
  * 
+ * @version 2015/07/05
+ * - using global hashing functions rather than global variables
  * @version 2015/06/22
  * - added optional compiler flag PQUEUE_PRINT_IN_HEAP_ORDER to indicate
  *   that PQ should be printed in heap-internal order rather than sorted order
@@ -691,13 +693,13 @@ template <typename T>
 int hashCode(const PriorityQueue<T>& pq) {
     // (slow, memory-inefficient) implementation: copy pq, dequeue all, and hash together
     PriorityQueue<T> backup = pq;
-    int code = HASH_SEED;
+    int code = hashSeed();
     while (!backup.isEmpty()) {
-        code = HASH_MULTIPLIER * code + hashCode(backup.peek());
-        code = HASH_MULTIPLIER * code + hashCode(backup.peekPriority());
+        code = hashMultiplier() * code + hashCode(backup.peek());
+        code = hashMultiplier() * code + hashCode(backup.peekPriority());
         backup.dequeue();
     }
-    return int(code & HASH_MASK);
+    return int(code & hashMask());
 }
 
 #ifdef PQUEUE_ALLOW_HEAP_ACCESS

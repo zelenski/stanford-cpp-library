@@ -4,6 +4,9 @@
  * This file exports the <code>HashMap</code> class, which stores
  * a set of <i>key</i>-<i>value</i> pairs.
  * 
+ * @version 2015/07/05
+ * - using global hashing functions rather than global variables
+ * - fixed bug where string quotes would not show when map was printed
  * @version 2015/06/19
  * - fixed deepCopy code that was causing copies to have different hash code than
  *   the original they were copied from (credit to SL Wen Zhang for finding the bug)
@@ -846,9 +849,9 @@ std::ostream& operator <<(std::ostream& os,
         if (it != begin) {
             os << ", ";
         }
-        writeGenericValue(os, *it, false);
+        writeGenericValue(os, *it, true);
         os << ":";
-        writeGenericValue(os, map[*it], false);
+        writeGenericValue(os, map[*it], true);
         ++it;
     }
     return os << "}";
@@ -894,13 +897,13 @@ std::istream& operator >>(std::istream& is,
  */
 template <typename K, typename V>
 int hashCode(const HashMap<K, V>& map) {
-    int code = HASH_SEED;
+    int code = hashSeed();
     for (K k : map) {
-        code = HASH_MULTIPLIER * code + hashCode(k);
+        code = hashMultiplier() * code + hashCode(k);
         V v = map[k];
-        code = HASH_MULTIPLIER * code + hashCode(v);
+        code = hashMultiplier() * code + hashCode(v);
     }
-    return int(code & HASH_MASK);
+    return int(code & hashMask());
 }
 
 /*

@@ -1,7 +1,13 @@
-/* Copyright (c) 2009, Fredrik Orderud
-   License: BSD licence (http://www.opensource.org/licenses/bsd-license.php) */
+/*
+ * Copyright (c) 2009, Fredrik Orderud
+ * License: BSD licence (http://www.opensource.org/licenses/bsd-license.php)
+ *
+ * @version 2015/07/05
+ * - replaced pragma once with ifndef/define for greater compatibility
+ */
 
-#pragma once
+#ifndef _call_stack_h
+#define _call_stack_h
 #include <string>
 #include <vector>
 #include <sstream>
@@ -69,3 +75,5 @@ public:
 };
 
 } // namespace stacktrace
+
+#endif // _call_stack_h

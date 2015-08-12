@@ -5,6 +5,8 @@
  * Please see urlstream.h for information about how to use these classes.
  *
  * @author Marty Stepp
+ * @version 2015/07/05
+ * - removed static global Platform variable, replaced by getPlatform as needed
  * @version 2014/10/14
  * - fixed .c_str() Mac bug on ifstream::open() call
  * @since 2014/10/08
@@ -17,8 +19,6 @@
 #include "filelib.h"
 #include "platform.h"
 #include "strlib.h"
-
-static Platform *pp = getPlatform();
 
 iurlstream::iurlstream() : m_url(""), m_tempFilePath(""), m_lastError(0) {
     // empty
@@ -51,7 +51,7 @@ void iurlstream::open(std::string url) {
     std::string filename = getUrlFilename(url);
     m_tempFilePath = tempDir + getDirectoryPathSeparator() + filename;
     
-    m_lastError = pp->url_download(url, filename);
+    m_lastError = getPlatform()->url_download(url, filename);
     
     if (m_lastError == ERR_MALFORMED_URL) {
         error("iurlstream::open: malformed URL when downloading " + url + " to " + m_tempFilePath);

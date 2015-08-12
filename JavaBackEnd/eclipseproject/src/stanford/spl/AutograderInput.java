@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp
+ * @version 2015/08/01
+ * - support for headless mode for use on server
  * @version 2014/11/15
  * - key listener to forward to JBE Console
  */

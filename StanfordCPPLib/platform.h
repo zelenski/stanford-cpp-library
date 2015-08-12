@@ -85,6 +85,7 @@ public:
     void gbufferedimage_resize(GObject* gobj, double width, double height, bool retain = true);
     std::string gbufferedimage_save(const GObject* const gobj, const std::string& filename);
     void gbufferedimage_setRGB(GObject* gobj, double x, double y, int rgb);
+    void gbufferedimage_updateAllPixels(GObject* gobj, const std::string& base64);
     void gbutton_constructor(GObject* gobj, std::string label);
     void gcheckbox_constructor(GObject* gobj, std::string label);
     bool gcheckbox_isSelected(GObject* gobj);

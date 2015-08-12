@@ -15,6 +15,8 @@
  *
  * The original DAWG implementation is retained as dawglexicon.h/cpp.
  * 
+ * @version 2015/07/05
+ * - using global hashing functions rather than global variables
  * @version 2014/11/13
  * - added comparison operators <, >=, etc.
  * - added hashCode function
@@ -426,11 +428,11 @@ std::istream& operator >>(std::istream& is, Lexicon& lex) {
  * Hash function for lexicons.
  */
 int hashCode(const Lexicon& l) {
-    int code = HASH_SEED;
+    int code = hashSeed();
     for (std::string n : l) {
-        code = HASH_MULTIPLIER * code + hashCode(n);
+        code = hashMultiplier() * code + hashCode(n);
     }
-    return int(code & HASH_MASK);
+    return int(code & hashMask());
 }
 
 static bool scrub(std::string& str) {

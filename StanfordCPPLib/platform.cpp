@@ -1,9 +1,16 @@
-﻿/*
+/*
  * File: platform.cpp
  * ------------------
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2015/08/05
+ * - added output limit for EchoingStreamBuf to facilitate trimming of infinite
+ *   output by runaway programs / infinite loops
+ * @version 2015/08/01
+ * - added flag for 'headless' mode for use in non-GUI server environments
+ * @version 2015/07/05
+ * - added EchoingStreamBuf class for use in unified single-file version of library
  * @version 2014/11/25
  * - added methods for checking and unchecking individual autograder test cases
  * @version 2014/11/20
@@ -63,6 +70,7 @@ static int pout;
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <ios>
 #include <signal.h>
 #include <sstream>
 #include <string>
@@ -86,7 +94,7 @@ static int pout;
 // #define PIPE_DEBUG true
 
 // related: similar constant in Java back-end stanford.spl.SplPipeDecoder.java
-static const size_t PIPE_MAX_COMMAND_LENGTH = 4096;
+static const size_t PIPE_MAX_COMMAND_LENGTH = 2048;
 
 static std::string getLineConsole();
 static void putConsole(const std::string& str, bool isStderr = false);
@@ -242,6 +250,136 @@ public:
     
     std::streamsize sputn(const char* s, std::streamsize n) {
         return delegate.sputn(s, n);
+    }
+};
+
+/*
+ * A stream buffer that just forwards everything to a delegate,
+ * but echoes any user input read from it.
+ * Used to (sometimes) echo console input when redirected in from a file.
+ * http://www.cplusplus.com/reference/streambuf/streambuf/
+ */
+class EchoingStreambuf : public std::streambuf {
+private:
+    /* Constants */
+    static const int BUFFER_SIZE = 4096;
+
+    /* Instance variables */
+    char inBuffer[BUFFER_SIZE];
+    char outBuffer[BUFFER_SIZE];
+    std::istream instream;
+    int outputLimit;
+    int outputPrinted;
+
+public:
+    EchoingStreambuf(std::streambuf& buf)
+            : instream(&buf),
+              outputLimit(0),
+              outputPrinted(0) {
+        // outstream.rdbuf(&buf);
+        setg(inBuffer, inBuffer, inBuffer);
+        setp(outBuffer, outBuffer + BUFFER_SIZE);
+    }
+
+    ~EchoingStreambuf() {
+        /* Empty */
+    }
+    
+    virtual void setOutputLimit(int limit) {
+        outputLimit = limit;
+    }
+
+    virtual int underflow() {
+        // Allow long strings at some point
+        std::string line;
+        getline(instream, line);
+        
+        // echo the line just read
+        // std::cout << line << std::endl;
+        // outputPrinted += line.length();
+        // if (outputLimit > 0 && outputPrinted > outputLimit) {
+        //     error("excessive output printed");
+        // }
+        
+        int n = line.length();
+        if (n + 1 >= BUFFER_SIZE) {
+            error("EchoingStreambuf::underflow: String too long");
+        }
+        for (int i = 0; i < n; i++) {
+            inBuffer[i] = line[i];
+        }
+        inBuffer[n++] = '\n';
+        inBuffer[n] = '\0';
+        setg(inBuffer, inBuffer, inBuffer + n);
+        return inBuffer[0];
+    }
+
+    virtual int overflow(int ch = EOF) {
+        std::string line = "";
+        for (char *cp = pbase(); cp < pptr(); cp++) {
+            if (*cp == '\n') {
+                // puts(line.c_str());
+                outputPrinted += line.length();
+                if (outputLimit > 0 && outputPrinted > outputLimit) {
+                    error("excessive output printed");
+                }
+                line = "";
+            } else {
+                line += *cp;
+            }
+        }
+        if (line != "") {
+            // puts(line.c_str());
+            outputPrinted += line.length();
+            if (outputLimit > 0 && outputPrinted > outputLimit) {
+                error("excessive output printed");
+            }
+        }
+        setp(outBuffer, outBuffer + BUFFER_SIZE);
+        if (ch != EOF) {
+            outBuffer[0] = ch;
+            pbump(1);
+        }
+        return ch != EOF;
+    }
+    
+    virtual int sync() {
+        return overflow();
+    }
+};
+
+/*
+ * A stream buffer that limits how many characters you can print to it.
+ * If you exceed that many, it throws an ErrorException.
+ */
+class LimitedStreambuf : public std::streambuf {
+private:
+    std::ostream outstream;
+    int outputLimit;
+    int outputPrinted;
+
+public:
+    LimitedStreambuf(std::streambuf& buf, int limit)
+            : outstream(&buf),
+              outputLimit(limit),
+              outputPrinted(0) {
+        setp(0, 0);   // // no buffering, overflow on every char
+    }
+
+    virtual void setOutputLimit(int limit) {
+        outputLimit = limit;
+    }
+
+    virtual int overflow(int ch = EOF) {
+        outputPrinted++;
+        if (outputLimit > 0 && outputPrinted > outputLimit) {
+            // error("excessive output printed");
+            // outstream.setstate(std::ios::failbit | std::ios::badbit | std::ios::eofbit);
+            raise(SIGABRT);   // kill the program
+        } else {
+            outstream.put(ch);
+        }
+        return ch;
     }
 };
 
@@ -1254,6 +1392,15 @@ void Platform::gbufferedimage_setRGB(GObject* gobj, double x, double y,
     putPipe(os.str());
 }
 
+void Platform::gbufferedimage_updateAllPixels(GObject* gobj,
+                                              const std::string& base64) {
+    std::ostringstream os;
+    os << "GBufferedImage.updateAllPixels(\"" << gobj << "\", ";
+    writeQuotedString(os, base64);
+    os << ")";
+    putPipe(os.str());
+}
+
 GDimension Platform::gimage_constructor(GObject* gobj, std::string filename) {
     std::ostringstream os;
     os << "GImage.create(\"" << gobj << "\", \"" << filename << "\")";
@@ -1879,7 +2026,7 @@ static std::string getPipe() {
     return line;
 }
 
-#else
+#else // not WIN32
 
 /* Linux/Mac implementation of interface to Java back end */
 
@@ -1921,10 +2068,10 @@ static std::string getOption(std::string key) {
 
 #ifdef SPL_AUTOGRADER_MODE
 int startupMain(int /*argc*/, char** argv) {
-#else
+#else // not SPL_AUTOGRADER_MODE
 int startupMain(int argc, char **argv) {
     extern int Main(int argc, char **argv);
-#endif
+#endif // SPL_AUTOGRADER_MODE
     std::string arg0 = argv[0];
     exceptions::setProgramNameForStackTrace(argv[0]);
     programName = getRoot(getTail(arg0));
@@ -1942,9 +2089,9 @@ int startupMain(int argc, char **argv) {
     if (noConsoleFlag != NULL && startsWith(std::string(noConsoleFlag), "t")) {
 #ifdef SPL_AUTOGRADER_MODE
         return 0;
-#else
+#else // not SPL_AUTOGRADER_MODE
         return Main(argc, argv);
-#endif
+#endif // SPL_AUTOGRADER_MODE
     }
     scanOptions();
     initPipe();
@@ -1954,16 +2101,18 @@ int startupMain(int argc, char **argv) {
     std::cerr.rdbuf(new ForwardingStreambuf(*cinout_new_buf, true));
     std::string font = getOption("CPPFONT");
     if (font != "") {
+#ifdef _console_h
         setConsoleFont(font);
+#endif // _console_h
     }
     getPlatform()->cpplib_setCppLibraryVersion();
     setConsoleProperties();
 
 #ifndef SPL_AUTOGRADER_MODE
     return Main(argc, argv);
-#else
+#else // not SPL_AUTOGRADER_MODE
     return 0;
-#endif
+#endif // SPL_AUTOGRADER_MODE
 }
 
 /*
@@ -1987,6 +2136,8 @@ void startupMainDontRunMain(int /*argc*/, char** argv) {
     }
     scanOptions();
     initPipe();
+    
+#ifndef SPL_DISABLE_GRAPHICAL_CONSOLE
     cinout_new_buf = new ConsoleStreambuf();
     std::cin.rdbuf(cinout_new_buf);
     std::cout.rdbuf(cinout_new_buf);
@@ -1995,10 +2146,25 @@ void startupMainDontRunMain(int /*argc*/, char** argv) {
     if (font != "") {
         setConsoleFont(font);
     }
-    getPlatform()->cpplib_setCppLibraryVersion();
     setConsoleProperties();
+#endif // SPL_DISABLE_GRAPHICAL_CONSOLE
+    
+#ifdef SPL_ECHO_PLAIN_CONSOLE
+    // echo user input pulled from cin
+    EchoingStreambuf* echobufIn = new EchoingStreambuf(*std::cin.rdbuf());
+    std::cin.rdbuf(echobufIn);
+#ifdef SPL_CONSOLE_OUTPUT_LIMIT
+    LimitedStreambuf* limitedbufOut = new LimitedStreambuf(*std::cout.rdbuf(), SPL_CONSOLE_OUTPUT_LIMIT);
+    LimitedStreambuf* limitedbufErr = new LimitedStreambuf(*std::cerr.rdbuf(), SPL_CONSOLE_OUTPUT_LIMIT);
+    std::cout.rdbuf(limitedbufOut);
+    std::cerr.rdbuf(limitedbufErr);
+#endif // SPL_CONSOLE_OUTPUT_LIMIT
+#endif // SPL_ECHO_PLAIN_CONSOLE
+    
+    getPlatform()->cpplib_setCppLibraryVersion();
 }
 
+#ifndef SPL_HEADLESS_MODE
 static void sigPipeHandler(int /*signum*/) {
     // use stderr directly rather than cerr because graphical console may be unreachable
     fputs("***\n", stderr);
@@ -2008,6 +2174,7 @@ static void sigPipeHandler(int /*signum*/) {
     fflush(stderr);
     exit(1);
 }
+#endif // SPL_HEADLESS_MODE
 
 static void initPipe() {
     char *trace = getenv("JBETRACE");
@@ -2039,6 +2206,14 @@ static void initPipe() {
         fputs("*** in the same directory as your executable, or set the system\n", stderr);
         fputs("*** environment variable SPL_HOME to a directory path containing spl.jar.\n", stderr);
         fputs("***\n", stderr);
+        fputs("*** (I looked for it in the following directory:)\n", stderr);
+        if (splHomeDir == "") {
+            char cwdbuf[1024];
+            getcwd(cwdbuf, 1024);
+            splHomeDir = cwdbuf;
+        }
+        fputs(("*** " + splHomeDir + "\n").c_str(), stderr);
+        fputs("***\n", stderr);
         fflush(stderr);
         exit(1);
     }
@@ -2065,12 +2240,18 @@ static void initPipe() {
         std::string option = "-Xdock:name=" + programName;
         execlp("java", "java", option.c_str(), "-jar", jarName.c_str(),
                programName.c_str(), NULL);
-#else
+#else // !APPLE
+#ifdef SPL_HEADLESS_MODE
+        execlp("java", "java", "-Djava.awt.headless=true", "-jar", jarName.c_str(), programName.c_str(), NULL);
+#else // !SPL_HEADLESS_MODE
         execlp("java", "java", "-jar", jarName.c_str(), programName.c_str(), NULL);
-#endif
+#endif // SPL_HEADLESS_MODE
+#endif // APPLE
         
         // if we get here, the execlp call failed, so show error message
         // use stderr directly rather than cerr because graphical console is unreachable
+        char* lastError = strerror(errno);
+        
         fputs("\n", stderr);
         fputs("***\n", stderr);
         fputs("*** STANFORD C++ LIBRARY ERROR:\n", stderr);
@@ -2079,6 +2260,7 @@ static void initPipe() {
         fputs("*** Please check your Java installation and make sure\n", stderr);
         fputs("*** that spl.jar is properly attached to your project.\n", stderr);
         fputs("***\n", stderr);
+        fputs((std::string("*** Error was: ") + lastError).c_str(), stderr);
         fflush(stderr);
         error("Could not exec spl.jar");
     } else {
@@ -2090,7 +2272,9 @@ static void initPipe() {
         close(toJBE[0]);
         
         // stop the pipe from generating a SIGPIPE when JBE is closed
+#ifndef SPL_HEADLESS_MODE
         signal(SIGPIPE, sigPipeHandler);
+#endif // SPL_HEADLESS_MODE
     }
 }
 
@@ -2237,6 +2421,7 @@ static GEvent parseEvent(std::string line) {
     } else if (name == "windowResized") {
         return parseWindowEvent(scanner, WINDOW_RESIZED);
     } else if (name == "consoleWindowClosed") {
+#ifndef SPL_DISABLE_GRAPHICAL_CONSOLE
         // Java console window was closed; possibly exit the C++ program now
         extern bool getConsoleExitProgramOnClose();
         extern bool getConsoleEventOnClose();
@@ -2263,6 +2448,7 @@ static GEvent parseEvent(std::string line) {
             GWindowEvent e(CONSOLE_CLOSED, GWindow(gwd));
             return e;
         }
+#endif // SPL_DISABLE_GRAPHICAL_CONSOLE
     } else if (name == "lastWindowClosed") {
         exit(0);
     } else if (name == "lastWindowGWindow_closed") {
@@ -2623,6 +2809,7 @@ static void putConsole(const std::string& str, bool isStderr) {
     echoConsole(str, isStderr);
 }
 
+#ifdef _console_h
 static void echoConsole(const std::string& str, bool isStderr) {
     if (getConsoleEcho()) {
         // write to the standard (non-graphical) console for output copy/pasting
@@ -2631,6 +2818,11 @@ static void echoConsole(const std::string& str, bool isStderr) {
         fflush(stderr);
     }
 }
+#else
+static void echoConsole(const std::string&, bool) {
+    // empty
+}
+#endif // _console_h
 
 static void endLineConsole(bool isStderr) {
     putPipe("JBEConsole.println()");

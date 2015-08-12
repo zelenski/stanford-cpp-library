@@ -1,3 +1,15 @@
+/*
+ * File: hashcode.h
+ * ----------------
+ * This file declares global hashing functions for various common data types.
+ * These functions are used by the HashMap and HashSet collections, as well as
+ * by other collections that wish to be used as elements within HashMaps/Sets.
+ * 
+ * @version 2015/07/05
+ * - using global hashing functions rather than global variables
+ *   (hashSeed(), hashMultiplier(), and hashMask())
+ */
+
 #ifndef _hashcode_h
 #define _hashcode_h
 
@@ -25,9 +37,9 @@ int hashCode(void* key);
  * Constants that are used to help implement these functions
  * (see hashcode.h for example usage)
  */
-extern const int HASH_SEED;         // Starting point for first cycle
-extern const int HASH_MULTIPLIER;   // Multiplier for each cycle
-extern const int HASH_MASK;         // All 1 bits except the sign
+int hashSeed();         // Starting point for first cycle
+int hashMultiplier();   // Multiplier for each cycle
+int hashMask();         // All 1 bits except the sign
 
 /*
  * Template hash function for arbitrary types.

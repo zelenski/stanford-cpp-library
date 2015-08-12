@@ -3,6 +3,8 @@
  * ----------------
  * This file implements the classes in the gtypes.h interface.
  * 
+ * @version 2015/07/05
+ * - using global hashing functions rather than global variables
  * @version 2014/10/08
  * - removed 'using namespace' statement
  */
@@ -11,11 +13,8 @@
 #include <cmath>
 #include <string>
 #include "error.h"
+#include "hashcode.h"
 #include "strlib.h"
-
-// BUGFIX 2014/07/09: commenting out unused variable 'PI'
-// static const double PI = 3.14159265358979;
-static const int HASH_MASK = int(unsigned(-1) >> 1);
 
 /*
  * Implementation notes: GPoint class
@@ -64,7 +63,7 @@ int hashCode(const GPoint & pt) {
     for (size_t i = 0; i < sizeof(double) / sizeof(int); i++) {
         hash ^= ((int *) &pt.x)[i] ^ ((int *) &pt.y)[i];
     }
-    return HASH_MASK & hash;
+    return hashMask() & hash;
 }
 
 /*
@@ -114,7 +113,7 @@ int hashCode(const GDimension & dim) {
     for (size_t i = 0; i < sizeof(double) / sizeof(int); i++) {
         hash ^= ((int *) &dim.width)[i] ^ ((int *) &dim.height)[i];
     }
-    return HASH_MASK & hash;
+    return hashMask() & hash;
 }
 
 /*
@@ -195,5 +194,5 @@ int hashCode(const GRectangle & r) {
         hash ^= ((int *) &r.x)[i] ^ ((int *) &r.y)[i];
         hash ^= ((int *) &r.width)[i] ^ ((int *) &r.height)[i];
     }
-    return HASH_MASK & hash;
+    return hashMask() & hash;
 }

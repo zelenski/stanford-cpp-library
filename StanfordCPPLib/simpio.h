@@ -4,6 +4,9 @@
  * This file exports a set of functions that simplify input/output
  * operations in C++ and provide some error-checking on console input.
  * 
+ * @version 2015/07/05
+ * - increased visibility of appendSpace function used by various IO
+ *   prompting functions (no longer static)
  * @version 2014/10/19
  * - alphabetized functions
  * - converted many funcs to take const string& rather than string for efficiency
@@ -14,6 +17,13 @@
 
 #include <iostream>
 #include <string>
+
+/*
+ * Function: appendSpace
+ * ---------------------
+ * Adds a space at the end of the given string by reference if none is present.
+ */
+void appendSpace(std::string& prompt);
 
 /*
  * Function: getInteger

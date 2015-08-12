@@ -138,11 +138,16 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		this.console.setErrorColor(ERROR_COLOR);
 		this.console.setErrorStyle(ERROR_STYLE);
 		
-		AutograderInput autograderInput = AutograderInput.getInstance(this);
-		autograderInput.addObserver(this);
+		// TODO: REMOVE
+		System.out.println("HEADLESS: " + GraphicsEnvironment.isHeadless());
 		
-		this.menuBar = new JBEMenuBar(this, this.console);
-		this.console.setMenuBar(this.menuBar);
+		if (!GraphicsEnvironment.isHeadless()) {
+			AutograderInput autograderInput = AutograderInput.getInstance(this);
+			autograderInput.addObserver(this);
+			this.menuBar = new JBEMenuBar(this, this.console);
+			this.console.setMenuBar(this.menuBar);
+		}
+		
 		if (this.exec != null) {
 			try {
 				Process localProcess = Runtime.getRuntime().exec(this.exec);
@@ -756,7 +761,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	 */
 	private String readLongCommand(BufferedReader systemInReader) throws IOException {
 		// repeatedly read lines from System.in until long command is done
-		StringBuilder sb = new StringBuilder(65536);
+		StringBuilder sb = new StringBuilder(256000);
 		while (true) {
 			String line = systemInReader.readLine();
 			if (line == null || line.equals("LongCommand.end()")) {

@@ -5,6 +5,8 @@
  * in which values can be added and removed from the front or back.
  * It combines much of the functionality of a stack and a queue.
  * 
+ * @version 2015/07/05
+ * - using global hashing functions rather than global variables
  * @version 2014/10/29
  * - added comparison operators ==, !=, <, etc.
  * @since 2014/10/29
@@ -506,11 +508,11 @@ std::istream& operator >>(std::istream& is, Deque<ValueType>& deque) {
  */
 template <typename T>
 int hashCode(const Deque<T>& q) {
-    int code = HASH_SEED;
+    int code = hashSeed();
     for (T element : q) {
-        code = HASH_MULTIPLIER * code + hashCode(element);
+        code = hashMultiplier() * code + hashCode(element);
     }
-    return int(code & HASH_MASK);
+    return int(code & hashMask());
 }
 
 #endif

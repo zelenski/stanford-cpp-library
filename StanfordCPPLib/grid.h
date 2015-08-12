@@ -4,6 +4,8 @@
  * This file exports the <code>Grid</code> class, which offers a
  * convenient abstraction for representing a two-dimensional array.
  *
+ * @version 2015/07/05
+ * - using global hashing functions rather than global variables
  * @version 2014/11/20
  * - minor bug fixes in member initializers
  * @version 2014/11/13
@@ -886,11 +888,11 @@ std::istream& operator >>(std::istream& is, Grid<ValueType>& grid) {
  */
 template <typename T>
 int hashCode(const Grid<T>& g) {
-    int code = HASH_SEED;
+    int code = hashSeed();
     for (T n : g) {
-        code = HASH_MULTIPLIER * code + hashCode(n);
+        code = hashMultiplier() * code + hashCode(n);
     }
-    return int(code & HASH_MASK);
+    return int(code & hashMask());
 }
 
 /*

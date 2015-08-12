@@ -5,6 +5,8 @@
  * in which values are ordinarily processed in a first-in/first-out
  * (FIFO) order.
  * 
+ * @version 2015/07/05
+ * - using global hashing functions rather than global variables
  * @version 2014/11/13
  * - added comparison operators ==, !=, <, etc.
  * - added add() method as synonym for enqueue()
@@ -518,11 +520,11 @@ std::istream& operator >>(std::istream& is, Queue<ValueType>& queue) {
  */
 template <typename T>
 int hashCode(const Queue<T>& q) {
-    int code = HASH_SEED;
+    int code = hashSeed();
     for (int i = 0; i < q.count; i++) {
-        code = HASH_MULTIPLIER * code + hashCode(q.ringBuffer[(q.head + i) % q.capacity]);
+        code = hashMultiplier() * code + hashCode(q.ringBuffer[(q.head + i) % q.capacity]);
     }
-    return int(code & HASH_MASK);
+    return int(code & hashMask());
 }
 
 #endif

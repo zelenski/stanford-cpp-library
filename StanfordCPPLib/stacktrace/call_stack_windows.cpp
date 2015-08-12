@@ -4,6 +4,8 @@
  * Windows implementation of the call_stack class.
  *
  * @author Marty Stepp
+ * @version 2015/07/05
+ * - removed static global Platform variable, replaced by getPlatform as needed
  * @version 2015/05/28
  */
 
@@ -38,8 +40,6 @@
 #include <cxxabi.h>
 
 namespace stacktrace {
-
-static Platform* pp = getPlatform();
 
 const int WIN_STACK_FRAMES_TO_SKIP = 0;
 const int WIN_STACK_FRAMES_MAX = 20;
@@ -161,7 +161,7 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
                 NULL,         // User-defined short name of the module (it can be NULL)
                 BaseAddr,     // Base address of the module (cannot be NULL if .PDB file is used, otherwise it can be NULL)
                 FileSize)) {      // Size of the file (cannot be NULL if .PDB file is used, otherwise it can be NULL)
-            // std::cout << "Error: SymLoadModule() failed: " << pp->os_getLastError() << std::endl;
+            // std::cout << "Error: SymLoadModule() failed: " << getPlatform()->os_getLastError() << std::endl;
             // return;
         }
     }

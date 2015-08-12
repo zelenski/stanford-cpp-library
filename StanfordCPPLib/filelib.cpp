@@ -4,6 +4,9 @@
  * This file implements the filelib.h interface.  All platform dependencies
  * are managed through the platform interface.
  * 
+ * @version 2015/07/05
+ * - removed static global Platform variable, replaced by getPlatform as needed
+ * - moved appendSpace function to simpio
  * @version 2015/04/12
  * - added promptUserForFile overload without stream parameter
  * @version 2014/10/19
@@ -23,21 +26,19 @@
 #include <string>
 #include <vector>
 #include "platform.h"
+#include "simpio.h"
 #include "strlib.h"
 #include "vector.h"
-
-static Platform *pp = getPlatform();
 
 /* Prototypes */
 
 static void splitPath(const std::string& path, Vector<std::string> list);
 static bool recursiveMatch(const std::string& str, int sx, const std::string& pattern, int px);
-static void appendSpace(std::string& prompt);
 
 /* Implementations */
 
 void createDirectory(const std::string& path) {
-    return pp->filelib_createDirectory(path);
+    return getPlatform()->filelib_createDirectory(path);
 }
 
 void createDirectoryPath(const std::string& path) {
@@ -76,11 +77,11 @@ void deleteFile(const std::string& filename) {
 }
 
 std::string expandPathname(const std::string& filename) {
-    return pp->filelib_expandPathname(filename);
+    return getPlatform()->filelib_expandPathname(filename);
 }
 
 bool fileExists(const std::string& filename) {
-    return pp->filelib_fileExists(filename);
+    return getPlatform()->filelib_fileExists(filename);
 }
 
 std::string findOnPath(const std::string& path, const std::string& filename) {
@@ -91,11 +92,11 @@ std::string findOnPath(const std::string& path, const std::string& filename) {
 }
 
 std::string getCurrentDirectory() {
-    return pp->filelib_getCurrentDirectory();
+    return getPlatform()->filelib_getCurrentDirectory();
 }
 
 std::string getDirectoryPathSeparator() {
-    return pp->filelib_getDirectoryPathSeparator();
+    return getPlatform()->filelib_getDirectoryPathSeparator();
 }
 
 std::string getExtension(const std::string& filename) {
@@ -145,7 +146,7 @@ std::string getRoot(const std::string& filename) {
 }
 
 std::string getSearchPathSeparator() {
-    return pp->filelib_getSearchPathSeparator();
+    return getPlatform()->filelib_getSearchPathSeparator();
 }
 
 std::string getTail(const std::string& filename) {
@@ -163,19 +164,19 @@ std::string getTail(const std::string& filename) {
 }
 
 std::string getTempDirectory() {
-    return pp->filelib_getTempDirectory();
+    return getPlatform()->filelib_getTempDirectory();
 }
 
 bool isDirectory(const std::string& filename) {
-    return pp->filelib_isDirectory(filename);
+    return getPlatform()->filelib_isDirectory(filename);
 }
 
 bool isFile(const std::string& filename) {
-    return pp->filelib_isFile(filename);
+    return getPlatform()->filelib_isFile(filename);
 }
 
 bool isSymbolicLink(const std::string& filename) {
-    return pp->filelib_isSymbolicLink(filename);
+    return getPlatform()->filelib_isSymbolicLink(filename);
 }
 
 void listDirectory(const std::string& path, Vector<std::string>& list) {
@@ -188,7 +189,7 @@ void listDirectory(const std::string& path, Vector<std::string>& list) {
 }
 
 void listDirectory(const std::string& path, std::vector<std::string>& list) {
-    return pp->filelib_listDirectory(path, list);
+    return getPlatform()->filelib_listDirectory(path, list);
 }
 
 Vector<std::string> listDirectory(const std::string& path) {
@@ -226,7 +227,7 @@ std::string openFileDialog(std::ifstream& stream,
 std::string openFileDialog(std::ifstream& stream,
                            const std::string& title,
                            const std::string& path) {
-    std::string filename = pp->file_openFileDialog(title, "load", path);
+    std::string filename = getPlatform()->file_openFileDialog(title, "load", path);
     if (filename == "") return "";
     stream.open(filename.c_str());
     return (stream.fail()) ? "" : filename;
@@ -244,7 +245,7 @@ std::string openFileDialog(std::ofstream& stream,
 std::string openFileDialog(std::ofstream& stream,
                            const std::string& title,
                            const std::string& path) {
-    std::string filename = pp->file_openFileDialog(title, "save", path);
+    std::string filename = getPlatform()->file_openFileDialog(title, "save", path);
     if (filename == "") return "";
     stream.open(filename.c_str());
     return (stream.fail()) ? "" : filename;
@@ -404,7 +405,7 @@ void rewindStream(std::istream& input) {
 }
 
 void setCurrentDirectory(const std::string& path) {
-    return pp->filelib_setCurrentDirectory(path);
+    return getPlatform()->filelib_setCurrentDirectory(path);
 }
 
 bool writeEntireFile(const std::string& filename,
@@ -481,10 +482,4 @@ static bool recursiveMatch(const std::string& str, int sx, const std::string& pa
         if (pch != sch) return false;
     }
     return recursiveMatch(str, sx + 1, pattern, px + 1);
-}
-
-static void appendSpace(std::string& prompt) {
-    if (!prompt.empty() && !isspace(prompt[prompt.length() - 1])) {
-        prompt += ' ';
-    }
 }

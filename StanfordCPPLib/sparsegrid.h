@@ -9,6 +9,8 @@
  * Grid is recommended for use over SparseGrid.
  * 
  * @author Marty Stepp
+ * @version 2015/07/05
+ * - using global hashing functions rather than global variables
  * @version 2014/11/13
  * - added comparison operators <, >=, etc.
  * - added template hashCode function
@@ -839,11 +841,11 @@ std::istream& operator >>(std::istream& is, SparseGrid<ValueType>& grid) {
  */
 template <typename T>
 int hashCode(const SparseGrid<T>& g) {
-    int code = HASH_SEED;
+    int code = hashSeed();
     for (T n : g) {
-        code = HASH_MULTIPLIER * code + hashCode(n);
+        code = hashMultiplier() * code + hashCode(n);
     }
-    return int(code & HASH_MASK);
+    return int(code & hashMask());
 }
 
 /*

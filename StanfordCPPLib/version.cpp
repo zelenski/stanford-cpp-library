@@ -6,6 +6,8 @@
  * file (.pro).
  *
  * @author Marty Stepp 
+ * @version 2015/07/05
+ * - removed static global Platform variable, replaced by getPlatform as needed
  * @version 2014/11/13
  * - ifdef'd out macroIntegerToDate function to remove unused function warning on some platforms
  * @since 2014/10/31
@@ -19,8 +21,6 @@
 #include "platform.h"
 
 namespace version {
-static Platform* pp = getPlatform();
-
 #ifdef SPL_PROJECT_VERSION
 /*
  * converts an 8-digit into into a YYYY/MM/DD date,
@@ -39,7 +39,7 @@ static std::string macroIntegerToDate(int macroInteger) {
 #endif // SPL_PROJECT_VERSION
 
 static void ensureJavaBackEndVersionHelper(std::string minVersion) {
-    std::string backendVersion = pp->cpplib_getJavaBackEndVersion();
+    std::string backendVersion = getPlatform()->cpplib_getJavaBackEndVersion();
     if (backendVersion < minVersion) {
         // use stderr directly rather than cerr because graphical console is unreachable
         fputs("\n", stderr);
@@ -106,7 +106,7 @@ std::string getCppLibraryVersion() {
 }
 
 std::string getJavaBackEndVersion() {
-    return pp->cpplib_getJavaBackEndVersion();
+    return getPlatform()->cpplib_getJavaBackEndVersion();
 }
 
 /*

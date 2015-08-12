@@ -3,22 +3,46 @@
  */
 
 #include "console.h"
+#include "map.h"
+#include "vector.h"
 #include "random.h"
 #include "simpio.h"
 #include "strlib.h"
 #include "test/testcases.h"
 #include "private/version.h"
+#include "types.h"
 #include <iostream>
 using namespace std;
 
+//int Main() {
+//    return 0;
+//}
+
 int main() {
+#ifdef _console_h
     setConsoleSize(1000, 600);
     setConsoleLocation(-1, -1);
     setConsoleWindowTitle("Marty is great");
-    
+#endif // _console_h
+
 //    cout << randomInteger(1, 10) << " "
 //         << randomInteger(1, 10) << " "
 //         << randomInteger(1, 10) << endl;
+    
+    Map<string, int> m;
+    m["a"] = 2;
+    m["b"] = 4;
+    cout << "map is: " << m << endl;
+    
+    Vector<string> v;
+    v += "a", "b";
+    cout << "v is: " << v << endl;
+    
+    Vector<Domino> vd;
+    string s = "{(1:4), (2:6), (4:5), (1:5), (3:5)}";
+    istringstream input(s);
+    input >> vd;
+    cout << "vd = " << vd << endl;
     
     while (true) {
         cout << "   DATA STRUCTURES::" << endl;

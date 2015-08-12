@@ -42,6 +42,7 @@ public abstract class JBECommand {
 		localHashMap.put("GBufferedImage.resize", new GBufferedImage_resize());
 		localHashMap.put("GBufferedImage.save", new GBufferedImage_save());
 		localHashMap.put("GBufferedImage.setRGB", new GBufferedImage_setRGB());
+		localHashMap.put("GBufferedImage.updateAllPixels", new GBufferedImage_updateAllPixels());
 		localHashMap.put("GButton.create", new GButton_create());
 		localHashMap.put("GCheckBox.create", new GCheckBox_create());
 		localHashMap.put("GCheckBox.isSelected", new GCheckBox_isSelected());

@@ -5,6 +5,8 @@
  * implementation of a doubly-linked list of objects and provides the same
  * public interface of members as the <code>LinkedList</code> class.
  *
+ * @version 2015/07/05
+ * - using global hashing functions rather than global variables
  * @version 2014/11/13
  * - added comparison operators <, >=, etc.
  * - added template hashCode function
@@ -839,11 +841,11 @@ std::istream& operator>>(std::istream& is, LinkedList<ValueType>& list) {
  */
 template <typename T>
 int hashCode(const LinkedList<T>& list) {
-    int code = HASH_SEED;
+    int code = hashSeed();
     for (T element : list) {
-        code = HASH_MULTIPLIER * code + hashCode(element);
+        code = hashMultiplier() * code + hashCode(element);
     }
-    return int(code & HASH_MASK);
+    return int(code & hashMask());
 }
 
 /*
