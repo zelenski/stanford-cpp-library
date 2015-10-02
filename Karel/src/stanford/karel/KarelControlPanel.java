@@ -202,7 +202,7 @@ public class KarelControlPanel extends CardPanel implements KarelWorldMonitor,
 		editWorldButton.setMnemonic('E');
 		editWorldButton.addActionListener(this);
 
-		JButton[] buttons = { startButton, resetButton, loadWorldButton,
+		JButton[] buttons = { startButton, /* resetButton, */ loadWorldButton,
 				newWorldButton, editWorldButton };
 		int maxWidth = 0;
 		for (JButton button : buttons) {
