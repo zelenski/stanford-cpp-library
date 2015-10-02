@@ -4,6 +4,9 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2015/10/01
+ * - fix to check JAVA_HOME environment variable to force Java executable path
+ *   (improved compatibility on Windows systems with many JDKs/JREs installed)
  * @version 2015/08/05
  * - added output limit for EchoingStreamBuf to facilitate trimming of infinite
  *   output by runaway programs / infinite loops
@@ -47,7 +50,7 @@
 #  undef KEY_EVENT
 #  undef MOUSE_MOVED
 #  undef HELP_KEY
-#else
+#else // _WIN32
 #  include <sys/types.h>
 #  include <sys/stat.h>
 #  include <sys/resource.h>
@@ -59,7 +62,7 @@
 static bool tracePipe;
 static int pin;
 static int pout;
-#endif
+#endif // _WIN32
 
 #include "platform.h"
 #include <algorithm>
@@ -399,16 +402,17 @@ static HANDLE rdFromJBE = NULL;
 static HANDLE wrFromJBE = NULL;
 static HANDLE rdToJBE = NULL;
 static HANDLE wrToJBE = NULL;
-#else
+#else // _WIN32
 static pid_t cppLibPid;
 static pid_t javaBackEndPid;
-#endif
+#endif // _WIN32
 
 /* Prototypes */
 
 static void initPipe();
 static void putPipe(std::string line);
 static void putPipeLongString(std::string line);
+static std::string getJavaCommand();
 static std::string getPipe();
 static std::string getResult(bool consumeAcks = false, const std::string& caller = "");
 static void getStatus();
@@ -433,29 +437,34 @@ Platform::~Platform() {
 
 #ifndef _WIN32
 
+// Unix implementation; see Windows implementation elsewhere in this file
 bool Platform::filelib_fileExists(std::string filename) {
     struct stat fileInfo;
     return stat(filename.c_str(), &fileInfo) == 0;
 }
 
+// Unix implementation; see Windows implementation elsewhere in this file
 bool Platform::filelib_isFile(std::string filename) {
     struct stat fileInfo;
     if (stat(filename.c_str(), &fileInfo) != 0) return false;
     return S_ISREG(fileInfo.st_mode) != 0;
 }
 
+// Unix implementation; see Windows implementation elsewhere in this file
 bool Platform::filelib_isSymbolicLink(std::string filename) {
     struct stat fileInfo;
     if (stat(filename.c_str(), &fileInfo) != 0) return false;
     return S_ISLNK(fileInfo.st_mode) != 0;
 }
 
+// Unix implementation; see Windows implementation elsewhere in this file
 bool Platform::filelib_isDirectory(std::string filename) {
     struct stat fileInfo;
     if (stat(filename.c_str(), &fileInfo) != 0) return false;
     return S_ISDIR(fileInfo.st_mode) != 0;
 }
 
+// Unix implementation; see Windows implementation elsewhere in this file
 void Platform::filelib_setCurrentDirectory(std::string path) {
     if (chdir(path.c_str()) == 0) {
         std::string msg = "setCurrentDirectory: ";
@@ -464,6 +473,7 @@ void Platform::filelib_setCurrentDirectory(std::string path) {
     }
 }
 
+// Unix implementation; see Windows implementation elsewhere in this file
 std::string Platform::filelib_getCurrentDirectory() {
     char *cwd = getcwd(NULL, 0);
     if (cwd == NULL) {
@@ -478,6 +488,7 @@ std::string Platform::filelib_getCurrentDirectory() {
     }
 }
 
+// Unix implementation; see Windows implementation elsewhere in this file
 // http://stackoverflow.com/questions/8087805/
 // how-to-get-system-or-user-temp-folder-in-unix-and-windows
 std::string Platform::filelib_getTempDirectory() {
@@ -489,6 +500,7 @@ std::string Platform::filelib_getTempDirectory() {
     return dir;
 }
 
+// Unix implementation; see Windows implementation elsewhere in this file
 void Platform::filelib_createDirectory(std::string path) {
     if (endsWith(path, "/")) {
         path = path.substr(0, path.length() - 2);
@@ -501,14 +513,17 @@ void Platform::filelib_createDirectory(std::string path) {
     }
 }
 
+// Unix implementation; see Windows implementation elsewhere in this file
 std::string Platform::filelib_getDirectoryPathSeparator() {
     return "/";
 }
 
+// Unix implementation; see Windows implementation elsewhere in this file
 std::string Platform::filelib_getSearchPathSeparator() {
     return ":";
 }
 
+// Unix implementation; see Windows implementation elsewhere in this file
 std::string Platform::filelib_expandPathname(std::string filename) {
     if (filename == "") return "";
     int len = filename.length();
@@ -540,6 +555,7 @@ std::string Platform::filelib_expandPathname(std::string filename) {
     return filename;
 }
 
+// Unix implementation; see Windows implementation elsewhere in this file
 void Platform::filelib_listDirectory(std::string path, std::vector<std::string>& list) {
     if (path == "") path = ".";
     DIR *dir = opendir(path.c_str());
@@ -555,60 +571,71 @@ void Platform::filelib_listDirectory(std::string path, std::vector<std::string>&
     sort(list.begin(), list.end());
 }
 
-#else
+#else // _WIN32
 
+// Windows implementation; see Unix implementation elsewhere in this file
 bool Platform::filelib_fileExists(std::string filename) {
     return GetFileAttributesA(filename.c_str()) != INVALID_FILE_ATTRIBUTES;
 }
 
+// Windows implementation; see Unix implementation elsewhere in this file
 bool Platform::filelib_isFile(std::string filename) {
     DWORD attr = GetFileAttributesA(filename.c_str());
     return attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_NORMAL);
 }
 
+// Windows implementation; see Unix implementation elsewhere in this file
 bool Platform::filelib_isSymbolicLink(std::string filename) {
     DWORD attr = GetFileAttributesA(filename.c_str());
     return attr != INVALID_FILE_ATTRIBUTES
             && (attr & FILE_ATTRIBUTE_REPARSE_POINT);
 }
 
+// Windows implementation; see Unix implementation elsewhere in this file
 bool Platform::filelib_isDirectory(std::string filename) {
     DWORD attr = GetFileAttributesA(filename.c_str());
     return attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_DIRECTORY);
 }
 
+// Windows implementation; see Unix implementation elsewhere in this file
 void Platform::filelib_setCurrentDirectory(std::string path) {
     if (!filelib_isDirectory(path) || !SetCurrentDirectoryA(path.c_str())) {
         error("setCurrentDirectory: Can't change to " + path);
     }
 }
 
+// Windows implementation; see Unix implementation elsewhere in this file
 std::string Platform::filelib_getCurrentDirectory() {
     char path[MAX_PATH + 1];
     int n = GetCurrentDirectoryA(MAX_PATH + 1, path);
     return std::string(path, n);
 }
 
+// Windows implementation; see Unix implementation elsewhere in this file
 std::string Platform::filelib_getTempDirectory() {
     char path[MAX_PATH + 1];
     int n = GetTempPathA(MAX_PATH + 1, path);
     return std::string(path, n);
 }
 
+// Windows implementation; see Unix implementation elsewhere in this file
 void Platform::filelib_createDirectory(std::string path) {
     if (!CreateDirectoryA(path.c_str(), NULL)) {
         error("createDirectory: Can't create " + path);
     }
 }
 
+// Windows implementation; see Unix implementation elsewhere in this file
 std::string Platform::filelib_getDirectoryPathSeparator() {
     return "\\";
 }
 
+// Windows implementation; see Unix implementation elsewhere in this file
 std::string Platform::filelib_getSearchPathSeparator() {
     return ";";
 }
 
+// Windows implementation; see Unix implementation elsewhere in this file
 std::string Platform::filelib_expandPathname(std::string filename) {
     if (filename == "") return "";
     int len = filename.length();
@@ -618,6 +645,7 @@ std::string Platform::filelib_expandPathname(std::string filename) {
     return filename;
 }
 
+// Windows implementation; see Unix implementation elsewhere in this file
 void Platform::filelib_listDirectory(std::string path, std::vector<std::string> & list) {
     if (path == "") path = ".";
     std::string pattern = path + "\\*.*";
@@ -636,7 +664,7 @@ void Platform::filelib_listDirectory(std::string path, std::vector<std::string> 
     sort(list.begin(), list.end());
 }
 
-#endif
+#endif // _WIN32
 
 /*
  * This function increases the system stack size on Unixy platforms (Linux+Mac),
@@ -648,18 +676,18 @@ void Platform::filelib_listDirectory(std::string path, std::vector<std::string> 
 #ifdef _WIN32
     // Windows doesn't support this operation
 void Platform::setStackSize(unsigned int /* stackSize */) {
-#else
+#else // not _WIN32
 void Platform::setStackSize(unsigned int stackSize) {
     // Linux/Mac definition (they DO support stack size changing)
 #if defined(__USE_LARGEFILE64)
     // 64-bit version
     rlimit64 rl;
     int result = getrlimit64(RLIMIT_STACK, &rl);
-#else
+#else // not __USE_LARGEFILE64
     // 32-bit version
     rlimit rl;
     int result = getrlimit(RLIMIT_STACK, &rl);
-#endif
+#endif // __USE_LARGEFILE64
     if (result == 0) {
         if (rl.rlim_cur < stackSize || rl.rlim_max < stackSize) {
             rl.rlim_cur = (rlim_t) stackSize;
@@ -667,9 +695,9 @@ void Platform::setStackSize(unsigned int stackSize) {
 #if defined(__USE_LARGEFILE64)
             // 64-bit version
             result = setrlimit64(RLIMIT_STACK, &rl);
-#else
+#else // not __USE_LARGEFILE64
             result = setrlimit(RLIMIT_STACK, &rl);
-#endif
+#endif // __USE_LARGEFILE64
             if (result != 0) {
                 std::cerr << std::endl;
                 std::cerr << " ***" << std::endl;
@@ -1731,7 +1759,7 @@ GEvent Platform::gevent_waitForEvent(int mask) {
     GEvent event = eventQueue.dequeue();
 #ifdef PIPE_DEBUG
     fprintf(stderr, "Platform::waitForEvent returning event \"%s\"\n", event.toString().c_str());  fflush(stderr);
-#endif
+#endif // PIPE_DEBUG
     return event;
 }
 
@@ -1868,6 +1896,7 @@ static void putPipeLongString(std::string line) {
 /* Windows implementation of interface to Java back end */
 
 // formats an error message using Windows lookup of error codes and strings
+// Windows implementation; see Unix implementation elsewhere in this file
 static WINBOOL WinCheck(WINBOOL result) {
     if (result == 0 && result != ERROR_IO_PENDING) {
         // failure; Windows error codes: http://msdn.microsoft.com/en-us/library/windows/desktop/ms681381(v=vs.85).aspx
@@ -1895,13 +1924,14 @@ static WINBOOL WinCheck(WINBOOL result) {
     return result;
 }
 
+// Windows implementation; see Unix implementation elsewhere in this file
 int startupMain(int argc, char **argv) {
     startupMainDontRunMain(argc, argv);
 
 #ifndef SPL_AUTOGRADER_MODE
     extern int Main(int argc, char **argv);
     return Main(argc, argv);
-#else
+#else // SPL_AUTOGRADER_MODE
     return 0;
 #endif // SPL_AUTOGRADER_MODE
 }
@@ -1910,6 +1940,7 @@ int startupMain(int argc, char **argv) {
  * This is a version of startupMain that does all of the setup but then does
  * not actually run startupMain.
  * This is used to facilitate the creation of autograder programs.
+ * Windows implementation; see Unix implementation elsewhere in this file
  */
 void startupMainDontRunMain(int /*argc*/, char** argv) {
     exceptions::setProgramNameForStackTrace(argv[0]);
@@ -1925,6 +1956,7 @@ void startupMainDontRunMain(int /*argc*/, char** argv) {
     setConsoleProperties();
 }
 
+// Windows implementation; see Unix implementation elsewhere in this file
 static void initPipe() {
     SECURITY_ATTRIBUTES attr;
     attr.nLength = sizeof(SECURITY_ATTRIBUTES);
@@ -1942,10 +1974,10 @@ static void initPipe() {
     if (!SetHandleInformation(wrToJBE, HANDLE_FLAG_INHERIT, 0)) {
         error("Platform::initPipe: SetHandleInformation failed for toJBE");
     }
-    std::string cmd = "java";
+    std::string cmd = getJavaCommand();
 #ifdef PIPE_DEBUG
     cmd += " -Dstanfordspl.debug=true";
-#endif
+#endif // PIPE_DEBUG
     cmd += " -jar spl.jar";
     cmd += std::string(" ") + programName;
     int n = cmd.length();
@@ -1983,6 +2015,7 @@ static void initPipe() {
     }
 }
 
+// Windows implementation; see Unix implementation elsewhere in this file
 static void putPipe(std::string line) {
     if (line.length() > PIPE_MAX_COMMAND_LENGTH) {
         putPipeLongString(line);
@@ -1992,18 +2025,19 @@ static void putPipe(std::string line) {
     DWORD nch;
 #ifdef PIPE_DEBUG
     fprintf(stderr, "putPipe(\"%s\")\n", line.c_str());  fflush(stderr);
-#endif
+#endif // PIPE_DEBUG
     if (!WinCheck(WriteFile(wrToJBE, line.c_str(), line.length(), &nch, NULL))) return;
     if (!WinCheck(WriteFile(wrToJBE, "\n", 1, &nch, NULL))) return;
     WinCheck(FlushFileBuffers(wrToJBE));
 }
 
+// Windows implementation; see Unix implementation elsewhere in this file
 static std::string getPipe() {
     std::string line = "";
     DWORD nch;
 #ifdef PIPE_DEBUG
     fprintf(stderr, "getPipe(): waiting ...\n");  fflush(stderr);
-#endif
+#endif // PIPE_DEBUG
 
     int charsRead = 0;
     int charsReadMax = 1024*1024;
@@ -2030,6 +2064,7 @@ static std::string getPipe() {
 
 /* Linux/Mac implementation of interface to Java back end */
 
+// Unix implementation; see Windows implementation elsewhere in this file
 static bool LinCheck(ssize_t result) {
     if (result == EPIPE) {
         // fputs("Error from Java back-end subprocess.\n", stderr);
@@ -2040,6 +2075,7 @@ static bool LinCheck(ssize_t result) {
     }
 }
 
+// Unix implementation; see Windows implementation elsewhere in this file
 static void scanOptions() {
     char *home = getenv("HOME");
     if (home != NULL) {
@@ -2060,12 +2096,14 @@ static void scanOptions() {
     }
 }
 
+// Unix implementation; see Windows implementation elsewhere in this file
 static std::string getOption(std::string key) {
     char *str = getenv(key.c_str());
     if (str != NULL) return std::string(str);
     return optionTable.get(key);
 }
 
+// Unix implementation; see Windows implementation elsewhere in this file
 #ifdef SPL_AUTOGRADER_MODE
 int startupMain(int /*argc*/, char** argv) {
 #else // not SPL_AUTOGRADER_MODE
@@ -2119,6 +2157,7 @@ int startupMain(int argc, char **argv) {
  * This is a version of startupMain that does all of the setup but then does
  * not actually run startupMain.
  * This is used to facilitate the creation of autograder programs.
+ * Unix implementation; see Windows implementation elsewhere in this file
  */
 void startupMainDontRunMain(int /*argc*/, char** argv) {
     std::string arg0 = argv[0];
@@ -2165,6 +2204,7 @@ void startupMainDontRunMain(int /*argc*/, char** argv) {
 }
 
 #ifndef SPL_HEADLESS_MODE
+// Unix implementation; see Windows implementation elsewhere in this file
 static void sigPipeHandler(int /*signum*/) {
     // use stderr directly rather than cerr because graphical console may be unreachable
     fputs("***\n", stderr);
@@ -2176,6 +2216,7 @@ static void sigPipeHandler(int /*signum*/) {
 }
 #endif // SPL_HEADLESS_MODE
 
+// Unix implementation; see Windows implementation elsewhere in this file
 static void initPipe() {
     char *trace = getenv("JBETRACE");
     logfile.open("/dev/tty");
@@ -2235,16 +2276,17 @@ static void initPipe() {
         dup2(fromJBE[1], 1);
         close(fromJBE[0]);
         close(fromJBE[1]);
+        std::string javaCommand = getJavaCommand();
         
 #ifdef __APPLE__
         std::string option = "-Xdock:name=" + programName;
-        execlp("java", "java", option.c_str(), "-jar", jarName.c_str(),
+        execlp(javaCommand.c_str(), javaCommand.c_str(), option.c_str(), "-jar", jarName.c_str(),
                programName.c_str(), NULL);
 #else // !APPLE
 #ifdef SPL_HEADLESS_MODE
-        execlp("java", "java", "-Djava.awt.headless=true", "-jar", jarName.c_str(), programName.c_str(), NULL);
+        execlp(javaCommand.c_str(), javaCommand.c_str(), "-Djava.awt.headless=true", "-jar", jarName.c_str(), programName.c_str(), NULL);
 #else // !SPL_HEADLESS_MODE
-        execlp("java", "java", "-jar", jarName.c_str(), programName.c_str(), NULL);
+        execlp(javaCommand.c_str(), javaCommand.c_str(), "-jar", jarName.c_str(), programName.c_str(), NULL);
 #endif // SPL_HEADLESS_MODE
 #endif // APPLE
         
@@ -2278,6 +2320,7 @@ static void initPipe() {
     }
 }
 
+// Unix implementation; see Windows implementation elsewhere in this file
 static void putPipe(std::string line) {
     if (line.length() > PIPE_MAX_COMMAND_LENGTH) {
         putPipeLongString(line);
@@ -2291,6 +2334,7 @@ static void putPipe(std::string line) {
     if (tracePipe) logfile << "-> " << line << std::endl;
 }
 
+// Unix implementation; see Windows implementation elsewhere in this file
 static std::string getPipe() {
 #ifdef PIPE_DEBUG
     fprintf(stderr, "getPipe(): waiting ...\n");  fflush(stderr);
@@ -2316,7 +2360,7 @@ static std::string getPipe() {
     return line;
 }
 
-#endif
+#endif // WIN32
 
 static std::string getResult(bool consumeAcks, const std::string& caller) {
     while (true) {
@@ -2373,6 +2417,44 @@ static std::string getResult(bool consumeAcks, const std::string& caller) {
                 fprintf(stderr, "%s\n", line.c_str());
                 fflush(stderr);
             }
+        }
+    }
+}
+
+/*
+ * Returns the full path to the java (Linux/Mac) or java.exe (Windows)
+ * executable to be executed to launch the Java back-end.
+ * If the JAVA_HOME environment variable has been set, looks there first
+ * for the java executable.
+ * If found, returns the one from JAVA_HOME.
+ * Otherwise simply returns the string "java" and relies on this being found
+ * in the system's execution path.
+ * Setting JAVA_HOME can help disambiguate between multiple versions of Java
+ * that might be found on the same machine.
+ */
+static std::string getJavaCommand() {
+    static std::string DEFAULT_JAVA_COMMAND = "java";
+    char* JAVA_HOME = getenv("JAVA_HOME");
+    if (!JAVA_HOME) {
+        return DEFAULT_JAVA_COMMAND;
+    } else {
+        std::string path = JAVA_HOME;
+        if (path.empty()) {
+            return DEFAULT_JAVA_COMMAND;
+        }
+        
+        std::string pathSep = getDirectoryPathSeparator();
+        if (!endsWith(path, pathSep)) {
+            path += pathSep;
+        }
+        path += "bin" + pathSep + "java";
+        if (pathSep == "\\") {
+            path += ".exe";   // Windows
+        }
+        if (fileExists(path)) {
+            return path;
+        } else {
+            return DEFAULT_JAVA_COMMAND;   // fallback
         }
     }
 }
