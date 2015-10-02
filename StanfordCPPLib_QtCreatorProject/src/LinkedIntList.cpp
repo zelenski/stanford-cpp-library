@@ -1,7 +1,7 @@
 /*
  * LinkedIntList.cpp implements the LinkedIntList class behavior declared in LinkedIntList.h.
  *
- * @version 2015/07/23
+ * @version 2015/08/16
  */
 
 #include "LinkedIntList.h"
@@ -51,6 +51,7 @@ LinkedIntList::LinkedIntList()
 }
 
 LinkedIntList::~LinkedIntList() {
+    m_locked = false;
     clear();
 }
 

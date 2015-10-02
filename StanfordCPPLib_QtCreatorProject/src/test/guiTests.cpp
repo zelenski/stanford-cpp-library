@@ -69,6 +69,7 @@ static void border(GBufferedImage* img) {
 
 void gbufferedImageTest() {
     GWindow gw;
+    gw.setSize(900, 700);
     gw.setTitle("Test");
 
     GButton* button1 = new GButton("Click Me 1");
@@ -85,7 +86,42 @@ void gbufferedImageTest() {
     gw.add(img, 50, 50);
     // gw.addToRegion(img, "SOUTH");
     gw.setVisible(true);
-    pause(500);
+    
+//    GBufferedImage* img2 = new GBufferedImage(20, 20);
+//    img2->fill(GBufferedImage::createRgbPixel(255, 0, 255));
+//    Grid<int> grid = img2->toGrid();
+//    cout << "grid of pixels before: " << grid << endl;
+//    for (int y = 4; y <= 18; y++) {
+//        for (int x = 2; x <= 9; x++) {
+//            grid[y][x] = GBufferedImage::createRgbPixel(0, 255, 0);
+//        }
+//    }
+//    cout << "grid of pixels after: " << grid << endl;
+//    img2->fromGrid(grid);
+//    gw.add(img2, 350, 20);
+    
+    GBufferedImage* img3 = new GBufferedImage();
+    img3->load("rainbow.png");
+    cout << "adding the image!" << endl;
+    gw.add(img3, 10, 20);
+    // pause(2000);
+    
+    cout << "start toGrid" << endl;
+    Grid<int> grid3 = img3->toGrid();
+    cout << "end toGrid, start rgb shit" << endl;
+    for (int y = 0; y < grid3.height(); y++) {
+        for (int x = 0; x < grid3.width(); x++) {
+            int red, green, blue;
+            GBufferedImage::getRedGreenBlue(grid3[y][x], red, green, blue);
+            grid3[y][x] = GBufferedImage::createRgbPixel(green, red, blue);
+        }
+    }
+    cout << "end rgb shit, start fromGrid" << endl;
+    img3->fromGrid(grid3);
+    cout << "end fromGrid" << endl;
+    
+    pause(2000);
+    return;
 
     // fill
     img->fill(0xff00ff);  // purple
