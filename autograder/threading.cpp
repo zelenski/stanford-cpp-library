@@ -5,6 +5,8 @@
  * with a timeout, possibly in a separate thread depending on the platform.
  *
  * @author Marty Stepp
+ * @version 2015/10/01
+ * - fixed Mac OS X ETIMEDOUT errno.h issue; should reduce hanging
  * @version 2014/11/29
  * - fixes for Mac OS X's shitty implementation of pthread library
  * @version 2014/11/26
@@ -68,8 +70,9 @@ void runTestWithTimeout(autograder::AutograderTest* test) {
 
 #else // not _WIN32
 #ifdef __APPLE__
+#include <errno.h>
 #ifndef ETIMEDOUT
-#define ETIMEDOUT 110
+#define ETIMEDOUT 60
 #endif
 
 /*
