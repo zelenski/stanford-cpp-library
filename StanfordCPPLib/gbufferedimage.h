@@ -4,6 +4,9 @@
  * This file exports the GBufferedImage class for per-pixel graphics.
  *
  * @author Marty Stepp
+ * @version 2015/10/08
+ * - bug fixes and refactoring for pixel-based functions such as fromGrid, load
+ *   to help fix bugs with Base64 encoding/decoding
  * @version 2015/08/12
  * - added toGrid, fromGrid, createRgbPixel, getRed, getGreen, getBlue functions
  * - perf.optimizations to per-pixel stuff; now almost tolerable speed
@@ -68,14 +71,20 @@
  * individual pixels and rectangular regions.
  * If you want to draw shapes and lines, use other classes from this library
  * such as GRect, GLine, and so on.
-</p>
-
-<p class="since">
-    Available since: 2014/08/04 version of C++ library
-</p>
+ * </p>
+ * 
+ * <p class="since">
+ *     Available since: 2014/08/04 version of C++ library
+ * </p>
  */
 class GBufferedImage : public GInteractor {
 public:
+    /*
+     * Largest value that an image's width and/or height can have.
+     * Error will be thrown if you try to make/resize an image larger than this.
+     */
+    static const int WIDTH_HEIGHT_MAX;
+    
     /*
      * Creates a single RGB integer from the given R-G-B components from 0-255.
      */

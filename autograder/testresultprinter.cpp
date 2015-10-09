@@ -6,6 +6,8 @@
  * See testresultprinter.h for declarations and documentation.
  *
  * @author Marty Stepp
+ * @version 2015/10/08
+ * - fixes for printing of failed non-timeout tests
  * @version 2014/11/24
  * @since 2014/11/24
  */
@@ -172,6 +174,14 @@ void MartyGraphicalTestResultPrinter::OnTestEnd(const ::testing::TestInfo& test_
         std::string testName = test_info.name();
         if (test_info.result()->Failed()) {
             pp->autograderunittest_setTestResult(testName, "fail");
+            for (int i = 0; i < test_info.result()->total_part_count(); i++) {
+                testing::TestPartResult part = test_info.result()->GetTestPartResult(i);
+                if (part.failed()) {
+                    UnitTestDetails deets(autograder::UnitTestType::TEST_FAIL, part.message());
+                    pp->autograderunittest_setTestDetails(testName, deets.toString());
+                    break;
+                }
+            }
         } else {
             pp->autograderunittest_setTestResult(testName, "pass");
         }

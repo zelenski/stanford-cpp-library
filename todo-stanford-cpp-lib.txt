@@ -1,4 +1,40 @@
 	C++ libs
+
+#ifdef SPL_HEADLESS_MODE
+        execlp("java", "java", "-Djava.awt.headless=true", "-jar", jarName.c_str(), programName.c_str(), NULL);
+#else // !SPL_HEADLESS_MODE
+        // execlp("java", "java", "-agentlib:jdwp=transport=dt_socket,address=127.0.0.1:60106,server=y,suspend=y", "-jar", jarName.c_str(), programName.c_str(), NULL);
+        execlp("java", "java", "-Dstanfordspl.debug=true", "-jar", jarName.c_str(), programName.c_str(), NULL);
+#endif // SPL_HEADLESS_MODE
+
+
+		create 500 images, starts to get really slow ... mem leak?  hash of all GBufferedImages ever created?
+
+#ifdef PIPE_DEBUG
+    cmd += " -Dstanfordspl.debug=true";
+#endif
+		
+	C++ lib: style checker, regex for comments: crashes on Ilan's good-Fauxtoshop commenting code (stack overflow)
+		/********* ?
+
+		an event snuck in to the middle of my long string pipe sending
+			idea 1: in cpp, look for "event:" strings, put into event queue  (reshape getResult code)
+			idea 2: make pipe output be synchronized in Java Back-End; probably better solution
+		
+		need to add this to Linux pipe initializtion in platform.cpp
+		THREAD ISSUES
+			multiple tests running at same time, in separate threads; collide with each others' pipe outputs
+		
+		style checker bug on omitted tests  "passed 19 / 1 tests (complete)"
+		
+		off-by-one test bug?  see email
+		
+		*** why do some of the tests fail?  check output .txt files?  why can't I click on test to see failure reason?
+			threw exception
+			"C++ exception with description "GBufferedImage::load: expected 169804 bytes but saw 70663" thrown in"... (115)
+
+
+
 x		BUGBUG: pressing Up crashes JBE console!
 xx		libs: press Up to recall last console input line?  Up/down history?
 -		libs: ProgramHelper => ___Program
@@ -40,6 +76,13 @@ x		unit test lib on timeout/exception, show the exception and the stack trace
 			figure out way to hide menus?
 			based on Purdue code?
 			make it close all projects when you exit Eclipse?
+			"fix indentation" button?
+			"close problems view" => go away
+			failures with submitter
+				no internet connection
+				authentication issue
+				no submission area on our end
+				
 
 		CS 198 site edits
 			fix 404 of https://cs198.stanford.edu/cs106/media/jquery.min.map
@@ -153,6 +196,7 @@ x			remove operator < from some collections (esp. PQ)
 		
 		debug args thing so I can connect a debugger to the Java back-end
 			// #define DEBUG_ARGS "-agentlib:jdwp=transport=dt_socket,address=127.0.0.1:60106,server=y,suspend=y"
+			
 		
 -		BasicGraph::clearExtraData? (can't; don't know the type of the data; just set all to NULL?)
 		

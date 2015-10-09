@@ -5,6 +5,11 @@
  * See that file for documentation of each member.
  *
  * @author Marty Stepp
+ * @version 2015/10/08
+ * - bug fixes and refactoring for pixel-based functions such as fromGrid, load
+ *   to help fix bugs with Base64 encoding/decoding
+ * @version 2015/10/05
+ * - removed extraneous debug printf statements left in during development
  * @version 2015/08/12
  * - added toGrid, fromGrid, createRgbPixel, getRed, getGreen, getBlue functions
  * - perf.optimizations to per-pixel stuff; now almost tolerable speed
@@ -21,6 +26,7 @@
  */
 
 #include "gbufferedimage.h"
+#include <cstring>
 #include <iomanip>
 #include "base64.h"
 #include "filelib.h"
@@ -29,6 +35,8 @@
 #include "strlib.h"
 
 #define CHAR_TO_HEX(ch) ((ch >= '0' && ch <= '9') ? (ch - '0') : (ch - 'a' + 10))
+
+const int GBufferedImage::WIDTH_HEIGHT_MAX = 65535;
 
 int GBufferedImage::createRgbPixel(int red, int green, int blue) {
     if (red < 0 || red > 255 || green < 0 || green > 255 || blue < 0 || blue > 255) {
@@ -141,17 +149,25 @@ GBufferedImage* GBufferedImage::diff(GBufferedImage& image, int diffPixelColor) 
     int wmax = std::max(w1, w2);
     int hmax = std::max(h1, h2);
     
-    GBufferedImage* result = new GBufferedImage(wmax, hmax, diffPixelColor);
-    result->fillRegion(0, 0, w1, h1, m_backgroundColor);
+    Grid<int> resultGrid;
+    resultGrid.resize(hmax, wmax);
+    resultGrid.fill(diffPixelColor);
+    for (int r = 0; r < h1; r++) {
+        for (int c = 0; c < w1; c++) {
+            resultGrid[r][c] = m_backgroundColor;
+        }
+    }
     for (int y = 0; y < hmin; y++) {
         for (int x = 0; x < wmin; x++) {
             int px1 = m_pixels[y][x];
             int px2 = image.m_pixels[y][x];
             if (px1 != px2) {
-                result->setRGB(x, y, diffPixelColor);
+                resultGrid[y][x] = diffPixelColor;
             }
         }
     }
+    GBufferedImage* result = new GBufferedImage(wmax, hmax);
+    result->fromGrid(resultGrid);
     return result;
 }
 
@@ -182,50 +198,37 @@ void GBufferedImage::fillRegion(double x, double y, double width, double height,
 }
 
 void GBufferedImage::fromGrid(const Grid<int>& grid) {
+    checkSize("fromGrid", grid.width(), grid.height());
     m_pixels = grid;
     m_width = grid.width();
     m_height = grid.height();
     
-    // custom-encoded version (best so far, if it would work)
-//    std::ostringstream ostr;
-//    ostr << m_width << '#' << m_height << '#';
-//    ostr << std::hex << std::setfill('0');
-//    for (int row = 0; row < grid.height(); row++) {
-//        for (int col = 0; col < grid.width(); col++) {
-//            int rgb = grid[row][col];
-//            ostr << '#'
-//                 << std::setw(2) << (rgb >> 16 & 0xff)
-//                 << std::setw(2) << (rgb >> 8 & 0xff)
-//                 << std::setw(2) << (rgb & 0xff);
-//        }
-//    }
-//    std::string text = ostr.str();
+    // output a base64-encoded version of the image pixels
+    std::ostringstream out;
     
-    // base64-encoded version (best)
-    int bufLength = m_width * m_height * 3 + 32;
-    char buf[bufLength];
-    char* bufPtr = buf;
-    bufPtr[0] = ((int) m_width & 0xff00) >> 8;
-    bufPtr[1] = ((int) m_width & 0x00ff);
-    bufPtr[2] = ((int) m_height & 0xff00) >> 8;
-    bufPtr[3] = ((int) m_height & 0x00ff);
-    bufPtr += 4;
-    for (int row = 0; row < grid.height(); row++) {
-        for (int col = 0; col < grid.width(); col++) {
+    // output width as 2 bytes, then height as 2 bytes
+    out << (char) (((((int) m_width) & 0x0000ff00) >> 8) & 0x000000ff);
+    out << (char)  ((((int) m_width) & 0x000000ff));
+    out << (char) (((((int) m_height) & 0x0000ff00) >> 8) & 0x000000ff);
+    out << (char)  ((((int) m_height) & 0x000000ff));
+    
+    // output each pixel as 3 bytes (R,G,B)
+    for (int row = 0; row < m_height; row++) {
+        for (int col = 0; col < m_width; col++) {
             int rgb = grid[row][col];
-            bufPtr[0] = ((rgb & 0xff0000) >> 16) & 0x000000ff;
-            bufPtr[1] = ((rgb & 0x00ff00) >> 8) & 0x000000ff;
-            bufPtr[2] = (rgb & 0x0000ff);
-            bufPtr += 3;
+            out << (char) (((rgb & 0x00ff0000) >> 16) & 0x000000ff);
+            out << (char) (((rgb & 0x0000ff00) >> 8) & 0x000000ff);
+            out << (char)   (rgb & 0x000000ff);
         }
     }
-    bufPtr[0] = '\0';
 
-    char base64buf[Base64encode_len(bufLength) + 32];
-    Base64encode(base64buf, buf, bufLength);
+    // encode the bytes into a base64 string so it can go through
+    // the process pipe to the Java back-end
+    std::string result = out.str();
+    std::string encoded = Base64::encode(result);
     
     // update the back-end with all of the pretty new pixels
-    getPlatform()->gbufferedimage_updateAllPixels(this, base64buf);
+    getPlatform()->gbufferedimage_updateAllPixels(this, encoded);
 }
 
 double GBufferedImage::getHeight() const {
@@ -256,37 +259,47 @@ void GBufferedImage::load(const std::string& filename) {
         error("GBufferedImage::load: file not found: " + filename);
     }
     
+    // read Base64-compressed pixel data from Java back-end
     std::string result = getPlatform()->gbufferedimage_load(this, filename);
-    printf("GBuf::load: string from pipe is %ld bytes.\n", result.length()); fflush(stdout);
-
-    // newest 'base64-compressed' version
-    const char* resultCstr = result.c_str();
-    char buf[Base64decode_len(resultCstr) + 32];
-    Base64decode(buf, resultCstr);
-    char* bufPtr = buf;
+    std::string decoded = Base64::decode(result);
     
-    int w = (((bufPtr[0] & 0x000000ff) << 8) & 0x0000ff00) | (bufPtr[1] & 0x000000ff);
-    int h = (((bufPtr[2] & 0x000000ff) << 8) & 0x0000ff00) | (bufPtr[3] & 0x000000ff);
-    bufPtr += 4;
-    printf("new w=%d, h=%d\n", w, h); fflush(stdout);
+    // read width (2-byte) and height (2-byte)
+    int w = (((decoded[0] & 0x000000ff) << 8) & 0x0000ff00) | (decoded[1] & 0x000000ff);
+    int h = (((decoded[2] & 0x000000ff) << 8) & 0x0000ff00) | (decoded[3] & 0x000000ff);
     if (w != m_pixels.width() || h != m_pixels.height()) {
         m_width = w;
         m_height = h;
         m_pixels.resize(m_height, m_width, /* retain */ false);
     }
+    int expectedLength = (w * h * 3) + 4;
+    int actualLength = (int) decoded.length();
+    
+    // crash if number of bytes that arrive are way off from what's expected
+    if (actualLength < expectedLength || actualLength > expectedLength + 10) {
+        std::string errorMessage = std::string("GBufferedImage::load(\"" + filename + "\"): expected ")
+                + integerToString(expectedLength) + std::string(" bytes but saw ")
+                + integerToString(actualLength);
+        error(errorMessage);
+    }
+    
+    // read each pixel (3-byte: R,G,B)
+    int i = 4;
     for (int y = 0; y < m_height; y++) {
         for (int x = 0; x < m_width; x++) {
-            m_pixels[y][x] = 
-                    ((bufPtr[0] << 16 & 0x00ff0000)
-                    | (bufPtr[1] << 8 & 0x0000ff00)
-                    | (bufPtr[2] & 0x000000ff))
-                    & 0x00ffffff;
-            bufPtr += 3;
+            if (i + 2 < actualLength) {
+                m_pixels[y][x] = 
+                         ((((decoded[i]   & 0x000000ff) << 16) & 0x00ff0000)   // red
+                        | (((decoded[i+1] & 0x000000ff) <<  8) & 0x0000ff00)   // green
+                        | (decoded[i+2]   & 0x000000ff))                       // blue
+                        & 0x00ffffff;                                          // alpha mask
+                i += 3;
+            }
         }
     }
 }
 
 void GBufferedImage::resize(double width, double height, bool retain) {
+    checkSize("resize", width, height);
     bool wasZero = (this->m_width == 0 && this->m_height == 0);
     this->m_width = width;
     this->m_height = height;
@@ -349,6 +362,11 @@ void GBufferedImage::checkIndex(std::string member, double x, double y) const {
 void GBufferedImage::checkSize(std::string member, double width, double height) const {
     if (width < 0 || height < 0) {
         error("GBufferedImage::" + member + ": width/height cannot be negative");
+    }
+    if (width > GBufferedImage::WIDTH_HEIGHT_MAX
+            || height > GBufferedImage::WIDTH_HEIGHT_MAX) {
+        error("GBufferedImage::" + member + ": width/height too large (cannot exceed "
+              + integerToString(WIDTH_HEIGHT_MAX));
     }
 }
 

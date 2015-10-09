@@ -4,6 +4,8 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2015/10/08
+ * - bug fixes for sending long strings through Java process pipe
  * @version 2015/10/01
  * - fix to check JAVA_HOME environment variable to force Java executable path
  *   (improved compatibility on Windows systems with many JDKs/JREs installed)
@@ -1423,9 +1425,7 @@ void Platform::gbufferedimage_setRGB(GObject* gobj, double x, double y,
 void Platform::gbufferedimage_updateAllPixels(GObject* gobj,
                                               const std::string& base64) {
     std::ostringstream os;
-    os << "GBufferedImage.updateAllPixels(\"" << gobj << "\", ";
-    writeQuotedString(os, base64);
-    os << ")";
+    os << "GBufferedImage.updateAllPixels(\"" << gobj << "\", \"" << base64 << "\")";
     putPipe(os.str());
 }
 
@@ -2349,7 +2349,9 @@ static std::string getPipe() {
             throw InterruptedIOException();
             // break;   // failed to read from subprocess
         }
-        if (ch == '\n') break;
+        if (ch == '\n') {
+            break;
+        }
         line += ch;
         charsRead++;
     }
@@ -2368,17 +2370,39 @@ static std::string getResult(bool consumeAcks, const std::string& caller) {
         fprintf(stderr, "getResult(): calling getPipe() ...\n");  fflush(stderr);
 #endif
         std::string line = getPipe();
-        bool isResult = startsWith(line, "result:");
-        bool isResultLong = startsWith(line, "result_long:");
-        bool isEvent  = startsWith(line, "event:");
-        bool isAck    = startsWith(line, "result:___jbe___ack___");
+        
+        bool isResult        = startsWith(line, "result:");
+        bool isResultLong    = startsWith(line, "result_long:");
+        bool isEvent         = startsWith(line, "event:");
+        bool isAck           = startsWith(line, "result:___jbe___ack___");
         bool hasACMException = line.find("acm.util.ErrorException") != std::string::npos;
         bool hasException    = line.find("xception") != std::string::npos;
         bool hasError        = line.find("Unexpected error") != std::string::npos;
 
-        // added by Marty: if there is a back-end error, display it
-        if (((isResult || isEvent) && hasACMException) ||
+        if (isResultLong) {
+            // read a 'long' result (sent across multiple lines)
+            std::ostringstream os;
+            std::string nextLine = getPipe();
+            while (nextLine != "result_long:end") {
+                if (!startsWith(line, "result:___jbe___ack___")) {
+                    os << nextLine;
+#ifdef PIPE_DEBUG
+                    fprintf(stderr, "getResult(): appended line (length so far: %ld)\n", os.str().length());  fflush(stderr);
+#endif
+                }
+                nextLine = getPipe();
+            }
+            std::string result = os.str();
+#ifdef PIPE_DEBUG
+            fprintf(stderr, "getResult(): returning long string \"%s ... %s\" (length %ld)\n",
+                    result.substr(0, 10).c_str(),
+                    result.substr(result.length() - 10, 10).c_str(),
+                    result.length());  fflush(stderr);
+#endif
+            return result;
+        } else if (((isResult || isEvent) && hasACMException) ||
                 (!isResult && !isEvent && (hasException || hasError))) {
+            // an error message from the back-end; throw it here
             std::ostringstream out;
             if (isResult) {
                 line = line.substr(7);
@@ -2389,22 +2413,22 @@ static std::string getResult(bool consumeAcks, const std::string& caller) {
                 << std::endl << line;
             error(out.str());
         } else if (isResult) {
-            if (!(consumeAcks && isAck)) {
-                // this is just an acknowledgment of some previous event;
-                // not a real result of its own
-                return line.substr(7);
+            // a regular result
+            if (!isAck || !consumeAcks) {
+                std::string result = line.substr(7);
+#ifdef PIPE_DEBUG
+        fprintf(stderr, "getResult(): returning regular result (length %ld): \"%s\"\n", result.length(), result.c_str());  fflush(stderr);
+#endif
+                return result;
+            } else {
+                // else this is just an acknowledgment of some previous event;
+                // not a real result of its own. consume it and keep waiting
+#ifdef PIPE_DEBUG
+        fprintf(stderr, "getResult(): saw ACK (length %ld): \"%s\"\n", line.length(), line.c_str());  fflush(stderr);
+#endif
             }
-        } else if (isResultLong) {
-            // read a 'long' result (more than ~4096 chars; sent across multiple lines)
-            std::ostringstream os;
-            // os << line.substr(17);   // don't add first line "result_long:begin"
-            std::string nextLine = getPipe();
-            while (nextLine != "result_long:end") {
-                os << nextLine;
-                nextLine = getPipe();
-            }
-            return os.str();
         } else if (isEvent) {
+            // a Java-originated event; enqueue it to process here
             GEvent event = parseEvent(line.substr(6));
             eventQueue.enqueue(event);
             if (event.getEventClass() == WINDOW_EVENT && event.getEventType() == CONSOLE_CLOSED
@@ -2413,7 +2437,9 @@ static std::string getResult(bool consumeAcks, const std::string& caller) {
             }
         } else {
             if (line.find("\tat ") != std::string::npos || line.find("   at ") != std::string::npos) {
-                // part of a Java exception stack trace, so echo it
+                // a line from a back-end Java exception stack trace;
+                // shouldn't really be happening, but back end isn't perfect.
+                // echo it here to STDERR so C++ user can see it to help diagnose the issue
                 fprintf(stderr, "%s\n", line.c_str());
                 fflush(stderr);
             }
