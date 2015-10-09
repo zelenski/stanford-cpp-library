@@ -10,6 +10,8 @@ import javax.swing.*;
 /**
  * 
  * @author Marty Stepp
+ * @version 2015/10/08
+ * - bug fixes in to/fromGrid support
  * @version 2015/08/12
  * - added to/fromGrid support, much faster per-pixel operations
  */
@@ -73,20 +75,19 @@ public class GBufferedImage extends GInteractor {
 		return imageWidth;
 	}
 	
-	public void load(String filename) {
-		try {
-			bufferedImage = ImageIO.read(new File(filename));
-			imageWidth = bufferedImage.getWidth();
-			imageHeight = bufferedImage.getHeight();
-			repaintImage();
-			// SplPipeDecoder.writeResult(toStringCompressed());   // this is a LONG string
-			SplPipeDecoder.writeResult(toStringBase64());   // this is a LONG string
-		} catch (Exception ex) {
-			SplPipeDecoder.writeResult("error:" + ex.getClass().getSimpleName() + ": " + ex.getMessage().replace('\n', ' '));
-		}
+	public void load(String filename) throws IOException {
+		bufferedImage = ImageIO.read(new File(filename));
+		imageWidth = bufferedImage.getWidth();
+		imageHeight = bufferedImage.getHeight();
+		repaintImage();
 	}
 	
 	public void resize(int w, int h, boolean retain) {
+		if (retain && w == imageWidth && h == imageHeight) {
+			// no-op
+			return;
+		}
+		
 		BufferedImage oldImage = bufferedImage;
 		bufferedImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 		imageWidth = w;
@@ -99,19 +100,13 @@ public class GBufferedImage extends GInteractor {
 		repaintImage();
 	}
 	
-	public void save(String filename) {
+	public void save(String filename) throws IOException {
 		String extension = "png";
 		int dot = filename.lastIndexOf('.');
 		if (dot >= 0) {
 			extension = filename.substring(dot + 1).toLowerCase();
 		}
-		
-		try {
-			ImageIO.write(bufferedImage, extension, new File(filename));
-			SplPipeDecoder.writeResult("ok");
-		} catch (Exception ex) {
-			SplPipeDecoder.writeResult("error:" + ex.getClass().getSimpleName() + ": " + ex.getMessage().replace('\n', ' '));
-		}
+		ImageIO.write(bufferedImage, extension, new File(filename));
 	}
 	
 	public void setRGB(int x, int y, int rgb) {
@@ -120,19 +115,6 @@ public class GBufferedImage extends GInteractor {
 	}
 	
 	public String toStringBase64() {
-//		StringBuilder sb = new StringBuilder(1024 * 256);
-//		sb.append((int) imageWidth);
-//		sb.append('\n');
-//		sb.append((int) imageHeight);
-//		sb.append('\n');
-//		for (int y = 0; y < imageHeight; y++) {
-//			for (int x = 0; x < imageWidth; x++) {
-//				// trim off top two hex digits (alpha) because C++ lib expects 24-bit ints
-//				int px = bufferedImage.getRGB(x, y);
-//				sb.append(String.format("#%06x\n", px & 0x00ffffff));
-//			}
-//		}
-		
 		ByteArrayOutputStream out = new ByteArrayOutputStream(imageWidth * imageHeight * 3 + 512);
 		
 		// width and height each as 2-byte integers (0-65535)
@@ -145,32 +127,20 @@ public class GBufferedImage extends GInteractor {
 		for (int y = 0; y < imageHeight; y++) {
 			for (int x = 0; x < imageWidth; x++) {
 				int px = bufferedImage.getRGB(x, y);
-				int red = (px & 0xff0000) >> 16;
-				int green = (px & 0x00ff00) >> 8;
-				int blue = px & 0x0000ff;
+				int red = ((px & 0x00ff0000) >> 16) & 0x000000ff;
+				int green = ((px & 0x0000ff00) >> 8) & 0x000000ff;
+				int blue = px & 0x000000ff;
 				out.write(red);
 				out.write(green);
 				out.write(blue);
 			}
 		}
-		String base64 = Base64.encodeBytes(out.toByteArray());
+		byte[] bytes = out.toByteArray();
+		String base64raw = Base64.encodeBytes(bytes);
+		String base64 = base64raw.replace("\r", "");
+		base64 = base64raw.replace("\n", "");
+		// JOptionPane.showMessageDialog(null, "GBufferedImage.toStringBase64: \n w=" + imageWidth + ", h=" + imageHeight + ", \n bytes=" + bytes.length + ", base64len=" + base64.length() + " (was " + base64raw.length() + ")");
 		return base64;
-	}
-	
-	public String toStringCompressed() {
-		StringBuilder sb = new StringBuilder(imageWidth * imageHeight * 7 + 32);
-		sb.append((int) imageWidth);
-		sb.append('#');
-		sb.append((int) imageHeight);
-		sb.append('#');
-		for (int y = 0; y < imageHeight; y++) {
-			for (int x = 0; x < imageWidth; x++) {
-				// trim off top two hex digits (alpha) because C++ lib expects 24-bit ints
-				int px = bufferedImage.getRGB(x, y);
-				sb.append(String.format("#%06x", px & 0x00ffffff));
-			}
-		}
-		return sb.toString();
 	}
 	
 	public void fromStringBase64(String base64) throws IOException {
@@ -181,68 +151,28 @@ public class GBufferedImage extends GInteractor {
 			this.resize(w, h, /* retain */ false);
 		}
 		
-		int[] pixelArray = new int[w * h];
+		// JOptionPane.showMessageDialog(null, "GBufferedImage.fromStringBase64: w=" + imageWidth + ", h=" + imageHeight + ", bytes=" + bytes.length + ", base64len=" + base64.length());
+		
+		int[] pixelArray = new int[imageWidth * imageHeight];
 		int byteIndex = 4;
 		int index = 0;
 		for (int y = 0; y < imageHeight; y++) {
 			for (int x = 0; x < imageWidth; x++) {
-				int rgb =
-						0xff000000   // alpha
-						| ((bytes[byteIndex] << 16) & 0x00ff0000)
-						| ((bytes[byteIndex + 1] << 8) & 0x0000ff00)
-						| ((bytes[byteIndex + 2]) & 0x000000ff);
-				pixelArray[index] = rgb;
-				index++;
-				byteIndex += 3;
-			}
-		}
-		bufferedImage.setRGB(0, 0, w, h, pixelArray, 0, w);
-		// bufferedImage.flush();
-		repaintImage();
-	}
-	
-	public void fromStringCompressed(String data) throws IOException {
-		BufferedReader reader = new BufferedReader(new StringReader(data));
-		int w = 0;
-		int ch;
-		while ((ch = reader.read()) != '#') {
-			w = 10 * w + (ch - '0');
-		}
-		int h = 0;
-		while ((ch = reader.read()) != '#') {
-			h = 10 * h + (ch - '0');
-		}
-		if (w != imageWidth || h != imageHeight) {
-			this.resize(w, h, /* retain */ true);
-		}
-		
-		int[] pixelArray = new int[w * h];
-		int index = 0;
-		// StringBuilder sb = new StringBuilder(16);
-		for (int y = 0; y < imageHeight; y++) {
-			for (int x = 0; x < imageWidth; x++) {
-				reader.read();   // throw away '#'
-//				for (int i = 0; i < 6; i++) {
-//					sb.append((char) reader.read());
-//				}
-//				int rgb = Integer.valueOf(sb.toString(), 16) | 0xff000000;   // restore alpha channel
-//				sb.delete(0, 6);
-				
-				int rgb = 0;
-				for (int i = 0; i < 6; i++) {
-					int oneByte = reader.read();
-					oneByte = ((oneByte >= '0' && oneByte <= '9') ? (oneByte - '0') : (oneByte - 'a' + 10));
-					rgb = rgb << 4 | oneByte;
+				// OOB shouldn't happen, but let's just make sure not to walk past end of array
+				if (byteIndex + 2 < bytes.length && index < pixelArray.length) {
+					int rgb =
+							0xff000000   // alpha
+							| (((bytes[byteIndex] & 0x000000ff) << 16) & 0x00ff0000)
+							| (((bytes[byteIndex + 1] & 0x000000ff) << 8) & 0x0000ff00)
+							| ((bytes[byteIndex + 2]) & 0x000000ff);
+					pixelArray[index] = rgb;
+					index++;
+					byteIndex += 3;
 				}
-				pixelArray[index] = rgb;
-				// bufferedImage.setRGB(x, y, rgb);
-				index++;
 			}
 		}
-		reader.close();
-		
-		bufferedImage.setRGB(0, 0, w, h, pixelArray, 0, w);
-		// bufferedImage.flush();
+		bufferedImage.setRGB(0, 0, imageWidth, imageHeight, pixelArray, 0, imageWidth);
+		bufferedImage.flush();
 		repaintImage();
 	}
 	

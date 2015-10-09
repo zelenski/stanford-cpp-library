@@ -6,7 +6,7 @@ import acm.util.*;
 /**
  * 
  * @author Marty Stepp
- * @version 2014/10/21
+ * @version 2015/10/08
  */
 public class GBufferedImage_load extends JBECommand {
 	// gbufferedimage.load("foobar.png");
@@ -20,7 +20,13 @@ public class GBufferedImage_load extends JBECommand {
 		GObject gobj = paramJavaBackEnd.getGObject(id);
 		if (gobj != null && gobj instanceof GBufferedImage) {
 			GBufferedImage img = (GBufferedImage) gobj;
-			img.load(filename);
+			try {
+				img.load(filename);
+				String b64 = img.toStringBase64();
+				SplPipeDecoder.writeResult(b64);   // this is a LONG string
+			} catch (Exception ex) {
+				SplPipeDecoder.writeResult("Unexpected error:" + ex.getClass().getSimpleName() + ": " + ex.getMessage().replace('\n', ' '));
+			}
 		}
 	}
 }

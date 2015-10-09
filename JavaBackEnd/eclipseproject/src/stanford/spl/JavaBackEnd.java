@@ -138,9 +138,6 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		this.console.setErrorColor(ERROR_COLOR);
 		this.console.setErrorStyle(ERROR_STYLE);
 		
-		// TODO: REMOVE
-		System.out.println("HEADLESS: " + GraphicsEnvironment.isHeadless());
-		
 		if (!GraphicsEnvironment.isHeadless()) {
 			AutograderInput autograderInput = AutograderInput.getInstance(this);
 			autograderInput.addObserver(this);
@@ -318,8 +315,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 
 	public void println(String paramString) {
 		synchronized (this.eventLock) {
-			System.out.println(paramString);
-			System.out.flush();
+			SplPipeDecoder.println(paramString);
 		}
 	}
 
@@ -329,11 +325,12 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	
 	protected void acknowledgeEvent(String eventText) {
 		synchronized (this.eventLock) {
-			System.out.println(eventText);
-			System.out.flush();
+			SplPipeDecoder.println(eventText);
 			if (!this.eventAcknowledged) {
-				System.out.println("result:___jbe___ack___ " + eventText);
-				System.out.flush();
+				// strip (), "" stuff from event to shorten it / ease encoding/decoding
+				eventText = eventText.replaceAll("\\(.{0,99999}", "");
+				eventText = eventText.replaceAll("\".{0,99999}", "");
+				SplPipeDecoder.writeAck(eventText);
 				this.eventAcknowledged = true;
 				this.eventPending = false;
 			} else {
@@ -345,8 +342,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	protected void acknowledgeEvent() {
 		synchronized (this.eventLock) {
 			if (!this.eventAcknowledged) {
-				System.out.println("result:___jbe___ack___");
-				System.out.flush();
+				SplPipeDecoder.writeAck();
 				this.eventAcknowledged = true;
 				this.eventPending = false;
 			} else {
@@ -713,7 +709,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 			out.flush();
 			out.close();
 		} catch (IOException ioe) {
-			
+			ioe.printStackTrace();
 		}
 	}
 
@@ -764,6 +760,9 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		StringBuilder sb = new StringBuilder(256000);
 		while (true) {
 			String line = systemInReader.readLine();
+			if (DEBUG) {
+				printLog(line);
+			}
 			if (line == null || line.equals("LongCommand.end()")) {
 				break;
 			}

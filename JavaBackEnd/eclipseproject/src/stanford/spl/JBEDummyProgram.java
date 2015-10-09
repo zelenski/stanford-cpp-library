@@ -17,8 +17,7 @@ public class JBEDummyProgram extends AbstractConsoleProgram {
 		String s = event.getActionCommand();
 		if (s.equals("Quit") || s.equals("Exit")) {
 			// notify the C++ library that the JBE was shut down
-			System.out.print("event:consoleWindowClosed()");
-			System.out.flush();
+			SplPipeDecoder.println("event:consoleWindowClosed()");
 			jbe.acknowledgeEvent();
 			// give it a little time to make sure the message goes through
 			try {

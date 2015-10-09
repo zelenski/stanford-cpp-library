@@ -31,18 +31,16 @@ public class GBufferedImage_updateAllPixels extends JBECommand {
 				base64 = base64.substring(0, base64.length() - 2);
 			}
 		} catch (Exception e) {
-			System.err.println(e);
+			e.printStackTrace();
 		}
-		// paramTokenScanner.verifyToken(")");
 		
 		GObject gobj = paramJavaBackEnd.getGObject(id);
 		if (gobj != null && gobj instanceof GBufferedImage) {
 			GBufferedImage img = (GBufferedImage) gobj;
 			try {
 				img.fromStringBase64(base64);
-				// img.fromStringCompressed(base64);
 			} catch (java.io.IOException ioe) {
-				System.out.println(ioe);
+				ioe.printStackTrace();
 			}
 		}
 	}

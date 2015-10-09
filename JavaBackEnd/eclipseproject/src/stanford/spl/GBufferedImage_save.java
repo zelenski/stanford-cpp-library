@@ -6,7 +6,7 @@ import acm.util.*;
 /**
  * 
  * @author Marty Stepp
- * @version 2014/10/21
+ * @version 2015/10/08
  */
 public class GBufferedImage_save extends JBECommand {
 	// gbufferedimage.save("foobar.png");
@@ -20,7 +20,12 @@ public class GBufferedImage_save extends JBECommand {
 		GObject gobj = paramJavaBackEnd.getGObject(id);
 		if (gobj != null && gobj instanceof GBufferedImage) {
 			GBufferedImage img = (GBufferedImage) gobj;
-			img.save(filename);
+			try {
+				img.save(filename);
+				SplPipeDecoder.writeResult("ok");
+			} catch (Exception ex) {
+				SplPipeDecoder.writeResult("error:" + ex.getClass().getSimpleName() + ": " + ex.getMessage().replace('\n', ' '));
+			}
 		}
 	}
 }
