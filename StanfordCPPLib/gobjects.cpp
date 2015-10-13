@@ -3,6 +3,8 @@
  * ------------------
  * This file implements the gobjects.h interface.
  * 
+ * @version 2015/10/13
+ * - replaced 'fabs' with 'std::fabs'
  * @version 2015/07/05
  * - removed static global Platform variable, replaced by getPlatform as needed
  * - made top global vars static to reduce visibility
@@ -595,7 +597,7 @@ bool GArc::contains(double x, double y) const {
         if (r > 1.0) return false;
     } else {
         double t = ARC_TOLERANCE / ((rx + ry) / 2);
-        if (fabs(1.0 - r) > t) return false;
+        if (std::fabs(1.0 - r) > t) return false;
     }
     return containsAngle(atan2(-dy, dx) * 180 / PI);
 }
@@ -906,7 +908,7 @@ GRectangle GLine::getBounds() const {
     if (transformed) return getPlatform()->gobject_getBounds(this);
     double x0 = (dx < 0) ? x + dx : x;
     double y0 = (dy < 0) ? y + dy : y;
-    return GRectangle(x0, y0, fabs(dx), fabs(dy));
+    return GRectangle(x0, y0, std::fabs(dx), std::fabs(dy));
 }
 
 bool GLine::contains(double x, double y) const {

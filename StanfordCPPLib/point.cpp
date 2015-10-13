@@ -47,7 +47,7 @@ std::ostream & operator<<(std::ostream & os, const Point & pt) {
 
 int hashCode(const Point & pt) {
     int hash = 0;
-    hash += abs(pt.getX() & 0x7fff) << 16;
-    hash += abs(pt.getY());
+    hash += std::abs(pt.getX() & 0x7fff) << 16;
+    hash += std::abs(pt.getY());
     return hash;
 }
