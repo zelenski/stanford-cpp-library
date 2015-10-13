@@ -595,6 +595,7 @@ HashMap<KeyType, ValueType>::HashMap() {
 template <typename KeyType, typename ValueType>
 HashMap<KeyType, ValueType>::~HashMap() {
     deleteBuckets(buckets);
+    numEntries = 0;
 }
 
 template <typename KeyType, typename ValueType>

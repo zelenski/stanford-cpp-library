@@ -4,6 +4,8 @@
  * This file exports the template class <code>Map</code>, which
  * maintains a collection of <i>key</i>-<i>value</i> pairs.
  * 
+ * @version 2015/10/13
+ * - nulled out pointer fields in destructor after deletion to avoid double-free
  * @version 2015/07/05
  * - using global hashing functions rather than global variables
  * - fixed bug where string quotes would not show when map was printed
@@ -900,8 +902,11 @@ template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>::~Map() {
     if (cmpp != NULL) {
         delete cmpp;
+        cmpp = NULL;
     }
     deleteTree(root);
+    root = NULL;
+    nodeCount = 0;
 }
 
 template <typename KeyType, typename ValueType>

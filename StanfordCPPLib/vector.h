@@ -4,6 +4,8 @@
  * This file exports the <code>Vector</code> class, which provides an
  * efficient, safe, convenient replacement for the array type in C++.
  *
+ * @version 2015/10/13
+ * - nulled out pointer fields in destructor after deletion to avoid double-free
  * @version 2015/07/05
  * - using global hashing functions rather than global variables
  * @version 2014/11/13
@@ -538,6 +540,7 @@ template <typename ValueType>
 Vector<ValueType>::~Vector() {
     if (elements != NULL) {
         delete[] elements;
+        elements = NULL;
     }
 }
 

@@ -5,6 +5,8 @@
  * by student code on the console.
  * 
  * @author Marty Stepp
+ * @version 2015/10/13
+ * - bug fix in terminate handler to turn off signal handler at end
  * @version 2015/05/28
  * - tiny bug fix to exception stack trace printing format on Windows
  * @version 2014/11/19
@@ -415,7 +417,6 @@ static void stanfordCppLibSignalHandler(int sig) {
  * Prints details about the exception and then tries to print a stack trace.
  */
 static void stanfordCppLibTerminateHandler() {
-    signalHandlerDisable();   // don't want both a signal AND a terminate() call
     std::string DEFAULT_EXCEPTION_KIND = "An exception";
     std::string DEFAULT_EXCEPTION_DETAILS = "(unknown exception details)";
     
@@ -427,7 +428,7 @@ static void stanfordCppLibTerminateHandler() {
     msg += " *** " + DEFAULT_EXCEPTION_DETAILS + "\n";
     msg += " ***\n";
     
-    std::ostream& out = std::cerr;
+    std::ostream& out = std::cerr;   // used by FILL_IN_EXCEPTION_TRACE macro
     try {
         throw;   // re-throws the exception that already occurred
     } catch (const ErrorException& ex) {
@@ -457,6 +458,7 @@ static void stanfordCppLibTerminateHandler() {
         std::string ex = "Unknown";
         FILL_IN_EXCEPTION_TRACE(ex, "An exception", std::string());
     }
+    signalHandlerDisable();   // don't want both a signal AND a terminate() call
 }
 
 } // namespace exceptions
