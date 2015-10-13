@@ -22,19 +22,7 @@ public class URL_download extends JBECommand {
 		
 		int result = 0;
 		try {
-			URL url = new URL(urlString);
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			result = connection.getResponseCode();
-			if (result == 200) {
-				InputStream stream = url.openStream();
-				BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-				PrintStream out = new PrintStream(tmpFile);
-				while (reader.ready()) {
-					out.print((char) reader.read());
-				}
-				out.close();
-				reader.close();
-			}
+			UrlDownloader.getInstance().download(urlString, tmpFile);
 		} catch (MalformedURLException mfurle) {
 			result = -42;
 		} catch (IOException ioe) {

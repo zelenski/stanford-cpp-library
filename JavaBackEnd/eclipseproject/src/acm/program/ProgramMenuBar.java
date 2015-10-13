@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp (current maintainer)
+ * @version 2015/10/13
+ * - new menu feature "Check for Updates..." => LibraryUpdater.java
  * @version 2015/06/19
  * - fixed bug where some hotkeys (PgUp, PgDown) were not working in SPL C++ JBEDummyProgram
  * @version 2015/05/21
@@ -44,11 +46,9 @@
 package acm.program;
 
 import acm.util.*;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-
 import javax.swing.*;
 import javax.swing.event.*;
 
@@ -587,6 +587,11 @@ public class ProgramMenuBar extends JMenuBar
 		aboutItem.setMnemonic('A');
 		helpMenu.add(aboutItem);
 		
+		JMenuItem checkForUpdatesItem = new JMenuItem("Check for Updates");
+		checkForUpdatesItem.addActionListener(this);
+		checkForUpdatesItem.setMnemonic('C');
+		helpMenu.add(checkForUpdatesItem);
+		
 		add(helpMenu);
 	}
 	
@@ -600,13 +605,17 @@ public class ProgramMenuBar extends JMenuBar
 	}
 	
 	public void actionPerformed(ActionEvent event) {
-		if (event.getActionCommand().equals("About...")) {
+		String cmd = event.getActionCommand().intern();
+		if (cmd == "About...") {
 			JOptionPane.showMessageDialog(
 					getProgram().getConsole(),           // parent component
 					getAboutMessage(),                   // message
 					"About Stanford Java/C++ Library",   // title
 					JOptionPane.INFORMATION_MESSAGE      // type
 			);
+		} else if (cmd == "Check for Updates") {
+			stanford.spl.LibraryUpdater updater = new stanford.spl.LibraryUpdater();
+			updater.checkForUpdates(getProgram().getJFrame());
 		}
 	}
 	

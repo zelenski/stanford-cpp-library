@@ -58,7 +58,6 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	private static boolean DEBUG = false;
 	private String appName;
 	private String exec;
-	private String cppVersion = "(unknown)";
 	private String consoleWindowTitle = "Console";
 	private JBEMenuBar menuBar;
 	private JBEConsole console;
@@ -92,11 +91,11 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	}
 	
 	public void setCppVersion(String version) {
-		this.cppVersion = version;
+		Version.setCppLibraryVersion(version);
 	}
 	
 	public String getCppVersion() {
-		return this.cppVersion;
+		return Version.getCppLibraryVersion();
 	}
 
 	public String getJbeVersion() {

@@ -268,6 +268,14 @@ public abstract class GraphicsProgram extends Program {
 		}
 	}
 
+	/**
+	 * This version of getElementAt accepts a variable number of coordinate
+	 * pairs (in x1, y1, x2, y2, x3, y3, ... order) and will return the
+	 * topmost graphical objectfound at any of these pairs.
+	 * The pairs are checked in the order they are passed.
+	 * If no graphical object is found at any of these coordinate pairs,
+	 * null is returned. 
+	 */
 	public GObject getElementAt(double... coords) {
 		if (coords.length == 0 || coords.length % 2 != 0) {
 			throw new IllegalArgumentException(
@@ -296,6 +304,14 @@ public abstract class GraphicsProgram extends Program {
 	 */
 	public final GObject getElementAt(GPoint pt) {
 		return getElementAt(pt.getX(), pt.getY());
+	}
+
+	/**
+	 * Returns true if a graphical object exists that touches the given
+	 * (x, y) pixel position, or false if no such object exists.
+	 */
+	public boolean hasElementAt(double x, double y) {
+		return getElementAt(x, y) != null;
 	}
 
 	/* Method: iterator() */

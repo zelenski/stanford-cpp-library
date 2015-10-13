@@ -18,7 +18,7 @@ import stanford.cs106.gui.GuiUtils;
 import stanford.cs106.gui.WindowCloseKeyListener;
 import stanford.cs106.util.StringUtils;
 
-public class TextFileDialog {
+public class TextFileDialog extends JDialog {
 	public static final int DEFAULT_ROWS    = 20;
 	public static final int DEFAULT_COLUMNS = 80;
 	
@@ -28,15 +28,56 @@ public class TextFileDialog {
 	public static final int MAX_ROWS    = 50;
 	public static final int MAX_COLUMNS = 100;
 	
-	private TextFileDialog() {
-		// empty
+	private JTextArea textarea;
+	private JScrollPane scrollPane;
+	
+	public TextFileDialog(Window parent) {
+		super(parent);
 	}
 	
-	public static void showDialog(Window parent, String title, String text) {
-		showDialog(parent, title, text, DEFAULT_ROWS, DEFAULT_COLUMNS);
+	public void addText(String text) {
+		textarea.setText(textarea.getText() + text);
+		JScrollBar vertical = scrollPane.getVerticalScrollBar();
+		vertical.setValue(vertical.getMaximum());
 	}
 	
-	public static void showDialog(Window parent, String title, String text, int rows, int cols) {
+	public void clearText() {
+		textarea.setText("");
+	}
+	
+	public void print(String text) {
+		addText(text);
+	}
+	
+	public void println(String text) {
+		addText(text + "\n");
+	}
+	
+	public void println(Object o) {
+		println(String.valueOf(o));
+	}
+	
+	public static TextFileDialog showDialog(Component parent, String title) {
+		return showDialog(parent, title, /* text */ "");
+	}
+	
+	public static TextFileDialog showDialog(Component parent, String title, boolean modal) {
+		return showDialog(parent, title, /* text */ "", DEFAULT_ROWS, DEFAULT_COLUMNS, modal);
+	}
+	
+	public static TextFileDialog showDialog(Component parent, String title, String text) {
+		return showDialog(parent, title, text, DEFAULT_ROWS, DEFAULT_COLUMNS, /* modal */ true);
+	}
+	
+	public static TextFileDialog showDialog(Component parent, String title, String text, boolean modal) {
+		return showDialog(parent, title, text, DEFAULT_ROWS, DEFAULT_COLUMNS, modal);
+	}
+	
+	public static TextFileDialog showDialog(Component parent, String title, String text, int rows, int cols) {
+		return showDialog(parent, title, text, rows, cols, /* modal */ true);
+	}
+	
+	public static TextFileDialog showDialog(Component parent, String title, String text, int rows, int cols, boolean modal) {
 		if (rows <= 0) {
 			rows = DEFAULT_ROWS;
 		}
@@ -50,18 +91,18 @@ public class TextFileDialog {
 		height = Math.max(MIN_ROWS, Math.min(MAX_ROWS, height));
 		width  = Math.max(MIN_COLUMNS, Math.min(MAX_COLUMNS, width));
 		
-		final JDialog dialog = new JDialog(parent);
+		final TextFileDialog dialog = new TextFileDialog((parent instanceof Window) ? (Window) parent : null);
 		dialog.setTitle(title);
-		dialog.setModal(true);
+		dialog.setModal(modal);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		
-		JTextArea textArea = new JTextArea(text, height, width);
-		textArea.setEditable(false);
-		Font oldFont = textArea.getFont();
-		textArea.setFont(new Font("Monospaced", Font.PLAIN, oldFont.getSize()));
+		dialog.textarea = new JTextArea(text, height, width);
+		dialog.textarea.setEditable(false);
+		Font oldFont = dialog.textarea.getFont();
+		dialog.textarea.setFont(new Font("Monospaced", Font.PLAIN, oldFont.getSize()));
 		
-		JScrollPane center = new JScrollPane(textArea);
-		dialog.add(center, BorderLayout.CENTER);
+		dialog.scrollPane = new JScrollPane(dialog.textarea);
+		dialog.add(dialog.scrollPane, BorderLayout.CENTER);
 		
 		JPanel south = new JPanel();
 		JButton ok = new JButton("OK");
@@ -88,5 +129,7 @@ public class TextFileDialog {
 		
 		ok.requestFocus();
 		dialog.setVisible(true);
+		
+		return dialog;
 	}
 }

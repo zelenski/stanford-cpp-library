@@ -1,4 +1,10 @@
 /*
+ * @version 2015/10/13
+ * - added animation-related methods (animation, setAnimationDelay, startAnimation, etc.)
+ * - style fix: moved fields/constants to top of class as the good lord intended
+ */
+
+/*
  * @(#)Program.java   1.99.1 08/12/08
  */
 
@@ -113,6 +119,45 @@ public abstract class Program extends JApplet
 /** Constant specifying the center of the container */
 	public static final String CENTER = BorderLayout.CENTER;
 
+/* Private constants */
+	private static final int DEFAULT_X = 16;
+	private static final int DEFAULT_Y = 40;
+	private static final int DEFAULT_WIDTH = 754;
+	private static final int DEFAULT_HEIGHT = 492;
+	private static final int PRINT_MARGIN = 36;
+
+/* Private fields */
+	private ArrayList<Object> finalizers;
+	private HashMap<String, String> parameterTable;
+	private JFrame programFrame;
+	private AppletStub appletStub;
+	private String myTitle;
+	private ProgramMenuBar myMenuBar;
+	private Component northBorder;
+	private Component southBorder;
+	private Component eastBorder;
+	private Component westBorder;
+	private JPanel northPanel;
+	private JPanel southPanel;
+	private JPanel eastPanel;
+	private JPanel westPanel;
+	private JPanel centerPanel;
+	private IOConsole myConsole;
+	private IODialog myDialog;
+	private IOModel inputModel;
+	private IOModel outputModel;
+	private Object startupObject;
+	private AppletStarter appletStarter;
+	private Rectangle programBounds;
+	private boolean started;
+	private boolean shown;
+	private boolean initFinished;
+	private boolean appletMode;
+	private boolean exitOnClose = true;
+	private boolean animatedMode = false;
+	private int animationDelay = 1000 / 50;   // 50 FPS default
+	private javax.swing.Timer animationTimer = null;
+
 /* Default constructor: Program */
 /**
  * This code initializes the program data structures.
@@ -136,6 +181,106 @@ public abstract class Program extends JApplet
 		myConsole.setMenuBar(myMenuBar);
 		addComponentListener(this);
 	}
+	
+	//////////////////////// BEGIN ANIMATION METHODS ////////////////////////
+	/**
+	 * Override this method to indicate what to do on every frame advance
+	 * in an animated program after setAnimated(true) is called.
+	 */
+	public void animation() {
+		// empty
+	}
+	
+	/**
+	 * Returns true if the program is currently in animated mode.
+	 */
+	public boolean isAnimated() {
+		return animatedMode;
+	}
+	
+	/**
+	 * Sets the program to be in animated (true) or non-animated (false) mode.
+	 */
+	public synchronized void setAnimated(boolean value) {
+		animatedMode = value;
+		if (animatedMode) {
+			// start timer, if not already started
+			if (animationTimer == null) {
+				animationTimer = new javax.swing.Timer(animationDelay, new ActionListener() {
+					public void actionPerformed(ActionEvent event) {
+						animation();
+					}
+				});
+				animationTimer.start();
+			}
+		} else {
+			// stop timer, if already started
+			if (animationTimer != null) {
+				animationTimer.stop();
+				animationTimer = null;
+			}
+		}
+	}
+	
+	/**
+	 * Sets the number of milliseconds to delay between frames of animation.
+	 * If animation is already in progress, the delay change will take effect immediately.
+	 * @param delayMS delay in milliseconds (must be a positive integer)
+	 */
+	public synchronized void setAnimationDelay(int delayMS) {
+		if (delayMS <= 0) {
+			throw new IllegalArgumentException("invalid delay of " + delayMS + "; must be a positive integer");
+		}
+		if (delayMS != animationDelay) {
+			animationDelay = delayMS;
+			if (animationTimer != null) {
+				animationTimer.setDelay(delayMS);
+			}
+		}
+	}
+	
+	/**
+	 * Returns the delay between frames of animation in milliseconds (default 20).
+	 */
+	public int getAnimationDelay() {
+		return animationDelay;
+	}
+	
+	/**
+	 * Sets the animation delay properly to produce the given number of frames
+	 * per second of animation.
+	 * Equivalent to calling setAnimationDelay(1000 / fps).
+	 * Special case: If 0 fps is passed, stops the animation.
+	 * Note that calling this method does not start the animation running.
+	 * If animation is already in progress, the FPS change will take effect immediately.
+	 * @param fps frames per second (must be a non-negative integer)
+	 */
+	public void setFramesPerSecond(int fps) {
+		if (fps < 0) {
+			throw new IllegalArgumentException("invalid FPS of " + fps + "; must be non-negative");
+		} else if (fps == 0) {
+			stopAnimation();
+		} else {
+			setAnimationDelay(Math.max(1, 1000 / fps));
+		}
+	}
+	
+	/**
+	 * Sets the program into animated mode.
+	 * The animation() method will be called repeatedly in the background.
+	 */
+	public void startAnimation() {
+		setAnimated(true);
+	}
+
+	/**
+	 * Sets the program into non-animated (default) mode.
+	 * The animation() method will no longer be called repeatedly in the background.
+	 */
+	public void stopAnimation() {
+		setAnimated(false);
+	}
+	///////////////////////// END ANIMATION METHODS /////////////////////////
 
 /* Method: run() */
 /**
@@ -2003,42 +2148,6 @@ public abstract class Program extends JApplet
 		frame.setSize(frameSize.width, frameSize.height);
 		frame.validate();
 	}
-
-/* Private constants */
-	private static final int DEFAULT_X = 16;
-	private static final int DEFAULT_Y = 40;
-	private static final int DEFAULT_WIDTH = 754;
-	private static final int DEFAULT_HEIGHT = 492;
-	private static final int PRINT_MARGIN = 36;
-
-/* Private instance variables */
-	private ArrayList<Object> finalizers;
-	private HashMap<String,String> parameterTable;
-	private JFrame programFrame;
-	private AppletStub appletStub;
-	private String myTitle;
-	private ProgramMenuBar myMenuBar;
-	private Component northBorder;
-	private Component southBorder;
-	private Component eastBorder;
-	private Component westBorder;
-	private JPanel northPanel;
-	private JPanel southPanel;
-	private JPanel eastPanel;
-	private JPanel westPanel;
-	private JPanel centerPanel;
-	private IOConsole myConsole;
-	private IODialog myDialog;
-	private IOModel inputModel;
-	private IOModel outputModel;
-	private Object startupObject;
-	private AppletStarter appletStarter;
-	private Rectangle programBounds;
-	private boolean started;
-	private boolean shown;
-	private boolean initFinished;
-	private boolean appletMode;
-	private boolean exitOnClose = true;
 }
 
 /* Package class: AppletStarter */
