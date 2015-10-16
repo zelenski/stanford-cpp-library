@@ -597,7 +597,8 @@ public class ProgramMenuBar extends JMenuBar
 	
 	protected String getAboutMessage() {
 		String message = 
-			"Stanford Java Library (spl.jar) version " + stanford.spl.Version.getLibraryVersion() + "\n\n"
+			"Stanford Java Library (spl.jar) version: " + stanford.spl.Version.getLibraryVersion() + "\n"
+			+ "Java JDK/JRE version: " + stanford.spl.Version.getJdkVersion() + "\n\n"
 			+ "Libraries originally written by Eric Roberts,\n"
 			+ "with assistance from Julie Zelenski, Keith Schwarz, et al.\n"
 			+ "This version of the library is unofficially maintained by Marty Stepp.";

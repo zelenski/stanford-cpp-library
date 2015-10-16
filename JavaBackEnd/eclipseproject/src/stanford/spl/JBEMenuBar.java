@@ -1,4 +1,6 @@
 /*
+ * @version 2015/10/15
+ * - tiny edit: added a colon after 'version' in Help About message
  * @version 2014/10/22
  * - added Ctrl-Home, Ctrl-End, PgUp, PgDown hotkeys to scroll around in console
  */
@@ -22,7 +24,7 @@ public class JBEMenuBar extends ProgramMenuBar implements ActionListener {
 	}
 
 	protected String getAboutMessage() {
-		return "Stanford C++ Library version " + javaBackEnd.getCppVersion() + "\n"
+		return "Stanford C++ Library version: " + javaBackEnd.getCppVersion() + "\n"
 				+ super.getAboutMessage();
 	}
 }
