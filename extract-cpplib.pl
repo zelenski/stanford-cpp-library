@@ -25,6 +25,7 @@ my @ALL_FILES = (
 "$basedir/point.h",              # deps: none
 "$basedir/simpio.h",             # deps: none
 "$basedir/strlib.h",             # deps: none
+"$basedir/plainconsole.h",       # deps: none
 "$basedir/gmath.h",              # deps: gtypes.h
 "$basedir/shuffle.h",            # deps: random.h
 "$basedir/observable.h",         # deps: error.h
@@ -55,6 +56,9 @@ my @ALL_FILES = (
 "$basedir/pqueue.h",
 "$basedir/sparsegrid.h",
 "$basedir/dawglexicon.h",        # deps: set.h
+"$basedir/linkedhashmap.h",      
+"$basedir/linkedhashset.h",      # deps: linkedhashmap.h
+
 
 # gui; not wanted
 "$basedir/gwindow.h",
@@ -95,6 +99,7 @@ my @ALL_FILES = (
 "$basedir/random.cpp",
 "$basedir/shuffle.cpp",
 "$basedir/strlib.cpp",
+"$basedir/plainconsole.cpp",       # deps: error
 
 # collections
 "$basedir/basicgraph.cpp",

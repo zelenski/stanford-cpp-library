@@ -420,7 +420,7 @@ std::ostream& operator <<(std::ostream& out, const DawgLexicon& lex) {
         } else {
             out << ", ";
         }
-        writeGenericValue(out, word, true);
+        writeGenericValue(out, word, /* forceQuotes */ true);
     }
     out << "}";
     return out;

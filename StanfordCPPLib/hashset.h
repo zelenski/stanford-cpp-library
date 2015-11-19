@@ -626,7 +626,7 @@ std::ostream& operator <<(std::ostream& os, const HashSet<ValueType>& set) {
         if (started) {
             os << ", ";
         }
-        writeGenericValue(os, value, true);
+        writeGenericValue(os, value, /* forceQuotes */ true);
         started = true;
     }
     os << "}";

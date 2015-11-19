@@ -728,7 +728,7 @@ std::ostream& operator <<(std::ostream& os,
             os << ", ";
         }
         os << pq.heap[i].priority << ":";
-        writeGenericValue(os, pq.heap[i].value, true);
+        writeGenericValue(os, pq.heap[i].value, /* forceQuotes */ true);
     }
 #else
     // (default) slow, memory-inefficient implementation: copy pq and print
@@ -738,7 +738,7 @@ std::ostream& operator <<(std::ostream& os,
             os << ", ";
         }
         os << copy.peekPriority() << ":";
-        writeGenericValue(os, copy.dequeue(), true);
+        writeGenericValue(os, copy.dequeue(), /* forceQuotes */ true);
     }
 #endif
     return os << "}";

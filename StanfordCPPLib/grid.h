@@ -860,7 +860,7 @@ std::ostream& operator <<(std::ostream& os, const Grid<ValueType>& grid) {
             if (j > 0) {
                 os << ", ";
             }
-            writeGenericValue(os, grid.get(i, j), true);
+            writeGenericValue(os, grid.get(i, j), /* forceQuotes */ true);
         }
         os << "}";
     }

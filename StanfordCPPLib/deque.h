@@ -470,7 +470,7 @@ std::ostream& operator <<(std::ostream& os, const Deque<ValueType>& deque) {
             os << ", ";
         }
         i++;
-        writeGenericValue(os, element, true);
+        writeGenericValue(os, element, /* forceQuotes */ true);
     }
     return os << "}";
 }

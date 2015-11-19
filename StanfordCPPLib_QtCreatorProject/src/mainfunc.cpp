@@ -4,7 +4,9 @@
 
 #include "console.h"
 #include "map.h"
+#include "plainconsole.h"
 #include "vector.h"
+#include "queue.h"
 #include "random.h"
 #include "simpio.h"
 #include "strlib.h"
@@ -24,26 +26,39 @@ int main() {
     setConsoleLocation(-1, -1);
     setConsoleWindowTitle("Marty is great");
 #endif // _console_h
+    
+    Vector<int> v1;
+    v1 += 1, 2, 3;
+    cout << "v1: " << v1 << endl;
+    
+    Vector<string> v2;
+    v2 += "a", "b", "c";
+    cout << "v2: " << v2 << endl;
+    
+    Stack<int> s1;
+    s1.push(1);
+    s1.push(2);
+    s1.push(3);
+    cout << "s1: " << s1 << endl;
+    
+    Stack<string> s2;
+    s2.push("a");
+    s2.push("b");
+    s2.push("c");
+    cout << "s2: " << s2 << endl;
+    
+    Queue<int> q1;
+    q1.enqueue(1);
+    q1.enqueue(2);
+    q1.enqueue(3);
+    cout << "q1: " << q1 << endl;
+    
+    Queue<string> q2;
+    q2.enqueue("a");
+    q2.enqueue("b");
+    q2.enqueue("c");
+    cout << "q2: " << q2 << endl;
 
-//    cout << randomInteger(1, 10) << " "
-//         << randomInteger(1, 10) << " "
-//         << randomInteger(1, 10) << endl;
-    
-    Map<string, int> m;
-    m["a"] = 2;
-    m["b"] = 4;
-    cout << "map is: " << m << endl;
-    
-    Vector<string> v;
-    v += "a", "b";
-    cout << "v is: " << v << endl;
-    
-    Vector<Domino> vd;
-    string s = "{(1:4), (2:6), (4:5), (1:5), (3:5)}";
-    istringstream input(s);
-    input >> vd;
-    cout << "vd = " << vd << endl;
-    
     while (true) {
         cout << "   DATA STRUCTURES::" << endl;
         cout << "c) collections" << endl;
@@ -60,6 +75,7 @@ int main() {
         cout << "bi) buffered image" << endl;
         cout << "op) optionpane" << endl;
         cout << "rb) radio buttons" << endl;
+        cout << "ta) table" << endl;
         
         cout << "   ERROR HANDLING AND STACK TRACES:" << endl;
         cout << "   (Try all 3 to make sure stack trace prints.)" << endl;
@@ -108,6 +124,8 @@ int main() {
             stringToIntegerTest();
         } else if (cmd == "t") {
             exceptionTest();
+        } else if (cmd == "ta") {
+            gtableTest();
         } else if (cmd == "u") {
             urlstreamTest();
         }

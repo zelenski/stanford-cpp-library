@@ -797,11 +797,11 @@ std::ostream& operator <<(std::ostream& os, const LinkedList<ValueType>& list) {
     os << "{";
     if (!list.isEmpty()) {
         auto itr = list.begin(), end = list.end();
-        writeGenericValue(os, *itr, true);
+        writeGenericValue(os, *itr, /* forceQuotes */ true);
         itr++;
         while (itr != end) {
             os << ", ";
-            writeGenericValue(os, *itr, true);
+            writeGenericValue(os, *itr, /* forceQuotes */ true);
             itr++;
         }
     }

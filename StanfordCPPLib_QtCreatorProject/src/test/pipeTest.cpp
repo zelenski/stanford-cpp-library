@@ -44,6 +44,29 @@ void getIntegerTest() {
         }
         if (line == "") break;
     }
+
+    //    plainconsole::setEcho(true);
+    //    int x = getInteger("Type x: ");
+    //    cout << "You typed: " << x << endl;
+    //    cout << "Type again: ";
+    //    cin >> x;
+    //    cout << "You typed: " << x << endl;
+    
+    // test some int <-> char stuff
+    char ch = '3';
+    int x = charToInteger(ch);
+    cout << ch << " is " << x << endl;
+    
+    ch = integerToChar(x);
+    cout << x << " is " << ch << endl;
+    
+    // test errors
+    // charToInteger('x');
+    // integerToChar(42);
+        
+    //    cout << randomInteger(1, 10) << " "
+    //         << randomInteger(1, 10) << " "
+    //         << randomInteger(1, 10) << endl;
 }
 
 void killProcessTest() {

@@ -17,6 +17,7 @@ void stackOverflowTest(int n = 0);
 void fileDialogTest();
 void gbufferedImageTest();
 void goptionpaneTest();
+void gtableTest();
 void radioButtonTest();
 
 // pipe tests

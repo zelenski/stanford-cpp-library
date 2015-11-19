@@ -16,6 +16,8 @@
 #include "hashmap.h"
 #include "hashset.h"
 #include "lexicon.h"
+#include "linkedhashmap.h"
+#include "linkedhashset.h"
 #include "linkedlist.h"
 #include "map.h"
 #include "pqueue.h"
@@ -172,6 +174,22 @@ void randomElementTest() {
 
 void compareTest() {
     std::cout << "BEGIN COMPARE TEST" << std::endl;
+    
+    // testing some toString stuff and collections of objects
+    Map<string, int> m;
+    m["a"] = 2;
+    m["b"] = 4;
+    cout << "map is: " << m << endl;
+    
+    Vector<string> v;
+    v += "a", "b";
+    cout << "v is: " << v << endl;
+    
+//    Vector<Domino> vd;
+//    string s = "{(1:4), (2:6), (4:5), (1:5), (3:5)}";
+//    istringstream input(s);
+//    input >> vd;
+//    cout << "vd = " << vd << endl;
     
     BasicGraph bgraph;
     bgraph.addNode("a");
@@ -505,6 +523,48 @@ void foreachTest() {
     for (std::string n : lex) {
         std::cout << n << std::endl;
     }
+
+    std::cout << std::endl;
+    LinkedHashMap<std::string, int> lhmap;
+//    lhmap["zz"] = 26;
+//    lhmap["a"] = 1;
+//    lhmap["ss"] = 97;
+//    lhmap["bbbb"] = 2;
+//    lhmap["E"] = 4;
+//    lhmap["yZ44"] = 33;
+    lhmap.put("zz", 26);
+    lhmap.put("a", 1);
+    lhmap.put("ss", 97);
+    lhmap.put("bbbb", 2);
+    lhmap.put("E", 4);
+    lhmap.put("yZ44", 33);
+    std::cout << "linkedhashmap: " << lhmap << std::endl;
+    for (std::string k : lhmap) {
+        std::cout << k << " => " << lhmap[k] << std::endl;
+    }
+    lhmap.remove("ss");
+    lhmap.remove("zz");
+    lhmap.remove("yZ44");
+    lhmap.remove("notfound");
+    std::cout << "after removes:" << std::endl;
+    std::cout << "linkedhashmap: " << lhmap << std::endl;
+    for (std::string k : lhmap) {
+        std::cout << k << " => " << lhmap[k] << std::endl;
+    }
+    std::cout << std::endl;
+    
+    LinkedHashSet<int> lhset;
+    lhset += 30, 10, 40, 66, -1, 42, 99;
+    std::cout << "linkedhashset: " << lhset << std::endl;
+    for (int n : lhset) {
+        std::cout << n << std::endl;
+    }
+    lhset -= 40, 30, 99;
+    std::cout << "linkedhashset: " << lhset << std::endl;
+    for (int n : lhset) {
+        std::cout << n << std::endl;
+    }
+    std::cout << std::endl;
 
     LinkedList<int> ll;
     ll += 10, 20, 30, 40;

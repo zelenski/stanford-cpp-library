@@ -430,6 +430,7 @@ static void stanfordCppLibTerminateHandler() {
     
     std::ostream& out = std::cerr;   // used by FILL_IN_EXCEPTION_TRACE macro
     try {
+        signalHandlerDisable();   // don't want both a signal AND a terminate() call
         throw;   // re-throws the exception that already occurred
     } catch (const ErrorException& ex) {
         FILL_IN_EXCEPTION_TRACE(ex, "An ErrorException", ex.what());

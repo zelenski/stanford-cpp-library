@@ -10,6 +10,7 @@
 #include "ginteractors.h"
 #include "gobjects.h"
 #include "goptionpane.h"
+#include "gtable.h"
 #include "gtypes.h"
 #include "gwindow.h"
 #include "simpio.h"
@@ -168,6 +169,97 @@ void gbufferedImageTest() {
     pause(200);
     std::cout << "Test complete." << std::endl;
     std::cout << std::endl;
+}
+
+void gtableTest() {
+    GWindow gw;
+    gw.setTitle("GTable Test");
+    
+    GTable* table = new GTable(5, 3);
+    // table->setColor("#0000cc");
+    // table->setFont("Monospaced-Bold-20");
+    // table->setHorizontalAlignment(GTable::Alignment::RIGHT);
+    table->select(0, 1);
+    gw.addToRegion(table, "NORTH");
+    
+//    GTable* table2 = new GTable(4, 2, 0, 0, 100, 400);
+//    gw.addToRegion(table2, "EAST");
+    
+    GButton* buttget = new GButton("Get All");
+    gw.addToRegion(buttget, "SOUTH");
+    
+    GButton* buttset = new GButton("Set All");
+    gw.addToRegion(buttset, "SOUTH");
+    
+    GButton* buttclear = new GButton("Clear");
+    gw.addToRegion(buttclear, "SOUTH");
+    
+    GButton* buttrowadd = new GButton("+R");
+    gw.addToRegion(buttrowadd, "SOUTH");
+    
+    GButton* buttrowrem = new GButton("-R");
+    gw.addToRegion(buttrowrem, "SOUTH");
+    
+    GButton* buttcoladd = new GButton("+C");
+    gw.addToRegion(buttcoladd, "SOUTH");
+    
+    GButton* buttcolrem = new GButton("-C");
+    gw.addToRegion(buttcolrem, "SOUTH");
+    
+    GButton* buttwidthadd = new GButton("+W");
+    gw.addToRegion(buttwidthadd, "SOUTH");
+    
+    GButton* buttwidthrem = new GButton("-W");
+    gw.addToRegion(buttwidthrem, "SOUTH");
+    
+    gw.setVisible(true);
+    
+    while (true) {
+        GEvent event = waitForEvent(ACTION_EVENT | TABLE_EVENT | WINDOW_EVENT);
+        if (event.getEventClass() == ACTION_EVENT) {
+            GActionEvent actionEvent(event);
+            if (actionEvent.getSource() == buttget) {
+                for (int row = 0; row < table->numRows(); row++) {
+                    for (int col = 0; col < table->numCols(); col++) {
+                        cout << "R" << row << "C" << col << "=\"" << table->get(row, col) << "\" ";
+                    }
+                    cout << endl;
+                }
+                int row, col;
+                table->getSelectedCell(row, col);
+                cout << "selected: R" << row << "C" << col << endl;
+            } else if (actionEvent.getSource() == buttset) {
+                for (int row = 0; row < table->numRows(); row++) {
+                    for (int col = 0; col < table->numCols(); col++) {
+                        std::string value = "R" + integerToString(row) + "C" + integerToString(col);
+                        table->set(row, col, value);
+                    }
+                }
+                table->select(1, 2);
+            } else if (actionEvent.getSource() == buttclear) {
+                table->clear();
+            } else if (actionEvent.getSource() == buttrowadd) {
+                table->resize(table->numRows() + 1, table->numCols());
+            } else if (actionEvent.getSource() == buttrowrem) {
+                table->resize(table->numRows() - 1, table->numCols());
+            } else if (actionEvent.getSource() == buttcoladd) {
+                table->resize(table->numRows(), table->numCols() + 1);
+            } else if (actionEvent.getSource() == buttcolrem) {
+                table->resize(table->numRows(), table->numCols() - 1);
+            } else if (actionEvent.getSource() == buttwidthadd) {
+                table->setColumnWidth(1, table->getColumnWidth(1) + 20);
+            } else if (actionEvent.getSource() == buttwidthrem) {
+                table->setColumnWidth(1, table->getColumnWidth(1) - 20);
+            }
+        } else if (event.getEventClass() == WINDOW_EVENT) {
+            if (event.getEventType() == WINDOW_CLOSED) {
+                break;
+            }
+        } else if (event.getEventClass() == TABLE_EVENT) {
+            GTableEvent tableEvent(event);
+            std::cout << "cell updated: " << tableEvent.toString() << std::endl;
+        }
+    }
 }
 
 void radioButtonTest() {

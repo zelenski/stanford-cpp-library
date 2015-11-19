@@ -882,10 +882,16 @@ public:
         friend class Map;
     };
 
+    /*
+     * Returns an iterator positioned at the first key of the map.
+     */
     iterator begin() const {
         return iterator(this, /* end */ false);
     }
 
+    /*
+     * Returns an iterator positioned at the last key of the map.
+     */
     iterator end() const {
         return iterator(this, /* end */ true);
     }
@@ -1156,9 +1162,9 @@ std::ostream& operator <<(std::ostream& os,
         if (it != begin) {
             os << ", ";
         }
-        writeGenericValue(os, *it, true);
+        writeGenericValue(os, *it, /* forceQuotes */ true);
         os << ":";
-        writeGenericValue(os, map[*it], true);
+        writeGenericValue(os, map[*it], /* forceQuotes */ true);
         ++it;
     }
     return os << "}";
@@ -1222,7 +1228,7 @@ int hashCode(const Map<K, V>& map) {
 template <typename K, typename V>
 const K& randomKey(const Map<K, V>& map) {
     if (map.isEmpty()) {
-        error("randomElement: empty map was passed");
+        error("randomKey: empty map was passed");
     }
     int index = randomInteger(0, map.size() - 1);
     int i = 0;

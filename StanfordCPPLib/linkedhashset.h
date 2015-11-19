@@ -1,52 +1,48 @@
 /*
- * File: set.h
- * -----------
- * This file exports the <code>Set</code> class, which implements a
- * collection for storing a set of distinct elements.
+ * File: LinkedHashSet.h
+ * ---------------------
+ * This file exports the <code>LinkedHashSet</code> class, which
+ * implements an efficient abstraction for storing sets of values.
  * 
- * @version 2015/07/05
- * - using global hashing functions rather than global variables
- * @version 2014/11/13
- * - added comparison operators <, >=, etc.
- * - added template hashCode function
- * @version 2014/10/10
- * - removed use of __foreach macro
+ * @author Marty Stepp
+ * @version 2015/10/26
+ * @since 2015/10/26
  */
 
-#ifndef _set_h
-#define _set_h
+#ifndef _linkedhashset_h
+#define _linkedhashset_h
 
 #include <iostream>
-#include <set>
-#include "compare.h"
 #include "error.h"
 #include "hashcode.h"
-#include "map.h"
-#include "vector.h"
+#include "linkedhashmap.h"
 
 /*
- * Class: Set<ValueType>
- * ---------------------
- * This class stores a collection of distinct elements.
+ * Class: LinkedHashSet<ValueType>
+ * -------------------------------
+ * Identical to a HashSet except that upon iteration using a for-each loop
+ * or << / toString call, it will emit its elements in the order they were
+ * originally inserted.  This is provided at a runtime and memory
+ * cost due to needing to store an extra copy of the elements.
  */
 template <typename ValueType>
-class Set {
+class LinkedHashSet {
 public:
     /*
-     * Constructor: Set
-     * Usage: Set<ValueType> set;
-     * --------------------------
+     * Constructor: LinkedHashSet
+     * Usage: LinkedHashSet<ValueType> set;
+     * ------------------------------------
      * Initializes an empty set of the specified element type.
      */
-    Set();
+    LinkedHashSet();
 
     /*
-     * Destructor: ~Set
-     * ----------------
+     * Destructor: ~LinkedHashSet
+     * --------------------------
      * Frees any heap storage associated with this set.
      */
-    virtual ~Set();
-    
+    virtual ~LinkedHashSet();
+
     /*
      * Method: add
      * Usage: set.add(value);
@@ -65,7 +61,7 @@ public:
      * Returns a reference to this set.
      * Identical in behavior to the += operator.
      */
-    Set<ValueType>& addAll(const Set<ValueType>& set);
+    LinkedHashSet<ValueType>& addAll(const LinkedHashSet<ValueType>& set);
     
     /*
      * Method: clear
@@ -74,7 +70,7 @@ public:
      * Removes all elements from this set.
      */
     void clear();
-
+    
     /*
      * Method: contains
      * Usage: if (set.contains(value)) ...
@@ -91,7 +87,7 @@ public:
      * as the given other set.
      * Identical in behavior to the == operator.
      */
-    bool equals(const Set<ValueType>& set2) const;
+    bool equals(const LinkedHashSet<ValueType>& set2) const;
     
     /*
      * Method: first
@@ -111,7 +107,7 @@ public:
      * method is exported for compatibility with the STL <code>set</code> class.
      */
     void insert(const ValueType& value);
-    
+
     /*
      * Method: isEmpty
      * Usage: if (set.isEmpty()) ...
@@ -128,7 +124,7 @@ public:
      * <code>true</code> if every element of this set is
      * contained in <code>set2</code>.
      */
-    bool isSubsetOf(const Set& set2) const;
+    bool isSubsetOf(const LinkedHashSet& set2) const;
     
     /*
      * Method: mapAll
@@ -143,7 +139,7 @@ public:
 
     template <typename FunctorType>
     void mapAll(FunctorType fn) const;
-
+    
     /*
      * Method: remove
      * Usage: set.remove(value);
@@ -162,7 +158,7 @@ public:
      * Returns a reference to this set.
      * Identical in behavior to the -= operator.
      */
-    Set<ValueType>& removeAll(const Set<ValueType>& set);
+    LinkedHashSet<ValueType>& removeAll(const LinkedHashSet<ValueType>& set);
     
     /*
      * Method: retainAll
@@ -172,7 +168,7 @@ public:
      * other set. Returns a reference to this set.
      * Identical in behavior to the *= operator.
      */
-    Set<ValueType>& retainAll(const Set<ValueType>& set);
+    LinkedHashSet<ValueType>& retainAll(const LinkedHashSet<ValueType>& set);
 
     /*
      * Method: size
@@ -182,14 +178,6 @@ public:
      */
     int size() const;
     
-    /*
-     * Method: toStlset
-     * Usage: set<ValueType> set2 = set1.toStlSet();
-     * -----------------------------------
-     * Returns an STL set object with the same elements as this Set.
-     */
-    std::set<ValueType> toStlSet() const;
-
     /*
      * Method: toString
      * Usage: string str = set.toString();
@@ -205,7 +193,7 @@ public:
      * Returns <code>true</code> if <code>set1</code> and <code>set2</code>
      * contain the same elements.
      */
-    bool operator ==(const Set& set2) const;
+    bool operator ==(const LinkedHashSet& set2) const;
 
     /*
      * Operator: !=
@@ -214,22 +202,8 @@ public:
      * Returns <code>true</code> if <code>set1</code> and <code>set2</code>
      * are different.
      */
-    bool operator !=(const Set& set2) const;
+    bool operator !=(const LinkedHashSet& set2) const;
 
-    /*
-     * Operators: <, >, <=, >=
-     * Usage: if (set1 <= set2) ...
-     * ...
-     * ----------------------------
-     * Relational operators to compare two sets.
-     * The <, >, <=, >= operators require that the ValueType has a < operator
-     * so that the elements can be compared pairwise.
-     */
-    bool operator <(const Set& set2) const;
-    bool operator <=(const Set& set2) const;
-    bool operator >(const Set& set2) const;
-    bool operator >=(const Set& set2) const;
-    
     /*
      * Operator: +
      * Usage: set1 + set2
@@ -240,8 +214,8 @@ public:
      * right hand set can be replaced by an element of the value type, in which
      * case the operator returns a new set formed by adding that element.
      */
-    Set operator +(const Set& set2) const;
-    Set operator +(const ValueType& element) const;
+    LinkedHashSet operator +(const LinkedHashSet& set2) const;
+    LinkedHashSet operator +(const ValueType& element) const;
 
     /*
      * Operator: *
@@ -250,7 +224,7 @@ public:
      * Returns the intersection of sets <code>set1</code> and <code>set2</code>,
      * which is the set of all elements that appear in both.
      */
-    Set operator *(const Set& set2) const;
+    LinkedHashSet operator *(const LinkedHashSet& set2) const;
 
     /*
      * Operator: -
@@ -263,8 +237,8 @@ public:
      * element of the value type, in which case the operator returns a new
      * set formed by removing that element.
      */
-    Set operator -(const Set& set2) const;
-    Set operator -(const ValueType& element) const;
+    LinkedHashSet operator -(const LinkedHashSet& set2) const;
+    LinkedHashSet operator -(const ValueType& element) const;
 
     /*
      * Operator: +=
@@ -273,16 +247,16 @@ public:
      * ---------------------
      * Adds all of the elements from <code>set2</code> (or the single
      * specified value) to <code>set1</code>.  As a convenience, the
-     * <code>Set</code> package also overloads the comma operator so
+     * <code>LinkedHashSet</code> package also overloads the comma operator so
      * that it is possible to initialize a set like this:
      *
      *<pre>
-     *    Set&lt;int&gt; digits;
+     *    LinkedHashSet&lt;int&lt; digits;
      *    digits += 0, 1, 2, 3, 4, 5, 6, 7, 8, 9;
      *</pre>
      */
-    Set& operator +=(const Set& set2);
-    Set& operator +=(const ValueType& value);
+    LinkedHashSet& operator +=(const LinkedHashSet& set2);
+    LinkedHashSet& operator +=(const ValueType& value);
 
     /*
      * Operator: *=
@@ -291,7 +265,7 @@ public:
      * Removes any elements from <code>set1</code> that are not present in
      * <code>set2</code>.
      */
-    Set& operator *=(const Set& set2);
+    LinkedHashSet& operator *=(const LinkedHashSet& set2);
 
     /*
      * Operator: -=
@@ -300,7 +274,7 @@ public:
      * ---------------------
      * Removes the elements from <code>set2</code> (or the single
      * specified value) from <code>set1</code>.  As a convenience, the
-     * <code>Set</code> package also overloads the comma operator so
+     * <code>LinkedHashSet</code> package also overloads the comma operator so
      * that it is possible to remove multiple elements from a set
      * like this:
      *
@@ -311,20 +285,20 @@ public:
      * which removes the values 0, 2, 4, 6, and 8 from the set
      * <code>digits</code>.
      */
-    Set& operator -=(const Set& set2);
-    Set& operator -=(const ValueType& value);
+    LinkedHashSet& operator -=(const LinkedHashSet& set2);
+    LinkedHashSet& operator -=(const ValueType& value);
 
     /*
-     * Additional Set operations
-     * -------------------------
-     * In addition to the methods listed in this interface, the Set
+     * Additional LinkedHashSet operations
+     * -----------------------------------
+     * In addition to the methods listed in this interface, the LinkedHashSet
      * class supports the following operations:
      *
      *   - Stream I/O using the << and >> operators
      *   - Deep copying for the copy constructor and assignment operator
      *   - Iteration using the range-based for statement and STL iterators
      *
-     * The iteration forms process the Set in ascending order.
+     * The iteration forms process the LinkedHashSet in the order of insertion.
      */
 
     /* Private section */
@@ -335,7 +309,7 @@ public:
     /**********************************************************************/
 
 private:
-    Map<ValueType, bool> map;            /* Map used to store the element     */
+    LinkedHashMap<ValueType, bool> map;  /* Map used to store the element     */
     bool removeFlag;                     /* Flag to differentiate += and -=   */
 
 public:
@@ -347,14 +321,7 @@ public:
      * Including these methods in the public interface would make
      * that interface more difficult to understand for the average client.
      */
-
-    /* Extended constructors */
-    template <typename CompareType>
-    explicit Set(CompareType cmp) : map(Map<ValueType, bool>(cmp)), removeFlag(false) {
-        // Empty
-    }
-
-    Set& operator ,(const ValueType& value) {
+    LinkedHashSet& operator ,(const ValueType& value) {
         if (this->removeFlag) {
             this->remove(value);
         } else {
@@ -372,14 +339,14 @@ public:
      */
     class iterator : public std::iterator<std::input_iterator_tag,ValueType> {
     private:
-        typename Map<ValueType,bool>::iterator mapit;  /* Iterator for the map */
+        typename LinkedHashMap<ValueType,bool>::iterator mapit;
 
     public:
         iterator() {
             /* Empty */
         }
 
-        iterator(typename Map<ValueType,bool>::iterator it) : mapit(it) {
+        iterator(typename LinkedHashMap<ValueType, bool>::iterator it) : mapit(it) {
             /* Empty */
         }
 
@@ -424,25 +391,23 @@ public:
     }
 };
 
-extern void error(std::string msg);
-
 template <typename ValueType>
-Set<ValueType>::Set() : removeFlag(false) {
+LinkedHashSet<ValueType>::LinkedHashSet() : removeFlag(false) {
     /* Empty */
 }
 
 template <typename ValueType>
-Set<ValueType>::~Set() {
+LinkedHashSet<ValueType>::~LinkedHashSet() {
     /* Empty */
 }
 
 template <typename ValueType>
-void Set<ValueType>::add(const ValueType& value) {
+void LinkedHashSet<ValueType>::add(const ValueType& value) {
     map.put(value, true);
 }
 
 template <typename ValueType>
-Set<ValueType>& Set<ValueType>::addAll(const Set& set2) {
+LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::addAll(const LinkedHashSet& set2) {
     for (ValueType value : set2) {
         this->add(value);
     }
@@ -450,57 +415,49 @@ Set<ValueType>& Set<ValueType>::addAll(const Set& set2) {
 }
 
 template <typename ValueType>
-void Set<ValueType>::clear() {
+void LinkedHashSet<ValueType>::clear() {
     map.clear();
 }
 
 template <typename ValueType>
-bool Set<ValueType>::contains(const ValueType& value) const {
+bool LinkedHashSet<ValueType>::contains(const ValueType& value) const {
     return map.containsKey(value);
 }
 
 template <typename ValueType>
-bool Set<ValueType>::equals(const Set<ValueType>& set2) const {
+bool LinkedHashSet<ValueType>::equals(const LinkedHashSet<ValueType>& set2) const {
     // optimization: if literally same set, stop
     if (this == &set2) {
         return true;
     }
+    
     if (size() != set2.size()) {
         return false;
     }
-    iterator it1 = begin();
-    iterator it2 = set2.map.begin();
-    iterator end = this->end();
-    while (it1 != end) {
-        if (map.compareKeys(*it1, *it2) != 0) {
-            return false;
-        }
-        ++it1;
-        ++it2;
-    }
-    return true;
+    
+    return isSubsetOf(set2) && set2.isSubsetOf(*this);
 }
 
 template <typename ValueType>
-ValueType Set<ValueType>::first() const {
+ValueType LinkedHashSet<ValueType>::first() const {
     if (isEmpty()) {
-        error("Set::first: set is empty");
+        error("LinkedHashSet::first: set is empty");
     }
     return *begin();
 }
 
 template <typename ValueType>
-void Set<ValueType>::insert(const ValueType& value) {
+void LinkedHashSet<ValueType>::insert(const ValueType& value) {
     map.put(value, true);
 }
 
 template <typename ValueType>
-bool Set<ValueType>::isEmpty() const {
+bool LinkedHashSet<ValueType>::isEmpty() const {
     return map.isEmpty();
 }
 
 template <typename ValueType>
-bool Set<ValueType>::isSubsetOf(const Set& set2) const {
+bool LinkedHashSet<ValueType>::isSubsetOf(const LinkedHashSet& set2) const {
     iterator it = begin();
     iterator end = this->end();
     while (it != end) {
@@ -513,28 +470,28 @@ bool Set<ValueType>::isSubsetOf(const Set& set2) const {
 }
 
 template <typename ValueType>
-void Set<ValueType>::mapAll(void (*fn)(ValueType)) const {
+void LinkedHashSet<ValueType>::mapAll(void (*fn)(ValueType)) const {
     map.mapAll(fn);
 }
 
 template <typename ValueType>
-void Set<ValueType>::mapAll(void (*fn)(const ValueType&)) const {
+void LinkedHashSet<ValueType>::mapAll(void (*fn)(const ValueType&)) const {
     map.mapAll(fn);
 }
 
 template <typename ValueType>
 template <typename FunctorType>
-void Set<ValueType>::mapAll(FunctorType fn) const {
+void LinkedHashSet<ValueType>::mapAll(FunctorType fn) const {
     map.mapAll(fn);
 }
 
 template <typename ValueType>
-void Set<ValueType>::remove(const ValueType& value) {
+void LinkedHashSet<ValueType>::remove(const ValueType& value) {
     map.remove(value);
 }
 
 template <typename ValueType>
-Set<ValueType>& Set<ValueType>::removeAll(const Set& set2) {
+LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::removeAll(const LinkedHashSet& set2) {
     Vector<ValueType> toRemove;
     for (ValueType value : *this) {
         if (set2.map.containsKey(value)) {
@@ -548,7 +505,7 @@ Set<ValueType>& Set<ValueType>::removeAll(const Set& set2) {
 }
 
 template <typename ValueType>
-Set<ValueType>& Set<ValueType>::retainAll(const Set& set2) {
+LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::retainAll(const LinkedHashSet& set2) {
     Vector<ValueType> toRemove;
     for (ValueType value : *this) {
         if (!set2.map.containsKey(value)) {
@@ -562,21 +519,12 @@ Set<ValueType>& Set<ValueType>::retainAll(const Set& set2) {
 }
 
 template <typename ValueType>
-int Set<ValueType>::size() const {
+int LinkedHashSet<ValueType>::size() const {
     return map.size();
 }
 
 template <typename ValueType>
-std::set<ValueType> Set<ValueType>::toStlSet() const {
-    std::set<ValueType> result;
-    for (ValueType value : *this) {
-        result.insert(value);
-    }
-    return result;
-}
-
-template <typename ValueType>
-std::string Set<ValueType>::toString() const {
+std::string LinkedHashSet<ValueType>::toString() const {
     std::ostringstream os;
     os << *this;
     return os.str();
@@ -589,106 +537,88 @@ std::string Set<ValueType>::toString() const {
  * over the elements in one or both sets.
  */
 template <typename ValueType>
-bool Set<ValueType>::operator ==(const Set& set2) const {
+bool LinkedHashSet<ValueType>::operator ==(const LinkedHashSet& set2) const {
     return equals(set2);
 }
 
 template <typename ValueType>
-bool Set<ValueType>::operator !=(const Set& set2) const {
+bool LinkedHashSet<ValueType>::operator !=(const LinkedHashSet& set2) const {
     return !equals(set2);
 }
 
 template <typename ValueType>
-bool Set<ValueType>::operator <(const Set& set2) const {
-    return compare::compare(*this, set2) < 0;
-}
-
-template <typename ValueType>
-bool Set<ValueType>::operator <=(const Set& set2) const {
-    return compare::compare(*this, set2) <= 0;
-}
-
-template <typename ValueType>
-bool Set<ValueType>::operator >(const Set& set2) const {
-    return compare::compare(*this, set2) > 0;
-}
-
-template <typename ValueType>
-bool Set<ValueType>::operator >=(const Set& set2) const {
-    return compare::compare(*this, set2) >= 0;
-}
-
-template <typename ValueType>
-Set<ValueType> Set<ValueType>::operator +(const Set& set2) const {
-    Set<ValueType> set = *this;
+LinkedHashSet<ValueType> LinkedHashSet<ValueType>::operator +(const LinkedHashSet& set2) const {
+    LinkedHashSet<ValueType> set = *this;
     set.addAll(set2);
     return set;
 }
 
 template <typename ValueType>
-Set<ValueType> Set<ValueType>::operator +(const ValueType& element) const {
-    Set<ValueType> set = *this;
+LinkedHashSet<ValueType>
+LinkedHashSet<ValueType>::operator +(const ValueType& element) const {
+    LinkedHashSet<ValueType> set = *this;
     set.add(element);
     return set;
 }
 
 template <typename ValueType>
-Set<ValueType> Set<ValueType>::operator *(const Set& set2) const {
-    Set<ValueType> set = *this;
+LinkedHashSet<ValueType> LinkedHashSet<ValueType>::operator *(const LinkedHashSet& set2) const {
+    LinkedHashSet<ValueType> set = *this;
     return set.retainAll(set2);
 }
 
 template <typename ValueType>
-Set<ValueType> Set<ValueType>::operator -(const Set& set2) const {
-    Set<ValueType> set = *this;
+LinkedHashSet<ValueType> LinkedHashSet<ValueType>::operator -(const LinkedHashSet& set2) const {
+    LinkedHashSet<ValueType> set = *this;
     return set.removeAll(set2);
 }
 
 template <typename ValueType>
-Set<ValueType> Set<ValueType>::operator -(const ValueType& element) const {
-    Set<ValueType> set = *this;
+LinkedHashSet<ValueType>
+LinkedHashSet<ValueType>::operator -(const ValueType& element) const {
+    LinkedHashSet<ValueType> set = *this;
     set.remove(element);
     return set;
 }
 
 template <typename ValueType>
-Set<ValueType>& Set<ValueType>::operator +=(const Set& set2) {
+LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator +=(const LinkedHashSet& set2) {
     return addAll(set2);
 }
 
 template <typename ValueType>
-Set<ValueType>& Set<ValueType>::operator +=(const ValueType& value) {
+LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator +=(const ValueType& value) {
     add(value);
     removeFlag = false;
     return *this;
 }
 
 template <typename ValueType>
-Set<ValueType>& Set<ValueType>::operator *=(const Set& set2) {
+LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator *=(const LinkedHashSet& set2) {
     return retainAll(set2);
 }
 
 template <typename ValueType>
-Set<ValueType>& Set<ValueType>::operator -=(const Set& set2) {
+LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator -=(const LinkedHashSet& set2) {
     return removeAll(set2);
 }
 
 template <typename ValueType>
-Set<ValueType>& Set<ValueType>::operator -=(const ValueType& value) {
+LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator -=(const ValueType& value) {
     remove(value);
     removeFlag = true;
     return *this;
 }
 
 template <typename ValueType>
-std::ostream& operator <<(std::ostream& os, const Set<ValueType>& set) {
+std::ostream& operator <<(std::ostream& os, const LinkedHashSet<ValueType>& set) {
     os << "{";
     bool started = false;
     for (ValueType value : set) {
         if (started) {
             os << ", ";
         }
-        writeGenericValue(os, value, /* forceQuotes */ true);
+        writeGenericValue(os, value, true);
         started = true;
     }
     os << "}";
@@ -696,11 +626,11 @@ std::ostream& operator <<(std::ostream& os, const Set<ValueType>& set) {
 }
 
 template <typename ValueType>
-std::istream& operator >>(std::istream& is, Set<ValueType>& set) {
+std::istream& operator >>(std::istream& is, LinkedHashSet<ValueType>& set) {
     char ch = '\0';
     is >> ch;
     if (ch != '{') {
-        error("Set::operator >>: Missing {");
+        error("LinkedHashSet::operator >>: Missing {");
     }
     set.clear();
     is >> ch;
@@ -715,7 +645,7 @@ std::istream& operator >>(std::istream& is, Set<ValueType>& set) {
                 break;
             }
             if (ch != ',') {
-                error(std::string("Set::operator >>: Unexpected character ") + ch);
+                error(std::string("LinkedHashSet::operator >>: Unexpected character ") + ch);
             }
         }
     }
@@ -723,11 +653,11 @@ std::istream& operator >>(std::istream& is, Set<ValueType>& set) {
 }
 
 /*
- * Template hash function for sets.
- * Requires the element type in the Set to have a hashCode function.
+ * Template hash function for hash sets.
+ * Requires the element type in the LinkedHashSet to have a hashCode function.
  */
 template <typename T>
-int hashCode(const Set<T>& s) {
+int hashCode(const LinkedHashSet<T>& s) {
     int code = hashSeed();
     for (T n : s) {
         code = hashMultiplier() * code + hashCode(n);
@@ -743,9 +673,9 @@ int hashCode(const Set<T>& s) {
  * Throws an error if the set is empty.
  */
 template <typename T>
-const T& randomElement(const Set<T>& set) {
+const T& randomElement(const LinkedHashSet<T>& set) {
     if (set.isEmpty()) {
-        error("randomElement: empty set was passed");
+        error("randomElement: empty linked hash set was passed");
     }
     int index = randomInteger(0, set.size() - 1);
     int i = 0;
@@ -761,4 +691,4 @@ const T& randomElement(const Set<T>& set) {
     return unused;
 }
 
-#endif
+#endif // _linkedhashset_h

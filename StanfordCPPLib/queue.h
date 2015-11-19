@@ -477,10 +477,10 @@ template <typename ValueType>
 std::ostream& operator <<(std::ostream& os, const Queue<ValueType>& queue) {
     os << "{";
     if (!queue.isEmpty()) {
-        writeGenericValue(os, queue.ringBuffer[queue.head], false);
+        writeGenericValue(os, queue.ringBuffer[queue.head], /* forceQuotes */ true);
         for (int i = 1; i < queue.count; i++) {
             os << ", ";
-            writeGenericValue(os, queue.ringBuffer[(queue.head + i) % queue.capacity], false);
+            writeGenericValue(os, queue.ringBuffer[(queue.head + i) % queue.capacity], /* forceQuotes */ true);
         }
     }
     os << "}";
