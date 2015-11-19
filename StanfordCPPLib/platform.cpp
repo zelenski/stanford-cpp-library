@@ -4,6 +4,8 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2015/10/21
+ * - moved EchoingStreambuf to plainconsole.h/cpp facilitate in/output capture
  * @version 2015/10/08
  * - bug fixes for sending long strings through Java process pipe
  * @version 2015/10/01
@@ -88,6 +90,7 @@ static int pout;
 #include "gtimer.h"
 #include "gtypes.h"
 #include "hashmap.h"
+#include "plainconsole.h"
 #include "queue.h"
 #include "stack.h"
 #include "strlib.h"
@@ -258,136 +261,6 @@ public:
     }
 };
 
-/*
- * A stream buffer that just forwards everything to a delegate,
- * but echoes any user input read from it.
- * Used to (sometimes) echo console input when redirected in from a file.
- * http://www.cplusplus.com/reference/streambuf/streambuf/
- */
-class EchoingStreambuf : public std::streambuf {
-private:
-    /* Constants */
-    static const int BUFFER_SIZE = 4096;
-
-    /* Instance variables */
-    char inBuffer[BUFFER_SIZE];
-    char outBuffer[BUFFER_SIZE];
-    std::istream instream;
-    int outputLimit;
-    int outputPrinted;
-
-public:
-    EchoingStreambuf(std::streambuf& buf)
-            : instream(&buf),
-              outputLimit(0),
-              outputPrinted(0) {
-        // outstream.rdbuf(&buf);
-        setg(inBuffer, inBuffer, inBuffer);
-        setp(outBuffer, outBuffer + BUFFER_SIZE);
-    }
-
-    ~EchoingStreambuf() {
-        /* Empty */
-    }
-    
-    virtual void setOutputLimit(int limit) {
-        outputLimit = limit;
-    }
-
-    virtual int underflow() {
-        // Allow long strings at some point
-        std::string line;
-        getline(instream, line);
-        
-        // echo the line just read
-        // std::cout << line << std::endl;
-        // outputPrinted += line.length();
-        // if (outputLimit > 0 && outputPrinted > outputLimit) {
-        //     error("excessive output printed");
-        // }
-        
-        int n = line.length();
-        if (n + 1 >= BUFFER_SIZE) {
-            error("EchoingStreambuf::underflow: String too long");
-        }
-        for (int i = 0; i < n; i++) {
-            inBuffer[i] = line[i];
-        }
-        inBuffer[n++] = '\n';
-        inBuffer[n] = '\0';
-        setg(inBuffer, inBuffer, inBuffer + n);
-        return inBuffer[0];
-    }
-
-    virtual int overflow(int ch = EOF) {
-        std::string line = "";
-        for (char *cp = pbase(); cp < pptr(); cp++) {
-            if (*cp == '\n') {
-                // puts(line.c_str());
-                outputPrinted += line.length();
-                if (outputLimit > 0 && outputPrinted > outputLimit) {
-                    error("excessive output printed");
-                }
-                line = "";
-            } else {
-                line += *cp;
-            }
-        }
-        if (line != "") {
-            // puts(line.c_str());
-            outputPrinted += line.length();
-            if (outputLimit > 0 && outputPrinted > outputLimit) {
-                error("excessive output printed");
-            }
-        }
-        setp(outBuffer, outBuffer + BUFFER_SIZE);
-        if (ch != EOF) {
-            outBuffer[0] = ch;
-            pbump(1);
-        }
-        return ch != EOF;
-    }
-    
-    virtual int sync() {
-        return overflow();
-    }
-};
-
-/*
- * A stream buffer that limits how many characters you can print to it.
- * If you exceed that many, it throws an ErrorException.
- */
-class LimitedStreambuf : public std::streambuf {
-private:
-    std::ostream outstream;
-    int outputLimit;
-    int outputPrinted;
-
-public:
-    LimitedStreambuf(std::streambuf& buf, int limit)
-            : outstream(&buf),
-              outputLimit(limit),
-              outputPrinted(0) {
-        setp(0, 0);   // // no buffering, overflow on every char
-    }
-
-    virtual void setOutputLimit(int limit) {
-        outputLimit = limit;
-    }
-
-    virtual int overflow(int ch = EOF) {
-        outputPrinted++;
-        if (outputLimit > 0 && outputPrinted > outputLimit) {
-            // error("excessive output printed");
-            // outstream.setstate(std::ios::failbit | std::ios::badbit | std::ios::eofbit);
-            raise(SIGABRT);   // kill the program
-        } else {
-            outstream.put(ch);
-        }
-        return ch;
-    }
-};
-
 /* Private data */
 
 static Queue<GEvent> eventQueue;
@@ -397,7 +270,7 @@ static HashMap<std::string, GObject*> sourceTable;
 static HashMap<std::string, std::string> optionTable;
 static std::string programName;
 static std::ofstream logfile;
-static ConsoleStreambuf* cinout_new_buf;
+static ConsoleStreambuf* cinout_new_buf = NULL;
 
 #ifdef _WIN32
 static HANDLE rdFromJBE = NULL;
@@ -421,6 +294,7 @@ static void getStatus();
 static GEvent parseEvent(std::string line);
 static GEvent parseMouseEvent(TokenScanner& scanner, EventType type);
 static GEvent parseKeyEvent(TokenScanner& scanner, EventType type);
+static GEvent parseTableEvent(TokenScanner& scanner, EventType type);
 static GEvent parseTimerEvent(TokenScanner& scanner, EventType type);
 static GEvent parseWindowEvent(TokenScanner& scanner, EventType type);
 static GEvent parseActionEvent(TokenScanner& scanner, EventType type);
@@ -1049,7 +923,7 @@ void Platform::gwindow_setResizable(const GWindow& gw, bool value) {
     putPipe(os.str());
 }
 
-void Platform::gwindow_addToRegion(const GWindow& gw, GObject* gobj, std::string region) {
+void Platform::gwindow_addToRegion(const GWindow& gw, GObject* gobj, const std::string& region) {
     std::ostringstream os;
     os << "GWindow.addToRegion(\"" << gw.gwd << "\", \"" << gobj << "\", \""
        << region << "\")";
@@ -1627,6 +1501,87 @@ void Platform::gslider_setValue(GObject* gobj, int value) {
     putPipe(os.str());
 }
 
+void Platform::gtable_clear(GObject* gobj) {
+    std::ostringstream os;
+    os << "GTable.clear(\"" << gobj << "\")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_constructor(GObject* gobj, int numRows, int numCols,
+                                  double x, double y, double width, double height) {
+    std::ostringstream os;
+    os << gobj;
+    sourceTable.put(os.str(), gobj);
+    os.str("");
+    os << "GTable.create(\"" << gobj << "\", " << numRows << ", " << numCols
+       << ", " << x << ", " << y << ", " << width << ", " << height << ")";
+    putPipe(os.str());
+}
+
+std::string Platform::gtable_get(const GObject * gobj, int row, int column) {
+    std::ostringstream os;
+    os << "GTable.get(\"" << gobj << "\", " << row << ", " << column << ")";
+    putPipe(os.str());
+    return getResult();
+}
+
+int Platform::gtable_getColumnWidth(const GObject* gobj, int column) {
+    std::ostringstream os;
+    os << "GTable.getColumnWidth(\"" << gobj << "\", " << column << ")";
+    putPipe(os.str());
+    return stringToInteger(getResult());
+}
+
+void Platform::gtable_getSelection(const GObject* gobj, int& row, int& column) {
+    std::ostringstream os;
+    os << "GTable.getSelection(\"" << gobj << "\")";
+    putPipe(os.str());
+    row = stringToInteger(getResult());
+    column = stringToInteger(getResult());
+}
+
+void Platform::gtable_resize(GObject* gobj, int numRows, int numCols) {
+    std::ostringstream os;
+    os << "GTable.resize(\"" << gobj << "\", " << numRows << ", " << numCols << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_select(GObject* gobj, int row, int column) {
+    std::ostringstream os;
+    os << "GTable.select(\"" << gobj << "\", " << row << ", " << column << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_set(GObject* gobj, int row, int column, const std::string& value) {
+    std::ostringstream os;
+    os << "GTable.set(\"" << gobj << "\", " << row << ", " << column << ", ";
+    writeQuotedString(os, value);
+    os << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_setColumnWidth(GObject* gobj, int column, int width) {
+    std::ostringstream os;
+    os << "GTable.setColumnWidth(\"" << gobj << "\", " << column << ", " << width << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_setFont(GObject* gobj, const std::string& font) {
+    std::ostringstream os;
+    os << "GTable.setFont(\"" << gobj << "\", ";
+    writeQuotedString(os, font);
+    os << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_setHorizontalAlignment(GObject* gobj, const std::string& alignment) {
+    std::ostringstream os;
+    os << "GTable.setHorizontalAlignment(\"" << gobj << "\", ";
+    writeQuotedString(os, alignment);
+    os << ")";
+    putPipe(os.str());
+}
+
 void Platform::gtextfield_constructor(GObject* gobj, int nChars) {
     std::ostringstream os;
     os << gobj;
@@ -2190,13 +2145,9 @@ void startupMainDontRunMain(int /*argc*/, char** argv) {
     
 #ifdef SPL_ECHO_PLAIN_CONSOLE
     // echo user input pulled from cin
-    EchoingStreambuf* echobufIn = new EchoingStreambuf(*std::cin.rdbuf());
-    std::cin.rdbuf(echobufIn);
+    plainconsole::setEcho(true);
 #ifdef SPL_CONSOLE_OUTPUT_LIMIT
-    LimitedStreambuf* limitedbufOut = new LimitedStreambuf(*std::cout.rdbuf(), SPL_CONSOLE_OUTPUT_LIMIT);
-    LimitedStreambuf* limitedbufErr = new LimitedStreambuf(*std::cerr.rdbuf(), SPL_CONSOLE_OUTPUT_LIMIT);
-    std::cout.rdbuf(limitedbufOut);
-    std::cerr.rdbuf(limitedbufErr);
+    plainconsole::setOutputLimit(SPL_CONSOLE_OUTPUT_LIMIT);
 #endif // SPL_CONSOLE_OUTPUT_LIMIT
 #endif // SPL_ECHO_PLAIN_CONSOLE
     
@@ -2280,31 +2231,43 @@ static void initPipe() {
         
 #ifdef __APPLE__
         std::string option = "-Xdock:name=" + programName;
-        execlp(javaCommand.c_str(), javaCommand.c_str(), option.c_str(), "-jar", jarName.c_str(),
+        int execlpResult = execlp(javaCommand.c_str(), javaCommand.c_str(), option.c_str(), "-jar", jarName.c_str(),
                programName.c_str(), NULL);
+        std::string fullCommand = javaCommand + " " + option + " -jar " + jarName + " " + programName;
 #else // !APPLE
 #ifdef SPL_HEADLESS_MODE
-        execlp(javaCommand.c_str(), javaCommand.c_str(), "-Djava.awt.headless=true", "-jar", jarName.c_str(), programName.c_str(), NULL);
+        int execlpResult = execlp(javaCommand.c_str(), javaCommand.c_str(), "-Djava.awt.headless=true", "-jar", jarName.c_str(), programName.c_str(), NULL);
+        std::string fullCommand = javaCommand + " -jar " + jarName + " " + programName;
 #else // !SPL_HEADLESS_MODE
-        execlp(javaCommand.c_str(), javaCommand.c_str(), "-jar", jarName.c_str(), programName.c_str(), NULL);
+        int execlpResult = execlp(javaCommand.c_str(), javaCommand.c_str(), "-jar", jarName.c_str(), programName.c_str(), NULL);
+        std::string fullCommand = javaCommand + " -Djava.awt.headless=true -jar " + jarName + " " + programName;
 #endif // SPL_HEADLESS_MODE
 #endif // APPLE
         
         // if we get here, the execlp call failed, so show error message
         // use stderr directly rather than cerr because graphical console is unreachable
-        char* lastError = strerror(errno);
-        
-        fputs("\n", stderr);
-        fputs("***\n", stderr);
-        fputs("*** STANFORD C++ LIBRARY ERROR:\n", stderr);
-        fputs("*** Unable to connect to Java back-end\n", stderr);
-        fputs("*** to launch 'spl.jar' command.\n", stderr);
-        fputs("*** Please check your Java installation and make sure\n", stderr);
-        fputs("*** that spl.jar is properly attached to your project.\n", stderr);
-        fputs("***\n", stderr);
-        fputs((std::string("*** Error was: ") + lastError).c_str(), stderr);
-        fflush(stderr);
-        error("Could not exec spl.jar");
+#ifndef SPL_HEADLESS_MODE
+        if (execlpResult != 0) {
+            char* lastError = strerror(errno);
+            std::string workingDir = getCurrentDirectory();
+            
+            fputs("\n", stderr);
+            fputs("***\n", stderr);
+            fputs("*** STANFORD C++ LIBRARY ERROR:\n", stderr);
+            fputs("*** Unable to launch process to connect to Java back-end\n", stderr);
+            fputs("*** using the 'spl.jar' library.\n", stderr);
+            fputs("*** Please check your Java installation and make sure\n", stderr);
+            fputs("*** that spl.jar is properly attached to your project.\n", stderr);
+            fputs("***\n", stderr);
+            fputs(("*** Command was: " + fullCommand + "\n").c_str(), stderr);
+            fputs(("*** Working dir: " + workingDir + "\n").c_str(), stderr);
+            fputs(("***  Result was: " + integerToString(execlpResult) + "\n").c_str(), stderr);
+            fputs((std::string("***   Error was: ") + lastError + std::string("\n")).c_str(), stderr);
+            fputs("***\n", stderr);
+            fflush(stderr);
+            exit(1);
+        }
+#endif // SPL_HEADLESS_MODE
     } else {
         // we are the C++ process; connect pipe input/output
         cppLibPid = getpid();
@@ -2516,6 +2479,8 @@ static GEvent parseEvent(std::string line) {
         return parseKeyEvent(scanner, KEY_TYPED);
     } else if (name == "actionPerformed") {
         return parseActionEvent(scanner, ACTION_PERFORMED);
+    } else if (name == "tableUpdated") {
+        return parseTableEvent(scanner, TABLE_UPDATED);
     } else if (name == "timerTicked") {
         return parseTimerEvent(scanner, TIMER_TICKED);
     } else if (name == "windowClosed") {
@@ -2600,6 +2565,25 @@ static GEvent parseKeyEvent(TokenScanner& scanner, EventType type) {
     GKeyEvent e(type, GWindow(windowTable.get(id)), char(keyChar), keyCode);
     e.setEventTime(time);
     e.setModifiers(modifiers);
+    return e;
+}
+
+static GEvent parseTableEvent(TokenScanner& scanner, EventType type) {
+    scanner.verifyToken("(");
+    std::string id = scanner.getStringValue(scanner.nextToken());
+    scanner.verifyToken(",");
+    double time = scanDouble(scanner);
+    scanner.verifyToken(",");
+    int row = scanInt(scanner);
+    scanner.verifyToken(",");
+    int col = scanInt(scanner);
+    scanner.verifyToken(",");
+    std::string value = urlDecode(scanner.getStringValue(scanner.nextToken()));
+    scanner.verifyToken(")");
+    GTableEvent e(type);  //, GTimer(timerTable.get(id)));
+    e.setLocation(row, col);
+    e.setValue(value);
+    e.setEventTime(time);
     return e;
 }
 

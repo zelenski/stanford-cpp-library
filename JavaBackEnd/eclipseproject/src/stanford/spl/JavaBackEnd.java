@@ -148,9 +148,9 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 			try {
 				Process localProcess = Runtime.getRuntime().exec(this.exec);
 				System.setIn(localProcess.getInputStream());
-				System.setOut(new PrintStream(localProcess.getOutputStream(), true));
+				System.setOut(new PrintStream(localProcess.getOutputStream(), /* autoflush */ true));
 			} catch (IOException localIOException) {
-				System.err.println("Can't exec process");
+				System.err.println("Can't exec process: " + localIOException.getMessage());
 			}
 		}
 		commandLoop();
@@ -308,7 +308,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		this.console.println();
 	}
 
-	protected double getEventTime() {
+	public double getEventTime() {
 		return new Date().getTime();
 	}
 
@@ -743,8 +743,8 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 				}
 			}
 		} catch (Exception localException) {
-			localException.printStackTrace(System.err);
 			System.err.println("Unexpected error: " + localException.getMessage());
+			localException.printStackTrace(System.err);
 			if (DEBUG) {
 				printLog("Unexpected error: " + localException.getMessage());
 			}
@@ -790,22 +790,36 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	}
 
 	private void initSystemProperties() {
-		System.setProperty("com.apple.mrj.application.apple.menu.about.name", this.appName);
-		System.setProperty("apple.laf.useScreenMenuBar", "true");
-		try {
-			UIManager.put("Slider.paintValue", false);
+		if (!GraphicsEnvironment.isHeadless()) {
+			System.setProperty("com.apple.mrj.application.apple.menu.about.name", this.appName);
+			System.setProperty("apple.laf.useScreenMenuBar", "true");
 			try {
-				String lnf = UIManager.getSystemLookAndFeelClassName();
-				if (lnf == null || lnf.contains("MetalLookAndFeel")) {
-					// workaround because system L&F seems to fail on Linux boxes
-					UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-				} else {
-					UIManager.setLookAndFeel(lnf);
+				try {
+					UIManager.put("Slider.paintValue", false);
+					UIManager.put("Table.disabled", false);
+					UIManager.put("Table.gridColor", new Color(204,207,213));
+					UIManager.put("Table.showGrid", true);
+					UIManager.put("Table.intercellSpacing", new Dimension(1, 1));
+					
+					String lnf = UIManager.getSystemLookAndFeelClassName();
+					if (lnf == null || lnf.contains("MetalLookAndFeel")) {
+						// workaround because system L&F seems to fail on Linux boxes
+						UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+					} else {
+						UIManager.setLookAndFeel(lnf);
+					}
+					
+					UIManager.put("Slider.paintValue", false);
+					UIManager.put("Table.disabled", false);
+					UIManager.put("Table.gridColor", new Color(204,207,213));
+					UIManager.put("Table.showGrid", true);
+					UIManager.put("Table.intercellSpacing", new Dimension(1, 1));
+				} catch (Exception e) {
+					// empty
 				}
-			} catch (Exception e) {
+			} catch (Exception localException) {
 				// empty
 			}
-		} catch (Exception localException) {
 		}
 	}
 

@@ -117,6 +117,17 @@ public abstract class JBECommand {
 		localHashMap.put("GSlider.setPaintTicks", new GSlider_setPaintTicks());
 		localHashMap.put("GSlider.setSnapToTicks", new GSlider_setSnapToTicks());
 		localHashMap.put("GSlider.setValue", new GSlider_setValue());
+		localHashMap.put("GTable.clear", new GTable_clear());
+		localHashMap.put("GTable.create", new GTable_create());
+		localHashMap.put("GTable.get", new GTable_get());
+		localHashMap.put("GTable.getColumnWidth", new GTable_getColumnWidth());
+		localHashMap.put("GTable.getSelection", new GTable_getSelection());
+		localHashMap.put("GTable.resize", new GTable_resize());
+		localHashMap.put("GTable.select", new GTable_select());
+		localHashMap.put("GTable.set", new GTable_set());
+		localHashMap.put("GTable.setColumnWidth", new GTable_setColumnWidth());
+		localHashMap.put("GTable.setFont", new GTable_setFont());
+		localHashMap.put("GTable.setHorizontalAlignment", new GTable_setHorizontalAlignment());
 		localHashMap.put("GTextField.create", new GTextField_create());
 		localHashMap.put("GTextField.getText", new GTextField_getText());
 		localHashMap.put("GTextField.isEditable", new GTextField_isEditable());

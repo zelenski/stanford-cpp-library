@@ -1,13 +1,15 @@
 /*
  * @author Marty Stepp
- * @version 2015/10/15
+ * @version 2015/11/18
+ * - If you update this file, make sure to update the @version tag above
+ *   AND the String constant below! Both are needed and must be in sync. 
  * - see also: stanford/spl/LibraryUpdater.java 
  */
 
 package stanford.spl;
 
 public class Version {
-	private static final String JAVA_BACK_END_VERSION = "2015/10/15";
+	private static final String JAVA_BACK_END_VERSION = "2015/11/18";
 	private static final String CPP_LIB_VERSION_UNKNOWN = "(unknown)";
 	private static String CPP_LIB_VERSION = CPP_LIB_VERSION_UNKNOWN;
 	

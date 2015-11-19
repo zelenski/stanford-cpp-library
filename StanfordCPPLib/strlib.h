@@ -4,6 +4,8 @@
  * This file exports several useful string functions that are not
  * included in the C++ string library.
  * 
+ * @version 2015/10/26
+ * - added charToInteger/integerToChar functions
  * @version 2015/08/02
  * - added htmlEncode/Decode functions (not 100% perfect but works for common cases)
  * @version 2014/10/19
@@ -30,6 +32,13 @@ std::string boolToString(bool b);
  * Returns the string "true" if b is nonzero, or "false" if b is 0.
  */
 std::string boolToString(int b);
+
+/*
+ * Returns an integer equivalent of the given numeric character.
+ * For example, charToInteger('3') returns the int 3.
+ * If the character is not '0' through '9', throws an error.
+ */
+int charToInteger(char c);
 
 /*
  * Returns a single-character string containing the given character.
@@ -78,6 +87,18 @@ std::string htmlDecode(const std::string& s);
  * "&lt;p class=&quot;abc&quot;&gt;I love you &amp; me&lt;/p&gt;".
  */
 std::string htmlEncode(const std::string& s);
+
+/*
+ * Function: integerToChar
+ * Usage: char ch = integerToChar(n);
+ * ----------------------------------
+ * Converts an integer into the corresponding numeric character.
+ * For example, calling <code>integerToChar(3)</code> returns
+ * the char <code>'3'</code>.
+ * If the given integer is not a single-digit number from 0-9 inclusive,
+ * throws an error.
+ */
+char integerToChar(int n);
 
 /*
  * Function: integerToString

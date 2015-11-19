@@ -5,6 +5,8 @@
  * the platform-specific parts of the StanfordCPPLib package.  This file is
  * logically part of the implementation and is not interesting to clients.
  *
+ * @version 2015/11/07
+ * - added GTable back-end methods
  * @version 2014/11/20
  * - added gwindow clearCanvas method
  * @version 2014/11/15
@@ -163,6 +165,17 @@ public:
     void gslider_setPaintTicks(GObject* gobj, bool value);
     void gslider_setSnapToTicks(GObject* gobj, bool value);
     void gslider_setValue(GObject* gobj, int value);
+    void gtable_clear(GObject* gobj);
+    void gtable_constructor(GObject* gobj, int numRows, int numCols, double x, double y, double width, double height);
+    std::string gtable_get(const GObject* gobj, int row, int column);
+    int gtable_getColumnWidth(const GObject* gobj, int column);
+    void gtable_getSelection(const GObject* gobj, int& row, int& column);
+    void gtable_resize(GObject* gobj, int numRows, int numCols);
+    void gtable_select(GObject* gobj, int row, int column);
+    void gtable_set(GObject* gobj, int row, int column, const std::string& value);
+    void gtable_setColumnWidth(GObject* gobj, int column, int width);
+    void gtable_setFont(GObject* gobj, const std::string& font);
+    void gtable_setHorizontalAlignment(GObject* gobj, const std::string& alignment);
     void gtextfield_constructor(GObject* gobj, int nChars);
     std::string gtextfield_getText(GObject* gobj);
     bool gtextfield_isEditable(const GObject* gobj);
@@ -173,7 +186,7 @@ public:
     void gtimer_pause(double milliseconds);
     void gtimer_start(const GTimer& timer);
     void gtimer_stop(const GTimer& timer);
-    void gwindow_addToRegion(const GWindow& gw, GObject* gobj, std::string region);
+    void gwindow_addToRegion(const GWindow& gw, GObject* gobj, const std::string& region);
     void gwindow_clear(const GWindow& gw);
     void gwindow_clearCanvas(const GWindow& gw);
     void gwindow_close(const GWindow& gw);

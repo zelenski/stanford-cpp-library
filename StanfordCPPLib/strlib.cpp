@@ -3,8 +3,10 @@
  * ----------------
  * This file implements the strlib.h interface.
  * 
- * @version 2015/08/02
- * - added htmlEncode/Decode functions (not 100% perfect but works for common cases)
+ * @version 2015/11/07
+ * - fixed bugs in urlDecode (wasn't decoding % sequences properly, oops)
+ * @version 2015/10/26
+ * - added charToInteger/integerToChar functions
  * @version 2015/06/19
  * - slight bug fix to make stringToInteger functions compile with int radix
  * @version 2015/05/22
@@ -33,6 +35,16 @@ std::string boolToString(bool b) {
 
 std::string boolToString(int b) {
     return (b ? "true" : "false");
+}
+
+int charToInteger(char c) {
+    if (c < '0' || c > '9') {
+        std::ostringstream out;
+        out << "charToInteger: character is not numeric: '" << c
+            << "' (ASCII value " << (int) c << ")";
+        error(out.str());
+    }
+    return c - '0';
 }
 
 std::string charToString(char c) {
@@ -87,6 +99,15 @@ std::string htmlEncode(const std::string& s) {
     stringReplaceInPlace(result, ">", "&gt;");
     stringReplaceInPlace(result, "\"", "&quot;");
     return result;
+}
+
+char integerToChar(int n) {
+    if (n < 0 || n > 9) {
+        std::ostringstream out;
+        out << "integerToChar: number must be between 0-9: " << n;
+        error(out.str());
+    }
+    return (char) (n + '0');
 }
 
 /*
@@ -388,12 +409,16 @@ std::string urlDecode(const std::string& str) {
         } else if (c == '+')  {
             unescaped << ' ';
         } else if (c == '%') {
-            int decodedChar = 0;
-            ++i;
-            decodedChar += (*i) * 16;
-            ++i;
-            decodedChar += (*i);
+            // decode a URL-encoded ASCII character, e.g. %40 => &
+            // TODO: fails if string is invalid and doesn't have 2 char after %
+            //       or if it has non-hex chars here
+            char ch1 = *(i + 1);
+            char ch2 = *(i + 2);
+            int hex1 = (isdigit(ch1) ? (ch1 - '0') : (toupper(ch1) - 'A' + 10));
+            int hex2 = (isdigit(ch2) ? (ch2 - '0') : (toupper(ch2) - 'A' + 10));
+            int decodedChar = (hex1 << 4) + hex2;
             unescaped << (char) decodedChar;
+            i += 2;
         } else {
             std::ostringstream msg;
             msg << "urlDecode: Unexpected character in string: "
