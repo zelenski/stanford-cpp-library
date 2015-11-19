@@ -6,6 +6,9 @@
  * See autograder.h for documentation of each member.
  * 
  * @author Marty Stepp
+ * @version 2015/10/26
+ * - added wrapped version of exit(int) to alert grader when students
+ *   try to call exit() in their code to quit the program
  * @version 2014/11/27
  * - bug fix with shutting down program during manual testing
  * - bug fix with style checker not showing and having unwanted checkboxes
@@ -640,6 +643,21 @@ int autograderGraphicalMain(int argc, char** argv) {
 }
 #endif // SPL_AUTOGRADER_MODE
 } // namespace autograder
+
+/*
+ * We replace std::exit(int) function with our own, to alert the grader
+ * if the student is trying to exit the autograder program by calling
+ * exit() in their program code.
+ */
+void exit(int status) {
+    std::ostringstream out;
+    out << "Student tried to call exit(" << status << ") to exit their program. " << std::endl;
+    out << "They should not use this function; main should end through " << std::endl;
+    out << "normal program control flow." << std::endl;
+    out << "Edit their code to remove calls to exit() and run again." << std::endl;
+    error(out.str());
+    std::exit(status);
+}
 
 #undef main
 int main(int argc, char** argv) {
