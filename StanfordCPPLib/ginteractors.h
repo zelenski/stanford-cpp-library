@@ -79,6 +79,12 @@ public:
      * Interactors are enabled by default when first created.
      */
     bool isEnabled();
+    
+    /*
+     * See GObject::setColor.
+     */
+    void setBackground(int rgb);
+    void setBackground(std::string color);
 
     /*
      * Sets the interactor to be enabled (true) or disabled (false).
@@ -98,6 +104,9 @@ public:
     void setBounds(const GRectangle& size);
     void setBounds(double x, double y, double width, double height);
     
+    /*
+     * Methods related to get/setting icons on graphical interactors.
+     */
     virtual std::string getIcon() const;
     virtual void setIcon(std::string filename);
     virtual void setTextPosition(SwingConstants horizontal, SwingConstants vertical);

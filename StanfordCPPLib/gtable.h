@@ -4,7 +4,9 @@
  * This file exports the GTable class for a graphical editable 2D table.
  *
  * @author Marty Stepp
- * @version 2015/11/07
+ * @version 2015/12/01
+ * - added setEventEnabled to turn on/off table update/selection events
+ * - added isEditable, setEditable
  * @since 2015/11/07
  */
 
@@ -27,7 +29,7 @@
  * while (true) {
  *     GEvent event = waitForEvent(TABLE_EVENT);
  *     GTableEvent tableEvent(event);
- *     std::cout << "cell updated: " << tableEvent.toString() << std::endl;
+ *     std::cout << "table event: " << tableEvent.toString() << std::endl;
  *     ...
  * }
  * </pre>
@@ -139,6 +141,12 @@ public:
     bool inBounds(int row, int column) const;
     
     /*
+     * Returns whether cells of the table can be edited.
+     * Defaults to true when a table is initially created.
+     */
+    bool isEditable() const;
+    
+    /*
      * Returns the number of columns in the table.
      * Equivalent to width().
      */
@@ -180,6 +188,17 @@ public:
     void setColumnWidth(int column, double width);
     
     /*
+     * Sets whether cells of the table can be edited.
+     */
+    void setEditable(bool editable);
+    
+    /*
+     * Sets whether the given kind of event should be enabled on tables.
+     * Must be a table event type such as TABLE_SELECTED or TABLE_UPDATED.
+     */
+    void setEventEnabled(int type, bool enabled = true);
+    
+    /*
      * Sets the cells of this table to display their text in the given font.
      * See also: GWindow documentation on font strings.
      */
@@ -208,6 +227,7 @@ private:
     double m_height;
     std::string font;
     Alignment alignment;
+    bool editable;
 
     /*
      * Throws an error if the given numRows/numCols values are negative.

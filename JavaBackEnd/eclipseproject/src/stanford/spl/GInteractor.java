@@ -1,16 +1,13 @@
+/*
+ * @version 2015/12/01
+ * - added setBackground, setColor
+ */
+
 package stanford.spl;
 
-import acm.graphics.GContainer;
-import acm.graphics.GDimension;
-import acm.graphics.GMath;
-import acm.graphics.GObject;
-import acm.graphics.GRectangle;
-import acm.graphics.GResizable;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import javax.swing.JComponent;
+import acm.graphics.*;
+import java.awt.*;
+import javax.swing.*;
 
 public abstract class GInteractor extends GObject implements GResizable {
 	private static final long serialVersionUID = 1L;
@@ -23,6 +20,24 @@ public abstract class GInteractor extends GObject implements GResizable {
 		this.actionCommand = "";
 		Dimension localDimension = paramJComponent.getPreferredSize();
 		paramJComponent.setSize(localDimension.width, localDimension.height);
+	}
+	
+	public void setBackground(Color color) {
+		this.interactor.setBackground(color);
+		if (this.interactor instanceof JButton) {
+			// workaround for buttons not showing background on some platforms
+			this.interactor.setOpaque(true);
+		}
+	}
+	
+	@Override
+	public void setColor(Color color) {
+		super.setColor(color);
+		setForeground(color);
+	}
+	
+	public void setForeground(Color color) {
+		this.interactor.setForeground(color);
 	}
 	
 	public void setEnabled(boolean value) {

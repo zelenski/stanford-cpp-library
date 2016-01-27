@@ -1343,6 +1343,12 @@ void Platform::ginteractor_setActionCommand(GObject* gobj, std::string cmd) {
     putPipe(os.str());
 }
 
+void Platform::ginteractor_setBackground(GObject* gobj, std::string color) {
+    std::ostringstream os;
+    os << "GInteractor.setBackground(\"" << gobj << "\", \"" << color << "\")";
+    putPipe(os.str());
+}
+
 GDimension Platform::ginteractor_getSize(GObject* gobj) {
     std::ostringstream os;
     os << "GInteractor.getSize(\"" << gobj << "\")";
@@ -1563,6 +1569,19 @@ void Platform::gtable_set(GObject* gobj, int row, int column, const std::string&
 void Platform::gtable_setColumnWidth(GObject* gobj, int column, int width) {
     std::ostringstream os;
     os << "GTable.setColumnWidth(\"" << gobj << "\", " << column << ", " << width << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_setEditable(GObject* gobj, bool editable) {
+    std::ostringstream os;
+    os << "GTable.setEditable(\"" << gobj << "\", " << std::boolalpha << editable << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_setEventEnabled(GObject* gobj, int type, bool enabled) {
+    std::ostringstream os;
+    os << "GTable.setEventEnabled(\"" << gobj << "\", " << type
+       << ", " << std::boolalpha << enabled << ")";
     putPipe(os.str());
 }
 
@@ -2479,6 +2498,8 @@ static GEvent parseEvent(std::string line) {
         return parseKeyEvent(scanner, KEY_TYPED);
     } else if (name == "actionPerformed") {
         return parseActionEvent(scanner, ACTION_PERFORMED);
+    } else if (name == "tableSelected") {
+        return parseTableEvent(scanner, TABLE_SELECTED);
     } else if (name == "tableUpdated") {
         return parseTableEvent(scanner, TABLE_UPDATED);
     } else if (name == "timerTicked") {
@@ -2577,9 +2598,14 @@ static GEvent parseTableEvent(TokenScanner& scanner, EventType type) {
     int row = scanInt(scanner);
     scanner.verifyToken(",");
     int col = scanInt(scanner);
-    scanner.verifyToken(",");
-    std::string value = urlDecode(scanner.getStringValue(scanner.nextToken()));
+    std::string value;
+
+    if (type == TABLE_UPDATED) {
+        scanner.verifyToken(",");
+        value = urlDecode(scanner.getStringValue(scanner.nextToken()));
+    }
     scanner.verifyToken(")");
+    
     GTableEvent e(type);  //, GTimer(timerTable.get(id)));
     e.setLocation(row, col);
     e.setValue(value);

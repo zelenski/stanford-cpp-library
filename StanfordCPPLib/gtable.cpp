@@ -5,7 +5,9 @@
  * See that file for documentation of each member.
  *
  * @author Marty Stepp
- * @version 2015/11/07
+ * @version 2015/12/01
+ * - added setEventEnabled to turn on/off table update/selection events
+ * - added isEditable, setEditable
  * @since 2015/11/07
  */
 
@@ -14,18 +16,20 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include "gevents.h"
 #include "gwindow.h"
 #include "platform.h"
 
 GTable::GTable(int rows, int columns, double x, double y, double width, double height)
-    : rows(rows),
-      columns(columns),
-      m_x(x),
-      m_y(y),
-      m_width(width),
-      m_height(height),
-      font("*-*-*"),
-      alignment(Alignment::LEFT) {
+        : rows(rows),
+          columns(columns),
+          m_x(x),
+          m_y(y),
+          m_width(width),
+          m_height(height),
+          font("*-*-*"),
+          alignment(Alignment::LEFT),
+          editable(true) {
     checkDimensions("constructor", rows, columns);
     checkSize("constructor", width, height);
     getPlatform()->gtable_constructor(this, rows, columns, x, y, width, height);
@@ -47,7 +51,7 @@ std::string GTable::toString() const {
 
 void GTable::clear() {
     getPlatform()->gtable_clear(this);
-    clearSelection();
+    // clearSelection();
 }
 
 void GTable::clearSelection() {
@@ -97,6 +101,10 @@ bool GTable::inBounds(int row, int column) const {
             && 0 <= column && column < columns;
 }
 
+bool GTable::isEditable() const {
+    return editable;
+}
+
 int GTable::numCols() const {
     return columns;
 }
@@ -129,6 +137,18 @@ void GTable::setColumnWidth(int column, double width) {
     getPlatform()->gtable_setColumnWidth(this, column, (int) width);
 }
 
+void GTable::setEditable(bool editable) {
+    this->editable = editable;
+    getPlatform()->gtable_setEditable(this, editable);
+}
+
+void GTable::setEventEnabled(int type, bool enabled) {
+    if (type != TABLE_SELECTED && type != TABLE_UPDATED) {
+        error("GTable::setEventEnabled: invalid event type");
+    }
+    getPlatform()->gtable_setEventEnabled(this, type, enabled);
+}
+
 void GTable::setFont(const std::string& font) {
     this->font = font;
     getPlatform()->gtable_setFont(this, font);
@@ -143,7 +163,6 @@ void GTable::setHorizontalAlignment(GTable::Alignment alignment) {
     } else if (alignment == Alignment::RIGHT) {
         alignmentStr = "RIGHT";
     }
-    std::cout << "alignmentStr = " << alignmentStr << std::endl;
     this->alignment = alignment;
     getPlatform()->gtable_setHorizontalAlignment(this, alignmentStr);
 }

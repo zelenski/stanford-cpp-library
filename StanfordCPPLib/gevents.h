@@ -58,7 +58,8 @@ typedef enum {
     KEY_RELEASED     = KEY_EVENT + 2,
     KEY_TYPED        = KEY_EVENT + 3,
     TIMER_TICKED     = TIMER_EVENT + 1,
-    TABLE_UPDATED    = TABLE_EVENT + 1
+    TABLE_UPDATED    = TABLE_EVENT + 1,
+    TABLE_SELECTED   = TABLE_EVENT + 2
 } EventType;
 
 /*

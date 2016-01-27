@@ -61,6 +61,7 @@ public abstract class JBECommand {
 		localHashMap.put("GInteractor.getSize", new GInteractor_getSize());
 		localHashMap.put("GInteractor.isEnabled", new GInteractor_isEnabled());
 		localHashMap.put("GInteractor.setActionCommand", new GInteractor_setActionCommand());
+		localHashMap.put("GInteractor.setBackground", new GInteractor_setBackground());
 		localHashMap.put("GInteractor.setEnabled", new GInteractor_setEnabled());
 		localHashMap.put("GInteractor.setIcon", new GInteractor_setIcon());
 		localHashMap.put("GInteractor.setTextPosition", new GInteractor_setTextPosition());
@@ -126,6 +127,8 @@ public abstract class JBECommand {
 		localHashMap.put("GTable.select", new GTable_select());
 		localHashMap.put("GTable.set", new GTable_set());
 		localHashMap.put("GTable.setColumnWidth", new GTable_setColumnWidth());
+		localHashMap.put("GTable.setEditable", new GTable_setEditable());
+		localHashMap.put("GTable.setEventEnabled", new GTable_setEventEnabled());
 		localHashMap.put("GTable.setFont", new GTable_setFont());
 		localHashMap.put("GTable.setHorizontalAlignment", new GTable_setHorizontalAlignment());
 		localHashMap.put("GTextField.create", new GTextField_create());

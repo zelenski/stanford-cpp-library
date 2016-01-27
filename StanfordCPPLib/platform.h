@@ -106,6 +106,7 @@ public:
     GDimension ginteractor_getSize(GObject* gobj);
     bool ginteractor_isEnabled(GObject* gint);
     void ginteractor_setActionCommand(GObject* gobj, std::string cmd);
+    void ginteractor_setBackground(GObject* gobj, std::string color);
     void ginteractor_setEnabled(GObject* gint, bool value);
     void ginteractor_setIcon(GObject* gobj, std::string filename);
     void ginteractor_setTextPosition(GObject* gobj, int horizontal, int vertical);
@@ -174,6 +175,8 @@ public:
     void gtable_select(GObject* gobj, int row, int column);
     void gtable_set(GObject* gobj, int row, int column, const std::string& value);
     void gtable_setColumnWidth(GObject* gobj, int column, int width);
+    void gtable_setEditable(GObject* gobj, bool editable);
+    void gtable_setEventEnabled(GObject* gobj, int type, bool enabled);
     void gtable_setFont(GObject* gobj, const std::string& font);
     void gtable_setHorizontalAlignment(GObject* gobj, const std::string& alignment);
     void gtextfield_constructor(GObject* gobj, int nChars);

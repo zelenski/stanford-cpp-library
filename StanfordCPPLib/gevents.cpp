@@ -389,8 +389,13 @@ void GTableEvent::setValue(std::string value) {
 std::string GTableEvent::toString() const {
     if (!valid) return "GTableEvent(?)";
     std::ostringstream out;
-    out << "GTableEvent:TABLE_UPDATED(r"
-        << row << "c" << column << " \"" << value << "\")";
+    if (eventType == TABLE_UPDATED) {
+        out << "GTableEvent:TABLE_UPDATED(r"
+            << row << "c" << column << " \"" << value << "\")";
+    } else if (eventType == TABLE_SELECTED) {
+        out << "GTableEvent:TABLE_SELECTED(r"
+            << row << "c" << column << ")";
+    }
     return out.str();
 }
 

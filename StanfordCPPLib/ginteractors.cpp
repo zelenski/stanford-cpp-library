@@ -3,6 +3,8 @@
  * ------------------
  * This file implements the ginteractors.h interface.
  * 
+ * @version 2015/12/01
+ * - added GInteractor::setBackground
  * @version 2015/07/05
  * - removed static global Platform variable, replaced by getPlatform as needed
  * @version 2015/06/20
@@ -65,6 +67,15 @@ GRectangle GInteractor::getBounds() const {
 
 bool GInteractor::isEnabled() {
     return getPlatform()->ginteractor_isEnabled(this);
+}
+
+void GInteractor::setBackground(int rgb) {
+    std::string color = convertRGBToColor(rgb);
+    getPlatform()->ginteractor_setBackground(this, color);
+}
+
+void GInteractor::setBackground(std::string color) {
+    getPlatform()->ginteractor_setBackground(this, color);
 }
 
 void GInteractor::setEnabled(bool value) {
