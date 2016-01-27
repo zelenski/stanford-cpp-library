@@ -1121,7 +1121,7 @@ bool Map<KeyType, ValueType>::operator ==(const Map& map2) const {
 
 template <typename KeyType, typename ValueType>
 bool Map<KeyType, ValueType>::operator !=(const Map& map2) const {
-    return !equals(map2);
+    return !equals(map2);   // BUGFIX 2016/01/27, thanks to O. Zeng
 }
 
 template <typename KeyType, typename ValueType>
