@@ -144,6 +144,8 @@ static bool shouldFilterOutFromStackTrace(const std::string& function) {
             || function == "error"
             || function == "startupMain(int, char**)"
             || function.find("stacktrace::") != std::string::npos
+            || function.find("ErrorException::ErrorException") != std::string::npos
+            || function.find(" error(") != std::string::npos
             || function.find("testing::") != std::string::npos
             || function.find("printStackTrace") != std::string::npos
             || function.find("stanfordCppLibSignalHandler") != std::string::npos

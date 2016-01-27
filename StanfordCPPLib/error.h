@@ -35,16 +35,20 @@ public:
     ErrorException(std::string msg);
     virtual ~ErrorException() throw ();
     virtual std::string getMessage() const;
-    virtual const char *what() const throw ();
+    virtual std::string getStackTrace() const;
+    virtual const char* what() const throw ();
 
 private:
     std::string msg;
+    std::string stackTrace;
 };
 
 /*
  * Thrown when a blocking I/O call is interrupted by closing the program.
  */
-class InterruptedIOException : public std::exception {};
+class InterruptedIOException : public std::exception {
+    // empty
+};
 
 /*
  * Function: error

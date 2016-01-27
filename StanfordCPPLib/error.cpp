@@ -8,14 +8,22 @@
  */
 
 #include "error.h"
+#include "exceptions.h"
 #include <exception>
 #include <string>
 #include <iostream>
+#include <sstream>
 
 /* Definitions for the ErrorException class */
 
 ErrorException::ErrorException(std::string msg) {
     this->msg = msg;
+
+#ifdef ERROREXCEPTION_CAPTURE_STACK_TRACE
+    std::ostringstream out;
+    exceptions::printStackTrace(out);
+    this->stackTrace = out.str();
+#endif // ERROREXCEPTION_CAPTURE_STACK_TRACE
 }
 
 ErrorException::~ErrorException() throw () {
@@ -26,7 +34,11 @@ std::string ErrorException::getMessage() const {
     return msg;
 }
 
-const char *ErrorException::what() const throw () {
+std::string ErrorException::getStackTrace() const {
+    return stackTrace;
+}
+
+const char* ErrorException::what() const throw () {
     // stepp : The original "Error: " prefix is commented out here,
     // because in many error cases, the attempt to do the string concatenation
     // ends up garbling the string and leading to garbage exception text
