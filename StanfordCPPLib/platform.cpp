@@ -2579,7 +2579,7 @@ static GEvent parseKeyEvent(TokenScanner& scanner, EventType type) {
     scanner.verifyToken(",");
     int modifiers = scanInt(scanner);
     scanner.verifyToken(",");
-    int keyChar = scanInt(scanner);
+    int keyChar = scanChar(scanner);   // BUGFIX 2016/01/27: Thanks to K. Perry
     scanner.verifyToken(",");
     int keyCode = scanInt(scanner);
     scanner.verifyToken(")");
@@ -2945,6 +2945,12 @@ static void echoConsole(const std::string&, bool) {
 static void endLineConsole(bool isStderr) {
     putPipe("JBEConsole.println()");
     echoConsole("\n", isStderr);
+}
+
+static int scanChar(TokenScanner& scanner) {
+    std::string token = scanner.nextToken();
+    if (token == "-") token += scanner.nextToken();
+    return stringToChar(token);
 }
 
 static int scanInt(TokenScanner& scanner) {
