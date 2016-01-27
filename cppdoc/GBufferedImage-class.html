@@ -57,7 +57,7 @@ This class implements a 2D region of colored pixels that can be read/set individ
 
 <p>
 	For example, the integer <code>0xff00cc</code> is a purple color, while <code>0x770000</code> is a dark red.
-	A <code>GBufferedImage</code> will also let you represent colors as hex strings such as <code>"#ff00cc"</code> instead of as integers.
+	Several <code>GBufferedImage</code> methods will also let you represent colors as hex strings such as <code>"#ff00cc"</code> instead of as integers.
 	String colors are always converted to integer colors internally by calling the <code>GWindow</code> function <a href="gwindow.html#Function:convertColorToRGB"><code>convertColorToRGB</code></a>.
 	Therefore some common color names like <code>&quot;black&quot;</code> can be passed successfully in lieu of the usual hex format; see that function for more details.
 </p>
@@ -90,6 +90,7 @@ This class implements a 2D region of colored pixels that can be read/set individ
 <tr><td class=indexKey><a href="#Method:clear">clear()</a></td><td class=indexSynopsis width=100%>Sets the color of every pixel in the image to its default color.</td></tr>
 <tr><td class=indexKey><a href="#Method:fill">fill(<var>rgb</var>)</a></td><td class=indexSynopsis width=100%>Sets the color of every pixel in the image.</td></tr>
 <tr><td class=indexKey><a href="#Method:fillRegion">fillRegion(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>width</var>,&nbsp;<var>height</var>,&nbsp;<var>rgb</var>)</a></td><td class=indexSynopsis width=100%>Sets the color of every pixel in the given rectangular range of the image.</td></tr>
+<tr><td class=indexKey><a href="#Method:fromGrid">fromGrid(<var>grid</var>)</a></td><td class=indexSynopsis width=100%>Replaces the entire contents of this image with the contents of the given grid of RGB pixel values.</td></tr>
 <tr><td class=indexKey><a href="#Method:getHeight">getHeight()</a></td><td class=indexSynopsis width=100%>Returns the height of the image in pixels.</td></tr>
 <tr><td class=indexKey><a href="#Method:getRGB">getRGB(<var>x</var>,&nbsp;<var>y</var>)</a></td><td class=indexSynopsis width=100%>Returns the color of the pixel at the given x/y coordinates of the image as an integer.</td></tr>
 <tr><td class=indexKey><a href="#Method:getRGBString">getRGBString(<var>x</var>,&nbsp;<var>y</var>)</a></td><td class=indexSynopsis width=100%>Returns the color of the pixel at the given x/y coordinates of the image as a string.</td></tr>
@@ -100,6 +101,7 @@ This class implements a 2D region of colored pixels that can be read/set individ
 resize(<var>width</var>,&nbsp;<var>height</var>,&nbsp;<var>retain</var>)</a></td><td class=indexSynopsis width=100%>Changes the image's size.</td></tr>
 <tr><td class=indexKey><a href="#Method:save">save(<var>filename</var>)</a></td><td class=indexSynopsis width=100%>Writes the image data to the given file.</td></tr>
 <tr><td class=indexKey><a href="#Method:setRGB">setRGB(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>rgb</var>)</a></td><td class=indexSynopsis width=100%>Sets the color of the pixel at the given x/y coordinates of the image to the given value.</td></tr>
+<tr><td class=indexKey><a href="#Method:toGrid">toGrid()<br>toGrid(<var>grid</var>)</a></td><td class=indexSynopsis width=100%>Converts this image into a grid of RGB pixels.</td></tr>
 </table>
 
 <h2>Constructor detail</h2>
@@ -186,6 +188,26 @@ Throws an error if the given rgb value is not a valid color.
 int rgb = 0xff00cc;
 img-&gt;fillRegion(x, y, width, height, rgb);
 </pre>
+
+<hr>
+<a name="Method:fromGrid"></a>
+<pre class=detailCode>
+void fromGrid(const Grid&lt;int&gt;&amp; grid);
+</pre>
+<div class=detailHTML>
+Replaces the entire contents of this image with the contents of the
+given grid of RGB pixel values.
+If this image is not the same size as the grid, the image is resized.
+Any existing contents of the image are lost.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+img-&gt;fromGrid(grid);
+</pre>
+<p class="since">
+	Available since: 2015/08/12 version of C++ library
+</p>
 
 <hr>
 <a name="Method:getHeight"></a>
@@ -347,6 +369,32 @@ Throws an error if the given rgb value is not a valid color.
 <pre class=usageCode>
 img-&gt;setRGB(x, y, rgb);
 </pre>
+
+<hr>
+<a name="Method:toGrid"></a>
+<pre class=detailCode>
+Grid&lt;int&gt; toGrid() const;
+void toGrid(Grid&lt;int&gt;&amp; grid) const;
+</pre>
+<div class=detailHTML>
+Converts this image into a grid of RGB pixels.
+The grid's first index is a row or y-index, and its second index
+is the column or x-index.
+So for example, <code>grid[y][x]</code> returns the RGB int value at pixel (x, y).
+The grid can either be returned or filled by reference.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Grid&lt;int&gt; grid = img-&gt;toGrid();   // first version
+
+Grid&lt;int&gt; grid;
+img-&gt;toGrid(grid);                // second version
+</pre>
+
+<p class="since">
+	Available since: 2015/08/12 version of C++ library
+</p>
 
 <hr>
 

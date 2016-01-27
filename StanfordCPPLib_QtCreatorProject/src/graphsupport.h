@@ -8,11 +8,11 @@
 using namespace std;
 
 // colors for graph problems
-//typedef int Color;
-//extern const Color UNCOLORED, WHITE, GRAY, YELLOW, GREEN, RED, BLUE;
-//extern const int NUM_COLORS;
-//extern const Color COLORS[7];
-//extern const std::string COLOR_NAMES[7];
+typedef int Color;
+extern const Color UNCOLORED, WHITE, GRAY, YELLOW, GREEN, RED, BLUE;
+extern const int NUM_COLORS;
+extern const Color COLORS[7];
+extern const std::string COLOR_NAMES[7];
 
 bool graph_canReach(BasicGraph& graph, Vertex* start, Vertex* end, Vector<Vertex*>* path = NULL);
 bool graph_isConnected(BasicGraph& graph, bool checkWeak = false);

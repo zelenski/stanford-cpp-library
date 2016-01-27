@@ -3,6 +3,8 @@
  */
 
 #include "console.h"
+#include "error.h"
+#include "exceptions.h"
 #include "map.h"
 #include "plainconsole.h"
 #include "vector.h"
@@ -13,6 +15,7 @@
 #include "test/testcases.h"
 #include "private/version.h"
 #include "types.h"
+#include <exception>
 #include <iostream>
 using namespace std;
 
@@ -20,12 +23,38 @@ using namespace std;
 //    return 0;
 //}
 
+void terminate_handler_func() {
+    
+}
+
+void unexpected_handler_func() {
+    std::cerr << "unexpected called!!" << endl;
+    exceptions::printStackTrace();
+}
+
+int foo(int n) {
+    if (n == 5) {
+        error("oh noez");
+        return 0;
+    } else if (n <= 0) {
+        return 1;
+    } else {
+        return 2 * foo(n - 1);
+    }
+}
+
 int main() {
 #ifdef _console_h
     setConsoleSize(1000, 600);
     setConsoleLocation(-1, -1);
     setConsoleWindowTitle("Marty is great");
 #endif // _console_h
+    
+    try {
+        foo(8);
+    } catch (ErrorException ex) {
+        cout << "stack trace:" << endl << ex.getStackTrace() << endl;
+    }
     
     Vector<int> v1;
     v1 += 1, 2, 3;

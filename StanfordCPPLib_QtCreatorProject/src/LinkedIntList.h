@@ -47,10 +47,12 @@ public:
     // exam questions
     void chopBothSides(int k);
     void combineDuplicates();
-    bool isSortedBy(int k) const;
     void expand(int k);
-    bool removeRange(int min, int max);
+    bool isSortedBy(int k) const;
     void mergeUpTo(int max);
+    void partitionSort();
+    bool removeRange(int min, int max);
+    
 
 private:
     ListNode* front;   // pointer to front node in list;  NULL if empty

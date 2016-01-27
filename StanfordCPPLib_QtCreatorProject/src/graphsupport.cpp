@@ -3,35 +3,35 @@
 using namespace std;
 
 // definitions for colors
-//const int NUM_COLORS = 7;
+const int NUM_COLORS = 7;
 
-//const Color UNCOLORED = 0;
-//const Color WHITE = 1;
-//const Color GRAY = 2;
-//const Color YELLOW = 3;
-//const Color GREEN = 4;
-//const Color RED = 5;
-//const Color BLUE = 6;
+const Color UNCOLORED = 0;
+const Color WHITE = 1;
+const Color GRAY = 2;
+const Color YELLOW = 3;
+const Color GREEN = 4;
+const Color RED = 5;
+const Color BLUE = 6;
 
-//const Color COLORS[7] = {
-//    UNCOLORED,
-//    WHITE,
-//    GRAY,
-//    YELLOW,
-//    GREEN,
-//    RED,
-//    BLUE
-//};
+const Color COLORS[7] = {
+    UNCOLORED,
+    WHITE,
+    GRAY,
+    YELLOW,
+    GREEN,
+    RED,
+    BLUE
+};
 
-//const string COLOR_NAMES[7] = {
-//    "uncolored",
-//    "white",
-//    "gray",
-//    "yellow",
-//    "green",
-//    "red",
-//    "blue"
-//};
+const string COLOR_NAMES[7] = {
+    "uncolored",
+    "white",
+    "gray",
+    "yellow",
+    "green",
+    "red",
+    "blue"
+};
 
 bool graph_canReach(BasicGraph& graph, Vertex* start, Vertex* end, Vector<Vertex*>* path) {
     // cout << "    canReach(graph, start=" << start->name << ", end=" << end->name << ")" << endl;

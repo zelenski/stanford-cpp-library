@@ -42,12 +42,13 @@ public:
     void limitPathSum(int max);
     
     // exam problems
-    void swapChildrenAtLevel(int level);
-    void removeMatchingLeaves(const BinaryTree& other);
-    int range(int min, int max);
-    int makeFull();
-    void limitLeaves(int n);
     bool hasPath(int start, int end) const;
+    bool isConsecutive() const;
+    void limitLeaves(int n);
+    int makeFull();
+    int range(int min, int max);
+    void removeMatchingLeaves(const BinaryTree& other);
+    void swapChildrenAtLevel(int level);
 
 private:
     void print(BinaryTreeNode* node, int level);
