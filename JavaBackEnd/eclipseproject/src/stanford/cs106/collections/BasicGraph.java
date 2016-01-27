@@ -1,6 +1,9 @@
 /*
  * @author Marty Stepp
- * @version 2015/06/06
+ * @version 2015/11/30
+ * - fixed bugs related to in/outDegree and neighbors of vertexes that have none
+ *   (should have returned 0 or empty set; instead crashed with NPE)
+ * @since 2015/06/06
  */
 
 package stanford.cs106.collections;
@@ -254,7 +257,12 @@ public class BasicGraph implements Graph {
 
 	/** {@inheritDoc} */
 	public final int inDegree(Vertex v) {
-		return adjacencyMap.column(v).size();
+		checkVertex(v);
+		if (adjacencyMap.containsColumn(v)) {
+			return adjacencyMap.column(v).size();
+		} else {
+			return 0;
+		}
 	}
 
 	/** {@inheritDoc} */
@@ -274,13 +282,17 @@ public class BasicGraph implements Graph {
 
 	/** {@inheritDoc} */
 	public final Set<Vertex> neighbors(String v) {
-		checkVertex(v);
-		return adjacencyMap.row(vertex(v)).keySet();
+		return neighbors(vertex(v));
 	}
 
 	/** {@inheritDoc} */
 	public final Set<Vertex> neighbors(Vertex v) {
-		return adjacencyMap.row(v).keySet();
+		checkVertex(v);
+		if (adjacencyMap.containsRow(v)) {
+			return adjacencyMap.row(v).keySet();
+		} else {
+			return Collections.emptySet();
+		}
 	}
 
 	/** {@inheritDoc} */
@@ -290,7 +302,7 @@ public class BasicGraph implements Graph {
 
 	/** {@inheritDoc} */
 	public final int outDegree(Vertex v) {
-		return adjacencyMap.row(v).size();
+		return neighbors(v).size();
 	}
 
 	/** {@inheritDoc} */
@@ -483,7 +495,7 @@ public class BasicGraph implements Graph {
 	 * objects in this graph.
 	 */
 	protected final void clearVertexInfo() {
-		for (Vertex vertex : this.vertexes.values()) {
+		for (Vertex vertex : vertexes.values()) {
 			vertex.clear();
 		}
 	}
