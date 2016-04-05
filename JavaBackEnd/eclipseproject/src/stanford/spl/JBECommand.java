@@ -173,6 +173,10 @@ public abstract class JBECommand {
 		localHashMap.put("GWindow.setTitle", new GWindow_setTitle());
 		localHashMap.put("GWindow.setVisible", new GWindow_setVisible());
 		localHashMap.put("GWindow.toFront", new GWindow_toFront());
+		localHashMap.put("HttpServer.start", new HttpServer_start());
+		localHashMap.put("HttpServer.stop", new HttpServer_stop());
+		localHashMap.put("HttpServer.sendResponse", new HttpServer_sendResponse());
+		localHashMap.put("HttpServer.sendResponseFile", new HttpServer_sendResponseFile());
 		localHashMap.put("JBEConsole.clear", new JBEConsole_clear());
 		localHashMap.put("JBEConsole.getLine", new JBEConsole_getLine());
 		localHashMap.put("JBEConsole.minimize", new JBEConsole_minimize());

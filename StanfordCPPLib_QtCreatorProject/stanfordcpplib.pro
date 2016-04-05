@@ -2,7 +2,7 @@
 #
 # This file specifies the information about your project to Qt Creator.
 # You should not need to modify this file to complete your assignment.
-#
+
 # If you need to add files or folders to your project, we recommend the following:
 # - close Qt Creator.
 # - delete your ".pro.user" file and "build_xxxxxxx" directory.

@@ -9,6 +9,13 @@
 
 
 		create 500 images, starts to get really slow ... mem leak?  hash of all GBufferedImages ever created?
+	
+	SuperConsoleProgram that allows more complex art?
+		translate
+		rotate
+		scale
+		color
+		animation / frames feature
 
 #ifdef PIPE_DEBUG
     cmd += " -Dstanfordspl.debug=true";

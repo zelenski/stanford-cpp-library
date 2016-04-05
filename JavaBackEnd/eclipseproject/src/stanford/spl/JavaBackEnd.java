@@ -318,11 +318,11 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		}
 	}
 
-	protected void acknowledgeEvent(String eventText, Object... args) {
+	public void acknowledgeEvent(String eventText, Object... args) {
 		acknowledgeEvent(String.format(Locale.US, eventText, args));
 	}
 	
-	protected void acknowledgeEvent(String eventText) {
+	public void acknowledgeEvent(String eventText) {
 		synchronized (this.eventLock) {
 			SplPipeDecoder.println(eventText);
 			if (!this.eventAcknowledged) {
@@ -338,7 +338,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		}
 	}
 	
-	protected void acknowledgeEvent() {
+	public void acknowledgeEvent() {
 		synchronized (this.eventLock) {
 			if (!this.eventAcknowledged) {
 				SplPipeDecoder.writeAck();

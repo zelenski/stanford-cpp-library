@@ -4,6 +4,8 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2016/03/16
+ * - added functions for HTTP server
  * @version 2015/10/21
  * - moved EchoingStreambuf to plainconsole.h/cpp facilitate in/output capture
  * @version 2015/10/08
@@ -110,6 +112,7 @@ static void endLineConsole(bool isStderr = false);
 static void echoConsole(const std::string& str, bool isStderr = false);
 static int scanInt(TokenScanner& scanner);
 static double scanDouble(TokenScanner& scanner);
+static int scanChar(TokenScanner& scanner);
 static GDimension scanDimension(const std::string& str);
 static Point scanPoint(const std::string& str);
 static GRectangle scanRectangle(const std::string& str);
@@ -294,6 +297,7 @@ static void getStatus();
 static GEvent parseEvent(std::string line);
 static GEvent parseMouseEvent(TokenScanner& scanner, EventType type);
 static GEvent parseKeyEvent(TokenScanner& scanner, EventType type);
+static GEvent parseServerEvent(TokenScanner& scanner, EventType type);
 static GEvent parseTableEvent(TokenScanner& scanner, EventType type);
 static GEvent parseTimerEvent(TokenScanner& scanner, EventType type);
 static GEvent parseWindowEvent(TokenScanner& scanner, EventType type);
@@ -855,6 +859,38 @@ void Platform::gtimer_start(const GTimer& timer) {
 void Platform::gtimer_stop(const GTimer& timer) {
     std::ostringstream os;
     os << "GTimer.stopTimer(\"" << timer.gtd << "\")";
+    putPipe(os.str());
+}
+
+void Platform::httpserver_sendResponse(int requestID, int httpErrorCode, const std::string& contentType, const std::string& responseText) {
+    std::ostringstream os;
+    os << "HttpServer.sendResponse(" << requestID << "," << httpErrorCode << ",";
+    writeQuotedString(os, contentType);
+    os << ",";
+    writeQuotedString(os, responseText);
+    os << ")";
+    putPipe(os.str());
+}
+
+void Platform::httpserver_sendResponseFile(int requestID, const std::string& contentType, const std::string& responseFilePath) {
+    std::ostringstream os;
+    os << "HttpServer.sendResponseFile(" << requestID << ",";
+    writeQuotedString(os, contentType);
+    os << ",";
+    writeQuotedString(os, responseFilePath);
+    os << ")";
+    putPipe(os.str());
+}
+
+void Platform::httpserver_start(int port) {
+    std::ostringstream os;
+    os << "HttpServer.start(" << port << ")";
+    putPipe(os.str());
+}
+
+void Platform::httpserver_stop() {
+    std::ostringstream os;
+    os << "HttpServer.stop()";
     putPipe(os.str());
 }
 
@@ -2498,6 +2534,8 @@ static GEvent parseEvent(std::string line) {
         return parseKeyEvent(scanner, KEY_TYPED);
     } else if (name == "actionPerformed") {
         return parseActionEvent(scanner, ACTION_PERFORMED);
+    } else if (name == "serverRequest") {
+        return parseServerEvent(scanner, SERVER_REQUEST);
     } else if (name == "tableSelected") {
         return parseTableEvent(scanner, TABLE_SELECTED);
     } else if (name == "tableUpdated") {
@@ -2586,6 +2624,20 @@ static GEvent parseKeyEvent(TokenScanner& scanner, EventType type) {
     GKeyEvent e(type, GWindow(windowTable.get(id)), char(keyChar), keyCode);
     e.setEventTime(time);
     e.setModifiers(modifiers);
+    return e;
+}
+
+static GEvent parseServerEvent(TokenScanner& scanner, EventType type) {
+    scanner.verifyToken("(");
+    double time = scanDouble(scanner);
+    scanner.verifyToken(",");
+    int requestID = scanInt(scanner);
+    scanner.verifyToken(",");
+    std::string requestUrl = urlDecode(scanner.getStringValue(scanner.nextToken()));
+    scanner.verifyToken(")");
+
+    GServerEvent e(type, requestID, requestUrl);
+    e.setEventTime(time);
     return e;
 }
 

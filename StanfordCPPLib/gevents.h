@@ -36,6 +36,7 @@ enum EventClassType {
     MOUSE_EVENT  = 0x100,
     CLICK_EVENT  = 0x200,
     TABLE_EVENT  = 0x400,
+    SERVER_EVENT = 0x800,
     ANY_EVENT    = 0x3F0
 };
 
@@ -59,7 +60,8 @@ typedef enum {
     KEY_TYPED        = KEY_EVENT + 3,
     TIMER_TICKED     = TIMER_EVENT + 1,
     TABLE_UPDATED    = TABLE_EVENT + 1,
-    TABLE_SELECTED   = TABLE_EVENT + 2
+    TABLE_SELECTED   = TABLE_EVENT + 2,
+    SERVER_REQUEST   = SERVER_EVENT + 1
 } EventType;
 
 /*
@@ -120,6 +122,8 @@ class GActionEvent;
 class GMouseEvent;
 class GKeyEvent;
 class GTimerEvent;
+class GTableEvent;
+class GServerEvent;
 class GObject;
 
 /*
@@ -281,6 +285,10 @@ private:
     int keyChar;
     int keyCode;
 
+    /* Server events */
+    int requestID;
+    std::string requestUrl;
+
     /* Table events */
     int row;
     int column;
@@ -290,12 +298,13 @@ private:
     GTimerData *gtd;
 
     /* Friend specifications */
-    friend class GWindowEvent;
     friend class GActionEvent;
-    friend class GMouseEvent;
     friend class GKeyEvent;
-    friend class GTimerEvent;
+    friend class GMouseEvent;
+    friend class GServerEvent;
     friend class GTableEvent;
+    friend class GTimerEvent;
+    friend class GWindowEvent;
 };
 
 /*
@@ -711,10 +720,10 @@ public:
     int getColumn() const;
     int getRow() const;
     std::string getValue() const;
-    
+
     void setLocation(int row, int column);
     void setValue(std::string value);
-    
+
     /*
      * Method: toString
      * Usage: string str = e.toString();
@@ -726,6 +735,40 @@ public:
     /* Private section */
     GTableEvent();
     GTableEvent(GEvent e);
+};
+
+class GServerEvent : public GEvent {
+public:
+    /*
+     * Constructor: GServerEvent
+     * Usage: GServerEvent serverEvent(type);
+     * --------------------------------------
+     * Creates a <code>GServerEvent</code> with the specified type.
+     */
+    GServerEvent(EventType type, int requestID, const std::string& requestUrl);
+
+    /*
+     * Returns the request ID sent by the server to disambiguate messages.
+     */
+    int getRequestID() const;
+
+    /*
+     * Returns the URL of the request that the web client wants to fetch,
+     * such as "/foo/bar/baz.txt".
+     */
+    std::string getRequestURL() const;
+
+    /*
+     * Method: toString
+     * Usage: string str = e.toString();
+     * ---------------------------------
+     * Converts the event to a human-readable representation of the event.
+     */
+    std::string toString() const;
+
+    /* Private section */
+    GServerEvent();
+    GServerEvent(GEvent e);
 };
 
 #endif

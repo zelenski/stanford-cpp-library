@@ -448,6 +448,39 @@ void compareTest() {
 
 void foreachTest() {
     std::cout << "foreach test: " << std::endl;
+
+    Vector<int> v1;
+    v1 += 1, 2, 3;
+    cout << "v1: " << v1 << endl;
+
+    Vector<string> v2;
+    v2 += "a", "b", "c";
+    cout << "v2: " << v2 << endl;
+
+    Stack<int> s1;
+    s1.push(1);
+    s1.push(2);
+    s1.push(3);
+    cout << "s1: " << s1 << endl;
+
+    Stack<string> s2;
+    s2.push("a");
+    s2.push("b");
+    s2.push("c");
+    cout << "s2: " << s2 << endl;
+
+    Queue<int> q1;
+    q1.enqueue(1);
+    q1.enqueue(2);
+    q1.enqueue(3);
+    cout << "q1: " << q1 << endl;
+
+    Queue<string> q2;
+    q2.enqueue("a");
+    q2.enqueue("b");
+    q2.enqueue("c");
+    cout << "q2: " << q2 << endl;
+
     
     BasicGraph bgraph;
     bgraph.addNode("a");

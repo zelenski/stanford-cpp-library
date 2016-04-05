@@ -34,4 +34,7 @@ void stringToIntegerTest();
 // url tests
 void urlstreamTest();
 
+// server tests
+void serverTest();
+
 #endif

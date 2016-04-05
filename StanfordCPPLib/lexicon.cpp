@@ -303,6 +303,7 @@ bool Lexicon::removeHelper(TrieNode*& node, const std::string& word, const std::
         return true;
     } else {
         // recursive case: chop off first letter, traverse the rest
+        // TODO: if I wasn't a leaf but now am, remove me too
         return removeHelper(node->child(word[0]), word.substr(1), originalWord, isPrefix);
     }
 }

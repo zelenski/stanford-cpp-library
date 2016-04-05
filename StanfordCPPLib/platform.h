@@ -221,6 +221,10 @@ public:
     void gwindow_setTitle(const GWindow& gw, std::string title);
     void gwindow_setVisible(const GWindow& gw, bool flag);
     void gwindow_toFront(const GWindow& gw);
+    void httpserver_sendResponse(int requestID, int httpErrorCode, const std::string& contentType, const std::string& responseText);
+    void httpserver_sendResponseFile(int requestID, const std::string& contentType, const std::string& responseFile);
+    void httpserver_start(int port);
+    void httpserver_stop();
     void jbeconsole_clear();
     bool jbeconsole_isBlocked();
     void jbeconsole_minimize();

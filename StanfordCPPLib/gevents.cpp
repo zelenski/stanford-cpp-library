@@ -399,6 +399,49 @@ std::string GTableEvent::toString() const {
     return out.str();
 }
 
+GServerEvent::GServerEvent(EventType type, int requestID, const std::string& requestUrl) {
+    this->eventClass = SERVER_EVENT;
+    this->eventType = int(type);
+    this->requestID = requestID;
+    this->requestUrl = requestUrl;
+    valid = true;
+}
+
+int GServerEvent::getRequestID() const {
+    return requestID;
+}
+
+std::string GServerEvent::getRequestURL() const {
+    return requestUrl;
+}
+
+std::string GServerEvent::toString() const {
+    if (!valid) return "GServerEvent(?)";
+    std::ostringstream out;
+    if (eventType == SERVER_REQUEST) {
+        out << "GServerEvent:SERVER_REQUEST(id="
+            << requestID << " url=\"" << requestUrl << "\")";
+    }
+    return out.str();
+}
+
+GServerEvent::GServerEvent() {
+    valid = false;
+}
+
+GServerEvent::GServerEvent(GEvent e) {
+    valid = e.valid && e.eventClass == SERVER_EVENT;
+    if (valid) {
+        eventClass = e.eventClass;
+        eventType = e.eventType;
+        modifiers = e.modifiers;
+        eventTime = e.eventTime;
+        requestID = e.requestID;
+        requestUrl = e.requestUrl;
+        value = e.value;
+    }
+}
+
 /* Global event handlers */
 
 GMouseEvent waitForClick() {
