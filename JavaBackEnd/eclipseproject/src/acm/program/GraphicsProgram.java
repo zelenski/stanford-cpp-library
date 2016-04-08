@@ -148,7 +148,7 @@ public abstract class GraphicsProgram extends Program {
 	/**
 	 * Adds the graphical object to the canvas and sets its location to the
 	 * specified point.
-	 * 
+	 * 	
 	 * @usage add(gobj, pt);
 	 * @param gobj
 	 *            The graphical object to add

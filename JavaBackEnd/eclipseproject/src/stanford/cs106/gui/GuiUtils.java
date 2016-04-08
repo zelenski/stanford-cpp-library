@@ -371,6 +371,11 @@ public class GuiUtils {
 			
 			UIManager.getLookAndFeelDefaults().put("Slider.paintValue", false);
 			UIManager.put("Slider.paintValue", false);
+			UIManager.put("Table.disabled", false);
+			UIManager.put("Table.gridColor", new Color(204,207,213));
+			UIManager.put("Table.intercellSpacing", new Dimension(1, 1));
+			UIManager.put("Table.showGrid", true);
+			System.setProperty("apple.laf.useScreenMenuBar", "true");
 		} catch (Exception e) {
 			// empty
 		}

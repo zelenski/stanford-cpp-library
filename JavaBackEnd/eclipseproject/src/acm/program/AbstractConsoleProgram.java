@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp (current maintainer)
+ * @version 2016/04/07
+ * - added fontEnlarge, fontShrink, fontToggleBold
  * @version 2015/06/19
  * - dummy superclass between Program and ConsoleProgram/JBEDummyProgram
  */
@@ -9,9 +11,49 @@ package acm.program;
 import java.awt.*;
 import javax.swing.*;
 import acm.io.*;
+import acm.util.JTFTools;
 
 public class AbstractConsoleProgram extends Program {
 	private static final int DEFAULT_LINE_HEIGHT = 16;
+	
+	public void fontEnlarge() {
+		fontChangeSize(+2);
+	}
+	
+	public void fontShrink() {
+		fontChangeSize(-2);
+	}
+	
+	public void fontToggleBold() {
+		Font font = fontExtract();
+		if (font != null) {
+			if ((font.getStyle() & Font.BOLD) != 0) {
+				font = font.deriveFont(font.getStyle() & ~Font.BOLD);
+			} else {
+				font = font.deriveFont(font.getStyle() | Font.BOLD);
+			}
+			this.setFont(font);
+		}
+	}
+	
+	private void fontChangeSize(int increment) {
+		Font font = fontExtract();
+		if (font != null) {
+			font = font.deriveFont((float) font.getSize() + increment);
+			this.setFont(font);
+		}
+	}
+	
+	private Font fontExtract() {
+		Font font = this.getFont();
+		if (font == null) {
+			font = this.getConsole().getFont();
+		}
+		if (font == null) {
+			font = JTFTools.decodeFont(null);
+		}
+		return font;
+	}
 	
 	private JScrollPane getScrollPane() {
 		IOConsole console = getConsole();

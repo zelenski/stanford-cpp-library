@@ -84,6 +84,13 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 		}
 	}
 	
+	/**
+	 * Returns all text that has been displayed on this console so far.
+	 */
+	public String getAllOutput() {
+		return this.getConsole().getConsoleModel().getText();
+	}
+	
 /* Method: run() */
 /**
  * Specifies the code to be executed as the program runs.
@@ -357,7 +364,7 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 
 	/* Administrative Methods */
 	private boolean shouldOverrideInput() {
-		return inputOverride && (inputReader.peekInputLine() != null);			
+		return inputOverride && (inputReader != null && inputReader.peekInputLine() != null);			
 	}
 
 	/**
@@ -381,6 +388,9 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 	
 	public void captureOutput(boolean capture) {
 		outputCapture = capture;
+		if (capturedOutput == null) {
+			capturedOutput = new StringBuilder();
+		}
 		if (!outputCapture && capturedOutput.length() > 0) {
 			capturedOutput.delete(0, capturedOutput.length());
 		}
@@ -418,17 +428,15 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 		// all other print()s call print(String)
 		if (outputCapture) {
 			capturedOutput.append(value);
-		} else {
-			super.print(value);
 		}
+		super.print(value);
 	}
 	
 	public void println() {
 		if (outputCapture) {
 			capturedOutput.append('\n');
-		} else {
-			super.println();
 		}
+		super.println();
 	}
 	
 	public void println(String value) {
@@ -436,23 +444,25 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 		if (outputCapture) {
 			capturedOutput.append(value);
 			capturedOutput.append('\n');
-		} else {
-			super.println(value);
 		}
+		super.println(value);
 	}
 	
 	@Override
 	public int readInt(String prompt, int min, int max) {	
 		int result;
 		
-		if (outputCapture || shouldOverrideInput()) {
+		if (shouldOverrideInput()) {
 			result = getInputInt();	
 			checkRange(result, min, max);
 			// super.println(prompt + result + "\t<readInt>");
 			println(prompt + result + "\t<readInt>");
 		} else {
 			result = super.readInt(prompt, min, max);
-				
+		}
+		if (outputCapture) {
+			capturedOutput.append(result);
+			capturedOutput.append("\n");
 		}
 		
 		return result; 
@@ -462,13 +472,17 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 	public double readDouble(String prompt, double min, double max) {	
 		double result;
 		
-		if (outputCapture || shouldOverrideInput()) {
+		if (shouldOverrideInput()) {
 			result = getInputDouble();
 			checkRange(result, min, max);
 			// super.println(prompt + result + "\t<readDouble>");
 			println(prompt + result + "\t<readDouble>");
 		} else {
 			result = super.readDouble(prompt, min, max); 
+		}
+		if (outputCapture) {
+			capturedOutput.append(result);
+			capturedOutput.append("\n");
 		}
 		
 		return result; 

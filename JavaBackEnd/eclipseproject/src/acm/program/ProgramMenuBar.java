@@ -46,8 +46,12 @@
 package acm.program;
 
 import acm.util.*;
+import stanford.cs106.diff.DiffGui;
+import stanford.cs106.io.IOUtils;
+
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -105,23 +109,31 @@ public class ProgramMenuBar extends JMenuBar
 	// key commands for navigating around in the console window
 	protected KeyStroke ALT_F4;
 	protected KeyStroke COMMAND_A;
+	protected KeyStroke COMMAND_B;
 	protected KeyStroke COMMAND_C;
 	protected KeyStroke COMMAND_END;
+	protected KeyStroke COMMAND_EQUALS;
 	protected KeyStroke COMMAND_HOME;
 	protected KeyStroke COMMAND_L;
+	protected KeyStroke COMMAND_MINUS;
 	protected KeyStroke COMMAND_P;
+	protected KeyStroke COMMAND_PLUS;
 	protected KeyStroke COMMAND_Q;
 	protected KeyStroke COMMAND_S;
 	protected KeyStroke COMMAND_V;
 	protected KeyStroke COMMAND_W;
 	protected KeyStroke COMMAND_X;
 	protected KeyStroke CTRL_A;
+	protected KeyStroke CTRL_B;
 	protected KeyStroke CTRL_C;
 	protected KeyStroke CTRL_END;
+	protected KeyStroke CTRL_EQUALS;
 	protected KeyStroke CTRL_HOME;
 	protected KeyStroke CTRL_L;
+	protected KeyStroke CTRL_MINUS;
 	protected KeyStroke CTRL_P;
 	protected KeyStroke CTRL_Q;
+	protected KeyStroke CTRL_PLUS;
 	protected KeyStroke CTRL_S;
 	protected KeyStroke CTRL_V;
 	protected KeyStroke CTRL_W;
@@ -155,21 +167,29 @@ public class ProgramMenuBar extends JMenuBar
 
 		ALT_F4 = KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK);
 		COMMAND_A = KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.META_DOWN_MASK);
+		COMMAND_B = KeyStroke.getKeyStroke(KeyEvent.VK_B, KeyEvent.META_DOWN_MASK);
 		COMMAND_C = KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.META_DOWN_MASK);
 		COMMAND_END = KeyStroke.getKeyStroke(KeyEvent.VK_END, KeyEvent.META_DOWN_MASK);
+		COMMAND_EQUALS = KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, KeyEvent.META_DOWN_MASK);
 		COMMAND_HOME = KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.META_DOWN_MASK);
 		COMMAND_L = KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.META_DOWN_MASK);
+		COMMAND_MINUS = KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.META_DOWN_MASK);
 		COMMAND_P = KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.META_DOWN_MASK);
+		COMMAND_PLUS = KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, KeyEvent.META_DOWN_MASK);
 		COMMAND_Q = KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.META_DOWN_MASK);
 		COMMAND_S = KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.META_DOWN_MASK);
 		COMMAND_V = KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.META_DOWN_MASK);
 		COMMAND_W = KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.META_DOWN_MASK);
 		CTRL_A = KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_B = KeyStroke.getKeyStroke(KeyEvent.VK_B, KeyEvent.CTRL_DOWN_MASK);
 		CTRL_C = KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK);
 		CTRL_END = KeyStroke.getKeyStroke(KeyEvent.VK_END, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_EQUALS = KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, KeyEvent.CTRL_DOWN_MASK);
 		CTRL_HOME = KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.CTRL_DOWN_MASK);
 		CTRL_L = KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_MINUS = KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.CTRL_DOWN_MASK);
 		CTRL_P = KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_PLUS = KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, KeyEvent.CTRL_DOWN_MASK);
 		CTRL_Q = KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK);
 		CTRL_S = KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK);
 		CTRL_V = KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK);
@@ -228,6 +248,8 @@ public class ProgramMenuBar extends JMenuBar
 			item = createFocusedItem(action, 'V', mac ? COMMAND_V : CTRL_V);
 			item.setMnemonic('P');
 			if (!mac) item.setName("Paste (v)");
+		} else if (action.equals("Compare Output...")) {
+			item = createProgramItem(action, 'C');
 		} else if (action.equals("Clear Console")) {
 			item = createProgramItem(action, 'L', mac ? COMMAND_L : CTRL_L);
 		} else if (action.equals("Select All")) {
@@ -486,16 +508,27 @@ public class ProgramMenuBar extends JMenuBar
 			} else if (stroke.equals(PGUP)) {
 				consoleProgram.scrollPageUp();
 				return true;
+			} else if (stroke.equals(CTRL_PLUS) || stroke.equals(COMMAND_PLUS)
+					|| stroke.equals(CTRL_EQUALS) || stroke.equals(COMMAND_EQUALS)) {
+				consoleProgram.fontEnlarge();
+				return true;
+			} else if (stroke.equals(CTRL_MINUS) || stroke.equals(COMMAND_MINUS)) {
+				consoleProgram.fontShrink();
+				return true;
+			} else if (stroke.equals(CTRL_B) || stroke.equals(COMMAND_B)) {
+				consoleProgram.fontToggleBold();
+				return true;
 			} else if (stroke.equals(UP_ARROW)) {
-				// consoleProgram.scrollLineUp();
 				consoleProgram.historyUp();
 				return true;
 			} else if (stroke.equals(DOWN_ARROW)) {
-				// consoleProgram.scrollLineDown();
 				consoleProgram.historyDown();
 				return true;
 			} else if (stroke.equals(PGDN)) {
 				consoleProgram.scrollPageDown();
+				return true;
+			} else if (stroke.equals(CTRL_W) || stroke.equals(COMMAND_W)) {
+				consoleProgram.exit();
 				return true;
 			}
 		}
@@ -614,6 +647,45 @@ public class ProgramMenuBar extends JMenuBar
 					"About Stanford Java/C++ Library",   // title
 					JOptionPane.INFORMATION_MESSAGE      // type
 			);
+		} else if (cmd == "Compare Output...") {
+			// DiffGui diff = new DiffGui();
+			if (getProgram() instanceof ConsoleProgram) {
+				ConsoleProgram consoleProgram = (ConsoleProgram) getProgram();
+				try {
+					// pick working dir for loading expected output files
+					File dir = new File(System.getProperty("user.dir"));
+					File[] dirsToTry = {
+							new File(dir, "output"),
+							new File(dir, "expected-output"),
+							new File(dir, "res/output"),
+							new File(dir, "res/expected-output"),
+					};
+					for (File dirToTry : dirsToTry) {
+						if (dirToTry.exists()) {
+							dir = dirToTry;
+							break;
+						}
+					}
+					
+					// let the user browse for a file for expected output
+					JFileChooser chooser = new JFileChooser(dir);
+					int result = chooser.showOpenDialog(consoleProgram.getJFrame());
+					if (result == JFileChooser.CANCEL_OPTION) {
+						return;
+					}
+					File selectedFile = chooser.getSelectedFile();
+					if (selectedFile == null || !selectedFile.exists()) {
+						return;
+					}
+					
+					String expectedOutput = IOUtils.readEntireFile(selectedFile);
+					String studentOutput = consoleProgram.getAllOutput();
+					DiffGui diff = new DiffGui("expected output", expectedOutput, "your output", studentOutput);
+					diff.show();
+				} catch (Exception e) {
+					// empty
+				}
+			}
 		} else if (cmd == "Check for Updates") {
 			stanford.spl.LibraryUpdater updater = new stanford.spl.LibraryUpdater();
 			updater.checkForUpdates(getProgram().getJFrame());
@@ -637,6 +709,12 @@ public class ProgramMenuBar extends JMenuBar
 			menu.add(createStandardItem("Print...", 'P'));
 //			menu.add(createStandardItem("Print Console"));
 //			menu.add(createStandardItem("Script"));
+			menu.addSeparator();
+			
+			JMenuItem compareOutputItem = new JMenuItem("Compare Output...");
+			compareOutputItem.addActionListener(this);
+			compareOutputItem.setMnemonic('C');
+			menu.add(compareOutputItem);
 			menu.addSeparator();
 		}
 //		menu.add(createStandardItem("Export Applet"));

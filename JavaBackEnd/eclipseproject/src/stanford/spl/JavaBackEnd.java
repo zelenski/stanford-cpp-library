@@ -6,6 +6,7 @@ import acm.util.ErrorException;
 import acm.util.JTFTools;
 import acm.util.Platform;
 import acm.util.TokenScanner;
+import stanford.cs106.gui.GuiUtils;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -792,34 +793,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	private void initSystemProperties() {
 		if (!GraphicsEnvironment.isHeadless()) {
 			System.setProperty("com.apple.mrj.application.apple.menu.about.name", this.appName);
-			System.setProperty("apple.laf.useScreenMenuBar", "true");
-			try {
-				try {
-					UIManager.put("Slider.paintValue", false);
-					UIManager.put("Table.disabled", false);
-					UIManager.put("Table.gridColor", new Color(204,207,213));
-					UIManager.put("Table.showGrid", true);
-					UIManager.put("Table.intercellSpacing", new Dimension(1, 1));
-					
-					String lnf = UIManager.getSystemLookAndFeelClassName();
-					if (lnf == null || lnf.contains("MetalLookAndFeel")) {
-						// workaround because system L&F seems to fail on Linux boxes
-						UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-					} else {
-						UIManager.setLookAndFeel(lnf);
-					}
-					
-					UIManager.put("Slider.paintValue", false);
-					UIManager.put("Table.disabled", false);
-					UIManager.put("Table.gridColor", new Color(204,207,213));
-					UIManager.put("Table.showGrid", true);
-					UIManager.put("Table.intercellSpacing", new Dimension(1, 1));
-				} catch (Exception e) {
-					// empty
-				}
-			} catch (Exception localException) {
-				// empty
-			}
+			GuiUtils.setSystemLookAndFeel();
 		}
 	}
 

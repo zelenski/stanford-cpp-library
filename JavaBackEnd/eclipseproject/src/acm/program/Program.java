@@ -73,6 +73,7 @@ import acm.graphics.GObject;
 import acm.gui.*;
 import acm.io.*;
 import acm.util.*;
+import stanford.cs106.gui.GuiUtils;
 
 import java.applet.*;
 import java.awt.*;
@@ -163,6 +164,7 @@ public abstract class Program extends JApplet
  * This code initializes the program data structures.
  */
 	protected Program() {
+		GuiUtils.setSystemLookAndFeel();
 		JTFTools.registerApplet(this);
 		appletMode = checkForAppletMode();
 		shown = false;

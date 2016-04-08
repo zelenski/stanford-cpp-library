@@ -9,7 +9,7 @@
 package stanford.spl;
 
 public class Version {
-	private static final String JAVA_BACK_END_VERSION = "2016/03/16";
+	private static final String JAVA_BACK_END_VERSION = "2016/04/07";
 	private static final String CPP_LIB_VERSION_UNKNOWN = "(unknown)";
 	private static String CPP_LIB_VERSION = CPP_LIB_VERSION_UNKNOWN;
 	
