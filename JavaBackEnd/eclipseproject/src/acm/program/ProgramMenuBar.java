@@ -648,7 +648,6 @@ public class ProgramMenuBar extends JMenuBar
 					JOptionPane.INFORMATION_MESSAGE      // type
 			);
 		} else if (cmd == "Compare Output...") {
-			// DiffGui diff = new DiffGui();
 			if (getProgram() instanceof ConsoleProgram) {
 				ConsoleProgram consoleProgram = (ConsoleProgram) getProgram();
 				try {
@@ -680,7 +679,7 @@ public class ProgramMenuBar extends JMenuBar
 					
 					String expectedOutput = IOUtils.readEntireFile(selectedFile);
 					String studentOutput = consoleProgram.getAllOutput();
-					DiffGui diff = new DiffGui("expected output", expectedOutput, "your output", studentOutput);
+					DiffGui diff = new DiffGui("expected output", expectedOutput, "your output", studentOutput, /* checkboxes */ false);
 					diff.show();
 				} catch (Exception e) {
 					// empty

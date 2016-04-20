@@ -44,7 +44,7 @@ import javax.swing.*;
  * of a <code>ConsoleProgram</code> using the standard I/O streams.
  */
 public class CommandLineProgram
-  implements IOModel, Runnable, MouseListener, MouseMotionListener,
+  implements IOModel, MouseListener, MouseMotionListener,
              KeyListener, ActionListener {
 
 /** Constant specifying the north edge of the container */
@@ -102,6 +102,8 @@ public class CommandLineProgram
 			program.exit();
 		} catch (Exception ex) {
 			throw new ErrorException(ex);
+		} catch (Throwable t) {
+			throw new ErrorException(new RuntimeException(t));
 		}
 	}
 
@@ -111,7 +113,7 @@ public class CommandLineProgram
  * you are defining your own program, you need to override the definition of
  * <code>run</code> so that it contains the code for your application.
  */
-	public void run() {
+	public void run() throws Throwable {
 		/* Empty */
 	}
 
@@ -680,7 +682,15 @@ public class CommandLineProgram
 			parameterTable = createParameterTable(args);
 		}
 		init();
-		run();
+		try {
+			run();
+		} catch (Throwable t) {
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException) t;
+			} else {
+				throw new RuntimeException(t);
+			}
+		}
 	}
 
 /* Method: exit() */

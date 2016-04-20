@@ -1,4 +1,7 @@
 /*
+ * @version 2016/04/16
+ * - added some file-reading methods to help with programs packed into JARs/applets
+ *   e.g. fileExists, openFileFromJAR
  * @version 2015/10/13
  * - added animation-related methods (animation, setAnimationDelay, startAnimation, etc.)
  * - style fix: moved fields/constants to top of class as the good lord intended
@@ -74,6 +77,7 @@ import acm.gui.*;
 import acm.io.*;
 import acm.util.*;
 import stanford.cs106.gui.GuiUtils;
+import stanford.cs106.io.IORuntimeException;
 
 import java.applet.*;
 import java.awt.*;
@@ -315,6 +319,13 @@ public abstract class Program extends JApplet
  */
 	public void init() {
 		/* Empty */
+	}
+	
+	/**
+	 * Returns true if this program's init() method has been called.
+	 */
+	public boolean isInitialized() {
+		return initFinished;
 	}
 
 /* Method: print(value) */
@@ -841,8 +852,18 @@ public abstract class Program extends JApplet
 		return programFrame;
 	}
 	
+	/**
+	 * Sets whether the program will exit when its window is closed (default true).
+	 */
 	public void setExitOnClose(boolean exitOnClose) {
 		this.exitOnClose = exitOnClose;
+	}
+	
+	/**
+	 * Returns whether the program will exit when its window is closed (default true).
+	 */
+	public boolean isExitOnClose() {
+		return this.exitOnClose;
 	}
 	
 /* Method: setInputModel(io) */
@@ -1100,7 +1121,17 @@ public abstract class Program extends JApplet
 			circumventFrameSizeBug(programFrame, programBounds.getSize());
 		}
 		started = true;
-		init();
+		if (!initFinished) {
+			try {
+				init();
+			} catch (Throwable t) {
+				if (t instanceof RuntimeException) {
+					throw (RuntimeException) t;
+				}
+				throw new RuntimeException(t);
+			}
+		}
+		initFinished = true;
 		if (programFrame != null && myMenuBar != null) {
 			myMenuBar.install(programFrame);
 		}
@@ -1145,7 +1176,153 @@ public abstract class Program extends JApplet
 	public void addExitHook(Object obj) {
 		finalizers.add(obj);
 	}
-
+	
+	protected int fileSize(String filename) throws IOException {
+		if (!isApplet() && fileExistsOnDisk(filename)) {
+			return (int) (new File(filename).length());
+		} else if (fileExistsInsideJAR(filename)) {
+			InputStream input = openFileFromJAR(filename);
+			int size = 0;
+			while (input.read() != -1) {
+				size++;
+			}
+			return size;
+		} else {
+			throw new FileNotFoundException(filename);
+		}
+	}
+	
+	protected boolean fileExists(String filename) {
+		return fileExistsOnDisk(filename) || fileExistsInsideJAR(filename);
+	}
+	
+	protected boolean fileExists(String directory, String filename) {
+		return fileExistsOnDisk(directory, filename) || fileExistsInsideJAR(directory, filename);
+	}
+	
+	protected boolean fileExistsInsideJAR(String filename) {
+		return fileExistsInsideJAR(/* directory */ "", filename);
+	}
+	
+	protected boolean fileExistsInsideJAR(String directory, String filename) {
+		// fallback to using internal class stream (JAR or applet)
+		String filepath = "";
+		if (directory != null && !directory.isEmpty()) {
+			filepath += directory + File.separator;
+		}
+		filepath += filename;
+		InputStream stream = getClass().getResourceAsStream(filepath);
+		if (stream == null) {
+			return false;
+		} else {
+			try {
+				stream.close();
+			} catch (IOException ioe) {
+				// empty
+			}
+			return true;
+		}
+	}
+	
+	protected boolean fileExistsOnDisk(String filename) {
+		return fileExistsOnDisk(/* directory */ "", filename);
+	}
+	
+	protected boolean fileExistsOnDisk(String directory, String filename) {
+		if (isApplet()) {
+			return false;
+		} else {
+			// try reading a real file
+			File file = new File(directory, filename);
+			try {
+				if (file.exists() && file.isFile()) {
+					return true;
+				} else {
+					file = new File("../" + filename);  // "../simple.txt"
+					if (file.exists() && file.isFile()) {
+						return true;
+					}
+				}
+			} catch (SecurityException sex) {
+				// running as an applet
+			}
+			return false;
+		}
+	}
+	
+	protected boolean isApplet() {
+		try {
+			if (java.lang.System.getSecurityManager() != null) {
+				// applets run with security managers enabled
+				return true;
+			} else {
+				File currentDir = new File(java.lang.System.getProperty("user.dir"));
+				currentDir.exists();  // calling this will trigger security exception if applet
+			}
+		} catch (SecurityException sex) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	protected InputStream openFile(String filename) {
+		return openFile(/* directory */ "", filename);
+	}
+	
+	protected InputStream openFile(String directory, String filename) {
+		if (!isApplet() && fileExistsOnDisk(directory, filename)) {
+			return openFileFromDisk(filename);
+		} else if (fileExistsInsideJAR(directory, filename)) {
+			return openFileFromJAR(directory, filename);
+		} else {
+			throw new IORuntimeException("File not found: " + filename);
+		}
+	}
+	
+	protected InputStream openFileFromDisk(String filename) {
+		return openFileFromDisk(/* directory */ "", filename);
+	}
+	
+	protected InputStream openFileFromDisk(String directory, String filename) {
+		// try reading a real file first
+		File file = new File(directory, filename);
+		try {
+			if (file.exists()) {
+				return new BufferedInputStream(new FileInputStream(file));
+			} else {
+				file = new File("../" + filename);  // "../simple.txt"
+				if (file.exists()) {
+					return new BufferedInputStream(new FileInputStream(file));
+				}
+			}
+		} catch (SecurityException sex) {
+			// running as an applet
+		} catch (IOException sex) {
+			// file not found
+		}
+		throw new IORuntimeException("File not found: " + filename);
+	}
+	
+	protected InputStream openFileFromJAR(String filename) {
+		return openFileFromJAR(/* directory */ "", filename);
+	}
+	
+	protected InputStream openFileFromJAR(String directory, String filename) {
+		// fallback to using internal class stream (JAR or applet)
+		String filepath = "";
+		if (directory != null && !directory.isEmpty()) {
+			filepath += directory + File.separator;
+		}
+		filepath += filename;
+		InputStream stream = getClass().getResourceAsStream(filepath);
+		if (stream == null) {
+			throw new IORuntimeException("File not found: " + filepath);
+		} else {
+			return new BufferedInputStream(stream);
+		}
+	}
+	
 /* Method: setParameter(name, value) */
 /**
  * Sets a new value for the named parameter.
@@ -1634,7 +1811,21 @@ public abstract class Program extends JApplet
 				appletStarter.start();
 			}
 		} else {
-			start(null);
+			try {
+				start(null);
+			} catch (Throwable t) {
+				if (t instanceof Error) {
+					throw (Error) t;
+				} else if (t instanceof RuntimeException) {
+					throw (RuntimeException) t;
+				} else {
+					Throwable cause = t;
+					while (cause.getCause() != null) {
+						cause = cause.getCause();
+					}
+					throw new RuntimeException(cause);
+				}
+			}
 		}
 	}
 
@@ -2175,7 +2366,25 @@ class AppletStarter implements Runnable {
  */
 	public void start() {
 		try {
-			mainThread = new Thread(this);
+			mainThread = new Thread(new Runnable() {
+				public void run() {
+					try {
+						AppletStarter.this.run();
+					} catch (Throwable t) {
+						if (t instanceof Error) {
+							throw (Error) t;
+						} else if (t instanceof RuntimeException) {
+							throw (RuntimeException) t;
+						} else {
+							Throwable cause = t;
+							while (cause.getCause() != null) {
+								cause = cause.getCause();
+							}
+							throw new RuntimeException(cause);
+						}
+					}
+				}
+			});
 			mainThread.start();
 			if (JTFTools.testDebugOption("startup")) {
 				System.out.println("Starting main thread using Thread package");
@@ -2254,7 +2463,21 @@ class AppletStarter implements Runnable {
 			}
 			executor = null;
 			mainThread = Thread.currentThread();
-			myProgram.startRun();
+			try {
+				myProgram.startRun();
+			} catch (Throwable t) {
+				if (t instanceof Error) {
+					throw (Error) t;
+				} else if (t instanceof RuntimeException) {
+					throw (RuntimeException) t;
+				} else {
+					Throwable cause = t;
+					while (cause.getCause() != null) {
+						cause = cause.getCause();
+					}
+					throw new RuntimeException(cause);
+				}
+			}
 		}
 	}
 

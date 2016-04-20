@@ -25,7 +25,7 @@ public class GBufferedImage_load extends JBECommand {
 				String b64 = img.toStringBase64();
 				SplPipeDecoder.writeResult(b64);   // this is a LONG string
 			} catch (Exception ex) {
-				SplPipeDecoder.writeResult("Unexpected error:" + ex.getClass().getSimpleName() + ": " + ex.getMessage().replace('\n', ' '));
+				SplPipeDecoder.writeResult("error:" + ex.getClass().getSimpleName() + ": " + ex.getMessage().replace('\n', ' '));
 			}
 		}
 	}

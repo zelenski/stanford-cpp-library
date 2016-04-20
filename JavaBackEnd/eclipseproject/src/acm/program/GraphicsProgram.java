@@ -505,7 +505,7 @@ public abstract class GraphicsProgram extends Program {
 	 *            The array of arguments
 	 * @noshow
 	 */
-	public static void startGraphicsProgram(GObject gobj, String[] args) {
+	public static void startGraphicsProgram(GObject gobj, String[] args) throws Throwable {
 		GraphicsProgram program = new GObjectProgram();
 		program.setStartupObject(gobj);
 		program.start(args);

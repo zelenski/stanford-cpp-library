@@ -11,6 +11,8 @@ import stanford.cs106.util.StringUtils;
 public class DiffGui implements ActionListener, AdjustmentListener {
 	public static boolean SIDE_BY_SIDE_ENABLED = false;
 	private static final int SPLIT = JSplitPane.VERTICAL_SPLIT;
+	private static final int MAX_WIDTH = 1000;
+	private static final int MAX_HEIGHT = 700;
 	public static final String EXPECTED_COLOR = "#00aa00";
 	public static final String STUDENT_COLOR = "#aa0000";
 	public static final String LINE_NUMBER_BG_COLOR = "#ffffff";
@@ -52,10 +54,18 @@ public class DiffGui implements ActionListener, AdjustmentListener {
 	}
 	
 	public DiffGui(String name1, String s1, String name2, String s2) {
-		this(name1, s1, name2, s2, Diff.FLAGS_DEFAULT_LENIENT);
+		this(name1, s1, name2, s2, Diff.FLAGS_DEFAULT_LENIENT, /* checkboxes */ true);
+	}
+	
+	public DiffGui(String name1, String s1, String name2, String s2, boolean checkboxes) {
+		this(name1, s1, name2, s2, Diff.FLAGS_DEFAULT_LENIENT, checkboxes);
 	}
 	
 	public DiffGui(String name1, String s1, String name2, String s2, int flags) {
+		this(name1, s1, name2, s2, flags, /* checkboxes */ true);
+	}
+	
+	public DiffGui(String name1, String s1, String name2, String s2, int flags, boolean checkboxes) {
 		this.s1 = s1;
 		this.s2 = s2;
 		
@@ -90,30 +100,43 @@ public class DiffGui implements ActionListener, AdjustmentListener {
 		center.add(scroll2);
 		
 		JTabbedPane diffsSouth = new JTabbedPane();
-		diffsSouth.addTab("Diffs (use checkboxes below)", new JScrollPane(diffsArea));
+		String tab1text = "Diffs";
+		String tab2text = "Side-by-side";
+		if (checkboxes) {
+			tab1text += " (use checkboxes below)";
+			tab2text += " (checkboxes have no effect)";
+		}
+		diffsSouth.addTab(tab1text, new JScrollPane(diffsArea));
 		if (SIDE_BY_SIDE_ENABLED) {
-			diffsSouth.addTab("Side-by-side (checkboxes have no effect)", new JScrollPane(sbsDiffsArea));
+			diffsSouth.addTab(tab2text, new JScrollPane(sbsDiffsArea));
 		}
 		
-		Container buttonPane = GuiUtils.createPanel(
-				new FlowLayout(FlowLayout.CENTER),
-				new JLabel("Ignore: "),
-				ignoreLeading,
-				ignoreTrailing,
-				ignoreWhitespace,
-				ignoreBlankLines,
-				ignoreCase,
-				ignorePunctuation,
-				ignoreNumbers,
-				ignoreNonNumbers,
-				GuiUtils.createButton("Update", 'U', this),
-				Box.createHorizontalStrut(20),
-				GuiUtils.createButton("Close", 'C', this)
-		);
+		Container buttonPane = null;
+		if (checkboxes) {
+			buttonPane = GuiUtils.createPanel(
+					new FlowLayout(FlowLayout.CENTER),
+					new JLabel("Ignore: "),
+					ignoreLeading,
+					ignoreTrailing,
+					ignoreWhitespace,
+					ignoreBlankLines,
+					ignoreCase,
+					ignorePunctuation,
+					ignoreNumbers,
+					ignoreNonNumbers,
+					GuiUtils.createButton("Update", 'U', this),
+					Box.createHorizontalStrut(20),
+					GuiUtils.createButton("Close", 'C', this)
+			);
+		} else {
+			buttonPane = GuiUtils.createPanel(
+					new FlowLayout(FlowLayout.CENTER),
+					GuiUtils.createButton("Close", 'C', this)
+			);
+		}
 		
 		Container overall = new JPanel(new BorderLayout());
-		JSplitPane splitPane = new JSplitPane(SPLIT, center, diffsSouth);
-		splitPane.setDividerLocation(0.6);   // 60/40 split
+		final JSplitPane splitPane = new JSplitPane(SPLIT, center, diffsSouth);
 		overall.add(splitPane, BorderLayout.CENTER);
 		overall.add(buttonPane, BorderLayout.SOUTH);
 		
@@ -141,7 +164,26 @@ public class DiffGui implements ActionListener, AdjustmentListener {
 		frame.setContentPane(overall);
 		new WindowCloseKeyListener(frame);
 		frame.pack();
+		if (frame.getWidth() > MAX_WIDTH) {
+			frame.setSize(MAX_WIDTH, frame.getHeight());
+		}
+		if (frame.getHeight() > MAX_HEIGHT) {
+			frame.setSize(frame.getWidth(), MAX_HEIGHT);
+		}
+		splitPane.setDividerLocation(0.6);   // 60/40 split
 		GuiUtils.centerWindow(frame);
+		
+		// setting split pane doesn't really work unless you give a delay after show()
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException ie) {
+					// empty
+				}
+				splitPane.setDividerLocation(0.6);   // 60/40 split
+			}
+		}).start();
 	}
 	
 	public void adjustmentValueChanged(AdjustmentEvent event) {
@@ -247,5 +289,9 @@ public class DiffGui implements ActionListener, AdjustmentListener {
 		pane.setCaretPosition(0);
 		pane.setEditable(false);
 		return pane;
+	}
+	
+	public void setDiffCheckboxes(boolean value) {
+		
 	}
 }

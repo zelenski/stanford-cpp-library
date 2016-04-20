@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp
+ * @version 2016/04/15
+ * - bugfix: removed debug println on history up/down (oops)
  * @version 2015/06/19
  * - added support for up/down for history
  */
@@ -90,7 +92,6 @@ public class StandardConsoleModel implements KeyListener, FocusListener, Console
 		} else {
 			line = "";
 		}
-		java.lang.System.out.println("historyUpdate() line=\"" + line + "\"");
 		
 		// this.inputMonitor.readLine();
 		this.delete(this.base, this.getLength());

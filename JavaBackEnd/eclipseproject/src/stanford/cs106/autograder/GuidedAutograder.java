@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp
+ * @version 2016/04/08
+ * - fixed bug with user input table layout
  * @version 2015/05/28
  * - slight improvements in assert* output
  * @version 2015/05/19
@@ -16,10 +18,8 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.List;
-
 import javax.swing.*;
 import javax.swing.event.*;
-
 import stanford.cs106.diff.*;
 import stanford.cs106.gui.*;
 import stanford.cs106.io.*;
@@ -27,6 +27,7 @@ import stanford.cs106.junit.*;
 import stanford.cs106.program.*;
 import stanford.cs106.reflect.*;
 import stanford.cs106.util.*;
+import stanford.karel.*;
 import stanford.spl.AutograderUnitTestGUI;
 import acm.graphics.*;
 import acm.gui.*;
@@ -267,7 +268,7 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 		// program launcher panel
 		List<Component> launchButtons = new ArrayList<Component>();
 		for (Class<?> clazz : LAUNCH_CLASSES) {
-			JButton launchButton = GuiUtils.createButton("Launch " + clazz.getName(), 'B', this);
+			JButton launchButton = GuiUtils.createButton("Run " + clazz.getName(), 'B', this);
 			Font buttonFont = launchButton.getFont();
 			launchButton.setFont(buttonFont.deriveFont(Font.BOLD, buttonFont.getSize() + 2f));
 			int wider = 10;  // 50
@@ -343,7 +344,12 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 		                    "No  N O P Q R S T U V W X Y Z . Space";
 			int additionalGridWidth = 2;   // 2 columns per cell for user inputs additional
 			int cols = 16;
-			int rows = 2 + (int) Math.ceil((double) USER_INPUTS_ADDITIONAL.size() / cols / additionalGridWidth);
+			int rows = 2;
+
+			// add another row of inputs for every <= 16 additional inputs you have
+			if (!USER_INPUTS_ADDITIONAL.isEmpty()) { 
+				rows += (int) Math.ceil((double) USER_INPUTS_ADDITIONAL.size() / cols / additionalGridWidth);
+			}
 			JPanel userInputPanel = new JPanel(new TableLayout(rows, cols));
 			// add
 			for (String input : inputs.split("[ \t]+")) {
@@ -359,7 +365,9 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 				JButton inputButton = GuiUtils.createButton(input, "User input " + input, ' ', this);
 				userInputPanel.add(inputButton, "gridwidth=" + additionalGridWidth);
 			}
-			for (int i = 0; i < cols - (USER_INPUTS_ADDITIONAL.size() % cols * additionalGridWidth); i++) {
+			
+			// fill rest with empty panels
+			while (userInputPanel.getComponentCount() < rows * cols) {
 				userInputPanel.add(new JPanel());   // empty square
 			}
 			
@@ -1201,6 +1209,7 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 				this.programClass = clazz;
 				if (Program.class.isAssignableFrom(clazz)) {
 					this.program = (Program) clazz.newInstance();
+					this.program.setExitOnClose(false);
 					ReflectionPanel panel = reflectionPanels.get(STUDENT_CLASS);
 					if (panel != null) {
 						panel.setObject(this.program);
@@ -1223,16 +1232,20 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 
 		public void init() {
 			if (program != null) {
-				oFrame = new JFrame(clazz.getName());
-				GuiUtils.rememberWindowLocation(oFrame);
-				oFrame.setVisible(true);
-				oFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-				Insets insets = oFrame.getInsets();
-				oFrame.setSize(width + insets.left + insets.right,
-						height + insets.top + insets.bottom);
-				oFrame.add(program, BorderLayout.CENTER);
-				// oFrame.setLocation(DEFAULT_X, DEFAULT_Y);
-				program.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+				if (program instanceof Karel) {
+					// TODO?
+				} else {
+					oFrame = new JFrame(clazz.getName());
+					GuiUtils.rememberWindowLocation(oFrame);
+					oFrame.setVisible(true);
+					oFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+					Insets insets = oFrame.getInsets();
+					oFrame.setSize(width + insets.left + insets.right,
+							height + insets.top + insets.bottom);
+					oFrame.add(program, BorderLayout.CENTER);
+					// oFrame.setLocation(DEFAULT_X, DEFAULT_Y);
+					program.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+				}
 			}
 		}
 
@@ -1260,15 +1273,27 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 						main.invoke(null, (Object) args);
 					}
 				} else {
-					if (callInitAndRun) {
-						program.init();
-					}
-					oFrame.setVisible(true);
-					program.setVisible(true);
-					oFrame.validate();
-					oFrame.repaint();
-					if (callInitAndRun) {
-						program.run();
+					if (program instanceof Karel) {
+						program.start();
+					} else {
+						if (callInitAndRun) {
+							program.init();
+						}
+						program.setExitOnClose(false);
+						oFrame.setVisible(true);
+						program.setVisible(true);
+						oFrame.validate();
+						oFrame.repaint();
+						if (callInitAndRun) {
+							try {
+								program.run();
+							} catch (Throwable t) {
+								if (t instanceof RuntimeException) {
+									throw (RuntimeException) t;
+								}
+								throw new RuntimeException(t);
+							}
+						}
 					}
 				}
 			} catch (Error e) {

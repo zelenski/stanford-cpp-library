@@ -1,5 +1,6 @@
 /*
- * @author Marty Stepp (current maintainer)
+ * @version 2016/04/18
+ * - modified readBoolean, readLine to work with override input feature (e.g. HW2 autograder)
  * @version 2015/05/12
  * - added scroll__() methods for scrolling around in the console
  *   (these are called by ProgramMenuBar but are made public in case clients want them)
@@ -295,7 +296,9 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 	 * Erases any text from the main console.
 	 */
 	public void clearConsole() {
-		getConsole().clear();
+		if (clearEnabled) {
+			getConsole().clear();
+		}
 	}
 	
 	/**
@@ -335,7 +338,7 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 	 */
 	public String promptUserForFile(String prompt, String directory, String reprompt) {
 		String filename = readLine(prompt);
-		while (filename.isEmpty() || !(new File(directory, filename).exists())) {
+		while (filename.isEmpty() || !fileExists(directory, filename)) {
 			println(reprompt);
 			filename = readLine(prompt).trim();
 		}
@@ -348,6 +351,14 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 		}
 		return directory + filename;
 	}
+	
+	/**
+	 * Turns on/off the ability to clear the console using clearConsole(); (default true)
+	 * @param enabled Whether to enable clearConsole();
+	 */
+	public void setClearConsoleEnabled(boolean enabled) {
+		clearEnabled = enabled;
+	}
 
 
 	// BEGIN SNEAKY AUTOGRADER CODE //
@@ -356,6 +367,7 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 	private InputFileReader inputReader = null;
 	private boolean outputCapture = false;
 	private boolean inputOverride = false;
+	private boolean clearEnabled = true;   // whether clearConsole(); is effectual
 	private List<String> echoedComments = null;
 	private StringBuilder capturedOutput = new StringBuilder();
 	
@@ -432,6 +444,21 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 		super.print(value);
 	}
 	
+	public void print(String value, Color color) {
+		// all other print()s call print(String)
+		if (outputCapture) {
+			capturedOutput.append(value);
+		}
+		super.print(value, color);
+	}
+	
+	public void printf(String format, Object... args) {
+		if (outputCapture) {
+			capturedOutput.append(String.format(format, args));
+		}
+		super.printf(format, args);
+	}
+	
 	public void println() {
 		if (outputCapture) {
 			capturedOutput.append('\n');
@@ -448,21 +475,35 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 		super.println(value);
 	}
 	
+	public void println(String value, Color color) {
+		// all other println()s call println(String)
+		if (outputCapture) {
+			capturedOutput.append(value);
+			capturedOutput.append('\n');
+		}
+		super.println(value, color);
+	}
+	
 	@Override
 	public int readInt(String prompt, int min, int max) {	
 		int result;
 		
 		if (shouldOverrideInput()) {
+			if (!prompt.endsWith(" ")) {
+				prompt += " ";
+			}
 			result = getInputInt();	
 			checkRange(result, min, max);
 			// super.println(prompt + result + "\t<readInt>");
-			println(prompt + result + "\t<readInt>");
+			print(prompt);
+			print(result, Color.BLUE);
+			println("\t<readInt>");
 		} else {
 			result = super.readInt(prompt, min, max);
-		}
-		if (outputCapture) {
-			capturedOutput.append(result);
-			capturedOutput.append("\n");
+			if (outputCapture) {
+				capturedOutput.append(result);
+				capturedOutput.append("\n");
+			}
 		}
 		
 		return result; 
@@ -473,36 +514,60 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 		double result;
 		
 		if (shouldOverrideInput()) {
+			if (!prompt.endsWith(" ")) {
+				prompt += " ";
+			}
 			result = getInputDouble();
 			checkRange(result, min, max);
 			// super.println(prompt + result + "\t<readDouble>");
-			println(prompt + result + "\t<readDouble>");
+			print(prompt);
+			print(result, Color.BLUE);
+			println("\t<readDouble>");
 		} else {
 			result = super.readDouble(prompt, min, max); 
-		}
-		if (outputCapture) {
-			capturedOutput.append(result);
-			capturedOutput.append("\n");
+			if (outputCapture) {
+				capturedOutput.append(result);
+				capturedOutput.append("\n");
+			}
 		}
 		
 		return result; 
 	}
 
-	// TODO
-//	@Override
-//	public boolean readBoolean(String prompt, String y, String n) {	
-//		boolean result = false;
-//		
-//		if (shouldOverrideInput()) {
-//			result = getInputDouble();
-//			checkRange(result, min, max);
-//			super.println(prompt + result + "\t<readDouble>");
-//		} else {
-//			result = super.readDouble(prompt, min, max); 
-//		}
-//		
-//		return result; 
-//	}
+	@Override
+	public boolean readBoolean(String prompt, String y, String n) {	
+		boolean result = false;
+		
+		if (shouldOverrideInput()) {
+			if (!prompt.endsWith(" ")) {
+				prompt += " ";
+			}
+			print(prompt);
+			result = getInputBoolean(y, n);
+			println("\t<readBoolean>");
+		} else {
+			result = super.readBoolean(prompt, y, n); 
+		}
+		
+		return result; 
+	}
+
+	@Override
+	public String readLine(String prompt) {	
+		String line = "";
+		
+		if (shouldOverrideInput()) {
+			if (!prompt.endsWith(" ")) {
+				prompt += " ";
+			}
+			line = inputReader.readInputLine();
+			println(prompt + line + "\t<readLine>");
+		} else {
+			line = super.readLine(prompt); 
+		}
+		
+		return line; 
+	}
 
 	/* Support Methods */
 	private int getInputInt() {
@@ -512,7 +577,7 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 			return Integer.parseInt(line);
 		}
 		catch (NumberFormatException e) {
-			throw new RuntimeException(absolveStudentStr + " Poorly formatted integer input: " + line, e);
+			throw new RuntimeException(absolveStudentStr + " Poorly formatted integer input: \"" + line + "\"", e);
 		}		
 	}
 	
@@ -523,8 +588,19 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 			return Double.parseDouble(line);
 		}
 		catch (NumberFormatException e) {
-			throw new RuntimeException(absolveStudentStr + " Poorly formatted double input: " + line, e);
+			throw new RuntimeException(absolveStudentStr + " Poorly formatted double input: \"" + line + "\"", e);
 		}		
+	}
+	
+	private Boolean getInputBoolean(String t, String f) {
+		String line = null;
+		line = inputReader.readInputLine();
+		if (outputCapture) {
+			capturedOutput.append(line);
+			capturedOutput.append("\n");
+		}
+		print(line, Color.BLUE);
+		return t.equals(line) ? true : f.equals(line) ? false : null;
 	}
 	
 	private static void checkRange(int value, int min, int max) {
