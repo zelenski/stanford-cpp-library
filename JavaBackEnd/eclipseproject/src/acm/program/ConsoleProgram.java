@@ -595,10 +595,6 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 	private Boolean getInputBoolean(String t, String f) {
 		String line = null;
 		line = inputReader.readInputLine();
-		if (outputCapture) {
-			capturedOutput.append(line);
-			capturedOutput.append("\n");
-		}
 		print(line, Color.BLUE);
 		return t.equals(line) ? true : f.equals(line) ? false : null;
 	}
