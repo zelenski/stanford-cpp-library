@@ -1,4 +1,7 @@
 /*
+ * @version 2016/04/26
+ * - modified return type of getElementAt to avoid need for type cast
+ * - made GraphicsProgram implement Iterable<GObject>
  * @version 2015/05/09
  * - added methods to control pause/tick functionality
  * @version 2015/04/21
@@ -47,7 +50,7 @@ import java.util.*;
  * <code><a href="Program.html">Program</a></code> whose principal window is
  * used for drawing graphics.
  */
-public abstract class GraphicsProgram extends Program {
+public abstract class GraphicsProgram extends Program implements Iterable<GObject> {
 
 	/* Constructor: GraphicsProgram() */
 	/**
@@ -241,8 +244,9 @@ public abstract class GraphicsProgram extends Program {
 	 *            The index of the component to return
 	 * @return The graphical object at the specified index
 	 */
-	public GObject getElement(int index) {
-		return gc.getElement(index);
+	@SuppressWarnings("unchecked")
+	public <T extends GObject> T getElement(int index) {
+		return (T) gc.getElement(index);
 	}
 
 	/* Method: getElementAt(x, y) */
@@ -259,12 +263,13 @@ public abstract class GraphicsProgram extends Program {
 	 * @return The graphical object at the specified location, or
 	 *         <code>null</code> if no such object exists.
 	 */
-	public GObject getElementAt(double x, double y) {
+	@SuppressWarnings("unchecked")
+	public <T extends GObject> T getElementAt(double x, double y) {
 		GObject result = gc.getElementAt(x, y);
 		if (result != null && invisibleObjects.contains(result)) {
 			return null;
 		} else {
-			return result;
+			return (T) result;
 		}
 	}
 
@@ -276,7 +281,8 @@ public abstract class GraphicsProgram extends Program {
 	 * If no graphical object is found at any of these coordinate pairs,
 	 * null is returned. 
 	 */
-	public GObject getElementAt(double... coords) {
+	@SuppressWarnings("unchecked")
+	public <T extends GObject> T getElementAt(double... coords) {
 		if (coords.length == 0 || coords.length % 2 != 0) {
 			throw new IllegalArgumentException(
 					"number of coordinates passed must be even (must be a sequence of x/y pairs); you passed "
@@ -285,7 +291,7 @@ public abstract class GraphicsProgram extends Program {
 		for (int i = 0; i < coords.length; i += 2) {
 			GObject obj = gc.getElementAt(coords[i], coords[i + 1]);
 			if (obj != null) {
-				return obj;
+				return (T) obj;
 			}
 		}
 		return null;
@@ -302,7 +308,7 @@ public abstract class GraphicsProgram extends Program {
 	 * @return The graphical object at the specified location, or
 	 *         <code>null</code> if no such object exists
 	 */
-	public final GObject getElementAt(GPoint pt) {
+	public final <T extends GObject> T getElementAt(GPoint pt) {
 		return getElementAt(pt.getX(), pt.getY());
 	}
 
