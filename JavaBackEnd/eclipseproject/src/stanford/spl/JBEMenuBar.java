@@ -9,12 +9,10 @@
 
 package stanford.spl;
 
-import java.awt.event.*;
-
 import acm.io.*;
 import acm.program.*;
 
-public class JBEMenuBar extends ProgramMenuBar implements ActionListener {
+public class JBEMenuBar extends ProgramMenuBar {
 	private static final long serialVersionUID = 1L;
 	
 	public JBEMenuBar(JavaBackEnd paramJavaBackEnd, IOConsole paramIOConsole) {
