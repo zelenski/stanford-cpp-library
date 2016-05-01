@@ -1,4 +1,6 @@
 /*
+ * @version 2016/04/28
+ * - bug fix in openFileFromDisk (was ignoring directory passed)
  * @version 2016/04/16
  * - added some file-reading methods to help with programs packed into JARs/applets
  *   e.g. fileExists, openFileFromJAR
@@ -78,6 +80,7 @@ import acm.io.*;
 import acm.util.*;
 import stanford.cs106.gui.GuiUtils;
 import stanford.cs106.io.IORuntimeException;
+import stanford.spl.Version;
 
 import java.applet.*;
 import java.awt.*;
@@ -1030,7 +1033,12 @@ public abstract class Program extends JApplet
  */
 	public void setTitle(String title) {
 		myTitle = title;
-		if (programFrame != null) programFrame.setTitle(title);
+		if (programFrame != null) {
+			programFrame.setTitle(title);
+			if (Platform.isMac()) {
+				// System.setProperty("com.apple.mrj.application.apple.menu.about.name", title);
+			}
+		}
 	}
 
 /* Method: getTitle() */
@@ -1233,12 +1241,12 @@ public abstract class Program extends JApplet
 			return false;
 		} else {
 			// try reading a real file
-			File file = new File(directory, filename);
+			File file = (directory == null || directory.isEmpty()) ? new File(filename) : new File(directory, filename);
 			try {
 				if (file.exists() && file.isFile()) {
 					return true;
 				} else {
-					file = new File("../" + filename);  // "../simple.txt"
+					file = new File("../" + directory + "/" + filename);  // "../simple.txt"
 					if (file.exists() && file.isFile()) {
 						return true;
 					}
@@ -1271,8 +1279,8 @@ public abstract class Program extends JApplet
 	}
 	
 	protected InputStream openFile(String directory, String filename) {
-		if (!isApplet() && fileExistsOnDisk(directory, filename)) {
-			return openFileFromDisk(filename);
+		if (fileExistsOnDisk(directory, filename)) {
+			return openFileFromDisk(directory, filename);
 		} else if (fileExistsInsideJAR(directory, filename)) {
 			return openFileFromJAR(directory, filename);
 		} else {
@@ -1286,12 +1294,12 @@ public abstract class Program extends JApplet
 	
 	protected InputStream openFileFromDisk(String directory, String filename) {
 		// try reading a real file first
-		File file = new File(directory, filename);
+		File file = (directory == null || directory.isEmpty()) ? new File(filename) : new File(directory, filename);
 		try {
 			if (file.exists()) {
 				return new BufferedInputStream(new FileInputStream(file));
 			} else {
-				file = new File("../" + filename);  // "../simple.txt"
+				file = new File("../" + directory + "/" + filename);  // "../simple.txt"
 				if (file.exists()) {
 					return new BufferedInputStream(new FileInputStream(file));
 				}
@@ -1862,6 +1870,7 @@ public abstract class Program extends JApplet
  * @param args An array of string arguments
  */
 	public static void main(String[] args) {
+		GuiUtils.setSystemLookAndFeel();
 		HashMap<String,String> ht = createParameterTable(args);
 		JTFTools.setDebugOptions(ht.get("debug"));
 		String className = ht.get("code");
@@ -1916,25 +1925,44 @@ public abstract class Program extends JApplet
  * commands recognized even in the absence of a component with
  * keyboard focus.
  */
-	public boolean menuAction(ActionEvent e) {
-		String cmd = e.getActionCommand();
-		if (cmd.equals("Quit")) {
+	public boolean menuAction(ActionEvent event) {
+		String cmd = event.getActionCommand().intern();
+		if (cmd == ProgramMenuBar.MENU_ITEM_TEXT_QUIT) {
 			exit();
-		} else if (cmd.equals("Print") || cmd.equals("Print...")) {
+		} else if (cmd == ProgramMenuBar.MENU_ITEM_TEXT_PRINT
+				|| cmd.equals(ProgramMenuBar.MENU_ITEM_TEXT_PRINT + "...")) {
 			Frame frame = JTFTools.getEnclosingFrame(this);
-			if (frame == null) return true;
+			if (frame == null) {
+				return true;
+			}
 			PrintJob pj = frame.getToolkit().getPrintJob(frame, myTitle, null);
-			if (pj == null) return true;
+			if (pj == null) {
+				return true;
+			}
 			Graphics pg = pj.getGraphics();
 			pg.translate(PRINT_MARGIN, PRINT_MARGIN);
 			frame.printAll(pg);
 			pj.end();
 			return true;
-		} else if (cmd.equals("Export Applet") || cmd.equals("Submit Project")) {
+		} else if (cmd == ProgramMenuBar.MENU_ITEM_TEXT_EXPORT_APPLET
+				|| cmd == ProgramMenuBar.MENU_ITEM_TEXT_SUBMIT_PROJECT) {
 			JTFTools.executeExportAction(this, cmd);
 			return true;
+		} else if (cmd == ProgramMenuBar.MENU_ITEM_TEXT_ABOUT) {
+			JOptionPane.showMessageDialog(
+					getConsole(),                        // parent component
+					Version.getAboutMessage(),           // message
+					"About Stanford Library",            // title
+					JOptionPane.INFORMATION_MESSAGE      // type
+			);
+
+		} else if (cmd == ProgramMenuBar.MENU_ITEM_TEXT_CHECK_FOR_UPDATES) {
+			stanford.spl.LibraryUpdater updater = new stanford.spl.LibraryUpdater();
+			updater.checkForUpdates(getJFrame());
 		}
-		return getConsole().menuAction(e);
+		
+		// IOConsole handles other menu items like Cut/Copy/Paste, clear, etc.
+		return getConsole().menuAction(event);
 	}
 
 /**********************************************************************/

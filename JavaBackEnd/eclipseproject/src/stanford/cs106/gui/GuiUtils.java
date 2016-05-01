@@ -2,6 +2,8 @@
  * This class contains utility functions related to GUIs.
  *
  * @author Marty Stepp
+ * @version 2016/05/01
+ * - added create*MenuItem methods
  * @version 2014/05/26
  * - added centerWindowWithin method
  * @version 2014/05/22
@@ -187,6 +189,59 @@ public class GuiUtils {
 			box.setActionCommand(actionCommand);
 		}
 		return box;
+	}
+	
+	
+	public static JMenu createMenu(String text, JMenuBar bar) {
+		return createMenu(text, /* mnemonic */ text.charAt(0), bar);
+	}
+	
+	public static JMenu createMenu(String text, char mnemonic, JMenuBar bar) {
+		JMenu menu = new JMenu(text);
+		if (mnemonic != '\0') {
+			menu.setMnemonic(mnemonic);
+		}
+		if (bar != null) {
+			bar.add(menu);
+		}
+		return menu;
+	}
+	
+	public static JMenuItem createMenuItem(String text, ActionListener listener, JMenu menu) {
+		return createMenuItem(text, /* mnemonic */ text.charAt(0), listener, menu);
+	}
+	
+	public static JMenuItem createMenuItem(String text, char mnemonic, ActionListener listener, JMenu menu) {
+		JMenuItem item = new JMenuItem(text);
+		if (mnemonic != '\0') {
+			item.setMnemonic(mnemonic);
+		}
+		if (listener != null) {
+			item.addActionListener(listener);
+		}
+		if (menu != null) {
+			menu.add(item);
+		}
+		return item;
+	}
+	
+	public static JCheckBoxMenuItem createCheckBoxMenuItem(String text, ActionListener listener, JMenu menu) {
+		return createCheckBoxMenuItem(text, /* mnemonic */ text.charAt(0), /* checked */ false, listener, menu);
+	}
+	
+	public static JCheckBoxMenuItem createCheckBoxMenuItem(String text, char mnemonic, boolean checked, ActionListener listener, JMenu menu) {
+		JCheckBoxMenuItem item = new JCheckBoxMenuItem(text);
+		if (mnemonic != '\0') {
+			item.setMnemonic(mnemonic);
+		}
+		item.setSelected(checked);
+		if (listener != null) {
+			item.addActionListener(listener);
+		}
+		if (menu != null) {
+			menu.add(item);
+		}
+		return item;
 	}
 	
 	/*

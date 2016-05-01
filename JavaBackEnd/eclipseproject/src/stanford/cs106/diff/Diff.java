@@ -1,3 +1,8 @@
+/*
+ * @version 2016/04/28
+ * - fixed IGNORE_BLANK_LINES flag to actually work
+ */
+
 package stanford.cs106.diff;
 
 import java.util.*;
@@ -25,247 +30,247 @@ public class Diff {
 	
 	
 	public static List<Difference> diffAsList(String s1, String s2) {
-	    return diffAsList(s1, s2, FLAGS_DEFAULT);
+		return diffAsList(s1, s2, FLAGS_DEFAULT);
 	}
 
 	public static List<Difference> diffAsList(String s1, String s2, int flags) {
-	    s1 = String.valueOf(s1);
-	    s2 = String.valueOf(s2);
+		s1 = String.valueOf(s1);
+		s2 = String.valueOf(s2);
 		String[] lines1 = s1.split("\r?\n");
-	    String[] lines2 = s2.split("\r?\n");
-//	    String[] lines1Original = Arrays.copyOf(lines1, lines1.length);
-//	    String[] lines2Original = Arrays.copyOf(lines2, lines2.length);
+		String[] lines2 = s2.split("\r?\n");
+//		String[] lines1Original = Arrays.copyOf(lines1, lines1.length);
+//		String[] lines2Original = Arrays.copyOf(lines2, lines2.length);
 
-	    if ((flags & IGNORE_NUMBERS) != 0) {
-	        s1 = s1.replaceAll("[0-9]+", "###");
-	        s2 = s2.replaceAll("[0-9]+", "###");
-	        lines1 = s1.split("\r?\n");
-	        lines2 = s2.split("\r?\n");
-	    }
-	    if ((flags & IGNORE_NONNUMBERS) != 0) {
-	        s1 = s1.replaceAll("[^0-9\n]+", " ");
-	        s2 = s2.replaceAll("[^0-9\n]+", " ");
-	        lines1 = s1.split("\r?\n");
-	        lines2 = s2.split("\r?\n");
-	    }
-	    if ((flags & IGNORE_PUNCTUATION) != 0) {
-	        String punct = "[.,?!'\"()\\/#$%@^&*_\\[\\]{}|<>:;-]+";
-	    	s1 = s1.replaceAll(punct, "");
-	        s2 = s2.replaceAll(punct, "");
-	        lines1 = s1.split("\r?\n");
-	        lines2 = s2.split("\r?\n");
-	    }
-	    if ((flags & IGNORE_AFTERDECIMAL) != 0) {
-	        s1 = s1.replaceAll("\\.[0-9]+", ".#");
-	        s2 = s2.replaceAll("\\.[0-9]+", ".#");
-	        lines1 = s1.split("\r?\n");
-	        lines2 = s2.split("\r?\n");
-	    }
-	    if ((flags & IGNORE_CASE) != 0) {
-	        s1 = s1.toLowerCase();
-	        s2 = s2.toLowerCase();
-	        lines1 = s1.split("\r?\n");
-	        lines2 = s2.split("\r?\n");
-	    }
-	    if ((flags & IGNORE_CHARORDER) != 0) {
-	        ArrayList<String> lines1Sorted = new ArrayList<String>();
-	        for (String line : lines1) {
-	            line = StringUtils.sortChars(line);
-	            lines1Sorted.add(line);
-	        }
-	        lines1 = lines1Sorted.toArray(new String[0]);
-	        s1 = StringUtils.join(lines1, "\n");
+		if ((flags & IGNORE_NUMBERS) != 0) {
+			s1 = s1.replaceAll("[0-9]+", "###");
+			s2 = s2.replaceAll("[0-9]+", "###");
+			lines1 = s1.split("\r?\n");
+			lines2 = s2.split("\r?\n");
+		}
+		if ((flags & IGNORE_NONNUMBERS) != 0) {
+			s1 = s1.replaceAll("[^0-9\n]+", " ");
+			s2 = s2.replaceAll("[^0-9\n]+", " ");
+			lines1 = s1.split("\r?\n");
+			lines2 = s2.split("\r?\n");
+		}
+		if ((flags & IGNORE_PUNCTUATION) != 0) {
+			String punct = "[.,?!'\"()\\/#$%@^&*_\\[\\]{}|<>:;-]+";
+			s1 = s1.replaceAll(punct, "");
+			s2 = s2.replaceAll(punct, "");
+			lines1 = s1.split("\r?\n");
+			lines2 = s2.split("\r?\n");
+		}
+		if ((flags & IGNORE_AFTERDECIMAL) != 0) {
+			s1 = s1.replaceAll("\\.[0-9]+", ".#");
+			s2 = s2.replaceAll("\\.[0-9]+", ".#");
+			lines1 = s1.split("\r?\n");
+			lines2 = s2.split("\r?\n");
+		}
+		if ((flags & IGNORE_CASE) != 0) {
+			s1 = s1.toLowerCase();
+			s2 = s2.toLowerCase();
+			lines1 = s1.split("\r?\n");
+			lines2 = s2.split("\r?\n");
+		}
+		if ((flags & IGNORE_CHARORDER) != 0) {
+			ArrayList<String> lines1Sorted = new ArrayList<String>();
+			for (String line : lines1) {
+				line = StringUtils.sortChars(line);
+				lines1Sorted.add(line);
+			}
+			lines1 = lines1Sorted.toArray(new String[0]);
+			s1 = StringUtils.join(lines1, "\n");
 
-	        ArrayList<String> lines2Sorted = new ArrayList<String>();
-	        for (String line : lines2) {
-	            line = StringUtils.sortChars(line);
-	            lines2Sorted.add(line);
-	        }
-	        lines2 = lines2Sorted.toArray(new String[0]);
-	        s2 = StringUtils.join(lines2, "\n");
-	    }
-	    if ((flags & IGNORE_LINEORDER) != 0) {
-	        Arrays.sort(lines1);
-	        Arrays.sort(lines2);
-	        s1 = StringUtils.join(lines1, "\n");
-	        s2 = StringUtils.join(lines2, "\n");
-	    }
-	    if ((flags & IGNORE_WHITESPACE) != 0) {
-	        for (int i = 0; i < lines1.length; i++) {
-	            lines1[i] = StringUtils.removeWhitespace(lines1[i]);
-	        }
-	        for (int i = 0; i < lines2.length; i++) {
-	            lines2[i] = StringUtils.removeWhitespace(lines2[i]);
-	        }
-	    }
+			ArrayList<String> lines2Sorted = new ArrayList<String>();
+			for (String line : lines2) {
+				line = StringUtils.sortChars(line);
+				lines2Sorted.add(line);
+			}
+			lines2 = lines2Sorted.toArray(new String[0]);
+			s2 = StringUtils.join(lines2, "\n");
+		}
+		if ((flags & IGNORE_LINEORDER) != 0) {
+			Arrays.sort(lines1);
+			Arrays.sort(lines2);
+			s1 = StringUtils.join(lines1, "\n");
+			s2 = StringUtils.join(lines2, "\n");
+		}
+		if ((flags & IGNORE_WHITESPACE) != 0) {
+			for (int i = 0; i < lines1.length; i++) {
+				lines1[i] = StringUtils.removeWhitespace(lines1[i]);
+			}
+			for (int i = 0; i < lines2.length; i++) {
+				lines2[i] = StringUtils.removeWhitespace(lines2[i]);
+			}
+		}
 
-	    List<Difference> out = new ArrayList<Difference>();
-	    if (StringUtils.trimR(s1).equals(StringUtils.trimR(s2))) {
-	        return out;
-	    }
+		List<Difference> out = new ArrayList<Difference>();
+		if (StringUtils.trimR(s1).equals(StringUtils.trimR(s2))) {
+			return out;
+		}
 
-	    // build a reverse-index array using the line as key and line number as value
-	    // don't store blank lines, so they won't be targets of the shortest distance
-	    // search
-	    Map<String, Set<Integer>> reverse1 = new TreeMap<String, Set<Integer>>();
-	    Map<String, Set<Integer>> reverse2 = new TreeMap<String, Set<Integer>>();
-	    for (int i = 0; i < lines1.length; i++) {
-	        String line = lines1[i];
-	        if (line.length() > 0) {
-	            if (!reverse1.containsKey(line)) {
-	            	reverse1.put(line, new TreeSet<Integer>());
-	            }
-	        	reverse1.get(line).add(i);
-	        }
-	    }
-	    for (int i = 0; i < lines2.length; i++) {
-	        String line = lines2[i];
-	        if (line.length() > 0) {
-	            if (!reverse2.containsKey(line)) {
-	            	reverse2.put(line, new TreeSet<Integer>());
-	            }
-	        	reverse2.get(line).add(i);
-	        }
-	    }
+		// build a reverse-index array using the line as key and line number as value
+		// don't store blank lines, so they won't be targets of the shortest distance
+		// search
+		Map<String, Set<Integer>> reverse1 = new TreeMap<String, Set<Integer>>();
+		Map<String, Set<Integer>> reverse2 = new TreeMap<String, Set<Integer>>();
+		for (int i = 0; i < lines1.length; i++) {
+			String line = lines1[i];
+			if (line.length() > 0) {
+				if (!reverse1.containsKey(line)) {
+					reverse1.put(line, new TreeSet<Integer>());
+				}
+				reverse1.get(line).add(i);
+			}
+		}
+		for (int i = 0; i < lines2.length; i++) {
+			String line = lines2[i];
+			if (line.length() > 0) {
+				if (!reverse2.containsKey(line)) {
+					reverse2.put(line, new TreeSet<Integer>());
+				}
+				reverse2.get(line).add(i);
+			}
+		}
 
-	    // indexes of current lines within each file
-	    // (start at beginning of each list)
-	    int index1 = 0;
-	    int index2 = 0;
-	    List<Integer> actions = new ArrayList<Integer>();
+		// indexes of current lines within each file
+		// (start at beginning of each list)
+		int index1 = 0;
+		int index2 = 0;
+		List<Integer> actions = new ArrayList<Integer>();
 
-	    // walk this loop until we reach the end of one of the lists of lines
-	    while (index1 < (int) lines1.length && index2 < (int) lines2.length) {
-	        // if we have a common line, save it and go to the next
-	        if (lines1[index1].equals(lines2[index2])) {
-	            actions.add(4);
-	            index1++;
-	            index2++;
-	            continue;
-	        }
-	        // otherwise, find the shortest move (Manhattan-distance) from the
-	        // current location
-	        int best1 = lines1.length;
-	        int best2 = lines2.length;
-	        int sub1 = index1;
-	        int sub2 = index2;
-	        while ((sub1 + sub2 - index1 - index2) < (best1 + best2 - index1 - index2)) {
-	            int d = -1;
-	            if (lines2.length > sub2 && reverse1.containsKey(lines2[sub2])) {
-	                for (int lineNumber : reverse1.get(lines2[sub2])) {
-	                    if (lineNumber >= sub1) {
-	                        d = lineNumber;
-	                        break;
-	                    }
-	                }
-	            }
-	            if (d >= sub1 && (d + sub2 - index1 - index2) < (best1 + best2 - index1 - index2)) {
-	                best1 = d;
-	                best2 = sub2;
-	            }
+		// walk this loop until we reach the end of one of the lists of lines
+		while (index1 < (int) lines1.length && index2 < (int) lines2.length) {
+			// if we have a common line, save it and go to the next
+			if (lines1[index1].equals(lines2[index2])) {
+				actions.add(4);
+				index1++;
+				index2++;
+				continue;
+			}
+			// otherwise, find the shortest move (Manhattan-distance) from the
+			// current location
+			int best1 = lines1.length;
+			int best2 = lines2.length;
+			int sub1 = index1;
+			int sub2 = index2;
+			while ((sub1 + sub2 - index1 - index2) < (best1 + best2 - index1 - index2)) {
+				int d = -1;
+				if (lines2.length > sub2 && reverse1.containsKey(lines2[sub2])) {
+					for (int lineNumber : reverse1.get(lines2[sub2])) {
+						if (lineNumber >= sub1) {
+							d = lineNumber;
+							break;
+						}
+					}
+				}
+				if (d >= sub1 && (d + sub2 - index1 - index2) < (best1 + best2 - index1 - index2)) {
+					best1 = d;
+					best2 = sub2;
+				}
 
-	            d = -1;
-	            if (lines1.length > sub1 && reverse2.containsKey(lines1[sub1])) {
-	                for (int lineNumber : reverse2.get(lines1[sub1])) {
-	                    if (lineNumber >= sub2) {
-	                        d = lineNumber;
-	                        break;
-	                    }
-	                }
-	            }
-	            if (d >= sub2 && (d + sub1 - index1 - index2) < (best1 + best2 - index1 - index2)) {
-	                best1 = sub1;
-	                best2 = d;
-	            }
+				d = -1;
+				if (lines1.length > sub1 && reverse2.containsKey(lines1[sub1])) {
+					for (int lineNumber : reverse2.get(lines1[sub1])) {
+						if (lineNumber >= sub2) {
+							d = lineNumber;
+							break;
+						}
+					}
+				}
+				if (d >= sub2 && (d + sub1 - index1 - index2) < (best1 + best2 - index1 - index2)) {
+					best1 = sub1;
+					best2 = d;
+				}
 
-	            sub1++;
-	            sub2++;
-	        }
+				sub1++;
+				sub2++;
+			}
 
-	        while (index1 < best1) {
-	            actions.add(1);
-	            index1++;
-	        }  // deleted elements
+			while (index1 < best1) {
+				actions.add(1);
+				index1++;
+			}  // deleted elements
 
-	        while (index2 < best2) {
-	            actions.add(2);
-	            index2++;
-	        }  // added elements
-	    }
+			while (index2 < best2) {
+				actions.add(2);
+				index2++;
+			}  // added elements
+		}
 
-	    // we've reached the end of one list, now walk to the end of the other
-	    while (index1 < (int) lines1.length) {
-	        actions.add(1);
-	        index1++;
-	    }  // deleted elements
+		// we've reached the end of one list, now walk to the end of the other
+		while (index1 < (int) lines1.length) {
+			actions.add(1);
+			index1++;
+		}  // deleted elements
 
-	    if ((flags & IGNORE_TRAILING) != 0) {
-	        while (index2 < (int) lines2.length) {
-	            actions.add(2);
-	            index2++;
-	        }  // added elements
-	    }
+		if ((flags & IGNORE_TRAILING) != 0) {
+			while (index2 < (int) lines2.length) {
+				actions.add(2);
+				index2++;
+			}  // added elements
+		}
 
-	    // and this marks our ending point
-	    actions.add(8);
+		// and this marks our ending point
+		actions.add(8);
 
-	    int op = 0;
-	    int x0 = 0;
-	    int x1 = 0;
-	    int y0 = 0;
-	    int y1 = 0;
+		int op = 0;
+		int x0 = 0;
+		int x1 = 0;
+		int y0 = 0;
+		int y1 = 0;
 
-	    for (int action : actions) {
-	        if (action == 1) {
-	            op |= action;
-	            x1++;
-	            continue;
-	        } else if (action == 2) {
-	            op |= action;
-	            y1++;
-	            continue;
-	        }
+		for (int action : actions) {
+			if (action == 1) {
+				op |= action;
+				x1++;
+				continue;
+			} else if (action == 2) {
+				op |= action;
+				y1++;
+				continue;
+			}
 
-	        if (op > 0) {
-//	            boolean multipleLines = (x1 != x0 + 1);
-//	            String xstr = "" + (multipleLines ? ((x0 + 1) + "-" + x1) : x1);
-//	            String ystr = "" + ((y1 != y0 + 1) ? ((y0 + 1) + "-" + y1) : y1);
-//	            String linesStr = "\nLine" + (multipleLines ? "s " : " ");
-//	            String doStr = "do" + (multipleLines ? "" : "es");
-	            if (op == 1) {
-	            	out.add(new Difference(Difference.Type.DELETE, x0, x1-1, y0, y1-1));
-	            } else if (op == 3) {
-	            	out.add(new Difference(Difference.Type.MODIFY, x0, x1-1, y0, y1-1));
-	            }
+			if (op > 0) {
+//				boolean multipleLines = (x1 != x0 + 1);
+//				String xstr = "" + (multipleLines ? ((x0 + 1) + "-" + x1) : x1);
+//				String ystr = "" + ((y1 != y0 + 1) ? ((y0 + 1) + "-" + y1) : y1);
+//				String linesStr = "\nLine" + (multipleLines ? "s " : " ");
+//				String doStr = "do" + (multipleLines ? "" : "es");
+				if (op == 1) {
+					out.add(new Difference(Difference.Type.DELETE, x0, x1-1, y0, y1-1));
+				} else if (op == 3) {
+					out.add(new Difference(Difference.Type.MODIFY, x0, x1-1, y0, y1-1));
+				}
 
-	            while (x0 < x1) {
-	            	out.add(new Difference(Difference.Type.DELETE, x0, x1-1, y0, y1-1));
-	                x0++;
-	            }   // deleted elems
+				while (x0 < x1) {
+					out.add(new Difference(Difference.Type.DELETE, x0, x1-1, y0, y1-1));
+					x0++;
+				}   // deleted elems
 
-	            if (op == 2) {
-	                if ((flags & IGNORE_LEADING) == 0 || x1 > 0) {
-		            	out.add(new Difference(Difference.Type.ADD, x0, x1-1, y0, y1-1));
-	                }
-	            } else if (op == 3) {
-	                // out += "---";
-	            }
+				if (op == 2) {
+					if ((flags & IGNORE_LEADING) == 0 || x1 > 0) {
+						out.add(new Difference(Difference.Type.ADD, x0, x1-1, y0, y1-1));
+					}
+				} else if (op == 3) {
+					// out += "---";
+				}
 
-	            while (y0 < y1) {
-	                if ((flags & IGNORE_LEADING) == 0 || op != 2 || x1 > 0) {
-		            	out.add(new Difference(Difference.Type.ADD, x0, x1-1, y0, y1-1));
-	                }
-	                y0++;
-	            }   // added elems
-	        }
-	        x1++;
-	        x0 = x1;
-	        y1++;
-	        y0 = y1;
-	        op = 0;
-	    }
+				while (y0 < y1) {
+					if ((flags & IGNORE_LEADING) == 0 || op != 2 || x1 > 0) {
+						out.add(new Difference(Difference.Type.ADD, x0, x1-1, y0, y1-1));
+					}
+					y0++;
+				}   // added elems
+			}
+			x1++;
+			x0 = x1;
+			y1++;
+			y0 = y1;
+			op = 0;
+		}
 
-	    return out;
+		return out;
 	}
 	
 	public static class Difference {
@@ -311,258 +316,276 @@ public class Diff {
 	
 	
 	public static String diff(String s1, String s2) {
-	    return diff(s1, s2, FLAGS_DEFAULT);
+		return diff(s1, s2, FLAGS_DEFAULT);
 	}
 
 	public static String diff(String s1, String s2, int flags) {
-	    s1 = String.valueOf(s1);
-	    s2 = String.valueOf(s2);
+		s1 = String.valueOf(s1);
+		s2 = String.valueOf(s2);
 		String[] lines1 = s1.split("\r?\n");
-	    String[] lines2 = s2.split("\r?\n");
-	    String[] lines1Original = Arrays.copyOf(lines1, lines1.length);
-	    String[] lines2Original = Arrays.copyOf(lines2, lines2.length);
+		String[] lines2 = s2.split("\r?\n");
+		String[] lines1Original = Arrays.copyOf(lines1, lines1.length);
+		String[] lines2Original = Arrays.copyOf(lines2, lines2.length);
 
-	    if ((flags & IGNORE_NUMBERS) != 0) {
-	        s1 = s1.replaceAll("[0-9]+", "###");
-	        s2 = s2.replaceAll("[0-9]+", "###");
-	        lines1 = s1.split("\r?\n");
-	        lines2 = s2.split("\r?\n");
-	    }
-	    if ((flags & IGNORE_NONNUMBERS) != 0) {
-	        s1 = s1.replaceAll("[^0-9\n]+", " ");
-	        s2 = s2.replaceAll("[^0-9\n]+", " ");
-	        lines1 = s1.split("\r?\n");
-	        lines2 = s2.split("\r?\n");
-	    }
-	    if ((flags & IGNORE_PUNCTUATION) != 0) {
-	        String punct = "[.,?!'\"()\\/#$%@^&*_\\[\\]{}|<>:;-]+";
-	    	s1 = s1.replaceAll(punct, "");
-	        s2 = s2.replaceAll(punct, "");
-	        lines1 = s1.split("\r?\n");
-	        lines2 = s2.split("\r?\n");
-	    }
-	    if ((flags & IGNORE_AFTERDECIMAL) != 0) {
-	        s1 = s1.replaceAll("\\.[0-9]+", ".#");
-	        s2 = s2.replaceAll("\\.[0-9]+", ".#");
-	        lines1 = s1.split("\r?\n");
-	        lines2 = s2.split("\r?\n");
-	    }
-	    if ((flags & IGNORE_CASE) != 0) {
-	        s1 = s1.toLowerCase();
-	        s2 = s2.toLowerCase();
-	        lines1 = s1.split("\r?\n");
-	        lines2 = s2.split("\r?\n");
-	    }
-	    if ((flags & IGNORE_CHARORDER) != 0) {
-	        ArrayList<String> lines1Sorted = new ArrayList<String>();
-	        for (String line : lines1) {
-	            line = StringUtils.sortChars(line);
-	            lines1Sorted.add(line);
-	        }
-	        lines1 = lines1Sorted.toArray(new String[0]);
-	        s1 = StringUtils.join(lines1, "\n");
+		if ((flags & IGNORE_NUMBERS) != 0) {
+			s1 = s1.replaceAll("[0-9]+", "###");
+			s2 = s2.replaceAll("[0-9]+", "###");
+			lines1 = s1.split("\r?\n");
+			lines2 = s2.split("\r?\n");
+		}
+		if ((flags & IGNORE_NONNUMBERS) != 0) {
+			s1 = s1.replaceAll("[^0-9\n]+", " ");
+			s2 = s2.replaceAll("[^0-9\n]+", " ");
+			lines1 = s1.split("\r?\n");
+			lines2 = s2.split("\r?\n");
+		}
+		if ((flags & IGNORE_PUNCTUATION) != 0) {
+			String punct = "[.,?!'\"()\\/#$%@^&*_\\[\\]{}|<>:;-]+";
+			s1 = s1.replaceAll(punct, "");
+			s2 = s2.replaceAll(punct, "");
+			lines1 = s1.split("\r?\n");
+			lines2 = s2.split("\r?\n");
+		}
+		if ((flags & IGNORE_AFTERDECIMAL) != 0) {
+			s1 = s1.replaceAll("\\.[0-9]+", ".#");
+			s2 = s2.replaceAll("\\.[0-9]+", ".#");
+			lines1 = s1.split("\r?\n");
+			lines2 = s2.split("\r?\n");
+		}
+		if ((flags & IGNORE_CASE) != 0) {
+			s1 = s1.toLowerCase();
+			s2 = s2.toLowerCase();
+			lines1 = s1.split("\r?\n");
+			lines2 = s2.split("\r?\n");
+		}
+		if ((flags & IGNORE_BLANK_LINES) != 0) {
+			while (s1.startsWith("\r") || s1.startsWith("\n")) {
+				s1 = s1.substring(1);
+			}
+			while (s2.startsWith("\r") || s2.startsWith("\n")) {
+				s2 = s2.substring(1);
+			}
+			while (s1.endsWith("\r") || s1.endsWith("\n")) {
+				s1 = s1.substring(0, s1.length() - 1);
+			}
+			while (s2.endsWith("\r") || s2.endsWith("\n")) {
+				s2 = s2.substring(0, s2.length() - 1);
+			}
+			s1 = s1.replaceAll("\r?\n[ \t]{0,999}\r?\n", "\n");
+			s2 = s2.replaceAll("\r?\n[ \t]{0,999}\r?\n", "\n");
+			lines1 = s1.split("\r?\n");
+			lines2 = s2.split("\r?\n");
+		}
+		if ((flags & IGNORE_CHARORDER) != 0) {
+			ArrayList<String> lines1Sorted = new ArrayList<String>();
+			for (String line : lines1) {
+				line = StringUtils.sortChars(line);
+				lines1Sorted.add(line);
+			}
+			lines1 = lines1Sorted.toArray(new String[0]);
+			s1 = StringUtils.join(lines1, "\n");
 
-	        ArrayList<String> lines2Sorted = new ArrayList<String>();
-	        for (String line : lines2) {
-	            line = StringUtils.sortChars(line);
-	            lines2Sorted.add(line);
-	        }
-	        lines2 = lines2Sorted.toArray(new String[0]);
-	        s2 = StringUtils.join(lines2, "\n");
-	    }
-	    if ((flags & IGNORE_LINEORDER) != 0) {
-	        Arrays.sort(lines1);
-	        Arrays.sort(lines2);
-	        s1 = StringUtils.join(lines1, "\n");
-	        s2 = StringUtils.join(lines2, "\n");
-	    }
-	    if ((flags & IGNORE_WHITESPACE) != 0) {
-	        for (int i = 0; i < lines1.length; i++) {
-	            lines1[i] = StringUtils.removeWhitespace(lines1[i]);
-	        }
-	        for (int i = 0; i < lines2.length; i++) {
-	            lines2[i] = StringUtils.removeWhitespace(lines2[i]);
-	        }
-	    }
+			ArrayList<String> lines2Sorted = new ArrayList<String>();
+			for (String line : lines2) {
+				line = StringUtils.sortChars(line);
+				lines2Sorted.add(line);
+			}
+			lines2 = lines2Sorted.toArray(new String[0]);
+			s2 = StringUtils.join(lines2, "\n");
+		}
+		if ((flags & IGNORE_LINEORDER) != 0) {
+			Arrays.sort(lines1);
+			Arrays.sort(lines2);
+			s1 = StringUtils.join(lines1, "\n");
+			s2 = StringUtils.join(lines2, "\n");
+		}
+		if ((flags & IGNORE_WHITESPACE) != 0) {
+			for (int i = 0; i < lines1.length; i++) {
+				lines1[i] = StringUtils.removeWhitespace(lines1[i]);
+			}
+			for (int i = 0; i < lines2.length; i++) {
+				lines2[i] = StringUtils.removeWhitespace(lines2[i]);
+			}
+		}
 
-	    if (StringUtils.trimR(s1).equals(StringUtils.trimR(s2))) {
-	        return NO_DIFFS_MESSAGE;
-	    }
+		if (StringUtils.trimR(s1).equals(StringUtils.trimR(s2))) {
+			return NO_DIFFS_MESSAGE;
+		}
 
-	    // build a reverse-index array using the line as key and line number as value
-	    // don't store blank lines, so they won't be targets of the shortest distance
-	    // search
-	    Map<String, Set<Integer>> reverse1 = new TreeMap<String, Set<Integer>>();
-	    Map<String, Set<Integer>> reverse2 = new TreeMap<String, Set<Integer>>();
-	    for (int i = 0; i < lines1.length; i++) {
-	        String line = lines1[i];
-	        if (line.length() > 0) {
-	            if (!reverse1.containsKey(line)) {
-	            	reverse1.put(line, new TreeSet<Integer>());
-	            }
-	        	reverse1.get(line).add(i);
-	        }
-	    }
-	    for (int i = 0; i < lines2.length; i++) {
-	        String line = lines2[i];
-	        if (line.length() > 0) {
-	            if (!reverse2.containsKey(line)) {
-	            	reverse2.put(line, new TreeSet<Integer>());
-	            }
-	        	reverse2.get(line).add(i);
-	        }
-	    }
+		// build a reverse-index array using the line as key and line number as value
+		// don't store blank lines, so they won't be targets of the shortest distance
+		// search
+		Map<String, Set<Integer>> reverse1 = new TreeMap<String, Set<Integer>>();
+		Map<String, Set<Integer>> reverse2 = new TreeMap<String, Set<Integer>>();
+		for (int i = 0; i < lines1.length; i++) {
+			String line = lines1[i];
+			if (line.length() > 0) {
+				if (!reverse1.containsKey(line)) {
+					reverse1.put(line, new TreeSet<Integer>());
+				}
+				reverse1.get(line).add(i);
+			}
+		}
+		for (int i = 0; i < lines2.length; i++) {
+			String line = lines2[i];
+			if (line.length() > 0) {
+				if (!reverse2.containsKey(line)) {
+					reverse2.put(line, new TreeSet<Integer>());
+				}
+				reverse2.get(line).add(i);
+			}
+		}
 
-	    // indexes of current lines within each file
-	    // (start at beginning of each list)
-	    int index1 = 0;
-	    int index2 = 0;
-	    List<Integer> actions = new ArrayList<Integer>();
+		// indexes of current lines within each file
+		// (start at beginning of each list)
+		int index1 = 0;
+		int index2 = 0;
+		List<Integer> actions = new ArrayList<Integer>();
 
-	    // walk this loop until we reach the end of one of the lists of lines
-	    while (index1 < (int) lines1.length && index2 < (int) lines2.length) {
-	        // if we have a common line, save it and go to the next
-	        if (lines1[index1].equals(lines2[index2])) {
-	            actions.add(4);
-	            index1++;
-	            index2++;
-	            continue;
-	        }
-	        // otherwise, find the shortest move (Manhattan-distance) from the
-	        // current location
-	        int best1 = lines1.length;
-	        int best2 = lines2.length;
-	        int sub1 = index1;
-	        int sub2 = index2;
-	        while ((sub1 + sub2 - index1 - index2) < (best1 + best2 - index1 - index2)) {
-	            int d = -1;
-	            if (lines2.length > sub2 && reverse1.containsKey(lines2[sub2])) {
-	                for (int lineNumber : reverse1.get(lines2[sub2])) {
-	                    if (lineNumber >= sub1) {
-	                        d = lineNumber;
-	                        break;
-	                    }
-	                }
-	            }
-	            if (d >= sub1 && (d + sub2 - index1 - index2) < (best1 + best2 - index1 - index2)) {
-	                best1 = d;
-	                best2 = sub2;
-	            }
+		// walk this loop until we reach the end of one of the lists of lines
+		while (index1 < (int) lines1.length && index2 < (int) lines2.length) {
+			// if we have a common line, save it and go to the next
+			if (lines1[index1].equals(lines2[index2])) {
+				actions.add(4);
+				index1++;
+				index2++;
+				continue;
+			}
+			// otherwise, find the shortest move (Manhattan-distance) from the
+			// current location
+			int best1 = lines1.length;
+			int best2 = lines2.length;
+			int sub1 = index1;
+			int sub2 = index2;
+			while ((sub1 + sub2 - index1 - index2) < (best1 + best2 - index1 - index2)) {
+				int d = -1;
+				if (lines2.length > sub2 && reverse1.containsKey(lines2[sub2])) {
+					for (int lineNumber : reverse1.get(lines2[sub2])) {
+						if (lineNumber >= sub1) {
+							d = lineNumber;
+							break;
+						}
+					}
+				}
+				if (d >= sub1 && (d + sub2 - index1 - index2) < (best1 + best2 - index1 - index2)) {
+					best1 = d;
+					best2 = sub2;
+				}
 
-	            d = -1;
-	            if (lines1.length > sub1 && reverse2.containsKey(lines1[sub1])) {
-	                for (int lineNumber : reverse2.get(lines1[sub1])) {
-	                    if (lineNumber >= sub2) {
-	                        d = lineNumber;
-	                        break;
-	                    }
-	                }
-	            }
-	            if (d >= sub2 && (d + sub1 - index1 - index2) < (best1 + best2 - index1 - index2)) {
-	                best1 = sub1;
-	                best2 = d;
-	            }
+				d = -1;
+				if (lines1.length > sub1 && reverse2.containsKey(lines1[sub1])) {
+					for (int lineNumber : reverse2.get(lines1[sub1])) {
+						if (lineNumber >= sub2) {
+							d = lineNumber;
+							break;
+						}
+					}
+				}
+				if (d >= sub2 && (d + sub1 - index1 - index2) < (best1 + best2 - index1 - index2)) {
+					best1 = sub1;
+					best2 = d;
+				}
 
-	            sub1++;
-	            sub2++;
-	        }
+				sub1++;
+				sub2++;
+			}
 
-	        while (index1 < best1) {
-	            actions.add(1);
-	            index1++;
-	        }  // deleted elements
+			while (index1 < best1) {
+				actions.add(1);
+				index1++;
+			}  // deleted elements
 
-	        while (index2 < best2) {
-	            actions.add(2);
-	            index2++;
-	        }  // added elements
-	    }
+			while (index2 < best2) {
+				actions.add(2);
+				index2++;
+			}  // added elements
+		}
 
-	    // we've reached the end of one list, now walk to the end of the other
-	    while (index1 < (int) lines1.length) {
-	        actions.add(1);
-	        index1++;
-	    }  // deleted elements
+		// we've reached the end of one list, now walk to the end of the other
+		while (index1 < (int) lines1.length) {
+			actions.add(1);
+			index1++;
+		}  // deleted elements
 
-	    if ((flags & IGNORE_TRAILING) != 0) {
-	        while (index2 < (int) lines2.length) {
-	            actions.add(2);
-	            index2++;
-	        }  // added elements
-	    }
+		if ((flags & IGNORE_TRAILING) != 0) {
+			while (index2 < (int) lines2.length) {
+				actions.add(2);
+				index2++;
+			}  // added elements
+		}
 
-	    // and this marks our ending point
-	    actions.add(8);
+		// and this marks our ending point
+		actions.add(8);
 
-	    int op = 0;
-	    int x0 = 0;
-	    int x1 = 0;
-	    int y0 = 0;
-	    int y1 = 0;
-	    List<String> out = new ArrayList<String>();
+		int op = 0;
+		int x0 = 0;
+		int x1 = 0;
+		int y0 = 0;
+		int y1 = 0;
+		List<String> out = new ArrayList<String>();
 
-	    for (int action : actions) {
-	        if (action == 1) {
-	            op |= action;
-	            x1++;
-	            continue;
-	        } else if (action == 2) {
-	            op |= action;
-	            y1++;
-	            continue;
-	        }
+		for (int action : actions) {
+			if (action == 1) {
+				op |= action;
+				x1++;
+				continue;
+			} else if (action == 2) {
+				op |= action;
+				y1++;
+				continue;
+			}
 
-	        if (op > 0) {
-	            boolean multipleLines = (x1 != x0 + 1);
-	            String xstr = "" + (multipleLines ? ((x0 + 1) + "-" + x1) : x1);
-	            String ystr = "" + ((y1 != y0 + 1) ? ((y0 + 1) + "-" + y1) : y1);
-	            String linesStr = "\nLine" + (multipleLines ? "s " : " ");
-	            String doStr = "do" + (multipleLines ? "" : "es");
-	            if (op == 1) {
-	                out.add(linesStr + xstr + " deleted near student line " + y1);
-	            } else if (op == 3) {
-	                if (xstr.equals(ystr)) {
-	                    out.add(linesStr + xstr + " " + doStr + " not match");
-	                } else {
-	                    out.add(linesStr + xstr + " changed to student line " + ystr);
-	                }
-	            }
+			if (op > 0) {
+				boolean multipleLines = (x1 != x0 + 1);
+				String xstr = "" + (multipleLines ? ((x0 + 1) + "-" + x1) : x1);
+				String ystr = "" + ((y1 != y0 + 1) ? ((y0 + 1) + "-" + y1) : y1);
+				String linesStr = "\nLine" + (multipleLines ? "s " : " ");
+				String doStr = "do" + (multipleLines ? "" : "es");
+				if (op == 1) {
+					out.add(linesStr + xstr + " deleted near student line " + y1);
+				} else if (op == 3) {
+					if (xstr.equals(ystr)) {
+						out.add(linesStr + xstr + " " + doStr + " not match");
+					} else {
+						out.add(linesStr + xstr + " changed to student line " + ystr);
+					}
+				}
 
-	            while (x0 < x1) {
-	                out.add("EXPECTED < " + lines1Original[x0]);
-	                x0++;
-	            }   // deleted elems
+				while (x0 < x1) {
+					out.add("EXPECTED < " + lines1Original[x0]);
+					x0++;
+				}   // deleted elems
 
-	            if (op == 2) {
-	                if ((flags & IGNORE_LEADING) == 0 || x1 > 0) {
-	                    // out.add(linesStr + x1 + " added at student line " + ystr);
-	                	// Marty 2015/04/21
-	                	out.add(linesStr + " added near student line " + ystr);
-	                }
-	            } else if (op == 3) {
-	                // out += "---";
-	            }
+				if (op == 2) {
+					if ((flags & IGNORE_LEADING) == 0 || x1 > 0) {
+						// out.add(linesStr + x1 + " added at student line " + ystr);
+						// Marty 2015/04/21
+						out.add(linesStr + " added near student line " + ystr);
+					}
+				} else if (op == 3) {
+					// out += "---";
+				}
 
-	            while (y0 < y1) {
-	                if ((flags & IGNORE_LEADING) == 0 || op != 2 || x1 > 0) {
-	                    out.add("STUDENT  > " + lines2Original[y0]);
-	                }
-	                y0++;
-	            }   // added elems
-	        }
-	        x1++;
-	        x0 = x1;
-	        y1++;
-	        y0 = y1;
-	        op = 0;
-	    }
+				while (y0 < y1) {
+					if ((flags & IGNORE_LEADING) == 0 || op != 2 || x1 > 0) {
+						out.add("STUDENT  > " + lines2Original[y0]);
+					}
+					y0++;
+				}   // added elems
+			}
+			x1++;
+			x0 = x1;
+			y1++;
+			y0 = y1;
+			op = 0;
+		}
 
-	    if (out.size() > 0) {
-	        out.add("");
-	        return StringUtils.join(out, "\n").trim();
-	    } else {
-	        return NO_DIFFS_MESSAGE;
-	    }
+		if (out.size() > 0) {
+			out.add("");
+			return StringUtils.join(out, "\n").trim();
+		} else {
+			return NO_DIFFS_MESSAGE;
+		}
 	}
 
 	

@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp
+ * @version 2016/04/28
+ * - made static fields/methods show "static" in drop-down menu
  * @version 2016/04/08
  * - fixed bug with user input table layout
  * @version 2015/05/28
@@ -269,6 +271,7 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 		List<Component> launchButtons = new ArrayList<Component>();
 		for (Class<?> clazz : LAUNCH_CLASSES) {
 			JButton launchButton = GuiUtils.createButton("Run " + clazz.getName(), 'B', this);
+			launchButton.setActionCommand("Launch " + clazz.getName());
 			Font buttonFont = launchButton.getFont();
 			launchButton.setFont(buttonFont.deriveFont(Font.BOLD, buttonFont.getSize() + 2f));
 			int wider = 10;  // 50
@@ -959,7 +962,8 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 			Arrays.sort(fields, new ReflectionUtils.FieldNameComparator());
 			for (Field field : fields) {
 				if (SUPPORTED_FIELD_TYPES.contains(field.getType())) {
-					String fieldString = ReflectionUtils.getClassNameWithoutPackage(field.getType(), field.getGenericType())
+					String fieldString = (Modifier.isStatic(field.getModifiers()) ? "static " : "")
+							+ ReflectionUtils.getClassNameWithoutPackage(field.getType(), field.getGenericType())
 							+ " " + field.getName();
 					fieldTable.put(fieldString, field);
 					fieldBox.addItem(fieldString);
@@ -983,7 +987,8 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 			Arrays.sort(constants, new ReflectionUtils.FieldNameComparator());
 			for (Field constant : constants) {
 				if (Modifier.isStatic(constant.getModifiers()) && SUPPORTED_FIELD_TYPES.contains(constant.getType())) {
-					String constantString = ReflectionUtils.getClassNameWithoutPackage(constant
+					String constantString = (Modifier.isStatic(constant.getModifiers()) ? "static " : "")
+							+ ReflectionUtils.getClassNameWithoutPackage(constant
 							.getType(), constant.getGenericType()) + " " + constant.getName();
 					constantTable.put(constantString, constant);
 					constantBox.addItem(constantString);
@@ -1006,8 +1011,8 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 			Method[] methods = clazz.getDeclaredMethods();
 			Arrays.sort(methods, new ReflectionUtils.MethodNameComparator());
 			for (Method method : methods) {
-				String methodString = ReflectionUtils
-						.getClassNameWithoutPackage(method.getReturnType())
+				String methodString = (Modifier.isStatic(method.getModifiers()) ? "static " : "")
+						+ ReflectionUtils.getClassNameWithoutPackage(method.getReturnType())
 						+ " "
 						+ method.getName()
 						+ "()";

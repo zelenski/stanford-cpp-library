@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp
+ * @version 2016/04/28
+ * - max window size so a program with many tests doesn't fall off screen
  * @version 2015/05/28
  * - slight tweaks for ASSERT_NULL and ASSERT_NOT_NULL test failure display
  * @version 2015/05/02
@@ -37,6 +39,8 @@ public class AutograderUnitTestGUI extends Observable
 	private static final Color FAIL_COLOR = new Color(96, 0, 0);
 	private static final Color WARN_COLOR = new Color(112, 112, 0);
 	private static final int MAX_VALUE_DISPLAY_LENGTH = 120;
+	private static final int MAX_WINDOW_WIDTH = 1000;   // px
+	private static final int MAX_WINDOW_HEIGHT = 700;   // px
 	private static Color NORMAL_COLOR = null;
 	
 	//private static final int MIN_WIDTH = 75;
@@ -488,7 +492,10 @@ public class AutograderUnitTestGUI extends Observable
 		// frame.revalidate();
 		frame.validate();
 		frame.pack();
-		frame.setSize(frame.getWidth() + 32, frame.getHeight() + 10);  // a bit of buffer for scrollbar
+		int width = Math.min(MAX_WINDOW_WIDTH, frame.getWidth() + 32);
+		int height = Math.min(MAX_WINDOW_HEIGHT, frame.getHeight() + 10);
+		frame.setSize(width, height);  // a bit of buffer for scrollbar
+		
 //		if (frame.isVisible() != !isEmpty()) {
 //			frame.setVisible(!isEmpty());
 //		}

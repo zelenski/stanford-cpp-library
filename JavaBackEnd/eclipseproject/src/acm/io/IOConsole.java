@@ -536,7 +536,7 @@ public class IOConsole extends Container implements IOModel {
 	protected static final int MINIMUM_CONSOLE_WIDTH = 50;
 	protected static final int MINIMUM_CONSOLE_HEIGHT = 40;
 	private static final String[] CONSOLE_MENU_ACTIONS = { "Save", "Save As",
-			"Print Console", "Script", "Cut", "Copy", "Paste", "Select All" };
+			"Print Console", "Script", "Cut", "Copy", "Paste", "Select All", "Clear Console" };
 	private ConsoleModel consoleModel;
 	private boolean exceptionOnError;
 	private Color inputColor;

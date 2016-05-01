@@ -213,7 +213,7 @@ public class JUnitUtils {
 					// some other exception
 					details.put("testType", UnitTestType.EXCEPTION.toString());
 					// listener.setTestDetailsMessage(testName, "test threw: " + run.thrown);
-					details.put("message", "test threw: " + run.thrown);
+					details.put("message", "test threw: " + run.thrown + "\n" + ExceptionUtils.stackTraceToString(run.thrown));
 				}
 				
 				listener.setTestDetails(testName, details);

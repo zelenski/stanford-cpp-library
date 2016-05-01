@@ -1,6 +1,6 @@
 /*
  * @author Marty Stepp
- * @version 2016/04/26
+ * @version 2016/05/01
  * - If you update this file, make sure to update the @version tag above
  *   AND the String constant below! Both are needed and must be in sync. 
  * - see also: stanford/spl/LibraryUpdater.java 
@@ -9,9 +9,23 @@
 package stanford.spl;
 
 public class Version {
-	private static final String JAVA_BACK_END_VERSION = "2016/04/26";
+	private static final String JAVA_BACK_END_VERSION = "2016/05/01";
 	private static final String CPP_LIB_VERSION_UNKNOWN = "(unknown)";
 	private static String CPP_LIB_VERSION = CPP_LIB_VERSION_UNKNOWN;
+	public static final String ABOUT_MESSAGE = "";
+	
+	public static String getAboutMessage() {
+		String about = "Stanford Java Library (spl.jar) version: " + getLibraryVersion() + "\n"
+				+ (CPP_LIB_VERSION == CPP_LIB_VERSION_UNKNOWN ? "" : ("Stanford C++ Library version: " + getCppLibraryVersion() + "\n"))
+				+ "\n"
+				+ "Java JDK/JRE version: " + getJdkVersion() + "\n\n"
+				+ "Libraries originally written by Eric Roberts,\n"
+				+ "with assistance from Julie Zelenski, Keith Schwarz, et al.\n"
+				+ "This version of the library is unofficially maintained by Marty Stepp.\n"
+				+ "\n"
+				+ "See http://cs106a.stanford.edu/ for more information.";
+		return about;
+	}
 	
 	public static final String getJdkVersion() {
 		String[] propNames = {"java.version", "java.runtime.version"};

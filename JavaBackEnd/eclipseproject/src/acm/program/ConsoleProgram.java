@@ -31,10 +31,17 @@ package acm.program;
 import acm.io.*;
 import acm.util.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
 import java.util.List;
+
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+
+import stanford.cs106.diff.DiffGui;
 import stanford.cs106.gui.GuiUtils;
+import stanford.cs106.io.IOUtils;
 import stanford.cs106.util.*;
 
 /* Class: ConsoleProgram() */
@@ -44,7 +51,7 @@ import stanford.cs106.util.*;
  */
 public abstract class ConsoleProgram extends AbstractConsoleProgram {
 	private static final String DEFAULT_REPROMPT_MESSAGE = "Unable to open that file. Try again.";
-
+	
 /* Constructor: ConsoleProgram() */
 /**
  * Creates a new console program.
@@ -90,6 +97,64 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 	 */
 	public String getAllOutput() {
 		return this.getConsole().getConsoleModel().getText();
+	}
+	
+	@Override
+	public boolean menuAction(ActionEvent event) {
+		String cmd = event.getActionCommand().intern();
+		if (cmd == ProgramMenuBar.MENU_ITEM_TEXT_COMPARE_OUTPUT) {
+			compareOutput();
+			return true;
+		} else {
+			return super.menuAction(event);
+		}
+	}
+	
+	/**
+	 * Pops up a file chooser to compare output to some expected output.
+	 */
+	protected void compareOutput() {
+		try {
+			// pick working dir for loading expected output files
+			File dir = new File(System.getProperty("user.dir"));
+			File[] dirsToTry = {
+					new File(dir, "output"),
+					new File(dir, "expected-output"),
+					new File(dir, "res/output"),
+					new File(dir, "res/expected-output"),
+			};
+			for (File dirToTry : dirsToTry) {
+				if (dirToTry.exists()) {
+					dir = dirToTry;
+					break;
+				}
+			}
+			
+			// let the user browse for a file for expected output
+			JFileChooser chooser = new JFileChooser(dir);
+			int result = chooser.showOpenDialog(getJFrame());
+			if (result == JFileChooser.CANCEL_OPTION) {
+				return;
+			}
+			File selectedFile = chooser.getSelectedFile();
+			if (selectedFile == null || !selectedFile.isFile()) {
+				return;
+			}
+			
+			String expectedOutput = IOUtils.readEntireFile(selectedFile);
+			String studentOutput = getAllOutput();
+			DiffGui diff = new DiffGui(
+					"expected output", expectedOutput,
+					"your output", studentOutput,
+					/* checkboxes */ false);
+			diff.show();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(
+					getJFrame(),
+					"Unable to compare output.",
+					"Error",
+					JOptionPane.WARNING_MESSAGE);
+		}
 	}
 	
 /* Method: run() */
@@ -308,7 +373,7 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 	 * The file's full path is returned as a string.
 	 * @param prompt the text to display to the user
 	 * @param directory the working directory in which to look for files (e.g. "res/")
-	 * @return the file name typed by the user
+	 * @return the file name typed by the user, including any directory prefix, such as "res/input.txt" or "foo.dat"
 	 */
 	public String promptUserForFile(String prompt) {
 		return promptUserForFile(prompt, "");
@@ -321,7 +386,7 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 	 * The file's full path is returned as a string.
 	 * @param prompt the text to display to the user
 	 * @param directory the working directory in which to look for files (e.g. "res/")
-	 * @return the file name typed by the user
+	 * @return the file name typed by the user, including any directory prefix, such as "res/input.txt" or "foo.dat"
 	 */
 	public String promptUserForFile(String prompt, String directory) {
 		return promptUserForFile(prompt, directory, DEFAULT_REPROMPT_MESSAGE);
@@ -334,7 +399,7 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 	 * The file's full path is returned as a string.
 	 * @param prompt the text to display to the user
 	 * @param directory the working directory in which to look for files (e.g. "res/")
-	 * @return the file name typed by the user
+	 * @return the file name typed by the user, including any directory prefix, such as "res/input.txt" or "foo.dat"
 	 */
 	public String promptUserForFile(String prompt, String directory, String reprompt) {
 		String filename = readLine(prompt);
@@ -390,6 +455,36 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 			inputReader = new InputFileReader(inputFilename);
 			echoedComments = new ArrayList<String>();
 			String newTitle = getTitle() + " [Input from " + inputFilename + "]";
+			setTitle(newTitle);
+		}
+	}
+	
+	/**
+	 * Signals the ConsoleProgram to use the input profile read from the given stream,
+	 * rather than prompt the user for input.
+	 * @param inputFilename 	File to draw the input from.
+	 */
+	public void overrideInput(InputStream stream) {
+		if (!inputOverride) {
+			inputOverride = true;
+			inputReader = new InputFileReader(stream);
+			echoedComments = new ArrayList<String>();
+			String newTitle = getTitle() + " [Input from file]";
+			setTitle(newTitle);
+		}
+	}
+	
+	/**
+	 * Signals the ConsoleProgram to use the input profile read from the given reader,
+	 * rather than prompt the user for input.
+	 * @param inputFilename 	File to draw the input from.
+	 */
+	public void overrideInput(Reader reader) {
+		if (!inputOverride) {
+			inputOverride = true;
+			inputReader = new InputFileReader(reader);
+			echoedComments = new ArrayList<String>();
+			String newTitle = getTitle() + " [Input from file]";
 			setTitle(newTitle);
 		}
 	}
@@ -536,7 +631,7 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 
 	@Override
 	public boolean readBoolean(String prompt, String y, String n) {	
-		boolean result = false;
+		Boolean result = false;
 		
 		if (shouldOverrideInput()) {
 			if (!prompt.endsWith(" ")) {
@@ -549,7 +644,7 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 			result = super.readBoolean(prompt, y, n); 
 		}
 		
-		return result; 
+		return result == null ? false : (boolean) result; 
 	}
 
 	@Override
@@ -594,9 +689,13 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 	
 	private Boolean getInputBoolean(String t, String f) {
 		String line = null;
-		line = inputReader.readInputLine();
+		if (inputReader != null) {
+			line = inputReader.readInputLine();
+		}
 		print(line, Color.BLUE);
-		return t.equals(line) ? true : f.equals(line) ? false : null;
+		return (t != null && t.equalsIgnoreCase(line)) ? Boolean.TRUE
+				: (f != null && f.equalsIgnoreCase(line)) ? Boolean.FALSE
+				: null;
 	}
 	
 	private static void checkRange(int value, int min, int max) {
@@ -612,7 +711,7 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 	}
 	
 	/* Input File Reader class */
-	private class InputFileReader {
+	class InputFileReader {
 		/* Instance Variables */
 		private BufferedReader inputReader;
 		private String cachedLine;
@@ -627,6 +726,18 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 			catch (IOException e) {
 				throw new RuntimeException(absolveStudentStr + " Error while opening file: " + inputFilename, e);
 			}
+		}
+
+		/* Constructor */
+		public InputFileReader(InputStream stream) {
+			cachedLine = null;
+			inputReader = new BufferedReader(new InputStreamReader(stream));
+		}
+
+		/* Constructor */
+		public InputFileReader(Reader reader) {
+			cachedLine = null;
+			inputReader = new BufferedReader(reader);
 		}
 
 		/* Input file reading operations */

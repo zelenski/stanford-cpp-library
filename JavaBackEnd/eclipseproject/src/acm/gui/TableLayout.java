@@ -886,8 +886,18 @@ public class TableLayout implements LayoutManager2, Serializable {
 		for (int i = 0; i < nComponents; i++) {
 			Component comp = target.getComponent(i);
 			TableConstraints tc = getConstraints(comp);
-			if (tc.gridx != GridBagConstraints.RELATIVE) column = tc.gridx;
-			if (tc.gridy != GridBagConstraints.RELATIVE) row = tc.gridy;
+			if (tc.gridx != GridBagConstraints.RELATIVE) {
+				column = tc.gridx;
+			}
+			if (tc.gridy != GridBagConstraints.RELATIVE) {
+				row = tc.gridy;
+			}
+			if (nRows > 0 && row >= nRows) {
+				// try to repair
+				row = i / nColumns;
+				column = i % nColumns;
+			}
+			
 			if (nRows > 0 && row >= nRows) {
 				throw new ErrorException("TableLayout: Too many rows specified "
 						+ "(created with " + nRows + " rows x " + nColumns + " cols, but contains "

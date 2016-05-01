@@ -46,15 +46,13 @@
 package acm.program;
 
 import acm.util.*;
-import stanford.cs106.diff.DiffGui;
-import stanford.cs106.io.IOUtils;
-
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 import java.util.*;
 import javax.swing.*;
-import javax.swing.event.*;
+
+import stanford.cs106.gui.GuiUtils;
+import stanford.karel.*;
 
 /* Class: ProgramMenuBar */
 /**
@@ -103,8 +101,37 @@ import javax.swing.event.*;
  * method in the <code>Program</code> object that created the menu bar.
  * </ul>
  */
-public class ProgramMenuBar extends JMenuBar
-		implements ActionListener, Iterable<JMenuItem> {
+public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
+
+	// constants for menu bar item text
+	public static final String MENU_ITEM_TEXT_ABOUT = "About...";
+	public static final String MENU_ITEM_TEXT_CHECK_FOR_UPDATES = "Check for Updates";
+	public static final String MENU_ITEM_TEXT_CLEAR_CONSOLE = "Clear Console";
+	public static final String MENU_ITEM_TEXT_COPY = "Copy";
+	public static final String MENU_ITEM_TEXT_CUT = "Cut";
+	public static final String MENU_ITEM_TEXT_EXPORT_APPLET = "Export Applet";
+	public static final String MENU_ITEM_TEXT_PASTE = "Paste";
+	public static final String MENU_ITEM_TEXT_PRINT = "Print";
+	public static final String MENU_ITEM_TEXT_PRINT_CONSOLE = "Print Console";
+	public static final String MENU_ITEM_TEXT_QUIT = "Quit";
+	public static final String MENU_ITEM_TEXT_SAVE = "Save";
+	public static final String MENU_ITEM_TEXT_SAVE_AS = "Save As...";
+	public static final String MENU_ITEM_TEXT_SCRIPT = "Script";
+	public static final String MENU_ITEM_TEXT_SELECT_ALL = "Select All";
+	public static final String MENU_ITEM_TEXT_SUBMIT_PROJECT = "Submit Project";
+	
+	// constants for menu bar item text (specific to Karel programs)
+	public static final String MENU_ITEM_TEXT_INTERACTIVE = "Interactive Mode";
+	public static final String MENU_ITEM_TEXT_MSKAREL = "Ms. Karel";
+
+	// constants for menu bar item text (specific to Console programs)
+	public static final String MENU_ITEM_TEXT_COMPARE_OUTPUT = "Compare Output...";
+
+	/* Constant: SHIFT */
+	/**
+	 * Constant indicating that an accelerator key requires the SHIFT modifier.
+	 */
+	public static final int SHIFT = 0x20000;
 
 	// key commands for navigating around in the console window
 	protected KeyStroke ALT_F4;
@@ -144,11 +171,12 @@ public class ProgramMenuBar extends JMenuBar
 	protected KeyStroke PGUP;
 	protected KeyStroke UP_ARROW;
 	
-/* Constant: SHIFT */
-/**
- * Constant indicating that an accelerator key requires the SHIFT modifier.
- */
-	public static final int SHIFT = 0x20000;
+/* Private fields (instance variables) */
+	private Program program;
+	private ActionListener menuBarListener;
+	private ActionListener focusedListener;
+	private HashMap<KeyStroke,JMenuItem> accelerators;
+	private HashSet<JMenuItem> focusedItems;
 
 /* Constructor: ProgramMenuBar(program) */
 /**
@@ -163,7 +191,6 @@ public class ProgramMenuBar extends JMenuBar
 		focusedListener = null;
 		accelerators = new HashMap<KeyStroke,JMenuItem>();
 		focusedItems = new HashSet<JMenuItem>();
-		macMenuBarFlag = true;
 
 		ALT_F4 = KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK);
 		COMMAND_A = KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.META_DOWN_MASK);
@@ -229,47 +256,48 @@ public class ProgramMenuBar extends JMenuBar
 	
 	public JMenuItem createStandardItem(String action, int mnemonic, KeyStroke keystroke) {
 		boolean mac = Platform.isMac();
+		action = action.intern();
 		JMenuItem item = null;
-		if (action.equals("Quit")) {
+		if (action.equals(MENU_ITEM_TEXT_QUIT)) {
 			item = createProgramItem(action, 'Q', mac ? COMMAND_Q : ALT_F4);
 			if (mac) {
 				setAccelerator(item, 'Q');
 			} else {
 				item.setName("Exit");
 			}
-		} else if (action.equals("Cut")) {
+		} else if (action.equals(MENU_ITEM_TEXT_CUT)) {
 			item = createFocusedItem(action, 'X', mac ? COMMAND_X : CTRL_X);
 			item.setMnemonic('t');
 			if (!mac) item.setName("Cut (x)");
-		} else if (action.equals("Copy")) {
+		} else if (action.equals(MENU_ITEM_TEXT_COPY)) {
 			item = createFocusedItem(action, 'C', mac ? COMMAND_C : CTRL_C);
 			if (!mac) item.setName("Copy (c)");
-		} else if (action.equals("Paste")) {
+		} else if (action.equals(MENU_ITEM_TEXT_PASTE)) {
 			item = createFocusedItem(action, 'V', mac ? COMMAND_V : CTRL_V);
 			item.setMnemonic('P');
 			if (!mac) item.setName("Paste (v)");
-		} else if (action.equals("Compare Output...")) {
+		} else if (action.equals(MENU_ITEM_TEXT_COMPARE_OUTPUT)) {
 			item = createProgramItem(action, 'C');
-		} else if (action.equals("Clear Console")) {
+		} else if (action.equals(MENU_ITEM_TEXT_CLEAR_CONSOLE)) {
 			item = createProgramItem(action, 'L', mac ? COMMAND_L : CTRL_L);
-		} else if (action.equals("Select All")) {
+		} else if (action.equals(MENU_ITEM_TEXT_SELECT_ALL)) {
 			item = createFocusedItem(action, 'A', mac ? COMMAND_A : CTRL_A);
-		} else if (action.equals("Save")) {
+		} else if (action.equals(MENU_ITEM_TEXT_SAVE)) {
 			item = createFocusedItem(action, 'S', mac ? COMMAND_S : CTRL_S);
-		} else if (action.equals("Save As...")) {
+		} else if (action.equals(MENU_ITEM_TEXT_SAVE_AS)) {
 			item = createFocusedItem(action, 'A');
-		} else if (action.equals("Print...")) {
+		} else if (action.equals(MENU_ITEM_TEXT_PRINT)) {
 			item = createProgramItem(action, 'P', mac ? COMMAND_P : CTRL_P);
-			item.setName("Print...");
-		} else if (action.equals("Print Console")) {
+			item.setName(MENU_ITEM_TEXT_PRINT);
+		} else if (action.equals(MENU_ITEM_TEXT_PRINT_CONSOLE)) {
 			item = createProgramItem(action);
-		} else if (action.equals("Script")) {
+		} else if (action.equals(MENU_ITEM_TEXT_SCRIPT)) {
 			item = createProgramItem(action);
 			item.setName("Script...");
-		} else if (action.equals("Export Applet")) {
+		} else if (action.equals(MENU_ITEM_TEXT_EXPORT_APPLET)) {
 			item = createProgramItem(action);
 			item.setName("Export Applet...");
-		} else if (action.equals("Submit Project")) {
+		} else if (action.equals(MENU_ITEM_TEXT_SUBMIT_PROJECT)) {
 			item = createProgramItem(action);
 			item.setName("Submit Project...");
 		} else {
@@ -359,6 +387,24 @@ public class ProgramMenuBar extends JMenuBar
 		item.setMnemonic(key);
 		return item;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public <T extends JMenuItem> T getMenuItem(String text) {
+		for (int i = 0; i < getMenuCount(); i++) {
+			JMenu menu = getMenu(i);
+			if (menu == null) {
+				continue;
+			}
+			for (int j = 0; j < menu.getItemCount(); j++) {
+				JMenuItem item = menu.getItem(j);
+				String itemText = item.getText();
+				if (itemText != null && itemText.equals(text)) {
+					return (T) item;
+				}
+			}
+		}
+		return null;
+	}
 
 /* Method: isFocusedItem(item) */
 /**
@@ -424,49 +470,14 @@ public class ProgramMenuBar extends JMenuBar
 		while (comp != null && !(comp instanceof JFrame)) {
 			comp = comp.getParent();
 			if (comp == contentPane && program.isAppletMode()) {
-				if (!Platform.isMac() || !macMenuBarFlag) {
-					program.setJMenuBar(this);
-				}
+				program.setJMenuBar(this);
 				return;
 			}
 		}
 		if (comp == null) return;
 		JFrame frame = (JFrame) comp;
-		if (Platform.isMac() && macMenuBarFlag) {
-			if (oldStyleMenuBar == null) {
-				oldStyleMenuBar = createOldStyleMenuBar();
-			}
-			frame.setMenuBar(oldStyleMenuBar);
-		} else {
-			frame.setJMenuBar(this);
-			frame.validate();
-		}
-	}
-
-/* Method: setMacMenuBarFlag(flag) */
-/**
- * Sets a flag indicating whether applications running on the Macintosh
- * should use standard Mac menus.  The default is <code>true</code>.
- * Setting this value to <code>false</code> means that Mac programs
- * use the same in-window <code>JMenuBar</code> approach used on other
- * platforms.
- *
- * @usage setMacMenuBarFlag(flag);
- * @param flag <code>true</code> to use Mac menu style; <code>false</code> otherwise
- */
-	public void setMacMenuBarFlag(boolean flag) {
-		macMenuBarFlag = flag;
-	}
-
-/* Method: getMacMenuBarFlag() */
-/**
- * Retrieves the setting of the Mac menu bar flag.
- *
- * @usage boolean flag = getMacMenuBarFlag();
- * @return <code>true</code> if Mac menu style is supported; <code>false</code> otherwise
- */
-	public boolean getMacMenuBarFlag() {
-		return macMenuBarFlag;
+		frame.setJMenuBar(this);
+		frame.validate();
 	}
 
 /* Method: fireActionListeners(e) */
@@ -575,9 +586,12 @@ public class ProgramMenuBar extends JMenuBar
  */
 	protected void addMenus() {
 		addFileMenu();
-		boolean isConsole = getProgram() instanceof AbstractConsoleProgram;
-		if (isConsole) {
+		Program program = getProgram();
+		if (program instanceof AbstractConsoleProgram) {
 			addEditMenu();
+		}
+		if (program instanceof Karel || program instanceof KarelProgram) {
+			addOptionsMenu();
 		}
 		addHelpMenu();
 	}
@@ -589,10 +603,8 @@ public class ProgramMenuBar extends JMenuBar
  * @usage mbar.addFileMenu();
  */
 	protected void addFileMenu() {
-		JMenu fileMenu = new JMenu("File");
-		fileMenu.setMnemonic('F');
+		JMenu fileMenu = GuiUtils.createMenu("File", this);
 		addFileMenuItems(fileMenu);
-		add(fileMenu);
 	}
 
 /* Protected method: addEditMenu() */
@@ -602,93 +614,30 @@ public class ProgramMenuBar extends JMenuBar
  * @usage mbar.addEditMenu();
  */
 	protected void addEditMenu() {
-		JMenu editMenu = new JMenu("Edit");
-		editMenu.setMnemonic('E');
+		JMenu editMenu = GuiUtils.createMenu("Edit", this);
 		addEditMenuItems(editMenu);
-		add(editMenu);
+	}
+
+/* Protected method: addOptionsMenu() */
+/**
+ * Installs the <code>Options</code> menu.
+ *
+ * @usage mbar.addOptionsMenu();
+ */
+	protected void addOptionsMenu() {
+		JMenu optionsMenu = GuiUtils.createMenu("Options", this);
+		GuiUtils.createCheckBoxMenuItem(MENU_ITEM_TEXT_MSKAREL, menuBarListener, optionsMenu);
+		GuiUtils.createCheckBoxMenuItem(MENU_ITEM_TEXT_INTERACTIVE, menuBarListener, optionsMenu);
 	}
 
 	protected void addHelpMenu() {
-		JMenu helpMenu = new JMenu("Help");
-		helpMenu.setMnemonic('H');
+		JMenu helpMenu = GuiUtils.createMenu("Help", this);
 		
-		JMenuItem aboutItem = new JMenuItem("About...");
-		aboutItem.addActionListener(this);
+		JMenuItem aboutItem = GuiUtils.createMenuItem(MENU_ITEM_TEXT_ABOUT, menuBarListener, helpMenu);
 		aboutItem.setAccelerator(F1);
 		accelerators.put(F1, aboutItem);
-		// setAccelerator(aboutItem, KeyEvent.VK_F1);
-		aboutItem.setMnemonic('A');
-		helpMenu.add(aboutItem);
 		
-		JMenuItem checkForUpdatesItem = new JMenuItem("Check for Updates");
-		checkForUpdatesItem.addActionListener(this);
-		checkForUpdatesItem.setMnemonic('C');
-		helpMenu.add(checkForUpdatesItem);
-		
-		add(helpMenu);
-	}
-	
-	protected String getAboutMessage() {
-		String message = 
-			"Stanford Java Library (spl.jar) version: " + stanford.spl.Version.getLibraryVersion() + "\n"
-			+ "Java JDK/JRE version: " + stanford.spl.Version.getJdkVersion() + "\n\n"
-			+ "Libraries originally written by Eric Roberts,\n"
-			+ "with assistance from Julie Zelenski, Keith Schwarz, et al.\n"
-			+ "This version of the library is unofficially maintained by Marty Stepp.";
-		return message;
-	}
-	
-	public void actionPerformed(ActionEvent event) {
-		String cmd = event.getActionCommand().intern();
-		if (cmd == "About...") {
-			JOptionPane.showMessageDialog(
-					getProgram().getConsole(),           // parent component
-					getAboutMessage(),                   // message
-					"About Stanford Java/C++ Library",   // title
-					JOptionPane.INFORMATION_MESSAGE      // type
-			);
-		} else if (cmd == "Compare Output...") {
-			if (getProgram() instanceof ConsoleProgram) {
-				ConsoleProgram consoleProgram = (ConsoleProgram) getProgram();
-				try {
-					// pick working dir for loading expected output files
-					File dir = new File(System.getProperty("user.dir"));
-					File[] dirsToTry = {
-							new File(dir, "output"),
-							new File(dir, "expected-output"),
-							new File(dir, "res/output"),
-							new File(dir, "res/expected-output"),
-					};
-					for (File dirToTry : dirsToTry) {
-						if (dirToTry.exists()) {
-							dir = dirToTry;
-							break;
-						}
-					}
-					
-					// let the user browse for a file for expected output
-					JFileChooser chooser = new JFileChooser(dir);
-					int result = chooser.showOpenDialog(consoleProgram.getJFrame());
-					if (result == JFileChooser.CANCEL_OPTION) {
-						return;
-					}
-					File selectedFile = chooser.getSelectedFile();
-					if (selectedFile == null || !selectedFile.exists()) {
-						return;
-					}
-					
-					String expectedOutput = IOUtils.readEntireFile(selectedFile);
-					String studentOutput = consoleProgram.getAllOutput();
-					DiffGui diff = new DiffGui("expected output", expectedOutput, "your output", studentOutput, /* checkboxes */ false);
-					diff.show();
-				} catch (Exception e) {
-					// empty
-				}
-			}
-		} else if (cmd == "Check for Updates") {
-			stanford.spl.LibraryUpdater updater = new stanford.spl.LibraryUpdater();
-			updater.checkForUpdates(getProgram().getJFrame());
-		}
+		GuiUtils.createMenuItem(MENU_ITEM_TEXT_CHECK_FOR_UPDATES, menuBarListener, helpMenu);
 	}
 	
 /* Protected method: addFileMenuItems(menu) */
@@ -702,24 +651,22 @@ public class ProgramMenuBar extends JMenuBar
 	protected void addFileMenuItems(JMenu menu) {
 		boolean isConsole = getProgram() instanceof ConsoleProgram;
 		if (isConsole) {
-			menu.add(createStandardItem("Save", 'S'));
-			menu.add(createStandardItem("Save As...", 'A'));
+			menu.add(createStandardItem(MENU_ITEM_TEXT_SAVE, 'S'));
+			menu.add(createStandardItem(MENU_ITEM_TEXT_SAVE_AS, 'A'));
 			menu.addSeparator();
-			menu.add(createStandardItem("Print...", 'P'));
+			menu.add(createStandardItem(MENU_ITEM_TEXT_PRINT, 'P'));
 //			menu.add(createStandardItem("Print Console"));
 //			menu.add(createStandardItem("Script"));
 			menu.addSeparator();
 			
-			JMenuItem compareOutputItem = new JMenuItem("Compare Output...");
-			compareOutputItem.addActionListener(this);
-			compareOutputItem.setMnemonic('C');
-			menu.add(compareOutputItem);
+			GuiUtils.createMenuItem(MENU_ITEM_TEXT_COMPARE_OUTPUT, menuBarListener, menu);
+			
 			menu.addSeparator();
 		}
 //		menu.add(createStandardItem("Export Applet"));
 //		menu.add(createStandardItem("Submit Project"));
 //		menu.addSeparator();
-		menu.add(createStandardItem("Quit", 'Q'));
+		menu.add(createStandardItem(MENU_ITEM_TEXT_QUIT, 'Q'));
 	}
 
 /* Protected method: addEditMenuItems(menu) */
@@ -731,12 +678,12 @@ public class ProgramMenuBar extends JMenuBar
  * @param menu The menu to which the <code>Edit</code> items are added
  */
 	protected void addEditMenuItems(JMenu menu) {
-		menu.add(createStandardItem("Cut", 'C'));
-		menu.add(createStandardItem("Copy", 'o'));
-		menu.add(createStandardItem("Paste", 'P'));
-		menu.add(createStandardItem("Select All", 'A'));
+		menu.add(createStandardItem(MENU_ITEM_TEXT_CUT, 'C'));
+		menu.add(createStandardItem(MENU_ITEM_TEXT_COPY, 'o'));
+		menu.add(createStandardItem(MENU_ITEM_TEXT_PASTE, 'P'));
+		menu.add(createStandardItem(MENU_ITEM_TEXT_SELECT_ALL, 'A'));
 		menu.addSeparator();
-		menu.add(createStandardItem("Clear Console", 'l'));
+		menu.add(createStandardItem(MENU_ITEM_TEXT_CLEAR_CONSOLE, 'l'));
 	}
 
 /* Private method: addItemToList(itemList, item) */
@@ -760,55 +707,6 @@ public class ProgramMenuBar extends JMenuBar
 		}
 	}
 
-/* Private method: createOldStyleMenuBar */
-/**
- * Creates a <code>MenuBar</code> that has the same effect as the
- * specified <code>JMenuBar</code>.
- *
- * @usage MenuBar oldMenuBar = mbar.createOldStyleMenuBar();
- * @return A <code>MenuBar</code> whose actions are paired with the original
- */
-	private MenuBar createOldStyleMenuBar() {
-		MenuBar mbar = new MenuBar();
-		int nMenus = getMenuCount();
-		for (int i = 0; i < nMenus; i++) {
-			mbar.add(createOldStyleMenu(getMenu(i)));
-		}
-		return mbar;
-	}
-
-/* Private method: createOldStyleMenu */
-/**
- * Creates a <code>Menu</code> that has the same effect as the
- * specified <code>JMenu</code>.
- */
-	private Menu createOldStyleMenu(JMenu jmenu) {
-		Menu menu = new Menu(jmenu.getText());
-		int nItems = jmenu.getItemCount();
-		for (int i = 0; i < nItems; i++) {
-			menu.add(createOldStyleMenuItem(jmenu.getItem(i)));
-		}
-		return menu;
-	}
-
-/* Private method: createOldStyleMenuItem */
-/**
- * Creates a <code>MenuItem</code> that has the same effect as the
- * specified <code>JMenuItem</code>.
- */
-	private MenuItem createOldStyleMenuItem(Object jitem) {
-		if (jitem == null) {
-			return new MenuItem("-");
-		} else if (jitem instanceof JMenu) {
-			return createOldStyleMenu((JMenu) jitem);
-		} else if (jitem instanceof JCheckBoxMenuItem) {
-			return new OldStyleCheckBoxMenuItem((JCheckBoxMenuItem) jitem);
-		} else if (jitem instanceof JMenuItem) {
-			return new OldStyleMenuItem((JMenuItem) jitem);
-		}
-		throw new ErrorException("Unsupported menu item type");
-	}
-
 /* Private method: setEnabled(menu, action, flag) */
 /**
  * Updates the enabled state of everything in the menu that has the specified action.
@@ -829,16 +727,6 @@ public class ProgramMenuBar extends JMenuBar
 	private void setEnabled(JMenuItem item, String action, boolean flag) {
 		if (action.equals(item.getActionCommand())) item.setEnabled(flag);
 	}
-
-/* Private instance variables */
-	private Program program;
-	private ActionListener menuBarListener;
-	private ActionListener focusedListener;
-	private HashMap<KeyStroke,JMenuItem> accelerators;
-	private HashSet<JMenuItem> focusedItems;
-	private MenuBar oldStyleMenuBar;
-	private boolean macMenuBarFlag;
-
 }
 
 /* Package class: ProgramMenuBarListener */
@@ -869,112 +757,4 @@ class ProgramMenuBarListener implements ActionListener {
 /* Private instance variables */
 	private ProgramMenuBar menuBar;
 
-}
-
-/* Package class: OldStyleMenuItem */
-/**
- * This class represents a standard Macintosh <code>MenuItem</code> that listens to
- * a <code>JMenuItem</code> and tracks its changes.
- */
-class OldStyleMenuItem extends MenuItem implements ActionListener, ChangeListener {
-
-/* Constructor: OldStyleMenuItem(jitem) */
-/**
- * Creates a new <code>MenuItem</code> that tracks the changes in the specified
- * <code>JMenuItem</code>.
- */
-	public OldStyleMenuItem(JMenuItem jitem) {
-		super(jitem.getText());
-		twin = jitem;
-		addActionListener(this);
-		twin.addChangeListener(this);
-		setEnabled(twin.isEnabled());
-		KeyStroke accelerator = twin.getAccelerator();
-		if (accelerator != null) setShortcut(createShortcut(accelerator));
-	}
-
-/* Method: actionPerformed(e) */
-/**
- * Responds to an action event in the Mac menu and forwards it along to
- * the actual <code>JMenuItem</code> that the client has created.
- */
-	public void actionPerformed(ActionEvent e) {
-		twin.doClick(0);
-	}
-
-/* Method: stateChanged(e) */
-/**
- * Monitors the state of the <code>JMenuItem</code> and replicates changes
- * in the enabled state.
- */
-	public void stateChanged(ChangeEvent e) {
-		setEnabled(twin.isEnabled());
-	}
-
-/* Private method: createShortcut(accelerator) */
-/**
- * Creates an old-style menu shortcut from the new-style accelerator.
- */
-	private MenuShortcut createShortcut(KeyStroke accelerator) {
-		boolean isShifted = (accelerator.getModifiers() & Event.SHIFT_MASK) != 0;
-		return new MenuShortcut(accelerator.getKeyCode(), isShifted);
-	}
-
-/* Private instance variables */
-	private JMenuItem twin;
-}
-
-/* Package class: OldStyleCheckBoxMenuItem */
-/**
- * This class represents a standard Macintosh <code>CheckBoxMenuItem</code> that
- * listens to a <code>JCheckBoxMenuItem</code> and tracks its changes.
- */
-class OldStyleCheckBoxMenuItem extends CheckboxMenuItem implements ActionListener, ChangeListener {
-
-/* Constructor: OldStyleCheckBoxMenuItem(jitem) */
-/**
- * Creates a new <code>CheckBoxMenuItem</code> that tracks the changes in the specified
- * <code>JCheckBoxMenuItem</code>.
- */
-	public OldStyleCheckBoxMenuItem(JCheckBoxMenuItem jitem) {
-		super(jitem.getText());
-		twin = jitem;
-		addActionListener(this);
-		twin.addChangeListener(this);
-		setState(twin.getState());
-		setEnabled(twin.isEnabled());
-		KeyStroke accelerator = twin.getAccelerator();
-		if (accelerator != null) setShortcut(createShortcut(accelerator));
-	}
-
-/* Method: actionPerformed(e) */
-/**
- * Responds to an action event in the Mac menu and forwards it along to
- * the actual <code>JMenuItem</code> that the client has created.
- */
-	public void actionPerformed(ActionEvent e) {
-		twin.doClick(0);
-	}
-
-/* Method: stateChanged(e) */
-/**
- * Monitors the state of the <code>JMenuItem</code> and replicates changes
- * in the enabled state.
- */
-	public void stateChanged(ChangeEvent e) {
-		setState(twin.getState());
-		setEnabled(twin.isEnabled());
-	}
-
-/* Private method: createShortcut(accelerator) */
-/**
- * Creates an old-style menu shortcut from the new-style accelerator.
- */
-	private MenuShortcut createShortcut(KeyStroke accelerator) {
-		boolean isShifted = (accelerator.getModifiers() & Event.SHIFT_MASK) != 0;
-		return new MenuShortcut(accelerator.getKeyCode(), isShifted);
-	}
-
-/* Private instance variables */
-	private JCheckBoxMenuItem twin;
 }

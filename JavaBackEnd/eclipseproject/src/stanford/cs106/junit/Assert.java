@@ -22,7 +22,7 @@ public class Assert {
 		if (!diffs.equals(Diff.NO_DIFFS_MESSAGE)) {
 			ComparisonFailureEnhanced failure = new ComparisonFailureEnhanced(
 					UnitTestType.ASSERT_DIFF,
-					"string",
+					"diff",
 					message,
 					expected,
 					actual
