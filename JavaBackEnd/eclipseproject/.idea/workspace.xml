@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="475277d2-4180-4b67-83d1-a973ed166bcb" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/obf/spl.jar" afterPath="$PROJECT_DIR$/obf/spl.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/acm/graphics/GCompound.java" afterPath="$PROJECT_DIR$/src/acm/graphics/GCompound.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/acm/graphics/GImage.java" afterPath="$PROJECT_DIR$/src/acm/graphics/GImage.java" />
     </list>
     <ignored path="eclipseproject.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -40,6 +38,7 @@
       <list>
         <option value="$PROJECT_DIR$/src/acm/graphics/GCanvas.java" />
         <option value="$PROJECT_DIR$/src/acm/graphics/GCompound.java" />
+        <option value="$PROJECT_DIR$/src/acm/graphics/GImage.java" />
       </list>
     </option>
   </component>
@@ -447,6 +446,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="540">
           <caret line="588" column="11" selection-start-line="588" selection-start-column="11" selection-end-line="588" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/acm/graphics/GImage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="3" column="30" selection-start-line="3" selection-start-column="30" selection-end-line="3" selection-end-column="30" />
           <folding />
         </state>
       </provider>
