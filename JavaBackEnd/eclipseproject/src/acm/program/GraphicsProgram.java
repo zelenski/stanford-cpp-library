@@ -1,4 +1,6 @@
 /*
+ * @version 2016/05/05
+ * - added get/setCanvasSize,Width,Height methods for better control over central drawing canvas size
  * @version 2016/04/26
  * - modified return type of getElementAt to avoid need for type cast
  * - made GraphicsProgram implement Iterable<GObject>
@@ -495,6 +497,69 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 		super.setBackground(bg);
 		if (gc != null)
 			gc.setBackground(bg);
+	}
+
+	/**
+	 * Returns the height of the central canvas area.
+	 * @return the height of the central canvas area
+	 */
+	public double getCanvasHeight() {
+		if (gc != null) {
+			return gc.getHeight();
+		} else {
+			return getHeight();
+		}
+	}
+
+	/**
+	 * Returns the width of the central canvas area.
+	 * @return the width of the central canvas area
+	 */
+	public double getCanvasWidth() {
+		if (gc != null) {
+			return gc.getWidth();
+		} else {
+			return getWidth();
+		}
+	}
+
+	/**
+	 * Sets this program to be exactly the right size so that its graphical canvas will be
+	 * the given height in pixels.
+	 * This is often preferred over setHeight() because you'll know exactly how many pixels
+	 * are available to you for drawing.
+	 * @param height the desired height of the drawing canvas, in pixels
+	 */
+	public void setCanvasHeight(double height) {
+		setCanvasSize(getCanvasWidth(), height);
+	}
+
+	/**
+	 * Sets this program to be exactly the right size so that its graphical canvas will be
+	 * the given size in pixels.
+	 * This is often preferred over setSize() because you'll know exactly how many pixels
+	 * are available to you for drawing.
+	 * @param width the desired width of the drawing canvas, in pixels
+	 * @param height the desired height of the drawing canvas, in pixels
+	 */
+	public void setCanvasSize(double width, double height) {
+		if (gc != null) {
+			Dimension dim = new Dimension((int) width, (int) height);
+			gc.setSize(dim);
+			gc.setPreferredSize(dim);
+			getJFrame().pack();
+		}
+	}
+
+	/**
+	 * Sets this program to be exactly the right size so that its graphical canvas will be
+	 * the given width in pixels.
+	 * This is often preferred over setWidth() because you'll know exactly how many pixels
+	 * are available to you for drawing.
+	 * @param width the desired width of the drawing canvas, in pixels
+	 */
+	public void setCanvasWidth(double width) {
+		setCanvasSize(width, getCanvasHeight());
 	}
 
 	/* Static method: startGraphicsProgram(gobj, args) */

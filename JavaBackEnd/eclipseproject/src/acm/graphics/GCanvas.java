@@ -2,6 +2,7 @@
  * @version 2016/05/05
  * - restored from original eroberts source code
  * - alphabetized methods
+ * - implements Iterable of GObject
  */
 
 /*
@@ -56,7 +57,7 @@ import javax.swing.*;
  * Conceptually, the <code>GCanvas</code> provides a background canvas
  * to which other graphical objects can be added.
  */
-public class GCanvas extends JComponent implements GContainer {
+public class GCanvas extends JComponent implements GContainer, Iterable<GObject> {
 	private static final long serialVersionUID = 0L;
 
 	private GCanvasListener gCanvasListener;
