@@ -1,116 +1,292 @@
 /*
+ * @version 2016/05/05
+ * - resynched with eroberts source
+ * - alphabetized members
  * @version 2015/04/29
  * - added setText method to mimick less-standard setLabel
  */
 
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-// Source File Name:   GLabel.java
+
+/*
+ * @(#)GLabel.java   1.99.1 08/12/08
+ */
+
+// ************************************************************************
+// * Copyright (c) 2008 by the Association for Computing Machinery        *
+// *                                                                      *
+// * The Java Task Force seeks to impose few restrictions on the use of   *
+// * these packages so that users have as much freedom as possible to     *
+// * use this software in constructive ways and can make the benefits of  *
+// * that work available to others.  In view of the legal complexities    *
+// * of software development, however, it is essential for the ACM to     *
+// * maintain its copyright to guard against attempts by others to        *
+// * claim ownership rights.  The full text of the JTF Software License   *
+// * is available at the following URL:                                   *
+// *                                                                      *
+// *          http://www.acm.org/jtf/jtf-software-license.pdf             *
+// *                                                                      *
+// ************************************************************************
+
+// REVISION HISTORY
+//
+// -- V2.0 --
+// Feature enhancement 26-May-08 (ESR)
+//   1. Added support for serialization.
 
 package acm.graphics;
 
-import acm.util.JTFTools;
-import acm.util.MediaTools;
+import acm.util.*;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
+import java.awt.geom.*;
 
+/**
+ * The <code>GLabel</code> class is a graphical object whose appearance
+ * consists of a text string.
+ */
 public class GLabel extends GObject {
+	/**
+	 * The serialization code for this class.  This value should be incremented
+	 * whenever you change the structure of this class in an incompatible way,
+	 * typically by adding a new instance variable.
+	 */
+	static final long serialVersionUID = 1L;
+	/**
+	 * The default font used to display strings.  You can change the font by invoking
+	 * the <a href="#setFont(Font)"><code>setFont</code></a> method.
+	 */
+	public static final Font DEFAULT_FONT = new Font("Default", Font.PLAIN, 12);
 
-	public GLabel(String s) {
-		this(s, 0.0D, 0.0D);
+	private static final Component DUMMY_COMPONENT = MediaTools.getImageObserver();
+
+	/* Private instance variables */
+	private String label;
+	private Font labelFont;
+
+	/**
+	 * Creates a new <code>GLabel</code> object initialized to contain the specified string.
+	 *
+	 * @param str The initial contents of the <code>GLabel</code>
+	 * @usage GLabel glabel = new GLabel(str);
+	 */
+	public GLabel(String str) {
+		this(str, 0, 0);
 	}
 
-	public GLabel(String s, double d, double d1) {
-		label = s;
+	/**
+	 * Creates a new <code>GLabel</code> object with its baseline origin at the
+	 * specified position.
+	 *
+	 * @param str The initial contents of the <code>GLabel</code>
+	 * @param x   The x-coordinate of the label origin
+	 * @param y   The y-coordinate of the baseline for the label
+	 * @usage GLabel glabel = new GLabel(str, x, y);
+	 */
+	public GLabel(String str, double x, double y) {
+		label = str;
 		setFont(DEFAULT_FONT);
-		setLocation(d, d1);
+		setLocation(x, y);
 	}
 
-	public void setFont(Font font) {
-		labelFont = JTFTools.getStandardFont(font);
-		repaint();
-	}
-
-	public void setFont(String s) {
-		setFont(JTFTools.decodeFont(s, getFont()));
-	}
-
-	public Font getFont() {
-		return labelFont;
-	}
-
-	public void setLabel(String s) {
-		label = s;
-		repaint();
-	}
-
-	public void setText(String s) {
-		setLabel(s);
-	}
-
-	public String getLabel() {
-		return label;
-	}
-
-	public String getText() {
-		return getLabel();
-	}
-
-	protected void paint2d(Graphics2D graphics2d) {
-		graphics2d.setFont(labelFont);
-		graphics2d.drawString(label, 0, 0);
-	}
-
-	public double getAscent() {
-		return (double) getFontMetrics().getAscent();
-	}
-
-	public double getDescent() {
-		return (double) getFontMetrics().getDescent();
-	}
-
-	public FontMetrics getFontMetrics() {
-		Component component = getComponent();
-		if (component == null)
-			component = DUMMY_COMPONENT;
-		return component.getFontMetrics(labelFont);
-	}
-
-	public GRectangle getBounds() {
-		FontMetrics fontmetrics = getFontMetrics();
-		Object obj = new java.awt.geom.Rectangle2D.Double(0.0D,
-				-fontmetrics.getAscent(), fontmetrics.stringWidth(label),
-				fontmetrics.getHeight());
+	/**
+	 * Returns true if this label contains the given x/y point.
+	 *
+	 * @param x the x-coordinate to check
+	 * @param y the y-coordinate to check
+	 * @return true if this label contains the given x/y point
+	 */
+	public boolean contains(double x, double y) {
+		FontMetrics fm = getFontMetrics();
+		Object obj = new java.awt.geom.Rectangle2D.Double(0.0,
+				-fm.getAscent(), fm.stringWidth(label),
+				fm.getHeight());
 		AffineTransform affinetransform = getMatrix();
-		if (affinetransform != null)
+		if (affinetransform != null) {
 			obj = affinetransform.createTransformedShape(((Shape) (obj)));
+		}
+		return ((Shape) (obj)).contains(x - getX(), y - getY());
+	}
+
+	/**
+	 * Returns the distance this string extends above the baseline.
+	 *
+	 * @return The ascent of this string in pixels
+	 * @usage double ascent = glabel.getAscent();
+	 */
+	public double getAscent() {
+		return getFontMetrics().getAscent();
+	}
+
+	/**
+	 * Returns a <code>GRectangle</code> that specifies the bounding box for the string.
+	 *
+	 * @return The bounding box for this object
+	 * @usage GRectangle bounds = glabel.getBounds();
+	 */
+	public GRectangle getBounds() {
+		FontMetrics fm = getFontMetrics();
+		Object obj = new java.awt.geom.Rectangle2D.Double(0.0,
+				-fm.getAscent(), fm.stringWidth(label),
+				fm.getHeight());
+		AffineTransform affinetransform = getMatrix();
+		if (affinetransform != null) {
+			obj = affinetransform.createTransformedShape(((Shape) (obj)));
+		}
 		java.awt.Rectangle rectangle = ((Shape) (obj)).getBounds();
 		return new GRectangle(getX() + rectangle.getX(), getY()
 				+ rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
 	}
 
-	public boolean contains(double d, double d1) {
-		FontMetrics fontmetrics = getFontMetrics();
-		Object obj = new java.awt.geom.Rectangle2D.Double(0.0D,
-				-fontmetrics.getAscent(), fontmetrics.stringWidth(label),
-				fontmetrics.getHeight());
-		AffineTransform affinetransform = getMatrix();
-		if (affinetransform != null)
-			obj = affinetransform.createTransformedShape(((Shape) (obj)));
-		return ((Shape) (obj)).contains(d - getX(), d1 - getY());
+	/**
+	 * Returns the distance this string descends below the baseline.
+	 *
+	 * @return The descent of this string in pixels
+	 * @usage double descent = glabel.getDescent();
+	 */
+	public double getDescent() {
+		return getFontMetrics().getDescent();
 	}
 
+	/**
+	 * Returns the font in which the <code>GLabel</code> is displayed.
+	 *
+	 * @return The font in use by this object
+	 * @usage Font font = glabel.getFont();
+	 */
+	public Font getFont() {
+		return labelFont;
+	}
+
+	/**
+	 * Returns a <code>FontMetrics</code> object describing the dimensions of this string.
+	 *
+	 * @return A <code>FontMetrics</code> object describing the dimensions of this string
+	 * @usage FontMetrics fm = glabel.getFontMetrics();
+	 * @noshow
+	 */
+	public FontMetrics getFontMetrics() {
+		Component comp = getComponent();
+		if (comp == null) {
+			comp = DUMMY_COMPONENT;
+		}
+		return comp.getFontMetrics(labelFont);
+	}
+
+	/**
+	 * Returns the height of this string, as it appears on the display.
+	 *
+	 * @return The height of this string
+	 * @usage double height = glabel.getHeight();
+	 */
+	public double getHeight() {
+		return getFontMetrics().getHeight();
+	}
+
+	/**
+	 * Returns the string displayed by this object.
+	 * Equivalent to getText.
+	 *
+	 * @return The string displayed by this object
+	 * @usage String str = glabel.getLabel();
+	 */
+	public String getLabel() {
+		return label;
+	}
+
+	/**
+	 * Returns the string displayed by this object.
+	 * Equivalent to getLabel.
+	 *
+	 * @return The string displayed by this object
+	 * @usage String str = glabel.getLabel();
+	 */
+	public String getText() {
+		return getLabel();
+	}
+
+	/**
+	 * Returns the width of this string, as it appears on the display.
+	 *
+	 * @return The width of this object
+	 * @usage double width = glabel.getWidth();
+	 */
+	public double getWidth() {
+		return getFontMetrics().stringWidth(label);
+	}
+
+	/**
+	 * Implements the <code>paint2d</code> operation for this graphical object.  This method
+	 * is not called directly by clients.
+	 *
+	 * @noshow
+	 */
+	public void paint2d(Graphics2D g) {
+		g.setFont(labelFont);
+		g.drawString(label, GMath.round(getX()), GMath.round(getY()));
+	}
+
+	/**
+	 * Returns a string indicating the parameters of this object.
+	 *
+	 * @noshow
+	 */
 	public String paramString() {
-		return (new StringBuilder()).append(super.paramString())
-				.append(", string=\"").append(label).append("\"").toString();
+		return super.paramString() + ", string=\"" + label + "\"";
 	}
 
-	public static final Font DEFAULT_FONT = new Font("Default", 0, 12);
-	private String label;
-	private Font labelFont;
-	private static final Component DUMMY_COMPONENT = MediaTools
-			.getImageObserver();
-	static final long serialVersionUID = 21L;
+	/**
+	 * Changes the font used to display the <code>GLabel</code>.  This call will
+	 * usually change the size of the displayed object and will therefore affect
+	 * the result of calls to <a href="GObject.html#getSize()"><code>getSize</code></a>
+	 * and <a href="GObject.html#getBounds()"><code>getBounds</code></a>.
+	 *
+	 * @param font A <code>Font</code> object indicating the new font
+	 * @usage glabel.setFont(font);
+	 */
+	public void setFont(Font font) {
+		labelFont = JTFTools.getStandardFont(font);
+		repaint();
+	}
 
+	/**
+	 * Changes the font used to display the <code>GLabel</code> as specified by
+	 * the string <code>str</code>, which is interpreted in the style of
+	 * <code>Font.decode</code>.  The usual format of the font string is
+	 * <p>
+	 * <p><pre><code>
+	 * &nbsp;    <font face="serif;times"><i>family</i></font>-<font face="serif;times"><i>style</i></font>-<font face="serif;times"><i>size</i></font>
+	 * <p>
+	 * <p>where both <i>style</i> and <i>size</i> are optional.  If any of these
+	 * parts are specified as an asterisk, the existing value is retained.
+	 * <p>
+	 * @usage glabel.setFont(str);
+	 * @param str A <code>String</code> specifying the new font
+	 */
+	public void setFont(String str) {
+		setFont(JTFTools.decodeFont(str, getFont()));
+	}
+
+	/**
+	 * Changes the string stored within the <code>GLabel</code> object, so that
+	 * a new text string appears on the display.
+	 * Equivalent to setText.
+	 *
+	 * @param str The new string to display
+	 * @usage glabel.setLabel(str);
+	 */
+	public void setLabel(String str) {
+		label = str;
+		repaint();
+	}
+
+	/**
+	 * Changes the string stored within the <code>GLabel</code> object, so that
+	 * a new text string appears on the display.
+	 * Equivalent to setLabel.
+	 *
+	 * @param str The new string to display
+	 * @usage glabel.setText(str);
+	 */
+	public void setText(String str) {
+		setLabel(str);
+	}
 }

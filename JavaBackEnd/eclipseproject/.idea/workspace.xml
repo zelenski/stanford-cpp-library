@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="475277d2-4180-4b67-83d1-a973ed166bcb" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/acm/graphics/GImage.java" afterPath="$PROJECT_DIR$/src/acm/graphics/GImage.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/acm/graphics/GLabel.java" afterPath="$PROJECT_DIR$/src/acm/graphics/GLabel.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/acm/graphics/GObject.java" afterPath="$PROJECT_DIR$/src/acm/graphics/GObject.java" />
     </list>
     <ignored path="eclipseproject.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -39,6 +40,8 @@
         <option value="$PROJECT_DIR$/src/acm/graphics/GCanvas.java" />
         <option value="$PROJECT_DIR$/src/acm/graphics/GCompound.java" />
         <option value="$PROJECT_DIR$/src/acm/graphics/GImage.java" />
+        <option value="$PROJECT_DIR$/src/acm/graphics/GObject.java" />
+        <option value="$PROJECT_DIR$/src/acm/graphics/GLabel.java" />
       </list>
     </option>
   </component>
@@ -175,7 +178,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="settings.editor.selected.configurable" value="preferences.sourceCode.Java" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
   </component>
   <component name="RunManager">
@@ -454,6 +457,22 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
           <caret line="3" column="30" selection-start-line="3" selection-start-column="30" selection-end-line="3" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/acm/graphics/GLabel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="765">
+          <caret line="275" column="38" selection-start-line="275" selection-start-column="38" selection-end-line="275" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/acm/graphics/GObject.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
