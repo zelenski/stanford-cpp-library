@@ -812,9 +812,8 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 	 * @param bottomY The new bottom y-coordinate for the object
 	 * @usage gobj.setBottomY(y);
 	 */
-	public void setBottomY(double bottomY) {
-		this.yc = bottomY - getHeight();
-		repaint();
+	public final void setBottomY(double bottomY) {
+		setLocation(getX(), bottomY - getHeight());
 	}
 
 	/**
@@ -887,9 +886,8 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 	 * @param rightX The new rightmost x-coordinate for the object
 	 * @usage gobj.setRightX(x);
 	 */
-	public void setRightX(double rightX) {
-		this.xc = rightX - getWidth();
-		repaint();
+	public final void setRightX(double rightX) {
+		setLocation(rightX - getWidth(), getY());
 	}
 
 	/**
@@ -909,9 +907,8 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 	 * @param x The new x-coordinate for the object
 	 * @usage gobj.setX(x);
 	 */
-	public void setX(double x) {
-		this.xc = x;
-		repaint();
+	public final void setX(double x) {
+		setLocation(x, getY());
 	}
 
 	/**
@@ -920,9 +917,8 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 	 * @param y The new y-coordinate for the object
 	 * @usage gobj.setY(y);
 	 */
-	public void setY(double y) {
-		this.yc = y;
-		repaint();
+	public final void setY(double y) {
+		setLocation(getX(), y);
 	}
 
 	/**

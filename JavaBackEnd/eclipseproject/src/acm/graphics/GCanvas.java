@@ -1,6 +1,7 @@
 /*
  * @version 2016/05/05
  * - restored from original eroberts source code
+ * - alphabetized methods
  */
 
 /*
