@@ -1,3 +1,8 @@
+/*
+ * @version 2016/05/04
+ * - fixed bug with contains() always returning false
+ */
+
 package acm.graphics;
 
 import acm.util.ErrorException;
@@ -129,8 +134,9 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 		return getBounds().getHeight();
 	}
 
-	public boolean contains(double paramDouble1, double paramDouble2) {
-		return false;
+	public boolean contains(double x, double y) {
+		GRectangle rect = getBounds();
+		return rect != null && rect.contains(GMath.round(x), GMath.round(y));
 	}
 
 	public final boolean contains(GPoint paramGPoint) {
