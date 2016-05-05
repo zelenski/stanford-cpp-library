@@ -2344,7 +2344,7 @@ public abstract class Program extends JApplet
 /**
  * Returns the name of the caller of the method that invoked <code>getMyCaller</code>.
  */
-	private String getMyCaller() {
+	String getMyCaller() {
 		StackTraceElement[] stack = new Throwable().getStackTrace();
 		return stack[2].getClassName() + "." + stack[2].getMethodName();
 	}

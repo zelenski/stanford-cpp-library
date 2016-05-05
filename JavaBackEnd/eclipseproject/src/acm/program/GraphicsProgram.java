@@ -1,6 +1,7 @@
 /*
  * @version 2016/05/05
  * - added get/setCanvasSize,Width,Height methods for better control over central drawing canvas size
+ * - modified setSize to call setCanvasSize because that's what students actually want
  * @version 2016/04/26
  * - modified return type of getElementAt to avoid need for type cast
  * - made GraphicsProgram implement Iterable<GObject>
@@ -560,6 +561,38 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 	 */
 	public void setCanvasWidth(double width) {
 		setCanvasSize(width, getCanvasHeight());
+	}
+
+	/**
+	 * Sets this program to be exactly the right size so that its graphical canvas will be
+	 * the given size in pixels.
+	 * @param width the desired width of the drawing canvas, in pixels
+	 * @param height the desired height of the drawing canvas, in pixels
+	 */
+	@Override
+	public void setSize(double width, double height) {
+		String caller = getMyCaller();
+		if (caller.startsWith("java.") || caller.startsWith("javax.")) {
+			super.setSize(width, height);
+		} else {
+			setCanvasSize(width, height);
+		}
+	}
+
+	/**
+	 * Sets this program to be exactly the right size so that its graphical canvas will be
+	 * the given size in pixels.
+	 * @param width the desired width of the drawing canvas, in pixels
+	 * @param height the desired height of the drawing canvas, in pixels
+	 */
+	@Override
+	public void setSize(int width, int height) {
+		String caller = getMyCaller();
+		if (caller.startsWith("java.") || caller.startsWith("javax.")) {
+			super.setSize(width, height);
+		} else {
+			setCanvasSize(width, height);
+		}
 	}
 
 	/* Static method: startGraphicsProgram(gobj, args) */

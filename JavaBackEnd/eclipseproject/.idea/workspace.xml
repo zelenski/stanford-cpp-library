@@ -3,8 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="475277d2-4180-4b67-83d1-a973ed166bcb" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/obf/spl.jar" afterPath="$PROJECT_DIR$/obf/spl.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/acm/graphics/GCanvas.java" afterPath="$PROJECT_DIR$/src/acm/graphics/GCanvas.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/acm/program/GraphicsProgram.java" afterPath="$PROJECT_DIR$/src/acm/program/GraphicsProgram.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/acm/program/Program.java" afterPath="$PROJECT_DIR$/src/acm/program/Program.java" />
     </list>
     <ignored path="eclipseproject.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -25,7 +25,28 @@
     <favorites_list name="eclipseproject" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="Program.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/acm/program/Program.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="429">
+              <caret line="2703" column="30" selection-start-line="2703" selection-start-column="30" selection-end-line="2703" selection-end-column="30" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GraphicsProgram.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/acm/program/GraphicsProgram.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="60">
+              <caret line="3" column="86" selection-start-line="3" selection-start-column="86" selection-end-line="3" selection-end-column="86" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
@@ -43,6 +64,7 @@
         <option value="$PROJECT_DIR$/src/acm/graphics/GLabel.java" />
         <option value="$PROJECT_DIR$/src/acm/graphics/GObject.java" />
         <option value="$PROJECT_DIR$/src/acm/graphics/GCanvas.java" />
+        <option value="$PROJECT_DIR$/src/acm/program/Program.java" />
         <option value="$PROJECT_DIR$/src/acm/program/GraphicsProgram.java" />
       </list>
     </option>
@@ -189,6 +211,28 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="Program.java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.ClassesTreeStructureProvider$PsiClassOwnerTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="eclipseproject" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="StanfordCPPLib_JavaBackEnd" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="acm" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="program" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="GraphicsProgram.java" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.ClassesTreeStructureProvider$PsiClassOwnerTreeNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -416,7 +460,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="63" y="253" width="1939" height="1328" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -427,7 +471,7 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2496132" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2496132" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2496132" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -513,15 +557,15 @@
     <entry file="file://$PROJECT_DIR$/src/acm/program/Program.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="429">
-          <caret line="1128" column="70" selection-start-line="1128" selection-start-column="70" selection-end-line="1128" selection-end-column="70" />
+          <caret line="2703" column="30" selection-start-line="2703" selection-start-column="30" selection-end-line="2703" selection-end-column="30" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/acm/program/GraphicsProgram.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="429">
-          <caret line="735" column="35" selection-start-line="735" selection-start-column="35" selection-end-line="735" selection-end-column="35" />
+        <state relative-caret-position="60">
+          <caret line="3" column="86" selection-start-line="3" selection-start-column="86" selection-end-line="3" selection-end-column="86" />
           <folding />
         </state>
       </provider>
