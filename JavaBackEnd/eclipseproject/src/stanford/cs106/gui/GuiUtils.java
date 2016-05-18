@@ -25,11 +25,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
-
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
-
 import acm.program.Program;
 import stanford.cs106.io.*;
 
@@ -405,6 +403,33 @@ public class GuiUtils {
 		size.width += w;
 		size.height += h;
 		component.setPreferredSize(size);
+	}
+	
+	public static void printComponentHierarchy(Component comp) {
+		printComponentHierarchy(comp, /* indent */ "");
+	}
+	
+	private static void printComponentHierarchy(Component comp, String indent) {
+		if (comp == null) {
+			return;
+		}
+		
+		Dimension size = comp.getSize();
+		Dimension prefSize = comp.getPreferredSize();
+		System.out.println(indent
+				+ comp.getClass().getName()
+				+ "@" + comp.hashCode()
+				+ ", size=" + size.width + "x" + size.height
+				+ ", psize=" + prefSize.width + "x" + prefSize.height
+				+ ", vis?" + comp.isVisible()
+				+ ", show?" + comp.isShowing()
+		);
+		if (comp instanceof Container) {
+			Container cont = (Container) comp;
+			for (int i = 0; i < cont.getComponentCount(); i++) {
+				printComponentHierarchy(cont.getComponent(i), indent + "  ");
+			}
+		}
 	}
 	
 	public static void rememberWindowLocation(final Frame window) {

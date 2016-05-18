@@ -134,6 +134,8 @@ public abstract class Program extends JApplet
 	private static final int DEFAULT_HEIGHT = 492;
 	private static final int PRINT_MARGIN = 36;
 
+	protected static final String CONFIG_FILE_NAME = "spl-jar-settings.txt";
+
 /* Private fields */
 	private ArrayList<Object> finalizers;
 	private HashMap<String, String> parameterTable;
@@ -845,7 +847,7 @@ public abstract class Program extends JApplet
 	public IODialog getDialog() {
 		return myDialog;
 	}
-	
+
 	/**
 	 * Returns the Java Swing window frame that encloses this program.
 	 * Will be null until start() has been called on the program.
@@ -854,7 +856,32 @@ public abstract class Program extends JApplet
 	public JFrame getJFrame() {
 		return programFrame;
 	}
-	
+
+	/**
+	 * Sets the Java Swing window frame that encloses this program.
+	 * @param jframe
+	 */
+	public void setJFrame(JFrame jframe) {
+		programFrame = jframe;
+	}
+
+	/**
+	 * Returns the Java Swing window that encloses this program.
+	 * @return the window frame
+	 */
+	public Window getWindow() {
+		JFrame frame = getJFrame();
+		if (frame != null) {
+			return frame;
+		} else {
+			Component comp = this;
+			while (comp != null && !(comp instanceof Window)) {
+				comp = comp.getParent();
+			}
+			return (Window) comp;
+		}
+	}
+
 	/**
 	 * Sets whether the program will exit when its window is closed (default true).
 	 */
@@ -1081,6 +1108,10 @@ public abstract class Program extends JApplet
 	protected void checkCompilerFlags() {
 		// empty; override me
 	}
+	
+	protected void checkStartupSettings() {
+		// empty; override me
+	}
 
 	/** Required methods of ComponentListener interface. */
 	public void componentHidden(ComponentEvent e) {
@@ -1144,6 +1175,9 @@ public abstract class Program extends JApplet
 			myMenuBar.install(programFrame);
 		}
 		validate();
+		if (!isAppletMode()) {
+			loadConfiguration();
+		}
 		startRun();
 	}
 
@@ -1157,6 +1191,7 @@ public abstract class Program extends JApplet
  * @usage program.exit();
  */
 	public void exit() {
+		saveConfiguration();
 		if (exitOnClose) {
 			int nFinalizers = finalizers.size();
 			for (int i = 0; i < nFinalizers; i++) {
@@ -1170,7 +1205,9 @@ public abstract class Program extends JApplet
 				}
 			}
 			JTFTools.terminateAppletThreads(this);
-			if (!appletMode) System.exit(0);
+			if (!appletMode) {
+				System.exit(0);
+			}
 		}
 	}
 
@@ -1824,6 +1861,8 @@ public abstract class Program extends JApplet
 			} catch (Throwable t) {
 				if (t instanceof Error) {
 					throw (Error) t;
+				} else if (t instanceof InterruptedException) {
+					// empty; return
 				} else if (t instanceof RuntimeException) {
 					throw (RuntimeException) t;
 				} else {
@@ -2368,6 +2407,50 @@ public abstract class Program extends JApplet
 		frameSize.height += size.height - actualSize.height;
 		frame.setSize(frameSize.width, frameSize.height);
 		frame.validate();
+	}
+	
+	protected final void saveConfiguration() {
+		try {
+			String tmpDir = System.getProperty("java.io.tmpdir");
+			if (tmpDir != null) {
+				File configFile = new File(tmpDir, CONFIG_FILE_NAME);
+				Properties props = new Properties();
+				saveConfiguration(props);
+				FileOutputStream out = new FileOutputStream(configFile);
+				props.store(out, "spl.jar configuration file");
+				out.close();
+			}
+		} catch (Exception ex) {
+			// empty
+		}
+	}
+	
+	protected void saveConfiguration(Properties props) {
+		// empty; override me
+	}
+	
+	protected final void loadConfiguration() {
+		try {
+			String tmpDir = System.getProperty("java.io.tmpdir");
+			if (tmpDir != null) {
+				File configFile = new File(tmpDir, CONFIG_FILE_NAME);
+				if (!configFile.exists()) {
+					return;
+				}
+				Properties props = new Properties();
+				FileInputStream input = new FileInputStream(configFile);
+				props.load(input);
+				input.close();
+				
+				loadConfiguration(props);
+			}
+		} catch (Exception ex) {
+			// empty
+		}
+	}
+
+	protected void loadConfiguration(Properties props) {
+		// empty; override me
 	}
 }
 

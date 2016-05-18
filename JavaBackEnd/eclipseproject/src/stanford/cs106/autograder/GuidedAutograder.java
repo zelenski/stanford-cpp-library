@@ -70,11 +70,8 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 	protected static boolean SHOW_INIT_RUN_BOXES = true;
 
 	// these constants come from acm.program.Program class
-//	private static final int DEFAULT_X = 16;
-//	private static final int DEFAULT_Y = 40;
 	private static final int DEFAULT_WIDTH = 754;
 	private static final int DEFAULT_HEIGHT = 492;
-	// private static final int PRINT_MARGIN = 36;
 	
 	// dimensions of the message log area; can be changed by subclass
 	protected static int MESSAGE_LOG_ROWS = 5;
@@ -601,22 +598,12 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 		if (runnerThread == null) {
 			return;
 		}
-
-		if (runnerThread.started) {
-			runnerThread.killMe();
-			try {
-				runnerThread.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		} else {
-			if (studentProgram != null) {
-				studentProgram.stop();
-			}
-			runnerThread.nonRunKill();
-			studentProgram = null;
+		if (runnerThread.started && runnerThread.isAlive()) {
+			runnerThread.interrupt();
 		}
-		runnerThread.started = false;
+		runnerThread.killMe();
+		studentProgram = null;
+		runnerThread = null;
 	}
 
 	// (re)starts student program in its own JFrame and Thread,
@@ -688,6 +675,7 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 
 	protected void studentProgramThreadLaunch(Class<?> clazz) {
 		studentProgramThreadKill();
+		
 		printlnLog("launching " + clazz.getName());
 		runnerThread = new StudentProgramRunnerThread(clazz, windowWidth, windowHeight, initRunBox.isSelected());
 		studentProgram = runnerThread.getProgram();
@@ -899,6 +887,7 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 		text += msg;
 		messageLog.setText(text);
 		messageLog.setCaretPosition(text.length());
+		System.out.println(msg);
 	}
 
 	// tells student's pause() method to scale its actual pause time by
@@ -1191,14 +1180,9 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 	}
 
 	protected class StudentProgramRunnerThread extends Thread {
-		private Class<?> clazz;
 		private boolean callInitAndRun;
 		public boolean started = false;
-		private boolean kill = false;
-		private int width;
-		private int height;
 		private Program program;
-		private JFrame oFrame;
 		private Class<?> programClass;
 
 		public StudentProgramRunnerThread(Class<?> clazz, boolean callInitAndRun) {
@@ -1206,9 +1190,8 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 		}
 		
 		public StudentProgramRunnerThread(Class<?> clazz, int width, int height, boolean callInitAndRun) {
-			this.clazz = clazz;
-			this.width = width;
-			this.height = height;
+			this.setName(getClass().getName() + "-" + clazz.getName() + "@" + hashCode());
+			
 			this.callInitAndRun = callInitAndRun;
 			try {
 				this.programClass = clazz;
@@ -1232,7 +1215,7 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 		}
 		
 		public JFrame getFrame() {
-			return oFrame;
+			return program.getJFrame();
 		}
 
 		public void init() {
@@ -1240,59 +1223,68 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 				if (program instanceof Karel) {
 					// TODO?
 				} else {
-					oFrame = new JFrame(clazz.getName());
-					GuiUtils.rememberWindowLocation(oFrame);
-					oFrame.setVisible(true);
-					oFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-					Insets insets = oFrame.getInsets();
-					oFrame.setSize(width + insets.left + insets.right,
-							height + insets.top + insets.bottom);
-					oFrame.add(program, BorderLayout.CENTER);
+					// GuiUtils.rememberWindowLocation(oFrame);
+					// oFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 					// oFrame.setLocation(DEFAULT_X, DEFAULT_Y);
-					program.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+					// program.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 				}
 			}
 		}
 
-		public void nonRunKill() {
-			if (oFrame != null) {
-				oFrame.setVisible(false);
-				oFrame.dispose();
-			}
-		}
-
 		public void killMe() {
-			Program program = getProgram();
 			if (program != null) {
 				program.stop();
+				if (program.getWindow() != null) {
+					program.getWindow().setVisible(false);
+					program.getWindow().dispose();
+					program.setVisible(false);
+				}
 			}
-			kill = true;
 		}
 
 		public void run() {
-			try {
-				if (program == null && programClass != null) {
+			if (program == null && programClass != null) {
+				try {
 					String[] args = new String[0];
 					Method main = programClass.getMethod("main", args.getClass());
 					if (main != null) {
 						main.invoke(null, (Object) args);
 					}
+				} catch (Error e) {
+					printlnLog(e.toString());
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					e.printStackTrace();
+				} catch (SecurityException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else {
+				if (program instanceof Karel) {
+					started = true;
+					program.start();
 				} else {
-					if (program instanceof Karel) {
-						program.start();
-					} else {
-						if (callInitAndRun) {
-							program.init();
-						}
-						program.setExitOnClose(false);
-						oFrame.setVisible(true);
-						program.setVisible(true);
-						oFrame.validate();
-						oFrame.repaint();
-						if (callInitAndRun) {
-							try {
-								program.run();
-							} catch (Throwable t) {
+					if (callInitAndRun) {
+						program.init();
+					}
+					program.setExitOnClose(false);
+					// program.setVisible(true);
+					if (callInitAndRun) {
+						try {
+							started = true;
+							program.start();
+						} catch (Throwable t) {
+							if (t instanceof InterruptedException) {
+								// empty
+							} else {
 								if (t instanceof RuntimeException) {
 									throw (RuntimeException) t;
 								}
@@ -1301,33 +1293,6 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 						}
 					}
 				}
-			} catch (Error e) {
-				printlnLog(e.toString());
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			while (!kill) {
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					// empty
-				}
-			}
-			if (oFrame != null) {
-				oFrame.setVisible(false);
-				oFrame.dispose();
 			}
 		}
 	}

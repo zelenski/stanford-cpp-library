@@ -548,7 +548,10 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 			Dimension dim = new Dimension((int) width, (int) height);
 			gc.setSize(dim);
 			gc.setPreferredSize(dim);
-			getJFrame().pack();
+			Window window = getWindow();
+			if (window != null) {
+				window.pack();
+			}
 		}
 	}
 
@@ -575,6 +578,7 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 		if (caller.startsWith("java.") || caller.startsWith("javax.")) {
 			super.setSize(width, height);
 		} else {
+			super.setSize(width, height);
 			setCanvasSize(width, height);
 		}
 	}
@@ -591,8 +595,18 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 		if (caller.startsWith("java.") || caller.startsWith("javax.")) {
 			super.setSize(width, height);
 		} else {
+			super.setSize(width, height);
 			setCanvasSize(width, height);
 		}
+	}
+
+	/**
+	 * Sets this program's window to be the given size in pixels.
+	 * @param width the desired width of the window, in pixels
+	 * @param height the desired height of the window, in pixels
+	 */
+	public void setWindowSize(double width, double height) {
+		super.setSize(width, height);
 	}
 
 	/* Static method: startGraphicsProgram(gobj, args) */

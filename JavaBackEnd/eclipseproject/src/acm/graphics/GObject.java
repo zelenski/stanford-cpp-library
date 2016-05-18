@@ -499,9 +499,7 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 	 * @return true if the objects intersect, else false
 	 */
 	public boolean intersects(GObject obj) {
-		return new java.awt.geom.Rectangle2D.Double(getX(), getY(), getWidth(),
-				getHeight()).intersects(obj.getX(), obj.getY(), obj.getWidth(),
-				obj.getHeight());
+		return getBounds().intersects(obj.getBounds());
 	}
 
 	/**
@@ -702,7 +700,7 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 		} else if (transientParent != null) {
 			try {
 				Class<?> parentClass = transientParent.getClass();
-				Class[] types = {Class.forName("acm.graphics.GObject")};
+				Class<?>[] types = {Class.forName("acm.graphics.GObject")};
 				Object[] args = {this};
 				Method fn = parentClass.getMethod("sendBackward", types);
 				if (fn != null) {
@@ -731,7 +729,7 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 		} else if (transientParent != null) {
 			try {
 				Class<?> parentClass = transientParent.getClass();
-				Class[] types = {Class.forName("acm.graphics.GObject")};
+				Class<?>[] types = {Class.forName("acm.graphics.GObject")};
 				Object[] args = {this};
 				Method fn = parentClass.getMethod("sendForward", types);
 				if (fn != null) {
@@ -761,7 +759,7 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 		} else if (transientParent != null) {
 			try {
 				Class<?> parentClass = transientParent.getClass();
-				Class[] types = {Class.forName("acm.graphics.GObject")};
+				Class<?>[] types = {Class.forName("acm.graphics.GObject")};
 				Object[] args = {this};
 				Method fn = parentClass.getMethod("sendToBack", types);
 				if (fn != null) {
@@ -791,7 +789,7 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 		} else if (transientParent != null) {
 			try {
 				Class<?> parentClass = transientParent.getClass();
-				Class[] types = {Class.forName("acm.graphics.GObject")};
+				Class<?>[] types = {Class.forName("acm.graphics.GObject")};
 				Object[] args = {this};
 				Method fn = parentClass.getMethod("sendToFront", types);
 				if (fn != null) {
@@ -943,7 +941,7 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 		try {
 			Class<?> programClass = Class.forName("acm.program.GraphicsProgram");
 			Class<?> gObjectClass = Class.forName("acm.graphics.GObject");
-			Class[] types = {gObjectClass, args.getClass()};
+			Class<?>[] types = {gObjectClass, args.getClass()};
 			Object[] params = {this, args};
 			Method startGraphicsProgram = programClass.getMethod("startGraphicsProgram", types);
 			startGraphicsProgram.invoke(null, params);

@@ -288,8 +288,8 @@ public class Note {
 
 	/**
 	 * Sets this Note's repeat flag to be the given value.
-	 * @param pitch true to indicate that this note is the start/end of a
-	 *              repeated section, or false if not.
+	 * @param repeat true to indicate that this note is the start/end of a
+	 *               repeated section, or false if not.
 	 */
 	public void setRepeat(boolean repeat) {
 		this.repeat = repeat;

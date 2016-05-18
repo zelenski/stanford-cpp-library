@@ -1,4 +1,7 @@
 /*
+ * @version 2016/05/17
+ * - moved some menuAction code to AbstractConsoleProgram superclass
+ * - added getFont() method to fix null-font-before-set issue
  * @version 2016/04/18
  * - modified readBoolean, readLine to work with override input feature (e.g. HW2 autograder)
  * @version 2015/05/12
@@ -29,20 +32,10 @@
 package acm.program;
 
 import acm.io.*;
-import acm.util.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
 import java.util.List;
-
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-
-import stanford.cs106.diff.DiffGui;
-import stanford.cs106.gui.GuiUtils;
-import stanford.cs106.io.IOUtils;
-import stanford.cs106.util.*;
 
 /* Class: ConsoleProgram() */
 /**
@@ -61,100 +54,6 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 	public ConsoleProgram() {
 		add(getConsole(), CENTER);
 		validate();
-	}
-	
-	// looks for some settings that can be supplied in the project info.
-	protected void checkCompilerFlags() {
-		super.checkCompilerFlags();
-		if (SystemProperties.hasSystemProperty(ProgramStartupFlags.SPL_CONSOLE_FONTSIZE)) {
-			int size = SystemProperties.getSystemPropertyInt(ProgramStartupFlags.SPL_CONSOLE_FONTSIZE);
-			setFont("Monospaced-Bold-" + size);
-		}
-		
-		if (SystemProperties.hasSystemProperty(ProgramStartupFlags.SPL_CONSOLE_WIDTH)
-				&& SystemProperties.hasSystemProperty(ProgramStartupFlags.SPL_CONSOLE_HEIGHT)) {
-			int w = SystemProperties.getSystemPropertyInt(ProgramStartupFlags.SPL_CONSOLE_WIDTH);
-			int h = SystemProperties.getSystemPropertyInt(ProgramStartupFlags.SPL_CONSOLE_HEIGHT);
-			setSize(w, h);
-		}
-		
-		if (SystemProperties.hasSystemProperty(ProgramStartupFlags.SPL_CONSOLE_X)
-				&& SystemProperties.hasSystemProperty(ProgramStartupFlags.SPL_CONSOLE_Y)) {
-			int x = SystemProperties.getSystemPropertyInt(ProgramStartupFlags.SPL_CONSOLE_X);
-			int y = SystemProperties.getSystemPropertyInt(ProgramStartupFlags.SPL_CONSOLE_Y);
-			setLocation(x, y);
-		}
-		
-		if (SystemProperties.hasSystemProperty(ProgramStartupFlags.SPL_CONSOLE_LOCATION_SAVED)) {
-			if (SystemProperties.getSystemPropertyBoolean(ProgramStartupFlags.SPL_CONSOLE_LOCATION_SAVED)) {
-				GuiUtils.rememberWindowLocation(getJFrame());
-			}
-		}
-	}
-	
-	/**
-	 * Returns all text that has been displayed on this console so far.
-	 */
-	public String getAllOutput() {
-		return this.getConsole().getConsoleModel().getText();
-	}
-	
-	@Override
-	public boolean menuAction(ActionEvent event) {
-		String cmd = event.getActionCommand().intern();
-		if (cmd == ProgramMenuBar.MENU_ITEM_TEXT_COMPARE_OUTPUT) {
-			compareOutput();
-			return true;
-		} else {
-			return super.menuAction(event);
-		}
-	}
-	
-	/**
-	 * Pops up a file chooser to compare output to some expected output.
-	 */
-	protected void compareOutput() {
-		try {
-			// pick working dir for loading expected output files
-			File dir = new File(System.getProperty("user.dir"));
-			File[] dirsToTry = {
-					new File(dir, "output"),
-					new File(dir, "expected-output"),
-					new File(dir, "res/output"),
-					new File(dir, "res/expected-output"),
-			};
-			for (File dirToTry : dirsToTry) {
-				if (dirToTry.exists()) {
-					dir = dirToTry;
-					break;
-				}
-			}
-			
-			// let the user browse for a file for expected output
-			JFileChooser chooser = new JFileChooser(dir);
-			int result = chooser.showOpenDialog(getJFrame());
-			if (result == JFileChooser.CANCEL_OPTION) {
-				return;
-			}
-			File selectedFile = chooser.getSelectedFile();
-			if (selectedFile == null || !selectedFile.isFile()) {
-				return;
-			}
-			
-			String expectedOutput = IOUtils.readEntireFile(selectedFile);
-			String studentOutput = getAllOutput();
-			DiffGui diff = new DiffGui(
-					"expected output", expectedOutput,
-					"your output", studentOutput,
-					/* checkboxes */ false);
-			diff.show();
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(
-					getJFrame(),
-					"Unable to compare output.",
-					"Error",
-					JOptionPane.WARNING_MESSAGE);
-		}
 	}
 	
 /* Method: run() */
@@ -188,42 +87,6 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
  */
 	public void init() {
 		/* Empty */
-	}
-
-/* Method: setFont(str) */
-/**
- * Sets the font used for the console as specified by
- * the string <code>str</code>, which is interpreted in the style of
- * <code>Font.decode</code>.  The usual format of the font string is
- *
-* <p>   <i>family</i><code>-</code><i>style</i><code>-</code><i>size</i><p>
- *
- * where both <i>style</i> and <i>size</i> are optional.  If any of these parts
- * are specified as an asterisk, the existing value is retained.
- *
- * @usage program.setFont(str);
- * @param str A <code>String</code> specifying the new font
- */
-	public void setFont(String str) {
-		IOConsole console = getConsole();
-		if (console != null) {
-			console.setFont(str);
-			super.setFont(console.getFont());
-		}
-	}
-
-/* Override method: setFont(font) */
-/**
- * Sets the font for the console.
- *
- * @usage program.setFont(font);
- * @param font The new font
- */
-	public void setFont(Font font) {
-		IOConsole console = getConsole();
-		font = JTFTools.getStandardFont(font);
-		if (console != null) console.setFont(font);
-		super.setFont(font);
 	}
 
 /* Factory method: createConsole() */

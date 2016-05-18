@@ -56,60 +56,67 @@ import stanford.karel.*;
 
 /* Class: ProgramMenuBar */
 /**
- * This class standardizes the menu bars used in the ACM program package.
- * The fundamental principles behind the design of this package are:
+ * This class standardizes the menu bars used in the ACM program package. The
+ * fundamental principles behind the design of this package are:
  *
- * <p><ol>
+ * <p>
+ * <ol>
  * <li>The most common menu operations (including, for example, the standard
- *     editing operations <b>cut</b>, <b>copy</b>, and <b>paste</b>) should
- *     always be available and require no action on the part of the programmer.
+ * editing operations <b>cut</b>, <b>copy</b>, and <b>paste</b>) should always
+ * be available and require no action on the part of the programmer.
  * <p>
  * <li>It should be easy to extend the menu bar without interfering with the
- *     standard operations.
+ * standard operations.
  * <p>
  * <li>Menu bars should work in a familiar way on each of the major platforms.
- *     In particular, Macintosh users expect there to be a single menu bar
- *     at the top of the screen rather than a menu bar in each window.
+ * In particular, Macintosh users expect there to be a single menu bar at the
+ * top of the screen rather than a menu bar in each window.
  * </ol>
  *
- * <p>These goals turn out to be difficult to achieve simultaneously.  In
+ * <p>
+ * These goals turn out to be difficult to achieve simultaneously. In
  * particular, supporting both Macintosh-style and Windows-style menu bars
  * requires creating a parallel <code>MenuBar</code> structure behind the
  * underlying <code>JMenuBar</code>, which accounts for much of the complexity
  * in this implementation.
  *
- * <p><b>Using the <code>ProgramMenuBar</code> class</b>
+ * <p>
+ * <b>Using the <code>ProgramMenuBar</code> class</b>
  *
- * The <code>ProgramMenuBar</code> class supports two distinct disciplines
- * for listening for menu actions:
+ * The <code>ProgramMenuBar</code> class supports two distinct disciplines for
+ * listening for menu actions:
  *
- * <p><ul>
+ * <p>
+ * <ul>
  * <li><b>Focused items</b> correspond to actions that are relevant only to the
  * component with the keyboard focus (such as <b>Cut</b>, <b>Copy</b>, and
- * <b>Paste</b>).  Clients create focused items by calling
+ * <b>Paste</b>). Clients create focused items by calling
  * <a href="#createFocusedItem(String)"><code>createFocusedItem</code></a>.
- * Activating a focused item passes an action event to the listener set by calling
- * <a href="#setFocusedListener(ActionListener)"><code>setFocusedListener</code></a>,
- * which should be called whenever a component interested in responding to menu
- * actions gains the keyboard focus.
+ * Activating a focused item passes an action event to the listener set by
+ * calling <a href="#setFocusedListener(ActionListener)">
+ * <code>setFocusedListener</code></a>, which should be called whenever a
+ * component interested in responding to menu actions gains the keyboard focus.
  * <p>
  * <li><b>Program items</b> correspond to actions that are relevant throughout
- * the lifetime of the program (such as <b>Quit</b> and <b>Print</b>).
- * Clients create program items by calling
- * <a href="#createProgramItem(String)"><code>createProgramItem</code></a>.
- * Activating a program item passes an action event to the <code>menuAction</code>
- * method in the <code>Program</code> object that created the menu bar.
+ * the lifetime of the program (such as <b>Quit</b> and <b>Print</b>). Clients
+ * create program items by calling <a href="#createProgramItem(String)">
+ * <code>createProgramItem</code></a>. Activating a program item passes an
+ * action event to the <code>menuAction</code> method in the
+ * <code>Program</code> object that created the menu bar.
  * </ul>
  */
 public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 
 	// constants for menu bar item text
 	public static final String MENU_ITEM_TEXT_ABOUT = "About...";
+	public static final String MENU_ITEM_TEXT_BACKGROUND_COLOR = "Background Color...";
 	public static final String MENU_ITEM_TEXT_CHECK_FOR_UPDATES = "Check for Updates";
 	public static final String MENU_ITEM_TEXT_CLEAR_CONSOLE = "Clear Console";
 	public static final String MENU_ITEM_TEXT_COPY = "Copy";
 	public static final String MENU_ITEM_TEXT_CUT = "Cut";
 	public static final String MENU_ITEM_TEXT_EXPORT_APPLET = "Export Applet";
+	public static final String MENU_ITEM_TEXT_FONT = "Font...";
+	public static final String MENU_ITEM_TEXT_FOREGROUND_COLOR = "Text Color...";
 	public static final String MENU_ITEM_TEXT_PASTE = "Paste";
 	public static final String MENU_ITEM_TEXT_PRINT = "Print";
 	public static final String MENU_ITEM_TEXT_PRINT_CONSOLE = "Print Console";
@@ -119,7 +126,7 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 	public static final String MENU_ITEM_TEXT_SCRIPT = "Script";
 	public static final String MENU_ITEM_TEXT_SELECT_ALL = "Select All";
 	public static final String MENU_ITEM_TEXT_SUBMIT_PROJECT = "Submit Project";
-	
+
 	// constants for menu bar item text (specific to Karel programs)
 	public static final String MENU_ITEM_TEXT_INTERACTIVE = "Interactive Mode";
 	public static final String MENU_ITEM_TEXT_MSKAREL = "Ms. Karel";
@@ -170,26 +177,27 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 	protected KeyStroke PGDN;
 	protected KeyStroke PGUP;
 	protected KeyStroke UP_ARROW;
-	
-/* Private fields (instance variables) */
+
+	/* Private fields (instance variables) */
 	private Program program;
 	private ActionListener menuBarListener;
 	private ActionListener focusedListener;
-	private HashMap<KeyStroke,JMenuItem> accelerators;
+	private HashMap<KeyStroke, JMenuItem> accelerators;
 	private HashSet<JMenuItem> focusedItems;
 
-/* Constructor: ProgramMenuBar(program) */
-/**
- * Creates an empty <code>ProgramMenuBar</code>.
- *
- * @usage ProgramMenuBar mbar = new ProgramMenuBar(owner);
- * @param owner The <code>Program</code> that owns this menu bar.
- */
+	/* Constructor: ProgramMenuBar(program) */
+	/**
+	 * Creates an empty <code>ProgramMenuBar</code>.
+	 *
+	 * @usage ProgramMenuBar mbar = new ProgramMenuBar(owner);
+	 * @param owner
+	 *            The <code>Program</code> that owns this menu bar.
+	 */
 	public ProgramMenuBar(Program owner) {
 		program = owner;
 		menuBarListener = new ProgramMenuBarListener(this);
 		focusedListener = null;
-		accelerators = new HashMap<KeyStroke,JMenuItem>();
+		accelerators = new HashMap<KeyStroke, JMenuItem>();
 		focusedItems = new HashSet<JMenuItem>();
 
 		ALT_F4 = KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK);
@@ -226,34 +234,35 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		PGDN = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0);
 		PGUP = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0);
 		UP_ARROW = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0);
-		
+
 		addMenus();
 	}
 
-/* Method: getProgram() */
-/**
- * Returns the <code>Program</code> object associated with this menu.
- *
- * @usage Program program = mbar.getProgram();
- * @return The program associated with this menu bar
- */
+	/* Method: getProgram() */
+	/**
+	 * Returns the <code>Program</code> object associated with this menu.
+	 *
+	 * @usage Program program = mbar.getProgram();
+	 * @return The program associated with this menu bar
+	 */
 	public Program getProgram() {
 		return program;
 	}
 
-/* Method: createStandardItem(action) */
-/**
- * Creates one of the standard menu items implemented by the
- * <code>ProgramMenuBar</code> class.   The menu item is identified
- * by its action command.
- *
- * @usage JMenuItem item = mbar.createStandardItem(action);
- * @param action The action command identifying the menu item to be created
- */
+	/* Method: createStandardItem(action) */
+	/**
+	 * Creates one of the standard menu items implemented by the
+	 * <code>ProgramMenuBar</code> class. The menu item is identified by its
+	 * action command.
+	 *
+	 * @usage JMenuItem item = mbar.createStandardItem(action);
+	 * @param action
+	 *            The action command identifying the menu item to be created
+	 */
 	public JMenuItem createStandardItem(String action, int mnemonic) {
 		return createStandardItem(action, mnemonic, /* keystroke */ null);
 	}
-	
+
 	public JMenuItem createStandardItem(String action, int mnemonic, KeyStroke keystroke) {
 		boolean mac = Platform.isMac();
 		action = action.intern();
@@ -268,14 +277,17 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		} else if (action.equals(MENU_ITEM_TEXT_CUT)) {
 			item = createFocusedItem(action, 'X', mac ? COMMAND_X : CTRL_X);
 			item.setMnemonic('t');
-			if (!mac) item.setName("Cut (x)");
+			if (!mac)
+				item.setName("Cut (x)");
 		} else if (action.equals(MENU_ITEM_TEXT_COPY)) {
 			item = createFocusedItem(action, 'C', mac ? COMMAND_C : CTRL_C);
-			if (!mac) item.setName("Copy (c)");
+			if (!mac)
+				item.setName("Copy (c)");
 		} else if (action.equals(MENU_ITEM_TEXT_PASTE)) {
 			item = createFocusedItem(action, 'V', mac ? COMMAND_V : CTRL_V);
 			item.setMnemonic('P');
-			if (!mac) item.setName("Paste (v)");
+			if (!mac)
+				item.setName("Paste (v)");
 		} else if (action.equals(MENU_ITEM_TEXT_COMPARE_OUTPUT)) {
 			item = createProgramItem(action, 'C');
 		} else if (action.equals(MENU_ITEM_TEXT_CLEAR_CONSOLE)) {
@@ -309,15 +321,16 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		return item;
 	}
 
-/* Method: createProgramItem(action) */
-/**
- * Creates a program menu item with the specified action command.  The
- * initial item has the same label as the action command, but clients
- * can change this name by calling <code>setName</code> on the item.
- *
- * @usage JMenuItem item = createProgramItem(action);
- * @param action The action command generated by this menu item
- */
+	/* Method: createProgramItem(action) */
+	/**
+	 * Creates a program menu item with the specified action command. The
+	 * initial item has the same label as the action command, but clients can
+	 * change this name by calling <code>setName</code> on the item.
+	 *
+	 * @usage JMenuItem item = createProgramItem(action);
+	 * @param action
+	 *            The action command generated by this menu item
+	 */
 	public JMenuItem createProgramItem(String action) {
 		JMenuItem item = new JMenuItem(action);
 		item.setActionCommand(action);
@@ -325,21 +338,24 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		return item;
 	}
 
-/* Method: createProgramItem(action, key) */
-/**
- * Creates a program menu item with the specified action command and accelerator key.
- *
- * @usage JMenuItem item = createProgramItem(action, key);
- * @param action The action command generated by this menu item
- * @param key The integer value of the keystroke accelerator
- */
+	/* Method: createProgramItem(action, key) */
+	/**
+	 * Creates a program menu item with the specified action command and
+	 * accelerator key.
+	 *
+	 * @usage JMenuItem item = createProgramItem(action, key);
+	 * @param action
+	 *            The action command generated by this menu item
+	 * @param key
+	 *            The integer value of the keystroke accelerator
+	 */
 	public JMenuItem createProgramItem(String action, int key, KeyStroke keystroke) {
 		JMenuItem item = createProgramItem(action, key);
 		item.setAccelerator(keystroke);
 		item.setMnemonic(key);
 		return item;
 	}
-	
+
 	public JMenuItem createProgramItem(String action, int key) {
 		JMenuItem item = createProgramItem(action);
 		setAccelerator(item, key);
@@ -347,35 +363,39 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		return item;
 	}
 
-/* Method: createFocusedItem(action) */
-/**
- * Creates a focused menu item with the specified action command.
- *
- * @usage JMenuItem item = createFocusedItem(action);
- * @param action The action command generated by this menu item
- */
+	/* Method: createFocusedItem(action) */
+	/**
+	 * Creates a focused menu item with the specified action command.
+	 *
+	 * @usage JMenuItem item = createFocusedItem(action);
+	 * @param action
+	 *            The action command generated by this menu item
+	 */
 	public JMenuItem createFocusedItem(String action) {
 		JMenuItem item = createProgramItem(action);
 		focusedItems.add(item);
 		return item;
 	}
 
-/* Method: createFocusedItem(action, key) */
-/**
- * Creates a focused menu item with the specified action command and accelerator key.
- *
- * @usage JMenuItem item = createFocusedItem(action, key);
- * @param action The action command generated by this menu item
- * @param key The integer value of the keystroke accelerator
- */
+	/* Method: createFocusedItem(action, key) */
+	/**
+	 * Creates a focused menu item with the specified action command and
+	 * accelerator key.
+	 *
+	 * @usage JMenuItem item = createFocusedItem(action, key);
+	 * @param action
+	 *            The action command generated by this menu item
+	 * @param key
+	 *            The integer value of the keystroke accelerator
+	 */
 	public JMenuItem createFocusedItem(String action, int key) {
 		return createFocusedItem(action, key, /* keystroke */ null, /* shouldSetAccelerator */ false);
 	}
-	
+
 	public JMenuItem createFocusedItem(String action, int key, KeyStroke keystroke) {
 		return createFocusedItem(action, key, keystroke, /* shouldSetAccelerator */ true);
 	}
-	
+
 	public JMenuItem createFocusedItem(String action, int key, KeyStroke keystroke, boolean shouldSetAccelerator) {
 		JMenuItem item = createFocusedItem(action);
 		if (keystroke != null) {
@@ -387,7 +407,7 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		item.setMnemonic(key);
 		return item;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public <T extends JMenuItem> T getMenuItem(String text) {
 		for (int i = 0; i < getMenuCount(); i++) {
@@ -406,27 +426,30 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		return null;
 	}
 
-/* Method: isFocusedItem(item) */
-/**
- * Returns <code>true</code> if the item is a focused item.
- *
- * @usage if (mbar.isFocusedItem(item)) . . .
- * @param item A menu item installed in the menu bar
- * @return <code>true</code> if the item is a program item
- */
+	/* Method: isFocusedItem(item) */
+	/**
+	 * Returns <code>true</code> if the item is a focused item.
+	 *
+	 * @usage if (mbar.isFocusedItem(item)) . . .
+	 * @param item
+	 *            A menu item installed in the menu bar
+	 * @return <code>true</code> if the item is a program item
+	 */
 	public boolean isFocusedItem(JMenuItem item) {
 		return focusedItems.contains(item);
 	}
 
-/* Method: setAccelerator(item, key) */
-/**
- * Sets the accelerator for the item as appropriate to the operating system
- * conventions.
- *
- * @usage mbar.setAccelerator(item, key);
- * @param item The menu item triggered by this accelerator
- * @param key The integer value of the keystroke accelerator
- */
+	/* Method: setAccelerator(item, key) */
+	/**
+	 * Sets the accelerator for the item as appropriate to the operating system
+	 * conventions.
+	 *
+	 * @usage mbar.setAccelerator(item, key);
+	 * @param item
+	 *            The menu item triggered by this accelerator
+	 * @param key
+	 *            The integer value of the keystroke accelerator
+	 */
 	public void setAccelerator(JMenuItem item, int key) {
 		int mask = (Platform.isMac()) ? KeyEvent.META_MASK : KeyEvent.CTRL_MASK;
 		if (key > 0x10000) {
@@ -442,14 +465,18 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		}
 	}
 
-/* Method: setEnabled(action, flag) */
-/**
- * Enables or disables any menu items that generate the specified action command.
- *
- * @usage mbar.setEnabled(action, flag);
- * @param action The action command triggered by the menu item
- * @param flag <code>true</code> to enable the item, <code>false</code> to disable it
- */
+	/* Method: setEnabled(action, flag) */
+	/**
+	 * Enables or disables any menu items that generate the specified action
+	 * command.
+	 *
+	 * @usage mbar.setEnabled(action, flag);
+	 * @param action
+	 *            The action command triggered by the menu item
+	 * @param flag
+	 *            <code>true</code> to enable the item, <code>false</code> to
+	 *            disable it
+	 */
 	public void setEnabled(String action, boolean flag) {
 		int nMenus = getMenuCount();
 		for (int i = 0; i < nMenus; i++) {
@@ -457,14 +484,15 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		}
 	}
 
-/* Method: install(comp) */
-/**
- * Installs the menu bar in the <code>JFrame</code> or <code>Program</code>
- * object enclosing the component <code>comp</code>.
- *
- * @usage mbar.install(comp);
- * @param comp A descendant of the frame in which the menu is to be installed
- */
+	/* Method: install(comp) */
+	/**
+	 * Installs the menu bar in the <code>JFrame</code> or <code>Program</code>
+	 * object enclosing the component <code>comp</code>.
+	 *
+	 * @usage mbar.install(comp);
+	 * @param comp
+	 *            A descendant of the frame in which the menu is to be installed
+	 */
 	public void install(Component comp) {
 		Component contentPane = program.getContentPane();
 		while (comp != null && !(comp instanceof JFrame)) {
@@ -474,18 +502,19 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 				return;
 			}
 		}
-		if (comp == null) return;
+		if (comp == null)
+			return;
 		JFrame frame = (JFrame) comp;
 		frame.setJMenuBar(this);
 		frame.validate();
 	}
 
-/* Method: fireActionListeners(e) */
-/**
- * Fires the action listeners responsible for handling the specified event.
- * The process of choosing the appropriate handlers takes into account
- * whether the action command is designated as program or focused.
- */
+	/* Method: fireActionListeners(e) */
+	/**
+	 * Fires the action listeners responsible for handling the specified event.
+	 * The process of choosing the appropriate handlers takes into account
+	 * whether the action command is designated as program or focused.
+	 */
 	public void fireActionListeners(ActionEvent e) {
 		if (focusedListener != null && focusedItems.contains(e.getSource())) {
 			focusedListener.actionPerformed(e);
@@ -494,11 +523,12 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		}
 	}
 
-/* Method: fireAccelerator(e) */
-/**
- * Triggers the accelerator associated with the keystroke implied by the key event.
- * This method returns <code>true</code> if such an accelerator exists.
- */
+	/* Method: fireAccelerator(e) */
+	/**
+	 * Triggers the accelerator associated with the keystroke implied by the key
+	 * event. This method returns <code>true</code> if such an accelerator
+	 * exists.
+	 */
 	public boolean fireAccelerator(KeyEvent e) {
 		KeyStroke stroke = KeyStroke.getKeyStrokeForEvent(e);
 		JMenuItem item = accelerators.get(stroke);
@@ -506,7 +536,7 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 			item.doClick(0);
 			return true;
 		}
-		
+
 		//////
 		if (getProgram() instanceof AbstractConsoleProgram) {
 			AbstractConsoleProgram consoleProgram = (AbstractConsoleProgram) getProgram();
@@ -519,8 +549,8 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 			} else if (stroke.equals(PGUP)) {
 				consoleProgram.scrollPageUp();
 				return true;
-			} else if (stroke.equals(CTRL_PLUS) || stroke.equals(COMMAND_PLUS)
-					|| stroke.equals(CTRL_EQUALS) || stroke.equals(COMMAND_EQUALS)) {
+			} else if (stroke.equals(CTRL_PLUS) || stroke.equals(COMMAND_PLUS) || stroke.equals(CTRL_EQUALS)
+					|| stroke.equals(COMMAND_EQUALS)) {
 				consoleProgram.fontEnlarge();
 				return true;
 			} else if (stroke.equals(CTRL_MINUS) || stroke.equals(COMMAND_MINUS)) {
@@ -543,31 +573,32 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
-/* Method: setFocusedListener(listener) */
-/**
- * Registers a listener that responds while the caller holds the keyboard
- * focus.  The caller should register its listener when it acquires the
- * keyboard focus and set it to <code>null</code> when it loses it.
- *
- * @usage setFocusedListener(listener);
- * @param listener An <code>ActionListener</code> that responds to focused items
- */
+
+	/* Method: setFocusedListener(listener) */
+	/**
+	 * Registers a listener that responds while the caller holds the keyboard
+	 * focus. The caller should register its listener when it acquires the
+	 * keyboard focus and set it to <code>null</code> when it loses it.
+	 *
+	 * @usage setFocusedListener(listener);
+	 * @param listener
+	 *            An <code>ActionListener</code> that responds to focused items
+	 */
 	public void setFocusedListener(ActionListener listener) {
 		focusedListener = listener;
 	}
 
-/* Method: iterator() */
-/**
- * Returns an iterator that enumerates the individual menu items under the
- * control of the menu bar.
- *
- * @usage Iterator<JMenuItem> iterator = mbar.iterator();
- * return An iterator that enumerates the menu items
- */
+	/* Method: iterator() */
+	/**
+	 * Returns an iterator that enumerates the individual menu items under the
+	 * control of the menu bar.
+	 *
+	 * @usage Iterator<JMenuItem> iterator = mbar.iterator(); return An iterator
+	 *        that enumerates the menu items
+	 */
 	public Iterator<JMenuItem> iterator() {
 		ArrayList<JMenuItem> itemList = new ArrayList<JMenuItem>();
 		for (int i = 0; i < getMenuCount(); i++) {
@@ -576,55 +607,69 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		return itemList.iterator();
 	}
 
-/* Protected methods */
+	/* Protected methods */
 
-/* Protected method: addMenus() */
-/**
- * Adds menus to the menu bar.  Subclasses that wish to change the composition
- * of the menu bar beyond the default <code>File</code> and <code>Edit</code>
- * menus should override this method with one that adds the desired menus.
- */
+	/* Protected method: addMenus() */
+	/**
+	 * Adds menus to the menu bar. Subclasses that wish to change the
+	 * composition of the menu bar beyond the default <code>File</code> and
+	 * <code>Edit</code> menus should override this method with one that adds
+	 * the desired menus.
+	 */
 	protected void addMenus() {
 		addFileMenu();
 		Program program = getProgram();
 		if (program instanceof AbstractConsoleProgram) {
 			addEditMenu();
+			addOptionsMenu();
 		}
 		if (program instanceof Karel || program instanceof KarelProgram) {
-			addOptionsMenu();
+			addKarelOptionsMenu();
 		}
 		addHelpMenu();
 	}
 
-/* Protected method: addFileMenu() */
-/**
- * Installs the <code>File</code> menu.
- *
- * @usage mbar.addFileMenu();
- */
+	/* Protected method: addFileMenu() */
+	/**
+	 * Installs the <code>File</code> menu.
+	 *
+	 * @usage mbar.addFileMenu();
+	 */
 	protected void addFileMenu() {
 		JMenu fileMenu = GuiUtils.createMenu("File", this);
 		addFileMenuItems(fileMenu);
 	}
 
-/* Protected method: addEditMenu() */
-/**
- * Installs the <code>Edit</code> menu.
- *
- * @usage mbar.addEditMenu();
- */
+	/* Protected method: addEditMenu() */
+	/**
+	 * Installs the <code>Edit</code> menu.
+	 *
+	 * @usage mbar.addEditMenu();
+	 */
 	protected void addEditMenu() {
 		JMenu editMenu = GuiUtils.createMenu("Edit", this);
 		addEditMenuItems(editMenu);
 	}
 
-/* Protected method: addOptionsMenu() */
-/**
- * Installs the <code>Options</code> menu.
- *
- * @usage mbar.addOptionsMenu();
- */
+	/**
+	 * Installs the <code>Options</code> menu for console programs.
+	 *
+	 * @usage mbar.addOptionsMenu();
+	 */
 	protected void addOptionsMenu() {
+		JMenu optionsMenu = GuiUtils.createMenu("Options", this);
+		GuiUtils.createMenuItem(MENU_ITEM_TEXT_FONT, menuBarListener, optionsMenu);
+		GuiUtils.createMenuItem(MENU_ITEM_TEXT_BACKGROUND_COLOR, menuBarListener, optionsMenu);
+		GuiUtils.createMenuItem(MENU_ITEM_TEXT_FOREGROUND_COLOR, menuBarListener, optionsMenu);
+	}
+
+	/* Protected method: addKarelOptionsMenu() */
+	/**
+	 * Installs the <code>Options</code> menu for Karel programs.
+	 *
+	 * @usage mbar.addKarelOptionsMenu();
+	 */
+	protected void addKarelOptionsMenu() {
 		JMenu optionsMenu = GuiUtils.createMenu("Options", this);
 		GuiUtils.createCheckBoxMenuItem(MENU_ITEM_TEXT_MSKAREL, menuBarListener, optionsMenu);
 		GuiUtils.createCheckBoxMenuItem(MENU_ITEM_TEXT_INTERACTIVE, menuBarListener, optionsMenu);
@@ -632,22 +677,23 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 
 	protected void addHelpMenu() {
 		JMenu helpMenu = GuiUtils.createMenu("Help", this);
-		
+
 		JMenuItem aboutItem = GuiUtils.createMenuItem(MENU_ITEM_TEXT_ABOUT, menuBarListener, helpMenu);
 		aboutItem.setAccelerator(F1);
 		accelerators.put(F1, aboutItem);
-		
+
 		GuiUtils.createMenuItem(MENU_ITEM_TEXT_CHECK_FOR_UPDATES, menuBarListener, helpMenu);
 	}
-	
-/* Protected method: addFileMenuItems(menu) */
-/**
- * Adds the standard <code>File</code> items to the specified menu.  Subclasses
- * can override this method to change the list of items.
- *
- * @usage mbar.addFileMenuItems(menu);
- * @param menu The menu to which the <code>File</code> items are added
- */
+
+	/* Protected method: addFileMenuItems(menu) */
+	/**
+	 * Adds the standard <code>File</code> items to the specified menu.
+	 * Subclasses can override this method to change the list of items.
+	 *
+	 * @usage mbar.addFileMenuItems(menu);
+	 * @param menu
+	 *            The menu to which the <code>File</code> items are added
+	 */
 	protected void addFileMenuItems(JMenu menu) {
 		boolean isConsole = getProgram() instanceof ConsoleProgram;
 		if (isConsole) {
@@ -655,28 +701,29 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 			menu.add(createStandardItem(MENU_ITEM_TEXT_SAVE_AS, 'A'));
 			menu.addSeparator();
 			menu.add(createStandardItem(MENU_ITEM_TEXT_PRINT, 'P'));
-//			menu.add(createStandardItem("Print Console"));
-//			menu.add(createStandardItem("Script"));
+			// menu.add(createStandardItem("Print Console"));
+			// menu.add(createStandardItem("Script"));
 			menu.addSeparator();
-			
+
 			GuiUtils.createMenuItem(MENU_ITEM_TEXT_COMPARE_OUTPUT, menuBarListener, menu);
-			
+
 			menu.addSeparator();
 		}
-//		menu.add(createStandardItem("Export Applet"));
-//		menu.add(createStandardItem("Submit Project"));
-//		menu.addSeparator();
+		// menu.add(createStandardItem("Export Applet"));
+		// menu.add(createStandardItem("Submit Project"));
+		// menu.addSeparator();
 		menu.add(createStandardItem(MENU_ITEM_TEXT_QUIT, 'Q'));
 	}
 
-/* Protected method: addEditMenuItems(menu) */
-/**
- * Adds the standard <code>Edit</code> items to the specified menu.  Subclasses
- * can override this method to change the list of items.
- *
- * @usage mbar.addEditMenuItems(menu);
- * @param menu The menu to which the <code>Edit</code> items are added
- */
+	/* Protected method: addEditMenuItems(menu) */
+	/**
+	 * Adds the standard <code>Edit</code> items to the specified menu.
+	 * Subclasses can override this method to change the list of items.
+	 *
+	 * @usage mbar.addEditMenuItems(menu);
+	 * @param menu
+	 *            The menu to which the <code>Edit</code> items are added
+	 */
 	protected void addEditMenuItems(JMenu menu) {
 		menu.add(createStandardItem(MENU_ITEM_TEXT_CUT, 'C'));
 		menu.add(createStandardItem(MENU_ITEM_TEXT_COPY, 'o'));
@@ -686,17 +733,20 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		menu.add(createStandardItem(MENU_ITEM_TEXT_CLEAR_CONSOLE, 'l'));
 	}
 
-/* Private method: addItemToList(itemList, item) */
-/**
- * Adds the specified menu item to the list.  If <code>item</code> is itself
- * a menu, this method expands the item recursively.
- *
- * @usage mbar.addItemToList(itemList, item);
- * @param itemList The <code>ArrayList</code> to which items are added
- * @param item The item to be added
- */
+	/* Private method: addItemToList(itemList, item) */
+	/**
+	 * Adds the specified menu item to the list. If <code>item</code> is itself
+	 * a menu, this method expands the item recursively.
+	 *
+	 * @usage mbar.addItemToList(itemList, item);
+	 * @param itemList
+	 *            The <code>ArrayList</code> to which items are added
+	 * @param item
+	 *            The item to be added
+	 */
 	private void addItemToList(ArrayList<JMenuItem> itemList, JMenuItem item) {
-		if (item == null) return;
+		if (item == null)
+			return;
 		if (item instanceof JMenu) {
 			JMenu menu = (JMenu) item;
 			for (int i = 0; i < menu.getItemCount(); i++) {
@@ -707,54 +757,58 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		}
 	}
 
-/* Private method: setEnabled(menu, action, flag) */
-/**
- * Updates the enabled state of everything in the menu that has the specified action.
- */
+	/* Private method: setEnabled(menu, action, flag) */
+	/**
+	 * Updates the enabled state of everything in the menu that has the
+	 * specified action.
+	 */
 	private void setEnabled(JMenu item, String action, boolean flag) {
 		JMenu menu = item;
 		int nItems = menu.getItemCount();
 		for (int i = 0; i < nItems; i++) {
 			JMenuItem subItem = menu.getItem(i);
-			if (subItem != null) setEnabled(subItem, action, flag);
+			if (subItem != null)
+				setEnabled(subItem, action, flag);
 		}
 	}
 
-/* Private method: setEnabled(item, action, flag) */
-/**
- * Updates the enabled state of the menu item if it has the specified action.
- */
+	/* Private method: setEnabled(item, action, flag) */
+	/**
+	 * Updates the enabled state of the menu item if it has the specified
+	 * action.
+	 */
 	private void setEnabled(JMenuItem item, String action, boolean flag) {
-		if (action.equals(item.getActionCommand())) item.setEnabled(flag);
+		if (action.equals(item.getActionCommand()))
+			item.setEnabled(flag);
 	}
 }
 
 /* Package class: ProgramMenuBarListener */
 /**
- * This class implements the listener for the standard menu items that
- * forwards their action back to the program.
+ * This class implements the listener for the standard menu items that forwards
+ * their action back to the program.
  */
 class ProgramMenuBarListener implements ActionListener {
 
-/* Constructor: ProgramMenuBarListener(mbar) */
-/**
- * Creates a new listener for the standard menu items that will be added to this
- * menu bar.
- */
+	/* Constructor: ProgramMenuBarListener(mbar) */
+	/**
+	 * Creates a new listener for the standard menu items that will be added to
+	 * this menu bar.
+	 */
 	public ProgramMenuBarListener(ProgramMenuBar mbar) {
 		menuBar = mbar;
 	}
 
-/* Method: actionPerformed(e) */
-/**
- * Responds to an action event in the corresponding menu.   The effect of an
- * action event is to forward the action command back to the program.
- */
+	/* Method: actionPerformed(e) */
+	/**
+	 * Responds to an action event in the corresponding menu. The effect of an
+	 * action event is to forward the action command back to the program.
+	 */
 	public void actionPerformed(ActionEvent e) {
 		menuBar.fireActionListeners(e);
 	}
 
-/* Private instance variables */
+	/* Private instance variables */
 	private ProgramMenuBar menuBar;
 
 }

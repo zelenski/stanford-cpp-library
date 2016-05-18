@@ -1,4 +1,6 @@
 /*
+ * @version 2016/05/10
+ * - fixed bug with drawing at wrong location (paint vs paint2d)
  * @version 2016/05/05
  * - resynched with eroberts source
  * - alphabetized members
@@ -132,8 +134,9 @@ public class GLabel extends GObject {
 			obj = affinetransform.createTransformedShape(((Shape) (obj)));
 		}
 		java.awt.Rectangle rectangle = ((Shape) (obj)).getBounds();
-		return new GRectangle(getX() + rectangle.getX(), getY()
+		GRectangle bounds = new GRectangle(getX() + rectangle.getX(), getY()
 				+ rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
+		return bounds;
 	}
 
 	/**
@@ -211,6 +214,17 @@ public class GLabel extends GObject {
 	 */
 	public double getWidth() {
 		return getFontMetrics().stringWidth(label);
+	}
+
+	/**
+	 * Implements the <code>paint2d</code> operation for this graphical object.  This method
+	 * is not called directly by clients.
+	 *
+	 * @noshow
+	 */
+	public void paint(Graphics g) {
+		g.setFont(labelFont);
+		g.drawString(label, GMath.round(getX()), GMath.round(getY()));
 	}
 
 	/**
