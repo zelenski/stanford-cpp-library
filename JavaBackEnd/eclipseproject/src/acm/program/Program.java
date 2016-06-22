@@ -1,4 +1,7 @@
 /*
+ * @version 2016/05/22
+ * - slight refactor of outermost exception-handling code
+ *   (let exceptions bubble out to aid student debugging)
  * @version 2016/04/28
  * - bug fix in openFileFromDisk (was ignoring directory passed)
  * @version 2016/04/16
@@ -864,6 +867,30 @@ public abstract class Program extends JApplet
 	public void setJFrame(JFrame jframe) {
 		programFrame = jframe;
 	}
+	
+	/**
+	 * Removes the JMenuBar at the top of the program window.
+	 */
+	public void removeMenuBar() {
+		setJMenuBar(null);
+	}
+	
+	/**
+	 * Sets the JMenuBar at the top of the program window to be the given menu bar.
+	 * If the menu bar passed is null, removes the menu bar.
+	 */
+	public void setJMenuBar(JMenuBar bar) {
+		super.setJMenuBar(bar);
+		
+		Window window = programFrame == null ? getWindow() : programFrame;
+		if (window != null && window instanceof JFrame) {
+			((JFrame) window).setJMenuBar(null);
+		}
+		
+		if (myConsole != null && (bar == null || bar instanceof ProgramMenuBar)) {
+			myConsole.setMenuBar((ProgramMenuBar) bar);
+		}
+	}
 
 	/**
 	 * Returns the Java Swing window that encloses this program.
@@ -975,15 +1002,15 @@ public abstract class Program extends JApplet
  * @noshow
  */
 	public JPanel getRegionPanel(String region) {
-		if (region.equals(NORTH)) {
+		if (region.equalsIgnoreCase(NORTH)) {
 			return northPanel;
-		} else if (region.equals(SOUTH)) {
+		} else if (region.equalsIgnoreCase(SOUTH)) {
 			return southPanel;
-		} else if (region.equals(WEST)) {
+		} else if (region.equalsIgnoreCase(WEST)) {
 			return westPanel;
-		} else if (region.equals(EAST)) {
+		} else if (region.equalsIgnoreCase(EAST)) {
 			return eastPanel;
-		} else if (region.equals(CENTER)) {
+		} else if (region.equalsIgnoreCase(CENTER)) {
 			return centerPanel;
 		} else {
 			throw new ErrorException("getRegionPanel: Illegal region " + region);
@@ -1003,42 +1030,62 @@ public abstract class Program extends JApplet
  * @noshow
  */
 	public void add(Component comp, String region, Object constraints) {
-		if (region.equals(NORTH)) {
+		if (region.equalsIgnoreCase(NORTH)) {
 			northPanel.add(comp, constraints);
-		} else if (region.equals(SOUTH)) {
+		} else if (region.equalsIgnoreCase(SOUTH)) {
 			southPanel.add(comp, constraints);
-		} else if (region.equals(WEST)) {
+		} else if (region.equalsIgnoreCase(WEST)) {
 			westPanel.add(comp, constraints);
-		} else if (region.equals(EAST)) {
+		} else if (region.equalsIgnoreCase(EAST)) {
 			eastPanel.add(comp, constraints);
-		} else if (region.equals(CENTER)) {
+		} else if (region.equalsIgnoreCase(CENTER)) {
 			centerPanel.add(comp, constraints);
 		} else {
 			throw new ErrorException("add: Illegal region " + region);
 		}
 	}
 
-/* Method: addActionListeners() */
-/**
- * Adds the program as an <code>ActionListener</code> to every button in
- * the structure that does not have a listener already.
- *
- * @usage addActionListeners();
- */
+	/**
+	 * Adds the program as an <code>ActionListener</code> to every button in
+	 * the structure that does not have a listener already.
+	 *
+	 * @usage addActionListeners();
+	 */
 	public void addActionListeners() {
 		addActionListeners(this);
 	}
+	
+	/**
+	 * Adds the program as an <code>ActionListener</code> to every button or component in
+	 * the structure that does not have a listener already.
+	 * Also adds action listeners to other components that have action commands.
+	 *
+	 * @usage addAllActionListeners();
+	 */
+	public void addAllActionListeners() {
+		addActionListeners(getContentPane(), this, /* buttonsOnly */ false);
+	}
 
-/* Method: addActionListeners(listener) */
-/**
- * Adds the specified listener to every button in
- * the structure that does not have a listener already.
- *
- * @usage addActionListeners(listener);
- * @param listener The <code>ActionListener</code> to be added
- */
+	/**
+	 * Adds the program as an <code>ActionListener</code> to every button in
+	 * the structure that does not have a listener already.
+	 * Also adds action listeners to other components that have action commands.
+	 *
+	 * @usage addActionListeners();
+	 */
+	public void addActionListenersToButtonsOnly() {
+		addActionListeners(getContentPane(), this, /* buttonsOnly */ true);
+	}
+
+	/**
+	 * Adds the specified listener to every button in
+	 * the structure that does not have a listener already.
+	 *
+	 * @usage addActionListeners(listener);
+	 * @param listener The <code>ActionListener</code> to be added
+	 */
 	public void addActionListeners(ActionListener listener) {
-		addActionListeners(getContentPane(), listener);
+		addActionListeners(getContentPane(), listener, /* buttonsOnly */ true);
 	}
 	
 	/**
@@ -1136,6 +1183,8 @@ public abstract class Program extends JApplet
 /* Method: start(args) */
 /**
  * Starts the program using the specified argument list.
+ * Note: Java back-end C++ lib programs do not call start(), so any mandatory initialization
+ * code that affects the back-end and C++ probably should not go here.
  *
  * @usage program.start(args);
  * @param args An array of strings passed to the program
@@ -1856,23 +1905,7 @@ public abstract class Program extends JApplet
 				appletStarter.start();
 			}
 		} else {
-			try {
-				start(null);
-			} catch (Throwable t) {
-				if (t instanceof Error) {
-					throw (Error) t;
-				} else if (t instanceof InterruptedException) {
-					// empty; return
-				} else if (t instanceof RuntimeException) {
-					throw (RuntimeException) t;
-				} else {
-					Throwable cause = t;
-					while (cause.getCause() != null) {
-						cause = cause.getCause();
-					}
-					throw new RuntimeException(cause);
-				}
-			}
+			start(null);
 		}
 	}
 
@@ -2248,20 +2281,21 @@ public abstract class Program extends JApplet
 		contentPane.add(centerPanel, CENTER);
 	}
 
-/* Private method: addActionListeners(comp, listener) */
-/**
- * Recursively adds the specified listener as an <code>ActionListener</code> to
- * every button in the hierarchy.  Reflection is used because there are many
- * possible classes of button-like objects.
- */
-	private void addActionListeners(Component comp, ActionListener listener) {
-		if (isButton(comp)) {
+	/**
+	 * Recursively adds the specified listener as an <code>ActionListener</code> to
+	 * every button in the hierarchy.  Reflection is used because there are many
+	 * possible classes of button-like objects.
+	 */
+	private void addActionListeners(Component comp, ActionListener listener, boolean buttonsOnly) {
+		if (!buttonsOnly || isButton(comp)) {
 			if (!hasActionListener(comp)) {
 				try {
-					Class<?>[] types = { Class.forName("java.awt.event.ActionListener") };
+					Class<?>[] types = { java.awt.event.ActionListener.class };
 					Object[] args = { listener };
 					Method addActionListener = comp.getClass().getMethod("addActionListener", types);
-					addActionListener.invoke(comp, args);
+					if (addActionListener != null) {
+						addActionListener.invoke(comp, args);
+					}
 				} catch (Exception ex) {
 					throw new ErrorException(ex);
 				}
@@ -2270,24 +2304,22 @@ public abstract class Program extends JApplet
 			Container container = (Container) comp;
 			int nComponents = container.getComponentCount();
 			for (int i = 0; i < nComponents; i++) {
-				addActionListeners(container.getComponent(i), listener);
+				addActionListeners(container.getComponent(i), listener, buttonsOnly);
 			}
 		}
 	}
 
-/* Private method: isButton(comp) */
-/**
- * Determines whether the component is a button.
- */
+	/**
+	 * Determines whether the component is a button.
+	 */
 	private boolean isButton(Component comp) {
 		return (comp instanceof Button || comp instanceof JButton);
 	}
 
-/* Private method: hasActionListener(comp) */
-/**
- * Returns true if the component has at least one action listener.  The method
- * returns false if the Java runtime is too old to determine the answer.
- */
+	/**
+	 * Returns true if the component has at least one action listener.  The method
+	 * returns false if the Java runtime is too old to determine the answer.
+	 */
 	private boolean hasActionListener(Component comp) {
 		try {
 			Method getActionListeners = comp.getClass().getMethod("getActionListeners", new Class[0]);
@@ -2297,6 +2329,19 @@ public abstract class Program extends JApplet
 			return false;
 		}
 	}
+	
+//	/**
+//	 * Returns true if this component's type supports adding action listeners.
+//	 */
+//	private boolean supportsActionListener(Component comp) {
+//		try {
+//			Class<?>[] types = { java.awt.event.ActionListener.class };
+//			Method method = comp.getClass().getMethod("addActionListener", types);
+//			return method != null;
+//		} catch (Exception ex) {
+//			return false;
+//		}
+//	}
 
 /* Private method: initApplicationFrame() */
 /**
@@ -2409,11 +2454,12 @@ public abstract class Program extends JApplet
 		frame.validate();
 	}
 	
-	protected final void saveConfiguration() {
+	public final void saveConfiguration() {
+		File configFile = null;
 		try {
 			String tmpDir = System.getProperty("java.io.tmpdir");
 			if (tmpDir != null) {
-				File configFile = new File(tmpDir, CONFIG_FILE_NAME);
+				configFile = new File(tmpDir, CONFIG_FILE_NAME);
 				Properties props = new Properties();
 				saveConfiguration(props);
 				FileOutputStream out = new FileOutputStream(configFile);
@@ -2421,19 +2467,33 @@ public abstract class Program extends JApplet
 				out.close();
 			}
 		} catch (Exception ex) {
+			System.err.println("error: Could not save C++ lib configuration to file \"" + configFile + "\": " + ex.getMessage());
+		}
+	}
+	
+	public final boolean hasConfiguration() {
+		try {
+			String tmpDir = System.getProperty("java.io.tmpdir");
+			if (tmpDir != null) {
+				File configFile = new File(tmpDir, CONFIG_FILE_NAME);
+				return configFile.isFile() && configFile.canRead();
+			}
+		} catch (Exception ex) {
 			// empty
 		}
+		return false;
 	}
 	
 	protected void saveConfiguration(Properties props) {
 		// empty; override me
 	}
 	
-	protected final void loadConfiguration() {
+	public final void loadConfiguration() {
+		File configFile = null;
 		try {
 			String tmpDir = System.getProperty("java.io.tmpdir");
 			if (tmpDir != null) {
-				File configFile = new File(tmpDir, CONFIG_FILE_NAME);
+				configFile = new File(tmpDir, CONFIG_FILE_NAME);
 				if (!configFile.exists()) {
 					return;
 				}
@@ -2445,7 +2505,7 @@ public abstract class Program extends JApplet
 				loadConfiguration(props);
 			}
 		} catch (Exception ex) {
-			// empty
+			System.err.println("error: Could not load C++ lib configuration from file \"" + configFile + "\": " + ex.getMessage());
 		}
 	}
 
@@ -2453,6 +2513,7 @@ public abstract class Program extends JApplet
 		// empty; override me
 	}
 }
+// end class Program
 
 /* Package class: AppletStarter */
 /**

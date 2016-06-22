@@ -477,6 +477,20 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	public void setAutoRepaintFlag(boolean state) {
 		autoRepaint = state;
 	}
+	
+	/**
+	 * Sets this canvas to use a border of the given color, 1px thick.
+	 */
+	public void setBorder(Color color) {
+		setBorder(BorderFactory.createLineBorder(color));
+	}
+	
+	/**
+	 * Sets this canvas to use a border of the given color and number of pixels thick.
+	 */
+	public void setBorder(Color color, int thickness) {
+		setBorder(BorderFactory.createLineBorder(color, thickness));
+	}
 
 	/**
 	 * Sets whether the redering code for <code>GArc</code> and <code>GOval</code> should use

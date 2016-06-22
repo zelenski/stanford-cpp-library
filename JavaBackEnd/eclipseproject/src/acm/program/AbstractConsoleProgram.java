@@ -16,11 +16,12 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.Properties;
 import javax.swing.*;
+
+import acm.gui.JFontChooser;
 import acm.io.*;
 import acm.util.JTFTools;
 import stanford.cs106.diff.DiffGui;
 import stanford.cs106.gui.GuiUtils;
-import stanford.cs106.gui.JFontChooser;
 import stanford.cs106.io.IOUtils;
 import stanford.cs106.util.SystemProperties;
 

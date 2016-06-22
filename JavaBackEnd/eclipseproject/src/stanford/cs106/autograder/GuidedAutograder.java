@@ -29,7 +29,6 @@ import stanford.cs106.junit.*;
 import stanford.cs106.program.*;
 import stanford.cs106.reflect.*;
 import stanford.cs106.util.*;
-import stanford.karel.*;
 import stanford.spl.AutograderUnitTestGUI;
 import acm.graphics.*;
 import acm.gui.*;
@@ -619,9 +618,10 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 		studentProgramThreadLaunch(STUDENT_CLASS);
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected void studentProgramThreadLaunch(String className) {
 		try {
-			studentProgramThreadLaunch(Class.forName(className));
+			studentProgramThreadLaunch((Class<? extends Program>) Class.forName(className));
 		} catch (ClassNotFoundException e) {
 			throw new ReflectionRuntimeException(e);
 		}
@@ -673,14 +673,13 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 		thread.start();
 	}
 
-	protected void studentProgramThreadLaunch(Class<?> clazz) {
+	protected void studentProgramThreadLaunch(Class<? extends Program> clazz) {
 		studentProgramThreadKill();
 		
 		printlnLog("launching " + clazz.getName());
 		runnerThread = new StudentProgramRunnerThread(clazz, windowWidth, windowHeight, initRunBox.isSelected());
 		studentProgram = runnerThread.getProgram();
 		// scaleTimeBySlider(timeSlider.getValue());
-		runnerThread.init();
 		runnerThread.start();
 		try {
 			runnerThread.join(50);
@@ -853,7 +852,6 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 		for (GObject line : toRemove) {
 			container.remove(line);
 		}
-		printlnLog("Grid lines removed.");
 	}
 
 	// gets rid of all grid lines on screen
@@ -1183,20 +1181,18 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 		private boolean callInitAndRun;
 		public boolean started = false;
 		private Program program;
-		private Class<?> programClass;
 
-		public StudentProgramRunnerThread(Class<?> clazz, boolean callInitAndRun) {
+		public StudentProgramRunnerThread(Class<? extends Program> clazz, boolean callInitAndRun) {
 			this(clazz, DEFAULT_WIDTH, DEFAULT_HEIGHT, callInitAndRun);
 		}
 		
-		public StudentProgramRunnerThread(Class<?> clazz, int width, int height, boolean callInitAndRun) {
+		public StudentProgramRunnerThread(Class<? extends Program> clazz, int width, int height, boolean callInitAndRun) {
 			this.setName(getClass().getName() + "-" + clazz.getName() + "@" + hashCode());
 			
 			this.callInitAndRun = callInitAndRun;
 			try {
-				this.programClass = clazz;
 				if (Program.class.isAssignableFrom(clazz)) {
-					this.program = (Program) clazz.newInstance();
+					this.program = clazz.newInstance();
 					this.program.setExitOnClose(false);
 					ReflectionPanel panel = reflectionPanels.get(STUDENT_CLASS);
 					if (panel != null) {
@@ -1218,19 +1214,6 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 			return program.getJFrame();
 		}
 
-		public void init() {
-			if (program != null) {
-				if (program instanceof Karel) {
-					// TODO?
-				} else {
-					// GuiUtils.rememberWindowLocation(oFrame);
-					// oFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-					// oFrame.setLocation(DEFAULT_X, DEFAULT_Y);
-					// program.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-				}
-			}
-		}
-
 		public void killMe() {
 			if (program != null) {
 				program.stop();
@@ -1243,56 +1226,10 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 		}
 
 		public void run() {
-			if (program == null && programClass != null) {
-				try {
-					String[] args = new String[0];
-					Method main = programClass.getMethod("main", args.getClass());
-					if (main != null) {
-						main.invoke(null, (Object) args);
-					}
-				} catch (Error e) {
-					printlnLog(e.toString());
-					e.printStackTrace();
-				} catch (NoSuchMethodException e) {
-					e.printStackTrace();
-				} catch (SecurityException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} else {
-				if (program instanceof Karel) {
-					started = true;
-					program.start();
-				} else {
-					if (callInitAndRun) {
-						program.init();
-					}
-					program.setExitOnClose(false);
-					// program.setVisible(true);
-					if (callInitAndRun) {
-						try {
-							started = true;
-							program.start();
-						} catch (Throwable t) {
-							if (t instanceof InterruptedException) {
-								// empty
-							} else {
-								if (t instanceof RuntimeException) {
-									throw (RuntimeException) t;
-								}
-								throw new RuntimeException(t);
-							}
-						}
-					}
-				}
+			if (callInitAndRun) {
+				started = true;
+				program.start();
+				// GuiUtils.rememberWindowLocation(program.getWindow());
 			}
 		}
 	}

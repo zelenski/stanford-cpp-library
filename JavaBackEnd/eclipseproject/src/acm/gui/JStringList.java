@@ -10,19 +10,18 @@
  * Version: Tue 2014/06/05
  * - Added various convenience methods: setItems, setColors, getColor, etc.
  *   to facilitate modification of an existing list's items and colors
- *   for HW6 part 2.
+ *   for NameSurfer.
  * 
  * This file and its contents are copyright (C) Stanford University and Marty Stepp,
  * licensed under Creative Commons Attribution 2.5 License.  All rights reserved.
  */
 
-package stanford.cs106.gui;
+package acm.gui;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.util.List;
-
 import javax.swing.*;
 import javax.swing.event.*;
 

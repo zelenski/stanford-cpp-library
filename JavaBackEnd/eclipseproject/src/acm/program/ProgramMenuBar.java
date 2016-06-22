@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp (current maintainer)
+ * @version 2016/06/21
+ * - bug fix where Compare Output option wasn't showing in C++ console programs
  * @version 2015/10/13
  * - new menu feature "Check for Updates..." => LibraryUpdater.java
  * @version 2015/06/19
@@ -622,8 +624,7 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		if (program instanceof AbstractConsoleProgram) {
 			addEditMenu();
 			addOptionsMenu();
-		}
-		if (program instanceof Karel || program instanceof KarelProgram) {
+		} else if (program instanceof Karel || program instanceof KarelProgram) {
 			addKarelOptionsMenu();
 		}
 		addHelpMenu();
@@ -695,7 +696,7 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 	 *            The menu to which the <code>File</code> items are added
 	 */
 	protected void addFileMenuItems(JMenu menu) {
-		boolean isConsole = getProgram() instanceof ConsoleProgram;
+		boolean isConsole = getProgram() instanceof AbstractConsoleProgram;
 		if (isConsole) {
 			menu.add(createStandardItem(MENU_ITEM_TEXT_SAVE, 'S'));
 			menu.add(createStandardItem(MENU_ITEM_TEXT_SAVE_AS, 'A'));

@@ -222,20 +222,9 @@ public class GLabel extends GObject {
 	 *
 	 * @noshow
 	 */
-	public void paint(Graphics g) {
-		g.setFont(labelFont);
-		g.drawString(label, GMath.round(getX()), GMath.round(getY()));
-	}
-
-	/**
-	 * Implements the <code>paint2d</code> operation for this graphical object.  This method
-	 * is not called directly by clients.
-	 *
-	 * @noshow
-	 */
 	public void paint2d(Graphics2D g) {
 		g.setFont(labelFont);
-		g.drawString(label, GMath.round(getX()), GMath.round(getY()));
+		g.drawString(label, 0, 0);
 	}
 
 	/**

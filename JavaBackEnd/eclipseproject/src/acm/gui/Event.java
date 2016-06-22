@@ -1,4 +1,4 @@
-package stanford.cs106.gui;
+package acm.gui;
 
 import java.util.Observable;
 

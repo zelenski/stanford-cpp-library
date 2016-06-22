@@ -3,7 +3,7 @@
  * - initial version for Stanford Java/CPP libs
  */
 
-package stanford.cs106.gui;
+package acm.gui;
 
 // This class based on code found at:
 // http://stackoverflow.com/questions/2120228/java-swing-font-chooser

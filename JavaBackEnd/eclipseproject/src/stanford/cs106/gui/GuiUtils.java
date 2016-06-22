@@ -2,6 +2,8 @@
  * This class contains utility functions related to GUIs.
  *
  * @author Marty Stepp
+ * @version 2016/05/26
+ * - added createJComboGroupBox, setPreferred* methods
  * @version 2016/05/01
  * - added create*MenuItem methods
  * @version 2014/05/26
@@ -77,7 +79,7 @@ public class GuiUtils {
 		}
 	}
 
-	public static void centerWindowWithin(Window window, Window parent) {
+	public static void centerWindowWithin(Window window, Component parent) {
 		if (window != null && parent != null) {
 			window.setLocation(
 					parent.getX() + (parent.getWidth() - window.getWidth()) / 2,
@@ -139,8 +141,29 @@ public class GuiUtils {
 		return button;
 	}
 	
+	public static ButtonGroup createButtonGroup(ActionListener listener, String... items) {
+		ButtonGroup group = new ButtonGroup();
+		String selected = null;
+		for (String item : items) {
+			JRadioButton jrb = new JRadioButton(item);
+			if (selected == null) {
+				jrb.setSelected(true);
+				selected = item;
+			}
+			if (listener != null) {
+				jrb.addActionListener(listener);
+			}
+			group.add(jrb);
+		}
+		return group;
+	}
+	
 	public static JCheckBox createCheckBox(String actionCommand, ActionListener listener) {
-		return createCheckBox(actionCommand, /* checked */ true, listener);
+		return createCheckBox(actionCommand, /* checked */ false, listener);
+	}
+	
+	public static JCheckBox createCheckBox(String text, String actionCommand, char mnemonic, ActionListener listener) {
+		return createCheckBox(text, actionCommand, mnemonic, /* checked */ false, listener);
 	}
 	
 	public static JCheckBox createCheckBox(String actionCommand, boolean checked, ActionListener listener) {
@@ -156,11 +179,19 @@ public class GuiUtils {
 		return createCheckBox(actionCommand, mnemonic, checked, listener, /* container */ null);
 	}
 	
+	public static JCheckBox createCheckBox(String text, String actionCommand, char mnemonic, boolean checked, ActionListener listener) {
+		return createCheckBox(text, actionCommand, mnemonic, checked, listener, /* container */ null);
+	}
+	
 	public static JCheckBox createCheckBox(String actionCommand, char mnemonic, ActionListener listener, Container container) {
 		return createCheckBox(actionCommand, mnemonic, /* checked */ false, listener, container);
 	}
 	
 	public static JCheckBox createCheckBox(String actionCommand, char mnemonic, boolean checked, ActionListener listener, Container container) {
+		return createCheckBox(/* text */ actionCommand, actionCommand, mnemonic, checked, listener, container);
+	}
+	
+	public static JCheckBox createCheckBox(String text, String actionCommand, char mnemonic, boolean checked, ActionListener listener, Container container) {
 		JCheckBox box = new JCheckBox(actionCommand);
 		box.setSelected(checked);
 		if (mnemonic != '\0' && mnemonic != ' ') {
@@ -177,11 +208,8 @@ public class GuiUtils {
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static JComboBox createComboBox(String actionCommand, ActionListener listener, String... items) {
-		JComboBox box = new JComboBox();
+		JComboBox box = new JComboBox(items);
 		box.setEditable(false);
-		for (String item : items) {
-			box.addItem(item);
-		}
 		if (listener != null) {
 			box.addActionListener(listener);
 			box.setActionCommand(actionCommand);
@@ -189,6 +217,26 @@ public class GuiUtils {
 		return box;
 	}
 	
+	public static JComboGroupBox createComboGroupBox(String actionCommand, ActionListener listener, String... items) {
+		JComboGroupBox box = new JComboGroupBox();
+		for (String item : items) {
+			if (item.startsWith("GROUP: ")) {
+				box.addDelimiter(item.substring(7));
+			} else if (item.startsWith("* ")) {
+				box.addDelimiter(item.substring(2));
+			} else if (item.startsWith("- ")) {
+				box.addDelimiter(item.substring(2));
+			} else {
+				box.addItem(item);
+			}
+		}
+		box.setEditable(false);
+		if (listener != null) {
+			box.addActionListener(listener);
+			box.setActionCommand(actionCommand);
+		}
+		return box;
+	}
 	
 	public static JMenu createMenu(String text, JMenuBar bar) {
 		return createMenu(text, /* mnemonic */ text.charAt(0), bar);
@@ -323,19 +371,24 @@ public class GuiUtils {
 		if (container == null) {
 			return null;
 		}
-		Set<JC> components = new HashSet<JC>();
+		Set<JC> results = new LinkedHashSet<JC>();
 		for (Component component : container.getComponents()) {
 			if (component instanceof JComponent) {
 				if (type == null || type == component.getClass() || type.isAssignableFrom(component.getClass())) {
-					components.add((JC) component);
+					results.add((JC) component);
 				}
 			}
 			if (component instanceof Container) {
 				Set<JC> sub = getDescendents((Container) component, type);
-				components.addAll(sub);
+				results.addAll(sub);
 			}
 		}
-		return components;
+		
+		if (container instanceof Program && results.isEmpty()) {
+			Set<JC> sub = getDescendents(((Program) container).getWindow(), type);
+			results.addAll(sub);
+		}
+		return results;
 	}
 		
 	public static Icon extractOptionPaneIcon(String text) {
@@ -459,6 +512,25 @@ public class GuiUtils {
 		} catch (Exception e) {
 			// empty
 		}
+	}
+	
+	public static void setPreferredWidth(JComponent comp, int width) {
+		Dimension size = comp.getPreferredSize();
+		size.width = width;
+		comp.setPreferredSize(size);
+	}
+	
+	public static void setPreferredHeight(JComponent comp, int height) {
+		Dimension size = comp.getPreferredSize();
+		size.height = height;
+		comp.setPreferredSize(size);
+	}
+	
+	public static void shiftPreferredSize(JComponent comp, int dw, int dh) {
+		Dimension size = comp.getPreferredSize();
+		size.width += dw;
+		size.height += dh;
+		comp.setPreferredSize(size);
 	}
 	
 	public static void shrinkFont(JComponent button) {

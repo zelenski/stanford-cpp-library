@@ -10,6 +10,8 @@
 # - re-open and "Configure" your project again.
 #
 # @author Marty Stepp, Reid Watson, Rasmus Rygaard, Jess Fisher, etc.
+# @version 2016/06/22
+# - removed FONTSIZE setting; left to default and app configuration
 # @version 2015/04/09
 # - decreased Mac stack size to avoid sporatic crashes on Mac systems
 # @version 2014/11/29
@@ -116,15 +118,16 @@ macx {
 }
 
 # set up flags used internally by the Stanford C++ libraries
+# (setting x/y to 999999 centers the window)
+# (see platform.cpp/h for descriptions of some of these flags)
 DEFINES += SPL_CONSOLE_X=999999
 DEFINES += SPL_CONSOLE_Y=999999
 DEFINES += SPL_CONSOLE_WIDTH=750
 DEFINES += SPL_CONSOLE_HEIGHT=500
-DEFINES += SPL_CONSOLE_FONTSIZE=14
 DEFINES += SPL_CONSOLE_ECHO
 DEFINES += SPL_CONSOLE_EXIT_ON_CLOSE
 DEFINES += SPL_VERIFY_JAVA_BACKEND_VERSION
-DEFINES += SPL_PROJECT_VERSION=20150705
+DEFINES += SPL_PROJECT_VERSION=20160622
 DEFINES += PQUEUE_ALLOW_HEAP_ACCESS
 DEFINES += PQUEUE_PRINT_IN_HEAP_ORDER
 

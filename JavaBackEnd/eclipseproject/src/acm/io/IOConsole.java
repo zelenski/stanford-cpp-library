@@ -530,7 +530,7 @@ public class IOConsole extends Container implements IOModel {
 		return new StandardConsoleModel();
 	}
 
-	protected static final Font DEFAULT_FONT = new Font("Monospaced", 0, 12);
+	protected static final Font DEFAULT_FONT = new Font("Monospaced", 0, 14);
 	protected static final String LINE_SEPARATOR = System
 			.getProperty("line.separator");
 	protected static final int MINIMUM_CONSOLE_WIDTH = 50;

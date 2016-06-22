@@ -5,6 +5,9 @@
  * by your Melody class.
  *
  * @author Marty Stepp
+ * @version Fri 2016/05/21
+ * - new constructors as per conversation with Alisha Adam;
+ *   can now construct by passing just a String line
  * @version Fri 2014/05/23
  * - bug fix: Rests were storing octave 0, broke most octave up/down code
  * @version Fri 2014/05/08
@@ -28,6 +31,8 @@
 
 package stanford.cs106.audio;
 
+import java.util.Scanner;
+
 /**
  * This instructor-provided file represents musical notes and is to be used
  * by your Melody class.
@@ -38,9 +43,7 @@ package stanford.cs106.audio;
  * start/end of a repeated section or not.
  * A song or melody can be thought of as a list or array of Note objects.
  *
- * @author Marty Stepp
- * @version Fri 2014/05/08
- * - version for 15sp; folded into spl.jar
+ * @author Marty Stepp and Allison Obourn
  */
 public class Note {
 	/**
@@ -66,6 +69,35 @@ public class Note {
 	private boolean repeat;          // true if this note starts/ends a repeated section
 
 	/**
+	 * Constructs a Note with the information contained in the given line.
+	 * @param line a line of input data such as "0.2 C 4 NATURAL false" or "0.4 R false" for a rest
+	 * @throws NullPointerException if line is null.
+	 * @throws IllegalArgumentException if duration is negative or octave is not
+	 *                                  between OCTAVE_MIN and OCTAVE_MAX inclusive.
+	 */
+	public Note(String line) {
+		// line = "0.2 C 4 NATURAL false"
+		Scanner input = new Scanner(line);
+		double duration = input.nextDouble();
+		Pitch pitch = Pitch.getValueOf(input.next());
+		boolean isRepeat;
+		int octave = OCTAVE_MIN + 1;
+		Accidental accidental = Accidental.NATURAL;
+		if (pitch != Pitch.R) {
+			octave = input.nextInt();
+			accidental = Accidental.getValueOf(input.next());
+		}
+		isRepeat = input.nextBoolean();
+		input.close();
+		
+		setPitch(pitch);
+		setAccidental(accidental);
+		setDuration(duration);
+		setOctave(octave);
+		setRepeat(isRepeat);
+	}
+
+	/**
 	 * Constructs a Note with the given information.
 	 * @param duration Note's duration in seconds.
 	 * @param pitch Note's pitch from Pitch.A through Pitch.G, or Pitch.R for a rest.
@@ -79,6 +111,25 @@ public class Note {
 	public Note(double duration, Pitch pitch, int octave, Accidental accidental, boolean repeat) {
 		setPitch(pitch);
 		setAccidental(accidental);
+		setDuration(duration);
+		setOctave(octave);
+		this.repeat = repeat;
+	}
+
+	/**
+	 * Constructs a Note with the given information.
+	 * @param duration Note's duration in seconds.
+	 * @param pitch Note's pitch from "A" through "G", or "R" for a rest.
+	 * @param octave Note's octave from OCTAVE_MIN through OCTAVE_MAX inclusive.
+	 * @param accidental Note's accidental from "SHARP", "FLAT", or "NATURAL".
+	 * @param repeat true if this note starts/ends a repeated section.
+	 * @throws NullPointerException if pitch or accidental is null.
+	 * @throws IllegalArgumentException if duration is negative or octave is not
+	 *                                  between OCTAVE_MIN and OCTAVE_MAX inclusive.
+	 */
+	public Note(double duration, String pitch, int octave, String accidental, boolean repeat) {
+		setPitch(Pitch.valueOf(pitch));
+		setAccidental(Accidental.valueOf(accidental));
 		setDuration(duration);
 		setOctave(octave);
 		this.repeat = repeat;
@@ -266,10 +317,10 @@ public class Note {
 	 *                                  and OCTAVE_MAX inclusive.
 	 */
 	public void setOctave(int octave) {
-		if (octave < OCTAVE_MIN || octave > OCTAVE_MAX) {
-			throw new IllegalArgumentException("Illegal octave value: " + octave);
-		}
 		if (pitch != Pitch.R) {
+			if (octave < OCTAVE_MIN || octave > OCTAVE_MAX) {
+				throw new IllegalArgumentException("Illegal octave value: " + octave);
+			}
 			this.octave = octave;
 		}
 	}

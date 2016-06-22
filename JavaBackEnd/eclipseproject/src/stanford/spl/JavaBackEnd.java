@@ -2,18 +2,14 @@ package stanford.spl;
 
 import acm.graphics.GObject;
 import acm.io.*;
-import acm.util.ErrorException;
-import acm.util.JTFTools;
-import acm.util.Platform;
-import acm.util.TokenScanner;
+import acm.program.*;
+import acm.util.*;
 import stanford.cs106.gui.GuiUtils;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-
 import javax.sound.sampled.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -54,16 +50,10 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	public static final int BUTTON1_DOWN = 32;
 	public static final int BUTTON2_DOWN = 64;
 	public static final int BUTTON3_DOWN = 128;
+	
 	private static final String DEBUG_PROPERTY = "stanfordspl.debug";
 	private static final String DEBUG_LOG_FILE = "stanfordspldebug.txt";
 	private static boolean DEBUG = false;
-	private String appName;
-	private String exec;
-	private String consoleWindowTitle = "Console";
-	private JBEMenuBar menuBar;
-	private JBEConsole console;
-	private JFrame consoleFrame;
-	private int consoleCloseOperation = JFrame.HIDE_ON_CLOSE;
 	private static final Color ERROR_COLOR = new Color(192, 0, 0);   // slightly dark red
 	private static final int ERROR_STYLE = Font.BOLD;
 
@@ -76,6 +66,34 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		new JavaBackEnd().run(paramArrayOfString);
 	}
 	
+	private String appName;
+	private String exec;
+	private String consoleWindowTitle = "Console";
+	private JBEMenuBar menuBar;
+	private Program program;
+	private JBEConsole console;
+	private JFrame consoleFrame;
+	private int consoleCloseOperation = JFrame.HIDE_ON_CLOSE;
+
+	private int consoleX = 10;
+	private int consoleY = 40;
+	private int consoleWidth = 500;
+	private int consoleHeight = 250;
+	private HashMap<String, JBECommand> cmdTable;
+	private HashMap<String, JBEWindow> windowTable;
+	private HashMap<String, GObject> gobjTable;
+	private HashMap<String, GTimer> timerTable;
+	private HashMap<String, Image> imageTable;
+	private HashMap<String, Clip> clipTable;
+	private HashMap<String, Clip> clipIdTable;
+	private HashMap<JComponent, String> sourceTable;
+	private Container empty = JTFTools.createEmptyContainer();
+	private int activeWindowCount;
+	private int eventMask;
+	private Object eventLock = new Object();
+	private boolean eventAcknowledged;
+	private boolean eventPending;
+
 	// called by AutograderInput; represents input the user wants to insert
 	public void update(Observable obs, Object arg) {
 		String input = (String) arg;
@@ -142,7 +160,18 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 			AutograderInput autograderInput = AutograderInput.getInstance(this);
 			autograderInput.addObserver(this);
 			this.menuBar = new JBEMenuBar(this, this.console);
+			this.program = menuBar.getProgram();
 			this.console.setMenuBar(this.menuBar);
+			program.loadConfiguration();
+			new Thread(new Runnable() {
+				public void run() {
+					try { Thread.sleep(1000); } catch (Exception e) {}
+					Window window = program.getWindow();
+					if (window != null) {
+						window.toFront();
+					}
+				}
+			}).start();
 		}
 		
 		if (this.exec != null) {
@@ -869,23 +898,4 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		}
 		return null;
 	}
-
-	private int consoleX = 10;
-	private int consoleY = 40;
-	private int consoleWidth = 500;
-	private int consoleHeight = 250;
-	private HashMap<String, JBECommand> cmdTable;
-	private HashMap<String, JBEWindow> windowTable;
-	private HashMap<String, GObject> gobjTable;
-	private HashMap<String, GTimer> timerTable;
-	private HashMap<String, Image> imageTable;
-	private HashMap<String, Clip> clipTable;
-	private HashMap<String, Clip> clipIdTable;
-	private HashMap<JComponent, String> sourceTable;
-	private Container empty = JTFTools.createEmptyContainer();
-	private int activeWindowCount;
-	private int eventMask;
-	private Object eventLock = new Object();
-	private boolean eventAcknowledged;
-	private boolean eventPending;
 }

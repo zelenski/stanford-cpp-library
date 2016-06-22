@@ -815,6 +815,26 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 	}
 
 	/**
+	 * Sets the central x-coordinate of this object to the given x value.
+	 *
+	 * @param centerX The new central x-coordinate for the object
+	 * @usage gobj.setCenterX(x);
+	 */
+	public final void setCenterX(double centerX) {
+		setLocation(centerX - getWidth() / 2, getY());
+	}
+
+	/**
+	 * Sets the central y-coordinate of this object to the given y value.
+	 *
+	 * @param centerY The new central y-coordinate for the object
+	 * @usage gobj.setCenterY(y);
+	 */
+	public final void setCenterY(double centerY) {
+		setLocation(getX(), centerY - getHeight() / 2);
+	}
+
+	/**
 	 * Sets the color used to display this object.
 	 *
 	 * @param color The color used to display this object

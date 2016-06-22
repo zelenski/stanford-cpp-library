@@ -26,8 +26,10 @@ cp -r ../../bin/* .
 
 find . > files.list
 jar -cvmf ../MANIFEST ../$OUTFILE @files.list
+cd ../../src
+jar uvf ../obf/$OUTFILE acm/*/*.java javazoom/*/*/*.java stanford/*/*.java stanford/*/*/*.java
 
 # copy in the META-INF folder so mp3 files can play
-cd ..
+cd ../obf
 # zip -ru $OUTFILE META-INF/
 jar -uvf $OUTFILE META-INF/

@@ -13,7 +13,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import stanford.cs106.gui.*;
+import acm.gui.Event;
 import stanford.cs106.io.IORuntimeException;
 
 public class NetworkManager {
