@@ -461,7 +461,6 @@ static void stanfordCppLibTerminateHandler() {
         std::string ex = "Unknown";
         FILL_IN_EXCEPTION_TRACE(ex, "An exception", std::string());
     }
-    signalHandlerDisable();   // don't want both a signal AND a terminate() call
 }
 
 } // namespace exceptions

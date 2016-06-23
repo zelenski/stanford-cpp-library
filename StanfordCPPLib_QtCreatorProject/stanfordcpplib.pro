@@ -9,9 +9,12 @@
 # - place the new files/folders into your project directory.
 # - re-open and "Configure" your project again.
 #
-# @author Marty Stepp, Reid Watson, Rasmus Rygaard, Jess Fisher, etc.
-# @version 2016/06/22
+# @author Marty Stepp
+#     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2016/06/24
 # - removed FONTSIZE setting; left to default and app configuration
+# - made output/ folder copy itself to subdir of build directory, if present
+# - improved code flow, structure, and comments
 # @version 2015/04/09
 # - decreased Mac stack size to avoid sporatic crashes on Mac systems
 # @version 2014/11/29
@@ -28,6 +31,10 @@ TEMPLATE = app
 
 # make sure we do not accidentally #include files placed in 'resources'
 CONFIG += no_include_pwd
+
+###############################################################################
+# BEGIN SECTION FOR SPECIFYING SOURCE/LIBRARY/RESOURCE FILES OF PROJECT       #
+###############################################################################
 
 # checks to ensure that the Stanford C++ library and its associated
 # Java back-end are both present in this project
@@ -80,6 +87,34 @@ exists($$PWD/*.h) {
     HEADERS += $$PWD/*.h
 }
 
+# directories examined by Qt Creator when student writes an #include statement
+INCLUDEPATH += $$PWD/lib/StanfordCPPLib/
+INCLUDEPATH += $$PWD/lib/StanfordCPPLib/private/
+INCLUDEPATH += $$PWD/lib/StanfordCPPLib/stacktrace/
+INCLUDEPATH += $$PWD/src/
+INCLUDEPATH += $$PWD/
+exists($$PWD/src/test/*.h) {
+    INCLUDEPATH += $$PWD/src/test/
+}
+
+# directories listed as "Other files" in left Project pane of Qt Creator
+OTHER_FILES += $$files(res/*)
+exists($$PWD/output/*.txt) {
+    OTHER_FILES += $$files(output/*)
+}
+exists($$PWD/*.txt) {
+    OTHER_FILES += $$files($$PWD/*.txt)
+}
+
+###############################################################################
+# END SECTION FOR SPECIFYING SOURCE/LIBRARY/RESOURCE FILES OF PROJECT         #
+###############################################################################
+
+
+###############################################################################
+# BEGIN SECTION FOR SPECIFYING COMPILER/LINKER FLAGS AND LIBRARIES            #
+###############################################################################
+
 # set up flags for the C++ compiler
 # (In general, many warnings/errors are enabled to tighten compile-time checking.
 # A few overly pedantic/confusing errors are turned off for simplicity.)
@@ -93,31 +128,43 @@ QMAKE_CXXFLAGS += -Wno-missing-field-initializers
 QMAKE_CXXFLAGS += -Wno-sign-compare
 QMAKE_CXXFLAGS += -Wno-write-strings
 
+# additional flags for Windows
+win32 {
+    # increase system stack size (helpful for recursive programs)
+    QMAKE_LFLAGS += -Wl,--stack,536870912
+    LIBS += -lDbghelp
+    LIBS += -lbfd
+    LIBS += -limagehlp
+}
+
+# additional flags for Mac OS X
+macx {
+    # increase system stack size (helpful for recursive programs)
+    # (this has been disabled because it led to crashes on many systems)
+    #QMAKE_LFLAGS += -Wl,-stack_size,0x2000000
+
+    # calling cache() reduces warnings on Mac OS X systems
+    cache()
+    QMAKE_MAC_SDK = macosx
+}
+
+# additional flags for Linux
 unix:!macx {
     QMAKE_CXXFLAGS += -rdynamic
     QMAKE_LFLAGS += -rdynamic
     QMAKE_LFLAGS += -Wl,--export-dynamic
     QMAKE_CXXFLAGS += -Wl,--export-dynamic
 }
+
+# additional flags for non-Windows systems (Mac and Linux)
 !win32 {
     QMAKE_CXXFLAGS += -Wno-dangling-field
     QMAKE_CXXFLAGS += -Wno-unused-const-variable
     LIBS += -ldl
 }
 
-# increase system stack size (helpful for recursive programs)
-win32 {
-    QMAKE_LFLAGS += -Wl,--stack,536870912
-    LIBS += -lDbghelp
-    LIBS += -lbfd
-    #LIBS += -liberty
-    LIBS += -limagehlp
-}
-macx {
-    #QMAKE_LFLAGS += -Wl,-stack_size,0x2000000
-}
-
-# set up flags used internally by the Stanford C++ libraries
+# set up configuration flags used internally by the Stanford C++ libraries
+# These flags are all optional but can simplify project configuration.
 # (setting x/y to 999999 centers the window)
 # (see platform.cpp/h for descriptions of some of these flags)
 DEFINES += SPL_CONSOLE_X=999999
@@ -127,24 +174,24 @@ DEFINES += SPL_CONSOLE_HEIGHT=500
 DEFINES += SPL_CONSOLE_ECHO
 DEFINES += SPL_CONSOLE_EXIT_ON_CLOSE
 DEFINES += SPL_VERIFY_JAVA_BACKEND_VERSION
-DEFINES += SPL_PROJECT_VERSION=20160622
+DEFINES += SPL_PROJECT_VERSION=20160624
 DEFINES += PQUEUE_ALLOW_HEAP_ACCESS
 DEFINES += PQUEUE_PRINT_IN_HEAP_ORDER
 
-# directories examined by Qt Creator when student writes an #include statement
-INCLUDEPATH += $$PWD/lib/StanfordCPPLib/
-INCLUDEPATH += $$PWD/lib/StanfordCPPLib/private/
-INCLUDEPATH += $$PWD/lib/StanfordCPPLib/stacktrace/
-INCLUDEPATH += $$PWD/src/
-INCLUDEPATH += $$PWD/
-exists($$PWD/src/test/*.h) {
-    INCLUDEPATH += $$PWD/src/test/
+# build-specific options (debug vs release)
+
+# make 'debug' target (default) use no optimization, generate debugger symbols,
+# and catch/print to console any uncaught exceptions thrown by the program
+CONFIG(debug, debug|release) {
+    QMAKE_CXXFLAGS += -O0
+    QMAKE_CXXFLAGS += -g3
+    QMAKE_CXXFLAGS += -ggdb3
+    QMAKE_CXXFLAGS += -fno-inline
+    DEFINES += SPL_CONSOLE_PRINT_EXCEPTIONS
 }
 
-# build-specific options (debug vs release)
+# make 'release' target be statically linked so it is a stand-alone executable
 CONFIG(release, debug|release) {
-    # make 'release' target be statically linked so it is a stand-alone executable
-    # (this code comes from Rasmus Rygaard)
     QMAKE_CXXFLAGS += -O2
     macx {
         QMAKE_POST_LINK += 'macdeployqt $${OUT_PWD}/$${TARGET}.app && rm $${OUT_PWD}/*.o && rm $${OUT_PWD}/Makefile'
@@ -180,15 +227,15 @@ CONFIG(release, debug|release) {
             && del $${REMOVE_FILES}'
     }
 }
-CONFIG(debug, debug|release) {
-    # make 'debug' target use no optimization, generate debugger symbols,
-    # and catch/print any uncaught exceptions thrown by the program
-    QMAKE_CXXFLAGS += -O0
-    QMAKE_CXXFLAGS += -g3
-    QMAKE_CXXFLAGS += -ggdb3
-    QMAKE_CXXFLAGS += -fno-inline
-    DEFINES += SPL_CONSOLE_PRINT_EXCEPTIONS
-}
+
+###############################################################################
+# END SECTION FOR SPECIFYING COMPILER/LINKER FLAGS AND LIBRARIES              #
+###############################################################################
+
+
+###############################################################################
+# BEGIN SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING            #
+###############################################################################
 
 # This function copies the given files to the destination directory.
 # Used to place important resources from res/ and spl.jar into build/ folder.
@@ -212,6 +259,7 @@ defineTest(copyToDestdir) {
     export(copyResources.commands)
 }
 
+# specify files to copy on non-Windows systems
 !win32 {
     copyToDestdir($$files($$PWD/res/*))
     copyToDestdir($$files($$PWD/lib/*.jar))
@@ -219,6 +267,8 @@ defineTest(copyToDestdir) {
         copyToDestdir($$files($$PWD/*.txt))
     }
 }
+
+# specify files to copy on Windows systems
 win32 {
     copyToDestdir($$PWD/res)
     copyToDestdir($$PWD/lib/*.jar)
@@ -228,30 +278,38 @@ win32 {
     }
 }
 
+# copy output/ dir to an output/ subdir of the build directory
+exists($$PWD/output/*) {
+    copydata.commands = $(COPY_DIR) '"'$$PWD/output'"' '"'$$OUT_PWD'"'
+    first.depends = $(first) copydata
+    export(first.depends)
+    export(copydata.commands)
+}
+
+# copy support files such as library JAR and addr2line
 copyResources.input += $$files($$PWD/lib/*.jar)
 win32 {
     copyResources.input += $$files($$PWD/lib/addr2line.exe)
 }
 copyResources.input += $$files($$PWD/res/*)
+exists($$PWD/output/*.txt) {
+    copyResources.input += $$files(output/*)
+}
 exists($$PWD/*.txt) {
     copyResources.input += $$files($$PWD/*.txt)
 }
 
-OTHER_FILES += $$files(res/*)
-exists($$PWD/*.txt) {
-    OTHER_FILES += $$files($$PWD/*.txt)
-}
-
-QMAKE_EXTRA_TARGETS += copyResources
+QMAKE_EXTRA_TARGETS += copyResources first copydata
 POST_TARGETDEPS += copyResources
 
-# Platform-specific project settings to reduce warnings on Mac OS X systems
-macx {
-    cache()
-    QMAKE_MAC_SDK = macosx
-}
+###############################################################################
+# END SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING              #
+###############################################################################
 
-# ================== END GENERAL PROJECT SETTINGS ==================
+
+###############################################################################
+# BEGIN SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                             #
+###############################################################################
 
 # settings specific to CS 106 B/X auto-grading programs; do not modify
 exists($$PWD/lib/autograder/*.cpp) {
@@ -300,3 +358,8 @@ exists($$PWD/lib/autograder/*.cpp) {
         copyToDestdir($$files($$PWD/*.h))
     }
 }
+###############################################################################
+# END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
+###############################################################################
+
+# END OF FILE (this should be line #365; if not, your .pro has been changed!)
