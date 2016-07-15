@@ -8,6 +8,29 @@
 #include <string>
 using namespace std;
 
+void animationTest() {
+    for (int i = 0; i < 20; i++) {
+        cout << "Frame #" << i << endl;
+        pause(200);
+        clearConsole();
+    }
+    getLine("animation complete.");
+    setConsoleClearEnabled(false);
+    for (int i = 0; i < 20; i++) {
+        cout << "Frame #" << i << endl;
+        pause(200);
+        clearConsole();
+    }
+    getLine("animation 2 complete (no clear).");
+    setConsoleClearEnabled(true);
+    for (int i = 0; i < 20; i++) {
+        cout << "Frame #" << i << endl;
+        pause(200);
+        clearConsole();
+    }
+    getLine("animation 3 complete (w/ clear).");
+}
+
 void cinOutTest() {
     cout << "Hello, world! This is main!" << endl;
     for (int i = 0; i < 100; i++) {

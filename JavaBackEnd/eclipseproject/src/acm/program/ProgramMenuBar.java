@@ -152,8 +152,10 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 	protected KeyStroke COMMAND_HOME;
 	protected KeyStroke COMMAND_L;
 	protected KeyStroke COMMAND_MINUS;
+	protected KeyStroke COMMAND_SHIFT_MINUS;
 	protected KeyStroke COMMAND_P;
 	protected KeyStroke COMMAND_PLUS;
+	protected KeyStroke COMMAND_SHIFT_PLUS;
 	protected KeyStroke COMMAND_Q;
 	protected KeyStroke COMMAND_S;
 	protected KeyStroke COMMAND_V;
@@ -167,9 +169,11 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 	protected KeyStroke CTRL_HOME;
 	protected KeyStroke CTRL_L;
 	protected KeyStroke CTRL_MINUS;
+	protected KeyStroke CTRL_SHIFT_MINUS;
 	protected KeyStroke CTRL_P;
 	protected KeyStroke CTRL_Q;
 	protected KeyStroke CTRL_PLUS;
+	protected KeyStroke CTRL_SHIFT_PLUS;
 	protected KeyStroke CTRL_S;
 	protected KeyStroke CTRL_V;
 	protected KeyStroke CTRL_W;
@@ -211,8 +215,10 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		COMMAND_HOME = KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.META_DOWN_MASK);
 		COMMAND_L = KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.META_DOWN_MASK);
 		COMMAND_MINUS = KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.META_DOWN_MASK);
+		COMMAND_SHIFT_MINUS = KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.META_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK);
 		COMMAND_P = KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.META_DOWN_MASK);
 		COMMAND_PLUS = KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, KeyEvent.META_DOWN_MASK);
+		COMMAND_SHIFT_PLUS = KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, KeyEvent.META_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK);
 		COMMAND_Q = KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.META_DOWN_MASK);
 		COMMAND_S = KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.META_DOWN_MASK);
 		COMMAND_V = KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.META_DOWN_MASK);
@@ -225,8 +231,10 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		CTRL_HOME = KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.CTRL_DOWN_MASK);
 		CTRL_L = KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_DOWN_MASK);
 		CTRL_MINUS = KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_SHIFT_MINUS = KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK);
 		CTRL_P = KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_DOWN_MASK);
 		CTRL_PLUS = KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_SHIFT_PLUS = KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK);
 		CTRL_Q = KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK);
 		CTRL_S = KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK);
 		CTRL_V = KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK);
@@ -552,10 +560,10 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 				consoleProgram.scrollPageUp();
 				return true;
 			} else if (stroke.equals(CTRL_PLUS) || stroke.equals(COMMAND_PLUS) || stroke.equals(CTRL_EQUALS)
-					|| stroke.equals(COMMAND_EQUALS)) {
+					|| stroke.equals(COMMAND_EQUALS) || stroke.equals(CTRL_SHIFT_PLUS) || stroke.equals(COMMAND_SHIFT_PLUS)) {
 				consoleProgram.fontEnlarge();
 				return true;
-			} else if (stroke.equals(CTRL_MINUS) || stroke.equals(COMMAND_MINUS)) {
+			} else if (stroke.equals(CTRL_MINUS) || stroke.equals(COMMAND_MINUS) || stroke.equals(CTRL_SHIFT_MINUS) || stroke.equals(COMMAND_SHIFT_MINUS)) {
 				consoleProgram.fontShrink();
 				return true;
 			} else if (stroke.equals(CTRL_B) || stroke.equals(COMMAND_B)) {

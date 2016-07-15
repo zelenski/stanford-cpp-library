@@ -63,6 +63,7 @@ int main() {
         cout << "   STUFF RELATED TO INPUT/OUTPUT:" << endl;
         cout << "e) cout / cerr mix" << endl;
         cout << "i) cin / cout" << endl;
+        cout << "an) animation" << endl;
         cout << "p) pipe" << endl;
         cout << "s) strings" << endl;
         cout << "u) urlstream" << endl;
@@ -88,6 +89,8 @@ int main() {
         string cmd = getLine("Command (Enter to quit)?");
         if (cmd.empty()) {
             break;
+        } else if (cmd == "an") {
+            animationTest();
         } else if (cmd == "c") {
             randomElementTest();
             compareTest();

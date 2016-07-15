@@ -75,6 +75,31 @@ public class Grid<E> {
 		return Arrays.deepToString(array);
 	}
 	
+	public String toString2D() {
+		return "{" + toString2D(
+				/* rowStart */     "{",
+				/* rowEnd */       "}",
+				/* colSeparator */ ", ",
+				/* rowSeparator */ ",\n ")
+				+ "}";
+	}
+	
+	public String toString2D(String rowStart, String rowEnd, String colSeparator, String rowSeparator) {
+		StringBuilder sb = new StringBuilder();
+		for (int row = 0; row < numRows(); row++) {
+			sb.append(rowStart);
+			for (int col = 0; col < numCols(); col++) {
+				if (col > 0) {
+					sb.append(colSeparator);
+				}
+				sb.append(get(row, col));
+			}
+			sb.append(rowEnd);
+			sb.append(rowSeparator);
+		}
+		return sb.toString();
+	}
+	
 	public int width() {
 		return cols;
 	}

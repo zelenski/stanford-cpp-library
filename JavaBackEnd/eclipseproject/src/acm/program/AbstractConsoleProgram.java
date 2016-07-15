@@ -12,26 +12,28 @@
 package acm.program;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.util.Properties;
 import javax.swing.*;
-
 import acm.gui.JFontChooser;
 import acm.io.*;
 import acm.util.JTFTools;
 import stanford.cs106.diff.DiffGui;
 import stanford.cs106.gui.GuiUtils;
 import stanford.cs106.io.IOUtils;
-import stanford.cs106.util.SystemProperties;
+import stanford.cs106.util.*;
 
 public abstract class AbstractConsoleProgram extends Program {
 	private static final int DEFAULT_LINE_HEIGHT = 16;
+	private static final int FONT_MIN_SIZE = 4;
+	private static final int FONT_MAX_SIZE = 255;
 	
 	private boolean fontHasBeenSet = false;
 	private boolean backgroundHasBeenSet = false;
 	private boolean foregroundHasBeenSet = false;
-
+	private boolean mouseListenersAdded = false;
+	
 	/* Method: setFont(str) */
 	/**
 	 * Sets the font used for the console as specified by the string
@@ -139,8 +141,11 @@ public abstract class AbstractConsoleProgram extends Program {
 	private void fontChangeSize(int increment) {
 		Font font = fontExtract();
 		if (font != null) {
-			font = font.deriveFont((float) font.getSize() + increment);
-			this.setFont(font);
+			float newSize = (float) font.getSize() + increment;
+			if (newSize >= FONT_MIN_SIZE && font.getSize() <= FONT_MAX_SIZE) {
+				font = font.deriveFont(newSize);
+				this.setFont(font);
+			}
 		}
 	}
 
@@ -157,24 +162,47 @@ public abstract class AbstractConsoleProgram extends Program {
 
 	private JScrollPane getScrollPane() {
 		IOConsole console = getConsole();
-		StandardConsoleModel model = (StandardConsoleModel) console.getConsoleModel();
-		return model.getScrollPane();
+		if (console != null && console.getConsoleModel() instanceof StandardConsoleModel) {
+			StandardConsoleModel model = (StandardConsoleModel) console.getConsoleModel();
+			return model.getScrollPane();
+		} else {
+			return null;
+		}
 	}
 
 	public void historyDown() {
 		IOConsole console = getConsole();
-		StandardConsoleModel model = (StandardConsoleModel) console.getConsoleModel();
-		model.historyDown();
+		if (console != null && console.getConsoleModel() instanceof StandardConsoleModel) {
+			StandardConsoleModel model = (StandardConsoleModel) console.getConsoleModel();
+			model.historyDown();
+		}
 	}
 
 	public void historyUp() {
 		IOConsole console = getConsole();
-		StandardConsoleModel model = (StandardConsoleModel) console.getConsoleModel();
-		model.historyUp();
+		if (console != null && console.getConsoleModel() instanceof StandardConsoleModel) {
+			StandardConsoleModel model = (StandardConsoleModel) console.getConsoleModel();
+			model.historyUp();
+		}
 	}
 	
 	@Override
 	protected void loadConfiguration(Properties props) {
+		if (!mouseListenersAdded) {
+			mouseListenersAdded = true;
+			
+			// try to listen to mouse wheel scroll events
+			addMouseWheelListener(this);
+			getConsole().addMouseWheelListener(this);
+			IOConsole console = getConsole();
+			if (console != null && console.getConsoleModel() instanceof StandardConsoleModel) {
+				StandardConsoleModel model = (StandardConsoleModel) console.getConsoleModel();
+				if (model.getTextPane() != null) {
+					model.getTextPane().addMouseWheelListener(this);
+				}
+			}
+		}
+		
 		if (props.containsKey("background")) {
 			Color background = JTFTools.decodeColor(String.valueOf(props.get("background")));
 			setBackground(background);
@@ -231,6 +259,26 @@ public abstract class AbstractConsoleProgram extends Program {
 		}
 	}
 	
+	/**
+	 * Implementation of MouseWheelListener interface.
+	 * When you Ctrl-wheel or Command-wheel, the font will grow or shrink.
+	 */
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		// JOptionPane.showMessageDialog(this, "mouseWheelMoved(" + e + ")");
+		if (e.isControlDown() || e.isAltDown() || e.isMetaDown() || e.isShiftDown()) {
+			int notches = e.getWheelRotation();
+			if (notches < 0) {
+				// mouse wheel moved up
+				fontEnlarge();
+			} else {
+				// mouse wheel moved down
+				fontShrink();
+			}
+		} else {
+			// re-dispatch the event so we do not block regular scrolling
+			e.getComponent().getParent().dispatchEvent(e);
+		}
+	}
 
 	private int scrollPageHeight() {
 		JScrollPane scroll = getScrollPane();

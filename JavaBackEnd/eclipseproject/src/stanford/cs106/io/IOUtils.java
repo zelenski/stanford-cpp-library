@@ -1,6 +1,12 @@
+/*
+ * @version 2016/07/13
+ * - added readEntireReader, readEntireScanner, readEntireStream
+ */
+
 package stanford.cs106.io;
 
 import java.io.*;
+import java.util.*;
 
 /**
  * Utility methods related to file processing and I/O.
@@ -110,14 +116,7 @@ public class IOUtils {
 	public static String readEntireFile(File file) {
 		try {
 			FileReader fr = new FileReader(file);
-			BufferedReader reader = new BufferedReader(fr);
-			StringBuilder text = new StringBuilder();
-			while (reader.ready()) {
-				text.append((char) reader.read());
-			}
-			reader.close();
-			fr.close();
-			return text.toString();
+			return readEntireReader(fr);
 		} catch (IOException ioe) {
 			throw new IORuntimeException(ioe);
 		}
@@ -129,6 +128,57 @@ public class IOUtils {
 	 */
 	public static String readEntireFile(String fileName) {
 		return readEntireFile(new File(fileName));
+	}
+	
+	/**
+	 * Reads the given reader's text fully and returns it as a String.
+	 * @throws FileNotFoundException if file cannot be read
+	 */
+	public static String readEntireReader(Reader reader) {
+		try {
+			BufferedReader breader = new BufferedReader(reader);
+			StringBuilder text = new StringBuilder();
+			while (breader.ready()) {
+				text.append((char) breader.read());
+			}
+			breader.close();
+			reader.close();
+			return text.toString();
+		} catch (IOException ioe) {
+			throw new IORuntimeException(ioe);
+		}
+	}
+	
+	/**
+	 * Reads the given scanner's text fully and returns it as a String.
+	 */
+	public static String readEntireScanner(Scanner input) {
+		StringBuilder text = new StringBuilder();
+		while (input.hasNextLine()) {
+			text.append(input.hasNextLine());
+			text.append('\n');
+		}
+		input.close();
+		return text.toString();
+	}
+	
+	/**
+	 * Reads the given stream's text fully and returns it as a String.
+	 * @throws FileNotFoundException if file cannot be read
+	 */
+	public static String readEntireStream(InputStream stream) {
+		try {
+			BufferedReader breader = new BufferedReader(new InputStreamReader(stream));
+			StringBuilder text = new StringBuilder();
+			while (breader.ready()) {
+				text.append((char) breader.read());
+			}
+			breader.close();
+			stream.close();
+			return text.toString();
+		} catch (IOException ioe) {
+			throw new IORuntimeException(ioe);
+		}
 	}
 	
 	/**

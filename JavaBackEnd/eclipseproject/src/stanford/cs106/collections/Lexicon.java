@@ -1,13 +1,22 @@
 /*
  * @author Marty Stepp
- * @version 2015/05/28
+ * @version 2016/07/13
+ * - added iterator, implementing Iterable<String> for for-each looping
+ * - added constructors that take an input source
+ * - added addWordsFrom(...) methods
+ * 
+ * Implementation notes: doesn't totally work. Has all of A-Z as prefixes,
+ * regardless of contents, and doesn't support removal.
+ * Implemented naively using just a set of strings.
  */
 
 package stanford.cs106.collections;
 
+import java.io.*;
 import java.util.*;
+import stanford.cs106.io.IORuntimeException;
 
-public class Lexicon {
+public class Lexicon implements Iterable<String> {
 	private Set<String> words;
 	private Set<String> knownPrefixes;
 	
@@ -20,6 +29,10 @@ public class Lexicon {
 		}
 	}
 	
+	public Lexicon(String filename) {
+		addWordsFromFile(filename);
+	}
+	
 	public void add(String word) {
 		word = word.toUpperCase();
 		words.add(word);
@@ -28,12 +41,48 @@ public class Lexicon {
 		}
 	}
 	
+	public void addWordsFrom(InputStream input) {
+		Scanner scan = new Scanner(input);
+		addWordsFrom(scan);
+	}
+	
+	public void addWordsFrom(Reader reader) {
+		Scanner scan = new Scanner(reader);
+		addWordsFrom(scan);
+	}
+	
+	public void addWordsFrom(Scanner input) {
+		while (input.hasNextLine()) {
+			String line = input.nextLine().trim();
+			if (!line.isEmpty()) {
+				add(line);
+			}
+		}
+	}
+	
+	public void addWordsFromFile(File file) {
+		try {
+			Scanner input = new Scanner(file);
+			addWordsFrom(input);
+		} catch (FileNotFoundException fnfe) {
+			throw new IORuntimeException(fnfe);
+		}
+	}
+	
+	public void addWordsFromFile(String filename) {
+		addWordsFromFile(new File(filename));
+	}
+	
 	public boolean contains(String word) {
 		return words.contains(word.toUpperCase());
 	}
 	
 	public boolean containsPrefix(String prefix) {
 		return knownPrefixes.contains(prefix.toUpperCase());
+	}
+	
+	public Iterator<String> iterator() {
+		return Collections.unmodifiableSet(words).iterator();
 	}
 	
 	public int size() {

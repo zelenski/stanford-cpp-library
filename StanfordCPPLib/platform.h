@@ -61,6 +61,8 @@ public:
     std::string cpplib_getCppLibraryVersion();
     std::string cpplib_getJavaBackEndVersion();
     void cpplib_setCppLibraryVersion();
+    void diffimage_compareWindowToImage(const GWindow& gwindow, const std::string& file2);
+    void diffimage_show(const std::string& file1, const std::string& file2);
     std::string file_openFileDialog(std::string title, std::string mode, std::string path);
     void filelib_createDirectory(std::string path);
     std::string filelib_expandPathname(std::string filename);

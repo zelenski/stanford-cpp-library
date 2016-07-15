@@ -2,6 +2,7 @@
 #define _testcases_h
 
 // collection tests
+void animationTest();
 void compareTest();
 void foreachTest();
 void hashCodeTest();

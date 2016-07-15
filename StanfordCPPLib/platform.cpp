@@ -4,6 +4,8 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2016/07/06
+ * - added functions for showing DiffImage window to compare graphical output
  * @version 2016/03/16
  * - added functions for HTTP server
  * @version 2015/10/21
@@ -1273,6 +1275,26 @@ void Platform::garc_setSweepAngle(GObject* gobj, double angle) {
     std::ostringstream os;
     os << "GArc.setSweepAngle(\"" << gobj << "\", " << angle << ")";
     putPipe(os.str());
+}
+
+void Platform::diffimage_compareWindowToImage(const GWindow& gwindow, const std::string& file2) {
+    std::ostringstream os;
+    os << "DiffImage.compareWindowToImage(\"" << gwindow.gwd << "\", ";
+    writeQuotedString(os, file2);
+    os << ")";
+    putPipe(os.str());
+    getResult();   // read "ok"; modal dialog
+}
+
+void Platform::diffimage_show(const std::string& file1, const std::string& file2) {
+    std::ostringstream os;
+    os << "DiffImage.show(";
+    writeQuotedString(os, file1);
+    os << ", ";
+    writeQuotedString(os, file2);
+    os << ")";
+    putPipe(os.str());
+    getResult();   // read "ok"; modal dialog
 }
 
 void Platform::gbufferedimage_constructor(GObject* gobj, double x, double y,

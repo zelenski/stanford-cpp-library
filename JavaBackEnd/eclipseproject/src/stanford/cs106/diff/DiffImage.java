@@ -74,6 +74,7 @@ public class DiffImage extends JPanel implements ActionListener, ChangeListener 
         Object source = e.getSource();
         if (source == box) {
             highlightDiffs = box.isSelected();
+            slider.setEnabled(!highlightDiffs);
             repaint();
         } else if (source == colorButton) {
             Color color = JColorChooser.showDialog(frame,

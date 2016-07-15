@@ -11,6 +11,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2016/06/28
+# - fixed bugs with 'copydata' on Windows systems
 # @version 2016/06/24
 # - removed FONTSIZE setting; left to default and app configuration
 # - made output/ folder copy itself to subdir of build directory, if present
@@ -174,7 +176,7 @@ DEFINES += SPL_CONSOLE_HEIGHT=500
 DEFINES += SPL_CONSOLE_ECHO
 DEFINES += SPL_CONSOLE_EXIT_ON_CLOSE
 DEFINES += SPL_VERIFY_JAVA_BACKEND_VERSION
-DEFINES += SPL_PROJECT_VERSION=20160624
+DEFINES += SPL_PROJECT_VERSION=20160628
 DEFINES += PQUEUE_ALLOW_HEAP_ACCESS
 DEFINES += PQUEUE_PRINT_IN_HEAP_ORDER
 
@@ -280,7 +282,16 @@ win32 {
 
 # copy output/ dir to an output/ subdir of the build directory
 exists($$PWD/output/*) {
-    copydata.commands = $(COPY_DIR) '"'$$PWD/output'"' '"'$$OUT_PWD'"'
+    PROJECTOUTDIR = $$PWD/output
+    BUILDOUTDIR = $$OUT_PWD
+    win32 {
+        # on windows, must change / to \ in paths,
+        # and include \output at end of dest dir
+        PROJECTOUTDIR ~= s,/,\\,g
+        BUILDOUTDIR = $$OUT_PWD/output
+        BUILDOUTDIR ~= s,/,\\,g
+    }
+    copydata.commands = $(COPY_DIR) '"'$$PROJECTOUTDIR'"' '"'$$BUILDOUTDIR'"'
     first.depends = $(first) copydata
     export(first.depends)
     export(copydata.commands)
@@ -300,6 +311,7 @@ exists($$PWD/*.txt) {
 }
 
 QMAKE_EXTRA_TARGETS += copyResources first copydata
+#QMAKE_EXTRA_TARGETS += copyResources
 POST_TARGETDEPS += copyResources
 
 ###############################################################################

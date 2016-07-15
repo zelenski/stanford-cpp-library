@@ -3,6 +3,8 @@
  * ------------------
  * This file implements the ginteractors.h interface.
  * 
+ * @version 2016/07/07
+ * - added getText method to GButton, GCheckBox, GRadioButton
  * @version 2015/12/01
  * - added GInteractor::setBackground
  * @version 2015/07/05
@@ -105,6 +107,10 @@ GButton::GButton(std::string label) {
     getPlatform()->gbutton_constructor(this, label);
 }
 
+std::string GButton::getText() const {
+    return this->label;
+}
+
 std::string GButton::getType() const {
     return "GButton";
 }
@@ -123,6 +129,10 @@ std::string GButton::toString() const {
 GCheckBox::GCheckBox(std::string label) {
     this->label = label;
     getPlatform()->gcheckbox_constructor(this, label);
+}
+
+std::string GCheckBox::getText() const {
+    return this->label;
 }
 
 bool GCheckBox::isSelected() {
@@ -158,6 +168,10 @@ GRadioButton::GRadioButton(std::string label, std::string group, bool selected) 
     if (selected) {
         setSelected(true);
     }
+}
+
+std::string GRadioButton::getText() const {
+    return this->label;
 }
 
 bool GRadioButton::isSelected() {

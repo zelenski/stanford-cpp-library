@@ -1,4 +1,6 @@
 /*
+ * @version 2016/07/14
+ * - bug fix for fileExistsInsideJAR, openFileFromJAR on Windows
  * @version 2016/05/22
  * - slight refactor of outermost exception-handling code
  *   (let exceptions bubble out to aid student debugging)
@@ -113,7 +115,7 @@ import javax.swing.*;
 public abstract class Program extends JApplet
     implements IOModel, Runnable,
   			ActionListener, ComponentListener, KeyListener,
-  			MouseListener, MouseMotionListener {
+  			MouseListener, MouseMotionListener, MouseWheelListener {
 
 /** Constant specifying the north edge of the container */
 	public static final String NORTH = BorderLayout.NORTH;
@@ -1185,6 +1187,8 @@ public abstract class Program extends JApplet
  * Starts the program using the specified argument list.
  * Note: Java back-end C++ lib programs do not call start(), so any mandatory initialization
  * code that affects the back-end and C++ probably should not go here.
+ * Java back-end C++ programs instead use the JavaBackEnd class's main() / run() methods
+ * to construct and initialize Program objects.
  *
  * @usage program.start(args);
  * @param args An array of strings passed to the program
@@ -1302,7 +1306,8 @@ public abstract class Program extends JApplet
 		// fallback to using internal class stream (JAR or applet)
 		String filepath = "";
 		if (directory != null && !directory.isEmpty()) {
-			filepath += directory + File.separator;
+			// BUGFIX: use "/" instead of File.separator because JAR URLs must use / even on Windows
+			filepath += directory + "/";
 		}
 		filepath += filename;
 		InputStream stream = getClass().getResourceAsStream(filepath);
@@ -1406,7 +1411,8 @@ public abstract class Program extends JApplet
 		// fallback to using internal class stream (JAR or applet)
 		String filepath = "";
 		if (directory != null && !directory.isEmpty()) {
-			filepath += directory + File.separator;
+			// BUGFIX: use "/" instead of File.separator because JAR URLs must use / even on Windows
+			filepath += directory + "/";
 		}
 		filepath += filename;
 		InputStream stream = getClass().getResourceAsStream(filepath);
@@ -1592,6 +1598,14 @@ public abstract class Program extends JApplet
  * travels outside the domain of the object.
  */
 	public void mouseDragged(MouseEvent e) { }
+	
+	/**
+	 * Implementation of MouseWheelListener interface.
+	 * This method does nothing but can be overridden.
+	 */
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		// empty
+	}
 
 /* Method: keyTyped (implements KeyListener) */
 /**

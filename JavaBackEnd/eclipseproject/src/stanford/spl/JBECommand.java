@@ -1,3 +1,8 @@
+/*
+ * @version 2016/07/06
+ * - added DiffImage_show
+ */
+
 package stanford.spl;
 
 import acm.util.TokenScanner;
@@ -27,6 +32,8 @@ public abstract class JBECommand {
 		localHashMap.put("AutograderUnitTest.setTestRuntime", new AutograderUnitTest_setTestRuntime());
 		localHashMap.put("AutograderUnitTest.setVisible", new AutograderUnitTest_setVisible());
 		localHashMap.put("AutograderUnitTest.setWindowDescriptionText", new AutograderUnitTest_setWindowDescriptionText());
+		localHashMap.put("DiffImage.compareWindowToImage", new DiffImage_compareWindowToImage());
+		localHashMap.put("DiffImage.show", new DiffImage_show());
 		localHashMap.put("File.openFileDialog", new File_openFileDialog());
 		localHashMap.put("File.getTempFolder", new File_getTempDirectory());
 		localHashMap.put("G3DRect.create", new G3DRect_create());

@@ -226,6 +226,9 @@ void setConsoleSize(double width, double height);
  */
 void setConsoleWindowTitle(const std::string& title);
 
+// defined in gwindow.h/cpp
+extern void pause(double milliseconds);
+
 #include "private/main.h"
 
 #endif

@@ -280,6 +280,8 @@ std::string openFileDialog(std::ofstream& stream,
 std::string openFileDialog(std::ofstream& stream,
                            const std::string& title,
                            const std::string& path);
+std::string openFileDialog(const std::string& title = "Open File ...",
+                           const std::string& path = "");
 
 /*
  * Function: openOnPath

@@ -4,7 +4,8 @@
  * The list can store only ints for now.
  * See ArrayIntList.cpp for documentation of each member.
  *
- * @version 2015/08/10
+ * @version 2016/07/10
+ * - added removeDuplicates() declaration
  */
 
 #ifndef _arrayintlist_h
@@ -43,6 +44,7 @@ public:
     void mirror();
     int longestSortedSequence() const;
     bool filter(const Set<int>& set);
+    void removeDuplicates();
 
 private:
     // member variables (fields)

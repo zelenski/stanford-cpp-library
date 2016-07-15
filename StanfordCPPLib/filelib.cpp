@@ -233,6 +233,13 @@ std::string openFileDialog(std::ifstream& stream,
     return (stream.fail()) ? "" : filename;
 }
 
+std::string openFileDialog(const std::string& title,
+                           const std::string& path) {
+    std::string filename = getPlatform()->file_openFileDialog(title, "load", path);
+    if (filename == "") return "";
+    return (fileExists(filename)) ? filename : "";
+}
+
 std::string openFileDialog(std::ofstream& stream) {
     return openFileDialog(stream, "Open File", "");
 }

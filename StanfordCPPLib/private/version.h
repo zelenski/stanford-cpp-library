@@ -17,14 +17,14 @@
  * NOTE: *MUST* be zero-padded to YYYY/MM/DD format;
  *       if month or day is < 10, insert a preceding 0
  */
-#define STANFORD_CPP_LIB_VERSION "2016/03/16"
+#define STANFORD_CPP_LIB_VERSION "2016/07/07"
 
 /*
  * Minimum version of Java back-end spl.jar that is supported.
  * platform.cpp checks this and exits if spl.jar is older than
  * this to avoid incompatible versions.
  */
-#define STANFORD_JAVA_BACKEND_MINIMUM_VERSION "2016/03/16"
+#define STANFORD_JAVA_BACKEND_MINIMUM_VERSION "2016/07/07"
 
 namespace version {
 void ensureJavaBackEndVersion(std::string minVersion = "");
