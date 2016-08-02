@@ -1,14 +1,20 @@
 /*
+ * Given a graphical window and an image file name, pops up a DiffImage window to compare the
+ * window (actual output) to the image (expected output) for differences.
+ * @version 2016/07/30
+ * - added descriptive text labels to the two sides of the diff
  * @version 2016/07/06
+ * - initial version
  */
 
 package stanford.spl;
 
 import acm.util.*;
-import stanford.cs106.diff.DiffImage;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import stanford.cs106.diff.DiffImage;
+import stanford.cs106.io.IORuntimeException;
 
 public class DiffImage_compareWindowToImage extends JBECommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
@@ -16,7 +22,7 @@ public class DiffImage_compareWindowToImage extends JBECommand {
 		String windowID = nextString(paramTokenScanner);
 		JBEWindow window = paramJavaBackEnd.getWindow(windowID);
 		paramTokenScanner.verifyToken(",");
-		String file = nextString(paramTokenScanner);
+		String filename = nextString(paramTokenScanner);
 		paramTokenScanner.verifyToken(")");
 		
 		if (window != null) {
@@ -26,17 +32,23 @@ public class DiffImage_compareWindowToImage extends JBECommand {
 			canvas.paint(img.getGraphics());
 			
 			// diff it
-			Image image1 = img;
-			Image image2 = MediaTools.loadImage(file);
+			File file = new File(filename);
 			try {
+				
+				Image image1 = MediaTools.loadImage(filename);
+				Image image2 = img;
+				
 				DiffImage diff = new DiffImage(image1, image2);
+				diff.setImage1Label(file.getName());
+				diff.setImage2Label("window");
 				diff.setVisible(true);
-			} catch (IOException ioe) {
+				
+				// useless "ok" result for C++ lib to throw away, to make dialog modal
+				SplPipeDecoder.writeResult("ok");
+			} catch (IORuntimeException ioe) {
 				SplPipeDecoder.writeResult("error:" + ioe.getMessage());
 			}
 		}
 		
-		// useless "ok" result for C++ lib to throw away, to make dialog modal
-		SplPipeDecoder.writeResult("ok");
 	}
 }

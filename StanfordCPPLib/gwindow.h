@@ -4,6 +4,8 @@
  * This file defines the <code>GWindow</code> class which supports
  * drawing graphical objects on the screen.
  * 
+ * @version 2016/08/02
+ * - added saveCanvasPixels method
  * @version 2014/11/20
  * - added clearCanvas method
  * @version 2014/11/18
@@ -353,6 +355,11 @@ public:
      * inside it.
      */
     void pack();
+
+    /*
+     * Writes the pixels of this window's graphical canvas to the given file.
+     */
+    void saveCanvasPixels(const std::string& filename);
 
     /*
      * Method: setCanvasSize

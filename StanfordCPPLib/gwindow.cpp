@@ -5,6 +5,11 @@
  * to the appropriate methods in the Platform class, which is implemented
  * separately for each architecture.
  * 
+ * @version 2016/08/02
+ * - added saveCanvasPixels method
+ * - re-enabled setVisible(bool) method
+ * @version 2016/07/22
+ * - fixed autograder bug with exit() call in notifyOnClose function
  * @version 2015/07/05
  * - removed static global Platform variable, replaced by getPlatform as needed
  * @version 2014/11/20
@@ -151,7 +156,7 @@ void GWindow::notifyOfClose() {
             // JBE notified me that I was closed by the user.
             // JBE is already going to shut itself down.
             // I just have to shut down the C++ process.
-            exit(0);
+            std::exit(0);
         }
     }
 }
@@ -218,8 +223,7 @@ void GWindow::setVisible(bool flag) {
         if (gwd) {
             gwd->visible = flag;
         }
-        // *** BUGBUG; commented out
-        // getPlatform()->gwindow_setVisible(*this, flag);
+        getPlatform()->gwindow_setVisible(*this, flag);
     }
 }
 
@@ -364,6 +368,10 @@ void GWindow::pack() {
     if (isOpen()) {
         getPlatform()->gwindow_pack(*this);
     }
+}
+
+void GWindow::saveCanvasPixels(const std::string& filename) {
+    getPlatform()->gwindow_saveCanvasPixels(*this, filename);
 }
 
 void GWindow::setCanvasSize(int width, int height) {

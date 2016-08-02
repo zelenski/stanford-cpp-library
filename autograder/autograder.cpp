@@ -6,6 +6,9 @@
  * See autograder.h for documentation of each member.
  * 
  * @author Marty Stepp
+ * @version 2016/08/02
+ * - added setExitEnabled(bool) function and exitEnabled flag
+ * - added assertEqualsImage
  * @version 2015/10/26
  * - added wrapped version of exit(int) to alert grader when students
  *   try to call exit() in their code to quit the program
@@ -29,7 +32,9 @@
 #include "autograder.h"
 #include <cstdio>
 #include "console.h"
+#include "exceptions.h"
 #include "filelib.h"
+#include "gbufferedimage.h"
 #include "gevents.h"
 #include "ginteractors.h"
 #include "goptionpane.h"
@@ -63,8 +68,9 @@ AutograderFlags::AutograderFlags() {
     aboutText = DEFAULT_ABOUT_TEXT;
     failsToPrintPerTest = 1;
     testNameWidth = -1;
-    showInputPanel = true;
+    showInputPanel = false;
     inputPanelFilename = INPUT_PANE_FILENAME;
+    exitEnabled = true;
     showLateDays = true;
     graphicalUI = false;
     callbackStart = NULL;
@@ -182,6 +188,10 @@ void setCurrentTestCaseName(const std::string& testName) {
 
 void setCurrentTestShouldRun(bool shouldRun) {
     FLAGS.currentTestShouldRun = shouldRun;
+}
+
+void setExitEnabled(bool enabled) {
+    FLAGS.exitEnabled = enabled;
 }
 
 void setFailDetails(const autograder::UnitTestDetails& deets) {
@@ -542,8 +552,7 @@ static std::string addAutograderButton(GWindow& gui, const std::string& text, co
 }
 
 int autograderGraphicalMain(int argc, char** argv) {
-    GWindow gui;
-    gui.setVisible(false);
+    GWindow gui(500, 300, /* visible */ false);
     gui.setTitle(FLAGS.assignmentName + " Autograder");
     gui.setCanvasSize(0, 0);
     gui.setExitOnClose(true);
@@ -626,6 +635,7 @@ int autograderGraphicalMain(int argc, char** argv) {
                 GOptionPane::showMessageDialog(FLAGS.aboutText, "About Autograder",
                                                GOptionPane::MessageType::INFORMATION);
             } else if (cmd == exitText) {
+                autograder::setExitEnabled(true);   // don't block exit() call
                 gui.close();
                 break;
             } else {
@@ -650,13 +660,33 @@ int autograderGraphicalMain(int argc, char** argv) {
  * exit() in their program code.
  */
 void exit(int status) {
-    std::ostringstream out;
-    out << "Student tried to call exit(" << status << ") to exit their program. " << std::endl;
-    out << "They should not use this function; main should end through " << std::endl;
-    out << "normal program control flow." << std::endl;
-    out << "Edit their code to remove calls to exit() and run again." << std::endl;
-    error(out.str());
+    if (!autograder::FLAGS.exitEnabled) {
+        std::ostringstream out;
+        out << "Student tried to call exit(" << status << ") to exit their program. " << std::endl;
+        out << "*** They should not use this function; main should end through " << std::endl;
+        out << "*** normal program control flow." << std::endl;
+        out << "*** Edit their code to remove calls to exit() and run again.";
+        error(out.str());
+    }
+
+    // must exit either way (not return) because the function exit() is
+    // flagged by the compiler as 'noreturn'
     std::exit(status);
+}
+
+// declared in assertions.h
+void assertEqualsImage(const std::string& msg,
+                       const std::string& imagefile1,
+                       const std::string& imagefile2) {
+    GBufferedImage image1(imagefile1);
+    GBufferedImage image2(imagefile2);
+    bool imagesAreEqual = image1 == image2;
+
+    autograder::setFailDetails(autograder::UnitTestDetails(
+        autograder::UnitTestType::TEST_ASSERT_DIFF_IMAGE,
+        msg, imagefile1, imagefile2, "image",
+        imagesAreEqual));
+    EXPECT_TRUE(imagesAreEqual);
 }
 
 #undef main

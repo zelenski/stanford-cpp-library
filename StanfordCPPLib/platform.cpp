@@ -4,6 +4,12 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2016/08/02
+ * - added diffimage_compareImages method
+ * - added gwindow_saveCanvasPixels method
+ * @version 2016/07/22
+ * - fixed calls to exit(int) to explicitly call std::exit(int) to avoid conflicts
+ *   with autograder exit function meant to stop students from abusing exit(int)
  * @version 2016/07/06
  * - added functions for showing DiffImage window to compare graphical output
  * @version 2016/03/16
@@ -755,6 +761,14 @@ void Platform::gwindow_repaint(const GWindow& gw) {
     putPipe(os.str());
 }
 
+void Platform::gwindow_saveCanvasPixels(const GWindow& gw, const std::string& filename) {
+    std::ostringstream os;
+    os << "GWindow.saveCanvasPixels(\"" << gw.gwd << "\",";
+    writeQuotedString(os, filename);
+    os << ")";
+    putPipe(os.str());
+}
+
 void Platform::gwindow_setSize(const GWindow& gw, int width, int height) {
     std::ostringstream os;
     os << "GWindow.setSize(\"" << gw.gwd << "\", " << width << ", " << height
@@ -1274,6 +1288,18 @@ void Platform::garc_setStartAngle(GObject* gobj, double angle) {
 void Platform::garc_setSweepAngle(GObject* gobj, double angle) {
     std::ostringstream os;
     os << "GArc.setSweepAngle(\"" << gobj << "\", " << angle << ")";
+    putPipe(os.str());
+}
+
+void Platform::diffimage_compareImages(const std::string& file1, const std::string& file2, const std::string& outfile) {
+    std::ostringstream os;
+    os << "DiffImage.compareImages(";
+    writeQuotedString(os, file1);
+    os << ",";
+    writeQuotedString(os, file2);
+    os << ",";
+    writeQuotedString(os, outfile);
+    os << ")";
     putPipe(os.str());
 }
 
@@ -1803,10 +1829,10 @@ void Platform::gwindow_exitGraphics(bool abortBlockedConsoleIO) {
     if (abortBlockedConsoleIO && jbeconsole_isBlocked()) {
         // graphical console is blocked waiting for an I/O read;
         // won't be able to exit graphics in the JBE anyway; just exit
-        exit(0);
+        std::exit(0);
     } else {
         putPipe("GWindow.exitGraphics()");
-        exit(0);
+        std::exit(0);
     }
 }
 
@@ -2240,7 +2266,7 @@ static void sigPipeHandler(int /*signum*/) {
     fputs("*** Prematurely exiting program because console window was closed.\n", stderr);
     fputs("***\n", stderr);
     fflush(stderr);
-    exit(1);
+    std::exit(1);
 }
 #endif // SPL_HEADLESS_MODE
 
@@ -2284,7 +2310,7 @@ static void initPipe() {
         fputs(("*** " + splHomeDir + "\n").c_str(), stderr);
         fputs("***\n", stderr);
         fflush(stderr);
-        exit(1);
+        std::exit(1);
     }
     
     int toJBE[2], fromJBE[2];
@@ -2342,7 +2368,7 @@ static void initPipe() {
             fputs((std::string("***   Error was: ") + lastError + std::string("\n")).c_str(), stderr);
             fputs("***\n", stderr);
             fflush(stderr);
-            exit(1);
+            std::exit(1);
         }
 #endif // SPL_HEADLESS_MODE
     } else {
@@ -2592,7 +2618,7 @@ static GEvent parseEvent(std::string line) {
             // if waiting for keyboard input, abort it
             if (cinout_new_buf && cinout_new_buf->isBlocked()) {
                 // abortAllConsoleIO();
-                exit(0);
+                std::exit(0);
             }
 
             // close any other graphical windows and exit program
@@ -2604,9 +2630,9 @@ static GEvent parseEvent(std::string line) {
         }
 #endif // SPL_DISABLE_GRAPHICAL_CONSOLE
     } else if (name == "lastWindowClosed") {
-        exit(0);
+        std::exit(0);
     } else if (name == "lastWindowGWindow_closed") {
-        exit(0);
+        std::exit(0);
     } else {
         /* Ignore for now */
     }

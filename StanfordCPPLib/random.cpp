@@ -3,6 +3,8 @@
  * ----------------
  * This file implements the random.h interface.
  * 
+ * @version 2016/08/02
+ * - added randomColor, randomColorString
  * @version 2014/10/19
  * - alphabetized functions
  * @version 2014/10/08
@@ -63,6 +65,23 @@ bool randomChance(double p) {
 //    int index = randomInteger(0, v.size() - 1);
 //    return v[index];
 //}
+
+int randomColor() {
+    if (!autograder::fixedInts.empty()) {
+        int top = autograder::fixedInts.front();
+        autograder::fixedInts.pop();
+        return top & 0x00ffffff;
+    }
+    initRandomSeed();
+    return rand() & 0x00ffffff;
+}
+
+// don't want to depend on gwindow.h
+extern std::string convertRGBToColor(int rgb);
+
+std::string randomColorString() {
+    return convertRGBToColor(randomColor());
+}
 
 /*
  * Implementation notes: randomInteger

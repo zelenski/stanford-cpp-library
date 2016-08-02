@@ -1,5 +1,10 @@
-/**
- * Marty Stepp: I brought this in so I could overwrite/fix setPreferredSize
+/*
+ * @version 2016/08/01
+ * - added toImage method (to facilitate image diffing and autograders)
+ * @version 2016/07/20
+ * - bug fix with clear()  (wasn't working)
+ * @version ...
+ * - I brought this in so I could overwrite/fix setPreferredSize
  */
 
 package stanford.spl;
@@ -7,6 +12,7 @@ package stanford.spl;
 import acm.graphics.*;
 import java.awt.*;
 import java.awt.geom.*;
+import java.awt.image.BufferedImage;
 
 public class JBECanvas extends GCanvas {
 	private static final long serialVersionUID = 1L;
@@ -69,6 +75,9 @@ public class JBECanvas extends GCanvas {
 		this.osg.setColor(Color.WHITE);
 		this.osg.fillRect(0, 0, localDimension.width, localDimension.height);
 		this.osg.setColor(Color.BLACK);
+		if (topCompound != null) {
+			topCompound.removeAll();
+		}
 		repaint();
 	}
 
@@ -153,5 +162,16 @@ public class JBECanvas extends GCanvas {
 		paramGraphics.drawImage(this.offscreenImage, 0, 0, this);
 		this.topCompound.paint(paramGraphics);
 		super.paint(paramGraphics);
+	}
+	
+	/**
+	 * Returns the pixel contents of this canvas as a BufferedImage.
+	 */
+	public BufferedImage toImage() {
+		// dump canvas into a BufferedImage
+		BufferedImage img = new BufferedImage(preferredWidth, preferredHeight,
+				BufferedImage.TYPE_INT_ARGB);
+		paint(img.getGraphics());
+		return img;
 	}
 }

@@ -34,6 +34,7 @@ public abstract class JBECommand {
 		localHashMap.put("AutograderUnitTest.setWindowDescriptionText", new AutograderUnitTest_setWindowDescriptionText());
 		localHashMap.put("DiffImage.compareWindowToImage", new DiffImage_compareWindowToImage());
 		localHashMap.put("DiffImage.show", new DiffImage_show());
+		localHashMap.put("DiffImage.compareImages", new DiffImage_compareImages());
 		localHashMap.put("File.openFileDialog", new File_openFileDialog());
 		localHashMap.put("File.getTempFolder", new File_getTempDirectory());
 		localHashMap.put("G3DRect.create", new G3DRect_create());
@@ -169,6 +170,7 @@ public abstract class JBECommand {
 		localHashMap.put("GWindow.removeFromRegion", new GWindow_removeFromRegion());
 		localHashMap.put("GWindow.repaint", new GWindow_repaint());
 		localHashMap.put("GWindow.requestFocus", new GWindow_requestFocus());
+		localHashMap.put("GWindow.saveCanvasPixels", new GWindow_saveCanvasPixels());
 		localHashMap.put("GWindow.setCanvasSize", new GWindow_setCanvasSize());
 		localHashMap.put("GWindow.setExitOnClose", new GWindow_setExitOnClose());
 		localHashMap.put("GWindow.setLocation", new GWindow_setLocation());

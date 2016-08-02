@@ -8,7 +8,10 @@
  * can show the results in the GUI for the user.
  * 
  * @author Marty Stepp
+ * @version 2016/08/02
+ * - added assertEqualsImage
  * @version 2014/11/24
+ * - initial version
  * @since 2014/11/24
  */
 
@@ -144,7 +147,7 @@
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_FAIL, \
         msg)); \
-    GTEST_FATAL_FAILURE_(msg)
+    GTEST_FATAL_FAILURE_(msg.c_str())
 
 #define assertFailQuiet() \
     autograder::setFailDetails(autograder::UnitTestDetails( \
@@ -167,5 +170,9 @@
 #define assertThrowsAny(msg, stmt)           EXPECT_ANY_THROW(stmt)
 #define assertThrows(msg, stmt, ex)          EXPECT_THROW(stmt, ex)
 #define assertNotThrows(msg, stmt, ex)       EXPECT_NO_THROW(stmt)
+
+void assertEqualsImage(const std::string& msg,
+                       const std::string& imagefile1,
+                       const std::string& imagefile2);
 
 #endif // _assertions_h

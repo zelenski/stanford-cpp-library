@@ -5,6 +5,8 @@
  * by your Melody class.
  *
  * @author Marty Stepp
+ * @version Fri 2016/07/27
+ * - bug fix for locale issues on nextDouble parsing
  * @version Fri 2016/05/21
  * - new constructors as per conversation with Alisha Adam;
  *   can now construct by passing just a String line
@@ -31,6 +33,7 @@
 
 package stanford.cs106.audio;
 
+import java.util.Locale;
 import java.util.Scanner;
 
 /**
@@ -78,6 +81,7 @@ public class Note {
 	public Note(String line) {
 		// line = "0.2 C 4 NATURAL false"
 		Scanner input = new Scanner(line);
+		input.useLocale(Locale.US);
 		double duration = input.nextDouble();
 		Pitch pitch = Pitch.getValueOf(input.next());
 		boolean isRepeat;

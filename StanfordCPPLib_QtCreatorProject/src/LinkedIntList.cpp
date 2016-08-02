@@ -6,6 +6,7 @@
 
 #include "LinkedIntList.h"
 #include "error.h"
+#include "hashset.h"
 #include "strlib.h"
 
 int ListNode::s_allocated = 0;
@@ -43,6 +44,26 @@ void ListNode::printChain(ListNode* list, string name, int maxLength) {
         }
         cout << endl;
     }
+}
+
+ostream& operator <<(ostream& out, ListNode* front) {
+    LinkedIntList* list = new LinkedIntList();
+    list->front = front;
+    out << *list;
+    list->front = NULL;   // avoid double-free
+    return out;
+}
+
+istream& operator >>(istream& input, ListNode*& front) {
+    LinkedIntList* list = new LinkedIntList();
+    input >> *list;
+    if (input.fail()) {
+        front = NULL;
+    } else {
+        front = list->front;
+    }
+    list->front = NULL;   // avoid double-free
+    return input;
 }
 
 LinkedIntList::LinkedIntList()
@@ -148,13 +169,23 @@ int LinkedIntList::size() const {
     return count;
 }
 
+// TODO: put printing code into operator <<, call that from toString
 string LinkedIntList::toString() const {
     string result = "{";
     if (!isEmpty()) {
+        HashSet<ListNode*> visited;
         result += integerToString(front->data);
+        visited.add(front);
+
         ListNode* curr = front->next;
         while (curr != NULL) {
             result += ", " + integerToString(curr->data);
+            if (visited.contains(curr)) {
+                result += " (cycle!)";
+                break;
+            }
+
+            visited.add(curr);
             curr = curr->next;
         }
     }

@@ -1,14 +1,30 @@
+/*
+ * This is the class that represents the C++ lib GWindow class.
+ * 
+ * @version 2016/07/30
+ * - fixed constructor with false visibility (don't pop up window)
+ * - added saveCanvasPixels method for saving graphical output to a file
+ */
+
 package stanford.spl;
 
 import acm.gui.TableLayout;
+import stanford.cs106.io.IORuntimeException;
+import stanford.cs106.io.IOUtils;
+import stanford.cs106.util.CollectionUtils;
 import java.awt.BorderLayout;
 import java.awt.event.WindowEvent;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.util.*;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 
 public class JBEWindow extends JFrame {
 	private static final long serialVersionUID = 0L;
+	private static Set<String> IMAGE_FILE_TYPES = CollectionUtils.asSet(
+			"gif", "jpg", "jpeg", "png"
+	);
 	
 	private JavaBackEnd jbe;
 	private JBECanvas canvas;
@@ -107,6 +123,27 @@ public class JBEWindow extends JFrame {
 			localJPanel.remove(paramJComponent);
 			localJPanel.validate();
 			validate();
+		}
+	}
+	
+	/**
+	 * 
+	 * @param filename must be an image type like PNG, JPG, or GIF 
+	 */
+	public void saveCanvasPixels(String filename) {
+		// dump canvas into a BufferedImage
+		BufferedImage img = canvas.toImage();
+		
+		// save it
+		File file = new File(filename);
+		try {
+			String extension = IOUtils.getExtension(file).toLowerCase();
+			if (!IMAGE_FILE_TYPES.contains(extension)) {
+				extension = "png";   // default
+			}
+			ImageIO.write(img, extension, file);
+		} catch (IOException ioe) {
+			throw new IORuntimeException(ioe);
 		}
 	}
 

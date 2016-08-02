@@ -5,6 +5,8 @@
  * of the Google Test C++ unit testing framework.
  * 
  * @author Marty Stepp
+ * @version 2016/08/02
+ * - added getTestName and getCategoryName methods for unit tests
  * @version 2014/11/24
  * - heavy refactor; moved code out to autogradertest, testresultprinter, threading, unittestdetails
  * @version 2014/10/31
@@ -33,6 +35,8 @@
             this->name = #test_name; \
             this->category = #test_case_name; \
         } \
+        std::string getCategoryName() { return this->category; } \
+        std::string getTestName() { return this->name; } \
     private: \
         virtual void TestRealBody(); \
         virtual void TestBody(); \

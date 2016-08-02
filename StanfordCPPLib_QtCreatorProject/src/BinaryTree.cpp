@@ -19,21 +19,6 @@ BinaryTree::~BinaryTree() {
     root = NULL;
 }
 
-bool BinaryTree::contains(int value) {
-    return contains(root, value);
-}
-
-bool BinaryTree::contains(BinaryTreeNode* node, int value) {
-    if (node == NULL) {
-        return false;
-    } else if (node->data == value) {
-        return true;
-    } else {
-        return contains(node->left, value) ||
-               contains(node->right, value);
-    }
-}
-
 static void binaryTreeClearHelper(BinaryTreeNode*& node) {
     if (node != NULL) {
         binaryTreeClearHelper(node->left);
@@ -46,53 +31,6 @@ static void binaryTreeClearHelper(BinaryTreeNode*& node) {
 void BinaryTree::clear() {
     binaryTreeClearHelper(root);
 }
-
-void BinaryTree::print() {
-    print(root, 1);
-}
-
-void BinaryTree::print(BinaryTreeNode* node, int level) {
-    if (node != NULL) {
-        print(node->left, level+1);
-        cout << node->data << " (" << level << ")" << endl;
-        print(node->right, level+1);
-    }
-}
-
-void BinaryTree::printSideways() {
-    printSideways(root, "");
-}
-
-void BinaryTree::printSideways(BinaryTreeNode* node, string indent) {
-    if (node != NULL) {
-        printSideways(node->right, indent + "  ");
-        cout << indent << node->data << endl;
-        printSideways(node->left, indent + "  ");
-    }
-}
-
-int BinaryTree::size() {
-    return size(root);
-}
-
-int BinaryTree::size(BinaryTreeNode* node) {
-    if (node == NULL) {
-        return 0;
-    } else {
-        return 1 + size(node->left) + size(node->right);
-    }
-}
-
-//int BinaryTree::height() {
-//    return height(root);
-//}
-//int BinaryTree::height(BinaryTreeNode* node) {
-//    if (node == NULL) {
-//        return 0;
-//    } else {
-//        return 1 + max(height(node->left), height(node->right));
-//    }
-//}
 
 string BinaryTree::toString() {
     return toString(root);
@@ -184,5 +122,25 @@ istream& operator >>(istream& input, BinaryTree& tree) {
     if (getline(input, line)) {
         makeTreeFromString(tree, line);
     }
+    return input;
+}
+
+ostream& operator <<(ostream& out, BinaryTreeNode* node) {
+    BinaryTree* tree = new BinaryTree();
+    tree->root = node;
+    out << *tree;
+    tree->root = NULL;   // avoid double-free
+    return out;
+}
+
+istream& operator >>(istream& input, BinaryTreeNode*& node) {
+    BinaryTree* tree = new BinaryTree();
+    input >> *tree;
+    if (input.fail()) {
+        node = NULL;
+    } else {
+        node = tree->root;
+    }
+    tree->root = NULL;   // avoid double-free
     return input;
 }

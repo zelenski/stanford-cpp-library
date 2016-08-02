@@ -142,7 +142,7 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 	 *
 	 * @noshow
 	 */
-	protected static String colorName(Color color) {
+	public static String colorName(Color color) {
 		if (color.equals(Color.BLACK)) {
 			return "BLACK";
 		}
@@ -182,7 +182,67 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 		if (color.equals(Color.YELLOW)) {
 			return "YELLOW";
 		}
-		return "0x" + Integer.toString(color.getRGB() & 0xFFFFFF, 16).toUpperCase();
+		return colorName(color.getRGB());
+	}
+	
+	/**
+	 * Translates a color RGB int to a string representation such as "0xFF00FF" or "YELLOW".
+	 *
+	 * @noshow
+	 */
+	public static String colorName(int colorRGB) {
+		if (colorRGB == Color.BLACK.getRGB()) {
+			return "BLACK";
+		}
+		if (colorRGB == Color.BLUE.getRGB()) {
+			return "BLUE";
+		}
+		if (colorRGB == Color.CYAN.getRGB()) {
+			return "CYAN";
+		}
+		if (colorRGB == Color.DARK_GRAY.getRGB()) {
+			return "DARK_GRAY";
+		}
+		if (colorRGB == Color.GRAY.getRGB()) {
+			return "GRAY";
+		}
+		if (colorRGB == Color.GREEN.getRGB()) {
+			return "GREEN";
+		}
+		if (colorRGB == Color.LIGHT_GRAY.getRGB()) {
+			return "LIGHT_GRAY";
+		}
+		if (colorRGB == Color.MAGENTA.getRGB()) {
+			return "MAGENTA";
+		}
+		if (colorRGB == Color.ORANGE.getRGB()) {
+			return "ORANGE";
+		}
+		if (colorRGB == Color.PINK.getRGB()) {
+			return "PINK";
+		}
+		if (colorRGB == Color.RED.getRGB()) {
+			return "RED";
+		}
+		if (colorRGB == Color.WHITE.getRGB()) {
+			return "WHITE";
+		}
+		if (colorRGB == Color.YELLOW.getRGB()) {
+			return "YELLOW";
+		}
+		return String.format("0x%06x", colorRGB & 0xFFFFFF).toUpperCase();
+	}
+	
+	/**
+	 * Translates a color RGB int to a string representation such as "#ff00ff" or "dark gray".
+	 *
+	 * @noshow
+	 */
+	public static String colorNameFriendly(int colorRGB) {
+		return colorName(colorRGB)
+				.replace("0x", "#")
+				.replace("_", " ")
+				.toLowerCase();
 	}
 
 	/**

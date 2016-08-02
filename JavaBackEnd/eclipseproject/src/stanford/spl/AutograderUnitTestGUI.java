@@ -23,6 +23,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 
 import stanford.cs106.diff.DiffGui;
+import stanford.cs106.diff.DiffImage;
 import stanford.cs106.gui.*;
 import stanford.cs106.io.ResourceUtils;
 import stanford.cs106.junit.*;
@@ -121,6 +122,7 @@ public class AutograderUnitTestGUI extends Observable
 		scroll = new JScrollPane(contentPaneBox);
 		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scroll.getVerticalScrollBar().setUnitIncrement(32);
+		contentPaneBox.add(Box.createGlue());   // to eat up excess vertical space
 		frame.add(scroll, BorderLayout.CENTER);
 		
 		southLabel = new JLabel(" ");
@@ -146,8 +148,6 @@ public class AutograderUnitTestGUI extends Observable
 		if (!allCategories.containsKey(name)) {
 			final Container category = Box.createVerticalBox();
 			currentCategory = category;
-//			category.add(Box.createRigidArea(new Dimension(0, 0)));
-//			category.add(Box.createVerticalGlue());
 			category.setName("category");
 			allCategories.put(name, currentCategory);
 			if (!name.isEmpty()) {
@@ -213,7 +213,11 @@ public class AutograderUnitTestGUI extends Observable
 				category.add(top);
 			}
 			
-			contentPaneBox.add(currentCategory);
+			// add just before last index; last index is occupied by invisible 'glue' component
+			// that stretches to eat up excess vertical space
+			// (without this glue, the panels awkwardly vertically stretch)
+			contentPaneBox.add(currentCategory, contentPaneBox.getComponentCount() - 1);
+			
 			checkVisibility();
 		}
 		return allCategories.get(name);
@@ -256,6 +260,7 @@ public class AutograderUnitTestGUI extends Observable
 		testPanel.add(testWestPanel, BorderLayout.WEST);
 		
 		String testNameShort = testName.replaceAll("Test_[0-9]{1,5}_", "");
+		testNameShort = testNameShort.replaceAll("^Test_", "");
 		testInfo.description = new JLabel(testNameShort);
 		testInfo.description.setToolTipText("Click to see detailed results from this test.");
 		GuiUtils.shrinkFont(testInfo.description);
@@ -274,6 +279,11 @@ public class AutograderUnitTestGUI extends Observable
 		allTests.put(testInfo.result, testInfo);
 		
 		currentCategory.add(testPanel);
+
+		// BUGFIX: bounding the max height prevents vertical stretching on window resize
+		Dimension prefSize = currentCategory.getPreferredSize();
+		prefSize.width = Integer.MAX_VALUE;
+		currentCategory.setMaximumSize(prefSize);
 		
 		checkVisibility();
 	}
@@ -286,6 +296,7 @@ public class AutograderUnitTestGUI extends Observable
 		testCount = 0;
 		testingIsInProgress = true;
 		contentPaneBox.removeAll();
+		contentPaneBox.add(Box.createGlue());   // to eat up excess vertical space
 		contentPaneBox.validate();
 		scroll.validate();
 		updateSouthText();
@@ -662,6 +673,10 @@ public class AutograderUnitTestGUI extends Observable
 		} else if (type == "ASSERT_DIFF") {
 			shouldShowJOptionPane = false;
 			new DiffGui("expected output", expected, "student output", student).show();
+		} else if (type == "ASSERT_DIFF_IMAGE") {
+			shouldShowJOptionPane = false;
+			DiffImage diff = new DiffImage(expected, student);
+			diff.setVisible(true);
 		} else if (type == "MANUAL") {
 			shouldShowJOptionPane = true;
 			String htmlMessage = "";

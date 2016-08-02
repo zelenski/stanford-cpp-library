@@ -52,7 +52,11 @@ public:
     void mergeUpTo(int max);
     void partitionSort();
     bool removeRange(int min, int max);
-    
+
+    // operators for reading/writing lists based on a front pointer
+    // (these are used by the CodeStepByStep tool)
+    friend ostream& operator <<(ostream& out, ListNode* front);
+    friend istream& operator >>(istream& input, ListNode*& front);
 
 private:
     ListNode* front;   // pointer to front node in list;  NULL if empty
@@ -82,5 +86,8 @@ struct ListNode {
     
     static void printChain(ListNode* list, string name = "list", int maxLength = 10);
 };
+
+ostream& operator <<(ostream& out, ListNode* front);
+istream& operator >>(istream& input, ListNode*& front);
 
 #endif

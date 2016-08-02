@@ -206,11 +206,12 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		localJBEWindow.setLocation(10, 10);
 		localJBEWindow.getCanvas().initOffscreenImage();
 		localJBEWindow.getCanvas().setTopCompound(paramTopCompound);
-		this.activeWindowCount += 1;
 		localJBEWindow.setResizable(false);
-		localJBEWindow.setVisible(true);
-		waitForWindowActive(localJBEWindow);
-		if (!visible) {
+		this.activeWindowCount += 1;
+		if (visible) {
+			localJBEWindow.setVisible(true);
+			waitForWindowActive(localJBEWindow);
+		} else {
 			localJBEWindow.setVisible(false);
 		}
 	}
@@ -563,10 +564,19 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 
 	private void printEvent(String type, KeyEvent paramKeyEvent) {
 		JBECanvas localJBECanvas = (JBECanvas) paramKeyEvent.getSource();
+		String keyChar;
+		if (Character.isISOControl(paramKeyEvent.getKeyCode())
+				|| Character.isISOControl(paramKeyEvent.getKeyChar())) {
+			// special characters such as Ctrl or Shift
+			keyChar = "?";
+		} else {
+			// all other characters
+			keyChar = String.valueOf(paramKeyEvent.getKeyChar());
+		}
 		acknowledgeEvent("event:%s(\"%s\", %d, %d, %s, %d)",
 				type, localJBECanvas.getWindowId(), (long) getEventTime(),
 				convertModifiers(paramKeyEvent.getModifiersEx()),
-				paramKeyEvent.getKeyChar(), paramKeyEvent.getKeyCode());
+				keyChar, paramKeyEvent.getKeyCode());
 	}
 
 	public void mouseClicked(MouseEvent paramMouseEvent) {

@@ -5,6 +5,8 @@
  * by student code on the console.
  * 
  * @author Marty Stepp
+ * @version 2016/08/02
+ * - added some new cxx11 filters to stack traces
  * @version 2015/10/13
  * - bug fix in terminate handler to turn off signal handler at end
  * @version 2015/05/28
@@ -142,6 +144,8 @@ static bool shouldFilterOutFromStackTrace(const std::string& function) {
             || function == "??"
             || function == "error(string)"
             || function == "error"
+            || function == "_start"
+            || function == "_Unwind_Resume"
             || function == "startupMain(int, char**)"
             || function.find("stacktrace::") != std::string::npos
             || function.find("ErrorException::ErrorException") != std::string::npos
@@ -179,7 +183,9 @@ void printStackTrace(std::ostream& out) {
     for (size_t i = 0; i < entries.size(); ++i) {
         // remove references to std:: namespace
         stringReplaceInPlace(entries[i].function, "std::", "");
-        
+        stringReplaceInPlace(entries[i].function, "__cxx11::", "");
+        stringReplaceInPlace(entries[i].function, "__1::", "");   // on Mac
+
         // a few substitutions related to predefined types for simplicity
         stringReplaceInPlace(entries[i].function, "basic_ostream", "ostream");
         stringReplaceInPlace(entries[i].function, "basic_istream", "istream");
@@ -225,16 +231,16 @@ void printStackTrace(std::ostream& out) {
     }
     
     if (lineStrLength > 0) {
-        out << " *** Stack trace (line numbers are approximate):" << std::endl;
+        out << "*** Stack trace (line numbers are approximate):" << std::endl;
         if (STACK_TRACE_SHOW_TOP_BOTTOM_BARS) {
-            out << " *** "
+            out << "*** "
                       << std::setw(lineStrLength) << std::left
                       << "file:line" << "  " << "function" << std::endl;
-            out << " *** "
+            out << "*** "
                       << std::string(lineStrLength + 2 + funcNameLength, '=') << std::endl;
         }
     } else {
-        out << " *** Stack trace:" << std::endl;
+        out << "*** Stack trace:" << std::endl;
     }
     
     for (size_t i = 0; i < entries.size(); ++i) {
@@ -261,7 +267,7 @@ void printStackTrace(std::ostream& out) {
             lineStr = "line " + integerToString(entry.line);
         }
         
-        out << " *** " << std::left << std::setw(lineStrLength) << lineStr
+        out << "*** " << std::left << std::setw(lineStrLength) << lineStr
                   << "  " << entry.function << std::endl;
         
         // don't show entries beneath the student's main() function, for simplicity
@@ -270,21 +276,21 @@ void printStackTrace(std::ostream& out) {
         }
     }
     if (entries.size() == 1 && entries[0].address == fakeStackPtr) {
-        out << " *** (partial stack due to crash)" << std::endl;
+        out << "*** (partial stack due to crash)" << std::endl;
     }
 
     if (STACK_TRACE_SHOW_TOP_BOTTOM_BARS && lineStrLength > 0) {
-        out << " *** "
+        out << "*** "
                   << std::string(lineStrLength + 2 + funcNameLength, '=') << std::endl;
     }
     
-//    out << " ***" << std::endl;
-//    out << " *** NOTE:" << std::endl;
-//    out << " *** Any line numbers listed above are approximate." << std::endl;
-//    out << " *** To learn more about why the program crashed, we" << std::endl;
-//    out << " *** suggest running your program under the debugger." << std::endl;
+//    out << "***" << std::endl;
+//    out << "*** NOTE:" << std::endl;
+//    out << "*** Any line numbers listed above are approximate." << std::endl;
+//    out << "*** To learn more about why the program crashed, we" << std::endl;
+//    out << "*** suggest running your program under the debugger." << std::endl;
     
-    out << " ***" << std::endl;
+    out << "***" << std::endl;
 }
 
 // macro to avoid lots of redundancy in catch statements below
@@ -396,19 +402,19 @@ static void stanfordCppLibSignalHandler(int sig) {
     }
     
     std::cerr << std::endl;
-    std::cerr << " ***" << std::endl;
-    std::cerr << " *** STANFORD C++ LIBRARY" << std::endl;
-    std::cerr << " *** " << SIGNAL_KIND << " occurred during program execution." << std::endl;
-    std::cerr << " *** " << SIGNAL_DETAILS << std::endl;;
-    std::cerr << " ***" << std::endl;;
+    std::cerr << "***" << std::endl;
+    std::cerr << "*** STANFORD C++ LIBRARY" << std::endl;
+    std::cerr << "*** " << SIGNAL_KIND << " occurred during program execution." << std::endl;
+    std::cerr << "*** " << SIGNAL_DETAILS << std::endl;;
+    std::cerr << "***" << std::endl;;
     
 //    if (sig != SIGSTACK) {
         exceptions::printStackTrace();
 //    } else {
 //        std::string line;
 //        stacktrace::addr2line(stacktrace::getFakeCallStackPointer(), line);
-//        std::cerr << " *** (unable to print stack trace because of stack memory corruption.)" << std::endl;
-//        std::cerr << " *** " << line << std::endl;
+//        std::cerr << "*** (unable to print stack trace because of stack memory corruption.)" << std::endl;
+//        std::cerr << "*** " << line << std::endl;
 //    }
     std::cerr.flush();
     raise(sig == SIGSTACK ? SIGABRT : sig);
@@ -424,11 +430,11 @@ static void stanfordCppLibTerminateHandler() {
     
     std::string msg;
     msg += "\n";
-    msg += " ***\n";
-    msg += " *** STANFORD C++ LIBRARY \n";
-    msg += " *** " + DEFAULT_EXCEPTION_KIND + " occurred during program execution: \n";
-    msg += " *** " + DEFAULT_EXCEPTION_DETAILS + "\n";
-    msg += " ***\n";
+    msg += "***\n";
+    msg += "*** STANFORD C++ LIBRARY \n";
+    msg += "*** " + DEFAULT_EXCEPTION_KIND + " occurred during program execution: \n";
+    msg += "*** " + DEFAULT_EXCEPTION_DETAILS + "\n";
+    msg += "***\n";
     
     std::ostream& out = std::cerr;   // used by FILL_IN_EXCEPTION_TRACE macro
     try {

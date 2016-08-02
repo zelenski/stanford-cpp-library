@@ -5,6 +5,8 @@
  * autograder programs for grading student assignments.
  * 
  * @author Marty Stepp
+ * @version 2016/08/01
+ * - added setExitEnabled(bool) function
  * @version 2014/10/31
  * - added graphical autograder support (setGraphicalUI)
  * @since 2014/10/14
@@ -81,6 +83,7 @@ public:
 
     int failsToPrintPerTest;
     int testNameWidth;
+    bool exitEnabled;
     bool showInputPanel;
     bool showLateDays;
     bool graphicalUI;
@@ -179,6 +182,13 @@ void setCurrentTestCaseName(const std::string& testName);
  * Called internally by autograder; do not use.
  */
 void setCurrentTestShouldRun(bool shouldRun);
+
+/*
+ * Sets whether the system function exit() should be allowed.
+ * Default true, but can be turned off to stop student programs from
+ * calling exit() as a form of return.
+ */
+void setExitEnabled(bool enabled);
 
 /*
  * Specifies details to show for a failed test case.

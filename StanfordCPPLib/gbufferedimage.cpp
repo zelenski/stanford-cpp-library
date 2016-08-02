@@ -5,6 +5,10 @@
  * See that file for documentation of each member.
  *
  * @author Marty Stepp
+ * @version 2016/07/30
+ * - added constructor that takes a file name
+ * - converted all occurrences of string parameters to const string&
+ * - added operators ==, !=
  * @version 2015/10/08
  * - bug fixes and refactoring for pixel-based functions such as fromGrid, load
  *   to help fix bugs with Base64 encoding/decoding
@@ -71,6 +75,15 @@ GBufferedImage::GBufferedImage()
     init(/* x */ 0, /* y */ 0, /* width */ 1, /* height */ 1, 0x000000);
 }
 
+GBufferedImage::GBufferedImage(const std::string& filename)
+    : GInteractor(),
+      m_width(1),
+      m_height(1),
+      m_backgroundColor(0) {
+    init(/* x */ 0, /* y */ 0, /* width */ 1, /* height */ 1, 0x000000);
+    load(filename);
+}
+
 GBufferedImage::GBufferedImage(double width, double height,
                                int rgbBackground)
     : GInteractor(),
@@ -90,7 +103,7 @@ GBufferedImage::GBufferedImage(double x, double y, double width, double height,
 }
 
 GBufferedImage::GBufferedImage(double x, double y, double width, double height,
-                               std::string rgbBackground)
+                               const std::string& rgbBackground)
     : GInteractor(),
       m_width(width),
       m_height(height),
@@ -177,7 +190,7 @@ void GBufferedImage::fill(int rgb) {
     getPlatform()->gbufferedimage_fill(this, rgb);
 }
 
-void GBufferedImage::fill(std::string rgb) {
+void GBufferedImage::fill(const std::string& rgb) {
     fill(convertColorToRGB(rgb));
 }
 
@@ -193,7 +206,7 @@ void GBufferedImage::fillRegion(double x, double y, double width, double height,
     getPlatform()->gbufferedimage_fillRegion(this, x, y, width, height, rgb);
 }
 
-void GBufferedImage::fillRegion(double x, double y, double width, double height, std::string rgb) {
+void GBufferedImage::fillRegion(double x, double y, double width, double height, const std::string& rgb) {
     fillRegion(x, y, width, height, convertColorToRGB(rgb));
 }
 
@@ -328,7 +341,7 @@ void GBufferedImage::setRGB(double x, double y, int rgb) {
     getPlatform()->gbufferedimage_setRGB(this, x, y, rgb);
 }
 
-void GBufferedImage::setRGB(double x, double y, std::string rgb) {
+void GBufferedImage::setRGB(double x, double y, const std::string& rgb) {
     setRGB(x, y, convertColorToRGB(rgb));
 }
 
@@ -341,14 +354,14 @@ void GBufferedImage::toGrid(Grid<int>& grid) const {
 }
 
 
-void GBufferedImage::checkColor(std::string member, int rgb) const {
+void GBufferedImage::checkColor(const std::string& member, int rgb) const {
     if (rgb < 0x0 || rgb > 0xffffff) {
         error("GBufferedImage::" + member
               + ": color is outside of range 0x000000 through 0xffffff");
     }
 }
 
-void GBufferedImage::checkIndex(std::string member, double x, double y) const {
+void GBufferedImage::checkIndex(const std::string& member, double x, double y) const {
     if (!inBounds(x, y)) {
         error("GBufferedImage::" + member
               + ": (x=" + integerToString((int) x)
@@ -359,7 +372,7 @@ void GBufferedImage::checkIndex(std::string member, double x, double y) const {
     }
 }
 
-void GBufferedImage::checkSize(std::string member, double width, double height) const {
+void GBufferedImage::checkSize(const std::string& member, double width, double height) const {
     if (width < 0 || height < 0) {
         error("GBufferedImage::" + member + ": width/height cannot be negative");
     }
@@ -393,4 +406,15 @@ void GBufferedImage::init(double x, double y, double width, double height,
             fill(rgb);
         }
     }
+}
+
+bool operator ==(const GBufferedImage& img1, const GBufferedImage& img2) {
+    return img1.m_width == img2.m_width
+            && img1.m_height == img2.m_height
+            && img1.m_backgroundColor == img2.m_backgroundColor
+            && img1.m_pixels == img2.m_pixels;
+}
+
+bool operator !=(const GBufferedImage& img1, const GBufferedImage& img2) {
+    return !(img1 == img2);
 }

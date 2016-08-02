@@ -5,7 +5,7 @@
  * support code.
  * 
  * @author Marty Stepp
- * @version 2015/10/26
+ * @version 2016/08/02
  * @since 2014/03/01
  */
 
@@ -14,6 +14,6 @@
 
 // NOTE: *MUST* be zero-padded to YYYY/MM/DD format;
 //       if month or day is < 10, insert a preceding 0
-#define AUTOGRADER_LIB_VERSION "2015/10/26"
+#define AUTOGRADER_LIB_VERSION "2016/08/02"
 
 #endif

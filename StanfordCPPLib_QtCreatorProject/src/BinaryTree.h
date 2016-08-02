@@ -24,13 +24,15 @@ public:
     virtual ~BinaryTree();
     
     void clear();
-    void print();
-    void printSideways();
-    bool contains(int value);
     // int height();
-    int size();
     string toString();
     
+    // lecture problems
+    void print() const;
+    int size() const;
+    void printSideways() const;
+    bool contains(int value) const;
+
     // section problems
     int height() const;
     int countLeftNodes() const;
@@ -50,11 +52,12 @@ public:
     void removeMatchingLeaves(const BinaryTree& other);
     void swapChildrenAtLevel(int level);
 
+    // operators for reading/writing trees based on a root pointer
+    // (these are used by the CodeStepByStep tool)
+    friend ostream& operator <<(ostream& out, BinaryTreeNode* node);
+    friend istream& operator >>(istream& input, BinaryTreeNode*& node);
+
 private:
-    void print(BinaryTreeNode* node, int level);
-    void printSideways(BinaryTreeNode* node, string indent);
-    bool contains(BinaryTreeNode* node, int value);
-    // int height(BinaryTreeNode* node);
     int size(BinaryTreeNode* node);
     string toString(BinaryTreeNode* node);
     void deleteTree(BinaryTreeNode* node);
@@ -65,6 +68,9 @@ void makeTreeFromString(BinaryTree& tree, string s);
 
 ostream& operator <<(ostream& out, const BinaryTree& tree);
 istream& operator >>(istream& input, BinaryTree& tree);
+
+ostream& operator <<(ostream& out, BinaryTreeNode* node);
+istream& operator >>(istream& input, BinaryTreeNode*& node);
 
 enum Order {PRE_ORDER, IN_ORDER, POST_ORDER};
 

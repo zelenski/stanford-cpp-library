@@ -3,6 +3,8 @@
  * --------------
  * This file exports functions for generating pseudorandom numbers.
  * 
+ * @version 2016/08/02
+ * - added randomColor, randomColorString
  * @version 2014/10/19
  * - alphabetized functions
  */
@@ -10,7 +12,7 @@
 #ifndef _random_h
 #define _random_h
 
-#include <vector>
+#include <string>
 
 /*
  * Function: randomBool
@@ -31,6 +33,24 @@ bool randomBool();
  * of the time.
  */
 bool randomChance(double p);
+
+/*
+ * Function: randomColor
+ * Usage: int color = randomColor();
+ * ---------------------------------
+ * Returns a random RGB color as an integer.
+ * See also: gwindow.h convertRGBToColor()
+ */
+int randomColor();
+
+/*
+ * Function: randomColorString
+ * Usage: string color = randomColorString();
+ * ------------------------------------------
+ * Returns a random RGB color as a hex string like "#ff00ff" for magenta.
+ * See also: gwindow.h convertColorToRGB()
+ */
+std::string randomColorString();
 
 /*
  * Function: randomElement

@@ -6,17 +6,21 @@
  * See unittestdetails.h for declarations and documentation.
  *
  * @author Marty Stepp
+ * @version 2016/08/01
+ * - added ASSERT_DIFF_IMAGE
  * @version 2014/11/24
+ * - initial version
  * @since 2014/11/24
  */
 
 #include "unittestdetails.h"
 
-static std::string UNIT_TEST_TYPE_NAMES[11] = {
+static std::string UNIT_TEST_TYPE_NAMES[12] = {
     "ASSERT_EQUALS",
     "ASSERT_NOT_EQUALS",
     "ASSERT_NEAR",
     "ASSERT_DIFF",
+    "ASSERT_DIFF_IMAGE",
     "ASSERT_TRUE",
     "ASSERT_FALSE",
     "EXCEPTION",

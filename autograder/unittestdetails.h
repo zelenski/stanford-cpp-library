@@ -5,7 +5,10 @@
  * that is passed through the Java back-end to the autograder GUI to display.
  * 
  * @author Marty Stepp
+ * @version 2016/08/01
+ * - added ASSERT_DIFF_IMAGE
  * @version 2014/11/24
+ * - initial version
  * @since 2014/11/24
  */
 
@@ -18,12 +21,13 @@
 
 namespace autograder {
 
-// NOTE: must keep in sync with UNIT_TEST_TYPE_NAMES in gtest-marty.cpp
+// NOTE: must keep in sync with UNIT_TEST_TYPE_NAMES in unittestdetails.cpp
 enum UnitTestType {
     TEST_ASSERT_EQUALS = 0,
     TEST_ASSERT_NOT_EQUALS,
     TEST_ASSERT_NEAR,
     TEST_ASSERT_DIFF,
+    TEST_ASSERT_DIFF_IMAGE,
     TEST_ASSERT_TRUE,
     TEST_ASSERT_FALSE,
     TEST_EXCEPTION,

@@ -5,6 +5,9 @@
  * the platform-specific parts of the StanfordCPPLib package.  This file is
  * logically part of the implementation and is not interesting to clients.
  *
+ * @version 2016/08/02
+ * - added DiffImage methods
+ * - added GWindow savePixels method
  * @version 2015/11/07
  * - added GTable back-end methods
  * @version 2014/11/20
@@ -61,6 +64,7 @@ public:
     std::string cpplib_getCppLibraryVersion();
     std::string cpplib_getJavaBackEndVersion();
     void cpplib_setCppLibraryVersion();
+    void diffimage_compareImages(const std::string& file1, const std::string& file2, const std::string& outfile);
     void diffimage_compareWindowToImage(const GWindow& gwindow, const std::string& file2);
     void diffimage_show(const std::string& file1, const std::string& file2);
     std::string file_openFileDialog(std::string title, std::string mode, std::string path);
@@ -213,6 +217,7 @@ public:
     void gwindow_removeFromRegion(const GWindow& gw, GObject* gobj, std::string region);
     void gwindow_repaint(const GWindow& gw);
     void gwindow_requestFocus(const GWindow& gw);
+    void gwindow_saveCanvasPixels(const GWindow& gw, const std::string& filename);
     void gwindow_setCanvasSize(const GWindow& gw, int width, int height);
     void gwindow_setExitOnClose(const GWindow& gw, bool value);
     void gwindow_setLocation(const GWindow& gw, int x, int y);

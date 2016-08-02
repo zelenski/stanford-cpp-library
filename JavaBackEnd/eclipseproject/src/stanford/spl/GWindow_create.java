@@ -16,6 +16,8 @@ public class GWindow_create extends JBECommand {
 		paramTokenScanner.verifyToken(",");
 		boolean visible = nextBoolean(paramTokenScanner);
 		paramTokenScanner.verifyToken(")");
+		
+		// creates an object of type JBEWindow
 		paramJavaBackEnd.createWindow(str1, width, height,
 				(TopCompound) paramJavaBackEnd.getGObject(str2), visible);
 		paramJavaBackEnd.println("result:ok");
