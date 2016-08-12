@@ -25,7 +25,9 @@
 #ifndef _basicgraph_h
 #define _basicgraph_h
 
+#include <initializer_list>
 #include <string>
+#include <utility>
 #include "graph.h"
 #include "grid.h"
 #include "observable.h"
@@ -123,7 +125,7 @@ private:
  * Note that printing a vertex is not the same as printing a vertex pointer.
  * If you try to print a pointer, you will just see its address in hex.
  */
-std::ostream& operator<<(std::ostream& out, const Vertex& v);
+std::ostream& operator <<(std::ostream& out, const Vertex& v);
 
 /*
  * You can refer to a Vertex as a Node if you prefer.
@@ -189,7 +191,7 @@ public:
  * Note that printing an arc is not the same as printing an arc pointer.
  * If you try to print a pointer, you will just see its address in hex.
  */
-std::ostream& operator<<(std::ostream& out, const Edge& edge);
+std::ostream& operator <<(std::ostream& out, const Edge& edge);
 
 /*
  * You can refer to an Edge as an Arc if you prefer.
@@ -217,6 +219,7 @@ public:
      * Newly added behavior in BasicGraph.
      */
     BasicGraph();
+    BasicGraph(std::initializer_list<std::string> vertexList);
     void clearArcs();
     void clearEdges();
     bool containsArc(Vertex* v1, Vertex* v2) const;

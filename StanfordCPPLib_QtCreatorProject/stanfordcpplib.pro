@@ -11,6 +11,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2016/08/04
+# - added flag for throwing errors on op >> parsing (default off)
 # @version 2016/06/28
 # - fixed bugs with 'copydata' on Windows systems
 # @version 2016/06/24
@@ -176,9 +178,10 @@ DEFINES += SPL_CONSOLE_HEIGHT=500
 DEFINES += SPL_CONSOLE_ECHO
 DEFINES += SPL_CONSOLE_EXIT_ON_CLOSE
 DEFINES += SPL_VERIFY_JAVA_BACKEND_VERSION
-DEFINES += SPL_PROJECT_VERSION=20160628
+DEFINES += SPL_PROJECT_VERSION=20160804
 DEFINES += PQUEUE_ALLOW_HEAP_ACCESS
 DEFINES += PQUEUE_PRINT_IN_HEAP_ORDER
+# DEFINES += SPL_ERROR_ON_STREAM_EXTRACT
 
 # build-specific options (debug vs release)
 
@@ -374,4 +377,4 @@ exists($$PWD/lib/autograder/*.cpp) {
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #365; if not, your .pro has been changed!)
+# END OF FILE (this should be line #380; if not, your .pro has been changed!)

@@ -95,9 +95,9 @@ private:
  * Overloads the <code>&lt;&lt;</code> operator so that it is able
  * to display <code>Point</code> values.
  */
-std::ostream & operator<<(std::ostream & os, const Point & pt);
+std::ostream& operator <<(std::ostream& os, const Point& pt);
 
 // hash code function for Point objects
-int hashCode(const Point & pt);
+int hashCode(const Point& pt);
 
 #endif

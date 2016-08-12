@@ -5,7 +5,10 @@
  * implements an efficient abstraction for storing sets of values.
  * 
  * @author Marty Stepp
+ * @version 2016/08/04
+ * - fixed operator >> to not throw errors
  * @version 2015/10/26
+ * - initial version
  * @since 2015/10/26
  */
 
@@ -630,7 +633,11 @@ std::istream& operator >>(std::istream& is, LinkedHashSet<ValueType>& set) {
     char ch = '\0';
     is >> ch;
     if (ch != '{') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
         error("LinkedHashSet::operator >>: Missing {");
+#endif
+        is.setstate(std::ios_base::failbit);
+        return is;
     }
     set.clear();
     is >> ch;
@@ -638,14 +645,23 @@ std::istream& operator >>(std::istream& is, LinkedHashSet<ValueType>& set) {
         is.unget();
         while (true) {
             ValueType value;
-            readGenericValue(is, value);
+            if (!readGenericValue(is, value)) {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
+                error("LinkedHashSet::operator >>: parse error");
+#endif
+                return is;
+            }
             set += value;
             is >> ch;
             if (ch == '}') {
                 break;
             }
             if (ch != ',') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
                 error(std::string("LinkedHashSet::operator >>: Unexpected character ") + ch);
+#endif
+                is.setstate(std::ios_base::failbit);
+                return is;
             }
         }
     }

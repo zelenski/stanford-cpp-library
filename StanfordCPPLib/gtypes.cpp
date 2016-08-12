@@ -46,19 +46,19 @@ std::string GPoint::toString() const {
     return "(" + realToString(x) + ", " + realToString(y) + ")";
 }
 
-std::ostream & operator<<(std::ostream & os, const GPoint & pt) {
+std::ostream& operator <<(std::ostream& os, const GPoint& pt) {
     return os << pt.toString();
 }
 
-bool operator==(const GPoint & p1, const GPoint & p2) {
+bool operator ==(const GPoint& p1, const GPoint& p2) {
     return p1.x == p2.x && p1.y == p2.y;
 }
 
-bool operator!=(const GPoint & p1, const GPoint & p2) {
+bool operator !=(const GPoint& p1, const GPoint& p2) {
     return !(p1 == p2);
 }
 
-int hashCode(const GPoint & pt) {
+int hashCode(const GPoint& pt) {
     int hash = 0;
     for (size_t i = 0; i < sizeof(double) / sizeof(int); i++) {
         hash ^= ((int *) &pt.x)[i] ^ ((int *) &pt.y)[i];
@@ -96,19 +96,19 @@ std::string GDimension::toString() const {
     return "(" + realToString(width) + ", " + realToString(height) + ")";
 }
 
-std::ostream & operator<<(std::ostream & os, const GDimension & dim) {
+std::ostream& operator <<(std::ostream& os, const GDimension& dim) {
     return os << dim.toString();
 }
 
-bool operator==(const GDimension & d1, const GDimension & d2) {
+bool operator ==(const GDimension& d1, const GDimension& d2) {
     return d1.width == d2.width && d1.height == d2.height;
 }
 
-bool operator!=(const GDimension & d1, const GDimension & d2) {
+bool operator !=(const GDimension& d1, const GDimension& d2) {
     return !(d1 == d2);
 }
 
-int hashCode(const GDimension & dim) {
+int hashCode(const GDimension& dim) {
     int hash = 0;
     for (size_t i = 0; i < sizeof(double) / sizeof(int); i++) {
         hash ^= ((int *) &dim.width)[i] ^ ((int *) &dim.height)[i];
@@ -174,21 +174,21 @@ std::string GRectangle::toString() const {
             + realToString(width) + ", " + realToString(height) + ")";
 }
 
-std::ostream & operator<<(std::ostream & os, const GRectangle & rect) {
+std::ostream& operator <<(std::ostream& os, const GRectangle& rect) {
     return os << rect.toString();
 }
 
-bool operator==(const GRectangle & r1, const GRectangle & r2) {
+bool operator ==(const GRectangle& r1, const GRectangle& r2) {
     return r1.x == r2.x && r1.y == r2.y
             && r1.width == r2.width
             && r1.height == r2.height;
 }
 
-bool operator!=(const GRectangle & r1, const GRectangle & r2) {
+bool operator !=(const GRectangle& r1, const GRectangle& r2) {
     return !(r1 == r2);
 }
 
-int hashCode(const GRectangle & r) {
+int hashCode(const GRectangle& r) {
     int hash = 0;
     for (size_t i = 0; i < sizeof(double) / sizeof(int); i++) {
         hash ^= ((int *) &r.x)[i] ^ ((int *) &r.y)[i];

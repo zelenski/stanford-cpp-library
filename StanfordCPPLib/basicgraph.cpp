@@ -91,7 +91,7 @@ Vertex& Vertex::operator =(Vertex&& other) {
     return *this;
 }
 
-std::ostream& operator<<(std::ostream& out, const Vertex& v) {
+std::ostream& operator <<(std::ostream& out, const Vertex& v) {
     out << "Vertex{name=" << v.name;
     if (v.cost != 0.0) {
         out << ", cost=" << v.cost;
@@ -160,7 +160,7 @@ Edge& Edge::operator =(Edge&& other) {
     return *this;
 }
 
-std::ostream& operator<<(std::ostream& out, const Edge& edge) {
+std::ostream& operator <<(std::ostream& out, const Edge& edge) {
     out << "Edge{start=";
     if (edge.start == NULL) {
         out << "NULL";
@@ -189,6 +189,14 @@ std::ostream& operator<<(std::ostream& out, const Edge& edge) {
  */
 BasicGraph::BasicGraph() : Graph<Vertex, Edge>() {
     m_resetEnabled = true;
+}
+
+BasicGraph::BasicGraph(std::initializer_list<std::string> vertexList)
+        : Graph<Vertex, Edge>() {
+    m_resetEnabled = true;
+    for (std::string vertexName : vertexList) {
+        addVertex(vertexName);
+    }
 }
 
 void BasicGraph::clearArcs() {

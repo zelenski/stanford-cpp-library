@@ -5,6 +5,8 @@
  * in which values can be added and removed from the front or back.
  * It combines much of the functionality of a stack and a queue.
  * 
+ * @version 2016/08/04
+ * - fixed operator >> to not throw errors
  * @version 2015/07/05
  * - using global hashing functions rather than global variables
  * @version 2014/10/29
@@ -480,7 +482,11 @@ std::istream& operator >>(std::istream& is, Deque<ValueType>& deque) {
     char ch;
     is >> ch;
     if (ch != '{') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
         error("Deque::operator >>: Missing {");
+#endif
+        is.setstate(std::ios_base::failbit);
+        return is;
     }
     deque.clear();
     is >> ch;
@@ -488,14 +494,23 @@ std::istream& operator >>(std::istream& is, Deque<ValueType>& deque) {
         is.unget();
         while (true) {
             ValueType value;
-            readGenericValue(is, value);
+            if (!readGenericValue(is, value)) {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
+                error("Deque::operator >>: parse error");
+#endif
+                return is;
+            }
             deque.enqueue(value);
             is >> ch;
             if (ch == '}') {
                 break;
             }
             if (ch != ',') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
                 error(std::string("Deque::operator >>: Unexpected character ") + ch);
+#endif
+                is.setstate(std::ios_base::failbit);
+                return is;
             }
         }
     }

@@ -4,6 +4,11 @@
  * This file exports the <code>PriorityQueue</code> class, a
  * collection in which values are processed in priority order.
  * 
+ * @version 2016/08/10
+ * - added constructor support for std initializer_list usage, such as
+ *   {{"a", 1}, {"b", 2}, {"c", 3}}
+ * @version 2016/08/04
+ * - fixed operator >> to not throw errors
  * @version 2015/07/05
  * - using global hashing functions rather than global variables
  * @version 2015/06/22
@@ -32,6 +37,8 @@
 #ifndef _pqueue_h
 #define _pqueue_h
 
+#include <initializer_list>
+#include <utility>
 #include "compare.h"
 #include "error.h"
 #include "hashcode.h"
@@ -57,6 +64,16 @@ public:
      * Initializes a new priority queue, which is initially empty.
      */
     PriorityQueue();
+
+    /*
+     * Constructor: PriorityQueue
+     * Usage: PriorityQueue<ValueType> map {{"a", 1.0}, {"b", 2.0}, {"c", 3.0}};
+     * -------------------------------------------------------------------------
+     * Initializes a new priority that stores the given pairs.
+     * Note that the pairs are stored in priority order and not
+     * necessarily the order in which they are written in the initializer list.
+     */
+    PriorityQueue(std::initializer_list<std::pair<ValueType, double> > list);
 
     /*
      * Destructor: ~PriorityQueue
@@ -378,6 +395,15 @@ public:
 template <typename ValueType>
 PriorityQueue<ValueType>::PriorityQueue() {
     clear();
+}
+
+template <typename ValueType>
+PriorityQueue<ValueType>::PriorityQueue(
+        std::initializer_list<std::pair<ValueType, double> > list) {
+    clear();
+    for (std::pair<ValueType, double> pair : list) {
+        enqueue(pair.first, pair.second);
+    }
 }
 
 /*
@@ -749,7 +775,11 @@ std::istream& operator >>(std::istream& is, PriorityQueue<ValueType>& pq) {
     char ch = '\0';
     is >> ch;
     if (ch != '{') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
         error("PriorityQueue::operator >>: Missing {");
+#endif
+        is.setstate(std::ios_base::failbit);
+        return is;
     }
     pq.clear();
     is >> ch;
@@ -759,17 +789,30 @@ std::istream& operator >>(std::istream& is, PriorityQueue<ValueType>& pq) {
             double priority = 0.0;
             is >> priority >> ch;
             if (ch != ':') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
                 error("PriorityQueue::operator >>: Missing colon after priority");
+#endif
+                is.setstate(std::ios_base::failbit);
+                return is;
             }
             ValueType value;
-            readGenericValue(is, value);
+            if (!readGenericValue(is, value)) {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
+                error("PriorityQueue::operator >>: parse error");
+#endif
+                return is;
+            }
             pq.enqueue(value, priority);
             is >> ch;
             if (ch == '}') {
                 break;
             }
             if (ch != ',') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
                 error(std::string("PriorityQueue::operator >>: Unexpected character ") + ch);
+#endif
+                is.setstate(std::ios_base::failbit);
+                return is;
             }
         }
     }

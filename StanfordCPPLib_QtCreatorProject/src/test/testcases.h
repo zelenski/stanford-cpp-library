@@ -6,7 +6,9 @@ void animationTest();
 void compareTest();
 void foreachTest();
 void hashCodeTest();
+void initializerListTest();
 void randomElementTest();
+void streamExtractTest();
 
 // exception tests
 void exceptionTest();

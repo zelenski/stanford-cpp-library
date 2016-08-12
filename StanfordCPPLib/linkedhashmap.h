@@ -9,7 +9,10 @@
  * cost due to needing to store an extra copy of the keys.
  * 
  * @author Marty Stepp
+ * @version 2016/08/04
+ * - fixed operator >> to not throw errors
  * @version 2015/10/26
+ * - initial version
  * @since 2015/10/26
  */
 
@@ -589,7 +592,11 @@ std::istream& operator >>(std::istream& is,
     char ch = '\0';
     is >> ch;
     if (ch != '{') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
         error("LinkedHashMap::operator >>: Missing {");
+#endif
+        is.setstate(std::ios_base::failbit);
+        return is;
     }
     map.clear();
     is >> ch;
@@ -597,20 +604,38 @@ std::istream& operator >>(std::istream& is,
         is.unget();
         while (true) {
             KeyType key;
-            readGenericValue(is, key);
+            if (!readGenericValue(is, key)) {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
+                error("LinkedHashMap::operator >>: parse key error");
+#endif
+                return is;
+            }
             is >> ch;
             if (ch != ':') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
                 error("LinkedHashMap::operator >>: Missing colon after key");
+#endif
+                is.setstate(std::ios_base::failbit);
+                return is;
             }
             ValueType value;
-            readGenericValue(is, value);
+            if (!readGenericValue(is, value)) {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
+                error("LinkedHashMap::operator >>: parse value error");
+#endif
+                return is;
+            }
             map[key] = value;
             is >> ch;
             if (ch == '}') {
                 break;
             }
             if (ch != ',') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
                 error(std::string("LinkedHashMap::operator >>: Unexpected character ") + ch);
+#endif
+                is.setstate(std::ios_base::failbit);
+                return is;
             }
         }
     }

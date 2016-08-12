@@ -242,19 +242,19 @@ private:
  * This section of the interface defines the insertion, comparison,
  * and hashCode functions for the geometric types.
  */
-std::ostream & operator<<(std::ostream & os, const GPoint & pt);
-bool operator==(const GPoint & p1, const GPoint & p2);
-bool operator!=(const GPoint & p1, const GPoint & p2);
-int hashCode(const GPoint & pt);
+std::ostream& operator <<(std::ostream& os, const GPoint& pt);
+bool operator ==(const GPoint& p1, const GPoint& p2);
+bool operator !=(const GPoint& p1, const GPoint& p2);
+int hashCode(const GPoint& pt);
 
-std::ostream & operator<<(std::ostream & os, const GDimension & dim);
-bool operator==(const GDimension & d1, const GDimension & d2);
-bool operator!=(const GDimension & d1, const GDimension & d2);
-int hashCode(const GDimension & dim);
+std::ostream& operator <<(std::ostream& os, const GDimension& dim);
+bool operator ==(const GDimension& d1, const GDimension& d2);
+bool operator !=(const GDimension& d1, const GDimension& d2);
+int hashCode(const GDimension& dim);
 
-std::ostream & operator<<(std::ostream & os, const GRectangle & rect);
-bool operator==(const GRectangle & r1, const GRectangle & r2);
-bool operator!=(const GRectangle & r1, const GRectangle & r2);
-int hashCode(const GRectangle & r);
+std::ostream& operator <<(std::ostream& os, const GRectangle& rect);
+bool operator ==(const GRectangle& r1, const GRectangle& r2);
+bool operator !=(const GRectangle& r1, const GRectangle& r2);
+int hashCode(const GRectangle& r);
 
 #endif

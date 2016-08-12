@@ -9,6 +9,11 @@
  * Grid is recommended for use over SparseGrid.
  * 
  * @author Marty Stepp
+ * @version 2016/08/10
+ * - added constructor support for std initializer_list usage, such as
+ *   {{1, 2, 3}, {4, 5, 6}}
+ * @version 2016/08/04
+ * - fixed operator >> to not throw errors
  * @version 2015/07/05
  * - using global hashing functions rather than global variables
  * @version 2014/11/13
@@ -26,6 +31,7 @@
 #ifndef _sparsegrid_h
 #define _sparsegrid_h
 
+#include <initializer_list>
 #include "error.h"
 #include "hashcode.h"
 #include "map.h"
@@ -63,6 +69,12 @@ public:
     SparseGrid();
     SparseGrid(int nRows, int nCols);
     SparseGrid(int nRows, int nCols, const ValueType& value);
+
+    /*
+     * This constructor uses an initializer list to set up the grid.
+     * Usage: Grid<int> grid {{1, 2, 3}, {4, 5, 6}};
+     */
+    SparseGrid(std::initializer_list<std::initializer_list<ValueType> > list);
 
     /*
      * Destructor: ~SparseGrid
@@ -491,9 +503,11 @@ public:
 };
 
 template <typename ValueType>
-SparseGrid<ValueType>::SparseGrid() {
-    nRows = 0;
-    nCols = 0;
+SparseGrid<ValueType>::SparseGrid() :
+    nRows(0),
+    nCols(0)
+{
+    // empty
 }
 
 template <typename ValueType>
@@ -506,6 +520,34 @@ SparseGrid<ValueType>::SparseGrid(int nRows, int nCols, const ValueType& value) 
     resize(nRows, nCols);
     fill(value);
 }
+
+template <typename ValueType>
+SparseGrid<ValueType>::SparseGrid(std::initializer_list<std::initializer_list<ValueType> > list) :
+    nRows(0),
+    nCols(0)
+{
+    // create the grid at the proper size
+    nRows = list.size();
+    if (list.begin() != list.end()) {
+        nCols = list.begin()->size();
+    }
+    resize(nRows, nCols);
+
+    // copy the data from the initializer list into the Grid
+    auto rowItr = list.begin();
+    for (int row = 0; row < nRows; row++) {
+        if (rowItr->size() != nCols) {
+            error("SparseGrid::constructor: initializer list is not rectangular (must have same # cols in each row)");
+        }
+        auto colItr = rowItr->begin();
+        for (int col = 0; col < nCols; col++) {
+            set(row, col, *colItr);
+            colItr++;
+        }
+        rowItr++;
+    }
+}
+
 
 template <typename ValueType>
 SparseGrid<ValueType>::~SparseGrid() {
@@ -825,13 +867,44 @@ std::ostream& operator <<(std::ostream& os, const SparseGrid<ValueType>& grid) {
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, SparseGrid<ValueType>& grid) {
     // "{...}, 4 x 3"
-    is >> grid.elements;
+
+    // read "{...}" (map of elements)
+    if (!(is >> grid.elements)) {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
+        error("SparseGrid::operator >>: Invalid elements");
+#endif
+        is.setstate(std::ios_base::failbit);
+        return is;
+    }
+
+    // throw away ', ' token
     std::string comma;
-    is >> comma;   // throw away ', ' token
-    is >> grid.nRows;
+    if (!(is >> comma)) {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
+        error("SparseGrid::operator >>: Invalid format");
+#endif
+        is.setstate(std::ios_base::failbit);
+        return is;
+    }
+
+    if (!(is >> grid.nRows)) {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
+        error("SparseGrid::operator >>: Invalid number of rows");
+#endif
+        is.setstate(std::ios_base::failbit);
+        return is;
+    }
+
     std::string x;
     is >> x;       // throw away 'x' token
-    is >> grid.nCols;
+
+    if (!(is >> grid.nCols)) {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
+        error("SparseGrid::operator >>: Invalid number of rows");
+#endif
+        is.setstate(std::ios_base::failbit);
+        return is;
+    }
     return is;
 }
 

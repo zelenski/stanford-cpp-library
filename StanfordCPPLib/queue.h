@@ -5,6 +5,10 @@
  * in which values are ordinarily processed in a first-in/first-out
  * (FIFO) order.
  * 
+ * @version 2016/08/10
+ * - added constructor support for std initializer_list usage, such as {1, 2, 3}
+ * @version 2016/08/04
+ * - fixed operator >> to not throw errors
  * @version 2015/07/05
  * - using global hashing functions rather than global variables
  * @version 2014/11/13
@@ -45,6 +49,14 @@ public:
      * Initializes a new empty queue.
      */
     Queue();
+
+    /*
+     * Constructor: Queue
+     * Usage: Queue<ValueType> queue {1, 2, 3};
+     * ----------------------------------------
+     * Initializes a new queue that stores the given elements from front-back.
+     */
+    Queue(std::initializer_list<ValueType> list);
 
     /*
      * Destructor: ~Queue
@@ -258,6 +270,14 @@ static const int INITIAL_CAPACITY = 10;
 template <typename ValueType>
 Queue<ValueType>::Queue() {
     clear();
+}
+
+template <typename ValueType>
+Queue<ValueType>::Queue(std::initializer_list<ValueType> list) {
+    clear();
+    for (const ValueType& value : list) {
+        add(value);
+    }
 }
 
 /*
@@ -492,7 +512,11 @@ std::istream& operator >>(std::istream& is, Queue<ValueType>& queue) {
     char ch = '\0';
     is >> ch;
     if (ch != '{') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
         error("Queue::operator >>: Missing {");
+#endif
+        is.setstate(std::ios_base::failbit);
+        return is;
     }
     queue.clear();
     is >> ch;
@@ -500,14 +524,23 @@ std::istream& operator >>(std::istream& is, Queue<ValueType>& queue) {
         is.unget();
         while (true) {
             ValueType value;
-            readGenericValue(is, value);
+            if (!readGenericValue(is, value)) {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
+                error("Queue::operator >>: parse error");
+#endif
+                return is;
+            }
             queue.enqueue(value);
             is >> ch;
             if (ch == '}') {
                 break;
             }
             if (ch != ',') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
                 error(std::string("Queue::operator >>: Unexpected character ") + ch);
+#endif
+                is.setstate(std::ios_base::failbit);
+                return is;
             }
         }
     }

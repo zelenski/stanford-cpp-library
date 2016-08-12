@@ -4,6 +4,13 @@
  * This file exports the <code>DawgLexicon</code> class, which is a
  * compact structure for storing a list of words.
  * 
+ * @version 2016/08/11
+ * - added methods addAll, containsAll,
+ *   operators +, +=, *, *= to better match Set/HashSet
+ * @version 2016/08/10
+ * - added constructor support for std initializer_list usage, such as {"a", "b", "c"}
+ * @version 2016/08/04
+ * - added operator >>
  * @version 2014/11/13
  * - added comparison operators <, >=, etc.
  * - added hashCode function
@@ -17,6 +24,7 @@
 #ifndef _dawglexicon_h
 #define _dawglexicon_h
 
+#include <initializer_list>
 #include <set>
 #include <string>
 #include "set.h"
@@ -80,6 +88,12 @@ public:
     DawgLexicon(const std::string& filename);
 
     /*
+     * This constructor uses an initializer list to set up the lexicon.
+     * Usage: DawgLexicon lex {1, 2, 3};
+     */
+    DawgLexicon(std::initializer_list<std::string> list);
+
+    /*
      * Destructor: ~DawgLexicon
      * ------------------------
      * The destructor deallocates any storage associated with the lexicon.
@@ -93,7 +107,19 @@ public:
      * Adds the specified word to the lexicon.
      */
     void add(const std::string& word);
-    
+
+    /*
+     * Method: addAll
+     * Usage: lex.addAll(lex2);
+     * ------------------------
+     * Adds all elements of the given other lexicon to this lexicon.
+     * You can also pass an initializer list such as {"a", "b", "c"}.
+     * Returns a reference to this lexicon.
+     * Identical in behavior to the += operator.
+     */
+    DawgLexicon& addAll(const DawgLexicon& lex);
+    DawgLexicon& addAll(std::initializer_list<std::string> list);
+
     /*
      * Method: addWordsFromFile
      * Usage: lex.addWordsFromFile(input);
@@ -127,7 +153,19 @@ public:
      * ignored, so "Zoo" is the same as "ZOO" or "zoo".
      */
     bool contains(const std::string& word) const;
-    
+
+    /*
+     * Method: containsAll
+     * Usage: if (lex.containsAll(lex2)) ...
+     * -------------------------------------
+     * Returns <code>true</code> if every value from the given other lexicon
+     * is also found in this lexicon.
+     * You can also pass an initializer list such as {"a", "b", "c"}.
+     * Equivalent in behavior to isSupersetOf.
+     */
+    bool containsAll(const DawgLexicon& set2) const;
+    bool containsAll(std::initializer_list<std::string> list) const;
+
     /*
      * Method: containsPrefix
      * Usage: if (lex.containsPrefix(prefix)) ...
@@ -148,7 +186,16 @@ public:
      * Identical in behavior to the == operator.
      */
     bool equals(const DawgLexicon& lex2) const;
-    
+
+    /*
+     * Method: insert
+     * Usage: lex.insert(word);
+     * -------------------------
+     * Adds an element to this lexicon, if it was not already there.  This
+     * method is exported for compatibility with the STL <code>set</code> class.
+     */
+    void insert(const std::string& word);
+
     /*
      * Method: isEmpty
      * Usage: if (lex.isEmpty()) ...
@@ -156,7 +203,32 @@ public:
      * Returns <code>true</code> if the lexicon contains no words.
      */
     bool isEmpty() const;
-    
+
+    /*
+     * Method: isSubsetOf
+     * Usage: if (lex.isSubsetOf(lex2)) ...
+     * ------------------------------------
+     * Implements the subset relation on lexicons.  It returns
+     * <code>true</code> if every word of this lexicon is
+     * contained in <code>lex2</code>.
+     * You can also pass an initializer list such as {"a", "b", "c"}.
+     */
+    bool isSubsetOf(const DawgLexicon& lex2) const;
+    bool isSubsetOf(std::initializer_list<std::string> list) const;
+
+    /*
+     * Method: isSupersetOf
+     * Usage: if (lex.isSupersetOf(lex2)) ...
+     * --------------------------------------
+     * Implements the superset relation on lexicons.  It returns
+     * <code>true</code> if every word of this lexicon is
+     * contained in <code>lex2</code>.
+     * You can also pass an initializer list such as {"a", "b", "c"}.
+     * Equivalent in behavior to containsAll.
+     */
+    bool isSupersetOf(const DawgLexicon& lex2) const;
+    bool isSupersetOf(std::initializer_list<std::string> list) const;
+
     /*
      * Method: mapAll
      * Usage: lexicon.mapAll(fn);
@@ -169,6 +241,10 @@ public:
     template <typename FunctorType>
     void mapAll(FunctorType fn) const;
 
+    // implementation note: DawgLexicon does not support removal,
+    // so there are no methods remove(), removeAll, retainAll, etc.
+    // nor operators -, -=, *=
+
     /*
      * Method: size
      * Usage: int n = lex.size();
@@ -176,6 +252,11 @@ public:
      * Returns the number of words contained in the lexicon.
      */
     int size() const;
+
+    /*
+     * Returns an STL set object with the same elements as this lexicon.
+     */
+    std::set<std::string> toStlSet() const;
 
     /*
      * Method: toString
@@ -186,11 +267,6 @@ public:
      * a large number of words.
      */
     std::string toString() const;
-    
-    /*
-     * Returns an STL set object with the same elements as this lexicon.
-     */
-    std::set<std::string> toStlSet() const;
     
     /*
      * Operators: ==, !=
@@ -220,6 +296,41 @@ public:
     bool operator >=(const DawgLexicon& lex2) const;
 
     /*
+     * Operator: +
+     * Usage: lex1 + lex2
+     *        lex1 + element
+     * ---------------------
+     * Returns the union of lexicons <code>lex1</code> and <code>lex2</code>,
+     * which is the set of words that appear in at least one of the two.
+     * You can also pass an initializer list such as {"a", "b", "c"}.
+     * The right hand set can be replaced by a single word, in
+     * which case the operator returns a new Lexicon formed by adding that word.
+     */
+    DawgLexicon operator +(const DawgLexicon& lex2) const;
+    DawgLexicon operator +(std::initializer_list<std::string> list) const;
+    DawgLexicon operator +(const std::string& word) const;
+
+    /*
+     * Operator: +=
+     * Usage: lex1 += lex2;
+     *        lex1 += value;
+     * ---------------------
+     * Adds all of the words from <code>lex2</code> (or the single
+     * specified word) to <code>lex1</code>.
+     * You can also pass an initializer list such as {"a", "b", "c"}.
+     * As a convenience, the <code>Lexicon</code> package also overloads the
+     * comma operator so that it is possible to initialize a set like this:
+     *
+     *<pre>
+     *    DawgLexicon words;
+     *    words += "she", "sells", "sea", "shells";
+     *</pre>
+     */
+    DawgLexicon& operator +=(const DawgLexicon& lex2);
+    DawgLexicon& operator +=(std::initializer_list<std::string> list);
+    DawgLexicon& operator +=(const std::string& word);
+
+    /*
      * Additional DawgLexicon operations
      * ---------------------------------
      * In addition to the methods listed in this interface, the DawgLexicon
@@ -238,6 +349,8 @@ public:
     /* Note: Everything below this point in the file is logically part    */
     /* of the implementation and should not be of interest to clients.    */
     /**********************************************************************/
+    DawgLexicon& operator ,(const std::string& word);
+
 private:
 #ifdef _WIN32
 #define LITTLE_ENDIAN 1
@@ -426,5 +539,6 @@ void DawgLexicon::mapAll(FunctorType fn) const {
 int hashCode(const DawgLexicon& lex);
 
 std::ostream& operator <<(std::ostream& os, const DawgLexicon& lex);
+std::istream& operator >>(std::istream& is, DawgLexicon& lex);
 
 #endif

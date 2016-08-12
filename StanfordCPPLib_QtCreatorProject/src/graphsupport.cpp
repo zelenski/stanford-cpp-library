@@ -227,7 +227,7 @@ ostream& operator <<(ostream& out, const Vector<Vertex*>& path) {
     return out;
 }
 
-ostream& operator <<(ostream& out, Set<Vertex*> set) {
+ostream& operator <<(ostream& out, const Set<Vertex*>& set) {
     out << "{";
     int i = 0;
     for (Vertex* v : set) {

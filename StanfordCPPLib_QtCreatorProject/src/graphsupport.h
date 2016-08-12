@@ -24,6 +24,6 @@ void graph_printVertexDegrees(BasicGraph& graph);
 string graph_pathToString(const Vector<Vertex*>& path);
 void graph_printPath(const Vector<Vertex*>& path);
 ostream& operator <<(ostream& out, const Vector<Vertex*>& path);
-ostream& operator <<(ostream& out, Set<Vertex*> set);
+ostream& operator <<(ostream& out, const Set<Vertex*>& set);
 
 #endif //_graphsupport_h

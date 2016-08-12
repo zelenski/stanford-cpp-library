@@ -15,6 +15,10 @@
  * The DAWG builder code is quite a bit more intricate, see Julie Zelenski
  * if you need it.
  * 
+ * @version 2016/08/10
+ * - added constructor support for std initializer_list usage, such as {"a", "b", "c"}
+ * @version 2016/08/04
+ * - added operator >>
  * @version 2015/07/05
  * - using global hashing functions rather than global variables
  * @version 2014/11/13
@@ -56,29 +60,50 @@ static uint32_t my_ntohl(uint32_t arg);
  * machines.
  */
 
-DawgLexicon::DawgLexicon() {
-    edges = start = NULL;
-    numEdges = numDawgWords = 0;
+DawgLexicon::DawgLexicon() :
+        edges(NULL),
+        start(NULL),
+        numEdges(0),
+        numDawgWords(0) {
+    // empty
 }
 
-DawgLexicon::DawgLexicon(std::istream& input) {
-    edges = start = NULL;
-    numEdges = numDawgWords = 0;
+DawgLexicon::DawgLexicon(std::istream& input) :
+        edges(NULL),
+        start(NULL),
+        numEdges(0),
+        numDawgWords(0) {
     addWordsFromFile(input);
 }
 
-DawgLexicon::DawgLexicon(const std::string& filename) {
-    edges = start = NULL;
-    numEdges = numDawgWords = 0;
+DawgLexicon::DawgLexicon(const std::string& filename) :
+        edges(NULL),
+        start(NULL),
+        numEdges(0),
+        numDawgWords(0) {
     addWordsFromFile(filename);
 }
 
-DawgLexicon::DawgLexicon(const DawgLexicon& src) {
+DawgLexicon::DawgLexicon(const DawgLexicon& src) :
+        edges(NULL),
+        start(NULL),
+        numEdges(0),
+        numDawgWords(0) {
     deepCopy(src);
 }
 
+DawgLexicon::DawgLexicon(std::initializer_list<std::string> list) :
+        edges(NULL),
+        start(NULL),
+        numEdges(0),
+        numDawgWords(0) {
+    addAll(list);
+}
+
 DawgLexicon::~DawgLexicon() {
-    if (edges) delete[] edges;
+    if (edges) {
+        delete[] edges;
+    }
 }
 
 void DawgLexicon::add(const std::string& word) {
@@ -87,6 +112,20 @@ void DawgLexicon::add(const std::string& word) {
     if (!contains(copy)) {
         otherWords.add(copy);
     }
+}
+
+DawgLexicon& DawgLexicon::addAll(const DawgLexicon& lex) {
+    for (const std::string& word : lex) {
+        add(word);
+    }
+    return *this;
+}
+
+DawgLexicon& DawgLexicon::addAll(std::initializer_list<std::string> list) {
+    for (const std::string& word : list) {
+        add(word);
+    }
+    return *this;
 }
 
 /*
@@ -146,6 +185,24 @@ bool DawgLexicon::contains(const std::string& word) const {
     return otherWords.contains(copy);
 }
 
+bool DawgLexicon::containsAll(const DawgLexicon& lex2) const {
+    for (const std::string& word : lex2) {
+        if (!contains(word)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool DawgLexicon::containsAll(std::initializer_list<std::string> list) const {
+    for (const std::string& word : list) {
+        if (!contains(word)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 bool DawgLexicon::containsPrefix(const std::string& prefix) const {
     if (prefix.empty()) return true;
     std::string copy = prefix;
@@ -169,8 +226,37 @@ bool DawgLexicon::equals(const DawgLexicon& lex2) const {
     return compare::compare(*this, lex2) == 0;
 }
 
+void DawgLexicon::insert(const std::string& word) {
+    add(word);
+}
+
 bool DawgLexicon::isEmpty() const {
     return size() == 0;
+}
+
+bool DawgLexicon::isSubsetOf(const DawgLexicon& lex2) const {
+    auto it = begin();
+    auto end = this->end();
+    while (it != end) {
+        if (!lex2.contains(*it)) {
+            return false;
+        }
+        ++it;
+    }
+    return true;
+}
+
+bool DawgLexicon::isSubsetOf(std::initializer_list<std::string> list) const {
+    DawgLexicon lex2(list);
+    return isSubsetOf(lex2);
+}
+
+bool DawgLexicon::isSupersetOf(const DawgLexicon& lex2) const {
+    return containsAll(lex2);
+}
+
+bool DawgLexicon::isSupersetOf(std::initializer_list<std::string> list) const {
+    return containsAll(list);
 }
 
 void DawgLexicon::mapAll(void (*fn)(std::string)) const {
@@ -230,9 +316,45 @@ bool DawgLexicon::operator >=(const DawgLexicon& lex2) const {
     return compare::compare(*this, lex2) >= 0;
 }
 
+DawgLexicon DawgLexicon::operator +(const DawgLexicon& lex2) const {
+    DawgLexicon lex = *this;
+    lex.addAll(lex2);
+    return lex;
+}
+
+DawgLexicon DawgLexicon::operator +(std::initializer_list<std::string> list) const {
+    DawgLexicon lex = *this;
+    lex.addAll(list);
+    return lex;
+}
+
+DawgLexicon DawgLexicon::operator +(const std::string& word) const {
+    DawgLexicon lex = *this;
+    lex.add(word);
+    return lex;
+}
+
+DawgLexicon& DawgLexicon::operator +=(const DawgLexicon& lex2) {
+    return addAll(lex2);
+}
+
+DawgLexicon& DawgLexicon::operator +=(std::initializer_list<std::string> list) {
+    return addAll(list);
+}
+
+DawgLexicon& DawgLexicon::operator +=(const std::string& word) {
+    add(word);
+    return *this;
+}
+
 /*
- * Private methods
+ * Private methods and helpers
  */
+
+DawgLexicon& DawgLexicon::operator ,(const std::string& word) {
+    add(word);
+    return *this;
+}
 
 int DawgLexicon::countDawgWords(Edge* ep) const {
     int count = 0;
@@ -424,6 +546,45 @@ std::ostream& operator <<(std::ostream& out, const DawgLexicon& lex) {
     }
     out << "}";
     return out;
+}
+
+std::istream& operator >>(std::istream& is, DawgLexicon& lex) {
+    char ch;
+    is >> ch;
+    if (ch != '{') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
+        error("DawgLexicon::operator >>: Missing {");
+#endif
+        is.setstate(std::ios_base::failbit);
+        return is;
+    }
+    lex.clear();
+    is >> ch;
+    if (ch != '}') {
+        is.unget();
+        while (true) {
+            std::string value;
+            if (!readGenericValue(is, value)) {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
+                error("DawgLexicon::operator >>: parse error");
+#endif
+                return is;
+            }
+            lex.add(value);
+            is >> ch;
+            if (ch == '}') {
+                break;
+            }
+            if (ch != ',') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
+                error(std::string("DawgLexicon::operator >>: Unexpected character ") + ch);
+#endif
+                is.setstate(std::ios_base::failbit);
+                return is;
+            }
+        }
+    }
+    return is;
 }
 
 int hashCode(const DawgLexicon& lex) {

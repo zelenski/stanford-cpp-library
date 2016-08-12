@@ -4,6 +4,11 @@
  * This file exports the <code>Grid</code> class, which offers a
  * convenient abstraction for representing a two-dimensional array.
  *
+ * @version 2016/08/10
+ * - added constructor support for std initializer_list usage, such as
+ *   {{1, 2, 3}, {4, 5, 6}}
+ * @version 2016/08/04
+ * - fixed operator >> to not throw errors
  * @version 2015/07/05
  * - using global hashing functions rather than global variables
  * @version 2014/11/20
@@ -25,6 +30,7 @@
 #ifndef _grid_h
 #define _grid_h
 
+#include <initializer_list>
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -76,6 +82,12 @@ public:
     Grid();
     Grid(int nRows, int nCols);
     Grid(int nRows, int nCols, const ValueType& value);
+
+    /*
+     * This constructor uses an initializer list to set up the grid.
+     * Usage: Grid<int> grid {{1, 2, 3}, {4, 5, 6}};
+     */
+    Grid(std::initializer_list<std::initializer_list<ValueType> > list);
 
     /*
      * Destructor: ~Grid
@@ -531,6 +543,33 @@ Grid<ValueType>::Grid(int nRows, int nCols, const ValueType& value)
 }
 
 template <typename ValueType>
+Grid<ValueType>::Grid(std::initializer_list<std::initializer_list<ValueType> > list)
+    : elements(NULL),
+      nRows(0),
+      nCols(0) {
+    // create the grid at the proper size
+    nRows = list.size();
+    if (list.begin() != list.end()) {
+        nCols = list.begin()->size();
+    }
+    resize(nRows, nCols);
+
+    // copy the data from the initializer list into the Grid
+    auto rowItr = list.begin();
+    for (int row = 0; row < nRows; row++) {
+        if (rowItr->size() != nCols) {
+            error("Grid::constructor: initializer list is not rectangular (must have same # cols in each row)");
+        }
+        auto colItr = rowItr->begin();
+        for (int col = 0; col < nCols; col++) {
+            set(row, col, *colItr);
+            colItr++;
+        }
+        rowItr++;
+    }
+}
+
+template <typename ValueType>
 Grid<ValueType>::~Grid() {
     if (elements != NULL) {
         delete[] elements;
@@ -870,7 +909,11 @@ std::ostream& operator <<(std::ostream& os, const Grid<ValueType>& grid) {
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, Grid<ValueType>& grid) {
     Vector<Vector<ValueType> > vec2d;
-    is >> vec2d;
+    if (!(is >> vec2d)) {
+        is.setstate(std::ios_base::failbit);
+        return is;
+    }
+
     int nRows = vec2d.size();
     int nCols = (nRows == 0) ? 0 : vec2d[0].size();
     grid.resize(nRows, nCols);
@@ -879,6 +922,7 @@ std::istream& operator >>(std::istream& is, Grid<ValueType>& grid) {
             grid[i][j] = vec2d[i][j];
         }
     }
+
     return is;
 }
 

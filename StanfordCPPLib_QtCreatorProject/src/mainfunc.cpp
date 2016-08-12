@@ -59,7 +59,9 @@ int main() {
     while (true) {
         cout << "   DATA STRUCTURES::" << endl;
         cout << "c) collections" << endl;
-        
+        cout << "cs) collection stream extraction" << endl;
+        cout << "ci) collection initializer lists" << endl;
+
         cout << "   STUFF RELATED TO INPUT/OUTPUT:" << endl;
         cout << "e) cout / cerr mix" << endl;
         cout << "i) cin / cout" << endl;
@@ -96,6 +98,10 @@ int main() {
             compareTest();
             foreachTest();
             hashCodeTest();
+        } else if (cmd == "cs") {
+            streamExtractTest();
+        } else if (cmd == "ci") {
+            initializerListTest();
         } else if (cmd == "e") {
             coutCerrMixTest();
         } else if (cmd == "fd") {

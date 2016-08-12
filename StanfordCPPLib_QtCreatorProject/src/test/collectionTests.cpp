@@ -27,6 +27,7 @@
 #include "stack.h"
 #include "vector.h"
 #include <iostream>
+#include <sstream>
 #include <string>
 using namespace std;
 
@@ -170,6 +171,34 @@ void randomElementTest() {
     }
     std::cout << std::endl;
     std::cout << "counts:" << counts << std::endl << std::endl;
+}
+
+void streamExtractTest() {
+    // hashmap
+    istringstream hmstream("{1:1, 2:2, 3:3}");
+    HashMap<int, int> hm;
+    hmstream >> hm;
+    std::cout << "hashmap: " << hm << endl;
+    istringstream hmstreambad("1:1, 2, 33}");
+    if (hmstreambad >> hm) {
+        std::cout << "hashmap 2: " << hm << " (FAIL!!)" << std::endl;
+    } else {
+        std::cout << "hashmap 2 bad (expected)" << endl;
+    }
+
+    // vector
+    istringstream vstream("{1, 2, 3}");
+    Vector<int> v;
+    vstream >> v;
+    std::cout << "vector: " << v << endl;
+    istringstream vstreambad("1, 2, 3}");
+    if (vstreambad >> v) {
+        std::cout << "vector: " << v << " (FAIL!!)" << std::endl;
+    } else {
+        std::cout << "vector 2 bad (expected)" << endl;
+    }
+
+    std::cout << std::endl;
 }
 
 void compareTest() {
@@ -936,4 +965,149 @@ void hashCodeTest() {
     std::cout << "sizes: " << hsetcode.size() << ", " << hsetcode2.size() << std::endl;
 
     std::cout << "================== END HASHCODE TESTS ==================" << std::endl;
+}
+
+void initializerListTest() {
+    auto list = {60, 70};
+    auto list2 = {20, 50};
+    std::initializer_list<std::string> lexlist = {"sixty", "seventy"};
+    std::initializer_list<std::string> lexlist2 = {"twenty", "fifty"};
+    std::initializer_list<std::pair<std::string, int> > pairlist = {{"k", 60}, {"t", 70}};
+    std::initializer_list<std::pair<std::string, int> > pairlist2 = {{"b", 20}, {"e", 50}};
+
+    BasicGraph graph {"a", "b", "c", "d"};
+    cout << "init list BasicGraph = " << graph << endl;
+
+    Grid<int> grid {{1, 2, 3}, {4, 5, 6}};
+    cout << "init list Grid = " << grid << endl;
+
+    HashMap<string, int> hmap {{"a", 10}, {"b", 20}, {"c", 30}};
+    cout << "init list HashMap = " << hmap << endl;
+    hmap += {{"d", 40}, {"e", 50}};
+    cout << "after +=, HashMap = " << hmap << endl;
+    cout << "HashMap + {} list = " << (hmap + pairlist) << endl;
+    cout << "HashMap - {} list = " << (hmap - pairlist2) << endl;
+    cout << "HashMap * {} list = " << (hmap * pairlist2) << endl;
+    hmap -= {{"b", 20}, {"e", 50}, {"a", 999}};
+    cout << "HashMap -={} list = " << hmap << endl;
+    hmap *= {{"z", 0}, {"a", 10}, {"d", 40}, {"x", 99}};
+    cout << "HashMap *={} list = " << hmap << endl;
+    cout << "at end,   HashMap = " << hmap << endl;
+
+    HashSet<int> hset {10, 20, 30};
+    cout << "init list HashSet = " << hset << endl;
+    hset += {40, 50};
+    cout << "after +=, HashSet = " << hset << endl;
+    cout << "HashSet + {} list = " << (hset + list) << endl;
+    cout << "HashSet - {} list = " << (hset - list2) << endl;
+    cout << "HashSet * {} list = " << (hset * list2) << endl;
+    hset -= {20, 50};
+    cout << "HashSet -={} list = " << hset << endl;
+    hset *= {0, 10, 40, 99};
+    cout << "HashSet *={} list = " << hset << endl;
+    cout << "at end,   HashSet = " << hset << endl;
+
+    std::initializer_list<std::string> lexallwords = {
+        "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy"
+    };
+    Lexicon lex {"ten", "twenty", "thirty"};
+    cout << "init list Lexicon = " << lex << ", size " << lex.size() << endl;
+    for (std::string s : lexallwords) { cout << boolalpha << lex.contains(s) << " "; }
+    cout << endl;
+    lex += "forty", "fifty";
+    cout << "after +=, Lexicon = " << lex << ", size " << lex.size() << endl;
+    lex -= "forty", "fifty";
+    cout << "after -=, Lexicon = " << lex << ", size " << lex.size() << endl;
+    lex += {"forty", "fifty"};
+    cout << "after +=, Lexicon = " << lex << ", size " << lex.size() << endl;
+    for (std::string s : lexallwords) { cout << boolalpha << lex.contains(s) << " "; }
+    cout << endl;
+    cout << "Lexicon + {} list = " << (lex + lexlist) << endl;
+    cout << "Lexicon - {} list = " << (lex - lexlist2) << endl;
+    cout << "Lexicon * {} list = " << (lex * lexlist2) << endl;
+    lex -= {"twenty", "fifty"};
+    cout << "Lexicon -={} list = " << lex << ", size " << lex.size() << endl;
+    lex *= {"zero", "ten", "forty", "ninetynine"};
+    cout << "Lexicon *={} list = " << lex << ", size " << lex.size() << endl;
+    cout << "at end,   Lexicon = " << lex << ", size " << lex.size() << endl;
+
+    DawgLexicon dlex {"ten", "twenty", "thirty"};
+    cout << "init list DawgLexicon = " << dlex << ", size " << dlex.size() << endl;
+    for (std::string s : lexallwords) { cout << boolalpha << dlex.contains(s) << " "; }
+    cout << endl;
+    dlex += "forty", "fifty";
+    cout << "after +=, DawgLexicon = " << dlex << ", size " << dlex.size() << endl;
+    for (std::string s : lexallwords) { cout << boolalpha << dlex.contains(s) << " "; }
+    cout << endl;
+    cout << "DawgLexicon + {} list = " << (dlex + lexlist) << endl;
+    cout << "at end,   DawgLexicon = " << dlex << ", size " << dlex.size() << endl;
+
+    LinkedList<int> llist {10, 20, 30};
+    cout << "init list LinkedList = " << llist << endl;
+    llist += {40, 50};
+    cout << "after +=, LinkedList = " << llist << endl;
+    cout << "LinkedList + {} list = " << (llist + list) << endl;
+    cout << "at end,   LinkedList = " << llist << endl;
+
+    Map<string, int> map {{"a", 10}, {"b", 20}, {"c", 30}};
+    cout << "init list Map = " << map << endl;
+    map += {{"d", 40}, {"e", 50}};
+    cout << "after +=, Map = " << map << endl;
+    cout << "Map + {} list = " << (map + pairlist) << endl;
+    cout << "Map - {} list = " << (map - pairlist2) << endl;
+    cout << "Map * {} list = " << (map * pairlist2) << endl;
+    map -= {{"b", 20}, {"e", 50}, {"a", 999}};
+    cout << "Map -={} list = " << map << endl;
+    map *= {{"z", 0}, {"a", 10}, {"d", 40}, {"x", 99}};
+    cout << "Map *={} list = " << map << endl;
+    cout << "at end,   Map = " << map << endl;
+
+    PriorityQueue<string> pqueue {{"Marty", 40.0}, {"Eric", 20.0}, {"Mehran", 30.0}};
+    cout << "init list PQueue = " << pqueue << endl;
+    while (!pqueue.isEmpty()) {
+        cout << "  " << pqueue.peekPriority() << " " << pqueue.peek() << endl;
+        pqueue.dequeue();
+    }
+
+    Queue<int> queue {10, 20, 30};
+    cout << "init list Queue = " << queue << endl;
+
+    Set<int> set {10, 20, 30};
+    cout << "init list Set = " << set << endl;
+    set += {40, 50};
+    cout << "after +=, Set = " << set << endl;
+    cout << "Set + {} list = " << (set + list) << endl;
+    cout << "Set - {} list = " << (set - list2) << endl;
+    cout << "Set * {} list = " << (set * list2) << endl;
+    set -= {20, 50};
+    cout << "Set -={} list = " << set << endl;
+    set *= {0, 10, 40, 99};
+    cout << "Set *={} list = " << set << endl;
+    cout << "at end,   Set = " << set << endl;
+
+    SparseGrid<int> sgrid {{1, 2, 3}, {4, 5, 6}};
+    cout << "init list SparseGrid = " << sgrid << endl;
+
+    Stack<int> stack {10, 20, 30};
+    cout << "init list Stack = " << stack << endl;
+
+    Vector<int> v {10, 20, 30};
+    cout << "init list Vector = " << v << endl;
+    v += {40, 50};
+    cout << "after +=, Vector = " << v << endl;
+    cout << "Vector + {} list = " << (v + list) << endl;
+    cout << "at end,   Vector = " << v << endl;
+    v = {999, 888, 777};
+    cout << "on =,     Vector = " << v << endl;
+    v.clear();
+    v.add(777);
+    std::initializer_list<int> sevenlist = {777};
+    if (v == sevenlist) {
+        cout << "op ==, Vector equal" << endl;
+    } else {
+        cout << "op ==, Vector not equal" << endl;
+    }
+
+    // test containsAll
+
 }

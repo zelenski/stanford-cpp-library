@@ -217,7 +217,11 @@ istream& operator >>(istream& input, LinkedIntList& list) {
     char ch = '\0';
     input >> ch;
     if (ch != '{') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
         error("LinkedIntList::operator >>: Missing {");
+#endif
+        input.setstate(std::ios_base::failbit);
+        return input;
     }
     list.clear();
     input >> ch;
@@ -225,13 +229,22 @@ istream& operator >>(istream& input, LinkedIntList& list) {
         input.unget();
         while (true) {
             int value;
-            readGenericValue(input, value);
+            if (!readGenericValue(input, value)) {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
+                error("LinkedIntList::operator >>: parse error");
+#endif
+                return input;
+            }
             list.add(value);
             input >> ch;
             if (ch == '}') {
                 break;
             } else if (ch != ',') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
                 error(std::string("LinkedIntList::operator >>: Unexpected character ") + ch);
+#endif
+                input.setstate(std::ios_base::failbit);
+                return input;
             }
         }
     }

@@ -466,7 +466,7 @@ void urlEncodeInPlace(std::string& str) {
 
 static const std::string STRING_DELIMITERS = ",:)}]\n";
 
-bool stringNeedsQuoting(const std::string & str) {
+bool stringNeedsQuoting(const std::string& str) {
     int n = str.length();
     for (int i = 0; i < n; i++) {
         char ch = str[i];
@@ -476,19 +476,32 @@ bool stringNeedsQuoting(const std::string & str) {
     return false;
 }
 
-void readQuotedString(std::istream & is, std::string & str) {
+bool readQuotedString(std::istream& is, std::string& str, bool throwOnError) {
     str = "";
     char ch;
     while (is.get(ch) && isspace(ch)) {
         /* Empty */
     }
-    if (is.fail()) return;
+    if (is.fail()) {
+        return true;   // empty string?
+    }
     if (ch == '\'' || ch == '"') {
         char delim = ch;
         while (is.get(ch) && ch != delim) {
-            if (is.fail()) error("Unterminated string");
+            if (is.fail()) {
+                if (throwOnError) {
+                    error("Unterminated string");
+                }
+                return false;
+            }
             if (ch == '\\') {
-                if (!is.get(ch)) error("Unterminated string");
+                if (!is.get(ch)) {
+                    if (throwOnError) {
+                        error("Unterminated string");
+                    }
+                    is.setstate(std::ios_base::failbit);
+                    return false;
+                }
                 if (isdigit(ch) || ch == 'x') {
                     int maxDigits = 3;
                     int base = 8;
@@ -507,7 +520,13 @@ void readQuotedString(std::istream & is, std::string & str) {
                             break;
                         }
                         result = base * result + digit;
-                        if (!is.get(ch)) error("Unterminated string");
+                        if (!is.get(ch)) {
+                            if (throwOnError) {
+                                error("Unterminated string");
+                            }
+                            is.setstate(std::ios_base::failbit);
+                            return false;
+                        }
                     }
                     ch = char(result);
                     is.unget();
@@ -538,6 +557,7 @@ void readQuotedString(std::istream & is, std::string & str) {
         if (is) is.unget();
         str = str.substr(0, endTrim);
     }
+    return true;   // read successfully
 }
 
 void writeQuotedString(std::ostream & os, const std::string & str, bool forceQuotes) {

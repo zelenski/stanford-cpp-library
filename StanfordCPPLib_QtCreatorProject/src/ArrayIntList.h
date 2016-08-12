@@ -56,7 +56,7 @@ private:
 };
 
 // overloaded operators
-ostream& operator <<(ostream& out, ArrayIntList& list);
+ostream& operator <<(ostream& out, const ArrayIntList& list);
 istream& operator >>(istream& in, ArrayIntList& list);
 
 #endif

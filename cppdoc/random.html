@@ -18,12 +18,14 @@ This file exports functions for generating pseudorandom numbers.
 <tr><td class=indexHead colspan=2>Functions</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:randomBool">randomBool()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> or <code>false</code> with 50% probability.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:randomChance">randomChance(<var>p</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> with the probability indicated by <code>p</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:randomColor">randomColor()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a random RGB color as an integer such as <code>0xff00ff</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:randomColorString">randomColorString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a random RGB color as a string such as <code>"#ff00ff"</code>.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:randomElement">randomElement(<var>grid</var>)</a>&nbsp;<br>
 	<a href="#Function:randomElement">randomElement(<var>list</var>)</a>&nbsp;<br>
 	<a href="#Function:randomElement">randomElement(<var>set</var>)</a>&nbsp;
 	<a href="#Function:randomElement">randomElement(<var>v</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a randomly chosen element from the given collection.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:randomInteger">randomInteger(<var>low</var>,&nbsp;<var>high</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a random integer in the range <code>low</code> to <code>high</code>, inclusive.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Function:randomElement">randomKey(<var>map</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a randomly chosen key from the given map.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:randomKey">randomKey(<var>map</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a randomly chosen key from the given map.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:randomReal">randomReal(<var>low</var>,&nbsp;<var>high</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a random real number in the half-open interval [<code>low</code>&nbsp;..&nbsp;<code>high</code>).</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:setRandomSeed">setRandomSeed(<var>seed</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the internal random number seed to the specified value.</td></tr>
 </table>
@@ -60,6 +62,38 @@ of the time.
 <pre class=usageCode>
 if (randomChance(p)) ...
 </pre>
+<hr>
+
+<a name="Function:randomColor"></a>
+<pre class=detailCode>
+int randomColor();
+</pre>
+<div class=detailHTML>
+Returns a random RGB color as an integer such as <code>0xff00ff</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int color = randomColor();
+</pre>
+<p class="since">
+	Available since: 2016/08/02 version of C++ library
+</p>
+<hr>
+
+<a name="Function:randomColorString"></a>
+<pre class=detailCode>
+string randomColorString();
+</pre>
+<div class=detailHTML>
+Returns a random RGB color as a string such as <code>"#ff00ff"</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string color = randomColorString();
+</pre>
+<p class="since">
+	Available since: 2016/08/02 version of C++ library
+</p>
 <hr>
 
 <a name="Function:randomElement"></a>

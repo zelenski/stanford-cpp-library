@@ -5,6 +5,8 @@
  * to represent <b><i>graphs,</i></b> which consist of a set of
  * <b><i>nodes</i></b> (vertices) and a set of <b><i>arcs</i></b> (edges).
  * 
+ * @version 2016/08/04
+ * - fixed operator >> to not throw errors
  * @version 2015/07/05
  * - using global hashing functions rather than global variables
  * @version 2014/11/13
@@ -864,7 +866,10 @@ bool Graph<NodeType, ArcType>::scanGraphEntry(TokenScanner& scanner) {
     }
     NodeType* n2 = scanNode(scanner);
     if (n2 == NULL) {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
         error("Graph::scanGraphEntry: Missing node after " + op);
+#endif
+        return false;
     }
     ArcType* forward = new ArcType();
     forward->start = n1;
@@ -1120,7 +1125,11 @@ std::istream& operator >>(std::istream& is, Graph<NodeType, ArcType>& g) {
     scanner.addOperator("->");
     std::string token = scanner.nextToken();
     if (token != "{") {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
         error("Graph::operator >>: Missing {");
+#endif
+        is.setstate(std::ios_base::failbit);
+        return is;
     }
     g.clear();
     while (g.scanGraphEntry(scanner)) {
@@ -1128,12 +1137,20 @@ std::istream& operator >>(std::istream& is, Graph<NodeType, ArcType>& g) {
         if (token == "}") {
             scanner.saveToken(token);
         } else if (token != ",") {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
             error("Graph::operator >>: Unexpected token " + token);
+#endif
+            is.setstate(std::ios_base::failbit);
+            return is;
         }
     }
     token = scanner.nextToken();
     if (token != "}") {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
         error("Graph::operator >>: Missing }");
+#endif
+        is.setstate(std::ios_base::failbit);
+        return is;
     }
     return is;
 }

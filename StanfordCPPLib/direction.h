@@ -64,7 +64,7 @@ std::string directionToString(Direction dir);
  * to display <code>Direction</code> values.
  */
 
-std::ostream & operator<<(std::ostream & os, const Direction & dir);
+std::ostream& operator <<(std::ostream& os, const Direction& dir);
 
 /*
  * Operator: >>
@@ -74,7 +74,7 @@ std::ostream & operator<<(std::ostream & os, const Direction & dir);
  * to read <code>Direction</code> values.
  */
 
-std::istream & operator>>(std::istream & os, Direction & dir);
+std::istream& operator >>(std::istream& os, Direction& dir);
 
 /*
  * Operator: ++
@@ -89,6 +89,6 @@ std::istream & operator>>(std::istream & os, Direction & dir);
  *</pre>
  */
 
-Direction operator++(Direction & dir, int);
+Direction operator ++(Direction& dir, int);
 
 #endif

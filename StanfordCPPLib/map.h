@@ -4,6 +4,13 @@
  * This file exports the template class <code>Map</code>, which
  * maintains a collection of <i>key</i>-<i>value</i> pairs.
  * 
+ * @version 2016/08/10
+ * - added support for std initializer_list usage, such as
+ *   {{"a", 1}, {"b", 2}, {"c", 3}} in constructor, addAll, putAll,
+ *   removeAll, retainAll, and operators +, +=, -, -=, *, *=
+ * - added addAll method
+ * @version 2016/08/04
+ * - fixed operator >> to not throw errors
  * @version 2015/10/13
  * - nulled out pointer fields in destructor after deletion to avoid double-free
  * @version 2015/07/05
@@ -21,7 +28,9 @@
 #define _map_h
 
 #include <cstdlib>
+#include <initializer_list>
 #include <map>
+#include <utility>
 #include "compare.h"
 #include "error.h"
 #include "hashcode.h"
@@ -49,6 +58,16 @@ public:
     Map();
 
     /*
+     * Constructor: Map
+     * Usage: Map<ValueType> map {{"a", 1}, {"b", 2}, {"c", 3}};
+     * ---------------------------------------------------------
+     * Initializes a new map that stores the given pairs.
+     * Note that the pairs are stored in key-sorted order internally and not
+     * necessarily the order in which they are written in the initializer list.
+     */
+    Map(std::initializer_list<std::pair<KeyType, ValueType> > list);
+
+    /*
      * Destructor: ~Map
      * ----------------
      * Frees any heap storage associated with this map.
@@ -63,7 +82,21 @@ public:
      * A synonym for the put method.
      */
     void add(const KeyType& key, const ValueType& value);
-    
+
+    /*
+     * Method: addAll
+     * Usage: map.addAll(map2);
+     * ------------------------
+     * Adds all key/value pairs from the given map to this map.
+     * If both maps contain a pair for the same key, the one from map2 will
+     * replace the one from this map.
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
+     * Returns a reference to this map.
+     * Identical in behavior to putAll.
+     */
+    Map& addAll(const Map& map2);
+    Map& addAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
+
     /*
      * Method: clear
      * Usage: map.clear();
@@ -145,13 +178,16 @@ public:
     /*
      * Method: putAll
      * Usage: map.putAll(map2);
-     * ---------------------------
+     * ------------------------
      * Adds all key/value pairs from the given map to this map.
      * If both maps contain a pair for the same key, the one from map2 will
      * replace the one from this map.
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      * Returns a reference to this map.
+     * Identical in behavior to addAll.
      */
     Map& putAll(const Map& map2);
+    Map& putAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: remove
@@ -168,9 +204,11 @@ public:
      * Removes all key/value pairs from this map that are contained in the given map.
      * If both maps contain the same key but it maps to different values, that
      * mapping will not be removed.
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      * Returns a reference to this map.
      */
     Map& removeAll(const Map& map2);
+    Map& removeAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: retainAll
@@ -179,9 +217,11 @@ public:
      * Removes all key/value pairs from this map that are not contained in the given map.
      * If both maps contain the same key but it maps to different values, that
      * mapping will be removed.
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      * Returns a reference to this map.
      */
     Map& retainAll(const Map& map2);
+    Map& retainAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: size
@@ -265,8 +305,10 @@ public:
      * with addAll called on it passing the second map as a parameter.
      * If the two maps both contain a mapping for the same key, the mapping
      * from the second map is favored.
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map operator +(const Map& map2) const;
+    Map operator +(std::initializer_list<std::pair<KeyType, ValueType> > list) const;
 
     /*
      * Operator: +=
@@ -274,8 +316,10 @@ public:
      * --------------------
      * Adds all key/value pairs from the given map to this map.
      * Equivalent to calling addAll(map2).
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map& operator +=(const Map& map2);
+    Map& operator +=(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Operator: -
@@ -283,8 +327,10 @@ public:
      * ------------------
      * Returns the difference of the two maps, equivalent to a copy of the first map
      * with removeAll called on it passing the second map as a parameter.
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map operator -(const Map& map2) const;
+    Map operator -(std::initializer_list<std::pair<KeyType, ValueType> > list) const;
 
     /*
      * Operator: -=
@@ -292,8 +338,10 @@ public:
      * --------------------
      * Removes all key/value pairs from the given map to this map.
      * Equivalent to calling removeAll(map2).
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map& operator -=(const Map& map2);
+    Map& operator -=(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Operator: *
@@ -301,8 +349,10 @@ public:
      * ------------------
      * Returns the intersection of the two maps, equivalent to a copy of the first map
      * with retainAll called on it passing the second map as a parameter.
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map operator *(const Map& map2) const;
+    Map operator *(std::initializer_list<std::pair<KeyType, ValueType> > list) const;
 
     /*
      * Operator: *=
@@ -310,8 +360,10 @@ public:
      * ---------------------
      * Removes all key/value pairs that are not found in the given map from this map.
      * Equivalent to calling retainAll(map2).
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map& operator *=(const Map& map2);
+    Map& operator *=(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Additional Map operations
@@ -905,6 +957,14 @@ Map<KeyType, ValueType>::Map() {
 }
 
 template <typename KeyType, typename ValueType>
+Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<KeyType, ValueType> > list) {
+    root = NULL;
+    nodeCount = 0;
+    cmpp = new TemplateComparator<std::less<KeyType> >(std::less<KeyType>());
+    putAll(list);
+}
+
+template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>::~Map() {
     if (cmpp != NULL) {
         delete cmpp;
@@ -919,6 +979,17 @@ template <typename KeyType, typename ValueType>
 void Map<KeyType, ValueType>::add(const KeyType& key,
                                   const ValueType& value) {
     put(key, value);
+}
+
+template <typename KeyType, typename ValueType>
+Map<KeyType, ValueType>& Map<KeyType, ValueType>::addAll(const Map& map2) {
+    return putAll(map2);
+}
+
+template <typename KeyType, typename ValueType>
+Map<KeyType, ValueType>& Map<KeyType, ValueType>::addAll(
+        std::initializer_list<std::pair<KeyType, ValueType> > list) {
+    return putAll(list);
 }
 
 template <typename KeyType, typename ValueType>
@@ -1012,6 +1083,15 @@ Map<KeyType, ValueType>& Map<KeyType, ValueType>::putAll(const Map& map2) {
 }
 
 template <typename KeyType, typename ValueType>
+Map<KeyType, ValueType>& Map<KeyType, ValueType>::putAll(
+        std::initializer_list<std::pair<KeyType, ValueType> > list) {
+    for (std::pair<KeyType, ValueType> pair : list) {
+        put(pair.first, pair.second);
+    }
+    return *this;
+}
+
+template <typename KeyType, typename ValueType>
 void Map<KeyType, ValueType>::remove(const KeyType& key) {
     removeNode(root, key);
 }
@@ -1021,6 +1101,17 @@ Map<KeyType, ValueType>& Map<KeyType, ValueType>::removeAll(const Map& map2) {
     for (KeyType key : map2) {
         if (containsKey(key) && get(key) == map2.get(key)) {
             remove(key);
+        }
+    }
+    return *this;
+}
+
+template <typename KeyType, typename ValueType>
+Map<KeyType, ValueType>& Map<KeyType, ValueType>::removeAll(
+        std::initializer_list<std::pair<KeyType, ValueType> > list) {
+    for (std::pair<KeyType, ValueType> pair : list) {
+        if (containsKey(pair.first) && get(pair.first) == pair.second) {
+            remove(pair.first);
         }
     }
     return *this;
@@ -1037,6 +1128,14 @@ Map<KeyType, ValueType>& Map<KeyType, ValueType>::retainAll(const Map& map2) {
     for (KeyType key : toRemove) {
         remove(key);
     }
+    return *this;
+}
+
+template <typename KeyType, typename ValueType>
+Map<KeyType, ValueType>& Map<KeyType, ValueType>::retainAll(
+        std::initializer_list<std::pair<KeyType, ValueType> > list) {
+    Map<KeyType, ValueType> map2(list);
+    retainAll(map2);
     return *this;
 }
 
@@ -1088,8 +1187,21 @@ Map<KeyType, ValueType> Map<KeyType, ValueType>::operator +(const Map& map2) con
 }
 
 template <typename KeyType, typename ValueType>
+Map<KeyType, ValueType> Map<KeyType, ValueType>::operator +(
+        std::initializer_list<std::pair<KeyType, ValueType> > list) const {
+    Map<KeyType, ValueType> result = *this;
+    return result.putAll(list);
+}
+
+template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>& Map<KeyType, ValueType>::operator +=(const Map& map2) {
     return putAll(map2);
+}
+
+template <typename KeyType, typename ValueType>
+Map<KeyType, ValueType>& Map<KeyType, ValueType>::operator +=(
+        std::initializer_list<std::pair<KeyType, ValueType> > list) {
+    return putAll(list);
 }
 
 template <typename KeyType, typename ValueType>
@@ -1099,8 +1211,21 @@ Map<KeyType, ValueType> Map<KeyType, ValueType>::operator -(const Map& map2) con
 }
 
 template <typename KeyType, typename ValueType>
+Map<KeyType, ValueType> Map<KeyType, ValueType>::operator -(
+        std::initializer_list<std::pair<KeyType, ValueType> > list) const {
+    Map<KeyType, ValueType> result = *this;
+    return result.removeAll(list);
+}
+
+template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>& Map<KeyType, ValueType>::operator -=(const Map& map2) {
     return removeAll(map2);
+}
+
+template <typename KeyType, typename ValueType>
+Map<KeyType, ValueType>& Map<KeyType, ValueType>::operator -=(
+        std::initializer_list<std::pair<KeyType, ValueType> > list) {
+    return removeAll(list);
 }
 
 template <typename KeyType, typename ValueType>
@@ -1110,8 +1235,21 @@ Map<KeyType, ValueType> Map<KeyType, ValueType>::operator *(const Map& map2) con
 }
 
 template <typename KeyType, typename ValueType>
+Map<KeyType, ValueType> Map<KeyType, ValueType>::operator *(
+        std::initializer_list<std::pair<KeyType, ValueType> > list) const {
+    Map<KeyType, ValueType> result = *this;
+    return result.retainAll(list);
+}
+
+template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>& Map<KeyType, ValueType>::operator *=(const Map& map2) {
     return retainAll(map2);
+}
+
+template <typename KeyType, typename ValueType>
+Map<KeyType, ValueType>& Map<KeyType, ValueType>::operator *=(
+        std::initializer_list<std::pair<KeyType, ValueType> > list) {
+    return retainAll(list);
 }
 
 template <typename KeyType, typename ValueType>
@@ -1175,7 +1313,11 @@ std::istream& operator >>(std::istream& is, Map<KeyType,ValueType>& map) {
     char ch = '\0';
     is >> ch;
     if (ch != '{') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
         error("Map::operator >>: Missing {");
+#endif
+        is.setstate(std::ios_base::failbit);
+        return is;
     }
     map.clear();
     is >> ch;
@@ -1183,20 +1325,38 @@ std::istream& operator >>(std::istream& is, Map<KeyType,ValueType>& map) {
         is.unget();
         while (true) {
             KeyType key;
-            readGenericValue(is, key);
+            if (!readGenericValue(is, key)) {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
+                error("Map::operator >>: parse key error");
+#endif
+                return is;
+            }
             is >> ch;
             if (ch != ':') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
                 error("Map::operator >>: Missing colon after key");
+#endif
+                is.setstate(std::ios_base::failbit);
+                return is;
             }
             ValueType value;
-            readGenericValue(is, value);
+            if (!readGenericValue(is, value)) {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
+                error("Map::operator >>: parse value error");
+#endif
+                return is;
+            }
             map[key] = value;
             is >> ch;
             if (ch == '}') {
                 break;
             }
             if (ch != ',') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
                 error(std::string("Map::operator >>: Unexpected character ") + ch);
+#endif
+                is.setstate(std::ios_base::failbit);
+                return is;
             }
         }
     }

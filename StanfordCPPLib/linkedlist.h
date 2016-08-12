@@ -5,6 +5,11 @@
  * implementation of a doubly-linked list of objects and provides the same
  * public interface of members as the <code>LinkedList</code> class.
  *
+ * @version 2016/08/10
+ * - added support for std initializer_list usage, such as {1, 2, 3}
+ *   in constructor, addAll, +, +=
+ * @version 2016/08/04
+ * - fixed operator >> to not throw errors
  * @version 2015/07/05
  * - using global hashing functions rather than global variables
  * @version 2014/11/13
@@ -24,8 +29,9 @@
 #ifndef _linkedlist_h
 #define _linkedlist_h
 
-#include <iterator>
+#include <initializer_list>
 #include <iostream>
+#include <iterator>
 #include <sstream>
 #include <string>
 #include <list>
@@ -49,12 +55,18 @@ public:
     /*
      * Constructor: LinkedList
      * Usage: LinkedList<ValueType> list;
-     * --------------------------------------------
+     * ----------------------------------
      * Initializes a new LinkedList.  The default constructor creates an
      * empty LinkedList.
      */
     LinkedList();
     /* implicit */ LinkedList(const std::list<ValueType>& v);
+
+    /*
+     * This constructor uses an initializer list to set up the linked list.
+     * Usage: LinkedList<int> list {1, 2, 3};
+     */
+    LinkedList(std::initializer_list<ValueType> list);
 
     /*
      * Destructor: ~LinkedList
@@ -80,13 +92,15 @@ public:
      * Adds all elements of the given other linked list to this list.
      * Returns a reference to this list.
      * Identical in behavior to the += operator.
+     * You may also pass an initializer list such as {1, 2, 3}.
      */
     LinkedList<ValueType>& addAll(const LinkedList<ValueType>& list);
-    
+    LinkedList<ValueType>& addAll(std::initializer_list<ValueType> list);
+
     /*
      * Method: back
      * Usage: ValueType val = list.back();
-     * ---------------------------------------
+     * -----------------------------------
      * Returns the element at the back of this LinkedList.
      * This method signals an error if the list is empty.
      */
@@ -276,9 +290,11 @@ public:
      * Operator: +
      * Usage: v1 + l2
      * --------------
-     * Concatenates two LinkedLists.
+     * Concatenates two LinkedLists, or concatenates this linked list with an
+     * initializer list such as {1, 2, 3}.
      */
     LinkedList operator +(const LinkedList& l2) const;
+    LinkedList operator +(std::initializer_list<ValueType> list) const;
 
     /*
      * Operator: +=
@@ -294,8 +310,10 @@ public:
      *    LinkedList&lt;int&gt; digits;
      *    digits += 0, 1, 2, 3, 4, 5, 6, 7, 8, 9;
      *</pre>
+     * You can also pass an initializer list such as {1, 2, 3}.
      */
     LinkedList& operator +=(const LinkedList& l2);
+    LinkedList& operator +=(std::initializer_list<ValueType> list);
     LinkedList& operator +=(const ValueType& value);
 
     /*
@@ -465,6 +483,11 @@ LinkedList<ValueType>::LinkedList(const std::list<ValueType>& v) {
 }
 
 template <typename ValueType>
+LinkedList<ValueType>::LinkedList(std::initializer_list<ValueType> list) {
+    addAll(list);
+}
+
+template <typename ValueType>
 LinkedList<ValueType>::~LinkedList() {
     // empty
 }
@@ -477,9 +500,17 @@ void LinkedList<ValueType>::add(ValueType value) {
 template <typename ValueType>
 LinkedList<ValueType>&
 LinkedList<ValueType>::addAll(const LinkedList<ValueType>& list) {
-    for (ValueType value : list) {
+    for (const ValueType& value : list) {
         add(value);
     }
+}
+
+template <typename ValueType>
+LinkedList<ValueType>& LinkedList<ValueType>::addAll(std::initializer_list<ValueType> list) {
+    for (const ValueType& value : list) {
+        add(value);
+    }
+    return *this;
 }
 
 template <typename ValueType>
@@ -684,9 +715,20 @@ LinkedList<ValueType>::operator +(const LinkedList& list2) const {
 }
 
 template <typename ValueType>
+LinkedList<ValueType> LinkedList<ValueType>::operator +(std::initializer_list<ValueType> list) const {
+    LinkedList<ValueType> result = *this;
+    return result.addAll(list);
+}
+
+template <typename ValueType>
 LinkedList<ValueType>&
 LinkedList<ValueType>::operator +=(const LinkedList& list2) {
     return addAll(list2);
+}
+
+template <typename ValueType>
+LinkedList<ValueType>& LinkedList<ValueType>::operator +=(std::initializer_list<ValueType> list) {
+    return addAll(list);
 }
 
 template <typename ValueType>
@@ -809,11 +851,15 @@ std::ostream& operator <<(std::ostream& os, const LinkedList<ValueType>& list) {
 }
 
 template <typename ValueType>
-std::istream& operator>>(std::istream& is, LinkedList<ValueType>& list) {
+std::istream& operator >>(std::istream& is, LinkedList<ValueType>& list) {
     char ch = '\0';
     is >> ch;
     if (ch != '{') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
         error("LinkedList::operator >>: Missing {");
+#endif
+        is.setstate(std::ios_base::failbit);
+        return is;
     }
     list.clear();
     is >> ch;
@@ -821,14 +867,23 @@ std::istream& operator>>(std::istream& is, LinkedList<ValueType>& list) {
         is.unget();
         while (true) {
             ValueType value;
-            readGenericValue(is, value);
+            if (!readGenericValue(is, value)) {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
+                error("LinkedList::operator >>: parse error");
+#endif
+                return is;
+            }
             list.add(value);
             is >> ch;
             if (ch == '}') {
                 break;
             }
             if (ch != ',') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
                 error(std::string("LinkedList::operator >>: Unexpected character ") + ch);
+#endif
+                is.setstate(std::ios_base::failbit);
+                return is;
             }
         }
     }

@@ -88,7 +88,11 @@ istream& operator >>(istream& input, HeapPriorityQueue& pq) {
     char ch = '\0';
     input >> ch;
     if (ch != '{') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
         error("HeapPriorityQueue::operator >>: Missing {");
+#endif
+        input.setstate(std::ios_base::failbit);
+        return input;
     }
     pq.clear();
     input >> ch;
@@ -96,10 +100,19 @@ istream& operator >>(istream& input, HeapPriorityQueue& pq) {
         input.unget();
         while (true) {
             std::string value;
-            readGenericValue(input, value);
+            if (!readGenericValue(input, value)) {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
+                error("HeapPriorityQueue::operator >>: parse error");
+#endif
+                return input;
+            }
             input >> ch;
             if (ch != ':') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
                 error("HeapPriorityQueue::operator >>: Missing colon after priority");
+#endif
+                input.setstate(std::ios_base::failbit);
+                return input;
             }
             double priority = 0.0;
             input >> priority;
@@ -110,7 +123,11 @@ istream& operator >>(istream& input, HeapPriorityQueue& pq) {
                 break;
             }
             if (ch != ',') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
                 error(std::string("HeapPriorityQueue::operator >>: Unexpected character ") + ch);
+#endif
+                input.setstate(std::ios_base::failbit);
+                return input;
             }
         }
     }

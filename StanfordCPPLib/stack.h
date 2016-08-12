@@ -4,6 +4,10 @@
  * This file exports the <code>Stack</code> class, which implements
  * a collection that processes values in a last-in/first-out (LIFO) order.
  * 
+ * @version 2016/08/10
+ * - added constructor support for std initializer_list usage, such as {1, 2, 3}
+ * @version 2016/08/04
+ * - fixed operator >> to not throw errors
  * @version 2014/11/13
  * - added add() method as synonym for push()
  * - added remove() method as synonym for pop()
@@ -14,6 +18,7 @@
 #ifndef _stack_h
 #define _stack_h
 
+#include <initializer_list>
 #include <iterator>
 #include <stack>
 #include "error.h"
@@ -40,6 +45,14 @@ public:
      * Initializes a new empty stack.
      */
     Stack();
+
+    /*
+     * Constructor: Stack
+     * Usage: Stack<ValueType> stack {1, 2, 3};
+     * ----------------------------------------
+     * Initializes a new stack that stores the given elements from bottom-top.
+     */
+    Stack(std::initializer_list<ValueType> list);
 
     /*
      * Destructor: ~Stack
@@ -274,6 +287,13 @@ Stack<ValueType>::Stack() {
 }
 
 template <typename ValueType>
+Stack<ValueType>::Stack(std::initializer_list<ValueType> list) {
+    for (const ValueType& element : list) {
+        push(element);
+    }
+}
+
+template <typename ValueType>
 Stack<ValueType>::~Stack() {
     /* Empty */
 }
@@ -406,7 +426,11 @@ std::istream& operator >>(std::istream& is, Stack<ValueType>& stack) {
     char ch = '\0';
     is >> ch;
     if (ch != '{') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
         error("Stack::operator >>: Missing {");
+#endif
+        is.setstate(std::ios_base::failbit);
+        return is;
     }
     stack.clear();
     is >> ch;
@@ -414,14 +438,23 @@ std::istream& operator >>(std::istream& is, Stack<ValueType>& stack) {
         is.unget();
         while (true) {
             ValueType value;
-            readGenericValue(is, value);
+            if (!readGenericValue(is, value)) {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
+                error("Stack::operator >>: parse error");
+#endif
+                return is;
+            }
             stack.push(value);
             is >> ch;
             if (ch == '}') {
                 break;
             }
             if (ch != ',') {
+#ifdef SPL_ERROR_ON_COLLECTION_PARSE
                 error(std::string("Stack::operator >>: Unexpected character ") + ch);
+#endif
+                is.setstate(std::ios_base::failbit);
+                return is;
             }
         }
     }
