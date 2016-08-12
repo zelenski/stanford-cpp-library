@@ -4,6 +4,8 @@
  * This file exports the <code>Vector</code> class, which provides an
  * efficient, safe, convenient replacement for the array type in C++.
  *
+ * @version 2016/08/12
+ * - bug fix for constructor based on initializer list
  * @version 2016/08/10
  * - added support for std initializer_list usage, such as {1, 2, 3}
  *   in constructor, addAll, +, +=
@@ -560,7 +562,7 @@ template <typename ValueType>
 Vector<ValueType>::Vector(std::initializer_list<ValueType> list) {
     capacity = list.size();
     count = 0;
-    elements = new ValueType[count];
+    elements = new ValueType[capacity];
     addAll(list);
 }
 

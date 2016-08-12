@@ -1,4 +1,13 @@
 	C++ libs
+		
+		add new collection behavior/methods below to cppdocs?
+		
+		BUG: default font seems to get forgotten?
+		
+		Java lib:  Karel speak(String)
+			- when to hide?  automatically?  param?  on some other method call?
+			- how to draw speech bubble?
+
 
 x		collections with initializer lists {}
 x			check whether coll = {} is same as coll {} ?
@@ -44,22 +53,13 @@ x					insert
 x					isSubsetOf
 x					isSupersetOf
 x			addAll, containsAll, removeAll, retainAll?
-		
-		
-		add all of the above to cppdocs?
-		
-		call_stack_windows.cpp:34
-			stacktrace::pp defined but not used (-Wunused-variable)
-		on windows, release build, directory with spaces
-			move command doesn't properly put quotes around dirs
-			'"'$${TARGET_PATH}'"'
-		addr2line.exe fails with spaces
-		segfault with RtlUnicodeStringToInteger function
-		
-		Java lib:  Karel speak(String)
-			- when to hide?  automatically?  param?  on some other method call?
-			- how to draw speech bubble?
-
+-		call_stack_windows.cpp:34
+-			stacktrace::pp defined but not used (-Wunused-variable)
+x		on windows, release build, directory with spaces
+x			move command doesn't properly put quotes around dirs
+x			'"'$${TARGET_PATH}'"'
+-		addr2line.exe fails with spaces
+-		segfault with RtlUnicodeStringToInteger function
 
 
 

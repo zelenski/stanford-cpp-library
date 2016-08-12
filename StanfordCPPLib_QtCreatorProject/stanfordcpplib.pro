@@ -11,6 +11,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2016/08/12
+# - fixed Windows release build problems
 # @version 2016/08/04
 # - added flag for throwing errors on op >> parsing (default off)
 # @version 2016/06/28
@@ -135,7 +137,7 @@ QMAKE_CXXFLAGS += -Wno-write-strings
 # additional flags for Windows
 win32 {
     # increase system stack size (helpful for recursive programs)
-    QMAKE_LFLAGS += -Wl,--stack,536870912
+    # QMAKE_LFLAGS += -Wl,--stack,536870912
     LIBS += -lDbghelp
     LIBS += -lbfd
     LIBS += -limagehlp
@@ -199,13 +201,14 @@ CONFIG(debug, debug|release) {
 CONFIG(release, debug|release) {
     QMAKE_CXXFLAGS += -O2
     macx {
-        QMAKE_POST_LINK += 'macdeployqt $${OUT_PWD}/$${TARGET}.app && rm $${OUT_PWD}/*.o && rm $${OUT_PWD}/Makefile'
+        QMAKE_POST_LINK += 'macdeployqt $${OUT_PWD}/$${TARGET}.app'
+        #QMAKE_POST_LINK += 'macdeployqt $${OUT_PWD}/$${TARGET}.app && rm $${OUT_PWD}/*.o && rm $${OUT_PWD}/Makefile'
     }
     unix:!macx {
-        QMAKE_POST_LINK += 'rm $${OUT_PWD}/*.o && rm $${OUT_PWD}/Makefile'
         QMAKE_LFLAGS += -static
         QMAKE_LFLAGS += -static-libgcc
         QMAKE_LFLAGS += -static-libstdc++
+        #QMAKE_POST_LINK += 'rm $${OUT_PWD}/*.o && rm $${OUT_PWD}/Makefile'
     }
     win32 {
         TARGET_PATH = $${OUT_PWD}/release/$${TARGET}.exe
@@ -214,22 +217,23 @@ CONFIG(release, debug|release) {
         OUT_PATH = $${OUT_PWD}/
         OUT_PATH ~= s,/,\\,g
 
-        REMOVE_DIRS += $${OUT_PWD}/release
-        REMOVE_DIRS += $${OUT_PWD}/debug
-        REMOVE_FILES += $${OUT_PWD}/Makefile
-        REMOVE_FILES += $${OUT_PWD}/Makefile.Debug
-        REMOVE_FILES += $${OUT_PWD}/Makefile.Release
-        REMOVE_FILES += $${OUT_PWD}/object_script.$${TARGET}.Release
-        REMOVE_FILES += $${OUT_PWD}/object_script.$${TARGET}.Debug
+        REMOVE_DIRS += '"'$${OUT_PWD}/release'"'
+        REMOVE_DIRS += '"'$${OUT_PWD}/debug'"'
+        REMOVE_FILES += '"'$${OUT_PWD}/Makefile'"'
+        REMOVE_FILES += '"'$${OUT_PWD}/Makefile.Debug'"'
+        REMOVE_FILES += '"'$${OUT_PWD}/Makefile.Release'"'
+        #REMOVE_FILES += '"'$${OUT_PWD}/object_script.$${TARGET}.Release'"'
+        REMOVE_FILES += '"'$${OUT_PWD}/object_script.$${TARGET}.Debug'"'
         REMOVE_DIRS ~= s,/,\\,g
         REMOVE_FILES ~= s,/,\\,g
 
         QMAKE_LFLAGS += -static
         QMAKE_LFLAGS += -static-libgcc
         QMAKE_LFLAGS += -static-libstdc++
-        QMAKE_POST_LINK += 'move $${TARGET_PATH} $${OUT_PWD} \
-            && rmdir /s /q $${REMOVE_DIRS} \
-            && del $${REMOVE_FILES}'
+        QMAKE_POST_LINK += copy '"'$${TARGET_PATH}'"' '"'$${OUT_PATH}'"'
+        #QMAKE_POST_LINK += copy '"'$${TARGET_PATH}'"' '"'$${OUT_PATH}'"' \
+        #    && rmdir /s /q $${REMOVE_DIRS} \
+        #    && del $${REMOVE_FILES}
     }
 }
 
@@ -377,4 +381,4 @@ exists($$PWD/lib/autograder/*.cpp) {
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #380; if not, your .pro has been changed!)
+# END OF FILE (this should be line #384; if not, your .pro has been changed!)

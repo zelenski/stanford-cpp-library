@@ -2453,17 +2453,17 @@ static std::string getResult(bool consumeAcks, const std::string& caller) {
                 if (!startsWith(line, "result:___jbe___ack___")) {
                     os << nextLine;
 #ifdef PIPE_DEBUG
-                    fprintf(stderr, "getResult(): appended line (length so far: %ld)\n", os.str().length());  fflush(stderr);
+                    fprintf(stderr, "getResult(): appended line (length so far: %d)\n", (int) os.str().length());  fflush(stderr);
 #endif
                 }
                 nextLine = getPipe();
             }
             std::string result = os.str();
 #ifdef PIPE_DEBUG
-            fprintf(stderr, "getResult(): returning long string \"%s ... %s\" (length %ld)\n",
+            fprintf(stderr, "getResult(): returning long string \"%s ... %s\" (length %d)\n",
                     result.substr(0, 10).c_str(),
                     result.substr(result.length() - 10, 10).c_str(),
-                    result.length());  fflush(stderr);
+                    (int) result.length());  fflush(stderr);
 #endif
             return result;
         } else if (((isResult || isEvent) && hasACMException) ||
@@ -2483,14 +2483,14 @@ static std::string getResult(bool consumeAcks, const std::string& caller) {
             if (!isAck || !consumeAcks) {
                 std::string result = line.substr(7);
 #ifdef PIPE_DEBUG
-        fprintf(stderr, "getResult(): returning regular result (length %ld): \"%s\"\n", result.length(), result.c_str());  fflush(stderr);
+        fprintf(stderr, "getResult(): returning regular result (length %d): \"%s\"\n", (int) result.length(), result.c_str());  fflush(stderr);
 #endif
                 return result;
             } else {
                 // else this is just an acknowledgment of some previous event;
                 // not a real result of its own. consume it and keep waiting
 #ifdef PIPE_DEBUG
-        fprintf(stderr, "getResult(): saw ACK (length %ld): \"%s\"\n", line.length(), line.c_str());  fflush(stderr);
+        fprintf(stderr, "getResult(): saw ACK (length %d): \"%s\"\n", (int) line.length(), line.c_str());  fflush(stderr);
 #endif
             }
         } else if (isEvent) {
