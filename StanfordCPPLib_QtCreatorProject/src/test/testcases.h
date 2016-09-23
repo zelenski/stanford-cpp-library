@@ -8,6 +8,7 @@ void foreachTest();
 void hashCodeTest();
 void initializerListTest();
 void randomElementTest();
+void shuffleTest();
 void streamExtractTest();
 
 // exception tests

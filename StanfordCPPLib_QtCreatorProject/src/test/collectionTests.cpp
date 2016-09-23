@@ -173,6 +173,16 @@ void randomElementTest() {
     std::cout << "counts:" << counts << std::endl << std::endl;
 }
 
+void shuffleTest() {
+    Vector<int> v {10, 20, 30, 40, 50};
+    cout << "before shuffle, v = " << v << endl;
+
+    for (int i = 0; i < 10; i++) {
+        shuffle(v);
+        cout << "after  shuffle, v = " << v << endl;
+    }
+}
+
 void streamExtractTest() {
     // hashmap
     istringstream hmstream("{1:1, 2:2, 3:3}");

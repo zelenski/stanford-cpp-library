@@ -24,6 +24,7 @@ int main() {
         cout << "c) collections" << endl;
         cout << "cs) collection stream extraction" << endl;
         cout << "ci) collection initializer lists" << endl;
+        cout << "csh) collection shuffle" << endl;
 
         cout << "   STUFF RELATED TO INPUT/OUTPUT:" << endl;
         cout << "e) cout / cerr mix" << endl;
@@ -63,6 +64,8 @@ int main() {
             hashCodeTest();
         } else if (cmd == "cs") {
             streamExtractTest();
+        } else if (cmd == "csh") {
+            shuffleTest();
         } else if (cmd == "ci") {
             initializerListTest();
         } else if (cmd == "e") {
