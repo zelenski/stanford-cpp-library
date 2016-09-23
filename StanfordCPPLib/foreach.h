@@ -217,4 +217,6 @@ T Hook(State& fe, ArrayRange<T>*) {
 
 #define in = _fe::Hook(_fe, _fe.state != 0 ? NULL : _fe::Init(_fe,
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _foreach_h

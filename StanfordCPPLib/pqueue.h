@@ -6,7 +6,7 @@
  * 
  * @version 2016/08/10
  * - added constructor support for std initializer_list usage, such as
- *   {{"a", 1}, {"b", 2}, {"c", 3}}
+ *   {{1.0, "a"}, {2.0, "b"}, {3.0, "c"}}
  * @version 2016/08/04
  * - fixed operator >> to not throw errors
  * @version 2015/07/05
@@ -67,13 +67,13 @@ public:
 
     /*
      * Constructor: PriorityQueue
-     * Usage: PriorityQueue<ValueType> map {{"a", 1.0}, {"b", 2.0}, {"c", 3.0}};
+     * Usage: PriorityQueue<ValueType> pq {{1.0, "a"}, {2.0, "b"}, {3.0, "c"}};
      * -------------------------------------------------------------------------
      * Initializes a new priority that stores the given pairs.
      * Note that the pairs are stored in priority order and not
      * necessarily the order in which they are written in the initializer list.
      */
-    PriorityQueue(std::initializer_list<std::pair<ValueType, double> > list);
+    PriorityQueue(std::initializer_list<std::pair<double, ValueType> > list);
 
     /*
      * Destructor: ~PriorityQueue
@@ -399,10 +399,10 @@ PriorityQueue<ValueType>::PriorityQueue() {
 
 template <typename ValueType>
 PriorityQueue<ValueType>::PriorityQueue(
-        std::initializer_list<std::pair<ValueType, double> > list) {
+        std::initializer_list<std::pair<double, ValueType> > list) {
     clear();
-    for (std::pair<ValueType, double> pair : list) {
-        enqueue(pair.first, pair.second);
+    for (std::pair<double, ValueType> pair : list) {
+        enqueue(pair.second, pair.first);
     }
 }
 
@@ -819,4 +819,6 @@ std::istream& operator >>(std::istream& is, PriorityQueue<ValueType>& pq) {
     return is;
 }
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _pqueue_h

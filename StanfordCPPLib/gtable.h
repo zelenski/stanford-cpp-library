@@ -245,4 +245,6 @@ private:
     void checkSize(const std::string& member, double width, double height) const;
 };
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _gtable_h

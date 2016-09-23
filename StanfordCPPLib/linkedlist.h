@@ -947,4 +947,6 @@ void shuffle(LinkedList<T>& list) {
     }
 }
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _linkedlist_h

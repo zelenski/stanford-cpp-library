@@ -60,12 +60,6 @@ bool randomChance(double p) {
     return randomReal(0, 1) < p;
 }
 
-//template <typename T>
-//T& randomElement(std::vector<T>& v) {
-//    int index = randomInteger(0, v.size() - 1);
-//    return v[index];
-//}
-
 int randomColor() {
     if (!autograder::fixedInts.empty()) {
         int top = autograder::fixedInts.front();

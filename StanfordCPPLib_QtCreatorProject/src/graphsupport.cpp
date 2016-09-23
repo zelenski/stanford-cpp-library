@@ -209,6 +209,11 @@ void graph_printPath(const Vector<Vertex*>& path) {
     cout << "}" << endl;
 }
 
+void BasicGraph_fromString(BasicGraph& obj, string str) {
+    istringstream input(str);
+    input >> obj;
+}
+
 ostream& operator <<(ostream& out, const Vector<Vertex*>& path) {
     out << "{";
     int i = 0;

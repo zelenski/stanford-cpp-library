@@ -18,7 +18,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include "platform.h"
+#include "private/platform.h"
 
 namespace version {
 #ifdef SPL_PROJECT_VERSION
@@ -39,7 +39,7 @@ static std::string macroIntegerToDate(int macroInteger) {
 #endif // SPL_PROJECT_VERSION
 
 static void ensureJavaBackEndVersionHelper(std::string minVersion) {
-    std::string backendVersion = getPlatform()->cpplib_getJavaBackEndVersion();
+    std::string backendVersion = stanfordcpplib::getPlatform()->cpplib_getJavaBackEndVersion();
     if (backendVersion < minVersion) {
         // use stderr directly rather than cerr because graphical console is unreachable
         fputs("\n", stderr);
@@ -106,7 +106,7 @@ std::string getCppLibraryVersion() {
 }
 
 std::string getJavaBackEndVersion() {
-    return getPlatform()->cpplib_getJavaBackEndVersion();
+    return stanfordcpplib::getPlatform()->cpplib_getJavaBackEndVersion();
 }
 
 /*

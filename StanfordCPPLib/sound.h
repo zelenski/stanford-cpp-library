@@ -55,4 +55,6 @@ public:
     void play();
 };
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _sound_h

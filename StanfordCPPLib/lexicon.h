@@ -596,4 +596,6 @@ int hashCode(const Lexicon& l);
  */
 std::ostream& operator <<(std::ostream& os, const Lexicon& lex);
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _lexicon_h

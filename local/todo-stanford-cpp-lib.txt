@@ -1,8 +1,62 @@
 	C++ libs
 		
+		add initializer_list stuff to LinkedHash*
+		
 		add new collection behavior/methods below to cppdocs?
 		
 		BUG: default font seems to get forgotten?
+		
+		
+		BUG: images fall off screen?
+				Ali & I have a question about FacePamphlet regarding loading the profile image in that we came across in LaIR. The student's final code (which worked fine) looked as such: 
+
+				GImage image = profile.getImage();
+				image.setSize(IMAGE_WIDTH, IMAGE_HEIGHT);
+				add(image, x, y);
+
+				However, if we remove the setSize on the image, we then get a blank screen (so nothing seems to be added). This didn't work.
+
+				In another odd twist, if we then (after removing setSize) add a GRect (as shown below) on top of the image, that seems to work (except the image is not the right size).
+
+				GRect r = new GRect (800, 800);
+				r.setFilled(false);
+				add(r, x + 10, y + 10);
+
+				For the sake of our own curiousity, we were wondering why this works/what's going on and why setSize fixes the problem. Ali's take on it is below:
+
+				---------------------------------------------------------------------------------------------------------------------------
+
+				So the issue is to do with the maximum height of a photo allowed on the canvas. So imagine you're trying to add MehranS.jpg. The following will work:
+
+				GImage image = profile.getImage();
+				image.setSize(image.getWidth() , image.getHeight() -180);
+				add(image, x, y);
+
+				so will 
+
+				GImage image = profile.getImage();
+				image.setSize(image.getWidth() , image.getHeight() -​175);
+				add(image, x, y);
+
+
+				But If you go past -175, it disappears. So this won't work:
+
+				GImage image = profile.getImage();
+				image.setSize(image.getWidth() , image.getHeight() -​174);
+				add(image, x, y);
+
+				​But then this works (offsetting the y position by -1):​
+
+				GImage image = profile.getImage();
+				image.setSize(image.getWidth() , image.getHeight() -​174);
+				add(image, x​​, y-1);
+
+
+				So the issue is almost certainly with the image going off bounds of some limit on the screen. These numbers (-175) are also MehranS.jpg specific. AlishaA.png has a different number limit because it's size is different. 
+
+				I don't know why the image adds as a blank if it goes off these limits. Similar things happen if you try adding a GRect and tweak its dimensions to bigger numbers until it disappears. However, at least it helps bring some sense to the madness that was debugging this problem. 
+
+		
 		
 		Java lib:  Karel speak(String)
 			- when to hide?  automatically?  param?  on some other method call?

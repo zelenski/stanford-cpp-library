@@ -51,6 +51,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	public static final int BUTTON2_DOWN = 64;
 	public static final int BUTTON3_DOWN = 128;
 	
+	private static final String DEFAULT_APP_NAME = "JBE";
 	private static final String DEBUG_PROPERTY = "stanfordspl.debug";
 	private static final String DEBUG_LOG_FILE = "stanfordspldebug.txt";
 	private static boolean DEBUG = false;
@@ -813,7 +814,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	}
 
 	private void processArguments(String[] paramArrayOfString) {
-		this.appName = "JBE";
+		this.appName = DEFAULT_APP_NAME;
 		this.exec = null;
 		for (int i = 0; i < paramArrayOfString.length; i++) {
 			String str = paramArrayOfString[i];

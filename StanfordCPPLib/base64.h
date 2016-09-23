@@ -16,7 +16,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif // __cplusplus
 
 int Base64encode_len(int len);
 int Base64encode(char* coded_dst, const char* plain_src, int len_plain_src);
@@ -41,7 +41,9 @@ std::string encode(const std::string& s);
  */
 std::string decode(const std::string& s);
 }
-#endif
+#endif // __cplusplus
 
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _base64_h

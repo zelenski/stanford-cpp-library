@@ -100,4 +100,6 @@ std::ostream& operator <<(std::ostream& os, const Point& pt);
 // hash code function for Point objects
 int hashCode(const Point& pt);
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _point_h

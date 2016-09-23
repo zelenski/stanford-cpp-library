@@ -557,7 +557,7 @@ Grid<ValueType>::Grid(std::initializer_list<std::initializer_list<ValueType> > l
     // copy the data from the initializer list into the Grid
     auto rowItr = list.begin();
     for (int row = 0; row < nRows; row++) {
-        if (rowItr->size() != nCols) {
+        if ((int) rowItr->size() != nCols) {
             error("Grid::constructor: initializer list is not rectangular (must have same # cols in each row)");
         }
         auto colItr = rowItr->begin();
@@ -978,4 +978,6 @@ void shuffle(Grid<T>& grid) {
     }
 }
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _grid_h

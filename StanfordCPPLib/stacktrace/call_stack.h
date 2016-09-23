@@ -21,11 +21,10 @@ int addr2line_all(void** addrs, int length, std::string& output);
 std::string addr2line_clean(std::string line);
 
 /*
- * Functions to set a fake call stack pointer for use in printing a stack trace.
+ * Function to get/set a fake call stack pointer for use in printing a stack trace.
  * Called on Windows only after a signal / SEH handler is invoked to get a stack pointer.
  */
-void* getFakeCallStackPointer();
-void setFakeCallStackPointer(void* ptr);
+void*& fakeCallStackPointer();
 
 /** Call-stack entry datastructure. */
 struct entry {

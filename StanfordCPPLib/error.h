@@ -60,6 +60,6 @@ class InterruptedIOException : public std::exception {
 
 void error(std::string msg);
 
-#include "private/main.h"
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif

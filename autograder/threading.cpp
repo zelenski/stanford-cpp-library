@@ -16,7 +16,7 @@
 #include "autograder.h"
 #include "autogradertest.h"
 #include "exceptions.h"
-#include "platform.h"
+#include "private/platform.h"
 
 static const std::string TIMEOUT_ERROR_MESSAGE = "test timed out! possible infinite loop";
 static const std::string EXCEPTION_ERROR_MESSAGE = "test threw an exception!";
@@ -140,7 +140,7 @@ static void failWithException(autograder::AutograderTest* test, std::string kind
     out << desc << std::endl;
     exceptions::printStackTrace(out);
     std::string errorMessage = out.str();
-    getPlatform()->autograderunittest_setTestResult(test->getName(), "fail");
+    stanfordcpplib::getPlatform()->autograderunittest_setTestResult(test->getName(), "fail");
     autograder::setFailDetails(autograder::UnitTestDetails(
         autograder::UnitTestType::TEST_EXCEPTION,
         errorMessage));

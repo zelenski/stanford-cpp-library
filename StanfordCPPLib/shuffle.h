@@ -61,4 +61,6 @@ void shuffle(T** array2d, int rows, int cols) {
  */
 std::string shuffle(std::string s);
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _shuffle_h

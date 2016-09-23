@@ -11,10 +11,14 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2016/09/22
+# - added private/*.cpp to sources
 # @version 2016/08/12
 # - fixed Windows release build problems
 # @version 2016/08/04
 # - added flag for throwing errors on op >> parsing (default off)
+# @version 2016/07/22
+# - added support for src/autograder/ directory
 # @version 2016/06/28
 # - fixed bugs with 'copydata' on Windows systems
 # @version 2016/06/24
@@ -69,9 +73,13 @@ win32 {
 # include various source .cpp files and header .h files in the build process
 # (student's source code can be put into project root, or src/ subfolder)
 SOURCES += $$PWD/lib/StanfordCPPLib/*.cpp
+SOURCES += $$PWD/lib/StanfordCPPLib/private/*.cpp
 SOURCES += $$PWD/lib/StanfordCPPLib/stacktrace/*.cpp
 exists($$PWD/src/*.cpp) {
     SOURCES += $$PWD/src/*.cpp
+}
+exists($$PWD/src/autograder/*.cpp) {
+    SOURCES += $$PWD/src/autograder/*.cpp
 }
 exists($$PWD/src/test/*.cpp) {
     SOURCES += $$PWD/src/test/*.cpp
@@ -86,6 +94,9 @@ HEADERS += $$PWD/lib/StanfordCPPLib/stacktrace/*.h
 exists($$PWD/src/*.h) {
     HEADERS += $$PWD/src/*.h
 }
+exists($$PWD/src/autograder/*.h) {
+    HEADERS += $$PWD/src/autograder/*.h
+}
 exists($$PWD/src/test/*.h) {
     HEADERS += $$PWD/src/test/*.h
 }
@@ -99,6 +110,9 @@ INCLUDEPATH += $$PWD/lib/StanfordCPPLib/private/
 INCLUDEPATH += $$PWD/lib/StanfordCPPLib/stacktrace/
 INCLUDEPATH += $$PWD/src/
 INCLUDEPATH += $$PWD/
+exists($$PWD/src/autograder/*.h) {
+    INCLUDEPATH += $$PWD/src/autograder/
+}
 exists($$PWD/src/test/*.h) {
     INCLUDEPATH += $$PWD/src/test/
 }
@@ -137,7 +151,7 @@ QMAKE_CXXFLAGS += -Wno-write-strings
 # additional flags for Windows
 win32 {
     # increase system stack size (helpful for recursive programs)
-    # QMAKE_LFLAGS += -Wl,--stack,536870912
+    QMAKE_LFLAGS += -Wl,--stack,268435456
     LIBS += -lDbghelp
     LIBS += -lbfd
     LIBS += -limagehlp
@@ -156,15 +170,18 @@ macx {
 
 # additional flags for Linux
 unix:!macx {
-    QMAKE_CXXFLAGS += -rdynamic
+    unix-g++ {
+        QMAKE_CXXFLAGS += -rdynamic
+        QMAKE_CXXFLAGS += -Wl,--export-dynamic
+    }
+
     QMAKE_LFLAGS += -rdynamic
     QMAKE_LFLAGS += -Wl,--export-dynamic
-    QMAKE_CXXFLAGS += -Wl,--export-dynamic
 }
 
 # additional flags for non-Windows systems (Mac and Linux)
 !win32 {
-    QMAKE_CXXFLAGS += -Wno-dangling-field
+    #QMAKE_CXXFLAGS += -Wno-dangling-field
     QMAKE_CXXFLAGS += -Wno-unused-const-variable
     LIBS += -ldl
 }
@@ -180,7 +197,7 @@ DEFINES += SPL_CONSOLE_HEIGHT=500
 DEFINES += SPL_CONSOLE_ECHO
 DEFINES += SPL_CONSOLE_EXIT_ON_CLOSE
 DEFINES += SPL_VERIFY_JAVA_BACKEND_VERSION
-DEFINES += SPL_PROJECT_VERSION=20160804
+DEFINES += SPL_PROJECT_VERSION=20160812
 DEFINES += PQUEUE_ALLOW_HEAP_ACCESS
 DEFINES += PQUEUE_PRINT_IN_HEAP_ORDER
 # DEFINES += SPL_ERROR_ON_STREAM_EXTRACT
@@ -381,4 +398,4 @@ exists($$PWD/lib/autograder/*.cpp) {
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #384; if not, your .pro has been changed!)
+# END OF FILE (this should be line #398; if not, your .pro has been changed!)

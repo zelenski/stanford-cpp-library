@@ -2,7 +2,8 @@
  * CS 106B, Marty Stepp
  * ArrayIntList.cpp implements the ArrayIntList class behavior declared in ArrayIntList.h.
  * 
- * @version 2015/07/28
+ * @version 2016/08/23
+ * - added initializer_list support to match other lib collections
  */
 
 #include "ArrayIntList.h"
@@ -22,10 +23,22 @@ ArrayIntList::ArrayIntList() {
 /*
  * Constructs a new empty list with the given capacity.
  */
-ArrayIntList::ArrayIntList(int capacity) {
-    elements = new int[capacity]();
+ArrayIntList::ArrayIntList(int cap) {
+    elements = new int[cap]();
     mysize = 0;
-    capacity = capacity;
+    capacity = cap;
+}
+
+/*
+ * Constructs a new empty list storing the given elements.
+ */
+ArrayIntList::ArrayIntList(std::initializer_list<int> list) {
+    elements = new int[list.size()]();
+    mysize = 0;
+    capacity = list.size();
+    for (int n : list) {
+        add(n);
+    }
 }
 
 /*
@@ -196,4 +209,16 @@ void ArrayIntList::ensureCapacity(int cap) {
         delete[] elements;
         elements = bigger;
     }
+}
+
+ArrayIntList& ArrayIntList::operator =(const ArrayIntList& src) {
+    if (this != &src) {
+        // deep copy
+        clear();
+        ensureCapacity(src.size());
+        for (int i = 0; i < src.size(); i++) {
+            add(src.get(i));
+        }
+    }
+    return *this;
 }

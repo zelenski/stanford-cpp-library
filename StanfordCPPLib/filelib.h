@@ -8,6 +8,8 @@
  * contain separators in any of the supported styles, which usually
  * makes it possible to use the same code on different platforms.
  * 
+ * @version 2016/08/12
+ * - added second overload of openFileDialog that accepts path parameter
  * @version 2015/04/12
  * - added promptUserForFile overload without stream parameter
  * @version 2014/10/19
@@ -396,6 +398,6 @@ bool writeEntireFile(const std::string& filename,
                      const std::string& text,
                      bool append = false);
 
-#include "private/main.h"
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif

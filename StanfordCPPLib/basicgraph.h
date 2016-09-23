@@ -9,6 +9,8 @@
  * See BasicGraph.cpp for implementation of each member.
  *
  * @author Marty Stepp
+ * @version 2016/08/12
+ * - added initializer_list functionality
  * @version 2014/11/13
  * - added iterator begin(), end() support so that students can directly
  *   for-each over the vertices of a graph.
@@ -269,5 +271,7 @@ public:
 private:
     bool m_resetEnabled;
 };
+
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif

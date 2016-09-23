@@ -14,8 +14,8 @@
 
 #include "testresultprinter.h"
 #include "autograder.h"
-#include "platform.h"
 #include "stringutils.h"
+#include "private/platform.h"
 
 static std::string UNIT_TEST_TYPE_NAMES[11] = {
     "ASSERT_EQUALS",
@@ -30,8 +30,6 @@ static std::string UNIT_TEST_TYPE_NAMES[11] = {
     "FAIL",
     "STYLE_CHECK",
 };
-
-static Platform* pp = getPlatform();
 
 namespace autograder {
 std::string MartyTestResultPrinter::failMessage = "";
@@ -159,7 +157,7 @@ void MartyTestResultPrinter::setTestNameWidth(int width) {
 const int MartyGraphicalTestResultPrinter::TEST_RUNTIME_MIN_TO_DISPLAY_MS = 10;
 
 void MartyGraphicalTestResultPrinter::setFailDetails(const UnitTestDetails& deets) {
-    pp->autograderunittest_setTestDetails(autograder::getCurrentTestCaseName(), deets.toString());
+    stanfordcpplib::getPlatform()->autograderunittest_setTestDetails(autograder::getCurrentTestCaseName(), deets.toString());
 }
 
 void MartyGraphicalTestResultPrinter::OnTestStart(const ::testing::TestInfo& test_info) {
@@ -173,24 +171,24 @@ void MartyGraphicalTestResultPrinter::OnTestEnd(const ::testing::TestInfo& test_
     if (autograder::currentTestShouldRun()) {
         std::string testName = test_info.name();
         if (test_info.result()->Failed()) {
-            pp->autograderunittest_setTestResult(testName, "fail");
+            stanfordcpplib::getPlatform()->autograderunittest_setTestResult(testName, "fail");
             for (int i = 0; i < test_info.result()->total_part_count(); i++) {
                 testing::TestPartResult part = test_info.result()->GetTestPartResult(i);
                 if (part.failed()) {
                     UnitTestDetails deets(autograder::UnitTestType::TEST_FAIL, part.message());
-                    pp->autograderunittest_setTestDetails(testName, deets.toString());
+                    stanfordcpplib::getPlatform()->autograderunittest_setTestDetails(testName, deets.toString());
                     break;
                 }
             }
         } else {
-            pp->autograderunittest_setTestResult(testName, "pass");
+            stanfordcpplib::getPlatform()->autograderunittest_setTestResult(testName, "pass");
         }
         
         if (autograder::getFlags().testTimers.containsKey(testName)) {
             autograder::getFlags().testTimers[testName].stop();
             int runtimeMS = (int) autograder::getFlags().testTimers[testName].elapsed();
             if (runtimeMS >= TEST_RUNTIME_MIN_TO_DISPLAY_MS) {
-                pp->autograderunittest_setTestRuntime(testName, runtimeMS);
+                stanfordcpplib::getPlatform()->autograderunittest_setTestRuntime(testName, runtimeMS);
             }
         }
     }

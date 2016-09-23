@@ -71,6 +71,16 @@ LinkedIntList::LinkedIntList()
     // empty
 }
 
+/*
+ * Constructs a new empty list storing the given elements.
+ */
+LinkedIntList::LinkedIntList(std::initializer_list<int> list)
+        : front(NULL), m_locked(false) {
+    for (int n : list) {
+        add(n);
+    }
+}
+
 LinkedIntList::~LinkedIntList() {
     m_locked = false;
     clear();
@@ -206,6 +216,17 @@ void LinkedIntList::checkLocked(string memberName) const {
     if (m_locked) {
         error("LinkedIntList forbidden from calling member function " + memberName);
     }
+}
+
+LinkedIntList& LinkedIntList::operator =(const LinkedIntList& src) {
+    if (this != &src) {
+        // deep copy
+        clear();
+        for (int i = 0; i < src.size(); i++) {
+            add(src.get(i));
+        }
+    }
+    return *this;
 }
 
 ostream& operator <<(ostream& out, const LinkedIntList& list) {

@@ -3,12 +3,14 @@
  * A LinkedIntList is a sequential collection of integers stored with 0-based integer
  * indexes and internally represented as a list of linked node structures.
  *
- * @version 2015/07/23
+ * @version 2016/08/23
+ * - added initializer_list support to match other lib collections
  */
 
 #ifndef _linkedintlist_h
 #define _linkedintlist_h
 
+#include <initializer_list>
 #include <iostream>
 #include <string>
 using namespace std;
@@ -18,7 +20,9 @@ struct ListNode;   // forward declaration
 class LinkedIntList {
 public:
     LinkedIntList();
+    LinkedIntList(std::initializer_list<int> list);
     ~LinkedIntList();
+
     void add(int value);
     void clear();
     int get(int index) const;
@@ -52,6 +56,8 @@ public:
     void mergeUpTo(int max);
     void partitionSort();
     bool removeRange(int min, int max);
+
+    LinkedIntList& operator =(const LinkedIntList& src);
 
     // operators for reading/writing lists based on a front pointer
     // (these are used by the CodeStepByStep tool)

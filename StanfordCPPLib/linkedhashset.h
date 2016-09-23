@@ -707,4 +707,6 @@ const T& randomElement(const LinkedHashSet<T>& set) {
     return unused;
 }
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
 #endif // _linkedhashset_h

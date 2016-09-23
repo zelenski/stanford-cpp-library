@@ -936,4 +936,6 @@ const T& randomElement(const Set<T>& set) {
     return unused;
 }
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _set_h

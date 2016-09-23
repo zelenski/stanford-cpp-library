@@ -53,16 +53,6 @@ int randomColor();
 std::string randomColorString();
 
 /*
- * Function: randomElement
- * Usage: element = randomElement(v);
- * ----------------------------------
- * Returns a randomly chosen element of the given vector.
- * Can be used with STL vectors or Stanford Vectors.
- */
-//template <typename T>
-//T& randomElement(std::vector<T>& v);
-
-/*
  * Function: randomInteger
  * Usage: int n = randomInteger(low, high);
  * ----------------------------------------
@@ -115,4 +105,6 @@ void randomFeedInteger(int value);
 void randomFeedReal(double value);
 }
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _random_h

@@ -18,15 +18,14 @@
 #include "autograder.h"
 #include "filelib.h"
 #include "gtest-marty.h"
-#include "platform.h"
 #include "rapidxml.h"
 #include "regexpr.h"
 #include "stringutils.h"
 #include "strlib.h"
 #include "xmlutils.h"
+#include "private/platform.h"
 
 namespace stylecheck {
-static Platform* pp = getPlatform();
 
 static const int DEFAULT_MIN_COUNT = 0;
 static const int DEFAULT_MAX_COUNT = 999999999;
@@ -93,8 +92,8 @@ static bool processPatternNode(const std::string& codeFileName, rapidxml::xml_no
         out << "    STYLE CHECK " << (pass ? "PASSED : " : "WARNING: ") << patternDescription << std::endl;
         if (autograder::isGraphicalUI()) {
             std::string resultStr = pass ? "pass" : failType;
-            pp->autograderunittest_addTest(prefix + patternDescription, prefix + categoryName, /* styleCheck */ true);
-            pp->autograderunittest_setTestResult(prefix + patternDescription, resultStr, /* styleCheck */ true);
+            stanfordcpplib::getPlatform()->autograderunittest_addTest(prefix + patternDescription, prefix + categoryName, /* styleCheck */ true);
+            stanfordcpplib::getPlatform()->autograderunittest_setTestResult(prefix + patternDescription, resultStr, /* styleCheck */ true);
             autograder::UnitTestDetails deets;
             deets.message = patternDescription;
             deets.passed = pass;
@@ -107,7 +106,7 @@ static bool processPatternNode(const std::string& codeFileName, rapidxml::xml_no
             deets.valueType = "T";
             out.str("");
             out << deets;
-            pp->autograderunittest_setTestDetails(prefix + patternDescription, out.str(), /* styleCheck */ true);
+            stanfordcpplib::getPlatform()->autograderunittest_setTestDetails(prefix + patternDescription, out.str(), /* styleCheck */ true);
             out.str("");
         } else {
             if (showCounts) {
@@ -150,8 +149,8 @@ void styleCheck(std::string codeFileName, std::string styleXmlFileName, bool pri
             out << std::endl;
         }
         if (autograder::isGraphicalUI()) {
-            pp->autograderunittest_clearTests(/* styleCheck */ true);
-            pp->autograderunittest_setWindowDescriptionText(out.str(), /* styleCheck */ true);
+            stanfordcpplib::getPlatform()->autograderunittest_clearTests(/* styleCheck */ true);
+            stanfordcpplib::getPlatform()->autograderunittest_setWindowDescriptionText(out.str(), /* styleCheck */ true);
             out.str("");
         }
     }

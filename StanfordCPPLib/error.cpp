@@ -55,6 +55,10 @@ const char* ErrorException::what() const throw () {
  * the errors are catchable.
  */
 
+void error(const char* msg) {
+    throw ErrorException(msg);
+}
+
 void error(std::string msg) {
     throw ErrorException(msg);
 }

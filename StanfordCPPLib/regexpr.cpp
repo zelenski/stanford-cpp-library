@@ -15,16 +15,16 @@
  */
 
 #include "regexpr.h"
-#include "platform.h"
+#include "private/platform.h"
 
 bool regexMatch(std::string s, std::string regexp) {
-    return getPlatform()->regex_match(s, regexp);
+    return stanfordcpplib::getPlatform()->regex_match(s, regexp);
 }
 
 int regexMatchCount(std::string s, std::string regexp) {
-    return getPlatform()->regex_matchCount(s, regexp);
+    return stanfordcpplib::getPlatform()->regex_matchCount(s, regexp);
 }
 
 std::string regexReplace(std::string s, std::string regexp, std::string replacement, int limit) {
-    return getPlatform()->regex_replace(s, regexp, replacement, limit);
+    return stanfordcpplib::getPlatform()->regex_replace(s, regexp, replacement, limit);
 }

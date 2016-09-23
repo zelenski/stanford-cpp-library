@@ -11,17 +11,17 @@
  */
 
 #include "sound.h"
-#include "platform.h"
+#include "private/platform.h"
 
 Sound::Sound(std::string filename) {
-    getPlatform()->sound_constructor(this, filename);
+    stanfordcpplib::getPlatform()->sound_constructor(this, filename);
 }
 
 Sound::~Sound() {
-    getPlatform()->sound_delete(this);
+    stanfordcpplib::getPlatform()->sound_delete(this);
 }
 
 void Sound::play() {
-    getPlatform()->sound_play(this);
+    stanfordcpplib::getPlatform()->sound_play(this);
 }
 

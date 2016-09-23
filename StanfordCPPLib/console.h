@@ -1,11 +1,17 @@
 /*
  * File: console.h
  * ---------------
- * This file redirects the <code>cin</code>, <code>cout</code>,
- * and <code>cerr</code> channels to use a console window.  This file
- * must be included in the source file that contains the <code>main</code>
- * method, although it may be included in other source files as well.
+ * This file contains functions related to the library's graphical console window.
+ * In general if you #include this file, it will implicitly enable the graphical
+ * console.  If you don't want to do that, you should #define a flag named
+ * __DONT_ENABLE_GRAPHICAL_CONSOLE right before #include'ing this header.
+ * Once the graphical console has been enabled, it cannot easily be turned off
+ * again for that program.
  * 
+ * @version 2016/09/22
+ * - added __DONT_ENABLE_GRAPHICAL_CONSOLE and optional graphical console
+ * @version 2016/08/12
+ * - added extern declaration of pause() function for pausing console programs
  * @version 2015/06/20
  * - added recursionIndent() function for pretty-printing indented recursive calls
  * @version 2015/04/25
@@ -229,6 +235,36 @@ void setConsoleWindowTitle(const std::string& title);
 // defined in gwindow.h/cpp
 extern void pause(double milliseconds);
 
-#include "private/main.h"
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
-#endif
+#endif // _console_h
+
+/*
+ * console.h is weird in that a student's program must be able to #include it
+ * and then magically receive the graphical console instead of the standard one;
+ * but we want other lib files to be able to include console.h to get the
+ * function prototypes without actually turning the graphical console on.
+ * To achieve this, we have the __DONT_ENABLE_GRAPHICAL_CONSOLE flag that lib
+ * files can set right before #include'ing console.h.  If they do so, it will
+ * declare the prototypes but not initialize the graphical console.
+ */
+#ifndef __DONT_ENABLE_GRAPHICAL_CONSOLE
+
+namespace stanfordcpplib {
+extern void initializeGraphicalConsole();
+
+class __ConsoleInitializer {
+public:
+    /*
+     * Code to initialize the library.
+     * Implemented as a class constructor so that it will run before the
+     * student's main function.
+     */
+    __ConsoleInitializer() {
+        initializeGraphicalConsole();
+    }
+};
+static __ConsoleInitializer __console_init;
+}
+
+#endif // __DONT_ENABLE_GRAPHICAL_CONSOLE

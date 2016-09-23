@@ -33,4 +33,6 @@ void startServer(int port = DEFAULT_PORT);
 void stopServer();
 } // namespace HttpServer
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _server_h

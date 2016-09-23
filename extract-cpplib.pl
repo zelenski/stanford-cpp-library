@@ -141,7 +141,7 @@ my @ALL_FILES = (
 # Practice-It CPP test harness
 #"$practiceit_dir/PracticeItCppTestHarness.cpp_",
 
-# some classes that come from practice exams but are needed for 106B section/exam problems
+# some classes that come from practice exams but are needed for 106B/X section/exam problems
 "$projdir/ArrayIntList.h",
 "$projdir/ArrayIntList.cpp",
 "$projdir/BinaryTreeNode.h",
@@ -162,6 +162,10 @@ my @ALL_FILES = (
 "$projdir/graphsupport.cpp",
 "$projdir/types.h",
 "$projdir/types.cpp",
+
+# csbs-specific
+"$projdir/codestepbystep.h",
+"$projdir/codestepbystep.cpp",
 );
 
 

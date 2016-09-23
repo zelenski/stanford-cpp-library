@@ -560,4 +560,6 @@ int hashCode(const Queue<T>& q) {
     return int(code & hashMask());
 }
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _queue_h

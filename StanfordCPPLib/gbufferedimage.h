@@ -307,4 +307,6 @@ private:
 bool operator ==(const GBufferedImage& img1, const GBufferedImage& img2);
 bool operator !=(const GBufferedImage& img1, const GBufferedImage& img2);
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
 #endif

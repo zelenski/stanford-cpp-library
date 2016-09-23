@@ -112,4 +112,6 @@ double vectorAngle(double x, double y);
  */
 int countDigits(int n, int base = 10);
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _gmath_h

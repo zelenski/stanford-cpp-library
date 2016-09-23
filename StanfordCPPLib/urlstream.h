@@ -106,4 +106,6 @@ typedef enum {
 
 } http_retcode;
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
 #endif // _urlstream_h

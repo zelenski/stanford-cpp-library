@@ -6,6 +6,8 @@
  * See autograder.h for documentation of each member.
  * 
  * @author Marty Stepp
+ * @version 2016/09/22
+ * - fixed small bugs with exit()
  * @version 2016/08/02
  * - added setExitEnabled(bool) function and exitEnabled flag
  * - added assertEqualsImage
@@ -40,9 +42,9 @@
 #include "goptionpane.h"
 #include "gwindow.h"
 #include "map.h"
-#include "platform.h"
 #include "simpio.h"
 #include "version.h"
+#include "private/platform.h"
 
 #include "date.h"
 #include "gtest-marty.h"
@@ -57,7 +59,6 @@ extern void autograderMain();
 
 namespace autograder {
 static const std::string DEFAULT_ABOUT_TEXT = "CS 106 B/X Autograder Framework\nDeveloped by Marty Stepp (stepp@cs.stanford.edu)";
-static Platform* pp = getPlatform();
 
 AutograderFlags::AutograderFlags() {
     assignmentName = "";
@@ -192,6 +193,7 @@ void setCurrentTestShouldRun(bool shouldRun) {
 
 void setExitEnabled(bool enabled) {
     FLAGS.exitEnabled = enabled;
+    gwindowSetExitGraphicsEnabled(true);
 }
 
 void setFailDetails(const autograder::UnitTestDetails& deets) {
@@ -237,7 +239,7 @@ void setStudentProgramFileName(const std::string& filename) {
 }
 
 void setTestCounts(int passCount, int testCount, bool isStyleCheck) {
-    pp->autograderunittest_setTestCounts(passCount, testCount, isStyleCheck);
+    stanfordcpplib::getPlatform()->autograderunittest_setTestCounts(passCount, testCount, isStyleCheck);
 }
 
 void setTestNameWidth(int width) {
@@ -455,8 +457,8 @@ static int mainRunAutograderTestCases(int argc, char** argv) {
 }
 
 static void mainRunStyleChecker() {
-    pp->jbeconsole_toFront();
-    pp->autograderunittest_setVisible(true, /* styleCheck */ true);
+    stanfordcpplib::getPlatform()->jbeconsole_toFront();
+    stanfordcpplib::getPlatform()->autograderunittest_setVisible(true, /* styleCheck */ true);
     int styleCheckCount = 0;
     for (std::string filename : FLAGS.styleCheckFiles) {
         stylecheck::styleCheck(
@@ -468,7 +470,7 @@ static void mainRunStyleChecker() {
         }
         styleCheckCount++;
     }
-    pp->autograderunittest_setTestingCompleted(true, /* styleCheck */ true);
+    stanfordcpplib::getPlatform()->autograderunittest_setTestingCompleted(true, /* styleCheck */ true);
 }
 
 int autograderTextMain(int argc, char** argv) {
@@ -595,12 +597,12 @@ int autograderGraphicalMain(int argc, char** argv) {
                     FLAGS.callbackStart();
                 }
                 
-                // pp->autograderunittest_clearTests();
-                pp->autograderunittest_clearTestResults();
-                pp->autograderunittest_setTestingCompleted(false);
-                pp->autograderunittest_setVisible(true);
+                // stanfordcpplib::getPlatform()->autograderunittest_clearTests();
+                stanfordcpplib::getPlatform()->autograderunittest_clearTestResults();
+                stanfordcpplib::getPlatform()->autograderunittest_setTestingCompleted(false);
+                stanfordcpplib::getPlatform()->autograderunittest_setVisible(true);
                 result = mainRunAutograderTestCases(argc, argv);
-                pp->autograderunittest_setTestingCompleted(true);
+                stanfordcpplib::getPlatform()->autograderunittest_setTestingCompleted(true);
                 
                 if (FLAGS.callbackEnd) {
                     FLAGS.callbackEnd();
@@ -619,9 +621,9 @@ int autograderGraphicalMain(int argc, char** argv) {
                 // proceed with more grading and tests afterward.
                 // A little wonky, but it avoids most of the surprise cases of
                 // "I closed the student's console and it killed the autograder".
-                pp->jbeconsole_clear();
-                pp->jbeconsole_setVisible(true);
-                pp->jbeconsole_toFront();
+                stanfordcpplib::getPlatform()->jbeconsole_clear();
+                stanfordcpplib::getPlatform()->jbeconsole_setVisible(true);
+                stanfordcpplib::getPlatform()->jbeconsole_toFront();
                 setConsoleCloseOperation(ConsoleCloseOperation::CONSOLE_EXIT_ON_CLOSE);
                 autograder::gwindowSetExitGraphicsEnabled(false);
                 studentMain();
@@ -671,7 +673,7 @@ void exit(int status) {
 
     // must exit either way (not return) because the function exit() is
     // flagged by the compiler as 'noreturn'
-    std::exit(status);
+    std::quick_exit(status);
 }
 
 // declared in assertions.h
@@ -692,20 +694,19 @@ void assertEqualsImage(const std::string& msg,
 #undef main
 int main(int argc, char** argv) {
     // initialize Stanford libraries and graphical console
-    _mainFlags = GRAPHICS_FLAG + CONSOLE_FLAG;
-    startupMainDontRunMain(argc, argv);
+    ::__initializeStanfordCppLibrary(argc, argv);
 
     setConsoleLocationSaved(true);
     setConsoleCloseOperation(ConsoleCloseOperation::CONSOLE_HIDE_ON_CLOSE);
     
     // tell the GUI the names of all tests so that it can display them
-    getPlatform()->autograderunittest_setVisible(false);
+    stanfordcpplib::getPlatform()->autograderunittest_setVisible(false);
     for (std::string category : autograder::AutograderTest::getAllCategories()) {
         for (std::string test : autograder::AutograderTest::getAllTests(category)) {
-            getPlatform()->autograderunittest_addTest(test, category);
+            stanfordcpplib::getPlatform()->autograderunittest_addTest(test, category);
         }
     }
-    getPlatform()->autograderunittest_setVisible(true);
+    stanfordcpplib::getPlatform()->autograderunittest_setVisible(true);
 
     // your assignment-specific autograder main runs here
     ::autograderMain();

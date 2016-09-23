@@ -91,4 +91,6 @@ std::istream& operator >>(std::istream& os, Direction& dir);
 
 Direction operator ++(Direction& dir, int);
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
 #endif

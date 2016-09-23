@@ -257,4 +257,6 @@ bool operator ==(const GRectangle& r1, const GRectangle& r2);
 bool operator !=(const GRectangle& r1, const GRectangle& r2);
 int hashCode(const GRectangle& r);
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _gtypes_h

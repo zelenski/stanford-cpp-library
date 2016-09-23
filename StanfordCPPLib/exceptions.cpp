@@ -7,6 +7,7 @@
  * @author Marty Stepp
  * @version 2016/08/02
  * - added some new cxx11 filters to stack traces
+ * - fixed spacing on *** messages from exception handlers
  * @version 2015/10/13
  * - bug fix in terminate handler to turn off signal handler at end
  * @version 2015/05/28
@@ -32,7 +33,7 @@
 #include "error.h"
 #include "filelib.h"
 #include "strlib.h"
-#include "call_stack.h"
+#include "stacktrace/call_stack.h"
 #ifdef _WIN32
 #include <windows.h>
 #  undef MOUSE_EVENT
@@ -40,7 +41,7 @@
 #  undef MOUSE_MOVED
 #  undef HELP_KEY
 #endif
-#include "platform.h"
+#include "private/platform.h"
 
 // uncomment the definition below to use an alternative 'signal stack'
 // which helps in handling stack overflow errors
@@ -52,19 +53,29 @@ namespace exceptions {
 #define SIGSTACK ((int) 0xdeadbeef)
 #define SIGUNKNOWN ((int) 0xcafebabe)
 #define SIGTIMEOUT ((int) 0xf00df00d)
+
 static const bool STACK_TRACE_SHOULD_FILTER = true;
 static const bool STACK_TRACE_SHOW_TOP_BOTTOM_BARS = false;
 static bool topLevelExceptionHandlerEnabled = false;
 static void (*old_terminate)() = NULL;
-static std::string PROGRAM_NAME = "";
-static std::vector<int> SIGNALS_HANDLED;
+static std::vector<int> SIGNALS_HANDLED = {
+    SIGSEGV,
+    SIGILL,
+    SIGFPE,
+#ifdef SPL_AUTOGRADER_MODE
+    SIGINT,
+#else // not SPL_AUTOGRADER_MODE
+    SIGABRT
+#endif
+};
 
 static void signalHandlerDisable();
 static void signalHandlerEnable();
 static void stanfordCppLibSignalHandler(int sig);
 static void stanfordCppLibTerminateHandler();
 
-std::string getProgramNameForStackTrace() {
+std::string& getProgramNameForStackTrace() {
+    static std::string PROGRAM_NAME;
     return PROGRAM_NAME;
 }
 
@@ -73,24 +84,24 @@ bool getTopLevelExceptionHandlerEnabled() {
 }
 
 void setProgramNameForStackTrace(char* programName) {
-    PROGRAM_NAME = programName;
+    getProgramNameForStackTrace() = programName;
 }
 
 #ifdef _WIN32
 void myInvalidParameterHandler(const wchar_t* expression,
-   const wchar_t* function,
-   const wchar_t* file,
-   unsigned int line,
-   uintptr_t /*pReserved*/) {
-   wprintf(L"Invalid parameter detected in function %s."
+        const wchar_t* function,
+        const wchar_t* file,
+        unsigned int line,
+        uintptr_t /*pReserved*/) {
+    wprintf(L"Invalid parameter detected in function %s."
             L" File: %s Line: %d\n", function, file, line);
-   wprintf(L"Expression: %s\n", expression);
+    wprintf(L"Expression: %s\n", expression);
 }
 
 LONG WINAPI UnhandledException(LPEXCEPTION_POINTERS exceptionInfo) {
     if (exceptionInfo && exceptionInfo->ContextRecord && exceptionInfo->ContextRecord->Eip) {
-        // stacktrace::setFakeCallStackPointer((void*) exceptionInfo->ContextRecord->Eip);
-        stacktrace::setFakeCallStackPointer((void*) exceptionInfo);
+        // stacktrace::fakeCallStackPointer() = (void*) exceptionInfo->ContextRecord->Eip;
+        stacktrace::fakeCallStackPointer() = (void*) exceptionInfo;
     }
     DWORD code = exceptionInfo->ExceptionRecord->ExceptionCode;
     if (code == EXCEPTION_STACK_OVERFLOW || code == EXCEPTION_FLT_STACK_CHECK) {
@@ -176,7 +187,7 @@ void printStackTrace(std::ostream& out) {
     std::vector<stacktrace::entry> entries = trace.stack;
     
     // get longest line string length to line up stack traces
-    void* fakeStackPtr = stacktrace::getFakeCallStackPointer();
+    void* fakeStackPtr = stacktrace::fakeCallStackPointer();
     int entriesToShowCount = 0;
     int funcNameLength = 0;
     int lineStrLength = 0;
@@ -256,7 +267,17 @@ void printStackTrace(std::ostream& out) {
         if (startsWith(entry.function, "Main(")) {
             entry.function.replace(0, 5, "main(");
         }
-        
+
+        // for some reason, some functions don't show () parens after; add them
+        if (!entry.function.empty() && !stringContains(entry.function, "(")) {
+            entry.function += "()";
+        }
+
+        // fix main to hide int/char**
+        if (entry.function == "main(int, char**)") {
+            entry.function = "main()";
+        }
+
         std::string lineStr = "";
         if (!entry.lineStr.empty()) {
             lineStr = trimEnd(entry.lineStr);
@@ -271,11 +292,13 @@ void printStackTrace(std::ostream& out) {
                   << "  " << entry.function << std::endl;
         
         // don't show entries beneath the student's main() function, for simplicity
-        if (entry.function == "main()") {
+        if (entry.function == "main"
+                || entry.function == "main()"
+                || entry.function == "main(int, char**)") {
             break;
         }
     }
-    if (entries.size() == 1 && entries[0].address == fakeStackPtr) {
+    if (entries.size() == 1 && fakeStackPtr && entries[0].address == fakeStackPtr) {
         out << "*** (partial stack due to crash)" << std::endl;
     }
 
@@ -354,15 +377,6 @@ static void signalHandlerEnable() {
 #endif
 #endif // SHOULD_USE_SIGNAL_STACK
 
-    SIGNALS_HANDLED.clear();
-    SIGNALS_HANDLED.push_back(SIGSEGV);
-    SIGNALS_HANDLED.push_back(SIGILL);
-    SIGNALS_HANDLED.push_back(SIGFPE);
-#ifdef SPL_AUTOGRADER_MODE
-    SIGNALS_HANDLED.push_back(SIGINT);
-#else // not SPL_AUTOGRADER_MODE
-    SIGNALS_HANDLED.push_back(SIGABRT);
-#endif // SPL_AUTOGRADER_MODE
     if (!handled) {
         for (int sig : SIGNALS_HANDLED) {
             signal(sig, stanfordCppLibSignalHandler);
@@ -383,7 +397,7 @@ static void stanfordCppLibSignalHandler(int sig) {
     std::string SIGNAL_DETAILS = "No details were provided about the error.";
     if (sig == SIGSEGV) {
         SIGNAL_KIND = "A segmentation fault";
-        SIGNAL_DETAILS = "This typically happens when you try to dereference a pointer\n *** that is NULL or invalid.";
+        SIGNAL_DETAILS = "This typically happens when you try to dereference a pointer\n*** that is NULL or invalid.";
     } else if (sig == SIGABRT) {
         SIGNAL_KIND = "An abort error";
         SIGNAL_DETAILS = "This error is thrown by system functions that detect corrupt state.";

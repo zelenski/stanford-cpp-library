@@ -4,6 +4,8 @@
  * This file implements the filelib.h interface.  All platform dependencies
  * are managed through the platform interface.
  * 
+ * @version 2016/08/12
+ * - added second overload of openFileDialog that accepts path parameter
  * @version 2015/07/05
  * - removed static global Platform variable, replaced by getPlatform as needed
  * - moved appendSpace function to simpio
@@ -25,7 +27,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "platform.h"
+#include "private/platform.h"
 #include "simpio.h"
 #include "strlib.h"
 #include "vector.h"
@@ -38,7 +40,7 @@ static bool recursiveMatch(const std::string& str, int sx, const std::string& pa
 /* Implementations */
 
 void createDirectory(const std::string& path) {
-    return getPlatform()->filelib_createDirectory(path);
+    return stanfordcpplib::getPlatform()->filelib_createDirectory(path);
 }
 
 void createDirectoryPath(const std::string& path) {
@@ -77,11 +79,11 @@ void deleteFile(const std::string& filename) {
 }
 
 std::string expandPathname(const std::string& filename) {
-    return getPlatform()->filelib_expandPathname(filename);
+    return stanfordcpplib::getPlatform()->filelib_expandPathname(filename);
 }
 
 bool fileExists(const std::string& filename) {
-    return getPlatform()->filelib_fileExists(filename);
+    return stanfordcpplib::getPlatform()->filelib_fileExists(filename);
 }
 
 std::string findOnPath(const std::string& path, const std::string& filename) {
@@ -92,11 +94,11 @@ std::string findOnPath(const std::string& path, const std::string& filename) {
 }
 
 std::string getCurrentDirectory() {
-    return getPlatform()->filelib_getCurrentDirectory();
+    return stanfordcpplib::getPlatform()->filelib_getCurrentDirectory();
 }
 
 std::string getDirectoryPathSeparator() {
-    return getPlatform()->filelib_getDirectoryPathSeparator();
+    return stanfordcpplib::getPlatform()->filelib_getDirectoryPathSeparator();
 }
 
 std::string getExtension(const std::string& filename) {
@@ -146,7 +148,7 @@ std::string getRoot(const std::string& filename) {
 }
 
 std::string getSearchPathSeparator() {
-    return getPlatform()->filelib_getSearchPathSeparator();
+    return stanfordcpplib::getPlatform()->filelib_getSearchPathSeparator();
 }
 
 std::string getTail(const std::string& filename) {
@@ -164,19 +166,19 @@ std::string getTail(const std::string& filename) {
 }
 
 std::string getTempDirectory() {
-    return getPlatform()->filelib_getTempDirectory();
+    return stanfordcpplib::getPlatform()->filelib_getTempDirectory();
 }
 
 bool isDirectory(const std::string& filename) {
-    return getPlatform()->filelib_isDirectory(filename);
+    return stanfordcpplib::getPlatform()->filelib_isDirectory(filename);
 }
 
 bool isFile(const std::string& filename) {
-    return getPlatform()->filelib_isFile(filename);
+    return stanfordcpplib::getPlatform()->filelib_isFile(filename);
 }
 
 bool isSymbolicLink(const std::string& filename) {
-    return getPlatform()->filelib_isSymbolicLink(filename);
+    return stanfordcpplib::getPlatform()->filelib_isSymbolicLink(filename);
 }
 
 void listDirectory(const std::string& path, Vector<std::string>& list) {
@@ -189,7 +191,7 @@ void listDirectory(const std::string& path, Vector<std::string>& list) {
 }
 
 void listDirectory(const std::string& path, std::vector<std::string>& list) {
-    return getPlatform()->filelib_listDirectory(path, list);
+    return stanfordcpplib::getPlatform()->filelib_listDirectory(path, list);
 }
 
 Vector<std::string> listDirectory(const std::string& path) {
@@ -227,7 +229,7 @@ std::string openFileDialog(std::ifstream& stream,
 std::string openFileDialog(std::ifstream& stream,
                            const std::string& title,
                            const std::string& path) {
-    std::string filename = getPlatform()->file_openFileDialog(title, "load", path);
+    std::string filename = stanfordcpplib::getPlatform()->file_openFileDialog(title, "load", path);
     if (filename == "") return "";
     stream.open(filename.c_str());
     return (stream.fail()) ? "" : filename;
@@ -235,7 +237,7 @@ std::string openFileDialog(std::ifstream& stream,
 
 std::string openFileDialog(const std::string& title,
                            const std::string& path) {
-    std::string filename = getPlatform()->file_openFileDialog(title, "load", path);
+    std::string filename = stanfordcpplib::getPlatform()->file_openFileDialog(title, "load", path);
     if (filename == "") return "";
     return (fileExists(filename)) ? filename : "";
 }
@@ -252,7 +254,7 @@ std::string openFileDialog(std::ofstream& stream,
 std::string openFileDialog(std::ofstream& stream,
                            const std::string& title,
                            const std::string& path) {
-    std::string filename = getPlatform()->file_openFileDialog(title, "save", path);
+    std::string filename = stanfordcpplib::getPlatform()->file_openFileDialog(title, "save", path);
     if (filename == "") return "";
     stream.open(filename.c_str());
     return (stream.fail()) ? "" : filename;
@@ -412,7 +414,7 @@ void rewindStream(std::istream& input) {
 }
 
 void setCurrentDirectory(const std::string& path) {
-    return getPlatform()->filelib_setCurrentDirectory(path);
+    return stanfordcpplib::getPlatform()->filelib_setCurrentDirectory(path);
 }
 
 bool writeEntireFile(const std::string& filename,

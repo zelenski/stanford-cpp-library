@@ -1062,7 +1062,7 @@ void initializerListTest() {
     cout << "Map *={} list = " << map << endl;
     cout << "at end,   Map = " << map << endl;
 
-    PriorityQueue<string> pqueue {{"Marty", 40.0}, {"Eric", 20.0}, {"Mehran", 30.0}};
+    PriorityQueue<string> pqueue {{40.0, "Marty"}, {20.0, "Eric"}, {30.0, "Mehran"}};
     cout << "init list PQueue = " << pqueue << endl;
     while (!pqueue.isEmpty()) {
         cout << "  " << pqueue.peekPriority() << " " << pqueue.peek() << endl;

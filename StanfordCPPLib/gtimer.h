@@ -10,6 +10,10 @@
 
 #include <string>
 
+namespace stanfordcpplib {
+class Platform;
+}
+
 /*
  * Friend type: GTimerData
  * -----------------------
@@ -95,8 +99,10 @@ private:
     /* Instance variables */
     GTimerData *gtd;
 
-    friend class Platform;
+    friend class stanfordcpplib::Platform;
     friend class GTimerEvent;
 };
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _gtimer_h

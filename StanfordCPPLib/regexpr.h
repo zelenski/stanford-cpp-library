@@ -43,4 +43,6 @@ int regexMatchCount(std::string s, std::string regexp);
 std::string regexReplace(std::string s, std::string regexp,
                          std::string replacement, int limit = -1);
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _regexpr_h

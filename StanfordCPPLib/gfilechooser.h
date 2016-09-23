@@ -27,4 +27,6 @@ private:
     static const int OPEN_DIALOG = 1;
 };
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _gfilechooser_h

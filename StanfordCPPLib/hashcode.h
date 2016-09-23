@@ -41,14 +41,6 @@ int hashSeed();         // Starting point for first cycle
 int hashMultiplier();   // Multiplier for each cycle
 int hashMask();         // All 1 bits except the sign
 
-/*
- * Template hash function for arbitrary types.
- * Hashes based on memory address.
- */
-//template <typename T>
-//int hashCode(const T& t) {
-//    return hashCode(reinterpret_cast<long>(&t));
-//}
-
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _hashcode_h

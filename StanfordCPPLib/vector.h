@@ -1023,4 +1023,6 @@ void shuffle(Vector<T>& v) {
     }
 }
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _vector_h

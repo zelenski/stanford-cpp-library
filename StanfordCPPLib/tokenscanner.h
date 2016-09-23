@@ -322,4 +322,6 @@ private:
     bool isOperatorPrefix(std::string op);
 };
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _tokenscanner_h

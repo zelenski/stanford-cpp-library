@@ -876,4 +876,6 @@ const T& randomElement(const HashSet<T>& set) {
     return unused;
 }
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _hashset_h

@@ -29,6 +29,10 @@ class GLabel;
 class GObject;
 class GMouseEvent;
 
+namespace stanfordcpplib {
+class Platform;
+}
+
 /*
  * Friend type: GWindowData
  * ------------------------
@@ -554,16 +558,16 @@ public:
 
     explicit GWindow(bool visible);
     GWindow(double width, double height, bool visible);
-    GWindow(GWindowData *gwd);
+    GWindow(GWindowData* gwd);
 
 private:
     /* Instance variables */
-    GWindowData *gwd;
+    GWindowData* gwd;
 
     /* Private methods */
     void initGWindow(double width, double height, bool visible);
 
-    friend class Platform;
+    friend class stanfordcpplib::Platform;
     friend class GKeyEvent;
     friend class GMouseEvent;
     friend class GWindowEvent;
@@ -661,7 +665,6 @@ void gwindowSetExitGraphicsEnabled(bool value = true);
 void gwindowSetPauseEnabled(bool value = true);
 }
 
-#include "console.h"
-#include "private/main.h"
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
-#endif
+#endif // _gwindow_h

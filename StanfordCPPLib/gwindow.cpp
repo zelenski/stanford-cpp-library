@@ -26,15 +26,14 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include "console.h"
 #include "gevents.h"
 #include "gmath.h"
 #include "gobjects.h"
 #include "gtypes.h"
 #include "map.h"
-#include "platform.h"
 #include "strlib.h"
 #include "vector.h"
+#include "private/platform.h"
 
 /* Constants */
 
@@ -117,10 +116,10 @@ void GWindow::initGWindow(double width, double height, bool visible) {
     gwd->closed = false;
     gwd->exitOnClose = false;
     gwd->repaintImmediately = true;
-    getPlatform()->gwindow_constructor(*this, width, height, gwd->top, visible);
+    stanfordcpplib::getPlatform()->gwindow_constructor(*this, width, height, gwd->top, visible);
     setColor("BLACK");
     setVisible(visible);
-    pause(1000); // Temporary fix for race condition in back-end.
+    // pause(1000); // Temporary fix for race condition in back-end.
 }
 
 GWindow::~GWindow() {
@@ -131,6 +130,7 @@ GWindow::~GWindow() {
     //         gwd->top = NULL;
     //      }
     //      delete gwd;
+    //      gwd = NULL;
     //   }
 }
 
@@ -139,8 +139,8 @@ void GWindow::close() {
         gwd->visible = false;
         gwd->closed = true;
     }
-    getPlatform()->gwindow_close(*this);
-    getPlatform()->gwindow_delete(*this);
+    stanfordcpplib::getPlatform()->gwindow_close(*this);
+    stanfordcpplib::getPlatform()->gwindow_delete(*this);
     if (gwd && gwd->exitOnClose) {
         // I was closed by the student's program.
         // I need to inform JBE so that it will shut down.
@@ -174,7 +174,7 @@ void GWindow::setExitOnClose(bool value) {
     if (gwd) {
         gwd->exitOnClose = value;
     }
-    getPlatform()->gwindow_setExitOnClose(*this, value);
+    stanfordcpplib::getPlatform()->gwindow_setExitOnClose(*this, value);
 }
 
 bool GWindow::isRepaintImmediately() const {
@@ -193,7 +193,7 @@ bool GWindow::isOpen() const {
 
 void GWindow::requestFocus() {
     if (isOpen()) {
-        getPlatform()->gwindow_requestFocus(*this);
+        stanfordcpplib::getPlatform()->gwindow_requestFocus(*this);
     }
 }
 
@@ -202,19 +202,19 @@ void GWindow::clear() {
         if (gwd && gwd->top) {
             gwd->top->removeAll();
         }
-        getPlatform()->gwindow_clear(*this);
+        stanfordcpplib::getPlatform()->gwindow_clear(*this);
     }
 }
 
 void GWindow::clearCanvas() {
     if (isOpen()) {
-        getPlatform()->gwindow_clearCanvas(*this);
+        stanfordcpplib::getPlatform()->gwindow_clearCanvas(*this);
     }
 }
 
 void GWindow::repaint() {
     if (isOpen()) {
-        getPlatform()->gwindow_repaint(*this);
+        stanfordcpplib::getPlatform()->gwindow_repaint(*this);
     }
 }
 
@@ -223,7 +223,7 @@ void GWindow::setVisible(bool flag) {
         if (gwd) {
             gwd->visible = flag;
         }
-        getPlatform()->gwindow_setVisible(*this, flag);
+        stanfordcpplib::getPlatform()->gwindow_setVisible(*this, flag);
     }
 }
 
@@ -351,7 +351,7 @@ double GWindow::getHeight() const {
 }
 
 GDimension GWindow::getSize() const {
-    return getPlatform()->gwindow_getSize(*this);
+    return stanfordcpplib::getPlatform()->gwindow_getSize(*this);
 }
 
 GDimension GWindow::getCanvasSize() const {
@@ -360,23 +360,23 @@ GDimension GWindow::getCanvasSize() const {
 
 void GWindow::setSize(int width, int height) {
     if (isOpen()) {
-        getPlatform()->gwindow_setSize(*this, width, height);
+        stanfordcpplib::getPlatform()->gwindow_setSize(*this, width, height);
     }
 }
 
 void GWindow::pack() {
     if (isOpen()) {
-        getPlatform()->gwindow_pack(*this);
+        stanfordcpplib::getPlatform()->gwindow_pack(*this);
     }
 }
 
 void GWindow::saveCanvasPixels(const std::string& filename) {
-    getPlatform()->gwindow_saveCanvasPixels(*this, filename);
+    stanfordcpplib::getPlatform()->gwindow_saveCanvasPixels(*this, filename);
 }
 
 void GWindow::setCanvasSize(int width, int height) {
     if (isOpen()) {
-        getPlatform()->gwindow_setCanvasSize(*this, width, height);
+        stanfordcpplib::getPlatform()->gwindow_setCanvasSize(*this, width, height);
     }
 }
 
@@ -389,12 +389,12 @@ void GWindow::setWindowTitle(std::string title) {
         if (gwd) {
             gwd->windowTitle = title;
         }
-        getPlatform()->gwindow_setTitle(*this, title);
+        stanfordcpplib::getPlatform()->gwindow_setTitle(*this, title);
     }
 }
 
 Point GWindow::getLocation() const {
-    return getPlatform()->gwindow_getLocation(*this);
+    return stanfordcpplib::getPlatform()->gwindow_getLocation(*this);
 }
 
 void GWindow::setLocation(const Point& p) {
@@ -407,13 +407,13 @@ void GWindow::setLocation(int x, int y) {
             gwd->windowX = x;
             gwd->windowY = y;
         }
-        getPlatform()->gwindow_setLocation(*this, x, y);
+        stanfordcpplib::getPlatform()->gwindow_setLocation(*this, x, y);
     }
 }
 
 void GWindow::setLocationSaved(bool value) {
     if (isOpen()) {
-        getPlatform()->gwindow_setLocationSaved(*this, value);
+        stanfordcpplib::getPlatform()->gwindow_setLocationSaved(*this, value);
     }
 }
 
@@ -435,9 +435,9 @@ void GWindow::draw(const GObject& gobj) {
 void GWindow::draw(GObject *gobj) {
     if (isOpen()) {
         if (!gwd || gwd->repaintImmediately) {
-            getPlatform()->gwindow_draw(*this, gobj);
+            stanfordcpplib::getPlatform()->gwindow_draw(*this, gobj);
         } else {
-            getPlatform()->gwindow_drawInBackground(*this, gobj);
+            stanfordcpplib::getPlatform()->gwindow_drawInBackground(*this, gobj);
         }
     }
 }
@@ -445,9 +445,9 @@ void GWindow::draw(GObject *gobj) {
 void GWindow::draw(const GObject *gobj) {
     if (isOpen()) {
         if (!gwd || gwd->repaintImmediately) {
-            getPlatform()->gwindow_draw(*this, gobj);
+            stanfordcpplib::getPlatform()->gwindow_draw(*this, gobj);
         } else {
-            getPlatform()->gwindow_drawInBackground(*this, gobj);
+            stanfordcpplib::getPlatform()->gwindow_drawInBackground(*this, gobj);
         }
     }
 }
@@ -462,9 +462,9 @@ void GWindow::draw(GObject *gobj, double x, double y) {
     if (isOpen()) {
         gobj->setLocation(x, y);
         if (!gwd || gwd->repaintImmediately) {
-            getPlatform()->gwindow_draw(*this, gobj);
+            stanfordcpplib::getPlatform()->gwindow_draw(*this, gobj);
         } else {
-            getPlatform()->gwindow_drawInBackground(*this, gobj);
+            stanfordcpplib::getPlatform()->gwindow_drawInBackground(*this, gobj);
         }
     }
 }
@@ -486,29 +486,29 @@ void GWindow::add(GObject *gobj, double x, double y) {
 
 void GWindow::addToRegion(GInteractor *gobj, std::string region) {
     if (isOpen()) {
-        getPlatform()->gwindow_addToRegion(*this, (GObject *) gobj, region);
+        stanfordcpplib::getPlatform()->gwindow_addToRegion(*this, (GObject *) gobj, region);
     }
 }
 
 void GWindow::addToRegion(GLabel *gobj, std::string region) {
     if (isOpen()) {
-        getPlatform()->gwindow_addToRegion(*this, (GObject *) gobj, region);
+        stanfordcpplib::getPlatform()->gwindow_addToRegion(*this, (GObject *) gobj, region);
     }
 }
 
 GDimension GWindow::getRegionSize(std::string region) const {
-    return getPlatform()->gwindow_getRegionSize(*this, region);
+    return stanfordcpplib::getPlatform()->gwindow_getRegionSize(*this, region);
 }
 
 void GWindow::removeFromRegion(GInteractor *gobj, std::string region) {
     if (isOpen()) {
-        getPlatform()->gwindow_removeFromRegion(*this, (GObject *) gobj, region);
+        stanfordcpplib::getPlatform()->gwindow_removeFromRegion(*this, (GObject *) gobj, region);
     }
 }
 
 void GWindow::removeFromRegion(GLabel *gobj, std::string region) {
     if (isOpen()) {
-        getPlatform()->gwindow_removeFromRegion(*this, (GObject *) gobj, region);
+        stanfordcpplib::getPlatform()->gwindow_removeFromRegion(*this, (GObject *) gobj, region);
     }
 }
 
@@ -533,13 +533,13 @@ GObject *GWindow::getGObjectAt(double x, double y) const {
 
 void GWindow::setRegionAlignment(std::string region, std::string align) {
     if (isOpen()) {
-        getPlatform()->gwindow_setRegionAlignment(*this, region, align);
+        stanfordcpplib::getPlatform()->gwindow_setRegionAlignment(*this, region, align);
     }
 }
 
 void GWindow::setResizable(bool resizable) {
     if (isOpen()) {
-        getPlatform()->gwindow_setResizable(*this, resizable);
+        stanfordcpplib::getPlatform()->gwindow_setResizable(*this, resizable);
     }
 }
 
@@ -557,22 +557,22 @@ GWindow::GWindow(GWindowData *gwd) {
 
 void pause(double milliseconds) {
     if (autograder::gwindow_pause_enabled) {
-        getPlatform()->gtimer_pause(milliseconds);
+        stanfordcpplib::getPlatform()->gtimer_pause(milliseconds);
     }
     autograder::gwindow_pauses++;
     autograder::gwindow_last_pauseMS = milliseconds;
 }
 
 double getScreenWidth() {
-    return getPlatform()->gwindow_getScreenWidth();
+    return stanfordcpplib::getPlatform()->gwindow_getScreenWidth();
 }
 
 double getScreenHeight() {
-    return getPlatform()->gwindow_getScreenHeight();   // BUGBUG: was returning getScreenWidth
+    return stanfordcpplib::getPlatform()->gwindow_getScreenHeight();   // BUGBUG: was returning getScreenWidth
 }
 
 GDimension getScreenSize() {
-    return getPlatform()->gwindow_getScreenSize();
+    return stanfordcpplib::getPlatform()->gwindow_getScreenSize();
 }
 
 int convertColorToRGB(std::string colorName) {
@@ -605,7 +605,7 @@ std::string convertRGBToColor(int rgb) {
 
 void exitGraphics() {
     if (autograder::gwindow_exitGraphics_enabled) {
-        getPlatform()->gwindow_exitGraphics();   // calls exit(0);
+        stanfordcpplib::getPlatform()->gwindow_exitGraphics();   // calls exit(0);
     }
 }
 
@@ -634,3 +634,9 @@ static std::string canonicalColorName(std::string str) {
     }
     return result;
 }
+
+// some flag stuff for error reporting on Windows
+#if defined (_MSC_VER) && (_MSC_VER >= 1200)
+#  include <windows.h>
+#  define MSC_ERROR_FLAGS (MB_OK | MB_ICONSTOP | MB_TOPMOST)
+#endif

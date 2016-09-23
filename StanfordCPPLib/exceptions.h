@@ -23,7 +23,7 @@ namespace exceptions {
  * Called by C++ lib's main wrapper so that the stack trace knows the program's name.
  * (Taken from argv[0].)
  */
-std::string getProgramNameForStackTrace();
+std::string& getProgramNameForStackTrace();
 
 /*
  * Returns whether the top-level exception handler is enabled.
@@ -73,5 +73,7 @@ int getRecursionIndentLevel();
  * So if you want to use this function, consider making your function non-static.
  */
 std::string recursionIndent(std::string indenter = "    ");
+
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _exceptions_h

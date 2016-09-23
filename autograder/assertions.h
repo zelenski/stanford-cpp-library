@@ -147,7 +147,7 @@
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_FAIL, \
         msg)); \
-    GTEST_FATAL_FAILURE_(msg.c_str())
+    GTEST_FATAL_FAILURE_(std::string(msg).c_str())
 
 #define assertFailQuiet() \
     autograder::setFailDetails(autograder::UnitTestDetails( \

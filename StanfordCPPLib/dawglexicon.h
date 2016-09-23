@@ -541,4 +541,6 @@ int hashCode(const DawgLexicon& lex);
 std::ostream& operator <<(std::ostream& os, const DawgLexicon& lex);
 std::istream& operator >>(std::istream& is, DawgLexicon& lex);
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
 #endif

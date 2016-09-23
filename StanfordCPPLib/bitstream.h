@@ -379,4 +379,6 @@ private:
     std::stringbuf sb;
 };
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
 #endif

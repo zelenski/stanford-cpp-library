@@ -4,6 +4,8 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2016/09/22
+ * - refactored initialization of lib; facilitates not using graphical console
  * @version 2016/08/02
  * - added diffimage_compareImages method
  * - added gwindow_saveCanvasPixels method
@@ -14,8 +16,6 @@
  * - added functions for showing DiffImage window to compare graphical output
  * @version 2016/03/16
  * - added functions for HTTP server
- * @version 2015/10/21
- * - moved EchoingStreambuf to plainconsole.h/cpp facilitate in/output capture
  * @version 2015/10/08
  * - bug fixes for sending long strings through Java process pipe
  * @version 2015/10/01
@@ -73,9 +73,34 @@
 #  include <pwd.h>
 #  include <stdint.h>
 #  include <unistd.h>
-static bool tracePipe;
-static int pin;
-static int pout;
+extern void error(const char* msg);
+
+/*
+ * Returns a reference to the Java back-end process pipe input file descriptor,
+ * which you can set or use.  If check is true/absent, makes sure the descriptor
+ * has been initialized and throws an error if not.
+ */
+static int& pin(bool check = true) {
+    static int _pin = -1;
+    if (check && _pin < 0) {
+        error("pipe not initialized! Stanford C++ lib's Java back-end has not been started.");
+    }
+    return _pin;
+}
+
+/*
+ * Returns a reference to the Java back-end process pipe output file descriptor,
+ * which you can set or use.  If check is true/absent, makes sure the descriptor
+ * has been initialized and throws an error if not.
+ */
+static int& pout(bool check = true) {
+    static int _pout = -1;
+    if (check && _pout < 0) {
+        error("pipe not initialized! Stanford C++ lib's Java back-end has not been started.");
+    }
+    return _pout;
+}
+
 #endif // _WIN32
 
 #include "platform.h"
@@ -92,7 +117,14 @@ static int pout;
 #include <sstream>
 #include <string>
 #include <vector>
+#include "private/consolestreambuf.h"
+#include "private/forwardingstreambuf.h"
 #include "private/version.h"
+
+#define __DONT_ENABLE_GRAPHICAL_CONSOLE
+#include "console.h"
+#undef __DONT_ENABLE_GRAPHICAL_CONSOLE
+
 #include "error.h"
 #include "exceptions.h"
 #include "filelib.h"
@@ -100,7 +132,6 @@ static int pout;
 #include "gtimer.h"
 #include "gtypes.h"
 #include "hashmap.h"
-#include "plainconsole.h"
 #include "queue.h"
 #include "stack.h"
 #include "strlib.h"
@@ -114,174 +145,13 @@ static int pout;
 // related: similar constant in Java back-end stanford.spl.SplPipeDecoder.java
 static const size_t PIPE_MAX_COMMAND_LENGTH = 2048;
 
-static std::string getLineConsole();
-static void putConsole(const std::string& str, bool isStderr = false);
-static void endLineConsole(bool isStderr = false);
-static void echoConsole(const std::string& str, bool isStderr = false);
-static int scanInt(TokenScanner& scanner);
-static double scanDouble(TokenScanner& scanner);
-static int scanChar(TokenScanner& scanner);
-static GDimension scanDimension(const std::string& str);
-static Point scanPoint(const std::string& str);
-static GRectangle scanRectangle(const std::string& str);
-static void setConsoleProperties();
-void startupMainDontRunMain(int argc, char** argv);
-//static void abortAllConsoleIO();
-
-class ConsoleStreambuf : public std::streambuf {
-private:
-    /* Constants */
-    static const int BUFFER_SIZE = 4096;
-
-    /* Instance variables */
-    char inBuffer[BUFFER_SIZE];
-    char outBuffer[BUFFER_SIZE];
-    int blocked;
-
-public:
-    ConsoleStreambuf() {
-        setg(inBuffer, inBuffer, inBuffer);
-        setp(outBuffer, outBuffer + BUFFER_SIZE);
-        blocked = 0;
-    }
-
-    ~ConsoleStreambuf() {
-        /* Empty */
-    }
-
-    bool isBlocked() {
-        return blocked > 0;
-    }
-
-    virtual int underflow() {
-        // Allow long strings at some point
-        blocked++;
-        std::string line = getLineConsole();
-        blocked--;
-        int n = line.length();
-        if (n + 1 >= BUFFER_SIZE) {
-            error("ConsoleStreambuf::underflow: String too long");
-        }
-        for (int i = 0; i < n; i++) {
-            inBuffer[i] = line[i];
-        }
-        inBuffer[n++] = '\n';
-        inBuffer[n] = '\0';
-        setg(inBuffer, inBuffer, inBuffer + n);
-        return inBuffer[0];
-    }
-
-    virtual int overflow(int ch = EOF) {
-        return overflow(ch, false);
-    }
-        
-    virtual int overflow(int ch, bool isStderr) {
-        std::string line = "";
-        for (char *cp = pbase(); cp < pptr(); cp++) {
-            if (*cp == '\n') {
-                putConsole(line, isStderr);
-                endLineConsole(isStderr);
-                line = "";
-            } else {
-                line += *cp;
-            }
-        }
-        if (line != "") {
-            putConsole(line, isStderr);
-        }
-        setp(outBuffer, outBuffer + BUFFER_SIZE);
-        if (ch != EOF) {
-            outBuffer[0] = ch;
-            pbump(1);
-        }
-        return ch != EOF;
-    }
-    
-    virtual int sync() {
-        return overflow();
-    }
-    
-    virtual int sync(bool isStderr) {
-        return overflow(EOF, isStderr);
-    }
-};
-
-/*
- * A stream buffer that just "wraps" another stream buffer.
- * This is used here to distinguish cout (black text) from cerr (red text).
- */
-class ForwardingStreambuf : public std::streambuf {
-private:
-    ConsoleStreambuf& delegate;
-    bool isStderr;
-    
-public:
-    ForwardingStreambuf(ConsoleStreambuf& del, bool err = false)
-            : delegate(del), isStderr(err) {
-        // empty
-    }
-    
-    virtual int underflow() {
-        return delegate.underflow();
-    }
-    
-    virtual int overflow(int ch = EOF) {
-        return delegate.overflow(ch, isStderr);
-    }
-    
-    virtual int sync() {
-        return delegate.sync(isStderr);
-    }
-    
-    // functions below are overridden for completeness,
-    // but all just delegate to underlying ConsoleStreambuf
-    std::streamsize in_avail() {
-        return delegate.in_avail();
-    }
-    
-    int snextc() {
-        return delegate.snextc();
-    }
-    
-    int sbumpc() {
-        return delegate.sbumpc();
-    }
-    
-    int sgetc() {
-        return delegate.sgetc();
-    }
-    
-    std::streamsize sgetn(char* s, std::streamsize n) {
-        return delegate.sgetn(s, n);
-    }
-    
-    int sputbackc(char c) {
-        return delegate.sputbackc(c);
-    }
-    
-    int sungetc() {
-        return delegate.sungetc();
-    }
-    
-    int sputc(char c) {
-        return delegate.sputc(c);
-    }
-    
-    std::streamsize sputn(const char* s, std::streamsize n) {
-        return delegate.sputn(s, n);
-    }
-};
-
 /* Private data */
-
 static Queue<GEvent> eventQueue;
 static HashMap<std::string, GTimerData*> timerTable;
 static HashMap<std::string, GWindowData*> windowTable;
 static HashMap<std::string, GObject*> sourceTable;
-static HashMap<std::string, std::string> optionTable;
-static std::string programName;
 static std::ofstream logfile;
-static ConsoleStreambuf* cinout_new_buf = NULL;
+static stanfordcpplib::ConsoleStreambuf* cinout_new_buf = NULL;
 
 #ifdef _WIN32
 static HANDLE rdFromJBE = NULL;
@@ -293,26 +163,36 @@ static pid_t cppLibPid;
 static pid_t javaBackEndPid;
 #endif // _WIN32
 
-/* Prototypes */
 
-static void initPipe();
-static void putPipe(std::string line);
-static void putPipeLongString(std::string line);
+/* static function prototypes */
 static std::string getJavaCommand();
 static std::string getPipe();
 static std::string getResult(bool consumeAcks = false, const std::string& caller = "");
+static std::string getSplJarPath();
 static void getStatus();
+static void initPipe();
+static GEvent parseActionEvent(TokenScanner& scanner, EventType type);
 static GEvent parseEvent(std::string line);
-static GEvent parseMouseEvent(TokenScanner& scanner, EventType type);
 static GEvent parseKeyEvent(TokenScanner& scanner, EventType type);
+static GEvent parseMouseEvent(TokenScanner& scanner, EventType type);
 static GEvent parseServerEvent(TokenScanner& scanner, EventType type);
 static GEvent parseTableEvent(TokenScanner& scanner, EventType type);
 static GEvent parseTimerEvent(TokenScanner& scanner, EventType type);
 static GEvent parseWindowEvent(TokenScanner& scanner, EventType type);
-static GEvent parseActionEvent(TokenScanner& scanner, EventType type);
+static std::string& programName();
+static void putPipe(std::string line);
+static void putPipeLongString(std::string line);
+static int scanChar(TokenScanner& scanner);
+static GDimension scanDimension(const std::string& str);
+static double scanDouble(TokenScanner& scanner);
+static int scanInt(TokenScanner& scanner);
+static Point scanPoint(const std::string& str);
+static GRectangle scanRectangle(const std::string& str);
+
 
 /* Implementation of the Platform class */
 
+namespace stanfordcpplib {
 Platform::Platform() {
     /* Empty */
 }
@@ -1932,824 +1812,6 @@ void Platform::goptionpane_showTextFileDialog(std::string message,
     getResult();   // wait for dialog to close
 }
 
-Platform *getPlatform() {
-    static Platform gp;
-    return &gp;
-}
-
-static void putPipeLongString(std::string line) {
-    // break into chunks
-    // precondition: line does not contain substring "LongCommand.end()"
-    putPipe("LongCommand.begin()");
-    size_t len = line.length();
-    for (size_t i = 0; i < len; i += PIPE_MAX_COMMAND_LENGTH) {
-        std::string chunk = line.substr(i, std::min(PIPE_MAX_COMMAND_LENGTH, len - i));
-        putPipe(chunk);
-    }
-    putPipe("LongCommand.end()");
-}
-
-#ifdef _WIN32
-
-/* Windows implementation of interface to Java back end */
-
-// formats an error message using Windows lookup of error codes and strings
-// Windows implementation; see Unix implementation elsewhere in this file
-static WINBOOL WinCheck(WINBOOL result) {
-    if (result == 0 && result != ERROR_IO_PENDING) {
-        // failure; Windows error codes: http://msdn.microsoft.com/en-us/library/windows/desktop/ms681381(v=vs.85).aspx
-        DWORD lastErrorCode = GetLastError();
-        char* errorMsg = NULL;
-        // Ask Windows to prepare a standard message for a GetLastError() code:
-        FormatMessageA(/* dwFlags */ FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                       /* lpSource */ NULL,
-                       /* dwMessageId */ lastErrorCode,
-                       /* dwLanguageId */ LANG_NEUTRAL, // MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                       /* lpBuffer */ (LPSTR)&errorMsg,
-                       /* dwSize */ 0,
-                       /* arguments */ NULL);
-        if (errorMsg) {
-            // use stderr directly rather than cerr because graphical console may be unreachable
-            fputs("\n", stderr);
-            fputs("***\n", stderr);
-            fputs("*** STANFORD C++ LIBRARY\n", stderr);
-            fputs("*** Error from Java back-end subprocess:\n", stderr);
-            fprintf(stderr, "*** %s\n", errorMsg);
-            fputs("***\n", stderr);
-            fputs("\n", stderr);
-        }
-    }
-    return result;
-}
-
-// Windows implementation; see Unix implementation elsewhere in this file
-int startupMain(int argc, char **argv) {
-    startupMainDontRunMain(argc, argv);
-
-#ifndef SPL_AUTOGRADER_MODE
-    extern int Main(int argc, char **argv);
-    return Main(argc, argv);
-#else // SPL_AUTOGRADER_MODE
-    return 0;
-#endif // SPL_AUTOGRADER_MODE
-}
-
-/*
- * This is a version of startupMain that does all of the setup but then does
- * not actually run startupMain.
- * This is used to facilitate the creation of autograder programs.
- * Windows implementation; see Unix implementation elsewhere in this file
- */
-void startupMainDontRunMain(int /*argc*/, char** argv) {
-    exceptions::setProgramNameForStackTrace(argv[0]);
-    std::string arg0 = argv[0];
-    programName = getRoot(getTail(arg0));
-    initPipe();
-    cinout_new_buf = new ConsoleStreambuf();
-    std::cin.rdbuf(cinout_new_buf);
-    std::cout.rdbuf(cinout_new_buf);
-    std::cerr.rdbuf(new ForwardingStreambuf(*cinout_new_buf, true));
-    ShowWindow(GetConsoleWindow(), SW_HIDE);
-    getPlatform()->cpplib_setCppLibraryVersion();
-    setConsoleProperties();
-}
-
-// Windows implementation; see Unix implementation elsewhere in this file
-static void initPipe() {
-    SECURITY_ATTRIBUTES attr;
-    attr.nLength = sizeof(SECURITY_ATTRIBUTES);
-    attr.bInheritHandle = true;
-    attr.lpSecurityDescriptor = NULL;
-    if (!CreatePipe(&rdFromJBE, &wrFromJBE, &attr, 0)) {
-        error("Platform::initPipe: Can't create fromJBE");
-    }
-    if (!SetHandleInformation(rdFromJBE, HANDLE_FLAG_INHERIT, 0)) {
-        error("Platform::initPipe: SetHandleInformation failed for fromJBE");
-    }
-    if (!CreatePipe(&rdToJBE, &wrToJBE, &attr, 0)) {
-        error("Platform::initPipe: Can't create toJBE");
-    }
-    if (!SetHandleInformation(wrToJBE, HANDLE_FLAG_INHERIT, 0)) {
-        error("Platform::initPipe: SetHandleInformation failed for toJBE");
-    }
-    std::string cmd = getJavaCommand();
-#ifdef PIPE_DEBUG
-    cmd += " -Dstanfordspl.debug=true";
-#endif // PIPE_DEBUG
-    cmd += " -jar spl.jar";
-    cmd += std::string(" ") + programName;
-    int n = cmd.length();
-    char *cmdLine = new char[n + 1];
-    for (int i = 0; i < n; i++) {
-        cmdLine[i] = cmd[i];
-    }
-    cmdLine[n] = '\0';
-    PROCESS_INFORMATION pInfo;
-    memset(&pInfo, 0, sizeof(PROCESS_INFORMATION));
-    STARTUPINFOA sInfo;
-    memset(&sInfo, 0, sizeof(STARTUPINFOA));
-    sInfo.cb = sizeof(STARTUPINFOA);
-    sInfo.dwFlags = STARTF_USESTDHANDLES;
-    sInfo.hStdInput = rdToJBE;
-    sInfo.hStdOutput = wrFromJBE;
-    sInfo.hStdError = wrFromJBE;
-    int ok = CreateProcessA(NULL, cmdLine, NULL, NULL, true, CREATE_NO_WINDOW,
-                            NULL, NULL, &sInfo, &pInfo);
-    if (!ok) {
-        // DWORD err = GetLastError();
-        // use stderr directly rather than cerr because graphical console is not connected
-        fputs("\n", stderr);
-        fputs("***\n", stderr);
-        fputs("*** STANFORD C++ LIBRARY ERROR:\n", stderr);
-        fputs("*** Unable to connect to Java back-end\n", stderr);
-        fputs("*** to launch 'spl.jar' command.\n", stderr);
-        fputs("*** Please check your Java installation and make sure\n", stderr);
-        fputs("*** that spl.jar is properly attached to your project.\n", stderr);
-        fputs("***\n", stderr);
-        fflush(stderr);
-    } else {
-        CloseHandle(pInfo.hProcess);
-        CloseHandle(pInfo.hThread);
-    }
-}
-
-// Windows implementation; see Unix implementation elsewhere in this file
-static void putPipe(std::string line) {
-    if (line.length() > PIPE_MAX_COMMAND_LENGTH) {
-        putPipeLongString(line);
-        return;
-    }
-    
-    DWORD nch;
-#ifdef PIPE_DEBUG
-    fprintf(stderr, "putPipe(\"%s\")\n", line.c_str());  fflush(stderr);
-#endif // PIPE_DEBUG
-    if (!WinCheck(WriteFile(wrToJBE, line.c_str(), line.length(), &nch, NULL))) return;
-    if (!WinCheck(WriteFile(wrToJBE, "\n", 1, &nch, NULL))) return;
-    WinCheck(FlushFileBuffers(wrToJBE));
-}
-
-// Windows implementation; see Unix implementation elsewhere in this file
-static std::string getPipe() {
-    std::string line = "";
-    DWORD nch;
-#ifdef PIPE_DEBUG
-    fprintf(stderr, "getPipe(): waiting ...\n");  fflush(stderr);
-#endif // PIPE_DEBUG
-
-    int charsRead = 0;
-    int charsReadMax = 1024*1024;
-    while (charsRead < charsReadMax) {
-        char ch;
-        WINBOOL readFileResult = WinCheck(ReadFile(rdFromJBE, &ch, 1, &nch, NULL));
-        if (readFileResult == 0) {
-            break;   // failed to read from subprocess
-        }
-        if (ch == '\n' || ch == '\r') {
-            break;
-        }
-        line += ch;
-        charsRead++;
-    }
-
-#ifdef PIPE_DEBUG
-    fprintf(stderr, "getPipe(): returned \"%s\"\n", line.c_str());  fflush(stderr);
-#endif
-    return line;
-}
-
-#else // not WIN32
-
-/* Linux/Mac implementation of interface to Java back end */
-
-// Unix implementation; see Windows implementation elsewhere in this file
-static bool LinCheck(ssize_t result) {
-    if (result == EPIPE) {
-        // fputs("Error from Java back-end subprocess.\n", stderr);
-        // throw InterruptedIOException();
-        return false;
-    } else {
-        return true;
-    }
-}
-
-// Unix implementation; see Windows implementation elsewhere in this file
-static void scanOptions() {
-    char *home = getenv("HOME");
-    if (home != NULL) {
-        std::string filename = std::string() + home + "/.spl";
-        std::ifstream infile(filename.c_str());
-        if (!infile.fail()) {
-            std::string line;
-            while (getline(infile, line)) {
-                size_t equals = line.find('=');
-                if (equals != std::string::npos) {
-                    std::string key = line.substr(0, equals);
-                    std::string value = line.substr(equals + 1);
-                    optionTable.put(key, value);
-                }
-            }
-            infile.close();
-        }
-    }
-}
-
-// Unix implementation; see Windows implementation elsewhere in this file
-static std::string getOption(std::string key) {
-    char *str = getenv(key.c_str());
-    if (str != NULL) return std::string(str);
-    return optionTable.get(key);
-}
-
-// Unix implementation; see Windows implementation elsewhere in this file
-#ifdef SPL_AUTOGRADER_MODE
-int startupMain(int /*argc*/, char** argv) {
-#else // not SPL_AUTOGRADER_MODE
-int startupMain(int argc, char **argv) {
-    extern int Main(int argc, char **argv);
-#endif // SPL_AUTOGRADER_MODE
-    std::string arg0 = argv[0];
-    exceptions::setProgramNameForStackTrace(argv[0]);
-    programName = getRoot(getTail(arg0));
-    size_t ax = arg0.find(".app/Contents/");
-    if (ax != std::string::npos) {
-        while (ax > 0 && arg0[ax] != '/') {
-            ax--;
-        }
-        if (ax > 0) {
-            std::string cwd = arg0.substr(0, ax);
-            chdir(cwd.c_str());
-        }
-    }
-    char *noConsoleFlag = getenv("NOCONSOLE");
-    if (noConsoleFlag != NULL && startsWith(std::string(noConsoleFlag), "t")) {
-#ifdef SPL_AUTOGRADER_MODE
-        return 0;
-#else // not SPL_AUTOGRADER_MODE
-        return Main(argc, argv);
-#endif // SPL_AUTOGRADER_MODE
-    }
-    scanOptions();
-    initPipe();
-    cinout_new_buf = new ConsoleStreambuf();
-    std::cin.rdbuf(cinout_new_buf);
-    std::cout.rdbuf(cinout_new_buf);
-    std::cerr.rdbuf(new ForwardingStreambuf(*cinout_new_buf, true));
-    std::string font = getOption("CPPFONT");
-    if (font != "") {
-#ifdef _console_h
-        setConsoleFont(font);
-#endif // _console_h
-    }
-    getPlatform()->cpplib_setCppLibraryVersion();
-    setConsoleProperties();
-
-#ifndef SPL_AUTOGRADER_MODE
-    return Main(argc, argv);
-#else // not SPL_AUTOGRADER_MODE
-    return 0;
-#endif // SPL_AUTOGRADER_MODE
-}
-
-/*
- * This is a version of startupMain that does all of the setup but then does
- * not actually run startupMain.
- * This is used to facilitate the creation of autograder programs.
- * Unix implementation; see Windows implementation elsewhere in this file
- */
-void startupMainDontRunMain(int /*argc*/, char** argv) {
-    std::string arg0 = argv[0];
-    exceptions::setProgramNameForStackTrace(argv[0]);
-    programName = getRoot(getTail(arg0));
-    size_t ax = arg0.find(".app/Contents/");
-    if (ax != std::string::npos) {
-        while (ax > 0 && arg0[ax] != '/') {
-            ax--;
-        }
-        if (ax > 0) {
-            std::string cwd = arg0.substr(0, ax);
-            chdir(cwd.c_str());
-        }
-    }
-    scanOptions();
-    initPipe();
-    
-#ifndef SPL_DISABLE_GRAPHICAL_CONSOLE
-    cinout_new_buf = new ConsoleStreambuf();
-    std::cin.rdbuf(cinout_new_buf);
-    std::cout.rdbuf(cinout_new_buf);
-    std::cerr.rdbuf(new ForwardingStreambuf(*cinout_new_buf, true));
-    std::string font = getOption("CPPFONT");
-    if (font != "") {
-        setConsoleFont(font);
-    }
-    setConsoleProperties();
-#endif // SPL_DISABLE_GRAPHICAL_CONSOLE
-    
-#ifdef SPL_ECHO_PLAIN_CONSOLE
-    // echo user input pulled from cin
-    plainconsole::setEcho(true);
-#ifdef SPL_CONSOLE_OUTPUT_LIMIT
-    plainconsole::setOutputLimit(SPL_CONSOLE_OUTPUT_LIMIT);
-#endif // SPL_CONSOLE_OUTPUT_LIMIT
-#endif // SPL_ECHO_PLAIN_CONSOLE
-    
-    getPlatform()->cpplib_setCppLibraryVersion();
-}
-
-#ifndef SPL_HEADLESS_MODE
-// Unix implementation; see Windows implementation elsewhere in this file
-static void sigPipeHandler(int /*signum*/) {
-    // use stderr directly rather than cerr because graphical console may be unreachable
-    fputs("***\n", stderr);
-    fputs("*** STANFORD C++ LIBRARY\n", stderr);
-    fputs("*** Prematurely exiting program because console window was closed.\n", stderr);
-    fputs("***\n", stderr);
-    fflush(stderr);
-    std::exit(1);
-}
-#endif // SPL_HEADLESS_MODE
-
-// Unix implementation; see Windows implementation elsewhere in this file
-static void initPipe() {
-    char *trace = getenv("JBETRACE");
-    logfile.open("/dev/tty");
-    tracePipe = trace != NULL && startsWith(toLowerCase(trace), "t");
-
-    std::string splHomeDir = "";
-    char *splHome = getenv("SPL_HOME");
-    if (splHome != NULL) {
-        splHomeDir = splHome;
-        // ensure that it ends with a trailing slash
-        if (!splHomeDir.empty() && splHomeDir[splHomeDir.length() - 1] != '/') {
-            splHomeDir += '/';
-        }
-    }
-    
-    // check whether spl.jar file exists (code taken from filelib_fileExists)
-    std::string jarName = splHomeDir + "spl.jar";
-    struct stat fileInfo;
-    if (stat(jarName.c_str(), &fileInfo) != 0) {
-        // use stderr directly rather than cerr because graphical console is unreachable
-        fputs("\n", stderr);
-        fputs("***\n", stderr);
-        fputs("*** STANFORD C++ LIBRARY ERROR:\n", stderr);
-        fputs("*** Unable to find the file 'spl.jar' for the Stanford\n", stderr);
-        fputs("*** C++ library's Java back-end process.\n", stderr);
-        fputs("*** Please make sure that spl.jar is properly attached to your project.\n", stderr);
-        fputs("*** If you are trying to run a stand-alone executable, place spl.jar\n", stderr);
-        fputs("*** in the same directory as your executable, or set the system\n", stderr);
-        fputs("*** environment variable SPL_HOME to a directory path containing spl.jar.\n", stderr);
-        fputs("***\n", stderr);
-        fputs("*** (I looked for it in the following directory:)\n", stderr);
-        if (splHomeDir == "") {
-            char cwdbuf[1024];
-            getcwd(cwdbuf, 1024);
-            splHomeDir = cwdbuf;
-        }
-        fputs(("*** " + splHomeDir + "\n").c_str(), stderr);
-        fputs("***\n", stderr);
-        fflush(stderr);
-        std::exit(1);
-    }
-    
-    int toJBE[2], fromJBE[2];
-    if (pipe(toJBE) != 0) {
-        error("Unable to establish pipe to Java back-end; exiting.");
-    }
-    if (pipe(fromJBE) != 0) {
-        error("Unable to establish pipe from Java back-end; exiting.");
-    }
-    int child = fork();
-    if (child == 0) {
-        // we are the Java back-end process; launch external Java command
-        javaBackEndPid = getpid();
-        dup2(toJBE[0], 0);
-        close(toJBE[0]);
-        close(toJBE[1]);
-        dup2(fromJBE[1], 1);
-        close(fromJBE[0]);
-        close(fromJBE[1]);
-        std::string javaCommand = getJavaCommand();
-        
-#ifdef __APPLE__
-        std::string option = "-Xdock:name=" + programName;
-        int execlpResult = execlp(javaCommand.c_str(), javaCommand.c_str(), option.c_str(), "-jar", jarName.c_str(),
-               programName.c_str(), NULL);
-        std::string fullCommand = javaCommand + " " + option + " -jar " + jarName + " " + programName;
-#else // !APPLE
-#ifdef SPL_HEADLESS_MODE
-        int execlpResult = execlp(javaCommand.c_str(), javaCommand.c_str(), "-Djava.awt.headless=true", "-jar", jarName.c_str(), programName.c_str(), NULL);
-        std::string fullCommand = javaCommand + " -jar " + jarName + " " + programName;
-#else // !SPL_HEADLESS_MODE
-        int execlpResult = execlp(javaCommand.c_str(), javaCommand.c_str(), "-jar", jarName.c_str(), programName.c_str(), NULL);
-        std::string fullCommand = javaCommand + " -Djava.awt.headless=true -jar " + jarName + " " + programName;
-#endif // SPL_HEADLESS_MODE
-#endif // APPLE
-        
-        // if we get here, the execlp call failed, so show error message
-        // use stderr directly rather than cerr because graphical console is unreachable
-#ifndef SPL_HEADLESS_MODE
-        if (execlpResult != 0) {
-            char* lastError = strerror(errno);
-            std::string workingDir = getCurrentDirectory();
-            
-            fputs("\n", stderr);
-            fputs("***\n", stderr);
-            fputs("*** STANFORD C++ LIBRARY ERROR:\n", stderr);
-            fputs("*** Unable to launch process to connect to Java back-end\n", stderr);
-            fputs("*** using the 'spl.jar' library.\n", stderr);
-            fputs("*** Please check your Java installation and make sure\n", stderr);
-            fputs("*** that spl.jar is properly attached to your project.\n", stderr);
-            fputs("***\n", stderr);
-            fputs(("*** Command was: " + fullCommand + "\n").c_str(), stderr);
-            fputs(("*** Working dir: " + workingDir + "\n").c_str(), stderr);
-            fputs(("***  Result was: " + integerToString(execlpResult) + "\n").c_str(), stderr);
-            fputs((std::string("***   Error was: ") + lastError + std::string("\n")).c_str(), stderr);
-            fputs("***\n", stderr);
-            fflush(stderr);
-            std::exit(1);
-        }
-#endif // SPL_HEADLESS_MODE
-    } else {
-        // we are the C++ process; connect pipe input/output
-        cppLibPid = getpid();
-        pin = fromJBE[0];
-        pout = toJBE[1];
-        close(fromJBE[1]);
-        close(toJBE[0]);
-        
-        // stop the pipe from generating a SIGPIPE when JBE is closed
-#ifndef SPL_HEADLESS_MODE
-        signal(SIGPIPE, sigPipeHandler);
-#endif // SPL_HEADLESS_MODE
-    }
-}
-
-// Unix implementation; see Windows implementation elsewhere in this file
-static void putPipe(std::string line) {
-    if (line.length() > PIPE_MAX_COMMAND_LENGTH) {
-        putPipeLongString(line);
-        return;
-    }
-#ifdef PIPE_DEBUG
-    fprintf(stderr, "putPipe(\"%s\")\n", line.c_str());  fflush(stderr);
-#endif
-    LinCheck(write(pout, line.c_str(), line.length()));
-    LinCheck(write(pout, "\n", 1));
-    if (tracePipe) logfile << "-> " << line << std::endl;
-}
-
-// Unix implementation; see Windows implementation elsewhere in this file
-static std::string getPipe() {
-#ifdef PIPE_DEBUG
-    fprintf(stderr, "getPipe(): waiting ...\n");  fflush(stderr);
-#endif
-    std::string line = "";
-    int charsRead = 0;
-    int charsReadMax = PIPE_MAX_COMMAND_LENGTH + 100;
-    while (charsRead < charsReadMax) {
-        char ch;
-        ssize_t result = read(pin, &ch, 1);
-        if (result <= 0) {
-            throw InterruptedIOException();
-            // break;   // failed to read from subprocess
-        }
-        if (ch == '\n') {
-            break;
-        }
-        line += ch;
-        charsRead++;
-    }
-#ifdef PIPE_DEBUG
-    fprintf(stderr, "getPipe(): \"%s\"\n", line.c_str());  fflush(stderr);
-#endif
-    if (tracePipe) logfile << "<- " << line << std::endl;
-    return line;
-}
-
-#endif // WIN32
-
-static std::string getResult(bool consumeAcks, const std::string& caller) {
-    while (true) {
-#ifdef PIPE_DEBUG
-        fprintf(stderr, "getResult(): calling getPipe() ...\n");  fflush(stderr);
-#endif
-        std::string line = getPipe();
-        
-        bool isResult        = startsWith(line, "result:");
-        bool isResultLong    = startsWith(line, "result_long:");
-        bool isEvent         = startsWith(line, "event:");
-        bool isAck           = startsWith(line, "result:___jbe___ack___");
-        bool hasACMException = line.find("acm.util.ErrorException") != std::string::npos;
-        bool hasException    = line.find("xception") != std::string::npos;
-        bool hasError        = line.find("Unexpected error") != std::string::npos;
-
-        if (isResultLong) {
-            // read a 'long' result (sent across multiple lines)
-            std::ostringstream os;
-            std::string nextLine = getPipe();
-            while (nextLine != "result_long:end") {
-                if (!startsWith(line, "result:___jbe___ack___")) {
-                    os << nextLine;
-#ifdef PIPE_DEBUG
-                    fprintf(stderr, "getResult(): appended line (length so far: %d)\n", (int) os.str().length());  fflush(stderr);
-#endif
-                }
-                nextLine = getPipe();
-            }
-            std::string result = os.str();
-#ifdef PIPE_DEBUG
-            fprintf(stderr, "getResult(): returning long string \"%s ... %s\" (length %d)\n",
-                    result.substr(0, 10).c_str(),
-                    result.substr(result.length() - 10, 10).c_str(),
-                    (int) result.length());  fflush(stderr);
-#endif
-            return result;
-        } else if (((isResult || isEvent) && hasACMException) ||
-                (!isResult && !isEvent && (hasException || hasError))) {
-            // an error message from the back-end; throw it here
-            std::ostringstream out;
-            if (isResult) {
-                line = line.substr(7);
-            } else if (isEvent) {
-                line = line.substr(6);
-            }
-            out << "ERROR emitted from Stanford Java back-end process:"
-                << std::endl << line;
-            error(out.str());
-        } else if (isResult) {
-            // a regular result
-            if (!isAck || !consumeAcks) {
-                std::string result = line.substr(7);
-#ifdef PIPE_DEBUG
-        fprintf(stderr, "getResult(): returning regular result (length %d): \"%s\"\n", (int) result.length(), result.c_str());  fflush(stderr);
-#endif
-                return result;
-            } else {
-                // else this is just an acknowledgment of some previous event;
-                // not a real result of its own. consume it and keep waiting
-#ifdef PIPE_DEBUG
-        fprintf(stderr, "getResult(): saw ACK (length %d): \"%s\"\n", (int) line.length(), line.c_str());  fflush(stderr);
-#endif
-            }
-        } else if (isEvent) {
-            // a Java-originated event; enqueue it to process here
-            GEvent event = parseEvent(line.substr(6));
-            eventQueue.enqueue(event);
-            if (event.getEventClass() == WINDOW_EVENT && event.getEventType() == CONSOLE_CLOSED
-                    && caller == "getLineConsole") {
-                return "";
-            }
-        } else {
-            if (line.find("\tat ") != std::string::npos || line.find("   at ") != std::string::npos) {
-                // a line from a back-end Java exception stack trace;
-                // shouldn't really be happening, but back end isn't perfect.
-                // echo it here to STDERR so C++ user can see it to help diagnose the issue
-                fprintf(stderr, "%s\n", line.c_str());
-                fflush(stderr);
-            }
-        }
-    }
-}
-
-/*
- * Returns the full path to the java (Linux/Mac) or java.exe (Windows)
- * executable to be executed to launch the Java back-end.
- * If the JAVA_HOME environment variable has been set, looks there first
- * for the java executable.
- * If found, returns the one from JAVA_HOME.
- * Otherwise simply returns the string "java" and relies on this being found
- * in the system's execution path.
- * Setting JAVA_HOME can help disambiguate between multiple versions of Java
- * that might be found on the same machine.
- */
-static std::string getJavaCommand() {
-    static std::string DEFAULT_JAVA_COMMAND = "java";
-    char* JAVA_HOME = getenv("JAVA_HOME");
-    if (!JAVA_HOME) {
-        return DEFAULT_JAVA_COMMAND;
-    } else {
-        std::string path = JAVA_HOME;
-        if (path.empty()) {
-            return DEFAULT_JAVA_COMMAND;
-        }
-        
-        std::string pathSep = getDirectoryPathSeparator();
-        if (!endsWith(path, pathSep)) {
-            path += pathSep;
-        }
-        path += "bin" + pathSep + "java";
-        if (pathSep == "\\") {
-            path += ".exe";   // Windows
-        }
-        if (fileExists(path)) {
-            return path;
-        } else {
-            return DEFAULT_JAVA_COMMAND;   // fallback
-        }
-    }
-}
-
-static void getStatus() {
-    std::string result = getResult();
-    if (result != "ok") {
-        error(result);
-    }
-}
-
-static GEvent parseEvent(std::string line) {
-    TokenScanner scanner(line);
-    scanner.ignoreWhitespace();
-    scanner.scanNumbers();
-    scanner.scanStrings();
-    std::string name = scanner.nextToken();
-    if (name == "mousePressed") {
-        return parseMouseEvent(scanner, MOUSE_PRESSED);
-    } else if (name == "mouseReleased") {
-        return parseMouseEvent(scanner, MOUSE_RELEASED);
-    } else if (name == "mouseClicked") {
-        return parseMouseEvent(scanner, MOUSE_CLICKED);
-    } else if (name == "mouseMoved") {
-        return parseMouseEvent(scanner, MOUSE_MOVED);
-    } else if (name == "mouseDragged") {
-        return parseMouseEvent(scanner, MOUSE_DRAGGED);
-    } else if (name == "keyPressed") {
-        return parseKeyEvent(scanner, KEY_PRESSED);
-    } else if (name == "keyReleased") {
-        return parseKeyEvent(scanner, KEY_RELEASED);
-    } else if (name == "keyTyped") {
-        return parseKeyEvent(scanner, KEY_TYPED);
-    } else if (name == "actionPerformed") {
-        return parseActionEvent(scanner, ACTION_PERFORMED);
-    } else if (name == "serverRequest") {
-        return parseServerEvent(scanner, SERVER_REQUEST);
-    } else if (name == "tableSelected") {
-        return parseTableEvent(scanner, TABLE_SELECTED);
-    } else if (name == "tableUpdated") {
-        return parseTableEvent(scanner, TABLE_UPDATED);
-    } else if (name == "timerTicked") {
-        return parseTimerEvent(scanner, TIMER_TICKED);
-    } else if (name == "windowClosed") {
-        // BUGBUG: GWindow objects were not maintaining proper state on close
-        //         and were doing a circular ring of close() messages to/from JBE
-        GWindowEvent e = parseWindowEvent(scanner, WINDOW_CLOSED);
-        e.getGWindow().setVisible(false);
-        e.getGWindow().notifyOfClose();
-        windowTable.remove(e.getGWindow().getWindowData());
-        return e;
-    } else if (name == "windowResized") {
-        return parseWindowEvent(scanner, WINDOW_RESIZED);
-    } else if (name == "consoleWindowClosed") {
-#ifndef SPL_DISABLE_GRAPHICAL_CONSOLE
-        // Java console window was closed; possibly exit the C++ program now
-        extern bool getConsoleExitProgramOnClose();
-        extern bool getConsoleEventOnClose();
-        if (getConsoleExitProgramOnClose()) {
-            // use stderr directly rather than cerr because graphical console is unreachable
-            fputs("\n", stderr);
-            fputs("***\n", stderr);
-            fputs("*** STANFORD C++ LIBRARY\n", stderr);
-            fputs("*** Prematurely exiting program because console window was closed\n", stderr);
-            fputs("***\n", stderr);
-            fputs("\n", stderr);
-            fflush(stderr);
-
-            // if waiting for keyboard input, abort it
-            if (cinout_new_buf && cinout_new_buf->isBlocked()) {
-                // abortAllConsoleIO();
-                std::exit(0);
-            }
-
-            // close any other graphical windows and exit program
-            exitGraphics();
-        } else if (getConsoleEventOnClose()) {
-            GWindowData* gwd = NULL;
-            GWindowEvent e(CONSOLE_CLOSED, GWindow(gwd));
-            return e;
-        }
-#endif // SPL_DISABLE_GRAPHICAL_CONSOLE
-    } else if (name == "lastWindowClosed") {
-        std::exit(0);
-    } else if (name == "lastWindowGWindow_closed") {
-        std::exit(0);
-    } else {
-        /* Ignore for now */
-    }
-    return GEvent();
-}
-
-static GEvent parseMouseEvent(TokenScanner& scanner, EventType type) {
-    scanner.verifyToken("(");
-    std::string id = scanner.getStringValue(scanner.nextToken());
-    scanner.verifyToken(",");
-    double time = scanDouble(scanner);
-    scanner.verifyToken(",");
-    int modifiers = scanInt(scanner);
-    scanner.verifyToken(",");
-    double x = scanDouble(scanner);
-    scanner.verifyToken(",");
-    double y = scanDouble(scanner);
-    scanner.verifyToken(")");
-    GMouseEvent e(type, GWindow(windowTable.get(id)), x, y);
-    e.setEventTime(time);
-    e.setModifiers(modifiers);
-    return e;
-}
-
-static GEvent parseKeyEvent(TokenScanner& scanner, EventType type) {
-    scanner.verifyToken("(");
-    std::string id = scanner.getStringValue(scanner.nextToken());
-    scanner.verifyToken(",");
-    double time = scanDouble(scanner);
-    scanner.verifyToken(",");
-    int modifiers = scanInt(scanner);
-    scanner.verifyToken(",");
-    int keyChar = scanChar(scanner);   // BUGFIX 2016/01/27: Thanks to K. Perry
-    scanner.verifyToken(",");
-    int keyCode = scanInt(scanner);
-    scanner.verifyToken(")");
-    GKeyEvent e(type, GWindow(windowTable.get(id)), char(keyChar), keyCode);
-    e.setEventTime(time);
-    e.setModifiers(modifiers);
-    return e;
-}
-
-static GEvent parseServerEvent(TokenScanner& scanner, EventType type) {
-    scanner.verifyToken("(");
-    double time = scanDouble(scanner);
-    scanner.verifyToken(",");
-    int requestID = scanInt(scanner);
-    scanner.verifyToken(",");
-    std::string requestUrl = urlDecode(scanner.getStringValue(scanner.nextToken()));
-    scanner.verifyToken(")");
-
-    GServerEvent e(type, requestID, requestUrl);
-    e.setEventTime(time);
-    return e;
-}
-
-static GEvent parseTableEvent(TokenScanner& scanner, EventType type) {
-    scanner.verifyToken("(");
-    std::string id = scanner.getStringValue(scanner.nextToken());
-    scanner.verifyToken(",");
-    double time = scanDouble(scanner);
-    scanner.verifyToken(",");
-    int row = scanInt(scanner);
-    scanner.verifyToken(",");
-    int col = scanInt(scanner);
-    std::string value;
-
-    if (type == TABLE_UPDATED) {
-        scanner.verifyToken(",");
-        value = urlDecode(scanner.getStringValue(scanner.nextToken()));
-    }
-    scanner.verifyToken(")");
-    
-    GTableEvent e(type);  //, GTimer(timerTable.get(id)));
-    e.setLocation(row, col);
-    e.setValue(value);
-    e.setEventTime(time);
-    return e;
-}
-
-static GEvent parseTimerEvent(TokenScanner& scanner, EventType type) {
-    scanner.verifyToken("(");
-    std::string id = scanner.getStringValue(scanner.nextToken());
-    scanner.verifyToken(",");
-    double time = scanDouble(scanner);
-    scanner.verifyToken(")");
-    GTimerEvent e(type, GTimer(timerTable.get(id)));
-    e.setEventTime(time);
-    return e;
-}
-
-static GEvent parseWindowEvent(TokenScanner& scanner, EventType type) {
-    scanner.verifyToken("(");
-    std::string id = scanner.getStringValue(scanner.nextToken());
-    scanner.verifyToken(",");
-    double time = scanDouble(scanner);
-    scanner.verifyToken(")");
-    GWindowEvent e(type, GWindow(windowTable.get(id)));
-    e.setEventTime(time);
-    return e;
-}
-
-static GEvent parseActionEvent(TokenScanner& scanner, EventType type) {
-    scanner.verifyToken("(");
-    std::string id = scanner.getStringValue(scanner.nextToken());
-    scanner.verifyToken(",");
-    std::string action = scanner.getStringValue(scanner.nextToken());
-    scanner.verifyToken(",");
-    double time = scanDouble(scanner);
-    scanner.verifyToken(")");
-    GActionEvent e(type, sourceTable.get(id), action);
-    e.setEventTime(time);
-    return e;
-}
-
-/* Console code */
-
 void Platform::cpplib_setCppLibraryVersion() {
     std::ostringstream out;
     out << "StanfordCppLib.setCppVersion(";
@@ -3002,49 +2064,696 @@ void Platform::autograderunittest_setWindowDescriptionText(const std::string& te
     putPipe(os.str());
 }
 
-static std::string getLineConsole() {
-    putPipe("JBEConsole.getLine()");
-    std::string result = getResult(/* consumeAcks */ true, /* caller */ "getLineConsole");
-    echoConsole(result + "\n");   // wrong for multiple inputs on one line
+Platform* getPlatform() {
+    static Platform gp;
+    return &gp;
+}
+} // namespace stanfordcpplib
+
+
+static void putPipeLongString(std::string line) {
+    // break into chunks
+    // precondition: line does not contain substring "LongCommand.end()"
+    putPipe("LongCommand.begin()");
+    size_t len = line.length();
+    for (size_t i = 0; i < len; i += PIPE_MAX_COMMAND_LENGTH) {
+        std::string chunk = line.substr(i, std::min(PIPE_MAX_COMMAND_LENGTH, len - i));
+        putPipe(chunk);
+    }
+    putPipe("LongCommand.end()");
+}
+
+void parseArgs(int argc, char** argv) {
+    if (argc <= 0) {
+        return;
+    }
+    std::string arg0 = argv[0];
+    exceptions::setProgramNameForStackTrace(argv[0]);
+    programName() = getRoot(getTail(arg0));
+
+#ifndef _WIN32
+    // on Mac only, may need to change folder because of app's nested dir structure
+    size_t ax = arg0.find(".app/Contents/");
+    if (ax != std::string::npos) {
+        while (ax > 0 && arg0[ax] != '/') {
+            ax--;
+        }
+        if (ax > 0) {
+            std::string cwd = arg0.substr(0, ax);
+            chdir(cwd.c_str());
+        }
+    }
+#endif // _WIN32
+
+    char* noConsoleFlag = getenv("NOCONSOLE");
+    if (noConsoleFlag != NULL && startsWith(std::string(noConsoleFlag), "t")) {
+        return;
+    }
+}
+
+#ifdef _WIN32
+
+/* Windows implementation of interface to Java back end */
+
+// formats an error message using Windows lookup of error codes and strings
+// Windows implementation; see Unix implementation elsewhere in this file
+static WINBOOL WinCheck(WINBOOL result) {
+    if (result == 0 && result != ERROR_IO_PENDING) {
+        // failure; Windows error codes: http://msdn.microsoft.com/en-us/library/windows/desktop/ms681381(v=vs.85).aspx
+        DWORD lastErrorCode = GetLastError();
+        char* errorMsg = NULL;
+        // Ask Windows to prepare a standard message for a GetLastError() code:
+        FormatMessageA(/* dwFlags */ FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                       /* lpSource */ NULL,
+                       /* dwMessageId */ lastErrorCode,
+                       /* dwLanguageId */ LANG_NEUTRAL, // MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                       /* lpBuffer */ (LPSTR)&errorMsg,
+                       /* dwSize */ 0,
+                       /* arguments */ NULL);
+        if (errorMsg) {
+            // use stderr directly rather than cerr because graphical console may be unreachable
+            fputs("\n", stderr);
+            fputs("***\n", stderr);
+            fputs("*** STANFORD C++ LIBRARY\n", stderr);
+            fputs("*** Error from Java back-end subprocess:\n", stderr);
+            fprintf(stderr, "*** %s\n", errorMsg);
+            fputs("***\n", stderr);
+            fputs("\n", stderr);
+        }
+    }
     return result;
 }
 
-static void putConsole(const std::string& str, bool isStderr) {
-    std::ostringstream os;
-    os << "JBEConsole.print(";
-
-    // BUGFIX: strings that end with \\ don't print because of back-end error;
-    //         kludge fix by appending an invisible space after it
-    if (!str.empty() && str[str.length() - 1] == '\\') {
-        std::string str2 = str + ' ';
-        writeQuotedString(os, str2);
+// Windows implementation; see Unix implementation elsewhere in this file
+static void initPipe() {
+    SECURITY_ATTRIBUTES attr;
+    attr.nLength = sizeof(SECURITY_ATTRIBUTES);
+    attr.bInheritHandle = true;
+    attr.lpSecurityDescriptor = NULL;
+    if (!CreatePipe(&rdFromJBE, &wrFromJBE, &attr, 0)) {
+        error("Platform::initPipe: Can't create fromJBE");
+    }
+    if (!SetHandleInformation(rdFromJBE, HANDLE_FLAG_INHERIT, 0)) {
+        error("Platform::initPipe: SetHandleInformation failed for fromJBE");
+    }
+    if (!CreatePipe(&rdToJBE, &wrToJBE, &attr, 0)) {
+        error("Platform::initPipe: Can't create toJBE");
+    }
+    if (!SetHandleInformation(wrToJBE, HANDLE_FLAG_INHERIT, 0)) {
+        error("Platform::initPipe: SetHandleInformation failed for toJBE");
+    }
+    std::string cmd = getJavaCommand();
+#ifdef PIPE_DEBUG
+    cmd += " -Dstanfordspl.debug=true";
+#endif // PIPE_DEBUG
+    std::string jarName = getSplJarPath();
+    cmd += " -jar " + jarName;
+    cmd += std::string(" ") + programName();
+    int n = cmd.length();
+    char *cmdLine = new char[n + 1];
+    for (int i = 0; i < n; i++) {
+        cmdLine[i] = cmd[i];
+    }
+    cmdLine[n] = '\0';
+    PROCESS_INFORMATION pInfo;
+    memset(&pInfo, 0, sizeof(PROCESS_INFORMATION));
+    STARTUPINFOA sInfo;
+    memset(&sInfo, 0, sizeof(STARTUPINFOA));
+    sInfo.cb = sizeof(STARTUPINFOA);
+    sInfo.dwFlags = STARTF_USESTDHANDLES;
+    sInfo.hStdInput = rdToJBE;
+    sInfo.hStdOutput = wrFromJBE;
+    sInfo.hStdError = wrFromJBE;
+    int ok = CreateProcessA(NULL, cmdLine, NULL, NULL, true, CREATE_NO_WINDOW,
+                            NULL, NULL, &sInfo, &pInfo);
+    if (!ok) {
+        // DWORD err = GetLastError();
+        // use stderr directly rather than cerr because graphical console is not connected
+        fputs("\n", stderr);
+        fputs("***\n", stderr);
+        fputs("*** STANFORD C++ LIBRARY ERROR:\n", stderr);
+        fputs("*** Unable to connect to Java back-end\n", stderr);
+        fputs("*** to launch 'spl.jar' command.\n", stderr);
+        fputs("*** Please check your Java installation and make sure\n", stderr);
+        fputs("*** that spl.jar is properly attached to your project.\n", stderr);
+        fputs("***\n", stderr);
+        fflush(stderr);
     } else {
-        writeQuotedString(os, str);
+        CloseHandle(pInfo.hProcess);
+        CloseHandle(pInfo.hThread);
+    }
+}
+
+// Windows implementation; see Unix implementation elsewhere in this file
+static void putPipe(std::string line) {
+    if (line.length() > PIPE_MAX_COMMAND_LENGTH) {
+        putPipeLongString(line);
+        return;
     }
     
-    os << "," << std::boolalpha << isStderr << ")";
-    putPipe(os.str());
-    echoConsole(str, isStderr);
+    DWORD nch;
+#ifdef PIPE_DEBUG
+    fprintf(stderr, "putPipe(\"%s\")\n", line.c_str());  fflush(stderr);
+#endif // PIPE_DEBUG
+    if (!WinCheck(WriteFile(wrToJBE, line.c_str(), line.length(), &nch, NULL))) return;
+    if (!WinCheck(WriteFile(wrToJBE, "\n", 1, &nch, NULL))) return;
+    WinCheck(FlushFileBuffers(wrToJBE));
 }
 
-#ifdef _console_h
-static void echoConsole(const std::string& str, bool isStderr) {
-    if (getConsoleEcho()) {
-        // write to the standard (non-graphical) console for output copy/pasting
-        fputs(str.c_str(), isStderr ? stderr : stdout);
-        fflush(stdout);   // flush both stdout and stderr
-        fflush(stderr);
+// Windows implementation; see Unix implementation elsewhere in this file
+static std::string getPipe() {
+    std::string line = "";
+    DWORD nch;
+#ifdef PIPE_DEBUG
+    fprintf(stderr, "getPipe(): waiting ...\n");  fflush(stderr);
+#endif // PIPE_DEBUG
+
+    int charsRead = 0;
+    int charsReadMax = 1024*1024;
+    while (charsRead < charsReadMax) {
+        char ch;
+        WINBOOL readFileResult = WinCheck(ReadFile(rdFromJBE, &ch, 1, &nch, NULL));
+        if (readFileResult == 0) {
+            break;   // failed to read from subprocess
+        }
+        if (ch == '\n' || ch == '\r') {
+            break;
+        }
+        line += ch;
+        charsRead++;
+    }
+
+#ifdef PIPE_DEBUG
+    fprintf(stderr, "getPipe(): returned \"%s\"\n", line.c_str());  fflush(stderr);
+#endif
+    return line;
+}
+
+#else // not WIN32
+
+/* Linux/Mac implementation of interface to Java back end */
+
+// Unix implementation; see Windows implementation elsewhere in this file
+static bool LinCheck(ssize_t result) {
+    if (result == EPIPE) {
+        // fputs("Error from Java back-end subprocess.\n", stderr);
+        // throw InterruptedIOException();
+        return false;
+    } else {
+        return true;
     }
 }
-#else
-static void echoConsole(const std::string&, bool) {
-    // empty
-}
-#endif // _console_h
 
-static void endLineConsole(bool isStderr) {
-    putPipe("JBEConsole.println()");
-    echoConsole("\n", isStderr);
+#ifndef SPL_HEADLESS_MODE
+// Unix implementation; see Windows implementation elsewhere in this file
+static void sigPipeHandler(int /*signum*/) {
+    // use stderr directly rather than cerr because graphical console may be unreachable
+    fputs("***\n", stderr);
+    fputs("*** STANFORD C++ LIBRARY\n", stderr);
+    fputs("*** Prematurely exiting program because console window was closed.\n", stderr);
+    fputs("***\n", stderr);
+    fflush(stderr);
+    std::exit(1);
+}
+#endif // SPL_HEADLESS_MODE
+
+// Unix implementation; see Windows implementation elsewhere in this file
+static void initPipe() {
+    std::string jarName = getSplJarPath();
+    
+    int toJBE[2], fromJBE[2];
+    if (pipe(toJBE) != 0) {
+        error("Unable to establish pipe to Java back-end; exiting.");
+    }
+    if (pipe(fromJBE) != 0) {
+        error("Unable to establish pipe from Java back-end; exiting.");
+    }
+    int child = fork();
+    if (child == 0) {
+        // we are the Java back-end process; launch external Java command
+        javaBackEndPid = getpid();
+        dup2(toJBE[0], 0);
+        close(toJBE[0]);
+        close(toJBE[1]);
+        dup2(fromJBE[1], 1);
+        close(fromJBE[0]);
+        close(fromJBE[1]);
+        std::string javaCommand = getJavaCommand();
+        
+#ifdef __APPLE__
+        std::string option = "-Xdock:name=" + programName();
+        int execlpResult = execlp(javaCommand.c_str(), javaCommand.c_str(), option.c_str(), "-jar", jarName.c_str(),
+               programName().c_str(), NULL);
+        std::string fullCommand = javaCommand + " " + option + " -jar " + jarName + " " + programName();
+#else // !APPLE
+#ifdef SPL_HEADLESS_MODE
+        int execlpResult = execlp(javaCommand.c_str(), javaCommand.c_str(), "-Djava.awt.headless=true", "-jar", jarName.c_str(), programName().c_str(), NULL);
+        std::string fullCommand = javaCommand + " -jar " + jarName + " " + programName();
+#else // !SPL_HEADLESS_MODE
+        int execlpResult = execlp(javaCommand.c_str(), javaCommand.c_str(), "-jar", jarName.c_str(), programName().c_str(), NULL);
+        std::string fullCommand = javaCommand + " -Djava.awt.headless=true -jar " + jarName + " " + programName();
+#endif // SPL_HEADLESS_MODE
+#endif // APPLE
+        
+        // if we get here, the execlp call failed, so show error message
+        // use stderr directly rather than cerr because graphical console is unreachable
+#ifndef SPL_HEADLESS_MODE
+        if (execlpResult != 0) {
+            char* lastError = strerror(errno);
+            std::string workingDir = getCurrentDirectory();
+            
+            fputs("\n", stderr);
+            fputs("***\n", stderr);
+            fputs("*** STANFORD C++ LIBRARY ERROR:\n", stderr);
+            fputs("*** Unable to launch process to connect to Java back-end\n", stderr);
+            fputs("*** using the 'spl.jar' library.\n", stderr);
+            fputs("*** Please check your Java installation and make sure\n", stderr);
+            fputs("*** that spl.jar is properly attached to your project.\n", stderr);
+            fputs("***\n", stderr);
+            fputs(("*** Command was: " + fullCommand + "\n").c_str(), stderr);
+            fputs(("*** Working dir: " + workingDir + "\n").c_str(), stderr);
+            fputs(("***  Result was: " + integerToString(execlpResult) + "\n").c_str(), stderr);
+            fputs((std::string("***   Error was: ") + lastError + std::string("\n")).c_str(), stderr);
+            fputs("***\n", stderr);
+            fflush(stderr);
+            std::exit(1);
+        }
+#endif // SPL_HEADLESS_MODE
+    } else {
+        // we are the C++ process; connect pipe input/output
+        cppLibPid = getpid();
+        pin(/* check */ false) = fromJBE[0];
+        pout(/* check */ false) = toJBE[1];
+        close(fromJBE[1]);
+        close(toJBE[0]);
+        
+        // stop the pipe from generating a SIGPIPE when JBE is closed
+#ifndef SPL_HEADLESS_MODE
+        signal(SIGPIPE, sigPipeHandler);
+#endif // SPL_HEADLESS_MODE
+    }
+}
+
+// Unix implementation; see Windows implementation elsewhere in this file
+static void putPipe(std::string line) {
+    if (line.length() > PIPE_MAX_COMMAND_LENGTH) {
+        putPipeLongString(line);
+        return;
+    }
+#ifdef PIPE_DEBUG
+    fprintf(stderr, "putPipe(\"%s\")\n", line.c_str());  fflush(stderr);
+#endif
+    LinCheck(write(pout(), line.c_str(), line.length()));
+    LinCheck(write(pout(), "\n", 1));
+}
+
+// Unix implementation; see Windows implementation elsewhere in this file
+static std::string getPipe() {
+#ifdef PIPE_DEBUG
+    fprintf(stderr, "getPipe(): waiting ...\n");  fflush(stderr);
+#endif
+    std::string line = "";
+    int charsRead = 0;
+    int charsReadMax = PIPE_MAX_COMMAND_LENGTH + 100;
+    while (charsRead < charsReadMax) {
+        char ch;
+        ssize_t result = read(pin(), &ch, 1);
+        if (result <= 0) {
+            throw InterruptedIOException();
+            // break;   // failed to read from subprocess
+        }
+        if (ch == '\n') {
+            break;
+        }
+        line += ch;
+        charsRead++;
+    }
+#ifdef PIPE_DEBUG
+    fprintf(stderr, "getPipe(): \"%s\"\n", line.c_str());  fflush(stderr);
+#endif
+    return line;
+}
+
+#endif // WIN32
+
+static std::string getResult(bool consumeAcks, const std::string& caller) {
+    while (true) {
+#ifdef PIPE_DEBUG
+        fprintf(stderr, "getResult(): calling getPipe() ...\n");  fflush(stderr);
+#endif
+        std::string line = getPipe();
+        
+        bool isResult        = startsWith(line, "result:");
+        bool isResultLong    = startsWith(line, "result_long:");
+        bool isEvent         = startsWith(line, "event:");
+        bool isAck           = startsWith(line, "result:___jbe___ack___");
+        bool hasACMException = line.find("acm.util.ErrorException") != std::string::npos;
+        bool hasException    = line.find("xception") != std::string::npos;
+        bool hasError        = line.find("Unexpected error") != std::string::npos;
+
+        if (isResultLong) {
+            // read a 'long' result (sent across multiple lines)
+            std::ostringstream os;
+            std::string nextLine = getPipe();
+            while (nextLine != "result_long:end") {
+                if (!startsWith(line, "result:___jbe___ack___")) {
+                    os << nextLine;
+#ifdef PIPE_DEBUG
+                    fprintf(stderr, "getResult(): appended line (length so far: %d)\n", (int) os.str().length());  fflush(stderr);
+#endif
+                }
+                nextLine = getPipe();
+            }
+            std::string result = os.str();
+#ifdef PIPE_DEBUG
+            fprintf(stderr, "getResult(): returning long string \"%s ... %s\" (length %d)\n",
+                    result.substr(0, 10).c_str(),
+                    result.substr(result.length() - 10, 10).c_str(),
+                    (int) result.length());  fflush(stderr);
+#endif
+            return result;
+        } else if (((isResult || isEvent) && hasACMException) ||
+                (!isResult && !isEvent && (hasException || hasError))) {
+            // an error message from the back-end; throw it here
+            std::ostringstream out;
+            if (isResult) {
+                line = line.substr(7);
+            } else if (isEvent) {
+                line = line.substr(6);
+            }
+            out << "ERROR emitted from Stanford Java back-end process:"
+                << std::endl << line;
+            error(out.str());
+        } else if (isResult) {
+            // a regular result
+            if (!isAck || !consumeAcks) {
+                std::string result = line.substr(7);
+#ifdef PIPE_DEBUG
+                fprintf(stderr, "getResult(): returning regular result (length %d): \"%s\"\n", (int) result.length(), result.c_str());  fflush(stderr);
+#endif
+                return result;
+            } else {
+                // else this is just an acknowledgment of some previous event;
+                // not a real result of its own. consume it and keep waiting
+#ifdef PIPE_DEBUG
+                fprintf(stderr, "getResult(): saw ACK (length %d): \"%s\"\n", (int) line.length(), line.c_str());  fflush(stderr);
+#endif
+            }
+        } else if (isEvent) {
+            // a Java-originated event; enqueue it to process here
+            GEvent event = parseEvent(line.substr(6));
+            eventQueue.enqueue(event);
+            if (event.getEventClass() == WINDOW_EVENT && event.getEventType() == CONSOLE_CLOSED
+                    && caller == "getLineConsole") {
+                return "";
+            }
+        } else {
+            if (line.find("\tat ") != std::string::npos || line.find("   at ") != std::string::npos) {
+                // a line from a back-end Java exception stack trace;
+                // shouldn't really be happening, but back end isn't perfect.
+                // echo it here to STDERR so C++ user can see it to help diagnose the issue
+                fprintf(stderr, "%s\n", line.c_str());
+                fflush(stderr);
+            }
+        }
+    }
+}
+
+/*
+ * Returns the full path to the java (Linux/Mac) or java.exe (Windows)
+ * executable to be executed to launch the Java back-end.
+ * If the JAVA_HOME environment variable has been set, looks there first
+ * for the java executable.
+ * If found, returns the one from JAVA_HOME.
+ * Otherwise simply returns the string "java" and relies on this being found
+ * in the system's execution path.
+ * Setting JAVA_HOME can help disambiguate between multiple versions of Java
+ * that might be found on the same machine.
+ */
+static std::string getJavaCommand() {
+    static std::string DEFAULT_JAVA_COMMAND = "java";
+    char* JAVA_HOME = getenv("JAVA_HOME");
+    if (!JAVA_HOME) {
+        return DEFAULT_JAVA_COMMAND;
+    } else {
+        std::string path = JAVA_HOME;
+        if (path.empty()) {
+            return DEFAULT_JAVA_COMMAND;
+        }
+        
+        std::string pathSep = getDirectoryPathSeparator();
+        if (!endsWith(path, pathSep)) {
+            path += pathSep;
+        }
+        path += "bin" + pathSep + "java";
+        if (pathSep == "\\") {
+            path += ".exe";   // Windows
+        }
+        if (fileExists(path)) {
+            return path;
+        } else {
+            return DEFAULT_JAVA_COMMAND;   // fallback
+        }
+    }
+}
+
+static std::string getSplJarPath() {
+    std::string splHomeDir = "";
+    char* splHome = getenv("SPL_HOME");
+    if (splHome != NULL) {
+        splHomeDir = splHome;
+        // ensure that it ends with a trailing slash
+        if (!splHomeDir.empty() && splHomeDir[splHomeDir.length() - 1] != '/') {
+            splHomeDir += '/';
+        }
+    }
+
+    // check whether spl.jar file exists (code taken from filelib_fileExists)
+    std::string jarName = splHomeDir + "spl.jar";
+    if (!stanfordcpplib::getPlatform()->filelib_fileExists(jarName)) {
+        // use stderr directly rather than cerr because graphical console is unreachable
+        fputs("\n", stderr);
+        fputs("***\n", stderr);
+        fputs("*** STANFORD C++ LIBRARY ERROR:\n", stderr);
+        fputs("*** Unable to find the file 'spl.jar' for the Stanford\n", stderr);
+        fputs("*** C++ library's Java back-end process.\n", stderr);
+        fputs("*** Please make sure that spl.jar is properly attached to your project.\n", stderr);
+        fputs("*** If you are trying to run a stand-alone executable, place spl.jar\n", stderr);
+        fputs("*** in the same directory as your executable, or set the system\n", stderr);
+        fputs("*** environment variable SPL_HOME to a directory path containing spl.jar.\n", stderr);
+        fputs("***\n", stderr);
+        fputs("*** (I looked for it in the following directory:)\n", stderr);
+        if (splHomeDir == "") {
+            splHomeDir = stanfordcpplib::getPlatform()->filelib_getCurrentDirectory();
+        }
+        fputs(("*** " + splHomeDir + "\n").c_str(), stderr);
+        fputs("***\n", stderr);
+        fflush(stderr);
+        std::exit(1);
+    }
+    return jarName;
+}
+
+static void getStatus() {
+    std::string result = getResult();
+    if (result != "ok") {
+        error(result);
+    }
+}
+
+static std::string& programName() {
+    static std::string __programName;
+    return __programName;
+}
+
+static GEvent parseEvent(std::string line) {
+    TokenScanner scanner(line);
+    scanner.ignoreWhitespace();
+    scanner.scanNumbers();
+    scanner.scanStrings();
+    std::string name = scanner.nextToken();
+    if (name == "mousePressed") {
+        return parseMouseEvent(scanner, MOUSE_PRESSED);
+    } else if (name == "mouseReleased") {
+        return parseMouseEvent(scanner, MOUSE_RELEASED);
+    } else if (name == "mouseClicked") {
+        return parseMouseEvent(scanner, MOUSE_CLICKED);
+    } else if (name == "mouseMoved") {
+        return parseMouseEvent(scanner, MOUSE_MOVED);
+    } else if (name == "mouseDragged") {
+        return parseMouseEvent(scanner, MOUSE_DRAGGED);
+    } else if (name == "keyPressed") {
+        return parseKeyEvent(scanner, KEY_PRESSED);
+    } else if (name == "keyReleased") {
+        return parseKeyEvent(scanner, KEY_RELEASED);
+    } else if (name == "keyTyped") {
+        return parseKeyEvent(scanner, KEY_TYPED);
+    } else if (name == "actionPerformed") {
+        return parseActionEvent(scanner, ACTION_PERFORMED);
+    } else if (name == "serverRequest") {
+        return parseServerEvent(scanner, SERVER_REQUEST);
+    } else if (name == "tableSelected") {
+        return parseTableEvent(scanner, TABLE_SELECTED);
+    } else if (name == "tableUpdated") {
+        return parseTableEvent(scanner, TABLE_UPDATED);
+    } else if (name == "timerTicked") {
+        return parseTimerEvent(scanner, TIMER_TICKED);
+    } else if (name == "windowClosed") {
+        // BUGBUG: GWindow objects were not maintaining proper state on close
+        //         and were doing a circular ring of close() messages to/from JBE
+        GWindowEvent e = parseWindowEvent(scanner, WINDOW_CLOSED);
+        e.getGWindow().setVisible(false);
+        e.getGWindow().notifyOfClose();
+        windowTable.remove(e.getGWindow().getWindowData());
+        return e;
+    } else if (name == "windowResized") {
+        return parseWindowEvent(scanner, WINDOW_RESIZED);
+    } else if (name == "consoleWindowClosed") {
+#ifndef SPL_DISABLE_GRAPHICAL_CONSOLE
+        // Java console window was closed; possibly exit the C++ program now
+        extern bool getConsoleExitProgramOnClose();
+        extern bool getConsoleEventOnClose();
+        if (getConsoleExitProgramOnClose()) {
+            // use stderr directly rather than cerr because graphical console is unreachable
+            fputs("\n", stderr);
+            fputs("***\n", stderr);
+            fputs("*** STANFORD C++ LIBRARY\n", stderr);
+            fputs("*** Prematurely exiting program because console window was closed\n", stderr);
+            fputs("***\n", stderr);
+            fputs("\n", stderr);
+            fflush(stderr);
+
+            // if waiting for keyboard input, abort it
+            if (cinout_new_buf && cinout_new_buf->isBlocked()) {
+                // abortAllConsoleIO();
+                std::exit(0);
+            }
+
+            // close any other graphical windows and exit program
+            exitGraphics();
+        } else if (getConsoleEventOnClose()) {
+            GWindowData* gwd = NULL;
+            GWindowEvent e(CONSOLE_CLOSED, GWindow(gwd));
+            return e;
+        }
+#endif // SPL_DISABLE_GRAPHICAL_CONSOLE
+    } else if (name == "lastWindowClosed") {
+        std::exit(0);
+    } else if (name == "lastWindowGWindow_closed") {
+        std::exit(0);
+    } else {
+        /* Ignore for now */
+    }
+    return GEvent();
+}
+
+static GEvent parseMouseEvent(TokenScanner& scanner, EventType type) {
+    scanner.verifyToken("(");
+    std::string id = scanner.getStringValue(scanner.nextToken());
+    scanner.verifyToken(",");
+    double time = scanDouble(scanner);
+    scanner.verifyToken(",");
+    int modifiers = scanInt(scanner);
+    scanner.verifyToken(",");
+    double x = scanDouble(scanner);
+    scanner.verifyToken(",");
+    double y = scanDouble(scanner);
+    scanner.verifyToken(")");
+    GMouseEvent e(type, GWindow(windowTable.get(id)), x, y);
+    e.setEventTime(time);
+    e.setModifiers(modifiers);
+    return e;
+}
+
+static GEvent parseKeyEvent(TokenScanner& scanner, EventType type) {
+    scanner.verifyToken("(");
+    std::string id = scanner.getStringValue(scanner.nextToken());
+    scanner.verifyToken(",");
+    double time = scanDouble(scanner);
+    scanner.verifyToken(",");
+    int modifiers = scanInt(scanner);
+    scanner.verifyToken(",");
+    int keyChar = scanChar(scanner);   // BUGFIX 2016/01/27: Thanks to K. Perry
+    scanner.verifyToken(",");
+    int keyCode = scanInt(scanner);
+    scanner.verifyToken(")");
+    GKeyEvent e(type, GWindow(windowTable.get(id)), char(keyChar), keyCode);
+    e.setEventTime(time);
+    e.setModifiers(modifiers);
+    return e;
+}
+
+static GEvent parseServerEvent(TokenScanner& scanner, EventType type) {
+    scanner.verifyToken("(");
+    double time = scanDouble(scanner);
+    scanner.verifyToken(",");
+    int requestID = scanInt(scanner);
+    scanner.verifyToken(",");
+    std::string requestUrl = urlDecode(scanner.getStringValue(scanner.nextToken()));
+    scanner.verifyToken(")");
+
+    GServerEvent e(type, requestID, requestUrl);
+    e.setEventTime(time);
+    return e;
+}
+
+static GEvent parseTableEvent(TokenScanner& scanner, EventType type) {
+    scanner.verifyToken("(");
+    std::string id = scanner.getStringValue(scanner.nextToken());
+    scanner.verifyToken(",");
+    double time = scanDouble(scanner);
+    scanner.verifyToken(",");
+    int row = scanInt(scanner);
+    scanner.verifyToken(",");
+    int col = scanInt(scanner);
+    std::string value;
+
+    if (type == TABLE_UPDATED) {
+        scanner.verifyToken(",");
+        value = urlDecode(scanner.getStringValue(scanner.nextToken()));
+    }
+    scanner.verifyToken(")");
+    
+    GTableEvent e(type);  //, GTimer(timerTable.get(id)));
+    e.setLocation(row, col);
+    e.setValue(value);
+    e.setEventTime(time);
+    return e;
+}
+
+static GEvent parseTimerEvent(TokenScanner& scanner, EventType type) {
+    scanner.verifyToken("(");
+    std::string id = scanner.getStringValue(scanner.nextToken());
+    scanner.verifyToken(",");
+    double time = scanDouble(scanner);
+    scanner.verifyToken(")");
+    GTimerEvent e(type, GTimer(timerTable.get(id)));
+    e.setEventTime(time);
+    return e;
+}
+
+static GEvent parseWindowEvent(TokenScanner& scanner, EventType type) {
+    scanner.verifyToken("(");
+    std::string id = scanner.getStringValue(scanner.nextToken());
+    scanner.verifyToken(",");
+    double time = scanDouble(scanner);
+    scanner.verifyToken(")");
+    GWindowEvent e(type, GWindow(windowTable.get(id)));
+    e.setEventTime(time);
+    return e;
+}
+
+static GEvent parseActionEvent(TokenScanner& scanner, EventType type) {
+    scanner.verifyToken("(");
+    std::string id = scanner.getStringValue(scanner.nextToken());
+    scanner.verifyToken(",");
+    std::string action = scanner.getStringValue(scanner.nextToken());
+    scanner.verifyToken(",");
+    double time = scanDouble(scanner);
+    scanner.verifyToken(")");
+    GActionEvent e(type, sourceTable.get(id), action);
+    e.setEventTime(time);
+    return e;
 }
 
 static int scanChar(TokenScanner& scanner) {
@@ -3108,11 +2817,110 @@ static GRectangle scanRectangle(const std::string& str) {
     return GRectangle(x, y, width, height);
 }
 
+namespace stanfordcpplib {
+std::string getLineConsole() {
+    putPipe("JBEConsole.getLine()");
+    std::string result = getResult(/* consumeAcks */ true, /* caller */ "getLineConsole");
+    echoConsole(result + "\n");   // wrong for multiple inputs on one line
+    return result;
+}
+
+void putConsole(const std::string& str, bool isStderr) {
+    std::ostringstream os;
+    os << "JBEConsole.print(";
+
+    // BUGFIX: strings that end with \\ don't print because of back-end error;
+    //         kludge fix by appending an invisible space after it
+    if (!str.empty() && str[str.length() - 1] == '\\') {
+        std::string str2 = str + ' ';
+        writeQuotedString(os, str2);
+    } else {
+        writeQuotedString(os, str);
+    }
+
+    os << "," << std::boolalpha << isStderr << ")";
+    putPipe(os.str());
+    echoConsole(str, isStderr);
+}
+
+#ifdef _console_h
+void echoConsole(const std::string& str, bool isStderr) {
+    if (getConsoleEcho()) {
+        // write to the standard (non-graphical) console for output copy/pasting
+        // fflush(stdout);   // flush both stdout and stderr
+        bool shouldFlush = str.find('\n') != std::string::npos;
+        if (shouldFlush) {
+            fflush(stdout);   // flush both stdout and stderr
+        }
+
+        fputs(str.c_str(), isStderr ? stderr : stdout);
+
+        if (shouldFlush) {
+            fflush(stdout);   // flush both stdout and stderr
+            fflush(stderr);
+        }
+    }
+}
+#else
+void echoConsole(const std::string&, bool) {
+    // empty
+}
+#endif // _console_h
+
+void endLineConsole(bool isStderr) {
+    putPipe("JBEConsole.println()");
+    echoConsole("\n", isStderr);
+}
+
+void initializeGraphicalConsole() {
+    // ensure that console is initialized only once
+    static bool _initialized = false;
+    if (_initialized) {
+        return;
+    }
+    _initialized = true;
+
+    initializeStanfordCppLibrary();
+
+    // buffer C-style stderr
+    char* stderrBuf = new char[BUFSIZ + 10];
+    setbuf(stderr, stderrBuf);
+
+    // redirect cin/cout/cerr
+    cinout_new_buf = new stanfordcpplib::ConsoleStreambuf();
+    std::cin.rdbuf(cinout_new_buf);
+    std::cout.rdbuf(cinout_new_buf);
+    std::cerr.rdbuf(new stanfordcpplib::ForwardingStreambuf(*cinout_new_buf, /* isStderr */ true));
+    // std::nounitbuf(std::cerr);   // disable buffering after each token
+
+#ifdef _WIN32
+    ShowWindow(GetConsoleWindow(), SW_HIDE);
+#endif // _WIN32
+
+    setConsoleProperties();
+}
+
+void initializeStanfordCppLibrary() {
+    // ensure that library is initialized only once
+    static bool _initialized = false;
+    if (_initialized) {
+        return;
+    }
+    _initialized = true;
+
+#if defined(SPL_CONSOLE_PRINT_EXCEPTIONS)
+    setConsolePrintExceptions(true);
+#endif
+
+    initPipe();
+    getPlatform()->cpplib_setCppLibraryVersion();
+}
+
 /*
  * Sets up console settings like window size, location, exit-on-close, etc.
  * based on compiler options set in the .pro file.
  */
-static void setConsoleProperties() {
+void setConsoleProperties() {
 #if defined(SPL_CONSOLE_FONTSIZE)
     std::string fontStr = std::string("Monospaced-Bold-") + integerToString(SPL_CONSOLE_FONTSIZE);
     setConsoleFont(fontStr);
@@ -3130,10 +2938,6 @@ static void setConsoleProperties() {
     setConsoleEcho(true);
 #endif
 
-#if defined(SPL_CONSOLE_PRINT_EXCEPTIONS)
-    setConsolePrintExceptions(true);
-#endif
-    
 #if defined(SPL_CONSOLE_EXIT_ON_CLOSE)
     setConsoleExitProgramOnClose(true);
 #endif
@@ -3150,11 +2954,12 @@ static void setConsoleProperties() {
     version::ensureProjectVersion();
 #endif
 }
+} // namespace stanfordcpplib
 
-//static void abortAllConsoleIO() {
-//#ifdef _WIN32
-//    CancelIo(wrToJBE);
-//    CancelIo(rdFromJBE);
-//#endif
-//    throw InterruptedIOException();
-//}
+void __initializeStanfordCppLibrary(int argc, char** argv) {
+    if (argc >= 1) {
+        parseArgs(argc, argv);
+        exceptions::setProgramNameForStackTrace(argv[0]);
+    }
+    stanfordcpplib::initializeStanfordCppLibrary();
+}

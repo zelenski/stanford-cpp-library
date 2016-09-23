@@ -1,6 +1,6 @@
 /*
- * File: base64.h
- * --------------
+ * File: call_stack_gcc.cpp
+ * ------------------------
  * Linux/gcc implementation of the call_stack class.
  *
  * @author Marty Stepp, based on code from Fredrik Orderud
@@ -35,10 +35,9 @@
 #include "call_stack.h"
 #include "exceptions.h"
 #include "strlib.h"
-#include "platform.h"
+#include "private/platform.h"
 
 namespace stacktrace {
-static void* fakeCallStackPointer = NULL;
 
 /*
  * Run a sub-process and capture its output.
@@ -89,7 +88,7 @@ int execAndCapture(std::string cmd, std::string& output) {
             NULL,                  // use parent's current directory
             &siStartInfo,          // STARTUPINFO pointer
             &piProcInfo)) {        // receives PROCESS_INFORMATION
-        std::cerr << "CREATE PROCESS FAIL: " << getPlatform()->os_getLastError() << std::endl;
+        std::cerr << "CREATE PROCESS FAIL: " << stanfordcpplib::getPlatform()->os_getLastError() << std::endl;
         std::cerr << cmd << std::endl;
         return 1;   // fail
     }
@@ -207,12 +206,9 @@ int addr2line(void* addr, std::string& line) {
     return addr2line_all(addrs, 1, line);
 }
 
-void* getFakeCallStackPointer() {
+void*& fakeCallStackPointer() {
+    static void* fakeCallStackPointer = NULL;
     return fakeCallStackPointer;
-}
-
-void setFakeCallStackPointer(void* ptr) {
-    fakeCallStackPointer = ptr;
 }
 } // namespace stacktrace
 

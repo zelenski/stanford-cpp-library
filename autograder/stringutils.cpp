@@ -15,9 +15,7 @@
 #include <cctype>
 #include <cmath>
 #include <sstream>
-#include "platform.h"
-
-static Platform *pp = getPlatform();
+#include "private/platform.h"
 
 namespace stringutils {
 int charsDifferent(std::string s1, std::string s2) {
@@ -115,7 +113,7 @@ std::string makeSloppy(std::string s) {
 }
 
 int regexMatchCountWithLines(std::string s, std::string regexp, std::string& linesOut) {
-    return pp->regex_matchCountWithLines(s, regexp, linesOut);
+    return stanfordcpplib::getPlatform()->regex_matchCountWithLines(s, regexp, linesOut);
 }
 
 std::string removeBlankLines(std::string s) {

@@ -9,6 +9,8 @@
  * See BasicGraph.h for documentation of each member.
  *
  * @author Marty Stepp
+ * @version 2016/08/12
+ * - added initializer_list functionality
  * @version 2014/12/04
  * - bug fix: Edge end reference was not properly pointing at finish field
  * @version 2014/11/21

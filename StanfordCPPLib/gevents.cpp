@@ -31,7 +31,7 @@
 #include "gtimer.h"
 #include "gtypes.h"
 #include "map.h"
-#include "platform.h"
+#include "private/platform.h"
 
 /* Implementation of GEvent class */
 
@@ -451,10 +451,9 @@ GMouseEvent waitForClick() {
 }
 
 GEvent waitForEvent(int mask) {
-    return getPlatform()->gevent_waitForEvent(mask);
+    return stanfordcpplib::getPlatform()->gevent_waitForEvent(mask);
 }
 
 GEvent getNextEvent(int mask) {
-    return getPlatform()->gevent_getNextEvent(mask);
+    return stanfordcpplib::getPlatform()->gevent_getNextEvent(mask);
 }
-

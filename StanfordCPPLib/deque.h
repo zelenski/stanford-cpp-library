@@ -530,4 +530,6 @@ int hashCode(const Deque<T>& q) {
     return int(code & hashMask());
 }
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
 #endif

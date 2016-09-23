@@ -11,26 +11,28 @@
  */
 
 #include "gtimer.h"
-#include "platform.h"
+#include "private/platform.h"
 
 /* Implementation of the GTimer class */
 
 GTimer::GTimer(double milliseconds) {
     gtd = new GTimerData();
     gtd->refCount = 1;
-    getPlatform()->gtimer_constructor(*this, milliseconds);
+    stanfordcpplib::getPlatform()->gtimer_constructor(*this, milliseconds);
 }
 
 GTimer::~GTimer() {
-    if (--gtd->refCount == 0) delete gtd;
+    if (--gtd->refCount == 0) {
+        delete gtd;
+    }
 }
 
 void GTimer::start() {
-    getPlatform()->gtimer_start(*this);
+    stanfordcpplib::getPlatform()->gtimer_start(*this);
 }
 
 void GTimer::stop() {
-    getPlatform()->gtimer_stop(*this);
+    stanfordcpplib::getPlatform()->gtimer_stop(*this);
 }
 
 bool GTimer::operator==(GTimer t2) {
@@ -53,7 +55,9 @@ GTimer::GTimer(const GTimer & src) {
 
 GTimer & GTimer::operator=(const GTimer & src) {
     if (this != &src) {
-        if (--gtd->refCount == 0) delete gtd;
+        if (--gtd->refCount == 0) {
+            delete gtd;
+        }
         this->gtd = src.gtd;
         this->gtd->refCount++;
     }

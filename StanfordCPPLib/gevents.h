@@ -771,4 +771,6 @@ public:
     GServerEvent(GEvent e);
 };
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
 #endif

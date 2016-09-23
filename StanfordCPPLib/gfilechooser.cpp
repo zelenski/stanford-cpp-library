@@ -13,12 +13,12 @@
  */
 
 #include "gfilechooser.h"
-#include "platform.h"
+#include "private/platform.h"
 
 std::string GFileChooser::showOpenDialog(std::string currentDir) {
-    return getPlatform()->gfilechooser_showOpenDialog(currentDir);
+    return stanfordcpplib::getPlatform()->gfilechooser_showOpenDialog(currentDir);
 }
 
 std::string GFileChooser::showSaveDialog(std::string currentDir) {
-    return getPlatform()->gfilechooser_showSaveDialog(currentDir);
+    return stanfordcpplib::getPlatform()->gfilechooser_showSaveDialog(currentDir);
 }

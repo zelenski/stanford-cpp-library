@@ -122,7 +122,6 @@ void gbufferedImageTest() {
     cout << "end fromGrid" << endl;
     
     pause(2000);
-    return;
 
     // fill
     img->fill(0xff00ff);  // purple

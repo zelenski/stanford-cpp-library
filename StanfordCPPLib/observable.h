@@ -76,4 +76,6 @@ public:
     virtual void update(Observable* obs, void* arg = NULL) = 0;
 };
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _observable_h

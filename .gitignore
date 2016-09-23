@@ -4,14 +4,15 @@ deploy-*.pl
 Autograder_QtCreatorProject/lib/autograder
 Autograder_QtCreatorProject/lib/StanfordCPPLib
 build/
+build_*/
 JavaBackEnd/eclipseproject/bin/
 JavaBackEnd/eclipseproject/obf/temp/
 JavaBackEnd/eclipseproject/src/stanford/karel/
 Karel/src/CollectNewspaper.java
 Karel/bin/
 Karel/.settings
+local/
 StanfordCPPLib_QtCreatorProject/lib/StanfordCPPLib
 StanfordCPPLib_experimental/
 stanfordcpplib.cpp
 stanfordcpplib.h
-

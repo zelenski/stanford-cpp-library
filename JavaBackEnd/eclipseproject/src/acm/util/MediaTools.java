@@ -1,4 +1,6 @@
 /*
+ * @version: 2016/09/07
+ * - removed file delete() code from saveImage
  * @version: 2015/05/03
  * - support for MP3 and other audio formats via new JavaZoom multimedia library
  * @version: 2015/04/23
@@ -450,10 +452,10 @@ public class MediaTools {
 					+ " format");
 		}
 		if (file.exists()) {
-			if (!file.delete()) {
-				throw new ErrorException("saveImage: Cannot replace "
-						+ filename);
-			}
+//			if (!file.delete()) {
+//				throw new ErrorException("saveImage: Cannot replace "
+//						+ filename);
+//			}
 		}
 		try {
 			OutputStream out = new BufferedOutputStream(new FileOutputStream(

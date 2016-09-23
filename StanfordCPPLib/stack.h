@@ -470,4 +470,6 @@ int hashCode(const Stack<T>& s) {
     return hashCode(s.elements);
 }
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _stack_h

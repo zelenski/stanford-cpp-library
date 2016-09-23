@@ -23,6 +23,7 @@ void graph_printAdjacencyMatrix(BasicGraph& graph);
 void graph_printVertexDegrees(BasicGraph& graph);
 string graph_pathToString(const Vector<Vertex*>& path);
 void graph_printPath(const Vector<Vertex*>& path);
+void BasicGraph_fromString(BasicGraph& obj, string str);
 ostream& operator <<(ostream& out, const Vector<Vertex*>& path);
 ostream& operator <<(ostream& out, const Set<Vertex*>& set);
 

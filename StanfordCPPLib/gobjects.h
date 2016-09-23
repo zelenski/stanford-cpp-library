@@ -1336,4 +1336,6 @@ private:
     bool fillFlag;                  /* Indicates if object is filled */
 };
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _gobjects_h

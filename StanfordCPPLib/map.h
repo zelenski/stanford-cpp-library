@@ -1404,4 +1404,6 @@ const K& randomKey(const Map<K, V>& map) {
     return v[0];
 }
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _map_h

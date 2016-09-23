@@ -24,7 +24,7 @@
 #include "gobjects.h"
 #include "gtypes.h"
 #include "gwindow.h"
-#include "platform.h"
+#include "private/platform.h"
 
 /*
  * Implementation notes: GInteractor class
@@ -37,7 +37,7 @@ GInteractor::GInteractor() {
 
 void GInteractor::setActionCommand(std::string cmd) {
     actionCommand = cmd;
-    getPlatform()->ginteractor_setActionCommand(this, cmd);
+    stanfordcpplib::getPlatform()->ginteractor_setActionCommand(this, cmd);
 }
 
 std::string GInteractor::getActionCommand() {
@@ -49,7 +49,7 @@ void GInteractor::setSize(const GDimension& size) {
 }
 
 void GInteractor::setSize(double width, double height) {
-    getPlatform()->gobject_setSize(this, width, height);
+    stanfordcpplib::getPlatform()->gobject_setSize(this, width, height);
 }
 
 void GInteractor::setBounds(const GRectangle& rect) {
@@ -63,25 +63,25 @@ void GInteractor::setBounds(double x, double y, double width, double height) {
 }
 
 GRectangle GInteractor::getBounds() const {
-    GDimension size = getPlatform()->ginteractor_getSize((GObject *) this);
+    GDimension size = stanfordcpplib::getPlatform()->ginteractor_getSize((GObject *) this);
     return GRectangle(x, y, size.getWidth(), size.getHeight());
 }
 
 bool GInteractor::isEnabled() {
-    return getPlatform()->ginteractor_isEnabled(this);
+    return stanfordcpplib::getPlatform()->ginteractor_isEnabled(this);
 }
 
 void GInteractor::setBackground(int rgb) {
     std::string color = convertRGBToColor(rgb);
-    getPlatform()->ginteractor_setBackground(this, color);
+    stanfordcpplib::getPlatform()->ginteractor_setBackground(this, color);
 }
 
 void GInteractor::setBackground(std::string color) {
-    getPlatform()->ginteractor_setBackground(this, color);
+    stanfordcpplib::getPlatform()->ginteractor_setBackground(this, color);
 }
 
 void GInteractor::setEnabled(bool value) {
-    getPlatform()->ginteractor_setEnabled(this, value);
+    stanfordcpplib::getPlatform()->ginteractor_setEnabled(this, value);
 }
 
 std::string GInteractor::getIcon() const {
@@ -90,11 +90,11 @@ std::string GInteractor::getIcon() const {
 
 void GInteractor::setIcon(std::string filename) {
     this->icon = filename;
-    getPlatform()->ginteractor_setIcon(this, filename);
+    stanfordcpplib::getPlatform()->ginteractor_setIcon(this, filename);
 }
 
 void GInteractor::setTextPosition(SwingConstants horizontal, SwingConstants vertical) {
-    getPlatform()->ginteractor_setTextPosition(this, horizontal, vertical);
+    stanfordcpplib::getPlatform()->ginteractor_setTextPosition(this, horizontal, vertical);
 }
 
 /*
@@ -104,7 +104,7 @@ void GInteractor::setTextPosition(SwingConstants horizontal, SwingConstants vert
 
 GButton::GButton(std::string label) {
     this->label = label;
-    getPlatform()->gbutton_constructor(this, label);
+    stanfordcpplib::getPlatform()->gbutton_constructor(this, label);
 }
 
 std::string GButton::getText() const {
@@ -128,7 +128,7 @@ std::string GButton::toString() const {
 
 GCheckBox::GCheckBox(std::string label) {
     this->label = label;
-    getPlatform()->gcheckbox_constructor(this, label);
+    stanfordcpplib::getPlatform()->gcheckbox_constructor(this, label);
 }
 
 std::string GCheckBox::getText() const {
@@ -136,11 +136,11 @@ std::string GCheckBox::getText() const {
 }
 
 bool GCheckBox::isSelected() {
-    return getPlatform()->gcheckbox_isSelected(this);
+    return stanfordcpplib::getPlatform()->gcheckbox_isSelected(this);
 }
 
 void GCheckBox::setSelected(bool state) {
-    getPlatform()->gcheckbox_setSelected(this, state);
+    stanfordcpplib::getPlatform()->gcheckbox_setSelected(this, state);
 }
 
 std::string GCheckBox::getType() const {
@@ -164,7 +164,7 @@ GRadioButton::GRadioButton(std::string label, std::string group, bool selected) 
         group = "default";
     }
     this->group = group;
-    getPlatform()->gradiobutton_constructor(this, label, group);
+    stanfordcpplib::getPlatform()->gradiobutton_constructor(this, label, group);
     if (selected) {
         setSelected(true);
     }
@@ -175,11 +175,11 @@ std::string GRadioButton::getText() const {
 }
 
 bool GRadioButton::isSelected() {
-    return getPlatform()->gradiobutton_isSelected(this);
+    return stanfordcpplib::getPlatform()->gradiobutton_isSelected(this);
 }
 
 void GRadioButton::setSelected(bool state) {
-    getPlatform()->gradiobutton_setSelected(this, state);
+    stanfordcpplib::getPlatform()->gradiobutton_setSelected(this, state);
 }
 
 std::string GRadioButton::getGroup() const {
@@ -210,23 +210,23 @@ GSlider::GSlider(int min, int max, int value) {
 }
 
 int GSlider::getMajorTickSpacing() const {
-    return getPlatform()->gslider_getMajorTickSpacing(this);
+    return stanfordcpplib::getPlatform()->gslider_getMajorTickSpacing(this);
 }
 
 int GSlider::getMinorTickSpacing() const {
-    return getPlatform()->gslider_getMinorTickSpacing(this);
+    return stanfordcpplib::getPlatform()->gslider_getMinorTickSpacing(this);
 }
 
 bool GSlider::getPaintLabels() const {
-    return getPlatform()->gslider_getPaintLabels(this);
+    return stanfordcpplib::getPlatform()->gslider_getPaintLabels(this);
 }
 
 bool GSlider::getPaintTicks() const {
-    return getPlatform()->gslider_getPaintTicks(this);
+    return stanfordcpplib::getPlatform()->gslider_getPaintTicks(this);
 }
 
 bool GSlider::getSnapToTicks() const {
-    return getPlatform()->gslider_getSnapToTicks(this);
+    return stanfordcpplib::getPlatform()->gslider_getSnapToTicks(this);
 }
 
 std::string GSlider::getType() const {
@@ -234,31 +234,31 @@ std::string GSlider::getType() const {
 }
 
 int GSlider::getValue() {
-    return getPlatform()->gslider_getValue(this);
+    return stanfordcpplib::getPlatform()->gslider_getValue(this);
 }
 
 void GSlider::setMajorTickSpacing(int value) {
-    getPlatform()->gslider_setMajorTickSpacing(this, value);
+    stanfordcpplib::getPlatform()->gslider_setMajorTickSpacing(this, value);
 }
 
 void GSlider::setMinorTickSpacing(int value) {
-    getPlatform()->gslider_setMinorTickSpacing(this, value);
+    stanfordcpplib::getPlatform()->gslider_setMinorTickSpacing(this, value);
 }
 
 void GSlider::setPaintLabels(bool value) {
-    getPlatform()->gslider_setPaintLabels(this, value);
+    stanfordcpplib::getPlatform()->gslider_setPaintLabels(this, value);
 }
 
 void GSlider::setPaintTicks(bool value) {
-    getPlatform()->gslider_setPaintTicks(this, value);
+    stanfordcpplib::getPlatform()->gslider_setPaintTicks(this, value);
 }
 
 void GSlider::setSnapToTicks(bool value) {
-    getPlatform()->gslider_setSnapToTicks(this, value);
+    stanfordcpplib::getPlatform()->gslider_setSnapToTicks(this, value);
 }
 
 void GSlider::setValue(int value) {
-    getPlatform()->gslider_setValue(this, value);
+    stanfordcpplib::getPlatform()->gslider_setValue(this, value);
 }
 
 std::string GSlider::toString() const {
@@ -270,7 +270,7 @@ std::string GSlider::toString() const {
 void GSlider::create(int min, int max, int value) {
     this->min = min;
     this->max = max;
-    getPlatform()->gslider_constructor(this, min, max, value);
+    stanfordcpplib::getPlatform()->gslider_constructor(this, min, max, value);
 }
 
 /*
@@ -279,27 +279,27 @@ void GSlider::create(int min, int max, int value) {
  */
 
 GTextField::GTextField() {
-    getPlatform()->gtextfield_constructor(this, 10);
+    stanfordcpplib::getPlatform()->gtextfield_constructor(this, 10);
 }
 
 GTextField::GTextField(int nChars) {
-    getPlatform()->gtextfield_constructor(this, nChars);
+    stanfordcpplib::getPlatform()->gtextfield_constructor(this, nChars);
 }
 
 std::string GTextField::getText() {
-    return getPlatform()->gtextfield_getText(this);
+    return stanfordcpplib::getPlatform()->gtextfield_getText(this);
 }
 
 bool GTextField::isEditable() const {
-    return getPlatform()->gtextfield_isEditable(this);
+    return stanfordcpplib::getPlatform()->gtextfield_isEditable(this);
 }
 
 void GTextField::setEditable(bool value) {
-    getPlatform()->gtextfield_setEditable(this, value);
+    stanfordcpplib::getPlatform()->gtextfield_setEditable(this, value);
 }
 
 void GTextField::setText(std::string str) {
-    getPlatform()->gtextfield_setText(this, str);
+    stanfordcpplib::getPlatform()->gtextfield_setText(this, str);
 }
 
 std::string GTextField::getType() const {
@@ -318,19 +318,19 @@ std::string GTextField::toString() const {
  */
 
 GChooser::GChooser() {
-    getPlatform()->gchooser_constructor(this);
+    stanfordcpplib::getPlatform()->gchooser_constructor(this);
 }
 
 void GChooser::addItem(std::string item) {
-    getPlatform()->gchooser_addItem(this, item);
+    stanfordcpplib::getPlatform()->gchooser_addItem(this, item);
 }
 
 std::string GChooser::getSelectedItem() {
-    return getPlatform()->gchooser_getSelectedItem(this);
+    return stanfordcpplib::getPlatform()->gchooser_getSelectedItem(this);
 }
 
 void GChooser::setSelectedItem(std::string item) {
-    getPlatform()->gchooser_setSelectedItem(this, item);
+    stanfordcpplib::getPlatform()->gchooser_setSelectedItem(this, item);
 }
 
 std::string GChooser::getType() const {

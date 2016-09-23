@@ -11,7 +11,7 @@
 
 #include "autogradertest.h"
 #include "autograder.h"
-#include "platform.h"
+#include "private/platform.h"
 
 namespace autograder {
 
@@ -71,7 +71,7 @@ std::string AutograderTest::getCategory() const {
 
 bool AutograderTest::shouldRun() {
     if (autograder::isGraphicalUI()) {
-        return getPlatform()->autograderunittest_isChecked(this->name);
+        return stanfordcpplib::getPlatform()->autograderunittest_isChecked(this->name);
     } else {
         return true;
     }

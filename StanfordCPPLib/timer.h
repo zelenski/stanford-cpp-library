@@ -54,4 +54,6 @@ private:
     bool m_isStarted;
 };
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
 #endif // _timer_h

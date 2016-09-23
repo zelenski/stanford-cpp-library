@@ -11,8 +11,8 @@
 #include "server.h"
 #include "filelib.h"
 #include "map.h"
-#include "platform.h"
 #include "strlib.h"
+#include "private/platform.h"
 
 namespace HttpServer {
 static bool _isRunning = false;
@@ -196,7 +196,7 @@ void sendResponse(const GServerEvent& event, const std::string& responseText,
     if (contentTypeActual.empty()) {
         contentTypeActual = getContentType(getUrlExtension(event.getRequestURL()));
     }
-    getPlatform()->httpserver_sendResponse(event.getRequestID(), HTTP_ERROR_OK, contentTypeActual, responseText);
+    stanfordcpplib::getPlatform()->httpserver_sendResponse(event.getRequestID(), HTTP_ERROR_OK, contentTypeActual, responseText);
 }
 
 void sendResponseError(const GServerEvent& event, int httpErrorCode,
@@ -205,7 +205,7 @@ void sendResponseError(const GServerEvent& event, int httpErrorCode,
     if (errorMessageActual.empty()) {
         errorMessageActual = getErrorMessage(httpErrorCode);
     }
-    getPlatform()->httpserver_sendResponse(event.getRequestID(), httpErrorCode, CONTENT_TYPE_ERROR, errorMessageActual);
+    stanfordcpplib::getPlatform()->httpserver_sendResponse(event.getRequestID(), httpErrorCode, CONTENT_TYPE_ERROR, errorMessageActual);
 }
 
 void sendResponseFile(const GServerEvent& event, const std::string& responseFilePath,
@@ -217,13 +217,13 @@ void sendResponseFile(const GServerEvent& event, const std::string& responseFile
     if (contentTypeActual.empty()) {
         contentTypeActual = getContentType(getExtension(responseFilePath));
     }
-    getPlatform()->httpserver_sendResponseFile(event.getRequestID(), contentType, responseFilePath);
+    stanfordcpplib::getPlatform()->httpserver_sendResponseFile(event.getRequestID(), contentType, responseFilePath);
 }
 
 
 void startServer(int port) {
     if (!_isRunning) {
-        getPlatform()->httpserver_start(port);
+        stanfordcpplib::getPlatform()->httpserver_start(port);
         _isRunning = true;
     }
 }
@@ -231,7 +231,7 @@ void startServer(int port) {
 void stopServer() {
     if (_isRunning) {
         _isRunning = false;
-        getPlatform()->httpserver_stop();
+        stanfordcpplib::getPlatform()->httpserver_stop();
     }
 }
 } // namespace HttpServer

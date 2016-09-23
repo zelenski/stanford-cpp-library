@@ -11,32 +11,30 @@
  */
 
 #include "inputpanel.h"
-#include "platform.h"
+#include "private/platform.h"
 #include "xmlutils.h"
-
-static Platform* pp = getPlatform();
 
 namespace inputpanel {
 static bool inputPanelIsLoaded = false;
 
 void addInputButton(const std::string& text, const std::string& input) {
-    pp->autograderinput_addButton(text, input);
+    stanfordcpplib::getPlatform()->autograderinput_addButton(text, input);
 }
 
 void addInputCategory(const std::string& name) {
-    pp->autograderinput_addCategory(name);
+    stanfordcpplib::getPlatform()->autograderinput_addCategory(name);
 }
 
 void removeInputCategory(const std::string& name) {
-    pp->autograderinput_removeCategory(name);
+    stanfordcpplib::getPlatform()->autograderinput_removeCategory(name);
 }
 
 void removeInputButton(const std::string& text) {
-    pp->autograderinput_removeButton(text);
+    stanfordcpplib::getPlatform()->autograderinput_removeButton(text);
 }
 
 void setVisible(bool value) {
-    pp->autograderinput_setVisible(value);
+    stanfordcpplib::getPlatform()->autograderinput_setVisible(value);
 }
 
 bool isLoaded() {
@@ -75,4 +73,3 @@ void load(std::string xmlFilename) {
     }
 }
 } // namespace inputpanel
-

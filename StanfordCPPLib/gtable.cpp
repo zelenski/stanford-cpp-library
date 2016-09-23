@@ -18,7 +18,7 @@
 #include <sstream>
 #include "gevents.h"
 #include "gwindow.h"
-#include "platform.h"
+#include "private/platform.h"
 
 GTable::GTable(int rows, int columns, double x, double y, double width, double height)
         : rows(rows),
@@ -32,7 +32,7 @@ GTable::GTable(int rows, int columns, double x, double y, double width, double h
           editable(true) {
     checkDimensions("constructor", rows, columns);
     checkSize("constructor", width, height);
-    getPlatform()->gtable_constructor(this, rows, columns, x, y, width, height);
+    stanfordcpplib::getPlatform()->gtable_constructor(this, rows, columns, x, y, width, height);
 }
 
 GRectangle GTable::getBounds() const {
@@ -50,22 +50,22 @@ std::string GTable::toString() const {
 }
 
 void GTable::clear() {
-    getPlatform()->gtable_clear(this);
+    stanfordcpplib::getPlatform()->gtable_clear(this);
     // clearSelection();
 }
 
 void GTable::clearSelection() {
-    getPlatform()->gtable_select(this, -1, -1);
+    stanfordcpplib::getPlatform()->gtable_select(this, -1, -1);
 }
 
 std::string GTable::get(int row, int column) const {
     checkIndex("get", row, column);
-    return getPlatform()->gtable_get(this, row, column);
+    return stanfordcpplib::getPlatform()->gtable_get(this, row, column);
 }
 
 double GTable::getColumnWidth(int column) const {
     checkIndex("getColumnWidth", /* row */ 0, column);
-    return getPlatform()->gtable_getColumnWidth(this, column);
+    return stanfordcpplib::getPlatform()->gtable_getColumnWidth(this, column);
 }
 
 std::string GTable::getFont() const {
@@ -77,18 +77,18 @@ GTable::Alignment GTable::getHorizontalAlignment() const {
 }
 
 void GTable::getSelectedCell(int& row, int& column) const {
-    getPlatform()->gtable_getSelection(this, row, column);
+    stanfordcpplib::getPlatform()->gtable_getSelection(this, row, column);
 }
 
 int GTable::getSelectedColumn() const {
     int row, column;
-    getPlatform()->gtable_getSelection(this, row, column);
+    stanfordcpplib::getPlatform()->gtable_getSelection(this, row, column);
     return column;
 }
 
 int GTable::getSelectedRow() const {
     int row, column;
-    getPlatform()->gtable_getSelection(this, row, column);
+    stanfordcpplib::getPlatform()->gtable_getSelection(this, row, column);
     return row;
 }
 
@@ -117,16 +117,16 @@ void GTable::resize(int numRows, int numCols) {
     checkDimensions("resize", numRows, numCols);
     this->rows = numRows;
     this->columns = numCols;
-    getPlatform()->gtable_resize(this, numRows, numCols);
+    stanfordcpplib::getPlatform()->gtable_resize(this, numRows, numCols);
 }
 
 void GTable::select(int row, int column) {
-    getPlatform()->gtable_select(this, row, column);
+    stanfordcpplib::getPlatform()->gtable_select(this, row, column);
 }
 
 void GTable::set(int row, int column, const std::string& text) {
     checkIndex("set", row, column);
-    getPlatform()->gtable_set(this, row, column, text);
+    stanfordcpplib::getPlatform()->gtable_set(this, row, column, text);
 }
 
 void GTable::setColumnWidth(int column, double width) {
@@ -134,24 +134,24 @@ void GTable::setColumnWidth(int column, double width) {
     if (width < 0) {
         error("GTable::setColumnWidth: width cannot be negative");
     }
-    getPlatform()->gtable_setColumnWidth(this, column, (int) width);
+    stanfordcpplib::getPlatform()->gtable_setColumnWidth(this, column, (int) width);
 }
 
 void GTable::setEditable(bool editable) {
     this->editable = editable;
-    getPlatform()->gtable_setEditable(this, editable);
+    stanfordcpplib::getPlatform()->gtable_setEditable(this, editable);
 }
 
 void GTable::setEventEnabled(int type, bool enabled) {
     if (type != TABLE_SELECTED && type != TABLE_UPDATED) {
         error("GTable::setEventEnabled: invalid event type");
     }
-    getPlatform()->gtable_setEventEnabled(this, type, enabled);
+    stanfordcpplib::getPlatform()->gtable_setEventEnabled(this, type, enabled);
 }
 
 void GTable::setFont(const std::string& font) {
     this->font = font;
-    getPlatform()->gtable_setFont(this, font);
+    stanfordcpplib::getPlatform()->gtable_setFont(this, font);
 }
 
 void GTable::setHorizontalAlignment(GTable::Alignment alignment) {
@@ -164,7 +164,7 @@ void GTable::setHorizontalAlignment(GTable::Alignment alignment) {
         alignmentStr = "RIGHT";
     }
     this->alignment = alignment;
-    getPlatform()->gtable_setHorizontalAlignment(this, alignmentStr);
+    stanfordcpplib::getPlatform()->gtable_setHorizontalAlignment(this, alignmentStr);
 }
 
 int GTable::width() const {

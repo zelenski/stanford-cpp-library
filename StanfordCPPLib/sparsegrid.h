@@ -536,7 +536,7 @@ SparseGrid<ValueType>::SparseGrid(std::initializer_list<std::initializer_list<Va
     // copy the data from the initializer list into the Grid
     auto rowItr = list.begin();
     for (int row = 0; row < nRows; row++) {
-        if (rowItr->size() != nCols) {
+        if ((int) rowItr->size() != nCols) {
             error("SparseGrid::constructor: initializer list is not rectangular (must have same # cols in each row)");
         }
         auto colItr = rowItr->begin();
@@ -939,5 +939,7 @@ const T& randomElement(const SparseGrid<T>& grid) {
     int col = randomKey(grid.elements[row]);
     return grid.get(row, col);
 }
+
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _sparsegrid_h

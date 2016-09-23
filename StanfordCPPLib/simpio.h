@@ -117,4 +117,6 @@ bool getYesOrNo(const std::string& prompt = "",
                 const std::string& reprompt = "",
                 const std::string& defaultValue = "");
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _simpio_h

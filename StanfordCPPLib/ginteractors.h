@@ -482,4 +482,6 @@ public:
     virtual std::string toString() const;
 };
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _ginteractors_h

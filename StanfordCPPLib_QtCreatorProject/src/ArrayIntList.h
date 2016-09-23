@@ -4,6 +4,8 @@
  * The list can store only ints for now.
  * See ArrayIntList.cpp for documentation of each member.
  *
+ * @version 2016/08/23
+ * - added initializer_list support to match other lib collections
  * @version 2016/07/10
  * - added removeDuplicates() declaration
  */
@@ -12,6 +14,7 @@
 #define _arrayintlist_h
 
 #include <fstream>
+#include <initializer_list>
 #include <iostream>
 #include <string>
 #include "set.h"
@@ -22,6 +25,7 @@ public:
     // constructor
     ArrayIntList();
     ArrayIntList(int capacity);
+    ArrayIntList(std::initializer_list<int> list);
     ~ArrayIntList();
     
     // member functions (methods)
@@ -45,6 +49,8 @@ public:
     int longestSortedSequence() const;
     bool filter(const Set<int>& set);
     void removeDuplicates();
+
+    ArrayIntList& operator =(const ArrayIntList& src);
 
 private:
     // member variables (fields)

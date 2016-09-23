@@ -1171,4 +1171,6 @@ int hashCode(const Graph<NodeType, ArcType>& graph) {
     return (code & hashMask());
 }
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _graph_h

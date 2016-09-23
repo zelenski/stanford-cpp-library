@@ -35,8 +35,8 @@
 #include "base64.h"
 #include "filelib.h"
 #include "gwindow.h"
-#include "platform.h"
 #include "strlib.h"
+#include "private/platform.h"
 
 #define CHAR_TO_HEX(ch) ((ch >= '0' && ch <= '9') ? (ch - '0') : (ch - 'a' + 10))
 
@@ -187,7 +187,7 @@ GBufferedImage* GBufferedImage::diff(GBufferedImage& image, int diffPixelColor) 
 void GBufferedImage::fill(int rgb) {
     checkColor("fill", rgb);
     m_pixels.fill(rgb);
-    getPlatform()->gbufferedimage_fill(this, rgb);
+    stanfordcpplib::getPlatform()->gbufferedimage_fill(this, rgb);
 }
 
 void GBufferedImage::fill(const std::string& rgb) {
@@ -203,7 +203,7 @@ void GBufferedImage::fillRegion(double x, double y, double width, double height,
             m_pixels[r][c] = rgb;
         }
     }
-    getPlatform()->gbufferedimage_fillRegion(this, x, y, width, height, rgb);
+    stanfordcpplib::getPlatform()->gbufferedimage_fillRegion(this, x, y, width, height, rgb);
 }
 
 void GBufferedImage::fillRegion(double x, double y, double width, double height, const std::string& rgb) {
@@ -241,7 +241,7 @@ void GBufferedImage::fromGrid(const Grid<int>& grid) {
     std::string encoded = Base64::encode(result);
     
     // update the back-end with all of the pretty new pixels
-    getPlatform()->gbufferedimage_updateAllPixels(this, encoded);
+    stanfordcpplib::getPlatform()->gbufferedimage_updateAllPixels(this, encoded);
 }
 
 double GBufferedImage::getHeight() const {
@@ -273,7 +273,7 @@ void GBufferedImage::load(const std::string& filename) {
     }
     
     // read Base64-compressed pixel data from Java back-end
-    std::string result = getPlatform()->gbufferedimage_load(this, filename);
+    std::string result = stanfordcpplib::getPlatform()->gbufferedimage_load(this, filename);
     std::string decoded = Base64::decode(result);
     
     // read width (2-byte) and height (2-byte)
@@ -323,7 +323,7 @@ void GBufferedImage::resize(double width, double height, bool retain) {
     } else {
         // was non-zero
         this->m_pixels.resize((int) this->m_height, (int) this->m_width, retain);
-        getPlatform()->gbufferedimage_resize(this, width, height, retain);
+        stanfordcpplib::getPlatform()->gbufferedimage_resize(this, width, height, retain);
         if (!retain && m_backgroundColor != 0x0) {
             this->m_pixels.fill(m_backgroundColor);
         }
@@ -331,14 +331,14 @@ void GBufferedImage::resize(double width, double height, bool retain) {
 }
 
 void GBufferedImage::save(const std::string& filename) const {
-    getPlatform()->gbufferedimage_save(this, filename);
+    stanfordcpplib::getPlatform()->gbufferedimage_save(this, filename);
 }
 
 void GBufferedImage::setRGB(double x, double y, int rgb) {
     checkIndex("setRGB", x, y);
     checkColor("setRGB", rgb);
     m_pixels[(int) y][(int) x] = rgb;
-    getPlatform()->gbufferedimage_setRGB(this, x, y, rgb);
+    stanfordcpplib::getPlatform()->gbufferedimage_setRGB(this, x, y, rgb);
 }
 
 void GBufferedImage::setRGB(double x, double y, const std::string& rgb) {
@@ -393,7 +393,7 @@ void GBufferedImage::init(double x, double y, double width, double height,
     this->m_height = height;
     if (width > 0 && height > 0) {
         this->m_pixels.resize((int) this->m_height, (int) this->m_width);
-        getPlatform()->gbufferedimage_constructor(this, x, y, width, height, rgb);
+        stanfordcpplib::getPlatform()->gbufferedimage_constructor(this, x, y, width, height, rgb);
     }
 
     if (x != 0 || y != 0) {

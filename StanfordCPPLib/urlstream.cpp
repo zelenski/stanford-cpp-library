@@ -17,8 +17,8 @@
 #include <string>
 #include "error.h"
 #include "filelib.h"
-#include "platform.h"
 #include "strlib.h"
+#include "private/platform.h"
 
 iurlstream::iurlstream() : m_url(""), m_tempFilePath(""), m_lastError(0) {
     // empty
@@ -51,7 +51,7 @@ void iurlstream::open(std::string url) {
     std::string filename = getUrlFilename(url);
     m_tempFilePath = tempDir + getDirectoryPathSeparator() + filename;
     
-    m_lastError = getPlatform()->url_download(url, filename);
+    m_lastError = stanfordcpplib::getPlatform()->url_download(url, filename);
     
     if (m_lastError == ERR_MALFORMED_URL) {
         error("iurlstream::open: malformed URL when downloading " + url + " to " + m_tempFilePath);

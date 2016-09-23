@@ -23,13 +23,16 @@
  *   for better matching against expected output log files
  */
 
+#define __DONT_ENABLE_GRAPHICAL_CONSOLE
 #include "console.h"
+#undef __DONT_ENABLE_GRAPHICAL_CONSOLE
+
 #include <cstdio>
 #include <string>
 #include "error.h"
 #include "exceptions.h"
 #include "gwindow.h"
-#include "platform.h"
+#include "private/platform.h"
 
 static bool consoleClearEnabled = true;
 static bool consoleEcho = false;
@@ -46,7 +49,7 @@ void clearConsole() {
         printf("%s\n", msg.c_str());
 
         // clear the graphical console window
-        getPlatform()->jbeconsole_clear();
+        stanfordcpplib::getPlatform()->jbeconsole_clear();
     } else {
         // don't actually clear the window, just display 'cleared' message on it
         std::cout << msg << std::endl;
@@ -93,7 +96,7 @@ void setConsoleCloseOperation(ConsoleCloseOperation op) {
     if (consoleLocked) { return; }
     consoleCloseOperation = op;
     consoleExitProgramOnClose = op == ConsoleCloseOperation::CONSOLE_EXIT_ON_CLOSE;
-    getPlatform()->jbeconsole_setCloseOperation(op);
+    stanfordcpplib::getPlatform()->jbeconsole_setCloseOperation(op);
 }
 
 void setConsoleEcho(bool echo) {
@@ -104,7 +107,7 @@ void setConsoleEcho(bool echo) {
 void setConsoleErrorColor(const std::string& color) {
     if (consoleLocked) { return; }
     // consoleOutputColor = color;
-    getPlatform()->jbeconsole_setErrorColor(color);
+    stanfordcpplib::getPlatform()->jbeconsole_setErrorColor(color);
 }
 
 void setConsoleEventOnClose(bool eventOnClose) {
@@ -115,29 +118,29 @@ void setConsoleEventOnClose(bool eventOnClose) {
 void setConsoleExitProgramOnClose(bool exitOnClose) {
     if (consoleLocked) { return; }
     consoleExitProgramOnClose = exitOnClose;
-    getPlatform()->jbeconsole_setExitProgramOnClose(exitOnClose);
+    stanfordcpplib::getPlatform()->jbeconsole_setExitProgramOnClose(exitOnClose);
 }
 
 void setConsoleFont(const std::string& font) {
     if (consoleLocked) { return; }
-    getPlatform()->jbeconsole_setFont(font);
+    stanfordcpplib::getPlatform()->jbeconsole_setFont(font);
 }
 
 void setConsoleLocation(int x, int y) {
     if (consoleLocked) { return; }
-    getPlatform()->jbeconsole_setLocation(x, y);
+    stanfordcpplib::getPlatform()->jbeconsole_setLocation(x, y);
 }
 
 void setConsoleLocationSaved(bool value) {
     if (consoleLocked) { return; }
     consoleLocationSaved = value;
-    getPlatform()->jbeconsole_setLocationSaved(value);
+    stanfordcpplib::getPlatform()->jbeconsole_setLocationSaved(value);
 }
 
 void setConsoleOutputColor(const std::string& color) {
     if (consoleLocked) { return; }
     // consoleOutputColor = color;
-    getPlatform()->jbeconsole_setOutputColor(color);
+    stanfordcpplib::getPlatform()->jbeconsole_setOutputColor(color);
 }
 
 void setConsolePrintExceptions(bool printExceptions) {
@@ -151,10 +154,10 @@ void setConsoleSettingsLocked(bool value) {
 
 void setConsoleSize(double width, double height) {
     if (consoleLocked) { return; }
-    getPlatform()->jbeconsole_setSize(width, height);
+    stanfordcpplib::getPlatform()->jbeconsole_setSize(width, height);
 }
 
 void setConsoleWindowTitle(const std::string& title) {
     if (consoleLocked) { return; }
-    getPlatform()->jbeconsole_setTitle(title);
+    stanfordcpplib::getPlatform()->jbeconsole_setTitle(title);
 }

@@ -35,9 +35,9 @@
 #include <imagehlp.h>
 #include "error.h"
 #include "exceptions.h"
-#include "platform.h"
 #include "strlib.h"
 #include <cxxabi.h>
+#include "private/platform.h"
 
 namespace stacktrace {
 
@@ -89,7 +89,7 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
     HANDLE process = GetCurrentProcess();
     HANDLE thread = GetCurrentThread();
 
-    void* fakeStackPtr = stacktrace::getFakeCallStackPointer();
+    void* fakeStackPtr = stacktrace::fakeCallStackPointer();
     if (fakeStackPtr) {
         // set up fake stack for partial trace
         LPEXCEPTION_POINTERS exceptionInfo = (LPEXCEPTION_POINTERS) fakeStackPtr;

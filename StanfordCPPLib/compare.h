@@ -121,4 +121,6 @@ int compareMaps(const MapType& v1, const MapType& v2) {
 }
 } // namespace compare
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
 #endif

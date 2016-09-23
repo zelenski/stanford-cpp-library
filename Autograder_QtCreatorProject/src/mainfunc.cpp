@@ -114,17 +114,17 @@ TIMED_TEST(Crashes, test_exception, TIMEOUT_DEFAULT) {
     assertDiff("a diff", 42, 42);
 }
 
-TIMED_TEST(Crashes, test_sigfpe, TIMEOUT_DEFAULT) {
-    int y = 0 + 0;
-    int x = 1 / y;  // boom
-    assertEquals("a diff", 42, x);
-}
+//TIMED_TEST(Crashes, test_sigfpe, TIMEOUT_DEFAULT) {
+//    int y = 0 + 0;
+//    int x = 1 / y;  // boom
+//    assertEquals("a diff", 42, x);
+//}
 
-TIMED_TEST(Crashes, test_segfault, TIMEOUT_DEFAULT) {
-    int* p = NULL;
-    int x = *p;  // boom
-    assertEquals("a diff", 42, x);
-}
+//TIMED_TEST(Crashes, test_segfault, TIMEOUT_DEFAULT) {
+//    int* p = NULL;
+//    int x = *p;  // boom
+//    assertEquals("a diff", 42, x);
+//}
 
 TEST_CATEGORY(PassFailTestsEnd, "standard pass/fail tests at end");
 

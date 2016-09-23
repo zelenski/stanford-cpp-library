@@ -1096,4 +1096,6 @@ const K& randomKey(const HashMap<K, V>& map) {
     return v[0];
 }
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _hashmap_h

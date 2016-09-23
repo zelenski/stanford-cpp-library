@@ -437,4 +437,6 @@ inline bool readGenericValue(std::istream& is, std::string& value) {
     return readQuotedString(is, value, /* throwOnError */ false);
 }
 
-#endif
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _strlib_h

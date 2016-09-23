@@ -9,6 +9,8 @@
  * cost due to needing to store an extra copy of the keys.
  * 
  * @author Marty Stepp
+ * @version 2016/08/12
+ * - bug fix in operator >>
  * @version 2016/08/04
  * - fixed operator >> to not throw errors
  * @version 2015/10/26
@@ -625,7 +627,7 @@ std::istream& operator >>(std::istream& is,
 #endif
                 return is;
             }
-            map[key] = value;
+            map.put(key, value);
             is >> ch;
             if (ch == '}') {
                 break;
@@ -682,5 +684,7 @@ const K& randomKey(const LinkedHashMap<K, V>& map) {
     static Vector<K> v = map.keys();
     return v[0];
 }
+
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _linkedhashmap_h

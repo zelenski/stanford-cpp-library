@@ -3,6 +3,9 @@
  * ----------------
  * This file implements the strlib.h interface.
  * 
+ * @version 2016/08/03
+ * - modified readQuotedString not to throw error() on parse failures
+ *   (needed to support idiomatic silent-failing >> operators)
  * @version 2015/11/07
  * - fixed bugs in urlDecode (wasn't decoding % sequences properly, oops)
  * @version 2015/10/26

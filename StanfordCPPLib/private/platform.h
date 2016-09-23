@@ -37,10 +37,11 @@
 #include "point.h"
 #include "sound.h"
 
+namespace stanfordcpplib {
 class Platform {
 private:
     Platform();
-    friend Platform *getPlatform();
+    friend Platform* getPlatform();
 
 public:
     virtual ~Platform();
@@ -258,6 +259,22 @@ public:
     int url_download(std::string url, std::string filename);
 };
 
-Platform *getPlatform();
+/* free function to get a reference to the singleton Platform instance */
+Platform* getPlatform();
+
+// functions to interact with the graphical console through the platform
+std::string getLineConsole();
+void initializeGraphicalConsole();
+void initializeStanfordCppLibrary();
+void putConsole(const std::string& str, bool isStderr = false);
+void endLineConsole(bool isStderr = false);
+void echoConsole(const std::string& str, bool isStderr = false);
+void setConsoleProperties();
+void parseArgs(int argc, char** argv);
+
+} // namespace stanfordcpplib
+
+// for internal use
+void __initializeStanfordCppLibrary(int argc, char** argv);
 
 #endif
