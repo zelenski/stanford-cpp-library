@@ -427,7 +427,7 @@ ValueType & PriorityQueue<ValueType>::back() {
     if (count == 0) {
         error("PriorityQueue::back: Attempting to read back of an empty queue");
     }
-    return heap.get(backIndex).value;
+    return heap[backIndex].value;
 }
 
 /*
@@ -572,7 +572,7 @@ ValueType & PriorityQueue<ValueType>::front() {
     if (count == 0) {
         error("PriorityQueue::front: Attempting to read front of an empty queue");
     }
-    return heap.get(0).value;
+    return heap[0].value;
 }
 
 template <typename ValueType>
