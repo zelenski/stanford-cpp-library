@@ -1042,6 +1042,32 @@ void initializerListTest() {
     cout << "DawgLexicon + {} list = " << (dlex + lexlist) << endl;
     cout << "at end,   DawgLexicon = " << dlex << ", size " << dlex.size() << endl;
 
+    LinkedHashMap<string, int> lhmap {{"a", 10}, {"b", 20}, {"c", 30}};
+    cout << "init list LinkedHashMap = " << lhmap << endl;
+    lhmap += {{"d", 40}, {"e", 50}};
+    cout << "after +=, LinkedHashMap = " << lhmap << endl;
+    cout << "LinkedHashMap + {} list = " << (lhmap + pairlist) << endl;
+    cout << "LinkedHashMap - {} list = " << (lhmap - pairlist2) << endl;
+    cout << "LinkedHashMap * {} list = " << (lhmap * pairlist2) << endl;
+    lhmap -= {{"b", 20}, {"e", 50}, {"a", 999}};
+    cout << "LinkedHashMap -={} list = " << lhmap << endl;
+    lhmap *= {{"z", 0}, {"a", 10}, {"d", 40}, {"x", 99}};
+    cout << "LinkedHashMap *={} list = " << lhmap << endl;
+    cout << "at end,   LinkedHashMap = " << lhmap << endl;
+
+    LinkedHashSet<int> lhset {10, 20, 30};
+    cout << "init list LinkedHashSet = " << lhset << endl;
+    lhset += {40, 50};
+    cout << "after +=, LinkedHashSet = " << lhset << endl;
+    cout << "LinkedHashSet + {} list = " << (lhset + list) << endl;
+    cout << "LinkedHashSet - {} list = " << (lhset - list2) << endl;
+    cout << "LinkedHashSet * {} list = " << (lhset * list2) << endl;
+    lhset -= {20, 50};
+    cout << "LinkedHashSet -={} list = " << lhset << endl;
+    lhset *= {0, 10, 40, 99};
+    cout << "LinkedHashSet *={} list = " << lhset << endl;
+    cout << "at end,   LinkedHashSet = " << lhset << endl;
+
     LinkedList<int> llist {10, 20, 30};
     cout << "init list LinkedList = " << llist << endl;
     llist += {40, 50};
@@ -1071,6 +1097,9 @@ void initializerListTest() {
 
     Queue<int> queue {10, 20, 30};
     cout << "init list Queue = " << queue << endl;
+
+    Deque<int> deque {10, 20, 30};
+    cout << "init list Deque = " << deque << endl;
 
     Set<int> set {10, 20, 30};
     cout << "init list Set = " << set << endl;

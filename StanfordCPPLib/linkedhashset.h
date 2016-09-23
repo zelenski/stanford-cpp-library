@@ -5,6 +5,12 @@
  * implements an efficient abstraction for storing sets of values.
  * 
  * @author Marty Stepp
+ * @version 2016/09/22
+ * - added containsAll, isSupersetOf methods
+ * - added support for std initializer_list usage, such as {1, 2, 3}
+ *   in constructor, addAll, containsAll, isSubsetOf, isSupersetOf, removeAll,
+ *   retainAll, and operators +, +=, -, -=, *, *=
+ * - bug fix in hashCode function
  * @version 2016/08/04
  * - fixed operator >> to not throw errors
  * @version 2015/10/26
@@ -15,6 +21,7 @@
 #ifndef _linkedhashset_h
 #define _linkedhashset_h
 
+#include <initializer_list>
 #include <iostream>
 #include "error.h"
 #include "hashcode.h"
@@ -38,6 +45,16 @@ public:
      * Initializes an empty set of the specified element type.
      */
     LinkedHashSet();
+
+    /*
+     * Constructor: LinkedHashSet
+     * Usage: LinkedHashSet<ValueType> set {1, 2, 3};
+     * ----------------------------------------------
+     * Initializes a new set that stores the given elements.
+     * Note that the elements are stored in unpredictable order internally and not
+     * necessarily the order in which they are written in the initializer list.
+     */
+    LinkedHashSet(std::initializer_list<ValueType> list);
 
     /*
      * Destructor: ~LinkedHashSet
@@ -65,7 +82,8 @@ public:
      * Identical in behavior to the += operator.
      */
     LinkedHashSet<ValueType>& addAll(const LinkedHashSet<ValueType>& set);
-    
+    LinkedHashSet<ValueType>& addAll(std::initializer_list<ValueType> list);
+
     /*
      * Method: clear
      * Usage: set.clear();
@@ -81,7 +99,19 @@ public:
      * Returns <code>true</code> if the specified value is in this set.
      */
     bool contains(const ValueType& value) const;
-    
+
+    /*
+     * Method: containsAll
+     * Usage: if (set.containsAll(set2)) ...
+     * -------------------------------------
+     * Returns <code>true</code> if every value from the given other set
+     * is also found in this set.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * Equivalent in behavior to isSupersetOf.
+     */
+    bool containsAll(const LinkedHashSet<ValueType>& set2) const;
+    bool containsAll(std::initializer_list<ValueType> list) const;
+
     /*
      * Method: equals
      * Usage: if (set.equals(set2)) ...
@@ -128,7 +158,22 @@ public:
      * contained in <code>set2</code>.
      */
     bool isSubsetOf(const LinkedHashSet& set2) const;
-    
+    bool isSubsetOf(std::initializer_list<ValueType> list) const;
+
+    /*
+     * Method: isSupersetOf
+     * Usage: if (set.isSupersetOf(set2)) ...
+     * --------------------------------------
+     * Implements the superset relation on sets.  It returns
+     * <code>true</code> if every element of this set is
+     * contained in <code>set2</code>.
+     * Note that this will be true if the sets are equal.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * Equivalent in behavior to containsAll.
+     */
+    bool isSupersetOf(const LinkedHashSet& set2) const;
+    bool isSupersetOf(std::initializer_list<ValueType> list) const;
+
     /*
      * Method: mapAll
      * Usage: set.mapAll(fn);
@@ -162,7 +207,8 @@ public:
      * Identical in behavior to the -= operator.
      */
     LinkedHashSet<ValueType>& removeAll(const LinkedHashSet<ValueType>& set);
-    
+    LinkedHashSet<ValueType>& removeAll(std::initializer_list<ValueType> list);
+
     /*
      * Method: retainAll
      * Usage: set.retainAll(set2);
@@ -172,6 +218,7 @@ public:
      * Identical in behavior to the *= operator.
      */
     LinkedHashSet<ValueType>& retainAll(const LinkedHashSet<ValueType>& set);
+    LinkedHashSet<ValueType>& retainAll(std::initializer_list<ValueType> list);
 
     /*
      * Method: size
@@ -218,6 +265,7 @@ public:
      * case the operator returns a new set formed by adding that element.
      */
     LinkedHashSet operator +(const LinkedHashSet& set2) const;
+    LinkedHashSet operator +(std::initializer_list<ValueType> list) const;
     LinkedHashSet operator +(const ValueType& element) const;
 
     /*
@@ -228,6 +276,7 @@ public:
      * which is the set of all elements that appear in both.
      */
     LinkedHashSet operator *(const LinkedHashSet& set2) const;
+    LinkedHashSet operator *(std::initializer_list<ValueType> list) const;
 
     /*
      * Operator: -
@@ -241,6 +290,7 @@ public:
      * set formed by removing that element.
      */
     LinkedHashSet operator -(const LinkedHashSet& set2) const;
+    LinkedHashSet operator -(std::initializer_list<ValueType> list) const;
     LinkedHashSet operator -(const ValueType& element) const;
 
     /*
@@ -259,6 +309,7 @@ public:
      *</pre>
      */
     LinkedHashSet& operator +=(const LinkedHashSet& set2);
+    LinkedHashSet& operator +=(std::initializer_list<ValueType> list);
     LinkedHashSet& operator +=(const ValueType& value);
 
     /*
@@ -269,6 +320,7 @@ public:
      * <code>set2</code>.
      */
     LinkedHashSet& operator *=(const LinkedHashSet& set2);
+    LinkedHashSet& operator *=(std::initializer_list<ValueType> list);
 
     /*
      * Operator: -=
@@ -289,6 +341,7 @@ public:
      * <code>digits</code>.
      */
     LinkedHashSet& operator -=(const LinkedHashSet& set2);
+    LinkedHashSet& operator -=(std::initializer_list<ValueType> list);
     LinkedHashSet& operator -=(const ValueType& value);
 
     /*
@@ -400,6 +453,12 @@ LinkedHashSet<ValueType>::LinkedHashSet() : removeFlag(false) {
 }
 
 template <typename ValueType>
+LinkedHashSet<ValueType>::LinkedHashSet(std::initializer_list<ValueType> list)
+        : removeFlag(false) {
+    addAll(list);
+}
+
+template <typename ValueType>
 LinkedHashSet<ValueType>::~LinkedHashSet() {
     /* Empty */
 }
@@ -418,6 +477,14 @@ LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::addAll(const LinkedHashSet& 
 }
 
 template <typename ValueType>
+LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::addAll(std::initializer_list<ValueType> list) {
+    for (const ValueType& value : list) {
+        this->add(value);
+    }
+    return *this;
+}
+
+template <typename ValueType>
 void LinkedHashSet<ValueType>::clear() {
     map.clear();
 }
@@ -425,6 +492,26 @@ void LinkedHashSet<ValueType>::clear() {
 template <typename ValueType>
 bool LinkedHashSet<ValueType>::contains(const ValueType& value) const {
     return map.containsKey(value);
+}
+
+template <typename ValueType>
+bool LinkedHashSet<ValueType>::containsAll(const LinkedHashSet<ValueType>& set2) const {
+    for (const ValueType& value : set2) {
+        if (!contains(value)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+template <typename ValueType>
+bool LinkedHashSet<ValueType>::containsAll(std::initializer_list<ValueType> list) const {
+    for (const ValueType& value : list) {
+        if (!contains(value)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 template <typename ValueType>
@@ -473,6 +560,22 @@ bool LinkedHashSet<ValueType>::isSubsetOf(const LinkedHashSet& set2) const {
 }
 
 template <typename ValueType>
+bool LinkedHashSet<ValueType>::isSubsetOf(std::initializer_list<ValueType> list) const {
+    LinkedHashSet<ValueType> set2(list);
+    return isSubsetOf(set2);
+}
+
+template <typename ValueType>
+bool LinkedHashSet<ValueType>::isSupersetOf(const LinkedHashSet& set2) const {
+    return containsAll(set2);
+}
+
+template <typename ValueType>
+bool LinkedHashSet<ValueType>::isSupersetOf(std::initializer_list<ValueType> list) const {
+    return containsAll(list);
+}
+
+template <typename ValueType>
 void LinkedHashSet<ValueType>::mapAll(void (*fn)(ValueType)) const {
     map.mapAll(fn);
 }
@@ -496,13 +599,21 @@ void LinkedHashSet<ValueType>::remove(const ValueType& value) {
 template <typename ValueType>
 LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::removeAll(const LinkedHashSet& set2) {
     Vector<ValueType> toRemove;
-    for (ValueType value : *this) {
+    for (const ValueType& value : *this) {
         if (set2.map.containsKey(value)) {
             toRemove.add(value);
         }
     }
-    for (ValueType value : toRemove) {
-        this->remove(value);
+    for (const ValueType& value : toRemove) {
+        remove(value);
+    }
+    return *this;
+}
+
+template <typename ValueType>
+LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::removeAll(std::initializer_list<ValueType> list) {
+    for (const ValueType& value : list) {
+        remove(value);
     }
     return *this;
 }
@@ -510,15 +621,21 @@ LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::removeAll(const LinkedHashSe
 template <typename ValueType>
 LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::retainAll(const LinkedHashSet& set2) {
     Vector<ValueType> toRemove;
-    for (ValueType value : *this) {
+    for (const ValueType& value : *this) {
         if (!set2.map.containsKey(value)) {
             toRemove.add(value);
         }
     }
-    for (ValueType value : toRemove) {
-        this->remove(value);
+    for (const ValueType& value : toRemove) {
+        remove(value);
     }
     return *this;
+}
+
+template <typename ValueType>
+LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::retainAll(std::initializer_list<ValueType> list) {
+    LinkedHashSet<ValueType> set2(list);
+    return retainAll(set2);
 }
 
 template <typename ValueType>
@@ -557,8 +674,14 @@ LinkedHashSet<ValueType> LinkedHashSet<ValueType>::operator +(const LinkedHashSe
 }
 
 template <typename ValueType>
-LinkedHashSet<ValueType>
-LinkedHashSet<ValueType>::operator +(const ValueType& element) const {
+LinkedHashSet<ValueType> LinkedHashSet<ValueType>::operator +(std::initializer_list<ValueType> list) const {
+    LinkedHashSet<ValueType> set = *this;
+    set.addAll(list);
+    return set;
+}
+
+template <typename ValueType>
+LinkedHashSet<ValueType> LinkedHashSet<ValueType>::operator +(const ValueType& element) const {
     LinkedHashSet<ValueType> set = *this;
     set.add(element);
     return set;
@@ -571,14 +694,25 @@ LinkedHashSet<ValueType> LinkedHashSet<ValueType>::operator *(const LinkedHashSe
 }
 
 template <typename ValueType>
+LinkedHashSet<ValueType> LinkedHashSet<ValueType>::operator *(std::initializer_list<ValueType> list) const {
+    LinkedHashSet<ValueType> set = *this;
+    return set.retainAll(list);
+}
+
+template <typename ValueType>
 LinkedHashSet<ValueType> LinkedHashSet<ValueType>::operator -(const LinkedHashSet& set2) const {
     LinkedHashSet<ValueType> set = *this;
     return set.removeAll(set2);
 }
 
 template <typename ValueType>
-LinkedHashSet<ValueType>
-LinkedHashSet<ValueType>::operator -(const ValueType& element) const {
+LinkedHashSet<ValueType> LinkedHashSet<ValueType>::operator -(std::initializer_list<ValueType> list) const {
+    LinkedHashSet<ValueType> set = *this;
+    return set.removeAll(list);
+}
+
+template <typename ValueType>
+LinkedHashSet<ValueType> LinkedHashSet<ValueType>::operator -(const ValueType& element) const {
     LinkedHashSet<ValueType> set = *this;
     set.remove(element);
     return set;
@@ -587,6 +721,11 @@ LinkedHashSet<ValueType>::operator -(const ValueType& element) const {
 template <typename ValueType>
 LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator +=(const LinkedHashSet& set2) {
     return addAll(set2);
+}
+
+template <typename ValueType>
+LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator +=(std::initializer_list<ValueType> list) {
+    return addAll(list);
 }
 
 template <typename ValueType>
@@ -602,8 +741,18 @@ LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator *=(const LinkedHash
 }
 
 template <typename ValueType>
+LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator *=(std::initializer_list<ValueType> list) {
+    return retainAll(list);
+}
+
+template <typename ValueType>
 LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator -=(const LinkedHashSet& set2) {
     return removeAll(set2);
+}
+
+template <typename ValueType>
+LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator -=(std::initializer_list<ValueType> list) {
+    return removeAll(list);
 }
 
 template <typename ValueType>

@@ -5,6 +5,8 @@
  * in which values can be added and removed from the front or back.
  * It combines much of the functionality of a stack and a queue.
  * 
+ * @version 2016/09/22
+ * - added constructor support for std initializer_list usage, such as {1, 2, 3}
  * @version 2016/08/04
  * - fixed operator >> to not throw errors
  * @version 2015/07/05
@@ -18,6 +20,7 @@
 #define _deque_h
 
 #include <deque>
+#include <initializer_list>
 #include "compare.h"
 #include "error.h"
 #include "hashcode.h"
@@ -41,6 +44,14 @@ public:
      * Initializes a new empty deque.
      */
     Deque();
+
+    /*
+     * Constructor: Deque
+     * Usage: Deque<ValueType> queue {1, 2, 3};
+     * ----------------------------------------
+     * Initializes a new deque that stores the given elements from front-back.
+     */
+    Deque(std::initializer_list<ValueType> list);
 
     /*
      * Destructor: ~Deque
@@ -280,6 +291,14 @@ Deque<ValueType>::Deque() {
 template <typename ValueType>
 Deque<ValueType>::~Deque() {
     // empty
+}
+
+template <typename ValueType>
+Deque<ValueType>::Deque(std::initializer_list<ValueType> list) {
+    clear();
+    for (const ValueType& value : list) {
+        add(value);
+    }
 }
 
 template <typename ValueType>

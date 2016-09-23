@@ -26,6 +26,7 @@
 #define _queue_h
 
 #include <deque>
+#include <initializer_list>
 #include <queue>
 #include "error.h"
 #include "hashcode.h"

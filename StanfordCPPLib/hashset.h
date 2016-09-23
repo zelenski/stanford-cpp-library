@@ -472,7 +472,8 @@ HashSet<ValueType>::HashSet() : removeFlag(false) {
 }
 
 template <typename ValueType>
-HashSet<ValueType>::HashSet(std::initializer_list<ValueType> list) {
+HashSet<ValueType>::HashSet(std::initializer_list<ValueType> list)
+        : removeFlag(false) {
     addAll(list);
 }
 
@@ -699,8 +700,7 @@ HashSet<ValueType> HashSet<ValueType>::operator +(std::initializer_list<ValueTyp
 }
 
 template <typename ValueType>
-HashSet<ValueType>
-HashSet<ValueType>::operator +(const ValueType& element) const {
+HashSet<ValueType> HashSet<ValueType>::operator +(const ValueType& element) const {
     HashSet<ValueType> set = *this;
     set.add(element);
     return set;
@@ -731,8 +731,7 @@ HashSet<ValueType> HashSet<ValueType>::operator -(std::initializer_list<ValueTyp
 }
 
 template <typename ValueType>
-HashSet<ValueType>
-HashSet<ValueType>::operator -(const ValueType& element) const {
+HashSet<ValueType> HashSet<ValueType>::operator -(const ValueType& element) const {
     HashSet<ValueType> set = *this;
     set.remove(element);
     return set;
