@@ -5,6 +5,8 @@
  * in which values can be added and removed from the front or back.
  * It combines much of the functionality of a stack and a queue.
  * 
+ * @version 2016/09/24
+ * - refactored to use collections.h utility functions
  * @version 2016/09/22
  * - added constructor support for std initializer_list usage, such as {1, 2, 3}
  * @version 2016/08/04
@@ -21,7 +23,7 @@
 
 #include <deque>
 #include <initializer_list>
-#include "compare.h"
+#include "collections.h"
 #include "error.h"
 #include "hashcode.h"
 
@@ -209,7 +211,7 @@ public:
     /**********************************************************************/
 
     template <typename Collection>
-    friend int compare::compare(const Collection& pq1, const Collection& pq2);
+    friend int stanfordcpplib::collections::compare(const Collection& pq1, const Collection& pq2);
     
     template <typename T>
     friend int hashCode(const Deque<T>& s);
@@ -221,6 +223,7 @@ private:
     /* Instance variables */
     std::deque<ValueType> elements;
 
+public:
     /*
      * Iterator support
      * ----------------
@@ -464,76 +467,33 @@ bool Deque<ValueType>::operator !=(const Deque& deque2) const {
 
 template <typename ValueType>
 bool Deque<ValueType>::operator <(const Deque& deque2) const {
-    return compare::compare(*this, deque2) < 0;
+    return stanfordcpplib::collections::compare(*this, deque2) < 0;
 }
 
 template <typename ValueType>
 bool Deque<ValueType>::operator <=(const Deque& deque2) const {
-    return compare::compare(*this, deque2) <= 0;
+    return stanfordcpplib::collections::compare(*this, deque2) <= 0;
 }
 
 template <typename ValueType>
 bool Deque<ValueType>::operator >(const Deque& deque2) const {
-    return compare::compare(*this, deque2) > 0;
+    return stanfordcpplib::collections::compare(*this, deque2) > 0;
 }
 
 template <typename ValueType>
 bool Deque<ValueType>::operator >=(const Deque& deque2) const {
-    return compare::compare(*this, deque2) >= 0;
+    return stanfordcpplib::collections::compare(*this, deque2) >= 0;
 }
 
 template <typename ValueType>
 std::ostream& operator <<(std::ostream& os, const Deque<ValueType>& deque) {
-    os << "{";
-    int i = 0;
-    for (ValueType element : deque) {
-        if (i > 0) {
-            os << ", ";
-        }
-        i++;
-        writeGenericValue(os, element, /* forceQuotes */ true);
-    }
-    return os << "}";
+    return stanfordcpplib::collections::writeCollection(os, deque);
 }
 
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, Deque<ValueType>& deque) {
-    char ch;
-    is >> ch;
-    if (ch != '{') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error("Deque::operator >>: Missing {");
-#endif
-        is.setstate(std::ios_base::failbit);
-        return is;
-    }
-    deque.clear();
-    is >> ch;
-    if (ch != '}') {
-        is.unget();
-        while (true) {
-            ValueType value;
-            if (!readGenericValue(is, value)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error("Deque::operator >>: parse error");
-#endif
-                return is;
-            }
-            deque.enqueue(value);
-            is >> ch;
-            if (ch == '}') {
-                break;
-            }
-            if (ch != ',') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error(std::string("Deque::operator >>: Unexpected character ") + ch);
-#endif
-                is.setstate(std::ios_base::failbit);
-                return is;
-            }
-        }
-    }
-    return is;
+    ValueType element;
+    return stanfordcpplib::collections::readCollection(is, deque, element, /* descriptor */ "Deque::operator >>");
 }
 
 /*
@@ -541,12 +501,8 @@ std::istream& operator >>(std::istream& is, Deque<ValueType>& deque) {
  * Requires the element type in the deque to have a hashCode function.
  */
 template <typename T>
-int hashCode(const Deque<T>& q) {
-    int code = hashSeed();
-    for (T element : q) {
-        code = hashMultiplier() * code + hashCode(element);
-    }
-    return int(code & hashMask());
+int hashCode(const Deque<T>& deq) {
+    return stanfordcpplib::collections::hashCodeCollection(deq);
 }
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

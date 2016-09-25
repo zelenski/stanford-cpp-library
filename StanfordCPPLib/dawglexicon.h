@@ -4,6 +4,8 @@
  * This file exports the <code>DawgLexicon</code> class, which is a
  * compact structure for storing a list of words.
  * 
+ * @version 2016/09/24
+ * - refactored to use collections.h utility functions
  * @version 2016/08/11
  * - added methods addAll, containsAll,
  *   operators +, +=, *, *= to better match Set/HashSet
@@ -329,6 +331,10 @@ public:
     DawgLexicon& operator +=(const DawgLexicon& lex2);
     DawgLexicon& operator +=(std::initializer_list<std::string> list);
     DawgLexicon& operator +=(const std::string& word);
+
+    // Implementation note: DawgLexicon does not support -, -=, *, and *=
+    // operators like the standard Lexicon.  Because of its binary internal
+    // format, it is non-trivial to support removal from a DawgLexicon.
 
     /*
      * Additional DawgLexicon operations

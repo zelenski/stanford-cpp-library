@@ -4,6 +4,8 @@
  * This file exports the <code>Vector</code> class, which provides an
  * efficient, safe, convenient replacement for the array type in C++.
  *
+ * @version 2016/09/24
+ * - refactored to use collections.h utility functions
  * @version 2016/08/12
  * - bug fix for constructor based on initializer list
  * @version 2016/08/10
@@ -38,7 +40,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "compare.h"
+#include "collections.h"
 #include "error.h"
 #include "hashcode.h"
 #include "random.h"
@@ -641,18 +643,7 @@ void Vector<ValueType>::ensureCapacity(int cap) {
 
 template <typename ValueType>
 bool Vector<ValueType>::equals(const Vector<ValueType>& v) const {
-    if (this == &v) {
-        return true;
-    }
-    if (size() != v.size()) {
-        return false;
-    }
-    for (int i = 0, sz = size(); i < sz; i++) {
-        if (elements[i] != v.elements[i]) {
-            return false;
-        }
-    }
-    return true;
+    return stanfordcpplib::collections::equals(*this, v);
 }
 
 /*
@@ -846,22 +837,22 @@ bool Vector<ValueType>::operator !=(const Vector& v2) const {
 
 template <typename ValueType>
 bool Vector<ValueType>::operator <(const Vector& v2) const {
-    return compare::compare(*this, v2) < 0;
+    return stanfordcpplib::collections::compare(*this, v2) < 0;
 }
 
 template <typename ValueType>
 bool Vector<ValueType>::operator <=(const Vector& v2) const {
-    return compare::compare(*this, v2) <= 0;
+    return stanfordcpplib::collections::compare(*this, v2) <= 0;
 }
 
 template <typename ValueType>
 bool Vector<ValueType>::operator >(const Vector& v2) const {
-    return compare::compare(*this, v2) > 0;
+    return stanfordcpplib::collections::compare(*this, v2) > 0;
 }
 
 template <typename ValueType>
 bool Vector<ValueType>::operator >=(const Vector& v2) const {
-    return compare::compare(*this, v2) >= 0;
+    return stanfordcpplib::collections::compare(*this, v2) >= 0;
 }
 
 template <typename ValueType>
@@ -927,56 +918,13 @@ Vector<ValueType>& Vector<ValueType>::operator ,(const ValueType& value) {
  */
 template <typename ValueType>
 std::ostream& operator <<(std::ostream& os, const Vector<ValueType>& vec) {
-    os << "{";
-    int len = vec.size();
-    for (int i = 0; i < len; i++) {
-        if (i > 0) {
-            os << ", ";
-        }
-        writeGenericValue(os, vec[i], true);
-    }
-    return os << "}";
+    return stanfordcpplib::collections::writeCollection(os, vec);
 }
 
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, Vector<ValueType>& vec) {
-    char ch = '\0';
-    is >> ch;
-    if (ch != '{') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error("Vector::operator >>: Missing {");
-#endif
-        is.setstate(std::ios_base::failbit);
-        return is;
-    }
-    vec.clear();
-    is >> ch;
-    if (ch != '}') {
-        is.unget();
-        while (true) {
-            ValueType value;
-            if (!readGenericValue(is, value)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error("Vector::operator >>: parse error");
-#endif
-                return is;
-            }
-            vec += value;
-            if (!(is >> ch)) {
-                break;
-            }
-            if (ch == '}') {
-                break;
-            } else if (ch != ',') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error(std::string("Vector::operator >>: Unexpected character ") + ch);
-#endif
-                is.setstate(std::ios_base::failbit);
-                return is;
-            }
-        }
-    }
-    return is;
+    ValueType element;
+    return stanfordcpplib::collections::readCollection(is, vec, element, /* descriptor */ "Vector::operator >>");
 }
 
 /*
@@ -984,12 +932,8 @@ std::istream& operator >>(std::istream& is, Vector<ValueType>& vec) {
  * Requires the element type in the Vector to have a hashCode function.
  */
 template <typename ValueType>
-int hashCode(const Vector<ValueType>& v) {
-    int code = hashSeed();
-    for (ValueType element : v) {
-        code = hashMultiplier() * code + hashCode(element);
-    }
-    return (code & hashMask());
+int hashCode(const Vector<ValueType>& vec) {
+    return stanfordcpplib::collections::hashCodeCollection(vec);
 }
 
 /*
@@ -1000,12 +944,8 @@ int hashCode(const Vector<ValueType>& v) {
  * Throws an error if the vector is empty.
  */
 template <typename T>
-const T& randomElement(const Vector<T>& v) {
-    if (v.isEmpty()) {
-        error("randomElement: empty Vector was passed");
-    }
-    int index = randomInteger(0, v.size() - 1);
-    return v[index];
+const T& randomElement(const Vector<T>& vec) {
+    return stanfordcpplib::collections::randomElement(vec);
 }
 
 /*

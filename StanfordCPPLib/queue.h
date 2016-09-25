@@ -5,6 +5,11 @@
  * in which values are ordinarily processed in a first-in/first-out
  * (FIFO) order.
  * 
+ * @version 2016/09/24
+ * - refactored to use collections.h utility functions
+ * - added iterators begin(), end()
+ * @version 2016/09/22
+ * - optimized equals, ==, != to avoid deep-copy
  * @version 2016/08/10
  * - added constructor support for std initializer_list usage, such as {1, 2, 3}
  * @version 2016/08/04
@@ -27,7 +32,9 @@
 
 #include <deque>
 #include <initializer_list>
+#include <iterator>
 #include <queue>
+#include "collections.h"
 #include "error.h"
 #include "hashcode.h"
 #include "vector.h"
@@ -241,6 +248,66 @@ private:
     /* Private functions */
     void expandRingBufferCapacity();
     int queueCompare(const Queue& queue2) const;
+
+    /*
+     * Iterator support
+     * ----------------
+     * The classes in the StanfordCPPLib collection implement input
+     * iterators so that they work symmetrically with respect to the
+     * corresponding STL classes.
+     */
+    class iterator : public std::iterator<std::input_iterator_tag, ValueType> {
+    public:
+        iterator(const Queue* gp, int index) {
+            this->gp = gp;
+            this->index = index;
+        }
+
+        iterator(const iterator& it) {
+            this->gp = it.gp;
+            this->index = it.index;
+        }
+
+        iterator& operator ++() {
+            index = (index + 1) % gp->capacity;
+            return *this;
+        }
+
+        iterator operator ++(int) {
+            iterator copy(*this);
+            operator++();
+            return copy;
+        }
+
+        bool operator ==(const iterator& rhs) {
+            return gp == rhs.gp && index == rhs.index;
+        }
+
+        bool operator !=(const iterator& rhs) {
+            return !(*this == rhs);
+        }
+
+        const ValueType& operator *() {
+            return gp->ringBuffer[index];
+        }
+
+        ValueType* operator ->() {
+            return &gp->ringBuffer[index];
+        }
+
+    private:
+        const Queue* gp;
+        int index;
+    };
+
+public:
+    iterator begin() const {
+        return iterator(this, /* index */ head);
+    }
+
+    iterator end() const {
+        return iterator(this, /* index */ tail);
+    }
 };
 
 /*
@@ -343,20 +410,7 @@ void Queue<ValueType>::enqueue(const ValueType& value) {
 
 template <typename ValueType>
 bool Queue<ValueType>::equals(const Queue<ValueType>& queue2) const {
-    if (this == &queue2) {
-        return true;
-    }
-    if (size() != queue2.size()) {
-        return false;
-    }
-    Queue<ValueType> copy1 = *this;
-    Queue<ValueType> copy2 = queue2;
-    while (!copy1.isEmpty() && !copy2.isEmpty()) {
-        if (!(copy1.dequeue() == copy2.dequeue())) {
-            return false;
-        }
-    }
-    return copy1.isEmpty() == copy2.isEmpty();
+    return stanfordcpplib::collections::equals(*this, queue2);
 }
 
 template <typename ValueType>
@@ -441,7 +495,7 @@ void Queue<ValueType>::expandRingBufferCapacity() {
 
 template <typename ValueType>
 int Queue<ValueType>::queueCompare(const Queue& queue2) const {
-    if (*this == queue2) {
+    if (this == &queue2) {
         return 0;
     }
     
@@ -466,7 +520,7 @@ int Queue<ValueType>::queueCompare(const Queue& queue2) const {
 
 template <typename ValueType>
 bool Queue<ValueType>::operator ==(const Queue& queue2) const {
-	return equals(queue2);
+    return equals(queue2);
 }
 
 template <typename ValueType>
@@ -510,42 +564,8 @@ std::ostream& operator <<(std::ostream& os, const Queue<ValueType>& queue) {
 
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, Queue<ValueType>& queue) {
-    char ch = '\0';
-    is >> ch;
-    if (ch != '{') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error("Queue::operator >>: Missing {");
-#endif
-        is.setstate(std::ios_base::failbit);
-        return is;
-    }
-    queue.clear();
-    is >> ch;
-    if (ch != '}') {
-        is.unget();
-        while (true) {
-            ValueType value;
-            if (!readGenericValue(is, value)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error("Queue::operator >>: parse error");
-#endif
-                return is;
-            }
-            queue.enqueue(value);
-            is >> ch;
-            if (ch == '}') {
-                break;
-            }
-            if (ch != ',') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error(std::string("Queue::operator >>: Unexpected character ") + ch);
-#endif
-                is.setstate(std::ios_base::failbit);
-                return is;
-            }
-        }
-    }
-    return is;
+    ValueType element;
+    return stanfordcpplib::collections::readCollection(is, queue, element, /* descriptor */ "Queue::operator >>");
 }
 
 /*

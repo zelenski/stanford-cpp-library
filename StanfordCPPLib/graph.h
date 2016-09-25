@@ -5,6 +5,8 @@
  * to represent <b><i>graphs,</i></b> which consist of a set of
  * <b><i>nodes</i></b> (vertices) and a set of <b><i>arcs</i></b> (edges).
  * 
+ * @version 2016/09/24
+ * - refactored to use collections.h utility functions
  * @version 2016/08/04
  * - fixed operator >> to not throw errors
  * @version 2015/07/05
@@ -27,7 +29,7 @@
 #define _graph_h
 
 #include <string>
-#include "compare.h"
+#include "collections.h"
 #include "error.h"
 #include "hashcode.h"
 #include "map.h"
@@ -1165,8 +1167,8 @@ int hashCode(const Graph<NodeType, ArcType>& graph) {
         code = hashMultiplier() * code + hashCode(node->name);
     }
     for (ArcType* arc : graph.getArcSet()) {
-        code = hashMultiplier() * code + hashCode(arc->start);
-        code = hashMultiplier() * code + hashCode(arc->finish);
+        code = hashMultiplier() * code + hashCode(arc->start->name);
+        code = hashMultiplier() * code + hashCode(arc->finish->name);
     }
     return (code & hashMask());
 }

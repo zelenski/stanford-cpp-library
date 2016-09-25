@@ -15,6 +15,8 @@
  *
  * The original DAWG implementation is retained as dawglexicon.h/cpp.
  * 
+ * @version 2016/09/24
+ * - refactored to use collections.h utility functions
  * @version 2016/08/11
  * - added operators +, +=, -, -=, *, *= to better match Set/HashSet
  * @version 2016/08/10
@@ -39,7 +41,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include "compare.h"
+#include "collections.h"
 #include "dawglexicon.h"
 #include "error.h"
 #include "filelib.h"
@@ -185,14 +187,7 @@ bool Lexicon::containsPrefix(const std::string& prefix) const {
 }
 
 bool Lexicon::equals(const Lexicon& lex2) const {
-    // optimization: if literally same lexicon, stop
-    if (this == &lex2) {
-        return true;
-    }
-    if (size() != lex2.size()) {
-        return false;
-    }
-    return m_allWords == lex2.m_allWords;
+    return stanfordcpplib::collections::equals(*this, lex2);
 }
 
 std::string Lexicon::first() const {
@@ -340,19 +335,19 @@ bool Lexicon::operator !=(const Lexicon& lex2) const {
 }
 
 bool Lexicon::operator <(const Lexicon& lex2) const {
-    return compare::compare(*this, lex2) < 0;
+    return stanfordcpplib::collections::compare(*this, lex2) < 0;
 }
 
 bool Lexicon::operator <=(const Lexicon& lex2) const {
-    return compare::compare(*this, lex2) <= 0;
+    return stanfordcpplib::collections::compare(*this, lex2) <= 0;
 }
 
 bool Lexicon::operator >(const Lexicon& lex2) const {
-    return compare::compare(*this, lex2) > 0;
+    return stanfordcpplib::collections::compare(*this, lex2) > 0;
 }
 
 bool Lexicon::operator >=(const Lexicon& lex2) const {
-    return compare::compare(*this, lex2) >= 0;
+    return stanfordcpplib::collections::compare(*this, lex2) >= 0;
 }
 
 Lexicon Lexicon::operator +(const Lexicon& lex2) const {
@@ -627,53 +622,15 @@ std::ostream& operator <<(std::ostream& out, const Lexicon& lex) {
 }
 
 std::istream& operator >>(std::istream& is, Lexicon& lex) {
-    char ch;
-    is >> ch;
-    if (ch != '{') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error("Lexicon::operator >>: Missing {");
-#endif
-        is.setstate(std::ios_base::failbit);
-        return is;
-    }
-    lex.clear();
-    is >> ch;
-    if (ch != '}') {
-        is.unget();
-        while (true) {
-            std::string value;
-            if (!readGenericValue(is, value)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error("Lexicon::operator >>: parse error");
-#endif
-                return is;
-            }
-            lex.add(value);
-            is >> ch;
-            if (ch == '}') {
-                break;
-            }
-            if (ch != ',') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error(std::string("Lexicon::operator >>: Unexpected character ") + ch);
-#endif
-                is.setstate(std::ios_base::failbit);
-                return is;
-            }
-        }
-    }
-    return is;
+    std::string element;
+    return stanfordcpplib::collections::readCollection(is, lex, element, /* descriptor */ "Lexicon::operator >>");
 }
 
 /*
  * Hash function for lexicons.
  */
-int hashCode(const Lexicon& l) {
-    int code = hashSeed();
-    for (std::string n : l) {
-        code = hashMultiplier() * code + hashCode(n);
-    }
-    return int(code & hashMask());
+int hashCode(const Lexicon& lex) {
+    return stanfordcpplib::collections::hashCodeCollection(lex);
 }
 
 static bool scrub(std::string& str) {

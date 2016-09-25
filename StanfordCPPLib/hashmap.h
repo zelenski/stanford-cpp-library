@@ -4,6 +4,8 @@
  * This file exports the <code>HashMap</code> class, which stores
  * a set of <i>key</i>-<i>value</i> pairs.
  * 
+ * @version 2016/09/24
+ * - refactored to use collections.h utility functions
  * @version 2016/08/10
  * - added support for std initializer_list usage, such as
  *   {{"a", 1}, {"b", 2}, {"c", 3}} in constructor, putAll, removeAll, retainAll,
@@ -35,6 +37,7 @@
 #include <map>
 #include <string>
 #include <utility>
+#include "collections.h"
 #include "error.h"
 #include "hashcode.h"
 #include "vector.h"
@@ -690,27 +693,7 @@ bool HashMap<KeyType, ValueType>::containsKey(const KeyType& key) const {
 
 template <typename KeyType, typename ValueType>
 bool HashMap<KeyType, ValueType>::equals(const HashMap<KeyType, ValueType>& map2) const {
-    // optimization: if literally same map, stop
-    if (this == &map2) {
-        return true;
-    }
-    
-    if (size() != map2.size()) {
-        return false;
-    }
-
-    // compare both ways; each must be subset of the other
-    for (KeyType key : *this) {
-        if (!map2.containsKey(key) || map2.get(key) != get(key)) {
-            return false;
-        }
-    }
-    for (KeyType key : map2) {
-        if (!containsKey(key) || get(key) != map2.get(key)) {
-            return false;
-        }
-    }
-    return true;
+    return stanfordcpplib::collections::equalsMap(*this, map2);
 }
 
 template <typename KeyType, typename ValueType>
@@ -970,7 +953,7 @@ bool HashMap<KeyType, ValueType>::operator ==(const HashMap& map2) const {
 
 template <typename KeyType, typename ValueType>
 bool HashMap<KeyType, ValueType>::operator !=(const HashMap& map2) const {
-    return equals(map2);
+    return !equals(map2);   // BUGFIX 2016/09/24
 }
 
 /*
@@ -983,76 +966,15 @@ bool HashMap<KeyType, ValueType>::operator !=(const HashMap& map2) const {
 template <typename KeyType, typename ValueType>
 std::ostream& operator <<(std::ostream& os,
                           const HashMap<KeyType, ValueType>& map) {
-    os << "{";
-    typename HashMap<KeyType, ValueType>::iterator begin = map.begin();
-    typename HashMap<KeyType, ValueType>::iterator end = map.end();
-    typename HashMap<KeyType, ValueType>::iterator it = begin;
-    while (it != end) {
-        if (it != begin) {
-            os << ", ";
-        }
-        writeGenericValue(os, *it, /* forceQuotes */ true);
-        os << ":";
-        writeGenericValue(os, map[*it], /* forceQuotes */ true);
-        ++it;
-    }
-    return os << "}";
+    return stanfordcpplib::collections::writeMap(os, map);
 }
 
 template <typename KeyType, typename ValueType>
 std::istream& operator >>(std::istream& is,
                           HashMap<KeyType, ValueType>& map) {
-    char ch = '\0';
-    is >> ch;
-    if (ch != '{') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error("HashMap::operator >>: Missing {");
-#endif
-        is.setstate(std::ios_base::failbit);
-        return is;
-    }
-    map.clear();
-    is >> ch;
-    if (ch != '}') {
-        is.unget();
-        while (true) {
-            KeyType key;
-            if (!readGenericValue(is, key)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error("HashMap::operator >>: parse key error");
-#endif
-                return is;
-            }
-            is >> ch;
-            if (ch != ':') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error("HashMap::operator >>: Missing colon after key");
-#endif
-                is.setstate(std::ios_base::failbit);
-                return is;
-            }
-            ValueType value;
-            if (!readGenericValue(is, value)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error("HashMap::operator >>: parse value error");
-#endif
-                return is;
-            }
-            map[key] = value;
-            is >> ch;
-            if (ch == '}') {
-                break;
-            }
-            if (ch != ',') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error(std::string("HashMap::operator >>: Unexpected character ") + ch);
-#endif
-                is.setstate(std::ios_base::failbit);
-                return is;
-            }
-        }
-    }
-    return is;
+    KeyType key;
+    ValueType value;
+    return stanfordcpplib::collections::readMap(is, map, key, value, /* descriptor */ std::string("HashMap::operator >>"));
 }
 
 /*
@@ -1061,13 +983,7 @@ std::istream& operator >>(std::istream& is,
  */
 template <typename K, typename V>
 int hashCode(const HashMap<K, V>& map) {
-    int code = hashSeed();
-    for (K k : map) {
-        code += hashCode(k);
-        V v = map[k];
-        code += hashCode(v);
-    }
-    return int(code & hashMask());
+    return stanfordcpplib::collections::hashCodeMap(map, /* orderMatters */ false);
 }
 
 /*

@@ -9,13 +9,16 @@
  * See BasicGraph.cpp for implementation of each member.
  *
  * @author Marty Stepp
+ * @version 2016/09/24
+ * - refactored to use collections.h utility functions
+ * @version 2016/09/22
+ * - bug fix for hashCode function
  * @version 2016/08/12
  * - added initializer_list functionality
  * @version 2014/11/13
  * - added iterator begin(), end() support so that students can directly
  *   for-each over the vertices of a graph.
  * - added comparison operators ==, !=, <, etc.
- * - added template hashCode function
  * - bug fix to Edge to add move/copy = operators
  * @version 2014/10/20
  * - converted functions to accept const string& rather than string for speed
@@ -271,6 +274,11 @@ public:
 private:
     bool m_resetEnabled;
 };
+
+/*
+ * Hash function for BasicGraphs.
+ */
+int hashCode(const BasicGraph& graph);
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 

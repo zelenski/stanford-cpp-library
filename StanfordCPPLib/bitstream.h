@@ -14,7 +14,7 @@
  * member functions writeBit and size.
  *
  * There are two subclasses of ibitstream: ifbitstream and istringbitstream,
- * which are similar to the ifstream and istringstream classes.	 The
+ * which are similar to the ifstream and istringstream classes.  The
  * obitstream class similarly has ofbitstream and ostringbitstream as
  * subclasses.
  *
@@ -40,7 +40,7 @@ const int PSEUDO_EOF = 256;
 
 /* Constant: NOT_A_CHAR
  * A constant representing an extended character that does not
- * actually hold a value.	 When you are constructing your Huffman
+ * actually hold a value.  When you are constructing your Huffman
  * encoding tree, you should set the characters in each internal
  * node (non-leaf) to this value to explicitly mark that they are not
  * being used.
@@ -55,7 +55,7 @@ const int NOT_A_CHAR = 257;
  * functions for rewinding the stream back to the beginning and getting the stream
  * size.
  *
- * You will probably not create instances of this class directly.	 Instead, you
+ * You will probably not create instances of this class directly.  Instead, you
  * will create ifbitstreams or istringbitstreams to read from files or string buffers.
  */
 class ibitstream: public std::istream {
@@ -64,7 +64,7 @@ public:
      * Constructor: ibitstream
      * Usage: ibitstream stream;
      * -----------------------
-     * Initializes a new ibitstream that is not attached to any source.	 You are
+     * Initializes a new ibitstream that is not attached to any source.  You are
      * unlikely to use this function directly.
      */
     ibitstream();
@@ -74,7 +74,7 @@ public:
      * Usage: bit = in.readBit();
      * --------------------------
      * Reads a single bit from the ibitstream and returns 0 or 1 depending on
-     * the bit value.	 If the stream is exhausted, EOF (-1) is returned.
+     * the bit value.  If the stream is exhausted, EOF (-1) is returned.
      * Raises an error if this ibitstream has not been properly opened.
      */
     int readBit();
@@ -84,7 +84,7 @@ public:
      * Usage: in.rewind();
      * -------------------
      * Rewinds the ibitstream back to the beginning so that subsequent reads
-     * start again from the beginning.	Raises an error if this ibitstream
+     * start again from the beginning.  Raises an error if this ibitstream
      * has not been properly opened.
      */
     void rewind();
@@ -107,7 +107,7 @@ public:
      * Member function: is_open()
      * Usage: if (ibs.is_open()) { ... }
      * ----------------------
-     * Returns whether or not this ibitstream is opened.	This only has
+     * Returns whether or not this ibitstream is opened.  This only has
      * meaning if the ibitstream is a file stream; otherwise it always
      * returns true.
      */
@@ -138,7 +138,7 @@ public:
      * Constructor: obitstream
      * Usage: obitstream outfile;
      * ------------------------
-     * Initializes a new obitstream that is not attached to any file.	 Use the
+     * Initializes a new obitstream that is not attached to any file.  Use the
      * open member function from ofstream to attach the stream to a file.
      */
     obitstream();
@@ -170,7 +170,7 @@ public:
      * Member function: is_open()
      * Usage: if (ibs.is_open()) { ... }
      * ----------------------
-     * Returns whether or not this obitstream is opened.	This only has
+     * Returns whether or not this obitstream is opened.  This only has
      * meaning if the obitstream is a file stream; otherwise it always
      * returns true.
      */
@@ -197,7 +197,7 @@ public:
      * Constructor: ifbitstream();
      * Usage: ifbitstream ifb;
      * -------------------------
-     * Constructs a new ifbitstream not attached to any file.	 You can
+     * Constructs a new ifbitstream not attached to any file.  You can
      * open a file for reading using the .open() member functions.
      */
     ifbitstream();
@@ -208,7 +208,7 @@ public:
      * Usage: ifbitstream ifb("filename");
      * -------------------------
      * Constructs a new ifbitstream that reads the specified file, if
-     * it exists.	 If not, the stream enters an error state.
+     * it exists.  If not, the stream enters an error state.
      */
     ifbitstream(const char* filename);
     ifbitstream(const std::string& filename);
@@ -218,7 +218,7 @@ public:
      * Member function: open(string filename);
      * Usage: ifb.open("my-file.txt");
      * -------------------------
-     * Opens the specified file for reading.	If an error occurs, the
+     * Opens the specified file for reading.  If an error occurs, the
      * stream enters a failure state, which can be detected by calling
      * ifb.fail().
      */
@@ -238,7 +238,7 @@ public:
      * Member function: close();
      * Usage: ifb.close();
      * --------------------------
-     * Closes the currently-opened file, if the stream is open.	 If the
+     * Closes the currently-opened file, if the stream is open.  If the
      * stream is not open, puts the stream into a fail state.
      */
     void close();
@@ -266,7 +266,7 @@ public:
      * Constructor: ofbitstream();
      * Usage: ofbitstream ofb;
      * -------------------------
-     * Constructs a new ofbitstream not attached to any file.	 You can
+     * Constructs a new ofbitstream not attached to any file.  You can
      * open a file for writing using the .open() member functions.
      */
     ofbitstream();
@@ -277,7 +277,7 @@ public:
      * Usage: ofbitstream ofb("filename");
      * -------------------------
      * Constructs a new ofbitstream that writes the specified file, if
-     * it exists.	 If not, the stream enters an error state.	Read
+     * it exists.  If not, the stream enters an error state.  Read
      * the documentation on "open" for more details.
      */
     ofbitstream(const char* filename);
@@ -288,9 +288,9 @@ public:
      * Member function: open(string filename);
      * Usage: ofb.open("my-file.txt");
      * -------------------------
-     * Opens the specified file for writing.	If an error occurs, the
+     * Opens the specified file for writing.  If an error occurs, the
      * stream enters a failure state, which can be detected by calling
-     * ifb.fail().	If an invalid filename is specified (for example,
+     * ifb.fail().  If an invalid filename is specified (for example,
      * a source file), reports an error.
      */
     void open(const char* filename);
@@ -309,7 +309,7 @@ public:
      * Member function: close();
      * Usage: ifb.close();
      * --------------------------
-     * Closes the currently-opened file, if the stream is open.	 If the
+     * Closes the currently-opened file, if the stream is open.  If the
      * stream is not open, puts the stream into a fail state.
      */
     void close();
@@ -323,7 +323,7 @@ private:
  * Class: istringbitstream
  * ---------------
  * A variant on C++'s istringstream class, which acts as a stream that
- * reads its data from a string.	This is mostly used by the testing
+ * reads its data from a string.  This is mostly used by the testing
  * code to test your Huffman encoding without having to read or write
  * files on disk, but you can use it in your own testing if you would
  * like.
@@ -352,7 +352,7 @@ private:
  * Class: ostringbitstream
  * ---------------
  * A variant on C++'s ostringstream class, which acts as a stream that
- * writes its data to a string.	 This is mostly used by the testing
+ * writes its data to a string.  This is mostly used by the testing
  * code to test your Huffman encoding without having to read or write
  * files on disk, but you can use it in your own testing if you would
  * like.

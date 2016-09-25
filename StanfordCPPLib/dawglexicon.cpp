@@ -40,7 +40,7 @@
 #include <sstream>
 #include <stdint.h>
 #include <string>
-#include "compare.h"
+#include "collections.h"
 #include "error.h"
 #include "hashcode.h"
 #include "strlib.h"
@@ -204,26 +204,27 @@ bool DawgLexicon::containsAll(std::initializer_list<std::string> list) const {
 }
 
 bool DawgLexicon::containsPrefix(const std::string& prefix) const {
-    if (prefix.empty()) return true;
+    if (prefix.empty()) {
+        return true;
+    }
     std::string copy = prefix;
     toLowerCaseInPlace(copy);
-    if (traceToLastEdge(copy)) return true;
+    if (traceToLastEdge(copy)) {
+        return true;
+    }
     for (std::string word : otherWords) {
-        if (startsWith(word, copy)) return true;
-        if (copy < word) return false;
+        if (startsWith(word, copy)) {
+            return true;
+        }
+        if (copy < word) {
+            return false;
+        }
     }
     return false;
 }
 
 bool DawgLexicon::equals(const DawgLexicon& lex2) const {
-    // optimization: if literally same lexicon, stop
-    if (this == &lex2) {
-        return true;
-    }
-    if (size() != lex2.size()) {
-        return false;
-    }
-    return compare::compare(*this, lex2) == 0;
+    return stanfordcpplib::collections::equals(*this, lex2);
 }
 
 void DawgLexicon::insert(const std::string& word) {
@@ -301,19 +302,19 @@ bool DawgLexicon::operator !=(const DawgLexicon& lex2) const {
 }
 
 bool DawgLexicon::operator <(const DawgLexicon& lex2) const {
-    return compare::compare(*this, lex2) < 0;
+    return stanfordcpplib::collections::compare(*this, lex2) < 0;
 }
 
 bool DawgLexicon::operator <=(const DawgLexicon& lex2) const {
-    return compare::compare(*this, lex2) <= 0;
+    return stanfordcpplib::collections::compare(*this, lex2) <= 0;
 }
 
 bool DawgLexicon::operator >(const DawgLexicon& lex2) const {
-    return compare::compare(*this, lex2) > 0;
+    return stanfordcpplib::collections::compare(*this, lex2) > 0;
 }
 
 bool DawgLexicon::operator >=(const DawgLexicon& lex2) const {
-    return compare::compare(*this, lex2) >= 0;
+    return stanfordcpplib::collections::compare(*this, lex2) >= 0;
 }
 
 DawgLexicon DawgLexicon::operator +(const DawgLexicon& lex2) const {
@@ -533,66 +534,17 @@ void DawgLexicon::iterator::advanceToNextWordInDawg() {
     }
 }
 
-std::ostream& operator <<(std::ostream& out, const DawgLexicon& lex) {
-    out << "{";
-    bool first = true;
-    for (std::string word : lex) {
-        if (first) {
-            first = false;
-        } else {
-            out << ", ";
-        }
-        writeGenericValue(out, word, /* forceQuotes */ true);
-    }
-    out << "}";
-    return out;
+std::ostream& operator <<(std::ostream& os, const DawgLexicon& lex) {
+    return stanfordcpplib::collections::writeCollection(os, lex);
 }
 
 std::istream& operator >>(std::istream& is, DawgLexicon& lex) {
-    char ch;
-    is >> ch;
-    if (ch != '{') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error("DawgLexicon::operator >>: Missing {");
-#endif
-        is.setstate(std::ios_base::failbit);
-        return is;
-    }
-    lex.clear();
-    is >> ch;
-    if (ch != '}') {
-        is.unget();
-        while (true) {
-            std::string value;
-            if (!readGenericValue(is, value)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error("DawgLexicon::operator >>: parse error");
-#endif
-                return is;
-            }
-            lex.add(value);
-            is >> ch;
-            if (ch == '}') {
-                break;
-            }
-            if (ch != ',') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error(std::string("DawgLexicon::operator >>: Unexpected character ") + ch);
-#endif
-                is.setstate(std::ios_base::failbit);
-                return is;
-            }
-        }
-    }
-    return is;
+    std::string element;
+    return stanfordcpplib::collections::readCollection(is, lex, element, /* descriptor */ "DawgLexicon::operator >>");
 }
 
 int hashCode(const DawgLexicon& lex) {
-    int code = hashSeed();
-    for (std::string n : lex) {
-        code = hashMultiplier() * code + hashCode(n);
-    }
-    return int(code & hashMask());
+    return stanfordcpplib::collections::hashCodeCollection(lex);
 }
 
 /*

@@ -2950,7 +2950,7 @@ void setConsoleProperties() {
     version::ensureJavaBackEndVersion();
 #endif
     
-#if defined(SPL_VERIFY_PROJECT_VERSION) && defined(SPL_MINIMUM_PROJECT_VERSION)
+#if defined(SPL_VERIFY_PROJECT_VERSION)
     version::ensureProjectVersion();
 #endif
 }

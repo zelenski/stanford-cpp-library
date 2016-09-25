@@ -124,6 +124,12 @@ std::string integerToString(int n);
 std::string longToString(long n);
 
 /*
+ * Returns a hexadecimal string for the given pointer, such as "0x3f0427b".
+ * Returns "NULL" if p is a null pointer.
+ */
+std::string pointerToString(void* p);
+
+/*
  * Function: realToString
  * Usage: string s = realToString(d);
  * ----------------------------------

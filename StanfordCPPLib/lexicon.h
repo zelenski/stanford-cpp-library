@@ -5,6 +5,9 @@
  * compact structure for storing a list of words.
  *
  * @author Marty Stepp
+ * @version 2016/09/24
+ * - refactored to use collections.h utility functions
+ * @version 2016/08/12
  * - added methods addAll, containsAll, removeAll, retainAll,
  *   operators +, +=, -, -=, *, *= to better match Set/HashSet
  * @version 2016/08/10

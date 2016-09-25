@@ -9,11 +9,14 @@
  * cost due to needing to store an extra copy of the keys.
  * 
  * @author Marty Stepp
+ * @version 2016/09/24
+ * - refactored to use collections.h utility functions
  * @version 2016/09/22
  * - added support for std initializer_list usage, such as
  *   {{"a", 1}, {"b", 2}, {"c", 3}} in constructor, putAll, removeAll, retainAll,
  *   operators +, +=, -, -=, *, *=
  * - added addAll method
+ * - added operators <, <=, >, >=
  * @version 2016/08/12
  * - bug fix in operator >>
  * @version 2016/08/04
@@ -29,6 +32,7 @@
 #include <initializer_list>
 #include <iterator>
 #include <string>
+#include "collections.h"
 #include "error.h"
 #include "hashcode.h"
 #include "hashmap.h"
@@ -280,6 +284,19 @@ public:
     bool operator !=(const LinkedHashMap& map2) const;
 
     /*
+     * Operators: <, <=, >, >=
+     * Usage: if (map1 < map2) ...
+     * ---------------------------
+     * Relational operators to compare two maps.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
+     */
+    bool operator <(const LinkedHashMap& map2) const;
+    bool operator <=(const LinkedHashMap& map2) const;
+    bool operator >(const LinkedHashMap& map2) const;
+    bool operator >=(const LinkedHashMap& map2) const;
+
+    /*
      * Operator: +
      * Usage: map1 + map2
      * ------------------
@@ -463,7 +480,7 @@ bool LinkedHashMap<KeyType, ValueType>::containsKey(const KeyType& key) const {
 
 template <typename KeyType, typename ValueType>
 bool LinkedHashMap<KeyType, ValueType>::equals(const LinkedHashMap<KeyType, ValueType>& map2) const {
-    return innerMap.equals(map2.innerMap);
+    return stanfordcpplib::collections::equalsMap(*this, map2);
 }
 
 template <typename KeyType, typename ValueType>
@@ -680,7 +697,27 @@ bool LinkedHashMap<KeyType, ValueType>::operator ==(const LinkedHashMap& map2) c
 
 template <typename KeyType, typename ValueType>
 bool LinkedHashMap<KeyType, ValueType>::operator !=(const LinkedHashMap& map2) const {
-    return equals(map2);
+    return !equals(map2);
+}
+
+template <typename KeyType, typename ValueType>
+bool LinkedHashMap<KeyType, ValueType>::operator <(const LinkedHashMap& map2) const {
+    return stanfordcpplib::collections::compareMaps(*this, map2) < 0;
+}
+
+template <typename KeyType, typename ValueType>
+bool LinkedHashMap<KeyType, ValueType>::operator <=(const LinkedHashMap& map2) const {
+    return stanfordcpplib::collections::compareMaps(*this, map2) <= 0;
+}
+
+template <typename KeyType, typename ValueType>
+bool LinkedHashMap<KeyType, ValueType>::operator >(const LinkedHashMap& map2) const {
+    return stanfordcpplib::collections::compareMaps(*this, map2) > 0;
+}
+
+template <typename KeyType, typename ValueType>
+bool LinkedHashMap<KeyType, ValueType>::operator >=(const LinkedHashMap& map2) const {
+    return stanfordcpplib::collections::compareMaps(*this, map2) >= 0;
 }
 
 /*
@@ -693,72 +730,15 @@ bool LinkedHashMap<KeyType, ValueType>::operator !=(const LinkedHashMap& map2) c
 template <typename KeyType, typename ValueType>
 std::ostream& operator <<(std::ostream& os,
                           const LinkedHashMap<KeyType, ValueType>& map) {
-    os << "{";
-    for (int i = 0, sz = map.keyVector.size(); i < sz; i++) {
-        if (i != 0) {
-            os << ", ";
-        }
-        writeGenericValue(os, map.keyVector[i], true);
-        os << ":";
-        writeGenericValue(os, map[map.keyVector[i]], true);
-    }
-    return os << "}";
+    return stanfordcpplib::collections::writeMap(os, map);
 }
 
 template <typename KeyType, typename ValueType>
 std::istream& operator >>(std::istream& is,
                           LinkedHashMap<KeyType, ValueType>& map) {
-    char ch = '\0';
-    is >> ch;
-    if (ch != '{') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error("LinkedHashMap::operator >>: Missing {");
-#endif
-        is.setstate(std::ios_base::failbit);
-        return is;
-    }
-    map.clear();
-    is >> ch;
-    if (ch != '}') {
-        is.unget();
-        while (true) {
-            KeyType key;
-            if (!readGenericValue(is, key)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error("LinkedHashMap::operator >>: parse key error");
-#endif
-                return is;
-            }
-            is >> ch;
-            if (ch != ':') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error("LinkedHashMap::operator >>: Missing colon after key");
-#endif
-                is.setstate(std::ios_base::failbit);
-                return is;
-            }
-            ValueType value;
-            if (!readGenericValue(is, value)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error("LinkedHashMap::operator >>: parse value error");
-#endif
-                return is;
-            }
-            map.put(key, value);
-            is >> ch;
-            if (ch == '}') {
-                break;
-            }
-            if (ch != ',') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error(std::string("LinkedHashMap::operator >>: Unexpected character ") + ch);
-#endif
-                is.setstate(std::ios_base::failbit);
-                return is;
-            }
-        }
-    }
-    return is;
+    KeyType key;
+    ValueType value;
+    return stanfordcpplib::collections::readMap(is, map, key, value, /* descriptor */ std::string("LinkedHashMap::operator >>"));
 }
 
 /*
@@ -767,13 +747,7 @@ std::istream& operator >>(std::istream& is,
  */
 template <typename K, typename V>
 int hashCode(const LinkedHashMap<K, V>& map) {
-    int code = hashSeed();
-    for (K k : map) {
-        code = hashMultiplier() * code + hashCode(k);
-        V v = map[k];
-        code = hashMultiplier() * code + hashCode(v);
-    }
-    return int(code & hashMask());
+    return stanfordcpplib::collections::hashCodeMap(map, /* orderMatters */ false);
 }
 
 /*

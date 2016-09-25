@@ -4,6 +4,10 @@
  * This file exports the template class <code>Map</code>, which
  * maintains a collection of <i>key</i>-<i>value</i> pairs.
  * 
+ * @version 2016/09/24
+ * - refactored to use collections.h utility functions
+ * @version 2016/09/22
+ * - bug fix for operators <, <=, >, >= (was comparing only keys!)
  * @version 2016/08/10
  * - added support for std initializer_list usage, such as
  *   {{"a", 1}, {"b", 2}, {"c", 3}} in constructor, addAll, putAll,
@@ -31,7 +35,7 @@
 #include <initializer_list>
 #include <map>
 #include <utility>
-#include "compare.h"
+#include "collections.h"
 #include "error.h"
 #include "hashcode.h"
 #include "stack.h"
@@ -1006,25 +1010,7 @@ bool Map<KeyType, ValueType>::containsKey(const KeyType& key) const {
 
 template <typename KeyType, typename ValueType>
 bool Map<KeyType, ValueType>::equals(const Map<KeyType, ValueType>& map2) const {
-    if (this == &map2) {
-        return true;
-    }
-    if (size() != map2.size()) {
-        return false;
-    }
-
-    // compare both ways; each must be subset of the other
-    for (KeyType key : *this) {
-        if (!map2.containsKey(key) || map2.get(key) != get(key)) {
-            return false;
-        }
-    }
-    for (KeyType key : map2) {
-        if (!containsKey(key) || get(key) != map2.get(key)) {
-            return false;
-        }
-    }
-    return true;
+    return stanfordcpplib::collections::equalsMap(*this, map2);
 }
 
 template <typename KeyType, typename ValueType>
@@ -1264,22 +1250,22 @@ bool Map<KeyType, ValueType>::operator !=(const Map& map2) const {
 
 template <typename KeyType, typename ValueType>
 bool Map<KeyType, ValueType>::operator <(const Map& map2) const {
-    return compare::compare(*this, map2) < 0;
+    return stanfordcpplib::collections::compareMaps(*this, map2) < 0;
 }
 
 template <typename KeyType, typename ValueType>
 bool Map<KeyType, ValueType>::operator <=(const Map& map2) const {
-    return compare::compare(*this, map2) <= 0;
+    return stanfordcpplib::collections::compareMaps(*this, map2) <= 0;
 }
 
 template <typename KeyType, typename ValueType>
 bool Map<KeyType, ValueType>::operator >(const Map& map2) const {
-    return compare::compare(*this, map2) > 0;
+    return stanfordcpplib::collections::compareMaps(*this, map2) > 0;
 }
 
 template <typename KeyType, typename ValueType>
 bool Map<KeyType, ValueType>::operator >=(const Map& map2) const {
-    return compare::compare(*this, map2) >= 0;
+    return stanfordcpplib::collections::compareMaps(*this, map2) >= 0;
 }
 
 /*
@@ -1292,75 +1278,14 @@ bool Map<KeyType, ValueType>::operator >=(const Map& map2) const {
 template <typename KeyType, typename ValueType>
 std::ostream& operator <<(std::ostream& os,
                           const Map<KeyType, ValueType>& map) {
-    os << "{";
-    typename Map<KeyType, ValueType>::iterator begin = map.begin();
-    typename Map<KeyType, ValueType>::iterator end = map.end();
-    typename Map<KeyType, ValueType>::iterator it = begin;
-    while (it != end) {
-        if (it != begin) {
-            os << ", ";
-        }
-        writeGenericValue(os, *it, /* forceQuotes */ true);
-        os << ":";
-        writeGenericValue(os, map[*it], /* forceQuotes */ true);
-        ++it;
-    }
-    return os << "}";
+    return stanfordcpplib::collections::writeMap(os, map);
 }
 
 template <typename KeyType, typename ValueType>
 std::istream& operator >>(std::istream& is, Map<KeyType,ValueType>& map) {
-    char ch = '\0';
-    is >> ch;
-    if (ch != '{') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error("Map::operator >>: Missing {");
-#endif
-        is.setstate(std::ios_base::failbit);
-        return is;
-    }
-    map.clear();
-    is >> ch;
-    if (ch != '}') {
-        is.unget();
-        while (true) {
-            KeyType key;
-            if (!readGenericValue(is, key)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error("Map::operator >>: parse key error");
-#endif
-                return is;
-            }
-            is >> ch;
-            if (ch != ':') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error("Map::operator >>: Missing colon after key");
-#endif
-                is.setstate(std::ios_base::failbit);
-                return is;
-            }
-            ValueType value;
-            if (!readGenericValue(is, value)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error("Map::operator >>: parse value error");
-#endif
-                return is;
-            }
-            map[key] = value;
-            is >> ch;
-            if (ch == '}') {
-                break;
-            }
-            if (ch != ',') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error(std::string("Map::operator >>: Unexpected character ") + ch);
-#endif
-                is.setstate(std::ios_base::failbit);
-                return is;
-            }
-        }
-    }
-    return is;
+    KeyType key;
+    ValueType value;
+    return stanfordcpplib::collections::readMap(is, map, key, value, /* descriptor */ std::string("Map::operator >>"));
 }
 
 /*
@@ -1369,13 +1294,7 @@ std::istream& operator >>(std::istream& is, Map<KeyType,ValueType>& map) {
  */
 template <typename K, typename V>
 int hashCode(const Map<K, V>& map) {
-    int code = hashSeed();
-    for (K k : map) {
-        code = hashMultiplier() * code + hashCode(k);
-        V v = map[k];
-        code = hashMultiplier() * code + hashCode(v);
-    }
-    return int(code & hashMask());
+    return stanfordcpplib::collections::hashCodeMap(map);
 }
 
 /*

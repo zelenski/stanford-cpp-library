@@ -134,6 +134,17 @@ std::string longToString(long n) {
     return stream.str();
 }
 
+std::string pointerToString(void* p) {
+    if (p) {
+        std::ostringstream stream;
+        stream << std::hex;
+        stream << "0x" << p;
+        return stream.str();
+    } else {
+        return "NULL";
+    }
+}
+
 std::string realToString(double d) {
     std::ostringstream stream;
     stream << std::uppercase << d;
@@ -162,6 +173,9 @@ bool stringIsDouble(const std::string& str) {
 }
 
 bool stringIsInteger(const std::string& str, int radix) {
+    if (radix <= 0) {
+        error("stringIsInteger: Illegal radix: " + integerToString(radix));
+    }
     std::istringstream stream(trim(str));
     stream >> std::setbase(radix);
     int value;
@@ -170,6 +184,9 @@ bool stringIsInteger(const std::string& str, int radix) {
 }
 
 bool stringIsLong(const std::string& str, int radix) {
+    if (radix <= 0) {
+        error("stringIsLong: Illegal radix: " + integerToString(radix));
+    }
     std::istringstream stream(trim(str));
     stream >> std::setbase(radix);
     long value;
@@ -212,23 +229,29 @@ double stringToDouble(const std::string& str) {
 }
 
 int stringToInteger(const std::string& str, int radix) {
+    if (radix <= 0) {
+        error("stringToInteger: Illegal radix: " + integerToString(radix));
+    }
     std::istringstream stream(trim(str));
     stream >> std::setbase(radix);
     int value;
     stream >> value;
     if (stream.fail() || !stream.eof()) {
-        error("stringToInteger: Illegal integer format (" + str + ")");
+        error("stringToInteger: Illegal integer format: \"" + str + "\"");
     }
     return value;
 }
 
 long stringToLong(const std::string& str, int radix) {
+    if (radix <= 0) {
+        error("stringToLong: Illegal radix: " + integerToString(radix));
+    }
     std::istringstream stream(trim(str));
     stream >> std::setbase(radix);
     long value;
     stream >> value;
     if (stream.fail() || !stream.eof()) {
-        error("stringToLong: Illegal long format (" + str + ")");
+        error("stringToLong: Illegal long format \"" + str + "\"");
     }
     return value;
 }

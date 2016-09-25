@@ -2,7 +2,7 @@
 #
 # This file specifies the information about your project to Qt Creator.
 # You should not need to modify this file to complete your assignment.
-
+#
 # If you need to add files or folders to your project, we recommend the following:
 # - close Qt Creator.
 # - delete your ".pro.user" file and "build_xxxxxxx" directory.
@@ -11,8 +11,9 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
-# @version 2016/09/22
+# @version 2016/09/24
 # - added private/*.cpp to sources
+# - added verification of .pro version by default
 # @version 2016/08/12
 # - fixed Windows release build problems
 # @version 2016/08/04
@@ -190,16 +191,40 @@ unix:!macx {
 # These flags are all optional but can simplify project configuration.
 # (setting x/y to 999999 centers the window)
 # (see platform.cpp/h for descriptions of some of these flags)
-DEFINES += SPL_CONSOLE_X=999999
-DEFINES += SPL_CONSOLE_Y=999999
-DEFINES += SPL_CONSOLE_WIDTH=750
-DEFINES += SPL_CONSOLE_HEIGHT=500
-DEFINES += SPL_CONSOLE_ECHO
-DEFINES += SPL_CONSOLE_EXIT_ON_CLOSE
-DEFINES += SPL_VERIFY_JAVA_BACKEND_VERSION
+
+# what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
 DEFINES += SPL_PROJECT_VERSION=20160922
+
+# x/y location and w/h of the graphical console window; set to -1 to center
+DEFINES += SPL_CONSOLE_X=-1
+DEFINES += SPL_CONSOLE_Y=-1
+DEFINES += SPL_CONSOLE_WIDTH=800
+DEFINES += SPL_CONSOLE_HEIGHT=500
+
+# echo graphical console onto the plain text console as well?
+DEFINES += SPL_CONSOLE_ECHO
+
+# quit the C++ program when the graphical console is closed?
+DEFINES += SPL_CONSOLE_EXIT_ON_CLOSE
+
+# crash if the Java back-end version is older than that specified in version.h?
+DEFINES += SPL_VERIFY_JAVA_BACKEND_VERSION
+
+# crash if the .pro is older than the minimum specified in version.h? (SPL_PROJECT_VERSION)
+DEFINES += SPL_VERIFY_PROJECT_VERSION
+
+# allow clients to access the internal data inside the heap of PriorityQueue?
+# (used for some practice exam exercises/demos)
 DEFINES += PQUEUE_ALLOW_HEAP_ACCESS
+
+# should toString / << of a PriorityQueue display the elements in sorted order,
+# or in heap internal order? the former is more expected by client; the latter
+# is faster and avoids a deep-copy
 DEFINES += PQUEUE_PRINT_IN_HEAP_ORDER
+
+# should we throw an error() when operator >> fails on a collection?
+# for years this was true, but the C++ standard says you should just silently
+# set the fail bit on the stream and exit, so that has been made the default.
 # DEFINES += SPL_ERROR_ON_STREAM_EXTRACT
 
 # build-specific options (debug vs release)
@@ -211,6 +236,8 @@ CONFIG(debug, debug|release) {
     QMAKE_CXXFLAGS += -g3
     QMAKE_CXXFLAGS += -ggdb3
     QMAKE_CXXFLAGS += -fno-inline
+
+    # print details about uncaught exceptions with red error text / stack trace
     DEFINES += SPL_CONSOLE_PRINT_EXCEPTIONS
 }
 
@@ -398,4 +425,4 @@ exists($$PWD/lib/autograder/*.cpp) {
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #398; if not, your .pro has been changed!)
+# END OF FILE (this should be line #428; if not, your .pro has been changed!)

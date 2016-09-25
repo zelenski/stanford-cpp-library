@@ -1,6 +1,47 @@
-	C++ libs
+	TODO C++ libs:
+	==============
+		purge "using namespace std;"
 		
-		add initializer_list stuff to LinkedHash*
+		automated test suite
+			convert my tests to assertion style
+			incorporate Eric's tests?
+
+		BUG: stack trace lost on exceptions in unit tests?
+
+		console.h / init change
+			test on Mac
+			
+			update all occurrences of lib (106b/x, zips)
+			should Graph have initializer_list feature?
+			supply operator << for STL collections?
+				stl.h
+
+		make empty-project  (simpler than simple-project)
+
+
+		Info.plist issue on Mac
+			Info: creating stash file ..../Debug/.qmake.stash
+			WARNING: Could not resolve Info.plist: ../../../../Qt/5.4/clang_64/mkspecs/macx-clang/Info.plist.app  .  Check if QMAKE_INFO_PLIST points to a valid file.
+			look at HelloWorld[1-2].plist in cppdoc/ dir?
+			
+			http://doc.qt.io/qt-5/qmake-variable-reference.html
+				QMAKE_INFO_PLIST
+				Note: This variable is used on OS X and iOS platforms only.
+				Specifies the name of the property list file, .plist, you would like to include in your OS X and iOS application bundle.
+				In the .plist file, you can define some variables, e.g., @EXECUTABLE@, which qmake will replace with the actual executable name. Other variables include @ICON@, @TYPEINFO@, @LIBRARY@, and @SHORT_VERSION@.
+				Note: Most of the time, the default Info.plist is good enough.
+
+			I got it working with the following code:
+				QMAKE_INFO_PLIST = ../../Source/CustomInfo.plist
+				plist.target = ".$${DESTDIR}/$${TARGET}.app/Contents/Info.plist"
+				plist.depends = ../../Source/CustomInfo.plist
+				plist.commands = $(DEL_FILE) \".$${DESTDIR}/$${TARGET}.app/Contents/Info.plist\" $$escape_expand(\n\t) \
+				$(COPY_FILE) ../../Source/CustomInfo.plist \".$${DESTDIR}/$${TARGET}.app/Contents/Info.plist\"
+				QMAKE_EXTRA_TARGETS = plist
+				PRE_TARGETDEPS += $$plist.target
+
+
+x		add initializer_list stuff to LinkedHash*
 		
 		add new collection behavior/methods below to cppdocs?
 		
@@ -61,62 +102,6 @@
 		Java lib:  Karel speak(String)
 			- when to hide?  automatically?  param?  on some other method call?
 			- how to draw speech bubble?
-
-
-x		collections with initializer lists {}
-x			check whether coll = {} is same as coll {} ?
--			overload operator = ?
--			support operator ==, != on initializer_list ?
--				if (v == {}) { ... }
-x			maps: addAll
-x			HashMap
-x				std::initializer_list<std::pair<K, V>> input
-x			Map
-x				std::initializer_list<std::pair<K, V>> input
-x			PriorityQueue
-x				std::initializer_list<std::pair<V, double>> input
-x				pqueue {{"a", 2}, {"b", 4}};
-x			BasicGraph
--			Graph
-x			Grid
-x				test with non-rectangular initializer! bug
-x			DawgLexicon
-x			HashSet
-x			Lexicon
-x			LinkedList
-x			Queue
-x			Set
-x			SparseGrid
-x			Stack
-x			Vector
-x		bug in HashSet::hashCode
-x			depends on order of elements
-x			take away the scaling * stuff?
--		bug: basicgraph toString should put quotes around vertexes?
-x		Set/HashSet:  add containsAll method
-x		Dawg/Lexicon:
-x			Lexicon: does it still have remove bug?
-x			add operator +, +=, -, -=, *, *=?
-x				removeFlag?
-x				comma operator?
-x				copy * to DawgLexicon
-x				other methods?
-x					containsAll
-x					first
-x					insert
-x					isSubsetOf
-x					isSupersetOf
-x			addAll, containsAll, removeAll, retainAll?
--		call_stack_windows.cpp:34
--			stacktrace::pp defined but not used (-Wunused-variable)
-x		on windows, release build, directory with spaces
-x			move command doesn't properly put quotes around dirs
-x			'"'$${TARGET_PATH}'"'
--		addr2line.exe fails with spaces
--		segfault with RtlUnicodeStringToInteger function
-
-
-
 
 
 
@@ -420,6 +405,57 @@ x			diffImage?
 
 DONE:
 =======================================================================================================================
+x		collections with initializer lists {}
+x			check whether coll = {} is same as coll {} ?
+-			overload operator = ?
+-			support operator ==, != on initializer_list ?
+-				if (v == {}) { ... }
+x			maps: addAll
+x			HashMap
+x				std::initializer_list<std::pair<K, V>> input
+x			Map
+x				std::initializer_list<std::pair<K, V>> input
+x			PriorityQueue
+x				std::initializer_list<std::pair<V, double>> input
+x				pqueue {{"a", 2}, {"b", 4}};
+x			BasicGraph
+-			Graph
+x			Grid
+x				test with non-rectangular initializer! bug
+x			DawgLexicon
+x			HashSet
+x			Lexicon
+x			LinkedList
+x			Queue
+x			Set
+x			SparseGrid
+x			Stack
+x			Vector
+x		bug in HashSet::hashCode
+x			depends on order of elements
+x			take away the scaling * stuff?
+-		bug: basicgraph toString should put quotes around vertexes?
+x		Set/HashSet:  add containsAll method
+x		Dawg/Lexicon:
+x			Lexicon: does it still have remove bug?
+x			add operator +, +=, -, -=, *, *=?
+x				removeFlag?
+x				comma operator?
+x				copy * to DawgLexicon
+x				other methods?
+x					containsAll
+x					first
+x					insert
+x					isSubsetOf
+x					isSupersetOf
+x			addAll, containsAll, removeAll, retainAll?
+-		call_stack_windows.cpp:34
+-			stacktrace::pp defined but not used (-Wunused-variable)
+x		on windows, release build, directory with spaces
+x			move command doesn't properly put quotes around dirs
+x			'"'$${TARGET_PATH}'"'
+-		addr2line.exe fails with spaces
+-		segfault with RtlUnicodeStringToInteger function
 x		Java libs: set default font somehow?  specified in project file?  Java compiler flag?
 x			use same flag as C++ lib:  SPL_CONSOLE_FONT
 x		Java console PgUp/Down

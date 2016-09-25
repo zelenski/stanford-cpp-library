@@ -20,6 +20,7 @@
 
 #include <string>
 #include "assertions.h"
+#include "autograder.h"
 #include "autogradertest.h"
 #include "gtest.h"
 #include "threading.h"

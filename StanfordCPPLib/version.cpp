@@ -15,6 +15,7 @@
 
 #include "private/version.h"
 #include <cstdio>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -23,17 +24,18 @@
 namespace version {
 #ifdef SPL_PROJECT_VERSION
 /*
- * converts an 8-digit into into a YYYY/MM/DD date,
- * e.g. 20141031 -> "2014/10/31"
+ * converts an 8-digit integer into a YYYY/MM/DD date string,
+ * e.g. 20140907 -> "2014/09/07"
  * needed because I can't have a string as a -D command-line defined flag
  */
 static std::string macroIntegerToDate(int macroInteger) {
+    int year = (macroInteger / 10000);          // 2014
+    int month = (macroInteger % 10000 / 100);   // 09
+    int day = (macroInteger % 100);             // 07
     std::ostringstream out;
-    out << (macroInteger / 10000);         // 2014
-    out << "/";
-    out << (macroInteger % 10000 / 100);   // 10
-    out << "/";
-    out << (macroInteger % 100);           // 31
+    out << std::setw(4) << std::setfill('0') << year
+        << "/" << std::setw(2) << std::setfill('0') << month
+        << "/" << std::setw(2) << std::setfill('0') << day;
     return out.str();
 }
 #endif // SPL_PROJECT_VERSION
@@ -55,7 +57,7 @@ static void ensureJavaBackEndVersionHelper(std::string minVersion) {
         fputs("\n", stderr);
         fflush(stderr);
         
-        exit(1);
+        std::quick_exit(1);
     }
 }
 
@@ -65,6 +67,7 @@ static void ensureProjectVersionHelper(std::string minVersion) {
 #else
     std::string projectVersion = "";
 #endif
+
     if (projectVersion < minVersion) {
         fputs("\n", stderr);
         fputs("***\n", stderr);
@@ -79,7 +82,7 @@ static void ensureProjectVersionHelper(std::string minVersion) {
         fputs("\n", stderr);
         fflush(stderr);
         
-        exit(1);
+        std::quick_exit(1);
     }
 }
 
@@ -95,7 +98,7 @@ void ensureProjectVersion(std::string minVersion) {
 #ifdef SPL_MINIMUM_PROJECT_VERSION
         minVersion = SPL_MINIMUM_PROJECT_VERSION;
 #else
-        minVersion = "";
+        minVersion = STANFORD_CPP_PROJECT_MINIMUM_VERSION;
 #endif
     }
     ensureProjectVersionHelper(minVersion);

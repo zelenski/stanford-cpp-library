@@ -8,6 +8,8 @@
  * can show the results in the GUI for the user.
  * 
  * @author Marty Stepp
+ * @version 2016/09/22
+ * - added () parentheses around all macro variable usages
  * @version 2016/08/02
  * - added assertEqualsImage
  * @version 2014/11/24
@@ -19,6 +21,7 @@
 #define _assertions_h
 
 #include "gtest.h"
+#include "autograder.h"
 
 #define TEST_FAIL_PREFIX std::string("Test case failed: ")
 #define FAIL_PREFIX      std::string("Assertion failed: ")
@@ -26,127 +29,141 @@
 #define assertDiff(msg, a, b) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_DIFF, \
-        msg, a, b, "diff", a == b)); \
-    EXPECT_EQ(a, b)
+        (ms), (a), (b), "diff", ((a) == (b)))); \
+    EXPECT_EQ((a), (b))
 
 #define assertDiffPass(msg, a, b) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_DIFF, \
-        msg, a, b, "diff", true));
+        (msg), (a), (b), "diff", true));
 
 // general assertEquals macro (better to use assertEqualsFoo for various types)
 #define assertEquals(msg, a, b) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_EQUALS, \
-        msg, a, b, "T", a == b)); \
-    EXPECT_EQ(a, b)
+        (msg), (a), (b), "T", ((a) == (b)))); \
+    EXPECT_EQ((a), (b))
 
 // 'quiet' version, only sends to backend/GUI if failed for efficiency
 // (needed when doing a ton of assertions in one program)
 #define assertEqualsQ(msg, a, b) \
-    if (a != b) { \
+    if ((a) != (b)) { \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_EQUALS, \
-        msg, a, b, "T", a == b)); \
+        (msg), (a), (b), "T", ((a) == (b)))); \
     } \
-    EXPECT_EQ(a, b)
+    EXPECT_EQ((a), (b))
 
 // hard-failure on assertion fail
 #define assertEqualsF(msg, a, b) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_EQUALS, \
-        msg, a, b, "T", a == b)); \
-    ASSERT_EQ(a, b)
+        (msg), (a), (b), "T", ((a) == (b)))); \
+    ASSERT_EQ((a), (b))
 
 #define assertEqualsFQ(msg, a, b) \
-    if (a != b) { \
+    if ((a) != (b)) { \
         autograder::setFailDetails(autograder::UnitTestDetails( \
             autograder::UnitTestType::TEST_ASSERT_EQUALS, \
-            msg, a, b, "T", a == b)); \
+            (msg), (a), (b), "T", ((a) == (b)))); \
     } \
-    ASSERT_EQ(a, b)
+    ASSERT_EQ((a), (b))
 
 #define assertEqualsString(msg, a, b) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_EQUALS, \
-        msg, a, b, "string", a == b)); \
-    EXPECT_EQ(a, b)
+        (msg), (a), (b), "string", ((a) == (b)))); \
+    EXPECT_EQ((a), (b))
 
 #define assertEqualsCString(msg, a, b) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_EQUALS, \
-        msg, a, b, "string", std::string(a) == std::string(b))); \
-    EXPECT_EQ(a, b)
+        (msg), (a), (b), "string", std::string((a)) == std::string((b)))); \
+    EXPECT_EQ((a), (b))
 
 #define assertEqualsInt(msg, a, b) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_EQUALS, \
-        msg, integerToString(a), integerToString(b), "int", a == b)); \
-    EXPECT_EQ(a, b)
+        (msg), integerToString((a)), integerToString((b)), "int", ((a) == (b)))); \
+    EXPECT_EQ((a), (b))
 
 #define assertEqualsBool(msg, a, b) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_EQUALS, \
-        msg, boolToString(a), boolToString(b), "bool", a == b)); \
-    EXPECT_EQ(a, b)
+        (msg), boolToString((a)), boolToString((b)), "bool", ((a) == (b)))); \
+    EXPECT_EQ((a), (b))
 
 #define assertEqualsDouble(msg, a, b) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_NEAR, \
-        msg, realToString(a), realToString(b), "double", \
-        (a-b) <= 0.001 && (a-b) >= -0.001)); \
-    EXPECT_NEAR(a, b, 0.001)
+        (msg), realToString((a)), realToString((b)), "double", \
+        ((a)-(b)) <= 0.001 && ((a)-(b)) >= -0.001)); \
+    EXPECT_NEAR((a), (b), 0.001)
 
 #define assertNotEquals(msg, a, b) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_NOT_EQUALS, \
-        msg, a, b, "T", a != b)); \
-    EXPECT_NE(a, b)
+        (msg), (a), (b), "T", ((a) != (b)))); \
+    EXPECT_NE((a), (b))
 
 #define assertNotEqualsString(msg, a, b) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_NOT_EQUALS, \
-        msg, a, b, "string", a != b)); \
-    EXPECT_NE(a, b)
+        (msg), (a), (b), "string", ((a) != (b)))); \
+    EXPECT_NE((a), (b))
 
 #define assertNotEqualsInt(msg, a, b) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_NOT_EQUALS, \
-        msg, integerToString(a), integerToString(b), "int", a != b)); \
-    EXPECT_NE(a, b)
+        (msg), integerToString((a)), integerToString((b)), "int", ((a) != (b)))); \
+    EXPECT_NE((a), (b))
 
 #define assertNotEqualsBool(msg, a, b) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_NOT_EQUALS, \
-        msg, boolToString(a), boolToString(b), "bool", a != b)); \
-    EXPECT_NE(a, b)
+        (msg), boolToString((a)), boolToString((b)), "bool", ((a) != (b)))); \
+    EXPECT_NE((a), (b))
 
 #define assertDoubleNear(msg, a, b, t) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_NEAR, \
-        msg, realToString(a), realToString(b), "double", \
-        (a-b) <= t && (a-b) >= -t)); \
-    EXPECT_NEAR(a, b, t)
+        (msg), realToString(a), realToString(b), "double", \
+        ((a)-(b)) <= (t) && ((a)-(b)) >= -(t))); \
+    EXPECT_NEAR((a), (b), (t))
 #define assertNear assertDoubleNear
 
 #define assertTrue(msg, b) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_TRUE, \
-        msg, boolToString(true), boolToString(b), "bool", \
-        b)); \
-    EXPECT_TRUE(b)
+        (msg), boolToString(true), boolToString(b), "bool", \
+        (b))); \
+    EXPECT_TRUE((b))
 
 #define assertFalse(msg, b) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_FALSE, \
-        msg, boolToString(false), boolToString(b), "bool", \
-        !b)); \
-    EXPECT_FALSE(b)
+        (msg), boolToString(false), boolToString(b), "bool", \
+        !(b))); \
+    EXPECT_FALSE((b))
+
+#define assertNotNull(msg, b) \
+    autograder::setFailDetails(autograder::UnitTestDetails( \
+        autograder::UnitTestType::TEST_ASSERT_NOT_NULL, \
+        (msg), std::string("NULL"), pointerToString((void*) b), "pointer", \
+        (b != NULL))); \
+    EXPECT_NE(((void*) b), ((void*) NULL))
+
+#define assertNull(msg, b) \
+    autograder::setFailDetails(autograder::UnitTestDetails( \
+        autograder::UnitTestType::TEST_ASSERT_NULL, \
+        (msg), std::string("NULL"), pointerToString((void*) b), "pointer", \
+        (b == NULL))); \
+    EXPECT_EQ(((void*) b), ((void*) NULL))
 
 #define assertFail(msg) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_FAIL, \
-        msg)); \
+        (msg))); \
     GTEST_FATAL_FAILURE_(std::string(msg).c_str())
 
 #define assertFailQuiet() \
@@ -158,8 +175,8 @@
 #define assertPass(msg) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_PASS, \
-        msg, true)); \
-    GTEST_SUCCESS_(msg)
+        (msg), true)); \
+    GTEST_SUCCESS_((msg))
 
 #define assertPassQuiet() \
     autograder::setFailDetails(autograder::UnitTestDetails( \

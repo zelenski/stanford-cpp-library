@@ -4,16 +4,19 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include "autograder.h"
 #include "console.h"
 #include "gtest-marty.h"
 #include "platform.h"
+#include "queue.h"
 #include "simpio.h"
+#include "stack.h"
+#include "stl.h"
 #include "vector.h"
+#include "testcases.h"
 #include "private/version.h"
 using namespace std;
-
-static const int TIMEOUT_DEFAULT = 3000;
 
 
 //TEST_CATEGORY(PassFailTests, "standard pass/fail tests");
@@ -106,13 +109,13 @@ static const int TIMEOUT_DEFAULT = 3000;
 //}
 
 
-TEST_CATEGORY(Crashes, "crashes and exceptions");
+//TEST_CATEGORY(Crashes, "crashes and exceptions");
 
-TIMED_TEST(Crashes, test_exception, TIMEOUT_DEFAULT) {
-    Vector<int> v;
-    v[29] = 42;   // boom
-    assertDiff("a diff", 42, 42);
-}
+//TIMED_TEST(Crashes, test_exception, TIMEOUT_DEFAULT) {
+//    Vector<int> v;
+//    v[29] = 42;   // boom
+//    assertDiff("a diff", 42, 42);
+//}
 
 //TIMED_TEST(Crashes, test_sigfpe, TIMEOUT_DEFAULT) {
 //    int y = 0 + 0;
@@ -126,75 +129,58 @@ TIMED_TEST(Crashes, test_exception, TIMEOUT_DEFAULT) {
 //    assertEquals("a diff", 42, x);
 //}
 
-TEST_CATEGORY(PassFailTestsEnd, "standard pass/fail tests at end");
+//TEST_CATEGORY(PassFailTestsEnd, "standard pass/fail tests at end");
 
-TIMED_TEST(PassFailTestsEnd, test_ints_again_PASS, TIMEOUT_DEFAULT) {
-    assertEquals("compare ints", 42, 42);
-}
+//TIMED_TEST(PassFailTestsEnd, test_ints_again_PASS, TIMEOUT_DEFAULT) {
+//    assertEquals("compare ints", 42, 42);
+//}
 
-TIMED_TEST(PassFailTestsEnd, test_ints_again_2_PASS, TIMEOUT_DEFAULT) {
-    sleep(1);
-    assertEquals("compare doubles", 42.0, 42.0);
-}
+//TIMED_TEST(PassFailTestsEnd, test_ints_again_2_PASS, TIMEOUT_DEFAULT) {
+//    sleep(1);
+//    assertEquals("compare doubles", 42.0, 42.0);
+//}
 
-TIMED_TEST(PassFailTestsEnd, test_ints_again_3_PASS, TIMEOUT_DEFAULT) {
-    assertEquals("compare ints", 42, 42);
-}
+//TIMED_TEST(PassFailTestsEnd, test_ints_again_3_PASS, TIMEOUT_DEFAULT) {
+//    assertEquals("compare ints", 42, 42);
+//}
 
-TIMED_TEST(PassFailTestsEnd, test_ints_again_4_FAIL, TIMEOUT_DEFAULT) {
-    sleep(1);
-    assertEquals("compare ints", 42, 43);
-}
+//TIMED_TEST(PassFailTestsEnd, test_ints_again_4_FAIL, TIMEOUT_DEFAULT) {
+//    sleep(1);
+//    assertEquals("compare ints", 42, 43);
+//}
 
-TIMED_TEST(PassFailTestsEnd, test_ints_again_5_PASS, TIMEOUT_DEFAULT) {
-    assertEqualsCString("compare strings", "42", "42");
-}
+//TIMED_TEST(PassFailTestsEnd, test_ints_again_5_PASS, TIMEOUT_DEFAULT) {
+//    assertEqualsCString("compare strings", "42", "42");
+//}
 
-
-/*
- * Code that autograderMain() runs before it starts the autograding test cases.
- */
-void before() {
-    cout << "THIS IS BEFORE!" << endl;
-    cout << "THIS IS BEFORE!" << endl;
-    cout << "THIS IS BEFORE!" << endl;
-}
-
-/*
- * Code that autograderMain() runs after it ends the autograding test cases.
- */
-void after() {
-    cout << "THIS IS AFTER!" << endl;
-    cout << "THIS IS AFTER!" << endl;
-    cout << "THIS IS AFTER!" << endl;
-}
-
-void showMyInputTxt() {
-    // empty
-    autograder::showStudentTextFile("myinput.txt", /* maxWidth */ 75, /* maxHeight */ 30);
-}
 
 // this just needs to be here so that it will become studentMain()
 int main() {
-    cout << "Hello, world!  This is main." << endl;
-    string line = getLine("Please type something: ");
-    cout << "You typed: " << line << endl;
+    cout << "Hello, world!" << endl;
     return 0;
 }
 
 void autograderMain() {
-    // autograder::setShowLateDays(true);    // this is the default
-    version::ensureProjectVersion("2014/10/31");
-    autograder::setAssignmentName("CS 106B Test");
-    autograder::setAboutMessage("TEST 1 2 3 \nHWX assignment auto-grader by Marty Stepp");
-    // autograder::setStudentProgramFileName("recursionproblems.cpp");
-    autograder::setShowInputPanel(true, "inputpanel-mainfunc.xml");
+    autograder::setAssignmentName("Stanford C++ Library Test");
+    autograder::setAboutMessage("Stanford C++ library tester by Marty Stepp");
     autograder::setGraphicalUI(true);
     autograder::setTestNameWidth(std::string("test02_abc_oops_real_long_name_gonnaFail").length());
     autograder::setStartMessage("my start message");
-    autograder::styleCheckAddFile("mainfunc.cpp");
 
-    autograder::addCallbackButton(showMyInputTxt, "View\nmyinput.txt", "textfile.gif");
-    // autograder::setCallbackStart(before);
-    // autograder::setCallbackEnd(after);
+//    std::vector<int> v {10, 20, 30};
+//    std::cout << v << std::endl;
+
+//    std::initializer_list<std::string> list {"a", "bc", "def"};
+//    std::cout << list << std::endl;
+
+//    Stack<int> stack {10, 20, 30};
+//    for (int n : stack) {
+//        std::cout << "stack: " << n << std::endl;
+//    }
+
+//    Queue<int> queue {10, 20, 30};
+//    for (int i = 40; i < 200; i += 10) {
+//        queue.enqueue(i);
+//        for (int n : queue) { std::cout << " " << n; } std::cout << std::endl;
+//    }
 }

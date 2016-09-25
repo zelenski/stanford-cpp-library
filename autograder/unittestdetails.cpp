@@ -15,7 +15,7 @@
 
 #include "unittestdetails.h"
 
-static std::string UNIT_TEST_TYPE_NAMES[12] = {
+static std::string UNIT_TEST_TYPE_NAMES[14] = {
     "ASSERT_EQUALS",
     "ASSERT_NOT_EQUALS",
     "ASSERT_NEAR",
@@ -23,6 +23,8 @@ static std::string UNIT_TEST_TYPE_NAMES[12] = {
     "ASSERT_DIFF_IMAGE",
     "ASSERT_TRUE",
     "ASSERT_FALSE",
+    "ASSERT_NOT_NULL",
+    "ASSERT_NULL",
     "EXCEPTION",
     "NOT_EXCEPTION",
     "PASS",
@@ -151,7 +153,7 @@ std::ostream& operator <<(std::ostream& out, const UnitTestDetails& deets) {
         << ",message=" << urlEncode(deets.message)
         << ",expected=" << urlEncode(deets.expected)
         << ",student=" << urlEncode(deets.student)
-        << ",valueType=" << deets.valueType
+        << ",valueType=" << urlEncode(deets.valueType)
         << ",passed=" << std::boolalpha << deets.passed
         << "}";
     return out;

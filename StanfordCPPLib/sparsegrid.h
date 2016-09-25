@@ -9,6 +9,9 @@
  * Grid is recommended for use over SparseGrid.
  * 
  * @author Marty Stepp
+ * @version 2016/09/24
+ * - refactored to use collections.h utility functions
+ * - added size() method
  * @version 2016/08/10
  * - added constructor support for std initializer_list usage, such as
  *   {{1, 2, 3}, {4, 5, 6}}
@@ -32,6 +35,7 @@
 #define _sparsegrid_h
 
 #include <initializer_list>
+#include "collections.h"
 #include "error.h"
 #include "hashcode.h"
 #include "map.h"
@@ -206,6 +210,16 @@ public:
      * the grid boundaries.
      */
     void set(int row, int col, const ValueType& value);
+
+    /*
+     * Method: size
+     * Usage: int size = grid.size();
+     * ------------------------------
+     * Returns the total number of elements that have been set in the grid.
+     * Note that this may not be equal to the number of rows times the number of
+     * columns, because not every index may have been set.
+     */
+    int size() const;
 
     /*
      * Method: toString
@@ -710,6 +724,15 @@ void SparseGrid<ValueType>::set(int row, int col, const ValueType& value) {
 }
 
 template <typename ValueType>
+int SparseGrid<ValueType>::size() const {
+    int count = 0;
+    for (Map<int, ValueType>& map : elements) {
+        count += map.size();
+    }
+    return count;
+}
+
+template <typename ValueType>
 std::string SparseGrid<ValueType>::toString() const {
     std::ostringstream os;
     os << *this;
@@ -913,12 +936,8 @@ std::istream& operator >>(std::istream& is, SparseGrid<ValueType>& grid) {
  * Requires the element type in the SparseGrid to have a hashCode function.
  */
 template <typename T>
-int hashCode(const SparseGrid<T>& g) {
-    int code = hashSeed();
-    for (T n : g) {
-        code = hashMultiplier() * code + hashCode(n);
-    }
-    return int(code & hashMask());
+int hashCode(const SparseGrid<T>& grid) {
+    return stanfordcpplib::collections::hashCodeCollection(grid);
 }
 
 /*
@@ -935,6 +954,7 @@ const T& randomElement(const SparseGrid<T>& grid) {
     }
     
     // pick a non-empty row, then pick a random element from it
+    // TODO: fix, this is NOT evenly distributed when rows/cols are unequal in size
     int row = randomKey(grid.elements);
     int col = randomKey(grid.elements[row]);
     return grid.get(row, col);

@@ -4,6 +4,8 @@
  * This file exports the <code>Set</code> class, which implements a
  * collection for storing a set of distinct elements.
  * 
+ * @version 2016/09/24
+ * - refactored to use collections.h utility functions
  * @version 2016/08/11
  * - added containsAll, isSupersetOf methods
  * @version 2016/08/10
@@ -27,7 +29,7 @@
 #include <initializer_list>
 #include <iostream>
 #include <set>
-#include "compare.h"
+#include "collections.h"
 #include "error.h"
 #include "hashcode.h"
 #include "map.h"
@@ -563,20 +565,12 @@ bool Set<ValueType>::equals(const Set<ValueType>& set2) const {
     if (this == &set2) {
         return true;
     }
+
     if (size() != set2.size()) {
         return false;
     }
-    iterator it1 = begin();
-    iterator it2 = set2.map.begin();
-    iterator end = this->end();
-    while (it1 != end) {
-        if (map.compareKeys(*it1, *it2) != 0) {
-            return false;
-        }
-        ++it1;
-        ++it2;
-    }
-    return true;
+
+    return isSubsetOf(set2) && set2.isSubsetOf(*this);
 }
 
 template <typename ValueType>
@@ -728,22 +722,22 @@ bool Set<ValueType>::operator !=(const Set& set2) const {
 
 template <typename ValueType>
 bool Set<ValueType>::operator <(const Set& set2) const {
-    return compare::compare(*this, set2) < 0;
+    return stanfordcpplib::collections::compare(*this, set2) < 0;
 }
 
 template <typename ValueType>
 bool Set<ValueType>::operator <=(const Set& set2) const {
-    return compare::compare(*this, set2) <= 0;
+    return stanfordcpplib::collections::compare(*this, set2) <= 0;
 }
 
 template <typename ValueType>
 bool Set<ValueType>::operator >(const Set& set2) const {
-    return compare::compare(*this, set2) > 0;
+    return stanfordcpplib::collections::compare(*this, set2) > 0;
 }
 
 template <typename ValueType>
 bool Set<ValueType>::operator >=(const Set& set2) const {
-    return compare::compare(*this, set2) >= 0;
+    return stanfordcpplib::collections::compare(*this, set2) >= 0;
 }
 
 template <typename ValueType>
@@ -844,57 +838,13 @@ Set<ValueType>& Set<ValueType>::operator -=(const ValueType& value) {
 
 template <typename ValueType>
 std::ostream& operator <<(std::ostream& os, const Set<ValueType>& set) {
-    os << "{";
-    bool started = false;
-    for (ValueType value : set) {
-        if (started) {
-            os << ", ";
-        }
-        writeGenericValue(os, value, /* forceQuotes */ true);
-        started = true;
-    }
-    os << "}";
-    return os;
+    return stanfordcpplib::collections::writeCollection(os, set);
 }
 
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, Set<ValueType>& set) {
-    char ch = '\0';
-    is >> ch;
-    if (ch != '{') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error("Set::operator >>: Missing {");
-#endif
-        is.setstate(std::ios_base::failbit);
-        return is;
-    }
-    set.clear();
-    is >> ch;
-    if (ch != '}') {
-        is.unget();
-        while (true) {
-            ValueType value;
-            if (!readGenericValue(is, value)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error("Set::operator >>: parse error");
-#endif
-                return is;
-            }
-            set += value;
-            is >> ch;
-            if (ch == '}') {
-                break;
-            }
-            if (ch != ',') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error(std::string("Set::operator >>: Unexpected character ") + ch);
-#endif
-                is.setstate(std::ios_base::failbit);
-                return is;
-            }
-        }
-    }
-    return is;
+    ValueType element;
+    return stanfordcpplib::collections::readCollection(is, set, element, /* descriptor */ "Set::operator >>");
 }
 
 /*
@@ -902,12 +852,8 @@ std::istream& operator >>(std::istream& is, Set<ValueType>& set) {
  * Requires the element type in the Set to have a hashCode function.
  */
 template <typename T>
-int hashCode(const Set<T>& s) {
-    int code = hashSeed();
-    for (T n : s) {
-        code = hashMultiplier() * code + hashCode(n);
-    }
-    return int(code & hashMask());
+int hashCode(const Set<T>& set) {
+    return stanfordcpplib::collections::hashCodeCollection(set);
 }
 
 /*
@@ -919,21 +865,7 @@ int hashCode(const Set<T>& s) {
  */
 template <typename T>
 const T& randomElement(const Set<T>& set) {
-    if (set.isEmpty()) {
-        error("randomElement: empty set was passed");
-    }
-    int index = randomInteger(0, set.size() - 1);
-    int i = 0;
-    for (const T& element : set) {
-        if (i == index) {
-            return element;
-        }
-        i++;
-    }
-    
-    // this code will never be reached
-    static T unused = set.first();
-    return unused;
+    return stanfordcpplib::collections::randomElement(set);
 }
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

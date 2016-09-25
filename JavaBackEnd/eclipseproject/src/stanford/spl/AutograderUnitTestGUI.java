@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp
+ * @version 2016/09/22
+ * - fixed bugs with forgetting to HTML-encode test results message/expected/actual
  * @version 2016/04/28
  * - max window size so a program with many tests doesn't fall off screen
  * @version 2015/05/28
@@ -577,6 +579,8 @@ public class AutograderUnitTestGUI extends Observable
 		    ASSERT_DIFF,
 		    ASSERT_TRUE,
 		    ASSERT_FALSE,
+		    ASSERT_NOT_NULL,
+		    ASSERT_NULL,
 		    EXCEPTION,
 		    NOT_EXCEPTION,
 		    PASS,
@@ -601,7 +605,7 @@ public class AutograderUnitTestGUI extends Observable
 		
 		boolean passed = deets.containsKey("passed") && deets.get("passed").equalsIgnoreCase("true");
 		String type = deets.containsKey("testType") ? deets.get("testType").toUpperCase().intern() : "";
-		String message = deets.get("message");
+		String message = StringUtils.htmlEncode(deets.get("message"));
 		if (type == "ASSERT_EQUALS") {
 			message += " (must be equal)";
 		} else if (type == "ASSERT_NOT_EQUALS") {
@@ -631,8 +635,8 @@ public class AutograderUnitTestGUI extends Observable
 		}
 		
 		// simple expected/actual tests (show both as bullets)
-		String expected = String.valueOf(deets.get("expected"));
-		String student  = String.valueOf(deets.get("student"));
+		String expected = StringUtils.htmlEncode(String.valueOf(deets.get("expected")));
+		String student  = StringUtils.htmlEncode(String.valueOf(deets.get("student")));
 		String valueType = deets.containsKey("valueType") ? deets.get("valueType").toLowerCase().intern() : "";
 		if (valueType == "string") {
 			expected = "\"" + expected + "\"";
@@ -644,7 +648,7 @@ public class AutograderUnitTestGUI extends Observable
 		
 		String stack = "";
 		if (deets.containsKey("stackTrace")) {
-			stack = deets.get("stackTrace").replace("\n", "<br>").replace("\t", "  ");
+			stack = StringUtils.htmlEncode(deets.get("stackTrace")).replace("\n", "<br>").replace("\t", "  ");
 		}
 		
 		boolean shouldShowJOptionPane = true;

@@ -4,6 +4,10 @@
  * This file exports the <code>Grid</code> class, which offers a
  * convenient abstraction for representing a two-dimensional array.
  *
+ * @version 2016/09/24
+ * - refactored to use collections.h utility functions
+ * - made member variables actually private (oops)
+ * - added size() method
  * @version 2016/08/10
  * - added constructor support for std initializer_list usage, such as
  *   {{1, 2, 3}, {4, 5, 6}}
@@ -34,6 +38,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include "collections.h"
 #include "error.h"
 #include "hashcode.h"
 #include "random.h"
@@ -221,7 +226,16 @@ public:
      * the grid boundaries.
      */
     void set(int row, int col, const ValueType& value);
-    
+
+    /*
+     * Method: size
+     * Usage: int size = grid.size();
+     * ------------------------------
+     * Returns the total number of elements in the grid, which is equal to the
+     * number of rows times the number of columns.
+     */
+    int size() const;
+
     /*
      * Method: toString
      * Usage: string str = grid.toString();
@@ -330,6 +344,7 @@ public:
      * and so on.
      */
 
+private:
     /* Instance variables */
     ValueType* elements;  /* A dynamic array of the elements   */
     int nRows;            /* The number of rows in the grid    */
@@ -748,6 +763,11 @@ void Grid<ValueType>::set(int row, int col, const ValueType& value) {
 }
 
 template <typename ValueType>
+int Grid<ValueType>::size() const {
+    return nRows * nCols;
+}
+
+template <typename ValueType>
 std::string Grid<ValueType>::toString() const {
     std::ostringstream os;
     os << *this;
@@ -932,11 +952,7 @@ std::istream& operator >>(std::istream& is, Grid<ValueType>& grid) {
  */
 template <typename T>
 int hashCode(const Grid<T>& g) {
-    int code = hashSeed();
-    for (T n : g) {
-        code = hashMultiplier() * code + hashCode(n);
-    }
-    return int(code & hashMask());
+    return stanfordcpplib::collections::hashCodeCollection(g);
 }
 
 /*
@@ -951,8 +967,10 @@ const T& randomElement(const Grid<T>& grid) {
     if (grid.isEmpty()) {
         error("randomElement: empty grid was passed");
     }
-    int row = randomInteger(0, grid.numRows() - 1);
-    int col = randomInteger(0, grid.numCols() - 1);
+
+    int randomIndex = randomInteger(0, grid.size() - 1);
+    int row = randomIndex / grid.numCols();
+    int col = randomIndex % grid.numCols();
     return grid.get(row, col);
 }
 

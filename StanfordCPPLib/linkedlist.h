@@ -5,6 +5,8 @@
  * implementation of a doubly-linked list of objects and provides the same
  * public interface of members as the <code>LinkedList</code> class.
  *
+ * @version 2016/09/24
+ * - refactored to use collections.h utility functions
  * @version 2016/08/10
  * - added support for std initializer_list usage, such as {1, 2, 3}
  *   in constructor, addAll, +, +=
@@ -36,6 +38,7 @@
 #include <string>
 #include <list>
 #include <vector>
+#include "collections.h"
 #include "error.h"
 #include "hashcode.h"
 #include "random.h"
@@ -836,58 +839,13 @@ LinkedList<ValueType>::operator ,(const ValueType& value) {
  */
 template <typename ValueType>
 std::ostream& operator <<(std::ostream& os, const LinkedList<ValueType>& list) {
-    os << "{";
-    if (!list.isEmpty()) {
-        auto itr = list.begin(), end = list.end();
-        writeGenericValue(os, *itr, /* forceQuotes */ true);
-        itr++;
-        while (itr != end) {
-            os << ", ";
-            writeGenericValue(os, *itr, /* forceQuotes */ true);
-            itr++;
-        }
-    }
-    return os << "}";
+    return stanfordcpplib::collections::writeCollection(os, list);
 }
 
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, LinkedList<ValueType>& list) {
-    char ch = '\0';
-    is >> ch;
-    if (ch != '{') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error("LinkedList::operator >>: Missing {");
-#endif
-        is.setstate(std::ios_base::failbit);
-        return is;
-    }
-    list.clear();
-    is >> ch;
-    if (ch != '}') {
-        is.unget();
-        while (true) {
-            ValueType value;
-            if (!readGenericValue(is, value)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error("LinkedList::operator >>: parse error");
-#endif
-                return is;
-            }
-            list.add(value);
-            is >> ch;
-            if (ch == '}') {
-                break;
-            }
-            if (ch != ',') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error(std::string("LinkedList::operator >>: Unexpected character ") + ch);
-#endif
-                is.setstate(std::ios_base::failbit);
-                return is;
-            }
-        }
-    }
-    return is;
+    ValueType element;
+    return stanfordcpplib::collections::readCollection(is, list, element, /* descriptor */ "LinkedList::operator >>");
 }
 
 /*
@@ -896,11 +854,7 @@ std::istream& operator >>(std::istream& is, LinkedList<ValueType>& list) {
  */
 template <typename T>
 int hashCode(const LinkedList<T>& list) {
-    int code = hashSeed();
-    for (T element : list) {
-        code = hashMultiplier() * code + hashCode(element);
-    }
-    return int(code & hashMask());
+    return stanfordcpplib::collections::hashCodeCollection(list);
 }
 
 /*
@@ -912,11 +866,7 @@ int hashCode(const LinkedList<T>& list) {
  */
 template <typename T>
 const T& randomElement(const LinkedList<T>& list) {
-    if (list.isEmpty()) {
-        error("randomElement: empty list was passed");
-    }
-    int index = randomInteger(0, list.size() - 1);
-    return list[index];
+    return stanfordcpplib::collections::randomElementIndexed(list);
 }
 
 /*

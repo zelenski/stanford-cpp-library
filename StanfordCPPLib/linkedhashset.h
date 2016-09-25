@@ -5,12 +5,15 @@
  * implements an efficient abstraction for storing sets of values.
  * 
  * @author Marty Stepp
+ * @version 2016/09/24
+ * - refactored to use collections.h utility functions
  * @version 2016/09/22
  * - added containsAll, isSupersetOf methods
  * - added support for std initializer_list usage, such as {1, 2, 3}
  *   in constructor, addAll, containsAll, isSubsetOf, isSupersetOf, removeAll,
  *   retainAll, and operators +, +=, -, -=, *, *=
  * - bug fix in hashCode function
+ * - added operators <, <=, >, >=
  * @version 2016/08/04
  * - fixed operator >> to not throw errors
  * @version 2015/10/26
@@ -23,6 +26,7 @@
 
 #include <initializer_list>
 #include <iostream>
+#include "collections.h"
 #include "error.h"
 #include "hashcode.h"
 #include "linkedhashmap.h"
@@ -253,6 +257,20 @@ public:
      * are different.
      */
     bool operator !=(const LinkedHashSet& set2) const;
+
+    /*
+     * Operators: <, >, <=, >=
+     * Usage: if (set1 <= set2) ...
+     * ...
+     * ----------------------------
+     * Relational operators to compare two sets.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
+     */
+    bool operator <(const LinkedHashSet& set2) const;
+    bool operator <=(const LinkedHashSet& set2) const;
+    bool operator >(const LinkedHashSet& set2) const;
+    bool operator >=(const LinkedHashSet& set2) const;
 
     /*
      * Operator: +
@@ -520,11 +538,11 @@ bool LinkedHashSet<ValueType>::equals(const LinkedHashSet<ValueType>& set2) cons
     if (this == &set2) {
         return true;
     }
-    
+
     if (size() != set2.size()) {
         return false;
     }
-    
+
     return isSubsetOf(set2) && set2.isSubsetOf(*this);
 }
 
@@ -667,6 +685,26 @@ bool LinkedHashSet<ValueType>::operator !=(const LinkedHashSet& set2) const {
 }
 
 template <typename ValueType>
+bool LinkedHashSet<ValueType>::operator <(const LinkedHashSet& set2) const {
+    return stanfordcpplib::collections::compare(*this, set2) < 0;
+}
+
+template <typename ValueType>
+bool LinkedHashSet<ValueType>::operator <=(const LinkedHashSet& set2) const {
+    return stanfordcpplib::collections::compare(*this, set2) <= 0;
+}
+
+template <typename ValueType>
+bool LinkedHashSet<ValueType>::operator >(const LinkedHashSet& set2) const {
+    return stanfordcpplib::collections::compare(*this, set2) > 0;
+}
+
+template <typename ValueType>
+bool LinkedHashSet<ValueType>::operator >=(const LinkedHashSet& set2) const {
+    return stanfordcpplib::collections::compare(*this, set2) >= 0;
+}
+
+template <typename ValueType>
 LinkedHashSet<ValueType> LinkedHashSet<ValueType>::operator +(const LinkedHashSet& set2) const {
     LinkedHashSet<ValueType> set = *this;
     set.addAll(set2);
@@ -764,57 +802,13 @@ LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator -=(const ValueType&
 
 template <typename ValueType>
 std::ostream& operator <<(std::ostream& os, const LinkedHashSet<ValueType>& set) {
-    os << "{";
-    bool started = false;
-    for (ValueType value : set) {
-        if (started) {
-            os << ", ";
-        }
-        writeGenericValue(os, value, true);
-        started = true;
-    }
-    os << "}";
-    return os;
+    return stanfordcpplib::collections::writeCollection(os, set);
 }
 
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, LinkedHashSet<ValueType>& set) {
-    char ch = '\0';
-    is >> ch;
-    if (ch != '{') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error("LinkedHashSet::operator >>: Missing {");
-#endif
-        is.setstate(std::ios_base::failbit);
-        return is;
-    }
-    set.clear();
-    is >> ch;
-    if (ch != '}') {
-        is.unget();
-        while (true) {
-            ValueType value;
-            if (!readGenericValue(is, value)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error("LinkedHashSet::operator >>: parse error");
-#endif
-                return is;
-            }
-            set += value;
-            is >> ch;
-            if (ch == '}') {
-                break;
-            }
-            if (ch != ',') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error(std::string("LinkedHashSet::operator >>: Unexpected character ") + ch);
-#endif
-                is.setstate(std::ios_base::failbit);
-                return is;
-            }
-        }
-    }
-    return is;
+    ValueType element;
+    return stanfordcpplib::collections::readCollection(is, set, element, /* descriptor */ "LinkedHashSet::operator >>");
 }
 
 /*
@@ -822,12 +816,8 @@ std::istream& operator >>(std::istream& is, LinkedHashSet<ValueType>& set) {
  * Requires the element type in the LinkedHashSet to have a hashCode function.
  */
 template <typename T>
-int hashCode(const LinkedHashSet<T>& s) {
-    int code = hashSeed();
-    for (T n : s) {
-        code = hashMultiplier() * code + hashCode(n);
-    }
-    return int(code & hashMask());
+int hashCode(const LinkedHashSet<T>& set) {
+    return stanfordcpplib::collections::hashCodeCollection(set, /* orderMatters */ false);
 }
 
 /*
@@ -839,21 +829,7 @@ int hashCode(const LinkedHashSet<T>& s) {
  */
 template <typename T>
 const T& randomElement(const LinkedHashSet<T>& set) {
-    if (set.isEmpty()) {
-        error("randomElement: empty linked hash set was passed");
-    }
-    int index = randomInteger(0, set.size() - 1);
-    int i = 0;
-    for (const T& element : set) {
-        if (i == index) {
-            return element;
-        }
-        i++;
-    }
-    
-    // this code will never be reached
-    static T unused = set.first();
-    return unused;
+    return stanfordcpplib::collections::randomElement(set);
 }
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

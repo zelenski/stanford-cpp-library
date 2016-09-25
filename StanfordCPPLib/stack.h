@@ -4,6 +4,9 @@
  * This file exports the <code>Stack</code> class, which implements
  * a collection that processes values in a last-in/first-out (LIFO) order.
  * 
+ * @version 2016/09/24
+ * - refactored to use collections.h utility functions
+ * - made const iterators public
  * @version 2016/08/10
  * - added constructor support for std initializer_list usage, such as {1, 2, 3}
  * @version 2016/08/04
@@ -241,6 +244,7 @@ private:
         const_iterator(const typename Vector<ValueType>::const_iterator& it) : Vector<ValueType>::const_iterator(it) {}
     };
     
+public:
     /*
      * Returns an iterator positioned at the first element of the list.
      */
@@ -249,14 +253,6 @@ private:
     }
 
     /*
-     * Returns an iterator positioned at the first element of the list.
-     */
-    const_iterator begin() const {
-        auto itr = elements.begin();
-        return const_iterator(itr);
-    }
-    
-    /*
      * Returns an iterator positioned at the last element of the list.
      */
     iterator end() {
@@ -264,6 +260,14 @@ private:
         return iterator(itr);
     }
     
+    /*
+     * Returns an iterator positioned at the first element of the list.
+     */
+    const_iterator begin() const {
+        auto itr = elements.begin();
+        return const_iterator(itr);
+    }
+
     /*
      * Returns an iterator positioned at the last element of the list.
      */
@@ -310,18 +314,7 @@ void Stack<ValueType>::clear() {
 
 template <typename ValueType>
 bool Stack<ValueType>::equals(const Stack<ValueType>& stack2) const {
-    if (this == &stack2) {
-		return true;
-	}
-	if (size() != stack2.size()) {
-        return false;
-    }
-    for (int i = 0; i < size(); i++) {
-        if (elements[i] != stack2.elements[i]) {
-            return false;
-        }
-    }
-    return true;
+    return stanfordcpplib::collections::equals(*this, stack2);
 }
 
 template <typename ValueType>
@@ -423,42 +416,8 @@ std::ostream& operator <<(std::ostream& os, const Stack<ValueType>& stack) {
 
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, Stack<ValueType>& stack) {
-    char ch = '\0';
-    is >> ch;
-    if (ch != '{') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error("Stack::operator >>: Missing {");
-#endif
-        is.setstate(std::ios_base::failbit);
-        return is;
-    }
-    stack.clear();
-    is >> ch;
-    if (ch != '}') {
-        is.unget();
-        while (true) {
-            ValueType value;
-            if (!readGenericValue(is, value)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error("Stack::operator >>: parse error");
-#endif
-                return is;
-            }
-            stack.push(value);
-            is >> ch;
-            if (ch == '}') {
-                break;
-            }
-            if (ch != ',') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error(std::string("Stack::operator >>: Unexpected character ") + ch);
-#endif
-                is.setstate(std::ios_base::failbit);
-                return is;
-            }
-        }
-    }
-    return is;
+    ValueType element;
+    return stanfordcpplib::collections::readCollection(is, stack, element, /* descriptor */ "Stack::operator >>");
 }
 
 /*

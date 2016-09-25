@@ -135,18 +135,18 @@ long ibitstream::size() {
     if (!is_open()) {
         error("ibitstream::size: Cannot get size of stream which is not open.");
     }
-    clear();					// clear any error state
-    streampos cur = tellg();	// save current streampos
-    seekg(0, std::ios::end);			// seek to end
-    streampos end = tellg();	// get offset
-    seekg(cur);					// seek back to original pos
+    clear();                    // clear any error state
+    streampos cur = tellg();    // save current streampos
+    seekg(0, std::ios::end);    // seek to end
+    streampos end = tellg();    // get offset
+    seekg(cur);                 // seek back to original pos
     return long(end);
 }
 
 /* Member function ibitstream::is_open
  * -----------------------------------
  * Default implementation of is_open has the stream always
- * open.	Subclasses can customize this if they'd like.
+ * open.  Subclasses can customize this if they'd like.
  */
 bool ibitstream::is_open() {
     return true;
@@ -172,7 +172,7 @@ obitstream::obitstream() : std::ostream(NULL), lastTell(0), curByte(0), pos(NUM_
  * Else if end of curByte (or some other write happened), then start a fresh
  * byte at position 0.
  * We write the byte out for each bit (backing up to overwrite as needed), rather
- * than waiting for 8 bits.	 This is because the client might make
+ * than waiting for 8 bits.  This is because the client might make
  * 3 writeBit calls and then start using << so we can't wait til full-byte
  * boundary to flush any partial-byte bits.
  */
@@ -191,7 +191,7 @@ void obitstream::writeBit(int bit) {
         // if just filled curByte or if data written to stream after last writeBit()
         if (lastTell != tellp() || pos == NUM_BITS_IN_BYTE) {
             curByte = 0;   // zero out byte for next writes
-            pos = 0;	   // start writing to first bit of new byte
+            pos = 0;       // start writing to first bit of new byte
         }
 
         if (bit) {
@@ -225,18 +225,18 @@ long obitstream::size() {
     if (!is_open()) {
         error("obitstream::size: stream is not open");
     }
-    clear();					// clear any error state
-    streampos cur = tellp();	// save current streampos
-    seekp(0, std::ios::end);			// seek to end
-    streampos end = tellp();	// get offset
-    seekp(cur);					// seek back to original pos
+    clear();                    // clear any error state
+    streampos cur = tellp();    // save current streampos
+    seekp(0, std::ios::end);    // seek to end
+    streampos end = tellp();    // get offset
+    seekp(cur);                 // seek back to original pos
     return long(end);
 }
 
 /* Member function obitstream::is_open
  * -----------------------------------
  * Default implementation of is_open has the stream always
- * open.	Subclasses can customize this if they'd like.
+ * open.  Subclasses can customize this if they'd like.
  */
 bool obitstream::is_open() {
     return true;
