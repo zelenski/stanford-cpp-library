@@ -5,6 +5,8 @@
  * the platform-specific parts of the StanfordCPPLib package.  This file is
  * logically part of the implementation and is not interesting to clients.
  *
+ * @version 2016/09/26
+ * - added Note playing methods
  * @version 2016/08/02
  * - added DiffImage methods
  * - added GWindow savePixels method
@@ -247,6 +249,7 @@ public:
     void jbeconsole_setTitle(const std::string& title);
     void jbeconsole_setVisible(bool value);
     void jbeconsole_toFront();
+    void note_play(const std::string& noteString);
     std::string os_getLastError();
     bool regex_match(std::string s, std::string regexp);
     int regex_matchCount(std::string s, std::string regexp);

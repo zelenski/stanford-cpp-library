@@ -1916,6 +1916,15 @@ void Platform::jbeconsole_toFront() {
     putPipe("JBEConsole.toFront()");
 }
 
+void Platform::note_play(const std::string& noteString) {
+    std::ostringstream os;
+    os << "Note.play(";
+    writeQuotedString(os, urlEncode(noteString));
+    os << ")";
+    putPipe(os.str());
+    getResult();   // wait for playing to be done
+}
+
 void Platform::autograderinput_addButton(std::string text, std::string input) {
     if (input.empty()) {
         input = text;

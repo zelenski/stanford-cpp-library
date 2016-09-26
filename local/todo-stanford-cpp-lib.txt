@@ -1,5 +1,7 @@
 	TODO C++ libs:
 	==============
+		modify writeQuotedString etc. to return ostream& (enable chaining)
+		
 		purge "using namespace std;"
 		
 		automated test suite

@@ -1,4 +1,6 @@
 /*
+ * @version 2016/09/26
+ * - added Note_play
  * @version 2016/07/06
  * - added DiffImage_show
  */
@@ -202,6 +204,7 @@ public abstract class JBECommand {
 		localHashMap.put("JBEConsole.setTitle", new JBEConsole_setTitle());
 		localHashMap.put("JBEConsole.setVisible", new JBEConsole_setVisible());
 		localHashMap.put("JBEConsole.toFront", new JBEConsole_toFront());
+		localHashMap.put("Note.play", new Note_play());
 		localHashMap.put("Regex.matchCount", new Regex_matchCount());
 		localHashMap.put("Regex.matchCountWithLines", new Regex_matchCountWithLines());
 		localHashMap.put("Regex.match", new Regex_match());
