@@ -6,6 +6,8 @@
  * file (.pro).
  *
  * @author Marty Stepp 
+ * @version 2016/09/24
+ * - bug fix for std::quick_exit function
  * @version 2015/07/05
  * - removed static global Platform variable, replaced by getPlatform as needed
  * @version 2014/11/13
@@ -57,7 +59,7 @@ static void ensureJavaBackEndVersionHelper(std::string minVersion) {
         fputs("\n", stderr);
         fflush(stderr);
         
-        std::quick_exit(1);
+        std::exit(1);
     }
 }
 
@@ -82,7 +84,7 @@ static void ensureProjectVersionHelper(std::string minVersion) {
         fputs("\n", stderr);
         fflush(stderr);
         
-        std::quick_exit(1);
+        std::exit(1);
     }
 }
 

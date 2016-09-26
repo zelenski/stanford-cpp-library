@@ -4,6 +4,8 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2016/09/24
+ * - bug fix for current directory of spl.jar on Mac platform
  * @version 2016/09/22
  * - refactored initialization of lib; facilitates not using graphical console
  * @version 2016/08/02
@@ -2527,6 +2529,21 @@ static std::string getSplJarPath() {
             splHomeDir += '/';
         }
     }
+
+#ifndef _WIN32
+    // on Mac only, may need to change folder because of app's nested dir structure
+    std::string currentDir = getcwd(NULL, 0);
+    size_t ax = currentDir.find(".app/Contents/");
+    if (ax != std::string::npos) {
+        while (ax > 0 && currentDir[ax] != '/') {
+            ax--;
+        }
+        if (ax > 0) {
+            std::string cwd = currentDir.substr(0, ax);
+            chdir(cwd.c_str());
+        }
+    }
+#endif // _WIN32
 
     // check whether spl.jar file exists (code taken from filelib_fileExists)
     std::string jarName = splHomeDir + "spl.jar";
