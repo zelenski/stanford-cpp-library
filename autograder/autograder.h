@@ -189,6 +189,7 @@ void setCurrentTestShouldRun(bool shouldRun);
  * calling exit() as a form of return.
  */
 void setExitEnabled(bool enabled);
+bool exitEnabled();
 
 /*
  * Specifies details to show for a failed test case.
@@ -208,6 +209,7 @@ void setFailsToPrintPerTest(int count);
  * Sets whether to show a GUI rather than printing test results to cout.
  */
 void setGraphicalUI(bool value = true);
+bool isGraphicalUI();
 
 /*
  * Enables/disables the helper window panel that pops up with

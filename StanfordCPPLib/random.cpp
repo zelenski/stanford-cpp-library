@@ -3,6 +3,8 @@
  * ----------------
  * This file implements the random.h interface.
  * 
+ * @version 2016/10/04
+ * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * @version 2016/08/02
  * - added randomColor, randomColorString
  * @version 2014/10/19
@@ -16,29 +18,29 @@
 #include <cmath>
 #include <ctime>
 #include <queue>
+#include "private/static.h"
 
 /* Private function prototype */
 
 static void initRandomSeed();
 
-namespace autograder {
 /* internal buffer of fixed random numbers to return; used by autograders */
-std::queue<bool> fixedBools;
-std::queue<int> fixedInts;
-std::queue<double> fixedReals;
+STATIC_VARIABLE_DECLARE_COLLECTION_EMPTY(std::queue<bool>, fixedBools)
+STATIC_VARIABLE_DECLARE_COLLECTION_EMPTY(std::queue<int>, fixedInts)
+STATIC_VARIABLE_DECLARE_COLLECTION_EMPTY(std::queue<double>, fixedReals)
 
 void randomFeedBool(bool value) {
-    fixedBools.push(value);
+    STATIC_VARIABLE(fixedBools).push(value);
 }
 
 void randomFeedInteger(int value) {
-    fixedInts.push(value);
+    STATIC_VARIABLE(fixedInts).push(value);
 }
 
 void randomFeedReal(double value) {
-    fixedReals.push(value);
+    STATIC_VARIABLE(fixedReals).push(value);
 }
-}
+/* end 'fixed' internal stuff */
 
 bool randomBool() {
     return randomChance(0.5);
@@ -51,9 +53,9 @@ bool randomBool() {
  * whether the result is less than the requested probability.
  */
 bool randomChance(double p) {
-    if (!autograder::fixedBools.empty()) {
-        bool top = autograder::fixedBools.front();
-        autograder::fixedBools.pop();
+    if (!STATIC_VARIABLE(fixedBools).empty()) {
+        bool top = STATIC_VARIABLE(fixedBools).front();
+        STATIC_VARIABLE(fixedBools).pop();
         return top;
     }
     initRandomSeed();
@@ -61,9 +63,9 @@ bool randomChance(double p) {
 }
 
 int randomColor() {
-    if (!autograder::fixedInts.empty()) {
-        int top = autograder::fixedInts.front();
-        autograder::fixedInts.pop();
+    if (!STATIC_VARIABLE(fixedInts).empty()) {
+        int top = STATIC_VARIABLE(fixedInts).front();
+        STATIC_VARIABLE(fixedInts).pop();
         return top & 0x00ffffff;
     }
     initRandomSeed();
@@ -99,9 +101,9 @@ std::string randomColorString() {
  * performed using doubles instead of ints.
  */
 int randomInteger(int low, int high) {
-    if (!autograder::fixedInts.empty()) {
-        int top = autograder::fixedInts.front();
-        autograder::fixedInts.pop();
+    if (!STATIC_VARIABLE(fixedInts).empty()) {
+        int top = STATIC_VARIABLE(fixedInts).front();
+        STATIC_VARIABLE(fixedInts).pop();
         return top;
     }
     initRandomSeed();
@@ -117,9 +119,9 @@ int randomInteger(int low, int high) {
  * without the final conversion step.
  */
 double randomReal(double low, double high) {
-    if (!autograder::fixedReals.empty()) {
-        double top = autograder::fixedReals.front();
-        autograder::fixedReals.pop();
+    if (!STATIC_VARIABLE(fixedReals).empty()) {
+        double top = STATIC_VARIABLE(fixedReals).front();
+        STATIC_VARIABLE(fixedReals).pop();
         return top;
     }
     initRandomSeed();
@@ -147,10 +149,10 @@ void setRandomSeed(int seed) {
  * is called, initialized is false, so the seed is set to the current time.
  */
 static void initRandomSeed() {
-    static bool initialized = false;
-    if (!initialized) {
+    static bool _initialized = false;
+    if (!_initialized) {
         srand(int(time(NULL)));
         rand();   // BUGFIX: throwaway call to get randomness going
-        initialized = true;
+        _initialized = true;
     }
 }

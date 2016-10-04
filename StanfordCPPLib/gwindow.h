@@ -656,14 +656,12 @@ void exitGraphics();
 
 // functions for auditing calls to pause();
 // used to facilitate creation of autograder programs
-namespace autograder {
 int gwindowGetNumPauses();
 void gwindowResetNumPauses();
 double gwindowGetLastPauseMS();
 void gwindowResetLastPauseMS();
 void gwindowSetExitGraphicsEnabled(bool value = true);
 void gwindowSetPauseEnabled(bool value = true);
-}
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 

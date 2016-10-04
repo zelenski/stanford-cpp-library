@@ -1,7 +1,19 @@
+/*
+ * File: consolestreambuf.h
+ * --------------------------
+ * This file defines the <code>ConsoleStreambuf</code> class, which
+ * represents a stream buffer that reads/writes to the Stanford graphical console
+ * using a process pipe to a Java back-end process.
+ *
+ * @version 2016/10/04
+ * - initial version
+ */
+
 #ifndef _consolestreambuf_h
 #define _consolestreambuf_h
 
 #include <iostream>
+#include <streambuf>
 
 namespace stanfordcpplib {
 

@@ -5,7 +5,10 @@
  * See autogradertest.h for declarations and documentation.
  *
  * @author Marty Stepp
+ * @version 2016/10/04
+ * - slight refactor of static variables
  * @version 2014/11/24
+ * - initial version
  * @since 2014/11/24
  */
 
@@ -17,13 +20,14 @@ namespace autograder {
 
 int AutograderTest::TIMEOUT_MS_DEFAULT = 10000;
 int AutograderTest::TIMEOUT_MS_MIN = 100;
+
 static std::vector<std::string>& allCategories() {
     static std::vector<std::string> v;
     return v;
 }
 std::map<std::string, std::vector<std::string> >& allTests() {
-    static std::map<std::string, std::vector<std::string> > m;
-    return m;
+    static std::map<std::string, std::vector<std::string> > __allTests;
+    return __allTests;
 }
 
 void AutograderTest::addTestToList(const std::string& categoryName, const std::string& testName) {

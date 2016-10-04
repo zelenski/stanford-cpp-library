@@ -1,8 +1,20 @@
+/*
+ * File: forwardingstreambuf.h
+ * ---------------------------
+ * This file defines the <code>ForwardingStreambuf</code> class, which
+ * represents a stream buffer that just wraps another stream buffer.
+ * We mostly use this to merge cout and cerr into a single output target.
+ *
+ * @version 2016/10/04
+ * - initial version
+ */
+
 #ifndef _forwardingstreambuf_h
 #define _forwardingstreambuf_h
 
 #include <iostream>
 #include <locale>
+#include <streambuf>
 
 namespace stanfordcpplib {
 /*

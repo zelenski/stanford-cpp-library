@@ -4,6 +4,8 @@
  * Linux/gcc implementation of the call_stack class.
  *
  * @author Marty Stepp, based on code from Fredrik Orderud
+ * @version 2016/10/04
+ * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * @version 2015/05/28
  */
 
@@ -36,6 +38,7 @@
 #include "exceptions.h"
 #include "strlib.h"
 #include "private/platform.h"
+#include "private/static.h"
 
 namespace stacktrace {
 
@@ -219,15 +222,15 @@ void*& fakeCallStackPointer() {
 #ifndef _WIN32
 
 namespace stacktrace {
-const int WIN_STACK_FRAMES_TO_SKIP = 0;
-const int WIN_STACK_FRAMES_MAX = 20;
+STATIC_CONST_VARIABLE_DECLARE(int, STACK_FRAMES_TO_SKIP, 0)
+STATIC_CONST_VARIABLE_DECLARE(int, STACK_FRAMES_MAX, 20)
 
 call_stack::call_stack(const size_t /*num_discard = 0*/) {
     using namespace abi;
 
     // retrieve call-stack
-    void* trace[WIN_STACK_FRAMES_MAX];
-    int stack_depth = backtrace(trace, WIN_STACK_FRAMES_MAX);
+    void* trace[STATIC_VARIABLE(STACK_FRAMES_MAX)];
+    int stack_depth = backtrace(trace, STATIC_VARIABLE(STACK_FRAMES_MAX));
 
     // let's also try to get the line numbers via an external process
     std::string addr2lineOutput;
@@ -237,7 +240,7 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
         addr2lineLines = stringSplit(addr2lineOutput, "\n");
     }
     
-    for (int i = WIN_STACK_FRAMES_TO_SKIP; i < stack_depth; i++) {
+    for (int i = STATIC_VARIABLE(STACK_FRAMES_TO_SKIP); i < stack_depth; i++) {
         Dl_info dlinfo;
         if (!dladdr(trace[i], &dlinfo)) {
             continue;

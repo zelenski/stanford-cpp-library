@@ -4,6 +4,8 @@
  * This file exports a set of functions that implement a simple HTTP server
  * that can listen for connections.
  *
+ * @version 2016/10/04
+ * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * @version 2016/03/16
  * - initial version
  */
@@ -13,21 +15,22 @@
 #include "map.h"
 #include "strlib.h"
 #include "private/platform.h"
+#include "private/static.h"
 
 namespace HttpServer {
-static bool _isRunning = false;
-static Map<std::string, std::string> CONTENT_TYPE_MAP;   // extension => MIME type
-static const std::string CONTENT_TYPE_DEFAULT = "text/html";
-static const std::string CONTENT_TYPE_ERROR = "text/plain";
-static Map<int, std::string> ERROR_MESSAGE_MAP;   // 404 => "File not found"
+STATIC_CONST_VARIABLE_DECLARE(std::string, CONTENT_TYPE_DEFAULT, "text/html")
+STATIC_CONST_VARIABLE_DECLARE(std::string, CONTENT_TYPE_ERROR, "text/plain")
+STATIC_VARIABLE_DECLARE(bool, isRunning, false)
 
 bool isRunning() {
-    return _isRunning;
+    return STATIC_VARIABLE(isRunning);
 }
 
 std::string getContentType(const std::string& extension) {
+    static Map<std::string, std::string> CONTENT_TYPE_MAP;   // extension => MIME type
+
     if (extension.empty()) {
-        return CONTENT_TYPE_DEFAULT;
+        return STATIC_VARIABLE(CONTENT_TYPE_DEFAULT);
     }
 
     // populate map of content types, if needed
@@ -114,11 +117,13 @@ std::string getContentType(const std::string& extension) {
     if (CONTENT_TYPE_MAP.containsKey(ext)) {
         return CONTENT_TYPE_MAP[ext];
     } else {
-        return CONTENT_TYPE_DEFAULT;
+        return STATIC_VARIABLE(CONTENT_TYPE_DEFAULT);
     }
 }
 
 std::string getErrorMessage(int httpErrorCode) {
+    static Map<int, std::string> ERROR_MESSAGE_MAP;   // 404 => "File not found"
+
     // populate map of content types, if needed
     if (ERROR_MESSAGE_MAP.isEmpty()) {
         ERROR_MESSAGE_MAP[200] = "HTTP ERROR 200: OK";
@@ -205,7 +210,7 @@ void sendResponseError(const GServerEvent& event, int httpErrorCode,
     if (errorMessageActual.empty()) {
         errorMessageActual = getErrorMessage(httpErrorCode);
     }
-    stanfordcpplib::getPlatform()->httpserver_sendResponse(event.getRequestID(), httpErrorCode, CONTENT_TYPE_ERROR, errorMessageActual);
+    stanfordcpplib::getPlatform()->httpserver_sendResponse(event.getRequestID(), httpErrorCode, STATIC_VARIABLE(CONTENT_TYPE_ERROR), errorMessageActual);
 }
 
 void sendResponseFile(const GServerEvent& event, const std::string& responseFilePath,
@@ -222,15 +227,15 @@ void sendResponseFile(const GServerEvent& event, const std::string& responseFile
 
 
 void startServer(int port) {
-    if (!_isRunning) {
+    if (!STATIC_VARIABLE(isRunning)) {
         stanfordcpplib::getPlatform()->httpserver_start(port);
-        _isRunning = true;
+        STATIC_VARIABLE(isRunning) = true;
     }
 }
 
 void stopServer() {
-    if (_isRunning) {
-        _isRunning = false;
+    if (STATIC_VARIABLE(isRunning)) {
+        STATIC_VARIABLE(isRunning) = false;
         stanfordcpplib::getPlatform()->httpserver_stop();
     }
 }

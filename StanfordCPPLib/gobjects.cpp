@@ -3,6 +3,8 @@
  * ------------------
  * This file implements the gobjects.h interface.
  * 
+ * @version 2016/09/27
+ * - added get/setText methods to GLabel
  * @version 2015/10/13
  * - replaced 'fabs' with 'std::fabs'
  * @version 2015/07/05
@@ -864,7 +866,15 @@ void GLabel::setLabel(std::string str) {
     height = size.getHeight();
 }
 
+void GLabel::setText(std::string str) {
+    setLabel(str);
+}
+
 std::string GLabel::getLabel() const {
+    return str;
+}
+
+std::string GLabel::getText() const {
     return str;
 }
 

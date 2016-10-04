@@ -5,6 +5,8 @@
  * the platform-specific parts of the StanfordCPPLib package.  This file is
  * logically part of the implementation and is not interesting to clients.
  *
+ * @version 2016/09/27
+ * - added ginteractor_setText method
  * @version 2016/09/26
  * - added Note playing methods
  * @version 2016/08/02
@@ -118,6 +120,7 @@ public:
     void ginteractor_setBackground(GObject* gobj, std::string color);
     void ginteractor_setEnabled(GObject* gint, bool value);
     void ginteractor_setIcon(GObject* gobj, std::string filename);
+    void ginteractor_setText(GObject* gobj, const std::string& text);
     void ginteractor_setTextPosition(GObject* gobj, int horizontal, int vertical);
     void glabel_constructor(GObject* gobj, std::string label);
     double glabel_getFontAscent(const GObject* gobj);

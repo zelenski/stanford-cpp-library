@@ -3,6 +3,8 @@
  * ----------------
  * This file implements the simpio.h interface.
  * 
+ * @version 2016/09/29
+ * - added getDouble method
  * @version 2015/07/05
  * - increased visibility of appendSpace function used by various IO
  *   prompting functions (no longer static)
@@ -29,12 +31,17 @@ static const std::string GETYESORNO_DEFAULT_PROMPT = "Try again: ";
 static const std::string GETYESORNO_DEFAULT_REPROMPT = "Please type a word that starts with 'Y' or 'N'.";
 
 /*
- * Implementation notes: getInteger, getReal
- * -----------------------------------------
+ * Implementation notes: getInteger, getDouble, getReal
+ * ----------------------------------------------------
  * Each of these functions reads a complete input line and then uses the
  * <sstream> library to parse that line into a value of the desired type.
  * If that fails, the implementation asks the user for a new value.
  */
+
+double getDouble(const std::string& prompt,
+                 const std::string& reprompt) {
+    return getReal(prompt, reprompt);
+}
 
 int getInteger(const std::string& prompt,
                const std::string& reprompt) {

@@ -2,20 +2,24 @@
  * Test file for verifying the Stanford C++ lib functionality.
  */
 
+//#include "console.h"
+//#include "error.h"
+//#include "exceptions.h"
+//#include "map.h"
+//#include "note.h"
+//#include "vector.h"
+//#include "queue.h"
+//#include "random.h"
+//#include "simpio.h"
+//#include "strlib.h"
+//// #include "testcases.h"
+//#include "private/version.h"
+//#include "types.h"
+//#include <exception>
+//#include <iostream>
+
+
 #include "console.h"
-#include "error.h"
-#include "exceptions.h"
-#include "map.h"
-#include "note.h"
-#include "vector.h"
-#include "queue.h"
-#include "random.h"
-#include "simpio.h"
-#include "strlib.h"
-// #include "testcases.h"
-#include "private/version.h"
-#include "types.h"
-#include <exception>
 #include <iostream>
 using namespace std;
 
@@ -112,15 +116,18 @@ int main() {
 //    std::cout << "Complete." << std::endl;
 
     // Note note(1.5, Note::G, 5, Note::NATURAL, false);
-    Note note("1.5 G 5 NATURAL false");
-    Note rest("1 R false");
-    // std::cout << "NOTE: " << note << std::endl;
-    std::cout << "about to play ... " << std::endl;
-    note.play();
-    rest.play();
-    std::cout << "about to play 2 ... " << std::endl;
-    note.play();
-    rest.play();
+//    Note note("1.5 G 5 NATURAL false");
+//    Note rest("1 R false");
+//    // std::cout << "NOTE: " << note << std::endl;
+//    std::cout << "about to play ... " << std::endl;
+//    note.play();
+//    rest.play();
+//    std::cout << "about to play 2 ... " << std::endl;
+//    note.play();
+//    rest.play();
+
+
+
     std::cout << "done." << std::endl;
     return 0;
 }

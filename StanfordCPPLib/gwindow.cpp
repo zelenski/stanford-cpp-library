@@ -5,6 +5,8 @@
  * to the appropriate methods in the Platform class, which is implemented
  * separately for each architecture.
  * 
+ * @version 2016/10/04
+ * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * @version 2016/08/02
  * - added saveCanvasPixels method
  * - re-enabled setVisible(bool) method
@@ -34,45 +36,43 @@
 #include "strlib.h"
 #include "vector.h"
 #include "private/platform.h"
+#include "private/static.h"
 
 /* Constants */
 
 // variables and functions for auditing calls to pause();
 // used to facilitate creation of autograde programs
-namespace autograder {
-static int gwindow_pauses = 0;
-static double gwindow_last_pauseMS = 0.0;
-static bool gwindow_exitGraphics_enabled = true;
-static bool gwindow_pause_enabled = true;
+STATIC_VARIABLE_DECLARE(int, gwindowPauses, 0)
+STATIC_VARIABLE_DECLARE(double, gwindowLastPauseMS, 0.0)
+STATIC_VARIABLE_DECLARE(bool, gwindowExitGraphicsEnabled, true)
+STATIC_VARIABLE_DECLARE(bool, gwindowPauseEnabled, true)
 
 int gwindowGetNumPauses() {
-    return gwindow_pauses;
+    return STATIC_VARIABLE(gwindowPauses);
 }
 
 void gwindowResetNumPauses() {
-    gwindow_pauses = 0;
+    STATIC_VARIABLE(gwindowPauses) = 0;
 }
 
 double gwindowGetLastPauseMS() {
-    return gwindow_last_pauseMS;
+    return STATIC_VARIABLE(gwindowLastPauseMS);
 }
 
 void gwindowResetLastPauseMS() {
-    gwindow_last_pauseMS = 0.0;
+    STATIC_VARIABLE(gwindowLastPauseMS) = 0.0;
 }
 
 void gwindowSetExitGraphicsEnabled(bool value) {
-    gwindow_exitGraphics_enabled = value;
+    STATIC_VARIABLE(gwindowExitGraphicsEnabled) = value;
 }
 
 void gwindowSetPauseEnabled(bool value) {
-    gwindow_pause_enabled = value;
-}
+    STATIC_VARIABLE(gwindowPauseEnabled) = value;
 }
 
 /* Private function prototypes */
 
-static void initColorTable();
 static std::string canonicalColorName(std::string str);
 
 /*
@@ -88,7 +88,27 @@ static std::string canonicalColorName(std::string str);
  *     const string MAGENTA = "0xFF00FF";
  */
 
-static Map<std::string, int> colorTable;
+static Map<std::string, int>& colorTable() {
+    static Map<std::string, int> __colorTable;
+    if (__colorTable.isEmpty()) {
+        __colorTable["black"] = 0x000000;
+        __colorTable["blue"] = 0x0000FF;
+        __colorTable["brown"] = 0x926239;
+        __colorTable["cyan"] = 0x00FFFF;
+        __colorTable["darkgray"] = 0x595959;
+        __colorTable["gray"] = 0x999999;
+        __colorTable["green"] = 0x00FF00;
+        __colorTable["lightgray"] = 0xBFBFBF;
+        __colorTable["magenta"] = 0xFF00FF;
+        __colorTable["orange"] = 0xFFC800;
+        __colorTable["pink"] = 0xFFAFAF;
+        __colorTable["purple"] = 0xFF00FF;
+        __colorTable["red"] = 0xFF0000;
+        __colorTable["white"] = 0xFFFFFF;
+        __colorTable["yellow"] = 0xFFFF00;
+    }
+    return __colorTable;
+}
 
 GWindow::GWindow() {
     initGWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, true);
@@ -168,7 +188,7 @@ std::string GWindow::getWindowData() const {
 }
 
 void GWindow::setExitOnClose(bool value) {
-    if (!autograder::gwindow_exitGraphics_enabled) {
+    if (!STATIC_VARIABLE(gwindowExitGraphicsEnabled)) {
         return;
     }
     if (gwd) {
@@ -556,11 +576,11 @@ GWindow::GWindow(GWindowData *gwd) {
 }
 
 void pause(double milliseconds) {
-    if (autograder::gwindow_pause_enabled) {
+    if (STATIC_VARIABLE(gwindowPauseEnabled)) {
         stanfordcpplib::getPlatform()->gtimer_pause(milliseconds);
     }
-    autograder::gwindow_pauses++;
-    autograder::gwindow_last_pauseMS = milliseconds;
+    STATIC_VARIABLE(gwindowPauses)++;
+    STATIC_VARIABLE(gwindowLastPauseMS) = milliseconds;
 }
 
 double getScreenWidth() {
@@ -586,11 +606,10 @@ int convertColorToRGB(std::string colorName) {
         return rgb;
     }
     std::string name = canonicalColorName(colorName);
-    if (colorTable.size() == 0) initColorTable();
-    if (!colorTable.containsKey(name)) {
+    if (!colorTable().containsKey(name)) {
         error("convertColorToRGB: Undefined color - " + colorName);
     }
-    return colorTable[name];
+    return colorTable()[name];
 }
 
 std::string convertRGBToColor(int rgb) {
@@ -604,25 +623,9 @@ std::string convertRGBToColor(int rgb) {
 }
 
 void exitGraphics() {
-    if (autograder::gwindow_exitGraphics_enabled) {
+    if (STATIC_VARIABLE(gwindowExitGraphicsEnabled)) {
         stanfordcpplib::getPlatform()->gwindow_exitGraphics();   // calls exit(0);
     }
-}
-
-static void initColorTable() {
-    colorTable["black"] = 0x000000;
-    colorTable["darkgray"] = 0x595959;
-    colorTable["gray"] = 0x999999;
-    colorTable["lightgray"] = 0xBFBFBF;
-    colorTable["white"] = 0xFFFFFF;
-    colorTable["red"] = 0xFF0000;
-    colorTable["yellow"] = 0xFFFF00;
-    colorTable["green"] = 0x00FF00;
-    colorTable["cyan"] = 0x00FFFF;
-    colorTable["blue"] = 0x0000FF;
-    colorTable["magenta"] = 0xFF00FF;
-    colorTable["orange"] = 0xFFC800;
-    colorTable["pink"] = 0xFFAFAF;
 }
 
 static std::string canonicalColorName(std::string str) {

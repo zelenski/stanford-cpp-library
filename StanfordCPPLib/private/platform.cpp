@@ -4,6 +4,11 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2016/10/04
+ * - removed all static variables (replaced with STATIC_VARIABLE macros)
+ * - fixed bug with Stanford console not popping up if #includes were in wrong order
+ * @version 2016/09/27
+ * - added ginteractor_setText method
  * @version 2016/09/24
  * - bug fix for current directory of spl.jar on Mac platform
  * @version 2016/09/22
@@ -75,6 +80,7 @@
 #  include <pwd.h>
 #  include <stdint.h>
 #  include <unistd.h>
+
 extern void error(const char* msg);
 
 /*
@@ -102,7 +108,6 @@ static int& pout(bool check = true) {
     }
     return _pout;
 }
-
 #endif // _WIN32
 
 #include "platform.h"
@@ -121,6 +126,7 @@ static int& pout(bool check = true) {
 #include <vector>
 #include "private/consolestreambuf.h"
 #include "private/forwardingstreambuf.h"
+#include "private/static.h"
 #include "private/version.h"
 
 #define __DONT_ENABLE_GRAPHICAL_CONSOLE
@@ -145,24 +151,23 @@ static int& pout(bool check = true) {
 // #define PIPE_DEBUG true
 
 // related: similar constant in Java back-end stanford.spl.SplPipeDecoder.java
-static const size_t PIPE_MAX_COMMAND_LENGTH = 2048;
+STATIC_CONST_VARIABLE_DECLARE(size_t, PIPE_MAX_COMMAND_LENGTH, 2048)
 
 /* Private data */
-static Queue<GEvent> eventQueue;
-static HashMap<std::string, GTimerData*> timerTable;
-static HashMap<std::string, GWindowData*> windowTable;
-static HashMap<std::string, GObject*> sourceTable;
-static std::ofstream logfile;
-static stanfordcpplib::ConsoleStreambuf* cinout_new_buf = NULL;
+STATIC_VARIABLE_DECLARE_COLLECTION_EMPTY(Queue<GEvent>, eventQueue)
+STATIC_VARIABLE_DECLARE_MAP_EMPTY(HashMap, std::string, GTimerData*, timerTable)
+STATIC_VARIABLE_DECLARE_MAP_EMPTY(HashMap, std::string, GWindowData*, windowTable)
+STATIC_VARIABLE_DECLARE_MAP_EMPTY(HashMap, std::string, GObject*, sourceTable)
+STATIC_VARIABLE_DECLARE(stanfordcpplib::ConsoleStreambuf*, cinout_new_buf, NULL)
 
 #ifdef _WIN32
-static HANDLE rdFromJBE = NULL;
-static HANDLE wrFromJBE = NULL;
-static HANDLE rdToJBE = NULL;
-static HANDLE wrToJBE = NULL;
+STATIC_VARIABLE_DECLARE(HANDLE, rdFromJBE, NULL)
+STATIC_VARIABLE_DECLARE(HANDLE, wrFromJBE, NULL)
+STATIC_VARIABLE_DECLARE(HANDLE, rdToJBE, NULL)
+STATIC_VARIABLE_DECLARE(HANDLE, wrToJBE, NULL)
 #else // _WIN32
-static pid_t cppLibPid;
-static pid_t javaBackEndPid;
+STATIC_VARIABLE_DECLARE_BLANK(pid_t, cppLibPid)
+STATIC_VARIABLE_DECLARE_BLANK(pid_t, javaBackEndPid)
 #endif // _WIN32
 
 
@@ -589,7 +594,7 @@ void Platform::gwindow_constructor(const GWindow& gw, double width, double heigh
     std::ostringstream os;
     os << gw.gwd;
     std::string id = os.str();
-    windowTable.put(id, gw.gwd);
+    STATIC_VARIABLE(windowTable).put(id, gw.gwd);
     os.str("");
     os << "GWindow.create(\"" << id << "\", " << width << ", " << height
        << ", \"" << topCompound << "\", " << std::boolalpha << visible << ")";
@@ -601,7 +606,7 @@ void Platform::gwindow_delete(const GWindow& gw) {
     std::ostringstream os;
     os << gw.gwd;
     std::string id = os.str();
-    windowTable.remove(id);
+    STATIC_VARIABLE(windowTable).remove(id);
     os.str("");
     os << "GWindow.delete(\"" << gw.gwd << "\")";
     putPipe(os.str());
@@ -732,7 +737,7 @@ void Platform::gtimer_constructor(const GTimer& timer, double delay) {
     std::ostringstream os;
     os << timer.gtd;
     std::string id = os.str();
-    timerTable.put(id, timer.gtd);
+    STATIC_VARIABLE(timerTable).put(id, timer.gtd);
     os.str("");
     os << "GTimer.create(\"" << id << "\", " << delay << ")";
     putPipe(os.str());
@@ -742,7 +747,7 @@ void Platform::gtimer_delete(const GTimer& timer) {
     std::ostringstream os;
     os << timer.gtd;
     std::string id = os.str();
-    timerTable.remove(id);
+    STATIC_VARIABLE(timerTable).remove(id);
     os.str("");
     os << "GTimer.deleteTimer(\"" << id << "\")";
     putPipe(os.str());
@@ -1034,6 +1039,16 @@ void Platform::ginteractor_setIcon(GObject* gobj, std::string filename) {
     putPipe(os.str());
 }
 
+void Platform::ginteractor_setText(GObject* gobj, const std::string& text) {
+    std::ostringstream os;
+    os << "GInteractor.setText("
+       << "\"" << gobj << "\""
+       << ", ";
+    writeQuotedString(os, urlDecode(text));
+    os << ")";
+    putPipe(os.str());
+}
+
 void Platform::ginteractor_setTextPosition(GObject* gobj, int horizontal, int vertical) {
     std::ostringstream os;
     os << "GInteractor.setTextPosition("
@@ -1209,7 +1224,7 @@ void Platform::gbufferedimage_constructor(GObject* gobj, double x, double y,
                                           double width, double height, int rgb) {
     std::ostringstream os;
     os << gobj;
-    sourceTable.put(os.str(), gobj);
+    STATIC_VARIABLE(sourceTable).put(os.str(), gobj);
     os.str("");
     os << "GBufferedImage.create(\"" << gobj << "\", " << (int) x << ", "
        << (int) y << ", " << (int) width << ", " << (int) height << ", " << rgb << ")";
@@ -1325,7 +1340,7 @@ GDimension Platform::ginteractor_getSize(GObject* gobj) {
 void Platform::gbutton_constructor(GObject* gobj, std::string label) {
     std::ostringstream os;
     os << gobj;
-    sourceTable.put(os.str(), gobj);
+    STATIC_VARIABLE(sourceTable).put(os.str(), gobj);
     os.str("");
     os << "GButton.create(\"" << gobj << "\", ";
     writeQuotedString(os, label);
@@ -1336,7 +1351,7 @@ void Platform::gbutton_constructor(GObject* gobj, std::string label) {
 void Platform::gcheckbox_constructor(GObject* gobj, std::string label) {
     std::ostringstream os;
     os << gobj;
-    sourceTable.put(os.str(), gobj);
+    STATIC_VARIABLE(sourceTable).put(os.str(), gobj);
     os.str("");
     os << "GCheckBox.create(\"" << gobj << "\", ";
     writeQuotedString(os, label);
@@ -1361,7 +1376,7 @@ void Platform::gcheckbox_setSelected(GObject* gobj, bool state) {
 void Platform::gradiobutton_constructor(GObject* gobj, std::string label, std::string group) {
     std::ostringstream os;
     os << gobj;
-    sourceTable.put(os.str(), gobj);
+    STATIC_VARIABLE(sourceTable).put(os.str(), gobj);
     os.str("");
     os << "GRadioButton.create(\"" << gobj << "\", ";
     writeQuotedString(os, label);
@@ -1388,7 +1403,7 @@ void Platform::gradiobutton_setSelected(GObject* gobj, bool state) {
 void Platform::gslider_constructor(GObject* gobj, int min, int max, int value) {
     std::ostringstream os;
     os << gobj;
-    sourceTable.put(os.str(), gobj);
+    STATIC_VARIABLE(sourceTable).put(os.str(), gobj);
     os.str("");
     os << "GSlider.create(\"" << gobj << "\", " << min << ", " << max
        << ", " << value << ")";
@@ -1483,7 +1498,7 @@ void Platform::gtable_constructor(GObject* gobj, int numRows, int numCols,
                                   double x, double y, double width, double height) {
     std::ostringstream os;
     os << gobj;
-    sourceTable.put(os.str(), gobj);
+    STATIC_VARIABLE(sourceTable).put(os.str(), gobj);
     os.str("");
     os << "GTable.create(\"" << gobj << "\", " << numRows << ", " << numCols
        << ", " << x << ", " << y << ", " << width << ", " << height << ")";
@@ -1570,7 +1585,7 @@ void Platform::gtable_setHorizontalAlignment(GObject* gobj, const std::string& a
 void Platform::gtextfield_constructor(GObject* gobj, int nChars) {
     std::ostringstream os;
     os << gobj;
-    sourceTable.put(os.str(), gobj);
+    STATIC_VARIABLE(sourceTable).put(os.str(), gobj);
     os.str("");
     os << "GTextField.create(\"" << gobj << "\", " << nChars << ")";
     putPipe(os.str());
@@ -1608,7 +1623,7 @@ void Platform::gtextfield_setText(GObject* gobj, std::string str) {
 void Platform::gchooser_constructor(GObject* gobj) {
     std::ostringstream os;
     os << gobj;
-    sourceTable.put(os.str(), gobj);
+    STATIC_VARIABLE(sourceTable).put(os.str(), gobj);
     os.str("");
     os << "GChooser.create(\"" << gobj << "\")";
     putPipe(os.str());
@@ -1679,16 +1694,18 @@ GDimension Platform::glabel_getSize(const GObject* gobj) {
 }
 
 GEvent Platform::gevent_getNextEvent(int mask) {
-    if (eventQueue.isEmpty()) {
+    if (STATIC_VARIABLE(eventQueue).isEmpty()) {
         putPipe("GEvent.getNextEvent(" + integerToString(mask) + ")");
         getResult();
-        if (eventQueue.isEmpty()) return GEvent();
+        if (STATIC_VARIABLE(eventQueue).isEmpty()) {
+            return GEvent();
+        }
     }
-    return eventQueue.dequeue();
+    return STATIC_VARIABLE(eventQueue).dequeue();
 }
 
 GEvent Platform::gevent_waitForEvent(int mask) {
-    while (eventQueue.isEmpty()) {
+    while (STATIC_VARIABLE(eventQueue).isEmpty()) {
         putPipe("GEvent.waitForEvent(" + integerToString(mask) + ")");
 
         // BUGBUG: Marty changing to consume ACKs because it was skipping an
@@ -1696,7 +1713,7 @@ GEvent Platform::gevent_waitForEvent(int mask) {
         getResult();
     }
 
-    GEvent event = eventQueue.dequeue();
+    GEvent event = STATIC_VARIABLE(eventQueue).dequeue();
 #ifdef PIPE_DEBUG
     fprintf(stderr, "Platform::waitForEvent returning event \"%s\"\n", event.toString().c_str());  fflush(stderr);
 #endif // PIPE_DEBUG
@@ -1704,7 +1721,7 @@ GEvent Platform::gevent_waitForEvent(int mask) {
 }
 
 bool Platform::jbeconsole_isBlocked() {
-    return cinout_new_buf && cinout_new_buf->isBlocked();
+    return STATIC_VARIABLE(cinout_new_buf) && STATIC_VARIABLE(cinout_new_buf)->isBlocked();
 }
 
 void Platform::gwindow_exitGraphics(bool abortBlockedConsoleIO) {
@@ -2087,8 +2104,8 @@ static void putPipeLongString(std::string line) {
     // precondition: line does not contain substring "LongCommand.end()"
     putPipe("LongCommand.begin()");
     size_t len = line.length();
-    for (size_t i = 0; i < len; i += PIPE_MAX_COMMAND_LENGTH) {
-        std::string chunk = line.substr(i, std::min(PIPE_MAX_COMMAND_LENGTH, len - i));
+    for (size_t i = 0; i < len; i += STATIC_VARIABLE(PIPE_MAX_COMMAND_LENGTH)) {
+        std::string chunk = line.substr(i, std::min(STATIC_VARIABLE(PIPE_MAX_COMMAND_LENGTH), len - i));
         putPipe(chunk);
     }
     putPipe("LongCommand.end()");
@@ -2161,16 +2178,16 @@ static void initPipe() {
     attr.nLength = sizeof(SECURITY_ATTRIBUTES);
     attr.bInheritHandle = true;
     attr.lpSecurityDescriptor = NULL;
-    if (!CreatePipe(&rdFromJBE, &wrFromJBE, &attr, 0)) {
+    if (!CreatePipe(&STATIC_VARIABLE(rdFromJBE), &STATIC_VARIABLE(wrFromJBE), &attr, 0)) {
         error("Platform::initPipe: Can't create fromJBE");
     }
-    if (!SetHandleInformation(rdFromJBE, HANDLE_FLAG_INHERIT, 0)) {
+    if (!SetHandleInformation(STATIC_VARIABLE(rdFromJBE), HANDLE_FLAG_INHERIT, 0)) {
         error("Platform::initPipe: SetHandleInformation failed for fromJBE");
     }
-    if (!CreatePipe(&rdToJBE, &wrToJBE, &attr, 0)) {
+    if (!CreatePipe(&STATIC_VARIABLE(rdToJBE), &STATIC_VARIABLE(wrToJBE), &attr, 0)) {
         error("Platform::initPipe: Can't create toJBE");
     }
-    if (!SetHandleInformation(wrToJBE, HANDLE_FLAG_INHERIT, 0)) {
+    if (!SetHandleInformation(STATIC_VARIABLE(wrToJBE), HANDLE_FLAG_INHERIT, 0)) {
         error("Platform::initPipe: SetHandleInformation failed for toJBE");
     }
     std::string cmd = getJavaCommand();
@@ -2192,9 +2209,9 @@ static void initPipe() {
     memset(&sInfo, 0, sizeof(STARTUPINFOA));
     sInfo.cb = sizeof(STARTUPINFOA);
     sInfo.dwFlags = STARTF_USESTDHANDLES;
-    sInfo.hStdInput = rdToJBE;
-    sInfo.hStdOutput = wrFromJBE;
-    sInfo.hStdError = wrFromJBE;
+    sInfo.hStdInput = STATIC_VARIABLE(rdToJBE);
+    sInfo.hStdOutput = STATIC_VARIABLE(wrFromJBE);
+    sInfo.hStdError = STATIC_VARIABLE(wrFromJBE);
     int ok = CreateProcessA(NULL, cmdLine, NULL, NULL, true, CREATE_NO_WINDOW,
                             NULL, NULL, &sInfo, &pInfo);
     if (!ok) {
@@ -2217,7 +2234,7 @@ static void initPipe() {
 
 // Windows implementation; see Unix implementation elsewhere in this file
 static void putPipe(std::string line) {
-    if (line.length() > PIPE_MAX_COMMAND_LENGTH) {
+    if (line.length() > STATIC_VARIABLE(PIPE_MAX_COMMAND_LENGTH)) {
         putPipeLongString(line);
         return;
     }
@@ -2226,9 +2243,9 @@ static void putPipe(std::string line) {
 #ifdef PIPE_DEBUG
     fprintf(stderr, "putPipe(\"%s\")\n", line.c_str());  fflush(stderr);
 #endif // PIPE_DEBUG
-    if (!WinCheck(WriteFile(wrToJBE, line.c_str(), line.length(), &nch, NULL))) return;
-    if (!WinCheck(WriteFile(wrToJBE, "\n", 1, &nch, NULL))) return;
-    WinCheck(FlushFileBuffers(wrToJBE));
+    if (!WinCheck(WriteFile(STATIC_VARIABLE(wrToJBE), line.c_str(), line.length(), &nch, NULL))) return;
+    if (!WinCheck(WriteFile(STATIC_VARIABLE(wrToJBE), "\n", 1, &nch, NULL))) return;
+    WinCheck(FlushFileBuffers(STATIC_VARIABLE(wrToJBE)));
 }
 
 // Windows implementation; see Unix implementation elsewhere in this file
@@ -2243,7 +2260,7 @@ static std::string getPipe() {
     int charsReadMax = 1024*1024;
     while (charsRead < charsReadMax) {
         char ch;
-        WINBOOL readFileResult = WinCheck(ReadFile(rdFromJBE, &ch, 1, &nch, NULL));
+        WINBOOL readFileResult = WinCheck(ReadFile(STATIC_VARIABLE(rdFromJBE), &ch, 1, &nch, NULL));
         if (readFileResult == 0) {
             break;   // failed to read from subprocess
         }
@@ -2302,7 +2319,7 @@ static void initPipe() {
     int child = fork();
     if (child == 0) {
         // we are the Java back-end process; launch external Java command
-        javaBackEndPid = getpid();
+        STATIC_VARIABLE(javaBackEndPid) = getpid();
         dup2(toJBE[0], 0);
         close(toJBE[0]);
         close(toJBE[1]);
@@ -2352,7 +2369,7 @@ static void initPipe() {
 #endif // SPL_HEADLESS_MODE
     } else {
         // we are the C++ process; connect pipe input/output
-        cppLibPid = getpid();
+        STATIC_VARIABLE(cppLibPid) = getpid();
         pin(/* check */ false) = fromJBE[0];
         pout(/* check */ false) = toJBE[1];
         close(fromJBE[1]);
@@ -2367,7 +2384,7 @@ static void initPipe() {
 
 // Unix implementation; see Windows implementation elsewhere in this file
 static void putPipe(std::string line) {
-    if (line.length() > PIPE_MAX_COMMAND_LENGTH) {
+    if (line.length() > STATIC_VARIABLE(PIPE_MAX_COMMAND_LENGTH)) {
         putPipeLongString(line);
         return;
     }
@@ -2385,7 +2402,7 @@ static std::string getPipe() {
 #endif
     std::string line = "";
     int charsRead = 0;
-    int charsReadMax = PIPE_MAX_COMMAND_LENGTH + 100;
+    int charsReadMax = STATIC_VARIABLE(PIPE_MAX_COMMAND_LENGTH) + 100;
     while (charsRead < charsReadMax) {
         char ch;
         ssize_t result = read(pin(), &ch, 1);
@@ -2473,7 +2490,7 @@ static std::string getResult(bool consumeAcks, const std::string& caller) {
         } else if (isEvent) {
             // a Java-originated event; enqueue it to process here
             GEvent event = parseEvent(line.substr(6));
-            eventQueue.enqueue(event);
+            STATIC_VARIABLE(eventQueue).enqueue(event);
             if (event.getEventClass() == WINDOW_EVENT && event.getEventType() == CONSOLE_CLOSED
                     && caller == "getLineConsole") {
                 return "";
@@ -2630,7 +2647,7 @@ static GEvent parseEvent(std::string line) {
         GWindowEvent e = parseWindowEvent(scanner, WINDOW_CLOSED);
         e.getGWindow().setVisible(false);
         e.getGWindow().notifyOfClose();
-        windowTable.remove(e.getGWindow().getWindowData());
+        STATIC_VARIABLE(windowTable).remove(e.getGWindow().getWindowData());
         return e;
     } else if (name == "windowResized") {
         return parseWindowEvent(scanner, WINDOW_RESIZED);
@@ -2650,7 +2667,7 @@ static GEvent parseEvent(std::string line) {
             fflush(stderr);
 
             // if waiting for keyboard input, abort it
-            if (cinout_new_buf && cinout_new_buf->isBlocked()) {
+            if (STATIC_VARIABLE(cinout_new_buf) && STATIC_VARIABLE(cinout_new_buf)->isBlocked()) {
                 // abortAllConsoleIO();
                 std::exit(0);
             }
@@ -2685,7 +2702,7 @@ static GEvent parseMouseEvent(TokenScanner& scanner, EventType type) {
     scanner.verifyToken(",");
     double y = scanDouble(scanner);
     scanner.verifyToken(")");
-    GMouseEvent e(type, GWindow(windowTable.get(id)), x, y);
+    GMouseEvent e(type, GWindow(STATIC_VARIABLE(windowTable).get(id)), x, y);
     e.setEventTime(time);
     e.setModifiers(modifiers);
     return e;
@@ -2703,7 +2720,7 @@ static GEvent parseKeyEvent(TokenScanner& scanner, EventType type) {
     scanner.verifyToken(",");
     int keyCode = scanInt(scanner);
     scanner.verifyToken(")");
-    GKeyEvent e(type, GWindow(windowTable.get(id)), char(keyChar), keyCode);
+    GKeyEvent e(type, GWindow(STATIC_VARIABLE(windowTable).get(id)), char(keyChar), keyCode);
     e.setEventTime(time);
     e.setModifiers(modifiers);
     return e;
@@ -2740,7 +2757,7 @@ static GEvent parseTableEvent(TokenScanner& scanner, EventType type) {
     }
     scanner.verifyToken(")");
     
-    GTableEvent e(type);  //, GTimer(timerTable.get(id)));
+    GTableEvent e(type);  //, GTimer(STATIC_VARIABLE(timerTable).get(id)));
     e.setLocation(row, col);
     e.setValue(value);
     e.setEventTime(time);
@@ -2753,7 +2770,7 @@ static GEvent parseTimerEvent(TokenScanner& scanner, EventType type) {
     scanner.verifyToken(",");
     double time = scanDouble(scanner);
     scanner.verifyToken(")");
-    GTimerEvent e(type, GTimer(timerTable.get(id)));
+    GTimerEvent e(type, GTimer(STATIC_VARIABLE(timerTable).get(id)));
     e.setEventTime(time);
     return e;
 }
@@ -2764,7 +2781,7 @@ static GEvent parseWindowEvent(TokenScanner& scanner, EventType type) {
     scanner.verifyToken(",");
     double time = scanDouble(scanner);
     scanner.verifyToken(")");
-    GWindowEvent e(type, GWindow(windowTable.get(id)));
+    GWindowEvent e(type, GWindow(STATIC_VARIABLE(windowTable).get(id)));
     e.setEventTime(time);
     return e;
 }
@@ -2777,7 +2794,7 @@ static GEvent parseActionEvent(TokenScanner& scanner, EventType type) {
     scanner.verifyToken(",");
     double time = scanDouble(scanner);
     scanner.verifyToken(")");
-    GActionEvent e(type, sourceTable.get(id), action);
+    GActionEvent e(type, STATIC_VARIABLE(sourceTable).get(id), action);
     e.setEventTime(time);
     return e;
 }
@@ -2909,14 +2926,14 @@ void initializeGraphicalConsole() {
     initializeStanfordCppLibrary();
 
     // buffer C-style stderr
-    char* stderrBuf = new char[BUFSIZ + 10];
+    char* stderrBuf = new char[BUFSIZ + 10]();
     setbuf(stderr, stderrBuf);
 
     // redirect cin/cout/cerr
-    cinout_new_buf = new stanfordcpplib::ConsoleStreambuf();
-    std::cin.rdbuf(cinout_new_buf);
-    std::cout.rdbuf(cinout_new_buf);
-    std::cerr.rdbuf(new stanfordcpplib::ForwardingStreambuf(*cinout_new_buf, /* isStderr */ true));
+    STATIC_VARIABLE(cinout_new_buf) = new stanfordcpplib::ConsoleStreambuf();
+    std::cin.rdbuf(STATIC_VARIABLE(cinout_new_buf));
+    std::cout.rdbuf(STATIC_VARIABLE(cinout_new_buf));
+    std::cerr.rdbuf(new stanfordcpplib::ForwardingStreambuf(*STATIC_VARIABLE(cinout_new_buf), /* isStderr */ true));
     // std::nounitbuf(std::cerr);   // disable buffering after each token
 
 #ifdef _WIN32
@@ -2933,6 +2950,10 @@ void initializeStanfordCppLibrary() {
         return;
     }
     _initialized = true;
+
+    // declaring this object ensures that std::cin, cout, cerr are initialized
+    // properly before our lib tries to mess with them / redirect them
+    static std::ios_base::Init ios_base_init;
 
 #if defined(SPL_CONSOLE_PRINT_EXCEPTIONS)
     setConsolePrintExceptions(true);

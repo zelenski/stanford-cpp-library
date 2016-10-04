@@ -1,9 +1,11 @@
 /*
- * File: base64.h
- * --------------
+ * File: call_stack_windows.cpp
+ * ----------------------------
  * Windows implementation of the call_stack class.
  *
  * @author Marty Stepp
+ * @version 2016/10/04
+ * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * @version 2015/07/05
  * - removed static global Platform variable, replaced by getPlatform as needed
  * @version 2015/05/28
@@ -38,11 +40,11 @@
 #include "strlib.h"
 #include <cxxabi.h>
 #include "private/platform.h"
+#include "private/static.h"
 
 namespace stacktrace {
-
-const int WIN_STACK_FRAMES_TO_SKIP = 0;
-const int WIN_STACK_FRAMES_MAX = 20;
+STATIC_CONST_VARIABLE_DECLARE(int, STACK_FRAMES_TO_SKIP, 0)
+STATIC_CONST_VARIABLE_DECLARE(int, STACK_FRAMES_MAX, 20)
 
 // line = "ZNK6VectorIiE3getEi at vector.h:587"
 //         <FUNCTION> at <LINESTR>
@@ -105,7 +107,7 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
             frame.AddrStack.Mode   = AddrModeFlat;
             frame.AddrFrame.Offset = exceptionInfo->ContextRecord->Ebp;
             frame.AddrFrame.Mode   = AddrModeFlat;
-            while ((int) traceVector.size() < WIN_STACK_FRAMES_MAX &&
+            while ((int) traceVector.size() < STATIC_VARIABLE(STACK_FRAMES_MAX) &&
                    StackWalk(IMAGE_FILE_MACHINE_I386,
                              process,
                              thread,
@@ -138,10 +140,10 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
             // return;
         }
 
-        void* trace[WIN_STACK_FRAMES_MAX];
+        void* trace[STATIC_VARIABLE(STACK_FRAMES_MAX)];
         USHORT frameCount = ::CaptureStackBackTrace(
-                    /* framesToSkip */ WIN_STACK_FRAMES_TO_SKIP,
-                    /* framesToCapture; must be < 63 */ WIN_STACK_FRAMES_MAX,
+                    /* framesToSkip */ STATIC_VARIABLE(STACK_FRAMES_TO_SKIP),
+                    /* framesToCapture; must be < 63 */ STATIC_VARIABLE(STACK_FRAMES_MAX),
                     trace,
                     /* hash */ NULL
                     );

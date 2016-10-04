@@ -5,6 +5,8 @@
  * by student code on the console.
  * 
  * @author Marty Stepp
+ * @version 2016/10/04
+ * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * @version 2016/08/02
  * - added some new cxx11 filters to stack traces
  * - fixed spacing on *** messages from exception handlers
@@ -32,7 +34,9 @@
 #include <vector>
 #include "error.h"
 #include "filelib.h"
+#include "static.h"
 #include "strlib.h"
+#include "private/static.h"
 #include "stacktrace/call_stack.h"
 #ifdef _WIN32
 #include <windows.h>
@@ -54,20 +58,18 @@ namespace exceptions {
 #define SIGUNKNOWN ((int) 0xcafebabe)
 #define SIGTIMEOUT ((int) 0xf00df00d)
 
-static const bool STACK_TRACE_SHOULD_FILTER = true;
-static const bool STACK_TRACE_SHOW_TOP_BOTTOM_BARS = false;
-static bool topLevelExceptionHandlerEnabled = false;
-static void (*old_terminate)() = NULL;
-static std::vector<int> SIGNALS_HANDLED = {
-    SIGSEGV,
-    SIGILL,
-    SIGFPE,
+// static 'variables' (as functions to avoid initialization ordering bugs)
+STATIC_CONST_VARIABLE_DECLARE(bool, STACK_TRACE_SHOULD_FILTER, true)
+STATIC_CONST_VARIABLE_DECLARE(bool, STACK_TRACE_SHOW_TOP_BOTTOM_BARS, false)
+
+STATIC_VARIABLE_DECLARE(std::string, programNameForStackTrace, "")
+STATIC_VARIABLE_DECLARE(bool, topLevelExceptionHandlerEnabled, false)
+
 #ifdef SPL_AUTOGRADER_MODE
-    SIGINT,
-#else // not SPL_AUTOGRADER_MODE
-    SIGABRT
-#endif
-};
+STATIC_CONST_VARIABLE_DECLARE_COLLECTION(std::vector<int>, SIGNALS_HANDLED, SIGSEGV, SIGILL, SIGFPE, SIGINT)
+#else
+STATIC_CONST_VARIABLE_DECLARE_COLLECTION(std::vector<int>, SIGNALS_HANDLED, SIGSEGV, SIGILL, SIGFPE, SIGABRT)
+#endif // SPL_AUTOGRADER_MODE
 
 static void signalHandlerDisable();
 static void signalHandlerEnable();
@@ -75,16 +77,15 @@ static void stanfordCppLibSignalHandler(int sig);
 static void stanfordCppLibTerminateHandler();
 
 std::string& getProgramNameForStackTrace() {
-    static std::string PROGRAM_NAME;
-    return PROGRAM_NAME;
+    return STATIC_VARIABLE(programNameForStackTrace);
 }
 
 bool getTopLevelExceptionHandlerEnabled() {
-    return topLevelExceptionHandlerEnabled;
+    return STATIC_VARIABLE(topLevelExceptionHandlerEnabled);
 }
 
 void setProgramNameForStackTrace(char* programName) {
-    getProgramNameForStackTrace() = programName;
+    STATIC_VARIABLE(programNameForStackTrace) = programName;
 }
 
 #ifdef _WIN32
@@ -123,7 +124,9 @@ LONG WINAPI UnhandledException(LPEXCEPTION_POINTERS exceptionInfo) {
 #endif // _WIN32
 
 void setTopLevelExceptionHandlerEnabled(bool enabled) {
-    if (!topLevelExceptionHandlerEnabled && enabled) {
+    static void (* old_terminate)() = NULL;
+
+    if (!STATIC_VARIABLE(topLevelExceptionHandlerEnabled) && enabled) {
         old_terminate = std::set_terminate(stanfordCppLibTerminateHandler);
 #ifdef _WIN32
         // disabling this code for now because it messes with the
@@ -140,10 +143,10 @@ void setTopLevelExceptionHandlerEnabled(bool enabled) {
         
         // also set up a signal handler for things like segfaults / null-pointer-dereferences
         signalHandlerEnable();
-    } else if (topLevelExceptionHandlerEnabled && !enabled) {
+    } else if (STATIC_VARIABLE(topLevelExceptionHandlerEnabled) && !enabled) {
         std::set_terminate(old_terminate);
     }
-    topLevelExceptionHandlerEnabled = enabled;
+    STATIC_VARIABLE(topLevelExceptionHandlerEnabled) = enabled;
 }
 
 /*
@@ -230,7 +233,7 @@ void printStackTrace(std::ostream& out) {
             }
         }
         
-        if (!STACK_TRACE_SHOULD_FILTER || !shouldFilterOutFromStackTrace(entries[i].function)) {
+        if (!STATIC_VARIABLE(STACK_TRACE_SHOULD_FILTER) || !shouldFilterOutFromStackTrace(entries[i].function)) {
             lineStrLength = std::max(lineStrLength, (int) entries[i].lineStr.length());
             funcNameLength = std::max(funcNameLength, (int) entries[i].function.length());
             entriesToShowCount++;
@@ -243,7 +246,7 @@ void printStackTrace(std::ostream& out) {
     
     if (lineStrLength > 0) {
         out << "*** Stack trace (line numbers are approximate):" << std::endl;
-        if (STACK_TRACE_SHOW_TOP_BOTTOM_BARS) {
+        if (STATIC_VARIABLE(STACK_TRACE_SHOW_TOP_BOTTOM_BARS)) {
             out << "*** "
                       << std::setw(lineStrLength) << std::left
                       << "file:line" << "  " << "function" << std::endl;
@@ -259,7 +262,7 @@ void printStackTrace(std::ostream& out) {
         entry.file = getTail(entry.file);
         
         // skip certain entries for clarity
-        if (STACK_TRACE_SHOULD_FILTER && shouldFilterOutFromStackTrace(entry.function)) {
+        if (STATIC_VARIABLE(STACK_TRACE_SHOULD_FILTER) && shouldFilterOutFromStackTrace(entry.function)) {
             continue;
         }
         
@@ -302,7 +305,7 @@ void printStackTrace(std::ostream& out) {
         out << "*** (partial stack due to crash)" << std::endl;
     }
 
-    if (STACK_TRACE_SHOW_TOP_BOTTOM_BARS && lineStrLength > 0) {
+    if (STATIC_VARIABLE(STACK_TRACE_SHOW_TOP_BOTTOM_BARS) && lineStrLength > 0) {
         out << "*** "
                   << std::string(lineStrLength + 2 + funcNameLength, '=') << std::endl;
     }
@@ -332,7 +335,7 @@ void printStackTrace(std::ostream& out) {
     THROW_NOT_ON_WINDOWS(ex);
 
 static void signalHandlerDisable() {
-    for (int sig : SIGNALS_HANDLED) {
+    for (int sig : STATIC_VARIABLE(SIGNALS_HANDLED)) {
         signal(sig, SIG_DFL);
     }
 }
@@ -378,7 +381,7 @@ static void signalHandlerEnable() {
 #endif // SHOULD_USE_SIGNAL_STACK
 
     if (!handled) {
-        for (int sig : SIGNALS_HANDLED) {
+        for (int sig : STATIC_VARIABLE(SIGNALS_HANDLED)) {
             signal(sig, stanfordCppLibSignalHandler);
         }
     }

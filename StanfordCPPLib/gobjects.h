@@ -4,6 +4,9 @@
  * This file exports a hierarchy of graphical shapes based on
  * the model developed for the ACM Java Graphics.
  * <include src="pictures/ClassHierarchies/GObjectHierarchy-h.html">
+ *
+ * @version 2016/09/27
+ * - added get/setText methods to GLabel
  */
 
 #ifndef _gobjects_h
@@ -1086,6 +1089,7 @@ public:
      * a new text string appears on the display.
      */
     void setLabel(std::string str);
+    void setText(std::string str);
 
     /*
      * Method: getLabel
@@ -1094,6 +1098,7 @@ public:
      * Returns the string displayed by this object.
      */
     std::string getLabel() const;
+    std::string getText() const;
 
     /*
      * Method: getFontAscent

@@ -4,6 +4,8 @@
  * This file exports a set of functions that simplify input/output
  * operations in C++ and provide some error-checking on console input.
  * 
+ * @version 2016/09/29
+ * - added getDouble method
  * @version 2015/07/05
  * - increased visibility of appendSpace function used by various IO
  *   prompting functions (no longer static)
@@ -24,6 +26,29 @@
  * Adds a space at the end of the given string by reference if none is present.
  */
 void appendSpace(std::string& prompt);
+
+/*
+ * Function: getDouble
+ * Usage: double x = getDouble(prompt);
+ * ------------------------------------
+ * Equivalent to getReal.
+ *
+ * Reads a complete line from <code>cin</code> and scans it as a
+ * floating-point number. If the scan succeeds, the floating-point
+ * value is returned.  If the input is not a legal number or if
+ * extraneous characters (other than whitespace) appear in the string,
+ * the user is given a chance to reenter the value.
+ *
+ * If supplied, the optional <code>prompt</code> string is printed before
+ * reading the value.
+ *
+ * The also optional <code>reprompt</code> argument provides an output message
+ * displayed each time if the user types a file that is not found.
+ * If no value is passed, defaults to, "Illegal numeric format. Try again.".
+ */
+double getDouble(const std::string& prompt = "",
+                 const std::string& reprompt = "");
+
 
 /*
  * Function: getInteger
@@ -75,6 +100,8 @@ void getLine(std::istream& input,
  * Function: getReal
  * Usage: double x = getReal(prompt);
  * ----------------------------------
+ * Equivalent to getDouble.
+ *
  * Reads a complete line from <code>cin</code> and scans it as a
  * floating-point number. If the scan succeeds, the floating-point
  * value is returned.  If the input is not a legal number or if

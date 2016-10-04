@@ -6,16 +6,20 @@
  * See inputpanel.h for documentation of each function.
  * 
  * @author Marty Stepp
+ * @version 2016/10/04
+ * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * @version 2014/10/14
+ * - initial version
  * @since 2014/10/14
  */
 
 #include "inputpanel.h"
 #include "private/platform.h"
+#include "private/static.h"
 #include "xmlutils.h"
 
 namespace inputpanel {
-static bool inputPanelIsLoaded = false;
+STATIC_VARIABLE_DECLARE(bool, inputPanelIsLoaded, false)
 
 void addInputButton(const std::string& text, const std::string& input) {
     stanfordcpplib::getPlatform()->autograderinput_addButton(text, input);
@@ -38,14 +42,14 @@ void setVisible(bool value) {
 }
 
 bool isLoaded() {
-    return inputPanelIsLoaded;
+    return STATIC_VARIABLE(inputPanelIsLoaded);
 }
 
 void load(std::string xmlFilename) {
-    if (inputPanelIsLoaded) {
+    if (isLoaded()) {
         return;
     }
-    inputPanelIsLoaded = true;
+    STATIC_VARIABLE(inputPanelIsLoaded) = true;
     rapidxml::xml_node<>* doc = xmlutils::openXmlDocument(xmlFilename, "inputpanel");
     for (rapidxml::xml_node<>* category : xmlutils::getChildNodes(doc, "category")) {
         std::string categoryName = xmlutils::getAttribute(category, "name");

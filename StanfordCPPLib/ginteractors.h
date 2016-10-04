@@ -5,6 +5,8 @@
  * provided in the Java Swing libraries.
  * <include src="pictures/ClassHierarchies/GInteractorHierarchy-h.html">
  * 
+ * @version 2016/09/27
+ * - added setText method to GButton, GCheckBox, GRadioButton
  * @version 2016/07/07
  * - added getText method to GButton, GCheckBox, GRadioButton
  * @version 2015/06/20
@@ -164,6 +166,11 @@ public:
      */
     virtual std::string getText() const;
 
+    /*
+     * Sets the text label showing on the button to be the given text.
+     */
+    virtual void setText(std::string text);
+
     /* Prototypes for the virtual methods */
     virtual std::string getType() const;
     virtual std::string toString() const;
@@ -199,6 +206,11 @@ public:
      * Returns the text label showing on the button.
      */
     virtual std::string getText() const;
+
+    /*
+     * Sets the text label showing on the button to be the given text.
+     */
+    virtual void setText(std::string text);
 
     /*
      * Method: setSelected
@@ -252,6 +264,11 @@ public:
      * Returns the text label showing on the button.
      */
     virtual std::string getText() const;
+
+    /*
+     * Sets the text label showing on the button to be the given text.
+     */
+    virtual void setText(std::string text);
 
     /*
      * Method: setSelected

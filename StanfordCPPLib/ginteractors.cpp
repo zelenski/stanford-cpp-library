@@ -3,6 +3,8 @@
  * ------------------
  * This file implements the ginteractors.h interface.
  * 
+ * @version 2016/09/27
+ * - added setText method to GButton, GCheckBox, GRadioButton
  * @version 2016/07/07
  * - added getText method to GButton, GCheckBox, GRadioButton
  * @version 2015/12/01
@@ -111,6 +113,12 @@ std::string GButton::getText() const {
     return this->label;
 }
 
+void GButton::setText(std::string text) {
+    this->label = text;
+    stanfordcpplib::getPlatform()->ginteractor_setText(this, text);
+    setActionCommand(text);
+}
+
 std::string GButton::getType() const {
     return "GButton";
 }
@@ -133,6 +141,12 @@ GCheckBox::GCheckBox(std::string label) {
 
 std::string GCheckBox::getText() const {
     return this->label;
+}
+
+void GCheckBox::setText(std::string text) {
+    this->label = text;
+    stanfordcpplib::getPlatform()->ginteractor_setText(this, text);
+    setActionCommand(text);
 }
 
 bool GCheckBox::isSelected() {
@@ -172,6 +186,12 @@ GRadioButton::GRadioButton(std::string label, std::string group, bool selected) 
 
 std::string GRadioButton::getText() const {
     return this->label;
+}
+
+void GRadioButton::setText(std::string text) {
+    this->label = text;
+    stanfordcpplib::getPlatform()->ginteractor_setText(this, text);
+    setActionCommand(text);
 }
 
 bool GRadioButton::isSelected() {

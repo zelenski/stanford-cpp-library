@@ -3,6 +3,8 @@
  * -----------------
  * This file implements the console.h interface.
  *
+ * @version 2016/10/04
+ * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * @version 2015/07/05
  * - removed static global Platform variable, replaced by getPlatform as needed
  * @version 2015/04/25
@@ -28,19 +30,23 @@
 #undef __DONT_ENABLE_GRAPHICAL_CONSOLE
 
 #include <cstdio>
+#include <iostream>
 #include <string>
 #include "error.h"
 #include "exceptions.h"
 #include "gwindow.h"
 #include "private/platform.h"
+#include "private/static.h"
 
-static bool consoleClearEnabled = true;
-static bool consoleEcho = false;
-static bool consoleEventOnClose = false;
-static bool consoleExitProgramOnClose = false;
-static bool consoleLocationSaved = false;
-static bool consoleLocked = false;
-static ConsoleCloseOperation consoleCloseOperation = ConsoleCloseOperation::CONSOLE_HIDE_ON_CLOSE;
+// static 'variables' (as functions to avoid initialization ordering bugs)
+STATIC_VARIABLE_DECLARE(bool, consoleClearEnabled, true)
+STATIC_VARIABLE_DECLARE(bool, consoleEcho, false)
+STATIC_VARIABLE_DECLARE(bool, consoleEventOnClose, false)
+STATIC_VARIABLE_DECLARE(bool, consoleExitProgramOnClose, false)
+STATIC_VARIABLE_DECLARE(bool, consoleLocationSaved, false)
+STATIC_VARIABLE_DECLARE(bool, consoleLocked, false)
+STATIC_VARIABLE_DECLARE(ConsoleCloseOperation, consoleCloseOperation, ConsoleCloseOperation::CONSOLE_HIDE_ON_CLOSE)
+// end static 'variables'
 
 void clearConsole() {
     std::string msg = "==================== (console cleared) ====================";
@@ -57,27 +63,27 @@ void clearConsole() {
 }
 
 bool getConsoleClearEnabled() {
-    return consoleClearEnabled;
+    return STATIC_VARIABLE(consoleClearEnabled);
 }
 
 ConsoleCloseOperation getConsoleCloseOperation() {
-    return consoleCloseOperation;
+    return STATIC_VARIABLE(consoleCloseOperation);
 }
 
 bool getConsoleEcho() {
-    return consoleEcho;
+    return STATIC_VARIABLE(consoleEcho);
 }
 
 bool getConsoleEventOnClose() {
-    return consoleEventOnClose;
+    return STATIC_VARIABLE(consoleEventOnClose);
 }
 
 bool getConsoleExitProgramOnClose() {
-    return consoleExitProgramOnClose;
+    return STATIC_VARIABLE(consoleExitProgramOnClose);
 }
 
 bool getConsoleLocationSaved() {
-    return consoleLocationSaved;
+    return STATIC_VARIABLE(consoleLocationSaved);
 }
 
 bool getConsolePrintExceptions() {
@@ -85,79 +91,77 @@ bool getConsolePrintExceptions() {
 }
 
 bool getConsoleSettingsLocked() {
-    return consoleLocked;
+    return STATIC_VARIABLE(consoleLocked);
 }
 
 void setConsoleClearEnabled(bool value) {
-    consoleClearEnabled = value;
+    STATIC_VARIABLE(consoleClearEnabled) = value;
 }
 
 void setConsoleCloseOperation(ConsoleCloseOperation op) {
-    if (consoleLocked) { return; }
-    consoleCloseOperation = op;
-    consoleExitProgramOnClose = op == ConsoleCloseOperation::CONSOLE_EXIT_ON_CLOSE;
+    if (STATIC_VARIABLE(consoleLocked)) { return; }
+    STATIC_VARIABLE(consoleCloseOperation) = op;
+    STATIC_VARIABLE(consoleExitProgramOnClose) = op == ConsoleCloseOperation::CONSOLE_EXIT_ON_CLOSE;
     stanfordcpplib::getPlatform()->jbeconsole_setCloseOperation(op);
 }
 
 void setConsoleEcho(bool echo) {
-    if (consoleLocked) { return; }
-    consoleEcho = echo;
+    if (STATIC_VARIABLE(consoleLocked)) { return; }
+    STATIC_VARIABLE(consoleEcho) = echo;
 }
 
 void setConsoleErrorColor(const std::string& color) {
-    if (consoleLocked) { return; }
-    // consoleOutputColor = color;
+    if (STATIC_VARIABLE(consoleLocked)) { return; }
     stanfordcpplib::getPlatform()->jbeconsole_setErrorColor(color);
 }
 
 void setConsoleEventOnClose(bool eventOnClose) {
-    if (consoleLocked) { return; }
-    consoleEventOnClose = eventOnClose;
+    if (STATIC_VARIABLE(consoleLocked)) { return; }
+    STATIC_VARIABLE(consoleEventOnClose) = eventOnClose;
 }
 
 void setConsoleExitProgramOnClose(bool exitOnClose) {
-    if (consoleLocked) { return; }
-    consoleExitProgramOnClose = exitOnClose;
+    if (STATIC_VARIABLE(consoleLocked)) { return; }
+    STATIC_VARIABLE(consoleExitProgramOnClose) = exitOnClose;
     stanfordcpplib::getPlatform()->jbeconsole_setExitProgramOnClose(exitOnClose);
 }
 
 void setConsoleFont(const std::string& font) {
-    if (consoleLocked) { return; }
+    if (STATIC_VARIABLE(consoleLocked)) { return; }
     stanfordcpplib::getPlatform()->jbeconsole_setFont(font);
 }
 
 void setConsoleLocation(int x, int y) {
-    if (consoleLocked) { return; }
+    if (STATIC_VARIABLE(consoleLocked)) { return; }
     stanfordcpplib::getPlatform()->jbeconsole_setLocation(x, y);
 }
 
 void setConsoleLocationSaved(bool value) {
-    if (consoleLocked) { return; }
-    consoleLocationSaved = value;
+    if (STATIC_VARIABLE(consoleLocked)) { return; }
+    STATIC_VARIABLE(consoleLocationSaved) = value;
     stanfordcpplib::getPlatform()->jbeconsole_setLocationSaved(value);
 }
 
 void setConsoleOutputColor(const std::string& color) {
-    if (consoleLocked) { return; }
-    // consoleOutputColor = color;
+    if (STATIC_VARIABLE(consoleLocked)) { return; }
     stanfordcpplib::getPlatform()->jbeconsole_setOutputColor(color);
 }
 
 void setConsolePrintExceptions(bool printExceptions) {
-    if (consoleLocked) { return; }
+    if (STATIC_VARIABLE(consoleLocked)) { return; }
     exceptions::setTopLevelExceptionHandlerEnabled(printExceptions);
 }
 
 void setConsoleSettingsLocked(bool value) {
-    consoleLocked = value;
+    STATIC_VARIABLE(consoleLocked) = value;
 }
 
 void setConsoleSize(double width, double height) {
-    if (consoleLocked) { return; }
+    if (STATIC_VARIABLE(consoleLocked)) { return; }
     stanfordcpplib::getPlatform()->jbeconsole_setSize(width, height);
 }
 
 void setConsoleWindowTitle(const std::string& title) {
-    if (consoleLocked) { return; }
+    if (STATIC_VARIABLE(consoleLocked)) { return; }
     stanfordcpplib::getPlatform()->jbeconsole_setTitle(title);
 }
