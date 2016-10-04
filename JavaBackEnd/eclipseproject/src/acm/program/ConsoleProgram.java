@@ -1,4 +1,6 @@
 /*
+ * @version 2016/10/02
+ * - moved some I/O code to AbstractConsoleProgram superclass
  * @version 2016/05/17
  * - moved some menuAction code to AbstractConsoleProgram superclass
  * - added getFont() method to fix null-font-before-set issue
@@ -43,8 +45,6 @@ import java.util.List;
  * that installs a console in the window.
  */
 public abstract class ConsoleProgram extends AbstractConsoleProgram {
-	private static final String DEFAULT_REPROMPT_MESSAGE = "Unable to open that file. Try again.";
-	
 /* Constructor: ConsoleProgram() */
 /**
  * Creates a new console program.
@@ -100,194 +100,8 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 		return new IOConsole();
 	}
 
-/* Inherited method: print(value) */
-/**
- * @inherited Program#void print(String value)
- * Displays the argument value on the console, leaving the cursor at the end of
- * the output.
- */
-
-/* Inherited method: println() */
-/**
- * @inherited Program#void println()
- * Advances the console cursor to the beginning of the next line.
- */
-
-/* Inherited method: println(value) */
-/**
- * @inherited Program#void println(String value)
- * Displays the argument value on the console and then advances the cursor
- * to the next line.
- */
-
-/* Inherited method: readLine() */
-/**
- * @inherited Program#String readLine()
- * Reads and returns a line of input from the console.
- */
-
-/* Inherited method: readLine(prompt) */
-/**
- * @inherited Program#String readLine(String prompt)
- * Prompts the user for a line of input.
- */
-
-/* Inherited method: readInt() */
-/**
- * @inherited Program#int readInt()
- * Reads and returns an integer value from the user.
- */
-
-/* Inherited method: readInt(prompt) */
-/**
- * @inherited Program#int readInt(String prompt)
- * Prompts the user to enter an integer.
- */
-
-/* Inherited method: readDouble() */
-/**
- * @inherited Program#double readDouble()
- * Reads and returns a double-precision value from the user.
- */
-
-/* Inherited method: readDouble(prompt) */
-/**
- * @inherited Program#double readDouble(String prompt)
- * Prompts the user to enter a double-precision number.
- */
-
-/* Inherited method: readBoolean() */
-/**
- * @inherited Program#boolean readBoolean()
- * Reads and returns a boolean value (<code>true</code> or <code>false</code>).
- */
-
-/* Inherited method: readBoolean(prompt) */
-/**
- * @inherited Program#boolean readBoolean(String prompt)
- * Prompts the user to enter a boolean value.
- */
-
-/* Inherited method: readBoolean(prompt, trueLabel, falseLabel) */
-/**
- * @inherited Program#boolean readBoolean(String prompt, String trueLabel, String falseLabel)
- * Prompts the user to enter a boolean value, which is matched against the
- * labels provided.
- */
-
-/* Inherited method: getConsole() */
-/**
- * @inherited Program#IOConsole getConsole()
- * Returns the console associated with this program.
- */
-
-/* Inherited method: getDialog() */
-/**
- * @inherited Program#IODialog getDialog()
- * Returns the dialog used for user interaction.
- */
-
-/* Inherited method: getReader() */
-/**
- * @inherited Program#BufferedReader getReader()
- * Returns a <code>BufferedReader</code> whose input comes from the console.
- */
-
-/* Inherited method: getWriter() */
-/**
- * @inherited Program#PrintWriter getWriter()
- * Returns a <code>PrintWriter</code> whose output is directed to the console.
- */
-
-/* Inherited method: setTitle(title) */
-/**
- * @inherited Program#void setTitle(String title)
- * Sets the title of this program.
- */
-
-/* Inherited method: getTitle() */
-/**
- * @inherited Program#String getTitle()
- * Gets the title of this program.
- */
-
-/* Inherited method: pause(milliseconds) */
-/**
- * @inherited Program#void pause(double milliseconds)
- * Delays the calling thread for the specified time, which is expressed in
- * milliseconds.
- */
-
 	// METHODS ADDED BY MARTY
 	
-	/**
-	 * Erases any text from the main console.
-	 */
-	public void clearConsole() {
-		if (clearEnabled) {
-			getConsole().clear();
-		}
-	}
-	
-	/**
-	 * Asks the user to type a file name, re-prompting until the user types a
-	 * file that exists in the current directory.
-	 * The message "Unable to open that file. Try again." is shown every time a reprompt is necessary.
-	 * The file's full path is returned as a string.
-	 * @param prompt the text to display to the user
-	 * @param directory the working directory in which to look for files (e.g. "res/")
-	 * @return the file name typed by the user, including any directory prefix, such as "res/input.txt" or "foo.dat"
-	 */
-	public String promptUserForFile(String prompt) {
-		return promptUserForFile(prompt, "");
-	}
-	
-	/**
-	 * Asks the user to type a file name, re-prompting until the user types a
-	 * file that exists in the given directory.
-	 * The message "Unable to open that file. Try again." is shown every time a reprompt is necessary.
-	 * The file's full path is returned as a string.
-	 * @param prompt the text to display to the user
-	 * @param directory the working directory in which to look for files (e.g. "res/")
-	 * @return the file name typed by the user, including any directory prefix, such as "res/input.txt" or "foo.dat"
-	 */
-	public String promptUserForFile(String prompt, String directory) {
-		return promptUserForFile(prompt, directory, DEFAULT_REPROMPT_MESSAGE);
-	}
-	
-	/**
-	 * Asks the user to type a file name, re-prompting until the user types a
-	 * file that exists in the given directory.
-	 * The given reprompt message is shown every time a reprompt is necessary.
-	 * The file's full path is returned as a string.
-	 * @param prompt the text to display to the user
-	 * @param directory the working directory in which to look for files (e.g. "res/")
-	 * @return the file name typed by the user, including any directory prefix, such as "res/input.txt" or "foo.dat"
-	 */
-	public String promptUserForFile(String prompt, String directory, String reprompt) {
-		String filename = readLine(prompt);
-		while (filename.isEmpty() || !fileExists(directory, filename)) {
-			println(reprompt);
-			filename = readLine(prompt).trim();
-		}
-		if (!directory.equals("")) {
-			// filename = new File(directory, filename).getAbsolutePath();
-			directory = directory.replace("\\", "/");
-			if (!directory.endsWith("/")) {
-				directory += "/";
-			}
-		}
-		return directory + filename;
-	}
-	
-	/**
-	 * Turns on/off the ability to clear the console using clearConsole(); (default true)
-	 * @param enabled Whether to enable clearConsole();
-	 */
-	public void setClearConsoleEnabled(boolean enabled) {
-		clearEnabled = enabled;
-	}
-
 
 	// BEGIN SNEAKY AUTOGRADER CODE //
 	
@@ -295,7 +109,6 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 	private InputFileReader inputReader = null;
 	private boolean outputCapture = false;
 	private boolean inputOverride = false;
-	private boolean clearEnabled = true;   // whether clearConsole(); is effectual
 	private List<String> echoedComments = null;
 	private StringBuilder capturedOutput = new StringBuilder();
 	

@@ -1,4 +1,6 @@
 /*
+ * @version 2016/10/02
+ * - added getYesOrNo
  * @version 2016/07/14
  * - bug fix for fileExistsInsideJAR, openFileFromJAR on Windows
  * @version 2016/05/22
@@ -597,6 +599,18 @@ public abstract class Program extends JApplet
 	public final String readLine() {
 		return readLine(null);
 	}
+	
+	/**
+	 * Reads and returns a line of input from the console.  The end-of-line
+	 * characters that terminate the input are not included in the returned
+	 * string.
+	 *
+	 * @usage String str = program.getLine();
+	 * @return The next line of input as a <code>String</code>
+	 */
+	public String getLine() {
+		return readLine();
+	}
 
 /* Method: readLine(prompt) */
 /**
@@ -609,6 +623,18 @@ public abstract class Program extends JApplet
  */
 	public String readLine(String prompt) {
 		return getInputModel().readLine(prompt);
+	}
+
+	/**
+	 * Prompts the user for a line of input.  The end-of-line characters
+	 * that terminate the input are not included in the returned string.
+	 *
+	 * @usage String str = program.getLine(prompt);
+	 * @param prompt The prompt string to display to the user
+	 * @return The next line of input as a <code>String</code>
+	 */
+	public String getLine(String prompt) {
+		return readLine(prompt);
 	}
 
 /* Method: readInt() */
@@ -624,6 +650,20 @@ public abstract class Program extends JApplet
  */
 	public final int readInt() {
 		return readInt(null, Integer.MIN_VALUE, Integer.MAX_VALUE);
+	}
+	
+	/**
+	 * Reads and returns an integer value from the user.  If the user types
+	 * a value that is not a legal integer, the method ordinarily offers the
+	 * user a chance to reenter the data, although this behavior can be
+	 * changed using the
+	 * <a href="#setExceptionOnError(boolean)"><code>setExceptionOnError</code></a> method.
+	 *
+	 * @usage int n = program.getInteger();
+	 * @return The value of the input interpreted as a decimal integer
+	 */
+	public int getInteger() {
+		return readInt();
 	}
 
 /* Method: readInt(low, high) */
@@ -643,6 +683,22 @@ public abstract class Program extends JApplet
 		return readInt(null, low, high);
 	}
 
+	/**
+	 * Reads and returns an integer value from the user, which is constrained to
+	 * be within the specified inclusive range.  If the user types a value
+	 * that is not a legal integer, the method ordinarily offers the user a chance
+	 * to reenter the data, although this behavior can be changed using the
+	 * <a href="#setExceptionOnError(boolean)"><code>setExceptionOnError</code></a> method.
+	 *
+	 * @usage int n = program.getInteger(low, high);
+	 * @param low The lowest value in the permitted range
+	 * @param high The highest value in the permitted range
+	 * @return The value of the input interpreted as a decimal integer
+	 */
+	public int getInteger(int low, int high) {
+		return readInt(low, high);
+	}
+
 /* Method: readInt(prompt) */
 /**
  * Prompts the user to enter an integer, which is then returned as the value
@@ -657,6 +713,21 @@ public abstract class Program extends JApplet
  */
 	public final int readInt(String prompt) {
 		return readInt(prompt, Integer.MIN_VALUE, Integer.MAX_VALUE);
+	}
+
+	/**
+	 * Prompts the user to enter an integer, which is then returned as the value
+	 * of this method.  If the user types a value that is not a legal integer,
+	 * the method ordinarily offers the user a chance to reenter the data,
+	 * although this behavior can be changed using the
+	 * <a href="#setExceptionOnError(boolean)"><code>setExceptionOnError</code></a> method.
+	 *
+	 * @usage int n = program.getInteger(prompt);
+	 * @param prompt The prompt string to display to the user
+	 * @return The value of the input interpreted as a decimal integer
+	 */
+	public final int getInteger(String prompt) {
+		return readInt(prompt);
 	}
 
 /* Method: readInt(prompt, low, high) */
@@ -679,6 +750,26 @@ public abstract class Program extends JApplet
 		return getInputModel().readInt(prompt, low, high);
 	}
 
+	/**
+	 * Prompts the user to enter an integer, which is then returned as the value
+	 * of this method.  The value must be within the inclusive range between
+	 * <code>low</code> and <code>high</code>.  If the user types a value that
+	 * is not a legal integer or is outside the specified range, the method
+	 * ordinarily offers the user a chance to reenter the data,
+	 * although this behavior can be changed using the
+	 * <a href="#setExceptionOnError(boolean)"><code>setExceptionOnError</code></a> method.
+	 *
+	 * @usage int n = console.getInteger(prompt, low, high);
+	 * @param prompt The prompt string to display to the user
+	 * @param low The lowest value in the permitted range
+	 * @param high The highest value in the permitted range
+	 * @return The value of the input interpreted as a decimal integer
+	 */
+	public int getInteger(String prompt, int low, int high) {
+		return readInt(prompt, low, high);
+	}
+
+
 /* Method: readDouble() */
 /**
  * Reads and returns a double-precision value from the user.  If the user
@@ -692,6 +783,34 @@ public abstract class Program extends JApplet
  */
 	public final double readDouble() {
 		return readDouble(null, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+	}
+
+	/**
+	 * Reads and returns a double-precision value from the user.  If the user
+	 * types a value that is not a legal number, the method ordinarily offers
+	 * the user a chance to reenter the data, although this behavior can be
+	 * changed using the
+	 * <a href="#setExceptionOnError(boolean)"><code>setExceptionOnError</code></a> method.
+	 *
+	 * @usage double d = program.getDouble();
+	 * @return The value of the input interpreted as a <code>double</code>
+	 */
+	public double getDouble() {
+		return readDouble();
+	}
+
+	/**
+	 * Reads and returns a double-precision value from the user.  If the user
+	 * types a value that is not a legal number, the method ordinarily offers
+	 * the user a chance to reenter the data, although this behavior can be
+	 * changed using the
+	 * <a href="#setExceptionOnError(boolean)"><code>setExceptionOnError</code></a> method.
+	 *
+	 * @usage double d = program.getReal();
+	 * @return The value of the input interpreted as a <code>double</code>
+	 */
+	public double getReal() {
+		return readDouble();
 	}
 
 /* Method: readDouble(low, high) */
@@ -712,6 +831,40 @@ public abstract class Program extends JApplet
 		return readDouble(null, low, high);
 	}
 
+	/**
+	 * Reads and returns a double-precision value from the user, which is
+	 * constrained to be within the specified inclusive range.  If the user
+	 * types a value that is not a legal number, the method ordinarily offers
+	 * the user a chance to reenter the data, although this behavior can be
+	 * changed using the
+	 * <a href="#setExceptionOnError(boolean)"><code>setExceptionOnError</code></a> method.
+	 *
+	 * @usage double d = program.getDouble(low, high);
+	 * @param low The lowest value in the permitted range
+	 * @param high The highest value in the permitted range
+	 * @return The value of the input interpreted as a <code>double</code>
+	 */
+	public double getDouble(double low, double high) {
+		return readDouble(low, high);
+	}
+
+	/**
+	 * Reads and returns a double-precision value from the user, which is
+	 * constrained to be within the specified inclusive range.  If the user
+	 * types a value that is not a legal number, the method ordinarily offers
+	 * the user a chance to reenter the data, although this behavior can be
+	 * changed using the
+	 * <a href="#setExceptionOnError(boolean)"><code>setExceptionOnError</code></a> method.
+	 *
+	 * @usage double d = program.getReal(low, high);
+	 * @param low The lowest value in the permitted range
+	 * @param high The highest value in the permitted range
+	 * @return The value of the input interpreted as a <code>double</code>
+	 */
+	public double getReal(double low, double high) {
+		return readDouble(low, high);
+	}
+
 /* Method: readDouble(prompt) */
 /**
  * Prompts the user to enter an double-precision number, which is then
@@ -726,6 +879,36 @@ public abstract class Program extends JApplet
  */
 	public final double readDouble(String prompt) {
 		return readDouble(prompt, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+	}
+
+	/**
+	 * Prompts the user to enter an double-precision number, which is then
+	 * returned as the value of this method.  If the user types a value that
+	 * is not a legal number, the method ordinarily offers the user a chance to
+	 * reenter the data,  although this behavior can be changed using the
+	 * <a href="#setExceptionOnError(boolean)"><code>setExceptionOnError</code></a> method.
+	 *
+	 * @usage double d = program.getDouble(prompt);
+	 * @param prompt The prompt string to display to the user
+	 * @return The value of the input interpreted as a <code>double</code>
+	 */
+	public final double getDouble(String prompt) {
+		return readDouble(prompt);
+	}
+
+	/**
+	 * Prompts the user to enter an double-precision number, which is then
+	 * returned as the value of this method.  If the user types a value that
+	 * is not a legal number, the method ordinarily offers the user a chance to
+	 * reenter the data,  although this behavior can be changed using the
+	 * <a href="#setExceptionOnError(boolean)"><code>setExceptionOnError</code></a> method.
+	 *
+	 * @usage double d = program.getReal(prompt);
+	 * @param prompt The prompt string to display to the user
+	 * @return The value of the input interpreted as a <code>double</code>
+	 */
+	public final double getReal(String prompt) {
+		return readDouble(prompt);
 	}
 
 /* Method: readDouble(prompt, low, high) */
@@ -747,6 +930,42 @@ public abstract class Program extends JApplet
 		return getInputModel().readDouble(prompt, low, high);
 	}
 
+	/**
+	 * Prompts the user to enter an double-precision number, which is then returned
+	 * as the value of this method.  The value must be within the inclusive range
+	 * between <code>low</code> and <code>high</code>.  If the user types a value
+	 * that is not a legal number, the method ordinarily offers the user a chance
+	 * to reenter the data,  although this behavior can be changed using the
+	 * <a href="#setExceptionOnError(boolean)"><code>setExceptionOnError</code></a> method.
+	 *
+	 * @usage d = program.getDouble(prompt, low, high);
+	 * @param prompt The prompt string to display to the user
+	 * @param low The lowest value in the permitted range
+	 * @param high The highest value in the permitted range
+	 * @return The value of the input interpreted as a <code>double</code>
+	 */
+	public double getDouble(String prompt, double low, double high) {
+		return readDouble(prompt, low, high);
+	}
+
+	/**
+	 * Prompts the user to enter an double-precision number, which is then returned
+	 * as the value of this method.  The value must be within the inclusive range
+	 * between <code>low</code> and <code>high</code>.  If the user types a value
+	 * that is not a legal number, the method ordinarily offers the user a chance
+	 * to reenter the data,  although this behavior can be changed using the
+	 * <a href="#setExceptionOnError(boolean)"><code>setExceptionOnError</code></a> method.
+	 *
+	 * @usage d = program.getReal(prompt, low, high);
+	 * @param prompt The prompt string to display to the user
+	 * @param low The lowest value in the permitted range
+	 * @param high The highest value in the permitted range
+	 * @return The value of the input interpreted as a <code>double</code>
+	 */
+	public double getReal(String prompt, double low, double high) {
+		return readDouble(prompt, low, high);
+	}
+
 /* Method: readBoolean() */
 /**
  * Reads and returns a boolean value (<code>true</code> or <code>false</code>).
@@ -761,6 +980,21 @@ public abstract class Program extends JApplet
  */
 	public final boolean readBoolean() {
 		return readBoolean(null);
+	}
+
+	/**
+	 * Reads and returns a boolean value (<code>true</code> or <code>false</code>).
+	 * The input must match one of these strings, ignoring case.  If the user
+	 * types a value that is not one of these possibilities, the method ordinarily
+	 * offers the user a chance to reenter the data, although this behavior
+	 * can be changed using the
+	 * <a href="#setExceptionOnError(boolean)"><code>setExceptionOnError</code></a> method.
+	 *
+	 * @usage boolean flag = program.getBoolean();
+	 * @return The value of the input interpreted as a boolean value
+	 */
+	public final boolean getBoolean() {
+		return readBoolean();
 	}
 
 /* Method: readBoolean(prompt) */
@@ -779,6 +1013,21 @@ public abstract class Program extends JApplet
 		return readBoolean(prompt, "true", "false");
 	}
 
+	/**
+	 * Prompts the user to enter a boolean value, which is returned as
+	 * the value of this method.  If the user types a value that is not a
+	 * legal boolean value, the method ordinarily offers the user a chance
+	 * to reenter the data, although this behavior can be changed using the
+	 * <a href="#setExceptionOnError(boolean)"><code>setExceptionOnError</code></a> method.
+	 *
+	 * @usage boolean flag = program.readBoolean(prompt);
+	 * @param prompt The prompt string to display to the user
+	 * @return The value of the input interpreted as a boolean value
+	 */
+	public boolean getBoolean(String prompt) {
+		return readBoolean(prompt);
+	}
+
 /* Method: readBoolean(prompt, trueLabel, falseLabel) */
 /**
  * Prompts the user to enter a boolean value, which is matched against the
@@ -787,7 +1036,7 @@ public abstract class Program extends JApplet
  * to reenter the data, although this behavior can be changed using the
  * <a href="#setExceptionOnError(boolean)"><code>setExceptionOnError</code></a> method.
  *
- * @usage boolean flag = program.readBoolean(prompt);
+ * @usage boolean flag = program.readBoolean(prompt, trueLabel, falseLabel);
  * @param prompt The prompt string to display to the user
  * @param trueLabel The string used to indicate <code>true</code>
  * @param falseLabel The string used to indicate <code>false</code>
@@ -796,6 +1045,44 @@ public abstract class Program extends JApplet
 	public boolean readBoolean(String prompt, String trueLabel, String falseLabel) {
 		return getInputModel().readBoolean(prompt, trueLabel, falseLabel);
 	}
+
+	/**
+	 * Prompts the user to enter a boolean value, which is matched against the
+	 * labels provided.  If the user enters a value that is not one of the two
+	 * choices, <code>readBoolean</code> ordinarily offers the user a chance
+	 * to reenter the data, although this behavior can be changed using the
+	 * <a href="#setExceptionOnError(boolean)"><code>setExceptionOnError</code></a> method.
+	 *
+	 * @usage boolean flag = program.getBoolean(prompt, trueLabel, falseLabel);
+	 * @param prompt The prompt string to display to the user
+	 * @param trueLabel The string used to indicate <code>true</code>
+	 * @param falseLabel The string used to indicate <code>false</code>
+	 * @return The value of the input interpreted as a boolean value
+	 */
+	public boolean getBoolean(String prompt, String trueLabel, String falseLabel) {
+		return readBoolean(prompt, trueLabel, falseLabel);
+	}
+
+	/**
+	 * Prompts the user to answer a yes/no question and returns true if the user
+	 * typed 'yes' (or anything that starts with a 'y', case-insensitively),
+	 * false if the user types anything that starts with 'n', or re-prompts if
+	 * the user doesn't type a 'y' or 'n' word.
+	 * @return true if user types a 'y' word; false if user types an 'n' word
+	 */
+	public boolean getYesOrNo(String prompt) {
+		while (true) {
+			String answer = getLine(prompt).trim().toLowerCase();
+			if (answer.startsWith("y")) {
+				return true;
+			} else if (answer.startsWith("n")) {
+				return false;
+			} else {
+				getOutputModel().showErrorMessage("Please type a word that begins with 'Y' or 'N'.");
+			}
+		}
+	}
+
 
 /* Method: isAppletMode() */
 /**

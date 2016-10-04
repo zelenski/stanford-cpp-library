@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp
+ * @version 2016/10/02
+ * - added ability to set reprompt messages for readInt/Double/Boolean
  * @version 2015/05/10
  * - added a space after all readInt/Double/Line prompts
  */
@@ -160,13 +162,21 @@ public class IOConsole extends Container implements IOModel {
 				str1 = "Value is outside the range [" + paramInt1 + ":"
 						+ paramInt2 + "]";
 			} catch (NumberFormatException localNumberFormatException) {
-				str1 = "Illegal numeric format";
+				str1 = GETINTEGER_REPROMPT_MESSAGE;
 			}
 			showErrorMessage(str1);
 			if (paramString == null) {
-				paramString = "Retry: ";
+				paramString = GETINTEGER_DEFAULT_PROMPT;
 			}
 		}
+	}
+	
+	protected void setReadIntDefaultPrompt(String prompt) {
+		GETINTEGER_DEFAULT_PROMPT = prompt;
+	}
+
+	protected void setReadIntRepromptMessage(String message) {
+		GETINTEGER_REPROMPT_MESSAGE = message;
 	}
 
 	public final double readDouble() {
@@ -196,13 +206,21 @@ public class IOConsole extends Container implements IOModel {
 				str1 = "Value is outside the range [" + paramDouble1 + ":"
 						+ paramDouble2 + "]";
 			} catch (NumberFormatException localNumberFormatException) {
-				str1 = "Illegal numeric format";
+				str1 = GETREAL_REPROMPT_MESSAGE;
 			}
 			showErrorMessage(str1);
 			if (paramString == null) {
-				paramString = "Retry: ";
+				paramString = GETREAL_DEFAULT_PROMPT;
 			}
 		}
+	}
+
+	protected void setReadDoubleDefaultPrompt(String prompt) {
+		GETREAL_DEFAULT_PROMPT = prompt;
+	}
+
+	protected void setReadDoubleRepromptMessage(String message) {
+		GETREAL_REPROMPT_MESSAGE = message;
 	}
 
 	public final boolean readBoolean() {
@@ -227,13 +245,17 @@ public class IOConsole extends Container implements IOModel {
 				return false;
 			}
 			if (this.exceptionOnError) {
-				throw new ErrorException("Illegal boolean format");
+				throw new ErrorException(GETBOOL_REPROMPT_MESSAGE);
 			}
-			showErrorMessage("Illegal boolean format");
+			showErrorMessage(GETBOOL_REPROMPT_MESSAGE);
 			if (paramString1 == null) {
 				paramString1 = "Retry: ";
 			}
 		}
+	}
+	
+	protected void setReadBooleanRepromptMessage(String message) {
+		GETBOOL_REPROMPT_MESSAGE = message;
 	}
 	
 	protected String appendSpace(String s) {
@@ -547,4 +569,10 @@ public class IOConsole extends Container implements IOModel {
 	private PrintWriter writer;
 	private File file;
 	private ProgramMenuBar menuBar;
+	
+	private String GETINTEGER_REPROMPT_MESSAGE = "Illegal numeric format";
+	private String GETINTEGER_DEFAULT_PROMPT = "Retry: ";
+	private String GETREAL_REPROMPT_MESSAGE = "Illegal numeric format";
+	private String GETREAL_DEFAULT_PROMPT = "Retry: ";
+	private String GETBOOL_REPROMPT_MESSAGE = "Illegal boolean format";
 }

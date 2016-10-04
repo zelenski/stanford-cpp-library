@@ -74,6 +74,7 @@ public abstract class JBECommand {
 		localHashMap.put("GInteractor.setBackground", new GInteractor_setBackground());
 		localHashMap.put("GInteractor.setEnabled", new GInteractor_setEnabled());
 		localHashMap.put("GInteractor.setIcon", new GInteractor_setIcon());
+		localHashMap.put("GInteractor.setText", new GInteractor_setText());
 		localHashMap.put("GInteractor.setTextPosition", new GInteractor_setTextPosition());
 		localHashMap.put("GLabel.create", new GLabel_create());
 		localHashMap.put("GLabel.getFontAscent", new GLabel_getFontAscent());
