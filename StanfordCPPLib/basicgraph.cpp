@@ -98,7 +98,6 @@ std::ostream& operator <<(std::ostream& out, const Vertex& v) {
     if (v.cost != 0.0) {
         out << ", cost=" << v.cost;
     }
-    out << ", cost=" << v.cost;
     out << ", visited=" << (v.visited ? "true" : "false");
     out << ", previous=" << (v.previous == NULL ? std::string("NULL") : v.previous->name);
 
