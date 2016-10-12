@@ -1,4 +1,6 @@
 /*
+ * @version 2016/10/07
+ * - oops, actually IGNORE_BLANK_LINES flag was still totally broken; NOW it works!
  * @version 2016/04/28
  * - fixed IGNORE_BLANK_LINES flag to actually work
  */
@@ -358,24 +360,24 @@ public class Diff {
 			lines1 = s1.split("\r?\n");
 			lines2 = s2.split("\r?\n");
 		}
-		if ((flags & IGNORE_BLANK_LINES) != 0) {
-			while (s1.startsWith("\r") || s1.startsWith("\n")) {
-				s1 = s1.substring(1);
-			}
-			while (s2.startsWith("\r") || s2.startsWith("\n")) {
-				s2 = s2.substring(1);
-			}
-			while (s1.endsWith("\r") || s1.endsWith("\n")) {
-				s1 = s1.substring(0, s1.length() - 1);
-			}
-			while (s2.endsWith("\r") || s2.endsWith("\n")) {
-				s2 = s2.substring(0, s2.length() - 1);
-			}
-			s1 = s1.replaceAll("\r?\n[ \t]{0,999}\r?\n", "\n");
-			s2 = s2.replaceAll("\r?\n[ \t]{0,999}\r?\n", "\n");
-			lines1 = s1.split("\r?\n");
-			lines2 = s2.split("\r?\n");
-		}
+//		if ((flags & IGNORE_BLANK_LINES) != 0) {
+//			while (s1.startsWith("\r") || s1.startsWith("\n")) {
+//				s1 = s1.substring(1);
+//			}
+//			while (s2.startsWith("\r") || s2.startsWith("\n")) {
+//				s2 = s2.substring(1);
+//			}
+//			while (s1.endsWith("\r") || s1.endsWith("\n")) {
+//				s1 = s1.substring(0, s1.length() - 1);
+//			}
+//			while (s2.endsWith("\r") || s2.endsWith("\n")) {
+//				s2 = s2.substring(0, s2.length() - 1);
+//			}
+//			s1 = s1.replaceAll("\r?\n[ \t]{0,999}\r?\n", "\n");
+//			s2 = s2.replaceAll("\r?\n[ \t]{0,999}\r?\n", "\n");
+//			lines1 = s1.split("\r?\n");
+//			lines2 = s2.split("\r?\n");
+//		}
 		if ((flags & IGNORE_CHARORDER) != 0) {
 			ArrayList<String> lines1Sorted = new ArrayList<String>();
 			for (String line : lines1) {
@@ -535,6 +537,8 @@ public class Diff {
 				continue;
 			}
 
+			List<String> outTemp = new ArrayList<String>();
+			List<String> outLinesTemp = new ArrayList<String>();
 			if (op > 0) {
 				boolean multipleLines = (x1 != x0 + 1);
 				String xstr = "" + (multipleLines ? ((x0 + 1) + "-" + x1) : x1);
@@ -542,17 +546,19 @@ public class Diff {
 				String linesStr = "\nLine" + (multipleLines ? "s " : " ");
 				String doStr = "do" + (multipleLines ? "" : "es");
 				if (op == 1) {
-					out.add(linesStr + xstr + " deleted near student line " + y1);
+					outTemp.add(linesStr + xstr + " deleted near student line " + y1);
 				} else if (op == 3) {
 					if (xstr.equals(ystr)) {
-						out.add(linesStr + xstr + " " + doStr + " not match");
+						outTemp.add(linesStr + xstr + " " + doStr + " not match");
 					} else {
-						out.add(linesStr + xstr + " changed to student line " + ystr);
+						outTemp.add(linesStr + xstr + " changed to student line " + ystr);
 					}
 				}
 
 				while (x0 < x1) {
-					out.add("EXPECTED < " + lines1Original[x0]);
+					if ((flags & IGNORE_BLANK_LINES) == 0 || !lines1Original[x0].trim().isEmpty()) {
+						outLinesTemp.add("EXPECTED < " + lines1Original[x0]);
+					}
 					x0++;
 				}   // deleted elems
 
@@ -560,7 +566,7 @@ public class Diff {
 					if ((flags & IGNORE_LEADING) == 0 || x1 > 0) {
 						// out.add(linesStr + x1 + " added at student line " + ystr);
 						// Marty 2015/04/21
-						out.add(linesStr + " added near student line " + ystr);
+						outTemp.add(linesStr + " added near student line " + ystr);
 					}
 				} else if (op == 3) {
 					// out += "---";
@@ -568,11 +574,22 @@ public class Diff {
 
 				while (y0 < y1) {
 					if ((flags & IGNORE_LEADING) == 0 || op != 2 || x1 > 0) {
-						out.add("STUDENT  > " + lines2Original[y0]);
+						if ((flags & IGNORE_BLANK_LINES) == 0 || !lines2Original[y0].trim().isEmpty()) {
+							outLinesTemp.add("STUDENT  > " + lines2Original[y0]);
+						}
 					}
 					y0++;
 				}   // added elems
 			}
+			
+			// decide whether we should show this diff, based on flags
+			// (Basically, outTemp almost always has stuff in it, but flags might strip outLinesTemp,
+			//  and if the lines got stripped, we shouldn't show any of it.)
+			if (!outTemp.isEmpty() && !outLinesTemp.isEmpty()) {
+				out.addAll(outTemp);
+				out.addAll(outLinesTemp);
+			}
+			
 			x1++;
 			x0 = x1;
 			y1++;
