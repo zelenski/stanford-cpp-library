@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp
+ * @version 2016/10/12
+ * - fixed bug with double-HTML-encoding diff expected/actual output
  * @version 2016/09/22
  * - fixed bugs with forgetting to HTML-encode test results message/expected/actual
  * @version 2016/04/28
@@ -24,12 +26,11 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
-import stanford.cs106.diff.DiffGui;
-import stanford.cs106.diff.DiffImage;
+import stanford.cs106.diff.*;
 import stanford.cs106.gui.*;
-import stanford.cs106.io.ResourceUtils;
+import stanford.cs106.io.*;
 import stanford.cs106.junit.*;
-import stanford.cs106.util.StringUtils;
+import stanford.cs106.util.*;
 
 public class AutograderUnitTestGUI extends Observable
 		implements ActionListener, JUnitListener, MouseListener {
@@ -635,8 +636,14 @@ public class AutograderUnitTestGUI extends Observable
 		}
 		
 		// simple expected/actual tests (show both as bullets)
-		String expected = StringUtils.htmlEncode(String.valueOf(deets.get("expected")));
-		String student  = StringUtils.htmlEncode(String.valueOf(deets.get("student")));
+		String expected = String.valueOf(deets.get("expected"));
+		String student  = String.valueOf(deets.get("student"));
+		if (type != "ASSERT_DIFF") {
+			// BUGFIX: don't HTML-encode Diff outputs here; they are encoded by DiffGui, so don't double-HTML-encode
+			expected = StringUtils.htmlEncode(expected);
+			student  = StringUtils.htmlEncode(student);
+		}
+		
 		String valueType = deets.containsKey("valueType") ? deets.get("valueType").toLowerCase().intern() : "";
 		if (valueType == "string") {
 			expected = "\"" + expected + "\"";

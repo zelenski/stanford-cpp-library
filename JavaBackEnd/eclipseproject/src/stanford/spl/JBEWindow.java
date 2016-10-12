@@ -1,6 +1,8 @@
 /*
  * This is the class that represents the C++ lib GWindow class.
  * 
+ * @version 2016/10/12
+ * - added getContentPaneSize method
  * @version 2016/10/07
  * - added getCanvasSize method (fix GWindow_getCanvasSize JBE command)
  * @version 2016/07/30
@@ -81,6 +83,26 @@ public class JBEWindow extends JFrame {
 //					
 //				}
 //			}
+		}
+	}
+
+	public Dimension getContentPaneSize() {
+		if (getContentPane() == null) {
+			return new Dimension(0, 0);
+		}
+		
+		Dimension pref = getContentPane().getPreferredSize();
+		Dimension actual = getContentPane().getSize();
+		if (actual == null) {
+			return pref;
+		} else if (pref == null) {
+			return actual;
+		} else {
+			if (actual.width <= 0 && actual.height <= 0) {
+				return pref;
+			} else { //if (pref.width <= 0 && pref.height <= 0) {
+				return actual;
+			}
 		}
 	}
 

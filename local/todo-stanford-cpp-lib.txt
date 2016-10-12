@@ -3,12 +3,14 @@
 		Fauxtoshop autograder stuff
 			why aren't timeouts working?
 			stack traces?
-			maybe wait for result/status on GBufferedImage load()?
 		
+		
+		BUG: side-by-side diff with " " in it turns them into &quot;
 		
 		autograder.cpp
 			exit() calls exit() - inf.recursion, warning in clang
 				change to abort()? etc
+				idea: macro, #define exit() ... later #undef it in my version
 		
 		console [closed] when program terminated
 		

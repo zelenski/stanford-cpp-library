@@ -249,6 +249,7 @@ public:
     void gwindow_drawInBackground(const GWindow& gw, const GObject* gobj);
     void gwindow_exitGraphics(bool abortBlockedConsoleIO = true);
     GDimension gwindow_getCanvasSize(const GWindow& gw);
+    GDimension gwindow_getContentPaneSize(const GWindow& gw);
     Point gwindow_getLocation(const GWindow& gw);
     GDimension gwindow_getRegionSize(const GWindow& gw, std::string region);
     double gwindow_getScreenHeight();

@@ -938,6 +938,17 @@ GDimension Platform::gwindow_getCanvasSize(const GWindow& gw) {
     return scanDimension(result);
 }
 
+GDimension Platform::gwindow_getContentPaneSize(const GWindow& gw) {
+    std::ostringstream os;
+    os << "GWindow.getContentPaneSize(\"" << gw.gwd << "\")";
+    putPipe(os.str());
+    std::string result = getResult();
+    if (!startsWith(result, "GDimension(")) {
+        error("GWindow::getContentPaneSize: " + result);
+    }
+    return scanDimension(result);
+}
+
 void Platform::gobject_sendForward(GObject* gobj) {
     std::ostringstream os;
     os << "GObject.sendForward(\"" << gobj << "\")";

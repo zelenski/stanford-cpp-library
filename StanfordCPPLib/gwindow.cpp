@@ -387,11 +387,9 @@ GDimension GWindow::getSize() const {
 }
 
 GDimension GWindow::getCanvasSize() const {
-    GDimension size = getSize();
-    return GDimension(size.getWidth() - getRegionSize("West").getWidth()
-                      - getRegionSize("East").getWidth(),
-                      size.getHeight() - getRegionSize("North").getHeight()
-                      - getRegionSize("South").getHeight());
+    GDimension size = stanfordcpplib::getPlatform()->gwindow_getContentPaneSize(*this);
+    return GDimension(size.getWidth() - getRegionWidth("West") - getRegionWidth("East"),
+                      size.getHeight() - getRegionHeight("North") - getRegionHeight("South"));
 }
 
 void GWindow::setSize(int width, int height) {
@@ -534,6 +532,14 @@ void GWindow::addToRegion(GLabel *gobj, std::string region) {
 
 GDimension GWindow::getRegionSize(std::string region) const {
     return stanfordcpplib::getPlatform()->gwindow_getRegionSize(*this, region);
+}
+
+double GWindow::getRegionHeight(std::string region) const {
+    return getRegionSize(region).getHeight();   // inefficient but oh well
+}
+
+double GWindow::getRegionWidth(std::string region) const {
+    return getRegionSize(region).getWidth();   // inefficient but oh well
 }
 
 void GWindow::removeFromRegion(GInteractor *gobj, std::string region) {

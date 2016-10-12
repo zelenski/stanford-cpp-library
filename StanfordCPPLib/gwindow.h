@@ -4,6 +4,8 @@
  * This file defines the <code>GWindow</code> class which supports
  * drawing graphical objects on the screen.
  * 
+ * @version 2016/10/12
+ * - added getRegionWidth, getRegionHeight methods
  * @version 2016/10/08
  * - added toBack/Front
  * @version 2016/10/07
@@ -507,6 +509,8 @@ public:
     void addToRegion(GLabel* gobj, std::string region);
 
     GDimension getRegionSize(std::string region) const;
+    double getRegionHeight(std::string region) const;
+    double getRegionWidth(std::string region) const;
 
     /*
      * Method: removeFromRegion
