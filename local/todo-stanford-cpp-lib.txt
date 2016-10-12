@@ -18,7 +18,6 @@ x		simpio.h: getIntegerBetween / getRealBetween(min, max)
 				change to abort()? etc
 				idea: macro, #define exit() ... later #undef it in my version
 		
-	
 		add methods to match STL: find, empty, ...?
 		gcheckbox/radiobutton isChecked / setChecked
 		gwindow getCanvasWidth, getCanvasHeight

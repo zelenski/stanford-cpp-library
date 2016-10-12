@@ -219,6 +219,7 @@ public:
      * Sets the state of the check box.
      */
     void setSelected(bool state);
+    void setChecked(bool state);
 
     /*
      * Method: isSelected
@@ -227,6 +228,7 @@ public:
      * Returns <code>true</code> if the check box is selected.
      */
     bool isSelected();
+    bool isChecked();
 
     /* Prototypes for the virtual methods */
     virtual std::string getType() const;
@@ -277,6 +279,7 @@ public:
      * Sets the state of the radio button.
      */
     void setSelected(bool state);
+    void setChecked(bool state);
 
     /*
      * Method: isSelected
@@ -285,6 +288,7 @@ public:
      * Returns <code>true</code> if the button is selected.
      */
     bool isSelected();
+    bool isChecked();
 
     /*
      * Method: getGroup

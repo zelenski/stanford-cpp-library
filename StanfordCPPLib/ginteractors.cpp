@@ -153,8 +153,16 @@ bool GCheckBox::isSelected() {
     return stanfordcpplib::getPlatform()->gcheckbox_isSelected(this);
 }
 
+bool GCheckBox::isChecked() {
+    return isSelected();
+}
+
 void GCheckBox::setSelected(bool state) {
     stanfordcpplib::getPlatform()->gcheckbox_setSelected(this, state);
+}
+
+void GCheckBox::setChecked(bool state) {
+    setSelected(state);
 }
 
 std::string GCheckBox::getType() const {
@@ -198,8 +206,16 @@ bool GRadioButton::isSelected() {
     return stanfordcpplib::getPlatform()->gradiobutton_isSelected(this);
 }
 
+bool GRadioButton::isChecked() {
+    return isSelected();
+}
+
 void GRadioButton::setSelected(bool state) {
     stanfordcpplib::getPlatform()->gradiobutton_setSelected(this, state);
+}
+
+void GRadioButton::setChecked(bool state) {
+    setSelected(state);
 }
 
 std::string GRadioButton::getGroup() const {
