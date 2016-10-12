@@ -29,7 +29,7 @@
 #define assertDiff(msg, a, b) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_DIFF, \
-        (ms), (a), (b), "diff", ((a) == (b)))); \
+        (msg), (a), (b), "diff", ((a) == (b)))); \
     EXPECT_EQ((a), (b))
 
 #define assertDiffPass(msg, a, b) \

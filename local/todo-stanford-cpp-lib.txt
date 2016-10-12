@@ -1,5 +1,11 @@
 	TODO C++ libs:
 	==============
+		that one guy's code
+			jeff lutgen @ whittier.edu
+			
+			all JBECommand
+				=> SwingUtilities.invokeLater(new Runner(...) { ...... });
+		
 		modify writeQuotedString etc. to return ostream& (enable chaining)
 		
 		purge "using namespace std;"
@@ -12,13 +18,12 @@
 
 		console.h / init change
 			test on Mac
-			
 			update all occurrences of lib (106b/x, zips)
 			should Graph have initializer_list feature?
 			supply operator << for STL collections?
 				stl.h
 
-		make empty-project  (simpler than simple-project)
+x		make empty-project  (simpler than simple-project)
 
 
 		Info.plist issue on Mac
@@ -314,8 +319,8 @@ x			remove operator < from some collections (esp. PQ)
 		
 -		BasicGraph::clearExtraData? (can't; don't know the type of the data; just set all to NULL?)
 		
-		BUG: weird line breaks in STDERR output on windows and in Debug mode
-			(probably related to redirecting stderr to graphical console window, flushing, \n insertion etc.)
+x		BUG: weird line breaks in STDERR output on windows and in Debug mode
+x			(probably related to redirecting stderr to graphical console window, flushing, \n insertion etc.)
 		
 
 		autograder stuff

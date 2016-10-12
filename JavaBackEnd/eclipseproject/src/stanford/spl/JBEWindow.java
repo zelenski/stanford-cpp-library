@@ -1,6 +1,8 @@
 /*
  * This is the class that represents the C++ lib GWindow class.
  * 
+ * @version 2016/10/07
+ * - added getCanvasSize method (fix GWindow_getCanvasSize JBE command)
  * @version 2016/07/30
  * - fixed constructor with false visibility (don't pop up window)
  * - added saveCanvasPixels method for saving graphical output to a file
@@ -13,6 +15,7 @@ import stanford.cs106.io.IORuntimeException;
 import stanford.cs106.io.IOUtils;
 import stanford.cs106.util.CollectionUtils;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -52,6 +55,33 @@ public class JBEWindow extends JFrame {
 
 	public JBECanvas getCanvas() {
 		return this.canvas;
+	}
+	
+	public Dimension getCanvasSize() {
+		if (canvas == null) {
+			return new Dimension(0, 0);
+		}
+		
+		Dimension pref = canvas.getPreferredSize();
+		Dimension actual = canvas.getSize();
+		if (actual == null) {
+			return pref;
+		} else if (pref == null) {
+			return actual;
+		} else {
+			if (actual.width <= 0 && actual.height <= 0) {
+				return pref;
+			} else { //if (pref.width <= 0 && pref.height <= 0) {
+				return actual;
+			}
+//			else {
+//				if (actual.width < pref.width || actual.height < pref.height) {
+//					return actual;
+//				} else {
+//					
+//				}
+//			}
+		}
 	}
 
 	public String getWindowId() {

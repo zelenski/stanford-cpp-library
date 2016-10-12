@@ -1,0 +1,32 @@
+<html>
+<head>
+<title>LinkedHashSet</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="hashset.html">#include "hashset.h"</a></div>
+<h1 class=header><code>class LinkedHashSet&lt;<var>ValueType</var>&gt;</code></h1>
+
+<p>
+The <code>LinkedHashSet</code> class implements an efficient abstraction for storing sets of values.
+A <code>LinkedHashSet</code> is the same as a <code>HashSet</code>, except that it exposes its values in the order they were inserted, rather than in the unpredictable order of a standard <code>HashSet</code>.
+This is accomplished by storing the data in two ways internally: (1) in a hash table array, as in a <code>HashSet</code>; and (2) in a linear list, to remember the insertion order.
+A <code>LinkedHashSet</code> provides identical lookup (<code>contains</code>) speed, nearly the same insertion (<code>add</code>) speed, and slower removal (<code>remove</code>) speed.
+Its for-each loop and iterators emit the elements in the order they were added to the set, at the cost of the additional memory usage of the internal list.
+</p>
+
+<p>
+	Since the members of <code>LinkedHashSet</code> are the same as those of <code>HashSet</code>, in the interest of avoiding redundancy, we refer you to <a href="HashSet-class.html">the <code>HashSet</code> documentation</a> for descriptions of each member.
+</p>
+
+<hr>
+</body>
+</html>

@@ -5,7 +5,11 @@
  * checking on C++ code.
  * 
  * @author Marty Stepp
+ * @version 2016/10/08
+ * - added setStyleCheckMergedWithUnitTests;
+ *   ability to merge style checks with regular unit tests
  * @version 2014/10/14
+ * - initial version
  * @since 2014/10/14
  */
 
@@ -15,6 +19,8 @@
 #include <string>
 
 namespace stylecheck {
+bool isStyleCheckMergedWithUnitTests();
+void setStyleCheckMergedWithUnitTests(bool merged = true);
 void styleCheck(std::string codeFileName, std::string styleXmlFileName = "stylecheck.xml", bool printWarning = true);
 } // namespace stylecheck
 

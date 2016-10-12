@@ -4,6 +4,10 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2016/10/09
+ * - changed gwindow_saveCanvasPixels to wait for OK result (avoid race condition)
+ * @version 2016/10/08
+ * - added gwindow_toBack/Front
  * @version 2016/10/04
  * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * - fixed bug with Stanford console not popping up if #includes were in wrong order
@@ -654,6 +658,7 @@ void Platform::gwindow_saveCanvasPixels(const GWindow& gw, const std::string& fi
     writeQuotedString(os, filename);
     os << ")";
     putPipe(os.str());
+    getResult();   // wait for "OK"
 }
 
 void Platform::gwindow_setSize(const GWindow& gw, int width, int height) {
@@ -700,6 +705,12 @@ void Platform::gwindow_setLocationSaved(const GWindow& gw, bool value) {
     std::ostringstream os;
     os << "GWindow.setLocationSaved(\"" << gw.gwd << "\", "
        << std::boolalpha << value << ")";
+    putPipe(os.str());
+}
+
+void Platform::gwindow_toBack(const GWindow& gw) {
+    std::ostringstream os;
+    os << "GWindow.toBack(\"" << gw.gwd << "\")";
     putPipe(os.str());
 }
 

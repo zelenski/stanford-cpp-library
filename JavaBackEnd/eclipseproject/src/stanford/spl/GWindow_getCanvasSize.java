@@ -12,7 +12,7 @@ public class GWindow_getCanvasSize extends JBECommand {
 		paramTokenScanner.verifyToken(")");
 		Dimension dim = new Dimension(0, 0);
 		if (localJBEWindow != null) {
-			dim = localJBEWindow.isShowing() ? localJBEWindow.getCanvas().getPreferredSize() : localJBEWindow.getCanvas().getSize();
+			dim = localJBEWindow.getCanvasSize();
 		}
 		SplPipeDecoder.writeResult("GDimension(" + dim.width + ", " + dim.height + ")");
 	}

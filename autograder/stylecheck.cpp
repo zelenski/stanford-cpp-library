@@ -6,6 +6,9 @@
  * See sylecheck.h for documentation of each function.
  * 
  * @author Marty Stepp
+ * @version 2016/10/08
+ * - added setStyleCheckMergedWithUnitTests;
+ *   ability to merge style checks with regular unit tests
  * @version 2014/11/15
  * - added warning description to top of window if 'omitOnPass' is turned on
  * @version 2014/10/31
@@ -29,8 +32,13 @@ namespace stylecheck {
 
 static const int DEFAULT_MIN_COUNT = 0;
 static const int DEFAULT_MAX_COUNT = 999999999;
+static bool styleChecksMerged = false;
 
-static bool processPatternNode(const std::string& codeFileName, rapidxml::xml_node<>* patternNode, const std::string& categoryName, const std::string& codeFileText, bool omitOnPass) {
+static bool processPatternNode(const std::string& codeFileName,
+                               rapidxml::xml_node<>* patternNode,
+                               const std::string& categoryName,
+                               const std::string& codeFileText,
+                               bool omitOnPass) {
     std::ostringstream out;
     std::string patternRegex = xmlutils::getAttribute(patternNode, "regex");
     patternRegex = stringReplace(patternRegex, "(:IDENTIFIER:)", "(?:[a-zA-Z_$][a-zA-Z0-9_$]{0,255})");
@@ -86,14 +94,24 @@ static bool processPatternNode(const std::string& codeFileName, rapidxml::xml_no
     }
     
     std::string prefix = "";
-    prefix += "[" + codeFileName + "] ";
+    std::string testName = patternDescription;
+    if (styleChecksMerged) {
+        prefix += "Style Checker: " + codeFileName;
+    } else {
+        prefix += "[" + codeFileName + "] ";
+        testName = prefix + patternDescription;
+    }
 
     if (!pass || !omitOnPass) {
         out << "    STYLE CHECK " << (pass ? "PASSED : " : "WARNING: ") << patternDescription << std::endl;
         if (autograder::isGraphicalUI()) {
             std::string resultStr = pass ? "pass" : failType;
-            stanfordcpplib::getPlatform()->autograderunittest_addTest(prefix + patternDescription, prefix + categoryName, /* styleCheck */ true);
-            stanfordcpplib::getPlatform()->autograderunittest_setTestResult(prefix + patternDescription, resultStr, /* styleCheck */ true);
+            stanfordcpplib::getPlatform()->autograderunittest_addTest(
+                        testName, prefix + categoryName,
+                        /* styleCheck */ !styleChecksMerged);
+            stanfordcpplib::getPlatform()->autograderunittest_setTestResult(
+                        testName, resultStr,
+                        /* styleCheck */ !styleChecksMerged);
             autograder::UnitTestDetails deets;
             deets.message = patternDescription;
             deets.passed = pass;
@@ -106,7 +124,9 @@ static bool processPatternNode(const std::string& codeFileName, rapidxml::xml_no
             deets.valueType = "T";
             out.str("");
             out << deets;
-            stanfordcpplib::getPlatform()->autograderunittest_setTestDetails(prefix + patternDescription, out.str(), /* styleCheck */ true);
+            stanfordcpplib::getPlatform()->autograderunittest_setTestDetails(
+                        testName, out.str(),
+                        /* styleCheck */ !styleChecksMerged);
             out.str("");
         } else {
             if (showCounts) {
@@ -121,6 +141,14 @@ static bool processPatternNode(const std::string& codeFileName, rapidxml::xml_no
     }
     
     return pass;
+}
+
+void setStyleCheckMergedWithUnitTests(bool merged) {
+    styleChecksMerged = merged;
+}
+
+bool isStyleCheckMergedWithUnitTests() {
+    return styleChecksMerged;
 }
 
 /*
@@ -149,8 +177,12 @@ void styleCheck(std::string codeFileName, std::string styleXmlFileName, bool pri
             out << std::endl;
         }
         if (autograder::isGraphicalUI()) {
-            stanfordcpplib::getPlatform()->autograderunittest_clearTests(/* styleCheck */ true);
-            stanfordcpplib::getPlatform()->autograderunittest_setWindowDescriptionText(out.str(), /* styleCheck */ true);
+            if (styleChecksMerged) {
+                // stanfordcpplib::getPlatform()->autograderunittest_setWindowDescriptionText(out.str(), /* styleCheck */ true);
+            } else {
+                stanfordcpplib::getPlatform()->autograderunittest_clearTests(/* styleCheck */ true);
+                stanfordcpplib::getPlatform()->autograderunittest_setWindowDescriptionText(out.str(), /* styleCheck */ true);
+            }
             out.str("");
         }
     }
@@ -188,7 +220,9 @@ void styleCheck(std::string codeFileName, std::string styleXmlFileName, bool pri
             if (processPatternNode(codeFileName, patternNode, categoryName, codeFileText, omitOnPass)) {
                 passCount++;
             }
-            autograder::setTestCounts(passCount, testCount, /* isStyleCheck */ true);
+            if (!styleChecksMerged) {
+                autograder::setTestCounts(passCount, testCount, /* isStyleCheck */ true);
+            }
         }
     }
 

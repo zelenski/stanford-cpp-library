@@ -1,0 +1,29 @@
+<html>
+<head>
+<title>linkedhashmap.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><code>linkedhashmap.h</code></h1>
+This file exports the <code>LinkedHashMap</code> class, which stores a set of <i>key</i>-<i>value</i> pairs.
+
+A <code>LinkedHashMap</code> is the same as a <code>HashMap</code>, except that it exposes its key/value pairs in the order they were inserted, rather than in the unpredictable order of a standard <code>HashMap</code>.
+This is accomplished by storing the data in two ways internally: (1) in a hash table array, as in a <code>HashMap</code>; and (2) in a linear list of keys, to remember the insertion order.
+A <code>LinkedHashMap</code> provides identical lookup (<code>containsKey</code> / <code>get</code> / <code>operator []</code>) speed, nearly the same insertion (<code>add</code> / <code>put</code>) speed, and slower removal (<code>remove</code>) speed.
+Its for-each loop and iterators emit the keys in the order they were added to the map, at the cost of the additional memory usage of the internal list.
+
+
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Class</td></tr>
+<tr><td class=indexKey><nobr><a href="LinkedHashMap-class.html">LinkedHashMap&lt;<var>KeyType</var>,&nbsp;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class implements an efficient association between <b><i>keys</i></b> and <b><i>values</i></b>.</td></tr>
+</table>
+</body>
+</html>

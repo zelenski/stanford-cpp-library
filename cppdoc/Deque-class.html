@@ -1,0 +1,329 @@
+<html>
+<head>
+<title>Deque</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="deque.html">#include "deque.h"</a></div>
+<h1 class=header><code>class Deque&lt;<var>ValueType</var>&gt;</code></h1>
+This file exports the <code>Deque</code> class, an ordered collection with a front and back in which elements can be efficiently added and removed from both the front and the back.
+A deque combines many of the benefits of a stack and a queue.
+
+<table class=index width=100%>
+	<tr>
+		<td class=indexHead colspan=3>Constructor</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Constructor:Deque">Deque()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Initializes a new empty deque.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Methods</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:add">add(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Adds a value to the back of the deque; equivalent to <code>addBack</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:addBack">addBack(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Adds a value to the back of the deque.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:addFront">addFront(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Adds a value to the front of the deque.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:back">back()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the last value in the deque by reference.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Removes all elements from the deque.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:dequeue">dequeue(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Removes a value from the front of the deque; equivalent to <code>dequeueFront</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:dequeueBack">dequeueBack(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Removes a value from the back of the deque.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:dequeueFront">dequeueFront(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Removes a value from the front of the deque.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:enqueue">enqueue(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Adds a value to the end of the deque; equivalent to <code>enqueueBack</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:enqueueBack">enqueueBack(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Adds a value to the end of the deque.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:enqueueFront">enqueueFront(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Adds a value to the front of the deque.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:equals">equals(<var>deque</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the two deques contain the same elements in the same order.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:front">front()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the first value in the deque by reference.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the deque contains no elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:peek">peek()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the first value in the deque, without removing it; equivalent to <code>peekFront</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:peekBack">peekBack()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the last value in the deque, without removing it.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:peekFront">peekFront()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the first value in the deque, without removing it.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:remove">remove(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Removes a value from the front of the deque; equivalent to <code>removeFront</code> or <code>dequeueFront</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:removeBack">removeBack(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Removes a value from the back of the deque.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:removeFront">removeFront(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Removes a value from the front of the deque.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the number of values in the deque.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Converts the deque to a printable string representation.</td>
+	<tr>
+
+	<tr>
+		<td class=indexHead colspan=3>Operators</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:=="><var>deque1</var> == <var>deque1</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>deque1</code> and <code>deque2</code> contain the same elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:!="><var>deque1</var> != <var>deque2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>deque1</code> and <code>deque2</code> are different.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><var>ostream</var>&nbsp;&lt;&lt;&nbsp;<var>deque</var></nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Outputs the contents of the deque to the given output stream.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><var>istream</var>&nbsp;&gt;&gt;&nbsp;<var>deque</var></nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Reads the contents of the given input stream into the deque.</td>
+	</tr>
+</table>
+
+<h2>Constructor detail</h2>
+
+<hr>
+<a name="Constructor:Deque"></a>
+<pre class=detailCode>
+Deque();
+</pre>
+<div class=detailHTML>
+Initializes a new empty deque.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Deque&lt;ValueType&gt; deque;
+</pre>
+
+<hr>
+</table>
+<h2>Method detail</h2>
+
+<hr>
+<a name="Method:back"></a>
+<pre class=detailCode>
+ValueType&amp; back();
+</pre>
+<div class=detailHTML>
+Returns the last value in the deque by reference.
+
+<p>If the deque is empty, this function signals an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType last = deque.back();
+</pre>
+
+<hr>
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Removes all elements from the deque.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+deque.clear();
+</pre>
+
+<hr>
+<a name="Method:dedeque"></a>
+<pre class=detailCode>
+ValueType dedeque();
+</pre>
+<div class=detailHTML>
+Removes and returns the first item in the deque.
+<p>If the deque is empty, this function signals an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType first = deque.dedeque();
+</pre>
+
+<hr>
+<a name="Method:enqueue"></a>
+<pre class=detailCode>
+void enqueue(ValueType value);
+</pre>
+<div class=detailHTML>
+Adds <code>value</code> to the end of the deque.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+deque.enqueue(value);
+</pre>
+
+<hr>
+<a name="Method:equals"></a>
+<pre class=detailCode>
+bool equals(const Deque&amp; q) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the two deques contain exactly the same element values in the same order.
+Identical in behavior to the <code>==</code> operator.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (q.equals(q2)) ...
+</pre>
+
+<hr>
+<a name="Method:front"></a>
+<pre class=detailCode>
+ValueType&amp; front();
+</pre>
+<div class=detailHTML>
+Returns the first value in the deque by reference.
+<p>If the deque is empty, this function signals an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType first = deque.front();
+</pre>
+
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty() const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the deque contains no elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (deque.isEmpty()) ...
+</pre>
+
+<hr>
+<a name="Method:peek"></a>
+<pre class=detailCode>
+ValueType peek() const;
+</pre>
+<div class=detailHTML>
+Returns the first value in the deque, without removing it.  For
+compatibility with the STL classes, this method is also exported
+under the name <code>front</code>, in which case it returns the
+value by reference.
+<p>If the deque is empty, this function signals an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType first = deque.peek();
+</pre>
+
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size() const;
+</pre>
+<div class=detailHTML>
+Returns the number of values in the deque.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int n = deque.size();
+</pre>
+
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Converts the deque to a printable string representation, with the elements listed left-to-right from the front of the deque to the back, such as <code>&quot;{value1, value2, value3}&quot;</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = deque.toString();
+</pre>
+
+<hr>
+</table>
+</body>
+</html>

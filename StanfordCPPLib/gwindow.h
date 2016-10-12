@@ -4,6 +4,10 @@
  * This file defines the <code>GWindow</code> class which supports
  * drawing graphical objects on the screen.
  * 
+ * @version 2016/10/08
+ * - added toBack/Front
+ * @version 2016/10/07
+ * - added getCanvasWidth, getCanvasHeight methods
  * @version 2016/08/02
  * - added saveCanvasPixels method
  * @version 2014/11/20
@@ -339,6 +343,22 @@ public:
     GDimension getCanvasSize() const;
 
     /*
+     * Method: getCanvasWidth
+     * Usage: double width = gw.getCanvasWidth();
+     * ------------------------------------------
+     * Returns the width of the graphics window's canvas area in pixels.
+     */
+    double getCanvasWidth() const;
+
+    /*
+     * Method: getCanvasHeight
+     * Usage: double height = gw.getCanvasHeight();
+     * --------------------------------------------
+     * Returns the height of the graphics window's canvas area in pixels.
+     */
+    double getCanvasHeight() const;
+
+    /*
      * Method: repaint
      * Usage: gw.repaint();
      * --------------------
@@ -532,7 +552,23 @@ public:
      * Sets whether the window can be resized by the user (default false).
      */
     void setResizable(bool resizable);  
-    
+
+    /*
+     * Method: toBack
+     * Usage: gw.toBack();
+     * -----------------------
+     * Asks the window to move itself behind other graphical windows on screen.
+     */
+    void toBack();
+
+    /*
+     * Method: toFront
+     * Usage: gw.toFront();
+     * -----------------------
+     * Asks the window to move itself in front of other graphical windows on screen.
+     */
+    void toFront();
+
     /*
      * Operator: ==
      * Usage: if (w1 == w2) ...

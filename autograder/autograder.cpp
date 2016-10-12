@@ -466,7 +466,9 @@ static int mainRunAutograderTestCases(int argc, char** argv) {
 
 static void mainRunStyleChecker() {
     stanfordcpplib::getPlatform()->jbeconsole_toFront();
-    stanfordcpplib::getPlatform()->autograderunittest_setVisible(true, /* styleCheck */ true);
+    if (!stylecheck::isStyleCheckMergedWithUnitTests()) {
+        stanfordcpplib::getPlatform()->autograderunittest_setVisible(true, /* styleCheck */ true);
+    }
     int styleCheckCount = 0;
     for (std::string filename : STATIC_VARIABLE(FLAGS).styleCheckFiles) {
         stylecheck::styleCheck(
@@ -612,6 +614,11 @@ int autograderGraphicalMain(int argc, char** argv) {
                 result = mainRunAutograderTestCases(argc, argv);
                 stanfordcpplib::getPlatform()->autograderunittest_setTestingCompleted(true);
                 
+                // if style checker is merged, also run it now
+                if (stylecheck::isStyleCheckMergedWithUnitTests()) {
+                    mainRunStyleChecker();
+                }
+
                 if (STATIC_VARIABLE(FLAGS).callbackEnd) {
                     STATIC_VARIABLE(FLAGS).callbackEnd();
                 }

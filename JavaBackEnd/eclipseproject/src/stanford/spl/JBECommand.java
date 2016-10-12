@@ -1,4 +1,6 @@
 /*
+ * @version 2016/10/08
+ * - added GWindow_toBack
  * @version 2016/09/26
  * - added Note_play
  * @version 2016/07/06
@@ -184,6 +186,7 @@ public abstract class JBECommand {
 		localHashMap.put("GWindow.setSize", new GWindow_setSize());
 		localHashMap.put("GWindow.setTitle", new GWindow_setTitle());
 		localHashMap.put("GWindow.setVisible", new GWindow_setVisible());
+		localHashMap.put("GWindow.toBack", new GWindow_toBack());
 		localHashMap.put("GWindow.toFront", new GWindow_toFront());
 		localHashMap.put("HttpServer.start", new HttpServer_start());
 		localHashMap.put("HttpServer.stop", new HttpServer_stop());

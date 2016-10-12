@@ -5,6 +5,10 @@
  * to the appropriate methods in the Platform class, which is implemented
  * separately for each architecture.
  * 
+ * @version 2016/10/08
+ * - added toBack/Front
+ * @version 2016/10/07
+ * - added getCanvasWidth, getCanvasHeight methods
  * @version 2016/10/04
  * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * @version 2016/08/02
@@ -370,12 +374,24 @@ double GWindow::getHeight() const {
     return gwd->windowHeight;
 }
 
+double GWindow::getCanvasWidth() const {
+    return getCanvasSize().getWidth();
+}
+
+double GWindow::getCanvasHeight() const {
+    return getCanvasSize().getHeight();
+}
+
 GDimension GWindow::getSize() const {
     return stanfordcpplib::getPlatform()->gwindow_getSize(*this);
 }
 
 GDimension GWindow::getCanvasSize() const {
-    return GDimension(getWidth(), getHeight());
+    GDimension size = getSize();
+    return GDimension(size.getWidth() - getRegionSize("West").getWidth()
+                      - getRegionSize("East").getWidth(),
+                      size.getHeight() - getRegionSize("North").getHeight()
+                      - getRegionSize("South").getHeight());
 }
 
 void GWindow::setSize(int width, int height) {
@@ -563,11 +579,19 @@ void GWindow::setResizable(bool resizable) {
     }
 }
 
-bool GWindow::operator==(GWindow w2) {
+void GWindow::toBack() {
+    stanfordcpplib::getPlatform()->gwindow_toBack(*this);
+}
+
+void GWindow::toFront() {
+    stanfordcpplib::getPlatform()->gwindow_toFront(*this);
+}
+
+bool GWindow::operator ==(GWindow w2) {
     return gwd == w2.gwd;
 }
 
-bool GWindow::operator!=(GWindow w2) {
+bool GWindow::operator !=(GWindow w2) {
     return gwd != w2.gwd;
 }
 

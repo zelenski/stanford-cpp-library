@@ -1,0 +1,33 @@
+<html>
+<head>
+<title>LinkedHashMap</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="hashmap.html">#include "hashmap.h"</a></div>
+<h1 class=header><code>class LinkedHashMap&lt;<var>KeyType</var>,&nbsp;<var>ValueType</var>&gt;</code></h1>
+
+This class stores a set of <i>key</i>-<i>value</i> pairs.
+
+A <code>LinkedHashMap</code> is the same as a <code>HashMap</code>, except that it exposes its key/value pairs in the order they were inserted, rather than in the unpredictable order of a standard <code>HashMap</code>.
+This is accomplished by storing the data in two ways internally: (1) in a hash table array, as in a <code>HashMap</code>; and (2) in a linear list of keys, to remember the insertion order.
+A <code>LinkedHashMap</code> provides identical lookup (<code>containsKey</code> / <code>get</code> / <code>operator []</code>) speed, nearly the same insertion (<code>add</code> / <code>put</code>) speed, and slower removal (<code>remove</code>) speed.
+Its for-each loop and iterators emit the keys in the order they were added to the map, at the cost of the additional memory usage of the internal list.
+
+<p>
+	Since the members of <code>LinkedHashMap</code> are the same as those of <code>HashMap</code>, in the interest of avoiding redundancy, we refer you to <a href="HashMap-class.html">the <code>HashMap</code> documentation</a> for descriptions of each member.
+	The only noteworthy difference in the documentation is that the <code>operator []</code> of a <code>LinkedHashMap</code> is currently read-only; it cannot be used for insertion.
+	To insert into a <code>LinkedHashMap</code>, use the <code>put</code> or <code>add</code> methods.
+</p>
+
+<hr>
+</body>
+</html>

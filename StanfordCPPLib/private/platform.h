@@ -5,6 +5,8 @@
  * the platform-specific parts of the StanfordCPPLib package.  This file is
  * logically part of the implementation and is not interesting to clients.
  *
+ * @version 2016/10/08
+ * - added gwindow_toBack/Front
  * @version 2016/09/27
  * - added ginteractor_setText method
  * @version 2016/09/26
@@ -233,6 +235,7 @@ public:
     void gwindow_setSize(const GWindow& gw, int width, int height);
     void gwindow_setTitle(const GWindow& gw, std::string title);
     void gwindow_setVisible(const GWindow& gw, bool flag);
+    void gwindow_toBack(const GWindow& gw);
     void gwindow_toFront(const GWindow& gw);
     void httpserver_sendResponse(int requestID, int httpErrorCode, const std::string& contentType, const std::string& responseText);
     void httpserver_sendResponseFile(int requestID, const std::string& contentType, const std::string& responseFile);
