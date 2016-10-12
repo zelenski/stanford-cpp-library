@@ -35,7 +35,7 @@ static const std::string EXCEPTION_ERROR_MESSAGE = "test threw an exception!";
  */
 static DWORD WINAPI runTestInItsOwnThread(LPVOID lpParam) {
     autograder::AutograderTest* test = (autograder::AutograderTest*) lpParam;
-    getPlatform()->autograderunittest_setTestResult(test->getName(), "progress");
+    stanfordcpplib::getPlatform()->autograderunittest_setTestResult(test->getName(), "progress");
     test->TestRealBody();
     return (DWORD) 0;
 }
@@ -52,7 +52,7 @@ void runTestWithTimeout(autograder::AutograderTest* test) {
             0,                      // use default creation flags
             &threadID);             // returns the thread identifier
         if (!hThread) {
-            error("Unable to run test case thread: " + getPlatform()->os_getLastError());
+            error("Unable to run test case thread: " + stanfordcpplib::getPlatform()->os_getLastError());
         }
         DWORD result = WaitForSingleObject(hThread, timeoutMS);
         if (result == WAIT_TIMEOUT) {

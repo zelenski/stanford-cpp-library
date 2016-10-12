@@ -187,6 +187,7 @@ int addr2line_all(void** addrs, int length, std::string& output) {
     // have addr2line map the address to the relent line in the code
 #if defined(__APPLE__)
     // Mac OS X
+    // JL : change "atos" to "xcrun atos"?
     out << "atos -o " << exceptions::getProgramNameForStackTrace() << addrsStr;
 #elif defined(_WIN32)
     // Windows

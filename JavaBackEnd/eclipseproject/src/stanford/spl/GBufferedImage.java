@@ -176,6 +176,7 @@ public class GBufferedImage extends GInteractor {
 		repaintImage();
 	}
 	
+	// JL: SwingUtilities.invokeLater
 	private void repaintImage() {
 		Dimension oldSize = label.getPreferredSize();
 		label.setIcon(new ImageIcon(bufferedImage));

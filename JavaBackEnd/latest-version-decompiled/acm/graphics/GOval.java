@@ -44,7 +44,7 @@ public class GOval extends GObject
         Object obj = new java.awt.geom.Ellipse2D.Double(0.0D, 0.0D, frameWidth, frameHeight);
         AffineTransform affinetransform = getMatrix();
         if(affinetransform != null)
-            obj = affinetransform.createTransformedShape(((Shape) (obj))).getBounds();
+            obj = affinetransform.createTransformedShape(((Shape) (obj)));
         return ((Shape) (obj)).contains(d - getX(), d1 - getY());
     }
 

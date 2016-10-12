@@ -47,6 +47,7 @@ public class JBECanvas extends GCanvas {
 		return this.topCompound;
 	}
 
+	// JL: SwingUtilities.invokeLater
 	protected void initOffscreenImage() {
 		Dimension localDimension = Toolkit.getDefaultToolkit().getScreenSize();
 		this.offscreenImage = createImage(localDimension.width,
@@ -81,16 +82,19 @@ public class JBECanvas extends GCanvas {
 		repaint();
 	}
 
+	// JL: SwingUtilities.invokeLater
 	public void draw(Shape paramShape) {
 		this.osg.draw(paramShape);
 		repaint();
 	}
 
+	// JL: SwingUtilities.invokeLater
 	public void fill(Shape paramShape) {
 		this.osg.fill(paramShape);
 		repaint();
 	}
 
+	// JL: SwingUtilities.invokeLater
 	public void drawRect(double paramDouble1, double paramDouble2,
 			double paramDouble3, double paramDouble4) {
 		Rectangle2D.Double localDouble = new Rectangle2D.Double(paramDouble1,
@@ -99,6 +103,7 @@ public class JBECanvas extends GCanvas {
 		repaint();
 	}
 
+	// JL: SwingUtilities.invokeLater
 	public void fillRect(double paramDouble1, double paramDouble2,
 			double paramDouble3, double paramDouble4) {
 		Rectangle2D.Double localDouble = new Rectangle2D.Double(paramDouble1,
@@ -108,6 +113,7 @@ public class JBECanvas extends GCanvas {
 		repaint();
 	}
 
+	// JL: SwingUtilities.invokeLater
 	public void drawOval(double paramDouble1, double paramDouble2,
 			double paramDouble3, double paramDouble4) {
 		Ellipse2D.Double localDouble = new Ellipse2D.Double(paramDouble1,
@@ -116,6 +122,7 @@ public class JBECanvas extends GCanvas {
 		repaint();
 	}
 
+	// JL: SwingUtilities.invokeLater
 	public void fillOval(double paramDouble1, double paramDouble2,
 			double paramDouble3, double paramDouble4) {
 		Ellipse2D.Double localDouble = new Ellipse2D.Double(paramDouble1,
@@ -125,6 +132,7 @@ public class JBECanvas extends GCanvas {
 		repaint();
 	}
 
+	// JL: SwingUtilities.invokeLater
 	public void drawArc(double paramDouble1, double paramDouble2,
 			double paramDouble3, double paramDouble4, double paramDouble5,
 			double paramDouble6) {
@@ -135,6 +143,7 @@ public class JBECanvas extends GCanvas {
 		repaint();
 	}
 
+	// JL: SwingUtilities.invokeLater
 	public void fillArc(double paramDouble1, double paramDouble2,
 			double paramDouble3, double paramDouble4, double paramDouble5,
 			double paramDouble6) {
@@ -146,6 +155,7 @@ public class JBECanvas extends GCanvas {
 		repaint();
 	}
 
+	// JL: SwingUtilities.invokeLater
 	public void drawLine(double paramDouble1, double paramDouble2,
 			double paramDouble3, double paramDouble4) {
 		Line2D.Double localDouble = new Line2D.Double(paramDouble1,
@@ -154,6 +164,7 @@ public class JBECanvas extends GCanvas {
 		repaint();
 	}
 
+	// JL: SwingUtilities.invokeLater
 	public void setColor(int paramInt) {
 		this.osg.setColor(new Color(paramInt));
 	}

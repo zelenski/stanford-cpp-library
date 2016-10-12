@@ -2,9 +2,27 @@
 	==============
 		that one guy's code
 			jeff lutgen @ whittier.edu
-			
-			all JBECommand
-				=> SwingUtilities.invokeLater(new Runner(...) { ...... });
+				all JBECommand
+					=> SwingUtilities.invokeLater(new Runner(...) { ...... });
+				
+=>				idea: JBE_GUI_Event_command superclass, make THOSE run in BG thread, but not others
+					and/or, look for prefixes/patterns in class name, like /GWindow_*/
+				
+b				GTextArea
+				apple quit handler?
+				GBufferedImage::scale?
+				
+				I NEED TO CHECK EVERYTHING NEWER THAN:
+					Correct computations in GPolygon::getBounds and GPolygon::contains
+					jlutgen committed on Jan 24, 2015
+				
+		split files up more?
+			folders? collections/, gui/, util/, io/, ?
+			split gobjects.h, ginteractors.h, gevents.h, etc.?
+				need original headers to still include all, for backward compatibility
+		
+		alphabetize methods
+			gobject, ginteractor, gwindow
 		
 		modify writeQuotedString etc. to return ostream& (enable chaining)
 		

@@ -587,6 +587,11 @@ std::string Platform::file_openFileDialog(std::string title, std::string mode, s
     if (isDirectory(path) && !endsWith(path, sep)) {
         path += sep;
     }
+
+    // BUGFIX (JL): hack to circumvent back-end bug when path ends with backslash;
+    // will be stripped off by backend
+    path += " ";
+
     writeQuotedString(os, path);
     os << ")";
     putPipe(os.str());
@@ -851,6 +856,7 @@ void Platform::gcompound_add(GObject *compound, GObject* gobj) {
     std::ostringstream os;
     os << "GCompound.add(\"" << compound << "\", \"" << gobj << "\")";
     putPipe(os.str());
+    getStatus();   // JL
 }
 
 void Platform::gobject_remove(GObject* gobj) {
@@ -1271,13 +1277,13 @@ void Platform::gbufferedimage_resize(GObject* gobj, double width, double height,
     putPipe(os.str());
 }
 
-std::string Platform::gbufferedimage_save(const GObject* const gobj, const std::string& filename) {
+void Platform::gbufferedimage_save(const GObject* const gobj, const std::string& filename) {
     std::ostringstream os;
     os << "GBufferedImage.save(\"" << gobj << "\", ";
     writeQuotedString(os, filename);
     os << ")";
     putPipe(os.str());
-    return getResult();
+    getStatus();
 }
 
 void Platform::gbufferedimage_setRGB(GObject* gobj, double x, double y,
@@ -1592,6 +1598,44 @@ void Platform::gtable_setHorizontalAlignment(GObject* gobj, const std::string& a
     os << ")";
     putPipe(os.str());
 }
+
+void Platform::gtextarea_create(GObject* gobj, double width, double height) {
+    std::ostringstream os;
+    os << "GTextArea.create(\"" << gobj << "\", " << width << ", "
+       << height << ")";
+    putPipe(os.str());
+}
+
+std::string Platform::gtextarea_getText(const GObject* gobj) {
+    std::ostringstream os;
+    os << "GTextArea.getText(\"" << gobj << "\")";
+    putPipe(os.str());
+    return getResult();
+}
+
+void Platform::gtextarea_setEditable(GObject* gobj, bool isEditable) {
+    std::ostringstream os;
+    os << "GTextArea.setEditable(\"" << gobj << "\", "
+       << std::boolalpha << isEditable << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtextarea_setFont(GObject* gobj, std::string font) {
+    std::ostringstream os;
+    os << "GTextArea.setFont(\"" << gobj << "\", ";
+    writeQuotedString(os, font);
+    os << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtextarea_setText(GObject* gobj, std::string text) {
+    std::ostringstream os;
+    os << "GTextArea.setText(\"" << gobj << "\", ";
+    writeQuotedString(os, text);
+    os << ")";
+    putPipe(os.str());
+}
+
 
 void Platform::gtextfield_constructor(GObject* gobj, int nChars) {
     std::ostringstream os;

@@ -144,6 +144,11 @@ public abstract class JBECommand {
 		localHashMap.put("GTable.setEventEnabled", new GTable_setEventEnabled());
 		localHashMap.put("GTable.setFont", new GTable_setFont());
 		localHashMap.put("GTable.setHorizontalAlignment", new GTable_setHorizontalAlignment());
+		localHashMap.put("GTextArea.create", new GTextArea_create());
+		localHashMap.put("GTextArea.getText", new GTextArea_getText());
+		localHashMap.put("GTextArea.setEditable", new GTextArea_setEditable());
+		localHashMap.put("GTextArea.setFont", new GTextArea_setFont());
+		localHashMap.put("GTextArea.setText", new GTextArea_setText());
 		localHashMap.put("GTextField.create", new GTextField_create());
 		localHashMap.put("GTextField.getText", new GTextField_getText());
 		localHashMap.put("GTextField.isEditable", new GTextField_isEditable());

@@ -192,6 +192,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		createWindow(paramString, paramInt1, paramInt2, paramTopCompound, true);
 	}
 	
+	// JL: SwingUtilities.invokeLater
 	public void createWindow(String paramString, int paramInt1, int paramInt2,
 			TopCompound paramTopCompound, boolean visible) {
 		JBEWindow localJBEWindow = new JBEWindow(this, paramString, this.appName, paramInt1,
@@ -287,6 +288,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		}
 	}
 
+	// JL: SwingUtilities.invokeLater
 	public void setConsoleSize(int paramInt1, int paramInt2) {
 		this.consoleWidth = paramInt1;
 		this.consoleHeight = paramInt2;
@@ -298,6 +300,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 //		}
 	}
 
+	// JL: SwingUtilities.invokeLater
 	public void setConsoleLocation(int x, int y) {
 		this.consoleX = x;
 		this.consoleY = y;
@@ -401,6 +404,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		}
 	}
 
+	// JL: SwingUtilities.invokeLater
 	private void showConsole() {
 		this.console.setPreferredSize(this.consoleWidth, this.consoleHeight);
 		this.consoleFrame = new JFrame(this.consoleWindowTitle);

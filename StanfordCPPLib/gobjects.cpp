@@ -304,6 +304,32 @@ GRoundRect::~GRoundRect() {
     /* Empty */
 }
 
+bool GRoundRect::contains(double x, double y) const {
+    if (transformed) {
+        return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
+    }
+
+    // JL BUGFIX: The rest of this is code to return correct result in non-transformed case
+    // (accounting for corners)
+    if (!getBounds().contains(x, y)) {
+        return false;
+    }
+
+    // If corner diameter is too big, the largest sensible value is used by Java back end.
+    double a = std::min(corner, width) / 2;
+    double b = std::min(corner, height) / 2;
+
+    // Get distances from nearest edges of bounding rectangle
+    double dx = std::min(std::abs(x - getX()), std::abs(x - (getX() + width)));
+    double dy = std::min(std::abs(y - getY()), std::abs(y - (getY() + height)));
+
+    if (dx > a || dy > b) {
+        return true;   // in "central cross" of rounded rect
+    }
+
+    return (dx - a) * (dx - a) / (a * a) + (dy - b) * (dy - b) / (b * b) <= 1;
+}
+
 std::string GRoundRect::getType() const {
     return "GRoundRect";
 }
@@ -615,7 +641,9 @@ bool GArc::contains(double x, double y) const {
         double t = ARC_TOLERANCE / ((rx + ry) / 2);
         if (std::fabs(1.0 - r) > t) return false;
     }
-    return containsAngle(atan2(-dy, dx) * 180 / PI);
+
+    // JL BUGFIX: must scale by ry, rx.
+    return containsAngle(atan2(-dy/ry, dx/rx) * 180 / PI);
 }
 
 std::string GArc::getType() const {
@@ -710,9 +738,10 @@ GRectangle GCompound::getBounds() const {
         xMin = std::min(xMin, bounds.getX());
         yMin = std::min(yMin, bounds.getY());
         xMax = std::max(xMax, bounds.getX());
-        yMin = std::min(yMax, bounds.getY());
+        yMin = std::max(yMax, bounds.getY());   // JL BUGFIX 2016/10/11
     }
-    return GRectangle(xMin, yMin, xMax - xMin, yMax - yMin);
+    // JL BUGFIX: shifted anchor point
+    return GRectangle(xMin + getX(), yMin + getY(), xMax - xMin, yMax - yMin);
 }
 
 bool GCompound::contains(double x, double y) const {
@@ -1049,7 +1078,8 @@ GRectangle GPolygon::getBounds() const {
         if (i == 0 || x > xMax) xMax = x;
         if (i == 0 || y > yMax) yMax = y;
     }
-    return GRectangle(xMin, yMin, xMax - xMin, yMax - yMin);
+    // JL BUGFIX: add getX, getY
+    return GRectangle(xMin + getX(), yMin + getY(), xMax - xMin, yMax - yMin);
 }
 
 bool GPolygon::contains(double x, double y) const {

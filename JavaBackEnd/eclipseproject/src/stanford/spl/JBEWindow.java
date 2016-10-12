@@ -88,11 +88,13 @@ public class JBEWindow extends JFrame {
 		return this.windowId;
 	}
 
+	// JL: SwingUtilities.invokeLater
 	public void close() {
 		WindowEvent localWindowEvent = new WindowEvent(this, 201);
 		processWindowEvent(localWindowEvent);
 	}
 
+	// JL: SwingUtilities.invokeLater
 	public void clear() {
 		this.canvas.clear();
 		int i = 0;
@@ -121,6 +123,7 @@ public class JBEWindow extends JFrame {
 		this.canvas.clear();
 	}
 	
+	// JL: SwingUtilities.invokeLater
 	public void addToRegion(JComponent paramJComponent, String paramString) {
 		JPanel localJPanel = null;
 		if (paramString.equalsIgnoreCase("NORTH")) {
@@ -138,6 +141,7 @@ public class JBEWindow extends JFrame {
 		}
 	}
 
+	// JL: SwingUtilities.invokeLater
 	public void removeFromRegion(JComponent paramJComponent, String paramString) {
 		JPanel localJPanel = null;
 		if (paramString.equalsIgnoreCase("NORTH")) {
@@ -177,6 +181,7 @@ public class JBEWindow extends JFrame {
 		}
 	}
 
+	// JL: SwingUtilities.invokeLater
 	public void setRegionAlignment(String paramString1, String paramString2) {
 		JPanel localJPanel = null;
 		if (paramString1.equalsIgnoreCase("NORTH")) {

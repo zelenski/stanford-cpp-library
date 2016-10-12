@@ -16,6 +16,9 @@ public class GCompound_add extends JBECommand {
 		paramTokenScanner.verifyToken(")");
 		if ((localGObject1 != null) && (localGObject2 != null)) {
 			((TopCompound) localGObject1).add(localGObject2);
+			paramJavaBackEnd.println("result:ok");
+		} else {
+			paramJavaBackEnd.println("error:GCompound_add: an object was null");
 		}
 	}
 }

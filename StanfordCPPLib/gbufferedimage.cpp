@@ -367,8 +367,8 @@ void GBufferedImage::checkIndex(const std::string& member, double x, double y) c
               + ": (x=" + integerToString((int) x)
               + ", y=" + integerToString((int) y)
               + ") is out of valid range of (0, 0) through ("
-              + integerToString((int) m_width) + ", "
-              + integerToString((int) m_height) + ")");
+              + integerToString((int) m_width - 1) + ", "
+              + integerToString((int) m_height - 1) + ")");
     }
 }
 

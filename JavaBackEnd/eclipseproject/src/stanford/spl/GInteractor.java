@@ -30,6 +30,7 @@ public abstract class GInteractor extends GObject implements GResizable {
 		}
 	}
 	
+	// JL: SwingUtilities.invokeLater
 	@Override
 	public void setColor(Color color) {
 		super.setColor(color);
@@ -88,6 +89,7 @@ public abstract class GInteractor extends GObject implements GResizable {
 		}
 	}
 
+	// JL: SwingUtilities.invokeLater
 	public void setSize(double paramDouble1, double paramDouble2) {
 		int i = GMath.round(paramDouble1);
 		int j = GMath.round(paramDouble2);

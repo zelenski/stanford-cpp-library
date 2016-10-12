@@ -193,6 +193,7 @@ GMouseEvent::GMouseEvent(GEvent e) {
         eventTime = e.eventTime;
         x = e.x;
         y = e.y;
+        gwd = e.gwd;   // JL
     }
 }
 

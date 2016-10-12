@@ -5,6 +5,8 @@
  * the model developed for the ACM Java Graphics.
  * <include src="pictures/ClassHierarchies/GObjectHierarchy-h.html">
  *
+ * @version 2016/10/12
+ * - added contains to GRoundRect
  * @version 2016/09/27
  * - added get/setText methods to GLabel
  */
@@ -501,6 +503,15 @@ public:
      * Frees any resources maintained by this object.
      */
     virtual ~GRoundRect();
+
+    /*
+     * Method: contains
+     * Usage: if (grrect->contains(pt)) ...
+     *        if (grrect->contains(x, y)) ...
+     * --------------------------------------
+     * Returns <code>true</code> if the specified point is inside the object.
+     */
+    virtual bool contains(double x, double y) const;
 
     /* Prototypes for the virtual methods */
     virtual std::string getType() const;

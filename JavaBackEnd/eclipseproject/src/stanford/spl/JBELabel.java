@@ -28,6 +28,7 @@ public class JBELabel extends GLabel {
 		return this.jlabel;
 	}
 
+	// JL: SwingUtilities.invokeLater
 	public void setFont(Font paramFont) {
 		super.setFont(paramFont);
 		getInteractor();
@@ -36,6 +37,7 @@ public class JBELabel extends GLabel {
 		}
 	}
 
+	// JL: SwingUtilities.invokeLater
 	public void setColor(Color paramColor) {
 		super.setColor(paramColor);
 		getInteractor();
@@ -44,6 +46,7 @@ public class JBELabel extends GLabel {
 		}
 	}
 	
+	// JL: SwingUtilities.invokeLater
 	public void setLabel(String label) {
 		super.setLabel(label);
 		getInteractor();
@@ -53,10 +56,6 @@ public class JBELabel extends GLabel {
 	}
 	
 	public void setText(String label) {
-		super.setText(label);
-		getInteractor();
-		if (this.jlabel != null) {
-			this.jlabel.setText(label);
-		}
+		setLabel(label);
 	}
 }

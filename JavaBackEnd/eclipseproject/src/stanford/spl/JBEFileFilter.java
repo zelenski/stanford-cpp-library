@@ -12,9 +12,9 @@ public class JBEFileFilter extends FileChooserFilter {
 		this.dir = (i == -1 ? "" : path.substring(0, i));
 		String str = path.substring(i + 1);
 		if (!isPattern(str)) {
-//			if (this.dir.isEmpty()) {
-//				this.dir += "/";
-//			}
+			if (dir.isEmpty() && str.isEmpty()) {
+				dir += "/";
+			}
 			this.dir += str;
 		}
 		if (this.dir.isEmpty()) {
@@ -28,11 +28,13 @@ public class JBEFileFilter extends FileChooserFilter {
 		return this.dir;
 	}
 
+	// JL: getPatternPart?
+	
 	private static String getPattern(String paramString) {
 		int i = Math.max(paramString.lastIndexOf("/"),
 				paramString.lastIndexOf('\\'));
 		String str = paramString.substring(i + 1);
-		return isPattern(str) ? str : null;
+		return isPattern(str) ? str : "";   // JL BUGFIX: null -> ""
 	}
 
 	private static boolean isPattern(String paramString) {
