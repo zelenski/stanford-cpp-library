@@ -2,7 +2,7 @@ package stanford.spl;
 
 import acm.util.TokenScanner;
 
-public class AutograderUnitTest_setTestRuntime extends JBECommand {
+public class AutograderUnitTest_setTestRuntime extends JBESwingCommand {
 
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");

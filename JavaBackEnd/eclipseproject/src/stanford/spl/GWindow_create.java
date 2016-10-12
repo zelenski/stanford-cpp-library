@@ -3,7 +3,7 @@ package stanford.spl;
 import stanford.spl.TopCompound;
 import acm.util.TokenScanner;
 
-public class GWindow_create extends JBECommand {
+public class GWindow_create extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String str1 = nextString(paramTokenScanner);

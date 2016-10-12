@@ -1,4 +1,6 @@
 /*
+ * @version 2016/10/12
+ * - added shouldRunOnSwingEventThread
  * @version 2016/10/08
  * - added GWindow_toBack
  * @version 2016/09/26
@@ -15,7 +17,7 @@ import java.util.HashMap;
 
 public abstract class JBECommand {
 	public abstract void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd);
-
+	
 	public static HashMap<String, JBECommand> createCommandTable() {
 		HashMap<String, JBECommand> localHashMap = new HashMap<String, JBECommand>();
 		localHashMap.put("AutograderInput.addButton", new AutograderInput_addButton());
@@ -252,5 +254,26 @@ public abstract class JBECommand {
 
 	public boolean nextBoolean(TokenScanner paramTokenScanner) {
 		return paramTokenScanner.nextToken().startsWith("t");
+	}
+
+	/**
+	 * Returns whether this command should wait for itself to finish running on the Swing GUI event thread.
+	 * This is true only for graphical/GUI related commands that return important results that must be
+	 * processed in an exact order.
+	 */
+	public boolean shouldInvokeAndWait() {
+		// TODO: implement
+		return false;
+	}
+
+	/**
+	 * Returns whether this command should run on the Swing GUI event thread.
+	 * This is typically true for graphical/GUI related commands.
+	 */
+	public boolean shouldRunOnSwingEventThread() {
+		String className = getClass().getSimpleName();
+		return className.startsWith("G")
+				// || className.startsWith("JBEConsole")
+				|| className.startsWith("TopCompound");
 	}
 }

@@ -4,7 +4,7 @@ import stanford.spl.TopCompound;
 import acm.graphics.GObject;
 import acm.util.TokenScanner;
 
-public class GCompound_add extends JBECommand {
+public class GCompound_add extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner,
 			JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");

@@ -2,6 +2,8 @@
 	==============
 		that one guy's code
 			jeff lutgen @ whittier.edu
+				https://github.com/jlutgen/stanford-whittier-cpplib
+				
 				all JBECommand
 					=> SwingUtilities.invokeLater(new Runner(...) { ...... });
 				

@@ -5,7 +5,7 @@ import acm.util.JTFTools;
 import acm.util.TokenScanner;
 import java.awt.Font;
 
-public class GTable_setFont extends JBECommand {
+public class GTable_setFont extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String interactorID = nextString(paramTokenScanner);

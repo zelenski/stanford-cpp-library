@@ -3,7 +3,7 @@ package stanford.spl;
 import acm.graphics.GObject;
 import acm.util.TokenScanner;
 
-public class GTable_resize extends JBECommand {
+public class GTable_resize extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String interactorID = nextString(paramTokenScanner);

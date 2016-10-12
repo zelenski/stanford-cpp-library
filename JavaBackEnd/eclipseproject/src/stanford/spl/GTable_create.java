@@ -3,7 +3,7 @@ package stanford.spl;
 import java.awt.*;
 import acm.util.TokenScanner;
 
-public class GTable_create extends JBECommand {
+public class GTable_create extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String id = nextString(paramTokenScanner);

@@ -3,7 +3,7 @@ package stanford.spl;
 import acm.graphics.GObject;
 import acm.util.TokenScanner;
 
-public class GInteractor_setEnabled extends JBECommand {
+public class GInteractor_setEnabled extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String interactorID = nextString(paramTokenScanner);

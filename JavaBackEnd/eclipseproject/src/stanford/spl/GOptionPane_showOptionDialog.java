@@ -6,7 +6,7 @@ import java.util.*;
 
 import javax.swing.*;
 
-public class GOptionPane_showOptionDialog extends JBECommand {
+public class GOptionPane_showOptionDialog extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String message = SplPipeDecoder.readAndDecode(paramTokenScanner);

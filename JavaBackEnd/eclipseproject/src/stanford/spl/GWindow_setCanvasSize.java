@@ -4,7 +4,7 @@ import java.awt.Dimension;
 
 import acm.util.TokenScanner;
 
-public class GWindow_setCanvasSize extends JBECommand {
+public class GWindow_setCanvasSize extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String str1 = nextString(paramTokenScanner);

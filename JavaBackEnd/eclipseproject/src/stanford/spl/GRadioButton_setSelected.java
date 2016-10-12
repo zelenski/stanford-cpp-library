@@ -3,7 +3,7 @@ package stanford.spl;
 import acm.graphics.GObject;
 import acm.util.TokenScanner;
 
-public class GRadioButton_setSelected extends JBECommand {
+public class GRadioButton_setSelected extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String interactorID = nextString(paramTokenScanner);

@@ -8,7 +8,7 @@ import acm.util.*;
  * @author Marty Stepp
  * @version 2015/10/08
  */
-public class GBufferedImage_load extends JBECommand {
+public class GBufferedImage_load extends JBESwingCommand {
 	// gbufferedimage.load("foobar.png");
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");

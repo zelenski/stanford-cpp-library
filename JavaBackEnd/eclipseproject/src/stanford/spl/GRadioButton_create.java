@@ -8,7 +8,7 @@ package stanford.spl;
 
 import acm.util.*;
 
-public class GRadioButton_create extends JBECommand {
+public class GRadioButton_create extends JBESwingCommand {
 	// grb = new GRadioButton(label, group);
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");

@@ -15,7 +15,7 @@ import stanford.cs106.io.IORuntimeException;
 import java.awt.*;
 import java.io.*;
 
-public class DiffImage_show extends JBECommand {
+public class DiffImage_show extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String filename1 = nextString(paramTokenScanner);

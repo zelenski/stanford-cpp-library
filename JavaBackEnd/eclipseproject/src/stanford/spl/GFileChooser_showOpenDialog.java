@@ -6,7 +6,7 @@ import java.io.*;
 
 import javax.swing.*;
 
-public class GFileChooser_showOpenDialog extends JBECommand {
+public class GFileChooser_showOpenDialog extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String currentDir = nextString(paramTokenScanner);

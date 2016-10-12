@@ -2,7 +2,7 @@ package stanford.spl;
 
 import acm.util.TokenScanner;
 
-public class GOptionPane_showTextFileDialog extends JBECommand {
+public class GOptionPane_showTextFileDialog extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String text = SplPipeDecoder.readAndDecode(paramTokenScanner);

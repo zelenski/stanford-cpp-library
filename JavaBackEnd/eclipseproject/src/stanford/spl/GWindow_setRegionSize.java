@@ -4,7 +4,7 @@ import java.awt.*;
 
 import acm.util.TokenScanner;
 
-public class GWindow_setRegionSize extends JBECommand {
+public class GWindow_setRegionSize extends JBESwingCommand {
 	public void execute(TokenScanner scanner, JavaBackEnd jbe) {
 		scanner.verifyToken("(");
 		String id = nextString(scanner);

@@ -2,7 +2,7 @@ package stanford.spl;
 
 import acm.util.TokenScanner;
 
-public class GTextArea_setEditable extends JBECommand {
+public class GTextArea_setEditable extends JBESwingCommand {
 	public void execute(TokenScanner scanner, JavaBackEnd jbe) {
 		scanner.verifyToken("(");
 		final String id = nextString(scanner);

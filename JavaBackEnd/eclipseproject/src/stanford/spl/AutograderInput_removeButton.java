@@ -2,7 +2,7 @@ package stanford.spl;
 
 import acm.util.TokenScanner;
 
-public class AutograderInput_removeButton extends JBECommand {
+public class AutograderInput_removeButton extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String text = SplPipeDecoder.readAndDecode(paramTokenScanner);

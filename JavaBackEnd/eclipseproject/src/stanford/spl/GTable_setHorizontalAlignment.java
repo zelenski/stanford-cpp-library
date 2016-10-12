@@ -5,7 +5,7 @@ import javax.swing.JLabel;
 import acm.graphics.GObject;
 import acm.util.TokenScanner;
 
-public class GTable_setHorizontalAlignment extends JBECommand {
+public class GTable_setHorizontalAlignment extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String interactorID = nextString(paramTokenScanner);

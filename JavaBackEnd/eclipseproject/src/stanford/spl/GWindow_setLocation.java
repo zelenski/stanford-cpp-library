@@ -9,7 +9,7 @@ import java.awt.Window;
 
 import acm.util.TokenScanner;
 
-public class GWindow_setLocation extends JBECommand {
+public class GWindow_setLocation extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String str1 = nextString(paramTokenScanner);

@@ -6,7 +6,7 @@ import acm.graphics.GObject;
 import acm.util.JTFTools;
 import acm.util.TokenScanner;
 
-public class GInteractor_setBackground extends JBECommand {
+public class GInteractor_setBackground extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String interactorID = nextString(paramTokenScanner);

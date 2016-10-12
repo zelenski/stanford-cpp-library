@@ -7,7 +7,7 @@ import stanford.spl.GCheckBox;
 import acm.graphics.*;
 import acm.util.TokenScanner;
 
-public class GInteractor_setTextPosition extends JBECommand {
+public class GInteractor_setTextPosition extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String interactorID = nextString(paramTokenScanner);

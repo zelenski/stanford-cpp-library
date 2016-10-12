@@ -12,7 +12,7 @@ import acm.util.TokenScanner;
 //        student=No+word+ladder+found+from+DATa+back+to+CoDe.,
 //        valueType=string,
 //        passed=false}")
-public class AutograderUnitTest_setTestDetails extends JBECommand {
+public class AutograderUnitTest_setTestDetails extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String testName = SplPipeDecoder.readAndDecode(paramTokenScanner);

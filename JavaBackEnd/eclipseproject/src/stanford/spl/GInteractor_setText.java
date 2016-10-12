@@ -5,7 +5,7 @@ import javax.swing.*;
 import acm.graphics.*;
 import acm.util.TokenScanner;
 
-public class GInteractor_setText extends JBECommand {
+public class GInteractor_setText extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String interactorID = nextString(paramTokenScanner);

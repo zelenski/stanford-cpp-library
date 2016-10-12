@@ -2,7 +2,7 @@ package stanford.spl;
 
 import acm.util.TokenScanner;
 
-public class GTextArea_create extends JBECommand {
+public class GTextArea_create extends JBESwingCommand {
 	// gTextArea = new GTextArea(width, height);
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd jbe) {
 		paramTokenScanner.verifyToken("(");

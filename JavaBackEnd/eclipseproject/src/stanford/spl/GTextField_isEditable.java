@@ -6,7 +6,7 @@ import stanford.spl.GTextField;
 import acm.graphics.GObject;
 import acm.util.TokenScanner;
 
-public class GTextField_isEditable extends JBECommand {
+public class GTextField_isEditable extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String interactorID = nextString(paramTokenScanner);

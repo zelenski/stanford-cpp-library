@@ -3,7 +3,7 @@ package stanford.spl;
 import acm.graphics.GObject;
 import acm.util.TokenScanner;
 
-public class GSlider_setMinorTickSpacing extends JBECommand {
+public class GSlider_setMinorTickSpacing extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String interactorID = nextString(paramTokenScanner);

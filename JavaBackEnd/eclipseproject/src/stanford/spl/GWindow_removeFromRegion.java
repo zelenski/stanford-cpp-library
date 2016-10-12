@@ -3,7 +3,7 @@ package stanford.spl;
 import acm.graphics.GObject;
 import acm.util.TokenScanner;
 
-public class GWindow_removeFromRegion extends JBECommand {
+public class GWindow_removeFromRegion extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner,
 			JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");

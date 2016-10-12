@@ -16,7 +16,7 @@ import java.io.*;
 import stanford.cs106.diff.DiffImage;
 import stanford.cs106.io.IORuntimeException;
 
-public class DiffImage_compareWindowToImage extends JBECommand {
+public class DiffImage_compareWindowToImage extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String windowID = nextString(paramTokenScanner);

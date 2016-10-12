@@ -9,7 +9,7 @@ import acm.graphics.GCompound;
 import acm.graphics.GObject;
 import acm.util.TokenScanner;
 
-public class GObject_remove extends JBECommand {
+public class GObject_remove extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner,
 			JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");

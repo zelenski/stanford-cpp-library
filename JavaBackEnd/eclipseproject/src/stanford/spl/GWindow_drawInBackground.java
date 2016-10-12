@@ -8,7 +8,7 @@ import java.awt.Graphics2D;
 /*
  * same as GWindow_draw but doesn't repaint for speed
  */
-public class GWindow_drawInBackground extends JBECommand {
+public class GWindow_drawInBackground extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String str = nextString(paramTokenScanner);

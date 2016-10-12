@@ -7,7 +7,7 @@ package stanford.spl;
 
 import acm.util.TokenScanner;
 
-public class GWindow_toBack extends JBECommand {
+public class GWindow_toBack extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String str1 = nextString(paramTokenScanner);

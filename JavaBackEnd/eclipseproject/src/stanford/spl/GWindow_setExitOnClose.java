@@ -11,7 +11,7 @@ import javax.swing.Timer;
 
 import acm.util.TokenScanner;
 
-public class GWindow_setExitOnClose extends JBECommand implements ActionListener, WindowListener {
+public class GWindow_setExitOnClose extends JBESwingCommand implements ActionListener, WindowListener {
 	private Set<String> windowsToMonitor = new HashSet<String>();
 	
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {

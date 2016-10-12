@@ -8,7 +8,7 @@ import acm.util.*;
  * @author Marty Stepp
  * @version 2014/10/08
  */
-public class GBufferedImage_resize extends JBECommand {
+public class GBufferedImage_resize extends JBESwingCommand {
 	// gbufferedimage.setRGB(x, y, rgb);
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");

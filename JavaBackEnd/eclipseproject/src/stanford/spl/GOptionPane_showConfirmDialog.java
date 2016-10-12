@@ -4,7 +4,7 @@ import acm.util.TokenScanner;
 
 import javax.swing.*;
 
-public class GOptionPane_showConfirmDialog extends JBECommand {
+public class GOptionPane_showConfirmDialog extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String message = SplPipeDecoder.readAndDecode(paramTokenScanner);

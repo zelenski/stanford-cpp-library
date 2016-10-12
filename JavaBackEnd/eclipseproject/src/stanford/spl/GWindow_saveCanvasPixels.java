@@ -11,7 +11,7 @@ package stanford.spl;
 import acm.util.*;
 import stanford.cs106.io.IORuntimeException;
 
-public class GWindow_saveCanvasPixels extends JBECommand {
+public class GWindow_saveCanvasPixels extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String windowID = nextString(paramTokenScanner);

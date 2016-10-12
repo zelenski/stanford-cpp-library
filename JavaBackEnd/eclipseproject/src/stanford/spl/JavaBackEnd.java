@@ -8,6 +8,7 @@ import stanford.cs106.gui.GuiUtils;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.lang.reflect.*;
 import java.net.*;
 import java.util.*;
 import javax.sound.sampled.*;
@@ -759,7 +760,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 
 	private void commandLoop() {
 		BufferedReader localBufferedReader = new BufferedReader(new InputStreamReader(System.in));
-		TokenScanner localTokenScanner = new TokenScanner();
+		final TokenScanner localTokenScanner = new TokenScanner();
 		localTokenScanner.ignoreWhitespace();
 		localTokenScanner.scanNumbers();
 		localTokenScanner.scanStrings();
@@ -780,11 +781,35 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 				
 				localTokenScanner.setInput(str1);
 				String str2 = localTokenScanner.nextToken();
-				JBECommand localJBECommand = (JBECommand) this.cmdTable.get(str2);
+				final JBECommand localJBECommand = (JBECommand) this.cmdTable.get(str2);
 				if (localJBECommand == null) {
 					System.err.println("Unexpected error: unknown command \"" + str2 + "\"");
 				} else {
-					localJBECommand.execute(localTokenScanner, this);
+					// execute JBE command; some commands must be run on Swing event thread
+					if (localJBECommand.shouldRunOnSwingEventThread()) {
+						Runnable run = new Runnable() {
+							public void run() {
+								localJBECommand.execute(localTokenScanner, JavaBackEnd.this);
+							}
+						};
+						if (localJBECommand.shouldInvokeAndWait()) {
+							try {
+								SwingUtilities.invokeAndWait(run);
+							} catch (InvocationTargetException ite) {
+								// TODO: is this the right way to handle such an error?  :-/ not sure
+								// println("error:" + ite.getMessage());
+								System.err.println("Unexpected error: " + ite.getMessage());
+								ite.printStackTrace(System.err);
+							} catch (InterruptedException ie) {
+								// okay; do nothing
+							}
+						} else {
+							SwingUtilities.invokeLater(run);
+						}
+					} else {
+						// don't run on Swing event thread; just run on this current thread
+						localJBECommand.execute(localTokenScanner, this);
+					}
 				}
 			}
 		} catch (Exception localException) {

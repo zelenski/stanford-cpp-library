@@ -12,7 +12,7 @@ import java.io.IOException;
 import stanford.cs106.diff.DiffImage;
 import stanford.cs106.io.IORuntimeException;
 
-public class DiffImage_compareImages extends JBECommand {
+public class DiffImage_compareImages extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String filename1 = nextString(paramTokenScanner);
