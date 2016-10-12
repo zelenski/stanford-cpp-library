@@ -263,7 +263,7 @@ public abstract class JBECommand {
 	 */
 	public boolean shouldInvokeAndWait() {
 		// TODO: implement
-		return false;
+		return true;
 	}
 
 	/**

@@ -6,6 +6,10 @@
 			maybe wait for result/status on GBufferedImage load()?
 		
 		
+		autograder.cpp
+			exit() calls exit() - inf.recursion, warning in clang
+				change to abort()? etc
+		
 		console [closed] when program terminated
 		
 		
