@@ -171,6 +171,7 @@ public abstract class JBECommand {
 		localHashMap.put("GWindow.draw", new GWindow_draw());
 		localHashMap.put("GWindow.exitGraphics", new GWindow_exitGraphics());
 		localHashMap.put("GWindow.getCanvasSize", new GWindow_getCanvasSize());
+		localHashMap.put("GWindow.getContentPaneSize", new GWindow_getContentPaneSize());
 		localHashMap.put("GWindow.getLocation", new GWindow_getLocation());
 		localHashMap.put("GWindow.getRegionSize", new GWindow_getRegionSize());
 		localHashMap.put("GWindow.getScreenHeight", new GWindow_getScreenHeight());
