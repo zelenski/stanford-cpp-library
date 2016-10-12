@@ -22,15 +22,16 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include "private/static.h"
 
-static const std::string GETCHAR_DEFAULT_PROMPT = "Enter an character: ";
-static const std::string GETCHAR_DEFAULT_REPROMPT = "You must type a single character. Try again.";
-static const std::string GETINTEGER_DEFAULT_PROMPT = "Enter an integer: ";
-static const std::string GETINTEGER_DEFAULT_REPROMPT = "Illegal integer format. Try again.";
-static const std::string GETREAL_DEFAULT_PROMPT = "Enter a number: ";
-static const std::string GETREAL_DEFAULT_REPROMPT = "Illegal numeric format. Try again.";
-static const std::string GETYESORNO_DEFAULT_PROMPT = "Try again: ";
-static const std::string GETYESORNO_DEFAULT_REPROMPT = "Please type a word that starts with 'Y' or 'N'.";
+STATIC_CONST_VARIABLE_DECLARE(std::string, GETCHAR_DEFAULT_PROMPT, "Enter an character: ")
+STATIC_CONST_VARIABLE_DECLARE(std::string, GETCHAR_DEFAULT_REPROMPT, "You must type a single character. Try again.")
+STATIC_CONST_VARIABLE_DECLARE(std::string, GETINTEGER_DEFAULT_PROMPT, "Enter an integer: ")
+STATIC_CONST_VARIABLE_DECLARE(std::string, GETINTEGER_DEFAULT_REPROMPT, "Illegal integer format. Try again.")
+STATIC_CONST_VARIABLE_DECLARE(std::string, GETREAL_DEFAULT_PROMPT, "Enter a number: ")
+STATIC_CONST_VARIABLE_DECLARE(std::string, GETREAL_DEFAULT_REPROMPT, "Illegal numeric format. Try again.")
+STATIC_CONST_VARIABLE_DECLARE(std::string, GETYESORNO_DEFAULT_PROMPT, "Try again: ")
+STATIC_CONST_VARIABLE_DECLARE(std::string, GETYESORNO_DEFAULT_REPROMPT, "Please type a word that starts with 'Y' or 'N'.")
 
 /*
  * Implementation notes: getChar, getDouble, getInteger, getReal
@@ -56,9 +57,9 @@ char getChar(const std::string& prompt,
             break;
         }
 
-        std::cout << (reprompt.empty() ? GETCHAR_DEFAULT_REPROMPT : reprompt) << std::endl;
+        std::cout << (reprompt.empty() ? STATIC_VARIABLE(GETCHAR_DEFAULT_REPROMPT) : reprompt) << std::endl;
         if (promptCopy.empty()) {
-            promptCopy = GETCHAR_DEFAULT_PROMPT;
+            promptCopy = STATIC_VARIABLE(GETCHAR_DEFAULT_PROMPT);
         }
     }
     return value;
@@ -88,9 +89,9 @@ int getInteger(const std::string& prompt,
         if (!stream.fail() && stream.eof()) {
             break;
         }
-        std::cout << (reprompt.empty() ? GETINTEGER_DEFAULT_REPROMPT : reprompt) << std::endl;
+        std::cout << (reprompt.empty() ? STATIC_VARIABLE(GETINTEGER_DEFAULT_REPROMPT) : reprompt) << std::endl;
         if (promptCopy.empty()) {
-            promptCopy = GETINTEGER_DEFAULT_PROMPT;
+            promptCopy = STATIC_VARIABLE(GETINTEGER_DEFAULT_PROMPT);
         }
     }
     return value;
@@ -153,9 +154,9 @@ double getReal(const std::string& prompt,
         if (!stream.fail() && stream.eof()) {
             break;
         }
-        std::cout << (reprompt.empty() ? GETREAL_DEFAULT_REPROMPT : reprompt) << std::endl;
+        std::cout << (reprompt.empty() ? STATIC_VARIABLE(GETREAL_DEFAULT_REPROMPT) : reprompt) << std::endl;
         if (promptCopy.empty()) {
-            promptCopy = GETREAL_DEFAULT_PROMPT;
+            promptCopy = STATIC_VARIABLE(GETREAL_DEFAULT_PROMPT);
         }
     }
     return value;
@@ -198,9 +199,9 @@ bool getYesOrNo(const std::string& prompt,
                 break;
             }
         }
-        std::cout << (reprompt.empty() ? GETYESORNO_DEFAULT_REPROMPT : reprompt) << std::endl;
+        std::cout << (reprompt.empty() ? STATIC_VARIABLE(GETYESORNO_DEFAULT_REPROMPT) : reprompt) << std::endl;
         if (promptCopy.empty()) {
-            promptCopy = GETYESORNO_DEFAULT_PROMPT;
+            promptCopy = STATIC_VARIABLE(GETYESORNO_DEFAULT_PROMPT);
         }
     }
     return value;

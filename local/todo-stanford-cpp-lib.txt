@@ -1,18 +1,45 @@
 	TODO C++ libs:
 	==============
-		Fauxtoshop autograder stuff
-			why aren't timeouts working?
-			stack traces?
+x		BUG: side-by-side diff with " " in it turns them into &quot;
+x		simpio.h: getIntegerBetween / getRealBetween(min, max)
+
+		autograders: why aren't timeouts working?
+		autograders: why no stack traces?
 		
 		
-		BUG: side-by-side diff with " " in it turns them into &quot;
 		
-		autograder.cpp
+		console [closed] when program terminated
+		
+		
+		
+		autograder.cpp line 684
+			no quick_exit
 			exit() calls exit() - inf.recursion, warning in clang
 				change to abort()? etc
 				idea: macro, #define exit() ... later #undef it in my version
 		
-		console [closed] when program terminated
+	
+		add methods to match STL: find, empty, ...?
+		gcheckbox/radiobutton isChecked / setChecked
+		gwindow getCanvasWidth, getCanvasHeight
+		compareTo helper?  compare(1, 2, 3, ...)
+		hashCode helper?   hashCode(1, 2, 3, ...)
+		change 'NULL' to 'nullptr' everywhere (grep)
+		cool macro for static init code/class?
+		strip out clone() from stack traces in autograder?
+			*** (unknown) clone()
+		
+		make compiler/command-line flags for:
+			force plain text console
+			echo cin
+		graphical console: option to "feed" user input as a script
+		idea: do EVERY pipe I/O operation on swing event thread?
+		bug: no output appears until user input?  flush issue?
+		bug: seems that if you create window but it isn't visible, set[Canvas]Size doesn't work
+		
+		
+		
+		
 		
 		
 		that one guy's code
