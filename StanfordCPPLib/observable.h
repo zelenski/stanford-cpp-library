@@ -35,7 +35,7 @@ public:
      * Adds the given observer object to this observable object's internal list
      * of observers.  The observer's update method will be called when the
      * notifyObservers method is called afterward.
-     * Precondition: obs != NULL
+     * Precondition: obs != nullptr
      */
     void addObserver(Observer* obs);
 
@@ -43,9 +43,9 @@ public:
      * Calls the update method of all observers that have been added previously
      * to this observable object.
      * The given argument can be passed to provide extra information to the
-     * observers if necessary.  If no argument is passed, NULL is used.
+     * observers if necessary.  If no argument is passed, nullptr is used.
      */
-    void notifyObservers(void* arg = NULL);
+    void notifyObservers(void* arg = nullptr);
 
     /*
      * Removes the given observer object from this observable object's internal
@@ -73,7 +73,7 @@ public:
      * the extra information passed by the Observable when it called
      * notifyObservers, if any.
      */
-    virtual void update(Observable* obs, void* arg = NULL) = 0;
+    virtual void update(Observable* obs, void* arg = nullptr) = 0;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

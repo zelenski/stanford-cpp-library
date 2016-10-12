@@ -45,7 +45,7 @@ void runTestWithTimeout(autograder::AutograderTest* test) {
     if (timeoutMS > 0) {
         DWORD threadID;
         HANDLE hThread = CreateThread(
-            NULL,                   // default security attributes
+            nullptr,                // default security attributes
             0,                      // use default stack size
             runTestInItsOwnThread,  // thread function name
             (LPVOID) test,          // argument to pass to thread function
@@ -144,7 +144,7 @@ static void failWithException(autograder::AutograderTest* test, std::string kind
     autograder::setFailDetails(autograder::UnitTestDetails(
         autograder::UnitTestType::TEST_EXCEPTION,
         errorMessage));
-    pthread_exit((void*) NULL);
+    pthread_exit((void*) nullptr);
 }
 
 /*
@@ -154,8 +154,8 @@ static void failWithException(autograder::AutograderTest* test, std::string kind
 static void* runTestInItsOwnThread(void* arg) {
     autograder::AutograderTest* test = (autograder::AutograderTest*) arg;
     // getPlatform()->autograderunittest_setTestResult(test->getName(), "progress");
-    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
-    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, nullptr);
+    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, nullptr);
     
     try {
         test->TestRealBody();
@@ -179,7 +179,7 @@ static void* runTestInItsOwnThread(void* arg) {
         failWithException(test, "A double exception", realToString(d));
     }
     
-    return (void*) NULL;
+    return (void*) nullptr;
 }
 
 /*
@@ -191,17 +191,17 @@ void runTestWithTimeout(autograder::AutograderTest* test) {
     if (timeoutMS > 0) {
         // create a new pthread and run the test in that thread
         pthread_t thread;
-        pthread_create(&thread, NULL, &runTestInItsOwnThread, (void*) test);
+        pthread_create(&thread, nullptr, &runTestInItsOwnThread, (void*) test);
 
         // convert the thread's timeout in ms into the needed timeval struct
         struct timeval now;
         struct timespec timeToWait;
-        gettimeofday(&now,NULL);
+        gettimeofday(&now, nullptr);
         timeToWait.tv_sec = now.tv_sec + (timeoutMS / 1000);
         timeToWait.tv_nsec = ((now.tv_usec + 1000UL * (timeoutMS % 1000)) * 1000UL) % 1000000UL;
         
         // wait for the given timeout amount of time
-        void* threadReturn = NULL;
+        void* threadReturn = nullptr;
         int joinResult = pthread_timedjoin_np(thread, &threadReturn, &timeToWait);
         if (joinResult == ETIMEDOUT) {
             // thread didn't finish by the timeout; halt it and show failure

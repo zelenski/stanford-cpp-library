@@ -407,7 +407,7 @@ public:
 
     public:
         iterator() {
-            this->vp = NULL;
+            this->vp = nullptr;
             this->index = 0;
         }
 
@@ -539,13 +539,13 @@ public:
 template <typename ValueType>
 Vector<ValueType>::Vector() {
     count = capacity = 0;
-    elements = NULL;
+    elements = nullptr;
 }
 
 template <typename ValueType>
 Vector<ValueType>::Vector(int n, ValueType value) {
     count = capacity = n;
-    elements = (n == 0) ? NULL : new ValueType[n];
+    elements = (n == 0) ? nullptr : new ValueType[n];
     for (int i = 0; i < n; i++) {
         elements[i] = value;
     }
@@ -581,9 +581,9 @@ Vector<ValueType>::Vector(const Vector& src) {
 
 template <typename ValueType>
 Vector<ValueType>::~Vector() {
-    if (elements != NULL) {
+    if (elements) {
         delete[] elements;
-        elements = NULL;
+        elements = nullptr;
     }
 }
 
@@ -616,11 +616,11 @@ Vector<ValueType>& Vector<ValueType>::addAll(std::initializer_list<ValueType> li
 
 template <typename ValueType>
 void Vector<ValueType>::clear() {
-    if (elements != NULL) {
+    if (elements) {
         delete[] elements;
     }
     count = capacity = 0;
-    elements = NULL;
+    elements = nullptr;
 }
 
 // implementation note: This method is public so clients can guarantee a given
@@ -631,7 +631,7 @@ void Vector<ValueType>::ensureCapacity(int cap) {
     if (cap >= 1 && capacity < cap) {
         capacity = std::max(cap, capacity * 2);
         ValueType* array = new ValueType[capacity];
-        if (elements != NULL) {
+        if (elements) {
             for (int i = 0; i < count; i++) {
                 array[i] = elements[i];
             }
@@ -657,7 +657,7 @@ template <typename ValueType>
 void Vector<ValueType>::expandCapacity() {
     capacity = std::max(1, capacity * 2);
     ValueType *array = new ValueType[capacity];
-    if (elements != NULL) {
+    if (elements) {
         for (int i = 0; i < count; i++) {
             array[i] = elements[i];
         }
@@ -858,7 +858,7 @@ bool Vector<ValueType>::operator >=(const Vector& v2) const {
 template <typename ValueType>
 Vector<ValueType> & Vector<ValueType>::operator =(const Vector& src) {
     if (this != &src) {
-        if (elements != NULL) {
+        if (elements) {
             delete[] elements;
         }
         deepCopy(src);
@@ -890,7 +890,7 @@ void Vector<ValueType>::checkIndex(int index, int min, int max, std::string pref
 template <typename ValueType>
 void Vector<ValueType>::deepCopy(const Vector& src) {
     count = capacity = src.count;
-    elements = (capacity == 0) ? NULL : new ValueType[capacity];
+    elements = (capacity == 0) ? nullptr : new ValueType[capacity];
     for (int i = 0; i < count; i++) {
         elements[i] = src.elements[i];
     }

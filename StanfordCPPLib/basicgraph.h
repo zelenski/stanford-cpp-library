@@ -63,7 +63,7 @@ public:
     double cost;        // cost to reach this vertex (initially 0; you can set this)
     double& weight;     // alias of cost; they are the same field
     bool visited;       // whether this vertex has been visited before (initally false; you can set this)
-    Vertex* previous;   // vertex that comes before this one (initially NULL; you can set this)
+    Vertex* previous;   // vertex that comes before this one (initially nullptr; you can set this)
 
     /*
      * The following pointer can point to any extra data needed by the vertex.
@@ -93,7 +93,7 @@ public:
 
     /*
      * Wipes the supplementary data of this vertex back to its initial state.
-     * Specifically, sets cost to 0, visited to false, and previous to NULL.
+     * Specifically, sets cost to 0, visited to false, and previous to nullptr.
      */
     void resetData();
 
@@ -160,7 +160,7 @@ public:
      * Constructs a new edge between the given start/end vertices with
      * the given cost.
      */
-    Edge(Vertex* start = NULL, Vertex* finish = NULL, double cost = 0.0);
+    Edge(Vertex* start = nullptr, Vertex* finish = nullptr, double cost = 0.0);
 
     /*
      * Frees up any memory dynamically allocated by this edge.

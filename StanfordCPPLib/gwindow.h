@@ -530,7 +530,7 @@ public:
      * Usage: GObject *gobj = getGObjectAt(x, y);
      * ------------------------------------------
      * Returns a pointer to the topmost <code>GObject</code> containing the
-     * point (<code>x</code>, <code>y</code>), or <code>NULL</code> if no such
+     * point (<code>x</code>, <code>y</code>), or <code>nullptr</code> if no such
      * object exists.
      */
     GObject* getGObjectAt(double x, double y) const;

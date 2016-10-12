@@ -102,7 +102,7 @@ void addCallbackButton(void (* func)(), const std::string& text, const std::stri
  * The main function called by the autograder to run the program.
  * Your autograder file should call this to initiate the grading process.
  */
-int autograderMain(int argc = 0, char** argv = NULL);
+int autograderMain(int argc = 0, char** argv = nullptr);
 
 /*
  * Displays a 'diff' betwen the given expected output and the given student output.
@@ -158,13 +158,13 @@ void setAssignmentName(const std::string& name);
 
 /*
  * Specifies a function to call once the automated tests are finished running.
- * If NULL is passed, no function will be called.
+ * If null is passed, no function will be called.
  */
 void setCallbackEnd(void(* func)());
 
 /*
  * Specifies a function to call before the automated tests start running.
- * If NULL is passed, no function will be called.
+ * If null is passed, no function will be called.
  */
 void setCallbackStart(void(* func)());
 

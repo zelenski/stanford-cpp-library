@@ -227,7 +227,7 @@
 //                            define themselves.
 //   GTEST_USES_SIMPLE_RE   - our own simple regex is used;
 //                            the above two are mutually exclusive.
-//   GTEST_CAN_COMPARE_NULL - accepts untyped NULL in EXPECT_EQ().
+//   GTEST_CAN_COMPARE_NULL - accepts untyped null in EXPECT_EQ().
 //
 // Macros for basic C++ coding:
 //   GTEST_AMBIGUOUS_ELSE_BLOCKER_ - for disabling a gcc warning.
@@ -1998,7 +1998,7 @@ class scoped_ptr {
  public:
   typedef T element_type;
 
-  explicit scoped_ptr(T* p = NULL) : ptr_(p) {}
+  explicit scoped_ptr(T* p = nullptr) : ptr_(p) {}
   ~scoped_ptr() { reset(); }
 
   T& operator*() const { return *ptr_; }
@@ -2007,11 +2007,11 @@ class scoped_ptr {
 
   T* release() {
     T* const ptr = ptr_;
-    ptr_ = NULL;
+    ptr_ = nullptr;
     return ptr;
   }
 
-  void reset(T* p = NULL) {
+  void reset(T* p = nullptr) {
     if (p != ptr_) {
       if (IsTrue(sizeof(T) > 0)) {  // Makes sure T is a complete type.
         delete ptr_;
@@ -2148,7 +2148,7 @@ class GTEST_API_ GTestLog {
                                   __FILE__, __LINE__).GetStream()
 
 inline void LogToStderr() {}
-inline void FlushInfoLog() { fflush(NULL); }
+inline void FlushInfoLog() { fflush(nullptr); }
 
 // INTERNAL IMPLEMENTATION - DO NOT USE.
 //
@@ -2232,13 +2232,13 @@ inline To DownCast_(From* f) {  // so we only accept pointers
   // optimized build at run-time, as it will be optimized away
   // completely.
   if (false) {
-    const To to = NULL;
+    const To to = nullptr;
     ::testing::internal::ImplicitCast_<From*>(to);
   }
 
 #if GTEST_HAS_RTTI
   // RTTI: debug mode only!
-  GTEST_CHECK_(f == NULL || dynamic_cast<To>(f) != NULL);
+  GTEST_CHECK_(f == nullptr || dynamic_cast<To>(f) != nullptr);
 #endif
   return static_cast<To>(f);
 }
@@ -2297,7 +2297,7 @@ inline void SleepMilliseconds(int n) {
     0,                  // 0 seconds.
     n * 1000L * 1000L,  // And n ms.
   };
-  nanosleep(&time, NULL);
+  nanosleep(&time, nullptr);
 }
 
 // Allows a controller thread to pause execution of newly created
@@ -2309,7 +2309,7 @@ inline void SleepMilliseconds(int n) {
 class Notification {
  public:
   Notification() : notified_(false) {
-    GTEST_CHECK_POSIX_SUCCESS_(pthread_mutex_init(&mutex_, NULL));
+    GTEST_CHECK_POSIX_SUCCESS_(pthread_mutex_init(&mutex_, nullptr));
   }
   ~Notification() {
     pthread_mutex_destroy(&mutex_);
@@ -2362,7 +2362,7 @@ class ThreadWithParamBase {
 // pass into pthread_create().
 extern "C" inline void* ThreadFuncWithCLinkage(void* thread) {
   static_cast<ThreadWithParamBase*>(thread)->Run();
-  return NULL;
+  return nullptr;
 }
 
 // Helper class for testing Google Test's multi-threading constructs.
@@ -2371,7 +2371,7 @@ extern "C" inline void* ThreadFuncWithCLinkage(void* thread) {
 //   void ThreadFunc(int param) { /* Do things with param */ }
 //   Notification thread_can_start;
 //   ...
-//   // The thread_can_start parameter is optional; you can supply NULL.
+//   // The thread_can_start parameter is optional; you can supply nullptr.
 //   ThreadWithParam<int> thread(&ThreadFunc, 5, &thread_can_start);
 //   thread_can_start.Notify();
 //
@@ -2404,7 +2404,7 @@ class ThreadWithParam : public ThreadWithParamBase {
   }
 
   virtual void Run() {
-    if (thread_can_start_ != NULL)
+    if (thread_can_start_ != nullptr)
       thread_can_start_->WaitForNotification();
     func_(param_);
   }
@@ -2412,7 +2412,7 @@ class ThreadWithParam : public ThreadWithParamBase {
  private:
   const UserThreadFunc func_;  // User-supplied thread function.
   const T param_;  // User-supplied parameter to the thread function.
-  // When non-NULL, used to block execution until the controller thread
+  // When non-null, used to block execution until the controller thread
   // notifies.
   Notification* const thread_can_start_;
   bool finished_;  // true iff we know that the thread function has finished.
@@ -2501,7 +2501,7 @@ class MutexBase {
 class Mutex : public MutexBase {
  public:
   Mutex() {
-    GTEST_CHECK_POSIX_SUCCESS_(pthread_mutex_init(&mutex_, NULL));
+    GTEST_CHECK_POSIX_SUCCESS_(pthread_mutex_init(&mutex_, nullptr));
     has_owner_ = false;
   }
   ~Mutex() {
@@ -2623,7 +2623,7 @@ class ThreadLocal {
   T* GetOrCreateValue() const {
     ThreadLocalValueHolderBase* const holder =
         static_cast<ThreadLocalValueHolderBase*>(pthread_getspecific(key_));
-    if (holder != NULL) {
+    if (holder != nullptr) {
       return CheckedDowncastToActualType<ValueHolder>(holder)->pointer();
     }
 
@@ -2699,7 +2699,7 @@ GTEST_API_ size_t GetThreadCount();
 // objects.  We define this to ensure that only POD is passed through
 // ellipsis on these systems.
 #if defined(__SYMBIAN32__) || defined(__IBMCPP__) || defined(__SUNPRO_CC)
-// We lose support for NULL detection where the compiler doesn't like
+// We lose support for null detection where the compiler doesn't like
 // passing non-POD classes through ellipsis (...).
 # define GTEST_ELLIPSIS_NEEDS_POD_ 1
 #else
@@ -2899,12 +2899,12 @@ inline const char* StrError(int errnum) { return strerror(errnum); }
 inline const char* GetEnv(const char* name) {
 #if GTEST_OS_WINDOWS_MOBILE
   // We are on Windows CE, which has no environment variables.
-  return NULL;
+  return nullptr;
 #elif defined(__BORLANDC__) || defined(__SunOS_5_8) || defined(__SunOS_5_9)
   // Environment variables which we programmatically clear will be set to the
-  // empty string rather than unset (NULL).  Handle that case.
+  // empty string rather than unset (null).  Handle that case.
   const char* const env = getenv(name);
-  return (env != NULL && env[0] != '\0') ? env : NULL;
+  return (env != nullptr && env[0] != '\0') ? env : nullptr;
 #else
   return getenv(name);
 #endif
@@ -3150,9 +3150,9 @@ namespace testing {
 // destructor is not virtual.
 //
 // Note that stringstream behaves differently in gcc and in MSVC.  You
-// can stream a NULL char pointer to it in the former, but not in the
+// can stream a null char pointer to it in the former, but not in the
 // latter (it causes an access violation if you do).  The Message
-// class hides this difference by treating a NULL char pointer as
+// class hides this difference by treating a null char pointer as
 // "(null)".
 class GTEST_API_ Message {
  private:
@@ -3212,14 +3212,14 @@ class GTEST_API_ Message {
   // [temp.func.order].)  If you stream a non-pointer, then the
   // previous definition will be used.
   //
-  // The reason for this overload is that streaming a NULL pointer to
+  // The reason for this overload is that streaming a null pointer to
   // ostream is undefined behavior.  Depending on the compiler, you
   // may get "0", "(nil)", "(null)", or an access violation.  To
-  // ensure consistent result across compilers, we always treat NULL
+  // ensure consistent result across compilers, we always treat null
   // as "(null)".
   template <typename T>
   inline Message& operator <<(T* const& pointer) {  // NOLINT
-    if (pointer == NULL) {
+    if (pointer == nullptr) {
       *ss_ << "(null)";
     } else {
       *ss_ << pointer;
@@ -3276,7 +3276,7 @@ class GTEST_API_ Message {
   // tr1::type_traits-like is_pointer works, and we can overload on that.
   template <typename T>
   inline void StreamHelper(internal::true_type /*is_pointer*/, T* pointer) {
-    if (pointer == NULL) {
+    if (pointer == nullptr) {
       *ss_ << "(null)";
     } else {
       *ss_ << pointer;
@@ -3307,7 +3307,7 @@ inline std::ostream& operator <<(std::ostream& os, const Message& sb) {
 
 namespace internal {
 
-// Converts a streamable value to an std::string.  A NULL pointer is
+// Converts a streamable value to an std::string.  A null pointer is
 // converted to "(null)".  When the input value is a ::string,
 // ::std::string, ::wstring, or ::std::wstring object, each NUL
 // character in it is replaced with "\\0".
@@ -3382,8 +3382,8 @@ class GTEST_API_ String {
 
   // Clones a 0-terminated C string, allocating memory using new.  The
   // caller is responsible for deleting the return value using
-  // delete[].  Returns the cloned string, or NULL if the input is
-  // NULL.
+  // delete[].  Returns the cloned string, or nullptr if the input is
+  // null.
   //
   // This is different from strdup() in string.h, which allocates
   // memory using malloc().
@@ -3396,8 +3396,8 @@ class GTEST_API_ String {
 
   // Creates a UTF-16 wide string from the given ANSI string, allocating
   // memory using new. The caller is responsible for deleting the return
-  // value using delete[]. Returns the wide string, or NULL if the
-  // input is NULL.
+  // value using delete[]. Returns the wide string, or nullptr if the
+  // input is null.
   //
   // The wide string is created using the ANSI codepage (CP_ACP) to
   // match the behaviour of the ANSI versions of Win32 calls and the
@@ -3406,8 +3406,8 @@ class GTEST_API_ String {
 
   // Creates an ANSI string from the given wide string, allocating
   // memory using new. The caller is responsible for deleting the return
-  // value using delete[]. Returns the ANSI string, or NULL if the
-  // input is NULL.
+  // value using delete[]. Returns the ANSI string, or nullptr if the
+  // input is null.
   //
   // The returned string is created using the ANSI codepage (CP_ACP) to
   // match the behaviour of the ANSI versions of Win32 calls and the
@@ -3417,13 +3417,13 @@ class GTEST_API_ String {
 
   // Compares two C strings.  Returns true iff they have the same content.
   //
-  // Unlike strcmp(), this function can handle NULL argument(s).  A
-  // NULL C string is considered different to any non-NULL C string,
+  // Unlike strcmp(), this function can handle null argument(s).  A
+  // null C string is considered different to any non-null C string,
   // including the empty string.
   static bool CStringEquals(const char* lhs, const char* rhs);
 
   // Converts a wide C string to a String using the UTF-8 encoding.
-  // NULL will be converted to "(null)".  If an error occurred during
+  // nullptr will be converted to "(null)".  If an error occurred during
   // the conversion, "(failed to convert from wide string)" is
   // returned.
   static std::string ShowWideCString(const wchar_t* wide_c_str);
@@ -3431,16 +3431,16 @@ class GTEST_API_ String {
   // Compares two wide C strings.  Returns true iff they have the same
   // content.
   //
-  // Unlike wcscmp(), this function can handle NULL argument(s).  A
-  // NULL C string is considered different to any non-NULL C string,
+  // Unlike wcscmp(), this function can handle null argument(s).  A
+  // null C string is considered different to any non-null C string,
   // including the empty string.
   static bool WideCStringEquals(const wchar_t* lhs, const wchar_t* rhs);
 
   // Compares two C strings, ignoring case.  Returns true iff they
   // have the same content.
   //
-  // Unlike strcasecmp(), this function can handle NULL argument(s).
-  // A NULL C string is considered different to any non-NULL C string,
+  // Unlike strcasecmp(), this function can handle null argument(s).
+  // A null C string is considered different to any non-null C string,
   // including the empty string.
   static bool CaseInsensitiveCStringEquals(const char* lhs,
                                            const char* rhs);
@@ -3448,8 +3448,8 @@ class GTEST_API_ String {
   // Compares two wide C strings, ignoring case.  Returns true iff they
   // have the same content.
   //
-  // Unlike wcscasecmp(), this function can handle NULL argument(s).
-  // A NULL C string is considered different to any non-NULL wide C string,
+  // Unlike wcscasecmp(), this function can handle null argument(s).
+  // A null C string is considered different to any non-null wide C string,
   // including the empty string.
   // NB: The implementations on different platforms slightly differ.
   // On windows, this method uses _wcsicmp which compares according to LC_CTYPE
@@ -3681,7 +3681,7 @@ class GTEST_API_ FilePath {
 
   // Returns a pointer to the last occurence of a valid path separator in
   // the FilePath. On Windows, for example, both '/' and '\' are valid path
-  // separators. Returns NULL if no path separator was found.
+  // separators. Returns nullptr if no path separator was found.
   const char* FindLastPathSeparator() const;
 
   std::string pathname_;
@@ -7065,7 +7065,7 @@ GTEST_API_ extern int g_init_gtest_count;
 GTEST_API_ extern const char kStackTraceMarker[];
 
 // Two overloaded helpers for checking at compile time whether an
-// expression is a null pointer literal (i.e. NULL or any 0-valued
+// expression is a null pointer literal (i.e. nullptr or any 0-valued
 // compile-time integral constant).  Their return values have
 // different sizes, so we can use sizeof() to test which version is
 // picked by the compiler.  These helpers have no implementations, as
@@ -7082,10 +7082,10 @@ char IsNullLiteralHelper(Secret* p);
 char (&IsNullLiteralHelper(...))[2];  // NOLINT
 
 // A compile-time bool constant that is true if and only if x is a
-// null pointer literal (i.e. NULL or any 0-valued compile-time
+// null pointer literal (i.e. nullptr or any 0-valued compile-time
 // integral constant).
 #ifdef GTEST_ELLIPSIS_NEEDS_POD_
-// We lose support for NULL detection where the compiler doesn't like
+// We lose support for null detection where the compiler doesn't like
 // passing non-POD classes through ellipsis (...).
 # define GTEST_IS_NULL_LITERAL_(x) false
 #else
@@ -7442,10 +7442,10 @@ typedef void (*TearDownTestCaseFunc)();
 //
 //   test_case_name:   name of the test case
 //   name:             name of the test
-//   type_param        the name of the test's type parameter, or NULL if
+//   type_param        the name of the test's type parameter, or nullptr if
 //                     this is not a typed or a type-parameterized test.
 //   value_param       text representation of the test's value parameter,
-//                     or NULL if this is not a type-parameterized test.
+//                     or nullptr if this is not a type-parameterized test.
 //   fixture_class_id: ID of the test fixture class
 //   set_up_tc:        pointer to the function that sets up the test case
 //   tear_down_tc:     pointer to the function that tears down the test case
@@ -7464,7 +7464,7 @@ GTEST_API_ TestInfo* MakeAndRegisterTestInfo(
 
 // If *pstr starts with the given prefix, modifies *pstr to be right
 // past the prefix and returns true; otherwise leaves *pstr unchanged
-// and returns false.  None of pstr, *pstr, and prefix can be NULL.
+// and returns false.  None of pstr, *pstr, and prefix can be null.
 GTEST_API_ bool SkipPrefix(const char* prefix, const char** pstr);
 
 #if GTEST_HAS_TYPED_TEST || GTEST_HAS_TYPED_TEST_P
@@ -7502,11 +7502,11 @@ class GTEST_API_ TypedTestCasePState {
 };
 
 // Skips to the first non-space char after the first comma in 'str';
-// returns NULL if no comma is found in 'str'.
+// returns nullptr if no comma is found in 'str'.
 inline const char* SkipComma(const char* str) {
   const char* comma = strchr(str, ',');
-  if (comma == NULL) {
-    return NULL;
+  if (comma == nullptr) {
+    return nullptr;
   }
   while (IsSpace(*(++comma))) {}
   return comma;
@@ -7516,7 +7516,7 @@ inline const char* SkipComma(const char* str) {
 // the entire string if it contains no comma.
 inline std::string GetPrefixUntilComma(const char* str) {
   const char* comma = strchr(str, ',');
-  return comma == NULL ? str : std::string(str, comma);
+  return comma == nullptr ? str : std::string(str, comma);
 }
 
 // TypeParameterizedTest<Fixture, TestSel, Types>::Register()
@@ -7546,7 +7546,7 @@ class TypeParameterizedTest {
          + StreamableToString(index)).c_str(),
         GetPrefixUntilComma(test_names).c_str(),
         GetTypeName<Type>().c_str(),
-        NULL,  // No value parameter.
+        nullptr,  // No value parameter.
         GetTypeId<FixtureClass>(),
         TestClass::SetUpTestCase,
         TestClass::TearDownTestCase,
@@ -7624,7 +7624,7 @@ GTEST_API_ bool AlwaysTrue();
 inline bool AlwaysFalse() { return !AlwaysTrue(); }
 
 // Helper for suppressing false warning from Clang on a const char*
-// variable declared in a conditional expression always being NULL in
+// variable declared in a conditional expression always being null in
 // the else branch.
 struct GTEST_API_ ConstCharPtr {
   ConstCharPtr(const char* str) : value(str) {}
@@ -7802,7 +7802,7 @@ struct IsAProtocolMessage
 // When the compiler sees expression IsContainerTest<C>(0), if C is an
 // STL-style container class, the first overload of IsContainerTest
 // will be viable (since both C::iterator* and C::const_iterator* are
-// valid types and NULL can be implicitly converted to them).  It will
+// valid types and nullptr can be implicitly converted to them).  It will
 // be picked over the second overload as 'int' is a perfect match for
 // the type of argument 0.  If C::iterator or C::const_iterator is not
 // a valid type, the first overload is not viable, and the second
@@ -7823,8 +7823,8 @@ struct IsAProtocolMessage
 typedef int IsContainer;
 template <class C>
 IsContainer IsContainerTest(int /* dummy */,
-                            typename C::iterator* /* it */ = NULL,
-                            typename C::const_iterator* /* const_it */ = NULL) {
+                            typename C::iterator* /* it */ = nullptr,
+                            typename C::const_iterator* /* const_it */ = nullptr) {
   return 0;
 }
 
@@ -8111,7 +8111,7 @@ class GTEST_TEST_CLASS_NAME_(test_case_name, test_name) : public parent_class {\
 ::testing::TestInfo* const GTEST_TEST_CLASS_NAME_(test_case_name, test_name)\
   ::test_info_ =\
     ::testing::internal::MakeAndRegisterTestInfo(\
-        #test_case_name, #test_name, NULL, NULL, \
+        #test_case_name, #test_name, nullptr, nullptr, \
         (parent_id), \
         parent_class::SetUpTestCase, \
         parent_class::TearDownTestCase, \
@@ -8235,7 +8235,7 @@ class GTEST_API_ DeathTest {
   // The LastMessage method will return a more detailed message in that
   // case.  Otherwise, the DeathTest pointer pointed to by the "test"
   // argument is set.  If the death test should be skipped, the pointer
-  // is set to NULL; otherwise, it is set to the address of a new concrete
+  // is set to nullptr; otherwise, it is set to the address of a new concrete
   // DeathTest object that controls the execution of the current test.
   static bool Create(const char* statement, const RE* regex,
                      const char* file, int line, DeathTest** test);
@@ -8352,7 +8352,7 @@ GTEST_API_ bool ExitedUnsuccessfully(int exit_status);
         __FILE__, __LINE__, &gtest_dt)) { \
       goto GTEST_CONCAT_TOKEN_(gtest_label_, __LINE__); \
     } \
-    if (gtest_dt != NULL) { \
+    if (gtest_dt != nullptr) { \
       ::testing::internal::scoped_ptr< ::testing::internal::DeathTest> \
           gtest_dt_ptr(gtest_dt); \
       switch (gtest_dt->AssumeRole()) { \
@@ -8422,7 +8422,7 @@ class InternalRunDeathTestFlag {
 
 // Returns a newly created InternalRunDeathTestFlag object with fields
 // initialized from the GTEST_FLAG(internal_run_death_test) flag if
-// the flag is specified; otherwise returns NULL.
+// the flag is specified; otherwise returns nullptr.
 InternalRunDeathTestFlag* ParseInternalRunDeathTestFlag();
 
 #else  // GTEST_HAS_DEATH_TEST
@@ -9103,7 +9103,7 @@ class linked_ptr {
 
   // Take over ownership of a raw pointer.  This should happen as soon as
   // possible after the object is created.
-  explicit linked_ptr(T* ptr = NULL) { capture(ptr); }
+  explicit linked_ptr(T* ptr = nullptr) { capture(ptr); }
   ~linked_ptr() { depart(); }
 
   // Copy an existing linked_ptr<>, adding ourselves to the list of references.
@@ -9129,7 +9129,7 @@ class linked_ptr {
   }
 
   // Smart pointer members.
-  void reset(T* ptr = NULL) {
+  void reset(T* ptr = nullptr) {
     depart();
     capture(ptr);
   }
@@ -9447,7 +9447,7 @@ namespace internal {
 
 // UniversalPrinter<T>::Print(value, ostream_ptr) prints the given
 // value to the given ostream.  The caller must ensure that
-// 'ostream_ptr' is not NULL, or the behavior is undefined.
+// 'ostream_ptr' is not null, or the behavior is undefined.
 //
 // We define UniversalPrinter as a class template (as opposed to a
 // function template), as we need to partially specialize it for
@@ -9498,7 +9498,7 @@ template <typename T>
 void DefaultPrintTo(IsNotContainer /* dummy */,
                     true_type /* is a pointer */,
                     T* p, ::std::ostream* os) {
-  if (p == NULL) {
+  if (p == nullptr) {
     *os << "NULL";
   } else {
     // C++ doesn't allow casting from a function pointer to any object
@@ -9897,7 +9897,7 @@ template <>
 class UniversalTersePrinter<const char*> {
  public:
   static void Print(const char* str, ::std::ostream* os) {
-    if (str == NULL) {
+    if (str == nullptr) {
       *os << "NULL";
     } else {
       UniversalPrint(string(str), os);
@@ -9917,7 +9917,7 @@ template <>
 class UniversalTersePrinter<const wchar_t*> {
  public:
   static void Print(const wchar_t* str, ::std::ostream* os) {
-    if (str == NULL) {
+    if (str == nullptr) {
       *os << "NULL";
     } else {
       UniversalPrint(::std::wstring(str), os);
@@ -10310,7 +10310,7 @@ class ValuesInIteratorRangeGenerator : public ParamGeneratorInterface<T> {
     // detect that fact. The client code, on the other hand, is
     // responsible for not calling Current() on an out-of-range iterator.
     virtual const T* Current() const {
-      if (value_.get() == NULL)
+      if (value_.get() == nullptr)
         value_.reset(new T(*iterator_));
       return value_.get();
     }
@@ -10511,7 +10511,7 @@ class ParameterizedTestCaseInfo : public ParameterizedTestCaseInfoBase {
           MakeAndRegisterTestInfo(
               test_case_name.c_str(),
               test_name_stream.GetString().c_str(),
-              NULL,  // No type parameter.
+              nullptr,  // No type parameter.
               PrintToString(*param_it).c_str(),
               GetTestCaseTypeId(),
               TestCase::SetUpTestCase,
@@ -10573,7 +10573,7 @@ class ParameterizedTestCaseRegistry {
       const char* test_case_name,
       const char* file,
       int line) {
-    ParameterizedTestCaseInfo<TestCase>* typed_test_info = NULL;
+    ParameterizedTestCaseInfo<TestCase>* typed_test_info = nullptr;
     for (TestCaseInfoContainer::iterator it = test_case_infos_.begin();
          it != test_case_infos_.end(); ++it) {
       if ((*it)->GetTestCaseName() == test_case_name) {
@@ -10593,7 +10593,7 @@ class ParameterizedTestCaseRegistry {
         break;
       }
     }
-    if (typed_test_info == NULL) {
+    if (typed_test_info == nullptr) {
       typed_test_info = new ParameterizedTestCaseInfo<TestCase>(test_case_name);
       test_case_infos_.push_back(typed_test_info);
     }
@@ -17109,7 +17109,7 @@ class GTEST_API_ TestPartResult {
                  int a_line_number,
                  const char* a_message)
       : type_(a_type),
-        file_name_(a_file_name == NULL ? "" : a_file_name),
+        file_name_(a_file_name == nullptr ? "" : a_file_name),
         line_number_(a_line_number),
         summary_(ExtractSummary(a_message)),
         message_(a_message) {
@@ -17119,9 +17119,9 @@ class GTEST_API_ TestPartResult {
   Type type() const { return type_; }
 
   // Gets the name of the source file where the test part took place, or
-  // NULL if it's unknown.
+  // nullptr if it's unknown.
   const char* file_name() const {
-    return file_name_.empty() ? NULL : file_name_.c_str();
+    return file_name_.empty() ? nullptr : file_name_.c_str();
   }
 
   // Gets the line in the source file where the test part took place,
@@ -17689,7 +17689,7 @@ class GTEST_API_ AssertionResult {
   // assertion's expectation). When nothing has been streamed into the
   // object, returns an empty string.
   const char* message() const {
-    return message_.get() != NULL ?  message_->c_str() : "";
+    return message_.get() != nullptr ?  message_->c_str() : "";
   }
   // TODO(vladl@google.com): Remove this after making sure no clients use it.
   // Deprecated; please use message() instead.
@@ -17712,7 +17712,7 @@ class GTEST_API_ AssertionResult {
  private:
   // Appends the contents of message to message_.
   void AppendMessage(const Message& a_message) {
-    if (message_.get() == NULL)
+    if (message_.get() == nullptr)
       message_.reset(new ::std::string);
     message_->append(a_message.GetString().c_str());
   }
@@ -17869,7 +17869,7 @@ class GTEST_API_ Test {
   // If you see an error about overriding the following function or
   // about it being private, you have mis-spelled SetUp() as Setup().
   struct Setup_should_be_spelled_SetUp {};
-  virtual Setup_should_be_spelled_SetUp* Setup() { return NULL; }
+  virtual Setup_should_be_spelled_SetUp* Setup() { return nullptr; }
 
   // We disallow copying Tests.
   GTEST_DISALLOW_COPY_AND_ASSIGN_(Test);
@@ -18051,20 +18051,20 @@ class GTEST_API_ TestInfo {
   // Returns the test name.
   const char* name() const { return name_.c_str(); }
 
-  // Returns the name of the parameter type, or NULL if this is not a typed
+  // Returns the name of the parameter type, or nullptr if this is not a typed
   // or a type-parameterized test.
   const char* type_param() const {
-    if (type_param_.get() != NULL)
+    if (type_param_.get() != nullptr)
       return type_param_->c_str();
-    return NULL;
+    return nullptr;
   }
 
-  // Returns the text representation of the value parameter, or NULL if this
+  // Returns the text representation of the value parameter, or nullptr if this
   // is not a value-parameterized test.
   const char* value_param() const {
-    if (value_param_.get() != NULL)
+    if (value_param_.get() != nullptr)
       return value_param_->c_str();
-    return NULL;
+    return nullptr;
   }
 
   // Returns true if this test should run, that is if the test is not
@@ -18118,8 +18118,8 @@ class GTEST_API_ TestInfo {
   // ownership of the factory object.
   TestInfo(const std::string& test_case_name,
            const std::string& name,
-           const char* a_type_param,   // NULL if not a type-parameterized test
-           const char* a_value_param,  // NULL if not a value-parameterized test
+           const char* a_type_param,   // nullptr if not a type-parameterized test
+           const char* a_value_param,  // nullptr if not a value-parameterized test
            internal::TypeId fixture_class_id,
            internal::TestFactoryBase* factory);
 
@@ -18140,10 +18140,10 @@ class GTEST_API_ TestInfo {
   // These fields are immutable properties of the test.
   const std::string test_case_name_;     // Test case name
   const std::string name_;               // Test name
-  // Name of the parameter type, or NULL if this is not a typed or a
+  // Name of the parameter type, or nullptr if this is not a typed or a
   // type-parameterized test.
   const internal::scoped_ptr<const ::std::string> type_param_;
-  // Text representation of the value parameter, or NULL if this is not a
+  // Text representation of the value parameter, or nullptr if this is not a
   // value-parameterized test.
   const internal::scoped_ptr<const ::std::string> value_param_;
   const internal::TypeId fixture_class_id_;   // ID of the test fixture class
@@ -18174,7 +18174,7 @@ class GTEST_API_ TestCase {
   // Arguments:
   //
   //   name:         name of the test case
-  //   a_type_param: the name of the test's type parameter, or NULL if
+  //   a_type_param: the name of the test's type parameter, or nullptr if
   //                 this is not a type-parameterized test.
   //   set_up_tc:    pointer to the function that sets up the test case
   //   tear_down_tc: pointer to the function that tears down the test case
@@ -18188,12 +18188,12 @@ class GTEST_API_ TestCase {
   // Gets the name of the TestCase.
   const char* name() const { return name_.c_str(); }
 
-  // Returns the name of the parameter type, or NULL if this is not a
+  // Returns the name of the parameter type, or nullptr if this is not a
   // type-parameterized test case.
   const char* type_param() const {
-    if (type_param_.get() != NULL)
+    if (type_param_.get() != nullptr)
       return type_param_->c_str();
-    return NULL;
+    return nullptr;
   }
 
   // Returns true if any test in this test case should run.
@@ -18234,7 +18234,7 @@ class GTEST_API_ TestCase {
   TimeInMillis elapsed_time() const { return elapsed_time_; }
 
   // Returns the i-th test among all the tests. i can range from 0 to
-  // total_test_count() - 1. If i is not in that range, returns NULL.
+  // total_test_count() - 1. If i is not in that range, returns nullptr.
   const TestInfo* GetTestInfo(int i) const;
 
   // Returns the TestResult that holds test properties recorded during
@@ -18254,7 +18254,7 @@ class GTEST_API_ TestCase {
   }
 
   // Returns the i-th test among all the tests. i can range from 0 to
-  // total_test_count() - 1. If i is not in that range, returns NULL.
+  // total_test_count() - 1. If i is not in that range, returns nullptr.
   TestInfo* GetMutableTestInfo(int i);
 
   // Sets the should_run member.
@@ -18322,7 +18322,7 @@ class GTEST_API_ TestCase {
 
   // Name of the test case.
   std::string name_;
-  // Name of the parameter type, or NULL if this is not a typed or a
+  // Name of the parameter type, or nullptr if this is not a typed or a
   // type-parameterized test.
   const internal::scoped_ptr<const ::std::string> type_param_;
   // The vector of TestInfos in their original order.  It owns the
@@ -18376,7 +18376,7 @@ class Environment {
   // If you see an error about overriding the following function or
   // about it being private, you have mis-spelled SetUp() as Setup().
   struct Setup_should_be_spelled_SetUp {};
-  virtual Setup_should_be_spelled_SetUp* Setup() { return NULL; }
+  virtual Setup_should_be_spelled_SetUp* Setup() { return nullptr; }
 };
 
 // The interface for tracing execution of tests. The methods are organized in
@@ -18466,14 +18466,14 @@ class GTEST_API_ TestEventListeners {
 
   // Removes the given event listener from the list and returns it.  It then
   // becomes the caller's responsibility to delete the listener. Returns
-  // NULL if the listener is not found in the list.
+  // nullptr if the listener is not found in the list.
   TestEventListener* Release(TestEventListener* listener);
 
   // Returns the standard listener responsible for the default console
   // output.  Can be removed from the listeners list to shut down default
   // console output.  Note that removing this object from the listener list
   // with Release transfers its ownership to the caller and makes this
-  // function return NULL the next time.
+  // function return nullptr the next time.
   TestEventListener* default_result_printer() const {
     return default_result_printer_;
   }
@@ -18483,7 +18483,7 @@ class GTEST_API_ TestEventListeners {
   // listeners list by users who want to shut down the default XML output
   // controlled by this flag and substitute it with custom one.  Note that
   // removing this object from the listener list with Release transfers its
-  // ownership to the caller and makes this function return NULL the next
+  // ownership to the caller and makes this function return nullptr the next
   // time.
   TestEventListener* default_xml_generator() const {
     return default_xml_generator_;
@@ -18504,14 +18504,14 @@ class GTEST_API_ TestEventListeners {
   // Sets the default_result_printer attribute to the provided listener.
   // The listener is also added to the listener list and previous
   // default_result_printer is removed from it and deleted. The listener can
-  // also be NULL in which case it will not be added to the list. Does
+  // also be nullptr in which case it will not be added to the list. Does
   // nothing if the previous and the current listener objects are the same.
   void SetDefaultResultPrinter(TestEventListener* listener);
 
   // Sets the default_xml_generator attribute to the provided listener.  The
   // listener is also added to the listener list and previous
   // default_xml_generator is removed from it and deleted. The listener can
-  // also be NULL in which case it will not be added to the list. Does
+  // also be nullptr in which case it will not be added to the list. Does
   // nothing if the previous and the current listener objects are the same.
   void SetDefaultXmlGenerator(TestEventListener* listener);
 
@@ -18561,12 +18561,12 @@ class GTEST_API_ UnitTest {
   const char* original_working_dir() const;
 
   // Returns the TestCase object for the test that's currently running,
-  // or NULL if no test is running.
+  // or nullptr if no test is running.
   const TestCase* current_test_case() const
       GTEST_LOCK_EXCLUDED_(mutex_);
 
   // Returns the TestInfo object for the test that's currently running,
-  // or NULL if no test is running.
+  // or nullptr if no test is running.
   const TestInfo* current_test_info() const
       GTEST_LOCK_EXCLUDED_(mutex_);
 
@@ -18631,7 +18631,7 @@ class GTEST_API_ UnitTest {
   bool Failed() const;
 
   // Gets the i-th test case among all the test cases. i can range from 0 to
-  // total_test_case_count() - 1. If i is not in that range, returns NULL.
+  // total_test_case_count() - 1. If i is not in that range, returns nullptr.
   const TestCase* GetTestCase(int i) const;
 
   // Returns the TestResult containing information on test failures and
@@ -18673,7 +18673,7 @@ class GTEST_API_ UnitTest {
   void RecordProperty(const std::string& key, const std::string& value);
 
   // Gets the i-th test case among all the test cases. i can range from 0 to
-  // total_test_case_count() - 1. If i is not in that range, returns NULL.
+  // total_test_case_count() - 1. If i is not in that range, returns nullptr.
   TestCase* GetMutableTestCase(int i);
 
   // Accessors for the implementation object.
@@ -18926,7 +18926,7 @@ class EqHelper {
 };
 
 // This specialization is used when the first argument to ASSERT_EQ()
-// is a null pointer literal, like NULL, false, or 0.
+// is a null pointer literal, like nullptr, false, or 0.
 template <>
 class EqHelper<true> {
  public:
@@ -18941,8 +18941,8 @@ class EqHelper<true> {
       const T1& expected,
       const T2& actual,
       // The following line prevents this overload from being considered if T2
-      // is not a pointer type.  We need this because ASSERT_EQ(NULL, my_ptr)
-      // expands to Compare("", "", NULL, my_ptr), which requires a conversion
+      // is not a pointer type.  We need this because ASSERT_EQ(nullptr, my_ptr)
+      // expands to Compare("", "", nullptr, my_ptr), which requires a conversion
       // to match the Secret* in the other overload, which would otherwise make
       // this template match better.
       typename EnableIf<!is_pointer<T2>::value>::type* = 0) {
@@ -18951,7 +18951,7 @@ class EqHelper<true> {
   }
 
   // This version will be picked when the second argument to ASSERT_EQ() is a
-  // pointer, e.g. ASSERT_EQ(NULL, a_pointer).
+  // pointer, e.g. ASSERT_EQ(nullptr, a_pointer).
   template <typename T>
   static AssertionResult Compare(
       const char* expected_expression,
@@ -18959,14 +18959,14 @@ class EqHelper<true> {
       // We used to have a second template parameter instead of Secret*.  That
       // template parameter would deduce to 'long', making this a better match
       // than the first overload even without the first overload's EnableIf.
-      // Unfortunately, gcc with -Wconversion-null warns when "passing NULL to
+      // Unfortunately, gcc with -Wconversion-null warns when "passing null to
       // non-pointer argument" (even a deduced integral argument), so the old
       // implementation caused warnings in user code.
-      Secret* /* expected (NULL) */,
+      Secret* /* expected (nullptr) */,
       T* actual) {
     // We already know that 'expected' is a null pointer.
     return CmpHelperEQ(expected_expression, actual_expression,
-                       static_cast<T*>(NULL), actual);
+                       static_cast<T*>(nullptr), actual);
   }
 };
 
@@ -19065,7 +19065,7 @@ GTEST_API_ AssertionResult CmpHelperSTRNE(const char* s1_expression,
 // IsSubstring() and IsNotSubstring() are intended to be used as the
 // first argument to {EXPECT,ASSERT}_PRED_FORMAT2(), not by
 // themselves.  They check whether needle is a substring of haystack
-// (NULL is considered a substring of itself only), and return an
+// (nullptr is considered a substring of itself only), and return an
 // appropriate error message when they fail.
 //
 // The {needle,haystack}_expr arguments are the stringified
@@ -19233,7 +19233,7 @@ class WithParamInterface {
   // like writing 'WithParamInterface<bool>::GetParam()' for a test that
   // uses a fixture whose parameter type is int.
   const ParamType& GetParam() const {
-    GTEST_CHECK_(parameter_ != NULL)
+    GTEST_CHECK_(parameter_ != nullptr)
         << "GetParam() can only be called inside a value-parameterized test "
         << "-- did you intend to write TEST_P instead of TEST_F?";
     return *parameter_;
@@ -19254,7 +19254,7 @@ class WithParamInterface {
 };
 
 template <typename T>
-const T* WithParamInterface<T>::parameter_ = NULL;
+const T* WithParamInterface<T>::parameter_ = nullptr;
 
 // Most value-parameterized classes can ignore the existence of
 // WithParamInterface, and can just inherit from ::testing::TestWithParam.
@@ -19752,7 +19752,7 @@ AssertionResult AssertPred5Helper(const char* pred_text,
 // Examples:
 //
 //   EXPECT_NE(5, Foo());
-//   EXPECT_EQ(NULL, a_pointer);
+//   EXPECT_EQ(nullptr, a_pointer);
 //   ASSERT_LT(i, array_size);
 //   ASSERT_GT(records.size(), 0) << "There is no record left.";
 
@@ -19813,8 +19813,8 @@ AssertionResult AssertPred5Helper(const char* pred_text,
 # define ASSERT_GT(val1, val2) GTEST_ASSERT_GT(val1, val2)
 #endif
 
-// C-string Comparisons.  All tests treat NULL and any non-NULL string
-// as different.  Two NULLs are equal.
+// C-string Comparisons.  All tests treat nullptr and any non-null string
+// as different.  Two nullptrs are equal.
 //
 //    * {ASSERT|EXPECT}_STREQ(s1, s2):     Tests that s1 == s2
 //    * {ASSERT|EXPECT}_STRNE(s1, s2):     Tests that s1 != s2

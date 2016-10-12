@@ -477,7 +477,7 @@ public:
      */
     class GridRow {
     public:
-        GridRow() : gp(NULL), row(0) {
+        GridRow() : gp(nullptr), row(0) {
             /* Empty */
         }
 
@@ -509,7 +509,7 @@ public:
 
     class GridRowConst {
     public:
-        GridRowConst() : gp(NULL), row(0) {
+        GridRowConst() : gp(nullptr), row(0) {
             /* Empty */
         }
 
@@ -534,7 +534,7 @@ public:
 
 template <typename ValueType>
 Grid<ValueType>::Grid()
-        : elements(NULL),
+        : elements(nullptr),
           nRows(0),
           nCols(0) {
     // empty
@@ -542,7 +542,7 @@ Grid<ValueType>::Grid()
 
 template <typename ValueType>
 Grid<ValueType>::Grid(int nRows, int nCols)
-    : elements(NULL),
+    : elements(nullptr),
       nRows(0),
       nCols(0) {
     resize(nRows, nCols);
@@ -550,7 +550,7 @@ Grid<ValueType>::Grid(int nRows, int nCols)
 
 template <typename ValueType>
 Grid<ValueType>::Grid(int nRows, int nCols, const ValueType& value)
-    : elements(NULL),
+    : elements(nullptr),
       nRows(0),
       nCols(0) {
     resize(nRows, nCols);
@@ -559,7 +559,7 @@ Grid<ValueType>::Grid(int nRows, int nCols, const ValueType& value)
 
 template <typename ValueType>
 Grid<ValueType>::Grid(std::initializer_list<std::initializer_list<ValueType> > list)
-    : elements(NULL),
+    : elements(nullptr),
       nRows(0),
       nCols(0) {
     // create the grid at the proper size
@@ -586,9 +586,9 @@ Grid<ValueType>::Grid(std::initializer_list<std::initializer_list<ValueType> > l
 
 template <typename ValueType>
 Grid<ValueType>::~Grid() {
-    if (elements != NULL) {
+    if (elements) {
         delete[] elements;
-        elements = NULL;
+        elements = nullptr;
     }
 }
 
@@ -751,7 +751,7 @@ void Grid<ValueType>::resize(int nRows, int nCols, bool retain) {
     }
     
     // free old array memory
-    if (oldElements != NULL) {
+    if (oldElements) {
         delete[] oldElements;
     }
 }

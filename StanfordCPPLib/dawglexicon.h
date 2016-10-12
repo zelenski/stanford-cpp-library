@@ -425,7 +425,7 @@ public:
         void advanceToNextEdge();
 
     public:
-        iterator() : lp(NULL), index(0), edgePtr(NULL) {
+        iterator() : lp(nullptr), index(0), edgePtr(nullptr) {
             /* empty */
         }
 
@@ -435,7 +435,7 @@ public:
                 index = lp->size();
             } else {
                 index = 0;
-                edgePtr = NULL;
+                edgePtr = nullptr;
                 setIterator = lp->otherWords.begin();
                 setEnd = lp->otherWords.end();
                 currentDawgPrefix = "";
@@ -456,7 +456,7 @@ public:
         }
 
         iterator& operator ++() {
-            if (edgePtr == NULL) {
+            if (!edgePtr) {
                 advanceToNextWordInSet();
             } else {
                 if (currentSetWord == "" || currentDawgPrefix < currentSetWord) {
@@ -484,7 +484,7 @@ public:
         }
 
         std::string operator *() {
-            if (edgePtr == NULL) {
+            if (!edgePtr) {
                 return currentSetWord;
             }
             if (currentSetWord == "" || currentDawgPrefix < currentSetWord) {
@@ -495,7 +495,7 @@ public:
         }
 
         std::string* operator ->() {
-            if (edgePtr == NULL) {
+            if (!edgePtr) {
                 return &currentSetWord;
             }
             if (currentSetWord == "" || currentDawgPrefix < currentSetWord) {

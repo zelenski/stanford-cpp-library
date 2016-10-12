@@ -313,7 +313,7 @@ public:
      * objects to the window adds them to that <code>GCompound</code>,
      * which means that every object you add to the window has a parent.
      * Calling <code>getParent</code> on the top-level <code>GCompound</code>
-     * returns <code>NULL</code>.
+     * returns <code>nullptr</code>.
      */
     GCompound *getParent() const;
 

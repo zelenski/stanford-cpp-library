@@ -161,7 +161,7 @@ public:
      * Friend constructor: GEvent
      * Usage: GEvent event;
      * --------------------
-     * Ensures that an event is properly initialized to a <code>NULL</code> event.
+     * Ensures that an event is properly initialized to a null/empty event.
      */
     GEvent();
 

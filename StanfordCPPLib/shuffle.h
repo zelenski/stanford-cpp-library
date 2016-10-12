@@ -16,7 +16,7 @@
 
 /*
  * Randomly rearranges the elements of the given array up to the given length.
- * Precondition: The array pointer points to a valid non-NULL array in memory,
+ * Precondition: The array pointer points to a valid non-null array in memory,
  * and that array contains at least 'length' elements.
  */
 template <typename T>
@@ -34,7 +34,7 @@ void shuffle(T* array, int length) {
 /*
  * Randomly rearranges the elements of the given 2-D array up to the given
  * number of rows and columns.
- * Precondition: The array pointer points to a valid non-NULL 2-D array in
+ * Precondition: The array pointer points to a valid non-null 2-D array in
  * memory, and that array contains at least the given number of rows/columns.
  */
 template <typename T>

@@ -124,7 +124,7 @@ LONG WINAPI UnhandledException(LPEXCEPTION_POINTERS exceptionInfo) {
 #endif // _WIN32
 
 void setTopLevelExceptionHandlerEnabled(bool enabled) {
-    static void (* old_terminate)() = NULL;
+    static void (* old_terminate)() = nullptr;
 
     if (!STATIC_VARIABLE(topLevelExceptionHandlerEnabled) && enabled) {
         old_terminate = std::set_terminate(stanfordCppLibTerminateHandler);
@@ -133,7 +133,7 @@ void setTopLevelExceptionHandlerEnabled(bool enabled) {
         // newly added uncaught signal handler
         // SetErrorMode(SEM_NOGPFAULTERRORBOX);
         SetErrorMode(SEM_FAILCRITICALERRORS);
-        // SetThreadErrorMode(SEM_FAILCRITICALERRORS, NULL);
+        // SetThreadErrorMode(SEM_FAILCRITICALERRORS, nullptr);
         SetUnhandledExceptionFilter(UnhandledException);
         // _invalid_parameter_handler newHandler;
         // newHandler = myInvalidParameterHandler;
@@ -356,7 +356,7 @@ static void signalHandlerEnable() {
     ss.ss_sp = (void*) alternate_stack;
     ss.ss_size = SIGSTKSZ;
     ss.ss_flags = 0;
-    sigaltstack(&ss, NULL);
+    sigaltstack(&ss, nullptr);
     
     struct sigaction sig_action = {};
     sig_action.sa_sigaction = stanfordCppLibPosixSignalHandler;
@@ -367,14 +367,14 @@ static void signalHandlerEnable() {
 #else
     sig_action.sa_flags = SA_SIGINFO | SA_ONSTACK;
 #endif // __APPLE__
-    sigaction(SIGSEGV, &sig_action, NULL);
-    sigaction(SIGFPE,  &sig_action, NULL);
-    sigaction(SIGILL,  &sig_action, NULL);
-    sigaction(SIGTERM, &sig_action, NULL);
+    sigaction(SIGSEGV, &sig_action, nullptr);
+    sigaction(SIGFPE,  &sig_action, nullptr);
+    sigaction(SIGILL,  &sig_action, nullptr);
+    sigaction(SIGTERM, &sig_action, nullptr);
 #ifdef SPL_AUTOGRADER_MODE
-    sigaction(SIGINT,  &sig_action, NULL);
+    sigaction(SIGINT,  &sig_action, nullptr);
 #else // not SPL_AUTOGRADER_MODE
-    sigaction(SIGABRT, &sig_action, NULL);
+    sigaction(SIGABRT, &sig_action, nullptr);
 #endif // SPL_AUTOGRADER_MODE
     handled = true;
 #endif

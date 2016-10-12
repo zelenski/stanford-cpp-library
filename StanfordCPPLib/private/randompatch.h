@@ -51,8 +51,8 @@ static int _seed = 1;
 
    static time_t patchedTime(time_t *) {
       char *str = getenv("RANDOM_SEED");
-      if (str == NULL) {
-         return time(NULL);
+      if (!str) {
+         return time(nullptr);
       } else {
          return atoi(str);
       }

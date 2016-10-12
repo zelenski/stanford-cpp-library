@@ -51,35 +51,35 @@
 static bool scrub(std::string& str);
 
 Lexicon::Lexicon() :
-        m_root(NULL),
+        m_root(nullptr),
         m_size(0),
         m_removeFlag(false) {
     // empty
 }
 
 Lexicon::Lexicon(std::istream& input) :
-        m_root(NULL),
+        m_root(nullptr),
         m_size(0),
         m_removeFlag(false) {
     addWordsFromFile(input);
 }
 
 Lexicon::Lexicon(const std::string& filename) :
-        m_root(NULL),
+        m_root(nullptr),
         m_size(0),
         m_removeFlag(false) {
     addWordsFromFile(filename);
 }
 
 Lexicon::Lexicon(std::initializer_list<std::string> list) :
-        m_root(NULL),
+        m_root(nullptr),
         m_size(0),
         m_removeFlag(false) {
     addAll(list);
 }
 
 Lexicon::Lexicon(const Lexicon& src) :
-        m_root(NULL),
+        m_root(nullptr),
         m_size(0),
         m_removeFlag(false) {
     deepCopy(src);
@@ -143,7 +143,7 @@ void Lexicon::clear() {
     m_size = 0;
     m_allWords.clear();
     deleteTree(m_root);
-    m_root = NULL;
+    m_root = nullptr;
 }
 
 bool Lexicon::contains(const std::string& word) const {
@@ -443,7 +443,7 @@ Lexicon& Lexicon::operator ,(const std::string& word) {
 
 // pre: word is scrubbed to contain only lowercase a-z letters
 bool Lexicon::addHelper(TrieNode*& node, const std::string& word, const std::string& originalWord) {
-    if (node == NULL) {
+    if (!node) {
         // create nodes all the way down, one for each letter of the word
         node = new TrieNode();
     }
@@ -467,7 +467,7 @@ bool Lexicon::addHelper(TrieNode*& node, const std::string& word, const std::str
 
 // pre: word is scrubbed to contain only lowercase a-z letters
 bool Lexicon::containsHelper(TrieNode* node, const std::string& word, bool isPrefix) const {
-    if (node == NULL) {
+    if (!node) {
         // base case: no pointer down to here, so prefix must not exist
         return false;
     } else if (word.length() == 0) {
@@ -485,7 +485,7 @@ bool Lexicon::containsHelper(TrieNode* node, const std::string& word, bool isPre
 
 // pre: word is scrubbed to contain only lowercase a-z letters
 bool Lexicon::removeHelper(TrieNode*& node, const std::string& word, const std::string& originalWord, bool isPrefix) {
-    if (node == NULL) {
+    if (!node) {
         // base case: dead end; this word/prefix must not be contained
         return false;
     } else if (word.empty()) {
@@ -494,13 +494,13 @@ bool Lexicon::removeHelper(TrieNode*& node, const std::string& word, const std::
         if (isPrefix) {
             // remove this node and all of its descendents
             removeSubtreeHelper(node, originalWord);   // removes from m_allWords, sets m_size
-            node = NULL;
+            node = nullptr;
         } else {
             // found this word in the lexicon;
             if (node->isLeaf()) {
                 // remove this leaf node only
                 delete node;
-                node = NULL;
+                node = nullptr;
             } else {
                 // de-word-ify this node, but leave it because it may
                 // still have children that are valid words
@@ -519,10 +519,10 @@ bool Lexicon::removeHelper(TrieNode*& node, const std::string& word, const std::
 
         // memory cleanup: if I wasn't a leaf but now am, and am not a word,
         // then I am now unneeded, so remove me too
-        if (result && !wasLeaf && node != NULL
+        if (result && !wasLeaf && node
                 && node->isLeaf() && !node->isWord()) {
             delete node;
-            node = NULL;
+            node = nullptr;
         }
         return result;
     }
@@ -530,7 +530,7 @@ bool Lexicon::removeHelper(TrieNode*& node, const std::string& word, const std::
 
 // remove/free this node and all descendents
 void Lexicon::removeSubtreeHelper(TrieNode*& node, const std::string& originalWord) {
-    if (node != NULL) {
+    if (node) {
         for (char letter = 'a'; letter <= 'z'; letter++) {
             removeSubtreeHelper(node->child(letter), originalWord + letter);
         }
@@ -539,7 +539,7 @@ void Lexicon::removeSubtreeHelper(TrieNode*& node, const std::string& originalWo
             m_size--;
         }
         delete node;
-        node = NULL;
+        node = nullptr;
     }
 }
 
@@ -550,7 +550,7 @@ void Lexicon::deepCopy(const Lexicon& src) {
 }
 
 void Lexicon::deleteTree(TrieNode* node) {
-    if (node != NULL) {
+    if (node) {
         for (char letter = 'a'; letter <= 'z'; letter++) {
             deleteTree(node->child(letter));
         }
@@ -608,7 +608,7 @@ void Lexicon::readBinaryFile(const std::string& filename) {
     }
 }
 
-Lexicon& Lexicon::operator=(const Lexicon& src) {
+Lexicon& Lexicon::operator =(const Lexicon& src) {
     if (this != &src) {
         clear();
         deepCopy(src);

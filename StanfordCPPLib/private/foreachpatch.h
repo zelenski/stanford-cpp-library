@@ -127,7 +127,7 @@ struct MapRange : Range {
  */
 
 struct State {
-    State() : state(0), itr(NULL) { }
+    State() : state(0), itr(nullptr) { }
     ~State() { delete itr; }
     int state;
     Range *itr;
@@ -233,6 +233,6 @@ T Hook(State& fe, ArrayRange<T>*) {
     for (_fepatch::State _fes; _fes.state < 2; ) \
     for (arg)); _fes.state++ == 1; _fes.state = 0)
 
-#define __in__ = _fepatch::Hook(_fes, _fes.state != 0 ? NULL : _fepatch::Init(_fes,
+#define __in__ = _fepatch::Hook(_fes, _fes.state != 0 ? nullptr : _fepatch::Init(_fes,
 
 #endif

@@ -124,24 +124,24 @@ bool GObject::isVisible() const {
 
 void GObject::sendForward() {
     GCompound *parent = getParent();
-    if (parent != NULL) parent->sendForward(this);
+    if (parent) parent->sendForward(this);
 }
 
 void GObject::sendToFront() {
     GCompound *parent = getParent();
-    if (parent != NULL) parent->sendToFront(this);
+    if (parent) parent->sendToFront(this);
 }
 
 void GObject::sendBackward() {
     GCompound *parent = getParent();
-    if (parent != NULL) {
+    if (parent) {
         parent->sendBackward(this);
     }
 }
 
 void GObject::sendToBack() {
     GCompound *parent = getParent();
-    if (parent != NULL) {
+    if (parent) {
         parent->sendToBack(this);
     }
 }
@@ -169,7 +169,7 @@ GObject::GObject() {
     lineWidth = 1.0;
     transformed = false;
     visible = true;
-    parent = NULL;
+    parent = nullptr;
 }
 
 GObject::~GObject() {
@@ -814,7 +814,7 @@ void GCompound::removeAt(int index) {
     GObject* gobj = contents[index];
     contents.remove(index);
     stanfordcpplib::getPlatform()->gobject_remove(gobj);
-    gobj->parent = NULL;
+    gobj->parent = nullptr;
 }
 
 GImage::GImage(std::string filename) {

@@ -413,7 +413,7 @@ private:
      * Private method: createBuckets
      * Usage: createBuckets(nBuckets);
      * -------------------------------
-     * Sets up the vector of buckets to have nBuckets entries, each NULL.
+     * Sets up the vector of buckets to have nBuckets entries, each null.
      * If asked to make empty vector, makes one bucket just to simplify
      * handling elsewhere.
      */
@@ -421,7 +421,7 @@ private:
         if (nBuckets == 0) {
             nBuckets = 1;
         }
-        buckets = Vector<Cell*>(nBuckets, NULL);
+        buckets = Vector<Cell*>(nBuckets, nullptr);
         this->nBuckets = nBuckets;
         numEntries = 0;
     }
@@ -435,12 +435,12 @@ private:
     void deleteBuckets(Vector<Cell*>& buckets) {
         for (int i = 0; i < buckets.size(); i++) {
             Cell* cp = buckets[i];
-            while (cp != NULL) {
+            while (cp) {
                 Cell* np = cp->next;
                 delete cp;
                 cp = np;
             }
-            buckets[i] = NULL;
+            buckets[i] = nullptr;
         }
     }
 
@@ -458,7 +458,7 @@ private:
         Vector<Cell*> oldBuckets = buckets;
         createBuckets(oldBuckets.size() * 2 + 1);
         for (int i = 0; i < oldBuckets.size(); i++) {
-            for (Cell* cp = oldBuckets[i]; cp != NULL; cp = cp->next) {
+            for (Cell* cp = oldBuckets[i]; cp != nullptr; cp = cp->next) {
                 put(cp->key, cp->value);
             }
         }
@@ -472,10 +472,10 @@ private:
      * ------------------------------------------------
      * Finds a cell in the chain for the specified bucket that matches key.
      * If a match is found, the return value is a pointer to the cell containing
-     * the matching key.  If no match is found, the function returns NULL.
+     * the matching key.  If no match is found, the function returns nullptr.
      * If the optional third argument is supplied, it is filled in with the
      * cell preceding the matching cell to allow the client to splice out
-     * the target cell in the delete call.  If parent is NULL, it indicates
+     * the target cell in the delete call.  If parent is null, it indicates
      * that the cell is the first cell in the bucket chain.
      */
     Cell* findCell(int bucket, const KeyType& key) const {
@@ -484,9 +484,9 @@ private:
     }
 
     Cell* findCell(int bucket, const KeyType& key, Cell*& parent) const {
-        parent = NULL;
+        parent = nullptr;
         Cell* cp = buckets.get(bucket);
-        while (cp != NULL && key != cp->key) {
+        while (cp && !(key == cp->key)) {
             parent = cp;
             cp = cp->next;
         }
@@ -498,16 +498,16 @@ private:
         for (int i = 0; i < src.nBuckets; i++) {
             // BUGFIX: was just calling put(), which reversed the chains;
             // now deep-copy the chains exactly as they were to preserve hashcode
-            Cell* endOfChain = NULL;
-            for (Cell* cp = src.buckets.get(i); cp != NULL; cp = cp->next) {
+            Cell* endOfChain = nullptr;
+            for (Cell* cp = src.buckets.get(i); cp != nullptr; cp = cp->next) {
                 // put(cp->key, cp->value);
                 
                 // copy the cell and put at end of bucket list
                 Cell* copy = new Cell();
                 copy->key = cp->key;
                 copy->value = cp->value;
-                copy->next = NULL;
-                if (endOfChain == NULL) {
+                copy->next = nullptr;
+                if (!endOfChain) {
                     // first node in bucket
                     buckets.set(i, copy);
                 } else {
@@ -564,7 +564,7 @@ public:
         Cell* cp;                    /* Current cell in bucket chain */
 
     public:
-        iterator() : mp(NULL), bucket(0), cp(0) {
+        iterator() : mp(nullptr), bucket(0), cp(0) {
             /* Empty */
         }
 
@@ -572,11 +572,11 @@ public:
             this->mp = mp;
             if (end) {
                 bucket = mp->nBuckets;
-                cp = NULL;
+                cp = nullptr;
             } else {
                 bucket = 0;
                 cp = mp->buckets.get(bucket);
-                while (cp == NULL && ++bucket < mp->nBuckets) {
+                while (!cp && ++bucket < mp->nBuckets) {
                     cp = mp->buckets.get(bucket);
                 }
             }
@@ -590,7 +590,7 @@ public:
 
         iterator& operator ++() {
             cp = cp->next;
-            while (cp == NULL && ++bucket < mp->nBuckets) {
+            while (!cp && ++bucket < mp->nBuckets) {
                 cp = mp->buckets.get(bucket);
             }
             return *this;
@@ -688,7 +688,7 @@ void HashMap<KeyType, ValueType>::clear() {
 
 template <typename KeyType, typename ValueType>
 bool HashMap<KeyType, ValueType>::containsKey(const KeyType& key) const {
-    return findCell(hashCode(key) % nBuckets, key) != NULL;
+    return findCell(hashCode(key) % nBuckets, key) != nullptr;
 }
 
 template <typename KeyType, typename ValueType>
@@ -699,7 +699,7 @@ bool HashMap<KeyType, ValueType>::equals(const HashMap<KeyType, ValueType>& map2
 template <typename KeyType, typename ValueType>
 ValueType HashMap<KeyType, ValueType>::get(const KeyType& key) const {
     Cell* cp = findCell(hashCode(key) % nBuckets, key);
-    if (cp == NULL) {
+    if (!cp) {
         return ValueType();
     }
     return cp->value;
@@ -722,7 +722,7 @@ Vector<KeyType> HashMap<KeyType, ValueType>::keys() const {
 template <typename KeyType, typename ValueType>
 void HashMap<KeyType, ValueType>::mapAll(void (*fn)(KeyType, ValueType)) const {
     for (int i = 0; i < buckets.size(); i++) {
-        for (Cell* cp = buckets.get(i); cp != NULL; cp = cp->next) {
+        for (Cell* cp = buckets.get(i); cp != nullptr; cp = cp->next) {
             fn(cp->key, cp->value);
         }
     }
@@ -732,7 +732,7 @@ template <typename KeyType, typename ValueType>
 void HashMap<KeyType, ValueType>::mapAll(void (*fn)(const KeyType&,
                                                    const ValueType&)) const {
     for (int i = 0; i < buckets.size(); i++) {
-        for (Cell* cp = buckets.get(i); cp != NULL; cp = cp->next) {
+        for (Cell* cp = buckets.get(i); cp != nullptr; cp = cp->next) {
             fn(cp->key, cp->value);
         }
     }
@@ -742,7 +742,7 @@ template <typename KeyType, typename ValueType>
 template <typename FunctorType>
 void HashMap<KeyType, ValueType>::mapAll(FunctorType fn) const {
     for (int i = 0; i < buckets.size(); i++) {
-        for (Cell* cp = buckets.get(i); cp != NULL; cp = cp->next) {
+        for (Cell* cp = buckets.get(i); cp != nullptr; cp = cp->next) {
             fn(cp->key, cp->value);
         }
     }
@@ -775,8 +775,8 @@ void HashMap<KeyType, ValueType>::remove(const KeyType& key) {
     int bucket = hashCode(key) % nBuckets;
     Cell *parent;
     Cell* cp = findCell(bucket, key, parent);
-    if (cp != NULL) {
-        if (parent == NULL) {
+    if (cp) {
+        if (!parent) {
             buckets[bucket] = cp->next;
         } else {
             parent->next = cp->next;
@@ -854,7 +854,7 @@ template <typename KeyType, typename ValueType>
 ValueType& HashMap<KeyType, ValueType>::operator [](const KeyType& key) {
     int bucket = hashCode(key) % nBuckets;
     Cell* cp = findCell(bucket, key);
-    if (cp == NULL) {
+    if (!cp) {
         if (numEntries > MAX_LOAD_PERCENTAGE * nBuckets / 100.0) {
             expandAndRehash();
             bucket = hashCode(key) % nBuckets;

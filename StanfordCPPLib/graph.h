@@ -20,7 +20,7 @@
  * - converted functions to accept const string& rather than string for speed
  * - added iterator/for-each support over nodes; begin() / end() members
  * - updated various methods that accept node/arc pointers to verify
- *   that those nodes/arcs are part of the graph first, and to check for NULL
+ *   that those nodes/arcs are part of the graph first, and to check for null
  * @version 2014/10/10
  * - removed use of __foreach macro
  */
@@ -91,7 +91,7 @@ public:
      * case the client needs to capture this value.
      * If the third form is called and the start/finish nodes passed are not
      * already part of the graph, they are added to the graph.
-     * If any pointer passed is NULL, throws an error.
+     * If any pointer passed is null, throws an error.
      */
     ArcType* addArc(const std::string& s1, const std::string& s2);
     ArcType* addArc(NodeType* n1, NodeType* n2);
@@ -107,7 +107,7 @@ public:
      * fields; the second assumes that the client has already created
      * the node and simply adds it to the graph.  Both versions of this
      * method return a pointer to the node.
-     * If any pointer passed is NULL, throws an error.
+     * If any pointer passed is null, throws an error.
      */
     NodeType* addNode(const std::string& name);
     NodeType* addNode(NodeType* node);
@@ -140,7 +140,7 @@ public:
      * Returns the set of all arcs in the graph or, in the second and
      * third forms, the arcs that start at the specified node, which
      * can be indicated either as a pointer or by name.
-     * If any pointer passed is NULL, throws an error.
+     * If any pointer passed is null, throws an error.
      */
     const Set<ArcType*>& getArcSet() const;
     const Set<ArcType*>& getArcSet(NodeType* node) const;
@@ -153,7 +153,7 @@ public:
      * ------------------------------------------------------
      * Returns the set of nodes that are neighbors of the specified
      * node, which can be indicated either as a pointer or by name.
-     * If any pointer passed is NULL, or if the given node is not found
+     * If any pointer passed is null, or if the given node is not found
      * in this graph, throws an error.
      */
     const Set<NodeType*> getNeighbors(NodeType* node) const;
@@ -165,7 +165,7 @@ public:
      * ----------------------------------------
      * Looks up a node in the name table attached to the graph and
      * returns a pointer to that node.  If no node with the specified
-     * name exists, returns <code>NULL</code>.
+     * name exists, returns <code>nullptr</code>.
      */
     NodeType* getNode(const std::string& name) const;
     
@@ -185,7 +185,7 @@ public:
      * Returns <code>true</code> if the graph contains an arc from
      * <code>n1</code> to <code>n2</code>.  As in the <code>addArc</code>
      * method, nodes can be specified either as node pointers or by name.
-     * If any pointer passed is NULL, or if either node is not contained
+     * If any pointer passed is null, or if either node is not contained
      * in this graph, returns false.
      */
     bool isConnected(NodeType* n1, NodeType* n2) const;
@@ -237,7 +237,7 @@ public:
      * Reads the data for an arc from the scanner.  The <code>forward</code>
      * argument points to the arc in the forward direction.  If the arc is
      * undirected, <code>backward</code> points to the reverse arc; for
-     * directed arcs, the <code>backward</code> pointer is <code>NULL</code>.
+     * directed arcs, the <code>backward</code> pointer is <code>nullptr</code>.
      * The default implementation of this method is empty.  Clients that want
      * to initialize other fields in the arc must override this method so
      * that it initializes one or both arc, as appropriate.
@@ -339,7 +339,7 @@ public:
      */
     class graph_iterator : public std::iterator<std::input_iterator_tag, NodeType*> {
     public:
-        graph_iterator() : m_graph(NULL) {
+        graph_iterator() : m_graph(nullptr) {
             // empty
         }
 
@@ -714,9 +714,9 @@ Graph<NodeType, ArcType>::getNeighbors(const std::string& name) const {
  * Implementation notes: getNode, getExistingNode
  * ----------------------------------------------
  * The getNode method simply looks up the name in the map, which correctly
- * returns NULL if the name is not found.  Other methods in the
+ * returns nullptr if the name is not found.  Other methods in the
  * implementation call the private method getExistingNode instead,
- * which checks for a NULL value and signals an error.
+ * which checks for a null value and signals an error.
  */
 template <typename NodeType, typename ArcType>
 NodeType* Graph<NodeType, ArcType>::getNode(const std::string& name) const {
@@ -858,7 +858,7 @@ void Graph<NodeType, ArcType>::removeNode(NodeType* node) {
 template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::scanGraphEntry(TokenScanner& scanner) {
     NodeType* n1 = scanNode(scanner);
-    if (n1 == NULL) {
+    if (!n1) {
         return false;
     }
     std::string op = scanner.nextToken();
@@ -867,7 +867,7 @@ bool Graph<NodeType, ArcType>::scanGraphEntry(TokenScanner& scanner) {
         return true;
     }
     NodeType* n2 = scanNode(scanner);
-    if (n2 == NULL) {
+    if (!n2) {
 #ifdef SPL_ERROR_ON_COLLECTION_PARSE
         error("Graph::scanGraphEntry: Missing node after " + op);
 #endif
@@ -877,7 +877,7 @@ bool Graph<NodeType, ArcType>::scanGraphEntry(TokenScanner& scanner) {
     forward->start = n1;
     forward->finish = n2;
     addArc(forward);
-    ArcType* backward = NULL;
+    ArcType* backward = nullptr;
     if (op == "-") {
         backward = new ArcType();
         backward->start = n2;
@@ -899,10 +899,10 @@ NodeType* Graph<NodeType, ArcType>::scanNode(TokenScanner& scanner) {
         break;
     default:
         scanner.saveToken(token);
-        return NULL;
+        return nullptr;
     }
     NodeType* node = getNode(token);
-    if (node == NULL) {
+    if (!node) {
         node = new NodeType();
         node->name = token;
         scanNodeData(scanner, node);

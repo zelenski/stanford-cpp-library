@@ -2,6 +2,9 @@
 	==============
 x		BUG: side-by-side diff with " " in it turns them into &quot;
 x		simpio.h: getIntegerBetween / getRealBetween(min, max)
+x		gcheckbox/radiobutton isChecked / setChecked
+x		gwindow getCanvasWidth, getCanvasHeight
+x		change 'NULL' to 'nullptr' everywhere (grep)
 
 		autograders: why aren't timeouts working?
 		autograders: why no stack traces?
@@ -19,11 +22,8 @@ x		simpio.h: getIntegerBetween / getRealBetween(min, max)
 				idea: macro, #define exit() ... later #undef it in my version
 		
 		add methods to match STL: find, empty, ...?
-		gcheckbox/radiobutton isChecked / setChecked
-		gwindow getCanvasWidth, getCanvasHeight
 		compareTo helper?  compare(1, 2, 3, ...)
 		hashCode helper?   hashCode(1, 2, 3, ...)
-		change 'NULL' to 'nullptr' everywhere (grep)
 		cool macro for static init code/class?
 		strip out clone() from stack traces in autograder?
 			*** (unknown) clone()

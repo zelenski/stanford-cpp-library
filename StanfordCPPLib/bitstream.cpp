@@ -69,7 +69,7 @@ static std::string toPrintable(int ch) {
  * We set initial state for lastTell and curByte to 0, then pos is
  * set at 8 so that next readBit will trigger a fresh read.
  */
-ibitstream::ibitstream() : std::istream(NULL), lastTell(0), curByte(0), pos(NUM_BITS_IN_BYTE) {
+ibitstream::ibitstream() : std::istream(nullptr), lastTell(0), curByte(0), pos(NUM_BITS_IN_BYTE) {
     this->fake = false;
 }
 
@@ -162,7 +162,7 @@ bool ibitstream::is_open() {
  * We set initial state for lastTell and curByte to 0, then pos is
  * set at 8 so that next writeBit will start a new byte.
  */
-obitstream::obitstream() : std::ostream(NULL), lastTell(0), curByte(0), pos(NUM_BITS_IN_BYTE) {
+obitstream::obitstream() : std::ostream(nullptr), lastTell(0), curByte(0), pos(NUM_BITS_IN_BYTE) {
     this->fake = false;
 }
 

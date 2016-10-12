@@ -61,40 +61,40 @@ static uint32_t my_ntohl(uint32_t arg);
  */
 
 DawgLexicon::DawgLexicon() :
-        edges(NULL),
-        start(NULL),
+        edges(nullptr),
+        start(nullptr),
         numEdges(0),
         numDawgWords(0) {
     // empty
 }
 
 DawgLexicon::DawgLexicon(std::istream& input) :
-        edges(NULL),
-        start(NULL),
+        edges(nullptr),
+        start(nullptr),
         numEdges(0),
         numDawgWords(0) {
     addWordsFromFile(input);
 }
 
 DawgLexicon::DawgLexicon(const std::string& filename) :
-        edges(NULL),
-        start(NULL),
+        edges(nullptr),
+        start(nullptr),
         numEdges(0),
         numDawgWords(0) {
     addWordsFromFile(filename);
 }
 
 DawgLexicon::DawgLexicon(const DawgLexicon& src) :
-        edges(NULL),
-        start(NULL),
+        edges(nullptr),
+        start(nullptr),
         numEdges(0),
         numDawgWords(0) {
     deepCopy(src);
 }
 
 DawgLexicon::DawgLexicon(std::initializer_list<std::string> list) :
-        edges(NULL),
-        start(NULL),
+        edges(nullptr),
+        start(nullptr),
         numEdges(0),
         numDawgWords(0) {
     addAll(list);
@@ -170,7 +170,7 @@ void DawgLexicon::clear() {
     if (edges) {
         delete[] edges;
     }
-    edges = start = NULL;
+    edges = start = nullptr;
     numEdges = numDawgWords = 0;
     otherWords.clear();
 }
@@ -371,9 +371,9 @@ int DawgLexicon::countDawgWords(Edge* ep) const {
 }
 
 void DawgLexicon::deepCopy(const DawgLexicon& src) {
-    if (src.edges == NULL) {
-        edges = NULL;
-        start = NULL;
+    if (!src.edges) {
+        edges = nullptr;
+        start = nullptr;
     } else {
         numEdges = src.numEdges;
         edges = new Edge[src.numEdges];
@@ -388,7 +388,7 @@ void DawgLexicon::deepCopy(const DawgLexicon& src) {
  * Implementation notes: findEdgeForChar
  * -------------------------------------
  * Iterate over sequence of children to find one that
- * matches the given char.  Returns NULL if we get to
+ * matches the given char.  Returns nullptr if we get to
  * last child without finding a match (thus no such
  * child edge exists).
  */
@@ -398,7 +398,9 @@ DawgLexicon::Edge* DawgLexicon::findEdgeForChar(Edge* children, char ch) const {
         if (curEdge->letter == charToOrd(ch)) {
             return curEdge;
         }
-        if (curEdge->lastEdge) return NULL;
+        if (curEdge->lastEdge) {
+            return nullptr;
+        }
         curEdge++;
     }
 }
@@ -466,18 +468,18 @@ void DawgLexicon::readBinaryFile(const std::string& filename) {
  * Implementation notes: traceToLastEdge
  * -------------------------------------
  * Given a string, trace out path through the DAWG edge-by-edge.
- * If a path exists, return last edge; otherwise return NULL.
+ * If a path exists, return last edge; otherwise return nullptr.
  */
 
 DawgLexicon::Edge* DawgLexicon::traceToLastEdge(const std::string& s) const {
     if (!start) {
-        return NULL;
+        return nullptr;
     }
     Edge* curEdge = findEdgeForChar(start, s[0]);
     int len = (int) s.length();
     for (int i = 1; i < len; i++) {
         if (!curEdge || !curEdge->children) {
-            return NULL;
+            return nullptr;
         }
         curEdge = findEdgeForChar(&edges[curEdge->children], s[i]);
     }
@@ -486,7 +488,7 @@ DawgLexicon::Edge* DawgLexicon::traceToLastEdge(const std::string& s) const {
 
 DawgLexicon& DawgLexicon::operator =(const DawgLexicon& src) {
     if (this != &src) {
-        if (edges != NULL) {
+        if (edges) {
             delete[] edges;
         }
         deepCopy(src);
@@ -506,9 +508,9 @@ void DawgLexicon::iterator::advanceToNextWordInSet() {
 void DawgLexicon::iterator::advanceToNextEdge() {
     Edge *ep = edgePtr;
     if (ep->children == 0) {
-        while (ep != NULL && ep->lastEdge) {
+        while (ep && ep->lastEdge) {
             if (stack.isEmpty()) {
-                edgePtr = NULL;
+                edgePtr = nullptr;
                 return;
             } else {
                 ep = stack.pop();
@@ -524,12 +526,12 @@ void DawgLexicon::iterator::advanceToNextEdge() {
 }
 
 void DawgLexicon::iterator::advanceToNextWordInDawg() {
-    if (edgePtr == NULL) {
+    if (!edgePtr) {
         edgePtr = lp->start;
     } else {
         advanceToNextEdge();
     }
-    while (edgePtr != NULL && !edgePtr->accept) {
+    while (edgePtr && !edgePtr->accept) {
         advanceToNextEdge();
     }
 }

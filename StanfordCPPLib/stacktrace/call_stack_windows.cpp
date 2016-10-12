@@ -78,7 +78,7 @@ void injectAddr2lineInfo(entry& ent, const std::string& line) {
 
     if (startsWith(ent.function, "_Z")) {
         int status;
-        char* demangled = abi::__cxa_demangle(ent.function.c_str(), NULL, 0, &status);
+        char* demangled = abi::__cxa_demangle(ent.function.c_str(), nullptr, 0, &status);
         if (status == 0 && demangled) {
             ent.function = demangled;
         }
@@ -134,7 +134,7 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
         }
         if (!::SymInitialize(
                 /* process */ process,
-                /* user-defined search path */ NULL,
+                /* user-defined search path */ nullptr,
                 /* include current process */ TRUE)) {
             // std::cout << "SymInitialize failed!" << std::endl;
             // return;
@@ -145,7 +145,7 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
                     /* framesToSkip */ STATIC_VARIABLE(STACK_FRAMES_TO_SKIP),
                     /* framesToCapture; must be < 63 */ STATIC_VARIABLE(STACK_FRAMES_MAX),
                     trace,
-                    /* hash */ NULL
+                    /* hash */ nullptr
                     );
         for (int i = 0; i < frameCount; i++) {
             traceVector.push_back(trace[i]);
@@ -158,11 +158,11 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
         char* progFile = (char*) progFileC;
         if (!::SymLoadModule(
                 process,      // Process handle of the current process
-                NULL,         // Handle to the module's image file (not needed)
+                nullptr,      // Handle to the module's image file (not needed)
                 progFile,     // Path/name of the file
-                NULL,         // User-defined short name of the module (it can be NULL)
-                BaseAddr,     // Base address of the module (cannot be NULL if .PDB file is used, otherwise it can be NULL)
-                FileSize)) {      // Size of the file (cannot be NULL if .PDB file is used, otherwise it can be NULL)
+                nullptr,      // User-defined short name of the module (it can be null)
+                BaseAddr,     // Base address of the module (cannot be null if .PDB file is used, otherwise it can be null)
+                FileSize)) {      // Size of the file (cannot be null if .PDB file is used, otherwise it can be null)
             // std::cout << "Error: SymLoadModule() failed: " << getPlatform()->os_getLastError() << std::endl;
             // return;
         }

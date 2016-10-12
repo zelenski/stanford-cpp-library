@@ -29,7 +29,7 @@ bool getAttributeBool(rapidxml::xml_node<>* node, const std::string& attrName, b
 
 std::string getAttribute(rapidxml::xml_node<>* node, const std::string& attrName, const std::string& defaultValue) {
     rapidxml::xml_attribute<>* attr = node->first_attribute(attrName.c_str());
-    if (attr == NULL) {
+    if (!attr) {
         return defaultValue;
     } else {
         // RapidXML stores its value strings in a funny way, as non-zero-terminated
@@ -43,7 +43,7 @@ std::string getAttribute(rapidxml::xml_node<>* node, const std::string& attrName
 std::vector<rapidxml::xml_node<>*> getChildNodes(rapidxml::xml_node<>* node, const std::string& nodeName) {
     std::vector<rapidxml::xml_node<>*> v;
     for (rapidxml::xml_node<>* childNode = node->first_node(nodeName.c_str());
-         childNode != NULL;
+         childNode != nullptr;
          childNode = childNode->next_sibling(nodeName.c_str())) {
         v.push_back(childNode);
     }
@@ -52,7 +52,7 @@ std::vector<rapidxml::xml_node<>*> getChildNodes(rapidxml::xml_node<>* node, con
 
 bool hasAttribute(rapidxml::xml_node<>* node, const std::string& attrName) {
     rapidxml::xml_attribute<>* attr = node->first_attribute(attrName.c_str());
-    return (attr != NULL);
+    return (attr != nullptr);
 }
 
 rapidxml::xml_node<>* openXmlDocument(const std::string& filename, const std::string& documentNode) {

@@ -473,11 +473,11 @@ private:
      * Searches the tree rooted at t to find the specified key, searching
      * in the left or right subtree, as approriate.  If a matching node
      * is found, findNode returns a pointer to the value cell in that node.
-     * If no matching node exists in the tree, findNode returns NULL.
+     * If no matching node exists in the tree, findNode returns nullptr.
      */
     ValueType* findNode(BSTNode* t, const KeyType& key) const {
-        if (t == NULL) {
-            return NULL;
+        if (!t) {
+            return nullptr;
         }
         int sign = compareKeys(key, t->key);
         if (sign == 0) {
@@ -503,12 +503,12 @@ private:
      */
     ValueType* addNode(BSTNode*& t, const KeyType& key, bool& heightFlag) {
         heightFlag = false;
-        if (t == NULL)  {
+        if (!t)  {
             t = new BSTNode();
             t->key = key;
             t->value = ValueType();
             t->bf = BST_IN_BALANCE;
-            t->left = t->right = NULL;
+            t->left = t->right = nullptr;
             heightFlag = true;
             nodeCount++;
             return &t->value;
@@ -518,7 +518,7 @@ private:
         if (sign == 0) {
             return &t->value;
         }
-        ValueType* vp = NULL;
+        ValueType* vp = nullptr;
         int bfDelta = BST_IN_BALANCE;
         if (sign < 0) {
             vp = addNode(t->left, key, heightFlag);
@@ -544,7 +544,7 @@ private:
      * changes.  The removeTargetNode method does the actual deletion.
      */
     bool removeNode(BSTNode*& t, const KeyType& key) {
-        if (t == NULL) {
+        if (!t) {
             return false;
         }
         int sign = compareKeys(key, t->key);
@@ -569,28 +569,28 @@ private:
      * Implementation notes: removeTargetNode(t)
      * -----------------------------------------
      * Removes the node which is passed by reference as t.  The easy case
-     * occurs when either (or both) of the children is NULL; all you need
-     * to do is replace the node with its non-NULL child, if any.  If both
-     * children are non-NULL, this code finds the rightmost descendent of
+     * occurs when either (or both) of the children is null; all you need
+     * to do is replace the node with its non-null child, if any.  If both
+     * children are non-null, this code finds the rightmost descendent of
      * the left child; this node may not be a leaf, but will have no right
      * child.  Its left child replaces it in the tree, after which the
      * replacement data is moved to the position occupied by the target node.
      */
     bool removeTargetNode(BSTNode*& t) {
         BSTNode* toDelete = t;
-        if (t->left == NULL) {
+        if (!t->left) {
             t = t->right;
             delete toDelete;
             nodeCount--;
             return true;
-        } else if (t->right == NULL) {
+        } else if (!t->right) {
             t = t->left;
             delete toDelete;
             nodeCount--;
             return true;
         } else {
             BSTNode* successor = t->left;
-            while (successor->right != NULL) {
+            while (successor->right) {
                 successor = successor->right;
             }
             t->key = successor->key;
@@ -731,7 +731,7 @@ private:
      * Deletes all the nodes in the tree.
      */
     void deleteTree(BSTNode* t) {
-        if (t != NULL) {
+        if (t) {
             deleteTree(t->left);
             deleteTree(t->right);
             delete t;
@@ -744,7 +744,7 @@ private:
      * Calls fn(key, value) for every key-value pair in the tree.
      */
     void mapAll(BSTNode* t, void (*fn)(KeyType, ValueType)) const {
-        if (t != NULL) {
+        if (t) {
             mapAll(t->left, fn);
             fn(t->key, t->value);
             mapAll(t->right, fn);
@@ -753,7 +753,7 @@ private:
 
     void mapAll(BSTNode* t,
                 void (*fn)(const KeyType&, const ValueType&)) const {
-        if (t != NULL) {
+        if (t) {
             mapAll(t->left, fn);
             fn(t->key, t->value);
             mapAll(t->right, fn);
@@ -762,7 +762,7 @@ private:
 
     template <typename FunctorType>
     void mapAll(BSTNode* t, FunctorType fn) const {
-        if (t != NULL) {
+        if (t) {
             mapAll(t->left, fn);
             fn(t->key, t->value);
             mapAll(t->right, fn);
@@ -772,12 +772,12 @@ private:
     void deepCopy(const Map& other) {
         root = copyTree(other.root);
         nodeCount = other.nodeCount;
-        cmpp = (other.cmpp == NULL) ? NULL : other.cmpp->clone();
+        cmpp = (!other.cmpp) ? nullptr : other.cmpp->clone();
     }
 
     BSTNode* copyTree(BSTNode* const t) {
-        if (t == NULL) {
-            return NULL;
+        if (!t) {
+            return nullptr;
         }
         BSTNode* np = new BSTNode;
         np->key = t->key;
@@ -801,7 +801,7 @@ public:
     /* Extended constructors */
     template <typename CompareType>
     explicit Map(CompareType cmp) {
-        root = NULL;
+        root = nullptr;
         nodeCount = 0;
         cmpp = new TemplateComparator<CompareType>(cmp);
     }
@@ -861,10 +861,10 @@ public:
 
         void findLeftmostChild() {
             BSTNode *np = stack.peek().np;
-            if (np == NULL) {
+            if (!np) {
                 return;
             }
-            while (np->left != NULL) {
+            while (np->left) {
                 NodeMarker marker = { np->left,  false };
                 stack.push(marker);
                 np = np->left;
@@ -872,7 +872,7 @@ public:
         }
 
     public:
-        iterator() : mp(NULL), index(0) {
+        iterator() : mp(nullptr), index(0) {
             /* Empty */
         }
 
@@ -897,7 +897,7 @@ public:
         iterator& operator ++() {
             NodeMarker marker = stack.pop();
             BSTNode* np = marker.np;
-            if (np->right == NULL) {
+            if (!np->right) {
                 while (!stack.isEmpty() && stack.peek().processed) {
                     stack.pop();
                 }
@@ -955,14 +955,14 @@ public:
 
 template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>::Map() {
-    root = NULL;
+    root = nullptr;
     nodeCount = 0;
     cmpp = new TemplateComparator<std::less<KeyType> >(std::less<KeyType>());
 }
 
 template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    root = NULL;
+    root = nullptr;
     nodeCount = 0;
     cmpp = new TemplateComparator<std::less<KeyType> >(std::less<KeyType>());
     putAll(list);
@@ -970,12 +970,12 @@ Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<KeyType, ValueType>
 
 template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>::~Map() {
-    if (cmpp != NULL) {
+    if (cmpp) {
         delete cmpp;
-        cmpp = NULL;
+        cmpp = nullptr;
     }
     deleteTree(root);
-    root = NULL;
+    root = nullptr;
     nodeCount = 0;
 }
 
@@ -999,13 +999,13 @@ Map<KeyType, ValueType>& Map<KeyType, ValueType>::addAll(
 template <typename KeyType, typename ValueType>
 void Map<KeyType, ValueType>::clear() {
     deleteTree(root);
-    root = NULL;
+    root = nullptr;
     nodeCount = 0;
 }
 
 template <typename KeyType, typename ValueType>
 bool Map<KeyType, ValueType>::containsKey(const KeyType& key) const {
-    return findNode(root, key) != NULL;
+    return findNode(root, key) != nullptr;
 }
 
 template <typename KeyType, typename ValueType>
@@ -1016,7 +1016,7 @@ bool Map<KeyType, ValueType>::equals(const Map<KeyType, ValueType>& map2) const 
 template <typename KeyType, typename ValueType>
 ValueType Map<KeyType, ValueType>::get(const KeyType& key) const {
     ValueType* vp = findNode(root, key);
-    if (vp == NULL) {
+    if (!vp) {
         return ValueType();
     }
     return *vp;

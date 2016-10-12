@@ -44,9 +44,9 @@ void captureStderrBegin() {
 }
 
 std::string captureStderrEnd() {
-    if (oldErr != NULL) {
+    if (oldErr) {
         std::cerr.rdbuf(oldErr);
-        oldErr = NULL;
+        oldErr = nullptr;
     }
     return bufferErr.str();
 }
@@ -69,13 +69,13 @@ void captureStdoutBegin(bool alsoStderr) {
 }
 
 std::string captureStdoutEnd() {
-    if (oldOut != NULL) {
+    if (oldOut) {
         std::cout.rdbuf(oldOut);
-        oldOut = NULL;
+        oldOut = nullptr;
     }
-    if (oldErr != NULL) {
+    if (oldErr) {
         std::cerr.rdbuf(oldErr);
-        oldErr = NULL;
+        oldErr = nullptr;
     }
     return bufferOut.str();
 }
@@ -107,9 +107,9 @@ void redirectStdinFeedInput(std::string userInput) {
 }
 
 void redirectStdinEnd() {
-    if (oldIn != NULL) {
+    if (oldIn) {
         std::cin.rdbuf(oldIn);
-        oldIn = NULL;
+        oldIn = nullptr;
     }
 }
 

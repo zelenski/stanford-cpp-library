@@ -150,15 +150,15 @@
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_NOT_NULL, \
         (msg), std::string("NULL"), pointerToString((void*) b), "pointer", \
-        (b != NULL))); \
-    EXPECT_NE(((void*) b), ((void*) NULL))
+        (b != nullptr))); \
+    EXPECT_NE(((void*) b), ((void*) nullptr))
 
 #define assertNull(msg, b) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_NULL, \
         (msg), std::string("NULL"), pointerToString((void*) b), "pointer", \
-        (b == NULL))); \
-    EXPECT_EQ(((void*) b), ((void*) NULL))
+        (b == nullptr))); \
+    EXPECT_EQ(((void*) b), ((void*) nullptr))
 
 #define assertFail(msg) \
     autograder::setFailDetails(autograder::UnitTestDetails( \

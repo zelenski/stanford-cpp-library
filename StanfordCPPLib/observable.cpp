@@ -15,7 +15,7 @@
 
 void Observable::addObserver(Observer* obs) {
     if (!obs) {
-        error("Observable::addObserver: NULL observer passed");
+        error("Observable::addObserver: null observer passed");
     }
     m_observers.insert(obs);
 }
@@ -28,7 +28,7 @@ void Observable::notifyObservers(void* arg) {
 
 void Observable::removeObserver(Observer* obs) {
     if (!obs) {
-        error("Observable::removeObserver: NULL observer passed");
+        error("Observable::removeObserver: null observer passed");
     }
     m_observers.erase(obs);
 }

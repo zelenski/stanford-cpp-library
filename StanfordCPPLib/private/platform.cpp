@@ -162,13 +162,13 @@ STATIC_VARIABLE_DECLARE_COLLECTION_EMPTY(Queue<GEvent>, eventQueue)
 STATIC_VARIABLE_DECLARE_MAP_EMPTY(HashMap, std::string, GTimerData*, timerTable)
 STATIC_VARIABLE_DECLARE_MAP_EMPTY(HashMap, std::string, GWindowData*, windowTable)
 STATIC_VARIABLE_DECLARE_MAP_EMPTY(HashMap, std::string, GObject*, sourceTable)
-STATIC_VARIABLE_DECLARE(stanfordcpplib::ConsoleStreambuf*, cinout_new_buf, NULL)
+STATIC_VARIABLE_DECLARE(stanfordcpplib::ConsoleStreambuf*, cinout_new_buf, nullptr)
 
 #ifdef _WIN32
-STATIC_VARIABLE_DECLARE(HANDLE, rdFromJBE, NULL)
-STATIC_VARIABLE_DECLARE(HANDLE, wrFromJBE, NULL)
-STATIC_VARIABLE_DECLARE(HANDLE, rdToJBE, NULL)
-STATIC_VARIABLE_DECLARE(HANDLE, wrToJBE, NULL)
+STATIC_VARIABLE_DECLARE(HANDLE, rdFromJBE, nullptr)
+STATIC_VARIABLE_DECLARE(HANDLE, wrFromJBE, nullptr)
+STATIC_VARIABLE_DECLARE(HANDLE, rdToJBE, nullptr)
+STATIC_VARIABLE_DECLARE(HANDLE, wrToJBE, nullptr)
 #else // _WIN32
 STATIC_VARIABLE_DECLARE_BLANK(pid_t, cppLibPid)
 STATIC_VARIABLE_DECLARE_BLANK(pid_t, javaBackEndPid)
@@ -254,8 +254,8 @@ void Platform::filelib_setCurrentDirectory(std::string path) {
 
 // Unix implementation; see Windows implementation elsewhere in this file
 std::string Platform::filelib_getCurrentDirectory() {
-    char *cwd = getcwd(NULL, 0);
-    if (cwd == NULL) {
+    char *cwd = getcwd(nullptr, 0);
+    if (!cwd) {
         std::string msg = "getCurrentDirectory: ";
         std::string err = std::string(strerror(errno));
         error(msg + err);
@@ -311,15 +311,15 @@ std::string Platform::filelib_expandPathname(std::string filename) {
         while (spos < len && filename[spos] != '\\' && filename[spos] != '/') {
             spos++;
         }
-        char *homedir = NULL;
+        char *homedir = nullptr;
         if (spos == 1) {
             homedir = getenv("HOME");
-            if (homedir == NULL) {
+            if (!homedir) {
                 homedir = getpwuid(getuid())->pw_dir;
             }
         } else {
             struct passwd *pw = getpwnam(filename.substr(1, spos - 1).c_str());
-            if (pw == NULL) {
+            if (!pw) {
                 error("expandPathname: No such user");
             } else {
                 homedir = pw->pw_dir;
@@ -338,11 +338,15 @@ std::string Platform::filelib_expandPathname(std::string filename) {
 void Platform::filelib_listDirectory(std::string path, std::vector<std::string>& list) {
     if (path == "") path = ".";
     DIR *dir = opendir(path.c_str());
-    if (dir == NULL) error(std::string("listDirectory: Can't open ") + path);
+    if (!dir) {
+        error(std::string("listDirectory: Can't open ") + path);
+    }
     list.clear();
     while (true) {
         struct dirent *ep = readdir(dir);
-        if (ep == NULL) break;
+        if (!ep) {
+            break;
+        }
         std::string name = std::string(ep->d_name);
         if (name != "." && name != "..") list.push_back(name);
     }
@@ -399,7 +403,7 @@ std::string Platform::filelib_getTempDirectory() {
 
 // Windows implementation; see Unix implementation elsewhere in this file
 void Platform::filelib_createDirectory(std::string path) {
-    if (!CreateDirectoryA(path.c_str(), NULL)) {
+    if (!CreateDirectoryA(path.c_str(), nullptr)) {
         error("createDirectory: Can't create " + path);
     }
 }
@@ -494,16 +498,16 @@ std::string Platform::os_getLastError() {
 #ifdef _WIN32
     // Windows error-reporting code
     DWORD lastErrorCode = ::GetLastError();
-    char* errorMsg = NULL;
+    char* errorMsg = nullptr;
     // Ask Windows to prepare a standard message for a GetLastError() code:
     ::FormatMessageA(
                    /* dwFlags */ FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                   /* lpSource */ NULL,
+                   /* lpSource */ nullptr,
                    /* dwMessageId */ lastErrorCode,
                    /* dwLanguageId */ LANG_NEUTRAL,
                    /* lpBuffer */ (LPSTR) &errorMsg,
                    /* dwSize */ 0,
-                   /* arguments */ NULL);
+                   /* arguments */ nullptr);
     if (errorMsg) {
         return std::string(errorMsg);
     } else {
@@ -2200,7 +2204,7 @@ void parseArgs(int argc, char** argv) {
 #endif // _WIN32
 
     char* noConsoleFlag = getenv("NOCONSOLE");
-    if (noConsoleFlag != NULL && startsWith(std::string(noConsoleFlag), "t")) {
+    if (noConsoleFlag && startsWith(std::string(noConsoleFlag), "t")) {
         return;
     }
 }
@@ -2215,15 +2219,15 @@ static WINBOOL WinCheck(WINBOOL result) {
     if (result == 0 && result != ERROR_IO_PENDING) {
         // failure; Windows error codes: http://msdn.microsoft.com/en-us/library/windows/desktop/ms681381(v=vs.85).aspx
         DWORD lastErrorCode = GetLastError();
-        char* errorMsg = NULL;
+        char* errorMsg = nullptr;
         // Ask Windows to prepare a standard message for a GetLastError() code:
         FormatMessageA(/* dwFlags */ FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                       /* lpSource */ NULL,
+                       /* lpSource */ nullptr,
                        /* dwMessageId */ lastErrorCode,
                        /* dwLanguageId */ LANG_NEUTRAL, // MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                        /* lpBuffer */ (LPSTR)&errorMsg,
                        /* dwSize */ 0,
-                       /* arguments */ NULL);
+                       /* arguments */ nullptr);
         if (errorMsg) {
             // use stderr directly rather than cerr because graphical console may be unreachable
             fputs("\n", stderr);
@@ -2243,7 +2247,7 @@ static void initPipe() {
     SECURITY_ATTRIBUTES attr;
     attr.nLength = sizeof(SECURITY_ATTRIBUTES);
     attr.bInheritHandle = true;
-    attr.lpSecurityDescriptor = NULL;
+    attr.lpSecurityDescriptor = nullptr;
     if (!CreatePipe(&STATIC_VARIABLE(rdFromJBE), &STATIC_VARIABLE(wrFromJBE), &attr, 0)) {
         error("Platform::initPipe: Can't create fromJBE");
     }
@@ -2278,8 +2282,8 @@ static void initPipe() {
     sInfo.hStdInput = STATIC_VARIABLE(rdToJBE);
     sInfo.hStdOutput = STATIC_VARIABLE(wrFromJBE);
     sInfo.hStdError = STATIC_VARIABLE(wrFromJBE);
-    int ok = CreateProcessA(NULL, cmdLine, NULL, NULL, true, CREATE_NO_WINDOW,
-                            NULL, NULL, &sInfo, &pInfo);
+    int ok = CreateProcessA(nullptr, cmdLine, nullptr, nullptr, true, CREATE_NO_WINDOW,
+                            nullptr, nullptr, &sInfo, &pInfo);
     if (!ok) {
         // DWORD err = GetLastError();
         // use stderr directly rather than cerr because graphical console is not connected
@@ -2309,8 +2313,8 @@ static void putPipe(std::string line) {
 #ifdef PIPE_DEBUG
     fprintf(stderr, "putPipe(\"%s\")\n", line.c_str());  fflush(stderr);
 #endif // PIPE_DEBUG
-    if (!WinCheck(WriteFile(STATIC_VARIABLE(wrToJBE), line.c_str(), line.length(), &nch, NULL))) return;
-    if (!WinCheck(WriteFile(STATIC_VARIABLE(wrToJBE), "\n", 1, &nch, NULL))) return;
+    if (!WinCheck(WriteFile(STATIC_VARIABLE(wrToJBE), line.c_str(), line.length(), &nch, nullptr))) return;
+    if (!WinCheck(WriteFile(STATIC_VARIABLE(wrToJBE), "\n", 1, &nch, nullptr))) return;
     WinCheck(FlushFileBuffers(STATIC_VARIABLE(wrToJBE)));
 }
 
@@ -2326,7 +2330,7 @@ static std::string getPipe() {
     int charsReadMax = 1024*1024;
     while (charsRead < charsReadMax) {
         char ch;
-        WINBOOL readFileResult = WinCheck(ReadFile(STATIC_VARIABLE(rdFromJBE), &ch, 1, &nch, NULL));
+        WINBOOL readFileResult = WinCheck(ReadFile(STATIC_VARIABLE(rdFromJBE), &ch, 1, &nch, nullptr));
         if (readFileResult == 0) {
             break;   // failed to read from subprocess
         }
@@ -2397,14 +2401,14 @@ static void initPipe() {
 #ifdef __APPLE__
         std::string option = "-Xdock:name=" + programName();
         int execlpResult = execlp(javaCommand.c_str(), javaCommand.c_str(), option.c_str(), "-jar", jarName.c_str(),
-               programName().c_str(), NULL);
+               programName().c_str(), nullptr);
         std::string fullCommand = javaCommand + " " + option + " -jar " + jarName + " " + programName();
 #else // !APPLE
 #ifdef SPL_HEADLESS_MODE
-        int execlpResult = execlp(javaCommand.c_str(), javaCommand.c_str(), "-Djava.awt.headless=true", "-jar", jarName.c_str(), programName().c_str(), NULL);
+        int execlpResult = execlp(javaCommand.c_str(), javaCommand.c_str(), "-Djava.awt.headless=true", "-jar", jarName.c_str(), programName().c_str(), nullptr);
         std::string fullCommand = javaCommand + " -jar " + jarName + " " + programName();
 #else // !SPL_HEADLESS_MODE
-        int execlpResult = execlp(javaCommand.c_str(), javaCommand.c_str(), "-jar", jarName.c_str(), programName().c_str(), NULL);
+        int execlpResult = execlp(javaCommand.c_str(), javaCommand.c_str(), "-jar", jarName.c_str(), programName().c_str(), nullptr);
         std::string fullCommand = javaCommand + " -Djava.awt.headless=true -jar " + jarName + " " + programName();
 #endif // SPL_HEADLESS_MODE
 #endif // APPLE
@@ -2614,7 +2618,7 @@ static std::string getJavaCommand() {
 static std::string getSplJarPath() {
     std::string splHomeDir = "";
     char* splHome = getenv("SPL_HOME");
-    if (splHome != NULL) {
+    if (splHome) {
         splHomeDir = splHome;
         // ensure that it ends with a trailing slash
         if (!splHomeDir.empty() && splHomeDir[splHomeDir.length() - 1] != '/') {
@@ -2624,7 +2628,7 @@ static std::string getSplJarPath() {
 
 #ifndef _WIN32
     // on Mac only, may need to change folder because of app's nested dir structure
-    std::string currentDir = getcwd(NULL, 0);
+    std::string currentDir = getcwd(nullptr, 0);
     size_t ax = currentDir.find(".app/Contents/");
     if (ax != std::string::npos) {
         while (ax > 0 && currentDir[ax] != '/') {
@@ -2741,7 +2745,7 @@ static GEvent parseEvent(std::string line) {
             // close any other graphical windows and exit program
             exitGraphics();
         } else if (getConsoleEventOnClose()) {
-            GWindowData* gwd = NULL;
+            GWindowData* gwd = nullptr;
             GWindowEvent e(CONSOLE_CLOSED, GWindow(gwd));
             return e;
         }

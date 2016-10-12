@@ -16,7 +16,7 @@
  * @version 2014/11/21
  * - bug fix: Edge weight reference was not properly pointing at cost field
  * @version 2014/10/31
- * - bug fix: extraData was being NULLed accidentally in Vertex::resetData()
+ * - bug fix: extraData was being nulled accidentally in Vertex::resetData()
  * @version 2014/10/23
  * - bug fixes based on cppcheck lint output
  * @version 2014/10/20
@@ -32,7 +32,7 @@
 /*
  * Vertex member implementations
  */
-Vertex::Vertex(const std::string& name) : name(name), edges(arcs), weight(cost), extraData(NULL) {
+Vertex::Vertex(const std::string& name) : name(name), edges(arcs), weight(cost), extraData(nullptr) {
     resetData();
 }
 
@@ -43,7 +43,7 @@ Vertex::Vertex(const Vertex &other) : name(other.name), arcs(other.arcs),
 }
 
 Vertex::~Vertex() {
-    if (extraData != NULL) {
+    if (extraData != nullptr) {
         // delete extraData;
     }
 }
@@ -54,10 +54,9 @@ int Vertex::getColor() const {
 
 void Vertex::resetData() {
     cost = 0.0;
-    previous = NULL;
+    previous = nullptr;
     visited = false;
     m_color = /* UNCOLORED */ 0;
-    // extraData = NULL;
 }
 
 void Vertex::setColor(int c) {
@@ -100,7 +99,7 @@ std::ostream& operator <<(std::ostream& out, const Vertex& v) {
     }
     out << ", cost=" << v.cost;
     out << ", visited=" << (v.visited ? "true" : "false");
-    out << ", previous=" << (v.previous == NULL ? std::string("NULL") : v.previous->name);
+    out << ", previous=" << (v.previous == nullptr ? std::string("NULL") : v.previous->name);
 
     out << ", neighbors={";
     int i = 0;
@@ -126,12 +125,12 @@ std::ostream& operator <<(std::ostream& out, const Vertex& v) {
  */
 Edge::Edge(Vertex* start, Vertex* finish, double cost)
         : start(start), finish(finish), end(this->finish), cost(cost), weight(this->cost) {
-    this->extraData = NULL;
+    this->extraData = nullptr;
     this->resetData();
 }
 
 Edge::~Edge() {
-    if (this->extraData != NULL) {
+    if (this->extraData != nullptr) {
         // delete this->extraData;
     }
 }
@@ -164,13 +163,13 @@ Edge& Edge::operator =(Edge&& other) {
 
 std::ostream& operator <<(std::ostream& out, const Edge& edge) {
     out << "Edge{start=";
-    if (edge.start == NULL) {
+    if (!edge.start) {
         out << "NULL";
     } else {
         out << edge.start->name;
     }
     out << ", finish=";
-    if (edge.finish == NULL) {
+    if (!edge.finish) {
         out << "NULL";
     } else {
         out << edge.finish->name;
@@ -213,15 +212,15 @@ void BasicGraph::clearEdges() {
 }
 
 bool BasicGraph::containsArc(Vertex* v1, Vertex* v2) const {
-    return this->getArc(v1, v2) != NULL;
+    return this->getArc(v1, v2) != nullptr;
 }
 
 bool BasicGraph::containsArc(const std::string& v1, const std::string& v2) const {
-    return this->getArc(v1, v2) != NULL;
+    return this->getArc(v1, v2) != nullptr;
 }
 
 bool BasicGraph::containsArc(Edge* edge) const {
-    if (edge == NULL) {
+    if (!edge) {
         return false;
     } else {
         return this->getEdgeSet().contains(edge);
@@ -241,11 +240,11 @@ bool BasicGraph::containsEdge(Edge* edge) const {
 }
 
 bool BasicGraph::containsNode(const std::string& name) const {
-    return this->getNode(name) != NULL;
+    return this->getNode(name) != nullptr;
 }
 
 bool BasicGraph::containsNode(Vertex* v) const {
-    if (v == NULL) {
+    if (!v) {
         return false;
     } else {
         return this->getNodeSet().contains(v);
@@ -266,7 +265,7 @@ Edge* BasicGraph::getArc(Vertex* v1, Vertex* v2) const {
             return edge;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 Edge* BasicGraph::getArc(const std::string& v1, const std::string& v2) const {
@@ -396,7 +395,7 @@ void BasicGraph::scanArcData(TokenScanner& scanner, Edge* edge, Edge* inverse) {
     if (colon == ":") {
         std::string costStr = scanner.nextToken();
         edge->cost = stringToReal(costStr);
-        if (inverse != NULL) {
+        if (inverse) {
             inverse->cost = edge->cost;
         }
     } else {

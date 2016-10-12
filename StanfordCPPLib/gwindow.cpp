@@ -151,10 +151,10 @@ GWindow::~GWindow() {
     //   if (gwd) {
     //      if (gwd->top) {
     //         delete gwd->top;
-    //         gwd->top = NULL;
+    //         gwd->top = nullptr;
     //      }
     //      delete gwd;
-    //      gwd = NULL;
+    //      gwd = nullptr;
     //   }
 }
 
@@ -570,7 +570,7 @@ GObject *GWindow::getGObjectAt(double x, double y) const {
             if (gobj->contains(x, y)) return gobj;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 void GWindow::setRegionAlignment(std::string region, std::string align) {

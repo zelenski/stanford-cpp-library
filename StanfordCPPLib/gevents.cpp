@@ -41,9 +41,9 @@ GEvent::GEvent() {
     valid = false;
     modifiers = 0;
     eventTime = 0.0;
-    gwd = NULL;
-    source = NULL;
-    gtd = NULL;
+    gwd = nullptr;
+    source = nullptr;
+    gtd = nullptr;
     x = 0;
     y = 0;
     keyChar = 0;

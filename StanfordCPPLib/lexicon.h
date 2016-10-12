@@ -471,7 +471,7 @@ private:
         TrieNode() {
             m_isWord = false;
             for (int i = 0; i < 26; i++) {
-                m_children[i] = NULL;
+                m_children[i] = nullptr;
             }
         }
 
@@ -483,7 +483,7 @@ private:
         inline int childCount() {
             int count = 0;
             for (int i = 0; i < 26; i++) {
-                if (m_children[i] != NULL) {
+                if (m_children[i] != nullptr) {
                     count++;
                 }
             }
@@ -492,7 +492,7 @@ private:
 
         inline bool isLeaf() {
             for (int i = 0; i < 26; i++) {
-                if (m_children[i] != NULL) {
+                if (m_children[i] != nullptr) {
                     return false;
                 }
             }

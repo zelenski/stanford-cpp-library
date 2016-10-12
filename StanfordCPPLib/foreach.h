@@ -7,6 +7,10 @@
  * clients don't ordinarily need to do so explicitly.  This version of
  * <code>foreach</code> also supports C++ strings and arrays.
  * 
+ * @deprecated
+ * We do not recommend that clients include this header any more.
+ * It is replaced by the better for (type name : collection) syntax in C++11.
+ *
  * @version 2014/10/08
  * - removed 'using namespace' statement
  */
@@ -112,7 +116,7 @@ struct MapRange : Range {
  */
 
 struct State {
-    State() : state(0), itr(NULL) { }
+    State() : state(0), itr(nullptr) { }
     ~State() { delete itr; }
     int state;
     Range *itr;
@@ -215,7 +219,7 @@ T Hook(State& fe, ArrayRange<T>*) {
     for (_fe::State _fe; _fe.state < 2; ) \
     for (arg)); _fe.state++ == 1; _fe.state = 0)
 
-#define in = _fe::Hook(_fe, _fe.state != 0 ? NULL : _fe::Init(_fe,
+#define in = _fe::Hook(_fe, _fe.state != 0 ? nullptr : _fe::Init(_fe,
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 

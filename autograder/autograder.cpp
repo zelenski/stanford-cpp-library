@@ -78,8 +78,8 @@ AutograderFlags::AutograderFlags() {
     exitEnabled = true;
     showLateDays = true;
     graphicalUI = false;
-    callbackStart = NULL;
-    callbackEnd = NULL;
+    callbackStart = nullptr;
+    callbackEnd = nullptr;
     currentTestShouldRun = true;
 }
 

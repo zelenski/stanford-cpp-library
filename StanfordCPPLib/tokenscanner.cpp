@@ -37,13 +37,13 @@ void TokenScanner::setInput(std::string str) {
     stringInputFlag = true;
     buffer = str;
     isp = new std::istringstream(buffer);
-    savedTokens = NULL;
+    savedTokens = nullptr;
 }
 
 void TokenScanner::setInput(std::istream & infile) {
     stringInputFlag = false;
     isp = &infile;
-    savedTokens = NULL;
+    savedTokens = nullptr;
 }
 
 bool TokenScanner::hasMoreTokens() {
@@ -53,7 +53,7 @@ bool TokenScanner::hasMoreTokens() {
 }
 
 std::string TokenScanner::nextToken() {
-    if (savedTokens != NULL) {
+    if (savedTokens) {
         StringCell *cp = savedTokens;
         std::string token = cp->str;
         savedTokens = cp->link;
@@ -145,7 +145,7 @@ void TokenScanner::addOperator(std::string op) {
 }
 
 int TokenScanner::getPosition() const {
-    if (savedTokens == NULL) {
+    if (!savedTokens) {
         return int(isp->tellg());
     } else {
         return int(isp->tellg()) - savedTokens->str.length();
@@ -244,7 +244,7 @@ void TokenScanner::initScanner() {
     ignoreCommentsFlag = false;
     scanNumbersFlag = false;
     scanStringsFlag = false;
-    operators = NULL;
+    operators = nullptr;
 }
 
 /*
@@ -397,14 +397,14 @@ std::string TokenScanner::scanString() {
  */
 
 bool TokenScanner::isOperator(std::string op) {
-    for (StringCell *cp = operators; cp != NULL; cp = cp->link) {
+    for (StringCell *cp = operators; cp != nullptr; cp = cp->link) {
         if (op == cp->str) return true;
     }
     return false;
 }
 
 bool TokenScanner::isOperatorPrefix(std::string op) {
-    for (StringCell *cp = operators; cp != NULL; cp = cp->link) {
+    for (StringCell *cp = operators; cp != nullptr; cp = cp->link) {
         if (startsWith(cp->str, op)) return true;
     }
     return false;

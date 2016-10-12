@@ -151,7 +151,7 @@ void setRandomSeed(int seed) {
 static void initRandomSeed() {
     static bool _initialized = false;
     if (!_initialized) {
-        srand(int(time(NULL)));
+        srand(int(time(nullptr)));
         rand();   // BUGFIX: throwaway call to get randomness going
         _initialized = true;
     }

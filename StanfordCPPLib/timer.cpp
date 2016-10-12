@@ -42,6 +42,6 @@ long Timer::stop() {
 
 long Timer::currentTimeMS() {
     timeval time;
-    gettimeofday(&time, NULL);
+    gettimeofday(&time, nullptr);
     return (time.tv_sec * 1000000 + time.tv_usec) / 1000;
 }

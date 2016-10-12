@@ -65,7 +65,7 @@ public:
         int result(0);
         if (gptr() < egptr()) {
             result = m_source->sputbackc(*gptr());
-            setg(NULL, NULL, NULL);
+            setg(nullptr, nullptr, nullptr);
         }
         if (m_source->pubsync() == EOF) {
             result = EOF;

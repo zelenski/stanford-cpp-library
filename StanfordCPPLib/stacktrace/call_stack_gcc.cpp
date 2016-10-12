@@ -48,14 +48,14 @@ namespace stacktrace {
 int execAndCapture(std::string cmd, std::string& output) {
 #ifdef _WIN32
     // Windows code for external process (ugly)
-    HANDLE g_hChildStd_IN_Rd = NULL;
-    HANDLE g_hChildStd_IN_Wr = NULL;
-    HANDLE g_hChildStd_OUT_Rd = NULL;
-    HANDLE g_hChildStd_OUT_Wr = NULL;
+    HANDLE g_hChildStd_IN_Rd = nullptr;
+    HANDLE g_hChildStd_IN_Wr = nullptr;
+    HANDLE g_hChildStd_OUT_Rd = nullptr;
+    HANDLE g_hChildStd_OUT_Wr = nullptr;
     SECURITY_ATTRIBUTES saAttr;
     saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
     saAttr.bInheritHandle = TRUE;
-    saAttr.lpSecurityDescriptor = NULL;
+    saAttr.lpSecurityDescriptor = nullptr;
     if (!CreatePipe(&g_hChildStd_OUT_Rd, &g_hChildStd_OUT_Wr, &saAttr, 0)) {
         return 1;   // fail
     }
@@ -81,14 +81,14 @@ int execAndCapture(std::string cmd, std::string& output) {
     siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
     if (!CreateProcessA(
-            NULL,
+            nullptr,
             (char*) cmd.c_str(),   // command line
-            NULL,                  // process security attributes
-            NULL,                  // primary thread security attributes
+            nullptr,               // process security attributes
+            nullptr,               // primary thread security attributes
             TRUE,                  // handles are inherited
             CREATE_NO_WINDOW,      // creation flags
-            NULL,                  // use parent's environment
-            NULL,                  // use parent's current directory
+            nullptr,               // use parent's environment
+            nullptr,               // use parent's current directory
             &siStartInfo,          // STARTUPINFO pointer
             &piProcInfo)) {        // receives PROCESS_INFORMATION
         std::cerr << "CREATE PROCESS FAIL: " << stanfordcpplib::getPlatform()->os_getLastError() << std::endl;
@@ -105,7 +105,7 @@ int execAndCapture(std::string cmd, std::string& output) {
     DWORD dwRead;
     const int BUFSIZE = 65536;
     CHAR chBuf[BUFSIZE] = {0};
-    if (!ReadFile(g_hChildStd_OUT_Rd, chBuf, BUFSIZE, &dwRead, NULL) || dwRead == 0) {
+    if (!ReadFile(g_hChildStd_OUT_Rd, chBuf, BUFSIZE, &dwRead, nullptr) || dwRead == 0) {
         return 1;
     }
     std::ostringstream out;
@@ -125,7 +125,7 @@ int execAndCapture(std::string cmd, std::string& output) {
     char buffer[65536] = {0};
     output = "";
     while (!feof(pipe)) {
-        if (fgets(buffer, 65536, pipe) != NULL) {
+        if (fgets(buffer, 65536, pipe) != nullptr) {
             output += buffer;
         }
     }
@@ -211,7 +211,7 @@ int addr2line(void* addr, std::string& line) {
 }
 
 void*& fakeCallStackPointer() {
-    static void* fakeCallStackPointer = NULL;
+    static void* fakeCallStackPointer = nullptr;
     return fakeCallStackPointer;
 }
 } // namespace stacktrace
@@ -250,7 +250,7 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
         const char* symname = dlinfo.dli_sname;
 
         int   status;
-        char* demangled = abi::__cxa_demangle(symname, NULL, 0, &status);
+        char* demangled = abi::__cxa_demangle(symname, nullptr, 0, &status);
         if (status == 0 && demangled) {
             symname = demangled;
         }

@@ -29,7 +29,7 @@ void*& fakeCallStackPointer();
 /** Call-stack entry datastructure. */
 struct entry {
     /** Default constructor that clears all fields. */
-    entry () : line(0), address(NULL) {
+    entry () : line(0), address(nullptr) {
     }
 
     std::string file;     ///< filename
