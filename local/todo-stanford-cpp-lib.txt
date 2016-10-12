@@ -1,23 +1,27 @@
 	TODO C++ libs:
 	==============
+		Fauxtoshop autograder stuff
+			why aren't timeouts working?
+			stack traces?
+			maybe wait for result/status on GBufferedImage load()?
+		
+		
+		console [closed] when program terminated
+		
+		
 		that one guy's code
 			jeff lutgen @ whittier.edu
 				https://github.com/jlutgen/stanford-whittier-cpplib
-				
-				all JBECommand
-					=> SwingUtilities.invokeLater(new Runner(...) { ...... });
-				
-=>				idea: JBE_GUI_Event_command superclass, make THOSE run in BG thread, but not others
-					and/or, look for prefixes/patterns in class name, like /GWindow_*/
-				
-b				GTextArea
-				apple quit handler?
-				GBufferedImage::scale?
-				
-				I NEED TO CHECK EVERYTHING NEWER THAN:
-					Correct computations in GPolygon::getBounds and GPolygon::contains
-					jlutgen committed on Jan 24, 2015
-				
+
+x				all JBECommand
+x					=> SwingUtilities.invokeLater(new Runner(...) { ...... });
+x				idea: JBE_GUI_Event_command superclass, make THOSE run in BG thread, but not others
+x					and/or, look for prefixes/patterns in class name, like /GWindow_*/
+x				GTextArea
+
+-				apple quit handler?
+-				GBufferedImage::scale?
+
 		split files up more?
 			folders? collections/, gui/, util/, io/, ?
 			split gobjects.h, ginteractors.h, gevents.h, etc.?

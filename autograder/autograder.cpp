@@ -688,7 +688,7 @@ void exit(int status) {
 
     // must exit either way (not return) because the function exit() is
     // flagged by the compiler as 'noreturn'
-    std::quick_exit(status);
+    std::exit(status);
 }
 
 // declared in assertions.h
