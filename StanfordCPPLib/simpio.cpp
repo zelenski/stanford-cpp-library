@@ -23,6 +23,8 @@
 #include <sstream>
 #include <string>
 
+static const std::string GETCHAR_DEFAULT_PROMPT = "Enter an character: ";
+static const std::string GETCHAR_DEFAULT_REPROMPT = "You must type a single character. Try again.";
 static const std::string GETINTEGER_DEFAULT_PROMPT = "Enter an integer: ";
 static const std::string GETINTEGER_DEFAULT_REPROMPT = "Illegal integer format. Try again.";
 static const std::string GETREAL_DEFAULT_PROMPT = "Enter a number: ";
@@ -31,16 +33,44 @@ static const std::string GETYESORNO_DEFAULT_PROMPT = "Try again: ";
 static const std::string GETYESORNO_DEFAULT_REPROMPT = "Please type a word that starts with 'Y' or 'N'.";
 
 /*
- * Implementation notes: getInteger, getDouble, getReal
- * ----------------------------------------------------
+ * Implementation notes: getChar, getDouble, getInteger, getReal
+ * -------------------------------------------------------------
  * Each of these functions reads a complete input line and then uses the
  * <sstream> library to parse that line into a value of the desired type.
  * If that fails, the implementation asks the user for a new value.
  */
 
+char getChar(const std::string& prompt,
+             const std::string& reprompt) {
+    std::string promptCopy = prompt;
+    appendSpace(promptCopy);
+    char value = '\0';
+    while (true) {
+        std::cout << promptCopy;
+        std::string line;
+        if (!getline(std::cin, line)) {
+            break;
+        }
+        if (line.length() == 1) {
+            value = line[0];
+            break;
+        }
+
+        std::cout << (reprompt.empty() ? GETCHAR_DEFAULT_REPROMPT : reprompt) << std::endl;
+        if (promptCopy.empty()) {
+            promptCopy = GETCHAR_DEFAULT_PROMPT;
+        }
+    }
+    return value;
+}
+
 double getDouble(const std::string& prompt,
                  const std::string& reprompt) {
     return getReal(prompt, reprompt);
+}
+
+double getDoubleBetween(const std::string& prompt, double min, double max) {
+    return getRealBetween(prompt, min, max);
 }
 
 int getInteger(const std::string& prompt,
@@ -61,6 +91,20 @@ int getInteger(const std::string& prompt,
         std::cout << (reprompt.empty() ? GETINTEGER_DEFAULT_REPROMPT : reprompt) << std::endl;
         if (promptCopy.empty()) {
             promptCopy = GETINTEGER_DEFAULT_PROMPT;
+        }
+    }
+    return value;
+}
+
+int getIntegerBetween(const std::string& prompt, int min, int max) {
+    int value = 0;
+    while (true) {
+        value = getInteger(prompt);
+        if (value < min || value > max) {
+            std::cout << "Please type a value between " << min
+                      << " and " << max << "." << std::endl;
+        } else {
+            break;
         }
     }
     return value;
@@ -112,6 +156,20 @@ double getReal(const std::string& prompt,
         std::cout << (reprompt.empty() ? GETREAL_DEFAULT_REPROMPT : reprompt) << std::endl;
         if (promptCopy.empty()) {
             promptCopy = GETREAL_DEFAULT_PROMPT;
+        }
+    }
+    return value;
+}
+
+double getRealBetween(const std::string& prompt, double min, double max) {
+    double value = 0;
+    while (true) {
+        value = getReal(prompt);
+        if (value < min || value > max) {
+            std::cout << "Please type a value between " << min
+                      << " and " << max << "." << std::endl;
+        } else {
+            break;
         }
     }
     return value;
