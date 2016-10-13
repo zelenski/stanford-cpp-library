@@ -83,7 +83,6 @@ public:
 
     int failsToPrintPerTest;
     int testNameWidth;
-    bool exitEnabled;
     bool showInputPanel;
     bool showLateDays;
     bool graphicalUI;
@@ -187,6 +186,7 @@ void setCurrentTestShouldRun(bool shouldRun);
  * Sets whether the system function exit() should be allowed.
  * Default true, but can be turned off to stop student programs from
  * calling exit() as a form of return.
+ * These are here for backward compatibility.
  */
 void setExitEnabled(bool enabled);
 bool exitEnabled();

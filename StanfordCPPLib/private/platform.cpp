@@ -4,6 +4,8 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2016/10/13
+ * - added exitEnabled / setExitEnabled
  * @version 2016/10/09
  * - changed gwindow_saveCanvasPixels to wait for OK result (avoid race condition)
  * @version 2016/10/08
@@ -204,6 +206,10 @@ static GRectangle scanRectangle(const std::string& str);
 /* Implementation of the Platform class */
 
 namespace stanfordcpplib {
+
+STATIC_VARIABLE_DECLARE(bool, isExitEnabled, true)
+
+
 Platform::Platform() {
     /* Empty */
 }
@@ -2166,6 +2172,15 @@ Platform* getPlatform() {
     static Platform gp;
     return &gp;
 }
+
+bool exitEnabled() {
+    return STATIC_VARIABLE(isExitEnabled);
+}
+
+void setExitEnabled(bool enabled) {
+    STATIC_VARIABLE(isExitEnabled) = enabled;
+    gwindowSetExitGraphicsEnabled(enabled);
+}
 } // namespace stanfordcpplib
 
 
@@ -3080,3 +3095,24 @@ void __initializeStanfordCppLibrary(int argc, char** argv) {
     }
     stanfordcpplib::initializeStanfordCppLibrary();
 }
+
+// see init.h
+namespace std {
+void __stanfordCppLibExit(int status) {
+    if (stanfordcpplib::exitEnabled()) {
+        // call std::exit (has been renamed)
+
+#undef exit
+        std::exit(status);
+#define exit __stanfordCppLibExit
+
+    } else {
+        // not allowed to call exit(); produce error message
+        std::ostringstream out;
+        out << "Program tried to call exit(" << status << ") to quit. " << std::endl;
+        out << "*** This function has been disabled; main should end through " << std::endl;
+        out << "*** normal program control flow." << std::endl;
+        error(out.str());
+    }
+}
+} // namespace std

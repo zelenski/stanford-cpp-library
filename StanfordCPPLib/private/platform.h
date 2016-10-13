@@ -5,6 +5,8 @@
  * the platform-specific parts of the StanfordCPPLib package.  This file is
  * logically part of the implementation and is not interesting to clients.
  *
+ * @version 2016/10/13
+ * - added exitEnabled / setExitEnabled
  * @version 2016/10/08
  * - added gwindow_toBack/Front
  * @version 2016/09/27
@@ -314,6 +316,10 @@ public:
 
 /* free function to get a reference to the singleton Platform instance */
 Platform* getPlatform();
+
+/* enable / disable use of the std::exit() function */
+bool exitEnabled();
+void setExitEnabled(bool enabled = true);
 
 // functions to interact with the graphical console through the platform
 std::string getLineConsole();

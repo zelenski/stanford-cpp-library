@@ -3,6 +3,8 @@
  * ----------------
  * This file implements the strlib.h interface.
  * 
+ * @version 2016/10/13
+ * - modified writeQuotedString to return ostream
  * @version 2016/08/03
  * - modified readQuotedString not to throw error() on parse failures
  *   (needed to support idiomatic silent-failing >> operators)
@@ -586,9 +588,13 @@ bool readQuotedString(std::istream& is, std::string& str, bool throwOnError) {
     return true;   // read successfully
 }
 
-void writeQuotedString(std::ostream & os, const std::string & str, bool forceQuotes) {
-    if (!forceQuotes && stringNeedsQuoting(str)) forceQuotes = true;
-    if (forceQuotes) os << '"';
+std::ostream& writeQuotedString(std::ostream& os, const std::string& str, bool forceQuotes) {
+    if (!forceQuotes && stringNeedsQuoting(str)) {
+        forceQuotes = true;
+    }
+    if (forceQuotes) {
+        os << '"';
+    }
     int len = str.length();
     for (int i = 0; i < len; i++) {
         char ch = str.at(i);
@@ -611,5 +617,8 @@ void writeQuotedString(std::ostream & os, const std::string & str, bool forceQuo
             }
         }
     }
-    if (forceQuotes) os << '"';
+    if (forceQuotes) {
+        os << '"';
+    }
+    return os;
 }

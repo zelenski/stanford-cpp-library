@@ -11,6 +11,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2016/10/13
+# - split StanfordCPPLib into subfolders: collections, graphics, io, private, system, util
 # @version 2016/09/24
 # - added private/*.cpp to sources
 # - added verification of .pro version by default
@@ -73,14 +75,17 @@ win32 {
 
 # include various source .cpp files and header .h files in the build process
 # (student's source code can be put into project root, or src/ subfolder)
-SOURCES += $$PWD/lib/StanfordCPPLib/*.cpp
+exists($$PWD/lib/StanfordCPPLib/*.cpp) {
+    SOURCES += $$PWD/lib/StanfordCPPLib/*.cpp
+}
+SOURCES += $$PWD/lib/StanfordCPPLib/collections/*.cpp
+SOURCES += $$PWD/lib/StanfordCPPLib/graphics/*.cpp
+SOURCES += $$PWD/lib/StanfordCPPLib/io/*.cpp
 SOURCES += $$PWD/lib/StanfordCPPLib/private/*.cpp
-SOURCES += $$PWD/lib/StanfordCPPLib/stacktrace/*.cpp
+SOURCES += $$PWD/lib/StanfordCPPLib/system/*.cpp
+SOURCES += $$PWD/lib/StanfordCPPLib/util/*.cpp
 exists($$PWD/src/*.cpp) {
     SOURCES += $$PWD/src/*.cpp
-}
-exists($$PWD/src/autograder/*.cpp) {
-    SOURCES += $$PWD/src/autograder/*.cpp
 }
 exists($$PWD/src/test/*.cpp) {
     SOURCES += $$PWD/src/test/*.cpp
@@ -89,17 +94,17 @@ exists($$PWD/*.cpp) {
     SOURCES += $$PWD/*.cpp
 }
 
-HEADERS += $$PWD/lib/StanfordCPPLib/*.h
+exists($$PWD/lib/StanfordCPPLib/*.h) {
+    HEADERS += $$PWD/lib/StanfordCPPLib/*.h
+}
+HEADERS += $$PWD/lib/StanfordCPPLib/collections/*.h
+HEADERS += $$PWD/lib/StanfordCPPLib/graphics/*.h
+HEADERS += $$PWD/lib/StanfordCPPLib/io/*.h
 HEADERS += $$PWD/lib/StanfordCPPLib/private/*.h
-HEADERS += $$PWD/lib/StanfordCPPLib/stacktrace/*.h
-exists($$PWD/src/*.h) {
-    HEADERS += $$PWD/src/*.h
-}
-exists($$PWD/src/autograder/*.h) {
-    HEADERS += $$PWD/src/autograder/*.h
-}
+HEADERS += $$PWD/lib/StanfordCPPLib/system/*.h
+HEADERS += $$PWD/lib/StanfordCPPLib/util/*.h
 exists($$PWD/src/test/*.h) {
-    HEADERS += $$PWD/src/test/*.h
+    INCLUDEPATH += $$PWD/src/test/
 }
 exists($$PWD/*.h) {
     HEADERS += $$PWD/*.h
@@ -107,8 +112,11 @@ exists($$PWD/*.h) {
 
 # directories examined by Qt Creator when student writes an #include statement
 INCLUDEPATH += $$PWD/lib/StanfordCPPLib/
-INCLUDEPATH += $$PWD/lib/StanfordCPPLib/private/
-INCLUDEPATH += $$PWD/lib/StanfordCPPLib/stacktrace/
+INCLUDEPATH += $$PWD/lib/StanfordCPPLib/collections/
+INCLUDEPATH += $$PWD/lib/StanfordCPPLib/graphics/
+INCLUDEPATH += $$PWD/lib/StanfordCPPLib/io/
+INCLUDEPATH += $$PWD/lib/StanfordCPPLib/system/
+INCLUDEPATH += $$PWD/lib/StanfordCPPLib/util/
 INCLUDEPATH += $$PWD/src/
 INCLUDEPATH += $$PWD/
 exists($$PWD/src/autograder/*.h) {
@@ -120,11 +128,14 @@ exists($$PWD/src/test/*.h) {
 
 # directories listed as "Other files" in left Project pane of Qt Creator
 OTHER_FILES += $$files(res/*)
-exists($$PWD/output/*.txt) {
-    OTHER_FILES += $$files(output/*)
-}
 exists($$PWD/*.txt) {
     OTHER_FILES += $$files($$PWD/*.txt)
+}
+exists($$PWD/input/*) {
+    OTHER_FILES += $$files(input/*)
+}
+exists($$PWD/output/*) {
+    OTHER_FILES += $$files(output/*)
 }
 
 ###############################################################################
@@ -193,7 +204,7 @@ unix:!macx {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20160924
+DEFINES += SPL_PROJECT_VERSION=20161013
 
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1
@@ -354,11 +365,14 @@ win32 {
     copyResources.input += $$files($$PWD/lib/addr2line.exe)
 }
 copyResources.input += $$files($$PWD/res/*)
-exists($$PWD/output/*.txt) {
-    copyResources.input += $$files(output/*)
-}
 exists($$PWD/*.txt) {
     copyResources.input += $$files($$PWD/*.txt)
+}
+exists($$PWD/input/*) {
+    copyResources.input += $$files(input/*)
+}
+exists($$PWD/output/*) {
+    copyResources.input += $$files(output/*)
 }
 
 QMAKE_EXTRA_TARGETS += copyResources first copydata
@@ -378,9 +392,20 @@ POST_TARGETDEPS += copyResources
 exists($$PWD/lib/autograder/*.cpp) {
     # include the various autograder source code and libraries in the build process
     SOURCES += $$PWD/lib/autograder/*.cpp
+    exists($$PWD/src/autograder/*.cpp) {
+        SOURCES += $$PWD/src/autograder/*.cpp
+    }
+
     HEADERS += $$PWD/lib/autograder/*.h
-    INCLUDEPATH += $$PWD/lib/StanfordCPPLib/private/
+    exists($$PWD/src/autograder/*.h) {
+        HEADERS += $$PWD/src/autograder/*.h
+    }
+
     INCLUDEPATH += $$PWD/lib/autograder/
+    exists($$PWD/src/autograder/*.h) {
+        INCLUDEPATH += $$PWD/src/autograder/
+    }
+
     DEFINES += SPL_AUTOGRADER_MODE
 
     # a check to ensure that required autograder resources are present in this project
@@ -395,12 +420,12 @@ exists($$PWD/lib/autograder/*.cpp) {
     copyResources.input += $$files($$PWD/res/autograder/*)
     OTHER_FILES += $$files(res/autograder/*)
 
+    win32 {
+        copyToDestdir($$PWD/res/autograder)
+    }
     !win32 {
         LIBS += -lpthread
         copyToDestdir($$files($$PWD/res/autograder/*))
-    }
-    win32 {
-        copyToDestdir($$PWD/res/autograder)
     }
 
     # copy source code into build folder so it can be analyzed by style checker
@@ -425,4 +450,4 @@ exists($$PWD/lib/autograder/*.cpp) {
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #428; if not, your .pro has been changed!)
+# END OF FILE (this should be line #453; if not, your .pro has been changed!)

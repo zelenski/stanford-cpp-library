@@ -6,6 +6,8 @@
  * See autograder.h for documentation of each member.
  * 
  * @author Marty Stepp
+ * @version 2016/10/13
+ * - refactored exitEnabled/setExitEnabled to use new Platform version
  * @version 2016/10/04
  * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * @version 2016/09/22
@@ -75,7 +77,6 @@ AutograderFlags::AutograderFlags() {
     testNameWidth = -1;
     showInputPanel = false;
     inputPanelFilename = INPUT_PANE_FILENAME;
-    exitEnabled = true;
     showLateDays = true;
     graphicalUI = false;
     callbackStart = nullptr;
@@ -196,12 +197,11 @@ void setCurrentTestShouldRun(bool shouldRun) {
 }
 
 bool exitEnabled() {
-    return STATIC_VARIABLE(FLAGS).exitEnabled;
+    return stanfordcpplib::exitEnabled();
 }
 
 void setExitEnabled(bool enabled) {
-    STATIC_VARIABLE(FLAGS).exitEnabled = enabled;
-    gwindowSetExitGraphicsEnabled(enabled);
+    stanfordcpplib::setExitEnabled(enabled);
 }
 
 void setFailDetails(const autograder::UnitTestDetails& deets) {
@@ -670,26 +670,6 @@ int autograderGraphicalMain(int argc, char** argv) {
 }
 #endif // SPL_AUTOGRADER_MODE
 } // namespace autograder
-
-/*
- * We replace std::exit(int) function with our own, to alert the grader
- * if the student is trying to exit the autograder program by calling
- * exit() in their program code.
- */
-void exit(int status) {
-    if (!autograder::exitEnabled()) {
-        std::ostringstream out;
-        out << "Student tried to call exit(" << status << ") to exit their program. " << std::endl;
-        out << "*** They should not use this function; main should end through " << std::endl;
-        out << "*** normal program control flow." << std::endl;
-        out << "*** Edit their code to remove calls to exit() and run again.";
-        error(out.str());
-    }
-
-    // must exit either way (not return) because the function exit() is
-    // flagged by the compiler as 'noreturn'
-    std::exit(status);
-}
 
 // declared in assertions.h
 void assertEqualsImage(const std::string& msg,

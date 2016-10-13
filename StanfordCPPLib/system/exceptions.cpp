@@ -32,12 +32,11 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "call_stack.h"
 #include "error.h"
 #include "filelib.h"
-#include "static.h"
 #include "strlib.h"
 #include "private/static.h"
-#include "stacktrace/call_stack.h"
 #ifdef _WIN32
 #include <windows.h>
 #  undef MOUSE_EVENT
@@ -463,7 +462,7 @@ static void stanfordCppLibTerminateHandler() {
         // blocked console I/O was interrupted; just exit program immediately
         // (doesn't close any other JBE-generated GUI windows, but oh well)
         std::cout.flush();
-        exit(0);
+        std::exit(0);
     } catch (const std::exception& ex) {
         FILL_IN_EXCEPTION_TRACE(ex, "A C++ exception", ex.what());
     } catch (std::string str) {

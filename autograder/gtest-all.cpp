@@ -4591,7 +4591,7 @@ XmlUnitTestResultPrinter::XmlUnitTestResultPrinter(const char* output_file)
   if (output_file_.c_str() == nullptr || output_file_.empty()) {
     std::cerr << "XML output file may not be null" << std::endl;
     std::cerr.flush();
-    exit(EXIT_FAILURE);
+    std::exit(EXIT_FAILURE);
   }
 }
 
@@ -4618,7 +4618,7 @@ void XmlUnitTestResultPrinter::OnTestIterationEnd(const UnitTest& unit_test,
     //      Windows.
     std::cerr << "Unable to open file \"" << output_file_ << "\"" << std::endl;
     std::cerr.flush();
-    exit(EXIT_FAILURE);
+    std::exit(EXIT_FAILURE);
   }
   std::stringstream stream;
   PrintXmlUnitTest(&stream, unit_test);
@@ -5332,7 +5332,7 @@ void UnitTest::AddTestPartResult(
 #else
       // We cannot call abort() as it generates a pop-up in debug mode
       // that cannot be suppressed in VC 7.1 or below.
-      exit(1);
+      std::exit(1);
 #endif
     }
   }
@@ -5866,7 +5866,7 @@ void WriteToShardStatusFileIfNeeded() {
                     "specified by the %s environment variable.\n",
                     test_shard_file, kTestShardStatusFile);
       std::cout.flush();
-      exit(EXIT_FAILURE);
+      std::exit(EXIT_FAILURE);
     }
     fclose(file);
   }
@@ -5897,7 +5897,7 @@ bool ShouldShard(const char* total_shards_env,
       << ", but have left " << kTestTotalShards << " unset.\n";
     ColoredPrintf(COLOR_RED, msg.GetString().c_str());
     fflush(stdout);
-    exit(EXIT_FAILURE);
+    std::exit(EXIT_FAILURE);
   } else if (total_shards != -1 && shard_index == -1) {
     const Message msg = Message()
       << "Invalid environment variables: you have "
@@ -5905,7 +5905,7 @@ bool ShouldShard(const char* total_shards_env,
       << ", but have left " << kTestShardIndex << " unset.\n";
     ColoredPrintf(COLOR_RED, msg.GetString().c_str());
     fflush(stdout);
-    exit(EXIT_FAILURE);
+    std::exit(EXIT_FAILURE);
   } else if (shard_index < 0 || shard_index >= total_shards) {
     const Message msg = Message()
       << "Invalid environment variables: we require 0 <= "
@@ -5914,7 +5914,7 @@ bool ShouldShard(const char* total_shards_env,
       << ", " << kTestTotalShards << "=" << total_shards << ".\n";
     ColoredPrintf(COLOR_RED, msg.GetString().c_str());
     fflush(stdout);
-    exit(EXIT_FAILURE);
+    std::exit(EXIT_FAILURE);
   }
 
   return total_shards > 1;
@@ -5932,7 +5932,7 @@ Int32 Int32FromEnvOrDie(const char* var, Int32 default_val) {
   Int32 result;
   if (!ParseInt32(Message() << "The value of environment variable " << var,
                   str_val, &result)) {
-    exit(EXIT_FAILURE);
+    std::exit(EXIT_FAILURE);
   }
   return result;
 }

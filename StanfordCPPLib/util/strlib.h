@@ -4,6 +4,8 @@
  * This file exports several useful string functions that are not
  * included in the C++ string library.
  * 
+ * @version 2016/10/13
+ * - modified writeGenericValue, writeQuotedString to return ostream
  * @version 2016/08/03
  * - modified readGenericValue not to throw error() on parse failures
  *   (needed to support idiomatic silent-failing >> operators)
@@ -381,8 +383,8 @@ bool readQuotedString(std::istream& is, std::string& str, bool throwOnError = tr
  * parameter forceQuotes is explicitly set to false, quotes are included
  * in the output only if necessary.
  */
-void writeQuotedString(std::ostream& os, const std::string& str,
-                       bool forceQuotes = true);
+std::ostream& writeQuotedString(std::ostream& os, const std::string& str,
+                                bool forceQuotes = true);
 
 /*
  * Friend function: stringNeedsQuoting
@@ -400,14 +402,15 @@ bool stringNeedsQuoting(const std::string& str);
  * this function uses writeQuotedString to write the value.
  */
 template <typename ValueType>
-void writeGenericValue(std::ostream& os, const ValueType& value, bool) {
+std::ostream& writeGenericValue(std::ostream& os, const ValueType& value, bool) {
     os << value;
+    return os;
 }
 
 template <>
-inline void writeGenericValue(std::ostream& os, const std::string& value,
+inline std::ostream& writeGenericValue(std::ostream& os, const std::string& value,
                               bool forceQuotes) {
-    writeQuotedString(os, value, forceQuotes);
+    return writeQuotedString(os, value, forceQuotes);
 }
 
 template <typename ValueType>

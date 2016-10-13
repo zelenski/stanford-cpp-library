@@ -13,7 +13,7 @@
 #include <sstream>
 #include "error.h"
 #include "hashcode.h"
-#include "platform.h"
+#include "private/platform.h"
 
 // line e.g. "1.5 G 5 NATURAL false"
 Note::Note(std::string line) {

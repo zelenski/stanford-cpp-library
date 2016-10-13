@@ -1,4 +1,7 @@
 /*
+ * @version 2016/10/12
+ * - added clear method as alias for removeAll
+ * - added getCanvasSize
  * @version 2016/05/05
  * - added get/setCanvasSize,Width,Height methods for better control over central drawing canvas size
  * - modified setSize to call setCanvasSize because that's what students actually want
@@ -223,6 +226,28 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 	 */
 	public void removeAll() {
 		gc.removeAll();
+	}
+	
+	/* Method: clear() */
+	/**
+	 * Removes all graphical objects from this container.
+	 * Equivalent to removeAll.
+	 * 
+	 * @usage clear();
+	 */
+	public void clear() {
+		removeAll();
+	}
+
+	/* Method: clearCanvas() */
+	/**
+	 * Removes all graphical objects from this container.
+	 * Equivalent to removeAll.
+	 * 
+	 * @usage clearCanvas();
+	 */
+	public void clearCanvas() {
+		removeAll();
 	}
 
 	/* Method: getElementCount() */
@@ -510,6 +535,14 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 		} else {
 			return getHeight();
 		}
+	}
+
+	/**
+	 * Returns the size of the central canvas area.
+	 * @return the size of the central canvas area
+	 */
+	public Dimension getCanvasSize() {
+		return new Dimension((int) getCanvasWidth(), (int) getCanvasHeight());
 	}
 
 	/**

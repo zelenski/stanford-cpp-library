@@ -17,6 +17,7 @@
 #ifndef _init_h
 #define _init_h
 
+#include <cstdlib>
 #include <stdio.h>
 
 namespace stanfordcpplib {
@@ -110,5 +111,13 @@ static __StanfordCppLibraryInitializer __stanfordcpplib_init;
 
 #  endif  // SPL_AUTOGRADER_MODE
 extern int mainWrapper(int argc, char **argv);
+
+// bypass std::exit function
+namespace std {
+void __stanfordCppLibExit(int status);
+} // namespace std
+
+#define __EXIT __std_exit_function_
+#define exit __stanfordCppLibExit
 
 #endif // _init_h
