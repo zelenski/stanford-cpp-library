@@ -5,6 +5,8 @@
  * See that file for documentation of each member.
  *
  * @author Marty Stepp
+ * @version 2016/10/14
+ * - modified floating-point equality tests to use floatingPointEqual function
  * @version 2016/07/30
  * - added constructor that takes a file name
  * - converted all occurrences of string parameters to const string&
@@ -34,6 +36,7 @@
 #include <iomanip>
 #include "base64.h"
 #include "filelib.h"
+#include "gmath.h"
 #include "gwindow.h"
 #include "strlib.h"
 #include "private/platform.h"
@@ -313,7 +316,8 @@ void GBufferedImage::load(const std::string& filename) {
 
 void GBufferedImage::resize(double width, double height, bool retain) {
     checkSize("resize", width, height);
-    bool wasZero = (this->m_width == 0 && this->m_height == 0);
+    bool wasZero = (floatingPointEqual(this->m_width, 0)
+                    && floatingPointEqual(this->m_height, 0));
     this->m_width = width;
     this->m_height = height;
     if (wasZero) {
@@ -396,7 +400,7 @@ void GBufferedImage::init(double x, double y, double width, double height,
         stanfordcpplib::getPlatform()->gbufferedimage_constructor(this, x, y, width, height, rgb);
     }
 
-    if (x != 0 || y != 0) {
+    if (!floatingPointEqual(x, 0) || !floatingPointEqual(y, 0)) {
         setLocation(x, y);
     }
     
@@ -409,8 +413,8 @@ void GBufferedImage::init(double x, double y, double width, double height,
 }
 
 bool operator ==(const GBufferedImage& img1, const GBufferedImage& img2) {
-    return img1.m_width == img2.m_width
-            && img1.m_height == img2.m_height
+    return floatingPointEqual(img1.m_width, img2.m_width)
+            && floatingPointEqual(img1.m_height, img2.m_height)
             && img1.m_backgroundColor == img2.m_backgroundColor
             && img1.m_pixels == img2.m_pixels;
 }

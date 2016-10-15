@@ -4,6 +4,8 @@
  * This file implements the body of each member of the Note class.
  *
  * @author Marty Stepp
+ * @version 2016/10/14
+ * - modified floating-point equality tests to use floatingPointEqual function
  * @version 2016/09/26
  * - initial version
  * @since 2016/09/26
@@ -12,6 +14,7 @@
 #include "note.h"
 #include <sstream>
 #include "error.h"
+#include "gmath.h"
 #include "hashcode.h"
 #include "private/platform.h"
 
@@ -102,7 +105,7 @@ Note::Note(double duration, Pitch pitch, int octave, Accidental accidental, bool
 }
 
 bool Note::equals(const Note& note2) const {
-    return duration == note2.duration
+    return floatingPointEqual(duration, note2.duration)
             && pitch == note2.pitch
             && octave == note2.octave
             && accidental == note2.accidental

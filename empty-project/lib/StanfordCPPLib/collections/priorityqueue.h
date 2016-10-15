@@ -4,6 +4,8 @@
  * This file exports the <code>PriorityQueue</code> class, a
  * collection in which values are processed in priority order.
  * 
+ * @version 2016/10/14
+ * - modified floating-point equality tests to use floatingPointEqual function
  * @version 2016/09/24
  * - refactored to use collections.h utility functions
  * @version 2016/09/22
@@ -41,10 +43,12 @@
 #ifndef _priorityqueue_h
 #define _priorityqueue_h
 
+#include <cmath>
 #include <initializer_list>
 #include <utility>
 #include "collections.h"
 #include "error.h"
+#include "gmath.h"
 #include "hashcode.h"
 #include "vector.h"
 
@@ -324,11 +328,11 @@ private:
                 }
                 double ipri = m_pq->heapGet(i).priority;
                 int iseq = m_pq->heapGet(i).sequence;
-                if (ipri < pri || (ipri == pri && iseq < seq)) {
+                if (ipri < pri || (floatingPointEqual(ipri, pri) && iseq < seq)) {
                     continue;
                 } else if (newIndex == m_pq->count
                            || ipri < newPri
-                           || (ipri == newPri && iseq < newSeq)) {
+                           || (floatingPointEqual(ipri, newPri) && iseq < newSeq)) {
                     newPri = ipri;
                     newSeq = iseq;
                     newIndex = i;
@@ -441,10 +445,10 @@ ValueType & PriorityQueue<ValueType>::back() {
  */
 template <typename ValueType>
 void PriorityQueue<ValueType>::changePriority(ValueType value, double newPriority) {
-    if (!(newPriority == newPriority)) {
+    if (std::isnan(newPriority)) {
         error("PriorityQueue::changePriority: Attempted to use NaN as a priority.");
     }
-    if (newPriority == -0.0) {
+    if (floatingPointEqual(newPriority, -0.0)) {
         newPriority = 0.0;
     }
 
@@ -522,10 +526,10 @@ ValueType PriorityQueue<ValueType>::dequeue() {
 
 template <typename ValueType>
 void PriorityQueue<ValueType>::enqueue(const ValueType& value, double priority) {
-    if (!(priority == priority)) {
+    if (std::isnan(priority)) {
         error("PriorityQueue::enqueue: Attempted to use NaN as a priority.");
     }
-    if (priority == -0.0) {
+    if (floatingPointEqual(priority, -0.0)) {
         priority = 0.0;
     }
 
@@ -561,7 +565,7 @@ bool PriorityQueue<ValueType>::equals(const PriorityQueue<ValueType>& pq2) const
     PriorityQueue<ValueType> backup1 = *this;
     PriorityQueue<ValueType> backup2 = pq2;
     while (!backup1.isEmpty() && !backup2.isEmpty()) {
-        if (backup1.peekPriority() != backup2.peekPriority()) {
+        if (!floatingPointEqual(backup1.peekPriority(), backup2.peekPriority())) {
             return false;
         }
         if (backup1.dequeue() != backup2.dequeue()) {

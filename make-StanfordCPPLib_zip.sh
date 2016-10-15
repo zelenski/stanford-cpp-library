@@ -7,9 +7,9 @@ cp -f $SPLJARFILE $OUTDIR
 CPPLIBFILE=$OUTDIR/StanfordCPPLib.zip
 echo "Building $CPPLIBFILE ..."
 rm $CPPLIBFILE 2>/dev/null
-zip -r $CPPLIBFILE StanfordCPPLib/
-zip --update $CPPLIBFILE -j JavaBackEnd/eclipseproject/obf/spl.jar
-zip --update $CPPLIBFILE -j $OUTDIR/addr2line.exe
+zip -rq $CPPLIBFILE StanfordCPPLib/
+zip -q --update $CPPLIBFILE -j JavaBackEnd/eclipseproject/obf/spl.jar
+zip -q --update $CPPLIBFILE -j $OUTDIR/addr2line.exe
 
 EMPTYPROJECTFILE=cppdoc/dist/empty-project.zip
 echo "Building $EMPTYPROJECTFILE ..."
@@ -20,7 +20,7 @@ cp -r StanfordCPPLib/* empty-project/lib/StanfordCPPLib/
 rm -f empty-project/lib/spl.jar
 cp -f $SPLJARFILE empty-project/lib/spl.jar
 rm $EMPTYPROJECTFILE 2>/dev/null
-zip -r $EMPTYPROJECTFILE empty-project/
+zip -rq $EMPTYPROJECTFILE empty-project/
 cp -f empty-project/empty-project.pro $OUTDIR
 
 echo "Done."

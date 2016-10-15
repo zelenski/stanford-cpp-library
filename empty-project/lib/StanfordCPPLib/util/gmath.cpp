@@ -4,6 +4,9 @@
  * This file implements the gmath.h interface.  In all cases, the
  * implementation for each function requires only one line of code,
  * which makes detailed documentation unnecessary.
+ *
+ * @version 2016/10/14
+ * - modified floating-point equality tests to use floatingPointEqual function
  */
 
 #include "gmath.h"
@@ -47,7 +50,8 @@ double vectorAngle(const GPoint & pt) {
 }
 
 double vectorAngle(double x, double y) {
-    return (x == 0 && y == 0) ? 0 : toDegrees(atan2(-y, x));
+    return floatingPointEqual(x, 0) && floatingPointEqual(y, 0)
+            ? 0 : toDegrees(atan2(-y, x));
 }
 
 int countDigits(int n, int base) {

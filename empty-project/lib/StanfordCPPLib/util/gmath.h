@@ -4,11 +4,16 @@
  * This file exports several functions for working with graphical
  * geometry along with the mathematical constants <code>PI</code>
  * and <code>E</code>.
+ *
+ * @version 2016/10/14
+ * - added floatingPointEqual method for comparing floats and doubles
  */
 
 #ifndef _gmath_h
 #define _gmath_h
 
+#include <cmath>
+#include <limits>
 #include "gtypes.h"
 
 /*
@@ -111,6 +116,39 @@ double vectorAngle(double x, double y);
  * Throws an error if base is 0 or negative.
  */
 int countDigits(int n, int base = 10);
+
+/*
+ * Returns true if the two given floating-point numbers are "equal" to each other.
+ * Floating-point equality is tricky because of round-off errors, which can cause
+ * the numbers to be nearly the same but not identical.
+ *
+ * See also:
+ * http://stackoverflow.com/questions/4548004/how-to-correctly-and-standardly-compare-floats
+ */
+template<typename T>
+bool floatingPointEqual(T f1, T f2) {
+  return (std::fabs(f1 - f2) <= std::numeric_limits<T>::epsilon() * std::fmax(fabs(f1), fabs(f2)));
+}
+
+template<typename T>
+bool floatingPointEqual(T f1, int f2) {
+  return floatingPointEqual(f1, (T) f2);
+}
+
+template<typename T>
+bool floatingPointEqual(int f1, T f2) {
+  return floatingPointEqual((T) f1, f2);
+}
+
+template<typename T>
+bool floatingPointEqual(T f1, long int f2) {
+  return floatingPointEqual(f1, (T) f2);
+}
+
+template<typename T>
+bool floatingPointEqual(long int f1, T f2) {
+  return floatingPointEqual((T) f1, f2);
+}
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 

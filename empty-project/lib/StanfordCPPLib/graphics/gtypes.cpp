@@ -3,6 +3,8 @@
  * ----------------
  * This file implements the classes in the gtypes.h interface.
  * 
+ * @version 2016/10/14
+ * - modified floating-point equality tests to use floatingPointEqual function
  * @version 2015/07/05
  * - using global hashing functions rather than global variables
  * @version 2014/10/08
@@ -13,6 +15,7 @@
 #include <cmath>
 #include <string>
 #include "error.h"
+#include "gmath.h"
 #include "hashcode.h"
 #include "strlib.h"
 
@@ -51,7 +54,8 @@ std::ostream& operator <<(std::ostream& os, const GPoint& pt) {
 }
 
 bool operator ==(const GPoint& p1, const GPoint& p2) {
-    return p1.x == p2.x && p1.y == p2.y;
+    return floatingPointEqual(p1.x, p2.x)
+            && floatingPointEqual(p1.y, p2.y);
 }
 
 bool operator !=(const GPoint& p1, const GPoint& p2) {
@@ -101,7 +105,8 @@ std::ostream& operator <<(std::ostream& os, const GDimension& dim) {
 }
 
 bool operator ==(const GDimension& d1, const GDimension& d2) {
-    return d1.width == d2.width && d1.height == d2.height;
+    return floatingPointEqual(d1.width, d2.width)
+            && floatingPointEqual(d1.height, d2.height);
 }
 
 bool operator !=(const GDimension& d1, const GDimension& d2) {
@@ -179,9 +184,10 @@ std::ostream& operator <<(std::ostream& os, const GRectangle& rect) {
 }
 
 bool operator ==(const GRectangle& r1, const GRectangle& r2) {
-    return r1.x == r2.x && r1.y == r2.y
-            && r1.width == r2.width
-            && r1.height == r2.height;
+    return floatingPointEqual(r1.x, r2.x)
+            && floatingPointEqual(r1.y, r2.y)
+            && floatingPointEqual(r1.width, r2.width)
+            && floatingPointEqual(r1.height, r2.height);
 }
 
 bool operator !=(const GRectangle& r1, const GRectangle& r2) {
