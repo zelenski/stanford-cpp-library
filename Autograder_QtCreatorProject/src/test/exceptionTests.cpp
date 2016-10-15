@@ -28,7 +28,7 @@ namespace MyNS {
 
 void b() {
     cout << "function b start" << endl;
-    MyNS::LoL::cCcCc_cCcCc(0, NULL, 0, 0, false);
+    MyNS::LoL::cCcCc_cCcCc(0, nullptr, 0, 0, false);
     cout << "function b end" << endl;
 }
 
@@ -73,7 +73,7 @@ void segC_theOneThatActuallyThrows(int sig) {
         cout << (a/b) << endl;
     } else if (sig == SIGSEGV) {
         // dereference a NULL pointer (generate SIGSEGV)
-        int* foo = 0;
+        int* foo = nullptr;
         cout << *foo << endl;
     }
     cout << "will never get here lol" << endl;

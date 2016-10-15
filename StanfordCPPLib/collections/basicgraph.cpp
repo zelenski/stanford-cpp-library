@@ -9,6 +9,8 @@
  * See BasicGraph.h for documentation of each member.
  *
  * @author Marty Stepp
+ * @version 2016/10/14
+ * - modified floating-point equality tests to use floatingPointEqual function
  * @version 2016/08/12
  * - added initializer_list functionality
  * @version 2014/12/04
@@ -28,6 +30,7 @@
 
 #include "basicgraph.h"
 #include <sstream>
+#include "gmath.h"
 
 /*
  * Vertex member implementations
@@ -94,7 +97,7 @@ Vertex& Vertex::operator =(Vertex&& other) {
 
 std::ostream& operator <<(std::ostream& out, const Vertex& v) {
     out << "Vertex{name=" << v.name;
-    if (v.cost != 0.0) {
+    if (!floatingPointEqual(v.cost, 0.0)) {
         out << ", cost=" << v.cost;
     }
     out << ", cost=" << v.cost;
@@ -174,7 +177,7 @@ std::ostream& operator <<(std::ostream& out, const Edge& edge) {
     } else {
         out << edge.finish->name;
     }
-    if (edge.cost != 0.0) {
+    if (!floatingPointEqual(edge.cost, 0.0)) {
         out << ", cost=" << edge.cost;
     }
     if (edge.visited) {
@@ -406,7 +409,7 @@ void BasicGraph::scanArcData(TokenScanner& scanner, Edge* edge, Edge* inverse) {
 }
 
 void BasicGraph::writeArcData(std::ostream& out, Edge* edge) const {
-    if (edge->cost != 0) {
+    if (!floatingPointEqual(edge->cost, 0.0)) {
         out << " : ";
         out << edge->cost;
     }

@@ -4,6 +4,8 @@
  * This file exports the <code>HashMap</code> class, which stores
  * a set of <i>key</i>-<i>value</i> pairs.
  * 
+ * @version 2016/10/14
+ * - modified floating-point equality tests to use floatingPointEqual function
  * @version 2016/09/24
  * - refactored to use collections.h utility functions
  * @version 2016/08/10
@@ -564,7 +566,7 @@ public:
         Cell* cp;                    /* Current cell in bucket chain */
 
     public:
-        iterator() : mp(nullptr), bucket(0), cp(0) {
+        iterator() : mp(nullptr), bucket(0), cp(nullptr) {
             /* Empty */
         }
 

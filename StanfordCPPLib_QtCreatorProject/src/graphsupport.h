@@ -14,7 +14,7 @@ extern const int NUM_COLORS;
 extern const Color COLORS[7];
 extern const std::string COLOR_NAMES[7];
 
-bool graph_canReach(BasicGraph& graph, Vertex* start, Vertex* end, Vector<Vertex*>* path = NULL);
+bool graph_canReach(BasicGraph& graph, Vertex* start, Vertex* end, Vector<Vertex*>* path = nullptr);
 bool graph_isConnected(BasicGraph& graph, bool checkWeak = false);
 bool graph_isCyclic(BasicGraph& graph);
 void graph_printEdgeList(BasicGraph& graph);

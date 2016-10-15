@@ -1,5 +1,6 @@
 #include "graphsupport.h"
 #include <iomanip>
+#include "gmath.h"
 using namespace std;
 
 // definitions for colors
@@ -105,7 +106,7 @@ void graph_printEdgeList(BasicGraph& graph) {
     Vector<string> edgeList;
     for (Edge* edge : graph.getEdgeSet()) {
         string edgeStr = "" + edge->start->name + " -> " + edge->finish->name;
-        if (edge->weight != 0) {
+        if (!floatingPointEqual(edge->weight, 0.0)) {
             edgeStr += " : " + realToString(edge->weight);
         }
         cout << "  " << edgeStr << endl;
@@ -123,7 +124,7 @@ void graph_printAdjacencyList(BasicGraph& graph) {
             }
             cout << "(" << neighbor->name;
             Edge* edge = graph.getEdge(v, neighbor);
-            if (edge->weight != 0) {
+            if (!floatingPointEqual(edge->weight, 0.0)) {
                 cout << ":" << edge->weight;
             }
             count++;
@@ -153,7 +154,7 @@ void graph_printAdjacencyMatrix(BasicGraph& graph) {
             double toPrint = 0;
             if (graph.isNeighbor(v1, v2)) {
                 Edge* edge = graph.getEdge(v1, v2);
-                if (edge->weight != 0) {
+                if (!floatingPointEqual(edge->weight, 0.0)) {
                     toPrint = edge->weight;
                 } else {
                     toPrint = 1;

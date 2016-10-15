@@ -3,6 +3,8 @@
  * ------------------
  * This file implements the gobjects.h interface.
  * 
+ * @version 2016/10/14
+ * - modified floating-point equality tests to use floatingPointEqual function
  * @version 2016/09/27
  * - added get/setText methods to GLabel
  * @version 2015/10/13
@@ -460,7 +462,9 @@ bool GOval::contains(double x, double y) const {
     }
     double rx = width / 2;
     double ry = height / 2;
-    if (rx == 0 || ry == 0) return false;
+    if (floatingPointEqual(rx, 0) || floatingPointEqual(ry, 0)) {
+        return false;
+    }
     double dx = x - (this->x + rx);
     double dy = y - (this->y + ry);
     return (dx * dx) / (rx * rx) + (dy * dy) / (ry * ry) <= 1.0;
@@ -631,7 +635,9 @@ bool GArc::contains(double x, double y) const {
     }
     double rx = frameWidth / 2;
     double ry = frameHeight / 2;
-    if (rx == 0 || ry == 0) return false;
+    if (floatingPointEqual(rx, 0) || floatingPointEqual(ry, 0)) {
+        return false;
+    }
     double dx = x - (this->x + rx);
     double dy = y - (this->y + ry);
     double r = (dx * dx) / (rx * rx) + (dy * dy) / (ry * ry);
@@ -983,13 +989,27 @@ bool GLine::contains(double x, double y) const {
     double x1 = x0 + dx;
     double y1 = y0 + dy;
     double tSquared = LINE_TOLERANCE * LINE_TOLERANCE;
-    if (dsq(x, y, x0, y0) < tSquared) return true;
-    if (dsq(x, y, x1, y1) < tSquared) return true;
-    if (x < std::min(x0, x1) - LINE_TOLERANCE) return false;
-    if (x > std::max(x0, x1) + LINE_TOLERANCE) return false;
-    if (y < std::min(y0, y1) - LINE_TOLERANCE) return false;
-    if (y > std::max(y0, y1) + LINE_TOLERANCE) return false;
-    if ((float) (x0 - x1) == 0 && (float) (y0 - y1) == 0) return false;
+    if (dsq(x, y, x0, y0) < tSquared) {
+        return true;
+    }
+    if (dsq(x, y, x1, y1) < tSquared) {
+        return true;
+    }
+    if (x < std::min(x0, x1) - LINE_TOLERANCE) {
+        return false;
+    }
+    if (x > std::max(x0, x1) + LINE_TOLERANCE) {
+        return false;
+    }
+    if (y < std::min(y0, y1) - LINE_TOLERANCE) {
+        return false;
+    }
+    if (y > std::max(y0, y1) + LINE_TOLERANCE) {
+        return false;
+    }
+    if (floatingPointEqual(x0 - x1, 0) && floatingPointEqual(y0 - y1, 0)) {
+        return false;
+    }
     double u = ((x - x0) * (x1 - x0) + (y - y0) * (y1 - y0))
             / dsq(x0, y0, x1, y1);
     return dsq(x, y, x0 + u * (x1 - x0), y0 + u * (y1 - y0)) < tSquared;

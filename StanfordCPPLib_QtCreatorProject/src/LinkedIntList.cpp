@@ -50,7 +50,7 @@ ostream& operator <<(ostream& out, ListNode* front) {
     LinkedIntList* list = new LinkedIntList();
     list->front = front;
     out << *list;
-    list->front = NULL;   // avoid double-free
+    list->front = nullptr;   // avoid double-free
     return out;
 }
 
@@ -58,16 +58,16 @@ istream& operator >>(istream& input, ListNode*& front) {
     LinkedIntList* list = new LinkedIntList();
     input >> *list;
     if (input.fail()) {
-        front = NULL;
+        front = nullptr;
     } else {
         front = list->front;
     }
-    list->front = NULL;   // avoid double-free
+    list->front = nullptr;   // avoid double-free
     return input;
 }
 
 LinkedIntList::LinkedIntList()
-        : front(NULL), m_locked(false) {
+        : front(nullptr), m_locked(false) {
     // empty
 }
 
@@ -75,7 +75,7 @@ LinkedIntList::LinkedIntList()
  * Constructs a new empty list storing the given elements.
  */
 LinkedIntList::LinkedIntList(std::initializer_list<int> list)
-        : front(NULL), m_locked(false) {
+        : front(nullptr), m_locked(false) {
     for (int n : list) {
         add(n);
     }
@@ -88,22 +88,22 @@ LinkedIntList::~LinkedIntList() {
 
 void LinkedIntList::add(int value) {
     checkLocked("add");
-    if (front == NULL) {
+    if (!front) {
         // empty list: add this node as the new front
-        front = new ListNode(value, NULL);
+        front = new ListNode(value);
     } else {
         // non-empty list: move to end, attach new node
         ListNode* current = front;
-        while (current->next != NULL) {
+        while (current->next) {
             current = current->next;
         }
-        current->next = new ListNode(value, NULL);
+        current->next = new ListNode(value);
     }
 }
 
 void LinkedIntList::clear() {
     checkLocked("clear");
-    while (front != NULL) {
+    while (front) {
         ListNode* temp = front;
         front = front->next;
         delete temp;
@@ -137,7 +137,7 @@ void LinkedIntList::insert(int index, int value) {
 }
 
 bool LinkedIntList::isEmpty() const {
-    return front == NULL;
+    return front == nullptr;
 }
 
 void LinkedIntList::remove(int index) {
@@ -172,7 +172,7 @@ int LinkedIntList::size() const {
     checkLocked("size");
     int count = 0;
     ListNode* current = front;
-    while (current != NULL) {
+    while (current) {
         count++;
         current = current->next;
     }
@@ -188,7 +188,7 @@ string LinkedIntList::toString() const {
         visited.add(front);
 
         ListNode* curr = front->next;
-        while (curr != NULL) {
+        while (curr) {
             result += ", " + integerToString(curr->data);
             if (visited.contains(curr)) {
                 result += " (cycle!)";

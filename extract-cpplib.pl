@@ -10,157 +10,141 @@ if ($#ARGV >= 0) {
 my $basedir = "StanfordCPPLib";
 my $projdir = "StanfordCPPLib_QtCreatorProject/src";
 my $autograder_basedir = "autograder";
-my $practiceit_dir = "/home/stepp/Dropbox/data/docs/practiceit/web";
 
 my @ALL_FILES = (
-# .h headers
+# .h headers (order is very important because of dependencies of declarations)
 # basic library functionality
-"$basedir/base64.h",             # deps: none
-"$basedir/compare.h",            # deps: none
-"$basedir/direction.h",          # deps: none
-"$basedir/error.h",              # deps: none
-"$basedir/gtypes.h",             # deps: none
-"$basedir/hashcode.h",           # deps: none
-"$basedir/random.h",             # deps: none
-"$basedir/point.h",              # deps: none
-"$basedir/simpio.h",             # deps: none
-"$basedir/strlib.h",             # deps: none
-"$basedir/plainconsole.h",       # deps: none
-"$basedir/gmath.h",              # deps: gtypes.h
-"$basedir/shuffle.h",            # deps: random.h
-"$basedir/observable.h",         # deps: error.h
-
-"$basedir/exceptions.h",
-"$basedir/vector.h",
-
-"$basedir/filelib.h",            # deps: vector.h
-
-# collections
-"$basedir/queue.h",
-"$basedir/stack.h",
-"$basedir/deque.h",
-
+"$basedir/private/init.h",                   # deps: none
+"$basedir/private/static.h",                 # deps: none
+"$basedir/io/base64.h",                      # deps: none
+"$basedir/util/direction.h",                 # deps: none
+"$basedir/system/error.h",                   # deps: none
+"$basedir/collections/hashcode.h",           # deps: none
+"$basedir/util/random.h",                    # deps: none
+"$basedir/util/point.h",                     # deps: none
+"$basedir/io/simpio.h",                      # deps: none
+"$basedir/util/strlib.h",                    # deps: none
+"$basedir/graphics/gtypes.h",                # deps: none
+"$basedir/util/gmath.h",                     # deps: gtypes.h
+"$basedir/collections/shuffle.h",            # deps: random.h
+"$basedir/collections/collections.h",        # deps: none
+"$basedir/util/observable.h",                # deps: error.h
+"$basedir/system/exceptions.h",
+"$basedir/collections/vector.h",
+"$basedir/io/filelib.h",                     # deps: vector.h
+"$basedir/collections/queue.h",
+"$basedir/collections/stack.h",
+"$basedir/collections/deque.h",
 "$basedir/private/tokenpatch.h",
-"$basedir/tokenscanner.h",
-
-"$basedir/map.h",
-"$basedir/set.h",
-"$basedir/hashmap.h",
-"$basedir/hashset.h",
-
-"$basedir/graph.h",              # deps: map, set, tokenscanner
-"$basedir/basicgraph.h",         # deps: map, set, graph, 
-"$basedir/grid.h",
-"$basedir/lexicon.h",
-"$basedir/linkedlist.h",
-"$basedir/pqueue.h",
-"$basedir/sparsegrid.h",
-"$basedir/dawglexicon.h",        # deps: set.h
-"$basedir/linkedhashmap.h",      
-"$basedir/linkedhashset.h",      # deps: linkedhashmap.h
-
-
-# gui; not wanted
-"$basedir/gwindow.h",
-"$basedir/gobjects.h",           # deps: gtypes, gwindow
-"$basedir/gtimer.h",
-"$basedir/gevents.h",
-"$basedir/ginteractors.h",
-
-"$basedir/gbufferedimage.h",
-"$basedir/gfilechooser.h",
-"$basedir/goptionpane.h",
-
-# not wanted
-"$basedir/bitstream.h",
-#"$basedir/foreach.h",
-#"$basedir/console.h",
-
-"$basedir/sound.h",
-"$basedir/platform.h",
+"$basedir/io/tokenscanner.h",
+"$basedir/collections/map.h",
+"$basedir/collections/set.h",
+"$basedir/collections/hashmap.h",
+"$basedir/collections/hashset.h",
+"$basedir/collections/graph.h",              # deps: map, set, tokenscanner
+"$basedir/collections/basicgraph.h",         # deps: map, set, graph, 
+"$basedir/collections/grid.h",
+"$basedir/collections/lexicon.h",
+"$basedir/collections/linkedlist.h",
+"$basedir/collections/priorityqueue.h",
+"$basedir/collections/pqueue.h",
+"$basedir/collections/sparsegrid.h",
+"$basedir/collections/dawglexicon.h",        # deps: set.h
+"$basedir/collections/linkedhashmap.h",      
+"$basedir/collections/linkedhashset.h",      # deps: linkedhashmap.h
+"$basedir/collections/stl.h",
+"$basedir/graphics/gwindow.h",
+"$basedir/graphics/gobjects.h",              # deps: gtypes, gwindow
+"$basedir/graphics/gtimer.h",
+"$basedir/graphics/gevents.h",
+"$basedir/graphics/ginteractors.h",
+"$basedir/graphics/gbufferedimage.h",
+"$basedir/graphics/gfilechooser.h",
+"$basedir/graphics/goptionpane.h",
+"$basedir/graphics/gtable.h",
+"$basedir/graphics/gtextarea.h",
+"$basedir/io/bitstream.h",
+#"$basedir/util/foreach.h",
+#"$basedir/io/console.h",
+"$basedir/util/sound.h",
+"$basedir/private/consolestreambuf.h",
+"$basedir/private/echoinputstreambuf.h",
+"$basedir/private/forwardingstreambuf.h",
+"$basedir/private/limitoutputstreambuf.h",
+"$basedir/private/platform.h",
 #"$basedir/private/foreachpatch.h",
 #"$basedir/private/main.h",
 #"$basedir/private/randompatch.h",
 #"$basedir/private/tplatform.h",
 "$basedir/private/version.h",
-"$basedir/regexpr.h",
-"$basedir/stacktrace/call_stack.h",
-"$basedir/stacktrace/stack_exception.h",
-"$basedir/timer.h",
-"$basedir/urlstream.h",
+"$basedir/util/regexpr.h",
+"$basedir/system/call_stack.h",
+"$basedir/system/stack_exception.h",
+"$basedir/util/timer.h",
+"$basedir/util/note.h",
+"$basedir/io/urlstream.h",
 
-# .cpp implementations
-"$basedir/base64.cpp",
-"$basedir/direction.cpp",
-"$basedir/error.cpp",
-"$basedir/gtypes.cpp",
-"$basedir/gmath.cpp",
-"$basedir/hashcode.cpp",
-"$basedir/random.cpp",
-"$basedir/shuffle.cpp",
-"$basedir/strlib.cpp",
-"$basedir/plainconsole.cpp",       # deps: error
-
-# collections
-"$basedir/basicgraph.cpp",
-"$basedir/dawglexicon.cpp",
-"$basedir/lexicon.cpp",
-
-"$basedir/exceptions.cpp",
-"$basedir/filelib.cpp",
-
-#"$basedir/main.cpp",
-
-"$basedir/observable.cpp",
-"$basedir/platform.cpp",
-"$basedir/point.cpp",
-"$basedir/regexpr.cpp",
-"$basedir/simpio.cpp",
-"$basedir/sound.cpp",
-"$basedir/stacktrace/call_stack_gcc.cpp",
-"$basedir/startup.cpp",
-"$basedir/timer.cpp",
-"$basedir/tokenscanner.cpp",
-"$basedir/urlstream.cpp",
-"$basedir/version.cpp",
-
-# not wanted
-"$basedir/bitstream.cpp",
-#"$basedir/console.cpp",
-
-# gui; not wanted
-"$basedir/gbufferedimage.cpp",
-"$basedir/gevents.cpp",
-"$basedir/gfilechooser.cpp",
-"$basedir/ginteractors.cpp",
-"$basedir/gobjects.cpp",
-"$basedir/goptionpane.cpp",
-"$basedir/gtimer.cpp",
-"$basedir/gwindow.cpp",
-
-# Practice-It CPP test harness
-#"$practiceit_dir/PracticeItCppTestHarness.cpp_",
+# .cpp implementations (order should be unimportant)
+"$basedir/collections/basicgraph.cpp",
+"$basedir/collections/dawglexicon.cpp",
+"$basedir/collections/hashcode.cpp",
+"$basedir/collections/lexicon.cpp",
+"$basedir/collections/shuffle.cpp",
+"$basedir/graphics/gbufferedimage.cpp",
+"$basedir/graphics/gevents.cpp",
+"$basedir/graphics/gfilechooser.cpp",
+"$basedir/graphics/ginteractors.cpp",
+"$basedir/graphics/gobjects.cpp",
+"$basedir/graphics/goptionpane.cpp",
+"$basedir/graphics/gtable.cpp",
+"$basedir/graphics/gtextarea.cpp",
+"$basedir/graphics/gtimer.cpp",
+"$basedir/graphics/gtypes.cpp",
+"$basedir/graphics/gwindow.cpp",
+"$basedir/io/base64.cpp",
+"$basedir/io/bitstream.cpp",
+"$basedir/io/filelib.cpp",
+"$basedir/io/simpio.cpp",
+"$basedir/io/tokenscanner.cpp",
+"$basedir/io/urlstream.cpp",
+"$basedir/private/platform.cpp",
+"$basedir/private/version.cpp",
+"$basedir/system/call_stack_gcc.cpp",
+#"$basedir/system/call_stack_windows.cpp",   # not needed because the server runs *nix
+"$basedir/system/error.cpp",
+"$basedir/system/exceptions.cpp",
+"$basedir/util/direction.cpp",
+"$basedir/util/gmath.cpp",
+"$basedir/util/observable.cpp",
+"$basedir/util/point.cpp",
+"$basedir/util/random.cpp",
+"$basedir/util/regexpr.cpp",
+"$basedir/util/sound.cpp",
+"$basedir/util/strlib.cpp",
+"$basedir/util/timer.cpp",
+#"$basedir/io/console.cpp",
 
 # some classes that come from practice exams but are needed for 106B/X section/exam problems
 "$projdir/ArrayIntList.h",
-"$projdir/ArrayIntList.cpp",
 "$projdir/BinaryTreeNode.h",
-"$projdir/BinaryTreeNode.cpp",
 "$projdir/BinaryTree.h",
-"$projdir/BinaryTree.cpp",
 "$projdir/BinaryTreeMapNode.h",
 "$projdir/BinaryTreeMap.h",
-"$projdir/BinaryTreeMap.cpp",
 "$projdir/HashTableMap.h",
 "$projdir/HashTableSet.h",
-"$projdir/HashTableSet.cpp",
 "$projdir/HeapPriorityQueue.h",
-"$projdir/HeapPriorityQueue.cpp",
 "$projdir/LinkedIntList.h",
-"$projdir/LinkedIntList.cpp",
 "$projdir/graphsupport.h",
-"$projdir/graphsupport.cpp",
 "$projdir/types.h",
+
+"$projdir/ArrayIntList.cpp",
+"$projdir/BinaryTreeNode.cpp",
+"$projdir/BinaryTree.cpp",
+"$projdir/BinaryTreeMap.cpp",
+"$projdir/HashTableSet.cpp",
+"$projdir/HeapPriorityQueue.cpp",
+"$projdir/LinkedIntList.cpp",
+"$projdir/graphsupport.cpp",
 "$projdir/types.cpp",
 
 # csbs-specific
@@ -177,11 +161,34 @@ print("=======================\n");
 
 # gather the C++ code text
 print("Reading source code ...\n");
-my $overall_text = "using namespace std;\n\n";
-my $overall_h_text = "#define STANFORD_CPP_LIB_PRESENT true\n\n";
+
+my $author = "Marty Stepp";
+my $nowdate = `date`;   # e.g. "Fri Oct 14 10:52:02 PDT 2016"
+chomp($nowdate);
+
+my $overall_shared_comment_header = 
+	"// Stanford C++ library (extracted)\n"
+	. "// \@author ${author}\n"
+	. "// \@version ${nowdate}\n"
+	. "//\n"
+	. "// This library has been merged into a single .h and .cpp file by an automatic script\n"
+	. "// to make it easier to include and use with the CodeStepByStep tool.\n"
+	. "// DO NOT EDIT THIS FILE DIRECTLY!\n"
+	. "// If you want to make changes or additions to the Stanford C++ library,\n"
+	. "// make them to the library's original source as separate .cpp / .h files,\n"
+	. "// then re-run the script to extract the library into these single large merged files.\n\n";
+
+my $overall_text = $overall_shared_comment_header
+	. "using namespace std;\n\n";
+my $overall_h_text = $overall_shared_comment_header
+	. "#define STANFORD_CPP_LIB_PRESENT true\n\n";
 $overall_h_text .= "using namespace std;\n\n";
 foreach my $cppfile (@ALL_FILES) {
 	print("  - $cppfile\n");
+	if (not -f $cppfile) {
+		die("ERROR: required file not found: $cppfile\n");
+	}
+	
 	$cppfiletext = `cat $cppfile`;
 	
 	# clean up the code a bit;

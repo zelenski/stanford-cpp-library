@@ -11,6 +11,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2016/10/14
+# - new stricter compiler warning flags (float equality comparison; null pointers; undefined macros; etc.)
 # @version 2016/10/13
 # - split StanfordCPPLib into subfolders: collections, graphics, io, private, system, util
 # @version 2016/09/24
@@ -42,8 +44,8 @@
 
 TEMPLATE = app
 
-# make sure we do not accidentally #include files placed in 'resources'
-CONFIG += no_include_pwd
+CONFIG += no_include_pwd   # make sure we do not accidentally #include files placed in 'resources'
+CONFIG += warn_off         # turn of default -Wall (we will add it back ourselves)
 
 ###############################################################################
 # BEGIN SECTION FOR SPECIFYING SOURCE/LIBRARY/RESOURCE FILES OF PROJECT       #
@@ -153,11 +155,27 @@ exists($$PWD/output/*) {
 QMAKE_CXXFLAGS += -std=c++11
 QMAKE_CXXFLAGS += -Wall
 QMAKE_CXXFLAGS += -Wextra
+#QMAKE_CXXFLAGS += -Weffc++
+QMAKE_CXXFLAGS += -Wcast-align
+QMAKE_CXXFLAGS += -Wfloat-equal
+QMAKE_CXXFLAGS += -Wlong-long
 QMAKE_CXXFLAGS += -Wreturn-type
-QMAKE_CXXFLAGS += -Werror=return-type
+#QMAKE_CXXFLAGS += -Wshadow
+#QMAKE_CXXFLAGS += -Wswitch-default
+#QMAKE_CXXFLAGS += -Wundef
 QMAKE_CXXFLAGS += -Wunreachable-code
+exists($$PWD/lib/autograder/*.cpp) {
+    # omit some warnings/errors in autograder projects
+    # (largely because the Google Test framework violates them a ton of times)
+} else {
+    QMAKE_CXXFLAGS += -Wzero-as-null-pointer-constant
+    QMAKE_CXXFLAGS += -Werror=zero-as-null-pointer-constant
+}
+QMAKE_CXXFLAGS += -Werror=return-type
+QMAKE_CXXFLAGS += -Werror=uninitialized
 QMAKE_CXXFLAGS += -Wno-missing-field-initializers
 QMAKE_CXXFLAGS += -Wno-sign-compare
+QMAKE_CXXFLAGS += -Wno-sign-conversion
 QMAKE_CXXFLAGS += -Wno-write-strings
 
 # additional flags for Windows
@@ -172,8 +190,9 @@ win32 {
 # additional flags for Mac OS X
 macx {
     # increase system stack size (helpful for recursive programs)
-    # (this has been disabled because it led to crashes on many systems)
-    #QMAKE_LFLAGS += -Wl,-stack_size,0x2000000
+    # (this was previously disabled because it led to crashes on some systems,
+    #  but it seems to be working again, so we are going to re-enable it)
+    QMAKE_LFLAGS += -Wl,-stack_size,0x4000000
 
     # calling cache() reduces warnings on Mac OS X systems
     cache()
@@ -204,7 +223,7 @@ unix:!macx {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20161013
+DEFINES += SPL_PROJECT_VERSION=20161014
 
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1
@@ -450,4 +469,4 @@ exists($$PWD/lib/autograder/*.cpp) {
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #453; if not, your .pro has been changed!)
+# END OF FILE (this should be line #472; if not, your .pro has been changed!)

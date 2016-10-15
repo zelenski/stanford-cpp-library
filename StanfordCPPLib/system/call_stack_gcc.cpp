@@ -4,6 +4,8 @@
  * Linux/gcc implementation of the call_stack class.
  *
  * @author Marty Stepp, based on code from Fredrik Orderud
+ * @version 2016/10/14
+ * - modified floating-point equality tests to use floatingPointEqual function
  * @version 2016/10/04
  * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * @version 2015/05/28
@@ -250,7 +252,7 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
         const char* symname = dlinfo.dli_sname;
 
         int   status;
-        char* demangled = abi::__cxa_demangle(symname, nullptr, 0, &status);
+        char* demangled = abi::__cxa_demangle(symname, nullptr, nullptr, &status);
         if (status == 0 && demangled) {
             symname = demangled;
         }

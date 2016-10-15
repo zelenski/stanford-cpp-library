@@ -13,7 +13,7 @@
 using namespace std;
 
 BinaryTreeMap::BinaryTreeMap() {
-    m_root = NULL;
+    m_root = nullptr;
 }
 
 BinaryTreeMap::~BinaryTreeMap() {
@@ -26,7 +26,7 @@ bool BinaryTreeMap::containsKey(string key) const {
 }
 
 bool BinaryTreeMap::containsKey(BinaryTreeMapNode* node, string key) const {
-    if (node == NULL) {
+    if (!node) {
         return false;
     } else if (key == node->key) {
         return true;
@@ -42,7 +42,7 @@ int BinaryTreeMap::get(string key) const {
 }
 
 int BinaryTreeMap::get(BinaryTreeMapNode* node, string key) const {
-    if (node == NULL) {
+    if (!node) {
         return 0;
     } else if (key == node->key) {
         return node->value;
@@ -62,7 +62,7 @@ void BinaryTreeMap::put(string key, int value) {
 }
 
 void BinaryTreeMap::put(BinaryTreeMapNode*& node, string key, int value) {
-    if (node == NULL) {
+    if (!node) {
         node = new BinaryTreeMapNode(key, value);
         m_size++;
     } else if (node->key == key) {
@@ -79,19 +79,19 @@ void BinaryTreeMap::remove(string key) {
 }
 
 void BinaryTreeMap::remove(BinaryTreeMapNode*& node, string key) {
-    if (node == NULL) {
+    if (!node) {
         // not here, nothing to do
     } else if (key == node->key) {
         // remove THIS node
-        BinaryTreeMapNode* trash = NULL;
+        BinaryTreeMapNode* trash = nullptr;
         if (node->isLeaf()) {
             trash = node;
-            node = NULL;
-        } else if (node->right == NULL) {
+            node = nullptr;
+        } else if (!node->right) {
             // left child only; replace me with left
             trash = node;
             node = node->left;
-        } else if (node->left == NULL) {
+        } else if (!node->left) {
             // right child only; replace me with right
             trash = node;
             node = node->right;
@@ -104,7 +104,7 @@ void BinaryTreeMap::remove(BinaryTreeMapNode*& node, string key) {
         }
 
         m_size--;
-        if (trash != NULL) {
+        if (trash) {
             delete trash;
         }
     } else if (key < node->key) {
@@ -115,7 +115,7 @@ void BinaryTreeMap::remove(BinaryTreeMapNode*& node, string key) {
 }
 
 BinaryTreeMapNode* BinaryTreeMap::getMin(BinaryTreeMapNode* node) const {
-    if (node == NULL || node->left == NULL) {
+    if (!node || !node->left) {
         return node;
     } else {
         return getMin(node->left);

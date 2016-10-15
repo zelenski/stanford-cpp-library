@@ -12,11 +12,11 @@ namespace CodeStepByStep {
 static std::string __testToRun = "";
 static bool __runAllTests = false;
 static std::string __xmlOutFilename;
-static std::ofstream* __xout = NULL;
-static void (*old_terminate)() = NULL;
+static std::ofstream* __xout = nullptr;
+static void (*old_terminate)() = nullptr;
 
 // only use these if we can't use __getXmlOut (e.g. in a signal handler)
-static FILE* __xfout = NULL;
+static FILE* __xfout = nullptr;
 
 std::string testToRun() {
     return __testToRun;
@@ -35,7 +35,7 @@ std::string htmlEncode(const std::string& s) {
 }
 
 std::ofstream& __getXmlOut() {
-    if (__xout == NULL) {
+    if (!__xout) {
         __xout = new std::ofstream();
     }
     return *__xout;
@@ -75,21 +75,21 @@ void __printException(const std::string& type, const std::string& message,
 }
 
 void __openXmlOldWay(const std::string& filename) {
-    if (__xout != NULL) {
+    if (__xout) {
         __getXmlOut().flush();
         __getXmlOut().close();
-        __xout = NULL;
+        __xout = nullptr;
     }
     __xfout = fopen(filename.c_str(), "a+");   // open for appending
 }
 
 void __closeXml() {
-    if (__xout != NULL) {
+    if (__xout) {
         __getXmlOut().close();
     }
-    if (__xfout != NULL) {
+    if (__xfout) {
         fclose(__xfout);
-        __xfout = NULL;
+        __xfout = nullptr;
     }
 }
 
@@ -211,7 +211,7 @@ static void __setupSignalHandler() {
     ss.ss_sp = (void*) alternate_stack;
     ss.ss_size = SIGSTKSZ;
     ss.ss_flags = 0;
-    sigaltstack(&ss, NULL);
+    sigaltstack(&ss, nullptr);
 
     struct sigaction sig_action = {};
     sig_action.sa_sigaction = __posixSignalHandler;
@@ -222,12 +222,12 @@ static void __setupSignalHandler() {
 #else
     sig_action.sa_flags = SA_SIGINFO | SA_ONSTACK;
 #endif // __APPLE__
-    sigaction(SIGSEGV, &sig_action, NULL);
-    sigaction(SIGFPE,  &sig_action, NULL);
-    sigaction(SIGILL,  &sig_action, NULL);
-    sigaction(SIGTERM, &sig_action, NULL);
-    sigaction(SIGINT,  &sig_action, NULL);
-    sigaction(SIGABRT, &sig_action, NULL);
+    sigaction(SIGSEGV, &sig_action, nullptr);
+    sigaction(SIGFPE,  &sig_action, nullptr);
+    sigaction(SIGILL,  &sig_action, nullptr);
+    sigaction(SIGTERM, &sig_action, nullptr);
+    sigaction(SIGINT,  &sig_action, nullptr);
+    sigaction(SIGABRT, &sig_action, nullptr);
     handled = true;
 #endif
 #endif // SHOULD_USE_SIGNAL_STACK

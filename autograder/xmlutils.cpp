@@ -6,6 +6,8 @@
  * See xmlutils.h for documentation of each function.
  * 
  * @author Marty Stepp
+ * @version 2016/10/14
+ * - changed NULL to nullptr as appropriate
  * @version 2014/10/14
  * @since 2014/03/01
  */
@@ -61,7 +63,7 @@ rapidxml::xml_node<>* openXmlDocument(const std::string& filename, const std::st
     memset(buf, 0, xmlFileText.length() + 1024);
     strcpy(buf, xmlFileText.c_str());
     rapidxml::xml_document<char>* xmlDoc = new rapidxml::xml_document<char>;   // *** memory leak (but MUST be heap-allocated)
-    xmlDoc->parse<0>(buf);
+    xmlDoc->parse<NULL>(buf);
     rapidxml::xml_node<>* node = xmlDoc->first_node(documentNode.c_str());
     return node;
 }

@@ -15,16 +15,16 @@ BinaryTree::BinaryTree(BinaryTreeNode* root) {
 }
 
 BinaryTree::~BinaryTree() {
-    // TODO
-    root = NULL;
+    // TODO: free memory
+    root = nullptr;
 }
 
 static void binaryTreeClearHelper(BinaryTreeNode*& node) {
-    if (node != NULL) {
+    if (node) {
         binaryTreeClearHelper(node->left);
         binaryTreeClearHelper(node->right);
         delete node;
-        node = NULL;
+        node = nullptr;
     }
 }
 
@@ -36,9 +36,9 @@ string BinaryTree::toString() {
     return toString(root);
 }
 string BinaryTree::toString(BinaryTreeNode* node) {
-    if (node == NULL) {
+    if (!node) {
         return "/";
-    } else if (node->left == NULL && node->right == NULL) {
+    } else if (node->left == nullptr && node->right == nullptr) {
         return integerToString(node->data);
     } else {
         return "(" + integerToString(node->data) + ", "
@@ -47,7 +47,7 @@ string BinaryTree::toString(BinaryTreeNode* node) {
 }
 
 void BinaryTree::deleteTree(BinaryTreeNode* node) {
-    if (node != NULL) {
+    if (node) {
         deleteTree(node->left);
         deleteTree(node->right);
         delete node;
@@ -56,7 +56,7 @@ void BinaryTree::deleteTree(BinaryTreeNode* node) {
 
 BinaryTreeNode* parseBinaryTreeNodeFromQueue(Queue<string>& tokenQueue) {
     if (tokenQueue.isEmpty()) {
-        return NULL;
+        return nullptr;
     } else if (tokenQueue.peek() == "(") {
         // start of a new node
         tokenQueue.dequeue();   // the "(" token
@@ -68,9 +68,9 @@ BinaryTreeNode* parseBinaryTreeNodeFromQueue(Queue<string>& tokenQueue) {
         return node;
     } else if (tokenQueue.peek() == "NULL" || tokenQueue.peek() == "null" || tokenQueue.peek() == "/") {
         tokenQueue.dequeue();
-        return NULL;
+        return nullptr;
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -94,7 +94,7 @@ void makeTreeFromString(BinaryTree& tree, string s) {
 }
 
 static void binaryTreeOpLtLtHelper(ostream& out, BinaryTreeNode* node) {
-    if (node == NULL) {
+    if (!node) {
         out << "/";
     } else {
         out << "(";
@@ -102,7 +102,7 @@ static void binaryTreeOpLtLtHelper(ostream& out, BinaryTreeNode* node) {
         if (!node->isLeaf()) {
             out << " ";
             binaryTreeOpLtLtHelper(out, node->left);
-            if (node->right != NULL) {
+            if (node->right) {
                 out << " ";
                 binaryTreeOpLtLtHelper(out, node->right);
             }
@@ -129,7 +129,7 @@ ostream& operator <<(ostream& out, BinaryTreeNode* node) {
     BinaryTree* tree = new BinaryTree();
     tree->root = node;
     out << *tree;
-    tree->root = NULL;   // avoid double-free
+    tree->root = nullptr;   // avoid double-free
     return out;
 }
 
@@ -137,10 +137,10 @@ istream& operator >>(istream& input, BinaryTreeNode*& node) {
     BinaryTree* tree = new BinaryTree();
     input >> *tree;
     if (input.fail()) {
-        node = NULL;
+        node = nullptr;
     } else {
         node = tree->root;
     }
-    tree->root = NULL;   // avoid double-free
+    tree->root = nullptr;   // avoid double-free
     return input;
 }

@@ -65,7 +65,7 @@ public:
     friend istream& operator >>(istream& input, ListNode*& front);
 
 private:
-    ListNode* front;   // pointer to front node in list;  NULL if empty
+    ListNode* front;   // pointer to front node in list;  null if empty
     
     bool m_locked;     // whether to forbid method calls (for problems)
 
@@ -85,9 +85,9 @@ struct ListNode {
     static int s_freed;
     
     int data;         // element stored in each node
-    ListNode* next;   // pointer to the next node (NULL if none)
+    ListNode* next;   // pointer to the next node (null if none)
     
-    ListNode(int d = 0, ListNode* n = NULL);
+    ListNode(int d = 0, ListNode* n = nullptr);
     ~ListNode();
     
     static void printChain(ListNode* list, string name = "list", int maxLength = 10);

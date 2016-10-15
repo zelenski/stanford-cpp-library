@@ -1,5 +1,7 @@
 /*
  * @author see below; slight modifications made by Marty Stepp
+ * @version 2016/10/14
+ * - changed NULL to nullptr as appropriate
  * @version 2014/11/08
  */
 
@@ -1432,7 +1434,7 @@ bool ParseNaturalNumber(const ::std::string& str, Integer* number) {
 
 # else
 
-  typedef unsigned long long BiggestConvertible;  // NOLINT
+  typedef unsigned long BiggestConvertible;  // NOLINT
   const BiggestConvertible parsed = strtoull(str.c_str(), &end, 10);
 
 # endif  // GTEST_OS_WINDOWS && !defined(__GNUC__)
@@ -3621,7 +3623,7 @@ Result HandleExceptionsInMethodIfSupported(
           TestPartResult::kFatalFailure,
           FormatCxxExceptionMessage(nullptr, location));
     }
-    return static_cast<Result>(0);
+    return static_cast<Result>(nullptr);
 #else
     return HandleSehExceptionsInMethodIfSupported(object, method, location);
 #endif  // GTEST_HAS_EXCEPTIONS

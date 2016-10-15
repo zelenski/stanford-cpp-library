@@ -1,3 +1,8 @@
+/*
+ * @version 2016/10/14
+ * - changed NULL to nullptr as appropriate
+ */
+
 // Copyright 2005, Google Inc.
 // All rights reserved.
 //
@@ -2753,7 +2758,7 @@ typedef __int64 BiggestInt;
 #else
 # define GTEST_PATH_SEP_ "/"
 # define GTEST_HAS_ALT_PATH_SEP_ 0
-typedef long long BiggestInt;  // NOLINT
+typedef long BiggestInt;  // NOLINT
 #endif  // GTEST_OS_WINDOWS
 
 // Utilities for char.
@@ -2998,8 +3003,8 @@ class TypeWithSize<8> {
   typedef __int64 Int;
   typedef unsigned __int64 UInt;
 #else
-  typedef long long Int;  // NOLINT
-  typedef unsigned long long UInt;  // NOLINT
+  typedef long Int;  // NOLINT
+  typedef unsigned long UInt;  // NOLINT
 #endif  // GTEST_OS_WINDOWS
 };
 
@@ -19497,8 +19502,7 @@ AssertionResult AssertPred2Helper(const char* pred_text,
 // Internal macro for implementing {EXPECT|ASSERT}_PRED_FORMAT2.
 // Don't use this in your code.
 #define GTEST_PRED_FORMAT2_(pred_format, v1, v2, on_failure)\
-  GTEST_ASSERT_(pred_format(#v1, #v2, v1, v2), \
-                on_failure)
+  GTEST_ASSERT_(pred_format(#v1, #v2, v1, v2), on_failure)
 
 // Internal macro for implementing {EXPECT|ASSERT}_PRED2.  Don't use
 // this in your code.
