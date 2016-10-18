@@ -1,4 +1,6 @@
 /*
+ * @version 2016/10/16
+ * - added GWindow pixel methods; added GInteractor_setTooltip
  * @version 2016/10/12
  * - added shouldRunOnSwingEventThread
  * @version 2016/10/08
@@ -13,6 +15,9 @@ package stanford.spl;
 
 import acm.util.TokenScanner;
 
+import java.io.BufferedReader;
+import java.io.Reader;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 
 public abstract class JBECommand {
@@ -80,6 +85,7 @@ public abstract class JBECommand {
 		localHashMap.put("GInteractor.setIcon", new GInteractor_setIcon());
 		localHashMap.put("GInteractor.setText", new GInteractor_setText());
 		localHashMap.put("GInteractor.setTextPosition", new GInteractor_setTextPosition());
+		localHashMap.put("GInteractor.setTooltip", new GInteractor_setTooltip());
 		localHashMap.put("GLabel.create", new GLabel_create());
 		localHashMap.put("GLabel.getFontAscent", new GLabel_getFontAscent());
 		localHashMap.put("GLabel.getFontDescent", new GLabel_getFontDescent());
@@ -155,6 +161,7 @@ public abstract class JBECommand {
 		localHashMap.put("GTextField.getText", new GTextField_getText());
 		localHashMap.put("GTextField.isEditable", new GTextField_isEditable());
 		localHashMap.put("GTextField.setEditable", new GTextField_setEditable());
+		localHashMap.put("GTextField.setPlaceholder", new GTextField_setPlaceholder());
 		localHashMap.put("GTextField.setText", new GTextField_setText());
 		localHashMap.put("GTimer.create", new GTimer_create());
 		localHashMap.put("GTimer.deleteTimer", new GTimer_deleteTimer());
@@ -173,6 +180,8 @@ public abstract class JBECommand {
 		localHashMap.put("GWindow.getCanvasSize", new GWindow_getCanvasSize());
 		localHashMap.put("GWindow.getContentPaneSize", new GWindow_getContentPaneSize());
 		localHashMap.put("GWindow.getLocation", new GWindow_getLocation());
+		localHashMap.put("GWindow.getPixel", new GWindow_getPixel());
+		localHashMap.put("GWindow.getPixels", new GWindow_getPixels());
 		localHashMap.put("GWindow.getRegionSize", new GWindow_getRegionSize());
 		localHashMap.put("GWindow.getScreenHeight", new GWindow_getScreenHeight());
 		localHashMap.put("GWindow.getScreenSize", new GWindow_getScreenSize());
@@ -188,6 +197,8 @@ public abstract class JBECommand {
 		localHashMap.put("GWindow.setExitOnClose", new GWindow_setExitOnClose());
 		localHashMap.put("GWindow.setLocation", new GWindow_setLocation());
 		localHashMap.put("GWindow.setLocationSaved", new GWindow_setLocationSaved());
+		localHashMap.put("GWindow.setPixel", new GWindow_setPixel());
+		localHashMap.put("GWindow.setPixels", new GWindow_setPixels());
 		localHashMap.put("GWindow.setRegionAlignment", new GWindow_setRegionAlignment());
 		localHashMap.put("GWindow.setRegionSize", new GWindow_setRegionSize());
 		localHashMap.put("GWindow.setResizable", new GWindow_setResizable());
@@ -252,6 +263,29 @@ public abstract class JBECommand {
 	public String nextString(TokenScanner paramTokenScanner) {
 		return paramTokenScanner.getStringValue(paramTokenScanner.nextToken());
 	}
+	
+	public String nextBase64(TokenScanner paramTokenScanner) {
+		String base64 = "";
+		try {
+			BufferedReader reader = new BufferedReader(getTokenScannerReader(paramTokenScanner));
+			// throw away ", \"" char
+			while (reader.read() != '"') {
+				// empty
+			}
+			base64 = reader.readLine();
+			
+			// trim off "" from start/end and ) from end
+			if (base64.endsWith("\")")) {
+				base64 = base64.substring(0, base64.length() - 2);
+				
+				// put ) char back into token scanner to read 
+				paramTokenScanner.ungetChar(')');
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return base64;
+	}
 
 	public boolean nextBoolean(TokenScanner paramTokenScanner) {
 		return paramTokenScanner.nextToken().startsWith("t");
@@ -276,5 +310,16 @@ public abstract class JBECommand {
 		return className.startsWith("G")
 				// || className.startsWith("JBEConsole")
 				|| className.startsWith("TopCompound");
+	}
+
+	private Reader getTokenScannerReader(TokenScanner scanner) {
+		try {
+			Field inputField = TokenScanner.class.getDeclaredField("input");
+			inputField.setAccessible(true);
+			return (Reader) inputField.get(scanner);
+		} catch (Exception e) {
+			System.err.println(e);
+			return null;
+		}
 	}
 }

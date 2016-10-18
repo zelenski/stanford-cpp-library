@@ -5,6 +5,8 @@
  * the model developed for the ACM Java Graphics.
  * <include src="pictures/ClassHierarchies/GObjectHierarchy-h.html">
  *
+ * @version 2016/10/15
+ * - made GRect() constructor public
  * @version 2016/10/12
  * - added contains to GRoundRect
  * @version 2016/09/27
@@ -390,6 +392,7 @@ public:
      * form is positioned at the origin; the second at the coordinates
      * given by <code>x</code> and <code>y</code>.
      */
+    GRect();
     GRect(double width, double height);
     GRect(double x, double y, double width, double height);
 
@@ -468,7 +471,6 @@ protected:
     std::string fillColor;  /* Color used to fill the object           */
 
     /* Protected methods */
-    GRect();
     virtual void createGRect(double width, double height);
 };
 
@@ -1064,7 +1066,7 @@ public:
      * the second form automatically resets the location of the
      * <code>GLabel</code> to the point (<code>x</code>, <code>y</code>).
      */
-    GLabel(std::string str);
+    GLabel(std::string str = "");
     GLabel(std::string str, double x, double y);
 
     /*

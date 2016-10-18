@@ -98,8 +98,16 @@ public class SplPipeDecoder {
 		writeResult("___jbe___ack___ " + s);
 	}
 	
+	public static synchronized void writeError(String msg) {
+		writeResult("error:" + msg);
+	}
+	
+	public static synchronized void writeOK() {
+		writeResult("ok");
+	}
+	
 	public static synchronized void writeResult(Object o) {
-		writeResult(o == null ? "null" : o.toString());
+		writeResult(String.valueOf(o));
 	}
 	
 	public static synchronized void writeResult(String s) {

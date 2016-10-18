@@ -124,14 +124,26 @@ std::string doubleToString(double d) {
     return realToString(d);
 }
 
-std::string integerToString(int n) {
+std::string integerToString(int n, int radix) {
+    if (radix <= 0) {
+        error("integerToString: Illegal radix: " + integerToString(radix));
+    }
     std::ostringstream stream;
+    if (radix != 10) {
+        stream << std::setbase(radix);
+    }
     stream << n;
     return stream.str();
 }
 
-std::string longToString(long n) {
+std::string longToString(long n, int radix) {
+    if (radix <= 0) {
+        error("longToString: Illegal radix: " + integerToString(radix));
+    }
     std::ostringstream stream;
+    if (radix != 10) {
+        stream << std::setbase(radix);
+    }
     stream << n;
     return stream.str();
 }

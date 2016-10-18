@@ -25,6 +25,10 @@ public class GInteractor_setTextPosition extends JBESwingCommand {
 			JCheckBox component = (JCheckBox) ((GCheckBox) localGObject).getInteractor();
 			component.setHorizontalTextPosition(horizontal);
 			component.setVerticalTextPosition(vertical);
+		} else if (localGObject != null && localGObject instanceof GRadioButton) {
+			JRadioButton component = (JRadioButton) ((GRadioButton) localGObject).getInteractor();
+			component.setHorizontalTextPosition(horizontal);
+			component.setVerticalTextPosition(vertical);
 		} else {
 			// unsupported; do nothing
 		}

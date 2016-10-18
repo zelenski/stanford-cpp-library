@@ -4,6 +4,10 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2016/10/18
+ * - fixed Windows bug in filelib_expandPathname
+ * @version 2016/10/15
+ * - changed all string param to const string&; added gtextfield_setPlaceholder
  * @version 2016/10/13
  * - added exitEnabled / setExitEnabled
  * @version 2016/10/09
@@ -134,6 +138,7 @@ static int& pout(bool check = true) {
 #include "private/forwardingstreambuf.h"
 #include "private/static.h"
 #include "private/version.h"
+#include "base64.h"
 
 #define __DONT_ENABLE_GRAPHICAL_CONSOLE
 #include "console.h"
@@ -142,6 +147,7 @@ static int& pout(bool check = true) {
 #include "error.h"
 #include "exceptions.h"
 #include "filelib.h"
+#include "gbufferedimage.h"
 #include "gevents.h"
 #include "gtimer.h"
 #include "gtypes.h"
@@ -185,7 +191,7 @@ static std::string getSplJarPath();
 static void getStatus();
 static void initPipe();
 static GEvent parseActionEvent(TokenScanner& scanner, EventType type);
-static GEvent parseEvent(std::string line);
+static GEvent parseEvent(const std::string& line);
 static GEvent parseKeyEvent(TokenScanner& scanner, EventType type);
 static GEvent parseMouseEvent(TokenScanner& scanner, EventType type);
 static GEvent parseServerEvent(TokenScanner& scanner, EventType type);
@@ -193,8 +199,8 @@ static GEvent parseTableEvent(TokenScanner& scanner, EventType type);
 static GEvent parseTimerEvent(TokenScanner& scanner, EventType type);
 static GEvent parseWindowEvent(TokenScanner& scanner, EventType type);
 static std::string& programName();
-static void putPipe(std::string line);
-static void putPipeLongString(std::string line);
+static void putPipe(const std::string& line);
+static void putPipeLongString(const std::string& line);
 static int scanChar(TokenScanner& scanner);
 static GDimension scanDimension(const std::string& str);
 static double scanDouble(TokenScanner& scanner);
@@ -223,34 +229,40 @@ Platform::~Platform() {
 #ifndef _WIN32
 
 // Unix implementation; see Windows implementation elsewhere in this file
-bool Platform::filelib_fileExists(std::string filename) {
+bool Platform::filelib_fileExists(const std::string& filename) {
     struct stat fileInfo;
     return stat(filename.c_str(), &fileInfo) == 0;
 }
 
 // Unix implementation; see Windows implementation elsewhere in this file
-bool Platform::filelib_isFile(std::string filename) {
+bool Platform::filelib_isFile(const std::string& filename) {
     struct stat fileInfo;
-    if (stat(filename.c_str(), &fileInfo) != 0) return false;
+    if (stat(filename.c_str(), &fileInfo) != 0) {
+        return false;
+    }
     return S_ISREG(fileInfo.st_mode) != 0;
 }
 
 // Unix implementation; see Windows implementation elsewhere in this file
-bool Platform::filelib_isSymbolicLink(std::string filename) {
+bool Platform::filelib_isSymbolicLink(const std::string& filename) {
     struct stat fileInfo;
-    if (stat(filename.c_str(), &fileInfo) != 0) return false;
+    if (stat(filename.c_str(), &fileInfo) != 0) {
+        return false;
+    }
     return S_ISLNK(fileInfo.st_mode) != 0;
 }
 
 // Unix implementation; see Windows implementation elsewhere in this file
-bool Platform::filelib_isDirectory(std::string filename) {
+bool Platform::filelib_isDirectory(const std::string& filename) {
     struct stat fileInfo;
-    if (stat(filename.c_str(), &fileInfo) != 0) return false;
+    if (stat(filename.c_str(), &fileInfo) != 0) {
+        return false;
+    }
     return S_ISDIR(fileInfo.st_mode) != 0;
 }
 
 // Unix implementation; see Windows implementation elsewhere in this file
-void Platform::filelib_setCurrentDirectory(std::string path) {
+void Platform::filelib_setCurrentDirectory(const std::string& path) {
     if (chdir(path.c_str()) == 0) {
         std::string msg = "setCurrentDirectory: ";
         std::string err = std::string(strerror(errno));
@@ -286,12 +298,15 @@ std::string Platform::filelib_getTempDirectory() {
 }
 
 // Unix implementation; see Windows implementation elsewhere in this file
-void Platform::filelib_createDirectory(std::string path) {
+void Platform::filelib_createDirectory(const std::string& path) {
+    std::string pathStr = path;
     if (endsWith(path, "/")) {
-        path = path.substr(0, path.length() - 2);
+        pathStr = path.substr(0, path.length() - 1);
     }
-    if (mkdir(path.c_str(), 0777) != 0) {
-        if (errno == EEXIST && filelib_isDirectory(path)) return;
+    if (mkdir(pathStr.c_str(), 0777) != 0) {
+        if (errno == EEXIST && filelib_isDirectory(pathStr)) {
+            return;
+        }
         std::string msg = "createDirectory: ";
         std::string err = std::string(strerror(errno));
         error(msg + err);
@@ -309,12 +324,15 @@ std::string Platform::filelib_getSearchPathSeparator() {
 }
 
 // Unix implementation; see Windows implementation elsewhere in this file
-std::string Platform::filelib_expandPathname(std::string filename) {
-    if (filename == "") return "";
+std::string Platform::filelib_expandPathname(const std::string& filename) {
+    if (filename == "") {
+        return "";
+    }
     int len = filename.length();
-    if (filename[0] == '~') {
+    std::string expanded = filename;
+    if (expanded[0] == '~') {
         int spos = 1;
-        while (spos < len && filename[spos] != '\\' && filename[spos] != '/') {
+        while (spos < len && expanded[spos] != '\\' && expanded[spos] != '/') {
             spos++;
         }
         char *homedir = nullptr;
@@ -324,37 +342,40 @@ std::string Platform::filelib_expandPathname(std::string filename) {
                 homedir = getpwuid(getuid())->pw_dir;
             }
         } else {
-            struct passwd *pw = getpwnam(filename.substr(1, spos - 1).c_str());
+            struct passwd *pw = getpwnam(expanded.substr(1, spos - 1).c_str());
             if (!pw) {
                 error("expandPathname: No such user");
             } else {
                 homedir = pw->pw_dir;
             }
         }
-        filename = std::string(homedir) + filename.substr(spos);
-        len = filename.length();
+        expanded = std::string(homedir) + expanded.substr(spos);
+        len = expanded.length();
     }
     for (int i = 0; i < len; i++) {
-        if (filename[i] == '\\') filename[i] = '/';
+        if (expanded[i] == '\\') {
+            expanded[i] = '/';
+        }
     }
-    return filename;
+    return expanded;
 }
 
 // Unix implementation; see Windows implementation elsewhere in this file
-void Platform::filelib_listDirectory(std::string path, std::vector<std::string>& list) {
-    if (path == "") path = ".";
-    DIR *dir = opendir(path.c_str());
+void Platform::filelib_listDirectory(const std::string& path, std::vector<std::string>& list) {
+    DIR* dir = opendir(path.empty() ? "." : path.c_str());
     if (!dir) {
-        error(std::string("listDirectory: Can't open ") + path);
+        error(std::string("listDirectory: Can't open \"") + path + "\"");
     }
     list.clear();
     while (true) {
-        struct dirent *ep = readdir(dir);
+        struct dirent* ep = readdir(dir);
         if (!ep) {
             break;
         }
         std::string name = std::string(ep->d_name);
-        if (name != "." && name != "..") list.push_back(name);
+        if (name != "." && name != "..") {
+            list.push_back(name);
+        }
     }
     closedir(dir);
     sort(list.begin(), list.end());
@@ -363,31 +384,31 @@ void Platform::filelib_listDirectory(std::string path, std::vector<std::string>&
 #else // _WIN32
 
 // Windows implementation; see Unix implementation elsewhere in this file
-bool Platform::filelib_fileExists(std::string filename) {
+bool Platform::filelib_fileExists(const std::string& filename) {
     return GetFileAttributesA(filename.c_str()) != INVALID_FILE_ATTRIBUTES;
 }
 
 // Windows implementation; see Unix implementation elsewhere in this file
-bool Platform::filelib_isFile(std::string filename) {
+bool Platform::filelib_isFile(const std::string& filename) {
     DWORD attr = GetFileAttributesA(filename.c_str());
     return attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_NORMAL);
 }
 
 // Windows implementation; see Unix implementation elsewhere in this file
-bool Platform::filelib_isSymbolicLink(std::string filename) {
+bool Platform::filelib_isSymbolicLink(const std::string& filename) {
     DWORD attr = GetFileAttributesA(filename.c_str());
     return attr != INVALID_FILE_ATTRIBUTES
             && (attr & FILE_ATTRIBUTE_REPARSE_POINT);
 }
 
 // Windows implementation; see Unix implementation elsewhere in this file
-bool Platform::filelib_isDirectory(std::string filename) {
+bool Platform::filelib_isDirectory(const std::string& filename) {
     DWORD attr = GetFileAttributesA(filename.c_str());
     return attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_DIRECTORY);
 }
 
 // Windows implementation; see Unix implementation elsewhere in this file
-void Platform::filelib_setCurrentDirectory(std::string path) {
+void Platform::filelib_setCurrentDirectory(const std::string& path) {
     if (!filelib_isDirectory(path) || !SetCurrentDirectoryA(path.c_str())) {
         error("setCurrentDirectory: Can't change to " + path);
     }
@@ -408,7 +429,7 @@ std::string Platform::filelib_getTempDirectory() {
 }
 
 // Windows implementation; see Unix implementation elsewhere in this file
-void Platform::filelib_createDirectory(std::string path) {
+void Platform::filelib_createDirectory(const std::string& path) {
     if (!CreateDirectoryA(path.c_str(), nullptr)) {
         error("createDirectory: Can't create " + path);
     }
@@ -425,29 +446,40 @@ std::string Platform::filelib_getSearchPathSeparator() {
 }
 
 // Windows implementation; see Unix implementation elsewhere in this file
-std::string Platform::filelib_expandPathname(std::string filename) {
-    if (filename == "") return "";
-    int len = filename.length();
-    for (int i = 0; i < len; i++) {
-        if (filename[i] == '/') filename[i] = '\\';
+std::string Platform::filelib_expandPathname(const std::string& filename) {
+    if (filename.empty()) {
+        return "";
     }
-    return filename;
+    std::string filenameStr = filename;
+    for (int i = 0, len = filename.length(); i < len; i++) {
+        if (filenameStr[i] == '/') {
+            filenameStr[i] = '\\';
+        }
+    }
+    return filenameStr;
 }
 
 // Windows implementation; see Unix implementation elsewhere in this file
-void Platform::filelib_listDirectory(std::string path, std::vector<std::string> & list) {
-    if (path == "") path = ".";
-    std::string pattern = path + "\\*.*";
+void Platform::filelib_listDirectory(const std::string& path, std::vector<std::string> & list) {
+    std::string pathStr = path;
+    if (pathStr == "") {
+        pathStr = ".";
+    }
+    std::string pattern = pathStr + "\\*.*";
     WIN32_FIND_DATAA fd;
     HANDLE h = FindFirstFileA(pattern.c_str(), &fd);
     if (h == INVALID_HANDLE_VALUE) {
-        error("listDirectory: Can't list directory");
+        error("listDirectory: Can't list directory \"" + pathStr + "\"");
     }
     list.clear();
     while (true) {
         std::string name = std::string(fd.cFileName);
-        if (name != "." && name != "..") list.push_back(name);
-        if (!FindNextFileA(h, &fd)) break;
+        if (name != "." && name != "..") {
+            list.push_back(name);
+        }
+        if (!FindNextFileA(h, &fd)) {
+            break;
+        }
     }
     FindClose(h);
     sort(list.begin(), list.end());
@@ -525,7 +557,7 @@ std::string Platform::os_getLastError() {
 #endif // _WIN32
 }
 
-bool Platform::regex_match(std::string s, std::string regexp) {
+bool Platform::regex_match(const std::string& s, const std::string& regexp) {
     std::ostringstream os;
     os << "Regex.match(";
     writeQuotedString(os, urlEncode(s));
@@ -537,7 +569,7 @@ bool Platform::regex_match(std::string s, std::string regexp) {
     return (result == "true");
 }
 
-int Platform::regex_matchCount(std::string s, std::string regexp) {
+int Platform::regex_matchCount(const std::string& s, const std::string& regexp) {
     std::ostringstream os;
     os << "Regex.matchCount(";
     writeQuotedString(os, urlEncode(s));
@@ -549,7 +581,7 @@ int Platform::regex_matchCount(std::string s, std::string regexp) {
     return stringToInteger(result);
 }
 
-int Platform::regex_matchCountWithLines(std::string s, std::string regexp, std::string& linesOut) {
+int Platform::regex_matchCountWithLines(const std::string& s, const std::string& regexp, std::string& linesOut) {
     std::ostringstream os;
     os << "Regex.matchCountWithLines(";
     writeQuotedString(os, urlEncode(s));
@@ -572,7 +604,7 @@ int Platform::regex_matchCountWithLines(std::string s, std::string regexp, std::
     return stringToInteger(countStr);
 }
 
-std::string Platform::regex_replace(std::string s, std::string regexp, std::string replacement, int /* limit */) {
+std::string Platform::regex_replace(const std::string& s, const std::string& regexp, const std::string& replacement, int /* limit */) {
     std::ostringstream os;
     os << "Regex.replace(";
     writeQuotedString(os, urlEncode(s));
@@ -586,7 +618,7 @@ std::string Platform::regex_replace(std::string s, std::string regexp, std::stri
     return urlDecode(result);
 }
 
-std::string Platform::file_openFileDialog(std::string title, std::string mode, std::string path) {
+std::string Platform::file_openFileDialog(const std::string& title, const std::string& mode, const std::string& path) {
     std::ostringstream os;
     os << "File.openFileDialog(";
     writeQuotedString(os, title);
@@ -594,22 +626,25 @@ std::string Platform::file_openFileDialog(std::string title, std::string mode, s
     
     // BUGFIX: (2014/10/09) wasn't working if dirs didn't have slashes at end
     std::string sep = getDirectoryPathSeparator();
-    if (isDirectory(path) && !endsWith(path, sep)) {
-        path += sep;
-    }
+    bool needSep = isDirectory(path) && !endsWith(path, sep);
 
     // BUGFIX (JL): hack to circumvent back-end bug when path ends with backslash;
     // will be stripped off by backend
-    path += " ";
-
-    writeQuotedString(os, path);
+    std::string pathStr = path;
+    if (needSep) {
+        pathStr += sep;
+    }
+    if (sep == "\\") {
+        pathStr += " ";   // BUGFIX: need trailing space on Windows only
+    }
+    writeQuotedString(os, pathStr);
     os << ")";
     putPipe(os.str());
     return getResult();
 }
 
 void Platform::gwindow_constructor(const GWindow& gw, double width, double height,
-                             GObject *topCompound, bool visible) {
+                                   GObject* topCompound, bool visible) {
     std::ostringstream os;
     os << gw.gwd;
     std::string id = os.str();
@@ -702,7 +737,7 @@ void Platform::gwindow_pack(const GWindow& gw) {
     putPipe(os.str());
 }
 
-void Platform::gwindow_setTitle(const GWindow& gw, std::string title) {
+void Platform::gwindow_setTitle(const GWindow& gw, const std::string& title) {
     std::ostringstream os;
     os << "GWindow.setTitle(\"" << gw.gwd << "\", ";
     writeQuotedString(os, title);
@@ -720,6 +755,23 @@ void Platform::gwindow_setLocationSaved(const GWindow& gw, bool value) {
     std::ostringstream os;
     os << "GWindow.setLocationSaved(\"" << gw.gwd << "\", "
        << std::boolalpha << value << ")";
+    putPipe(os.str());
+}
+
+void Platform::gwindow_setPixel(const GWindow& gw, int x, int y, int rgb, bool repaint) {
+    std::ostringstream os;
+    os << "GWindow.setPixel(\"" << gw.gwd << "\", " << x << ", " << y << ", "
+       << rgb << ", " << std::boolalpha << repaint <<  ")";
+    putPipe(os.str());
+}
+
+void Platform::gwindow_setPixels(const GWindow& gw, const Grid<int>& grid) {
+    std::ostringstream os;
+    std::string pixelString = GBufferedImage::gridToPixelString(grid);
+    std::string base64 = Base64::encode(pixelString);
+    os << "GWindow.setPixels(\"" << gw.gwd << "\", ";
+    writeQuotedString(os, base64);
+    os << ")";
     putPipe(os.str());
 }
 
@@ -823,7 +875,7 @@ void Platform::httpserver_stop() {
     putPipe(os.str());
 }
 
-void Platform::sound_constructor(Sound *sound, std::string filename) {
+void Platform::sound_constructor(Sound* sound, const std::string& filename) {
     std::ostringstream os;
     os << "Sound.create(\"" << sound << "\", ";
     writeQuotedString(os, filename);
@@ -832,19 +884,19 @@ void Platform::sound_constructor(Sound *sound, std::string filename) {
     getStatus();
 }
 
-void Platform::sound_delete(Sound *sound) {
+void Platform::sound_delete(Sound* sound) {
     std::ostringstream os;
     os << "Sound.delete(\"" << sound << "\")";
     putPipe(os.str());
 }
 
-void Platform::sound_play(Sound *sound) {
+void Platform::sound_play(Sound* sound) {
     std::ostringstream os;
     os << "Sound.play(\"" << sound << "\")";
     putPipe(os.str());
 }
 
-int Platform::url_download(std::string url, std::string filename) {
+int Platform::url_download(const std::string& url, const std::string& filename) {
     std::ostringstream os;
     os << "URL.download(";
     writeQuotedString(os, urlEncode(url));
@@ -862,7 +914,7 @@ void Platform::gobject_delete(GObject* gobj) {
     putPipe(os.str());
 }
 
-void Platform::gcompound_add(GObject *compound, GObject* gobj) {
+void Platform::gcompound_add(GObject* compound, GObject* gobj) {
     std::ostringstream os;
     os << "GCompound.add(\"" << compound << "\", \"" << gobj << "\")";
     putPipe(os.str());
@@ -875,8 +927,8 @@ void Platform::gobject_remove(GObject* gobj) {
     putPipe(os.str());
 }
 
-void Platform::gwindow_setRegionAlignment(const GWindow& gw, std::string region,
-                                  std::string align) {
+void Platform::gwindow_setRegionAlignment(const GWindow& gw, const std::string& region,
+                                          const std::string& align) {
     std::ostringstream os;
     os << "GWindow.setRegionAlignment(\"" << gw.gwd << "\", \"" << region
        << "\", \"" << align << "\")";
@@ -907,7 +959,29 @@ Point Platform::gwindow_getLocation(const GWindow& gw) {
     return scanPoint(result);
 }
 
-GDimension Platform::gwindow_getRegionSize(const GWindow& gw, std::string region) {
+int Platform::gwindow_getPixel(const GWindow& gw, int x, int y) {
+    std::ostringstream os;
+    os << "GWindow.getPixel(\"" << gw.gwd << "\", " << x << ", " << y << ")";
+    putPipe(os.str());
+
+    // result will be an RGB integer as a string
+    std::string result = getResult();
+    int rgb = stringToInteger(result);
+    return rgb;
+}
+
+Grid<int> Platform::gwindow_getPixels(const GWindow& gw) {
+    std::ostringstream os;
+    os << "GWindow.getPixels(\"" << gw.gwd << "\")";
+    putPipe(os.str());
+
+    // result will be a base64-encoded pixel string
+    std::string result = getResult();
+    std::string decoded = Base64::decode(result);
+    return GBufferedImage::pixelStringToGrid(decoded);
+}
+
+GDimension Platform::gwindow_getRegionSize(const GWindow& gw, const std::string& region) {
     std::ostringstream os;
     os << "GWindow.getRegionSize(\"" << gw.gwd << "\", \"" << region << "\")";
     putPipe(os.str());
@@ -919,7 +993,7 @@ GDimension Platform::gwindow_getRegionSize(const GWindow& gw, std::string region
 }
 
 void Platform::gwindow_removeFromRegion(const GWindow& gw, GObject* gobj,
-                                std::string region) {
+                                        const std::string& region) {
     std::ostringstream os;
     os << "GWindow.removeFromRegion(\"" << gw.gwd << "\", \""
        << gobj << "\", \"" << region << "\")";
@@ -995,7 +1069,7 @@ void Platform::gwindow_setVisible(const GWindow& gw, bool flag) {
     putPipe(os.str());
 }
 
-void Platform::gobject_setColor(GObject* gobj, std::string color) {
+void Platform::gobject_setColor(GObject* gobj, const std::string& color) {
     std::ostringstream os;
     os << "GObject.setColor(\"" << gobj << "\", \"" << color << "\")";
     putPipe(os.str());
@@ -1032,7 +1106,7 @@ GRectangle Platform::gobject_getBounds(const GObject* gobj) {
     std::ostringstream os;
     os << "GObject.getBounds(\"" << gobj << "\")";
     putPipe(os.str());
-     std::string result = getResult();
+    std::string result = getResult();
     if (!startsWith(result, "GRectangle(")) error(result);
     return scanRectangle(result);
 }
@@ -1069,7 +1143,7 @@ void Platform::ginteractor_setEnabled(GObject* gint, bool value) {
     putPipe(os.str());
 }
 
-void Platform::ginteractor_setIcon(GObject* gobj, std::string filename) {
+void Platform::ginteractor_setIcon(GObject* gobj, const std::string& filename) {
     std::ostringstream os;
     os << "GInteractor.setIcon(\"" << gobj << "\", ";
     writeQuotedString(os, filename);
@@ -1082,7 +1156,7 @@ void Platform::ginteractor_setText(GObject* gobj, const std::string& text) {
     os << "GInteractor.setText("
        << "\"" << gobj << "\""
        << ", ";
-    writeQuotedString(os, urlDecode(text));
+    writeQuotedString(os, urlEncode(text));
     os << ")";
     putPipe(os.str());
 }
@@ -1096,6 +1170,15 @@ void Platform::ginteractor_setTextPosition(GObject* gobj, int horizontal, int ve
     putPipe(os.str());
 }
 
+void Platform::ginteractor_setTooltip(GObject* gobj, const std::string& tooltipText) {
+    std::ostringstream os;
+    os << "GInteractor.setTooltip("
+       << "\"" << gobj << "\", ";
+    writeQuotedString(os, urlEncode(tooltipText));
+    os << ")";
+    putPipe(os.str());
+}
+
 void Platform::gobject_setAntialiasing(bool value) {
     std::ostringstream os;
     os << "GObject.setAntialiasing(" << std::boolalpha << value << ")";
@@ -1103,7 +1186,7 @@ void Platform::gobject_setAntialiasing(bool value) {
 }
 
 void Platform::garc_setFrameRectangle(GObject* gobj, double x, double y,
-                                 double width, double height) {
+                                      double width, double height) {
     std::ostringstream os;
     if (x >= 0 && y >= 0 && width >= 0 && height >= 0) {
         os << "GArc.setFrameRectangle(\"" << gobj << "\", "
@@ -1133,7 +1216,7 @@ void Platform::gobject_setFilled(GObject* gobj, bool flag) {
     putPipe(os.str());
 }
 
-void Platform::gobject_setFillColor(GObject* gobj, std::string color) {
+void Platform::gobject_setFillColor(GObject* gobj, const std::string& color) {
     std::ostringstream os;
     os << "GObject.setFillColor(\"" << gobj << "\", \"" << color << "\")";
     putPipe(os.str());
@@ -1169,7 +1252,7 @@ void Platform::g3drect_setRaised(GObject* gobj, bool raised) {
     putPipe(os.str());
 }
 
-void Platform::glabel_constructor(GObject* gobj, std::string label) {
+void Platform::glabel_constructor(GObject* gobj, const std::string& label) {
     std::ostringstream os;
     // *** BUGBUG: must escape quotation marks in label string (Marty)
     os << "GLabel.create(\"" << gobj << "\", ";
@@ -1238,11 +1321,11 @@ void Platform::diffimage_compareImages(const std::string& file1, const std::stri
     putPipe(os.str());
 }
 
-void Platform::diffimage_compareWindowToImage(const GWindow& gwindow, const std::string& file2) {
+void Platform::diffimage_compareWindowToImage(const GWindow& gwindow, const std::string& file2, bool ignoreWindowSize) {
     std::ostringstream os;
     os << "DiffImage.compareWindowToImage(\"" << gwindow.gwd << "\", ";
     writeQuotedString(os, file2);
-    os << ")";
+    os << ", " << std::boolalpha << ignoreWindowSize << ")";
     putPipe(os.str());
     getResult();   // read "ok"; modal dialog
 }
@@ -1322,7 +1405,7 @@ void Platform::gbufferedimage_updateAllPixels(GObject* gobj,
     putPipe(os.str());
 }
 
-GDimension Platform::gimage_constructor(GObject* gobj, std::string filename) {
+GDimension Platform::gimage_constructor(GObject* gobj, const std::string& filename) {
     std::ostringstream os;
     os << "GImage.create(\"" << gobj << "\", \"" << filename << "\")";
     putPipe(os.str());
@@ -1354,7 +1437,7 @@ void Platform::goval_constructor(GObject* gobj, double width, double height) {
     putPipe(os.str());
 }
 
-void Platform::ginteractor_setActionCommand(GObject* gobj, std::string cmd) {
+void Platform::ginteractor_setActionCommand(GObject* gobj, const std::string& cmd) {
     std::ostringstream os;
     os << "GInteractor.setActionCommand(\"" << gobj << "\", ";
     writeQuotedString(os, cmd);
@@ -1362,7 +1445,7 @@ void Platform::ginteractor_setActionCommand(GObject* gobj, std::string cmd) {
     putPipe(os.str());
 }
 
-void Platform::ginteractor_setBackground(GObject* gobj, std::string color) {
+void Platform::ginteractor_setBackground(GObject* gobj, const std::string& color) {
     std::ostringstream os;
     os << "GInteractor.setBackground(\"" << gobj << "\", \"" << color << "\")";
     putPipe(os.str());
@@ -1375,7 +1458,7 @@ GDimension Platform::ginteractor_getSize(GObject* gobj) {
     return scanDimension(getResult());
 }
 
-void Platform::gbutton_constructor(GObject* gobj, std::string label) {
+void Platform::gbutton_constructor(GObject* gobj, const std::string& label) {
     std::ostringstream os;
     os << gobj;
     STATIC_VARIABLE(sourceTable).put(os.str(), gobj);
@@ -1386,7 +1469,7 @@ void Platform::gbutton_constructor(GObject* gobj, std::string label) {
     putPipe(os.str());
 }
 
-void Platform::gcheckbox_constructor(GObject* gobj, std::string label) {
+void Platform::gcheckbox_constructor(GObject* gobj, const std::string& label) {
     std::ostringstream os;
     os << gobj;
     STATIC_VARIABLE(sourceTable).put(os.str(), gobj);
@@ -1411,7 +1494,7 @@ void Platform::gcheckbox_setSelected(GObject* gobj, bool state) {
     putPipe(os.str());
 }
 
-void Platform::gradiobutton_constructor(GObject* gobj, std::string label, std::string group) {
+void Platform::gradiobutton_constructor(GObject* gobj, const std::string& label, const std::string& group) {
     std::ostringstream os;
     os << gobj;
     STATIC_VARIABLE(sourceTable).put(os.str(), gobj);
@@ -1641,7 +1724,7 @@ void Platform::gtextarea_setEditable(GObject* gobj, bool isEditable) {
     putPipe(os.str());
 }
 
-void Platform::gtextarea_setFont(GObject* gobj, std::string font) {
+void Platform::gtextarea_setFont(GObject* gobj, const std::string& font) {
     std::ostringstream os;
     os << "GTextArea.setFont(\"" << gobj << "\", ";
     writeQuotedString(os, font);
@@ -1649,7 +1732,7 @@ void Platform::gtextarea_setFont(GObject* gobj, std::string font) {
     putPipe(os.str());
 }
 
-void Platform::gtextarea_setText(GObject* gobj, std::string text) {
+void Platform::gtextarea_setText(GObject* gobj, const std::string& text) {
     std::ostringstream os;
     os << "GTextArea.setText(\"" << gobj << "\", ";
     writeQuotedString(os, text);
@@ -1688,7 +1771,15 @@ void Platform::gtextfield_setEditable(GObject* gobj, bool value) {
     putPipe(os.str());
 }
 
-void Platform::gtextfield_setText(GObject* gobj, std::string str) {
+void Platform::gtextfield_setPlaceholder(GObject* gobj, const std::string& text) {
+    std::ostringstream os;
+    os << "GTextField.setPlaceholder(\"" << gobj << "\", ";
+    writeQuotedString(os, text);
+    os << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtextfield_setText(GObject* gobj, const std::string& str) {
     std::ostringstream os;
     os << "GTextField.setText(\"" << gobj << "\", ";
     writeQuotedString(os, str);
@@ -1705,7 +1796,7 @@ void Platform::gchooser_constructor(GObject* gobj) {
     putPipe(os.str());
 }
 
-void Platform::gchooser_addItem(GObject* gobj, std::string item) {
+void Platform::gchooser_addItem(GObject* gobj, const std::string& item) {
     std::ostringstream os;
     os << "GChooser.addItem(\"" << gobj << "\", ";
     writeQuotedString(os, item);
@@ -1720,7 +1811,7 @@ std::string Platform::gchooser_getSelectedItem(GObject* gobj) {
     return getResult();
 }
 
-void Platform::gchooser_setSelectedItem(GObject* gobj, std::string item) {
+void Platform::gchooser_setSelectedItem(GObject* gobj, const std::string& item) {
     std::ostringstream os;
     os << "GChooser.setSelectedItem(\"" << gobj << "\", ";
     writeQuotedString(os, item);
@@ -1734,13 +1825,13 @@ void Platform::gcompound_constructor(GObject* gobj) {
     putPipe(os.str());
 }
 
-void Platform::glabel_setFont(GObject* gobj, std::string font) {
+void Platform::glabel_setFont(GObject* gobj, const std::string& font) {
     std::ostringstream os;
     os << "GLabel.setFont(\"" << gobj << "\", \"" << font << "\")";
     putPipe(os.str());
 }
 
-void Platform::glabel_setLabel(GObject* gobj, std::string str) {
+void Platform::glabel_setLabel(GObject* gobj, const std::string& str) {
     std::ostringstream os;
     os << "GLabel.setLabel(\"" << gobj << "\", ";
     writeQuotedString(os, str);
@@ -1811,7 +1902,7 @@ void Platform::gwindow_exitGraphics(bool abortBlockedConsoleIO) {
     }
 }
 
-std::string Platform::gfilechooser_showOpenDialog(std::string currentDir) {
+std::string Platform::gfilechooser_showOpenDialog(const std::string& currentDir) {
     std::ostringstream os;
     os << "GFileChooser.showOpenDialog(";
     writeQuotedString(os, currentDir);
@@ -1820,7 +1911,7 @@ std::string Platform::gfilechooser_showOpenDialog(std::string currentDir) {
     return getResult();
 }
 
-std::string Platform::gfilechooser_showSaveDialog(std::string currentDir) {
+std::string Platform::gfilechooser_showSaveDialog(const std::string& currentDir) {
     std::ostringstream os;
     os << "GFileChooser.showSaveDialog(";
     writeQuotedString(os, currentDir);
@@ -1829,7 +1920,7 @@ std::string Platform::gfilechooser_showSaveDialog(std::string currentDir) {
     return getResult();
 }
 
-int Platform::goptionpane_showConfirmDialog(std::string message, std::string title, int type) {
+int Platform::goptionpane_showConfirmDialog(const std::string& message, const std::string& title, int type) {
     std::ostringstream os;
     os << "GOptionPane.showConfirmDialog(";
     writeQuotedString(os, urlEncode(message));
@@ -1841,7 +1932,7 @@ int Platform::goptionpane_showConfirmDialog(std::string message, std::string tit
     return stringToInteger(getResult());
 }
 
-std::string Platform::goptionpane_showInputDialog(std::string message, std::string title) {
+std::string Platform::goptionpane_showInputDialog(const std::string& message, const std::string& title) {
     std::ostringstream os;
     os << "GOptionPane.showInputDialog(";
     writeQuotedString(os, urlEncode(message));
@@ -1852,7 +1943,7 @@ std::string Platform::goptionpane_showInputDialog(std::string message, std::stri
     return urlDecode(getResult());
 }
 
-void Platform::goptionpane_showMessageDialog(std::string message, std::string title, int type) {
+void Platform::goptionpane_showMessageDialog(const std::string& message, const std::string& title, int type) {
     std::ostringstream os;
     os << "GOptionPane.showMessageDialog(";
     writeQuotedString(os, urlEncode(message));
@@ -1864,10 +1955,10 @@ void Platform::goptionpane_showMessageDialog(std::string message, std::string ti
     getResult();   // wait for dialog to close
 }
 
-int Platform::goptionpane_showOptionDialog(std::string message,
-                                           std::string title,
+int Platform::goptionpane_showOptionDialog(const std::string& message,
+                                           const std::string& title,
                                            const std::vector<std::string>& options,
-                                           std::string initiallySelected) {
+                                           const std::string& initiallySelected) {
     std::ostringstream os;
     os << "GOptionPane.showOptionDialog(";
     writeQuotedString(os, urlEncode(message));
@@ -1891,8 +1982,8 @@ int Platform::goptionpane_showOptionDialog(std::string message,
     return stringToInteger(result);
 }
 
-void Platform::goptionpane_showTextFileDialog(std::string message,
-                                              std::string title,
+void Platform::goptionpane_showTextFileDialog(const std::string& message,
+                                              const std::string& title,
                                               int rows,
                                               int cols) {
     std::ostringstream os;
@@ -1936,7 +2027,7 @@ void Platform::jbeconsole_minimize() {
     putPipe("JBEConsole.minimize()");
 }
 
-void Platform::jbeconsole_setFont(const std::string & font) {
+void Platform::jbeconsole_setFont(const std::string& font) {
     std::ostringstream os;
     os << "JBEConsole.setFont(\"" << font << "\")";
     putPipe(os.str());
@@ -2018,20 +2109,17 @@ void Platform::note_play(const std::string& noteString) {
     getResult();   // wait for playing to be done
 }
 
-void Platform::autograderinput_addButton(std::string text, std::string input) {
-    if (input.empty()) {
-        input = text;
-    }
+void Platform::autograderinput_addButton(const std::string& text, const std::string& input) {
     std::ostringstream out;
     out << "AutograderInput.addButton(";
     writeQuotedString(out, urlEncode(text));
     out << ", ";
-    writeQuotedString(out, urlEncode(input));
+    writeQuotedString(out, urlEncode(input.empty() ? text : input));
     out << ")";
     putPipe(out.str());
 }
 
-void Platform::autograderinput_removeButton(std::string text) {
+void Platform::autograderinput_removeButton(const std::string& text) {
     std::ostringstream out;
     out << "AutograderInput.removeButton(";
     writeQuotedString(out, urlEncode(text));
@@ -2039,7 +2127,7 @@ void Platform::autograderinput_removeButton(std::string text) {
     putPipe(out.str());
 }
 
-void Platform::autograderinput_addCategory(std::string name) {
+void Platform::autograderinput_addCategory(const std::string& name) {
     std::ostringstream out;
     out << "AutograderInput.addCategory(";
     writeQuotedString(out, urlEncode(name));
@@ -2047,7 +2135,7 @@ void Platform::autograderinput_addCategory(std::string name) {
     putPipe(out.str());
 }
 
-void Platform::autograderinput_removeCategory(std::string name) {
+void Platform::autograderinput_removeCategory(const std::string& name) {
     std::ostringstream out;
     out << "AutograderInput.removeCategory(";
     writeQuotedString(out, urlEncode(name));
@@ -2184,7 +2272,7 @@ void setExitEnabled(bool enabled) {
 } // namespace stanfordcpplib
 
 
-static void putPipeLongString(std::string line) {
+static void putPipeLongString(const std::string& line) {
     // break into chunks
     // precondition: line does not contain substring "LongCommand.end()"
     putPipe("LongCommand.begin()");
@@ -2318,7 +2406,7 @@ static void initPipe() {
 }
 
 // Windows implementation; see Unix implementation elsewhere in this file
-static void putPipe(std::string line) {
+static void putPipe(const std::string& line) {
     if (line.length() > STATIC_VARIABLE(PIPE_MAX_COMMAND_LENGTH)) {
         putPipeLongString(line);
         return;
@@ -2468,7 +2556,7 @@ static void initPipe() {
 }
 
 // Unix implementation; see Windows implementation elsewhere in this file
-static void putPipe(std::string line) {
+static void putPipe(const std::string& line) {
     if (line.length() > STATIC_VARIABLE(PIPE_MAX_COMMAND_LENGTH)) {
         putPipeLongString(line);
         return;
@@ -2694,7 +2782,7 @@ static std::string& programName() {
     return __programName;
 }
 
-static GEvent parseEvent(std::string line) {
+static GEvent parseEvent(const std::string& line) {
     TokenScanner scanner(line);
     scanner.ignoreWhitespace();
     scanner.scanNumbers();
@@ -2878,8 +2966,11 @@ static GEvent parseActionEvent(TokenScanner& scanner, EventType type) {
     std::string action = scanner.getStringValue(scanner.nextToken());
     scanner.verifyToken(",");
     double time = scanDouble(scanner);
+    scanner.verifyToken(",");
+    int modifiers = scanInt(scanner);
     scanner.verifyToken(")");
     GActionEvent e(type, STATIC_VARIABLE(sourceTable).get(id), action);
+    e.setModifiers(modifiers);
     e.setEventTime(time);
     return e;
 }

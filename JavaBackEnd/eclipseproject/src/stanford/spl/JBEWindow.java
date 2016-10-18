@@ -143,6 +143,7 @@ public class JBEWindow extends JFrame {
 
 	public void clearCanvas() {
 		this.canvas.clear();
+		repaint();
 	}
 	
 	// JL: SwingUtilities.invokeLater

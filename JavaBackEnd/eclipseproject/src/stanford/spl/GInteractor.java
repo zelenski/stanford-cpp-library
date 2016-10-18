@@ -1,4 +1,6 @@
 /*
+ * @version 2016/10/16
+ * - added get/setIcon
  * @version 2015/12/01
  * - added setBackground, setColor
  */
@@ -58,6 +60,44 @@ public abstract class GInteractor extends GObject implements GResizable {
 		Dimension localDimension = this.interactor.getPreferredSize();
 		return new GRectangle(localPoint.x, localPoint.y, localDimension.width,
 				localDimension.height);
+	}
+	
+	public Icon getIcon() {
+		JComponent interactor = getInteractor();
+		if (interactor == null) {
+			return null;
+		} else if (interactor instanceof JButton) {
+			return ((JButton) interactor).getIcon();
+		} else if (interactor instanceof JCheckBox) {
+			return ((JCheckBox) interactor).getIcon();
+		} else if (interactor instanceof JLabel) {
+			return ((JLabel) interactor).getIcon();
+		} else if (interactor instanceof JRadioButton) {
+			return ((JRadioButton) interactor).getIcon();
+		} else {
+			return null;
+		}
+	}
+	
+	public void setIcon(Icon icon) {
+		JComponent interactor = getInteractor();
+		if (interactor == null) {
+			return;
+		} else if (interactor instanceof JButton) {
+			((JButton) interactor).setIcon(icon);
+		} else if (interactor instanceof JCheckBox) {
+			((JCheckBox) interactor).setIcon(icon);
+		} else if (interactor instanceof JLabel) {
+			((JLabel) interactor).setIcon(icon);
+		} else if (interactor instanceof JRadioButton) {
+			((JRadioButton) interactor).setIcon(icon);
+		} else {
+			throw new IllegalArgumentException("interactor type does not support setIcon: " + getClass().getSimpleName());
+		}
+	}
+	
+	public void setIcon(String iconFileName) {
+		setIcon(new ImageIcon(iconFileName));
 	}
 
 	public void setLocation(double paramDouble1, double paramDouble2) {
@@ -119,6 +159,13 @@ public abstract class GInteractor extends GObject implements GResizable {
 
 	public String getActionCommand() {
 		return this.actionCommand;
+	}
+	
+	public void setTooltip(String tooltipText) {
+		JComponent interactor = this.getInteractor();
+		if (interactor != null) {
+			interactor.setToolTipText(tooltipText);
+		}
 	}
 
 	public void repaint() {

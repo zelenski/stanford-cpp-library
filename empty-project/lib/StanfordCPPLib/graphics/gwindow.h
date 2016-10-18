@@ -4,6 +4,9 @@
  * This file defines the <code>GWindow</code> class which supports
  * drawing graphical objects on the screen.
  * 
+ * @version 2016/10/16
+ * - added get/setPixel[s], get/setWidth/Height
+ * - alphabetized methods
  * @version 2016/10/12
  * - added getRegionWidth, getRegionHeight methods
  * @version 2016/10/08
@@ -25,6 +28,7 @@
 #define _gwindow_h
 
 #include <string>
+#include "grid.h"
 #include "gtypes.h"
 #include "point.h"
 #include "vector.h"
@@ -53,11 +57,13 @@ struct GWindowData {
     int windowY;
     std::string windowTitle;
     std::string color;
+    int colorInt;
     bool visible;
+    bool resizable;
     bool closed;
     bool exitOnClose;
     bool repaintImmediately;
-    GCompound *top;
+    GCompound* top;
 };
 
 /*
@@ -109,9 +115,13 @@ public:
      *        GWindow gw(width, height);
      * ---------------------------------
      * Creates a window, either of the specified size or a default size.
+     * You can optionally pass a bool value of false to make the window
+     * initially invisible; you must then call setVisible(true) on it
+     * for it to appear.
      */
     GWindow();
     GWindow(double width, double height);
+    GWindow(double width, double height, bool visible);
 
     /*
      * Destructor: ~GWindow
@@ -123,52 +133,39 @@ public:
     virtual ~GWindow();
 
     /*
-     * Method: close
-     * Usage: gw.close();
-     * ------------------
-     * Deletes the window from the screen.
+     * Method: add
+     * Usage: gw.add(gobj);
+     *        gw.add(gobj, x, y);
+     * --------------------------
+     * Adds the <code>GObject</code> to the foreground layer of the window.
+     * The second form of the call sets the location of the object to
+     * (<code>x</code>, <code>y</code>) first.
+     *
+     * <p>In terms of memory management, adding a <code>GObject</code> pointer to
+     * a <code>GWindow</code> transfers control of that object from the client to
+     * the window manager.  Deleting a <code>GWindow</code> automatically deletes
+     * any <nobr><code>GObject</code><font size=-1>s</font></nobr> it contains.
      */
-    void close();
-    void notifyOfClose();           // not to be called by students
-    std::string getWindowData() const;   // not to be called by students
+    void add(GObject* gobj);
+    void add(GObject* gobj, double x, double y);
 
     /*
-     * Sets this window such that when it is closed, the program will shut down
-     * immediately.  Useful if the program has a primary GUI window.
+     * Method: addToRegion
+     * Usage: gw.addToRegion(interactor, region);
+     * ------------------------------------------
+     * Adds the interactor (which can also be a <code>GLabel</code>) to
+     * the control strip specified by the <code>region</code> parameter.
+     * The <code>region</code> parameter must be one of the strings
+     * <code>"NORTH"</code>, <code>"EAST"</code>, <code>"SOUTH"</code>,
+     * or <code>"WEST"</code>.
      */
-    void setExitOnClose(bool value = true);
-    
-    /*
-     * Returns whether the GWindow will repaint after every draw operation.
-     * Initially true unless changed by a call to setRepaintImmediately.
-     */
-    bool isRepaintImmediately() const;
+    void addToRegion(GInteractor* gobj, const std::string& region);
+    void addToRegion(GLabel* gobj, const std::string& region);
 
     /*
-     * Sets whether the GWindow should repaint after every draw operation.
-     * Initially true.
-     * If set to false, you must manually repaint when you want the GWindow
-     * to update itself.  Useful for optimizing complex/animated GUIs.
+     * Sets the (x, y) location of the window to be the center of the screen.
      */
-    void setRepaintImmediately(bool value);
-
-    /*
-     * Method: isOpen
-     * Usage: bool open = gw.isOpen();
-     * ------------------
-     * Returns true if the window is open (has not been closed).
-     */
-    bool isOpen() const;
-
-    /*
-     * Method: requestFocus
-     * Usage: gw.requestFocus();
-     * -------------------------
-     * Asks the system to assign the keyboard focus to the window, which
-     * brings it to the top and ensures that key events are delivered to
-     * the window.  Clicking in the window automatically requests the focus.
-     */
-    void requestFocus();
+    void center();
 
     /*
      * Method: clear
@@ -188,20 +185,38 @@ public:
     void clearCanvas();
 
     /*
-     * Method: setVisible
-     * Usage: gw.setVisible(flag);
-     * ---------------------------
-     * Determines whether the window is visible on the screen.
+     * Method: close
+     * Usage: gw.close();
+     * ------------------
+     * Deletes the window from the screen.
      */
-    void setVisible(bool flag);
+    void close();
 
     /*
-     * Method: isVisible
-     * Usage: if (gw.isVisible()) ...
-     * ------------------------------
-     * Tests whether the window is visible.
+     * Method: compareToImage
+     * Usage: gw.compareToImage(filename);
+     * -----------------------------------
+     * Performs an image 'diff' between the pixels of this window and those
+     * of the image found in the given file.
      */
-    bool isVisible() const;
+    void compareToImage(const std::string& filename, bool ignoreWindowSize = true) const;
+
+    /*
+     * Method: draw
+     * Usage: gw.draw(gobj);
+     *        gw.draw(gobj, x, y);
+     * ---------------------------
+     * Draws the <code>GObject</code> on the background layer.  For convenience,
+     * the <code>gobj</code> parameter may be passed either as a constant
+     * reference or as a pointer.  If the <code>x</code> and <code>y</code>
+     * parameters are included, the object is moved to that location before
+     * drawing.
+     */
+    void draw(const GObject& gobj);
+    void draw(GObject* gobj);
+    void draw(const GObject* gobj);
+    void draw(GObject& gobj, double x, double y);
+    void draw(GObject* gobj, double x, double y);
 
     /*
      * Method: drawLine
@@ -212,6 +227,16 @@ public:
      */
     void drawLine(const GPoint & p0, const GPoint & p1);
     void drawLine(double x0, double y0, double x1, double y1);
+
+    /*
+     * Method: drawOval
+     * Usage: gw.drawOval(bounds);
+     *        gw.drawOval(x, y, width, height);
+     * ----------------------------------------
+     * Draws the frame of a oval with the specified bounds.
+     */
+    void drawOval(const GRectangle & bounds);
+    void drawOval(double x, double y, double width, double height);
 
     /*
      * Method: drawPolarLine
@@ -227,24 +252,15 @@ public:
     GPoint drawPolarLine(double x0, double y0, double r, double theta);
 
     /*
-     * Method: drawOval
-     * Usage: gw.drawOval(bounds);
-     *        gw.drawOval(x, y, width, height);
-     * ----------------------------------------
-     * Draws the frame of a oval with the specified bounds.
+     * Method: drawPixel
+     * Usage: gw.drawPixel(x, y);
+     * --------------------------
+     * Sets the color of the given pixel to be the GWindow's current color.
+     * If no color is passed, uses the color last passed to setColor.
      */
-    void drawOval(const GRectangle & bounds);
-    void drawOval(double x, double y, double width, double height);
-
-    /*
-     * Method: fillOval
-     * Usage: gw.fillOval(bounds);
-     *        gw.fillOval(x, y, width, height);
-     * ----------------------------------------
-     * Fills the frame of a oval with the specified bounds.
-     */
-    void fillOval(const GRectangle & bounds);
-    void fillOval(double x, double y, double width, double height);
+    void drawPixel(double x, double y);
+    void drawPixel(double x, double y, int color);
+    void drawPixel(double x, double y, const std::string& color);
 
     /*
      * Method: drawRect
@@ -257,6 +273,16 @@ public:
     void drawRect(double x, double y, double width, double height);
 
     /*
+     * Method: fillOval
+     * Usage: gw.fillOval(bounds);
+     *        gw.fillOval(x, y, width, height);
+     * ----------------------------------------
+     * Fills the frame of a oval with the specified bounds.
+     */
+    void fillOval(const GRectangle & bounds);
+    void fillOval(double x, double y, double width, double height);
+
+    /*
      * Method: fillRect
      * Usage: gw.fillRect(bounds);
      *        gw.fillRect(x, y, width, height);
@@ -265,6 +291,282 @@ public:
      */
     void fillRect(const GRectangle & bounds);
     void fillRect(double x, double y, double width, double height);
+
+    /*
+     * Method: getCanvasHeight
+     * Usage: double height = gw.getCanvasHeight();
+     * --------------------------------------------
+     * Returns the height of the graphics window's canvas area in pixels.
+     */
+    double getCanvasHeight() const;
+
+    /*
+     * Method: getCanvasSize
+     * Usage: GDimension canvasSize = gw.getCanvasSize();
+     * --------------------------------------
+     * Returns the width and height of the graphics window's central
+     * drawing canvas in pixels as a GDimension.
+     */
+    GDimension getCanvasSize() const;
+
+    /*
+     * Method: getCanvasWidth
+     * Usage: double width = gw.getCanvasWidth();
+     * ------------------------------------------
+     * Returns the width of the graphics window's canvas area in pixels.
+     */
+    double getCanvasWidth() const;
+
+    /*
+     * Method: getColor
+     * Usage: string color = gw.getColor();
+     * ------------------------------------
+     * Returns the current color as a string in the form <code>"#rrggbb"</code>.
+     * In this string, the values <code>rr</code>, <code>gg</code>,
+     * and <code>bb</code> are two-digit hexadecimal values representing
+     * the red, green, and blue components of the color, respectively.
+     */
+    std::string getColor() const;
+    int getColorInt() const;
+
+    /*
+     * Method: getGObjectAt
+     * Usage: GObject *gobj = getGObjectAt(x, y);
+     * ------------------------------------------
+     * Returns a pointer to the topmost <code>GObject</code> containing the
+     * point (<code>x</code>, <code>y</code>), or <code>nullptr</code> if no such
+     * object exists.
+     */
+    GObject* getGObjectAt(double x, double y) const;
+
+    /*
+     * Method: getHeight
+     * Usage: double height = gw.getHeight();
+     * --------------------------------------
+     * Returns the height of the graphics window in pixels.
+     */
+    double getHeight() const;
+
+    /*
+     * Method: getLocation
+     * Usage: Point p = gw.getLocation();
+     * ----------------------------------
+     * Returns the (x, y) location of the graphics window relative to
+     * the top/left corner of the screen.
+     */
+    Point getLocation() const;
+
+    /*
+     * Returns the pixel value at the given (x, y) position as an RGB integer.
+     */
+    int getPixel(double x, double y) const;
+
+    /*
+     * Returns the pixel value at the given (x, y) position as an ARGB integer
+     * with the alpha transparency component intact.
+     */
+    int getPixelARGB(double x, double y) const;
+
+    /*
+     * Returns the pixel values at all (x, y) positions in the canvas as
+     * a grid of RGB integers.
+     */
+    Grid<int> getPixels() const;
+
+    /*
+     * Returns the pixel values at all (x, y) positions in the canvas as
+     * a grid of ARGB integers with the alpha transparency component intact.
+     */
+    Grid<int> getPixelsARGB() const;
+
+    /*
+     * Returns the height, size, or width of the given region respectively,
+     * specified as "NORTH", "SOUTH", "WEST", "EAST", or "CENTER".
+     */
+    double getRegionHeight(const std::string& region) const;
+    GDimension getRegionSize(const std::string& region) const;
+    double getRegionWidth(const std::string& region) const;
+
+    /*
+     * Method: getSize
+     * Usage: GDimension size = gw.getSize();
+     * --------------------------------------
+     * Returns the width and height of the graphics window in pixels
+     * as a GDimension.
+     */
+    GDimension getSize() const;
+
+    /*
+     * Method: getTitle
+     * Usage: string title = gw.getTitle();
+     * ------------------------------------
+     * Returns the title of the graphics window.
+     * Equivalent to getWindowTitle.
+     */
+    std::string getTitle() const;
+
+    /*
+     * Method: getWidth
+     * Usage: double width = gw.getWidth();
+     * ------------------------------------
+     * Returns the width of the graphics window in pixels.
+     */
+    double getWidth() const;
+
+    std::string getWindowData() const;   // not to be called by students
+
+    /*
+     * Method: getWindowTitle
+     * Usage: string title = gw.getWindowTitle();
+     * ------------------------------------------
+     * Returns the title of the graphics window.
+     */
+    std::string getWindowTitle() const;
+
+    /*
+     * Method: getX
+     * Usage: double x = gw.getX();
+     * ----------------------------
+     * Returns the x location of the graphics window relative to
+     * the top/left corner of the screen.
+     */
+    double getX() const;
+
+    /*
+     * Method: getY
+     * Usage: double y = gw.getY();
+     * ----------------------------
+     * Returns the y location of the graphics window relative to
+     * the top/left corner of the screen.
+     */
+    double getY() const;
+
+    /*
+     * Method: inBounds
+     * Usage: if (gw.inBounds(x, y)) ...
+     * ---------------------------------
+     * Returns whether the given (x, y) pixel coordinate is within the bounds
+     * of this window.
+     * Note that this includes the entire window, not just the canvas area.
+     */
+    bool inBounds(double x, double y) const;
+
+    /*
+     * Method: inBounds
+     * Usage: if (gw.inBounds(x, y)) ...
+     * ---------------------------------
+     * Returns whether the given (x, y) pixel coordinate is within the bounds
+     * of this window's central canvas area.
+     */
+    bool inCanvasBounds(double x, double y) const;
+
+    /*
+     * Method: isOpen
+     * Usage: bool open = gw.isOpen();
+     * -------------------------------
+     * Returns true if the window is open (has not been closed).
+     */
+    bool isOpen() const;
+
+    /*
+     * Returns whether the GWindow will repaint after every draw operation.
+     * Initially true unless changed by a call to setRepaintImmediately.
+     */
+    bool isRepaintImmediately() const;
+
+    /*
+     * Method: isResizable
+     * Usage: if (gw.isResizable()) ...
+     * --------------------------------
+     * Returns whether the window can be resized by the user (default false).
+     */
+    bool isResizable() const;
+
+    /*
+     * Method: isVisible
+     * Usage: if (gw.isVisible()) ...
+     * ------------------------------
+     * Tests whether the window is visible.
+     */
+    bool isVisible() const;
+
+    void notifyOfClose();           // not to be called by students
+
+    /*
+     * Resizes the window to exactly the right size to fit the components
+     * inside it.
+     */
+    void pack();
+
+    /*
+     * Method: remove
+     * Usage: gw.remove(gobj);
+     * -----------------------
+     * Removes the object from the window.
+     */
+    void remove(GObject* gobj);
+
+    /*
+     * Method: removeFromRegion
+     * Usage: gw.removeFromRegion(interactor, region);
+     * -----------------------------------------------
+     * Adds the interactor (which can also be a <code>GLabel</code>) to
+     * the control strip specified by the <code>region</code> parameter.
+     * The <code>region</code> parameter must be one of the strings
+     * <code>"NORTH"</code>, <code>"EAST"</code>, <code>"SOUTH"</code>,
+     * or <code>"WEST"</code>.
+     */
+    void removeFromRegion(GInteractor* gobj, const std::string& region);
+    void removeFromRegion(GLabel* gobj, const std::string& region);
+
+    /*
+     * Method: repaint
+     * Usage: gw.repaint();
+     * --------------------
+     * Schedule a repaint on this window.
+     */
+    void repaint();
+
+    /*
+     * Method: requestFocus
+     * Usage: gw.requestFocus();
+     * -------------------------
+     * Asks the system to assign the keyboard focus to the window, which
+     * brings it to the top and ensures that key events are delivered to
+     * the window.  Clicking in the window automatically requests the focus.
+     */
+    void requestFocus();
+
+    /*
+     * Writes the pixels of this window's graphical canvas to the given file.
+     */
+    void saveCanvasPixels(const std::string& filename);
+
+    /*
+     * Method: setCanvasHeight
+     * Usage: gw.setCanvasHeight(height);
+     * ----------------------------------
+     * Sets the height of the graphics window's central drawing canvas in pixels
+     * without modifying its width.
+     */
+    void setCanvasHeight(double height);
+
+    /*
+     * Method: setCanvasSize
+     * Usage: gw.setCanvasSize(width, height);
+     * --------------------------------
+     * Sets the size of the graphics window's central drawing canvas in pixels.
+     */
+    void setCanvasSize(double width, double height);
+
+    /*
+     * Method: setCanvasWidth
+     * Usage: gw.setCanvasWidth(width);
+     * --------------------------------
+     * Sets the width of the graphics window's central drawing canvas in pixels
+     * without modifying its height.
+     */
+    void setCanvasWidth(double width);
 
     /*
      * Method: setColor
@@ -296,141 +598,33 @@ public:
      * <code>bb</code> are pairs of hexadecimal digits indicating the
      * red, green, and blue components of the color.
      */
-    void setColor(std::string color);
     void setColor(int color);
+    void setColor(const std::string& color);
 
     /*
-     * Method: getColor
-     * Usage: string color = gw.getColor();
-     * ------------------------------------
-     * Returns the current color as a string in the form <code>"#rrggbb"</code>.
-     * In this string, the values <code>rr</code>, <code>gg</code>,
-     * and <code>bb</code> are two-digit hexadecimal values representing
-     * the red, green, and blue components of the color, respectively.
+     * Sets this window such that when it is closed, the program will shut down
+     * immediately.  Useful if the program has a primary GUI window.
      */
-    std::string getColor() const;
+    void setExitOnClose(bool value = true);
 
     /*
-     * Method: getWidth
-     * Usage: double width = gw.getWidth();
-     * ------------------------------------
-     * Returns the width of the graphics window in pixels.
+     * Method: setHeight
+     * Usage: gw.setHeight(height);
+     * ----------------------------
+     * Sets the height of the graphics window in pixels without changing its width.
      */
-    double getWidth() const;
-
-    /*
-     * Method: getHeight
-     * Usage: double height = gw.getHeight();
-     * --------------------------------------
-     * Returns the height of the graphics window in pixels.
-     */
-    double getHeight() const;
-    
-    /*
-     * Method: getSize
-     * Usage: GDimension size = gw.getSize();
-     * --------------------------------------
-     * Returns the width and height of the graphics window in pixels
-     * as a GDimension.
-     */
-    GDimension getSize() const;
-    
-    /*
-     * Method: getCanvasSize
-     * Usage: GDimension canvasSize = gw.getCanvasSize();
-     * --------------------------------------
-     * Returns the width and height of the graphics window's central
-     * drawing canvas in pixels as a GDimension.
-     */
-    GDimension getCanvasSize() const;
-
-    /*
-     * Method: getCanvasWidth
-     * Usage: double width = gw.getCanvasWidth();
-     * ------------------------------------------
-     * Returns the width of the graphics window's canvas area in pixels.
-     */
-    double getCanvasWidth() const;
-
-    /*
-     * Method: getCanvasHeight
-     * Usage: double height = gw.getCanvasHeight();
-     * --------------------------------------------
-     * Returns the height of the graphics window's canvas area in pixels.
-     */
-    double getCanvasHeight() const;
-
-    /*
-     * Method: repaint
-     * Usage: gw.repaint();
-     * --------------------
-     * Schedule a repaint on this window.
-     */
-    void repaint();
-
-    /*
-     * Method: setSize
-     * Usage: gw.setSize(width, height);
-     * --------------------------------
-     * Sets the size of the graphics window in pixels.
-     */
-    void setSize(int width, int height);
-    
-    /*
-     * Resizes the window to exactly the right size to fit the components
-     * inside it.
-     */
-    void pack();
-
-    /*
-     * Writes the pixels of this window's graphical canvas to the given file.
-     */
-    void saveCanvasPixels(const std::string& filename);
-
-    /*
-     * Method: setCanvasSize
-     * Usage: gw.setCanvasSize(width, height);
-     * --------------------------------
-     * Sets the size of the graphics window's central drawing canvas in pixels.
-     */
-    void setCanvasSize(int width, int height);
-
-    /*
-     * Method: setTitle
-     * Usage: gw.setTitle(title);
-     * --------------------------
-     * Sets the title of the graphics window.
-     * A synonym for setWindowTitle whose name more closely matches Java's.
-     */
-    void setTitle(std::string title);
-
-    /*
-     * Method: setWindowTitle
-     * Usage: gw.setWindowTitle(title);
-     * --------------------------------
-     * Sets the title of the graphics window.
-     */
-    void setWindowTitle(std::string title);
+    void setHeight(double height);
 
     /*
      * Method: setLocation
      * Usage: gw.setLocation(x, y);
-     * --------------------------------
+     * ----------------------------
      * Sets the (x, y) location of the graphics window relative to the top/left
      * of the screen.
      */
-    Point getLocation() const;
-    
-    /*
-     * Method: setLocation
-     * Usage: gw.setLocation(x, y);
-     * --------------------------------
-     * Sets the (x, y) location of the graphics window relative to the top/left
-     * of the screen.
-     */
-    void setLocation(int x, int y);
+    void setLocation(double x, double y);
     void setLocation(const Point& p);
-    
+
     /*
      * Method: setLocationSaved
      * Usage: gw.setLocationSaved(true);
@@ -441,99 +635,28 @@ public:
     void setLocationSaved(bool value);
 
     /*
-     * Sets the (x, y) location of the window to be the center of the screen.
+     * Sets the pixel value at the given (x, y) position from an RGB integer.
      */
-    void center();
+    void setPixel(double x, double y, int rgb);
 
     /*
-     * Method: getWindowTitle
-     * Usage: string title = gw.getWindowTitle();
-     * ------------------------------------------
-     * Returns the title of the graphics window.
+     * Sets the pixel value at the given (x, y) position from an ARGB integer
+     * with the alpha transparency component intact.
      */
-    std::string getWindowTitle() const;
+    void setPixelARGB(double x, double y, int argb);
 
     /*
-     * Method: draw
-     * Usage: gw.draw(gobj);
-     *        gw.draw(gobj, x, y);
-     * ---------------------------
-     * Draws the <code>GObject</code> on the background layer.  For convenience,
-     * the <code>gobj</code> parameter may be passed either as a constant
-     * reference or as a pointer.  If the <code>x</code> and <code>y</code>
-     * parameters are included, the object is moved to that location before
-     * drawing.
+     * Sets the pixel value at all (x, y) positions in the canvas from
+     * the given grid of RGB integers.
      */
-    void draw(const GObject& gobj);
-    void draw(GObject* gobj);
-    void draw(const GObject* gobj);
-    void draw(GObject& gobj, double x, double y);
-    void draw(GObject* gobj, double x, double y);
+    void setPixels(const Grid<int>& pixels);
 
     /*
-     * Method: add
-     * Usage: gw.add(gobj);
-     *        gw.add(gobj, x, y);
-     * --------------------------
-     * Adds the <code>GObject</code> to the foreground layer of the window.
-     * The second form of the call sets the location of the object to
-     * (<code>x</code>, <code>y</code>) first.
-     *
-     * <p>In terms of memory management, adding a <code>GObject</code> pointer to
-     * a <code>GWindow</code> transfers control of that object from the client to
-     * the window manager.  Deleting a <code>GWindow</code> automatically deletes
-     * any <nobr><code>GObject</code><font size=-1>s</font></nobr> it contains.
+     * Sets the pixel value at all (x, y) positions in the canvas from
+     * the given grid of ARGB integers.
      */
-    void add(GObject* gobj);
-    void add(GObject* gobj, double x, double y);
+    void setPixelsARGB(const Grid<int>& pixelsARGB);
 
-    /*
-     * Method: remove
-     * Usage: gw.remove(gobj);
-     * -----------------------
-     * Removes the object from the window.
-     */
-    void remove(GObject* gobj);
-
-    /*
-     * Method: addToRegion
-     * Usage: gw.addToRegion(interactor, region);
-     * ------------------------------------------
-     * Adds the interactor (which can also be a <code>GLabel</code>) to
-     * the control strip specified by the <code>region</code> parameter.
-     * The <code>region</code> parameter must be one of the strings
-     * <code>"NORTH"</code>, <code>"EAST"</code>, <code>"SOUTH"</code>,
-     * or <code>"WEST"</code>.
-     */
-    void addToRegion(GInteractor* gobj, std::string region);
-    void addToRegion(GLabel* gobj, std::string region);
-
-    GDimension getRegionSize(std::string region) const;
-    double getRegionHeight(std::string region) const;
-    double getRegionWidth(std::string region) const;
-
-    /*
-     * Method: removeFromRegion
-     * Usage: gw.removeFromRegion(interactor, region);
-     * -----------------------------------------------
-     * Adds the interactor (which can also be a <code>GLabel</code>) to
-     * the control strip specified by the <code>region</code> parameter.
-     * The <code>region</code> parameter must be one of the strings
-     * <code>"NORTH"</code>, <code>"EAST"</code>, <code>"SOUTH"</code>,
-     * or <code>"WEST"</code>.
-     */
-    void removeFromRegion(GInteractor* gobj, std::string region);
-    void removeFromRegion(GLabel* gobj, std::string region);
-    
-    /*
-     * Method: getGObjectAt
-     * Usage: GObject *gobj = getGObjectAt(x, y);
-     * ------------------------------------------
-     * Returns a pointer to the topmost <code>GObject</code> containing the
-     * point (<code>x</code>, <code>y</code>), or <code>nullptr</code> if no such
-     * object exists.
-     */
-    GObject* getGObjectAt(double x, double y) const;
 
     /*
      * Method: setRegionAlignment
@@ -547,7 +670,15 @@ public:
      * <code>"CENTER"</code>.  By default, side panels use
      * <code>CENTER</code> alignment.
      */
-    void setRegionAlignment(std::string region, std::string align);
+    void setRegionAlignment(const std::string& region, const std::string& align);
+
+    /*
+     * Sets whether the GWindow should repaint after every draw operation.
+     * Initially true.
+     * If set to false, you must manually repaint when you want the GWindow
+     * to update itself.  Useful for optimizing complex/animated GUIs.
+     */
+    void setRepaintImmediately(bool value);
 
     /*
      * Method: setResizable
@@ -555,7 +686,68 @@ public:
      * -----------------------------
      * Sets whether the window can be resized by the user (default false).
      */
-    void setResizable(bool resizable);  
+    void setResizable(bool resizable);
+
+    /*
+     * Method: setSize
+     * Usage: gw.setSize(width, height);
+     * ---------------------------------
+     * Sets the size of the graphics window in pixels.
+     */
+    void setSize(double width, double height);
+
+    /*
+     * Method: setTitle
+     * Usage: gw.setTitle(title);
+     * --------------------------
+     * Sets the title of the graphics window.
+     * Equivalent to setWindowTitle.
+     * (A synonym for setWindowTitle whose name more closely matches Java's.)
+     */
+    void setTitle(const std::string& title);
+
+    /*
+     * Method: setVisible
+     * Usage: gw.setVisible(flag);
+     * ---------------------------
+     * Determines whether the window is visible on the screen.
+     */
+    void setVisible(bool flag);
+
+    /*
+     * Method: setWidth
+     * Usage: gw.setWidth(width);
+     * --------------------------
+     * Sets the width of the graphics window in pixels without changing its height.
+     */
+    void setWidth(double width);
+
+    /*
+     * Method: setWindowTitle
+     * Usage: gw.setWindowTitle(title);
+     * --------------------------------
+     * Sets the title of the graphics window.
+     * Equivalent to setTitle.
+     */
+    void setWindowTitle(const std::string& title);
+
+    /*
+     * Method: setX
+     * Usage: gw.setX(x);
+     * ------------------
+     * Sets the x location of the graphics window relative to the top/left
+     * of the screen without modifying its y-coordinate.
+     */
+    void setX(double x);
+
+    /*
+     * Method: setY
+     * Usage: gw.setY(y);
+     * ------------------
+     * Sets the y location of the graphics window relative to the top/left
+     * of the screen without modifying its x-coordinate.
+     */
+    void setY(double y);
 
     /*
      * Method: toBack
@@ -579,7 +771,7 @@ public:
      * ------------------------
      * Checks whether the two objects refer to the same window.
      */
-    bool operator ==(GWindow w2);
+    bool operator ==(const GWindow& w2);
 
     /*
      * Operator: !=
@@ -587,7 +779,7 @@ public:
      * ------------------------
      * Checks whether the two objects refer to different windows.
      */
-    bool operator !=(GWindow w2);
+    bool operator !=(const GWindow& w2);
 
     /* Private section */
 
@@ -597,7 +789,6 @@ public:
     /**********************************************************************/
 
     explicit GWindow(bool visible);
-    GWindow(double width, double height, bool visible);
     GWindow(GWindowData* gwd);
 
 private:
@@ -614,57 +805,13 @@ private:
 };
 
 /*
- * Function: repaint
- * Usage: repaint();
- * -----------------
- * Issues a request to update all graphics windows.  This function
- * is called automatically when the program pauses, waits for an
- * event, waits for user input on the console, or terminates.  As
- * a result, most clients never need to call repaint explicitly.
- */
-void repaint();
-
-/*
- * Function: pause
- * Usage: pause(milliseconds);
- * ---------------------------
- * Pauses for the indicated number of milliseconds.  This function is
- * useful for animation where the motion would otherwise be too fast.
- */
-void pause(double milliseconds);
-
-/*
- * Function: getScreenWidth
- * Usage: width = getScreenWidth();
- * --------------------------------
- * Returns the width of the entire display screen.
- */
-double getScreenWidth();
-
-/*
- * Function: getScreenHeight
- * Usage: height = getScreenHeight();
- * ----------------------------------
- * Returns the height of the entire display screen.
- */
-double getScreenHeight();
-
-/*
- * Function: getScreenSize
- * Usage: size = getScreenSize();
- * ----------------------------------
- * Returns the width/height of the entire display screen.
- */
-GDimension getScreenSize();
-
-/*
  * Function: convertColorToRGB
  * Usage: int rgb = convertColorToRGB(colorName);
  * ----------------------------------------------
  * Converts a color name into an integer that encodes the
  * red, green, and blue components of the color.
  */
-int convertColorToRGB(std::string colorName);
+int convertColorToRGB(const std::string& colorName);
 
 /*
  * Function: convertRGBToColor
@@ -678,14 +825,6 @@ int convertColorToRGB(std::string colorName);
 std::string convertRGBToColor(int rgb);
 
 /*
- * Function: waitForClick
- * Usage: waitForClick();
- * ----------------------
- * Waits for a mouse click to occur anywhere in any window.
- */
-GMouseEvent waitForClick();
-
-/*
  * Function: exitGraphics
  * Usage: exitGraphics();
  * ----------------------
@@ -694,14 +833,66 @@ GMouseEvent waitForClick();
  */
 void exitGraphics();
 
-// functions for auditing calls to pause();
+/*
+ * Function: getScreenHeight
+ * Usage: height = getScreenHeight();
+ * ----------------------------------
+ * Returns the height of the entire display screen.
+ */
+double getScreenHeight();
+
+/*
+ * Function: getScreenWidth
+ * Usage: width = getScreenWidth();
+ * --------------------------------
+ * Returns the width of the entire display screen.
+ */
+double getScreenWidth();
+
+/*
+ * Function: getScreenSize
+ * Usage: size = getScreenSize();
+ * ----------------------------------
+ * Returns the width/height of the entire display screen.
+ */
+GDimension getScreenSize();
+
+// private functions for auditing calls to pause();
 // used to facilitate creation of autograder programs
-int gwindowGetNumPauses();
-void gwindowResetNumPauses();
 double gwindowGetLastPauseMS();
+int gwindowGetNumPauses();
 void gwindowResetLastPauseMS();
+void gwindowResetNumPauses();
 void gwindowSetExitGraphicsEnabled(bool value = true);
 void gwindowSetPauseEnabled(bool value = true);
+
+/*
+ * Function: pause
+ * Usage: pause(milliseconds);
+ * ---------------------------
+ * Pauses for the indicated number of milliseconds.  This function is
+ * useful for animation where the motion would otherwise be too fast.
+ */
+void pause(double milliseconds);
+
+/*
+ * Function: repaint
+ * Usage: repaint();
+ * -----------------
+ * Issues a request to update all graphics windows.  This function
+ * is called automatically when the program pauses, waits for an
+ * event, waits for user input on the console, or terminates.  As
+ * a result, most clients never need to call repaint explicitly.
+ */
+void repaint();
+
+/*
+ * Function: waitForClick
+ * Usage: waitForClick();
+ * ----------------------
+ * Waits for a mouse click to occur anywhere in any window.
+ */
+GMouseEvent waitForClick();
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 

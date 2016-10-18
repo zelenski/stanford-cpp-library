@@ -5,6 +5,10 @@
  * the platform-specific parts of the StanfordCPPLib package.  This file is
  * logically part of the implementation and is not interesting to clients.
  *
+ * @version 2016/10/16
+ * - added gwindow_getPixels
+ * @version 2016/10/15
+ * - changed all string param to const string&; added gtextfield_setPlaceholder
  * @version 2016/10/13
  * - added exitEnabled / setExitEnabled
  * @version 2016/10/08
@@ -53,10 +57,10 @@ private:
 
 public:
     virtual ~Platform();
-    void autograderinput_addButton(std::string text, std::string input = "");
-    void autograderinput_addCategory(std::string name);
-    void autograderinput_removeButton(std::string text);
-    void autograderinput_removeCategory(std::string name);
+    void autograderinput_addButton(const std::string& text, const std::string& input = "");
+    void autograderinput_addCategory(const std::string& name);
+    void autograderinput_removeButton(const std::string& text);
+    void autograderinput_removeCategory(const std::string& name);
     void autograderinput_setVisible(bool value = true);
 
     void autograderunittest_addTest(const std::string& testName, const std::string& category = "", bool styleCheck = false);
@@ -77,22 +81,22 @@ public:
     void cpplib_setCppLibraryVersion();
 
     void diffimage_compareImages(const std::string& file1, const std::string& file2, const std::string& outfile);
-    void diffimage_compareWindowToImage(const GWindow& gwindow, const std::string& file2);
+    void diffimage_compareWindowToImage(const GWindow& gwindow, const std::string& file2, bool ignoreWindowSize);
     void diffimage_show(const std::string& file1, const std::string& file2);
 
-    std::string file_openFileDialog(std::string title, std::string mode, std::string path);
-    void filelib_createDirectory(std::string path);
-    std::string filelib_expandPathname(std::string filename);
-    bool filelib_fileExists(std::string filename);
+    std::string file_openFileDialog(const std::string& title, const std::string& mode, const std::string& path);
+    void filelib_createDirectory(const std::string& path);
+    std::string filelib_expandPathname(const std::string& filename);
+    bool filelib_fileExists(const std::string& filename);
     std::string filelib_getCurrentDirectory();
     std::string filelib_getDirectoryPathSeparator();
     std::string filelib_getSearchPathSeparator();
     std::string filelib_getTempDirectory();
-    bool filelib_isDirectory(std::string filename);
-    bool filelib_isFile(std::string filename);
-    bool filelib_isSymbolicLink(std::string filename);
-    void filelib_listDirectory(std::string path, std::vector<std::string>& list);
-    void filelib_setCurrentDirectory(std::string path);
+    bool filelib_isDirectory(const std::string& filename);
+    bool filelib_isFile(const std::string& filename);
+    bool filelib_isSymbolicLink(const std::string& filename);
+    void filelib_listDirectory(const std::string& path, std::vector<std::string>& list);
+    void filelib_setCurrentDirectory(const std::string& path);
 
     void g3drect_constructor(GObject* gobj, double width, double height, bool raised);
     void g3drect_setRaised(GObject* gobj, bool raised);
@@ -111,16 +115,16 @@ public:
     void gbufferedimage_setRGB(GObject* gobj, double x, double y, int rgb);
     void gbufferedimage_updateAllPixels(GObject* gobj, const std::string& base64);
 
-    void gbutton_constructor(GObject* gobj, std::string label);
+    void gbutton_constructor(GObject* gobj, const std::string& label);
 
-    void gcheckbox_constructor(GObject* gobj, std::string label);
+    void gcheckbox_constructor(GObject* gobj, const std::string& label);
     bool gcheckbox_isSelected(GObject* gobj);
     void gcheckbox_setSelected(GObject* gobj, bool state);
 
-    void gchooser_addItem(GObject* gobj, std::string item);
+    void gchooser_addItem(GObject* gobj, const std::string& item);
     void gchooser_constructor(GObject* gobj);
     std::string gchooser_getSelectedItem(GObject* gobj);
-    void gchooser_setSelectedItem(GObject* gobj, std::string item);
+    void gchooser_setSelectedItem(GObject* gobj, const std::string& item);
 
     void gcompound_add(GObject* compound, GObject* gobj);
     void gcompound_constructor(GObject* gobj);
@@ -128,26 +132,27 @@ public:
     GEvent gevent_getNextEvent(int mask);
     GEvent gevent_waitForEvent(int mask);
 
-    std::string gfilechooser_showOpenDialog(std::string currentDir);
-    std::string gfilechooser_showSaveDialog(std::string currentDir);
+    std::string gfilechooser_showOpenDialog(const std::string& currentDir);
+    std::string gfilechooser_showSaveDialog(const std::string& currentDir);
 
-    GDimension gimage_constructor(GObject* gobj, std::string filename);
+    GDimension gimage_constructor(GObject* gobj, const std::string& filename);
 
     GDimension ginteractor_getSize(GObject* gobj);
     bool ginteractor_isEnabled(GObject* gint);
-    void ginteractor_setActionCommand(GObject* gobj, std::string cmd);
-    void ginteractor_setBackground(GObject* gobj, std::string color);
+    void ginteractor_setActionCommand(GObject* gobj, const std::string& cmd);
+    void ginteractor_setBackground(GObject* gobj, const std::string& color);
     void ginteractor_setEnabled(GObject* gint, bool value);
-    void ginteractor_setIcon(GObject* gobj, std::string filename);
+    void ginteractor_setIcon(GObject* gobj, const std::string& filename);
     void ginteractor_setText(GObject* gobj, const std::string& text);
     void ginteractor_setTextPosition(GObject* gobj, int horizontal, int vertical);
+    void ginteractor_setTooltip(GObject* gobj, const std::string& tooltipText);
 
-    void glabel_constructor(GObject* gobj, std::string label);
+    void glabel_constructor(GObject* gobj, const std::string& label);
     double glabel_getFontAscent(const GObject* gobj);
     double glabel_getFontDescent(const GObject* gobj);
     GDimension glabel_getSize(const GObject* gobj);
-    void glabel_setFont(GObject* gobj, std::string font);
-    void glabel_setLabel(GObject* gobj, std::string str);
+    void glabel_setFont(GObject* gobj, const std::string& font);
+    void glabel_setLabel(GObject* gobj, const std::string& str);
 
     void gline_constructor(GObject* gobj, double x1, double y1, double x2, double y2);
     void gline_setEndPoint(GObject* gobj, double x, double y);
@@ -164,29 +169,29 @@ public:
     void gobject_sendToBack(GObject* gobj);
     void gobject_sendToFront(GObject* gobj);
     void gobject_setAntialiasing(bool value);
-    void gobject_setColor(GObject* gobj, std::string color);
-    void gobject_setFillColor(GObject* gobj, std::string color);
+    void gobject_setColor(GObject* gobj, const std::string& color);
+    void gobject_setFillColor(GObject* gobj, const std::string& color);
     void gobject_setFilled(GObject* gobj, bool flag);
     void gobject_setLineWidth(GObject* gobj, double lineWidth);
     void gobject_setLocation(GObject* gobj, double x, double y);
     void gobject_setSize(GObject* gobj, double width, double height);
     void gobject_setVisible(GObject* gobj, bool flag);
 
-    int goptionpane_showConfirmDialog(std::string message, std::string title, int type);
-    std::string goptionpane_showInputDialog(std::string message, std::string title);
-    void goptionpane_showMessageDialog(std::string message, std::string title, int type);
-    int goptionpane_showOptionDialog(std::string message,
-                                     std::string title,
+    int goptionpane_showConfirmDialog(const std::string& message, const std::string& title, int type);
+    std::string goptionpane_showInputDialog(const std::string& message, const std::string& title);
+    void goptionpane_showMessageDialog(const std::string& message, const std::string& title, int type);
+    int goptionpane_showOptionDialog(const std::string& message,
+                                     const std::string& title,
                                      const std::vector<std::string>& options,
-                                     std::string initiallySelected);
-    void goptionpane_showTextFileDialog(std::string message, std::string title, int rows, int cols);
+                                     const std::string& initiallySelected);
+    void goptionpane_showTextFileDialog(const std::string& message, const std::string& title, int rows, int cols);
 
     void goval_constructor(GObject* gobj, double width, double height);
 
     void gpolygon_addVertex(GObject* gobj, double x, double y);
     void gpolygon_constructor(GObject* gobj);
 
-    void gradiobutton_constructor(GObject* gobj, std::string label, std::string group);
+    void gradiobutton_constructor(GObject* gobj, const std::string& label, const std::string& group);
     bool gradiobutton_isSelected(GObject* gobj);
     void gradiobutton_setSelected(GObject* gobj, bool state);
 
@@ -225,14 +230,15 @@ public:
     void gtextarea_create(GObject* gobj, double width, double height);
     std::string gtextarea_getText(const GObject *gobj);
     void gtextarea_setEditable(GObject* gobj, bool isEditable);
-    void gtextarea_setFont(GObject* gobj, std::string font);
-    void gtextarea_setText(GObject* gobj, std::string text);
+    void gtextarea_setFont(GObject* gobj, const std::string& font);
+    void gtextarea_setText(GObject* gobj, const std::string& text);
 
     void gtextfield_constructor(GObject* gobj, int nChars);
     std::string gtextfield_getText(GObject* gobj);
     bool gtextfield_isEditable(const GObject* gobj);
     void gtextfield_setEditable(GObject* gobj, bool value);
-    void gtextfield_setText(GObject* gobj, std::string str);
+    void gtextfield_setPlaceholder(GObject* gobj, const std::string& text);
+    void gtextfield_setText(GObject* gobj, const std::string& str);
 
     void gtimer_constructor(const GTimer& timer, double delay);
     void gtimer_delete(const GTimer& timer);
@@ -253,14 +259,16 @@ public:
     GDimension gwindow_getCanvasSize(const GWindow& gw);
     GDimension gwindow_getContentPaneSize(const GWindow& gw);
     Point gwindow_getLocation(const GWindow& gw);
-    GDimension gwindow_getRegionSize(const GWindow& gw, std::string region);
+    int gwindow_getPixel(const GWindow& gw, int x, int y);
+    Grid<int> gwindow_getPixels(const GWindow& gw);
+    GDimension gwindow_getRegionSize(const GWindow& gw, const std::string& region);
     double gwindow_getScreenHeight();
     GDimension gwindow_getScreenSize();
     double gwindow_getScreenWidth();
     GDimension gwindow_getSize(const GWindow& gw);
     void gwindow_minimize(const GWindow& gw);
     void gwindow_pack(const GWindow& gw);
-    void gwindow_removeFromRegion(const GWindow& gw, GObject* gobj, std::string region);
+    void gwindow_removeFromRegion(const GWindow& gw, GObject* gobj, const std::string& region);
     void gwindow_repaint(const GWindow& gw);
     void gwindow_requestFocus(const GWindow& gw);
     void gwindow_saveCanvasPixels(const GWindow& gw, const std::string& filename);
@@ -268,10 +276,12 @@ public:
     void gwindow_setExitOnClose(const GWindow& gw, bool value);
     void gwindow_setLocation(const GWindow& gw, int x, int y);
     void gwindow_setLocationSaved(const GWindow& gw, bool value);
-    void gwindow_setRegionAlignment(const GWindow& gw, std::string region, std::string align);
+    void gwindow_setPixel(const GWindow& gw, int x, int y, int rgb, bool repaint = true);
+    void gwindow_setPixels(const GWindow& gw, const Grid<int>& grid);
+    void gwindow_setRegionAlignment(const GWindow& gw, const std::string& region, const std::string& align);
     void gwindow_setResizable(const GWindow& gw, bool value);
     void gwindow_setSize(const GWindow& gw, int width, int height);
-    void gwindow_setTitle(const GWindow& gw, std::string title);
+    void gwindow_setTitle(const GWindow& gw, const std::string& title);
     void gwindow_setVisible(const GWindow& gw, bool flag);
     void gwindow_toBack(const GWindow& gw);
     void gwindow_toFront(const GWindow& gw);
@@ -300,18 +310,18 @@ public:
 
     std::string os_getLastError();
 
-    bool regex_match(std::string s, std::string regexp);
-    int regex_matchCount(std::string s, std::string regexp);
-    int regex_matchCountWithLines(std::string s, std::string regexp, std::string& linesOut);
-    std::string regex_replace(std::string s, std::string regexp, std::string replacement, int limit = -1);
+    bool regex_match(const std::string& s, const std::string& regexp);
+    int regex_matchCount(const std::string& s, const std::string& regexp);
+    int regex_matchCountWithLines(const std::string& s, const std::string& regexp, std::string& linesOut);
+    std::string regex_replace(const std::string& s, const std::string& regexp, const std::string& replacement, int limit = -1);
 
     void setStackSize(unsigned int stackSize);
 
-    void sound_constructor(Sound *sound, std::string filename);
-    void sound_delete(Sound *sound);
-    void sound_play(Sound *sound);
+    void sound_constructor(Sound* sound, const std::string& filename);
+    void sound_delete(Sound* sound);
+    void sound_play(Sound* sound);
 
-    int url_download(std::string url, std::string filename);
+    int url_download(const std::string& url, const std::string& filename);
 };
 
 /* free function to get a reference to the singleton Platform instance */

@@ -113,7 +113,7 @@ char integerToChar(int n);
  * For example, calling <code>integerToString(123)</code> returns
  * the string <code>"123"</code>.
  */
-std::string integerToString(int n);
+std::string integerToString(int n, int radix = 10);
 
 /*
  * Function: longToString
@@ -123,7 +123,7 @@ std::string integerToString(int n);
  * For example, calling <code>longToString(123)</code> returns
  * the string <code>"123"</code>.
  */
-std::string longToString(long n);
+std::string longToString(long n, int radix = 10);
 
 /*
  * Returns a hexadecimal string for the given pointer, such as "0x3f0427b".

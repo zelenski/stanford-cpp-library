@@ -5,6 +5,9 @@
  * See gbufferedimage.cpp for implementation of each member.
  *
  * @author Marty Stepp
+ * @version 2016/10/16
+ * - refactored to/fromGrid to use static pixelString methods (so we can reuse
+ *   the pixel functionality in GWindow)
  * @version 2016/07/30
  * - added constructor that takes a file name
  * - converted all occurrences of string parameters to const string&
@@ -89,36 +92,51 @@ public:
      * Error will be thrown if you try to make/resize an image larger than this.
      */
     static const int WIDTH_HEIGHT_MAX;
-    
+
     /*
      * Creates a single RGB integer from the given R-G-B components from 0-255.
      */
     static int createRgbPixel(int red, int green, int blue);
-    
+
     /*
-     * Extracts the red component from 0-255 of the given RGB integer.
-     * The red component comes from bits 16-23 of the integer.
+     * Extracts the alpha component from 0-255 of the given ARGB integer.
+     * The red component comes from bits 24-31 (most significant) of the integer.
      */
-    static int getRed(int rgb);
-    
+    static int getAlpha(int argb);
+
+    /*
+     * Extracts the blue component from 0-255 of the given RGB integer.
+     * The red component comes from bits 0-7 (least significant) of the integer.
+     */
+    static int getBlue(int rgb);
+
     /*
      * Extracts the green component from 0-255 of the given RGB integer.
      * The red component comes from bits 8-15 of the integer.
      */
     static int getGreen(int rgb);
-    
+
     /*
-     * Extracts the blue component from 0-255 of the given RGB integer.
-     * The red component comes from bits 0-7 of the integer.
+     * Extracts the red component from 0-255 of the given RGB integer.
+     * The red component comes from bits 16-23 of the integer.
      */
-    static int getBlue(int rgb);
-    
+    static int getRed(int rgb);
+
     /*
      * Extracts the red, green, and blue components from 0-255
      * of the given RGB integer, filling by reference.
      */
     static void getRedGreenBlue(int rgb, int& red, int& green, int& blue);
-    
+
+    /*
+     * Functions for converting grids of pixels into strings for sending to
+     * the Java back-end.
+     * Private; clients should not use these functions.
+     */
+    static std::string gridToPixelString(const Grid<int>& grid);
+    static Grid<int> pixelStringToGrid(const std::string& base64text);
+    static void pixelStringToGrid(const std::string& base64text, Grid<int>& grid);
+
     /*
      * Constructs an image with the specified location, size, and optional
      * background color.

@@ -11,7 +11,9 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
-# @version 2016/10/14
+# @version 2016/10/18
+# - re-disabled Mac stack increase flag
+# @version 2016/10/15
 # - new stricter compiler warning flags (float equality comparison; null pointers; undefined macros; etc.)
 # @version 2016/10/13
 # - split StanfordCPPLib into subfolders: collections, graphics, io, private, system, util
@@ -106,7 +108,10 @@ HEADERS += $$PWD/lib/StanfordCPPLib/private/*.h
 HEADERS += $$PWD/lib/StanfordCPPLib/system/*.h
 HEADERS += $$PWD/lib/StanfordCPPLib/util/*.h
 exists($$PWD/src/test/*.h) {
-    INCLUDEPATH += $$PWD/src/test/
+    HEADERS += $$PWD/src/test/*.h
+}
+exists($$PWD/src/*.h) {
+    HEADERS += $$PWD/src/*.h
 }
 exists($$PWD/*.h) {
     HEADERS += $$PWD/*.h
@@ -192,7 +197,7 @@ macx {
     # increase system stack size (helpful for recursive programs)
     # (this was previously disabled because it led to crashes on some systems,
     #  but it seems to be working again, so we are going to re-enable it)
-    QMAKE_LFLAGS += -Wl,-stack_size,0x4000000
+    # QMAKE_LFLAGS += -Wl,-stack_size,0x4000000
 
     # calling cache() reduces warnings on Mac OS X systems
     cache()
@@ -223,7 +228,7 @@ unix:!macx {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20161014
+DEFINES += SPL_PROJECT_VERSION=20161018
 
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1
@@ -469,4 +474,4 @@ exists($$PWD/lib/autograder/*.cpp) {
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #472; if not, your .pro has been changed!)
+# END OF FILE (this should be line #477; if not, your .pro has been changed!)

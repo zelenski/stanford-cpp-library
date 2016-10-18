@@ -39,6 +39,10 @@ import java.lang.reflect.*;
 public abstract class GObject implements Cloneable, Serializable, GScalable {
 	private static boolean antialiasing = true;
 
+	public static boolean isAntiAliasing() {
+		return antialiasing;
+	}
+
 	public static void setAntiAliasing(boolean value) {
 		antialiasing = value;
 	}

@@ -5,6 +5,9 @@
  * See that file for documentation of each member.
  *
  * @author Marty Stepp
+ * @version 2016/10/16
+ * - refactored to/fromGrid to use static pixelString methods (so we can reuse
+ *   the pixel functionality in GWindow)
  * @version 2016/10/14
  * - modified floating-point equality tests to use floatingPointEqual function
  * @version 2016/07/30
@@ -52,16 +55,21 @@ int GBufferedImage::createRgbPixel(int red, int green, int blue) {
     return ((red << 16 & 0xff0000) | (green << 8 & 0x00ff00) | (blue & 0x0000ff)) & 0xffffff;
 }
 
-int GBufferedImage::getRed(int rgb) {
-    return (rgb & 0xff0000) >> 16;
+int GBufferedImage::getAlpha(int argb) {
+    // have to & a second time because of sign-extension on >> shift
+    return ((argb & 0xff000000) >> 24) & 0x000000ff;
+}
+
+int GBufferedImage::getBlue(int rgb) {
+    return rgb & 0x0000ff;
 }
 
 int GBufferedImage::getGreen(int rgb) {
     return (rgb & 0x00ff00) >> 8;
 }
 
-int GBufferedImage::getBlue(int rgb) {
-    return rgb & 0x0000ff;
+int GBufferedImage::getRed(int rgb) {
+    return (rgb & 0xff0000) >> 16;
 }
 
 void GBufferedImage::getRedGreenBlue(int rgb, int& red, int& green, int& blue) {
@@ -218,19 +226,31 @@ void GBufferedImage::fromGrid(const Grid<int>& grid) {
     m_pixels = grid;
     m_width = grid.width();
     m_height = grid.height();
-    
+
+    // encode the bytes into a base64 string so it can go through
+    // the process pipe to the Java back-end
+    std::string pixelString = GBufferedImage::gridToPixelString(m_pixels);
+    std::string encoded = Base64::encode(pixelString);
+
+    // update the back-end with all of the pretty new pixels
+    stanfordcpplib::getPlatform()->gbufferedimage_updateAllPixels(this, encoded);
+}
+
+std::string GBufferedImage::gridToPixelString(const Grid<int>& grid) {
     // output a base64-encoded version of the image pixels
     std::ostringstream out;
-    
+
     // output width as 2 bytes, then height as 2 bytes
-    out << (char) (((((int) m_width) & 0x0000ff00) >> 8) & 0x000000ff);
-    out << (char)  ((((int) m_width) & 0x000000ff));
-    out << (char) (((((int) m_height) & 0x0000ff00) >> 8) & 0x000000ff);
-    out << (char)  ((((int) m_height) & 0x000000ff));
+    int w = grid.width();
+    int h = grid.height();
+    out << (char) (((((int) w) & 0x0000ff00) >> 8) & 0x000000ff);
+    out << (char)  ((((int) w) & 0x000000ff));
+    out << (char) (((((int) h) & 0x0000ff00) >> 8) & 0x000000ff);
+    out << (char)  ((((int) h) & 0x000000ff));
     
     // output each pixel as 3 bytes (R,G,B)
-    for (int row = 0; row < m_height; row++) {
-        for (int col = 0; col < m_width; col++) {
+    for (int row = 0; row < h; row++) {
+        for (int col = 0; col < w; col++) {
             int rgb = grid[row][col];
             out << (char) (((rgb & 0x00ff0000) >> 16) & 0x000000ff);
             out << (char) (((rgb & 0x0000ff00) >> 8) & 0x000000ff);
@@ -238,13 +258,7 @@ void GBufferedImage::fromGrid(const Grid<int>& grid) {
         }
     }
 
-    // encode the bytes into a base64 string so it can go through
-    // the process pipe to the Java back-end
-    std::string result = out.str();
-    std::string encoded = Base64::encode(result);
-    
-    // update the back-end with all of the pretty new pixels
-    stanfordcpplib::getPlatform()->gbufferedimage_updateAllPixels(this, encoded);
+    return out.str();
 }
 
 double GBufferedImage::getHeight() const {
@@ -278,32 +292,41 @@ void GBufferedImage::load(const std::string& filename) {
     // read Base64-compressed pixel data from Java back-end
     std::string result = stanfordcpplib::getPlatform()->gbufferedimage_load(this, filename);
     std::string decoded = Base64::decode(result);
-    
+
+    GBufferedImage::pixelStringToGrid(decoded, m_pixels);
+    m_width = m_pixels.width();
+    m_height = m_pixels.height();
+}
+
+Grid<int> GBufferedImage::pixelStringToGrid(const std::string& decoded) {
+    Grid<int> grid;
+    pixelStringToGrid(decoded, grid);
+    return grid;
+}
+
+void GBufferedImage::pixelStringToGrid(const std::string& decoded, Grid<int>& grid) {
     // read width (2-byte) and height (2-byte)
     int w = (((decoded[0] & 0x000000ff) << 8) & 0x0000ff00) | (decoded[1] & 0x000000ff);
     int h = (((decoded[2] & 0x000000ff) << 8) & 0x0000ff00) | (decoded[3] & 0x000000ff);
-    if (w != m_pixels.width() || h != m_pixels.height()) {
-        m_width = w;
-        m_height = h;
-        m_pixels.resize(m_height, m_width, /* retain */ false);
+    if (w != grid.width() || h != grid.height()) {
+        grid.resize(h, w, /* retain */ false);
     }
     int expectedLength = (w * h * 3) + 4;
     int actualLength = (int) decoded.length();
     
     // crash if number of bytes that arrive are way off from what's expected
     if (actualLength < expectedLength || actualLength > expectedLength + 10) {
-        std::string errorMessage = std::string("GBufferedImage::load(\"" + filename + "\"): expected ")
-                + integerToString(expectedLength) + std::string(" bytes but saw ")
-                + integerToString(actualLength);
+        std::string errorMessage = "expected " + integerToString(expectedLength)
+                + " bytes but saw " + integerToString(actualLength);
         error(errorMessage);
     }
     
     // read each pixel (3-byte: R,G,B)
     int i = 4;
-    for (int y = 0; y < m_height; y++) {
-        for (int x = 0; x < m_width; x++) {
+    for (int row = 0; row < h; row++) {
+        for (int col = 0; col < w; col++) {
             if (i + 2 < actualLength) {
-                m_pixels[y][x] = 
+                grid[row][col] =
                          ((((decoded[i]   & 0x000000ff) << 16) & 0x00ff0000)   // red
                         | (((decoded[i+1] & 0x000000ff) <<  8) & 0x0000ff00)   // green
                         | (decoded[i+2]   & 0x000000ff))                       // blue

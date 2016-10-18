@@ -7,6 +7,9 @@ import java.io.*;
 import javax.imageio.*;
 import javax.swing.*;
 
+import acm.graphics.GObject;
+import stanford.cs106.io.IORuntimeException;
+
 /**
  * 
  * @author Marty Stepp
@@ -34,6 +37,11 @@ public class GBufferedImage extends GInteractor {
 		this.imageHeight = height;
 		this.backgroundColor = backgroundColor;
 		bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		if (!GObject.isAntiAliasing()) {
+			Graphics2D g = (Graphics2D) bufferedImage.getGraphics();
+			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+		}
+		
 		label = (JLabel) this.getInteractor();
 		if (backgroundColor != 0) {
 			fill(backgroundColor);
@@ -65,6 +73,10 @@ public class GBufferedImage extends GInteractor {
 	
 	public BufferedImage getBufferedImage() {
 		return bufferedImage;
+	}
+	
+	public Graphics getGraphics() {
+		return bufferedImage.getGraphics();
 	}
 	
 	public int getImageHeight() {
@@ -115,6 +127,14 @@ public class GBufferedImage extends GInteractor {
 	}
 	
 	public String toStringBase64() {
+		return toStringBase64(bufferedImage, imageWidth, imageHeight);
+	}
+	
+	public static String toStringBase64(BufferedImage bufferedImage) {
+		return toStringBase64(bufferedImage, bufferedImage.getWidth(), bufferedImage.getHeight());
+	}
+	
+	public static String toStringBase64(BufferedImage bufferedImage, int imageWidth, int imageHeight) {
 		ByteArrayOutputStream out = new ByteArrayOutputStream(imageWidth * imageHeight * 3 + 512);
 		
 		// width and height each as 2-byte integers (0-65535)
@@ -139,7 +159,6 @@ public class GBufferedImage extends GInteractor {
 		String base64raw = Base64.encodeBytes(bytes);
 		String base64 = base64raw.replace("\r", "");
 		base64 = base64raw.replace("\n", "");
-		// JOptionPane.showMessageDialog(null, "GBufferedImage.toStringBase64: \n w=" + imageWidth + ", h=" + imageHeight + ", \n bytes=" + bytes.length + ", base64len=" + base64.length() + " (was " + base64raw.length() + ")");
 		return base64;
 	}
 	
@@ -150,8 +169,6 @@ public class GBufferedImage extends GInteractor {
 		if (w != imageWidth || h != imageHeight) {
 			this.resize(w, h, /* retain */ false);
 		}
-		
-		// JOptionPane.showMessageDialog(null, "GBufferedImage.fromStringBase64: w=" + imageWidth + ", h=" + imageHeight + ", bytes=" + bytes.length + ", base64len=" + base64.length());
 		
 		int[] pixelArray = new int[imageWidth * imageHeight];
 		int byteIndex = 4;
@@ -174,6 +191,43 @@ public class GBufferedImage extends GInteractor {
 		bufferedImage.setRGB(0, 0, imageWidth, imageHeight, pixelArray, 0, imageWidth);
 		bufferedImage.flush();
 		repaintImage();
+	}
+	
+	public static void fromStringBase64(String base64, BufferedImage bufferedImage) {
+		byte[] bytes = null;
+		try {
+			bytes = Base64.decode(base64);
+		} catch (IOException ioe) {
+			throw new IORuntimeException(ioe);
+		}
+		int w = (((bytes[0] & 0x000000ff) << 8) & 0x0000ff00) | (bytes[1] & 0x000000ff);
+		int h = (((bytes[2] & 0x000000ff) << 8) & 0x0000ff00) | (bytes[3] & 0x000000ff);
+		int imageWidth = bufferedImage.getWidth();
+		int imageHeight = bufferedImage.getHeight();
+		if (w != imageWidth || h != imageHeight) {
+			// TODO?
+		}
+		
+		int[] pixelArray = new int[imageWidth * imageHeight];
+		int byteIndex = 4;
+		int index = 0;
+		for (int y = 0; y < imageHeight; y++) {
+			for (int x = 0; x < imageWidth; x++) {
+				// OOB shouldn't happen, but let's just make sure not to walk past end of array
+				if (byteIndex + 2 < bytes.length && index < pixelArray.length) {
+					int rgb =
+							0xff000000   // alpha
+							| (((bytes[byteIndex] & 0x000000ff) << 16) & 0x00ff0000)
+							| (((bytes[byteIndex + 1] & 0x000000ff) << 8) & 0x0000ff00)
+							| ((bytes[byteIndex + 2]) & 0x000000ff);
+					pixelArray[index] = rgb;
+					index++;
+					byteIndex += 3;
+				}
+			}
+		}
+		bufferedImage.setRGB(0, 0, imageWidth, imageHeight, pixelArray, 0, imageWidth);
+		bufferedImage.flush();
 	}
 	
 	// JL: SwingUtilities.invokeLater

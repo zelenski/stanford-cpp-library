@@ -5,6 +5,9 @@
  * in the gevents.h interface.  The actual functions for receiving events
  * from the environment are implemented in the platform package.
  * 
+ * @version 2016/10/16
+ * - added GEvent.isShiftKeyDown
+ * - alphabetized methods
  * @version 2015/07/05
  * - removed static global Platform variable, replaced by getPlatform as needed
  * @version 2014/10/08
@@ -32,8 +35,8 @@
 #include "gtypes.h"
 #include "map.h"
 #include "private/platform.h"
+#include "private/static.h"
 
-/* Implementation of GEvent class */
 
 GEvent::GEvent() {
     eventClass = NULL_EVENT;
@@ -54,16 +57,44 @@ EventClassType GEvent::getEventClass() const {
     return eventClass;
 }
 
-EventType GEvent::getEventType() const {
-    return EventType(eventType);
-}
-
 double GEvent::getEventTime() const {
     return eventTime;
 }
 
+EventType GEvent::getEventType() const {
+    return EventType(eventType);
+}
+
 int GEvent::getModifiers() const {
     return modifiers;
+}
+
+bool GEvent::isValid() {
+    return valid;
+}
+
+bool GEvent::isAltKeyDown() const {
+    return (modifiers & ALT_DOWN) != 0;
+}
+
+bool GEvent::isCtrlKeyDown() const {
+    return (modifiers & CTRL_DOWN) != 0;
+}
+
+bool GEvent::isMetaKeyDown() const {
+    return (modifiers & META_DOWN) != 0;
+}
+
+bool GEvent::isShiftKeyDown() const {
+    return (modifiers & SHIFT_DOWN) != 0;
+}
+
+void GEvent::setEventTime(double time) {
+    eventTime = time;
+}
+
+void GEvent::setModifiers(int modifiers) {
+    this->modifiers = modifiers;
 }
 
 std::string GEvent::toString() const {
@@ -89,55 +120,6 @@ std::string GEvent::toString() const {
     }
 }
 
-bool GEvent::isValid() {
-    return valid;
-}
-
-void GEvent::setEventTime(double time) {
-    eventTime = time;
-}
-
-void GEvent::setModifiers(int modifiers) {
-    this->modifiers = modifiers;
-}
-
-GWindowEvent::GWindowEvent() {
-    valid = false;
-}
-
-GWindowEvent::GWindowEvent(GEvent e) {
-    valid = e.valid && e.eventClass == WINDOW_EVENT;
-    if (valid) {
-        eventClass = e.eventClass;
-        eventType = e.eventType;
-        modifiers = e.modifiers;
-        eventTime = e.eventTime;
-        gwd = e.gwd;
-    }
-}
-
-GWindowEvent::GWindowEvent(EventType type, const GWindow & gw) {
-    this->eventClass = WINDOW_EVENT;
-    this->eventType = int(type);
-    this->gwd = gw.gwd;
-    valid = true;
-}
-
-GWindow GWindowEvent::getGWindow() const {
-    return GWindow(gwd);
-}
-
-std::string GWindowEvent::toString() const {
-    if (!valid) return "GWindowEvent(?)";
-    std::ostringstream os;
-    os << "GWindowEvent:";
-    switch (eventType) {
-    case WINDOW_CLOSED:      os << "WINDOW_CLOSED";       break;
-    case WINDOW_RESIZED:     os << "WINDOW_RESIZED";      break;
-    }
-    os << "()";
-    return os.str();
-}
 
 GActionEvent::GActionEvent() {
     valid = false;
@@ -155,7 +137,7 @@ GActionEvent::GActionEvent(GEvent e) {
     }
 }
 
-GActionEvent::GActionEvent(EventType type, GObject *source,
+GActionEvent::GActionEvent(EventType type, GObject* source,
                            std::string actionCommand) {
     this->eventClass = ACTION_EVENT;
     this->eventType = int(type);
@@ -164,89 +146,26 @@ GActionEvent::GActionEvent(EventType type, GObject *source,
     valid = true;
 }
 
-GObject *GActionEvent::getSource() const {
-    return source;
-}
-
 std::string GActionEvent::getActionCommand() const {
-    if (!valid) error("getActionCommand: Event is not valid");
+    if (!valid) {
+        error("GActionEvent::getActionCommand: Event is not valid");
+    }
     return actionCommand;
 }
 
+GObject* GActionEvent::getSource() const {
+    return source;
+}
+
 std::string GActionEvent::toString() const {
-    if (!valid) return "GActionEvent(?)";
+    if (!valid) {
+        return "GActionEvent(?)";
+    }
     std::ostringstream os;
     os << "GActionEvent:ACTION_PERFORMED(" << actionCommand << ")";
     return os.str();
 }
 
-GMouseEvent::GMouseEvent() {
-    valid = false;
-}
-
-GMouseEvent::GMouseEvent(GEvent e) {
-    valid = e.valid && e.eventClass == MOUSE_EVENT;
-    if (valid) {
-        eventClass = e.eventClass;
-        eventType = e.eventType;
-        modifiers = e.modifiers;
-        eventTime = e.eventTime;
-        x = e.x;
-        y = e.y;
-        gwd = e.gwd;   // JL
-    }
-}
-
-GMouseEvent::GMouseEvent(EventType type, const GWindow & gw,
-                         double x, double y) {
-    this->eventClass = MOUSE_EVENT;
-    this->eventType = int(type);
-    this->gwd = gw.gwd;
-    this->x = x;
-    this->y = y;
-    valid = true;
-}
-
-GWindow GMouseEvent::getGWindow() const {
-    return GWindow(gwd);
-}
-
-double GMouseEvent::getX() const {
-    if (!valid) error("getX: Event is not valid");
-    return x;
-}
-
-double GMouseEvent::getY() const {
-    if (!valid) error("getY: Event is not valid");
-    return y;
-}
-
-bool GMouseEvent::isLeftClick() const {
-    return !isMiddleClick() && !isRightClick();
-}
-
-bool GMouseEvent::isRightClick() const {
-    return getModifiers() & 4;
-}
-
-bool GMouseEvent::isMiddleClick() const {
-    return getModifiers() & 8;
-}
-
-std::string GMouseEvent::toString() const {
-    if (!valid) return "GMouseEvent(?)";
-    std::ostringstream os;
-    os << "GMouseEvent:";
-    switch (eventType) {
-    case MOUSE_PRESSED:  os << "MOUSE_PRESSED";   break;
-    case MOUSE_RELEASED: os << "MOUSE_RELEASED";  break;
-    case MOUSE_CLICKED:  os << "MOUSE_CLICKED";   break;
-    case MOUSE_MOVED:    os << "MOUSE_MOVED";     break;
-    case MOUSE_DRAGGED:  os << "MOUSE_DRAGGED";   break;
-    }
-    os << "(" << x << ", " << y << ")";
-    return os.str();
-}
 
 GKeyEvent::GKeyEvent() {
     valid = false;
@@ -265,7 +184,7 @@ GKeyEvent::GKeyEvent(GEvent e) {
     }
 }
 
-GKeyEvent::GKeyEvent(EventType type, const GWindow & gw,
+GKeyEvent::GKeyEvent(EventType type, const GWindow& gw,
                      int keyChar, int keyCode) {
     this->eventClass = KEY_EVENT;
     this->eventType = int(type);
@@ -280,13 +199,17 @@ GWindow GKeyEvent::getGWindow() const {
 }
 
 char GKeyEvent::getKeyChar() const {
-    if (!valid) error("getKey: Event is not valid");
+    if (!valid) {
+        error("GKeyEvent::getKey: Event is not valid");
+    }
     return char(keyChar);
     // Think about wide characters at some point
 }
 
 int GKeyEvent::getKeyCode() const {
-    if (!valid) error("getKey: Event is not valid");
+    if (!valid) {
+        error("GKeyEvent::getKey: Event is not valid");
+    }
     return keyCode;
 }
 
@@ -308,97 +231,79 @@ std::string GKeyEvent::toString() const {
     return os.str();
 }
 
-/* Timer events */
 
-GTimerEvent::GTimerEvent() {
+GMouseEvent::GMouseEvent() {
     valid = false;
 }
 
-GTimerEvent::GTimerEvent(GEvent e) {
-    valid = e.valid && e.eventClass == TIMER_EVENT;
+GMouseEvent::GMouseEvent(GEvent e) {
+    valid = e.valid && e.eventClass == MOUSE_EVENT;
     if (valid) {
         eventClass = e.eventClass;
         eventType = e.eventType;
         modifiers = e.modifiers;
         eventTime = e.eventTime;
-        gtd = e.gtd;
+        x = e.x;
+        y = e.y;
+        gwd = e.gwd;   // JL
     }
 }
 
-GTimerEvent::GTimerEvent(EventType type, const GTimer & timer) {
-    this->eventClass = TIMER_EVENT;
+GMouseEvent::GMouseEvent(EventType type, const GWindow& gw,
+                         double x, double y) {
+    this->eventClass = MOUSE_EVENT;
     this->eventType = int(type);
-    this->gtd = timer.gtd;
+    this->gwd = gw.gwd;
+    this->x = x;
+    this->y = y;
     valid = true;
 }
 
-GTimer GTimerEvent::getGTimer() const {
-    return GTimer(gtd);
+GWindow GMouseEvent::getGWindow() const {
+    return GWindow(gwd);
 }
 
-std::string GTimerEvent::toString() const {
-    if (!valid) return "GTimerEvent(?)";
-    return "GTimerEvent:TIMER_TICKED()";
-}
-
-/* Table events */
-
-GTableEvent::GTableEvent() {
-    valid = false;
-}
-
-GTableEvent::GTableEvent(GEvent e) {
-    valid = e.valid && e.eventClass == TABLE_EVENT;
-    if (valid) {
-        eventClass = e.eventClass;
-        eventType = e.eventType;
-        modifiers = e.modifiers;
-        eventTime = e.eventTime;
-        row = e.row;
-        column = e.column;
-        value = e.value;
+double GMouseEvent::getX() const {
+    if (!valid) {
+        error("GMouseEvent::getX: Event is not valid");
     }
+    return x;
 }
 
-GTableEvent::GTableEvent(EventType type) {
-    this->eventClass = TABLE_EVENT;
-    this->eventType = int(type);
-    valid = true;
-}
-
-int GTableEvent::getColumn() const {
-    return column;
-}
-
-int GTableEvent::getRow() const {
-    return row;
-}
-
-std::string GTableEvent::getValue() const {
-    return value;
-}
-
-void GTableEvent::setLocation(int row, int column) {
-    this->row = row;
-    this->column = column;
-}
-
-void GTableEvent::setValue(std::string value) {
-    this->value = value;
-}
-
-std::string GTableEvent::toString() const {
-    if (!valid) return "GTableEvent(?)";
-    std::ostringstream out;
-    if (eventType == TABLE_UPDATED) {
-        out << "GTableEvent:TABLE_UPDATED(r"
-            << row << "c" << column << " \"" << value << "\")";
-    } else if (eventType == TABLE_SELECTED) {
-        out << "GTableEvent:TABLE_SELECTED(r"
-            << row << "c" << column << ")";
+double GMouseEvent::getY() const {
+    if (!valid) {
+        error("GMouseEvent::getY: Event is not valid");
     }
-    return out.str();
+    return y;
 }
+
+bool GMouseEvent::isLeftClick() const {
+    return !isMiddleClick() && !isRightClick();
+}
+
+bool GMouseEvent::isMiddleClick() const {
+    return (getModifiers() & BUTTON3_DOWN) != 0;
+}
+
+bool GMouseEvent::isRightClick() const {
+    return (getModifiers() & BUTTON2_DOWN) != 0;
+}
+
+std::string GMouseEvent::toString() const {
+    if (!valid) return "GMouseEvent(?)";
+    std::ostringstream os;
+    os << "GMouseEvent:";
+    switch (eventType) {
+    case MOUSE_PRESSED:  os << "MOUSE_PRESSED";   break;
+    case MOUSE_RELEASED: os << "MOUSE_RELEASED";  break;
+    case MOUSE_CLICKED:  os << "MOUSE_CLICKED";   break;
+    case MOUSE_MOVED:    os << "MOUSE_MOVED";     break;
+    case MOUSE_DRAGGED:  os << "MOUSE_DRAGGED";   break;
+    }
+    os << "(" << x << ", " << y << ")";
+    return os.str();
+}
+
 
 GServerEvent::GServerEvent(EventType type, int requestID, const std::string& requestUrl) {
     this->eventClass = SERVER_EVENT;
@@ -443,7 +348,144 @@ GServerEvent::GServerEvent(GEvent e) {
     }
 }
 
-/* Global event handlers */
+
+GTableEvent::GTableEvent(GEvent e) {
+    valid = e.valid && e.eventClass == TABLE_EVENT;
+    if (valid) {
+        eventClass = e.eventClass;
+        eventType = e.eventType;
+        modifiers = e.modifiers;
+        eventTime = e.eventTime;
+        row = e.row;
+        column = e.column;
+        value = e.value;
+    }
+}
+
+GTableEvent::GTableEvent(EventType type) {
+    this->eventClass = TABLE_EVENT;
+    this->eventType = int(type);
+    valid = true;
+}
+
+int GTableEvent::getColumn() const {
+    return column;
+}
+
+int GTableEvent::getRow() const {
+    return row;
+}
+
+std::string GTableEvent::getValue() const {
+    return value;
+}
+
+void GTableEvent::setLocation(int row, int column) {
+    this->row = row;
+    this->column = column;
+}
+
+void GTableEvent::setValue(std::string value) {
+    this->value = value;
+}
+
+std::string GTableEvent::toString() const {
+    if (!valid) {
+        return "GTableEvent(?)";
+    }
+    std::ostringstream out;
+    if (eventType == TABLE_UPDATED) {
+        out << "GTableEvent:TABLE_UPDATED(r"
+            << row << "c" << column << " \"" << value << "\")";
+    } else if (eventType == TABLE_SELECTED) {
+        out << "GTableEvent:TABLE_SELECTED(r"
+            << row << "c" << column << ")";
+    }
+    return out.str();
+}
+
+
+GTimerEvent::GTimerEvent() {
+    valid = false;
+}
+
+GTimerEvent::GTimerEvent(GEvent e) {
+    valid = e.valid && e.eventClass == TIMER_EVENT;
+    if (valid) {
+        eventClass = e.eventClass;
+        eventType = e.eventType;
+        modifiers = e.modifiers;
+        eventTime = e.eventTime;
+        gtd = e.gtd;
+    }
+}
+
+GTimerEvent::GTimerEvent(EventType type, const GTimer& timer) {
+    this->eventClass = TIMER_EVENT;
+    this->eventType = int(type);
+    this->gtd = timer.gtd;
+    valid = true;
+}
+
+GTimer GTimerEvent::getGTimer() const {
+    return GTimer(gtd);
+}
+
+std::string GTimerEvent::toString() const {
+    if (!valid) {
+        return "GTimerEvent(?)";
+    }
+    return "GTimerEvent:TIMER_TICKED()";
+}
+
+
+GTableEvent::GTableEvent() {
+    valid = false;
+}
+
+
+GWindowEvent::GWindowEvent() {
+    valid = false;
+}
+
+GWindowEvent::GWindowEvent(GEvent e) {
+    valid = e.valid && e.eventClass == WINDOW_EVENT;
+    if (valid) {
+        eventClass = e.eventClass;
+        eventType = e.eventType;
+        modifiers = e.modifiers;
+        eventTime = e.eventTime;
+        gwd = e.gwd;
+    }
+}
+
+GWindowEvent::GWindowEvent(EventType type, const GWindow& gw) {
+    this->eventClass = WINDOW_EVENT;
+    this->eventType = int(type);
+    this->gwd = gw.gwd;
+    valid = true;
+}
+
+GWindow GWindowEvent::getGWindow() const {
+    return GWindow(gwd);
+}
+
+std::string GWindowEvent::toString() const {
+    if (!valid) {
+        return "GWindowEvent(?)";
+    }
+    std::ostringstream os;
+    os << "GWindowEvent:";
+    switch (eventType) {
+    case WINDOW_CLOSED:      os << "WINDOW_CLOSED";       break;
+    case WINDOW_RESIZED:     os << "WINDOW_RESIZED";      break;
+    }
+    os << "()";
+    return os.str();
+}
+
+
+// free functions
 
 GMouseEvent waitForClick() {
     GEvent event = waitForEvent(CLICK_EVENT);

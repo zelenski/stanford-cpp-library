@@ -26,6 +26,9 @@ import stanford.cs106.io.IORuntimeException;
  * - added setLabel1, setLabel2
  */
 public class DiffImage extends JPanel {
+	private static final Color DIFF_COLOR = new Color(140, 20, 20);
+	private static final Color NO_DIFF_COLOR = new JLabel("hi").getForeground();
+	
 	private static final long serialVersionUID = 0;
 
 	private BufferedImage image1;
@@ -246,6 +249,11 @@ public class DiffImage extends JPanel {
 			JOptionPane.showMessageDialog(frame, "Unable to save image:\n" + ex);
 		}
 	}
+	
+	private void setDiffPixelsText() {
+		diffPixelsLabel.setText("(" + numDiffPixels + " pixels differ)");
+		diffPixelsLabel.setForeground(numDiffPixels > 0 ? DIFF_COLOR : NO_DIFF_COLOR);
+	}
 
 	// called when "Set Image 1" menu item is clicked
 	public void setImage1() {
@@ -258,7 +266,7 @@ public class DiffImage extends JPanel {
 		try {
 			setImage1(selectedFile.toString());
 			countDiffPixels();
-			diffPixelsLabel.setText("(" + numDiffPixels + " pixels differ)");
+			setDiffPixelsText();
 			image1Label.setText(selectedFile.getName());
 			frame.pack();
 		} catch (IOException ex) {
@@ -311,7 +319,7 @@ public class DiffImage extends JPanel {
 		try {
 			setImage2(selectedFile.toString());
 			countDiffPixels();
-			diffPixelsLabel.setText("(" + numDiffPixels + " pixels differ)");
+			setDiffPixelsText();
 			image2Label.setText(selectedFile.getName());
 			frame.pack();
 		} catch (IOException ex) {
@@ -376,6 +384,7 @@ public class DiffImage extends JPanel {
 
 		diffPixelsLabel = new JLabel("(" + numDiffPixels + " pixels differ)");
 		diffPixelsLabel.setFont(diffPixelsLabel.getFont().deriveFont(Font.BOLD));
+		setDiffPixelsText();
 		image1Label = new JLabel(label1Text);
 		image2Label = new JLabel(label2Text);
 		southPixelLabel = new JLabel("(0, 0)");

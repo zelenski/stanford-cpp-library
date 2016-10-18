@@ -5,6 +5,11 @@
  * provided in the Java Swing libraries.
  * <include src="pictures/ClassHierarchies/GInteractorHierarchy-h.html">
  * 
+ * @version 2016/10/16
+ * - added setTooltip to interactors
+ * - alphabetized methods
+ * @version 2016/10/15
+ * - added setPlaceholder method to GTextField
  * @version 2016/09/27
  * - added setText method to GButton, GCheckBox, GRadioButton
  * @version 2016/07/07
@@ -46,18 +51,7 @@ enum SwingConstants {
  */
 
 class GInteractor : public GObject {
-
 public:
-
-    /*
-     * Method: setActionCommand
-     * Usage: interactor.setActionCommand(cmd);
-     * ----------------------------------------
-     * Sets the action command to the indicated string.  If the string is not
-     * empty, activating the interactor generates a <code>GActionEvent</code>.
-     */
-    void setActionCommand(std::string cmd);
-
     /*
      * Method: getActionCommand
      * Usage: string cmd = interactor.getActionCommand();
@@ -66,15 +60,13 @@ public:
      */
     std::string getActionCommand();
 
+    /* Prototypes for the virtual methods */
+    virtual GRectangle getBounds() const;
+
     /*
-     * Method: setSize
-     * Usage: interactor.setSize(size);
-     *        interactor.setSize(width, height);
-     * -----------------------------------------
-     * Changes the size of the interactor to the specified width and height.
+     * Methods related to get/setting icons on graphical interactors.
      */
-    void setSize(const GDimension & size);
-    void setSize(double width, double height);
+    virtual std::string getIcon() const;
 
     /*
      * Returns whether the interactor is enabled (true) or disabled (false).
@@ -83,12 +75,31 @@ public:
      * Interactors are enabled by default when first created.
      */
     bool isEnabled();
-    
+
     /*
-     * See GObject::setColor.
+     * Method: setActionCommand
+     * Usage: interactor.setActionCommand(cmd);
+     * ----------------------------------------
+     * Sets the action command to the indicated string.  If the string is not
+     * empty, activating the interactor generates a <code>GActionEvent</code>.
+     */
+    void setActionCommand(const std::string& cmd);
+
+    /*
+     * See GObject::setBackground and setColor.
      */
     void setBackground(int rgb);
-    void setBackground(std::string color);
+    void setBackground(const std::string& color);
+
+    /*
+     * Method: setBounds
+     * Usage: interactor.setBounds(rect);
+     *        interactor.setBounds(x, y, width, height);
+     * -------------------------------------------------
+     * Changes the bounds of the interactor to the specified values.
+     */
+    void setBounds(double x, double y, double width, double height);
+    void setBounds(const GRectangle& size);
 
     /*
      * Sets the interactor to be enabled (true) or disabled (false).
@@ -99,24 +110,29 @@ public:
     void setEnabled(bool value);
 
     /*
-     * Method: setBounds
-     * Usage: interactor.setBounds(rect);
-     *        interactor.setBounds(x, y, width, height);
-     * -------------------------------------------------
-     * Changes the bounds of the interactor to the specified values.
+     * Methods related to get/setting icons on graphical interactors.
      */
-    void setBounds(const GRectangle& size);
-    void setBounds(double x, double y, double width, double height);
-    
+    virtual void setIcon(const std::string& filename);
+
+    /*
+     * Method: setSize
+     * Usage: interactor.setSize(size);
+     *        interactor.setSize(width, height);
+     * -----------------------------------------
+     * Changes the size of the interactor to the specified width and height.
+     */
+    void setSize(double width, double height);
+    void setSize(const GDimension& size);
+
     /*
      * Methods related to get/setting icons on graphical interactors.
      */
-    virtual std::string getIcon() const;
-    virtual void setIcon(std::string filename);
     virtual void setTextPosition(SwingConstants horizontal, SwingConstants vertical);
 
-    /* Prototypes for the virtual methods */
-    virtual GRectangle getBounds() const;
+    /*
+     * Sets tooltip text that will pop up on the interactor on mouse hover.
+     */
+    void setTooltip(const std::string& tooltipText);
 
 protected:
     GInteractor();
@@ -158,8 +174,9 @@ public:
      * Creates a <code>GButton</code> with the specified label.  This
      * constructor also sets the action command for the button to the
      * label string.
+     * If the label is omitted, uses an empty string.
      */
-    GButton(std::string label);
+    GButton(std::string label = "");
 
     /*
      * Returns the text label showing on the button.
@@ -200,7 +217,7 @@ public:
      * to the <code>GButton</code> constructor, this constructor does not set
      * an action command.
      */
-    GCheckBox(std::string label);
+    GCheckBox(std::string label = "");
 
     /*
      * Returns the text label showing on the button.
@@ -260,7 +277,7 @@ public:
      * If no group name is provided, the button is placed into a default group.
      * Button is not initially selected unless 'selected' of true is passed.
      */
-    GRadioButton(std::string label, std::string group = "default", bool selected = false);
+    GRadioButton(std::string label = "", std::string group = "default", bool selected = false);
 
     /*
      * Returns the text label showing on the button.
@@ -384,6 +401,7 @@ private:
 class GTextField : public GInteractor {
 
 public:
+    enum InputType {INPUT_DOUBLE, INPUT_INTEGER, INPUT_STRING};
 
     /*
      * Constructor: GTextField
@@ -399,12 +417,24 @@ public:
     GTextField(int nChars);
 
     /*
-     * Method: setText
-     * Usage: field->setText(str);
-     * ---------------------------
-     * Sets the text of the field to the specified string.
+     * Method: getInputType
+     * Usage: GTextField::InputType type = field->getInputType();
+     * ----------------------------------------------------------
+     * Returns the GTextField's expected type of input.
+     * The default is INPUT_STRING, which allows any text.
+     * If it has been set to INPUT_INTEGER or INPUT_DOUBLE using setInputType,
+     * the field will constrain its input to allow only valid numeric data.
      */
-    void setText(std::string str);
+    InputType getInputType() const;
+
+    /*
+     * Method: getPlaceholder
+     * Usage: string str = field->getPlaceholder();
+     * --------------------------------------------
+     * Returns the light gray placeholder text to appear in the field when no text
+     * has been entered.  Initially empty.
+     */
+    std::string getPlaceholder() const;
 
     /*
      * Method: getText
@@ -413,7 +443,28 @@ public:
      * Returns the contents of the text field.
      */
     std::string getText();
-    
+
+    /* Prototypes for the virtual methods */
+    virtual std::string getType() const;
+
+    /*
+     * Method: getValueAsDouble
+     * Usage: double value = field->getValueAsDouble();
+     * ------------------------------------------------
+     * Returns the contents of the text field, converted to a double.
+     * If the text is unable to be read as a double, throws an ErrorException.
+     */
+    double getValueAsDouble();
+
+    /*
+     * Method: getValueAsInt
+     * Usage: int value = field->getValueAsInt();
+     * ------------------------------------------
+     * Returns the contents of the text field, converted to an integer.
+     * If the text is unable to be read as an integer, throws an ErrorException.
+     */
+    int getValueAsInt();
+
     /*
      * Method: isEditable
      * Usage: if (field->isEditable()) ...
@@ -422,7 +473,7 @@ public:
      * Initially true.
      */
     bool isEditable() const;
-    
+
     /*
      * Method: setEditable
      * Usage: field->setEditable(false);
@@ -432,9 +483,49 @@ public:
      */
     void setEditable(bool value);
 
+    /*
+     * Method: setInputType
+     * Usage: field->setInputType(GTextField::INPUT_INTEGER);
+     * ------------------------------------------------------
+     * Sets the GTextField to expect the given type of input.
+     * The default is INPUT_STRING, which allows any text.
+     * If you specify INPUT_INTEGER or INPUT_DOUBLE, the field will
+     * constrain its input to allow only valid numeric data.
+     */
+    void setInputType(InputType inputType);
+
+    /*
+     * Method: setPlaceholder
+     * Usage: field->setPlaceholder(str);
+     * ----------------------------------
+     * Sets a light gray placeholder text to appear in the field when no text
+     * has been entered.
+     */
+    void setPlaceholder(const std::string& text);
+
+    /*
+     * Method: setText
+     * Usage: field->setText(str);
+     * ---------------------------
+     * Sets the text of the field to the specified string.
+     */
+    void setText(std::string str);
+
+    /*
+     * Method: setValue
+     * Usage: field->setValue(value);
+     * ------------------------------
+     * Sets the text of the field to the specified number converted to a string.
+     */
+    void setValue(double value);
+    void setValue(int value);
+
     /* Prototypes for the virtual methods */
-    virtual std::string getType() const;
     virtual std::string toString() const;
+
+private:
+    InputType m_inputType;
+    std::string m_placeholder;
 };
 
 /*
@@ -480,6 +571,9 @@ public:
      * Adds a new item consisting of the specified string.
      */
     void addItem(std::string item);
+
+    void addItems(const std::initializer_list<std::string>& items);
+    void addItems(const Vector<std::string>& items);
 
     /*
      * Method: setSelectedItem

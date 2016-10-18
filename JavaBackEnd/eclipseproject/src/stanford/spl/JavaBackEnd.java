@@ -5,6 +5,8 @@ import acm.io.*;
 import acm.program.*;
 import acm.util.*;
 import stanford.cs106.gui.GuiUtils;
+import stanford.cs106.util.ExceptionUtils;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -207,7 +209,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		// this.consoleY = (50 + paramInt2);
 		localJBEWindow.pack();
 		localJBEWindow.setLocation(10, 10);
-		localJBEWindow.getCanvas().initOffscreenImage();
+//		localJBEWindow.getCanvas().initOffscreenImage();
 		localJBEWindow.getCanvas().setTopCompound(paramTopCompound);
 		localJBEWindow.setResizable(false);
 		this.activeWindowCount += 1;
@@ -471,30 +473,39 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		}
 	}
 
+	// https://docs.oracle.com/javase/7/docs/api/constant-values.html#java.awt.event.InputEvent.BUTTON1_DOWN_MASK
 	private int convertModifiers(int paramInt) {
 		int i = 0;
 		if ((paramInt & 0x40) != 0) {
+			// SHIFT_DOWN_MASK
 			i |= 0x1;
 		}
 		if ((paramInt & 0x80) != 0) {
+			// CTRL_DOWN_MASK
 			i |= 0x2;
 		}
 		if ((paramInt & 0x100) != 0) {
+			// META_DOWN_MASK
 			i |= 0x4;
 		}
 		if ((paramInt & 0x200) != 0) {
+			// ALT_DOWN_MASK
 			i |= 0x8;
 		}
 		if ((paramInt & 0x2000) != 0) {
+			// ALT_GRAPH_DOWN_MASK
 			i |= 0x10;
 		}
 		if ((paramInt & 0x400) != 0) {
+			// BUTTON1_DOWN_MASK
 			i |= 0x20;
 		}
 		if ((paramInt & 0x800) != 0) {
+			// BUTTON2_DOWN_MASK
 			i |= 0x40;
 		}
 		if ((paramInt & 0x1000) != 0) {
+			// BUTTON3_DOWN_MASK
 			i |= 0x80;
 		}
 		return i;
@@ -543,9 +554,10 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 			GInteractor localGInteractor = (GInteractor) getGObject((String) localObject2);
 			String str = localGInteractor.getActionCommand();
 			if (!str.isEmpty()) {
-				acknowledgeEvent("event:actionPerformed(\"%s\", \"%s\", %d)",
+				acknowledgeEvent("event:actionPerformed(\"%s\", \"%s\", %d, %d)",
 						(String) localObject2, str,
-						(long) getEventTime());
+						(long) getEventTime(),
+						paramActionEvent.getModifiers());
 			}
 		}
 	}
@@ -798,8 +810,9 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 							} catch (InvocationTargetException ite) {
 								// TODO: is this the right way to handle such an error?  :-/ not sure
 								// println("error:" + ite.getMessage());
-								System.err.println("Unexpected error: " + ite.getMessage());
-								ite.printStackTrace(System.err);
+								Throwable cause = ExceptionUtils.getUnderlyingCause(ite);
+								System.err.println("Unexpected error: " + cause.getMessage());
+								cause.printStackTrace(System.err);
 							} catch (InterruptedException ie) {
 								// okay; do nothing
 							}

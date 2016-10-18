@@ -6,6 +6,9 @@
  * the Java event model.
  * <include src="pictures/ClassHierarchies/GEventHierarchy-h.html">
  * 
+ * @version 2016/10/16
+ * - added GEvent.isShiftKeyDown
+ * - alphabetized methods
  * @version 2015/11/07
  * - added GTable TABLE_EVENT and TABLE_UPDATED
  */
@@ -117,14 +120,14 @@ enum KeyCodes {
 };
 
 /* Forward definitions */
-class GWindowEvent;
 class GActionEvent;
-class GMouseEvent;
 class GKeyEvent;
-class GTimerEvent;
-class GTableEvent;
-class GServerEvent;
+class GMouseEvent;
 class GObject;
+class GServerEvent;
+class GTableEvent;
+class GTimerEvent;
+class GWindowEvent;
 
 /*
  * Class: GEvent
@@ -153,7 +156,6 @@ class GObject;
  *    }
  *</pre>
  */
-
 class GEvent {
 public:
 
@@ -175,15 +177,6 @@ public:
     EventClassType getEventClass() const;
 
     /*
-     * Method: getEventType
-     * Usage: EventType type = e.getEventType();
-     * -----------------------------------------
-     * Returns the enumerated type constant corresponding to the specific
-     * event type.
-     */
-    EventType getEventType() const;
-
-    /*
      * Method: getEventTime
      * Usage: double time = e.getEventTime();
      * --------------------------------------
@@ -195,6 +188,15 @@ public:
      * the conventional zero point for computer-based time systems.
      */
     double getEventTime() const;
+
+    /*
+     * Method: getEventType
+     * Usage: EventType type = e.getEventType();
+     * -----------------------------------------
+     * Returns the enumerated type constant corresponding to the specific
+     * event type.
+     */
+    EventType getEventType() const;
 
     /*
      * Method: getModifiers
@@ -211,12 +213,36 @@ public:
     int getModifiers() const;
 
     /*
-     * Method: toString
-     * Usage: string str = e.toString();
-     * ---------------------------------
-     * Converts the event to a human-readable representation of the event.
+     * Method: isAltKeyDown
+     * Usage: if (e.isAltKeyDown()) ...
+     * --------------------------------
+     * Returns <code>true</code> if the Alt key was held down during this event.
      */
-    virtual std::string toString() const;
+    bool isAltKeyDown() const;
+
+    /*
+     * Method: isCtrlKeyDown
+     * Usage: if (e.isCtrlKeyDown()) ...
+     * ---------------------------------
+     * Returns <code>true</code> if the Ctrl key was held down during this event.
+     */
+    bool isCtrlKeyDown() const;
+
+    /*
+     * Method: isMetaKeyDown
+     * Usage: if (e.isMetaKeyDown()) ...
+     * ---------------------------------
+     * Returns <code>true</code> if the Meta/Command key was held down during this event.
+     */
+    bool isMetaKeyDown() const;
+
+    /*
+     * Method: isShiftKeyDown
+     * Usage: if (e.isShiftKeyDown()) ...
+     * ----------------------------------
+     * Returns <code>true</code> if the Shift key was held down during this event.
+     */
+    bool isShiftKeyDown() const;
 
     /*
      * Method: isValid
@@ -225,6 +251,14 @@ public:
      * Returns <code>true</code> if the event is valid.
      */
     bool isValid();
+
+    /*
+     * Method: toString
+     * Usage: string str = e.toString();
+     * ---------------------------------
+     * Converts the event to a human-readable representation of the event.
+     */
+    virtual std::string toString() const;
 
     /* Private section */
 
@@ -308,6 +342,18 @@ private:
 };
 
 /*
+ * Function: getNextEvent
+ * Usage: GEvent e = getNextEvent(mask);
+ * -------------------------------------
+ * Checks to see if there are any events of the desired type waiting on the
+ * event queue.  If so, this function returns the event in exactly the same
+ * fashion as <code>waitForEvent</code>; if not, <code>getNextEvent</code>
+ * returns an invalid event.  The <code>mask</code> parameter is optional.
+ * If it is missing, <code>getNextEvent</code> accepts any event.
+ */
+GEvent getNextEvent(int mask = ANY_EVENT);
+
+/*
  * Function: waitForClick
  * Usage: waitForClick();
  * ----------------------
@@ -358,57 +404,6 @@ GMouseEvent waitForClick();
 GEvent waitForEvent(int mask = ANY_EVENT);
 
 /*
- * Function: getNextEvent
- * Usage: GEvent e = getNextEvent(mask);
- * -------------------------------------
- * Checks to see if there are any events of the desired type waiting on the
- * event queue.  If so, this function returns the event in exactly the same
- * fashion as <code>waitForEvent</code>; if not, <code>getNextEvent</code>
- * returns an invalid event.  The <code>mask</code> parameter is optional.
- * If it is missing, <code>getNextEvent</code> accepts any event.
- */
-GEvent getNextEvent(int mask = ANY_EVENT);
-
-/*
- * Class: GWindowEvent
- * -------------------
- * This event subclass represents a window event.
- * Each <code>GWindowEvent</code> keeps track of the event type
- * (<code>WINDOW_CLOSED</code>, <code>WINDOW_RESIZED</code>) along
- * with the identity of the window.
- */
-class GWindowEvent : public GEvent {
-public:
-    /*
-     * Constructor: GWindowEvent
-     * Usage: GWindowEvent windowEvent(type, gw);
-     * ------------------------------------------
-     * Creates a <code>GWindowEvent</code> using the specified parameters.
-     */
-    GWindowEvent(EventType type, const GWindow & gw);
-
-    /*
-     * Method: getGWindow
-     * Usage: GWindow gw = e.getGWindow();
-     * -----------------------------------
-     * Returns the graphics window in which this event occurred.
-     */
-    GWindow getGWindow() const;
-
-    /*
-     * Method: toString
-     * Usage: string str = e.toString();
-     * ---------------------------------
-     * Converts the event to a human-readable representation of the event.
-     */
-    std::string toString() const;
-
-    /* Private section */
-    GWindowEvent();
-    GWindowEvent(GEvent e);
-};
-
-/*
  * Class: GActionEvent
  * -------------------
  * This event subclass represents an action event.
@@ -450,7 +445,7 @@ public:
      * -------------------------------------
      * Returns a pointer to the <code>GObject</code> that generated this event.
      */
-    GObject *getSource() const;
+    GObject* getSource() const;
 
     /*
      * Method: getActionCommand
@@ -471,6 +466,69 @@ public:
     /* Private section */
     GActionEvent();
     GActionEvent(GEvent e);
+};
+
+/*
+ * Class: GKeyEvent
+ * ----------------
+ * This event subclass represents a key event.  Each key event records
+ * the event type along with two representations of the key.  The
+ * <code>getKeyChar</code> function is more generally useful and
+ * returns the character after taking into account modifier keys.
+ * The <code>getKeyCode</code> function returns an integer identifying
+ * the key, which can be a function key as well as a standard key.
+ * The codes return by <code>getKeyCode</code> are listed in the
+ * <code>KeyCodes</code> enumeration.
+ */
+class GKeyEvent : public GEvent {
+public:
+    /*
+     * Constructor: GKeyEvent
+     * Usage: GKeyEvent keyEvent(type, gw, keyChar, keyCode);
+     * ------------------------------------------------------
+     * Creates a <code>GKeyEvent</code> using the specified parameters.
+     */
+    GKeyEvent(EventType type, const GWindow& gw, int keyChar, int keyCode);
+
+    /*
+     * Method: getGWindow
+     * Usage: GWindow gw = e.getGWindow();
+     * -----------------------------------
+     * Returns the graphics window in which this event occurred.
+     */
+    GWindow getGWindow() const;
+
+    /*
+     * Method: getKeyChar
+     * Usage: char ch = e.getKeyChar();
+     * --------------------------------
+     * Returns the character represented by the keystroke, taking the modifier
+     * keys into account.  For example, if the user types the <code>'a'</code>
+     * key with the shift key down, <code>getKeyChar</code> will return
+     * <code>'A'</code>.  If the key code in the event does not correspond
+     * to a character, <code>getKeyChar</code> returns the null character.
+     */
+    char getKeyChar() const;
+
+    /*
+     * Method: getKeyCode
+     * Usage: int key = getKeyCode();
+     * ------------------------------
+     * Returns the integer code associated with the key in the event.
+     */
+    int getKeyCode() const;
+
+    /*
+     * Method: toString
+     * Usage: string str = e.toString();
+     * ---------------------------------
+     * Converts the event to a human-readable representation of the event.
+     */
+    std::string toString() const;
+
+    /* Private section */
+    GKeyEvent();
+    GKeyEvent(GEvent e);
 };
 
 /*
@@ -516,7 +574,6 @@ public:
  *    }
  *</pre>
  */
-
 class GMouseEvent : public GEvent {
 public:
     /*
@@ -559,14 +616,14 @@ public:
     bool isLeftClick() const;
 
     /*
-     * Returns true if the user pressed the right mouse button.
-     */
-    bool isRightClick() const;
-
-    /*
      * Returns true if the user pressed the middle mouse button.
      */
     bool isMiddleClick() const;
+
+    /*
+     * Returns true if the user pressed the right mouse button.
+     */
+    bool isRightClick() const;
 
     /*
      * Method: toString
@@ -582,54 +639,30 @@ public:
 };
 
 /*
- * Class: GKeyEvent
- * ----------------
- * This event subclass represents a key event.  Each key event records
- * the event type along with two representations of the key.  The
- * <code>getKeyChar</code> function is more generally useful and
- * returns the character after taking into account modifier keys.
- * The <code>getKeyCode</code> function returns an integer identifying
- * the key, which can be a function key as well as a standard key.
- * The codes return by <code>getKeyCode</code> are listed in the
- * <code>KeyCodes</code> enumeration.
+ * Class: GWindowEvent
+ * -------------------
+ * Events that occur on a web server.
  */
-class GKeyEvent : public GEvent {
+class GServerEvent : public GEvent {
 public:
     /*
-     * Constructor: GKeyEvent
-     * Usage: GKeyEvent keyEvent(type, gw, keyChar, keyCode);
-     * ------------------------------------------------------
-     * Creates a <code>GKeyEvent</code> using the specified parameters.
+     * Constructor: GServerEvent
+     * Usage: GServerEvent serverEvent(type);
+     * --------------------------------------
+     * Creates a <code>GServerEvent</code> with the specified type.
      */
-    GKeyEvent(EventType type, const GWindow & gw, int keyChar, int keyCode);
+    GServerEvent(EventType type, int requestID, const std::string& requestUrl);
 
     /*
-     * Method: getGWindow
-     * Usage: GWindow gw = e.getGWindow();
-     * -----------------------------------
-     * Returns the graphics window in which this event occurred.
+     * Returns the request ID sent by the server to disambiguate messages.
      */
-    GWindow getGWindow() const;
+    int getRequestID() const;
 
     /*
-     * Method: getKeyChar
-     * Usage: char ch = e.getKeyChar();
-     * --------------------------------
-     * Returns the character represented by the keystroke, taking the modifier
-     * keys into account.  For example, if the user types the <code>'a'</code>
-     * key with the shift key down, <code>getKeyChar</code> will return
-     * <code>'A'</code>.  If the key code in the event does not correspond
-     * to a character, <code>getKeyChar</code> returns the null character.
+     * Returns the URL of the request that the web client wants to fetch,
+     * such as "/foo/bar/baz.txt".
      */
-    char getKeyChar() const;
-
-    /*
-     * Method: getKeyCode
-     * Usage: int key = getKeyCode();
-     * ------------------------------
-     * Returns the integer code associated with the key in the event.
-     */
-    int getKeyCode() const;
+    std::string getRequestURL() const;
 
     /*
      * Method: toString
@@ -640,8 +673,54 @@ public:
     std::string toString() const;
 
     /* Private section */
-    GKeyEvent();
-    GKeyEvent(GEvent e);
+    GServerEvent();
+    GServerEvent(GEvent e);
+};
+
+/*
+ * Class: GTableEvent
+ * ------------------
+ * Events that occur on a GTable.
+ */
+class GTableEvent : public GEvent {
+public:
+    /*
+     * Constructor: GTableEvent
+     * Usage: GTableEvent tableEvent(type);
+     * -------------------------------------------
+     * Creates a <code>GTableEvent</code> for the specified table.
+     */
+    GTableEvent(EventType type);
+
+//    /*
+//     * Method: getGTable
+//     * Usage: GTable table = e.getGTable();
+//     * ------------------------------------
+//     * Returns the table that generated this event.
+//     */
+//    GTable getGTable() const;
+
+    int getColumn() const;
+
+    int getRow() const;
+
+    std::string getValue() const;
+
+    void setLocation(int row, int column);
+
+    void setValue(std::string value);
+
+    /*
+     * Method: toString
+     * Usage: string str = e.toString();
+     * ---------------------------------
+     * Converts the event to a human-readable representation of the event.
+     */
+    std::string toString() const;
+
+    /* Private section */
+    GTableEvent();
+    GTableEvent(GEvent e);
 };
 
 /*
@@ -699,30 +778,31 @@ public:
     GTimerEvent(GEvent e);
 };
 
-class GTableEvent : public GEvent {
+/*
+ * Class: GWindowEvent
+ * -------------------
+ * This event subclass represents a window event.
+ * Each <code>GWindowEvent</code> keeps track of the event type
+ * (<code>WINDOW_CLOSED</code>, <code>WINDOW_RESIZED</code>) along
+ * with the identity of the window.
+ */
+class GWindowEvent : public GEvent {
 public:
     /*
-     * Constructor: GTableEvent
-     * Usage: GTableEvent tableEvent(type);
-     * -------------------------------------------
-     * Creates a <code>GTableEvent</code> for the specified table.
+     * Constructor: GWindowEvent
+     * Usage: GWindowEvent windowEvent(type, gw);
+     * ------------------------------------------
+     * Creates a <code>GWindowEvent</code> using the specified parameters.
      */
-    GTableEvent(EventType type);
+    GWindowEvent(EventType type, const GWindow & gw);
 
-//    /*
-//     * Method: getGTable
-//     * Usage: GTable table = e.getGTable();
-//     * ------------------------------------
-//     * Returns the table that generated this event.
-//     */
-//    GTable getGTable() const;
-
-    int getColumn() const;
-    int getRow() const;
-    std::string getValue() const;
-
-    void setLocation(int row, int column);
-    void setValue(std::string value);
+    /*
+     * Method: getGWindow
+     * Usage: GWindow gw = e.getGWindow();
+     * -----------------------------------
+     * Returns the graphics window in which this event occurred.
+     */
+    GWindow getGWindow() const;
 
     /*
      * Method: toString
@@ -733,42 +813,8 @@ public:
     std::string toString() const;
 
     /* Private section */
-    GTableEvent();
-    GTableEvent(GEvent e);
-};
-
-class GServerEvent : public GEvent {
-public:
-    /*
-     * Constructor: GServerEvent
-     * Usage: GServerEvent serverEvent(type);
-     * --------------------------------------
-     * Creates a <code>GServerEvent</code> with the specified type.
-     */
-    GServerEvent(EventType type, int requestID, const std::string& requestUrl);
-
-    /*
-     * Returns the request ID sent by the server to disambiguate messages.
-     */
-    int getRequestID() const;
-
-    /*
-     * Returns the URL of the request that the web client wants to fetch,
-     * such as "/foo/bar/baz.txt".
-     */
-    std::string getRequestURL() const;
-
-    /*
-     * Method: toString
-     * Usage: string str = e.toString();
-     * ---------------------------------
-     * Converts the event to a human-readable representation of the event.
-     */
-    std::string toString() const;
-
-    /* Private section */
-    GServerEvent();
-    GServerEvent(GEvent e);
+    GWindowEvent();
+    GWindowEvent(GEvent e);
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

@@ -3,6 +3,8 @@
  * ------------------
  * This file implements the ginteractors.h interface.
  * 
+ * @version 2016/10/15
+ * - added setPlaceholder method to GTextField
  * @version 2016/09/27
  * - added setText method to GButton, GCheckBox, GRadioButton
  * @version 2016/07/07
@@ -22,22 +24,24 @@
 #include "ginteractors.h"
 #include <iostream>
 #include <sstream>
+#include "error.h"
+#include "filelib.h"
 #include "gevents.h"
 #include "gobjects.h"
 #include "gtypes.h"
 #include "gwindow.h"
+#include "strlib.h"
 #include "private/platform.h"
+#include "private/static.h"
 
-/*
- * Implementation notes: GInteractor class
- * ---------------------------------------
- */
+// default # of characters visible in a GTextField
+STATIC_CONST_VARIABLE_DECLARE(int, GTEXTFIELD_DEFAULT_NUM_CHARS, 10)
 
 GInteractor::GInteractor() {
     actionCommand = "";
 }
 
-void GInteractor::setActionCommand(std::string cmd) {
+void GInteractor::setActionCommand(const std::string& cmd) {
     actionCommand = cmd;
     stanfordcpplib::getPlatform()->ginteractor_setActionCommand(this, cmd);
 }
@@ -46,27 +50,13 @@ std::string GInteractor::getActionCommand() {
     return actionCommand;
 }
 
-void GInteractor::setSize(const GDimension& size) {
-    setSize(size.getWidth(), size.getHeight());
-}
-
-void GInteractor::setSize(double width, double height) {
-    stanfordcpplib::getPlatform()->gobject_setSize(this, width, height);
-}
-
-void GInteractor::setBounds(const GRectangle& rect) {
-    setLocation(rect.getX(), rect.getY());
-    setSize(rect.getWidth(), rect.getHeight());
-}
-
-void GInteractor::setBounds(double x, double y, double width, double height) {
-    setLocation(x, y);
-    setSize(width, height);
-}
-
 GRectangle GInteractor::getBounds() const {
     GDimension size = stanfordcpplib::getPlatform()->ginteractor_getSize((GObject *) this);
     return GRectangle(x, y, size.getWidth(), size.getHeight());
+}
+
+std::string GInteractor::getIcon() const {
+    return icon;
 }
 
 bool GInteractor::isEnabled() {
@@ -78,25 +68,46 @@ void GInteractor::setBackground(int rgb) {
     stanfordcpplib::getPlatform()->ginteractor_setBackground(this, color);
 }
 
-void GInteractor::setBackground(std::string color) {
+void GInteractor::setBackground(const std::string& color) {
     stanfordcpplib::getPlatform()->ginteractor_setBackground(this, color);
+}
+
+void GInteractor::setBounds(double x, double y, double width, double height) {
+    setLocation(x, y);
+    setSize(width, height);
+}
+
+void GInteractor::setBounds(const GRectangle& rect) {
+    setLocation(rect.getX(), rect.getY());
+    setSize(rect.getWidth(), rect.getHeight());
 }
 
 void GInteractor::setEnabled(bool value) {
     stanfordcpplib::getPlatform()->ginteractor_setEnabled(this, value);
 }
 
-std::string GInteractor::getIcon() const {
-    return icon;
-}
-
-void GInteractor::setIcon(std::string filename) {
+void GInteractor::setIcon(const std::string& filename) {
+    if (!fileExists(filename)) {
+        error("GInteractor::setIcon: icon file not found: " + filename);
+    }
     this->icon = filename;
     stanfordcpplib::getPlatform()->ginteractor_setIcon(this, filename);
 }
 
+void GInteractor::setSize(const GDimension& size) {
+    setSize(size.getWidth(), size.getHeight());
+}
+
+void GInteractor::setSize(double width, double height) {
+    stanfordcpplib::getPlatform()->gobject_setSize(this, width, height);
+}
+
 void GInteractor::setTextPosition(SwingConstants horizontal, SwingConstants vertical) {
     stanfordcpplib::getPlatform()->ginteractor_setTextPosition(this, horizontal, vertical);
+}
+
+void GInteractor::setTooltip(const std::string& tooltipText) {
+    stanfordcpplib::getPlatform()->ginteractor_setTooltip(this, tooltipText);
 }
 
 /*
@@ -315,15 +326,37 @@ void GSlider::create(int min, int max, int value) {
  */
 
 GTextField::GTextField() {
-    stanfordcpplib::getPlatform()->gtextfield_constructor(this, 10);
+    stanfordcpplib::getPlatform()->gtextfield_constructor(this, STATIC_VARIABLE(GTEXTFIELD_DEFAULT_NUM_CHARS));
 }
 
 GTextField::GTextField(int nChars) {
     stanfordcpplib::getPlatform()->gtextfield_constructor(this, nChars);
 }
 
+GTextField::InputType GTextField::getInputType() const {
+    return m_inputType;
+}
+
+std::string GTextField::getPlaceholder() const {
+    return m_placeholder;
+}
+
 std::string GTextField::getText() {
     return stanfordcpplib::getPlatform()->gtextfield_getText(this);
+}
+
+std::string GTextField::getType() const {
+    return "GTextField";
+}
+
+double GTextField::getValueAsDouble() {
+    std::string text = getText();
+    return stringToDouble(text);
+}
+
+int GTextField::getValueAsInt() {
+    std::string text = getText();
+    return stringToInteger(text);
 }
 
 bool GTextField::isEditable() const {
@@ -334,13 +367,27 @@ void GTextField::setEditable(bool value) {
     stanfordcpplib::getPlatform()->gtextfield_setEditable(this, value);
 }
 
+void GTextField::setInputType(GTextField::InputType inputType) {
+    m_inputType = inputType;
+}
+
+void GTextField::setPlaceholder(const std::string& text) {
+    m_placeholder = text;
+    stanfordcpplib::getPlatform()->gtextfield_setPlaceholder(this, text);
+}
+
 void GTextField::setText(std::string str) {
     stanfordcpplib::getPlatform()->gtextfield_setText(this, str);
 }
 
-std::string GTextField::getType() const {
-    return "GTextField";
+void GTextField::setValue(double value) {
+    setText(doubleToString(value));
 }
+
+void GTextField::setValue(int value) {
+    setText(integerToString(value));
+}
+
 
 std::string GTextField::toString() const {
     std::ostringstream oss;
@@ -359,6 +406,18 @@ GChooser::GChooser() {
 
 void GChooser::addItem(std::string item) {
     stanfordcpplib::getPlatform()->gchooser_addItem(this, item);
+}
+
+void GChooser::addItems(const std::initializer_list<std::string>& items) {
+    for (const std::string& item : items) {
+        stanfordcpplib::getPlatform()->gchooser_addItem(this, item);
+    }
+}
+
+void GChooser::addItems(const Vector<std::string>& items) {
+    for (const std::string& item : items) {
+        stanfordcpplib::getPlatform()->gchooser_addItem(this, item);
+    }
 }
 
 std::string GChooser::getSelectedItem() {
