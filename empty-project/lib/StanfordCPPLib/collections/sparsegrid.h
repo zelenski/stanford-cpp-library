@@ -9,6 +9,8 @@
  * Grid is recommended for use over SparseGrid.
  * 
  * @author Marty Stepp
+ * @version 2016/10/22
+ * - bug fix for size method
  * @version 2016/09/24
  * - refactored to use collections.h utility functions
  * - added size() method
@@ -726,8 +728,8 @@ void SparseGrid<ValueType>::set(int row, int col, const ValueType& value) {
 template <typename ValueType>
 int SparseGrid<ValueType>::size() const {
     int count = 0;
-    for (Map<int, ValueType>& map : elements) {
-        count += map.size();
+    for (int row : elements) {
+        count += elements[row].size();
     }
     return count;
 }

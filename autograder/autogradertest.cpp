@@ -22,11 +22,11 @@ int AutograderTest::TIMEOUT_MS_DEFAULT = 10000;
 int AutograderTest::TIMEOUT_MS_MIN = 100;
 
 static std::vector<std::string>& allCategories() {
-    static std::vector<std::string> v;
+    static std::vector<std::string> v;   // static OK
     return v;
 }
 std::map<std::string, std::vector<std::string> >& allTests() {
-    static std::map<std::string, std::vector<std::string> > __allTests;
+    static std::map<std::string, std::vector<std::string> > __allTests;   // static OK
     return __allTests;
 }
 

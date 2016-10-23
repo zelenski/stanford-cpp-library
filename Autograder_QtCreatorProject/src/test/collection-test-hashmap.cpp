@@ -8,6 +8,7 @@
 #include "hashset.h"
 #include "queue.h"
 #include "assertions.h"
+#include "collection-test-common.h"
 #include "gtest-marty.h"
 #include "strlib.h"
 #include <initializer_list>
@@ -91,6 +92,7 @@ TIMED_TEST(HashMapTests, hashCodeTest_HashMap, TEST_TIMEOUT_DEFAULT) {
 TIMED_TEST(HashMapTests, initializerListTest_HashMap, TEST_TIMEOUT_DEFAULT) {
     std::initializer_list<std::pair<std::string, int> > pairlist = {{"k", 60}, {"t", 70}};
     std::initializer_list<std::pair<std::string, int> > pairlist2 = {{"b", 20}, {"e", 50}};
+    std::initializer_list<std::pair<std::string, int> > expected;
 
     HashMap<std::string, int> hmap {{"a", 10}, {"b", 20}, {"c", 30}};
     assertEqualsInt("init list HashMap get a", 10, hmap.get("a"));
@@ -99,42 +101,41 @@ TIMED_TEST(HashMapTests, initializerListTest_HashMap, TEST_TIMEOUT_DEFAULT) {
     assertEqualsInt("init list HashMap size", 3, hmap.size());
 
     hmap += {{"d", 40}, {"e", 50}};
-    assertEqualsInt("after +=, HashMap get d", 40, hmap.get("d"));
-    assertEqualsInt("after +=, HashMap get e", 50, hmap.get("e"));
-    assertEqualsInt("after +=, HashMap size", 5, hmap.size());
-
-    hmap -= {{"d", 40}, {"e", 50}};
-    assertFalse("after -=, HashMap containsKey d", hmap.containsKey("d"));
-    assertFalse("after -=, HashMap containsKey e", hmap.containsKey("e"));
-    assertEqualsInt("after +=, HashMap size", 3, hmap.size());
+    expected = {{"a", 10}, {"b", 20}, {"c", 30}, {"d", 40}, {"e", 50}};
+    assertMap("after +=", expected, hmap);
 
     HashMap<std::string, int> copy = hmap + pairlist;
-    assertEqualsInt("after +, HashMap size", 3, hmap.size());
-    assertEqualsInt("after +, HashMap copy size", 5, copy.size());
-    assertEqualsInt("after +, HashMap copy get k", 60, copy.get("k"));
-    assertEqualsInt("after +, HashMap copy get t", 70, copy.get("t"));
+    expected = {{"a", 10}, {"b", 20}, {"c", 30}, {"d", 40}, {"e", 50}};
+    assertMap("after + (shouldn't modify)", expected, hmap);
+    expected = {{"a", 10}, {"b", 20}, {"c", 30}, {"d", 40}, {"e", 50}, {"k", 60}, {"t", 70}};
+    assertMap("after + copy", expected, copy);
 
     copy = hmap - pairlist2;
-    assertEqualsInt("after -, HashMap size", 3, hmap.size());
-    assertEqualsInt("after -, HashMap get a", 10, copy.get("a"));
-    assertFalse("after -, HashMap containsKey b", copy.containsKey("b"));
-    assertEqualsInt("after -, HashMap get c", 30, hmap.get("c"));
+    expected = {{"a", 10}, {"b", 20}, {"c", 30}, {"d", 40}, {"e", 50}};
+    assertMap("after - (shouldn't modify)", expected, hmap);
+    expected = {{"a", 10}, {"c", 30}, {"d", 40}};
+    assertMap("after - copy", expected, copy);
 
     copy = hmap * pairlist2;
-    assertEqualsInt("after *, HashMap size", 3, hmap.size());
-    assertEqualsInt("after *, HashMap copy size", 1, copy.size());
-    assertFalse("after *, HashMap containsKey a", copy.containsKey("a"));
-    assertEqualsInt("after *, HashMap get b", 20, copy.get("b"));
+    expected = {{"a", 10}, {"b", 20}, {"c", 30}, {"d", 40}, {"e", 50}};
+    assertMap("after * (shouldn't modify)", expected, hmap);
+    expected = {{"b", 20}, {"e", 50}};
+    assertMap("after * copy", expected, copy);
+
+    hmap -= {{"d", 40}, {"e", 50}};
+    expected = {{"a", 10}, {"b", 20}, {"c", 30}};
+    assertMap("after -=", expected, hmap);
 
     hmap *= pairlist2;
-    assertEqualsInt("after *=, HashMap size", 1, hmap.size());
-    assertFalse("after *=, HashMap containsKey a", hmap.containsKey("a"));
-    assertEqualsInt("after -, HashMap get b", 20, hmap.get("b"));
+    expected = {{"b", 20}};
+    assertMap("after *=", expected, hmap);
 }
 
 TIMED_TEST(HashMapTests, randomKeyTest_HashMap, TEST_TIMEOUT_DEFAULT) {
     Map<std::string, int> counts;
     int RUNS = 200;
+
+    std::initializer_list<std::string> list {"a", "b", "c", "d", "e", "f"};
 
     HashMap<std::string, int> hmap;
     hmap["a"] = 50;
@@ -148,12 +149,9 @@ TIMED_TEST(HashMapTests, randomKeyTest_HashMap, TEST_TIMEOUT_DEFAULT) {
         counts[s]++;
     }
 
-    assertTrue("must choose a sometimes", counts["a"] > 0);
-    assertTrue("must choose b sometimes", counts["b"] > 0);
-    assertTrue("must choose c sometimes", counts["c"] > 0);
-    assertTrue("must choose d sometimes", counts["d"] > 0);
-    assertTrue("must choose e sometimes", counts["e"] > 0);
-    assertTrue("must choose f sometimes", counts["f"] > 0);
+    for (const std::string& s : list) {
+        assertTrue("must choose " + s + " sometimes", counts[s] > 0);
+    }
 }
 
 TIMED_TEST(HashMapTests, streamExtractTest_HashMap, TEST_TIMEOUT_DEFAULT) {

@@ -8,6 +8,7 @@
 #include "hashset.h"
 #include "queue.h"
 #include "assertions.h"
+#include "collection-test-common.h"
 #include "gtest-marty.h"
 #include <initializer_list>
 #include <iostream>
@@ -44,58 +45,57 @@ TIMED_TEST(VectorTests, compareTest_Vector, TEST_TIMEOUT_DEFAULT) {
 }
 
 TIMED_TEST(VectorTests, forEachTest_Vector, TEST_TIMEOUT_DEFAULT) {
-    Vector<int> v1;
-    v1 += 1, 2, 3;
-    std::cout << "v1: " << v1 << std::endl;
+    Vector<int> v1 {1, 2, 3};
+    assertCollection("foreach Vector", {1, 2, 3}, v1);
 
-    Vector<std::string> v2;
-    v2 += "a", "b", "c";
-    std::cout << "v2: " << v2 << std::endl;
+    Vector<std::string> v2 {"a", "b", "c"};
+    std::initializer_list<std::string> list {"a", "b", "c"};
+    assertCollection("foreach Vector", list, v2);
 }
 
 TIMED_TEST(VectorTests, hashCodeTest_Vector, TEST_TIMEOUT_DEFAULT) {
-    HashSet<Vector<int> > hashvec;
     Vector<int> v;
     v.add(69);
     v.add(42);
-    hashvec.add(v);
-    std::cout << "hashset of vector: " << hashvec << std::endl;
+    assertEqualsInt("hashcode of self Vector", hashCode(v), hashCode(v));
+
+    Vector<int> copy = v;
+    assertEqualsInt("hashcode of copy Vector", hashCode(v), hashCode(copy));
+
+    Vector<int> empty;
+    HashSet<Vector<int> > hashvec {v, copy, empty, empty};
+    assertEqualsInt("hashset of Vector size", 2, hashvec.size());
 }
 
 TIMED_TEST(VectorTests, initializerListTest_Vector, TEST_TIMEOUT_DEFAULT) {
     auto list = {60, 70};
 
-    Vector<int> v {10, 20, 30};
-    std::cout << "init list Vector = " << v << std::endl;
-    v += {40, 50};
-    std::cout << "after +=, Vector = " << v << std::endl;
-    std::cout << "Vector + {} list = " << (v + list) << std::endl;
-    std::cout << "at end,   Vector = " << v << std::endl;
-    v = {999, 888, 777};
-    std::cout << "on =,     Vector = " << v << std::endl;
-    v.clear();
-    v.add(777);
-    std::initializer_list<int> sevenlist = {777};
-    if (v == sevenlist) {
-        std::cout << "op ==, Vector equal" << std::endl;
-    } else {
-        std::cout << "op ==, Vector not equal" << std::endl;
-    }
+    Vector<int> vec {10, 20, 30};
+    assertCollection("initial", {10, 20, 30}, vec);
+
+    vec += {40, 50};
+    assertCollection("after +=", {10, 20, 30, 40, 50}, vec);
+
+    Vector<int> copy = vec + list;
+    assertCollection("after + (shouldn't modify)", {10, 20, 30, 40, 50}, vec);
+    assertCollection("after + copy", {10, 20, 30, 40, 50, 60, 70}, copy);
 }
 
 TIMED_TEST(VectorTests, randomElementTest_Vector, TEST_TIMEOUT_DEFAULT) {
     Map<std::string, int> counts;
     int RUNS = 200;
 
-    Vector<std::string> v;
-    v += "a", "b", "c", "d", "e", "f";
+    std::initializer_list<std::string> list {"a", "b", "c", "d", "e", "f"};
+
+    Vector<std::string> v(list);
     for (int i = 0; i < RUNS; i++) {
         std::string s = randomElement(v);
-        std::cout << s << " ";
         counts[s]++;
     }
-    std::cout << std::endl;
-    std::cout << "counts:" << counts << std::endl << std::endl;
+
+    for (const std::string& s : list) {
+        assertTrue("must choose " + s + " sometimes", counts[s] > 0);
+    }
 }
 
 TIMED_TEST(VectorTests, shuffleTest, TEST_TIMEOUT_DEFAULT) {

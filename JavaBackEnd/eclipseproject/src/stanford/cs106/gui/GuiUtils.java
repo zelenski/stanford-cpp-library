@@ -132,7 +132,9 @@ public class GuiUtils {
 			button.setMnemonic(mnemonic);
 		}
 		
-		button.addActionListener(listener);
+		if (listener != null) {
+			button.addActionListener(listener);
+		}
 		
 		if (container != null) {
 			container.add(button);

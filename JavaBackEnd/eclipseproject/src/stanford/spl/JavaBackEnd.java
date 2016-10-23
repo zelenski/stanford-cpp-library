@@ -1,3 +1,8 @@
+/*
+ * @version 2016/10/22
+ * - bug fix for shutting down console repeatedly (don't shut down back-end)
+ */
+
 package stanford.spl;
 
 import acm.graphics.GObject;
@@ -672,9 +677,9 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		if (sendEvent) {
 			if (consoleFrame != null) {
 				consoleFrame.setVisible(false);
+				acknowledgeEvent("event:consoleWindowClosed()");
 			}
 			acknowledgeEvent("event:lastWindowGWindow_closed()");
-			acknowledgeEvent("event:consoleWindowClosed()");
 		}
 	}
 	
@@ -695,11 +700,12 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 				acknowledgeEvent("event:windowClosed(\"%s\", %d)", localJBEWindow.getWindowId(), (long) getEventTime());
 				this.windowTable.remove(localJBEWindow.getWindowId());
 			}
-		}
-		this.activeWindowCount -= 1;
-		if (this.activeWindowCount == 0) {
-			acknowledgeEvent("event:lastWindowGWindow_closed()");
-			System.exit(0);
+
+			this.activeWindowCount -= 1;
+			if (this.activeWindowCount == 0) {
+				acknowledgeEvent("event:lastWindowGWindow_closed()");
+				shutdownBackEnd(false);
+			}
 		}
 	}
 

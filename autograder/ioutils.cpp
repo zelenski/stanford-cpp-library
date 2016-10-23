@@ -6,6 +6,8 @@
  * See ioutils.h for documentation of each function.
  * 
  * @author Marty Stepp
+ * @version 2016/10/22
+ * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * @version 2014/10/14
  * @since 2014/03/01
  */
@@ -18,106 +20,107 @@
 #include "error.h"
 #include "private/echoinputstreambuf.h"
 #include "private/limitoutputstreambuf.h"
+#include "private/static.h"
 
 namespace ioutils {
-static std::stringstream bufferOut;
-static std::streambuf* oldOut;
-static std::stringstream bufferErr;
-static std::streambuf* oldErr;
-static std::stringstream bufferIn;
-static std::streambuf* oldIn;
-static bool consoleEchoUserInput = false;
-static int consoleOutputLimit = 0;
+STATIC_VARIABLE_DECLARE_BLANK(std::stringstream, bufferOut)
+STATIC_VARIABLE_DECLARE(std::streambuf*, oldOut, nullptr)
+STATIC_VARIABLE_DECLARE_BLANK(std::stringstream, bufferErr)
+STATIC_VARIABLE_DECLARE(std::streambuf*, oldErr, nullptr)
+STATIC_VARIABLE_DECLARE_BLANK(std::stringstream, bufferIn)
+STATIC_VARIABLE_DECLARE(std::streambuf*, oldIn, nullptr)
+STATIC_VARIABLE_DECLARE(bool, consoleEchoUserInput, false)
+STATIC_VARIABLE_DECLARE(int, consoleOutputLimit, 0)
 
 
 
 void captureStderrBegin() {
-    bufferErr.str(std::string());
+    STATIC_VARIABLE(bufferErr).str(std::string());
     std::streambuf* newBuf;
     int limit = getConsoleOutputLimit();
     if (limit > 0) {
-        newBuf = new stanfordcpplib::LimitOutputStreambuf(bufferErr.rdbuf(), limit);
+        newBuf = new stanfordcpplib::LimitOutputStreambuf(STATIC_VARIABLE(bufferErr).rdbuf(), limit);
     } else {
-        newBuf = bufferErr.rdbuf();
+        newBuf = STATIC_VARIABLE(bufferErr).rdbuf();
     }
-    oldErr = std::cerr.rdbuf(newBuf);
+    STATIC_VARIABLE(oldErr) = std::cerr.rdbuf(newBuf);
 }
 
 std::string captureStderrEnd() {
-    if (oldErr) {
-        std::cerr.rdbuf(oldErr);
-        oldErr = nullptr;
+    if (STATIC_VARIABLE(oldErr)) {
+        std::cerr.rdbuf(STATIC_VARIABLE(oldErr));
+        STATIC_VARIABLE(oldErr) = nullptr;
     }
-    return bufferErr.str();
+    return STATIC_VARIABLE(bufferErr).str();
 }
 
 void captureStdoutBegin(bool alsoStderr) {
-    bufferOut.str(std::string());
+    STATIC_VARIABLE(bufferOut).str(std::string());
     std::streambuf* newBuf;
     int limit = getConsoleOutputLimit();
     if (limit > 0) {
-        newBuf = new stanfordcpplib::LimitOutputStreambuf(bufferOut.rdbuf(), limit);
+        newBuf = new stanfordcpplib::LimitOutputStreambuf(STATIC_VARIABLE(bufferOut).rdbuf(), limit);
     } else {
-        newBuf = bufferOut.rdbuf();
+        newBuf = STATIC_VARIABLE(bufferOut).rdbuf();
     }
     
-    oldOut = std::cout.rdbuf(newBuf);
+    STATIC_VARIABLE(oldOut) = std::cout.rdbuf(newBuf);
     if (alsoStderr) {
-        bufferErr.str(std::string());
-        oldErr = std::cerr.rdbuf(newBuf);
+        STATIC_VARIABLE(bufferErr).str(std::string());
+        STATIC_VARIABLE(oldErr) = std::cerr.rdbuf(newBuf);
     }
 }
 
 std::string captureStdoutEnd() {
-    if (oldOut) {
-        std::cout.rdbuf(oldOut);
-        oldOut = nullptr;
+    if (STATIC_VARIABLE(oldOut)) {
+        std::cout.rdbuf(STATIC_VARIABLE(oldOut));
+        STATIC_VARIABLE(oldOut) = nullptr;
     }
-    if (oldErr) {
-        std::cerr.rdbuf(oldErr);
-        oldErr = nullptr;
+    if (STATIC_VARIABLE(oldErr)) {
+        std::cerr.rdbuf(STATIC_VARIABLE(oldErr));
+        STATIC_VARIABLE(oldErr) = nullptr;
     }
-    return bufferOut.str();
+    return STATIC_VARIABLE(bufferOut).str();
 }
 
 bool getConsoleEchoUserInput() {
-    return consoleEchoUserInput;
+    return STATIC_VARIABLE(consoleEchoUserInput);
 }
 
 int getConsoleOutputLimit() {
-    return consoleOutputLimit;
+    return STATIC_VARIABLE(consoleEchoUserInput);
 }
         
 void redirectStdinBegin(std::string userInput) {
-    bufferIn.str(std::string());
+    STATIC_VARIABLE(bufferIn).str(std::string());
     std::streambuf* newBuf;
     if (getConsoleEchoUserInput()) {
-        newBuf = new stanfordcpplib::EchoInputStreambuf(bufferIn.rdbuf());
+        newBuf = new stanfordcpplib::EchoInputStreambuf(STATIC_VARIABLE(bufferIn).rdbuf());
     } else {
-        newBuf = bufferIn.rdbuf();
+        newBuf = STATIC_VARIABLE(bufferIn).rdbuf();
     }
-    oldIn = std::cin.rdbuf(newBuf);
+    STATIC_VARIABLE(oldIn) = std::cin.rdbuf(newBuf);
     redirectStdinFeedInput(userInput);
 }
 
 void redirectStdinFeedInput(std::string userInput) {
     if (!userInput.empty()) {
-        bufferIn << userInput << std::endl;
+        STATIC_VARIABLE(bufferIn) << userInput << std::endl;
     }
 }
 
 void redirectStdinEnd() {
-    if (oldIn) {
-        std::cin.rdbuf(oldIn);
-        oldIn = nullptr;
+    if (STATIC_VARIABLE(oldIn)) {
+        std::cin.rdbuf(STATIC_VARIABLE(oldIn));
+        STATIC_VARIABLE(oldIn) = nullptr;
     }
 }
 
 void setConsoleEchoUserInput(bool echo) {
-    consoleEchoUserInput = echo;
+    STATIC_VARIABLE(consoleEchoUserInput) = echo;
 }
 
 void setConsoleOutputLimit(int limit) {
-    consoleOutputLimit = limit;
+    STATIC_VARIABLE(consoleEchoUserInput) = limit;
 }
 } // namespace ioutils

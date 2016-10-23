@@ -231,12 +231,12 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 	/* Method: clear() */
 	/**
 	 * Removes all graphical objects from this container.
-	 * Equivalent to removeAll.
+	 * Equivalent to removeAll but also clears pixel data.
 	 * 
 	 * @usage clear();
 	 */
 	public void clear() {
-		removeAll();
+		gc.clear();
 	}
 
 	/* Method: clearCanvas() */

@@ -6,6 +6,10 @@
  * See sylecheck.h for documentation of each function.
  * 
  * @author Marty Stepp
+ * @version 2016/10/22
+ * - removed all static variables (replaced with STATIC_VARIABLE macros)
+ * - changed styleCheck function to return rather than crash on file-not-found
+ * - fixed colons on merged style check category prefixes
  * @version 2016/10/08
  * - added setStyleCheckMergedWithUnitTests;
  *   ability to merge style checks with regular unit tests
@@ -27,12 +31,13 @@
 #include "strlib.h"
 #include "xmlutils.h"
 #include "private/platform.h"
+#include "private/static.h"
 
 namespace stylecheck {
 
-static const int DEFAULT_MIN_COUNT = 0;
-static const int DEFAULT_MAX_COUNT = 999999999;
-static bool styleChecksMerged = false;
+STATIC_CONST_VARIABLE_DECLARE(int, DEFAULT_MIN_COUNT, 0)
+STATIC_CONST_VARIABLE_DECLARE(int, DEFAULT_MAX_COUNT, 999999999)
+STATIC_VARIABLE_DECLARE(bool, styleChecksMerged, false)
 
 static bool processPatternNode(const std::string& codeFileName,
                                rapidxml::xml_node<>* patternNode,
@@ -48,8 +53,8 @@ static bool processPatternNode(const std::string& codeFileName,
     patternRegex = stringReplace(patternRegex, "(:TEMPLATE:)", "(?:&lt;[ \t]{0,255}[a-zA-Z_$][a-zA-Z0-9_$]{0,255}[ \t]{0,255}&gt;)");
 
     std::string patternDescription = xmlutils::getAttribute(patternNode, "description", patternRegex);
-    int patternMinCount = xmlutils::getAttributeInt(patternNode, "mincount", DEFAULT_MIN_COUNT);
-    int patternMaxCount = xmlutils::getAttributeInt(patternNode, "maxcount", DEFAULT_MAX_COUNT);
+    int patternMinCount = xmlutils::getAttributeInt(patternNode, "mincount", STATIC_VARIABLE(DEFAULT_MIN_COUNT));
+    int patternMaxCount = xmlutils::getAttributeInt(patternNode, "maxcount", STATIC_VARIABLE(DEFAULT_MAX_COUNT));
     int patternCount = xmlutils::getAttributeInt(patternNode, "count", -1);
     if (patternCount != -1) {
         patternMinCount = patternMaxCount = patternCount;
@@ -77,9 +82,9 @@ static bool processPatternNode(const std::string& codeFileName,
     std::string rangeStr = "";
     if (patternMinCount == patternMaxCount) {
         rangeStr = "should occur exactly " + integerToString(patternMinCount) + " times";
-    } else if (patternMinCount == 0 && patternMaxCount > 0 && patternMaxCount != DEFAULT_MAX_COUNT) {
+    } else if (patternMinCount == 0 && patternMaxCount > 0 && patternMaxCount != STATIC_VARIABLE(DEFAULT_MAX_COUNT)) {
         rangeStr = "should occur <= " + integerToString(patternMaxCount) + " times";
-    } else if (patternMaxCount == DEFAULT_MAX_COUNT && patternMinCount > 0) {
+    } else if (patternMaxCount == STATIC_VARIABLE(DEFAULT_MAX_COUNT) && patternMinCount > 0) {
         rangeStr = "should occur >= " + integerToString(patternMinCount) + " times";
     } else {
         rangeStr = "should be between " + integerToString(patternMinCount) + "-" + integerToString(patternMaxCount) + " times";
@@ -95,8 +100,8 @@ static bool processPatternNode(const std::string& codeFileName,
     
     std::string prefix = "";
     std::string testName = patternDescription;
-    if (styleChecksMerged) {
-        prefix += "Style Checker: " + codeFileName;
+    if (STATIC_VARIABLE(styleChecksMerged)) {
+        prefix += "Style Checker: " + codeFileName + ": ";
     } else {
         prefix += "[" + codeFileName + "] ";
         testName = prefix + patternDescription;
@@ -108,10 +113,10 @@ static bool processPatternNode(const std::string& codeFileName,
             std::string resultStr = pass ? "pass" : failType;
             stanfordcpplib::getPlatform()->autograderunittest_addTest(
                         testName, prefix + categoryName,
-                        /* styleCheck */ !styleChecksMerged);
+                        /* styleCheck */ !STATIC_VARIABLE(styleChecksMerged));
             stanfordcpplib::getPlatform()->autograderunittest_setTestResult(
                         testName, resultStr,
-                        /* styleCheck */ !styleChecksMerged);
+                        /* styleCheck */ !STATIC_VARIABLE(styleChecksMerged));
             autograder::UnitTestDetails deets;
             deets.message = patternDescription;
             deets.passed = pass;
@@ -126,7 +131,7 @@ static bool processPatternNode(const std::string& codeFileName,
             out << deets;
             stanfordcpplib::getPlatform()->autograderunittest_setTestDetails(
                         testName, out.str(),
-                        /* styleCheck */ !styleChecksMerged);
+                        /* styleCheck */ !STATIC_VARIABLE(styleChecksMerged));
             out.str("");
         } else {
             if (showCounts) {
@@ -144,11 +149,11 @@ static bool processPatternNode(const std::string& codeFileName,
 }
 
 void setStyleCheckMergedWithUnitTests(bool merged) {
-    styleChecksMerged = merged;
+    STATIC_VARIABLE(styleChecksMerged) = merged;
 }
 
 bool isStyleCheckMergedWithUnitTests() {
-    return styleChecksMerged;
+    return STATIC_VARIABLE(styleChecksMerged);
 }
 
 /*
@@ -157,9 +162,20 @@ bool isStyleCheckMergedWithUnitTests() {
  *      ...
  * </stylecheck>
  */
-void styleCheck(std::string codeFileName, std::string styleXmlFileName, bool printWarning) {
+void styleCheck(const std::string& codeFileName, const std::string& styleXmlFileName, bool printWarning) {
+    if (!fileExists(codeFileName)) {
+        std::cerr << "Warning: file not found: " << codeFileName << std::endl;
+        std::cerr << "Cannot perform style check. Aborting. " << std::endl;
+        return;
+    }
+
     std::string codeFileText = readEntireFile(codeFileName);
     rapidxml::xml_node<>* styleCheckNode = xmlutils::openXmlDocument(styleXmlFileName, "stylecheck");
+    if (!styleCheckNode) {
+        // file was not found or could not be parsed
+        return;
+    }
+
     bool omitOnPass = xmlutils::getAttributeBool(styleCheckNode, "omitonpass", true);
 
     std::ostringstream out;
@@ -177,7 +193,7 @@ void styleCheck(std::string codeFileName, std::string styleXmlFileName, bool pri
             out << std::endl;
         }
         if (autograder::isGraphicalUI()) {
-            if (styleChecksMerged) {
+            if (STATIC_VARIABLE(styleChecksMerged)) {
                 // stanfordcpplib::getPlatform()->autograderunittest_setWindowDescriptionText(out.str(), /* styleCheck */ true);
             } else {
                 stanfordcpplib::getPlatform()->autograderunittest_clearTests(/* styleCheck */ true);
@@ -220,7 +236,7 @@ void styleCheck(std::string codeFileName, std::string styleXmlFileName, bool pri
             if (processPatternNode(codeFileName, patternNode, categoryName, codeFileText, omitOnPass)) {
                 passCount++;
             }
-            if (!styleChecksMerged) {
+            if (!STATIC_VARIABLE(styleChecksMerged)) {
                 autograder::setTestCounts(passCount, testCount, /* isStyleCheck */ true);
             }
         }

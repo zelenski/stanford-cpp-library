@@ -22,6 +22,7 @@
 
 #include "gtest.h"
 #include "autograder.h"
+#include "diff.h"
 
 #define TEST_FAIL_PREFIX std::string("Test case failed: ")
 #define FAIL_PREFIX      std::string("Assertion failed: ")
@@ -29,7 +30,16 @@
 #define assertDiff(msg, a, b) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_DIFF, \
-        (msg), (a), (b), "diff", ((a) == (b)))); \
+        (msg), (a), (b), "diff", \
+        diff::DIFF_DEFAULT_FLAGS, \
+        diff::diffPass((a), (b))));
+
+#define assertDiffFlags(msg, a, b, flags) \
+    autograder::setFailDetails(autograder::UnitTestDetails( \
+        autograder::UnitTestType::TEST_ASSERT_DIFF, \
+        (msg), (a), (b), "diff", \
+        flags, \
+        diff::diffPass((a), (b), (flags)))); \
     EXPECT_EQ((a), (b))
 
 #define assertDiffPass(msg, a, b) \
@@ -91,6 +101,12 @@
     autograder::setFailDetails(autograder::UnitTestDetails( \
         autograder::UnitTestType::TEST_ASSERT_EQUALS, \
         (msg), boolToString((a)), boolToString((b)), "bool", ((a) == (b)))); \
+    EXPECT_EQ((a), (b))
+
+#define assertEqualsCollection(msg, a, b) \
+    autograder::setFailDetails(autograder::UnitTestDetails( \
+        autograder::UnitTestType::TEST_ASSERT_EQUALS, \
+        (msg), ((a).toString()), ((b).toString()), "object", ((a) == (b)))); \
     EXPECT_EQ((a), (b))
 
 #define assertEqualsDouble(msg, a, b) \

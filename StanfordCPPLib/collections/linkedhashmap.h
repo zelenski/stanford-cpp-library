@@ -523,7 +523,7 @@ void LinkedHashMap<KeyType, ValueType>::put(const KeyType& key, const ValueType&
 
 template <typename KeyType, typename ValueType>
 LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::putAll(const LinkedHashMap& map2) {
-    for (KeyType key : map2) {
+    for (const KeyType& key : map2) {
         put(key, map2.get(key));
     }
     return *this;
@@ -532,7 +532,7 @@ LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::putAll(con
 template <typename KeyType, typename ValueType>
 LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::putAll(
         std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    for (std::pair<KeyType, ValueType> pair : list) {
+    for (const std::pair<KeyType, ValueType>& pair : list) {
         put(pair.first, pair.second);
     }
     return *this;
@@ -551,7 +551,7 @@ void LinkedHashMap<KeyType, ValueType>::remove(const KeyType& key) {
 
 template <typename KeyType, typename ValueType>
 LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::removeAll(const LinkedHashMap& map2) {
-    for (KeyType key : map2) {
+    for (const KeyType& key : map2) {
         if (containsKey(key) && get(key) == map2.get(key)) {
             remove(key);
         }
@@ -562,7 +562,7 @@ LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::removeAll(
 template <typename KeyType, typename ValueType>
 LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::removeAll(
         std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    for (std::pair<KeyType, ValueType> pair : list) {
+    for (const std::pair<KeyType, ValueType>& pair : list) {
         if (containsKey(pair.first) && get(pair.first) == pair.second) {
             remove(pair.first);
         }
@@ -573,12 +573,12 @@ LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::removeAll(
 template <typename KeyType, typename ValueType>
 LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::retainAll(const LinkedHashMap& map2) {
     Vector<KeyType> toRemove;
-    for (KeyType key : *this) {
+    for (const KeyType& key : *this) {
         if (!map2.containsKey(key) || get(key) != map2.get(key)) {
             toRemove.add(key);
         }
     }
-    for (KeyType key : toRemove) {
+    for (const KeyType& key : toRemove) {
         remove(key);
     }
     return *this;
@@ -607,7 +607,7 @@ std::string LinkedHashMap<KeyType, ValueType>::toString() const {
 template <typename KeyType, typename ValueType>
 Vector<ValueType> LinkedHashMap<KeyType, ValueType>::values() const {
     Vector<ValueType> values;
-    for (KeyType key : *this) {
+    for (const KeyType& key : *this) {
         values.add(get(key));
     }
     return values;
@@ -700,24 +700,40 @@ bool LinkedHashMap<KeyType, ValueType>::operator !=(const LinkedHashMap& map2) c
     return !equals(map2);
 }
 
+// Implementation note:
+// The definitions of <, <=, >, and >= are a bit unintuitive here.
+// Because Maps are considered to be "equal" if they have the same key/value pairs,
+// regardless of order, the equals() method and == / != operators ignore order.
+//
+// Similarly, if you ask whether a map is <= or >= to another, this includes
+// the notion of equality, so it should return true if the maps contain the same
+// pairs, regardless of order.
+//
+// If you ask whether a map is < or > to another, it is assumed that you don't
+// want this to return true if they are "equal", so we must check for non-equality
+// before checking the K/V pairs pairwise.
+//
+// This issue is unique to LinkedHashMap because Map sorts into a predictable sorted order
+// and HashMap opts not to implement <, <=, >, or >= due to its unpredictable hash order.
+
 template <typename KeyType, typename ValueType>
 bool LinkedHashMap<KeyType, ValueType>::operator <(const LinkedHashMap& map2) const {
-    return stanfordcpplib::collections::compareMaps(*this, map2) < 0;
+    return !equals(map2) && stanfordcpplib::collections::compareMaps(*this, map2) < 0;
 }
 
 template <typename KeyType, typename ValueType>
 bool LinkedHashMap<KeyType, ValueType>::operator <=(const LinkedHashMap& map2) const {
-    return stanfordcpplib::collections::compareMaps(*this, map2) <= 0;
+    return equals(map2) || stanfordcpplib::collections::compareMaps(*this, map2) <= 0;
 }
 
 template <typename KeyType, typename ValueType>
 bool LinkedHashMap<KeyType, ValueType>::operator >(const LinkedHashMap& map2) const {
-    return stanfordcpplib::collections::compareMaps(*this, map2) > 0;
+    return !equals(map2) && stanfordcpplib::collections::compareMaps(*this, map2) > 0;
 }
 
 template <typename KeyType, typename ValueType>
 bool LinkedHashMap<KeyType, ValueType>::operator >=(const LinkedHashMap& map2) const {
-    return stanfordcpplib::collections::compareMaps(*this, map2) >= 0;
+    return equals(map2) || stanfordcpplib::collections::compareMaps(*this, map2) >= 0;
 }
 
 /*

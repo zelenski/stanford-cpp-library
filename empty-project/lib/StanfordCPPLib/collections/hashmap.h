@@ -715,7 +715,7 @@ bool HashMap<KeyType, ValueType>::isEmpty() const {
 template <typename KeyType, typename ValueType>
 Vector<KeyType> HashMap<KeyType, ValueType>::keys() const {
     Vector<KeyType> keyset;
-    for (KeyType key : *this) {
+    for (const KeyType& key : *this) {
         keyset.add(key);
     }
     return keyset;
@@ -757,7 +757,7 @@ void HashMap<KeyType, ValueType>::put(const KeyType& key, const ValueType& value
 
 template <typename KeyType, typename ValueType>
 HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::putAll(const HashMap& map2) {
-    for (KeyType key : map2) {
+    for (const KeyType& key : map2) {
         put(key, map2.get(key));
     }
     return *this;
@@ -766,7 +766,7 @@ HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::putAll(const HashMap& 
 template <typename KeyType, typename ValueType>
 HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::putAll(
         std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    for (std::pair<KeyType, ValueType> pair : list) {
+    for (const std::pair<KeyType, ValueType>& pair : list) {
         put(pair.first, pair.second);
     }
     return *this;
@@ -790,7 +790,7 @@ void HashMap<KeyType, ValueType>::remove(const KeyType& key) {
 
 template <typename KeyType, typename ValueType>
 HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::removeAll(const HashMap& map2) {
-    for (KeyType key : map2) {
+    for (const KeyType& key : map2) {
         if (containsKey(key) && get(key) == map2.get(key)) {
             remove(key);
         }
@@ -801,7 +801,7 @@ HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::removeAll(const HashMa
 template <typename KeyType, typename ValueType>
 HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::removeAll(
         std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    for (std::pair<KeyType, ValueType> pair : list) {
+    for (const std::pair<KeyType, ValueType>& pair : list) {
         if (containsKey(pair.first) && get(pair.first) == pair.second) {
             remove(pair.first);
         }
@@ -812,12 +812,12 @@ HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::removeAll(
 template <typename KeyType, typename ValueType>
 HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::retainAll(const HashMap& map2) {
     Vector<KeyType> toRemove;
-    for (KeyType key : *this) {
+    for (const KeyType& key : *this) {
         if (!map2.containsKey(key) || get(key) != map2.get(key)) {
             toRemove.add(key);
         }
     }
-    for (KeyType key : toRemove) {
+    for (const KeyType& key : toRemove) {
         remove(key);
     }
     return *this;
@@ -846,7 +846,7 @@ std::string HashMap<KeyType, ValueType>::toString() const {
 template <typename KeyType, typename ValueType>
 Vector<ValueType> HashMap<KeyType, ValueType>::values() const {
     Vector<ValueType> values;
-    for (KeyType key : *this) {
+    for (const KeyType& key : *this) {
         values.add(this->get(key));
     }
     return values;

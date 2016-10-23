@@ -5,6 +5,8 @@
  * with a timeout, possibly in a separate thread depending on the platform.
  *
  * @author Marty Stepp
+ * @version 2016/10/22
+ * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * @version 2015/10/01
  * - fixed Mac OS X ETIMEDOUT errno.h issue; should reduce hanging
  * @version 2014/11/29
@@ -17,9 +19,10 @@
 #include "autogradertest.h"
 #include "exceptions.h"
 #include "private/platform.h"
+#include "private/static.h"
 
-static const std::string TIMEOUT_ERROR_MESSAGE = "test timed out! possible infinite loop";
-static const std::string EXCEPTION_ERROR_MESSAGE = "test threw an exception!";
+STATIC_CONST_VARIABLE_DECLARE(std::string, TIMEOUT_ERROR_MESSAGE, "test timed out! possible infinite loop")
+STATIC_CONST_VARIABLE_DECLARE(std::string, EXCEPTION_ERROR_MESSAGE, "test threw an exception!")
 
 #ifdef _WIN32
 #include <windows.h>
@@ -59,8 +62,8 @@ void runTestWithTimeout(autograder::AutograderTest* test) {
             TerminateThread(hThread, 1);
             autograder::setFailDetails(autograder::UnitTestDetails(
                 autograder::UnitTestType::TEST_FAIL,
-                TIMEOUT_ERROR_MESSAGE));
-            error(TIMEOUT_ERROR_MESSAGE);
+                STATIC_VARIABLE(TIMEOUT_ERROR_MESSAGE)));
+            error(STATIC_VARIABLE(TIMEOUT_ERROR_MESSAGE));
         }
     } else {
         // no timeout specified; just run the test without a thread
@@ -208,8 +211,8 @@ void runTestWithTimeout(autograder::AutograderTest* test) {
             pthread_cancel(thread);
             autograder::setFailDetails(autograder::UnitTestDetails(
                 autograder::UnitTestType::TEST_FAIL,
-                TIMEOUT_ERROR_MESSAGE));
-            error(TIMEOUT_ERROR_MESSAGE);
+                STATIC_VARIABLE(TIMEOUT_ERROR_MESSAGE)));
+            error(STATIC_VARIABLE(TIMEOUT_ERROR_MESSAGE));
         } else if (joinResult != 0) {
             // something went wrong, e.g. exception thrown
         }

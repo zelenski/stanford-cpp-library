@@ -8,6 +8,7 @@
 #include "hashset.h"
 #include "queue.h"
 #include "assertions.h"
+#include "collection-test-common.h"
 #include "gtest-marty.h"
 #include <initializer_list>
 #include <iostream>
@@ -16,32 +17,20 @@
 
 TEST_CATEGORY(SetTests, "Set tests");
 
-TIMED_TEST(SetTests, randomElementTest_Set, TEST_TIMEOUT_DEFAULT) {
-    Map<std::string, int> counts;
-    int RUNS = 200;
-    
-    std::cout << "Set: ";
-    Set<std::string> set;
-    set += "a", "b", "c", "d", "e", "f";
-    for (int i = 0; i < RUNS; i++) {
-        std::string s = randomElement(set);
-        std::cout << s << " ";
-        counts[s]++;
-    }
-}
-
 TIMED_TEST(SetTests, compareTest_Set, TEST_TIMEOUT_DEFAULT) {
-    Set<int> set1;
-    set1 += 7, 5, 1, 2, 8;
-    Set<int> set2;
-    set2 += 1, 2, 3, 4;
-    Set<int> set3;
+    Set<int> set1 {7, 5, 1, 2, 8};
+    Set<int> set2 {1, 2, 3, 4};
+    Set<int> set3 {2, 1, 3, 4};
+    Set<int> set4;
     compareTestHelper(set1, set2, "Set", /* compareTo */  1);
     compareTestHelper(set2, set1, "Set", /* compareTo */ -1);
     compareTestHelper(set1, set3, "Set", /* compareTo */  1);
-    compareTestHelper(set2, set3, "Set", /* compareTo */  1);
+    compareTestHelper(set2, set3, "Set", /* compareTo */  0);
+    compareTestHelper(set2, set4, "Set", /* compareTo */  1);
+    compareTestHelper(set4, set1, "Set", /* compareTo */ -1);
 
-    Set<Set<int> > sset {set1, set2, set3};
+    // note: shouldn't add set3 because it is 'equal' to set2 (duplicate)
+    Set<Set<int> > sset {set1, set2, set3, set4};
     assertEqualsString("sset", "{{}, {1, 2, 3, 4}, {1, 2, 5, 7, 8}}", sset.toString());
 }
 
@@ -56,12 +45,17 @@ TIMED_TEST(SetTests, forEachTest_Set, TEST_TIMEOUT_DEFAULT) {
 }
 
 TIMED_TEST(SetTests, hashCodeTest_Set, TEST_TIMEOUT_DEFAULT) {
-    HashSet<Set<int> > hashset;
     Set<int> set;
     set.add(69);
     set.add(42);
-    hashset.add(set);
-    std::cout << "hashset of set: " << hashset << std::endl;
+    assertEqualsInt("hashcode of self Set", hashCode(set), hashCode(set));
+
+    Set<int> copy = set;
+    assertEqualsInt("hashcode of copy Set", hashCode(set), hashCode(copy));
+
+    Set<int> empty;
+    HashSet<Set<int> > hashset {set, copy, empty, empty};
+    assertEqualsInt("hashset of Set size", 2, hashset.size());
 }
 
 TIMED_TEST(SetTests, initializerListTest_Set, TEST_TIMEOUT_DEFAULT) {
@@ -69,15 +63,42 @@ TIMED_TEST(SetTests, initializerListTest_Set, TEST_TIMEOUT_DEFAULT) {
     auto list2 = {20, 50};
 
     Set<int> set {10, 20, 30};
-    std::cout << "init list Set = " << set << std::endl;
+    assertCollection("initial", {10, 20, 30}, set);
+
     set += {40, 50};
-    std::cout << "after +=, Set = " << set << std::endl;
-    std::cout << "Set + {} list = " << (set + list) << std::endl;
-    std::cout << "Set - {} list = " << (set - list2) << std::endl;
-    std::cout << "Set * {} list = " << (set * list2) << std::endl;
+    assertCollection("after +=", {10, 20, 30, 40, 50}, set);
+
+    Set<int> copy = set + list;
+    assertCollection("after + (shouldn't modify)", {10, 20, 30, 40, 50}, set);
+    assertCollection("after + copy", {10, 20, 30, 40, 50, 60, 70}, copy);
+
+    copy = set - list2;
+    assertCollection("after - (shouldn't modify)", {10, 20, 30, 40, 50}, set);
+    assertCollection("after - copy", {10, 30, 40}, copy);
+
+    copy = set * list2;
+    assertCollection("after * (shouldn't modify)", {10, 20, 30, 40, 50}, set);
+    assertCollection("after * copy", {20, 50}, copy);
+
     set -= {20, 50};
-    std::cout << "Set -={} list = " << set << std::endl;
+    assertCollection("after -=", {10, 30, 40}, set);
     set *= {0, 10, 40, 99};
-    std::cout << "Set *={} list = " << set << std::endl;
-    std::cout << "at end,   Set = " << set << std::endl;
+    assertCollection("after *=", {10, 40}, set);
+}
+
+TIMED_TEST(SetTests, randomElementTest_Set, TEST_TIMEOUT_DEFAULT) {
+    Map<std::string, int> counts;
+    int RUNS = 200;
+
+    std::initializer_list<std::string> list {"a", "b", "c", "d", "e", "f"};
+
+    Set<std::string> hset(list);
+    for (int i = 0; i < RUNS; i++) {
+        std::string s = randomElement(hset);
+        counts[s]++;
+    }
+
+    for (const std::string& s : list) {
+        assertTrue("must choose " + s + " sometimes", counts[s] > 0);
+    }
 }

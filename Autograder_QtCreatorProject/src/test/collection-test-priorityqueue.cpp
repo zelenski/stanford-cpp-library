@@ -8,6 +8,7 @@
 #include "hashset.h"
 #include "queue.h"
 #include "assertions.h"
+#include "collection-test-common.h"
 #include "gtest-marty.h"
 #include <initializer_list>
 #include <iostream>
@@ -24,6 +25,16 @@ TIMED_TEST(PriorityQueueTests, forEachTest_PriorityQueue, TEST_TIMEOUT_DEFAULT) 
     pq.add("ddd", 6);
     pq.add("e", 5);
     pq.add("ffff", 2);
+    Queue<std::string> expected {"c", "ffff", "bb", "a", "e", "ddd"};
+    Queue<double> expectedPriority {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
+    while (!pq.isEmpty()) {
+        double expPri = expectedPriority.dequeue();
+        std::string exp = expected.dequeue();
+        double actPri = pq.peekPriority();
+        std::string act = pq.dequeue();
+        assertEqualsDouble("foreach PriorityQueue", expPri, actPri);
+        assertEqualsString("foreach PriorityQueue", exp, act);
+    }
 }
 
 TIMED_TEST(PriorityQueueTests, hashCodeTest_PriorityQueue, TEST_TIMEOUT_DEFAULT) {
@@ -34,22 +45,27 @@ TIMED_TEST(PriorityQueueTests, hashCodeTest_PriorityQueue, TEST_TIMEOUT_DEFAULT)
     pq.add("ddd", 6);
     pq.add("e", 5);
     pq.add("ffff", 2);
-    PriorityQueue<std::string> pq2;
-    HashSet<PriorityQueue<std::string> > hashpq;
-    hashpq.add(pq);
-    hashpq.add(pq2);
+    assertEqualsInt("hashcode of self PriorityQueue", hashCode(pq), hashCode(pq));
+
+    PriorityQueue<std::string> copy = pq;
+    assertEqualsInt("hashcode of copy PriorityQueue", hashCode(pq), hashCode(copy));
+
+    PriorityQueue<std::string> empty;
+
+    HashSet<PriorityQueue<std::string> > hashpq {pq, copy, empty, empty};
+    assertEqualsInt("hashset of PriorityQueue size", 2, hashpq.size());
 }
 
 TIMED_TEST(PriorityQueueTests, initializerListTest_PriorityQueue, TEST_TIMEOUT_DEFAULT) {
-    std::initializer_list<std::string> lexlist = {"sixty", "seventy"};
-    std::initializer_list<std::string> lexlist2 = {"twenty", "fifty"};
-    std::initializer_list<std::pair<std::string, int> > pairlist = {{"k", 60}, {"t", 70}};
-    std::initializer_list<std::pair<std::string, int> > pairlist2 = {{"b", 20}, {"e", 50}};
-
-    PriorityQueue<std::string> pqueue {{40.0, "Marty"}, {20.0, "Eric"}, {30.0, "Mehran"}};
-    std::cout << "init list PQueue = " << pqueue << std::endl;
-    while (!pqueue.isEmpty()) {
-        std::cout << "  " << pqueue.peekPriority() << " " << pqueue.peek() << std::endl;
-        pqueue.dequeue();
+    PriorityQueue<std::string> pq {{40.0, "Marty"}, {20.0, "Eric"}, {30.0, "Mehran"}};
+    Queue<std::string> expected {"Eric", "Mehran", "Marty"};
+    Queue<double> expectedPriority {20.0, 30.0, 40.0};
+    while (!pq.isEmpty()) {
+        double expPri = expectedPriority.dequeue();
+        std::string exp = expected.dequeue();
+        double actPri = pq.peekPriority();
+        std::string act = pq.dequeue();
+        assertEqualsDouble("initializer list PriorityQueue", expPri, actPri);
+        assertEqualsString("initializer list PriorityQueue", exp, act);
     }
 }

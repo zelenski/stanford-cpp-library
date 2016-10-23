@@ -7,7 +7,9 @@
 #include "hashset.h"
 #include "map.h"
 #include "queue.h"
+#include "stl.h"
 #include "assertions.h"
+#include "collection-test-common.h"
 #include "gtest-marty.h"
 #include <initializer_list>
 #include <iostream>
@@ -17,9 +19,7 @@
 TEST_CATEGORY(HashSetTests, "HashSet tests");
 
 TIMED_TEST(HashSetTests, forEachTest_HashSet, TEST_TIMEOUT_DEFAULT) {
-    HashSet<int> hset;
-    hset += 40, 20, 10, 30;
-
+    HashSet<int> hset {40, 20, 10, 30};
     Set<int> expected {10, 20, 30, 40};
     for (int n : hset) {
         assertTrue("HashSet must contain " + integerToString(n), expected.contains(n));
@@ -45,48 +45,42 @@ TIMED_TEST(HashSetTests, initializerListTest_HashSet, TEST_TIMEOUT_DEFAULT) {
     auto list2 = {20, 50};
 
     HashSet<int> hset {10, 20, 30};
-    Vector<int> expected {10, 20, 30};
-    for (int n : expected) {
-        assertTrue("init list HashSet must contain " + integerToString(n), hset.contains(n));
-    }
-    assertEqualsInt("after +=, HashSet size", 3, hset.size());
+    assertCollection("initial", {10, 20, 30}, hset);
 
     hset += {40, 50};
-    expected = {10, 20, 30, 40, 50};
-    for (int n : expected) {
-        assertTrue("after +=, HashSet must contain " + integerToString(n), hset.contains(n));
-    }
-    assertEqualsInt("after +=, HashSet size", 5, hset.size());
+    assertCollection("after +=", {10, 20, 30, 40, 50}, hset);
 
     HashSet<int> copy = hset + list;
-    assertEqualsInt("after +, HashSet size", 5, hset.size());
-    std::cout << "HashSet + {} list = " << (hset + list) << std::endl;
-    std::cout << "HashSet - {} list = " << (hset - list2) << std::endl;
-    std::cout << "HashSet * {} list = " << (hset * list2) << std::endl;
+    assertCollection("after + (shouldn't modify)", {10, 20, 30, 40, 50}, hset);
+    assertCollection("after + copy", {10, 20, 30, 40, 50, 60, 70}, copy);
+
+    copy = hset - list2;
+    assertCollection("after - (shouldn't modify)", {10, 20, 30, 40, 50}, hset);
+    assertCollection("after - copy", {10, 30, 40}, copy);
+
+    copy = hset * list2;
+    assertCollection("after * (shouldn't modify)", {10, 20, 30, 40, 50}, hset);
+    assertCollection("after * copy", {20, 50}, copy);
+
     hset -= {20, 50};
-    std::cout << "HashSet -={} list = " << hset << std::endl;
+    assertCollection("after -=", {10, 30, 40}, hset);
     hset *= {0, 10, 40, 99};
-    std::cout << "HashSet *={} list = " << hset << std::endl;
-    std::cout << "at end,   HashSet = " << hset << std::endl;
+    assertCollection("after *=", {10, 40}, hset);
 }
 
-TIMED_TEST(HashSetTests, randomKeyTest_HashSet, TEST_TIMEOUT_DEFAULT) {
+TIMED_TEST(HashSetTests, randomElementTest_HashSet, TEST_TIMEOUT_DEFAULT) {
     Map<std::string, int> counts;
     int RUNS = 200;
 
-    std::cout << "HashSet: ";
-    HashSet<std::string> hset;
-    hset += "a", "b", "c", "d", "e", "f";
+    std::initializer_list<std::string> list {"a", "b", "c", "d", "e", "f"};
+
+    HashSet<std::string> hset(list);
     for (int i = 0; i < RUNS; i++) {
         std::string s = randomElement(hset);
-        std::cout << s << " ";
         counts[s]++;
     }
+
+    for (const std::string& s : list) {
+        assertTrue("must choose " + s + " sometimes", counts[s] > 0);
+    }
 }
-
-
-
-
-
-
-

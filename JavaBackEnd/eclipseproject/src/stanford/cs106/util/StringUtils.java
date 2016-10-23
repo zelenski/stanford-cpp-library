@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp
+ * @version 2016/10/21
+ * - added stringIsInteger/Double/Real/Boolean
  * @version 2015/05/28
  * - added truncate() with suffix string parameter
  */
@@ -453,6 +455,36 @@ public class StringUtils {
 		char[] a = s.toCharArray();
 		Arrays.sort(a);
 		return new String(a).intern();
+	}
+	
+	public static boolean stringIsBoolean(String text) {
+		return text != null && (text.equals("true") || text.equals("false"));
+	}
+	
+	public static boolean stringIsDouble(String text) {
+		try {
+			Double.parseDouble(text);
+			return true;
+		} catch (NumberFormatException nfe) {
+			return false;
+		}
+	}
+	
+	public static boolean stringIsInteger(String text) {
+		return stringIsInteger(text, /* radix */ 10);
+	}
+	
+	public static boolean stringIsInteger(String text, int radix) {
+		try {
+			Integer.parseInt(text, radix);
+			return true;
+		} catch (NumberFormatException nfe) {
+			return false;
+		}
+	}
+	
+	public static boolean stringIsReal(String text) {
+		return stringIsDouble(text);
 	}
 	
 	public static String toAsciiDump(String s) {

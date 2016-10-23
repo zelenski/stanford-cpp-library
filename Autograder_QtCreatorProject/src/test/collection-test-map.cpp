@@ -7,7 +7,9 @@
 #include "hashcode.h"
 #include "hashset.h"
 #include "queue.h"
+#include "set.h"
 #include "assertions.h"
+#include "collection-test-common.h"
 #include "gtest-marty.h"
 #include <initializer_list>
 #include <iostream>
@@ -22,45 +24,88 @@ TIMED_TEST(MapTests, compareTest_Map, TEST_TIMEOUT_DEFAULT) {
 
 TIMED_TEST(MapTests, forEachTest_Map, TEST_TIMEOUT_DEFAULT) {
     Map<std::string, int> map;
-    map["a"] = 1;
-    map["bbbb"] = 2;
-    map["zz"] = 26;
-    std::cout << "map: " << map << std::endl;
-    for (std::string k : map) {
-        std::cout << k << " => " << map[k] << std::endl;
+    map.put("zz", 26);
+    map.put("a", 1);
+    map.put("ss", 97);
+    map.put("bbbb", 2);
+    map.put("E", 4);
+    map.put("yZ44", 33);
+    Set<std::string> expected {"zz", "a", "ss", "bbbb", "E", "yZ44"};
+    for (const std::string& key : map) {
+        assertTrue("foreach Map contains " + key, expected.contains(key));
+    }
+    map.remove("ss");
+    map.remove("zz");
+    map.remove("yZ44");
+    map.remove("notfound");
+    expected = {"a", "bbbb", "E"};
+    for (const std::string& key : map) {
+        assertTrue("foreach Map contains " + key, expected.contains(key));
     }
 }
 
 TIMED_TEST(MapTests, hashCodeTest_Map, TEST_TIMEOUT_DEFAULT) {
-    HashSet<Map<int, int> > hashmap;
     Map<int, int> map;
     map.add(69, 96);
     map.add(42, 24);
-    hashmap.add(map);
-    std::cout << "hashset of map: " << hashmap << std::endl;
+    assertEqualsInt("hashcode of self Map", hashCode(map), hashCode(map));
+
+    Map<int, int> copy = map;
+    assertEqualsInt("hashcode of copy Map", hashCode(map), hashCode(copy));
+
+    Map<int, int> empty;
+
+    HashSet<Map<int, int> > hashmap {map, copy, empty, empty};
+    assertEqualsInt("hashset of Map size", 2, hashmap.size());
 }
 
 TIMED_TEST(MapTests, initializerListTest_Map, TEST_TIMEOUT_DEFAULT) {
     std::initializer_list<std::pair<std::string, int> > pairlist = {{"k", 60}, {"t", 70}};
     std::initializer_list<std::pair<std::string, int> > pairlist2 = {{"b", 20}, {"e", 50}};
+    std::initializer_list<std::pair<std::string, int> > expected;
 
     Map<std::string, int> map {{"a", 10}, {"b", 20}, {"c", 30}};
-    std::cout << "init list Map = " << map << std::endl;
+    assertEqualsInt("init list Map get a", 10, map.get("a"));
+    assertEqualsInt("init list Map get b", 20, map.get("b"));
+    assertEqualsInt("init list Map get c", 30, map.get("c"));
+    assertEqualsInt("init list Map size", 3, map.size());
+
     map += {{"d", 40}, {"e", 50}};
-    std::cout << "after +=, Map = " << map << std::endl;
-    std::cout << "Map + {} list = " << (map + pairlist) << std::endl;
-    std::cout << "Map - {} list = " << (map - pairlist2) << std::endl;
-    std::cout << "Map * {} list = " << (map * pairlist2) << std::endl;
-    map -= {{"b", 20}, {"e", 50}, {"a", 999}};
-    std::cout << "Map -={} list = " << map << std::endl;
-    map *= {{"z", 0}, {"a", 10}, {"d", 40}, {"x", 99}};
-    std::cout << "Map *={} list = " << map << std::endl;
-    std::cout << "at end,   Map = " << map << std::endl;
+    expected = {{"a", 10}, {"b", 20}, {"c", 30}, {"d", 40}, {"e", 50}};
+    assertMap("after +=", expected, map);
+
+    Map<std::string, int> copy = map + pairlist;
+    expected = {{"a", 10}, {"b", 20}, {"c", 30}, {"d", 40}, {"e", 50}};
+    assertMap("after + (shouldn't modify)", expected, map);
+    expected = {{"a", 10}, {"b", 20}, {"c", 30}, {"d", 40}, {"e", 50}, {"k", 60}, {"t", 70}};
+    assertMap("after + copy", expected, copy);
+
+    copy = map - pairlist2;
+    expected = {{"a", 10}, {"b", 20}, {"c", 30}, {"d", 40}, {"e", 50}};
+    assertMap("after - (shouldn't modify)", expected, map);
+    expected = {{"a", 10}, {"c", 30}, {"d", 40}};
+    assertMap("after - copy", expected, copy);
+
+    copy = map * pairlist2;
+    expected = {{"a", 10}, {"b", 20}, {"c", 30}, {"d", 40}, {"e", 50}};
+    assertMap("after * (shouldn't modify)", expected, map);
+    expected = {{"b", 20}, {"e", 50}};
+    assertMap("after * copy", expected, copy);
+
+    map -= {{"d", 40}, {"e", 50}};
+    expected = {{"a", 10}, {"b", 20}, {"c", 30}};
+    assertMap("after -=", expected, map);
+
+    map *= pairlist2;
+    expected = {{"b", 20}};
+    assertMap("after *=", expected, map);
 }
 
 TIMED_TEST(MapTests, randomKeyTest_Map, TEST_TIMEOUT_DEFAULT) {
     Map<std::string, int> counts;
     int RUNS = 200;
+
+    std::initializer_list<std::string> list {"a", "b", "c", "d", "e", "f"};
 
     Map<std::string, int> map;
     map["a"] = 50;
@@ -71,7 +116,17 @@ TIMED_TEST(MapTests, randomKeyTest_Map, TEST_TIMEOUT_DEFAULT) {
     map["f"] =  0;
     for (int i = 0; i < RUNS; i++) {
         std::string s = randomKey(map);
-        std::cout << s << " ";
         counts[s]++;
     }
+
+    for (const std::string& s : list) {
+        assertTrue("must choose " + s + " sometimes", counts[s] > 0);
+    }
+}
+
+TIMED_TEST(MapTests, streamExtractTest_Map, TEST_TIMEOUT_DEFAULT) {
+    std::istringstream stream("{2:20, 1:10, 4:40, 3:30}");
+    Map<int, int> map;
+    stream >> map;
+    assertEqualsString("map", "{1:10, 2:20, 3:30, 4:40}", map.toString());
 }

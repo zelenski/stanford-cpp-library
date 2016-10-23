@@ -5,7 +5,10 @@
  * operation to compare two strings and output the differences.
  * 
  * @author Marty Stepp
+ * @version 2016/10/22
+ * - added diffPass (for autograder assertDiff)
  * @version 2014/10/14
+ * - initial version
  * @since 2014/10/14
  */
 
@@ -18,6 +21,7 @@ namespace diff {
 const std::string NO_DIFFS_MESSAGE = "No differences found";
 
 enum DiffFlags {
+    IGNORE_NONE         = 0x0,
     IGNORE_LEADING      = 0x1,
     IGNORE_TRAILING     = 0x2,
     IGNORE_WHITESPACE   = 0x4,
@@ -33,9 +37,11 @@ enum DiffFlags {
     // IGNORE_PRINTF       = 0x800    // not implemented
 };
 
-std::string diff(std::string s1, std::string s2);
-std::string diff(std::string s1, std::string s2, int flags);
-bool isDiffMatch(std::string diffs);
+const int DIFF_DEFAULT_FLAGS = IGNORE_CASE | IGNORE_TRAILING | IGNORE_WHITESPACE;
+
+std::string diff(std::string s1, std::string s2, int flags = DIFF_DEFAULT_FLAGS);
+bool diffPass(const std::string& s1, const std::string& s2, int flags = DIFF_DEFAULT_FLAGS);
+bool isDiffMatch(const std::string& diffs);
 } // namespace diff
 
 #endif // _diff_h

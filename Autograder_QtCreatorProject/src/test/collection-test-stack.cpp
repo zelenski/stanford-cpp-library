@@ -8,6 +8,7 @@
 #include "hashset.h"
 #include "queue.h"
 #include "assertions.h"
+#include "collection-test-common.h"
 #include "gtest-marty.h"
 #include <initializer_list>
 #include <iostream>
@@ -37,15 +38,20 @@ TIMED_TEST(StackTests, compareTest_Stack, TEST_TIMEOUT_DEFAULT) {
 }
 
 TIMED_TEST(StackTests, hashCodeTest_Stack, TEST_TIMEOUT_DEFAULT) {
-    HashSet<Stack<int> > hashstack;
-    Stack<int> s;
-    s.add(69);
-    s.add(42);
-    hashstack.add(s);
-    std::cout << "hashset of stack: " << hashstack << std::endl;
+    Stack<int> stack;
+    stack.add(69);
+    stack.add(42);
+    assertEqualsInt("hashcode of self Stack", hashCode(stack), hashCode(stack));
+
+    Stack<int> copy = stack;
+    assertEqualsInt("hashcode of copy Stack", hashCode(stack), hashCode(copy));
+
+    Stack<int> empty;
+    HashSet<Stack<int> > hashstack {stack, copy, empty, empty};
+    assertEqualsInt("hashset of Stack size", 2, hashstack.size());
 }
 
 TIMED_TEST(StackTests, initializerListTest_Stack, TEST_TIMEOUT_DEFAULT) {
     Stack<int> stack {10, 20, 30};
-    std::cout << "init list Stack = " << stack << std::endl;
+    assertEqualsString("init list Stack", "{10, 20, 30}", stack.toString());
 }

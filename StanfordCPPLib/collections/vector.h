@@ -945,7 +945,7 @@ int hashCode(const Vector<ValueType>& vec) {
  */
 template <typename T>
 const T& randomElement(const Vector<T>& vec) {
-    return stanfordcpplib::collections::randomElement(vec);
+    return stanfordcpplib::collections::randomElementIndexed(vec);
 }
 
 /*

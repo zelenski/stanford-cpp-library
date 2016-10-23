@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp
+ * @version 2016/10/22
+ * - added support for diff flags
  * @version 2016/10/12
  * - fixed bug with double-HTML-encoding diff expected/actual output
  * @version 2016/09/22
@@ -683,7 +685,8 @@ public class AutograderUnitTestGUI extends Observable
 			message = htmlMessage;
 		} else if (type == "ASSERT_DIFF") {
 			shouldShowJOptionPane = false;
-			new DiffGui("expected output", expected, "student output", student).show();
+			int flags = Integer.parseInt(deets.get("diffFlags"));
+			new DiffGui("expected output", expected, "student output", student, flags).show();
 		} else if (type == "ASSERT_DIFF_IMAGE") {
 			shouldShowJOptionPane = false;
 			DiffImage diff = new DiffImage(expected, student);

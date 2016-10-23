@@ -8,6 +8,7 @@
 #include "hashset.h"
 #include "queue.h"
 #include "assertions.h"
+#include "collection-test-common.h"
 #include "gtest-marty.h"
 #include <initializer_list>
 #include <iostream>
@@ -40,11 +41,7 @@ TIMED_TEST(DequeTests, forEachTest_Deque, TEST_TIMEOUT_DEFAULT) {
     deq.addBack(3);
     deq.addFront(4);
 
-    Queue<int> expected {4, 2, 1, 3};
-    for (int n : deq) {
-        int exp = expected.dequeue();
-        assertEqualsInt("Deque foreach", exp, n);
-    }
+    assertCollection("Deque foreach", {4, 2, 1, 3}, deq);
 }
 
 TIMED_TEST(DequeTests, hashCodeTest_Deque, TEST_TIMEOUT_DEFAULT) {
@@ -68,7 +65,3 @@ TIMED_TEST(DequeTests, initializerListTest_Deque, TEST_TIMEOUT_DEFAULT) {
     Deque<int> deque {10, 20, 30};
     assertEqualsString("deque initializer list", "{10, 20, 30}", deque.toString());
 }
-
-
-
-

@@ -7,6 +7,7 @@
 #include "hashcode.h"
 #include "hashset.h"
 #include "assertions.h"
+#include "collection-test-common.h"
 #include "gtest-marty.h"
 #include <initializer_list>
 #include <iostream>
@@ -43,18 +44,33 @@ TIMED_TEST(QueueTests, forEachTest_Queue, TEST_TIMEOUT_DEFAULT) {
     q.add("ddd");
     q.add("e");
     q.add("ffff");
+
+    Queue<std::string> expected {"a", "bb", "c", "ddd", "e", "ffff"};
+    while (!q.isEmpty()) {
+        assertEqualsString("foreach Queue", expected.dequeue(), q.dequeue());
+    }
 }
 
 TIMED_TEST(QueueTests, hashCodeTest_Queue, TEST_TIMEOUT_DEFAULT) {
-    HashSet<Queue<int> > hashq;
-    Queue<int> q;
-    q.add(69);
-    q.add(42);
-    hashq.add(q);
-    std::cout << "hashset of queue: " << hashq << std::endl;
+    Queue<std::string> queue;
+    queue.add("a");
+    queue.add("bb");
+    queue.add("c");
+    queue.add("ddd");
+    queue.add("e");
+    queue.add("ffff");
+    assertEqualsInt("hashcode of self Queue", hashCode(queue), hashCode(queue));
+
+    Queue<std::string> copy = queue;
+    assertEqualsInt("hashcode of copy Queue", hashCode(queue), hashCode(copy));
+
+    Queue<std::string> empty;
+
+    HashSet<Queue<std::string> > hashq {queue, copy, empty, empty};
+    assertEqualsInt("hashset of Queue size", 2, hashq.size());
 }
 
 TIMED_TEST(QueueTests, initializerListTest_Queue, TEST_TIMEOUT_DEFAULT) {
     Queue<int> queue {10, 20, 30};
-    std::cout << "init list Queue = " << queue << std::endl;
+    assertEqualsString("initializer list Queue", "{10, 20, 30}", queue.toString());
 }

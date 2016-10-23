@@ -11,6 +11,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2016/10/19
+# - added PROJECT_FILTER option to make it easier to have multiple .pro in same dir (e.g. ADTs HW)
 # @version 2016/10/18
 # - re-disabled Mac stack increase flag
 # @version 2016/10/15
@@ -48,6 +50,8 @@ TEMPLATE = app
 
 CONFIG += no_include_pwd   # make sure we do not accidentally #include files placed in 'resources'
 CONFIG += warn_off         # turn of default -Wall (we will add it back ourselves)
+
+PROJECT_FILTER =
 
 ###############################################################################
 # BEGIN SECTION FOR SPECIFYING SOURCE/LIBRARY/RESOURCE FILES OF PROJECT       #
@@ -88,14 +92,14 @@ SOURCES += $$PWD/lib/StanfordCPPLib/io/*.cpp
 SOURCES += $$PWD/lib/StanfordCPPLib/private/*.cpp
 SOURCES += $$PWD/lib/StanfordCPPLib/system/*.cpp
 SOURCES += $$PWD/lib/StanfordCPPLib/util/*.cpp
-exists($$PWD/src/*.cpp) {
-    SOURCES += $$PWD/src/*.cpp
+exists($$PWD/src/$$PROJECT_FILTER*.cpp) {
+    SOURCES += $$PWD/src/$$PROJECT_FILTER*.cpp
 }
 exists($$PWD/src/test/*.cpp) {
     SOURCES += $$PWD/src/test/*.cpp
 }
-exists($$PWD/*.cpp) {
-    SOURCES += $$PWD/*.cpp
+exists($$PWD/$$PROJECT_FILTER*.cpp) {
+    SOURCES += $$PWD/$$PROJECT_FILTER*.cpp
 }
 
 exists($$PWD/lib/StanfordCPPLib/*.h) {
@@ -110,11 +114,11 @@ HEADERS += $$PWD/lib/StanfordCPPLib/util/*.h
 exists($$PWD/src/test/*.h) {
     HEADERS += $$PWD/src/test/*.h
 }
-exists($$PWD/src/*.h) {
-    HEADERS += $$PWD/src/*.h
+exists($$PWD/src/$$PROJECT_FILTER*.h) {
+    HEADERS += $$PWD/src/$$PROJECT_FILTER*.h
 }
-exists($$PWD/*.h) {
-    HEADERS += $$PWD/*.h
+exists($$PWD/$$PROJECT_FILTER*.h) {
+    HEADERS += $$PWD/$$PROJECT_FILTER*.h
 }
 
 # directories examined by Qt Creator when student writes an #include statement
@@ -228,7 +232,7 @@ unix:!macx {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20161018
+DEFINES += SPL_PROJECT_VERSION=20161019
 
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1
@@ -416,13 +420,13 @@ POST_TARGETDEPS += copyResources
 exists($$PWD/lib/autograder/*.cpp) {
     # include the various autograder source code and libraries in the build process
     SOURCES += $$PWD/lib/autograder/*.cpp
-    exists($$PWD/src/autograder/*.cpp) {
-        SOURCES += $$PWD/src/autograder/*.cpp
+    exists($$PWD/src/autograder/$$PROJECT_FILTER*.cpp) {
+        SOURCES += $$PWD/src/autograder/$$PROJECT_FILTER*.cpp
     }
 
     HEADERS += $$PWD/lib/autograder/*.h
-    exists($$PWD/src/autograder/*.h) {
-        HEADERS += $$PWD/src/autograder/*.h
+    exists($$PWD/src/autograder/$$PROJECT_FILTER*.h) {
+        HEADERS += $$PWD/src/autograder/$$PROJECT_FILTER*.h
     }
 
     INCLUDEPATH += $$PWD/lib/autograder/
@@ -453,25 +457,25 @@ exists($$PWD/lib/autograder/*.cpp) {
     }
 
     # copy source code into build folder so it can be analyzed by style checker
-    exists($$PWD/src/*.cpp) {
-        copyResources.input += $$files($$PWD/src/*.cpp)
-        copyToDestdir($$files($$PWD/src/*.cpp))
+    exists($$PWD/src/$$PROJECT_FILTER*.cpp) {
+        copyResources.input += $$files($$PWD/src/$$PROJECT_FILTER*.cpp)
+        copyToDestdir($$files($$PWD/src/$$PROJECT_FILTER*.cpp))
     }
-    exists($$PWD/*.cpp) {
-        copyResources.input += $$files($$PWD/*.cpp)
-        copyToDestdir($$files($$PWD/*.cpp))
+    exists($$PWD/$$PROJECT_FILTER*.cpp) {
+        copyResources.input += $$files($$PWD/$$PROJECT_FILTER*.cpp)
+        copyToDestdir($$files($$PWD/$$PROJECT_FILTER*.cpp))
     }
-    exists($$PWD/src/*.h) {
-        copyResources.input += $$files($$PWD/src/*.h)
-        copyToDestdir($$files($$PWD/src/*.h))
+    exists($$PWD/src/$$PROJECT_FILTER*.h) {
+        copyResources.input += $$files($$PWD/src/$$PROJECT_FILTER*.h)
+        copyToDestdir($$files($$PWD/src/$$PROJECT_FILTER*.h))
     }
-    exists($$PWD/*.h) {
-        copyResources.input += $$files($$PWD/*.h)
-        copyToDestdir($$files($$PWD/*.h))
+    exists($$PWD/$$PROJECT_FILTER*.h) {
+        copyResources.input += $$files($$PWD/$$PROJECT_FILTER*.h)
+        copyToDestdir($$files($$PWD/$$PROJECT_FILTER*.h))
     }
 }
 ###############################################################################
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #477; if not, your .pro has been changed!)
+# END OF FILE (this should be line #481; if not, your .pro has been changed!)

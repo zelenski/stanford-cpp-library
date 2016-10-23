@@ -8,6 +8,7 @@
 #include "hashset.h"
 #include "queue.h"
 #include "assertions.h"
+#include "collection-test-common.h"
 #include "gtest-marty.h"
 #include <initializer_list>
 #include <iostream>
@@ -91,82 +92,75 @@ TIMED_TEST(LexiconTests, compareTest_Lexicon, TEST_TIMEOUT_DEFAULT) {
 TIMED_TEST(LexiconTests, forEachTest_Lexicon, TEST_TIMEOUT_DEFAULT) {
     Lexicon lex;
     lex.add("a");
+    lex.add("aba");
     lex.add("cc");
     lex.add("bbb");
-    std::cout << "lexicon: " << lex << std::endl;
-    for (std::string n : lex) {
-        std::cout << n << std::endl;
-    }
+    lex.add("c");
+    lex.add("bart");
+    std::initializer_list<std::string> list {"a", "aba", "bart", "bbb", "c", "cc"};
+    assertCollection("foreach Lexicon", list, lex);
 }
 
 TIMED_TEST(LexiconTests, hashCodeTest_Lexicon, TEST_TIMEOUT_DEFAULT) {
-    HashSet<Lexicon> hashlex;
     Lexicon lex;
     lex.add("a");
-    lex.add("abc");
-    hashlex.add(lex);
-    std::cout << "hashset of lexicon: " << hashlex << std::endl;
+    lex.add("bc");
+    assertEqualsInt("hashcode of self lexicon", hashCode(lex), hashCode(lex));
+
+    Lexicon copy = lex;
+    assertEqualsInt("hashcode of copy lexicon", hashCode(lex), hashCode(copy));
+
+    Lexicon lex2;   // empty
+
+    // shouldn't add two copies of same lexicon
+    HashSet<Lexicon> hashlex {lex, copy, lex2};
+    assertEqualsInt("hashset of lexicon size", 2, hashlex.size());
 }
 
 TIMED_TEST(LexiconTests, initializerListTest_Lexicon, TEST_TIMEOUT_DEFAULT) {
-//    std::initializer_list<std::string> lexlist = {"sixty", "seventy"};
-//    std::initializer_list<std::string> lexallwords = {
-//        "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy"
-//    };
+    std::initializer_list<std::string> lexlist = {"sixty", "seventy"};
+    std::initializer_list<std::string> lexallwords = {
+        "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy"
+    };
 
-//    Lexicon lex {"ten", "twenty", "thirty"};
-//    assertEqualsString("init list Lexicon", "{\"ten\", \"thirty\", \"twenty\"}", lex.toString());
-//    assertEqualsInt("init list Lexicon size", 3, lex.size());
-//    assertTrue("init list Lexicon contains ten", lex.contains("ten"));
-//    assertTrue("init list Lexicon contains twenty", lex.contains("twenty"));
-//    assertTrue("init list Lexicon contains thirty", lex.contains("thirty"));
-//    assertFalse("init list Lexicon contains forty", lex.contains("forty"));
-//    assertFalse("init list Lexicon contains fifty", lex.contains("fifty"));
+    Lexicon lex {"ten", "twenty", "thirty"};
+    assertEqualsString("init list Lexicon", "{\"ten\", \"thirty\", \"twenty\"}", lex.toString());
+    assertEqualsInt("init list Lexicon size", 3, lex.size());
+    assertTrue("init list Lexicon contains ten", lex.contains("ten"));
+    assertTrue("init list Lexicon contains twenty", lex.contains("twenty"));
+    assertTrue("init list Lexicon contains thirty", lex.contains("thirty"));
+    assertFalse("init list Lexicon contains forty", lex.contains("forty"));
+    assertFalse("init list Lexicon contains fifty", lex.contains("fifty"));
 
-//    lex += {"forty", "fifty"};
-//    assertEqualsString("after += Lexicon", "{\"fifty\", \"forty\", \"ten\", \"thirty\", \"twenty\"}", lex.toString());
-//    assertEqualsInt("after += Lexicon size", 5, lex.size());
-//    assertTrue("init list Lexicon contains ten", lex.contains("ten"));
-//    assertTrue("init list Lexicon contains twenty", lex.contains("twenty"));
-//    assertTrue("init list Lexicon contains thirty", lex.contains("thirty"));
-//    assertTrue("init list Lexicon contains forty", lex.contains("forty"));
-//    assertTrue("init list Lexicon contains fifty", lex.contains("fifty"));
-//    assertFalse("init list Lexicon contains sixty", lex.contains("sixty"));
-//    assertFalse("init list Lexicon contains seventy", lex.contains("seventy"));
+    lex += {"forty", "fifty"};
+    assertEqualsString("after += Lexicon", "{\"fifty\", \"forty\", \"ten\", \"thirty\", \"twenty\"}", lex.toString());
+    assertEqualsInt("after += Lexicon size", 5, lex.size());
+    assertTrue("init list Lexicon contains ten", lex.contains("ten"));
+    assertTrue("init list Lexicon contains twenty", lex.contains("twenty"));
+    assertTrue("init list Lexicon contains thirty", lex.contains("thirty"));
+    assertTrue("init list Lexicon contains forty", lex.contains("forty"));
+    assertTrue("init list Lexicon contains fifty", lex.contains("fifty"));
+    assertFalse("init list Lexicon contains sixty", lex.contains("sixty"));
+    assertFalse("init list Lexicon contains seventy", lex.contains("seventy"));
 
-//    Lexicon lex2 = (lex + lexlist);
-//    assertEqualsString("after += Lexicon", "{\"fifty\", \"forty\", \"ten\", \"thirty\", \"twenty\"}", lex.toString());
-//    assertEqualsInt("after + Lexicon size", 5, lex.size());
-//    assertTrue("init list Lexicon contains ten", lex.contains("ten"));
-//    assertTrue("init list Lexicon contains twenty", lex.contains("twenty"));
-//    assertTrue("init list Lexicon contains thirty", lex.contains("thirty"));
-//    assertTrue("init list Lexicon contains forty", lex.contains("forty"));
-//    assertTrue("init list Lexicon contains fifty", lex.contains("fifty"));
-//    assertFalse("init list Lexicon contains sixty", lex.contains("sixty"));
-//    assertFalse("init list Lexicon contains seventy", lex.contains("seventy"));
+    Lexicon lex2 = (lex + lexlist);
+    assertEqualsString("after += Lexicon", "{\"fifty\", \"forty\", \"ten\", \"thirty\", \"twenty\"}", lex.toString());
+    assertEqualsInt("after + Lexicon size", 5, lex.size());
+    assertTrue("init list Lexicon contains ten", lex.contains("ten"));
+    assertTrue("init list Lexicon contains twenty", lex.contains("twenty"));
+    assertTrue("init list Lexicon contains thirty", lex.contains("thirty"));
+    assertTrue("init list Lexicon contains forty", lex.contains("forty"));
+    assertTrue("init list Lexicon contains fifty", lex.contains("fifty"));
+    assertFalse("init list Lexicon contains sixty", lex.contains("sixty"));
+    assertFalse("init list Lexicon contains seventy", lex.contains("seventy"));
 
-//    assertEqualsString("after + Lexicon 2", "{\"fifty\", \"forty\", \"seventy\", \"sixty\", \"ten\", \"thirty\", \"twenty\"}", lex2.toString());
-//    assertEqualsInt("after + Lexicon 2 size", 7, lex2.size());
-//    assertTrue("init list Lexicon contains ten", lex2.contains("ten"));
-//    assertTrue("init list Lexicon contains twenty", lex2.contains("twenty"));
-//    assertTrue("init list Lexicon contains thirty", lex2.contains("thirty"));
-//    assertTrue("init list Lexicon contains forty", lex2.contains("forty"));
-//    assertTrue("init list Lexicon contains fifty", lex2.contains("fifty"));
-//    assertTrue("init list Lexicon contains sixty", lex2.contains("sixty"));
-//    assertTrue("init list Lexicon contains seventy", lex2.contains("seventy"));
-
-//    lex -= {"forty", "fifty"};
-//    std::cout << "after -=, Lexicon = " << lex << ", size " << lex.size() << std::endl;
-//    lex += {"forty", "fifty"};
-//    std::cout << "after +=, Lexicon = " << lex << ", size " << lex.size() << std::endl;
-//    for (std::string s : lexallwords) { std::cout << std::boolalpha << lex.contains(s) << " "; }
-//    std::cout << std::endl;
-//    std::cout << "Lexicon + {} list = " << (lex + lexlist) << std::endl;
-//    std::cout << "Lexicon - {} list = " << (lex - lexlist2) << std::endl;
-//    std::cout << "Lexicon * {} list = " << (lex * lexlist2) << std::endl;
-//    lex -= {"twenty", "fifty"};
-//    std::cout << "Lexicon -={} list = " << lex << ", size " << lex.size() << std::endl;
-//    lex *= {"zero", "ten", "forty", "ninetynine"};
-//    std::cout << "Lexicon *={} list = " << lex << ", size " << lex.size() << std::endl;
-//    std::cout << "at end,   Lexicon = " << lex << ", size " << lex.size() << std::endl;
+    assertEqualsString("after + Lexicon 2", "{\"fifty\", \"forty\", \"seventy\", \"sixty\", \"ten\", \"thirty\", \"twenty\"}", lex2.toString());
+    assertEqualsInt("after + Lexicon 2 size", 7, lex2.size());
+    assertTrue("init list Lexicon contains ten", lex2.contains("ten"));
+    assertTrue("init list Lexicon contains twenty", lex2.contains("twenty"));
+    assertTrue("init list Lexicon contains thirty", lex2.contains("thirty"));
+    assertTrue("init list Lexicon contains forty", lex2.contains("forty"));
+    assertTrue("init list Lexicon contains fifty", lex2.contains("fifty"));
+    assertTrue("init list Lexicon contains sixty", lex2.contains("sixty"));
+    assertTrue("init list Lexicon contains seventy", lex2.contains("seventy"));
 }

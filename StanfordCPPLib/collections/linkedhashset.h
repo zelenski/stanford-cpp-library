@@ -684,24 +684,53 @@ bool LinkedHashSet<ValueType>::operator !=(const LinkedHashSet& set2) const {
     return !equals(set2);
 }
 
+// Implementation note:
+// The definitions of <, <=, >, and >= are a bit unintuitive here.
+// Because Sets are considered to be "equal" if they have the same elements,
+// regardless of order, the equals() method and == / != operators ignore order.
+//
+// Example: {1, 2, 3, 4} == {4, 3, 2, 1}  true
+//
+// Similarly, if you ask whether a set is <= or >= to another, this includes
+// the notion of equality, so it should return true if the sets contain the same
+// elements, regardless of order.
+//
+// Example: {1, 2, 3, 4} == {4, 3, 2, 1}  true
+// Example: {1, 2, 3, 4} <= {4, 3, 2, 1}  true
+// Example: {1, 2, 3, 4} >= {4, 3, 2, 1}  true
+//
+// If you ask whether a set is < or > to another, it is assumed that you don't
+// want this to return true if they are "equal", so we must check for non-equality
+// before checking the elements pairwise.
+//
+// Example: {1, 2, 3, 4} <  {4, 3, 2, 1}       false   (because equal)
+// Example: {4, 2, 3, 1} >  {1, 3, 2, 4}       false   (because equal)
+// Example: {1, 2, 3, 4} <  {4, 3, 2}          true
+// Example: {1, 2, 3, 4} <= {4, 3, 2}          true
+// Example: {1, 2, 3, 4} <  {4, 3, 2, 1, 0}    true
+// Example: {1, 2, 3, 4} <= {4, 3, 2, 1, 0}    true
+//
+// This issue is unique to LinkedHashSet because Set sorts into a predictable sorted order
+// and HashSet opts not to implement <, <=, >, or >= due to its unpredictable hash order.
+
 template <typename ValueType>
 bool LinkedHashSet<ValueType>::operator <(const LinkedHashSet& set2) const {
-    return stanfordcpplib::collections::compare(*this, set2) < 0;
+    return !equals(set2) && stanfordcpplib::collections::compare(*this, set2) < 0;
 }
 
 template <typename ValueType>
 bool LinkedHashSet<ValueType>::operator <=(const LinkedHashSet& set2) const {
-    return stanfordcpplib::collections::compare(*this, set2) <= 0;
+    return equals(set2) || stanfordcpplib::collections::compare(*this, set2) <= 0;
 }
 
 template <typename ValueType>
 bool LinkedHashSet<ValueType>::operator >(const LinkedHashSet& set2) const {
-    return stanfordcpplib::collections::compare(*this, set2) > 0;
+    return !equals(set2) && stanfordcpplib::collections::compare(*this, set2) > 0;
 }
 
 template <typename ValueType>
 bool LinkedHashSet<ValueType>::operator >=(const LinkedHashSet& set2) const {
-    return stanfordcpplib::collections::compare(*this, set2) >= 0;
+    return equals(set2) || stanfordcpplib::collections::compare(*this, set2) >= 0;
 }
 
 template <typename ValueType>

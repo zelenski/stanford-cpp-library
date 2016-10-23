@@ -51,15 +51,15 @@ TIMED_TEST(GridTests, forEachTest_Grid, TEST_TIMEOUT_DEFAULT) {
 TIMED_TEST(GridTests, hashCodeTest_Grid, TEST_TIMEOUT_DEFAULT) {
     Grid<int> grid(2, 3);
     grid.fill(42);
-    assertEqualsInt("hashcode of self grid", hashCode(grid), hashCode(grid));
+    assertEqualsInt("hashcode of self Grid", hashCode(grid), hashCode(grid));
 
     Grid<int> copy = grid;
-    assertEqualsInt("hashcode of copy grid", hashCode(grid), hashCode(copy));
+    assertEqualsInt("hashcode of copy Grid", hashCode(grid), hashCode(copy));
 
     Grid<int> empty;   // empty
     HashSet<Grid<int> > hashgrid {grid, copy, empty, empty};
 
-    assertEqualsInt("hashset of grid size", 2, hashgrid.size());
+    assertEqualsInt("hashset of Grid size", 2, hashgrid.size());
 }
 
 TIMED_TEST(GridTests, initializerListTest_Grid, TEST_TIMEOUT_DEFAULT) {
@@ -79,6 +79,8 @@ TIMED_TEST(GridTests, randomElementTest_Grid, TEST_TIMEOUT_DEFAULT) {
     Map<std::string, int> counts;
     int RUNS = 200;
 
+    std::initializer_list<std::string> list {"a", "b", "c", "d", "e", "f"};
+
     Grid<std::string> grid;
     grid.resize(2, 3);
     grid[0][0] = "a";
@@ -92,10 +94,7 @@ TIMED_TEST(GridTests, randomElementTest_Grid, TEST_TIMEOUT_DEFAULT) {
         counts[s]++;
     }
 
-    assertTrue("must choose a sometimes", counts["a"] > 0);
-    assertTrue("must choose b sometimes", counts["b"] > 0);
-    assertTrue("must choose c sometimes", counts["c"] > 0);
-    assertTrue("must choose d sometimes", counts["d"] > 0);
-    assertTrue("must choose e sometimes", counts["e"] > 0);
-    assertTrue("must choose f sometimes", counts["f"] > 0);
+    for (const std::string& s : list) {
+        assertTrue("must choose " + s + " sometimes", counts[s] > 0);
+    }
 }

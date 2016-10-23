@@ -415,7 +415,7 @@ static bool autograderYesOrNo(std::string prompt, std::string reprompt = "", std
 
 
 static int mainRunAutograderTestCases(int argc, char** argv) {
-    static bool gtestInitialized = false;
+    static bool gtestInitialized = false;   // static OK
     
     // set up a few initial settings and lock-down the program
     ioutils::setConsoleEchoUserInput(true);
@@ -598,7 +598,7 @@ int autograderGraphicalMain(int argc, char** argv) {
     
     int result = 0;
     while (true) {
-        GEvent event = waitForEvent(ACTION_EVENT | WINDOW_EVENT);
+        GEvent event = waitForEvent(ACTION_EVENT);
         if (event.getEventClass() == ACTION_EVENT) {
             GActionEvent actionEvent(event);
             std::string cmd = actionEvent.getActionCommand();
@@ -639,11 +639,13 @@ int autograderGraphicalMain(int argc, char** argv) {
                 stanfordcpplib::getPlatform()->jbeconsole_clear();
                 stanfordcpplib::getPlatform()->jbeconsole_setVisible(true);
                 stanfordcpplib::getPlatform()->jbeconsole_toFront();
-                setConsoleCloseOperation(ConsoleCloseOperation::CONSOLE_EXIT_ON_CLOSE);
-                gwindowSetExitGraphicsEnabled(false);
-                studentMain();
-                gwindowSetExitGraphicsEnabled(true);
+                // setConsoleCloseOperation(ConsoleCloseOperation::CONSOLE_EXIT_ON_CLOSE);
+                autograder::setExitEnabled(false);   // block exit() call
                 setConsoleCloseOperation(ConsoleCloseOperation::CONSOLE_HIDE_ON_CLOSE);
+
+                studentMain();
+
+                // gwindowSetExitGraphicsEnabled(true);
             } else if (cmd == styleCheckText) {
                 mainRunStyleChecker();
             } else if (cmd == lateDayText) {

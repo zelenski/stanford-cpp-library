@@ -6,7 +6,10 @@
  * See diff.h for documentation of each function.
  * 
  * @author Marty Stepp
+ * @version 2016/10/22
+ * - added diffPass (for autograder assertDiff)
  * @version 2014/10/14
+ * - initial version
  * @since 2014/10/14
  */
 
@@ -20,10 +23,6 @@
 #include "vector.h"
 
 namespace diff {
-std::string diff(std::string s1, std::string s2) {
-    return diff(s1, s2, 0);
-}
-
 std::string diff(std::string s1, std::string s2, int flags) {
     Vector<std::string> lines1 = stringutils::explodeLines(s1);
     Vector<std::string> lines2 = stringutils::explodeLines(s2);
@@ -258,7 +257,13 @@ std::string diff(std::string s1, std::string s2, int flags) {
     }
 }
 
-bool isDiffMatch(std::string diffs) {
+bool diffPass(const std::string& s1, const std::string& s2, int flags) {
+    std::string diffs = diff(s1, s2, flags);
+    bool result = trim(diffs) == NO_DIFFS_MESSAGE;
+    return result;
+}
+
+bool isDiffMatch(const std::string& diffs) {
     return trim(diffs) == NO_DIFFS_MESSAGE;
 }
 } // namespace diff

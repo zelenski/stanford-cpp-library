@@ -101,8 +101,8 @@ void setConsoleClearEnabled(bool value) {
 void setConsoleCloseOperation(ConsoleCloseOperation op) {
     if (STATIC_VARIABLE(consoleLocked)) { return; }
     STATIC_VARIABLE(consoleCloseOperation) = op;
-    STATIC_VARIABLE(consoleExitProgramOnClose) = op == ConsoleCloseOperation::CONSOLE_EXIT_ON_CLOSE;
     stanfordcpplib::getPlatform()->jbeconsole_setCloseOperation(op);
+    setConsoleExitProgramOnClose(op == ConsoleCloseOperation::CONSOLE_EXIT_ON_CLOSE);
 }
 
 void setConsoleEcho(bool echo) {

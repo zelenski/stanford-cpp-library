@@ -21,7 +21,7 @@
 namespace stylecheck {
 bool isStyleCheckMergedWithUnitTests();
 void setStyleCheckMergedWithUnitTests(bool merged = true);
-void styleCheck(std::string codeFileName, std::string styleXmlFileName = "stylecheck.xml", bool printWarning = true);
+void styleCheck(const std::string& codeFileName, const std::string& styleXmlFileName = "stylecheck.xml", bool printWarning = true);
 } // namespace stylecheck
 
 #endif // _stylecheck_h

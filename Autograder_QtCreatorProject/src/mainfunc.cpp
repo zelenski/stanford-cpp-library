@@ -12,6 +12,7 @@
 #include "simpio.h"
 #include "stack.h"
 #include "stl.h"
+#include "stylecheck.h"
 #include "vector.h"
 #include "testcases.h"
 #include "private/platform.h"
@@ -19,7 +20,13 @@
 using namespace std;
 
 
-//TEST_CATEGORY(PassFailTests, "standard pass/fail tests");
+TEST_CATEGORY(PassFailTests, "standard pass/fail tests");
+
+//TIMED_TEST(PassFailTests, test_diffs_strict_FAIL, TEST_TIMEOUT_DEFAULT) {
+//    string expected = "Hello!\nhow are you?\n";
+//    string student  = "hello!\nhow ARE you?\n";
+//    assertDiffFlags("message goes here", expected, student, diff::IGNORE_NONE);
+//}
 
 //TIMED_TEST(PassFailTests, test_ints_PASS, TEST_TIMEOUT_DEFAULT) {
 //    assertEquals("compare ints", 42, 42);
@@ -90,23 +97,23 @@ using namespace std;
 //}
 
 
-TEST_CATEGORY(InfiniteLoops, "infinite loops");
+//TEST_CATEGORY(InfiniteLoops, "infinite loops");
 
-TIMED_TEST(InfiniteLoops, test_infinite_loop1, TEST_TIMEOUT_DEFAULT/2) {
-    while (1) { /* lolol */ }
-}
+//TIMED_TEST(InfiniteLoops, test_infinite_loop1, TEST_TIMEOUT_DEFAULT/2) {
+//    while (1) { /* lolol */ }
+//}
 
 
-TIMED_TEST(InfiniteLoops, test_infinite_loop2, TEST_TIMEOUT_DEFAULT) {
-    while (1) { sleep(1); }
-}
+//TIMED_TEST(InfiniteLoops, test_infinite_loop2, TEST_TIMEOUT_DEFAULT) {
+//    while (1) { sleep(1); }
+//}
 
-TIMED_TEST(InfiniteLoops, test_notInfiniteButExceedsTimeout, TEST_TIMEOUT_DEFAULT) {
-    string exp = "a\nb\nc";
-    string stu = "a\nb\nc";
-    assertDiff("some diffs", exp, stu);
-    sleep(5);
-}
+//TIMED_TEST(InfiniteLoops, test_notInfiniteButExceedsTimeout, TEST_TIMEOUT_DEFAULT) {
+//    string exp = "a\nb\nc";
+//    string stu = "a\nb\nc";
+//    assertDiff("some diffs", exp, stu);
+//    sleep(5);
+//}
 
 
 //TEST_CATEGORY(Crashes, "crashes and exceptions");
@@ -167,20 +174,6 @@ void autograderMain() {
     autograder::setTestNameWidth(std::string("test02_abc_oops_real_long_name_gonnaFail").length());
     autograder::setStartMessage("my start message");
 
-//    std::vector<int> v {10, 20, 30};
-//    std::cout << v << std::endl;
-
-//    std::initializer_list<std::string> list {"a", "bc", "def"};
-//    std::cout << list << std::endl;
-
-//    Stack<int> stack {10, 20, 30};
-//    for (int n : stack) {
-//        std::cout << "stack: " << n << std::endl;
-//    }
-
-//    Queue<int> queue {10, 20, 30};
-//    for (int i = 40; i < 200; i += 10) {
-//        queue.enqueue(i);
-//        for (int n : queue) { std::cout << " " << n; } std::cout << std::endl;
-//    }
+    //stylecheck::setStyleCheckMergedWithUnitTests(true);
+    //autograder::styleCheckAddFile("mainfunc.cpp");
 }

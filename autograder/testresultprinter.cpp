@@ -6,6 +6,8 @@
  * See testresultprinter.h for declarations and documentation.
  *
  * @author Marty Stepp
+ * @version 2016/10/22
+ * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * @version 2015/10/08
  * - fixes for printing of failed non-timeout tests
  * @version 2014/11/24
@@ -16,6 +18,7 @@
 #include "autograder.h"
 #include "stringutils.h"
 #include "private/platform.h"
+#include "private/static.h"
 
 static std::string UNIT_TEST_TYPE_NAMES[11] = {
     "ASSERT_EQUALS",
@@ -34,8 +37,8 @@ static std::string UNIT_TEST_TYPE_NAMES[11] = {
 namespace autograder {
 std::string MartyTestResultPrinter::failMessage = "";
 
-static const int TEST_OUTPUT_INDENT = 8;
-static const std::string TEST_OUTPUT_INDENT_SPACES(TEST_OUTPUT_INDENT, ' ');
+STATIC_CONST_VARIABLE_DECLARE(int, TEST_OUTPUT_INDENT, 8)
+STATIC_CONST_VARIABLE_DECLARE(std::string, TEST_OUTPUT_INDENT_SPACES, "        ")
 
 static std::string gtest_result_reformat(std::string msg) {
     bool hasActualLine = stringContains(msg, "Actual:");
@@ -91,9 +94,9 @@ void MartyTestResultPrinter::OnTestPartResult(const ::testing::TestPartResult& t
         }
         if (failCountToPrintPerTest > 0 && failCountThisTest <= failCountToPrintPerTest) {
             if (!failMessage.empty()) {
-                std::cout << TEST_OUTPUT_INDENT_SPACES << failMessage << std::endl;
+                std::cout << STATIC_VARIABLE(TEST_OUTPUT_INDENT_SPACES) << failMessage << std::endl;
             }
-            std::cout << stringutils::indent(gtest_result_reformat(test_part_result.summary()), TEST_OUTPUT_INDENT) << std::endl;
+            std::cout << stringutils::indent(gtest_result_reformat(test_part_result.summary()), STATIC_VARIABLE(TEST_OUTPUT_INDENT)) << std::endl;
         }
     }
 }
@@ -105,7 +108,7 @@ void MartyTestResultPrinter::OnTestEnd(const ::testing::TestInfo& test_info) {
     if (test_info.result()->Failed()) {
         if (failCountToPrintPerTest > 0 && failCountThisTest > failCountToPrintPerTest) {
             int extraFails = failCountThisTest - failCountToPrintPerTest;
-            std::cout << TEST_OUTPUT_INDENT_SPACES << "(" << extraFails << " additional assertion failure(s) not printed)" << std::endl;
+            std::cout << STATIC_VARIABLE(TEST_OUTPUT_INDENT_SPACES) << "(" << extraFails << " additional assertion failure(s) not printed)" << std::endl;
         }
     } else {
         std::cout << "pass, " << std::setw(5) << std::right << autograder::getFlags().testTimers[test_info.name()].elapsed() << "ms" << std::endl;

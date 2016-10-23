@@ -46,6 +46,7 @@ public:
     std::string expected;
     std::string student;
     std::string valueType;
+    int diffFlags;
     bool passed;
     
     UnitTestDetails();
@@ -60,7 +61,15 @@ public:
                     const std::string& stu,
                     const std::string& vtype,
                     bool pass = false);
-    
+
+    UnitTestDetails(autograder::UnitTestType tp,
+                    const std::string& msg,
+                    const std::string& exp,
+                    const std::string& stu,
+                    const std::string& vtype,
+                    int diffFlags,
+                    bool pass = false);
+
     UnitTestDetails(autograder::UnitTestType tp,
                     const std::string& msg,
                     bool exp,

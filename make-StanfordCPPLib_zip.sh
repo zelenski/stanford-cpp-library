@@ -1,6 +1,10 @@
 #!/bin/bash
 OUTDIR=cppdoc/dist
 SPLJARFILE=JavaBackEnd/eclipseproject/obf/spl.jar
+echo "Updating $SPLJARFILE in lib projects ..."
+cp $SPLJARFILE StanfordCPPLib_QtCreatorProject/lib/spl.jar
+cp $SPLJARFILE Autograder_QtCreatorProject/lib/spl.jar
+
 echo "Copying $SPLJARFILE ..."
 cp -f $SPLJARFILE $OUTDIR
 

@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp
+ * @version 2016/1021
+ * - added getValueAsInt/Double, valueIsInt/Double
  * @version 2016/10/15
  * - initial version
  * 
@@ -12,6 +14,8 @@ package acm.gui;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.text.Document;
+
+import stanford.cs106.util.StringUtils;
 
 @SuppressWarnings("serial")
 public class JPlaceholderTextField extends JTextField {
@@ -41,6 +45,14 @@ public class JPlaceholderTextField extends JTextField {
 	public String getPlaceholder() {
 		return placeholder;
 	}
+	
+	public double getValueAsDouble() {
+		return Double.parseDouble(getText());
+	}
+	
+	public int getValueAsInt() {
+		return Integer.parseInt(getText());
+	}
 
 	@Override
 	protected void paintComponent(final Graphics pG) {
@@ -63,5 +75,24 @@ public class JPlaceholderTextField extends JTextField {
 	public void setPlaceholder(final String s) {
 		placeholder = s;
 	}
-
+	
+	public void setValue(double value) {
+		setText(String.valueOf(value));
+	}
+	
+	public void setValue(int value) {
+		setText(String.valueOf(value));
+	}
+	
+	public void setValue(long value) {
+		setText(String.valueOf(value));
+	}
+	
+	public boolean valueIsDouble() {
+		return StringUtils.stringIsDouble(getText());
+	}
+	
+	public boolean valueIsInt() {
+		return StringUtils.stringIsInteger(getText());
+	}
 }

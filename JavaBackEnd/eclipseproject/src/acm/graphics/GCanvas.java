@@ -1,4 +1,6 @@
 /*
+ * @version 2016/10/21
+ * - added drawPolarLine
  * @version 2016/10/16
  * - added buffered image to get/set pixels
  * @version 2016/05/05
@@ -48,14 +50,10 @@ package acm.graphics;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.Arc2D;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.*;
 import java.awt.image.*;
 import java.util.*;
 import javax.swing.*;
-
 import stanford.spl.GBufferedImage;
 
 /* Class: GCanvas */
@@ -75,6 +73,7 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	private GObject dragObject;
 	private GObjectList contents;
 	private BufferedImage bufferedImage = null;
+	private Graphics2D osg = null;
 	private boolean autoRepaint;
 	private boolean nativeArcFlag;
 	
@@ -85,14 +84,19 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	 */
 	public GCanvas() {
 		contents = new GObjectList(this);
+		bufferedImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);   // will be resized
+		osg = (Graphics2D) bufferedImage.getGraphics();
+		osg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		
+		gCanvasListener = new GCanvasListener(this);
+		
 		setBackground(Color.WHITE);
 		setForeground(Color.BLACK);
 		setOpaque(true);
 		setAutoRepaintFlag(true);
 		setNativeArcFlag(false);
 		setLayout(null);
-		bufferedImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);   // will be resized
-		gCanvasListener = new GCanvasListener(this);
+		
 		addComponentListener(gCanvasListener);
 		addMouseListener(gCanvasListener);
 		addMouseMotionListener(gCanvasListener);
@@ -187,15 +191,17 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	
 	public void clear() {
 		// also clear out the buffered image
-		int w = bufferedImage.getWidth();
-		int h = bufferedImage.getHeight();
-		Graphics imageG = bufferedImage.getGraphics();
-		if (isOpaque()) {
-			imageG.setColor(getBackground());
-		} else {
-			imageG.setColor(TRANSPARENT);
+		if (bufferedImage != null) {
+			int w = bufferedImage.getWidth();
+			int h = bufferedImage.getHeight();
+			if (isOpaque()) {
+				osg.setColor(getBackground());
+			} else {
+				osg.setColor(TRANSPARENT);
+			}
+			osg.fillRect(0, 0, w, h);
+			osg.setColor(getForeground());
 		}
-		imageG.fillRect(0, 0, w, h);
 
 		removeAll();
 	}
@@ -210,6 +216,9 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	 */
 	protected void conditionalRepaint() {
 		if (autoRepaint) {
+			if (bufferedImage != null) {
+				bufferedImage.flush();
+			}
 			repaint();
 		}
 	}
@@ -289,6 +298,20 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 		conditionalRepaint();
 	}
 
+	public GPoint drawPolarLine(double x0, double y0, double r, double theta) {
+		theta = Math.toRadians(theta);
+		double x1 = x0 + r * Math.cos(theta);
+		double y1 = y0 - r * Math.sin(theta);
+		drawLine(x0, y0, x1, y1);
+		conditionalRepaint();
+		return new GPoint(x1, y1);
+	}
+
+	public GPoint drawPolarLine(GPoint p0, double r, double theta) {
+		return drawPolarLine(p0.getX(), p0.getY(), r, theta);
+	}
+
+	
 	public void drawRect(double paramDouble1, double paramDouble2,
 			double paramDouble3, double paramDouble4) {
 		Rectangle2D.Double localDouble = new Rectangle2D.Double(paramDouble1,
@@ -392,6 +415,11 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	public int getElementCount() {
 		return contents.getElementCount();
 	}
+	
+//	@Override
+//	public Graphics2D getGraphics() {
+//		return (Graphics2D) bufferedImage.getGraphics();
+//	}
 
 	/**
 	 * Returns the current setting of the native-arc flag as described in
@@ -406,7 +434,7 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	}
 	
 	public Graphics2D getOSG() {
-		return (Graphics2D) bufferedImage.getGraphics();
+		return osg;
 	}
 	
 	public String getPixelsAsString() {
@@ -457,23 +485,6 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	/**
 	 * Paints the canvas.  This method is not ordinarily called by clients.
 	 *
-	 * @usage gc.paint(g);
-	 * @param g The graphics context into which the canvas is painted
-	 * @noshow
-	 */
-//	public void paint(Graphics g) {
-//		// TODO: buffered image?
-//		if (isOpaque()) {
-//			g.setColor(getBackground());
-//			g.fillRect(0, 0, getWidth(), getHeight());
-//			g.setColor(getForeground());
-//		}
-//		super.paint(g);
-//	}
-
-	/**
-	 * Paints the canvas.  This method is not ordinarily called by clients.
-	 *
 	 * @usage gc.paintComponent(g);
 	 * @param g The graphics context into which the canvas is painted
 	 * @noshow
@@ -481,7 +492,6 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		if (bufferedImage != null) {
-			// contents.mapPaint(bufferedImage.getGraphics());
 			g.drawImage(bufferedImage, 0, 0, this);
 		}
 		contents.mapPaint(g);
@@ -571,7 +581,17 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	public void setColor(int paramInt) {
 		setColor(new Color(paramInt));
 	}
-
+	
+	@Override
+	public void setForeground(Color color) {
+		super.setForeground(color);
+		getOSG().setColor(color);
+	}
+	
+	public void setForeground(int paramInt) {
+		setColor(new Color(paramInt));
+	}
+	
 	/**
 	 * Sets a flag indicating whether this canvas is opaque, which means that it
 	 * obscures anything behind it.  Setting this flag to <code>false</code> makes
@@ -594,11 +614,10 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	}
 
 	public void setRGB(int x, int y, int rgb) {
-		
+		setRGB(x, y, rgb, /* repaint */ false);
 	}
 	
 	public void setRGB(int x, int y, int rgb, boolean repaint) {
-		// JOptionPane.showMessageDialog(null, "GCanvas setRGB x=" + " y=" + y + " rgb=" + rgb + " inbounds=" + inBounds(x, y));
 		if (inBounds(x, y)) {
 			bufferedImage.setRGB(x, y, rgb);
 			if (repaint) {
@@ -669,11 +688,12 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	public BufferedImage toImage(int width, int height) {
 		// dump canvas into a BufferedImage
 		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		Graphics g = img.getGraphics();
 		if (isOpaque()) {
-			img.getGraphics().setColor(getBackground());
-			img.getGraphics().fillRect(0, 0, width, height);
+			g.setColor(getBackground());
+			g.fillRect(0, 0, width, height);
 		}
-		paint(img.getGraphics());
+		paint(g);
 		return img;
 	}
 
@@ -733,17 +753,19 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 			}
 			
 			bufferedImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+			osg = (Graphics2D) bufferedImage.getGraphics();
+			osg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 			// draw background
-			Graphics imageG = bufferedImage.getGraphics();
 			if (isOpaque()) {
-				imageG.setColor(getBackground());
-				imageG.fillRect(0, 0, w, h);
+				osg.setColor(getBackground());
+				osg.fillRect(0, 0, w, h);
 			}
+			osg.setColor(Color.BLACK);
 			
 			// copy over
 			if (oldImage != null) {
-				imageG.drawImage(oldImage, 0, 0, gCanvas);
+				osg.drawImage(oldImage, 0, 0, gCanvas);
 			}
 			
 			if (gCanvas.isShowing()) {

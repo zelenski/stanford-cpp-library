@@ -6,6 +6,8 @@
  * See xmlutils.h for documentation of each function.
  * 
  * @author Marty Stepp
+ * @version 2016/10/22
+ * - changed openXmlDocument to print error message rather than crash on file-not-found
  * @version 2016/10/14
  * - changed NULL to nullptr as appropriate
  * @version 2014/10/14
@@ -67,4 +69,4 @@ rapidxml::xml_node<>* openXmlDocument(const std::string& filename, const std::st
     rapidxml::xml_node<>* node = xmlDoc->first_node(documentNode.c_str());
     return node;
 }
-}
+} // namespace xmlutils

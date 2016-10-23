@@ -1,4 +1,8 @@
 /*
+ * @version 2016/10/21
+ * - added center, pack, setWidth, setHeight, setLocation, setX, setY
+ * - fixed printf bug (was mistakenly inserting \n line break at end)
+ * - fixed bug in fileExistsInJar with paths that end with "/"
  * @version 2016/10/02
  * - added getYesOrNo
  * @version 2016/07/14
@@ -82,6 +86,7 @@
 package acm.program;
 
 import acm.graphics.GObject;
+import acm.graphics.GPoint;
 import acm.gui.*;
 import acm.io.*;
 import acm.util.*;
@@ -440,7 +445,7 @@ public abstract class Program extends JApplet
 	 * @throws NullPointerException If the format is null
 	 */
 	public void printf(String format, Object... args) {
-		println(String.format(format, args));
+		print(String.format(format, args));
 	}
 
 	/**
@@ -1385,6 +1390,29 @@ public abstract class Program extends JApplet
 	public void setSize(double width, double height) {
 		super.setSize((int) width, (int) height);
 	}
+	
+	/**
+	 * Sets the width of this program without changing its height.
+	 * @param width the new width, in pixels (will be rounded down to nearest integer)
+	 */
+	public void setWidth(double width) {
+		setSize(width, getHeight());
+	}
+	
+	/**
+	 * Sets the height of this program without changing its width.
+	 * @param height the new height, in pixels (will be rounded down to nearest integer)
+	 */
+	public void setHeight(double height) {
+		setSize(getWidth(), height);
+	}
+	
+	/**
+	 * Resizes this program to exactly fit the preferred size of its contents.
+	 */
+	public void pack() {
+		this.getWindow().pack();
+	}
 
 /* Method: setTitle(title) */
 /**
@@ -1501,14 +1529,14 @@ public abstract class Program extends JApplet
 		}
 		started = true;
 		if (!initFinished) {
-			try {
+			// try {
 				init();
-			} catch (Throwable t) {
-				if (t instanceof RuntimeException) {
-					throw (RuntimeException) t;
-				}
-				throw new RuntimeException(t);
-			}
+//			} catch (Throwable t) {
+//				if (t instanceof RuntimeException) {
+//					throw (RuntimeException) t;
+//				}
+//				throw new RuntimeException(t);
+//			}
 		}
 		initFinished = true;
 		if (programFrame != null && myMenuBar != null) {
@@ -1594,7 +1622,10 @@ public abstract class Program extends JApplet
 		String filepath = "";
 		if (directory != null && !directory.isEmpty()) {
 			// BUGFIX: use "/" instead of File.separator because JAR URLs must use / even on Windows
-			filepath += directory + "/";
+			filepath += directory;
+			if (!filepath.endsWith("/")) {
+				filepath += "/";
+			}
 		}
 		filepath += filename;
 		InputStream stream = getClass().getResourceAsStream(filepath);
@@ -1624,7 +1655,7 @@ public abstract class Program extends JApplet
 				if (file.exists() && file.isFile()) {
 					return true;
 				} else {
-					file = new File("../" + directory + "/" + filename);  // "../simple.txt"
+					file = new File("../" + directory, filename);  // "../simple.txt"
 					if (file.exists() && file.isFile()) {
 						return true;
 					}
@@ -1677,7 +1708,7 @@ public abstract class Program extends JApplet
 			if (file.exists()) {
 				return new BufferedInputStream(new FileInputStream(file));
 			} else {
-				file = new File("../" + directory + "/" + filename);  // "../simple.txt"
+				file = new File("../" + directory, filename);  // "../simple.txt"
 				if (file.exists()) {
 					return new BufferedInputStream(new FileInputStream(file));
 				}
@@ -1699,7 +1730,10 @@ public abstract class Program extends JApplet
 		String filepath = "";
 		if (directory != null && !directory.isEmpty()) {
 			// BUGFIX: use "/" instead of File.separator because JAR URLs must use / even on Windows
-			filepath += directory + "/";
+			filepath += directory;
+			if (!filepath.endsWith("/")) {
+				filepath += "/";
+			}
 		}
 		filepath += filename;
 		InputStream stream = getClass().getResourceAsStream(filepath);
@@ -2067,6 +2101,48 @@ public abstract class Program extends JApplet
 		} else {
 			return super.getLayout();
 		}
+	}
+	
+	/**
+	 * Sets the (x, y) location of the top-left corner of this program.
+	 * @param x the x location as a pixel offset (will be rounded down to nearest integer)
+	 * @param y the y location as a pixel offset (will be rounded down to nearest integer)
+	 */
+	public void setLocation(GPoint point) {
+		getWindow().setLocation((int) point.getX(), (int) point.getY());
+	}
+	
+	/**
+	 * Sets the (x, y) location of the top-left corner of this program.
+	 * @param x the x location as a pixel offset (will be rounded down to nearest integer)
+	 * @param y the y location as a pixel offset (will be rounded down to nearest integer)
+	 */
+	public void setLocation(double x, double y) {
+		getWindow().setLocation((int) x, (int) y);
+	}
+	
+	/**
+	 * Moves this program's window to the center of the screen.
+	 */
+	public void center() {
+		GuiUtils.centerWindow(getWindow());
+	}
+	
+	/**
+	 * Sets the x location of the top-left corner of this program.
+	 * @param x the x location as a pixel offset (will be rounded down to nearest integer)
+	 * @param y the y location as a pixel offset (will be rounded down to nearest integer)
+	 */
+	public void setX(double x) {
+		setLocation(x, getY());
+	}
+	
+	/**
+	 * Sets the y location of the top-left corner of this program.
+	 * @param y the y location as a pixel offset (will be rounded down to nearest integer)
+	 */
+	public void setY(double y) {
+		setLocation(getX(), y);
 	}
 
 /* Overridden method: setBackground(color) */

@@ -1030,7 +1030,7 @@ bool Map<KeyType, ValueType>::isEmpty() const {
 template <typename KeyType,typename ValueType>
 Vector<KeyType> Map<KeyType, ValueType>::keys() const {
     Vector<KeyType> keyset;
-    for (KeyType key : *this) {
+    for (const KeyType& key : *this) {
         keyset.add(key);
     }
     return keyset;
@@ -1062,7 +1062,7 @@ void Map<KeyType, ValueType>::put(const KeyType& key,
 
 template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>& Map<KeyType, ValueType>::putAll(const Map& map2) {
-    for (KeyType key : map2) {
+    for (const KeyType& key : map2) {
         put(key, map2.get(key));
     }
     return *this;
@@ -1071,7 +1071,7 @@ Map<KeyType, ValueType>& Map<KeyType, ValueType>::putAll(const Map& map2) {
 template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>& Map<KeyType, ValueType>::putAll(
         std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    for (std::pair<KeyType, ValueType> pair : list) {
+    for (const std::pair<KeyType, ValueType>& pair : list) {
         put(pair.first, pair.second);
     }
     return *this;
@@ -1084,7 +1084,7 @@ void Map<KeyType, ValueType>::remove(const KeyType& key) {
 
 template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>& Map<KeyType, ValueType>::removeAll(const Map& map2) {
-    for (KeyType key : map2) {
+    for (const KeyType& key : map2) {
         if (containsKey(key) && get(key) == map2.get(key)) {
             remove(key);
         }
@@ -1095,7 +1095,7 @@ Map<KeyType, ValueType>& Map<KeyType, ValueType>::removeAll(const Map& map2) {
 template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>& Map<KeyType, ValueType>::removeAll(
         std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    for (std::pair<KeyType, ValueType> pair : list) {
+    for (const std::pair<KeyType, ValueType>& pair : list) {
         if (containsKey(pair.first) && get(pair.first) == pair.second) {
             remove(pair.first);
         }
@@ -1106,12 +1106,12 @@ Map<KeyType, ValueType>& Map<KeyType, ValueType>::removeAll(
 template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>& Map<KeyType, ValueType>::retainAll(const Map& map2) {
     Vector<KeyType> toRemove;
-    for (KeyType key : *this) {
+    for (const KeyType& key : *this) {
         if (!map2.containsKey(key) || get(key) != map2.get(key)) {
             toRemove.add(key);
         }
     }
-    for (KeyType key : toRemove) {
+    for (const KeyType& key : toRemove) {
         remove(key);
     }
     return *this;
@@ -1133,7 +1133,7 @@ int Map<KeyType, ValueType>::size() const {
 template <typename KeyType, typename ValueType>
 std::map<KeyType, ValueType> Map<KeyType, ValueType>::toStlMap() const {
     std::map<KeyType, ValueType> result;
-    for (KeyType key : *this) {
+    for (const KeyType& key : *this) {
         result[key] = this->get(key);
     }
     return result;
@@ -1149,7 +1149,7 @@ std::string Map<KeyType, ValueType>::toString() const {
 template <typename KeyType,typename ValueType>
 Vector<ValueType> Map<KeyType, ValueType>::values() const {
     Vector<ValueType> values;
-    for (KeyType key : *this) {
+    for (const KeyType& key : *this) {
         values.add(this->get(key));
     }
     return values;

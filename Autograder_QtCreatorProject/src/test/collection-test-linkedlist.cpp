@@ -8,6 +8,7 @@
 #include "hashset.h"
 #include "queue.h"
 #include "assertions.h"
+#include "collection-test-common.h"
 #include "gtest-marty.h"
 #include <initializer_list>
 #include <iostream>
@@ -37,47 +38,56 @@ TIMED_TEST(LinkedListTests, compareTest_LinkedList, TEST_TIMEOUT_DEFAULT) {
 }
 
 TIMED_TEST(LinkedListTests, forEachTest_LinkedList, TEST_TIMEOUT_DEFAULT) {
-    LinkedList<int> ll;
-    ll += 10, 20, 30, 40;
-    std::cout << "linkedlist: " << ll << std::endl;
-    for (int n : ll) {
-        std::cout << n << std::endl;
-    }
+    LinkedList<int> v1 {1, 2, 3};
+    assertCollection("foreach LinkedList", {1, 2, 3}, v1);
+
+    LinkedList<std::string> v2 {"a", "b", "c"};
+    std::initializer_list<std::string> list {"a", "b", "c"};
+    assertCollection("foreach LinkedList", list, v2);
 }
 
 TIMED_TEST(LinkedListTests, hashCodeTest_LinkedList, TEST_TIMEOUT_DEFAULT) {
-    HashSet<LinkedList<int> > hashlink;
     LinkedList<int> llist;
     llist.add(69);
     llist.add(42);
-    hashlink.add(llist);
+    assertEqualsInt("hashcode of self LinkedList", hashCode(llist), hashCode(llist));
+
+    LinkedList<int> copy = llist;
+    assertEqualsInt("hashcode of copy LinkedList", hashCode(llist), hashCode(copy));
+
+    LinkedList<int> empty;
+    HashSet<LinkedList<int> > hashllist {llist, copy, empty, empty};
+    assertEqualsInt("hashset of LinkedList size", 2, hashllist.size());
 }
 
 TIMED_TEST(LinkedListTests, initializerListTest_LinkedList, TEST_TIMEOUT_DEFAULT) {
     auto list = {60, 70};
-    std::initializer_list<std::string> lexlist = {"sixty", "seventy"};
-    std::initializer_list<std::string> lexlist2 = {"twenty", "fifty"};
-    std::initializer_list<std::pair<std::string, int> > pairlist = {{"k", 60}, {"t", 70}};
-    std::initializer_list<std::pair<std::string, int> > pairlist2 = {{"b", 20}, {"e", 50}};
 
     LinkedList<int> llist {10, 20, 30};
-    std::cout << "init list LinkedList = " << llist << std::endl;
+    assertCollection("initial", {10, 20, 30}, llist);
+
     llist += {40, 50};
-    std::cout << "after +=, LinkedList = " << llist << std::endl;
-    std::cout << "LinkedList + {} list = " << (llist + list) << std::endl;
-    std::cout << "at end,   LinkedList = " << llist << std::endl;
+    assertCollection("after +=", {10, 20, 30, 40, 50}, llist);
+
+    LinkedList<int> copy = llist + list;
+    assertCollection("after + (shouldn't modify)", {10, 20, 30, 40, 50}, llist);
+    assertCollection("after + copy", {10, 20, 30, 40, 50, 60, 70}, copy);
 }
 
 TIMED_TEST(LinkedListTests, randomElementTest_LinkedList, TEST_TIMEOUT_DEFAULT) {
     Map<std::string, int> counts;
     int RUNS = 200;
 
-    LinkedList<std::string> list;
-    list += "a", "b", "c", "d", "e", "f";
+    std::initializer_list<std::string> list {"a", "b", "c", "d", "e", "f"};
+
+    LinkedList<std::string> llist(list);
     for (int i = 0; i < RUNS; i++) {
-        std::string s = randomElement(list);
-        std::cout << s << " ";
+        std::string s = randomElement(llist);
         counts[s]++;
+    }
+
+    for (const std::string& s : list) {
+        assertTrue("must choose " + s + " sometimes", counts[s] > 0);
     }
 }
 
