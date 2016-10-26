@@ -4,6 +4,8 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2016/10/23
+ * - added ginteractor_add/removeActionListener, requestFocus
  * @version 2016/10/18
  * - fixed Windows bug in filelib_expandPathname
  * @version 2016/10/15
@@ -1130,7 +1132,7 @@ void Platform::gobject_setSize(GObject* gobj, double width, double height) {
     putPipe(os.str());
 }
 
-bool Platform::ginteractor_isEnabled(GObject* gint) {
+bool Platform::ginteractor_isEnabled(const GObject* gint) {
     std::ostringstream os;
     os << "GInteractor.isEnabled(\"" << gint << ")";
     putPipe(os.str());
@@ -1143,11 +1145,25 @@ void Platform::ginteractor_setEnabled(GObject* gint, bool value) {
     putPipe(os.str());
 }
 
+void Platform::ginteractor_setFont(GObject* gobj, const std::string& font) {
+    std::ostringstream os;
+    os << "GInteractor.setFont(\"" << gobj << "\", ";
+    writeQuotedString(os, urlEncode(font));
+    os << ")";
+    putPipe(os.str());
+}
+
 void Platform::ginteractor_setIcon(GObject* gobj, const std::string& filename) {
     std::ostringstream os;
     os << "GInteractor.setIcon(\"" << gobj << "\", ";
     writeQuotedString(os, filename);
     os << ")";
+    putPipe(os.str());
+}
+
+void Platform::ginteractor_setMnemonic(GObject* gobj, char mnemonic) {
+    std::ostringstream os;
+    os << "GInteractor.setMnemonic(\"" << gobj << "\", " << (int) mnemonic << ")";
     putPipe(os.str());
 }
 
@@ -1432,8 +1448,15 @@ void Platform::gpolygon_addVertex(GObject* gobj, double x, double y) {
 
 void Platform::goval_constructor(GObject* gobj, double width, double height) {
     std::ostringstream os;
-    os << "GOval.create(\"" << gobj << "\", " << width << ", "
-       << height << ")";
+    os << "GOval.create(\"" << gobj << "\", " << width << ", " << height << ")";
+    putPipe(os.str());
+}
+
+void Platform::ginteractor_setAccelerator(GObject* gobj, const std::string& accelerator) {
+    std::ostringstream os;
+    os << "GInteractor.setAccelerator(\"" << gobj << "\", ";
+    writeQuotedString(os, urlEncode(accelerator));
+    os << ")";
     putPipe(os.str());
 }
 
@@ -1451,7 +1474,40 @@ void Platform::ginteractor_setBackground(GObject* gobj, const std::string& color
     putPipe(os.str());
 }
 
-GDimension Platform::ginteractor_getSize(GObject* gobj) {
+void Platform::ginteractor_addActionListener(GObject* gobj) {
+    std::ostringstream os;
+    os << "GInteractor.addActionListener(\"" << gobj << "\")";
+    putPipe(os.str());
+}
+
+void Platform::ginteractor_removeActionListener(GObject* gobj) {
+    std::ostringstream os;
+    os << "GInteractor.removeActionListener(\"" << gobj << "\")";
+    putPipe(os.str());
+}
+
+void Platform::ginteractor_requestFocus(GObject* gobj) {
+    std::ostringstream os;
+    os << "GInteractor.requestFocus(\"" << gobj << "\")";
+    putPipe(os.str());
+}
+
+std::string Platform::ginteractor_getFont(const GObject* gobj) {
+    std::ostringstream os;
+    os << "GInteractor.getFont(\"" << gobj << "\")";
+    putPipe(os.str());
+    return getResult();
+}
+
+char Platform::ginteractor_getMnemonic(const GObject* gobj) {
+    std::ostringstream os;
+    os << "GInteractor.getMnemonic(\"" << gobj << "\")";
+    putPipe(os.str());
+    std::string result = getResult();
+    return (char) stringToInteger(result);
+}
+
+GDimension Platform::ginteractor_getSize(const GObject* gobj) {
     std::ostringstream os;
     os << "GInteractor.getSize(\"" << gobj << "\")";
     putPipe(os.str());
@@ -1480,7 +1536,7 @@ void Platform::gcheckbox_constructor(GObject* gobj, const std::string& label) {
     putPipe(os.str());
 }
 
-bool Platform::gcheckbox_isSelected(GObject* gobj) {
+bool Platform::gcheckbox_isSelected(const GObject* gobj) {
     std::ostringstream os;
     os << "GCheckBox.isSelected(\"" << gobj << "\")";
     putPipe(os.str());
@@ -1507,7 +1563,7 @@ void Platform::gradiobutton_constructor(GObject* gobj, const std::string& label,
     putPipe(os.str());
 }
 
-bool Platform::gradiobutton_isSelected(GObject* gobj) {
+bool Platform::gradiobutton_isSelected(const GObject* gobj) {
     std::ostringstream os;
     os << "GRadioButton.isSelected(\"" << gobj << "\")";
     putPipe(os.str());
@@ -1750,7 +1806,7 @@ void Platform::gtextfield_constructor(GObject* gobj, int nChars) {
     putPipe(os.str());
 }
 
-std::string Platform::gtextfield_getText(GObject* gobj) {
+std::string Platform::gtextfield_getText(const GObject* gobj) {
     std::ostringstream os;
     os << "GTextField.getText(\"" << gobj << "\")";
     putPipe(os.str());
@@ -1804,7 +1860,7 @@ void Platform::gchooser_addItem(GObject* gobj, const std::string& item) {
     putPipe(os.str());
 }
 
-std::string Platform::gchooser_getSelectedItem(GObject* gobj) {
+std::string Platform::gchooser_getSelectedItem(const GObject* gobj) {
     std::ostringstream os;
     os << "GChooser.getSelectedItem(\"" << gobj << "\")";
     putPipe(os.str());
@@ -1902,19 +1958,23 @@ void Platform::gwindow_exitGraphics(bool abortBlockedConsoleIO) {
     }
 }
 
-std::string Platform::gfilechooser_showOpenDialog(const std::string& currentDir) {
+std::string Platform::gfilechooser_showOpenDialog(const std::string& currentDir, const std::string& fileFilter) {
     std::ostringstream os;
     os << "GFileChooser.showOpenDialog(";
     writeQuotedString(os, currentDir);
+    os << ",";
+    writeQuotedString(os, fileFilter);
     os << ")";
     putPipe(os.str());
     return getResult();
 }
 
-std::string Platform::gfilechooser_showSaveDialog(const std::string& currentDir) {
+std::string Platform::gfilechooser_showSaveDialog(const std::string& currentDir, const std::string& fileFilter) {
     std::ostringstream os;
     os << "GFileChooser.showSaveDialog(";
     writeQuotedString(os, currentDir);
+    os << ",";
+    writeQuotedString(os, fileFilter);
     os << ")";
     putPipe(os.str());
     return getResult();

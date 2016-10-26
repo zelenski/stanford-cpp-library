@@ -22,31 +22,105 @@ ListNode::~ListNode() {
     s_freed++;
 }
 
-void ListNode::printChain(ListNode* list, string name, int maxLength) {
-    cout << name << ": ";
+int ListNodeDouble::s_allocated = 0;
+int ListNodeDouble::s_freed = 0;
+
+ListNodeDouble::ListNodeDouble(double d, ListNodeDouble* n) {
+    data = d;
+    next = n;
+    s_allocated++;
+}
+
+ListNodeDouble::~ListNodeDouble() {
+    s_freed++;
+}
+
+int ListNodeString::s_allocated = 0;
+int ListNodeString::s_freed = 0;
+
+ListNodeString::ListNodeString(std::string d, ListNodeString* n) {
+    data = d;
+    next = n;
+    s_allocated++;
+}
+
+ListNodeString::~ListNodeString() {
+    s_freed++;
+}
+
+void ListNode::printChain(ListNode* list, std::string name, int maxLength) {
+    std::cout << name << ": ";
     if (list == NULL) {
-        cout << "NULL" << endl;
+        std::cout << "NULL" << std::endl;
     } else {
         ListNode* curr = list;
         bool hasCycle = false;
-        for (int i = 0; curr != NULL && (maxLength <= 0 || i < maxLength); i++, curr = curr->next) {
-            cout << curr->data;
-            if (curr->next != NULL) {
-                cout << " -> ";
+        for (int i = 0; curr && (maxLength <= 0 || i < maxLength); i++, curr = curr->next) {
+            std::cout << curr->data;
+            if (curr->next) {
+                std::cout << " -> ";
             }
             if (i == maxLength - 1) {
-                cout << " ... (cycle)";
+                std::cout << " ... (cycle)";
                 hasCycle = true;
             }
         }
         if (!hasCycle) {
-            cout << " /";
+            std::cout << " /";
         }
-        cout << endl;
+        std::cout << std::endl;
     }
 }
 
-ostream& operator <<(ostream& out, ListNode* front) {
+void ListNodeDouble::printChain(ListNodeDouble* list, std::string name, int maxLength) {
+    std::cout << name << ": ";
+    if (list == NULL) {
+        std::cout << "NULL" << std::endl;
+    } else {
+        ListNodeDouble* curr = list;
+        bool hasCycle = false;
+        for (int i = 0; curr && (maxLength <= 0 || i < maxLength); i++, curr = curr->next) {
+            std::cout << curr->data;
+            if (curr->next) {
+                std::cout << " -> ";
+            }
+            if (i == maxLength - 1) {
+                std::cout << " ... (cycle)";
+                hasCycle = true;
+            }
+        }
+        if (!hasCycle) {
+            std::cout << " /";
+        }
+        std::cout << std::endl;
+    }
+}
+
+void ListNodeString::printChain(ListNodeString* list, std::string name, int maxLength) {
+    std::cout << name << ": ";
+    if (list == NULL) {
+        std::cout << "NULL" << std::endl;
+    } else {
+        ListNodeString* curr = list;
+        bool hasCycle = false;
+        for (int i = 0; curr && (maxLength <= 0 || i < maxLength); i++, curr = curr->next) {
+            std::cout << curr->data;
+            if (curr->next) {
+                std::cout << " -> ";
+            }
+            if (i == maxLength - 1) {
+                std::cout << " ... (cycle)";
+                hasCycle = true;
+            }
+        }
+        if (!hasCycle) {
+            std::cout << " /";
+        }
+        std::cout << std::endl;
+    }
+}
+
+std::ostream& operator <<(std::ostream& out, ListNode* front) {
     LinkedIntList* list = new LinkedIntList();
     list->front = front;
     out << *list;
@@ -54,7 +128,51 @@ ostream& operator <<(ostream& out, ListNode* front) {
     return out;
 }
 
-istream& operator >>(istream& input, ListNode*& front) {
+std::ostream& operator <<(std::ostream& out, ListNodeDouble* front) {
+    out << "{";
+    if (front) {
+        ListNodeDouble* curr = front;
+        bool hasCycle = false;
+        int maxLength = 100;
+        for (int i = 0; curr && (maxLength <= 0 || i < maxLength); i++, curr = curr->next) {
+            out << curr->data;
+            if (curr->next) {
+                out << ", ";
+            }
+            if (i == maxLength - 1) {
+                out << " ... (cycle)";
+                hasCycle = true;
+                break;
+            }
+        }
+    }
+    out << "}";
+    return out;
+}
+
+std::ostream& operator <<(std::ostream& out, ListNodeString* front) {
+    out << "{";
+    if (front) {
+        ListNodeString* curr = front;
+        bool hasCycle = false;
+        int maxLength = 100;
+        for (int i = 0; curr && (maxLength <= 0 || i < maxLength); i++, curr = curr->next) {
+            out << curr->data;
+            if (curr->next) {
+                out << ", ";
+            }
+            if (i == maxLength - 1) {
+                out << " ... (cycle)";
+                hasCycle = true;
+                break;
+            }
+        }
+    }
+    out << "}";
+    return out;
+}
+
+std::istream& operator >>(std::istream& input, ListNode*& front) {
     LinkedIntList* list = new LinkedIntList();
     input >> *list;
     if (input.fail()) {
@@ -63,6 +181,50 @@ istream& operator >>(istream& input, ListNode*& front) {
         front = list->front;
     }
     list->front = nullptr;   // avoid double-free
+    return input;
+}
+
+std::istream& operator >>(std::istream& input, ListNodeDouble*& front) {
+    // parse as vector, e.g. {1.0, 2.5, 3.5}, then convert to LL of double
+    Vector<double> vec;
+    if (!(input >> vec)) {
+        return input;
+    }
+
+    // convert vector to LL
+    if (vec.isEmpty()) {
+        front = nullptr;
+    } else {
+        front = new ListNodeDouble(vec[0]);
+        ListNodeDouble* curr = front;
+        for (int i = 1; i < vec.size(); i++) {
+            curr->next = new ListNodeDouble(vec[i]);
+            curr = curr->next;
+        }
+    }
+
+    return input;
+}
+
+std::istream& operator >>(std::istream& input, ListNodeString*& front) {
+    // parse as vector, e.g. {1.0, 2.5, 3.5}, then convert to LL of double
+    Vector<std::string> vec;
+    if (!(input >> vec)) {
+        return input;
+    }
+
+    // convert vector to LL
+    if (vec.isEmpty()) {
+        front = nullptr;
+    } else {
+        front = new ListNodeString(vec[0]);
+        ListNodeString* curr = front;
+        for (int i = 1; i < vec.size(); i++) {
+            curr->next = new ListNodeString(vec[i]);
+            curr = curr->next;
+        }
+    }
+
     return input;
 }
 
@@ -180,8 +342,8 @@ int LinkedIntList::size() const {
 }
 
 // TODO: put printing code into operator <<, call that from toString
-string LinkedIntList::toString() const {
-    string result = "{";
+std::string LinkedIntList::toString() const {
+    std::string result = "{";
     if (!isEmpty()) {
         HashSet<ListNode*> visited;
         result += integerToString(front->data);
@@ -208,11 +370,11 @@ void LinkedIntList::setLocked(bool locked) {
 
 void LinkedIntList::checkIndex(int index, int min, int max) const {
     if (index < min || index > max) {
-        throw string("Invalid index");
+        throw std::string("Invalid index");
     }
 }
 
-void LinkedIntList::checkLocked(string memberName) const {
+void LinkedIntList::checkLocked(std::string memberName) const {
     if (m_locked) {
         error("LinkedIntList forbidden from calling member function " + memberName);
     }
@@ -229,12 +391,12 @@ LinkedIntList& LinkedIntList::operator =(const LinkedIntList& src) {
     return *this;
 }
 
-ostream& operator <<(ostream& out, const LinkedIntList& list) {
+std::ostream& operator <<(std::ostream& out, const LinkedIntList& list) {
     out << list.toString();
     return out;
 }
 
-istream& operator >>(istream& input, LinkedIntList& list) {
+std::istream& operator >>(std::istream& input, LinkedIntList& list) {
     char ch = '\0';
     input >> ch;
     if (ch != '{') {

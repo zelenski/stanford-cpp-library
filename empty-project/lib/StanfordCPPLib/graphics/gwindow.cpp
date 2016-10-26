@@ -148,7 +148,7 @@ GWindow::~GWindow() {
     //   }
 }
 
-void GWindow::add(GObject *gobj) {
+void GWindow::add(GObject* gobj) {
     if (isOpen()) {
         if (gwd) {
             gwd->top->add(gobj);
@@ -156,11 +156,15 @@ void GWindow::add(GObject *gobj) {
     }
 }
 
-void GWindow::add(GObject *gobj, double x, double y) {
+void GWindow::add(GObject* gobj, double x, double y) {
     if (isOpen()) {
         gobj->setLocation(x, y);
         add(gobj);
     }
+}
+
+void GWindow::addToRegion(GInteractor* gobj, Region region) {
+    addToRegion(gobj, regionToString(region));
 }
 
 void GWindow::addToRegion(GInteractor* gobj, const std::string& region) {
@@ -169,11 +173,44 @@ void GWindow::addToRegion(GInteractor* gobj, const std::string& region) {
     }
 }
 
+void GWindow::addToRegion(GLabel* gobj, Region region) {
+    addToRegion(gobj, regionToString(region));
+}
+
 void GWindow::addToRegion(GLabel* gobj, const std::string& region) {
     if (isOpen()) {
         stanfordcpplib::getPlatform()->gwindow_addToRegion(*this, (GObject *) gobj, region);
     }
 }
+
+std::string GWindow::alignmentToString(Alignment alignment) {
+    if (alignment == GWindow::ALIGN_CENTER) {
+        return "CENTER";
+    } else if (alignment == GWindow::ALIGN_LEFT) {
+        return "LEFT";
+    } else if (alignment == GWindow::ALIGN_RIGHT) {
+        return "RIGHT";
+    } else {
+        error("Invalid alignment: " + integerToString(alignment));
+    }
+}
+
+std::string GWindow::regionToString(Region region) {
+    if (region == GWindow::REGION_CENTER) {
+        return "CENTER";
+    } else if (region == GWindow::REGION_EAST) {
+        return "EAST";
+    } else if (region == GWindow::REGION_NORTH) {
+        return "NORTH";
+    } else if (region == GWindow::REGION_SOUTH) {
+        return "SOUTH";
+    } else if (region == GWindow::REGION_WEST) {
+        return "WEST";
+    } else {
+        error("Invalid region: " + integerToString(region));
+    }
+}
+
 
 void GWindow::center() {
     setLocation(CENTER_MAGIC_VALUE, CENTER_MAGIC_VALUE);
@@ -448,12 +485,24 @@ Grid<int> GWindow::getPixelsARGB() const {
     return pixels;
 }
 
+double GWindow::getRegionHeight(Region region) const {
+    return getRegionHeight(regionToString(region));
+}
+
 double GWindow::getRegionHeight(const std::string& region) const {
     return getRegionSize(region).getHeight();   // inefficient but oh well
 }
 
+GDimension GWindow::getRegionSize(Region region) const {
+    return getRegionSize(regionToString(region));
+}
+
 GDimension GWindow::getRegionSize(const std::string& region) const {
     return stanfordcpplib::getPlatform()->gwindow_getRegionSize(*this, region);
+}
+
+double GWindow::getRegionWidth(Region region) const {
+    return getRegionWidth(regionToString(region));
 }
 
 double GWindow::getRegionWidth(const std::string& region) const {
@@ -563,10 +612,18 @@ void GWindow::remove(GObject* gobj) {
     }
 }
 
+void GWindow::removeFromRegion(GInteractor* gobj, Region region) {
+    removeFromRegion(gobj, regionToString(region));
+}
+
 void GWindow::removeFromRegion(GInteractor* gobj, const std::string& region) {
     if (isOpen()) {
         stanfordcpplib::getPlatform()->gwindow_removeFromRegion(*this, (GObject*) gobj, region);
     }
+}
+
+void GWindow::removeFromRegion(GLabel* gobj, Region region) {
+    removeFromRegion(gobj, regionToString(region));
 }
 
 void GWindow::removeFromRegion(GLabel* gobj, const std::string& region) {
@@ -681,6 +738,10 @@ void GWindow::setPixels(const Grid<int>& pixels) {
 
 void GWindow::setPixelsARGB(const Grid<int>& pixelsARGB) {
     stanfordcpplib::getPlatform()->gwindow_setPixels(*this, pixelsARGB);
+}
+
+void GWindow::setRegionAlignment(Region region, Alignment align) {
+    setRegionAlignment(regionToString(region), alignmentToString(align));
 }
 
 void GWindow::setRegionAlignment(const std::string& region, const std::string& align) {

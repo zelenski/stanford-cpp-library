@@ -179,7 +179,8 @@ my $overall_shared_comment_header =
 	. "// then re-run the script to extract the library into these single large merged files.\n\n";
 
 my $overall_text = $overall_shared_comment_header
-	. "using namespace std;\n\n";
+	# . "using namespace std;\n"
+	. "\n";
 my $overall_h_text = $overall_shared_comment_header
 	. "#define STANFORD_CPP_LIB_PRESENT true\n\n";
 $overall_h_text .= "using namespace std;\n\n";
@@ -198,9 +199,13 @@ foreach my $cppfile (@ALL_FILES) {
 	# remove redeclaration of, static Platform *pp = getPlatform();
 	# $cppfiletext = regex_remove_lines($cppfiletext, "static[ ]*Platform[ *]+pp[ ]*=[ ]*getPlatform();[ ]*");
 	
-	$overall_text .= $cppfiletext . "\n";
+	$overall_text .= "/////////////////////// BEGIN code extracted from $cppfile ///////////////////////\n"
+			. $cppfiletext . "\n"
+			. "/////////////////////// END code extracted from $cppfile ///////////////////////\n\n";
 	if ($cppfile =~ m/\.h$/) {
-		$overall_h_text .= $cppfiletext . "\n";
+		$overall_h_text .= "/////////////////////// BEGIN code extracted from $cppfile ///////////////////////\n"
+				. $cppfiletext . "\n"
+				. "/////////////////////// END code extracted from $cppfile ///////////////////////\n\n";
 	}
 }
 

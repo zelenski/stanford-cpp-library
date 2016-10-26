@@ -1,4 +1,6 @@
 /*
+ * @version 2016/10/25
+ * - bug fix for paint() -> paintComponent() (prevents overdraw on shapes)
  * @version 2016/08/01
  * - added toImage method (to facilitate image diffing and autograders)
  * @version 2016/07/20
@@ -57,8 +59,13 @@ public class JBECanvas extends GCanvas {
 		repaint();
 	}
 
-	public void paint(Graphics paramGraphics) {
-		super.paint(paramGraphics);
-		this.topCompound.paint(paramGraphics);
+//	public void paint(Graphics paramGraphics) {
+//		super.paint(paramGraphics);
+//		this.topCompound.paint(paramGraphics);
+//	}
+
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		this.topCompound.paint(g);
 	}
 }

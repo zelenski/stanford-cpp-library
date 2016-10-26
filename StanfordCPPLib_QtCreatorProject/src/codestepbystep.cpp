@@ -162,6 +162,26 @@ void ListNodeptr_fromString(ListNode*& ptr, const std::string& str) {
     input >> ptr;
 }
 
+void ListNodeDouble_fromString(ListNodeDouble*& ptr, const std::string& str) {
+    std::istringstream input(str);
+    input >> ptr;
+}
+
+void ListNodeDoubleptr_fromString(ListNodeDouble*& ptr, const std::string& str) {
+    std::istringstream input(str);
+    input >> ptr;
+}
+
+void ListNodeString_fromString(ListNodeString*& ptr, const std::string& str) {
+    std::istringstream input(str);
+    input >> ptr;
+}
+
+void ListNodeStringptr_fromString(ListNodeString*& ptr, const std::string& str) {
+    std::istringstream input(str);
+    input >> ptr;
+}
+
 
 // CODE FOR HANDLING SIGNALS (VARIOUS PROGRAM CRASHES)
 void __codeStepByStepSignalHandler(int sig) {

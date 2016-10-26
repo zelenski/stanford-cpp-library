@@ -5,6 +5,12 @@
  * provided in the Java Swing libraries.
  * <include src="pictures/ClassHierarchies/GInteractorHierarchy-h.html">
  * 
+ * @version 2016/10/25
+ * - added valueIsDouble/Integer/Real to GTextField
+ * @version 2016/10/24
+ * - added get/setFont, get/setMnemonic, get/setAccelerator to GInteractor
+ * @version 2016/10/23
+ * - added add/removeActionListener to GInteractor
  * @version 2016/10/16
  * - added setTooltip to interactors
  * - alphabetized methods
@@ -53,15 +59,35 @@ enum SwingConstants {
 class GInteractor : public GObject {
 public:
     /*
+     * Method: addActionListener
+     * Usage: interactor.addActionListener();
+     * --------------------------------------
+     * Instructs the back-end to generate an ActionEvent when the user
+     * interacts with this interactor.
+     * You do not need to do this for buttons; they automatically receive
+     * action events when they are clicked.
+     * Calling this on a check box, radio button, or text field does have
+     * an effect, though.
+     */
+    void addActionListener();
+
+    // TODO: getAccelerator?
+
+    /*
      * Method: getActionCommand
      * Usage: string cmd = interactor.getActionCommand();
      * --------------------------------------------------
      * Returns the action command associated with the interactor.
      */
-    std::string getActionCommand();
+    std::string getActionCommand() const;
 
     /* Prototypes for the virtual methods */
     virtual GRectangle getBounds() const;
+
+    /*
+     * Returns the font used by this interactor.
+     */
+    std::string getFont() const;
 
     /*
      * Methods related to get/setting icons on graphical interactors.
@@ -69,12 +95,45 @@ public:
     virtual std::string getIcon() const;
 
     /*
+     * Returns the mnemonic (underlined character) used by this interactor,
+     * or '\0' if none.
+     */
+    char getMnemonic() const;
+
+    /*
      * Returns whether the interactor is enabled (true) or disabled (false).
      * If an interactor is disabled, it is grayed out onscreen and cannot be
      * clicked on to interact with it.
      * Interactors are enabled by default when first created.
      */
-    bool isEnabled();
+    bool isEnabled() const;
+
+    /*
+     * Method: removeActionListener
+     * Usage: interactor.removeActionListener();
+     * --------------------------------------
+     * Instructs the back-end not to generate an ActionEvent when the user
+     * interacts with this interactor.
+     * You do not need to do this for buttons; they automatically receive
+     * action events when they are clicked.
+     * Calling this on a check box, radio button, or text field does have
+     * an effect, though.
+     */
+    virtual void removeActionListener();
+
+    /*
+     * Method: requestFocus
+     * Usage: interactor.requestFocus();
+     * ---------------------------------
+     * Asks for this control to receive keyboard input focus.
+     */
+    void requestFocus();
+
+    /*
+     * Sets a hotkey associated with this interactor.
+     * Accelerator string is in a format such as "Shift-Ctrl-K".
+     */
+    void setAccelerator(const std::string& accelerator);
 
     /*
      * Method: setActionCommand
@@ -110,9 +169,21 @@ public:
     void setEnabled(bool value);
 
     /*
+     * Sets the font used on this interactor.
+     * Font is in a format such as "Arial-Bold-16".
+     */
+    void setFont(const std::string& font);
+
+    /*
      * Methods related to get/setting icons on graphical interactors.
      */
     virtual void setIcon(const std::string& filename);
+
+    /*
+     * Sets an underlined character to be used as a hotkey on this interactor,
+     * or '\0' to remove any such mnemonic.
+     */
+    void setMnemonic(char mnemonic);
 
     /*
      * Method: setSize
@@ -442,7 +513,7 @@ public:
      * -------------------------------------
      * Returns the contents of the text field.
      */
-    std::string getText();
+    std::string getText() const;
 
     /* Prototypes for the virtual methods */
     virtual std::string getType() const;
@@ -454,16 +525,16 @@ public:
      * Returns the contents of the text field, converted to a double.
      * If the text is unable to be read as a double, throws an ErrorException.
      */
-    double getValueAsDouble();
+    double getValueAsDouble() const;
 
     /*
-     * Method: getValueAsInt
-     * Usage: int value = field->getValueAsInt();
-     * ------------------------------------------
+     * Method: getValueAsInteger
+     * Usage: int value = field->getValueAsInteger();
+     * ----------------------------------------------
      * Returns the contents of the text field, converted to an integer.
      * If the text is unable to be read as an integer, throws an ErrorException.
      */
-    int getValueAsInt();
+    int getValueAsInteger() const;
 
     /*
      * Method: isEditable
@@ -509,7 +580,7 @@ public:
      * ---------------------------
      * Sets the text of the field to the specified string.
      */
-    void setText(std::string str);
+    void setText(const std::string& str);
 
     /*
      * Method: setValue
@@ -522,6 +593,30 @@ public:
 
     /* Prototypes for the virtual methods */
     virtual std::string toString() const;
+
+    /*
+     * Method: valueIsDouble
+     * Usage: if (field->valueIsDouble()) ...
+     * --------------------------------------
+     * Returns true if the text in this field can be treated as a real number.
+     */
+    bool valueIsDouble() const;
+
+    /*
+     * Method: valueIsInteger
+     * Usage: if (field->valueIsInteger()) ...
+     * ---------------------------------------
+     * Returns true if the text in this field can be treated as an integer.
+     */
+    bool valueIsInteger() const;
+
+    /*
+     * Method: valueIsReal
+     * Usage: if (field->valueIsReal()) ...
+     * ------------------------------------
+     * Returns true if the text in this field can be treated as a real number.
+     */
+    bool valueIsReal() const;
 
 private:
     InputType m_inputType;

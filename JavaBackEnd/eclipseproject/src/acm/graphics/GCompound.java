@@ -362,11 +362,11 @@ public class GCompound extends GObject implements GContainer, GScalable, Iterabl
 	 *
 	 * @noshow
 	 */
-	public void paint(Graphics g) {
-		g = g.create();
-		g.translate(GMath.round(getX()), GMath.round(getY()));
-		contents.mapPaint(g);
-	}
+//	public void paint(Graphics g) {
+//		g = g.create();
+//		g.translate(GMath.round(getX()), GMath.round(getY()));
+//		contents.mapPaint(g);
+//	}
 
 	/**
 	 * Implements the <code>paint2d</code> operation for this graphical object.  This method
@@ -375,7 +375,9 @@ public class GCompound extends GObject implements GContainer, GScalable, Iterabl
 	 * @noshow
 	 */
 	protected void paint2d(Graphics2D g) {
-		contents.mapPaint(g);
+		Graphics g2 = g.create();
+		g2.translate(GMath.round(getX()), GMath.round(getY()));
+		contents.mapPaint(g2);
 	}
 
 	/**

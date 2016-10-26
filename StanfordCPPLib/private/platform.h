@@ -5,6 +5,8 @@
  * the platform-specific parts of the StanfordCPPLib package.  This file is
  * logically part of the implementation and is not interesting to clients.
  *
+ * @version 2016/10/23
+ * - added ginteractor_add/removeActionListener, requestFocus
  * @version 2016/10/16
  * - added gwindow_getPixels
  * @version 2016/10/15
@@ -118,12 +120,12 @@ public:
     void gbutton_constructor(GObject* gobj, const std::string& label);
 
     void gcheckbox_constructor(GObject* gobj, const std::string& label);
-    bool gcheckbox_isSelected(GObject* gobj);
+    bool gcheckbox_isSelected(const GObject* gobj);
     void gcheckbox_setSelected(GObject* gobj, bool state);
 
     void gchooser_addItem(GObject* gobj, const std::string& item);
     void gchooser_constructor(GObject* gobj);
-    std::string gchooser_getSelectedItem(GObject* gobj);
+    std::string gchooser_getSelectedItem(const GObject* gobj);
     void gchooser_setSelectedItem(GObject* gobj, const std::string& item);
 
     void gcompound_add(GObject* compound, GObject* gobj);
@@ -132,17 +134,25 @@ public:
     GEvent gevent_getNextEvent(int mask);
     GEvent gevent_waitForEvent(int mask);
 
-    std::string gfilechooser_showOpenDialog(const std::string& currentDir);
-    std::string gfilechooser_showSaveDialog(const std::string& currentDir);
+    std::string gfilechooser_showOpenDialog(const std::string& currentDir, const std::string& fileFilter);
+    std::string gfilechooser_showSaveDialog(const std::string& currentDir, const std::string& fileFilter);
 
     GDimension gimage_constructor(GObject* gobj, const std::string& filename);
 
-    GDimension ginteractor_getSize(GObject* gobj);
-    bool ginteractor_isEnabled(GObject* gint);
+    void ginteractor_addActionListener(GObject* gobj);
+    std::string ginteractor_getFont(const GObject* gobj);
+    char ginteractor_getMnemonic(const GObject* gobj);
+    GDimension ginteractor_getSize(const GObject* gobj);
+    bool ginteractor_isEnabled(const GObject* gint);
+    void ginteractor_removeActionListener(GObject* gobj);
+    void ginteractor_requestFocus(GObject* gobj);
+    void ginteractor_setAccelerator(GObject* gobj, const std::string& accelerator);
     void ginteractor_setActionCommand(GObject* gobj, const std::string& cmd);
     void ginteractor_setBackground(GObject* gobj, const std::string& color);
     void ginteractor_setEnabled(GObject* gint, bool value);
+    void ginteractor_setFont(GObject* gobj, const std::string& font);
     void ginteractor_setIcon(GObject* gobj, const std::string& filename);
+    void ginteractor_setMnemonic(GObject* gobj, char mnemonic);
     void ginteractor_setText(GObject* gobj, const std::string& text);
     void ginteractor_setTextPosition(GObject* gobj, int horizontal, int vertical);
     void ginteractor_setTooltip(GObject* gobj, const std::string& tooltipText);
@@ -192,7 +202,7 @@ public:
     void gpolygon_constructor(GObject* gobj);
 
     void gradiobutton_constructor(GObject* gobj, const std::string& label, const std::string& group);
-    bool gradiobutton_isSelected(GObject* gobj);
+    bool gradiobutton_isSelected(const GObject* gobj);
     void gradiobutton_setSelected(GObject* gobj, bool state);
 
     void grect_constructor(GObject* gobj, double width, double height);
@@ -234,7 +244,7 @@ public:
     void gtextarea_setText(GObject* gobj, const std::string& text);
 
     void gtextfield_constructor(GObject* gobj, int nChars);
-    std::string gtextfield_getText(GObject* gobj);
+    std::string gtextfield_getText(const GObject* gobj);
     bool gtextfield_isEditable(const GObject* gobj);
     void gtextfield_setEditable(GObject* gobj, bool value);
     void gtextfield_setPlaceholder(GObject* gobj, const std::string& text);

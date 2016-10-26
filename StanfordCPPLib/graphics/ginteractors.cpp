@@ -3,6 +3,10 @@
  * ------------------
  * This file implements the ginteractors.h interface.
  * 
+ * @version 2016/10/24
+ * - added setFont, setMnemonic, setAccelerator to GInteractor
+ * @version 2016/10/23
+ * - added add/removeActionListener to GInteractor
  * @version 2016/10/15
  * - added setPlaceholder method to GTextField
  * @version 2016/09/27
@@ -41,12 +45,11 @@ GInteractor::GInteractor() {
     actionCommand = "";
 }
 
-void GInteractor::setActionCommand(const std::string& cmd) {
-    actionCommand = cmd;
-    stanfordcpplib::getPlatform()->ginteractor_setActionCommand(this, cmd);
+void GInteractor::addActionListener() {
+    stanfordcpplib::getPlatform()->ginteractor_addActionListener(this);
 }
 
-std::string GInteractor::getActionCommand() {
+std::string GInteractor::getActionCommand() const {
     return actionCommand;
 }
 
@@ -55,12 +58,37 @@ GRectangle GInteractor::getBounds() const {
     return GRectangle(x, y, size.getWidth(), size.getHeight());
 }
 
+std::string GInteractor::getFont() const {
+    return stanfordcpplib::getPlatform()->ginteractor_getFont((GObject *) this);
+}
+
 std::string GInteractor::getIcon() const {
     return icon;
 }
 
-bool GInteractor::isEnabled() {
+char GInteractor::getMnemonic() const {
+    return stanfordcpplib::getPlatform()->ginteractor_getMnemonic(this);
+}
+
+bool GInteractor::isEnabled() const {
     return stanfordcpplib::getPlatform()->ginteractor_isEnabled(this);
+}
+
+void GInteractor::removeActionListener() {
+    stanfordcpplib::getPlatform()->ginteractor_removeActionListener(this);
+}
+
+void GInteractor::requestFocus() {
+    stanfordcpplib::getPlatform()->ginteractor_requestFocus(this);
+}
+
+void GInteractor::setAccelerator(const std::string& accelerator) {
+    stanfordcpplib::getPlatform()->ginteractor_setAccelerator(this, accelerator);
+}
+
+void GInteractor::setActionCommand(const std::string& cmd) {
+    actionCommand = cmd;
+    stanfordcpplib::getPlatform()->ginteractor_setActionCommand(this, cmd);
 }
 
 void GInteractor::setBackground(int rgb) {
@@ -86,12 +114,20 @@ void GInteractor::setEnabled(bool value) {
     stanfordcpplib::getPlatform()->ginteractor_setEnabled(this, value);
 }
 
+void GInteractor::setFont(const std::string& font) {
+    stanfordcpplib::getPlatform()->ginteractor_setFont(this, font);
+}
+
 void GInteractor::setIcon(const std::string& filename) {
     if (!fileExists(filename)) {
         error("GInteractor::setIcon: icon file not found: " + filename);
     }
     this->icon = filename;
     stanfordcpplib::getPlatform()->ginteractor_setIcon(this, filename);
+}
+
+void GInteractor::setMnemonic(char mnemonic) {
+    stanfordcpplib::getPlatform()->ginteractor_setMnemonic(this, mnemonic);
 }
 
 void GInteractor::setSize(const GDimension& size) {
@@ -124,14 +160,14 @@ std::string GButton::getText() const {
     return this->label;
 }
 
+std::string GButton::getType() const {
+    return "GButton";
+}
+
 void GButton::setText(std::string text) {
     this->label = text;
     stanfordcpplib::getPlatform()->ginteractor_setText(this, text);
     setActionCommand(text);
-}
-
-std::string GButton::getType() const {
-    return "GButton";
 }
 
 std::string GButton::toString() const {
@@ -154,30 +190,30 @@ std::string GCheckBox::getText() const {
     return this->label;
 }
 
-void GCheckBox::setText(std::string text) {
-    this->label = text;
-    stanfordcpplib::getPlatform()->ginteractor_setText(this, text);
-    setActionCommand(text);
-}
-
-bool GCheckBox::isSelected() {
-    return stanfordcpplib::getPlatform()->gcheckbox_isSelected(this);
+std::string GCheckBox::getType() const {
+    return "GCheckBox";
 }
 
 bool GCheckBox::isChecked() {
     return isSelected();
 }
 
-void GCheckBox::setSelected(bool state) {
-    stanfordcpplib::getPlatform()->gcheckbox_setSelected(this, state);
+bool GCheckBox::isSelected() {
+    return stanfordcpplib::getPlatform()->gcheckbox_isSelected(this);
 }
 
 void GCheckBox::setChecked(bool state) {
     setSelected(state);
 }
 
-std::string GCheckBox::getType() const {
-    return "GCheckBox";
+void GCheckBox::setSelected(bool state) {
+    stanfordcpplib::getPlatform()->gcheckbox_setSelected(this, state);
+}
+
+void GCheckBox::setText(std::string text) {
+    this->label = text;
+    stanfordcpplib::getPlatform()->ginteractor_setText(this, text);
+    setActionCommand(text);
 }
 
 std::string GCheckBox::toString() const {
@@ -203,38 +239,38 @@ GRadioButton::GRadioButton(std::string label, std::string group, bool selected) 
     }
 }
 
+std::string GRadioButton::getGroup() const {
+    return group;
+}
+
 std::string GRadioButton::getText() const {
     return this->label;
 }
 
-void GRadioButton::setText(std::string text) {
-    this->label = text;
-    stanfordcpplib::getPlatform()->ginteractor_setText(this, text);
-    setActionCommand(text);
-}
-
-bool GRadioButton::isSelected() {
-    return stanfordcpplib::getPlatform()->gradiobutton_isSelected(this);
+std::string GRadioButton::getType() const {
+    return "GRadioButton";
 }
 
 bool GRadioButton::isChecked() {
     return isSelected();
 }
 
-void GRadioButton::setSelected(bool state) {
-    stanfordcpplib::getPlatform()->gradiobutton_setSelected(this, state);
+bool GRadioButton::isSelected() {
+    return stanfordcpplib::getPlatform()->gradiobutton_isSelected(this);
 }
 
 void GRadioButton::setChecked(bool state) {
     setSelected(state);
 }
 
-std::string GRadioButton::getGroup() const {
-    return group;
+void GRadioButton::setSelected(bool state) {
+    stanfordcpplib::getPlatform()->gradiobutton_setSelected(this, state);
 }
 
-std::string GRadioButton::getType() const {
-    return "GRadioButton";
+void GRadioButton::setText(std::string text) {
+    this->label = text;
+    stanfordcpplib::getPlatform()->ginteractor_setText(this, text);
+    setActionCommand(text);
 }
 
 std::string GRadioButton::toString() const {
@@ -249,11 +285,17 @@ std::string GRadioButton::toString() const {
  */
 
 GSlider::GSlider() {
-    create(0, 100, 50);
+    create(/* min */ 0, /* max */ 100, /* value */ 50);
 }
 
 GSlider::GSlider(int min, int max, int value) {
     create(min, max, value);
+}
+
+void GSlider::create(int min, int max, int value) {
+    this->min = min;
+    this->max = max;
+    stanfordcpplib::getPlatform()->gslider_constructor(this, min, max, value);
 }
 
 int GSlider::getMajorTickSpacing() const {
@@ -314,12 +356,6 @@ std::string GSlider::toString() const {
     return oss.str();
 }
 
-void GSlider::create(int min, int max, int value) {
-    this->min = min;
-    this->max = max;
-    stanfordcpplib::getPlatform()->gslider_constructor(this, min, max, value);
-}
-
 /*
  * Implementation notes: GTextField class
  * --------------------------------------
@@ -341,7 +377,7 @@ std::string GTextField::getPlaceholder() const {
     return m_placeholder;
 }
 
-std::string GTextField::getText() {
+std::string GTextField::getText() const {
     return stanfordcpplib::getPlatform()->gtextfield_getText(this);
 }
 
@@ -349,13 +385,13 @@ std::string GTextField::getType() const {
     return "GTextField";
 }
 
-double GTextField::getValueAsDouble() {
-    std::string text = getText();
+double GTextField::getValueAsDouble() const {
+    std::string text = trim(getText());
     return stringToDouble(text);
 }
 
-int GTextField::getValueAsInt() {
-    std::string text = getText();
+int GTextField::getValueAsInteger() const {
+    std::string text = trim(getText());
     return stringToInteger(text);
 }
 
@@ -376,7 +412,7 @@ void GTextField::setPlaceholder(const std::string& text) {
     stanfordcpplib::getPlatform()->gtextfield_setPlaceholder(this, text);
 }
 
-void GTextField::setText(std::string str) {
+void GTextField::setText(const std::string& str) {
     stanfordcpplib::getPlatform()->gtextfield_setText(this, str);
 }
 
@@ -388,6 +424,17 @@ void GTextField::setValue(int value) {
     setText(integerToString(value));
 }
 
+bool GTextField::valueIsDouble() const {
+    return stringIsDouble(trim(getText()));
+}
+
+bool GTextField::valueIsInteger() const {
+    return stringIsInteger(trim(getText()));
+}
+
+bool GTextField::valueIsReal() const {
+    return stringIsReal(trim(getText()));
+}
 
 std::string GTextField::toString() const {
     std::ostringstream oss;
@@ -424,12 +471,12 @@ std::string GChooser::getSelectedItem() {
     return stanfordcpplib::getPlatform()->gchooser_getSelectedItem(this);
 }
 
-void GChooser::setSelectedItem(std::string item) {
-    stanfordcpplib::getPlatform()->gchooser_setSelectedItem(this, item);
-}
-
 std::string GChooser::getType() const {
     return "GChooser";
+}
+
+void GChooser::setSelectedItem(std::string item) {
+    stanfordcpplib::getPlatform()->gchooser_setSelectedItem(this, item);
 }
 
 std::string GChooser::toString() const {

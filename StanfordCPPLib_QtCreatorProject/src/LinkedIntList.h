@@ -13,7 +13,6 @@
 #include <initializer_list>
 #include <iostream>
 #include <string>
-using namespace std;
 
 struct ListNode;   // forward declaration
 
@@ -31,7 +30,7 @@ public:
     void remove(int index);
     void set(int index, int value);
     int size() const;
-    string toString() const;
+    std::string toString() const;
 
     // section problems
     void setLocked(bool locked);
@@ -61,8 +60,8 @@ public:
 
     // operators for reading/writing lists based on a front pointer
     // (these are used by the CodeStepByStep tool)
-    friend ostream& operator <<(ostream& out, ListNode* front);
-    friend istream& operator >>(istream& input, ListNode*& front);
+    friend std::ostream& operator <<(std::ostream& out, ListNode* front);
+    friend std::istream& operator >>(std::istream& input, ListNode*& front);
 
 private:
     ListNode* front;   // pointer to front node in list;  null if empty
@@ -70,11 +69,11 @@ private:
     bool m_locked;     // whether to forbid method calls (for problems)
 
     void checkIndex(int index, int min, int max) const;
-    void checkLocked(string memberName = "") const;
+    void checkLocked(std::string memberName = "") const;
 };
 
-ostream& operator <<(ostream& out, const LinkedIntList& list);
-istream& operator >>(istream& input, LinkedIntList& list);
+std::ostream& operator <<(std::ostream& out, const LinkedIntList& list);
+std::istream& operator >>(std::istream& input, LinkedIntList& list);
 
 /*
  * The internal structure representing a single node.
@@ -83,17 +82,55 @@ struct ListNode {
     // global count of how many nodes have been created/destroyed
     static int s_allocated;
     static int s_freed;
-    
+
     int data;         // element stored in each node
     ListNode* next;   // pointer to the next node (null if none)
-    
+
     ListNode(int d = 0, ListNode* n = nullptr);
     ~ListNode();
-    
-    static void printChain(ListNode* list, string name = "list", int maxLength = 10);
+
+    static void printChain(ListNode* list, std::string name = "list", int maxLength = 10);
 };
 
-ostream& operator <<(ostream& out, ListNode* front);
-istream& operator >>(istream& input, ListNode*& front);
+/*
+ * The internal structure representing a single node.
+ */
+struct ListNodeDouble {
+    // global count of how many nodes have been created/destroyed
+    static int s_allocated;
+    static int s_freed;
+
+    double data;            // element stored in each node
+    ListNodeDouble* next;   // pointer to the next node (null if none)
+
+    ListNodeDouble(double d = 0.0, ListNodeDouble* n = nullptr);
+    ~ListNodeDouble();
+
+    static void printChain(ListNodeDouble* list, std::string name = "list", int maxLength = 10);
+};
+
+/*
+ * The internal structure representing a single node.
+ */
+struct ListNodeString {
+    // global count of how many nodes have been created/destroyed
+    static int s_allocated;
+    static int s_freed;
+
+    std::string data;       // element stored in each node
+    ListNodeString* next;   // pointer to the next node (null if none)
+
+    ListNodeString(std::string d = "", ListNodeString* n = nullptr);
+    ~ListNodeString();
+
+    static void printChain(ListNodeString* list, std::string name = "list", int maxLength = 10);
+};
+
+std::ostream& operator <<(std::ostream& out, ListNode* front);
+std::istream& operator >>(std::istream& input, ListNode*& front);
+std::ostream& operator <<(std::ostream& out, ListNodeDouble* front);
+std::istream& operator >>(std::istream& input, ListNodeDouble*& front);
+std::ostream& operator <<(std::ostream& out, ListNodeString* front);
+std::istream& operator >>(std::istream& input, ListNodeString*& front);
 
 #endif

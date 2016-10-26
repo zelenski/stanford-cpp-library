@@ -558,12 +558,12 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 			localObject2 = getSourceId((JComponent) localObject1);
 			GInteractor localGInteractor = (GInteractor) getGObject((String) localObject2);
 			String str = localGInteractor.getActionCommand();
-			if (!str.isEmpty()) {
+			// if (str != null && !str.isEmpty()) {
 				acknowledgeEvent("event:actionPerformed(\"%s\", \"%s\", %d, %d)",
 						(String) localObject2, str,
 						(long) getEventTime(),
 						paramActionEvent.getModifiers());
-			}
+			// }
 		}
 	}
 

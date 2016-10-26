@@ -1,4 +1,8 @@
 /*
+ * @version 2016/10/25
+ * - added GInteractor_set/getFont, Mnemonic, Accelerator
+ * @version 2016/10/23
+ * - added GInteractor_add/removeActionListener
  * @version 2016/10/16
  * - added GWindow pixel methods; added GInteractor_setTooltip
  * @version 2016/10/12
@@ -24,6 +28,7 @@ public abstract class JBECommand {
 	public abstract void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd);
 	
 	public static HashMap<String, JBECommand> createCommandTable() {
+		// TODO: get rid of strings; write helper that converts class name into string
 		HashMap<String, JBECommand> localHashMap = new HashMap<String, JBECommand>();
 		localHashMap.put("AutograderInput.addButton", new AutograderInput_addButton());
 		localHashMap.put("AutograderInput.addCategory", new AutograderInput_addCategory());
@@ -77,12 +82,21 @@ public abstract class JBECommand {
 		localHashMap.put("GFileChooser.showOpenDialog", new GFileChooser_showOpenDialog());
 		localHashMap.put("GFileChooser.showSaveDialog", new GFileChooser_showSaveDialog());
 		localHashMap.put("GImage.create", new GImage_create());
+		localHashMap.put("GInteractor.addActionListener", new GInteractor_addActionListener());
+		localHashMap.put("GInteractor.getAccelerator", new GInteractor_getAccelerator());
+		localHashMap.put("GInteractor.getFont", new GInteractor_getFont());
+		localHashMap.put("GInteractor.getMnemonic", new GInteractor_getMnemonic());
 		localHashMap.put("GInteractor.getSize", new GInteractor_getSize());
 		localHashMap.put("GInteractor.isEnabled", new GInteractor_isEnabled());
+		localHashMap.put("GInteractor.removeActionListener", new GInteractor_removeActionListener());
+		localHashMap.put("GInteractor.requestFocus", new GInteractor_requestFocus());
+		localHashMap.put("GInteractor.setAccelerator", new GInteractor_setAccelerator());
 		localHashMap.put("GInteractor.setActionCommand", new GInteractor_setActionCommand());
 		localHashMap.put("GInteractor.setBackground", new GInteractor_setBackground());
 		localHashMap.put("GInteractor.setEnabled", new GInteractor_setEnabled());
+		localHashMap.put("GInteractor.setFont", new GInteractor_setFont());
 		localHashMap.put("GInteractor.setIcon", new GInteractor_setIcon());
+		localHashMap.put("GInteractor.setMnemonic", new GInteractor_setMnemonic());
 		localHashMap.put("GInteractor.setText", new GInteractor_setText());
 		localHashMap.put("GInteractor.setTextPosition", new GInteractor_setTextPosition());
 		localHashMap.put("GInteractor.setTooltip", new GInteractor_setTooltip());

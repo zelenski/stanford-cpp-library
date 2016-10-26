@@ -106,6 +106,10 @@ void HeapPriorityQueue_fromString(HeapPriorityQueue& pqueue, const std::string& 
 void LinkedIntList_fromString(LinkedIntList& list, const std::string& str);
 void ListNode_fromString(ListNode*& ptr, const std::string& str);
 void ListNodeptr_fromString(ListNode*& ptr, const std::string& str);
+void ListNodeDouble_fromString(ListNodeDouble*& ptr, const std::string& str);
+void ListNodeDoubleptr_fromString(ListNodeDouble*& ptr, const std::string& str);
+void ListNodeString_fromString(ListNodeString*& ptr, const std::string& str);
+void ListNodeStringptr_fromString(ListNodeString*& ptr, const std::string& str);
 
 // this one's body must be here in .h file because it's a template
 template <typename T>

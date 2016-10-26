@@ -1,4 +1,6 @@
 /*
+ * @version 2016/10/23
+ * - added requestFocus
  * @version 2016/10/16
  * - added get/setIcon
  * @version 2015/12/01
@@ -8,7 +10,10 @@
 package stanford.spl;
 
 import acm.graphics.*;
+import acm.util.JTFTools;
+
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 
 public abstract class GInteractor extends GObject implements GResizable {
@@ -16,12 +21,74 @@ public abstract class GInteractor extends GObject implements GResizable {
 	
 	private JComponent interactor;
 	private String actionCommand;
+	private String accelerator = "";
 
 	public GInteractor(JComponent paramJComponent) {
 		this.interactor = paramJComponent;
 		this.actionCommand = "";
 		Dimension localDimension = paramJComponent.getPreferredSize();
 		paramJComponent.setSize(localDimension.width, localDimension.height);
+	}
+	
+	public boolean setAccelerator(String accelerator) {
+		final JComponent interactor = getInteractor();
+		if (interactor == null) {
+			return false;
+		}
+		
+		if (accelerator.isEmpty()) {
+			// remove accelerator
+			interactor.getActionMap().remove("hotkey");
+			return true;
+		}
+		
+		// do a tiny bit of preprocessing on the accelerator
+		// e.g. "Ctrl-x" => "control x"
+		accelerator = accelerator.toUpperCase();
+		accelerator = accelerator.replace("ALTGRAPH", "altGraph");
+		accelerator = accelerator.replace("ALT", "alt");
+		accelerator = accelerator.replace("CTRL", "control");
+		accelerator = accelerator.replace("CONTROL", "control");
+		accelerator = accelerator.replace("META", "meta");
+		accelerator = accelerator.replace("SHIFT", "shift");
+		accelerator = accelerator.replace("PRESSED", "pressed");
+		accelerator = accelerator.replace("RELEASED", "released");
+		accelerator = accelerator.replace("TYPED", "typed");
+		accelerator = accelerator.replace("-", " ");
+		
+		if (!accelerator.contains(" ")) {
+			// "y" -> "typed y"
+			accelerator = "pressed " + accelerator;
+		}
+		
+		// see also:
+		// https://docs.oracle.com/javase/7/docs/api/javax/swing/KeyStroke.html#getKeyStroke(java.lang.String)
+		
+		KeyStroke keystroke = KeyStroke.getKeyStroke(accelerator);
+		if (keystroke == null) {
+			return false;
+		}
+		
+		this.accelerator = accelerator;
+		// interactor.getInputMap().put(keystroke, "hotkey");
+		interactor.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keystroke, "hotkey");
+		
+		interactor.getActionMap().put("hotkey", new AbstractAction() {
+			public void actionPerformed(ActionEvent event) {
+				if (interactor instanceof AbstractButton) {
+					// delegate to existing action listener (likely the JavaBackEnd)
+					AbstractButton button = (AbstractButton) interactor;
+					for (ActionListener listener : button.getActionListeners()) {
+						listener.actionPerformed(event);
+					}
+				}
+			}
+		});
+		return true;
+	}
+	
+	public String getAccelerator() {
+		return accelerator;
 	}
 	
 	public void setBackground(Color color) {
@@ -37,6 +104,60 @@ public abstract class GInteractor extends GObject implements GResizable {
 	public void setColor(Color color) {
 		super.setColor(color);
 		setForeground(color);
+	}
+	
+	public void setFont(Font font) {
+		
+	}
+	
+	// e.g. "Arial-Bold-16"
+	public void setFont(String fontString) {
+		Font font = null;
+		JComponent interactor = getInteractor();
+		if (interactor == null) {
+			return;
+		}
+		
+		Font oldFont = interactor.getFont();
+		// font = JTFTools.decodeFont(fontString, oldFont);
+		font = JTFTools.decodeFont(fontString);
+		if (font == null) {
+			font = JTFTools.decodeFont(fontString, oldFont);
+		}
+		if (font != null) {
+			interactor.setFont(font);
+		}
+	}
+	
+	public Font getFont() {
+		Font font = null;
+		JComponent interactor = getInteractor();
+		if (interactor != null) {
+			font = interactor.getFont();
+		}
+		return font;
+	}
+	
+	public String getFontString() {
+		Font font = getFont();
+		if (font == null) {
+			return "";
+		} else {
+			int style = font.getStyle();
+			String fontString = font.getFamily() + "-";
+			if (style == Font.PLAIN) {
+				fontString += "plain";
+			} else {
+				if ((style & Font.BOLD) != 0) {
+					fontString += "bold";
+				}
+				if ((style & Font.ITALIC) != 0) {
+					fontString += "italic";
+				}
+			}
+			fontString += "-" + font.getSize();
+			return fontString;
+		}
 	}
 	
 	public void setForeground(Color color) {
@@ -104,6 +225,35 @@ public abstract class GInteractor extends GObject implements GResizable {
 		super.setLocation(paramDouble1, paramDouble2);
 		this.interactor.setLocation(GMath.round(paramDouble1), GMath.round(paramDouble2));
 		this.interactor.repaint();
+	}
+	
+	public boolean setMnemonic(char mnemonic) {
+		return setMnemonic((int) mnemonic);
+	}
+	
+	public boolean setMnemonic(int mnemonic) {
+		JComponent interactor = getInteractor();
+		if (interactor == null) {
+			return false;
+		}
+		if (interactor instanceof AbstractButton) {
+			((AbstractButton) interactor).setMnemonic(mnemonic);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public char getMnemonic() {
+		JComponent interactor = getInteractor();
+		if (interactor == null) {
+			return '\0';
+		}
+		if (interactor instanceof AbstractButton) {
+			return (char) ((AbstractButton) interactor).getMnemonic();
+		} else {
+			return '\0';
+		}
 	}
 
 	public void setVisible(boolean paramBoolean) {
@@ -175,5 +325,12 @@ public abstract class GInteractor extends GObject implements GResizable {
 	}
 
 	protected void paintObject(Graphics paramGraphics) {
+	}
+	
+	public void requestFocus() {
+		JComponent interactor = getInteractor();
+		if (interactor != null) {
+			interactor.requestFocus();
+		}
 	}
 }

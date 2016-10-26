@@ -15,10 +15,10 @@
 #include "gfilechooser.h"
 #include "private/platform.h"
 
-std::string GFileChooser::showOpenDialog(std::string currentDir) {
-    return stanfordcpplib::getPlatform()->gfilechooser_showOpenDialog(currentDir);
+std::string GFileChooser::showOpenDialog(const std::string& currentDir, const std::string& fileFilter) {
+    return stanfordcpplib::getPlatform()->gfilechooser_showOpenDialog(currentDir, fileFilter);
 }
 
-std::string GFileChooser::showSaveDialog(std::string currentDir) {
-    return stanfordcpplib::getPlatform()->gfilechooser_showSaveDialog(currentDir);
+std::string GFileChooser::showSaveDialog(const std::string& currentDir, const std::string& fileFilter) {
+    return stanfordcpplib::getPlatform()->gfilechooser_showSaveDialog(currentDir, fileFilter);
 }

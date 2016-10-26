@@ -4,6 +4,8 @@
  * This file defines the <code>GWindow</code> class which supports
  * drawing graphical objects on the screen.
  * 
+ * @version 2016/10/23
+ * - added Region, Alignment enums and overloads of region-based methods
  * @version 2016/10/16
  * - added get/setPixel[s], get/setWidth/Height
  * - alphabetized methods
@@ -105,6 +107,9 @@ struct GWindowData {
  */
 class GWindow {
 public:
+    enum Alignment { ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT };
+    enum Region { REGION_CENTER, REGION_EAST, REGION_NORTH, REGION_SOUTH, REGION_WEST };
+
     static const int DEFAULT_WIDTH = 500;
     static const int DEFAULT_HEIGHT = 300;
     static const int CENTER_MAGIC_VALUE = 999999;
@@ -155,11 +160,14 @@ public:
      * ------------------------------------------
      * Adds the interactor (which can also be a <code>GLabel</code>) to
      * the control strip specified by the <code>region</code> parameter.
-     * The <code>region</code> parameter must be one of the strings
+     * The <code>region</code> parameter must be one of the enum
+     * constants from the Region enum, or one of the region strings
      * <code>"NORTH"</code>, <code>"EAST"</code>, <code>"SOUTH"</code>,
      * or <code>"WEST"</code>.
      */
+    void addToRegion(GInteractor* gobj, Region region);
     void addToRegion(GInteractor* gobj, const std::string& region);
+    void addToRegion(GLabel* gobj, Region region);
     void addToRegion(GLabel* gobj, const std::string& region);
 
     /*
@@ -383,8 +391,11 @@ public:
      * Returns the height, size, or width of the given region respectively,
      * specified as "NORTH", "SOUTH", "WEST", "EAST", or "CENTER".
      */
+    double getRegionHeight(Region region) const;
     double getRegionHeight(const std::string& region) const;
+    GDimension getRegionSize(Region region) const;
     GDimension getRegionSize(const std::string& region) const;
+    double getRegionWidth(Region region) const;
     double getRegionWidth(const std::string& region) const;
 
     /*
@@ -516,7 +527,9 @@ public:
      * <code>"NORTH"</code>, <code>"EAST"</code>, <code>"SOUTH"</code>,
      * or <code>"WEST"</code>.
      */
+    void removeFromRegion(GInteractor* gobj, Region region);
     void removeFromRegion(GInteractor* gobj, const std::string& region);
+    void removeFromRegion(GLabel* gobj, Region region);
     void removeFromRegion(GLabel* gobj, const std::string& region);
 
     /*
@@ -670,6 +683,7 @@ public:
      * <code>"CENTER"</code>.  By default, side panels use
      * <code>CENTER</code> alignment.
      */
+    void setRegionAlignment(Region region, Alignment align);
     void setRegionAlignment(const std::string& region, const std::string& align);
 
     /*
@@ -797,6 +811,8 @@ private:
 
     /* Private methods */
     void initGWindow(double width, double height, bool visible);
+    static std::string alignmentToString(Alignment alignment);
+    static std::string regionToString(Region region);
 
     friend class stanfordcpplib::Platform;
     friend class GKeyEvent;

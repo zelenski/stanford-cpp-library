@@ -363,21 +363,21 @@ public class GImage extends GObject implements GResizable, GScalable {
 	 *
 	 * @noshow
 	 */
-	public void paint(Graphics g) {
-		Component imageObserver = getComponent();
-		if (imageObserver == null) {
-			imageObserver = MediaTools.getImageObserver();
-		}
-		if (myImage != null && imageObserver != null) {
-			Rectangle r = getAWTBounds();
-			Color color = getObjectColor();
-			if (color == null) {
-				g.drawImage(myImage, r.x, r.y, r.width, r.height, imageObserver);
-			} else {
-				g.drawImage(myImage, r.x, r.y, r.width, r.height, color, imageObserver);
-			}
-		}
-	}
+//	public void paint2d(Graphics g) {
+//		Component imageObserver = getComponent();
+//		if (imageObserver == null) {
+//			imageObserver = MediaTools.getImageObserver();
+//		}
+//		if (myImage != null && imageObserver != null) {
+//			Rectangle r = getAWTBounds();
+//			Color color = getObjectColor();
+//			if (color == null) {
+//				g.drawImage(myImage, r.x, r.y, r.width, r.height, imageObserver);
+//			} else {
+//				g.drawImage(myImage, r.x, r.y, r.width, r.height, color, imageObserver);
+//			}
+//		}
+//	}
 
 	/**
 	 * Implements the <code>paint2d</code> operation for this graphical object.  This method
@@ -394,11 +394,9 @@ public class GImage extends GObject implements GResizable, GScalable {
 			determineSize();
 			java.awt.Color color = getObjectColor();
 			if (color == null) {
-				graphics2d.drawImage(myImage, 0, 0, GMath.round(myWidth),
-						GMath.round(myHeight), component);
+				graphics2d.drawImage(myImage, 0, 0, GMath.round(myWidth), GMath.round(myHeight), component);
 			} else {
-				graphics2d.drawImage(myImage, 0, 0, GMath.round(myWidth),
-						GMath.round(myHeight), color, component);
+				graphics2d.drawImage(myImage, 0, 0, GMath.round(myWidth), GMath.round(myHeight), color, component);
 			}
 		}
 	}

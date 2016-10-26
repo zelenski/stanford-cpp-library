@@ -611,7 +611,7 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 	 * @param g The graphics context into which the painting is done
 	 * @usage gobj.paint(g);
 	 */
-	public void paint(Graphics g) {
+	public final void paint(Graphics g) {
 		if (this.isVisible) {
 			Graphics2D localGraphics2D = createTransformedGraphics(g);
 			paint2d(localGraphics2D);
