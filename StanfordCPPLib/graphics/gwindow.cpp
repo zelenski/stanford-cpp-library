@@ -5,6 +5,8 @@
  * to the appropriate methods in the Platform class, which is implemented
  * separately for each architecture.
  * 
+ * @version 2016/10/26
+ * - bug fix for compiler error in clang for getAlignment/Region
  * @version 2016/10/18
  * - fixed alpha bugs in get/setPixels
  * - added get/setPixel[s]ARGB to retain transparency channel
@@ -192,6 +194,7 @@ std::string GWindow::alignmentToString(Alignment alignment) {
         return "RIGHT";
     } else {
         error("Invalid alignment: " + integerToString(alignment));
+        return "";
     }
 }
 
@@ -208,6 +211,7 @@ std::string GWindow::regionToString(Region region) {
         return "WEST";
     } else {
         error("Invalid region: " + integerToString(region));
+        return "";
     }
 }
 
