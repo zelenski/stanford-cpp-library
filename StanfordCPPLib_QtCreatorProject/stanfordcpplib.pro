@@ -11,6 +11,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2016/10/30
+# - added FONTSIZE back in, but commented out by default
 # @version 2016/10/19
 # - added PROJECT_FILTER option to make it easier to have multiple .pro in same dir (e.g. ADTs HW)
 # @version 2016/10/18
@@ -239,6 +241,9 @@ DEFINES += SPL_CONSOLE_X=-1
 DEFINES += SPL_CONSOLE_Y=-1
 DEFINES += SPL_CONSOLE_WIDTH=800
 DEFINES += SPL_CONSOLE_HEIGHT=500
+
+# font size of the font in the graphical console window; can also be set via window menu
+#DEFINES += SPL_CONSOLE_FONTSIZE=18
 
 # echo graphical console onto the plain text console as well?
 DEFINES += SPL_CONSOLE_ECHO
@@ -478,4 +483,4 @@ exists($$PWD/lib/autograder/*.cpp) {
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #481; if not, your .pro has been changed!)
+# END OF FILE (this should be line #486; if not, your .pro has been changed!)

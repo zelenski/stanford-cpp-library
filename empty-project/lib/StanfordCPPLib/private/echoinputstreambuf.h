@@ -5,6 +5,8 @@
  * represents a stream buffer that echoes to stdout any user input.
  * We mostly use this to display console input when redirecting in from a file.
  *
+ * @version 2016/10/30
+ * - added constructor that takes a string of input
  * @version 2016/10/04
  * - initial version
  */
@@ -13,6 +15,7 @@
 #define _echoinputstreambuf_h
 
 #include <iostream>
+#include <sstream>
 #include <streambuf>
 
 namespace stanfordcpplib {
@@ -26,8 +29,13 @@ namespace stanfordcpplib {
  */
 class EchoInputStreambuf : public std::streambuf {
 public:
-    EchoInputStreambuf(std::streambuf* source) : m_source(source), m_buffer(0) {
+    EchoInputStreambuf(std::streambuf* source) : m_source(source), m_buffer('\0') {
         // empty
+    }
+
+    EchoInputStreambuf(const std::string& input) : m_buffer('\0') {
+        std::istringstream* istream = new std::istringstream(input);
+        m_source = istream->rdbuf();
     }
 
     virtual ~EchoInputStreambuf() {
