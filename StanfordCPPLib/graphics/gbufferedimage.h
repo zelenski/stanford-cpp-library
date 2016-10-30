@@ -5,6 +5,8 @@
  * See gbufferedimage.cpp for implementation of each member.
  *
  * @author Marty Stepp
+ * @version 2016/10/28
+ * - added equals, countDiffPixels(...) range
  * @version 2016/10/16
  * - refactored to/fromGrid to use static pixelString methods (so we can reuse
  *   the pixel functionality in GWindow)
@@ -173,15 +175,23 @@ public:
      * between this image and the given other image.
      * If the images are not the same size, any pixels in the range of one image
      * but out of the bounds of the other are considered to be differing.
+     * You can optionally pass an (x,y) range of pixels to compare; if none is
+     * passed, the entire images are compared.
      */
     int countDiffPixels(GBufferedImage& image) const;
-    
+    int countDiffPixels(GBufferedImage& image, int xmin, int ymin, int xmax, int ymax) const;
+
     /*
      * Generates a new image whose content is equal to that of this image but with
      * any pixels that don't match those in parameter 'image' colored in the given
      * color (default purple) to highlight differences between the two.
      */
     GBufferedImage* diff(GBufferedImage& image, int diffPixelColor = GBUFFEREDIMAGE_DEFAULT_DIFF_PIXEL_COLOR) const;
+
+    /*
+     * Returns true if the two given images contain exactly the same pixel data.
+     */
+    bool equals(const GBufferedImage& other) const;
     
     /*
      * Sets the color of every pixel in the image to the given color value.

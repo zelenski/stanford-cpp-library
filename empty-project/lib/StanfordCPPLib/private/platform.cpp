@@ -4,6 +4,8 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2016/10/30
+ * - bug fix for Windows version of filelib_isFile
  * @version 2016/10/23
  * - added ginteractor_add/removeActionListener, requestFocus
  * @version 2016/10/18
@@ -391,9 +393,10 @@ bool Platform::filelib_fileExists(const std::string& filename) {
 }
 
 // Windows implementation; see Unix implementation elsewhere in this file
+// https://msdn.microsoft.com/en-us/library/windows/desktop/gg258117(v=vs.85).aspx
 bool Platform::filelib_isFile(const std::string& filename) {
     DWORD attr = GetFileAttributesA(filename.c_str());
-    return attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_NORMAL);
+    return attr != INVALID_FILE_ATTRIBUTES && !(attr & FILE_ATTRIBUTE_DIRECTORY);
 }
 
 // Windows implementation; see Unix implementation elsewhere in this file

@@ -3,6 +3,11 @@
  * ----------------
  * This file implements the strlib.h interface.
  * 
+ * @version 2016/10/30
+ * - alphabetized functions
+ * - added overloads that take type char instead of string:
+ *   stringContains, stringIndexOf, stringJoin, stringLastIndexOf, stringReplace,
+ *   stringSplit, toLowerCase, toUpperCase
  * @version 2016/10/13
  * - modified writeQuotedString to return ostream
  * @version 2016/08/03
@@ -56,6 +61,10 @@ std::string charToString(char c) {
     std::string s;
     s += c;
     return s;
+}
+
+std::string doubleToString(double d) {
+    return realToString(d);
 }
 
 bool endsWith(const std::string& str, char suffix) {
@@ -120,10 +129,6 @@ char integerToChar(int n) {
  * ----------------------------------------
  * These functions use the <sstream> library to perform the conversion.
  */
-std::string doubleToString(double d) {
-    return realToString(d);
-}
-
 std::string integerToString(int n, int radix) {
     if (radix <= 0) {
         error("integerToString: Illegal radix: " + integerToString(radix));
@@ -215,6 +220,137 @@ bool stringIsReal(const std::string& str) {
     return !(stream.fail() || !stream.eof());
 }
 
+bool stringContains(const std::string& s, char ch) {
+    return s.find(ch) != std::string::npos;
+}
+
+bool stringContains(const std::string& s, const std::string& substring) {
+    return s.find(substring) != std::string::npos;
+}
+
+int stringIndexOf(const std::string& s, char ch, int startIndex) {
+    size_t index = s.find(ch, (size_t) startIndex);
+    if (index == std::string::npos) {
+        return -1;
+    } else {
+        return index;
+    }
+}
+
+int stringIndexOf(const std::string& s, const std::string& substring, int startIndex) {
+    size_t index = s.find(substring, (size_t) startIndex);
+    if (index == std::string::npos) {
+        return -1;
+    } else {
+        return index;
+    }
+}
+
+std::string stringJoin(const std::vector<std::string>& v, char delimiter) {
+    std::string delim = charToString(delimiter);
+    return stringJoin(v, delim);
+}
+
+std::string stringJoin(const std::vector<std::string>& v, const std::string& delimiter) {
+    if (v.empty()) {
+        return "";
+    } else {
+        std::ostringstream out;
+        out << v[0];
+        for (int i = 1; i < (int) v.size(); i++) {
+            out << delimiter;
+            out << v[i];
+        }
+        return out.str();
+    }
+}
+
+int stringLastIndexOf(const std::string& s, char ch, int startIndex) {
+    size_t index = s.rfind(ch, (size_t) startIndex);
+    if (index == std::string::npos) {
+        return -1;
+    } else {
+        return index;
+    }
+}
+
+int stringLastIndexOf(const std::string& s, const std::string& substring, int startIndex) {
+    size_t index = s.rfind(substring, (size_t) startIndex);
+    if (index == std::string::npos) {
+        return -1;
+    } else {
+        return index;
+    }
+}
+
+std::string stringReplace(const std::string& str, char old, char replacement, int limit) {
+    std::string str2 = str;
+    stringReplaceInPlace(str2, old, replacement, limit);
+    return str2;
+}
+
+std::string stringReplace(const std::string& str, const std::string& old, const std::string& replacement, int limit) {
+    std::string str2 = str;
+    stringReplaceInPlace(str2, old, replacement, limit);
+    return str2;
+}
+
+int stringReplaceInPlace(std::string& str, char old, char replacement, int limit) {
+    int count = 0;
+    for (size_t i = 0, len = str.length(); i < len; i++) {
+        if (str[i] == old) {
+            str[i] = replacement;
+            count++;
+            if (limit > 0 && count >= limit) {
+                break;
+            }
+        }
+    }
+    return count;
+}
+
+int stringReplaceInPlace(std::string& str, const std::string& old, const std::string& replacement, int limit) {
+    int count = 0;
+    size_t startIndex = 0;
+    size_t rlen = replacement.length();
+    while (limit <= 0 || count < limit) {
+        size_t index = str.find(old, startIndex);
+        if (index == std::string::npos) {
+            break;
+        }
+        str.replace(index, old.length(), replacement);
+        startIndex = index + rlen;
+        count++;
+    }
+    return count;
+}
+
+std::vector<std::string> stringSplit(const std::string& str, char delimiter, int limit) {
+    std::string delim = charToString(delimiter);
+    return stringSplit(str, delim, limit);
+}
+
+std::vector<std::string> stringSplit(const std::string& str, const std::string& delimiter, int limit) {
+    std::string str2 = str;
+    std::vector<std::string> result;
+    int count = 0;
+    size_t index = 0;
+    while (limit < 0 || count < limit) {
+        index = str2.find(delimiter);
+        if (index == std::string::npos) {
+            break;
+        }
+        result.push_back(str2.substr(0, index));
+        str2.erase(str2.begin(), str2.begin() + index + delimiter.length());
+        count++;
+    }
+    if ((int) str2.length() > 0) {
+        result.push_back(str2);
+    }
+
+    return result;
+}
+
 bool stringToBool(const std::string& str) {
     std::istringstream stream(trim(str));
     if (str == "true" || str == "1") {
@@ -280,15 +416,9 @@ double stringToReal(const std::string& str) {
     return value;
 }
 
-/*
- * Implementation notes: case conversion
- * -------------------------------------
- * The functions toUpperCase and toLowerCase return a new string whose
- * characters appear in the desired case. These implementations rely on
- * the fact that the characters in the string are copied when the
- * argument is passed to the function, which makes it possible to change
- * the case of the copy without affecting the original.
- */
+char toLowerCase(char ch) {
+    return (char) tolower(ch);
+}
 
 std::string toLowerCase(const std::string& str) {
     std::string str2 = str;
@@ -301,6 +431,10 @@ void toLowerCaseInPlace(std::string& str) {
     for (int i = 0; i < nChars; i++) {
         str[i] = tolower(str[i]);
     }
+}
+
+char toUpperCase(char ch) {
+    return (char) toupper(ch);
 }
 
 std::string toUpperCase(const std::string& str) {
@@ -358,85 +492,6 @@ void trimStartInPlace(std::string& str) {
     }
     if (start > 0) {
         str.erase(0, start);
-    }
-}
-
-bool stringContains(const std::string& s, const std::string& substring) {
-    return s.find(substring) != std::string::npos;
-}
-
-int stringIndexOf(const std::string& s, const std::string& substring, int startIndex) {
-    size_t index = s.find(substring, (size_t) startIndex);
-    if (index == std::string::npos) {
-        return -1;
-    } else {
-        return index;
-    }
-}
-
-int stringLastIndexOf(const std::string& s, const std::string& substring, int startIndex) {
-    size_t index = s.rfind(substring, (size_t) startIndex);
-    if (index == std::string::npos) {
-        return -1;
-    } else {
-        return index;
-    }
-}
-
-std::string stringReplace(const std::string& str, const std::string& old, const std::string& replacement, int limit) {
-    std::string str2 = str;
-    stringReplaceInPlace(str2, old, replacement, limit);
-    return str2;
-}
-
-int stringReplaceInPlace(std::string& str, const std::string& old, const std::string& replacement, int limit) {
-    int count = 0;
-    size_t startIndex = 0;
-    size_t rlen = replacement.length();
-    while (limit < 0 || count < limit) {
-        size_t index = str.find(old, startIndex);
-        if (index == std::string::npos) {
-            break;
-        }
-        str.replace(index, old.length(), replacement);
-        startIndex = index + rlen;
-        count++;
-    }
-    return count;
-}
-
-std::vector<std::string> stringSplit(const std::string& str, const std::string& delimiter, int limit) {
-    std::string str2 = str;
-    std::vector<std::string> result;
-    int count = 0;
-    size_t index = 0;
-    while (limit < 0 || count < limit) {
-        index = str2.find(delimiter);
-        if (index == std::string::npos) {
-            break;
-        }
-        result.push_back(str2.substr(0, index));
-        str2.erase(str2.begin(), str2.begin() + index + delimiter.length());
-        count++;
-    }
-    if ((int) str2.length() > 0) {
-        result.push_back(str2);
-    }
-
-    return result;
-}
-
-std::string stringJoin(const std::vector<std::string>& v, const std::string& delimiter) {
-    if (v.empty()) {
-        return "";
-    } else {
-        std::ostringstream out;
-        out << v[0];
-        for (int i = 1; i < (int) v.size(); i++) {
-            out << delimiter;
-            out << v[i];
-        }
-        return out.str();
     }
 }
 

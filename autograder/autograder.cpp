@@ -6,6 +6,8 @@
  * See autograder.h for documentation of each member.
  * 
  * @author Marty Stepp
+ * @version 2016/10/28
+ * - added assertSimilarImage
  * @version 2016/10/13
  * - refactored exitEnabled/setExitEnabled to use new Platform version
  * @version 2016/10/04
@@ -672,6 +674,30 @@ int autograderGraphicalMain(int argc, char** argv) {
 }
 #endif // SPL_AUTOGRADER_MODE
 } // namespace autograder
+
+// declared in assertions.h
+void assertSimilarImage(const std::string& msg,
+                        const std::string& imagefile1,
+                        const std::string& imagefile2,
+                        int diffPixelTolerance,
+                        int xmin, int ymin,
+                        int xmax, int ymax) {
+    GBufferedImage image1(imagefile1);
+    GBufferedImage image2(imagefile2);
+    int diffPixels;
+    if (xmin >= 0 && ymin >= 0 && xmax >= xmin && ymax >= ymin) {
+        diffPixels = image1.countDiffPixels(image2, xmin, ymin, xmax, ymax);
+    } else {
+        diffPixels = image1.countDiffPixels(image2);
+    }
+    bool imagesAreEqual = diffPixels <= diffPixelTolerance;
+
+    autograder::setFailDetails(autograder::UnitTestDetails(
+        autograder::UnitTestType::TEST_ASSERT_DIFF_IMAGE,
+        msg, imagefile1, imagefile2, "image",
+        imagesAreEqual));
+    EXPECT_TRUE(imagesAreEqual);
+}
 
 // declared in assertions.h
 void assertEqualsImage(const std::string& msg,

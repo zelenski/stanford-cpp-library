@@ -3,7 +3,13 @@ package stanford.cs106.gui;
 import java.awt.*;
 import java.awt.event.*;
 
+/**
+ * Makes a given window close itself when you press Escape or Ctrl-W.
+ */
 public class WindowCloseKeyListener implements KeyListener {
+	public static void add(Window window) {
+		new WindowCloseKeyListener(window);
+	}
 	
 	private Window window;
 	

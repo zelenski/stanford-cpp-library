@@ -8,6 +8,8 @@
  * can show the results in the GUI for the user.
  * 
  * @author Marty Stepp
+ * @version 2016/10/28
+ * - added assertSimilarImage
  * @version 2016/09/22
  * - added () parentheses around all macro variable usages
  * @version 2016/08/02
@@ -32,7 +34,8 @@
         autograder::UnitTestType::TEST_ASSERT_DIFF, \
         (msg), (a), (b), "diff", \
         diff::DIFF_DEFAULT_FLAGS, \
-        diff::diffPass((a), (b))));
+        diff::diffPass((a), (b)))); \
+    EXPECT_TRUE(diff::diffPass((a), (b)))
 
 #define assertDiffFlags(msg, a, b, flags) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
@@ -40,7 +43,7 @@
         (msg), (a), (b), "diff", \
         flags, \
         diff::diffPass((a), (b), (flags)))); \
-    EXPECT_EQ((a), (b))
+    EXPECT_TRUE(diff::diffPass((a), (b), (flags)))
 
 #define assertDiffPass(msg, a, b) \
     autograder::setFailDetails(autograder::UnitTestDetails( \
@@ -207,5 +210,12 @@
 void assertEqualsImage(const std::string& msg,
                        const std::string& imagefile1,
                        const std::string& imagefile2);
+
+void assertSimilarImage(const std::string& msg,
+                        const std::string& imagefile1,
+                        const std::string& imagefile2,
+                        int diffPixelTolerance = 0,
+                        int xmin = -1, int ymin = -1,
+                        int xmax = -1, int ymax = -1);
 
 #endif // _assertions_h

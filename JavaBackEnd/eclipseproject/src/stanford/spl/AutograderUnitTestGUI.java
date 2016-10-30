@@ -1,5 +1,8 @@
 /*
  * @author Marty Stepp
+ * @version 2016/10/30
+ * - made window close when you press Escape
+ * - added ignore-punctuation diff flag
  * @version 2016/10/22
  * - added support for diff flags
  * @version 2016/10/12
@@ -113,6 +116,7 @@ public class AutograderUnitTestGUI extends Observable
 		frame.setTitle(title);
 		frame.setVisible(false);
 		frame.addWindowListener(new AutograderUnitTestGUIWindowAdapter());
+		WindowCloseKeyListener.add(frame);
 		
 		descriptionLabel = new JLabel("Autograder Tests");
 		if (NORMAL_COLOR == null) {

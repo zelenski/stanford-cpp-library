@@ -4,6 +4,7 @@
 
 #include "codestepbystep.h"
 #include "exceptions.h"
+#include "plainconsole.h"
 #include "private/platform.h"
 
 extern void startupMainDontRunMain(int argc, char** argv);
@@ -320,7 +321,7 @@ void main_begin(int argc, char** argv) {
     CodeStepByStep::old_terminate = std::set_terminate(CodeStepByStep::__terminateHandler);
 
     // echo console input
-    // plainconsole::setEcho(true);
+    plainconsole::setEcho(true);
 
     // parse command-line args
     CodeStepByStep::__testToRun = "";

@@ -59,6 +59,6 @@ void error(const char* msg) {
     throw ErrorException(msg);
 }
 
-void error(std::string msg) {
+/* [[noreturn]] */ void error(std::string msg) {
     throw ErrorException(msg);
 }

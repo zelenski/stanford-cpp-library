@@ -6,6 +6,8 @@
  * See ioutils.h for documentation of each function.
  * 
  * @author Marty Stepp
+ * @version 2016/10/28
+ * - bug fix for output limit static var
  * @version 2016/10/22
  * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * @version 2014/10/14
@@ -88,7 +90,7 @@ bool getConsoleEchoUserInput() {
 }
 
 int getConsoleOutputLimit() {
-    return STATIC_VARIABLE(consoleEchoUserInput);
+    return STATIC_VARIABLE(consoleOutputLimit);
 }
         
 void redirectStdinBegin(std::string userInput) {
@@ -121,6 +123,6 @@ void setConsoleEchoUserInput(bool echo) {
 }
 
 void setConsoleOutputLimit(int limit) {
-    STATIC_VARIABLE(consoleEchoUserInput) = limit;
+    STATIC_VARIABLE(consoleOutputLimit) = limit;
 }
 } // namespace ioutils

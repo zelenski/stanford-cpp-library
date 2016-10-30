@@ -29,6 +29,7 @@ my @ALL_FILES = (
 "$basedir/collections/shuffle.h",            # deps: random.h
 "$basedir/collections/collections.h",        # deps: none
 "$basedir/util/observable.h",                # deps: error.h
+"$basedir/util/recursion.h",
 "$basedir/system/exceptions.h",
 "$basedir/collections/vector.h",
 "$basedir/io/filelib.h",                     # deps: vector.h
@@ -66,6 +67,7 @@ my @ALL_FILES = (
 "$basedir/io/bitstream.h",
 #"$basedir/util/foreach.h",
 #"$basedir/io/console.h",
+"$basedir/io/plainconsole.h",
 "$basedir/util/sound.h",
 "$basedir/private/consolestreambuf.h",
 "$basedir/private/echoinputstreambuf.h",
@@ -112,7 +114,9 @@ my @ALL_FILES = (
 "$basedir/system/call_stack_gcc.cpp",
 #"$basedir/system/call_stack_windows.cpp",   # not needed because the server runs *nix
 "$basedir/system/error.cpp",
+"$basedir/io/plainconsole.cpp",
 "$basedir/system/exceptions.cpp",
+"$basedir/util/recursion.cpp",
 "$basedir/util/direction.cpp",
 "$basedir/util/gmath.cpp",
 "$basedir/util/observable.cpp",

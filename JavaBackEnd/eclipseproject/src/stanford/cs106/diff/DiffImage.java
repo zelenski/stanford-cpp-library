@@ -1,8 +1,7 @@
 package stanford.cs106.diff;
 
 import acm.graphics.GObject;
-import acm.util.ErrorException;
-import acm.util.MediaTools;
+import acm.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
@@ -11,14 +10,16 @@ import java.net.*;
 import javax.imageio.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import stanford.cs106.gui.GuiUtils;
-import stanford.cs106.io.IORuntimeException;
+import stanford.cs106.gui.*;
+import stanford.cs106.io.*;
 
 /**
  * This class views the difference between two images in a graphical window
  * with a slider to switch between the two.
  *
  * @author Marty Stepp
+ * @version 2016/10/30
+ * - made Escape close the window
  * @version 2016/08/02
  * - added south panel with pixel information
  * - re-enabled JMenuBar options
@@ -367,6 +368,7 @@ public class DiffImage extends JPanel {
 		}
 		frame = new JFrame(title);
 		frame.setResizable(false);
+		WindowCloseKeyListener.add(frame);
 
 		slider = new JSlider();
 		slider.setPaintLabels(false);

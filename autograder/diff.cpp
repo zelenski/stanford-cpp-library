@@ -6,6 +6,8 @@
  * See diff.h for documentation of each function.
  * 
  * @author Marty Stepp
+ * @version 2016/10/30
+ * - fixed diff flags; added punctuation flag
  * @version 2016/10/22
  * - added diffPass (for autograder assertDiff)
  * @version 2014/10/14
@@ -38,6 +40,13 @@ std::string diff(std::string s1, std::string s2, int flags) {
     if (flags & IGNORE_NONNUMBERS) {
         s1 = regexReplace(s1, "[^0-9\n]+", " ");
         s2 = regexReplace(s2, "[^0-9\n]+", " ");
+        lines1 = stringutils::explodeLines(s1);
+        lines2 = stringutils::explodeLines(s2);
+    }
+    if (flags & IGNORE_PUNCTUATION) {
+        std::string punct = "[.,?!'\"()\\/#$%@^&*_\\[\\]{}|<>:;-]+";
+        s1 = regexReplace(s1, punct, "");
+        s2 = regexReplace(s2, punct, "");
         lines1 = stringutils::explodeLines(s1);
         lines2 = stringutils::explodeLines(s2);
     }

@@ -5,6 +5,8 @@
  * by student code on the console.
  * 
  * @author Marty Stepp
+ * @version 2016/10/30
+ * - moved recursion functions to recursion.h/cpp
  * @version 2016/10/04
  * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * @version 2016/08/02
@@ -152,9 +154,10 @@ void setTopLevelExceptionHandlerEnabled(bool enabled) {
  * Some lines from the stack trace are filtered out because they come from
  * private library code or OS code and would confuse the student.
  */
-static bool shouldFilterOutFromStackTrace(const std::string& function) {
+bool shouldFilterOutFromStackTrace(const std::string& function) {
     return startsWith(function, "__")
             || function == "??"
+            || function == "_clone"
             || function == "error(string)"
             || function == "error"
             || function == "_start"
@@ -165,6 +168,7 @@ static bool shouldFilterOutFromStackTrace(const std::string& function) {
             || function.find(" error(") != std::string::npos
             || function.find("testing::") != std::string::npos
             || function.find("printStackTrace") != std::string::npos
+            || function.find("shouldFilterOutFromStackTrace") != std::string::npos
             || function.find("stanfordCppLibSignalHandler") != std::string::npos
             || function.find("stanfordCppLibPosixSignalHandler") != std::string::npos
             || function.find("stanfordCppLibTerminateHandler") != std::string::npos
@@ -487,37 +491,3 @@ static void stanfordCppLibTerminateHandler() {
 
 } // namespace exceptions
 
-int getRecursionIndentLevel() {
-    // constructing the following object jumps into fancy code in call_stack_gcc/windows.cpp
-    // to rebuild the stack trace; implementation differs for each operating system
-    stacktrace::call_stack trace;
-    std::vector<stacktrace::entry> entries = trace.stack;
-    
-    std::string currentFunction = "";
-    int currentFunctionCount = 0;
-    for (size_t i = 0; i < entries.size(); ++i) {
-        // remove references to std:: namespace
-        if (exceptions::shouldFilterOutFromStackTrace(entries[i].function)
-                || entries[i].function.find("recursionIndent(") != std::string::npos
-                || entries[i].function.find("getRecursionIndentLevel(") != std::string::npos) {
-            continue;
-        } else if (currentFunction.empty()) {
-            currentFunction = entries[i].function;
-            currentFunctionCount = 1;
-        } else if (entries[i].function == currentFunction) {
-            currentFunctionCount++;
-        } else {
-            break;
-        }
-    }
-    return currentFunctionCount;
-}
-
-std::string recursionIndent(std::string indenter) {
-    int indent = getRecursionIndentLevel();
-    std::string result = "";
-    for (int i = 0; i < indent - 1; i++) {
-        result += indenter;
-    }
-    return result;
-}

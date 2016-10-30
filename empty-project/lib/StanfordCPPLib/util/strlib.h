@@ -4,6 +4,12 @@
  * This file exports several useful string functions that are not
  * included in the C++ string library.
  * 
+ * @version 2016/10/30
+ * - added overloads that take type char instead of string:
+ *   stringContains, stringIndexOf, stringJoin, stringLastIndexOf, stringReplace,
+ *   stringSplit, toLowerCase, toUpperCase
+ * @version 2016/10/26
+ * - bug fix for stringLastIndexOf default index arg
  * @version 2016/10/13
  * - modified writeGenericValue, writeQuotedString to return ostream
  * @version 2016/08/03
@@ -50,6 +56,17 @@ int charToInteger(char c);
  * For example, charToString('Q') returns the string "Q".
  */
 std::string charToString(char c);
+
+/*
+ * Function: doubleToString
+ * Usage: string s = doubleToString(d);
+ * ------------------------------------
+ * Converts a floating-point number into the corresponding string form.
+ * For example, calling <code>doubleToString(23.45)</code> returns
+ * the string <code>"23.45"</code>.
+ * Equivalent to realToString.
+ */
+std::string doubleToString(double d);
 
 /*
  * Function: endsWith
@@ -140,7 +157,6 @@ std::string pointerToString(void* p);
  * the string <code>"23.45"</code>.
  */
 std::string realToString(double d);
-std::string doubleToString(double d);   // alias
 
 /*
  * Function: startsWith
@@ -153,22 +169,32 @@ bool startsWith(const std::string& str, char prefix);
 bool startsWith(const std::string& str, const std::string& prefix);
 
 /*
- * Returns true if the given substring occurs somewhere in s.
+ * Returns true if the given substring or character occurs somewhere in s.
  */
+bool stringContains(const std::string& s, char ch);
 bool stringContains(const std::string& s, const std::string& substring);
 
 /*
- * Returns the index of the start of the first occurrence of the given substring
- * in s, if it occurs in s.  If it does not occur, returns -1.
+ * Returns the index of the start of the first occurrence of the given character
+ * or substring in s, if it occurs in s.  If it does not occur, returns -1.
  * This function is very similar to string.find, but find returns string::npos
  * when the string is not found.
  */
+int stringIndexOf(const std::string& s, char ch, int startIndex = 0);
 int stringIndexOf(const std::string& s, const std::string& substring, int startIndex = 0);
 
 /*
  * Returns true if the given string is either "true" or "false".
  */
 bool stringIsBool(const std::string& str);
+
+/*
+ * Returns true if the given string could be converted to an real number
+ * successfully by the stringToReal function, which will be true if
+ * the string has the format of a real number such as "3.14" or "-46".
+ * Equivalent to stringIsReal.
+ */
+bool stringIsDouble(const std::string& str);   // alias
 
 /*
  * Returns true if the given string could be converted to an integer
@@ -192,7 +218,6 @@ bool stringIsLong(const std::string& str, int radix = 10);
  * the string has the format of a real number such as "3.14" or "-46".
  */
 bool stringIsReal(const std::string& str);
-bool stringIsDouble(const std::string& str);   // alias
 
 /*
  * Combines the elements of the given STL vector into a single string,
@@ -200,25 +225,34 @@ bool stringIsDouble(const std::string& str);   // alias
  * For example, joining the elements of the vector
  * {"Hi", "there", "", "Jim"} with the delimiter "?" returns "Hi?there??Jim".
  */
+std::string stringJoin(const std::vector<std::string>& v, char delimiter = '\n');
 std::string stringJoin(const std::vector<std::string>& v, const std::string& delimiter = "\n");
 
 /*
- * Returns the index of the start of the last occurrence of the given substring
- * in s, if it occurs in s.  If it does not occur, returns -1.
+ * Returns the index of the start of the last occurrence of the given character
+ * or substring in s, if it occurs in s.  If it does not occur, returns -1.
  * This function is very similar to string.rfind, but rfind returns string::npos
  * when the string is not found.
  */
-int stringLastIndexOf(const std::string& s, const std::string& substring, int startIndex = 0);
+int stringLastIndexOf(const std::string& s, char ch, int startIndex = std::string::npos);
+int stringLastIndexOf(const std::string& s, const std::string& substring, int startIndex = std::string::npos);
 
 /*
  * Returns a new string formed by replacing any occurrences of the given 'old'
- * text with the given replacement text in 'str'.
+ * character or text with the given replacement text in 'str'.
  * Note that this is NOT a regular expression replacement; it looks for the
  * 'old' string literally.  If you want regular expressions, see regexpr.h.
  * The 'inPlace' variant modifies an existing string rather than returning a new one,
  * and returns the number of occurrences of 'old' were replaced.
  */
+std::string stringReplace(const std::string& str, char old, char replacement, int limit = -1);
 std::string stringReplace(const std::string& str, const std::string& old, const std::string& replacement, int limit = -1);
+
+/*
+ * A variant of stringReplace, except that it accepts the string as a reference
+ * and modifies it in-place rather than returning a new string.
+ */
+int stringReplaceInPlace(std::string& str, char old, char replacement, int limit = -1);
 int stringReplaceInPlace(std::string& str, const std::string& old, const std::string& replacement, int limit = -1);
 
 /*
@@ -227,6 +261,7 @@ int stringReplaceInPlace(std::string& str, const std::string& old, const std::st
  * For example, splitting "Hi there  Jim!" on " " returns
  * {"Hi", "there", "", "Jim!"}.
  */
+std::vector<std::string> stringSplit(const std::string& str, char delimiter, int limit = -1);
 std::vector<std::string> stringSplit(const std::string& str, const std::string& delimiter, int limit = -1);
 
 /*
@@ -242,6 +277,18 @@ bool stringToBool(const std::string& str);
  * Throws an error if the given string does not contain exactly 1 character.
  */
 char stringToChar(const std::string& str);
+
+/*
+ * Function: stringToDouble
+ * Usage: double d = stringToDouble(str);
+ * --------------------------------------
+ * Converts a string representing a real number into its corresponding
+ * value.  If the string is not a legal floating-point number or contains
+ * extraneous characters other than whitespace, <code>stringToDouble</code>
+ * calls <code>error</code> with an appropriate message.
+ * Equivalent to stringToReal.
+ */
+double stringToDouble(const std::string& str);   // alias
 
 /*
  * Function: stringToInteger
@@ -279,9 +326,9 @@ long stringToLong(const std::string& str, int radix = 10);
  * value.  If the string is not a legal floating-point number or contains
  * extraneous characters other than whitespace, <code>stringToReal</code>
  * calls <code>error</code> with an appropriate message.
+ * Equivalent to stringToDouble.
  */
 double stringToReal(const std::string& str);
-double stringToDouble(const std::string& str);   // alias
 
 /*
  * Function: toLowerCase
@@ -291,6 +338,7 @@ double stringToDouble(const std::string& str);   // alias
  * into their lowercase equivalents.
  * The 'inPlace' version modifies an existing string rather than returning a new one.
  */
+char toLowerCase(char ch);
 std::string toLowerCase(const std::string& str);
 void toLowerCaseInPlace(std::string& str);
 
@@ -302,6 +350,7 @@ void toLowerCaseInPlace(std::string& str);
  * into their uppercase equivalents.
  * The 'inPlace' version modifies an existing string rather than returning a new one.
  */
+char toUpperCase(char ch);
 std::string toUpperCase(const std::string& str);
 void toUpperCaseInPlace(std::string& str);
 

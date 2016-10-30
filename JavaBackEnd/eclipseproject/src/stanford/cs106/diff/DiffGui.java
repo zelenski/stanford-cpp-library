@@ -162,7 +162,7 @@ public class DiffGui implements ActionListener, AdjustmentListener {
 		frame.setTitle("Diff");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setContentPane(overall);
-		new WindowCloseKeyListener(frame);
+		WindowCloseKeyListener.add(frame);
 		frame.pack();
 		if (frame.getWidth() > MAX_WIDTH) {
 			frame.setSize(MAX_WIDTH, frame.getHeight());

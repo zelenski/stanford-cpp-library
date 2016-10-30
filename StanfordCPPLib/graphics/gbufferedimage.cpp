@@ -5,6 +5,8 @@
  * See that file for documentation of each member.
  *
  * @author Marty Stepp
+ * @version 2016/10/28
+ * - added equals, countDiffPixels(...) range
  * @version 2016/10/16
  * - refactored to/fromGrid to use static pixelString methods (so we can reuse
  *   the pixel functionality in GWindow)
@@ -163,6 +165,26 @@ int GBufferedImage::countDiffPixels(GBufferedImage& image) const {
     return diffPxCount;
 }
 
+int GBufferedImage::countDiffPixels(GBufferedImage& image, int xmin, int ymin, int xmax, int ymax) const {
+    int w1 = (int) getWidth();
+    int h1 = (int) getHeight();
+    int w2 = (int) image.getWidth();
+    int h2 = (int) image.getHeight();
+    int diffPxCount = 0;
+
+    for (int y = ymin; y < ymax; y++) {
+        for (int x = xmin; x < xmax; x++) {
+            int px1 = x < w1 && y < h1 ? m_pixels[y][x] : -1;
+            int px2 = x < w2 && y < h2 ? image.m_pixels[y][x] : -1;
+            if (px1 != px2) {
+                diffPxCount++;
+            }
+        }
+    }
+
+    return diffPxCount;
+}
+
 GBufferedImage* GBufferedImage::diff(GBufferedImage& image, int diffPixelColor) const {
     int w1 = (int) getWidth();
     int h1 = (int) getHeight();
@@ -194,6 +216,15 @@ GBufferedImage* GBufferedImage::diff(GBufferedImage& image, int diffPixelColor) 
     result->fromGrid(resultGrid);
     return result;
 }
+
+
+bool GBufferedImage::equals(const GBufferedImage& other) const {
+    return floatingPointEqual(m_width, other.m_width)
+            && floatingPointEqual(m_height, other.m_height)
+            && m_backgroundColor == other.m_backgroundColor
+            && m_pixels == other.m_pixels;
+}
+
 
 void GBufferedImage::fill(int rgb) {
     checkColor("fill", rgb);
@@ -436,12 +467,9 @@ void GBufferedImage::init(double x, double y, double width, double height,
 }
 
 bool operator ==(const GBufferedImage& img1, const GBufferedImage& img2) {
-    return floatingPointEqual(img1.m_width, img2.m_width)
-            && floatingPointEqual(img1.m_height, img2.m_height)
-            && img1.m_backgroundColor == img2.m_backgroundColor
-            && img1.m_pixels == img2.m_pixels;
+    return img1.equals(img2);
 }
 
 bool operator !=(const GBufferedImage& img1, const GBufferedImage& img2) {
-    return !(img1 == img2);
+    return !img1.equals(img2);
 }

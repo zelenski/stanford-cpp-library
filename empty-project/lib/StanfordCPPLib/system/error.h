@@ -20,7 +20,7 @@
  *<pre>
  *    try {
  *       ... code in which an error might occur ...
- *    } catch (ErrorException & ex) {
+ *    } catch (ErrorException& ex) {
  *       ... code to handle the error condition ...
  *    }
  *</pre>
@@ -56,9 +56,11 @@ class InterruptedIOException : public std::exception {
  * ------------------
  * Signals an error condition in a program by throwing an
  * <code>ErrorException</code> with the specified message.
+ *
+ * TODO: use [[noreturn]] to indicate that function does not ever return
+ * (added in c++11; still incompatible with some compilers?)
  */
-
-void error(std::string msg);
+/* [[noreturn]] */ void error(std::string msg);
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 

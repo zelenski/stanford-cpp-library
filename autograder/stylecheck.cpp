@@ -6,6 +6,8 @@
  * See sylecheck.h for documentation of each function.
  * 
  * @author Marty Stepp
+ * @version 2016/10/28
+ * - improved category merging on stylecheck when merged with autograder tests
  * @version 2016/10/22
  * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * - changed styleCheck function to return rather than crash on file-not-found
@@ -41,7 +43,7 @@ STATIC_VARIABLE_DECLARE(bool, styleChecksMerged, false)
 
 static bool processPatternNode(const std::string& codeFileName,
                                rapidxml::xml_node<>* patternNode,
-                               const std::string& categoryName,
+                               std::string categoryName,
                                const std::string& codeFileText,
                                bool omitOnPass) {
     std::ostringstream out;
@@ -101,7 +103,12 @@ static bool processPatternNode(const std::string& codeFileName,
     std::string prefix = "";
     std::string testName = patternDescription;
     if (STATIC_VARIABLE(styleChecksMerged)) {
-        prefix += "Style Checker: " + codeFileName + ": ";
+        // merge categories; one "category" per file
+        prefix += "Style Checker: " + codeFileName;
+        if (!categoryName.empty()) {
+            testName = "[" + categoryName + "] " + testName;
+        }
+        categoryName = "";
     } else {
         prefix += "[" + codeFileName + "] ";
         testName = prefix + patternDescription;
