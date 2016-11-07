@@ -53,6 +53,10 @@ public class JPlaceholderTextField extends JTextField {
 	public int getValueAsInt() {
 		return Integer.parseInt(getText());
 	}
+	
+	public int getValueAsInteger() {
+		return Integer.parseInt(getText());
+	}
 
 	@Override
 	protected void paintComponent(final Graphics pG) {
@@ -93,6 +97,10 @@ public class JPlaceholderTextField extends JTextField {
 	}
 	
 	public boolean valueIsInt() {
+		return StringUtils.stringIsInteger(getText());
+	}
+	
+	public boolean valueIsInteger() {
 		return StringUtils.stringIsInteger(getText());
 	}
 }

@@ -56,7 +56,7 @@ public class JBECanvas extends GCanvas {
 			topCompound.removeAll();
 		}
 		super.clear();
-		repaint();
+		conditionalRepaint();
 	}
 
 //	public void paint(Graphics paramGraphics) {

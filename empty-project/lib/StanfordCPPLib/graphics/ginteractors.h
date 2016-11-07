@@ -5,6 +5,8 @@
  * provided in the Java Swing libraries.
  * <include src="pictures/ClassHierarchies/GInteractorHierarchy-h.html">
  * 
+ * @version 2016/11/02
+ * - added GTextField constructor that takes a string parameter
  * @version 2016/10/25
  * - added valueIsDouble/Integer/Real to GTextField
  * @version 2016/10/24
@@ -478,6 +480,7 @@ public:
      * Constructor: GTextField
      * Usage: GTextField *field = new GTextField();
      *        GTextField *field = new GTextField(nChars);
+     *        GTextField *field = new GTextField(text);
      * --------------------------------------------------
      * Creates a text field capable of holding <code>nChars</code> characters,
      * which defaults to 10.  Assigning an action command to the text field
@@ -486,6 +489,7 @@ public:
      */
     GTextField();
     GTextField(int nChars);
+    GTextField(const std::string& text);
 
     /*
      * Method: getInputType

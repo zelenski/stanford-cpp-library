@@ -4,6 +4,8 @@
  * This file exports the <code>PriorityQueue</code> class, a
  * collection in which values are processed in priority order.
  * 
+ * @version 2016/11/07
+ * - small const-correctness bug fix in front() / back() (courtesy Truman Cranor)
  * @version 2016/10/14
  * - modified floating-point equality tests to use floatingPointEqual function
  * @version 2016/09/24
@@ -435,7 +437,7 @@ ValueType & PriorityQueue<ValueType>::back() {
     if (count == 0) {
         error("PriorityQueue::back: Attempting to read back of an empty queue");
     }
-    return heap.get(backIndex).value;
+    return heap[backIndex].value;
 }
 
 /*
@@ -580,7 +582,7 @@ ValueType & PriorityQueue<ValueType>::front() {
     if (count == 0) {
         error("PriorityQueue::front: Attempting to read front of an empty queue");
     }
-    return heap.get(0).value;
+    return heap[0].value;
 }
 
 template <typename ValueType>

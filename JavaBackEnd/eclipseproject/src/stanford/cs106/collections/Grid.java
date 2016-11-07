@@ -4,7 +4,10 @@
  * programs over to Java with minimal code changes.
  * 
  * @author Marty Stepp
+ * @version 2016/11/03
+ * - added equals, hashCode
  * @version 2015/05/28
+ * - initial version
  */
 
 package stanford.cs106.collections;
@@ -19,6 +22,33 @@ public class Grid<E> {
 		resize(rows, cols);
 	}
 	
+	public boolean equals(Object o) {
+		if (!(o instanceof Grid)) {
+			return false;
+		}
+		@SuppressWarnings("unchecked")
+		Grid<E> grid = (Grid<E>) o;
+		if (grid.numRows() != numRows() || grid.numCols() != numCols()) {
+			return false;
+		}
+		
+		for (int row = 0; row < rows; row++) {
+			for (int col = 0; col < cols; col++) {
+				E him = grid.array[row][col];
+				E me = array[row][col];
+				if (him != me) {
+					return false;
+				}
+				if (him != null && me != null && !him.equals(me)) {
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	}
+	
+	
 	public void fill(E value) {
 		for (int row = 0; row < rows; row++) {
 			for (int col = 0; col < cols; col++) {
@@ -30,6 +60,17 @@ public class Grid<E> {
 	public E get(int row, int col) {
 		checkIndex(row, col);
 		return array[row][col];
+	}
+	
+	public int hashCode() {
+		int mult = 7;
+		int hash = 31;
+		for (int row = 0; row < rows; row++) {
+			for (int col = 0; col < cols; col++) {
+				hash = hash * mult + (array[row][col] == null ? 0 : array[row][col].hashCode());
+			}
+		}
+		return hash;
 	}
 	
 	public int height() {

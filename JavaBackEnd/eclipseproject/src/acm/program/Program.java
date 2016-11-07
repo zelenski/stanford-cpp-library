@@ -1,4 +1,6 @@
 /*
+ * @version 2016/11/03
+ * - added removeFromRegion
  * @version 2016/10/21
  * - added center, pack, setWidth, setHeight, setLocation, setX, setY
  * - fixed printf bug (was mistakenly inserting \n line break at end)
@@ -2222,6 +2224,30 @@ public abstract class Program extends JApplet
 		}
 		invisibleObjects.remove(comp);
 	}
+	
+	/**
+	 * Removes the specified component from the specified region of this program window.
+	 */
+	public void removeFromRegion(Component comp, String region) {
+		JPanel panel = null;
+		if (region.equalsIgnoreCase("NORTH")) {
+			panel = this.northPanel;
+		} else if (region.equalsIgnoreCase("EAST")) {
+			panel = this.eastPanel;
+		} else if (region.equalsIgnoreCase("SOUTH")) {
+			panel = this.southPanel;
+		} else if (region.equalsIgnoreCase("WEST")) {
+			panel = this.westPanel;
+		} else if (region.equalsIgnoreCase("CENTER")) {
+			panel = this.centerPanel;
+		}
+		if (panel != null) {
+			panel.remove(comp);
+			panel.validate();
+			validate();
+		}
+	}
+	
 
 /* Overridden method: removeAll() */
 /**

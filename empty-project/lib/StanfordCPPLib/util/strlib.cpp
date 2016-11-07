@@ -3,6 +3,8 @@
  * ----------------
  * This file implements the strlib.h interface.
  * 
+ * @version 2016/11/07
+ * - bug fix: urlDecode throws error on invalid encodings (courtesy GitHub @scinart)
  * @version 2016/10/30
  * - alphabetized functions
  * - added overloads that take type char instead of string:
@@ -504,9 +506,13 @@ std::string urlDecode(const std::string& str) {
         } else if (c == '+')  {
             unescaped << ' ';
         } else if (c == '%') {
+            // throw error if string is invalid and doesn't have 2 char after,
+            // or if it has non-hex chars here (courtesy GitHub @scinart)
+            if (i + 2 >= n || !isxdigit(*(i + 1)) || !isxdigit(*(i + 2))) {
+                error("urlDecode: Invalid percent-encoding");
+            }
+
             // decode a URL-encoded ASCII character, e.g. %40 => &
-            // TODO: fails if string is invalid and doesn't have 2 char after %
-            //       or if it has non-hex chars here
             char ch1 = *(i + 1);
             char ch2 = *(i + 2);
             int hex1 = (isdigit(ch1) ? (ch1 - '0') : (toupper(ch1) - 'A' + 10));

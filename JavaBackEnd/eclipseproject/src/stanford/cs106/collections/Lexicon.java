@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp
+ * @version 2016/11/03
+ * - added isEmpty, toString, equals, hashCode
  * @version 2016/07/13
  * - added iterator, implementing Iterable<String> for for-each looping
  * - added constructors that take an input source
@@ -81,15 +83,36 @@ public class Lexicon implements Iterable<String> {
 		return knownPrefixes.contains(prefix.toUpperCase());
 	}
 	
+	public boolean equals(Object o) {
+		if (o instanceof Lexicon) {
+			Lexicon lex = (Lexicon) o;
+			return lex.words.equals(this.words);
+		} else {
+			return false;
+		}
+	}
+	
+	public int hashCode() {
+		return words.hashCode();
+	}
+
+	public boolean isEmpty() {
+		return size() == 0;
+	}
+	
 	public Iterator<String> iterator() {
 		return Collections.unmodifiableSet(words).iterator();
+	}
+	
+	public int prefixCount() {
+		return knownPrefixes.size();
 	}
 	
 	public int size() {
 		return words.size();
 	}
 	
-	public int prefixCount() {
-		return knownPrefixes.size();
+	public String toString() {
+		return words.toString();
 	}
 }

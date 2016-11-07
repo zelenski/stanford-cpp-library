@@ -3,6 +3,9 @@
  * ------------------
  * This file implements the gobjects.h interface.
  * 
+ * @version 2016/11/07
+ * - alphabetized all members
+ * - modified all members that accept std::string to take const std::string&
  * @version 2016/10/14
  * - modified floating-point equality tests to use floatingPointEqual function
  * @version 2016/09/27
@@ -27,142 +30,21 @@
 #include "gmath.h"
 #include "private/platform.h"
 
+
+// static constants
 static const double LINE_TOLERANCE = 1.5;
 static const double ARC_TOLERANCE = 2.5;
 static const double DEFAULT_CORNER = 10;
 static const std::string DEFAULT_GLABEL_FONT = "Dialog-13";
 
+/*
+ * Returns the square of the distance between two points.
+ * Used when checking to see if a line touches a given point.
+ */
 static double dsq(double x0, double y0, double x1, double y1);
 
-void GObject::setAntiAliasing(bool value) {
-    stanfordcpplib::getPlatform()->gobject_setAntialiasing(value);
-}
 
-double GObject::getX() const {
-    return x;
-}
-
-double GObject::getY() const {
-    return y;
-}
-
-GPoint GObject::getLocation() const {
-    return GPoint(x, y);
-}
-
-void GObject::setLocation(const GPoint & pt) {
-    setLocation(pt.getX(), pt.getY());
-}
-
-void GObject::setLocation(double x, double y) {
-    this->x = x;
-    this->y = y;
-    stanfordcpplib::getPlatform()->gobject_setLocation(this, x, y);
-}
-
-void GObject::move(double dx, double dy) {
-    setLocation(x + dx, y + dy);
-}
-
-double GObject::getWidth() const {
-    return getBounds().getWidth();
-}
-
-double GObject::getHeight() const {
-    return getBounds().getHeight();
-}
-
-GDimension GObject::getSize() const {
-    GRectangle bounds = getBounds();
-    return GDimension(bounds.getWidth(), bounds.getHeight());
-}
-
-void GObject::setLineWidth(double lineWidth) {
-    this->lineWidth = lineWidth;
-    stanfordcpplib::getPlatform()->gobject_setLineWidth(this, lineWidth);
-}
-
-double GObject::getLineWidth() const {
-    return lineWidth;
-}
-
-void GObject::setColor(std::string color) {
-    setColor(convertColorToRGB(color));
-}
-
-void GObject::setColor(int rgb) {
-    this->color = convertRGBToColor(rgb);
-    stanfordcpplib::getPlatform()->gobject_setColor(this, this->color);
-}
-
-std::string GObject::getColor() const {
-    return color;
-}
-
-void GObject::scale(double sf) {
-    scale(sf, sf);
-}
-
-void GObject::scale(double sx, double sy) {
-    // Apply local transform
-    transformed = true;
-    stanfordcpplib::getPlatform()->gobject_scale(this, sx, sy);
-}
-
-void GObject::rotate(double theta) {
-    // Apply local transform
-    transformed = true;
-    stanfordcpplib::getPlatform()->gobject_rotate(this, theta);
-}
-
-void GObject::setVisible(bool flag) {
-    visible = flag;
-    stanfordcpplib::getPlatform()->gobject_setVisible(this, flag);
-}
-
-bool GObject::isVisible() const {
-    return visible;
-}
-
-void GObject::sendForward() {
-    GCompound *parent = getParent();
-    if (parent) parent->sendForward(this);
-}
-
-void GObject::sendToFront() {
-    GCompound *parent = getParent();
-    if (parent) parent->sendToFront(this);
-}
-
-void GObject::sendBackward() {
-    GCompound *parent = getParent();
-    if (parent) {
-        parent->sendBackward(this);
-    }
-}
-
-void GObject::sendToBack() {
-    GCompound *parent = getParent();
-    if (parent) {
-        parent->sendToBack(this);
-    }
-}
-
-bool GObject::contains(GPoint pt) const {
-    return contains(pt.getX(), pt.getY());
-}
-
-bool GObject::contains(double x, double y) const {
-    if (transformed) {
-        return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
-    } else {
-        return getBounds().contains(x, y);
-    }
-}
-
-GCompound *GObject::getParent() const {
-    return parent;
-}
+/* GObject class */
 
 GObject::GObject() {
     x = 0;
@@ -178,6 +60,137 @@ GObject::~GObject() {
     stanfordcpplib::getPlatform()->gobject_delete(this);
 }
 
+bool GObject::contains(double x, double y) const {
+    if (transformed) {
+        return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
+    } else {
+        return getBounds().contains(x, y);
+    }
+}
+
+bool GObject::contains(const GPoint& pt) const {
+    return contains(pt.getX(), pt.getY());
+}
+
+std::string GObject::getColor() const {
+    return color;
+}
+
+double GObject::getHeight() const {
+    return getBounds().getHeight();
+}
+
+double GObject::getLineWidth() const {
+    return lineWidth;
+}
+
+GPoint GObject::getLocation() const {
+    return GPoint(x, y);
+}
+
+GCompound* GObject::getParent() const {
+    return parent;
+}
+
+GDimension GObject::getSize() const {
+    GRectangle bounds = getBounds();
+    return GDimension(bounds.getWidth(), bounds.getHeight());
+}
+
+double GObject::getWidth() const {
+    return getBounds().getWidth();
+}
+
+double GObject::getX() const {
+    return x;
+}
+
+double GObject::getY() const {
+    return y;
+}
+
+bool GObject::isVisible() const {
+    return visible;
+}
+
+void GObject::move(double dx, double dy) {
+    setLocation(x + dx, y + dy);
+}
+
+void GObject::rotate(double theta) {
+    // Apply local transform
+    transformed = true;
+    stanfordcpplib::getPlatform()->gobject_rotate(this, theta);
+}
+
+void GObject::scale(double sf) {
+    scale(sf, sf);
+}
+
+void GObject::scale(double sx, double sy) {
+    // Apply local transform
+    transformed = true;
+    stanfordcpplib::getPlatform()->gobject_scale(this, sx, sy);
+}
+
+void GObject::sendBackward() {
+    GCompound* parent = getParent();
+    if (parent) {
+        parent->sendBackward(this);
+    }
+}
+
+void GObject::sendForward() {
+    GCompound* parent = getParent();
+    if (parent) parent->sendForward(this);
+}
+
+void GObject::sendToBack() {
+    GCompound* parent = getParent();
+    if (parent) {
+        parent->sendToBack(this);
+    }
+}
+
+void GObject::sendToFront() {
+    GCompound* parent = getParent();
+    if (parent) parent->sendToFront(this);
+}
+
+void GObject::setAntiAliasing(bool value) {
+    stanfordcpplib::getPlatform()->gobject_setAntialiasing(value);
+}
+
+void GObject::setColor(int rgb) {
+    this->color = convertRGBToColor(rgb);
+    stanfordcpplib::getPlatform()->gobject_setColor(this, this->color);
+}
+
+void GObject::setColor(const std::string& color) {
+    setColor(convertColorToRGB(color));
+}
+
+void GObject::setLineWidth(double lineWidth) {
+    this->lineWidth = lineWidth;
+    stanfordcpplib::getPlatform()->gobject_setLineWidth(this, lineWidth);
+}
+
+void GObject::setLocation(double x, double y) {
+    this->x = x;
+    this->y = y;
+    stanfordcpplib::getPlatform()->gobject_setLocation(this, x, y);
+}
+
+void GObject::setLocation(const GPoint& pt) {
+    setLocation(pt.getX(), pt.getY());
+}
+
+void GObject::setVisible(bool flag) {
+    visible = flag;
+    stanfordcpplib::getPlatform()->gobject_setVisible(this, flag);
+}
+
+
 /*
  * Implementation notes: GRect class
  * ---------------------------------
@@ -186,6 +199,10 @@ GObject::~GObject() {
 
 GRect::GRect(double width, double height) {
     createGRect(width, height);
+}
+
+GRect::GRect() : width(0), height(0), fillFlag(false) {
+    /* Called only by the GRoundRect and G3DRect subclasses */
 }
 
 GRect::GRect(double x, double y, double width, double height) {
@@ -197,25 +214,14 @@ GRect::~GRect() {
     /* Empty */
 }
 
-void GRect::setSize(const GDimension & size) {
-    setSize(size.getWidth(), size.getHeight());
-}
-
-void GRect::setSize(double width, double height) {
-    if (transformed) error("setSize: Object has been transformed");
+void GRect::createGRect(double width, double height) {
+    this->x = 0;
+    this->y = 0;
     this->width = width;
     this->height = height;
-    stanfordcpplib::getPlatform()->gobject_setSize(this, width, height);
-}
-
-void GRect::setBounds(const GRectangle & bounds) {
-    setLocation(bounds.getX(), bounds.getY());
-    setSize(bounds.getWidth(), bounds.getHeight());
-}
-
-void GRect::setBounds(double x, double y, double width, double height) {
-    setLocation(x, y);
-    setSize(width, height);
+    fillFlag = false;
+    fillColor = "";
+    stanfordcpplib::getPlatform()->grect_constructor(this, width, height);
 }
 
 GRectangle GRect::getBounds() const {
@@ -226,21 +232,26 @@ GRectangle GRect::getBounds() const {
     }
 }
 
-void GRect::setFilled(bool flag) {
-    fillFlag = true;
-    stanfordcpplib::getPlatform()->gobject_setFilled(this, flag);
+std::string GRect::getFillColor() const {
+    return fillColor;
+}
+
+std::string GRect::getType() const {
+    return "GRect";
 }
 
 bool GRect::isFilled() const {
     return fillFlag;
 }
 
-void GRect::setFillColor(std::string color) {
-    fillColor = color;
-    if (fillColor != "") {
-        fillColor = convertRGBToColor(convertColorToRGB(color));
-    }
-    stanfordcpplib::getPlatform()->gobject_setFillColor(this, fillColor);
+void GRect::setBounds(double x, double y, double width, double height) {
+    setLocation(x, y);
+    setSize(width, height);
+}
+
+void GRect::setBounds(const GRectangle& bounds) {
+    setLocation(bounds.getX(), bounds.getY());
+    setSize(bounds.getWidth(), bounds.getHeight());
 }
 
 void GRect::setFillColor(int rgb) {
@@ -248,12 +259,35 @@ void GRect::setFillColor(int rgb) {
     stanfordcpplib::getPlatform()->gobject_setFillColor(this, fillColor);
 }
 
-std::string GRect::getFillColor() const {
-    return fillColor;
+void GRect::setFillColor(const std::string& color) {
+    fillColor = color;
+    if (fillColor == "") {
+        if (isFilled()) {
+            setFilled(false);
+        }
+    } else {
+        fillColor = convertRGBToColor(convertColorToRGB(color));
+        if (!isFilled()) {
+            setFilled(true);
+        }
+    }
+    stanfordcpplib::getPlatform()->gobject_setFillColor(this, fillColor);
 }
 
-std::string GRect::getType() const {
-    return "GRect";
+void GRect::setFilled(bool flag) {
+    fillFlag = true;
+    stanfordcpplib::getPlatform()->gobject_setFilled(this, flag);
+}
+
+void GRect::setSize(double width, double height) {
+    if (transformed) error("setSize: Object has been transformed");
+    this->width = width;
+    this->height = height;
+    stanfordcpplib::getPlatform()->gobject_setSize(this, width, height);
+}
+
+void GRect::setSize(const GDimension& size) {
+    setSize(size.getWidth(), size.getHeight());
 }
 
 std::string GRect::toString() const {
@@ -263,19 +297,6 @@ std::string GRect::toString() const {
     return oss.str();
 }
 
-GRect::GRect() : width(0), height(0), fillFlag(false) {
-    /* Called only by the GRoundRect and G3DRect subclasses */
-}
-
-void GRect::createGRect(double width, double height) {
-    this->x = 0;
-    this->y = 0;
-    this->width = width;
-    this->height = height;
-    fillFlag = false;
-    fillColor = "";
-    stanfordcpplib::getPlatform()->grect_constructor(this, width, height);
-}
 
 /*
  * Implementation notes: GRoundRect class
@@ -332,6 +353,17 @@ bool GRoundRect::contains(double x, double y) const {
     return (dx - a) * (dx - a) / (a * a) + (dy - b) * (dy - b) / (b * b) <= 1;
 }
 
+void GRoundRect::createGRoundRect(double width, double height, double corner) {
+    this->x = 0;
+    this->y = 0;
+    this->width = width;
+    this->height = height;
+    this->corner = corner;
+    fillFlag = false;
+    fillColor = "";
+    stanfordcpplib::getPlatform()->groundrect_constructor(this, width, height, corner);
+}
+
 std::string GRoundRect::getType() const {
     return "GRoundRect";
 }
@@ -343,16 +375,6 @@ std::string GRoundRect::toString() const {
     return oss.str();
 }
 
-void GRoundRect::createGRoundRect(double width, double height, double corner) {
-    this->x = 0;
-    this->y = 0;
-    this->width = width;
-    this->height = height;
-    this->corner = corner;
-    fillFlag = false;
-    fillColor = "";
-    stanfordcpplib::getPlatform()->groundrect_constructor(this, width, height, corner);
-}
 
 /*
  * Implementation notes: G3DRect class
@@ -383,26 +405,6 @@ G3DRect::~G3DRect() {
     /* Empty */
 }
 
-void G3DRect::setRaised(bool raised) {
-    this->raised = raised;
-    stanfordcpplib::getPlatform()->g3drect_setRaised(this, raised);
-}
-
-bool G3DRect::isRaised() const {
-    return raised;
-}
-
-std::string G3DRect::getType() const {
-    return "G3DRect";
-}
-
-std::string G3DRect::toString() const {
-    std::ostringstream oss;
-    oss << std::boolalpha << "G3DRect(" << x << ", " << y << ", "
-        << width << ", " << height << ", " << raised << ")";
-    return oss.str();
-}
-
 void G3DRect::createG3DRect(double width, double height, bool raised) {
     this->x = 0;
     this->y = 0;
@@ -413,6 +415,29 @@ void G3DRect::createG3DRect(double width, double height, bool raised) {
     fillColor = "";
     stanfordcpplib::getPlatform()->g3drect_constructor(this, width, height, raised);
 }
+
+std::string G3DRect::getType() const {
+    return "G3DRect";
+}
+
+bool G3DRect::isRaised() const {
+    return raised;
+}
+
+void G3DRect::setRaised(bool raised) {
+    this->raised = raised;
+    stanfordcpplib::getPlatform()->g3drect_setRaised(this, raised);
+}
+
+std::string G3DRect::toString() const {
+    std::ostringstream oss;
+    oss << std::boolalpha << "G3DRect(" << x << ", " << y << ", "
+        << width << ", " << height << ", " << raised << ")";
+    return oss.str();
+}
+
+
+/* GOval class */
 
 GOval::GOval(double width, double height) {
     createGOval(width, height);
@@ -425,35 +450,6 @@ GOval::GOval(double x, double y, double width, double height) {
 
 GOval::~GOval() {
     /* Empty */
-}
-
-void GOval::setSize(const GDimension & size) {
-    setSize(size.getWidth(), size.getHeight());
-}
-
-void GOval::setSize(double width, double height) {
-    if (transformed) error("setSize: Object has been transformed");
-    this->width = width;
-    this->height = height;
-    stanfordcpplib::getPlatform()->gobject_setSize(this, width, height);
-}
-
-void GOval::setBounds(const GRectangle & bounds) {
-    setLocation(bounds.getX(), bounds.getY());
-    setSize(bounds.getWidth(), bounds.getHeight());
-}
-
-void GOval::setBounds(double x, double y, double width, double height) {
-    setLocation(x, y);
-    setSize(width, height);
-}
-
-GRectangle GOval::getBounds() const {
-    if (transformed) {
-        return stanfordcpplib::getPlatform()->gobject_getBounds(this);
-    } else {
-        return GRectangle(x, y, width, height);
-    }
 }
 
 bool GOval::contains(double x, double y) const {
@@ -470,26 +466,22 @@ bool GOval::contains(double x, double y) const {
     return (dx * dx) / (rx * rx) + (dy * dy) / (ry * ry) <= 1.0;
 }
 
-void GOval::setFilled(bool flag) {
-    fillFlag = true;
-    stanfordcpplib::getPlatform()->gobject_setFilled(this, flag);
+void GOval::createGOval(double width, double height) {
+    this->x = 0;
+    this->y = 0;
+    this->width = width;
+    this->height = height;
+    fillFlag = false;
+    fillColor = "";
+    stanfordcpplib::getPlatform()->goval_constructor(this, width, height);
 }
 
-bool GOval::isFilled() const {
-    return fillFlag;
-}
-
-void GOval::setFillColor(std::string color) {
-    fillColor = color;
-    if (fillColor != "") {
-        fillColor = convertRGBToColor(convertColorToRGB(color));
+GRectangle GOval::getBounds() const {
+    if (transformed) {
+        return stanfordcpplib::getPlatform()->gobject_getBounds(this);
+    } else {
+        return GRectangle(x, y, width, height);
     }
-    stanfordcpplib::getPlatform()->gobject_setFillColor(this, fillColor);
-}
-
-void GOval::setFillColor(int color) {
-    fillColor = convertRGBToColor(color);
-    stanfordcpplib::getPlatform()->gobject_setFillColor(this, fillColor);
 }
 
 std::string GOval::getFillColor() const {
@@ -500,6 +492,56 @@ std::string GOval::getType() const {
     return "GOval";
 }
 
+bool GOval::isFilled() const {
+    return fillFlag;
+}
+
+void GOval::setBounds(double x, double y, double width, double height) {
+    setLocation(x, y);
+    setSize(width, height);
+}
+
+void GOval::setBounds(const GRectangle& bounds) {
+    setLocation(bounds.getX(), bounds.getY());
+    setSize(bounds.getWidth(), bounds.getHeight());
+}
+
+void GOval::setFillColor(int color) {
+    fillColor = convertRGBToColor(color);
+    stanfordcpplib::getPlatform()->gobject_setFillColor(this, fillColor);
+}
+
+void GOval::setFillColor(const std::string& color) {
+    fillColor = color;
+    if (fillColor == "") {
+        if (isFilled()) {
+            setFilled(false);
+        }
+    } else {
+        fillColor = convertRGBToColor(convertColorToRGB(color));
+        if (!isFilled()) {
+            setFilled(true);
+        }
+    }
+    stanfordcpplib::getPlatform()->gobject_setFillColor(this, fillColor);
+}
+
+void GOval::setFilled(bool flag) {
+    fillFlag = true;
+    stanfordcpplib::getPlatform()->gobject_setFilled(this, flag);
+}
+
+void GOval::setSize(double width, double height) {
+    if (transformed) error("setSize: Object has been transformed");
+    this->width = width;
+    this->height = height;
+    stanfordcpplib::getPlatform()->gobject_setSize(this, width, height);
+}
+
+void GOval::setSize(const GDimension& size) {
+    setSize(size.getWidth(), size.getHeight());
+}
+
 std::string GOval::toString() const {
     std::ostringstream oss;
     oss << "GOval(" << x << ", " << y << ", "
@@ -507,15 +549,6 @@ std::string GOval::toString() const {
     return oss.str();
 }
 
-void GOval::createGOval(double width, double height) {
-    this->x = 0;
-    this->y = 0;
-    this->width = width;
-    this->height = height;
-    fillFlag = false;
-    fillColor = "";
-    stanfordcpplib::getPlatform()->goval_constructor(this, width, height);
-}
 
 /* GArc class */
 
@@ -529,73 +562,61 @@ GArc::GArc(double x, double y, double width, double height,
     setLocation(x, y);
 }
 
-void GArc::setStartAngle(double start) {
-    this->start = start;
-    stanfordcpplib::getPlatform()->garc_setStartAngle(this, start);
+bool GArc::contains(double x, double y) const {
+    if (transformed) {
+        return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
+    }
+    double rx = frameWidth / 2;
+    double ry = frameHeight / 2;
+    if (floatingPointEqual(rx, 0) || floatingPointEqual(ry, 0)) {
+        return false;
+    }
+    double dx = x - (this->x + rx);
+    double dy = y - (this->y + ry);
+    double r = (dx * dx) / (rx * rx) + (dy * dy) / (ry * ry);
+    if (fillFlag) {
+        if (r > 1.0) return false;
+    } else {
+        double t = ARC_TOLERANCE / ((rx + ry) / 2);
+        if (std::fabs(1.0 - r) > t) return false;
+    }
+
+    // JL BUGFIX: must scale by ry, rx.
+    return containsAngle(atan2(-dy/ry, dx/rx) * 180 / PI);
 }
 
-double GArc::getStartAngle() const {
-    return start;
+bool GArc::containsAngle(double theta) const {
+    double start = std::min(this->start, this->start + this->sweep);
+    double sweep = std::abs(this->sweep);
+    if (sweep >= 360) return true;
+    theta = (theta < 0) ? 360 - fmod(-theta, 360) : fmod(theta, 360);
+    start = (start < 0) ? 360 - fmod(-start, 360) : fmod(start, 360);
+    if (start + sweep > 360) {
+        return theta >= start || theta <= start + sweep - 360;
+    } else {
+        return theta >= start && theta <= start + sweep;
+    }
 }
 
-void GArc::setSweepAngle(double sweep) {
-    this->sweep = sweep;
-    stanfordcpplib::getPlatform()->garc_setSweepAngle(this, sweep);
-}
-
-double GArc::getSweepAngle() const {
-    return sweep;
-}
-
-GPoint GArc::getStartPoint() const {
-    return getArcPoint(start);
-}
-
-GPoint GArc::getEndPoint() const {
-    return getArcPoint(start + sweep);
-}
-
-void GArc::setFrameRectangle(const GRectangle & rect) {
-    setFrameRectangle(rect.getX(), rect.getY(), rect.getWidth(),
-                      rect.getHeight());
-}
-
-void GArc::setFrameRectangle(double x, double y, double width, double height) {
-    this->x = x;
-    this->y = y;
+void GArc::createGArc(double width, double height, double start, double sweep) {
+    this->x = 0;
+    this->y = 0;
     frameWidth = width;
     frameHeight = height;
-    stanfordcpplib::getPlatform()->garc_setFrameRectangle(this, x, y, width, height);
+    this->start = start;
+    this->sweep = sweep;
+    fillFlag = false;
+    fillColor = "";
+    stanfordcpplib::getPlatform()->garc_constructor(this, width, height, start, sweep);
 }
 
-GRectangle GArc::getFrameRectangle() const {
-    return GRectangle(0, 0, 0, 0);
-}
-
-void GArc::setFilled(bool flag) {
-    fillFlag = true;
-    stanfordcpplib::getPlatform()->gobject_setFilled(this, flag);
-}
-
-bool GArc::isFilled() const {
-    return fillFlag;
-}
-
-void GArc::setFillColor(std::string color) {
-    fillColor = color;
-    if (fillColor != "") {
-        fillColor = convertRGBToColor(convertColorToRGB(color));
-    }
-    stanfordcpplib::getPlatform()->gobject_setFillColor(this, fillColor);
-}
-
-void GArc::setFillColor(int color) {
-    fillColor = convertRGBToColor(color);
-    stanfordcpplib::getPlatform()->gobject_setFillColor(this, fillColor);
-}
-
-std::string GArc::getFillColor() const {
-    return fillColor;
+GPoint GArc::getArcPoint(double theta) const {
+    double rx = frameWidth / 2;
+    double ry = frameHeight / 2;
+    double cx = x + rx;
+    double cy = y + ry;
+    double radians = theta * PI / 180;
+    return GPoint(cx + rx * cos(radians), cy - ry * sin(radians));
 }
 
 GRectangle GArc::getBounds() const {
@@ -629,31 +650,84 @@ GRectangle GArc::getBounds() const {
     return GRectangle(xMin, yMin, xMax - xMin, yMax - yMin);
 }
 
-bool GArc::contains(double x, double y) const {
-    if (transformed) {
-        return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
-    }
-    double rx = frameWidth / 2;
-    double ry = frameHeight / 2;
-    if (floatingPointEqual(rx, 0) || floatingPointEqual(ry, 0)) {
-        return false;
-    }
-    double dx = x - (this->x + rx);
-    double dy = y - (this->y + ry);
-    double r = (dx * dx) / (rx * rx) + (dy * dy) / (ry * ry);
-    if (fillFlag) {
-        if (r > 1.0) return false;
-    } else {
-        double t = ARC_TOLERANCE / ((rx + ry) / 2);
-        if (std::fabs(1.0 - r) > t) return false;
-    }
+GPoint GArc::getEndPoint() const {
+    return getArcPoint(start + sweep);
+}
 
-    // JL BUGFIX: must scale by ry, rx.
-    return containsAngle(atan2(-dy/ry, dx/rx) * 180 / PI);
+std::string GArc::getFillColor() const {
+    return fillColor;
+}
+
+GRectangle GArc::getFrameRectangle() const {
+    return GRectangle(0, 0, 0, 0);
+}
+
+double GArc::getStartAngle() const {
+    return start;
+}
+
+GPoint GArc::getStartPoint() const {
+    return getArcPoint(start);
+}
+
+double GArc::getSweepAngle() const {
+    return sweep;
 }
 
 std::string GArc::getType() const {
     return "GArc";
+}
+
+bool GArc::isFilled() const {
+    return fillFlag;
+}
+
+void GArc::setFillColor(int color) {
+    fillColor = convertRGBToColor(color);
+    stanfordcpplib::getPlatform()->gobject_setFillColor(this, fillColor);
+}
+
+void GArc::setFillColor(const std::string& color) {
+    fillColor = color;
+    if (fillColor == "") {
+        if (isFilled()) {
+            setFilled(false);
+        }
+    } else {
+        fillColor = convertRGBToColor(convertColorToRGB(color));
+        if (!isFilled()) {
+            setFilled(true);
+        }
+    }
+    stanfordcpplib::getPlatform()->gobject_setFillColor(this, fillColor);
+}
+
+void GArc::setFilled(bool flag) {
+    fillFlag = true;
+    stanfordcpplib::getPlatform()->gobject_setFilled(this, flag);
+}
+
+void GArc::setFrameRectangle(double x, double y, double width, double height) {
+    this->x = x;
+    this->y = y;
+    frameWidth = width;
+    frameHeight = height;
+    stanfordcpplib::getPlatform()->garc_setFrameRectangle(this, x, y, width, height);
+}
+
+void GArc::setFrameRectangle(const GRectangle& rect) {
+    setFrameRectangle(rect.getX(), rect.getY(), rect.getWidth(),
+                      rect.getHeight());
+}
+
+void GArc::setStartAngle(double start) {
+    this->start = start;
+    stanfordcpplib::getPlatform()->garc_setStartAngle(this, start);
+}
+
+void GArc::setSweepAngle(double sweep) {
+    this->sweep = sweep;
+    stanfordcpplib::getPlatform()->garc_setSweepAngle(this, sweep);
 }
 
 std::string GArc::toString() const {
@@ -663,72 +737,42 @@ std::string GArc::toString() const {
     return oss.str();
 }
 
-GPoint GArc::getArcPoint(double theta) const {
-    double rx = frameWidth / 2;
-    double ry = frameHeight / 2;
-    double cx = x + rx;
-    double cy = y + ry;
-    double radians = theta * PI / 180;
-    return GPoint(cx + rx * cos(radians), cy - ry * sin(radians));
-}
 
-bool GArc::containsAngle(double theta) const {
-    double start = std::min(this->start, this->start + this->sweep);
-    double sweep = std::abs(this->sweep);
-    if (sweep >= 360) return true;
-    theta = (theta < 0) ? 360 - fmod(-theta, 360) : fmod(theta, 360);
-    start = (start < 0) ? 360 - fmod(-start, 360) : fmod(start, 360);
-    if (start + sweep > 360) {
-        return theta >= start || theta <= start + sweep - 360;
-    } else {
-        return theta >= start && theta <= start + sweep;
-    }
-}
-
-void GArc::createGArc(double width, double height, double start, double sweep) {
-    this->x = 0;
-    this->y = 0;
-    frameWidth = width;
-    frameHeight = height;
-    this->start = start;
-    this->sweep = sweep;
-    fillFlag = false;
-    fillColor = "";
-    stanfordcpplib::getPlatform()->garc_constructor(this, width, height, start, sweep);
-}
+/* GCompound class */
 
 GCompound::GCompound() {
     stanfordcpplib::getPlatform()->gcompound_constructor(this);
 }
 
-void GCompound::add(GObject *gobj) {
+void GCompound::add(GObject* gobj) {
     stanfordcpplib::getPlatform()->gcompound_add(this, gobj);
     contents.add(gobj);
     gobj->parent = this;
 }
 
-void GCompound::add(GObject *gobj, double x, double y) {
+void GCompound::add(GObject* gobj, double x, double y) {
     gobj->setLocation(x, y);
     add(gobj);
 }
 
-void GCompound::remove(GObject *gobj) {
-    int index = findGObject(gobj);
-    if (index != -1) removeAt(index);
-}
-
-void GCompound::removeAll() {
-    while (!contents.isEmpty()) {
-        removeAt(0);
+bool GCompound::contains(double x, double y) const {
+    if (transformed) {
+        return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
     }
+    for (int i = 0, sz = contents.size(); i < sz; i++) {
+        if (contents[i]->contains(x, y)) return true;
+    }
+    return false;
 }
 
-int GCompound::getElementCount() {
-    return contents.size();
-}
-
-GObject *GCompound::getElement(int index) {
-    return contents.get(index);
+int GCompound::findGObject(GObject* gobj) const {
+    int n = contents.size();
+    for (int i = 0; i < n; i++) {
+        if (contents.get(i) == gobj) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 GRectangle GCompound::getBounds() const {
@@ -750,70 +794,36 @@ GRectangle GCompound::getBounds() const {
     return GRectangle(xMin + getX(), yMin + getY(), xMax - xMin, yMax - yMin);
 }
 
-bool GCompound::contains(double x, double y) const {
-    if (transformed) {
-        return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
+GObject* GCompound::getElement(int index) const {
+    return contents.get(index);
+}
+
+GObject* GCompound::getElementAt(double x, double y) const {
+    for (GObject* gobj : contents) {
+        if (gobj && gobj->contains(x, y)) {
+            return gobj;
+        }
     }
-    for (int i = 0; i < contents.size(); i++) {
-        if (contents.get(i)->contains(x, y)) return true;
-    }
-    return false;
+    return nullptr;
+}
+
+int GCompound::getElementCount() const {
+    return contents.size();
 }
 
 std::string GCompound::getType() const {
     return "GCompound";
 }
 
-std::string GCompound::toString() const {
-    return "GCompound(...)";
-}
-
-void GCompound::sendForward(GObject *gobj) {
+void GCompound::remove(GObject* gobj) {
     int index = findGObject(gobj);
-    if (index == -1) return;
-    if (index != contents.size() - 1) {
-        contents.remove(index);
-        contents.insert(index + 1, gobj);
-        stanfordcpplib::getPlatform()->gobject_sendForward(gobj);
-    }
+    if (index != -1) removeAt(index);
 }
 
-void GCompound::sendToFront(GObject *gobj) {
-    int index = findGObject(gobj);
-    if (index == -1) return;
-    if (index != contents.size() - 1) {
-        contents.remove(index);
-        contents.add(gobj);
-        stanfordcpplib::getPlatform()->gobject_sendToFront(gobj);
+void GCompound::removeAll() {
+    while (!contents.isEmpty()) {
+        removeAt(0);
     }
-}
-
-void GCompound::sendBackward(GObject *gobj) {
-    int index = findGObject(gobj);
-    if (index == -1) return;
-    if (index != 0) {
-        contents.remove(index);
-        contents.insert(index - 1, gobj);
-        stanfordcpplib::getPlatform()->gobject_sendBackward(gobj);
-    }
-}
-
-void GCompound::sendToBack(GObject *gobj) {
-    int index = findGObject(gobj);
-    if (index == -1) return;
-    if (index != 0) {
-        contents.remove(index);
-        contents.insert(0, gobj);
-        stanfordcpplib::getPlatform()->gobject_sendToBack(gobj);
-    }
-}
-
-int GCompound::findGObject(GObject *gobj) {
-    int n = contents.size();
-    for (int i = 0; i < n; i++) {
-        if (contents.get(i) == gobj) return i;
-    }
-    return -1;
 }
 
 void GCompound::removeAt(int index) {
@@ -823,13 +833,75 @@ void GCompound::removeAt(int index) {
     gobj->parent = nullptr;
 }
 
-GImage::GImage(std::string filename) {
+void GCompound::sendBackward(GObject* gobj) {
+    int index = findGObject(gobj);
+    if (index == -1) {
+        return;
+    }
+    if (index != 0) {
+        contents.remove(index);
+        contents.insert(index - 1, gobj);
+        stanfordcpplib::getPlatform()->gobject_sendBackward(gobj);
+    }
+}
+
+void GCompound::sendForward(GObject* gobj) {
+    int index = findGObject(gobj);
+    if (index == -1) {
+        return;
+    }
+    if (index != contents.size() - 1) {
+        contents.remove(index);
+        contents.insert(index + 1, gobj);
+        stanfordcpplib::getPlatform()->gobject_sendForward(gobj);
+    }
+}
+
+void GCompound::sendToBack(GObject* gobj) {
+    int index = findGObject(gobj);
+    if (index == -1) {
+        return;
+    }
+    if (index != 0) {
+        contents.remove(index);
+        contents.insert(0, gobj);
+        stanfordcpplib::getPlatform()->gobject_sendToBack(gobj);
+    }
+}
+
+void GCompound::sendToFront(GObject* gobj) {
+    int index = findGObject(gobj);
+    if (index == -1) {
+        return;
+    }
+    if (index != contents.size() - 1) {
+        contents.remove(index);
+        contents.add(gobj);
+        stanfordcpplib::getPlatform()->gobject_sendToFront(gobj);
+    }
+}
+
+std::string GCompound::toString() const {
+    return "GCompound(...)";
+}
+
+
+/* GImage class */
+
+GImage::GImage(const std::string& filename) {
     createGImage(filename);
 }
 
-GImage::GImage(std::string filename, double x, double y) {
+GImage::GImage(const std::string& filename, double x, double y) {
     createGImage(filename);
     setLocation(x, y);
+}
+
+void GImage::createGImage(const std::string& filename) {
+    this->filename = filename;
+    GDimension size = stanfordcpplib::getPlatform()->gimage_constructor(this, filename);
+    width = size.getWidth();
+    height = size.getHeight();
 }
 
 GRectangle GImage::getBounds() const {
@@ -847,23 +919,17 @@ std::string GImage::toString() const {
     return "GImage(\"" + filename + "\")";
 }
 
-void GImage::createGImage(std::string filename) {
-    this->filename = filename;
-    GDimension size = stanfordcpplib::getPlatform()->gimage_constructor(this, filename);
-    width = size.getWidth();
-    height = size.getHeight();
-}
 
 /*
  * Implementation notes: GLabel class
  * ----------------------------------
  */
 
-GLabel::GLabel(std::string str) {
+GLabel::GLabel(const std::string& str) {
     createGLabel(str);
 }
 
-GLabel::GLabel(std::string str, double x, double y) {
+GLabel::GLabel(const std::string& str, double x, double y) {
     createGLabel(str);
     setLocation(x, y);
 }
@@ -879,38 +945,15 @@ void GLabel::createGLabel(const std::string& str) {
     descent = stanfordcpplib::getPlatform()->glabel_getFontDescent(this);
 }
 
-void GLabel::setFont(std::string font) {
-    this->font = font;
-    stanfordcpplib::getPlatform()->glabel_setFont(this, font);
-    GDimension size = stanfordcpplib::getPlatform()->glabel_getSize(this);
-    width = size.getWidth();
-    height = size.getHeight();
-    ascent = stanfordcpplib::getPlatform()->glabel_getFontAscent(this);
-    descent = stanfordcpplib::getPlatform()->glabel_getFontDescent(this);
+GRectangle GLabel::getBounds() const {
+    if (transformed) {
+        return stanfordcpplib::getPlatform()->gobject_getBounds(this);
+    }
+    return GRectangle(x, y - ascent, width, height);
 }
 
 std::string GLabel::getFont() const {
     return font;
-}
-
-void GLabel::setLabel(std::string str) {
-    this->str = str;
-    stanfordcpplib::getPlatform()->glabel_setLabel(this, str);
-    GDimension size = stanfordcpplib::getPlatform()->glabel_getSize(this);
-    width = size.getWidth();
-    height = size.getHeight();
-}
-
-void GLabel::setText(std::string str) {
-    setLabel(str);
-}
-
-std::string GLabel::getLabel() const {
-    return str;
-}
-
-std::string GLabel::getText() const {
-    return str;
 }
 
 double GLabel::getFontAscent() const {
@@ -921,20 +964,44 @@ double GLabel::getFontDescent() const {
     return descent;
 }
 
-GRectangle GLabel::getBounds() const {
-    if (transformed) {
-        return stanfordcpplib::getPlatform()->gobject_getBounds(this);
-    }
-    return GRectangle(x, y - ascent, width, height);
+std::string GLabel::getLabel() const {
+    return str;
+}
+
+std::string GLabel::getText() const {
+    return str;
 }
 
 std::string GLabel::getType() const {
     return "GLabel";
 }
 
+void GLabel::setFont(const std::string& font) {
+    this->font = font;
+    stanfordcpplib::getPlatform()->glabel_setFont(this, font);
+    GDimension size = stanfordcpplib::getPlatform()->glabel_getSize(this);
+    width = size.getWidth();
+    height = size.getHeight();
+    ascent = stanfordcpplib::getPlatform()->glabel_getFontAscent(this);
+    descent = stanfordcpplib::getPlatform()->glabel_getFontDescent(this);
+}
+
+void GLabel::setLabel(const std::string& str) {
+    this->str = str;
+    stanfordcpplib::getPlatform()->glabel_setLabel(this, str);
+    GDimension size = stanfordcpplib::getPlatform()->glabel_getSize(this);
+    width = size.getWidth();
+    height = size.getHeight();
+}
+
+void GLabel::setText(const std::string& str) {
+    setLabel(str);
+}
+
 std::string GLabel::toString() const {
     return "GLabel(\"" + str + "\")";
 }
+
 
 /*
  * Implementation notes: GLine class
@@ -947,37 +1014,6 @@ GLine::GLine(double x0, double y0, double x1, double y1) {
     y = y0;
     dx = x1 - x0;
     dy = y1 - y0;
-}
-
-void GLine::setStartPoint(double x, double y) {
-    dx += this->x - x;
-    dy += this->y - y;
-    this->x = x;
-    this->y = y;
-    stanfordcpplib::getPlatform()->gline_setStartPoint(this, x, y);
-}
-
-GPoint GLine::getStartPoint() const {
-    return GPoint(x, y);
-}
-
-void GLine::setEndPoint(double x, double y) {
-    dx = x - this->x;
-    dy = y - this->y;
-    stanfordcpplib::getPlatform()->gline_setEndPoint(this, x, y);
-}
-
-GPoint GLine::getEndPoint() const {
-    return GPoint(x + dx, y + dy);
-}
-
-GRectangle GLine::getBounds() const {
-    if (transformed) {
-        return stanfordcpplib::getPlatform()->gobject_getBounds(this);
-    }
-    double x0 = (dx < 0) ? x + dx : x;
-    double y0 = (dy < 0) ? y + dy : y;
-    return GRectangle(x0, y0, std::fabs(dx), std::fabs(dy));
 }
 
 bool GLine::contains(double x, double y) const {
@@ -1015,8 +1051,39 @@ bool GLine::contains(double x, double y) const {
     return dsq(x, y, x0 + u * (x1 - x0), y0 + u * (y1 - y0)) < tSquared;
 }
 
+GRectangle GLine::getBounds() const {
+    if (transformed) {
+        return stanfordcpplib::getPlatform()->gobject_getBounds(this);
+    }
+    double x0 = (dx < 0) ? x + dx : x;
+    double y0 = (dy < 0) ? y + dy : y;
+    return GRectangle(x0, y0, std::fabs(dx), std::fabs(dy));
+}
+
+GPoint GLine::getEndPoint() const {
+    return GPoint(x + dx, y + dy);
+}
+
+GPoint GLine::getStartPoint() const {
+    return GPoint(x, y);
+}
+
 std::string GLine::getType() const {
     return "GLine";
+}
+
+void GLine::setEndPoint(double x, double y) {
+    dx = x - this->x;
+    dy = y - this->y;
+    stanfordcpplib::getPlatform()->gline_setEndPoint(this, x, y);
+}
+
+void GLine::setStartPoint(double x, double y) {
+    dx += this->x - x;
+    dy += this->y - y;
+    this->x = x;
+    this->y = y;
+    stanfordcpplib::getPlatform()->gline_setStartPoint(this, x, y);
 }
 
 std::string GLine::toString() const {
@@ -1025,6 +1092,7 @@ std::string GLine::toString() const {
         << (x + dx) << ", " << (y + dy) << ")";
     return oss.str();
 }
+
 
 /*
  * Implementation notes: GPolygon class
@@ -1037,13 +1105,6 @@ GPolygon::GPolygon() {
     stanfordcpplib::getPlatform()->gpolygon_constructor(this);
 }
 
-void GPolygon::addVertex(double x, double y) {
-    cx = x;
-    cy = y;
-    vertices.add(GPoint(cx, cy));
-    stanfordcpplib::getPlatform()->gpolygon_addVertex(this, cx, cy);
-}
-
 void GPolygon::addEdge(double dx, double dy) {
     addVertex(cx + dx, cy + dy);
 }
@@ -1052,54 +1113,11 @@ void GPolygon::addPolarEdge(double r, double theta) {
     addEdge(r * cos(theta * PI / 180), -r * sin(theta * PI / 180));
 }
 
-Vector<GPoint> GPolygon::getVertices() const {
-    return vertices;
-}
-
-void GPolygon::setFilled(bool flag) {
-    fillFlag = true;
-    stanfordcpplib::getPlatform()->gobject_setFilled(this, flag);
-}
-
-bool GPolygon::isFilled() const {
-    return fillFlag;
-}
-
-void GPolygon::setFillColor(std::string color) {
-    fillColor = color;
-    if (fillColor != "") {
-        fillColor = convertRGBToColor(convertColorToRGB(color));
-    }
-    stanfordcpplib::getPlatform()->gobject_setFillColor(this, fillColor);
-}
-
-void GPolygon::setFillColor(int rgb) {
-    fillColor = convertRGBToColor(rgb);
-    stanfordcpplib::getPlatform()->gobject_setFillColor(this, fillColor);
-}
-
-std::string GPolygon::getFillColor() const {
-    return fillColor;
-}
-
-GRectangle GPolygon::getBounds() const {
-    if (transformed) {
-        return stanfordcpplib::getPlatform()->gobject_getBounds(this);
-    }
-    double xMin = 0;
-    double yMin = 0;
-    double xMax = 0;
-    double yMax = 0;
-    for (int i = 0; i < vertices.size(); i++) {
-        double x = vertices[i].getX();
-        double y = vertices[i].getY();
-        if (i == 0 || x < xMin) xMin = x;
-        if (i == 0 || y < yMin) yMin = y;
-        if (i == 0 || x > xMax) xMax = x;
-        if (i == 0 || y > yMax) yMax = y;
-    }
-    // JL BUGFIX: add getX, getY
-    return GRectangle(xMin + getX(), yMin + getY(), xMax - xMin, yMax - yMin);
+void GPolygon::addVertex(double x, double y) {
+    cx = x;
+    cy = y;
+    vertices.add(GPoint(cx, cy));
+    stanfordcpplib::getPlatform()->gpolygon_addVertex(this, cx, cy);
 }
 
 bool GPolygon::contains(double x, double y) const {
@@ -1124,8 +1142,65 @@ bool GPolygon::contains(double x, double y) const {
     return (crossings % 2 == 1);
 }
 
+GRectangle GPolygon::getBounds() const {
+    if (transformed) {
+        return stanfordcpplib::getPlatform()->gobject_getBounds(this);
+    }
+    double xMin = 0;
+    double yMin = 0;
+    double xMax = 0;
+    double yMax = 0;
+    for (int i = 0; i < vertices.size(); i++) {
+        double x = vertices[i].getX();
+        double y = vertices[i].getY();
+        if (i == 0 || x < xMin) xMin = x;
+        if (i == 0 || y < yMin) yMin = y;
+        if (i == 0 || x > xMax) xMax = x;
+        if (i == 0 || y > yMax) yMax = y;
+    }
+    // JL BUGFIX: add getX, getY
+    return GRectangle(xMin + getX(), yMin + getY(), xMax - xMin, yMax - yMin);
+}
+
+std::string GPolygon::getFillColor() const {
+    return fillColor;
+}
+
 std::string GPolygon::getType() const {
     return "GPolygon";
+}
+
+Vector<GPoint> GPolygon::getVertices() const {
+    return vertices;
+}
+
+bool GPolygon::isFilled() const {
+    return fillFlag;
+}
+
+void GPolygon::setFillColor(int rgb) {
+    fillColor = convertRGBToColor(rgb);
+    stanfordcpplib::getPlatform()->gobject_setFillColor(this, fillColor);
+}
+
+void GPolygon::setFillColor(const std::string& color) {
+    fillColor = color;
+    if (fillColor == "") {
+        if (isFilled()) {
+            setFilled(false);
+        }
+    } else {
+        fillColor = convertRGBToColor(convertColorToRGB(color));
+        if (!isFilled()) {
+            setFilled(true);
+        }
+    }
+    stanfordcpplib::getPlatform()->gobject_setFillColor(this, fillColor);
+}
+
+void GPolygon::setFilled(bool flag) {
+    fillFlag = true;
+    stanfordcpplib::getPlatform()->gobject_setFilled(this, flag);
 }
 
 std::string GPolygon::toString() const {
@@ -1133,6 +1208,9 @@ std::string GPolygon::toString() const {
     oss << "GPolygon(" << vertices.size() << " vertices)";
     return oss.str();
 }
+
+
+/* Utility functions */
 
 static double dsq(double x0, double y0, double x1, double y1) {
     return (x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0);

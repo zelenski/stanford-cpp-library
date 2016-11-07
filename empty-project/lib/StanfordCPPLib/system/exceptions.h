@@ -7,6 +7,8 @@
  * exception is thrown, though it is hard to consistently do this on all platforms.
  * 
  * @author Marty Stepp
+ * @version 2016/11/07
+ * - added cleanupFunctionNameForStackTrace
  * @version 2016/10/30
  * - moved recursion functions to recursion.h/cpp
  * @version 2014/11/12
@@ -21,6 +23,13 @@
 #include <iostream>
 
 namespace exceptions {
+/*
+ * Strips some extraneous text from a function's name/header to make it look
+ * better when printed in a stack trace.
+ * e.g. basic_string -> string, removes std::, removes some weird compiler gibberish.
+ */
+std::string cleanupFunctionNameForStackTrace(std::string function);
+
 /*
  * Called by C++ lib's main wrapper so that the stack trace knows the program's name.
  * (Taken from argv[0].)

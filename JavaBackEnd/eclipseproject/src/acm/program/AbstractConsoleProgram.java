@@ -25,7 +25,7 @@ import acm.io.*;
 import acm.util.JTFTools;
 import stanford.cs106.diff.DiffGui;
 import stanford.cs106.gui.GuiUtils;
-import stanford.cs106.io.IOUtils;
+import stanford.cs106.io.*;
 import stanford.cs106.util.*;
 
 public abstract class AbstractConsoleProgram extends Program {
@@ -113,7 +113,50 @@ public abstract class AbstractConsoleProgram extends Program {
 					/* checkboxes */ false);
 			diff.show();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(getJFrame(), "Unable to compare output.", "Error",
+			JOptionPane.showMessageDialog(getJFrame(), "Unable to compare output.\n" + e, "Error",
+					JOptionPane.WARNING_MESSAGE);
+		}
+	}
+
+	/**
+	 * Pops up a file chooser to compare output to some expected output.
+	 */
+	protected void loadInputScript() {
+		try {
+			// pick working dir for loading expected output files
+			File dir = new File(System.getProperty("user.dir"));
+			File[] dirsToTry = {
+					new File(dir, "input"),
+					new File(dir, "res/input"),
+					new File(dir, "output"),
+					new File(dir, "expected-output"),
+					new File(dir, "res/output"),
+					new File(dir, "res/expected-output"),
+			};
+			for (File dirToTry : dirsToTry) {
+				if (dirToTry.exists()) {
+					dir = dirToTry;
+					break;
+				}
+			}
+
+			// let the user browse for a file for expected output
+			JFileChooser chooser = new JFileChooser(dir);
+			chooser.setFileFilter(new ExtensionFileFilter("txt"));
+			int result = chooser.showOpenDialog(getJFrame());
+			if (result == JFileChooser.CANCEL_OPTION) {
+				return;
+			}
+			File selectedFile = chooser.getSelectedFile();
+			if (selectedFile == null || !selectedFile.isFile()) {
+				return;
+			}
+
+			String inputScript = IOUtils.readEntireFile(selectedFile);
+			this.getConsole().setInputScript(new BufferedReader(new StringReader(inputScript)));
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(getJFrame(), "Unable to load input script.\n" + e, "Error",
 					JOptionPane.WARNING_MESSAGE);
 		}
 	}
@@ -278,6 +321,9 @@ public abstract class AbstractConsoleProgram extends Program {
 		String cmd = event.getActionCommand().intern();
 		if (cmd == ProgramMenuBar.MENU_ITEM_TEXT_COMPARE_OUTPUT) {
 			compareOutput();
+			return true;
+		} else if (cmd == ProgramMenuBar.MENU_ITEM_TEXT_LOAD_INPUT_SCRIPT) {
+			loadInputScript();
 			return true;
 		} else if (cmd == ProgramMenuBar.MENU_ITEM_TEXT_FONT) {
 			setFontFromChooser();

@@ -9,6 +9,8 @@
  * See BasicGraph.h for documentation of each member.
  *
  * @author Marty Stepp
+ * @version 2016/11/07
+ * - small bug fix for printing cost in operator << (courtesy GitHub @hsivnightbeam)
  * @version 2016/10/14
  * - modified floating-point equality tests to use floatingPointEqual function
  * @version 2016/08/12
@@ -100,7 +102,6 @@ std::ostream& operator <<(std::ostream& out, const Vertex& v) {
     if (!floatingPointEqual(v.cost, 0.0)) {
         out << ", cost=" << v.cost;
     }
-    out << ", cost=" << v.cost;
     out << ", visited=" << (v.visited ? "true" : "false");
     out << ", previous=" << (v.previous == nullptr ? std::string("NULL") : v.previous->name);
 

@@ -4,6 +4,8 @@
  * This file defines the <code>GWindow</code> class which supports
  * drawing graphical objects on the screen.
  * 
+ * @version 2016/11/02
+ * - added drawString, setFont methods
  * @version 2016/10/23
  * - added Region, Alignment enums and overloads of region-based methods
  * @version 2016/10/16
@@ -59,6 +61,7 @@ struct GWindowData {
     int windowY;
     std::string windowTitle;
     std::string color;
+    std::string font;
     int colorInt;
     bool visible;
     bool resizable;
@@ -279,6 +282,16 @@ public:
      */
     void drawRect(const GRectangle & bounds);
     void drawRect(double x, double y, double width, double height);
+
+    /*
+     * Method: drawString
+     * Usage: gw.drawString(text, x, y);
+     * ---------------------------------
+     * Draws the given text on the window with the baseline of its first
+     * character at the given x/y position.
+     * An optional font parameter can be passed to draw the string in that font.
+     */
+    void drawString(const std::string& text, double x, double y);
 
     /*
      * Method: fillOval
@@ -619,6 +632,14 @@ public:
      * immediately.  Useful if the program has a primary GUI window.
      */
     void setExitOnClose(bool value = true);
+
+    /*
+     * Method: setFont
+     * Usage: gw.setFont(font);
+     * ------------------------
+     * Sets the font used by the graphics window in calls such as drawString.
+     */
+    void setFont(const std::string& font);
 
     /*
      * Method: setHeight

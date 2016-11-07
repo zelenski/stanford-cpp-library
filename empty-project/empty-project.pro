@@ -11,6 +11,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2016/11/07
+# - better C++11 compiler flag compatibility (courtesy Kevin Miller)
 # @version 2016/10/30
 # - added FONTSIZE back in, but commented out by default
 # @version 2016/10/19
@@ -163,7 +165,8 @@ exists($$PWD/output/*) {
 # set up flags for the C++ compiler
 # (In general, many warnings/errors are enabled to tighten compile-time checking.
 # A few overly pedantic/confusing errors are turned off for simplicity.)
-QMAKE_CXXFLAGS += -std=c++11
+#QMAKE_CXXFLAGS += -std=c++11
+CONFIG += c++11
 QMAKE_CXXFLAGS += -Wall
 QMAKE_CXXFLAGS += -Wextra
 #QMAKE_CXXFLAGS += -Weffc++
@@ -483,4 +486,4 @@ exists($$PWD/lib/autograder/*.cpp) {
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #486; if not, your .pro has been changed!)
+# END OF FILE (this should be line #489; if not, your .pro has been changed!)

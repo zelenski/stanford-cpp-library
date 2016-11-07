@@ -1,12 +1,18 @@
+/*
+ * @version 2016/11/03
+ * - made it work for both java.io.FileFilter and javax.swing.filechooser.FileFilter (stupid)
+ */
+
 package stanford.cs106.io;
 
 import java.io.File;
-import java.io.FileFilter;
 
 /*
  * ...
  */
-public class ExtensionFileFilter implements FileFilter {
+public class ExtensionFileFilter
+		extends javax.swing.filechooser.FileFilter
+		implements java.io.FileFilter {
 	private String[] extensions;
 	
 	/*
@@ -31,5 +37,14 @@ public class ExtensionFileFilter implements FileFilter {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public String getDescription() {
+		if (extensions == null || extensions.length == 0) {
+			return "Files";
+		} else {
+			return "." + extensions[0] + " files";
+		}
 	}
 }

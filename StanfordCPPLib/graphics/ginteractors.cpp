@@ -1,8 +1,10 @@
 /*
- * File: gobjects.cpp
- * ------------------
+ * File: ginteractors.cpp
+ * ----------------------
  * This file implements the ginteractors.h interface.
  * 
+ * @version 2016/11/02
+ * - added GTextField constructor that takes a string parameter
  * @version 2016/10/24
  * - added setFont, setMnemonic, setAccelerator to GInteractor
  * @version 2016/10/23
@@ -367,6 +369,12 @@ GTextField::GTextField() {
 
 GTextField::GTextField(int nChars) {
     stanfordcpplib::getPlatform()->gtextfield_constructor(this, nChars);
+}
+
+GTextField::GTextField(const std::string& text) {
+    int nChars = (int) text.length();
+    stanfordcpplib::getPlatform()->gtextfield_constructor(this, nChars);
+    setText(text);
 }
 
 GTextField::InputType GTextField::getInputType() const {

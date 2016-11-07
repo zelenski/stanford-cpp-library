@@ -5,6 +5,9 @@
  * by student code on the console.
  * 
  * @author Marty Stepp
+ * @version 2016/11/07
+ * - added cleanupFunctionNameForStackTrace
+ * - slight refactor of shouldFilterOutFromStackTrace
  * @version 2016/10/30
  * - moved recursion functions to recursion.h/cpp
  * @version 2016/10/04
@@ -76,6 +79,49 @@ static void signalHandlerDisable();
 static void signalHandlerEnable();
 static void stanfordCppLibSignalHandler(int sig);
 static void stanfordCppLibTerminateHandler();
+
+std::string cleanupFunctionNameForStackTrace(std::string function) {
+    // remove references to std:: namespace
+    stringReplaceInPlace(function, "std::", "");
+    stringReplaceInPlace(function, "__cxx11::", "");
+    stringReplaceInPlace(function, "[abi:cxx11]", "");
+    stringReplaceInPlace(function, "__1::", "");   // on Mac
+
+    // a few substitutions related to predefined types for simplicity
+    stringReplaceInPlace(function, "basic_ostream", "ostream");
+    stringReplaceInPlace(function, "basic_istream", "istream");
+    stringReplaceInPlace(function, "basic_ofstream", "ofstream");
+    stringReplaceInPlace(function, "basic_ifstream", "ifstream");
+    stringReplaceInPlace(function, "basic_string", "string");
+
+    // remove template arguments
+    // TODO: does not work well for nested templates
+    int lessThan = stringIndexOf(function, "<");
+    while (lessThan >= 0) {
+        // see if there is a matching > for this <
+        int greaterThan = lessThan + 1;
+        int count = 1;
+        while (greaterThan < (int) function.length()) {
+            if (function[greaterThan] == '<') {
+                count++;
+            } else if (function[greaterThan] == '>') {
+                count--;
+                if (count == 0) {
+                    break;
+                }
+            }
+            greaterThan++;
+        }
+        if (count == 0 && lessThan >= 0 && greaterThan > lessThan) {
+            function.erase(lessThan, greaterThan - lessThan + 1);
+        } else {
+            // look for the next < in the string, if any, to see if it has a matching >
+            lessThan = stringIndexOf(function, "<", lessThan + 1);
+        }
+    }
+
+    return function;
+}
 
 std::string& getProgramNameForStackTrace() {
     return STATIC_VARIABLE(programNameForStackTrace);
@@ -155,31 +201,62 @@ void setTopLevelExceptionHandlerEnabled(bool enabled) {
  * private library code or OS code and would confuse the student.
  */
 bool shouldFilterOutFromStackTrace(const std::string& function) {
-    return startsWith(function, "__")
-            || function == "??"
-            || function == "_clone"
-            || function == "error(string)"
-            || function == "error"
-            || function == "_start"
-            || function == "_Unwind_Resume"
-            || function == "startupMain(int, char**)"
-            || function.find("stacktrace::") != std::string::npos
-            || function.find("ErrorException::ErrorException") != std::string::npos
-            || function.find(" error(") != std::string::npos
-            || function.find("testing::") != std::string::npos
-            || function.find("printStackTrace") != std::string::npos
-            || function.find("shouldFilterOutFromStackTrace") != std::string::npos
-            || function.find("stanfordCppLibSignalHandler") != std::string::npos
-            || function.find("stanfordCppLibPosixSignalHandler") != std::string::npos
-            || function.find("stanfordCppLibTerminateHandler") != std::string::npos
-            || function.find("InitializeExceptionChain") != std::string::npos
-            || function.find("BaseThreadInitThunk") != std::string::npos
-            || function.find("GetProfileString") != std::string::npos
-            || function.find("KnownExceptionFilter") != std::string::npos
-            || function.find("UnhandledException") != std::string::npos
-            || function.find("crtexe.c") != std::string::npos
-            || function.find("_sigtramp") != std::string::npos
-            || function.find("autograderMain") != std::string::npos;
+    // exact names that should be matched and filtered
+    static const std::vector<std::string> FORBIDDEN_NAMES {
+        "??",
+        "_clone",
+        "_start",
+        "_Unwind_Resume",
+        "error",
+        "error(string)",
+        "startupMain(int, char**)"
+    };
+
+    // substrings to filter (don't show any func whose name contains these)
+    static const std::vector<std::string> FORBIDDEN_SUBSTRINGS {
+        " error(",
+        "_sigtramp",
+        "autograderMain"
+        "BaseThreadInitThunk",
+        "crtexe.c",
+        "ErrorException::ErrorException",
+        "GetProfileString",
+        "InitializeExceptionChain",
+        "KnownExceptionFilter",
+        "printStackTrace",
+        "shouldFilterOutFromStackTrace",
+        "stacktrace::",
+        "stanfordCppLibPosixSignalHandler",
+        "stanfordCppLibSignalHandler",
+        "stanfordCppLibTerminateHandler",
+        "testing::",
+        "UnhandledException"
+    };
+
+    // prefixes to filter (don't show any func whose name starts with these)
+    static const std::vector<std::string> FORBIDDEN_PREFIXES {
+        "__"
+    };
+
+    for (const std::string& name : FORBIDDEN_NAMES) {
+        if (function == name) {
+            return true;
+        }
+    }
+
+    for (const std::string& name : FORBIDDEN_SUBSTRINGS) {
+        if (function.find(name) != std::string::npos) {
+            return true;
+        }
+    }
+
+    for (const std::string& name : FORBIDDEN_PREFIXES) {
+        if (function.find(name) == 0) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void printStackTrace() {
@@ -198,43 +275,7 @@ void printStackTrace(std::ostream& out) {
     int funcNameLength = 0;
     int lineStrLength = 0;
     for (size_t i = 0; i < entries.size(); ++i) {
-        // remove references to std:: namespace
-        stringReplaceInPlace(entries[i].function, "std::", "");
-        stringReplaceInPlace(entries[i].function, "__cxx11::", "");
-        stringReplaceInPlace(entries[i].function, "__1::", "");   // on Mac
-
-        // a few substitutions related to predefined types for simplicity
-        stringReplaceInPlace(entries[i].function, "basic_ostream", "ostream");
-        stringReplaceInPlace(entries[i].function, "basic_istream", "istream");
-        stringReplaceInPlace(entries[i].function, "basic_ofstream", "ofstream");
-        stringReplaceInPlace(entries[i].function, "basic_ifstream", "ifstream");
-        stringReplaceInPlace(entries[i].function, "basic_string", "string");
-        
-        // remove template arguments
-        // TODO: does not work well for nested templates
-        int lessThan = stringIndexOf(entries[i].function, "<");
-        while (lessThan >= 0) {
-            // see if there is a matching > for this <
-            int greaterThan = lessThan + 1;
-            int count = 1;
-            while (greaterThan < (int) entries[i].function.length()) {
-                if (entries[i].function[greaterThan] == '<') {
-                    count++;
-                } else if (entries[i].function[greaterThan] == '>') {
-                    count--;
-                    if (count == 0) {
-                        break;
-                    }
-                }
-                greaterThan++;
-            }
-            if (count == 0 && lessThan >= 0 && greaterThan > lessThan) {
-                entries[i].function.erase(lessThan, greaterThan - lessThan + 1);
-            } else {
-                // look for the next < in the string, if any, to see if it has a matching >
-                lessThan = stringIndexOf(entries[i].function, "<", lessThan + 1);
-            }
-        }
+        entries[i].function = cleanupFunctionNameForStackTrace(entries[i].function);
         
         if (!STATIC_VARIABLE(STACK_TRACE_SHOULD_FILTER) || !shouldFilterOutFromStackTrace(entries[i].function)) {
             lineStrLength = std::max(lineStrLength, (int) entries[i].lineStr.length());

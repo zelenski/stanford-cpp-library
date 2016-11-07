@@ -5,6 +5,13 @@
  * the model developed for the ACM Java Graphics.
  * <include src="pictures/ClassHierarchies/GObjectHierarchy-h.html">
  *
+ * TODO: add get/setX, Y, size?
+ * TODO: get fill color as RGB int?
+ * TODO: operator << for gobjects? they already have toString()
+ *
+ * @version 2016/11/07
+ * - alphabetized all members
+ * - modified all members that accept std::string to take const std::string&
  * @version 2016/10/15
  * - made GRect() constructor public
  * @version 2016/10/12
@@ -20,6 +27,7 @@
 #include "gwindow.h"
 #include "vector.h"
 
+// forward declaration of class
 class GCompound;
 
 /*
@@ -42,17 +50,113 @@ class GCompound;
 class GObject {
 public:
     /*
-     * Globally turns on/off the anti-aliasing feature that smooths out the
-     * edges of onscreen shapes.  On by default.
-     */
-    static void setAntiAliasing(bool value);
-
-    /*
      * Destructor: ~GObject
      * --------------------
      * Frees the storage for the object.
      */
     virtual ~GObject();
+
+    /*
+     * Method: contains
+     * Usage: if (gobj->contains(pt)) ...
+     *        if (gobj->contains(x, y)) ...
+     * ------------------------------------
+     * Returns <code>true</code> if the specified point is inside the object.
+     */
+    virtual bool contains(double x, double y) const;
+    bool contains(const GPoint& pt) const;
+
+    /*
+     * Method: getBounds
+     * Usage: GRectangle rect = gobj->getBounds();
+     * -------------------------------------------
+     * Returns the bounding box of this object, which is defined to be the
+     * smallest rectangle that covers everything drawn by the figure.  The
+     * coordinates of this rectangle do not necessarily match the location
+     * returned by <code>getLocation</code>.  Given a <code>GLabel</code>
+     * object, for example, <code>getLocation</code> returns the coordinates
+     * of the point on the baseline at which the string begins; the
+     * <code>getBounds</code> method, by contrast, returns a rectangle that
+     * covers the entire window area occupied by the string.
+     */
+    virtual GRectangle getBounds() const = 0;
+
+    /*
+     * Method: getColor
+     * Usage: string color = gobj->getColor();
+     * ---------------------------------------
+     * Returns the color used to display this object.  This color is
+     * always returned as a string in the form <code>"#rrggbb"</code>,
+     * where <code>rr</code>, <code>gg</code>, and <code>bb</code> are
+     * the red, green, and blue components of the color, expressed as
+     * two-digit hexadecimal values.
+     */
+    std::string getColor() const;
+
+    /*
+     * Method: getHeight
+     * Usage: double height = gobj->getHeight();
+     * -----------------------------------------
+     * Returns the height of this object, which is defined to be the height
+     * of the bounding box.
+     */
+    double getHeight() const;
+
+    /*
+     * Method: getLocation
+     * Usage: GPoint pt = gobj->getLocation();
+     * ---------------------------------------
+     * Returns the location of this object as a <code>GPoint</code>.
+     */
+    GPoint getLocation() const;
+
+    /*
+     * Method: getLineWidth
+     * Usage: double lineWidth = gobj->getLineWidth();
+     * -----------------------------------------------
+     * Returns the width of the line used to draw this object.
+     */
+    double getLineWidth() const;
+
+    /*
+     * Method: getParent
+     * Usage: GCompound *parent = gobj->getParent();
+     * ---------------------------------------------
+     * Returns a pointer to the <code>GCompound</code> that contains this
+     * object.  Every <code>GWindow</code> is initialized to contain a single
+     * <code>GCompound</code> that is aligned with the window.  Adding
+     * objects to the window adds them to that <code>GCompound</code>,
+     * which means that every object you add to the window has a parent.
+     * Calling <code>getParent</code> on the top-level <code>GCompound</code>
+     * returns <code>nullptr</code>.
+     */
+    GCompound* getParent() const;
+
+    /*
+     * Method: getSize
+     * Usage: GDimension size = gobj->getSize();
+     * -----------------------------------------
+     * Returns the size of the object as a <code>GDimension</code>.
+     */
+    GDimension getSize() const;
+
+    /*
+     * Method: getType
+     * Usage: string type = gobj->getType();
+     * -------------------------------------
+     * Returns the concrete type of the object as a string, as in
+     * <code>"GOval"</code> or <code>"GRect"</code>.
+     */
+    virtual std::string getType() const = 0;
+
+    /*
+     * Method: getWidth
+     * Usage: double width = gobj->getWidth();
+     * ---------------------------------------
+     * Returns the width of this object, which is defined to be the width of
+     * the bounding box.
+     */
+    double getWidth() const;
 
     /*
      * Method: getX
@@ -71,22 +175,12 @@ public:
     double getY() const;
 
     /*
-     * Method: getLocation
-     * Usage: GPoint pt = gobj->getLocation();
-     * ---------------------------------------
-     * Returns the location of this object as a <code>GPoint</code>.
+     * Method: isVisible
+     * Usage: if (gobj->isVisible()) ...
+     * ---------------------------------
+     * Returns <code>true</code> if this object is visible.
      */
-    GPoint getLocation() const;
-
-    /*
-     * Method: setLocation
-     * Usage: gobj->setLocation(pt);
-     *        gobj->setLocation(x, y);
-     * -------------------------------
-     * Sets the location of this object to the specified point.
-     */
-    void setLocation(const GPoint & pt);
-    void setLocation(double x, double y);
+    bool isVisible() const;
 
     /*
      * Method: move
@@ -98,61 +192,73 @@ public:
     void move(double dx, double dy);
 
     /*
-     * Method: getWidth
-     * Usage: double width = gobj->getWidth();
-     * ---------------------------------------
-     * Returns the width of this object, which is defined to be the width of
-     * the bounding box.
+     * Method: rotate
+     * Usage: gobj->rotate(theta);
+     * ---------------------------
+     * Transforms the object by rotating it <code>theta</code> degrees
+     * counterclockwise around its origin.
      */
-    double getWidth() const;
+    void rotate(double theta);
 
     /*
-     * Method: getHeight
-     * Usage: double height = gobj->getHeight();
-     * -----------------------------------------
-     * Returns the height of this object, which is defined to be the height
-     * of the bounding box.
+     * Method: scale
+     * Usage: gobj->scale(sf);
+     *        gobj->scale(sx, sy);
+     * ---------------------------
+     * Scales the object by the specified scale factors.  Most clients will use
+     * the first form, which scales the object by <code>sf</code> in both
+     * dimensions, so that invoking <code>gobj->scale(2)</code> doubles the
+     * size of the object.  The second form applies independent scale factors
+     * to the <i>x</i> and <i>y</i> dimensions.
      */
-    double getHeight() const;
+    void scale(double sf);
+    void scale(double sx, double sy);
 
     /*
-     * Method: getSize
-     * Usage: GDimension size = gobj->getSize();
-     * -----------------------------------------
-     * Returns the size of the object as a <code>GDimension</code>.
+     * Method: sendBackward
+     * Usage: gobj->sendBackward();
+     * ----------------------------
+     * Moves this object one step toward the back in the <i>z</i> dimension.
+     * If it was already at the back of the stack, nothing happens.
      */
-    GDimension getSize() const;
+    void sendBackward();
 
     /*
-     * Method: getBounds
-     * Usage: GRectangle rect = gobj->getBounds();
-     * -------------------------------------------
-     * Returns the bounding box of this object, which is defined to be the
-     * smallest rectangle that covers everything drawn by the figure.  The
-     * coordinates of this rectangle do not necessarily match the location
-     * returned by <code>getLocation</code>.  Given a <code>GLabel</code>
-     * object, for example, <code>getLocation</code> returns the coordinates
-     * of the point on the baseline at which the string begins; the
-     * <code>getBounds</code> method, by contrast, returns a rectangle that
-     * covers the entire window area occupied by the string.
+     * Method: sendForward
+     * Usage: gobj->sendForward();
+     * ---------------------------
+     * Moves this object one step toward the front in the <i>z</i> dimension.
+     * If it was already at the front of the stack, nothing happens.
      */
-    virtual GRectangle getBounds() const = 0;
+    void sendForward();
 
     /*
-     * Method: setLineWidth
-     * Usage: gobj->setLineWidth(lineWidth);
-     * -------------------------------------
-     * Sets the width of the line used to draw this object.
+     * Method: sendToBack
+     * Usage: gobj->sendToBack();
+     * --------------------------
+     * Moves this object to the back of the display in the <i>z</i> dimension.
+     * By moving it to the back, this object will appear to be behind the other
+     * graphical objects on the display and may be obscured by other objects
+     * in front.
      */
-    void setLineWidth(double lineWidth);
+    void sendToBack();
 
     /*
-     * Method: getLineWidth
-     * Usage: double lineWidth = gobj->getLineWidth();
-     * -----------------------------------------------
-     * Returns the width of the line used to draw this object.
+     * Method: sendToFront
+     * Usage: gobj->sendToFront();
+     * ---------------------------
+     * Moves this object to the front of the display in the <i>z</i> dimension.
+     * By moving it to the front, this object will appear to be on top of the
+     * other graphical objects on the display and may hide any objects that
+     * are further back.
      */
-    double getLineWidth() const;
+    void sendToFront();
+
+    /*
+     * Globally turns on/off the anti-aliasing feature that smooths out the
+     * edges of onscreen shapes.  On by default.
+     */
+    static void setAntiAliasing(bool value);
 
     /*
      * Method: setColor
@@ -184,43 +290,26 @@ public:
      * <code>bb</code> are pairs of hexadecimal digits indicating the
      * red, green, and blue components of the color, respectively.
      */
-    void setColor(std::string color);
     void setColor(int rgb);
+    void setColor(const std::string& color);
 
     /*
-     * Method: getColor
-     * Usage: string color = gobj->getColor();
-     * ---------------------------------------
-     * Returns the color used to display this object.  This color is
-     * always returned as a string in the form <code>"#rrggbb"</code>,
-     * where <code>rr</code>, <code>gg</code>, and <code>bb</code> are
-     * the red, green, and blue components of the color, expressed as
-     * two-digit hexadecimal values.
+     * Method: setLineWidth
+     * Usage: gobj->setLineWidth(lineWidth);
+     * -------------------------------------
+     * Sets the width of the line used to draw this object.
      */
-    std::string getColor() const;
+    void setLineWidth(double lineWidth);
 
     /*
-     * Method: scale
-     * Usage: gobj->scale(sf);
-     *        gobj->scale(sx, sy);
-     * ---------------------------
-     * Scales the object by the specified scale factors.  Most clients will use
-     * the first form, which scales the object by <code>sf</code> in both
-     * dimensions, so that invoking <code>gobj->scale(2)</code> doubles the
-     * size of the object.  The second form applies independent scale factors
-     * to the <i>x</i> and <i>y</i> dimensions.
+     * Method: setLocation
+     * Usage: gobj->setLocation(pt);
+     *        gobj->setLocation(x, y);
+     * -------------------------------
+     * Sets the location of this object to the specified point.
      */
-    void scale(double sf);
-    void scale(double sx, double sy);
-
-    /*
-     * Method: rotate
-     * Usage: gobj->rotate(theta);
-     * ---------------------------
-     * Transforms the object by rotating it <code>theta</code> degrees
-     * counterclockwise around its origin.
-     */
-    void rotate(double theta);
+    void setLocation(double x, double y);
+    void setLocation(const GPoint& pt);
 
     /*
      * Method: setVisible
@@ -231,73 +320,6 @@ public:
     void setVisible(bool flag);
 
     /*
-     * Method: isVisible
-     * Usage: if (gobj->isVisible()) ...
-     * ---------------------------------
-     * Returns <code>true</code> if this object is visible.
-     */
-    bool isVisible() const;
-
-    /*
-     * Method: sendForward
-     * Usage: gobj->sendForward();
-     * ---------------------------
-     * Moves this object one step toward the front in the <i>z</i> dimension.
-     * If it was already at the front of the stack, nothing happens.
-     */
-    void sendForward();
-
-    /*
-     * Method: sendToFront
-     * Usage: gobj->sendToFront();
-     * ---------------------------
-     * Moves this object to the front of the display in the <i>z</i> dimension.
-     * By moving it to the front, this object will appear to be on top of the
-     * other graphical objects on the display and may hide any objects that
-     * are further back.
-     */
-    void sendToFront();
-
-    /*
-     * Method: sendBackward
-     * Usage: gobj->sendBackward();
-     * ----------------------------
-     * Moves this object one step toward the back in the <i>z</i> dimension.
-     * If it was already at the back of the stack, nothing happens.
-     */
-    void sendBackward();
-
-    /*
-     * Method: sendToBack
-     * Usage: gobj->sendToBack();
-     * --------------------------
-     * Moves this object to the back of the display in the <i>z</i> dimension.
-     * By moving it to the back, this object will appear to be behind the other
-     * graphical objects on the display and may be obscured by other objects
-     * in front.
-     */
-    void sendToBack();
-
-    /*
-     * Method: contains
-     * Usage: if (gobj->contains(pt)) ...
-     *        if (gobj->contains(x, y)) ...
-     * ------------------------------------
-     * Returns <code>true</code> if the specified point is inside the object.
-     */
-    bool contains(GPoint pt) const;
-    virtual bool contains(double x, double y) const;
-
-    /*
-     * Method: getType
-     * Usage: string type = gobj->getType();
-     * -------------------------------------
-     * Returns the concrete type of the object as a string, as in
-     * <code>"GOval"</code> or <code>"GRect"</code>.
-     */
-    virtual std::string getType() const = 0;
-
-    /*
      * Method: toString
      * Usage: gobj->toString();
      * ------------------------
@@ -305,26 +327,14 @@ public:
      */
     virtual std::string toString() const = 0;
 
-    /*
-     * Method: getParent
-     * Usage: GCompound *parent = gobj->getParent();
-     * ---------------------------------------------
-     * Returns a pointer to the <code>GCompound</code> that contains this
-     * object.  Every <code>GWindow</code> is initialized to contain a single
-     * <code>GCompound</code> that is aligned with the window.  Adding
-     * objects to the window adds them to that <code>GCompound</code>,
-     * which means that every object you add to the window has a parent.
-     * Calling <code>getParent</code> on the top-level <code>GCompound</code>
-     * returns <code>nullptr</code>.
-     */
-    GCompound *getParent() const;
-
     /* Private section */
 private:
+    // forbid assignment between objects
     const GObject& operator =(const GObject&) {
         return *this;
     }
     
+    // forbid copy construction
     GObject(const GObject&) {
         // empty
     }
@@ -337,11 +347,12 @@ protected:
     std::string color;              /* The color of the object            */
     bool visible;                   /* Indicates if object is visible     */
     bool transformed;               /* Indicates if object is transformed */
-    GCompound *parent;              /* Pointer to the parent              */
+    GCompound* parent;              /* Pointer to the parent              */
 
 protected:
     GObject();
 
+    friend class G3DRect;
     friend class GArc;
     friend class GButton;
     friend class GCheckBox;
@@ -357,7 +368,6 @@ protected:
     friend class GRoundRect;
     friend class GSlider;
     friend class GTextField;
-    friend class G3DRect;
 };
 
 /*
@@ -382,7 +392,6 @@ protected:
  */
 class GRect : public GObject {
 public:
-
     /*
      * Constructor: GRect
      * Usage: GRect *rect = new GRect(width, height);
@@ -404,14 +413,21 @@ public:
     virtual ~GRect();
 
     /*
-     * Method: setSize
-     * Usage: rect->setSize(size);
-     *        rect->setSize(width, height);
-     * ------------------------------------
-     * Changes the size of this rectangle to the specified width and height.
+     * Method: getFillColor
+     * Usage: string color = rect->getFillColor();
+     * -------------------------------------------
+     * Returns the color used to display the filled region of this rectangle.  If
+     * none has been set, <code>getFillColor</code> returns the empty string.
      */
-    void setSize(const GDimension & size);
-    void setSize(double width, double height);
+    std::string getFillColor() const;
+
+    /*
+     * Method: isFilled
+     * Usage: if (rect->isFilled()) ...
+     * --------------------------------
+     * Returns <code>true</code> if the rectangle is filled.
+     */
+    bool isFilled() const;
 
     /*
      * Method: setBounds
@@ -420,8 +436,19 @@ public:
      * --------------------------------------------
      * Changes the bounds of this rectangle to the specified values.
      */
-    void setBounds(const GRectangle & size);
     void setBounds(double x, double y, double width, double height);
+    void setBounds(const GRectangle& size);
+
+    /*
+     * Method: setFillColor
+     * Usage: rect->setFillColor(color);
+     * ---------------------------------
+     * Sets the color used to display the filled region of this rectangle.
+     * As a side effect, sets this object to be filled (setFilled(true)).
+     * If an empty string is passed, sets filled to false.
+     */
+    void setFillColor(int rgb);
+    void setFillColor(const std::string& color);
 
     /*
      * Method: setFilled
@@ -433,30 +460,14 @@ public:
     void setFilled(bool flag);
 
     /*
-     * Method: isFilled
-     * Usage: if (rect->isFilled()) ...
-     * --------------------------------
-     * Returns <code>true</code> if the rectangle is filled.
+     * Method: setSize
+     * Usage: rect->setSize(size);
+     *        rect->setSize(width, height);
+     * ------------------------------------
+     * Changes the size of this rectangle to the specified width and height.
      */
-    bool isFilled() const;
-
-    /*
-     * Method: setFillColor
-     * Usage: rect->setFillColor(color);
-     * ---------------------------------
-     * Sets the color used to display the filled region of this rectangle.
-     */
-    void setFillColor(std::string color);
-    void setFillColor(int rgb);
-
-    /*
-     * Method: getFillColor
-     * Usage: string color = rect->getFillColor();
-     * -------------------------------------------
-     * Returns the color used to display the filled region of this rectangle.  If
-     * none has been set, <code>getFillColor</code> returns the empty string.
-     */
-    std::string getFillColor() const;
+    void setSize(double width, double height);
+    void setSize(const GDimension& size);
 
     /* Prototypes for the virtual methods */
     virtual GRectangle getBounds() const;
@@ -560,20 +571,20 @@ public:
     virtual ~G3DRect();
 
     /*
-     * Method: setRaised
-     * Usage: rect->setRaised(raised);
-     * -------------------------------
-     * Indicates whether this object appears raised.
-     */
-    void setRaised(bool raised);
-
-    /*
      * Method: isRaised
      * Usage: if (rect->isRaised()) ...
      * --------------------------------
      * Returns <code>true</code> if this object appears raised.
      */
     bool isRaised() const;
+
+    /*
+     * Method: setRaised
+     * Usage: rect->setRaised(raised);
+     * -------------------------------
+     * Indicates whether this object appears raised.
+     */
+    void setRaised(bool raised);
 
     /* Prototypes for the virtual methods */
     virtual std::string getType() const;
@@ -627,34 +638,13 @@ public:
     virtual ~GOval();
 
     /*
-     * Method: setSize
-     * Usage: oval->setSize(size);
-     *        oval->setSize(width, height);
-     * ------------------------------------
-     * Changes the size of the bounding rectangle to the specified width
-     * and height.
+     * Method: getFillColor
+     * Usage: string color = oval->getFillColor();
+     * -------------------------------------------
+     * Returns the color used to display the filled region of this oval.  If
+     * none has been set, <code>getFillColor</code> returns the empty string.
      */
-    void setSize(const GDimension & size);
-    void setSize(double width, double height);
-
-    /*
-     * Method: setBounds
-     * Usage: oval->setBounds(rect);
-     *        oval->setBounds(x, y, width, height);
-     * --------------------------------------------
-     * Changes the bounds of the oval to the specified values.
-     */
-    void setBounds(const GRectangle & size);
-    void setBounds(double x, double y, double width, double height);
-
-    /*
-     * Method: setFilled
-     * Usage: oval->setFilled(flag);
-     * -----------------------------
-     * Sets the fill status for the oval, where <code>false</code> is
-     * outlined and <code>true</code> is filled.
-     */
-    void setFilled(bool flag);
+    std::string getFillColor() const;
 
     /*
      * Method: isFilled
@@ -665,26 +655,49 @@ public:
     bool isFilled() const;
 
     /*
+     * Method: setSize
+     * Usage: oval->setSize(size);
+     *        oval->setSize(width, height);
+     * ------------------------------------
+     * Changes the size of the bounding rectangle to the specified width
+     * and height.
+     */
+    void setSize(double width, double height);
+    void setSize(const GDimension& size);
+
+    /*
+     * Method: setBounds
+     * Usage: oval->setBounds(rect);
+     *        oval->setBounds(x, y, width, height);
+     * --------------------------------------------
+     * Changes the bounds of the oval to the specified values.
+     */
+    void setBounds(double x, double y, double width, double height);
+    void setBounds(const GRectangle& size);
+
+    /*
      * Method: setFillColor
      * Usage: oval->setFillColor(color);
      * ---------------------------------
      * Sets the color used to display the filled region of this oval.
+     * As a side effect, sets this object to be filled (setFilled(true)).
+     * If an empty string is passed, sets filled to false.
      */
-    void setFillColor(std::string color);
+    void setFillColor(const std::string& color);
     void setFillColor(int rgb);
 
     /*
-     * Method: getFillColor
-     * Usage: string color = oval->getFillColor();
-     * -------------------------------------------
-     * Returns the color used to display the filled region of this oval.  If
-     * none has been set, <code>getFillColor</code> returns the empty string.
+     * Method: setFilled
+     * Usage: oval->setFilled(flag);
+     * -----------------------------
+     * Sets the fill status for the oval, where <code>false</code> is
+     * outlined and <code>true</code> is filled.
      */
-    std::string getFillColor() const;
+    void setFilled(bool flag);
 
     /* Prototypes for the virtual methods */
-    virtual GRectangle getBounds() const;
     virtual bool contains(double x, double y) const;
+    virtual GRectangle getBounds() const;
     virtual std::string getType() const;
     virtual std::string toString() const;
 
@@ -736,12 +749,29 @@ public:
          double start, double sweep);
 
     /*
-     * Method: setStartAngle
-     * Usage: arc->setStartAngle(start);
-     * ---------------------------------
-     * Sets the starting angle for this <code>GArc</code> object.
+     * Method: getEndPoint
+     * Usage: GPoint pt = arc->getEndPoint();
+     * --------------------------------------
+     * Returns the point at which the arc ends.
      */
-    void setStartAngle(double start);
+    GPoint getEndPoint() const;
+
+    /*
+     * Method: getFillColor
+     * Usage: string color = arc->getFillColor();
+     * ------------------------------------------
+     * Returns the color used to display the filled region of this arc.  If
+     * none has been set, <code>getFillColor</code> returns the empty string.
+     */
+    std::string getFillColor() const;
+
+    /*
+     * Method: getFrameRectangle
+     * Usage: GRectangle rect = arc->getFrameRectangle();
+     * --------------------------------------------------
+     * Returns the boundaries of the rectangle used to frame the arc.
+     */
+    GRectangle getFrameRectangle() const;
 
     /*
      * Method: getStartAngle
@@ -752,12 +782,12 @@ public:
     double getStartAngle() const;
 
     /*
-     * Method: setSweepAngle
-     * Usage: arc->setSweepAngle(start);
-     * ---------------------------------
-     * Sets the sweep angle for this <code>GArc</code> object.
+     * Method: getStartPoint
+     * Usage: GPoint pt = arc->getStartPoint();
+     * ----------------------------------------
+     * Returns the point at which the arc starts.
      */
-    void setSweepAngle(double start);
+    GPoint getStartPoint() const;
 
     /*
      * Method: getSweepAngle
@@ -768,38 +798,24 @@ public:
     double getSweepAngle() const;
 
     /*
-     * Method: getStartPoint
-     * Usage: GPoint pt = arc->getStartPoint();
-     * ----------------------------------------
-     * Returns the point at which the arc starts.
+     * Method: isFilled
+     * Usage: if (arc->isFilled()) ...
+     * -------------------------------
+     * Returns <code>true</code> if the arc is filled.
      */
-    GPoint getStartPoint() const;
+    bool isFilled() const;
 
     /*
-     * Method: getEndPoint
-     * Usage: GPoint pt = arc->getEndPoint();
-     * --------------------------------------
-     * Returns the point at which the arc ends.
+     * Method: setFillColor
+     * Usage: arc->setFillColor(color);
+     * --------------------------------
+     * Sets the color used to display the filled region of this arc.
+     * Colors are specified as strings as described in the notes for the
+     * <a href="GObject-class.html#Method:setColor"><code>setColor</code></a>
+     * method.
      */
-    GPoint getEndPoint() const;
-
-    /*
-     * Method: setFrameRectangle
-     * Usage: arc->setFrameRectangle(rect);
-     *        arc->setFrameRectangle(x, y, width, height);
-     * ---------------------------------------------------
-     * Changes the boundaries of the rectangle used to frame the arc.
-     */
-    void setFrameRectangle(const GRectangle & rect);
-    void setFrameRectangle(double x, double y, double width, double height);
-
-    /*
-     * Method: getFrameRectangle
-     * Usage: GRectangle rect = arc->getFrameRectangle();
-     * --------------------------------------------------
-     * Returns the boundaries of the rectangle used to frame the arc.
-     */
-    GRectangle getFrameRectangle() const;
+    void setFillColor(const std::string& color);
+    void setFillColor(int rgb);
 
     /*
      * Method: setFilled
@@ -833,44 +849,41 @@ public:
     void setFilled(bool flag);
 
     /*
-     * Method: isFilled
-     * Usage: if (arc->isFilled()) ...
-     * -------------------------------
-     * Returns <code>true</code> if the arc is filled.
+     * Method: setFrameRectangle
+     * Usage: arc->setFrameRectangle(rect);
+     *        arc->setFrameRectangle(x, y, width, height);
+     * ---------------------------------------------------
+     * Changes the boundaries of the rectangle used to frame the arc.
      */
-    bool isFilled() const;
+    void setFrameRectangle(const GRectangle& rect);
+    void setFrameRectangle(double x, double y, double width, double height);
 
     /*
-     * Method: setFillColor
-     * Usage: arc->setFillColor(color);
-     * --------------------------------
-     * Sets the color used to display the filled region of this arc.
-     * Colors are specified as strings as described in the notes for the
-     * <a href="GObject-class.html#Method:setColor"><code>setColor</code></a>
-     * method.
+     * Method: setStartAngle
+     * Usage: arc->setStartAngle(start);
+     * ---------------------------------
+     * Sets the starting angle for this <code>GArc</code> object.
      */
-    void setFillColor(std::string color);
-    void setFillColor(int rgb);
+    void setStartAngle(double start);
 
     /*
-     * Method: getFillColor
-     * Usage: string color = arc->getFillColor();
-     * ------------------------------------------
-     * Returns the color used to display the filled region of this arc.  If
-     * none has been set, <code>getFillColor</code> returns the empty string.
+     * Method: setSweepAngle
+     * Usage: arc->setSweepAngle(start);
+     * ---------------------------------
+     * Sets the sweep angle for this <code>GArc</code> object.
      */
-    std::string getFillColor() const;
+    void setSweepAngle(double start);
 
     /* Prototypes for the virtual methods */
-    virtual GRectangle getBounds() const;
     virtual bool contains(double x, double y) const;
+    virtual GRectangle getBounds() const;
     virtual std::string getType() const;
     virtual std::string toString() const;
 
 private:
-    GPoint getArcPoint(double theta) const;
     bool containsAngle(double theta) const;
     void createGArc(double width, double height, double start, double sweep);
+    GPoint getArcPoint(double theta) const;
 
     /* Instance variables */
     double start;                   /* Starting angle of the arc       */
@@ -908,8 +921,35 @@ public:
      * Adds a new graphical object to the <code>GCompound</code>.  The second
      * form moves the object to the point (<code>x</code>, <code>y</code>) first.
      */
-    void add(GObject *gobj);
-    void add(GObject *gobj, double x, double y);
+    void add(GObject* gobj);
+    void add(GObject* gobj, double x, double y);
+
+    /*
+     * Method: getElement
+     * Usage: GObject* gobj = comp->getElement(index);
+     * -----------------------------------------------
+     * Returns a pointer to the graphical object at the specified index,
+     * numbering from back to front in the the <i>z</i> dimension.
+     */
+    GObject* getElement(int index) const;
+
+    /*
+     * Method: getElementAt
+     * Usage: GObject* gobj = comp->getElementAt(x, y);
+     * ------------------------------------------------
+     * Returns a pointer to the first graphical object that contains the given
+     * (x, y) point, or a null pointer if no object in this compound touches it.
+     */
+    GObject* getElementAt(double x, double y) const;
+
+    /*
+     * Method: getElementCount
+     * Usage: int n = comp->getElementCount();
+     * ---------------------------------------
+     * Returns the number of graphical objects stored in the
+     * <code>GCompound</code>.
+     */
+    int getElementCount() const;
 
     /*
      * Method: remove
@@ -917,7 +957,7 @@ public:
      * --------------------------
      * Removes the specified object from the <code>GCompound</code>.
      */
-    void remove(GObject *gobj);
+    void remove(GObject* gobj);
 
     /*
      * Method: removeAll
@@ -927,40 +967,22 @@ public:
      */
     void removeAll();
 
-    /*
-     * Method: getElementCount
-     * Usage: int n = comp->getElementCount();
-     * ---------------------------------------
-     * Returns the number of graphical objects stored in the
-     * <code>GCompound</code>.
-     */
-    int getElementCount();
-
-    /*
-     * Method: getElement
-     * Usage: GObject *gobj = comp->getElement(index);
-     * -----------------------------------------------
-     * Returns a pointer to the graphical object at the specified index,
-     * numbering from back to front in the the <i>z</i> dimension.
-     */
-    GObject *getElement(int index);
-
     /* Prototypes for the virtual methods */
-    virtual GRectangle getBounds() const;
     virtual bool contains(double x, double y) const;
+    virtual GRectangle getBounds() const;
     virtual std::string getType() const;
     virtual std::string toString() const;
 
 private:
-    void sendForward(GObject *gobj);
-    void sendToFront(GObject *gobj);
-    void sendBackward(GObject *gobj);
-    void sendToBack(GObject *gobj);
-    int findGObject(GObject *gobj);
+    void sendBackward(GObject* gobj);
+    void sendForward(GObject* gobj);
+    void sendToBack(GObject* gobj);
+    void sendToFront(GObject* gobj);
+    int findGObject(GObject* gobj) const;
     void removeAt(int index);
 
     /* Instance variables */
-    Vector<GObject *> contents;
+    Vector<GObject*> contents;
 
     /* Friend declarations */
     friend class GObject;
@@ -991,8 +1013,8 @@ class GImage : public GObject {
 public:
     /*
      * Constructor: GImage
-     * Usage: GImage *image = new GImage(filename);
-     *        GImage *image = new GImage(filename, x, y);
+     * Usage: GImage* image = new GImage(filename);
+     *        GImage* image = new GImage(filename, x, y);
      * --------------------------------------------------
      * Constructs a new image by loading the image from the specified
      * file, which is either in the current directory or a subdirectory named
@@ -1000,8 +1022,8 @@ public:
      * appears at the origin; the second form automatically sets the location
      * to the point (<code>x</code>, <code>y</code>).
      */
-    GImage(std::string filename);
-    GImage(std::string filename, double x, double y);
+    GImage(const std::string& filename);
+    GImage(const std::string& filename, double x, double y);
 
     /* Prototypes for the virtual methods */
     virtual GRectangle getBounds() const;
@@ -1013,7 +1035,7 @@ private:
     double width;
     double height;
 
-    void createGImage(std::string filename);
+    void createGImage(const std::string& filename);
 };
 
 /*
@@ -1053,7 +1075,6 @@ private:
  * </ul>
  * <include src="pictures/GObjectDiagrams/GLabelGeometry.html">
  */
-
 class GLabel : public GObject {
 public:
     /*
@@ -1066,25 +1087,8 @@ public:
      * the second form automatically resets the location of the
      * <code>GLabel</code> to the point (<code>x</code>, <code>y</code>).
      */
-    GLabel(std::string str = "");
-    GLabel(std::string str, double x, double y);
-
-    /*
-     * Method: setFont
-     * Usage: label->setFont(font);
-     * ----------------------------
-     * Changes the font used to display the <code>GLabel</code> as specified by
-     * the string <code>font</code>, which has the following format:
-     *
-     *<pre>
-     *    family-style-size
-     *</pre>
-     *
-     * where both <code>style</code> and <code>size</code> are optional.
-     * If any of these elements are missing or specified as an asterisk,
-     * the existing value is retained.
-     */
-    void setFont(std::string font);
+    GLabel(const std::string& str = "");
+    GLabel(const std::string& str, double x, double y);
 
     /*
      * Method: getFont
@@ -1093,25 +1097,6 @@ public:
      * Returns the current font for the <code>GLabel</code>.
      */
     std::string getFont() const;
-
-    /*
-     * Method: setLabel
-     * Usage: label->setLabel(str);
-     * ----------------------------
-     * Changes the string stored within the <code>GLabel</code> object, so that
-     * a new text string appears on the display.
-     */
-    void setLabel(std::string str);
-    void setText(std::string str);
-
-    /*
-     * Method: getLabel
-     * Usage: string str = label->getLabel();
-     * --------------------------------------
-     * Returns the string displayed by this object.
-     */
-    std::string getLabel() const;
-    std::string getText() const;
 
     /*
      * Method: getFontAscent
@@ -1131,6 +1116,42 @@ public:
      */
     double getFontDescent() const;
 
+    /*
+     * Method: getLabel
+     * Usage: string str = label->getLabel();
+     * --------------------------------------
+     * Returns the string displayed by this object.
+     */
+    std::string getLabel() const;
+    std::string getText() const;
+
+    /*
+     * Method: setFont
+     * Usage: label->setFont(font);
+     * ----------------------------
+     * Changes the font used to display the <code>GLabel</code> as specified by
+     * the string <code>font</code>, which has the following format:
+     *
+     *<pre>
+     *    family-style-size
+     *</pre>
+     *
+     * where both <code>style</code> and <code>size</code> are optional.
+     * If any of these elements are missing or specified as an asterisk,
+     * the existing value is retained.
+     */
+    void setFont(const std::string& font);
+
+    /*
+     * Method: setLabel
+     * Usage: label->setLabel(str);
+     * ----------------------------
+     * Changes the string stored within the <code>GLabel</code> object, so that
+     * a new text string appears on the display.
+     */
+    void setLabel(const std::string& str);
+    void setText(const std::string& str);
+
     /* Prototypes for the virtual methods */
     virtual GRectangle getBounds() const;
     virtual std::string getType() const;
@@ -1145,7 +1166,7 @@ private:
     double ascent;                  /* Font ascent                       */
     double descent;                 /* Font descent                      */
 
-    void createGLabel(const std::string & str);
+    void createGLabel(const std::string& str);
 };
 
 /*
@@ -1169,7 +1190,7 @@ class GLine : public GObject {
 public:
     /*
      * Constructor: GLine
-     * Usage: GLine *gline = new GLine(x0, y0, x1, y1);
+     * Usage: GLine* gline = new GLine(x0, y0, x1, y1);
      * ------------------------------------------------
      * Constructs a line segment from its endpoints.  The point
      * (<code>x0</code>,&nbsp;<code>y0</code>) defines the start of the
@@ -1179,14 +1200,12 @@ public:
     GLine(double x0, double y0, double x1, double y1);
 
     /*
-     * Method: setStartPoint
-     * Usage: line->setStartPoint(x, y);
-     * ---------------------------------
-     * Sets the initial point in the line to (<code>x</code>,&nbsp;<code>y</code>),
-     * leaving the end point unchanged.  This method is therefore different from
-     * <code>setLocation</code>, which moves both components of the line segment.
+     * Method: getEndPoint
+     * Usage: GPoint pt = line->getEndPoint();
+     * ---------------------------------------
+     * Returns the point at which the line ends.
      */
-    void setStartPoint(double x, double y);
+    GPoint getEndPoint() const;
 
     /*
      * Method: getStartPoint
@@ -1207,16 +1226,18 @@ public:
     void setEndPoint(double x, double y);
 
     /*
-     * Method: getEndPoint
-     * Usage: GPoint pt = line->getEndPoint();
-     * ---------------------------------------
-     * Returns the point at which the line ends.
+     * Method: setStartPoint
+     * Usage: line->setStartPoint(x, y);
+     * ---------------------------------
+     * Sets the initial point in the line to (<code>x</code>,&nbsp;<code>y</code>),
+     * leaving the end point unchanged.  This method is therefore different from
+     * <code>setLocation</code>, which moves both components of the line segment.
      */
-    GPoint getEndPoint() const;
+    void setStartPoint(double x, double y);
 
     /* Prototypes for the virtual methods */
-    virtual GRectangle getBounds() const;
     virtual bool contains(double x, double y) const;
+    virtual GRectangle getBounds() const;
     virtual std::string getType() const;
     virtual std::string toString() const;
 
@@ -1244,7 +1265,7 @@ protected:
  *       GWindow gw;
  *       cout << "This program draws a red octagon." << endl;
  *       double edge = 75;
- *       GPolygon *stopSign = new GPolygon();
+ *       GPolygon* stopSign = new GPolygon();
  *       stopSign->addVertex(-edge / 2, edge / 2 + edge / sqrt(2.0));
  *       for (int i = 0; i < 8; i++) {
  *          stopSign->addPolarEdge(edge, 45 * i);
@@ -1268,15 +1289,6 @@ public:
     GPolygon();
 
     /*
-     * Method: addVertex
-     * Usage: poly->addVertex(x, y);
-     * -----------------------------
-     * Adds a vertex at (<code>x</code>, <code>y</code>) relative to the polygon
-     * origin.
-     */
-    void addVertex(double x, double y);
-
-    /*
      * Method: addEdge
      * Usage: poly->addEdge(dx, dy);
      * -----------------------------
@@ -1297,21 +1309,30 @@ public:
     void addPolarEdge(double r, double theta);
 
     /*
+     * Method: addVertex
+     * Usage: poly->addVertex(x, y);
+     * -----------------------------
+     * Adds a vertex at (<code>x</code>, <code>y</code>) relative to the polygon
+     * origin.
+     */
+    void addVertex(double x, double y);
+
+    /*
+     * Method: getFillColor
+     * Usage: string color = poly->getFillColor();
+     * -------------------------------------------
+     * Returns the color used to display the filled region of this polygon.  If
+     * none has been set, <code>getFillColor</code> returns the empty string.
+     */
+    std::string getFillColor() const;
+
+    /*
      * Method: getVertices
      * Usage: Vector<GPoint> vec = poly->getVertices();
      * ------------------------------------------------
      * Returns a vector of the points in the polygon.
      */
     Vector<GPoint> getVertices() const;
-
-    /*
-     * Method: setFilled
-     * Usage: poly->setFilled(flag);
-     * -----------------------------
-     * Sets the fill status for the polygon, where <code>false</code> is
-     * outlined and <code>true</code> is filled.
-     */
-    void setFilled(bool flag);
 
     /*
      * Method: isFilled
@@ -1327,21 +1348,21 @@ public:
      * ---------------------------------
      * Sets the color used to display the filled region of this polygon.
      */
-    void setFillColor(std::string color);
+    void setFillColor(const std::string& color);
     void setFillColor(int rgb);
 
     /*
-     * Method: getFillColor
-     * Usage: string color = poly->getFillColor();
-     * -------------------------------------------
-     * Returns the color used to display the filled region of this polygon.  If
-     * none has been set, <code>getFillColor</code> returns the empty string.
+     * Method: setFilled
+     * Usage: poly->setFilled(flag);
+     * -----------------------------
+     * Sets the fill status for the polygon, where <code>false</code> is
+     * outlined and <code>true</code> is filled.
      */
-    std::string getFillColor() const;
+    void setFilled(bool flag);
 
     /* Prototypes for the virtual methods */
-    virtual GRectangle getBounds() const;
     virtual bool contains(double x, double y) const;
+    virtual GRectangle getBounds() const;
     virtual std::string getType() const;
     virtual std::string toString() const;
 

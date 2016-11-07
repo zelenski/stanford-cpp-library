@@ -5,6 +5,8 @@
  * to the appropriate methods in the Platform class, which is implemented
  * separately for each architecture.
  * 
+ * @version 2016/11/02
+ * - added drawString, setFont methods
  * @version 2016/10/26
  * - bug fix for compiler error in clang for getAlignment/Region
  * @version 2016/10/18
@@ -367,6 +369,19 @@ void GWindow::drawRect(const GRectangle& bounds) {
     }
 }
 
+void GWindow::drawString(const std::string& text, double x, double y) {
+    if (isOpen()) {
+        GLabel label(text, x, y);
+        if (gwd) {
+            label.setColor(gwd->color);
+            if (!gwd->font.empty()) {
+                label.setFont(gwd->font);
+            }
+        }
+        draw(label);
+    }
+}
+
 void GWindow::fillOval(double x, double y, double width, double height) {
     if (isOpen()) {
         GOval oval(x, y, width, height);
@@ -692,6 +707,12 @@ void GWindow::setExitOnClose(bool value) {
         gwd->exitOnClose = value;
     }
     stanfordcpplib::getPlatform()->gwindow_setExitOnClose(*this, value);
+}
+
+void GWindow::setFont(const std::string& font) {
+    if (gwd) {
+        gwd->font = font;
+    }
 }
 
 void GWindow::setHeight(double height) {

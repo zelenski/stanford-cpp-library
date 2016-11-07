@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp (current maintainer)
+ * @version 2016/11/03
+ * - added Load Input Script option for console programs
  * @version 2016/06/21
  * - bug fix where Compare Output option wasn't showing in C++ console programs
  * @version 2015/10/13
@@ -135,6 +137,7 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 
 	// constants for menu bar item text (specific to Console programs)
 	public static final String MENU_ITEM_TEXT_COMPARE_OUTPUT = "Compare Output...";
+	public static final String MENU_ITEM_TEXT_LOAD_INPUT_SCRIPT = "Load Input Script...";
 
 	/* Constant: SHIFT */
 	/**
@@ -150,6 +153,7 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 	protected KeyStroke COMMAND_END;
 	protected KeyStroke COMMAND_EQUALS;
 	protected KeyStroke COMMAND_HOME;
+	protected KeyStroke COMMAND_I;
 	protected KeyStroke COMMAND_L;
 	protected KeyStroke COMMAND_MINUS;
 	protected KeyStroke COMMAND_SHIFT_MINUS;
@@ -167,6 +171,7 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 	protected KeyStroke CTRL_END;
 	protected KeyStroke CTRL_EQUALS;
 	protected KeyStroke CTRL_HOME;
+	protected KeyStroke CTRL_I;
 	protected KeyStroke CTRL_L;
 	protected KeyStroke CTRL_MINUS;
 	protected KeyStroke CTRL_SHIFT_MINUS;
@@ -186,7 +191,7 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 
 	/* Private fields (instance variables) */
 	private Program program;
-	private ActionListener menuBarListener;
+	private /* ActionListener */ ProgramMenuBarListener menuBarListener;
 	private ActionListener focusedListener;
 	private HashMap<KeyStroke, JMenuItem> accelerators;
 	private HashSet<JMenuItem> focusedItems;
@@ -213,6 +218,7 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		COMMAND_END = KeyStroke.getKeyStroke(KeyEvent.VK_END, KeyEvent.META_DOWN_MASK);
 		COMMAND_EQUALS = KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, KeyEvent.META_DOWN_MASK);
 		COMMAND_HOME = KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.META_DOWN_MASK);
+		COMMAND_I = KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.META_DOWN_MASK);
 		COMMAND_L = KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.META_DOWN_MASK);
 		COMMAND_MINUS = KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.META_DOWN_MASK);
 		COMMAND_SHIFT_MINUS = KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.META_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK);
@@ -229,6 +235,7 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		CTRL_END = KeyStroke.getKeyStroke(KeyEvent.VK_END, KeyEvent.CTRL_DOWN_MASK);
 		CTRL_EQUALS = KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, KeyEvent.CTRL_DOWN_MASK);
 		CTRL_HOME = KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_I = KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.CTRL_DOWN_MASK);
 		CTRL_L = KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_DOWN_MASK);
 		CTRL_MINUS = KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.CTRL_DOWN_MASK);
 		CTRL_SHIFT_MINUS = KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK);
@@ -302,6 +309,8 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 			item = createProgramItem(action, 'C');
 		} else if (action.equals(MENU_ITEM_TEXT_CLEAR_CONSOLE)) {
 			item = createProgramItem(action, 'L', mac ? COMMAND_L : CTRL_L);
+		} else if (action.equals(MENU_ITEM_TEXT_LOAD_INPUT_SCRIPT)) {
+			item = createProgramItem(action, 'I', mac ? COMMAND_I : CTRL_I);
 		} else if (action.equals(MENU_ITEM_TEXT_SELECT_ALL)) {
 			item = createFocusedItem(action, 'A', mac ? COMMAND_A : CTRL_A);
 		} else if (action.equals(MENU_ITEM_TEXT_SAVE)) {
@@ -714,6 +723,7 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 			// menu.add(createStandardItem("Script"));
 			menu.addSeparator();
 
+			GuiUtils.createMenuItem(MENU_ITEM_TEXT_LOAD_INPUT_SCRIPT, menuBarListener, menu);
 			GuiUtils.createMenuItem(MENU_ITEM_TEXT_COMPARE_OUTPUT, menuBarListener, menu);
 
 			menu.addSeparator();
@@ -790,34 +800,32 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		if (action.equals(item.getActionCommand()))
 			item.setEnabled(flag);
 	}
-}
 
-/* Package class: ProgramMenuBarListener */
-/**
- * This class implements the listener for the standard menu items that forwards
- * their action back to the program.
- */
-class ProgramMenuBarListener implements ActionListener {
-
-	/* Constructor: ProgramMenuBarListener(mbar) */
+	/* Package class: ProgramMenuBarListener */
 	/**
-	 * Creates a new listener for the standard menu items that will be added to
-	 * this menu bar.
+	 * This class implements the listener for the standard menu items that forwards
+	 * their action back to the program.
 	 */
-	public ProgramMenuBarListener(ProgramMenuBar mbar) {
-		menuBar = mbar;
+	private static class ProgramMenuBarListener implements ActionListener {
+		/* Private instance variables */
+		private ProgramMenuBar menuBar;
+
+		/* Constructor: ProgramMenuBarListener(mbar) */
+		/**
+		 * Creates a new listener for the standard menu items that will be added to
+		 * this menu bar.
+		 */
+		public ProgramMenuBarListener(ProgramMenuBar mbar) {
+			menuBar = mbar;
+		}
+
+		/* Method: actionPerformed(e) */
+		/**
+		 * Responds to an action event in the corresponding menu. The effect of an
+		 * action event is to forward the action command back to the program.
+		 */
+		public void actionPerformed(ActionEvent e) {
+			menuBar.fireActionListeners(e);
+		}
 	}
-
-	/* Method: actionPerformed(e) */
-	/**
-	 * Responds to an action event in the corresponding menu. The effect of an
-	 * action event is to forward the action command back to the program.
-	 */
-	public void actionPerformed(ActionEvent e) {
-		menuBar.fireActionListeners(e);
-	}
-
-	/* Private instance variables */
-	private ProgramMenuBar menuBar;
-
 }
