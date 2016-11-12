@@ -6,6 +6,8 @@
  * See autograder.h for documentation of each member.
  * 
  * @author Marty Stepp
+ * @version 2016/11/09
+ * - added mnemonics and accelerators for autograder panel buttons
  * @version 2016/10/28
  * - added assertSimilarImage
  * @version 2016/10/13
@@ -554,8 +556,25 @@ int autograderTextMain(int argc, char** argv) {
 }
 
 static std::string addAutograderButton(GWindow& gui, const std::string& text, const std::string& icon) {
+    static Set<char> usedMnemonics;
+
     std::string html = "<html><center>" + stringReplace(text, "\n", "<br>") + "</center></html>";
     GButton* button = new GButton(html);
+
+    // set mnemonic shortcut
+    char mnemonic = '\0';
+    for (int i = 0; i < (int) text.length(); i++) {
+        if (isalpha(text[i]) && !usedMnemonics.contains(text[i])) {
+            mnemonic = text[i];
+            break;
+        }
+    }
+    if (mnemonic) {
+        usedMnemonics.add(mnemonic);
+        button->setMnemonic(mnemonic);
+        button->setAccelerator("ctrl " + charToString(mnemonic));
+    }
+
     if (!icon.empty()) {
         button->setIcon(icon);
         button->setTextPosition(SwingConstants::SWING_CENTER, SwingConstants::SWING_BOTTOM);

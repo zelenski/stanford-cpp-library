@@ -18,9 +18,9 @@ using namespace std;
 class BinaryTree {
 public:
     // public just for exam testing
-    BinaryTreeNode* root;   // topmost node in the tree (NULL if empty)
+    BinaryTreeNode* root;   // topmost node in the tree (null if empty)
 
-    BinaryTree(BinaryTreeNode* root = NULL);
+    BinaryTree(BinaryTreeNode* root = nullptr);
     virtual ~BinaryTree();
     
     void clear();
@@ -63,38 +63,15 @@ private:
     void deleteTree(BinaryTreeNode* node);
 };
 
-BinaryTreeNode* parseBinaryTreeNodeFromQueue(Queue<string>& tokenQueue);
-void makeTreeFromString(BinaryTree& tree, string s);
-
 ostream& operator <<(ostream& out, const BinaryTree& tree);
 istream& operator >>(istream& input, BinaryTree& tree);
-
-ostream& operator <<(ostream& out, BinaryTreeNode* node);
-istream& operator >>(istream& input, BinaryTreeNode*& node);
 
 enum Order {PRE_ORDER, IN_ORDER, POST_ORDER};
 
 template <typename T>
-struct TreeSetNode {
-public:
-    T data;
-    TreeSetNode* left;
-    TreeSetNode* right;
-
-    /*
-     * Constructs a new tree node with the given data and left/right links.
-     */
-    TreeSetNode(T data = T(), TreeSetNode* left = NULL, TreeSetNode* right = NULL) {
-        this->data = data;
-        this->left = left;
-        this->right = right;
-    }
-};
-
-template <typename T>
 class TreeSet {
 public:
-    TreeSet(TreeSetNode<T>* root = NULL);
+    TreeSet(BinaryTreeNodeGen<T>* root = nullptr);
     virtual ~TreeSet();
     
     void add(T value);
@@ -107,21 +84,22 @@ public:
     void remove(T value);
     
 private:
-    TreeSetNode<T>* root;   // topmost node in the tree (NULL if empty)
-    void add(TreeSetNode<T>*& node, T value);
-    bool contains(TreeSetNode<T>* node, T value);
-    T getMin(TreeSetNode<T>* node) const;
-    int height(TreeSetNode<T>* node) const;
-    bool isBalanced(TreeSetNode<T>* node) const;
-    void print(TreeSetNode<T>* node, int order = IN_ORDER);
-    void printSideways(TreeSetNode<T>* node, string indent);
-    void remove(TreeSetNode<T>*& node, T value);
+    BinaryTreeNodeGen<T>* root;   // topmost node in the tree (NULL if empty)
+
+    void add(BinaryTreeNodeGen<T>*& node, T value);
+    bool contains(BinaryTreeNodeGen<T>* node, T value);
+    T getMin(BinaryTreeNodeGen<T>* node) const;
+    int height(BinaryTreeNodeGen<T>* node) const;
+    bool isBalanced(BinaryTreeNodeGen<T>* node) const;
+    void print(BinaryTreeNodeGen<T>* node, int order = IN_ORDER);
+    void printSideways(BinaryTreeNodeGen<T>* node, string indent);
+    void remove(BinaryTreeNodeGen<T>*& node, T value);
 };
 
 // method bodies must be in .h file for template classes
 
 template <typename T>
-TreeSet<T>::TreeSet(TreeSetNode<T>* root) {
+TreeSet<T>::TreeSet(BinaryTreeNodeGen<T>* root) {
     this->root = root;
 }
 
@@ -137,9 +115,9 @@ void TreeSet<T>::add(T value) {
 }
 
 template <typename T>
-void TreeSet<T>::add(TreeSetNode<T>*& node, T value) {
+void TreeSet<T>::add(BinaryTreeNodeGen<T>*& node, T value) {
     if (node == NULL) {
-        node = new TreeSetNode<T>(value);
+        node = new BinaryTreeNodeGen<T>(value);
     } else if (value < node->data) {
         add(node->left, value);
     } else if (value > node->data) {
@@ -153,7 +131,7 @@ bool TreeSet<T>::contains(T value) {
 }
 
 template <typename T>
-bool TreeSet<T>::contains(TreeSetNode<T>* node, T value) {
+bool TreeSet<T>::contains(BinaryTreeNodeGen<T>* node, T value) {
     if (node == NULL) {
         return false;
     } else if (value == node->data) {
@@ -171,7 +149,7 @@ T TreeSet<T>::getMin() const {
 }
 
 template <typename T>
-T TreeSet<T>::getMin(TreeSetNode<T>* node) const {
+T TreeSet<T>::getMin(BinaryTreeNodeGen<T>* node) const {
     if (node == NULL) {
         throw ":-(";
     } else if (node->left == NULL) {
@@ -187,7 +165,7 @@ int TreeSet<T>::height() const {
 }
 
 template <typename T>
-int TreeSet<T>::height(TreeSetNode<T>* node) const {
+int TreeSet<T>::height(BinaryTreeNodeGen<T>* node) const {
     if (node == NULL) {
         return 0;
     } else {
@@ -203,7 +181,7 @@ bool TreeSet<T>::isBalanced() const {
 }
 
 template <typename T>
-bool TreeSet<T>::isBalanced(TreeSetNode<T>* node) const {
+bool TreeSet<T>::isBalanced(BinaryTreeNodeGen<T>* node) const {
     if (node == NULL) {
         return true;
     } else {
@@ -227,7 +205,7 @@ void TreeSet<T>::print(int order) {
 }
 
 template <typename T>
-void TreeSet<T>::print(TreeSetNode<T>* node, int order) {
+void TreeSet<T>::print(BinaryTreeNodeGen<T>* node, int order) {
     if (node != NULL) {
         if (order == PRE_ORDER) {
             cout << node->data << " ";
@@ -252,7 +230,7 @@ void TreeSet<T>::printSideways() {
 }
 
 template <typename T>
-void TreeSet<T>::printSideways(TreeSetNode<T>* node, string indent) {
+void TreeSet<T>::printSideways(BinaryTreeNodeGen<T>* node, string indent) {
     if (node != NULL) {
         printSideways(node->right, indent + "  ");
         cout << indent << node->data << endl;
@@ -266,7 +244,7 @@ void TreeSet<T>::remove(T value) {
 }
 
 template <typename T>
-void TreeSet<T>::remove(TreeSetNode<T>*& node, T value) {
+void TreeSet<T>::remove(BinaryTreeNodeGen<T>*& node, T value) {
     if (node == NULL) {
         // do nothing
     } else if (value < node->data) {
@@ -279,11 +257,11 @@ void TreeSet<T>::remove(TreeSetNode<T>*& node, T value) {
             delete node;
             node = NULL;
         } else if (node->left == NULL) {
-            TreeSetNode<T>* trash = node;
+            BinaryTreeNodeGen<T>* trash = node;
             node = node->right;
             delete trash;
         } else if (node->right == NULL) {
-            TreeSetNode<T>* trash = node;
+            BinaryTreeNodeGen<T>* trash = node;
             node = node->left;
             delete trash;
         } else {

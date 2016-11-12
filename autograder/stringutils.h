@@ -6,7 +6,8 @@
  * but it is mostly written to support autograders so it is placed here.
  * 
  * @author Marty Stepp
- * @version 2014/10/14
+ * @version 2016/11/09
+ * - added trimToSize function
  * @since 2014/03/01
  */
 
@@ -45,6 +46,7 @@ std::string removeBlankLines(std::string s);
 std::string toLowerCase(std::string s);
 std::string trimR(std::string s);
 std::string trimToHeight(std::string s, int height, std::string suffix = "...");
+std::string trimToSize(std::string s, int width, int height, std::string suffix = " ...");
 std::string trimToWidth(std::string s, int width, std::string suffix = " ...");
 std::string stripWhitespace(std::string s);
 std::string truncate(std::string s, int length);

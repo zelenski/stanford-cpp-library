@@ -143,6 +143,16 @@ void BinaryTreeNodeptr_fromString(BinaryTreeNode*& root, const std::string& str)
     input >> root;
 }
 
+void BinaryTreeNodeChar_fromString(BinaryTreeNodeChar*& root, const std::string& str) {
+    std::istringstream input(str);
+    input >> root;
+}
+
+void BinaryTreeNodeCharptr_fromString(BinaryTreeNodeChar*& root, const std::string& str) {
+    std::istringstream input(str);
+    input >> root;
+}
+
 void HeapPriorityQueue_fromString(HeapPriorityQueue& pqueue, const std::string& str) {
     std::istringstream input(str);
     input >> pqueue;

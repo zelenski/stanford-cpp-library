@@ -3,6 +3,8 @@
  * A LinkedIntList is a sequential collection of integers stored with 0-based integer
  * indexes and internally represented as a list of linked node structures.
  *
+ * @version 2016/11/11
+ * - made into template class
  * @version 2016/08/23
  * - added initializer_list support to match other lib collections
  */
@@ -13,8 +15,141 @@
 #include <initializer_list>
 #include <iostream>
 #include <string>
+#include "collections.h"
+#include "error.h"
+#include "hashset.h"
+#include "strlib.h"
+#include "vector.h"
 
-struct ListNode;   // forward declaration
+/*
+ * The internal structure representing a single node.
+ */
+template <typename T>
+class ListNodeGen {
+public:
+    // global count of how many nodes have been created/destroyed
+    static int s_allocated;
+    static int s_freed;
+
+    T data;           // element stored in each node
+    ListNodeGen<T>* next;   // pointer to the next node (null if none)
+
+    ListNodeGen(T d = T(), ListNodeGen<T>* n = nullptr);
+    ~ListNodeGen();
+
+    static void printChain(ListNodeGen<T>* list, std::string name = "list", int maxLength = 10);
+};
+
+template <typename T>
+std::ostream& operator <<(std::ostream& out, ListNodeGen<T>* front);
+
+template <typename T>
+std::istream& operator >>(std::istream& input, ListNodeGen<T>*& front);
+
+
+// begin "cpp" section of ListNode
+
+template <typename T>
+int ListNodeGen<T>::s_allocated = 0;
+
+template <typename T>
+int ListNodeGen<T>::s_freed = 0;
+
+template <typename T>
+ListNodeGen<T>::ListNodeGen(T d, ListNodeGen<T>* n) {
+    data = d;
+    next = n;
+    s_allocated++;
+}
+
+template <typename T>
+ListNodeGen<T>::~ListNodeGen() {
+    s_freed++;
+}
+
+template <typename T>
+void ListNodeGen<T>::printChain(ListNodeGen<T>* list, std::string name, int maxLength) {
+    std::cout << name << ": ";
+    if (list == NULL) {
+        std::cout << "NULL" << std::endl;
+    } else {
+        ListNodeGen<T>* curr = list;
+        bool hasCycle = false;
+        for (int i = 0; curr && (maxLength <= 0 || i < maxLength); i++, curr = curr->next) {
+            std::cout << curr->data;
+            if (curr->next) {
+                std::cout << " -> ";
+            }
+            if (i == maxLength - 1) {
+                std::cout << " ... (cycle)";
+                hasCycle = true;
+            }
+        }
+        if (!hasCycle) {
+            std::cout << " /";
+        }
+        std::cout << std::endl;
+    }
+}
+
+template <typename T>
+std::ostream& operator <<(std::ostream& out, ListNodeGen<T>* front) {
+    if (!front) {
+        out << "NULL";
+    } else {
+        out << "{";
+        if (front) {
+            HashSet<ListNodeGen<T>*> visited;
+            writeGenericValue(out, front->data, /* forceQuotes */ true);
+            visited.add(front);
+
+            ListNodeGen<T>* curr = front->next;
+            while (curr) {
+                out << ", ";
+                writeGenericValue(out, curr->data, /* forceQuotes */ true);
+                if (visited.contains(curr)) {
+                    out << " (cycle!)";
+                    break;
+                }
+
+                visited.add(curr);
+                curr = curr->next;
+            }
+        }
+        out << "}";
+    }
+    return out;
+}
+
+template <typename T>
+std::istream& operator >>(std::istream& input, ListNodeGen<T>*& front) {
+    // read into a vector first (yeah yeah, wastes some space, oh well)
+    Vector<T> vec;
+    T element;
+    stanfordcpplib::collections::readCollection(input, vec, element, /* descriptor */ "ListNode::operator >>");
+
+    // now convert into a linked list
+    if (vec.isEmpty()) {
+        front = nullptr;
+    } else {
+        front = new ListNodeGen<T>(vec[0]);
+        ListNodeGen<T>* curr = front;
+        for (int i = 1; i < vec.size(); i++) {
+            curr->next = new ListNodeGen<T>(vec[i]);
+            curr = curr->next;
+        }
+    }
+
+    return input;
+}
+
+typedef ListNodeGen<int> ListNode;
+typedef ListNodeGen<int> ListNodeInt;
+typedef ListNodeGen<double> ListNodeDouble;
+typedef ListNodeGen<std::string> ListNodeString;
+
+// end "cpp" section of ListNode
+
 
 class LinkedIntList {
 public:
@@ -46,7 +181,7 @@ public:
     void reverse();
     void consume(LinkedIntList& list2);
     void transferEvens(LinkedIntList& list2);
-    
+
     // exam questions
     void chopBothSides(int k);
     void combineDuplicates();
@@ -58,79 +193,17 @@ public:
 
     LinkedIntList& operator =(const LinkedIntList& src);
 
-    // operators for reading/writing lists based on a front pointer
-    // (these are used by the CodeStepByStep tool)
-    friend std::ostream& operator <<(std::ostream& out, ListNode* front);
-    friend std::istream& operator >>(std::istream& input, ListNode*& front);
+    // declared here so they can access front
+    friend std::ostream& operator <<(std::ostream& out, const LinkedIntList& list);
+    friend std::istream& operator >>(std::istream& input, LinkedIntList& list);
 
 private:
     ListNode* front;   // pointer to front node in list;  null if empty
-    
+
     bool m_locked;     // whether to forbid method calls (for problems)
 
     void checkIndex(int index, int min, int max) const;
     void checkLocked(std::string memberName = "") const;
 };
 
-std::ostream& operator <<(std::ostream& out, const LinkedIntList& list);
-std::istream& operator >>(std::istream& input, LinkedIntList& list);
-
-/*
- * The internal structure representing a single node.
- */
-struct ListNode {
-    // global count of how many nodes have been created/destroyed
-    static int s_allocated;
-    static int s_freed;
-
-    int data;         // element stored in each node
-    ListNode* next;   // pointer to the next node (null if none)
-
-    ListNode(int d = 0, ListNode* n = nullptr);
-    ~ListNode();
-
-    static void printChain(ListNode* list, std::string name = "list", int maxLength = 10);
-};
-
-/*
- * The internal structure representing a single node.
- */
-struct ListNodeDouble {
-    // global count of how many nodes have been created/destroyed
-    static int s_allocated;
-    static int s_freed;
-
-    double data;            // element stored in each node
-    ListNodeDouble* next;   // pointer to the next node (null if none)
-
-    ListNodeDouble(double d = 0.0, ListNodeDouble* n = nullptr);
-    ~ListNodeDouble();
-
-    static void printChain(ListNodeDouble* list, std::string name = "list", int maxLength = 10);
-};
-
-/*
- * The internal structure representing a single node.
- */
-struct ListNodeString {
-    // global count of how many nodes have been created/destroyed
-    static int s_allocated;
-    static int s_freed;
-
-    std::string data;       // element stored in each node
-    ListNodeString* next;   // pointer to the next node (null if none)
-
-    ListNodeString(std::string d = "", ListNodeString* n = nullptr);
-    ~ListNodeString();
-
-    static void printChain(ListNodeString* list, std::string name = "list", int maxLength = 10);
-};
-
-std::ostream& operator <<(std::ostream& out, ListNode* front);
-std::istream& operator >>(std::istream& input, ListNode*& front);
-std::ostream& operator <<(std::ostream& out, ListNodeDouble* front);
-std::istream& operator >>(std::istream& input, ListNodeDouble*& front);
-std::ostream& operator <<(std::ostream& out, ListNodeString* front);
-std::istream& operator >>(std::istream& input, ListNodeString*& front);
-
-#endif
+#endif // _linkedintlist_h

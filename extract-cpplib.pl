@@ -142,7 +142,6 @@ my @ALL_FILES = (
 "$projdir/types.h",
 
 "$projdir/ArrayIntList.cpp",
-"$projdir/BinaryTreeNode.cpp",
 "$projdir/BinaryTree.cpp",
 "$projdir/BinaryTreeMap.cpp",
 "$projdir/HashTableSet.cpp",

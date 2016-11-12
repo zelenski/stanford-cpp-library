@@ -102,6 +102,8 @@ void BasicGraph_fromString(BasicGraph& graph, const std::string& str);
 void BinaryTree_fromString(BinaryTree& tree, const std::string& str);
 void BinaryTreeNode_fromString(BinaryTreeNode*& root, const std::string& str);
 void BinaryTreeNodeptr_fromString(BinaryTreeNode*& root, const std::string& str);
+void BinaryTreeNodeChar_fromString(BinaryTreeNodeChar*& root, const std::string& str);
+void BinaryTreeNodeCharptr_fromString(BinaryTreeNodeChar*& root, const std::string& str);
 void HeapPriorityQueue_fromString(HeapPriorityQueue& pqueue, const std::string& str);
 void LinkedIntList_fromString(LinkedIntList& list, const std::string& str);
 void ListNode_fromString(ListNode*& ptr, const std::string& str);

@@ -5,6 +5,8 @@
  * See stringutils.h for documentation of each member.
  * 
  * @author Marty Stepp
+ * @version 2016/11/09
+ * - added trimToSize function
  * @version 2014/10/31
  * - fixed bug in string trimToHeight function
  * @since 2014/03/01
@@ -188,6 +190,12 @@ std::string trimToHeight(std::string s, int height, std::string suffix) {
     return implode(lines);
 }
 
+std::string trimToSize(std::string s, int width, int height, std::string suffix) {
+    s = trimToHeight(s, height, suffix);
+    s = trimToWidth(s, width, suffix);
+    return s;
+}
+
 std::string trimToWidth(std::string s, int width, std::string suffix) {
     Vector<std::string> lines = explodeLines(s);
     for (int i = 0; i < lines.size(); i++) {
@@ -233,4 +241,4 @@ int width(std::string s) {
     }
     return width;
 }
-}
+} // namespace stringutils
