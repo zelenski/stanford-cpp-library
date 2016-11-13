@@ -237,8 +237,8 @@ std::string stringJoin(const std::vector<std::string>& v, const std::string& del
  * This function is very similar to string.rfind, but rfind returns string::npos
  * when the string is not found.
  */
-int stringLastIndexOf(const std::string& s, char ch, int startIndex = std::string::npos);
-int stringLastIndexOf(const std::string& s, const std::string& substring, int startIndex = std::string::npos);
+int stringLastIndexOf(const std::string& s, char ch, int startIndex = (int) std::string::npos);
+int stringLastIndexOf(const std::string& s, const std::string& substring, int startIndex = (int) std::string::npos);
 
 /*
  * Returns a new string formed by replacing any occurrences of the given 'old'
