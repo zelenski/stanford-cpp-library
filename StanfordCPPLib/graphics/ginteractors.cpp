@@ -3,6 +3,8 @@
  * ----------------------
  * This file implements the ginteractors.h interface.
  * 
+ * @version 2016/11/26
+ * - added GInteractor::setForeground as alias for setColor
  * @version 2016/11/02
  * - added GTextField constructor that takes a string parameter
  * @version 2016/10/24
@@ -115,6 +117,15 @@ void GInteractor::setBounds(const GRectangle& rect) {
 void GInteractor::setEnabled(bool value) {
     stanfordcpplib::getPlatform()->ginteractor_setEnabled(this, value);
 }
+
+void GInteractor::setForeground(int rgb) {
+    setColor(rgb);
+}
+
+void GInteractor::setForeground(const std::string& color) {
+    setColor(color);
+}
+
 
 void GInteractor::setFont(const std::string& font) {
     stanfordcpplib::getPlatform()->ginteractor_setFont(this, font);

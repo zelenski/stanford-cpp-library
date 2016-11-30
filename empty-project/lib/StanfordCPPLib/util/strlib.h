@@ -4,6 +4,9 @@
  * This file exports several useful string functions that are not
  * included in the C++ string library.
  * 
+ * @version 2016/11/09
+ * - added boolalpha to writeGenericValue (improves bool printing in
+ *   collection toString output)
  * @version 2016/10/30
  * - added overloads that take type char instead of string:
  *   stringContains, stringIndexOf, stringJoin, stringLastIndexOf, stringReplace,
@@ -452,7 +455,7 @@ bool stringNeedsQuoting(const std::string& str);
  */
 template <typename ValueType>
 std::ostream& writeGenericValue(std::ostream& os, const ValueType& value, bool) {
-    os << value;
+    os << std::boolalpha << value;
     return os;
 }
 

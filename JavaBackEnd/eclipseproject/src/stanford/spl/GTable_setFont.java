@@ -1,3 +1,9 @@
+/*
+ * @author Marty Stepp
+ * @version 2016/11/26
+ * - initial version
+ */
+
 package stanford.spl;
 
 import acm.graphics.GObject;

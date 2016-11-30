@@ -7,6 +7,8 @@
  * how a client properly uses these classes.
  *
  * @author Keith Schwarz, Eric Roberts, Marty Stepp
+ * @version 2016/11/12
+ * - made toPrintable non-static and visible
  * @version 2014/10/08
  * - removed 'using namespace' statement
  * 2014/01/23
@@ -30,10 +32,7 @@ inline void SetNthBit(int n, int & inByte) {
     inByte |= (1 << n);
 }
 
-/*
- * Returns a printable string for the given character.
- */
-static std::string toPrintable(int ch) {
+std::string toPrintable(int ch) {
     if (ch == '\n') {
         return "'\\n'";
     } else if (ch == '\t') {

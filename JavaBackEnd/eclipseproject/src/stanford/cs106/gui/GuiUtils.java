@@ -2,6 +2,8 @@
  * This class contains utility functions related to GUIs.
  *
  * @author Marty Stepp
+ * @version 2016/11/26
+ * - added getAncestor
  * @version 2016/05/26
  * - added createJComboGroupBox, setPreferred* methods
  * @version 2016/05/01
@@ -32,6 +34,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 import acm.program.Program;
 import stanford.cs106.io.*;
+import stanford.spl.*;
 
 public class GuiUtils {
 	public static final String SETTINGS_FILENAME = "autograder-window-settings.sav";
@@ -40,7 +43,6 @@ public class GuiUtils {
 	
 	public static void addKeyListenerRecursive(Component component, KeyListener listener) {
 		if (component.isFocusable() || component instanceof Window) {
-			// javax.swing.JOptionPane.showMessageDialog(null, "attaching key listener to: " + component);
 			component.addKeyListener(listener);
 		}
 		if (component instanceof Container) {
@@ -368,6 +370,42 @@ public class GuiUtils {
 		return label;
 	}
 	
+	/**
+	 * Looks upward at parent containers of the given component until it finds one of the given type or
+	 * any subclass of the given type, and returns it.  If none found, returns null.
+	 */
+	@SuppressWarnings("unchecked")
+	public static <C extends Component> C getAncestor(Component comp, Class<C> type) {
+		if (comp == null) {
+			return null;
+		}
+		while (true) {
+			comp = comp.getParent();
+			if (comp == null) {
+				break;
+			}
+			if (type.isAssignableFrom(comp.getClass())) {
+				return (C) comp;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns first found descendent of given type within the given container; null if not found.
+	 */
+	public static <JC extends JComponent> JC getDescendent(Container container, Class<JC> type) {
+		Set<JC> descendents = getDescendents(container, type);
+		if (descendents.isEmpty()) {
+			return null;
+		} else {
+			for (JC jc : descendents) {
+				return jc;
+			}
+			return null;
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static <JC extends JComponent> Set<JC> getDescendents(Container container, Class<JC> type) {
 		if (container == null) {
@@ -504,12 +542,8 @@ public class GuiUtils {
 				UIManager.setLookAndFeel(lnf);
 			}
 			
-			UIManager.getLookAndFeelDefaults().put("Slider.paintValue", false);
-			UIManager.put("Slider.paintValue", false);
-			UIManager.put("Table.disabled", false);
-			UIManager.put("Table.gridColor", new Color(204,207,213));
-			UIManager.put("Table.intercellSpacing", new Dimension(1, 1));
-			UIManager.put("Table.showGrid", true);
+			GSlider.setSystemLookAndFeelProperties();
+			GTable.setSystemLookAndFeelProperties();
 			System.setProperty("apple.laf.useScreenMenuBar", "true");
 		} catch (Exception e) {
 			// empty

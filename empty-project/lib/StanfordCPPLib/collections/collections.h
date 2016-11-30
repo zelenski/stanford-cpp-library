@@ -428,6 +428,35 @@ std::ostream& writeCollection(std::ostream& out, CollectionType collection) {
 }
 
 /*
+ * Writes out any collection to the given output stream using its two iterators,
+ * begin and end.
+ */
+template <typename IteratorType>
+std::ostream& writeIterableOfPointers(std::ostream& out, IteratorType begin, IteratorType end) {
+    out << "{";
+    bool first = true;
+    while (begin != end) {
+        if (!first) {
+            out << ", ";
+        }
+        first = false;
+        writeGenericValue(out, **begin, /* forceQuotes */ true);
+        ++begin;
+    }
+    out << "}";
+    return out;
+}
+
+/*
+ * Writes out any collection to the given output stream using its two iterators,
+ * begin and end.
+ */
+template <typename CollectionType>
+std::ostream& writeCollectionOfPointers(std::ostream& out, CollectionType collection) {
+    return writeIterableOfPointers(out, collection.begin(), collection.end());
+}
+
+/*
  * Implementation notes: << and >>
  * -------------------------------
  * The insertion and extraction operators use the template facilities in

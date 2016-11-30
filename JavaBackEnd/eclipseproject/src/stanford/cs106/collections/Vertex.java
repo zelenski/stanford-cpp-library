@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp
+ * @version 2016/11/29
+ * - added template parameter <V>
  * @version 2015/06/08
  */
 
@@ -19,17 +21,17 @@ import java.util.Observable;
  * }
  * </pre>
  */
-public class Vertex extends Observable implements Comparable<Vertex>, Cloneable {
+public class Vertex<V> extends Observable implements Comparable<Vertex<V>>, Cloneable {
 	/** Maximum possible cost to reach a vertex from another; treat this as "infinity". */
 	public static final double MAX_COST = Double.POSITIVE_INFINITY;
 	
 	private String name;
 	private int number;         // a mark giving a number or index to this vertex (or -1)
 	private Color color;        // for some algorithms that like to color vertexes
-	private Vertex previous;    // a reference to a 'previous' vertex; useful for path searching
+	private Vertex<V> previous;    // a reference to a 'previous' vertex; useful for path searching
 	private boolean visited;    // a mark for whether this vertex has been visited
 	private double cost;        // a mark for the minimum cost to reach this vertex
-	public Object extraData;    // anything else you want to store in here
+	public V extraData;    // anything else you want to store in here
 	
 	/**
 	 * Constructs information for the given vertex.
@@ -68,9 +70,10 @@ public class Vertex extends Observable implements Comparable<Vertex>, Cloneable 
 	/**
 	 * Returns a copy of this Vertex as per the contract of the Object.clone method.
 	 */
-	public Vertex clone() {
+	public Vertex<V> clone() {
 		try {
-			Vertex copy = (Vertex) super.clone();
+			@SuppressWarnings("unchecked")
+			Vertex<V> copy = (Vertex<V>) super.clone();
 			copy.clear();
 			return copy;
 		} catch (CloneNotSupportedException e) {
@@ -85,7 +88,7 @@ public class Vertex extends Observable implements Comparable<Vertex>, Cloneable 
 		return color;
 	}
 
-	public int compareTo(Vertex o) {
+	public int compareTo(Vertex<V> o) {
 		return name.compareTo(o.name);
 	}
 	
@@ -104,7 +107,8 @@ public class Vertex extends Observable implements Comparable<Vertex>, Cloneable 
 	 */
 	public boolean equals(Object o) {
 		if (o instanceof Vertex) {
-			Vertex other = (Vertex) o;
+			@SuppressWarnings("unchecked")
+			Vertex<V> other = (Vertex<V>) o;
 			return name.equals(other.name);
 		} else {
 			return false;
@@ -149,7 +153,7 @@ public class Vertex extends Observable implements Comparable<Vertex>, Cloneable 
 	 * Used internally in various path-finding algorithms.
 	 * If no previous vertex has been set, returns null.
 	 */
-	public Vertex previous() {
+	public Vertex<V> previous() {
 		return previous;
 	}
 	
@@ -184,7 +188,7 @@ public class Vertex extends Observable implements Comparable<Vertex>, Cloneable 
 	 * Used internally in various path-finding algorithms.
 	 * If null is passed, the previous vertex is cleared.
 	 */
-	public void setPrevious(Vertex previous) {
+	public void setPrevious(Vertex<V> previous) {
 		this.previous = previous;
 	}
 	

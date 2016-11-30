@@ -4,6 +4,11 @@
  * This file exports the GTable class for a graphical editable 2D table.
  *
  * @author Marty Stepp
+ * @version 2016/11/26
+ * - added autofitColumnWidths
+ * - added per-cell/column/row formatting: background/foreground color, font
+ * @version 2016/11/18
+ * - added column header methods
  * @version 2015/12/01
  * - added setEventEnabled to turn on/off table update/selection events
  * - added isEditable, setEditable
@@ -51,6 +56,15 @@ public:
         LEFT = 2,
         RIGHT = 4
     };
+
+    /*
+     * Styles of column header labels that can be shown.
+     */
+    enum ColumnHeaderStyle {
+        COLUMN_HEADER_NONE = 0,
+        COLUMN_HEADER_EXCEL = 1,    // A, B, ..., Z, AA, AB, ...
+        COLUMN_HEADER_NUMERIC = 2   // 1, 2, 3, ...
+    };
     
     /*
      * Constructs a new table with the given dimensions and (optional) size.
@@ -69,24 +83,41 @@ public:
     virtual std::string toString() const;
 
     /* unique GTable behavior */
-    
+
+    /*
+     * Changes widths of all columns to be perfectly large enough
+     * to fit their contents.
+     */
+    void autofitColumnWidths();
+
     /*
      * Sets all cells in the table to store an empty string value.
      */
     void clear();
-    
+
+    /*
+     * Removes any per-cell/column/row formatting that has been applied to the table.
+     */
+    void clearFormatting();
+
     /*
      * Deselects any currently selected cell.
      * If no cell is selected, calling this has no effect.
      */
     void clearSelection();
-    
+
     /*
      * Returns the text stored in the given cell.
      * Throws an error if the given row or column are out of bounds.
      */
     std::string get(int row, int column) const;
-    
+
+    /*
+     * Returns the column headers to use the given style.
+     * Default is none, but can be set to Excel style or numeric instead.
+     */
+    ColumnHeaderStyle getColumnHeaderStyle() const;
+
     /*
      * Returns the width of the given column index in pixels.
      * When a table is constructed, all columns initially have equal width.
@@ -164,7 +195,13 @@ public:
      * Throws an error if numRows or numCols is negative.
      */
     void resize(int numRows, int numCols);
-    
+
+    /*
+     * Returns whether row and column headers are shown in the table.
+     * Initially false.
+     */
+    bool rowColumnHeadersVisible() const;
+
     /*
      * Sets the given cell to become currently selected,
      * replacing any previous selection.
@@ -179,19 +216,52 @@ public:
      * Throws an error if the given row or column are out of bounds.
      */
     void set(int row, int column, const std::string& text);
-    
+
+    /*
+     * Member functions for per-cell formatting.
+     */
+    void setCellAlignment(int row, int column, Alignment alignment);
+    void setCellBackground(int row, int column, int color);
+    void setCellBackground(int row, int column, const std::string& color);
+    void setCellFont(int row, int column, const std::string& font);
+    void setCellForeground(int row, int column, int color);
+    void setCellForeground(int row, int column, const std::string& color);
+
+    /*
+     * Member functions for per-column formatting.
+     */
+    void setColumnAlignment(int column, Alignment alignment);
+    void setColumnBackground(int column, int color);
+    void setColumnBackground(int column, const std::string& color);
+    void setColumnFont(int column, const std::string& font);
+    void setColumnForeground(int column, int color);
+    void setColumnForeground(int column, const std::string& color);
+
     /*
      * Sets the given column index to have the given width in pixels.
      * Throws an error if the given column index is out of bounds
      * or if the width is negative.
      */
     void setColumnWidth(int column, double width);
-    
+
+    /*
+     * Sets the column headers to use the given style.
+     * Default is none, but can be set to Excel style or numeric instead.
+     */
+    void setColumnHeaderStyle(ColumnHeaderStyle style);
+
     /*
      * Sets whether cells of the table can be edited.
      */
     void setEditable(bool editable);
-    
+
+    /*
+     * Modifies the value in the cell that is currently being edited to store the given text.
+     * This does not modify the value in the table cell but merely the value in the editor widget.
+     * Throws an error if the given row or column are out of bounds.
+     */
+    void setEditorValue(int row, int column, const std::string& text);
+
     /*
      * Sets whether the given kind of event should be enabled on tables.
      * Must be a table event type such as TABLE_SELECTED or TABLE_UPDATED.
@@ -210,7 +280,23 @@ public:
      * Currently a table's alignment is global and applies to all cells.
      */
     void setHorizontalAlignment(Alignment alignment);
-    
+
+    /*
+     * Member functions for per-row formatting.
+     */
+    void setRowAlignment(int row, Alignment alignment);
+    void setRowBackground(int row, int color);
+    void setRowBackground(int row, const std::string& color);
+    void setRowFont(int row, const std::string& font);
+    void setRowForeground(int row, int color);
+    void setRowForeground(int row, const std::string& color);
+
+    /*
+     * Sets whether row and column headers should be shown in the table.
+     * Initially false.
+     */
+    void setRowColumnHeadersVisible(bool visible);
+
     /*
      * Returns the number of columns in the table.
      * Equivalent to numCols().
@@ -228,6 +314,8 @@ private:
     std::string font;
     Alignment alignment;
     bool editable;
+    bool rowColHeadersVisible;
+    ColumnHeaderStyle columnHeaderStyle;
 
     /*
      * Throws an error if the given numRows/numCols values are negative.

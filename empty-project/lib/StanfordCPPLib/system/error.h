@@ -3,13 +3,17 @@
  * -------------
  * This file defines the <code>ErrorException</code> class and the
  * <code>error</code> function.
+ *
+ * @version 2016/11/23
+ * - added operator << to print ErrorExceptions
  */
 
 #ifndef _error_h
 #define _error_h
 
-#include <string>
 #include <exception>
+#include <iostream>
+#include <string>
 
 /*
  * Class: ErrorException
@@ -42,6 +46,8 @@ private:
     std::string msg;
     std::string stackTrace;
 };
+
+std::ostream& operator <<(std::ostream& out, const ErrorException& ex);
 
 /*
  * Thrown when a blocking I/O call is interrupted by closing the program.

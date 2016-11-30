@@ -79,7 +79,7 @@ public abstract class AbstractTable<R, C, V> implements Table<R, C, V> {
 			Map<C, V> row = map.get(rowKey);
 			V result = row.remove(columnKey);
 			if (row.isEmpty()) {
-				map.remove(row);
+				map.remove(rowKey);
 			}
 			return result;
 		} else {

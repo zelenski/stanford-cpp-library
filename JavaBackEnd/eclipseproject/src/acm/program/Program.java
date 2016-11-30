@@ -1,4 +1,6 @@
 /*
+ * @version 2016/11/13
+ * - added fileSize(directory, filename)
  * @version 2016/11/03
  * - added removeFromRegion
  * @version 2016/10/21
@@ -307,6 +309,20 @@ public abstract class Program extends JApplet
 	}
 	///////////////////////// END ANIMATION METHODS /////////////////////////
 
+	/**
+	 * Generates an ErrorException with the given text as its error message.
+	 */
+	public void error(String text) {
+		throw new ErrorException(text);
+	}
+
+	/**
+	 * Generates an ErrorException with the given exception as its cause.
+	 */
+	public void error(Exception ex) {
+		throw new ErrorException(ex);
+	}
+	
 /* Method: run() */
 /**
  * Specifies the code to be executed as the program runs.
@@ -1168,7 +1184,10 @@ public abstract class Program extends JApplet
 	 * Removes the JMenuBar at the top of the program window.
 	 */
 	public void removeMenuBar() {
+		getJFrame().getJMenuBar().setEnabled(false);
 		setJMenuBar(null);
+		getJFrame().setJMenuBar(null);
+		getJFrame().validate();
 	}
 	
 	/**
@@ -1592,18 +1611,41 @@ public abstract class Program extends JApplet
 		finalizers.add(obj);
 	}
 	
-	protected int fileSize(String filename) throws IOException {
+	protected int fileSize(String filename) {
 		if (!isApplet() && fileExistsOnDisk(filename)) {
 			return (int) (new File(filename).length());
 		} else if (fileExistsInsideJAR(filename)) {
 			InputStream input = openFileFromJAR(filename);
 			int size = 0;
-			while (input.read() != -1) {
-				size++;
+			try {
+				while (input.read() != -1) {
+					size++;
+				}
+			} catch (IOException ioe) {
+				throw new IORuntimeException(ioe);
 			}
 			return size;
 		} else {
-			throw new FileNotFoundException(filename);
+			throw new IORuntimeException("File not found: " + filename);
+		}
+	}
+	
+	protected int fileSize(String directory, String filename) {
+		if (!isApplet() && fileExistsOnDisk(directory, filename)) {
+			return (int) (new File(directory, filename).length());
+		} else if (fileExistsInsideJAR(directory, filename)) {
+			InputStream input = openFileFromJAR(directory, filename);
+			int size = 0;
+			try {
+				while (input.read() != -1) {
+					size++;
+				}
+			} catch (IOException ioe) {
+				throw new IORuntimeException(ioe);
+			}
+			return size;
+		} else {
+			throw new IORuntimeException("File not found: " + filename);
 		}
 	}
 	

@@ -4,6 +4,12 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2016/11/25
+ * - added clipboard_get/set
+ * - added gtable_setCell/Column/RowFont
+ * - added gwindow_setCloseOperation
+ * @version 2016/11/17
+ * - added gtable_setEditorValue
  * @version 2016/10/30
  * - bug fix for Windows version of filelib_isFile
  * @version 2016/10/23
@@ -190,7 +196,8 @@ STATIC_VARIABLE_DECLARE_BLANK(pid_t, javaBackEndPid)
 /* static function prototypes */
 static std::string getJavaCommand();
 static std::string getPipe();
-static std::string getResult(bool consumeAcks = false, const std::string& caller = "");
+static std::string getResult(bool consumeAcks = true, bool stopOnEvent = false,
+                             const std::string& caller = "");
 static std::string getSplJarPath();
 static void getStatus();
 static void initPipe();
@@ -727,6 +734,12 @@ void Platform::gwindow_setCanvasSize(const GWindow& gw, int width, int height) {
     std::ostringstream os;
     os << "GWindow.setCanvasSize(\"" << gw.gwd << "\", " << width << ", "
        << height << ")";
+    putPipe(os.str());
+}
+
+void Platform::gwindow_setCloseOperation(const GWindow& gw, int op) {
+    std::ostringstream os;
+    os << "GWindow.setCloseOperation(\"" << gw.gwd << "\", " << op << ")";
     putPipe(os.str());
 }
 
@@ -1668,9 +1681,21 @@ void Platform::gslider_setValue(GObject* gobj, int value) {
     putPipe(os.str());
 }
 
+void Platform::gtable_autofitColumnWidths(GObject* gobj) {
+    std::ostringstream os;
+    os << "GTable.autofitColumnWidths(\"" << gobj << "\")";
+    putPipe(os.str());
+}
+
 void Platform::gtable_clear(GObject* gobj) {
     std::ostringstream os;
     os << "GTable.clear(\"" << gobj << "\")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_clearFormatting(GObject* gobj) {
+    std::ostringstream os;
+    os << "GTable.clearFormatting(\"" << gobj << "\")";
     putPipe(os.str());
 }
 
@@ -1727,6 +1752,73 @@ void Platform::gtable_set(GObject* gobj, int row, int column, const std::string&
     putPipe(os.str());
 }
 
+void Platform::gtable_setCellAlignment(GObject* gobj, int row, int column, int align) {
+    std::ostringstream os;
+    os << "GTable.setCellAlignment(\"" << gobj << "\", " << row << ", " << column
+       << ", " << align << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_setCellBackground(GObject* gobj, int row, int column, const std::string& color) {
+    std::ostringstream os;
+    os << "GTable.setCellBackground(\"" << gobj << "\", " << row << ", " << column << ", ";
+    writeQuotedString(os, color);
+    os << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_setCellFont(GObject* gobj, int row, int column, const std::string& font) {
+    std::ostringstream os;
+    os << "GTable.setCellFont(\"" << gobj << "\", " << row << ", " << column << ", ";
+    writeQuotedString(os, font);
+    os << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_setCellForeground(GObject* gobj, int row, int column, const std::string& color) {
+    std::ostringstream os;
+    os << "GTable.setCellForeground(\"" << gobj << "\", " << row << ", " << column << ", ";
+    writeQuotedString(os, color);
+    os << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_setColumnAlignment(GObject* gobj, int column, int align) {
+    std::ostringstream os;
+    os << "GTable.setColumnAlignment(\"" << gobj << "\", " << column << ", " << align << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_setColumnBackground(GObject* gobj, int column, const std::string& color) {
+    std::ostringstream os;
+    os << "GTable.setColumnBackground(\"" << gobj << "\", " << column << ", ";
+    writeQuotedString(os, color);
+    os << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_setColumnFont(GObject* gobj, int column, const std::string& font) {
+    std::ostringstream os;
+    os << "GTable.setColumnFont(\"" << gobj << "\", " << column << ", ";
+    writeQuotedString(os, font);
+    os << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_setColumnForeground(GObject* gobj, int column, const std::string& color) {
+    std::ostringstream os;
+    os << "GTable.setColumnForeground(\"" << gobj << "\", " << column << ", ";
+    writeQuotedString(os, color);
+    os << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_setColumnHeaderStyle(GObject* gobj, int style) {
+    std::ostringstream os;
+    os << "GTable.setColumnHeaderStyle(\"" << gobj << "\", " << style << ")";
+    putPipe(os.str());
+}
+
 void Platform::gtable_setColumnWidth(GObject* gobj, int column, int width) {
     std::ostringstream os;
     os << "GTable.setColumnWidth(\"" << gobj << "\", " << column << ", " << width << ")";
@@ -1736,6 +1828,14 @@ void Platform::gtable_setColumnWidth(GObject* gobj, int column, int width) {
 void Platform::gtable_setEditable(GObject* gobj, bool editable) {
     std::ostringstream os;
     os << "GTable.setEditable(\"" << gobj << "\", " << std::boolalpha << editable << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_setEditorValue(GObject* gobj, int row, int column, const std::string& value) {
+    std::ostringstream os;
+    os << "GTable.setEditorValue(\"" << gobj << "\", " << row << ", " << column << ", ";
+    writeQuotedString(os, value);
+    os << ")";
     putPipe(os.str());
 }
 
@@ -1758,6 +1858,43 @@ void Platform::gtable_setHorizontalAlignment(GObject* gobj, const std::string& a
     std::ostringstream os;
     os << "GTable.setHorizontalAlignment(\"" << gobj << "\", ";
     writeQuotedString(os, alignment);
+    os << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_setRowAlignment(GObject* gobj, int row, int align) {
+    std::ostringstream os;
+    os << "GTable.setRowAlignment(\"" << gobj << "\", " << row << ", " << align << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_setRowBackground(GObject* gobj, int row, const std::string& color) {
+    std::ostringstream os;
+    os << "GTable.setRowBackground(\"" << gobj << "\", " << row << ", ";
+    writeQuotedString(os, color);
+    os << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_setRowColumnHeadersVisible(GObject* gobj, bool visible) {
+    std::ostringstream os;
+    os << "GTable.setRowColumnHeadersVisible(\"" << gobj << "\", "
+       << std::boolalpha << visible << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_setRowFont(GObject* gobj, int row, const std::string& font) {
+    std::ostringstream os;
+    os << "GTable.setRowFont(\"" << gobj << "\", " << row << ", ";
+    writeQuotedString(os, font);
+    os << ")";
+    putPipe(os.str());
+}
+
+void Platform::gtable_setRowForeground(GObject* gobj, int row, const std::string& color) {
+    std::ostringstream os;
+    os << "GTable.setRowForeground(\"" << gobj << "\", " << row << ", ";
+    writeQuotedString(os, color);
     os << ")";
     putPipe(os.str());
 }
@@ -1916,13 +2053,15 @@ GDimension Platform::glabel_getSize(const GObject* gobj) {
     std::ostringstream os;
     os << "GLabel.getGLabelSize(\"" << gobj << "\")";
     putPipe(os.str());
-    return scanDimension(getResult());
+    std::string result = getResult();
+    // std::cout << "getGLabelSize result = " << result << std::endl;
+    return scanDimension(result);
 }
 
 GEvent Platform::gevent_getNextEvent(int mask) {
     if (STATIC_VARIABLE(eventQueue).isEmpty()) {
         putPipe("GEvent.getNextEvent(" + integerToString(mask) + ")");
-        getResult();
+        getResult(/* consumeAcks */ true, /* stopOnEvent */ true);
         if (STATIC_VARIABLE(eventQueue).isEmpty()) {
             return GEvent();
         }
@@ -1936,7 +2075,7 @@ GEvent Platform::gevent_waitForEvent(int mask) {
 
         // BUGBUG: Marty changing to consume ACKs because it was skipping an
         // event on mouse click before
-        getResult();
+        getResult(/* consumeAcks */ true, /* stopOnEvent */ true);
     }
 
     GEvent event = STATIC_VARIABLE(eventQueue).dequeue();
@@ -2061,12 +2200,30 @@ void Platform::goptionpane_showTextFileDialog(const std::string& message,
     getResult();   // wait for dialog to close
 }
 
+std::string Platform::clipboard_get() {
+    putPipe("Clipboard.get()");
+    std::string result = getResult();
+    return result;
+}
+
+void Platform::clipboard_set(const std::string& text) {
+    std::ostringstream os;
+    os << "Clipboard.set(";
+    writeQuotedString(os, urlEncode(text));
+    os << ")";
+    putPipe(os.str());
+}
+
 void Platform::cpplib_setCppLibraryVersion() {
     std::ostringstream out;
     out << "StanfordCppLib.setCppVersion(";
     writeQuotedString(out, STANFORD_CPP_LIB_VERSION);
     out << ")";
     putPipe(out.str());
+}
+
+std::string Platform::cpplib_getCppLibraryVersion() {
+    return version::getCppLibraryVersion();
 }
 
 std::string Platform::cpplib_getJavaBackEndVersion() {
@@ -2660,7 +2817,8 @@ static std::string getPipe() {
 
 #endif // WIN32
 
-static std::string getResult(bool consumeAcks, const std::string& caller) {
+static std::string getResult(bool consumeAcks, bool stopOnEvent,
+                             const std::string& caller) {
     while (true) {
 #ifdef PIPE_DEBUG
         fprintf(stderr, "getResult(): calling getPipe() ...\n");  fflush(stderr);
@@ -2727,8 +2885,9 @@ static std::string getResult(bool consumeAcks, const std::string& caller) {
             // a Java-originated event; enqueue it to process here
             GEvent event = parseEvent(line.substr(6));
             STATIC_VARIABLE(eventQueue).enqueue(event);
-            if (event.getEventClass() == WINDOW_EVENT && event.getEventType() == CONSOLE_CLOSED
-                    && caller == "getLineConsole") {
+            if (stopOnEvent ||
+                    (event.getEventClass() == WINDOW_EVENT && event.getEventType() == CONSOLE_CLOSED
+                    && caller == "getLineConsole")) {
                 return "";
             }
         } else {
@@ -2871,12 +3030,24 @@ static GEvent parseEvent(const std::string& line) {
         return parseActionEvent(scanner, ACTION_PERFORMED);
     } else if (name == "serverRequest") {
         return parseServerEvent(scanner, SERVER_REQUEST);
+    } else if (name == "tableCopy") {
+        return parseTableEvent(scanner, TABLE_COPY);
+    } else if (name == "tableCut") {
+        return parseTableEvent(scanner, TABLE_CUT);
+    } else if (name == "tableEditBegin") {
+        return parseTableEvent(scanner, TABLE_EDIT_BEGIN);
+    } else if (name == "tablePaste") {
+        return parseTableEvent(scanner, TABLE_PASTE);
+    } else if (name == "tableReplaceBegin") {
+        return parseTableEvent(scanner, TABLE_REPLACE_BEGIN);
     } else if (name == "tableSelected") {
         return parseTableEvent(scanner, TABLE_SELECTED);
     } else if (name == "tableUpdated") {
         return parseTableEvent(scanner, TABLE_UPDATED);
     } else if (name == "timerTicked") {
         return parseTimerEvent(scanner, TIMER_TICKED);
+    } else if (name == "windowClosing") {
+        return parseWindowEvent(scanner, WINDOW_CLOSING);
     } else if (name == "windowClosed") {
         // BUGBUG: GWindow objects were not maintaining proper state on close
         //         and were doing a circular ring of close() messages to/from JBE
@@ -2952,7 +3123,7 @@ static GEvent parseKeyEvent(TokenScanner& scanner, EventType type) {
     scanner.verifyToken(",");
     int modifiers = scanInt(scanner);
     scanner.verifyToken(",");
-    int keyChar = scanChar(scanner);   // BUGFIX 2016/01/27: Thanks to K. Perry
+    int keyChar = scanInt(scanner);   // BUGFIX 2016/01/27: Thanks to K. Perry
     scanner.verifyToken(",");
     int keyCode = scanInt(scanner);
     scanner.verifyToken(")");
@@ -2978,25 +3149,26 @@ static GEvent parseServerEvent(TokenScanner& scanner, EventType type) {
 
 static GEvent parseTableEvent(TokenScanner& scanner, EventType type) {
     scanner.verifyToken("(");
-    std::string id = scanner.getStringValue(scanner.nextToken());
+    /* std::string id = */ scanner.getStringValue(scanner.nextToken());
     scanner.verifyToken(",");
+
+    GTableEvent e(type);
     double time = scanDouble(scanner);
+    e.setEventTime(time);
+
     scanner.verifyToken(",");
     int row = scanInt(scanner);
     scanner.verifyToken(",");
     int col = scanInt(scanner);
-    std::string value;
+    e.setLocation(row, col);
 
     if (type == TABLE_UPDATED) {
         scanner.verifyToken(",");
-        value = urlDecode(scanner.getStringValue(scanner.nextToken()));
+        std::string value = urlDecode(scanner.getStringValue(scanner.nextToken()));
+        e.setValue(value);
     }
+
     scanner.verifyToken(")");
-    
-    GTableEvent e(type);  //, GTimer(STATIC_VARIABLE(timerTable).get(id)));
-    e.setLocation(row, col);
-    e.setValue(value);
-    e.setEventTime(time);
     return e;
 }
 

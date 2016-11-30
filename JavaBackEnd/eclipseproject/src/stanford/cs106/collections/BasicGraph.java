@@ -15,12 +15,12 @@ import java.util.*;
  * The only functionality missing is the three path-searching algorithms represented
  * by the isReachable, minimumWeightPath, and shortestPath methods.
  */
-public class BasicGraph implements Graph {
+public class BasicGraph<V, E> implements Graph<V, E> {
 	// data fields
 	private boolean directed;
 	private boolean weighted;
-	private Table<Vertex, Vertex, Edge> adjacencyMap;   // [source, destination --> edge info]
-	private Map<String, Vertex> vertexes;               // [vertex] -> [vertex info]
+	private Table<Vertex<V>, Vertex<V>, Edge<V, E>> adjacencyMap;   // [source, destination --> edge info]
+	private Map<String, Vertex<V>> vertexes;               // [vertex] -> [vertex info]
 	
 	/**
 	 * Constructs a new empty undirected, unweighted graph.
@@ -37,7 +37,7 @@ public class BasicGraph implements Graph {
 		this.directed = directed;
 		this.weighted = weighted;
 		adjacencyMap = TreeBasedTable.create();
-		vertexes = new TreeMap<String, Vertex>();
+		vertexes = new TreeMap<String, Vertex<V>>();
 		// edges = HashMultimap.create();
 	}
 
@@ -52,12 +52,12 @@ public class BasicGraph implements Graph {
 	}
 
 	/** {@inheritDoc} */
-	public final void addEdge(Vertex v1, Vertex v2) {
+	public final void addEdge(Vertex<V> v1, Vertex<V> v2) {
 		addEdge(v1, v2, Edge.DEFAULT_WEIGHT);
 	}
 
 	/** {@inheritDoc} */
-	public final void addEdge(Vertex v1, Vertex v2, double weight) {
+	public final void addEdge(Vertex<V> v1, Vertex<V> v2, double weight) {
 		checkVertexes(v1, v2);
 		checkForNegative(weight);
 		if (v1.equals(v2)) {
@@ -69,15 +69,15 @@ public class BasicGraph implements Graph {
 					+ weight + " (must be " + Edge.DEFAULT_WEIGHT + ")");
 		}
 		
-		Edge edge = null;
+		Edge<V, E> edge = null;
 		if (containsEdge(v1, v2)) {
 			edge = edge(v1, v2);
 			edge.setWeight(weight);
 		} else {
 			if (weighted) {
-				edge = new Edge(v1, v2, weight);
+				edge = new Edge<V, E>(v1, v2, weight);
 			} else {
-				edge = new Edge(v1, v2);
+				edge = new Edge<V, E>(v1, v2);
 			}
 			adjacencyMap.put(v1, v2, edge);
 			if (!directed) {
@@ -91,7 +91,7 @@ public class BasicGraph implements Graph {
 	public final void addVertex(String v) {
 		checkForNull(v);
 		if (!containsVertex(v)) {
-			vertexes.put(v, new Vertex(v));
+			vertexes.put(v, new Vertex<V>(v));
 		}
 	}
 
@@ -106,13 +106,30 @@ public class BasicGraph implements Graph {
 		adjacencyMap.clear();
 	}
 	
+	public final void clearEdges(String v) {
+		clearEdges(vertex(v));
+	}
+	
+	public final void clearEdges(Vertex<V> v) {
+		checkVertex(v);
+		Set<Edge<V, E>> toRemove = new HashSet<Edge<V, E>>();
+		for (Edge<V, E> edge : edges()) {
+			if (edge.start().equals(v)) {
+				toRemove.add(edge);
+			}
+		}
+		for (Edge<V, E> edge : toRemove) {
+			removeEdge(edge);
+		}
+	}
+	
 	/** {@inheritDoc} */
 	public final boolean containsEdge(String v1, String v2) {
 		return containsEdge(vertex(v1), vertex(v2));
 	}
 	
 	/** {@inheritDoc} */
-	public final boolean containsEdge(Vertex v1, Vertex v2) {
+	public final boolean containsEdge(Vertex<V> v1, Vertex<V> v2) {
 		return adjacencyMap.contains(v1, v2) ||
 				(!directed && adjacencyMap.contains(v2, v1));
 	}
@@ -142,7 +159,7 @@ public class BasicGraph implements Graph {
 	}
 
 	/** {@inheritDoc} */
-	public final boolean containsVertex(Vertex v) {
+	public final boolean containsVertex(Vertex<V> v) {
 		return vertexes.containsKey(v.name());
 	}
 	
@@ -177,17 +194,17 @@ public class BasicGraph implements Graph {
 	}
 
 	/** {@inheritDoc} */
-	public final int degree(Vertex v) {
+	public final int degree(Vertex<V> v) {
 		return outDegree(v);
 	}
 
 	/** {@inheritDoc} */
-	public final Edge edge(String v1, String v2) {
+	public final Edge<V, E> edge(String v1, String v2) {
 		return edge(vertex(v1), vertex(v2));
 	}
 
 	/** {@inheritDoc} */
-	public final Edge edge(Vertex v1, Vertex v2) {
+	public final Edge<V, E> edge(Vertex<V> v1, Vertex<V> v2) {
 		checkForNull(v1, v2);
 		checkVertexes(v1, v2);
 		if (adjacencyMap.contains(v1, v2)) {
@@ -203,7 +220,7 @@ public class BasicGraph implements Graph {
 	}
 
 	/** {@inheritDoc} */
-	public final Collection<Edge> edges() {
+	public final Collection<Edge<V, E>> edges() {
 		// return new EdgeCollection();
 		return adjacencyMap.values();
 	}
@@ -214,7 +231,7 @@ public class BasicGraph implements Graph {
 	}
 
 	/** {@inheritDoc} */
-	public final double edgeWeight(Vertex v1, Vertex v2) {
+	public final double edgeWeight(Vertex<V> v1, Vertex<V> v2) {
 		if (containsEdge(v1, v2)) {
 			// will work for either order in undirected graph
 			return edge(v1, v2).weight();
@@ -230,7 +247,8 @@ public class BasicGraph implements Graph {
 	 */
 	public boolean equals(Object o) {
 		if (o instanceof BasicGraph) {
-			BasicGraph other = (BasicGraph) o;
+			@SuppressWarnings("unchecked")
+			BasicGraph<V, E> other = (BasicGraph<V, E>) o;
 			return directed == other.directed &&
 					weighted == other.weighted &&
 					adjacencyMap.equals(other.adjacencyMap) &&
@@ -256,13 +274,33 @@ public class BasicGraph implements Graph {
 	}
 
 	/** {@inheritDoc} */
-	public final int inDegree(Vertex v) {
+	public final int inDegree(Vertex<V> v) {
 		checkVertex(v);
 		if (adjacencyMap.containsColumn(v)) {
 			return adjacencyMap.column(v).size();
 		} else {
 			return 0;
 		}
+	}
+	
+	public Set<Vertex<V>> inverseNeighbors(String v) {
+		return inverseNeighbors(vertex(v));
+	}
+	
+	public Set<Vertex<V>> inverseNeighbors(Vertex<V> v) {
+		checkVertex(v);
+		Set<Vertex<V>> result = new TreeSet<Vertex<V>>();
+		for (Edge<V, E> edge : edges()) {
+			if (edge.finish().equals(v)) {
+				result.add(edge.start());
+			}
+		}
+		return result;
+//		if (adjacencyMap.containsColumn(v)) {
+//			return adjacencyMap.column(v).keySet();
+//		} else {
+//			return Collections.emptySet();
+//		}
 	}
 
 	/** {@inheritDoc} */
@@ -281,12 +319,12 @@ public class BasicGraph implements Graph {
 	}
 
 	/** {@inheritDoc} */
-	public final Set<Vertex> neighbors(String v) {
+	public final Set<Vertex<V>> neighbors(String v) {
 		return neighbors(vertex(v));
 	}
 
 	/** {@inheritDoc} */
-	public final Set<Vertex> neighbors(Vertex v) {
+	public final Set<Vertex<V>> neighbors(Vertex<V> v) {
 		checkVertex(v);
 		if (adjacencyMap.containsRow(v)) {
 			return adjacencyMap.row(v).keySet();
@@ -301,12 +339,12 @@ public class BasicGraph implements Graph {
 	}
 
 	/** {@inheritDoc} */
-	public final int outDegree(Vertex v) {
+	public final int outDegree(Vertex<V> v) {
 		return neighbors(v).size();
 	}
 
 	/** {@inheritDoc} */
-	public final void removeEdge(Edge e) {
+	public final void removeEdge(Edge<V, E> e) {
 		removeEdge(e.start().name(), e.end().name());
 	}
 
@@ -316,7 +354,7 @@ public class BasicGraph implements Graph {
 	}
 
 	/** {@inheritDoc} */
-	public final void removeEdge(Vertex v1, Vertex v2) {
+	public final void removeEdge(Vertex<V> v1, Vertex<V> v2) {
 		if (containsEdge(v1, v2)) {
 			adjacencyMap.remove(v1, v2);
 			if (!directed) {
@@ -336,7 +374,7 @@ public class BasicGraph implements Graph {
 	}
 
 	/** {@inheritDoc} */
-	public final void removeVertex(Vertex v) {
+	public final void removeVertex(Vertex<V> v) {
 		checkForNull(v);
 		if (containsVertex(v)) {
 			// remove any incoming/outgoing edges from this vertex
@@ -355,7 +393,7 @@ public class BasicGraph implements Graph {
 		StringBuilder sb = new StringBuilder(65536);
 		sb.append("{V={");
 		boolean first = true;
-		for (Vertex v : vertexes()) {
+		for (Vertex<V> v : vertexes()) {
 			if (!first) {
 				sb.append(", ");
 			}
@@ -367,7 +405,7 @@ public class BasicGraph implements Graph {
 		sb.append(", E={");
 		first = true;
 		
-		for (Edge e : adjacencyMap.values()) {
+		for (Edge<V, E> e : adjacencyMap.values()) {
 			if (!first) {
 				sb.append(", ");
 			}
@@ -384,19 +422,19 @@ public class BasicGraph implements Graph {
 	public final String toStringDetailed() {
 		StringBuilder sb = new StringBuilder(65536);
 		sb.append("Graph{\n").append("\tvertices:\n");
-		for (Vertex v : vertexes()) {
+		for (Vertex<V> v : vertexes()) {
 			sb.append("\t\t").append(vertexes.get(v)).append(" -> neighbors: ")
 					.append(neighbors(v.name())).append('\n');
 		}
 		sb.append("\tedges:\n");
-		for (Edge edge : adjacencyMap.values()) {
+		for (Edge<V, E> edge : adjacencyMap.values()) {
 			sb.append("\t\t").append(edge).append('\n');
 		}
 		sb.append('}');
 		return sb.toString();
 	}
 	
-	public Vertex vertex(String name) {
+	public Vertex<V> vertex(String name) {
 		return vertexes.get(name);
 	}
 	
@@ -406,7 +444,7 @@ public class BasicGraph implements Graph {
 	}
 	
 	/** {@inheritDoc} */
-	public final Collection<Vertex> vertexes() {
+	public final Collection<Vertex<V>> vertexes() {
 		// return new VertexSet();
 		return vertexes.values();
 	}
@@ -459,7 +497,7 @@ public class BasicGraph implements Graph {
 		}
 	}
 	
-	protected final void checkVertex(Vertex vertex) {
+	protected final void checkVertex(Vertex<V> vertex) {
 		checkForNull(vertex);
 		if (!containsVertex(vertex.name()) || vertex(vertex.name()) != vertex) {
 			throw new IllegalArgumentException("Vertex not found in graph: " + vertex);
@@ -485,7 +523,7 @@ public class BasicGraph implements Graph {
 	 * @throws IllegalArgumentException If any vertex is not part of this graph.
 	 * @throws NullPointerException If any vertex is null.
 	 */
-	protected final void checkVertexes(Vertex v1, Vertex v2) {
+	protected final void checkVertexes(Vertex<V> v1, Vertex<V> v2) {
 		checkVertex(v1);
 		checkVertex(v2);
 	}
@@ -495,7 +533,7 @@ public class BasicGraph implements Graph {
 	 * objects in this graph.
 	 */
 	protected final void clearVertexInfo() {
-		for (Vertex vertex : vertexes.values()) {
+		for (Vertex<V> vertex : vertexes.values()) {
 			vertex.clear();
 		}
 	}
@@ -507,10 +545,10 @@ public class BasicGraph implements Graph {
 	 */
 	protected final void corruptVertexInfo() {
 		Random rand = new Random(42);
-		List<Vertex> vertexList = new ArrayList<Vertex>(this.vertexes());
+		List<Vertex<V>> vertexList = new ArrayList<Vertex<V>>(this.vertexes());
 		Collections.shuffle(vertexList, rand);
 		int i = 0;
-		for (Vertex vertex : this.vertexes.values()) {
+		for (Vertex<V> vertex : this.vertexes.values()) {
 			if (i % 2 == 0) {
 				vertex.setCost(rand.nextInt(1000));
 				vertex.setNumber(rand.nextInt(1000000));
@@ -528,7 +566,7 @@ public class BasicGraph implements Graph {
 	 * @throws IllegalArgumentException If any vertex is not part of this graph.
 	 * @throws NullPointerException If any vertex is null.
 	 */
-	protected final Vertex vertexInfo(String v) {
+	protected final Vertex<V> vertexInfo(String v) {
 		checkVertex(v);
 		return vertexes.get(v);
 	}
@@ -536,20 +574,20 @@ public class BasicGraph implements Graph {
 	/**
 	 * Returns a read-only view of all internal data about vertex information.
 	 */
-	protected final Map<String, Vertex> vertexInfos() {
+	protected final Map<String, Vertex<V>> vertexInfos() {
 		return Collections.unmodifiableMap(vertexes);
 	}
 	
 	// helper to remove a vertex; used by removeVertex and vertices() iterator remove()
 	private void removeVertexHelper(String v) {
-		Vertex vertex = vertex(v);
-		Map<Vertex, Edge> row = adjacencyMap.row(vertex);
+		Vertex<V> vertex = vertex(v);
+		Map<Vertex<V>, Edge<V, E>> row = adjacencyMap.row(vertex);
 //		for (Edge edge : row.values()) {
 //			// edges.remove(edge.edge(), edge);
 //		}
 		row.clear();
 		
-		Map<Vertex, Edge> column = adjacencyMap.column(vertex);
+		Map<Vertex<V>, Edge<V, E>> column = adjacencyMap.column(vertex);
 		if (!directed) {
 //			for (Edge edge : column.values()) {
 //				// edges.remove(edge.edge(), edge);
@@ -562,14 +600,14 @@ public class BasicGraph implements Graph {
 	}
 	
 	// helper to remove a vertex; used by removeVertex and vertices() iterator remove()
-	private void removeVertexHelper(Vertex v) {
-		Map<Vertex, Edge> row = adjacencyMap.row(v);
+	private void removeVertexHelper(Vertex<V> v) {
+		Map<Vertex<V>, Edge<V, E>> row = adjacencyMap.row(v);
 //		for (Edge edge : row.values()) {
 //			// edges.remove(edge.edge(), edge);
 //		}
 		row.clear();
 		
-		Map<Vertex, Edge> column = adjacencyMap.column(v);
+		Map<Vertex<V>, Edge<V, E>> column = adjacencyMap.column(v);
 		if (!directed) {
 //			for (Edge edge : column.values()) {
 //				// edges.remove(edge.edge(), edge);

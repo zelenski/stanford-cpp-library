@@ -1,10 +1,19 @@
 package stanford.spl;
 
 import javax.swing.JSlider;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeListener;
 
 public class GSlider extends GInteractor {
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Settings for Java look-and-feel related to tables.
+	 */
+	public static void setSystemLookAndFeelProperties() {
+		UIManager.getLookAndFeelDefaults().put("Slider.paintValue", false);
+		UIManager.put("Slider.paintValue", false);
+	}
 	
 	public GSlider(int paramInt1, int paramInt2, int paramInt3, ChangeListener paramChangeListener) {
 		super(new JSlider(paramInt1, paramInt2, paramInt3));

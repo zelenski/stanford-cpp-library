@@ -3,15 +3,14 @@
  * ---------------
  * Implementation of the error function.
  * 
+ * @version 2016/11/23
+ * - added operator << to print ErrorExceptions
  * @version 2014/10/08
  * - removed 'using namespace' statement
  */
 
 #include "error.h"
 #include "exceptions.h"
-#include <exception>
-#include <string>
-#include <iostream>
 #include <sstream>
 
 /* Definitions for the ErrorException class */
@@ -44,6 +43,11 @@ const char* ErrorException::what() const throw () {
     // ends up garbling the string and leading to garbage exception text
     // return ("Error: " + msg).c_str();
     return msg.c_str();
+}
+
+std::ostream& operator <<(std::ostream& out, const ErrorException& ex) {
+    out << "ErrorException: " << ex.what();
+    return out;
 }
 
 /*

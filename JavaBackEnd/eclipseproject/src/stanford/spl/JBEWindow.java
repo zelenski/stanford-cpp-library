@@ -13,16 +13,14 @@
 package stanford.spl;
 
 import acm.gui.TableLayout;
-import stanford.cs106.io.IORuntimeException;
-import stanford.cs106.io.IOUtils;
-import stanford.cs106.util.CollectionUtils;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
+import stanford.cs106.io.*;
+import stanford.cs106.util.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.*;
 import java.io.*;
 import java.util.*;
-import javax.imageio.ImageIO;
+import javax.imageio.*;
 import javax.swing.*;
 
 public class JBEWindow extends JFrame {
@@ -40,12 +38,12 @@ public class JBEWindow extends JFrame {
 	private JPanel westPanel;
 
 	public JBEWindow(JavaBackEnd paramJavaBackEnd, String paramString1,
-			String paramString2, int paramInt1, int paramInt2) {
+			String paramString2, int width, int height) {
 		super(paramString2);
 		this.jbe = paramJavaBackEnd;
 		this.windowId = paramString1;
 		setLayout(new BorderLayout());
-		this.canvas = new JBECanvas(paramString1, paramInt1, paramInt2);
+		this.canvas = new JBECanvas(paramString1, width, height);
 		addWindowListener(this.jbe);
 		this.canvas.addComponentListener(this.jbe);
 		this.canvas.addMouseListener(this.jbe);
@@ -148,7 +146,7 @@ public class JBEWindow extends JFrame {
 	
 	// JL: SwingUtilities.invokeLater
 	public void addToRegion(JComponent paramJComponent, String paramString) {
-		JPanel localJPanel = null;
+		Container localJPanel = null;
 		if (paramString.equalsIgnoreCase("NORTH")) {
 			localJPanel = this.northPanel;
 		} else if (paramString.equalsIgnoreCase("EAST")) {
@@ -157,7 +155,11 @@ public class JBEWindow extends JFrame {
 			localJPanel = this.southPanel;
 		} else if (paramString.equalsIgnoreCase("WEST")) {
 			localJPanel = this.westPanel;
+		} else if (paramString.equalsIgnoreCase("CENTER")) {
+			remove(this.canvas);
+			localJPanel = this.getContentPane();
 		}
+		
 		if (localJPanel != null) {
 			localJPanel.add(paramJComponent);
 			validate();
@@ -175,6 +177,11 @@ public class JBEWindow extends JFrame {
 			localJPanel = this.southPanel;
 		} else if (paramString.equalsIgnoreCase("WEST")) {
 			localJPanel = this.westPanel;
+		} else if (paramString.equalsIgnoreCase("CENTER")) {
+			remove(paramJComponent);
+			add(this.canvas);
+			validate();
+			return;
 		}
 		if (localJPanel != null) {
 			localJPanel.remove(paramJComponent);
@@ -226,7 +233,7 @@ public class JBEWindow extends JFrame {
 			((TableLayout) localJPanel.getLayout()).setHorizontalAlignment(i);
 		}
 	}
-
+	
 	private void createSidePanels() {
 		this.northPanel = new JPanel();
 		this.southPanel = new JPanel();

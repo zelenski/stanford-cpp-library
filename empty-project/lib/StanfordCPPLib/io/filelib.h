@@ -8,6 +8,8 @@
  * contain separators in any of the supported styles, which usually
  * makes it possible to use the same code on different platforms.
  * 
+ * @version 2016/11/12
+ * - added fileSize, readEntireStream
  * @version 2016/08/12
  * - added second overload of openFileDialog that accepts path parameter
  * @version 2015/04/12
@@ -86,6 +88,15 @@ std::string expandPathname(const std::string& filename);
  */
 
 bool fileExists(const std::string& filename);
+
+/*
+ * Function: fileSize
+ * Usage: int size = fileSize(filename);
+ * -------------------------------------
+ * Returns the size of the given file in bytes.
+ * Returns -1 if the file does not exist or cannot be read.
+ */
+int fileSize(const std::string& filename);
 
 /*
  * Function: findOnPath
@@ -362,6 +373,13 @@ void readEntireFile(std::istream& is, std::vector<std::string>& lines);
  */
 std::string readEntireFile(const std::string& filename);
 bool readEntireFile(const std::string& filename, std::string& out);
+
+/*
+ * Reads the contents of the given stream until its end and returns them as
+ * a string.  The second overload instead fills the string by reference.
+ */
+std::string readEntireStream(std::istream& input);
+void readEntireStream(std::istream& input, std::string& out);
 
 /*
  * Function: renameFile

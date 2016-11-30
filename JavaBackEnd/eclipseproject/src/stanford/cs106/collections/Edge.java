@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp
+ * @version 2016/11/29
+ * - added template parameters <V, E>
  * @version 2015/06/08
  */
 
@@ -9,15 +11,15 @@ package stanford.cs106.collections;
  * An Edge object represents information stored in a graph edge,
  * including its vertices, weight, and any extra edge info.
  */
-public class Edge implements Cloneable {
+public class Edge<V, E> implements Cloneable {
 	/** Default weight of an edge in an undirected graph (1). */
 	public static final int DEFAULT_WEIGHT = 1;
 	
-	private Vertex start;        // starting vertex for this edge
-	private Vertex end;          // ending vertex for this edge
+	private Vertex<V> start;        // starting vertex for this edge
+	private Vertex<V> end;          // ending vertex for this edge
 	private double weight;       // The edge's weight; 1 in an unweighted graph
 	private boolean weighted;
-	public Object extraData;     // extra information, if any stored in this edge (null if none)
+	public E extraData;     // extra information, if any stored in this edge (null if none)
 	
 	/** 
 	 * Constructs information about the given edge with the default edge weight.
@@ -26,7 +28,7 @@ public class Edge implements Cloneable {
 	 * @param edge The extra information (if any) to store in this edge; null if none.
 	 * @throws NullPointerException If the start or end vertex is null.
 	 */
-	public Edge(Vertex start, Vertex end) {
+	public Edge(Vertex<V> start, Vertex<V> end) {
 		this(start, end, DEFAULT_WEIGHT, false);
 	}
 	
@@ -37,7 +39,7 @@ public class Edge implements Cloneable {
 	 * @param edge The extra information (if any) to store in this edge; null if none.
 	 * @throws NullPointerException If the start or end vertex is null.
 	 */
-	public Edge(Vertex start, Vertex end, double weight) {
+	public Edge(Vertex<V> start, Vertex<V> end, double weight) {
 		this(start, end, weight, true);
 	}
 	
@@ -50,7 +52,7 @@ public class Edge implements Cloneable {
 	 * @throws IllegalArgumentException If the weight is negative.
 	 * @throws NullPointerException If the start or end vertex is null.
 	 */
-	private Edge(Vertex start, Vertex end, double weight, boolean weighted) {
+	private Edge(Vertex<V> start, Vertex<V> end, double weight, boolean weighted) {
 		if (start == null) {
 			throw new NullPointerException("null start vertex");
 		}
@@ -67,9 +69,10 @@ public class Edge implements Cloneable {
 	/**
 	 * Returns a copy of this Edge as per the contract of the Object.clone method.
 	 */
-	public Edge clone() {
+	public Edge<V, E> clone() {
 		try {
-			Edge copy = (Edge) super.clone();
+			@SuppressWarnings("unchecked")
+			Edge<V, E> copy = (Edge<V, E>) super.clone();
 			return copy;
 		} catch (CloneNotSupportedException e) {
 			return null;  // will not happen
@@ -81,7 +84,7 @@ public class Edge implements Cloneable {
 	 * if it is the start or end of this edge.
 	 * @throws NullPointerException If the vertex is null.
 	 */
-	public boolean contains(Vertex vertex) {
+	public boolean contains(Vertex<V> vertex) {
 		if (vertex == null) {
 			throw new NullPointerException("null vertex");
 		}
@@ -101,7 +104,7 @@ public class Edge implements Cloneable {
 	 * for an edge; this method always returns the second vertex that was passed
 	 * to the edge's constructor.
 	 */
-	public Vertex end() {
+	public Vertex<V> end() {
 		return end;
 	}
 	
@@ -111,7 +114,8 @@ public class Edge implements Cloneable {
 	 */
 	public boolean equals(Object o) {
 		if (o instanceof Edge) {
-			Edge other = (Edge) o;
+			@SuppressWarnings("unchecked")
+			Edge<V, E> other = (Edge<V, E>) o;
 			return start.equals(other.start) &&
 					end.equals(other.end) &&
 					weight == other.weight;
@@ -126,7 +130,7 @@ public class Edge implements Cloneable {
 	 * for an edge; this method always returns the second vertex that was passed
 	 * to the edge's constructor.
 	 */
-	public Vertex finish() {
+	public Vertex<V> finish() {
 		return end;
 	}
 	
@@ -158,7 +162,7 @@ public class Edge implements Cloneable {
 	 * for an edge; this method always returns the first vertex that was passed
 	 * to the edge's constructor.
 	 */
-	public Vertex start() {
+	public Vertex<V> start() {
 		return start;
 	}
 	

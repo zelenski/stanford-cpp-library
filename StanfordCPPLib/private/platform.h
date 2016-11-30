@@ -5,6 +5,12 @@
  * the platform-specific parts of the StanfordCPPLib package.  This file is
  * logically part of the implementation and is not interesting to clients.
  *
+ * @version 2016/11/25
+ * - added clipboard_get/set
+ * - added gtable_setCell/Column/RowFont
+ * - added gwindow_setCloseOperation
+ * @version 2016/11/18
+ * - added gtable_setEditorValue, gtable_setColumnHeadersVisible
  * @version 2016/10/23
  * - added ginteractor_add/removeActionListener, requestFocus
  * @version 2016/10/16
@@ -77,6 +83,9 @@ public:
     void autograderunittest_setTestRuntime(const std::string& testName, int runtimeMS);
     void autograderunittest_setVisible(bool visible = true, bool styleCheck = false);
     void autograderunittest_setWindowDescriptionText(const std::string& text, bool styleCheck = false);
+
+    std::string clipboard_get();
+    void clipboard_set(const std::string& text);
 
     std::string cpplib_getCppLibraryVersion();
     std::string cpplib_getJavaBackEndVersion();
@@ -223,7 +232,9 @@ public:
     void gslider_setSnapToTicks(GObject* gobj, bool value);
     void gslider_setValue(GObject* gobj, int value);
 
+    void gtable_autofitColumnWidths(GObject* gobj);
     void gtable_clear(GObject* gobj);
+    void gtable_clearFormatting(GObject* gobj);
     void gtable_constructor(GObject* gobj, int numRows, int numCols, double x, double y, double width, double height);
     std::string gtable_get(const GObject* gobj, int row, int column);
     int gtable_getColumnWidth(const GObject* gobj, int column);
@@ -231,11 +242,26 @@ public:
     void gtable_resize(GObject* gobj, int numRows, int numCols);
     void gtable_select(GObject* gobj, int row, int column);
     void gtable_set(GObject* gobj, int row, int column, const std::string& value);
+    void gtable_setCellAlignment(GObject* gobj, int row, int column, int align);
+    void gtable_setCellBackground(GObject* gobj, int row, int column, const std::string& color);
+    void gtable_setCellFont(GObject* gobj, int row, int column, const std::string& font);
+    void gtable_setCellForeground(GObject* gobj, int row, int column, const std::string& color);
+    void gtable_setColumnAlignment(GObject* gobj, int column, int align);
+    void gtable_setColumnBackground(GObject* gobj, int column, const std::string& color);
+    void gtable_setColumnFont(GObject* gobj, int column, const std::string& font);
+    void gtable_setColumnForeground(GObject* gobj, int column, const std::string& color);
+    void gtable_setColumnHeaderStyle(GObject* gobj, int style);
     void gtable_setColumnWidth(GObject* gobj, int column, int width);
     void gtable_setEditable(GObject* gobj, bool editable);
+    void gtable_setEditorValue(GObject* gobj, int row, int column, const std::string& value);
     void gtable_setEventEnabled(GObject* gobj, int type, bool enabled);
     void gtable_setFont(GObject* gobj, const std::string& font);
     void gtable_setHorizontalAlignment(GObject* gobj, const std::string& alignment);
+    void gtable_setRowAlignment(GObject* gobj, int row, int align);
+    void gtable_setRowBackground(GObject* gobj, int row, const std::string& color);
+    void gtable_setRowColumnHeadersVisible(GObject* gobj, bool visible);
+    void gtable_setRowFont(GObject* gobj, int row, const std::string& font);
+    void gtable_setRowForeground(GObject* gobj, int row, const std::string& color);
 
     void gtextarea_create(GObject* gobj, double width, double height);
     std::string gtextarea_getText(const GObject *gobj);
@@ -283,6 +309,7 @@ public:
     void gwindow_requestFocus(const GWindow& gw);
     void gwindow_saveCanvasPixels(const GWindow& gw, const std::string& filename);
     void gwindow_setCanvasSize(const GWindow& gw, int width, int height);
+    void gwindow_setCloseOperation(const GWindow& gw, int op);
     void gwindow_setExitOnClose(const GWindow& gw, bool value);
     void gwindow_setLocation(const GWindow& gw, int x, int y);
     void gwindow_setLocationSaved(const GWindow& gw, bool value);

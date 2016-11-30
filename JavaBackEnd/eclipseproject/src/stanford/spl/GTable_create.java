@@ -4,30 +4,30 @@ import java.awt.*;
 import acm.util.TokenScanner;
 
 public class GTable_create extends JBESwingCommand {
-	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
-		paramTokenScanner.verifyToken("(");
-		String id = nextString(paramTokenScanner);
-		paramTokenScanner.verifyToken(",");
-		int numRows = nextInt(paramTokenScanner);
-		paramTokenScanner.verifyToken(",");
-		int numCols = nextInt(paramTokenScanner);
-		paramTokenScanner.verifyToken(",");
-		double x = nextDouble(paramTokenScanner);
-		paramTokenScanner.verifyToken(",");
-		double y = nextDouble(paramTokenScanner);
-		paramTokenScanner.verifyToken(",");
-		double w = nextDouble(paramTokenScanner);
-		paramTokenScanner.verifyToken(",");
-		double h = nextDouble(paramTokenScanner);
-		paramTokenScanner.verifyToken(")");
+	public void execute(TokenScanner scanner, JavaBackEnd jbe) {
+		scanner.verifyToken("(");
+		String id = nextString(scanner);
+		scanner.verifyToken(",");
+		int numRows = nextInt(scanner);
+		scanner.verifyToken(",");
+		int numCols = nextInt(scanner);
+		scanner.verifyToken(",");
+		double x = nextDouble(scanner);
+		scanner.verifyToken(",");
+		double y = nextDouble(scanner);
+		scanner.verifyToken(",");
+		double w = nextDouble(scanner);
+		scanner.verifyToken(",");
+		double h = nextDouble(scanner);
+		scanner.verifyToken(")");
 		
 		GTable table = new GTable(numRows, numCols);
-		table.setJavaBackEnd(paramJavaBackEnd);
+		table.setJavaBackEnd(jbe);
 		table.setLocation(x, y);
 		if (w > 0 && h > 0) {
 			table.getInteractor().setPreferredSize(new Dimension((int) w, (int) h));
 		}
-		paramJavaBackEnd.defineGObject(id, table);
-		paramJavaBackEnd.defineSource(table.getInteractor(), id);
+		jbe.defineGObject(id, table);
+		jbe.defineSource(table.getInteractor(), id);
 	}
 }

@@ -21,16 +21,16 @@ public class JBECanvas extends GCanvas {
 	private int preferredWidth;
 	private int preferredHeight;
 
-	public JBECanvas(String paramString, int paramInt1, int paramInt2) {
-		this.windowId = paramString;
-		this.preferredWidth = paramInt1;
-		this.preferredHeight = paramInt2;
+	public JBECanvas(String windowId, int width, int height) {
+		this.windowId = windowId;
+		this.preferredWidth = width;
+		this.preferredHeight = height;
 	}
 
-	protected void setTopCompound(TopCompound paramTopCompound) {
-		this.topCompound = paramTopCompound;
-		paramTopCompound.setCanvas(this);
-		paramTopCompound.setParent(this);
+	protected void setTopCompound(TopCompound top) {
+		this.topCompound = top;
+		top.setCanvas(this);
+		top.setParent(this);
 	}
 
 	protected TopCompound getTopCompound() {

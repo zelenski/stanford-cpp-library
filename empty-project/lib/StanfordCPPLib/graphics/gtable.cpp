@@ -5,6 +5,11 @@
  * See that file for documentation of each member.
  *
  * @author Marty Stepp
+ * @version 2016/11/26
+ * - added autofitColumnWidths
+ * - added per-cell/column/row formatting: background/foreground color, font
+ * @version 2016/11/18
+ * - added column header methods
  * @version 2015/12/01
  * - added setEventEnabled to turn on/off table update/selection events
  * - added isEditable, setEditable
@@ -29,7 +34,9 @@ GTable::GTable(int rows, int columns, double x, double y, double width, double h
           m_height(height),
           font("*-*-*"),
           alignment(Alignment::LEFT),
-          editable(true) {
+          editable(true),
+          rowColHeadersVisible(false),
+          columnHeaderStyle(GTable::COLUMN_HEADER_NONE) {
     checkDimensions("constructor", rows, columns);
     checkSize("constructor", width, height);
     stanfordcpplib::getPlatform()->gtable_constructor(this, rows, columns, x, y, width, height);
@@ -49,9 +56,16 @@ std::string GTable::toString() const {
     return out.str();
 }
 
+void GTable::autofitColumnWidths() {
+    stanfordcpplib::getPlatform()->gtable_autofitColumnWidths(this);
+}
+
 void GTable::clear() {
     stanfordcpplib::getPlatform()->gtable_clear(this);
-    // clearSelection();
+}
+
+void GTable::clearFormatting() {
+    stanfordcpplib::getPlatform()->gtable_clearFormatting(this);
 }
 
 void GTable::clearSelection() {
@@ -61,6 +75,10 @@ void GTable::clearSelection() {
 std::string GTable::get(int row, int column) const {
     checkIndex("get", row, column);
     return stanfordcpplib::getPlatform()->gtable_get(this, row, column);
+}
+
+GTable::ColumnHeaderStyle GTable::getColumnHeaderStyle() const {
+    return columnHeaderStyle;
 }
 
 double GTable::getColumnWidth(int column) const {
@@ -129,6 +147,74 @@ void GTable::set(int row, int column, const std::string& text) {
     stanfordcpplib::getPlatform()->gtable_set(this, row, column, text);
 }
 
+void GTable::setCellAlignment(int row, int column, Alignment alignment) {
+    checkIndex("setCellAlignment", row, column);
+    stanfordcpplib::getPlatform()->gtable_setCellAlignment(this, row, column, alignment);
+}
+
+void GTable::setCellBackground(int row, int column, int color) {
+    checkIndex("setCellBackground", row, column);
+    std::string colorStr = convertRGBToColor(color);
+    stanfordcpplib::getPlatform()->gtable_setCellBackground(this, row, column, colorStr);
+}
+
+void GTable::setCellBackground(int row, int column, const std::string& color) {
+    checkIndex("setCellBackground", row, column);
+    stanfordcpplib::getPlatform()->gtable_setCellBackground(this, row, column, color);
+}
+
+void GTable::setCellFont(int row, int column, const std::string& font) {
+    checkIndex("setCellFont", row, column);
+    stanfordcpplib::getPlatform()->gtable_setCellFont(this, row, column, font);
+}
+
+void GTable::setCellForeground(int row, int column, int color) {
+    checkIndex("setCellForeground", row, column);
+    std::string colorStr = convertRGBToColor(color);
+    stanfordcpplib::getPlatform()->gtable_setCellForeground(this, row, column, colorStr);
+}
+
+void GTable::setCellForeground(int row, int column, const std::string& color) {
+    checkIndex("setCellForeground", row, column);
+    stanfordcpplib::getPlatform()->gtable_setCellForeground(this, row, column, color);
+}
+
+void GTable::setColumnAlignment(int column, Alignment alignment) {
+    checkIndex("setColumnAlignment", /* row */ 0, column);
+    stanfordcpplib::getPlatform()->gtable_setColumnAlignment(this, column, alignment);
+}
+
+void GTable::setColumnBackground(int column, int color) {
+    checkIndex("setColumnBackground", /* row */ 0, column);
+    std::string colorStr = convertRGBToColor(color);
+    stanfordcpplib::getPlatform()->gtable_setColumnBackground(this, column, colorStr);
+}
+
+void GTable::setColumnBackground(int column, const std::string& color) {
+    checkIndex("setColumnBackground", /* row */ 0, column);
+    stanfordcpplib::getPlatform()->gtable_setColumnBackground(this, column, color);
+}
+
+void GTable::setColumnFont(int column, const std::string& font) {
+    checkIndex("setColumnFont", /* row */ 0, column);
+    stanfordcpplib::getPlatform()->gtable_setColumnFont(this, column, font);
+}
+
+void GTable::setColumnForeground(int column, int color) {
+    checkIndex("setColumnForeground", /* row */ 0, column);
+    std::string colorStr = convertRGBToColor(color);
+    stanfordcpplib::getPlatform()->gtable_setColumnForeground(this, column, colorStr);
+}
+
+void GTable::setColumnForeground(int column, const std::string& color) {
+    checkIndex("setColumnForeground", /* row */ 0, column);
+    stanfordcpplib::getPlatform()->gtable_setColumnForeground(this, column, color);
+}
+
+void GTable::setColumnHeaderStyle(GTable::ColumnHeaderStyle style) {
+    stanfordcpplib::getPlatform()->gtable_setColumnHeaderStyle(this, style);
+}
+
 void GTable::setColumnWidth(int column, double width) {
     checkIndex("setColumnWidth", /* row */ 0, column);
     if (width < 0) {
@@ -142,8 +228,13 @@ void GTable::setEditable(bool editable) {
     stanfordcpplib::getPlatform()->gtable_setEditable(this, editable);
 }
 
+void GTable::setEditorValue(int row, int column, const std::string& text) {
+    stanfordcpplib::getPlatform()->gtable_setEditorValue(this, row, column, text);
+}
+
 void GTable::setEventEnabled(int type, bool enabled) {
-    if (type != TABLE_SELECTED && type != TABLE_UPDATED) {
+    if (type != TABLE_SELECTED && type != TABLE_UPDATED
+            && type != TABLE_EDIT_BEGIN && type != TABLE_REPLACE_BEGIN) {
         error("GTable::setEventEnabled: invalid event type");
     }
     stanfordcpplib::getPlatform()->gtable_setEventEnabled(this, type, enabled);
@@ -165,6 +256,43 @@ void GTable::setHorizontalAlignment(GTable::Alignment alignment) {
     }
     this->alignment = alignment;
     stanfordcpplib::getPlatform()->gtable_setHorizontalAlignment(this, alignmentStr);
+}
+
+void GTable::setRowAlignment(int row, Alignment alignment) {
+    checkIndex("setRowAlignment", row, /* column */ 0);
+    stanfordcpplib::getPlatform()->gtable_setRowAlignment(this, row, alignment);
+}
+
+void GTable::setRowBackground(int row, int color) {
+    checkIndex("setRowBackground", row, /* column */ 0);
+    std::string colorStr = convertRGBToColor(color);
+    stanfordcpplib::getPlatform()->gtable_setRowBackground(this, row, colorStr);
+}
+
+void GTable::setRowBackground(int row, const std::string& color) {
+    checkIndex("setRowBackground", row, /* column */ 0);
+    stanfordcpplib::getPlatform()->gtable_setRowBackground(this, row, color);
+}
+
+void GTable::setRowFont(int row, const std::string& font) {
+    checkIndex("setRowFont", row, /* column */ 0);
+    stanfordcpplib::getPlatform()->gtable_setRowFont(this, row, font);
+}
+
+void GTable::setRowForeground(int row, int color) {
+    checkIndex("setRowForeground", row, /* column */ 0);
+    std::string colorStr = convertRGBToColor(color);
+    stanfordcpplib::getPlatform()->gtable_setRowForeground(this, row, colorStr);
+}
+
+void GTable::setRowForeground(int row, const std::string& color) {
+    checkIndex("setRowForeground", row, /* column */ 0);
+    stanfordcpplib::getPlatform()->gtable_setRowForeground(this, row, color);
+}
+
+void GTable::setRowColumnHeadersVisible(bool visible) {
+    rowColHeadersVisible = visible;
+    stanfordcpplib::getPlatform()->gtable_setRowColumnHeadersVisible(this, visible);
 }
 
 int GTable::width() const {

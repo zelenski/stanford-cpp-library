@@ -5,6 +5,8 @@
  * provided in the Java Swing libraries.
  * <include src="pictures/ClassHierarchies/GInteractorHierarchy-h.html">
  * 
+ * @version 2016/11/26
+ * - added GInteractor::setForeground as alias for setColor
  * @version 2016/11/02
  * - added GTextField constructor that takes a string parameter
  * @version 2016/10/25
@@ -169,6 +171,12 @@ public:
      * Interactors are enabled by default when first created.
      */
     void setEnabled(bool value);
+
+    /*
+     * These are aliases for GObject::setColor.
+     */
+    void setForeground(int rgb);
+    void setForeground(const std::string& color);
 
     /*
      * Sets the font used on this interactor.

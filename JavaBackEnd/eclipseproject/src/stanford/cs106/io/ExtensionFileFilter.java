@@ -15,8 +15,8 @@ public class ExtensionFileFilter
 		implements java.io.FileFilter {
 	private String[] extensions;
 	
-	/*
-	 * ...
+	/**
+	 * Filters to keep only the given extensions (don't include the dot in front of each).
 	 */
 	public ExtensionFileFilter(String... extensions) {
 		this.extensions = extensions;

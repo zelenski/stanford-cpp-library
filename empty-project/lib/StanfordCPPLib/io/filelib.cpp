@@ -4,6 +4,10 @@
  * This file implements the filelib.h interface.  All platform dependencies
  * are managed through the platform interface.
  * 
+ * @version 2016/11/20
+ * - small bug fix in readEntireStream method (failed for non-text files)
+ * @version 2016/11/12
+ * - added fileSize, readEntireStream
  * @version 2016/08/12
  * - added second overload of openFileDialog that accepts path parameter
  * @version 2015/07/05
@@ -84,6 +88,17 @@ std::string expandPathname(const std::string& filename) {
 
 bool fileExists(const std::string& filename) {
     return stanfordcpplib::getPlatform()->filelib_fileExists(filename);
+}
+
+int fileSize(const std::string& filename) {
+    std::ifstream input;
+    input.open(filename.c_str(), std::ifstream::binary);
+    if (input.fail()) {
+        return -1;
+    } else {
+        input.seekg(0, std::ifstream::end);
+        return (int) input.tellg();
+    }
 }
 
 std::string findOnPath(const std::string& path, const std::string& filename) {
@@ -391,15 +406,27 @@ bool readEntireFile(const std::string& filename, std::string& out) {
     if (input.fail()) {
         return false;
     }
+    readEntireStream(input, out);
+    input.close();
+    return true;
+}
+
+std::string readEntireStream(std::istream& input) {
+    std::string out;
+    readEntireStream(input, out);
+    return out;
+}
+
+void readEntireStream(std::istream& input, std::string& out) {
     std::ostringstream output;
     while (true) {
         int ch = input.get();
-        if (input.fail()) break;
-        output << (char) ch;
+        if (input.fail()) {
+            break;
+        }
+        output.put(ch);
     }
-    input.close();
     out = output.str();
-    return true;
 }
 
 void renameFile(const std::string& oldname, const std::string& newname) {

@@ -4,6 +4,8 @@
  * This file defines the <code>GWindow</code> class which supports
  * drawing graphical objects on the screen.
  * 
+ * @version 2016/11/24
+ * - added setCloseOperation
  * @version 2016/11/02
  * - added drawString, setFont methods
  * @version 2016/10/23
@@ -112,6 +114,7 @@ class GWindow {
 public:
     enum Alignment { ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT };
     enum Region { REGION_CENTER, REGION_EAST, REGION_NORTH, REGION_SOUTH, REGION_WEST };
+    enum CloseOperation { CLOSE_DO_NOTHING = 0, CLOSE_HIDE = 1, CLOSE_DISPOSE = 2, CLOSE_EXIT = 3 };
 
     static const int DEFAULT_WIDTH = 500;
     static const int DEFAULT_HEIGHT = 300;
@@ -593,6 +596,12 @@ public:
      * without modifying its height.
      */
     void setCanvasWidth(double width);
+
+    /*
+     * Sets what this window should do when it is closed.
+     * Default is to dispose of its Java back-end resources.
+     */
+    void setCloseOperation(CloseOperation op);
 
     /*
      * Method: setColor

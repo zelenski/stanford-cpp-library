@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp
+ * @version 2016/11/29
+ * - added formatDoubleLikeCpp
  * @version 2016/10/21
  * - added stringIsInteger/Double/Real/Boolean
  * @version 2015/05/28
@@ -61,6 +63,53 @@ public class StringUtils {
 		}
 
 		return join(lines, html ? "<br/>\n" : "\n", height);
+	}
+	
+	/**
+	 * Tries to format double the C++ iostream way, with up to 6 digits shown after the decimal point.
+	 */
+	public static String formatDoubleLikeCpp(double value) {
+		final int CPP_ROUND_DIGITS = 6;
+		
+		long mult = 1;
+		if (Math.abs(value) >= 1.0) {
+			String integerComponent = String.valueOf((long) Math.abs(value));
+			int integerDigits = integerComponent.length();
+			for (int i = 0; i < CPP_ROUND_DIGITS - integerDigits; i++) {
+				mult *= 10;
+			}
+		} else {
+			// C++ seems to grab the first six non-zero digits after the decimal point
+			String unrounded = String.valueOf(value);
+			unrounded = unrounded.replaceAll(".*\\.", "");   // "0.001234562" -> "001234562"
+			int nonZeroDigitCount = 0;
+			boolean doneWithZeroes = false;
+			while (!unrounded.isEmpty()) {
+				mult *= 10;
+				char ch = unrounded.charAt(0);
+				unrounded = unrounded.substring(1);
+				if (ch != '0') {
+					doneWithZeroes = true;
+				}
+				if (doneWithZeroes) {
+					nonZeroDigitCount++;
+					if (nonZeroDigitCount == CPP_ROUND_DIGITS) {
+						break;
+					}
+				}
+			}
+		}
+		
+		// do the rounding
+		value = value * mult;
+		long rounded = Math.round(value);
+		value = rounded / (double) mult;
+		
+		String result = String.valueOf(value);
+		if (result.endsWith(".0")) {
+			result = result.substring(0, result.length() - 2);
+		}
+		return result;
 	}
 
 	public static int getWidth(String value) {

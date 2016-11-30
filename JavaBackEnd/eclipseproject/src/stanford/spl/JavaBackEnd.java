@@ -1,4 +1,6 @@
 /*
+ * @version 2016/11/24
+ * - separated windowClosing / windowClosed operations to enable C++ to stop windows from closing
  * @version 2016/10/22
  * - bug fix for shutting down console repeatedly (don't shut down back-end)
  */
@@ -40,6 +42,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	public static final int ANY_EVENT = 1008;
 	public static final int WINDOW_CLOSED = 129;
 	public static final int WINDOW_RESIZED = 130;
+	public static final int WINDOW_CLOSING = 132;
 	public static final int ACTION_PERFORMED = 17;
 	public static final int MOUSE_CLICKED = 257;
 	public static final int MOUSE_PRESSED = 258;
@@ -201,28 +204,27 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	}
 	
 	// JL: SwingUtilities.invokeLater
-	public void createWindow(String paramString, int paramInt1, int paramInt2,
-			TopCompound paramTopCompound, boolean visible) {
-		JBEWindow localJBEWindow = new JBEWindow(this, paramString, this.appName, paramInt1,
-				paramInt2);
-		this.windowTable.put(paramString, localJBEWindow);
+	public void createWindow(String windowId, int width, int height,
+			TopCompound top, boolean visible) {
+		JBEWindow jbeWindow = new JBEWindow(this, windowId, this.appName, width, height);
+		this.windowTable.put(windowId, jbeWindow);
 		
 		// commented out by Marty 2014/03/05;
 		// This code used to set console's size to the size of the last created window
 		// for some reason.  Why??  No.  Bad.  Turning this off.
 		// this.consoleWidth = paramInt1;
 		// this.consoleY = (50 + paramInt2);
-		localJBEWindow.pack();
-		localJBEWindow.setLocation(10, 10);
+		jbeWindow.pack();
+		jbeWindow.setLocation(10, 10);
 //		localJBEWindow.getCanvas().initOffscreenImage();
-		localJBEWindow.getCanvas().setTopCompound(paramTopCompound);
-		localJBEWindow.setResizable(false);
+		jbeWindow.getCanvas().setTopCompound(top);
+		jbeWindow.setResizable(false);
 		this.activeWindowCount += 1;
 		if (visible) {
-			localJBEWindow.setVisible(true);
-			waitForWindowActive(localJBEWindow);
+			jbeWindow.setVisible(true);
+			waitForWindowActive(jbeWindow);
 		} else {
-			localJBEWindow.setVisible(false);
+			jbeWindow.setVisible(false);
 		}
 	}
 
@@ -585,21 +587,42 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		}
 	}
 
-	private void printEvent(String type, KeyEvent paramKeyEvent) {
-		JBECanvas localJBECanvas = (JBECanvas) paramKeyEvent.getSource();
-		String keyChar;
-		if (Character.isISOControl(paramKeyEvent.getKeyCode())
-				|| Character.isISOControl(paramKeyEvent.getKeyChar())) {
-			// special characters such as Ctrl or Shift
-			keyChar = "?";
-		} else {
-			// all other characters
-			keyChar = String.valueOf(paramKeyEvent.getKeyChar());
+	private void printEvent(String type, KeyEvent keyEvent) {
+		String windowId = getWindowId(keyEvent);
+//		String keyChar;
+		int keyCode = keyEvent.getKeyCode();
+//		if (Character.isISOControl(keyCode)
+//				|| Character.isISOControl(keyEvent.getKeyChar())) {
+//			// special characters such as Ctrl or Shift
+//			keyChar = "?";
+//		} else {
+//			// all other characters
+//			keyChar = String.valueOf(keyEvent.getKeyChar());
+//		}
+		
+		acknowledgeEvent("event:%s(\"%s\", %d, %d, %d, %d)",
+				type, windowId, (long) getEventTime(),
+				convertModifiers(keyEvent.getModifiersEx()),
+				(int) keyEvent.getKeyChar(),
+				keyCode);
+	}
+	
+	private String getWindowId(AWTEvent event) {
+		Object src = event.getSource();
+		if (src instanceof JBECanvas) {
+			JBECanvas canvas = (JBECanvas) src;
+			return canvas.getWindowId();
+		} else if (src instanceof JBEWindow) {
+			JBEWindow window = (JBEWindow) src;
+			return window.getWindowId();
+		} else if (src instanceof Component) {
+			Component comp = (Component) src;
+			JBEWindow window = GuiUtils.getAncestor(comp, JBEWindow.class);
+			if (window != null) {
+				return window.getWindowId();
+			}
 		}
-		acknowledgeEvent("event:%s(\"%s\", %d, %d, %s, %d)",
-				type, localJBECanvas.getWindowId(), (long) getEventTime(),
-				convertModifiers(paramKeyEvent.getModifiersEx()),
-				keyChar, paramKeyEvent.getKeyCode());
+		return "???";
 	}
 
 	public void mouseClicked(MouseEvent paramMouseEvent) {
@@ -639,19 +662,42 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		}
 	}
 
-	private void printEvent(String type, MouseEvent paramMouseEvent) {
-		JBECanvas localJBECanvas = (JBECanvas) paramMouseEvent.getSource();
+	private void printEvent(String type, MouseEvent mouseEvent) {
+		String windowId = getWindowId(mouseEvent);
 		acknowledgeEvent("event:%s(\"%s\", %d, %d, %d, %d)",
-				type, localJBECanvas.getWindowId(), (long) getEventTime(),
-				convertModifiers(paramMouseEvent.getModifiersEx()),
-				paramMouseEvent.getX(), paramMouseEvent.getY());
+				type, windowId, (long) getEventTime(),
+				convertModifiers(mouseEvent.getModifiersEx()),
+				mouseEvent.getX(), mouseEvent.getY());
 	}
 
 	public void windowActivated(WindowEvent paramWindowEvent) {
+		// empty
 	}
 
 	public void windowClosed(WindowEvent paramWindowEvent) {
-		windowClosing(paramWindowEvent);
+		if (paramWindowEvent.getSource() == this.consoleFrame) {
+			if (consoleCloseOperation == JFrame.DO_NOTHING_ON_CLOSE) {
+				return;
+			} else if (consoleCloseOperation == JFrame.EXIT_ON_CLOSE) {
+				shutdownBackEnd(/* sendEvent */ false);
+			} else if (consoleCloseOperation == JFrame.HIDE_ON_CLOSE) {
+				consoleFrame.setVisible(false);
+			}
+			
+			acknowledgeEvent("event:consoleWindowClosed()");
+		} else {
+			JBEWindow localJBEWindow = (JBEWindow) paramWindowEvent.getSource();
+			if (this.windowTable.containsKey(localJBEWindow.getWindowId())) {
+				acknowledgeEvent("event:windowClosed(\"%s\", %d)", localJBEWindow.getWindowId(), (long) getEventTime());
+				this.windowTable.remove(localJBEWindow.getWindowId());
+			}
+
+			this.activeWindowCount -= 1;
+			if (this.activeWindowCount == 0) {
+				acknowledgeEvent("event:lastWindowGWindow_closed()");
+				shutdownBackEnd(false);
+			}
+		}
 	}
 
 	public void shutdownBackEnd(boolean sendEvent) {
@@ -687,35 +733,25 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		if (paramWindowEvent.getSource() == this.consoleFrame) {
 			if (consoleCloseOperation == JFrame.DO_NOTHING_ON_CLOSE) {
 				return;
-			} else if (consoleCloseOperation == JFrame.EXIT_ON_CLOSE) {
-				shutdownBackEnd(/* sendEvent */ false);
-			} else if (consoleCloseOperation == JFrame.HIDE_ON_CLOSE) {
-				consoleFrame.setVisible(false);
 			}
-			
-			acknowledgeEvent("event:consoleWindowClosed()");
 		} else {
 			JBEWindow localJBEWindow = (JBEWindow) paramWindowEvent.getSource();
 			if (this.windowTable.containsKey(localJBEWindow.getWindowId())) {
-				acknowledgeEvent("event:windowClosed(\"%s\", %d)", localJBEWindow.getWindowId(), (long) getEventTime());
-				this.windowTable.remove(localJBEWindow.getWindowId());
-			}
-
-			this.activeWindowCount -= 1;
-			if (this.activeWindowCount == 0) {
-				acknowledgeEvent("event:lastWindowGWindow_closed()");
-				shutdownBackEnd(false);
+				acknowledgeEvent("event:windowClosing(\"%s\", %d)", localJBEWindow.getWindowId(), (long) getEventTime());
 			}
 		}
 	}
 
 	public void windowDeactivated(WindowEvent paramWindowEvent) {
+		// empty
 	}
 
 	public void windowDeiconified(WindowEvent paramWindowEvent) {
+		// empty
 	}
 
 	public void windowIconified(WindowEvent paramWindowEvent) {
+		// empty
 	}
 
 	public void windowOpened(WindowEvent paramWindowEvent) {
@@ -750,15 +786,17 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	}
 
 	public void componentHidden(ComponentEvent paramComponentEvent) {
+		// empty
 	}
 
 	public void componentMoved(ComponentEvent paramComponentEvent) {
+		// empty
 	}
 
-	public void componentResized(ComponentEvent paramComponentEvent) {
+	public void componentResized(ComponentEvent componentEvent) {
 		if ((this.eventMask & 0x80) != 0) {
-			JBECanvas localJBECanvas = (JBECanvas) paramComponentEvent.getSource();
-			acknowledgeEvent("event:windowResized(\"%s\", %d)", localJBECanvas.getWindowId(), (long) getEventTime());
+			String windowId = getWindowId(componentEvent);
+			acknowledgeEvent("event:windowResized(\"%s\", %d)", windowId, (long) getEventTime());
 		}
 	}
 

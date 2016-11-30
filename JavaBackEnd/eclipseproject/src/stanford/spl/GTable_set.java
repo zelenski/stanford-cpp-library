@@ -1,3 +1,9 @@
+/*
+ * @author Marty Stepp
+ * @version 2016/11/24
+ * - initial version
+ */
+
 package stanford.spl;
 
 import acm.graphics.GObject;
@@ -18,7 +24,10 @@ public class GTable_set extends JBESwingCommand {
 		GObject localGObject = paramJavaBackEnd.getGObject(interactorID);
 		if (localGObject != null && localGObject instanceof GTable) {
 			GTable table = (GTable) localGObject;
-			table.set(row, col, value);
+			
+			// We pass 'false' as notifyBackEnd because this event came *from* the back-end;
+			// only need to tell back-end when the user initiates setting a cell from front-end in Java.
+			table.set(row, col, value, /* notifyBackEnd */ false);
 		}
 	}
 }

@@ -5,6 +5,8 @@
  * to the appropriate methods in the Platform class, which is implemented
  * separately for each architecture.
  * 
+ * @version 2016/11/24
+ * - added setCloseOperation
  * @version 2016/11/02
  * - added drawString, setFont methods
  * @version 2016/10/26
@@ -683,6 +685,10 @@ void GWindow::setCanvasWidth(double width) {
     if (isOpen()) {
         stanfordcpplib::getPlatform()->gwindow_setCanvasSize(*this, (int) width, (int) getCanvasHeight());
     }
+}
+
+void GWindow::setCloseOperation(CloseOperation op) {
+    stanfordcpplib::getPlatform()->gwindow_setCloseOperation(*this, (int) op);
 }
 
 void GWindow::setColor(int rgb) {

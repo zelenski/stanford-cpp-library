@@ -5,6 +5,11 @@
  * in the gevents.h interface.  The actual functions for receiving events
  * from the environment are implemented in the platform package.
  * 
+ * @version 2016/11/26
+ * - added WINDOW_CLOSING event
+ * - added isCtrlOrCommandKeyDown
+ * @version 2016/11/20
+ * - added operator << for all event types
  * @version 2016/10/16
  * - added GEvent.isShiftKeyDown
  * - alphabetized methods
@@ -79,6 +84,10 @@ bool GEvent::isAltKeyDown() const {
 
 bool GEvent::isCtrlKeyDown() const {
     return (modifiers & CTRL_DOWN) != 0;
+}
+
+bool GEvent::isCtrlOrCommandKeyDown() const {
+    return isCtrlKeyDown() || isMetaKeyDown();
 }
 
 bool GEvent::isMetaKeyDown() const {
@@ -394,13 +403,21 @@ std::string GTableEvent::toString() const {
         return "GTableEvent(?)";
     }
     std::ostringstream out;
-    if (eventType == TABLE_UPDATED) {
-        out << "GTableEvent:TABLE_UPDATED(r"
-            << row << "c" << column << " \"" << value << "\")";
-    } else if (eventType == TABLE_SELECTED) {
-        out << "GTableEvent:TABLE_SELECTED(r"
-            << row << "c" << column << ")";
+    out << "GTableEvent:";
+    switch (eventType) {
+    case TABLE_COPY:          out << "TABLE_COPY";          break;
+    case TABLE_CUT:           out << "TABLE_CUT";           break;
+    case TABLE_EDIT_BEGIN:    out << "TABLE_EDIT_BEGIN";    break;
+    case TABLE_PASTE:         out << "TABLE_PASTE";         break;
+    case TABLE_REPLACE_BEGIN: out << "TABLE_REPLACE_BEGIN"; break;
+    case TABLE_SELECTED:      out << "TABLE_SELECTED";      break;
+    case TABLE_UPDATED:       out << "TABLE_UPDATED";       break;
     }
+    out << "(r" << row << "c" << column;
+    if (eventType == TABLE_UPDATED) {
+        out << " \"" << value << "\"";
+    }
+    out << ")";
     return out.str();
 }
 
@@ -478,10 +495,44 @@ std::string GWindowEvent::toString() const {
     os << "GWindowEvent:";
     switch (eventType) {
     case WINDOW_CLOSED:      os << "WINDOW_CLOSED";       break;
+    case WINDOW_CLOSING:     os << "WINDOW_CLOSING";      break;
     case WINDOW_RESIZED:     os << "WINDOW_RESIZED";      break;
     }
     os << "()";
     return os.str();
+}
+
+
+std::ostream& operator <<(std::ostream& out, const GEvent& event) {
+    return out << event.toString();
+}
+
+std::ostream& operator <<(std::ostream& out, const GActionEvent& event) {
+    return out << event.toString();
+}
+
+std::ostream& operator <<(std::ostream& out, const GKeyEvent& event) {
+    return out << event.toString();
+}
+
+std::ostream& operator <<(std::ostream& out, const GMouseEvent& event) {
+    return out << event.toString();
+}
+
+std::ostream& operator <<(std::ostream& out, const GServerEvent& event) {
+    return out << event.toString();
+}
+
+std::ostream& operator <<(std::ostream& out, const GTableEvent& event) {
+    return out << event.toString();
+}
+
+std::ostream& operator <<(std::ostream& out, const GTimerEvent& event) {
+    return out << event.toString();
+}
+
+std::ostream& operator <<(std::ostream& out, const GWindowEvent& event) {
+    return out << event.toString();
 }
 
 

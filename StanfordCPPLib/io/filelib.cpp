@@ -4,6 +4,8 @@
  * This file implements the filelib.h interface.  All platform dependencies
  * are managed through the platform interface.
  * 
+ * @version 2016/11/20
+ * - small bug fix in readEntireStream method (failed for non-text files)
  * @version 2016/11/12
  * - added fileSize, readEntireStream
  * @version 2016/08/12
@@ -405,6 +407,7 @@ bool readEntireFile(const std::string& filename, std::string& out) {
         return false;
     }
     readEntireStream(input, out);
+    input.close();
     return true;
 }
 
@@ -421,9 +424,8 @@ void readEntireStream(std::istream& input, std::string& out) {
         if (input.fail()) {
             break;
         }
-        output << (char) ch;
+        output.put(ch);
     }
-    input.close();
     out = output.str();
 }
 

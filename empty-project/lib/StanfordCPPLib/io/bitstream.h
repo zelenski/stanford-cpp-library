@@ -19,9 +19,8 @@
  * subclasses.
  *
  * @author Keith Schwarz, Eric Roberts, Marty Stepp
- * @version 2014/01/23
- * Last modified by: Marty Stepp
- * Previously last modified on Mon May 21 19:50:00 PST 2012 by Keith Schwarz
+ * @version 2016/11/12
+ * - made toPrintable non-static and visible
  */
 
 #ifndef _bitstream_h
@@ -378,6 +377,14 @@ private:
     /* The actual string buffer that does character storage. */
     std::stringbuf sb;
 };
+
+/*
+ * Returns a printable string for the given character.
+ * For example:
+ * 'c'   => "c"
+ * '\n'  => "\\n"
+ */
+std::string toPrintable(int ch);
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 

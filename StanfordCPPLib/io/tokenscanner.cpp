@@ -3,6 +3,11 @@
  * ----------------------
  * Implementation for the TokenScanner class.
  * 
+ * @version 2016/11/26
+ * - added getInput method
+ * - replaced occurrences of string with const string& for efficiency
+ * - alphabetized method ordering
+ * - added operator << for printing a scanner
  * @version 2014/10/08
  * - removed 'using namespace' statement
  */
@@ -19,129 +24,39 @@ TokenScanner::TokenScanner() {
     setInput("");
 }
 
-TokenScanner::TokenScanner(std::string str) {
-    initScanner();
-    setInput(str);
-}
-
-TokenScanner::TokenScanner(std::istream & infile) {
+TokenScanner::TokenScanner(std::istream& infile) {
     initScanner();
     setInput(infile);
 }
 
+TokenScanner::TokenScanner(const std::string& str) {
+    initScanner();
+    setInput(str);
+}
+
 TokenScanner::~TokenScanner() {
-    if (stringInputFlag) delete isp;
-}
-
-void TokenScanner::setInput(std::string str) {
-    stringInputFlag = true;
-    buffer = str;
-    isp = new std::istringstream(buffer);
-    savedTokens = nullptr;
-}
-
-void TokenScanner::setInput(std::istream & infile) {
-    stringInputFlag = false;
-    isp = &infile;
-    savedTokens = nullptr;
-}
-
-bool TokenScanner::hasMoreTokens() {
-    std::string token = nextToken();
-    saveToken(token);
-    return (token != "");
-}
-
-std::string TokenScanner::nextToken() {
-    if (savedTokens) {
-        StringCell *cp = savedTokens;
-        std::string token = cp->str;
-        savedTokens = cp->link;
-        delete cp;
-        return token;
-    }
-    while (true) {
-        if (ignoreWhitespaceFlag) skipSpaces();
-        int ch = isp->get();
-        if (ch == '/' && ignoreCommentsFlag) {
-            ch = isp->get();
-            if (ch == '/') {
-                while (true) {
-                    ch = isp->get();
-                    if (ch == '\n' || ch == '\r' || ch == EOF) break;
-                }
-                continue;
-            } else if (ch == '*') {
-                int prev = EOF;
-                while (true) {
-                    ch = isp->get();
-                    if (ch == EOF || (prev == '*' && ch == '/')) break;
-                    prev = ch;
-                }
-                continue;
-            }
-            if (ch != EOF) isp->unget();
-            ch = '/';
-        }
-        if (ch == EOF) return "";
-        if ((ch == '"' || ch == '\'') && scanStringsFlag) {
-            isp->unget();
-            return scanString();
-        }
-        if (isdigit(ch) && scanNumbersFlag) {
-            isp->unget();
-            return scanNumber();
-        }
-        if (isWordCharacter(ch)) {
-            isp->unget();
-            return scanWord();
-        }
-        std::string op = std::string(1, ch);
-        while (isOperatorPrefix(op)) {
-            ch = isp->get();
-            if (ch == EOF) break;
-            op += ch;
-        }
-        while (op.length() > 1 && !isOperator(op)) {
-            isp->unget();
-            op.erase(op.length() - 1, 1);
-        }
-        return op;
+    if (stringInputFlag) {
+        delete isp;
     }
 }
 
-void TokenScanner::saveToken(std::string token) {
-    StringCell *cp = new StringCell;
-    cp->str = token;
-    cp->link = savedTokens;
-    savedTokens = cp;
-}
-
-void TokenScanner::ignoreWhitespace() {
-    ignoreWhitespaceFlag = true;
-}
-
-void TokenScanner::ignoreComments() {
-    ignoreCommentsFlag = true;
-}
-
-void TokenScanner::scanNumbers() {
-    scanNumbersFlag = true;
-}
-
-void TokenScanner::scanStrings() {
-    scanStringsFlag = true;
-}
-
-void TokenScanner::addWordCharacters(std::string str) {
-    wordChars += str;
-}
-
-void TokenScanner::addOperator(std::string op) {
-    StringCell *cp = new StringCell;
+void TokenScanner::addOperator(const std::string& op) {
+    StringCell* cp = new StringCell;
     cp->str = op;
     cp->link = operators;
     operators = cp;
+}
+
+void TokenScanner::addWordCharacters(const std::string& str) {
+    wordChars += str;
+}
+
+int TokenScanner::getChar() {
+    return isp->get();
+}
+
+std::string TokenScanner::getInput() const {
+    return buffer;
 }
 
 int TokenScanner::getPosition() const {
@@ -152,29 +67,7 @@ int TokenScanner::getPosition() const {
     }
 }
 
-bool TokenScanner::isWordCharacter(char ch) const {
-    return isalnum(ch) || wordChars.find(ch) != std::string::npos;
-}
-
-void TokenScanner::verifyToken(std::string expected) {
-    std::string token = nextToken();
-    if (token != expected) {
-        error("TokenScanner::verifyToken: Found \"" + token + "\"" +
-              " when expecting \"" + expected + "\"");
-    }
-}
-
-TokenType TokenScanner::getTokenType(std::string token) const {
-    if (token == "") return TokenType(EOF);
-    char ch = token[0];
-    if (isspace(ch)) return SEPARATOR;
-    if (ch == '"' || (ch == '\'' && token.length() > 1)) return STRING;
-    if (isdigit(ch)) return NUMBER;
-    if (isWordCharacter(ch)) return WORD;
-    return OPERATOR;
-};
-
-std::string TokenScanner::getStringValue(std::string token) const {
+std::string TokenScanner::getStringValue(const std::string& token) const {
     std::string str = "";
     int start = 0;
     int finish = token.length();
@@ -203,7 +96,9 @@ std::string TokenScanner::getStringValue(std::string token) const {
                     } else {
                         digit = base;
                     }
-                    if (digit >= base) break;
+                    if (digit >= base) {
+                        break;
+                    }
                     result = base * result + digit;
                     i++;
                 }
@@ -229,12 +124,156 @@ std::string TokenScanner::getStringValue(std::string token) const {
     return str;
 }
 
-int TokenScanner::getChar() {
-    return isp->get();
+TokenType TokenScanner::getTokenType(const std::string& token) const {
+    if (token.empty()) {
+        return TokenType(EOF);
+    }
+
+    char ch = token[0];
+    if (isspace(ch)) {
+        return SEPARATOR;
+    } else if (ch == '"' || (ch == '\'' && token.length() > 1)) {
+        return STRING;
+    } else if (isdigit(ch)) {
+        return NUMBER;
+    } else if (isWordCharacter(ch)) {
+        return WORD;
+    } else {
+        return OPERATOR;
+    }
+}
+
+bool TokenScanner::hasMoreTokens() {
+    std::string token = nextToken();
+    saveToken(token);
+    return !token.empty();
+}
+
+void TokenScanner::ignoreComments() {
+    ignoreCommentsFlag = true;
+}
+
+void TokenScanner::ignoreWhitespace() {
+    ignoreWhitespaceFlag = true;
+}
+
+bool TokenScanner::isWordCharacter(char ch) const {
+    return isalnum(ch) || wordChars.find(ch) != std::string::npos;
+}
+
+std::string TokenScanner::nextToken() {
+    if (savedTokens) {
+        StringCell* cp = savedTokens;
+        std::string token = cp->str;
+        savedTokens = cp->link;
+        delete cp;
+        return token;
+    }
+
+    while (true) {
+        if (ignoreWhitespaceFlag) {
+            skipSpaces();
+        }
+        int ch = isp->get();
+        if (ch == '/' && ignoreCommentsFlag) {
+            ch = isp->get();
+            if (ch == '/') {
+                while (true) {
+                    ch = isp->get();
+                    if (ch == '\n' || ch == '\r' || ch == EOF) {
+                        break;
+                    }
+                }
+                continue;
+            } else if (ch == '*') {
+                int prev = EOF;
+                while (true) {
+                    ch = isp->get();
+                    if (ch == EOF || (prev == '*' && ch == '/')) {
+                        break;
+                    }
+                    prev = ch;
+                }
+                continue;
+            }
+            if (ch != EOF) {
+                isp->unget();
+            }
+            ch = '/';
+        }
+        if (ch == EOF) {
+            return "";
+        }
+        if ((ch == '"' || ch == '\'') && scanStringsFlag) {
+            isp->unget();
+            return scanString();
+        }
+        if (isdigit(ch) && scanNumbersFlag) {
+            isp->unget();
+            return scanNumber();
+        }
+        if (isWordCharacter(ch)) {
+            isp->unget();
+            return scanWord();
+        }
+        std::string op = std::string(1, ch);
+        while (isOperatorPrefix(op)) {
+            ch = isp->get();
+            if (ch == EOF) {
+                break;
+            }
+            op += ch;
+        }
+        while (op.length() > 1 && !isOperator(op)) {
+            isp->unget();
+            op.erase(op.length() - 1, 1);
+        }
+        return op;
+    }
+}
+
+void TokenScanner::saveToken(const std::string& token) {
+    StringCell* cp = new StringCell;
+    cp->str = token;
+    cp->link = savedTokens;
+    savedTokens = cp;
+}
+
+void TokenScanner::scanNumbers() {
+    scanNumbersFlag = true;
+}
+
+void TokenScanner::scanStrings() {
+    scanStringsFlag = true;
+}
+
+void TokenScanner::setInput(std::istream& infile) {
+    stringInputFlag = false;
+    isp = &infile;
+    savedTokens = nullptr;
+}
+
+void TokenScanner::setInput(const std::string& str) {
+    stringInputFlag = true;
+    buffer = str;
+    isp = new std::istringstream(buffer);
+    savedTokens = nullptr;
 }
 
 void TokenScanner::ungetChar(int) {
     isp->unget();
+}
+
+void TokenScanner::verifyToken(const std::string& expected) {
+    std::string token = nextToken();
+    if (token != expected) {
+        std::string msg = "TokenScanner::verifyToken: Found \"" + token + "\""
+                + " when expecting \"" + expected + "\"";
+        if (!buffer.empty()) {
+            msg += "\ninput = \"" + buffer + "\"";
+        }
+        error(msg);
+    }
 }
 
 /* Private methods */
@@ -248,42 +287,29 @@ void TokenScanner::initScanner() {
 }
 
 /*
- * Implementation notes: skipSpaces
- * --------------------------------
- * Advances the position of the scanner until the current character is
- * not a whitespace character.
+ * Implementation notes: isOperator, isOperatorPrefix
+ * --------------------------------------------------
+ * These methods search the list of operators and return true if the
+ * specified operator is either in the list or a prefix of an operator
+ * in the list, respectively.  This code could be made considerably more
+ * efficient by implementing operators as a trie.
  */
-
-void TokenScanner::skipSpaces() {
-    while (true) {
-        int ch = isp->get();
-        if (ch == EOF) return;
-        if (!isspace(ch)) {
-            isp->unget();
-            return;
+bool TokenScanner::isOperator(const std::string& op) {
+    for (StringCell *cp = operators; cp != nullptr; cp = cp->link) {
+        if (op == cp->str) {
+            return true;
         }
     }
+    return false;
 }
 
-/*
- * Implementation notes: scanWord
- * ------------------------------
- * Reads characters until the scanner reaches the end of a sequence
- * of word characters.
- */
-
-std::string TokenScanner::scanWord() {
-    std::string token = "";
-    while (true) {
-        int ch = isp->get();
-        if (ch == EOF) break;
-        if (!isWordCharacter(ch)) {
-            isp->unget();
-            break;
+bool TokenScanner::isOperatorPrefix(const std::string& op) {
+    for (StringCell* cp = operators; cp != nullptr; cp = cp->link) {
+        if (startsWith(cp->str, op)) {
+            return true;
         }
-        token += char(ch);
     }
-    return token;
+    return false;
 }
 
 /*
@@ -295,7 +321,6 @@ std::string TokenScanner::scanWord() {
  * <code>state</code> to record the history of the process and
  * determine what characters would be legal at this point in time.
  */
-
 std::string TokenScanner::scanNumber() {
     std::string token = "";
     NumberScannerState state = INITIAL_STATE;
@@ -314,7 +339,9 @@ std::string TokenScanner::scanNumber() {
             } else if (ch == 'E' || ch == 'e') {
                 state = STARTING_EXPONENT;
             } else if (!isdigit(ch)) {
-                if (ch != EOF) isp->unget();
+                if (ch != EOF) {
+                    isp->unget();
+                }
                 state = FINAL_STATE;
             }
             break;
@@ -322,7 +349,9 @@ std::string TokenScanner::scanNumber() {
             if (ch == 'E' || ch == 'e') {
                 state = STARTING_EXPONENT;
             } else if (!isdigit(ch)) {
-                if (ch != EOF) isp->unget();
+                if (ch != EOF) {
+                    isp->unget();
+                }
                 state = FINAL_STATE;
             }
             break;
@@ -332,7 +361,9 @@ std::string TokenScanner::scanNumber() {
             } else if (isdigit(ch)) {
                 state = SCANNING_EXPONENT;
             } else {
-                if (ch != EOF) isp->unget();
+                if (ch != EOF) {
+                    isp->unget();
+                }
                 isp->unget();
                 state = FINAL_STATE;
             }
@@ -341,7 +372,9 @@ std::string TokenScanner::scanNumber() {
             if (isdigit(ch)) {
                 state = SCANNING_EXPONENT;
             } else {
-                if (ch != EOF) isp->unget();
+                if (ch != EOF) {
+                    isp->unget();
+                }
                 isp->unget();
                 isp->unget();
                 state = FINAL_STATE;
@@ -349,7 +382,9 @@ std::string TokenScanner::scanNumber() {
             break;
         case SCANNING_EXPONENT:
             if (!isdigit(ch)) {
-                if (ch != EOF) isp->unget();
+                if (ch != EOF) {
+                    isp->unget();
+                }
                 state = FINAL_STATE;
             }
             break;
@@ -371,7 +406,6 @@ std::string TokenScanner::scanNumber() {
  * it scans the matching delimiter.  The scanner generates an error if
  * there is no closing quotation mark before the end of the input.
  */
-
 std::string TokenScanner::scanString() {
     std::string token = "";
     char delim = isp->get();
@@ -379,8 +413,12 @@ std::string TokenScanner::scanString() {
     bool escape = false;
     while (true) {
         int ch = isp->get();
-        if (ch == EOF) error("TokenScanner::scanString: found unterminated string");
-        if (ch == delim && !escape) break;
+        if (ch == EOF) {
+            error("TokenScanner::scanString: found unterminated string");
+        }
+        if (ch == delim && !escape) {
+            break;
+        }
         escape = (ch == '\\') && !escape;
         token += ch;
     }
@@ -388,24 +426,76 @@ std::string TokenScanner::scanString() {
 }
 
 /*
- * Implementation notes: isOperator, isOperatorPrefix
- * --------------------------------------------------
- * These methods search the list of operators and return true if the
- * specified operator is either in the list or a prefix of an operator
- * in the list, respectively.  This code could be made considerably more
- * efficient by implementing operators as a trie.
+ * Implementation notes: scanWord
+ * ------------------------------
+ * Reads characters until the scanner reaches the end of a sequence
+ * of word characters.
  */
-
-bool TokenScanner::isOperator(std::string op) {
-    for (StringCell *cp = operators; cp != nullptr; cp = cp->link) {
-        if (op == cp->str) return true;
+std::string TokenScanner::scanWord() {
+    std::string token = "";
+    while (true) {
+        int ch = isp->get();
+        if (ch == EOF) {
+            break;
+        }
+        if (!isWordCharacter(ch)) {
+            isp->unget();
+            break;
+        }
+        token += char(ch);
     }
-    return false;
+    return token;
 }
 
-bool TokenScanner::isOperatorPrefix(std::string op) {
-    for (StringCell *cp = operators; cp != nullptr; cp = cp->link) {
-        if (startsWith(cp->str, op)) return true;
+/*
+ * Implementation notes: skipSpaces
+ * --------------------------------
+ * Advances the position of the scanner until the current character is
+ * not a whitespace character.
+ */
+void TokenScanner::skipSpaces() {
+    while (true) {
+        int ch = isp->get();
+        if (ch == EOF) {
+            return;
+        }
+        if (!isspace(ch)) {
+            isp->unget();
+            return;
+        }
     }
-    return false;
+}
+
+std::ostream& operator <<(std::ostream& out, const TokenScanner& scanner) {
+    out << "TokenScanner{";
+    bool first = true;
+    if (!scanner.buffer.empty()) {
+        out << "input=\"" << scanner.buffer << "\"";
+        first = false;
+    }
+    out << (first ? "" : ",") << "position=" << scanner.getPosition();
+    first = false;
+
+    if (scanner.scanNumbersFlag) {
+        out << (first ? "" : ",") << "scanNumbers";
+        first = false;
+    }
+    if (scanner.scanStringsFlag) {
+        out << (first ? "" : ",") << "scanStrings";
+        first = false;
+    }
+    if (!scanner.wordChars.empty()) {
+        out << (first ? "" : ",") << "wordChars=[" << scanner.wordChars << "]";
+        first = false;
+    }
+    if (scanner.ignoreWhitespaceFlag) {
+        out << (first ? "" : ",") << "ignoreWhitespace";
+        first = false;
+    }
+    if (scanner.ignoreCommentsFlag) {
+        out << (first ? "" : ",") << "ignoreComments";
+        first = false;
+    }
+    out << "}";
+    return out;
 }

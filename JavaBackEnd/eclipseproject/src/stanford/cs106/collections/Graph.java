@@ -29,7 +29,7 @@ import java.util.*;
  * If a negative edge weight is passed, an IllegalArgumentException is thrown.
  * A weight of 0 is allowed.
  */
-public interface Graph {
+public interface Graph<V, E> {
 	/**
 	 * Adds an edge between the given two vertices, if none already exists.
 	 * The edge will be given a default weight of 1.
@@ -60,7 +60,7 @@ public interface Graph {
 	 *                                  or if v1 and v2 are the same (a loop).
 	 * @throws NullPointerException If any object parameter is null.
 	 */
-	void addEdge(Vertex v1, Vertex v2);
+	void addEdge(Vertex<V> v1, Vertex<V> v2);
 	
 	/**
 	 * Adds an edge between the given two vertices, if none already exists.
@@ -100,7 +100,7 @@ public interface Graph {
 	 *                                  weight other than 1 is passed.
 	 * @throws NullPointerException If any object parameter is null.
 	 */
-	void addEdge(Vertex v1, Vertex v2, double weight);
+	void addEdge(Vertex<V> v1, Vertex<V> v2, double weight);
 	
 	/**
 	 * Adds the given element as a vertex in this graph.
@@ -130,7 +130,7 @@ public interface Graph {
 	 * Returns whether this graph contains an edge between the given vertices.
 	 * If either vertex is not part of this graph, returns false.
 	 */
-	boolean containsEdge(Vertex v1, Vertex v2);
+	boolean containsEdge(Vertex<V> v1, Vertex<V> v2);
 	
 	/**
 	 * Returns true if the given list of vertices represents a path that can
@@ -157,7 +157,7 @@ public interface Graph {
 	 * If the vertex passed is null, returns false.
 	 * @param v The vertex.
 	 */
-	boolean containsVertex(Vertex v);
+	boolean containsVertex(Vertex<V> v);
 	
 	/**
 	 * Returns the total cost of following the given path of vertices in this graph,
@@ -190,7 +190,7 @@ public interface Graph {
 	 * @throws IllegalArgumentException If the vertex is not part of the graph.
 	 * @throws NullPointerException If any object parameter is null.
 	 */
-	int degree(Vertex v);
+	int degree(Vertex<V> v);
 	
 	/**
 	 * Returns the extra information stored in the edge between vertices v1 and v2, if one exists.
@@ -202,7 +202,7 @@ public interface Graph {
 	 * @throws IllegalArgumentException If either vertex is not part of the graph.
 	 * @throws NullPointerException If any object parameter is null.
 	 */
-	Edge edge(String v1, String v2);
+	Edge<V, E> edge(String v1, String v2);
 	
 	/**
 	 * Returns the extra information stored in the edge between vertices v1 and v2, if one exists.
@@ -214,7 +214,7 @@ public interface Graph {
 	 * @throws IllegalArgumentException If either vertex is not part of the graph.
 	 * @throws NullPointerException If any object parameter is null.
 	 */
-	Edge edge(Vertex v1, Vertex v2);
+	Edge<V, E> edge(Vertex<V> v1, Vertex<V> v2);
 	
 	/**
 	 * Returns the total number of edges in this graph.
@@ -235,7 +235,7 @@ public interface Graph {
 	 * because it would not know which vertices to associate the edge with.
 	 * But edges can be removed, cleared, etc.
 	 */
-	Collection<Edge> edges();
+	Collection<Edge<V, E>> edges();
 	
 	/**
 	 * Returns the weight of the edge between vertices v1 and v2, if one exists.
@@ -257,7 +257,7 @@ public interface Graph {
 	 * @throws IllegalArgumentException If either vertex is not part of the graph.
 	 * @throws NullPointerException If any object parameter is null.
 	 */
-	double edgeWeight(Vertex v1, Vertex v2);
+	double edgeWeight(Vertex<V> v1, Vertex<V> v2);
 	
 	/**
 	 * Returns the number of incoming edges to the given vertex.
@@ -273,7 +273,7 @@ public interface Graph {
 	 * @throws IllegalArgumentException If the vertex is not part of the graph.
 	 * @throws NullPointerException If any object parameter is null.
 	 */
-	int inDegree(Vertex v);
+	int inDegree(Vertex<V> v);
 	
 	/**
 	 * Returns true if this is a directed graph, and false if it is undirected.
@@ -313,7 +313,7 @@ public interface Graph {
 	 * @throws IllegalArgumentException If the vertex is not part of this graph.
 	 * @throws NullPointerException If the vertex is null.
 	 */
-	Set<Vertex> neighbors(String v);
+	Set<Vertex<V>> neighbors(String v);
 	
 	/** 
 	 * Returns a collection containing all neighbors, that is, all vertices that are
@@ -326,7 +326,7 @@ public interface Graph {
 	 * @throws IllegalArgumentException If the vertex is not part of this graph.
 	 * @throws NullPointerException If the vertex is null.
 	 */
-	Set<Vertex> neighbors(Vertex v);
+	Set<Vertex<V>> neighbors(Vertex<V> v);
 	
 	/**
 	 * Returns the number of outgoing edges from the given vertex.
@@ -338,7 +338,7 @@ public interface Graph {
 	 * Returns the number of outgoing edges from the given vertex.
 	 * @param v The vertex to examine.
 	 */
-	int outDegree(Vertex v);
+	int outDegree(Vertex<V> v);
 	
 	/**
 	 * Removes any edge(s) that exist with the given extra info stored in it/them.
@@ -349,7 +349,7 @@ public interface Graph {
 	 * specified edge, so it is inefficient.
 	 * @param e The edge extra info of the edge to remove.
 	 */
-	void removeEdge(Edge e);
+	void removeEdge(Edge<V, E> e);
 	
 	/**
 	 * Removes any edge that exists from vertex v1 to vertex v2.
@@ -371,7 +371,7 @@ public interface Graph {
 	 * @throws IllegalArgumentException If either vertex is not part of the graph.
 	 * @throws NullPointerException If any object parameter is null.
 	 */
-	void removeEdge(Vertex v1, Vertex v2);
+	void removeEdge(Vertex<V> v1, Vertex<V> v2);
 	
 	/**
 	 * Removes the given vertex from this graph, along with all edges that were
@@ -389,7 +389,7 @@ public interface Graph {
 	 * @param v The vertex to remove.
 	 * @throws NullPointerException If the vertex is null.
 	 */
-	void removeVertex(Vertex v);
+	void removeVertex(Vertex<V> v);
 	
 	/**
 	 * Clears out any data stored in each vertex.
@@ -419,7 +419,7 @@ public interface Graph {
 	/**
 	 * Returns the structure of information about the vertex with the given name.
 	 */
-	Vertex vertex(String name);
+	Vertex<V> vertex(String name);
 	
 	/**
 	 * Returns the number of vertices in this graph.
@@ -432,5 +432,5 @@ public interface Graph {
 	 * Any changes made to it are written back to the graph.
 	 * Vertices can be added, removed, cleared, etc. on this collection.
 	 */
-	Collection<Vertex> vertexes();
+	Collection<Vertex<V>> vertexes();
 }

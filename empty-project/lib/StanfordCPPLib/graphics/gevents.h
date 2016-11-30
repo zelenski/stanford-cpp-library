@@ -6,6 +6,12 @@
  * the Java event model.
  * <include src="pictures/ClassHierarchies/GEventHierarchy-h.html">
  * 
+ * @version 2016/11/26
+ * - added WINDOW_CLOSING event
+ * - added isCtrlOrCommandKeyDown
+ * @version 2016/11/20
+ * - added operator << for all event types
+ * - added TABLE_EDIT_BEGIN and TABLE_REPLACE_BEGIN events
  * @version 2016/10/16
  * - added GEvent.isShiftKeyDown
  * - alphabetized methods
@@ -52,18 +58,30 @@ typedef enum {
     WINDOW_CLOSED    = WINDOW_EVENT + 1,
     WINDOW_RESIZED   = WINDOW_EVENT + 2,
     CONSOLE_CLOSED   = WINDOW_EVENT + 3,
+    WINDOW_CLOSING   = WINDOW_EVENT + 4,
+
     ACTION_PERFORMED = ACTION_EVENT + 1,
+
     MOUSE_CLICKED    = MOUSE_EVENT + 1,
     MOUSE_PRESSED    = MOUSE_EVENT + 2,
     MOUSE_RELEASED   = MOUSE_EVENT + 3,
     MOUSE_MOVED      = MOUSE_EVENT + 4,
     MOUSE_DRAGGED    = MOUSE_EVENT + 5,
+
     KEY_PRESSED      = KEY_EVENT + 1,
     KEY_RELEASED     = KEY_EVENT + 2,
     KEY_TYPED        = KEY_EVENT + 3,
+
     TIMER_TICKED     = TIMER_EVENT + 1,
+
     TABLE_UPDATED    = TABLE_EVENT + 1,
     TABLE_SELECTED   = TABLE_EVENT + 2,
+    TABLE_EDIT_BEGIN = TABLE_EVENT + 3,
+    TABLE_REPLACE_BEGIN = TABLE_EVENT + 4,   // like an edit but wipes out previous value
+    TABLE_CUT        = TABLE_EVENT + 5,      // clipboard stuff
+    TABLE_COPY       = TABLE_EVENT + 6,
+    TABLE_PASTE      = TABLE_EVENT + 7,
+
     SERVER_REQUEST   = SERVER_EVENT + 1
 } EventType;
 
@@ -227,6 +245,15 @@ public:
      * Returns <code>true</code> if the Ctrl key was held down during this event.
      */
     bool isCtrlKeyDown() const;
+
+    /*
+     * Method: isCtrlOrCommandKeyDown
+     * Usage: if (e.isCtrlOrCommandKeyDown()) ...
+     * ---------------------------------
+     * Returns <code>true</code> if the Ctrl key, or the Command key (Mac),
+     * was held down during this event.
+     */
+    bool isCtrlOrCommandKeyDown() const;
 
     /*
      * Method: isMetaKeyDown
@@ -817,6 +844,18 @@ public:
     GWindowEvent(GEvent e);
 };
 
+/*
+ * Operator to output an event to the console or a stream.
+ */
+std::ostream& operator <<(std::ostream& out, const GEvent& event);
+std::ostream& operator <<(std::ostream& out, const GActionEvent& event);
+std::ostream& operator <<(std::ostream& out, const GKeyEvent& event);
+std::ostream& operator <<(std::ostream& out, const GMouseEvent& event);
+std::ostream& operator <<(std::ostream& out, const GServerEvent& event);
+std::ostream& operator <<(std::ostream& out, const GTableEvent& event);
+std::ostream& operator <<(std::ostream& out, const GTimerEvent& event);
+std::ostream& operator <<(std::ostream& out, const GWindowEvent& event);
+
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
-#endif
+#endif // _gevents_h
