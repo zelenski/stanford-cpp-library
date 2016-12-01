@@ -84,6 +84,7 @@
  * - implemented backend of URL download for iurlstream
  */
 
+#include "platform.h"
 #ifdef _WIN32
 #  include <windows.h>
 #  include <tchar.h>
@@ -101,7 +102,7 @@
 #  include <stdint.h>
 #  include <unistd.h>
 
-extern void error(const char* msg);
+extern void error(const std::string& msg);
 
 /*
  * Returns a reference to the Java back-end process pipe input file descriptor,
@@ -196,7 +197,7 @@ STATIC_VARIABLE_DECLARE_BLANK(pid_t, javaBackEndPid)
 /* static function prototypes */
 static std::string getJavaCommand();
 static std::string getPipe();
-static std::string getResult(bool consumeAcks = true, bool stopOnEvent = false,
+static std::string getResult(bool consumeAcks = false, bool stopOnEvent = false,
                              const std::string& caller = "");
 static std::string getSplJarPath();
 static void getStatus();
@@ -2944,7 +2945,8 @@ static std::string getSplJarPath() {
     std::string splHomeDir = "";
     char* splHome = getenv("SPL_HOME");
     if (splHome) {
-        splHomeDir = splHome;
+        splHomeDir = splHome;   // copy to C++ string
+        free(splHome);          // free C heap memory
         // ensure that it ends with a trailing slash
         if (!splHomeDir.empty() && splHomeDir[splHomeDir.length() - 1] != '/') {
             splHomeDir += '/';
@@ -2953,15 +2955,20 @@ static std::string getSplJarPath() {
 
 #ifndef _WIN32
     // on Mac only, may need to change folder because of app's nested dir structure
-    std::string currentDir = getcwd(nullptr, 0);
-    size_t ax = currentDir.find(".app/Contents/");
-    if (ax != std::string::npos) {
-        while (ax > 0 && currentDir[ax] != '/') {
-            ax--;
-        }
-        if (ax > 0) {
-            std::string cwd = currentDir.substr(0, ax);
-            chdir(cwd.c_str());
+    char* currentDirC = getcwd(nullptr, 0);
+    if (currentDirC) {
+        std::string currentDir = currentDirC;
+        free(currentDirC);
+
+        size_t ax = currentDir.find(".app/Contents/");
+        if (ax != std::string::npos) {
+            while (ax > 0 && currentDir[ax] != '/') {
+                ax--;
+            }
+            if (ax > 0) {
+                std::string cwd = currentDir.substr(0, ax);
+                chdir(cwd.c_str());
+            }
         }
     }
 #endif // _WIN32
@@ -3328,6 +3335,7 @@ void endLineConsole(bool isStderr) {
 
 void initializeGraphicalConsole() {
     // ensure that console is initialized only once
+    static char stderrBuf[BUFSIZ + 10] = {'\0'};
     static bool _initialized = false;
     if (_initialized) {
         return;
@@ -3337,7 +3345,6 @@ void initializeGraphicalConsole() {
     initializeStanfordCppLibrary();
 
     // buffer C-style stderr
-    char* stderrBuf = new char[BUFSIZ + 10]();
     setbuf(stderr, stderrBuf);
 
     // redirect cin/cout/cerr

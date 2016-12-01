@@ -120,6 +120,9 @@ std::string cleanupFunctionNameForStackTrace(std::string function) {
         }
     }
 
+    // addr2line oddly writes "const Foo&" as "Foo const&"
+    stringReplaceInPlace(function, "string const&", "const string&");
+
     return function;
 }
 

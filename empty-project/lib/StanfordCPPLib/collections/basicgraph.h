@@ -156,18 +156,6 @@ template <typename V, typename E>
 std::ostream& operator <<(std::ostream& out, const VertexGen<V, E>& v);
 
 /*
- * Defines a Vertex to be a VertexGen with its data bound to be a void*.
- * Retained for backward compatibility.
- */
-typedef VertexGen<void*, void*> Vertex;
-#define VertexV VertexGen
-
-/*
- * You can refer to a Vertex as a Node if you prefer.
- */
-#define Node Vertex
-
-/*
  * Canonical Edge (Arc) structure implementation needed by Graph class template.
  * Each Edge structure represents a single edge in the graph.
  */
@@ -229,18 +217,6 @@ public:
  */
 template <typename V, typename E>
 std::ostream& operator <<(std::ostream& out, const EdgeGen<V, E>& edge);
-
-/*
- * Defines an Edge to be an EdgeGen with its data bound to be a void*.
- * Retained for backward compatibility.
- */
-typedef EdgeGen<void*, void*> Edge;
-#define EdgeV EdgeGen
-
-/*
- * You can refer to an Edge as an Arc if you prefer.
- */
-#define Arc Edge
 
 
 /*
@@ -319,17 +295,47 @@ private:
 };
 
 /*
- * Hash function for BasicGraphs.
+ * Hash function for BasicGraphGen.
  */
 template <typename V, typename E>
 int hashCode(const BasicGraphGen<V, E>& graph);
 
 /*
+ * Defines a Vertex to be a VertexGen with its data bound to be a void*.
+ * Retained for backward compatibility.
+ */
+typedef VertexGen<void*, void*> Vertex;
+#define VertexV VertexGen
+
+/*
+ * You can refer to a Vertex as a Node if you prefer.
+ */
+#define Node Vertex
+
+/*
+ * Defines an Edge to be an EdgeGen with its data bound to be a void*.
+ * Retained for backward compatibility.
+ */
+typedef EdgeGen<void*, void*> Edge;
+#define EdgeV EdgeGen
+
+/*
+ * You can refer to an Edge as an Arc if you prefer.
+ */
+#define Arc Edge
+
+/*
  * Defines a BasicGraph to be a BasicGraphGen with its data bound to be a void*.
  * Retained for backward compatibility.
  */
-typedef BasicGraphGen<Vertex, Edge> BasicGraph;
+typedef BasicGraphGen<void*, void*> BasicGraph;
 #define BasicGraphV BasicGraphGen
+
+/*
+ * Hash function for BasicGraph.
+ */
+int hashCode(const BasicGraph& graph);
+
 
 /*
  * Vertex member implementations
@@ -380,25 +386,29 @@ std::string VertexGen<V, E>::toString() const {
 
 template <typename V, typename E>
 VertexGen<V, E>& VertexGen<V, E>::operator =(const VertexGen& other) {
-    name = other.name;
-    arcs = other.arcs;
-    cost = other.cost;
-    visited = other.visited;
-    previous = other.previous;
-    data = other.data;
-    m_color = other.m_color;
+    if (this != &other) {
+        name = other.name;
+        arcs = other.arcs;
+        cost = other.cost;
+        visited = other.visited;
+        previous = other.previous;
+        data = other.data;
+        m_color = other.m_color;
+    }
     return *this;
 }
 
 template <typename V, typename E>
 VertexGen<V, E>& VertexGen<V, E>::operator =(VertexGen&& other) {
-    name = other.name;
-    arcs = other.arcs;
-    cost = other.cost;
-    visited = other.visited;
-    previous = other.previous;
-    data = other.data;
-    m_color = other.m_color;
+    if (this != &other) {
+        name = other.name;
+        arcs = other.arcs;
+        cost = other.cost;
+        visited = other.visited;
+        previous = other.previous;
+        data = other.data;
+        m_color = other.m_color;
+    }
     return *this;
 }
 
@@ -461,10 +471,12 @@ std::string EdgeGen<V, E>::toString() const {
 
 template <typename V, typename E>
 EdgeGen<V, E>& EdgeGen<V, E>::operator =(const EdgeGen& other) {
-    start = other.start;
-    finish = other.finish;
-    cost = other.cost;
-    visited = other.visited;
+    if (this != &other) {
+        start = other.start;
+        finish = other.finish;
+        cost = other.cost;
+        visited = other.visited;
+    }
     return *this;
 }
 
@@ -556,12 +568,12 @@ bool BasicGraphGen<V, E>::containsVertex(const std::string& name) const {
 
 template <typename V, typename E>
 bool BasicGraphGen<V, E>::containsVertex(VertexGen<V, E>* v) const {
-    return containsNode(v);
+    return this->containsNode(v);
 }
 
 template <typename V, typename E>
 EdgeGen<V, E>* BasicGraphGen<V, E>::getEdge(VertexGen<V, E>* v1, VertexGen<V, E>* v2) const {
-    return getArc(v1, v2);
+    return this->getArc(v1, v2);
 }
 
 template <typename V, typename E>
@@ -729,7 +741,7 @@ void BasicGraphGen<V, E>::writeArcData(std::ostream& out, EdgeGen<V, E>* edge) c
 }
 
 template <typename V, typename E>
-int hashCode(const BasicGraph& graph) {
+int hashCode(const BasicGraphGen<V, E>& graph) {
     int code = hashSeed();
     for (VertexGen<V, E>* v : graph) {
         code = hashMultiplier() * code + hashCode(v->name);

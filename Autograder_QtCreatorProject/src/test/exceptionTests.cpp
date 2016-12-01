@@ -5,6 +5,7 @@
 #include "testcases.h"
 #include "error.h"
 #include "exceptions.h"
+#include "recursion.h"
 #include "vector.h"
 #include <csignal>
 #include <iostream>

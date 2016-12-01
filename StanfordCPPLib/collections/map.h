@@ -409,8 +409,8 @@ private:
     struct BSTNode {
         KeyType key;             /* The key stored in this node         */
         ValueType value;         /* The corresponding value             */
-        BSTNode *left;           /* Subtree containing all smaller keys */
-        BSTNode *right;          /* Subtree containing all larger keys  */
+        BSTNode* left;           /* Subtree containing all smaller keys */
+        BSTNode* right;          /* Subtree containing all larger keys  */
         int bf;                  /* AVL balance factor                  */
     };
 
@@ -440,32 +440,32 @@ private:
     template <typename CompareType>
     class TemplateComparator : public Comparator {
     public:
-        TemplateComparator(CompareType cmp) {
-            this->cmp = new CompareType(cmp);
+        TemplateComparator(const CompareType& cmp) {
+            this->cmp = cmp;
         }
 
         virtual bool lessThan(const KeyType& k1, const KeyType& k2) {
-            return (*cmp)(k1, k2);
+            return (cmp)(k1, k2);
         }
 
         virtual Comparator* clone() {
-            return new TemplateComparator<CompareType>(*cmp);
+            return new TemplateComparator<CompareType>(cmp);
         }
 
     private:
-        CompareType* cmp;
+        CompareType cmp;
     };
 
     Comparator& getComparator() const {
         return *cmpp;
     }
 
-    /* Instance variables */
-    BSTNode*root;                   /* Pointer to the root of the tree */
-    int nodeCount;                  /* Number of entries in the map    */
-    Comparator* cmpp;               /* Pointer to the comparator       */
+    // instance variables
+    BSTNode* root;      // pointer to the root of the tree
+    int nodeCount;      // number of entries in the map
+    Comparator* cmpp;   // pointer to the comparator
 
-    /* Private methods */
+    // private methods
 
     /*
      * Implementation notes: findNode(t, key)
@@ -718,7 +718,6 @@ private:
      * higher level of the algorithm.
      */
     void rotateRight(BSTNode*& t) {
-
         BSTNode* child = t->left;
         t->left = child->right;
         child->right = t;
@@ -778,14 +777,15 @@ private:
     BSTNode* copyTree(BSTNode* const t) {
         if (!t) {
             return nullptr;
+        } else {
+            BSTNode* np = new BSTNode;
+            np->key = t->key;
+            np->value = t->value;
+            np->bf = t->bf;
+            np->left = copyTree(t->left);
+            np->right = copyTree(t->right);
+            return np;
         }
-        BSTNode* np = new BSTNode;
-        np->key = t->key;
-        np->value = t->value;
-        np->bf = t->bf;
-        np->left = copyTree(t->left);
-        np->right = copyTree(t->right);
-        return np;
     }
 
 public:
@@ -832,12 +832,17 @@ public:
     Map& operator =(const Map& src) {
         if (this != &src) {
             clear();
+            if (cmpp) {
+                // because we are about to clone() the other map's comparator
+                delete cmpp;
+                cmpp = nullptr;
+            }
             deepCopy(src);
         }
         return *this;
     }
 
-    Map(const Map& src) {
+    Map(const Map& src) : root(nullptr), nodeCount(0), cmpp(nullptr) {
         deepCopy(src);
     }
 
@@ -954,29 +959,24 @@ public:
 };
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>::Map() {
-    root = nullptr;
-    nodeCount = 0;
+Map<KeyType, ValueType>::Map() : root(nullptr), nodeCount(0) {
     cmpp = new TemplateComparator<std::less<KeyType> >(std::less<KeyType>());
 }
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    root = nullptr;
-    nodeCount = 0;
+Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<KeyType, ValueType> > list)
+        : root(nullptr), nodeCount(0) {
     cmpp = new TemplateComparator<std::less<KeyType> >(std::less<KeyType>());
     putAll(list);
 }
 
 template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>::~Map() {
+    clear();
     if (cmpp) {
         delete cmpp;
         cmpp = nullptr;
     }
-    deleteTree(root);
-    root = nullptr;
-    nodeCount = 0;
 }
 
 template <typename KeyType, typename ValueType>

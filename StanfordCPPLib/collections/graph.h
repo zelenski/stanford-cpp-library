@@ -677,10 +677,15 @@ template <typename NodeType, typename ArcType>
 ArcType* Graph<NodeType, ArcType>::addArc(NodeType* n1, NodeType* n2) {
     verifyExistingNode(n1, "addArc");
     verifyExistingNode(n2, "addArc");
-    ArcType* arc = new ArcType();
-    arc->start = n1;
-    arc->finish = n2;
-    return addArc(arc);
+    ArcType* arc = getArc(n1, n2);
+    if (arc) {
+        return arc;
+    } else {
+        arc = new ArcType();
+        arc->start = n1;
+        arc->finish = n2;
+        return addArc(arc);
+    }
 }
 
 template <typename NodeType, typename ArcType>
@@ -725,10 +730,11 @@ NodeType* Graph<NodeType, ArcType>::addNode(NodeType* node) {
     if (existingNode) {
         *existingNode = *node;   // copy state from parameter
         return existingNode;
+    } else {
+        nodes.add(node);
+        nodeMap[node->name] = node;
+        return node;
     }
-    nodes.add(node);
-    nodeMap[node->name] = node;
-    return node;
 }
 
 /*
@@ -796,13 +802,13 @@ bool Graph<NodeType, ArcType>::containsArc(ArcType* arc) const {
 
 template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::containsNode(const std::string& name) const {
-    return getNode(name) != nullptr;
+    return nodeMap.containsKey(name);
 }
 
 template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::containsNode(NodeType* node) const {
     if (node) {
-        return getNodeSet().contains(node);
+        return nodes.contains(node);
     } else {
         return false;
     }
@@ -1085,6 +1091,7 @@ void Graph<NodeType, ArcType>::removeArc(ArcType* arc) {
     }
     arc->start->arcs.remove(arc);
     arcs.remove(arc);
+    delete arc;
 }
 
 /*
@@ -1119,6 +1126,8 @@ void Graph<NodeType, ArcType>::removeNode(NodeType* node) {
         removeArc(arc);
     }
     nodes.remove(node);
+    nodeMap.remove(node->name);
+    delete node;
 }
 
 /*

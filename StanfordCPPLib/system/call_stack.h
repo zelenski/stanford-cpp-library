@@ -2,6 +2,10 @@
  * Copyright (c) 2009, Fredrik Orderud
  * License: BSD licence (http://www.opensource.org/licenses/bsd-license.php)
  *
+ * @author Marty Stepp (made changes to F.Orderud version)
+ * @version 2016/12/01
+ * - bug fixes for call stack line number retrieval
+ * - slight refactor of entry class
  * @version 2015/07/05
  * - replaced pragma once with ifndef/define for greater compatibility
  */
@@ -28,18 +32,21 @@ void*& fakeCallStackPointer();
 
 /** Call-stack entry datastructure. */
 struct entry {
+public:
     /** Default constructor that clears all fields. */
-    entry () : line(0), address(nullptr) {
+    entry() : line(0), address(nullptr) {
+        // empty
     }
 
-    std::string file;     ///< filename
-    size_t      line;     ///< line number
-    std::string lineStr;  ///< line number string (not always set)
-    std::string function; ///< name of function or method
-    void* address;        ///< memory address of stack pointer (not always set)
+    std::string file;       // filename
+    size_t      line;       // line number
+    std::string lineStr;    // line number string (not always set)
+    std::string function;   // name of function or method
+    void* address;          // memory address of stack pointer (raw)
+    void* address2;         // memory address of stack pointer (from dladdr; data segment offset subtracted)
 
     /** Serialize entry into a text string. */
-    std::string to_string() const {
+    std::string toString() const {
         std::ostringstream os;
         os << file;
         if (line > 0) {
@@ -51,6 +58,8 @@ struct entry {
         return os.str();
     }
 };
+
+std::ostream& operator <<(std::ostream& out, const entry& ent);
 
 /** Stack-trace base class, for retrieving the current call-stack. */
 class call_stack {
@@ -65,7 +74,7 @@ public:
     std::string to_string() const {
         std::ostringstream os;
         for (size_t i = 0; i < stack.size(); i++)
-            os << stack[i].to_string() << std::endl;
+            os << stack[i].toString() << std::endl;
         return os.str();
     }
 

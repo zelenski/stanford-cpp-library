@@ -10,7 +10,6 @@
 //#include "vector.h"
 //#include "queue.h"
 //#include "random.h"
-//#include "simpio.h"
 //#include "strlib.h"
 //// #include "testcases.h"
 //#include "private/version.h"
@@ -18,12 +17,57 @@
 //#include <exception>
 //#include <iostream>
 
-
-#include "console.h"
+#include <iomanip>
 #include <iostream>
+#include <string>
+#include "basicgraph.h"
+#include "call_stack.h"
+#include "console.h"
+#include "error.h"
+#include "exceptions.h"
+#include "map.h"
+#include "simpio.h"
+#include "vector.h"
 using namespace std;
 
+void bar() {
+    int x = 3;
+    int y = 5;
+    x += y;
+
+    int a = 3;
+    int b = 5;
+    a += b;
+
+    Vector<int> v;
+    v.add();
+    error(":-(");
+
+    int c = 2;
+    int d = 4;
+    c += d;
+    cout << "duh duh duh " << a << b << c << d << x << y << endl;
+}
+
+void foo() {
+    bar();
+}
+
 int main() {
+//    cout << "&main = " << (void*) Main << endl;
+//    cout << "&foo  = " << (void*) foo << endl;
+//    cout << "&bar  = " << (void*) bar << endl;
+//    getLine("?");
+
+//    foo();
+
+//    BasicGraph graph;
+//    graph.addVertex("v1");
+//    graph.removeVertex("v1");
+//    cout << graph << endl;
+//    cout << boolalpha << graph.containsVertex("v1") << endl;
+
+
 //    while (true) {
 //        cout << "   DATA STRUCTURES::" << endl;
 //        cout << "c) collections" << endl;

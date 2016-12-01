@@ -42,16 +42,16 @@ bool graph_canReach(BasicGraph& graph, Vertex* start, Vertex* end, Vector<Vertex
         return false;
     } else {
         start->visited = true;
-        if (path != NULL) {
+        if (path) {
             path->add(start);
         }
-        for (Vertex* neighbor : graph.getNeighbors(start)) {
+        for (Vertex* neighbor : graph.getNeighbors(start->name)) {
             if (graph_canReach(graph, neighbor, end, path)) {
                 return true;
             }
         }
         start->visited = false;
-        if (path != NULL) {
+        if (path) {
             path->remove(path->size() - 1);
         }
         return false;
@@ -184,10 +184,10 @@ void graph_printVertexDegrees(BasicGraph& graph) {
 string graph_pathToString(const Vector<Vertex*>& path) {
     Vector<string> path2;
     for (Vertex* v : path) {
-        if (v == NULL) {
-            path2.add("NULL");
-        } else {
+        if (v) {
             path2.add(v->name);
+        } else {
+            path2.add("NULL");
         }
     }
     return path2.toString();

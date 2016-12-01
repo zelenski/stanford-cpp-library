@@ -498,7 +498,7 @@ public:
         }
 
         int operator -(const iterator& rhs) {
-            extern void error(std::string msg);
+            extern void error(const std::string& msg);
             if (vp != rhs.vp) {
                 error("Vector Iterator::operator -: Iterators are in different vectors");
             }

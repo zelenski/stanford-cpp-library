@@ -4,6 +4,8 @@
  * This file defines the <code>ErrorException</code> class and the
  * <code>error</code> function.
  *
+ * @version 2016/11/29
+ * - changed error() to accept const string& instead of string
  * @version 2016/11/23
  * - added operator << to print ErrorExceptions
  */
@@ -66,7 +68,7 @@ class InterruptedIOException : public std::exception {
  * TODO: use [[noreturn]] to indicate that function does not ever return
  * (added in c++11; still incompatible with some compilers?)
  */
-/* [[noreturn]] */ void error(std::string msg);
+/* [[noreturn]] */ void error(const std::string& msg);
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 

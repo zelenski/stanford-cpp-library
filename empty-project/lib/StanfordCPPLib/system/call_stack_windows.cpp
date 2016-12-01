@@ -85,6 +85,10 @@ void injectAddr2lineInfo(entry& ent, const std::string& line) {
     }
 }
 
+std::ostream& operator <<(std::ostream& out, const entry& ent) {
+    return out << ent.toString();
+}
+
 call_stack::call_stack(const size_t /*num_discard = 0*/) {
     // getting a stack trace on Windows / MinGW is loads of fun (not)
     std::vector<void*> traceVector;

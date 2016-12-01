@@ -491,8 +491,6 @@ public:
     }
 };
 
-extern void error(std::string msg);
-
 template <typename ValueType>
 Set<ValueType>::Set() : removeFlag(false) {
     /* Empty */

@@ -192,6 +192,13 @@ TIMED_TEST(BasicGraphTests, hashCodeTest_BasicGraph, TEST_TIMEOUT_DEFAULT) {
     hset4.add(v6);
     hhset2.add(hset4);
     assertEqualsInt("hashset of hashset of vertex size", 2, hhset2.size());
+
+    delete v1;
+    delete v2;
+    delete v3;
+    delete v4;
+    delete v5;
+    delete v6;
 }
 
 TIMED_TEST(BasicGraphTests, initializerListTest_BasicGraph, TEST_TIMEOUT_DEFAULT) {

@@ -59,10 +59,6 @@ std::ostream& operator <<(std::ostream& out, const ErrorException& ex) {
  * the errors are catchable.
  */
 
-void error(const char* msg) {
-    throw ErrorException(msg);
-}
-
-/* [[noreturn]] */ void error(std::string msg) {
+/* [[noreturn]] */ void error(const std::string& msg) {
     throw ErrorException(msg);
 }

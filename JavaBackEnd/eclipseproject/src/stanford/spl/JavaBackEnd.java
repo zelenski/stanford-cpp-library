@@ -418,7 +418,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	private void showConsole() {
 		this.console.setPreferredSize(this.consoleWidth, this.consoleHeight);
 		this.consoleFrame = new JFrame(this.consoleWindowTitle);
-		this.consoleFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		this.consoleFrame.setDefaultCloseOperation(consoleCloseOperation);
 		this.consoleFrame.setLayout(new BorderLayout());
 		this.consoleFrame.add(this.console);
 		this.consoleFrame.pack();

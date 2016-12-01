@@ -6,6 +6,8 @@
  * See autograder.h for documentation of each member.
  * 
  * @author Marty Stepp
+ * @version 2016/12/01
+ * - fixed memory leak from autograder buttons
  * @version 2016/11/09
  * - added mnemonics and accelerators for autograder panel buttons
  * @version 2016/10/28
@@ -69,6 +71,7 @@ extern void autograderMain();
 namespace autograder {
 STATIC_CONST_VARIABLE_DECLARE(std::string, DEFAULT_ABOUT_TEXT,
                               "CS 106 B/X Autograder Framework\nDeveloped by Marty Stepp (stepp@cs.stanford.edu)")
+STATIC_VARIABLE_DECLARE_COLLECTION_EMPTY(Set<GButton*>, AUTOGRADER_BUTTONS)
 
 AutograderFlags::AutograderFlags() {
     assignmentName = "";
@@ -560,6 +563,7 @@ static std::string addAutograderButton(GWindow& gui, const std::string& text, co
 
     std::string html = "<html><center>" + stringReplace(text, "\n", "<br>") + "</center></html>";
     GButton* button = new GButton(html);
+    STATIC_VARIABLE(AUTOGRADER_BUTTONS).add(button);
 
     // set mnemonic shortcut
     char mnemonic = '\0';
@@ -580,7 +584,6 @@ static std::string addAutograderButton(GWindow& gui, const std::string& text, co
         button->setTextPosition(SwingConstants::SWING_CENTER, SwingConstants::SWING_BOTTOM);
     }
     gui.addToRegion(button, "SOUTH");
-    // memory leak
     return html;
 }
 
@@ -676,7 +679,14 @@ int autograderGraphicalMain(int argc, char** argv) {
                                                GOptionPane::MessageType::INFORMATION);
             } else if (cmd == exitText) {
                 autograder::setExitEnabled(true);   // don't block exit() call
-                gui.close();
+
+                // free up memory used by graphical interactors
+                for (GButton* button : STATIC_VARIABLE(AUTOGRADER_BUTTONS)) {
+                    delete button;
+                }
+                STATIC_VARIABLE(AUTOGRADER_BUTTONS).clear();
+
+                gui.close();   // exits program; will not return
                 break;
             } else {
                 for (CallbackButtonInfo buttonInfo : STATIC_VARIABLE(FLAGS).callbackButtons) {
@@ -688,6 +698,12 @@ int autograderGraphicalMain(int argc, char** argv) {
             }
         }
     }
+
+    // free up memory used by graphical interactors
+    for (GButton* button : STATIC_VARIABLE(AUTOGRADER_BUTTONS)) {
+        delete button;
+    }
+    STATIC_VARIABLE(AUTOGRADER_BUTTONS).clear();
     
     return result;
 }

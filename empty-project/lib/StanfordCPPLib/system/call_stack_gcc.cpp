@@ -4,6 +4,8 @@
  * Linux/gcc implementation of the call_stack class.
  *
  * @author Marty Stepp, based on code from Fredrik Orderud
+ * @version 2016/12/01
+ * - bug fixes for call stack line number retrieval
  * @version 2016/10/14
  * - modified floating-point equality tests to use floatingPointEqual function
  * @version 2016/10/04
@@ -228,31 +230,45 @@ namespace stacktrace {
 STATIC_CONST_VARIABLE_DECLARE(int, STACK_FRAMES_TO_SKIP, 0)
 STATIC_CONST_VARIABLE_DECLARE(int, STACK_FRAMES_MAX, 20)
 
-call_stack::call_stack(const size_t /*num_discard = 0*/) {
-    using namespace abi;
+std::ostream& operator <<(std::ostream& out, const entry& ent) {
+    return out << ent.toString();
+}
 
-    // retrieve call-stack
+call_stack::call_stack(const size_t /*num_discard = 0*/) {
+    // retrieve call-stack as an array of void* pointers to each function on stack
     void* trace[STATIC_VARIABLE(STACK_FRAMES_MAX)];
+    for (int i = 0; i < STATIC_VARIABLE(STACK_FRAMES_MAX); i++) {
+        trace[i] = nullptr;
+    }
     int stack_depth = backtrace(trace, STATIC_VARIABLE(STACK_FRAMES_MAX));
 
-    // let's also try to get the line numbers via an external process
-    std::string addr2lineOutput;
-    std::vector<std::string> addr2lineLines;
-    if (stack_depth > 0) {
-        addr2line_all(trace, stack_depth, addr2lineOutput);
-        addr2lineLines = stringSplit(addr2lineOutput, "\n");
-    }
-    
+    // First pass: read linker symbol info and get address offsets.
     for (int i = STATIC_VARIABLE(STACK_FRAMES_TO_SKIP); i < stack_depth; i++) {
+        // DL* = programmer API to dynamic linking loader
+
+        // https://linux.die.net/man/3/dladdr
+        // const char *dli_fname;   // pathname of shared object that contains address
+        // void       *dli_fbase;   // address at which shared object is loaded
+        // const char *dli_sname;   // name of nearest symbol with address lower than addr
+        // void       *dli_saddr;   // exact address of symbol named in dli_sname
+
         Dl_info dlinfo;
         if (!dladdr(trace[i], &dlinfo)) {
             continue;
         }
 
+        // debug code left in because we occasionally need to debug stack traces
+        // std::cout << i << "  ptr=" << trace[i] << "  dlinfo: "
+        //           << " fname=" << (dlinfo.dli_fname ? dlinfo.dli_fname : "null")
+        //           << " fbase=" << dlinfo.dli_fbase
+        //           << " sname=" << (dlinfo.dli_sname ? dlinfo.dli_sname : "null")
+        //           << " saddr=" << dlinfo.dli_saddr << std::endl;
+
         const char* symname = dlinfo.dli_sname;
 
         int   status;
-        char* demangled = abi::__cxa_demangle(symname, nullptr, nullptr, &status);
+        char* demangled = abi::__cxa_demangle(symname, /* buffer */ nullptr,
+                                              /* length pointer */ nullptr, &status);
         if (status == 0 && demangled) {
             symname = demangled;
         }
@@ -261,23 +277,60 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
         if (dlinfo.dli_fname && symname) {
             entry e;
             e.file     = dlinfo.dli_fname;
-            e.line     = 0; // unsupported
+            e.line     = 0;   // unsupported; use lineStr instead (later)
             e.function = symname;
-            
-            // let's try to get the line number
-            // addr2line(trace[i], e.lineStr);
-            if (i < (int) addr2lineLines.size()) {
-                e.lineStr = addr2line_clean(addr2lineLines[i]);
+            e.address  = trace[i];
+
+            // The dli_fbase gives an overall offset into the file itself;
+            // the dli_saddr is the offset of that symbol/function/line.
+            // by subtracting them we get the offset of the function within the file
+            // which addr2line can use to look up function line numbers.
+
+            if (dlinfo.dli_fbase > 0 && trace[i] >= dlinfo.dli_fbase) {
+                e.address2 = (void*) ((long) trace[i] - (long) dlinfo.dli_fbase);
+            } else {
+                e.address2 = dlinfo.dli_saddr;
             }
-            
             stack.push_back(e);
-        } else {
-            continue; // skip last entries below main
         }
 
         if (demangled) {
             free(demangled);
         }
+    }
+
+    if (stack_depth == 0 || stack.empty()) {
+        return;
+    }
+
+    // Second pass: try to look up line numbers.
+    //
+    // let's also try to get the line numbers via an 'addr2line' external process
+    // (for max compatibility with GCC and Clang, we look up the addresses 2 ways:
+    // 1) by the raw void* given to us from backtrace(), and
+    // 2) by the offsetted pointer where we subtract the addr of the exe file.
+    // Option 1 used to work for all compilers, but sometime around summer 2016
+    // GCC started failing unless we use option 2.
+    // Clang and other compilers still need option 1 and fail with option 2,
+    // and to avoid running external addr2line process twice, we just look it up
+    // both ways and then figure out which one is best by string length.
+    // The failing one will emit a lot of short "??:?? 0" lines.
+
+    std::vector<void*> addrsToLookup;
+    for (const entry& e : stack) {
+        addrsToLookup.push_back(e.address);
+        addrsToLookup.push_back(e.address2);
+    }
+
+    std::string addr2lineOutput;
+    addr2line_all(addrsToLookup, addr2lineOutput);
+    std::vector<std::string> addr2lineLines = stringSplit(addr2lineOutput, "\n");
+    int numAddrLines = (int) addr2lineLines.size();
+    for (int i = 0, size = (int) stack.size(); i < size; i++) {
+        std::string opt1 = (2 * i < numAddrLines ? addr2lineLines[2 * i] : std::string());
+        std::string opt2 = (2 * i + 1 < numAddrLines ? addr2lineLines[2 * i + 1] : std::string());
+        std::string best = opt1.length() > opt2.length() ? opt1 : opt2;
+        stack[i].lineStr = addr2line_clean(best);
     }
 }
 
