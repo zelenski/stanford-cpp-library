@@ -23,7 +23,9 @@ using namespace std;
 TEST_CATEGORY(PassFailTests, "standard pass/fail tests");
 
 void bar() {
-    error("oooooops");
+    // error("oooooops");
+    int* n = nullptr;
+    n[28583275] = 17;   // segfault
 }
 
 void foo() {
@@ -33,7 +35,7 @@ void foo() {
 TIMED_TEST(PassFailTests, test_exception_after_easy_assert, TEST_TIMEOUT_DEFAULT) {
     // assertTrue("Brussel sprouts are yummy", true);
     foo();
-    assertTrue("Pie is yummy", true);
+    // assertTrue("Pie is yummy", true);
 }
 
 

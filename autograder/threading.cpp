@@ -156,10 +156,10 @@ static void failWithException(autograder::AutograderTest* test, std::string kind
     // exceptions::printStackTrace(out);
 
     std::string errorMessage = out.str();
-    stanfordcpplib::getPlatform()->autograderunittest_setTestResult(test->getFullName(), "fail");
     autograder::setFailDetails(*test, autograder::UnitTestDetails(
         autograder::UnitTestType::TEST_EXCEPTION,
         errorMessage));
+    stanfordcpplib::getPlatform()->autograderunittest_setTestResult(test->getFullName(), "fail");
     pthread_exit((void*) nullptr);
 }
 
