@@ -5,6 +5,9 @@
  * to represent <b><i>graphs,</i></b> which consist of a set of
  * <b><i>nodes</i></b> (vertices) and a set of <b><i>arcs</i></b> (edges).
  * 
+ * @version 2016/12/01
+ * - removed memory leaks of graph vertex and edge structures
+ * - fixed bug in containsNode method (was returning false positives)
  * @version 2016/11/29
  * - added getNeighborNames, getInverseNeighborNames
  * @version 2016/11/26
@@ -98,6 +101,11 @@ public:
      * If the third form is called and the start/finish nodes passed are not
      * already part of the graph, they are added to the graph.
      * If any pointer passed is null, throws an error.
+     *
+     * Memory management: If you use the ArcType* version of this method,
+     * once you hand me this pointer, I own it.  It's mine.
+     * I will delete/free it when I am done with it.
+     * You do not need to (and should not) free it yourself.
      */
     ArcType* addArc(const std::string& s1, const std::string& s2);
     ArcType* addArc(NodeType* n1, NodeType* n2);
@@ -115,6 +123,11 @@ public:
      * method return a pointer to the node.
      * If a node with the given name is already present, does nothing.
      * If any pointer passed is null, throws an error.
+     *
+     * Memory management: If you use the NodeType* version of this method,
+     * once you hand me this pointer, I own it.  It's mine.
+     * I will delete/free it when I am done with it.
+     * You do not need to (and should not) free it yourself.
      */
     NodeType* addNode(const std::string& name);
     NodeType* addNode(NodeType* node);
@@ -329,6 +342,10 @@ public:
      * connects the specified endpoints, all of them are removed.
      * If no arc connects the given endpoints, or the given arc is not found,
      * the call has no effect.
+     *
+     * Memory management: If you use the ArcType* version of this method,
+     * I will delete/free the ArcType* object when I am done with it.
+     * You do not need to (and should not) free it yourself.
      */
     void removeArc(const std::string& s1, const std::string& s2);
     void removeArc(NodeType* n1, NodeType* n2);
@@ -344,6 +361,10 @@ public:
      * removes all arcs that contain that node.
      * If a node or name is passed that is not part of the graph,
      * the call has no effect.
+     *
+     * Memory management: If you use the NodeType* version of this method,
+     * I will delete/free the NodeType* object when I am done with it.
+     * You do not need to (and should not) free it yourself.
      */
     void removeNode(const std::string& name);
     void removeNode(NodeType* node);
@@ -822,6 +843,9 @@ bool Graph<NodeType, ArcType>::equals(const Graph<NodeType, ArcType>& graph2) co
 
 template <typename NodeType, typename ArcType>
 ArcType* Graph<NodeType, ArcType>::getArc(NodeType* node1, NodeType* node2) const {
+    if (!containsNode(node1) || !containsNode(node2)) {
+        return nullptr;
+    }
     for (ArcType* arc : getArcSet(node1)) {
         if (arc->finish == node2) {
             return arc;

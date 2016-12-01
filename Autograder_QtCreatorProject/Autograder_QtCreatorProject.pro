@@ -11,6 +11,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2016/12/01
+# - slight tweaks to compiler flags to improve stack trace line generation
 # @version 2016/11/07
 # - better C++11 compiler flag compatibility (courtesy Kevin Miller)
 # @version 2016/10/30
@@ -53,7 +55,8 @@
 TEMPLATE = app
 
 CONFIG += no_include_pwd   # make sure we do not accidentally #include files placed in 'resources'
-CONFIG += warn_off         # turn of default -Wall (we will add it back ourselves)
+CONFIG += warn_off         # turn off default -Wall (we will add it back ourselves)
+CONFIG -= c++11            # turn off default -std=gnu++11
 
 PROJECT_FILTER =
 
@@ -165,8 +168,8 @@ exists($$PWD/output/*) {
 # set up flags for the C++ compiler
 # (In general, many warnings/errors are enabled to tighten compile-time checking.
 # A few overly pedantic/confusing errors are turned off for simplicity.)
-#QMAKE_CXXFLAGS += -std=c++11
-CONFIG += c++11
+QMAKE_CXXFLAGS += -std=c++11
+#CONFIG += c++11
 QMAKE_CXXFLAGS += -Wall
 QMAKE_CXXFLAGS += -Wextra
 #QMAKE_CXXFLAGS += -Weffc++
@@ -237,7 +240,7 @@ unix:!macx {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20161107
+DEFINES += SPL_PROJECT_VERSION=20161201
 
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1
@@ -279,10 +282,11 @@ DEFINES += PQUEUE_PRINT_IN_HEAP_ORDER
 # make 'debug' target (default) use no optimization, generate debugger symbols,
 # and catch/print to console any uncaught exceptions thrown by the program
 CONFIG(debug, debug|release) {
-    QMAKE_CXXFLAGS += -O0
     QMAKE_CXXFLAGS += -g3
-    QMAKE_CXXFLAGS += -ggdb3
+    #QMAKE_CXXFLAGS += -O0
+    #QMAKE_CXXFLAGS += -ggdb3
     QMAKE_CXXFLAGS += -fno-inline
+    QMAKE_CXXFLAGS += -fno-omit-frame-pointer
 
     # print details about uncaught exceptions with red error text / stack trace
     DEFINES += SPL_CONSOLE_PRINT_EXCEPTIONS
@@ -486,4 +490,4 @@ exists($$PWD/lib/autograder/*.cpp) {
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #489; if not, your .pro has been changed!)
+# END OF FILE (this should be line #493; if not, your .pro has been changed!)

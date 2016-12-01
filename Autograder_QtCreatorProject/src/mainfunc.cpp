@@ -17,10 +17,25 @@
 #include "testcases.h"
 #include "private/platform.h"
 #include "private/version.h"
+#include "exceptions.h"
 using namespace std;
 
-
 TEST_CATEGORY(PassFailTests, "standard pass/fail tests");
+
+void bar() {
+    error("oooooops");
+}
+
+void foo() {
+    bar();
+}
+
+TIMED_TEST(PassFailTests, test_exception_after_easy_assert, TEST_TIMEOUT_DEFAULT) {
+    // assertTrue("Brussel sprouts are yummy", true);
+    foo();
+    assertTrue("Pie is yummy", true);
+}
+
 
 //TIMED_TEST(PassFailTests, test_diffs_strict_FAIL, TEST_TIMEOUT_DEFAULT) {
 //    string expected = "Hello!\nhow are you?\n";

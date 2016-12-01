@@ -38,6 +38,7 @@
         } \
         std::string getCategoryName() { return this->category; } \
         std::string getTestName() { return this->name; } \
+        std::string getTestFullName() { return this->category.empty() ? this->name : (this->category + "_" + this->name); } \
     private: \
         virtual void TestRealBody(); \
         virtual void TestBody(); \
@@ -55,6 +56,7 @@
             new ::testing::internal::TestFactoryImpl<GTEST_TEST_CLASS_NAME_(test_case_name, test_name)>); \
     void GTEST_TEST_CLASS_NAME_(test_case_name, test_name)::TestBody() { \
         autograder::setCurrentTestShouldRun(shouldRun()); \
+        autograder::setTestShouldRun(this->getTestFullName(), shouldRun()); \
         if (!shouldRun()) { \
             return; \
         } \
@@ -62,6 +64,7 @@
             setTestTimeout(timeoutMS); \
             runTestWithTimeout(this); \
         } else { \
+            autograder::setCurrentTestCaseName(this->getTestFullName()); \
             TestRealBody(); \
         } \
     } \

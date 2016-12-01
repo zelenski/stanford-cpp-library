@@ -134,21 +134,49 @@ int pthread_timedjoin_np(pthread_t td, void** res, struct timespec* ts) {
 #include <pthread.h>
 #include <sys/time.h>
 
+void my_unexpected() {
+    std::cout << "my_unexpected was called! STACK:" << std::endl;
+    exceptions::printStackTrace();
+    std::cout << "my_unexpected end." << std::endl;
+}
+
 /*
  * Called when test thread crashes with an exception.
  */
 static void failWithException(autograder::AutograderTest* test, std::string kind, std::string desc) {
     std::ostringstream out;
     out << kind << " was thrown during test execution:" << std::endl;
-    out << desc << std::endl;
-    exceptions::printStackTrace(out);
+    out << desc << std::endl << std::endl;
+    out << "(Sorry; stack trace cannot be shown in this view." << std::endl;
+    out << " To see a stack trace, Run/Debug again" << std::endl;
+    out << " with the 'Catch exceptions' box unchecked.)" << std::endl;
+
+    // can't really get a stack trace of an exception here; would need to get it
+    // at the moment that the exception was generated
+    // exceptions::printStackTrace(out);
+
     std::string errorMessage = out.str();
-    stanfordcpplib::getPlatform()->autograderunittest_setTestResult(test->getName(), "fail");
-    autograder::setFailDetails(autograder::UnitTestDetails(
+    stanfordcpplib::getPlatform()->autograderunittest_setTestResult(test->getFullName(), "fail");
+    autograder::setFailDetails(*test, autograder::UnitTestDetails(
         autograder::UnitTestType::TEST_EXCEPTION,
         errorMessage));
     pthread_exit((void*) nullptr);
 }
+
+// macro to avoid lots of redundancy in catch statements below
+#ifdef _WIN32
+#define THROW_NOT_ON_WINDOWS(ex)
+#else
+#define THROW_NOT_ON_WINDOWS(ex) throw(ex)
+#endif // _WIN32
+
+#define FILL_IN_EXCEPTION_TRACE(ex, kind, desc) \
+    if ((!std::string(kind).empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_KIND, (kind)); } \
+    if ((!std::string(desc).empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_DETAILS, (desc)); } \
+    std::cout.flush(); \
+    out << msg; \
+    exceptions::printStackTrace(out); \
+    THROW_NOT_ON_WINDOWS(ex);
 
 /*
  * Runs the given test case in its own thread function.
@@ -160,26 +188,35 @@ static void* runTestInItsOwnThread(void* arg) {
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, nullptr);
     pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, nullptr);
     
-    try {
+    bool catchAll = stanfordcpplib::getPlatform()->autograderunittest_catchExceptions();
+    if (catchAll) {
+        try {
+            // run and catch exceptions/errors thrown during test execution
+            test->TestRealBody();
+        } catch (const ErrorException& ex) {
+            failWithException(test, "An ErrorException", ex.what());
+        } catch (const std::exception& ex) {
+            failWithException(test, "A C++ exception", ex.what());
+        } catch (std::string str) {
+            failWithException(test, "A string exception", str);
+        } catch (char const* str) {
+            failWithException(test, "A string exception", str);
+        } catch (int n) {
+            failWithException(test, "An int exception", integerToString(n));
+        } catch (long l) {
+            failWithException(test, "A long exception", longToString(l));
+        } catch (char c) {
+            failWithException(test, "A char exception", charToString(c));
+        } catch (bool b) {
+            failWithException(test, "A bool exception", boolToString(b));
+        } catch (double d) {
+            failWithException(test, "A double exception", realToString(d));
+        }
+    } else {
+        // Do not catch exceptions/errors thrown during test execution;
+        // if test crashes, will stop program, but at least the grader
+        // can get a stack trace and track down the student's bug.
         test->TestRealBody();
-    } catch (const ErrorException& ex) {
-        failWithException(test, "An ErrorException", ex.what());
-    } catch (const std::exception& ex) {
-        failWithException(test, "A C++ exception", ex.what());
-    } catch (std::string str) {
-        failWithException(test, "A string exception", str);
-    } catch (char const* str) {
-        failWithException(test, "A string exception", str);
-    } catch (int n) {
-        failWithException(test, "An int exception", integerToString(n));
-    } catch (long l) {
-        failWithException(test, "A long exception", longToString(l));
-    } catch (char c) {
-        failWithException(test, "A char exception", charToString(c));
-    } catch (bool b) {
-        failWithException(test, "A bool exception", boolToString(b));
-    } catch (double d) {
-        failWithException(test, "A double exception", realToString(d));
     }
     
     return (void*) nullptr;
@@ -204,12 +241,13 @@ void runTestWithTimeout(autograder::AutograderTest* test) {
         timeToWait.tv_nsec = ((now.tv_usec + 1000UL * (timeoutMS % 1000)) * 1000UL) % 1000000UL;
         
         // wait for the given timeout amount of time
+        autograder::setCurrentTestCaseName(test->getFullName());
         void* threadReturn = nullptr;
         int joinResult = pthread_timedjoin_np(thread, &threadReturn, &timeToWait);
         if (joinResult == ETIMEDOUT) {
             // thread didn't finish by the timeout; halt it and show failure
             pthread_cancel(thread);
-            autograder::setFailDetails(autograder::UnitTestDetails(
+            autograder::setFailDetails(*test, autograder::UnitTestDetails(
                 autograder::UnitTestType::TEST_FAIL,
                 STATIC_VARIABLE(TIMEOUT_ERROR_MESSAGE)));
             error(STATIC_VARIABLE(TIMEOUT_ERROR_MESSAGE));
@@ -218,6 +256,7 @@ void runTestWithTimeout(autograder::AutograderTest* test) {
         }
     } else {
         // no timeout specified; just run the test without a thread
+        autograder::setCurrentTestCaseName(test->getFullName());
         test->TestRealBody();
     }
 }

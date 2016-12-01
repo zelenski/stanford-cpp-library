@@ -8,7 +8,7 @@
 
 // collection tests
 template <typename T>
-static void compareTestHelper(const T& o1, const T& o2, std::string type = "",
+void compareTestHelper(const T& o1, const T& o2, std::string type = "",
                               int compareTo = 0) {
     assertEqualsBool(type + " " + o1.toString() + " <  " + o2.toString(), compareTo <  0,  o1 <  o2);
     assertEqualsBool(type + " " + o1.toString() + " <= " + o2.toString(), compareTo <= 0,  o1 <= o2);

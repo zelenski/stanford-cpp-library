@@ -1,4 +1,6 @@
 /*
+ * @version 2016/12/01
+ * - added AutograderUnitTest_catchExceptions
  * @version 2016/11/26
  * - added Clipboard_get/set
  * - added GTable_set Cell/Column/Row Background, Font, Foreground
@@ -41,6 +43,7 @@ public abstract class JBECommand {
 			AutograderInput_setColumns.class,
 			AutograderInput_setVisible.class,
 			AutograderUnitTest_addTest.class,
+			AutograderUnitTest_catchExceptions.class,
 			AutograderUnitTest_clearTests.class,
 			AutograderUnitTest_clearTestResults.class,
 			AutograderUnitTest_isChecked.class,

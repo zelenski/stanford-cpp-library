@@ -6,6 +6,8 @@
  * See sylecheck.h for documentation of each function.
  * 
  * @author Marty Stepp
+ * @version 2016/12/01
+ * - fixed bugs with full test names to match 12/01 versions
  * @version 2016/10/28
  * - improved category merging on stylecheck when merged with autograder tests
  * @version 2016/10/22
@@ -113,6 +115,7 @@ static bool processPatternNode(const std::string& codeFileName,
         prefix += "[" + codeFileName + "] ";
         testName = prefix + patternDescription;
     }
+    std::string testFullName = prefix + categoryName + "_" + testName;
 
     if (!pass || !omitOnPass) {
         out << "    STYLE CHECK " << (pass ? "PASSED : " : "WARNING: ") << patternDescription << std::endl;
@@ -122,7 +125,7 @@ static bool processPatternNode(const std::string& codeFileName,
                         testName, prefix + categoryName,
                         /* styleCheck */ !STATIC_VARIABLE(styleChecksMerged));
             stanfordcpplib::getPlatform()->autograderunittest_setTestResult(
-                        testName, resultStr,
+                        testFullName, resultStr,
                         /* styleCheck */ !STATIC_VARIABLE(styleChecksMerged));
             autograder::UnitTestDetails deets;
             deets.message = patternDescription;
@@ -137,7 +140,7 @@ static bool processPatternNode(const std::string& codeFileName,
             out.str("");
             out << deets;
             stanfordcpplib::getPlatform()->autograderunittest_setTestDetails(
-                        testName, out.str(),
+                        testFullName, out.str(),
                         /* styleCheck */ !STATIC_VARIABLE(styleChecksMerged));
             out.str("");
         } else {

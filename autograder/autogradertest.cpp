@@ -73,9 +73,13 @@ std::string AutograderTest::getCategory() const {
     return this->category;
 }
 
+std::string AutograderTest::getFullName() const {
+    return this->category.empty() ? this->name : (this->category + "_" + this->name);
+}
+
 bool AutograderTest::shouldRun() {
     if (autograder::isGraphicalUI()) {
-        return stanfordcpplib::getPlatform()->autograderunittest_isChecked(this->name);
+        return stanfordcpplib::getPlatform()->autograderunittest_isChecked(this->getFullName());
     } else {
         return true;
     }

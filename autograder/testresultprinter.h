@@ -12,9 +12,9 @@
 #ifndef _testresultprinter_h
 #define _testresultprinter_h
 
+#include "autogradertest.h"
 #include "gtest.h"
 #include "map.h"
-
 #include "unittestdetails.h"
 
 namespace autograder {
@@ -24,6 +24,7 @@ namespace autograder {
  */
 class MartyTestResultPrinter : public ::testing::EmptyTestEventListener {
 public:
+    static void setFailDetails(AutograderTest& test, const UnitTestDetails& deets);
     static void setFailDetails(const UnitTestDetails& deets);
 
     MartyTestResultPrinter();
@@ -77,6 +78,7 @@ private:
 class MartyGraphicalTestResultPrinter : public ::testing::EmptyTestEventListener {
 public:
     static const int TEST_RUNTIME_MIN_TO_DISPLAY_MS;
+    static void setFailDetails(AutograderTest& test, const UnitTestDetails& deets);
     static void setFailDetails(const UnitTestDetails& deets);
 
     /*

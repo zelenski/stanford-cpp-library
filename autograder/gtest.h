@@ -17944,6 +17944,10 @@ class GTEST_API_ TestResult {
   // Returns true iff the test failed.
   bool Failed() const;
 
+  bool EverHadResults() const {
+      return everHadResults_;
+  }
+
   // Returns true iff the test fatally failed.
   bool HasFatalFailure() const;
 
@@ -18022,6 +18026,10 @@ class GTEST_API_ TestResult {
 
   // The vector of TestPartResults
   std::vector<TestPartResult> test_part_results_;
+
+  // Whether this test ever had any parts/results.
+  bool everHadResults_;
+
   // The vector of TestProperties
   std::vector<TestProperty> test_properties_;
   // Running count of death tests.
@@ -18055,6 +18063,9 @@ class GTEST_API_ TestInfo {
 
   // Returns the test name.
   const char* name() const { return name_.c_str(); }
+
+  // Returns "Category_TestName" or just "TestName" if cat is empty
+  std::string full_name() const { return (test_case_name_.empty() ? name_ : (test_case_name_ + "_" + name_)); }
 
   // Returns the name of the parameter type, or nullptr if this is not a typed
   // or a type-parameterized test.

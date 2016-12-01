@@ -236,6 +236,8 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "UnhandledException"
     };
 
+    return false;   // TODO: remove this
+
     // prefixes to filter (don't show any func whose name starts with these)
     static const std::vector<std::string> FORBIDDEN_PREFIXES {
         "__"

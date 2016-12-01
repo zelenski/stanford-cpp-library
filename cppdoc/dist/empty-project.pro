@@ -240,7 +240,7 @@ unix:!macx {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20161107
+DEFINES += SPL_PROJECT_VERSION=20161201
 
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1

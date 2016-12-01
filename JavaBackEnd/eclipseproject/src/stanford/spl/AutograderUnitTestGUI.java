@@ -1,5 +1,9 @@
 /*
  * @author Marty Stepp
+ * @version 2016/12/01
+ * - fixed bugs with badly displayed / wrong test results
+ * - clarified assertion output for ASSERT_TRUE and _FALSE
+ * - checkbox to catch exceptions in tests
  * @version 2016/10/30
  * - made window close when you press Escape
  * - added ignore-punctuation diff flag
@@ -27,10 +31,9 @@ package stanford.spl;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-
 import javax.swing.*;
 import javax.swing.border.*;
-
+import acm.graphics.GImage;
 import stanford.cs106.diff.*;
 import stanford.cs106.gui.*;
 import stanford.cs106.io.*;
@@ -45,7 +48,9 @@ public class AutograderUnitTestGUI extends Observable
 	
 	// should possibly keep in sync with colors in DiffGui.java
 	private static final Color PASS_COLOR = new Color(0, 96, 0);
+	private static final String PASS_COLOR_HEX = GImage.colorName(PASS_COLOR.getRGB());
 	private static final Color FAIL_COLOR = new Color(96, 0, 0);
+	private static final String FAIL_COLOR_HEX = GImage.colorName(FAIL_COLOR.getRGB());
 	private static final Color WARN_COLOR = new Color(112, 112, 0);
 	private static final int MAX_VALUE_DISPLAY_LENGTH = 120;
 	private static final int MAX_WINDOW_WIDTH = 1000;   // px
@@ -84,15 +89,21 @@ public class AutograderUnitTestGUI extends Observable
 	
 	private class TestInfo {
 		private String name;
+		private String category;
 		private JCheckBox checked;
 		private JLabel description;
 		private JLabel result;
 		private Map<String, String> details = new LinkedHashMap<String, String>();
+		
+		public String fullName() {
+			return (category == null || category.isEmpty()) ? name : (category + "_" + name);
+		}
 	}
 	
 	private JavaBackEnd javaBackEnd;
 	private JFrame frame = null;
 	private JScrollPane scroll = null;
+	private JCheckBox catchErrorsBox = null;
 	private Box contentPaneBox = null;
 	private JLabel descriptionLabel = null;
 	private JLabel southLabel = null;
@@ -118,14 +129,22 @@ public class AutograderUnitTestGUI extends Observable
 		frame.addWindowListener(new AutograderUnitTestGUIWindowAdapter());
 		WindowCloseKeyListener.add(frame);
 		
-		descriptionLabel = new JLabel("Autograder Tests");
+		descriptionLabel = new JLabel(TESTS_TITLE);
 		if (NORMAL_COLOR == null) {
 			NORMAL_COLOR= descriptionLabel.getForeground();
 		}
 		descriptionLabel.setHorizontalAlignment(JLabel.CENTER);
 		descriptionLabel.setAlignmentX(0.5f);
 		GuiUtils.shrinkFont(descriptionLabel);
-		frame.add(descriptionLabel, BorderLayout.NORTH);
+		
+		Box north = Box.createVerticalBox();
+		north.setAlignmentX(0.0f);
+		north.setBorder(BorderFactory.createEmptyBorder(/* TLBR */ 2, 5, 2, 2));
+		// north.add(descriptionLabel);
+		catchErrorsBox = new JCheckBox("Catch exceptions in tests", /* selected */ true);
+		catchErrorsBox.setMnemonic('C');
+		north.add(catchErrorsBox);
+		frame.add(north, BorderLayout.NORTH);
 		
 		contentPaneBox = Box.createVerticalBox();
 		scroll = new JScrollPane(contentPaneBox);
@@ -246,7 +265,8 @@ public class AutograderUnitTestGUI extends Observable
 		
 		TestInfo testInfo = new TestInfo();
 		testInfo.name = testName;
-		allTests.put(testName, testInfo);
+		testInfo.category = categoryName;
+		allTests.put(testInfo.fullName(), testInfo);
 		
 		testInfo.checked = new JCheckBox();
 		
@@ -297,6 +317,10 @@ public class AutograderUnitTestGUI extends Observable
 		checkVisibility();
 	}
 	
+	public boolean catchExceptions() {
+		return catchErrorsBox.isSelected();
+	}
+	
 	public void clearTests() {
 		currentCategory = null;
 		allCategories.clear();
@@ -323,8 +347,8 @@ public class AutograderUnitTestGUI extends Observable
 		updateSouthText();
 	}
 	
-	private String getTestResult(String testName) {
-		TestInfo testInfo = allTests.get(testName);
+	private String getTestResult(String testFullName) {
+		TestInfo testInfo = allTests.get(testFullName);
 		if (testInfo == null) {
 			return "no such test";
 		} else if (testInfo.description.getForeground().equals(FAIL_COLOR)) {
@@ -355,8 +379,8 @@ public class AutograderUnitTestGUI extends Observable
 		return getCheckedTestCount();
 	}
 	
-	public boolean isChecked(String testName) {
-		TestInfo testInfo = allTests.get(testName);
+	public boolean isChecked(String testFullName) {
+		TestInfo testInfo = allTests.get(testFullName);
 		if (testInfo == null) {
 			return false;
 		} else {
@@ -379,7 +403,7 @@ public class AutograderUnitTestGUI extends Observable
 	public void mouseClicked(MouseEvent event) {
 		JLabel label = (JLabel) event.getSource();
 		TestInfo testInfo = allTests.get(label);
-		String testName = testInfo.name;
+		String testName = testInfo.fullName();
 		if (testName != null) {
 			showTestDetails(testName);
 		}
@@ -401,8 +425,8 @@ public class AutograderUnitTestGUI extends Observable
 		// empty
 	}
 	
-	public void setChecked(String testName, boolean checked) {
-		TestInfo testInfo = allTests.get(testName);
+	public void setChecked(String testFullName, boolean checked) {
+		TestInfo testInfo = allTests.get(testFullName);
 		if (testInfo != null) {
 			testInfo.checked.setSelected(checked);
 		}
@@ -426,14 +450,14 @@ public class AutograderUnitTestGUI extends Observable
 	
 	// looking for a map with these keys:
 	// testType, message, ...
-	public void setTestDetails(String testName, Map<String, String> details) {
-		TestInfo testInfo = allTests.get(testName);
+	public void setTestDetails(String testFullName, Map<String, String> details) {
+		TestInfo testInfo = allTests.get(testFullName);
 		if (testInfo == null) {
 			return;
 		}
 
 		// BUGFIX: don't replace test details if a test already failed here
-		String existingResult = getTestResult(testName).intern();
+		String existingResult = getTestResult(testFullName).intern();
 		if (existingResult == "fail" || existingResult == "warn") {
 			if (!testInfo.details.isEmpty()) {
 				return;
@@ -455,19 +479,19 @@ public class AutograderUnitTestGUI extends Observable
 		updateSouthText();
 	}
 	
-	public boolean setTestResult(String testName, String result) {
+	public boolean setTestResult(String testFullName, String result) {
 		result = result.toLowerCase().intern();
 		if (result == "error") {
 			result = "fail";  // synonyms
 		}
 		
-		TestInfo testInfo = allTests.get(testName);
+		TestInfo testInfo = allTests.get(testFullName);
 		if (testInfo == null) {
 			return false;
 		}
 		
 		// BUGFIX: if test already failed previously, don't set back to passed
-		String existingResult = getTestResult(testName).intern();
+		String existingResult = getTestResult(testFullName).intern();
 		if ((existingResult == "fail" || existingResult == "warn") && result != "fail") {
 			return true;
 		}
@@ -487,8 +511,8 @@ public class AutograderUnitTestGUI extends Observable
 		return true;
 	}
 	
-	public boolean setTestRuntime(String testName, int runtimeMS) {
-		TestInfo testInfo = allTests.get(testName);
+	public boolean setTestRuntime(String testFullName, int runtimeMS) {
+		TestInfo testInfo = allTests.get(testFullName);
 		if (testInfo == null) {
 			return false;
 		} else {
@@ -594,14 +618,14 @@ public class AutograderUnitTestGUI extends Observable
 		    FAIL,
 		};
 	 */
-	private void showTestDetails(String testName) {
+	private void showTestDetails(String testFullName) {
 		// {testType=TEST_ASSERT_EQUALS,
 		//  message="......",
 		//  expected=foobarbaz,
 		//  student=foobarbaz,
 		//  valueType=string,
 		//  passed=true}
-		TestInfo testInfo = allTests.get(testName);
+		TestInfo testInfo = allTests.get(testFullName);
 		if (testInfo == null) {
 			return;
 		}
@@ -621,14 +645,14 @@ public class AutograderUnitTestGUI extends Observable
 			message += " (must be nearly equal)";
 		} else if (type == "ASSERT_DIFF") {
 			message += " (program output must match)";
-		} else if (type == "ASSERT_TRUE") {
-			message += " (must be true)";
-		} else if (type == "ASSERT_FALSE") {
-			message += " (must be false)";
-		} else if (type == "ASSERT_NULL") {
-			message += " (must be null)";
-		} else if (type == "ASSERT_NOT_NULL") {
-			message += " (must not be null)";
+//		} else if (type == "ASSERT_TRUE") {
+//			message += " (must be true)";
+//		} else if (type == "ASSERT_FALSE") {
+//			message += " (must be false)";
+//		} else if (type == "ASSERT_NULL") {
+//			message += " (must be null)";
+//		} else if (type == "ASSERT_NOT_NULL") {
+//			message += " (must not be null)";
 		} else if (type == "EXCEPTION") {
 			// message += " (threw exception)";
 		} else if (type == "NOT_EXCEPTION") {
@@ -667,7 +691,8 @@ public class AutograderUnitTestGUI extends Observable
 		boolean shouldShowJOptionPane = true;
 		if (type == "ASSERT_EQUALS" || type == "ASSERT_NOT_EQUALS"
 				|| type == "ASSERT_NEAR" || type == "STYLE_CHECK"
-				|| type == "ASSERT_NULL" || type == "ASSERT_NOT_NULL") {
+				|| type == "ASSERT_NULL" || type == "ASSERT_NOT_NULL"
+				|| type == "ASSERT_TRUE" || type == "ASSERT_FALSE") {
 			String htmlMessage = "";
 			String expectedTruncated = StringUtils.truncate(expected, MAX_VALUE_DISPLAY_LENGTH, " ...");
 			String studentTruncated  = StringUtils.truncate(student, MAX_VALUE_DISPLAY_LENGTH, " ...");
@@ -677,6 +702,11 @@ public class AutograderUnitTestGUI extends Observable
 			htmlMessage += "<li><font style='font-family: monospaced' color='" + DiffGui.EXPECTED_COLOR + "'>expected:</font>" + expectedTruncated + "</li>";
 			htmlMessage += "<li><font style='font-family: monospaced' color='" + DiffGui.STUDENT_COLOR  + "'>student :</font>" + studentTruncated  + "</li>";
 			htmlMessage += "</ul>";
+			
+			htmlMessage += "<p>result: "
+					+ "<font color='" + (passed ? PASS_COLOR_HEX : FAIL_COLOR_HEX).replace("0x", "#") + "'>"
+					+ (passed ? "PASS" : "FAIL")
+					+ "</font></p>";
 			
 			if (!stack.isEmpty()) {
 				htmlMessage += "<div><b>Stack trace:</b></div><pre>" + stack + "</pre>";
@@ -711,19 +741,19 @@ public class AutograderUnitTestGUI extends Observable
 			JOptionPane.showMessageDialog(
 					/* parent */ frame,
 					message,
-					/* title */ testName,
+					/* title */ testFullName,
 					/* type */ passed ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
 		}
 		
 		setChanged();
-		notifyObservers(testName);
+		notifyObservers(testFullName);
 	}
 	
 	private int getCheckedTestCount() {
 		int count = 0;
 		Set<TestInfo> tests = new HashSet<TestInfo>(allTests.values());
 		for (TestInfo info : tests) {
-			if (isChecked(info.name)) {
+			if (isChecked(info.fullName())) {
 				count++;
 			}
 		}

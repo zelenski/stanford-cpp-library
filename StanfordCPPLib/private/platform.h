@@ -72,15 +72,16 @@ public:
     void autograderinput_setVisible(bool value = true);
 
     void autograderunittest_addTest(const std::string& testName, const std::string& category = "", bool styleCheck = false);
-    bool autograderunittest_isChecked(const std::string& testName);
+    bool autograderunittest_catchExceptions();
     void autograderunittest_clearTests(bool styleCheck = false);
     void autograderunittest_clearTestResults(bool styleCheck = false);
-    void autograderunittest_setChecked(const std::string& testName, bool checked = true);
+    bool autograderunittest_isChecked(const std::string& testFullName);
+    void autograderunittest_setChecked(const std::string& testFullName, bool checked = true);
     void autograderunittest_setTestCounts(int passCount, int testCount, bool styleCheck = false);
-    void autograderunittest_setTestDetails(const std::string& testName, const std::string& details, bool styleCheck = false);
+    void autograderunittest_setTestDetails(const std::string& testFullName, const std::string& details, bool styleCheck = false);
     void autograderunittest_setTestingCompleted(bool completed = true, bool styleCheck = false);
-    void autograderunittest_setTestResult(const std::string& testName, const std::string& result, bool styleCheck = false);
-    void autograderunittest_setTestRuntime(const std::string& testName, int runtimeMS);
+    void autograderunittest_setTestResult(const std::string& testFullName, const std::string& result, bool styleCheck = false);
+    void autograderunittest_setTestRuntime(const std::string& testFullName, int runtimeMS);
     void autograderunittest_setVisible(bool visible = true, bool styleCheck = false);
     void autograderunittest_setWindowDescriptionText(const std::string& text, bool styleCheck = false);
 

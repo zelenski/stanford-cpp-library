@@ -8,6 +8,7 @@
  * @author Marty Stepp
  * @version 2016/12/01
  * - fixed memory leak from autograder buttons
+ * - removed most "current test case" logic and replaced with testcase-specific logic
  * @version 2016/11/09
  * - added mnemonics and accelerators for autograder panel buttons
  * @version 2016/10/28
@@ -195,8 +196,8 @@ void setCurrentCategoryName(const std::string& categoryName) {
     STATIC_VARIABLE(FLAGS).currentCategoryName = categoryName;
 }
 
-void setCurrentTestCaseName(const std::string& testName) {
-    STATIC_VARIABLE(FLAGS).currentTestCaseName = testName;
+void setCurrentTestCaseName(const std::string& testFullName) {
+    STATIC_VARIABLE(FLAGS).currentTestCaseName = testFullName;
 }
 
 void setCurrentTestShouldRun(bool shouldRun) {
@@ -209,6 +210,14 @@ bool exitEnabled() {
 
 void setExitEnabled(bool enabled) {
     stanfordcpplib::setExitEnabled(enabled);
+}
+
+void setFailDetails(AutograderTest& test, const autograder::UnitTestDetails& deets) {
+    if (STATIC_VARIABLE(FLAGS).graphicalUI) {
+        MartyGraphicalTestResultPrinter::setFailDetails(test, deets);
+    } else {
+        MartyTestResultPrinter::setFailDetails(test, deets);
+    }
 }
 
 void setFailDetails(const autograder::UnitTestDetails& deets) {
@@ -259,6 +268,14 @@ void setTestCounts(int passCount, int testCount, bool isStyleCheck) {
 
 void setTestNameWidth(int width) {
     STATIC_VARIABLE(FLAGS).testNameWidth = width;
+}
+
+void setTestShouldRun(const std::string& testFullName, bool shouldRun) {
+    if (shouldRun) {
+        STATIC_VARIABLE(FLAGS).testsThatShouldRun.add(testFullName);
+    } else {
+        STATIC_VARIABLE(FLAGS).testsThatShouldRun.remove(testFullName);
+    }
 }
 
 static std::string formatDate(const std::string& dateStr) {
@@ -405,6 +422,10 @@ void styleCheckAddFile(const std::string& filename, const std::string& styleChec
     }
     STATIC_VARIABLE(FLAGS).styleCheckFiles.add(filename);
     STATIC_VARIABLE(FLAGS).styleCheckFileMap.put(filename, styleFile);
+}
+
+bool testShouldRun(const std::string& testFullName) {
+    return STATIC_VARIABLE(FLAGS).testsThatShouldRun.contains(testFullName);
 }
 
 #ifdef SPL_AUTOGRADER_MODE

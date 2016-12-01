@@ -3190,11 +3190,14 @@ std::string AppendUserMessage(const std::string& gtest_msg,
 // Creates an empty TestResult.
 TestResult::TestResult()
     : death_test_count_(0),
-      elapsed_time_(0) {
+      elapsed_time_(0),
+      everHadResults_(false) {
+    // empty
 }
 
 // D'tor.
 TestResult::~TestResult() {
+    // empty
 }
 
 // Returns the i-th test part result among all the results. i can
@@ -3223,6 +3226,7 @@ void TestResult::ClearTestPartResults() {
 // Adds a test part result to the list.
 void TestResult::AddTestPartResult(const TestPartResult& test_part_result) {
   test_part_results_.push_back(test_part_result);
+  everHadResults_ = true;
 }
 
 // Adds a test property to the list. If a property with the same key as the

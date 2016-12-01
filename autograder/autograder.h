@@ -5,6 +5,8 @@
  * autograder programs for grading student assignments.
  * 
  * @author Marty Stepp
+ * @version 2016/12/01
+ * - removed most "current test case" logic and replaced with testcase-specific logic
  * @version 2016/08/01
  * - added setExitEnabled(bool) function
  * @version 2014/10/31
@@ -80,6 +82,7 @@ public:
     bool currentTestShouldRun;
     Map<std::string, Set<std::string> > testsAdded;
     Map<std::string, Timer> testTimers;
+    Set<std::string> testsThatShouldRun;
 
     int failsToPrintPerTest;
     int testNameWidth;
@@ -175,7 +178,7 @@ void setCurrentCategoryName(const std::string& categoryName);
 /*
  * Called internally by autograder; do not use.
  */
-void setCurrentTestCaseName(const std::string& testName);
+void setCurrentTestCaseName(const std::string& testFullName);
 
 /*
  * Called internally by autograder; do not use.
@@ -195,6 +198,7 @@ bool exitEnabled();
  * Specifies details to show for a failed test case.
  * Called internally by assertXxxx() macros.
  */
+void setFailDetails(AutograderTest& test, const autograder::UnitTestDetails& deets);
 void setFailDetails(const autograder::UnitTestDetails& deets);
 
 /*
@@ -251,6 +255,11 @@ void setTestCounts(int passCount, int testCount, bool isStyleCheck);
 void setTestNameWidth(int width);
 
 /*
+ * Called internally by autograder; do not use.
+ */
+void setTestShouldRun(const std::string& testFullName, bool shouldRun);
+
+/*
  * Sets whether the autograder should display the contents of the lateDays.txt
  * file to see whether the student turned in their assignment on time.
  */
@@ -278,6 +287,11 @@ void showStudentTextFile(const std::string& filename, int maxWidth = 0, int maxH
  * "Foo.bar.h" -> "stylecheck-foo-bar-h.xml"
  */
 void styleCheckAddFile(const std::string& filename, const std::string& styleCheckXmlFileName = "");
+
+/*
+ * Called internally by autograder; do not use.
+ */
+bool testShouldRun(const std::string& testFullName);
 } // namespace autograder
 
 #endif // _autograder_h

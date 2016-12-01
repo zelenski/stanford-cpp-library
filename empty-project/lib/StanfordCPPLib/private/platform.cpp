@@ -171,7 +171,7 @@ static int& pout(bool check = true) {
 
 // internal flag to emit a dump of every message sent to the Java back-end;
 // used for debugging purposes
-// #define PIPE_DEBUG true
+//#define PIPE_DEBUG true
 
 // related: similar constant in Java back-end stanford.spl.SplPipeDecoder.java
 STATIC_CONST_VARIABLE_DECLARE(size_t, PIPE_MAX_COMMAND_LENGTH, 2048)
@@ -197,7 +197,7 @@ STATIC_VARIABLE_DECLARE_BLANK(pid_t, javaBackEndPid)
 /* static function prototypes */
 static std::string getJavaCommand();
 static std::string getPipe();
-static std::string getResult(bool consumeAcks = false, bool stopOnEvent = false,
+static std::string getResult(bool consumeAcks = true, bool stopOnEvent = false,
                              const std::string& caller = "");
 static std::string getSplJarPath();
 static void getStatus();
@@ -2380,6 +2380,12 @@ void Platform::autograderunittest_addTest(const std::string& testName, const std
     putPipe(os.str());
 }
 
+bool Platform::autograderunittest_catchExceptions() {
+    putPipe("AutograderUnitTest.catchExceptions()");
+    std::string result = getResult(/* consumeAcks */ true);
+    return stringToBool(result);
+}
+
 void Platform::autograderunittest_clearTests(bool styleCheck) {
     std::ostringstream os;
     os << "AutograderUnitTest.clearTests(" << std::boolalpha << styleCheck << ")";
@@ -2392,20 +2398,20 @@ void Platform::autograderunittest_clearTestResults(bool styleCheck) {
     putPipe(os.str());
 }
 
-bool Platform::autograderunittest_isChecked(const std::string& testName) {
+bool Platform::autograderunittest_isChecked(const std::string& testFullName) {
     std::ostringstream os;
     os << "AutograderUnitTest.isChecked(";
-    writeQuotedString(os, urlEncode(testName));
+    writeQuotedString(os, urlEncode(testFullName));
     os << ")";
     putPipe(os.str());
     std::string result = getResult();
     return (result == "true");
 }
 
-void Platform::autograderunittest_setChecked(const std::string& testName, bool checked) {
+void Platform::autograderunittest_setChecked(const std::string& testFullName, bool checked) {
     std::ostringstream os;
     os << "AutograderUnitTest.setChecked(";
-    writeQuotedString(os, urlEncode(testName));
+    writeQuotedString(os, urlEncode(testFullName));
     os << "," << std::boolalpha << checked << ")";
     putPipe(os.str());
 }
@@ -2418,10 +2424,10 @@ void Platform::autograderunittest_setTestCounts(int passCount, int testCount, bo
     putPipe(os.str());
 }
 
-void Platform::autograderunittest_setTestDetails(const std::string& testName, const std::string& details, bool styleCheck) {
+void Platform::autograderunittest_setTestDetails(const std::string& testFullName, const std::string& details, bool styleCheck) {
     std::ostringstream os;
     os << "AutograderUnitTest.setTestDetails(";
-    writeQuotedString(os, urlEncode(testName));
+    writeQuotedString(os, urlEncode(testFullName));
     os << ",";
     std::string deets = details;
     stringReplaceInPlace(deets, "\n", "\\n");
@@ -2442,20 +2448,20 @@ void Platform::autograderunittest_setTestingCompleted(bool completed, bool style
     putPipe(os.str());
 }
 
-void Platform::autograderunittest_setTestResult(const std::string& testName, const std::string& result, bool styleCheck) {
+void Platform::autograderunittest_setTestResult(const std::string& testFullName, const std::string& result, bool styleCheck) {
     std::ostringstream os;
     os << "AutograderUnitTest.setTestResult(";
-    writeQuotedString(os, urlEncode(testName));
+    writeQuotedString(os, urlEncode(testFullName));
     os << ",";
     writeQuotedString(os, urlEncode(result));
     os << "," << std::boolalpha << styleCheck << ")";
     putPipe(os.str());
 }
 
-void Platform::autograderunittest_setTestRuntime(const std::string& testName, int runtimeMS) {
+void Platform::autograderunittest_setTestRuntime(const std::string& testFullName, int runtimeMS) {
     std::ostringstream os;
     os << "AutograderUnitTest.setTestRuntime(";
-    writeQuotedString(os, urlEncode(testName));
+    writeQuotedString(os, urlEncode(testFullName));
     os << "," << runtimeMS << ")";
     putPipe(os.str());
 }

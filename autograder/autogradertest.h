@@ -48,7 +48,8 @@ public:
     
     virtual std::string getName() const;
     virtual std::string getCategory() const;
-    
+    virtual std::string getFullName() const;   // "CategoryName_TestName"
+
     /*
      * Whether this test case should run.
      * Will be true unless unchecked in GUI test case list.

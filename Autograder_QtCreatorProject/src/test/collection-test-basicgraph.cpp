@@ -55,6 +55,8 @@ TIMED_TEST(BasicGraphTests, basicTest_BasicGraph, TEST_TIMEOUT_DEFAULT) {
     assertFalse("basicgraph contains edge a -> b", bgraph.containsEdge("a", "b"));
     assertFalse("basicgraph contains edge a -> b", bgraph.containsEdge("a", "b"));
 
+    // error("shiiiiiiit");
+
     bgraph.removeVertex("b");
     assertEqualsInt("basicgraph vertex count", 4, bgraph.getVertexSet().size());
     assertEqualsInt("basicgraph edge count", 2, bgraph.getEdgeSet().size());
