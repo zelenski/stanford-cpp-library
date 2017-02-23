@@ -412,6 +412,8 @@ DawgLexicon::Edge* DawgLexicon::findEdgeForChar(Edge* children, char ch) const {
  * DAWG:<startnode index>:<num bytes>:<num bytes block of edge data>
  */
 void DawgLexicon::readBinaryFile(std::istream& input) {
+    input.clear();
+    input.seekg(0, std::ios::beg);
     long startIndex, numBytes;
     char firstFour[4], expected[] = "DAWG";
     if (input.fail()) {
