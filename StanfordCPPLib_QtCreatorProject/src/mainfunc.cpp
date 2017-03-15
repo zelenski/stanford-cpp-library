@@ -32,6 +32,9 @@
 #include "map.h"
 #include "simpio.h"
 #include "vector.h"
+
+#include "alphatest.h"
+
 using namespace std;
 
 void bar() {
@@ -225,6 +228,8 @@ int main() {
 //            urlstreamTest();
 //        }
 //    }
-    
+
+    alphatest();
+    std::cout << "done." << std::endl;
     return 0;
 }

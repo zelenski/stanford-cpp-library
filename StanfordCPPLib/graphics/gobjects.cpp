@@ -163,13 +163,17 @@ void GObject::setAntiAliasing(bool value) {
     stanfordcpplib::getPlatform()->gobject_setAntialiasing(value);
 }
 
-void GObject::setColor(int rgb) {
-    this->color = convertRGBToColor(rgb);
+void GObject::setColor(int rgb, bool hasAlpha) {
+    this->color = convertRGBToColor(rgb, hasAlpha);
     stanfordcpplib::getPlatform()->gobject_setColor(this, this->color);
 }
 
 void GObject::setColor(const std::string& color) {
-    setColor(convertColorToRGB(color));
+    bool hasAlpha = false;
+    if (color.length() == 9 && color[0] == '#') {
+        hasAlpha = true;
+    }
+    setColor(convertColorToRGB(color), hasAlpha);
 }
 
 void GObject::setLineWidth(double lineWidth) {
@@ -256,8 +260,8 @@ void GRect::setBounds(const GRectangle& bounds) {
     setSize(bounds.getWidth(), bounds.getHeight());
 }
 
-void GRect::setFillColor(int rgb) {
-    fillColor = convertRGBToColor(rgb);
+void GRect::setFillColor(int rgb, bool hasAlpha) {
+    fillColor = convertRGBToColor(rgb, hasAlpha);
     stanfordcpplib::getPlatform()->gobject_setFillColor(this, fillColor);
 }
 
@@ -268,7 +272,11 @@ void GRect::setFillColor(const std::string& color) {
             setFilled(false);
         }
     } else {
-        fillColor = convertRGBToColor(convertColorToRGB(color));
+        bool hasAlpha = false;
+        if (color.length() == 9 && color[0] == '#') {
+            hasAlpha = true;
+        }
+        fillColor = convertRGBToColor(convertColorToRGB(color), hasAlpha);
         if (!isFilled()) {
             setFilled(true);
         }
@@ -508,8 +516,8 @@ void GOval::setBounds(const GRectangle& bounds) {
     setSize(bounds.getWidth(), bounds.getHeight());
 }
 
-void GOval::setFillColor(int color) {
-    fillColor = convertRGBToColor(color);
+void GOval::setFillColor(int color, bool hasAlpha) {
+    fillColor = convertRGBToColor(color, hasAlpha);
     stanfordcpplib::getPlatform()->gobject_setFillColor(this, fillColor);
 }
 
@@ -520,7 +528,11 @@ void GOval::setFillColor(const std::string& color) {
             setFilled(false);
         }
     } else {
-        fillColor = convertRGBToColor(convertColorToRGB(color));
+        bool hasAlpha = false;
+        if (color.length() == 9 && color[0] == '#') {
+            hasAlpha = true;
+        }
+        fillColor = convertRGBToColor(convertColorToRGB(color), hasAlpha);
         if (!isFilled()) {
             setFilled(true);
         }
@@ -684,8 +696,8 @@ bool GArc::isFilled() const {
     return fillFlag;
 }
 
-void GArc::setFillColor(int color) {
-    fillColor = convertRGBToColor(color);
+void GArc::setFillColor(int color, bool hasAlpha) {
+    fillColor = convertRGBToColor(color, hasAlpha);
     stanfordcpplib::getPlatform()->gobject_setFillColor(this, fillColor);
 }
 
@@ -696,7 +708,11 @@ void GArc::setFillColor(const std::string& color) {
             setFilled(false);
         }
     } else {
-        fillColor = convertRGBToColor(convertColorToRGB(color));
+        bool hasAlpha = false;
+        if (color.length() == 9 && color[0] == '#') {
+            hasAlpha = true;
+        }
+        fillColor = convertRGBToColor(convertColorToRGB(color), hasAlpha);
         if (!isFilled()) {
             setFilled(true);
         }
@@ -1189,8 +1205,8 @@ bool GPolygon::isFilled() const {
     return fillFlag;
 }
 
-void GPolygon::setFillColor(int rgb) {
-    fillColor = convertRGBToColor(rgb);
+void GPolygon::setFillColor(int rgb, bool hasAlpha) {
+    fillColor = convertRGBToColor(rgb, hasAlpha);
     stanfordcpplib::getPlatform()->gobject_setFillColor(this, fillColor);
 }
 
@@ -1201,7 +1217,11 @@ void GPolygon::setFillColor(const std::string& color) {
             setFilled(false);
         }
     } else {
-        fillColor = convertRGBToColor(convertColorToRGB(color));
+        bool hasAlpha = false;
+        if (color.length() == 9 && color[0] == '#') {
+            hasAlpha = true;
+        }
+        fillColor = convertRGBToColor(convertColorToRGB(color), hasAlpha);
         if (!isFilled()) {
             setFilled(true);
         }
