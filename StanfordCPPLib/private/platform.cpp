@@ -3214,9 +3214,16 @@ static GEvent parseActionEvent(TokenScanner& scanner, EventType type) {
     std::string action = scanner.getStringValue(scanner.nextToken());
     scanner.verifyToken(",");
     double time = scanDouble(scanner);
-    scanner.verifyToken(",");
-    int modifiers = scanInt(scanner);
-    scanner.verifyToken(")");
+    // event received from back end might be a "state changed" event, in which case
+    // there is no modifers argument, so we'll set modifiers to 0
+    int modifiers = 0;
+    std::string token = scanner.nextToken();
+    if (token != ")") {
+        scanner.saveToken(token);
+        scanner.verifyToken(",");
+        modifiers = scanInt(scanner);
+        scanner.verifyToken(")");
+    }
     GActionEvent e(type, STATIC_VARIABLE(sourceTable).get(id), action);
     e.setModifiers(modifiers);
     e.setEventTime(time);
