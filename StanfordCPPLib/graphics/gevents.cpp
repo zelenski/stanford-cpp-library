@@ -143,6 +143,7 @@ GActionEvent::GActionEvent(GEvent e) {
         eventTime = e.eventTime;
         source = e.source;
         actionCommand = e.actionCommand;
+        gwd = e.gwd;
     }
 }
 
@@ -190,6 +191,7 @@ GKeyEvent::GKeyEvent(GEvent e) {
         eventTime = e.eventTime;
         keyChar = e.keyChar;
         keyCode = e.keyCode;
+        gwd = e.gwd;
     }
 }
 
@@ -368,6 +370,7 @@ GTableEvent::GTableEvent(GEvent e) {
         row = e.row;
         column = e.column;
         value = e.value;
+        gwd = e.gwd;
     }
 }
 
