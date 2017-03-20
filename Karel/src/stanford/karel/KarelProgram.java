@@ -250,7 +250,7 @@ public class KarelProgram extends Program {
 		
 	}
 	
-	private void loadConfiguration() {
+	protected void loadConfiguration(Properties props) {
 		try {
 			String tmpDir = System.getProperty("java.io.tmpdir");
 			if (tmpDir != null) {
@@ -258,7 +258,6 @@ public class KarelProgram extends Program {
 				if (!configFile.exists()) {
 					return;
 				}
-				Properties props = new Properties();
 				FileInputStream input = new FileInputStream(configFile);
 				props.load(input);
 				input.close();
@@ -275,12 +274,11 @@ public class KarelProgram extends Program {
 		}
 	}
 	
-	private void saveConfiguration() {
+	protected void saveConfiguration(Properties props) {
 		try {
 			String tmpDir = System.getProperty("java.io.tmpdir");
 			if (tmpDir != null) {
 				File configFile = new File(tmpDir, CONFIG_FILE_NAME);
-				Properties props = new Properties();
 				props.put("mskarel", String.valueOf(msKarelItem.isSelected()));
 				FileOutputStream out = new FileOutputStream(configFile);
 				props.store(out, "Karel configuration file");
