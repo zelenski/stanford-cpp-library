@@ -479,8 +479,8 @@ public:
     bool inBounds(double x, double y) const;
 
     /*
-     * Method: inBounds
-     * Usage: if (gw.inBounds(x, y)) ...
+     * Method: inCanvasBounds
+     * Usage: if (gw.inCanvasBounds(x, y)) ...
      * ---------------------------------
      * Returns whether the given (x, y) pixel coordinate is within the bounds
      * of this window's central canvas area.
@@ -537,7 +537,7 @@ public:
      * Method: removeFromRegion
      * Usage: gw.removeFromRegion(interactor, region);
      * -----------------------------------------------
-     * Adds the interactor (which can also be a <code>GLabel</code>) to
+     * Removes the interactor (which can also be a <code>GLabel</code>) from
      * the control strip specified by the <code>region</code> parameter.
      * The <code>region</code> parameter must be one of the strings
      * <code>"NORTH"</code>, <code>"EAST"</code>, <code>"SOUTH"</code>,
