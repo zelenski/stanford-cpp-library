@@ -44,16 +44,21 @@ static bool recursiveMatch(const std::string& str, int sx, const std::string& pa
 /* Implementations */
 
 void createDirectory(const std::string& path) {
-    return stanfordcpplib::getPlatform()->filelib_createDirectory(path);
+    return stanfordcpplib::getPlatform()->filelib_createDirectory(expandPathname(path));
 }
 
 void createDirectoryPath(const std::string& path) {
-    size_t cp = 1;
+    size_t cp = 0;
     if (path == "") return;
-    while ((cp = path.find('/', cp + 1)) != std::string::npos) {
-        createDirectory(path.substr(0, cp - 1));
+    std::string expandedPath = expandPathname(path);
+    char sep = getDirectoryPathSeparator()[0];
+    if (expandedPath.substr(1, 2) == ":\\") { // Windows drive letter followed by ':\'
+        cp = 2;
     }
-    createDirectory(path);
+    while ((cp = expandedPath.find(sep, cp + 1)) != std::string::npos) {
+       createDirectory(expandedPath.substr(0, cp));
+    }
+    createDirectory(expandedPath);
 }
 
 std::string defaultExtension(const std::string& filename, const std::string& ext) {
@@ -79,7 +84,7 @@ std::string defaultExtension(const std::string& filename, const std::string& ext
 }
 
 void deleteFile(const std::string& filename) {
-    remove(expandPathname(filename).c_str());
+    stanfordcpplib::getPlatform()->filelib_deleteFile(expandPathname(filename));
 }
 
 std::string expandPathname(const std::string& filename) {
@@ -185,11 +190,11 @@ std::string getTempDirectory() {
 }
 
 bool isDirectory(const std::string& filename) {
-    return stanfordcpplib::getPlatform()->filelib_isDirectory(filename);
+    return stanfordcpplib::getPlatform()->filelib_isDirectory(expandPathname(filename));
 }
 
 bool isFile(const std::string& filename) {
-    return stanfordcpplib::getPlatform()->filelib_isFile(filename);
+    return stanfordcpplib::getPlatform()->filelib_isFile(expandPathname(filename));
 }
 
 bool isSymbolicLink(const std::string& filename) {
@@ -206,7 +211,7 @@ void listDirectory(const std::string& path, Vector<std::string>& list) {
 }
 
 void listDirectory(const std::string& path, std::vector<std::string>& list) {
-    return stanfordcpplib::getPlatform()->filelib_listDirectory(path, list);
+    return stanfordcpplib::getPlatform()->filelib_listDirectory(expandPathname(path), list);
 }
 
 Vector<std::string> listDirectory(const std::string& path) {
