@@ -57,8 +57,8 @@ bool getConsoleClearEnabled();
 
 /*
  * Function: setConsoleCloseOperation();
- * Usage: setConsoleCloseOperation(op);
- * ------------------------------------
+ * Usage: if (getConsoleCloseOperation() == ...)
+ * ---------------------------------------------
  * Returns what the console will do when the user hits its "close" button.
  * By default, this is CONSOLE_HIDE_ON_CLOSE unless set otherwise.
  */
@@ -67,7 +67,7 @@ ConsoleCloseOperation getConsoleCloseOperation();
 /*
  * Function: getConsoleEcho
  * Usage: bool echo = getConsoleEcho();
- * ----------------------------
+ * ------------------------------------
  * Returns whether or not the input/output from the Stanford graphical
  * console window is being echoed onto the standard operating system terminal
  * window. Initially this is false unless set to true by a previous call to
@@ -96,7 +96,7 @@ bool getConsoleLocationSaved();
 /*
  * Function: getConsolePrintExceptions
  * Usage: bool ex = getConsolePrintExceptions();
- * ----------------------------
+ * ---------------------------------------------
  * Returns whether or not a feature is enabled that causes exceptions to be
  * echoed to the Stanford graphical console window when they are thrown.
  * Disabled (false) by default.
