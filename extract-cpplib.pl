@@ -7,6 +7,8 @@ my $outfile = "stanfordcpplib.cpp";
 if ($#ARGV >= 0) {
 	$outfile = shift @ARGV;
 }
+my $out_h_file = $outfile;
+$out_h_file =~ s/\.cpp/.h/;   # "stanfordcpplib.h"
 my $basedir = "StanfordCPPLib";
 my $projdir = "StanfordCPPLib_QtCreatorProject/src";
 my $autograder_basedir = "autograder";
@@ -181,8 +183,9 @@ my $overall_shared_comment_header =
 	. "// make them to the library's original source as separate .cpp / .h files,\n"
 	. "// then re-run the script to extract the library into these single large merged files.\n\n";
 
-my $overall_text = $overall_shared_comment_header
+my $overall_cpp_text = $overall_shared_comment_header
 	# . "using namespace std;\n"
+	. "#include \"$out_h_file\"\n"
 	. "\n";
 my $overall_h_text = $overall_shared_comment_header
 	. "#define STANFORD_CPP_LIB_PRESENT true\n\n";
@@ -202,23 +205,22 @@ foreach my $cppfile (@ALL_FILES) {
 	# remove redeclaration of, static Platform *pp = getPlatform();
 	# $cppfiletext = regex_remove_lines($cppfiletext, "static[ ]*Platform[ *]+pp[ ]*=[ ]*getPlatform();[ ]*");
 	
-	$overall_text .= "/////////////////////// BEGIN code extracted from $cppfile ///////////////////////\n"
+	$text_to_add = "/////////////////////// BEGIN code extracted from $cppfile ///////////////////////\n"
 			. $cppfiletext . "\n"
 			. "/////////////////////// END code extracted from $cppfile ///////////////////////\n\n";
+	
 	if ($cppfile =~ m/\.h$/) {
-		$overall_h_text .= "/////////////////////// BEGIN code extracted from $cppfile ///////////////////////\n"
-				. $cppfiletext . "\n"
-				. "/////////////////////// END code extracted from $cppfile ///////////////////////\n\n";
+		$overall_h_text .= $text_to_add;
+	} else {
+		$overall_cpp_text .= $text_to_add;
 	}
 }
 
 print("Writing output file $outfile ...\n");
 open(OUTFILE, ">", $outfile) or die "Cannot open $outfile for writing: $!";
-print OUTFILE $overall_text;
+print OUTFILE $overall_cpp_text;
 close OUTFILE;
 
-my $out_h_file = $outfile;
-$out_h_file =~ s/\.cpp/.h/;
 print("Writing header file $out_h_file ...\n");
 open(OUTFILE, ">", $out_h_file) or die "Cannot open $out_h_file for writing: $!";
 print OUTFILE $overall_h_text;
