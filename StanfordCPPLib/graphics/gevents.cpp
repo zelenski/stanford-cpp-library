@@ -356,6 +356,7 @@ GServerEvent::GServerEvent(GEvent e) {
         requestID = e.requestID;
         requestUrl = e.requestUrl;
         value = e.value;
+        // gwd = e.gwd;
     }
 }
 
@@ -437,6 +438,7 @@ GTimerEvent::GTimerEvent(GEvent e) {
         modifiers = e.modifiers;
         eventTime = e.eventTime;
         gtd = e.gtd;
+        // gwd = e.gwd;
     }
 }
 
