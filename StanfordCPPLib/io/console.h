@@ -8,6 +8,8 @@
  * Once the graphical console has been enabled, it cannot easily be turned off
  * again for that program.
  * 
+ * @version 2017/04/25
+ * - wrap console initializer in an #ifndef to avoid multiple declaration
  * @version 2016/09/22
  * - added __DONT_ENABLE_GRAPHICAL_CONSOLE and optional graphical console
  * @version 2016/08/12
@@ -253,6 +255,8 @@ extern void pause(double milliseconds);
 namespace stanfordcpplib {
 extern void initializeGraphicalConsole();
 
+#ifndef __ConsoleInitializer_created
+#define __ConsoleInitializer_created
 class __ConsoleInitializer {
 public:
     /*
@@ -265,6 +269,7 @@ public:
     }
 };
 static __ConsoleInitializer __console_init;
+#endif // __ConsoleInitializer_created
 }
 
 #endif // __DONT_ENABLE_GRAPHICAL_CONSOLE

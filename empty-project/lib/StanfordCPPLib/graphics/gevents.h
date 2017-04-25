@@ -332,10 +332,10 @@ private:
     std::string sourceKey;
 
     /* Window, mouse, and key events */
-    GWindowData *gwd;
+    GWindowData* gwd;
 
     /* Action events */
-    GObject *source;
+    GObject* source;
     std::string actionCommand;
 
     /* Mouse events */
@@ -356,7 +356,7 @@ private:
     std::string value;
 
     /* Timer events */
-    GTimerData *gtd;
+    GTimerData* gtd;
 
     /* Friend specifications */
     friend class GActionEvent;

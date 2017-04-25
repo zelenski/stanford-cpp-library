@@ -8,6 +8,8 @@
  * Once the graphical console has been enabled, it cannot easily be turned off
  * again for that program.
  * 
+ * @version 2017/04/25
+ * - wrap console initializer in an #ifndef to avoid multiple declaration
  * @version 2016/09/22
  * - added __DONT_ENABLE_GRAPHICAL_CONSOLE and optional graphical console
  * @version 2016/08/12
@@ -57,8 +59,8 @@ bool getConsoleClearEnabled();
 
 /*
  * Function: setConsoleCloseOperation();
- * Usage: setConsoleCloseOperation(op);
- * ------------------------------------
+ * Usage: if (getConsoleCloseOperation() == ...)
+ * ---------------------------------------------
  * Returns what the console will do when the user hits its "close" button.
  * By default, this is CONSOLE_HIDE_ON_CLOSE unless set otherwise.
  */
@@ -67,7 +69,7 @@ ConsoleCloseOperation getConsoleCloseOperation();
 /*
  * Function: getConsoleEcho
  * Usage: bool echo = getConsoleEcho();
- * ----------------------------
+ * ------------------------------------
  * Returns whether or not the input/output from the Stanford graphical
  * console window is being echoed onto the standard operating system terminal
  * window. Initially this is false unless set to true by a previous call to
@@ -96,7 +98,7 @@ bool getConsoleLocationSaved();
 /*
  * Function: getConsolePrintExceptions
  * Usage: bool ex = getConsolePrintExceptions();
- * ----------------------------
+ * ---------------------------------------------
  * Returns whether or not a feature is enabled that causes exceptions to be
  * echoed to the Stanford graphical console window when they are thrown.
  * Disabled (false) by default.
@@ -253,6 +255,8 @@ extern void pause(double milliseconds);
 namespace stanfordcpplib {
 extern void initializeGraphicalConsole();
 
+#ifndef __ConsoleInitializer_created
+#define __ConsoleInitializer_created
 class __ConsoleInitializer {
 public:
     /*
@@ -265,6 +269,7 @@ public:
     }
 };
 static __ConsoleInitializer __console_init;
+#endif // __ConsoleInitializer_created
 }
 
 #endif // __DONT_ENABLE_GRAPHICAL_CONSOLE

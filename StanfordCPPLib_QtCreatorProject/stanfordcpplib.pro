@@ -12,7 +12,7 @@
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
 # @version 2016/12/09
-# - added SPL_THROW_ON_INVALID_ITERATOR flag
+# - added SPL_THROW_ON_INVALID_ITERATOR flag (default disabled)
 # @version 2016/12/01
 # - slight tweaks to compiler flags to improve stack trace line generation
 # @version 2016/11/07
@@ -276,7 +276,7 @@ DEFINES += PQUEUE_PRINT_IN_HEAP_ORDER
 
 # flag to throw exceptions when a collection iterator is used after it has
 # been invalidated (e.g. if you remove from a Map while iterating over it)
-DEFINES += SPL_THROW_ON_INVALID_ITERATOR
+# DEFINES += SPL_THROW_ON_INVALID_ITERATOR
 
 # should we throw an error() when operator >> fails on a collection?
 # for years this was true, but the C++ standard says you should just silently

@@ -33,6 +33,7 @@ namespace collections {
 template <typename CollectionType, typename IteratorType>
 void checkVersion(const CollectionType& coll, const IteratorType& itr,
                   const std::string& memberName = "") {
+#ifdef SPL_THROW_ON_INVALID_ITERATOR
     unsigned int collVersion = coll.version();
     unsigned int itrVersion = itr.version();
     if (itrVersion != collVersion) {
@@ -44,6 +45,7 @@ void checkVersion(const CollectionType& coll, const IteratorType& itr,
         msg += "Do not modify a collection during a for-each loop or iterator traversal.";
         error(msg);
     }
+#endif
 }
 
 /*

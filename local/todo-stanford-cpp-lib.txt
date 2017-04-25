@@ -1,6 +1,24 @@
 	TODO C++ libs:
 	==============
 
+	iterator versioning
+		BasicGraph
+		DawgLexicon
+		Deque
+		Graph
+		Grid
+		HashMap
+		HashSet
+		Lexicon
+		LinkedList
+		Map
+		PriorityQueue
+		Queue
+		Set
+		SparseGrid
+		Stack
+		Vector
+
 	autograders: why no stack traces?
 	
 	console [closed] when program terminated

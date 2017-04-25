@@ -78,7 +78,7 @@ public:
 
     /*
      * This constructor uses an initializer list to set up the grid.
-     * Usage: Grid<int> grid {{1, 2, 3}, {4, 5, 6}};
+     * Usage: SparseGrid<int> grid {{1, 2, 3}, {4, 5, 6}};
      */
     SparseGrid(std::initializer_list<std::initializer_list<ValueType> > list);
 

@@ -86,6 +86,7 @@
 
 #include "platform.h"
 #ifdef _WIN32
+#  include <direct.h>
 #  include <windows.h>
 #  include <tchar.h>
 #  undef MOUSE_EVENT
@@ -258,7 +259,7 @@ bool Platform::filelib_isFile(const std::string& filename) {
 // Unix implementation; see Windows implementation elsewhere in this file
 bool Platform::filelib_isSymbolicLink(const std::string& filename) {
     struct stat fileInfo;
-    if (stat(filename.c_str(), &fileInfo) != 0) {
+    if (lstat(filename.c_str(), &fileInfo) != 0) {
         return false;
     }
     return S_ISLNK(fileInfo.st_mode) != 0;
@@ -275,7 +276,7 @@ bool Platform::filelib_isDirectory(const std::string& filename) {
 
 // Unix implementation; see Windows implementation elsewhere in this file
 void Platform::filelib_setCurrentDirectory(const std::string& path) {
-    if (chdir(path.c_str()) == 0) {
+    if (chdir(path.c_str()) != 0) {
         std::string msg = "setCurrentDirectory: ";
         std::string err = std::string(strerror(errno));
         error(msg + err);
@@ -284,17 +285,15 @@ void Platform::filelib_setCurrentDirectory(const std::string& path) {
 
 // Unix implementation; see Windows implementation elsewhere in this file
 std::string Platform::filelib_getCurrentDirectory() {
-    char *cwd = getcwd(nullptr, 0);
-    if (!cwd) {
-        std::string msg = "getCurrentDirectory: ";
-        std::string err = std::string(strerror(errno));
-        error(msg + err);
-        return "";
+    char currentDirBuf[4096] = {'\0'};
+    char* cwd = getcwd(currentDirBuf, 4096 - 1);
+    std::string result;
+    if (cwd) {
+        result = std::string(cwd);
     } else {
-        std::string result = std::string(cwd);
-        free(cwd);
-        return result;
+        error("getCurrentDirectory: " + std::string(strerror(errno)));
     }
+    return result;
 }
 
 // Unix implementation; see Windows implementation elsewhere in this file
@@ -323,6 +322,11 @@ void Platform::filelib_createDirectory(const std::string& path) {
         std::string err = std::string(strerror(errno));
         error(msg + err);
     }
+}
+
+// Unix implementation; see Windows implementation elsewhere in this file
+void Platform::filelib_deleteFile(const std::string& path) {
+    remove(path.c_str());
 }
 
 // Unix implementation; see Windows implementation elsewhere in this file
@@ -443,8 +447,24 @@ std::string Platform::filelib_getTempDirectory() {
 
 // Windows implementation; see Unix implementation elsewhere in this file
 void Platform::filelib_createDirectory(const std::string& path) {
-    if (!CreateDirectoryA(path.c_str(), nullptr)) {
+    std::string pathStr = path;
+    if (endsWith(path, "\\")) {
+        pathStr = path.substr(0, path.length() - 1);
+    }
+    if (CreateDirectoryA(path.c_str(), nullptr) == 0) {
+        if (GetLastError() == ERROR_ALREADY_EXISTS && filelib_isDirectory(pathStr)) {
+            return;
+        }
         error("createDirectory: Can't create " + path);
+    }
+}
+
+// Windows implementation; see Unix implementation elsewhere in this file
+void Platform::filelib_deleteFile(const std::string& path) {
+    if(filelib_isDirectory(path)) {
+        RemoveDirectoryA(path.c_str());
+    } else {
+        DeleteFileA(path.c_str());
     }
 }
 
@@ -2952,7 +2972,6 @@ static std::string getSplJarPath() {
     char* splHome = getenv("SPL_HOME");
     if (splHome) {
         splHomeDir = splHome;   // copy to C++ string
-        free(splHome);          // free C heap memory
         // ensure that it ends with a trailing slash
         if (!splHomeDir.empty() && splHomeDir[splHomeDir.length() - 1] != '/') {
             splHomeDir += '/';
@@ -2961,26 +2980,26 @@ static std::string getSplJarPath() {
 
 #ifndef _WIN32
     // on Mac only, may need to change folder because of app's nested dir structure
-    char* currentDirC = getcwd(nullptr, 0);
-    if (currentDirC) {
-        std::string currentDir = currentDirC;
-        free(currentDirC);
-
-        size_t ax = currentDir.find(".app/Contents/");
-        if (ax != std::string::npos) {
-            while (ax > 0 && currentDir[ax] != '/') {
-                ax--;
-            }
-            if (ax > 0) {
-                std::string cwd = currentDir.substr(0, ax);
-                chdir(cwd.c_str());
-            }
+    std::string currentDir = stanfordcpplib::getPlatform()->filelib_getCurrentDirectory();
+    size_t ax = currentDir.find(".app/Contents/");
+    if (ax != std::string::npos) {
+        while (ax > 0 && currentDir[ax] != '/') {
+            ax--;
+        }
+        if (ax > 0) {
+            std::string cwd = currentDir.substr(0, ax);
+            chdir(cwd.c_str());
         }
     }
 #endif // _WIN32
 
     // check whether spl.jar file exists (code taken from filelib_fileExists)
     std::string jarName = splHomeDir + "spl.jar";
+    if (!stanfordcpplib::getPlatform()->filelib_fileExists(jarName)) {
+        std::string argvDir = getHead(exceptions::getProgramNameForStackTrace());
+        jarName = argvDir + "/spl.jar";
+    }
+
     if (!stanfordcpplib::getPlatform()->filelib_fileExists(jarName)) {
         // use stderr directly rather than cerr because graphical console is unreachable
         fputs("\n", stderr);
@@ -3214,9 +3233,16 @@ static GEvent parseActionEvent(TokenScanner& scanner, EventType type) {
     std::string action = scanner.getStringValue(scanner.nextToken());
     scanner.verifyToken(",");
     double time = scanDouble(scanner);
-    scanner.verifyToken(",");
-    int modifiers = scanInt(scanner);
-    scanner.verifyToken(")");
+    // event received from back end might be a "state changed" event, in which case
+    // there is no modifers argument, so we'll set modifiers to 0
+    int modifiers = 0;
+    std::string token = scanner.nextToken();
+    if (token != ")") {
+        scanner.saveToken(token);
+        scanner.verifyToken(",");
+        modifiers = scanInt(scanner);
+        scanner.verifyToken(")");
+    }
     GActionEvent e(type, STATIC_VARIABLE(sourceTable).get(id), action);
     e.setModifiers(modifiers);
     e.setEventTime(time);

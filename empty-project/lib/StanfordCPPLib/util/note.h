@@ -28,7 +28,7 @@
 /**
  * Should Note objects print a message to the console as they play?
  */
-#define NOTE_DEBUG true
+#define NOTE_DEBUG false
 
 /**
  * Each Note object represents a musical note or rest.

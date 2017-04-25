@@ -5,9 +5,12 @@
  * to represent <b><i>graphs,</i></b> which consist of a set of
  * <b><i>nodes</i></b> (vertices) and a set of <b><i>arcs</i></b> (edges).
  * 
+ * @version 2016/12/09
+ * - fixed bug in getInverseNeighborNames function
  * @version 2016/12/01
  * - removed memory leaks of graph vertex and edge structures
  * - fixed bug in containsNode method (was returning false positives)
+ * - fixed bugs in some node/arc methods (should not crash on empty/null args)
  * @version 2016/11/29
  * - added getNeighborNames, getInverseNeighborNames
  * @version 2016/11/26
@@ -788,9 +791,11 @@ void Graph<NodeType, ArcType>::clearArcs() {
 
 template <typename NodeType, typename ArcType>
 void Graph<NodeType, ArcType>::clearArcs(NodeType* node) {
-    Set<ArcType*> arcs = getArcSet(node);   // makes a copy
-    for (ArcType* arc : arcs) {
-        removeArc(arc);
+    if (isExistingNode(node)) {
+        Set<ArcType*> arcs = getArcSet(node);   // makes a copy
+        for (ArcType* arc : arcs) {
+            removeArc(arc);
+        }
     }
 }
 
@@ -866,13 +871,17 @@ const Set<ArcType*>& Graph<NodeType, ArcType>::getArcSet() const {
 
 template <typename NodeType, typename ArcType>
 const Set<ArcType*>& Graph<NodeType, ArcType>::getArcSet(NodeType* node) const {
-    verifyExistingNode(node, "getArcSet");
-    return node->arcs;
+    if (isExistingNode(node)) {
+        return node->arcs;
+    } else {
+        Set<ArcType*> set;   // empty
+        return set;
+    }
 }
 
 template <typename NodeType, typename ArcType>
 const Set<ArcType*>& Graph<NodeType, ArcType>::getArcSet(const std::string& name) const {
-    return getArcSet(getExistingNode(name, "getArcSet"));
+    return getArcSet(getNode(name));
 }
 
 template <typename NodeType, typename ArcType>
@@ -912,12 +921,11 @@ void Graph<NodeType, ArcType>::verifyNotNull(void* p, const std::string& member)
 template <typename NodeType, typename ArcType>
 const Set<ArcType*> Graph<NodeType, ArcType>::getInverseArcSet(NodeType* node) const {
     Set<ArcType*> set;
-    if (!node) {
-        return set;
-    }
-    for (ArcType* arc : getArcSet()) {
-        if (arc->finish == node) {
-            set.add(arc);
+    if (isExistingNode(node)) {
+        for (ArcType* arc : getArcSet()) {
+            if (arc->finish == node) {
+                set.add(arc);
+            }
         }
     }
     return set;
@@ -925,19 +933,17 @@ const Set<ArcType*> Graph<NodeType, ArcType>::getInverseArcSet(NodeType* node) c
 
 template <typename NodeType, typename ArcType>
 const Set<ArcType*> Graph<NodeType, ArcType>::getInverseArcSet(const std::string& nodeName) const {
-    NodeType* node = getNode(nodeName);
-    return getInverseArcSet(node);
+    return getInverseArcSet(getNode(nodeName));
 }
 
 template <typename NodeType, typename ArcType>
 Set<std::string> Graph<NodeType, ArcType>::getInverseNeighborNames(NodeType* node) const {
     Set<std::string> set;
-    if (!node) {
-        return set;
-    }
-    for (ArcType* arc : getArcSet()) {
-        if (arc->finish == node) {
-            set.add(arc->start->name);
+    if (isExistingNode(node)) {
+        for (ArcType* arc : getArcSet()) {
+            if (arc->finish == node) {
+                set.add(arc->start->name);
+            }
         }
     }
     return set;
@@ -945,18 +951,17 @@ Set<std::string> Graph<NodeType, ArcType>::getInverseNeighborNames(NodeType* nod
 
 template <typename NodeType, typename ArcType>
 Set<std::string> Graph<NodeType, ArcType>::getInverseNeighborNames(const std::string& name) const {
-    return getInverseNeighbors(getExistingNode(name, "getInverseNeighborNames"));
+    return getInverseNeighborNames(getNode(name));
 }
 
 template <typename NodeType, typename ArcType>
 Set<NodeType*> Graph<NodeType, ArcType>::getInverseNeighbors(NodeType* node) const {
     Set<NodeType*> set;
-    if (!node) {
-        return set;
-    }
-    for (ArcType* arc : getArcSet()) {
-        if (arc->finish == node) {
-            set.add(arc->start);
+    if (isExistingNode(node)) {
+        for (ArcType* arc : getArcSet()) {
+            if (arc->finish == node) {
+                set.add(arc->start);
+            }
         }
     }
     return set;
@@ -964,23 +969,23 @@ Set<NodeType*> Graph<NodeType, ArcType>::getInverseNeighbors(NodeType* node) con
 
 template <typename NodeType, typename ArcType>
 Set<NodeType*> Graph<NodeType, ArcType>::getInverseNeighbors(const std::string& nodeName) const {
-    NodeType* node = getNode(nodeName);
-    return getInverseNeighbors(node);
+    return getInverseNeighbors(getNode(nodeName));
 }
 
 template <typename NodeType, typename ArcType>
 Set<std::string> Graph<NodeType, ArcType>::getNeighborNames(NodeType* node) const {
-    verifyExistingNode(node, "getNeighborNames");
     Set<std::string> neighbors;
-    for (ArcType* arc : node->arcs) {
-        neighbors.add(arc->finish->name);
+    if (isExistingNode(node)) {
+        for (ArcType* arc : node->arcs) {
+            neighbors.add(arc->finish->name);
+        }
     }
     return neighbors;
 }
 
 template <typename NodeType, typename ArcType>
 Set<std::string> Graph<NodeType, ArcType>::getNeighborNames(const std::string& name) const {
-    return getNeighborNames(getExistingNode(name, "getNeighborNames"));
+    return getNeighborNames(getNode(name));
 }
 
 /*
@@ -991,17 +996,18 @@ Set<std::string> Graph<NodeType, ArcType>::getNeighborNames(const std::string& n
  */
 template <typename NodeType, typename ArcType>
 Set<NodeType*> Graph<NodeType, ArcType>::getNeighbors(NodeType* node) const {
-    verifyExistingNode(node, "getNeighbors");
     Set<NodeType*> nodes = Set<NodeType*>(comparator);
-    for (ArcType* arc : node->arcs) {
-        nodes.add(arc->finish);
+    if (isExistingNode(node)) {
+        for (ArcType* arc : node->arcs) {
+            nodes.add(arc->finish);
+        }
     }
     return nodes;
 }
 
 template <typename NodeType, typename ArcType>
 Set<NodeType*> Graph<NodeType, ArcType>::getNeighbors(const std::string& name) const {
-    return getNeighbors(getExistingNode(name, "getNeighbors"));
+    return getNeighbors(getNode(name));
 }
 
 /*

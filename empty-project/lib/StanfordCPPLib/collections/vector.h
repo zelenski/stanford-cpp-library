@@ -4,6 +4,8 @@
  * This file exports the <code>Vector</code> class, which provides an
  * efficient, safe, convenient replacement for the array type in C++.
  *
+ * @version 2016/12/09
+ * - added iterator version checking support
  * @version 2016/09/24
  * - refactored to use collections.h utility functions
  * @version 2016/08/12
@@ -345,9 +347,10 @@ private:
      */
 
     /* Instance variables */
-    ValueType* elements;        /* A dynamic array of the elements   */
-    int capacity;               /* The allocated size of the array   */
-    int count;                  /* The number of elements in use     */
+    ValueType* elements;        // a dynamic array of the elements
+    int capacity;               // the allocated size of the array
+    int count;                  // the number of elements in use
+    unsigned int m_version;     // structure version for detecting invalid iterators
 
     /* Private methods */
 
@@ -404,40 +407,50 @@ public:
     private:
         const Vector* vp;
         int index;
+        unsigned int itr_version;
 
     public:
-        iterator() {
-            this->vp = nullptr;
-            this->index = 0;
+        iterator()
+                : vp(nullptr),
+                  index(0),
+                  itr_version(0) {
+            // empty
         }
 
-        iterator(const iterator& it) {
-            this->vp = it.vp;
-            this->index = it.index;
+        iterator(const iterator& it)
+                : vp(it.vp),
+                  index(it.index),
+                  itr_version(it.itr_version) {
+            // empty
         }
 
-        iterator(const Vector* vp, int index) {
-            this->vp = vp;
-            this->index = index;
+        iterator(const Vector* vp, int index)
+                : vp(vp),
+                  index(index) {
+            itr_version = vp->version();
         }
 
         iterator& operator ++() {
+            stanfordcpplib::collections::checkVersion(*vp, *this);
             index++;
             return *this;
         }
 
         iterator operator ++(int) {
+            stanfordcpplib::collections::checkVersion(*vp, *this);
             iterator copy(*this);
             operator++();
             return copy;
         }
 
         iterator& operator --() {
+            stanfordcpplib::collections::checkVersion(*vp, *this);
             index--;
             return *this;
         }
 
         iterator operator --(int) {
+            stanfordcpplib::collections::checkVersion(*vp, *this);
             iterator copy(*this);
             operator--();
             return copy;
@@ -480,24 +493,29 @@ public:
         }
 
         iterator operator +(const int& rhs) {
+            stanfordcpplib::collections::checkVersion(*vp, *this);
             return iterator(vp, index + rhs);
         }
 
         iterator operator +=(const int& rhs) {
+            stanfordcpplib::collections::checkVersion(*vp, *this);
             index += rhs;
             return *this;
         }
 
         iterator operator -(const int& rhs) {
+            stanfordcpplib::collections::checkVersion(*vp, *this);
             return iterator(vp, index - rhs);
         }
 
         iterator operator -=(const int& rhs) {
+            stanfordcpplib::collections::checkVersion(*vp, *this);
             index -= rhs;
             return *this;
         }
 
         int operator -(const iterator& rhs) {
+            stanfordcpplib::collections::checkVersion(*vp, *this);
             extern void error(const std::string& msg);
             if (vp != rhs.vp) {
                 error("Vector Iterator::operator -: Iterators are in different vectors");
@@ -506,25 +524,44 @@ public:
         }
 
         ValueType& operator *() {
+            stanfordcpplib::collections::checkVersion(*vp, *this);
             return vp->elements[index];
         }
 
         ValueType* operator ->() {
+            stanfordcpplib::collections::checkVersion(*vp, *this);
             return &vp->elements[index];
         }
 
         ValueType& operator [](int k) {
+            stanfordcpplib::collections::checkVersion(*vp, *this);
             return vp->elements[index + k];
+        }
+
+        unsigned int version() const {
+            return itr_version;
         }
     };
 
+    /*
+     * Returns an iterator pointed at the beginning of this vector.
+     */
     iterator begin() const {
         return iterator(this, 0);
     }
 
+    /*
+     * Returns an iterator pointed just past the end of this vector.
+     */
     iterator end() const {
         return iterator(this, count);
     }
+
+    /*
+     * Returns the internal version of this collection.
+     * This is used to check for invalid iterators and issue error messages.
+     */
+    unsigned int version() const;
 };
 
 /* Implementation section */
@@ -537,23 +574,35 @@ public:
  * destructor frees the memory used for the array.
  */
 template <typename ValueType>
-Vector<ValueType>::Vector() {
-    count = capacity = 0;
-    elements = nullptr;
+Vector<ValueType>::Vector()
+        : elements(nullptr),
+          capacity(0),
+          count(0),
+          m_version(0) {
+    // empty
 }
 
 template <typename ValueType>
-Vector<ValueType>::Vector(int n, ValueType value) {
-    count = capacity = n;
-    elements = (n == 0) ? nullptr : new ValueType[n];
-    for (int i = 0; i < n; i++) {
-        elements[i] = value;
+Vector<ValueType>::Vector(int n, ValueType value)
+        : elements(nullptr),
+          capacity(n),
+          count(n),
+          m_version(0) {
+    if (n < 0) {
+        error("Vector::constructor: n cannot be negative: " + integerToString(n));
+    } else if (n > 0) {
+        elements = new ValueType[n];
+        for (int i = 0; i < n; i++) {
+            elements[i] = value;
+        }
     }
 }
 
 template <typename ValueType>
-Vector<ValueType>::Vector(const std::vector<ValueType>& v) {
-    count = capacity = v.size();
+Vector<ValueType>::Vector(const std::vector<ValueType>& v)
+        : m_version(0) {
+    count = v.size();
+    capacity = v.size();
     elements = new ValueType[count];
     for (int i = 0; i < count; i++) {
         elements[i] = v[i];
@@ -561,9 +610,10 @@ Vector<ValueType>::Vector(const std::vector<ValueType>& v) {
 }
 
 template <typename ValueType>
-Vector<ValueType>::Vector(std::initializer_list<ValueType> list) {
+Vector<ValueType>::Vector(std::initializer_list<ValueType> list)
+        : count(0),
+          m_version(0) {
     capacity = list.size();
-    count = 0;
     elements = new ValueType[capacity];
     addAll(list);
 }
@@ -619,8 +669,10 @@ void Vector<ValueType>::clear() {
     if (elements) {
         delete[] elements;
     }
-    count = capacity = 0;
+    count = 0;
+    capacity = 0;
     elements = nullptr;
+    m_version++;
 }
 
 // implementation note: This method is public so clients can guarantee a given
@@ -690,6 +742,7 @@ void Vector<ValueType>::insert(int index, const ValueType& value) {
     }
     elements[index] = value;
     count++;
+    m_version++;
 }
 
 template <typename ValueType>
@@ -737,6 +790,7 @@ void Vector<ValueType>::remove(int index) {
         elements[i] = elements[i + 1];
     }
     count--;
+    m_version++;
 }
 
 template <typename ValueType>
@@ -778,6 +832,11 @@ std::string Vector<ValueType>::toString() const {
     std::ostringstream os;
     os << *this;
     return os.str();
+}
+
+template <typename ValueType>
+unsigned int Vector<ValueType>::version() const {
+    return m_version;
 }
 
 /*
@@ -887,13 +946,18 @@ void Vector<ValueType>::checkIndex(int index, int min, int max, std::string pref
     }
 }
 
+// implementation notes:
+// doesn't free this->elements because deepCopy is only called in cases where
+// elements is either null (at construction) or has just been freed (operator =)
 template <typename ValueType>
 void Vector<ValueType>::deepCopy(const Vector& src) {
-    count = capacity = src.count;
+    count = src.count;
+    capacity = src.count;
     elements = (capacity == 0) ? nullptr : new ValueType[capacity];
     for (int i = 0; i < count; i++) {
         elements[i] = src.elements[i];
     }
+    m_version++;
 }
 
 /*

@@ -1,3 +1,8 @@
+/*
+ * @version 2017/04/25
+ * - changed from writeAck to writeOK
+ */
+
 package stanford.spl;
 
 import acm.util.TokenScanner;
@@ -11,6 +16,6 @@ public class Note_play extends JBECommand {
 		
 		Note note = new Note(noteStr);
 		note.play();
-		SplPipeDecoder.writeAck();   // tell C++ that note is done playing
+		SplPipeDecoder.writeOK();   // tell C++ that note is done playing
 	}
 }

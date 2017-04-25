@@ -12,6 +12,9 @@
  *
  * - simplicity/consolidation
  * - allow student to NOT include console.h and use plain text console
+ *
+ * @version 2017/04/25
+ * - wrap library initializer in an #ifndef to avoid multiple declaration
  */
 
 #ifndef _init_h
@@ -24,6 +27,8 @@ namespace stanfordcpplib {
 
 extern void initializeStanfordCppLibrary();
 
+#ifndef __StanfordCppLibraryInitializer_created
+#define __StanfordCppLibraryInitializer_created
 class __StanfordCppLibraryInitializer {
 public:
     /*
@@ -36,6 +41,7 @@ public:
     }
 };
 static __StanfordCppLibraryInitializer __stanfordcpplib_init;
+#endif // __StanfordCppLibraryInitializer_created
 
 } // namespace stanfordcpplib
 

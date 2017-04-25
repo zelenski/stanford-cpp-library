@@ -2,20 +2,20 @@
  * Test file for verifying the Stanford C++ lib functionality.
  */
 
-//#include "console.h"
-//#include "error.h"
-//#include "exceptions.h"
-//#include "map.h"
-//#include "note.h"
-//#include "vector.h"
-//#include "queue.h"
-//#include "random.h"
-//#include "strlib.h"
-//// #include "testcases.h"
-//#include "private/version.h"
-//#include "types.h"
-//#include <exception>
-//#include <iostream>
+#include "console.h"
+#include "error.h"
+#include "exceptions.h"
+#include "map.h"
+#include "note.h"
+#include "vector.h"
+#include "queue.h"
+#include "random.h"
+#include "strlib.h"
+// #include "testcases.h"
+#include "private/version.h"
+#include "types.h"
+#include <exception>
+#include <iostream>
 
 #include <iomanip>
 #include <iostream>
@@ -57,61 +57,21 @@ void test(Map<int, string> m) {
     cout << m << endl;
 }
 
+void testNotes() {
+    // Note note(1.5, Note::G, 5, Note::NATURAL, false);
+    Note note("1.5 G 5 NATURAL false");
+    Note rest("1 R false");
+    // std::cout << "NOTE: " << note << std::endl;
+    std::cout << "about to play ... " << std::endl;
+    note.play();
+    rest.play();
+    std::cout << "about to play 2 ... " << std::endl;
+    note.play();
+    rest.play();
+}
+
 int main() {
-//    cout << "&main = " << (void*) Main << endl;
-//    cout << "&foo  = " << (void*) foo << endl;
-//    cout << "&bar  = " << (void*) bar << endl;
-//    getLine("?");
-
-//    foo();
-
-    cout << "hi" + 40000 << endl;
-    cout << "hi" + 'x' << endl;
-    int n = 4000;
-    char c = 'x';
-    cout << "hi" + n << endl;
-    cout << "hi" + c << endl;
-
-    /*HashMap<int, string> map1;
-    map1[1] = "10";
-    map1[6] = "60";
-    map1[7] = "70";
-    map1[4] = "40";
-    map1[5] = "50";
-    map1[2] = "20";
-    map1[3] = "30";
-    map1[8] = "80";
-    HashMap<int, string> map2 = map1;
-    test(map2);
-    cout << boolalpha << map1.containsKey(1) << endl;
-    cout << boolalpha << map2.containsKey(10) << endl;
-    for (int k : map1) {
-        if (k % 2 == 0) {
-            cout << "remove " << k << endl;
-            //map1.remove(k);
-            map1.clear();
-        } else {
-            cout << "modify " << k << endl;
-            map1[k] += "!";
-        }
-    }
-    cout << "Done" << endl;*/
-
-//    Vector<int> v {1, 2, 3, 4, 5};
-//    for (int n : v) {
-//        if (n % 2 != 0) {
-//            cout << "Vector remove " << n << endl;
-//            v.remove(n);
-//        }
-//    }
-//    cout << "Done" << endl;
-
-//    BasicGraph graph;
-//    graph.addVertex("v1");
-//    graph.removeVertex("v1");
-//    cout << graph << endl;
-//    cout << boolalpha << graph.containsVertex("v1") << endl;
-
+    testNotes();
 
 //    while (true) {
 //        cout << "   DATA STRUCTURES::" << endl;
@@ -202,21 +162,6 @@ int main() {
 //        }
 //    }
     
-//    std::cout << "Complete." << std::endl;
-
-    // Note note(1.5, Note::G, 5, Note::NATURAL, false);
-//    Note note("1.5 G 5 NATURAL false");
-//    Note rest("1 R false");
-//    // std::cout << "NOTE: " << note << std::endl;
-//    std::cout << "about to play ... " << std::endl;
-//    note.play();
-//    rest.play();
-//    std::cout << "about to play 2 ... " << std::endl;
-//    note.play();
-//    rest.play();
-
-
-
-    std::cout << "done." << std::endl;
+    std::cout << "Complete." << std::endl;
     return 0;
 }

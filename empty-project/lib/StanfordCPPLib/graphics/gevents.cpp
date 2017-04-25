@@ -143,6 +143,7 @@ GActionEvent::GActionEvent(GEvent e) {
         eventTime = e.eventTime;
         source = e.source;
         actionCommand = e.actionCommand;
+        gwd = e.gwd;
     }
 }
 
@@ -190,6 +191,7 @@ GKeyEvent::GKeyEvent(GEvent e) {
         eventTime = e.eventTime;
         keyChar = e.keyChar;
         keyCode = e.keyCode;
+        gwd = e.gwd;
     }
 }
 
@@ -354,6 +356,7 @@ GServerEvent::GServerEvent(GEvent e) {
         requestID = e.requestID;
         requestUrl = e.requestUrl;
         value = e.value;
+        // gwd = e.gwd;
     }
 }
 
@@ -368,6 +371,7 @@ GTableEvent::GTableEvent(GEvent e) {
         row = e.row;
         column = e.column;
         value = e.value;
+        gwd = e.gwd;
     }
 }
 
@@ -434,6 +438,7 @@ GTimerEvent::GTimerEvent(GEvent e) {
         modifiers = e.modifiers;
         eventTime = e.eventTime;
         gtd = e.gtd;
+        // gwd = e.gwd;
     }
 }
 

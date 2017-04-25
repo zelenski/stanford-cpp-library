@@ -8,6 +8,8 @@
  * Used to implement comparison operators like < and >= on collections.
  *
  * @author Marty Stepp
+ * @version 2016/12/09
+ * - added checkVersion for iterators
  * @version 2016/09/24
  * - renamed compare.h to collections.h
  * - added printing functions
@@ -27,6 +29,24 @@
 
 namespace stanfordcpplib {
 namespace collections {
+
+template <typename CollectionType, typename IteratorType>
+void checkVersion(const CollectionType& coll, const IteratorType& itr,
+                  const std::string& memberName = "") {
+#ifdef SPL_THROW_ON_INVALID_ITERATOR
+    unsigned int collVersion = coll.version();
+    unsigned int itrVersion = itr.version();
+    if (itrVersion != collVersion) {
+        std::string msg = memberName;
+        if (!msg.empty()) {
+            msg += ": ";
+        }
+        msg += "Collection modified during iteration. Iterator is now invalid.\n";
+        msg += "Do not modify a collection during a for-each loop or iterator traversal.";
+        error(msg);
+    }
+#endif
+}
 
 /*
  * Performs a comparison for ordering between the given two collections
@@ -482,8 +502,6 @@ std::ostream& writeMap(std::ostream& out, const MapType& map) {
     out << "}";
     return out;
 }
-
-
 
 } // namespace collections
 } // namespace stanfordcpplib

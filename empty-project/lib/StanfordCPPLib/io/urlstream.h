@@ -100,9 +100,9 @@ typedef enum {
     ERR503=503, /* Service overloaded */
 
     /* Succesful results */
-    OK0 = 0,   /* successfull parse */
-    OK201=201, /* Ressource succesfully created */
-    OK200=200  /* Ressource succesfully read */
+    OK0 = 0,   /* Successful parse */
+    OK201=201, /* Resource succesfully created */
+    OK200=200  /* Resource succesfully read */
 
 } http_retcode;
 

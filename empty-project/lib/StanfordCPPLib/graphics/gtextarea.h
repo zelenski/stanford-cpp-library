@@ -1,11 +1,12 @@
-/**
- * @file gtextarea.h
+/*
+ * File: gtextarea.h
  * -----------------
- *
- * @brief
- * This file exports the GTextArea class.
+ * This file exports the GTextArea class, which represents a multi-line
+ * area that displays plain text.
  *
  * @author Jeff Lutgen
+ * @version 2017/03/16
+ * - improved comments and changed them from doxygen style to StanfordCPPLib style
  * @version 2016/10/12
  * - taken from https://github.com/jlutgen/stanford-whittier-cpplib/
  * - Thanks, Jeff!
@@ -35,11 +36,9 @@
 #include "gobjects.h"
 #include "gtypes.h"
 
-
-/**
- * @class GTextArea
- *
- * @brief This interactor subclass represents a multi-line
+/* Class: GTextArea
+ * ----------------
+ * This interactor subclass represents a multi-line
  * area that displays plain text.
  *
  * Scrollbars are added to the text area automatically if the
@@ -48,22 +47,19 @@
  */
 class GTextArea : public GInteractor {
 public:
-
-    /** \_overload */
     GTextArea(double width, double height);
-    /**
+    /*
+     * Constructor: GTextArea
+     * Usage: GTextArea textArea;
+     *        GTextArea textArea(width, height);
+     *        GTextArea textArea(x, y, width, height);
+     * -----------------------------------------------
      * Constructs an text area with the specified width, height,
      * and initial location. If no location is passed, the default
-     * of `(0, 0)` is used.
+     * of (0, 0) is used.
      *
      * The text area is editable by default.
-     *
-     * Sample usages:
-     *
-     *      GTextArea *textarea = new GTextArea(width, height);
-     *      GTextArea *textarea = new GTextArea(x, y, width, height);
      */
-    /** \_overload */
     GTextArea(double x, double y, double width, double height);
 
     /* Prototypes for the virtual methods */
@@ -73,40 +69,36 @@ public:
 
     /* unique GTextArea behavior */
 
-    /**
-      * Sets the font used by this text area.
-      *
-      * Sample usage:
-      *
-      *     textarea->setFont();
-      */
+    /*
+     * Method: GTextArea
+     * Usage: textarea.setFont("Monospaced-9");
+     * ----------------------------------------
+     * Sets the font used by this text area.
+     */
     void setFont(std::string font);
 
-    /**
+    /*
+     * Method: getText
+     * Usage: string text = textarea.getText();
+     * ----------------------------------------
      * Returns the text currently displayed by this text area.
-     *
-     * Sample usage:
-     *
-     *     string font = textarea->getText();
      */
     std::string getText() const;
 
-    /**
-      * Sets the text displayed by this text area.
-      *
-      * Sample usage:
-      *
-      *     textarea->setText();
-      */
+    /*
+     * Method: setText
+     * Usage: textarea.setText(text);
+     * ------------------------------
+     * Sets the text displayed by this text area.
+     */
     void setText(std::string text);
 
-    /**
-      * Sets whether this text area is editable.
-      *
-      * Sample usage:
-      *
-      *     textarea->setText(isEditable);
-      */
+    /*
+     * Method: setEditable
+     * Usage: textarea.setEditable(isEditable);
+     * ----------------------------------------
+     * Sets whether this text area is editable.
+     */
     void setEditable(bool isEditable);
 
 private:

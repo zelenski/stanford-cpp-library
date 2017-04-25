@@ -5,6 +5,8 @@
  * by student code on the console.
  * 
  * @author Marty Stepp
+ * @version 2016/12/09
+ * - added insertStarsBeforeEachLine
  * @version 2016/11/07
  * - added cleanupFunctionNameForStackTrace
  * - slight refactor of shouldFilterOutFromStackTrace
@@ -470,7 +472,7 @@ static void stanfordCppLibSignalHandler(int sig) {
     std::cerr << "*** STANFORD C++ LIBRARY" << std::endl;
     std::cerr << "*** " << SIGNAL_KIND << " occurred during program execution." << std::endl;
     std::cerr << "*** " << SIGNAL_DETAILS << std::endl;;
-    std::cerr << "***" << std::endl;;
+    std::cerr << "***" << std::endl;
     
 //    if (sig != SIGSTACK) {
         exceptions::printStackTrace();
@@ -482,6 +484,21 @@ static void stanfordCppLibSignalHandler(int sig) {
 //    }
     std::cerr.flush();
     raise(sig == SIGSTACK ? SIGABRT : sig);
+}
+
+// puts "*** " before each line for multi-line error messages
+static std::string insertStarsBeforeEachLine(const std::string& s) {
+    std::string result;
+    for (std::string line : stringSplit(s, "\n")) {
+        if (!result.empty()) {
+            if (!startsWith(line, "***")) {
+                line = "*** " + line;
+            }
+            result += "\n";
+        }
+        result += line;
+    }
+    return result;
 }
 
 /*
@@ -505,18 +522,18 @@ static void stanfordCppLibTerminateHandler() {
         signalHandlerDisable();   // don't want both a signal AND a terminate() call
         throw;   // re-throws the exception that already occurred
     } catch (const ErrorException& ex) {
-        FILL_IN_EXCEPTION_TRACE(ex, "An ErrorException", ex.what());
+        FILL_IN_EXCEPTION_TRACE(ex, "An ErrorException", insertStarsBeforeEachLine(ex.what()));
     } catch (const InterruptedIOException& /* iex */) {
         // blocked console I/O was interrupted; just exit program immediately
         // (doesn't close any other JBE-generated GUI windows, but oh well)
         std::cout.flush();
         std::exit(0);
     } catch (const std::exception& ex) {
-        FILL_IN_EXCEPTION_TRACE(ex, "A C++ exception", ex.what());
+        FILL_IN_EXCEPTION_TRACE(ex, "A C++ exception", insertStarsBeforeEachLine(ex.what()));
     } catch (std::string str) {
-        FILL_IN_EXCEPTION_TRACE(str, "A string exception", str);
+        FILL_IN_EXCEPTION_TRACE(str, "A string exception", insertStarsBeforeEachLine(str));
     } catch (char const* str) {
-        FILL_IN_EXCEPTION_TRACE(str, "A string exception", str);
+        FILL_IN_EXCEPTION_TRACE(str, "A string exception", insertStarsBeforeEachLine(str));
     } catch (int n) {
         FILL_IN_EXCEPTION_TRACE(n, "An int exception", integerToString(n));
     } catch (long l) {
