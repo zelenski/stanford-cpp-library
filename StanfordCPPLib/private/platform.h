@@ -98,6 +98,7 @@ public:
 
     std::string file_openFileDialog(const std::string& title, const std::string& mode, const std::string& path);
     void filelib_createDirectory(const std::string& path);
+    void filelib_deleteFile(const std::string& path);
     std::string filelib_expandPathname(const std::string& filename);
     bool filelib_fileExists(const std::string& filename);
     std::string filelib_getCurrentDirectory();

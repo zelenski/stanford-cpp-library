@@ -86,6 +86,7 @@
 
 #include "platform.h"
 #ifdef _WIN32
+#  include <direct.h>
 #  include <windows.h>
 #  include <tchar.h>
 #  undef MOUSE_EVENT
@@ -258,7 +259,7 @@ bool Platform::filelib_isFile(const std::string& filename) {
 // Unix implementation; see Windows implementation elsewhere in this file
 bool Platform::filelib_isSymbolicLink(const std::string& filename) {
     struct stat fileInfo;
-    if (stat(filename.c_str(), &fileInfo) != 0) {
+    if (lstat(filename.c_str(), &fileInfo) != 0) {
         return false;
     }
     return S_ISLNK(fileInfo.st_mode) != 0;
@@ -275,7 +276,7 @@ bool Platform::filelib_isDirectory(const std::string& filename) {
 
 // Unix implementation; see Windows implementation elsewhere in this file
 void Platform::filelib_setCurrentDirectory(const std::string& path) {
-    if (chdir(path.c_str()) == 0) {
+    if (chdir(path.c_str()) != 0) {
         std::string msg = "setCurrentDirectory: ";
         std::string err = std::string(strerror(errno));
         error(msg + err);
@@ -321,6 +322,11 @@ void Platform::filelib_createDirectory(const std::string& path) {
         std::string err = std::string(strerror(errno));
         error(msg + err);
     }
+}
+
+// Unix implementation; see Windows implementation elsewhere in this file
+void Platform::filelib_deleteFile(const std::string& path) {
+    remove(path.c_str());
 }
 
 // Unix implementation; see Windows implementation elsewhere in this file
@@ -441,8 +447,24 @@ std::string Platform::filelib_getTempDirectory() {
 
 // Windows implementation; see Unix implementation elsewhere in this file
 void Platform::filelib_createDirectory(const std::string& path) {
-    if (!CreateDirectoryA(path.c_str(), nullptr)) {
+    std::string pathStr = path;
+    if (endsWith(path, "\\")) {
+        pathStr = path.substr(0, path.length() - 1);
+    }
+    if (CreateDirectoryA(path.c_str(), nullptr) == 0) {
+        if (GetLastError() == ERROR_ALREADY_EXISTS && filelib_isDirectory(pathStr)) {
+            return;
+        }
         error("createDirectory: Can't create " + path);
+    }
+}
+
+// Windows implementation; see Unix implementation elsewhere in this file
+void Platform::filelib_deleteFile(const std::string& path) {
+    if(filelib_isDirectory(path)) {
+        RemoveDirectoryA(path.c_str());
+    } else {
+        DeleteFileA(path.c_str());
     }
 }
 
