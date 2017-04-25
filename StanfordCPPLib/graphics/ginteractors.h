@@ -475,7 +475,7 @@ private:
  * Class: GTextField
  * -----------------
  * This interactor subclass represents a text field for entering short
- * text strings.  Hitting enter in a text field generates a
+ * text strings.  Hitting ENTER in a text field generates a
  * <code>GActionEvent</code> if the text field has a nonempty action command.
  */
 

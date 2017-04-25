@@ -56,8 +56,8 @@ void clearConsole();
 bool getConsoleClearEnabled();
 
 /*
- * Function: setConsoleCloseOperation();
- * Usage: setConsoleCloseOperation(op);
+ * Function: getConsoleCloseOperation();
+ * Usage: getConsoleCloseOperation(op);
  * ------------------------------------
  * Returns what the console will do when the user hits its "close" button.
  * By default, this is CONSOLE_HIDE_ON_CLOSE unless set otherwise.
