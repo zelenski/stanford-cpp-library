@@ -76,7 +76,7 @@ public:
     LinkedHashMap(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
-     * Destructor: ~HashMap
+     * Destructor: ~LinkedHashMap
      * --------------------
      * Frees any heap storage associated with this map.
      */
@@ -385,7 +385,7 @@ public:
     /*
      * Implementation notes:
      * ---------------------
-     * The HashMap class is represented using a hash map along with a
+     * The LinkedHashMap class is represented using a hash map along with a
      * Vector to remember the order of insertion.
     */
 private:

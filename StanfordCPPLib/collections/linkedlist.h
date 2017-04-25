@@ -2,8 +2,8 @@
  * File: linkedlist.h
  * ------------------
  * This file exports the <code>LinkedList</code> class, which provides an
- * implementation of a doubly-linked list of objects and provides the same
- * public interface of members as the <code>LinkedList</code> class.
+ * implementation of a doubly-linked list of objects and provides a
+ * public interface similar to that of the <code>Vector</code> class.
  *
  * @version 2016/09/24
  * - refactored to use collections.h utility functions

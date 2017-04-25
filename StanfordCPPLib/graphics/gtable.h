@@ -44,14 +44,11 @@
 class GTable : public GInteractor {
 public:
     /*
-     * Constants for showConfirmDialog types, taken from Java's JOptionPane.
+     * The three supported kinds of cell alignment.
+     * Used in the GTable methods getHorizontalAlignment and setHorizontalAlignment.
+     * Values match the corresponding constants from javax.swing.SwingConstants.
      */
     enum Alignment {
-        /*
-         * The three supported kinds of cell alignment.
-         * Used in the GTable methods getHorizontalAlignment and setHorizontalAlignment.
-         * Values match the corresponding constants from javax.swing.SwingConstants.
-         */
         CENTER = 0,
         LEFT = 2,
         RIGHT = 4
@@ -147,7 +144,7 @@ public:
     void getSelectedCell(int& row, int& column) const;
     
     /*
-     * Returns the row of the cell that is currently selected, or -1 if no cell
+     * Returns the column of the cell that is currently selected, or -1 if no cell
      * is currently selected.
      */
     int getSelectedColumn() const;
