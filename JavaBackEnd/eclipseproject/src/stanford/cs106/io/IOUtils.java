@@ -45,6 +45,19 @@ public class IOUtils {
 	}
 	
 	/**
+	 * The directory in which the current app is running.
+	 */
+	public static String getCurrentDirectory() {
+		String currentDir = ".";
+		try {
+			currentDir = System.getProperty("user.dir");
+		} catch (Exception e) {
+			// empty
+		}
+		return currentDir;
+	}
+	
+	/**
 	 * The file name extension (such as mp3, doc, txt) of the given file's name.
 	 * @return null if the file is null, or "" if the file has no extension
 	 */

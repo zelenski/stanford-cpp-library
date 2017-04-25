@@ -1,4 +1,6 @@
 /*
+ * @version 2017/04/25
+ * - added showSaveDialog to save canvas graphics to an image file
  * @version 2016/10/21
  * - added drawPolarLine
  * @version 2016/10/16
@@ -52,8 +54,13 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
 import java.awt.image.*;
+import java.io.*;
 import java.util.*;
 import javax.swing.*;
+import acm.util.MediaTools;
+import stanford.cs106.diff.DiffImage;
+import stanford.cs106.gui.GuiUtils;
+import stanford.cs106.io.*;
 import stanford.spl.GBufferedImage;
 
 /* Class: GCanvas */
@@ -74,6 +81,7 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	private GObjectList contents;
 	private BufferedImage bufferedImage = null;
 	private Graphics2D osg = null;
+	private boolean antialias;
 	private boolean autoRepaint;
 	private boolean nativeArcFlag;
 	
@@ -86,7 +94,7 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 		contents = new GObjectList(this);
 		bufferedImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);   // will be resized
 		osg = (Graphics2D) bufferedImage.getGraphics();
-		osg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		setAntiAliasing(GObject.isAntiAliasing());
 		
 		gCanvasListener = new GCanvasListener(this);
 		
@@ -189,6 +197,9 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 		add(gobj, pt.getX(), pt.getY());
 	}
 	
+	/**
+	 * Removes all graphical objects from this canvas.
+	 */
 	public void clear() {
 		// also clear out the buffered image
 		if (bufferedImage != null) {
@@ -221,6 +232,99 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 			}
 			repaint();
 		}
+	}
+	
+	/**
+	 * Compares the pixels of this canvas to the image stored in the given file.
+	 */
+	public void diff(File file) {
+		diff(file, /* ignoreWindowSize */ false);
+	}
+	
+	/**
+	 * Compares the pixels of this canvas to the image stored in the given file.
+	 * If ignoreWindowSize is true, allows the two windows' sizes to differ as
+	 * long as they don't have any different drawn shapes between them.
+	 */
+	public void diff(File file, boolean ignoreWindowSize) {
+		BufferedImage windowImage = toImage();
+		try {
+			Image fileImage = MediaTools.loadImage(file);
+			if (ignoreWindowSize) {
+				// enlarge both to same (larger) size
+				int w1 = windowImage.getWidth();
+				int w2 = fileImage.getWidth(this);
+				int wmax = Math.max(w1, w2);
+				int h1 = windowImage.getHeight();
+				int h2 = fileImage.getHeight(this);
+				int hmax = Math.max(h1, h2);
+				
+				boolean opaque = this.isOpaque();
+				Color background = this.getBackground();
+				int backgroundColor = background.getRGB();
+				
+				BufferedImage bfileImage = new BufferedImage(wmax, hmax, BufferedImage.TYPE_INT_ARGB);
+				if (opaque) {
+					bfileImage.getGraphics().setColor(background);
+					bfileImage.getGraphics().fillRect(0, 0, wmax, hmax);
+				}
+				bfileImage.getGraphics().drawImage(fileImage, 0, 0, this);
+				
+				if (w1 < wmax || h1 < hmax) {
+					windowImage = this.toImage(wmax, hmax);
+					
+					for (int x = 0; x < wmax; x++) {
+						for (int y = 0; y < hmax; y++) {
+							if ((x >= w1 || y >= h1) && (x < w2 && y < h2)) {
+								int rgb = bfileImage.getRGB(x, y);
+								if (opaque && (rgb & 0xff000000) == 0) {
+									rgb = backgroundColor;
+								}
+								windowImage.setRGB(x, y, rgb);
+							}
+						}
+					}
+				}
+
+				if (w2 < wmax || h2 < hmax) {
+					for (int x = 0; x < wmax; x++) {
+						for (int y = 0; y < hmax; y++) {
+							if ((x >= w2 || y >= h2) && (x < w1 && y < h1)) {
+								int rgb = windowImage.getRGB(x, y);
+								if (opaque && (rgb & 0xff000000) == 0) {
+									rgb = backgroundColor;
+								}
+								bfileImage.setRGB(x, y, rgb);
+							}
+						}
+					}
+					fileImage = bfileImage;
+				}
+			}
+			
+			DiffImage diff = new DiffImage(fileImage, windowImage);
+			diff.setImage1Label(file.getName());
+			diff.setImage2Label("window");
+			diff.setVisible(true);
+		} catch (IORuntimeException ioe) {
+			GuiUtils.errorDialog(this, "Unable to compare images", ioe);
+		}
+	}
+
+	/**
+	 * Compares the pixels of this canvas to the image stored in the given file.
+	 */
+	public void diff(String file) {
+		diff(new File(file));
+	}
+
+	/**
+	 * Compares the pixels of this canvas to the image stored in the given file.
+	 * If ignoreWindowSize is true, allows the two windows' sizes to differ as
+	 * long as they don't have any different drawn shapes between them.
+	 */
+	public void diff(String file, boolean ignoreWindowSize) {
+		diff(new File(file), ignoreWindowSize);
 	}
 
 	/**
@@ -267,11 +371,17 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 		}
 	}
 
+	/**
+	 * Draws an outlined version of the given shape.
+	 */
 	public void draw(Shape paramShape) {
 		getOSG().draw(paramShape);
 		conditionalRepaint();
 	}
 
+	/**
+	 * Draws an outlined arc with the given coordinates.
+	 */
 	public void drawArc(double paramDouble1, double paramDouble2,
 			double paramDouble3, double paramDouble4, double paramDouble5,
 			double paramDouble6) {
@@ -282,6 +392,9 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 		conditionalRepaint();
 	}
 
+	/**
+	 * Draws a line with the given endpoint coordinates.
+	 */
 	public void drawLine(double paramDouble1, double paramDouble2,
 			double paramDouble3, double paramDouble4) {
 		Line2D.Double localDouble = new Line2D.Double(paramDouble1,
@@ -290,6 +403,9 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 		conditionalRepaint();
 	}
 
+	/**
+	 * Draws an outlined oval with the given coordinates.
+	 */
 	public void drawOval(double paramDouble1, double paramDouble2,
 			double paramDouble3, double paramDouble4) {
 		Ellipse2D.Double localDouble = new Ellipse2D.Double(paramDouble1,
@@ -298,6 +414,9 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 		conditionalRepaint();
 	}
 
+	/**
+	 * Draws a line with the given polar coordinates, returning its starting endpoint.
+	 */
 	public GPoint drawPolarLine(double x0, double y0, double r, double theta) {
 		theta = Math.toRadians(theta);
 		double x1 = x0 + r * Math.cos(theta);
@@ -307,11 +426,16 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 		return new GPoint(x1, y1);
 	}
 
+	/**
+	 * Draws a line with the given polar coordinates, returning its starting endpoint.
+	 */
 	public GPoint drawPolarLine(GPoint p0, double r, double theta) {
 		return drawPolarLine(p0.getX(), p0.getY(), r, theta);
 	}
-
 	
+	/**
+	 * Draws an outlined rectangle with the given coordinates.
+	 */
 	public void drawRect(double paramDouble1, double paramDouble2,
 			double paramDouble3, double paramDouble4) {
 		Rectangle2D.Double localDouble = new Rectangle2D.Double(paramDouble1,
@@ -320,11 +444,17 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 		conditionalRepaint();
 	}
 
+	/**
+	 * Draws a filled version of the given shape.
+	 */
 	public void fill(Shape paramShape) {
 		getOSG().fill(paramShape);
 		conditionalRepaint();
 	}
 
+	/**
+	 * Draws a filled arc with the given coordinates.
+	 */
 	public void fillArc(double paramDouble1, double paramDouble2,
 			double paramDouble3, double paramDouble4, double paramDouble5,
 			double paramDouble6) {
@@ -336,6 +466,9 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 		conditionalRepaint();
 	}
 
+	/**
+	 * Draws a filled oval with the given coordinates.
+	 */
 	public void fillOval(double paramDouble1, double paramDouble2,
 			double paramDouble3, double paramDouble4) {
 		Ellipse2D.Double localDouble = new Ellipse2D.Double(paramDouble1,
@@ -345,6 +478,9 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 		conditionalRepaint();
 	}
 
+	/**
+	 * Draws a filled rectangle with the given coordinates.
+	 */
 	public void fillRect(double paramDouble1, double paramDouble2,
 			double paramDouble3, double paramDouble4) {
 		Rectangle2D.Double localDouble = new Rectangle2D.Double(paramDouble1,
@@ -433,20 +569,40 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 		return nativeArcFlag;
 	}
 	
+	/**
+	 * Returns the graphical pen for drawing on this canvas.
+	 */
 	public Graphics2D getOSG() {
 		return osg;
 	}
 	
+	/**
+	 * Returns a Base64-encoded representation of the pixel data of this image.
+	 */
 	public String getPixelsAsString() {
 		return GBufferedImage.toStringBase64(bufferedImage);
 	}
 
+	/**
+	 * Returns the RGB color stored at the given (x, y) pixel, or 0 if that pixel falls outside the bounds of this canvas.
+	 */
 	public int getRGB(int x, int y) {
 		return inBounds(x, y) ? bufferedImage.getRGB(x, y) : 0;
 	}
 	
+	/**
+	 * Whether the given (x, y) point falls within the bounds of this canvas, from (0, 0) .. (width-1, height-1) inclusive.
+	 */
 	public boolean inBounds(int x, int y) {
 		return !(x < 0 || y < 0 || x >= bufferedImage.getWidth() || y >= bufferedImage.getHeight());
+	}
+	
+	/**
+	 * Sets whether this canvas uses anti-aliasing, which is smoothing and blending of neighboring pixels.
+	 * Default true.
+	 */
+	public boolean isAntiAliasing() {
+		return this.antialias;
 	}
 	
 	/**
@@ -528,6 +684,21 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 		contents.removeAll();
 		super.removeAll();
 		repaint();
+	}
+	
+	/**
+	 * Writes the contents of the canvas to the given file.
+	 */
+	public void save(File file) {
+		BufferedImage img = toImage();
+		MediaTools.saveImage(img, file);
+	}
+	
+	/**
+	 * Writes the contents of the canvas to the given file.
+	 */
+	public void save(String filename) {
+		save(new File(filename));
 	}
 	
 	/**
@@ -629,6 +800,20 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	}
 
 	/**
+	 * Sets whether this canvas uses anti-aliasing, which is smoothing and blending of neighboring pixels.
+	 * Default true.
+	 */
+	public void setAntiAliasing(boolean antialias) {
+		this.antialias = antialias;
+		if (antialias) {
+			osg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		} else {
+			osg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+		}
+		repaint();
+	}
+
+	/**
 	 * Changes the setting of the auto-repaint flag.  By default, any change to a
 	 * graphical object contained in this canvas automatically triggers a repaint
 	 * of the canvas as a whole.  While this behavior makes it much easier to use
@@ -673,6 +858,79 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	 */
 	public void setNativeArcFlag(boolean state) {
 		nativeArcFlag = state;
+	}
+	
+	/**
+	 * Pops up a dialog box to compare the contents of this canvas to an expected image file.
+	 */
+	public void showDiffDialog() {
+		showDiffDialog(IOUtils.getCurrentDirectory());
+	}
+	
+	/**
+	 * Pops up a dialog box to compare the contents of this canvas to an expected image file.
+	 * Starts the dialog box pointed at the given directory.
+	 */
+	public void showDiffDialog(File directory) {
+		JFileChooser chooser = new JFileChooser(directory);
+		chooser.setFileFilter(GuiUtils.getExtensionFileFilter("PNG images (*.png)", "png"));
+		int result = chooser.showSaveDialog(this);
+		if (result == JFileChooser.APPROVE_OPTION) {
+			File file = chooser.getSelectedFile();
+			try {
+				diff(file);
+			} catch (Exception ex) {
+				GuiUtils.errorDialog(this, "Unable to save to " + file.getName(), ex);
+			}
+		}
+	}
+	
+	/**
+	 * Pops up a dialog box to compare the contents of this canvas to an expected image file.
+	 * Starts the dialog box pointed at the given directory.
+	 */
+	public void showDiffDialog(String directory) {
+		showDiffDialog(new File(directory));
+	}
+	
+	/**
+	 * Pops up a dialog box to save the contents of this canvas to a file.
+	 * Returns the file saved to, or null if none.
+	 */
+	public File showSaveDialog() {
+		return showSaveDialog(IOUtils.getCurrentDirectory());
+	}
+	
+	/**
+	 * Pops up a dialog box to save the contents of this canvas to a file.
+	 * Starts the dialog box pointed at the given directory.
+	 * Returns the file saved to, or null if none.
+	 */
+	public File showSaveDialog(File directory) {
+		JFileChooser chooser = new JFileChooser(directory);
+		chooser.setFileFilter(GuiUtils.getExtensionFileFilter("PNG images (*.png)", "png"));
+		int result = chooser.showSaveDialog(this);
+		if (result == JFileChooser.APPROVE_OPTION) {
+			File file = chooser.getSelectedFile();
+			try {
+				save(file);
+				return file;
+			} catch (Exception ex) {
+				JOptionPane.showMessageDialog(this, "Unable to save to " + file.getName()
+						+ ": " + ex.getMessage(),
+						"I/O Error", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Pops up a dialog box to save the contents of this canvas to a file.
+	 * Starts the dialog box pointed at the given directory.
+	 * Returns the file saved to, or null if none.
+	 */
+	public File showSaveDialog(String directory) {
+		return showSaveDialog(new File(directory));
 	}
 	
 	/**

@@ -279,6 +279,10 @@ public class GuiUtils {
 		return createCheckBoxMenuItem(text, /* mnemonic */ text.charAt(0), /* checked */ false, listener, menu);
 	}
 	
+	public static JCheckBoxMenuItem createCheckBoxMenuItem(String text, boolean checked, ActionListener listener, JMenu menu) {
+		return createCheckBoxMenuItem(text, /* mnemonic */ text.charAt(0), checked, listener, menu);
+	}
+	
 	public static JCheckBoxMenuItem createCheckBoxMenuItem(String text, char mnemonic, boolean checked, ActionListener listener, JMenu menu) {
 		JCheckBoxMenuItem item = new JCheckBoxMenuItem(text);
 		if (mnemonic != '\0') {
@@ -429,6 +433,26 @@ public class GuiUtils {
 			results.addAll(sub);
 		}
 		return results;
+	}
+	
+	public static void errorDialog(String text) {
+		errorDialog(/* comp */ null, text);
+	}
+	
+	public static void errorDialog(Component comp, String text) {
+		JOptionPane.showMessageDialog(comp, text, "Error", JOptionPane.ERROR_MESSAGE);
+	}
+		
+	public static void errorDialog(Component comp, String text, Throwable th) {
+		JOptionPane.showMessageDialog(comp, text + ": " + th.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	}
+		
+	public static void errorDialog(Throwable th) {
+		errorDialog(/* comp */ null, th);
+	}
+	
+	public static void errorDialog(Component comp, Throwable th) {
+		JOptionPane.showMessageDialog(comp, th.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	}
 		
 	public static Icon extractOptionPaneIcon(String text) {

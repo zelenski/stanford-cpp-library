@@ -1,4 +1,6 @@
 /*
+ * @version 2017/04/14
+ * - bug fix for nextInt(int, int) with fixed rigged integers
  * @version 2016/05/19
  * - added choice(T...) method
  * @version 2016/04/18
@@ -218,11 +220,30 @@ public class RandomGenerator extends Random {
 	 *         <code>high</code>, inclusive
 	 */
 	public int nextInt(int low, int high) {
+		if (high < low) {
+			// swap
+			int temp = low;
+			low = high;
+			high = temp;
+		}
+		
 		// return fixed number if one is present
 		if (!fixedIntegers.isEmpty()) {
 			synchronized (fixedIntegers) {
 				if (!fixedIntegers.isEmpty()) {
 					int fixed = fixedIntegers.remove(0);
+					
+					// shift the fixed number to be inside the range [low .. high]
+					if (fixed < low || fixed > high) {
+						int range = high - low + 1;
+						while (fixed < low) {
+							fixed += range;
+						}
+						while (fixed > high) {
+							fixed -= range;
+						}
+					}
+					
 					return fixed;
 				}
 			}

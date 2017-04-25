@@ -1,4 +1,6 @@
 /*
+ * @version 2017/04/25
+ * - added menu bar actions to save/diff/print program's graphical output
  * @version 2016/11/13
  * - added fileSize(directory, filename)
  * @version 2016/11/03
@@ -89,15 +91,13 @@
 
 package acm.program;
 
-import acm.graphics.GObject;
-import acm.graphics.GPoint;
+import acm.graphics.*;
 import acm.gui.*;
 import acm.io.*;
 import acm.util.*;
-import stanford.cs106.gui.GuiUtils;
-import stanford.cs106.io.IORuntimeException;
-import stanford.spl.Version;
-
+import stanford.cs106.gui.*;
+import stanford.cs106.io.*;
+import stanford.spl.*;
 import java.applet.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -106,7 +106,6 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.net.*;
 import java.util.*;
-
 import javax.swing.*;
 
 /* Class: Program */
@@ -124,7 +123,7 @@ import javax.swing.*;
  * for the standard implementation of <a href="#main(String[])"><code>main</code></a>.
  */
 public abstract class Program extends JApplet
-    implements IOModel, Runnable,
+    implements ProgramInterface, IOModel, Runnable,
   			ActionListener, ComponentListener, KeyListener,
   			MouseListener, MouseMotionListener, MouseWheelListener {
 
@@ -154,7 +153,7 @@ public abstract class Program extends JApplet
 
 /* Private fields */
 	private ArrayList<Object> finalizers;
-	private HashMap<String, String> parameterTable;
+	private Map<String, String> parameterTable;
 	private JFrame programFrame;
 	private AppletStub appletStub;
 	private String myTitle;
@@ -170,6 +169,7 @@ public abstract class Program extends JApplet
 	private JPanel centerPanel;
 	private IOConsole myConsole;
 	private IODialog myDialog;
+	private File lastSaveFile;
 	private IOModel inputModel;
 	private IOModel outputModel;
 	private Object startupObject;
@@ -2387,15 +2387,17 @@ public abstract class Program extends JApplet
  * @param args An array of string arguments
  */
 	public static void main(String[] args) {
-		GuiUtils.setSystemLookAndFeel();
-		HashMap<String,String> ht = createParameterTable(args);
+		if (!CommandLineProgram.isHeadless()) {
+			GuiUtils.setSystemLookAndFeel();
+		}
+		Map<String,String> ht = createParameterTable(args);
 		JTFTools.setDebugOptions(ht.get("debug"));
 		String className = ht.get("code");
 		if (className == null) {
 			className = JTFTools.getMainClass();
 		}
 		Class<?> mainClass = null;
-		Program program = null;
+		ProgramInterface program = null;
 		if (className != null) {
 			if (className.endsWith(".class")) {
 				className = className.substring(0, className.length() - 6);
@@ -2408,11 +2410,12 @@ public abstract class Program extends JApplet
 				/* Empty */
 			}
 		}
+
 		if (mainClass != null) {
 			try {
 				Object obj = mainClass.newInstance();
-				if (obj instanceof Program) {
-					program = (Program) obj;
+				if (obj instanceof ProgramInterface) {
+					program = (ProgramInterface) obj;
 					program.setStartupObject(null);
 				} else {
 					className = ht.get("program");
@@ -2430,11 +2433,13 @@ public abstract class Program extends JApplet
 				/* Empty */
 			}
 		}
-		if (program == null) throw new ErrorException("Cannot determine the main class.");
+		if (program == null) {
+			throw new ErrorException("Cannot determine the main class.");
+		}
 		program.setParameterTable(ht);
 		program.start();
 	}
-
+	
 /* Method: menuAction(e) */
 /**
  * Called whenever a program action is detected in the menu bar.
@@ -2443,9 +2448,36 @@ public abstract class Program extends JApplet
  * keyboard focus.
  */
 	public boolean menuAction(ActionEvent event) {
-		String cmd = event.getActionCommand().intern();
+		String cmd = String.valueOf(event.getActionCommand()).intern();
 		if (cmd == ProgramMenuBar.MENU_ITEM_TEXT_QUIT) {
 			exit();
+		} else if (cmd == ProgramMenuBar.MENU_ITEM_TEXT_SAVE) {
+			// try to find a GCanvas in this program; if there is one, save its output
+			GCanvas gc = GuiUtils.getDescendent(this, GCanvas.class);
+			if (gc == null) {
+				return false;
+			}
+			if (this.lastSaveFile == null) {
+				this.lastSaveFile = gc.showSaveDialog();
+			} else {
+				gc.save(this.lastSaveFile);
+			}
+		} else if (cmd == ProgramMenuBar.MENU_ITEM_TEXT_SAVE_AS) {
+			// try to find a GCanvas in this program; if there is one, save its output
+			GCanvas gc = GuiUtils.getDescendent(this, GCanvas.class);
+			if (gc == null) {
+				return false;
+			}
+			this.lastSaveFile = gc.showSaveDialog();
+			return true;
+		} else if (cmd == ProgramMenuBar.MENU_ITEM_TEXT_COMPARE_OUTPUT) {
+			// try to find a GCanvas in this program; if there is one, compare its output
+			GCanvas gc = GuiUtils.getDescendent(this, GCanvas.class);
+			if (gc == null) {
+				return false;
+			}
+			gc.showDiffDialog();
+			return true;
 		} else if (cmd == ProgramMenuBar.MENU_ITEM_TEXT_PRINT
 				|| cmd.equals(ProgramMenuBar.MENU_ITEM_TEXT_PRINT + "...")) {
 			Frame frame = JTFTools.getEnclosingFrame(this);
@@ -2465,6 +2497,12 @@ public abstract class Program extends JApplet
 				|| cmd == ProgramMenuBar.MENU_ITEM_TEXT_SUBMIT_PROJECT) {
 			JTFTools.executeExportAction(this, cmd);
 			return true;
+		} else if (ProgramMenuBar.MENU_ITEM_TEXT_ANTI_ALIASING.equals(cmd)) {
+			JCheckBoxMenuItem item = (JCheckBoxMenuItem) event.getSource();
+			GObject.setAntiAliasing(item.isSelected());
+			for (GCanvas gc : GuiUtils.getDescendents(this, GCanvas.class)) {
+				gc.setAntiAliasing(item.isSelected());
+			}
 		} else if (cmd == ProgramMenuBar.MENU_ITEM_TEXT_ABOUT) {
 			JOptionPane.showMessageDialog(
 					getConsole(),                        // parent component
@@ -2591,7 +2629,7 @@ public abstract class Program extends JApplet
  * @usage setParameterTable(ht);
  * @param ht The parameter table
  */
-	protected void setParameterTable(HashMap<String,String> ht) {
+	public void setParameterTable(Map<String, String> ht) {
 		parameterTable = ht;
 	}
 
@@ -2602,7 +2640,7 @@ public abstract class Program extends JApplet
  * @usage ParameterTable ht = getParameterTable();
  * @return The parameter table
  */
-	protected HashMap<String,String> getParameterTable() {
+	protected Map<String,String> getParameterTable() {
 		return parameterTable;
 	}
 
@@ -2614,7 +2652,7 @@ public abstract class Program extends JApplet
  * @usage setStartupObject(obj);
  * @param obj The startup object
  */
-	protected void setStartupObject(Object obj) {
+	public void setStartupObject(Object obj) {
 		startupObject = obj;
 	}
 
@@ -2679,8 +2717,8 @@ public abstract class Program extends JApplet
  * @param args The array of strings passed to the application
  * @return A <code>HashMap</code> containing the parameter bindings
  */
-	protected static HashMap<String,String> createParameterTable(String[] args) {
-		if (args == null) return null;
+	protected static Map<String,String> createParameterTable(String[] args) {
+		if (args == null) return Collections.emptyMap();
 		HashMap<String,String> ht = new HashMap<String,String>();
 		String newArgs = "";
 		for (int i = 0; i < args.length; i++) {

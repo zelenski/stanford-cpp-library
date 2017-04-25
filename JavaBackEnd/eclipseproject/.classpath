@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/acm.jar" sourcepath="/home/stepp/Dropbox/data/docs/stanford/StanfordCPPLib/JavaBackEnd/latest-version-decompiled/stanford"/>
+	<classpathentry kind="lib" path="lib/acm.jar" sourcepath="/home/stepp/Dropbox/data/docs/stanford/StanfordCPPLib/JavaBackEnd/latest-version-decompiled"/>
 	<classpathentry kind="lib" path="lib/junit.jar"/>
 	<classpathentry kind="lib" path="lib/jogg-0.0.7.jar"/>
 	<classpathentry kind="lib" path="lib/jorbis-0.0.15.jar"/>

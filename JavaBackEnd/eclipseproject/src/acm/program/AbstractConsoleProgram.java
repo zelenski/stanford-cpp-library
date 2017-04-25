@@ -171,6 +171,8 @@ public abstract class AbstractConsoleProgram extends Program {
 			if (newSize >= FONT_MIN_SIZE && font.getSize() <= FONT_MAX_SIZE) {
 				font = font.deriveFont(newSize);
 				this.setFont(font);
+				fontHasBeenSet = true;
+				saveConfiguration();
 			}
 		}
 	}
@@ -215,6 +217,8 @@ public abstract class AbstractConsoleProgram extends Program {
 				font = font.deriveFont(font.getStyle() | Font.BOLD);
 			}
 			this.setFont(font);
+			fontHasBeenSet = true;
+			saveConfiguration();
 		}
 	}
 

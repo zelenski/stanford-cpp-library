@@ -446,39 +446,39 @@ public class IOConsole extends Container implements IOModel {
 
 	public boolean menuAction(ActionEvent paramActionEvent) {
 		String str = paramActionEvent.getActionCommand();
-		if (str.equals("Cut")) {
+		if (str.equals(ProgramMenuBar.MENU_ITEM_TEXT_CUT)) {
 			cut();
 			return true;
 		}
-		if (str.equals("Copy")) {
+		if (str.equals(ProgramMenuBar.MENU_ITEM_TEXT_COPY)) {
 			copy();
 			return true;
 		}
-		if (str.equals("Paste")) {
+		if (str.equals(ProgramMenuBar.MENU_ITEM_TEXT_PASTE)) {
 			paste();
 			return true;
 		}
-		if (str.equals("Select All")) {
+		if (str.equals(ProgramMenuBar.MENU_ITEM_TEXT_SELECT_ALL)) {
 			selectAll();
 			return true;
 		}
-		if (str.equals("Save")) {
+		if (str.equals(ProgramMenuBar.MENU_ITEM_TEXT_SAVE)) {
 			save();
 			return true;
 		}
-		if (str.equals("Save As")) {
+		if (str.equals(ProgramMenuBar.MENU_ITEM_TEXT_SAVE_AS)) {
 			saveAs();
 			return true;
 		}
-		if (str.equals("Script")) {
+		if (str.equals(ProgramMenuBar.MENU_ITEM_TEXT_SCRIPT)) {
 			script();
 			return true;
 		}
-		if (str.equals("Print Console")) {
+		if (str.equals(ProgramMenuBar.MENU_ITEM_TEXT_PRINT_CONSOLE)) {
 			printConsole();
 			return true;
 		}
-		if (str.equals("Clear Console")) {
+		if (str.equals(ProgramMenuBar.MENU_ITEM_TEXT_CLEAR_CONSOLE)) {
 			clear();
 			return true;
 		}

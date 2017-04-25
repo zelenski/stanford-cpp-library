@@ -4,8 +4,10 @@
  * This instructor-provided file contains utility functions related to loading
  * resource files, especially from within a JAR and/or applet.
  *
- * Author : Marty Stepp
- * Version: Tue 2014/05/11
+ * @author Marty Stepp
+ * @version 2017/04/25
+ * - added logic to load resources from inside spl.jar
+ * @version 2014/05/11
  * 
  * This file and its contents are copyright (C) Stanford University and Marty Stepp,
  * licensed under Creative Commons Attribution 2.5 License.  All rights reserved.
@@ -18,6 +20,8 @@ package stanford.cs106.io;
 
 import java.io.*;
 import java.net.*;
+
+import stanford.spl.Version;
 
 public class ResourceUtils {
 	// set to true to see debugging messages when trying to load resources
@@ -66,11 +70,28 @@ public class ResourceUtils {
 			// sex.printStackTrace();
 		}
 
-		// fallback to using internal class URL (JAR or applet)
+		// fallback to using internal class URL (app itself is a JAR or applet)
 		if (result == null) {
 			result = resourceLoaderClass.getResource("/" + filename);
 			if (DEBUG) System.out.println(" - filenameToURL: classLoader yields " + result);
 		}
+		
+		// fallback to using internal class URL from inside spl.jar (extract from spl lib)
+		if (result == null) {
+			String splJarPath = Version.getLibraryJarPath();
+			if (splJarPath != null && !splJarPath.isEmpty()) {
+				try {
+					URL url = new URL("file:" + splJarPath.replace("\\", "/") + "!/" + filename);
+					if (DEBUG) System.out.println(" - filenameToURL: in-JAR is " + url);
+					result = resourceLoaderClass.getResource(url.toString());
+					if (DEBUG) System.out.println(" - filenameToURL: in-JAR resource is " + result);
+					return result;
+				} catch (MalformedURLException mfurle) {
+					// empty
+				}
+			}
+		}
+		
 		if (result == null) {
 			throw new IORuntimeException(filename);
 		} else {

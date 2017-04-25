@@ -1,5 +1,6 @@
 /*
- * @(#)GPoint.java   1.99.1 08/12/08
+ * @version 2017/04/05
+ * - improved toString omit useless ".0"
  */
 
 // ************************************************************************
@@ -226,13 +227,23 @@ public class GPoint implements Serializable {
 	/* Method: toString() */
 	/**
 	 * Converts this <code>GPoint</code> to its string representation.
+	 * Decimal point on each coord will be shown if not a whole number.
+	 * Examples: "(4, -7)" or "(-2.4, 3.68)"
 	 *
 	 * @usage str = rect.toString();
 	 * @return A string representation of this point
 	 * @noshow
 	 */
 	public String toString() {
-		return "(" + (float) xc + ", " + (float) yc + ")";
+		String xs = Double.toString(xc);
+		if (xs.endsWith(".0")) {
+			xs = xs.substring(0, xs.length() - 2);
+		}
+		String ys = Double.toString(yc);
+		if (ys.endsWith(".0")) {
+			ys = ys.substring(0, ys.length() - 2);
+		}
+		return "(" + xs + ", " + ys + ")";
 	}
 
 	/* Private instance variables */

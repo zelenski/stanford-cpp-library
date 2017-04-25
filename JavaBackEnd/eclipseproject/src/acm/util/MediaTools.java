@@ -98,6 +98,44 @@ public class MediaTools {
 		/* Empty */
 	}
 
+	/**
+	 * Searches the default image search path for an image with the specified
+	 * file's name and then loads it to create an <code>Image</code>. The search
+	 * process consists of the following steps:
+	 * 
+	 * <p>
+	 * <ol>
+	 * <li>Check to see if an image with that name has already been defined. If
+	 * so, return that image.
+	 * <p>
+	 * 
+	 * <li>Check to see if there is a resource available with that name whose
+	 * contents can be read as an <code>Image</code>. If so, read the image from
+	 * the resource file.
+	 * <p>
+	 * 
+	 * <li>Load the image from a file with the specified name, relative to the
+	 * application directory or the applet code base.
+	 * </ol>
+	 * <p>
+	 * 
+	 * The second and third steps are repeated for each element of the image
+	 * search path, which consists of a list of directories separated by colons.
+	 * 
+	 * <p>
+	 * Unlike the <code>getImage</code> method in the <code>Applet</code> class,
+	 * <code>loadImage</code> waits for an image to be fully loaded before
+	 * returning.
+	 * 
+	 * @usage Image image = MediaTools.loadImage(name);
+	 * @param file
+	 *            The file of the image
+	 * @return A fully loaded <code>Image</code> object
+	 */
+	public static Image loadImage(File file) {
+		return loadImage(file.toString());
+	}
+
 	/* Static method: loadImage(name) */
 	/**
 	 * Searches the default image search path for an image with the specified
@@ -443,13 +481,12 @@ public class MediaTools {
 		String filename = file.getName();
 		int dot = filename.lastIndexOf('.');
 		if (dot <= 0) {
-			throw new ErrorException("saveImage: No image suffix in file name");
+			throw new ErrorException("No image suffix in file name");
 		}
 		String suffix = filename.substring(dot + 1);
 		ImageSaver saver = findImageSaver(suffix);
 		if (saver == null) {
-			throw new ErrorException("saveImage: No support for ." + suffix
-					+ " format");
+			throw new ErrorException("No support for ." + suffix + " format");
 		}
 		if (file.exists()) {
 //			if (!file.delete()) {
@@ -458,14 +495,13 @@ public class MediaTools {
 //			}
 		}
 		try {
-			OutputStream out = new BufferedOutputStream(new FileOutputStream(
-					file));
+			OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
 			saver.setOutputStream(out);
 			saver.saveImage(image);
 			saver.updateFileType(file);
 			out.close();
 		} catch (IOException ex) {
-			throw new ErrorException("saveImage: " + ex.getMessage());
+			throw new ErrorException(ex);
 		}
 	}
 

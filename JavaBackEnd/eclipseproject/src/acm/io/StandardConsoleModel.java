@@ -155,11 +155,11 @@ public class StandardConsoleModel implements KeyListener, FocusListener, Console
 		return this.document.getLength();
 	}
 
-	public Component getConsolePane() {
+	public JScrollPane getConsolePane() {
 		return this.scrollPane;
 	}
 
-	public Component getTextPane() {
+	public JTextPane getTextPane() {
 		return this.textPane;
 	}
 

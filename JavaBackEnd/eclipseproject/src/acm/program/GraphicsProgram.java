@@ -1,4 +1,9 @@
 /*
+ * @version 2017/04/25
+ * - added Save / Save As menu actions for saving graphics output to an image
+ * - added Compare Output menu action for checking graphics output against an expected image
+ * - alphabetized methods
+ * - moved GProgramListener, GObjectProgram classes out into their own files
  * @version 2016/10/12
  * - added clear method as alias for removeAll
  * - added getCanvasSize
@@ -48,7 +53,7 @@ import acm.graphics.*;
 import acm.util.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.lang.reflect.*;
+import java.awt.image.*;
 import java.util.*;
 
 /**
@@ -57,6 +62,10 @@ import java.util.*;
  * used for drawing graphics.
  */
 public abstract class GraphicsProgram extends Program implements Iterable<GObject> {
+	// private fields
+	private GCanvas gc;
+	private GProgramListener eventListener;
+	private boolean listenersAdded = false;
 
 	/* Constructor: GraphicsProgram() */
 	/**
@@ -78,49 +87,6 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 		// events
 		addMouseListeners();
 		addKeyListeners();
-	}
-
-	/* Method: run() */
-	/**
-	 * Specifies the code to be executed as the program runs. The
-	 * <code>run</code> method is required for applications that have a thread
-	 * of control that runs even in the absence of user actions, such as a
-	 * program that uses console interation or that involves animation.
-	 * GUI-based programs that operate by setting up an initial configuration
-	 * and then wait for user events usually do not specify a <code>run</code>
-	 * method and supply a new definition for <code>init</code> instead.
-	 */
-	public void run() {
-		/* Empty */
-	}
-
-	/* Method: init() */
-	/**
-	 * Specifies the code to be executed as startup time before the
-	 * <code>run</code> method is called. Subclasses can override this method to
-	 * perform any initialization code that would ordinarily be included in an
-	 * applet <code>init</code> method. In general, subclasses will override
-	 * <code>init</code> in GUI-based programs where the program simply sets up
-	 * an initial state and then waits for events from the user. The
-	 * <code>run</code> method is required for applications in which there needs
-	 * to be some control thread while the program runs, as in a typical
-	 * animation.
-	 * 
-	 * @usage program.init();
-	 */
-	public void init() {
-		/* Empty */
-	}
-
-	/* Method: getGCanvas() */
-	/**
-	 * Returns the <code>GCanvas</code> object used by this program.
-	 * 
-	 * @usage GCanvas gc = getGCanvas();
-	 * @return The <code>GCanvas</code> object used by the program
-	 */
-	public GCanvas getGCanvas() {
-		return gc;
 	}
 
 	/* Method: add(gobj) */
@@ -203,31 +169,68 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 		add(comp, pt.getX(), pt.getY());
 	}
 
-	/* Method: remove(gobj) */
+	/* Method: addKeyListeners() */
 	/**
-	 * Removes a graphical object from this container.
+	 * Adds the program as a <code>KeyListener</code> to the canvas.
 	 * 
-	 * @usage remove(gobj);
-	 * @param gobj
-	 *            The graphical object to remove
+	 * @usage addKeyListeners();
 	 */
-	public void remove(GObject gobj) {
-		gc.remove(gobj);
+	public void addKeyListeners() {
+		gc.addKeyListener(this);
 	}
 
-	/* Method: removeAll() */
+	/* Method: addKeyListeners(listener) */
 	/**
-	 * Removes all graphical objects from this container. Note that this
-	 * definition overrides the <code>Container</code> version of
-	 * <code>removeAll</code>, which is replaced by <a
-	 * href="#removeAllComponents()"><code>removeAllComponents</code></a>.
+	 * Adds the specified listener as a <code>KeyListener</code> to the canvas.
 	 * 
-	 * @usage removeAll();
+	 * @usage addKeyListeners(listener);
+	 * @param listener
+	 *            A <code>KeyListener</code> object
 	 */
-	public void removeAll() {
-		gc.removeAll();
+	public void addKeyListeners(KeyListener listener) {
+		gc.addKeyListener(listener);
 	}
-	
+
+	/* Method: addMouseListeners() */
+	/**
+	 * Adds the program as both a <code>MouseListener</code> and
+	 * <code>MouseMotionListener</code> to the canvas.
+	 * 
+	 * @usage addMouseListeners();
+	 */
+	public void addMouseListeners() {
+		if (!listenersAdded) {
+			// avoid attaching same listeners twice
+			gc.addMouseListener(this);
+			gc.addMouseMotionListener(this);
+			listenersAdded = true;
+		}
+	}
+
+	/* Method: addMouseListeners(listener) */
+	/**
+	 * Adds the specified listener as a <code>MouseListener</code> and/or
+	 * <code>MouseMotionListener</code>, as appropriate, to the canvas.
+	 * 
+	 * @usage addMouseListeners(listener);
+	 * @param listener
+	 *            A listener object that is either a <code>MouseListener</code>,
+	 *            a <code>MouseMotionListener</code>, or both
+	 */
+	public void addMouseListeners(EventListener listener) {
+		boolean ok = false;
+		if (listener instanceof MouseListener) {
+			gc.addMouseListener((MouseListener) listener);
+			ok = true;
+		}
+		if (listener instanceof MouseMotionListener) {
+			gc.addMouseMotionListener((MouseMotionListener) listener);
+			ok = true;
+		}
+		if (!ok)
+			throw new ErrorException("addMouseListeners: Illegal listener");
+	}
+
 	/* Method: clear() */
 	/**
 	 * Removes all graphical objects from this container.
@@ -248,6 +251,73 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 	 */
 	public void clearCanvas() {
 		removeAll();
+	}
+
+	/* Factory method: createGCanvas() */
+	/**
+	 * Creates the <code>GCanvas</code> used by the <code>GraphicsProgram</code>
+	 * . Subclasses can override this method to create their own
+	 * <code>GCanvas</code> types.
+	 * 
+	 * @usage GCanvas gc = program.createGCanvas();
+	 * @return The <code>GCanvas</code> to be inserted into the program
+	 * @noshow
+	 */
+	protected GCanvas createGCanvas() {
+		return new GCanvas();
+	}
+
+	/**
+	 * Returns all GObjects that reside inside this graphical program, as a list.
+	 * @return list of all elements
+	 */
+	public java.util.List<GObject> elements() {
+		java.util.List<GObject> list = new ArrayList<GObject>(gc.getElementCount());
+		Iterator<GObject> itr = iterator();
+		while (itr.hasNext()) {
+			list.add(itr.next());
+		}
+		return Collections.unmodifiableList(list);
+	}
+
+	/* Protected method: endHook() */
+	/**
+	 * Ensures that the window is repainted at the end of the program.
+	 */
+	protected void endHook() {
+		gc.repaint();
+	}
+
+	/**
+	 * Returns the height of the central canvas area.
+	 * @return the height of the central canvas area
+	 */
+	public double getCanvasHeight() {
+		if (gc != null) {
+			return gc.getHeight();
+		} else {
+			return getHeight();
+		}
+	}
+
+	/**
+	 * Returns the size of the central canvas area.
+	 * @return the size of the central canvas area
+	 */
+	public Dimension getCanvasSize() {
+		return new Dimension((int) getCanvasWidth(), (int) getCanvasHeight());
+	}
+
+	/**
+	 * Returns the width of the central canvas area.
+	 * @return the width of the central canvas area
+	 */
+	public double getCanvasWidth() {
+		if (gc != null) {
+			return gc.getWidth();
+		} else {
+			return getWidth();
+		}
 	}
 
 	/* Method: getElementCount() */
@@ -340,12 +410,67 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 		return getElementAt(pt.getX(), pt.getY());
 	}
 
+	/* Method: getGCanvas() */
+	/**
+	 * Returns the <code>GCanvas</code> object used by this program.
+	 * 
+	 * @usage GCanvas gc = getGCanvas();
+	 * @return The <code>GCanvas</code> object used by the program
+	 */
+	public GCanvas getGCanvas() {
+		return gc;
+	}
+
 	/**
 	 * Returns true if a graphical object exists that touches the given
 	 * (x, y) pixel position, or false if no such object exists.
 	 */
 	public boolean hasElementAt(double x, double y) {
 		return getElementAt(x, y) != null;
+	}
+
+	/**
+	 * Returns true if a graphical object exists that touches any of the given
+	 * (x, y) pixel positions, or false if no such object exists.
+	 * This method accepts a variable number of coordinate
+	 * pairs (in x1, y1, x2, y2, x3, y3, ... order).
+	 * The pairs are checked in the order they are passed.
+	 */
+	public boolean hasElementAt(double... coords) {
+		return getElementAt(coords) != null;
+	}
+
+	/* Method: init() */
+	/**
+	 * Specifies the code to be executed as startup time before the
+	 * <code>run</code> method is called. Subclasses can override this method to
+	 * perform any initialization code that would ordinarily be included in an
+	 * applet <code>init</code> method. In general, subclasses will override
+	 * <code>init</code> in GUI-based programs where the program simply sets up
+	 * an initial state and then waits for events from the user. The
+	 * <code>run</code> method is required for applications in which there needs
+	 * to be some control thread while the program runs, as in a typical
+	 * animation.
+	 * 
+	 * @usage program.init();
+	 */
+	public void init() {
+		/* Empty */
+	}
+
+	/* Protected method: isStarted() */
+	/**
+	 * Checks to see whether this program has started, usually by checking to
+	 * see whether some pane exists. Subclasses can override this method to
+	 * ensure that their structures are visible before proceeding.
+	 * 
+	 * @noshow
+	 */
+	protected boolean isStarted() {
+		if (gc == null || !super.isStarted())
+			return false;
+		Dimension size = gc.getSize();
+		return (size != null) && (size.width != 0) && (size.height != 0);
 	}
 
 	/* Method: iterator() */
@@ -403,89 +528,40 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 		return gc.iterator(direction);
 	}
 	
+	/* Method: remove(gobj) */
 	/**
-	 * Returns all GObjects that reside inside this graphical program, as a list.
-	 * @return list of all elements
+	 * Removes a graphical object from this container.
+	 * 
+	 * @usage remove(gobj);
+	 * @param gobj
+	 *            The graphical object to remove
 	 */
-	public java.util.List<GObject> elements() {
-		java.util.List<GObject> list = new ArrayList<GObject>(gc.getElementCount());
-		Iterator<GObject> itr = iterator();
-		while (itr.hasNext()) {
-			list.add(itr.next());
-		}
-		return Collections.unmodifiableList(list);
+	public void remove(GObject gobj) {
+		gc.remove(gobj);
 	}
 
-	/* Method: addMouseListeners() */
+	/* Method: removeAll() */
 	/**
-	 * Adds the program as both a <code>MouseListener</code> and
-	 * <code>MouseMotionListener</code> to the canvas.
+	 * Removes all graphical objects from this container. Note that this
+	 * definition overrides the <code>Container</code> version of
+	 * <code>removeAll</code>, which is replaced by <a
+	 * href="#removeAllComponents()"><code>removeAllComponents</code></a>.
 	 * 
-	 * @usage addMouseListeners();
+	 * @usage removeAll();
 	 */
-	public void addMouseListeners() {
-		if (!listenersAdded) {
-			// avoid attaching same listeners twice
-			gc.addMouseListener(this);
-			gc.addMouseMotionListener(this);
-			listenersAdded = true;
-		}
+	public void removeAll() {
+		gc.removeAll();
 	}
-
-	/* Method: addMouseListeners(listener) */
+	
+	/* Method: removeAllComponents() */
 	/**
-	 * Adds the specified listener as a <code>MouseListener</code> and/or
-	 * <code>MouseMotionListener</code>, as appropriate, to the canvas.
+	 * Removes all components from this container.
 	 * 
-	 * @usage addMouseListeners(listener);
-	 * @param listener
-	 *            A listener object that is either a <code>MouseListener</code>,
-	 *            a <code>MouseMotionListener</code>, or both
+	 * @usage removeAllComponents();
+	 * @noshow
 	 */
-	public void addMouseListeners(EventListener listener) {
-		boolean ok = false;
-		if (listener instanceof MouseListener) {
-			gc.addMouseListener((MouseListener) listener);
-			ok = true;
-		}
-		if (listener instanceof MouseMotionListener) {
-			gc.addMouseMotionListener((MouseMotionListener) listener);
-			ok = true;
-		}
-		if (!ok)
-			throw new ErrorException("addMouseListeners: Illegal listener");
-	}
-
-	/* Method: addKeyListeners() */
-	/**
-	 * Adds the program as a <code>KeyListener</code> to the canvas.
-	 * 
-	 * @usage addKeyListeners();
-	 */
-	public void addKeyListeners() {
-		gc.addKeyListener(this);
-	}
-
-	/* Method: addKeyListeners(listener) */
-	/**
-	 * Adds the specified listener as a <code>KeyListener</code> to the canvas.
-	 * 
-	 * @usage addKeyListeners(listener);
-	 * @param listener
-	 *            A <code>KeyListener</code> object
-	 */
-	public void addKeyListeners(KeyListener listener) {
-		gc.addKeyListener(listener);
-	}
-
-	/* Method: waitForClick() */
-	/**
-	 * Waits for a mouse click in the window before proceeding.
-	 * 
-	 * @usage waitForClick();
-	 */
-	public void waitForClick() {
-		eventListener.waitForClick();
+	public void removeAllComponents() {
+		super.removeAll();
 	}
 
 	/* Method: repaint() */
@@ -499,15 +575,18 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 		super.repaint();
 	}
 
-	/* Method: removeAllComponents() */
+	/* Method: run() */
 	/**
-	 * Removes all components from this container.
-	 * 
-	 * @usage removeAllComponents();
-	 * @noshow
+	 * Specifies the code to be executed as the program runs. The
+	 * <code>run</code> method is required for applications that have a thread
+	 * of control that runs even in the absence of user actions, such as a
+	 * program that uses console interation or that involves animation.
+	 * GUI-based programs that operate by setting up an initial configuration
+	 * and then wait for user events usually do not specify a <code>run</code>
+	 * method and supply a new definition for <code>init</code> instead.
 	 */
-	public void removeAllComponents() {
-		super.removeAll();
+	public void run() {
+		/* Empty */
 	}
 
 	/* Override method: setBackground(bg) */
@@ -523,38 +602,6 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 		super.setBackground(bg);
 		if (gc != null)
 			gc.setBackground(bg);
-	}
-
-	/**
-	 * Returns the height of the central canvas area.
-	 * @return the height of the central canvas area
-	 */
-	public double getCanvasHeight() {
-		if (gc != null) {
-			return gc.getHeight();
-		} else {
-			return getHeight();
-		}
-	}
-
-	/**
-	 * Returns the size of the central canvas area.
-	 * @return the size of the central canvas area
-	 */
-	public Dimension getCanvasSize() {
-		return new Dimension((int) getCanvasWidth(), (int) getCanvasHeight());
-	}
-
-	/**
-	 * Returns the width of the central canvas area.
-	 * @return the width of the central canvas area
-	 */
-	public double getCanvasWidth() {
-		if (gc != null) {
-			return gc.getWidth();
-		} else {
-			return getWidth();
-		}
 	}
 
 	/**
@@ -662,384 +709,20 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 		program.start(args);
 	}
 
-	/* Inherited method: print(value) */
 	/**
-	 * @inherited Program#void print(String value) Displays the argument value
-	 *            on the console, leaving the cursor at the end of the output.
+	 * Returns an image representation of the current contents of the screen.
 	 */
-
-	/* Inherited method: println() */
-	/**
-	 * @inherited Program#void println() Advances the console cursor to the
-	 *            beginning of the next line.
-	 */
-
-	/* Inherited method: println(value) */
-	/**
-	 * @inherited Program#void println(String value) Displays the argument value
-	 *            on the console and then advances the cursor to the next line.
-	 */
-
-	/* Inherited method: readLine() */
-	/**
-	 * @inherited Program#String readLine() Reads and returns a line of input
-	 *            from the console.
-	 */
-
-	/* Inherited method: readLine(prompt) */
-	/**
-	 * @inherited Program#String readLine(String prompt) Prompts the user for a
-	 *            line of input.
-	 */
-
-	/* Inherited method: readInt() */
-	/**
-	 * @inherited Program#int readInt() Reads and returns an integer value from
-	 *            the user.
-	 */
-
-	/* Inherited method: readInt(prompt) */
-	/**
-	 * @inherited Program#int readInt(String prompt) Prompts the user to enter
-	 *            an integer.
-	 */
-
-	/* Inherited method: readDouble() */
-	/**
-	 * @inherited Program#double readDouble() Reads and returns a
-	 *            double-precision value from the user.
-	 */
-
-	/* Inherited method: readDouble(prompt) */
-	/**
-	 * @inherited Program#double readDouble(String prompt) Prompts the user to
-	 *            enter a double-precision number, which is returned as the
-	 *            value of this method.
-	 */
-
-	/* Inherited method: readBoolean() */
-	/**
-	 * @inherited Program#boolean readBoolean() Reads and returns a boolean
-	 *            value (<code>true</code> or <code>false</code>).
-	 */
-
-	/* Inherited method: readBoolean(prompt) */
-	/**
-	 * @inherited Program#boolean readBoolean(String prompt) Prompts the user to
-	 *            enter a boolean value.
-	 */
-
-	/* Inherited method: readBoolean(prompt, trueLabel, falseLabel) */
-	/**
-	 * @inherited Program#boolean readBoolean(String prompt, String trueLabel,
-	 *            String falseLabel) Prompts the user to enter a boolean value,
-	 *            which is matched against the labels provided.
-	 */
-
-	/* Inherited method: getConsole() */
-	/**
-	 * @inherited Program#IOConsole getConsole() Returns the console associated
-	 *            with this program.
-	 */
-
-	/* Inherited method: getDialog() */
-	/**
-	 * @inherited Program#IODialog getDialog() Returns the dialog used for user
-	 *            interaction.
-	 */
-
-	/* Inherited method: getReader() */
-	/**
-	 * @inherited Program#BufferedReader getReader() Returns a
-	 *            <code>BufferedReader</code> whose input comes from the
-	 *            console.
-	 */
-
-	/* Inherited method: getWriter() */
-	/**
-	 * @inherited Program#PrintWriter getWriter() Returns a
-	 *            <code>PrintWriter</code> whose output is directed to the
-	 *            console.
-	 */
-
-	/* Inherited method: setTitle(title) */
-	/**
-	 * @inherited Program#void setTitle(String title) Sets the title of this
-	 *            program.
-	 */
-
-	/* Inherited method: getTitle() */
-	/**
-	 * @inherited Program#String getTitle() Gets the title of this program.
-	 */
-
-	/* Inherited method: pause(milliseconds) */
-	/**
-	 * @inherited Program#void pause(double milliseconds) Delays the calling
-	 *            thread for the specified time, which is expressed in
-	 *            milliseconds.
-	 */
-
-	/* Factory method: createGCanvas() */
-	/**
-	 * Creates the <code>GCanvas</code> used by the <code>GraphicsProgram</code>
-	 * . Subclasses can override this method to create their own
-	 * <code>GCanvas</code> types.
-	 * 
-	 * @usage GCanvas gc = program.createGCanvas();
-	 * @return The <code>GCanvas</code> to be inserted into the program
-	 * @noshow
-	 */
-	protected GCanvas createGCanvas() {
-		return new GCanvas();
+	public BufferedImage toImage() {
+		return this.gc.toImage();
 	}
-
-	/* Protected method: endHook() */
-	/**
-	 * Ensures that the window is repainted at the end of the program.
-	 */
-	protected void endHook() {
-		gc.repaint();
-	}
-
-	/* Protected method: isStarted() */
-	/**
-	 * Checks to see whether this program has started, usually by checking to
-	 * see whether some pane exists. Subclasses can override this method to
-	 * ensure that their structures are visible before proceeding.
-	 * 
-	 * @noshow
-	 */
-	protected boolean isStarted() {
-		if (gc == null || !super.isStarted())
-			return false;
-		Dimension size = gc.getSize();
-		return (size != null) && (size.width != 0) && (size.height != 0);
-	}
-
-	/* Private instance variables */
-	private GCanvas gc;
-	private GProgramListener eventListener;
-	private boolean listenersAdded = false;
-}
-
-/* Package class: GProgramListener */
-/**
- * The <code>GProgramListener</code> class implements the waitForClick method
- * and the objectdraw-style listener model.
- */
-class GProgramListener implements MouseListener, MouseMotionListener {
-
-	/* Constructor: GProgramListener() */
-	/**
-	 * Creates the <code>GProgramListener</code>.
-	 */
-	public GProgramListener(GraphicsProgram program) {
-		myProgram = program;
-		try {
-			Class<?> programClass = program.getClass();
-			Class<?>[] types = { Class.forName("acm.graphics.GPoint") };
-			try {
-				mousePressedHook = programClass
-						.getMethod("mousePressed", types);
-			} catch (NoSuchMethodException ex) {
-				/* Empty */
-			}
-			try {
-				mouseReleasedHook = programClass.getMethod("mouseReleased",
-						types);
-			} catch (NoSuchMethodException ex) {
-				/* Empty */
-			}
-			try {
-				mouseClickedHook = programClass
-						.getMethod("mouseClicked", types);
-			} catch (NoSuchMethodException ex) {
-				/* Empty */
-			}
-			try {
-				mouseMovedHook = programClass.getMethod("mouseMoved", types);
-			} catch (NoSuchMethodException ex) {
-				/* Empty */
-			}
-			try {
-				mouseDraggedHook = programClass
-						.getMethod("mouseDragged", types);
-			} catch (NoSuchMethodException ex) {
-				/* Empty */
-			}
-		} catch (Exception ex) {
-			throw new ErrorException(ex);
-		}
-	}
-
-	/* Method: needsMouseMotionListeners() */
-	/**
-	 * Returns true if this listener has to respond to mouse motion events as
-	 * well.
-	 */
-	public boolean needsMouseMotionListeners() {
-		return mouseMovedHook != null || mouseDraggedHook != null;
-	}
-
-	/* Method: mouseClicked() */
-	/**
-	 * Called by the event-handling system when the mouse is clicked in the
-	 * canvas.
-	 */
-	public void mouseClicked(MouseEvent e) {
-		if (mouseClickedHook != null) {
-			Object[] args = { new GPoint(e.getX(), e.getY()) };
-			try {
-				mouseClickedHook.invoke(myProgram, args);
-			} catch (Exception ex) {
-				throw new ErrorException(ex);
-			}
-		}
-		signalClickOccurred();
-	}
-
-	/* Method: mousePressed() */
-	/**
-	 * Called by the event-handling system when the mouse button is pressed.
-	 */
-	public void mousePressed(MouseEvent e) {
-		if (mousePressedHook != null) {
-			Object[] args = { new GPoint(e.getX(), e.getY()) };
-			try {
-				mousePressedHook.invoke(myProgram, args);
-			} catch (Exception ex) {
-				throw new ErrorException(ex);
-			}
-		}
-	}
-
-	/* Method: mouseReleased() */
-	/**
-	 * Called by the event-handling system when the mouse button is released.
-	 */
-	public void mouseReleased(MouseEvent e) {
-		if (mouseReleasedHook != null) {
-			Object[] args = { new GPoint(e.getX(), e.getY()) };
-			try {
-				mouseReleasedHook.invoke(myProgram, args);
-			} catch (Exception ex) {
-				throw new ErrorException(ex);
-			}
-		}
-	}
-
-	/* Method: mouseEntered() */
-	/**
-	 * Called by the event-handling system when the mouse enters the component.
-	 */
-	public void mouseEntered(MouseEvent e) {
-		/* Empty */
-	}
-
-	/* Method: mouseExited() */
-	/**
-	 * Called by the event-handling system when the mouse leaves the component.
-	 */
-	public void mouseExited(MouseEvent e) {
-		/* Empty */
-	}
-
-	/* Method: mouseMoved() */
-	/**
-	 * Called by the event-handling system when the mouse moves.
-	 */
-	public void mouseMoved(MouseEvent e) {
-		if (mouseMovedHook != null) {
-			Object[] args = { new GPoint(e.getX(), e.getY()) };
-			try {
-				mouseMovedHook.invoke(myProgram, args);
-			} catch (Exception ex) {
-				throw new ErrorException(ex);
-			}
-		}
-	}
-
-	/* Method: mouseDragged() */
-	/**
-	 * Called by the event-handling system when the mouse is dragged with the
-	 * button down.
-	 */
-	public void mouseDragged(MouseEvent e) {
-		if (mouseDraggedHook != null) {
-			Object[] args = { new GPoint(e.getX(), e.getY()) };
-			try {
-				mouseDraggedHook.invoke(myProgram, args);
-			} catch (Exception ex) {
-				throw new ErrorException(ex);
-			}
-		}
-	}
-
+	
 	/* Method: waitForClick() */
 	/**
 	 * Waits for a mouse click in the window before proceeding.
 	 * 
 	 * @usage waitForClick();
 	 */
-	public synchronized void waitForClick() {
-		clickFlag = false;
-		while (!clickFlag) {
-			try {
-				wait();
-			} catch (InterruptedException ex) {
-				/* Empty */
-			}
-		}
-	}
-
-	/* Private method: signalClickOccurred() */
-	/**
-	 * Notifies any waiting objects that a click has occurred.
-	 */
-	private synchronized void signalClickOccurred() {
-		clickFlag = true;
-		notifyAll();
-	}
-
-	/* Private instance variables */
-	private GraphicsProgram myProgram;
-	private Method mousePressedHook;
-	private Method mouseReleasedHook;
-	private Method mouseClickedHook;
-	private Method mouseMovedHook;
-	private Method mouseDraggedHook;
-	private boolean clickFlag;
-
-}
-
-/* Package class: GObjectProgram */
-/**
- * This class is used to launch a program containing a single
- * <code>GObject</code> instance at its center.
- */
-class GObjectProgram extends GraphicsProgram {
-
-	/* Hook method: runHook() */
-	/**
-	 * Calls the run method in the graphical object.
-	 */
-	protected void runHook() {
-		GObject gobj = (GObject) getStartupObject();
-		GDimension size = gobj.getSize();
-		add(gobj, (getWidth() - size.getWidth()) / 2,
-				(getHeight() - size.getHeight()) / 2);
-		try {
-			Class<?> gobjClass = gobj.getClass();
-			String className = gobjClass.getName();
-			className = className.substring(className.lastIndexOf(".") + 1);
-			setTitle(className);
-			Method run = gobjClass.getMethod("run", new Class[0]);
-			if (run == null)
-				throw new ErrorException(className + " has no run method");
-			run.invoke(gobj, new Object[0]);
-		} catch (Exception ex) {
-			throw new ErrorException(ex);
-		}
+	public void waitForClick() {
+		eventListener.waitForClick();
 	}
 }

@@ -1,5 +1,10 @@
 /*
  * @author Marty Stepp (current maintainer)
+ * @version 2017/04/25
+ * - added Save / Save As options to GraphicsProgram
+ * - added Anti-alias checkbox to GraphicsProgram
+ * - added Compare Output option to GraphicsProgram
+ * - added internal image icons to menu items
  * @version 2016/11/03
  * - added Load Input Script option for console programs
  * @version 2016/06/21
@@ -56,6 +61,7 @@ import java.util.*;
 import javax.swing.*;
 
 import stanford.cs106.gui.GuiUtils;
+import stanford.cs106.io.ResourceUtils;
 import stanford.karel.*;
 
 /* Class: ProgramMenuBar */
@@ -113,6 +119,7 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 
 	// constants for menu bar item text
 	public static final String MENU_ITEM_TEXT_ABOUT = "About...";
+	public static final String MENU_ITEM_TEXT_ANTI_ALIASING = "Anti-aliasing";
 	public static final String MENU_ITEM_TEXT_BACKGROUND_COLOR = "Background Color...";
 	public static final String MENU_ITEM_TEXT_CHECK_FOR_UPDATES = "Check for Updates";
 	public static final String MENU_ITEM_TEXT_CLEAR_CONSOLE = "Clear Console";
@@ -337,7 +344,35 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		if (keystroke != null) {
 			item.setAccelerator(keystroke);
 		}
+		
+		tryToSetIcon(item);
 		return item;
+	}
+	
+	/**
+	 * Tries to look up an image icon in the spl.jar and set it on the given menu item.
+	 */
+	static void tryToSetIcon(JMenuItem item) {
+		// try to find an icon for this menu item
+		String filename = "res/icons/" + item.getText().toLowerCase()
+				.replace("...", "")
+				.replaceAll("[^a-zA-Z0-9_-]+", "_")
+				+ ".gif";
+		if (ResourceUtils.fileExists(filename)) {
+			java.net.URL url = ResourceUtils.filenameToURL(filename);
+			Image img = MediaTools.loadImage(url);
+			if (img != null) {
+				item.setIcon(new ImageIcon(img));
+			} else {
+				// fall back to blank 16x16 icon
+				filename = "res/icons/blank.gif";
+				url = ResourceUtils.filenameToURL(filename);
+				img = MediaTools.loadImage(url);
+				if (img != null) {
+					item.setIcon(new ImageIcon(img));
+				}
+			}
+		}
 	}
 
 	/* Method: createProgramItem(action) */
@@ -354,6 +389,7 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		JMenuItem item = new JMenuItem(action);
 		item.setActionCommand(action);
 		item.addActionListener(menuBarListener);
+		tryToSetIcon(item);
 		return item;
 	}
 
@@ -372,6 +408,7 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		JMenuItem item = createProgramItem(action, key);
 		item.setAccelerator(keystroke);
 		item.setMnemonic(key);
+		tryToSetIcon(item);
 		return item;
 	}
 
@@ -379,6 +416,7 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		JMenuItem item = createProgramItem(action);
 		setAccelerator(item, key);
 		item.setMnemonic(key);
+		tryToSetIcon(item);
 		return item;
 	}
 
@@ -393,6 +431,7 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 	public JMenuItem createFocusedItem(String action) {
 		JMenuItem item = createProgramItem(action);
 		focusedItems.add(item);
+		tryToSetIcon(item);
 		return item;
 	}
 
@@ -424,6 +463,7 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 			setAccelerator(item, key);
 		}
 		item.setMnemonic(key);
+		tryToSetIcon(item);
 		return item;
 	}
 
@@ -640,9 +680,13 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		Program program = getProgram();
 		if (program instanceof AbstractConsoleProgram) {
 			addEditMenu();
-			addOptionsMenu();
+		}
+		if (program instanceof AbstractConsoleProgram) {
+			addConsoleOptionsMenu();
 		} else if (program instanceof Karel || program instanceof KarelProgram) {
 			addKarelOptionsMenu();
+		} else {
+			addGraphicsOptionsMenu();
 		}
 		addHelpMenu();
 	}
@@ -672,13 +716,24 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 	/**
 	 * Installs the <code>Options</code> menu for console programs.
 	 *
-	 * @usage mbar.addOptionsMenu();
+	 * @usage mbar.addConsoleOptionsMenu();
 	 */
-	protected void addOptionsMenu() {
+	protected void addConsoleOptionsMenu() {
 		JMenu optionsMenu = GuiUtils.createMenu("Options", this);
-		GuiUtils.createMenuItem(MENU_ITEM_TEXT_FONT, menuBarListener, optionsMenu);
-		GuiUtils.createMenuItem(MENU_ITEM_TEXT_BACKGROUND_COLOR, menuBarListener, optionsMenu);
-		GuiUtils.createMenuItem(MENU_ITEM_TEXT_FOREGROUND_COLOR, menuBarListener, optionsMenu);
+		tryToSetIcon(GuiUtils.createMenuItem(MENU_ITEM_TEXT_FONT, menuBarListener, optionsMenu));
+		tryToSetIcon(GuiUtils.createMenuItem(MENU_ITEM_TEXT_BACKGROUND_COLOR, menuBarListener, optionsMenu));
+		tryToSetIcon(GuiUtils.createMenuItem(MENU_ITEM_TEXT_FOREGROUND_COLOR, menuBarListener, optionsMenu));
+	}
+
+	/**
+	 * Installs the <code>Options</code> menu for graphics programs.
+	 *
+	 * @usage mbar.addGraphicsOptionsMenu();
+	 */
+	protected void addGraphicsOptionsMenu() {
+		JMenu optionsMenu = GuiUtils.createMenu("Options", this);
+		JCheckBoxMenuItem antialiasItem = GuiUtils.createCheckBoxMenuItem(MENU_ITEM_TEXT_ANTI_ALIASING, /* checked */ true, menuBarListener, optionsMenu);
+		antialiasItem.setToolTipText("Enable / disable smoothing of edges and pixels in drawn shapes.");
 	}
 
 	/* Protected method: addKarelOptionsMenu() */
@@ -699,8 +754,10 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		JMenuItem aboutItem = GuiUtils.createMenuItem(MENU_ITEM_TEXT_ABOUT, menuBarListener, helpMenu);
 		aboutItem.setAccelerator(F1);
 		accelerators.put(F1, aboutItem);
+		tryToSetIcon(aboutItem);
 
-		GuiUtils.createMenuItem(MENU_ITEM_TEXT_CHECK_FOR_UPDATES, menuBarListener, helpMenu);
+		JMenuItem checkForUpdatesItem = GuiUtils.createMenuItem(MENU_ITEM_TEXT_CHECK_FOR_UPDATES, menuBarListener, helpMenu);
+		tryToSetIcon(checkForUpdatesItem);
 	}
 
 	/* Protected method: addFileMenuItems(menu) */
@@ -714,23 +771,30 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 	 */
 	protected void addFileMenuItems(JMenu menu) {
 		boolean isConsole = getProgram() instanceof AbstractConsoleProgram;
+		// boolean isGraphics = getProgram() instanceof GraphicsProgram;
+		
+		menu.add(createStandardItem(MENU_ITEM_TEXT_SAVE, 'S'));
+		menu.add(createStandardItem(MENU_ITEM_TEXT_SAVE_AS, 'A'));
+		menu.addSeparator();
+		
+		menu.add(createStandardItem(MENU_ITEM_TEXT_PRINT, 'P'));
+		// menu.add(createStandardItem("Print Console"));
+		// menu.add(createStandardItem("Script"));
+		menu.addSeparator();
+
 		if (isConsole) {
-			menu.add(createStandardItem(MENU_ITEM_TEXT_SAVE, 'S'));
-			menu.add(createStandardItem(MENU_ITEM_TEXT_SAVE_AS, 'A'));
-			menu.addSeparator();
-			menu.add(createStandardItem(MENU_ITEM_TEXT_PRINT, 'P'));
-			// menu.add(createStandardItem("Print Console"));
-			// menu.add(createStandardItem("Script"));
-			menu.addSeparator();
-
-			GuiUtils.createMenuItem(MENU_ITEM_TEXT_LOAD_INPUT_SCRIPT, menuBarListener, menu);
-			GuiUtils.createMenuItem(MENU_ITEM_TEXT_COMPARE_OUTPUT, menuBarListener, menu);
-
-			menu.addSeparator();
+			tryToSetIcon(GuiUtils.createMenuItem(MENU_ITEM_TEXT_LOAD_INPUT_SCRIPT, menuBarListener, menu));
 		}
+
+		tryToSetIcon(GuiUtils.createMenuItem(MENU_ITEM_TEXT_COMPARE_OUTPUT, menuBarListener, menu));
+		menu.addSeparator();
+
+		// BUGBUG: turning off Export and Submit features;
+		// they seem to not always work any more anyway and are rarely used
 		// menu.add(createStandardItem("Export Applet"));
 		// menu.add(createStandardItem("Submit Project"));
 		// menu.addSeparator();
+		
 		menu.add(createStandardItem(MENU_ITEM_TEXT_QUIT, 'Q'));
 	}
 

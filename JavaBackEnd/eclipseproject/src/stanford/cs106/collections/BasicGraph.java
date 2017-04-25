@@ -1,5 +1,8 @@
 /*
  * @author Marty Stepp
+ * @version 2016/12/01
+ * - fixed bugs with adding edges between null vertexes, asking for null neighbors
+ *   (made behavior more closely match C++ version)
  * @version 2015/11/30
  * - fixed bugs related to in/outDegree and neighbors of vertexes that have none
  *   (should have returned 0 or empty set; instead crashed with NPE)
@@ -48,6 +51,12 @@ public class BasicGraph<V, E> implements Graph<V, E> {
 
 	/** {@inheritDoc} */
 	public final void addEdge(String v1, String v2, double weight) {
+		if (!containsVertex(v1)) {
+			addVertex(v1);
+		}
+		if (!containsVertex(v2)) {
+			addVertex(v2);
+		}
 		addEdge(vertex(v1), vertex(v2), weight);
 	}
 
@@ -58,8 +67,14 @@ public class BasicGraph<V, E> implements Graph<V, E> {
 
 	/** {@inheritDoc} */
 	public final void addEdge(Vertex<V> v1, Vertex<V> v2, double weight) {
-		checkVertexes(v1, v2);
+		checkForNull(v1, v2);
 		checkForNegative(weight);
+		if (!containsVertex(v1)) {
+			addVertex(v1.name());
+		}
+		if (!containsVertex(v2)) {
+			addVertex(v2.name());
+		}
 		if (v1.equals(v2)) {
 			throw new IllegalArgumentException("Cannot add a loop (an edge from "
 					+ v1 + " back to itself)");
@@ -111,7 +126,9 @@ public class BasicGraph<V, E> implements Graph<V, E> {
 	}
 	
 	public final void clearEdges(Vertex<V> v) {
-		checkVertex(v);
+		if (!containsVertex(v)) {
+			return;
+		}
 		Set<Edge<V, E>> toRemove = new HashSet<Edge<V, E>>();
 		for (Edge<V, E> edge : edges()) {
 			if (edge.start().equals(v)) {
@@ -160,7 +177,7 @@ public class BasicGraph<V, E> implements Graph<V, E> {
 
 	/** {@inheritDoc} */
 	public final boolean containsVertex(Vertex<V> v) {
-		return vertexes.containsKey(v.name());
+		return v != null && vertexes.containsKey(v.name());
 	}
 	
 	/** {@inheritDoc} */
@@ -205,8 +222,6 @@ public class BasicGraph<V, E> implements Graph<V, E> {
 
 	/** {@inheritDoc} */
 	public final Edge<V, E> edge(Vertex<V> v1, Vertex<V> v2) {
-		checkForNull(v1, v2);
-		checkVertexes(v1, v2);
 		if (adjacencyMap.contains(v1, v2)) {
 			return adjacencyMap.get(v1, v2);
 		} else {
@@ -288,19 +303,15 @@ public class BasicGraph<V, E> implements Graph<V, E> {
 	}
 	
 	public Set<Vertex<V>> inverseNeighbors(Vertex<V> v) {
-		checkVertex(v);
 		Set<Vertex<V>> result = new TreeSet<Vertex<V>>();
-		for (Edge<V, E> edge : edges()) {
-			if (edge.finish().equals(v)) {
-				result.add(edge.start());
+		if (containsVertex(v)) {
+			for (Edge<V, E> edge : edges()) {
+				if (edge.finish().equals(v)) {
+					result.add(edge.start());
+				}
 			}
 		}
 		return result;
-//		if (adjacencyMap.containsColumn(v)) {
-//			return adjacencyMap.column(v).keySet();
-//		} else {
-//			return Collections.emptySet();
-//		}
 	}
 
 	/** {@inheritDoc} */
@@ -325,8 +336,7 @@ public class BasicGraph<V, E> implements Graph<V, E> {
 
 	/** {@inheritDoc} */
 	public final Set<Vertex<V>> neighbors(Vertex<V> v) {
-		checkVertex(v);
-		if (adjacencyMap.containsRow(v)) {
+		if (containsVertex(v) && adjacencyMap.containsRow(v)) {
 			return adjacencyMap.row(v).keySet();
 		} else {
 			return Collections.emptySet();
@@ -340,12 +350,18 @@ public class BasicGraph<V, E> implements Graph<V, E> {
 
 	/** {@inheritDoc} */
 	public final int outDegree(Vertex<V> v) {
-		return neighbors(v).size();
+		if (containsVertex(v)) {
+			return neighbors(v).size();
+		} else {
+			return 0;
+		}
 	}
 
 	/** {@inheritDoc} */
 	public final void removeEdge(Edge<V, E> e) {
-		removeEdge(e.start().name(), e.end().name());
+		if (e != null && e.start() != null && e.end() != null) {
+			removeEdge(e.start().name(), e.end().name());
+		}
 	}
 
 	/** {@inheritDoc} */
@@ -365,7 +381,6 @@ public class BasicGraph<V, E> implements Graph<V, E> {
 
 	/** {@inheritDoc} */
 	public final void removeVertex(String v) {
-		checkForNull(v);
 		if (containsVertex(v)) {
 			// remove any incoming/outgoing edges from this vertex
 			removeVertexHelper(v);
@@ -375,7 +390,6 @@ public class BasicGraph<V, E> implements Graph<V, E> {
 
 	/** {@inheritDoc} */
 	public final void removeVertex(Vertex<V> v) {
-		checkForNull(v);
 		if (containsVertex(v)) {
 			// remove any incoming/outgoing edges from this vertex
 			removeVertexHelper(v);
