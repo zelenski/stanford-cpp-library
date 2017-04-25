@@ -31,13 +31,16 @@ The <code>TokenScanner</code> class exports several additional methods
 that give clients more control over its behavior.  Those methods are
 described individually in the documentation.
 
+<!--
 <p>
 	<em>NOTE:</em> While still available for compatibility, Stanford CS 106B/X students are generally advised to avoid using <code>TokenScanner</code>.
 	The library now provides cleaner ways to provide most string processing tasks, such as the <code>strlib.h</code> function <code>stringSplit</code>.
 </p>
+-->
+
 <table class=index width=100%>
 <tr><td class=indexHead colspan=2>Constructor</td></tr>
-<tr><td class=indexKey><nobr><a href="#Constructor:TokenScanner">TokenScanner()</a><br><a href="#Constructor:TokenScanner">TokenScanner(str)</a><br><a href="#Constructor:TokenScanner">TokenScanner(infile)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Initializes a scanner object.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:TokenScanner">TokenScanner()</a><br><a href="#Constructor:TokenScanner">TokenScanner(<var>str</var>)</a><br><a href="#Constructor:TokenScanner">TokenScanner(<var>infile</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Initializes a scanner object.</td></tr>
 <tr><td class=indexHead colspan=2>Methods</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:addOperator">addOperator(<var>op</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Defines a new multicharacter operator.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Method:addWordCharacters">addWordCharacters(<var>str</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds the characters in <code>str</code> to the set of characters legal in a <code>WORD</code> token.</td></tr>

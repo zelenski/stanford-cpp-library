@@ -4,6 +4,8 @@
  * This file exports the <code>Set</code> class, which implements a
  * collection for storing a set of distinct elements.
  * 
+ * @version 2016/12/06
+ * - slight speedup bug fix in equals() method
  * @version 2016/09/24
  * - refactored to use collections.h utility functions
  * @version 2016/08/11
@@ -568,7 +570,9 @@ bool Set<ValueType>::equals(const Set<ValueType>& set2) const {
         return false;
     }
 
-    return isSubsetOf(set2) && set2.isSubsetOf(*this);
+    // BUGFIX: don't need to check set2.isSubsetOf(*this) because they are
+    // the same size - credit to Stanford student G. Boullanger 2016/12/05
+    return isSubsetOf(set2);
 }
 
 template <typename ValueType>

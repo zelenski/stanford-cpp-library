@@ -11,6 +11,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2016/12/09
+# - added SPL_THROW_ON_INVALID_ITERATOR flag
 # @version 2016/12/01
 # - slight tweaks to compiler flags to improve stack trace line generation
 # @version 2016/11/07
@@ -168,8 +170,8 @@ exists($$PWD/output/*) {
 # set up flags for the C++ compiler
 # (In general, many warnings/errors are enabled to tighten compile-time checking.
 # A few overly pedantic/confusing errors are turned off for simplicity.)
-QMAKE_CXXFLAGS += -std=c++11
-#CONFIG += c++11
+#QMAKE_CXXFLAGS += -std=c++11
+CONFIG += c++11
 QMAKE_CXXFLAGS += -Wall
 QMAKE_CXXFLAGS += -Wextra
 #QMAKE_CXXFLAGS += -Weffc++
@@ -271,6 +273,10 @@ DEFINES += PQUEUE_ALLOW_HEAP_ACCESS
 # or in heap internal order? the former is more expected by client; the latter
 # is faster and avoids a deep-copy
 DEFINES += PQUEUE_PRINT_IN_HEAP_ORDER
+
+# flag to throw exceptions when a collection iterator is used after it has
+# been invalidated (e.g. if you remove from a Map while iterating over it)
+DEFINES += SPL_THROW_ON_INVALID_ITERATOR
 
 # should we throw an error() when operator >> fails on a collection?
 # for years this was true, but the C++ standard says you should just silently
@@ -490,4 +496,4 @@ exists($$PWD/lib/autograder/*.cpp) {
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #493; if not, your .pro has been changed!)
+# END OF FILE (this should be line #499; if not, your .pro has been changed!)

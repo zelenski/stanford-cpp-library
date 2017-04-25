@@ -4,6 +4,8 @@
  * This file exports the <code>Grid</code> class, which offers a
  * convenient abstraction for representing a two-dimensional array.
  *
+ * @version 2016/12/09
+ * - bug fix in resize method (credit to Liu Ren)
  * @version 2016/09/24
  * - refactored to use collections.h utility functions
  * - made member variables actually private (oops)
@@ -745,7 +747,7 @@ void Grid<ValueType>::resize(int nRows, int nCols, bool retain) {
         int minCols = oldnCols < nCols ? oldnCols : nCols;
         for (int row = 0; row < minRows; row++) {
             for (int col = 0; col < minCols; col++) {
-                this->elements[(row * nCols) + col] = oldElements[(row * oldnRows) + col];
+                this->elements[(row * nCols) + col] = oldElements[(row * oldnCols) + col];
             }
         }
     }

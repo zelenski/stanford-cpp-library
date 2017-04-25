@@ -4,6 +4,8 @@
  * This file exports the template class <code>Map</code>, which
  * maintains a collection of <i>key</i>-<i>value</i> pairs.
  * 
+ * @version 2016/12/09
+ * - added iterator version checking support
  * @version 2016/09/24
  * - refactored to use collections.h utility functions
  * @version 2016/09/22
@@ -257,7 +259,7 @@ public:
      * so it is inefficient to call on large maps.
      */
     Vector<ValueType> values() const;
-    
+
     /*
      * Operator: []
      * Usage: map[key]
@@ -464,6 +466,7 @@ private:
     BSTNode* root;      // pointer to the root of the tree
     int nodeCount;      // number of entries in the map
     Comparator* cmpp;   // pointer to the comparator
+    unsigned int m_version;   // structure version for detecting invalid iterators
 
     // private methods
 
@@ -772,6 +775,7 @@ private:
         root = copyTree(other.root);
         nodeCount = other.nodeCount;
         cmpp = (!other.cmpp) ? nullptr : other.cmpp->clone();
+        m_version++;
     }
 
     BSTNode* copyTree(BSTNode* const t) {
@@ -842,7 +846,7 @@ public:
         return *this;
     }
 
-    Map(const Map& src) : root(nullptr), nodeCount(0), cmpp(nullptr) {
+    Map(const Map& src) : root(nullptr), nodeCount(0), cmpp(nullptr), m_version(0) {
         deepCopy(src);
     }
 
@@ -860,9 +864,10 @@ public:
             bool processed;
         };
 
-        const Map* mp;               /* Pointer to the map         */
-        int index;                   /* Index of current element   */
-        Stack<NodeMarker> stack;     /* Stack of unprocessed nodes */
+        const Map* mp;               // pointer to the map
+        int index;                   // index of current element
+        Stack<NodeMarker> stack;     // stack of unprocessed nodes
+        unsigned int itr_version;
 
         void findLeftmostChild() {
             BSTNode *np = stack.peek().np;
@@ -877,12 +882,15 @@ public:
         }
 
     public:
-        iterator() : mp(nullptr), index(0) {
+        iterator()
+                : mp(nullptr),
+                  index(0),
+                  itr_version(0) {
             /* Empty */
         }
 
-        iterator(const Map* mp, bool end) {
-            this->mp = mp;
+        iterator(const Map* mp, bool end)
+                : mp(mp) {
             if (end || mp->nodeCount == 0) {
                 index = mp->nodeCount;
             } else {
@@ -891,15 +899,19 @@ public:
                 stack.push(marker);
                 findLeftmostChild();
             }
+            itr_version = mp->version();
         }
 
-        iterator(const iterator& it) {
-            mp = it.mp;
-            index = it.index;
-            stack = it.stack;
+        iterator(const iterator& it)
+                : mp(it.mp),
+                  index(it.index),
+                  stack(it.stack),
+                  itr_version(it.itr_version) {
+            // empty
         }
 
         iterator& operator ++() {
+            stanfordcpplib::collections::checkVersion(*mp, *this);
             NodeMarker marker = stack.pop();
             BSTNode* np = marker.np;
             if (!np->right) {
@@ -919,6 +931,7 @@ public:
         }
 
         iterator operator ++(int) {
+            stanfordcpplib::collections::checkVersion(*mp, *this);
             iterator copy(*this);
             operator++();
             return copy;
@@ -933,11 +946,17 @@ public:
         }
 
         KeyType& operator *() {
+            stanfordcpplib::collections::checkVersion(*mp, *this);
             return stack.peek().np->key;
         }
 
         KeyType* operator ->() {
+            stanfordcpplib::collections::checkVersion(*mp, *this);
             return &stack.peek().np->key;
+        }
+
+        unsigned int version() const {
+            return itr_version;
         }
 
         friend class Map;
@@ -956,16 +975,22 @@ public:
     iterator end() const {
         return iterator(this, /* end */ true);
     }
+
+    /*
+     * Returns the internal version of this collection.
+     * This is used to check for invalid iterators and issue error messages.
+     */
+    unsigned int version() const;
 };
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>::Map() : root(nullptr), nodeCount(0) {
+Map<KeyType, ValueType>::Map() : root(nullptr), nodeCount(0), m_version(0) {
     cmpp = new TemplateComparator<std::less<KeyType> >(std::less<KeyType>());
 }
 
 template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<KeyType, ValueType> > list)
-        : root(nullptr), nodeCount(0) {
+        : root(nullptr), nodeCount(0), m_version(0) {
     cmpp = new TemplateComparator<std::less<KeyType> >(std::less<KeyType>());
     putAll(list);
 }
@@ -1001,6 +1026,7 @@ void Map<KeyType, ValueType>::clear() {
     deleteTree(root);
     root = nullptr;
     nodeCount = 0;
+    m_version++;
 }
 
 template <typename KeyType, typename ValueType>
@@ -1058,6 +1084,7 @@ void Map<KeyType, ValueType>::put(const KeyType& key,
                                   const ValueType& value) {
     bool dummy;
     *addNode(root, key, dummy) = value;
+    m_version++;
 }
 
 template <typename KeyType, typename ValueType>
@@ -1080,6 +1107,7 @@ Map<KeyType, ValueType>& Map<KeyType, ValueType>::putAll(
 template <typename KeyType, typename ValueType>
 void Map<KeyType, ValueType>::remove(const KeyType& key) {
     removeNode(root, key);
+    m_version++;
 }
 
 template <typename KeyType, typename ValueType>
@@ -1153,6 +1181,11 @@ Vector<ValueType> Map<KeyType, ValueType>::values() const {
         values.add(this->get(key));
     }
     return values;
+}
+
+template <typename KeyType,typename ValueType>
+unsigned int  Map<KeyType, ValueType>::version() const {
+    return m_version;
 }
 
 template <typename KeyType, typename ValueType>

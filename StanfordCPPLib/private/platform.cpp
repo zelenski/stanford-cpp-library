@@ -284,17 +284,15 @@ void Platform::filelib_setCurrentDirectory(const std::string& path) {
 
 // Unix implementation; see Windows implementation elsewhere in this file
 std::string Platform::filelib_getCurrentDirectory() {
-    char *cwd = getcwd(nullptr, 0);
-    if (!cwd) {
-        std::string msg = "getCurrentDirectory: ";
-        std::string err = std::string(strerror(errno));
-        error(msg + err);
-        return "";
+    char currentDirBuf[4096] = {'\0'};
+    char* cwd = getcwd(currentDirBuf, 4096 - 1);
+    std::string result;
+    if (cwd) {
+        result = std::string(cwd);
     } else {
-        std::string result = std::string(cwd);
-        free(cwd);
-        return result;
+        error("getCurrentDirectory: " + std::string(strerror(errno)));
     }
+    return result;
 }
 
 // Unix implementation; see Windows implementation elsewhere in this file
@@ -2952,7 +2950,6 @@ static std::string getSplJarPath() {
     char* splHome = getenv("SPL_HOME");
     if (splHome) {
         splHomeDir = splHome;   // copy to C++ string
-        free(splHome);          // free C heap memory
         // ensure that it ends with a trailing slash
         if (!splHomeDir.empty() && splHomeDir[splHomeDir.length() - 1] != '/') {
             splHomeDir += '/';
@@ -2961,26 +2958,26 @@ static std::string getSplJarPath() {
 
 #ifndef _WIN32
     // on Mac only, may need to change folder because of app's nested dir structure
-    char* currentDirC = getcwd(nullptr, 0);
-    if (currentDirC) {
-        std::string currentDir = currentDirC;
-        free(currentDirC);
-
-        size_t ax = currentDir.find(".app/Contents/");
-        if (ax != std::string::npos) {
-            while (ax > 0 && currentDir[ax] != '/') {
-                ax--;
-            }
-            if (ax > 0) {
-                std::string cwd = currentDir.substr(0, ax);
-                chdir(cwd.c_str());
-            }
+    std::string currentDir = stanfordcpplib::getPlatform()->filelib_getCurrentDirectory();
+    size_t ax = currentDir.find(".app/Contents/");
+    if (ax != std::string::npos) {
+        while (ax > 0 && currentDir[ax] != '/') {
+            ax--;
+        }
+        if (ax > 0) {
+            std::string cwd = currentDir.substr(0, ax);
+            chdir(cwd.c_str());
         }
     }
 #endif // _WIN32
 
     // check whether spl.jar file exists (code taken from filelib_fileExists)
     std::string jarName = splHomeDir + "spl.jar";
+    if (!stanfordcpplib::getPlatform()->filelib_fileExists(jarName)) {
+        std::string argvDir = getHead(exceptions::getProgramNameForStackTrace());
+        jarName = argvDir + "/spl.jar";
+    }
+
     if (!stanfordcpplib::getPlatform()->filelib_fileExists(jarName)) {
         // use stderr directly rather than cerr because graphical console is unreachable
         fputs("\n", stderr);

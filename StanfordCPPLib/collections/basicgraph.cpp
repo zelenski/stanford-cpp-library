@@ -1,3 +1,12 @@
+/*
+ * File: basicgraph.cpp
+ * --------------------
+ * This file implements any non-template functionality used by
+ * the BasicGraph class.
+ *
+ * @version 2016/12/01
+ */
+
 #include "basicgraph.h"
 
 int hashCode(const BasicGraph& graph) {

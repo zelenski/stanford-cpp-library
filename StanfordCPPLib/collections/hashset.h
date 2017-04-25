@@ -4,6 +4,8 @@
  * This file exports the <code>HashSet</code> class, which
  * implements an efficient abstraction for storing sets of values.
  * 
+ * @version 2016/12/06
+ * - slight speedup bug fix in equals() method
  * @version 2016/09/24
  * - refactored to use collections.h utility functions
  * @version 2016/08/11
@@ -547,7 +549,9 @@ bool HashSet<ValueType>::equals(const HashSet<ValueType>& set2) const {
         return false;
     }
     
-    return isSubsetOf(set2) && set2.isSubsetOf(*this);
+    // BUGFIX: don't need to check set2.isSubsetOf(*this) because they are
+    // the same size - credit to Stanford student G. Boullanger 2016/12/05
+    return isSubsetOf(set2);
 }
 
 template <typename ValueType>

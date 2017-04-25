@@ -9,6 +9,11 @@
  * See BasicGraph.cpp for implementation of each member.
  *
  * @author Marty Stepp
+ * @version 2016/12/04
+ * - bug fix in resetData method (was referring to Vertex* and Edge*)
+ * @version 2016/12/01
+ * - bug fix in addEdge method (now correctly adds vertexes if not present)
+ * - fixed bugs in some node/arc methods (should not crash on empty/null args)
  * @version 2016/11/26
  * - added BasicGraphV, VertexV, EdgeV macros
  * - added getInverseEdgeSet
@@ -594,10 +599,10 @@ EdgeGen<V, E>* BasicGraphGen<V, E>::getInverseEdge(EdgeGen<V, E>* edge) const {
 template <typename V, typename E>
 void BasicGraphGen<V, E>::resetData() {
     if (m_resetEnabled) {
-        for (Vertex* v : getVertexSet()) {
+        for (VertexGen<V, E>* v : getVertexSet()) {
             v->resetData();
         }
-        for (Edge* e : getEdgeSet()) {
+        for (EdgeGen<V, E>* e : getEdgeSet()) {
             e->resetData();
         }
     }
@@ -610,6 +615,12 @@ void BasicGraphGen<V, E>::setResetEnabled(bool enabled) {
 
 template <typename V, typename E>
 EdgeGen<V, E>* BasicGraphGen<V, E>::addEdge(const std::string& v1, const std::string& v2, double cost, bool directed) {
+    if (!containsVertex(v1)) {
+        addVertex(v1);
+    }
+    if (!containsVertex(v2)) {
+        addVertex(v2);
+    }
     return this->addEdge(getVertex(v1), getVertex(v2), cost, directed);
 }
 
