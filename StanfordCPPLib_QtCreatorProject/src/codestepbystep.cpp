@@ -1,5 +1,6 @@
 /*
- * ...
+ * @version 2016/12/07
+ * - added assert* methods
  */
 
 #include "codestepbystep.h"
@@ -322,6 +323,7 @@ static void __terminateHandler() {
     CodeStepByStep::__closeXml();
 }
 
+
 void main_begin(int argc, char** argv) {
     // initialize Stanford library
     __initializeStanfordCppLibrary(argc, argv);
@@ -365,5 +367,64 @@ void main_end() {
 
     CodeStepByStep::__closeXml();
 }
+
+
+namespace Assertions {
+void assertEqualsBool(const std::string& msg, bool expected, bool actual) {
+    assertEquals(msg, "bool", boolToString(expected), boolToString(actual));
+}
+
+void assertEqualsChar(const std::string& msg, char expected, char actual) {
+    assertEquals(msg, "char", charToString(expected), charToString(actual));
+}
+
+void assertEqualsDouble(const std::string& msg, double expected, double actual, double tolerance) {
+    Map<std::string, std::string> attrs;
+    attrs["tolerance"] = doubleToString(tolerance);
+    assertEquals(msg, "double", doubleToString(expected), doubleToString(actual), attrs);
+}
+
+void assertEqualsInt(const std::string& msg, int expected, int actual) {
+    assertEquals(msg, "int", integerToString(expected), integerToString(actual));
+}
+
+void assertEqualsString(const std::string& msg, std::string expected, std::string actual) {
+    assertEquals(msg, "string", expected, actual);
+}
+
+void assertTrue(const std::string& msg, bool test) {
+    assertionPrint(msg, "assertTrue", "bool", "true", boolToString(test));
+}
+
+void assertFalse(const std::string& msg, bool test) {
+    assertionPrint(msg, "assertFalse", "bool", "false", boolToString(test));
+}
+
+void assertFail(const std::string& msg) {
+    assertionPrint(msg, "assertFail", "bool", /* expected */ "pass", /* actual */ "fail");
+}
+
+void setTestName(const std::string& name) {
+    assertionPrint(/* message */ name, "setTestName", "string", /* expected */ "", /* actual */ "");
+}
+
+void assertionPrint(const std::string& msg,
+                    const std::string& assertType,
+                    const std::string& valueType,
+                    const std::string& expected,
+                    const std::string& actual,
+                    Map<std::string, std::string> attrs) {
+    CodeStepByStep::__getXmlOut() << "<assertion type=\"" << htmlEncode(assertType) << "\"";
+    for (std::string attr : attrs) {
+        CodeStepByStep::__getXmlOut() << " " << attr << "=\"" << htmlEncode(attrs[attr]) << "\"";
+    }
+    CodeStepByStep::__getXmlOut() << ">" << std::endl;
+    CodeStepByStep::__getXmlOut() << "<message>" << htmlEncode(msg) << "</message>" << std::endl;
+    CodeStepByStep::__getXmlOut() << "<type>" << htmlEncode(valueType) << "</type>" << std::endl;
+    CodeStepByStep::__getXmlOut() << "<expected>" << htmlEncode(expected) << "</expected>" << std::endl;
+    CodeStepByStep::__getXmlOut() << "<actual>" << htmlEncode(actual) << "</actual>" << std::endl;
+    CodeStepByStep::__getXmlOut() << "</assertion>" << std::endl;
+}
+} // namespace CodeStepByStep::Assertions
 
 } // namespace CodeStepByStep

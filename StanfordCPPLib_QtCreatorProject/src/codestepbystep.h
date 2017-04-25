@@ -1,5 +1,6 @@
 /*
- * ...
+ * @version 2016/12/07
+ * - added assert* methods
  */
 
 #ifndef _codestepbystep_h
@@ -7,6 +8,7 @@
 
 // basic standard library stuff
 #include <cctype>
+#include <climits>
 #include <cmath>
 #include <csignal>
 #include <fstream>
@@ -124,6 +126,44 @@ void Vector_fromString(Vector<T>& v, const std::string& str) {
 void main_begin(int argc, char** argv);
 void main_end();
 
+// code for assertions (used in classes+objects problems)
+#ifndef _codestepbystep_assertions
+#define _codestepbystep_assertions
+namespace Assertions {
+void assertionPrint(const std::string& msg,
+                    const std::string& assertType,
+                    const std::string& valueType,
+                    const std::string& expected,
+                    const std::string& actual,
+                    Map<std::string, std::string> attrs = {});
+
+template <typename T>
+void assertEquals(const std::string& msg, const std::string& type, T expected, T actual,
+                  Map<std::string, std::string> attrs = {}) {
+    std::string expStr = genericValueToString(expected);
+    std::string actStr = genericValueToString(actual);
+    assertionPrint(msg, "assertEquals", type, expStr, actStr, attrs);
+}
+
+template <typename T>
+void assertEquals(const std::string& msg, T expected, T actual,
+                  Map<std::string, std::string> attrs = {}) {
+    assertEquals(msg, "T", expected, actual);
+}
+
+void assertEqualsBool(const std::string& msg, bool expected, bool actual);
+void assertEqualsChar(const std::string& msg, char expected, char actual);
+void assertEqualsDouble(const std::string& msg, double expected, double actual, double tolerance = 0.0001);
+void assertEqualsInt(const std::string& msg, int expected, int actual);
+void assertEqualsString(const std::string& msg, std::string expected, std::string actual);
+void assertTrue(const std::string& msg, bool test);
+void assertFalse(const std::string& msg, bool test);
+void assertFail(const std::string& msg);
+void setTestName(const std::string& name);
+} // namespace CodeStepByStep::Assertions
+#endif // _codestepbystep_assertions
+
 } // namespace CodeStepByStep
+
 
 #endif // _codestepbystep_h

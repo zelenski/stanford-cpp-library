@@ -22,6 +22,38 @@
 	
 	
 	
+	
+	
+	Keith bug: GWindow desync
+		#include <iostream>
+		#include "console.h"
+		#include "gwindow.h"
+		#include "simpio.h"
+		using namespace std;
+
+		int main() {
+			cout << "You're about to be prompted to enter some text." << endl;
+			cout << "When you do, close the window." << endl;
+			cout << "Then, look down at stdout." << endl;
+			cout << "You should notice that some input was entered even though" << endl;
+			cout << "nothing was echoed to the graphical console." << endl;
+			cout << "This desyncs the graphics console from stdin/stdout," << endl;
+			cout << "though I don't know why." << endl;
+
+			GWindow sacrificialWindow(400, 300);
+
+			for (int i = 0; ; i++) {
+				string line = getLine("Enter line " + to_string(i) + ": ");
+				cout << "You entered: " << line << endl;
+			}
+
+			return 0;
+		}
+
+	
+	
+	
+	
 		
 		
 		
