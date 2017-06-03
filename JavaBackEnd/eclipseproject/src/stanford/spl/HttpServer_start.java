@@ -1,7 +1,7 @@
 package stanford.spl;
 
 import acm.util.TokenScanner;
-import stanford.cs106.server.SimpleServer;
+import stanford.cs106.net.BackEndServer;
 
 public class HttpServer_start extends JBECommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
@@ -9,7 +9,7 @@ public class HttpServer_start extends JBECommand {
 		int port = nextInt(paramTokenScanner);
 		paramTokenScanner.verifyToken(")");
 		
-		SimpleServer server = SimpleServer.getInstance(port);
+		BackEndServer server = BackEndServer.getInstance(port);
 		server.setJavaBackEnd(paramJavaBackEnd);
 		server.start();
 	}

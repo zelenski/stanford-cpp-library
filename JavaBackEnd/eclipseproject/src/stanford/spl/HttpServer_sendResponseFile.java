@@ -1,7 +1,7 @@
 package stanford.spl;
 
 import acm.util.TokenScanner;
-import stanford.cs106.server.SimpleServer;
+import stanford.cs106.net.BackEndServer;
 
 public class HttpServer_sendResponseFile extends JBECommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
@@ -15,7 +15,7 @@ public class HttpServer_sendResponseFile extends JBECommand {
 		String responseFilePath = nextString(paramTokenScanner);
 		paramTokenScanner.verifyToken(")");
 		
-		SimpleServer server = SimpleServer.getInstance();
+		BackEndServer server = BackEndServer.getInstance();
 		server.sendResponseFile(requestID, httpErrorCode, contentType, responseFilePath);
 	}
 }

@@ -1,4 +1,16 @@
-package stanford.cs106.server;
+/*
+ * This file used to be SimpleServer.java but has been renamed.
+ * Really this should be merged with SimpleServer but I am keeping both of
+ * them for now because the C++ lib uses this particular version of
+ * the server class.
+ * 
+ * TODO: merge with SimpleServer and remove
+ * 
+ * @author Marty Stepp and Chris Piech
+ * @version 2017/05/24
+ */
+
+package stanford.cs106.net;
 
 import java.io.*;
 import java.net.*;
@@ -12,25 +24,19 @@ import stanford.cs106.io.IORuntimeException;
 import stanford.spl.JavaBackEnd;
 import stanford.spl.SplPipeDecoder;
 
-/**
- * Class: Bottle
- * -------------
- * This is the interesting class. The one that actually hosts the server and
- * the functionality that I want recreated in a CS 106 library.
- */
-public class SimpleServer {
+public class BackEndServer {
 	private static final int DEFAULT_PORT = 8080;
 	
-	private static SimpleServer INSTANCE;
+	private static BackEndServer INSTANCE;
 	
 	
-	public static synchronized SimpleServer getInstance() {
+	public static synchronized BackEndServer getInstance() {
 		return getInstance(DEFAULT_PORT);
 	}
 	
-	public static synchronized SimpleServer getInstance(int port) {
+	public static synchronized BackEndServer getInstance(int port) {
 		if (INSTANCE == null) {
-			INSTANCE = new SimpleServer(port);
+			INSTANCE = new BackEndServer(port);
 		}
 		return INSTANCE;
 	}
@@ -49,7 +55,7 @@ public class SimpleServer {
 	 * All this method does is create an object that could be used to handle
 	 * HTTP requests (but at the time of construction does nothing).
 	 */
-	public SimpleServer() {
+	public BackEndServer() {
 		this(DEFAULT_PORT);
 	}
 
@@ -59,7 +65,7 @@ public class SimpleServer {
 	 * All this method does is create an object that could be used to handle
 	 * HTTP requests (but at the time of construction does nothing).
 	 */
-	public SimpleServer(int port) {
+	public BackEndServer(int port) {
 		this.port = port;
 	}
 	
@@ -72,7 +78,7 @@ public class SimpleServer {
 	}
 	
 	public void sendResponse(int requestID, int httpErrorCode, String contentType, String responseText) {
-//		javax.swing.JOptionPane.showMessageDialog(null, "SimpleServer.sendResponse(requestID=" + requestID
+//		javax.swing.JOptionPane.showMessageDialog(null, "BackEndServer.sendResponse(requestID=" + requestID
 //				+ ", httpErrorCode=" + httpErrorCode + ", contentType=" + contentType + ")");
 		
 		if (!requestMap.containsKey(requestID)) {
@@ -90,7 +96,7 @@ public class SimpleServer {
 	}
 
 	public void sendResponseFile(int requestID, int httpErrorCode, String contentType, String responseFilePath) {
-//		javax.swing.JOptionPane.showMessageDialog(null, "SimpleServer.sendResponseFile(requestID=" + requestID
+//		javax.swing.JOptionPane.showMessageDialog(null, "BackEndServer.sendResponseFile(requestID=" + requestID
 //				+ ", httpErrorCode=" + httpErrorCode + ", contentType=" + contentType + ")");
 		
 		if (!requestMap.containsKey(requestID)) {
@@ -228,7 +234,7 @@ public class SimpleServer {
 		public void handle(HttpExchange exchange) throws IOException {
 			String requestUrl = getUriString(exchange);
 			int requestID = 0;
-			synchronized (SimpleServer.this) {
+			synchronized (BackEndServer.this) {
 				requestID = currentRequestID++;
 				requestMap.put(requestID, exchange);
 			}

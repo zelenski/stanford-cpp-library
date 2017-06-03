@@ -4,6 +4,8 @@ package stanford.cs106.net;
  * General reusable version of event-driven network manager object.
  *
  * @author Marty Stepp
+ * @version 2017/05/26
+ * - bug fix for shutdown socket exception
  * @version 2015/05/24
  * - initial version for 15sp
  */
@@ -176,7 +178,6 @@ public class NetworkManager {
 
 	// Notifies this network manager that you want it to shut down
 	// and stop listening for messages.
-	@SuppressWarnings("deprecation")
 	public void stop() {
 		shouldContinue = false;
 		try {
@@ -188,11 +189,11 @@ public class NetworkManager {
 		}
 
 		if (sendThread != null) {
-			sendThread.stop();
+			sendThread.interrupt();
 			sendThread = null;
 		}
 		if (receiveThread != null) {
-			receiveThread.stop();
+			receiveThread.interrupt();
 			receiveThread = null;
 		}
 	}
@@ -218,7 +219,7 @@ public class NetworkManager {
 		// Runs the listening thread.
 		public void run() {
 			try {
-				while (shouldContinue) {
+				while (shouldContinue && !receiveSrvSock.isClosed()) {
 					// wait for a message to arrive
 					Socket sock = receiveSrvSock.accept();
 					InputStream stream = sock.getInputStream();
@@ -234,9 +235,20 @@ public class NetworkManager {
 
 					receive.fire(strings);
 				}
+			} catch (SocketException se) {
+				// don't notify observers on socket exception; this probably means
+				// the program is shutting down
+				
+				// (empty)
 			} catch (Exception e) {
 				// notify observers that an error occurred
-				error.fire(e);
+				// don't notify observers on interrupt exception; this means thread/prog is shutting down
+				if (!(e instanceof InterruptedException)) {
+					error.fire(e);
+				}
+//			} catch (Throwable t) {
+//				// don't notify observers on Errors
+//				// (empty)
 			}
 		}
 	}
@@ -245,39 +257,45 @@ public class NetworkManager {
 	// network.
 	private class SendRunnable implements Runnable {
 		public void run() {
-			while (shouldContinue) {
-				// test-and-test-and-set paradigm
-				if (!outQueue.isEmpty()) {
-					synchronized (outQueue) {
-						if (!outQueue.isEmpty()) {
-							// grab message from the queue
-							Message message = outQueue.remove(0);
-
-							try {
-								// send the message
-								Socket sock = new Socket(message.host, port);
-								OutputStream stream = sock.getOutputStream();
-								ObjectOutputStream oos = new ObjectOutputStream(
-										stream);
-								oos.writeObject(message.strings);
-								if (DEBUG)
-									System.out.println("Sent on port " + port
-											+ ":\n" + message);
-								sock.close();
-							} catch (IOException e) {
-								// notify observers that an error occurred
-								error.fire(e);
+			try {
+				while (shouldContinue) {
+					// test-and-test-and-set paradigm
+					if (!outQueue.isEmpty()) {
+						synchronized (outQueue) {
+							if (!outQueue.isEmpty()) {
+								// grab message from the queue
+								Message message = outQueue.remove(0);
+	
+								try {
+									// send the message
+									Socket sock = new Socket(message.host, port);
+									OutputStream stream = sock.getOutputStream();
+									ObjectOutputStream oos = new ObjectOutputStream(
+											stream);
+									oos.writeObject(message.strings);
+									if (DEBUG)
+										System.out.println("Sent on port " + port
+												+ ":\n" + message);
+									sock.close();
+								} catch (IOException e) {
+									// notify observers that an error occurred
+									error.fire(e);
+								}
 							}
 						}
 					}
+	
+					// wait 1 second between checks for messages so this thread
+					// won't drain 100% of the CPU
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						// empty
+					}
 				}
-
-				// wait 1 second between checks for messages so this thread
-				// won't drain 100% of the CPU
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// empty
+			} catch (Exception e) {
+				if (!(e instanceof InterruptedException)) {
+					throw new RuntimeException(e);
 				}
 			}
 		}
