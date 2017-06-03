@@ -1,4 +1,6 @@
 /*
+ * @version 2017/04/26
+ * - bug fix for captured output with printf() method
  * @version 2016/10/02
  * - moved some I/O code to AbstractConsoleProgram superclass
  * @version 2016/05/17
@@ -224,9 +226,8 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 	}
 	
 	public void printf(String format, Object... args) {
-		if (outputCapture) {
-			capturedOutput.append(String.format(format, args));
-		}
+		// BUGFIX: used to append captured output here, but implementation
+		// of super.printf() calls super.print(), which made it print twice
 		super.printf(format, args);
 	}
 	

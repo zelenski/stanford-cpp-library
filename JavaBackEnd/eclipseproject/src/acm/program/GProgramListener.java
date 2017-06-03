@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp (current maintainer)
+ * @version 2017/04/26
+ * - alphabetized methods
  * @version 2017/04/25
  * - initial version; moved out of GraphicsProgram.java into its own file
  */
@@ -34,7 +36,7 @@ class GProgramListener implements MouseListener, MouseMotionListener {
 		myProgram = program;
 		try {
 			Class<?> programClass = program.getClass();
-			Class<?>[] types = { Class.forName("acm.graphics.GPoint") };
+			Class<?>[] types = { acm.graphics.GPoint.class };
 			try {
 				mousePressedHook = programClass
 						.getMethod("mousePressed", types);
@@ -69,15 +71,6 @@ class GProgramListener implements MouseListener, MouseMotionListener {
 		}
 	}
 
-	/* Method: needsMouseMotionListeners() */
-	/**
-	 * Returns true if this listener has to respond to mouse motion events as
-	 * well.
-	 */
-	public boolean needsMouseMotionListeners() {
-		return mouseMovedHook != null || mouseDraggedHook != null;
-	}
-
 	/* Method: mouseClicked() */
 	/**
 	 * Called by the event-handling system when the mouse is clicked in the
@@ -95,30 +88,16 @@ class GProgramListener implements MouseListener, MouseMotionListener {
 		signalClickOccurred();
 	}
 
-	/* Method: mousePressed() */
+	/* Method: mouseDragged() */
 	/**
-	 * Called by the event-handling system when the mouse button is pressed.
+	 * Called by the event-handling system when the mouse is dragged with the
+	 * button down.
 	 */
-	public void mousePressed(MouseEvent e) {
-		if (mousePressedHook != null) {
+	public void mouseDragged(MouseEvent e) {
+		if (mouseDraggedHook != null) {
 			Object[] args = { new GPoint(e.getX(), e.getY()) };
 			try {
-				mousePressedHook.invoke(myProgram, args);
-			} catch (Exception ex) {
-				throw new ErrorException(ex);
-			}
-		}
-	}
-
-	/* Method: mouseReleased() */
-	/**
-	 * Called by the event-handling system when the mouse button is released.
-	 */
-	public void mouseReleased(MouseEvent e) {
-		if (mouseReleasedHook != null) {
-			Object[] args = { new GPoint(e.getX(), e.getY()) };
-			try {
-				mouseReleasedHook.invoke(myProgram, args);
+				mouseDraggedHook.invoke(myProgram, args);
 			} catch (Exception ex) {
 				throw new ErrorException(ex);
 			}
@@ -156,20 +135,52 @@ class GProgramListener implements MouseListener, MouseMotionListener {
 		}
 	}
 
-	/* Method: mouseDragged() */
+	/* Method: mousePressed() */
 	/**
-	 * Called by the event-handling system when the mouse is dragged with the
-	 * button down.
+	 * Called by the event-handling system when the mouse button is pressed.
 	 */
-	public void mouseDragged(MouseEvent e) {
-		if (mouseDraggedHook != null) {
+	public void mousePressed(MouseEvent e) {
+		if (mousePressedHook != null) {
 			Object[] args = { new GPoint(e.getX(), e.getY()) };
 			try {
-				mouseDraggedHook.invoke(myProgram, args);
+				mousePressedHook.invoke(myProgram, args);
 			} catch (Exception ex) {
 				throw new ErrorException(ex);
 			}
 		}
+	}
+
+	/* Method: mouseReleased() */
+	/**
+	 * Called by the event-handling system when the mouse button is released.
+	 */
+	public void mouseReleased(MouseEvent e) {
+		if (mouseReleasedHook != null) {
+			Object[] args = { new GPoint(e.getX(), e.getY()) };
+			try {
+				mouseReleasedHook.invoke(myProgram, args);
+			} catch (Exception ex) {
+				throw new ErrorException(ex);
+			}
+		}
+	}
+
+	/* Method: needsMouseMotionListeners() */
+	/**
+	 * Returns true if this listener has to respond to mouse motion events as
+	 * well.
+	 */
+	public boolean needsMouseMotionListeners() {
+		return mouseMovedHook != null || mouseDraggedHook != null;
+	}
+
+	/* Private method: signalClickOccurred() */
+	/**
+	 * Notifies any waiting objects that a click has occurred.
+	 */
+	private synchronized void signalClickOccurred() {
+		clickFlag = true;
+		notifyAll();
 	}
 	
 	/* Method: waitForClick() */
@@ -187,14 +198,5 @@ class GProgramListener implements MouseListener, MouseMotionListener {
 				/* Empty */
 			}
 		}
-	}
-
-	/* Private method: signalClickOccurred() */
-	/**
-	 * Notifies any waiting objects that a click has occurred.
-	 */
-	private synchronized void signalClickOccurred() {
-		clickFlag = true;
-		notifyAll();
 	}
 }

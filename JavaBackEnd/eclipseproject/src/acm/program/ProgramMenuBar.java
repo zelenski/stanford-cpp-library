@@ -136,6 +136,8 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 	public static final String MENU_ITEM_TEXT_SAVE_AS = "Save As...";
 	public static final String MENU_ITEM_TEXT_SCRIPT = "Script";
 	public static final String MENU_ITEM_TEXT_SELECT_ALL = "Select All";
+	public static final String MENU_ITEM_TEXT_SHOW_PIXEL_GRID = "Show Pixel Grid";
+	public static final String MENU_ITEM_TEXT_SHOW_PIXEL_INFO = "Show Pixel Info";
 	public static final String MENU_ITEM_TEXT_SUBMIT_PROJECT = "Submit Project";
 
 	// constants for menu bar item text (specific to Karel programs)
@@ -734,6 +736,10 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		JMenu optionsMenu = GuiUtils.createMenu("Options", this);
 		JCheckBoxMenuItem antialiasItem = GuiUtils.createCheckBoxMenuItem(MENU_ITEM_TEXT_ANTI_ALIASING, /* checked */ true, menuBarListener, optionsMenu);
 		antialiasItem.setToolTipText("Enable / disable smoothing of edges and pixels in drawn shapes.");
+		JCheckBoxMenuItem showPixelInfoItem = GuiUtils.createCheckBoxMenuItem(MENU_ITEM_TEXT_SHOW_PIXEL_INFO, /* checked */ false, menuBarListener, optionsMenu);
+		showPixelInfoItem.setToolTipText("Enable / disable display of pixel x/y/color info for debugging.");
+		JCheckBoxMenuItem showPixelGridItem = GuiUtils.createCheckBoxMenuItem(MENU_ITEM_TEXT_SHOW_PIXEL_GRID, /* checked */ false, menuBarListener, optionsMenu);
+		showPixelGridItem.setToolTipText("Enable / disable display of grid lines on canvas for debugging.");
 	}
 
 	/* Protected method: addKarelOptionsMenu() */

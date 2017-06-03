@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp (current maintainer)
+ * @version 2017/06/01
+ * - added [completed] when program is done running
  * @version 2016/10/02
  * - added reprompt message options
  * - added getYesOrNo, some other console I/O methods
@@ -33,6 +35,7 @@ public abstract class AbstractConsoleProgram extends Program {
 	private static final int FONT_MAX_SIZE = 255;
 	private static final int FONT_MIN_SIZE = 4;
 	private static final String DEFAULT_REPROMPT_MESSAGE = "Unable to open that file.  Try again.";
+	protected static final String PROGRAM_COMPLETED_TITLE_SUFFIX = " [completed]";
 	
 	private boolean backgroundHasBeenSet = false;
 	private boolean clearEnabled = true;   // whether clearConsole(); is effectual
@@ -86,15 +89,7 @@ public abstract class AbstractConsoleProgram extends Program {
 	protected void compareOutput() {
 		try {
 			// pick working dir for loading expected output files
-			File dir = new File(System.getProperty("user.dir"));
-			File[] dirsToTry = { new File(dir, "output"), new File(dir, "expected-output"), new File(dir, "res/output"),
-					new File(dir, "res/expected-output"), };
-			for (File dirToTry : dirsToTry) {
-				if (dirToTry.exists()) {
-					dir = dirToTry;
-					break;
-				}
-			}
+			File dir = IOUtils.getExpectedOutputDirectory();
 
 			// let the user browse for a file for expected output
 			JFileChooser chooser = new JFileChooser(dir);
@@ -117,6 +112,15 @@ public abstract class AbstractConsoleProgram extends Program {
 					JOptionPane.WARNING_MESSAGE);
 		}
 	}
+	
+	/**
+	 * Called as the program is shutting down.
+	 * Puts [terminated] on the console window title.
+	 */
+	protected void endHook() {
+		super.endHook();
+		setTitle(getTitle() + PROGRAM_COMPLETED_TITLE_SUFFIX);
+	}
 
 	/**
 	 * Pops up a file chooser to compare output to some expected output.
@@ -124,21 +128,7 @@ public abstract class AbstractConsoleProgram extends Program {
 	protected void loadInputScript() {
 		try {
 			// pick working dir for loading expected output files
-			File dir = new File(System.getProperty("user.dir"));
-			File[] dirsToTry = {
-					new File(dir, "input"),
-					new File(dir, "res/input"),
-					new File(dir, "output"),
-					new File(dir, "expected-output"),
-					new File(dir, "res/output"),
-					new File(dir, "res/expected-output"),
-			};
-			for (File dirToTry : dirsToTry) {
-				if (dirToTry.exists()) {
-					dir = dirToTry;
-					break;
-				}
-			}
+			File dir = IOUtils.getExpectedInputDirectory();
 
 			// let the user browse for a file for expected output
 			JFileChooser chooser = new JFileChooser(dir);

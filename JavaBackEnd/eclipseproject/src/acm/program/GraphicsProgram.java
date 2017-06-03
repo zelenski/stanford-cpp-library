@@ -1,4 +1,7 @@
 /*
+ * @version 2017/04/26
+ * - added setShowPixelInfo, setShowPixelGrid
+ * - added remove(x, y), removeAll(x, y)
  * @version 2017/04/25
  * - added Save / Save As menu actions for saving graphics output to an image
  * - added Compare Output menu action for checking graphics output against an expected image
@@ -61,7 +64,8 @@ import java.util.*;
  * <code><a href="Program.html">Program</a></code> whose principal window is
  * used for drawing graphics.
  */
-public abstract class GraphicsProgram extends Program implements Iterable<GObject> {
+public abstract class GraphicsProgram extends Program
+		implements GraphicsProgramInterface, Iterable<GObject> {
 	// private fields
 	private GCanvas gc;
 	private GProgramListener eventListener;
@@ -83,8 +87,7 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 		add(gc, CENTER);
 		validate();
 
-		// added by Marty Stepp 2015/04/21 - no reason not to hear mouse/key
-		// events
+		// added by Marty Stepp 2015/04/21 - no reason not to hear mouse/key events
 		addMouseListeners();
 		addKeyListeners();
 	}
@@ -267,24 +270,12 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 		return new GCanvas();
 	}
 
-	/**
-	 * Returns all GObjects that reside inside this graphical program, as a list.
-	 * @return list of all elements
-	 */
-	public java.util.List<GObject> elements() {
-		java.util.List<GObject> list = new ArrayList<GObject>(gc.getElementCount());
-		Iterator<GObject> itr = iterator();
-		while (itr.hasNext()) {
-			list.add(itr.next());
-		}
-		return Collections.unmodifiableList(list);
-	}
-
 	/* Protected method: endHook() */
 	/**
 	 * Ensures that the window is repainted at the end of the program.
 	 */
 	protected void endHook() {
+		super.endHook();
 		gc.repaint();
 	}
 
@@ -379,20 +370,8 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 	 * If no graphical object is found at any of these coordinate pairs,
 	 * null is returned. 
 	 */
-	@SuppressWarnings("unchecked")
 	public <T extends GObject> T getElementAt(double... coords) {
-		if (coords.length == 0 || coords.length % 2 != 0) {
-			throw new IllegalArgumentException(
-					"number of coordinates passed must be even (must be a sequence of x/y pairs); you passed "
-							+ Arrays.toString(coords));
-		}
-		for (int i = 0; i < coords.length; i += 2) {
-			GObject obj = gc.getElementAt(coords[i], coords[i + 1]);
-			if (obj != null) {
-				return (T) obj;
-			}
-		}
-		return null;
+		return gc.getElementAt(coords);
 	}
 
 	/* Method: getElementAt(pt) */
@@ -426,7 +405,7 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 	 * (x, y) pixel position, or false if no such object exists.
 	 */
 	public boolean hasElementAt(double x, double y) {
-		return getElementAt(x, y) != null;
+		return gc.hasElementAt(x, y);
 	}
 
 	/**
@@ -437,7 +416,7 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 	 * The pairs are checked in the order they are passed.
 	 */
 	public boolean hasElementAt(double... coords) {
-		return getElementAt(coords) != null;
+		return gc.hasElementAt(coords);
 	}
 
 	/* Method: init() */
@@ -458,6 +437,15 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 		/* Empty */
 	}
 
+	/**
+	 * Sets whether this program's canvas uses anti-aliasing, which is
+	 * smoothing and blending of neighboring pixels.
+	 * Default true.
+	 */
+	public boolean isAntiAliasing() {
+		return gc.isAntiAliasing();
+	}
+	
 	/* Protected method: isStarted() */
 	/**
 	 * Checks to see whether this program has started, usually by checking to
@@ -528,6 +516,26 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 		return gc.iterator(direction);
 	}
 	
+	/**
+	 * Removes the top-most graphical object at the given (x, y) position from this container.
+	 * If no graphical object is located at that position, does nothing.
+	 * 
+	 * @usage remove(x, y);
+	 */
+	public void remove(double x, double y) {
+		gc.remove(x, y);
+	}
+
+	/**
+	 * Removes the top-most graphical object at the given (x, y) position from this container.
+	 * If no graphical object is located at that position, does nothing.
+	 * 
+	 * @usage remove(pt);
+	 */
+	public void remove(GPoint pt) {
+		gc.remove(pt);
+	}
+
 	/* Method: remove(gobj) */
 	/**
 	 * Removes a graphical object from this container.
@@ -553,6 +561,36 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 		gc.removeAll();
 	}
 	
+	/**
+	 * Removes all graphical objects at the given (x, y) position from this container.
+	 * If no graphical objects are located at that position, does nothing.
+	 * 
+	 * @usage removeAll(x, y);
+	 */
+	public void removeAll(double x, double y) {
+		gc.removeAll(x, y);
+	}
+
+	/**
+	 * Removes all graphical objects at the given (x, y) positions from this container.
+	 * If no graphical objects are located at that position, does nothing.
+	 * 
+	 * @usage removeAll(x1, y1, x2, y2, ...);
+	 */
+	public void removeAll(double... coords) {
+		gc.removeAll(coords);
+	}
+
+	/**
+	 * Removes all graphical objects at the given (x, y) position from this container.
+	 * If no graphical objects are located at that position, does nothing.
+	 * 
+	 * @usage removeAll(pt);
+	 */
+	public void removeAll(GPoint pt) {
+		gc.removeAll(pt);
+	}
+
 	/* Method: removeAllComponents() */
 	/**
 	 * Removes all components from this container.
@@ -586,7 +624,16 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 	 * method and supply a new definition for <code>init</code> instead.
 	 */
 	public void run() {
-		/* Empty */
+		// empty
+	}
+	
+	/**
+	 * Sets whether this program's canvas uses anti-aliasing, which is
+	 * smoothing and blending of neighboring pixels.
+	 * Default true.
+	 */
+	public void setAntiAliasing(boolean antialias) {
+		gc.setAntiAliasing(antialias);
 	}
 
 	/* Override method: setBackground(bg) */
@@ -600,8 +647,9 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 	 */
 	public void setBackground(Color bg) {
 		super.setBackground(bg);
-		if (gc != null)
+		if (gc != null) {
 			gc.setBackground(bg);
+		}
 	}
 
 	/**
@@ -662,6 +710,15 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 			setCanvasSize(width, height);
 		}
 	}
+	
+	/**
+	 * Sets whether to display information on this canvas about the current pixel where
+	 * the mouse pointer is resting in this program's graphical canvas.
+	 * Displays the current pixel's (x, y) coordinate and color.
+	 */
+	public void setShowPixelInfo(boolean show) {
+		gc.setShowPixelInfo(show);
+	}
 
 	/**
 	 * Sets this program to be exactly the right size so that its graphical canvas will be
@@ -713,7 +770,7 @@ public abstract class GraphicsProgram extends Program implements Iterable<GObjec
 	 * Returns an image representation of the current contents of the screen.
 	 */
 	public BufferedImage toImage() {
-		return this.gc.toImage();
+		return gc.toImage();
 	}
 	
 	/* Method: waitForClick() */
