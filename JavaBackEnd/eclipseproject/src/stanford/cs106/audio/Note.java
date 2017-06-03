@@ -5,6 +5,8 @@
  * by your Melody class.
  *
  * @author Marty Stepp
+ * @version Fri 2017/05/08
+ * - added setPitch/Accidental(String)
  * @version Fri 2016/07/27
  * - bug fix for locale issues on nextDouble parsing
  * @version Fri 2016/05/21
@@ -300,6 +302,19 @@ public class Note {
 	}
 
 	/**
+	 * Sets this Note's accidental value to be the given value: "SHARP", "FLAT", or "NATURAL".
+	 * The accidental value is meaningless for a rest, but the Note object still
+	 * maintains an accidental value internally (initially Accidental.NATURAL)
+	 * which is ignored.
+	 * @param accidental Note's accidental from "SHARP", "FLAT", or "NATURAL".
+	 */
+	public void setAccidental(String accidental) {
+		if (pitch != Pitch.R) {
+			this.accidental = Accidental.valueOf(accidental);
+		}
+	}
+
+	/**
 	 * Sets this Note's duration in seconds to be the given value.
 	 * @param duration Note's duration in seconds.
 	 * @throws IllegalArgumentException if duration is negative.
@@ -339,6 +354,15 @@ public class Note {
 			throw new NullPointerException();
 		}
 		this.pitch = pitch;
+	}
+
+	/**
+	 * Sets this Note's pitch to be the given value.
+	 * @param pitch Note's pitch from "A" through "G", or "R" for a rest.
+	 * @throws NullPointerException if pitch is null.
+	 */
+	public void setPitch(String pitch) {
+		this.pitch = Pitch.valueOf(pitch);
 	}
 
 	/**

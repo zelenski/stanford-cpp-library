@@ -1,5 +1,10 @@
 /*
  * @author Marty Stepp
+ * @version 2017/05/24
+ * - bug fix for running classes that are not Programs (launch main())
+ * @version 2017/05/07
+ * - small bug fix for RandomGenerator label width
+ * - added constGet
  * @version 2016/04/28
  * - made static fields/methods show "static" in drop-down menu
  * @version 2016/04/08
@@ -319,6 +324,7 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 					GuiUtils.createButton("5ms", "5ms DELAY", ' ', this),
 					GuiUtils.createButton("100ms", "100ms DELAY", ' ', this),
 					GuiUtils.createButton("1s", "1000ms DELAY", ' ', this),
+					GuiUtils.createButton("1000s", "1000000ms DELAY", ' ', this),
 					timeSlider,
 					GuiUtils.createButton("Tick", "Tick", 'T', this));
 		}
@@ -379,7 +385,7 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 		
 		if (SHOW_RANDOM_PANEL) {
 			addPanel("RandomGenerator",
-					new JLabel("RandomGenerator: "),
+					GuiUtils.createLabel("RandomGenerator: ", labelWidth),
 					new JLabel("Seed: "),
 					randomSeedField,
 					GuiUtils.createButton("Set", "Random seed", 'R', this),
@@ -694,6 +700,11 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 		studentProgramThreadLaunchIfBoxChecked();
 	}
 
+	@SuppressWarnings("unchecked")
+	protected <T> T constGet(String name) {
+		return (T) ReflectionUtils.getConstantValue(STUDENT_CLASS, studentProgram, name);
+	}
+
 	protected int constGetInt(String name) {
 		return ReflectionUtils.getConstantValueInt(STUDENT_CLASS, studentProgram, name);
 	}
@@ -825,7 +836,7 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 				if (
 						// obj instanceof GLine &&
 						obj instanceof GObject &&
-						((GObject) obj).getColor().equals(GRID_LINE_COLOR)) {
+						GRID_LINE_COLOR.equals(((GObject) obj).getColor())) {
 					return true;
 				}
 			}
@@ -844,13 +855,12 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 			GObject gobj = container.getElement(i);
 			if (
 					// gobj instanceof GLine && 
-					gobj instanceof GObject &&
-					gobj.getColor().equals(GRID_LINE_COLOR)) {
+					GRID_LINE_COLOR.equals(gobj.getColor())) {
 				toRemove.add(gobj);
 			}
 		}
-		for (GObject line : toRemove) {
-			container.remove(line);
+		for (GObject gobj : toRemove) {
+			container.remove(gobj);
 		}
 	}
 
@@ -862,15 +872,15 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 		
 		if (studentProgram instanceof GraphicsProgram) {
 			GraphicsProgram graphicsProgram = (GraphicsProgram) studentProgram;
-			Set<GLine> toRemove = new HashSet<GLine>();
+			Set<GObject> toRemove = new HashSet<GObject>();
 			for (Iterator<?> itr = graphicsProgram.iterator(); itr.hasNext();) {
 				Object obj = itr.next();
-				if (obj instanceof GLine && ((GLine) obj).getColor().equals(GRID_LINE_COLOR)) {
-					toRemove.add((GLine) obj);
+				if (obj instanceof GObject && ((GObject) obj).getColor().equals(GRID_LINE_COLOR)) {
+					toRemove.add((GObject) obj);
 				}
 			}
-			for (GLine line : toRemove) {
-				graphicsProgram.remove(line);
+			for (GObject gobj : toRemove) {
+				graphicsProgram.remove(gobj);
 			}
 		}
 	}
@@ -1181,18 +1191,20 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 		private boolean callInitAndRun;
 		public boolean started = false;
 		private Program program;
+		private Class<?> programClass;
 
-		public StudentProgramRunnerThread(Class<? extends Program> clazz, boolean callInitAndRun) {
+		public StudentProgramRunnerThread(Class<?> clazz, boolean callInitAndRun) {
 			this(clazz, DEFAULT_WIDTH, DEFAULT_HEIGHT, callInitAndRun);
 		}
 		
-		public StudentProgramRunnerThread(Class<? extends Program> clazz, int width, int height, boolean callInitAndRun) {
+		public StudentProgramRunnerThread(Class<?> clazz, int width, int height, boolean callInitAndRun) {
 			this.setName(getClass().getName() + "-" + clazz.getName() + "@" + hashCode());
+			this.programClass = clazz;
 			
 			this.callInitAndRun = callInitAndRun;
 			try {
 				if (Program.class.isAssignableFrom(clazz)) {
-					this.program = clazz.newInstance();
+					this.program = (Program) clazz.newInstance();
 					this.program.setExitOnClose(false);
 					ReflectionPanel panel = reflectionPanels.get(STUDENT_CLASS);
 					if (panel != null) {
@@ -1227,8 +1239,35 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 
 		public void run() {
 			if (callInitAndRun) {
-				started = true;
-				program.start();
+				if (program != null && Program.class.isAssignableFrom(programClass)) {
+					// run as a spl Program
+					started = true;
+					program.start();
+				} else {
+					// run as a standard Java main method
+					try {
+						String[] args = new String[0];
+						Method mainMethod = programClass.getMethod("main", args.getClass());
+						if (mainMethod != null) {
+							mainMethod.invoke(null, (Object) args);
+							started = true;
+						}
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
+					} catch (IllegalArgumentException e) {
+						e.printStackTrace();
+					} catch (InvocationTargetException e) {
+						Throwable cause = ExceptionUtils.getUnderlyingCause(e);
+						throw new RuntimeException(cause);
+					} catch (NoSuchMethodException e) {
+						// empty
+					}
+				}
+				
+				if (!started) {
+					throw new IllegalStateException("class " + programClass.getName()
+							+ " does not extend Program and does not seem to have a suitable main() method. Cannot run.");
+				}
 				// GuiUtils.rememberWindowLocation(program.getWindow());
 			}
 		}

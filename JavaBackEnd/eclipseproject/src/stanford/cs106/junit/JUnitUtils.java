@@ -63,6 +63,17 @@ public class JUnitUtils {
 		}
 		return "";
 	}
+	
+	// e.g. "intro_test00_introOutputSpacing"
+	public static String getTestFullName(Class<?> clazz, Method method) {
+		String category = getTestCategory(clazz, method);
+		String methodName = method.getName();
+		if (category == null || category.isEmpty()) {
+			return methodName;
+		} else {
+			return category + "_" + methodName;
+		}
+	}
 
 	public static boolean isJUnitMethod(Class<?> clazz, Method method) {
 		return method.getAnnotation(org.junit.Test.class) != null;
@@ -74,7 +85,7 @@ public class JUnitUtils {
 
 	@SuppressWarnings("deprecation")
 	public static void runJUnitMethod(final Class<?> junitClass, final Method method, final JUnitListener listener) {
-		String testName = method.getName();
+		String testFullName = getTestFullName(junitClass, method);   // category + _ + testName
 		Annotation annotation = method.getAnnotation(org.junit.Test.class);
 		Class<? extends Annotation> annoClass = annotation.annotationType();
 		
@@ -128,19 +139,19 @@ public class JUnitUtils {
 				// timed out
 				thread.stop();
 				if (listener != null) {
-					listener.setTestResult(testName, "fail");
-					listener.setTestDetailsMessage(testName, "test timed out after " + timeout + "ms");
+					listener.setTestResult(testFullName, "fail");
+					listener.setTestDetailsMessage(testFullName, "test timed out after " + timeout + "ms");
 				}
 			} else {
 				if (listener != null && run.passed) {
-					listener.setTestResult(testName, "pass");
+					listener.setTestResult(testFullName, "pass");
 				}
 			}
 			long endTime = System.currentTimeMillis();
 			long runtimeMS = endTime - startTime;
 
 			if (run.thrown != null) {
-				listener.setTestResult(testName, "fail");
+				listener.setTestResult(testFullName, "fail");
 				Map<String, String> details = new TreeMap<String, String>();
 				
 				if (run.thrown instanceof ComparisonFailure) {
@@ -193,8 +204,8 @@ public class JUnitUtils {
 					details.put("passed", "false");
 				} else if (run.thrown instanceof AssertionError) {
 					AssertionError failure = (AssertionError) run.thrown;
-					System.out.println("FAILURE: " + failure);
-					System.out.println("CAUSE  : " + failure.getCause());
+					// System.out.println("FAILURE: " + failure);
+					// System.out.println("CAUSE  : " + failure.getCause());
 					String expected = "passed assertion";
 					String actual = "failed assertion";
 					String message = failure.getMessage();
@@ -216,11 +227,11 @@ public class JUnitUtils {
 					details.put("message", "test threw: " + run.thrown + "\n" + ExceptionUtils.stackTraceToString(run.thrown));
 				}
 				
-				listener.setTestDetails(testName, details);
+				listener.setTestDetails(testFullName, details);
 			}
 			
 			if (listener != null) {
-				listener.setTestRuntime(testName, (int) runtimeMS);
+				listener.setTestRuntime(testFullName, (int) runtimeMS);
 			}
 		} catch (InstantiationException e) {
 			throw new ReflectionRuntimeException(e);

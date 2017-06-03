@@ -38,7 +38,7 @@ public class PatchingClassLoader extends ClassLoader {
 		this.targetName = targetClassName;
 		this.newSuperClassName = newSuperClassName.replace(".", "/");   // "acm/program/CommandLineProgram"
 		try {
-			Class<?> classLoader = Class.forName("java.lang.ClassLoader");
+			Class<?> classLoader = java.lang.ClassLoader.class;
 			Method getSystemClassLoader = classLoader.getMethod("getSystemClassLoader", new Class[0]);
 			realLoader = (ClassLoader) getSystemClassLoader.invoke(null, new Object[0]);
 		} catch (Exception ex) {

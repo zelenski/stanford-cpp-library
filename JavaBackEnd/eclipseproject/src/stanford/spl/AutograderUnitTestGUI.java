@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp
+ * @version 2017/05/02
+ * - fixed minor bugs with test output html/coloring, diff flags missing
  * @version 2016/12/01
  * - fixed bugs with badly displayed / wrong test results
  * - clarified assertion output for ASSERT_TRUE and _FALSE
@@ -487,6 +489,7 @@ public class AutograderUnitTestGUI extends Observable
 		
 		TestInfo testInfo = allTests.get(testFullName);
 		if (testInfo == null) {
+			// test case not found!
 			return false;
 		}
 		
@@ -496,7 +499,8 @@ public class AutograderUnitTestGUI extends Observable
 			return true;
 		}
 		
-		testInfo.result.setIcon(new ImageIcon(ResourceUtils.filenameToURL(ICONS_FOLDER + result + ".gif")));   // pass, fail, running, warn
+		String iconFile = ICONS_FOLDER + result + ".gif";
+		testInfo.result.setIcon(new ImageIcon(ResourceUtils.filenameToURL(iconFile)));   // pass, fail, running, warn
 		if (result == "pass") {
 			passCount++;
 			testInfo.description.setForeground(PASS_COLOR);
@@ -699,17 +703,17 @@ public class AutograderUnitTestGUI extends Observable
 			htmlMessage += "<html><body style='max-width: " + DIALOG_WIDTH + "px;'>";
 			htmlMessage += "<p>" + message + "</p>";
 			htmlMessage += "<ul>";
-			htmlMessage += "<li><font style='font-family: monospaced' color='" + DiffGui.EXPECTED_COLOR + "'>expected:</font>" + expectedTruncated + "</li>";
-			htmlMessage += "<li><font style='font-family: monospaced' color='" + DiffGui.STUDENT_COLOR  + "'>student :</font>" + studentTruncated  + "</li>";
+			htmlMessage += "<li><font style='font-family: monospaced' color='" + DiffGui.EXPECTED_COLOR + "'>expected:</font> <font style='font-family: monospaced'>" + expectedTruncated + "</font></li>";
+			htmlMessage += "<li><font style='font-family: monospaced' color='" + DiffGui.STUDENT_COLOR  + "'>student :</font> <font style='font-family: monospaced'>" + studentTruncated  + "</font></li>";
 			htmlMessage += "</ul>";
 			
 			htmlMessage += "<p>result: "
-					+ "<font color='" + (passed ? PASS_COLOR_HEX : FAIL_COLOR_HEX).replace("0x", "#") + "'>"
+					+ "<font color='" + (passed ? PASS_COLOR_HEX : FAIL_COLOR_HEX).replace("0x", "#") + "'><b>"
 					+ (passed ? "PASS" : "FAIL")
-					+ "</font></p>";
+					+ "</b></font></p>";
 			
 			if (!stack.isEmpty()) {
-				htmlMessage += "<div><b>Stack trace:</b></div><pre>" + stack + "</pre>";
+				htmlMessage += "<div style='margin-top: 5px;'><b>Stack trace:</b></div><pre>" + stack + "</pre>";
 			}
 			
 			htmlMessage += "</body></html>";
@@ -719,7 +723,10 @@ public class AutograderUnitTestGUI extends Observable
 			message = htmlMessage;
 		} else if (type == "ASSERT_DIFF") {
 			shouldShowJOptionPane = false;
-			int flags = Integer.parseInt(deets.get("diffFlags"));
+			int flags = Diff.FLAGS_DEFAULT_LENIENT;
+			if (deets.containsKey("diffFlags")) {
+				flags = Integer.parseInt(deets.get("diffFlags"));
+			}
 			new DiffGui("expected output", expected, "student output", student, flags).show();
 		} else if (type == "ASSERT_DIFF_IMAGE") {
 			shouldShowJOptionPane = false;

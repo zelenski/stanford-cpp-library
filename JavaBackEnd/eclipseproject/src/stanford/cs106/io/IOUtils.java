@@ -1,4 +1,6 @@
 /*
+ * @version 2017/05/22
+ * - bug fix for readEntireStream (was stopping prematurely)
  * @version 2016/07/13
  * - added readEntireReader, readEntireScanner, readEntireStream
  */
@@ -55,6 +57,52 @@ public class IOUtils {
 			// empty
 		}
 		return currentDir;
+	}
+	
+	/**
+	 * Returns a directory that is likely to contain expected input files for
+	 * a running Stanford lib project.
+	 * Checks in subfolders of the current directory such as input/, expected-output/, etc.
+	 */
+	public static File getExpectedInputDirectory() {
+		File dir = new File(System.getProperty("user.dir"));
+		File[] dirsToTry = {
+				new File(dir, "input"),
+				new File(dir, "res/input"),
+				new File(dir, "output"),
+				new File(dir, "expected-output"),
+				new File(dir, "res/output"),
+				new File(dir, "res/expected-output")
+		};
+		for (File dirToTry : dirsToTry) {
+			if (dirToTry.isDirectory()) {
+				dir = dirToTry;
+				break;
+			}
+		}
+		return dir;
+	}
+	
+	/**
+	 * Returns a directory that is likely to contain expected output files for
+	 * a running Stanford lib project.
+	 * Checks in subfolders of the current directory such as output/, expected-output/, etc.
+	 */
+	public static File getExpectedOutputDirectory() {
+		File dir = new File(System.getProperty("user.dir"));
+		File[] dirsToTry = {
+				new File(dir, "output"),
+				new File(dir, "expected-output"),
+				new File(dir, "res/output"),
+				new File(dir, "res/expected-output")
+		};
+		for (File dirToTry : dirsToTry) {
+			if (dirToTry.isDirectory()) {
+				dir = dirToTry;
+				break;
+			}
+		}
+		return dir;
 	}
 	
 	/**
@@ -183,8 +231,12 @@ public class IOUtils {
 		try {
 			BufferedReader breader = new BufferedReader(new InputStreamReader(stream));
 			StringBuilder text = new StringBuilder();
-			while (breader.ready()) {
-				text.append((char) breader.read());
+			while (true) {
+				int b = breader.read();
+				if (b < 0) {
+					break;
+				}
+				text.append((char) b);
 			}
 			breader.close();
 			stream.close();
