@@ -893,7 +893,7 @@ class SoundPlayer implements Runnable {
 	private SourceDataLine openSourceDataLine(int bufferSize) {
 		try {
 			AudioFormat format = soundClip.getFormat();
-			Class<?> sourceDataLineClass = Class.forName("javax.sound.sampled.SourceDataLine");
+			Class<?> sourceDataLineClass = javax.sound.sampled.SourceDataLine.class;
 			DataLine.Info info = new DataLine.Info(sourceDataLineClass, format);
 			if (!AudioSystem.isLineSupported(info)) {
 				throw new ErrorException("SoundClip: Unsupported data line format");

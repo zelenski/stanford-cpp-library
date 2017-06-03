@@ -1,4 +1,6 @@
 /*
+ * @version: 2017/06/02
+ * - fixed bug with image IO saving under JAR obfuscation
  * @version: 2016/09/07
  * - removed file delete() code from saveImage
  * @version: 2015/05/03
@@ -970,9 +972,36 @@ public class MediaTools {
 			ImageSaver saver = suffixTable.get(suffix);
 			if (saver == null) {
 				try {
-					Class<?> imageSaverClass = Class.forName("acm.util."
-							+ suffix + "ImageSaver");
-					saver = (ImageSaver) imageSaverClass.newInstance();
+					// explicitly writing out some image formats so that this code
+					// will work in the presence of class name obfuscation at the JAR level
+					Class<?> imageSaverClass = null;
+					if (suffix.equals("BMP")) {
+						imageSaverClass = acm.util.BMPImageSaver.class;
+					} else if (suffix.equals("EPS")) {
+						imageSaverClass = acm.util.EPSImageSaver.class;
+					} else if (suffix.equals("GIF")) {
+						imageSaverClass = acm.util.GIFImageSaver.class;
+					} else if (suffix.equals("GIF89")) {
+						imageSaverClass = acm.util.GIF89ImageSaver.class;
+					} else if (suffix.equals("JPEG")) {
+						imageSaverClass = acm.util.JPEGImageSaver.class;
+					} else if (suffix.equals("JPG")) {
+						imageSaverClass = acm.util.JPGImageSaver.class;
+					} else if (suffix.equals("PICT")) {
+						imageSaverClass = acm.util.PICTImageSaver.class;
+					} else if (suffix.equals("PNG")) {
+						imageSaverClass = acm.util.PNGImageSaver.class;
+					} else if (suffix.equals("RTF")) {
+						imageSaverClass = acm.util.RTFImageSaver.class;
+					} else if (suffix.equals("TIFF")) {
+						imageSaverClass = acm.util.TIFFImageSaver.class;
+					} else {
+						imageSaverClass = Class.forName("acm.util." + suffix + "ImageSaver");
+					}
+					
+					if (imageSaverClass != null) {
+						saver = (ImageSaver) imageSaverClass.newInstance();
+					}
 				} catch (Exception ex) {
 					return null;
 				}
