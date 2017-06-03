@@ -23,9 +23,10 @@ cd ..
 echo "Creating JAR archive in $OUTFILE ..."
 cd temp
 cp -r ../../bin/* .
-
 find . > files.list
 jar -cvmf ../MANIFEST ../$OUTFILE @files.list
+
+# also include source code in JAR
 cd ../../src
 jar uvf ../obf/$OUTFILE acm/*/*.java javazoom/*/*/*.java stanford/*/*.java stanford/*/*/*.java
 
