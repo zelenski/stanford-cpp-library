@@ -1,4 +1,8 @@
 /*
+ * @version 2017/06/03
+ * - added constructors that take point(s)
+ * - added addPointPolar
+ * - added first, last
  * @version 2016/05/19
  * - initial version
  */
@@ -17,13 +21,39 @@ import java.util.List;
  * @author Marty Stepp
  */
 public class GLineGroup extends GObject implements Iterable<GPoint> {
-	private List<GPoint> points;
+	private List<GPoint> points = new ArrayList<GPoint>();
 	
 	/**
 	 * Creates a new line group that does not contain any points.
 	 */
 	public GLineGroup() {
-		points = new ArrayList<GPoint>();
+		// empty
+	}
+	
+	/**
+	 * Creates a new line group that contains the given points, passed
+	 * in x1, y1, x2, y2, ..., xN, yN order.
+	 * @throws IndexOutOfBoundsException if the array is not even in length
+	 */
+	public GLineGroup(double... coords) {
+		if (coords == null || coords.length % 2 != 0) {
+			throw new IndexOutOfBoundsException("must pass an even number of coordinates");
+		}
+		for (int i = 0; i < coords.length - 1; i += 2) {
+			add(coords[i], coords[i + 1]);
+		}
+	}
+	
+	/**
+	 * Creates a new line group that contains the given points.
+	 */
+	public GLineGroup(GPoint... points) {
+		if (points == null) {
+			throw new NullPointerException();
+		}
+		for (GPoint point : points) {
+			add(point);
+		}
 	}
 	
 	/**
@@ -31,6 +61,27 @@ public class GLineGroup extends GObject implements Iterable<GPoint> {
 	 */
 	public void add(double x, double y) {
 		add(new GPoint(x, y));
+	}
+	
+	/**
+	 * Adds a point with the given coordinates to this line group.
+	 */
+	public void addAtOffset(double dx, double dy) {
+		GPoint prev = isEmpty() ? new GPoint(0, 0) : last();
+		add(prev.getX() + dx, prev.getY() + dy);
+	}
+	
+	/**
+	 * Adds a point with the given polar offsets from the last point of this line group,
+	 * or from (0, 0) if the line group is empty.
+	 * @param r polar radius in pixels
+	 * @param theta polar angle in degrees
+	 */
+	public void addPolar(double r, double theta) {
+		GPoint prev = isEmpty() ? new GPoint(0, 0) : last();
+		double newX = prev.getX() + r * Math.cos(theta * Math.PI / 180);
+		double newY = prev.getY() - r * Math.sin(theta * Math.PI / 180);
+		add(newX, newY);
 	}
 	
 	/**
@@ -75,6 +126,17 @@ public class GLineGroup extends GObject implements Iterable<GPoint> {
 	}
 	
 	/**
+	 * Returns the first point in this line group.
+	 * @throws IllegalStateException if the line group is empty.
+	 */
+	public GPoint first() {
+		if (points.isEmpty()) {
+			throw new IllegalStateException("line group is empty");
+		}
+		return points.get(0);
+	}
+	
+	/**
 	 * Returns a bounding rectangle that tightly contains this line group.
 	 * The rectangle's min x/y are the minimum x/y values of any point in the line group,
 	 * and the rectangle's max x/y are the maximum x/y values of any point in the line group.
@@ -100,16 +162,6 @@ public class GLineGroup extends GObject implements Iterable<GPoint> {
 		}
 	}
 	
-//	@Override
-//	public double getX() {
-//		return getBounds().getX();
-//	}
-//	
-//	@Override
-//	public double getY() {
-//		return getBounds().getY();
-//	}
-
 	/**
 	 * Returns true if there are no points in this line group.
 	 */
@@ -122,6 +174,17 @@ public class GLineGroup extends GObject implements Iterable<GPoint> {
 	 */
 	public Iterator<GPoint> iterator() {
 		return points.iterator();
+	}
+	
+	/**
+	 * Returns the last point in this line group.
+	 * @throws IllegalStateException if the line group is empty.
+	 */
+	public GPoint last() {
+		if (points.isEmpty()) {
+			throw new IllegalStateException("line group is empty");
+		}
+		return points.get(points.size() - 1);
 	}
 	
 	/**

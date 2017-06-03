@@ -192,7 +192,8 @@ public class GPoint implements Serializable {
 	 * @noshow
 	 */
 	public int hashCode() {
-		return new Float((float) xc).hashCode() ^ (37 * new Float((float) yc).hashCode());
+		return java.lang.Float.valueOf((float) xc).hashCode()
+				^ (37 * java.lang.Float.valueOf((float) yc).hashCode());
 	}
 
 	/* Method: equals(obj) */
@@ -235,11 +236,11 @@ public class GPoint implements Serializable {
 	 * @noshow
 	 */
 	public String toString() {
-		String xs = Double.toString(xc);
+		String xs = java.lang.Double.toString(xc);
 		if (xs.endsWith(".0")) {
 			xs = xs.substring(0, xs.length() - 2);
 		}
-		String ys = Double.toString(yc);
+		String ys = java.lang.Double.toString(yc);
 		if (ys.endsWith(".0")) {
 			ys = ys.substring(0, ys.length() - 2);
 		}

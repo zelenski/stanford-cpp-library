@@ -1,4 +1,6 @@
 /*
+ * @version 2017/05/06
+ * - added get/setCenterX/Y/Location
  * @version 2016/05/05
  * - re-synched with eroberts source
  * - alphabetized method names
@@ -234,7 +236,7 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 		if (colorRGB == Color.YELLOW.getRGB()) {
 			return "YELLOW";
 		}
-		return String.format("0x%06x", colorRGB & 0xFFFFFF).toUpperCase();
+		return "0x" + String.format("%06x", colorRGB & 0xFFFFFF).toUpperCase();
 	}
 	
 	/**
@@ -244,9 +246,9 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 	 */
 	public static String colorNameFriendly(int colorRGB) {
 		return colorName(colorRGB)
+				.toLowerCase()
 				.replace("0x", "#")
-				.replace("_", " ")
-				.toLowerCase();
+				.replace("_", " ");
 	}
 
 	/**
@@ -406,6 +408,33 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 	 * @usage GRectangle bounds = gobj.getBounds();
 	 */
 	public abstract GRectangle getBounds();
+
+	/**
+	 * Returns the central x/y-coordinates of this object.
+	 *
+	 * @usage GPoint pt = gobj.getCenterLocation();
+	 */
+	public final GPoint getCenterLocation() {
+		return new GPoint(getCenterX(), getCenterY());
+	}
+
+	/**
+	 * Returns the central x-coordinate of this object.
+	 *
+	 * @usage double centerX = gobj.getCenterX();
+	 */
+	public double getCenterX() {
+		return getX() + getWidth() / 2;
+	}
+
+	/**
+	 * Returns the central y-coordinate of this object.
+	 *
+	 * @usage double centerY = gobj.getCenterY();
+	 */
+	public double getCenterY() {
+		return getY() + getHeight() / 2;
+	}
 
 	/**
 	 * Returns the color used to display this object.
@@ -764,7 +793,7 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 		} else if (transientParent != null) {
 			try {
 				Class<?> parentClass = transientParent.getClass();
-				Class<?>[] types = {Class.forName("acm.graphics.GObject")};
+				Class<?>[] types = {acm.graphics.GObject.class};
 				Object[] args = {this};
 				Method fn = parentClass.getMethod("sendBackward", types);
 				if (fn != null) {
@@ -793,7 +822,7 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 		} else if (transientParent != null) {
 			try {
 				Class<?> parentClass = transientParent.getClass();
-				Class<?>[] types = {Class.forName("acm.graphics.GObject")};
+				Class<?>[] types = {acm.graphics.GObject.class};
 				Object[] args = {this};
 				Method fn = parentClass.getMethod("sendForward", types);
 				if (fn != null) {
@@ -823,7 +852,7 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 		} else if (transientParent != null) {
 			try {
 				Class<?> parentClass = transientParent.getClass();
-				Class<?>[] types = {Class.forName("acm.graphics.GObject")};
+				Class<?>[] types = {acm.graphics.GObject.class};
 				Object[] args = {this};
 				Method fn = parentClass.getMethod("sendToBack", types);
 				if (fn != null) {
@@ -853,7 +882,7 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 		} else if (transientParent != null) {
 			try {
 				Class<?> parentClass = transientParent.getClass();
-				Class<?>[] types = {Class.forName("acm.graphics.GObject")};
+				Class<?>[] types = {acm.graphics.GObject.class};
 				Object[] args = {this};
 				Method fn = parentClass.getMethod("sendToFront", types);
 				if (fn != null) {
@@ -874,8 +903,29 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 	 * @param bottomY The new bottom y-coordinate for the object
 	 * @usage gobj.setBottomY(y);
 	 */
-	public final void setBottomY(double bottomY) {
+	public void setBottomY(double bottomY) {
 		setLocation(getX(), bottomY - getHeight());
+	}
+
+	/**
+	 * Sets the central x/y-coordinates of this object to the given x/y values.
+	 *
+	 * @param centerX The new central x-coordinate for the object
+	 * @param centerY The new central y-coordinate for the object
+	 * @usage gobj.setCenterLocation(x, y);
+	 */
+	public void setCenterLocation(double centerX, double centerY) {
+		setLocation(centerX - getWidth() / 2, centerY - getHeight() / 2);
+	}
+
+	/**
+	 * Sets the central x/y-coordinates of this object to the given x/y values.
+	 *
+	 * @param pt The new central x/y-coordinates for the object
+	 * @usage gobj.setCenterLocation(pt);
+	 */
+	public final void setCenterLocation(GPoint pt) {
+		setCenterLocation(pt.getX(), pt.getY());
 	}
 
 	/**
@@ -884,7 +934,7 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 	 * @param centerX The new central x-coordinate for the object
 	 * @usage gobj.setCenterX(x);
 	 */
-	public final void setCenterX(double centerX) {
+	public void setCenterX(double centerX) {
 		setLocation(centerX - getWidth() / 2, getY());
 	}
 
@@ -894,7 +944,7 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 	 * @param centerY The new central y-coordinate for the object
 	 * @usage gobj.setCenterY(y);
 	 */
-	public final void setCenterY(double centerY) {
+	public void setCenterY(double centerY) {
 		setLocation(getX(), centerY - getHeight() / 2);
 	}
 
@@ -1025,8 +1075,8 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 	 */
 	protected void start(String[] args) {
 		try {
-			Class<?> programClass = Class.forName("acm.program.GraphicsProgram");
-			Class<?> gObjectClass = Class.forName("acm.graphics.GObject");
+			Class<?> programClass = acm.program.GraphicsProgram.class;
+			Class<?> gObjectClass = acm.graphics.GObject.class;
 			Class<?>[] types = {gObjectClass, args.getClass()};
 			Object[] params = {this, args};
 			Method startGraphicsProgram = programClass.getMethod("startGraphicsProgram", types);

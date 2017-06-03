@@ -237,8 +237,9 @@ public class GCompound extends GObject implements GContainer, GScalable, Iterabl
 	 * @return The graphical object at the specified index
 	 * @usage GObject gobj = gcomp.getElement(index);
 	 */
-	public GObject getElement(int index) {
-		return contents.getElement(index);
+	@SuppressWarnings("unchecked")
+	public <T extends GObject> T getElement(int index) {
+		return (T) contents.getElement(index);
 	}
 
 	/**
@@ -254,8 +255,9 @@ public class GCompound extends GObject implements GContainer, GScalable, Iterabl
 	 * if no such object exists
 	 * @usage GObject gobj = gcomp.getElementAt(x, y);
 	 */
-	public GObject getElementAt(double x, double y) {
-		return contents.getElementAt(x, y, false);
+	@SuppressWarnings("unchecked")
+	public <T extends GObject> T getElementAt(double x, double y) {
+		return (T) contents.getElementAt(x, y, false);
 	}
 
 	/**
@@ -267,8 +269,9 @@ public class GCompound extends GObject implements GContainer, GScalable, Iterabl
 	 * if no such object exists
 	 * @usage GObject gobj = gc.getElementAt(pt);
 	 */
-	public final GObject getElementAt(GPoint pt) {
-		return getElementAt(pt.getX(), pt.getY());
+	@SuppressWarnings("unchecked")
+	public final <T extends GObject> T getElementAt(GPoint pt) {
+		return (T) getElementAt(pt.getX(), pt.getY());
 	}
 
 	/**

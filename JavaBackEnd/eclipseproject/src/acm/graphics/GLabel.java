@@ -237,6 +237,48 @@ public class GLabel extends GObject {
 	}
 
 	/**
+	 * Sets the bottom y-coordinate of this object to the given y value.
+	 * Since labels use y-positioning relative to their bottom, not the top,
+	 * this is equivalent to calling setY().
+	 *
+	 * @param bottomY The new bottom y-coordinate for the object
+	 * @usage gobj.setBottomY(y);
+	 */
+	@Override
+	public void setBottomY(double bottomY) {
+		// we have to override this method because labels use y-positioning
+		// relative to the bottom, not the top
+		setLocation(getX(), bottomY);
+	}
+
+	/**
+	 * Sets the central x/y-coordinates of this object to the given x/y values.
+	 *
+	 * @param centerX The new central x-coordinate for the object
+	 * @param centerY The new central y-coordinate for the object
+	 * @usage gobj.setCenterLocation(x, y);
+	 */
+	@Override
+	public void setCenterLocation(double centerX, double centerY) {
+		// we have to override this method because labels use y-positioning
+		// relative to the bottom, not the top
+		setLocation(centerX - getWidth() / 2, centerY + getHeight() / 2);
+	}
+
+	/**
+	 * Sets the central y-coordinate of this object to the given y value.
+	 *
+	 * @param centerY The new central y-coordinate for the object
+	 * @usage gobj.setCenterY(y);
+	 */
+	@Override
+	public void setCenterY(double centerY) {
+		// we have to override this method because labels use y-positioning
+		// relative to the bottom, not the top
+		setLocation(getX(), centerY + getHeight() / 2);
+	}
+
+	/**
 	 * Changes the font used to display the <code>GLabel</code>.  This call will
 	 * usually change the size of the displayed object and will therefore affect
 	 * the result of calls to <a href="GObject.html#getSize()"><code>getSize</code></a>
@@ -291,5 +333,19 @@ public class GLabel extends GObject {
 	 */
 	public void setText(String str) {
 		setLabel(str);
+	}
+
+	/**
+	 * Sets the top y-coordinate of this object to the given y value.
+	 * Since labels use y-positioning relative to their bottom, not the top, this
+	 * is equivalent to calling setY() and shifting downward by the label's height.
+	 *
+	 * @param bottomY The new top y-coordinate for the object
+	 * @usage gobj.setBottomY(y);
+	 */
+	public void setTopY(double topY) {
+		// we have to override this method because labels use y-positioning
+		// relative to the bottom, not the top
+		setLocation(getX(), topY + getHeight());
 	}
 }

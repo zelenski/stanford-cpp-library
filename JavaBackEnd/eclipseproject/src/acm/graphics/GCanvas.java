@@ -1,4 +1,12 @@
 /*
+ * @version 2017/05/06
+ * - showSaveDialog prompt to overwrite if file already exists 
+ * @version 2017/04/30
+ * - made showDiffDialog default to expected-output directory
+ * @version 2017/04/26
+ * - added getElementAt(double...), hasElementAt
+ * - added remove(x, y), removeAll(x, y)
+ * - added setShowPixelInfo, setShowPixelGrid
  * @version 2017/04/25
  * - added showSaveDialog to save canvas graphics to an image file
  * @version 2016/10/21
@@ -71,19 +79,30 @@ import stanford.spl.GBufferedImage;
  * Conceptually, the <code>GCanvas</code> provides a background canvas
  * to which other graphical objects can be added.
  */
-public class GCanvas extends JComponent implements GContainer, Iterable<GObject> {
+public class GCanvas extends JComponent
+		implements GCanvasInterface, GContainer, Iterable<GObject> {
 	private static final long serialVersionUID = 0L;
 	private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
+	
+	// color and font used to display mouse info
+	private static final Color PIXEL_GRID_COLOR = Color.GRAY;
+	private static final int PIXEL_GRID_INCREMENT = 10;
+	private static final Color MOUSE_INFO_COLOR = Color.DARK_GRAY;
+	private static final Font MOUSE_INFO_FONT = new JLabel("^_^").getFont();
 
 	private GCanvasListener gCanvasListener;
 	private GObject lastObject;
 	private GObject dragObject;
 	private GObjectList contents;
 	private BufferedImage bufferedImage = null;
+	private BufferedImage bufferedImage2 = null;   // used only if showPixelInfo is true
 	private Graphics2D osg = null;
 	private boolean antialias;
 	private boolean autoRepaint;
 	private boolean nativeArcFlag;
+	private boolean showPixelGrid;
+	private boolean showPixelInfo;
+	private Point lastMousePoint = null;
 	
 	/**
 	 * Creates a new <code>GCanvas</code> that contains no objects.
@@ -103,6 +122,8 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 		setOpaque(true);
 		setAutoRepaintFlag(true);
 		setNativeArcFlag(false);
+		setShowPixelGrid(false);
+		setShowPixelInfo(false);
 		setLayout(null);
 		
 		addComponentListener(gCanvasListener);
@@ -202,19 +223,24 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	 */
 	public void clear() {
 		// also clear out the buffered image
-		if (bufferedImage != null) {
-			int w = bufferedImage.getWidth();
-			int h = bufferedImage.getHeight();
-			if (isOpaque()) {
-				osg.setColor(getBackground());
-			} else {
-				osg.setColor(TRANSPARENT);
-			}
-			osg.fillRect(0, 0, w, h);
-			osg.setColor(getForeground());
-		}
-
+		clear(bufferedImage);
+		clear(bufferedImage2);
 		removeAll();
+	}
+	
+	private void clear(BufferedImage img) {
+		if (img != null) {
+			int w = img.getWidth();
+			int h = img.getHeight();
+			Graphics g = img.getGraphics();
+//			if (isOpaque()) {
+//				g.setColor(getBackground());
+//			} else {
+				g.setColor(TRANSPARENT);
+//			}
+			g.fillRect(0, 0, w, h);
+			g.setColor(getForeground());
+		}
 	}
 
 	/**
@@ -510,8 +536,9 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	 * @param index The index of the component to return
 	 * @return The graphical object at the specified index
 	 */
-	public GObject getElement(int index) {
-		return contents.getElement(index);
+	@SuppressWarnings("unchecked")
+	public <T extends GObject> T getElement(int index) {
+		return (T) contents.getElement(index);
 	}
 
 	/**
@@ -525,8 +552,33 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	 * @return The graphical object at the specified location, or <code>null</code>
 	 *         if no such object exists
 	 */
-	public GObject getElementAt(double x, double y) {
-		return contents.getElementAt(x, y, false);
+	@SuppressWarnings("unchecked")
+	public <T extends GObject> T getElementAt(double x, double y) {
+		return (T) contents.getElementAt(x, y, false);
+	}
+
+	/**
+	 * This version of getElementAt accepts a variable number of coordinate
+	 * pairs (in x1, y1, x2, y2, x3, y3, ... order) and will return the
+	 * topmost graphical objectfound at any of these pairs.
+	 * The pairs are checked in the order they are passed.
+	 * If no graphical object is found at any of these coordinate pairs,
+	 * null is returned. 
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends GObject> T getElementAt(double... coords) {
+		if (coords.length == 0 || coords.length % 2 != 0) {
+			throw new IllegalArgumentException(
+					"number of coordinates passed must be even (must be a sequence of x/y pairs); you passed "
+							+ Arrays.toString(coords));
+		}
+		for (int i = 0; i < coords.length; i += 2) {
+			GObject obj = getElementAt(coords[i], coords[i + 1]);
+			if (obj != null) {
+				return (T) obj;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -538,8 +590,9 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	 * @return The graphical object at the specified location, or <code>null</code>
 	 *         if no such object exists
 	 */
-	public final GObject getElementAt(GPoint pt) {
-		return getElementAt(pt.getX(), pt.getY());
+	@SuppressWarnings("unchecked")
+	public final <T extends GObject> T getElementAt(GPoint pt) {
+		return (T) getElementAt(pt.getX(), pt.getY());
 	}
 
 	/**
@@ -587,9 +640,39 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	 * Returns the RGB color stored at the given (x, y) pixel, or 0 if that pixel falls outside the bounds of this canvas.
 	 */
 	public int getRGB(int x, int y) {
-		return inBounds(x, y) ? bufferedImage.getRGB(x, y) : 0;
+		int rgb = 0;
+		if (inBounds(x, y)) {
+			if (bufferedImage2 != null) {
+				rgb = bufferedImage2.getRGB(x, y);
+			} else if (bufferedImage != null) {
+				rgb = bufferedImage.getRGB(x, y);
+			}
+			if (rgb == 0 && isOpaque()) {
+				return getBackground().getRGB();
+			}
+		}
+		return rgb;
 	}
 	
+	/**
+	 * Returns true if a graphical object exists that touches the given
+	 * (x, y) pixel position, or false if no such object exists.
+	 */
+	public boolean hasElementAt(double x, double y) {
+		return getElementAt(x, y) != null;
+	}
+
+	/**
+	 * Returns true if a graphical object exists that touches any of the given
+	 * (x, y) pixel positions, or false if no such object exists.
+	 * This method accepts a variable number of coordinate
+	 * pairs (in x1, y1, x2, y2, x3, y3, ... order).
+	 * The pairs are checked in the order they are passed.
+	 */
+	public boolean hasElementAt(double... coords) {
+		return getElementAt(coords) != null;
+	}
+
 	/**
 	 * Whether the given (x, y) point falls within the bounds of this canvas, from (0, 0) .. (width-1, height-1) inclusive.
 	 */
@@ -647,10 +730,95 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	 */
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		if (bufferedImage != null) {
-			g.drawImage(bufferedImage, 0, 0, this);
+		if (showPixelInfo && bufferedImage2 != null) {
+			// special drawing if showPixelInfo is on (rare)
+			// draw onto a special second buffered image so I can get the pixels
+			clear(bufferedImage2);
+			Graphics g2 = bufferedImage2.getGraphics();
+			if (isOpaque()) {
+				g2.setColor(getBackground());
+				g2.fillRect(0, 0, getWidth(), getHeight());
+			}
+			g2.setColor(getForeground());
+			if (bufferedImage != null) {
+				g2.drawImage(bufferedImage, 0, 0, this);
+			}
+			contents.mapPaint(g2);
+			g.drawImage(bufferedImage2, 0, 0, this);
+			paintPixelInfo(g);
+		} else {
+			// standard drawing (much more common)
+			if (bufferedImage != null) {
+				if (isOpaque()) {
+					g.setColor(getBackground());
+					g.fillRect(0, 0, getWidth(), getHeight());
+				}
+				g.drawImage(bufferedImage, 0, 0, this);
+			}
+			g.setColor(getForeground());
+			contents.mapPaint(g);
 		}
-		contents.mapPaint(g);
+		
+		paintPixelGrid(g);
+	}
+	
+	// draws a grid of horizontal and vertical lines to help debugging
+	private void paintPixelGrid(Graphics g) {
+		if (!showPixelGrid) {
+			return;
+		}
+		
+		int w = getWidth();
+		int h = getHeight();
+		
+		if (g instanceof Graphics2D && isAntiAliasing()) {
+			Graphics2D g2 = (Graphics2D) g;
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		}
+
+		g.setColor(PIXEL_GRID_COLOR);
+
+		// horizontal lines
+		for (int y = PIXEL_GRID_INCREMENT; y < h; y += PIXEL_GRID_INCREMENT) {
+			g.drawLine(0, y, w, y);
+		}
+		
+		// vertical lines
+		for (int x = PIXEL_GRID_INCREMENT; x < w; x += PIXEL_GRID_INCREMENT) {
+			g.drawLine(x, 0, x, h);
+		}
+	}
+	
+	// draws a label on the canvas showing the current mouse position's
+	// (x, y) coordinate and current pixel color
+	private void paintPixelInfo(Graphics g) {
+		if (!showPixelInfo || lastMousePoint == null) {
+			return;
+		}
+		int x = lastMousePoint.x;
+		int y = lastMousePoint.y;
+		int w = getWidth();
+		int h = getHeight();
+		
+		// get info about the mouse pixel
+		String pxInfo = "(x=" + x + ", y=" + y + ")";
+		if (x >= 0 && x < w && y >= 0 && y < h) {
+			int rgb = getRGB(x, y);
+			pxInfo += ", color=" + GObject.colorNameFriendly(rgb);
+		}
+		
+		// draw info on canvas in bottom-right (and println to text console)
+		g.setColor(MOUSE_INFO_COLOR);
+		g.setFont(MOUSE_INFO_FONT);
+		FontMetrics met = g.getFontMetrics(MOUSE_INFO_FONT);
+		int sw = met.stringWidth(pxInfo);
+		// int sh = met.getHeight();
+		// System.out.println(pxInfo);
+		if (g instanceof Graphics2D && isAntiAliasing()) {
+			Graphics2D g2 = (Graphics2D) g;
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		}
+		g.drawString(pxInfo, w - sw - 5, h - 2);
 	}
 
 	/**
@@ -665,6 +833,19 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	}
 
 	/**
+	 * Removes the top-most graphical object at the given (x, y) position from this container.
+	 * If no graphical object is located at that position, does nothing.
+	 * 
+	 * @usage gc.remove(x, y);
+	 */
+	public void remove(double x, double y) {
+		GObject gobj = getElementAt(x, y);
+		if (gobj != null) {
+			remove(gobj);
+		}
+	}
+
+	/**
 	 * Removes a graphical object from this <code>GCanvas</code>.
 	 *
 	 * @usage gc.remove(gobj);
@@ -673,6 +854,19 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	public void remove(GObject gobj) {
 		contents.remove(gobj);
 		conditionalRepaint();
+	}
+
+	/**
+	 * Removes the top-most graphical object at the given (x, y) position from this container.
+	 * If no graphical object is located at that position, does nothing.
+	 * 
+	 * @usage gc.remove(pt);
+	 */
+	public void remove(GPoint pt) {
+		GObject gobj = getElementAt(pt);
+		if (gobj != null) {
+			remove(gobj);
+		}
 	}
 
 	/**
@@ -686,6 +880,55 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 		repaint();
 	}
 	
+	/**
+	 * Removes all graphical objects at the given (x, y) position from this container.
+	 * If no graphical objects are located at that position, does nothing.
+	 * 
+	 * @usage gc.removeAll(x, y);
+	 */
+	public void removeAll(double x, double y) {
+		GObject gobj = getElementAt(x, y);
+		while (gobj != null) {
+			remove(gobj);
+			gobj = getElementAt(x, y);
+		}
+	}
+
+	/**
+	 * Removes all graphical objects at the given (x, y) positions from this container.
+	 * If no graphical objects are located at that position, does nothing.
+	 * 
+	 * @usage gc.removeAll(x1, y1, x2, y2, ...);
+	 */
+	public void removeAll(double... coords) {
+		if (coords.length == 0 || coords.length % 2 != 0) {
+			throw new IllegalArgumentException(
+					"number of coordinates passed must be even (must be a sequence of x/y pairs); you passed "
+							+ Arrays.toString(coords));
+		}
+		for (int i = 0; i < coords.length; i += 2) {
+			GObject gobj = getElementAt(coords[i], coords[i + 1]);
+			while (gobj != null) {
+				remove(gobj);
+				gobj = getElementAt(coords[i], coords[i + 1]);
+			}
+		}
+	}
+
+	/**
+	 * Removes all graphical objects at the given (x, y) position from this container.
+	 * If no graphical objects are located at that position, does nothing.
+	 * 
+	 * @usage gc.removeAll(pt);
+	 */
+	public void removeAll(GPoint pt) {
+		GObject gobj = getElementAt(pt);
+		while (gobj != null) {
+			remove(gobj);
+			gobj = getElementAt(pt);
+		}
+	}
+
 	/**
 	 * Writes the contents of the canvas to the given file.
 	 */
@@ -745,6 +988,57 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 		conditionalRepaint();
 	}
 	
+	/**
+	 * Sets whether this canvas uses anti-aliasing, which is smoothing and blending of neighboring pixels.
+	 * Default true.
+	 */
+	public void setAntiAliasing(boolean antialias) {
+		this.antialias = antialias;
+		if (antialias) {
+			osg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		} else {
+			osg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+		}
+		repaint();
+	}
+
+	/**
+	 * Changes the setting of the auto-repaint flag.  By default, any change to a
+	 * graphical object contained in this canvas automatically triggers a repaint
+	 * of the canvas as a whole.  While this behavior makes it much easier to use
+	 * the package, it has the disadvantage that repaint requests come much more
+	 * frequently than necessary.  You can disable this feature by calling
+	 * <code>setAutoRepaintFlag(false)</code>, but you must then make explicit
+	 * calls to <code>repaint()</code> whenever you want to update the display.
+	 * The advantage of this model is that you can then make many different changes
+	 * and have them all appear at once with a single <code>repaint</code> call.
+	 *
+	 * @usage gc.setAutoRepaintFlag(state);
+	 * @param state <code>true</code> to enable auto-repaint mode, and <code>false</code>
+	 *              to disable it
+	 */
+	public void setAutoRepaintFlag(boolean state) {
+		autoRepaint = state;
+	}
+	
+	public void setBackground(Color color) {
+		super.setBackground(color);
+	}
+	
+	/**
+	 * Sets this canvas to use a border of the given color, 1px thick.
+	 */
+	public void setBorder(Color color) {
+		setBorder(BorderFactory.createLineBorder(color));
+	}
+	
+	/**
+	 * Sets this canvas to use a border of the given color and number of pixels thick.
+	 */
+	public void setBorder(Color color, int thickness) {
+		setBorder(BorderFactory.createLineBorder(color, thickness));
+	}
+
 	public void setColor(Color color) {
 		getOSG().setColor(color);
 	}
@@ -761,6 +1055,20 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 	
 	public void setForeground(int paramInt) {
 		setColor(new Color(paramInt));
+	}
+	
+	/**
+	 * Sets whether the redering code for <code>GArc</code> and <code>GOval</code> should use
+	 * Java arcs.  By default, arcs and ovals are rendered using polygons and polylines
+	 * to ensure that the same set of pixels is covered by the fill and frame.
+	 * If this value is set to <code>true</code>, the renderers will use the native
+	 * arc code, which is more efficient but less accurate.
+	 *
+	 * @usage gc.setNativeArcFlag(state);
+	 * @param state <code>true</code> to enable native arcs, <code>false</code> to use polygons
+	 */
+	public void setNativeArcFlag(boolean state) {
+		nativeArcFlag = state;
 	}
 	
 	/**
@@ -798,73 +1106,46 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 			}
 		}
 	}
+	
+	/**
+	 * Sets whether to display information on this canvas about the current pixel where
+	 * the mouse pointer is resting.
+	 * Displays the current pixel's (x, y) coordinate and color.
+	 */
+	public void setShowPixelGrid(boolean show) {
+		this.showPixelGrid = show;
+		repaint();
+	}
 
 	/**
-	 * Sets whether this canvas uses anti-aliasing, which is smoothing and blending of neighboring pixels.
-	 * Default true.
+	 * Sets whether to display information on this canvas about the current pixel where
+	 * the mouse pointer is resting.
+	 * Displays the current pixel's (x, y) coordinate and color.
 	 */
-	public void setAntiAliasing(boolean antialias) {
-		this.antialias = antialias;
-		if (antialias) {
-			osg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	public void setShowPixelInfo(boolean show) {
+		this.showPixelInfo = show;
+		if (show) {
+			int w = Math.max(1, getWidth());
+			int h = Math.max(1, getHeight());
+			bufferedImage2 = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+			if (isAntiAliasing()) {
+				Graphics2D g2 = (Graphics2D) bufferedImage2.getGraphics();
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			}
+			bufferedImage2.getGraphics().setColor(getForeground());
 		} else {
-			osg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+			bufferedImage2 = null;
+			lastMousePoint = null;
 		}
 		repaint();
 	}
 
 	/**
-	 * Changes the setting of the auto-repaint flag.  By default, any change to a
-	 * graphical object contained in this canvas automatically triggers a repaint
-	 * of the canvas as a whole.  While this behavior makes it much easier to use
-	 * the package, it has the disadvantage that repaint requests come much more
-	 * frequently than necessary.  You can disable this feature by calling
-	 * <code>setAutoRepaintFlag(false)</code>, but you must then make explicit
-	 * calls to <code>repaint()</code> whenever you want to update the display.
-	 * The advantage of this model is that you can then make many different changes
-	 * and have them all appear at once with a single <code>repaint</code> call.
-	 *
-	 * @usage gc.setAutoRepaintFlag(state);
-	 * @param state <code>true</code> to enable auto-repaint mode, and <code>false</code>
-	 *              to disable it
-	 */
-	public void setAutoRepaintFlag(boolean state) {
-		autoRepaint = state;
-	}
-	
-	/**
-	 * Sets this canvas to use a border of the given color, 1px thick.
-	 */
-	public void setBorder(Color color) {
-		setBorder(BorderFactory.createLineBorder(color));
-	}
-	
-	/**
-	 * Sets this canvas to use a border of the given color and number of pixels thick.
-	 */
-	public void setBorder(Color color, int thickness) {
-		setBorder(BorderFactory.createLineBorder(color, thickness));
-	}
-
-	/**
-	 * Sets whether the redering code for <code>GArc</code> and <code>GOval</code> should use
-	 * Java arcs.  By default, arcs and ovals are rendered using polygons and polylines
-	 * to ensure that the same set of pixels is covered by the fill and frame.
-	 * If this value is set to <code>true</code>, the renderers will use the native
-	 * arc code, which is more efficient but less accurate.
-	 *
-	 * @usage gc.setNativeArcFlag(state);
-	 * @param state <code>true</code> to enable native arcs, <code>false</code> to use polygons
-	 */
-	public void setNativeArcFlag(boolean state) {
-		nativeArcFlag = state;
-	}
-	
-	/**
 	 * Pops up a dialog box to compare the contents of this canvas to an expected image file.
 	 */
 	public void showDiffDialog() {
-		showDiffDialog(IOUtils.getCurrentDirectory());
+		File dir = IOUtils.getExpectedOutputDirectory();
+		showDiffDialog(dir);
 	}
 	
 	/**
@@ -912,6 +1193,17 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 		int result = chooser.showSaveDialog(this);
 		if (result == JFileChooser.APPROVE_OPTION) {
 			File file = chooser.getSelectedFile();
+			
+			// prompt to overwrite if file already exists
+			if (file.exists()) {
+				int confirm = JOptionPane.showConfirmDialog(this,
+						"File already exists. Overwrite?", "Overwrite?", JOptionPane.YES_NO_OPTION);
+				if (confirm != JOptionPane.YES_OPTION) {
+					// abort without saving
+					return null;
+				}
+			}
+			
 			try {
 				save(file);
 				return file;
@@ -919,6 +1211,7 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 				JOptionPane.showMessageDialog(this, "Unable to save to " + file.getName()
 						+ ": " + ex.getMessage(),
 						"I/O Error", JOptionPane.ERROR_MESSAGE);
+				ex.printStackTrace();
 			}
 		}
 		return null;
@@ -1011,15 +1304,20 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 			}
 			
 			bufferedImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+			if (showPixelInfo) {
+				bufferedImage2 = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+			}
 			osg = (Graphics2D) bufferedImage.getGraphics();
-			osg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			if (isAntiAliasing()) {
+				osg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			}
 
 			// draw background
-			if (isOpaque()) {
-				osg.setColor(getBackground());
-				osg.fillRect(0, 0, w, h);
-			}
-			osg.setColor(Color.BLACK);
+//			if (isOpaque()) {
+//				osg.setColor(getBackground());
+//				osg.fillRect(0, 0, w, h);
+//			}
+//			osg.setColor(Color.BLACK);
 			
 			// copy over
 			if (oldImage != null) {
@@ -1042,6 +1340,10 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 
 		public void mouseDragged(MouseEvent e) {
 			gCanvas.dispatchMouseEvent(e);
+			if (showPixelInfo) {
+				lastMousePoint = e.getPoint();
+				repaint();
+			}
 		}
 
 		public void mouseEntered(MouseEvent e) {
@@ -1054,6 +1356,10 @@ public class GCanvas extends JComponent implements GContainer, Iterable<GObject>
 
 		public void mouseMoved(MouseEvent e) {
 			gCanvas.dispatchMouseEvent(e);
+			if (showPixelInfo) {
+				lastMousePoint = e.getPoint();
+				repaint();
+			}
 		}
 
 		public void mousePressed(MouseEvent e) {
