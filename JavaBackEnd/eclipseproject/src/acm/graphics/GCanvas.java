@@ -1,4 +1,6 @@
 /*
+ * @version 2017/06/10
+ * - added setOpaque/isOpaque
  * @version 2017/05/06
  * - showSaveDialog prompt to overwrite if file already exists 
  * @version 2017/04/30

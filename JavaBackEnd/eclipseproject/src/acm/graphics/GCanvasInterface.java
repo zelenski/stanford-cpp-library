@@ -1,3 +1,8 @@
+/*
+ * @version 2017/06/10
+ * - added setOpaque/isOpaque
+ */
+
 package acm.graphics;
 
 import java.awt.*;
@@ -24,6 +29,7 @@ public interface GCanvasInterface {
 	public boolean hasElementAt(double x, double y);
 	public boolean hasElementAt(double... coords);
 	public boolean isAntiAliasing();
+	public boolean isOpaque();
 	public Iterator<GObject> iterator();
 	public Iterator<GObject> iterator(int direction);
 	public void remove(double x, double y);
@@ -38,6 +44,7 @@ public interface GCanvasInterface {
 	public void setBackground(Color bg);
 	public void setFont(Font font);
 	// public void setHeight(int height);
+	public void setOpaque(boolean opaque);
 	public void setSize(Dimension size);
 	// public void setWidth(int width);
 	public void setShowPixelInfo(boolean show);

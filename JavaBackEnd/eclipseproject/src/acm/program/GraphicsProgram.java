@@ -1,4 +1,6 @@
 /*
+ * @version 2017/06/10
+ * - added setOpaque/isOpaque
  * @version 2017/04/26
  * - added setShowPixelInfo, setShowPixelGrid
  * - added remove(x, y), removeAll(x, y)
@@ -438,12 +440,20 @@ public abstract class GraphicsProgram extends Program
 	}
 
 	/**
-	 * Sets whether this program's canvas uses anti-aliasing, which is
+	 * Whether this program's canvas uses anti-aliasing, which is
 	 * smoothing and blending of neighboring pixels.
 	 * Default true.
 	 */
 	public boolean isAntiAliasing() {
 		return gc.isAntiAliasing();
+	}
+	
+	/**
+	 * Whether this program has an opaque background.
+	 * Default false.
+	 */
+	public boolean isOpaque() {
+		return gc.isOpaque();
 	}
 	
 	/* Protected method: isStarted() */
@@ -694,6 +704,14 @@ public abstract class GraphicsProgram extends Program
 		setCanvasSize(width, getCanvasHeight());
 	}
 
+	/**
+	 * Sets whether this program has an opaque background.
+	 * Default false.
+	 */
+	public void setOpaque(boolean opaque) {
+		gc.setOpaque(opaque);
+	}
+	
 	/**
 	 * Sets this program to be exactly the right size so that its graphical canvas will be
 	 * the given size in pixels.

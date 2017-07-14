@@ -1,4 +1,7 @@
 /*
+ * @version 2017/06/10
+ * - added setOpaque/isOpaque
+ * - set default background color to WHITE
  * @version 2017/05/02
  * - added fakeMousePress/Moved/Dragged
  * @version 2017/04/27
@@ -49,8 +52,11 @@ public class HeadlessGraphicsProgram implements GraphicsProgramInterface {
 	{
 		gc = new GCanvas();
 		gc.setAntiAliasing(antialiasDefault);
+		gc.setOpaque(true);
 		setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 		setTitle(getClass().getName());
+		setBackground(Color.WHITE);
+		gc.setBackground(Color.WHITE);
 	}
 	
 	public final void main(String[] args) {
@@ -383,6 +389,10 @@ public class HeadlessGraphicsProgram implements GraphicsProgramInterface {
 		}
 	}
 	
+	public boolean isOpaque() {
+		return gc.isOpaque();
+	}
+	
 	public void pause(double milliseconds) {
 		// don't actually pause! do nothing
 	}
@@ -411,6 +421,10 @@ public class HeadlessGraphicsProgram implements GraphicsProgramInterface {
 		gc.setFont(font);
 	}
 
+	public void setOpaque(boolean opaque) {
+		gc.setOpaque(opaque);
+	}
+	
 	public void setSize(Dimension size) {
 		windowWidth = (int) size.width;
 		windowHeight = (int) size.height;
