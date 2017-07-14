@@ -1,5 +1,8 @@
 /*
  * @author Marty Stepp
+ * @version 2017/06/06
+ * - added addTest(String), containsTest
+ * - increased max auto window size
  * @version 2017/05/02
  * - fixed minor bugs with test output html/coloring, diff flags missing
  * @version 2016/12/01
@@ -55,8 +58,8 @@ public class AutograderUnitTestGUI extends Observable
 	private static final String FAIL_COLOR_HEX = GImage.colorName(FAIL_COLOR.getRGB());
 	private static final Color WARN_COLOR = new Color(112, 112, 0);
 	private static final int MAX_VALUE_DISPLAY_LENGTH = 120;
-	private static final int MAX_WINDOW_WIDTH = 1000;   // px
-	private static final int MAX_WINDOW_HEIGHT = 700;   // px
+	private static final int MAX_WINDOW_WIDTH = 1200;   // px
+	private static final int MAX_WINDOW_HEIGHT = 900;   // px
 	private static Color NORMAL_COLOR = null;
 	
 	//private static final int MIN_WIDTH = 75;
@@ -253,6 +256,10 @@ public class AutograderUnitTestGUI extends Observable
 		return allCategories.get(name);
 	}
 	
+	public void addTest(String testName) {
+		addTest(testName, /* categoryName */ "");
+	}
+	
 	public void addTest(String testName, String categoryName) {
 		testCount++;
 		currentCategory = addCategory(categoryName);
@@ -347,6 +354,10 @@ public class AutograderUnitTestGUI extends Observable
 			testInfo.result.setText("");
 		}
 		updateSouthText();
+	}
+	
+	public boolean containsTest(String testFullName) {
+		return allTests.containsKey(testFullName);
 	}
 	
 	private String getTestResult(String testFullName) {

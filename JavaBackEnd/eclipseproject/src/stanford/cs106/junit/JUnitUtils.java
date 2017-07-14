@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp
+ * @version 2015/06/06
+ * - bug fixes related to "full" test names
  * @version 2015/05/28
  * - fixed assertNull, assertNotNull, assertSame, assertNotSame
  * - added support for stack traces in autograder test GUI
@@ -64,7 +66,6 @@ public class JUnitUtils {
 		return "";
 	}
 	
-	// e.g. "intro_test00_introOutputSpacing"
 	public static String getTestFullName(Class<?> clazz, Method method) {
 		String category = getTestCategory(clazz, method);
 		String methodName = method.getName();
@@ -86,6 +87,10 @@ public class JUnitUtils {
 	@SuppressWarnings("deprecation")
 	public static void runJUnitMethod(final Class<?> junitClass, final Method method, final JUnitListener listener) {
 		String testFullName = getTestFullName(junitClass, method);   // category + _ + testName
+		if (listener != null && !listener.containsTest(testFullName)) {
+			throw new IllegalArgumentException("No test found with full name of \"" + testFullName + "\" in class " + junitClass.getName());
+		}
+		
 		Annotation annotation = method.getAnnotation(org.junit.Test.class);
 		Class<? extends Annotation> annoClass = annotation.annotationType();
 		
@@ -139,19 +144,25 @@ public class JUnitUtils {
 				// timed out
 				thread.stop();
 				if (listener != null) {
-					listener.setTestResult(testFullName, "fail");
+					if (!listener.setTestResult(testFullName, "fail")) {
+						throw new IllegalStateException("Unable to set test results for " + testFullName);
+					}
 					listener.setTestDetailsMessage(testFullName, "test timed out after " + timeout + "ms");
 				}
 			} else {
 				if (listener != null && run.passed) {
-					listener.setTestResult(testFullName, "pass");
+					if (!listener.setTestResult(testFullName, "pass")) {
+						throw new IllegalStateException("Unable to set test results for " + testFullName);
+					}
 				}
 			}
 			long endTime = System.currentTimeMillis();
 			long runtimeMS = endTime - startTime;
 
 			if (run.thrown != null) {
-				listener.setTestResult(testFullName, "fail");
+				if (!listener.setTestResult(testFullName, "fail")) {
+					throw new IllegalStateException("Unable to set test results for " + testFullName);
+				}
 				Map<String, String> details = new TreeMap<String, String>();
 				
 				if (run.thrown instanceof ComparisonFailure) {

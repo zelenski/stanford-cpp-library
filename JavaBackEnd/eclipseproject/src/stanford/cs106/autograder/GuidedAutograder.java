@@ -162,6 +162,8 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 	protected int passCount = 0;
 	protected int failCount = 0;
 	
+	protected boolean assertUsingGui = false;
+	
 	protected LookAndFeel lookAndFeel = UIManager.getLookAndFeel();
 
 	// runs the overall autograder program
@@ -920,7 +922,10 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 //			hangman.setPauseScaleFactor(0.05);
 //		}
 //	}
-
+	
+	public void setAssertUsingGui(boolean gui) {
+		this.assertUsingGui = gui;
+	}
 	
 	protected class ReflectionPanel implements ActionListener {
 		protected Class<?> clazz;
