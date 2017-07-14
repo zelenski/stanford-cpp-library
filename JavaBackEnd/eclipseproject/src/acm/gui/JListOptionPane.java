@@ -1,3 +1,11 @@
+/*
+ * @author Marty Stepp
+ * @version 2017/06/07
+ * - added version that accepts a title
+ * @version 2015/05/09
+ * - initial version
+ */
+
 package acm.gui;
 
 import java.awt.*;
@@ -14,8 +22,6 @@ import stanford.cs106.gui.GuiUtils;
 /**
  * A pop-up dialog box of options as a clickable list.
  * A sort of expansion of the JOptionPane functionality provided in Java Swing.
- * @author Marty Stepp
- * @version 2015/05/09
  */
 public class JListOptionPane extends JDialog implements ActionListener {
 	private static final long serialVersionUID = 0;
@@ -27,10 +33,20 @@ public class JListOptionPane extends JDialog implements ActionListener {
 
 	private boolean pressedOk = false;
 
+	public JListOptionPane(Frame frame, Iterable<String> items) {
+		this(frame, /* message */ "", /* title */ "Select an option", items);
+	}
+
+	public JListOptionPane(Frame frame, String message, Iterable<String> items) {
+		this(frame, message, /* title */ "Select an option", items);
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public JListOptionPane(JFrame frame, Iterable<String> items) {
+	public JListOptionPane(Frame frame, String message, String title, Iterable<String> items) {
 		super(frame, true);
-		setTitle("Load...");
+		if (title != null && !title.isEmpty()) {
+			setTitle(title);
+		}
 
 		List<String> itemList = new ArrayList<String>();
 		for (String item : items) {
@@ -47,10 +63,18 @@ public class JListOptionPane extends JDialog implements ActionListener {
 		cancel = GuiUtils.createButton("Cancel", null, 'C', this);
 		south.add(cancel);
 
+		if (message != null && !message.isEmpty()) {
+			JPanel north = new JPanel(new FlowLayout());
+			north.add(new JLabel(message));
+			add(north, BorderLayout.NORTH);
+		}
+		
 		add(new JScrollPane(list));
 		add(south, BorderLayout.SOUTH);
 		pack();
+		
 		if (frame != null) {
+			// center with respect to frame
 			setLocation(frame.getX() + (frame.getWidth() - getWidth()) / 2,
 					frame.getY() + (frame.getHeight() - getHeight()) / 2);
 		} else {
