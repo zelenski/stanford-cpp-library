@@ -1,4 +1,6 @@
 /*
+ * @version 2017/07/14
+ * - disabled console error messages when unable to save/load config data
  * @version 2017/05/31
  * - made Program class implement various EventListener sub-interface types
  * @version 2017/05/30
@@ -1882,7 +1884,8 @@ public abstract class Program
 				loadConfiguration(props);
 			}
 		} catch (Exception ex) {
-			System.err.println("error: Could not load C++ lib configuration from file \"" + configFile + "\": " + ex.getMessage());
+			// disabling this error message because some students were seeing it and becoming alarmed
+			// System.err.println("error: Could not load C++ lib configuration from file \"" + configFile + "\": " + ex.getMessage());
 		}
 	}
 
@@ -2547,7 +2550,7 @@ public abstract class Program
 	 * @return The value of the input interpreted as a boolean value
 	 */
 	public final boolean readBoolean() {
-		return readBoolean(null);
+		return readBoolean(/* prompt */ null);
 	}
 
 	/* Method: readBoolean(prompt) */
@@ -2563,7 +2566,7 @@ public abstract class Program
 	 * @return The value of the input interpreted as a boolean value
 	 */
 	public final boolean readBoolean(String prompt) {
-		return readBoolean(prompt, "true", "false");
+		return readBoolean(prompt, /* trueLabel */ "true", /* falseLabel */ "false");
 	}
 
 	/* Method: readBoolean(prompt, trueLabel, falseLabel) */
@@ -2596,7 +2599,7 @@ public abstract class Program
 	 * @return The value of the input interpreted as a <code>double</code>
 	 */
 	public final double readDouble() {
-		return readDouble(null, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+		return readDouble(/* prompt */ null, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 	}
 
 	/* Method: readDouble(low, high) */
@@ -2614,7 +2617,7 @@ public abstract class Program
 	 * @return The value of the input interpreted as a <code>double</code>
 	 */
 	public final double readDouble(double low, double high) {
-		return readDouble(null, low, high);
+		return readDouble(/* prompt */ null, low, high);
 	}
 
 	/* Method: readDouble(prompt) */
@@ -2664,7 +2667,7 @@ public abstract class Program
 	 * @return The value of the input interpreted as a decimal integer
 	 */
 	public final int readInt() {
-		return readInt(null, Integer.MIN_VALUE, Integer.MAX_VALUE);
+		return readInt(/* prompt */ null, Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 
 	/* Method: readInt(low, high) */
@@ -2681,7 +2684,7 @@ public abstract class Program
 	 * @return The value of the input interpreted as a decimal integer
 	 */
 	public final int readInt(int low, int high) {
-		return readInt(null, low, high);
+		return readInt(/* prompt */ null, low, high);
 	}
 
 	/* Method: readInt(prompt) */
@@ -2730,7 +2733,7 @@ public abstract class Program
 	 * @return The next line of input as a <code>String</code>
 	 */
 	public final String readLine() {
-		return readLine(null);
+		return readLine(/* prompt */ null);
 	}
 
 	/* Method: readLine(prompt) */
@@ -2884,7 +2887,8 @@ public abstract class Program
 				out.close();
 			}
 		} catch (Exception ex) {
-			System.err.println("error: Could not save C++ lib configuration to file \"" + configFile + "\": " + ex.getMessage());
+			// disabling this error message because some students were seeing it and becoming alarmed
+			// System.err.println("error: Could not save C++ lib configuration to file \"" + configFile + "\": " + ex.getMessage());
 		}
 	}
 

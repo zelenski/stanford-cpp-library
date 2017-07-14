@@ -1,4 +1,6 @@
 /*
+ * @version 2017/07/14
+ * - bug fix for readInt/Double/Boolean/Line with null prompt
  * @version 2017/04/26
  * - bug fix for captured output with printf() method
  * @version 2016/10/02
@@ -261,13 +263,15 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 		int result;
 		
 		if (shouldOverrideInput()) {
-			if (!prompt.endsWith(" ")) {
+			if (prompt != null && !prompt.endsWith(" ")) {
 				prompt += " ";
 			}
 			result = getInputInt();	
 			checkRange(result, min, max);
 			// super.println(prompt + result + "\t<readInt>");
-			print(prompt);
+			if (prompt != null) {
+				print(prompt);
+			}
 			print(result, Color.BLUE);
 			println("\t<readInt>");
 		} else {
@@ -286,13 +290,15 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 		double result;
 		
 		if (shouldOverrideInput()) {
-			if (!prompt.endsWith(" ")) {
+			if (prompt != null && !prompt.endsWith(" ")) {
 				prompt += " ";
 			}
 			result = getInputDouble();
 			checkRange(result, min, max);
 			// super.println(prompt + result + "\t<readDouble>");
-			print(prompt);
+			if (prompt != null) {
+				print(prompt);
+			}
 			print(result, Color.BLUE);
 			println("\t<readDouble>");
 		} else {
@@ -311,10 +317,12 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 		Boolean result = false;
 		
 		if (shouldOverrideInput()) {
-			if (!prompt.endsWith(" ")) {
+			if (prompt != null && !prompt.endsWith(" ")) {
 				prompt += " ";
 			}
-			print(prompt);
+			if (prompt != null) {
+				print(prompt);
+			}
 			result = getInputBoolean(y, n);
 			println("\t<readBoolean>");
 		} else {
@@ -329,11 +337,14 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 		String line = "";
 		
 		if (shouldOverrideInput()) {
-			if (!prompt.endsWith(" ")) {
+			if (prompt != null && !prompt.endsWith(" ")) {
 				prompt += " ";
 			}
+			if (prompt != null) {
+				print(prompt);
+			}
 			line = inputReader.readInputLine();
-			println(prompt + line + "\t<readLine>");
+			println(line + "\t<readLine>");
 		} else {
 			line = super.readLine(prompt); 
 		}
