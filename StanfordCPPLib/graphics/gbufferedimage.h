@@ -5,6 +5,8 @@
  * See gbufferedimage.cpp for implementation of each member.
  *
  * @author Marty Stepp
+ * @version 2017/09/28
+ * - added getFilename
  * @version 2016/10/28
  * - added equals, countDiffPixels(...) range
  * @version 2016/10/16
@@ -178,15 +180,15 @@ public:
      * You can optionally pass an (x,y) range of pixels to compare; if none is
      * passed, the entire images are compared.
      */
-    int countDiffPixels(GBufferedImage& image) const;
-    int countDiffPixels(GBufferedImage& image, int xmin, int ymin, int xmax, int ymax) const;
+    int countDiffPixels(const GBufferedImage& image) const;
+    int countDiffPixels(const GBufferedImage& image, int xmin, int ymin, int xmax, int ymax) const;
 
     /*
      * Generates a new image whose content is equal to that of this image but with
      * any pixels that don't match those in parameter 'image' colored in the given
      * color (default purple) to highlight differences between the two.
      */
-    GBufferedImage* diff(GBufferedImage& image, int diffPixelColor = GBUFFEREDIMAGE_DEFAULT_DIFF_PIXEL_COLOR) const;
+    GBufferedImage* diff(const GBufferedImage& image, int diffPixelColor = GBUFFEREDIMAGE_DEFAULT_DIFF_PIXEL_COLOR) const;
 
     /*
      * Returns true if the two given images contain exactly the same pixel data.
@@ -220,6 +222,13 @@ public:
      * Any existing contents of the image are lost.
      */
     void fromGrid(const Grid<int>& grid);
+
+    /*
+     * Returns the name of the file from which this image was loaded or
+     * to which it was saved most recently.
+     * If this image was not associated with any file, returns "".
+     */
+    std::string getFilename() const;
 
     /*
      * Returns the height of the image in pixels.
@@ -276,7 +285,7 @@ public:
      * Saves the image's contents to the given image file.
      * Throws an error if the given file is not writeable.
      */
-    void save(const std::string& filename) const;
+    void save(const std::string& filename);
 
     /*
      * Sets the color of the pixel at the given x/y coordinates of the image
@@ -306,6 +315,7 @@ private:
     double m_height;
     int m_backgroundColor;
     Grid<int> m_pixels;      // row-major; [y][x]
+    std::string m_filename;  // file image was loaded from; "" if not loaded from a file
 
     /*
      * Throws an error if the given rgb value is not a valid color.
