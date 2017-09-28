@@ -1,4 +1,6 @@
 /*
+ * @version 2017/09/27
+ * - fixed bug with double-offsetting coordinates in inner GObjects
  * @version 2016/05/05
  * - re-synched with eroberts source; sort methods by name
  */
@@ -257,7 +259,7 @@ public class GCompound extends GObject implements GContainer, GScalable, Iterabl
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends GObject> T getElementAt(double x, double y) {
-		return (T) contents.getElementAt(x, y, false);
+		return (T) contents.getElementAt(x, y, /* requireEnabled */ false);
 	}
 
 	/**
@@ -378,9 +380,15 @@ public class GCompound extends GObject implements GContainer, GScalable, Iterabl
 	 * @noshow
 	 */
 	protected void paint2d(Graphics2D g) {
-		Graphics g2 = g.create();
-		g2.translate(GMath.round(getX()), GMath.round(getY()));
-		contents.mapPaint(g2);
+		// BUGBUG: GObject.paint() calls createTransformedGraphics(),
+		// which translates g by x/y already.
+		// So we don't need to also translate g2 here.
+		
+//		Graphics g2 = g.create();
+//		g2.translate(GMath.round(getX()), GMath.round(getY()));
+//		contents.mapPaint(g2);
+		
+		contents.mapPaint(g);
 	}
 
 	/**

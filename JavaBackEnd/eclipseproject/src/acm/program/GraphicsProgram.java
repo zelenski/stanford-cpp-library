@@ -421,6 +421,14 @@ public abstract class GraphicsProgram extends Program
 		return gc.hasElementAt(coords);
 	}
 
+	/**
+	 * Returns true if a graphical object exists that touches the given
+	 * (x, y) pixel position, or false if no such object exists.
+	 */
+	public boolean hasElementAt(GPoint point) {
+		return gc.hasElementAt(point);
+	}
+
 	/* Method: init() */
 	/**
 	 * Specifies the code to be executed as startup time before the

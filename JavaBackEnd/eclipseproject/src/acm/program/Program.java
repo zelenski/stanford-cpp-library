@@ -1,4 +1,8 @@
 /*
+ * @version 2017/08/04
+ * - added system property to disable load/save of configuration 
+ * @version 2017/07/21
+ * - added add() overloads
  * @version 2017/07/14
  * - disabled console error messages when unable to save/load config data
  * @version 2017/05/31
@@ -111,6 +115,7 @@ import acm.io.*;
 import acm.util.*;
 import stanford.cs106.gui.*;
 import stanford.cs106.io.*;
+import stanford.cs106.util.StringUtils;
 import stanford.spl.*;
 import java.applet.*;
 import java.awt.*;
@@ -170,6 +175,9 @@ public abstract class Program
 
 	/* file where Stanford lib settings (e.g. window size/font) are saved on disk */
 	protected static final String CONFIG_FILE_NAME = "spl-jar-settings.txt";
+	
+	/* system property to disable/enable saving/loading configuration */
+	private static final String CONFIG_PROPERTY = "spl.save.settings";
 
 	/* Private fields */
 	private AppletStarter appletStarter;
@@ -304,6 +312,7 @@ public abstract class Program
 	 *               <code>EAST</code>, <code>WEST</code>, or <code>CENTER</code>)
 	 * @param constraints The constraints object
 	 * @noshow
+	 * @return the component passed
 	 */
 	public void add(Component comp, String region, Object constraints) {
 		if (region.equalsIgnoreCase(NORTH)) {
@@ -765,7 +774,15 @@ public abstract class Program
 	 * @usage program.exit();
 	 */
 	public void exit() {
-		saveConfiguration();
+		try {
+			if (!StringUtils.isFalsey(System.getProperty(CONFIG_PROPERTY))
+					&& !StringUtils.isFalsey(System.getenv(CONFIG_PROPERTY))) {
+				saveConfiguration();
+			}
+		} catch (SecurityException sex) {
+			// empty
+		}
+		
 		if (exitOnClose) {
 			int nFinalizers = finalizers.size();
 			for (int i = 0; i < nFinalizers; i++) {
@@ -3399,7 +3416,14 @@ public abstract class Program
 		}
 		validate();
 		if (!isAppletMode()) {
-			loadConfiguration();
+			try {
+				if (!StringUtils.isFalsey(System.getProperty(CONFIG_PROPERTY))
+						&& !StringUtils.isFalsey(System.getenv(CONFIG_PROPERTY))) {
+					loadConfiguration();
+				}
+			} catch (SecurityException sex) {
+				// empty
+			}
 		}
 		startRun();
 	}

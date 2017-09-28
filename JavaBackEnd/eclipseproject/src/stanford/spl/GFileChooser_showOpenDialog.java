@@ -1,9 +1,15 @@
+/*
+ * @version 2017/09/28
+ * - made file filter work with comma-separated lists of filters
+ * - moved heavy lifting code out to JFileChooserUtils
+ */
+
 package stanford.spl;
 
 import acm.util.TokenScanner;
 import java.io.*;
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
+import stanford.cs106.gui.*;
 
 public class GFileChooser_showOpenDialog extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
@@ -17,10 +23,8 @@ public class GFileChooser_showOpenDialog extends JBESwingCommand {
 				currentDir = System.getProperty("user.dir");
 			} catch (Exception e) {}
 		}
-		JFileChooser chooser = new JFileChooser(currentDir);
-		if (!fileFilter.isEmpty()) {
-			chooser.setFileFilter(new GFileChooserFileFilter(fileFilter));
-		}
+		
+		JFileChooser chooser = JFileChooserUtils.createChooser(currentDir, fileFilter);
 		int result = chooser.showOpenDialog(paramJavaBackEnd.getJBEConsoleFrame());
 		String filename = "";
 		if (result == JFileChooser.APPROVE_OPTION) {
@@ -32,24 +36,4 @@ public class GFileChooser_showOpenDialog extends JBESwingCommand {
 		SplPipeDecoder.writeResult(filename);
 	}
 	
-	public static class GFileChooserFileFilter extends FileFilter {
-		private String fileFilter;
-		
-		public GFileChooserFileFilter(String fileFilter) {
-			this.fileFilter = fileFilter;
-		}
-		
-		@Override
-		public boolean accept(File f) {
-			String filterRegex = fileFilter.replace(".", "\\.");
-			filterRegex = filterRegex.replace("*", ".*");
-			// JOptionPane.showMessageDialog(null, "filterRegex = " + filterRegex);
-			return f.isDirectory() || f.getName().matches(".*" + filterRegex + ".*");
-		}
-
-		@Override
-		public String getDescription() {
-			return fileFilter + " files";
-		}
-	}
 }

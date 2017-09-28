@@ -36,7 +36,7 @@ public class DiffImage_show extends JBESwingCommand {
 			// useless "ok" result for C++ lib to throw away, to make dialog modal
 			SplPipeDecoder.writeResult("ok");
 		} catch (IORuntimeException ioe) {
-			SplPipeDecoder.writeResult("error:" + ioe.getMessage());
+			SplPipeDecoder.writeError(ioe);
 		}
 	}
 }

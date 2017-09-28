@@ -1,4 +1,6 @@
 /*
+ * @version 2017/07/21
+ * - added hasElementAt(GPoint)
  * @version 2017/06/10
  * - added setOpaque/isOpaque
  * @version 2017/05/06
@@ -673,6 +675,14 @@ public class GCanvas extends JComponent
 	 */
 	public boolean hasElementAt(double... coords) {
 		return getElementAt(coords) != null;
+	}
+
+	/**
+	 * Returns true if a graphical object exists that touches the given
+	 * (x, y) pixel position, or false if no such object exists.
+	 */
+	public boolean hasElementAt(GPoint pt) {
+		return getElementAt(pt) != null;
 	}
 
 	/**

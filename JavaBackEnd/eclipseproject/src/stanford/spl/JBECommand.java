@@ -1,4 +1,6 @@
 /*
+ * @version 2017/09/24
+ * - added JBEConsole_getTitle
  * @version 2016/12/01
  * - added AutograderUnitTest_catchExceptions
  * @version 2016/11/26
@@ -254,6 +256,7 @@ public abstract class JBECommand {
 			HttpServer_sendResponseFile.class,
 			JBEConsole_clear.class,
 			JBEConsole_getLine.class,
+			JBEConsole_getTitle.class,
 			JBEConsole_minimize.class,
 			JBEConsole_println.class,
 			JBEConsole_print.class,

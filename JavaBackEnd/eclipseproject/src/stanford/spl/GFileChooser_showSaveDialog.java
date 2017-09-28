@@ -1,8 +1,15 @@
+/*
+ * @version 2017/09/28
+ * - made file filter work with comma-separated lists of filters
+ * - moved heavy lifting code out to JFileChooserUtils
+ */
+
 package stanford.spl;
 
 import acm.util.TokenScanner;
 import java.io.*;
 import javax.swing.*;
+import stanford.cs106.gui.JFileChooserUtils;
 
 public class GFileChooser_showSaveDialog extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
@@ -16,10 +23,7 @@ public class GFileChooser_showSaveDialog extends JBESwingCommand {
 				currentDir = System.getProperty("user.dir");
 			} catch (Exception e) {}
 		}
-		JFileChooser chooser = new JFileChooser(currentDir);
-		if (!fileFilter.isEmpty()) {
-			chooser.setFileFilter(new GFileChooser_showOpenDialog.GFileChooserFileFilter(fileFilter));
-		}
+		JFileChooser chooser = JFileChooserUtils.createChooser(currentDir, fileFilter);
 		int result = chooser.showSaveDialog(paramJavaBackEnd.getJBEConsoleFrame());
 		String filename = "";
 		if (result == JFileChooser.APPROVE_OPTION) {

@@ -13,7 +13,7 @@ public class GTextArea_setFont extends JBESwingCommand {
 		if (area != null) {
 			area.setFont(font);
 		} else {
-			System.out.println("error:GTextArea_setFont: null text area");
+			jbe.println("error:GTextArea_setFont: null text area");
 		}
 	}
 }

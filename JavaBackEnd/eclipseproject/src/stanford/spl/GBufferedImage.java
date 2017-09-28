@@ -13,6 +13,8 @@ import stanford.cs106.io.IORuntimeException;
 /**
  * 
  * @author Marty Stepp
+ * @version 2017/09/28
+ * - bug fixes in error handling in load/save
  * @version 2015/10/08
  * - bug fixes in to/fromGrid support
  * @version 2015/08/12
@@ -87,8 +89,19 @@ public class GBufferedImage extends GInteractor {
 		return imageWidth;
 	}
 	
-	public void load(String filename) throws IOException {
-		bufferedImage = ImageIO.read(new File(filename));
+	public void load(String filename) {
+		BufferedImage bufferedImage = null;
+		File file = new File(filename);
+		try {
+			bufferedImage = ImageIO.read(file);
+		} catch (IOException ioe) {
+			throw new IORuntimeException("unable to load image from " + file.getName(), ioe);
+		}
+		if (bufferedImage == null) {
+			throw new IORuntimeException("unable to load image from " + file.getName());
+		}
+
+		this.bufferedImage = bufferedImage;
 		imageWidth = bufferedImage.getWidth();
 		imageHeight = bufferedImage.getHeight();
 		repaintImage();
@@ -112,13 +125,18 @@ public class GBufferedImage extends GInteractor {
 		repaintImage();
 	}
 	
-	public void save(String filename) throws IOException {
+	public void save(String filename) {
 		String extension = "png";
 		int dot = filename.lastIndexOf('.');
 		if (dot >= 0) {
 			extension = filename.substring(dot + 1).toLowerCase();
 		}
-		ImageIO.write(bufferedImage, extension, new File(filename));
+		File file = new File(filename);
+		try {
+			ImageIO.write(bufferedImage, extension, file);
+		} catch (IOException ioe) {
+			throw new IORuntimeException("unable to save image to " + file.getName(), ioe);
+		}
 	}
 	
 	public void setRGB(int x, int y, int rgb) {

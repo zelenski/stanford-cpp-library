@@ -1,5 +1,8 @@
 /*
+ * @version 2017/09/28
+ * - fixed writeError to take Throwable and print correct text
  * @version 2015/10/08
+ * - initial version
  */
 
 package stanford.spl;
@@ -100,6 +103,19 @@ public class SplPipeDecoder {
 	
 	public static synchronized void writeError(String msg) {
 		writeResult("error:" + msg);
+	}
+	
+	public static synchronized void writeError(Throwable t) {
+		String text = "";
+		if (t != null) {
+			text += t.getClass().getName();
+			String msg = t.getMessage();
+			if (msg != null) {
+				msg = msg.replaceAll("\r?\n", " ");
+				text += ":" + msg.trim();
+			}
+		}
+		println("error:" + text);
 	}
 	
 	public static synchronized void writeOK() {

@@ -12,22 +12,22 @@ import acm.util.*;
 import stanford.cs106.io.IORuntimeException;
 
 public class GWindow_saveCanvasPixels extends JBESwingCommand {
-	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
+	public void execute(TokenScanner paramTokenScanner, JavaBackEnd jbe) {
 		paramTokenScanner.verifyToken("(");
 		String windowID = nextString(paramTokenScanner);
-		JBEWindow window = paramJavaBackEnd.getWindow(windowID);
+		JBEWindow window = jbe.getWindow(windowID);
 		paramTokenScanner.verifyToken(",");
 		String filename = nextString(paramTokenScanner);
 		paramTokenScanner.verifyToken(")");
 		
 		if (window == null) {
-			SplPipeDecoder.writeResult("error:window not found");
+			jbe.println("error:window not found");
 		} else {
 			try {
 				window.saveCanvasPixels(filename);
 				SplPipeDecoder.writeResult("ok");
 			} catch (IORuntimeException ioe) {
-				SplPipeDecoder.writeResult("error:" + ioe.getMessage());
+				SplPipeDecoder.writeError(ioe);
 			}
 		}
 	}

@@ -28,6 +28,7 @@ public interface GCanvasInterface {
 	public int getWidth();
 	public boolean hasElementAt(double x, double y);
 	public boolean hasElementAt(double... coords);
+	public boolean hasElementAt(GPoint pt);
 	public boolean isAntiAliasing();
 	public boolean isOpaque();
 	public Iterator<GObject> iterator();

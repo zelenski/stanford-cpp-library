@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp
+ * @version 2017/09/28
+ * - made getText() return all output including past clear()ed output
  * @version 2016/04/15
  * - bugfix: removed debug println on history up/down (oops)
  * @version 2015/06/19
@@ -19,6 +21,9 @@ import javax.swing.*;
 import javax.swing.text.*;
 
 public class StandardConsoleModel implements KeyListener, FocusListener, ConsoleModel {
+	// need to keep in sync with string in C++ lib console.cpp clearConsole() function
+	private static final String CONSOLE_CLEARED_MESSAGE = "==================== (console cleared) ====================\n";
+	
 	private static final int PRINT_MARGIN = 36;
 	private static final int MAX_PREVIOUS_INPUT_LINES = 100;
 	private ActionListener actionListener;
@@ -40,6 +45,7 @@ public class StandardConsoleModel implements KeyListener, FocusListener, Console
 	private Color outputColor = Color.BLACK;
 	private List<String> previousInputLines;
 	private int previousInputLinesIndex = 0;
+	private StringBuilder allOutput = new StringBuilder();   // history of output, survives clear()
 
 	public StandardConsoleModel() {
 		this.outputMonitor = new ConsoleOutputMonitor(this);
@@ -134,13 +140,21 @@ public class StandardConsoleModel implements KeyListener, FocusListener, Console
 	}
 
 	public void clear() {
+		// log the output for possible diffing/comparing later
+		String oldText = this.textPane.getText();
+		this.allOutput.append(oldText);
+		if (!oldText.endsWith("\n")) {
+			this.allOutput.append('\n');
+		}
+		this.allOutput.append(CONSOLE_CLEARED_MESSAGE);
+		
 		this.textPane.setText("");
 		this.base = 0;
 		this.buffer.clear();
 	}
 
 	public String getText() {
-		return this.textPane.getText();
+		return allOutput.toString() + this.textPane.getText();
 	}
 
 	public String getText(int paramInt1, int paramInt2) {

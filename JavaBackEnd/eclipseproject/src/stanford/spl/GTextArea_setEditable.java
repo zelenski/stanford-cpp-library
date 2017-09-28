@@ -13,7 +13,7 @@ public class GTextArea_setEditable extends JBESwingCommand {
 		if (area != null) { 
 			area.setEditable(flag);
 		} else {
-			System.out.println("error:GTextArea_setEditable: null text area");
+			jbe.println("error:GTextArea_setEditable: null text area");
 		}
 	}
 }

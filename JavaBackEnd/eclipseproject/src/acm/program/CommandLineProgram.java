@@ -1,4 +1,6 @@
 /*
+ * @version 2017/07/21
+ * - added add() overloads
  * @version 2017/04/27
  * - added support for HeadlessGraphicsProgram
  */
@@ -658,56 +660,52 @@ public class CommandLineProgram
 		return getConsole().getWriter();
 	}
 
-	/* Method: getRegionPanel(region) */
 	/**
-	 * Gets the <code>JPanel</code> for the specified region.
-	 *
-	 * @usage JPanel panel = getRegionPanel(region);
-	 * @param region The region of the window (<code>NORTH</code>, <code>SOUTH</code>,
-	 *               <code>EAST</code>, <code>WEST</code>, or <code>CENTER</code>)
-	 * @return The <code>JPanel</code> for that subregion
-	 * @noshow
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
 	 */
 	public JPanel getRegionPanel(String region) {
 		throw new ErrorException("No graphics environment");
 	}
 
-	/* Method: add(comp, region, constraints) */
 	/**
-	 * Adds the component to the specified border region with the indicated
-	 * constraints object.
-	 *
-	 * @usage add(comp, region, constraints);
-	 * @param comp The component to be added
-	 * @param region The region of the window (<code>NORTH</code>, <code>SOUTH</code>,
-	 *               <code>EAST</code>, <code>WEST</code>, or <code>CENTER</code>)
-	 * @param constraints The constraints object
-	 * @noshow
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
+	 */
+	public Component add(Component comp) {
+		throw new ErrorException("No graphics environment");
+	}
+
+	/**
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
+	 */
+	public void add(Component comp, Object constraints) {
+		throw new ErrorException("No graphics environment");
+	}
+	
+	/**
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
 	 */
 	public void add(Component comp, String region, Object constraints) {
 		throw new ErrorException("No graphics environment");
 	}
 
-	/* Method: addActionListeners() */
 	/**
-	 * Adds the program as an <code>ActionListener</code> to every button in
-	 * the structure that does not have a listener already.
-	 *
-	 * @usage addActionListeners();
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
 	 */
 	public void addActionListeners() {
 		throw new ErrorException("No graphics environment");
 	}
 
-	/* Method: addActionListeners(listener) */
 	/**
-	 * Adds the specified listener to every button in
-	 * the structure that does not have a listener already.
-	 *
-	 * @usage addActionListeners(listener);
-	 * @param listener The <code>ActionListener</code> to be added
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
 	 */
 	public void addActionListeners(ActionListener listener) {
+		throw new ErrorException("No graphics environment");
+	}
+
+	/**
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
+	 */
+	public void addMouseListeners() {
 		throw new ErrorException("No graphics environment");
 	}
 
@@ -734,6 +732,20 @@ public class CommandLineProgram
 		return myTitle;
 	}
 
+	/**
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
+	 */
+	public void setFont(Font font) {
+		throw new ErrorException("No graphics environment");
+	}
+	
+	/**
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
+	 */
+	public void setForeground(Color color) {
+		throw new ErrorException("No graphics environment");
+	}
+	
 	public void setParameterTable(Map<String, String> table) {
 		// empty
 	}
@@ -898,13 +910,8 @@ public class CommandLineProgram
 		return IOConsole.SYSTEM_CONSOLE;
 	}
 
-	/* Factory method: createDialogIO() */
 	/**
-	 * Creates the dialog used for interaction (primarily by the <code>DialogProgram</code>
-	 * class).  Subclasses can override this method to create their own dialog types.
-	 *
-	 * @usage IODialog dialog = program.createDialogIO();
-	 * @return The dialog to be used by the program
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
 	 */
 	protected IODialog createDialogIO() {
 		throw new ErrorException("No graphics environment");
@@ -967,102 +974,64 @@ public class CommandLineProgram
 		return value;
 	}
 
-	/* Overridden method: setLayout(layout) */
 	/**
-	 * Sets the layout manager for the central region of the content pane.
-	 *
-	 * @usage setLayout(layout);
-	 * @param layout The layout manager to use
-	 * @noshow
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
 	 */
 	public void setLayout(LayoutManager layout) {
 		throw new ErrorException("No graphics environment");
 	}
 
-	/* Overridden method: getLayout() */
 	/**
-	 * Gets the layout manager for the central region of the content pane.
-	 *
-	 * @usage LayoutManager layout = setLayout();
-	 * @return The active layout manager
-	 * @noshow
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
 	 */
 	public LayoutManager getLayout() {
 		throw new ErrorException("No graphics environment");
 	}
 
-	/* Overridden method: setBackground(color) */
 	/**
-	 * Sets the background for the central region of the content pane.
-	 *
-	 * @usage setBackground(color);
-	 * @param color The new background color
-	 * @noshow
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
 	 */
 	public void setBackground(Color color) {
 		throw new ErrorException("No graphics environment");
 	}
 
-	/* Overridden method: addImpl(comp, constraints, index) */
 	/**
-	 * Adds the specified component to the content pane using the specified constraints and index.
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
 	 */
 	protected void addImpl(Component comp, Object constraints, int index) {
 		throw new ErrorException("No graphics environment");
 	}
 
-	/* Overridden method: remove(index) */
 	/**
-	 * Removes the component at the specified index from the central region.
-	 *
-	 * @usage remove(index);
-	 * @param index The index position of the component to remove
-	 * @noshow
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
 	 */
 	public void remove(int index) {
 		throw new ErrorException("No graphics environment");
 	}
 
-	/* Overridden method: remove(comp) */
 	/**
-	 * Removes the specified component from the central region.
-	 *
-	 * @usage remove(comp);
-	 * @param comp The component to remove
-	 * @noshow
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
 	 */
 	public void remove(Component comp) {
 		throw new ErrorException("No graphics environment");
 	}
 
-	/* Overridden method: removeAll() */
 	/**
-	 * Removes all components from the central region.
-	 *
-	 * @usage removeAll();
-	 * @noshow
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
 	 */
 	public void removeAll() {
 		throw new ErrorException("No graphics environment");
 	}
 
-	/* Overridden method: validate() */
 	/**
-	 * Forwards validate to the content pane.
-	 *
-	 * @usage validate();
-	 * @noshow
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
 	 */
 	public void validate() {
 		throw new ErrorException("No graphics environment");
 	}
 
-	/* Overridden method: repaint() */
 	/**
-	 * Forwards repaint to the content pane.
-	 *
-	 * @usage repaint();
-	 * @noshow
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
 	 */
 	public void repaint() {
 		throw new ErrorException("No graphics environment");
@@ -1140,36 +1109,22 @@ public class CommandLineProgram
 	/* Menu handling methods                                              */
 	/**********************************************************************/
 
-	/* Method: menuAction(cmd) */
 	/**
-	 * Called whenever an action event is detected in the menu bar.  Most of
-	 * these actions are simply passed on to the appropriate console.
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
 	 */
 	public void menuAction(String cmd) {
 		throw new ErrorException("No graphics environment");
 	}
 
-	/* Protected method: setMacMenuBarFlag(flag) */
 	/**
-	 * Sets a flag indicating whether applications running on the Macintosh
-	 * should use standard Mac menus.  The default is <code>true</code>.
-	 * Setting this value to <code>false</code> means that Mac programs
-	 * use the same in-window <code>JMenuBar</code> approach used on other
-	 * platforms.
-	 *
-	 * @usage setMacMenuBarFlag(flag);
-	 * @param flag <code>true</code> to use Mac menu style; <code>false</code> otherwise
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
 	 */
 	protected void setMacMenuBarFlag(boolean flag) {
 		throw new ErrorException("No graphics environment");
 	}
 
-	/* Protected method: getMacMenuBarFlag() */
 	/**
-	 * Retrieves the setting of the Mac menu bar flag.
-	 *
-	 * @usage boolean flag = getMacMenuBarFlag();
-	 * @return <code>true</code> if Mac menu style is supported; <code>false</code> otherwise
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
 	 */
 	protected boolean getMacMenuBarFlag() {
 		throw new ErrorException("No graphics environment");
@@ -1179,17 +1134,8 @@ public class CommandLineProgram
 	/* Protected methods                                                  */
 	/**********************************************************************/
 
-	/* Protected method: getBorder(side) */
 	/**
-	 * Returns the component installed as a border on the specified side, which must
-	 * be one of the constants from <code>BorderLayout</code> (<code>NORTH</code>,
-	 * <code>SOUTH</code>, <code>EAST</code>, <code>WEST</code>).
-	 *
-	 * @usage getBorder(side, comp);
-	 * @param side The side (<code>NORTH</code>, <code>SOUTH</code>, <code>EAST</code>,
-	 *             or <code>WEST</code>)
-	 * @return The component used as a border on the specified side
-	 * @noshow
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
 	 */
 	protected Component getBorder(String side) {
 		throw new ErrorException("No graphics environment");
@@ -1214,12 +1160,8 @@ public class CommandLineProgram
 		return args;
 	}
 
-	/* Protected method: isStarted() */
 	/**
-	 * Checks to see whether this program has started, usually by checking to see
-	 * whether some pane exists.  Subclasses can override this method to ensure
-	 * that their structures are visible before proceeding.
-	 * @noshow
+	 * Throws an ErrorException because a CommandLineProgram has no graphical environment.
 	 */
 	protected boolean isStarted() {
 		throw new ErrorException("No graphics environment");

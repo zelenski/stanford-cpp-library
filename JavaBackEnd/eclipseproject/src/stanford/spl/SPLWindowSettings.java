@@ -1,3 +1,8 @@
+/*
+ * @version 2017/08/04
+ * - changed unknown window title from "???" to "unknown-window" to avoid invalid filename issues
+ */
+
 package stanford.spl;
 
 import java.awt.*;
@@ -61,7 +66,7 @@ public class SPLWindowSettings {
 		} else if (window instanceof Dialog) {
 			return ((Dialog) window).getTitle();
 		} else {
-			return "???";
+			return "unknown-window";
 		}
 	}
 	

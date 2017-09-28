@@ -1,4 +1,6 @@
 /*
+ * @version 2017/07/21
+ * - added add() overloads
  * @version 2017/06/10
  * - added setOpaque/isOpaque
  * - set default background color to WHITE
@@ -15,7 +17,7 @@ import java.awt.event.*;
 import java.awt.image.*;
 import java.util.*;
 import acm.graphics.*;
-import acm.util.MediaTools;
+import acm.util.*;
 
 public class HeadlessGraphicsProgram implements GraphicsProgramInterface {
 	// copied from Program.java
@@ -176,6 +178,19 @@ public class HeadlessGraphicsProgram implements GraphicsProgramInterface {
 	
 	// GraphicsProgramInterface methods
 
+	public Component add(Component comp) {
+		// empty
+		return comp;
+	}
+
+	public void add(Component comp, Object constraints) {
+		// empty
+	}
+	
+	public void add(Component comp, String region, Object constraints) {
+		// empty
+	}
+
 	public void add(GObject gobj) {
 		gc.add(gobj);
 	}
@@ -196,6 +211,10 @@ public class HeadlessGraphicsProgram implements GraphicsProgramInterface {
 		// empty
 	}
 
+	public void addActionListeners() {
+		// empty
+	}
+	
 	public void clear() {
 		gc.clear();
 	}
@@ -388,6 +407,10 @@ public class HeadlessGraphicsProgram implements GraphicsProgramInterface {
 			return null;
 		}
 	}
+
+	public boolean hasElementAt(GPoint point) {
+		return gc.hasElementAt(point);
+	}
 	
 	public boolean isOpaque() {
 		return gc.isOpaque();
@@ -419,6 +442,10 @@ public class HeadlessGraphicsProgram implements GraphicsProgramInterface {
 	
 	public void setFont(Font font) {
 		gc.setFont(font);
+	}
+
+	public void setForeground(Color color) {
+		// empty
 	}
 
 	public void setOpaque(boolean opaque) {

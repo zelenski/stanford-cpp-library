@@ -24,7 +24,7 @@ public class GBufferedImage_save extends JBESwingCommand {
 				img.save(filename);
 				SplPipeDecoder.writeResult("ok");
 			} catch (Exception ex) {
-				SplPipeDecoder.writeResult("error:" + ex.getClass().getSimpleName() + ": " + ex.getMessage().replace('\n', ' '));
+				SplPipeDecoder.writeError(ex);
 			}
 		}
 	}

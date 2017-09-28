@@ -6,7 +6,8 @@ import acm.util.*;
 /**
  * 
  * @author Marty Stepp
- * @version 2015/10/08
+ * @version 2017/09/27
+ * - bug fix for loading from bogus files (e.g. *.o); was causing NullPointerException
  */
 public class GBufferedImage_load extends JBESwingCommand {
 	// gbufferedimage.load("foobar.png");
@@ -25,7 +26,7 @@ public class GBufferedImage_load extends JBESwingCommand {
 				String b64 = img.toStringBase64();
 				SplPipeDecoder.writeResult(b64);   // this is a LONG string
 			} catch (Exception ex) {
-				SplPipeDecoder.writeResult("error:" + ex.getClass().getSimpleName() + ": " + ex.getMessage().replace('\n', ' '));
+				SplPipeDecoder.writeError(ex);
 			}
 		}
 	}

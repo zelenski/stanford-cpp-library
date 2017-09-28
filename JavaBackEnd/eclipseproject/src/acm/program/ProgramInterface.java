@@ -1,4 +1,6 @@
 /*
+ * @version 2017/07/21
+ * - added add() overloads
  * @version 2017/04/27
  * - added directional constants e.g. CENTER
  * - added pause()
@@ -7,7 +9,7 @@
 
 package acm.program;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.*;
 
 /**
@@ -29,6 +31,10 @@ public interface ProgramInterface {
 	/** Constant specifying the west edge of the container */
 	public static final String WEST = BorderLayout.WEST;
 
+	public Component add(Component comp);
+	public void add(Component comp, Object constraints);
+	public void add(Component comp, String region, Object constraints);
+	public void addActionListeners();
 	public void exit();
 	public String getTitle();
 	public void init();
@@ -40,6 +46,9 @@ public interface ProgramInterface {
 	public void println(Object value);
 	public void println(String value);
 	public void run();
+	public void setBackground(Color color);
+	public void setFont(Font font);
+	public void setForeground(Color color);
 	public void setParameterTable(Map<String, String> table);
 	public void setStartupObject(Object obj);
 	public void setTitle(String title);

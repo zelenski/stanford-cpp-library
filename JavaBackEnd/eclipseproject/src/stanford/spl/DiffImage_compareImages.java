@@ -26,9 +26,9 @@ public class DiffImage_compareImages extends JBESwingCommand {
 			DiffImage diff = new DiffImage(filename1, filename2, /* display */ false);
 			diff.save(outfile);
 		} catch (IOException ioe) {
-			SplPipeDecoder.writeResult("error:" + ioe.getMessage());
-		} catch (IORuntimeException ioe) {
-			SplPipeDecoder.writeResult("error:" + ioe.getMessage());
+			SplPipeDecoder.writeError(ioe);
+		} catch (IORuntimeException iore) {
+			SplPipeDecoder.writeError(iore);
 		}
 	}
 }

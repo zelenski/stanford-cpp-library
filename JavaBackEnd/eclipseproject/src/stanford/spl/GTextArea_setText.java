@@ -13,7 +13,7 @@ public class GTextArea_setText extends JBESwingCommand {
 		if (area != null) { 
 			area.setText(text);
 		} else {
-			System.out.println("error:GTextArea_setText: null text area");
+			jbe.println("error:GTextArea_setText: null text area");
 		}
 	}
 }
