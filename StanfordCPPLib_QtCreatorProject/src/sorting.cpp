@@ -8,7 +8,6 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include "console.h"
 #include "filelib.h"
 #include "random.h"
 #include "searchingsorting.h"

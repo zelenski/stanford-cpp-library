@@ -5,6 +5,8 @@
  * the platform-specific parts of the StanfordCPPLib package.  This file is
  * logically part of the implementation and is not interesting to clients.
  *
+ * @version 2017/09/24
+ * - graphical console shows "(terminated)" when complete
  * @version 2016/11/25
  * - added clipboard_get/set
  * - added gtable_setCell/Column/RowFont
@@ -331,6 +333,7 @@ public:
     void httpserver_stop();
 
     void jbeconsole_clear();
+    std::string jbeconsole_getTitle();
     bool jbeconsole_isBlocked();
     void jbeconsole_minimize();
     void jbeconsole_setCloseOperation(int value);
@@ -378,11 +381,13 @@ void putConsole(const std::string& str, bool isStderr = false);
 void endLineConsole(bool isStderr = false);
 void echoConsole(const std::string& str, bool isStderr = false);
 void setConsoleProperties();
+void shutdownStanfordCppLibrary();
 void parseArgs(int argc, char** argv);
 
 } // namespace stanfordcpplib
 
 // for internal use
 void __initializeStanfordCppLibrary(int argc, char** argv);
+void __shutdownStanfordCppLibrary();
 
 #endif

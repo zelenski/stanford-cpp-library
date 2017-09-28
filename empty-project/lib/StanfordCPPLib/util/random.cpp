@@ -3,6 +3,9 @@
  * ----------------
  * This file implements the random.h interface.
  * 
+ * @version 2017/09/28
+ * - moved random 'feed' functions into autograder namespace
+ * - ensure that randomly fed integers are within the specified range
  * @version 2016/10/04
  * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * @version 2016/08/02
@@ -29,6 +32,7 @@ STATIC_VARIABLE_DECLARE_COLLECTION_EMPTY(std::queue<bool>, fixedBools)
 STATIC_VARIABLE_DECLARE_COLLECTION_EMPTY(std::queue<int>, fixedInts)
 STATIC_VARIABLE_DECLARE_COLLECTION_EMPTY(std::queue<double>, fixedReals)
 
+namespace autograder {
 void randomFeedBool(bool value) {
     STATIC_VARIABLE(fixedBools).push(value);
 }
@@ -39,6 +43,7 @@ void randomFeedInteger(int value) {
 
 void randomFeedReal(double value) {
     STATIC_VARIABLE(fixedReals).push(value);
+}
 }
 /* end 'fixed' internal stuff */
 
@@ -104,6 +109,12 @@ int randomInteger(int low, int high) {
     if (!STATIC_VARIABLE(fixedInts).empty()) {
         int top = STATIC_VARIABLE(fixedInts).front();
         STATIC_VARIABLE(fixedInts).pop();
+        if (top < low || top > high) {
+            // make sure the value is in the given range
+            // (assumes that low/high don't overflow int range)
+            int range = high - low + 1;
+            top = low + std::abs(top) % range;
+        }
         return top;
     }
     initRandomSeed();

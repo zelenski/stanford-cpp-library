@@ -2,7 +2,7 @@
  * Test file for verifying the Stanford C++ lib functionality.
  */
 
-#include "console.h"
+//#include "console.h"
 #include "error.h"
 #include "exceptions.h"
 #include "map.h"
@@ -71,7 +71,7 @@ void testNotes() {
 }
 
 int main() {
-    testNotes();
+//    testNotes();
 
 //    while (true) {
 //        cout << "   DATA STRUCTURES::" << endl;

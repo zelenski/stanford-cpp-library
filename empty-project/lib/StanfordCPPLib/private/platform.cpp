@@ -4,6 +4,11 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2017/09/28
+ * - fix parsing of errors in getResult
+ * @version 2017/09/26
+ * - graphical console shows "(terminated)" when complete
+ * - minor urlEncode bug fix with GOptionPane
  * @version 2016/11/25
  * - added clipboard_get/set
  * - added gtable_setCell/Column/RowFont
@@ -2190,7 +2195,7 @@ int Platform::goptionpane_showOptionDialog(const std::string& message,
     os << ",";
     os << "{";
     if (!options.empty()) {
-        writeQuotedString(os, options[0]);
+        writeQuotedString(os, urlEncode(options[0]));
         for (int i = 1, sz = options.size(); i < sz; ++i) {
             os << ", ";
             writeQuotedString(os, urlEncode(options[i]));
@@ -2262,6 +2267,13 @@ std::string Platform::cpplib_getJavaBackEndVersion() {
 
 void Platform::jbeconsole_clear() {
     putPipe("JBEConsole.clear()");
+}
+
+std::string Platform::jbeconsole_getTitle() {
+    std::ostringstream os;
+    os << "JBEConsole.getTitle()";
+    putPipe(os.str());
+    return getResult();
 }
 
 void Platform::jbeconsole_minimize() {
@@ -2858,7 +2870,8 @@ static std::string getResult(bool consumeAcks, bool stopOnEvent,
         bool isAck           = startsWith(line, "result:___jbe___ack___");
         bool hasACMException = line.find("acm.util.ErrorException") != std::string::npos;
         bool hasException    = line.find("xception") != std::string::npos;
-        bool hasError        = line.find("Unexpected error") != std::string::npos;
+        bool hasError        = line.find("Unexpected error") != std::string::npos
+                || startsWith(line, "result:error:");
 
         if (isResultLong) {
             // read a 'long' result (sent across multiple lines)
@@ -2886,9 +2899,12 @@ static std::string getResult(bool consumeAcks, bool stopOnEvent,
             // an error message from the back-end; throw it here
             std::ostringstream out;
             if (isResult) {
-                line = line.substr(7);
+                line = line.substr(7);   // remove "result:"
             } else if (isEvent) {
-                line = line.substr(6);
+                line = line.substr(6);   // remove "event:"
+            }
+            if (startsWith(line, "error:")) {
+                line = line.substr(6);   // remove "error:"
             }
             out << "ERROR emitted from Stanford Java back-end process:"
                 << std::endl << line;
@@ -3413,6 +3429,20 @@ void initializeStanfordCppLibrary() {
     getPlatform()->cpplib_setCppLibraryVersion();
 }
 
+void shutdownStanfordCppLibrary() {
+    const std::string PROGRAM_COMPLETED_TITLE_SUFFIX = " [completed]";
+
+    if (getConsoleEnabled()) {
+        std::string title = getConsoleWindowTitle();
+        if (title == "") {
+            title = "Console";
+        }
+        if (title.find("terminated") == std::string::npos) {
+            setConsoleWindowTitle(title + PROGRAM_COMPLETED_TITLE_SUFFIX);
+        }
+    }
+}
+
 /*
  * Sets up console settings like window size, location, exit-on-close, etc.
  * based on compiler options set in the .pro file.
@@ -3459,6 +3489,10 @@ void __initializeStanfordCppLibrary(int argc, char** argv) {
         exceptions::setProgramNameForStackTrace(argv[0]);
     }
     stanfordcpplib::initializeStanfordCppLibrary();
+}
+
+void __shutdownStanfordCppLibrary() {
+    stanfordcpplib::shutdownStanfordCppLibrary();
 }
 
 // see init.h

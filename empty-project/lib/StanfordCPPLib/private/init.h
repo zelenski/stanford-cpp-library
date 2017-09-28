@@ -91,10 +91,12 @@ static __StanfordCppLibraryInitializer __stanfordcpplib_init;
 
 #undef main
 #define main main(int argc, char** argv) { \
+        extern void __shutdownStanfordCppLibrary(); \
         extern void __initializeStanfordCppLibrary(int argc, char** argv); \
         __initializeStanfordCppLibrary(argc, argv); \
         extern int Main(); \
         Main(); \
+        __shutdownStanfordCppLibrary(); \
         return 0; \
     } \
     int Main

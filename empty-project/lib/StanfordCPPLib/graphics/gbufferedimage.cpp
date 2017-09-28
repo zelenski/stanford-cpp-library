@@ -5,6 +5,8 @@
  * See that file for documentation of each member.
  *
  * @author Marty Stepp
+ * @version 2017/09/28
+ * - added getFilename
  * @version 2016/10/28
  * - added equals, countDiffPixels(...) range
  * @version 2016/10/16
@@ -84,7 +86,8 @@ GBufferedImage::GBufferedImage()
         : GInteractor(),
           m_width(1),
           m_height(1),
-          m_backgroundColor(0) {
+          m_backgroundColor(0),
+          m_filename("") {
     init(/* x */ 0, /* y */ 0, /* width */ 1, /* height */ 1, 0x000000);
 }
 
@@ -92,7 +95,8 @@ GBufferedImage::GBufferedImage(const std::string& filename)
     : GInteractor(),
       m_width(1),
       m_height(1),
-      m_backgroundColor(0) {
+      m_backgroundColor(0),
+      m_filename(filename) {
     init(/* x */ 0, /* y */ 0, /* width */ 1, /* height */ 1, 0x000000);
     load(filename);
 }
@@ -102,7 +106,8 @@ GBufferedImage::GBufferedImage(double width, double height,
     : GInteractor(),
       m_width(1),
       m_height(1),
-      m_backgroundColor(rgbBackground) {
+      m_backgroundColor(rgbBackground),
+      m_filename("") {
     init(0, 0, width, height, rgbBackground);
 }
 
@@ -111,7 +116,8 @@ GBufferedImage::GBufferedImage(double x, double y, double width, double height,
     : GInteractor(),
       m_width(width),
       m_height(height),
-      m_backgroundColor(rgbBackground) {
+      m_backgroundColor(rgbBackground),
+      m_filename("") {
     init(x, y, width, height, rgbBackground);
 }
 
@@ -120,12 +126,17 @@ GBufferedImage::GBufferedImage(double x, double y, double width, double height,
     : GInteractor(),
       m_width(width),
       m_height(height),
-      m_backgroundColor(0) {
+      m_backgroundColor(0),
+      m_filename("") {
     init(x, y, width, height, convertColorToRGB(rgbBackground));
 }
 
 GRectangle GBufferedImage::getBounds() const {
     return GRectangle(x, y, m_width, m_height);
+}
+
+std::string GBufferedImage::getFilename() const {
+    return m_filename;
 }
 
 std::string GBufferedImage::getType() const {
@@ -140,7 +151,7 @@ void GBufferedImage::clear() {
     fill(m_backgroundColor);
 }
 
-int GBufferedImage::countDiffPixels(GBufferedImage& image) const {
+int GBufferedImage::countDiffPixels(const GBufferedImage& image) const {
     int w1 = (int) getWidth();
     int h1 = (int) getHeight();
     int w2 = (int) image.getWidth();
@@ -165,7 +176,7 @@ int GBufferedImage::countDiffPixels(GBufferedImage& image) const {
     return diffPxCount;
 }
 
-int GBufferedImage::countDiffPixels(GBufferedImage& image, int xmin, int ymin, int xmax, int ymax) const {
+int GBufferedImage::countDiffPixels(const GBufferedImage& image, int xmin, int ymin, int xmax, int ymax) const {
     int w1 = (int) getWidth();
     int h1 = (int) getHeight();
     int w2 = (int) image.getWidth();
@@ -185,7 +196,7 @@ int GBufferedImage::countDiffPixels(GBufferedImage& image, int xmin, int ymin, i
     return diffPxCount;
 }
 
-GBufferedImage* GBufferedImage::diff(GBufferedImage& image, int diffPixelColor) const {
+GBufferedImage* GBufferedImage::diff(const GBufferedImage& image, int diffPixelColor) const {
     int w1 = (int) getWidth();
     int h1 = (int) getHeight();
     int w2 = (int) image.getWidth();
@@ -327,6 +338,7 @@ void GBufferedImage::load(const std::string& filename) {
     GBufferedImage::pixelStringToGrid(decoded, m_pixels);
     m_width = m_pixels.width();
     m_height = m_pixels.height();
+    m_filename = filename;
 }
 
 Grid<int> GBufferedImage::pixelStringToGrid(const std::string& decoded) {
@@ -388,8 +400,9 @@ void GBufferedImage::resize(double width, double height, bool retain) {
     }
 }
 
-void GBufferedImage::save(const std::string& filename) const {
+void GBufferedImage::save(const std::string& filename) {
     stanfordcpplib::getPlatform()->gbufferedimage_save(this, filename);
+    m_filename = filename;
 }
 
 void GBufferedImage::setRGB(double x, double y, int rgb) {
