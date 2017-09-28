@@ -78,6 +78,12 @@ ConsoleCloseOperation getConsoleCloseOperation();
 bool getConsoleEcho();
 
 /*
+ * Returns whether the graphical console window is enabled.
+ * This is true if you have included "console.h" in your program.
+ */
+bool getConsoleEnabled();
+
+/*
  * Returns whether an event should be generated if the console
  * window is closed.  By default this is false initially.
  */
@@ -110,6 +116,14 @@ bool getConsolePrintExceptions();
  * are currently ignored.  See setConsoleSettingsLocked.
  */
 bool getConsoleSettingsLocked();
+
+/*
+ * Function: getConsoleWindowTitle
+ * Usage: string title = getConsoleWindowTitle();
+ * ----------------------------------------------
+ * Returns the title bar text of the console window.
+ */
+std::string getConsoleWindowTitle();
 
 /*
  * Function: setConsoleClearEnabled
@@ -254,6 +268,7 @@ extern void pause(double milliseconds);
 
 namespace stanfordcpplib {
 extern void initializeGraphicalConsole();
+void setConsoleEnabled(bool enabled);
 
 #ifndef __ConsoleInitializer_created
 #define __ConsoleInitializer_created
@@ -266,6 +281,7 @@ public:
      */
     __ConsoleInitializer() {
         initializeGraphicalConsole();
+        setConsoleEnabled(true);
     }
 };
 static __ConsoleInitializer __console_init;

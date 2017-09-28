@@ -41,6 +41,7 @@
 // static 'variables' (as functions to avoid initialization ordering bugs)
 STATIC_VARIABLE_DECLARE(bool, consoleClearEnabled, true)
 STATIC_VARIABLE_DECLARE(bool, consoleEcho, false)
+STATIC_VARIABLE_DECLARE(bool, consoleEnabled, false)
 STATIC_VARIABLE_DECLARE(bool, consoleEventOnClose, false)
 STATIC_VARIABLE_DECLARE(bool, consoleExitProgramOnClose, false)
 STATIC_VARIABLE_DECLARE(bool, consoleLocationSaved, false)
@@ -74,6 +75,14 @@ bool getConsoleEcho() {
     return STATIC_VARIABLE(consoleEcho);
 }
 
+bool getConsoleEnabled() {
+#ifdef __DONT_ENABLE_GRAPHICAL_CONSOLE
+    return false;
+#else
+    return STATIC_VARIABLE(consoleEnabled);
+#endif
+}
+
 bool getConsoleEventOnClose() {
     return STATIC_VARIABLE(consoleEventOnClose);
 }
@@ -92,6 +101,10 @@ bool getConsolePrintExceptions() {
 
 bool getConsoleSettingsLocked() {
     return STATIC_VARIABLE(consoleLocked);
+}
+
+std::string getConsoleWindowTitle() {
+    return stanfordcpplib::getPlatform()->jbeconsole_getTitle();
 }
 
 void setConsoleClearEnabled(bool value) {
@@ -164,4 +177,11 @@ void setConsoleSize(double width, double height) {
 void setConsoleWindowTitle(const std::string& title) {
     if (STATIC_VARIABLE(consoleLocked)) { return; }
     stanfordcpplib::getPlatform()->jbeconsole_setTitle(title);
+}
+
+namespace stanfordcpplib {
+void setConsoleEnabled(bool enabled) {
+    if (STATIC_VARIABLE(consoleLocked)) { return; }
+    STATIC_VARIABLE(consoleEnabled) = enabled;
+}
 }
