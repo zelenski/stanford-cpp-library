@@ -4,7 +4,10 @@
 
 //#include "console.h"
 #include "error.h"
+#include "collections.h"
 #include "exceptions.h"
+#include "gwindow.h"
+#include "gevents.h"
 #include "map.h"
 #include "note.h"
 #include "vector.h"
@@ -72,6 +75,14 @@ void testNotes() {
 
 int main() {
 //    testNotes();
+
+//    cout << stanfordcpplib::collections::compareTo(42, 17) << endl;
+//    cout << stanfordcpplib::collections::compareTo2(42, 42, 17, 35) << endl;
+//    cout << stanfordcpplib::collections::compareTo3(42, 42, "a", "a", 'b', 'a') << endl;
+//    cout << stanfordcpplib::collections::compareTo4(42, 42, "a", "a", 'b', 'b', 1.0, 0.5) << endl;
+//    cout << stanfordcpplib::collections::compareTo5(42, 42, "a", "a", 'b', 'b', 1.0, 1.0, 17, 29) << endl;
+//    cout << stanfordcpplib::collections::compareTo5(42, 42, "a", "a", 'b', 'b', 1.0, 1.0, 37, 29) << endl;
+//    cout << stanfordcpplib::collections::compareTo5(42, 42, "a", "a", 'b', 'b', 1.0, 1.0, 29, 29) << endl;
 
 //    while (true) {
 //        cout << "   DATA STRUCTURES::" << endl;
@@ -162,6 +173,24 @@ int main() {
 //        }
 //    }
     
-    std::cout << "Complete." << std::endl;
+    // std::cout << "Complete." << std::endl;
+    cout << "You're about to be prompted to enter some text." << endl;
+    cout << "When you do, close the window." << endl;
+    cout << "Then, look down at stdout." << endl;
+    cout << "You should notice that some input was entered even though" << endl;
+    cout << "nothing was echoed to the graphical console." << endl;
+    cout << "This desyncs the graphics console from stdin/stdout," << endl;
+    cout << "though I don't know why." << endl;
+
+    GWindow sacrificialWindow(400, 300);
+
+    for (int i = 0; ; i++) {
+        string line = getLine("Enter line " + to_string(i) + ": ");
+        cout << "You entered: " << line << endl;
+        cout << "Now waiting for a click event:" << endl;
+        GMouseEvent event = waitForClick();
+        cout << "event = " << event << endl;
+    }
+
     return 0;
 }
