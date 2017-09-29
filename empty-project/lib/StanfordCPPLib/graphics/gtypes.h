@@ -68,9 +68,9 @@ private:
     double y;                       /* The y-coordinate of the point */
 
     /* Friend declarations */
-    friend bool operator==(const GPoint & p1, const GPoint & p2);
-    friend bool operator!=(const GPoint & p1, const GPoint & p2);
-    friend int hashCode(const GPoint & pt);
+    friend bool operator==(const GPoint& p1, const GPoint& p2);
+    friend bool operator!=(const GPoint& p1, const GPoint& p2);
+    friend int hashCode(const GPoint& pt);
 };
 
 /*

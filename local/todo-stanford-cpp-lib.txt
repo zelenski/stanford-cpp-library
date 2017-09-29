@@ -21,11 +21,13 @@
 
 	autograders: why no stack traces?
 	
-	console [closed] when program terminated
 	
+x	console [closed] when program terminated
+x	graphical console: option to "feed" user input as a script
+x	compareTo helper?  compare(1, 2, 3, ...)
+x	hashCode helper?   hashCode(1, 2, 3, ...)
+
 	add methods to match STL: find, empty, ...?
-	compareTo helper?  compare(1, 2, 3, ...)
-	hashCode helper?   hashCode(1, 2, 3, ...)
 	cool macro for static init code/class?
 	strip out clone() from stack traces in autograder?
 		*** (unknown) clone()
@@ -33,16 +35,15 @@
 	make compiler/command-line flags for:
 		force plain text console
 		echo cin
-	graphical console: option to "feed" user input as a script
 	idea: do EVERY pipe I/O operation on swing event thread?
-	bug: no output appears until user input?  flush issue?
+-	bug: no output appears until user input?  flush issue?
 	bug: seems that if you create window but it isn't visible, set[Canvas]Size doesn't work
 	
 	
 	
 	
 	
-	Keith bug: GWindow desync
+x	Keith bug: GWindow desync
 		#include <iostream>
 		#include "console.h"
 		#include "gwindow.h"
@@ -88,7 +89,7 @@
 		alphabetize methods
 			gobject, ginteractor, gwindow
 		
-		purge "using namespace std;"
+x		purge "using namespace std;"
 		
 		automated test suite
 			convert my tests to assertion style

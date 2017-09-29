@@ -4,6 +4,8 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2017/09/29
+ * - fix GWindow desync bug with console getLine (K.Schwarz bug report)
  * @version 2017/09/28
  * - fix parsing of errors in getResult
  * @version 2017/09/26
@@ -2849,7 +2851,7 @@ static std::string getPipe() {
         charsRead++;
     }
 #ifdef PIPE_DEBUG
-    fprintf(stderr, "getPipe(): \"%s\"\n", line.c_str());  fflush(stderr);
+    fprintf(stderr, "getPipe(): returning \"%s\"\n", line.c_str());  fflush(stderr);
 #endif
     return line;
 }
@@ -2860,6 +2862,10 @@ static std::string getResult(bool consumeAcks, bool stopOnEvent,
                              const std::string& caller) {
     while (true) {
 #ifdef PIPE_DEBUG
+        fprintf(stderr, "getResult(consumeAcks=%s, stopOnEvent=%s, caller=%s)\n",
+                consumeAcks ? "true" : "false",
+                stopOnEvent ? "true" : "false",
+                caller.c_str());
         fprintf(stderr, "getResult(): calling getPipe() ...\n");  fflush(stderr);
 #endif
         std::string line = getPipe();
@@ -3329,7 +3335,7 @@ static GRectangle scanRectangle(const std::string& str) {
 namespace stanfordcpplib {
 std::string getLineConsole() {
     putPipe("JBEConsole.getLine()");
-    std::string result = getResult(/* consumeAcks */ true, /* caller */ "getLineConsole");
+    std::string result = getResult(/* consumeAcks */ true, /* stopOnEvent */ false, /* caller */ "getLineConsole");
     echoConsole(result + "\n");   // wrong for multiple inputs on one line
     return result;
 }
