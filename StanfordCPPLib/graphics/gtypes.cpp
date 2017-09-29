@@ -3,6 +3,8 @@
  * ----------------
  * This file implements the classes in the gtypes.h interface.
  * 
+ * @version 2017/09/29
+ * - updated to use composite hashCode function
  * @version 2016/10/14
  * - modified floating-point equality tests to use floatingPointEqual function
  * @version 2015/07/05
@@ -63,11 +65,7 @@ bool operator !=(const GPoint& p1, const GPoint& p2) {
 }
 
 int hashCode(const GPoint& pt) {
-    int hash = 0;
-    for (size_t i = 0; i < sizeof(double) / sizeof(int); i++) {
-        hash ^= ((int *) &pt.x)[i] ^ ((int *) &pt.y)[i];
-    }
-    return hashMask() & hash;
+    return hashCode2(pt.x, pt.y);
 }
 
 /*
@@ -114,11 +112,7 @@ bool operator !=(const GDimension& d1, const GDimension& d2) {
 }
 
 int hashCode(const GDimension& dim) {
-    int hash = 0;
-    for (size_t i = 0; i < sizeof(double) / sizeof(int); i++) {
-        hash ^= ((int *) &dim.width)[i] ^ ((int *) &dim.height)[i];
-    }
-    return hashMask() & hash;
+    return hashCode2(dim.width, dim.height);
 }
 
 /*
@@ -195,10 +189,5 @@ bool operator !=(const GRectangle& r1, const GRectangle& r2) {
 }
 
 int hashCode(const GRectangle& r) {
-    int hash = 0;
-    for (size_t i = 0; i < sizeof(double) / sizeof(int); i++) {
-        hash ^= ((int *) &r.x)[i] ^ ((int *) &r.y)[i];
-        hash ^= ((int *) &r.width)[i] ^ ((int *) &r.height)[i];
-    }
-    return hashMask() & hash;
+    return hashCode4(r.x, r.y, r.width, r.height);
 }

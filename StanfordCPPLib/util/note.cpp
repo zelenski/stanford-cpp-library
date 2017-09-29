@@ -4,6 +4,8 @@
  * This file implements the body of each member of the Note class.
  *
  * @author Marty Stepp
+ * @version 2017/09/29
+ * - updated to use composite hashCode function
  * @version 2016/10/14
  * - modified floating-point equality tests to use floatingPointEqual function
  * @version 2016/09/26
@@ -212,11 +214,10 @@ std::ostream& operator <<(std::ostream& out, const Note& note) {
 }
 
 int hashCode(const Note& note) {
-    int code = hashSeed();
-    code = code * hashMultiplier() + hashCode(note.getDuration());
-    code = code * hashMultiplier() + hashCode(note.getPitch());
-    code = code * hashMultiplier() + hashCode(note.getOctave());
-    code = code * hashMultiplier() + hashCode(note.getAccidental());
-    code = code * hashMultiplier() + hashCode(note.isRepeat());
-    return int(code & hashMask());
+    return hashCode5(
+            note.getDuration(),
+            note.getPitch(),
+            note.getOctave(),
+            note.getAccidental(),
+            note.isRepeat());
 }

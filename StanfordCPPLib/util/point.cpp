@@ -3,12 +3,15 @@
  * ---------------
  * This file implements the point.h interface.
  * 
+ * @version 2017/09/29
+ * - updated to use composite hashCode function
  * @version 2014/10/08
  * - removed 'using namespace' statement
  */
 
 #include "point.h"
 #include <string>
+#include "hashcode.h"
 #include "strlib.h"
 
 Point::Point() {
@@ -46,8 +49,5 @@ std::ostream& operator <<(std::ostream& os, const Point& pt) {
 }
 
 int hashCode(const Point& pt) {
-    int hash = 0;
-    hash += std::abs(pt.getX() & 0x7fff) << 16;
-    hash += std::abs(pt.getY());
-    return hash;
+    return hashCode2(pt.getX(), pt.getY());
 }

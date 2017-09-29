@@ -8,6 +8,8 @@
  * Used to implement comparison operators like < and >= on collections.
  *
  * @author Marty Stepp
+ * @version 2017/09/29
+ * - added compareTo1-5
  * @version 2016/12/09
  * - added checkVersion for iterators
  * @version 2016/09/24
@@ -158,6 +160,115 @@ int compareMaps(const MapType& map1, const MapType& map2) {
         return -1;
     } else {
         return 1;
+    }
+}
+
+/*
+ * Compares two values and returns an integer indicating their relative order,
+ * in the general style of Java's compareTo method:
+ * -1 if the first value is less than the second,
+ *  0 if the values are equal,
+ *  1 if the first value is greater than the second.
+ * The type passed must support a < less-than operator.
+ */
+template <typename T>
+int compareTo(T t1, T t2) {
+    if (t1 < t2) {
+        return -1;
+    } else if (t2 < t1) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+/*
+ * Compares two pairs of values and returns an integer indicating their relative order,
+ * in the general style of Java's compareTo method.
+ * First the values t1 and t2 are compared.
+ * If they are equal, ties are broken by comparing t3 and t4.
+ * -1 if the first value is less than the second,
+ *  0 if the values are equal,
+ *  1 if the first value is greater than the second.
+ * The types passed must support a < less-than operator.
+ */
+template <typename T1, typename T2>
+int compareTo2(T1 t1, T1 t2, T2 t3, T2 t4) {
+    if (t3 < t4) {
+        return -1;
+    } else if (t4 < t3) {
+        return 1;
+    } else {
+        return compareTo(t1, t2);
+    }
+}
+
+/*
+ * Compares three pairs of values and returns an integer indicating their relative order,
+ * in the general style of Java's compareTo method.
+ * First the values t1 and t2 are compared.
+ * If t1 and t2 are equal, ties are broken by comparing t3 and t4.
+ * If t3 and t4 are equal, ties are broken by comparing t5 and t6.
+ * -1 if the first value is less than the second,
+ *  0 if the values are equal,
+ *  1 if the first value is greater than the second.
+ * The types passed must support a < less-than operator.
+ */
+template <typename T1, typename T2, typename T3>
+int compareTo3(T1 t1, T1 t2, T2 t3, T2 t4, T3 t5, T3 t6) {
+    if (t5 < t6) {
+        return -1;
+    } else if (t6 < t5) {
+        return 1;
+    } else {
+        return compareTo2(t1, t2, t3, t4);
+    }
+}
+
+/*
+ * Compares four pairs of values and returns an integer indicating their relative order,
+ * in the general style of Java's compareTo method.
+ * First the values t1 and t2 are compared.
+ * If t1 and t2 are equal, ties are broken by comparing t3 and t4.
+ * If t3 and t4 are equal, ties are broken by comparing t5 and t6.
+ * If t5 and t6 are equal, ties are broken by comparing t7 and t8.
+ * -1 if the first value is less than the second,
+ *  0 if the values are equal,
+ *  1 if the first value is greater than the second.
+ * The types passed must support a < less-than operator.
+ */
+template <typename T1, typename T2, typename T3, typename T4>
+int compareTo4(T1 t1, T1 t2, T2 t3, T2 t4, T3 t5, T3 t6, T4 t7, T4 t8) {
+    if (t7 < t8) {
+        return -1;
+    } else if (t8 < t7) {
+        return 1;
+    } else {
+        return compareTo3(t1, t2, t3, t4, t5, t6);
+    }
+}
+
+/*
+ * Compares five pairs of values and returns an integer indicating their relative order,
+ * in the general style of Java's compareTo method.
+ * First the values t1 and t2 are compared.
+ * If t1 and t2 are equal, ties are broken by comparing t3 and t4.
+ * If t3 and t4 are equal, ties are broken by comparing t5 and t6.
+ * If t5 and t6 are equal, ties are broken by comparing t7 and t8.
+ * If t7 and t8 are equal, ties are broken by comparing t9 and t10.
+ * -1 if the first value is less than the second,
+ *  0 if the values are equal,
+ *  1 if the first value is greater than the second.
+ * The types passed must support a < less-than operator.
+ */
+template <typename T1, typename T2, typename T3, typename T4, typename T5>
+int compareTo5(T1 t1, T1 t2, T2 t3, T2 t4, T3 t5, T3 t6, T4 t7, T4 t8, T5 t9, T5 t10) {
+    if (t9 < t10) {
+        return -1;
+    } else if (t10 < t9) {
+        return 1;
+    } else {
+        return compareTo4(t1, t2, t3, t4, t5, t6, t7, t8);
     }
 }
 
