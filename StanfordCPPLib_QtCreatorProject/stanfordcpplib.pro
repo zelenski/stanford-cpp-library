@@ -11,6 +11,10 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2017/09/30
+# - added kludge to trick Qt Creator into allowing you to add files to your project (yay)
+# - tweaked behavior for xcopy of files on Windows
+# - improved quoting/escaping of paths and filenames for compatibility
 # @version 2016/12/09
 # - added SPL_THROW_ON_INVALID_ITERATOR flag (default disabled)
 # @version 2016/12/01
@@ -55,11 +59,6 @@
 # - standard autograder-compatible version; should work with all assignments and graders.
 
 TEMPLATE = app
-
-CONFIG += no_include_pwd   # make sure we do not accidentally #include files placed in 'resources'
-CONFIG += warn_off         # turn off default -Wall (we will add it back ourselves)
-CONFIG -= c++11            # turn off default -std=gnu++11
-
 PROJECT_FILTER =
 
 ###############################################################################
@@ -89,6 +88,18 @@ win32 {
         error(Exiting.)
     }
 }
+
+# honeypot to trick Qt Creator so that adding files works from within IDE;
+# Qt looks for first 'SOURCES +=' line and adds newly added .cpp/h files there.
+# But then that causes the files to be added twice because of *.cpp/h rules below.
+# To get around this, we follow the first 'SOURCES +=' line by a line that clears
+# out SOURCES, so that the Qt Creator .pro modification is ineffectual.
+DISTFILES += ""
+DISTFILES = ""
+HEADERS += ""
+HEADERS = ""
+SOURCES += ""
+SOURCES = ""
 
 # include various source .cpp files and header .h files in the build process
 # (student's source code can be put into project root, or src/ subfolder)
@@ -152,10 +163,10 @@ exists($$PWD/*.txt) {
     OTHER_FILES += $$files($$PWD/*.txt)
 }
 exists($$PWD/input/*) {
-    OTHER_FILES += $$files(input/*)
+    OTHER_FILES += $$files($$PWD/input/*)
 }
 exists($$PWD/output/*) {
-    OTHER_FILES += $$files(output/*)
+    OTHER_FILES += $$files($$PWD/output/*)
 }
 
 ###############################################################################
@@ -170,8 +181,13 @@ exists($$PWD/output/*) {
 # set up flags for the C++ compiler
 # (In general, many warnings/errors are enabled to tighten compile-time checking.
 # A few overly pedantic/confusing errors are turned off for simplicity.)
-#QMAKE_CXXFLAGS += -std=c++11
+CONFIG += no_include_pwd   # make sure we do not accidentally #include files placed in 'resources'
+CONFIG += warn_off         # turn off default -Wall (we will add it back ourselves)
+CONFIG -= c++11            # turn off default -std=gnu++11
 CONFIG += c++11
+#CONFIG += nocache
+
+#QMAKE_CXXFLAGS += -std=c++11
 QMAKE_CXXFLAGS += -Wall
 QMAKE_CXXFLAGS += -Wextra
 #QMAKE_CXXFLAGS += -Weffc++
@@ -318,21 +334,21 @@ CONFIG(release, debug|release) {
         OUT_PATH = $${OUT_PWD}/
         OUT_PATH ~= s,/,\\,g
 
-        REMOVE_DIRS += '"'$${OUT_PWD}/release'"'
-        REMOVE_DIRS += '"'$${OUT_PWD}/debug'"'
-        REMOVE_FILES += '"'$${OUT_PWD}/Makefile'"'
-        REMOVE_FILES += '"'$${OUT_PWD}/Makefile.Debug'"'
-        REMOVE_FILES += '"'$${OUT_PWD}/Makefile.Release'"'
-        #REMOVE_FILES += '"'$${OUT_PWD}/object_script.$${TARGET}.Release'"'
-        REMOVE_FILES += '"'$${OUT_PWD}/object_script.$${TARGET}.Debug'"'
+        REMOVE_DIRS += $$quote($${OUT_PWD}/release)
+        REMOVE_DIRS += $$quote($${OUT_PWD}/debug)
+        REMOVE_FILES += $$quote($${OUT_PWD}/Makefile)
+        REMOVE_FILES += $$quote($${OUT_PWD}/Makefile.Debug)
+        REMOVE_FILES += $$quote($${OUT_PWD}/Makefile.Release)
+        #REMOVE_FILES += $$quote($${OUT_PWD}/object_script.$${TARGET}.Release)
+        REMOVE_FILES += $$quote($${OUT_PWD}/object_script.$${TARGET}.Debug)
         REMOVE_DIRS ~= s,/,\\,g
         REMOVE_FILES ~= s,/,\\,g
 
         QMAKE_LFLAGS += -static
         QMAKE_LFLAGS += -static-libgcc
         QMAKE_LFLAGS += -static-libstdc++
-        QMAKE_POST_LINK += copy '"'$${TARGET_PATH}'"' '"'$${OUT_PATH}'"'
-        #QMAKE_POST_LINK += copy '"'$${TARGET_PATH}'"' '"'$${OUT_PATH}'"' \
+        QMAKE_POST_LINK += copy $$quote($${TARGET_PATH}) $$quote($${OUT_PATH})
+        #QMAKE_POST_LINK += copy $$quote($${TARGET_PATH}) $$quote($${OUT_PATH}) \#
         #    && rmdir /s /q $${REMOVE_DIRS} \
         #    && del $${REMOVE_FILES}
     }
@@ -351,20 +367,11 @@ CONFIG(release, debug|release) {
 # Used to place important resources from res/ and spl.jar into build/ folder.
 defineTest(copyToDestdir) {
     files = $$1
-
     for(FILE, files) {
         DDIR = $$OUT_PWD
-
-        # Replace slashes in paths with backslashes for Windows
-        win32:FILE ~= s,/,\\,g
+        win32:FILE ~= s,/,\\,g   # Replace slashes in paths with backslashes for Windows
         win32:DDIR ~= s,/,\\,g
-
-        !win32 {
-            copyResources.commands += cp -r '"'$$FILE'"' '"'$$DDIR'"' $$escape_expand(\\n\\t)
-        }
-        win32 {
-            copyResources.commands += xcopy '"'$$FILE'"' '"'$$DDIR'"' /e /y $$escape_expand(\\n\\t)
-        }
+        copyResources.commands += $$QMAKE_COPY $$quote($$FILE) $$quote($$DDIR) $$escape_expand(\\n\\t\\n\\t)
     }
     export(copyResources.commands)
 }
@@ -399,7 +406,7 @@ exists($$PWD/output/*) {
         BUILDOUTDIR = $$OUT_PWD/output
         BUILDOUTDIR ~= s,/,\\,g
     }
-    copydata.commands = $(COPY_DIR) '"'$$PROJECTOUTDIR'"' '"'$$BUILDOUTDIR'"'
+    copydata.commands = $(COPY_DIR) $$quote($$PROJECTOUTDIR) $$quote($$BUILDOUTDIR)
     first.depends = $(first) copydata
     export(first.depends)
     export(copydata.commands)
@@ -496,4 +503,4 @@ exists($$PWD/lib/autograder/*.cpp) {
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #499; if not, your .pro has been changed!)
+# END OF FILE (this should be line #506; if not, your .pro has been changed!)
