@@ -5,6 +5,12 @@
  * to the appropriate methods in the Platform class, which is implemented
  * separately for each architecture.
  * 
+ * @version 2017/10/16
+ * - added add, remove that accept GObject references (avoid pointers)
+ * @version 2017/10/12
+ * - made setRepaintImmediately notify back-end
+ * @version 2017/10/05
+ * - added autograder::get/clear/closeLastGWindow
  * @version 2016/11/24
  * - added setCloseOperation
  * @version 2016/11/02
@@ -103,8 +109,82 @@ static Map<std::string, int>& colorTable() {
     return __colorTable;
 }
 
+namespace autograder {
+STATIC_VARIABLE_DECLARE(bool, __lastGWindowDataEnabled, false)
+STATIC_VARIABLE_DECLARE_COLLECTION_EMPTY(Vector<GWindowData*>, __lastGWindowData)
+
+// private function to be called by GWindow objects
+static void gwindowPrevDataAdd(GWindowData* gwd) {
+    if (gwindowPrevDataIsStarted() && gwd) {
+        STATIC_VARIABLE(__lastGWindowData).add(gwd);
+    }
+}
+
+const Vector<GWindowData*>& gwindowPrevDataAll() {
+    return STATIC_VARIABLE(__lastGWindowData);
+}
+
+void gwindowPrevDataCloseAll() {
+    Vector<GWindowData*>& vec = STATIC_VARIABLE(__lastGWindowData);
+    for (int i = vec.size() - 1; i >= 0; i--) {
+        GWindowData* gwd = vec[i];
+        if (gwd && gwd->visible) {
+            GWindow gw(gwd);
+            gw.setCloseOperation(GWindow::CLOSE_DISPOSE);
+            gw.close();
+        }
+    }
+    STATIC_VARIABLE(__lastGWindowData).clear();
+    pause(100);   // give it a sec to sink in yo
+}
+
+GWindowData* gwindowPrevDataGetLast() {
+    Vector<GWindowData*>& vec = STATIC_VARIABLE(__lastGWindowData);
+    if (vec.isEmpty()) {
+        return nullptr;
+    } else {
+        return vec[vec.size() - 1];
+    }
+}
+
+bool gwindowPrevDataIsStarted() {
+    return STATIC_VARIABLE(__lastGWindowDataEnabled);
+}
+
+// private function to be called by GWindow objects
+static void gwindowPrevDataRemove(GWindowData* gwd) {
+    if (gwindowPrevDataIsStarted() && gwd) {
+        Vector<GWindowData*>& vec = STATIC_VARIABLE(__lastGWindowData);
+        for (int i = 0; i < vec.size(); i++) {
+            if (vec[i] == gwd) {
+                vec.remove(i);
+                break;
+            }
+        }
+    }
+}
+
+void gwindowPrevDataStart() {
+    STATIC_VARIABLE(__lastGWindowDataEnabled) = true;
+    STATIC_VARIABLE(__lastGWindowData).clear();
+}
+
+void gwindowPrevDataStop() {
+    STATIC_VARIABLE(__lastGWindowDataEnabled) = false;
+    STATIC_VARIABLE(__lastGWindowData).clear();
+}
+
+void gwindowRememberPosition(GWindow& gw) {
+    stanfordcpplib::getPlatform()->gwindow_rememberPosition(gw);
+}
+
+void gwindowSetIsAutograderWindow(GWindow& gw, bool autograderWindow) {
+    gw.getWindowDataPointer()->autograderWindow = autograderWindow;
+}
+} // namespace autograder
+
 GWindow::GWindow() {
-    initGWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, true);
+    initGWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, /* visible */ true);
 }
 
 GWindow::GWindow(bool visible) {
@@ -136,22 +216,24 @@ void GWindow::initGWindow(double width, double height, bool visible) {
     gwd->resizable = false;
     gwd->exitOnClose = false;
     gwd->repaintImmediately = true;
+    gwd->autograderWindow = false;
     stanfordcpplib::getPlatform()->gwindow_constructor(*this, width, height, gwd->top, visible);
+    autograder::gwindowPrevDataAdd(gwd);
     setColor("BLACK");
     setVisible(visible);
-    // pause(1000); // Temporary fix for race condition in back-end.
+    pause(100); // Temporary fix for race condition in back-end.
 }
 
 GWindow::~GWindow() {
-    // commented out because for some reason it crashes to free this memory
-    //   if (gwd) {
-    //      if (gwd->top) {
-    //         delete gwd->top;
-    //         gwd->top = nullptr;
-    //      }
-    //      delete gwd;
-    //      gwd = nullptr;
-    //   }
+    if (gwd) {
+        // commented out because for some reason it crashes to free this memory
+//        if (gwd->top) {
+//            delete gwd->top;
+//            gwd->top = nullptr;
+//        }
+//        delete gwd;
+        gwd = nullptr;
+    }
 }
 
 void GWindow::add(GObject* gobj) {
@@ -167,6 +249,70 @@ void GWindow::add(GObject* gobj, double x, double y) {
         gobj->setLocation(x, y);
         add(gobj);
     }
+}
+
+void GWindow::add(GArc& gobj) {
+    add(&gobj);
+}
+
+void GWindow::add(GArc& gobj, double x, double y) {
+    add(&gobj, x, y);
+}
+
+void GWindow::add(GCompound& gobj) {
+    add(&gobj);
+}
+
+void GWindow::add(GCompound& gobj, double x, double y) {
+    add(&gobj, x, y);
+}
+
+void GWindow::add(GImage& gobj) {
+    add(&gobj);
+}
+
+void GWindow::add(GImage& gobj, double x, double y) {
+    add(&gobj, x, y);
+}
+
+void GWindow::add(GLabel& gobj) {
+    add(&gobj);
+}
+
+void GWindow::add(GLabel& gobj, double x, double y) {
+    add(&gobj, x, y);
+}
+
+void GWindow::add(GLine& gobj) {
+    add(&gobj);
+}
+
+void GWindow::add(GLine& gobj, double x, double y) {
+    add(&gobj, x, y);
+}
+
+void GWindow::add(GOval& gobj) {
+    add(&gobj);
+}
+
+void GWindow::add(GOval& gobj, double x, double y) {
+    add(&gobj, x, y);
+}
+
+void GWindow::add(GPolygon& gobj) {
+    add(&gobj);
+}
+
+void GWindow::add(GPolygon& gobj, double x, double y) {
+    add(&gobj, x, y);
+}
+
+void GWindow::add(GRect& gobj) {
+    add(&gobj);
+}
+
+void GWindow::add(GRect& gobj, double x, double y) {
+    add(&gobj, x, y);
 }
 
 void GWindow::addToRegion(GInteractor* gobj, Region region) {
@@ -249,7 +395,11 @@ void GWindow::close() {
     if (gwd && gwd->exitOnClose) {
         // I was closed by the student's program.
         // I need to inform JBE so that it will shut down.
-        exitGraphics();   // calls exit(0);
+        if (STATIC_VARIABLE(gwindowExitGraphicsEnabled)) {
+            exitGraphics();
+        } else {
+            stanfordcpplib::getPlatform()->gwindow_exitGraphics();   // calls exit(0);
+        }
     }
 }
 
@@ -566,6 +716,10 @@ std::string GWindow::getWindowData() const {
     return os.str();
 }
 
+GWindowData* GWindow::getWindowDataPointer() const {
+    return gwd;
+}
+
 std::string GWindow::getWindowTitle() const {
     return gwd->windowTitle;
 }
@@ -631,6 +785,38 @@ void GWindow::remove(GObject* gobj) {
             gwd->top->remove(gobj);
         }
     }
+}
+
+void GWindow::remove(GArc& gobj) {
+    remove(&gobj);
+}
+
+void GWindow::remove(GCompound& gobj) {
+    remove(&gobj);
+}
+
+void GWindow::remove(GImage& gobj) {
+    remove(&gobj);
+}
+
+void GWindow::remove(GLabel& gobj) {
+    remove(&gobj);
+}
+
+void GWindow::remove(GLine& gobj) {
+    remove(&gobj);
+}
+
+void GWindow::remove(GOval& gobj) {
+    remove(&gobj);
+}
+
+void GWindow::remove(GPolygon& gobj) {
+    remove(&gobj);
+}
+
+void GWindow::remove(GRect& gobj) {
+    remove(&gobj);
 }
 
 void GWindow::removeFromRegion(GInteractor* gobj, Region region) {
@@ -706,7 +892,7 @@ void GWindow::setColor(const std::string& color) {
 }
 
 void GWindow::setExitOnClose(bool value) {
-    if (!STATIC_VARIABLE(gwindowExitGraphicsEnabled)) {
+    if (!STATIC_VARIABLE(gwindowExitGraphicsEnabled) && (!gwd || !gwd->autograderWindow)) {
         return;
     }
     if (gwd) {
@@ -739,6 +925,10 @@ void GWindow::setLocation(double x, double y) {
         }
         stanfordcpplib::getPlatform()->gwindow_setLocation(*this, (int) x, (int) y);
     }
+}
+
+void GWindow::setLocation(const GPoint& p) {
+    setLocation(p.getX(), p.getY());
 }
 
 void GWindow::setLocation(const Point& p) {
@@ -782,8 +972,9 @@ void GWindow::setRegionAlignment(const std::string& region, const std::string& a
 }
 
 void GWindow::setRepaintImmediately(bool value) {
-    if (gwd) {
+    if (gwd && gwd->repaintImmediately != value) {
         gwd->repaintImmediately = value;
+        stanfordcpplib::getPlatform()->gwindow_setRepaintImmediately(*this, value);
     }
 }
 
@@ -801,6 +992,10 @@ void GWindow::setSize(double width, double height) {
             gwd->windowHeight = height;
         }
     }
+}
+
+void GWindow::setSize(const GDimension& size) {
+    setSize(size.getWidth(), size.getHeight());
 }
 
 void GWindow::setTitle(const std::string& title) {
@@ -961,7 +1156,6 @@ void pause(double milliseconds) {
 }
 
 // end free functions
-
 
 // some flag stuff for error reporting on Windows
 #if defined (_MSC_VER) && (_MSC_VER >= 1200)

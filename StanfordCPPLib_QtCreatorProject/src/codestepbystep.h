@@ -1,4 +1,6 @@
 /*
+ * @version 2017/10/06
+ * - hid POSIX signal handler behind preprocessor macro
  * @version 2016/12/07
  * - added assert* methods
  */
@@ -96,7 +98,9 @@ void __printlnXml(const std::string& s);
 #define SIGTIMEOUT ((int) 0xf00df00d)
 
 void __codeStepByStepSignalHandler(int sig);
+#if !defined(_WIN32)
 void __posixSignalHandler(int sig, siginfo_t* /*siginfo*/, void* /*context*/);
+#endif // !defined(_WIN32)
 
 // functions to parse various collections from strings
 void ArrayIntList_fromString(ArrayIntList& list, const std::string& str);

@@ -10,6 +10,7 @@
 #include "gevents.h"
 #include "map.h"
 #include "note.h"
+#include "process.h"
 #include "vector.h"
 #include "queue.h"
 #include "random.h"
@@ -73,8 +74,60 @@ void testNotes() {
     rest.play();
 }
 
+void testKeithWindowTest() {
+    // std::cout << "Complete." << std::endl;
+    cout << "You're about to be prompted to enter some text." << endl;
+    cout << "When you do, close the window." << endl;
+    cout << "Then, look down at stdout." << endl;
+    cout << "You should notice that some input was entered even though" << endl;
+    cout << "nothing was echoed to the graphical console." << endl;
+    cout << "This desyncs the graphics console from stdin/stdout," << endl;
+    cout << "though I don't know why." << endl;
+
+    GWindow sacrificialWindow(400, 300);
+
+    for (int i = 0; ; i++) {
+        string line = getLine("Enter line " + to_string(i) + ": ");
+        cout << "You entered: " << line << endl;
+        cout << "Now waiting for a click event:" << endl;
+        GMouseEvent event = waitForClick();
+        cout << "event = " << event << endl;
+    }
+}
+
+void testProcess() {
+    Process proc;
+    proc.addCommandLineArgs({
+//        "/bin/uname",
+//        "-a"
+        // "/home/stepp/Dropbox/data/docs/stanford/StanfordCPPLib/test_programs/exitcode42"
+        // "/home/stepp/Dropbox/data/docs/stanford/StanfordCPPLib/test_programs/delayed_output"
+        "/home/stepp/Dropbox/data/docs/stanford/StanfordCPPLib/test_programs/infinite_loop"
+    });
+    cout << "my process is: " << proc << endl << endl;
+    cout << "About to call startAndWait ..." << endl;
+
+    proc.setTimeout(1000);
+    proc.startAndWait();
+
+    cout << "Done with startAndWait" << endl << endl;
+    cout << "my process is: " << proc << endl << endl;
+
+    cout << "About to call stop ..." << endl;
+    proc.stop();
+    cout << "Done with stop" << endl << endl;
+
+    cout << "exit code:" << proc.exitCode() << endl;
+
+    cout << "output (length " << proc.output().length() << "):" << endl
+         << proc.output() << endl << endl;
+    cout << "my process is: " << proc << endl << endl;
+}
+
 int main() {
 //    testNotes();
+
+    testProcess();
 
 //    cout << stanfordcpplib::collections::compareTo(42, 17) << endl;
 //    cout << stanfordcpplib::collections::compareTo2(42, 42, 17, 35) << endl;
@@ -173,24 +226,5 @@ int main() {
 //        }
 //    }
     
-    // std::cout << "Complete." << std::endl;
-    cout << "You're about to be prompted to enter some text." << endl;
-    cout << "When you do, close the window." << endl;
-    cout << "Then, look down at stdout." << endl;
-    cout << "You should notice that some input was entered even though" << endl;
-    cout << "nothing was echoed to the graphical console." << endl;
-    cout << "This desyncs the graphics console from stdin/stdout," << endl;
-    cout << "though I don't know why." << endl;
-
-    GWindow sacrificialWindow(400, 300);
-
-    for (int i = 0; ; i++) {
-        string line = getLine("Enter line " + to_string(i) + ": ");
-        cout << "You entered: " << line << endl;
-        cout << "Now waiting for a click event:" << endl;
-        GMouseEvent event = waitForClick();
-        cout << "event = " << event << endl;
-    }
-
     return 0;
 }

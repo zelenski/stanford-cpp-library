@@ -11,7 +11,15 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
-# @version 2017/09/30
+# @version 2017/10/06
+# - added some compiler warning flags
+# - added $$files wrappings around source/header file inclusion
+# - added cache() call to all OSes to get rid of Qmake warning
+# @version 2017/10/05
+# - bug fixes for PROJECT_FILTER option (used for multiple .pro in same folder)
+# @version 2017/10/01
+# - added check for being inside .zip archive (common mistake on Windows)
+# - added check for intl chars in path (common issue for intl students)
 # - added kludge to trick Qt Creator into allowing you to add files to your project (yay)
 # - tweaked behavior for xcopy of files on Windows
 # - improved quoting/escaping of paths and filenames for compatibility
@@ -59,114 +67,170 @@
 # - standard autograder-compatible version; should work with all assignments and graders.
 
 TEMPLATE = app
-PROJECT_FILTER =
+PROJECT_FILTER = 
 
 ###############################################################################
 # BEGIN SECTION FOR SPECIFYING SOURCE/LIBRARY/RESOURCE FILES OF PROJECT       #
 ###############################################################################
 
+# checks to make sure we haven't accidentally opened the project
+# from within a ZIP archive (common mistake on Windows)
+
+# TODO: *= instead of +=
+win32 {
+    contains(PWD, .*\.zip.*) | contains(PWD, .*\.ZIP.*) {
+        message("")
+        message(*******************************************************************)
+        message(*** ERROR: You are trying to open this project from within a .ZIP archive:)
+        message(*** $$PWD)
+        message(*** You need to extract the files out of the ZIP file first.)
+        message(*** Open the ZIP in your file explorer and press the Extract button.)
+        message(*******************************************************************)
+        message("")
+        error(Exiting.)
+    }
+}
+
+# check for intl chars in path (common issue for intl students)
+PWD_WITHOUT_BAD_CHARS = $$PWD
+PWD_WITHOUT_BAD_CHARS ~= s|[^a-zA-Z0-9_ ().\/:;+-]+|???
+BAD_CHARS = $$PWD
+BAD_CHARS ~= s|[a-zA-Z0-9_ ().\/:;-]+|
+!isEmpty(BAD_CHARS) {
+    message("")
+    message(*******************************************************************)
+    message(*** ERROR: Your project directory contains invalid characters:)
+    message(*** $$PWD)
+    message(***)
+    message(*** The characters that are invalid are: $$BAD_CHARS)
+    message(***)
+    message(*** You need to store your project in a directory without any punctuation)
+    message(*** marks such as commas, or international symbols such as)
+    message(*** Chinese or Korean symbols.)
+    message(*** If you keep seeing this error try creating a simple directory)
+    message(*** name such as "C:\Programs\Homework1.")
+    message(*******************************************************************)
+    message("")
+    error(Exiting.)
+}
+
 # checks to ensure that the Stanford C++ library and its associated
 # Java back-end are both present in this project
 !exists($$PWD/lib/StanfordCPPLib/private/version.h) {
-    message(*** Stanford C++ library not found!)
+    message("")
+    message(*******************************************************************)
+    message(*** ERROR: Stanford C++ library not found!)
     message(*** This project cannot run without the folder lib/StanfordCPPLib/.)
     message(*** Place that folder into your project and try again.)
+    message(*******************************************************************)
+    message("")
     error(Exiting.)
 }
 !exists($$PWD/lib/spl.jar) {
-    message(*** Stanford Java back-end library 'spl.jar' not found!)
+    message("")
+    message(*******************************************************************)
+    message(*** ERROR: Stanford Java back-end library 'spl.jar' not found!)
     message(*** This project cannot run without spl.jar present.)
     message(*** Place that file into your lib/ folder and try again.)
+    message(*******************************************************************)
+    message("")
     error(Exiting.)
 }
 
 win32 {
     !exists($$PWD/lib/addr2line.exe) {
-        message(*** Stanford C++ library support file 'addr2line.exe' not found!)
+        message("")
+        message(*******************************************************************)
+        message(*** ERROR: Stanford C++ library support file 'addr2line.exe' not found!)
         message(*** Our library needs this file present to produce stack traces.)
         message(*** Place that file into your lib/ folder and try again.)
+        message(*******************************************************************)
+        message("")
         error(Exiting.)
     }
 }
 
 # honeypot to trick Qt Creator so that adding files works from within IDE;
-# Qt looks for first 'SOURCES +=' line and adds newly added .cpp/h files there.
+# Qt looks for first 'SOURCES *=' line and adds newly added .cpp/h files there.
 # But then that causes the files to be added twice because of *.cpp/h rules below.
-# To get around this, we follow the first 'SOURCES +=' line by a line that clears
+# To get around this, we follow the first 'SOURCES *=' line by a line that clears
 # out SOURCES, so that the Qt Creator .pro modification is ineffectual.
-DISTFILES += ""
+DISTFILES *= ""
 DISTFILES = ""
-HEADERS += ""
+HEADERS *= ""
 HEADERS = ""
-SOURCES += ""
+SOURCES *= ""
 SOURCES = ""
 
 # include various source .cpp files and header .h files in the build process
 # (student's source code can be put into project root, or src/ subfolder)
 exists($$PWD/lib/StanfordCPPLib/*.cpp) {
-    SOURCES += $$PWD/lib/StanfordCPPLib/*.cpp
+    SOURCES *= $$files($$PWD/lib/StanfordCPPLib/*.cpp)
 }
-SOURCES += $$PWD/lib/StanfordCPPLib/collections/*.cpp
-SOURCES += $$PWD/lib/StanfordCPPLib/graphics/*.cpp
-SOURCES += $$PWD/lib/StanfordCPPLib/io/*.cpp
-SOURCES += $$PWD/lib/StanfordCPPLib/private/*.cpp
-SOURCES += $$PWD/lib/StanfordCPPLib/system/*.cpp
-SOURCES += $$PWD/lib/StanfordCPPLib/util/*.cpp
+SOURCES *= $$files($$PWD/lib/StanfordCPPLib/collections/*.cpp)
+SOURCES *= $$files($$PWD/lib/StanfordCPPLib/graphics/*.cpp)
+SOURCES *= $$files($$PWD/lib/StanfordCPPLib/io/*.cpp)
+SOURCES *= $$files($$PWD/lib/StanfordCPPLib/private/*.cpp)
+SOURCES *= $$files($$PWD/lib/StanfordCPPLib/system/*.cpp)
+SOURCES *= $$files($$PWD/lib/StanfordCPPLib/util/*.cpp)
 exists($$PWD/src/$$PROJECT_FILTER*.cpp) {
-    SOURCES += $$PWD/src/$$PROJECT_FILTER*.cpp
+    SOURCES *= $$files($$PWD/src/$$PROJECT_FILTER*.cpp)
 }
 exists($$PWD/src/test/*.cpp) {
-    SOURCES += $$PWD/src/test/*.cpp
+    SOURCES *= $$files($$PWD/src/test/*.cpp)
 }
 exists($$PWD/$$PROJECT_FILTER*.cpp) {
-    SOURCES += $$PWD/$$PROJECT_FILTER*.cpp
+    SOURCES *= $$files($$PWD/$$PROJECT_FILTER*.cpp)
 }
 
 exists($$PWD/lib/StanfordCPPLib/*.h) {
-    HEADERS += $$PWD/lib/StanfordCPPLib/*.h
+    HEADERS *= $$files($$PWD/lib/StanfordCPPLib/*.h)
 }
-HEADERS += $$PWD/lib/StanfordCPPLib/collections/*.h
-HEADERS += $$PWD/lib/StanfordCPPLib/graphics/*.h
-HEADERS += $$PWD/lib/StanfordCPPLib/io/*.h
-HEADERS += $$PWD/lib/StanfordCPPLib/private/*.h
-HEADERS += $$PWD/lib/StanfordCPPLib/system/*.h
-HEADERS += $$PWD/lib/StanfordCPPLib/util/*.h
+HEADERS *= $$files($$PWD/lib/StanfordCPPLib/collections/*.h)
+HEADERS *= $$files($$PWD/lib/StanfordCPPLib/graphics/*.h)
+HEADERS *= $$files($$PWD/lib/StanfordCPPLib/io/*.h)
+HEADERS *= $$files($$PWD/lib/StanfordCPPLib/private/*.h)
+HEADERS *= $$files($$PWD/lib/StanfordCPPLib/system/*.h)
+HEADERS *= $$files($$PWD/lib/StanfordCPPLib/util/*.h)
 exists($$PWD/src/test/*.h) {
-    HEADERS += $$PWD/src/test/*.h
+    HEADERS *= $$files($$PWD/src/test/*.h)
 }
 exists($$PWD/src/$$PROJECT_FILTER*.h) {
-    HEADERS += $$PWD/src/$$PROJECT_FILTER*.h
+    HEADERS *= $$files($$PWD/src/$$PROJECT_FILTER*.h)
 }
 exists($$PWD/$$PROJECT_FILTER*.h) {
-    HEADERS += $$PWD/$$PROJECT_FILTER*.h
+    HEADERS *= $$files($$PWD/$$PROJECT_FILTER*.h)
 }
 
 # directories examined by Qt Creator when student writes an #include statement
-INCLUDEPATH += $$PWD/lib/StanfordCPPLib/
-INCLUDEPATH += $$PWD/lib/StanfordCPPLib/collections/
-INCLUDEPATH += $$PWD/lib/StanfordCPPLib/graphics/
-INCLUDEPATH += $$PWD/lib/StanfordCPPLib/io/
-INCLUDEPATH += $$PWD/lib/StanfordCPPLib/system/
-INCLUDEPATH += $$PWD/lib/StanfordCPPLib/util/
-INCLUDEPATH += $$PWD/src/
-INCLUDEPATH += $$PWD/
+INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/
+INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/collections/
+INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/graphics/
+INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/io/
+INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/system/
+INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/util/
+INCLUDEPATH *= $$PWD/src/
+INCLUDEPATH *= $$PWD/
 exists($$PWD/src/autograder/*.h) {
-    INCLUDEPATH += $$PWD/src/autograder/
+    INCLUDEPATH *= $$PWD/src/autograder/
+}
+exists($$PWD/src/autograder/$$PROJECT_FILTER/*.h) {
+    INCLUDEPATH *= $$PWD/src/autograder/$$PROJECT_FILTER/
 }
 exists($$PWD/src/test/*.h) {
-    INCLUDEPATH += $$PWD/src/test/
+    INCLUDEPATH *= $$PWD/src/test/
 }
 
 # directories listed as "Other files" in left Project pane of Qt Creator
-OTHER_FILES += $$files(res/*)
+OTHER_FILES *= $$files(res/*)
 exists($$PWD/*.txt) {
-    OTHER_FILES += $$files($$PWD/*.txt)
+    OTHER_FILES *= $$files($$PWD/*.txt)
 }
 exists($$PWD/input/*) {
-    OTHER_FILES += $$files($$PWD/input/*)
+    OTHER_FILES *= $$files($$PWD/input/*)
 }
 exists($$PWD/output/*) {
-    OTHER_FILES += $$files($$PWD/output/*)
+    OTHER_FILES *= $$files($$PWD/output/*)
 }
 
 ###############################################################################
@@ -193,13 +257,16 @@ QMAKE_CXXFLAGS += -Wextra
 #QMAKE_CXXFLAGS += -Weffc++
 QMAKE_CXXFLAGS += -Wcast-align
 QMAKE_CXXFLAGS += -Wfloat-equal
+QMAKE_CXXFLAGS += -Wformat=2
+QMAKE_CXXFLAGS += -Wlogical-op
 QMAKE_CXXFLAGS += -Wlong-long
 QMAKE_CXXFLAGS += -Wreturn-type
-#QMAKE_CXXFLAGS += -Wshadow
+QMAKE_CXXFLAGS += -Wshadow
 #QMAKE_CXXFLAGS += -Wswitch-default
 #QMAKE_CXXFLAGS += -Wundef
 QMAKE_CXXFLAGS += -Wunreachable-code
-exists($$PWD/lib/autograder/*.cpp) {
+QMAKE_CXXFLAGS += -Wuseless-cast
+exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
     # omit some warnings/errors in autograder projects
     # (largely because the Google Test framework violates them a ton of times)
 } else {
@@ -215,11 +282,16 @@ QMAKE_CXXFLAGS += -Wno-write-strings
 
 # additional flags for Windows
 win32 {
+    # disable inclusion of Qt core libraries (smaller,faster build)
+    CONFIG -= qt
+    QT -= core gui opengl widgets
+
     # increase system stack size (helpful for recursive programs)
     QMAKE_LFLAGS += -Wl,--stack,268435456
     LIBS += -lDbghelp
     LIBS += -lbfd
     LIBS += -limagehlp
+    cache()
 }
 
 # additional flags for Mac OS X
@@ -236,6 +308,10 @@ macx {
 
 # additional flags for Linux
 unix:!macx {
+    # disable inclusion of Qt core libraries (smaller,faster build)
+    CONFIG -= qt
+    QT -= core gui opengl widgets
+    
     unix-g++ {
         QMAKE_CXXFLAGS += -rdynamic
         QMAKE_CXXFLAGS += -Wl,--export-dynamic
@@ -243,6 +319,7 @@ unix:!macx {
 
     QMAKE_LFLAGS += -rdynamic
     QMAKE_LFLAGS += -Wl,--export-dynamic
+    cache()
 }
 
 # additional flags for non-Windows systems (Mac and Linux)
@@ -258,7 +335,7 @@ unix:!macx {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20161201
+DEFINES += SPL_PROJECT_VERSION=20171006
 
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1
@@ -334,21 +411,21 @@ CONFIG(release, debug|release) {
         OUT_PATH = $${OUT_PWD}/
         OUT_PATH ~= s,/,\\,g
 
-        REMOVE_DIRS += $$quote($${OUT_PWD}/release)
-        REMOVE_DIRS += $$quote($${OUT_PWD}/debug)
-        REMOVE_FILES += $$quote($${OUT_PWD}/Makefile)
-        REMOVE_FILES += $$quote($${OUT_PWD}/Makefile.Debug)
-        REMOVE_FILES += $$quote($${OUT_PWD}/Makefile.Release)
-        #REMOVE_FILES += $$quote($${OUT_PWD}/object_script.$${TARGET}.Release)
-        REMOVE_FILES += $$quote($${OUT_PWD}/object_script.$${TARGET}.Debug)
+        REMOVE_DIRS += '"'$${OUT_PWD}/release'"'
+        REMOVE_DIRS += '"'$${OUT_PWD}/debug'"'
+        REMOVE_FILES += '"'$${OUT_PWD}/Makefile'"'
+        REMOVE_FILES += '"'$${OUT_PWD}/Makefile.Debug'"'
+        REMOVE_FILES += '"'$${OUT_PWD}/Makefile.Release'"'
+        #REMOVE_FILES += '"'$${OUT_PWD}/object_script.$${TARGET}.Release'"'
+        REMOVE_FILES += '"'$${OUT_PWD}/object_script.$${TARGET}.Debug'"'
         REMOVE_DIRS ~= s,/,\\,g
         REMOVE_FILES ~= s,/,\\,g
 
         QMAKE_LFLAGS += -static
         QMAKE_LFLAGS += -static-libgcc
         QMAKE_LFLAGS += -static-libstdc++
-        QMAKE_POST_LINK += copy $$quote($${TARGET_PATH}) $$quote($${OUT_PATH})
-        #QMAKE_POST_LINK += copy $$quote($${TARGET_PATH}) $$quote($${OUT_PATH}) \#
+        QMAKE_POST_LINK += copy '"'$${TARGET_PATH}'"' '"'$${OUT_PATH}'"'
+        #QMAKE_POST_LINK += copy '"'$${TARGET_PATH}'"' '"'$${OUT_PATH} \#
         #    && rmdir /s /q $${REMOVE_DIRS} \
         #    && del $${REMOVE_FILES}
     }
@@ -369,9 +446,19 @@ defineTest(copyToDestdir) {
     files = $$1
     for(FILE, files) {
         DDIR = $$OUT_PWD
-        win32:FILE ~= s,/,\\,g   # Replace slashes in paths with backslashes for Windows
-        win32:DDIR ~= s,/,\\,g
-        copyResources.commands += $$QMAKE_COPY $$quote($$FILE) $$quote($$DDIR) $$escape_expand(\\n\\t\\n\\t)
+        win32 {
+            # Replace slashes in paths with backslashes for Windows
+            FILE ~= s,/,\\,g
+            DDIR ~= s,/,\\,g
+            copyResources.commands += xcopy /s /q /y /i '"'$$FILE'"' '"'$$DDIR'"' $$escape_expand(\\n\\t\\n\\t)
+        } else {
+            # Mac/Linux
+            copyResources.commands += cp -rf '"'$$FILE'"' '"'$$DDIR'"' $$escape_expand(\\n\\t\\n\\t)
+        }
+        
+        # QMAKE_COPY command is supposed to be a platform-independent copying command,
+        # but it seems to fail on Windows machines that have Cygwin or Windows Services for Unix installed
+        # copyResources.commands += $$QMAKE_COPY $$quote($$FILE) $$quote($$DDIR) $$escape_expand(\\n\\t\\n\\t)
     }
     export(copyResources.commands)
 }
@@ -406,26 +493,26 @@ exists($$PWD/output/*) {
         BUILDOUTDIR = $$OUT_PWD/output
         BUILDOUTDIR ~= s,/,\\,g
     }
-    copydata.commands = $(COPY_DIR) $$quote($$PROJECTOUTDIR) $$quote($$BUILDOUTDIR)
+    copydata.commands = $(COPY_DIR) '"'$$PROJECTOUTDIR'"' '"'$$BUILDOUTDIR'"'
     first.depends = $(first) copydata
     export(first.depends)
     export(copydata.commands)
 }
 
 # copy support files such as library JAR and addr2line
-copyResources.input += $$files($$PWD/lib/*.jar)
+copyResources.input *= $$files($$PWD/lib/*.jar)
 win32 {
-    copyResources.input += $$files($$PWD/lib/addr2line.exe)
+    copyResources.input *= $$files($$PWD/lib/addr2line.exe)
 }
-copyResources.input += $$files($$PWD/res/*)
+copyResources.input *= $$files($$PWD/res/*)
 exists($$PWD/*.txt) {
-    copyResources.input += $$files($$PWD/*.txt)
+    copyResources.input *= $$files($$PWD/*.txt)
 }
 exists($$PWD/input/*) {
-    copyResources.input += $$files(input/*)
+    copyResources.input *= $$files(input/*)
 }
 exists($$PWD/output/*) {
-    copyResources.input += $$files(output/*)
+    copyResources.input *= $$files(output/*)
 }
 
 QMAKE_EXTRA_TARGETS += copyResources first copydata
@@ -442,36 +529,49 @@ POST_TARGETDEPS += copyResources
 ###############################################################################
 
 # settings specific to CS 106 B/X auto-grading programs; do not modify
-exists($$PWD/lib/autograder/*.cpp) {
+exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
     # include the various autograder source code and libraries in the build process
-    SOURCES += $$PWD/lib/autograder/*.cpp
+    SOURCES *= $$files($$PWD/lib/autograder/*.cpp)
     exists($$PWD/src/autograder/$$PROJECT_FILTER*.cpp) {
-        SOURCES += $$PWD/src/autograder/$$PROJECT_FILTER*.cpp
+        SOURCES *= $$files($$PWD/src/autograder/$$PROJECT_FILTER*.cpp)
+    }
+    exists($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp) {
+        SOURCES *= $$files($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp)
     }
 
-    HEADERS += $$PWD/lib/autograder/*.h
+    HEADERS *= $$PWD/lib/autograder/*.h
     exists($$PWD/src/autograder/$$PROJECT_FILTER*.h) {
-        HEADERS += $$PWD/src/autograder/$$PROJECT_FILTER*.h
+        HEADERS *= $$files($$PWD/src/autograder/$$PROJECT_FILTER*.h)
+    }
+    exists($$PWD/src/autograder/$$PROJECT_FILTER/*.h) {
+        HEADERS *= $$files($$PWD/src/autograder/$$PROJECT_FILTER/*.h)
     }
 
-    INCLUDEPATH += $$PWD/lib/autograder/
+    INCLUDEPATH *= $$PWD/lib/autograder/
     exists($$PWD/src/autograder/*.h) {
-        INCLUDEPATH += $$PWD/src/autograder/
+        INCLUDEPATH *= $$PWD/src/autograder/
+    }
+    exists($$PWD/src/autograder/$$PROJECT_FILTER/*.h) {
+        INCLUDEPATH *= $$PWD/src/autograder/$$PROJECT_FILTER/
     }
 
     DEFINES += SPL_AUTOGRADER_MODE
 
     # a check to ensure that required autograder resources are present in this project
     !exists($$PWD/res/autograder/pass.gif) {
-        message(*** Stanford library cannot find its image files pass.gif, fail.gif, etc.!)
+        message("")
+        message(*******************************************************************)
+        message(*** ERROR: Stanford library cannot find image files pass.gif, fail.gif, etc.!)
         message(*** This project cannot run without those images present.)
         message(*** Place those files into your res/autograder/ folder and try again.)
+        message(*******************************************************************)
+        message("")
         error(Exiting.)
     }
 
     # copy autograder resource files into build folder
-    copyResources.input += $$files($$PWD/res/autograder/*)
-    OTHER_FILES += $$files(res/autograder/*)
+    copyResources.input *= $$files($$PWD/res/autograder/*)
+    OTHER_FILES *= $$files(res/autograder/*)
 
     win32 {
         copyToDestdir($$PWD/res/autograder)
@@ -483,19 +583,19 @@ exists($$PWD/lib/autograder/*.cpp) {
 
     # copy source code into build folder so it can be analyzed by style checker
     exists($$PWD/src/$$PROJECT_FILTER*.cpp) {
-        copyResources.input += $$files($$PWD/src/$$PROJECT_FILTER*.cpp)
+        copyResources.input *= $$files($$PWD/src/$$PROJECT_FILTER*.cpp)
         copyToDestdir($$files($$PWD/src/$$PROJECT_FILTER*.cpp))
     }
     exists($$PWD/$$PROJECT_FILTER*.cpp) {
-        copyResources.input += $$files($$PWD/$$PROJECT_FILTER*.cpp)
+        copyResources.input *= $$files($$PWD/$$PROJECT_FILTER*.cpp)
         copyToDestdir($$files($$PWD/$$PROJECT_FILTER*.cpp))
     }
     exists($$PWD/src/$$PROJECT_FILTER*.h) {
-        copyResources.input += $$files($$PWD/src/$$PROJECT_FILTER*.h)
+        copyResources.input *= $$files($$PWD/src/$$PROJECT_FILTER*.h)
         copyToDestdir($$files($$PWD/src/$$PROJECT_FILTER*.h))
     }
     exists($$PWD/$$PROJECT_FILTER*.h) {
-        copyResources.input += $$files($$PWD/$$PROJECT_FILTER*.h)
+        copyResources.input *= $$files($$PWD/$$PROJECT_FILTER*.h)
         copyToDestdir($$files($$PWD/$$PROJECT_FILTER*.h))
     }
 }
@@ -503,4 +603,4 @@ exists($$PWD/lib/autograder/*.cpp) {
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #506; if not, your .pro has been changed!)
+# END OF FILE (this should be line #606; if not, your .pro has been changed!)

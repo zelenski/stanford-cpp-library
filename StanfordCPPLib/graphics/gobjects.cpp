@@ -3,6 +3,8 @@
  * ------------------
  * This file implements the gobjects.h interface.
  * 
+ * @version 2017/10/16
+ * - added GLine constructor that takes GPoints
  * @version 2016/11/07
  * - alphabetized all members
  * - modified all members that accept std::string to take const std::string&
@@ -1014,6 +1016,15 @@ GLine::GLine(double x0, double y0, double x1, double y1) {
     y = y0;
     dx = x1 - x0;
     dy = y1 - y0;
+}
+
+GLine::GLine(const GPoint& p0, const GPoint& p1) {
+    stanfordcpplib::getPlatform()->gline_constructor(
+                this, p0.getX(), p0.getY(), p1.getX(), p1.getY());
+    x = p0.getX();
+    y = p0.getY();
+    dx = p1.getX() - p0.getX();
+    dy = p1.getY() - p1.getY();
 }
 
 bool GLine::contains(double x, double y) const {

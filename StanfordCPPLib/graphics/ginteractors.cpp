@@ -3,6 +3,8 @@
  * ----------------------
  * This file implements the ginteractors.h interface.
  * 
+ * @version 2017/10/12
+ * - added GTextLabel
  * @version 2016/11/26
  * - added GInteractor::setForeground as alias for setColor
  * @version 2016/11/02
@@ -236,6 +238,49 @@ std::string GCheckBox::toString() const {
 }
 
 /*
+ * Implementation notes: GChooser class
+ * ------------------------------------
+ */
+
+GChooser::GChooser() {
+    stanfordcpplib::getPlatform()->gchooser_constructor(this);
+}
+
+void GChooser::addItem(std::string item) {
+    stanfordcpplib::getPlatform()->gchooser_addItem(this, item);
+}
+
+void GChooser::addItems(const std::initializer_list<std::string>& items) {
+    for (const std::string& item : items) {
+        stanfordcpplib::getPlatform()->gchooser_addItem(this, item);
+    }
+}
+
+void GChooser::addItems(const Vector<std::string>& items) {
+    for (const std::string& item : items) {
+        stanfordcpplib::getPlatform()->gchooser_addItem(this, item);
+    }
+}
+
+std::string GChooser::getSelectedItem() {
+    return stanfordcpplib::getPlatform()->gchooser_getSelectedItem(this);
+}
+
+std::string GChooser::getType() const {
+    return "GChooser";
+}
+
+void GChooser::setSelectedItem(std::string item) {
+    stanfordcpplib::getPlatform()->gchooser_setSelectedItem(this, item);
+}
+
+std::string GChooser::toString() const {
+    std::ostringstream oss;
+    oss << "GChooser()";
+    return oss.str();
+}
+
+/*
  * Implementation notes: GRadioButton class
  * ----------------------------------------
  */
@@ -462,44 +507,31 @@ std::string GTextField::toString() const {
 }
 
 /*
- * Implementation notes: GChooser class
- * ------------------------------------
+ * Implementation notes: GTextLabel class
+ * --------------------------------------
  */
 
-GChooser::GChooser() {
-    stanfordcpplib::getPlatform()->gchooser_constructor(this);
+GTextLabel::GTextLabel(std::string label) {
+    this->label = label;
+    stanfordcpplib::getPlatform()->gtextlabel_constructor(this, label);
 }
 
-void GChooser::addItem(std::string item) {
-    stanfordcpplib::getPlatform()->gchooser_addItem(this, item);
+std::string GTextLabel::getText() const {
+    return this->label;
 }
 
-void GChooser::addItems(const std::initializer_list<std::string>& items) {
-    for (const std::string& item : items) {
-        stanfordcpplib::getPlatform()->gchooser_addItem(this, item);
-    }
+std::string GTextLabel::getType() const {
+    return "GTextLabel";
 }
 
-void GChooser::addItems(const Vector<std::string>& items) {
-    for (const std::string& item : items) {
-        stanfordcpplib::getPlatform()->gchooser_addItem(this, item);
-    }
+void GTextLabel::setText(std::string text) {
+    this->label = text;
+    stanfordcpplib::getPlatform()->ginteractor_setText(this, text);
+    setActionCommand(text);
 }
 
-std::string GChooser::getSelectedItem() {
-    return stanfordcpplib::getPlatform()->gchooser_getSelectedItem(this);
-}
-
-std::string GChooser::getType() const {
-    return "GChooser";
-}
-
-void GChooser::setSelectedItem(std::string item) {
-    stanfordcpplib::getPlatform()->gchooser_setSelectedItem(this, item);
-}
-
-std::string GChooser::toString() const {
+std::string GTextLabel::toString() const {
     std::ostringstream oss;
-    oss << "GChooser()";
+    oss << "GTextLabel(\"" << label << "\")";
     return oss.str();
 }

@@ -10,6 +10,9 @@
  * information.
  * 
  * @author Marty Stepp
+ * @version 2017/10/12
+ * - added initialValue to showInputDialog
+ * - modified functions to accept const string& instead of string
  * @version 2014/10/26
  * - added showTextFileDialog
  * @version 2014/10/09
@@ -66,7 +69,7 @@ public:
      * GOptionPaneResult enumeration constants is returned.
      * The caller can supply an optional window title; if none is passed, a default is used.
      */
-    static ConfirmResult showConfirmDialog(std::string message, std::string title = "",
+    static ConfirmResult showConfirmDialog(const std::string& message, const std::string& title = "",
                                            ConfirmType type = YES_NO);
     
     /*
@@ -75,7 +78,7 @@ public:
      * The caller can supply an optional window title; if none is passed, a default is used.
      * If the user cancels the box, an empty string is returned.
      */
-    static std::string showInputDialog(std::string message, std::string title = "");
+    static std::string showInputDialog(const std::string& message, const std::string& title = "", const std::string& initialValue = "");
     
     /*
      * Displays an output message dialog to the user.
@@ -85,7 +88,7 @@ public:
      * WARNING_MESSAGE, or QUESTION_MESSAGE; this slightly affects the dialog's
      * appearance.  The default is PLAIN_MESSAGE.
      */
-    static void showMessageDialog(std::string message, std::string title = "",
+    static void showMessageDialog(const std::string& message, const std::string& title = "",
                                   MessageType type = PLAIN);
     
     /*
@@ -95,14 +98,14 @@ public:
      * The caller can supply an optional window title; if none is passed, a default is used.
      * The caller can supply an optional initially selected value from the list.
      */
-    static std::string showOptionDialog(std::string message, const Vector<std::string>& options,
-                                        std::string title = "", std::string initiallySelected = "");
+    static std::string showOptionDialog(const std::string& message, const Vector<std::string>& options,
+                                        const std::string& title = "", const std::string& initiallySelected = "");
 
     /*
      * Displays the given text in a scrolling monospaced text area.
      * rows/cols parameters control size to show; set to <= 0 for a default limit.
      */
-    static void showTextFileDialog(std::string message, std::string title = "", int rows = -1, int cols = -1);
+    static void showTextFileDialog(const std::string& message, const std::string& title = "", int rows = -1, int cols = -1);
     
 private:
     /*

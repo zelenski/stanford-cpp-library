@@ -1,4 +1,6 @@
 /*
+ * @version 2017/10/06
+ * - hid POSIX signal handler behind preprocessor macro
  * @version 2016/12/07
  * - added assert* methods
  */
@@ -229,9 +231,11 @@ void __codeStepByStepSignalHandler(int sig) {
     std::exit(1);
 }
 
+#if !defined(_WIN32)
 void __posixSignalHandler(int sig, siginfo_t* /*siginfo*/, void* /*context*/) {
     __codeStepByStepSignalHandler(sig);
 }
+#endif // !defined(_WIN32)
 
 static void __setupSignalHandler() {
     bool handled = false;

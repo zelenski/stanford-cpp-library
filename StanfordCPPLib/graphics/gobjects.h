@@ -9,6 +9,8 @@
  * TODO: get fill color as RGB int?
  * TODO: operator << for gobjects? they already have toString()
  *
+ * @version 2017/10/16
+ * - added GLine constructor that takes GPoints
  * @version 2016/11/07
  * - alphabetized all members
  * - modified all members that accept std::string to take const std::string&
@@ -1198,6 +1200,16 @@ public:
      * the end.
      */
     GLine(double x0, double y0, double x1, double y1);
+
+    /*
+     * Constructor: GLine
+     * Usage: GLine* gline = new GLine(p0, p1);
+     * ----------------------------------------
+     * Constructs a line segment from its endpoints.  The point
+     * <code>p0</code> defines the start of the line and the point
+     * <code>p1</code> defines the end.
+     */
+    GLine(const GPoint& p0, const GPoint& p1);
 
     /*
      * Method: getEndPoint
