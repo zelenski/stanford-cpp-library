@@ -66,6 +66,7 @@ public class JBECanvas extends GCanvas {
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		GraphicsUtils.setAntialiasing(g, isAntiAliasing());
 		this.topCompound.paint(g);
 	}
 }

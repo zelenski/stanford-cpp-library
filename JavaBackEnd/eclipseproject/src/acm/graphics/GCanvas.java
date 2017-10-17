@@ -1,4 +1,10 @@
 /*
+ * @version 2017/10/14
+ * - small change to use GraphicsUtils for antialiasing
+ * @version 2017/10/12
+ * - fixed bug with clear() where transparent pixels wouldn't fill the canvas (!)
+ * - added (conditional)repaint overloads that take an x,y,w,h
+ * - added get/setRGB overloads that accept double x/y coords
  * @version 2017/07/21
  * - added hasElementAt(GPoint)
  * @version 2017/06/10
@@ -88,6 +94,8 @@ public class GCanvas extends JComponent
 	private static final long serialVersionUID = 0L;
 	private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 	
+	private static /* final */ boolean USE_BUFFERED_IMAGE = true;
+	
 	// color and font used to display mouse info
 	private static final Color PIXEL_GRID_COLOR = Color.GRAY;
 	private static final int PIXEL_GRID_INCREMENT = 10;
@@ -115,8 +123,10 @@ public class GCanvas extends JComponent
 	 */
 	public GCanvas() {
 		contents = new GObjectList(this);
-		bufferedImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);   // will be resized
-		osg = (Graphics2D) bufferedImage.getGraphics();
+		if (USE_BUFFERED_IMAGE) {
+			bufferedImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);   // will be resized
+			osg = (Graphics2D) bufferedImage.getGraphics();
+		}
 		setAntiAliasing(GObject.isAntiAliasing());
 		
 		gCanvasListener = new GCanvasListener(this);
@@ -227,23 +237,27 @@ public class GCanvas extends JComponent
 	 */
 	public void clear() {
 		// also clear out the buffered image
-		clear(bufferedImage);
-		clear(bufferedImage2);
-		removeAll();
+		if (USE_BUFFERED_IMAGE) {
+			clear(bufferedImage);
+			clear(bufferedImage2);
+		}
+		setAntiAliasing(isAntiAliasing());
+		removeAll();   // calls repaint
 	}
 	
 	private void clear(BufferedImage img) {
 		if (img != null) {
 			int w = img.getWidth();
 			int h = img.getHeight();
-			Graphics g = img.getGraphics();
-//			if (isOpaque()) {
-//				g.setColor(getBackground());
-//			} else {
-				g.setColor(TRANSPARENT);
-//			}
-			g.fillRect(0, 0, w, h);
-			g.setColor(getForeground());
+			Graphics2D g2 = (Graphics2D) img.getGraphics();
+			AlphaComposite composite = AlphaComposite.getInstance(AlphaComposite.CLEAR, 0.0f);
+			g2.setComposite(composite);	
+			g2.setColor(TRANSPARENT);
+			g2.fillRect(0, 0, w, h);
+			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+			img.flush();
+			g2 = (Graphics2D) img.getGraphics();
+			g2.setColor(getForeground());
 		}
 	}
 
@@ -261,6 +275,23 @@ public class GCanvas extends JComponent
 				bufferedImage.flush();
 			}
 			repaint();
+		}
+	}
+	
+	/**
+	 * Repaints part of the canvas if auto-repaint is in effect.  This method is called only
+	 * by the <a href="GObject.html#repaint()"><code>repaint</code></a> method in
+	 * <code>GObject</code> and is not accessible outside the package.
+	 *
+	 * @usage gc.conditionalRepaint();
+	 * @noshow
+	 */
+	protected void conditionalRepaint(int x, int y, int w, int h) {
+		if (autoRepaint) {
+//			if (bufferedImage != null) {
+//				bufferedImage.flush();
+//			}
+			repaint(x, y, w, h);
 		}
 	}
 	
@@ -404,43 +435,102 @@ public class GCanvas extends JComponent
 	/**
 	 * Draws an outlined version of the given shape.
 	 */
-	public void draw(Shape paramShape) {
-		getOSG().draw(paramShape);
+	public void draw(Shape shape) {
+		if (shape instanceof Arc2D) {
+			drawArc((Arc2D) shape);
+		} else if (shape instanceof Line2D) {
+			drawLine((Line2D) shape);
+		} else if (shape instanceof Ellipse2D) {
+			drawOval((Ellipse2D) shape);
+		} else if (shape instanceof Rectangle2D) {
+			drawRect((Rectangle2D) shape);
+		} else if (hasOSG()) {
+			getOSG().draw(shape);
+			conditionalRepaint();
+		}
+	}
+
+	/**
+	 * Draws an outlined arc with the given coordinates.
+	 */
+	public void drawArc(Arc2D arc) {
+		if (hasOSG()) {
+			getOSG().draw(arc);
+		} else {
+			GArc garc = new GArc(arc.getX(), arc.getY(), arc.getWidth(), arc.getHeight(), arc.getAngleStart(), arc.getAngleExtent());
+			garc.setColor(getForeground());
+			add(garc);
+		}
 		conditionalRepaint();
 	}
 
 	/**
 	 * Draws an outlined arc with the given coordinates.
 	 */
-	public void drawArc(double paramDouble1, double paramDouble2,
-			double paramDouble3, double paramDouble4, double paramDouble5,
-			double paramDouble6) {
-		Arc2D.Double localDouble = new Arc2D.Double(paramDouble1, paramDouble2,
-				paramDouble3, paramDouble4, paramDouble5, paramDouble6, 0);
-
-		getOSG().draw(localDouble);
+	public void drawArc(double x, double y, double width, double height, double start, double extent) {
+		if (hasOSG()) {
+			getOSG().drawArc((int) x, (int) y, (int) width, (int) height, (int) start, (int) extent);
+		} else {
+			GArc arc = new GArc(x, y, width, height, start, extent);
+			arc.setColor(getForeground());
+			add(arc);
+		}
 		conditionalRepaint();
 	}
 
 	/**
 	 * Draws a line with the given endpoint coordinates.
 	 */
-	public void drawLine(double paramDouble1, double paramDouble2,
-			double paramDouble3, double paramDouble4) {
-		Line2D.Double localDouble = new Line2D.Double(paramDouble1,
-				paramDouble2, paramDouble3, paramDouble4);
-		getOSG().draw(localDouble);
+	public void drawLine(Line2D line) {
+		if (hasOSG()) {
+			getOSG().draw(line);
+		} else {
+			GLine gline = new GLine(line);
+			gline.setColor(getForeground());
+			add(gline);
+		}
+		conditionalRepaint();
+	}
+
+	/**
+	 * Draws a line with the given endpoint coordinates.
+	 */
+	public void drawLine(double x1, double y1, double x2, double y2) {
+		if (hasOSG()) {
+			getOSG().drawLine((int) x1, (int) y1, (int) x2, (int) y2);
+		} else {
+			GLine line = new GLine(x1, y1, x2, y2);
+			line.setColor(getForeground());
+			add(line);
+		}
 		conditionalRepaint();
 	}
 
 	/**
 	 * Draws an outlined oval with the given coordinates.
 	 */
-	public void drawOval(double paramDouble1, double paramDouble2,
-			double paramDouble3, double paramDouble4) {
-		Ellipse2D.Double localDouble = new Ellipse2D.Double(paramDouble1,
-				paramDouble2, paramDouble3, paramDouble4);
-		getOSG().draw(localDouble);
+	public void drawOval(Ellipse2D oval) {
+		if (hasOSG()) {
+			getOSG().draw(oval);
+		} else {
+			GOval goval = new GOval(oval);
+			goval.setColor(getForeground());
+			add(goval);
+		}
+		conditionalRepaint();
+	}
+
+	/**
+	 * Draws an outlined oval with the given coordinates.
+	 */
+	public void drawOval(double x, double y, double width, double height) {
+		if (hasOSG()) {
+			getOSG().drawOval((int) x, (int) y, (int) width, (int) height);
+		} else {
+			GOval oval = new GOval(x, y, width, height);
+			oval.setColor(getForeground());
+			add(oval);
+		}
 		conditionalRepaint();
 	}
 
@@ -451,8 +541,7 @@ public class GCanvas extends JComponent
 		theta = Math.toRadians(theta);
 		double x1 = x0 + r * Math.cos(theta);
 		double y1 = y0 - r * Math.sin(theta);
-		drawLine(x0, y0, x1, y1);
-		conditionalRepaint();
+		drawLine(x0, y0, x1, y1);   // calls conditionalRepaint
 		return new GPoint(x1, y1);
 	}
 
@@ -466,57 +555,142 @@ public class GCanvas extends JComponent
 	/**
 	 * Draws an outlined rectangle with the given coordinates.
 	 */
-	public void drawRect(double paramDouble1, double paramDouble2,
-			double paramDouble3, double paramDouble4) {
-		Rectangle2D.Double localDouble = new Rectangle2D.Double(paramDouble1,
-				paramDouble2, paramDouble3, paramDouble4);
-		getOSG().draw(localDouble);
+	public void drawRect(double x, double y, double width, double height) {
+		if (hasOSG()) {
+			getOSG().drawRect((int) x, (int) y, (int) width, (int) height);
+		} else {
+			GRect rect = new GRect(x, y, width, height);
+			rect.setColor(getForeground());
+			add(rect);
+		}
+		conditionalRepaint();
+	}
+
+	/**
+	 * Draws an outlined rectangle with the given coordinates.
+	 */
+	public void drawRect(Rectangle2D rect) {
+		if (hasOSG()) {
+			getOSG().draw(rect);
+		} else {
+			GRect grect = new GRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+			grect.setColor(getForeground());
+			add(grect);
+		}
 		conditionalRepaint();
 	}
 
 	/**
 	 * Draws a filled version of the given shape.
 	 */
-	public void fill(Shape paramShape) {
-		getOSG().fill(paramShape);
+	public void fill(Shape shape) {
+		if (shape instanceof Arc2D) {
+			fillArc((Arc2D) shape);
+		} else if (shape instanceof Line2D) {
+			drawLine((Line2D) shape);
+		} else if (shape instanceof Ellipse2D) {
+			fillOval((Ellipse2D) shape);
+		} else if (shape instanceof Rectangle2D) {
+			fillRect((Rectangle2D) shape);
+		} else if (hasOSG()) {
+			getOSG().fill(shape);
+			conditionalRepaint();
+		}
+	}
+
+	/**
+	 * Draws a filled arc with the given coordinates.
+	 */
+	public void fillArc(Arc2D arc) {
+		if (hasOSG()) {
+			getOSG().fill(arc);
+		} else {
+			GArc garc = new GArc(arc.getX(), arc.getY(), arc.getWidth(), arc.getHeight(), arc.getAngleStart(), arc.getAngleExtent());
+			garc.setColor(getForeground());
+			garc.setFilled(true);
+			garc.setFillColor(getForeground());
+			add(garc);
+		}
 		conditionalRepaint();
 	}
 
 	/**
 	 * Draws a filled arc with the given coordinates.
 	 */
-	public void fillArc(double paramDouble1, double paramDouble2,
-			double paramDouble3, double paramDouble4, double paramDouble5,
-			double paramDouble6) {
-		Arc2D.Double localDouble = new Arc2D.Double(paramDouble1, paramDouble2,
-				paramDouble3, paramDouble4, paramDouble5, paramDouble6, 2);
-
-		getOSG().fill(localDouble);
-		getOSG().draw(localDouble);
+	public void fillArc(double x, double y, double width, double height, double start, double extent) {
+		if (hasOSG()) {
+			getOSG().fillArc((int) x, (int) y, (int) width, (int) height, (int) start, (int) extent);
+		} else {
+			GArc arc = new GArc(x, y, width, height, start, extent);
+			arc.setColor(getForeground());
+			arc.setFilled(true);
+			arc.setFillColor(getForeground());
+			add(arc);
+		}
 		conditionalRepaint();
 	}
 
 	/**
 	 * Draws a filled oval with the given coordinates.
 	 */
-	public void fillOval(double paramDouble1, double paramDouble2,
-			double paramDouble3, double paramDouble4) {
-		Ellipse2D.Double localDouble = new Ellipse2D.Double(paramDouble1,
-				paramDouble2, paramDouble3, paramDouble4);
-		getOSG().fill(localDouble);
-		getOSG().draw(localDouble);
+	public void fillOval(Ellipse2D oval) {
+		if (hasOSG()) {
+			getOSG().fill(oval);
+		} else {
+			GOval goval = new GOval(oval);
+			goval.setColor(getForeground());
+			goval.setFilled(true);
+			goval.setFillColor(getForeground());
+			add(goval);
+		}
+		conditionalRepaint();
+	}
+
+	/**
+	 * Draws a filled oval with the given coordinates.
+	 */
+	public void fillOval(double x, double y, double width, double height) {
+		if (hasOSG()) {
+			getOSG().fillOval((int) x, (int) y, (int) width, (int) height);
+		} else {
+			GOval goval = new GOval(x, y, width, height);
+			goval.setColor(getForeground());
+			goval.setFilled(true);
+			goval.setFillColor(getForeground());
+			add(goval);
+		}
 		conditionalRepaint();
 	}
 
 	/**
 	 * Draws a filled rectangle with the given coordinates.
 	 */
-	public void fillRect(double paramDouble1, double paramDouble2,
-			double paramDouble3, double paramDouble4) {
-		Rectangle2D.Double localDouble = new Rectangle2D.Double(paramDouble1,
-				paramDouble2, paramDouble3, paramDouble4);
-		getOSG().fill(localDouble);
-		getOSG().draw(localDouble);
+	public void fillRect(double x, double y, double width, double height) {
+		if (hasOSG()) {
+			getOSG().fillRect((int) x, (int) y, (int) width, (int) height);
+		} else {
+			GRect grect = new GRect(x, y, width, height);
+			grect.setColor(getForeground());
+			grect.setFilled(true);
+			grect.setFillColor(getForeground());
+			add(grect);
+		}
+		conditionalRepaint();
+	}
+
+	/**
+	 * Draws a filled rectangle with the given coordinates.
+	 */
+	public void fillRect(Rectangle2D rect) {
+		if (hasOSG()) {
+			getOSG().fill(rect);
+		} else {
+			GRect grect = new GRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+			grect.setColor(getForeground());
+			grect.setFilled(true);
+			grect.setFillColor(getForeground());
+			add(grect);
+		}
 		conditionalRepaint();
 	}
 
@@ -630,16 +804,35 @@ public class GCanvas extends JComponent
 	 * Returns the graphical pen for drawing on this canvas.
 	 */
 	public Graphics2D getOSG() {
-		return osg;
+		if (osg == null && bufferedImage != null) {
+			osg = (Graphics2D) bufferedImage.getGraphics();
+			GraphicsUtils.setAntialiasing(osg, isAntiAliasing());
+		}
+		if (osg != null) {
+			return osg;
+		} else {
+			return (Graphics2D) getGraphics();
+		}
 	}
 	
 	/**
 	 * Returns a Base64-encoded representation of the pixel data of this image.
 	 */
 	public String getPixelsAsString() {
-		return GBufferedImage.toStringBase64(bufferedImage);
+		if (USE_BUFFERED_IMAGE && bufferedImage != null) {
+			return GBufferedImage.toStringBase64(bufferedImage);
+		} else {
+			return "";
+		}
 	}
 
+	/**
+	 * Returns the RGB color stored at the given (x, y) pixel, or 0 if that pixel falls outside the bounds of this canvas.
+	 */
+	public int getRGB(double x, double y) {
+		return getRGB((int) x, (int) y);
+	}
+	
 	/**
 	 * Returns the RGB color stored at the given (x, y) pixel, or 0 if that pixel falls outside the bounds of this canvas.
 	 */
@@ -684,12 +877,21 @@ public class GCanvas extends JComponent
 	public boolean hasElementAt(GPoint pt) {
 		return getElementAt(pt) != null;
 	}
+	
+	/**
+	 * Returns true if this canvas has an offscreen graphics pen for drawing.
+	 */
+	private boolean hasOSG() {
+		return getOSG() != null;
+	}
 
 	/**
 	 * Whether the given (x, y) point falls within the bounds of this canvas, from (0, 0) .. (width-1, height-1) inclusive.
 	 */
 	public boolean inBounds(int x, int y) {
-		return !(x < 0 || y < 0 || x >= bufferedImage.getWidth() || y >= bufferedImage.getHeight());
+		int w = bufferedImage == null ? this.getWidth() : bufferedImage.getWidth();
+		int h = bufferedImage == null ? this.getHeight() : bufferedImage.getHeight();
+		return !(x < 0 || y < 0 || x >= w || y >= h);
 	}
 	
 	/**
@@ -742,6 +944,8 @@ public class GCanvas extends JComponent
 	 */
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		GraphicsUtils.setAntialiasing(g, isAntiAliasing());
+		
 		if (showPixelInfo && bufferedImage2 != null) {
 			// special drawing if showPixelInfo is on (rare)
 			// draw onto a special second buffered image so I can get the pixels
@@ -755,6 +959,7 @@ public class GCanvas extends JComponent
 			if (bufferedImage != null) {
 				g2.drawImage(bufferedImage, 0, 0, this);
 			}
+			GraphicsUtils.setAntialiasing(g2, isAntiAliasing());
 			contents.mapPaint(g2);
 			g.drawImage(bufferedImage2, 0, 0, this);
 			paintPixelInfo(g);
@@ -783,11 +988,6 @@ public class GCanvas extends JComponent
 		int w = getWidth();
 		int h = getHeight();
 		
-		if (g instanceof Graphics2D && isAntiAliasing()) {
-			Graphics2D g2 = (Graphics2D) g;
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		}
-
 		g.setColor(PIXEL_GRID_COLOR);
 
 		// horizontal lines
@@ -826,10 +1026,6 @@ public class GCanvas extends JComponent
 		int sw = met.stringWidth(pxInfo);
 		// int sh = met.getHeight();
 		// System.out.println(pxInfo);
-		if (g instanceof Graphics2D && isAntiAliasing()) {
-			Graphics2D g2 = (Graphics2D) g;
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		}
 		g.drawString(pxInfo, w - sw - 5, h - 2);
 	}
 
@@ -1005,13 +1201,17 @@ public class GCanvas extends JComponent
 	 * Default true.
 	 */
 	public void setAntiAliasing(boolean antialias) {
+		boolean oldAntialias = this.antialias;
 		this.antialias = antialias;
-		if (antialias) {
-			osg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		} else {
-			osg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+		GraphicsUtils.setAntialiasing(this, antialias);
+		if (USE_BUFFERED_IMAGE) {
+			GraphicsUtils.setAntialiasing(osg, antialias);
+			GraphicsUtils.setAntialiasing(bufferedImage, antialias);
+			GraphicsUtils.setAntialiasing(bufferedImage2, antialias);
 		}
-		repaint();
+		if (oldAntialias != antialias) {
+			conditionalRepaint();
+		}
 	}
 
 	/**
@@ -1052,21 +1252,23 @@ public class GCanvas extends JComponent
 	}
 
 	public void setColor(Color color) {
-		getOSG().setColor(color);
+		setForeground(color);
 	}
 	
-	public void setColor(int paramInt) {
-		setColor(new Color(paramInt));
+	public void setColor(int rgb) {
+		setColor(new Color(rgb));
 	}
 	
 	@Override
 	public void setForeground(Color color) {
 		super.setForeground(color);
-		getOSG().setColor(color);
+		if (hasOSG()) {
+			getOSG().setColor(color);
+		}
 	}
 	
-	public void setForeground(int paramInt) {
-		setColor(new Color(paramInt));
+	public void setForeground(int rgb) {
+		setForeground(new Color(rgb));
 	}
 	
 	/**
@@ -1100,8 +1302,18 @@ public class GCanvas extends JComponent
 	}
 	
 	public void setPixelsFromString(String base64) {
-		GBufferedImage.fromStringBase64(base64, bufferedImage);
-		conditionalRepaint();
+		if (USE_BUFFERED_IMAGE && bufferedImage != null) {
+			GBufferedImage.fromStringBase64(base64, bufferedImage);
+			conditionalRepaint();
+		}
+	}
+
+	public void setRGB(double x, double y, int rgb) {
+		setRGB((int) x, (int) y, rgb, /* repaint */ false);
+	}
+	
+	public void setRGB(double x, double y, int rgb, boolean repaint) {
+		setRGB((int) x, (int) y, rgb, repaint);
 	}
 
 	public void setRGB(int x, int y, int rgb) {
@@ -1110,11 +1322,17 @@ public class GCanvas extends JComponent
 	
 	public void setRGB(int x, int y, int rgb, boolean repaint) {
 		if (inBounds(x, y)) {
-			bufferedImage.setRGB(x, y, rgb);
-			if (repaint) {
-				repaint();
+			if (bufferedImage == null) {
+				GRect rect = new GRect(x, y, 1, 1);
+				rect.setColor(new Color(rgb));
+				this.add(rect);
 			} else {
-				conditionalRepaint();
+				bufferedImage.setRGB(x, y, rgb);
+			}
+			if (repaint) {
+				repaint(x, y, /* width */ 1, /* height */ 1);
+			} else {
+				conditionalRepaint(x, y, /* width */ 1, /* height */ 1);
 			}
 		}
 	}
@@ -1137,14 +1355,13 @@ public class GCanvas extends JComponent
 	public void setShowPixelInfo(boolean show) {
 		this.showPixelInfo = show;
 		if (show) {
-			int w = Math.max(1, getWidth());
-			int h = Math.max(1, getHeight());
-			bufferedImage2 = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-			if (isAntiAliasing()) {
-				Graphics2D g2 = (Graphics2D) bufferedImage2.getGraphics();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			if (USE_BUFFERED_IMAGE) {
+				int w = Math.max(1, getWidth());
+				int h = Math.max(1, getHeight());
+				bufferedImage2 = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+				GraphicsUtils.setAntialiasing(bufferedImage2, isAntiAliasing());
+				bufferedImage2.getGraphics().setColor(getForeground());
 			}
-			bufferedImage2.getGraphics().setColor(getForeground());
 		} else {
 			bufferedImage2 = null;
 			lastMousePoint = null;
@@ -1242,7 +1459,11 @@ public class GCanvas extends JComponent
 	 * Returns the pixel contents of this canvas as a BufferedImage.
 	 */
 	public BufferedImage toImage() {
-		return toImage(bufferedImage.getWidth(), bufferedImage.getHeight());
+		if (USE_BUFFERED_IMAGE && bufferedImage != null) {
+			return toImage(bufferedImage.getWidth(), bufferedImage.getHeight());
+		} else {
+			return toImage(getWidth(), getHeight());
+		}
 	}
 	
 	/**
@@ -1251,11 +1472,12 @@ public class GCanvas extends JComponent
 	public BufferedImage toImage(int width, int height) {
 		// dump canvas into a BufferedImage
 		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-		Graphics g = img.getGraphics();
+		Graphics2D g = (Graphics2D) img.getGraphics();
 		if (isOpaque()) {
 			g.setColor(getBackground());
 			g.fillRect(0, 0, width, height);
 		}
+		GraphicsUtils.setAntialiasing(g, isAntiAliasing());
 		paint(g);
 		return img;
 	}
@@ -1308,6 +1530,10 @@ public class GCanvas extends JComponent
 		}
 
 		public void componentResized(ComponentEvent e) {
+			if (!USE_BUFFERED_IMAGE || bufferedImage == null) {
+				return;
+			}
+			
 			BufferedImage oldImage = bufferedImage;
 			int w = Math.max(1, getWidth());
 			int h = Math.max(1, getHeight());
@@ -1320,9 +1546,7 @@ public class GCanvas extends JComponent
 				bufferedImage2 = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 			}
 			osg = (Graphics2D) bufferedImage.getGraphics();
-			if (isAntiAliasing()) {
-				osg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			}
+			GraphicsUtils.setAntialiasing(osg, isAntiAliasing());
 
 			// draw background
 //			if (isOpaque()) {

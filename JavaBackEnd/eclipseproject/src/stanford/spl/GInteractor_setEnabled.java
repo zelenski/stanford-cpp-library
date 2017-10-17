@@ -10,7 +10,7 @@ public class GInteractor_setEnabled extends JBESwingCommand {
 		paramTokenScanner.verifyToken(",");
 		String bool = nextString(paramTokenScanner);
 		paramTokenScanner.verifyToken(")");
-		GObject.setAntiAliasing(bool.equals("true"));
+		// GObject.setAntiAliasing(bool.equals("true"));
 		GObject localGObject = paramJavaBackEnd.getGObject(interactorID);
 		if (localGObject != null && localGObject instanceof GInteractor) {
 			((GInteractor) localGObject).setEnabled(bool.equals("true"));

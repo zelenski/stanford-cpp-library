@@ -1,6 +1,8 @@
 /*
  * @author Marty Stepp
- * @version 2016/1021
+ * @version 2017/10/14
+ * - use GraphicsUtils for antialiasing
+ * @version 2016/10/21
  * - added getValueAsInt/Double, valueIsInt/Double
  * @version 2016/10/15
  * - initial version
@@ -15,6 +17,7 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.text.Document;
 
+import acm.graphics.GraphicsUtils;
 import stanford.cs106.util.StringUtils;
 
 @SuppressWarnings("serial")
@@ -59,8 +62,8 @@ public class JPlaceholderTextField extends JTextField {
 	}
 
 	@Override
-	protected void paintComponent(final Graphics pG) {
-		super.paintComponent(pG);
+	protected void paintComponent(final Graphics g) {
+		super.paintComponent(g);
 
 		if (placeholder == null || placeholder.length() == 0 || getText().length() > 0) {
 			return;
@@ -70,10 +73,9 @@ public class JPlaceholderTextField extends JTextField {
 			placeholderColor = getDisabledTextColor().darker();
 		}
 
-		final Graphics2D g = (Graphics2D) pG;
-		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		GraphicsUtils.setAntialiasing(g, true);
 		g.setColor(placeholderColor);
-		g.drawString(placeholder, getInsets().left, pG.getFontMetrics().getMaxAscent() + getInsets().top);
+		g.drawString(placeholder, getInsets().left, g.getFontMetrics().getMaxAscent() + getInsets().top);
 	}
 
 	public void setPlaceholder(final String s) {

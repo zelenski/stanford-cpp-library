@@ -2,6 +2,8 @@
  * This class contains utility functions related to GUIs.
  *
  * @author Marty Stepp
+ * @version 2017/10/12
+ * - added createLabel overloads with icon
  * @version 2016/11/26
  * - added getAncestor
  * @version 2016/05/26
@@ -355,14 +357,26 @@ public class GuiUtils {
 		return new ExtensionFileFilter(description, extensions);
 	}
 	
+	public static JLabel createLabel(String text, String icon) {
+		return createLabel(text, icon, /* width */ 0, /* rightAligned */ false);
+	}
+	
 	public static JLabel createLabel(String text, int width) {
-		return createLabel(text, width, /* rightAligned */ false);
+		return createLabel(text, /* icon */ null, width, /* rightAligned */ false);
 	}
 	
 	public static JLabel createLabel(String text, int width, boolean rightAligned) {
+		return createLabel(text, /* icon */ null, width, rightAligned);
+	}
+	
+	public static JLabel createLabel(String text, String icon, int width) {
+		return createLabel(text, icon, width, /* rightAligned */ false);
+	}
+	
+	public static JLabel createLabel(String text, String icon, int width, boolean rightAligned) {
 		JLabel label = new JLabel(text);
 		Dimension size = label.getPreferredSize();
-		if (size.width < width) {
+		if (width > 0 && size.width < width) {
 			size.width = width;
 		}
 		if (rightAligned) {
@@ -370,6 +384,19 @@ public class GuiUtils {
 		}
 		if (width > 0) {
 			label.setPreferredSize(size);
+		}
+		if (icon != null && icon.length() > 0) {
+			try {
+				if (ResourceUtils.fileExists(icon)) {
+					label.setIcon(new ImageIcon(ResourceUtils.filenameToURL(icon)));
+				}
+			} catch (Exception e) {
+				try {
+					label.setIcon(new ImageIcon(ResourceUtils.filenameToURL(icon)));
+				} catch (IORuntimeException ioe) {
+					// empty
+				}
+			}
 		}
 		return label;
 	}

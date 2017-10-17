@@ -1,4 +1,6 @@
 /*
+ * @version 2017/10/14
+ * - use GraphicsUtils for antialiasing
  * @version 2017/05/06
  * - added get/setCenterX/Y/Location
  * @version 2016/05/05
@@ -50,13 +52,13 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 	}
 
 	private GCompound compoundParent;
-	private AffineTransform matrix;
+	private AffineTransform matrix = null;
 	private Color objectColor;
-	private double lineWidth;
+	private double lineWidth = 1.0;
 	private double xc;
 	private double yc;
-	private boolean isVisible;
-	private boolean mouseListenersEnabled;
+	private boolean isVisible = true;
+	private boolean mouseListenersEnabled = false;
 	private transient MouseListener mouseListener;
 	private transient MouseMotionListener mouseMotionListener;
 	private transient ActionListener actionListener;
@@ -69,10 +71,7 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 	 * constructors of its subclasses.
 	 */
 	protected GObject() {
-		this.matrix = null;
-		this.lineWidth = 1.0;
-		this.isVisible = true;
-		this.mouseListenersEnabled = false;
+		// empty
 	}
 
 	/**
@@ -288,28 +287,22 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 	 */
 	protected Graphics2D createTransformedGraphics(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g.create();
+		GraphicsUtils.setAntialiasing(g2, GObject.isAntiAliasing());
 		Color objectColor = getObjectColor();
 		if (objectColor != null) {
 			g2.setColor(objectColor);
 		}
-		g2.translate(getX(), getY());
-		g2.setStroke(new BasicStroke((float) this.lineWidth));
+		double myX = getX();
+		double myY = getY();
+		if (myX != 0.0 || myY != 0.0) {
+			g2.translate(getX(), getY());
+		}
+		if (this.lineWidth != 1.0) {
+			g2.setStroke(new BasicStroke((float) this.lineWidth));
+		}
 		if (this.matrix != null) {
 			g2.transform(this.matrix);
 		}
-		if (antialiasing) {
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-					RenderingHints.VALUE_ANTIALIAS_ON);
-		} else {
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-					RenderingHints.VALUE_ANTIALIAS_OFF);
-			g2.setRenderingHint(
-					RenderingHints.KEY_TEXT_ANTIALIASING,
-					RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-		}
-		g2.setRenderingHint(RenderingHints.KEY_RENDERING,
-				RenderingHints.VALUE_RENDER_SPEED);
-
 		return g2;
 	}
 
@@ -642,9 +635,11 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 	 */
 	public final void paint(Graphics g) {
 		if (this.isVisible) {
-			Graphics2D localGraphics2D = createTransformedGraphics(g);
-			paint2d(localGraphics2D);
-			localGraphics2D.dispose();
+			Graphics2D g2 = createTransformedGraphics(g);
+			paint2d(g2);
+			if (g2 != g) {
+				g2.dispose();
+			}
 		}
 	}
 

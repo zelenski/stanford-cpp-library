@@ -3,16 +3,16 @@ package stanford.spl;
 import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
-
 import javax.imageio.*;
 import javax.swing.*;
-
-import acm.graphics.GObject;
+import acm.graphics.*;
 import stanford.cs106.io.IORuntimeException;
 
 /**
  * 
  * @author Marty Stepp
+ * @version 2017/10/14
+ * - small change to use GraphicsUtils for antialiasing
  * @version 2017/09/28
  * - bug fixes in error handling in load/save
  * @version 2015/10/08
@@ -39,10 +39,7 @@ public class GBufferedImage extends GInteractor {
 		this.imageHeight = height;
 		this.backgroundColor = backgroundColor;
 		bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		if (!GObject.isAntiAliasing()) {
-			Graphics2D g = (Graphics2D) bufferedImage.getGraphics();
-			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-		}
+		GraphicsUtils.setAntialiasingDefault(bufferedImage);
 		
 		label = (JLabel) this.getInteractor();
 		if (backgroundColor != 0) {

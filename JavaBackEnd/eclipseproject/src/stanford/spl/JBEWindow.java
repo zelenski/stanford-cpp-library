@@ -1,6 +1,9 @@
 /*
  * This is the class that represents the C++ lib GWindow class.
  * 
+ * @version 2017/10/12
+ * - added is/setRepaintImmediately
+ * - alphabetized methods
  * @version 2016/10/12
  * - added getContentPaneSize method
  * @version 2016/10/07
@@ -36,6 +39,7 @@ public class JBEWindow extends JFrame {
 	private JPanel eastPanel;
 	private JPanel southPanel;
 	private JPanel westPanel;
+	private boolean repaintImmediately = true;
 
 	public JBEWindow(JavaBackEnd paramJavaBackEnd, String paramString1,
 			String paramString2, int width, int height) {
@@ -50,7 +54,81 @@ public class JBEWindow extends JFrame {
 		this.canvas.addMouseMotionListener(this.jbe);
 		this.canvas.addKeyListener(this.jbe);
 		add(this.canvas, "Center");
-		createSidePanels();
+		
+		// create side panels
+		this.northPanel = new JPanel();
+		this.southPanel = new JPanel();
+		this.eastPanel = new JPanel();
+		this.westPanel = new JPanel();
+		this.northPanel.setLayout(new TableLayout(1, 0, 5, 5));
+		this.southPanel.setLayout(new TableLayout(1, 0, 5, 5));
+		this.westPanel.setLayout(new TableLayout(0, 1, 5, 5));
+		this.eastPanel.setLayout(new TableLayout(0, 1, 5, 5));
+		add(this.northPanel, "North");
+		add(this.southPanel, "South");
+		add(this.eastPanel, "East");
+		add(this.westPanel, "West");
+	}
+
+	// JL: SwingUtilities.invokeLater
+	public void addToRegion(JComponent paramJComponent, String paramString) {
+		Container localJPanel = null;
+		if (paramString.equalsIgnoreCase("NORTH")) {
+			localJPanel = this.northPanel;
+		} else if (paramString.equalsIgnoreCase("EAST")) {
+			localJPanel = this.eastPanel;
+		} else if (paramString.equalsIgnoreCase("SOUTH")) {
+			localJPanel = this.southPanel;
+		} else if (paramString.equalsIgnoreCase("WEST")) {
+			localJPanel = this.westPanel;
+		} else if (paramString.equalsIgnoreCase("CENTER")) {
+			remove(this.canvas);
+			localJPanel = this.getContentPane();
+		}
+		
+		if (localJPanel != null) {
+			localJPanel.add(paramJComponent);
+			validate();
+		}
+	}
+
+	// JL: SwingUtilities.invokeLater
+	public void clear() {
+		this.canvas.clear();
+		int i = 0;
+		if (this.northPanel != null) {
+			this.northPanel.removeAll();
+			i = 1;
+		}
+		if (this.eastPanel != null) {
+			this.eastPanel.removeAll();
+			i = 1;
+		}
+		if (this.southPanel != null) {
+			this.southPanel.removeAll();
+			i = 1;
+		}
+		if (this.westPanel != null) {
+			this.westPanel.removeAll();
+			i = 1;
+		}
+		if (i != 0) {
+			validate();
+		}
+		repaint();
+	}
+
+	public void clearCanvas() {
+		this.canvas.clear();
+		if (repaintImmediately) {
+			repaint();
+		}
+	}
+	
+	// JL: SwingUtilities.invokeLater
+	public void close() {
+		WindowEvent localWindowEvent = new WindowEvent(this, 201);
+		processWindowEvent(localWindowEvent);
 	}
 
 	public JBECanvas getCanvas() {
@@ -107,63 +185,9 @@ public class JBEWindow extends JFrame {
 	public String getWindowId() {
 		return this.windowId;
 	}
-
-	// JL: SwingUtilities.invokeLater
-	public void close() {
-		WindowEvent localWindowEvent = new WindowEvent(this, 201);
-		processWindowEvent(localWindowEvent);
-	}
-
-	// JL: SwingUtilities.invokeLater
-	public void clear() {
-		this.canvas.clear();
-		int i = 0;
-		if (this.northPanel != null) {
-			this.northPanel.removeAll();
-			i = 1;
-		}
-		if (this.eastPanel != null) {
-			this.eastPanel.removeAll();
-			i = 1;
-		}
-		if (this.southPanel != null) {
-			this.southPanel.removeAll();
-			i = 1;
-		}
-		if (this.westPanel != null) {
-			this.westPanel.removeAll();
-			i = 1;
-		}
-		if (i != 0) {
-			validate();
-		}
-	}
-
-	public void clearCanvas() {
-		this.canvas.clear();
-		repaint();
-	}
 	
-	// JL: SwingUtilities.invokeLater
-	public void addToRegion(JComponent paramJComponent, String paramString) {
-		Container localJPanel = null;
-		if (paramString.equalsIgnoreCase("NORTH")) {
-			localJPanel = this.northPanel;
-		} else if (paramString.equalsIgnoreCase("EAST")) {
-			localJPanel = this.eastPanel;
-		} else if (paramString.equalsIgnoreCase("SOUTH")) {
-			localJPanel = this.southPanel;
-		} else if (paramString.equalsIgnoreCase("WEST")) {
-			localJPanel = this.westPanel;
-		} else if (paramString.equalsIgnoreCase("CENTER")) {
-			remove(this.canvas);
-			localJPanel = this.getContentPane();
-		}
-		
-		if (localJPanel != null) {
-			localJPanel.add(paramJComponent);
-			validate();
-		}
+	public boolean isRepaintImmediately() {
+		return repaintImmediately;
 	}
 
 	// JL: SwingUtilities.invokeLater
@@ -234,18 +258,8 @@ public class JBEWindow extends JFrame {
 		}
 	}
 	
-	private void createSidePanels() {
-		this.northPanel = new JPanel();
-		this.southPanel = new JPanel();
-		this.eastPanel = new JPanel();
-		this.westPanel = new JPanel();
-		this.northPanel.setLayout(new TableLayout(1, 0, 5, 5));
-		this.southPanel.setLayout(new TableLayout(1, 0, 5, 5));
-		this.westPanel.setLayout(new TableLayout(0, 1, 5, 5));
-		this.eastPanel.setLayout(new TableLayout(0, 1, 5, 5));
-		add(this.northPanel, "North");
-		add(this.southPanel, "South");
-		add(this.eastPanel, "East");
-		add(this.westPanel, "West");
+	public void setRepaintImmediately(boolean value) {
+		repaintImmediately = value;
+		this.canvas.setAutoRepaintFlag(repaintImmediately);
 	}
 }

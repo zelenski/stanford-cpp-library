@@ -1,4 +1,9 @@
 /*
+ * @version 2017/10/12
+ * - added GTextLabel_create
+ * - added GWindow_setRepaintImmediately
+ * @version 2017/10/05
+ * - added GWindow_rememberPosition
  * @version 2017/09/24
  * - added JBEConsole_getTitle
  * @version 2016/12/01
@@ -205,6 +210,7 @@ public abstract class JBECommand {
 			GTextField_setEditable.class,
 			GTextField_setPlaceholder.class,
 			GTextField_setText.class,
+			GTextLabel_create.class,
 			GTimer_create.class,
 			GTimer_deleteTimer.class,
 			GTimer_pause.class,
@@ -231,6 +237,7 @@ public abstract class JBECommand {
 			GWindow_getSize.class,
 			GWindow_minimize.class,
 			GWindow_pack.class,
+			GWindow_rememberPosition.class,
 			GWindow_removeFromRegion.class,
 			GWindow_repaint.class,
 			GWindow_requestFocus.class,
@@ -244,6 +251,7 @@ public abstract class JBECommand {
 			GWindow_setPixels.class,
 			GWindow_setRegionAlignment.class,
 			GWindow_setRegionSize.class,
+			GWindow_setRepaintImmediately.class,
 			GWindow_setResizable.class,
 			GWindow_setSize.class,
 			GWindow_setTitle.class,

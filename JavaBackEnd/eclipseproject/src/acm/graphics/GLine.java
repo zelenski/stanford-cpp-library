@@ -1,4 +1,6 @@
 /*
+ * @version 2017/10/14
+ * - added Point/GPoint/Line2D constructors
  * @version 2016/06/01
  * - added new constructors
  * - added setEndPointPolar
@@ -6,39 +8,16 @@
  * @version 2016/05/22
  * - bug fix for incorrect positioning in paint2d
  */
-
-/*
- * @(#)GLine.java   1.1 1 08/08/01
- */
-
-// ************************************************************************
-// * Copyright (c) 2008 by the Association for Computing Machinery        *
-// *                                                                      *
-// * The Java Task Force seeks to impose few restrictions on the use of   *
-// * these packages so that users have as much freedom as possible to     *
-// * use this software in constructive ways and can make the benefits of  *
-// * that work available to others.  In view of the legal complexities    *
-// * of software development, however, it is essential for the ACM to     *
-// * maintain its copyright to guard against attempts by others to        *
-// * claim ownership rights.  The full text of the JTF Software License   *
-// * is available at the following URL:                                   *
-// *                                                                      *
-// *          http://www.acm.org/jtf/jtf-software-license.pdf             *
-// *                                                                      *
-// ************************************************************************
-
 // REVISION HISTORY
-//
-// -- V2.0 --
 // Code cleanup 30-Sep-06 (ESR)
 //   1. Removed vestigial inherited methods setFilled and isFilled.
-//
 // Feature enhancement 26-May-08 (ESR)
 //   1. Added support for serialization.
 
 package acm.graphics;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
 
 /* Class: GLine */
 /**
@@ -106,6 +85,27 @@ public class GLine extends GObject implements GScalable {
 		setLocation(x0, y0);
 		dx = x1 - x0;
 		dy = y1 - y0;
+	}
+	
+	/**
+	 * Constructs a line segment from the given pair of points.
+	 */
+	public GLine(GPoint p1, GPoint p2) {
+		this(p1.getX(), p1.getY(), p2.getX(), p2.getY());
+	}
+	
+	/**
+	 * Constructs a line segment from the given other line segment.
+	 */
+	public GLine(Line2D line) {
+		this(line.getX1(), line.getY1(), line.getX2(), line.getY2());
+	}
+	
+	/**
+	 * Constructs a line segment from the given pair of points.
+	 */
+	public GLine(Point p1, Point p2) {
+		this(p1.getX(), p1.getY(), p2.getX(), p2.getY());
 	}
 
 	/* Method: contains(x, y) */

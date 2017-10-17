@@ -1,4 +1,7 @@
 /*
+ * @version 2017/10/14
+ * - added Ellipse2D constructor, parameterless constructor
+ * - rename some method/ctor parameters
  * @version 2016/10/12
  * - JL's getBounds fix for contains()
  */
@@ -17,14 +20,22 @@ public class GOval extends GObject implements GFillable, GResizable {
 	private boolean isFilled;
 	private Color fillColor;
 
-	public GOval(double d, double d1) {
-		this(0.0D, 0.0D, d, d1);
+	public GOval() {
+		this(0.0, 0.0, 0.0, 0.0);
 	}
 
-	public GOval(double d, double d1, double d2, double d3) {
-		frameWidth = d2;
-		frameHeight = d3;
-		setLocation(d, d1);
+	public GOval(double width, double height) {
+		this(0.0, 0.0, width, height);
+	}
+
+	public GOval(double x, double y, double width, double height) {
+		frameWidth = width;
+		frameHeight = height;
+		setLocation(x, y);
+	}
+	
+	public GOval(Ellipse2D oval) {
+		this(oval.getX(), oval.getY(), oval.getWidth(), oval.getHeight());
 	}
 
 	public GRectangle getBounds() {
@@ -37,25 +48,25 @@ public class GOval extends GObject implements GFillable, GResizable {
 				rectangle.getHeight());
 	}
 
-	public boolean contains(double d, double d1) {
+	public boolean contains(double x, double y) {
 		Object obj = new java.awt.geom.Ellipse2D.Double(0.0D, 0.0D, frameWidth, frameHeight);
 		AffineTransform affinetransform = getMatrix();
 		if (affinetransform != null) {
 			// JL: remove getBounds() call here
 			obj = affinetransform.createTransformedShape(((Shape) (obj)));
 		}
-		return ((Shape) (obj)).contains(d - getX(), d1 - getY());
+		return ((Shape) (obj)).contains(x - getX(), y - getY());
 	}
 
-	protected void paint2d(Graphics2D graphics2d) {
-		java.awt.geom.Ellipse2D.Double double1 = new java.awt.geom.Ellipse2D.Double(0.0D, 0.0D, frameWidth,
+	protected void paint2d(Graphics2D g2) {
+		java.awt.geom.Ellipse2D.Double oval = new java.awt.geom.Ellipse2D.Double(0.0D, 0.0D, frameWidth,
 				frameHeight);
 		if (isFilled()) {
-			graphics2d.setColor(getFillColor());
-			graphics2d.fill(double1);
-			graphics2d.setColor(getColor());
+			g2.setColor(getFillColor());
+			g2.fill(oval);
+			g2.setColor(getColor());
 		}
-		graphics2d.draw(double1);
+		g2.draw(oval);
 	}
 
 	public void setFilled(boolean flag) {
@@ -76,12 +87,12 @@ public class GOval extends GObject implements GFillable, GResizable {
 		return fillColor != null ? fillColor : getColor();
 	}
 
-	public void setSize(double d, double d1) {
+	public void setSize(double width, double height) {
 		if (getMatrix() != null) {
 			throw new ErrorException("setSize: Object has been transformed");
 		} else {
-			frameWidth = d;
-			frameHeight = d1;
+			frameWidth = width;
+			frameHeight = height;
 			repaint();
 			return;
 		}
@@ -95,13 +106,13 @@ public class GOval extends GObject implements GFillable, GResizable {
 		return new GDimension(frameWidth, frameHeight);
 	}
 
-	public void setBounds(double d, double d1, double d2, double d3) {
+	public void setBounds(double x, double y, double width, double height) {
 		if (getMatrix() != null) {
 			throw new ErrorException("setBounds: Object has been transformed");
 		} else {
-			frameWidth = d2;
-			frameHeight = d3;
-			setLocation(d, d1);
+			frameWidth = width;
+			frameHeight = height;
+			setLocation(x, y);
 			return;
 		}
 	}
