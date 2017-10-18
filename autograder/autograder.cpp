@@ -6,6 +6,9 @@
  * See autograder.h for documentation of each member.
  * 
  * @author Marty Stepp
+ * @version 2017/10/05
+ * - avoid error on file-not-found in showStudentTextFile
+ * - made autograder window remember position
  * @version 2016/12/01
  * - fixed memory leak from autograder buttons
  * - removed most "current test case" logic and replaced with testcase-specific logic
@@ -383,7 +386,12 @@ void showOutput(std::ostringstream& output, bool showIfGraphical, bool showIfCon
 }
 
 void showStudentTextFile(const std::string& filename, int maxWidth, int maxHeight) {
-    std::string myText = readEntireFile(filename);
+    std::string myText;
+    if (fileExists(filename)) {
+        myText = readEntireFile(filename);
+    } else {
+        myText = "file not found: " + filename;
+    }
     int height = stringutils::height(myText);
     if (maxWidth > 0) {
         myText = stringutils::trimToWidth(myText, maxWidth);
@@ -612,6 +620,8 @@ int autograderGraphicalMain(int argc, char** argv) {
     GWindow gui(500, 300, /* visible */ false);
     gui.setTitle(STATIC_VARIABLE(FLAGS).assignmentName + " Autograder");
     gui.setCanvasSize(0, 0);
+    autograder::gwindowSetIsAutograderWindow(gui, true);
+    autograder::gwindowRememberPosition(gui);
     gui.setExitOnClose(true);
     
     GLabel startLabel("");

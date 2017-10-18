@@ -54,7 +54,7 @@ extern int _mainFlags;
 /*
  * max # of chars student's program can print before halted by autograder
  */
-#define MAX_STUDENT_OUTPUT 65536
+#define MAX_STUDENT_OUTPUT 262144
 
 namespace autograder {
 
