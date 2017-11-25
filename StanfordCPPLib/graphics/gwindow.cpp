@@ -211,6 +211,7 @@ void GWindow::initGWindow(double width, double height, bool visible) {
     gwd->windowY = 0;
     gwd->top = new GCompound();
     gwd->colorInt = 0;
+    gwd->colorIntHasAlpha = false;
     gwd->closed = false;
     gwd->visible = visible;
     gwd->resizable = false;
@@ -877,10 +878,11 @@ void GWindow::setCloseOperation(CloseOperation op) {
     stanfordcpplib::getPlatform()->gwindow_setCloseOperation(*this, (int) op);
 }
 
-void GWindow::setColor(int rgb) {
+void GWindow::setColor(int rgb, int hasAlpha) {
     if (gwd) {
-        gwd->color = convertRGBToColor(rgb);
+        gwd->color = convertRGBToColor(rgb, hasAlpha);
         gwd->colorInt = rgb;
+        gwd->colorIntHasAlpha = hasAlpha;
     }
 }
 
@@ -1070,14 +1072,30 @@ static std::string canonicalColorName(const std::string& str) {
 int convertColorToRGB(const std::string& colorName) {
     if (colorName == "") return -1;
     if (colorName[0] == '#') {
-        std::istringstream is(colorName.substr(1) + "@");
+        // deal with colorName of the form "#aarrggbb" or "#rrggbb"
+        int aa = 0xff;
+        std::string name = colorName.substr(1);
+        int len = name.length();
+        if (len == 8) {
+            std::istringstream is(name.substr(0, 2) + "@");
+            char terminator = '\0';
+            is >> std::hex >> aa >> terminator;
+            if (terminator != '@') {
+                error("convertColorToRGB: Illegal color - " + colorName);
+            }
+            name = name.substr(2);
+        } else {
+            if (len != 6)
+                error("convertColorToRGB: Illegal color - " + colorName);
+        }
+        std::istringstream is(name + "@");
         int rgb;
         char terminator = '\0';
         is >> std::hex >> rgb >> terminator;
         if (terminator != '@') {
             error("convertColorToRGB: Illegal color - " + colorName);
         }
-        return rgb;
+        return rgb | aa << 24;
     }
     std::string name = canonicalColorName(colorName);
     if (!colorTable().containsKey(name)) {
@@ -1086,9 +1104,15 @@ int convertColorToRGB(const std::string& colorName) {
     return colorTable()[name];
 }
 
-std::string convertRGBToColor(int rgb) {
+// Returns string of the form "#rrggbb" if `hasAlpha` is false (the default).
+// Returns a string of the form "#aarrggbb" if `hasAlpha` is true.
+std::string convertRGBToColor(int rgb, bool hasAlpha) {
     std::ostringstream os;
     os << std::hex << std::setfill('0') << std::uppercase << "#";
+    if (hasAlpha) {
+        int aa = (rgb >> 24 & 0xFF);
+        os << std::setw(2) << aa;
+    }
     os << std::setw(2) << (rgb >> 16 & 0xFF);
     os << std::setw(2) << (rgb >> 8 & 0xFF);
     os << std::setw(2) << (rgb & 0xFF);

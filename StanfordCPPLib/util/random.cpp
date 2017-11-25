@@ -86,7 +86,7 @@ int randomColor() {
 }
 
 // don't want to depend on gwindow.h
-extern std::string convertRGBToColor(int rgb);
+extern std::string convertRGBToColor(int rgb, bool hasAlpha = false);
 
 std::string randomColorString() {
     return convertRGBToColor(randomColor());
