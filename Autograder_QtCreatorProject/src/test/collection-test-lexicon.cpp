@@ -164,3 +164,19 @@ TIMED_TEST(LexiconTests, initializerListTest_Lexicon, TEST_TIMEOUT_DEFAULT) {
     assertTrue("init list Lexicon contains sixty", lex2.contains("sixty"));
     assertTrue("init list Lexicon contains seventy", lex2.contains("seventy"));
 }
+
+#ifdef SPL_THROW_ON_INVALID_ITERATOR
+TIMED_TEST(LexiconTests, iteratorVersionTest_Lexicon, TEST_TIMEOUT_DEFAULT) {
+    Lexicon lex {"ten", "twenty", "thirty", "forty"};
+    try {
+        for (std::string s : lex) {
+            if (s.length() % 2 == 0) {
+                lex.remove(s);
+            }
+        }
+        assertFail("should not get to end of test; should throw exception before now");
+    } catch (ErrorException ex) {
+        assertPass("threw exception successfully");
+    }
+}
+#endif // SPL_THROW_ON_INVALID_ITERATOR

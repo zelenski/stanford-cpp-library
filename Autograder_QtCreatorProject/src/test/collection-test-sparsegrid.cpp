@@ -75,6 +75,22 @@ TIMED_TEST(SparseGridTests, initializerListTest_SparseGrid, TEST_TIMEOUT_DEFAULT
     assertEqualsInt("init list SparseGrid[1][2]", 60, grid[1][2]);
 }
 
+#ifdef SPL_THROW_ON_INVALID_ITERATOR
+TIMED_TEST(SparseGridTests, iteratorVersionTest_SparseGrid, TEST_TIMEOUT_DEFAULT) {
+    SparseGrid<int> grid {{10, 20, 30}, {40, 50, 60}};
+    try {
+        for (int n : grid) {
+            if (n % 2 == 0) {
+                grid.fill(42);
+            }
+        }
+        assertFail("should not get to end of test; should throw exception before now");
+    } catch (ErrorException ex) {
+        assertPass("threw exception successfully");
+    }
+}
+#endif // SPL_THROW_ON_INVALID_ITERATOR
+
 TIMED_TEST(SparseGridTests, randomElementTest_Grid, TEST_TIMEOUT_DEFAULT) {
     Map<std::string, int> counts;
     int RUNS = 200;

@@ -60,6 +60,25 @@ TIMED_TEST(LinkedListTests, hashCodeTest_LinkedList, TEST_TIMEOUT_DEFAULT) {
     assertEqualsInt("hashset of LinkedList size", 2, hashllist.size());
 }
 
+TIMED_TEST(LinkedListTests, indexOfTest_LinkedList, TEST_TIMEOUT_DEFAULT) {
+    //                    0   1   2   3   4   5   6   7  8
+    LinkedList<int> vec {10, 20, 30, 10, 40, 10, 50, 60, 0};
+    assertEqualsInt("indexOf 10", 0, vec.indexOf(10));
+    assertEqualsInt("indexOf 20", 1, vec.indexOf(20));
+    assertEqualsInt("indexOf 50", 6, vec.indexOf(50));
+
+    assertEqualsInt("lastIndexOf 10", 5, vec.lastIndexOf(10));
+    assertEqualsInt("lastIndexOf 20", 1, vec.lastIndexOf(20));
+    assertEqualsInt("lastIndexOf 0",  8, vec.lastIndexOf(0));
+
+    assertEqualsBool("contains 10", true, vec.contains(10));
+    assertEqualsBool("contains 20", true, vec.contains(20));
+    assertEqualsBool("contains 50", true, vec.contains(50));
+    assertEqualsBool("contains 70", false, vec.contains(70));
+    assertEqualsBool("contains -1", false, vec.contains(-1));
+    assertEqualsBool("contains 99", false, vec.contains(99));
+}
+
 TIMED_TEST(LinkedListTests, initializerListTest_LinkedList, TEST_TIMEOUT_DEFAULT) {
     auto list = {60, 70};
 
@@ -73,6 +92,22 @@ TIMED_TEST(LinkedListTests, initializerListTest_LinkedList, TEST_TIMEOUT_DEFAULT
     assertCollection("after + (shouldn't modify)", {10, 20, 30, 40, 50}, llist);
     assertCollection("after + copy", {10, 20, 30, 40, 50, 60, 70}, copy);
 }
+
+#ifdef SPL_THROW_ON_INVALID_ITERATOR
+TIMED_TEST(LinkedListTests, iteratorVersionTest_LinkedList, TEST_TIMEOUT_DEFAULT) {
+    LinkedList<int> ll {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    try {
+        for (int n : ll) {
+            if (n % 2 == 0) {
+                ll.remove(ll.size() - 1);
+            }
+        }
+        assertFail("should not get to end of test; should throw exception before now");
+    } catch (ErrorException ex) {
+        assertPass("threw exception successfully");
+    }
+}
+#endif // SPL_THROW_ON_INVALID_ITERATOR
 
 TIMED_TEST(LinkedListTests, randomElementTest_LinkedList, TEST_TIMEOUT_DEFAULT) {
     Map<std::string, int> counts;
@@ -91,13 +126,32 @@ TIMED_TEST(LinkedListTests, randomElementTest_LinkedList, TEST_TIMEOUT_DEFAULT) 
     }
 }
 
+TIMED_TEST(LinkedListTests, removeValueTest_LinkedList, TEST_TIMEOUT_DEFAULT) {
+    //                    0   1   2   3   4   5   6   7  8
+    LinkedList<int> vec {10, 20, 30, 10, 40, 10, 50, 60, 0};
+    vec.removeValue(40);
+    vec.removeValue(10);
+    vec.removeValue(10);
+    vec.removeValue(0);
+    LinkedList<int> exp {20, 30, 10, 50, 60};
+    assertEqualsString("after removes", exp.toString(), vec.toString());
+}
+
+TIMED_TEST(LinkedListTests, reverseTest_LinkedList, TEST_TIMEOUT_DEFAULT) {
+    //                    0   1   2   3   4   5   6   7   8   9  10
+    LinkedList<int> vec {70, 30, 20, 10, 40, 90, 10, 50,  0, 60, 50};
+    vec.reverse();
+    LinkedList<int> exp {50, 60, 0, 50, 10, 90, 40, 10, 20, 30, 70};
+    assertEqualsString("after reverse", exp.toString(), vec.toString());
+}
+
 TIMED_TEST(LinkedListTests, shuffleTest_LinkedList, TEST_TIMEOUT_DEFAULT) {
     LinkedList<int> v {10, 20, 30, 40, 50};
     Map<int, Map<int, int> > valueIndexCount;
 
     // shuffle 100 times
     for (int i = 0; i < 100; i++) {
-        shuffle(v);
+        v.shuffle();
         for (int j = 0; j < v.size(); j++) {
             valueIndexCount[v[j]][j]++;
         }
@@ -109,4 +163,12 @@ TIMED_TEST(LinkedListTests, shuffleTest_LinkedList, TEST_TIMEOUT_DEFAULT) {
             assertNotEqualsInt("", 0, valueIndexCount[n][j]);
         }
     }
+}
+
+TIMED_TEST(LinkedListTests, sortTest_LinkedList, TEST_TIMEOUT_DEFAULT) {
+    //                    0   1   2   3   4   5   6   7   8   9  10
+    LinkedList<int> vec {70, 30, 20, 10, 40, 90, 10, 50,  0, 60, 50};
+    vec.sort();
+    LinkedList<int> exp { 0, 10, 10, 20, 30, 40, 50, 50, 60, 70, 90};
+    assertEqualsString("after sort", exp.toString(), vec.toString());
 }

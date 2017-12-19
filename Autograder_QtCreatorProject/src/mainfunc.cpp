@@ -177,10 +177,18 @@ TIMED_TEST(PassFailTests, test_exception_after_easy_assert, TEST_TIMEOUT_DEFAULT
 //    assertEqualsCString("compare strings", "42", "42");
 //}
 
+int f() {
+    if (2 % 2 == 1) {
+        return 42;
+    } else {
+        return 43;
+    }
+}
 
 // this just needs to be here so that it will become studentMain()
 int main() {
     cout << "Hello, world!" << endl;
+    cout << "f is: " << f() << endl;
     return 0;
 }
 

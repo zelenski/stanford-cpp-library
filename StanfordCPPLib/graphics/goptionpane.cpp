@@ -5,6 +5,8 @@
  * See goptionpane.h for documentation of each member.
  * 
  * @author Marty Stepp
+ * @version 2017/10/18
+ * - fixed compiler warnings
  * @version 2017/10/12
  * - added initialValue to showInputDialog
  * - modified functions to accept const string& instead of string
@@ -35,7 +37,7 @@ GOptionPane::ConfirmResult GOptionPane::showConfirmDialog(const std::string& mes
     }
     std::string titleToUse = title.empty() ? std::string("Select an option") : title;
     int result = stanfordcpplib::getPlatform()->goptionpane_showConfirmDialog(message, titleToUse, type);
-    if (result == OK_OPTION || result == YES_OPTION) {
+    if (result == OK_OPTION) {
         // this is weird code because JOptionPane thinks of OK and Yes as the same,
         // and differentiates based on context of whether this is an OK/Cancel or Yes/No dialog
         return (type == GOptionPane::ConfirmType::OK_CANCEL)

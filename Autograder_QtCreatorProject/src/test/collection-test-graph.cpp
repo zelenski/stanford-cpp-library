@@ -175,3 +175,29 @@ TIMED_TEST(GraphTests, hashCodeTest_Graph, TEST_TIMEOUT_DEFAULT) {
 TIMED_TEST(GraphTests, initializerListTest_Graph, TEST_TIMEOUT_DEFAULT) {
     // TODO
 }
+
+#ifdef SPL_THROW_ON_INVALID_ITERATOR
+TIMED_TEST(GraphTests, iteratorVersionTest_Graph, TEST_TIMEOUT_DEFAULT) {
+    Graph<DumbNode, DumbEdge> graph;
+    graph.addNode("a");
+    graph.addNode("b");
+    graph.addNode("c");
+    graph.addNode("d");
+    graph.addNode("e");
+    graph.addArc("a", "b");
+    graph.addArc("a", "d");
+    graph.addArc("b", "c");
+    graph.addArc("b", "d");
+    graph.addArc("c", "b");
+    graph.addArc("c", "e");
+
+    try {
+        for (DumbNode* v : graph) {
+            graph.removeNode(v);
+        }
+        assertFail("should not get to end of test; should throw exception before now");
+    } catch (ErrorException ex) {
+        assertPass("threw exception successfully");
+    }
+}
+#endif // SPL_THROW_ON_INVALID_ITERATOR

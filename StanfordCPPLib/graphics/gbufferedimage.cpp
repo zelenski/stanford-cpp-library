@@ -5,6 +5,8 @@
  * See that file for documentation of each member.
  *
  * @author Marty Stepp
+ * @version 2017/10/18
+ * - fix compiler warnings
  * @version 2017/09/28
  * - added getFilename
  * @version 2016/10/28
@@ -111,24 +113,24 @@ GBufferedImage::GBufferedImage(double width, double height,
     init(0, 0, width, height, rgbBackground);
 }
 
-GBufferedImage::GBufferedImage(double x, double y, double width, double height,
+GBufferedImage::GBufferedImage(double theX, double theY, double width, double height,
                                int rgbBackground)
     : GInteractor(),
       m_width(width),
       m_height(height),
       m_backgroundColor(rgbBackground),
       m_filename("") {
-    init(x, y, width, height, rgbBackground);
+    init(theX, theY, width, height, rgbBackground);
 }
 
-GBufferedImage::GBufferedImage(double x, double y, double width, double height,
+GBufferedImage::GBufferedImage(double theX, double theY, double width, double height,
                                const std::string& rgbBackground)
     : GInteractor(),
       m_width(width),
       m_height(height),
       m_backgroundColor(0),
       m_filename("") {
-    init(x, y, width, height, convertColorToRGB(rgbBackground));
+    init(theX, theY, width, height, convertColorToRGB(rgbBackground));
 }
 
 GRectangle GBufferedImage::getBounds() const {
@@ -285,10 +287,10 @@ std::string GBufferedImage::gridToPixelString(const Grid<int>& grid) {
     // output width as 2 bytes, then height as 2 bytes
     int w = grid.width();
     int h = grid.height();
-    out << (char) (((((int) w) & 0x0000ff00) >> 8) & 0x000000ff);
-    out << (char)  ((((int) w) & 0x000000ff));
-    out << (char) (((((int) h) & 0x0000ff00) >> 8) & 0x000000ff);
-    out << (char)  ((((int) h) & 0x000000ff));
+    out << (char) (((w & 0x0000ff00) >> 8) & 0x000000ff);
+    out << (char)  ((w & 0x000000ff));
+    out << (char) (((h & 0x0000ff00) >> 8) & 0x000000ff);
+    out << (char)  ((h & 0x000000ff));
     
     // output each pixel as 3 bytes (R,G,B)
     for (int row = 0; row < h; row++) {

@@ -3,6 +3,8 @@
  * ------------------
  * This file implements the gobjects.h interface.
  * 
+ * @version 2017/10/25
+ * - added members for get/setting center and bottom/right x/y coords/location
  * @version 2017/10/16
  * - added GLine constructor that takes GPoints
  * @version 2016/11/07
@@ -74,6 +76,26 @@ bool GObject::contains(const GPoint& pt) const {
     return contains(pt.getX(), pt.getY());
 }
 
+GPoint GObject::getBottomRightLocation() const {
+    return GPoint(getRightX(), getBottomY());
+}
+
+double GObject::getBottomY() const {
+    return getY() + getHeight();
+}
+
+GPoint GObject::getCenterLocation() const {
+    return GPoint(getCenterX(), getCenterY());
+}
+
+double GObject::getCenterX() const {
+    return getX() + getWidth() / 2;
+}
+
+double GObject::getCenterY() const {
+    return getY() + getHeight() / 2;
+}
+
 std::string GObject::getColor() const {
     return color;
 }
@@ -92,6 +114,10 @@ GPoint GObject::getLocation() const {
 
 GCompound* GObject::getParent() const {
     return parent;
+}
+
+double GObject::getRightX() const {
+    return getX() + getWidth();
 }
 
 GDimension GObject::getSize() const {
@@ -163,6 +189,38 @@ void GObject::setAntiAliasing(bool value) {
     stanfordcpplib::getPlatform()->gobject_setAntialiasing(value);
 }
 
+void GObject::setBottomY(double y) {
+    setBottomRightLocation(getRightX(), y);
+}
+
+void GObject::setRightX(double x) {
+    setBottomRightLocation(x, getBottomY());
+}
+
+void GObject::setBottomRightLocation(double x, double y) {
+    setLocation(x - getWidth(), y - getHeight());
+}
+
+void GObject::setBottomRightLocation(const GPoint& pt) {
+    setBottomRightLocation(pt.getX(), pt.getY());
+}
+
+void GObject::setCenterX(double x) {
+    setCenterLocation(x, getCenterY());
+}
+
+void GObject::setCenterY(double y) {
+    setCenterLocation(getCenterX(), y);
+}
+
+void GObject::setCenterLocation(double x, double y) {
+    setLocation(x - getWidth() / 2, y - getHeight() / 2);
+}
+
+void GObject::setCenterLocation(const GPoint& pt) {
+    setCenterLocation(pt.getX(), pt.getY());
+}
+
 void GObject::setColor(int rgb) {
     this->color = convertRGBToColor(rgb);
     stanfordcpplib::getPlatform()->gobject_setColor(this, this->color);
@@ -190,6 +248,14 @@ void GObject::setLocation(const GPoint& pt) {
 void GObject::setVisible(bool flag) {
     visible = flag;
     stanfordcpplib::getPlatform()->gobject_setVisible(this, flag);
+}
+
+void GObject::setX(double x) {
+    setLocation(x, getY());
+}
+
+void GObject::setY(double y) {
+    setLocation(getX(), y);
 }
 
 
@@ -1116,8 +1182,47 @@ GPolygon::GPolygon() {
     stanfordcpplib::getPlatform()->gpolygon_constructor(this);
 }
 
+GPolygon::GPolygon(std::initializer_list<double> coords) {
+    fillFlag = false;
+    fillColor = "";
+    stanfordcpplib::getPlatform()->gpolygon_constructor(this);
+    addVertexes(coords);
+}
+
+GPolygon::GPolygon(std::initializer_list<GPoint> points) {
+    fillFlag = false;
+    fillColor = "";
+    stanfordcpplib::getPlatform()->gpolygon_constructor(this);
+    addVertexes(points);
+}
+
 void GPolygon::addEdge(double dx, double dy) {
     addVertex(cx + dx, cy + dy);
+}
+
+void GPolygon::addEdge(const GPoint& pt) {
+    addEdge(pt.getX(), pt.getY());
+}
+
+void GPolygon::addEdges(std::initializer_list<double> coords) {
+    int i = 0;
+    double dx = 0;
+    double dy = 0;
+    for (double d : coords) {
+        if (i % 2 == 0) {
+            dx = d;
+        } else {
+            dy = d;
+            addEdge(dx, dy);
+        }
+        i++;
+    }
+}
+
+void GPolygon::addEdges(std::initializer_list<GPoint> points) {
+    for (GPoint pt : points) {
+        addEdge(pt);
+    }
 }
 
 void GPolygon::addPolarEdge(double r, double theta) {
@@ -1130,6 +1235,32 @@ void GPolygon::addVertex(double x, double y) {
     vertices.add(GPoint(cx, cy));
     stanfordcpplib::getPlatform()->gpolygon_addVertex(this, cx, cy);
 }
+
+void GPolygon::addVertex(const GPoint& pt) {
+    addVertex(pt.getX(), pt.getY());
+}
+
+void GPolygon::addVertexes(std::initializer_list<double> coords) {
+    int i = 0;
+    double x = 0;
+    double y = 0;
+    for (double d : coords) {
+        if (i % 2 == 0) {
+            x = d;
+        } else {
+            y = d;
+            addVertex(x, y);
+        }
+        i++;
+    }
+}
+
+void GPolygon::addVertexes(std::initializer_list<GPoint> points) {
+    for (GPoint pt : points) {
+        addVertex(pt);
+    }
+}
+
 
 bool GPolygon::contains(double x, double y) const {
     if (transformed) {

@@ -4,6 +4,10 @@
  * This file exports the <code>Vector</code> class, which provides an
  * efficient, safe, convenient replacement for the array type in C++.
  *
+ * @version 2017/11/15
+ * - added contains, indexOf, lastIndexOf, removeValue, reverse, shuffle, sort
+ * @version 2017/10/18
+ * - fix compiler warnings
  * @version 2016/12/09
  * - added iterator version checking support
  * @version 2016/09/24
@@ -36,6 +40,7 @@
 #ifndef _vector_h
 #define _vector_h
 
+#include <algorithm>
 #include <initializer_list>
 #include <iostream>
 #include <iterator>
@@ -119,7 +124,16 @@ public:
      * Removes all elements from this vector.
      */
     void clear();
-    
+
+    /*
+     * Method: contains
+     * Usage: if (vec.contains(value)) ...
+     * -----------------------------------
+     * Returns true if the vector contains the given value.
+     * The ValueType must have an == operator to use this method.
+     */
+    bool contains(const ValueType& value) const;
+
     /*
      * Method: ensureCapacity
      * Usage: vec.ensureCapacity(n);
@@ -148,7 +162,17 @@ public:
      * method signals an error if the index is not in the array range.
      */
     const ValueType& get(int index) const;
-    
+
+    /*
+     * Method: indexOf
+     * Usage: int index = vec.indexOf(value);
+     * --------------------------------------
+     * Returns the index of the first occurrence of the given value.
+     * If the value is not found in the vector, returns -1.
+     * The ValueType must have an == operator to use this method.
+     */
+    int indexOf(const ValueType& value) const;
+
     /*
      * Method: insert
      * Usage: vec.insert(0, value);
@@ -167,7 +191,17 @@ public:
      * Returns <code>true</code> if this vector contains no elements.
      */
     bool isEmpty() const;
-    
+
+    /*
+     * Method: lastIndexOf
+     * Usage: int index = vec.lastIndexOf(value);
+     * ------------------------------------------
+     * Returns the index of the last occurrence of the given value.
+     * If the value is not found in the vector, returns -1.
+     * The ValueType must have an == operator to use this method.
+     */
+    int lastIndexOf(const ValueType& value) const;
+
     /*
      * Method: mapAll
      * Usage: vec.mapAll(fn);
@@ -200,7 +234,27 @@ public:
      * method signals an error if the index is outside the array range.
      */
     void remove(int index);
-    
+
+    /*
+     * Method: removeValue
+     * Usage: vec.removeValue(value);
+     * ------------------------------
+     * Removes the first occurrence of the element value from this vector.
+     * All subsequent elements are shifted one position to the left.
+     * If the vector does not contain the given value, has no effect.
+     * The ValueType must have an == operator to use this method.
+     */
+    void removeValue(const ValueType& value);
+
+    /*
+     * Method: reverse
+     * Usage: vec.reverse();
+     * ---------------------
+     * Reverses the order of the elements in this vector.
+     * For example, if vector stores {1, 3, 4, 9}, changes it to store {9, 4, 3, 1}.
+     */
+    void reverse();
+
     /*
      * Method: set
      * Usage: vec.set(index, value);
@@ -218,7 +272,25 @@ public:
      * Returns the number of elements in this vector.
      */
     int size() const;
-    
+
+    /*
+     * Method: shuffle
+     * Usage: vec.shuffle();
+     * ---------------------
+     * Rearranges the order of the elements in this vector into a random order.
+     */
+    void shuffle();
+
+    /*
+     * Method: sort
+     * Usage: vec.sort();
+     * ------------------
+     * Rearranges the order of the elements in this vector into sorted order.
+     * For example, if vector stores {9, 1, 4, 3}, changes it to store {1, 3, 4, 9}.
+     * The ValueType must have an operator < to call this method.
+     */
+    void sort();
+
     /*
      * Method: subList
      * Usage: Vector<ValueType> sub = v.subList(start, length);
@@ -424,9 +496,9 @@ public:
             // empty
         }
 
-        iterator(const Vector* vp, int index)
-                : vp(vp),
-                  index(index) {
+        iterator(const Vector* theVec, int theIndex)
+                : vp(theVec),
+                  index(theIndex) {
             itr_version = vp->version();
         }
 
@@ -675,6 +747,11 @@ void Vector<ValueType>::clear() {
     m_version++;
 }
 
+template <typename ValueType>
+bool Vector<ValueType>::contains(const ValueType& value) const {
+    return indexOf(value) >= 0;
+}
+
 // implementation note: This method is public so clients can guarantee a given
 // capacity.  Internal resizing is automatically done by expandCapacity.
 // See also: expandCapacity
@@ -708,7 +785,7 @@ bool Vector<ValueType>::equals(const Vector<ValueType>& v) const {
 template <typename ValueType>
 void Vector<ValueType>::expandCapacity() {
     capacity = std::max(1, capacity * 2);
-    ValueType *array = new ValueType[capacity];
+    ValueType* array = new ValueType[capacity];
     if (elements) {
         for (int i = 0; i < count; i++) {
             array[i] = elements[i];
@@ -722,6 +799,16 @@ template <typename ValueType>
 const ValueType& Vector<ValueType>::get(int index) const {
     checkIndex(index, 0, count-1, "get");
     return elements[index];
+}
+
+template <typename ValueType>
+int Vector<ValueType>::indexOf(const ValueType& value) const {
+    for (int i = 0; i < count; i++) {
+        if (elements[i] == value) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 /*
@@ -748,6 +835,16 @@ void Vector<ValueType>::insert(int index, const ValueType& value) {
 template <typename ValueType>
 bool Vector<ValueType>::isEmpty() const {
     return count == 0;
+}
+
+template <typename ValueType>
+int Vector<ValueType>::lastIndexOf(const ValueType& value) const {
+    for (int i = count - 1; i >= 0; i--) {
+        if (elements[i] == value) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 /*
@@ -794,6 +891,21 @@ void Vector<ValueType>::remove(int index) {
 }
 
 template <typename ValueType>
+void Vector<ValueType>::removeValue(const ValueType& value) {
+    int index = indexOf(value);
+    if (index >= 0) {
+        remove(index);
+    }
+}
+
+template <typename ValueType>
+void Vector<ValueType>::reverse() {
+    for (int i = 0; i < count / 2; i++) {
+        std::swap(elements[i], elements[count - 1 - i]);
+    }
+}
+
+template <typename ValueType>
 void Vector<ValueType>::set(int index, const ValueType& value) {
     checkIndex(index, 0, count-1, "set");
     elements[index] = value;
@@ -802,6 +914,21 @@ void Vector<ValueType>::set(int index, const ValueType& value) {
 template <typename ValueType>
 int Vector<ValueType>::size() const {
     return count;
+}
+
+template <typename ValueType>
+void Vector<ValueType>::shuffle() {
+    for (int i = 0; i < count; i++) {
+        int j = randomInteger(i, count - 1);
+        if (i != j) {
+            std::swap(elements[i], elements[j]);
+        }
+    }
+}
+
+template <typename ValueType>
+void Vector<ValueType>::sort() {
+    std::sort(begin(), end());
 }
 
 template <typename ValueType>
@@ -1017,14 +1144,7 @@ const T& randomElement(const Vector<T>& vec) {
  */
 template <typename T>
 void shuffle(Vector<T>& v) {
-    for (int i = 0, length = v.size(); i < length; i++) {
-        int j = randomInteger(i, length - 1);
-        if (i != j) {
-            T temp = v[i];
-            v[i] = v[j];
-            v[j] = temp;
-        }
-    }
+    v.shuffle();
 }
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

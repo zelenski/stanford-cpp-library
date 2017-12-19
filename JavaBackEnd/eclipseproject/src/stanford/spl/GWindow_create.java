@@ -4,22 +4,21 @@ import stanford.spl.TopCompound;
 import acm.util.TokenScanner;
 
 public class GWindow_create extends JBESwingCommand {
-	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
-		paramTokenScanner.verifyToken("(");
-		String str1 = nextString(paramTokenScanner);
-		paramTokenScanner.verifyToken(",");
-		int width = nextInt(paramTokenScanner);
-		paramTokenScanner.verifyToken(",");
-		int height = nextInt(paramTokenScanner);
-		paramTokenScanner.verifyToken(",");
-		String str2 = nextString(paramTokenScanner);
-		paramTokenScanner.verifyToken(",");
-		boolean visible = nextBoolean(paramTokenScanner);
-		paramTokenScanner.verifyToken(")");
+	public void execute(TokenScanner scanner, JavaBackEnd jbe) {
+		scanner.verifyToken("(");
+		String windowId = nextString(scanner);
+		scanner.verifyToken(",");
+		int width = nextInt(scanner);
+		scanner.verifyToken(",");
+		int height = nextInt(scanner);
+		scanner.verifyToken(",");
+		String str2 = nextString(scanner);
+		scanner.verifyToken(",");
+		boolean visible = nextBoolean(scanner);
+		scanner.verifyToken(")");
 		
 		// creates an object of type JBEWindow
-		paramJavaBackEnd.createWindow(str1, width, height,
-				(TopCompound) paramJavaBackEnd.getGObject(str2), visible);
-		paramJavaBackEnd.println("result:ok");
+		jbe.createWindow(windowId, width, height, (TopCompound) jbe.getGObject(str2), visible);
+		SplPipeDecoder.writeOK();
 	}
 }

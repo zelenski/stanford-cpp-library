@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp (current maintainer)
+ * @version 2017/10/31
+ * - added Ctrl-number hotkeys to automatically load input script and compare output
  * @version 2017/06/01
  * - added [completed] when program is done running
  * @version 2016/10/02
@@ -35,7 +37,7 @@ public abstract class AbstractConsoleProgram extends Program {
 	private static final int FONT_MAX_SIZE = 255;
 	private static final int FONT_MIN_SIZE = 4;
 	private static final String DEFAULT_REPROMPT_MESSAGE = "Unable to open that file.  Try again.";
-	protected static final String PROGRAM_COMPLETED_TITLE_SUFFIX = " [completed]";
+	public static final String PROGRAM_COMPLETED_TITLE_SUFFIX = " [completed]";
 	
 	private boolean backgroundHasBeenSet = false;
 	private boolean clearEnabled = true;   // whether clearConsole(); is effectual
@@ -98,19 +100,45 @@ public abstract class AbstractConsoleProgram extends Program {
 				return;
 			}
 			File selectedFile = chooser.getSelectedFile();
-			if (selectedFile == null || !selectedFile.isFile()) {
-				return;
-			}
-
-			String expectedOutput = IOUtils.readEntireFile(selectedFile);
-			String studentOutput = getAllOutput();
-			DiffGui diff = new DiffGui("expected output", expectedOutput, "your output", studentOutput,
-					/* checkboxes */ false);
-			diff.show();
+			compareOutput(selectedFile);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(getJFrame(), "Unable to compare output.\n" + e, "Error",
 					JOptionPane.WARNING_MESSAGE);
 		}
+	}
+	
+	/**
+	 * Compares current console output to contents of the given file.
+	 */
+	protected void compareOutput(File file) {
+		if (file == null || !file.isFile()) {
+			return;
+		}
+		String expectedOutput = IOUtils.readEntireFile(file);
+		String studentOutput = getAllOutput();
+		DiffGui diff = new DiffGui("expected output", expectedOutput, "your output", studentOutput,
+				/* checkboxes */ false);
+		diff.show();
+	}
+	
+	/**
+	 * Tries to find an expected output file ending with the given number and compare it.
+	 * For example, if num is 2, tries to find a file like expected-output-2.txt.
+	 */
+	protected boolean compareOutput(int num) {
+		try {
+			File dir = IOUtils.getExpectedOutputDirectory();
+			for (File file : dir.listFiles()) {
+				String name = file.getName();
+				if (name.contains("expected-output") && name.endsWith("-" + num + ".txt")) {
+					compareOutput(file);
+					return true;
+				}
+			}
+		} catch (Exception e) {
+			// empty
+		}
+		return false;
 	}
 	
 	/**
@@ -122,9 +150,6 @@ public abstract class AbstractConsoleProgram extends Program {
 		setTitle(getTitle() + PROGRAM_COMPLETED_TITLE_SUFFIX);
 	}
 
-	/**
-	 * Pops up a file chooser to compare output to some expected output.
-	 */
 	protected void loadInputScript() {
 		try {
 			// pick working dir for loading expected output files
@@ -149,6 +174,26 @@ public abstract class AbstractConsoleProgram extends Program {
 			JOptionPane.showMessageDialog(getJFrame(), "Unable to load input script.\n" + e, "Error",
 					JOptionPane.WARNING_MESSAGE);
 		}
+	}
+	
+	protected void loadInputScript(File file) {
+		if (file == null || !file.isFile()) {
+			return;
+		}
+		String inputScript = IOUtils.readEntireFile(file);
+		this.getConsole().setInputScript(new BufferedReader(new StringReader(inputScript)));
+	}
+	
+	protected boolean loadInputScript(int num) {
+		File dir = IOUtils.getExpectedOutputDirectory();
+		for (File file : dir.listFiles()) {
+			String name = file.getName();
+			if (name.contains("input") && name.endsWith("-" + num + ".txt")) {
+				loadInputScript(file);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/*

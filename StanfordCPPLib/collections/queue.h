@@ -5,6 +5,8 @@
  * in which values are ordinarily processed in a first-in/first-out
  * (FIFO) order.
  * 
+ * @version 2017/11/14
+ * - added iterator version checking support
  * @version 2016/09/24
  * - refactored to use collections.h utility functions
  * - added iterators begin(), end()
@@ -244,6 +246,7 @@ private:
     int capacity;
     int head;
     int tail;
+    unsigned int m_version;     // structure version for detecting invalid iterators
 
     /* Private functions */
     void expandRingBufferCapacity();
@@ -258,22 +261,27 @@ private:
      */
     class iterator : public std::iterator<std::input_iterator_tag, ValueType> {
     public:
-        iterator(const Queue* gp, int index) {
-            this->gp = gp;
-            this->index = index;
+        iterator(const Queue* gp, int index)
+                : gp(gp),
+                  index(index) {
+            itr_version = gp->version();
         }
 
-        iterator(const iterator& it) {
-            this->gp = it.gp;
-            this->index = it.index;
+        iterator(const iterator& it)
+                : gp(it.gp),
+                  index(it.index),
+                  itr_version(it.itr_version) {
+            // empty
         }
 
         iterator& operator ++() {
+            stanfordcpplib::collections::checkVersion(*gp, *this);
             index = (index + 1) % gp->capacity;
             return *this;
         }
 
         iterator operator ++(int) {
+            stanfordcpplib::collections::checkVersion(*gp, *this);
             iterator copy(*this);
             operator++();
             return copy;
@@ -288,16 +296,23 @@ private:
         }
 
         const ValueType& operator *() {
+            stanfordcpplib::collections::checkVersion(*gp, *this);
             return gp->ringBuffer[index];
         }
 
         ValueType* operator ->() {
+            stanfordcpplib::collections::checkVersion(*gp, *this);
             return &gp->ringBuffer[index];
+        }
+
+        unsigned int version() const {
+            return itr_version;
         }
 
     private:
         const Queue* gp;
         int index;
+        unsigned int itr_version;
     };
 
 public:
@@ -308,6 +323,12 @@ public:
     iterator end() const {
         return iterator(this, /* index */ tail);
     }
+
+    /*
+     * Returns the internal version of this collection.
+     * This is used to check for invalid iterators and issue error messages.
+     */
+    unsigned int version() const;
 };
 
 /*
@@ -336,12 +357,14 @@ static const int INITIAL_CAPACITY = 10;
  * elements and initialize the fields of the object.
  */
 template <typename ValueType>
-Queue<ValueType>::Queue() {
+Queue<ValueType>::Queue()
+        : m_version(0) {
     clear();
 }
 
 template <typename ValueType>
-Queue<ValueType>::Queue(std::initializer_list<ValueType> list) {
+Queue<ValueType>::Queue(std::initializer_list<ValueType> list)
+        : m_version(0) {
     clear();
     for (const ValueType& value : list) {
         add(value);
@@ -379,6 +402,7 @@ void Queue<ValueType>::clear() {
     head = 0;
     tail = 0;
     count = 0;
+    m_version++;
 }
 
 /*
@@ -395,6 +419,7 @@ ValueType Queue<ValueType>::dequeue() {
     ValueType result = ringBuffer[head];
     head = (head + 1) % capacity;
     count--;
+    m_version++;
     return result;
 }
 
@@ -406,6 +431,7 @@ void Queue<ValueType>::enqueue(const ValueType& value) {
     ringBuffer[tail] = value;
     tail = (tail + 1) % capacity;
     count++;
+    m_version++;
 }
 
 template <typename ValueType>
@@ -472,6 +498,11 @@ std::string Queue<ValueType>::toString() const {
     std::ostringstream os;
     os << *this;
     return os.str();
+}
+
+template <typename ValueType>
+unsigned int Queue<ValueType>::version() const {
+    return m_version;
 }
 
 /*

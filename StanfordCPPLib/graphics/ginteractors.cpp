@@ -3,6 +3,8 @@
  * ----------------------
  * This file implements the ginteractors.h interface.
  * 
+ * @version 2017/11/18
+ * - added GCheckBox constructor that takes bool for checked
  * @version 2017/10/12
  * - added GTextLabel
  * @version 2016/11/26
@@ -196,9 +198,12 @@ std::string GButton::toString() const {
  * -------------------------------------
  */
 
-GCheckBox::GCheckBox(std::string label) {
+GCheckBox::GCheckBox(std::string label, bool checked) {
     this->label = label;
     stanfordcpplib::getPlatform()->gcheckbox_constructor(this, label);
+    if (checked) {
+        setSelected(true);
+    }
 }
 
 std::string GCheckBox::getText() const {
@@ -285,14 +290,14 @@ std::string GChooser::toString() const {
  * ----------------------------------------
  */
 
-GRadioButton::GRadioButton(std::string label, std::string group, bool selected) {
+GRadioButton::GRadioButton(std::string label, std::string group, bool checked) {
     this->label = label;
     if (group.empty()) {
         group = "default";
     }
     this->group = group;
     stanfordcpplib::getPlatform()->gradiobutton_constructor(this, label, group);
-    if (selected) {
+    if (checked) {
         setSelected(true);
     }
 }

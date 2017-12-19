@@ -4,6 +4,8 @@
  * programs over to Java with minimal code changes.
  * 
  * @author Marty Stepp
+ * @version 2017/10/22
+ * - added zero-arg constructor
  * @version 2016/11/03
  * - added equals, hashCode
  * @version 2015/05/28
@@ -17,6 +19,10 @@ import java.util.Arrays;
 public class Grid<E> {
 	private int rows, cols;
 	private E[][] array;
+	
+	public Grid() {
+		this(0, 0);
+	}
 	
 	public Grid(int rows, int cols) {
 		resize(rows, cols);
@@ -47,7 +53,6 @@ public class Grid<E> {
 		
 		return true;
 	}
-	
 	
 	public void fill(E value) {
 		for (int row = 0; row < rows; row++) {

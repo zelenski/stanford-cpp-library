@@ -1,4 +1,6 @@
 /*
+ * @version 2017/10/22
+ * - added alertError methods 
  * @version 2017/08/04
  * - added system property to disable load/save of configuration 
  * @version 2017/07/21
@@ -115,6 +117,7 @@ import acm.io.*;
 import acm.util.*;
 import stanford.cs106.gui.*;
 import stanford.cs106.io.*;
+import stanford.cs106.util.ExceptionUtils;
 import stanford.cs106.util.StringUtils;
 import stanford.spl.*;
 import java.applet.*;
@@ -189,6 +192,7 @@ public abstract class Program
 	private boolean initFinished;
 	private boolean kill = false;
 	private boolean pauseTickFlag = false;
+	private boolean runFinished = false;
 	private boolean shown;
 	private boolean started;
 	private Component eastBorder;
@@ -459,10 +463,39 @@ public abstract class Program
 
 	/**
 	 * Pops up a dialog box displaying the given message.
-	 * @param value the value to display
+	 * @param message the message to display
 	 */
 	public void alert(String message) {
 		JOptionPane.showMessageDialog(getWindow(), message);
+	}
+
+	/**
+	 * Pops up a dialog box displaying the given error message.
+	 * @param message the error message to display
+	 */
+	public void alertError(String message) {
+		JOptionPane.showMessageDialog(getWindow(), "Error: " + message, /* title */ "Error", JOptionPane.ERROR_MESSAGE);
+	}
+
+	/**
+	 * Pops up a dialog box displaying the given error message.
+	 * @param error the error to display
+	 */
+	public void alertError(Throwable error) {
+		alertError(error, "An error of type " + error.getClass().getSimpleName() + " was thrown:");
+	}
+
+	/**
+	 * Pops up a dialog box displaying the given error message.
+	 * @param value the value to display
+	 */
+	public void alertError(Throwable th, String message) {
+		String stackTrace = ExceptionUtils.stackTraceToString(th);
+		stackTrace = StringUtils.fitToHeight(stackTrace, 10);
+		JOptionPane.showMessageDialog(getWindow(),
+				message + "\n"
+				+ th.getMessage() + "\n\n" + stackTrace,
+				/* title */ "Error", JOptionPane.ERROR_MESSAGE);
 	}
 
 	/**
@@ -1828,6 +1861,10 @@ public abstract class Program
 	public boolean isInitialized() {
 		return initFinished;
 	}
+	
+	public boolean isRunning() {
+		return isStarted() && !runFinished;
+	}
 
 	/* Protected method: isStarted() */
 	/**
@@ -1838,8 +1875,12 @@ public abstract class Program
 	 */
 	protected boolean isStarted() {
 		IOConsole console = getConsole();
-		if (console == null) return false;
-		if (console.getParent() == null) return true;
+		if (console == null) {
+			return false;
+		}
+		if (console.getParent() == null) {
+			return true;
+		}
 		Dimension size = console.getSize();
 		return (console.isShowing()) && (size.width != 0) && (size.height != 0);
 	}
@@ -3247,6 +3288,14 @@ public abstract class Program
 	public void setRightX(double x) {
 		setLocation(x - getWidth(), getY());
 	}
+	
+	/**
+	 * Sets whether the program is currently running.
+	 * Not to be called by clients.
+	 */
+	public void setRunning(boolean running) {
+		this.runFinished = !running;
+	}
 
 	/**
 	 * Sets whether to display a grid of horizontal and vertical lines on this canvas
@@ -3381,8 +3430,12 @@ public abstract class Program
 	 * @param args An array of strings passed to the program
 	 */
 	public void start(String[] args) {
-		if (parameterTable == null) parameterTable = createParameterTable(args);
-		if (getParent() == null) initApplicationFrame();
+		if (parameterTable == null) {
+			parameterTable = createParameterTable(args);
+		}
+		if (getParent() == null) {
+			initApplicationFrame();
+		}
 		validate();
 		checkCompilerFlags();
 		setVisible(true);
@@ -3461,8 +3514,10 @@ public abstract class Program
 		}
 		root.setCursor(Cursor.getDefaultCursor());
 		initFinished = true;
+		runFinished = false;
 		startHook();
 		runHook();
+		runFinished = true;
 		endHook();
 		if (!root.isShowing() && !getContentPane().isShowing()) {
 			exit();

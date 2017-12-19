@@ -3,6 +3,8 @@
  * which defines a binary tree of integers.
  * See BinaryTree.cpp for implementation of each member.
  *
+ * @version 2017/10/20
+ * - replaced nulls with nullptr
  * @version 2015/07/21
  */
 
@@ -84,7 +86,7 @@ public:
     void remove(T value);
     
 private:
-    BinaryTreeNodeGen<T>* root;   // topmost node in the tree (NULL if empty)
+    BinaryTreeNodeGen<T>* root;   // topmost node in the tree (nullptr if empty)
 
     void add(BinaryTreeNodeGen<T>*& node, T value);
     bool contains(BinaryTreeNodeGen<T>* node, T value);
@@ -106,7 +108,7 @@ TreeSet<T>::TreeSet(BinaryTreeNodeGen<T>* root) {
 template <typename T>
 TreeSet<T>::~TreeSet() {
     // TODO
-    root = NULL;
+    root = nullptr;
 }
 
 template <typename T>
@@ -116,7 +118,7 @@ void TreeSet<T>::add(T value) {
 
 template <typename T>
 void TreeSet<T>::add(BinaryTreeNodeGen<T>*& node, T value) {
-    if (node == NULL) {
+    if (!node) {
         node = new BinaryTreeNodeGen<T>(value);
     } else if (value < node->data) {
         add(node->left, value);
@@ -132,7 +134,7 @@ bool TreeSet<T>::contains(T value) {
 
 template <typename T>
 bool TreeSet<T>::contains(BinaryTreeNodeGen<T>* node, T value) {
-    if (node == NULL) {
+    if (!node) {
         return false;
     } else if (value == node->data) {
         return true;
@@ -150,9 +152,9 @@ T TreeSet<T>::getMin() const {
 
 template <typename T>
 T TreeSet<T>::getMin(BinaryTreeNodeGen<T>* node) const {
-    if (node == NULL) {
+    if (!node) {
         throw ":-(";
-    } else if (node->left == NULL) {
+    } else if (!node->left) {
         return node->data;
     } else {
         return getMin(node->left);
@@ -166,7 +168,7 @@ int TreeSet<T>::height() const {
 
 template <typename T>
 int TreeSet<T>::height(BinaryTreeNodeGen<T>* node) const {
-    if (node == NULL) {
+    if (!node) {
         return 0;
     } else {
         int l = height(node->left);
@@ -182,7 +184,7 @@ bool TreeSet<T>::isBalanced() const {
 
 template <typename T>
 bool TreeSet<T>::isBalanced(BinaryTreeNodeGen<T>* node) const {
-    if (node == NULL) {
+    if (!node) {
         return true;
     } else {
         int l = height(node->left);
@@ -206,7 +208,7 @@ void TreeSet<T>::print(int order) {
 
 template <typename T>
 void TreeSet<T>::print(BinaryTreeNodeGen<T>* node, int order) {
-    if (node != NULL) {
+    if (node) {
         if (order == PRE_ORDER) {
             cout << node->data << " ";
             cout.flush();
@@ -231,7 +233,7 @@ void TreeSet<T>::printSideways() {
 
 template <typename T>
 void TreeSet<T>::printSideways(BinaryTreeNodeGen<T>* node, string indent) {
-    if (node != NULL) {
+    if (node) {
         printSideways(node->right, indent + "  ");
         cout << indent << node->data << endl;
         printSideways(node->left, indent + "  ");
@@ -245,7 +247,7 @@ void TreeSet<T>::remove(T value) {
 
 template <typename T>
 void TreeSet<T>::remove(BinaryTreeNodeGen<T>*& node, T value) {
-    if (node == NULL) {
+    if (!node) {
         // do nothing
     } else if (value < node->data) {
         remove(node->left, value);
@@ -253,14 +255,14 @@ void TreeSet<T>::remove(BinaryTreeNodeGen<T>*& node, T value) {
         remove(node->right, value);
     } else {
         // remove this node
-        if (node->left == NULL && node->right == NULL) {
+        if (!node->left && !node->right) {
             delete node;
-            node = NULL;
-        } else if (node->left == NULL) {
+            node = nullptr;
+        } else if (!node->left) {
             BinaryTreeNodeGen<T>* trash = node;
             node = node->right;
             delete trash;
-        } else if (node->right == NULL) {
+        } else if (!node->right) {
             BinaryTreeNodeGen<T>* trash = node;
             node = node->left;
             delete trash;
@@ -272,4 +274,4 @@ void TreeSet<T>::remove(BinaryTreeNodeGen<T>*& node, T value) {
     }
 }
 
-#endif
+#endif // _binarytree_h

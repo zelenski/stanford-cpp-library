@@ -55,6 +55,14 @@
 		</p>
 
 		<p>
+			<em>Note about pointers:</em>
+			Several <code>BasicGraph</code> members return various pointers to vertexes and edges.
+			Any such pointers returned are direct pointers to the internal structures inside of this graph.
+			If the graph itself falls out of scope, is cleared, etc., or if the given vertex/edge is removed from the graph, this pointer will become invalid.
+			Undefined behavior and crashes will result if you retain pointers to vertexes/edges that live on beyond the life span of the graph.
+		</p>
+
+		<p>
 			For the purposes of Big-Oh listing, some members are proportional to the number of vertexes V, and some are proportional to the number of edges E.
 		</p>
 
@@ -126,6 +134,12 @@
 					<a href="#Method:getEdgeSet">getEdgeSet(<var>name</var>)</a>&nbsp;</nobr></td>
 				<td class="bigoh">O(log V)</td>
 				<td class=indexSynopsis width=100%>Returns the set of all edges that start at the specified vertex.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:getInverseNeighbors">getInverseNeighbors(<var>v</var>)</a><br>
+					<a href="#Method:getInverseNeighbors">getInverseNeighbors(<var>name</var>)</a>&nbsp;</nobr></td>
+				<td class="bigoh">O(log V)</td>
+				<td class=indexSynopsis width=100%>Returns the set of vertexes for which <var>v</var> is a neighbor; that is, the ones for which there is an edge from that vertex to <var>v</var>.</td>
 			</tr>
 			<tr>
 				<td class=indexKey><nobr><a href="#Method:getNeighbors">getNeighbors(<var>v</var>)</a><br>
@@ -298,9 +312,11 @@ fields; the other assumes that the client has already created
 the vertex and simply adds it to the graph.  Both versions of this
 method return a pointer to the vertex.
 <p>The vertexes in a graph must have unique names.  If this graph
-already contains a vertex with the given name, or if <code>NULL</code> is
+already contains a vertex with the given name, or if <code>nullptr</code> is
 passed to the pointer version of this function,
 <code>addVertex</code> throws an error.
+
+<p>The pointer returned is a direct pointer to the internal structure inside this graph, and will become invalid if the vertex is removed or if the graph itself falls out of scope.</p>
 
 <p>Usage:<br>
 </div>
@@ -320,7 +336,7 @@ Removes a vertex from the graph, where the vertex can be specified
 either by its name or as a pointer value.  Removing a vertex also
 removes all edges that contain that vertex.
 
-<p>If <code>NULL</code> is passed to the pointer version of this function,
+<p>If <code>nullptr</code> is passed to the pointer version of this function,
 or this graph does not contain the given vertex or a vertex with the given name,
 the function throws an error.
 
@@ -339,7 +355,10 @@ Vertex* getVertex(string name) const;
 <div class=detailHTML>
 Looks up a vertex in the name table attached to the graph and
 returns a pointer to that vertex.  If no vertex with the specified
-name exists, <code>getVertex</code> returns <code>NULL</code>.
+name exists, <code>getVertex</code> returns <code>nullptr</code>.
+
+<p>The pointer returned is a direct pointer to the internal structure inside this graph, and will become invalid if the vertex is removed or if the graph itself falls out of scope.</p>
+
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
@@ -356,7 +375,7 @@ bool containsVertex(string name) const;
 Returns whether the graph contains the given vertex.
 One version of this method looks up the vertex by name, and the other uses the
 information supplied in the provided pointer.
-<p>If <code>NULL</code> is passed to the pointer version of this function,
+<p>If <code>nullptr</code> is passed to the pointer version of this function,
 <code>containsVertex</code> throws an error.
 
 <p>Usage:<br>
@@ -383,7 +402,9 @@ case the client needs to capture this value.  Note that it is allowed
 to have multiple edges between the same pair of vertexes.
 
 <p>When calling either of the two-parameter versions of <code>addEdge</code>,
-if either of the vertexes supplied is <code>NULL</code> or is not found in the graph, the function will throw an error.
+if either of the vertexes supplied is <code>nullptr</code> or is not found in the graph, the function will throw an error.
+
+<p>The pointer returned is a direct pointer to the internal structure inside this graph, and will become invalid if the edge is removed or if the graph itself falls out of scope.</p>
 
 <p>Usage:<br>
 </div>
@@ -410,10 +431,10 @@ When calling either of the two-parameter versions of <code>removeEdge</code>,
 if more than one edge connects the specified endpoints, all of them are removed.
 
 <p>When calling the single-parameter version of <code>removeEdge</code>,
-if the edge supplied is <code>NULL</code> or is not found in the graph, calling this function will have no effect on the graph.
+if the edge supplied is <code>nullptr</code> or is not found in the graph, calling this function will have no effect on the graph.
 
 <p>When calling either of the two-parameter versions of <code>removeEdge</code>,
-if either of the vertexes supplied is <code>NULL</code> or is not found in the graph, calling this function will have no effect on the graph.
+if either of the vertexes supplied is <code>nullptr</code> or is not found in the graph, calling this function will have no effect on the graph.
 
 <p>Usage:<br>
 </div>
@@ -436,10 +457,10 @@ One version of this method looks up the edge by its start/finish vertexes, and t
 information supplied in the provided edge pointer.
 
 <p>When calling the single-parameter version of <code>removeEdge</code>,
-if the edge supplied is <code>NULL</code> or is not found in the graph, this function returns <code>false</code>.
+if the edge supplied is <code>nullptr</code> or is not found in the graph, this function returns <code>false</code>.
 
 <p>When calling either of the two-parameter versions of <code>removeEdge</code>,
-if either of the vertexes supplied is <code>NULL</code> or is not found in the graph, this function returns <code>false</code>.
+if either of the vertexes supplied is <code>nullptr</code> or is not found in the graph, this function returns <code>false</code>.
 
 <p>Usage:<br>
 </div>
@@ -458,9 +479,11 @@ Edge* getEdge(std::string v1, std::string v2) const;
 <div class=detailHTML>
 Returns the edge between the given pair of vertexes in the graph.
 
-<p>If either of the vertexes supplied is <code>NULL</code> or is not found in the graph, the function will throw an error.
+<p>If either of the vertexes supplied is <code>nullptr</code> or is not found in the graph, the function will throw an error.
 
 <p>If there are multiple edges between the given pair of vertexes, which of the edges will be returned is unspecified.</p>
+
+<p>The pointer returned is a direct pointer to the internal structure inside this graph, and will become invalid if the edge is removed or if the graph itself falls out of scope.</p>
 
 <p>Usage:<br>
 </div>
@@ -480,7 +503,7 @@ Returns <code>true</code> if the graph contains an edge from
 <code>v1</code> to <code>v2</code>.  As in the <code>addEdge</code>
 method, vertexes can be specified either as vertex pointers or by name.
 
-<p>If either of the vertexes supplied is <code>NULL</code> or is not found in the graph, the function will return <code>false</code>.
+<p>If either of the vertexes supplied is <code>nullptr</code> or is not found in the graph, the function will return <code>false</code>.
 
 <p>Usage:<br>
 </div>
@@ -495,6 +518,9 @@ const Set&lt;Vertex*&gt; &amp; getVertexSet() const;
 </pre>
 <div class=detailHTML>
 Returns the set of all vertexes in the graph.
+
+<p>The pointers returned are direct pointers to the internal structures inside this graph, and will become invalid if any vertex is removed or if the graph itself falls out of scope.</p>
+
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
@@ -512,7 +538,9 @@ Returns the set of all edges in the graph or, in the second and
 third forms, the edges that start at the specified vertex, which
 can be indicated either as a pointer or by name.
 
-<p>When calling the two versions of this function that accept a vertex parameter, if the vertex supplied is <code>NULL</code> or is not found in the graph, the function will throw an error.
+<p>When calling the two versions of this function that accept a vertex parameter, if the vertex supplied is <code>nullptr</code> or is not found in the graph, the function will throw an error.
+
+<p>The pointers returned are direct pointers to the internal structures inside this graph, and will become invalid if any edge is removed or if the graph itself falls out of scope.</p>
 
 <p>Usage:<br>
 </div>
@@ -520,6 +548,26 @@ can be indicated either as a pointer or by name.
 for (Edge* edge : g.getEdgeSet()) ...
 for (Edge* edge : g.getEdgeSet(vertex)) ...
 for (Edge* edge : g.getEdgeSet(name)) ...
+</pre>
+<hr>
+<a name="Method:getInverseNeighbors"></a>
+<pre class=detailCode>
+const Set&lt;Vertex*&gt; getInverseNeighbors(Vertex* vertex) const;
+const Set&lt;Vertex*&gt; getInverseNeighbors(string vertex) const;
+</pre>
+<div class=detailHTML>
+Returns the set of vertexes for which <var>v</var> is a neighbor; that is, the ones for which there is an edge from that vertex to <var>v</var>.
+This is essentially the opposite of <code>getNeighbors</code>, which returns all vertexes for which there is an edge from <var>v</var> to that vertex.
+
+<p>If the vertex supplied is <code>nullptr</code> or is not found in the graph, the function will throw an error.
+
+<p>The pointers returned are direct pointers to the internal structures inside this graph, and will become invalid if any vertex is removed or if the graph itself falls out of scope.</p>
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+for (Vertex* vertex : g.getInverseNeighbors(vertex)) ...
+for (Vertex* vertex : g.getInverseNeighbors(name)) ...
 </pre>
 <hr>
 <a name="Method:getNeighbors"></a>
@@ -531,7 +579,9 @@ const Set&lt;Vertex*&gt; getNeighbors(string vertex) const;
 Returns the set of vertexes that are neighbors of the specified
 vertex, which can be indicated either as a pointer or by name.
 
-<p>If the vertex supplied is <code>NULL</code> or is not found in the graph, the function will throw an error.
+<p>If the vertex supplied is <code>nullptr</code> or is not found in the graph, the function will throw an error.
+
+<p>The pointers returned are direct pointers to the internal structures inside this graph, and will become invalid if any vertex is removed or if the graph itself falls out of scope.</p>
 
 <p>Usage:<br>
 </div>

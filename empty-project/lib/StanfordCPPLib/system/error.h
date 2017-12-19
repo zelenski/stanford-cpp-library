@@ -4,6 +4,8 @@
  * This file defines the <code>ErrorException</code> class and the
  * <code>error</code> function.
  *
+ * @version 2017/11/29
+ * - fix for undefined SIGUSR1 on Windows systems
  * @version 2016/11/29
  * - changed error() to accept const string& instead of string
  * @version 2016/11/23
@@ -13,9 +15,15 @@
 #ifndef _error_h
 #define _error_h
 
+#include <csignal>
 #include <exception>
 #include <iostream>
 #include <string>
+
+// bug fix for missing SIGUSR1 on some Windows systems
+#ifndef SIGUSR1
+#define SIGUSR1 10
+#endif // SIGUSR2
 
 /*
  * Class: ErrorException

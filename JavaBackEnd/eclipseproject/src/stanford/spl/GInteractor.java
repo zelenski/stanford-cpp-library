@@ -92,10 +92,12 @@ public abstract class GInteractor extends GObject implements GResizable {
 	}
 	
 	public void setBackground(Color color) {
-		this.interactor.setBackground(color);
-		if (this.interactor instanceof JButton) {
-			// workaround for buttons not showing background on some platforms
-			this.interactor.setOpaque(true);
+		if (getInteractor() != null) {
+			getInteractor().setBackground(color);
+			if (getInteractor() instanceof JButton) {
+				// workaround for buttons not showing background on some platforms
+				getInteractor().setOpaque(true);
+			}
 		}
 	}
 	
@@ -161,15 +163,23 @@ public abstract class GInteractor extends GObject implements GResizable {
 	}
 	
 	public void setForeground(Color color) {
-		this.interactor.setForeground(color);
+		if (hasInteractor()) {
+			getInteractor().setForeground(color);
+		}
 	}
 	
 	public void setEnabled(boolean value) {
-		this.interactor.setEnabled(value);
+		if (hasInteractor()) {
+			getInteractor().setEnabled(value);
+		}
+	}
+	
+	public boolean hasInteractor() {
+		return getInteractor() != null;
 	}
 
 	public boolean isEnabled() {
-		return this.interactor.isEnabled();
+		return hasInteractor() && getInteractor().isEnabled();
 	}
 
 	public JComponent getInteractor() {
@@ -177,10 +187,14 @@ public abstract class GInteractor extends GObject implements GResizable {
 	}
 
 	public GRectangle getBounds() {
-		Point localPoint = this.interactor.getLocation();
-		Dimension localDimension = this.interactor.getPreferredSize();
-		return new GRectangle(localPoint.x, localPoint.y, localDimension.width,
-				localDimension.height);
+		if (hasInteractor()) {
+			Point localPoint = getInteractor().getLocation();
+			Dimension localDimension = getInteractor().getPreferredSize();
+			return new GRectangle(localPoint.x, localPoint.y, localDimension.width,
+					localDimension.height);
+		} else {
+			return null;
+		}
 	}
 	
 	public Icon getIcon() {
@@ -223,8 +237,10 @@ public abstract class GInteractor extends GObject implements GResizable {
 
 	public void setLocation(double paramDouble1, double paramDouble2) {
 		super.setLocation(paramDouble1, paramDouble2);
-		this.interactor.setLocation(GMath.round(paramDouble1), GMath.round(paramDouble2));
-		this.interactor.repaint();
+		if (hasInteractor()) {
+			getInteractor().setLocation(GMath.round(paramDouble1), GMath.round(paramDouble2));
+			getInteractor().repaint();
+		}
 	}
 	
 	public boolean setMnemonic(char mnemonic) {
@@ -258,22 +274,26 @@ public abstract class GInteractor extends GObject implements GResizable {
 
 	public void setVisible(boolean paramBoolean) {
 		super.setVisible(paramBoolean);
-		this.interactor.setVisible(paramBoolean);
-		this.interactor.repaint();
+		if (hasInteractor()) {
+			getInteractor().setVisible(paramBoolean);
+			getInteractor().repaint();
+		}
 	}
 
 	public void setParent(GContainer paramGContainer) {
 		if (paramGContainer == null) {
-			java.awt.Container parent = this.interactor.getParent();
-			if (parent != null) {
-				parent.remove(this.interactor);
-				parent.validate();
+			if (hasInteractor()) {
+				java.awt.Container parent = getInteractor().getParent();
+				if (parent != null) {
+					parent.remove(getInteractor());
+					parent.validate();
+				}
 			}
 		} else if ((paramGContainer instanceof TopCompound)) {
 			TopCompound localTopCompound = (TopCompound) paramGContainer;
 			JBECanvas localJBECanvas = localTopCompound.getCanvas();
 			if (localJBECanvas != null) {
-				localJBECanvas.add(this.interactor);
+				localJBECanvas.add(getInteractor());
 				localJBECanvas.validate();
 			}
 		}
@@ -283,9 +303,11 @@ public abstract class GInteractor extends GObject implements GResizable {
 	public void setSize(double paramDouble1, double paramDouble2) {
 		int i = GMath.round(paramDouble1);
 		int j = GMath.round(paramDouble2);
-		this.interactor.setPreferredSize(new Dimension(i, j));
-		this.interactor.setSize(i, j);
-		this.interactor.repaint();
+		if (getInteractor() != null) {
+			getInteractor().setPreferredSize(new Dimension(i, j));
+			getInteractor().setSize(i, j);
+			getInteractor().repaint();
+		}
 	}
 
 	public void setSize(GDimension paramGDimension) {
@@ -312,13 +334,15 @@ public abstract class GInteractor extends GObject implements GResizable {
 	}
 	
 	public void setTooltip(String tooltipText) {
-		JComponent interactor = this.getInteractor();
-		if (interactor != null) {
-			interactor.setToolTipText(tooltipText);
+		if (hasInteractor()) {
+			getInteractor().setToolTipText(tooltipText);
 		}
 	}
 
 	public void repaint() {
+		if (hasInteractor()) {
+			getInteractor().repaint();
+		}
 	}
 
 	public void paint2d(Graphics2D paramGraphics2D) {
@@ -328,9 +352,8 @@ public abstract class GInteractor extends GObject implements GResizable {
 	}
 	
 	public void requestFocus() {
-		JComponent interactor = getInteractor();
-		if (interactor != null) {
-			interactor.requestFocus();
+		if (hasInteractor()) {
+			getInteractor().requestFocus();
 		}
 	}
 }

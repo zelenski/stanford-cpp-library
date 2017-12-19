@@ -8,7 +8,7 @@ public class GWindow_getScreenSize extends JBESwingCommand {
 	public void execute(TokenScanner scanner, JavaBackEnd jbe) {
 		scanner.verifyToken("(");
 		scanner.verifyToken(")");
-		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		SplPipeDecoder.writeResult("GDimension(" + dim.width + ", " + dim.height + ")");
+		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+		SplPipeDecoder.writeResult("GDimension(" + size.width + ", " + size.height + ")");
 	}
 }

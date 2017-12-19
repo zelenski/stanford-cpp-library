@@ -1078,11 +1078,11 @@ public class GTable extends GInteractor {
 
 	private class GTableCellEditorListener implements CellEditorListener {
 		public void editingStopped(ChangeEvent e) {
-			// System.out.println("DEBUG: editingStopped: " + e);
+			// empty
 		}
 
 		public void editingCanceled(ChangeEvent e) {
-			// System.out.println("DEBUG: editingCanceled: " + e);
+			// empty
 		}
 	}
 	

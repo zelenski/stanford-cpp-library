@@ -438,7 +438,8 @@ void DawgLexicon::readBinaryFile(std::istream& input) {
     }
 
 #if defined(BYTE_ORDER) && BYTE_ORDER == LITTLE_ENDIAN
-    uint32_t *cur = (uint32_t *) edges;
+    // uint32_t* cur = (uint32_t*) edges;
+    uint32_t* cur = reinterpret_cast<uint32_t*>(edges);
     for (int i = 0; i < numEdges; i++, cur++) {
         *cur = my_ntohl(*cur);
     }

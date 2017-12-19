@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp
+ * @version 2017/10/21
+ * - made it expand/collapse test categories on double-click of All/None buttons
  * @version 2017/06/06
  * - added addTest(String), containsTest
  * - increased max auto window size
@@ -812,13 +814,15 @@ public class AutograderUnitTestGUI extends Observable
 				JButton button = (JButton) event.getSource();
 				if (button.getText().contains("All")) {
 					selectAll(contentPaneBox, true);
+					allCategoriesHidden = false;
 				} else if (button.getText().contains("None")) {
 					selectAll(contentPaneBox, false);
+					allCategoriesHidden = true;
 				} else if (button.getText().contains("Hide")) {
 					allCategoriesHidden = !allCategoriesHidden;
-					for (Container category : allCategories.values()) {
-						minimize(category, allCategoriesHidden);
-					}
+				}
+				for (Container category : allCategories.values()) {
+					minimize(category, allCategoriesHidden);
 				}
 			}
 		}

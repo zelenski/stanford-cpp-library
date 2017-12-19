@@ -4,6 +4,8 @@
  * This file exports the <code>Set</code> class, which implements a
  * collection for storing a set of distinct elements.
  * 
+ * @version 2016/12/09
+ * - added iterator version checking support (implicitly via Map)
  * @version 2016/12/06
  * - slight speedup bug fix in equals() method
  * @version 2016/09/24

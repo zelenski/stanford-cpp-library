@@ -3,6 +3,8 @@
  * ----------------
  * This file implements the random.h interface.
  * 
+ * @version 2017/10/05
+ * - added randomFeedClear
  * @version 2017/09/28
  * - moved random 'feed' functions into autograder namespace
  * - ensure that randomly fed integers are within the specified range
@@ -35,6 +37,12 @@ STATIC_VARIABLE_DECLARE_COLLECTION_EMPTY(std::queue<double>, fixedReals)
 namespace autograder {
 void randomFeedBool(bool value) {
     STATIC_VARIABLE(fixedBools).push(value);
+}
+
+void randomFeedClear() {
+    STATIC_VARIABLE(fixedBools) = std::queue<bool>();
+    STATIC_VARIABLE(fixedInts) = std::queue<int>();
+    STATIC_VARIABLE(fixedReals) = std::queue<double>();
 }
 
 void randomFeedInteger(int value) {

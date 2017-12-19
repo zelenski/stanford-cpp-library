@@ -4,7 +4,9 @@
  * This file declares global hashing functions for various common data types.
  * These functions are used by the HashMap and HashSet collections, as well as
  * by other collections that wish to be used as elements within HashMaps/Sets.
- * 
+ *
+ * @version 2017/10/21
+ * - added hash codes for short, unsigned integers
  * @version 2017/09/29
  * - added composite hashCode functions (hashCode2, 3, 4, ...)
  * @version 2015/07/05
@@ -30,7 +32,11 @@ int hashCode(char key);
 int hashCode(double key);
 int hashCode(float key);
 int hashCode(int key);
+int hashCode(unsigned int key);
 int hashCode(long key);
+int hashCode(unsigned long key);
+int hashCode(short key);
+int hashCode(unsigned short key);
 int hashCode(const char* str);
 int hashCode(const std::string& str);
 int hashCode(void* key);

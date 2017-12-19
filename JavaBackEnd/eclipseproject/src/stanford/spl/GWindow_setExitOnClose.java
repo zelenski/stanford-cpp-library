@@ -14,22 +14,22 @@ import acm.util.TokenScanner;
 public class GWindow_setExitOnClose extends JBESwingCommand implements ActionListener, WindowListener {
 	private Set<String> windowsToMonitor = new HashSet<String>();
 	
-	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
-		paramTokenScanner.verifyToken("(");
-		String str1 = nextString(paramTokenScanner);
-		JBEWindow localJBEWindow = paramJavaBackEnd.getWindow(str1);
-		paramTokenScanner.verifyToken(",");
-		String bool = nextString(paramTokenScanner);
-		paramTokenScanner.verifyToken(")");
+	public void execute(TokenScanner scanner, JavaBackEnd jbe) {
+		scanner.verifyToken("(");
+		String windowId = nextString(scanner);
+		JBEWindowInterface window = jbe.getWindowInterface(windowId);
+		scanner.verifyToken(",");
+		String bool = nextString(scanner);
+		scanner.verifyToken(")");
 		if (bool.equals("true")) {
-			windowsToMonitor.add(str1);
+			windowsToMonitor.add(windowId);
 		} else {
-			windowsToMonitor.remove(str1);
+			windowsToMonitor.remove(windowId);
 		}
 		
-		if (localJBEWindow != null) {
+		if (window != null) {
 			// won't turn off if you re-call it and set it to false; oh well
-			localJBEWindow.addWindowListener(this);
+			window.addWindowListener(this);
 		}
 	}
 

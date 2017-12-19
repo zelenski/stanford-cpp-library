@@ -7,6 +7,8 @@
  * This is an example of the classic Observer/Observable design pattern.
  *
  * @author Marty Stepp
+ * @version 2017/10/25
+ * - added addObserver/removeObserver overloads that accept reference param
  * @version 2016/11/20
  * - refactored to use template for event type
  * @version 2014/10/08
@@ -46,6 +48,7 @@ public:
      * Precondition: obs != nullptr
      */
     void addObserver(Observer<T>* obs);
+    void addObserver(Observer<T>& obs);
 
     /*
      * Calls the update method of all observers that have been added previously
@@ -60,6 +63,7 @@ public:
      * list of observers.  The observer will no longer be notified.
      */
     void removeObserver(Observer<T>* obs);
+    void removeObserver(Observer<T>& obs);
 
 private:
     /*
@@ -94,6 +98,11 @@ void Observable<T>::addObserver(Observer<T>* obs) {
 }
 
 template <typename T>
+void Observable<T>::addObserver(Observer<T>& obs) {
+    addObserver(&obs);
+}
+
+template <typename T>
 void Observable<T>::notifyObservers(T arg) {
     for (Observer<T>* obs : m_observers) {
         obs->update(this, arg);
@@ -107,6 +116,12 @@ void Observable<T>::removeObserver(Observer<T>* obs) {
     }
     m_observers.erase(obs);
 }
+
+template <typename T>
+void Observable<T>::removeObserver(Observer<T>& obs) {
+    removeObserver(&obs);
+}
+
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 

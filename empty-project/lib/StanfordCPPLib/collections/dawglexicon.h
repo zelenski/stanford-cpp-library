@@ -4,6 +4,10 @@
  * This file exports the <code>DawgLexicon</code> class, which is a
  * compact structure for storing a list of words.
  * 
+ * @version 2017/11/14
+ * - added iterator version checking support
+ * @version 2017/10/18
+ * - fix compiler warnings
  * @version 2016/09/24
  * - refactored to use collections.h utility functions
  * @version 2016/08/11
@@ -429,8 +433,8 @@ public:
             /* empty */
         }
 
-        iterator(const DawgLexicon* lp, bool endFlag) {
-            this->lp = lp;
+        iterator(const DawgLexicon* theLP, bool endFlag) {
+            this->lp = theLP;
             if (endFlag) {
                 index = lp->size();
             } else {
@@ -508,11 +512,11 @@ public:
     };
 
     iterator begin() const {
-        return iterator(this, false);
+        return iterator(this, /* end */ false);
     }
 
     iterator end() const {
-        return iterator(this, true);
+        return iterator(this, /* end */ true);
     }
 
 private:

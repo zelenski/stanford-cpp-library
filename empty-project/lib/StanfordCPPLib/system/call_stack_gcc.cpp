@@ -4,6 +4,8 @@
  * Linux/gcc implementation of the call_stack class.
  *
  * @author Marty Stepp, based on code from Fredrik Orderud
+ * @version 2017/10/18
+ * - small bug fix for pointer comparison
  * @version 2017/09/02
  * - small bug fix for new clang warning about ordered comparison between pointer and zero
  * @version 2016/12/01
@@ -288,7 +290,7 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
             // by subtracting them we get the offset of the function within the file
             // which addr2line can use to look up function line numbers.
 
-            if (dlinfo.dli_fbase > (void*) 0 && trace[i] >= dlinfo.dli_fbase) {
+            if (dlinfo.dli_fbase && trace[i] >= dlinfo.dli_fbase) {
                 e.address2 = (void*) ((long) trace[i] - (long) dlinfo.dli_fbase);
             } else {
                 e.address2 = dlinfo.dli_saddr;

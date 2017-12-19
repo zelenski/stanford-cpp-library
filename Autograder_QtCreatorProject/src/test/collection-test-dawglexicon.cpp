@@ -163,3 +163,19 @@ TIMED_TEST(DawgLexiconTests, initializerListTest_DawgLexicon, TEST_TIMEOUT_DEFAU
     assertTrue("init list DawgLexicon contains sixty", dlex2.contains("sixty"));
     assertTrue("init list DawgLexicon contains seventy", dlex2.contains("seventy"));
 }
+
+#ifdef SPL_THROW_ON_INVALID_ITERATOR
+TIMED_TEST(DawgLexiconTests, iteratorVersionTest_DawgLexicon, TEST_TIMEOUT_DEFAULT) {
+    DawgLexicon lex {"ten", "twenty", "thirty", "forty"};
+    try {
+        for (std::string s : lex) {
+            if (s.length() % 2 == 0) {
+                lex.add("hi");
+            }
+        }
+        assertFail("should not get to end of test; should throw exception before now");
+    } catch (ErrorException ex) {
+        assertPass("threw exception successfully");
+    }
+}
+#endif // SPL_THROW_ON_INVALID_ITERATOR

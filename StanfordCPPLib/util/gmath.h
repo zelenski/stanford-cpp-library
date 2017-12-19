@@ -5,6 +5,8 @@
  * geometry along with the mathematical constants <code>PI</code>
  * and <code>E</code>.
  *
+ * @version 2017/12/12
+ * - added floatingPointEqual(a, b, tolerance)
  * @version 2016/10/14
  * - added floatingPointEqual method for comparing floats and doubles
  */
@@ -126,28 +128,33 @@ int countDigits(int n, int base = 10);
  * http://stackoverflow.com/questions/4548004/how-to-correctly-and-standardly-compare-floats
  */
 template<typename T>
+bool floatingPointEqual(T f1, T f2, T tolerance) {
+    return (std::fabs(f1 - f2) <= tolerance);
+}
+
+template<typename T>
 bool floatingPointEqual(T f1, T f2) {
-  return (std::fabs(f1 - f2) <= std::numeric_limits<T>::epsilon() * std::fmax(fabs(f1), fabs(f2)));
+    return floatingPointEqual(f1, f2, /* tolerance */ (T) std::numeric_limits<T>::epsilon() * std::fmax(fabs(f1), fabs(f2)));
 }
 
 template<typename T>
 bool floatingPointEqual(T f1, int f2) {
-  return floatingPointEqual(f1, (T) f2);
+    return floatingPointEqual(f1, (T) f2);
 }
 
 template<typename T>
 bool floatingPointEqual(int f1, T f2) {
-  return floatingPointEqual((T) f1, f2);
+    return floatingPointEqual((T) f1, f2);
 }
 
 template<typename T>
 bool floatingPointEqual(T f1, long int f2) {
-  return floatingPointEqual(f1, (T) f2);
+    return floatingPointEqual(f1, (T) f2);
 }
 
 template<typename T>
 bool floatingPointEqual(long int f1, T f2) {
-  return floatingPointEqual((T) f1, f2);
+    return floatingPointEqual((T) f1, f2);
 }
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

@@ -21,7 +21,7 @@ public class DiffImage_compareWindowToImage extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String windowID = nextString(paramTokenScanner);
-		JBEWindow window = paramJavaBackEnd.getWindow(windowID);
+		JBEWindowInterface window = paramJavaBackEnd.getWindowInterface(windowID);
 		paramTokenScanner.verifyToken(",");
 		String filename = nextString(paramTokenScanner);
 		paramTokenScanner.verifyToken(",");

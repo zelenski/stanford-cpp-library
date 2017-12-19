@@ -5,15 +5,15 @@ import java.awt.Dimension;
 import acm.util.TokenScanner;
 
 public class GWindow_getSize extends JBESwingCommand {
-	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
-		paramTokenScanner.verifyToken("(");
-		String str1 = nextString(paramTokenScanner);
-		JBEWindow localJBEWindow = paramJavaBackEnd.getWindow(str1);
-		paramTokenScanner.verifyToken(")");
-		Dimension dim = new Dimension(0, 0);
-		if (localJBEWindow != null) {
-			dim = localJBEWindow.getSize();
+	public void execute(TokenScanner scanner, JavaBackEnd jbe) {
+		scanner.verifyToken("(");
+		String windowId = nextString(scanner);
+		JBEWindowInterface window = jbe.getWindowInterface(windowId);
+		scanner.verifyToken(")");
+		Dimension size = new Dimension(0, 0);
+		if (window != null) {
+			size = window.getSize();
 		}
-		SplPipeDecoder.writeResult("GDimension(" + dim.width + ", " + dim.height + ")");
+		SplPipeDecoder.writeResult("GDimension(" + size.width + ", " + size.height + ")");
 	}
 }

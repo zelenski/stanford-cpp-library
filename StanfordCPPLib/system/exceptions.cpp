@@ -376,12 +376,16 @@ void printStackTrace(std::ostream& out) {
 #endif // _WIN32
 
 #define FILL_IN_EXCEPTION_TRACE(ex, kind, desc) \
-    if ((!std::string(kind).empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_KIND, (kind)); } \
-    if ((!std::string(desc).empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_DETAILS, (desc)); } \
+    {\
+    std::string __kind = (kind); \
+    std::string __desc = (desc); \
+    if ((!__kind.empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_KIND, __kind); } \
+    if ((!__desc.empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_DETAILS, __desc); } \
     std::cout.flush(); \
     out << msg; \
     printStackTrace(out); \
-    THROW_NOT_ON_WINDOWS(ex);
+    THROW_NOT_ON_WINDOWS(ex); \
+    }
 
 static void signalHandlerDisable() {
     for (int sig : STATIC_VARIABLE(SIGNALS_HANDLED)) {
@@ -420,6 +424,7 @@ static void signalHandlerEnable() {
     sigaction(SIGFPE,  &sig_action, nullptr);
     sigaction(SIGILL,  &sig_action, nullptr);
     sigaction(SIGTERM, &sig_action, nullptr);
+    sigaction(SIGUSR1, &sig_action, nullptr);
 #ifdef SPL_AUTOGRADER_MODE
     sigaction(SIGINT,  &sig_action, nullptr);
 #else // not SPL_AUTOGRADER_MODE
@@ -465,6 +470,9 @@ static void stanfordCppLibSignalHandler(int sig) {
     } else if (sig == SIGSTACK) {
         SIGNAL_KIND = "A stack overflow";
         SIGNAL_DETAILS = "This can happen when you have a function that calls itself infinitely.";
+    } else if (sig == SIGUSR1) {
+        SIGNAL_KIND = "Custom signal 1";
+        SIGNAL_DETAILS = "This can happen when you produce infinite output in your code.";
     }
     
     std::cerr << std::endl;

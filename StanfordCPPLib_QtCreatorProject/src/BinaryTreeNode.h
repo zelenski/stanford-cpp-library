@@ -28,7 +28,7 @@ public:
     /*
      * Constructs a new tree node with the given data and left/right links.
      */
-    BinaryTreeNodeGen<T>(T data = T(), BinaryTreeNodeGen* left = nullptr, BinaryTreeNodeGen* right = nullptr);
+    BinaryTreeNodeGen<T>(const T& data = T(), BinaryTreeNodeGen* left = nullptr, BinaryTreeNodeGen* right = nullptr);
     ~BinaryTreeNodeGen<T>();
     bool isLeaf() const;
 };
@@ -58,7 +58,7 @@ int BinaryTreeNodeGen<T>::s_freed = 0;
  * Constructs a new tree node with the given data and left/right links.
  */
 template <typename T>
-BinaryTreeNodeGen<T>::BinaryTreeNodeGen(T data, BinaryTreeNodeGen* left, BinaryTreeNodeGen* right) {
+BinaryTreeNodeGen<T>::BinaryTreeNodeGen(const T& data, BinaryTreeNodeGen* left, BinaryTreeNodeGen* right) {
     this->data = data;
     this->left = left;
     this->right = right;
@@ -68,6 +68,8 @@ BinaryTreeNodeGen<T>::BinaryTreeNodeGen(T data, BinaryTreeNodeGen* left, BinaryT
 template <typename T>
 BinaryTreeNodeGen<T>::~BinaryTreeNodeGen() {
     s_freed++;
+    this->left = nullptr;
+    this->right = nullptr;
 }
 
 template <typename T>

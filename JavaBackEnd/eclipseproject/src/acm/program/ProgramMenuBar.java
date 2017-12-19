@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp (current maintainer)
+ * @version 2017/10/31
+ * - added Ctrl-number hotkeys to automatically load input script and compare output
  * @version 2017/04/25
  * - added Save / Save As options to GraphicsProgram
  * - added Anti-alias checkbox to GraphicsProgram
@@ -174,6 +176,16 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 	protected KeyStroke COMMAND_V;
 	protected KeyStroke COMMAND_W;
 	protected KeyStroke COMMAND_X;
+	protected KeyStroke CTRL_1;
+	protected KeyStroke CTRL_2;
+	protected KeyStroke CTRL_3;
+	protected KeyStroke CTRL_4;
+	protected KeyStroke CTRL_5;
+	protected KeyStroke CTRL_6;
+	protected KeyStroke CTRL_7;
+	protected KeyStroke CTRL_8;
+	protected KeyStroke CTRL_9;
+	protected KeyStroke CTRL_0;
 	protected KeyStroke CTRL_A;
 	protected KeyStroke CTRL_B;
 	protected KeyStroke CTRL_C;
@@ -221,6 +233,16 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 		focusedItems = new HashSet<JMenuItem>();
 
 		ALT_F4 = KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK);
+		CTRL_1 = KeyStroke.getKeyStroke(KeyEvent.VK_1, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_2 = KeyStroke.getKeyStroke(KeyEvent.VK_2, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_3 = KeyStroke.getKeyStroke(KeyEvent.VK_3, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_4 = KeyStroke.getKeyStroke(KeyEvent.VK_4, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_5 = KeyStroke.getKeyStroke(KeyEvent.VK_5, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_6 = KeyStroke.getKeyStroke(KeyEvent.VK_6, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_7 = KeyStroke.getKeyStroke(KeyEvent.VK_7, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_8 = KeyStroke.getKeyStroke(KeyEvent.VK_8, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_9 = KeyStroke.getKeyStroke(KeyEvent.VK_9, KeyEvent.CTRL_DOWN_MASK);
+		CTRL_0 = KeyStroke.getKeyStroke(KeyEvent.VK_0, KeyEvent.CTRL_DOWN_MASK);
 		COMMAND_A = KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.META_DOWN_MASK);
 		COMMAND_B = KeyStroke.getKeyStroke(KeyEvent.VK_B, KeyEvent.META_DOWN_MASK);
 		COMMAND_C = KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.META_DOWN_MASK);
@@ -600,7 +622,7 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 
 		//////
 		if (getProgram() instanceof AbstractConsoleProgram) {
-			AbstractConsoleProgram consoleProgram = (AbstractConsoleProgram) getProgram();
+			final AbstractConsoleProgram consoleProgram = (AbstractConsoleProgram) getProgram();
 			if (stroke.equals(CTRL_HOME) || stroke.equals(COMMAND_HOME)) {
 				consoleProgram.scrollToTop();
 				return true;
@@ -616,6 +638,38 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 				return true;
 			} else if (stroke.equals(CTRL_MINUS) || stroke.equals(COMMAND_MINUS) || stroke.equals(CTRL_SHIFT_MINUS) || stroke.equals(COMMAND_SHIFT_MINUS)) {
 				consoleProgram.fontShrink();
+				return true;
+			} else if (stroke.equals(CTRL_1)
+					|| stroke.equals(CTRL_2)
+					|| stroke.equals(CTRL_3)
+					|| stroke.equals(CTRL_4)
+					|| stroke.equals(CTRL_5)
+					|| stroke.equals(CTRL_6)
+					|| stroke.equals(CTRL_7)
+					|| stroke.equals(CTRL_8)
+					|| stroke.equals(CTRL_9)
+					|| stroke.equals(CTRL_0)) {
+				// auto-load input script and compare output
+				final int num = stroke.getKeyCode() - '0';   // 0-9
+				if (consoleProgram.loadInputScript(num)) {
+					new Thread(new Runnable() {
+						public void run() {
+							// wait up to 30 sec for program to terminate
+							long startTime = System.currentTimeMillis();
+							long elapsed = 0;
+							final long ELAPSED_MAX = 30000;
+							
+							while (elapsed < ELAPSED_MAX && consoleProgram.isRunning()) {
+								consoleProgram.pause(100);
+								elapsed = System.currentTimeMillis() - startTime;
+							}
+							
+							if (elapsed < ELAPSED_MAX) {
+								consoleProgram.compareOutput(num);
+							}
+						}
+					}).start();
+				}
 				return true;
 			} else if (stroke.equals(CTRL_B) || stroke.equals(COMMAND_B)) {
 				consoleProgram.fontToggleBold();

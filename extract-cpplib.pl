@@ -68,7 +68,7 @@ my @ALL_FILES = (
 "$basedir/graphics/gtextarea.h",
 "$basedir/io/bitstream.h",
 #"$basedir/util/foreach.h",
-#"$basedir/io/console.h",
+"$basedir/io/console.h",
 "$basedir/io/plainconsole.h",
 "$basedir/util/sound.h",
 "$basedir/private/consolestreambuf.h",
@@ -79,11 +79,14 @@ my @ALL_FILES = (
 #"$basedir/private/foreachpatch.h",
 #"$basedir/private/main.h",
 #"$basedir/private/randompatch.h",
-#"$basedir/private/tplatform.h",
+"$basedir/private/tplatform.h",
 "$basedir/private/version.h",
 "$basedir/util/regexpr.h",
 "$basedir/system/call_stack.h",
 "$basedir/system/stack_exception.h",
+"$basedir/system/thread.h",
+"$basedir/system/pstream.h",
+"$basedir/system/process.h",
 "$basedir/util/timer.h",
 "$basedir/util/note.h",
 "$basedir/io/urlstream.h",
@@ -113,11 +116,14 @@ my @ALL_FILES = (
 "$basedir/io/urlstream.cpp",
 "$basedir/private/platform.cpp",
 "$basedir/private/version.cpp",
+"$basedir/private/tplatform_posix.cpp",
 "$basedir/system/call_stack_gcc.cpp",
+"$basedir/system/thread.cpp",
 #"$basedir/system/call_stack_windows.cpp",   # not needed because the server runs *nix
 "$basedir/system/error.cpp",
 "$basedir/io/plainconsole.cpp",
 "$basedir/system/exceptions.cpp",
+"$basedir/system/process.cpp",
 "$basedir/util/recursion.cpp",
 "$basedir/util/direction.cpp",
 "$basedir/util/gmath.cpp",
@@ -128,7 +134,7 @@ my @ALL_FILES = (
 "$basedir/util/sound.cpp",
 "$basedir/util/strlib.cpp",
 "$basedir/util/timer.cpp",
-#"$basedir/io/console.cpp",
+"$basedir/io/console.cpp",
 
 # some classes that come from practice exams but are needed for 106B/X section/exam problems
 "$projdir/ArrayIntList.h",
@@ -210,7 +216,17 @@ foreach my $cppfile (@ALL_FILES) {
 			. "/////////////////////// END code extracted from $cppfile ///////////////////////\n\n";
 	
 	if ($cppfile =~ m/\.h$/) {
+		# special case: including console.h, must disable graphical console
+		if ($cppfile =~ m/\/console\.h$/) {
+			$overall_h_text .= "#define __DONT_ENABLE_GRAPHICAL_CONSOLE\n";
+		}
+
 		$overall_h_text .= $text_to_add;
+
+		if ($cppfile =~ m/\/console\.h$/) {
+			$overall_h_text .= "#undef __DONT_ENABLE_GRAPHICAL_CONSOLE\n";
+		}
+		
 	} else {
 		$overall_cpp_text .= $text_to_add;
 	}

@@ -5,6 +5,8 @@
  * compact structure for storing a list of words.
  *
  * @author Marty Stepp
+ * @version 2016/12/09
+ * - added iterator version checking support (implicitly via Set)
  * @version 2016/09/24
  * - refactored to use collections.h utility functions
  * @version 2016/08/12
@@ -480,7 +482,7 @@ private:
             return m_children[letter - 'a'];
         }
 
-        inline int childCount() {
+        inline int childCount() const {
             int count = 0;
             for (int i = 0; i < 26; i++) {
                 if (m_children[i] != nullptr) {
@@ -490,16 +492,11 @@ private:
             return count;
         }
 
-        inline bool isLeaf() {
-            for (int i = 0; i < 26; i++) {
-                if (m_children[i] != nullptr) {
-                    return false;
-                }
-            }
-            return true;
+        inline bool isLeaf() const {
+            return childCount() == 0;
         }
 
-        inline bool isWord() {
+        inline bool isWord() const {
             return m_isWord;
         }
 

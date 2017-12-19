@@ -21,7 +21,7 @@ public class GWindow_setRegionSize extends JBESwingCommand {
 		scanner.verifyToken(")");
 		
 		Dimension dim = new Dimension(width, height);
-		JBEWindow window = jbe.getWindow(id);
+		JBEWindowInterface window = jbe.getWindowInterface(id);
 		if (window != null) {
 			Container pane = window.getContentPane();
 			LayoutManager layout = pane.getLayout();

@@ -1,21 +1,22 @@
 package stanford.spl;
 
+import java.awt.*;
 import acm.util.TokenScanner;
 
 public class GWindow_setLocationSaved extends JBESwingCommand {
-	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
-		paramTokenScanner.verifyToken("(");
-		String str1 = nextString(paramTokenScanner);
-		JBEWindow localJBEWindow = paramJavaBackEnd.getWindow(str1);
-		paramTokenScanner.verifyToken(",");
-		boolean value = nextBoolean(paramTokenScanner);
-		paramTokenScanner.verifyToken(")");
-		if (localJBEWindow != null) {
+	public void execute(TokenScanner scanner, JavaBackEnd jbe) {
+		scanner.verifyToken("(");
+		String windowId = nextString(scanner);
+		JBEWindowInterface window = jbe.getWindowInterface(windowId);
+		scanner.verifyToken(",");
+		boolean value = nextBoolean(scanner);
+		scanner.verifyToken(")");
+		if (window != null && window instanceof Window) {
 			if (value) {
-				SPLWindowSettings.loadWindowLocation(localJBEWindow);
-				SPLWindowSettings.saveWindowLocation(localJBEWindow);
+				SPLWindowSettings.loadWindowLocation((Window) window);
+				SPLWindowSettings.saveWindowLocation((Window) window);
 			} else {
-				SPLWindowSettings.forgetWindowLocation(localJBEWindow);
+				SPLWindowSettings.forgetWindowLocation((Window) window);
 			}
 		}
 	}

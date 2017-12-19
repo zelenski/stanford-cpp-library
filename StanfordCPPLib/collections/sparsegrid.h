@@ -9,6 +9,8 @@
  * Grid is recommended for use over SparseGrid.
  * 
  * @author Marty Stepp
+ * @version 2017/11/14
+ * - added iterator version checking support
  * @version 2016/10/22
  * - bug fix for size method
  * @version 2016/09/24
@@ -335,10 +337,12 @@ public:
      * and so on.
      */
 
+private:
     /* Instance variables */
     Map<int, Map<int, ValueType> > elements;  // 2D map of the elements
     int nRows;            // The number of rows in the grid
     int nCols;            // The number of columns in the grid
+    unsigned int m_version;     // structure version for detecting invalid iterators
 
     /* Private method prototypes */
 
@@ -383,6 +387,15 @@ public:
         nCols = grid.nCols;
     }
 
+    template <typename T>
+    friend const T& randomElement(const SparseGrid<T>& grid);
+
+    template <typename T>
+    friend std::ostream& operator <<(std::ostream& os, const SparseGrid<T>& grid);
+
+    template <typename T>
+    friend std::istream& operator >>(std::istream& is, SparseGrid<T>& grid);
+
 public:
     SparseGrid& operator =(const SparseGrid& src) {
         if (this != &src) {
@@ -404,22 +417,28 @@ public:
      */
     class iterator : public std::iterator<std::input_iterator_tag, ValueType> {
     public:
-        iterator(const SparseGrid* gp, int index) {
-            this->gp = gp;
-            this->index = index;
+        iterator(const SparseGrid* gp, int index)
+                : gp(gp),
+                  index(index),
+                  itr_version(gp->version()) {
+            // empty
         }
 
-        iterator(const iterator& it) {
-            this->gp = it.gp;
-            this->index = it.index;
+        iterator(const iterator& it)
+                : gp(it.gp),
+                  index(it.index),
+                  itr_version(it.itr_version) {
+            // empty
         }
 
         iterator& operator ++() {
+            stanfordcpplib::collections::checkVersion(*gp, *this);
             index++;
             return *this;
         }
 
         iterator operator ++(int) {
+            stanfordcpplib::collections::checkVersion(*gp, *this);
             iterator copy(*this);
             operator++();
             return copy;
@@ -434,23 +453,27 @@ public:
         }
 
         ValueType operator *() {
+            stanfordcpplib::collections::checkVersion(*gp, *this);
             int row = index / gp->nCols;
             int col = index % gp->nCols;
             return gp->elements[row][col];
         }
 
-        // BUGBUG?: Does this work?
-        // Aren't I returning a pointer to a stack-allocated local int?
         ValueType* operator ->() {
+            stanfordcpplib::collections::checkVersion(*gp, *this);
             int row = index / gp->nCols;
             int col = index % gp->nCols;
-            std::cout << "itr opr-> row " << row << ", col " << col << std::endl;
             return &gp->elements[row][col];
+        }
+
+        unsigned int version() const {
+            return itr_version;
         }
 
     private:
         const SparseGrid* gp;
         int index;
+        unsigned int itr_version;
     };
 
     iterator begin() const {
@@ -460,6 +483,12 @@ public:
     iterator end() const {
         return iterator(this, nRows * nCols);
     }
+
+    /*
+     * Returns the internal version of this collection.
+     * This is used to check for invalid iterators and issue error messages.
+     */
+    unsigned int version() const;
 
     /*
      * Private class: SparseGrid<ValType>::SparseGridRow
@@ -519,29 +548,31 @@ public:
 };
 
 template <typename ValueType>
-SparseGrid<ValueType>::SparseGrid() :
-    nRows(0),
-    nCols(0)
-{
+SparseGrid<ValueType>::SparseGrid()
+        : nRows(0),
+          nCols(0),
+          m_version(0) {
     // empty
 }
 
 template <typename ValueType>
-SparseGrid<ValueType>::SparseGrid(int nRows, int nCols) {
+SparseGrid<ValueType>::SparseGrid(int nRows, int nCols)
+        : m_version(0) {
     resize(nRows, nCols);
 }
 
 template <typename ValueType>
-SparseGrid<ValueType>::SparseGrid(int nRows, int nCols, const ValueType& value) {
+SparseGrid<ValueType>::SparseGrid(int nRows, int nCols, const ValueType& value)
+        : m_version(0) {
     resize(nRows, nCols);
     fill(value);
 }
 
 template <typename ValueType>
-SparseGrid<ValueType>::SparseGrid(std::initializer_list<std::initializer_list<ValueType> > list) :
-    nRows(0),
-    nCols(0)
-{
+SparseGrid<ValueType>::SparseGrid(std::initializer_list<std::initializer_list<ValueType> > list)
+        : nRows(0),
+          nCols(0),
+          m_version(0) {
     // create the grid at the proper size
     nRows = list.size();
     if (list.begin() != list.end()) {
@@ -717,12 +748,14 @@ void SparseGrid<ValueType>::resize(int nRows, int nCols, bool retain) {
     } else {
         elements.clear();
     }
+    m_version++;
 }
 
 template <typename ValueType>
 void SparseGrid<ValueType>::set(int row, int col, const ValueType& value) {
     checkIndexes(row, col, nRows-1, nCols-1, "set");
     elements[row][col] = value;
+    m_version++;
 }
 
 template <typename ValueType>
@@ -769,6 +802,11 @@ std::string SparseGrid<ValueType>::toString2D(
     }
     os << rowEnd;
     return os.str();
+}
+
+template <typename ValueType>
+unsigned int SparseGrid<ValueType>::version() const {
+    return m_version;
 }
 
 template <typename ValueType>

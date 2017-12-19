@@ -110,6 +110,8 @@ void BinaryTreeNode_fromString(BinaryTreeNode*& root, const std::string& str);
 void BinaryTreeNodeptr_fromString(BinaryTreeNode*& root, const std::string& str);
 void BinaryTreeNodeChar_fromString(BinaryTreeNodeChar*& root, const std::string& str);
 void BinaryTreeNodeCharptr_fromString(BinaryTreeNodeChar*& root, const std::string& str);
+void BinaryTreeNodeDouble_fromString(BinaryTreeNodeDouble*& root, const std::string& str);
+void BinaryTreeNodeString_fromString(BinaryTreeNodeString*& root, const std::string& str);
 void HeapPriorityQueue_fromString(HeapPriorityQueue& pqueue, const std::string& str);
 void LinkedIntList_fromString(LinkedIntList& list, const std::string& str);
 void ListNode_fromString(ListNode*& ptr, const std::string& str);
@@ -152,7 +154,7 @@ void assertEquals(const std::string& msg, const std::string& type, T expected, T
 template <typename T>
 void assertEquals(const std::string& msg, T expected, T actual,
                   Map<std::string, std::string> attrs = {}) {
-    assertEquals(msg, "T", expected, actual);
+    assertEquals(msg, "T", expected, actual, attrs);
 }
 
 void assertEqualsBool(const std::string& msg, bool expected, bool actual);

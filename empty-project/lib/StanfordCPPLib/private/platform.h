@@ -5,6 +5,12 @@
  * the platform-specific parts of the StanfordCPPLib package.  This file is
  * logically part of the implementation and is not interesting to clients.
  *
+ * @version 2017/10/12
+ * - added gtextlabel_create
+ * - added gwindow_setRepaintImmediately
+ * - added initialValue to goptionPane_showInputDialog
+ * @version 2017/10/05
+ * - added gwindow_rememberPosition
  * @version 2017/09/24
  * - graphical console shows "(terminated)" when complete
  * @version 2016/11/25
@@ -201,7 +207,7 @@ public:
     void gobject_setVisible(GObject* gobj, bool flag);
 
     int goptionpane_showConfirmDialog(const std::string& message, const std::string& title, int type);
-    std::string goptionpane_showInputDialog(const std::string& message, const std::string& title);
+    std::string goptionpane_showInputDialog(const std::string& message, const std::string& title, const std::string& initialValue);
     void goptionpane_showMessageDialog(const std::string& message, const std::string& title, int type);
     int goptionpane_showOptionDialog(const std::string& message,
                                      const std::string& title,
@@ -280,6 +286,8 @@ public:
     void gtextfield_setPlaceholder(GObject* gobj, const std::string& text);
     void gtextfield_setText(GObject* gobj, const std::string& str);
 
+    void gtextlabel_constructor(GObject* gobj, const std::string& label);
+
     void gtimer_constructor(const GTimer& timer, double delay);
     void gtimer_delete(const GTimer& timer);
     void gtimer_pause(double milliseconds);
@@ -308,6 +316,7 @@ public:
     GDimension gwindow_getSize(const GWindow& gw);
     void gwindow_minimize(const GWindow& gw);
     void gwindow_pack(const GWindow& gw);
+    void gwindow_rememberPosition(const GWindow& gw);
     void gwindow_removeFromRegion(const GWindow& gw, GObject* gobj, const std::string& region);
     void gwindow_repaint(const GWindow& gw);
     void gwindow_requestFocus(const GWindow& gw);
@@ -320,6 +329,7 @@ public:
     void gwindow_setPixel(const GWindow& gw, int x, int y, int rgb, bool repaint = true);
     void gwindow_setPixels(const GWindow& gw, const Grid<int>& grid);
     void gwindow_setRegionAlignment(const GWindow& gw, const std::string& region, const std::string& align);
+    void gwindow_setRepaintImmediately(const GWindow& gw, bool value);
     void gwindow_setResizable(const GWindow& gw, bool value);
     void gwindow_setSize(const GWindow& gw, int width, int height);
     void gwindow_setTitle(const GWindow& gw, const std::string& title);

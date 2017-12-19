@@ -1,5 +1,8 @@
 /*
  * @author Marty Stepp
+ * @version 2017/10/22
+ * - added String... items overloads
+ * - added static method showInputDialog
  * @version 2017/06/07
  * - added version that accepts a title
  * @version 2015/05/09
@@ -24,6 +27,23 @@ import stanford.cs106.gui.GuiUtils;
  * A sort of expansion of the JOptionPane functionality provided in Java Swing.
  */
 public class JListOptionPane extends JDialog implements ActionListener {
+	private static final int HPADDING = 20;
+	private static final int VPADDING = 0;
+	
+	public static int showInputDialog(Frame frame, String message, String title, String... items) {
+		JListOptionPane dialog = new JListOptionPane(frame, message, title, items);
+		dialog.setMultipleSelection(false);
+		dialog.setVisible(true);
+		return dialog.getSelectedIndex();
+	}
+	
+	public static int showInputDialog(Frame frame, String message, String title, Iterable<String> items) {
+		JListOptionPane dialog = new JListOptionPane(frame, message, title, items);
+		dialog.setMultipleSelection(false);
+		dialog.setVisible(true);
+		return dialog.getSelectedIndex();
+	}
+	
 	private static final long serialVersionUID = 0;
 
 	@SuppressWarnings("rawtypes")
@@ -41,9 +61,14 @@ public class JListOptionPane extends JDialog implements ActionListener {
 		this(frame, message, /* title */ "Select an option", items);
 	}
 
+	public JListOptionPane(Frame frame, String message, String title, String... items) {
+		this(frame, message, title, Arrays.asList(items));
+	}
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public JListOptionPane(Frame frame, String message, String title, Iterable<String> items) {
-		super(frame, true);
+		super(frame, /* modal */ true);
+		
 		if (title != null && !title.isEmpty()) {
 			setTitle(title);
 		}
@@ -64,10 +89,14 @@ public class JListOptionPane extends JDialog implements ActionListener {
 		south.add(cancel);
 
 		if (message != null && !message.isEmpty()) {
-			JPanel north = new JPanel(new FlowLayout());
-			north.add(new JLabel(message));
+			JPanel north = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
+			JLabel label = new JLabel(message);
+			label.setHorizontalAlignment(SwingConstants.CENTER);
+			GuiUtils.pad(label, HPADDING, VPADDING);
+			north.add(label);
 			add(north, BorderLayout.NORTH);
 		}
+		GuiUtils.pad(list, HPADDING, VPADDING);
 		
 		add(new JScrollPane(list));
 		add(south, BorderLayout.SOUTH);

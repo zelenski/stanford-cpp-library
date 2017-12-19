@@ -50,6 +50,14 @@ Since 2014/10/20 version of the library, performing a for-each loop over a <code
 </p>
 
 <p>
+	<em>Note about pointers:</em>
+	Several <code>Graph</code> members return various pointers to nodes and arcs.
+	Any such pointers returned are direct pointers to the internal structures inside of this graph.
+	If the graph itself falls out of scope, is cleared, etc., or if the given node/arc is removed from the graph, this pointer will become invalid.
+	Undefined behavior and crashes will result if you retain pointers to node/arcs that live on beyond the life span of the graph.
+</p>
+
+<p>
 	For the purposes of Big-Oh listing, some members are proportional to the number of nodes N, and some are proportional to the number of arcs A.
 </p>
 
@@ -243,6 +251,8 @@ already contains a node with the given name, or if <code>NULL</code> is
 passed to the second version of this function,
 <code>addNode</code> throws an error.
 
+<p>The pointer returned is a direct pointer to the internal structure inside this graph, and will become invalid if the node is removed or if the graph itself falls out of scope.</p>
+
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
@@ -279,6 +289,9 @@ NodeType* getNode(string name) const;
 Looks up a node in the name table attached to the graph and
 returns a pointer to that node.  If no node with the specified
 name exists, <code>getNode</code> returns <code>NULL</code>.
+
+<p>The pointer returned is a direct pointer to the internal structure inside this graph, and will become invalid if the node is removed or if the graph itself falls out of scope.</p>
+
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
@@ -302,6 +315,8 @@ to have multiple arcs between the same pair of nodes.
 
 <p>When calling either of the two-parameter versions of <code>addArc</code>,
 if either of the nodes supplied is <code>NULL</code> or is not found in the graph, the function will throw an error.
+
+<p>The pointer returned is a direct pointer to the internal structure inside this graph, and will become invalid if the arc is removed or if the graph itself falls out of scope.</p>
 
 <p>Usage:<br>
 </div>
@@ -366,6 +381,9 @@ const Set&lt;NodeType* &gt; &amp; getNodeSet() const;
 </pre>
 <div class=detailHTML>
 Returns the set of all nodes in the graph.
+
+<p>The pointers returned are direct pointers to the internal structures inside this graph, and will become invalid if any node is removed or if the graph itself falls out of scope.</p>
+
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
@@ -385,6 +403,8 @@ can be indicated either as a pointer or by name.
 
 <p>When calling the two versions of this function that accept a node parameter, if the node supplied is <code>NULL</code> or is not found in the graph, the function will throw an error.
 
+<p>The pointers returned are direct pointers to the internal structures inside this graph, and will become invalid if any arc is removed or if the graph itself falls out of scope.</p>
+
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
@@ -403,6 +423,8 @@ Returns the set of nodes that are neighbors of the specified
 node, which can be indicated either as a pointer or by name.
 
 <p>If the node supplied is <code>NULL</code> or is not found in the graph, the function will throw an error.
+
+<p>The pointers returned are direct pointers to the internal structures inside this graph, and will become invalid if any node is removed or if the graph itself falls out of scope.</p>
 
 <p>Usage:<br>
 </div>

@@ -21,7 +21,7 @@
 struct HashTableNode {
     int data;
     HashTableNode* next;
-    HashTableNode(int data = 0, HashTableNode* next = NULL) {
+    HashTableNode(int data = 0, HashTableNode* next = nullptr) {
         this->data = data;
         this->next = next;
     }

@@ -118,6 +118,10 @@ public class SplPipeDecoder {
 		println("error:" + text);
 	}
 	
+	public static synchronized void writeEvent(String s) {
+		println("event:" + s);
+	}
+	
 	public static synchronized void writeOK() {
 		writeResult("ok");
 	}

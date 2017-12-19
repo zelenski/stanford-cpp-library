@@ -10,25 +10,29 @@ import java.awt.Window;
 import acm.util.TokenScanner;
 
 public class GWindow_setLocation extends JBESwingCommand {
-	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
-		paramTokenScanner.verifyToken("(");
-		String str1 = nextString(paramTokenScanner);
-		JBEWindow localJBEWindow = paramJavaBackEnd.getWindow(str1);
-		paramTokenScanner.verifyToken(",");
-		int x = nextInt(paramTokenScanner);
-		paramTokenScanner.verifyToken(",");
-		int y = nextInt(paramTokenScanner);
-		paramTokenScanner.verifyToken(")");
-		if (localJBEWindow != null) {
+	public void execute(TokenScanner scanner, JavaBackEnd jbe) {
+		scanner.verifyToken("(");
+		String windowId = nextString(scanner);
+		JBEWindowInterface window = jbe.getWindowInterface(windowId);
+		scanner.verifyToken(",");
+		int x = nextInt(scanner);
+		scanner.verifyToken(",");
+		int y = nextInt(scanner);
+		scanner.verifyToken(")");
+		if (window != null) {
 			// BUGBUG: It appears that TokenScanner can't handle negative numbers
 			//         and doesn't think they are int tokens.  Ugh.
 			if ((x == -1 && y == -1) || (x == 999999 && y == 999999)) {
-				Point center = getCenter(localJBEWindow);
+				Point center = getCenter(window);
 				x = center.x;
 				y = center.y;
 			}
-			localJBEWindow.setLocation(x, y);
+			window.setLocation(x, y);
 		}
+	}
+	
+	public static Point getCenter(JBEWindowInterface window) {
+		return getCenter(window.getWidth(), window.getHeight());
 	}
 	
 	public static Point getCenter(Window window) {
@@ -43,10 +47,6 @@ public class GWindow_setLocation extends JBESwingCommand {
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 		int centerX = Math.max(0, (screen.width - windowWidth) / 2);
 		int centerY = Math.max(0, (screen.height - windowHeight) / 2);
-//		JOptionPane.showMessageDialog(null,
-//				"screen size: " + screen.width + " x " + screen.height + "\n"
-//				+ "window size: " + windowWidth + " x " + windowHeight + "\n"
-//				+ "center: (x=" + centerX + ", y=" + centerY + ")");
 		return new Point(centerX, centerY);
 	}
 }

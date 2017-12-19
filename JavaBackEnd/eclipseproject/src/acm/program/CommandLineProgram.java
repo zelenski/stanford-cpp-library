@@ -51,6 +51,13 @@ public class CommandLineProgram
 		implements ProgramInterface, IOModel, MouseListener, MouseMotionListener,
 		KeyListener, ActionListener {
 
+	/* Private instance variables */
+	private HashMap<String,String> parameterTable;
+	private ArrayList<Object> finalizers;
+	private AppletStub appletStub;
+	private String myTitle;
+	private IOConsole myConsole;
+
 	/* Default constructor: CommandLineProgram */
 	/**
 	 * This code initializes the program data structures.
@@ -1268,12 +1275,5 @@ public class CommandLineProgram
 		ht.put("ARGS", newArgs);
 		return ht;
 	}
-
-	/* Private instance variables */
-	private HashMap<String,String> parameterTable;
-	private ArrayList<Object> finalizers;
-	private AppletStub appletStub;
-	private String myTitle;
-	private IOConsole myConsole;
 }
 

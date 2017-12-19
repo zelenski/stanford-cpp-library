@@ -123,7 +123,7 @@ std::string diff(std::string s1, std::string s2, int flags) {
     Vector<int> actions;
 
     // walk this loop until we reach the end of one of the lists of lines
-    while (index1 < (int) lines1.size() && index2 < (int) lines2.size()) {
+    while (index1 < lines1.size() && index2 < lines2.size()) {
         // if we have a common line, save it and go to the next
         if (lines1[index1] == lines2[index2]) {
             actions += 4;
@@ -182,13 +182,13 @@ std::string diff(std::string s1, std::string s2, int flags) {
     }
 
     // we've reached the end of one list, now walk to the end of the other
-    while (index1 < (int) lines1.size()) {
+    while (index1 < lines1.size()) {
         actions += 1;
         index1++;
     }  // deleted elements
 
     if (flags & IGNORE_TRAILING) {
-        while (index2 < (int) lines2.size()) {
+        while (index2 < lines2.size()) {
             actions += 2;
             index2++;
         }  // added elements

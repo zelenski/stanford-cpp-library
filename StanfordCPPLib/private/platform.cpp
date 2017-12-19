@@ -227,7 +227,7 @@ static GEvent parseWindowEvent(TokenScanner& scanner, EventType type);
 static std::string& programName();
 static void putPipe(const std::string& line);
 static void putPipeLongString(const std::string& line);
-static int scanChar(TokenScanner& scanner);
+// static int scanChar(TokenScanner& scanner);
 static GDimension scanDimension(const std::string& str);
 static double scanDouble(TokenScanner& scanner);
 static int scanInt(TokenScanner& scanner);
@@ -3302,11 +3302,12 @@ static GEvent parseActionEvent(TokenScanner& scanner, EventType type) {
     return e;
 }
 
-static int scanChar(TokenScanner& scanner) {
-    std::string token = scanner.nextToken();
-    if (token == "-") token += scanner.nextToken();
-    return stringToChar(token);
-}
+// commented out because unused
+//static int scanChar(TokenScanner& scanner) {
+//    std::string token = scanner.nextToken();
+//    if (token == "-") token += scanner.nextToken();
+//    return stringToChar(token);
+//}
 
 static int scanInt(TokenScanner& scanner) {
     std::string token = scanner.nextToken();
@@ -3469,13 +3470,14 @@ void initializeStanfordCppLibrary() {
 void shutdownStanfordCppLibrary() {
     const std::string PROGRAM_COMPLETED_TITLE_SUFFIX = " [completed]";
 
+
     if (getConsoleEnabled()) {
         std::string title = getConsoleWindowTitle();
         if (title == "") {
             title = "Console";
         }
         if (title.find("terminated") == std::string::npos) {
-            setConsoleWindowTitle(title + PROGRAM_COMPLETED_TITLE_SUFFIX);
+            ::setConsoleWindowTitle(title + PROGRAM_COMPLETED_TITLE_SUFFIX);
         }
     }
 }

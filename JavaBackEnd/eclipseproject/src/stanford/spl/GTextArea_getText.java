@@ -10,9 +10,9 @@ public class GTextArea_getText extends JBESwingCommand {
 		final GTextArea area = (GTextArea) jbe.getGObject(id);
 		if (area != null) {
 			String text = area.getText();
-			jbe.println("result:" + text);
+			SplPipeDecoder.writeResult(text);
 		} else {
-			jbe.println("error:GTextArea_getText: null text area");
+			SplPipeDecoder.writeError("GTextArea_getText: null text area");
 		}
 	}
 }

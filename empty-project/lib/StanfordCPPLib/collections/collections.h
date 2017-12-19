@@ -8,6 +8,10 @@
  * Used to implement comparison operators like < and >= on collections.
  *
  * @author Marty Stepp
+ * @version 2017/12/12
+ * - added equalsDouble for collections of double values (can't compare with ==)
+ * @version 2017/10/18
+ * - fix compiler warnings
  * @version 2017/09/29
  * - added compareTo1-5
  * @version 2016/12/09
@@ -25,6 +29,7 @@
 
 #include <iostream>
 #include "error.h"
+#include "gmath.h"
 #include "hashcode.h"
 #include "random.h"
 #include "strlib.h"
@@ -32,10 +37,10 @@
 namespace stanfordcpplib {
 namespace collections {
 
+#ifdef SPL_THROW_ON_INVALID_ITERATOR
 template <typename CollectionType, typename IteratorType>
 void checkVersion(const CollectionType& coll, const IteratorType& itr,
                   const std::string& memberName = "") {
-#ifdef SPL_THROW_ON_INVALID_ITERATOR
     unsigned int collVersion = coll.version();
     unsigned int itrVersion = itr.version();
     if (itrVersion != collVersion) {
@@ -47,8 +52,14 @@ void checkVersion(const CollectionType& coll, const IteratorType& itr,
         msg += "Do not modify a collection during a for-each loop or iterator traversal.";
         error(msg);
     }
-#endif
 }
+#else // SPL_THROW_ON_INVALID_ITERATOR
+template <typename CollectionType, typename IteratorType>
+void checkVersion(const CollectionType&, const IteratorType&,
+                  const std::string& = "") {
+    // empty
+}
+#endif
 
 /*
  * Performs a comparison for ordering between the given two collections
@@ -294,6 +305,36 @@ bool equals(const CollectionType& coll1, const CollectionType& coll2) {
     auto end2 = coll1.end();
     while (itr1 != end1 && itr2 != end2) {
         if (!(*itr1 == *itr2)) {
+            return false;
+        }
+        ++itr1;
+        ++itr2;
+    }
+    return true;
+}
+
+/*
+ * Returns true if the two collections contain the same elements in the same order.
+ * The element type must be double, float, or any floating-point type.
+ */
+template <typename CollectionType>
+bool equalsDouble(const CollectionType& coll1, const CollectionType& coll2) {
+    // optimization: if literally same collection, stop
+    if (&coll1 == &coll2) {
+        return true;
+    }
+    // optimization: if not same size, don't bother comparing pairwise
+    if (coll1.size() != coll2.size()) {
+        return false;
+    }
+
+    // check each pair of elements for equality
+    auto itr1 = coll1.begin();
+    auto end1 = coll1.end();
+    auto itr2 = coll2.begin();
+    auto end2 = coll1.end();
+    while (itr1 != end1 && itr2 != end2) {
+        if (!floatingPointEqual(*itr1, *itr2)) {
             return false;
         }
         ++itr1;

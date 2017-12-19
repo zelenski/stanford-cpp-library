@@ -4,6 +4,11 @@
  * This file defines the <code>GWindow</code> class which supports
  * drawing graphical objects on the screen.
  * 
+ * @version 2017/12/18
+ * - added drawImage
+ * @version 2017/10/25
+ * - added getGObject(index), getGObjectCount
+ * - fixed bug with clearCanvas not clearing top compound
  * @version 2017/10/16
  * - added add, remove that accept GObject references (avoid pointers)
  * @version 2017/10/05
@@ -37,6 +42,7 @@
 #ifndef _gwindow_h
 #define _gwindow_h
 
+#include <initializer_list>
 #include <string>
 #include "grid.h"
 #include "gtypes.h"
@@ -263,6 +269,23 @@ public:
     void draw(GObject* gobj, double x, double y);
 
     /*
+     * Method: drawImage
+     * Usage: gw.drawImage("filename");
+     * --------------------------------
+     * Draws an image from the given file with its top-left corner at (0, 0)
+     * onto the central drawing canvas area of the window.
+     * The window is resized so that its canvas is exactly the right size to fit the given image.
+     *
+     * After calling this function, you could get/set individual pixels of the image
+     * on this window by calling getPixel/setPixels.
+     *
+     * If you want more control over how an image is drawn on this window,
+     * consider instead creating a GBufferedImage object and adding that to the
+     * window rather than calling drawImage.
+     */
+    void drawImage(const std::string& filename);
+
+    /*
      * Method: drawLine
      * Usage: gw.drawLine(p0, p1);
      *        gw.drawLine(x0, y0, x1, y1);
@@ -307,6 +330,14 @@ public:
     void drawPixel(double x, double y, const std::string& color);
 
     /*
+     * Method: drawPolygon
+     * Usage: gw.drawPolygon(x1, y1, x2, y2, ..., xN, yN);
+     * ---------------------------------------------------
+     * Draws an outlined polygon connecting the given points.
+     */
+    void drawPolygon(std::initializer_list<double> coords);
+
+    /*
      * Method: drawRect
      * Usage: gw.drawRect(bounds);
      *        gw.drawRect(x, y, width, height);
@@ -336,6 +367,15 @@ public:
     void fillOval(const GRectangle& bounds);
     void fillOval(double x, double y, double width, double height);
 
+
+    /*
+     * Method: fillPolygon
+     * Usage: gw.fillPolygon(x1, y1, x2, y2, ..., xN, yN);
+     * ---------------------------------------------------
+     * Draws a filled polygon connecting the given points.
+     */
+    void fillPolygon(std::initializer_list<double> coords);
+
     /*
      * Method: fillRect
      * Usage: gw.fillRect(bounds);
@@ -357,7 +397,7 @@ public:
     /*
      * Method: getCanvasSize
      * Usage: GDimension canvasSize = gw.getCanvasSize();
-     * --------------------------------------
+     * --------------------------------------------------
      * Returns the width and height of the graphics window's central
      * drawing canvas in pixels as a GDimension.
      */
@@ -384,14 +424,33 @@ public:
     int getColorInt() const;
 
     /*
+     * Method: getGObject
+     * Usage: GObject* gobj = gw.getGObject(i);
+     * ----------------------------------------
+     * Returns a pointer to i'th <code>GObject</code> in this window,
+     * where i is a 0-based index from 0 through getGObjectCount() - 1.
+     * Returns <code>nullptr</code> if no such object exists.
+     */
+    GObject* getGObject(int index) const;
+
+    /*
      * Method: getGObjectAt
-     * Usage: GObject *gobj = getGObjectAt(x, y);
-     * ------------------------------------------
+     * Usage: GObject* gobj = gw.getGObjectAt(x, y);
+     * --------------------------------------------
      * Returns a pointer to the topmost <code>GObject</code> containing the
      * point (<code>x</code>, <code>y</code>), or <code>nullptr</code> if no such
      * object exists.
      */
     GObject* getGObjectAt(double x, double y) const;
+
+    /*
+     * Method: getGObjectCount
+     * Usage: int count = gw.getGObjectCount();
+     * ----------------------------------------
+     * Returns the number of GObjects added to the canvas of this window.
+     * Returns 0 if this window contains no objects or is closed.
+     */
+    int getGObjectCount() const;
 
     /*
      * Method: getHeight
@@ -423,13 +482,14 @@ public:
 
     /*
      * Returns the pixel values at all (x, y) positions in the canvas as
-     * a grid of RGB integers.
+     * a grid of RGB integers in [row][col] order.
      */
     Grid<int> getPixels() const;
 
     /*
      * Returns the pixel values at all (x, y) positions in the canvas as
-     * a grid of ARGB integers with the alpha transparency component intact.
+     * a grid in [row][col] order of ARGB integers
+     * with the alpha transparency component intact.
      */
     Grid<int> getPixelsARGB() const;
 
@@ -732,13 +792,13 @@ public:
 
     /*
      * Sets the pixel value at all (x, y) positions in the canvas from
-     * the given grid of RGB integers.
+     * the given grid of RGB integers in [row][col] order.
      */
     void setPixels(const Grid<int>& pixels);
 
     /*
      * Sets the pixel value at all (x, y) positions in the canvas from
-     * the given grid of ARGB integers.
+     * the given grid of ARGB integers in [row][col] order.
      */
     void setPixelsARGB(const Grid<int>& pixelsARGB);
 

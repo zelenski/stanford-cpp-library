@@ -65,13 +65,14 @@ ListNodeGen<T>::ListNodeGen(T d, ListNodeGen<T>* n) {
 template <typename T>
 ListNodeGen<T>::~ListNodeGen() {
     s_freed++;
+    next = nullptr;
 }
 
 template <typename T>
 void ListNodeGen<T>::printChain(ListNodeGen<T>* list, std::string name, int maxLength) {
     std::cout << name << ": ";
-    if (list == NULL) {
-        std::cout << "NULL" << std::endl;
+    if (!list) {
+        std::cout << "nullptr" << std::endl;
     } else {
         ListNodeGen<T>* curr = list;
         bool hasCycle = false;
@@ -95,7 +96,7 @@ void ListNodeGen<T>::printChain(ListNodeGen<T>* list, std::string name, int maxL
 template <typename T>
 std::ostream& operator <<(std::ostream& out, ListNodeGen<T>* front) {
     if (!front) {
-        out << "NULL";
+        out << "nullptr";
     } else {
         out << "{";
         if (front) {

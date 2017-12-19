@@ -3,6 +3,10 @@
  * --------------
  * This file exports functions for generating pseudorandom numbers.
  * 
+ * @version 2017/10/05
+ * - added randomFeedClear
+ * @version 2017/09/28
+ * - moved random 'feed' functions into autograder namespace
  * @version 2016/08/02
  * - added randomColor, randomColorString
  * @version 2014/10/19
@@ -91,6 +95,12 @@ namespace autograder {
  * generator, rather than truly random choices.
  */
 void randomFeedBool(bool value);
+
+/*
+ * Removes any previously 'fed' random integers so that future calls
+ * to random functions will return truly random values.
+ */
+void randomFeedClear();
 
 /*
  * Inserts the given integer to be returned by the random number generator,

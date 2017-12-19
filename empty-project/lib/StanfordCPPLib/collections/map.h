@@ -4,6 +4,8 @@
  * This file exports the template class <code>Map</code>, which
  * maintains a collection of <i>key</i>-<i>value</i> pairs.
  * 
+ * @version 2017/10/18
+ * - fix compiler warnings
  * @version 2016/12/09
  * - added iterator version checking support
  * @version 2016/09/24
@@ -442,8 +444,8 @@ private:
     template <typename CompareType>
     class TemplateComparator : public Comparator {
     public:
-        TemplateComparator(const CompareType& cmp) {
-            this->cmp = cmp;
+        TemplateComparator(const CompareType& compareType) {
+            this->cmp = compareType;
         }
 
         virtual bool lessThan(const KeyType& k1, const KeyType& k2) {
@@ -889,8 +891,8 @@ public:
             /* Empty */
         }
 
-        iterator(const Map* mp, bool end)
-                : mp(mp) {
+        iterator(const Map* theMap, bool end)
+                : mp(theMap) {
             if (end || mp->nodeCount == 0) {
                 index = mp->nodeCount;
             } else {

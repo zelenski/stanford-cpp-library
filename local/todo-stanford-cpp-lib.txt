@@ -1,23 +1,88 @@
 	TODO C++ libs:
 	==============
 
-	iterator versioning
-		BasicGraph
-		DawgLexicon
-		Deque
-		Graph
-		Grid
-		HashMap
-		HashSet
-		Lexicon
-		LinkedList
-		Map
-		PriorityQueue
-		Queue
-		Set
-		SparseGrid
-		Stack
-		Vector
+x	iterator versioning
+x		BasicGraph
+x		DawgLexicon
+x		Deque
+x		Graph
+x		Grid
+x		HashMap
+x		HashSet
+x		Lexicon
+x		LinkedList
+x		Map
+x		PriorityQueue
+x		Queue
+x		Set
+x		SparseGrid
+x		Stack
+x		Vector
+
+	Grid::clear()?
+	Vector/LinkedList methods
+x		contains
+x		indexOf, lastIndexOf
+x		removeValue(value)
+x		reverse()
+x		sort()
+x		shuffle()
+		first(), last(), removeLast(), removeFirst()
+
+	process/thread stuff? cross-platform
+		Process object?
+		inspired by ProcessWrapper in CSBS?
+
+	need to write cppdocs for GTextLabel  (somewhat redundant with weird JBELabel class)
+
+	cppdoc?
+		http://www.cs.scranton.edu/~doc/cppdoc/
+
+	filelib: getLineAsInt, getLineAsDouble?
+		hasNextInt, nextInt, hasNextDouble, nextDouble?
+		Scanner class?
+		maybe not; this is not very C++-ey
+
+	GInteractor::getFontName, size, style()
+	deriveFont(std::string font)?
+	
+	TEST PTHREAD ON MAC SUPPORT
+	
+	standard toString() that does:
+		std::ostringstream out;
+		out << *this;
+		return out.str();
+	Java pull in GRect, all other ERoberts sources
+
+	compile into .a shared library
+		ar mylib.a file1.o file2.o
+		does it work on Windows? on clang?
+		needs:
+			- get temp dir from env.var   (what if doesn't exist? platform-specific?)
+				make subdir whose name is based on arch/compiler, e.g. /tmp/stanfordcpplib-clang-...
+			- check whether lib exists in temp dir
+			- check last-modified date on current files vs temp dir
+				hack: lib version from version.h vs version in temp dir?
+			- copy files to temp dir once compiled
+
+	DiffImage window: Esc to close
+	idea for paint speedup
+		in GCanvas, don't want to fill whole canvas with opaque background color.
+		so look for a way to see if i need to do this.
+		maybe if we are painting and we know our parent has already painted the bg color, we don't have to?
+		or if we're painting on to a buffered image, we must paint the bg?
+	idea: TIMED_BLOCK(block) => runs Timer tim, prints elapsed time
+	Qt .pro
+x			error/warning when no value is returned?  not all paths return a value?
+		stack size on Mac?
+			https://stackoverflow.com/questions/18909395/how-do-i-increase-the-stack-size-when-compiling-with-clang-on-os-x
+
+	.pro stuff
+		message(MSC VER is: $$QMAKE_MSC_VER)
+		message(QMAKE CACHE is: $$_QMAKE_CACHE_)
+		# TODO: _QMAKE_CACHE_ ?
+		any fix for multiple mains?
+		macro MULTIPLE_MAIN_MODE?  __filename__ ?
 
 	autograders: why no stack traces?
 	
@@ -229,6 +294,39 @@ x		add initializer_list stuff to LinkedHash*
 
 
 
+x		re-add thread.h? why was this removed?
+x			http://cs.stanford.edu/people/eroberts/StanfordCPPLib/
+x			/home/stepp/Dropbox/data/docs/stanford/StanfordCPPLib/cppdoc/programs/HelloWorld1/StanfordCPPLib/thread.h
+-			pthread on Windows?
+-				linker: -pthread   (NOT -lpthread)
+-				https://stackoverflow.com/questions/33330738/how-to-add-posix-threads-into-eclipse-on-windows-mingw
+x		BUG: GWindow->clearCanvas needs to clear gwd->top
+x		GObject coord methods
+x			setCenterX
+x			setCenterY
+x			setCenterLocation
+x			setRightX
+x			setBottomY
+x			setBottomRightLocation
+x			setX
+x			setY
+x			getBottomY
+x			getRightX
+x			getBottomRightLocation
+x			getCenterX
+x			getCenterY
+x			getCenterLocation
+x		GWindow::getElement(int i), getElementCount()
+-		 * TODO: get fill color as RGB int?
+-		 * TODO: operator << for gobjects? they already have toString()
+-		GButton,GTextLabel,etc. => setFont,getFont
+x		Observable: versions that take ref instead of ptr?
+x		GCanvas draw/fillPolygon?
+x			how to deal with varargs?  (initializer list!)
+x				http://en.cppreference.com/w/cpp/utility/variadic
+x		BigInteger, BigFloat?
+x			https://github.com/kasparsklavins/bigint/tree/master/src
+x			alias as bigint, BigInt, bigfloat
 x	autograders: why aren't timeouts working?
 x				all JBECommand
 x					=> SwingUtilities.invokeLater(new Runner(...) { ...... });

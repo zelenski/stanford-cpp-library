@@ -31,7 +31,7 @@ void HashTableSet::add(int value) {
 bool HashTableSet::contains(int value) const {
     int index = hashCode(value);
     HashTableNode* current = m_elements[index];
-    while (current != NULL) {
+    while (current) {
         if (current->data == value) {
             return true;
         }
@@ -52,7 +52,7 @@ void HashTableSet::printStructure() const {
     for (int i = 0; i < m_capacity; i++) {
         cout << "[" << setw(2) << i << "]:";
         HashTableNode* curr = m_elements[i];
-        while (curr != NULL) {
+        while (curr) {
             cout << " -> " << setw(2) << curr->data;
             curr = curr->next;
         }

@@ -5,6 +5,11 @@
  * See goptionpane.h for documentation of each member.
  * 
  * @author Marty Stepp
+ * @version 2017/10/18
+ * - fixed compiler warnings
+ * @version 2017/10/12
+ * - added initialValue to showInputDialog
+ * - modified functions to accept const string& instead of string
  * @version 2015/07/05
  * - removed static global Platform variable, replaced by getPlatform as needed
  * @version 2014/10/26
@@ -23,19 +28,16 @@ GOptionPane::GOptionPane() {
     // empty
 }
 
-GOptionPane::ConfirmResult GOptionPane::showConfirmDialog(std::string message, std::string title,
+GOptionPane::ConfirmResult GOptionPane::showConfirmDialog(const std::string& message, const std::string& title,
                                                           ConfirmType type) {
     if (type != GOptionPane::ConfirmType::YES_NO
             && type != GOptionPane::ConfirmType::YES_NO_CANCEL
             && type != GOptionPane::ConfirmType::OK_CANCEL) {
         error("GOptionPane::showConfirmDialog: Illegal dialog type");
     }
-    if (title.empty()) {
-        title = "Select an option";
-    }
-    
-    int result = stanfordcpplib::getPlatform()->goptionpane_showConfirmDialog(message, title, type);
-    if (result == OK_OPTION || result == YES_OPTION) {
+    std::string titleToUse = title.empty() ? std::string("Select an option") : title;
+    int result = stanfordcpplib::getPlatform()->goptionpane_showConfirmDialog(message, titleToUse, type);
+    if (result == OK_OPTION) {
         // this is weird code because JOptionPane thinks of OK and Yes as the same,
         // and differentiates based on context of whether this is an OK/Cancel or Yes/No dialog
         return (type == GOptionPane::ConfirmType::OK_CANCEL)
@@ -47,11 +49,11 @@ GOptionPane::ConfirmResult GOptionPane::showConfirmDialog(std::string message, s
     }
 }
 
-std::string GOptionPane::showInputDialog(std::string message, std::string title) {
-    return stanfordcpplib::getPlatform()->goptionpane_showInputDialog(message, title);
+std::string GOptionPane::showInputDialog(const std::string& message, const std::string& title, const std::string& initialValue) {
+    return stanfordcpplib::getPlatform()->goptionpane_showInputDialog(message, title, initialValue);
 }
 
-void GOptionPane::showMessageDialog(std::string message, std::string title, MessageType type) {
+void GOptionPane::showMessageDialog(const std::string& message, const std::string& title, MessageType type) {
     if (type != GOptionPane::MessageType::PLAIN
             && type != GOptionPane::MessageType::INFORMATION
             && type != GOptionPane::MessageType::ERROR
@@ -59,18 +61,14 @@ void GOptionPane::showMessageDialog(std::string message, std::string title, Mess
             && type != GOptionPane::MessageType::QUESTION) {
         error("GOptionPane::showMessageDialog: Illegal dialog type");
     }
-    if (title.empty()) {
-        title = "Message";
-    }
-    stanfordcpplib::getPlatform()->goptionpane_showMessageDialog(message, title, type);
+    std::string titleToUse = title.empty() ? std::string("Message") : title;
+    stanfordcpplib::getPlatform()->goptionpane_showMessageDialog(message, titleToUse, type);
 }
 
-std::string GOptionPane::showOptionDialog(std::string message, const Vector<std::string>& options,
-                                          std::string title, std::string initiallySelected) {
-    if (title.empty()) {
-        title = "Select an option";
-    }
-    int index = stanfordcpplib::getPlatform()->goptionpane_showOptionDialog(message, title, options.toStlVector(), initiallySelected);
+std::string GOptionPane::showOptionDialog(const std::string& message, const Vector<std::string>& options,
+                                          const std::string& title, const std::string& initiallySelected) {
+    std::string titleToUse = title.empty() ? std::string("Select an option") : title;
+    int index = stanfordcpplib::getPlatform()->goptionpane_showOptionDialog(message, titleToUse, options.toStlVector(), initiallySelected);
     if (index == GOptionPane::InternalResult::CLOSED_OPTION
             || index < 0 || index >= options.size()) {
         return "";
@@ -79,9 +77,7 @@ std::string GOptionPane::showOptionDialog(std::string message, const Vector<std:
     }
 }
 
-void GOptionPane::showTextFileDialog(std::string message, std::string title, int rows, int cols) {
-    if (title.empty()) {
-        title = "Text file contents";
-    }
-    stanfordcpplib::getPlatform()->goptionpane_showTextFileDialog(message, title, rows, cols);
+void GOptionPane::showTextFileDialog(const std::string& message, const std::string& title, int rows, int cols) {
+    std::string titleToUse = title.empty() ? std::string("Text file contents") : title;
+    stanfordcpplib::getPlatform()->goptionpane_showTextFileDialog(message, titleToUse, rows, cols);
 }

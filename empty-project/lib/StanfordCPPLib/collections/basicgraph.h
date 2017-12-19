@@ -9,6 +9,15 @@
  * See BasicGraph.cpp for implementation of each member.
  *
  * @author Marty Stepp
+ * @version 2017/11/14
+ * - fix missing "this->" on some methods
+ * - added getVertexNames, vertexCount, edgeCount
+ * @version 2017/10/24
+ * - print nullptr instead of null in uppercase
+ * @version 2017/10/18
+ * - fix compiler warnings
+ * @version 2016/12/09
+ * - added iterator version checking support (implicitly via Graph)
  * @version 2016/12/04
  * - bug fix in resetData method (was referring to Vertex* and Edge*)
  * @version 2016/12/01
@@ -273,18 +282,21 @@ public:
     EdgeGen<V, E>* addEdge(EdgeGen<V, E>* e, bool directed = true);
     VertexGen<V, E>* addVertex(const std::string& name);
     VertexGen<V, E>* addVertex(VertexGen<V, E>* v);
+    int edgeCount() const;
     const Set<EdgeGen<V, E>*>& getEdgeSet() const;
     const Set<EdgeGen<V, E>*>& getEdgeSet(VertexGen<V, E>* v) const;
     const Set<EdgeGen<V, E>*>& getEdgeSet(const std::string& v) const;
     const Set<EdgeGen<V, E>*> getInverseEdgeSet(VertexGen<V, E>* v) const;
     const Set<EdgeGen<V, E>*> getInverseEdgeSet(const std::string& v) const;
     VertexGen<V, E>* getVertex(const std::string& name) const;
+    Set<std::string> getVertexNames() const;
     const Set<VertexGen<V, E>*>& getVertexSet() const;
     void removeEdge(const std::string& v1, const std::string& v2, bool directed = true);
     void removeEdge(VertexGen<V, E>* v1, VertexGen<V, E>* v2, bool directed = true);
     void removeEdge(EdgeGen<V, E>* e, bool directed = true);
     void removeVertex(const std::string& name);
     void removeVertex(VertexGen<V, E>* v);
+    int vertexCount() const;
 
     /*
      * Operator: []
@@ -346,8 +358,8 @@ int hashCode(const BasicGraph& graph);
  * Vertex member implementations
  */
 template <typename V, typename E>
-VertexGen<V, E>::VertexGen(const std::string& name)
-        : name(name), edges(arcs), weight(cost), data(V()), extraData(data) {
+VertexGen<V, E>::VertexGen(const std::string& theName)
+        : name(theName), edges(arcs), weight(cost), data(V()), extraData(data) {
     resetData();
 }
 
@@ -424,7 +436,7 @@ std::ostream& operator <<(std::ostream& out, const VertexGen<V, E>& v) {
         out << ", cost=" << v.cost;
     }
     out << ", visited=" << (v.visited ? "true" : "false");
-    out << ", previous=" << (v.previous == nullptr ? std::string("NULL") : v.previous->name);
+    out << ", previous=" << (v.previous == nullptr ? std::string("nullptr") : v.previous->name);
 
     out << ", neighbors={";
     int i = 0;
@@ -436,7 +448,7 @@ std::ostream& operator <<(std::ostream& out, const VertexGen<V, E>& v) {
         if (edge->finish) {
             out << edge->finish->name;
         } else {
-            out << "NULL";
+            out << "nullptr";
         }
     }
     out << "}";
@@ -449,8 +461,12 @@ std::ostream& operator <<(std::ostream& out, const VertexGen<V, E>& v) {
  * Edge member implementations
  */
 template <typename V, typename E>
-EdgeGen<V, E>::EdgeGen(VertexGen<V, E>* start, VertexGen<V, E>* finish, double cost)
-        : start(start), finish(finish), end(this->finish), cost(cost), weight(this->cost) {
+EdgeGen<V, E>::EdgeGen(VertexGen<V, E>* theStart, VertexGen<V, E>* theFinish, double theCost)
+        : start(theStart),
+          finish(theFinish),
+          end(this->finish),
+          cost(theCost),
+          weight(this->cost) {
     this->extraData = nullptr;
     this->resetData();
 }
@@ -498,13 +514,13 @@ template <typename V, typename E>
 std::ostream& operator <<(std::ostream& out, const EdgeGen<V, E>& edge) {
     out << "Edge{start=";
     if (!edge.start) {
-        out << "NULL";
+        out << "nullptr";
     } else {
         out << edge.start->name;
     }
     out << ", finish=";
     if (!edge.finish) {
-        out << "NULL";
+        out << "nullptr";
     } else {
         out << edge.finish->name;
     }
@@ -532,7 +548,7 @@ BasicGraphGen<V, E>::BasicGraphGen(std::initializer_list<std::string> vertexList
         : Graph<VertexGen<V, E>, EdgeGen<V, E> >() {
     m_resetEnabled = true;
     for (const std::string& vertexName : vertexList) {
-        addVertex(vertexName);
+        this->addVertex(vertexName);
     }
 }
 
@@ -543,7 +559,7 @@ void BasicGraphGen<V, E>::clearEdges() {
 
 template <typename V, typename E>
 void BasicGraphGen<V, E>::clearEdges(VertexGen<V, E>* v) {
-    clearArcs(v);
+    this->clearArcs(v);
 }
 
 template <typename V, typename E>
@@ -553,7 +569,7 @@ void BasicGraphGen<V, E>::clearEdges(const std::string& v) {
 
 template <typename V, typename E>
 bool BasicGraphGen<V, E>::containsEdge(VertexGen<V, E>* v1, VertexGen<V, E>* v2) const {
-    return containsArc(v1, v2);
+    return this->containsArc(v1, v2);
 }
 
 template <typename V, typename E>
@@ -563,7 +579,7 @@ bool BasicGraphGen<V, E>::containsEdge(const std::string& v1, const std::string&
 
 template <typename V, typename E>
 bool BasicGraphGen<V, E>::containsEdge(EdgeGen<V, E>* edge) const {
-    return containsArc(edge);
+    return this->containsArc(edge);
 }
 
 template <typename V, typename E>
@@ -574,6 +590,11 @@ bool BasicGraphGen<V, E>::containsVertex(const std::string& name) const {
 template <typename V, typename E>
 bool BasicGraphGen<V, E>::containsVertex(VertexGen<V, E>* v) const {
     return this->containsNode(v);
+}
+
+template <typename V, typename E>
+int BasicGraphGen<V, E>::edgeCount() const {
+    return this->arcCount();
 }
 
 template <typename V, typename E>
@@ -588,21 +609,21 @@ EdgeGen<V, E>* BasicGraphGen<V, E>::getEdge(const std::string& v1, const std::st
 
 template <typename V, typename E>
 EdgeGen<V, E>* BasicGraphGen<V, E>::getInverseArc(EdgeGen<V, E>* edge) const {
-    return getArc(edge->finish, edge->start);
+    return this->getArc(edge->finish, edge->start);
 }
 
 template <typename V, typename E>
 EdgeGen<V, E>* BasicGraphGen<V, E>::getInverseEdge(EdgeGen<V, E>* edge) const {
-    return getInverseArc(edge);
+    return this->getInverseArc(edge);
 }
 
 template <typename V, typename E>
 void BasicGraphGen<V, E>::resetData() {
     if (m_resetEnabled) {
-        for (VertexGen<V, E>* v : getVertexSet()) {
+        for (VertexGen<V, E>* v : this->getVertexSet()) {
             v->resetData();
         }
-        for (EdgeGen<V, E>* e : getEdgeSet()) {
+        for (EdgeGen<V, E>* e : this->getEdgeSet()) {
             e->resetData();
         }
     }
@@ -615,13 +636,13 @@ void BasicGraphGen<V, E>::setResetEnabled(bool enabled) {
 
 template <typename V, typename E>
 EdgeGen<V, E>* BasicGraphGen<V, E>::addEdge(const std::string& v1, const std::string& v2, double cost, bool directed) {
-    if (!containsVertex(v1)) {
-        addVertex(v1);
+    if (!this->containsVertex(v1)) {
+        this->addVertex(v1);
     }
-    if (!containsVertex(v2)) {
-        addVertex(v2);
+    if (!this->containsVertex(v2)) {
+        this->addVertex(v2);
     }
-    return this->addEdge(getVertex(v1), getVertex(v2), cost, directed);
+    return this->addEdge(this->getVertex(v1), this->getVertex(v2), cost, directed);
 }
 
 template <typename V, typename E>
@@ -682,6 +703,12 @@ VertexGen<V, E>* BasicGraphGen<V, E>::getVertex(const std::string& name) const {
 }
 
 template <typename V, typename E>
+Set<std::string> BasicGraphGen<V, E>::getVertexNames() const {
+    return this->getNodeNames();
+}
+
+
+template <typename V, typename E>
 const Set<VertexGen<V, E>*>& BasicGraphGen<V, E>::getVertexSet() const {
     return this->getNodeSet();
 }
@@ -718,13 +745,18 @@ void BasicGraphGen<V, E>::removeVertex(VertexGen<V, E>* v) {
 }
 
 template <typename V, typename E>
+int BasicGraphGen<V, E>::vertexCount() const {
+    return this->nodeCount();
+}
+
+template <typename V, typename E>
 VertexGen<V, E>* BasicGraphGen<V, E>::operator [](const std::string& name) {
-    return getVertex(name);
+    return this->getVertex(name);
 }
 
 template <typename V, typename E>
 const VertexGen<V, E>* BasicGraphGen<V, E>::operator [](const std::string& name) const {
-    return getVertex(name);
+    return this->getVertex(name);
 }
 
 template <typename V, typename E>

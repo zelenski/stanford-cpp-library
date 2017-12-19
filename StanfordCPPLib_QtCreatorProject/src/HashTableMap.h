@@ -23,7 +23,7 @@ struct HashTableMapNode {
     K key;
     V value;
     HashTableMapNode* next;
-    HashTableMapNode(K key, V value, HashTableMapNode* next = NULL) {
+    HashTableMapNode(K key, V value, HashTableMapNode* next = nullptr) {
         this->key = key;
         this->value = value;
         this->next = next;
@@ -69,7 +69,7 @@ void HashTableMap<K, V>::put(K key, V value) {
     if (containsKey(key)) {
         // already has a pair for this key; replace the value
         HashTableMapNode<K, V>* current = elements[index];
-        while (current != NULL) {
+        while (current) {
             if (current->key == key) {
                 current->value = value;
                 break;
@@ -90,7 +90,7 @@ template <typename K, typename V>
 bool HashTableMap<K, V>::containsKey(K key) const {
     int index = _hashCode(key);
     HashTableMapNode<K, V>* current = elements[index];
-    while (current != NULL) {
+    while (current) {
         if (current->key == key) {
             return true;
         }
@@ -103,7 +103,7 @@ template <typename K, typename V>
 V HashTableMap<K, V>::get(K key) const {
     int index = _hashCode(key);
     HashTableMapNode<K, V>* current = elements[index];
-    while (current != NULL) {
+    while (current) {
         if (current->key == key) {
             return current->value;
         }
@@ -142,7 +142,7 @@ void HashTableMap<K, V>::printStructure() const {
     for (int i = 0; i < capacity; i++) {
         cout << "[" << setw(2) << i << "]:";
         HashTableMapNode<K, V>* curr = elements[i];
-        while (curr != NULL) {
+        while (curr) {
             cout << " -> " << setw(2) << curr->key << ":" << curr->value;
             curr = curr->next;
         }
@@ -162,7 +162,7 @@ void HashTableMap<K, V>::rehash() {
     
     for (int i = 0; i < capacity/2; i++) {
         HashTableMapNode<K, V>* curr = oldElements[i];
-        while (curr != NULL) {
+        while (curr) {
             put(curr->key, curr->value);
             HashTableMapNode<K, V>* trash = curr;
             curr = curr->next;
@@ -176,7 +176,7 @@ void HashTableMap<K, V>::rehash() {
 template <typename K, typename V>
 void HashTableMap<K, V>::remove(K key) {
     int index = _hashCode(key);
-    if (elements[index] == NULL) {
+    if (!elements[index]) {
         return;
     } else if (elements[index]->key == key) {
         // remove from front
@@ -187,7 +187,7 @@ void HashTableMap<K, V>::remove(K key) {
     } else {
         // remove from later in the chain
         HashTableMapNode<K, V>* current = elements[index];
-        while (current->next != NULL) {
+        while (current->next) {
             if (current->next->key == key) {
                 HashTableMapNode<K, V>* trash = current->next;
                 current->next = current->next->next;

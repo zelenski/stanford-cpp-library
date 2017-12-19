@@ -3,6 +3,8 @@
  * ----------------
  * This file implements the strlib.h interface.
  * 
+ * @version 2017/10/24
+ * - print nullptr instead of null in uppercase
  * @version 2016/11/07
  * - bug fix: urlDecode throws error on invalid encodings (courtesy GitHub @scinart)
  * @version 2016/10/30
@@ -162,7 +164,7 @@ std::string pointerToString(void* p) {
         stream << "0x" << p;
         return stream.str();
     } else {
-        return "NULL";
+        return "nullptr";
     }
 }
 
@@ -523,7 +525,7 @@ std::string urlDecode(const std::string& str) {
         } else {
             std::ostringstream msg;
             msg << "urlDecode: Unexpected character in string: "
-                << (int) c << " (" << (char) c << ")";
+                << (int) c << " (" << c << ")";
             error(msg.str());
         }
     }

@@ -4,6 +4,15 @@
  * This file defines the <code>GWindow</code> class which supports
  * drawing graphical objects on the screen.
  * 
+ * @version 2017/12/18
+ * - added drawImage
+ * @version 2017/10/25
+ * - added getGObject(index), getGObjectCount
+ * - fixed bug with clearCanvas not clearing top compound
+ * @version 2017/10/16
+ * - added add, remove that accept GObject references (avoid pointers)
+ * @version 2017/10/05
+ * - added autograder::get/clear/closeLastGWindow
  * @version 2016/11/24
  * - added setCloseOperation
  * @version 2016/11/02
@@ -33,17 +42,24 @@
 #ifndef _gwindow_h
 #define _gwindow_h
 
+#include <initializer_list>
 #include <string>
 #include "grid.h"
 #include "gtypes.h"
 #include "point.h"
 #include "vector.h"
 
+class GArc;
 class GCompound;
+class GImage;
 class GInteractor;
 class GLabel;
-class GObject;
+class GLine;
 class GMouseEvent;
+class GObject;
+class GOval;
+class GPolygon;
+class GRect;
 
 namespace stanfordcpplib {
 class Platform;
@@ -70,6 +86,7 @@ struct GWindowData {
     bool closed;
     bool exitOnClose;
     bool repaintImmediately;
+    bool autograderWindow;
     GCompound* top;
 };
 
@@ -160,6 +177,25 @@ public:
     void add(GObject* gobj);
     void add(GObject* gobj, double x, double y);
 
+    // add() overloads that accept each GObject shape type
+    // (so we can avoid showing & syntax and pointers in early GUI demos)
+    void add(GArc& gobj);
+    void add(GArc& gobj, double x, double y);
+    void add(GCompound& gobj);
+    void add(GCompound& gobj, double x, double y);
+    void add(GImage& gobj);
+    void add(GImage& gobj, double x, double y);
+    void add(GLabel& gobj);
+    void add(GLabel& gobj, double x, double y);
+    void add(GLine& gobj);
+    void add(GLine& gobj, double x, double y);
+    void add(GOval& gobj);
+    void add(GOval& gobj, double x, double y);
+    void add(GPolygon& gobj);
+    void add(GPolygon& gobj, double x, double y);
+    void add(GRect& gobj);
+    void add(GRect& gobj, double x, double y);
+
     /*
      * Method: addToRegion
      * Usage: gw.addToRegion(interactor, region);
@@ -233,13 +269,30 @@ public:
     void draw(GObject* gobj, double x, double y);
 
     /*
+     * Method: drawImage
+     * Usage: gw.drawImage("filename");
+     * --------------------------------
+     * Draws an image from the given file with its top-left corner at (0, 0)
+     * onto the central drawing canvas area of the window.
+     * The window is resized so that its canvas is exactly the right size to fit the given image.
+     *
+     * After calling this function, you could get/set individual pixels of the image
+     * on this window by calling getPixel/setPixels.
+     *
+     * If you want more control over how an image is drawn on this window,
+     * consider instead creating a GBufferedImage object and adding that to the
+     * window rather than calling drawImage.
+     */
+    void drawImage(const std::string& filename);
+
+    /*
      * Method: drawLine
      * Usage: gw.drawLine(p0, p1);
      *        gw.drawLine(x0, y0, x1, y1);
      * -----------------------------------
      * Draws a line connecting the specified points.
      */
-    void drawLine(const GPoint & p0, const GPoint & p1);
+    void drawLine(const GPoint& p0, const GPoint& p1);
     void drawLine(double x0, double y0, double x1, double y1);
 
     /*
@@ -249,7 +302,7 @@ public:
      * ----------------------------------------
      * Draws the frame of a oval with the specified bounds.
      */
-    void drawOval(const GRectangle & bounds);
+    void drawOval(const GRectangle& bounds);
     void drawOval(double x, double y, double width, double height);
 
     /*
@@ -262,7 +315,7 @@ public:
      * degrees counterclockwise from the +<i>x</i> axis.  The method returns
      * the end point of the line.
      */
-    GPoint drawPolarLine(const GPoint & p0, double r, double theta);
+    GPoint drawPolarLine(const GPoint& p0, double r, double theta);
     GPoint drawPolarLine(double x0, double y0, double r, double theta);
 
     /*
@@ -277,13 +330,21 @@ public:
     void drawPixel(double x, double y, const std::string& color);
 
     /*
+     * Method: drawPolygon
+     * Usage: gw.drawPolygon(x1, y1, x2, y2, ..., xN, yN);
+     * ---------------------------------------------------
+     * Draws an outlined polygon connecting the given points.
+     */
+    void drawPolygon(std::initializer_list<double> coords);
+
+    /*
      * Method: drawRect
      * Usage: gw.drawRect(bounds);
      *        gw.drawRect(x, y, width, height);
      * ----------------------------------------
      * Draws the frame of a rectangle with the specified bounds.
      */
-    void drawRect(const GRectangle & bounds);
+    void drawRect(const GRectangle& bounds);
     void drawRect(double x, double y, double width, double height);
 
     /*
@@ -303,8 +364,17 @@ public:
      * ----------------------------------------
      * Fills the frame of a oval with the specified bounds.
      */
-    void fillOval(const GRectangle & bounds);
+    void fillOval(const GRectangle& bounds);
     void fillOval(double x, double y, double width, double height);
+
+
+    /*
+     * Method: fillPolygon
+     * Usage: gw.fillPolygon(x1, y1, x2, y2, ..., xN, yN);
+     * ---------------------------------------------------
+     * Draws a filled polygon connecting the given points.
+     */
+    void fillPolygon(std::initializer_list<double> coords);
 
     /*
      * Method: fillRect
@@ -313,7 +383,7 @@ public:
      * ----------------------------------------
      * Fills the frame of a rectangle with the specified bounds.
      */
-    void fillRect(const GRectangle & bounds);
+    void fillRect(const GRectangle& bounds);
     void fillRect(double x, double y, double width, double height);
 
     /*
@@ -327,7 +397,7 @@ public:
     /*
      * Method: getCanvasSize
      * Usage: GDimension canvasSize = gw.getCanvasSize();
-     * --------------------------------------
+     * --------------------------------------------------
      * Returns the width and height of the graphics window's central
      * drawing canvas in pixels as a GDimension.
      */
@@ -354,14 +424,33 @@ public:
     int getColorInt() const;
 
     /*
+     * Method: getGObject
+     * Usage: GObject* gobj = gw.getGObject(i);
+     * ----------------------------------------
+     * Returns a pointer to i'th <code>GObject</code> in this window,
+     * where i is a 0-based index from 0 through getGObjectCount() - 1.
+     * Returns <code>nullptr</code> if no such object exists.
+     */
+    GObject* getGObject(int index) const;
+
+    /*
      * Method: getGObjectAt
-     * Usage: GObject *gobj = getGObjectAt(x, y);
-     * ------------------------------------------
+     * Usage: GObject* gobj = gw.getGObjectAt(x, y);
+     * --------------------------------------------
      * Returns a pointer to the topmost <code>GObject</code> containing the
      * point (<code>x</code>, <code>y</code>), or <code>nullptr</code> if no such
      * object exists.
      */
     GObject* getGObjectAt(double x, double y) const;
+
+    /*
+     * Method: getGObjectCount
+     * Usage: int count = gw.getGObjectCount();
+     * ----------------------------------------
+     * Returns the number of GObjects added to the canvas of this window.
+     * Returns 0 if this window contains no objects or is closed.
+     */
+    int getGObjectCount() const;
 
     /*
      * Method: getHeight
@@ -393,13 +482,14 @@ public:
 
     /*
      * Returns the pixel values at all (x, y) positions in the canvas as
-     * a grid of RGB integers.
+     * a grid of RGB integers in [row][col] order.
      */
     Grid<int> getPixels() const;
 
     /*
      * Returns the pixel values at all (x, y) positions in the canvas as
-     * a grid of ARGB integers with the alpha transparency component intact.
+     * a grid in [row][col] order of ARGB integers
+     * with the alpha transparency component intact.
      */
     Grid<int> getPixelsARGB() const;
 
@@ -532,6 +622,17 @@ public:
      * Removes the object from the window.
      */
     void remove(GObject* gobj);
+
+    // remove() overloads that accept each GObject shape type
+    // (so we can avoid showing & syntax and pointers in early GUI demos)
+    void remove(GArc& gobj);
+    void remove(GCompound& gobj);
+    void remove(GImage& gobj);
+    void remove(GLabel& gobj);
+    void remove(GLine& gobj);
+    void remove(GOval& gobj);
+    void remove(GPolygon& gobj);
+    void remove(GRect& gobj);
 
     /*
      * Method: removeFromRegion
@@ -666,6 +767,7 @@ public:
      * of the screen.
      */
     void setLocation(double x, double y);
+    void setLocation(const GPoint& p);
     void setLocation(const Point& p);
 
     /*
@@ -690,13 +792,13 @@ public:
 
     /*
      * Sets the pixel value at all (x, y) positions in the canvas from
-     * the given grid of RGB integers.
+     * the given grid of RGB integers in [row][col] order.
      */
     void setPixels(const Grid<int>& pixels);
 
     /*
      * Sets the pixel value at all (x, y) positions in the canvas from
-     * the given grid of ARGB integers.
+     * the given grid of ARGB integers in [row][col] order.
      */
     void setPixelsARGB(const Grid<int>& pixelsARGB);
 
@@ -739,6 +841,7 @@ public:
      * Sets the size of the graphics window in pixels.
      */
     void setSize(double width, double height);
+    void setSize(const GDimension& size);
 
     /*
      * Method: setTitle
@@ -834,6 +937,7 @@ public:
 
     explicit GWindow(bool visible);
     GWindow(GWindowData* gwd);
+    GWindowData* getWindowDataPointer() const;
 
 private:
     /* Instance variables */
@@ -939,6 +1043,52 @@ void repaint();
  * Waits for a mouse click to occur anywhere in any window.
  */
 GMouseEvent waitForClick();
+
+namespace autograder {
+/*
+ * Returns a read-only collection of recently opened GWindows.
+ */
+const Vector<GWindowData*>& gwindowPrevDataAll();
+
+/*
+ * Closes the most recently opened GWindow and forgets about (clears) it.
+ * If there is no last window, has no effect.
+ */
+void gwindowPrevDataCloseAll();
+
+/*
+ * Return the most recently opened GWindow.
+ * Mostly used by autograders to close a student's window.
+ */
+GWindowData* gwindowPrevDataGetLast();
+
+/*
+ * Returns true if window logging is currently turned on.
+ * Initially false.
+ */
+bool gwindowPrevDataIsStarted();
+
+/*
+ * Begin logging recently opened GWindows.
+ */
+void gwindowPrevDataStart();
+
+/*
+ * Forget any memory of recently opened GWindows and stop logging.
+ */
+void gwindowPrevDataStop();
+
+/*
+ * Causes the given window's x/y position to be remembered across runs.
+ */
+void gwindowRememberPosition(GWindow& gw);
+
+/*
+ * Sets whether the given window is an autograder window.
+ * Autograder windows have certain privileges that regular windows don't.
+ */
+void gwindowSetIsAutograderWindow(GWindow& gw, bool autograderWindow);
+} // namespace autograder
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 

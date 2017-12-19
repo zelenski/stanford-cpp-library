@@ -4,6 +4,10 @@
  * Windows implementation of the call_stack class.
  *
  * @author Marty Stepp
+ * @version 2017/10/24
+ * - removed SYMOPT_DEBUG from SymSetOptions to avoid spurious console output
+ * @version 2017/10/20
+ * - changed null/0s to nullptr to remove compiler warnings
  * @version 2016/10/04
  * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * @version 2015/07/05
@@ -78,7 +82,7 @@ void injectAddr2lineInfo(entry& ent, const std::string& line) {
 
     if (startsWith(ent.function, "_Z")) {
         int status;
-        char* demangled = abi::__cxa_demangle(ent.function.c_str(), nullptr, 0, &status);
+        char* demangled = abi::__cxa_demangle(ent.function.c_str(), nullptr, nullptr, &status);
         if (status == 0 && demangled) {
             ent.function = demangled;
         }
@@ -103,7 +107,7 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
             // can't do stack walking in Windows when a stack overflow happens :-/
             traceVector.push_back((void*) exceptionInfo->ContextRecord->Eip);
         } else {
-            SymInitialize(GetCurrentProcess(), 0, TRUE);
+            SymInitialize(GetCurrentProcess(), nullptr, TRUE);
             STACKFRAME frame = {0};
             frame.AddrPC.Offset    = exceptionInfo->ContextRecord->Eip;
             frame.AddrPC.Mode      = AddrModeFlat;
@@ -117,18 +121,18 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
                              thread,
                              &frame,
                              exceptionInfo->ContextRecord,
-                             0,
+                             nullptr,
                              SymFunctionTableAccess,
                              SymGetModuleBase,
-                             0)) {
+                             nullptr)) {
                 traceVector.push_back((void*) frame.AddrPC.Offset);
             }
         }
     } else {
         if (!::SymSetOptions(
                              // ::SymGetOptions()
-                               SYMOPT_DEBUG
-                             | SYMOPT_DEFERRED_LOADS
+                             // SYMOPT_DEBUG
+                               SYMOPT_DEFERRED_LOADS
                              | SYMOPT_INCLUDE_32BIT_MODULES
                              // | SYMOPT_UNDNAME
                              | SYMOPT_CASE_INSENSITIVE
@@ -190,7 +194,7 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
     for (int i = 0; i < (int) traceVector.size(); ++i) {
         entry ent;
         ent.address = traceVector[i];
-        if (process && ::SymFromAddr(process, (DWORD64) traceVector[i], 0, symbol)) {
+        if (process && ::SymFromAddr(process, (DWORD64) traceVector[i], nullptr, symbol)) {
             ent.function = symbol->Name;
         }
         // internal stuff failed, so load from external process

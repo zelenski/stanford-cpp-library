@@ -5,6 +5,10 @@
  * provided in the Java Swing libraries.
  * <include src="pictures/ClassHierarchies/GInteractorHierarchy-h.html">
  * 
+ * @version 2017/11/18
+ * - added GCheckBox constructor that takes bool for checked
+ * @version 2017/10/12
+ * - added GTextLabel
  * @version 2016/11/26
  * - added GInteractor::setForeground as alias for setColor
  * @version 2016/11/02
@@ -298,7 +302,7 @@ public:
      * to the <code>GButton</code> constructor, this constructor does not set
      * an action command.
      */
-    GCheckBox(std::string label = "");
+    GCheckBox(std::string label = "", bool checked = false);
 
     /*
      * Returns the text label showing on the button.
@@ -337,6 +341,75 @@ private:
 };
 
 /*
+ * Class: GChooser
+ * ---------------
+ * This interactor subclass represents a selectable list.  The
+ * <code>GChooser</code> constructor creates an empty chooser.
+ * Once the chooser has been created, clients can use <code>addItem</code>
+ * to add the options.  For example, the following code creates a
+ * <code>GChooser</code> containing the four strings
+ * <code>"Small"</code>, <code>"Medium"</code>, <code>"Large"</code>,
+ * and <code>"X-Large"</code>:
+ *
+ *<pre>
+ *    GChooser *sizeChooser = new GChooser();
+ *    sizeChooser->addItem("Small");
+ *    sizeChooser->addItem("Medium");
+ *    sizeChooser->addItem("Large");
+ *    sizeChooser->addItem("X-Large");
+ *</pre>
+ *<include src="pictures/GInteractorDiagrams/GChooser.html">
+ */
+
+class GChooser : public GInteractor {
+
+public:
+
+    /*
+     * Constructor: GChooser
+     * Usage: GChooser *chooser = new GChooser();
+     * ------------------------------------------
+     * Creates a chooser that initially contains no items, which are added
+     * using the <code>addItem</code> method.  Assigning an action command
+     * to the chooser causes it to generate an action event whenever the
+     * user selects an item.
+     */
+    GChooser();
+
+    /*
+     * Method: addItem
+     * Usage: chooser->addItem(item);
+     * ------------------------------
+     * Adds a new item consisting of the specified string.
+     */
+    void addItem(std::string item);
+
+    void addItems(const std::initializer_list<std::string>& items);
+    void addItems(const Vector<std::string>& items);
+
+    /*
+     * Method: setSelectedItem
+     * Usage: chooser->setSelectedItem(item);
+     * --------------------------------------
+     * Sets the chooser so that it shows the specified item.  If the item
+     * does not exist in the chooser, no change occurs.
+     */
+    void setSelectedItem(std::string item);
+
+    /*
+     * Method: getSelectedItem
+     * Usage: string item = chooser->getSelectedItem();
+     * ------------------------------------------------
+     * Returns the current item selected in the chooser.
+     */
+    std::string getSelectedItem();
+
+    /* Prototypes for the virtual methods */
+    virtual std::string getType() const;
+    virtual std::string toString() const;
+};
+
+/*
  * Class: GRadioButton
  * -------------------
  * This interactor subclass represents an onscreen radio button.  Clicking
@@ -358,7 +431,7 @@ public:
      * If no group name is provided, the button is placed into a default group.
      * Button is not initially selected unless 'selected' of true is passed.
      */
-    GRadioButton(std::string label = "", std::string group = "default", bool selected = false);
+    GRadioButton(std::string label = "", std::string group = "default", bool checked = false);
 
     /*
      * Returns the text label showing on the button.
@@ -635,73 +708,34 @@ private:
     std::string m_placeholder;
 };
 
-/*
- * Class: GChooser
- * ---------------
- * This interactor subclass represents a selectable list.  The
- * <code>GChooser</code> constructor creates an empty chooser.
- * Once the chooser has been created, clients can use <code>addItem</code>
- * to add the options.  For example, the following code creates a
- * <code>GChooser</code> containing the four strings
- * <code>"Small"</code>, <code>"Medium"</code>, <code>"Large"</code>,
- * and <code>"X-Large"</code>:
- *
- *<pre>
- *    GChooser *sizeChooser = new GChooser();
- *    sizeChooser->addItem("Small");
- *    sizeChooser->addItem("Medium");
- *    sizeChooser->addItem("Large");
- *    sizeChooser->addItem("X-Large");
- *</pre>
- *<include src="pictures/GInteractorDiagrams/GChooser.html">
- */
-
-class GChooser : public GInteractor {
+class GTextLabel : public GInteractor {
 
 public:
+    /*
+     * Constructor: GTextLabel
+     * Usage: GTextLabel* label = new GTextLabel("text");
+     * --------------------------------------------------
+     * Creates a <code>GTextLabel</code> with the specified text.
+     * If the label is omitted, uses an empty string.
+     */
+    GTextLabel(std::string text = "");
 
     /*
-     * Constructor: GChooser
-     * Usage: GChooser *chooser = new GChooser();
-     * ------------------------------------------
-     * Creates a chooser that initially contains no items, which are added
-     * using the <code>addItem</code> method.  Assigning an action command
-     * to the chooser causes it to generate an action event whenever the
-     * user selects an item.
+     * Returns the text label showing.
      */
-    GChooser();
+    virtual std::string getText() const;
 
     /*
-     * Method: addItem
-     * Usage: chooser->addItem(item);
-     * ------------------------------
-     * Adds a new item consisting of the specified string.
+     * Sets the text label showing to be the given text.
      */
-    void addItem(std::string item);
-
-    void addItems(const std::initializer_list<std::string>& items);
-    void addItems(const Vector<std::string>& items);
-
-    /*
-     * Method: setSelectedItem
-     * Usage: chooser->setSelectedItem(item);
-     * --------------------------------------
-     * Sets the chooser so that it shows the specified item.  If the item
-     * does not exist in the chooser, no change occurs.
-     */
-    void setSelectedItem(std::string item);
-
-    /*
-     * Method: getSelectedItem
-     * Usage: string item = chooser->getSelectedItem();
-     * ------------------------------------------------
-     * Returns the current item selected in the chooser.
-     */
-    std::string getSelectedItem();
+    virtual void setText(std::string text);
 
     /* Prototypes for the virtual methods */
     virtual std::string getType() const;
     virtual std::string toString() const;
+
+private:
+    std::string label;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

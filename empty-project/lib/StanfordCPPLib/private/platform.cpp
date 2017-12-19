@@ -4,6 +4,12 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2017/10/12
+ * - added gtextlabel_create
+ * - added gwindow_setRepaintImmediately
+ * - added initialValue to goptionPane_showInputDialog
+ * @version 2017/10/05
+ * - added gwindow_rememberPosition
  * @version 2017/09/29
  * - fix GWindow desync bug with console getLine (K.Schwarz bug report)
  * @version 2017/09/28
@@ -221,7 +227,7 @@ static GEvent parseWindowEvent(TokenScanner& scanner, EventType type);
 static std::string& programName();
 static void putPipe(const std::string& line);
 static void putPipeLongString(const std::string& line);
-static int scanChar(TokenScanner& scanner);
+// static int scanChar(TokenScanner& scanner);
 static GDimension scanDimension(const std::string& str);
 static double scanDouble(TokenScanner& scanner);
 static int scanInt(TokenScanner& scanner);
@@ -783,6 +789,12 @@ void Platform::gwindow_pack(const GWindow& gw) {
     putPipe(os.str());
 }
 
+void Platform::gwindow_rememberPosition(const GWindow& gw) {
+    std::ostringstream os;
+    os << "GWindow.rememberPosition(\"" << gw.gwd << "\")";
+    putPipe(os.str());
+}
+
 void Platform::gwindow_setTitle(const GWindow& gw, const std::string& title) {
     std::ostringstream os;
     os << "GWindow.setTitle(\"" << gw.gwd << "\", ";
@@ -978,6 +990,12 @@ void Platform::gwindow_setRegionAlignment(const GWindow& gw, const std::string& 
     std::ostringstream os;
     os << "GWindow.setRegionAlignment(\"" << gw.gwd << "\", \"" << region
        << "\", \"" << align << "\")";
+    putPipe(os.str());
+}
+
+void Platform::gwindow_setRepaintImmediately(const GWindow& gw, bool value) {
+    std::ostringstream os;
+    os << "GWindow.setRepaintImmediately(\"" << gw.gwd << "\", " << std::boolalpha << value << ")";
     putPipe(os.str());
 }
 
@@ -2011,6 +2029,17 @@ void Platform::gtextfield_setText(GObject* gobj, const std::string& str) {
     putPipe(os.str());
 }
 
+void Platform::gtextlabel_constructor(GObject* gobj, const std::string& label) {
+    std::ostringstream os;
+    os << gobj;
+    STATIC_VARIABLE(sourceTable).put(os.str(), gobj);
+    os.str("");
+    os << "GTextLabel.create(\"" << gobj << "\", ";
+    writeQuotedString(os, label);
+    os << ")";
+    putPipe(os.str());
+}
+
 void Platform::gchooser_constructor(GObject* gobj) {
     std::ostringstream os;
     os << gobj;
@@ -2162,12 +2191,14 @@ int Platform::goptionpane_showConfirmDialog(const std::string& message, const st
     return stringToInteger(getResult());
 }
 
-std::string Platform::goptionpane_showInputDialog(const std::string& message, const std::string& title) {
+std::string Platform::goptionpane_showInputDialog(const std::string& message, const std::string& title, const std::string& initialValue) {
     std::ostringstream os;
     os << "GOptionPane.showInputDialog(";
     writeQuotedString(os, urlEncode(message));
     os << ",";
     writeQuotedString(os, urlEncode(title));
+    os << ",";
+    writeQuotedString(os, urlEncode(initialValue));
     os << ")";
     putPipe(os.str());
     return urlDecode(getResult());
@@ -3271,11 +3302,12 @@ static GEvent parseActionEvent(TokenScanner& scanner, EventType type) {
     return e;
 }
 
-static int scanChar(TokenScanner& scanner) {
-    std::string token = scanner.nextToken();
-    if (token == "-") token += scanner.nextToken();
-    return stringToChar(token);
-}
+// commented out because unused
+//static int scanChar(TokenScanner& scanner) {
+//    std::string token = scanner.nextToken();
+//    if (token == "-") token += scanner.nextToken();
+//    return stringToChar(token);
+//}
 
 static int scanInt(TokenScanner& scanner) {
     std::string token = scanner.nextToken();
@@ -3438,13 +3470,14 @@ void initializeStanfordCppLibrary() {
 void shutdownStanfordCppLibrary() {
     const std::string PROGRAM_COMPLETED_TITLE_SUFFIX = " [completed]";
 
+
     if (getConsoleEnabled()) {
         std::string title = getConsoleWindowTitle();
         if (title == "") {
             title = "Console";
         }
         if (title.find("terminated") == std::string::npos) {
-            setConsoleWindowTitle(title + PROGRAM_COMPLETED_TITLE_SUFFIX);
+            ::setConsoleWindowTitle(title + PROGRAM_COMPLETED_TITLE_SUFFIX);
         }
     }
 }

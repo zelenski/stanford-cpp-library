@@ -5,7 +5,10 @@
  * to represent <b><i>graphs,</i></b> which consist of a set of
  * <b><i>nodes</i></b> (vertices) and a set of <b><i>arcs</i></b> (edges).
  * 
+ * @version 2017/11/14
+ * - added nodeCount, arcCount, getNodeNames
  * @version 2016/12/09
+ * - added iterator version checking support (implicitly via Map)
  * - fixed bug in getInverseNeighborNames function
  * @version 2016/12/01
  * - removed memory leaks of graph vertex and edge structures
@@ -134,6 +137,14 @@ public:
      */
     NodeType* addNode(const std::string& name);
     NodeType* addNode(NodeType* node);
+
+    /*
+     * Method: arcCount
+     * Usage: int count = g.arcCount();
+     * --------------------------------
+     * Returns the number of arcs in the graph.
+     */
+    int arcCount() const;
 
     /*
      * Method: clear
@@ -300,6 +311,16 @@ public:
      * name exists, returns <code>nullptr</code>.
      */
     NodeType* getNode(const std::string& name) const;
+
+    /*
+     * Method: getNodeNames
+     * Usage: for (NodeType* node : g.getNodeNames()) ...
+     * --------------------------------------------------
+     * Returns the set of the names of all nodes in the graph.
+     * Similar to getNodeSet but returns a set of strings rather than a set
+     * of pointers to vertexes.
+     */
+    Set<std::string> getNodeNames() const;
     
     /*
      * Method: getNodeSet
@@ -332,7 +353,16 @@ public:
      * Returns <code>true</code> if the graph is empty.
      */
     bool isEmpty() const;
-    
+
+    /*
+     * Method: nodeCount
+     * Usage: int count = g.nodeCount();
+     * ---------------------------------
+     * Returns the number of nodes in the graph.
+     * Equivalent to size().
+     */
+    int nodeCount() const;
+
     /*
      * Method: removeArc
      * Usage: g.removeArc(s1, s2);
@@ -761,6 +791,11 @@ NodeType* Graph<NodeType, ArcType>::addNode(NodeType* node) {
     }
 }
 
+template <typename NodeType, typename ArcType>
+int Graph<NodeType, ArcType>::arcCount() const {
+    return getArcSet().size();
+}
+
 /*
  * Implementation notes: clear
  * ---------------------------
@@ -783,8 +818,8 @@ void Graph<NodeType, ArcType>::clear() {
 
 template <typename NodeType, typename ArcType>
 void Graph<NodeType, ArcType>::clearArcs() {
-    Set<ArcType*> arcs = getArcSet();   // makes a copy
-    for (ArcType* arc : arcs) {
+    Set<ArcType*> arcsCopy = getArcSet();   // makes a copy
+    for (ArcType* arc : arcsCopy) {
         removeArc(arc);
     }
 }
@@ -792,8 +827,8 @@ void Graph<NodeType, ArcType>::clearArcs() {
 template <typename NodeType, typename ArcType>
 void Graph<NodeType, ArcType>::clearArcs(NodeType* node) {
     if (isExistingNode(node)) {
-        Set<ArcType*> arcs = getArcSet(node);   // makes a copy
-        for (ArcType* arc : arcs) {
+        Set<ArcType*> arcsCopy = getArcSet(node);   // makes a copy
+        for (ArcType* arc : arcsCopy) {
             removeArc(arc);
         }
     }
@@ -801,8 +836,8 @@ void Graph<NodeType, ArcType>::clearArcs(NodeType* node) {
 
 template <typename NodeType, typename ArcType>
 void Graph<NodeType, ArcType>::clearArcs(const std::string& name) {
-    Set<ArcType*> arcs = getArcSet(name);   // makes a copy
-    for (ArcType* arc : arcs) {
+    Set<ArcType*> arcsCopy = getArcSet(name);   // makes a copy
+    for (ArcType* arc : arcsCopy) {
         removeArc(arc);
     }
 }
@@ -874,7 +909,7 @@ const Set<ArcType*>& Graph<NodeType, ArcType>::getArcSet(NodeType* node) const {
     if (isExistingNode(node)) {
         return node->arcs;
     } else {
-        Set<ArcType*> set;   // empty
+        static Set<ArcType*> set;   // empty
         return set;
     }
 }
@@ -996,13 +1031,13 @@ Set<std::string> Graph<NodeType, ArcType>::getNeighborNames(const std::string& n
  */
 template <typename NodeType, typename ArcType>
 Set<NodeType*> Graph<NodeType, ArcType>::getNeighbors(NodeType* node) const {
-    Set<NodeType*> nodes = Set<NodeType*>(comparator);
+    Set<NodeType*> nodesResult = Set<NodeType*>(comparator);
     if (isExistingNode(node)) {
         for (ArcType* arc : node->arcs) {
-            nodes.add(arc->finish);
+            nodesResult.add(arc->finish);
         }
     }
-    return nodes;
+    return nodesResult;
 }
 
 template <typename NodeType, typename ArcType>
@@ -1021,6 +1056,15 @@ Set<NodeType*> Graph<NodeType, ArcType>::getNeighbors(const std::string& name) c
 template <typename NodeType, typename ArcType>
 NodeType* Graph<NodeType, ArcType>::getNode(const std::string& name) const {
     return nodeMap.get(name);
+}
+
+template <typename NodeType, typename ArcType>
+Set<std::string> Graph<NodeType, ArcType>::getNodeNames() const {
+    Set<std::string> nodeNames;
+    for (NodeType* node : nodes) {
+        nodeNames.add(node->name);
+    }
+    return nodeNames;
 }
 
 /*
@@ -1077,6 +1121,11 @@ bool Graph<NodeType, ArcType>::isNeighbor(NodeType* node1, NodeType* node2) cons
 template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::isEmpty() const {
     return nodes.isEmpty();
+}
+
+template <typename NodeType, typename ArcType>
+int Graph<NodeType, ArcType>::nodeCount() const {
+    return getNodeSet().size();
 }
 
 /*

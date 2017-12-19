@@ -4,6 +4,8 @@
  * This file exports the <code>Stack</code> class, which implements
  * a collection that processes values in a last-in/first-out (LIFO) order.
  * 
+ * @version 2016/12/09
+ * - added iterator version checking support (implicitly via Vector)
  * @version 2016/09/24
  * - refactored to use collections.h utility functions
  * - made const iterators public

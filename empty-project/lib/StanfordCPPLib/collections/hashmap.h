@@ -4,6 +4,10 @@
  * This file exports the <code>HashMap</code> class, which stores
  * a set of <i>key</i>-<i>value</i> pairs.
  * 
+ * @version 2017/11/30
+ * - bug fix for iterator version checking support
+ * @version 2017/11/14
+ * - added iterator version checking support
  * @version 2016/10/14
  * - modified floating-point equality tests to use floatingPointEqual function
  * @version 2016/09/24
@@ -408,6 +412,7 @@ private:
     Vector<Cell*> buckets;
     int nBuckets;
     int numEntries;
+    unsigned int m_version;   // structure version for detecting invalid iterators
 
     /* Private methods */
 
@@ -521,6 +526,7 @@ private:
                 numEntries++;
             }
         }
+        m_version++;
     }
 
 public:
@@ -563,18 +569,28 @@ public:
     private:
         const HashMap* mp;           /* Pointer to the map           */
         int bucket;                  /* Index of current bucket      */
+        unsigned int itr_version;    /* Version for checking for modification */
         Cell* cp;                    /* Current cell in bucket chain */
 
     public:
-        iterator() : mp(nullptr), bucket(0), cp(nullptr) {
-            /* Empty */
+        iterator()
+                : mp(nullptr),
+                  bucket(0),
+                  itr_version(0),
+                  cp(nullptr) {
+            // empty
         }
 
-        iterator(const HashMap* mp, bool end) {
-            this->mp = mp;
+        iterator(const HashMap* mp, bool end)
+                : mp(mp),
+                  bucket(0),
+                  itr_version(0),
+                  cp(nullptr) {
+            if (mp) {
+                itr_version = mp->version();
+            }
             if (end) {
                 bucket = mp->nBuckets;
-                cp = nullptr;
             } else {
                 bucket = 0;
                 cp = mp->buckets.get(bucket);
@@ -584,13 +600,16 @@ public:
             }
         }
 
-        iterator(const iterator& it) {
-            mp = it.mp;
-            bucket = it.bucket;
-            cp = it.cp;
+        iterator(const iterator& it)
+                : mp(it.mp),
+                  bucket(it.bucket),
+                  itr_version(it.itr_version),
+                  cp(it.cp) {
+            // empty
         }
 
         iterator& operator ++() {
+            stanfordcpplib::collections::checkVersion(*mp, *this);
             cp = cp->next;
             while (!cp && ++bucket < mp->nBuckets) {
                 cp = mp->buckets.get(bucket);
@@ -599,6 +618,7 @@ public:
         }
 
         iterator operator ++(int) {
+            stanfordcpplib::collections::checkVersion(*mp, *this);
             iterator copy(*this);
             operator++();
             return copy;
@@ -613,11 +633,17 @@ public:
         }
 
         KeyType& operator *() {
+            stanfordcpplib::collections::checkVersion(*mp, *this);
             return cp->key;
         }
 
         KeyType* operator ->() {
+            stanfordcpplib::collections::checkVersion(*mp, *this);
             return &cp->key;
+        }
+
+        unsigned int version() const {
+            return itr_version;
         }
 
         friend class HashMap;
@@ -636,6 +662,14 @@ public:
     iterator end() const {
         return iterator(this, /* end */ true);
     }
+
+    /*
+     * Returns the internal version of this collection.
+     * This is used to check for invalid iterators and issue error messages.
+     */
+    unsigned int version() const {
+        return m_version;
+    }
 };
 
 /*
@@ -650,12 +684,14 @@ public:
  * performance on the put/remove/get operations.
  */
 template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>::HashMap() {
+HashMap<KeyType, ValueType>::HashMap()
+        : m_version(0) {
     createBuckets(INITIAL_BUCKET_COUNT);
 }
 
 template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>::HashMap(std::initializer_list<std::pair<KeyType, ValueType> > list) {
+HashMap<KeyType, ValueType>::HashMap(std::initializer_list<std::pair<KeyType, ValueType> > list)
+        : m_version(0) {
     createBuckets(INITIAL_BUCKET_COUNT);
     putAll(list);
 }
@@ -686,6 +722,7 @@ template <typename KeyType, typename ValueType>
 void HashMap<KeyType, ValueType>::clear() {
     deleteBuckets(buckets);
     numEntries = 0;
+    m_version++;
 }
 
 template <typename KeyType, typename ValueType>
@@ -753,6 +790,7 @@ void HashMap<KeyType, ValueType>::mapAll(FunctorType fn) const {
 template <typename KeyType, typename ValueType>
 void HashMap<KeyType, ValueType>::put(const KeyType& key, const ValueType& value) {
     (*this)[key] = value;
+    m_version++;
 }
 
 template <typename KeyType, typename ValueType>
@@ -785,6 +823,7 @@ void HashMap<KeyType, ValueType>::remove(const KeyType& key) {
         }
         delete cp;
         numEntries--;
+        m_version++;
     }
 }
 
@@ -867,6 +906,7 @@ ValueType& HashMap<KeyType, ValueType>::operator [](const KeyType& key) {
         cp->next = buckets[bucket];
         buckets[bucket] = cp;
         numEntries++;
+        m_version++;
     }
     return cp->value;
 }

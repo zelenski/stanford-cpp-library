@@ -6,6 +6,8 @@
  * http://en.wikipedia.org/wiki/Base64
  *
  * @author Marty Stepp, based upon open-source Apache Base64 en/decoder
+ * @version 2017/10/18
+ * - fixed compiler warnings
  * @version 2014/10/08
  * - removed 'using namespace' statement
  * 2014/08/14
@@ -110,10 +112,8 @@ int Base64encode(char *encoded, const char *string, int len) {
     p = encoded;
     for (i = 0; i < len - 2; i += 3) {
         *p++ = basis_64[(string[i] >> 2) & 0x3F];
-        *p++ = basis_64[((string[i] & 0x3) << 4) |
-                ((int) (string[i + 1] & 0xF0) >> 4)];
-        *p++ = basis_64[((string[i + 1] & 0xF) << 2) |
-                ((int) (string[i + 2] & 0xC0) >> 6)];
+        *p++ = basis_64[((string[i] & 0x3) << 4) | ((string[i + 1] & 0xF0) >> 4)];
+        *p++ = basis_64[((string[i + 1] & 0xF) << 2) | ((string[i + 2] & 0xC0) >> 6)];
         *p++ = basis_64[string[i + 2] & 0x3F];
     }
     if (i < len) {
@@ -123,8 +123,7 @@ int Base64encode(char *encoded, const char *string, int len) {
             *p++ = '=';
         }
         else {
-            *p++ = basis_64[((string[i] & 0x3) << 4) |
-                    ((int) (string[i + 1] & 0xF0) >> 4)];
+            *p++ = basis_64[((string[i] & 0x3) << 4) | ((string[i + 1] & 0xF0) >> 4)];
             *p++ = basis_64[((string[i + 1] & 0xF) << 2)];
         }
         *p++ = '=';
@@ -164,7 +163,7 @@ std::string decode(const std::string& s) {
     // because that will terminate the string at the first null \0 byte)
     std::ostringstream out;
     for (int i = 0; i < len; i++) {
-        out << (char) buf[i];
+        out << buf[i];
     }
     std::string result = out.str();
     

@@ -2,7 +2,9 @@
  * File: hashcode.cpp
  * ------------------
  * This file implements the interface declared in hashcode.h.
- * 
+ *
+ * @version 2017/10/21
+ * - added hash codes for short, unsigned integers
  * @version 2015/07/05
  * - using global hashing functions rather than global variables
  */
@@ -67,7 +69,23 @@ int hashCode(int key) {
     return key & HASH_MASK;
 }
 
+int hashCode(unsigned int key) {
+    return key & HASH_MASK;
+}
+
 int hashCode(long key) {
+    return int(key) & HASH_MASK;
+}
+
+int hashCode(unsigned long key) {
+    return int(key) & HASH_MASK;
+}
+
+int hashCode(short key) {
+    return int(key) & HASH_MASK;
+}
+
+int hashCode(unsigned short key) {
     return int(key) & HASH_MASK;
 }
 

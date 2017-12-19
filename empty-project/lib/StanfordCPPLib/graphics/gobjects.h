@@ -5,10 +5,11 @@
  * the model developed for the ACM Java Graphics.
  * <include src="pictures/ClassHierarchies/GObjectHierarchy-h.html">
  *
- * TODO: add get/setX, Y, size?
- * TODO: get fill color as RGB int?
- * TODO: operator << for gobjects? they already have toString()
- *
+ * @version 2017/10/25
+ * - added GPolygon initializer_list support
+ * - added members for get/setting center and bottom/right x/y coords/location
+ * @version 2017/10/16
+ * - added GLine constructor that takes GPoints
  * @version 2016/11/07
  * - alphabetized all members
  * - modified all members that accept std::string to take const std::string&
@@ -23,6 +24,7 @@
 #ifndef _gobjects_h
 #define _gobjects_h
 
+#include <initializer_list>
 #include "gtypes.h"
 #include "gwindow.h"
 #include "vector.h"
@@ -67,6 +69,16 @@ public:
     bool contains(const GPoint& pt) const;
 
     /*
+     * Method: getBottomY
+     * Usage: double bottomY = gobj->getBottomY();
+     * -------------------------------------------
+     * Returns the <i>y</i>-coordinate of the bottom of the object.
+     * Equivalent to the top y-coordinate plus the object's height.
+     */
+    double getBottomY() const;
+    GPoint getBottomRightLocation() const;
+
+    /*
      * Method: getBounds
      * Usage: GRectangle rect = gobj->getBounds();
      * -------------------------------------------
@@ -80,6 +92,19 @@ public:
      * covers the entire window area occupied by the string.
      */
     virtual GRectangle getBounds() const = 0;
+
+    /*
+     * Method: getCenterX/Y
+     * Usage: double centerX = gobj->getCenterX();
+     *        double centerY = gobj->getCenterY();
+     *        GPoint center = gobj->getCenterLocation();
+     * -------------------------------------------------
+     * Returns the <i>x</i>-coordinate of the center of the object.
+     * Equivalent to the top/left plus half the object's size.
+     */
+    GPoint getCenterLocation() const;
+    double getCenterX() const;
+    double getCenterY() const;
 
     /*
      * Method: getColor
@@ -106,7 +131,7 @@ public:
      * Method: getLocation
      * Usage: GPoint pt = gobj->getLocation();
      * ---------------------------------------
-     * Returns the location of this object as a <code>GPoint</code>.
+     * Returns the location of the top-left corner of object as a <code>GPoint</code>.
      */
     GPoint getLocation() const;
 
@@ -131,6 +156,15 @@ public:
      * returns <code>nullptr</code>.
      */
     GCompound* getParent() const;
+
+    /*
+     * Method: getRightX
+     * Usage: double rightX = gobj->getRightX();
+     * -----------------------------------------
+     * Returns the <i>x</i>-coordinate of the right side of the object.
+     * Equivalent to the left x-coordinate plus the object's width.
+     */
+    double getRightX() const;
 
     /*
      * Method: getSize
@@ -162,7 +196,7 @@ public:
      * Method: getX
      * Usage: double x = gobj->getX();
      * -------------------------------
-     * Returns the <i>x</i>-coordinate of the object.
+     * Returns the leftmost <i>x</i>-coordinate of the object.
      */
     double getX() const;
 
@@ -170,7 +204,7 @@ public:
      * Method: getY
      * Usage: double y = gobj->getY();
      * -------------------------------
-     * Returns the <i>y</i>-coordinate of the object.
+     * Returns the topmost <i>y</i>-coordinate of the object.
      */
     double getY() const;
 
@@ -261,6 +295,34 @@ public:
     static void setAntiAliasing(bool value);
 
     /*
+     * Method: setCenter/X/Y
+     * Usage: gobj->setBottomY(y);
+     *        gobj->setRightX(x);
+     *        gobj->setBottomRightLocation(x, y);
+     *        gobj->setBottomRightLocation(pt);
+     * ------------------------------------------
+     * Sets the location of the bottom/right of this object.
+     */
+    void setBottomY(double y);
+    void setRightX(double x);
+    void setBottomRightLocation(double x, double y);
+    void setBottomRightLocation(const GPoint& pt);
+
+    /*
+     * Method: setCenter/X/Y
+     * Usage: gobj->setCenterX(x);
+     *        gobj->setCenterY(y);
+     *        gobj->setCenterLocation(x, y);
+     *        gobj->setCenterLocation(pt);
+     * -------------------------------------
+     * Sets the location of the center of this object.
+     */
+    void setCenterX(double x);
+    void setCenterY(double y);
+    void setCenterLocation(double x, double y);
+    void setCenterLocation(const GPoint& pt);
+
+    /*
      * Method: setColor
      * Usage: gobj->setColor(color);
      * -----------------------------
@@ -306,7 +368,7 @@ public:
      * Usage: gobj->setLocation(pt);
      *        gobj->setLocation(x, y);
      * -------------------------------
-     * Sets the location of this object to the specified point.
+     * Sets the location of the top-left corner of this object to the specified point.
      */
     void setLocation(double x, double y);
     void setLocation(const GPoint& pt);
@@ -318,6 +380,16 @@ public:
      * Sets whether this object is visible.
      */
     void setVisible(bool flag);
+
+    /*
+     * Method: setX/Y
+     * Usage: gobj->setX(x);
+     *        gobj->setY(Y);
+     * ---------------------
+     * Sets the x/y location of the top/left of this object.
+     */
+    void setX(double x);
+    void setY(double y);
 
     /*
      * Method: toString
@@ -1200,6 +1272,16 @@ public:
     GLine(double x0, double y0, double x1, double y1);
 
     /*
+     * Constructor: GLine
+     * Usage: GLine* gline = new GLine(p0, p1);
+     * ----------------------------------------
+     * Constructs a line segment from its endpoints.  The point
+     * <code>p0</code> defines the start of the line and the point
+     * <code>p1</code> defines the end.
+     */
+    GLine(const GPoint& p0, const GPoint& p1);
+
+    /*
      * Method: getEndPoint
      * Usage: GPoint pt = line->getEndPoint();
      * ---------------------------------------
@@ -1282,11 +1364,20 @@ class GPolygon : public GObject {
 public:
     /*
      * Constructor: GPolygon
-     * Usage: GPolygon *poly = new GPolygon();
+     * Usage: GPolygon* poly = new GPolygon();
      * ---------------------------------------
      * Constructs a new empty polygon at the origin.
      */
     GPolygon();
+
+    /*
+     * Constructor: GPolygon
+     * Usage: GPolygon* poly = new GPolygon({x1, y1, x2, y2, ..., xN, yN});
+     * --------------------------------------------------------------------
+     * Constructs a new polygon with the given vertex coordinates at the origin.
+     */
+    GPolygon(std::initializer_list<double> coords);
+    GPolygon(std::initializer_list<GPoint> points);
 
     /*
      * Method: addEdge
@@ -1296,6 +1387,17 @@ public:
      * <code>dx</code> and <code>dy</code> from the last vertex.
      */
     void addEdge(double dx, double dy);
+    void addEdge(const GPoint& pt);
+
+    /*
+     * Method: addEdges
+     * Usage: poly->addEdges({dx1, dy1, dx2, dy2, ..., dxN, dyN});
+     * -----------------------------------------------------------
+     * Adds multiple edges to the polygon whose components are given by the
+     * displacements <code>dx</code> and <code>dy</code> from the last vertex.
+     */
+    void addEdges(std::initializer_list<double> coords);
+    void addEdges(std::initializer_list<GPoint> points);
 
     /*
      * Method: addPolarEdge
@@ -1316,6 +1418,17 @@ public:
      * origin.
      */
     void addVertex(double x, double y);
+    void addVertex(const GPoint& pt);
+
+    /*
+     * Method: addVertexes
+     * Usage: poly->addVertexes({x1, y1, x2, y2, ..., xN, yN});
+     * -----------------------------------------------------------
+     * Adds multiple edges to the polygon whose components are given by the
+     * coordinates <code>dx</code> and <code>dy</code> relative to the polygon origin.
+     */
+    void addVertexes(std::initializer_list<double> coords);
+    void addVertexes(std::initializer_list<GPoint> points);
 
     /*
      * Method: getFillColor

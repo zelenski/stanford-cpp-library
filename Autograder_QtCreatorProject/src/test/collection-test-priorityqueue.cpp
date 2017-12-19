@@ -69,3 +69,19 @@ TIMED_TEST(PriorityQueueTests, initializerListTest_PriorityQueue, TEST_TIMEOUT_D
         assertEqualsString("initializer list PriorityQueue", exp, act);
     }
 }
+
+#ifdef SPL_THROW_ON_INVALID_ITERATOR
+TIMED_TEST(PriorityQueueTests, iteratorVersionTest_PriorityQueue, TEST_TIMEOUT_DEFAULT) {
+    PriorityQueue<std::string> pq {{40.0, "Marty"}, {20.0, "Eric"}, {30.0, "Mehran"}, {50.0, "Bill"}, {10.0, "John"}};
+    try {
+        for (std::string s : pq) {
+            if (s.length() % 2 == 0) {
+                pq.dequeue();
+            }
+        }
+        assertFail("should not get to end of test; should throw exception before now");
+    } catch (ErrorException ex) {
+        assertPass("threw exception successfully");
+    }
+}
+#endif // SPL_THROW_ON_INVALID_ITERATOR

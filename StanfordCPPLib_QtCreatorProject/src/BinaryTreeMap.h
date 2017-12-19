@@ -59,7 +59,7 @@ public:
     int size() const;
     
 private:
-    BinaryTreeMapNode* m_root;   // topmost node in the tree (NULL if empty)
+    BinaryTreeMapNode* m_root;   // topmost node in the tree (null if empty)
     int m_size;            // # of k/v pairs in map (0 if empty)
 
     /*

@@ -15,17 +15,17 @@ public class GWindow_saveCanvasPixels extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd jbe) {
 		paramTokenScanner.verifyToken("(");
 		String windowID = nextString(paramTokenScanner);
-		JBEWindow window = jbe.getWindow(windowID);
+		JBEWindowInterface window = jbe.getWindowInterface(windowID);
 		paramTokenScanner.verifyToken(",");
 		String filename = nextString(paramTokenScanner);
 		paramTokenScanner.verifyToken(")");
 		
 		if (window == null) {
-			jbe.println("error:window not found");
+			SplPipeDecoder.writeError("window not found");
 		} else {
 			try {
 				window.saveCanvasPixels(filename);
-				SplPipeDecoder.writeResult("ok");
+				SplPipeDecoder.writeOK();
 			} catch (IORuntimeException ioe) {
 				SplPipeDecoder.writeError(ioe);
 			}

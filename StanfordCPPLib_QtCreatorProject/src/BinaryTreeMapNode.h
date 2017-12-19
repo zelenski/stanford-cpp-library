@@ -21,7 +21,7 @@ struct BinaryTreeMapNode {
     /*
      * Constructs a new tree node with the given key/value and left/right links.
      */
-    BinaryTreeMapNode(string key, int value, BinaryTreeMapNode* left = NULL, BinaryTreeMapNode* right = NULL) {
+    BinaryTreeMapNode(string key, int value, BinaryTreeMapNode* left = nullptr, BinaryTreeMapNode* right = nullptr) {
         this->key = key;
         this->value = value;
         this->left = left;
@@ -32,7 +32,7 @@ struct BinaryTreeMapNode {
      * Returns true if this node has no children.
      */
     bool isLeaf() {
-        return left == NULL && right == NULL;
+        return !left && !right;
     }
 };
 

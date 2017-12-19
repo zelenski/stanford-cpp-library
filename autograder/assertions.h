@@ -8,6 +8,8 @@
  * can show the results in the GUI for the user.
  * 
  * @author Marty Stepp
+ * @version 2017/12/12
+ * - added assertEqualsCollectionDouble
  * @version 2016/10/28
  * - added assertSimilarImage
  * @version 2016/09/22
@@ -111,6 +113,12 @@
         autograder::UnitTestType::TEST_ASSERT_EQUALS, \
         (msg), ((a).toString()), ((b).toString()), "object", ((a) == (b)))); \
     EXPECT_EQ((a), (b))
+
+#define assertEqualsCollectionDouble(msg, a, b) \
+    autograder::setFailDetails(autograder::UnitTestDetails( \
+        autograder::UnitTestType::TEST_ASSERT_EQUALS, \
+        (msg), ((a).toString()), ((b).toString()), "object", (stanfordcpplib::collections::equalsDouble((a), (b))))); \
+    EXPECT_EQ((a).toString(), (b).toString())
 
 #define assertEqualsDouble(msg, a, b) \
     autograder::setFailDetails(autograder::UnitTestDetails( \

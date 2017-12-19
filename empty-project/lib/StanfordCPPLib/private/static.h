@@ -6,6 +6,9 @@
  * These macros should be used to declare all not-inside-function static data
  * used by the library, since a lot of library code runs during the
  * static initialization phase.
+ *
+ * @version 2017/10/05
+ * - added STATIC_VARIABLE_NAMESPACE
  */
 
 #ifndef _static_h
@@ -64,5 +67,9 @@
 // look up the value of the given static variable (by calling its static s_ function)
 #define STATIC_VARIABLE(name) \
     (s_##name())
+
+// look up the value of the given static variable in another namespace
+#define STATIC_VARIABLE_NAMESPACE(namespacename, name) \
+    (namespacename::s_##name())
 
 #endif // _static_h

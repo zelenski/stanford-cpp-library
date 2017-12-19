@@ -382,6 +382,9 @@ private:
         int m_index;
     };
     
+public:
+    /* private implentation section */
+
     pq_iterator begin() const {
         return pq_iterator(*this, /* end */ false);
     }
@@ -389,10 +392,7 @@ private:
     pq_iterator end() const {
         return pq_iterator(*this, /* end */ true);
     }
-    
-public:
-    /* private implentation section */
-    
+
     template <typename Collection>
     friend int stanfordcpplib::collections::compare(const Collection& pq1, const Collection& pq2);
 

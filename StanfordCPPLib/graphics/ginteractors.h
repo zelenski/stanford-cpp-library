@@ -5,6 +5,8 @@
  * provided in the Java Swing libraries.
  * <include src="pictures/ClassHierarchies/GInteractorHierarchy-h.html">
  * 
+ * @version 2017/11/18
+ * - added GCheckBox constructor that takes bool for checked
  * @version 2017/10/12
  * - added GTextLabel
  * @version 2016/11/26
@@ -300,7 +302,7 @@ public:
      * to the <code>GButton</code> constructor, this constructor does not set
      * an action command.
      */
-    GCheckBox(std::string label = "");
+    GCheckBox(std::string label = "", bool checked = false);
 
     /*
      * Returns the text label showing on the button.
@@ -429,7 +431,7 @@ public:
      * If no group name is provided, the button is placed into a default group.
      * Button is not initially selected unless 'selected' of true is passed.
      */
-    GRadioButton(std::string label = "", std::string group = "default", bool selected = false);
+    GRadioButton(std::string label = "", std::string group = "default", bool checked = false);
 
     /*
      * Returns the text label showing on the button.

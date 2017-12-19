@@ -307,7 +307,9 @@ string toString() const;
 </pre>
 <div class=detailHTML>
 Converts the queue to a printable string representation.
-The elements are listed with their priorities first and are listed in increasing order of priority, such as <code>&quot;{pri1:value1, pri2:value2, pri3:value3}&quot;</code>
+The elements are listed with their priorities first, such as <code>&quot;{pri1:value1, pri2:value2, pri3:value3}&quot;</code>
+If your project sets the compiler flag <code>PQUEUE_PRINT_IN_HEAP_ORDER</code>, the elements are shown in an unpredictable order.
+If not, they are listed in increasing order of priority.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>

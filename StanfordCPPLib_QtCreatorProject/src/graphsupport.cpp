@@ -1,3 +1,8 @@
+/*
+ * @version 2017/10/24
+ * - replaced null in uppercase with nullptr
+ */
+
 #include "graphsupport.h"
 #include <iomanip>
 #include "gmath.h"
@@ -187,7 +192,7 @@ string graph_pathToString(const Vector<Vertex*>& path) {
         if (v) {
             path2.add(v->name);
         } else {
-            path2.add("NULL");
+            path2.add("nullptr");
         }
     }
     return path2.toString();
@@ -201,7 +206,7 @@ void graph_printPath(const Vector<Vertex*>& path) {
             cout << ", ";
         }
         if (!v) {
-            cout << "NULL";
+            cout << "nullptr";
         } else {
             cout << v->name;
         }
@@ -223,7 +228,7 @@ ostream& operator <<(ostream& out, const Vector<Vertex*>& path) {
             out << ", ";
         }
         if (!v) {
-            out << "NULL";
+            out << "nullptr";
         } else {
             out << v->name;
         }
@@ -241,7 +246,7 @@ ostream& operator <<(ostream& out, const Set<Vertex*>& set) {
             out << ", ";
         }
         if (!v) {
-            out << "NULL";
+            out << "nullptr";
         } else {
             out << v->name;
         }

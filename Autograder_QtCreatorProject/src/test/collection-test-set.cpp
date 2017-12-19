@@ -86,6 +86,22 @@ TIMED_TEST(SetTests, initializerListTest_Set, TEST_TIMEOUT_DEFAULT) {
     assertCollection("after *=", {10, 40}, set);
 }
 
+#ifdef SPL_THROW_ON_INVALID_ITERATOR
+TIMED_TEST(SetTests, iteratorVersionTest_Set, TEST_TIMEOUT_DEFAULT) {
+    Set<int> set {1, 2, 3, 4, 1, 6, 1, 8, 2, 10};
+    try {
+        for (int n : set) {
+            if (n % 2 == 0) {
+                set.remove(n);
+            }
+        }
+        assertFail("should not get to end of test; should throw exception before now");
+    } catch (ErrorException ex) {
+        assertPass("threw exception successfully");
+    }
+}
+#endif // SPL_THROW_ON_INVALID_ITERATOR
+
 TIMED_TEST(SetTests, randomElementTest_Set, TEST_TIMEOUT_DEFAULT) {
     Map<std::string, int> counts;
     int RUNS = 200;

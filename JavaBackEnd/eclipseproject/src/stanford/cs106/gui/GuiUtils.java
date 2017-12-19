@@ -354,7 +354,9 @@ public class GuiUtils {
 	}
 	
 	public static FileFilter getExtensionFileFilter(String description, String... extensions) {
-		return new ExtensionFileFilter(description, extensions);
+		ExtensionFileFilter filter = new ExtensionFileFilter(extensions);
+		filter.setDescription(description);
+		return filter;
 	}
 	
 	public static JLabel createLabel(String text, String icon) {
@@ -664,36 +666,6 @@ public class GuiUtils {
 			}
 		}
 		return null;
-	}
-	
-	private static class ExtensionFileFilter extends FileFilter {
-		private String description;
-		private String[] extensions;
-		
-		public ExtensionFileFilter(String description, String[] extensions) {
-			this.description = description;
-			this.extensions = extensions;
-		}
-		
-		@Override
-		public boolean accept(File file) {
-			if (file.isDirectory()) {
-				return true;
-			}
-			String filename = file.getName().toLowerCase();
-			for (String extension : extensions) {
-				extension = "." + extension.toLowerCase();
-				if (filename.endsWith(extension)) {
-					return true;
-				}
-			}
-			return false;
-		}
-		
-		@Override
-		public String getDescription() {
-			return description;
-		}
 	}
 	
 	private static class WindowSettingsComponentAdapter extends ComponentAdapter {

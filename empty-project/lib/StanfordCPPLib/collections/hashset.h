@@ -4,6 +4,8 @@
  * This file exports the <code>HashSet</code> class, which
  * implements an efficient abstraction for storing sets of values.
  * 
+ * @version 2016/12/09
+ * - added iterator version checking support (implicitly via HashMap)
  * @version 2016/12/06
  * - slight speedup bug fix in equals() method
  * @version 2016/09/24

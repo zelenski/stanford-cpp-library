@@ -5,6 +5,10 @@
  * to the appropriate methods in the Platform class, which is implemented
  * separately for each architecture.
  * 
+ * @version 2017/12/18
+ * - added drawImage
+ * @version 2017/10/25
+ * - fixed bug where clearCanvas didn't clear gwd->top
  * @version 2017/10/16
  * - added add, remove that accept GObject references (avoid pointers)
  * @version 2017/10/12
@@ -46,10 +50,12 @@
  */
 
 #include "gwindow.h"
+#include <cstdarg>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
+#include "gbufferedimage.h"
 #include "gevents.h"
 #include "gmath.h"
 #include "gobjects.h"
@@ -152,17 +158,18 @@ bool gwindowPrevDataIsStarted() {
 }
 
 // private function to be called by GWindow objects
-static void gwindowPrevDataRemove(GWindowData* gwd) {
-    if (gwindowPrevDataIsStarted() && gwd) {
-        Vector<GWindowData*>& vec = STATIC_VARIABLE(__lastGWindowData);
-        for (int i = 0; i < vec.size(); i++) {
-            if (vec[i] == gwd) {
-                vec.remove(i);
-                break;
-            }
-        }
-    }
-}
+// (commented out because unused)
+//static void gwindowPrevDataRemove(GWindowData* gwd) {
+//    if (gwindowPrevDataIsStarted() && gwd) {
+//        Vector<GWindowData*>& vec = STATIC_VARIABLE(__lastGWindowData);
+//        for (int i = 0; i < vec.size(); i++) {
+//            if (vec[i] == gwd) {
+//                vec.remove(i);
+//                break;
+//            }
+//        }
+//    }
+//}
 
 void gwindowPrevDataStart() {
     STATIC_VARIABLE(__lastGWindowDataEnabled) = true;
@@ -381,6 +388,9 @@ void GWindow::clear() {
 
 void GWindow::clearCanvas() {
     if (isOpen()) {
+        if (gwd && gwd->top) {
+            gwd->top->removeAll();
+        }
         stanfordcpplib::getPlatform()->gwindow_clearCanvas(*this);
     }
 }
@@ -460,6 +470,12 @@ void GWindow::drawLine(double x0, double y0, double x1, double y1) {
     }
 }
 
+void GWindow::drawImage(const std::string& filename) {
+    GBufferedImage img(filename);
+    setSize(img.getWidth(), img.getHeight());
+    setPixels(img.toGrid());
+}
+
 void GWindow::drawLine(const GPoint& p0, const GPoint& p1) {
     if (isOpen()) {
         drawLine(p0.getX(), p0.getY(), p1.getX(), p1.getY());
@@ -492,6 +508,14 @@ void GWindow::drawPixel(double x, double y, int color) {
 
 void GWindow::drawPixel(double x, double y, const std::string& color) {
     setPixel(x, y, convertColorToRGB(color));
+}
+
+void GWindow::drawPolygon(std::initializer_list<double> coords) {
+    GPolygon polygon(coords);
+    if (gwd) {
+        polygon.setColor(gwd->color);
+    }
+    draw(polygon);
 }
 
 GPoint GWindow::drawPolarLine(double x0, double y0, double r, double theta) {
@@ -539,6 +563,7 @@ void GWindow::fillOval(double x, double y, double width, double height) {
         GOval oval(x, y, width, height);
         if (gwd) {
             oval.setColor(gwd->color);
+            oval.setFillColor(gwd->color);
         }
         oval.setFilled(true);
         draw(oval);
@@ -551,18 +576,28 @@ void GWindow::fillOval(const GRectangle & bounds) {
     }
 }
 
+void GWindow::fillPolygon(std::initializer_list<double> coords) {
+    GPolygon polygon(coords);
+    if (gwd) {
+        polygon.setColor(gwd->color);
+    }
+    polygon.setFilled(true);
+    draw(polygon);
+}
+
 void GWindow::fillRect(double x, double y, double width, double height) {
     if (isOpen()) {
         GRect rect(x, y, width, height);
         if (gwd) {
             rect.setColor(gwd->color);
+            rect.setFillColor(gwd->color);
         }
         rect.setFilled(true);
         draw(rect);
     }
 }
 
-void GWindow::fillRect(const GRectangle & bounds) {
+void GWindow::fillRect(const GRectangle& bounds) {
     if (isOpen()) {
         fillRect(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
     }
@@ -590,6 +625,14 @@ int GWindow::getColorInt() const {
     return gwd->colorInt;
 }
 
+GObject* GWindow::getGObject(int index) const {
+    if (gwd && gwd->top && 0 <= index && index < getGObjectCount()) {
+        return gwd->top->getElement(index);
+    } else {
+        return nullptr;
+    }
+}
+
 GObject* GWindow::getGObjectAt(double x, double y) const {
     if (gwd && gwd->top) {
         int n = gwd->top->getElementCount();
@@ -601,6 +644,14 @@ GObject* GWindow::getGObjectAt(double x, double y) const {
         }
     }
     return nullptr;
+}
+
+int GWindow::getGObjectCount() const {
+    if (gwd && gwd->top) {
+        return gwd->top->getElementCount();
+    } else {
+        return 0;
+    }
 }
 
 double GWindow::getHeight() const {

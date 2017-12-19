@@ -1,6 +1,8 @@
 /*
  * This is the class that represents the C++ lib GWindow class.
  * 
+ * @version 2017/12/18
+ * - modified to implement JBEWindowInterface interface to allow for headless windows
  * @version 2017/10/12
  * - added is/setRepaintImmediately
  * - alphabetized methods
@@ -17,20 +19,15 @@ package stanford.spl;
 
 import acm.gui.TableLayout;
 import stanford.cs106.io.*;
-import stanford.cs106.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
 import java.io.*;
-import java.util.*;
 import javax.imageio.*;
 import javax.swing.*;
 
-public class JBEWindow extends JFrame {
+public class JBEWindow extends JFrame implements JBEWindowInterface {
 	private static final long serialVersionUID = 0L;
-	private static Set<String> IMAGE_FILE_TYPES = CollectionUtils.asSet(
-			"gif", "jpg", "jpeg", "png"
-	);
 	
 	private JavaBackEnd jbe;
 	private JBECanvas canvas;

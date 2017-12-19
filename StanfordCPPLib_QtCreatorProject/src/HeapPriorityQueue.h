@@ -22,7 +22,7 @@ struct PQEntry {
 
 class HeapPriorityQueue {
 public:
-    HeapPriorityQueue(PQEntry* elements = NULL, int capacity = 10, int mysize = 0);
+    HeapPriorityQueue(PQEntry* elements = nullptr, int capacity = 10, int mysize = 0);
     ~HeapPriorityQueue();
     void changePriority(string value, double newPriority);
     void clear();

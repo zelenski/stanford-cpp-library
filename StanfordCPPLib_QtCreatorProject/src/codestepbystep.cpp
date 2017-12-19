@@ -1,4 +1,6 @@
 /*
+ * @version 2017/11/12
+ * - added output limit of 100k chars to avoid infinite student solution output
  * @version 2017/10/06
  * - hid POSIX signal handler behind preprocessor macro
  * @version 2016/12/07
@@ -156,6 +158,16 @@ void BinaryTreeNodeCharptr_fromString(BinaryTreeNodeChar*& root, const std::stri
     input >> root;
 }
 
+void BinaryTreeNodeDouble_fromString(BinaryTreeNodeDouble*& root, const std::string& str) {
+    std::istringstream input(str);
+    input >> root;
+}
+
+void BinaryTreeNodeString_fromString(BinaryTreeNodeString*& root, const std::string& str) {
+    std::istringstream input(str);
+    input >> root;
+}
+
 void HeapPriorityQueue_fromString(HeapPriorityQueue& pqueue, const std::string& str) {
     std::istringstream input(str);
     input >> pqueue;
@@ -218,6 +230,8 @@ void __codeStepByStepSignalHandler(int sig) {
         __printXml("<exception>\n<type>SIGSTACK</type>\n<message>stack overflow</message>\n</exception>\n");
     } else if (sig == SIGTERM) {
         __printXml("<exception>\n<type>SIGTERM</type>\n<message>terminated</message>\n</exception>\n");
+    } else if (sig == SIGUSR1) {
+        __printXml("<exception>\n<type>SIGUSR1</type>\n<message>Excessive output printed; you may have an infinite loop in your code.</message>\n</exception>\n");
     } else {
         __printXml("<exception>\n<type>SIGFATAL</type>\n<message>fatal error</message>\n</exception>\n");
     }
@@ -264,6 +278,7 @@ static void __setupSignalHandler() {
     sigaction(SIGTERM, &sig_action, nullptr);
     sigaction(SIGINT,  &sig_action, nullptr);
     sigaction(SIGABRT, &sig_action, nullptr);
+    sigaction(SIGUSR1, &sig_action, nullptr);
     handled = true;
 #endif
 #endif // SHOULD_USE_SIGNAL_STACK
@@ -275,6 +290,7 @@ static void __setupSignalHandler() {
         signal(SIGINT,  CodeStepByStep::__codeStepByStepSignalHandler);
         signal(SIGSEGV, CodeStepByStep::__codeStepByStepSignalHandler);
         signal(SIGTERM, CodeStepByStep::__codeStepByStepSignalHandler);
+        signal(SIGUSR1, CodeStepByStep::__codeStepByStepSignalHandler);
     }
 }
 
@@ -285,6 +301,7 @@ static void __disableSignalHandler() {
     signal(SIGINT,  SIG_DFL);
     signal(SIGSEGV, SIG_DFL);
     signal(SIGTERM, SIG_DFL);
+    signal(SIGUSR1, SIG_DFL);
 }
 
 static void __terminateHandler() {
@@ -338,6 +355,10 @@ void main_begin(int argc, char** argv) {
 
     // echo console input
     plainconsole::setEcho(true);
+
+    // max amount of output a solution can print before it should be halted
+    const int __OUTPUT_PRINT_MAX = 100000;
+    plainconsole::setOutputLimit(__OUTPUT_PRINT_MAX);
 
     // parse command-line args
     CodeStepByStep::__testToRun = "";

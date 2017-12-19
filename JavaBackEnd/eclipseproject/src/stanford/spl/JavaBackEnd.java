@@ -73,7 +73,9 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		try {
 			String prop = System.getProperty(DEBUG_PROPERTY);
 			DEBUG = prop != null && (prop.startsWith("t") || prop.startsWith("1"));
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			// empty
+		}
 		
 		new JavaBackEnd().run(paramArrayOfString);
 	}
@@ -92,7 +94,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	private int consoleWidth = 500;
 	private int consoleHeight = 250;
 	private HashMap<String, JBECommand> cmdTable;
-	private HashMap<String, JBEWindow> windowTable;
+	private HashMap<String, JBEWindowInterface> windowTable;
 	private HashMap<String, GObject> gobjTable;
 	private HashMap<String, GTimer> timerTable;
 	private HashMap<String, Image> imageTable;
@@ -154,7 +156,7 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		initSystemProperties();
 		this.cmdTable = JBECommand.createCommandTable();
 		this.imageTable = new HashMap<String, Image>();
-		this.windowTable = new HashMap<String, JBEWindow>();
+		this.windowTable = new HashMap<String, JBEWindowInterface>();
 		this.gobjTable = new HashMap<String, GObject>();
 		this.timerTable = new HashMap<String, GTimer>();
 		this.clipTable = new HashMap<String, Clip>();
@@ -206,25 +208,34 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	// JL: SwingUtilities.invokeLater
 	public void createWindow(String windowId, int width, int height,
 			TopCompound top, boolean visible) {
-		JBEWindow jbeWindow = new JBEWindow(this, windowId, this.appName, width, height);
-		this.windowTable.put(windowId, jbeWindow);
-		
-		// commented out by Marty 2014/03/05;
-		// This code used to set console's size to the size of the last created window
-		// for some reason.  Why??  No.  Bad.  Turning this off.
-		// this.consoleWidth = paramInt1;
-		// this.consoleY = (50 + paramInt2);
-		jbeWindow.pack();
-		jbeWindow.setLocation(10, 10);
-//		localJBEWindow.getCanvas().initOffscreenImage();
-		jbeWindow.getCanvas().setTopCompound(top);
-		jbeWindow.setResizable(false);
-		this.activeWindowCount += 1;
-		if (visible) {
-			jbeWindow.setVisible(true);
-			waitForWindowActive(jbeWindow);
+		if (GraphicsEnvironment.isHeadless()) {
+			JBEHeadlessWindow headlessWindow = new JBEHeadlessWindow(this, windowId, this.appName, width, height);
+			this.windowTable.put(windowId, headlessWindow);
+			// headlessWindow.setLocation(10, 10);
+			// headlessWindow.setResizable(false);
+			headlessWindow.getCanvas().setTopCompound(top);
+			this.activeWindowCount += 1;
 		} else {
-			jbeWindow.setVisible(false);
+			JBEWindow jbeWindow = new JBEWindow(this, windowId, this.appName, width, height);
+			this.windowTable.put(windowId, jbeWindow);
+			
+			// commented out by Marty 2014/03/05;
+			// This code used to set console's size to the size of the last created window
+			// for some reason.  Why??  No.  Bad.  Turning this off.
+			// this.consoleWidth = paramInt1;
+			// this.consoleY = (50 + paramInt2);
+			jbeWindow.pack();
+			jbeWindow.setLocation(10, 10);
+//			localJBEWindow.getCanvas().initOffscreenImage();
+			jbeWindow.getCanvas().setTopCompound(top);
+			jbeWindow.setResizable(false);
+			this.activeWindowCount += 1;
+			if (visible) {
+				jbeWindow.setVisible(true);
+				waitForWindowActive(jbeWindow);
+			} else {
+				jbeWindow.setVisible(false);
+			}
 		}
 	}
 
@@ -262,8 +273,19 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		return null;
 	}
 
-	public JBEWindow getWindow(String paramString) {
-		return (JBEWindow) this.windowTable.get(paramString);
+	public JBEWindow getWindow(String windowId) {
+		if (this.windowTable.get(windowId) instanceof JBEWindow) {
+			return (JBEWindow) this.windowTable.get(windowId);
+		} else {
+			return null;
+		}
+	}
+
+	/*
+	 * version that works in headless mode
+	 */
+	public JBEWindowInterface getWindowInterface(String windowId) {
+		return this.windowTable.get(windowId);
 	}
 
 	public void clearConsole() {
@@ -295,6 +317,13 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		this.consoleWindowTitle = title;
 		if (this.consoleFrame != null) {
 			this.consoleFrame.setTitle(title);
+		}
+		
+		// mild hack: if C++ code tells me that program is "[completed]",
+		// tell Program object that it is no longer running
+		// (this is helpful for me for various hooks that wait for run() to be done)
+		if (title.endsWith(AbstractConsoleProgram.PROGRAM_COMPLETED_TITLE_SUFFIX)) {
+			this.program.setRunning(false);
 		}
 	}
 
@@ -698,6 +727,23 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 				shutdownBackEnd(false);
 			}
 		}
+	}
+	
+	// notify the back end that a window has been closed;
+	// this is used with headless windows only
+	public void notifyOfWindowClosed(JBEWindowInterface window) {
+		String windowId = window.getWindowId();
+		if (this.windowTable.containsKey(windowId)) {
+			acknowledgeEvent("event:windowClosed(\"%s\", %d)", windowId, (long) getEventTime());
+			this.windowTable.remove(windowId);
+		}
+
+		this.activeWindowCount -= 1;
+		if (this.activeWindowCount == 0) {
+			acknowledgeEvent("event:lastWindowGWindow_closed()");
+			shutdownBackEnd(false);
+		}
+		
 	}
 
 	public void shutdownBackEnd(boolean sendEvent) {

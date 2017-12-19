@@ -3,14 +3,29 @@
 # This file specifies the information about your project to Qt Creator.
 # You should not need to modify this file to complete your assignment.
 #
-# If you need to add files or folders to your project, we recommend the following:
-# - close Qt Creator.
-# - delete your ".pro.user" file and "build_xxxxxxx" directory.
-# - place the new files/folders into your project directory.
-# - re-open and "Configure" your project again.
+# If you need to add files or folders to your project, we recommend
+# that you "re-initialize" your project by doing the following:
+#
+# 1- close Qt Creator.
+# 2- delete your ".pro.user" file and "build_xxxxxxx" directory.
+# 3- place the new files/folders into your project directory.
+# 4- re-open and "Configure" your project again.
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2017/11/15
+# - turn on collection iterator version checking
+# @version 2017/11/02
+# - exclude Qt lib inclusion on Mac
+# - fixed unknown compiler warning option on Mac
+# @version 2017/10/24
+# - added pthread library on Linux/Mac
+# @version 2017/10/20
+# - fixed autograder source/header inclusion wrt project filter
+# - fixed autograder compiler warning flags
+# @version 2017/10/18
+# - re-enabled compiler warning flags that were mistakenly disabled (oops!)
+# - fixed bug with omitting directories under res/ for other-files copying
 # @version 2017/10/06
 # - added some compiler warning flags
 # - added $$files wrappings around source/header file inclusion
@@ -211,9 +226,6 @@ INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/system/
 INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/util/
 INCLUDEPATH *= $$PWD/src/
 INCLUDEPATH *= $$PWD/
-exists($$PWD/src/autograder/*.h) {
-    INCLUDEPATH *= $$PWD/src/autograder/
-}
 exists($$PWD/src/autograder/$$PROJECT_FILTER/*.h) {
     INCLUDEPATH *= $$PWD/src/autograder/$$PROJECT_FILTER/
 }
@@ -222,7 +234,7 @@ exists($$PWD/src/test/*.h) {
 }
 
 # directories listed as "Other files" in left Project pane of Qt Creator
-OTHER_FILES *= $$files(res/*)
+OTHER_FILES *= res/*
 exists($$PWD/*.txt) {
     OTHER_FILES *= $$files($$PWD/*.txt)
 }
@@ -246,7 +258,7 @@ exists($$PWD/output/*) {
 # (In general, many warnings/errors are enabled to tighten compile-time checking.
 # A few overly pedantic/confusing errors are turned off for simplicity.)
 CONFIG += no_include_pwd   # make sure we do not accidentally #include files placed in 'resources'
-CONFIG += warn_off         # turn off default -Wall (we will add it back ourselves)
+#CONFIG += warn_off         # turn off default -Wall (we will add it back ourselves)
 CONFIG -= c++11            # turn off default -std=gnu++11
 CONFIG += c++11
 #CONFIG += nocache
@@ -254,31 +266,34 @@ CONFIG += c++11
 #QMAKE_CXXFLAGS += -std=c++11
 QMAKE_CXXFLAGS += -Wall
 QMAKE_CXXFLAGS += -Wextra
-#QMAKE_CXXFLAGS += -Weffc++
+# QMAKE_CXXFLAGS += -Weffc++
 QMAKE_CXXFLAGS += -Wcast-align
 QMAKE_CXXFLAGS += -Wfloat-equal
 QMAKE_CXXFLAGS += -Wformat=2
 QMAKE_CXXFLAGS += -Wlogical-op
 QMAKE_CXXFLAGS += -Wlong-long
-QMAKE_CXXFLAGS += -Wreturn-type
-QMAKE_CXXFLAGS += -Wshadow
-#QMAKE_CXXFLAGS += -Wswitch-default
-#QMAKE_CXXFLAGS += -Wundef
-QMAKE_CXXFLAGS += -Wunreachable-code
-QMAKE_CXXFLAGS += -Wuseless-cast
-exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
-    # omit some warnings/errors in autograder projects
-    # (largely because the Google Test framework violates them a ton of times)
-} else {
-    QMAKE_CXXFLAGS += -Wzero-as-null-pointer-constant
-    QMAKE_CXXFLAGS += -Werror=zero-as-null-pointer-constant
-}
-QMAKE_CXXFLAGS += -Werror=return-type
-QMAKE_CXXFLAGS += -Werror=uninitialized
 QMAKE_CXXFLAGS += -Wno-missing-field-initializers
 QMAKE_CXXFLAGS += -Wno-sign-compare
 QMAKE_CXXFLAGS += -Wno-sign-conversion
 QMAKE_CXXFLAGS += -Wno-write-strings
+QMAKE_CXXFLAGS += -Wreturn-type
+QMAKE_CXXFLAGS += -Werror=return-type
+#QMAKE_CXXFLAGS += -Wshadow
+#QMAKE_CXXFLAGS += -Wswitch-default
+#QMAKE_CXXFLAGS += -Wundef
+QMAKE_CXXFLAGS += -Werror=uninitialized
+QMAKE_CXXFLAGS += -Wunreachable-code
+exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
+    # omit some warnings/errors in autograder projects
+    # (largely because the Google Test framework violates them a ton of times)
+    QMAKE_CXXFLAGS += -Wno-reorder
+    QMAKE_CXXFLAGS += -Wno-unused-function
+    QMAKE_CXXFLAGS += -Wno-useless-cast
+} else {
+    QMAKE_CXXFLAGS += -Wuseless-cast
+    QMAKE_CXXFLAGS += -Wzero-as-null-pointer-constant
+    QMAKE_CXXFLAGS += -Werror=zero-as-null-pointer-constant
+}
 
 # additional flags for Windows
 win32 {
@@ -300,6 +315,10 @@ macx {
     # (this was previously disabled because it led to crashes on some systems,
     #  but it seems to be working again, so we are going to re-enable it)
     # QMAKE_LFLAGS += -Wl,-stack_size,0x4000000
+
+    # disable inclusion of Qt core libraries (smaller,faster build)
+    CONFIG -= qt
+    QT -= core gui opengl widgets
 
     # calling cache() reduces warnings on Mac OS X systems
     cache()
@@ -327,6 +346,14 @@ unix:!macx {
     #QMAKE_CXXFLAGS += -Wno-dangling-field
     QMAKE_CXXFLAGS += -Wno-unused-const-variable
     LIBS += -ldl
+    LIBS += -lpthread
+}
+
+# additional flags for clang compiler (default on Mac)
+COMPILERNAME = $$QMAKE_CXX
+COMPILERNAME ~= s|.*/|
+equals(COMPILERNAME, clang++) {
+    QMAKE_CXXFLAGS += -Wno-unknown-warning-option
 }
 
 # set up configuration flags used internally by the Stanford C++ libraries
@@ -335,7 +362,7 @@ unix:!macx {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20171006
+DEFINES += SPL_PROJECT_VERSION=20171115
 
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1
@@ -369,7 +396,7 @@ DEFINES += PQUEUE_PRINT_IN_HEAP_ORDER
 
 # flag to throw exceptions when a collection iterator is used after it has
 # been invalidated (e.g. if you remove from a Map while iterating over it)
-# DEFINES += SPL_THROW_ON_INVALID_ITERATOR
+DEFINES += SPL_THROW_ON_INVALID_ITERATOR
 
 # should we throw an error() when operator >> fails on a collection?
 # for years this was true, but the C++ standard says you should just silently
@@ -532,17 +559,17 @@ POST_TARGETDEPS += copyResources
 exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
     # include the various autograder source code and libraries in the build process
     SOURCES *= $$files($$PWD/lib/autograder/*.cpp)
-    exists($$PWD/src/autograder/$$PROJECT_FILTER*.cpp) {
-        SOURCES *= $$files($$PWD/src/autograder/$$PROJECT_FILTER*.cpp)
-    }
+    #exists($$PWD/src/autograder/$$PROJECT_FILTER*.cpp) {
+    #    SOURCES *= $$files($$PWD/src/autograder/$$PROJECT_FILTER*.cpp)
+    #}
     exists($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp) {
         SOURCES *= $$files($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp)
     }
 
     HEADERS *= $$PWD/lib/autograder/*.h
-    exists($$PWD/src/autograder/$$PROJECT_FILTER*.h) {
-        HEADERS *= $$files($$PWD/src/autograder/$$PROJECT_FILTER*.h)
-    }
+    #exists($$PWD/src/autograder/$$PROJECT_FILTER*.h) {
+    #    HEADERS *= $$files($$PWD/src/autograder/$$PROJECT_FILTER*.h)
+    #}
     exists($$PWD/src/autograder/$$PROJECT_FILTER/*.h) {
         HEADERS *= $$files($$PWD/src/autograder/$$PROJECT_FILTER/*.h)
     }
@@ -603,4 +630,4 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #606; if not, your .pro has been changed!)
+# END OF FILE (this should be line #633; if not, your .pro has been changed!)

@@ -4,20 +4,19 @@ import acm.graphics.GObject;
 import acm.util.TokenScanner;
 
 public class GWindow_removeFromRegion extends JBESwingCommand {
-	public void execute(TokenScanner paramTokenScanner,
-			JavaBackEnd paramJavaBackEnd) {
-		paramTokenScanner.verifyToken("(");
-		String str1 = nextString(paramTokenScanner);
-		paramTokenScanner.verifyToken(",");
-		String str2 = nextString(paramTokenScanner);
-		paramTokenScanner.verifyToken(",");
-		String str3 = nextString(paramTokenScanner);
-		paramTokenScanner.verifyToken(")");
-		JBEWindow localJBEWindow = paramJavaBackEnd.getWindow(str1);
-		GObject localGObject = paramJavaBackEnd.getGObject(str2);
-		if ((localJBEWindow != null) && (localGObject != null)) {
-			localJBEWindow.removeFromRegion(
-					paramJavaBackEnd.getInteractor(localGObject), str3);
+	public void execute(TokenScanner scanner, JavaBackEnd jbe) {
+		scanner.verifyToken("(");
+		String windowId = nextString(scanner);
+		scanner.verifyToken(",");
+		String str2 = nextString(scanner);
+		scanner.verifyToken(",");
+		String str3 = nextString(scanner);
+		scanner.verifyToken(")");
+		JBEWindowInterface window = jbe.getWindowInterface(windowId);
+		GObject localGObject = jbe.getGObject(str2);
+		if ((window != null) && (localGObject != null)) {
+			window.removeFromRegion(
+					jbe.getInteractor(localGObject), str3);
 		}
 	}
 }

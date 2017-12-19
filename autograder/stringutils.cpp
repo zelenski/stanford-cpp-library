@@ -5,6 +5,8 @@
  * See stringutils.h for documentation of each member.
  * 
  * @author Marty Stepp
+ * @version 2017/10/20
+ * - changed string to const string& in all functions
  * @version 2016/11/09
  * - added trimToSize function
  * @version 2014/10/31
@@ -20,7 +22,7 @@
 #include "private/platform.h"
 
 namespace stringutils {
-int charsDifferent(std::string s1, std::string s2) {
+int charsDifferent(const std::string& s1, const std::string& s2) {
     int length = std::min(s1.length(), s2.length());
     int count = 0;
     for (int i = 0; i < length; i++) {
@@ -31,7 +33,7 @@ int charsDifferent(std::string s1, std::string s2) {
     return count;
 }
 
-std::string collapseSpaces(std::string s) {
+std::string collapseSpaces(const std::string& s) {
     std::ostringstream result;
     char last = '\0';
     for (int i = 0; i < (int) s.length(); i++) {
@@ -39,12 +41,12 @@ std::string collapseSpaces(std::string s) {
             continue;
         }
         last = s[i];
-        result << (char) last;
+        result << last;
     }
     return result.str();
 }
 
-Vector<std::string> explodeLines(std::string s) {
+Vector<std::string> explodeLines(const std::string& s) {
     Vector<std::string> result;
     std::string line;
     for (size_t i = 0; i < s.length(); i++) {
@@ -63,7 +65,7 @@ Vector<std::string> explodeLines(std::string s) {
     return result;
 }
 
-int height(std::string s) {
+int height(const std::string& s) {
     std::string line;
     int height = 0;
     for (size_t i = 0; i < s.length(); i++) {
@@ -82,7 +84,7 @@ int height(std::string s) {
     return height;
 }
 
-std::string implode(const Vector<std::string>& v, std::string delimiter) {
+std::string implode(const Vector<std::string>& v, const std::string& delimiter) {
     if (v.isEmpty()) {
         return "";
     } else {
@@ -95,30 +97,28 @@ std::string implode(const Vector<std::string>& v, std::string delimiter) {
     }
 }
 
-std::string indent(std::string s, int spaces) {
+std::string indent(const std::string& s, int spaces) {
     Vector<std::string> lines = explodeLines(s);
     Vector<std::string> newLines;
     std::string indentStr = "";
     for (int i = 0; i < spaces; i++) {
         indentStr += " ";
     }
-    for (std::string line : lines) {
+    for (const std::string& line : lines) {
         newLines.add(indentStr + line);
     }
     return implode(newLines);
 }
 
-std::string makeSloppy(std::string s) {
-    s = removeBlankLines(s);
-    s = collapseSpaces(s);
-    return s;
+std::string makeSloppy(const std::string& s) {
+    return collapseSpaces(removeBlankLines(s));
 }
 
-int regexMatchCountWithLines(std::string s, std::string regexp, std::string& linesOut) {
+int regexMatchCountWithLines(const std::string& s, const std::string& regexp, std::string& linesOut) {
     return stanfordcpplib::getPlatform()->regex_matchCountWithLines(s, regexp, linesOut);
 }
 
-std::string removeBlankLines(std::string s) {
+std::string removeBlankLines(const std::string& s) {
     Vector<std::string> lines = explodeLines(s);
     Vector<std::string> newLines;
     for (std::string line : lines) {
@@ -130,9 +130,9 @@ std::string removeBlankLines(std::string s) {
     return implode(newLines, "\n");
 }
 
-std::string stripWhitespace(std::string s) {
+std::string stripWhitespace(const std::string& s) {
     std::ostringstream result;
-    for (size_t i = 0; i < s.size(); i++) {
+    for (size_t i = 0; i < s.length(); i++) {
         if (!isspace(s[i])) {
             result << tolower(s[i]);
         }
@@ -140,7 +140,7 @@ std::string stripWhitespace(std::string s) {
     return result.str();
 }
 
-std::string toLowerCase(std::string s) {
+std::string toLowerCase(const std::string& s) {
     std::string result;
     for (size_t i = 0; i < s.length(); i++) {
         result += tolower(s[i]);
@@ -170,14 +170,15 @@ std::string toPrintable(int ch) {
     }
 }
 
-std::string trimR(std::string s) {
-    while (s.length() > 0 && isspace(s[s.length() - 1])) {
-        s = s.substr(0, s.length() - 1);
+std::string trimR(const std::string& s) {
+    std::string trimmed = s;
+    while (!trimmed.empty() && isspace(trimmed[trimmed.length() - 1])) {
+        trimmed.erase(trimmed.length() - 1, 1);
     }
-    return s;
+    return trimmed;
 }
 
-std::string trimToHeight(std::string s, int height, std::string suffix) {
+std::string trimToHeight(const std::string& s, int height, const std::string& suffix) {
     Vector<std::string> lines = explodeLines(s);
     int lineCount = lines.size();
     bool wasTooTall = lineCount > height;
@@ -190,13 +191,13 @@ std::string trimToHeight(std::string s, int height, std::string suffix) {
     return implode(lines);
 }
 
-std::string trimToSize(std::string s, int width, int height, std::string suffix) {
-    s = trimToHeight(s, height, suffix);
-    s = trimToWidth(s, width, suffix);
-    return s;
+std::string trimToSize(const std::string& s, int width, int height, const std::string& suffix) {
+    std::string trimmed = trimToHeight(s, height, suffix);
+    trimmed = trimToWidth(trimmed, width, suffix);
+    return trimmed;
 }
 
-std::string trimToWidth(std::string s, int width, std::string suffix) {
+std::string trimToWidth(const std::string& s, int width, const std::string& suffix) {
     Vector<std::string> lines = explodeLines(s);
     for (int i = 0; i < lines.size(); i++) {
         if ((int) lines[i].length() > width) {
@@ -210,16 +211,17 @@ std::string trimToWidth(std::string s, int width, std::string suffix) {
 }
 
 // truncate string with ... between
-std::string truncate(std::string s, int length) {
+std::string truncate(const std::string& s, int length) {
     int slength = (int) s.length();
     if (slength > length) {
         // s = s.substr(0, length/2) + " ... " + s.substr(slength - length/2);
-        s = s.substr(0, length) + " ...";
+        return s.substr(0, length) + " ...";
+    } else {
+        return s;
     }
-    return s;
 }
 
-int width(std::string s) {
+int width(const std::string& s) {
     std::string line;
     size_t width = 0;
     for (size_t i = 0; i < s.length(); i++) {
