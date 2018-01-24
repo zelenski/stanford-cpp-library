@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp
+ * @version 2018/01/23
+ * - fixed bug in getInteger reprompt message (should be "Illegal integer format")
  * @version 2016/10/02
  * - added ability to set reprompt messages for readInt/Double/Boolean
  * @version 2015/05/10
@@ -570,7 +572,7 @@ public class IOConsole extends Container implements IOModel {
 	private File file;
 	private ProgramMenuBar menuBar;
 	
-	private String GETINTEGER_REPROMPT_MESSAGE = "Illegal numeric format";
+	private String GETINTEGER_REPROMPT_MESSAGE = "Illegal integer format";
 	private String GETINTEGER_DEFAULT_PROMPT = "Retry: ";
 	private String GETREAL_REPROMPT_MESSAGE = "Illegal numeric format";
 	private String GETREAL_DEFAULT_PROMPT = "Retry: ";
