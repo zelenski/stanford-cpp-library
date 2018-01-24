@@ -624,7 +624,7 @@ int autograderGraphicalMain(int argc, char** argv) {
     autograder::gwindowRememberPosition(gui);
     gui.setExitOnClose(true);
     
-    GLabel startLabel("");
+    GTextLabel startLabel("");
     if (!STATIC_VARIABLE(FLAGS).startMessage.empty()) {
         std::string startMessage = STATIC_VARIABLE(FLAGS).startMessage;
         if (!stringContains(startMessage, "<html>")) {
@@ -635,7 +635,7 @@ int autograderGraphicalMain(int argc, char** argv) {
                     + "</body></html>";
         }
         
-        startLabel.setLabel(startMessage);
+        startLabel.setText(startMessage);
         gui.addToRegion(&startLabel, "NORTH");
     }
     

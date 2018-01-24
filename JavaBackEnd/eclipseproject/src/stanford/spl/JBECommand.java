@@ -54,6 +54,7 @@ public abstract class JBECommand {
 			AutograderUnitTest_clearTests.class,
 			AutograderUnitTest_clearTestResults.class,
 			AutograderUnitTest_isChecked.class,
+			AutograderUnitTest_runTestsInSeparateThreads.class,
 			AutograderUnitTest_setChecked.class,
 			AutograderUnitTest_setTestCounts.class,
 			AutograderUnitTest_setTestDetails.class,

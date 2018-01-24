@@ -5,6 +5,8 @@
  * of the Google Test C++ unit testing framework.
  * 
  * @author Marty Stepp
+ * @version 2018/01/23
+ * - fixed bug with first run test case name not being set properly
  * @version 2016/08/02
  * - added getTestName and getCategoryName methods for unit tests
  * @version 2014/11/24
@@ -60,11 +62,11 @@
         if (!shouldRun()) { \
             return; \
         } \
+        autograder::setCurrentTestCaseName(this->getTestFullName()); \
         if (timeoutMS > 0) { \
             setTestTimeout(timeoutMS); \
             runTestWithTimeout(this); \
         } else { \
-            autograder::setCurrentTestCaseName(this->getTestFullName()); \
             TestRealBody(); \
         } \
     } \

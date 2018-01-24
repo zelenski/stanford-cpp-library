@@ -4,6 +4,8 @@
  * This file exports the <code>Vector</code> class, which provides an
  * efficient, safe, convenient replacement for the array type in C++.
  *
+ * @version 2018/01/07
+ * - added front, back, removeFront, removeBack, pop_front, pop_back, push_front
  * @version 2017/11/15
  * - added contains, indexOf, lastIndexOf, removeValue, reverse, shuffle, sort
  * @version 2017/10/18
@@ -118,6 +120,16 @@ public:
     Vector<ValueType>& addAll(std::initializer_list<ValueType> list);
 
     /*
+     * Method: back
+     * Usage: ValueType val = vec.back();
+     * ----------------------------------
+     * Returns the element at index (size - 1) in this vector (without removing it).
+     * This method signals an error if vector is empty.
+     */
+    ValueType& back();
+    const ValueType& back() const;
+
+    /*
      * Method: clear
      * Usage: vec.clear();
      * -------------------
@@ -154,6 +166,16 @@ public:
      */
     bool equals(const Vector<ValueType>& v) const;
     
+    /*
+     * Method: front
+     * Usage: ValueType val = vec.front();
+     * -----------------------------------
+     * Returns the element at index 0 in this vector (without removing it).
+     * This method signals an error if vector is empty.
+     */
+    ValueType& front();
+    const ValueType& front() const;
+
     /*
      * Method: get
      * Usage: ValueType val = vec.get(index);
@@ -214,16 +236,46 @@ public:
 
     template <typename FunctorType>
     void mapAll(FunctorType fn) const;
-    
+
+    /*
+     * Method: pop_front
+     * Usage: ValueType front = list.pop_front();
+     * ------------------------------------------
+     * Removes and returns the first value of this LinkedList.
+     * Throws an error if the list is empty.
+     * Equivalent to removeFront.
+     */
+    ValueType pop_front();
+
+    /*
+     * Method: pop_back
+     * Usage: ValueType back = list.pop_back();
+     * ------------------------------------------
+     * Removes and returns the last value of this LinkedList.
+     * Throws an error if the list is empty.
+     * Equivalent to removeBack.
+     */
+    ValueType pop_back();
+
     /*
      * Method: push_back
      * Usage: vec.push_back(value);
-     * ----------------------
+     * ----------------------------
      * Adds a new value to the end of this vector.  This method is a synonym
      * of the add method that is provided to ensure compatibility
      * with the <code>vector</code> class in the Standard Template Library.
      */
     void push_back(const ValueType& value);
+
+    /*
+     * Method: push_front
+     * Usage: vec.push_front(value);
+     * -----------------------------
+     * Adds a new value to the start of this vector.  This method is equivalent
+     * to calling insert(0, value) and is provided to improve compatibility
+     * with the <code>vector</code> class in the Standard Template Library.
+     */
+    void push_front(const ValueType& value);
 
     /*
      * Method: remove
@@ -234,6 +286,24 @@ public:
      * method signals an error if the index is outside the array range.
      */
     void remove(int index);
+
+    /*
+     * Method: removeFirst
+     * Usage: ValueType val = vec.removeFirst();
+     * -----------------------------------------
+     * Removes and returns the element at index 0 in this vector.
+     * This method signals an error if vector is empty.
+     */
+    ValueType removeFront();
+
+    /*
+     * Method: removeLast
+     * Usage: ValueType val = vec.removeLast();
+     * ----------------------------------------
+     * Removes and returns the element at index (size - 1) in this vector.
+     * This method signals an error if vector is empty.
+     */
+    ValueType removeBack();
 
     /*
      * Method: removeValue
@@ -737,6 +807,22 @@ Vector<ValueType>& Vector<ValueType>::addAll(std::initializer_list<ValueType> li
 }
 
 template <typename ValueType>
+ValueType& Vector<ValueType>::back() {
+    if (isEmpty()) {
+        error("Vector::back: vector is empty");
+    }
+    return elements[count - 1];
+}
+
+template <typename ValueType>
+const ValueType& Vector<ValueType>::back() const {
+    if (isEmpty()) {
+        error("Vector::back: vector is empty");
+    }
+    return elements[count - 1];
+}
+
+template <typename ValueType>
 void Vector<ValueType>::clear() {
     if (elements) {
         delete[] elements;
@@ -793,6 +879,22 @@ void Vector<ValueType>::expandCapacity() {
         delete[] elements;
     }
     elements = array;
+}
+
+template <typename ValueType>
+ValueType& Vector<ValueType>::front() {
+    if (isEmpty()) {
+        error("Vector::front: vector is empty");
+    }
+    return elements[0];
+}
+
+template <typename ValueType>
+const ValueType& Vector<ValueType>::front() const {
+    if (isEmpty()) {
+        error("Vector::front: vector is empty");
+    }
+    return elements[0];
 }
 
 template <typename ValueType>
@@ -876,8 +978,33 @@ void Vector<ValueType>::mapAll(FunctorType fn) const {
 }
 
 template <typename ValueType>
+ValueType Vector<ValueType>::pop_back() {
+    if (isEmpty()) {
+        error("Vector::pop_back: vector is empty");
+    }
+    ValueType last = elements[count - 1];
+    remove(count - 1);
+    return last;
+}
+
+template <typename ValueType>
+ValueType Vector<ValueType>::pop_front() {
+    if (isEmpty()) {
+        error("Vector::pop_front: vector is empty");
+    }
+    ValueType first = elements[0];
+    remove(0);
+    return first;
+}
+
+template <typename ValueType>
 void Vector<ValueType>::push_back(const ValueType& value) {
     insert(count, value);
+}
+
+template <typename ValueType>
+void Vector<ValueType>::push_front(const ValueType& value) {
+    insert(0, value);
 }
 
 template <typename ValueType>
@@ -888,6 +1015,16 @@ void Vector<ValueType>::remove(int index) {
     }
     count--;
     m_version++;
+}
+
+template <typename ValueType>
+ValueType Vector<ValueType>::removeBack() {
+    return pop_back();
+}
+
+template <typename ValueType>
+ValueType Vector<ValueType>::removeFront() {
+    return pop_front();
 }
 
 template <typename ValueType>

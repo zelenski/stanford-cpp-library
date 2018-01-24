@@ -6,6 +6,8 @@
  * See testresultprinter.h for declarations and documentation.
  *
  * @author Marty Stepp
+ * @version 2018/01/23
+ * - fixed bug with not overwriting bad/vague test output on diffs ("expected true, got false" etc.)
  * @version 2016/12/01
  * - fixed bugs with badly displayed / wrong test results
  * - clarified assertion output
@@ -200,6 +202,7 @@ void MartyGraphicalTestResultPrinter::OnTestEnd(const ::testing::TestInfo& test_
             testing::TestPartResult part = test_info.result()->GetTestPartResult(i);
             if (part.failed()) {
                 UnitTestDetails deets(autograder::UnitTestType::TEST_FAIL, part.message());
+                deets.overwrite = false;   // BUGFIX for bad test details on Windows
                 stanfordcpplib::getPlatform()->autograderunittest_setTestDetails(testFullName, deets.toString());
                 break;
             }

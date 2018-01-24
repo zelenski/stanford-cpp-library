@@ -30,6 +30,11 @@ public:
     static int TIMEOUT_MS_MIN;
 
     /*
+     * Constant for whether each test should be run in its own thread by default.
+     */
+    static bool RUN_EACH_TEST_IN_THREAD_DEFAULT;
+
+    /*
      * A list of all known test case names, grouped by category.
      * Used to enable/disable categories to run.
      */
@@ -55,7 +60,14 @@ public:
      * Will be true unless unchecked in GUI test case list.
      */
     virtual bool shouldRun();
-    
+
+    /*
+     * Get/set whether this test case should spawn its own thread to run.
+     * Default true, but can be set false for specific tests or all tests.
+     */
+    virtual bool shouldRunInOwnThread();
+    virtual void setShouldRunInOwnThread(bool runInThread);
+
     virtual void SetUp();
     virtual void TearDown();
     virtual void TestBody();   // override me
@@ -65,6 +77,7 @@ protected:
     std::string name;       // test's name
     std::string category;   // test's category
     int timeoutMS;          // test's timeout in milliseconds (0 for none)
+    bool runInThread;       // whether to run test in its own thread
 };
 
 } // namespace autograder

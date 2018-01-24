@@ -5,6 +5,8 @@
  * with a timeout, possibly in a separate thread depending on the platform.
  *
  * @author Marty Stepp
+ * @version 2018/01/23
+ * - added code to check whether to run each unit test in its own thread
  * @version 2016/10/22
  * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * @version 2015/10/01
@@ -22,7 +24,7 @@
 #include "private/static.h"
 
 STATIC_CONST_VARIABLE_DECLARE(std::string, TIMEOUT_ERROR_MESSAGE, "test timed out! possible infinite loop")
-STATIC_CONST_VARIABLE_DECLARE(std::string, EXCEPTION_ERROR_MESSAGE, "test threw an exception!")
+// STATIC_CONST_VARIABLE_DECLARE(std::string, EXCEPTION_ERROR_MESSAGE, "test threw an exception!")
 
 #ifdef _WIN32
 #include <windows.h>
@@ -44,8 +46,11 @@ static DWORD WINAPI runTestInItsOwnThread(LPVOID lpParam) {
 }
 
 void runTestWithTimeout(autograder::AutograderTest* test) {
-    int timeoutMS = test->getTestTimeout();
-    if (timeoutMS > 0) {
+    // ask autograder GUI whether test should run in its own thread
+    bool runInThread = stanfordcpplib::getPlatform()->autograderunittest_runTestsInSeparateThreads();
+    test->setShouldRunInOwnThread(runInThread);
+
+    if (test->shouldRunInOwnThread()) {
         DWORD threadID;
         HANDLE hThread = CreateThread(
             nullptr,                // default security attributes
@@ -55,8 +60,14 @@ void runTestWithTimeout(autograder::AutograderTest* test) {
             0,                      // use default creation flags
             &threadID);             // returns the thread identifier
         if (!hThread) {
-            error("Unable to run test case thread: " + stanfordcpplib::getPlatform()->os_getLastError());
+            std::string errorMsg = stanfordcpplib::getPlatform()->os_getLastError();
+            error("Unable to run test case thread: " + errorMsg);
+
+            // NOTE: On some Windows systems we are getting errors of
+            // "Not enough storage is available to process this command."
+            // due to not enough threads free; unknown root cause.
         }
+        int timeoutMS = test->getTestTimeout();
         DWORD result = WaitForSingleObject(hThread, timeoutMS);
         if (result == WAIT_TIMEOUT) {
             TerminateThread(hThread, 1);
@@ -188,6 +199,10 @@ static void* runTestInItsOwnThread(void* arg) {
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, nullptr);
     pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, nullptr);
     
+    // ask autograder GUI whether test should run in its own thread
+    bool runInThread = stanfordcpplib::getPlatform()->autograderunittest_runTestsInSeparateThreads();
+    test->setShouldRunInOwnThread(runInThread);
+
     bool catchAll = stanfordcpplib::getPlatform()->autograderunittest_catchExceptions();
     if (catchAll) {
         try {
@@ -227,8 +242,11 @@ static void* runTestInItsOwnThread(void* arg) {
  * see: http://man7.org/linux/man-pages/man3/pthread_create.3.html
  */
 void runTestWithTimeout(autograder::AutograderTest* test) {
-    int timeoutMS = test->getTestTimeout();
-    if (timeoutMS > 0) {
+    // ask autograder GUI whether test should run in its own thread
+    bool runInThread = stanfordcpplib::getPlatform()->autograderunittest_runTestsInSeparateThreads();
+    test->setShouldRunInOwnThread(runInThread);
+
+    if (test->shouldRunInOwnThread()) {
         // create a new pthread and run the test in that thread
         pthread_t thread;
         pthread_create(&thread, nullptr, &runTestInItsOwnThread, (void*) test);
@@ -237,6 +255,7 @@ void runTestWithTimeout(autograder::AutograderTest* test) {
         struct timeval now;
         struct timespec timeToWait;
         gettimeofday(&now, nullptr);
+        int timeoutMS = test->getTestTimeout();
         timeToWait.tv_sec = now.tv_sec + (timeoutMS / 1000);
         timeToWait.tv_nsec = ((now.tv_usec + 1000UL * (timeoutMS % 1000)) * 1000UL) % 1000000UL;
         
@@ -255,7 +274,7 @@ void runTestWithTimeout(autograder::AutograderTest* test) {
             // something went wrong, e.g. exception thrown
         }
     } else {
-        // no timeout specified; just run the test without a thread
+        // no timeout specified; just run the test without a thread (YOLO)
         autograder::setCurrentTestCaseName(test->getFullName());
         test->TestRealBody();
     }

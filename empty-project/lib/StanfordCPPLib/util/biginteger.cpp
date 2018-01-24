@@ -338,7 +338,7 @@ std::string BigInteger::multiply(const std::string& n1, const std::string& n2) {
 
 std::string BigInteger::padLeft(const std::string& s, int length) {
     size_t lenS = s.length();
-    if (lenS < length) {
+    if ((int) lenS < length) {
         // left-pad numbers with 0s to be the same length as needed
         std::string scopy = s;
         scopy.insert(0, (length - lenS), '0');

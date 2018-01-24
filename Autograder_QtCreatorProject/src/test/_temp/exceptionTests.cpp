@@ -58,13 +58,14 @@ void recursionIndentTest() {
     rihelper(3);
 }
 
-void stackOverflowTest(int n) {
-    int a[100] = {0};
-    if (a[0] || n % 1000 == 0) {
-        cout << "stack overflow n=" << n << endl;
-    }
-    stackOverflowTest(n+1);
-}
+// commenting out because of compiler warning about infinite recursion
+//void stackOverflowTest(int n) {
+//    int a[100] = {0};
+//    if (a[0] || n % 1000 == 0) {
+//        cout << "stack overflow n=" << n << endl;
+//    }
+//    stackOverflowTest(n+1);
+//}
 
 void segC_theOneThatActuallyThrows(int sig) {
     if (sig == SIGFPE) {

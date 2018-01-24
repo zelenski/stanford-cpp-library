@@ -8,6 +8,8 @@
  * can show the results in the GUI for the user.
  * 
  * @author Marty Stepp
+ * @version 2018/01/23
+ * - fixed bugs with assertThrows* macros
  * @version 2017/12/12
  * - added assertEqualsCollectionDouble
  * @version 2016/10/28
@@ -211,9 +213,21 @@
         "", true)); \
     GTEST_SUCCESS_("")
 
-#define assertThrowsAny(msg, stmt)           EXPECT_ANY_THROW(stmt)
-#define assertThrows(msg, stmt, ex)          EXPECT_THROW(stmt, ex)
-#define assertNotThrows(msg, stmt, ex)       EXPECT_NO_THROW(stmt)
+#define assertThrowsAny(msg, stmt) \
+    autograder::setFailDetails(autograder::UnitTestDetails( \
+        autograder::UnitTestType::TEST_EXCEPTION, \
+        msg, true)); \
+    EXPECT_ANY_THROW(stmt)
+#define assertThrows(msg, stmt, ex) \
+    autograder::setFailDetails(autograder::UnitTestDetails( \
+        autograder::UnitTestType::TEST_EXCEPTION, \
+        msg, true)); \
+    EXPECT_THROW(stmt, ex)
+#define assertNotThrows(msg, stmt, ex) \
+    autograder::setFailDetails(autograder::UnitTestDetails( \
+        autograder::UnitTestType::TEST_NOT_EXCEPTION, \
+        msg, true)); \
+    EXPECT_NO_THROW(stmt)
 
 void assertEqualsImage(const std::string& msg,
                        const std::string& imagefile1,

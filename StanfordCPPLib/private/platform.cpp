@@ -2473,6 +2473,12 @@ bool Platform::autograderunittest_isChecked(const std::string& testFullName) {
     return (result == "true");
 }
 
+bool Platform::autograderunittest_runTestsInSeparateThreads() {
+    putPipe("AutograderUnitTest.runTestsInSeparateThreads()");
+    std::string result = getResult(/* consumeAcks */ true);
+    return stringToBool(result);
+}
+
 void Platform::autograderunittest_setChecked(const std::string& testFullName, bool checked) {
     std::ostringstream os;
     os << "AutograderUnitTest.setChecked(";

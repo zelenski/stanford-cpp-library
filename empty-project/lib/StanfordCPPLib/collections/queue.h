@@ -5,6 +5,8 @@
  * in which values are ordinarily processed in a first-in/first-out
  * (FIFO) order.
  * 
+ * @version 2018/01/23
+ * - fixed bad reference bug on queue.enqueue(queue.peek())
  * @version 2017/11/14
  * - added iterator version checking support
  * @version 2016/09/24
@@ -426,12 +428,21 @@ ValueType Queue<ValueType>::dequeue() {
 template <typename ValueType>
 void Queue<ValueType>::enqueue(const ValueType& value) {
     if (count >= capacity - 1) {
+        // Buffer almost full; need to resize buffer to a larger capacity.
+        // BUGFIX: when calling queue.enqueue(queue.peek()), the resize here
+        // was causing the reference to become invalid.
+        // In this case we need to make a copy of the value so that we don't
+        // lose its value on resize.
+        const ValueType valueCopy = value;
         expandRingBufferCapacity();
+        enqueue(valueCopy);
+    } else {
+        // standard add to end of ring buffer
+        ringBuffer[tail] = value;
+        tail = (tail + 1) % capacity;
+        count++;
+        m_version++;
     }
-    ringBuffer[tail] = value;
-    tail = (tail + 1) % capacity;
-    count++;
-    m_version++;
 }
 
 template <typename ValueType>

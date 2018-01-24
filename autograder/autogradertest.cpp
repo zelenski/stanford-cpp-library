@@ -20,6 +20,7 @@ namespace autograder {
 
 int AutograderTest::TIMEOUT_MS_DEFAULT = 10000;
 int AutograderTest::TIMEOUT_MS_MIN = 100;
+bool AutograderTest::RUN_EACH_TEST_IN_THREAD_DEFAULT = true;
 
 static std::vector<std::string>& allCategories() {
     static std::vector<std::string> v;   // static OK
@@ -85,8 +86,18 @@ bool AutograderTest::shouldRun() {
     }
 }
 
+bool AutograderTest::shouldRunInOwnThread() {
+    return runInThread && timeoutMS > 0;
+}
+
+void AutograderTest::setShouldRunInOwnThread(bool runInThread) {
+    this->runInThread = runInThread;
+}
+
+
 void AutograderTest::SetUp() {
     timeoutMS = TIMEOUT_MS_DEFAULT;
+    runInThread = RUN_EACH_TEST_IN_THREAD_DEFAULT;
 }
  
 void AutograderTest::TearDown() {

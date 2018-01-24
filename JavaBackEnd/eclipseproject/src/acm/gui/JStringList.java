@@ -24,6 +24,7 @@ import java.util.*;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.event.*;
+import stanford.cs106.gui.GuiUtils;
 
 /**
  * Represents a list of strings with optional colors.
@@ -377,7 +378,7 @@ public class JStringList extends JList {
 	 */
 	private String wrapWithColor(String s, Color c) {
 		String colorString = toRgbString(c);
-		return "<html><font color=\"" + colorString + "\">" + s + "</font></html>";
+		return GuiUtils.htmlLabelText(s, Collections.singletonMap("font-color", colorString));
 	}
 	
 	/*

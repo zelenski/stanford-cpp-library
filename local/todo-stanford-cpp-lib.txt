@@ -18,16 +18,17 @@ x		Set
 x		SparseGrid
 x		Stack
 x		Vector
-
-	Grid::clear()?
-	Vector/LinkedList methods
+x	Vector/LinkedList methods
 x		contains
 x		indexOf, lastIndexOf
 x		removeValue(value)
 x		reverse()
 x		sort()
 x		shuffle()
-		first(), last(), removeLast(), removeFirst()
+x		first(), last(), removeLast(), removeFirst()
+
+
+	Grid::clear()?
 
 	process/thread stuff? cross-platform
 		Process object?

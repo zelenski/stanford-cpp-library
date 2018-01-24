@@ -76,6 +76,29 @@ public class CollectionUtils {
 	}
 
 	/**
+	 * Converts the given array of object pairs into a map with each pair as key, value.
+	 * Must have an even number of items.
+	 * If any key or value is null, that pair is skipped.
+	 * @param pairs	The pairs for the map as {..., key, value, ...} 
+	 * @return the map
+	 * @throws ClassCastException if an even index element is not a K or an odd element is not a V
+	 */
+	@SuppressWarnings("unchecked")
+	public static <K, V> Map<K, V> asMap(Object... pairs) {
+		if (pairs.length % 2 != 0) {
+			throw new IllegalArgumentException("must pass an even number of parameters");
+		}
+
+		Map<K, V> map = new LinkedHashMap<K, V>();
+		for (int i = 0; i < pairs.length - 1; i += 2) {
+			if (pairs[i] != null && pairs[i + 1] != null) {
+				map.put((K) pairs[i], (V) pairs[i + 1]);
+			}
+		}
+		return map;
+	}
+
+	/**
 	 * Converts the given pair of arrays into a sorted map that maps each
 	 * keys[i] to the corresponding values[i].
 	 * @return the map (empty map if keys == null or values == null)

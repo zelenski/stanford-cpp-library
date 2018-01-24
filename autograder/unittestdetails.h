@@ -48,6 +48,7 @@ public:
     std::string valueType;
     int diffFlags;
     bool passed;
+    bool overwrite;
     
     UnitTestDetails();
     

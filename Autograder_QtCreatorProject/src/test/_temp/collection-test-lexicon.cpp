@@ -49,7 +49,7 @@ TIMED_TEST(LexiconTests, basicTest_Lexicon, TEST_TIMEOUT_DEFAULT) {
     for (std::string word : words) {
         lex.add(word);
     }
-    assertEquals("Lexicon size", words.size(), lex.size());
+    assertEquals("Lexicon size", (int) words.size(), lex.size());
 
     for (std::string word : words) {
         assertTrue("Lexicon contains " + word, lex.contains(word));
@@ -119,9 +119,6 @@ TIMED_TEST(LexiconTests, hashCodeTest_Lexicon, TEST_TIMEOUT_DEFAULT) {
 
 TIMED_TEST(LexiconTests, initializerListTest_Lexicon, TEST_TIMEOUT_DEFAULT) {
     std::initializer_list<std::string> lexlist = {"sixty", "seventy"};
-    std::initializer_list<std::string> lexallwords = {
-        "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy"
-    };
 
     Lexicon lex {"ten", "twenty", "thirty"};
     assertEqualsString("init list Lexicon", "{\"ten\", \"thirty\", \"twenty\"}", lex.toString());

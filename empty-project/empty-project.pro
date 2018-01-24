@@ -13,6 +13,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2018/01/23
+# - modify a couple of clang compiler flags for OSX
 # @version 2017/11/15
 # - turn on collection iterator version checking
 # @version 2017/11/02
@@ -82,7 +84,7 @@
 # - standard autograder-compatible version; should work with all assignments and graders.
 
 TEMPLATE = app
-PROJECT_FILTER = 
+PROJECT_FILTER =
 
 ###############################################################################
 # BEGIN SECTION FOR SPECIFYING SOURCE/LIBRARY/RESOURCE FILES OF PROJECT       #
@@ -314,7 +316,7 @@ macx {
     # increase system stack size (helpful for recursive programs)
     # (this was previously disabled because it led to crashes on some systems,
     #  but it seems to be working again, so we are going to re-enable it)
-    # QMAKE_LFLAGS += -Wl,-stack_size,0x4000000
+    # QMAKE_LFLAGS += -Wl,-stack_size -Wl,0x8000000
 
     # disable inclusion of Qt core libraries (smaller,faster build)
     CONFIG -= qt
@@ -329,8 +331,8 @@ macx {
 unix:!macx {
     # disable inclusion of Qt core libraries (smaller,faster build)
     CONFIG -= qt
-    QT -= core gui opengl widgets
-    
+    # QT -= core gui opengl widgets
+
     unix-g++ {
         QMAKE_CXXFLAGS += -rdynamic
         QMAKE_CXXFLAGS += -Wl,--export-dynamic
@@ -353,6 +355,7 @@ unix:!macx {
 COMPILERNAME = $$QMAKE_CXX
 COMPILERNAME ~= s|.*/|
 equals(COMPILERNAME, clang++) {
+    QMAKE_CXXFLAGS += -Wno-format-nonliteral
     QMAKE_CXXFLAGS += -Wno-unknown-warning-option
 }
 
@@ -482,7 +485,7 @@ defineTest(copyToDestdir) {
             # Mac/Linux
             copyResources.commands += cp -rf '"'$$FILE'"' '"'$$DDIR'"' $$escape_expand(\\n\\t\\n\\t)
         }
-        
+
         # QMAKE_COPY command is supposed to be a platform-independent copying command,
         # but it seems to fail on Windows machines that have Cygwin or Windows Services for Unix installed
         # copyResources.commands += $$QMAKE_COPY $$quote($$FILE) $$quote($$DDIR) $$escape_expand(\\n\\t\\n\\t)
@@ -630,4 +633,4 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #633; if not, your .pro has been changed!)
+# END OF FILE (this should be line #636; if not, your .pro has been changed!)

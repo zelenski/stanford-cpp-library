@@ -68,6 +68,11 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	private static boolean DEBUG = false;
 	private static final Color ERROR_COLOR = new Color(192, 0, 0);   // slightly dark red
 	private static final int ERROR_STYLE = Font.BOLD;
+	private static Font ourConsoleFont = null;
+	
+	public static Font getConsoleFont() {
+		return ourConsoleFont;
+	}
 
 	public static void main(String[] paramArrayOfString) {
 		try {
@@ -188,6 +193,8 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 			}).start();
 		}
 		
+		ourConsoleFont = this.console.getFont();
+		
 		if (this.exec != null) {
 			try {
 				Process localProcess = Runtime.getRuntime().exec(this.exec);
@@ -297,7 +304,9 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	}
 
 	public void setConsoleFont(String paramString) {
-		this.console.setFont(JTFTools.decodeFont(paramString));
+		Font font = JTFTools.decodeFont(paramString);
+		ourConsoleFont = font;
+		this.console.setFont(font);
 	}
 
 	public void consoleMinimize() {

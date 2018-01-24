@@ -20,23 +20,23 @@
 #include "exceptions.h"
 using namespace std;
 
-TEST_CATEGORY(PassFailTests, "standard pass/fail tests");
+//TEST_CATEGORY(PassFailTests, "standard pass/fail tests");
 
-void bar() {
-    // error("oooooops");
-    int* n = nullptr;
-    n[28583275] = 17;   // segfault
-}
+//void bar() {
+//    // error("oooooops");
+//    int* n = nullptr;
+//    n[28583275] = 17;   // segfault
+//}
 
-void foo() {
-    bar();
-}
+//void foo() {
+//    bar();
+//}
 
-TIMED_TEST(PassFailTests, test_exception_after_easy_assert, TEST_TIMEOUT_DEFAULT) {
-    // assertTrue("Brussel sprouts are yummy", true);
-    foo();
-    // assertTrue("Pie is yummy", true);
-}
+//TIMED_TEST(PassFailTests, test_exception_after_easy_assert, TEST_TIMEOUT_DEFAULT) {
+//    // assertTrue("Brussel sprouts are yummy", true);
+//    foo();
+//    // assertTrue("Pie is yummy", true);
+//}
 
 
 //TIMED_TEST(PassFailTests, test_diffs_strict_FAIL, TEST_TIMEOUT_DEFAULT) {
@@ -197,7 +197,7 @@ void autograderMain() {
     autograder::setAboutMessage("Stanford C++ library tester by Marty Stepp");
     autograder::setGraphicalUI(true);
     autograder::setTestNameWidth(std::string("test02_abc_oops_real_long_name_gonnaFail").length());
-    autograder::setStartMessage("my start message");
+    autograder::setStartMessage("my <b>COOL</b> start <i>message</i> yay!");
 
     //stylecheck::setStyleCheckMergedWithUnitTests(true);
     //autograder::styleCheckAddFile("mainfunc.cpp");

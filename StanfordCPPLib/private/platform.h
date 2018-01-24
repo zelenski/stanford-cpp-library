@@ -5,6 +5,8 @@
  * the platform-specific parts of the StanfordCPPLib package.  This file is
  * logically part of the implementation and is not interesting to clients.
  *
+ * @version 2018/01/23
+ * - added autograderunittest_runTestsInSeparateThreads
  * @version 2017/10/12
  * - added gtextlabel_create
  * - added gwindow_setRepaintImmediately
@@ -84,6 +86,7 @@ public:
     void autograderunittest_clearTests(bool styleCheck = false);
     void autograderunittest_clearTestResults(bool styleCheck = false);
     bool autograderunittest_isChecked(const std::string& testFullName);
+    bool autograderunittest_runTestsInSeparateThreads();
     void autograderunittest_setChecked(const std::string& testFullName, bool checked = true);
     void autograderunittest_setTestCounts(int passCount, int testCount, bool styleCheck = false);
     void autograderunittest_setTestDetails(const std::string& testFullName, const std::string& details, bool styleCheck = false);

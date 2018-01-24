@@ -90,3 +90,18 @@ TIMED_TEST(QueueTests, iteratorVersionTest_Queue, TEST_TIMEOUT_DEFAULT) {
     }
 }
 #endif // SPL_THROW_ON_INVALID_ITERATOR
+
+TIMED_TEST(QueueTests, peekEnqueueBugTest_Queue, TEST_TIMEOUT_DEFAULT) {
+    {
+        Queue<int> queue {10, 20, 30, 40, 50, 60, 70, 80};
+        assertEqualsString("Queue 1 initial", "{10, 20, 30, 40, 50, 60, 70, 80}", queue.toString());
+        queue.enqueue(queue.peek());
+        assertEqualsString("Queue 1 after enqueue", "{10, 20, 30, 40, 50, 60, 70, 80, 10}", queue.toString());
+    }
+    {
+        Queue<int> queue {10, 20, 30, 40, 50, 60, 70, 80, 90};
+        assertEqualsString("Queue 2 initial", "{10, 20, 30, 40, 50, 60, 70, 80, 90}", queue.toString());
+        queue.enqueue(queue.peek());
+        assertEqualsString("Queue 2 after enqueue", "{10, 20, 30, 40, 50, 60, 70, 80, 90, 10}", queue.toString());
+    }
+}

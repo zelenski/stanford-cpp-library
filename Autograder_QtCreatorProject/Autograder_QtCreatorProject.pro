@@ -13,6 +13,10 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2018/01/23
+# - modify a couple of clang compiler flags for OSX
+# @version 2017/11/15
+# - turn on collection iterator version checking
 # @version 2017/11/02
 # - exclude Qt lib inclusion on Mac
 # - fixed unknown compiler warning option on Mac
@@ -312,7 +316,7 @@ macx {
     # increase system stack size (helpful for recursive programs)
     # (this was previously disabled because it led to crashes on some systems,
     #  but it seems to be working again, so we are going to re-enable it)
-    # QMAKE_LFLAGS += -Wl,-stack_size,0x4000000
+    # QMAKE_LFLAGS += -Wl,-stack_size -Wl,0x8000000
 
     # disable inclusion of Qt core libraries (smaller,faster build)
     CONFIG -= qt
@@ -327,7 +331,7 @@ macx {
 unix:!macx {
     # disable inclusion of Qt core libraries (smaller,faster build)
     CONFIG -= qt
-    QT -= core gui opengl widgets
+    # QT -= core gui opengl widgets
 
     unix-g++ {
         QMAKE_CXXFLAGS += -rdynamic
@@ -351,6 +355,7 @@ unix:!macx {
 COMPILERNAME = $$QMAKE_CXX
 COMPILERNAME ~= s|.*/|
 equals(COMPILERNAME, clang++) {
+    QMAKE_CXXFLAGS += -Wno-format-nonliteral
     QMAKE_CXXFLAGS += -Wno-unknown-warning-option
 }
 
@@ -360,7 +365,7 @@ equals(COMPILERNAME, clang++) {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20171102
+DEFINES += SPL_PROJECT_VERSION=20171115
 
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1
@@ -628,4 +633,4 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #631; if not, your .pro has been changed!)
+# END OF FILE (this should be line #636; if not, your .pro has been changed!)

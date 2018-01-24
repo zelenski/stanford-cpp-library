@@ -1,3 +1,8 @@
+/*
+ * @version 2018/01/23
+ * - modified diff panes to use same font as JBE console if present
+ */
+
 package stanford.cs106.diff;
 
 import java.awt.*;
@@ -6,7 +11,8 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import stanford.cs106.gui.*;
-import stanford.cs106.util.StringUtils;
+import stanford.cs106.util.*;
+import stanford.spl.*;
 
 public class DiffGui implements ActionListener, AdjustmentListener {
 	public static boolean SIDE_BY_SIDE_ENABLED = false;
@@ -144,7 +150,10 @@ public class DiffGui implements ActionListener, AdjustmentListener {
 		if (name1 == null) {
 			north.add(new JLabel());
 		} else {
-			JLabel label1 = new JLabel("<html><body><font color='" + EXPECTED_COLOR + "'>" + name1 + "</font></body></html>");
+			String htmlLabelText = GuiUtils.htmlLabelText(name1, CollectionUtils.asMap(
+					"font-color", EXPECTED_COLOR
+			));
+			JLabel label1 = new JLabel(htmlLabelText);
 			label1.setHorizontalAlignment(JLabel.LEFT);
 			north.add(label1);
 		}
@@ -152,7 +161,10 @@ public class DiffGui implements ActionListener, AdjustmentListener {
 		if (name2 == null) {
 			north.add(new JLabel());
 		} else {
-			JLabel label2 = new JLabel("<html><body><font color='" + STUDENT_COLOR + "'>" + name2 + "</font></body></html>");
+			String htmlLabelText = GuiUtils.htmlLabelText(name1, CollectionUtils.asMap(
+					"font-color", STUDENT_COLOR
+			));
+			JLabel label2 = new JLabel(htmlLabelText);
 			label2.setHorizontalAlignment(JLabel.RIGHT);
 			north.add(label2);
 		}
@@ -170,14 +182,14 @@ public class DiffGui implements ActionListener, AdjustmentListener {
 		if (frame.getHeight() > MAX_HEIGHT) {
 			frame.setSize(frame.getWidth(), MAX_HEIGHT);
 		}
-		splitPane.setDividerLocation(0.6);   // 60/40 split
+		// splitPane.setDividerLocation(0.6);   // 60/40 split
 		GuiUtils.centerWindow(frame);
 		
 		// setting split pane doesn't really work unless you give a delay after show()
 		new Thread(new Runnable() {
 			public void run() {
 				try {
-					Thread.sleep(100);
+					Thread.sleep(200);
 				} catch (InterruptedException ie) {
 					// empty
 				}
@@ -252,7 +264,14 @@ public class DiffGui implements ActionListener, AdjustmentListener {
 	}
 	
 	private String htmlBodyWrap(String text) {
-		return "<html><body style=\"font-family: monospaced;\">" + text + "</body></html>";
+		Font monospacedFont = JavaBackEnd.getConsoleFont();
+		if (monospacedFont == null) {
+			Font defaultLabelFont = new JLabel().getFont();
+			monospacedFont = new Font("monospaced", Font.PLAIN, defaultLabelFont.getSize());
+		}
+		return GuiUtils.htmlLabelText(text, CollectionUtils.asMap(
+				"font", monospacedFont
+		));
 	}
 	
 	private String colorOutput(String output) {
@@ -281,8 +300,16 @@ public class DiffGui implements ActionListener, AdjustmentListener {
 
 	private JTextPane makeHtmlPane(String htmlText) {
 		JTextPane pane = new JTextPane();
+		
 		Font font = pane.getFont();
 		font = new Font(Font.MONOSPACED, Font.PLAIN, font.getSize());
+
+		// BUGFIX: set diff font size to match console font size
+		Font consoleFont = JavaBackEnd.getConsoleFont();
+		if (consoleFont != null) {
+			font = consoleFont;
+		}
+		
 		pane.setFont(font);
 		pane.setContentType("text/html");
 		pane.setText(htmlText);

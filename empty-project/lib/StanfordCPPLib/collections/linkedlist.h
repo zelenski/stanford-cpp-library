@@ -5,6 +5,8 @@
  * implementation of a doubly-linked list of objects and provides a
  * public interface similar to that of the <code>Vector</code> class.
  *
+ * @version 2018/01/07
+ * - added removeFront, removeBack
  * @version 2017/11/15
  * - added contains, indexOf, lastIndexOf, removeValue, reverse, shuffle, sort
  * @version 2017/11/14
@@ -109,7 +111,7 @@ public:
      * Method: back
      * Usage: ValueType val = list.back();
      * -----------------------------------
-     * Returns the element at the back of this LinkedList.
+     * Returns the element at the back (index size-1) of this LinkedList.
      * This method signals an error if the list is empty.
      */
     ValueType& back();
@@ -145,8 +147,8 @@ public:
     /*
      * Method: front
      * Usage: ValueType val = list.front();
-     * ---------------------------------------
-     * Returns the element at the front of this LinkedList.
+     * ------------------------------------
+     * Returns the element at the front (index 0) of this LinkedList.
      * This method signals an error if the list is empty.
      */
     ValueType& front();
@@ -217,6 +219,15 @@ public:
     void mapAll(FunctorType fn) const;
     
     /*
+     * Method: pop_back
+     * Usage: ValueType back = list.pop_back();
+     * ------------------------------------------
+     * Removes and returns the last value of this LinkedList.
+     * Throws an error if the list is empty.
+     */
+    ValueType pop_back();
+
+    /*
      * Method: pop_front
      * Usage: ValueType front = list.pop_front();
      * ------------------------------------------
@@ -226,14 +237,14 @@ public:
     ValueType pop_front();
     
     /*
-     * Method: pop_back
-     * Usage: ValueType back = list.pop_back();
-     * ------------------------------------------
-     * Removes and returns the last value of this LinkedList.
-     * Throws an error if the list is empty.
+     * Method: push_back
+     * Usage: list.push_back(value);
+     * -----------------------------
+     * Adds a new value to the end of this LinkedList.
+     * Same behavior as the <code>add</code> method.
      */
-    ValueType pop_back();
-    
+    void push_back(const ValueType& value);
+
     /*
      * Method: push_front
      * Usage: list.push_front(value);
@@ -243,15 +254,6 @@ public:
     void push_front(const ValueType& value);
     
     /*
-     * Method: push_back
-     * Usage: list.push_back(value);
-     * -----------------------------
-     * Adds a new value to the end of this LinkedList.
-     * Same behavior as the <code>add</code> method.
-     */
-    void push_back(const ValueType& value);
-    
-    /*
      * Method: remove
      * Usage: list.remove(index);
      * -------------------------
@@ -259,6 +261,24 @@ public:
      * This method signals an error if the index is outside the list range.
      */
     void remove(int index);
+
+    /*
+     * Method: removeFirst
+     * Usage: ValueType val = list.removeFirst();
+     * ------------------------------------------
+     * Removes and returns the element at index 0 in this list.
+     * This method signals an error if list is empty.
+     */
+    ValueType removeFront();
+
+    /*
+     * Method: removeLast
+     * Usage: ValueType val = list.removeLast();
+     * -----------------------------------------
+     * Removes and returns the element at index (size - 1) in this list.
+     * This method signals an error if list is empty.
+     */
+    ValueType removeBack();
 
     /*
      * Method: removeValue
@@ -833,6 +853,16 @@ void LinkedList<ValueType>::remove(int index) {
     advance(itr, index);
     m_elements.erase(itr);
     m_version++;
+}
+
+template <typename ValueType>
+ValueType LinkedList<ValueType>::removeBack() {
+    return pop_back();
+}
+
+template <typename ValueType>
+ValueType LinkedList<ValueType>::removeFront() {
+    return pop_front();
 }
 
 template <typename ValueType>

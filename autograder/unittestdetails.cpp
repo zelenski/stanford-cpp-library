@@ -39,7 +39,8 @@ UnitTestDetails::UnitTestDetails()
       message(""),
       expected(""),
       student(""),
-      passed(false) {
+      passed(false),
+      overwrite(true) {
     // empty
 }
 
@@ -52,7 +53,8 @@ UnitTestDetails::UnitTestDetails(
       expected(""),
       student(""),
       diffFlags(0),
-      passed(pass) {
+      passed(pass),
+      overwrite(true) {
     // empty
 }
 
@@ -68,7 +70,8 @@ UnitTestDetails::UnitTestDetails(autograder::UnitTestType tp,
       student(stu),
       valueType(vtype),
       diffFlags(0),
-      passed(pass) {
+      passed(pass),
+      overwrite(true) {
     // empty
 }
 
@@ -85,7 +88,8 @@ UnitTestDetails::UnitTestDetails(autograder::UnitTestType tp,
       student(stu),
       valueType(vtype),
       diffFlags(theDiffFlags),
-      passed(pass) {
+      passed(pass),
+      overwrite(true) {
     // empty
 }
 
@@ -99,7 +103,8 @@ UnitTestDetails::UnitTestDetails(autograder::UnitTestType tp,
       message(msg),
       valueType("bool"),
       diffFlags(0),
-      passed(pass) {
+      passed(pass),
+      overwrite(true) {
     expected = boolToString(exp);
     student = boolToString(stu);
 }
@@ -114,7 +119,8 @@ UnitTestDetails::UnitTestDetails(autograder::UnitTestType tp,
       message(msg),
       valueType("char"),
       diffFlags(0),
-      passed(pass) {
+      passed(pass),
+      overwrite(true) {
     expected = charToString(exp);
     student = charToString(stu);
 }
@@ -129,7 +135,8 @@ UnitTestDetails::UnitTestDetails(autograder::UnitTestType tp,
       message(msg),
       valueType("double"),
       diffFlags(0),
-      passed(pass) {
+      passed(pass),
+      overwrite(true) {
     expected = realToString(exp);
     student = realToString(stu);
 }
@@ -144,7 +151,8 @@ UnitTestDetails::UnitTestDetails(autograder::UnitTestType tp,
       message(msg),
       valueType("int"),
       diffFlags(0),
-      passed(pass) {
+      passed(pass),
+      overwrite(true) {
     expected = integerToString(exp);
     student = integerToString(stu);
 }
@@ -161,7 +169,8 @@ UnitTestDetails::UnitTestDetails(autograder::UnitTestType tp,
       student(stu),
       valueType("string"),
       diffFlags(0),
-      passed(pass) {
+      passed(pass),
+      overwrite(true) {
     // empty
 }
 
@@ -180,6 +189,7 @@ std::ostream& operator <<(std::ostream& out, const UnitTestDetails& deets) {
         << ",valueType=" << urlEncode(deets.valueType)
         << ",diffFlags=" << deets.diffFlags
         << ",passed=" << std::boolalpha << deets.passed
+        << ",overwrite=" << std::boolalpha << deets.overwrite
         << "}";
     return out;
 }

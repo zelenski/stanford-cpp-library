@@ -32,7 +32,7 @@ void assertCollection(std::string message,
         }
         assertEqualsCollection("Collections must be equal", expected, actual);
     }
-    assertEquals(message + ": size of collection", expectedList.size(), collection.size());
+    assertEquals(message + ": size of collection", (int) expectedList.size(), collection.size());
 }
 
 template <typename MapType, typename K, typename V>
@@ -59,7 +59,7 @@ void assertMap(std::string message, std::initializer_list<std::pair<K, V> > expe
         assertEqualsCollection("Keys must be equal", expectedKeys, actualKeys);
         assertEqualsCollection("Values must be equal", expectedValues, actualValues);
     }
-    assertEquals(message + ": size of collection", expected.size(), map.size());
+    assertEquals(message + ": size of collection", (int) expected.size(), map.size());
 }
 
 #endif // _collection_test_common_h

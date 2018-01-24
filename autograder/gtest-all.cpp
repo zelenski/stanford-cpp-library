@@ -3189,9 +3189,9 @@ std::string AppendUserMessage(const std::string& gtest_msg,
 
 // Creates an empty TestResult.
 TestResult::TestResult()
-    : death_test_count_(0),
-      elapsed_time_(0),
-      everHadResults_(false) {
+    : everHadResults_(false),
+      death_test_count_(0),
+      elapsed_time_(0) {
     // empty
 }
 
