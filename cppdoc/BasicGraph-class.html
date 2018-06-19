@@ -23,8 +23,6 @@
 			This class represents a simplified and expanded implementation of a directed, weighted graph.
 			Unlike with the <code>Graph</code> class, you do not need to supply the vertex and edge types via templates in <code>&lt; &gt;</code>.
 			The vertex / node type has been set to <code>Vertex</code> and the edge / arc type has been set to <code>Edge</code>.
-			These types contain fields that are useful for various path-searching algorithms
-			such as breadth-first search, Dijkstra's algorithm, and A*.
 		</p>
 
 		<p>
@@ -60,14 +58,11 @@
 			Any such pointers returned are direct pointers to the internal structures inside of this graph.
 			If the graph itself falls out of scope, is cleared, etc., or if the given vertex/edge is removed from the graph, this pointer will become invalid.
 			Undefined behavior and crashes will result if you retain pointers to vertexes/edges that live on beyond the life span of the graph.
+			Clients also should not free or <code>delete</code> any pointers to vertex or edge structures that were obtained by calling methods on a basic graph.
 		</p>
 
 		<p>
 			For the purposes of Big-Oh listing, some members are proportional to the number of vertexes V, and some are proportional to the number of edges E.
-		</p>
-
-		<p class="since">
-			Available since: 2014/02/01 version of C++ library
 		</p>
 
 		<table class=index width=100%>
@@ -84,14 +79,12 @@
 			</tr>
 			<tr>
 				<td class=indexKey><nobr><a href="#Method:addEdge">addEdge(<var>v1</var>,&nbsp;<var>v2</var>)</a><br>
-					<a href="#Method:addEdge">addEdge(<var>name1</var>,&nbsp;<var>name2</var>)</a><br>
 					<a href="#Method:addEdge">addEdge(<var>edge</var>)</a>&nbsp;</nobr></td>
 				<td class="bigoh">O(log V + log E)</td>
-				<td class=indexSynopsis width=100%>Adds an edge to the graph.</td>
+				<td class=indexSynopsis width=100%>Adds a directed edge to the graph from <var>v1</var> to <var>v2</var>.</td>
 			</tr>
 			<tr>
-				<td class=indexKey><nobr><a href="#Method:addVertex">addVertex(<var>v</var>)</a>&nbsp;<br>
-					<a href="#Method:addVertex">addVertex(<var>name</var>)</a></nobr></td>
+				<td class=indexKey><nobr><a href="#Method:addVertex">addVertex(<var>v</var>)</a></td>
 				<td class="bigoh">O(log V)</td>
 				<td class=indexSynopsis width=100%>Adds a vertex to the graph.</td>
 			</tr>
@@ -101,28 +94,31 @@
 				<td class=indexSynopsis width=100%>Removes all vertexes and edges from the graph.</td>
 			</tr>
 			<tr>
-				<td class=indexKey><nobr><a href="#Method:clearEdges">clearEdges()</a></nobr></td>
+				<td class=indexKey><nobr><a href="#Method:clearEdges">clearEdges()</a><br>
+					<a href="#Method:clearEdges">clearEdges(<var>v</var>)</a><br>
+					</nobr></td>
 				<td class="bigoh">O(E)</td>
-				<td class=indexSynopsis width=100%>Removes all edges from the graph.</td>
+				<td class=indexSynopsis width=100%>Removes all edges from the graph, or all edges outbound from a given vertex.</td>
 			</tr>
 			<tr>
-				<td class=indexKey><nobr><a href="#Method:containsEdge">containsEdge(<var>v1</var>,&nbsp;<var>v2</var>)</a><br>
-					<a href="#Method:containsEdge">containsEdge(<var>name1</var>,&nbsp;<var>name2</var>)</a><br>
-					<a href="#Method:containsEdge">containsEdge(<var>edge</var>)</a>&nbsp;</nobr></td>
+				<td class=indexKey><nobr><a href="#Method:containsEdge">containsEdge(<var>v1</var>,&nbsp;<var>v2</var>)</a></td>
 				<td class="bigoh">O(log E)</td>
-				<td class=indexSynopsis width=100%>Returns whether the graph has an edge between the given two vertexes.</td>
+				<td class=indexSynopsis width=100%>Returns whether the graph has an edge from <var>v1</var> to <var>v2</var>.</td>
 			</tr>
 			<tr>
-				<td class=indexKey><nobr><a href="#Method:containsVertex">containsVertex(<var>v</var>)</a><br>
-					<a href="#Method:containsVertex">containsVertex(<var>name</var>)</a></td>
+				<td class=indexKey><nobr><a href="#Method:containsVertex">containsVertex(<var>v</var>)</a></td>
 				<td class="bigoh">O(log V)</td>
-				<td class=indexSynopsis width=100%>Returns whether the graph has an edge between the given two vertexes.</td>
+				<td class=indexSynopsis width=100%>Returns whether the graph contains the given vertex, and/or contains a vertex with the given name.</td>
 			</tr>
 			<tr>
-				<td class=indexKey><nobr><a href="#Method:getEdge">getEdge(<var>v1</var>,&nbsp;<var>v2</var>)</a><br>
-			<a href="#Method:getEdge">getEdge(<var>name1</var>,&nbsp;<var>name2</var>)</a></td>
+				<td class=indexKey><nobr><a href="#Method:edgeCount">edgeCount()</a></td>
+				<td class="bigoh">O(1)</td>
+				<td class=indexSynopsis width=100%>Returns the number of edges in the graph.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:getEdge">getEdge(<var>v1</var>,&nbsp;<var>v2</var>)</a></td>
 				<td class="bigoh">O(log V + log E)</td>
-				<td class=indexSynopsis width=100%>Returns the edge between the given two vertexes.</td>
+				<td class=indexSynopsis width=100%>Returns the edge from <var>v1</var> to <var>v2</var>, if present.</td>
 			</tr>
 			<tr>
 				<td class=indexKey><nobr><a href="#Method:getEdgeSet">getEdgeSet()</a></nobr></td>
@@ -130,32 +126,54 @@
 				<td class=indexSynopsis width=100%>Returns the set of all edges in the graph.</td>
 			</tr>
 			<tr>
-				<td class=indexKey><nobr><a href="#Method:getEdgeSet">getEdgeSet(<var>v</var>)</a><br>
-					<a href="#Method:getEdgeSet">getEdgeSet(<var>name</var>)</a>&nbsp;</nobr></td>
+				<td class=indexKey><nobr><a href="#Method:getEdgeSet">getEdgeSet(<var>v</var>)</a></td>
 				<td class="bigoh">O(log V)</td>
 				<td class=indexSynopsis width=100%>Returns the set of all edges that start at the specified vertex.</td>
 			</tr>
 			<tr>
-				<td class=indexKey><nobr><a href="#Method:getInverseNeighbors">getInverseNeighbors(<var>v</var>)</a><br>
-					<a href="#Method:getInverseNeighbors">getInverseNeighbors(<var>name</var>)</a>&nbsp;</nobr></td>
+				<td class=indexKey><nobr><a href="#Method:getInverseEdge">getInverseEdge(<var>e</var>)</a></td>
+				<td class="bigoh">O(E)</td>
+				<td class=indexSynopsis width=100%>Returns the edge that is the opposite of the given edge; that is, if the specified edge <var>e</var> starts at <var>v1</var> and ends at <var>v2</var>, will return the edge that starts at <var>v2</var> and ends at <var>v1</var>, if such an edge exists in the graph.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:getInverseEdgeSet">getInverseEdgeSet(<var>v</var>)</a></td>
 				<td class="bigoh">O(log V)</td>
+				<td class=indexSynopsis width=100%>Returns the set of all edges that end at the specified vertex.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:getInverseNeighborNames">getInverseNeighborNames(<var>v</var>)</a></td>
+				<td class="bigoh">O(E)</td>
+				<td class=indexSynopsis width=100%>Returns a set of the names of vertexes for which <var>v</var> is a neighbor; that is, the ones for which there is an edge from that vertex to <var>v</var>.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:getInverseNeighbors">getInverseNeighbors(<var>v</var>)</a></td>
+				<td class="bigoh">O(E)</td>
 				<td class=indexSynopsis width=100%>Returns the set of vertexes for which <var>v</var> is a neighbor; that is, the ones for which there is an edge from that vertex to <var>v</var>.</td>
 			</tr>
 			<tr>
-				<td class=indexKey><nobr><a href="#Method:getNeighbors">getNeighbors(<var>v</var>)</a><br>
-					<a href="#Method:getNeighbors">getNeighbors(<var>name</var>)</a>&nbsp;</nobr></td>
+				<td class=indexKey><nobr><a href="#Method:getNeighborNames">getNeighborNames(<var>v</var>)</a></td>
 				<td class="bigoh">O(log V)</td>
-				<td class=indexSynopsis width=100%>Returns the set of vertexes that are neighbors of the specified vertex, which can be indicated either as a pointer or by name.</td>
+				<td class=indexSynopsis width=100%>Returns a set of the names of all vertexes that are neighbors of the specified vertex.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:getNeighbors">getNeighbors(<var>v</var>)</a></td>
+				<td class="bigoh">O(log V)</td>
+				<td class=indexSynopsis width=100%>Returns the set of vertexes <var>N</var> for which there is an edge from <var>v</var> to <var>N</var>.</td>
 			</tr>
 			<tr>
 				<td class=indexKey><nobr><a href="#Method:getVertex">getVertex(<var>name</var>)</a>&nbsp;</nobr></td>
 				<td class="bigoh">O(log V)</td>
-				<td class=indexSynopsis width=100%>Looks up a vertex in the name table attached to the graph and returns a pointer to that vertex.</td>
+				<td class=indexSynopsis width=100%>Returns a pointer to the graph's internal <code>Vertex</code> structure with information about a given vertex.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:getVertexNames">getVertexNames()</a>&nbsp;</nobr></td>
+				<td class="bigoh">O(V)</td>
+				<td class=indexSynopsis width=100%>Returns a set of the names of all vertexes in the graph.</td>
 			</tr>
 			<tr>
 				<td class=indexKey><nobr><a href="#Method:getVertexSet">getVertexSet()</a>&nbsp;</nobr></td>
 				<td class="bigoh">O(1)</td>
-				<td class=indexSynopsis width=100%>Returns the set of all vertexes in the graph.</td>
+				<td class=indexSynopsis width=100%>Returns the set of the graph's internal <code>Vertex</code> structures for all vertexes in the graph.</td>
 			</tr>
 			<tr>
 				<td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td>
@@ -163,23 +181,20 @@
 				<td class=indexSynopsis width=100%>Returns <code>true</code> if the graph contains no vertexes or edges.</td>
 			</tr>
 			<tr>
-				<td class=indexKey><nobr><a href="#Method:isNeighbor">isNeighbor(<var>v1</var>,&nbsp;<var>v2</var>)</a><br>
-					<a href="#Method:isNeighbor">isNeighbor(<var>name1</var>,&nbsp;<var>name2</var>)</a>&nbsp;</nobr></td>
+				<td class=indexKey><nobr><a href="#Method:isNeighbor">isNeighbor(<var>v1</var>,&nbsp;<var>v2</var>)</a></td>
 				<td class="bigoh">O(log V)</td>
-				<td class=indexSynopsis width=100%>Returns <code>true</code> if the graph contains an edge from <code>v1</code> to <code>v2</code>.</td>
+				<td class=indexSynopsis width=100%>Returns <code>true</code> if the graph contains an edge from <var>v1</var> to <var>v2</var>.</td>
 			</tr>
 			<tr>
 				<td class=indexKey><nobr><a href="#Method:removeEdge">removeEdge(<var>v1</var>,&nbsp;<var>v2</var>)</a><br>
-					<a href="#Method:removeEdge">removeEdge(<var>name1</var>,&nbsp;<var>name2</var>)</a><br>
 					<a href="#Method:removeEdge">removeEdge(<var>edge</var>)</a>&nbsp;</nobr></td>
 				<td class="bigoh">O(E + log V)</td>
-				<td class=indexSynopsis width=100%>Removes an edge from the graph, where the edge can be specified in any of three ways: by the names of its endpoints, by the vertex pointers at its endpoints, or as an edge pointer.</td>
+				<td class=indexSynopsis width=100%>Removes an edge from <var>v1</var> to <var>v2</var> from the graph.</td>
 			</tr>
 			<tr>
-				<td class=indexKey><nobr><a href="#Method:removeVertex">removeVertex(<var>vertex</var>)</a>&nbsp;<br>
-					<a href="#Method:removeVertex">removeVertex(<var>name</var>)</a></nobr></td>
+				<td class=indexKey><nobr><a href="#Method:removeVertex">removeVertex(<var>v</var>)</a></td>
 				<td class="bigoh">O(E + log V)</td>
-				<td class=indexSynopsis width=100%>Removes a vertex from the graph, where the vertex can be specified either by its name or as a pointer value.</td>
+				<td class=indexSynopsis width=100%>Removes a vertex from the graph.</td>
 			</tr>
 			<tr>
 				<td class=indexKey><nobr><a href="#Method:resetData">resetData()</a>&nbsp;</nobr></td>
@@ -195,6 +210,11 @@
 				<td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td>
 				<td class="bigoh">O(V + E)</td>
 				<td class=indexSynopsis width=100%>Converts the graph to a printable string representation.</td>
+			</tr>
+			<tr>
+				<td class=indexKey><nobr><a href="#Method:vertexCount">vertexCount()</a></td>
+				<td class="bigoh">O(1)</td>
+				<td class=indexSynopsis width=100%>Returns the number of vertexes in the graph.</td>
 			</tr>
 			<tr>
 				<td class=indexHead colspan=3>Operators</td>
@@ -223,7 +243,7 @@
 			</tr>
 		</table>
 
-		<h2>Constructor detail</h2>
+<h2>Constructor detail</h2>
 <hr>
 
 <a name="Constructor:BasicGraph"></a>
@@ -242,16 +262,295 @@ BasicGraph g;
 <h2>Method detail</h2>
 <hr>
 
-<a name="Method:size"></a>
+<a name="Method:addEdge"></a>
 <pre class=detailCode>
-int size() const;
+Edge* addEdge(string name1, string name2);
+Edge* addEdge(Vertex* v1, Vertex* v2);
+Edge* addEdge(Edge* edge);
 </pre>
 <div class=detailHTML>
-Returns the number of vertexes in the graph.
+Adds a directed edge to the graph from vertex 1 to vertex 2.
+The endpoints of the edge can be specified either as strings indicating the names of the vertexes, or as pointers to the vertex structures.
+Alternatively, the client can create the edge structure explicitly and pass that pointer to the <code>addEdge</code> method.
+All three of these versions return a pointer to the edge in case the client needs to capture this value.
+Note that it is allowed to have multiple edges between the same pair of vertexes.
+<p>If either of the vertexes supplied is <code>nullptr</code>, the function will throw an error.
+<p>Otherwise, if either vertex is not found in the graph, said vertex will be added to the graph.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-int size = g.size();
+g.addEdge(v1, v2);
+g.addEdge(edge);
+</pre>
+<hr>
+
+<a name="Method:addVertex"></a>
+<pre class=detailCode>
+Vertex* addVertex(string name);
+Vertex* addVertex(Vertex* vertex);
+</pre>
+<div class=detailHTML>
+Adds a vertex to the graph, if no vertex with that name already exists in the graph.
+<p>
+One version of this method accepts a string for the vertex's name, creates a new vertex of the appropriate type and initializes its fields.
+The other accepts a structure representing the vertex and its data.
+Both versions of this method return a pointer to the vertex, though clients need not store that pointer; you can get the pointer again later by calling <code>getVertex</code> and passing the same name.
+<p>The vertexes in a graph must have unique names.
+If this graph already contains a vertex with the given name, the vertex will not be added and the graph's state will not change.
+<p>If <code>nullptr</code> is passed to the pointer version of this function, an error will be thrown.
+<p>If you use the <code>Vertex*</code> version of this function, you are relinquishing ownership of the <code>Vertex</code> structure's lifecycle to the graph; our graph will free it when done with it.
+</p>
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+g.addVertex(vertex);
+</pre>
+<hr>
+
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Reinitializes the graph to be empty of all vertexes and edges, freeing any <code>Vertex</code> and <code>Edge</code> objects that were internally allocated as heap storage.
+(The heap memory associated with all vertexes and edges that have been previously added to the graph will be freed.)
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+g.clear();
+</pre>
+<hr>
+
+<a name="Method:clearEdges"></a>
+<pre class=detailCode>
+void clearEdges();
+void clearEdges(string vertexName);
+void clearEdges(Vertex* v);
+</pre>
+<div class=detailHTML>
+The first version removes all edges from the graph, freeing any <code>Edge</code> objects that were internally allocated as heap storage.
+The second and third versions remove all edges that start from the given vertex.
+(The vertexes in the graph will remain.  If you want to clear the vertexes as well, use the <code>clear</code> method.)
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+g.clearEdges();
+g.clearEdges(v);
+</pre>
+<hr>
+
+<a name="Method:containsEdge"></a>
+<pre class=detailCode>
+bool containsEdge(string name1, string name2) const;
+bool containsEdge(Vertex* v1, Vertex* v2) const;
+</pre>
+<div class=detailHTML>
+Returns whether the graph contains an edge from v1 to v2.
+<p>If either of the vertexes supplied is <code>nullptr</code> or is not found in the graph, this function returns <code>false</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (g.containsEdge(v1, v2)) ...
+if (g.containsEdge(edge)) ...
+</pre>
+<hr>
+
+<a name="Method:containsVertex"></a>
+<pre class=detailCode>
+bool containsVertex(string name) const;
+bool containsVertex(Vertex* vertex) const;
+</pre>
+<div class=detailHTML>
+Returns whether the graph contains the given vertex.
+One version of this method looks up the vertex by name, and the other uses the information supplied in the provided pointer.
+<p>If <code>nullptr</code> is passed to the pointer version of this function, returns <code>false</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (g.containsVertex(vertex)) ...
+</pre>
+<hr>
+
+<a name="Method:edgeCount"></a>
+<pre class=detailCode>
+int edgeCount() const;
+</pre>
+<div class=detailHTML>
+Returns the number of edges in the graph.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int count = g.edgeCount();
+</pre>
+<hr>
+
+<a name="Method:getEdge"></a>
+<pre class=detailCode>
+Edge* getEdge(string v1, string v2) const;
+Edge* getEdge(Vertex* v1, Vertex* v2) const;
+</pre>
+<div class=detailHTML>
+Returns the edge from v1 to v2 in the graph.
+<p>If either of the vertexes supplied is <code>nullptr</code> or is not found in the graph, the function will return <code>nullptr</code>.
+<p>If there are multiple edges between the given pair of vertexes, which of the edges will be returned is unspecified.</p>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Edge* e = g.getEdge(v1, v2);
+</pre>
+<hr>
+
+<a name="Method:getEdgeSet"></a>
+<pre class=detailCode>
+const Set&lt;Edge*&gt;&amp; getEdgeSet() const;
+const Set&lt;Edge*&gt;&amp; getEdgeSet(string vertexName) const;
+const Set&lt;Edge*&gt;&amp; getEdgeSet(Vertex* vertex) const;
+</pre>
+<div class=detailHTML>
+Returns the set of all edges in the graph or, in the second and third forms, the edges that start at the specified vertex, which can be indicated either as a pointer or by name.
+<p>When calling the two versions of this function that accept a vertex parameter, if the vertex supplied is <code>nullptr</code> or is not found in the graph, the function will return an empty set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+for (Edge* edge : g.getEdgeSet()) ...
+for (Edge* edge : g.getEdgeSet(vertex)) ...
+</pre>
+<hr>
+
+<a name="Method:getInverseEdge"></a>
+<pre class=detailCode>
+Edge* getInverseEdge(Edge* e) const;
+</pre>
+<div class=detailHTML>
+Returns the edge that is the opposite of the given edge; that is, if the specified edge <var>e</var> starts at <var>v1</var> and ends at <var>v2</var>, will return the edge that starts at <var>v2</var> and ends at <var>v1</var>, if such an edge exists in the graph.
+<p>If the edge supplied is <code>nullptr</code>, is not found in the graph, or has no inverse, the function will return <code>nullptr</code>.
+<p>If there are multiple edges between the given pair of vertexes, which of the edges will be returned is unspecified.</p>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Edge* e2 = g.getInverseEdge(e1);
+</pre>
+<hr>
+
+<a name="Method:getInverseEdgeSet"></a>
+<pre class=detailCode>
+const Set&lt;Edge*&gt;&amp; getInverseEdgeSet(string vertexName) const;
+const Set&lt;Edge*&gt;&amp; getInverseEdgeSet(Vertex* vertex) const;
+</pre>
+<div class=detailHTML>
+Returns the set of all edges in the graph that end at the specified vertex, which can be indicated either as a pointer or by name.
+<p>If the vertex supplied is <code>nullptr</code> or is not found in the graph, the function will return an empty set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+for (Edge* edge : g.getInverseEdgeSet(vertex)) ...
+</pre>
+<hr>
+
+<a name="Method:getInverseNeighborNames"></a>
+<pre class=detailCode>
+const Set&lt;string&gt; getInverseNeighborNames(string vertex) const;
+const Set&lt;string&gt; getInverseNeighborNames(Vertex* vertex) const;
+</pre>
+<div class=detailHTML>
+Returns a set of the names of vertexes for which the given vertex is a neighbor; that is, the names of all vertexes N for which there is an edge from N to the specified vertex.
+This is essentially the opposite of <code>getNeighborNames</code>, which returns the names of all vertexes N for which there is an edge from the specified vertex to N.
+<p>If the vertex supplied is <code>nullptr</code> or is not found in the graph, the function will return an empty set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+for (string neighbor : g.getInverseNeighborNames(vertex)) ...
+</pre>
+<hr>
+
+<a name="Method:getInverseNeighbors"></a>
+<pre class=detailCode>
+const Set&lt;Vertex*&gt; getInverseNeighbors(string vertex) const;
+const Set&lt;Vertex*&gt; getInverseNeighbors(Vertex* vertex) const;
+</pre>
+<div class=detailHTML>
+Returns the set of vertexes for which the given vertex is a neighbor; that is, the set of all vertexes N for which there is an edge from N to the specified vertex.
+This is essentially the opposite of <code>getNeighbors</code>, which returns all vertexes N for which there is an edge from the specified vertex to N.
+<p>If the vertex supplied is <code>nullptr</code> or is not found in the graph, the function will return an empty set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+for (Vertex* vertex : g.getInverseNeighbors(vertex)) ...
+</pre>
+<hr>
+
+<a name="Method:getNeighborNames"></a>
+<pre class=detailCode>
+const Set&lt;string&gt; getNeighborNames(string vertex) const;
+const Set&lt;string&gt; getNeighborNames(Vertex* vertex) const;
+</pre>
+<div class=detailHTML>
+Returns a set of the names of vertexes that are neighbors of the specified vertex, which can be indicated either as a pointer or by name.
+The graph is directed, so this is the set of names of all vertexes N to which there is an edge from the specified vertex to N.
+<p>If the vertex supplied is <code>nullptr</code> or is not found in the graph, the function will return an empty set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+for (string neighbor : g.getNeighborNames(vertex)) ...
+</pre>
+<hr>
+
+<a name="Method:getNeighbors"></a>
+<pre class=detailCode>
+const Set&lt;Vertex*&gt; getNeighbors(string vertex) const;
+const Set&lt;Vertex*&gt; getNeighbors(Vertex* vertex) const;
+</pre>
+<div class=detailHTML>
+Returns the set of vertexes that are neighbors of the specified vertex, which can be indicated either as a pointer or by name.
+The graph is directed, so this is the set of all vertexes N to which there is an edge from the specified vertex to N.
+<p>If the vertex supplied is <code>nullptr</code> or is not found in the graph, the function will return an empty set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+for (Vertex* vertex : g.getNeighbors(vertex)) ...
+</pre>
+<hr>
+
+<a name="Method:getVertex"></a>
+<pre class=detailCode>
+Vertex* getVertex(string name) const;
+</pre>
+<div class=detailHTML>
+Looks up a vertex in the graph by name and returns a pointer to its internal data structure.
+If no vertex with the specified name exists, returns <code>nullptr</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Vertex* vertex = g.getVertex(name);
+</pre>
+<hr>
+
+<a name="Method:getVertexNames"></a>
+<pre class=detailCode>
+const Set&lt;string&gt;&amp; getVertexNames() const;
+</pre>
+<div class=detailHTML>
+Returns a set of the names of all vertexes in the graph.
+The vertexes will be sorted in case-sensitive alphabetical order.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+for (string vertex : g.getVertexNames()) ...
+</pre>
+<hr>
+
+<a name="Method:getVertexSet"></a>
+<pre class=detailCode>
+const Set&lt;Vertex*&gt;&amp; getVertexSet() const;
+</pre>
+<div class=detailHTML>
+Returns the set of all vertexes in the graph.
+The vertexes will be sorted by name.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+for (Vertex* vertex : g.getVertexSet()) ...
 </pre>
 <hr>
 
@@ -268,350 +567,112 @@ if (g.isEmpty()) ...
 </pre>
 <hr>
 
-<a name="Method:clear"></a>
+<a name="Method:isNeighbor"></a>
 <pre class=detailCode>
-void clear();
+bool isNeighbor(string name1, string name2) const;
+bool isNeighbor(Vertex* v1, Vertex* v2) const;
 </pre>
 <div class=detailHTML>
-Reinitializes the graph to be empty of all vertexes and edges, freeing any heap storage.
-(The heap memory associated with all vertexes and edges that have been previously added
-to the graph will be freed.)
-
+Returns <code>true</code> if the graph contains an edge from <code>v1</code> to <code>v2</code>.
+<p>If either of the vertexes supplied is <code>nullptr</code> or is not found in the graph, the function will return <code>false</code>.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-g.clear();
+if (g.isNeighbor(v1, v2)) ...
 </pre>
 <hr>
 
-<a name="Method:clearEdges"></a>
+<a name="Method:removeEdge"></a>
 <pre class=detailCode>
-void clearEdges();
+void removeEdge(string name1, string name2);
+void removeEdge(Vertex* v1, Vertex* v2);
+void removeEdge(Edge* edge);
 </pre>
 <div class=detailHTML>
-Reinitializes the graph to be empty of all edges, freeing their heap storage.
-(The vertexes in the graph will remain.  If you want to clear the vertexes as well, use the <code>clear</code> method.)
-
+Removes an edge from the graph, where the edge can be specified in any of three ways:
+by the names of its endpoints, by the vertex pointers at its endpoints, or as an edge pointer.
+<p>When calling the single-parameter version of <code>removeEdge</code>, only that single edge is removed.
+When calling either of the two-parameter versions of <code>removeEdge</code>, if more than one edge connects the specified endpoints, all of them are removed.
+<p>If any of the vertexes or edges supplied is <code>nullptr</code> or is not found in the graph, calling this function will have no effect on the graph.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-g.clearEdges();
-</pre>
-<hr>
-<a name="Method:addVertex"></a>
-<pre class=detailCode>
-Vertex* addVertex(Vertex* vertex);
-Vertex* addVertex(string name);
-</pre>
-<div class=detailHTML>
-Adds a vertex to the graph.
-
-One version of this method accepts a string for the vertex's name,
-creates a new vertex of the appropriate type and initializes its
-fields; the other assumes that the client has already created
-the vertex and simply adds it to the graph.  Both versions of this
-method return a pointer to the vertex.
-<p>The vertexes in a graph must have unique names.  If this graph
-already contains a vertex with the given name, or if <code>nullptr</code> is
-passed to the pointer version of this function,
-<code>addVertex</code> throws an error.
-
-<p>The pointer returned is a direct pointer to the internal structure inside this graph, and will become invalid if the vertex is removed or if the graph itself falls out of scope.</p>
-
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-Vertex* vertex = g.addVertex(vertex);
-Vertex* vertex = g.addVertex(name);
+g.removeEdge(v1, v2);
+g.removeEdge(edge);
 </pre>
 <hr>
 
 <a name="Method:removeVertex"></a>
 <pre class=detailCode>
-void removeVertex(Vertex* vertex);
 void removeVertex(string name);
+void removeVertex(Vertex* vertex);
 </pre>
 <div class=detailHTML>
-Removes a vertex from the graph, where the vertex can be specified
-either by its name or as a pointer value.  Removing a vertex also
-removes all edges that contain that vertex.
-
-<p>If <code>nullptr</code> is passed to the pointer version of this function,
-or this graph does not contain the given vertex or a vertex with the given name,
-the function throws an error.
-
+Removes a vertex from the graph, where the vertex can be specified either by its name or as a pointer value.
+Removing a vertex also removes all edges that touch that vertex.
+<p>If <code>nullptr</code> is passed to the pointer version of this function, or if this graph does not contain the given vertex or a vertex with the given name, the function has no effect on the graph.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-g.removeVertex(name);
 g.removeVertex(vertex);
 </pre>
 <hr>
 
-<a name="Method:getVertex"></a>
+<a name="Method:resetData"></a>
 <pre class=detailCode>
-Vertex* getVertex(string name) const;
+void resetData();
 </pre>
 <div class=detailHTML>
-Looks up a vertex in the name table attached to the graph and
-returns a pointer to that vertex.  If no vertex with the specified
-name exists, <code>getVertex</code> returns <code>nullptr</code>.
-
-<p>The pointer returned is a direct pointer to the internal structure inside this graph, and will become invalid if the vertex is removed or if the graph itself falls out of scope.</p>
-
+Sets the data stored in each vertex and edge back to its original value by calling <code>resetData</code> on every vertex and edge.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-Vertex* vertex = g.getVertex(name);
+g.resetData();
 </pre>
 <hr>
 
-<a name="Method:containsVertex"></a>
+<a name="Method:size"></a>
 <pre class=detailCode>
-bool containsVertex(Vertex* vertex) const;
-bool containsVertex(string name) const;
+int size() const;
 </pre>
 <div class=detailHTML>
-Returns whether the graph contains the given vertex.
-One version of this method looks up the vertex by name, and the other uses the
-information supplied in the provided pointer.
-<p>If <code>nullptr</code> is passed to the pointer version of this function,
-<code>containsVertex</code> throws an error.
-
+Returns the number of vertexes in the graph.
+Equivalent to <code>vertexCount</code>.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-if (g.containsVertex(vertex)) ...
-if (g.containsVertex(name)) ...
+int size = g.size();
 </pre>
 <hr>
 
-<a name="Method:addEdge"></a>
-<pre class=detailCode>
-Edge* addEdge(Vertex* v1, Vertex* v2);
-Edge* addEdge(string name1, string name2);
-Edge* addEdge(Edge* edge);
-</pre>
-<div class=detailHTML>
-Adds an edge to the graph.  The endpoints of the edge can be specified
-either as strings indicating the names of the vertexes or as pointers
-to the vertex structures.  Alternatively, the client can create the edge
-structure explicitly and pass that pointer to the <code>addEdge</code>
-method.  All three of these versions return a pointer to the edge in
-case the client needs to capture this value.  Note that it is allowed
-to have multiple edges between the same pair of vertexes.
-
-<p>When calling either of the two-parameter versions of <code>addEdge</code>,
-if either of the vertexes supplied is <code>nullptr</code> or is not found in the graph, the function will throw an error.
-
-<p>The pointer returned is a direct pointer to the internal structure inside this graph, and will become invalid if the edge is removed or if the graph itself falls out of scope.</p>
-
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-g.addEdge(v1, v2);
-g.addEdge(name1, name2);
-g.addEdge(edge);
-</pre>
-<hr>
-<a name="Method:removeEdge"></a>
-<pre class=detailCode>
-void removeEdge(Vertex* v1, Vertex* v2);
-void removeEdge(string name1, string name2);
-void removeEdge(Edge* edge);
-</pre>
-<div class=detailHTML>
-Removes an edge from the graph, where the edge can be specified in any
-of three ways: by the names of its endpoints, by the vertex pointers
-at its endpoints, or as an edge pointer.
-
-<p>When calling the single-parameter version of <code>removeEdge</code>,
-only that single edge is removed.
-When calling either of the two-parameter versions of <code>removeEdge</code>,
-if more than one edge connects the specified endpoints, all of them are removed.
-
-<p>When calling the single-parameter version of <code>removeEdge</code>,
-if the edge supplied is <code>nullptr</code> or is not found in the graph, calling this function will have no effect on the graph.
-
-<p>When calling either of the two-parameter versions of <code>removeEdge</code>,
-if either of the vertexes supplied is <code>nullptr</code> or is not found in the graph, calling this function will have no effect on the graph.
-
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-g.removeEdge(v1, v2);
-g.removeEdge(name1, name2);
-g.removeEdge(edge);
-</pre>
-<hr>
-
-<a name="Method:containsEdge"></a>
-<pre class=detailCode>
-bool containsEdge(Vertex* v1, Vertex* v2) const;
-bool containsEdge(string name1, string name2) const;
-bool containsEdge(Edge* edge) const;
-</pre>
-<div class=detailHTML>
-Returns whether the graph contains an edge between the given two vertexes.
-One version of this method looks up the edge by its start/finish vertexes, and the other uses the
-information supplied in the provided edge pointer.
-
-<p>When calling the single-parameter version of <code>removeEdge</code>,
-if the edge supplied is <code>nullptr</code> or is not found in the graph, this function returns <code>false</code>.
-
-<p>When calling either of the two-parameter versions of <code>removeEdge</code>,
-if either of the vertexes supplied is <code>nullptr</code> or is not found in the graph, this function returns <code>false</code>.
-
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-if (g.containsEdge(v1, v2)) ...
-if (g.containsEdge(name1, name2)) ...
-if (g.containsEdge(edge)) ...
-</pre>
-<hr>
-
-<a name="Method:getEdge"></a>
-<pre class=detailCode>
-Edge* getEdge(Vertex* v1, Vertex* v2) const;
-Edge* getEdge(std::string v1, std::string v2) const;
-</pre>
-<div class=detailHTML>
-Returns the edge between the given pair of vertexes in the graph.
-
-<p>If either of the vertexes supplied is <code>nullptr</code> or is not found in the graph, the function will throw an error.
-
-<p>If there are multiple edges between the given pair of vertexes, which of the edges will be returned is unspecified.</p>
-
-<p>The pointer returned is a direct pointer to the internal structure inside this graph, and will become invalid if the edge is removed or if the graph itself falls out of scope.</p>
-
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-Edge* e = g.getEdge(v1, v2);
-Edge* e = g.getEdge(name1, name2);
-</pre>
-<hr>
-
-<a name="Method:isNeighbor"></a>
-<pre class=detailCode>
-bool isNeighbor(Vertex* v1, Vertex* v2) const;
-bool isNeighbor(string name1, string name2) const;
-</pre>
-<div class=detailHTML>
-Returns <code>true</code> if the graph contains an edge from
-<code>v1</code> to <code>v2</code>.  As in the <code>addEdge</code>
-method, vertexes can be specified either as vertex pointers or by name.
-
-<p>If either of the vertexes supplied is <code>nullptr</code> or is not found in the graph, the function will return <code>false</code>.
-
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-if (g.isNeighbor(v1, v2)) ...
-if (g.isNeighbor(name1, name2)) ...
-</pre>
-<hr>
-<a name="Method:getVertexSet"></a>
-<pre class=detailCode>
-const Set&lt;Vertex*&gt; &amp; getVertexSet() const;
-</pre>
-<div class=detailHTML>
-Returns the set of all vertexes in the graph.
-
-<p>The pointers returned are direct pointers to the internal structures inside this graph, and will become invalid if any vertex is removed or if the graph itself falls out of scope.</p>
-
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-for (Vertex* vertex : g.getVertexSet()) ...
-</pre>
-<hr>
-<a name="Method:getEdgeSet"></a>
-<pre class=detailCode>
-const Set&lt;Edge*&gt; &amp; getEdgeSet() const;
-const Set&lt;Edge*&gt; &amp; getEdgeSet(Vertex* vertex) const;
-const Set&lt;Edge*&gt; &amp; getEdgeSet(string name) const;
-</pre>
-<div class=detailHTML>
-Returns the set of all edges in the graph or, in the second and
-third forms, the edges that start at the specified vertex, which
-can be indicated either as a pointer or by name.
-
-<p>When calling the two versions of this function that accept a vertex parameter, if the vertex supplied is <code>nullptr</code> or is not found in the graph, the function will throw an error.
-
-<p>The pointers returned are direct pointers to the internal structures inside this graph, and will become invalid if any edge is removed or if the graph itself falls out of scope.</p>
-
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-for (Edge* edge : g.getEdgeSet()) ...
-for (Edge* edge : g.getEdgeSet(vertex)) ...
-for (Edge* edge : g.getEdgeSet(name)) ...
-</pre>
-<hr>
-<a name="Method:getInverseNeighbors"></a>
-<pre class=detailCode>
-const Set&lt;Vertex*&gt; getInverseNeighbors(Vertex* vertex) const;
-const Set&lt;Vertex*&gt; getInverseNeighbors(string vertex) const;
-</pre>
-<div class=detailHTML>
-Returns the set of vertexes for which <var>v</var> is a neighbor; that is, the ones for which there is an edge from that vertex to <var>v</var>.
-This is essentially the opposite of <code>getNeighbors</code>, which returns all vertexes for which there is an edge from <var>v</var> to that vertex.
-
-<p>If the vertex supplied is <code>nullptr</code> or is not found in the graph, the function will throw an error.
-
-<p>The pointers returned are direct pointers to the internal structures inside this graph, and will become invalid if any vertex is removed or if the graph itself falls out of scope.</p>
-
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-for (Vertex* vertex : g.getInverseNeighbors(vertex)) ...
-for (Vertex* vertex : g.getInverseNeighbors(name)) ...
-</pre>
-<hr>
-<a name="Method:getNeighbors"></a>
-<pre class=detailCode>
-const Set&lt;Vertex*&gt; getNeighbors(Vertex* vertex) const;
-const Set&lt;Vertex*&gt; getNeighbors(string vertex) const;
-</pre>
-<div class=detailHTML>
-Returns the set of vertexes that are neighbors of the specified
-vertex, which can be indicated either as a pointer or by name.
-
-<p>If the vertex supplied is <code>nullptr</code> or is not found in the graph, the function will throw an error.
-
-<p>The pointers returned are direct pointers to the internal structures inside this graph, and will become invalid if any vertex is removed or if the graph itself falls out of scope.</p>
-
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-for (Vertex* vertex : g.getNeighbors(vertex)) ...
-for (Vertex* vertex : g.getNeighbors(name)) ...
-</pre>
-<hr>
 <a name="Method:toString"></a>
 <pre class=detailCode>
 string toString() const;
 </pre>
 <div class=detailHTML>
 Converts the graph to a printable string representation, listing all vertex names followed by the start/finish of all edges, such as <code>&quot;{A, B, C, D, E, A -&gt; B, C -&gt; A, D -&gt; E}&quot;</code>.
+Edges will be shown in the form <code>A - B</code> if there is an edge in both directions between the given vertexes, and <code>A -&gt; B</code> if there is an edge in only one directien between them.
+You can also use the operator <code>&lt;&lt;</code> to print a graph to an output stream.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
 string str = g.toString();
+cout &lt;&lt; g &lt;&lt; endl;
 </pre>
 <hr>
-		<a name="Method:resetData"></a>
-		<pre class=detailCode>
-void resetData();
+
+<a name="Method:vertexCount"></a>
+<pre class=detailCode>
+int vertexCount() const;
 </pre>
-		<div class=detailHTML>
-		Sets the data stored in each vertex and edge back to its original value by calling <code>resetData</code> on every vertex and edge.
-		<p>Usage:<br>
-		</div>
-		<pre class=usageCode>
-v.resetData();
+<div class=detailHTML>
+Returns the number of vertexes in the graph.
+Equivalent to <code>size</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int count = g.vertexCount();
 </pre>
+<hr>
 </body>
 </html>

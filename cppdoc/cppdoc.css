@@ -39,6 +39,12 @@ pre, code, .code {
 	color:blue;
 }
 
+.deprecated,
+.deprecated * {
+	background-color: #e0e0e0 !important;
+	color: #aaa !important;
+}
+
 .detailCode {
 	padding:0px;
 	font-weight:bold;

@@ -88,17 +88,21 @@ This class implements a 2D region of colored pixels that can be read/set individ
 <a href="#Constructor:GBufferedImage">GBufferedImage(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>width</var>,&nbsp;<var>height</var>,&nbsp;<var>rgb</var>)</a>&nbsp;</td><td class=indexSynopsis width=100%>Constructs an image with the specified location, size, and optional background color (default black).</td></tr>
 <tr><td class=indexHead colspan=2>Methods</td></tr>
 <tr><td class=indexKey><a href="#Method:clear">clear()</a></td><td class=indexSynopsis width=100%>Sets the color of every pixel in the image to its default color.</td></tr>
+<tr><td class=indexKey><a href="#Method:createRgbPixel">createRgbPixel(<var>r</var>,&nbsp;<var>g</var>,&nbsp;<var>b</var>)</a></td><td class=indexSynopsis width=100%>Creates and returns a single RGB integer from the given R-G-B components from 0-255.</td></tr>
 <tr><td class=indexKey><a href="#Method:fill">fill(<var>rgb</var>)</a></td><td class=indexSynopsis width=100%>Sets the color of every pixel in the image.</td></tr>
 <tr><td class=indexKey><a href="#Method:fillRegion">fillRegion(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>width</var>,&nbsp;<var>height</var>,&nbsp;<var>rgb</var>)</a></td><td class=indexSynopsis width=100%>Sets the color of every pixel in the given rectangular range of the image.</td></tr>
 <tr><td class=indexKey><a href="#Method:fromGrid">fromGrid(<var>grid</var>)</a></td><td class=indexSynopsis width=100%>Replaces the entire contents of this image with the contents of the given grid of RGB pixel values.</td></tr>
+<tr><td class=indexKey><a href="#Method:getBlue">getBlue(<var>rgb</var>)</a></td><td class=indexSynopsis width=100%>Returns the blue component of the given R-G-B integer from 0-255.</td></tr>
+<tr><td class=indexKey><a href="#Method:getGreen">getGreen(<var>rgb</var>)</a></td><td class=indexSynopsis width=100%>Returns the green component of the given R-G-B integer from 0-255.</td></tr>
 <tr><td class=indexKey><a href="#Method:getHeight">getHeight()</a></td><td class=indexSynopsis width=100%>Returns the height of the image in pixels.</td></tr>
+<tr><td class=indexKey><a href="#Method:getRed">getRed(<var>rgb</var>)</a></td><td class=indexSynopsis width=100%>Returns the red component of the given R-G-B integer from 0-255.</td></tr>
+<tr><td class=indexKey><a href="#Method:getRedGreenBlue">getRedGreenBlue(<var>rgb</var>,&nbsp;<var>r</var>,&nbsp;<var>g</var>,&nbsp;<var>b</var>)</a></td><td class=indexSynopsis width=100%>Extracts the red, green, and blue components from 0-255 of the given RGB integer, filling by reference.</td></tr>
 <tr><td class=indexKey><a href="#Method:getRGB">getRGB(<var>x</var>,&nbsp;<var>y</var>)</a></td><td class=indexSynopsis width=100%>Returns the color of the pixel at the given x/y coordinates of the image as an integer.</td></tr>
 <tr><td class=indexKey><a href="#Method:getRGBString">getRGBString(<var>x</var>,&nbsp;<var>y</var>)</a></td><td class=indexSynopsis width=100%>Returns the color of the pixel at the given x/y coordinates of the image as a string.</td></tr>
 <tr><td class=indexKey><a href="#Method:getWidth">getWidth()</a></td><td class=indexSynopsis width=100%>Returns the width of the image in pixels.</td></tr>
 <tr><td class=indexKey><a href="#Method:inBounds">inBounds(<var>x</var>, <var>y</var>)</a></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the given x/y pixel is within the range of this image.</td></tr>
 <tr><td class=indexKey><a href="#Method:load">load(<var>filename</var>)</a></td><td class=indexSynopsis width=100%>Reads the image data from the given file.</td></tr>
-<tr><td class=indexKey><a href="#Method:resize">resize(<var>width</var>,&nbsp;<var>height</var>)<br>
-resize(<var>width</var>,&nbsp;<var>height</var>,&nbsp;<var>retain</var>)</a></td><td class=indexSynopsis width=100%>Changes the image's size.</td></tr>
+<tr><td class=indexKey><a href="#Method:resize">resize(<var>width</var>,&nbsp;<var>height</var>)<br>resize(<var>width</var>,&nbsp;<var>height</var>,&nbsp;<var>retain</var>)</a></td><td class=indexSynopsis width=100%>Changes the image's size.</td></tr>
 <tr><td class=indexKey><a href="#Method:save">save(<var>filename</var>)</a></td><td class=indexSynopsis width=100%>Writes the image data to the given file.</td></tr>
 <tr><td class=indexKey><a href="#Method:setRGB">setRGB(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>rgb</var>)</a></td><td class=indexSynopsis width=100%>Sets the color of the pixel at the given x/y coordinates of the image to the given value.</td></tr>
 <tr><td class=indexKey><a href="#Method:toGrid">toGrid()<br>toGrid(<var>grid</var>)</a></td><td class=indexSynopsis width=100%>Converts this image into a grid of RGB pixels.</td></tr>
@@ -148,6 +152,21 @@ If no fill color value was passed to the constructor, this sets every pixel to b
 </div>
 <pre class=usageCode>
 img-&gt;clear();
+</pre>
+
+<hr>
+<a name="Method:createRgbPixel"></a>
+<pre class=detailCode>
+static int createRgbPixel(int red, int green, int blue);
+</pre>
+<div class=detailHTML>
+Creates a single RGB integer from the given R-G-B components from 0-255.
+If any of red, green, or blue is not between 0-255 inclusive, throws an error.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int px = GBufferedImage::createRgbPixel(r, g, b);
 </pre>
 
 <hr>
@@ -210,6 +229,36 @@ img-&gt;fromGrid(grid);
 </p>
 
 <hr>
+<a name="Method:getBlue"></a>
+<pre class=detailCode>
+static int getBlue(int rgb);
+</pre>
+<div class=detailHTML>
+Returns the blue component of the given R-G-B integer from 0-255.
+The blue component comes from bits 0-7 (least significant) of the integer.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int blue = GBufferedImage::getBlue(rgb);
+</pre>
+
+<hr>
+<a name="Method:getGreen"></a>
+<pre class=detailCode>
+static int getGreen(int rgb);
+</pre>
+<div class=detailHTML>
+Returns the green component of the given R-G-B integer from 0-255.
+The green component comes from bits 8-15 of the integer.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int green = GBufferedImage::getGreen(rgb);
+</pre>
+
+<hr>
 <a name="Method:getHeight"></a>
 <pre class=detailCode>
 double getHeight() const;
@@ -221,6 +270,37 @@ Returns the height of the image in pixels.
 </div>
 <pre class=usageCode>
 double height = img-&gt;getHeight();
+</pre>
+
+<hr>
+<a name="Method:getRed"></a>
+<pre class=detailCode>
+static int getRed(int rgb);
+</pre>
+<div class=detailHTML>
+Returns the red component of the given R-G-B integer from 0-255.
+The red component comes from bits 16-23 of the integer.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int red = GBufferedImage::getRed(rgb);
+</pre>
+
+<hr>
+<a name="Method:getRedGreenBlue"></a>
+<pre class=detailCode>
+static void getRedGreenBlue(int rgb, int&amp; red, int&amp; green, int&amp; blue);
+</pre>
+<div class=detailHTML>
+Extracts the red, green, and blue components from 0-255
+of the given RGB integer, filling by reference.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int red, green, blue;
+GBufferedImage::getRedGreenBlue(rgb, red, green, blue);
 </pre>
 
 <hr>
@@ -242,7 +322,7 @@ int rgb = img-&gt;getRGB(x, y);
 <hr>
 <a name="Method:getRGBString"></a>
 <pre class=detailCode>
-int getRGBString(double x, double y) const;
+string getRGBString(double x, double y) const;
 </pre>
 <div class=detailHTML>
 Returns the color of the pixel at the given x/y coordinates of the image as a string such as "#ff00cc".

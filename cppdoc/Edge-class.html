@@ -26,6 +26,11 @@
 			The edge object itself stores some useful data fields that can be used in various graph algorithms.
 			In particular, an edge stores its cost, which is important for weighted graphs.
 		</p>
+		
+		<p>
+			Previous versions of this class in the library included member variables such as <code>visited</code> to help facilitate the implementation of various graph algorithms.
+			These were removed by the library's maintainer because we want our students to learn to manage such data themselves using collections.
+		</p>
 
 		<p>
 			See also:
@@ -42,14 +47,14 @@
 			<tr><td class=indexKey><nobr><a href="#Constructor:Edge">Edge(<var>start</var>,&nbsp;<var>finish</var>)</a><br>
 			<a href="#Constructor:Edge">Edge(<var>start</var>,&nbsp;<var>end</var>,&nbsp;<var>cost</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a edge between the given vertices.</td></tr>
 			<tr><td class=indexHead colspan=2>Methods</td></tr>
-			<tr><td class=indexKey><nobr><a href="#Method:resetData">resetData()</a></td><td class=indexSynopsis width=100%>Sets the <code>visited</code> field back to its initial value.</td></tr>
+			<tr class="deprecated"><td class=indexKey><nobr><a href="#Method:resetData">resetData()</a></td><td class=indexSynopsis width=100%><em>Deprecated.</em>  Sets the <code>visited</code> field back to its initial value. This will be removed from the library; students should not use it.</td></tr>
 			<tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a></td><td class=indexSynopsis width=100%>Returns a string representation of this edge.</td></tr>
 			<tr><td class=indexHead colspan=2>Fields</td></tr>
 			<tr><td class=indexKey><nobr>double&nbsp;cost</nobr></td><td class=indexSynopsis width=100%>The cost or weight of this edge.</td></tr>
 			<tr><td class=indexKey><nobr>Vertex*&amp;&nbsp;end</nobr></td><td class=indexSynopsis width=100%>A pointer to the finishing vertex touching this edge (alias for <code>finish</code>).</td></tr>
 			<tr><td class=indexKey><nobr>Vertex*&nbsp;finish</nobr></td><td class=indexSynopsis width=100%>A pointer to the finishing vertex touching this edge.</td></tr>
 			<tr><td class=indexKey><nobr>Vertex*&nbsp;start</nobr></td><td class=indexSynopsis width=100%>A pointer to the starting vertex touching this edge.</td></tr>
-			<tr><td class=indexKey><nobr>bool&nbsp;visited</nobr></td><td class=indexSynopsis width=100%>Whether or not this edge has currently been visited; initially <code>false</code>.</td></tr>
+			<tr class="deprecated"><td class=indexKey><nobr>bool&nbsp;visited</nobr></td><td class=indexSynopsis width=100%><em>Deprecated.</em>  Whether or not this edge has currently been visited; initially <code>false</code>. This will be removed from the library; students should not use it.</td></tr>
 			<tr><td class=indexKey><nobr>double&amp;&nbsp;weight</nobr></td><td class=indexSynopsis width=100%>The cost or weight of this edge (alias for <code>cost</code>).</td></tr>
 		</table>
 
@@ -77,6 +82,7 @@ Edge e2(v2, v3, 4.5);
 void resetData();
 </pre>
 		<div class=detailHTML>
+		<em>Deprecated.</em>
 		Sets the <code>visited</code> field back to its initial value of <code>false</code>.
 		<p>Usage:<br>
 		</div>
