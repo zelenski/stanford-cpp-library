@@ -7,7 +7,6 @@ build/
 build_*/
 JavaBackEnd/eclipseproject/bin/
 JavaBackEnd/eclipseproject/obf/temp/
-JavaBackEnd/eclipseproject/src/stanford/karel/
 Karel/src/CollectNewspaper.java
 Karel/bin/
 Karel/.settings
