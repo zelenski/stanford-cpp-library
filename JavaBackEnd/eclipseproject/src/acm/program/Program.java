@@ -181,6 +181,9 @@ public abstract class Program
 	
 	/* system property to disable/enable saving/loading configuration */
 	private static final String CONFIG_PROPERTY = "spl.save.settings";
+	
+	// messages to display when re-prompting on bad user input
+	private static final String GETYESORNO_DEFAULT_REPROMPT = "Please type a word that starts with 'Y' or 'N'.";
 
 	/* Private fields */
 	private AppletStarter appletStarter;
@@ -1699,7 +1702,7 @@ public abstract class Program
 			} else if (answer.startsWith("n")) {
 				return false;
 			} else {
-				getOutputModel().showErrorMessage("Please type a word that begins with 'Y' or 'N'.");
+				getOutputModel().showErrorMessage(GETYESORNO_DEFAULT_REPROMPT);
 			}
 		}
 	}

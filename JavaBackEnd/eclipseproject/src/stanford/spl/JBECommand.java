@@ -1,4 +1,6 @@
 /*
+ * @version 2018/01/26
+ * - added GWindow_setCanvasDrawingMode
  * @version 2017/10/12
  * - added GTextLabel_create
  * - added GWindow_setRepaintImmediately
@@ -243,6 +245,7 @@ public abstract class JBECommand {
 			GWindow_repaint.class,
 			GWindow_requestFocus.class,
 			GWindow_saveCanvasPixels.class,
+			GWindow_setCanvasDrawingMode.class,
 			GWindow_setCanvasSize.class,
 			GWindow_setCloseOperation.class,
 			GWindow_setExitOnClose.class,
@@ -317,32 +320,32 @@ public abstract class JBECommand {
 		}
 	}
 
-	public int nextInt(TokenScanner paramTokenScanner) {
-		String token = paramTokenScanner.nextToken();
+	public int nextInt(TokenScanner scanner) {
+		String token = scanner.nextToken();
 		if (token.equals("-")) {
 			// BUGBUG: argh geez, doesn't handle negative numbers? really? cmon
-			token += paramTokenScanner.nextToken();
+			token += scanner.nextToken();
 		}
 		return Integer.parseInt(token);
 	}
 
-	public double nextDouble(TokenScanner paramTokenScanner) {
-		String str = paramTokenScanner.nextToken();
+	public double nextDouble(TokenScanner scanner) {
+		String str = scanner.nextToken();
 		if (str.equals("-")) {
 			// BUGBUG: argh geez, doesn't handle negative numbers? really? cmon
-			str += paramTokenScanner.nextToken();
+			str += scanner.nextToken();
 		}
 		return Double.parseDouble(str);
 	}
 
-	public String nextString(TokenScanner paramTokenScanner) {
-		return paramTokenScanner.getStringValue(paramTokenScanner.nextToken());
+	public String nextString(TokenScanner scanner) {
+		return scanner.getStringValue(scanner.nextToken());
 	}
 	
-	public String nextBase64(TokenScanner paramTokenScanner) {
+	public String nextBase64(TokenScanner scanner) {
 		String base64 = "";
 		try {
-			BufferedReader reader = new BufferedReader(getTokenScannerReader(paramTokenScanner));
+			BufferedReader reader = new BufferedReader(getTokenScannerReader(scanner));
 			// throw away ", \"" char
 			while (reader.read() != '"') {
 				// empty
@@ -354,7 +357,7 @@ public abstract class JBECommand {
 				base64 = base64.substring(0, base64.length() - 2);
 				
 				// put ) char back into token scanner to read 
-				paramTokenScanner.ungetChar(')');
+				scanner.ungetChar(')');
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -362,8 +365,8 @@ public abstract class JBECommand {
 		return base64;
 	}
 
-	public boolean nextBoolean(TokenScanner paramTokenScanner) {
-		return paramTokenScanner.nextToken().startsWith("t");
+	public boolean nextBoolean(TokenScanner scanner) {
+		return scanner.nextToken().startsWith("t");
 	}
 
 	/**

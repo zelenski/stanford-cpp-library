@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/acm.jar" sourcepath="/home/stepp/Dropbox/data/docs/stanford/StanfordCPPLib/JavaBackEnd/latest-version-decompiled"/>
 	<classpathentry kind="lib" path="lib/junit.jar"/>
 	<classpathentry kind="lib" path="lib/jogg-0.0.7.jar"/>
 	<classpathentry kind="lib" path="lib/jorbis-0.0.15.jar"/>
@@ -10,5 +9,6 @@
 	<classpathentry kind="lib" path="lib/vorbisspi1.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/jl1.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/mp3spi1.9.5.jar"/>
+	<classpathentry kind="lib" path="lib/acm.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

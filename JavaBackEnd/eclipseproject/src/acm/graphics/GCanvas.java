@@ -1,4 +1,7 @@
 /*
+ * @version 2018/01/26
+ * - added setDrawingMode to speed up drawing when pixel-based methods are not used
+ * - optimizations to clear / removeAll
  * @version 2017/10/14
  * - small change to use GraphicsUtils for antialiasing
  * @version 2017/10/12
@@ -94,13 +97,15 @@ public class GCanvas extends JComponent
 	private static final long serialVersionUID = 0L;
 	private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 	
-	private static /* final */ boolean USE_BUFFERED_IMAGE = true;
-	
 	// color and font used to display mouse info
 	private static final Color PIXEL_GRID_COLOR = Color.GRAY;
 	private static final int PIXEL_GRID_INCREMENT = 10;
 	private static final Color MOUSE_INFO_COLOR = Color.DARK_GRAY;
 	private static final Font MOUSE_INFO_FONT = new JLabel("^_^").getFont();
+	
+	// drawing modes (should match constants in C++ 
+	// enum DrawingMode { DRAW_PIXEL_BASED = 0, DRAW_OBJECT_ORIENTED = 1 };
+	public static final int DRAW_PIXEL_BASED = 0, DRAW_OBJECT_ORIENTED = 1;
 
 	private GCanvasListener gCanvasListener;
 	private GObject lastObject;
@@ -108,13 +113,14 @@ public class GCanvas extends JComponent
 	private GObjectList contents;
 	private BufferedImage bufferedImage = null;
 	private BufferedImage bufferedImage2 = null;   // used only if showPixelInfo is true
-	private Graphics2D osg = null;
+	private Graphics2D osg = null;                 // graphics context for drawing on buffered image
 	private boolean antialias;
 	private boolean autoRepaint;
 	private boolean nativeArcFlag;
 	private boolean showPixelGrid;
 	private boolean showPixelInfo;
 	private Point lastMousePoint = null;
+	private int drawingMode = DRAW_PIXEL_BASED;
 	
 	/**
 	 * Creates a new <code>GCanvas</code> that contains no objects.
@@ -123,17 +129,17 @@ public class GCanvas extends JComponent
 	 */
 	public GCanvas() {
 		contents = new GObjectList(this);
-		if (USE_BUFFERED_IMAGE) {
+		if (drawingMode == DRAW_PIXEL_BASED) {
 			bufferedImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);   // will be resized
 			osg = (Graphics2D) bufferedImage.getGraphics();
 		}
+		setOpaque(true);
 		setAntiAliasing(GObject.isAntiAliasing());
 		
-		gCanvasListener = new GCanvasListener(this);
+		gCanvasListener = new GCanvasListener();
 		
 		setBackground(Color.WHITE);
 		setForeground(Color.BLACK);
-		setOpaque(true);
 		setAutoRepaintFlag(true);
 		setNativeArcFlag(false);
 		setShowPixelGrid(false);
@@ -155,6 +161,7 @@ public class GCanvas extends JComponent
 	 * @usage gc.add(comp);
 	 * @param comp The component to add
 	 */
+	@Override
 	public Component add(Component comp) {
 		super.add(comp);
 		Dimension size = comp.getSize();
@@ -237,9 +244,11 @@ public class GCanvas extends JComponent
 	 */
 	public void clear() {
 		// also clear out the buffered image
-		if (USE_BUFFERED_IMAGE) {
+		if (drawingMode == DRAW_PIXEL_BASED) {
 			clear(bufferedImage);
-			clear(bufferedImage2);
+			if (showPixelInfo) {
+				clear(bufferedImage2);
+			}
 		}
 		setAntiAliasing(isAntiAliasing());
 		removeAll();   // calls repaint
@@ -706,6 +715,10 @@ public class GCanvas extends JComponent
 		return autoRepaint;
 	}
 
+	public int getDrawingMode() {
+		return drawingMode;
+	}
+	
 	/**
 	 * Returns the graphical object at the specified index, numbering from back
 	 * to front in the the <i>z</i> dimension.
@@ -819,7 +832,7 @@ public class GCanvas extends JComponent
 	 * Returns a Base64-encoded representation of the pixel data of this image.
 	 */
 	public String getPixelsAsString() {
-		if (USE_BUFFERED_IMAGE && bufferedImage != null) {
+		if (drawingMode == DRAW_PIXEL_BASED && bufferedImage != null) {
 			return GBufferedImage.toStringBase64(bufferedImage);
 		} else {
 			return "";
@@ -839,7 +852,7 @@ public class GCanvas extends JComponent
 	public int getRGB(int x, int y) {
 		int rgb = 0;
 		if (inBounds(x, y)) {
-			if (bufferedImage2 != null) {
+			if (showPixelInfo && bufferedImage2 != null) {
 				rgb = bufferedImage2.getRGB(x, y);
 			} else if (bufferedImage != null) {
 				rgb = bufferedImage.getRGB(x, y);
@@ -849,6 +862,42 @@ public class GCanvas extends JComponent
 			}
 		}
 		return rgb;
+	}
+	
+	private void handleResize() {
+		if (drawingMode != DRAW_PIXEL_BASED) {
+			return;
+		}
+		
+		BufferedImage oldImage = bufferedImage;
+		int w = Math.max(1, getWidth());
+		int h = Math.max(1, getHeight());
+		if (oldImage != null && w == oldImage.getWidth() && h == oldImage.getHeight()) {
+			return;
+		}
+		
+		bufferedImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		if (showPixelInfo) {
+			bufferedImage2 = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		}
+		osg = (Graphics2D) bufferedImage.getGraphics();
+		GraphicsUtils.setAntialiasing(osg, isAntiAliasing());
+
+		// draw background
+//		if (isOpaque()) {
+//			osg.setColor(getBackground());
+//			osg.fillRect(0, 0, w, h);
+//		}
+//		osg.setColor(Color.BLACK);
+		
+		// copy over
+		if (oldImage != null) {
+			osg.drawImage(oldImage, 0, 0, this);
+		}
+		
+		if (isShowing()) {
+			// gCanvas.repaint();
+		}
 	}
 	
 	/**
@@ -942,6 +991,7 @@ public class GCanvas extends JComponent
 	 * @param g The graphics context into which the canvas is painted
 	 * @noshow
 	 */
+	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		GraphicsUtils.setAntialiasing(g, isAntiAliasing());
@@ -963,28 +1013,28 @@ public class GCanvas extends JComponent
 			contents.mapPaint(g2);
 			g.drawImage(bufferedImage2, 0, 0, this);
 			paintPixelInfo(g);
-		} else {
+		} else if (bufferedImage != null) {
 			// standard drawing (much more common)
-			if (bufferedImage != null) {
-				if (isOpaque()) {
-					g.setColor(getBackground());
-					g.fillRect(0, 0, getWidth(), getHeight());
-				}
-				g.drawImage(bufferedImage, 0, 0, this);
+			if (isOpaque()) {
+				g.setColor(getBackground());
+				g.fillRect(0, 0, getWidth(), getHeight());
 			}
+			g.drawImage(bufferedImage, 0, 0, this);
+			g.setColor(getForeground());
+			contents.mapPaint(g);
+		} else {
+			// no buffered image at all; direct draw
 			g.setColor(getForeground());
 			contents.mapPaint(g);
 		}
 		
-		paintPixelGrid(g);
+		if (showPixelGrid) {
+			paintPixelGrid(g);
+		}
 	}
 	
 	// draws a grid of horizontal and vertical lines to help debugging
 	private void paintPixelGrid(Graphics g) {
-		if (!showPixelGrid) {
-			return;
-		}
-		
 		int w = getWidth();
 		int h = getHeight();
 		
@@ -1204,10 +1254,12 @@ public class GCanvas extends JComponent
 		boolean oldAntialias = this.antialias;
 		this.antialias = antialias;
 		GraphicsUtils.setAntialiasing(this, antialias);
-		if (USE_BUFFERED_IMAGE) {
+		if (drawingMode == DRAW_PIXEL_BASED) {
 			GraphicsUtils.setAntialiasing(osg, antialias);
 			GraphicsUtils.setAntialiasing(bufferedImage, antialias);
-			GraphicsUtils.setAntialiasing(bufferedImage2, antialias);
+			if (showPixelInfo) {
+				GraphicsUtils.setAntialiasing(bufferedImage2, antialias);
+			}
 		}
 		if (oldAntialias != antialias) {
 			conditionalRepaint();
@@ -1259,6 +1311,18 @@ public class GCanvas extends JComponent
 		setColor(new Color(rgb));
 	}
 	
+	public void setDrawingMode(int mode) {
+		if (this.drawingMode != mode) {
+			this.drawingMode = mode;
+			if (mode == DRAW_OBJECT_ORIENTED) {
+				// get rid of BufferedImage background buffer to save memory
+				bufferedImage = null;
+			}
+			handleResize();
+			conditionalRepaint();
+		}
+	}
+	
 	@Override
 	public void setForeground(Color color) {
 		super.setForeground(color);
@@ -1302,25 +1366,29 @@ public class GCanvas extends JComponent
 	}
 	
 	public void setPixelsFromString(String base64) {
-		if (USE_BUFFERED_IMAGE && bufferedImage != null) {
+		if (drawingMode == DRAW_PIXEL_BASED && bufferedImage != null) {
 			GBufferedImage.fromStringBase64(base64, bufferedImage);
 			conditionalRepaint();
 		}
 	}
 
 	public void setRGB(double x, double y, int rgb) {
+		// TODO: what if not in pixel drawing mode?
 		setRGB((int) x, (int) y, rgb, /* repaint */ false);
 	}
 	
 	public void setRGB(double x, double y, int rgb, boolean repaint) {
+		// TODO: what if not in pixel drawing mode?
 		setRGB((int) x, (int) y, rgb, repaint);
 	}
 
 	public void setRGB(int x, int y, int rgb) {
+		// TODO: what if not in pixel drawing mode?
 		setRGB(x, y, rgb, /* repaint */ false);
 	}
 	
 	public void setRGB(int x, int y, int rgb, boolean repaint) {
+		// TODO: what if not in pixel drawing mode?
 		if (inBounds(x, y)) {
 			if (bufferedImage == null) {
 				GRect rect = new GRect(x, y, 1, 1);
@@ -1355,7 +1423,7 @@ public class GCanvas extends JComponent
 	public void setShowPixelInfo(boolean show) {
 		this.showPixelInfo = show;
 		if (show) {
-			if (USE_BUFFERED_IMAGE) {
+			if (drawingMode == DRAW_PIXEL_BASED) {
 				int w = Math.max(1, getWidth());
 				int h = Math.max(1, getHeight());
 				bufferedImage2 = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
@@ -1459,7 +1527,7 @@ public class GCanvas extends JComponent
 	 * Returns the pixel contents of this canvas as a BufferedImage.
 	 */
 	public BufferedImage toImage() {
-		if (USE_BUFFERED_IMAGE && bufferedImage != null) {
+		if (drawingMode == DRAW_PIXEL_BASED && bufferedImage != null) {
 			return toImage(bufferedImage.getWidth(), bufferedImage.getHeight());
 		} else {
 			return toImage(getWidth(), getHeight());
@@ -1506,20 +1574,6 @@ public class GCanvas extends JComponent
 	 * This class fields mouse events that occur in the <code>GCanvas</code>.
 	 */
 	private class GCanvasListener implements MouseListener, MouseMotionListener, ComponentListener {
-		/* Private instance variables */
-		private GCanvas gCanvas;
-
-		/**
-		 * Creates a new listener object that watches for mouse events in the
-		 * <code>GCanvas</code>.
-		 *
-		 * @usage GCanvasListener listener = new GCanvasListener(gc);
-		 * @param gc The <code>GCanvas</code> object to which this listens
-		 */
-		public GCanvasListener(GCanvas gc) {
-			gCanvas = gc;
-		}
-
 		/* ComponentListener interface */
 		public void componentHidden(ComponentEvent e) {
 			// empty
@@ -1530,39 +1584,7 @@ public class GCanvas extends JComponent
 		}
 
 		public void componentResized(ComponentEvent e) {
-			if (!USE_BUFFERED_IMAGE || bufferedImage == null) {
-				return;
-			}
-			
-			BufferedImage oldImage = bufferedImage;
-			int w = Math.max(1, getWidth());
-			int h = Math.max(1, getHeight());
-			if (w == oldImage.getWidth() && h == oldImage.getHeight()) {
-				return;
-			}
-			
-			bufferedImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-			if (showPixelInfo) {
-				bufferedImage2 = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-			}
-			osg = (Graphics2D) bufferedImage.getGraphics();
-			GraphicsUtils.setAntialiasing(osg, isAntiAliasing());
-
-			// draw background
-//			if (isOpaque()) {
-//				osg.setColor(getBackground());
-//				osg.fillRect(0, 0, w, h);
-//			}
-//			osg.setColor(Color.BLACK);
-			
-			// copy over
-			if (oldImage != null) {
-				osg.drawImage(oldImage, 0, 0, gCanvas);
-			}
-			
-			if (gCanvas.isShowing()) {
-				// gCanvas.repaint();
-			}
+			handleResize();
 		}
 
 		public void componentShown(ComponentEvent e) {
@@ -1571,11 +1593,11 @@ public class GCanvas extends JComponent
 		
 		/* MouseListener/MouseMotionListener interfaces */
 		public void mouseClicked(MouseEvent e) {
-			gCanvas.dispatchMouseEvent(e);
+			GCanvas.this.dispatchMouseEvent(e);
 		}
 
 		public void mouseDragged(MouseEvent e) {
-			gCanvas.dispatchMouseEvent(e);
+			GCanvas.this.dispatchMouseEvent(e);
 			if (showPixelInfo) {
 				lastMousePoint = e.getPoint();
 				repaint();
@@ -1583,15 +1605,15 @@ public class GCanvas extends JComponent
 		}
 
 		public void mouseEntered(MouseEvent e) {
-			gCanvas.dispatchMouseEvent(e);
+			GCanvas.this.dispatchMouseEvent(e);
 		}
 
 		public void mouseExited(MouseEvent e) {
-			gCanvas.dispatchMouseEvent(e);
+			GCanvas.this.dispatchMouseEvent(e);
 		}
 
 		public void mouseMoved(MouseEvent e) {
-			gCanvas.dispatchMouseEvent(e);
+			GCanvas.this.dispatchMouseEvent(e);
 			if (showPixelInfo) {
 				lastMousePoint = e.getPoint();
 				repaint();
@@ -1599,12 +1621,12 @@ public class GCanvas extends JComponent
 		}
 
 		public void mousePressed(MouseEvent e) {
-			gCanvas.requestFocus();
-			gCanvas.dispatchMouseEvent(e);
+			GCanvas.this.requestFocus();
+			GCanvas.this.dispatchMouseEvent(e);
 		}
 		
 		public void mouseReleased(MouseEvent e) {
-			gCanvas.dispatchMouseEvent(e);
+			GCanvas.this.dispatchMouseEvent(e);
 		}
 	}
 

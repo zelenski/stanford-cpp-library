@@ -41,17 +41,20 @@ public class GOval extends GObject implements GFillable, GResizable {
 	public GRectangle getBounds() {
 		Object obj = new java.awt.geom.Ellipse2D.Double(0.0D, 0.0D, frameWidth, frameHeight);
 		AffineTransform affinetransform = getMatrix();
-		if (affinetransform != null)
+		if (affinetransform != null) {
 			obj = affinetransform.createTransformedShape(((Shape) (obj)));
-		java.awt.Rectangle rectangle = ((Shape) (obj)).getBounds();
+		}
+		Rectangle2D rectangle = ((Shape) (obj)).getBounds2D();
 		return new GRectangle(rectangle.getX() + getX(), rectangle.getY() + getY(), rectangle.getWidth(),
 				rectangle.getHeight());
 	}
 
 	public boolean contains(double x, double y) {
-		Object obj = new java.awt.geom.Ellipse2D.Double(0.0D, 0.0D, frameWidth, frameHeight);
+		Object obj = null;
 		AffineTransform affinetransform = getMatrix();
-		if (affinetransform != null) {
+		if (affinetransform == null) {
+			obj = new java.awt.geom.Ellipse2D.Double(0.0D, 0.0D, frameWidth, frameHeight);
+		} else {
 			// JL: remove getBounds() call here
 			obj = affinetransform.createTransformedShape(((Shape) (obj)));
 		}
@@ -80,6 +83,7 @@ public class GOval extends GObject implements GFillable, GResizable {
 
 	public void setFillColor(Color color) {
 		fillColor = color;
+		isFilled = fillColor != null;
 		repaint();
 	}
 
