@@ -3,6 +3,8 @@
  * A LinkedIntList is a sequential collection of integers stored with 0-based integer
  * indexes and internally represented as a list of linked node structures.
  *
+ * @version 2018/03/19
+ * - changed nullptr output to {}
  * @version 2016/11/11
  * - made into template class
  * @version 2016/08/23
@@ -96,7 +98,8 @@ void ListNodeGen<T>::printChain(ListNodeGen<T>* list, std::string name, int maxL
 template <typename T>
 std::ostream& operator <<(std::ostream& out, ListNodeGen<T>* front) {
     if (!front) {
-        out << "nullptr";
+        // out << "nullptr";
+        out << "{}";
     } else {
         out << "{";
         if (front) {

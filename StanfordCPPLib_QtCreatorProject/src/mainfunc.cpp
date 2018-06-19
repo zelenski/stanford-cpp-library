@@ -414,10 +414,161 @@
 //}
 
 
-#include "qwindow.h"
+// #include "qwindow.h"
+
+#include <iostream>
+#include <string>
+#include "basicgraph.h"
+#include "console.h"
+#include "functional.h"
+#include "grid.h"
+#include "range.h"
+#include "sparsegrid.h"
+#include "vector.h"
+using namespace std;
+
+int fact(int n) {
+    cout << "fact " << n << endl;
+    if (n == 0) { return 1; }
+    return n * fact(n-1);
+}
+
+bool is_even(int n) {
+    return n % 2 == 0;
+}
+
+int add(int a, int b) {
+    return a + b;
+}
+
+int squared(int n) {
+    return n * n;
+}
+
+int len(string s) {
+    return (int) s.length();
+}
+
+bool strLenLess(const string& s1, const string& s2) {
+    return s1.length() < s2.length() ||
+            (s1.length() == s2.length() && s1 < s2);
+}
 
 int main() {
-    QWindow window(500, 300);
+    // QWindow window(500, 300);
+    fact(5);
+
+    Vector<int> v {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    Vector<int> v2 = functional::filter(v, is_even);
+    cout << "v  : " << v << endl;
+    cout << "v2 : " << v2 << endl;
+
+    Vector<int> v3 = functional::map(v, squared);
+    cout << "v3 : " << v3 << endl;
+
+    Vector<string> names {"Cynthia", "Marty", "Ed", "", "Bob"};
+    Vector<int> lengths;
+    functional::map(names, len, lengths);
+    cout << "names  : " << names << endl;
+    cout << "lengths: " << lengths << endl;
+
+    int result = functional::reduce(v, add);
+    cout << "sum: " << result << endl;
+
+    BasicGraph graph;
+    graph.addVertex("b");
+    graph.addVertex("c");
+    graph.addVertex("a");
+    graph.addVertex("e");
+    graph.addVertex("d");
+    graph.addEdge("a", "d");
+    graph.addEdge("c", "d");
+    graph.addEdge("b", "c");
+    graph.addEdge("a", "e");
+    graph.addEdge("b", "d");
+    graph.addEdge("a", "b");
+    graph.addEdge("a", "c");
+    graph.addEdge("c", "e");
+    graph.addEdge("b", "e");
+    graph.addEdge("d", "e");
+    Set<Edge*> edges;
+    edges = graph.getEdgeSet();
+    cout << "graph: " << graph << endl;
+    cout << "edges: " << edges << endl;
+
+    Map<string, Set<string>> m = graph.toMap();
+    cout << "map: " << m << endl;
+
+    cout << "getVertexSet: " << graph.getVertexSet() << endl;
+    cout << "getEdgeSet  : " << graph.getEdgeSet() << endl;
+
+    Vector<Vertex*> vec;
+    for (Vertex* vertex : graph) {
+        vec.add(vertex);
+    }
+
+    cout << "vector: " << vec << endl;
+    cout << endl;
+
+    // arcs ordering
+    for (Vertex* v : graph) {
+        cout << "arcs      of " << v->name << ": " << v->arcs << endl;
+        cout << "neighbors of " << v->name << ": " << graph.getNeighbors(v) << endl;
+    }
+
+
+    Grid<int> g;
+    g.resize(4, 3);
+
+
+
+    GridLocation loc {2, 1};
+    g.set(loc, 42);
+    cout << "Grid set: " << g << endl;
+    cout << "Grid get: " << g.get(loc) << endl;
+
+    g[loc] = 19;
+    cout << "Grid [] set: " << g << endl;
+    cout << "Grid [] get: " << g[loc] << endl;
+
+    cout << "Grid inBounds t: " << boolalpha << g.inBounds({0, 0}) << endl;
+    cout << "Grid inBounds f: " << boolalpha << g.inBounds({5, -1}) << endl;
+
+    for (const GridLocation& loc : g.locations()) {
+        cout << "loc " << loc << ": " << g[loc] << endl;
+        for (const GridLocation& neigh : loc.neighbors()) {
+            if (neigh == loc || !g.inBounds(neigh)) continue;
+            cout << "    neighbor = " << neigh << endl;
+        }
+    }
+
+
+//    g.unset(loc);
+//    cout << "Grid [] unset: " << g << endl;
+
+    // for (GridLocation loc; loc <= g.)
+
+    for (int i : range(10)) {
+        cout << "range i = " << i << endl;
+    }
+
+    for (Point p : range2d(2, 3, 6, 5)) {
+        cout << "range 2d p = " << p << endl;
+    }
+
+    Set<string> set({"hello", "ok", "byebye", "A", "Marty", "beautiful", "Marty", "x", "hello", "hi"}, strLenLess);
+//    set.add("hello");
+//    set.add("ok");
+//    set.add("byebye");
+//    set.add("A");
+//    set.add("Marty");
+//    set.add("beautiful");
+//    set.add("Marty");
+//    set.add("x");
+//    set.add("hello");
+//    set.add("hi");
+
+    cout << "set: " << set << endl;
 
     return 0;
 }

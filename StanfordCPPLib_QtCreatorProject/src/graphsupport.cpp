@@ -39,23 +39,23 @@ const string COLOR_NAMES[7] = {
     "blue"
 };
 
-bool graph_canReach(BasicGraph& graph, Vertex* start, Vertex* end, Vector<Vertex*>* path) {
+bool graph_canReach(BasicGraph& graph, Vertex* start, Vertex* end, Set<Vertex*>& visited, Vector<Vertex*>* path) {
     // cout << "    canReach(graph, start=" << start->name << ", end=" << end->name << ")" << endl;
     if (start == end) {
         return true;
-    } else if (start->visited) {
+    } else if (visited.contains(start)) {
         return false;
     } else {
-        start->visited = true;
+        visited.add(start);
         if (path) {
             path->add(start);
         }
         for (Vertex* neighbor : graph.getNeighbors(start->name)) {
-            if (graph_canReach(graph, neighbor, end, path)) {
+            if (graph_canReach(graph, neighbor, end, visited, path)) {
                 return true;
             }
         }
-        start->visited = false;
+        visited.remove(start);
         if (path) {
             path->remove(path->size() - 1);
         }
@@ -72,8 +72,9 @@ bool graph_isConnected(BasicGraph& graph, bool checkWeak) {
             }
             // cout << "    " << v1->name << " ... " << v2->name << endl;
             graph.resetData();
-            if (!graph_canReach(graph, v1, v2)) {
-                if (checkWeak && graph_canReach(graph, v2, v1)) {
+            Set<Vertex*> visited;
+            if (!graph_canReach(graph, v1, v2, visited)) {
+                if (checkWeak && graph_canReach(graph, v2, v1, visited)) {
                     weak = true;
                     continue;
                 }
@@ -94,7 +95,8 @@ bool graph_isCyclic(BasicGraph& graph) {
         for (Vertex* neighbor : graph.getNeighbors(v)) {
             Vector<Vertex*> path;
             graph.resetData();
-            if (graph_canReach(graph, neighbor, v, &path)) {
+            Set<Vertex*> visited;
+            if (graph_canReach(graph, neighbor, v, visited, &path)) {
                 path.insert(0, v);
                 path.add(v);
                 cout << "cycle starting from " << v->name << ": " << graph_pathToString(path) << endl;

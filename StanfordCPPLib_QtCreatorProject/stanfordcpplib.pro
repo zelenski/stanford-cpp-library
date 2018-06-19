@@ -13,6 +13,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2018/02/28
+# - flag to disable some BasicGraph Vertex/Edge members
 # @version 2018/01/23
 # - modify a couple of clang compiler flags for OSX
 # @version 2017/11/15
@@ -401,6 +403,10 @@ DEFINES += PQUEUE_PRINT_IN_HEAP_ORDER
 # been invalidated (e.g. if you remove from a Map while iterating over it)
 DEFINES += SPL_THROW_ON_INVALID_ITERATOR
 
+# flag to add members like 'cost', 'visited', etc. to BasicGraph Vertex/Edge
+# (we are going to disable these to force more interesting implementations)
+# DEFINES += SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
+
 # should we throw an error() when operator >> fails on a collection?
 # for years this was true, but the C++ standard says you should just silently
 # set the fail bit on the stream and exit, so that has been made the default.
@@ -633,4 +639,4 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #636; if not, your .pro has been changed!)
+# END OF FILE (this should be line #642; if not, your .pro has been changed!)
