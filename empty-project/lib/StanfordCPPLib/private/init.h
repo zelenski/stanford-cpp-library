@@ -128,4 +128,8 @@ void __stanfordCppLibExit(int status);
 #define __EXIT __std_exit_function_
 #define exit __stanfordCppLibExit
 
+#ifdef SPL_OVERLOAD_PROBLEMATIC_POINTER_ARITHMETIC
+#include "pointers.h"
+#endif // SPL_OVERLOAD_PROBLEMATIC_POINTER_ARITHMETIC
+
 #endif // _init_h

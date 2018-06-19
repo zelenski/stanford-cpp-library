@@ -5,6 +5,8 @@
  * compact structure for storing a list of words.
  *
  * @author Marty Stepp
+ * @version 2018/03/10
+ * - added methods front, back
  * @version 2016/12/09
  * - added iterator version checking support (implicitly via Set)
  * @version 2016/09/24
@@ -140,6 +142,15 @@ public:
     void addWordsFromFile(const std::string& filename);
 
     /*
+     * Method: back
+     * Usage: string word = lex.back();
+     * --------------------------------
+     * Returns the last value in the lexicon in alphabetical order.
+     * If the set is empty, generates an error.
+     */
+    std::string back() const;
+
+    /*
      * Method: clear
      * Usage: lex.clear();
      * -------------------
@@ -197,8 +208,19 @@ public:
      * ---------------------------------
      * Returns the first value in the lexicon in alphabetical order.
      * If the set is empty, <code>first</code> generates an error.
+     * Equivalent to first.
      */
     std::string first() const;
+
+    /*
+     * Method: front
+     * Usage: string word = lex.front();
+     * ---------------------------------
+     * Returns the first value in the lexicon in alphabetical order.
+     * If the set is empty, generates an error.
+     * Equivalent to first.
+     */
+    std::string front() const;
 
     /*
      * Method: insert

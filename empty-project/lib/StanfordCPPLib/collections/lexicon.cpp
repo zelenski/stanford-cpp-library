@@ -15,6 +15,8 @@
  *
  * The original DAWG implementation is retained as dawglexicon.h/cpp.
  * 
+ * @version 2018/03/10
+ * - added method front
  * @version 2016/09/24
  * - refactored to use collections.h utility functions
  * @version 2016/08/11
@@ -139,6 +141,13 @@ void Lexicon::addWordsFromFile(const std::string& filename) {
     input.close();
 }
 
+std::string Lexicon::back() const {
+    if (isEmpty()) {
+        error("Lexicon::back: lexicon is empty");
+    }
+    return m_allWords.back();
+}
+
 void Lexicon::clear() {
     m_size = 0;
     m_allWords.clear();
@@ -194,7 +203,14 @@ std::string Lexicon::first() const {
     if (isEmpty()) {
         error("Lexicon::first: lexicon is empty");
     }
-    return m_allWords.first();
+    return m_allWords.front();
+}
+
+std::string Lexicon::front() const {
+    if (isEmpty()) {
+        error("Lexicon::front: lexicon is empty");
+    }
+    return m_allWords.front();
 }
 
 void Lexicon::insert(const std::string& word) {

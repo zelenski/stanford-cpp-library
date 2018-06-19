@@ -165,7 +165,7 @@ public:
      * Identical in behavior to the == operator.
      */
     bool equals(const Vector<ValueType>& v) const;
-    
+
     /*
      * Method: front
      * Usage: ValueType val = vec.front();

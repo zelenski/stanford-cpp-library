@@ -5,13 +5,16 @@
  * to represent <b><i>graphs,</i></b> which consist of a set of
  * <b><i>nodes</i></b> (vertices) and a set of <b><i>arcs</i></b> (edges).
  * 
+ * @version 2018/03/10
+ * - added methods front, back
+ * - fixed compiler issue with getArcSet call
  * @version 2017/11/14
  * - added nodeCount, arcCount, getNodeNames
  * @version 2016/12/09
  * - added iterator version checking support (implicitly via Map)
  * - fixed bug in getInverseNeighborNames function
  * @version 2016/12/01
- * - removed memory leaks of graph vertex and edge structures
+ * - removed memory leaks of graph node and arc structures
  * - fixed bug in containsNode method (was returning false positives)
  * - fixed bugs in some node/arc methods (should not crash on empty/null args)
  * @version 2016/11/29
@@ -147,6 +150,15 @@ public:
     int arcCount() const;
 
     /*
+     * Method: back
+     * Usage: NodeType* node = graph.back();
+     * -------------------------------------
+     * Returns the last node in the graph in the order established by the
+     * <code>foreach</code> macro.  If the graph is empty, generates an error.
+     */
+    NodeType* back() const;
+
+    /*
      * Method: clear
      * Usage: g.clear();
      * -----------------
@@ -204,11 +216,24 @@ public:
      * ------------------------------------
      * Compares two graphs for equality.
      * Returns <code>true</code> if this graph contains exactly the same
-     * vertices, edges, and connections as the given other graph.
+     * nodes, arcs, and connections as the given other graph.
      * Identical in behavior to the == operator.
      */
     bool equals(const Graph<NodeType, ArcType>& graph2) const;
     
+    /*
+     * Method: front
+     * Usage: NodeType* node = graph.front();
+     * --------------------------------------
+     * Returns the first node in the graph in the order established by the
+     * <code>foreach</code> macro.  If the graph is empty, generates an error.
+     */
+    NodeType* front() const;
+
+    /*
+     * Returns the arc, if any, from node1 to node2.
+     * If no such arc exists, returns a null pointer.
+     */
     ArcType* getArc(NodeType* node1, NodeType* node2) const;
     ArcType* getArc(const std::string& node1, const std::string& node2) const;
 
@@ -232,10 +257,10 @@ public:
      * Usage: for (ArcType* arc : g.getInverseArcSet(node)) ...
      *        for (ArcType* arc : g.getInverseArcSet(name)) ...
      * -------------------------------------------------------------
-     * Returns the set of outbound edges to the given node from other nodes.
+     * Returns the set of outbound arcs to the given node from other nodes.
      * The given node can be indicated either as a pointer or by name.
      * In other words, getInverseArcSet(n1) is the set of all nodes n2
-     * such that there exists an edge E starting from n2 and ending at n1.
+     * such that there exists an arc E starting from n2 and ending at n1.
      * If any pointer passed is null, or if the given node is not found
      * in this graph, throws an error.
      */
@@ -250,7 +275,7 @@ public:
      * Returns the set of strings of names of nodes that are neighbors of the
      * given node, which can be indicated either as a pointer or by name.
      * In other words, getInverseNeighborNames(n1) is the set of all strings n2
-     * such that there exists an edge E starting from n2 and ending at n1.
+     * such that there exists an arc E starting from n2 and ending at n1.
      * If any pointer passed is null, or if the given node is not found
      * in this graph, returns an empty set.
      */
@@ -265,7 +290,7 @@ public:
      * Returns the set of nodes that are neighbors of the specified
      * node, which can be indicated either as a pointer or by name.
      * In other words, getInverseNeighbors(n1) is the set of all nodes n2
-     * such that there exists an edge E starting from n2 and ending at n1.
+     * such that there exists an arc E starting from n2 and ending at n1.
      * If any pointer passed is null, or if the given node is not found
      * in this graph, returns an empty set.
      */
@@ -280,7 +305,7 @@ public:
      * Returns the set of node names that are neighbors of the specified
      * node, which can be indicated either as a pointer or by name.
      * In other words, getNeighbors(n1) is the set of all strings n2
-     * such that there exists an edge E starting from n1 and ending at n2.
+     * such that there exists an arc E starting from n1 and ending at n2.
      * If any pointer passed is null, or if the given node is not found
      * in this graph, returns an empty set.
      */
@@ -295,7 +320,7 @@ public:
      * Returns the set of nodes that are neighbors of the specified
      * node, which can be indicated either as a pointer or by name.
      * In other words, getNeighbors(n1) is the set of all nodes n2
-     * such that there exists an edge E starting from n1 and ending at n2.
+     * such that there exists an arc E starting from n1 and ending at n2.
      * If any pointer passed is null, or if the given node is not found
      * in this graph, returns an empty set.
      */
@@ -318,7 +343,7 @@ public:
      * --------------------------------------------------
      * Returns the set of the names of all nodes in the graph.
      * Similar to getNodeSet but returns a set of strings rather than a set
-     * of pointers to vertexes.
+     * of pointers to nodes.
      */
     Set<std::string> getNodeNames() const;
     
@@ -706,7 +731,7 @@ Graph<NodeType, ArcType>::Graph(const Graph& src) {
  * Implementation notes: Graph destructor
  * --------------------------------------
  * The destructor must free all heap storage used by this graph to
- * represent the nodes and arcs.  The clear metho must also reclaim
+ * represent the nodes and arcs.  The clear method must also reclaim
  * this memory, which means that the destructor can simply call
  * clear to do the work.
  */
@@ -796,6 +821,14 @@ int Graph<NodeType, ArcType>::arcCount() const {
     return getArcSet().size();
 }
 
+template <typename NodeType, typename ArcType>
+NodeType* Graph<NodeType, ArcType>::back() const {
+    if (this->isEmpty()) {
+        error("Graph::back: graph is empty");
+    }
+    return this->nodes.back();
+}
+
 /*
  * Implementation notes: clear
  * ---------------------------
@@ -857,7 +890,7 @@ bool Graph<NodeType, ArcType>::containsArc(ArcType* arc) const {
     if (!arc) {
         return false;
     } else {
-        return this->getEdgeSet().contains(arc);
+        return this->getArcSet().contains(arc);
     }
 }
 
@@ -879,6 +912,14 @@ bool Graph<NodeType, ArcType>::containsNode(NodeType* node) const {
 template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::equals(const Graph<NodeType, ArcType>& graph2) const {
     return *this == graph2;
+}
+
+template <typename NodeType, typename ArcType>
+NodeType* Graph<NodeType, ArcType>::front() const {
+    if (this->isEmpty()) {
+        error("Graph::front: graph is empty");
+    }
+    return this->nodes.front();
 }
 
 template <typename NodeType, typename ArcType>
@@ -1333,7 +1374,7 @@ void Graph<NodeType, ArcType>::deepCopy(const Graph& src) {
 
 /*
  * Compares two graphs for <, <=, ==, !=, >, >= relational operators.
- * Vertices are compared, including their neighboring edges.
+ * Vertices are compared, including their neighboring arcs.
  */
 template <typename NodeType, typename ArcType>
 int Graph<NodeType, ArcType>::graphCompare(const Graph<NodeType, ArcType>& graph2) const {
@@ -1359,7 +1400,7 @@ int Graph<NodeType, ArcType>::graphCompare(const Graph<NodeType, ArcType>& graph
                 return node1->name.compare(node2->name);
             }
             
-            // then check all edges, pairwise
+            // then check all arcs, pairwise
             auto eitr1 = node1->arcs.begin();
             auto eitr2 = node2->arcs.begin();
             auto e1end = node1->arcs.end();
@@ -1368,7 +1409,7 @@ int Graph<NodeType, ArcType>::graphCompare(const Graph<NodeType, ArcType>& graph
                 ArcType* arc1 = *eitr1;
                 ArcType* arc2 = *eitr2;
                 
-                // optimization: if literally same edge, equal; don't compare
+                // optimization: if literally same arc, equal; don't compare
                 if (arc1 != arc2) {
                     // first check start vertex names, then end vertex names
                     if (arc1->start->name != arc2->start->name) {
@@ -1381,8 +1422,8 @@ int Graph<NodeType, ArcType>::graphCompare(const Graph<NodeType, ArcType>& graph
                 eitr2++;
             }
             
-            // if we get here, everything from me matched graph2, so either edges equal,
-            // or one is shorter than the other (fewer edges) and is therefore less
+            // if we get here, everything from me matched graph2, so either arcs equal,
+            // or one is shorter than the other (fewer arcs) and is therefore less
             if (eitr1 == e1end && eitr2 == e2end) {
                 // keep going
             } else if (eitr1 == e1end) {
@@ -1392,7 +1433,7 @@ int Graph<NodeType, ArcType>::graphCompare(const Graph<NodeType, ArcType>& graph
             }
         }
         
-        // if we get here, those two vertices and their outbound edges
+        // if we get here, those two vertices and their outbound arcs
         // were equal; so advance to next element
         itr1++;
         itr2++;

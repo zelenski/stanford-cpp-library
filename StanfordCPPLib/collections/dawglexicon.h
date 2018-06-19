@@ -4,6 +4,8 @@
  * This file exports the <code>DawgLexicon</code> class, which is a
  * compact structure for storing a list of words.
  * 
+ * @version 2018/03/10
+ * - added method front
  * @version 2017/11/14
  * - added iterator version checking support
  * @version 2017/10/18
@@ -192,6 +194,15 @@ public:
      * Identical in behavior to the == operator.
      */
     bool equals(const DawgLexicon& lex2) const;
+
+    /*
+     * Method: front
+     * Usage: string s = lex.front();
+     * ------------------------------
+     * Returns the first element in alphabetical order from this lexicon (without removing it).
+     * This method signals an error if lexicon is empty.
+     */
+    std::string front() const;
 
     /*
      * Method: insert

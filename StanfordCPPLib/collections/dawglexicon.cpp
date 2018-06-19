@@ -15,6 +15,10 @@
  * The DAWG builder code is quite a bit more intricate, see Julie Zelenski
  * if you need it.
  * 
+ * @version 2018/03/10
+ * - added method front
+ * @version 2017/11/14
+ * - added iterator version checking support
  * @version 2016/08/10
  * - added constructor support for std initializer_list usage, such as {"a", "b", "c"}
  * @version 2016/08/04
@@ -225,6 +229,14 @@ bool DawgLexicon::containsPrefix(const std::string& prefix) const {
 
 bool DawgLexicon::equals(const DawgLexicon& lex2) const {
     return stanfordcpplib::collections::equals(*this, lex2);
+}
+
+std::string DawgLexicon::front() const {
+    if (isEmpty()) {
+        error("DawgLexicon::front: lexicon is empty");
+    }
+    auto it = begin();
+    return *it;
 }
 
 void DawgLexicon::insert(const std::string& word) {

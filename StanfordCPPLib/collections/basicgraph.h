@@ -6,9 +6,15 @@
  * together in lecture.  We also declare BasicGraph, an instantiation of
  * Stanford's Graph class using Vertex and Edge as its type parameters.
  *
- * See BasicGraph.cpp for implementation of each member.
+ * Most members are implemented in this file, since the class is a template.
+ * See BasicGraph.cpp for implementation of some non-template members.
  *
  * @author Marty Stepp
+ * @version 2018/03/10
+ * - added methods front, back, toMap
+ * - added operator << for various collections of Vertex* and Edge*
+ * @version 2018/02/28
+ * - compiler flag to enable/disable Vertex fields like visited, previous
  * @version 2017/11/14
  * - fix missing "this->" on some methods
  * - added getVertexNames, vertexCount, edgeCount
@@ -69,8 +75,11 @@
 #include "gmath.h"
 #include "graph.h"
 #include "grid.h"
+#include "hashset.h"
+#include "linkedlist.h"
 #include "observable.h"
 #include "set.h"
+#include "vector.h"
 
 /*
  * Forward declarations of Vertex/Edge structures so that they can refer
@@ -86,10 +95,11 @@ class EdgeGen;
 template <typename V = void*, typename E = void*>
 class VertexGen : public Observable<int> {
 public:
-    std::string name;    // required by Stanford Graph; vertex's name
-    Set<EdgeGen<V, E>*> arcs;     // edges outbound from this vertex; to neighbors
+    std::string name;             // required by Stanford Graph; vertex's name
+    Set<EdgeGen<V, E>*> arcs;     // required by Stanford Graph; edges outbound from this vertex; to neighbors
     Set<EdgeGen<V, E>*>& edges;   // alias of arcs; preferred name
 
+#ifdef SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
     /*
      * The following three fields are 'supplementary data' inside each vertex.
      * You can use them in your path-searching algorithms to store various
@@ -99,6 +109,7 @@ public:
     double& weight;     // alias of cost; they are the same field
     bool visited;       // whether this vertex has been visited before (initally false; you can set this)
     VertexGen* previous;   // vertex that comes before this one (initially nullptr; you can set this)
+#endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
 
     /*
      * The following pointer can point to any extra data needed by the vertex.
@@ -176,18 +187,22 @@ std::ostream& operator <<(std::ostream& out, const VertexGen<V, E>& v);
 template <typename V, typename E>
 class EdgeGen {
 public:
-    VertexGen<V, E>* start;    // edge's starting vertex (required by Graph)
-    VertexGen<V, E>* finish;   // edge's ending vertex (required by Graph)
+    VertexGen<V, E>* start;    // required by Stanford Graph; edge's starting vertex
+    VertexGen<V, E>* finish;   // required by Stanford Graph; edge's ending vertex
     VertexGen<V, E>*& end;     // alias of finish; they are the same field
-    double cost;      // edge weight (required by Graph)
-    double& weight;   // alias of cost; they are the same field
+    double cost;               // required by Stanford Graph; edge weight
+    double& weight;            // alias of cost; they are the same field
+
+#ifdef SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
     bool visited;     // whether this edge has been visited before (initally false; you can set this)
+#endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
 
     /*
      * The following pointer can point to any extra data needed by the vertex.
      * This field is generally not necessary and can be ignored.
      */
-    void* extraData;
+    void* data;
+    void*& extraData;          // alias of data; they are the same field
 
     /*
      * Constructs a new edge between the given start/end vertices with
@@ -201,7 +216,7 @@ public:
     ~EdgeGen();
 
     /*
-     * Wipes the supplementary data of this vertex back to its initial state.
+     * Wipes the supplementary data of this edge back to its initial state.
      * Specifically, sets visited to false.
      */
     void resetData();
@@ -211,7 +226,7 @@ public:
      * "Arc{start=r12c42, finish=r12c41, cost=0.75}".
      */
     std::string toString() const;
-    
+
     /*
      * Copy assignment operator (rule of three).
      */
@@ -296,6 +311,16 @@ public:
     void removeEdge(EdgeGen<V, E>* e, bool directed = true);
     void removeVertex(const std::string& name);
     void removeVertex(VertexGen<V, E>* v);
+
+    /*
+     * Returns a Map representing an adjacency list equivalent to this graph.
+     * Each vertex's name is a key in the map, and its neighboring vertexes' names
+     * are stored in a Set as the value associated with that key.
+     * It should be noted that this member does not preserve the weights of the edges
+     * between the neighboring vertexes, so it is not ideal for use with weighted graphs.
+     */
+    Map<std::string, Set<std::string>> toMap() const;
+
     int vertexCount() const;
 
     /*
@@ -359,14 +384,30 @@ int hashCode(const BasicGraph& graph);
  */
 template <typename V, typename E>
 VertexGen<V, E>::VertexGen(const std::string& theName)
-        : name(theName), edges(arcs), weight(cost), data(V()), extraData(data) {
+        : name(theName),
+          edges(arcs),
+#ifdef SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
+          weight(cost),
+#endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
+          data(V()),
+          extraData(data) {
     resetData();
 }
 
 template <typename V, typename E>
-VertexGen<V, E>::VertexGen(const VertexGen& other) : name(other.name), arcs(other.arcs),
-        edges(arcs), cost(other.cost), weight(cost), visited(other.visited),
-        previous(other.previous), data(other.data), extraData(data), m_color(other.m_color) {
+VertexGen<V, E>::VertexGen(const VertexGen& other)
+    : name(other.name),
+      arcs(other.arcs),
+      edges(arcs),
+#ifdef SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
+      cost(other.cost),
+      weight(cost),
+      visited(other.visited),
+      previous(other.previous),
+#endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
+      data(other.data),
+      extraData(data),
+      m_color(other.m_color) {
     // empty
 }
 
@@ -382,9 +423,11 @@ int VertexGen<V, E>::getColor() const {
 
 template <typename V, typename E>
 void VertexGen<V, E>::resetData() {
+#ifdef SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
     cost = 0.0;
     previous = nullptr;
     visited = false;
+#endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
     m_color = /* UNCOLORED */ 0;
 }
 
@@ -406,9 +449,11 @@ VertexGen<V, E>& VertexGen<V, E>::operator =(const VertexGen& other) {
     if (this != &other) {
         name = other.name;
         arcs = other.arcs;
+#ifdef SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
         cost = other.cost;
         visited = other.visited;
         previous = other.previous;
+#endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
         data = other.data;
         m_color = other.m_color;
     }
@@ -420,9 +465,11 @@ VertexGen<V, E>& VertexGen<V, E>::operator =(VertexGen&& other) {
     if (this != &other) {
         name = other.name;
         arcs = other.arcs;
+#ifdef SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
         cost = other.cost;
         visited = other.visited;
         previous = other.previous;
+#endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
         data = other.data;
         m_color = other.m_color;
     }
@@ -432,12 +479,16 @@ VertexGen<V, E>& VertexGen<V, E>::operator =(VertexGen&& other) {
 template <typename V, typename E>
 std::ostream& operator <<(std::ostream& out, const VertexGen<V, E>& v) {
     out << "Vertex{name=" << v.name;
+
+#ifdef SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
     if (!floatingPointEqual(v.cost, 0.0)) {
         out << ", cost=" << v.cost;
     }
     out << ", visited=" << (v.visited ? "true" : "false");
     out << ", previous=" << (v.previous == nullptr ? std::string("nullptr") : v.previous->name);
+#endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
 
+    // print neighbors
     out << ", neighbors={";
     int i = 0;
     for (EdgeGen<V, E>* edge : v.edges) {
@@ -451,8 +502,9 @@ std::ostream& operator <<(std::ostream& out, const VertexGen<V, E>& v) {
             out << "nullptr";
         }
     }
-    out << "}";
-    out << "}";
+    out << "}";   // end of neighbors
+
+    out << "}";   // end of Vertex
     return out;
 }
 
@@ -466,21 +518,30 @@ EdgeGen<V, E>::EdgeGen(VertexGen<V, E>* theStart, VertexGen<V, E>* theFinish, do
           finish(theFinish),
           end(this->finish),
           cost(theCost),
-          weight(this->cost) {
+          weight(this->cost),
+          data(nullptr),
+          extraData(data) {
+#ifdef SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
     this->extraData = nullptr;
+#endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
     this->resetData();
 }
 
 template <typename V, typename E>
 EdgeGen<V, E>::~EdgeGen() {
+#ifdef SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
     if (this->extraData != nullptr) {
+        this->extraData = nullptr;
         // delete this->extraData;
     }
+#endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
 }
 
 template <typename V, typename E>
 void EdgeGen<V, E>::resetData() {
+#ifdef SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
     this->visited = false;
+#endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
 }
 
 template <typename V, typename E>
@@ -496,7 +557,9 @@ EdgeGen<V, E>& EdgeGen<V, E>::operator =(const EdgeGen& other) {
         start = other.start;
         finish = other.finish;
         cost = other.cost;
+#ifdef SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
         visited = other.visited;
+#endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
     }
     return *this;
 }
@@ -506,7 +569,9 @@ EdgeGen<V, E>& EdgeGen<V, E>::operator =(EdgeGen&& other) {
     start = other.start;
     finish = other.finish;
     cost = other.cost;
+#ifdef SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
     visited = other.visited;
+#endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
     return *this;
 }
 
@@ -527,9 +592,11 @@ std::ostream& operator <<(std::ostream& out, const EdgeGen<V, E>& edge) {
     if (!floatingPointEqual(edge.cost, 0.0)) {
         out << ", cost=" << edge.cost;
     }
+#ifdef SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
     if (edge.visited) {
         out << ", visited=" << (edge.visited ? "true" : "false");
     }
+#endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
     out << "}";
     return out;
 }
@@ -745,6 +812,19 @@ void BasicGraphGen<V, E>::removeVertex(VertexGen<V, E>* v) {
 }
 
 template <typename V, typename E>
+Map<std::string, Set<std::string>> BasicGraphGen<V, E>::toMap() const {
+    Map<std::string, Set<std::string>> result;
+    for (Vertex* v : this->getVertexSet()) {
+        Set<std::string> neighborSet;
+        for (Vertex* neighbor : this->getNeighbors(v)) {
+            neighborSet += neighbor->name;
+        }
+        result[v->name] = neighborSet;
+    }
+    return result;
+}
+
+template <typename V, typename E>
 int BasicGraphGen<V, E>::vertexCount() const {
     return this->nodeCount();
 }
@@ -794,6 +874,270 @@ int hashCode(const BasicGraphGen<V, E>& graph) {
         code = hashMultiplier() * code + hashCode(e->finish->name);
     }
     return (code & hashMask());
+}
+
+/*
+ * Overloaded operator to print a set of edge pointers.
+ * Normally it is unwise to override operators for printing pointers,
+ * because the pointer could be null or garbage.
+ * But in this case we have decided that it is better for students if their
+ * attempts to print collections of vertexes and edges are easy to read.
+ */
+template <typename V, typename E>
+std::ostream& operator <<(std::ostream& out, const HashSet<EdgeGen<V, E>*>& sete) {
+    out << "{";
+    if (!sete.isEmpty()) {
+        bool first = true;
+        for (EdgeGen<V, E>* e : sete) {
+            if (!first) {
+                out << ", ";
+            }
+            first = false;
+            if (e) {
+                if (e->start) {
+                    out << e->start->name;
+                } else {
+                    out << "null";
+                }
+                out << " -> ";
+                if (e->finish) {
+                    out << e->finish->name;
+                } else {
+                    out << "null";
+                }
+            } else {
+                out << "null";
+            }
+        }
+    }
+    out << "}";
+    return out;
+}
+
+/*
+ * Overloaded operator to print a set of vertex pointers.
+ * Normally it is unwise to override operators for printing pointers,
+ * because the pointer could be null or garbage.
+ * But in this case we have decided that it is better for students if their
+ * attempts to print collections of vertexes and edges are easy to read.
+ */
+template <typename V, typename E>
+std::ostream& operator <<(std::ostream& out, const HashSet<VertexGen<V, E>*>& setv) {
+    out << "{";
+    if (!setv.isEmpty()) {
+        bool first = true;
+        for (VertexGen<V, E>* v : setv) {
+            if (!first) {
+                out << ", ";
+            }
+            first = false;
+            if (v) {
+                out << v->name;
+            } else {
+                out << "null";
+            }
+        }
+    }
+    out << "}";
+    return out;
+}
+
+/*
+ * Overloaded operator to print a list of edge pointers.
+ * Normally it is unwise to override operators for printing pointers,
+ * because the pointer could be null or garbage.
+ * But in this case we have decided that it is better for students if their
+ * attempts to print collections of vertexes and edges are easy to read.
+ */
+template <typename V, typename E>
+std::ostream& operator <<(std::ostream& out, const LinkedList<EdgeGen<V, E>*>& liste) {
+    out << "{";
+    if (!liste.isEmpty()) {
+        bool first = true;
+        for (EdgeGen<V, E>* e : liste) {
+            if (!first) {
+                out << ", ";
+            }
+            first = false;
+            if (e) {
+                if (e->start) {
+                    out << e->start->name;
+                } else {
+                    out << "null";
+                }
+                out << " -> ";
+                if (e->finish) {
+                    out << e->finish->name;
+                } else {
+                    out << "null";
+                }
+            } else {
+                out << "null";
+            }
+        }
+    }
+    out << "}";
+    return out;
+}
+
+/*
+ * Overloaded operator to print a list of vertex pointers.
+ * Normally it is unwise to override operators for printing pointers,
+ * because the pointer could be null or garbage.
+ * But in this case we have decided that it is better for students if their
+ * attempts to print collections of vertexes and edges are easy to read.
+ */
+template <typename V, typename E>
+std::ostream& operator <<(std::ostream& out, const LinkedList<VertexGen<V, E>*>& lst) {
+    out << "{";
+    if (!lst.isEmpty()) {
+        bool first = true;
+        for (VertexGen<V, E>* v : lst) {
+            if (!first) {
+                out << ", ";
+            }
+            first = false;
+            if (v) {
+                out << v->name;
+            } else {
+                out << "null";
+            }
+        }
+    }
+    out << "}";
+    return out;
+}
+
+/*
+ * Overloaded operator to print a set of edge pointers.
+ * Normally it is unwise to override operators for printing pointers,
+ * because the pointer could be null or garbage.
+ * But in this case we have decided that it is better for students if their
+ * attempts to print collections of vertexes and edges are easy to read.
+ */
+template <typename V, typename E>
+std::ostream& operator <<(std::ostream& out, const Set<EdgeGen<V, E>*>& sete) {
+    out << "{";
+    if (!sete.isEmpty()) {
+        bool first = true;
+        for (EdgeGen<V, E>* e : sete) {
+            if (!first) {
+                out << ", ";
+            }
+            first = false;
+            if (e) {
+                if (e->start) {
+                    out << e->start->name;
+                } else {
+                    out << "null";
+                }
+                out << " -> ";
+                if (e->finish) {
+                    out << e->finish->name;
+                } else {
+                    out << "null";
+                }
+            } else {
+                out << "null";
+            }
+        }
+    }
+    out << "}";
+    return out;
+}
+
+/*
+ * Overloaded operator to print a set of vertex pointers.
+ * Normally it is unwise to override operators for printing pointers,
+ * because the pointer could be null or garbage.
+ * But in this case we have decided that it is better for students if their
+ * attempts to print collections of vertexes and edges are easy to read.
+ */
+template <typename V, typename E>
+std::ostream& operator <<(std::ostream& out, const Set<VertexGen<V, E>*>& setv) {
+    out << "{";
+    if (!setv.isEmpty()) {
+        bool first = true;
+        for (VertexGen<V, E>* v : setv) {
+            if (!first) {
+                out << ", ";
+            }
+            first = false;
+            if (v) {
+                out << v->name;
+            } else {
+                out << "null";
+            }
+        }
+    }
+    out << "}";
+    return out;
+}
+
+/*
+ * Overloaded operator to print a vector of edge pointers.
+ * Normally it is unwise to override operators for printing pointers,
+ * because the pointer could be null or garbage.
+ * But in this case we have decided that it is better for students if their
+ * attempts to print collections of vertexes and edges are easy to read.
+ */
+template <typename V, typename E>
+std::ostream& operator <<(std::ostream& out, const Vector<EdgeGen<V, E>*>& vece) {
+    out << "{";
+    if (!vece.isEmpty()) {
+        bool first = true;
+        for (EdgeGen<V, E>* e : vece) {
+            if (!first) {
+                out << ", ";
+            }
+            first = false;
+            if (e) {
+                if (e->start) {
+                    out << e->start->name;
+                } else {
+                    out << "null";
+                }
+                out << " -> ";
+                if (e->finish) {
+                    out << e->finish->name;
+                } else {
+                    out << "null";
+                }
+            } else {
+                out << "null";
+            }
+        }
+    }
+    out << "}";
+    return out;
+}
+
+/*
+ * Overloaded operator to print a vector of vertex pointers.
+ * Normally it is unwise to override operators for printing pointers,
+ * because the pointer could be null or garbage.
+ * But in this case we have decided that it is better for students if their
+ * attempts to print collections of vertexes and edges are easy to read.
+ */
+template <typename V, typename E>
+std::ostream& operator <<(std::ostream& out, const Vector<VertexGen<V, E>*>& vec) {
+    out << "{";
+    if (!vec.isEmpty()) {
+        bool first = true;
+        for (VertexGen<V, E>* v : vec) {
+            if (!first) {
+                out << ", ";
+            }
+            first = false;
+            if (v) {
+                out << v->name;
+            } else {
+                out << "null";
+            }
+        }
+    }
+    out << "}";
+    return out;
 }
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

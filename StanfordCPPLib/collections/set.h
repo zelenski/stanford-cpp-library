@@ -4,6 +4,10 @@
  * This file exports the <code>Set</code> class, which implements a
  * collection for storing a set of distinct elements.
  * 
+ * @version 2018/03/19
+ * - added constructors that accept a comparison function
+ * @version 2018/03/10
+ * - added methods front, back
  * @version 2016/12/09
  * - added iterator version checking support (implicitly via Map)
  * @version 2016/12/06
@@ -52,8 +56,28 @@ public:
      * Usage: Set<ValueType> set;
      * --------------------------
      * Initializes an empty set of the specified element type.
+     * Elements will be ordered according to their "natural" less-than ordering
+     * as dictated by the operator <.
+     * The ValueType must have an operator < in order to be used in this set.
      */
     Set();
+
+    /*
+     * Constructor: Set
+     * Usage: Set<ValueType> set(lessFunc);
+     * -----------------------------------------------
+     * Initializes a new empty set, using the given "less-than" comparison
+     * function to order any elements that are later added.
+     * The function should return true if the first argument is less than the
+     * second, and false if not.
+     * The function can accept the two elements to compare either by value
+     * or by const reference.
+     * Note that the elements are stored in order sorted by lessFunc
+     * internally and not necessarily the order in which they are written
+     * in the initializer list.
+     */
+    Set(bool lessFunc(ValueType, ValueType));
+    Set(bool lessFunc(const ValueType&, const ValueType&));
 
     /*
      * Constructor: Set
@@ -64,6 +88,23 @@ public:
      * necessarily the order in which they are written in the initializer list.
      */
     Set(std::initializer_list<ValueType> list);
+
+    /*
+     * Constructor: Set
+     * Usage: Set<ValueType> set({1, 2, 3}, lessFunc);
+     * -----------------------------------------------
+     * Initializes a new set that stores the given elements, using the given
+     * "less-than" comparison function to order them.
+     * The function should return true if the first argument is less than the
+     * second, and false if not.
+     * The function can accept the two elements to compare either by value
+     * or by const reference.
+     * Note that the elements are stored in order sorted by lessFunc
+     * internally and not necessarily the order in which they are written
+     * in the initializer list.
+     */
+    Set(std::initializer_list<ValueType> list, bool lessFunc(ValueType, ValueType));
+    Set(std::initializer_list<ValueType> list, bool lessFunc(const ValueType&, const ValueType&));
 
     /*
      * Destructor: ~Set
@@ -93,6 +134,15 @@ public:
      */
     Set<ValueType>& addAll(const Set<ValueType>& set);
     Set<ValueType>& addAll(std::initializer_list<ValueType> list);
+
+    /*
+     * Method: back
+     * Usage: ValueType value = set.back();
+     * ------------------------------------
+     * Returns the last value in the set in the order established by the
+     * <code>foreach</code> macro.  If the set is empty, generates an error.
+     */
+    ValueType back() const;
 
     /*
      * Method: clear
@@ -139,8 +189,19 @@ public:
      * Returns the first value in the set in the order established by the
      * <code>foreach</code> macro.  If the set is empty, <code>first</code>
      * generates an error.
+     * Equivalent to front.
      */
     ValueType first() const;
+
+    /*
+     * Method: front
+     * Usage: ValueType value = set.front();
+     * -------------------------------------
+     * Returns the first value in the set in the order established by the
+     * <code>foreach</code> macro.  If the set is empty, generates an error.
+     * Equivalent to first.
+     */
+    ValueType front() const;
 
     /*
      * Method: insert
@@ -497,11 +558,35 @@ public:
 
 template <typename ValueType>
 Set<ValueType>::Set() : removeFlag(false) {
-    /* Empty */
+    // empty
+}
+
+template <typename ValueType>
+Set<ValueType>::Set(bool lessFunc(ValueType, ValueType))
+        : map(lessFunc) {
+    // empty
+}
+
+template <typename ValueType>
+Set<ValueType>::Set(bool lessFunc(const ValueType&, const ValueType&))
+        : map(lessFunc) {
+    // empty
 }
 
 template <typename ValueType>
 Set<ValueType>::Set(std::initializer_list<ValueType> list) {
+    addAll(list);
+}
+
+template <typename ValueType>
+Set<ValueType>::Set(std::initializer_list<ValueType> list, bool lessFunc(ValueType, ValueType))
+        : map(lessFunc) {
+    addAll(list);
+}
+
+template <typename ValueType>
+Set<ValueType>::Set(std::initializer_list<ValueType> list, bool lessFunc(const ValueType&, const ValueType&))
+        : map(lessFunc) {
     addAll(list);
 }
 
@@ -529,6 +614,14 @@ Set<ValueType>& Set<ValueType>::addAll(std::initializer_list<ValueType> list) {
         this->add(value);
     }
     return *this;
+}
+
+template <typename ValueType>
+ValueType Set<ValueType>::back() const {
+    if (isEmpty()) {
+        error("Set::back: set is empty");
+    }
+    return map.back();
 }
 
 template <typename ValueType>
@@ -583,6 +676,14 @@ ValueType Set<ValueType>::first() const {
         error("Set::first: set is empty");
     }
     return *begin();
+}
+
+template <typename ValueType>
+ValueType Set<ValueType>::front() const {
+    if (isEmpty()) {
+        error("Set::front: set is empty");
+    }
+    return map.front();
 }
 
 template <typename ValueType>

@@ -24,7 +24,7 @@
 #include <string>
 #include "private/static.h"
 
-STATIC_CONST_VARIABLE_DECLARE(std::string, GETCHAR_DEFAULT_PROMPT, "Enter an character: ")
+STATIC_CONST_VARIABLE_DECLARE(std::string, GETCHAR_DEFAULT_PROMPT, "Enter a character: ")
 STATIC_CONST_VARIABLE_DECLARE(std::string, GETCHAR_DEFAULT_REPROMPT, "You must type a single character. Try again.")
 STATIC_CONST_VARIABLE_DECLARE(std::string, GETINTEGER_DEFAULT_PROMPT, "Enter an integer: ")
 STATIC_CONST_VARIABLE_DECLARE(std::string, GETINTEGER_DEFAULT_REPROMPT, "Illegal integer format. Try again.")

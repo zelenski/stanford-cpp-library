@@ -4,6 +4,8 @@
  * This file exports the <code>HashMap</code> class, which stores
  * a set of <i>key</i>-<i>value</i> pairs.
  * 
+ * @version 2018/03/10
+ * - added methods front, back
  * @version 2017/11/30
  * - bug fix for iterator version checking support
  * @version 2017/11/14
@@ -122,6 +124,20 @@ public:
     HashMap& addAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
+     * Method: back
+     * Usage: KeyType value = map.back();
+     * ----------------------------------
+     * Returns the last key in the map in the order established by the
+     * <code>foreach</code> macro.
+     * Note that since the keys are stored in an unpredictable order,
+     * this is not necessarily equal to the "largest" key value in any particular
+     * sorting order; it is just the key that would happen to be emitted last
+     * from a for-each loop.
+     * If the map is empty, generates an error.
+     */
+    KeyType back() const;
+
+    /*
      * Method: clear
      * Usage: map.clear();
      * -------------------
@@ -146,6 +162,20 @@ public:
      * key/value pairs, and <code>false</code> otherwise.
      */
     bool equals(const HashMap& map2) const;
+
+    /*
+     * Method: front
+     * Usage: KeyType value = map.front();
+     * -----------------------------------
+     * Returns the first key in the map in the order established by the
+     * <code>foreach</code> macro.
+     * Note that since the keys are stored in an unpredictable order,
+     * this is not necessarily equal to the "smallest" key value in any particular
+     * sorting order; it is just the key that would happen to be emitted first
+     * from a for-each loop.
+     * If the map is empty, generates an error.
+     */
+    KeyType front() const;
 
     /*
      * Method: get
@@ -719,6 +749,30 @@ HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::addAll(
 }
 
 template <typename KeyType, typename ValueType>
+KeyType HashMap<KeyType, ValueType>::back() const {
+    if (isEmpty()) {
+        error("HashMap::back: map is empty");
+    }
+
+    // find last non-null bucket
+    Cell* cell = nullptr;
+    for (int i = buckets.size() - 1; i >= 0; i--) {
+        cell = buckets[i];
+        if (cell) {
+            // find last non-null cell within bucket
+            while (cell->next) {
+                cell = cell->next;
+            }
+            return cell->key;
+        }
+    }
+
+    // we should never get here
+    error("HashMap::back: never found a non-empty cell bucket");
+    return cell->key;
+}
+
+template <typename KeyType, typename ValueType>
 void HashMap<KeyType, ValueType>::clear() {
     deleteBuckets(buckets);
     numEntries = 0;
@@ -733,6 +787,14 @@ bool HashMap<KeyType, ValueType>::containsKey(const KeyType& key) const {
 template <typename KeyType, typename ValueType>
 bool HashMap<KeyType, ValueType>::equals(const HashMap<KeyType, ValueType>& map2) const {
     return stanfordcpplib::collections::equalsMap(*this, map2);
+}
+
+template <typename KeyType, typename ValueType>
+KeyType HashMap<KeyType, ValueType>::front() const {
+    if (isEmpty()) {
+        error("HashMap::front: map is empty");
+    }
+    return *begin();
 }
 
 template <typename KeyType, typename ValueType>

@@ -4,6 +4,8 @@
  * This file exports the template class <code>Map</code>, which
  * maintains a collection of <i>key</i>-<i>value</i> pairs.
  * 
+ * @version 2018/03/10
+ * - added methods front, back
  * @version 2017/10/18
  * - fix compiler warnings
  * @version 2016/12/09
@@ -106,6 +108,15 @@ public:
     Map& addAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
+     * Method: back
+     * Usage: KeyType value = map.back();
+     * ------------------------------------
+     * Returns the last key in the map in the order established by the
+     * <code>foreach</code> macro.  If the map is empty, generates an error.
+     */
+    KeyType back() const;
+
+    /*
      * Method: clear
      * Usage: map.clear();
      * -------------------
@@ -130,6 +141,15 @@ public:
      * key/value pairs, and <code>false</code> otherwise.
      */
     bool equals(const Map& map2) const;
+
+    /*
+     * Method: front
+     * Usage: KeyType value = map.front();
+     * -------------------------------------
+     * Returns the first key in the map in the order established by the
+     * <code>foreach</code> macro.  If the map is empty, generates an error.
+     */
+    KeyType front() const;
 
     /*
      * Method: get
@@ -1024,6 +1044,18 @@ Map<KeyType, ValueType>& Map<KeyType, ValueType>::addAll(
 }
 
 template <typename KeyType, typename ValueType>
+KeyType Map<KeyType, ValueType>::back() const {
+    if (isEmpty()) {
+        error("Map::back: map is empty");
+    }
+    BSTNode* node = root;
+    while (node && node->right) {
+        node = node->right;
+    }
+    return node->key;
+}
+
+template <typename KeyType, typename ValueType>
 void Map<KeyType, ValueType>::clear() {
     deleteTree(root);
     root = nullptr;
@@ -1039,6 +1071,14 @@ bool Map<KeyType, ValueType>::containsKey(const KeyType& key) const {
 template <typename KeyType, typename ValueType>
 bool Map<KeyType, ValueType>::equals(const Map<KeyType, ValueType>& map2) const {
     return stanfordcpplib::collections::equalsMap(*this, map2);
+}
+
+template <typename KeyType, typename ValueType>
+KeyType Map<KeyType, ValueType>::front() const {
+    if (isEmpty()) {
+        error("Map::front: map is empty");
+    }
+    return *begin();
 }
 
 template <typename KeyType, typename ValueType>

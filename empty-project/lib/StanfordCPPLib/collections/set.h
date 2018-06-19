@@ -4,6 +4,8 @@
  * This file exports the <code>Set</code> class, which implements a
  * collection for storing a set of distinct elements.
  * 
+ * @version 2018/03/10
+ * - added methods front, back
  * @version 2016/12/09
  * - added iterator version checking support (implicitly via Map)
  * @version 2016/12/06
@@ -95,6 +97,15 @@ public:
     Set<ValueType>& addAll(std::initializer_list<ValueType> list);
 
     /*
+     * Method: back
+     * Usage: ValueType value = set.back();
+     * ------------------------------------
+     * Returns the last value in the set in the order established by the
+     * <code>foreach</code> macro.  If the set is empty, generates an error.
+     */
+    ValueType back() const;
+
+    /*
      * Method: clear
      * Usage: set.clear();
      * -------------------
@@ -139,8 +150,19 @@ public:
      * Returns the first value in the set in the order established by the
      * <code>foreach</code> macro.  If the set is empty, <code>first</code>
      * generates an error.
+     * Equivalent to front.
      */
     ValueType first() const;
+
+    /*
+     * Method: front
+     * Usage: ValueType value = set.front();
+     * -------------------------------------
+     * Returns the first value in the set in the order established by the
+     * <code>foreach</code> macro.  If the set is empty, generates an error.
+     * Equivalent to first.
+     */
+    ValueType front() const;
 
     /*
      * Method: insert
@@ -532,6 +554,14 @@ Set<ValueType>& Set<ValueType>::addAll(std::initializer_list<ValueType> list) {
 }
 
 template <typename ValueType>
+ValueType Set<ValueType>::back() const {
+    if (isEmpty()) {
+        error("Set::back: set is empty");
+    }
+    return map.back();
+}
+
+template <typename ValueType>
 void Set<ValueType>::clear() {
     map.clear();
 }
@@ -583,6 +613,14 @@ ValueType Set<ValueType>::first() const {
         error("Set::first: set is empty");
     }
     return *begin();
+}
+
+template <typename ValueType>
+ValueType Set<ValueType>::front() const {
+    if (isEmpty()) {
+        error("Set::front: set is empty");
+    }
+    return map.front();
 }
 
 template <typename ValueType>

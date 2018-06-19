@@ -4,6 +4,10 @@
  * This file exports the template class <code>Map</code>, which
  * maintains a collection of <i>key</i>-<i>value</i> pairs.
  * 
+ * @version 2018/03/19
+ * - added constructors that accept a comparison function
+ * @version 2018/03/10
+ * - added methods front, back
  * @version 2017/10/18
  * - fix compiler warnings
  * @version 2016/12/09
@@ -67,6 +71,19 @@ public:
 
     /*
      * Constructor: Map
+     * Usage: Map<KeyType,ValueType> map(lessFunc);
+     * --------------------------------------------
+     * Initializes a new empty map that associates keys and values of the
+     * specified types, using the given "less-than" comparison function
+     * to order any keys that will be later added to it.
+     * The function can accept the two keys to compare either by value
+     * or by const reference.
+     */
+    Map(bool lessFunc(KeyType, KeyType));
+    Map(bool lessFunc(const KeyType&, const KeyType&));
+
+    /*
+     * Constructor: Map
      * Usage: Map<ValueType> map {{"a", 1}, {"b", 2}, {"c", 3}};
      * ---------------------------------------------------------
      * Initializes a new map that stores the given pairs.
@@ -74,6 +91,19 @@ public:
      * necessarily the order in which they are written in the initializer list.
      */
     Map(std::initializer_list<std::pair<KeyType, ValueType> > list);
+
+    /*
+     * Constructor: Map
+     * Usage: Map<ValueType> map({{"a", 1}, {"b", 2}, {"c", 3}}, lessFunc);
+     * --------------------------------------------------------------------
+     * Initializes a new empty map that associates keys and values of the
+     * specified types, using the given "less-than" comparison function
+     * to order any keys that will be later added to it.
+     * The function can accept the two keys to compare either by value
+     * or by const reference.
+     */
+    Map(std::initializer_list<std::pair<KeyType, ValueType> > list, bool lessFunc(KeyType, KeyType));
+    Map(std::initializer_list<std::pair<KeyType, ValueType> > list, bool lessFunc(const KeyType&, const KeyType&));
 
     /*
      * Destructor: ~Map
@@ -106,6 +136,15 @@ public:
     Map& addAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
+     * Method: back
+     * Usage: KeyType value = map.back();
+     * ------------------------------------
+     * Returns the last key in the map in the order established by the
+     * <code>foreach</code> macro.  If the map is empty, generates an error.
+     */
+    KeyType back() const;
+
+    /*
      * Method: clear
      * Usage: map.clear();
      * -------------------
@@ -130,6 +169,15 @@ public:
      * key/value pairs, and <code>false</code> otherwise.
      */
     bool equals(const Map& map2) const;
+
+    /*
+     * Method: front
+     * Usage: KeyType value = map.front();
+     * -------------------------------------
+     * Returns the first key in the map in the order established by the
+     * <code>foreach</code> macro.  If the map is empty, generates an error.
+     */
+    KeyType front() const;
 
     /*
      * Method: get
@@ -441,6 +489,60 @@ private:
         virtual Comparator* clone() = 0;
     };
 
+    /*
+     * Compares based on an external less-than function that is passed in
+     * by the client at construction.
+     */
+    class FunctionComparator : public Comparator {
+    public:
+        FunctionComparator(void* lessFunc) {
+            this->lessFunc = lessFunc;
+        }
+
+        virtual bool lessThan(const KeyType& k1, const KeyType& k2) {
+            bool (*less)(KeyType, KeyType) =
+                    (bool (*)(KeyType, KeyType)) this->lessFunc;
+            return less(k1, k2);
+        }
+
+        virtual Comparator* clone() {
+            return new FunctionComparator(lessFunc);
+        }
+
+    private:
+        void* lessFunc;
+    };
+
+    /*
+     * Compares based on an external less-than function that is passed in
+     * by the client at construction.
+     * This is the same as FunctionComparator except that it uses a comparison
+     * function that accepts its arguments by const reference.
+     */
+    class FunctionConstRefComparator : public Comparator {
+    public:
+        FunctionConstRefComparator(void* lessFunc) {
+            this->lessFunc = lessFunc;
+        }
+
+        virtual bool lessThan(const KeyType& k1, const KeyType& k2) {
+            bool (*less)(const KeyType&, const KeyType&) =
+                    (bool (*)(const KeyType&, const KeyType&)) this->lessFunc;
+            return less(k1, k2);
+        }
+
+        virtual Comparator* clone() {
+            return new FunctionConstRefComparator(lessFunc);
+        }
+
+    private:
+        void* lessFunc;
+    };
+
+    /*
+     * Compares based on an internal template less-than function derived from
+     * the language standard std::less comparison function mechanism.
+     */
     template <typename CompareType>
     class TemplateComparator : public Comparator {
     public:
@@ -991,9 +1093,37 @@ Map<KeyType, ValueType>::Map() : root(nullptr), nodeCount(0), m_version(0) {
 }
 
 template <typename KeyType, typename ValueType>
+Map<KeyType, ValueType>::Map(bool lessFunc(KeyType, KeyType))
+        : root(nullptr), nodeCount(0), m_version(0) {
+    cmpp = new FunctionComparator((void*) lessFunc);
+}
+
+template <typename KeyType, typename ValueType>
+Map<KeyType, ValueType>::Map(bool lessFunc(const KeyType&, const KeyType&))
+        : root(nullptr), nodeCount(0), m_version(0) {
+    cmpp = new FunctionConstRefComparator((void*) lessFunc);
+}
+
+template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<KeyType, ValueType> > list)
         : root(nullptr), nodeCount(0), m_version(0) {
     cmpp = new TemplateComparator<std::less<KeyType> >(std::less<KeyType>());
+    putAll(list);
+}
+
+template <typename KeyType, typename ValueType>
+Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<KeyType, ValueType> > list,
+                             bool lessFunc(KeyType, KeyType))
+        : root(nullptr), nodeCount(0), m_version(0) {
+    cmpp = new FunctionComparator((void*) lessFunc);
+    putAll(list);
+}
+
+template <typename KeyType, typename ValueType>
+Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<KeyType, ValueType> > list,
+                             bool lessFunc(const KeyType&, const KeyType&))
+        : root(nullptr), nodeCount(0), m_version(0) {
+    cmpp = new FunctionConstRefComparator((void*) lessFunc);
     putAll(list);
 }
 
@@ -1024,6 +1154,18 @@ Map<KeyType, ValueType>& Map<KeyType, ValueType>::addAll(
 }
 
 template <typename KeyType, typename ValueType>
+KeyType Map<KeyType, ValueType>::back() const {
+    if (isEmpty()) {
+        error("Map::back: map is empty");
+    }
+    BSTNode* node = root;
+    while (node && node->right) {
+        node = node->right;
+    }
+    return node->key;
+}
+
+template <typename KeyType, typename ValueType>
 void Map<KeyType, ValueType>::clear() {
     deleteTree(root);
     root = nullptr;
@@ -1039,6 +1181,14 @@ bool Map<KeyType, ValueType>::containsKey(const KeyType& key) const {
 template <typename KeyType, typename ValueType>
 bool Map<KeyType, ValueType>::equals(const Map<KeyType, ValueType>& map2) const {
     return stanfordcpplib::collections::equalsMap(*this, map2);
+}
+
+template <typename KeyType, typename ValueType>
+KeyType Map<KeyType, ValueType>::front() const {
+    if (isEmpty()) {
+        error("Map::front: map is empty");
+    }
+    return *begin();
 }
 
 template <typename KeyType, typename ValueType>

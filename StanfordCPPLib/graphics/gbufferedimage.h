@@ -104,19 +104,19 @@ public:
 
     /*
      * Extracts the alpha component from 0-255 of the given ARGB integer.
-     * The red component comes from bits 24-31 (most significant) of the integer.
+     * The alpha component comes from bits 24-31 (most significant) of the integer.
      */
     static int getAlpha(int argb);
 
     /*
      * Extracts the blue component from 0-255 of the given RGB integer.
-     * The red component comes from bits 0-7 (least significant) of the integer.
+     * The blue component comes from bits 0-7 (least significant) of the integer.
      */
     static int getBlue(int rgb);
 
     /*
      * Extracts the green component from 0-255 of the given RGB integer.
-     * The red component comes from bits 8-15 of the integer.
+     * The green component comes from bits 8-15 of the integer.
      */
     static int getGreen(int rgb);
 
