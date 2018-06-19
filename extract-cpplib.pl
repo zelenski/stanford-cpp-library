@@ -27,6 +27,7 @@ my @ALL_FILES = (
 "$basedir/io/simpio.h",                      # deps: none
 "$basedir/util/strlib.h",                    # deps: none
 "$basedir/graphics/gtypes.h",                # deps: none
+"$basedir/collections/functional.h",         # deps: none
 "$basedir/util/gmath.h",                     # deps: gtypes.h
 "$basedir/collections/shuffle.h",            # deps: random.h
 "$basedir/collections/collections.h",        # deps: none
@@ -45,16 +46,18 @@ my @ALL_FILES = (
 "$basedir/collections/hashmap.h",
 "$basedir/collections/hashset.h",
 "$basedir/collections/graph.h",              # deps: map, set, tokenscanner
-"$basedir/collections/basicgraph.h",         # deps: map, set, graph, 
+"$basedir/collections/gridlocation.h",
 "$basedir/collections/grid.h",
 "$basedir/collections/lexicon.h",
 "$basedir/collections/linkedlist.h",
 "$basedir/collections/priorityqueue.h",
 "$basedir/collections/pqueue.h",
+"$basedir/util/range.h",
 "$basedir/collections/sparsegrid.h",
 "$basedir/collections/dawglexicon.h",        # deps: set.h
 "$basedir/collections/linkedhashmap.h",      
 "$basedir/collections/linkedhashset.h",      # deps: linkedhashmap.h
+"$basedir/collections/basicgraph.h",         # deps: map, set, graph, many other collections
 "$basedir/collections/stl.h",
 "$basedir/graphics/gwindow.h",
 "$basedir/graphics/gobjects.h",              # deps: gtypes, gwindow
@@ -92,11 +95,13 @@ my @ALL_FILES = (
 "$basedir/io/urlstream.h",
 
 # .cpp implementations (order should be unimportant)
+"$basedir/util/range.cpp",
 "$basedir/collections/basicgraph.cpp",
 "$basedir/collections/dawglexicon.cpp",
 "$basedir/collections/hashcode.cpp",
 "$basedir/collections/lexicon.cpp",
 "$basedir/collections/shuffle.cpp",
+"$basedir/collections/gridlocation.cpp",
 "$basedir/graphics/gbufferedimage.cpp",
 "$basedir/graphics/gevents.cpp",
 "$basedir/graphics/gfilechooser.cpp",
