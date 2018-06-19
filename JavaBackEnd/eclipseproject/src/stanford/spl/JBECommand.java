@@ -40,7 +40,10 @@ import stanford.cs106.reflect.ReflectionRuntimeException;
 import java.io.BufferedReader;
 import java.io.Reader;
 import java.lang.reflect.Field;
+import java.nio.charset.Charset;
 import java.util.*;
+
+import javax.swing.JOptionPane;
 
 public abstract class JBECommand {
 	@SuppressWarnings("unchecked")
@@ -337,9 +340,43 @@ public abstract class JBECommand {
 		}
 		return Double.parseDouble(str);
 	}
+	
+	/* Cache the UTF-8 charset decoder for efficiency. */
+	private static final Charset UTF_8;
+	static {
+		try {
+			UTF_8 = Charset.forName("UTF-8");
+		} catch (Exception e) {
+			throw new RuntimeException("Can't get the UTF_8 charset; this should not be possible as the spec guarantees it will be available.");			
+		}
+	}
 
 	public String nextString(TokenScanner scanner) {
-		return scanner.getStringValue(scanner.nextToken());
+		/* The string that we're getting over the pipe is essentially ASCII-encoded UTF-8. Specifically, the
+		 * string is formatted as a Java String where each value is an ASCII character, with special characters
+		 * formatted using escape sequences so that the decoder functions properly (e.g. tabs are \t, newlines
+		 * are \n, quotes are \", etc.)
+		 * 
+		 * The first step in decoding this is to process all the escape sequences using the TokenScanner.
+		 */
+		String initial = scanner.getStringValue(scanner.nextToken());
+		
+		/* We now have a string consisting of a bunch of characters that comprise a UTF-8 encoding of the
+		 * actual string we want. Each character is in the range [0, 256), so to finish processing the
+		 * string we need to map it back to an array of bytes and decode those bytes as intended.
+		 * 
+		 * TODO: We would probably be much better off bypassing the .getStringValue() method referenced above
+		 * to more directly do the string conversion. This current system isn't efficient.
+		 */
+		byte[] bytes = new byte[initial.length()];
+		for (int i = 0; i < initial.length(); i++) {
+			char ch = initial.charAt(i);
+			if (ch >= 256) throw new RuntimeException("Assumption violated: each character should be one byte long.");
+			
+			bytes[i] = (byte)ch;
+		}
+		
+		return new String(bytes, UTF_8);		
 	}
 	
 	public String nextBase64(TokenScanner scanner) {
