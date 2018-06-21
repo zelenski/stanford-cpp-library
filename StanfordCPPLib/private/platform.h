@@ -5,6 +5,8 @@
  * the platform-specific parts of the StanfordCPPLib package.  This file is
  * logically part of the implementation and is not interesting to clients.
  *
+ * @version 2018/06/20
+ * - added url_downloadWithHeaders
  * @version 2018/01/23
  * - added autograderunittest_runTestsInSeparateThreads
  * @version 2017/10/12
@@ -64,6 +66,7 @@
 #include <vector>
 #include "gevents.h"
 #include "gwindow.h"
+#include "map.h"
 #include "point.h"
 #include "sound.h"
 
@@ -377,6 +380,8 @@ public:
     void sound_play(Sound* sound);
 
     int url_download(const std::string& url, const std::string& filename);
+    int url_downloadWithHeaders(const std::string& url, const std::string& filename,
+                                const Map<std::string, std::string>& headers);
 };
 
 /* free function to get a reference to the singleton Platform instance */

@@ -5,7 +5,7 @@
  * Stanford C++ library.
  *
  * @author Marty Stepp
- * @version 2018/03/19
+ * @version 2018/06/20
  */
 
 #ifndef _version_h
@@ -19,7 +19,7 @@
  *       *MUST* be zero-padded to YYYY/MM/DD format;
  *       if month or day is < 10, insert a preceding 0
  */
-#define STANFORD_CPP_LIB_VERSION "2018/03/19"
+#define STANFORD_CPP_LIB_VERSION "2018/06/20"
 
 /*
  * Minimum version of your IDE's project that is supported.
@@ -41,7 +41,7 @@
  *       *MUST* be zero-padded to YYYY/MM/DD format;
  *       if month or day is < 10, insert a preceding 0
  */
-#define STANFORD_JAVA_BACKEND_MINIMUM_VERSION "2017/12/01"
+#define STANFORD_JAVA_BACKEND_MINIMUM_VERSION "2018/06/20"
 
 namespace version {
 void ensureJavaBackEndVersion(std::string minVersion = "");

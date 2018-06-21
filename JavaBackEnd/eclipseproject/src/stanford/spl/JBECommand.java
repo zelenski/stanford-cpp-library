@@ -1,4 +1,6 @@
 /*
+ * @version 2018/06/20
+ * - added URL_downloadWithHeaders
  * @version 2018/01/26
  * - added GWindow_setCanvasDrawingMode
  * @version 2017/10/12
@@ -42,8 +44,6 @@ import java.io.Reader;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.*;
-
-import javax.swing.JOptionPane;
 
 public abstract class JBECommand {
 	@SuppressWarnings("unchecked")
@@ -297,7 +297,8 @@ public abstract class JBECommand {
 			StanfordCppLib_getJbeVersion.class,
 			StanfordCppLib_setCppVersion.class,
 			TopCompound_create.class,
-			URL_download.class
+			URL_download.class,
+			URL_downloadWithHeaders.class
 	));
 	
 	public abstract void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd);

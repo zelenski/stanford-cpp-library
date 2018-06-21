@@ -19,8 +19,8 @@ public class TokenScanner
         cpos = 0;
         input = null;
         wordChars = "";
-        savedTokens = new Stack();
-        operators = new ArrayList();
+        savedTokens = new Stack<String>();
+        operators = new ArrayList<String>();
     }
 
     public TokenScanner(String s)
@@ -620,8 +620,8 @@ label0:
     private Reader input;
     private String wordChars;
     private String savedChars;
-    private Stack savedTokens;
-    private ArrayList operators;
+    private Stack<String> savedTokens;
+    private ArrayList<String> operators;
     private int cpos;
     private boolean ignoreWhitespaceFlag;
     private boolean ignoreCommentsFlag;

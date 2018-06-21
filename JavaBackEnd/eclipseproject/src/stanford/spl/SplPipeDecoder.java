@@ -1,4 +1,6 @@
 /*
+ * @version 2018/06/20
+ * - added readEncodedMap
  * @version 2017/09/28
  * - fixed writeError to take Throwable and print correct text
  * @version 2015/10/08
@@ -10,7 +12,7 @@ package stanford.spl;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-
+import java.util.*;
 import acm.util.ErrorException;
 import acm.util.TokenScanner;
 
@@ -70,6 +72,42 @@ public class SplPipeDecoder {
 	public static synchronized void println(String s) {
 		System.out.println(s);
 		System.out.flush();
+	}
+	
+	// TODO: readEncodedList
+	
+	public static Map<String, String> readEncodedMap(TokenScanner scanner) {
+		eatSpaces(scanner);
+		int ch = scanner.getChar();
+		if (ch != '{') {
+			throw new ErrorException("quoted map must start with { character, but saw '" + (char)ch + "' (" + (int)ch + ")");
+		}
+		
+		Map<String, String> map = new LinkedHashMap<String, String>();
+		while (true) {
+			String key = readAndDecode(scanner);
+			if ("}".equals(key)) {
+				break;
+			}
+			
+			String sep = scanner.nextToken();
+			if (!":".equals(sep) && !"=".equals(sep)) {
+				throw new ErrorException("quoted map missing colon or equals sign between key/value pairs");
+			}
+			eatSpaces(scanner);
+			
+			String value = readAndDecode(scanner);
+			map.put(key, value);
+			
+			// check next token for comma vs }
+			String next = scanner.nextToken();
+			if (",".equals(next)) {
+				eatSpaces(scanner);
+			} else if ("}".equals(next)) {
+				break;
+			}
+		}
+		return map;
 	}
 	
 	public static String readEncodedString(TokenScanner scanner) {

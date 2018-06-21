@@ -233,7 +233,7 @@ static double scanDouble(TokenScanner& scanner);
 static int scanInt(TokenScanner& scanner);
 static Point scanPoint(const std::string& str);
 static GRectangle scanRectangle(const std::string& str);
-
+static void writeQuotedMap(std::ostream& os, const Map<std::string, std::string>& map);
 
 /* Implementation of the Platform class */
 
@@ -960,6 +960,21 @@ int Platform::url_download(const std::string& url, const std::string& filename) 
     writeQuotedString(os, urlEncode(url));
     os << ",";
     writeQuotedString(os, urlEncode(filename));
+    os << ")";
+    putPipe(os.str());
+    std::string result = getResult();
+    return stringToInteger(result);
+}
+
+int Platform::url_downloadWithHeaders(const std::string& url, const std::string& filename,
+                                      const Map<std::string, std::string>& headers) {
+    std::ostringstream os;
+    os << "URL.downloadWithHeaders(";
+    writeQuotedString(os, urlEncode(url));
+    os << ",";
+    writeQuotedString(os, urlEncode(filename));
+    os << ",";
+    writeQuotedMap(os, headers);
     os << ")";
     putPipe(os.str());
     std::string result = getResult();
@@ -3368,6 +3383,21 @@ static GRectangle scanRectangle(const std::string& str) {
     double height = scanDouble(scanner);
     scanner.verifyToken(")");
     return GRectangle(x, y, width, height);
+}
+
+static void writeQuotedMap(std::ostream& os, const Map<std::string, std::string>& map) {
+    os << "{";
+    bool first = true;
+    for (std::string key : map) {
+        if (!first) {
+            os << ", ";
+        }
+        writeQuotedString(os, urlEncode(key));
+        os << ":";
+        writeQuotedString(os, urlEncode(map[key]));
+        first = false;
+    }
+    os << "}";
 }
 
 namespace stanfordcpplib {
