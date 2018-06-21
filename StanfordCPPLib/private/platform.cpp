@@ -4,6 +4,9 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2018/06/20
+ * - added mouse entered, exited, wheel moved events
+ * - added url_downloadWithHeaders
  * @version 2017/10/12
  * - added gtextlabel_create
  * - added gwindow_setRepaintImmediately
@@ -3126,6 +3129,14 @@ static GEvent parseEvent(const std::string& line) {
         return parseMouseEvent(scanner, MOUSE_MOVED);
     } else if (name == "mouseDragged") {
         return parseMouseEvent(scanner, MOUSE_DRAGGED);
+    } else if (name == "mouseEntered") {
+        return parseMouseEvent(scanner, MOUSE_ENTERED);
+    } else if (name == "mouseExited") {
+        return parseMouseEvent(scanner, MOUSE_EXITED);
+    } else if (name == "mouseWheelDown") {
+        return parseMouseEvent(scanner, MOUSE_WHEEL_DOWN);
+    } else if (name == "mouseWheelUp") {
+        return parseMouseEvent(scanner, MOUSE_WHEEL_UP);
     } else if (name == "keyPressed") {
         return parseKeyEvent(scanner, KEY_PRESSED);
     } else if (name == "keyReleased") {

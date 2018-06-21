@@ -1,4 +1,6 @@
 /*
+ * @version 2018/06/20
+ * - added mouse wheel events
  * @version 2017/06/10
  * - added setOpaque/isOpaque
  * @version 2017/04/26
@@ -208,6 +210,7 @@ public abstract class GraphicsProgram extends Program
 			// avoid attaching same listeners twice
 			gc.addMouseListener(this);
 			gc.addMouseMotionListener(this);
+			gc.addMouseWheelListener(this);
 			listenersAdded = true;
 		}
 	}

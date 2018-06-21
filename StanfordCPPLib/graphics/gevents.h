@@ -6,6 +6,8 @@
  * the Java event model.
  * <include src="pictures/ClassHierarchies/GEventHierarchy-h.html">
  * 
+ * @version 2018/06/20
+ * - added mouse entered, exit, wheel events
  * @version 2016/11/26
  * - added WINDOW_CLOSING event
  * - added isCtrlOrCommandKeyDown
@@ -55,34 +57,38 @@ enum EventClassType {
  * This enumeration type defines the event types for all events.
  */
 typedef enum {
-    WINDOW_CLOSED    = WINDOW_EVENT + 1,
-    WINDOW_RESIZED   = WINDOW_EVENT + 2,
-    CONSOLE_CLOSED   = WINDOW_EVENT + 3,
-    WINDOW_CLOSING   = WINDOW_EVENT + 4,
+    WINDOW_CLOSED       = WINDOW_EVENT + 1,
+    WINDOW_RESIZED      = WINDOW_EVENT + 2,
+    CONSOLE_CLOSED      = WINDOW_EVENT + 3,
+    WINDOW_CLOSING      = WINDOW_EVENT + 4,
 
-    ACTION_PERFORMED = ACTION_EVENT + 1,
+    ACTION_PERFORMED    = ACTION_EVENT + 1,
 
-    MOUSE_CLICKED    = MOUSE_EVENT + 1,
-    MOUSE_PRESSED    = MOUSE_EVENT + 2,
-    MOUSE_RELEASED   = MOUSE_EVENT + 3,
-    MOUSE_MOVED      = MOUSE_EVENT + 4,
-    MOUSE_DRAGGED    = MOUSE_EVENT + 5,
+    MOUSE_CLICKED       = MOUSE_EVENT + 1,
+    MOUSE_PRESSED       = MOUSE_EVENT + 2,
+    MOUSE_RELEASED      = MOUSE_EVENT + 3,
+    MOUSE_MOVED         = MOUSE_EVENT + 4,
+    MOUSE_DRAGGED       = MOUSE_EVENT + 5,
+    MOUSE_ENTERED       = MOUSE_EVENT + 6,
+    MOUSE_EXITED        = MOUSE_EVENT + 7,
+    MOUSE_WHEEL_DOWN    = MOUSE_EVENT + 8,
+    MOUSE_WHEEL_UP      = MOUSE_EVENT + 9,
 
-    KEY_PRESSED      = KEY_EVENT + 1,
-    KEY_RELEASED     = KEY_EVENT + 2,
-    KEY_TYPED        = KEY_EVENT + 3,
+    KEY_PRESSED         = KEY_EVENT + 1,
+    KEY_RELEASED        = KEY_EVENT + 2,
+    KEY_TYPED           = KEY_EVENT + 3,
 
-    TIMER_TICKED     = TIMER_EVENT + 1,
+    TIMER_TICKED        = TIMER_EVENT + 1,
 
-    TABLE_UPDATED    = TABLE_EVENT + 1,
-    TABLE_SELECTED   = TABLE_EVENT + 2,
-    TABLE_EDIT_BEGIN = TABLE_EVENT + 3,
+    TABLE_UPDATED       = TABLE_EVENT + 1,
+    TABLE_SELECTED      = TABLE_EVENT + 2,
+    TABLE_EDIT_BEGIN    = TABLE_EVENT + 3,
     TABLE_REPLACE_BEGIN = TABLE_EVENT + 4,   // like an edit but wipes out previous value
-    TABLE_CUT        = TABLE_EVENT + 5,      // clipboard stuff
-    TABLE_COPY       = TABLE_EVENT + 6,
-    TABLE_PASTE      = TABLE_EVENT + 7,
+    TABLE_CUT           = TABLE_EVENT + 5,   // clipboard stuff
+    TABLE_COPY          = TABLE_EVENT + 6,
+    TABLE_PASTE         = TABLE_EVENT + 7,
 
-    SERVER_REQUEST   = SERVER_EVENT + 1
+    SERVER_REQUEST      = SERVER_EVENT + 1
 } EventType;
 
 /*
@@ -190,7 +196,7 @@ public:
      * Usage: EventClassType eventClass = e.getEventClass();
      * -----------------------------------------------------
      * Returns the enumerated type constant indicating the class of the
-     * event.
+     * event, such as WINDOW_EVENT or ACTION_EVENT.
      */
     EventClassType getEventClass() const;
 
@@ -212,7 +218,9 @@ public:
      * Usage: EventType type = e.getEventType();
      * -----------------------------------------
      * Returns the enumerated type constant corresponding to the specific
-     * event type.
+     * event type.  The event type is a subcategory within the event class,
+     * such as MOUSE_RELEASED within the MOUSE_EVENT class or WINDOW_CLOSED
+     * within the WINDOW_EVENT class.
      */
     EventType getEventType() const;
 

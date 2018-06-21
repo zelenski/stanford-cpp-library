@@ -1,4 +1,6 @@
 /*
+ * @version 2018/06/20
+ * - made GCanvasListener implement MouseWheelListener to hear mouse wheel events
  * @version 2018/01/26
  * - added setDrawingMode to speed up drawing when pixel-based methods are not used
  * - optimizations to clear / removeAll
@@ -149,6 +151,7 @@ public class GCanvas extends JComponent
 		addComponentListener(gCanvasListener);
 		addMouseListener(gCanvasListener);
 		addMouseMotionListener(gCanvasListener);
+		addMouseWheelListener(gCanvasListener);
 	}
 	
 	/**
@@ -1573,7 +1576,7 @@ public class GCanvas extends JComponent
 	/**
 	 * This class fields mouse events that occur in the <code>GCanvas</code>.
 	 */
-	private class GCanvasListener implements MouseListener, MouseMotionListener, ComponentListener {
+	private class GCanvasListener implements MouseListener, MouseMotionListener, MouseWheelListener, ComponentListener {
 		/* ComponentListener interface */
 		public void componentHidden(ComponentEvent e) {
 			// empty
@@ -1626,6 +1629,10 @@ public class GCanvas extends JComponent
 		}
 		
 		public void mouseReleased(MouseEvent e) {
+			GCanvas.this.dispatchMouseEvent(e);
+		}
+		
+		public void mouseWheelMoved(MouseWheelEvent e) {
 			GCanvas.this.dispatchMouseEvent(e);
 		}
 	}

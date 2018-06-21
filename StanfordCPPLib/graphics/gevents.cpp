@@ -5,6 +5,8 @@
  * in the gevents.h interface.  The actual functions for receiving events
  * from the environment are implemented in the platform package.
  * 
+ * @version 2018/06/20
+ * - added mouse entered, exit, wheel events
  * @version 2016/11/26
  * - added WINDOW_CLOSING event
  * - added isCtrlOrCommandKeyDown
@@ -305,11 +307,15 @@ std::string GMouseEvent::toString() const {
     std::ostringstream os;
     os << "GMouseEvent:";
     switch (eventType) {
-    case MOUSE_PRESSED:  os << "MOUSE_PRESSED";   break;
-    case MOUSE_RELEASED: os << "MOUSE_RELEASED";  break;
-    case MOUSE_CLICKED:  os << "MOUSE_CLICKED";   break;
-    case MOUSE_MOVED:    os << "MOUSE_MOVED";     break;
-    case MOUSE_DRAGGED:  os << "MOUSE_DRAGGED";   break;
+    case MOUSE_PRESSED:      os << "MOUSE_PRESSED";      break;
+    case MOUSE_RELEASED:     os << "MOUSE_RELEASED";     break;
+    case MOUSE_CLICKED:      os << "MOUSE_CLICKED";      break;
+    case MOUSE_MOVED:        os << "MOUSE_MOVED";        break;
+    case MOUSE_DRAGGED:      os << "MOUSE_DRAGGED";      break;
+    case MOUSE_ENTERED:      os << "MOUSE_ENTERED";      break;
+    case MOUSE_EXITED:       os << "MOUSE_EXITED";       break;
+    case MOUSE_WHEEL_DOWN:   os << "MOUSE_WHEEL_DOWN";   break;
+    case MOUSE_WHEEL_UP:     os << "MOUSE_WHEEL_UP";     break;
     }
     os << "(" << x << ", " << y << ")";
     return os.str();

@@ -1,4 +1,6 @@
 /*
+ * @version 2018/06/20
+ * - added mouseEntered, mouseExited, and mouseWheelMoved events
  * @version 2016/11/24
  * - separated windowClosing / windowClosed operations to enable C++ to stop windows from closing
  * @version 2016/10/22
@@ -24,7 +26,7 @@ import javax.sound.sampled.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
-public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionListener,
+public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionListener, MouseWheelListener,
 		KeyListener, ActionListener, ComponentListener, ChangeListener, Observer {
 	public static final int DEFAULT_CONSOLE_X = 10;
 	public static final int DEFAULT_CONSOLE_Y = 40;
@@ -671,9 +673,15 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	}
 
 	public void mouseEntered(MouseEvent paramMouseEvent) {
+		if ((this.eventMask & 0x100) != 0) {
+			printEvent("mouseEntered", paramMouseEvent);
+		}
 	}
 
 	public void mouseExited(MouseEvent paramMouseEvent) {
+		if ((this.eventMask & 0x100) != 0) {
+			printEvent("mouseExited", paramMouseEvent);
+		}
 	}
 
 	public void mousePressed(MouseEvent paramMouseEvent) {
@@ -697,6 +705,17 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	public void mouseDragged(MouseEvent paramMouseEvent) {
 		if ((this.eventMask & 0x100) != 0) {
 			printEvent("mouseDragged", paramMouseEvent);
+		}
+	}
+
+	public void mouseWheelMoved(MouseWheelEvent event) {
+		if ((this.eventMask & 0x100) != 0) {
+			int rotation = event.getWheelRotation();
+			if (rotation > 0) {
+				printEvent("mouseWheelDown", event);
+			} else if (rotation < 0) {
+				printEvent("mouseWheelUp", event);
+			}
 		}
 	}
 
