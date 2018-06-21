@@ -248,7 +248,6 @@ private:
     int capacity;
     int head;
     int tail;
-    unsigned int m_version;     // structure version for detecting invalid iterators
 
     /* Private functions */
     void expandRingBufferCapacity();
@@ -359,14 +358,12 @@ static const int INITIAL_CAPACITY = 10;
  * elements and initialize the fields of the object.
  */
 template <typename ValueType>
-Queue<ValueType>::Queue()
-        : m_version(0) {
+Queue<ValueType>::Queue() {
     clear();
 }
 
 template <typename ValueType>
-Queue<ValueType>::Queue(std::initializer_list<ValueType> list)
-        : m_version(0) {
+Queue<ValueType>::Queue(std::initializer_list<ValueType> list) {
     clear();
     for (const ValueType& value : list) {
         add(value);
@@ -404,7 +401,6 @@ void Queue<ValueType>::clear() {
     head = 0;
     tail = 0;
     count = 0;
-    m_version++;
 }
 
 /*
@@ -421,7 +417,6 @@ ValueType Queue<ValueType>::dequeue() {
     ValueType result = ringBuffer[head];
     head = (head + 1) % capacity;
     count--;
-    m_version++;
     return result;
 }
 
@@ -441,7 +436,6 @@ void Queue<ValueType>::enqueue(const ValueType& value) {
         ringBuffer[tail] = value;
         tail = (tail + 1) % capacity;
         count++;
-        m_version++;
     }
 }
 
@@ -513,7 +507,7 @@ std::string Queue<ValueType>::toString() const {
 
 template <typename ValueType>
 unsigned int Queue<ValueType>::version() const {
-    return m_version;
+    return ringBuffer.version();
 }
 
 /*

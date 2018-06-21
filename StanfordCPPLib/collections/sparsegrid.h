@@ -410,7 +410,7 @@ private:
     Map<int, Map<int, ValueType> > elements;  // 2D map of the elements
     int nRows;            // The number of rows in the grid
     int nCols;            // The number of columns in the grid
-    unsigned int m_version;     // structure version for detecting invalid iterators
+    unsigned int m_version = 0;  // structure version for detecting invalid iterators
 
     /* Private method prototypes */
 
@@ -618,20 +618,17 @@ public:
 template <typename ValueType>
 SparseGrid<ValueType>::SparseGrid()
         : nRows(0),
-          nCols(0),
-          m_version(0) {
+          nCols(0) {
     // empty
 }
 
 template <typename ValueType>
-SparseGrid<ValueType>::SparseGrid(int nRows, int nCols)
-        : m_version(0) {
+SparseGrid<ValueType>::SparseGrid(int nRows, int nCols) {
     resize(nRows, nCols);
 }
 
 template <typename ValueType>
-SparseGrid<ValueType>::SparseGrid(int nRows, int nCols, const ValueType& value)
-        : m_version(0) {
+SparseGrid<ValueType>::SparseGrid(int nRows, int nCols, const ValueType& value) {
     resize(nRows, nCols);
     fill(value);
 }
@@ -639,8 +636,7 @@ SparseGrid<ValueType>::SparseGrid(int nRows, int nCols, const ValueType& value)
 template <typename ValueType>
 SparseGrid<ValueType>::SparseGrid(std::initializer_list<std::initializer_list<ValueType> > list)
         : nRows(0),
-          nCols(0),
-          m_version(0) {
+          nCols(0) {
     // create the grid at the proper size
     nRows = list.size();
     if (list.begin() != list.end()) {

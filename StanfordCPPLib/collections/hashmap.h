@@ -442,7 +442,7 @@ private:
     Vector<Cell*> buckets;
     int nBuckets;
     int numEntries;
-    unsigned int m_version;   // structure version for detecting invalid iterators
+    unsigned int m_version = 0; // structure version for detecting invalid iterators
 
     /* Private methods */
 
@@ -714,14 +714,12 @@ public:
  * performance on the put/remove/get operations.
  */
 template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>::HashMap()
-        : m_version(0) {
+HashMap<KeyType, ValueType>::HashMap() {
     createBuckets(INITIAL_BUCKET_COUNT);
 }
 
 template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>::HashMap(std::initializer_list<std::pair<KeyType, ValueType> > list)
-        : m_version(0) {
+HashMap<KeyType, ValueType>::HashMap(std::initializer_list<std::pair<KeyType, ValueType> > list) {
     createBuckets(INITIAL_BUCKET_COUNT);
     putAll(list);
 }
