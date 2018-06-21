@@ -224,7 +224,7 @@ public:
 private:
     /* Instance variables */
     std::deque<ValueType> elements;
-    unsigned int m_version;     // structure version for detecting invalid iterators
+    unsigned int m_version = 0; // structure version for detecting invalid iterators
 
 public:
     /*
@@ -362,6 +362,13 @@ public:
      * This is used to check for invalid iterators and issue error messages.
      */
     unsigned int version() const;
+    
+    /* Assignment behavior. */
+    Deque& operator= (Deque other) {
+      std::swap(elements, other.elements);
+      m_version++;
+      return *this;
+    }    
 };
 
 /*
@@ -370,14 +377,12 @@ public:
  * None.
  */
 template <typename ValueType>
-Deque<ValueType>::Deque()
-        : m_version(0) {
+Deque<ValueType>::Deque() {
     // empty
 }
 
 template <typename ValueType>
-Deque<ValueType>::Deque(std::initializer_list<ValueType> list)
-        : m_version(0) {
+Deque<ValueType>::Deque(std::initializer_list<ValueType> list) {
     clear();
     for (const ValueType& value : list) {
         add(value);

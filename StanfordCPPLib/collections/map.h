@@ -570,7 +570,7 @@ private:
     BSTNode* root;      // pointer to the root of the tree
     int nodeCount;      // number of entries in the map
     Comparator* cmpp;   // pointer to the comparator
-    unsigned int m_version;   // structure version for detecting invalid iterators
+    unsigned int m_version = 0; // structure version for detecting invalid iterators
 
     // private methods
 
@@ -950,7 +950,7 @@ public:
         return *this;
     }
 
-    Map(const Map& src) : root(nullptr), nodeCount(0), cmpp(nullptr), m_version(0) {
+    Map(const Map& src) : root(nullptr), nodeCount(0), cmpp(nullptr) {
         deepCopy(src);
     }
 
@@ -1088,25 +1088,25 @@ public:
 };
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>::Map() : root(nullptr), nodeCount(0), m_version(0) {
+Map<KeyType, ValueType>::Map() : root(nullptr), nodeCount(0) {
     cmpp = new TemplateComparator<std::less<KeyType> >(std::less<KeyType>());
 }
 
 template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>::Map(bool lessFunc(KeyType, KeyType))
-        : root(nullptr), nodeCount(0), m_version(0) {
+        : root(nullptr), nodeCount(0) {
     cmpp = new FunctionComparator((void*) lessFunc);
 }
 
 template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>::Map(bool lessFunc(const KeyType&, const KeyType&))
-        : root(nullptr), nodeCount(0), m_version(0) {
+        : root(nullptr), nodeCount(0) {
     cmpp = new FunctionConstRefComparator((void*) lessFunc);
 }
 
 template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<KeyType, ValueType> > list)
-        : root(nullptr), nodeCount(0), m_version(0) {
+        : root(nullptr), nodeCount(0) {
     cmpp = new TemplateComparator<std::less<KeyType> >(std::less<KeyType>());
     putAll(list);
 }
@@ -1114,7 +1114,7 @@ Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<KeyType, ValueType>
 template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<KeyType, ValueType> > list,
                              bool lessFunc(KeyType, KeyType))
-        : root(nullptr), nodeCount(0), m_version(0) {
+        : root(nullptr), nodeCount(0) {
     cmpp = new FunctionComparator((void*) lessFunc);
     putAll(list);
 }
@@ -1122,7 +1122,7 @@ Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<KeyType, ValueType>
 template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<KeyType, ValueType> > list,
                              bool lessFunc(const KeyType&, const KeyType&))
-        : root(nullptr), nodeCount(0), m_version(0) {
+        : root(nullptr), nodeCount(0) {
     cmpp = new FunctionConstRefComparator((void*) lessFunc);
     putAll(list);
 }
