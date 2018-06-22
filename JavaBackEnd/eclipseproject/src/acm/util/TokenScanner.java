@@ -461,86 +461,86 @@ label0:
 
     private String scanNumber()
     {
-        String s = "";
-        int i = 0;
-        int j = 69;
-        do
+        String result = "";
+        int state = INITIAL_STATE;
+        int exponentSign = 'E';
+        
+        while (true)
         {
-            if(i == 6)
+            if(state == FINAL_STATE)
                 break;
-            int k = getChar();
-            switch(i)
+            
+            int nextChar = getChar();
+            switch(state)
             {
-            case 0: // '\0'
-                if(k == 48)
+            case INITIAL_STATE:
+                if(nextChar == '0')
                 {
-                    int l = getChar();
-                    if(l == 120 || l == 88)
+                    int possibleHexMarker = getChar();
+                    if(possibleHexMarker == 'x' || possibleHexMarker == 'X')
                     {
-                        s = "0x";
+                        result = "0x";
                         continue;
                     }
-                    ungetChar(l);
+                    ungetChar(possibleHexMarker);
                 }
-                i = 1;
+                state = BEFORE_DECIMAL_POINT;
                 break;
 
-            case 1: // '\001'
-                if(k == 46)
-                    i = 2;
-                else
-                if(k == 69 || k == 101)
-                    i = 3;
-                else
-                if(!Character.isDigit(k))
-                    i = 6;
+            case BEFORE_DECIMAL_POINT:
+                if(nextChar == '.')
+                    state = AFTER_DECIMAL_POINT;
+                else if(nextChar == 'E' || nextChar == 'e')
+                    state = STARTING_EXPONENT;
+                else if(!Character.isDigit(nextChar))
+                    state = FINAL_STATE;
                 break;
 
-            case 2: // '\002'
-                if(k == 69 || k == 101)
+            case AFTER_DECIMAL_POINT:
+                if(nextChar == 'E' || nextChar == 'e')
                 {
-                    j = k;
-                    i = 3;
-                } else
-                if(!Character.isDigit(k))
-                    i = 6;
+                    exponentSign = nextChar;
+                    state = STARTING_EXPONENT;
+                }
+                else if(!Character.isDigit(nextChar))
+                    state = FINAL_STATE;
                 break;
 
-            case 3: // '\003'
-                if(k == 43 || k == 45)
-                    i = 4;
+            case STARTING_EXPONENT:
+                if(nextChar == '+' || nextChar == '-')
+                    state = FOUND_EXPONENT_SIGN;
+                else if(Character.isDigit(nextChar))
+                    state = SCANNING_EXPONENT;
                 else
-                if(Character.isDigit(k))
-                    i = 5;
-                else
-                    i = 6;
+                    state = FINAL_STATE;
                 break;
 
-            case 4: // '\004'
-                if(Character.isDigit(k))
+            case FOUND_EXPONENT_SIGN:
+                if(Character.isDigit(nextChar))
                 {
-                    i = 5;
-                } else
+                    state = SCANNING_EXPONENT;
+                }
+                else
                 {
-                    ungetChar(k);
-                    k = j;
-                    i = 6;
+                    ungetChar(nextChar);
+                    nextChar = exponentSign;
+                    state = FINAL_STATE;
                 }
                 break;
 
-            case 5: // '\005'
-                if(!Character.isDigit(k))
-                    i = 6;
+            case SCANNING_EXPONENT:
+                if(!Character.isDigit(nextChar))
+                    state = FINAL_STATE;
                 break;
             }
-            if(i == 6)
+            if(state == FINAL_STATE)
             {
-                ungetChar(k);
+                ungetChar(nextChar);
                 break;
             }
-            s = (new StringBuilder()).append(s).append((char)k).toString();
-        } while(true);
-        return s;
+            result += (char)nextChar;
+        }
+        return result;
     }
 
     /* Scans a quoted string and returns it as a unit. */
