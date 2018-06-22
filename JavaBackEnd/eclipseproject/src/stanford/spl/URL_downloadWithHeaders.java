@@ -8,10 +8,10 @@ package stanford.spl;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+
 import acm.util.*;
 
 public class URL_downloadWithHeaders extends JBECommand {
-	// URL.download("http%3A%2F%2Fmartystepp.com%2F", "temp.foo")
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String urlString = SplPipeDecoder.readEncodedString(paramTokenScanner);
@@ -29,7 +29,7 @@ public class URL_downloadWithHeaders extends JBECommand {
 		
 		int result = 0;
 		try {
-			UrlDownloader.getInstance().downloadWithHeaders(urlString, tmpFile, headers);
+			result = UrlDownloader.getInstance().downloadWithHeaders(urlString, tmpFile, headers);
 		} catch (MalformedURLException mfurle) {
 			result = UrlDownloader.ERR_MALFORMED_URL;
 		} catch (IOException ioe) {

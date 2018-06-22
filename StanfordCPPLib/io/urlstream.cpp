@@ -24,6 +24,15 @@
 #include "strlib.h"
 #include "private/platform.h"
 
+namespace {
+    /* Given a status code, determines whether it's successful. All successful HTTP
+     * status codes are of the form 2xx.
+     */
+    bool isHttpSuccess(int code) {
+        return code >= 200 && code <= 299;
+    }
+}
+
 iurlstream::iurlstream()
         : m_url(""),
           m_tempFilePath(""),
@@ -48,7 +57,12 @@ void iurlstream::close() {
 }
 
 int iurlstream::getErrorCode() const {
-    return m_lastError;
+    return isHttpSuccess(m_lastError)? 0 : m_lastError;
+}
+
+int iurlstream::getHttpStatusCode() const {
+    /* All HTTP status codes are between 1xx and 5xx, inclusive. */
+    return m_lastError >= 100 && m_lastError <= 599? m_lastError : 0;
 }
 
 std::string iurlstream::getHeader(const std::string& name) const {
@@ -104,13 +118,8 @@ void iurlstream::open(const std::string& url) {
     } else {
         m_lastError = stanfordcpplib::getPlatform()->url_downloadWithHeaders(m_url, filename, m_headers);
     }
-    
-    if (m_lastError == ERR_MALFORMED_URL) {
-        error("iurlstream::open: malformed URL when downloading " + m_url + " to " + m_tempFilePath);
-    } else if (m_lastError == ERR_IO_EXCEPTION) {
-        error("iurlstream::open: network I/O error when downloading " + m_url + " to " + m_tempFilePath);
-    }
-    if (m_lastError == 0) {
+
+    if (isHttpSuccess(m_lastError)) {
         std::ifstream::open(m_tempFilePath.c_str());
     } else {
         setstate(std::ios::failbit);

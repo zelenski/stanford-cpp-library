@@ -17,6 +17,8 @@ import java.net.*;
 import java.nio.channels.*;
 import java.util.*;
 
+import javax.xml.ws.http.HTTPException;
+
 public class UrlDownloader {
 	/**
 	 * constants to represent URL errors;
@@ -24,7 +26,6 @@ public class UrlDownloader {
 	 */
 	public static final int ERR_MALFORMED_URL = -42;
 	public static final int ERR_IO_EXCEPTION = -43;
-
 	
 	// singleton
 	private static final UrlDownloader instance = new UrlDownloader();
@@ -51,16 +52,16 @@ public class UrlDownloader {
 			reader.close();
 			return sb.toString();
 		} else {
-			throw new ConnectException("Cannot connect to " + urlString + " (HTTP error " + result + ")");
+			throw new HTTPException(result);
 		}
 	}
 	
-	public void download(String urlString, File file) throws IOException {
+	public int download(String urlString, File file) throws IOException {
 		Map<String, String> headers = Collections.emptyMap();
-		downloadWithHeaders(urlString, file, /* headers */ headers);
+		return downloadWithHeaders(urlString, file, /* headers */ headers);
 	}
 	
-	public void downloadWithHeaders(String urlString, File file, Map<String, String> headers) throws IOException {
+	public int downloadWithHeaders(String urlString, File file, Map<String, String> headers) throws IOException {
 		URL url = new URL(urlString);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		
@@ -82,8 +83,8 @@ public class UrlDownloader {
 			FileOutputStream fos = new FileOutputStream(file);
 			fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 			fos.close();
-		} else {
-			throw new ConnectException("Cannot connect to " + urlString + " (HTTP error " + result + ")");
 		}
+		
+		return result;
 	}
 }
