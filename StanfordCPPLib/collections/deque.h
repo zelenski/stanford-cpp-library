@@ -364,9 +364,11 @@ public:
     unsigned int version() const;
     
     /* Assignment behavior. */
-    Deque& operator= (Deque other) {
-      std::swap(elements, other.elements);
-      m_version++;
+    Deque& operator =(const Deque& other) {
+      if (this != &other) {
+          elements = other.elements;
+          m_version++;
+      }
       return *this;
     }    
 };
