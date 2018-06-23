@@ -408,7 +408,7 @@ private:
     ValueType* elements;  /* A dynamic array of the elements   */
     int nRows;            /* The number of rows in the grid    */
     int nCols;            /* The number of columns in the grid */
-    unsigned int m_version;     // structure version for detecting invalid iterators
+    unsigned int m_version = 0;  // structure version for detecting invalid iterators
 
     /* Private method prototypes */
 
@@ -455,6 +455,7 @@ private:
         }
         nRows = grid.nRows;
         nCols = grid.nCols;
+        m_version++;
     }
 
 public:
@@ -616,8 +617,7 @@ template <typename ValueType>
 Grid<ValueType>::Grid()
         : elements(nullptr),
           nRows(0),
-          nCols(0),
-          m_version(0) {
+          nCols(0) {
     // empty
 }
 
@@ -625,8 +625,7 @@ template <typename ValueType>
 Grid<ValueType>::Grid(int numRows, int numCols)
         : elements(nullptr),
           nRows(0),
-          nCols(0),
-          m_version(0){
+          nCols(0) {
     resize(numRows, numCols);
 }
 
@@ -634,8 +633,7 @@ template <typename ValueType>
 Grid<ValueType>::Grid(int numRows, int numCols, const ValueType& value)
         : elements(nullptr),
           nRows(0),
-          nCols(0),
-          m_version(0) {
+          nCols(0) {
     resize(numRows, numCols);
     fill(value);
 }
@@ -644,8 +642,7 @@ template <typename ValueType>
 Grid<ValueType>::Grid(std::initializer_list<std::initializer_list<ValueType> > list)
         : elements(nullptr),
           nRows(0),
-          nCols(0),
-          m_version(0) {
+          nCols(0) {
     // create the grid at the proper size
     nRows = list.size();
     if (list.begin() != list.end()) {

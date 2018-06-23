@@ -463,7 +463,7 @@ private:
 
     /* Instance variables */
     std::list<ValueType> m_elements;   // STL linked list as backing storage
-    unsigned int m_version;     // structure version for detecting invalid iterators
+    unsigned int m_version = 0;   // structure version for detecting invalid iterators
 
     /* Private methods */
 
@@ -636,21 +636,18 @@ public:
  * destructor frees the memory used for the array.
  */
 template <typename ValueType>
-LinkedList<ValueType>::LinkedList()
-        : m_version(0) {
+LinkedList<ValueType>::LinkedList() {
     // empty
 }
 
 template <typename ValueType>
 LinkedList<ValueType>::LinkedList(const std::list<ValueType>& v)
-        : m_elements(v),
-          m_version(0) {
+        : m_elements(v) {
     // empty
 }
 
 template <typename ValueType>
-LinkedList<ValueType>::LinkedList(std::initializer_list<ValueType> list)
-        : m_version(0) {
+LinkedList<ValueType>::LinkedList(std::initializer_list<ValueType> list) {
     addAll(list);
 }
 

@@ -492,7 +492,7 @@ private:
     ValueType* elements;        // a dynamic array of the elements
     int capacity;               // the allocated size of the array
     int count;                  // the number of elements in use
-    unsigned int m_version;     // structure version for detecting invalid iterators
+    unsigned int m_version = 0; // structure version for detecting invalid iterators
 
     /* Private methods */
 
@@ -719,8 +719,7 @@ template <typename ValueType>
 Vector<ValueType>::Vector()
         : elements(nullptr),
           capacity(0),
-          count(0),
-          m_version(0) {
+          count(0) {
     // empty
 }
 
@@ -728,8 +727,7 @@ template <typename ValueType>
 Vector<ValueType>::Vector(int n, ValueType value)
         : elements(nullptr),
           capacity(n),
-          count(n),
-          m_version(0) {
+          count(n) {
     if (n < 0) {
         error("Vector::constructor: n cannot be negative: " + integerToString(n));
     } else if (n > 0) {
@@ -741,8 +739,7 @@ Vector<ValueType>::Vector(int n, ValueType value)
 }
 
 template <typename ValueType>
-Vector<ValueType>::Vector(const std::vector<ValueType>& v)
-        : m_version(0) {
+Vector<ValueType>::Vector(const std::vector<ValueType>& v) {
     count = v.size();
     capacity = v.size();
     elements = new ValueType[count];
@@ -753,8 +750,7 @@ Vector<ValueType>::Vector(const std::vector<ValueType>& v)
 
 template <typename ValueType>
 Vector<ValueType>::Vector(std::initializer_list<ValueType> list)
-        : count(0),
-          m_version(0) {
+        : count(0) {
     capacity = list.size();
     elements = new ValueType[capacity];
     addAll(list);
