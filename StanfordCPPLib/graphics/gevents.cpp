@@ -5,6 +5,8 @@
  * in the gevents.h interface.  The actual functions for receiving events
  * from the environment are implemented in the platform package.
  * 
+ * @version 2018/06/22
+ * - added change events
  * @version 2018/06/20
  * - added mouse entered, exit, wheel events
  * @version 2016/11/26
@@ -179,6 +181,45 @@ std::string GActionEvent::toString() const {
 }
 
 
+GChangeEvent::GChangeEvent() {
+    this->eventClass = CHANGE_EVENT;
+    valid = false;
+}
+
+GChangeEvent::GChangeEvent(GEvent e) {
+    this->eventClass = CHANGE_EVENT;
+    valid = e.valid && e.eventClass == CHANGE_EVENT;
+    if (valid) {
+        eventClass = e.eventClass;
+        eventType = e.eventType;
+        modifiers = e.modifiers;
+        eventTime = e.eventTime;
+        source = e.source;
+    }
+}
+
+GChangeEvent::GChangeEvent(EventType type, GObject* source) {
+    this->eventClass = CHANGE_EVENT;
+    this->eventType = type;
+    this->source = source;
+    valid = true;
+}
+
+GObject* GChangeEvent::getSource() const {
+    return source;
+}
+
+std::string GChangeEvent::toString() const {
+    std::ostringstream os;
+    os << "GChangeEvent(";
+    switch (eventType) {
+    case STATE_CHANGED:  os << "STATE_CHANGED";  break;
+    }
+    os << ")";
+    return os.str();
+}
+
+
 GKeyEvent::GKeyEvent() {
     valid = false;
 }
@@ -232,9 +273,9 @@ std::string GKeyEvent::toString() const {
     os << "GKeyEvent:";
     int ch = '\0';
     switch (eventType) {
-    case KEY_PRESSED:  os << "KEY_PRESSED";   ch = keyCode; break;
-    case KEY_RELEASED: os << "KEY_RELEASED";  ch = keyCode; break;
-    case KEY_TYPED:    os << "KEY_TYPED";     ch = keyChar; break;
+    case KEY_PRESSED:       os << "KEY_PRESSED";   ch = keyCode;  break;
+    case KEY_RELEASED:      os << "KEY_RELEASED";  ch = keyCode;  break;
+    case KEY_TYPED:         os << "KEY_TYPED";     ch = keyChar;  break;
     }
     if (isprint(ch)) {
         os << "('" << char(ch) << "')";

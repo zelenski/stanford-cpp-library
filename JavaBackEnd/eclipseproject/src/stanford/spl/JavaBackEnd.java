@@ -26,43 +26,69 @@ import javax.sound.sampled.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
-public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionListener, MouseWheelListener,
-		KeyListener, ActionListener, ComponentListener, ChangeListener, Observer {
-	public static final int DEFAULT_CONSOLE_X = 10;
-	public static final int DEFAULT_CONSOLE_Y = 40;
-	public static final int DEFAULT_CONSOLE_WIDTH = 500;
+public class JavaBackEnd implements
+		ActionListener,
+		ChangeListener,
+		ComponentListener,
+		KeyListener,
+		MouseListener,
+		MouseMotionListener,
+		MouseWheelListener,
+		Observer,
+		WindowListener {
+	
+	// default window geometry
+	public static final int DEFAULT_CONSOLE_X      = 10;
+	public static final int DEFAULT_CONSOLE_Y      = 40;
+	public static final int DEFAULT_CONSOLE_WIDTH  = 500;
 	public static final int DEFAULT_CONSOLE_HEIGHT = 250;
-	public static final int DEFAULT_GRAPHICS_X = 10;
-	public static final int DEFAULT_GRAPHICS_Y = 10;
+	public static final int DEFAULT_GRAPHICS_X     = 10;
+	public static final int DEFAULT_GRAPHICS_Y     = 10;
+	
+	// event classes; these should be kept in sync with C++ constants in gevents.h
 	public static final int EVENT_SUBTYPE_MASK = 15;
-	public static final int ACTION_EVENT = 16;
-	public static final int KEY_EVENT = 32;
-	public static final int TIMER_EVENT = 64;
-	public static final int WINDOW_EVENT = 128;
-	public static final int MOUSE_EVENT = 256;
-	public static final int CLICK_EVENT = 512;
-	public static final int ANY_EVENT = 1008;
-	public static final int WINDOW_CLOSED = 129;
-	public static final int WINDOW_RESIZED = 130;
-	public static final int WINDOW_CLOSING = 132;
-	public static final int ACTION_PERFORMED = 17;
-	public static final int MOUSE_CLICKED = 257;
-	public static final int MOUSE_PRESSED = 258;
-	public static final int MOUSE_RELEASED = 259;
-	public static final int MOUSE_MOVED = 260;
-	public static final int MOUSE_DRAGGED = 261;
-	public static final int KEY_PRESSED = 33;
-	public static final int KEY_RELEASED = 34;
-	public static final int KEY_TYPED = 35;
-	public static final int TIMER_TICKED = 65;
-	public static final int SHIFT_DOWN = 1;
-	public static final int CTRL_DOWN = 2;
-	public static final int META_DOWN = 4;
-	public static final int ALT_DOWN = 8;
-	public static final int ALT_GRAPH_DOWN = 16;
-	public static final int BUTTON1_DOWN = 32;
-	public static final int BUTTON2_DOWN = 64;
-	public static final int BUTTON3_DOWN = 128;
+	public static final int ACTION_EVENT       = 0x0010;
+	public static final int KEY_EVENT          = 0x0020;
+	public static final int TIMER_EVENT        = 0x0040;
+	public static final int WINDOW_EVENT       = 0x0080;
+	public static final int MOUSE_EVENT        = 0x0100;
+	public static final int CLICK_EVENT        = 0x0200;
+	// public static final int TABLE_EVENT	= 0x0400;   // see GTable.java
+	// public static final int SERVER_EVENT	= 0x0800;
+	public static final int CHANGE_EVENT       = 0x1000;
+	public static final int ANY_EVENT          = 0x03F0;
+	
+	// event subtypes
+	public static final int ACTION_PERFORMED = ACTION_EVENT + 1;
+	public static final int WINDOW_CLOSED    = WINDOW_EVENT + 1;
+	public static final int WINDOW_RESIZED   = WINDOW_EVENT + 2;
+	public static final int WINDOW_CLOSING   = WINDOW_EVENT + 4;
+	public static final int MOUSE_CLICKED    = MOUSE_EVENT + 1;
+	public static final int MOUSE_PRESSED    = MOUSE_EVENT + 2;
+	public static final int MOUSE_RELEASED   = MOUSE_EVENT + 3;
+	public static final int MOUSE_MOVED      = MOUSE_EVENT + 4;
+	public static final int MOUSE_DRAGGED    = MOUSE_EVENT + 5;
+	public static final int MOUSE_ENTERED    = MOUSE_EVENT + 6;
+	public static final int MOUSE_EXITED     = MOUSE_EVENT + 7;
+	public static final int MOUSE_WHEEL_DOWN = MOUSE_EVENT + 8;
+	public static final int MOUSE_WHEEL_UP   = MOUSE_EVENT + 9;
+	public static final int KEY_PRESSED      = KEY_EVENT + 1;
+	public static final int KEY_RELEASED     = KEY_EVENT + 2;
+	public static final int KEY_TYPED        = KEY_EVENT + 3;
+	public static final int TIMER_TICKED     = TIMER_EVENT + 1;
+	// see GTable.java for TABLE_* types
+	// public static final int SERVER_REQUEST   = SERVER_EVENT + 1;
+	public static final int STATE_CHANGED    = CHANGE_EVENT + 1;
+	
+	// modifier flags (these must match the C++ ModifierCodes type in gevent.h)
+	public static final int SHIFT_DOWN     = 0x1;
+	public static final int CTRL_DOWN      = 0x2;
+	public static final int META_DOWN      = 0x4;
+	public static final int ALT_DOWN       = 0x8;
+	public static final int ALT_GRAPH_DOWN = 0x10;
+	public static final int BUTTON1_DOWN   = 0x20;
+	public static final int BUTTON2_DOWN   = 0x40;
+	public static final int BUTTON3_DOWN   = 0x80;
 	
 	private static final String DEFAULT_APP_NAME = "JBE";
 	private static final String DEBUG_PROPERTY = "stanfordspl.debug";
@@ -524,36 +550,28 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	private int convertModifiers(int paramInt) {
 		int i = 0;
 		if ((paramInt & 0x40) != 0) {
-			// SHIFT_DOWN_MASK
-			i |= 0x1;
+			i |= SHIFT_DOWN;
 		}
 		if ((paramInt & 0x80) != 0) {
-			// CTRL_DOWN_MASK
-			i |= 0x2;
+			i |= CTRL_DOWN;
 		}
 		if ((paramInt & 0x100) != 0) {
-			// META_DOWN_MASK
-			i |= 0x4;
+			i |= META_DOWN;
 		}
 		if ((paramInt & 0x200) != 0) {
-			// ALT_DOWN_MASK
-			i |= 0x8;
+			i |= ALT_DOWN;
 		}
 		if ((paramInt & 0x2000) != 0) {
-			// ALT_GRAPH_DOWN_MASK
-			i |= 0x10;
+			i |= ALT_GRAPH_DOWN;
 		}
 		if ((paramInt & 0x400) != 0) {
-			// BUTTON1_DOWN_MASK
-			i |= 0x20;
+			i |= BUTTON1_DOWN;
 		}
 		if ((paramInt & 0x800) != 0) {
-			// BUTTON2_DOWN_MASK
-			i |= 0x40;
+			i |= BUTTON2_DOWN;
 		}
 		if ((paramInt & 0x1000) != 0) {
-			// BUTTON3_DOWN_MASK
-			i |= 0x80;
+			i |= BUTTON3_DOWN;
 		}
 		return i;
 	}
@@ -591,12 +609,12 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		Object localObject1 = paramActionEvent.getSource();
 		Object localObject2;
 		if ((localObject1 instanceof GTimer)) {
-			if ((this.eventMask & 0x40) != 0) {
+			if (listeningForEvent(TIMER_EVENT)) {
 				localObject2 = (GTimer) paramActionEvent.getSource();
 				acknowledgeEvent("event:timerTicked(\"%s\", %d)",
 						((GTimer) localObject2).getId(), (long) getEventTime());
 			}
-		} else if ((this.eventMask & 0x10) != 0) {
+		} else if (listeningForEvent(ACTION_EVENT)) {
 			localObject2 = getSourceId((JComponent) localObject1);
 			GInteractor localGInteractor = (GInteractor) getGObject((String) localObject2);
 			String str = localGInteractor.getActionCommand();
@@ -610,36 +628,26 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	}
 
 	public void keyPressed(KeyEvent paramKeyEvent) {
-		if ((this.eventMask & 0x20) != 0) {
+		if (listeningForEvent(KEY_EVENT)) {
 			printEvent("keyPressed", paramKeyEvent);
 		}
 	}
 
 	public void keyReleased(KeyEvent paramKeyEvent) {
-		if ((this.eventMask & 0x20) != 0) {
+		if (listeningForEvent(KEY_EVENT)) {
 			printEvent("keyReleased", paramKeyEvent);
 		}
 	}
 
 	public void keyTyped(KeyEvent paramKeyEvent) {
-		if ((this.eventMask & 0x20) != 0) {
+		if (listeningForEvent(KEY_EVENT)) {
 			printEvent("keyTyped", paramKeyEvent);
 		}
 	}
 
 	private void printEvent(String type, KeyEvent keyEvent) {
 		String windowId = getWindowId(keyEvent);
-//		String keyChar;
 		int keyCode = keyEvent.getKeyCode();
-//		if (Character.isISOControl(keyCode)
-//				|| Character.isISOControl(keyEvent.getKeyChar())) {
-//			// special characters such as Ctrl or Shift
-//			keyChar = "?";
-//		} else {
-//			// all other characters
-//			keyChar = String.valueOf(keyEvent.getKeyChar());
-//		}
-		
 		acknowledgeEvent("event:%s(\"%s\", %d, %d, %d, %d)",
 				type, windowId, (long) getEventTime(),
 				convertModifiers(keyEvent.getModifiersEx()),
@@ -647,7 +655,17 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 				keyCode);
 	}
 	
-	private String getWindowId(AWTEvent event) {
+	private void printEvent(String type, String sourceId, DocumentEvent docEvent) {
+		acknowledgeEvent("event:%s(\"%s\", %d)",
+				type, sourceId, (long) getEventTime());
+	}
+	
+//	private void printEvent(String type, String sourceId, AWTEvent event) {
+//		acknowledgeEvent("event:%s(\"%s\", %d, %d)",
+//				type, sourceId, (long) getEventTime());
+//	}
+	
+	private String getWindowId(EventObject event) {
 		Object src = event.getSource();
 		if (src instanceof JBECanvas) {
 			JBECanvas canvas = (JBECanvas) src;
@@ -664,52 +682,83 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		}
 		return "???";
 	}
+	
+	/**
+	 * Returns a DocumentListener that listens for events on the given interactor.
+	 * This method is needed for DocumentListener unlike other listeners because DocumentEvent
+	 * does not have a getSource method, so we need a reference to the back-end and interactor
+	 * to determine the event source.
+	 */
+	public DocumentListener createDocumentListener(final GInteractor interactor) {
+		return new DocumentListener() {
+			// required method of DocumentListener interface
+			public void changedUpdate(DocumentEvent event) {
+				fireEvent(event);
+			}
+			
+			// required method of DocumentListener interface
+			public void removeUpdate(DocumentEvent event) {
+				fireEvent(event);
+			}
+			
+			// required method of DocumentListener interface
+			public void insertUpdate(DocumentEvent event) {
+				fireEvent(event);
+			}
+			
+			// common code to actually send the event through the pipe
+			private void fireEvent(DocumentEvent event) {
+				String sourceId = sourceTable.get(interactor.getInteractor());
+				printEvent("stateChanged", sourceId, event);
+			}
+		};
+	};
 
 	public void mouseClicked(MouseEvent paramMouseEvent) {
 		((Component) paramMouseEvent.getSource()).requestFocus();
-		if ((this.eventMask & 0x300) != 0) {
+		if (listeningForEvent(MOUSE_EVENT | CLICK_EVENT)) {
 			printEvent("mouseClicked", paramMouseEvent);
 		}
 	}
 
 	public void mouseEntered(MouseEvent paramMouseEvent) {
-		if ((this.eventMask & 0x100) != 0) {
+		if (listeningForEvent(MOUSE_EVENT)) {
 			printEvent("mouseEntered", paramMouseEvent);
 		}
 	}
 
 	public void mouseExited(MouseEvent paramMouseEvent) {
-		if ((this.eventMask & 0x100) != 0) {
+		if (listeningForEvent(MOUSE_EVENT)) {
 			printEvent("mouseExited", paramMouseEvent);
 		}
 	}
 
 	public void mousePressed(MouseEvent paramMouseEvent) {
-		if ((this.eventMask & 0x100) != 0) {
+		if (listeningForEvent(MOUSE_EVENT)) {
 			printEvent("mousePressed", paramMouseEvent);
 		}
 	}
 
 	public void mouseReleased(MouseEvent paramMouseEvent) {
-		if ((this.eventMask & 0x100) != 0) {
+		if (listeningForEvent(MOUSE_EVENT)) {
 			printEvent("mouseReleased", paramMouseEvent);
 		}
 	}
 
 	public void mouseMoved(MouseEvent paramMouseEvent) {
-		if ((this.eventMask & 0x100) != 0) {
+		if (listeningForEvent(MOUSE_EVENT)) {
 			printEvent("mouseMoved", paramMouseEvent);
 		}
 	}
 
 	public void mouseDragged(MouseEvent paramMouseEvent) {
-		if ((this.eventMask & 0x100) != 0) {
+		if (listeningForEvent(MOUSE_EVENT)) {
 			printEvent("mouseDragged", paramMouseEvent);
 		}
 	}
 
 	public void mouseWheelMoved(MouseWheelEvent event) {
-		if ((this.eventMask & 0x100) != 0) {
+		if (listeningForEvent(MOUSE_EVENT)) {
 			int rotation = event.getWheelRotation();
 			if (rotation > 0) {
 				printEvent("mouseWheelDown", event);
@@ -847,14 +896,18 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 		}
 	}
 
-	public void stateChanged(ChangeEvent paramChangeEvent) {
-		Object localObject1 = paramChangeEvent.getSource();
-		if ((this.eventMask & 0x10) != 0) {
-			String str1 = getSourceId((JComponent) localObject1);
-			GInteractor localGInteractor = (GInteractor) getGObject(str1);
-			String str2 = localGInteractor.getActionCommand();
-			if (!str2.isEmpty()) {
-				acknowledgeEvent("event:actionPerformed(\"%s\", \"%s\", %d)", str1, str2, (long) getEventTime());
+	// required method of ChangeListener interface
+	public void stateChanged(ChangeEvent event) {
+		Object source = event.getSource();
+		if (listeningForEvent(CHANGE_EVENT)) {
+			String sourceId = getSourceId((JComponent) source);
+			acknowledgeEvent("event:stateChanged(\"%s\", %d)", sourceId, (long) getEventTime());
+		} else if (listeningForEvent(ACTION_EVENT)) {
+			String sourceId = getSourceId((JComponent) source);
+			GInteractor interactor = (GInteractor) getGObject(sourceId);
+			String actionCommand = interactor.getActionCommand();
+			if (!actionCommand.isEmpty()) {
+				acknowledgeEvent("event:actionPerformed(\"%s\", \"%s\", %d)", sourceId, actionCommand, (long) getEventTime());
 			}
 		}
 	}
@@ -868,13 +921,19 @@ public class JavaBackEnd implements WindowListener, MouseListener, MouseMotionLi
 	}
 
 	public void componentResized(ComponentEvent componentEvent) {
-		if ((this.eventMask & 0x80) != 0) {
+		if (listeningForEvent(WINDOW_EVENT)) {
 			String windowId = getWindowId(componentEvent);
 			acknowledgeEvent("event:windowResized(\"%s\", %d)", windowId, (long) getEventTime());
 		}
 	}
 
 	public void componentShown(ComponentEvent paramComponentEvent) {
+	}
+	
+	// returns true if the given event type (such as MOUSE_EVENT) is currently part
+	// of JBE's event mask, meaning that we are listening for that type of event
+	private boolean listeningForEvent(int type) {
+		return (this.eventMask & type) != 0;
 	}
 	
 	private void printLog(String s) {

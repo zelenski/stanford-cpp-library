@@ -332,6 +332,15 @@ void GWindow::addToRegion(GInteractor* gobj, const std::string& region) {
     }
 }
 
+void GWindow::addToRegion(GInteractor& gobj, Region region) {
+    addToRegion(&gobj, region);
+}
+
+void GWindow::addToRegion(GInteractor& gobj, const std::string& region) {
+    addToRegion(&gobj, region);
+}
+
+
 void GWindow::addToRegion(GLabel* gobj, Region region) {
     addToRegion(gobj, regionToString(region));
 }
@@ -340,6 +349,14 @@ void GWindow::addToRegion(GLabel* gobj, const std::string& region) {
     if (isOpen()) {
         stanfordcpplib::getPlatform()->gwindow_addToRegion(*this, (GObject *) gobj, region);
     }
+}
+
+void GWindow::addToRegion(GLabel& gobj, Region region) {
+    addToRegion(&gobj, region);
+}
+
+void GWindow::addToRegion(GLabel& gobj, const std::string& region) {
+    addToRegion(&gobj, region);
 }
 
 std::string GWindow::alignmentToString(Alignment alignment) {
@@ -1143,6 +1160,31 @@ std::string convertRGBToColor(int rgb) {
     os << std::setw(2) << (rgb >> 16 & 0xFF);
     os << std::setw(2) << (rgb >> 8 & 0xFF);
     os << std::setw(2) << (rgb & 0xFF);
+    return os.str();
+}
+
+std::string convertRGBToColor(int r, int g, int b) {
+    if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
+        error("convertRGBToColor: invalid RGB value (must be 0-255)");
+    }
+    std::ostringstream os;
+    os << std::hex << std::setfill('0') << std::uppercase << "#";
+    os << std::setw(2) << (r & 0xFF);
+    os << std::setw(2) << (g & 0xFF);
+    os << std::setw(2) << (b & 0xFF);
+    return os.str();
+}
+
+std::string convertARGBToColor(int a, int r, int g, int b) {
+    if (a < 0 || a > 255 || r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
+        error("convertARGBToColor: invalid ARGB value (must be 0-255)");
+    }
+    std::ostringstream os;
+    os << std::hex << std::setfill('0') << std::uppercase << "#";
+    os << std::setw(2) << (a & 0xFF);
+    os << std::setw(2) << (r & 0xFF);
+    os << std::setw(2) << (g & 0xFF);
+    os << std::setw(2) << (b & 0xFF);
     return os.str();
 }
 

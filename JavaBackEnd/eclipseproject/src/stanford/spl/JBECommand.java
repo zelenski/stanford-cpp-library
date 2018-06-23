@@ -1,6 +1,7 @@
 /*
  * @version 2018/06/20
  * - added URL_downloadWithHeaders
+ * - added GInteractor_add/removeDocumentListener
  * @version 2018/01/26
  * - added GWindow_setCanvasDrawingMode
  * @version 2017/10/12
@@ -105,12 +106,14 @@ public abstract class JBECommand {
 			GFileChooser_showSaveDialog.class,
 			GImage_create.class,
 			GInteractor_addActionListener.class,
+			GInteractor_addChangeListener.class,
 			GInteractor_getAccelerator.class,
 			GInteractor_getFont.class,
 			GInteractor_getMnemonic.class,
 			GInteractor_getSize.class,
 			GInteractor_isEnabled.class,
 			GInteractor_removeActionListener.class,
+			GInteractor_removeChangeListener.class,
 			GInteractor_requestFocus.class,
 			GInteractor_setAccelerator.class,
 			GInteractor_setActionCommand.class,

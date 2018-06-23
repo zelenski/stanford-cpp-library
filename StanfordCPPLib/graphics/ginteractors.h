@@ -5,6 +5,8 @@
  * provided in the Java Swing libraries.
  * <include src="pictures/ClassHierarchies/GInteractorHierarchy-h.html">
  * 
+ * @version 2018/06/23
+ * - added change listener functionality
  * @version 2017/11/18
  * - added GCheckBox constructor that takes bool for checked
  * @version 2017/10/12
@@ -79,6 +81,25 @@ public:
      */
     void addActionListener();
 
+    /*
+     * Method: addChangeListener
+     * Usage: interactor.addChangeListener();
+     * --------------------------------------
+     * Instructs the back-end to generate a ChangeEvent (CHANGE_EVENT class)
+     * when the user changes the state of the interactor's data.
+     *
+     * Currently this is supported in the following interactors:
+     *
+     * - GTextField
+     * - GTextArea  (when any character of the text changes)
+     * - GSlider    (when user drags the slider to change its value)
+     *
+     * Note that you do not need to call addChangeListener on a GSlider because
+     * the listener is already added automatically.
+     * Calling this method on any other kind of GInteractor will have no effect.
+     */
+    virtual void addChangeListener();
+
     // TODO: getAccelerator?
 
     /*
@@ -128,6 +149,15 @@ public:
      * an effect, though.
      */
     virtual void removeActionListener();
+
+    /*
+     * Method: removeChangeListener
+     * Usage: interactor.removeChangeListener();
+     * -----------------------------------------
+     * Instructs the back-end to stop generating change events when the user
+     * changes the state of this interactor.
+     */
+    virtual void removeChangeListener();
 
     /*
      * Method: requestFocus
@@ -486,11 +516,8 @@ private:
  * slider has a nonempty action command.
  * <include src="pictures/GInteractorDiagrams/GSlider.html">
  */
-
 class GSlider : public GInteractor {
-
 public:
-
     /*
      * Constructor: GSlider
      * Usage: GSlider *slider = new GSlider();

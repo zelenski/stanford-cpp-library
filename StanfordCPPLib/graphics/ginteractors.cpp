@@ -3,6 +3,8 @@
  * ----------------------
  * This file implements the ginteractors.h interface.
  * 
+ * @version 2018/06/23
+ * - added change listener functionality
  * @version 2017/11/18
  * - added GCheckBox constructor that takes bool for checked
  * @version 2017/10/12
@@ -57,6 +59,10 @@ void GInteractor::addActionListener() {
     stanfordcpplib::getPlatform()->ginteractor_addActionListener(this);
 }
 
+void GInteractor::addChangeListener() {
+    stanfordcpplib::getPlatform()->ginteractor_addChangeListener(this);
+}
+
 std::string GInteractor::getActionCommand() const {
     return actionCommand;
 }
@@ -84,6 +90,10 @@ bool GInteractor::isEnabled() const {
 
 void GInteractor::removeActionListener() {
     stanfordcpplib::getPlatform()->ginteractor_removeActionListener(this);
+}
+
+void GInteractor::removeChangeListener() {
+    stanfordcpplib::getPlatform()->ginteractor_removeChangeListener(this);
 }
 
 void GInteractor::requestFocus() {

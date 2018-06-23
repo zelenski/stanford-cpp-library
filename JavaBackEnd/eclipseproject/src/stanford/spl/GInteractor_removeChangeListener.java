@@ -1,14 +1,9 @@
-/*
- * @version 2018/06/23
- * - initial version
- */
-
 package stanford.spl;
 
 import acm.graphics.GObject;
 import acm.util.TokenScanner;
 
-public class GInteractor_addActionListener extends JBESwingCommand {
+public class GInteractor_removeChangeListener extends JBESwingCommand {
 	public void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd) {
 		paramTokenScanner.verifyToken("(");
 		String interactorID = nextString(paramTokenScanner);
@@ -17,10 +12,14 @@ public class GInteractor_addActionListener extends JBESwingCommand {
 		GObject localGObject = paramJavaBackEnd.getGObject(interactorID);
 		if (localGObject != null && localGObject instanceof GInteractor) {
 			GInteractor interactor = (GInteractor) localGObject;
-			if (interactor instanceof GButton) {
-				return;   // disallow add/remove of action listeners on buttons (always on)
+			if (interactor instanceof GTextField) {
+				((GTextField) interactor).removeDocumentListeners();
+			} else if (interactor instanceof GTextArea) {
+				((GTextArea) interactor).removeDocumentListeners();
+			} else if (interactor instanceof GSlider) {
+				((GSlider) interactor).removeChangeListeners();
 			}
-			interactor.addActionListener(paramJavaBackEnd);
+			// allow change listeners only on text-editing components
 		}
 	}
 }

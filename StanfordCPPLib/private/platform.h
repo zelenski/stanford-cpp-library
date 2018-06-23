@@ -7,6 +7,7 @@
  *
  * @version 2018/06/20
  * - added url_downloadWithHeaders
+ * - added ginteractor_add/removeChangeListener
  * @version 2018/01/23
  * - added autograderunittest_runTestsInSeparateThreads
  * @version 2017/10/12
@@ -165,11 +166,13 @@ public:
     GDimension gimage_constructor(GObject* gobj, const std::string& filename);
 
     void ginteractor_addActionListener(GObject* gobj);
+    void ginteractor_addChangeListener(GObject* gobj);
     std::string ginteractor_getFont(const GObject* gobj);
     char ginteractor_getMnemonic(const GObject* gobj);
     GDimension ginteractor_getSize(const GObject* gobj);
     bool ginteractor_isEnabled(const GObject* gint);
     void ginteractor_removeActionListener(GObject* gobj);
+    void ginteractor_removeChangeListener(GObject* gobj);
     void ginteractor_requestFocus(GObject* gobj);
     void ginteractor_setAccelerator(GObject* gobj, const std::string& accelerator);
     void ginteractor_setActionCommand(GObject* gobj, const std::string& cmd);

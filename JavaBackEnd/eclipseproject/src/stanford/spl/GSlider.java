@@ -1,3 +1,8 @@
+/*
+ * @version 2018/06/23
+ * - added change listener functionality
+ */
+
 package stanford.spl;
 
 import javax.swing.JSlider;
@@ -24,6 +29,13 @@ public class GSlider extends GInteractor {
 		}
 	}
 	
+	public void addChangeListener(ChangeListener listener) {
+		JSlider slider = getJSlider();
+		if (slider != null) {
+			slider.addChangeListener(listener);
+		}
+	}
+	
 	public boolean getPaintLabels() {
 		return getJSlider().getPaintLabels();
 	}
@@ -42,6 +54,27 @@ public class GSlider extends GInteractor {
 	
 	public int getMinorTickSpacing() {
 		return getJSlider().getMinorTickSpacing();
+	}
+	
+	public boolean hasChangeListener() {
+		JSlider slider = getJSlider();
+		return slider != null && slider.getChangeListeners().length > 0;
+	}
+	
+	public void removeChangeListener(ChangeListener listener) {
+		JSlider slider = getJSlider();
+		if (slider != null) {
+			slider.removeChangeListener(listener);
+		}
+	}
+	
+	public void removeChangeListeners() {
+		JSlider slider = getJSlider();
+		if (slider != null) {
+			for (ChangeListener listener : slider.getChangeListeners()) {
+				slider.removeChangeListener(listener);
+			}
+		}
 	}
 	
 	public void setPaintLabels(boolean value) {

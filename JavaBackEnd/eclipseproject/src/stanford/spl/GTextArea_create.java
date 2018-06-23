@@ -13,6 +13,9 @@ public class GTextArea_create extends JBESwingCommand {
 		int height = nextInt(paramTokenScanner);
 		paramTokenScanner.verifyToken(")");
 		GTextArea area = new GTextArea(width, height);
-		jbe.defineGObject(id, area);	       
+		jbe.defineGObject(id, area);
+		
+		// TODO: getInteractor here returns the JScrollPane; should it be instead linked to the JTextArea?
+		jbe.defineSource(area.getInteractor(), id);
 	}
 }

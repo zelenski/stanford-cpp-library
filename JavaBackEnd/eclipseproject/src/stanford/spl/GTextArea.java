@@ -1,7 +1,9 @@
 /*
  * GTextArea.java
  * 
- * @author Jeff Lutgen
+ * @author Jeff Lutgen and Marty Stepp
+ * @version 2018/06/23
+ * - added document listener functionality
  */
 
 /*************************************************************************/
@@ -24,11 +26,11 @@
 
 package stanford.spl;
 
-import java.awt.Color;
-import java.awt.Font;
-
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
+import javax.swing.*;
+import javax.swing.event.*;
 
 /**
  * The <code>GTextArea</code> class is a graphical object whose appearance
@@ -57,8 +59,7 @@ public class GTextArea extends GInteractor {
 	
 	private JTextArea textArea;
 	private JScrollPane scrollPane;
-
-
+	private List<DocumentListener> documentListeners;
 
 	/**
 	 * Creates a new <code>GTextArea</code> object with its anchor point at the
@@ -75,6 +76,33 @@ public class GTextArea extends GInteractor {
 		scrollPane.setViewportView(textArea);
 		setFont(DEFAULT_FONT);
 		setSize(width, height); 
+	}
+	
+	public void addDocumentListener(DocumentListener listener) {
+		textArea.getDocument().addDocumentListener(listener);
+		if (documentListeners == null) {
+			documentListeners = new ArrayList<DocumentListener>();
+		}
+		documentListeners.add(listener);
+	}
+	
+	public boolean hasDocumentListener() {
+		return documentListeners != null && !documentListeners.isEmpty();
+	}
+	
+	public void removeDocumentListener(DocumentListener listener) {
+		textArea.getDocument().removeDocumentListener(listener);
+		if (documentListeners != null) {
+			documentListeners.remove(listener);
+		}
+	}
+
+	public void removeDocumentListeners() {
+		if (documentListeners != null) {
+			for (DocumentListener listener : documentListeners) {
+				textArea.getDocument().removeDocumentListener(listener);
+			}
+		}
 	}
 
 	/**

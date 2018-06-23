@@ -7,6 +7,7 @@
  * @version 2018/06/20
  * - added mouse entered, exited, wheel moved events
  * - added url_downloadWithHeaders
+ * - added ginteractor_add/removeChangeListener
  * @version 2017/10/12
  * - added gtextlabel_create
  * - added gwindow_setRepaintImmediately
@@ -221,6 +222,7 @@ static void getStatus();
 static void initPipe();
 static GEvent parseActionEvent(TokenScanner& scanner, EventType type);
 static GEvent parseEvent(const std::string& line);
+static GEvent parseChangeEvent(TokenScanner& scanner, EventType type);
 static GEvent parseKeyEvent(TokenScanner& scanner, EventType type);
 static GEvent parseMouseEvent(TokenScanner& scanner, EventType type);
 static GEvent parseServerEvent(TokenScanner& scanner, EventType type);
@@ -1560,9 +1562,21 @@ void Platform::ginteractor_addActionListener(GObject* gobj) {
     putPipe(os.str());
 }
 
+void Platform::ginteractor_addChangeListener(GObject* gobj) {
+    std::ostringstream os;
+    os << "GInteractor.addChangeListener(\"" << gobj << "\")";
+    putPipe(os.str());
+}
+
 void Platform::ginteractor_removeActionListener(GObject* gobj) {
     std::ostringstream os;
     os << "GInteractor.removeActionListener(\"" << gobj << "\")";
+    putPipe(os.str());
+}
+
+void Platform::ginteractor_removeChangeListener(GObject* gobj) {
+    std::ostringstream os;
+    os << "GInteractor.removeChangeListener(\"" << gobj << "\")";
     putPipe(os.str());
 }
 
@@ -1965,6 +1979,9 @@ void Platform::gtable_setRowForeground(GObject* gobj, int row, const std::string
 
 void Platform::gtextarea_create(GObject* gobj, double width, double height) {
     std::ostringstream os;
+    os << gobj;
+    STATIC_VARIABLE(sourceTable).put(os.str(), gobj);
+    os.str("");
     os << "GTextArea.create(\"" << gobj << "\", " << width << ", "
        << height << ")";
     putPipe(os.str());
@@ -3143,6 +3160,8 @@ static GEvent parseEvent(const std::string& line) {
         return parseKeyEvent(scanner, KEY_RELEASED);
     } else if (name == "keyTyped") {
         return parseKeyEvent(scanner, KEY_TYPED);
+    } else if (name == "stateChanged") {
+        return parseChangeEvent(scanner, STATE_CHANGED);
     } else if (name == "actionPerformed") {
         return parseActionEvent(scanner, ACTION_PERFORMED);
     } else if (name == "serverRequest") {
@@ -3229,6 +3248,17 @@ static GEvent parseMouseEvent(TokenScanner& scanner, EventType type) {
     GMouseEvent e(type, GWindow(STATIC_VARIABLE(windowTable).get(id)), x, y);
     e.setEventTime(time);
     e.setModifiers(modifiers);
+    return e;
+}
+
+static GEvent parseChangeEvent(TokenScanner& scanner, EventType type) {
+    scanner.verifyToken("(");
+    std::string id = scanner.getStringValue(scanner.nextToken());
+    scanner.verifyToken(",");
+    double time = scanDouble(scanner);
+    scanner.verifyToken(")");
+    GChangeEvent e(type, STATIC_VARIABLE(sourceTable).get(id));
+    e.setEventTime(time);
     return e;
 }
 

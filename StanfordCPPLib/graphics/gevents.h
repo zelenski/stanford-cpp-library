@@ -6,6 +6,8 @@
  * the Java event model.
  * <include src="pictures/ClassHierarchies/GEventHierarchy-h.html">
  * 
+ * @version 2018/06/22
+ * - added change events
  * @version 2018/06/20
  * - added mouse entered, exit, wheel events
  * @version 2016/11/26
@@ -39,15 +41,16 @@
  * selects any event.
  */
 enum EventClassType {
-    NULL_EVENT   = 0x000,
-    ACTION_EVENT = 0x010,
-    KEY_EVENT    = 0x020,
-    TIMER_EVENT  = 0x040,
-    WINDOW_EVENT = 0x080,
-    MOUSE_EVENT  = 0x100,
-    CLICK_EVENT  = 0x200,
-    TABLE_EVENT  = 0x400,
-    SERVER_EVENT = 0x800,
+    NULL_EVENT   = 0x0000,
+    ACTION_EVENT = 0x0010,
+    KEY_EVENT    = 0x0020,
+    TIMER_EVENT  = 0x0040,
+    WINDOW_EVENT = 0x0080,
+    MOUSE_EVENT  = 0x0100,
+    CLICK_EVENT  = 0x0200,
+    TABLE_EVENT  = 0x0400,
+    SERVER_EVENT = 0x0800,
+    CHANGE_EVENT = 0x1000,
     ANY_EVENT    = 0x3F0
 };
 
@@ -88,7 +91,9 @@ typedef enum {
     TABLE_COPY          = TABLE_EVENT + 6,
     TABLE_PASTE         = TABLE_EVENT + 7,
 
-    SERVER_REQUEST      = SERVER_EVENT + 1
+    SERVER_REQUEST      = SERVER_EVENT + 1,
+
+    STATE_CHANGED       = CHANGE_EVENT + 1
 } EventType;
 
 /*
@@ -368,6 +373,7 @@ private:
 
     /* Friend specifications */
     friend class GActionEvent;
+    friend class GChangeEvent;
     friend class GKeyEvent;
     friend class GMouseEvent;
     friend class GServerEvent;
@@ -501,6 +507,43 @@ public:
     /* Private section */
     GActionEvent();
     GActionEvent(GEvent e);
+};
+
+
+/*
+ * Class: GChangeEvent
+ * -------------------
+ * Change events that occur on an interactor with a state such as editable text.
+ */
+class GChangeEvent : public GEvent {
+public:
+    /*
+     * Constructor: GChangeEvent
+     * Usage: GChangeEvent changeEvent(type, source);
+     * ----------------------------------------------
+     * Creates a <code>GChangeEvent</code> with the specified type and source.
+     */
+    GChangeEvent(EventType type, GObject* source);
+
+    /*
+     * Method: getSource
+     * Usage: GObject *gobj = e.getSource();
+     * -------------------------------------
+     * Returns a pointer to the <code>GObject</code> that generated this event.
+     */
+    GObject* getSource() const;
+
+    /*
+     * Method: toString
+     * Usage: string str = e.toString();
+     * ---------------------------------
+     * Converts the event to a human-readable representation of the event.
+     */
+    std::string toString() const;
+
+    /* Private section */
+    GChangeEvent();
+    GChangeEvent(GEvent e);
 };
 
 /*
@@ -674,7 +717,7 @@ public:
 };
 
 /*
- * Class: GWindowEvent
+ * Class: GServerEvent
  * -------------------
  * Events that occur on a web server.
  */
@@ -682,9 +725,10 @@ class GServerEvent : public GEvent {
 public:
     /*
      * Constructor: GServerEvent
-     * Usage: GServerEvent serverEvent(type);
-     * --------------------------------------
-     * Creates a <code>GServerEvent</code> with the specified type.
+     * Usage: GServerEvent serverEvent(type, requestID, requestUrl);
+     * -------------------------------------------------------------
+     * Creates a <code>GServerEvent</code> with the specified type,
+     * request ID, and request URL.
      */
     GServerEvent(EventType type, int requestID, const std::string& requestUrl);
 

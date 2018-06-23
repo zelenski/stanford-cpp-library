@@ -4,6 +4,10 @@
  * This file defines the <code>GWindow</code> class which supports
  * drawing graphical objects on the screen.
  * 
+ * @version 2018/06/23
+ * - added addToRegion overloads that accept const reference
+ * - added convertRGBToColor that accepts three rgb integers
+ * - added convertARGBToColor
  * @version 2017/12/18
  * - added drawImage
  * @version 2017/10/25
@@ -206,11 +210,16 @@ public:
      * constants from the Region enum, or one of the region strings
      * <code>"NORTH"</code>, <code>"EAST"</code>, <code>"SOUTH"</code>,
      * or <code>"WEST"</code>.
+     * You can pass the interactor by pointer or by const reference.
      */
     void addToRegion(GInteractor* gobj, Region region);
     void addToRegion(GInteractor* gobj, const std::string& region);
+    void addToRegion(GInteractor& gobj, Region region);
+    void addToRegion(GInteractor& gobj, const std::string& region);
     void addToRegion(GLabel* gobj, Region region);
     void addToRegion(GLabel* gobj, const std::string& region);
+    void addToRegion(GLabel& gobj, Region region);
+    void addToRegion(GLabel& gobj, const std::string& region);
 
     /*
      * Sets the (x, y) location of the window to be the center of the screen.
@@ -973,6 +982,30 @@ int convertColorToRGB(const std::string& colorName);
  * hexadecimal numbers indicating the intensity of that component.
  */
 std::string convertRGBToColor(int rgb);
+
+/*
+ * Function: convertRGBToColor
+ * Usage: int colorName = convertRGBToColor(a, r, g, b);
+ * -----------------------------------------------------
+ * Converts four integer RGB values from 0-255 into a color name in the
+ * form <code>"#aarrggbb"</code>.  Each of the <code>aa</code>, <code>rr</code>,
+ * <code>gg</code>, and <code>bb</code> values are two-digit
+ * hexadecimal numbers indicating the intensity of that component.
+ * If any of a, r, g, or b is outside the range of 0-255, throws an error.
+ */
+std::string convertARGBToColor(int a, int r, int g, int b);
+
+/*
+ * Function: convertRGBToColor
+ * Usage: int colorName = convertRGBToColor(r, g, b);
+ * --------------------------------------------------
+ * Converts three integer RGB values from 0-255 into a color name in the
+ * form <code>"#rrggbb"</code>.  Each of the <code>rr</code>,
+ * <code>gg</code>, and <code>bb</code> values are two-digit
+ * hexadecimal numbers indicating the intensity of that component.
+ * If any of r, g, or b is outside the range of 0-255, throws an error.
+ */
+std::string convertRGBToColor(int r, int g, int b);
 
 /*
  * Function: exitGraphics
