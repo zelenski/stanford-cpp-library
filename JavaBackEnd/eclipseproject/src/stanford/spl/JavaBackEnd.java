@@ -15,6 +15,7 @@ import acm.program.*;
 import acm.util.*;
 import stanford.cs106.gui.GuiUtils;
 import stanford.cs106.util.ExceptionUtils;
+import stanford.cs106.util.StringUtils;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -660,6 +661,13 @@ public class JavaBackEnd implements
 				type, sourceId, (long) getEventTime());
 	}
 	
+	private void printEvent(String type, String sourceId, HyperlinkEvent linkEvent) {
+		String url = linkEvent.getURL().toString();
+		url = StringUtils.urlEncode(url);
+		acknowledgeEvent("event:%s(\"%s\", \"%s\", %d)",
+				type, sourceId, url, (long) getEventTime());
+	}
+	
 //	private void printEvent(String type, String sourceId, AWTEvent event) {
 //		acknowledgeEvent("event:%s(\"%s\", %d, %d)",
 //				type, sourceId, (long) getEventTime());
@@ -713,6 +721,21 @@ public class JavaBackEnd implements
 			}
 		};
 	};
+
+	/**
+	 * Returns a HyperlinkListener that listens for hyperlink events on the given interactor.
+	 */
+	public HyperlinkListener createHyperlinkListener(final GInteractor interactor) {
+		return new HyperlinkListener() {
+			// required method of DocumentListener interface
+			public void hyperlinkUpdate(HyperlinkEvent event) {
+				if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+					String sourceId = sourceTable.get(interactor.getInteractor());
+					printEvent("hyperlinkClicked", sourceId, event);
+				}
+			}
+		};
+	}
 
 	public void mouseClicked(MouseEvent paramMouseEvent) {
 		((Component) paramMouseEvent.getSource()).requestFocus();

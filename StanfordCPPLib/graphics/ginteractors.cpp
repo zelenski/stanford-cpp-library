@@ -3,6 +3,8 @@
  * ----------------------
  * This file implements the ginteractors.h interface.
  * 
+ * @version 2018/06/24
+ * - added GFormattedPane
  * @version 2018/06/23
  * - added change listener functionality
  * @version 2017/11/18
@@ -44,6 +46,7 @@
 #include "gobjects.h"
 #include "gtypes.h"
 #include "gwindow.h"
+#include "server.h"
 #include "strlib.h"
 #include "private/platform.h"
 #include "private/static.h"
@@ -294,6 +297,73 @@ std::string GChooser::toString() const {
     oss << "GChooser()";
     return oss.str();
 }
+
+/*
+ * Implementation notes: GFormattedPane class
+ * ------------------------------------------
+ * This class is based on Java's JEditorPane on the backend.
+ */
+
+GFormattedPane::GFormattedPane(const std::string& url) {
+    stanfordcpplib::getPlatform()->gformattedpane_constructor(this);
+    if (!url.empty()) {
+        readTextFromUrl(url);
+    }
+}
+
+std::string GFormattedPane::getContentType() const {
+    return stanfordcpplib::getPlatform()->gformattedpane_getContentType(this);
+}
+
+std::string GFormattedPane::getPageUrl() const {
+    return pageUrl;
+}
+
+std::string GFormattedPane::getText() const {
+    return stanfordcpplib::getPlatform()->gformattedpane_getText(this);
+}
+
+void GFormattedPane::setContentType(const std::string& contentType) {
+    stanfordcpplib::getPlatform()->gformattedpane_setContentType(this, contentType);
+}
+
+void GFormattedPane::readTextFromUrl(const std::string& url) {
+    stanfordcpplib::getPlatform()->gformattedpane_setPage(this, url);
+    this->pageUrl = url;
+}
+
+void GFormattedPane::setText(const std::string& text) {
+    stanfordcpplib::getPlatform()->gformattedpane_setText(this, text);
+}
+
+void GFormattedPane::readTextFromFile(std::istream& file) {
+    std::string fileText = readEntireStream(file);
+    setText(fileText);
+}
+
+void GFormattedPane::readTextFromFile(const std::string& filename) {
+    std::ifstream input;
+    input.open(filename.c_str());
+    if (!input.fail()) {
+        pageUrl = filename;
+        std::string extension = getExtension(filename);
+        std::string contentType = HttpServer::getContentType(extension);
+        if (!contentType.empty()) {
+            setContentType(contentType);
+        }
+        readTextFromFile(input);
+    }
+}
+
+/* Prototypes for the virtual methods */
+std::string GFormattedPane::getType() const {
+    return "GFormattedPane";
+}
+
+std::string GFormattedPane::toString() const {
+    return "GFormattedPane(" + pageUrl + ")";
+}
+
 
 /*
  * Implementation notes: GRadioButton class

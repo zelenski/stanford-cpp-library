@@ -1,4 +1,8 @@
 /*
+ * @version 2018/06/24
+ * - added GFormattedPane_get/setContentType
+ * @version 2018/06/23
+ * - added GFormattedPane_*
  * @version 2018/06/20
  * - added URL_downloadWithHeaders
  * - added GInteractor_add/removeDocumentListener
@@ -104,6 +108,13 @@ public abstract class JBECommand {
 			GEvent_waitForEvent.class,
 			GFileChooser_showOpenDialog.class,
 			GFileChooser_showSaveDialog.class,
+			GFormattedPane_create.class,
+			GFormattedPane_getContentType.class,
+			GFormattedPane_getPage.class,
+			GFormattedPane_getText.class,
+			GFormattedPane_setContentType.class,
+			GFormattedPane_setPage.class,
+			GFormattedPane_setText.class,
 			GImage_create.class,
 			GInteractor_addActionListener.class,
 			GInteractor_addChangeListener.class,

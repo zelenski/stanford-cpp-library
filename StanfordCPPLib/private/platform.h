@@ -5,6 +5,11 @@
  * the platform-specific parts of the StanfordCPPLib package.  This file is
  * logically part of the implementation and is not interesting to clients.
  *
+ * @version 2018/06/24
+ * - added gformattedpane_get/setContentType
+ * @version 2018/06/23
+ * - added gformattedpane_*
+ * - added change events
  * @version 2018/06/20
  * - added url_downloadWithHeaders
  * - added ginteractor_add/removeChangeListener
@@ -162,6 +167,13 @@ public:
 
     std::string gfilechooser_showOpenDialog(const std::string& currentDir, const std::string& fileFilter);
     std::string gfilechooser_showSaveDialog(const std::string& currentDir, const std::string& fileFilter);
+
+    void gformattedpane_constructor(const GObject* const gobj);
+    std::string gformattedpane_getContentType(const GObject* const gobj);
+    std::string gformattedpane_getText(const GObject* const gobj);
+    void gformattedpane_setContentType(GObject* gobj, const std::string& contentType);
+    void gformattedpane_setPage(GObject* gobj, const std::string& url);
+    void gformattedpane_setText(GObject* gobj, const std::string& text);
 
     GDimension gimage_constructor(GObject* gobj, const std::string& filename);
 

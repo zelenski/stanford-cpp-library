@@ -4,6 +4,10 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2018/06/24
+ * - added hyperlink events
+ * @version 2018/06/23
+ * - added change events
  * @version 2018/06/20
  * - added mouse entered, exited, wheel moved events
  * - added url_downloadWithHeaders
@@ -223,6 +227,7 @@ static void initPipe();
 static GEvent parseActionEvent(TokenScanner& scanner, EventType type);
 static GEvent parseEvent(const std::string& line);
 static GEvent parseChangeEvent(TokenScanner& scanner, EventType type);
+static GEvent parseHyperlinkEvent(TokenScanner& scanner, EventType type);
 static GEvent parseKeyEvent(TokenScanner& scanner, EventType type);
 static GEvent parseMouseEvent(TokenScanner& scanner, EventType type);
 static GEvent parseServerEvent(TokenScanner& scanner, EventType type);
@@ -2214,6 +2219,53 @@ std::string Platform::gfilechooser_showSaveDialog(const std::string& currentDir,
     return getResult();
 }
 
+void Platform::gformattedpane_constructor(const GObject* const gobj) {
+    std::ostringstream os;
+    os << "GFormattedPane.create(\"" << gobj << "\")";
+    putPipe(os.str());
+}
+
+std::string Platform::gformattedpane_getContentType(const GObject* const gobj) {
+    std::ostringstream os;
+    os << "GFormattedPane.getContentType(\"" << gobj << "\")";
+    putPipe(os.str());
+    return getResult();
+}
+
+std::string Platform::gformattedpane_getText(const GObject* const gobj) {
+    std::ostringstream os;
+    os << "GFormattedPane.getText(\"" << gobj << "\")";
+    putPipe(os.str());
+    return getResult();
+}
+
+void Platform::gformattedpane_setContentType(GObject* gobj, const std::string& contentType) {
+    std::ostringstream os;
+    os << "GFormattedPane.setContentType(\"" << gobj << "\", ";
+    writeQuotedString(os, contentType);
+    os << ")";
+    putPipe(os.str());
+    getResult();
+}
+
+void Platform::gformattedpane_setPage(GObject* gobj, const std::string& url) {
+    std::ostringstream os;
+    os << "GFormattedPane.setPage(\"" << gobj << "\", ";
+    writeQuotedString(os, urlEncode(url));
+    os << ")";
+    putPipe(os.str());
+    getResult();
+}
+
+void Platform::gformattedpane_setText(GObject* gobj, const std::string& text) {
+    std::ostringstream os;
+    os << "GFormattedPane.setText(\"" << gobj << "\", ";
+    writeQuotedString(os, urlEncode(text));
+    os << ")";
+    putPipe(os.str());
+    getResult();
+}
+
 int Platform::goptionpane_showConfirmDialog(const std::string& message, const std::string& title, int type) {
     std::ostringstream os;
     os << "GOptionPane.showConfirmDialog(";
@@ -3162,6 +3214,8 @@ static GEvent parseEvent(const std::string& line) {
         return parseKeyEvent(scanner, KEY_TYPED);
     } else if (name == "stateChanged") {
         return parseChangeEvent(scanner, STATE_CHANGED);
+    } else if (name == "hyperlinkClicked") {
+        return parseHyperlinkEvent(scanner, HYPERLINK_CLICKED);
     } else if (name == "actionPerformed") {
         return parseActionEvent(scanner, ACTION_PERFORMED);
     } else if (name == "serverRequest") {
@@ -3258,6 +3312,19 @@ static GEvent parseChangeEvent(TokenScanner& scanner, EventType type) {
     double time = scanDouble(scanner);
     scanner.verifyToken(")");
     GChangeEvent e(type, STATIC_VARIABLE(sourceTable).get(id));
+    e.setEventTime(time);
+    return e;
+}
+
+static GEvent parseHyperlinkEvent(TokenScanner& scanner, EventType type) {
+    scanner.verifyToken("(");
+    std::string id = scanner.getStringValue(scanner.nextToken());
+    scanner.verifyToken(",");
+    std::string url = urlDecode(scanner.getStringValue(scanner.nextToken()));
+    scanner.verifyToken(",");
+    double time = scanDouble(scanner);
+    scanner.verifyToken(")");
+    GHyperlinkEvent e(type, STATIC_VARIABLE(sourceTable).get(id), url);
     e.setEventTime(time);
     return e;
 }

@@ -70,7 +70,7 @@ public class GTextArea extends GInteractor {
 	 */
 
 	public GTextArea(double width, double height) {
-		super (new JScrollPane());
+		super(new JScrollPane());
 		textArea = new JTextArea();
 		scrollPane = (JScrollPane) getInteractor();
 		scrollPane.setViewportView(textArea);

@@ -5,7 +5,9 @@
  * in the gevents.h interface.  The actual functions for receiving events
  * from the environment are implemented in the platform package.
  * 
- * @version 2018/06/22
+ * @version 2018/06/24
+ * - added hyperlink events
+ * @version 2018/06/23
  * - added change events
  * @version 2018/06/20
  * - added mouse entered, exit, wheel events
@@ -218,6 +220,42 @@ std::string GChangeEvent::toString() const {
     os << ")";
     return os.str();
 }
+
+
+GHyperlinkEvent::GHyperlinkEvent(EventType type, GObject* source, const std::string& url) {
+    this->eventClass = HYPERLINK_EVENT;
+    this->eventType = type;
+    this->source = source;
+    this->requestUrl = url;
+    this->valid = true;
+}
+
+GObject* GHyperlinkEvent::getSource() const {
+    return source;
+}
+
+std::string GHyperlinkEvent::getUrl() const {
+    return requestUrl;
+}
+
+std::string GHyperlinkEvent::toString() const {
+    return "GHyperlinkEvent(" + requestUrl + ")";
+}
+
+GHyperlinkEvent::GHyperlinkEvent() {
+    valid = false;
+}
+
+GHyperlinkEvent::GHyperlinkEvent(GEvent e) {
+    this->eventClass = HYPERLINK_EVENT;
+    valid = e.valid && e.eventClass == HYPERLINK_EVENT;
+    if (valid) {
+        this->source = e.source;
+        this->requestUrl = e.requestUrl;
+        this->eventTime = e.eventTime;
+    }
+}
+
 
 
 GKeyEvent::GKeyEvent() {
