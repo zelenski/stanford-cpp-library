@@ -52,8 +52,16 @@ bool QGTextField::isEditable() const {
     return !_qtextfield.isReadOnly();
 }
 
+bool QGTextField::isEnabled() const {
+    return !_qtextfield.isEnabled();
+}
+
 void QGTextField::setEditable(bool value) {
     _qtextfield.setReadOnly(!value);
+}
+
+void QGTextField::setEnabled(bool value) {
+    _qtextfield.setEnabled(value);
 }
 
 void QGTextField::setPlaceholder(const std::string& text) {

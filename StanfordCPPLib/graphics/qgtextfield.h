@@ -45,7 +45,9 @@ public:
     virtual QWidget* getWidget() const;
     // void setClickHandler(void (* func)());
     bool isEditable() const;
+    bool isEnabled() const;
     void setEditable(bool value);
+    void setEnabled(bool enabled);
     void setPlaceholder(const std::string& text);
     void setText(const std::string& text);
 
