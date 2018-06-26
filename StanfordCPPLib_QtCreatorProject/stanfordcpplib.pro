@@ -87,6 +87,8 @@
 
 TEMPLATE = app
 PROJECT_FILTER =
+QT       += core gui
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 ###############################################################################
 # BEGIN SECTION FOR SPECIFYING SOURCE/LIBRARY/RESOURCE FILES OF PROJECT       #
@@ -302,7 +304,7 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
 # additional flags for Windows
 win32 {
     # disable inclusion of Qt core libraries (smaller,faster build)
-    CONFIG -= qt
+    # CONFIG -= qt
     QT -= core gui opengl widgets
 
     # increase system stack size (helpful for recursive programs)
@@ -321,7 +323,7 @@ macx {
     # QMAKE_LFLAGS += -Wl,-stack_size -Wl,0x8000000
 
     # disable inclusion of Qt core libraries (smaller,faster build)
-    CONFIG -= qt
+    # CONFIG -= qt
     QT -= core gui opengl widgets
 
     # calling cache() reduces warnings on Mac OS X systems
@@ -332,7 +334,7 @@ macx {
 # additional flags for Linux
 unix:!macx {
     # disable inclusion of Qt core libraries (smaller,faster build)
-    CONFIG -= qt
+    # CONFIG -= qt
     # QT -= core gui opengl widgets
 
     unix-g++ {

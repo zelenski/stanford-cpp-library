@@ -1,0 +1,55 @@
+/*
+ * File: qgbutton.h
+ * ----------------
+ *
+ * @version 2018/06/25
+ * - initial version
+ */
+
+#ifndef _qgbutton_h
+#define _qgbutton_h
+
+#include <string>
+#include <QPushButton>
+#include <QWidget>
+#include "qginteractor.h"
+
+// forward declaration
+class QGButton;
+
+// Internal class; not to be used by clients.
+class _Q_Internal_Button : public QPushButton {
+    Q_OBJECT
+
+public:
+    _Q_Internal_Button(QGButton* button, QWidget* parent = nullptr);
+
+public slots:
+    void handleClick();
+
+private:
+    QGButton* _qgbutton;
+};
+
+/*
+ * ...
+ */
+class QGButton : public QGInteractor {
+public:
+    QGButton(const std::string& text = "", QWidget* parent = nullptr);
+    std::string getText() const;
+    virtual QWidget* getWidget() const;
+    void setClickHandler(void (* func)());
+    void setText(const std::string& text);
+
+private:
+    _Q_Internal_Button _qbutton;
+
+    void (* _clickHandler)();
+
+    friend class _Q_Internal_Button;
+};
+
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#endif // _qgbutton_h
