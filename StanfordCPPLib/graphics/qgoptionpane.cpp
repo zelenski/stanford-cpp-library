@@ -40,7 +40,7 @@ QGOptionPane::ConfirmResult QGOptionPane::showConfirmDialog(const std::string& m
         buttons = QMessageBox::Ok | QMessageBox::Cancel;
     }
 
-    int result = QMessageBox::question(nullptr,
+    int result = QMessageBox::question(/* parent */ nullptr,
                 QString::fromStdString(titleToUse),
                 QString::fromStdString(message),
                 buttons,
@@ -58,7 +58,7 @@ QGOptionPane::ConfirmResult QGOptionPane::showConfirmDialog(const std::string& m
 
 std::string QGOptionPane::showInputDialog(const std::string& message, const std::string& title, const std::string& initialValue) {
     std::string titleToUse = title.empty() ? std::string("Type a value") : title;
-    return QInputDialog::getText(nullptr,
+    return QInputDialog::getText(/* parent */ nullptr,
                           QString::fromStdString(titleToUse),
                           QString::fromStdString(message),
                           QLineEdit::Normal,
@@ -78,11 +78,11 @@ void QGOptionPane::showMessageDialog(const std::string& message, const std::stri
     if (type == QGOptionPane::MessageType::PLAIN
             || type == QGOptionPane::MessageType::INFORMATION
             || type == QGOptionPane::MessageType::QUESTION) {
-        QMessageBox::information(nullptr, QString::fromStdString(titleToUse), QString::fromStdString(message));
+        QMessageBox::information(/* parent */ nullptr, QString::fromStdString(titleToUse), QString::fromStdString(message));
     } else if (type == QGOptionPane::MessageType::WARNING) {
-        QMessageBox::warning(nullptr, QString::fromStdString(titleToUse), QString::fromStdString(message));
+        QMessageBox::warning(/* parent */ nullptr, QString::fromStdString(titleToUse), QString::fromStdString(message));
     } else if (type == QGOptionPane::MessageType::ERROR) {
-        QMessageBox::critical(nullptr, QString::fromStdString(titleToUse), QString::fromStdString(message));
+        QMessageBox::critical(/* parent */ nullptr, QString::fromStdString(titleToUse), QString::fromStdString(message));
     }
 }
 
