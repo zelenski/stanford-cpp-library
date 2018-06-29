@@ -89,6 +89,14 @@ QWidget* QGChooser::getWidget() const {
     return (QWidget*) &_chooser;
 }
 
+bool QGChooser::isEditable() const {
+    return _chooser.isEditable();
+}
+
+bool QGChooser::isEnabled() const {
+    return _chooser.isEnabled();
+}
+
 void QGChooser::setChangeHandler(void (* func)()) {
     _changeHandler = func;
 }
@@ -101,6 +109,14 @@ void QGChooser::setItem(int index, const std::string& item) {
 void QGChooser::setSelectedIndex(int index) {
     checkIndex("QGChooser::setSelectedIndex", index);
     _chooser.setCurrentIndex(index);
+}
+
+void QGChooser::setEditable(bool editable) {
+    _chooser.setEditable(editable);
+}
+
+void QGChooser::setEnabled(bool enabled) {
+    _chooser.setEnabled(enabled);
 }
 
 void QGChooser::setSelectedItem(const std::string& item) {

@@ -39,11 +39,13 @@ public:
     QGButton(const std::string& text = "", QWidget* parent = nullptr);
     std::string getText() const;
     virtual QWidget* getWidget() const;
+    bool isEnabled() const;
     void setClickHandler(void (* func)());
+    void setEnabled(bool enabled);
     void setText(const std::string& text);
 
 private:
-    _Q_Internal_Button _qbutton;
+    _Q_Internal_Button _button;
 
     void (* _clickHandler)();
 

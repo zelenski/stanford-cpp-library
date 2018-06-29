@@ -43,7 +43,6 @@ public:
     int getValueAsInt() const;
     int getValueAsInteger() const;
     virtual QWidget* getWidget() const;
-    // void setClickHandler(void (* func)());
     bool isEditable() const;
     bool isEnabled() const;
     void setEditable(bool value);
@@ -52,7 +51,6 @@ public:
     void setText(const std::string& text);
 
     // get/setInputType
-    // get/setPlaceholder
 
 private:
     _Q_Internal_TextField _qtextfield;
