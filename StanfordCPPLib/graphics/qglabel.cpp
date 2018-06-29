@@ -25,6 +25,10 @@ std::string QGLabel::getText() const {
     return _label.text().toStdString();
 }
 
+std::string QGLabel::getType() const {
+    return "QGLabel";
+}
+
 QWidget* QGLabel::getWidget() const {
     return (QWidget*) &_label;
 }

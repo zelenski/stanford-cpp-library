@@ -35,11 +35,10 @@ class QGCheckBox : public QGInteractor {
 public:
     QGCheckBox(const std::string& text = "", bool checked = false, QWidget* parent = nullptr);
     std::string getText() const;
+    virtual std::string getType() const;
     virtual QWidget* getWidget() const;
     bool isChecked() const;
-    bool isEnabled() const;
     void setChecked(bool checked);
-    void setEnabled(bool enabled);
     void setText(const std::string& text);
 
 private:

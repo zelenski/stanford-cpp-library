@@ -13,20 +13,27 @@
 
 _Q_Internal_Window::_Q_Internal_Window(QGWindow* window, QWidget* parent)
         : QMainWindow(parent),
-          _qgwindow(window),
-          _qcentralWidget(),
-          _qblayout() {
-    // _qcentralWidget.setGeometry(10, 10, 300, 300);
-    setCentralWidget(&_qcentralWidget);
-    _qcentralWidget.setLayout(new QHBoxLayout);
-    // _qcentralWidget.setLayout(&_qblayout);
-}
+          _qgwindow(window) {
 
-QLayout* _Q_Internal_Window::getLayout() const {
-    return _qcentralWidget.layout();
-    // return (QGBorderLayout*) &_qblayout;
-}
+    QWidget* dummyWidget = new QWidget(this);
+    _northLayout.addStretch(99);
+    _northLayout.addStretch(99);
+    _southLayout.addStretch(99);
+    _southLayout.addStretch(99);
+    _westLayout.addStretch(99);
+    _westLayout.addStretch(99);
+    _eastLayout.addStretch(99);
+    _eastLayout.addStretch(99);
 
+    _overallLayout.addLayout(&_northLayout, /* stretch */ 1);
+    _middleLayout.addLayout(&_westLayout, /* stretch */ 1);
+    _middleLayout.addLayout(&_centerLayout, /* stretch */ 99);
+    _middleLayout.addLayout(&_eastLayout, /* stretch */ 1);
+    _overallLayout.addLayout(&_middleLayout, /* stretch */ 99);
+    _overallLayout.addLayout(&_southLayout, /* stretch */ 1);
+    dummyWidget->setLayout(&_overallLayout);
+    setCentralWidget(dummyWidget);
+}
 
 QApplication* QGWindow::_app = nullptr;
 _Q_Internal_Window* QGWindow::_lastWindow = nullptr;
@@ -53,8 +60,28 @@ void QGWindow::add(QGInteractor* interactor) {
 
 void QGWindow::addToRegion(QGInteractor* interactor, const std::string& region) {
     QGBorderLayout::Position position = QGBorderLayout::toPosition(region);
-    // _qwindow.getLayout()->addWidget(interactor->getWidget(), position);
-    _qwindow.getLayout()->addWidget(interactor->getWidget());
+    if (position == QGBorderLayout::North) {
+        // _qwindow._northLayout.addWidget(interactor->getWidget());
+        _qwindow._northLayout.insertWidget(/* index */ _qwindow._northLayout.count() - 1, interactor->getWidget());
+    } else if (position == QGBorderLayout::South) {
+        // _qwindow._southLayout.addWidget(interactor->getWidget());
+        _qwindow._southLayout.insertWidget(/* index */ _qwindow._southLayout.count() - 1, interactor->getWidget());
+    } else if (position == QGBorderLayout::West) {
+        // _qwindow._westLayout.addWidget(interactor->getWidget());
+        _qwindow._westLayout.insertWidget(/* index */ _qwindow._westLayout.count() - 1, interactor->getWidget());
+    } else if (position == QGBorderLayout::East) {
+        // _qwindow._eastLayout.addWidget(interactor->getWidget());
+        _qwindow._eastLayout.insertWidget(/* index */ _qwindow._eastLayout.count() - 1, interactor->getWidget());
+    } else {
+        // center holds at most one widget
+        if (_qwindow._centerLayout.isEmpty()) {
+            _qwindow._centerLayout.addWidget(interactor->getWidget());
+        } else {
+            _qwindow._centerLayout.replaceWidget(
+                        /* from */ _qwindow._centerLayout.takeAt(0)->widget(),
+                        /* to   */ interactor->getWidget());
+        }
+    }
 }
 
 void QGWindow::center() {
@@ -111,11 +138,26 @@ bool QGWindow::isVisible() const {
 }
 
 void QGWindow::remove(QGInteractor* interactor) {
-    // TODO
+    removeFromRegion(interactor, "North");
+    removeFromRegion(interactor, "South");
+    removeFromRegion(interactor, "East");
+    removeFromRegion(interactor, "West");
+    removeFromRegion(interactor, "Center");
 }
 
 void QGWindow::removeFromRegion(QGInteractor* interactor, const std::string& region) {
-    // TODO
+    QGBorderLayout::Position position = QGBorderLayout::toPosition(region);
+    if (position == QGBorderLayout::North) {
+        _qwindow._northLayout.removeWidget(interactor->getWidget());
+    } else if (position == QGBorderLayout::South) {
+        _qwindow._southLayout.removeWidget(interactor->getWidget());
+    } else if (position == QGBorderLayout::West) {
+        _qwindow._westLayout.removeWidget(interactor->getWidget());
+    } else if (position == QGBorderLayout::East) {
+        _qwindow._eastLayout.removeWidget(interactor->getWidget());
+    } else {
+        _qwindow._centerLayout.removeWidget(interactor->getWidget());
+    }
 }
 
 void QGWindow::setLocation(double x, double y) {

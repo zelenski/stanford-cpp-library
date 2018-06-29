@@ -55,6 +55,10 @@ bool QGSlider::getSnapToTicks() const {
     return true;
 }
 
+std::string QGSlider::getType() const {
+    return "QGSlider";
+}
+
 int QGSlider::getValue() const {
     return _slider.value();
 }
@@ -63,16 +67,8 @@ QWidget* QGSlider::getWidget() const {
     return (QWidget*) &_slider;
 }
 
-bool QGSlider::isEnabled() const {
-    return _slider.isEnabled();
-}
-
 void QGSlider::setChangeHandler(void (* func)()) {
     _changeHandler = func;
-}
-
-void QGSlider::setEnabled(bool enabled) {
-    _slider.setEnabled(enabled);
 }
 
 void QGSlider::setMajorTickSpacing(int value) {

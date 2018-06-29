@@ -6,8 +6,8 @@
  * - initial version
  */
 
-#ifndef _qborderlayout_h
-#define _qborderlayout_h
+#ifndef _qgborderlayout_h
+#define _qgborderlayout_h
 
 #include <QLayout>
 #include <QRect>
@@ -18,43 +18,43 @@ class QGBorderLayout : public QLayout {
 public:
     enum Position { West, North, South, East, Center };
 
-    explicit QGBorderLayout(QWidget* parent, int margin = 0, int spacing = -1);
+    QGBorderLayout(QWidget* parent, int margin = 0, int spacing = -1);
     QGBorderLayout(int spacing = -1);
     ~QGBorderLayout();
 
-    void addItem(QLayoutItem *item) Q_DECL_OVERRIDE;
-    void addWidget(QWidget *widget);
-    void addWidget(QWidget *widget, Position position);
+    void addItem(QLayoutItem* item) Q_DECL_OVERRIDE;
+    void addWidget(QWidget* widget);
+    void addWidget(QWidget* widget, Position position);
     Qt::Orientations expandingDirections() const Q_DECL_OVERRIDE;
     bool hasHeightForWidth() const Q_DECL_OVERRIDE;
     int count() const Q_DECL_OVERRIDE;
-    QLayoutItem *itemAt(int index) const Q_DECL_OVERRIDE;
+    QLayoutItem* itemAt(int index) const Q_DECL_OVERRIDE;
     QSize minimumSize() const Q_DECL_OVERRIDE;
-    void setGeometry(const QRect &rect) Q_DECL_OVERRIDE;
+    void setGeometry(const QRect& rect) Q_DECL_OVERRIDE;
     QSize sizeHint() const Q_DECL_OVERRIDE;
-    QLayoutItem *takeAt(int index) Q_DECL_OVERRIDE;
+    QLayoutItem* takeAt(int index) Q_DECL_OVERRIDE;
 
-    void add(QLayoutItem *item, Position position);
+    void add(QLayoutItem* item, Position position);
 
     static Position toPosition(const std::string& positionName);
 
 private:
     struct ItemWrapper {
-        ItemWrapper(QLayoutItem *i, Position p) {
+        ItemWrapper(QLayoutItem* i, Position p) {
             item = i;
             position = p;
         }
 
-        QLayoutItem *item;
+        QLayoutItem* item;
         Position position;
     };
 
     enum SizeType { MinimumSize, SizeHint };
     QSize calculateSize(SizeType sizeType) const;
 
-    QList<ItemWrapper *> list;
+    QList<ItemWrapper*> list;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
-#endif // _qborderlayout_h
+#endif // _qgborderlayout_h

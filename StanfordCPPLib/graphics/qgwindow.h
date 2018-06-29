@@ -35,16 +35,17 @@ class _Q_Internal_Window : public QMainWindow {
 public:
     _Q_Internal_Window(QGWindow* window, QWidget* parent = nullptr);
 
-    QLayout* getLayout() const;
-
-//public slots:
-//    void handleClick();
-
 private:
-
+    QHBoxLayout _northLayout;
+    QHBoxLayout _southLayout;
+    QHBoxLayout _centerLayout;
+    QHBoxLayout _middleLayout;
+    QVBoxLayout _eastLayout;
+    QVBoxLayout _westLayout;
+    QVBoxLayout _overallLayout;
     QGWindow* _qgwindow;
-    QWidget _qcentralWidget;
-    QGBorderLayout _qblayout;
+
+    friend class QGWindow;
 };
 
 /*

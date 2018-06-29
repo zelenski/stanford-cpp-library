@@ -46,11 +46,10 @@ public:
     bool getPaintLabels() const;
     bool getPaintTicks() const;
     bool getSnapToTicks() const;
+    virtual std::string getType() const;
     int getValue() const;
     virtual QWidget* getWidget() const;
-    bool isEnabled() const;
     void setChangeHandler(void (* func)());
-    void setEnabled(bool enabled);
     void setMajorTickSpacing(int value);
     void setMinorTickSpacing(int value);
     void setPaintLabels(bool value);

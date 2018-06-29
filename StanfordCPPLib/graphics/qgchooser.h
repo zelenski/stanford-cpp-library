@@ -49,14 +49,11 @@ public:
     std::string getItem(int index) const;
     int getSelectedIndex() const;
     std::string getSelectedItem() const;
+    virtual std::string getType() const;
     virtual QWidget* getWidget() const;
-
     bool isEditable() const;
-    bool isEnabled() const;
-
     void setChangeHandler(void (* func)());
     void setEditable(bool editable);
-    void setEnabled(bool enabled);
     void setItem(int index, const std::string& item);
     void setSelectedIndex(int index);
     void setSelectedItem(const std::string& item);

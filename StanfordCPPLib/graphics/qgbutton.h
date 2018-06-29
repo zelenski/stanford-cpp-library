@@ -38,10 +38,9 @@ class QGButton : public QGInteractor {
 public:
     QGButton(const std::string& text = "", QWidget* parent = nullptr);
     std::string getText() const;
+    virtual std::string getType() const;
     virtual QWidget* getWidget() const;
-    bool isEnabled() const;
     void setClickHandler(void (* func)());
-    void setEnabled(bool enabled);
     void setText(const std::string& text);
 
 private:

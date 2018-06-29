@@ -29,6 +29,10 @@ std::string QGTextField::getText() const {
     return _qtextfield.text().toStdString();
 }
 
+std::string QGTextField::getType() const {
+    return "QGTextField";
+}
+
 double QGTextField::getValueAsDouble() const {
     std::string text = trim(getText());
     return stringToDouble(text);
@@ -52,16 +56,8 @@ bool QGTextField::isEditable() const {
     return !_qtextfield.isReadOnly();
 }
 
-bool QGTextField::isEnabled() const {
-    return !_qtextfield.isEnabled();
-}
-
 void QGTextField::setEditable(bool value) {
     _qtextfield.setReadOnly(!value);
-}
-
-void QGTextField::setEnabled(bool value) {
-    _qtextfield.setEnabled(value);
 }
 
 void QGTextField::setPlaceholder(const std::string& text) {

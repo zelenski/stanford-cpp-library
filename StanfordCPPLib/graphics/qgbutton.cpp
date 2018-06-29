@@ -31,20 +31,16 @@ std::string QGButton::getText() const {
     return _button.text().toStdString();
 }
 
+std::string QGButton::getType() const {
+    return "QGButton";
+}
+
 QWidget* QGButton::getWidget() const {
     return (QWidget*) &_button;
 }
 
-bool QGButton::isEnabled() const {
-    return _button.isEnabled();
-}
-
 void QGButton::setClickHandler(void (* func)()) {
     _clickHandler = func;
-}
-
-void QGButton::setEnabled(bool enabled) {
-    _button.setEnabled(enabled);
 }
 
 void QGButton::setText(const std::string& text) {

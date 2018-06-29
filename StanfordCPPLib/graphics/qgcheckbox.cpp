@@ -25,6 +25,10 @@ std::string QGCheckBox::getText() const {
     return _checkBox.text().toStdString();
 }
 
+std::string QGCheckBox::getType() const {
+    return "QGCheckBox";
+}
+
 QWidget* QGCheckBox::getWidget() const {
     return (QWidget*) &_checkBox;
 }
@@ -33,16 +37,8 @@ bool QGCheckBox::isChecked() const {
     return _checkBox.isChecked();
 }
 
-bool QGCheckBox::isEnabled() const {
-    return _checkBox.isEnabled();
-}
-
 void QGCheckBox::setChecked(bool checked) {
     _checkBox.setChecked(checked);
-}
-
-void QGCheckBox::setEnabled(bool enabled) {
-    _checkBox.setEnabled(enabled);
 }
 
 void QGCheckBox::setText(const std::string& text) {

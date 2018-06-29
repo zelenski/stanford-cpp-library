@@ -29,6 +29,10 @@ std::string QGTextArea::getText() const {
     return _qtextarea.toPlainText().toStdString();
 }
 
+std::string QGTextArea::getType() const {
+    return "QGTextArea";
+}
+
 QWidget* QGTextArea::getWidget() const {
     return (QWidget*) &_qtextarea;
 }
@@ -37,16 +41,8 @@ bool QGTextArea::isEditable() const {
     return !_qtextarea.isReadOnly();
 }
 
-bool QGTextArea::isEnabled() const {
-    return !_qtextarea.isEnabled();
-}
-
 void QGTextArea::setEditable(bool value) {
     _qtextarea.setReadOnly(!value);
-}
-
-void QGTextArea::setEnabled(bool value) {
-    _qtextarea.setEnabled(value);
 }
 
 void QGTextArea::setPlaceholder(const std::string& text) {

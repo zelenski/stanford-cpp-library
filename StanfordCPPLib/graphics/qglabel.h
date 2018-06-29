@@ -35,6 +35,7 @@ class QGLabel : public QGInteractor {
 public:
     QGLabel(const std::string& text = "", QWidget* parent = nullptr);
     std::string getText() const;
+    virtual std::string getType() const;
     virtual QWidget* getWidget() const;
     void setText(const std::string& text);
 

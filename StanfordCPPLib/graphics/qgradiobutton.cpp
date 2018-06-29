@@ -29,6 +29,10 @@ std::string QGRadioButton::getText() const {
     return _radioButton.text().toStdString();
 }
 
+std::string QGRadioButton::getType() const {
+    return "QGRadioButton";
+}
+
 QWidget* QGRadioButton::getWidget() const {
     return (QWidget*) &_radioButton;
 }
@@ -37,16 +41,8 @@ bool QGRadioButton::isChecked() const {
     return _radioButton.isChecked();
 }
 
-bool QGRadioButton::isEnabled() const {
-    return _radioButton.isEnabled();
-}
-
 void QGRadioButton::setChecked(bool checked) {
     _radioButton.setChecked(checked);
-}
-
-void QGRadioButton::setEnabled(bool enabled) {
-    _radioButton.setEnabled(enabled);
 }
 
 void QGRadioButton::setText(const std::string& text) {

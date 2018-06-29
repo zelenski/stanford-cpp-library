@@ -36,11 +36,10 @@ public:
     QGTextArea(const std::string& text = "", QWidget* parent = nullptr);
     std::string getPlaceholder() const;
     std::string getText() const;
+    virtual std::string getType() const;
     virtual QWidget* getWidget() const;
     bool isEditable() const;
-    bool isEnabled() const;
     void setEditable(bool value);
-    void setEnabled(bool enabled);
     void setPlaceholder(const std::string& text);
     void setText(const std::string& text);
 
