@@ -16,9 +16,7 @@
 /*
  * ...
  */
-class QGInteractor : public QObject {
-    Q_OBJECT
-
+class QGInteractor {
 public:
     virtual QWidget* getWidget() const = 0;
 };
