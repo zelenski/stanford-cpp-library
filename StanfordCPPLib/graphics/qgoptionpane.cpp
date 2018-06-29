@@ -13,14 +13,23 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QWidget>
+#include "error.h"
 #include "strlib.h"
 
 QGOptionPane::QGOptionPane() {
     // empty
 }
 
-QGOptionPane::ConfirmResult QGOptionPane::showConfirmDialog(const std::string& message, const std::string& title,
-                                                          ConfirmType type) {
+QGOptionPane::ConfirmResult QGOptionPane::showConfirmDialog(const std::string& message,
+                                                            const std::string& title,
+                                                            ConfirmType type) {
+    return showConfirmDialog(/* parent */ nullptr, message, title, type);
+}
+
+QGOptionPane::ConfirmResult QGOptionPane::showConfirmDialog(QWidget* parent,
+                                                            const std::string& message,
+                                                            const std::string& title,
+                                                            ConfirmType type) {
     if (type != QGOptionPane::ConfirmType::YES_NO
             && type != QGOptionPane::ConfirmType::YES_NO_CANCEL
             && type != QGOptionPane::ConfirmType::OK_CANCEL) {
@@ -40,11 +49,11 @@ QGOptionPane::ConfirmResult QGOptionPane::showConfirmDialog(const std::string& m
         buttons = QMessageBox::Ok | QMessageBox::Cancel;
     }
 
-    int result = QMessageBox::question(/* parent */ nullptr,
-                QString::fromStdString(titleToUse),
-                QString::fromStdString(message),
-                buttons,
-                defaultButton);
+    int result = QMessageBox::question(parent,
+            QString::fromStdString(titleToUse),
+            QString::fromStdString(message),
+            buttons,
+            defaultButton);
     switch (result) {
         case QMessageBox::Yes:
             return QGOptionPane::ConfirmResult::YES;
@@ -56,16 +65,34 @@ QGOptionPane::ConfirmResult QGOptionPane::showConfirmDialog(const std::string& m
     }
 }
 
-std::string QGOptionPane::showInputDialog(const std::string& message, const std::string& title, const std::string& initialValue) {
-    std::string titleToUse = title.empty() ? std::string("Type a value") : title;
-    return QInputDialog::getText(/* parent */ nullptr,
-                          QString::fromStdString(titleToUse),
-                          QString::fromStdString(message),
-                          QLineEdit::Normal,
-                          QString::fromStdString(initialValue)).toStdString();
+std::string QGOptionPane::showInputDialog(const std::string& message,
+                                          const std::string& title,
+                                          const std::string& initialValue) {
+    return showInputDialog(/* parent */ nullptr, message, title, initialValue);
 }
 
-void QGOptionPane::showMessageDialog(const std::string& message, const std::string& title, MessageType type) {
+std::string QGOptionPane::showInputDialog(QWidget* parent,
+                                          const std::string& message,
+                                          const std::string& title,
+                                          const std::string& initialValue) {
+    std::string titleToUse = title.empty() ? std::string("Type a value") : title;
+    return QInputDialog::getText(parent,
+            QString::fromStdString(titleToUse),
+            QString::fromStdString(message),
+            QLineEdit::Normal,
+            QString::fromStdString(initialValue)).toStdString();
+}
+
+void QGOptionPane::showMessageDialog(const std::string& message,
+                                     const std::string& title,
+                                     MessageType type) {
+    showMessageDialog(/* parent */ nullptr, message, title, type);
+}
+
+void QGOptionPane::showMessageDialog(QWidget* parent,
+                                     const std::string& message,
+                                     const std::string& title,
+                                     MessageType type) {
     if (type != QGOptionPane::MessageType::PLAIN
             && type != QGOptionPane::MessageType::INFORMATION
             && type != QGOptionPane::MessageType::ERROR
@@ -78,20 +105,42 @@ void QGOptionPane::showMessageDialog(const std::string& message, const std::stri
     if (type == QGOptionPane::MessageType::PLAIN
             || type == QGOptionPane::MessageType::INFORMATION
             || type == QGOptionPane::MessageType::QUESTION) {
-        QMessageBox::information(/* parent */ nullptr, QString::fromStdString(titleToUse), QString::fromStdString(message));
+        QMessageBox::information(parent, QString::fromStdString(titleToUse), QString::fromStdString(message));
     } else if (type == QGOptionPane::MessageType::WARNING) {
-        QMessageBox::warning(/* parent */ nullptr, QString::fromStdString(titleToUse), QString::fromStdString(message));
+        QMessageBox::warning(parent, QString::fromStdString(titleToUse), QString::fromStdString(message));
     } else if (type == QGOptionPane::MessageType::ERROR) {
-        QMessageBox::critical(/* parent */ nullptr, QString::fromStdString(titleToUse), QString::fromStdString(message));
+        QMessageBox::critical(parent, QString::fromStdString(titleToUse), QString::fromStdString(message));
     }
 }
 
-std::string QGOptionPane::showOptionDialog(const std::string& message, const Vector<std::string>& options,
-                                          const std::string& title, const std::string& initiallySelected) {
-    std::string titleToUse = title.empty() ? std::string("Select an option") : title;
+std::string QGOptionPane::showOptionDialog(const std::string& message,
+                                           const Vector<std::string>& options,
+                                           const std::string& title,
+                                           const std::string& initiallySelected) {
+    return showOptionDialog(/* parent */ nullptr, message, options, title, initiallySelected);
+}
 
-    // TODO
-    int index = 0;   // stanfordcpplib::getPlatform()->goptionpane_showOptionDialog(message, titleToUse, options.toStlVector(), initiallySelected);
+std::string QGOptionPane::showOptionDialog(QWidget* parent,
+                                           const std::string& message,
+                                           const Vector<std::string>& options,
+                                           const std::string& title,
+                                           const std::string& initiallySelected) {
+    std::string titleToUse = title.empty() ? std::string("Select an option") : title;
+    QMessageBox box;
+    if (parent) {
+        box.setParent(parent);
+    }
+    box.setText(QString::fromStdString(message));
+    box.setWindowTitle(QString::fromStdString(title));
+
+    for (std::string option : options) {
+        box.addButton(QString::fromStdString(option), QMessageBox::ActionRole);
+    }
+    if (!initiallySelected.empty()) {
+        // TODO: dunno how to set initially selected button properly
+        // box.setDefaultButton(QString::fromStdString(initiallySelected));
+    }
+    int index = box.exec();
 
     if (index == QGOptionPane::InternalResult::CLOSED_OPTION
             || index < 0 || index >= options.size()) {
@@ -103,7 +152,6 @@ std::string QGOptionPane::showOptionDialog(const std::string& message, const Vec
 
 void QGOptionPane::showTextFileDialog(const std::string& message, const std::string& title, int rows, int cols) {
     std::string titleToUse = title.empty() ? std::string("Text file contents") : title;
-
     // TODO
-    // stanfordcpplib::getPlatform()->goptionpane_showTextFileDialog(message, titleToUse, rows, cols);
+    error("QGOptionPane::showTextFileDialog: not implemented");
 }

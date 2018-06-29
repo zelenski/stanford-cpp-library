@@ -13,11 +13,14 @@
 #define _qgfilechooser_h
 
 #include <string>
+#include <QWidget>
 
 class QGFileChooser {
 public:
     static std::string showOpenDialog(const std::string& currentDir = "", const std::string& fileFilter = "");
+    static std::string showOpenDialog(QWidget* parent, const std::string& currentDir = "", const std::string& fileFilter = "");
     static std::string showSaveDialog(const std::string& currentDir = "", const std::string& fileFilter = "");
+    static std::string showSaveDialog(QWidget* parent, const std::string& currentDir = "", const std::string& fileFilter = "");
 
 private:
     /*
