@@ -14,10 +14,18 @@ _Q_Internal_CheckBox::_Q_Internal_CheckBox(QGCheckBox* checkBox, bool checked, Q
         : QCheckBox(parent),
           _checkBox(checkBox) {
     _checkBox->setChecked(checked);
+    connect(this, SIGNAL(clicked(bool)), this, SLOT(handleChange(bool)));
+}
+
+void _Q_Internal_CheckBox::handleChange(bool /* checked */) {
+    if (_checkBox->_changeHandler) {
+        _checkBox->_changeHandler();
+    }
 }
 
 QGCheckBox::QGCheckBox(const std::string& text, bool checked, QWidget* parent)
-        : _checkBox(this, checked, parent ? parent : (QWidget*) QGWindow::getLastWindow()) {
+        : _checkBox(this, checked, parent ? parent : (QWidget*) QGWindow::getLastWindow()),
+          _changeHandler(nullptr) {
     setText(text);
 }
 
@@ -39,6 +47,10 @@ bool QGCheckBox::isChecked() const {
 
 void QGCheckBox::setChecked(bool checked) {
     _checkBox.setChecked(checked);
+}
+
+void QGCheckBox::setChangeHandler(void (* func)()) {
+    _changeHandler = func;
 }
 
 void QGCheckBox::setText(const std::string& text) {

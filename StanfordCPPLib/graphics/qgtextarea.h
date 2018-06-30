@@ -24,6 +24,9 @@ class _Q_Internal_TextArea : public QTextEdit {
 public:
     _Q_Internal_TextArea(QGTextArea* textArea, QWidget* parent = nullptr);
 
+public slots:
+    void handleTextChange();
+
 private:
     QGTextArea* _qgtextarea;
 };
@@ -42,9 +45,12 @@ public:
     void setEditable(bool value);
     void setPlaceholder(const std::string& text);
     void setText(const std::string& text);
+    void setTextChangeHandler(void (* func)());
 
 private:
     _Q_Internal_TextArea _qtextarea;
+
+    void (* _textChangeHandler)();
 
     friend class _Q_Internal_TextArea;
 };

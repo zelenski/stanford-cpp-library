@@ -14,12 +14,20 @@ _Q_Internal_RadioButton::_Q_Internal_RadioButton(QGRadioButton* radioButton, boo
         : QRadioButton(parent),
           _radioButton(radioButton) {
     _radioButton->setChecked(checked);
+    connect(this, SIGNAL(clicked(bool)), this, SLOT(handleChange(bool)));
+}
+
+void _Q_Internal_RadioButton::handleChange(bool /* checked */) {
+    if (_radioButton->_changeHandler) {
+        _radioButton->_changeHandler();
+    }
 }
 
 Map<std::string, QButtonGroup*> QGRadioButton::_buttonGroups;
 
 QGRadioButton::QGRadioButton(const std::string& text, const std::string& group, bool checked, QWidget* parent)
-        : _radioButton(this, checked, parent ? parent : (QWidget*) QGWindow::getLastWindow()) {
+        : _radioButton(this, checked, parent ? parent : (QWidget*) QGWindow::getLastWindow()),
+          _changeHandler(nullptr) {
     QButtonGroup* buttonGroup = getButtonGroup(group);
     buttonGroup->addButton(&_radioButton);
     setText(text);
@@ -43,6 +51,10 @@ bool QGRadioButton::isChecked() const {
 
 void QGRadioButton::setChecked(bool checked) {
     _radioButton.setChecked(checked);
+}
+
+void QGRadioButton::setChangeHandler(void (* func)()) {
+    _changeHandler = func;
 }
 
 void QGRadioButton::setText(const std::string& text) {

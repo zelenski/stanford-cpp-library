@@ -13,11 +13,18 @@
 _Q_Internal_TextField::_Q_Internal_TextField(QGTextField* textField, QWidget* parent)
         : QLineEdit(parent),
           _qgtextfield(textField) {
-    // empty
+    connect(this, SIGNAL(textChanged(QString)), this, SLOT(handleTextChange(const QString&)));
+}
+
+void _Q_Internal_TextField::handleTextChange(const QString&) {
+    if (_qgtextfield->_textChangeHandler) {
+        _qgtextfield->_textChangeHandler();
+    }
 }
 
 QGTextField::QGTextField(const std::string& text, QWidget* parent)
-        : _qtextfield(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()) {
+        : _qtextfield(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()),
+          _textChangeHandler(nullptr) {
     setText(text);
 }
 
@@ -66,4 +73,8 @@ void QGTextField::setPlaceholder(const std::string& text) {
 
 void QGTextField::setText(const std::string& text) {
     _qtextfield.setText(QString::fromStdString(text));
+}
+
+void QGTextField::setTextChangeHandler(void (* func)()) {
+    _textChangeHandler = func;
 }

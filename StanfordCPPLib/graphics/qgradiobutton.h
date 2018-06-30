@@ -26,6 +26,9 @@ class _Q_Internal_RadioButton : public QRadioButton {
 public:
     _Q_Internal_RadioButton(QGRadioButton* radioButton, bool checked = false, QWidget* parent = nullptr);
 
+public slots:
+    void handleChange(bool);
+
 private:
     QGRadioButton* _radioButton;
 };
@@ -41,6 +44,7 @@ public:
     virtual QWidget* getWidget() const;
     bool isChecked() const;
     void setChecked(bool checked);
+    void setChangeHandler(void (* func)());
     void setText(const std::string& text);
 
 private:
@@ -48,6 +52,8 @@ private:
     QButtonGroup* getButtonGroup(const std::string& group);
 
     _Q_Internal_RadioButton _radioButton;
+
+    void (* _changeHandler)();
 
     friend class _Q_Internal_RadioButton;
 };

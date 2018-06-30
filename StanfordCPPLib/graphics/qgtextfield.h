@@ -11,6 +11,7 @@
 
 #include <string>
 #include <QLineEdit>
+#include <QString>
 #include <QWidget>
 #include "qginteractor.h"
 
@@ -24,8 +25,8 @@ class _Q_Internal_TextField : public QLineEdit {
 public:
     _Q_Internal_TextField(QGTextField* textField, QWidget* parent = nullptr);
 
-//public slots:
-//    void handleClick();
+public slots:
+    void handleTextChange(const QString&);
 
 private:
     QGTextField* _qgtextfield;
@@ -48,13 +49,14 @@ public:
     void setEditable(bool value);
     void setPlaceholder(const std::string& text);
     void setText(const std::string& text);
+    void setTextChangeHandler(void (* func)());
 
-    // get/setInputType
+    // TODO: get/setInputType?
 
 private:
     _Q_Internal_TextField _qtextfield;
 
-    // void (* _clickHandler)();
+    void (* _textChangeHandler)();
 
     friend class _Q_Internal_TextField;
 };

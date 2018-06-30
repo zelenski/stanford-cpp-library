@@ -6,8 +6,8 @@
 //#include "error.h"
 //#include "collections.h"
 //#include "exceptions.h"
-//#include "gwindow.h"
-//#include "gevents.h"
+#include "gwindow.h"
+#include "gevents.h"
 //#include "map.h"
 //#include "note.h"
 //#include "process.h"
@@ -19,9 +19,10 @@
 //#include "private/version.h"
 //#include "types.h"
 //#include <exception>
-//#include <iostream>
 
-//#include <iomanip>
+#include <iomanip>
+#include <iostream>
+
 //#include <iostream>
 //#include <string>
 //#include "basicgraph.h"
@@ -414,12 +415,10 @@
 //}
 
 
-// #include "qwindow.h"
-
 #include <iostream>
 #include <string>
 #include "basicgraph.h"
-#include "console.h"
+// #include "console.h"
 #include "functional.h"
 #include "grid.h"
 #include "range.h"
@@ -482,11 +481,198 @@ int testAllUrls() {
 
 ////////
 
-int main() {
-    // QWindow window(500, 300);
-    // testAllUrls();
-    // return 0;
+void testWindowWithScrollbar() {
+    GWindow window;
+    window.setSize(700, 500);
+    window.setResizable(true);
+    GOval oval(50, 50, 400, 400);
+    window.add(oval);
 
+    GTextField field(8);
+    window.addToRegion(field, GWindow::REGION_NORTH);
+    field.addActionListener();
+    field.addChangeListener();
+
+    GSlider slider(0, 100, 50);
+    window.addToRegion(slider, GWindow::REGION_SOUTH);
+    slider.addActionListener();
+    slider.addChangeListener();
+
+    GFormattedPane pane;
+    window.addToRegion(pane, GWindow::REGION_CENTER);
+    pane.readTextFromUrl("http://en.wikipedia.org/");
+
+    // TODO: get/setContentType?  text/html,  text/plain?
+
+    pane.setFont("Monospaced-14");
+    // pane.readTextFromFile("resfile3.html");
+    // pane.readTextFromUrl("http://poopypoopypoopypoopypoopypoopypoopypoopy.poop/");
+
+    // pane.setText("<h1>yay!!!</h1><p>hi</p><ul><li>lolol<li>bullet2<li>hooray</ul><p>goodbye</p>");
+
+    while (true) {
+        GEvent event = waitForEvent(ACTION_EVENT | CHANGE_EVENT | HYPERLINK_EVENT | WINDOW_EVENT);
+        if (event.getEventClass() == CHANGE_EVENT) {
+            GChangeEvent changeEvent(event);
+            GObject* source = changeEvent.getSource();
+            if (source == &field) {
+                cout << "field text: \"" << field.getText() << "\"" << endl;
+            } else if (source == &slider) {
+                int value = 2 * slider.getValue();
+                cout << "slider value: " << value << endl;
+                window.setColor(convertRGBToColor(value, value, value));
+                window.fillOval(10, 10, 100, 100);
+            }
+        } else if (event.getEventClass() == HYPERLINK_EVENT) {
+            GHyperlinkEvent hyperlinkEvent(event);
+            pane.readTextFromUrl(hyperlinkEvent.getUrl());
+        } else if (event.getEventType() == WINDOW_CLOSED) {
+            break;
+        }
+    }
+}
+
+#include "qgbutton.h"
+#include "qgcheckbox.h"
+#include "qgchooser.h"
+#include "qgfilechooser.h"
+#include "qglabel.h"
+#include "qgoptionpane.h"
+#include "qgradiobutton.h"
+#include "qgslider.h"
+#include "qgtextarea.h"
+#include "qgtextfield.h"
+#include "qgwindow.h"
+
+QGWindow* window;
+QGChooser* chooser;
+QGSlider* slider;
+
+void clickHandler() {
+    window->setResizable(!window->isResizable());
+    cout << "clickHandler: button was clicked!" << endl;
+    cout << "location:  " << window->getLocation() << endl;
+    cout << "size:      " << window->getSize() << endl;
+    cout << "visible:   " << boolalpha << window->isVisible() << endl;
+    cout << "resizable: " << boolalpha << window->isResizable() << endl << endl;
+
+    // test QGOptionPane
+    QGOptionPane::showMessageDialog("I love Yana! <3");
+
+    Vector<string> choices = {"One", "Two", "Three"};
+    string result = QGOptionPane::showOptionDialog("Pick a thing", choices);
+    cout << "You chose: " << result << endl;
+
+//    int result = QGOptionPane::showConfirmDialog("Is Yana the most beautiful?", "Important Question", QGOptionPane::YES_NO_CANCEL);
+//    cout << "You chose: " << result << endl;
+//    std::string answer = QGOptionPane::showInputDialog("Who is my baby?", "Baby's name?", "bozo");
+//    cout << "You typed: " << answer << endl;
+
+//    string filename = QGFileChooser::showOpenDialog("", "*.txt, *.cpp, *.h");
+//    cout << "You chose: " << filename << endl;
+}
+
+void chooserChangeHandler() {
+    cout << "changeHandler: chooser was clicked!" << endl;
+    cout << "selected: " << chooser->getSelectedIndex() << " : "
+         << chooser->getSelectedItem() << endl;
+    cout << "size: " << chooser->size() << endl << endl;
+}
+
+void sliderChangeHandler() {
+    cout << "sliderChangeHandler: slider was slid!" << endl;
+    cout << "value: " << slider->getValue() << endl;
+}
+
+void testQwindow() {
+    initializeQt();
+    window = new QGWindow(900, 500);
+    window->setTitle("QtGui Window");
+    window->setResizable(true);
+    window->center();
+
+    QGLabel label("Type <b>stuff</b> <i>now</i> (North):");
+    window->addToRegion(&label, "North");
+
+    chooser = new QGChooser({"one", "two", "three four"});
+    chooser->setChangeHandler(chooserChangeHandler);
+    window->addToRegion(chooser, "South");
+
+    static QGCheckBox checkBox("Question?", true);
+    checkBox.setChangeHandler([]() {
+        cout << "checkbox clicked! " << boolalpha << checkBox.isChecked() << endl;
+    });
+    window->addToRegion(&checkBox, "West");
+
+    static QGRadioButton radio1group1("A", "group1");
+    static QGRadioButton radio2group1("B", "group1", true);
+    static QGRadioButton radio3group1("C", "group1");
+    static QGRadioButton radio1group2("XX", "group2", true);
+    static QGRadioButton radio2group2("YY", "group2");
+
+    void (* radioChangeHandler)() = [] {
+        cout << "checkbox clicked! " << boolalpha
+             << radio1group1.isChecked() << " "
+             << radio2group1.isChecked() << " "
+             << radio3group1.isChecked() << " "
+             << radio1group2.isChecked() << " "
+             << radio2group2.isChecked() << endl;
+    };
+    radio1group1.setChangeHandler(radioChangeHandler);
+    radio2group1.setChangeHandler(radioChangeHandler);
+    radio3group1.setChangeHandler(radioChangeHandler);
+    radio1group2.setChangeHandler(radioChangeHandler);
+    radio2group2.setChangeHandler(radioChangeHandler);
+
+    window->addToRegion(&radio1group1, "East");
+    window->addToRegion(&radio2group1, "East");
+    window->addToRegion(&radio3group1, "East");
+    window->addToRegion(&radio1group2, "East");
+    window->addToRegion(&radio2group2, "East");
+
+    static QGTextField textField("Marty");
+    textField.setPlaceholder("type your name");
+    // textField.setEditable(false);
+    textField.setTextChangeHandler([]() {
+        cout << "textfield text changed! text is:" << endl << textField.getText() << endl;
+    });
+    window->addToRegion(&textField, "South");
+
+    static QGTextArea textArea("This is \na multi-line\n\ntext area");
+    textArea.setPlaceholder("type some text");
+    textArea.setTextChangeHandler([]() {
+        cout << "textarea text changed! text is:" << endl << textArea.getText() << endl;
+    });
+    window->addToRegion(&textArea, "Center");
+
+    QGButton button("Push me");
+    button.setClickHandler(clickHandler);
+    window->addToRegion(&button, "South");
+
+    slider = new QGSlider();
+    slider->setMinorTickSpacing(20);
+    slider->setPaintLabels(true);
+    slider->setPaintTicks(true);
+    slider->setChangeHandler(sliderChangeHandler);
+    window->addToRegion(slider, "North");
+
+    startEventLoop();
+
+    // todo
+
+
+
+}
+
+int main() {
+    testQwindow();
+    // testWindowWithScrollbar();
+    return 0;
+
+    // testAllUrls();
+}
+
+int otherMain() {
     fact(5);
 
     Vector<int> v {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};

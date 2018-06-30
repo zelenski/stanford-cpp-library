@@ -13,7 +13,13 @@
 _Q_Internal_TextArea::_Q_Internal_TextArea(QGTextArea* textArea, QWidget* parent)
         : QTextEdit(parent),
           _qgtextarea(textArea) {
-    // empty
+    connect(this, SIGNAL(textChanged()), this, SLOT(handleTextChange()));
+}
+
+void _Q_Internal_TextArea::handleTextChange() {
+    if (_qgtextarea->_textChangeHandler) {
+        _qgtextarea->_textChangeHandler();
+    }
 }
 
 QGTextArea::QGTextArea(const std::string& text, QWidget* parent)
@@ -51,4 +57,8 @@ void QGTextArea::setPlaceholder(const std::string& text) {
 
 void QGTextArea::setText(const std::string& text) {
     _qtextarea.setText(QString::fromStdString(text));
+}
+
+void QGTextArea::setTextChangeHandler(void (* func)()) {
+    _textChangeHandler = func;
 }

@@ -24,6 +24,9 @@ class _Q_Internal_CheckBox : public QCheckBox {
 public:
     _Q_Internal_CheckBox(QGCheckBox* checkBox, bool checked = false, QWidget* parent = nullptr);
 
+public slots:
+    void handleChange(bool);
+
 private:
     QGCheckBox* _checkBox;
 };
@@ -39,10 +42,13 @@ public:
     virtual QWidget* getWidget() const;
     bool isChecked() const;
     void setChecked(bool checked);
+    void setChangeHandler(void (* func)());
     void setText(const std::string& text);
 
 private:
     _Q_Internal_CheckBox _checkBox;
+
+    void (* _changeHandler)();
 
     friend class _Q_Internal_CheckBox;
 };
