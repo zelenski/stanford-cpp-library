@@ -2,11 +2,18 @@
  * File: qgtextfield.cpp
  * ---------------------
  *
+ * @version 2018/06/29
+ * - added textChange event
+ * - added autocompletion
  * @version 2018/06/25
  * - initial version
  */
 
 #include "qgtextfield.h"
+#include <QCompleter>
+#include <QString>
+#include <QStringList>
+#include <QStringListModel>
 #include "qgwindow.h"
 #include "strlib.h"
 
@@ -54,13 +61,41 @@ int QGTextField::getValueAsInteger() const {
     return stringToInteger(text);
 }
 
-
 QWidget* QGTextField::getWidget() const {
     return (QWidget*) &_qtextfield;
 }
 
+bool QGTextField::isAutocompleteEnabled() const {
+    return _qtextfield.completer() != nullptr;
+}
+
 bool QGTextField::isEditable() const {
     return !_qtextfield.isReadOnly();
+}
+
+void QGTextField::setAutocompleteList(std::initializer_list<std::string> strings) {
+    Vector<std::string> v(strings);
+    setAutocompleteList(v);
+}
+
+void QGTextField::setAutocompleteList(const Vector<std::string>& strings) {
+    QStringList stringList;
+    for (std::string s : strings) {
+        stringList.push_back(QString::fromStdString(s));
+    }
+    QStringListModel* model = new QStringListModel(stringList, &_qtextfield);   // MEMORY LEAK
+    QCompleter* completer = new QCompleter(model, &_qtextfield);                // MEMORY LEAK
+    completer->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
+    completer->setCaseSensitivity(Qt::CaseInsensitive);
+    completer->setCompletionMode(QCompleter::PopupCompletion);
+    _qtextfield.setCompleter(completer);
+}
+
+void QGTextField::setAutocompleteEnabled(bool enabled) {
+    if (!enabled) {
+        _qtextfield.setCompleter(nullptr);
+    }
+    // TODO
 }
 
 void QGTextField::setEditable(bool value) {
@@ -77,4 +112,20 @@ void QGTextField::setText(const std::string& text) {
 
 void QGTextField::setTextChangeHandler(void (* func)()) {
     _textChangeHandler = func;
+}
+
+bool QGTextField::valueIsDouble() const {
+    return stringIsDouble(trim(getText()));
+}
+
+bool QGTextField::valueIsInt() const {
+    return stringIsInteger(trim(getText()));
+}
+
+bool QGTextField::valueIsInteger() const {
+    return stringIsInteger(trim(getText()));
+}
+
+bool QGTextField::valueIsReal() const {
+    return stringIsReal(trim(getText()));
 }

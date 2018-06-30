@@ -2,6 +2,8 @@
  * File: qgtextfield.h
  * -------------------
  *
+ * @version 2018/06/29
+ * - added textChange event
  * @version 2018/06/25
  * - initial version
  */
@@ -9,11 +11,13 @@
 #ifndef _qgtextfield_h
 #define _qgtextfield_h
 
+#include <initializer_list>
 #include <string>
 #include <QLineEdit>
 #include <QString>
 #include <QWidget>
 #include "qginteractor.h"
+#include "vector.h"
 
 // forward declaration
 class QGTextField;
@@ -45,12 +49,19 @@ public:
     int getValueAsInt() const;
     int getValueAsInteger() const;
     virtual QWidget* getWidget() const;
+    bool isAutocompleteEnabled() const;
     bool isEditable() const;
+    void setAutocompleteList(std::initializer_list<std::string> strings);
+    void setAutocompleteList(const Vector<std::string>& strings);
+    void setAutocompleteEnabled(bool enabled);
     void setEditable(bool value);
     void setPlaceholder(const std::string& text);
     void setText(const std::string& text);
     void setTextChangeHandler(void (* func)());
-
+    bool valueIsDouble() const;
+    bool valueIsInt() const;
+    bool valueIsInteger() const;
+    bool valueIsReal() const;
     // TODO: get/setInputType?
 
 private:

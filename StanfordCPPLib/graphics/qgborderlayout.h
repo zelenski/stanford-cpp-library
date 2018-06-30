@@ -36,6 +36,7 @@ public:
 
     void add(QLayoutItem* item, Position position);
 
+    static void clearLayout(QLayout* layout);
     static Position toPosition(const std::string& positionName);
 
 private:

@@ -2,6 +2,8 @@
  * File: qgcheckbox.h
  * ------------------
  *
+ * @version 2018/06/29
+ * - added change event
  * @version 2018/06/25
  * - initial version
  */

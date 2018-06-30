@@ -177,6 +177,20 @@ QSize QGBorderLayout::calculateSize(SizeType sizeType) const {
     return totalSize;
 }
 
+void QGBorderLayout::clearLayout(QLayout* layout) {
+    if (!layout) {
+        return;
+    }
+    while (!layout->isEmpty()) {
+        QLayoutItem* item = layout->itemAt(0);
+        if (item->layout()) {
+            clearLayout(item->layout());
+        }
+        layout->removeItem(item);
+    }
+    layout->update();
+}
+
 QGBorderLayout::Position QGBorderLayout::toPosition(const std::string& positionName) {
     std::string regionU = toUpperCase(positionName);
     if (regionU == "NORTH" || regionU == "TOP") {
