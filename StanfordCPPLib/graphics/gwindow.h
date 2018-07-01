@@ -693,10 +693,11 @@ public:
     /*
      * Method: setCanvasSize
      * Usage: gw.setCanvasSize(width, height);
-     * --------------------------------
+     * ---------------------------------------
      * Sets the size of the graphics window's central drawing canvas in pixels.
      */
     void setCanvasSize(double width, double height);
+    void setCanvasSize(const GDimension& size);
 
     /*
      * Method: setCanvasWidth
@@ -1035,7 +1036,7 @@ double getScreenWidth();
 /*
  * Function: getScreenSize
  * Usage: size = getScreenSize();
- * ----------------------------------
+ * ------------------------------
  * Returns the width/height of the entire display screen.
  */
 GDimension getScreenSize();

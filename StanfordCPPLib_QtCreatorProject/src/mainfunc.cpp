@@ -533,10 +533,12 @@ void testWindowWithScrollbar() {
 }
 
 #include "qgbutton.h"
+#include "qgcanvas.h"
 #include "qgcheckbox.h"
 #include "qgchooser.h"
 #include "qgfilechooser.h"
 #include "qglabel.h"
+#include "qgobjects.h"
 #include "qgoptionpane.h"
 #include "qgradiobutton.h"
 #include "qgslider.h"
@@ -570,6 +572,7 @@ void clickHandler() {
 
 //    string filename = QGFileChooser::showOpenDialog("", "*.txt, *.cpp, *.h");
 //    cout << "You chose: " << filename << endl;
+    window->clear();
 }
 
 void chooserChangeHandler() {
@@ -633,17 +636,43 @@ void testQwindow() {
     static QGTextField textField("Marty");
     textField.setPlaceholder("type your name");
     // textField.setEditable(false);
+
+    textField.setAutocompleteList({"matt", "Marty", "Stuart", "steve", "yana", "yes", "no"});
+
     textField.setTextChangeHandler([]() {
         cout << "textfield text changed! text is:" << endl << textField.getText() << endl;
     });
     window->addToRegion(&textField, "South");
 
-    static QGTextArea textArea("This is \na multi-line\n\ntext area");
-    textArea.setPlaceholder("type some text");
-    textArea.setTextChangeHandler([]() {
-        cout << "textarea text changed! text is:" << endl << textArea.getText() << endl;
-    });
-    window->addToRegion(&textArea, "Center");
+//    static QGTextArea textArea("This is \na multi-line\n\ntext area");
+//    textArea.setPlaceholder("type some text");
+//    textArea.setTextChangeHandler([]() {
+//        cout << "textarea text changed! text is:" << endl << textArea.getText() << endl;
+//    });
+//    window->addToRegion(&textArea, "Center");
+
+    // canvas
+//    QGCanvas canvas;
+//    QGRect* rect = new QGRect(10, 30, 120, 70);
+//    QGOval* oval = new QGOval(20, 120, 40, 60);
+//    QGLine* line = new QGLine(100, 100, 200, 150);
+//    canvas.add(rect);
+//    canvas.add(oval);
+//    canvas.add(line);
+//    window->addToRegion(&canvas, "Center");
+
+    // drawing directly onto window
+    window->setColor("blue");
+    window->setFillColor("yellow");
+    window->fillOval(20, 120, 40, 60);
+    window->setColor("red");
+    window->setFillColor("green");
+    window->setLineWidth(3);
+
+    // should be "default" fill of white? but uses yellow
+    window->fillRect(10, 30, 120, 70);
+
+    window->drawLine(100, 100, 200, 150);
 
     QGButton button("Push me");
     button.setClickHandler(clickHandler);

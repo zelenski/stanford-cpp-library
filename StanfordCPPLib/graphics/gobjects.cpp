@@ -343,7 +343,7 @@ void GRect::setFillColor(const std::string& color) {
 }
 
 void GRect::setFilled(bool flag) {
-    fillFlag = true;
+    fillFlag = flag;
     stanfordcpplib::getPlatform()->gobject_setFilled(this, flag);
 }
 
@@ -595,7 +595,7 @@ void GOval::setFillColor(const std::string& color) {
 }
 
 void GOval::setFilled(bool flag) {
-    fillFlag = true;
+    fillFlag = flag;
     stanfordcpplib::getPlatform()->gobject_setFilled(this, flag);
 }
 
@@ -771,7 +771,7 @@ void GArc::setFillColor(const std::string& color) {
 }
 
 void GArc::setFilled(bool flag) {
-    fillFlag = true;
+    fillFlag = flag;
     stanfordcpplib::getPlatform()->gobject_setFilled(this, flag);
 }
 
@@ -821,6 +821,10 @@ void GCompound::add(GObject* gobj) {
 void GCompound::add(GObject* gobj, double x, double y) {
     gobj->setLocation(x, y);
     add(gobj);
+}
+
+void GCompound::clear() {
+    removeAll();
 }
 
 bool GCompound::contains(double x, double y) const {
@@ -1341,7 +1345,7 @@ void GPolygon::setFillColor(const std::string& color) {
 }
 
 void GPolygon::setFilled(bool flag) {
-    fillFlag = true;
+    fillFlag = flag;
     stanfordcpplib::getPlatform()->gobject_setFilled(this, flag);
 }
 

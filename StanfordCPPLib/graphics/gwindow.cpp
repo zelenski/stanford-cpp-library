@@ -935,6 +935,12 @@ void GWindow::setCanvasSize(double width, double height) {
     }
 }
 
+void GWindow::setCanvasSize(const GDimension& size) {
+    if (isOpen()) {
+        stanfordcpplib::getPlatform()->gwindow_setCanvasSize(*this, (int) size.getWidth(), (int) size.getHeight());
+    }
+}
+
 void GWindow::setCanvasWidth(double width) {
     if (isOpen()) {
         stanfordcpplib::getPlatform()->gwindow_setCanvasSize(*this, (int) width, (int) getCanvasHeight());
