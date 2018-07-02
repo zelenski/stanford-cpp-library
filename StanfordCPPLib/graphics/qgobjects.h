@@ -16,6 +16,7 @@
 #include <iostream>
 #include <QPainter>
 #include <QPen>
+#include <QWidget>
 #include "gtypes.h"
 #include "vector.h"
 
@@ -213,6 +214,12 @@ public:
     double getY() const;
 
     /*
+     * Returns whether we should globally anti-alias graphical objects.
+     * On by default.
+     */
+    static bool isAntiAliasing();
+
+    /*
      * Method: isFilled
      * Usage: if (gobj->isFilled()) ...
      * --------------------------------
@@ -236,6 +243,11 @@ public:
      * <code>dx</code> and <code>dy</code>.
      */
     void move(double dx, double dy);
+
+    /*
+     * ...
+     */
+    virtual void repaint();
 
     /*
      * Method: rotate
@@ -303,6 +315,7 @@ public:
     /*
      * Globally turns on/off the anti-aliasing feature that smooths out the
      * edges of onscreen shapes.  On by default.
+     * Does not repaint any onscreen objects when called; you must do this yourself.
      */
     static void setAntiAliasing(bool value);
 
@@ -462,6 +475,9 @@ private:
     QGObject(const QGObject&) {
         // empty
     }
+
+    // whether to anti-alias graphical objects; default true
+    static bool _sAntiAliasing;
 
     /* Instance variables */
 protected:
@@ -949,6 +965,11 @@ public:
     void clear();
 
     /*
+     * ...
+     */
+    void conditionalRepaint();
+
+    /*
      * Draws all objects stored in this compound using the given painter pen.
      */
     void draw(QPainter* painter);
@@ -980,6 +1001,10 @@ public:
      */
     int getElementCount() const;
 
+    QWidget* getWidget() const;
+
+    bool isAutoRepaint() const;
+
     /*
      * Method: remove
      * Usage: comp->remove(gobj);
@@ -997,6 +1022,12 @@ public:
      */
     void removeAll();
 
+    virtual void repaint();
+
+    void setAutoRepaint(bool autoRepaint);
+
+    void setWidget(QWidget* widget);
+
     /* Prototypes for the virtual methods */
     virtual bool contains(double x, double y) const;
     virtual GRectangle getBounds() const;
@@ -1013,6 +1044,8 @@ private:
 
     /* Instance variables */
     Vector<QGObject*> contents;
+    QWidget* _widget;    // widget containing this compound
+    bool _autoRepaint;   // automatically repaint on any change; default true
 
     /* Friend declarations */
     friend class QGObject;

@@ -53,15 +53,15 @@ void QGInteractor::requestFocus() {
     getWidget()->setFocus();
 }
 
-void QGInteractor::setAccelerator(const std::string& accelerator) {
+void QGInteractor::setAccelerator(const std::string& /* accelerator */) {
     // TODO
 }
 
-void QGInteractor::setBackground(int rgb) {
+void QGInteractor::setBackground(int /* rgb */) {
     // TODO
 }
 
-void QGInteractor::setBackground(const std::string& color) {
+void QGInteractor::setBackground(const std::string& /* color */) {
     // TODO
 }
 
@@ -77,24 +77,24 @@ void QGInteractor::setEnabled(bool value) {
     getWidget()->setEnabled(value);
 }
 
-void QGInteractor::setForeground(int rgb) {
+void QGInteractor::setForeground(int /* rgb */) {
     // TODO
 }
 
-void QGInteractor::setForeground(const std::string& color) {
+void QGInteractor::setForeground(const std::string& /* color */) {
     // TODO
 }
 
-void QGInteractor::setFont(const std::string& font) {
+void QGInteractor::setFont(const std::string& /* font */) {
     // TODO
     // getWidget()->setFont(QFont&);
 }
 
-void QGInteractor::setIcon(const std::string& filename) {
+void QGInteractor::setIcon(const std::string& /* filename */) {
     // TODO
 }
 
-void QGInteractor::setMnemonic(char mnemonic) {
+void QGInteractor::setMnemonic(char /* mnemonic */) {
     // TODO
 }
 

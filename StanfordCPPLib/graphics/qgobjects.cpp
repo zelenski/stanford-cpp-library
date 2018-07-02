@@ -13,7 +13,6 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include "gevents.h"
 #include "gmath.h"
 #include "qgcolor.h"
 
@@ -32,6 +31,8 @@ static double dsq(double x0, double y0, double x1, double y1);
 
 
 /* QGObject class */
+
+bool QGObject::_sAntiAliasing = true;
 
 QGObject::QGObject() {
     _x = 0;
@@ -159,6 +160,10 @@ void QGObject::initializeBrushAndPen(QPainter* painter) {
     }
 }
 
+bool QGObject::isAntiAliasing() {
+    return _sAntiAliasing;
+}
+
 bool QGObject::isFilled() const {
     return _fillFlag;
 }
@@ -169,6 +174,16 @@ bool QGObject::isVisible() const {
 
 void QGObject::move(double dx, double dy) {
     setLocation(_x + dx, _y + dy);
+}
+
+void QGObject::repaint() {
+    QGCompound* parent = getParent();
+    while (parent && parent->getParent()) {
+        parent = parent->getParent();
+    }
+    if (parent) {
+        parent->conditionalRepaint();
+    }
 }
 
 void QGObject::rotate(double /* theta */) {
@@ -216,8 +231,7 @@ void QGObject::sendToFront() {
 }
 
 void QGObject::setAntiAliasing(bool value) {
-    // TODO
-    // stanfordcpplib::getPlatform()->gobject_setAntialiasing(value);
+    _sAntiAliasing = value;
 }
 
 void QGObject::setBottomY(double y) {
@@ -288,7 +302,7 @@ void QGObject::setFillColor(const std::string& color) {
             setFilled(false);
         }
     } else {
-        _fillColor = QGColor::convertRGBToColor(convertColorToRGB(color));
+        _fillColor = QGColor::convertRGBToColor(QGColor::convertColorToRGB(color));
         if (!isFilled()) {
             setFilled(true);
         }
@@ -574,7 +588,8 @@ std::string QGArc::toStringExtra() const {
 }
 
 
-QGCompound::QGCompound() {
+QGCompound::QGCompound()
+        : _autoRepaint(true) {
     // stanfordcpplib::getPlatform()->gcompound_constructor(this);
 }
 
@@ -582,15 +597,23 @@ void QGCompound::add(QGObject* gobj) {
     // stanfordcpplib::getPlatform()->gcompound_add(this, gobj);
     contents.add(gobj);
     gobj->_parent = this;
+    conditionalRepaint();
 }
 
 void QGCompound::add(QGObject* gobj, double x, double y) {
     gobj->setLocation(x, y);
-    add(gobj);
+    add(gobj);   // calls conditionalRepaint
 }
 
 void QGCompound::clear() {
     removeAll();
+    conditionalRepaint();
+}
+
+void QGCompound::conditionalRepaint() {
+    if (_autoRepaint) {
+        repaint();
+    }
 }
 
 bool QGCompound::contains(double x, double y) const {
@@ -599,7 +622,9 @@ bool QGCompound::contains(double x, double y) const {
         // return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
     }
     for (int i = 0, sz = contents.size(); i < sz; i++) {
-        if (contents[i]->contains(x, y)) return true;
+        if (contents[i]->contains(x, y)) {
+            return true;
+        }
     }
     return false;
 }
@@ -662,14 +687,24 @@ std::string QGCompound::getType() const {
     return "QGCompound";
 }
 
+QWidget* QGCompound::getWidget() const {
+    return _widget;
+}
+
+bool QGCompound::isAutoRepaint() const {
+    return _autoRepaint;
+}
+
 void QGCompound::remove(QGObject* gobj) {
     int index = findQGObject(gobj);
-    if (index != -1) removeAt(index);
+    if (index != -1) {
+        removeAt(index);   // calls conditionalRepaint
+    }
 }
 
 void QGCompound::removeAll() {
     while (!contents.isEmpty()) {
-        removeAt(0);
+        removeAt(0);   // calls conditionalRepaint
     }
 }
 
@@ -678,6 +713,13 @@ void QGCompound::removeAt(int index) {
     contents.remove(index);
     // stanfordcpplib::getPlatform()->gobject_remove(gobj);
     gobj->_parent = nullptr;
+    conditionalRepaint();
+}
+
+void QGCompound::repaint() {
+    if (_widget) {
+        _widget->repaint();
+    }
 }
 
 void QGCompound::sendBackward(QGObject* gobj) {
@@ -689,6 +731,7 @@ void QGCompound::sendBackward(QGObject* gobj) {
         contents.remove(index);
         contents.insert(index - 1, gobj);
         // stanfordcpplib::getPlatform()->gobject_sendBackward(gobj);
+        conditionalRepaint();
     }
 }
 
@@ -701,6 +744,7 @@ void QGCompound::sendForward(QGObject* gobj) {
         contents.remove(index);
         contents.insert(index + 1, gobj);
         // stanfordcpplib::getPlatform()->gobject_sendForward(gobj);
+        conditionalRepaint();
     }
 }
 
@@ -713,6 +757,7 @@ void QGCompound::sendToBack(QGObject* gobj) {
         contents.remove(index);
         contents.insert(0, gobj);
         // stanfordcpplib::getPlatform()->gobject_sendToBack(gobj);
+        conditionalRepaint();
     }
 }
 
@@ -724,8 +769,16 @@ void QGCompound::sendToFront(QGObject* gobj) {
     if (index != contents.size() - 1) {
         contents.remove(index);
         contents.add(gobj);
-        // stanfordcpplib::getPlatform()->gobject_sendToFront(gobj);
+        conditionalRepaint();
     }
+}
+
+void QGCompound::setAutoRepaint(bool autoRepaint) {
+    _autoRepaint = autoRepaint;
+}
+
+void QGCompound::setWidget(QWidget* widget) {
+    _widget = widget;
 }
 
 std::string QGCompound::toString() const {
@@ -909,7 +962,7 @@ void QGOval::createQGOval(double width, double height) {
 
 void QGOval::draw(QPainter* painter) {
     initializeBrushAndPen(painter);
-    painter->drawEllipse((int) _x, (int) _y, (int) (_x + width), (int) (_y + height));
+    painter->drawEllipse((int) _x, (int) _y, (int) width, (int) height);
 }
 
 GRectangle QGOval::getBounds() const {
@@ -1127,7 +1180,7 @@ void QGRect::createQGRect(double width, double height) {
 
 void QGRect::draw(QPainter* painter) {
     initializeBrushAndPen(painter);
-    painter->drawRect((int) _x, (int) _y, (int) (_x + width), (int) (_y + height));
+    painter->drawRect((int) _x, (int) _y, (int) width, (int) height);
 }
 
 GRectangle QGRect::getBounds() const {
@@ -1240,7 +1293,7 @@ void QGRoundRect::createQGRoundRect(double width, double height, double corner) 
 
 void QGRoundRect::draw(QPainter* painter) {
     initializeBrushAndPen(painter);
-    painter->drawRoundRect((int) _x, (int) _y, (int) (_x + width), (int) (_y + height), (int) corner, (int) corner);
+    painter->drawRoundRect((int) _x, (int) _y, (int) width, (int) height, (int) corner, (int) corner);
 }
 
 std::string QGRoundRect::getType() const {

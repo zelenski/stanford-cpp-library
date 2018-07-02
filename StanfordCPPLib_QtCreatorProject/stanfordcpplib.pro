@@ -13,6 +13,9 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2018/07/01
+# - re-enable Qt in configuration to support Qt-based GUI functionality
+# - remove some compiler warnings (long-long, useless-cast) because they trigger in Qt
 # @version 2018/02/28
 # - flag to disable some BasicGraph Vertex/Edge members
 # @version 2018/01/23
@@ -277,7 +280,7 @@ QMAKE_CXXFLAGS += -Wcast-align
 QMAKE_CXXFLAGS += -Wfloat-equal
 QMAKE_CXXFLAGS += -Wformat=2
 QMAKE_CXXFLAGS += -Wlogical-op
-QMAKE_CXXFLAGS += -Wlong-long
+#QMAKE_CXXFLAGS += -Wlong-long
 QMAKE_CXXFLAGS += -Wno-missing-field-initializers
 QMAKE_CXXFLAGS += -Wno-sign-compare
 QMAKE_CXXFLAGS += -Wno-sign-conversion
@@ -296,7 +299,7 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
     QMAKE_CXXFLAGS += -Wno-unused-function
     QMAKE_CXXFLAGS += -Wno-useless-cast
 } else {
-    QMAKE_CXXFLAGS += -Wuseless-cast
+    #QMAKE_CXXFLAGS += -Wuseless-cast
     QMAKE_CXXFLAGS += -Wzero-as-null-pointer-constant
     QMAKE_CXXFLAGS += -Werror=zero-as-null-pointer-constant
 }
@@ -641,4 +644,4 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #642; if not, your .pro has been changed!)
+# END OF FILE (this should be line #647; if not, your .pro has been changed!)

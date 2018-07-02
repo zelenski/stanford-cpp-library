@@ -35,14 +35,30 @@ private:
 /*
  * ...
  */
-class QGCanvas : public QGInteractor, public QGCompound {
+class QGCanvas : public virtual QGInteractor {
 public:
     QGCanvas(QWidget* _parent = nullptr);
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;
 
+    // QGCompound methods
+    void add(QGObject* gobj);
+    void add(QGObject* gobj, double x, double y);
+    void clear();
+    void draw(QPainter* painter);
+    virtual bool contains(double x, double y) const;
+    QGObject* getElement(int index) const;
+    QGObject* getElementAt(double x, double y) const;
+    int getElementCount() const;
+    bool isAutoRepaint() const;
+    void remove(QGObject* gobj);
+    void removeAll();
+    void repaint();
+    void setAutoRepaint(bool autoRepaint);
+
 private:
     _Q_Internal_Canvas _canvas;
+    QGCompound _compound;
 
     friend class _Q_Internal_Canvas;
 };

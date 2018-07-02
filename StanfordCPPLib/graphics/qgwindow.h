@@ -23,11 +23,13 @@
 // set up Qt for gui stuff
 void initializeQt();
 
-// global function for starting the app
+// global functions for starting the app
+void startBackgroundEventLoop(int (* mainFunc)(void));
 void startEventLoop();
 
 // forward declaration
 class QGWindow;
+class QGWindowThread;
 
 // Internal class; not to be used by clients.
 class _Q_Internal_Window : public QMainWindow {
@@ -54,25 +56,25 @@ private:
  */
 class QGWindow {
 public:
+    enum Alignment { ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT };
+    enum Region { REGION_CENTER, REGION_EAST, REGION_NORTH, REGION_SOUTH, REGION_WEST };
+    enum CloseOperation { CLOSE_DO_NOTHING = 0, CLOSE_HIDE = 1, CLOSE_DISPOSE = 2, CLOSE_EXIT = 3 };
+
+    static const int DEFAULT_WIDTH = 500;
+    static const int DEFAULT_HEIGHT = 300;
+
     QGWindow(double width = 0, double height = 0, bool visible = true);
     virtual ~QGWindow();
     void add(QGInteractor* interactor);
+    void addToRegion(QGInteractor* interactor, Region region);
     void addToRegion(QGInteractor* interactor, const std::string& region = "Center");
-
-    /*
-~   clear
-    compareToImage
-    draw***
-    fill***
-    getColor
-    getGObjectAt
-    setColor
-    */
-
     void clear();
     void clearCanvas();
+    void clearRegion(Region region);
+    void clearRegion(const std::string& region);
     void center();
     void close();
+    void compareToImage(const std::string& filename, bool ignoreWindowSize = true) const;
     void draw(QGObject* obj);
     void draw(QGObject& obj, double x, double y);
     void draw(QGObject* obj, double x, double y);
@@ -96,10 +98,6 @@ public:
     void fillPolygon(std::initializer_list<double> coords);
     void fillRect(const GRectangle& bounds);
     void fillRect(double x, double y, double width, double height);
-
-    // TODO: get/setCanvasSize,width,height
-    // TODO: get/setColor, background, linewidth, font
-
     double getCanvasHeight() const;
     GDimension getCanvasSize() const;
     double getCanvasWidth() const;
@@ -124,33 +122,43 @@ public:
     bool inBounds(double x, double y) const;
     bool inCanvasBounds(double x, double y) const;
     bool isOpen() const;
+    bool isRepaintImmediately() const;
     bool isResizable() const;
     bool isVisible() const;
+    void loadCanvasPixels(const std::string& filename);
     void pack();
+    void pause(double ms);
     void remove(QGObject* obj);
     void remove(QGObject& obj);
     void remove(QGInteractor* interactor);
+    void removeFromRegion(QGInteractor* interactor, Region region);
     void removeFromRegion(QGInteractor* interactor, const std::string& region);
     void repaint();
     void requestFocus();
+    void saveCanvasPixels(const std::string& filename);
     void setCanvasHeight(double height);
     void setCanvasSize(double width, double height);
     void setCanvasSize(const GDimension& size);
     void setCanvasWidth(double width);
+    void setCloseOperation(CloseOperation op);
     void setColor(int color);
     void setColor(const std::string& color);
+    void setExitOnClose(bool exitOnClose);
     void setFillColor(int color);
     void setFillColor(const std::string& color);
     void setFont(const std::string& font);
+    void setHeight(double width);
     void setLineWidth(double lineWidth);
     void setLocation(double x, double y);
     void setLocation(const GPoint& p);
     void setLocation(const Point& p);
+    void setRepaintImmediately(bool repaintImmediately);
     void setResizable(bool resizable);
     void setSize(double width, double height);
     void setSize(const GDimension& size);
     void setTitle(const std::string& title);
     void setVisible(bool visible);
+    void setWidth(double width);
     void setWindowTitle(const std::string& title);
     void setX(double x);
     void setY(double y);
@@ -168,6 +176,7 @@ private:
 
     void ensureCanvas();
     void initializeQGObject(QGObject* obj, bool filled = false);
+    std::string regionToString(Region region);
 
     _Q_Internal_Window _qwindow;
     QGCanvas* _canvas;
@@ -180,8 +189,10 @@ private:
     bool _resizable;
 
     friend class QGInteractor;
+    friend class QGWindowThread;
     friend class _Q_Internal_Window;
     friend void initializeQt();
+    friend void startBackgroundEventLoop(int (* mainFunc)(void));
     friend void startEventLoop();
 };
 

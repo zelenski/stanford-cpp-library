@@ -6,8 +6,8 @@
 //#include "error.h"
 //#include "collections.h"
 //#include "exceptions.h"
-#include "gwindow.h"
-#include "gevents.h"
+//#include "gwindow.h"
+//#include "gevents.h"
 //#include "map.h"
 //#include "note.h"
 //#include "process.h"
@@ -481,56 +481,56 @@ int testAllUrls() {
 
 ////////
 
-void testWindowWithScrollbar() {
-    GWindow window;
-    window.setSize(700, 500);
-    window.setResizable(true);
-    GOval oval(50, 50, 400, 400);
-    window.add(oval);
+//void testWindowWithScrollbar() {
+//    GWindow window;
+//    window.setSize(700, 500);
+//    window.setResizable(true);
+//    GOval oval(50, 50, 400, 400);
+//    window.add(oval);
 
-    GTextField field(8);
-    window.addToRegion(field, GWindow::REGION_NORTH);
-    field.addActionListener();
-    field.addChangeListener();
+//    GTextField field(8);
+//    window.addToRegion(field, GWindow::REGION_NORTH);
+//    field.addActionListener();
+//    field.addChangeListener();
 
-    GSlider slider(0, 100, 50);
-    window.addToRegion(slider, GWindow::REGION_SOUTH);
-    slider.addActionListener();
-    slider.addChangeListener();
+//    GSlider slider(0, 100, 50);
+//    window.addToRegion(slider, GWindow::REGION_SOUTH);
+//    slider.addActionListener();
+//    slider.addChangeListener();
 
-    GFormattedPane pane;
-    window.addToRegion(pane, GWindow::REGION_CENTER);
-    pane.readTextFromUrl("http://en.wikipedia.org/");
+//    GFormattedPane pane;
+//    window.addToRegion(pane, GWindow::REGION_CENTER);
+//    pane.readTextFromUrl("http://en.wikipedia.org/");
 
-    // TODO: get/setContentType?  text/html,  text/plain?
+//    // TODO: get/setContentType?  text/html,  text/plain?
 
-    pane.setFont("Monospaced-14");
-    // pane.readTextFromFile("resfile3.html");
-    // pane.readTextFromUrl("http://poopypoopypoopypoopypoopypoopypoopypoopy.poop/");
+//    pane.setFont("Monospaced-14");
+//    // pane.readTextFromFile("resfile3.html");
+//    // pane.readTextFromUrl("http://poopypoopypoopypoopypoopypoopypoopypoopy.poop/");
 
-    // pane.setText("<h1>yay!!!</h1><p>hi</p><ul><li>lolol<li>bullet2<li>hooray</ul><p>goodbye</p>");
+//    // pane.setText("<h1>yay!!!</h1><p>hi</p><ul><li>lolol<li>bullet2<li>hooray</ul><p>goodbye</p>");
 
-    while (true) {
-        GEvent event = waitForEvent(ACTION_EVENT | CHANGE_EVENT | HYPERLINK_EVENT | WINDOW_EVENT);
-        if (event.getEventClass() == CHANGE_EVENT) {
-            GChangeEvent changeEvent(event);
-            GObject* source = changeEvent.getSource();
-            if (source == &field) {
-                cout << "field text: \"" << field.getText() << "\"" << endl;
-            } else if (source == &slider) {
-                int value = 2 * slider.getValue();
-                cout << "slider value: " << value << endl;
-                window.setColor(convertRGBToColor(value, value, value));
-                window.fillOval(10, 10, 100, 100);
-            }
-        } else if (event.getEventClass() == HYPERLINK_EVENT) {
-            GHyperlinkEvent hyperlinkEvent(event);
-            pane.readTextFromUrl(hyperlinkEvent.getUrl());
-        } else if (event.getEventType() == WINDOW_CLOSED) {
-            break;
-        }
-    }
-}
+//    while (true) {
+//        GEvent event = waitForEvent(ACTION_EVENT | CHANGE_EVENT | HYPERLINK_EVENT | WINDOW_EVENT);
+//        if (event.getEventClass() == CHANGE_EVENT) {
+//            GChangeEvent changeEvent(event);
+//            GObject* source = changeEvent.getSource();
+//            if (source == &field) {
+//                cout << "field text: \"" << field.getText() << "\"" << endl;
+//            } else if (source == &slider) {
+//                int value = 2 * slider.getValue();
+//                cout << "slider value: " << value << endl;
+//                window.setColor(convertRGBToColor(value, value, value));
+//                window.fillOval(10, 10, 100, 100);
+//            }
+//        } else if (event.getEventClass() == HYPERLINK_EVENT) {
+//            GHyperlinkEvent hyperlinkEvent(event);
+//            pane.readTextFromUrl(hyperlinkEvent.getUrl());
+//        } else if (event.getEventType() == WINDOW_CLOSED) {
+//            break;
+//        }
+//    }
+//}
 
 #include "qgbutton.h"
 #include "qgcanvas.h"
@@ -685,12 +685,11 @@ void testQwindow() {
     slider->setChangeHandler(sliderChangeHandler);
     window->addToRegion(slider, "North");
 
+    window->pause(500);
+
     startEventLoop();
 
     // todo
-
-
-
 }
 
 int main() {
