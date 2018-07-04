@@ -2,6 +2,10 @@
  * File: qgwindow.cpp
  * ------------------
  *
+ * @version 2018/07/03
+ * - thread safety code
+ * @version 2018/07/01
+ * - 2D graphics/painting functions
  * @version 2018/06/25
  * - initial version
  */
@@ -11,32 +15,37 @@
 #include <QStatusBar>
 #include <QThread>
 #include "qgcolor.h"
+#include "qgui.h"
 #include "strlib.h"
+
+#include <iostream>
+using namespace std;  // TODO: remove
 
 _Q_Internal_Window::_Q_Internal_Window(QGWindow* window, QWidget* parent)
         : QMainWindow(parent),
           _qgwindow(window) {
-
+    QGui::instance()->ensureThatThisIsTheQtGuiThread("QGWindow");
     QWidget* dummyWidget = new QWidget(this);
 
-    _overallLayout.setSpacing(0);
-    _overallLayout.setMargin(0);
-    _overallLayout.setContentsMargins(0, 0, 0, 0);
-    _northLayout.setSpacing(0);
-    _northLayout.setMargin(0);
-    _northLayout.setContentsMargins(0, 0, 0, 0);
-    _southLayout.setSpacing(0);
-    _southLayout.setMargin(0);
-    _southLayout.setContentsMargins(0, 0, 0, 0);
-    _westLayout.setSpacing(0);
-    _westLayout.setMargin(0);
-    _westLayout.setContentsMargins(0, 0, 0, 0);
-    _eastLayout.setSpacing(0);
-    _eastLayout.setMargin(0);
-    _eastLayout.setContentsMargins(0, 0, 0, 0);
-    _centerLayout.setSpacing(0);
-    _centerLayout.setMargin(0);
-    _centerLayout.setContentsMargins(0, 0, 0, 0);
+    // squish margins/padding
+//    _overallLayout.setSpacing(0);
+//    _overallLayout.setMargin(0);
+//    _overallLayout.setContentsMargins(0, 0, 0, 0);
+//    _northLayout.setSpacing(0);
+//    _northLayout.setMargin(0);
+//    _northLayout.setContentsMargins(0, 0, 0, 0);
+//    _southLayout.setSpacing(0);
+//    _southLayout.setMargin(0);
+//    _southLayout.setContentsMargins(0, 0, 0, 0);
+//    _westLayout.setSpacing(0);
+//    _westLayout.setMargin(0);
+//    _westLayout.setContentsMargins(0, 0, 0, 0);
+//    _eastLayout.setSpacing(0);
+//    _eastLayout.setMargin(0);
+//    _eastLayout.setContentsMargins(0, 0, 0, 0);
+//    _centerLayout.setSpacing(0);
+//    _centerLayout.setMargin(0);
+//    _centerLayout.setContentsMargins(0, 0, 0, 0);
 
     _northLayout.addStretch(99);
     _northLayout.addStretch(99);
@@ -61,7 +70,15 @@ _Q_Internal_Window::_Q_Internal_Window(QGWindow* window, QWidget* parent)
     setCentralWidget(dummyWidget);
 }
 
-QApplication* QGWindow::_app = nullptr;
+bool _Q_Internal_Window::event(QEvent* event) {
+    // TODO
+    if (event->type() == (QEvent::Type) (QEvent::User + 106)) {
+        cout << "user event! type=" << event->type() << endl;
+    }
+
+    return QWidget::event(event);
+}
+
 _Q_Internal_Window* QGWindow::_lastWindow = nullptr;
 
 QGWindow::QGWindow(double width, double height, bool visible)
@@ -69,9 +86,6 @@ QGWindow::QGWindow(double width, double height, bool visible)
           _canvas(nullptr),
           _lineWidth(1),
           _resizable(true) {
-    if (!_app) {
-        initializeQt();
-    }
     _lastWindow = &_qwindow;
 
     // go ahead and set up canvas when window is loaded
@@ -95,27 +109,35 @@ void QGWindow::addToRegion(QGInteractor* interactor, Region region) {
 }
 
 void QGWindow::addToRegion(QGInteractor* interactor, const std::string& region) {
+    QWidget* widget = interactor->getWidget();
+    if (!widget) {
+        return;
+    }
+
+    // TODO: remove?
+    // widget->moveToThread(_qwindow.thread());
+
     QGBorderLayout::Position position = QGBorderLayout::toPosition(region);
     if (position == QGBorderLayout::North) {
         // _qwindow._northLayout.addWidget(interactor->getWidget());
-        _qwindow._northLayout.insertWidget(/* index */ _qwindow._northLayout.count() - 1, interactor->getWidget());
+        _qwindow._northLayout.insertWidget(/* index */ _qwindow._northLayout.count() - 1, widget);
     } else if (position == QGBorderLayout::South) {
         // _qwindow._southLayout.addWidget(interactor->getWidget());
-        _qwindow._southLayout.insertWidget(/* index */ _qwindow._southLayout.count() - 1, interactor->getWidget());
+        _qwindow._southLayout.insertWidget(/* index */ _qwindow._southLayout.count() - 1, widget);
     } else if (position == QGBorderLayout::West) {
         // _qwindow._westLayout.addWidget(interactor->getWidget());
-        _qwindow._westLayout.insertWidget(/* index */ _qwindow._westLayout.count() - 1, interactor->getWidget());
+        _qwindow._westLayout.insertWidget(/* index */ _qwindow._westLayout.count() - 1, widget);
     } else if (position == QGBorderLayout::East) {
         // _qwindow._eastLayout.addWidget(interactor->getWidget());
-        _qwindow._eastLayout.insertWidget(/* index */ _qwindow._eastLayout.count() - 1, interactor->getWidget());
+        _qwindow._eastLayout.insertWidget(/* index */ _qwindow._eastLayout.count() - 1, widget);
     } else {
         // center holds at most one widget
         if (_qwindow._centerLayout.isEmpty()) {
-            _qwindow._centerLayout.addWidget(interactor->getWidget());
+            _qwindow._centerLayout.addWidget(widget);
         } else {
             _qwindow._centerLayout.replaceWidget(
                         /* from */ _qwindow._centerLayout.takeAt(0)->widget(),
-                        /* to   */ interactor->getWidget());
+                        /* to   */ widget);
         }
     }
 }
@@ -371,6 +393,58 @@ double QGWindow::getLineWidth() const {
     return _lineWidth;
 }
 
+int QGWindow::getPixel(double /* x */, double /* y */) const {
+    // TODO
+    return 0;
+}
+
+int QGWindow::getPixelARGB(double /* x */, double /* y */) const {
+    // TODO
+    return 0;
+}
+
+Grid<int> QGWindow::getPixels() const {
+    // TODO
+    Grid<int> grid;
+    return grid;
+}
+
+Grid<int> QGWindow::getPixelsARGB() const {
+    // TODO
+    Grid<int> grid;
+    return grid;
+}
+
+double QGWindow::getRegionHeight(Region /* region */) const {
+    // TODO
+    return 0.0;
+}
+
+double QGWindow::getRegionHeight(const std::string& /* region */) const {
+    // TODO
+    return 0.0;
+}
+
+GDimension QGWindow::getRegionSize(Region /* region */) const {
+    // TODO
+    return GDimension();
+}
+
+GDimension QGWindow::getRegionSize(const std::string& /* region */) const {
+    // TODO
+    return GDimension();
+}
+
+double QGWindow::getRegionWidth(Region /* region */) const {
+    // TODO
+    return 0.0;
+}
+
+double QGWindow::getRegionWidth(const std::string& /* region */) const {
+    // TODO
+    return 0.0;
+}
+
 double QGWindow::getScreenHeight() {
     return getScreenSize().getHeight();
 }
@@ -391,6 +465,10 @@ GDimension QGWindow::getSize() const {
 
 std::string QGWindow::getTitle() const {
     return _qwindow.windowTitle().toStdString();
+}
+
+QWidget* QGWindow::getWidget() const {
+    return (QWidget*) &_qwindow;
 }
 
 double QGWindow::getWidth() const {
@@ -424,14 +502,6 @@ void QGWindow::initializeQGObject(QGObject* obj, bool fill) {
     }
     obj->setFont(_font);
     obj->setLineWidth(_lineWidth);
-}
-
-void initializeQt() {
-    static int argc = 1;
-    static char* argv[1] = {"Stanford Cpp Lib"};
-    if (!QGWindow::_app) {
-        QGWindow::_app = new QApplication(argc, argv);
-    }
 }
 
 bool QGWindow::isOpen() const {
@@ -603,6 +673,30 @@ void QGWindow::setLocation(const Point& p) {
     setLocation(p.getX(), p.getY());
 }
 
+void QGWindow::setPixel(double /* x */, double /* y */, int /* rgb */) {
+    // TODO
+}
+
+void QGWindow::setPixelARGB(double /* x */, double /* y */, int /* argb */) {
+    // TODO
+}
+
+void QGWindow::setPixels(const Grid<int>& /* pixels */) {
+    // TODO
+}
+
+void QGWindow::setPixelsARGB(const Grid<int>& /* pixelsARGB */) {
+    // TODO
+}
+
+void QGWindow::setRegionAlignment(Region /* region */, Alignment /* align */) {
+    // TODO
+}
+
+void QGWindow::setRegionAlignment(const std::string& /* region */, const std::string& /* align */) {
+    // TODO
+}
+
 void QGWindow::setRepaintImmediately(bool repaintImmediately) {
     ensureCanvas();
     _canvas->setAutoRepaint(repaintImmediately);
@@ -662,47 +756,4 @@ void QGWindow::toBack() {
 
 void QGWindow::toFront() {
     _qwindow.raise();
-}
-
-class QGWindowThread : public QThread {
-public:
-    QGWindowThread(int (* mainFunc)(void))
-            : _mainFunc(mainFunc) {
-        // empty
-    }
-
-    int getResult() const {
-        return _result;
-    }
-
-protected:
-    void run() {
-        this->msleep(200);
-        _result = _mainFunc();
-    }
-
-private:
-    int (* _mainFunc)(void);
-    int _result;
-};
-
-void startBackgroundEventLoop(int (* mainFunc)(void)) {
-    // TODO: make it possible to stop;  exitGraphics?
-
-    // assumes that this is being called from the main thread
-    if (QGWindow::_app) {
-        // start student's main function in its own second thread
-        static QGWindowThread* thread = nullptr;
-        thread = new QGWindowThread(mainFunc);
-        thread->start();
-
-        // QGWindow::_app->moveToThread(this);
-        QGWindow::_app->exec();   // start Qt event loop on main thread
-    }
-}
-
-void startEventLoop() {
-    if (QGWindow::_app) {
-        QGWindow::_app->exec();
-    }
 }

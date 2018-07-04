@@ -227,7 +227,7 @@ static std::string getResult(bool consumeAcks = true, bool stopOnEvent = false,
                              const std::string& caller = "");
 static std::string getSplJarPath();
 static void getStatus();
-static void initPipe();
+void initPipe();
 static GEvent parseActionEvent(TokenScanner& scanner, EventType type);
 static GEvent parseEvent(const std::string& line);
 static GEvent parseChangeEvent(TokenScanner& scanner, EventType type);
@@ -2897,7 +2897,7 @@ static void sigPipeHandler(int /*signum*/) {
 #endif // SPL_HEADLESS_MODE
 
 // Unix implementation; see Windows implementation elsewhere in this file
-static void initPipe() {
+void initPipe() {
     std::string jarName = getSplJarPath();
     
     int toJBE[2], fromJBE[2];

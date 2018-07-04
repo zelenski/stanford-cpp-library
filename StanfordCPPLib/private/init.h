@@ -13,6 +13,8 @@
  * - simplicity/consolidation
  * - allow student to NOT include console.h and use plain text console
  *
+ * @version 2018/07/03
+ * - add code to handle Qt GUI library initialization
  * @version 2017/04/25
  * - wrap library initializer in an #ifndef to avoid multiple declaration
  */
@@ -90,6 +92,17 @@ static __StanfordCppLibraryInitializer __stanfordcpplib_init;
 #else // not SPL_AUTOGRADER_MODE
 
 #undef main
+
+#ifdef SPL_QT_GUI
+#define main main(int argc, char** argv) { \
+        extern void __shutdownStanfordCppLibraryQt(); \
+        extern void __initializeStanfordCppLibraryQt(int argc, char** argv, int (* mainFunc)(void)); \
+        extern int Main(); \
+        __initializeStanfordCppLibraryQt(argc, argv, Main); \
+        return 0; \
+    } \
+    int Main
+#else // SPL_QT_GUI
 #define main main(int argc, char** argv) { \
         extern void __shutdownStanfordCppLibrary(); \
         extern void __initializeStanfordCppLibrary(int argc, char** argv); \
@@ -100,6 +113,7 @@ static __StanfordCppLibraryInitializer __stanfordcpplib_init;
         return 0; \
     } \
     int Main
+#endif // SPL_QT_GUI
 
 // TODO: figure out how to support both 0-arg and 2-arg main()
 

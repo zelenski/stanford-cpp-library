@@ -12,6 +12,7 @@
 #include <string>
 #include <QPushButton>
 #include <QWidget>
+#include "qgborderlayout.h"
 #include "qginteractor.h"
 
 // forward declaration
@@ -40,13 +41,12 @@ public:
     std::string getText() const;
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;
-    void setClickHandler(void (* func)());
+    void setClickHandler(std::function<void()> func);
     void setText(const std::string& text);
+    void setTextPosition(QGBorderLayout::Position horizontal, QGBorderLayout::Position vertical);
 
 private:
     _Q_Internal_Button _button;
-
-    void (* _clickHandler)();
 
     friend class _Q_Internal_Button;
 };

@@ -18,16 +18,14 @@ _Q_Internal_RadioButton::_Q_Internal_RadioButton(QGRadioButton* radioButton, boo
 }
 
 void _Q_Internal_RadioButton::handleChange(bool /* checked */) {
-    if (_radioButton->_changeHandler) {
-        _radioButton->_changeHandler();
-    }
+    _radioButton->fireEvent("change");
 }
 
 Map<std::string, QButtonGroup*> QGRadioButton::_buttonGroups;
 
 QGRadioButton::QGRadioButton(const std::string& text, const std::string& group, bool checked, QWidget* parent)
-        : _radioButton(this, checked, parent ? parent : (QWidget*) QGWindow::getLastWindow()),
-          _changeHandler(nullptr) {
+        : _radioButton(this, checked, parent ? parent : (QWidget*) QGWindow::getLastWindow()) {
+    ensureThreadSafety();
     QButtonGroup* buttonGroup = getButtonGroup(group);
     buttonGroup->addButton(&_radioButton);
     setText(text);
@@ -49,12 +47,20 @@ bool QGRadioButton::isChecked() const {
     return _radioButton.isChecked();
 }
 
+bool QGRadioButton::isSelected() const {
+    return _radioButton.isChecked();
+}
+
 void QGRadioButton::setChecked(bool checked) {
     _radioButton.setChecked(checked);
 }
 
-void QGRadioButton::setChangeHandler(void (* func)()) {
-    _changeHandler = func;
+void QGRadioButton::setChangeHandler(std::function<void()> func) {
+    setEventHandler("change", func);
+}
+
+void QGRadioButton::setSelected(bool selected) {
+    _radioButton.setChecked(selected);
 }
 
 void QGRadioButton::setText(const std::string& text) {

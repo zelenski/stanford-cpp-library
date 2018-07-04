@@ -18,6 +18,7 @@ _Q_Internal_Label::_Q_Internal_Label(QGLabel* label, QWidget* parent)
 
 QGLabel::QGLabel(const std::string& text, QWidget* parent)
         : _label(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()) {
+    ensureThreadSafety();
     setText(text);
 }
 
@@ -35,4 +36,5 @@ QWidget* QGLabel::getWidget() const {
 
 void QGLabel::setText(const std::string& text) {
     _label.setText(QString::fromStdString(text));
+    _label.updateGeometry();
 }

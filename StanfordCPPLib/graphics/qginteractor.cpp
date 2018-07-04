@@ -9,9 +9,38 @@
 #include "qginteractor.h"
 #include <iostream>
 #include <sstream>
+#include "qgui.h"
+
+void QGInteractor::clearEventHandlers() {
+    _eventMap.clear();
+}
+
+void QGInteractor::ensureThreadSafety() {
+    QGui::instance()->ensureThatThisIsTheQtGuiThread();
+}
+
+void QGInteractor::fireEvent(const std::string& eventName) {
+    if (hasEventHandler(eventName)) {
+        _eventMap[eventName]();
+    }
+}
+
+std::string QGInteractor::getAccelerator() const {
+    // TODO
+    return "?";
+}
+
+std::string QGInteractor::getActionCommand() const {
+    // TODO
+    return "?";
+}
 
 GRectangle QGInteractor::getBounds() const {
     return GRectangle(getX(), getY(), getWidth(), getHeight());
+}
+
+std::function<void()> QGInteractor::getEventHandler(const std::string& eventName) const {
+    return _eventMap[eventName];
 }
 
 std::string QGInteractor::getFont() const {
@@ -45,12 +74,24 @@ double QGInteractor::getY() const {
     return getWidget()->y();
 }
 
+bool QGInteractor::hasEventHandler(const std::string& eventName) const {
+    return _eventMap.containsKey(eventName);
+}
+
 bool QGInteractor::isEnabled() const {
     return getWidget()->isEnabled();
 }
 
+bool QGInteractor::isVisible() const {
+    return getWidget()->isVisible();
+}
+
 void QGInteractor::requestFocus() {
     getWidget()->setFocus();
+}
+
+void QGInteractor::setActionCommand(const std::string& /* actionCommand */) {
+    // TODO
 }
 
 void QGInteractor::setAccelerator(const std::string& /* accelerator */) {
@@ -73,8 +114,20 @@ void QGInteractor::setBounds(const GRectangle& size) {
     setBounds(size.getX(), size.getY(), size.getWidth(), size.getHeight());
 }
 
+void QGInteractor::setColor(int /* rgb */) {
+    // TODO
+}
+
+void QGInteractor::setColor(const std::string& /* color */) {
+    // TODO
+}
+
 void QGInteractor::setEnabled(bool value) {
     getWidget()->setEnabled(value);
+}
+
+void QGInteractor::setEventHandler(const std::string& eventName, std::function<void()> func) {
+    _eventMap[eventName] = func;
 }
 
 void QGInteractor::setForeground(int /* rgb */) {
@@ -108,6 +161,10 @@ void QGInteractor::setSize(const GDimension& size) {
 
 void QGInteractor::setTooltip(const std::string& tooltipText) {
     getWidget()->setToolTip(QString::fromStdString(tooltipText));
+}
+
+void QGInteractor::setVisible(bool visible) {
+    getWidget()->setVisible(visible);
 }
 
 std::string QGInteractor::toString() const {

@@ -544,6 +544,7 @@ int testAllUrls() {
 #include "qgslider.h"
 #include "qgtextarea.h"
 #include "qgtextfield.h"
+#include "qgui.h"
 #include "qgwindow.h"
 
 QGWindow* window;
@@ -588,7 +589,13 @@ void sliderChangeHandler() {
 }
 
 void testQwindow() {
-    initializeQt();
+//    cout << "This is the testQwindow function! yay!" << endl;
+//    cout << "testQwindow is in thread " << QGui::instance()->getCurrentThread() << endl;
+//    cout << "testQwindow sleeping 500ms ..." << endl;
+//    QGui::instance()->getCurrentThread()->msleep(500);
+//    cout << "testQwindow done sleeping." << endl;
+//    return;
+
     window = new QGWindow(900, 500);
     window->setTitle("QtGui Window");
     window->setResizable(true);
@@ -596,16 +603,19 @@ void testQwindow() {
 
     QGLabel label("Type <b>stuff</b> <i>now</i> (North):");
     window->addToRegion(&label, "North");
+    cout << "label:     " << label.toString() << endl;
 
     chooser = new QGChooser({"one", "two", "three four"});
     chooser->setChangeHandler(chooserChangeHandler);
     window->addToRegion(chooser, "South");
+    cout << "chooser:   " << chooser->toString() << endl;
 
     static QGCheckBox checkBox("Question?", true);
     checkBox.setChangeHandler([]() {
         cout << "checkbox clicked! " << boolalpha << checkBox.isChecked() << endl;
     });
     window->addToRegion(&checkBox, "West");
+    cout << "checkbox:  " << checkBox.toString() << endl;
 
     static QGRadioButton radio1group1("A", "group1");
     static QGRadioButton radio2group1("B", "group1", true);
@@ -632,17 +642,17 @@ void testQwindow() {
     window->addToRegion(&radio3group1, "East");
     window->addToRegion(&radio1group2, "East");
     window->addToRegion(&radio2group2, "East");
+    cout << "radio:     " << radio1group1.toString() << endl;
 
     static QGTextField textField("Marty");
     textField.setPlaceholder("type your name");
     // textField.setEditable(false);
-
     textField.setAutocompleteList({"matt", "Marty", "Stuart", "steve", "yana", "yes", "no"});
-
     textField.setTextChangeHandler([]() {
         cout << "textfield text changed! text is:" << endl << textField.getText() << endl;
     });
     window->addToRegion(&textField, "South");
+    cout << "textfield: " << textField.toString() << endl;
 
 //    static QGTextArea textArea("This is \na multi-line\n\ntext area");
 //    textArea.setPlaceholder("type some text");
@@ -650,6 +660,7 @@ void testQwindow() {
 //        cout << "textarea text changed! text is:" << endl << textArea.getText() << endl;
 //    });
 //    window->addToRegion(&textArea, "Center");
+//    cout << "textarea:  " << textArea.toString() << endl;
 
     // canvas
 //    QGCanvas canvas;
@@ -660,6 +671,7 @@ void testQwindow() {
 //    canvas.add(oval);
 //    canvas.add(line);
 //    window->addToRegion(&canvas, "Center");
+//    cout << "canvas:    " << canvas.toString() << endl;
 
     // drawing directly onto window
     window->setColor("blue");
@@ -671,33 +683,37 @@ void testQwindow() {
 
     // should be "default" fill of white? but uses yellow
     window->fillRect(10, 30, 120, 70);
-
     window->drawLine(100, 100, 200, 150);
 
     QGButton button("Push me");
     button.setClickHandler(clickHandler);
     window->addToRegion(&button, "South");
+    cout << "button:    " << button.toString() << endl;
 
-    slider = new QGSlider();
-    slider->setMinorTickSpacing(20);
-    slider->setPaintLabels(true);
-    slider->setPaintTicks(true);
-    slider->setChangeHandler(sliderChangeHandler);
-    window->addToRegion(slider, "North");
+//    slider = new QGSlider();
+//    slider->setMinorTickSpacing(20);
+//    slider->setPaintLabels(true);
+//    slider->setPaintTicks(true);
+//    slider->setChangeHandler(sliderChangeHandler);
+//    window->addToRegion(slider, "North");
+//    cout << "slider:    " << slider->toString() << endl;
 
-    window->pause(500);
-
-    startEventLoop();
+    // window->pause(500);
 
     // todo
 }
 
 int main() {
-    testQwindow();
-    // testWindowWithScrollbar();
-    return 0;
+    cout << "main is in thread " << QGui::instance()->getCurrentThread() << endl;
+    cout << " (qt main=" << QGui::instance()->getQtMainThread()
+         << " student=" << QGui::instance()->getStudentThread() << ")" << endl;
+    QGui::instance()->runOnQtGuiThread(testQwindow);
+    cout << "main back from running on GUI thread." << endl;
+    cout << "main sleeping 200ms ..." << endl;
+    QGui::instance()->getCurrentThread()->msleep(200);
+    cout << "main done sleeping." << endl;
 
-    // testAllUrls();
+    return 0;
 }
 
 int otherMain() {

@@ -18,27 +18,23 @@ _Q_Internal_Chooser::_Q_Internal_Chooser(QGChooser* chooser, QWidget* parent)
 }
 
 void _Q_Internal_Chooser::handleChange() {
-    if (_chooser->_changeHandler) {
-        _chooser->_changeHandler();
-    }
+    _chooser->fireEvent("change");
 }
 
 
 QGChooser::QGChooser(QWidget* parent)
-        : _chooser(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()),
-          _changeHandler(nullptr) {
-    // empty
+        : _chooser(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()) {
+    ensureThreadSafety();
 }
 
 QGChooser::QGChooser(const std::initializer_list<std::string>& items, QWidget* parent)
-        : _chooser(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()),
-          _changeHandler(nullptr) {
+        : _chooser(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()) {
     addItems(items);
 }
 
 QGChooser::QGChooser(const Vector<std::string>& items, QWidget* parent)
-        : _chooser(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()),
-          _changeHandler(nullptr) {
+        : _chooser(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()) {
+    ensureThreadSafety();
     addItems(items);
 }
 
@@ -97,8 +93,8 @@ bool QGChooser::isEditable() const {
     return _chooser.isEditable();
 }
 
-void QGChooser::setChangeHandler(void (* func)()) {
-    _changeHandler = func;
+void QGChooser::setChangeHandler(std::function<void()> func) {
+    setEventHandler("change", func);
 }
 
 void QGChooser::setItem(int index, const std::string& item) {

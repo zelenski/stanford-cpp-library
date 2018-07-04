@@ -150,8 +150,22 @@ std::string QGOptionPane::showOptionDialog(QWidget* parent,
     }
 }
 
-void QGOptionPane::showTextFileDialog(const std::string& message, const std::string& title, int rows, int cols) {
+void QGOptionPane::showTextFileDialog(const std::string& message,
+                                      const std::string& title,
+                                      int /* rows */,
+                                      int /* cols */) {
     std::string titleToUse = title.empty() ? std::string("Text file contents") : title;
+    showMessageDialog(message, titleToUse);
+    // TODO
+    error("QGOptionPane::showTextFileDialog: not implemented");
+}
+void QGOptionPane::showTextFileDialog(QWidget* parent,
+                                      const std::string& message,
+                                      const std::string& title,
+                                      int /* rows */,
+                                      int /* cols */) {
+    std::string titleToUse = title.empty() ? std::string("Text file contents") : title;
+    showMessageDialog(parent, message, titleToUse);
     // TODO
     error("QGOptionPane::showTextFileDialog: not implemented");
 }

@@ -14,28 +14,28 @@
 #include "strlib.h"
 #include "vector.h"
 
-std::string QGFileChooser::showOpenDialog(const std::string& currentDir, const std::string& fileFilter) {
-    return showOpenDialog(/* parent */ nullptr, currentDir, fileFilter);
+std::string QGFileChooser::showOpenDialog(const std::string& title, const std::string& currentDir, const std::string& fileFilter) {
+    return showOpenDialog(/* parent */ nullptr, title, currentDir, fileFilter);
 }
 
-std::string QGFileChooser::showOpenDialog(QWidget* parent, const std::string& currentDir, const std::string& fileFilter) {
+std::string QGFileChooser::showOpenDialog(QWidget* parent, const std::string& title, const std::string& currentDir, const std::string& fileFilter) {
     // Qt filter spec:
     // If you want multiple filters, separate them with ';;', for example:
     // "Images (*.png *.xpm *.jpg);;Text files (*.txt);;XML files (*.xml)"
 
     return QFileDialog::getOpenFileName(parent,
-            /* title */ "Select a file to open",
+            QString::fromStdString(title),
             QString::fromStdString(currentDir),
             QString::fromStdString(normalizeFileFilter(fileFilter))).toStdString();
 }
 
-std::string QGFileChooser::showSaveDialog(const std::string& currentDir, const std::string& fileFilter) {
-    return showSaveDialog(/* parent */ nullptr, currentDir, fileFilter);
+std::string QGFileChooser::showSaveDialog(const std::string& title, const std::string& currentDir, const std::string& fileFilter) {
+    return showSaveDialog(/* parent */ nullptr, title, currentDir, fileFilter);
 }
 
-std::string QGFileChooser::showSaveDialog(QWidget* parent, const std::string& currentDir, const std::string& fileFilter) {
+std::string QGFileChooser::showSaveDialog(QWidget* parent, const std::string& title, const std::string& currentDir, const std::string& fileFilter) {
     return QFileDialog::getSaveFileName(parent,
-            /* title */ "Select a file to save",
+            QString::fromStdString(title),
             QString::fromStdString(currentDir),
             QString::fromStdString(normalizeFileFilter(fileFilter))).toStdString();
 }

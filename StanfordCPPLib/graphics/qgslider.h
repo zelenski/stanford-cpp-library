@@ -49,7 +49,7 @@ public:
     virtual std::string getType() const;
     int getValue() const;
     virtual QWidget* getWidget() const;
-    void setChangeHandler(void (* func)());
+    void setChangeHandler(std::function<void()> func);
     void setMajorTickSpacing(int value);
     void setMinorTickSpacing(int value);
     void setPaintLabels(bool value);
@@ -59,8 +59,6 @@ public:
 
 private:
     _Q_Internal_Slider _slider;
-
-    void (* _changeHandler)();
 
     friend class _Q_Internal_Slider;
 };

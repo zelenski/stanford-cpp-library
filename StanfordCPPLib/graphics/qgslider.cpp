@@ -16,9 +16,7 @@ _Q_Internal_Slider::_Q_Internal_Slider(QGSlider* slider, QWidget* parent)
 }
 
 void _Q_Internal_Slider::handleChange(int /* value */) {
-    if (_qgslider->_changeHandler) {
-        _qgslider->_changeHandler();
-    }
+    _qgslider->fireEvent("change");
 }
 
 const int QGSlider::DEFAULT_MIN_VALUE = 0;
@@ -26,8 +24,8 @@ const int QGSlider::DEFAULT_MAX_VALUE = 100;
 const int QGSlider::DEFAULT_INITIAL_VALUE = 50;
 
 QGSlider::QGSlider(int min, int max, int value, QWidget* parent)
-        : _slider(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()),
-          _changeHandler(nullptr) {
+        : _slider(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()) {
+    ensureThreadSafety();
     _slider.setRange(min, max);
     _slider.setValue(value);
 }
@@ -67,8 +65,8 @@ QWidget* QGSlider::getWidget() const {
     return (QWidget*) &_slider;
 }
 
-void QGSlider::setChangeHandler(void (* func)()) {
-    _changeHandler = func;
+void QGSlider::setChangeHandler(std::function<void()> func) {
+    setEventHandler("change", func);
 }
 
 void QGSlider::setMajorTickSpacing(int value) {

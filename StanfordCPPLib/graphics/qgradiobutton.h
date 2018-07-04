@@ -45,8 +45,10 @@ public:
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;
     bool isChecked() const;
+    bool isSelected() const;
     void setChecked(bool checked);
-    void setChangeHandler(void (* func)());
+    void setChangeHandler(std::function<void()> func);
+    void setSelected(bool selected);
     void setText(const std::string& text);
 
 private:
@@ -54,8 +56,6 @@ private:
     QButtonGroup* getButtonGroup(const std::string& group);
 
     _Q_Internal_RadioButton _radioButton;
-
-    void (* _changeHandler)();
 
     friend class _Q_Internal_RadioButton;
 };

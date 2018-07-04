@@ -45,12 +45,10 @@ public:
     void setEditable(bool value);
     void setPlaceholder(const std::string& text);
     void setText(const std::string& text);
-    void setTextChangeHandler(void (* func)());
+    void setTextChangeHandler(std::function<void()> func);
 
 private:
     _Q_Internal_TextArea _qtextarea;
-
-    void (* _textChangeHandler)();
 
     friend class _Q_Internal_TextArea;
 };

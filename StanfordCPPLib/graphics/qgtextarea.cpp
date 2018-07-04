@@ -17,13 +17,12 @@ _Q_Internal_TextArea::_Q_Internal_TextArea(QGTextArea* textArea, QWidget* parent
 }
 
 void _Q_Internal_TextArea::handleTextChange() {
-    if (_qgtextarea->_textChangeHandler) {
-        _qgtextarea->_textChangeHandler();
-    }
+    _qgtextarea->fireEvent("textchange");
 }
 
 QGTextArea::QGTextArea(const std::string& text, QWidget* parent)
         : _qtextarea(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()) {
+    ensureThreadSafety();
     setText(text);
 }
 
@@ -59,6 +58,6 @@ void QGTextArea::setText(const std::string& text) {
     _qtextarea.setText(QString::fromStdString(text));
 }
 
-void QGTextArea::setTextChangeHandler(void (* func)()) {
-    _textChangeHandler = func;
+void QGTextArea::setTextChangeHandler(std::function<void()> func) {
+    setEventHandler("textchange", func);
 }

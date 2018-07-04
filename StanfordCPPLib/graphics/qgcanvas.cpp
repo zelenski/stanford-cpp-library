@@ -35,6 +35,7 @@ void _Q_Internal_Canvas::paintEvent(QPaintEvent* event) {
 
 QGCanvas::QGCanvas(QWidget* parent)
         : _canvas(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()) {
+    ensureThreadSafety();
     _compound.setWidget(&_canvas);
 }
 

@@ -607,7 +607,6 @@ void QGCompound::add(QGObject* gobj, double x, double y) {
 
 void QGCompound::clear() {
     removeAll();
-    conditionalRepaint();
 }
 
 void QGCompound::conditionalRepaint() {
@@ -703,9 +702,13 @@ void QGCompound::remove(QGObject* gobj) {
 }
 
 void QGCompound::removeAll() {
-    while (!contents.isEmpty()) {
-        removeAt(0);   // calls conditionalRepaint
+    Vector<QGObject*> contentsCopy = contents;
+    contents.clear();
+    for (QGObject* obj : contentsCopy) {
+        obj->_parent = nullptr;
+        // TODO: delete?
     }
+    conditionalRepaint();
 }
 
 void QGCompound::removeAt(int index) {

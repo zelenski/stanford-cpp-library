@@ -42,9 +42,16 @@ private:
 class QGTextField : public QGInteractor {
 public:
     QGTextField(const std::string& text = "", QWidget* parent = nullptr);
+    QGTextField(const std::string& text, int charsWide, QWidget* parent = nullptr);
+    QGTextField(int charsWide, QWidget* parent = nullptr);
+    int getCharsWide() const;
+    int getMaxLength() const;
     std::string getPlaceholder() const;
     std::string getText() const;
     virtual std::string getType() const;
+    std::string getValue() const;
+    bool getValueAsBool() const;
+    char getValueAsChar() const;
     double getValueAsDouble() const;
     int getValueAsInt() const;
     int getValueAsInteger() const;
@@ -54,10 +61,19 @@ public:
     void setAutocompleteList(std::initializer_list<std::string> strings);
     void setAutocompleteList(const Vector<std::string>& strings);
     void setAutocompleteEnabled(bool enabled);
+    void setCharsWide(int charsWide);
     void setEditable(bool value);
+    void setMaxLength(int maxLength);
     void setPlaceholder(const std::string& text);
     void setText(const std::string& text);
-    void setTextChangeHandler(void (* func)());
+    void setTextChangeHandler(std::function<void()> func);
+    void setValue(bool value);
+    void setValue(char value);
+    void setValue(double value);
+    void setValue(int value);
+    void setValue(const std::string& value);
+    bool valueIsBool() const;
+    bool valueIsChar() const;
     bool valueIsDouble() const;
     bool valueIsInt() const;
     bool valueIsInteger() const;
@@ -66,8 +82,6 @@ public:
 
 private:
     _Q_Internal_TextField _qtextfield;
-
-    void (* _textChangeHandler)();
 
     friend class _Q_Internal_TextField;
 };

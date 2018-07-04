@@ -11,6 +11,7 @@
 #ifndef _qgcheckbox_h
 #define _qgcheckbox_h
 
+#include <functional>
 #include <string>
 #include <QCheckBox>
 #include <QWidget>
@@ -43,14 +44,14 @@ public:
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;
     bool isChecked() const;
+    bool isSelected() const;
     void setChecked(bool checked);
-    void setChangeHandler(void (* func)());
+    void setChangeHandler(std::function<void()> func);
+    void setSelected(bool selected);
     void setText(const std::string& text);
 
 private:
     _Q_Internal_CheckBox _checkBox;
-
-    void (* _changeHandler)();
 
     friend class _Q_Internal_CheckBox;
 };

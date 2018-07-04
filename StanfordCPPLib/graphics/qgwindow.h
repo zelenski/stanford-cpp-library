@@ -14,22 +14,15 @@
 #include <QApplication>
 #include <QMainWindow>
 #include <QRect>
+#include "grid.h"
 #include "gtypes.h"
 #include "point.h"
 #include "qgborderlayout.h"
 #include "qgcanvas.h"
 #include "qginteractor.h"
 
-// set up Qt for gui stuff
-void initializeQt();
-
-// global functions for starting the app
-void startBackgroundEventLoop(int (* mainFunc)(void));
-void startEventLoop();
-
 // forward declaration
 class QGWindow;
-class QGWindowThread;
 
 // Internal class; not to be used by clients.
 class _Q_Internal_Window : public QMainWindow {
@@ -37,6 +30,7 @@ class _Q_Internal_Window : public QMainWindow {
 
 public:
     _Q_Internal_Window(QGWindow* window, QWidget* parent = nullptr);
+    bool event(QEvent* event) Q_DECL_OVERRIDE;
 
 private:
     QHBoxLayout _northLayout;
@@ -111,11 +105,22 @@ public:
     Point getLocation() const;
     double getHeight() const;
     double getLineWidth() const;
+    int getPixel(double x, double y) const;
+    int getPixelARGB(double x, double y) const;
+    Grid<int> getPixels() const;
+    Grid<int> getPixelsARGB() const;
+    double getRegionHeight(Region region) const;
+    double getRegionHeight(const std::string& region) const;
+    GDimension getRegionSize(Region region) const;
+    GDimension getRegionSize(const std::string& region) const;
+    double getRegionWidth(Region region) const;
+    double getRegionWidth(const std::string& region) const;
     static double getScreenHeight();
     static GDimension getScreenSize();
     static double getScreenWidth();
     GDimension getSize() const;
     std::string getTitle() const;
+    QWidget* getWidget() const;
     double getWidth() const;
     double getX() const;
     double getY() const;
@@ -152,6 +157,12 @@ public:
     void setLocation(double x, double y);
     void setLocation(const GPoint& p);
     void setLocation(const Point& p);
+    void setPixel(double x, double y, int rgb);
+    void setPixelARGB(double x, double y, int argb);
+    void setPixels(const Grid<int>& pixels);
+    void setPixelsARGB(const Grid<int>& pixelsARGB);
+    void setRegionAlignment(Region region, Alignment align);
+    void setRegionAlignment(const std::string& region, const std::string& align);
     void setRepaintImmediately(bool repaintImmediately);
     void setResizable(bool resizable);
     void setSize(double width, double height);
@@ -168,10 +179,7 @@ public:
     // not to be called by students
     static QMainWindow* getLastWindow();
 
-    // TODO: pause
-
 private:
-    static QApplication* _app;
     static _Q_Internal_Window* _lastWindow;
 
     void ensureCanvas();
@@ -189,11 +197,7 @@ private:
     bool _resizable;
 
     friend class QGInteractor;
-    friend class QGWindowThread;
     friend class _Q_Internal_Window;
-    friend void initializeQt();
-    friend void startBackgroundEventLoop(int (* mainFunc)(void));
-    friend void startEventLoop();
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

@@ -11,6 +11,7 @@
 
 #include "qgtextfield.h"
 #include <QCompleter>
+#include <QFontMetrics>
 #include <QString>
 #include <QStringList>
 #include <QStringListModel>
@@ -24,15 +25,36 @@ _Q_Internal_TextField::_Q_Internal_TextField(QGTextField* textField, QWidget* pa
 }
 
 void _Q_Internal_TextField::handleTextChange(const QString&) {
-    if (_qgtextfield->_textChangeHandler) {
-        _qgtextfield->_textChangeHandler();
-    }
+    _qgtextfield->fireEvent("textchange");
 }
 
 QGTextField::QGTextField(const std::string& text, QWidget* parent)
-        : _qtextfield(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()),
-          _textChangeHandler(nullptr) {
+        : _qtextfield(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()) {
+    ensureThreadSafety();
     setText(text);
+}
+
+QGTextField::QGTextField(const std::string& text, int charsWide, QWidget* parent)
+        : _qtextfield(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()) {
+    ensureThreadSafety();
+    setText(text);
+    setCharsWide(charsWide);
+}
+
+QGTextField::QGTextField(int charsWide, QWidget* parent)
+        : _qtextfield(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()) {
+    ensureThreadSafety();
+    setCharsWide(charsWide);
+}
+
+int QGTextField::getCharsWide() const {
+    QFontMetrics fm(_qtextfield.font());
+    int mWidth = fm.width(QString::fromStdString("m"));
+    return (int) (getWidth() / mWidth);
+}
+
+int QGTextField::getMaxLength() const {
+    return _qtextfield.maxLength();
 }
 
 std::string QGTextField::getPlaceholder() const {
@@ -45,6 +67,24 @@ std::string QGTextField::getText() const {
 
 std::string QGTextField::getType() const {
     return "QGTextField";
+}
+
+std::string QGTextField::getValue() const {
+    return getText();
+}
+
+bool QGTextField::getValueAsBool() const {
+    std::string text = trim(getText());
+    return stringToBool(text);
+}
+
+char QGTextField::getValueAsChar() const {
+    std::string text = getText();
+    if (text.empty()) {
+        return '\0';
+    } else {
+        return text[0];
+    }
 }
 
 double QGTextField::getValueAsDouble() const {
@@ -98,8 +138,19 @@ void QGTextField::setAutocompleteEnabled(bool enabled) {
     // TODO
 }
 
+void QGTextField::setCharsWide(int charsWide) {
+    QFontMetrics fm(_qtextfield.font());
+    int mWidth = fm.width(QString::fromStdString("m"));
+    _qtextfield.setFixedWidth(mWidth * charsWide);
+    _qtextfield.updateGeometry();
+}
+
 void QGTextField::setEditable(bool value) {
     _qtextfield.setReadOnly(!value);
+}
+
+void QGTextField::setMaxLength(int maxLength) {
+    _qtextfield.setMaxLength(maxLength);
 }
 
 void QGTextField::setPlaceholder(const std::string& text) {
@@ -110,8 +161,36 @@ void QGTextField::setText(const std::string& text) {
     _qtextfield.setText(QString::fromStdString(text));
 }
 
-void QGTextField::setTextChangeHandler(void (* func)()) {
-    _textChangeHandler = func;
+void QGTextField::setTextChangeHandler(std::function<void()> func) {
+    setEventHandler("textchange", func);
+}
+
+void QGTextField::setValue(bool value) {
+    setText(boolToString(value));
+}
+
+void QGTextField::setValue(char value) {
+    setText(charToString(value));
+}
+
+void QGTextField::setValue(double value) {
+    setText(doubleToString(value));
+}
+
+void QGTextField::setValue(int value) {
+    setText(integerToString(value));
+}
+
+void QGTextField::setValue(const std::string& value) {
+    setText(value);
+}
+
+bool QGTextField::valueIsBool() const {
+    return stringIsBool(trim(getText()));
+}
+
+bool QGTextField::valueIsChar() const {
+    return (int) getText().length() == 1;
 }
 
 bool QGTextField::valueIsDouble() const {

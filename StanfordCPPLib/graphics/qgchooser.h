@@ -52,7 +52,7 @@ public:
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;
     bool isEditable() const;
-    void setChangeHandler(void (* func)());
+    void setChangeHandler(std::function<void()> func);
     void setEditable(bool editable);
     void setItem(int index, const std::string& item);
     void setSelectedIndex(int index);
@@ -61,7 +61,6 @@ public:
 
 private:
     _Q_Internal_Chooser _chooser;
-    void (* _changeHandler)();   // change event
 
     void checkIndex(const std::string& member, int index, int min = 0, int max = -1) const;
 
