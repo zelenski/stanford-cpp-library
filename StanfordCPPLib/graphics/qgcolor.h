@@ -17,6 +17,24 @@
  */
 class QGColor {
 public:
+    enum {
+        BLACK = 0x000000,
+        BLUE = 0x0000FF,
+        BROWN = 0x926239,
+        CYAN = 0x00FFFF,
+        DARKGRAY = 0x595959,
+        GRAY = 0x999999,
+        GREEN = 0x00FF00,
+        LIGHTGRAY = 0xBFBFBF,
+        MAGENTA = 0xFF00FF,
+        ORANGE = 0xFFC800,
+        PINK = 0xFFAFAF,
+        PURPLE = 0xFF00FF,
+        RED = 0xFF0000,
+        WHITE = 0xFFFFFF,
+        YELLOW = 0xFFFF00
+    } Color;
+
     /*
      * Function: convertRGBToColor
      * Usage: int colorName = convertRGBToColor(a, r, g, b);
@@ -63,6 +81,8 @@ public:
 
     static int convertARGBToARGB(int a, int r, int g, int b);
     static int convertRGBToRGB(int r, int g, int b);
+
+    static int convertRGBToQtGlobalColor(int r, int g, int b);
 
 private:
     QGColor();

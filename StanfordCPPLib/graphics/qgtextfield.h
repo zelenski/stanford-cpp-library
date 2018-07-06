@@ -23,11 +23,11 @@
 class QGTextField;
 
 // Internal class; not to be used by clients.
-class _Q_Internal_TextField : public QLineEdit {
+class _Internal_QLineEdit : public QLineEdit {
     Q_OBJECT
 
 public:
-    _Q_Internal_TextField(QGTextField* textField, QWidget* parent = nullptr);
+    _Internal_QLineEdit(QGTextField* qgtextField, QWidget* parent = nullptr);
 
 public slots:
     void handleTextChange(const QString&);
@@ -44,46 +44,46 @@ public:
     QGTextField(const std::string& text = "", QWidget* parent = nullptr);
     QGTextField(const std::string& text, int charsWide, QWidget* parent = nullptr);
     QGTextField(int charsWide, QWidget* parent = nullptr);
-    int getCharsWide() const;
-    int getMaxLength() const;
-    std::string getPlaceholder() const;
-    std::string getText() const;
+    virtual ~QGTextField();
+    virtual int getCharsWide() const;
+    virtual int getMaxLength() const;
+    virtual std::string getPlaceholder() const;
+    virtual std::string getText() const;
     virtual std::string getType() const;
-    std::string getValue() const;
-    bool getValueAsBool() const;
-    char getValueAsChar() const;
-    double getValueAsDouble() const;
-    int getValueAsInt() const;
-    int getValueAsInteger() const;
+    virtual std::string getValue() const;
+    virtual bool getValueAsBool() const;
+    virtual char getValueAsChar() const;
+    virtual double getValueAsDouble() const;
+    virtual int getValueAsInt() const;
+    virtual int getValueAsInteger() const;
     virtual QWidget* getWidget() const;
-    bool isAutocompleteEnabled() const;
-    bool isEditable() const;
-    void setAutocompleteList(std::initializer_list<std::string> strings);
-    void setAutocompleteList(const Vector<std::string>& strings);
-    void setAutocompleteEnabled(bool enabled);
-    void setCharsWide(int charsWide);
-    void setEditable(bool value);
-    void setMaxLength(int maxLength);
-    void setPlaceholder(const std::string& text);
-    void setText(const std::string& text);
-    void setTextChangeHandler(std::function<void()> func);
-    void setValue(bool value);
-    void setValue(char value);
-    void setValue(double value);
-    void setValue(int value);
-    void setValue(const std::string& value);
-    bool valueIsBool() const;
-    bool valueIsChar() const;
-    bool valueIsDouble() const;
-    bool valueIsInt() const;
-    bool valueIsInteger() const;
-    bool valueIsReal() const;
-    // TODO: get/setInputType?
+    virtual bool isAutocompleteEnabled() const;
+    virtual bool isEditable() const;
+    virtual void setAutocompleteList(std::initializer_list<std::string> strings);
+    virtual void setAutocompleteList(const Vector<std::string>& strings);
+    virtual void setAutocompleteEnabled(bool enabled);
+    virtual void setCharsWide(int charsWide);
+    virtual void setEditable(bool value);
+    virtual void setMaxLength(int maxLength);
+    virtual void setPlaceholder(const std::string& text);
+    virtual void setText(const std::string& text);
+    virtual void setTextChangeHandler(std::function<void()> func);
+    virtual void setValue(bool value);
+    virtual void setValue(char value);
+    virtual void setValue(double value);
+    virtual void setValue(int value);
+    virtual void setValue(const std::string& value);
+    virtual bool valueIsBool() const;
+    virtual bool valueIsChar() const;
+    virtual bool valueIsDouble() const;
+    virtual bool valueIsInt() const;
+    virtual bool valueIsInteger() const;
+    virtual bool valueIsReal() const;
 
 private:
-    _Q_Internal_TextField _qtextfield;
+    _Internal_QLineEdit* _iqlineedit;
 
-    friend class _Q_Internal_TextField;
+    friend class _Internal_QLineEdit;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

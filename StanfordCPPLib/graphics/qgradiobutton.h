@@ -22,17 +22,17 @@
 class QGRadioButton;
 
 // Internal class; not to be used by clients.
-class _Q_Internal_RadioButton : public QRadioButton {
+class _Internal_QRadioButton : public QRadioButton {
     Q_OBJECT
 
 public:
-    _Q_Internal_RadioButton(QGRadioButton* radioButton, bool checked = false, QWidget* parent = nullptr);
+    _Internal_QRadioButton(QGRadioButton* qgradioButton, bool checked = false, QWidget* parent = nullptr);
 
 public slots:
-    void handleChange(bool);
+    void handleClick();
 
 private:
-    QGRadioButton* _radioButton;
+    QGRadioButton* _qgradioButton;
 };
 
 /*
@@ -41,23 +41,24 @@ private:
 class QGRadioButton : public QGInteractor {
 public:
     QGRadioButton(const std::string& text = "", const std::string& group = "default", bool checked = false, QWidget* parent = nullptr);
-    std::string getText() const;
+    virtual ~QGRadioButton();
+    virtual std::string getText() const;
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;
-    bool isChecked() const;
-    bool isSelected() const;
-    void setChecked(bool checked);
-    void setChangeHandler(std::function<void()> func);
-    void setSelected(bool selected);
-    void setText(const std::string& text);
+    virtual bool isChecked() const;
+    virtual bool isSelected() const;
+    virtual void setChecked(bool checked);
+    virtual void setChangeHandler(std::function<void()> func);
+    virtual void setSelected(bool selected);
+    virtual void setText(const std::string& text);
 
 private:
     static Map<std::string, QButtonGroup*> _buttonGroups;
     QButtonGroup* getButtonGroup(const std::string& group);
 
-    _Q_Internal_RadioButton _radioButton;
+    _Internal_QRadioButton* _iqradioButton;
 
-    friend class _Q_Internal_RadioButton;
+    friend class _Internal_QRadioButton;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

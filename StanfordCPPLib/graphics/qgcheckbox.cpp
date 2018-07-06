@@ -10,25 +10,29 @@
 #include "qgwindow.h"
 #include "strlib.h"
 
-_Q_Internal_CheckBox::_Q_Internal_CheckBox(QGCheckBox* checkBox, bool checked, QWidget* parent)
+_Internal_QCheckBox::_Internal_QCheckBox(QGCheckBox* qgcheckBox, bool checked, QWidget* parent)
         : QCheckBox(parent),
-          _checkBox(checkBox) {
-    _checkBox->setChecked(checked);
-    connect(this, SIGNAL(clicked(bool)), this, SLOT(handleChange(bool)));
+          _qgcheckBox(qgcheckBox) {
+    setChecked(checked);
+    connect(this, SIGNAL(stateChanged(int)), this, SLOT(handleStateChange(int)));
 }
 
-void _Q_Internal_CheckBox::handleChange(bool /* checked */) {
-    _checkBox->fireEvent("change");
+void _Internal_QCheckBox::handleStateChange(int /* state */) {
+    _qgcheckBox->fireEvent("change");
 }
 
-QGCheckBox::QGCheckBox(const std::string& text, bool checked, QWidget* parent)
-        : _checkBox(this, checked, parent ? parent : (QWidget*) QGWindow::getLastWindow()) {
-    ensureThreadSafety();
+QGCheckBox::QGCheckBox(const std::string& text, bool checked, QWidget* parent) {
+    _iqcheckBox = new _Internal_QCheckBox(this, checked, getInternalParent(parent));
     setText(text);
 }
 
+QGCheckBox::~QGCheckBox() {
+    // TODO: delete _iqcheckBox;
+    _iqcheckBox = nullptr;
+}
+
 std::string QGCheckBox::getText() const {
-    return _checkBox.text().toStdString();
+    return _iqcheckBox->text().toStdString();
 }
 
 std::string QGCheckBox::getType() const {
@@ -36,23 +40,23 @@ std::string QGCheckBox::getType() const {
 }
 
 QWidget* QGCheckBox::getWidget() const {
-    return (QWidget*) &_checkBox;
+    return static_cast<QWidget*>(_iqcheckBox);
 }
 
 bool QGCheckBox::isChecked() const {
-    return _checkBox.isChecked();
+    return _iqcheckBox->isChecked();
 }
 
 bool QGCheckBox::isSelected() const {
-    return _checkBox.isChecked();
+    return _iqcheckBox->isChecked();
 }
 
 void QGCheckBox::setChecked(bool checked) {
-    _checkBox.setChecked(checked);
+    _iqcheckBox->setChecked(checked);
 }
 
 void QGCheckBox::setSelected(bool selected) {
-    _checkBox.setChecked(selected);
+    _iqcheckBox->setChecked(selected);
 }
 
 void QGCheckBox::setChangeHandler(std::function<void()> func) {
@@ -60,5 +64,5 @@ void QGCheckBox::setChangeHandler(std::function<void()> func) {
 }
 
 void QGCheckBox::setText(const std::string& text) {
-    _checkBox.setText(QString::fromStdString(text));
+    _iqcheckBox->setText(QString::fromStdString(text));
 }

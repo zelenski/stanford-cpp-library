@@ -25,21 +25,37 @@
 class QGWindow;
 
 // Internal class; not to be used by clients.
-class _Q_Internal_Window : public QMainWindow {
+class _Internal_QMainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    _Q_Internal_Window(QGWindow* window, QWidget* parent = nullptr);
+    _Internal_QMainWindow(QGWindow* qgwindow, QWidget* parent = nullptr);
     bool event(QEvent* event) Q_DECL_OVERRIDE;
 
 private:
-    QHBoxLayout _northLayout;
-    QHBoxLayout _southLayout;
-    QHBoxLayout _centerLayout;
-    QHBoxLayout _middleLayout;
-    QVBoxLayout _eastLayout;
-    QVBoxLayout _westLayout;
-    QVBoxLayout _overallLayout;
+    // border layout regions for N/S/W/E/C:
+    // +------------------------+
+    // |         north          |
+    // |------------------------|
+    // |         middle         |
+    // |+----------------------+|
+    // || west | center | east ||
+    // |+----------------------+|
+    // |------------------------|
+    // |         south          |
+    // +------------------------+
+    // sizing/stretching rules:
+    // - N/S expand horizontally
+    // - W/E expand vertically
+    // - C takes all remaining space
+    // - each widget other than Center widget appears at its preferred ("hinted") size
+    QVBoxLayout* _overallLayout;
+    QHBoxLayout* _northLayout;
+    QHBoxLayout* _southLayout;
+    QVBoxLayout* _westLayout;
+    QVBoxLayout* _eastLayout;
+    QHBoxLayout* _centerLayout;
+    QHBoxLayout* _middleLayout;
     QGWindow* _qgwindow;
 
     friend class QGWindow;
@@ -59,134 +75,136 @@ public:
 
     QGWindow(double width = 0, double height = 0, bool visible = true);
     virtual ~QGWindow();
-    void add(QGInteractor* interactor);
-    void addToRegion(QGInteractor* interactor, Region region);
-    void addToRegion(QGInteractor* interactor, const std::string& region = "Center");
-    void clear();
-    void clearCanvas();
-    void clearRegion(Region region);
-    void clearRegion(const std::string& region);
-    void center();
-    void close();
-    void compareToImage(const std::string& filename, bool ignoreWindowSize = true) const;
-    void draw(QGObject* obj);
-    void draw(QGObject& obj, double x, double y);
-    void draw(QGObject* obj, double x, double y);
-    void drawImage(const std::string& filename, double x = 0, double y = 0);
-    void drawLine(const GPoint& p0, const GPoint& p1);
-    void drawLine(double x0, double y0, double x1, double y1);
-    void drawOval(const GRectangle& bounds);
-    void drawOval(double x, double y, double width, double height);
-    GPoint drawPolarLine(const GPoint& p0, double r, double theta);
-    GPoint drawPolarLine(double x0, double y0, double r, double theta);
-    void drawPixel(double x, double y);
-    void drawPixel(double x, double y, int color);
-    void drawPixel(double x, double y, const std::string& color);
-    void drawPolygon(std::initializer_list<double> coords);
-    void drawPolygon(std::initializer_list<GPoint> points);
-    void drawRect(const GRectangle& bounds);
-    void drawRect(double x, double y, double width, double height);
-    void drawString(const std::string& text, double x, double y);
-    void fillOval(const GRectangle& bounds);
-    void fillOval(double x, double y, double width, double height);
-    void fillPolygon(std::initializer_list<double> coords);
-    void fillRect(const GRectangle& bounds);
-    void fillRect(double x, double y, double width, double height);
-    double getCanvasHeight() const;
-    GDimension getCanvasSize() const;
-    double getCanvasWidth() const;
-    std::string getColor() const;
-    int getColorInt() const;
-    std::string getFillColor() const;
-    int getFillColorInt() const;
-    QGObject* getQGObject(int index) const;
-    QGObject* getQGObjectAt(double x, double y) const;
-    int getQGObjectCount() const;
-    Point getLocation() const;
-    double getHeight() const;
-    double getLineWidth() const;
-    int getPixel(double x, double y) const;
-    int getPixelARGB(double x, double y) const;
-    Grid<int> getPixels() const;
-    Grid<int> getPixelsARGB() const;
-    double getRegionHeight(Region region) const;
-    double getRegionHeight(const std::string& region) const;
-    GDimension getRegionSize(Region region) const;
-    GDimension getRegionSize(const std::string& region) const;
-    double getRegionWidth(Region region) const;
-    double getRegionWidth(const std::string& region) const;
+    virtual void add(QGInteractor* interactor);
+    virtual void addToRegion(QGInteractor* interactor, Region region);
+    virtual void addToRegion(QGInteractor* interactor, const std::string& region = "Center");
+    virtual void clear();
+    virtual void clearCanvas();
+    virtual void clearRegion(Region region);
+    virtual void clearRegion(const std::string& region);
+    virtual void center();
+    virtual void close();
+    virtual void compareToImage(const std::string& filename, bool ignoreWindowSize = true) const;
+    virtual void draw(QGObject* obj);
+    virtual void draw(QGObject& obj, double x, double y);
+    virtual void draw(QGObject* obj, double x, double y);
+    virtual void drawImage(const std::string& filename, double x = 0, double y = 0);
+    virtual void drawLine(const GPoint& p0, const GPoint& p1);
+    virtual void drawLine(double x0, double y0, double x1, double y1);
+    virtual void drawOval(const GRectangle& bounds);
+    virtual void drawOval(double x, double y, double width, double height);
+    virtual GPoint drawPolarLine(const GPoint& p0, double r, double theta);
+    virtual GPoint drawPolarLine(double x0, double y0, double r, double theta);
+    virtual void drawPixel(double x, double y);
+    virtual void drawPixel(double x, double y, int color);
+    virtual void drawPixel(double x, double y, const std::string& color);
+    virtual void drawPolygon(std::initializer_list<double> coords);
+    virtual void drawPolygon(std::initializer_list<GPoint> points);
+    virtual void drawRect(const GRectangle& bounds);
+    virtual void drawRect(double x, double y, double width, double height);
+    virtual void drawString(const std::string& text, double x, double y);
+    virtual void fillOval(const GRectangle& bounds);
+    virtual void fillOval(double x, double y, double width, double height);
+    virtual void fillPolygon(std::initializer_list<double> coords);
+    virtual void fillRect(const GRectangle& bounds);
+    virtual void fillRect(double x, double y, double width, double height);
+    virtual double getCanvasHeight() const;
+    virtual GDimension getCanvasSize() const;
+    virtual double getCanvasWidth() const;
+    virtual std::string getColor() const;
+    virtual int getColorInt() const;
+    virtual std::string getFillColor() const;
+    virtual int getFillColorInt() const;
+    virtual QGObject* getQGObject(int index) const;
+    virtual QGObject* getQGObjectAt(double x, double y) const;
+    virtual int getQGObjectCount() const;
+    virtual Point getLocation() const;
+    virtual double getHeight() const;
+    virtual double getLineWidth() const;
+    virtual int getPixel(double x, double y) const;
+    virtual int getPixelARGB(double x, double y) const;
+    virtual Grid<int> getPixels() const;
+    virtual Grid<int> getPixelsARGB() const;
+    virtual double getRegionHeight(Region region) const;
+    virtual double getRegionHeight(const std::string& region) const;
+    virtual GDimension getRegionSize(Region region) const;
+    virtual GDimension getRegionSize(const std::string& region) const;
+    virtual double getRegionWidth(Region region) const;
+    virtual double getRegionWidth(const std::string& region) const;
     static double getScreenHeight();
     static GDimension getScreenSize();
     static double getScreenWidth();
-    GDimension getSize() const;
-    std::string getTitle() const;
-    QWidget* getWidget() const;
-    double getWidth() const;
-    double getX() const;
-    double getY() const;
-    bool inBounds(double x, double y) const;
-    bool inCanvasBounds(double x, double y) const;
-    bool isOpen() const;
-    bool isRepaintImmediately() const;
-    bool isResizable() const;
-    bool isVisible() const;
-    void loadCanvasPixels(const std::string& filename);
-    void pack();
-    void pause(double ms);
-    void remove(QGObject* obj);
-    void remove(QGObject& obj);
-    void remove(QGInteractor* interactor);
-    void removeFromRegion(QGInteractor* interactor, Region region);
-    void removeFromRegion(QGInteractor* interactor, const std::string& region);
-    void repaint();
-    void requestFocus();
-    void saveCanvasPixels(const std::string& filename);
-    void setCanvasHeight(double height);
-    void setCanvasSize(double width, double height);
-    void setCanvasSize(const GDimension& size);
-    void setCanvasWidth(double width);
-    void setCloseOperation(CloseOperation op);
-    void setColor(int color);
-    void setColor(const std::string& color);
-    void setExitOnClose(bool exitOnClose);
-    void setFillColor(int color);
-    void setFillColor(const std::string& color);
-    void setFont(const std::string& font);
-    void setHeight(double width);
-    void setLineWidth(double lineWidth);
-    void setLocation(double x, double y);
-    void setLocation(const GPoint& p);
-    void setLocation(const Point& p);
-    void setPixel(double x, double y, int rgb);
-    void setPixelARGB(double x, double y, int argb);
-    void setPixels(const Grid<int>& pixels);
-    void setPixelsARGB(const Grid<int>& pixelsARGB);
-    void setRegionAlignment(Region region, Alignment align);
-    void setRegionAlignment(const std::string& region, const std::string& align);
-    void setRepaintImmediately(bool repaintImmediately);
-    void setResizable(bool resizable);
-    void setSize(double width, double height);
-    void setSize(const GDimension& size);
-    void setTitle(const std::string& title);
-    void setVisible(bool visible);
-    void setWidth(double width);
-    void setWindowTitle(const std::string& title);
-    void setX(double x);
-    void setY(double y);
-    void toBack();
-    void toFront();
+    virtual GDimension getSize() const;
+    virtual std::string getTitle() const;
+    virtual QWidget* getWidget() const;
+    virtual double getWidth() const;
+    virtual double getX() const;
+    virtual double getY() const;
+    virtual bool inBounds(double x, double y) const;
+    virtual bool inCanvasBounds(double x, double y) const;
+    virtual bool isOpen() const;
+    virtual bool isRepaintImmediately() const;
+    virtual bool isResizable() const;
+    virtual bool isVisible() const;
+    virtual void loadCanvasPixels(const std::string& filename);
+    virtual void pack();
+    virtual void pause(double ms);
+    virtual void remove(QGObject* obj);
+    virtual void remove(QGObject& obj);
+    virtual void remove(QGInteractor* interactor);
+    virtual void removeFromRegion(QGInteractor* interactor, Region region);
+    virtual void removeFromRegion(QGInteractor* interactor, const std::string& region);
+    virtual void repaint();
+    virtual void requestFocus();
+    virtual void saveCanvasPixels(const std::string& filename);
+    virtual void setCanvasHeight(double height);
+    virtual void setCanvasSize(double width, double height);
+    virtual void setCanvasSize(const GDimension& size);
+    virtual void setCanvasWidth(double width);
+    virtual void setCloseOperation(CloseOperation op);
+    virtual void setColor(int color);
+    virtual void setColor(const std::string& color);
+    virtual void setExitOnClose(bool exitOnClose);
+    virtual void setFillColor(int color);
+    virtual void setFillColor(const std::string& color);
+    virtual void setFont(const std::string& font);
+    virtual void setHeight(double width);
+    virtual void setLineWidth(double lineWidth);
+    virtual void setLocation(double x, double y);
+    virtual void setLocation(const GPoint& p);
+    virtual void setLocation(const Point& p);
+    virtual void setPixel(double x, double y, int rgb);
+    virtual void setPixelARGB(double x, double y, int argb);
+    virtual void setPixels(const Grid<int>& pixels);
+    virtual void setPixelsARGB(const Grid<int>& pixelsARGB);
+    virtual void setRegionAlignment(Region region, Alignment align);
+    virtual void setRegionAlignment(const std::string& region, const std::string& align);
+    virtual void setRepaintImmediately(bool repaintImmediately);
+    virtual void setResizable(bool resizable);
+    virtual void setSize(double width, double height);
+    virtual void setSize(const GDimension& size);
+    virtual void setTitle(const std::string& title);
+    virtual void setVisible(bool visible);
+    virtual void setWidth(double width);
+    virtual void setWindowTitle(const std::string& title);
+    virtual void setX(double x);
+    virtual void setY(double y);
+    virtual void toBack();
+    virtual void toFront();
 
     // not to be called by students
     static QMainWindow* getLastWindow();
 
 private:
-    static _Q_Internal_Window* _lastWindow;
+    static _Internal_QMainWindow* _lastWindow;
 
     void ensureCanvas();
     void initializeQGObject(QGObject* obj, bool filled = false);
+    QLayout* regionToLayout(Region region);
+    QLayout* regionToLayout(const std::string& region);
     std::string regionToString(Region region);
 
-    _Q_Internal_Window _qwindow;
+    _Internal_QMainWindow* _iqmainwindow;
     QGCanvas* _canvas;
     std::string _color;
     std::string _fillColor;
@@ -197,7 +215,7 @@ private:
     bool _resizable;
 
     friend class QGInteractor;
-    friend class _Q_Internal_Window;
+    friend class _Internal_QMainWindow;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

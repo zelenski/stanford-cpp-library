@@ -10,10 +10,17 @@
 #include <QEvent>
 #include <QThread>
 #include "error.h"
+#include "exceptions.h"
 #include "qgwindow.h"
 #include "strlib.h"
 
-QGStudentThread::QGStudentThread(int (* mainFunc)(void))
+#ifdef _WIN32
+#  include <direct.h>   // for chdir
+#else // _WIN32
+#  include <unistd.h>   // for chdir
+#endif // _WIN32
+
+QGStudentThread::QGStudentThread(QGThunkInt mainFunc)
         : _mainFunc(mainFunc) {
     // empty
 }
@@ -60,7 +67,6 @@ QGThunk QGuiEventQueue::peek() {
 }
 
 void QGuiEventQueue::runOnQtGuiThreadAsync(QGThunk thunk) {
-    // cout << "QGuiEventQueue::runOnQtGuiThreadAsync: my current thread is " << QGui::instance()->getCurrentThread() << endl;
     _queueMutex.lock();
     _functionQueue.add(thunk);
     _queueMutex.unlock();
@@ -68,7 +74,6 @@ void QGuiEventQueue::runOnQtGuiThreadAsync(QGThunk thunk) {
 }
 
 void QGuiEventQueue::runOnQtGuiThreadSync(QGThunk thunk) {
-    // cout << "QGuiEventQueue::runOnQtGuiThreadSync: my current thread is " << QGui::instance()->getCurrentThread() << endl;
     _queueMutex.lock();
     _functionQueue.add(thunk);
     _queueMutex.unlock();
@@ -88,6 +93,7 @@ void QGuiEventQueue::runOnQtGuiThreadSync(QGThunk thunk) {
 }
 
 
+// QGui members
 QApplication* QGui::_app = nullptr;
 QThread* QGui::_qtMainThread = nullptr;
 QGStudentThread* QGui::_studentThread = nullptr;
@@ -104,7 +110,7 @@ QGui::QGui() {
 
 void QGui::ensureThatThisIsTheQtGuiThread(const std::string& message) {
     QThread* currentThread = QThread::currentThread();
-    if (currentThread != _qtMainThread) {
+    if (_qtMainThread && currentThread != _qtMainThread) {
         error((message.empty() ? "" : (message + ": "))
               + "Qt GUI system must be initialized from the application's main thread.");
     }
@@ -123,6 +129,7 @@ QThread* QGui::getStudentThread() {
 }
 
 void QGui::initializeQt() {
+    ensureThatThisIsTheQtGuiThread("QGui::initializeQt");
     if (!_app) {
         _app = new QApplication(_argc, _argv);
     }
@@ -137,12 +144,9 @@ QGui* QGui::instance() {
 }
 
 void QGui::mySlot() {
-    // cout << "QGui::mySlot:: my thread is " << QThread::currentThread() << endl;
     if (!QGuiEventQueue::instance()->isEmpty()) {
         QGThunk thunk = QGuiEventQueue::instance()->peek();
-        // cout << "QGui::mySlot:: about to run thunk" << endl;
         thunk();
-        // cout << "QGui::mySlot:: done running thunk" << endl;
         QGuiEventQueue::instance()->dequeue();
     }
 }
@@ -159,12 +163,11 @@ void QGui::runOnQtGuiThreadAsync(QGThunk func) {
 }
 
 // this should be called by the Qt main thread
-void QGui::startBackgroundEventLoop(int (* mainFunc)(void)) {
-    // TODO: make it possible to stop;  exitGraphics?
+void QGui::startBackgroundEventLoop(QGThunkInt mainFunc) {
+    ensureThatThisIsTheQtGuiThread("QGui::startBackgroundEventLoop");
 
     // start student's main function in its own second thread
-    if (!_qtMainThread && !_studentThread) {
-        _qtMainThread = QThread::currentThread();
+    if (!_studentThread) {
         _studentThread = new QGStudentThread(mainFunc);
         _studentThread->start();
 
@@ -175,7 +178,10 @@ void QGui::startBackgroundEventLoop(int (* mainFunc)(void)) {
 
 // this should be called by the Qt main thread
 void QGui::startEventLoop() {
-    initializeQt();
+    ensureThatThisIsTheQtGuiThread("QGui::startEventLoop");
+    if (!_app) {
+        error("QGui::startEventLoop: need to initialize Qt first");
+    }
     _app->exec();   // start Qt event loop on main thread; blocks
 }
 
@@ -185,12 +191,38 @@ void QGui::startEventLoop() {
 
 static int (* _mainFunc)(void);
 
-// to be run in Qt thread
-int __initializeQtAndRunMainFunc() {
-    QGui::instance()->initializeQt();
-    return _mainFunc();
+// this should be roughly the same code as platform.cpp's parseArgs function
+void __parseArgsQt(int argc, char** argv) {
+    if (argc <= 0) {
+        return;
+    }
+    std::string arg0 = argv[0];
+    exceptions::setProgramNameForStackTrace(argv[0]);
+    // programName() = getRoot(getTail(arg0));
+
+#ifndef _WIN32
+    // on Mac only, may need to change folder because of app's nested dir structure
+    size_t ax = arg0.find(".app/Contents/");
+    if (ax != std::string::npos) {
+        while (ax > 0 && arg0[ax] != '/') {
+            ax--;
+        }
+        if (ax > 0) {
+            std::string cwd = arg0.substr(0, ax);
+            chdir(cwd.c_str());
+        }
+    }
+#endif // _WIN32
+
+    char* noConsoleFlag = getenv("NOCONSOLE");
+    if (noConsoleFlag && startsWith(std::string(noConsoleFlag), "t")) {
+        return;
+    }
 }
 
+// called automatically by real main() function;
+// call to this is inserted by library init.h
+// to be run in Qt main thread
 void __initializeStanfordCppLibraryQt(int argc, char** argv, int (* mainFunc)(void)) {
     // ensure that library is initialized only once
     static bool _initialized = false;
@@ -198,8 +230,13 @@ void __initializeStanfordCppLibraryQt(int argc, char** argv, int (* mainFunc)(vo
         return;
     }
     _initialized = true;
+
+    QGui::_qtMainThread = QThread::currentThread();
     QGui::_argc = argc;
     QGui::_argv = argv;
+    __parseArgsQt(argc, argv);
+
+    QGui::instance()->initializeQt();
 
     // declaring this object ensures that std::cin, cout, cerr are initialized
     // properly before our lib tries to mess with them / redirect them
@@ -217,9 +254,10 @@ void __initializeStanfordCppLibraryQt(int argc, char** argv, int (* mainFunc)(vo
 
     // set up student's main function
     _mainFunc = mainFunc;
-    QGui::instance()->startBackgroundEventLoop(__initializeQtAndRunMainFunc);
+    QGui::instance()->startBackgroundEventLoop(mainFunc);
 }
 
+// to be run in Qt main thread
 void __shutdownStanfordCppLibraryQt() {
     // TODO
 //    const std::string PROGRAM_COMPLETED_TITLE_SUFFIX = " [completed]";

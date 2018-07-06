@@ -18,51 +18,53 @@
 #include "qgwindow.h"
 #include "strlib.h"
 
-_Q_Internal_TextField::_Q_Internal_TextField(QGTextField* textField, QWidget* parent)
+_Internal_QLineEdit::_Internal_QLineEdit(QGTextField* qgtextField, QWidget* parent)
         : QLineEdit(parent),
-          _qgtextfield(textField) {
+          _qgtextfield(qgtextField) {
     connect(this, SIGNAL(textChanged(QString)), this, SLOT(handleTextChange(const QString&)));
 }
 
-void _Q_Internal_TextField::handleTextChange(const QString&) {
+void _Internal_QLineEdit::handleTextChange(const QString&) {
     _qgtextfield->fireEvent("textchange");
 }
 
-QGTextField::QGTextField(const std::string& text, QWidget* parent)
-        : _qtextfield(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()) {
-    ensureThreadSafety();
+QGTextField::QGTextField(const std::string& text, QWidget* parent) {
+    _iqlineedit = new _Internal_QLineEdit(this, getInternalParent(parent));
     setText(text);
 }
 
-QGTextField::QGTextField(const std::string& text, int charsWide, QWidget* parent)
-        : _qtextfield(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()) {
-    ensureThreadSafety();
+QGTextField::QGTextField(const std::string& text, int charsWide, QWidget* parent) {
+    _iqlineedit = new _Internal_QLineEdit(this, getInternalParent(parent));
     setText(text);
     setCharsWide(charsWide);
 }
 
-QGTextField::QGTextField(int charsWide, QWidget* parent)
-        : _qtextfield(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()) {
-    ensureThreadSafety();
+QGTextField::QGTextField(int charsWide, QWidget* parent) {
+    _iqlineedit = new _Internal_QLineEdit(this, getInternalParent(parent));
     setCharsWide(charsWide);
+}
+
+QGTextField::~QGTextField() {
+    // TODO: delete _iqlineedit;
+    _iqlineedit = nullptr;
 }
 
 int QGTextField::getCharsWide() const {
-    QFontMetrics fm(_qtextfield.font());
+    QFontMetrics fm(_iqlineedit->font());
     int mWidth = fm.width(QString::fromStdString("m"));
     return (int) (getWidth() / mWidth);
 }
 
 int QGTextField::getMaxLength() const {
-    return _qtextfield.maxLength();
+    return _iqlineedit->maxLength();
 }
 
 std::string QGTextField::getPlaceholder() const {
-    return _qtextfield.placeholderText().toStdString();
+    return _iqlineedit->placeholderText().toStdString();
 }
 
 std::string QGTextField::getText() const {
-    return _qtextfield.text().toStdString();
+    return _iqlineedit->text().toStdString();
 }
 
 std::string QGTextField::getType() const {
@@ -102,15 +104,15 @@ int QGTextField::getValueAsInteger() const {
 }
 
 QWidget* QGTextField::getWidget() const {
-    return (QWidget*) &_qtextfield;
+    return static_cast<QWidget*>(_iqlineedit);
 }
 
 bool QGTextField::isAutocompleteEnabled() const {
-    return _qtextfield.completer() != nullptr;
+    return _iqlineedit->completer() != nullptr;
 }
 
 bool QGTextField::isEditable() const {
-    return !_qtextfield.isReadOnly();
+    return !_iqlineedit->isReadOnly();
 }
 
 void QGTextField::setAutocompleteList(std::initializer_list<std::string> strings) {
@@ -123,42 +125,42 @@ void QGTextField::setAutocompleteList(const Vector<std::string>& strings) {
     for (std::string s : strings) {
         stringList.push_back(QString::fromStdString(s));
     }
-    QStringListModel* model = new QStringListModel(stringList, &_qtextfield);   // MEMORY LEAK
-    QCompleter* completer = new QCompleter(model, &_qtextfield);                // MEMORY LEAK
+    QStringListModel* model = new QStringListModel(stringList, _iqlineedit);   // TODO: MEMORY LEAK
+    QCompleter* completer = new QCompleter(model, _iqlineedit);                // TODO: MEMORY LEAK
     completer->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
     completer->setCaseSensitivity(Qt::CaseInsensitive);
     completer->setCompletionMode(QCompleter::PopupCompletion);
-    _qtextfield.setCompleter(completer);
+    _iqlineedit->setCompleter(completer);
 }
 
 void QGTextField::setAutocompleteEnabled(bool enabled) {
     if (!enabled) {
-        _qtextfield.setCompleter(nullptr);
+        _iqlineedit->setCompleter(nullptr);
     }
     // TODO
 }
 
 void QGTextField::setCharsWide(int charsWide) {
-    QFontMetrics fm(_qtextfield.font());
+    QFontMetrics fm(_iqlineedit->font());
     int mWidth = fm.width(QString::fromStdString("m"));
-    _qtextfield.setFixedWidth(mWidth * charsWide);
-    _qtextfield.updateGeometry();
+    _iqlineedit->setFixedWidth(mWidth * charsWide);
+    _iqlineedit->updateGeometry();
 }
 
 void QGTextField::setEditable(bool value) {
-    _qtextfield.setReadOnly(!value);
+    _iqlineedit->setReadOnly(!value);
 }
 
 void QGTextField::setMaxLength(int maxLength) {
-    _qtextfield.setMaxLength(maxLength);
+    _iqlineedit->setMaxLength(maxLength);
 }
 
 void QGTextField::setPlaceholder(const std::string& text) {
-    _qtextfield.setPlaceholderText(QString::fromStdString(text));
+    _iqlineedit->setPlaceholderText(QString::fromStdString(text));
 }
 
 void QGTextField::setText(const std::string& text) {
-    _qtextfield.setText(QString::fromStdString(text));
+    _iqlineedit->setText(QString::fromStdString(text));
 }
 
 void QGTextField::setTextChangeHandler(std::function<void()> func) {

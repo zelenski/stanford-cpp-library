@@ -18,11 +18,11 @@
 class QGTextArea;
 
 // Internal class; not to be used by clients.
-class _Q_Internal_TextArea : public QTextEdit {
+class _Internal_QTextEdit : public QTextEdit {
     Q_OBJECT
 
 public:
-    _Q_Internal_TextArea(QGTextArea* textArea, QWidget* parent = nullptr);
+    _Internal_QTextEdit(QGTextArea* qgtextArea, QWidget* parent = nullptr);
 
 public slots:
     void handleTextChange();
@@ -36,21 +36,30 @@ private:
  */
 class QGTextArea : public QGInteractor {
 public:
+    QGTextArea(int rows, int columns, QWidget* parent = nullptr);
     QGTextArea(const std::string& text = "", QWidget* parent = nullptr);
-    std::string getPlaceholder() const;
-    std::string getText() const;
+    virtual ~QGTextArea();
+    virtual int getColumns() const;
+    virtual std::string getPlaceholder() const;
+    virtual int getRows() const;
+    virtual std::string getText() const;
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;
-    bool isEditable() const;
-    void setEditable(bool value);
-    void setPlaceholder(const std::string& text);
-    void setText(const std::string& text);
-    void setTextChangeHandler(std::function<void()> func);
+    virtual bool isEditable() const;
+    virtual void setColumns(int columns);
+    virtual void setEditable(bool value);
+    virtual void setPlaceholder(const std::string& text);
+    virtual void setRows(int rows);
+    virtual void setRowsColumns(int rows, int columns);
+    virtual void setText(const std::string& text);
+    virtual void setTextChangeHandler(std::function<void()> func);
 
 private:
-    _Q_Internal_TextArea _qtextarea;
+    _Internal_QTextEdit* _iqtextedit;
 
-    friend class _Q_Internal_TextArea;
+    GDimension getRowColumnSize() const;
+
+    friend class _Internal_QTextEdit;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

@@ -19,11 +19,11 @@
 class QGButton;
 
 // Internal class; not to be used by clients.
-class _Q_Internal_Button : public QPushButton {
+class _Internal_QPushButton : public QPushButton {
     Q_OBJECT
 
 public:
-    _Q_Internal_Button(QGButton* button, QWidget* parent = nullptr);
+    _Internal_QPushButton(QGButton* button, QWidget* parent = nullptr);
 
 public slots:
     void handleClick();
@@ -38,17 +38,19 @@ private:
 class QGButton : public QGInteractor {
 public:
     QGButton(const std::string& text = "", QWidget* parent = nullptr);
+    virtual ~QGButton();
     std::string getText() const;
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;
-    void setClickHandler(std::function<void()> func);
-    void setText(const std::string& text);
-    void setTextPosition(QGBorderLayout::Position horizontal, QGBorderLayout::Position vertical);
+    virtual void setClickHandler(std::function<void()> func);
+    virtual void setIcon(const std::string& filename);
+    virtual void setText(const std::string& text);
+    virtual void setTextPosition(QGBorderLayout::Position horizontal, QGBorderLayout::Position vertical);
 
 private:
-    _Q_Internal_Button _button;
+    _Internal_QPushButton* _iqpushbutton;
 
-    friend class _Q_Internal_Button;
+    friend class _Internal_QPushButton;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

@@ -362,7 +362,6 @@ public:
      * ---------------------------------
      * Draws the given text on the window with the baseline of its first
      * character at the given x/y position.
-     * An optional font parameter can be passed to draw the string in that font.
      */
     void drawString(const std::string& text, double x, double y);
 

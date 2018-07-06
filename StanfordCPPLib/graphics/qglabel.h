@@ -18,14 +18,14 @@
 class QGLabel;
 
 // Internal class; not to be used by clients.
-class _Q_Internal_Label : public QLabel {
+class _Internal_QLabel : public QLabel {
     Q_OBJECT
 
 public:
-    _Q_Internal_Label(QGLabel* label, QWidget* parent = nullptr);
+    _Internal_QLabel(QGLabel* qglabel, QWidget* parent = nullptr);
 
 private:
-    QGLabel* _label;
+    QGLabel* _qglabel;
 };
 
 /*
@@ -34,15 +34,19 @@ private:
 class QGLabel : public QGInteractor {
 public:
     QGLabel(const std::string& text = "", QWidget* parent = nullptr);
-    std::string getText() const;
+    virtual ~QGLabel();
+    virtual std::string getLabel() const;
+    virtual std::string getText() const;
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;
-    void setText(const std::string& text);
+    virtual void setIcon(const std::string& filename);
+    virtual void setLabel(const std::string& text);
+    virtual void setText(const std::string& text);
 
 private:
-    _Q_Internal_Label _label;
+    _Internal_QLabel* _iqlabel;
 
-    friend class _Q_Internal_Label;
+    friend class _Internal_QLabel;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

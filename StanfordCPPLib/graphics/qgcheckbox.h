@@ -21,17 +21,17 @@
 class QGCheckBox;
 
 // Internal class; not to be used by clients.
-class _Q_Internal_CheckBox : public QCheckBox {
+class _Internal_QCheckBox : public QCheckBox {
     Q_OBJECT
 
 public:
-    _Q_Internal_CheckBox(QGCheckBox* checkBox, bool checked = false, QWidget* parent = nullptr);
+    _Internal_QCheckBox(QGCheckBox* qgcheckBox, bool checked = false, QWidget* parent = nullptr);
 
 public slots:
-    void handleChange(bool);
+    void handleStateChange(int);
 
 private:
-    QGCheckBox* _checkBox;
+    QGCheckBox* _qgcheckBox;
 };
 
 /*
@@ -40,20 +40,21 @@ private:
 class QGCheckBox : public QGInteractor {
 public:
     QGCheckBox(const std::string& text = "", bool checked = false, QWidget* parent = nullptr);
-    std::string getText() const;
+    virtual ~QGCheckBox();
+    virtual std::string getText() const;
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;
-    bool isChecked() const;
-    bool isSelected() const;
-    void setChecked(bool checked);
-    void setChangeHandler(std::function<void()> func);
-    void setSelected(bool selected);
-    void setText(const std::string& text);
+    virtual bool isChecked() const;
+    virtual bool isSelected() const;
+    virtual void setChecked(bool checked);
+    virtual void setChangeHandler(std::function<void()> func);
+    virtual void setSelected(bool selected);
+    virtual void setText(const std::string& text);
 
 private:
-    _Q_Internal_CheckBox _checkBox;
+    _Internal_QCheckBox* _iqcheckBox;
 
-    friend class _Q_Internal_CheckBox;
+    friend class _Internal_QCheckBox;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

@@ -9,13 +9,13 @@
 #include "qgslider.h"
 #include "qgwindow.h"
 
-_Q_Internal_Slider::_Q_Internal_Slider(QGSlider* slider, QWidget* parent)
+_Internal_QSlider::_Internal_QSlider(QGSlider* qgslider, QWidget* parent)
         : QSlider(Qt::Horizontal, parent),
-          _qgslider(slider) {
+          _qgslider(qgslider) {
     connect(this, SIGNAL(valueChanged(int)), this, SLOT(handleChange(int)));
 }
 
-void _Q_Internal_Slider::handleChange(int /* value */) {
+void _Internal_QSlider::handleChange(int /* value */) {
     _qgslider->fireEvent("change");
 }
 
@@ -23,19 +23,23 @@ const int QGSlider::DEFAULT_MIN_VALUE = 0;
 const int QGSlider::DEFAULT_MAX_VALUE = 100;
 const int QGSlider::DEFAULT_INITIAL_VALUE = 50;
 
-QGSlider::QGSlider(int min, int max, int value, QWidget* parent)
-        : _slider(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()) {
-    ensureThreadSafety();
-    _slider.setRange(min, max);
-    _slider.setValue(value);
+QGSlider::QGSlider(int min, int max, int value, QWidget* parent) {
+    _iqslider = new _Internal_QSlider(this, getInternalParent(parent));
+    _iqslider->setRange(min, max);
+    _iqslider->setValue(value);
+}
+
+QGSlider::~QGSlider() {
+    // TODO: delete _iqslider;
+    _iqslider = nullptr;
 }
 
 int QGSlider::getMajorTickSpacing() const {
-    return _slider.tickInterval();
+    return _iqslider->tickInterval();
 }
 
 int QGSlider::getMinorTickSpacing() const {
-    return _slider.tickInterval();
+    return _iqslider->tickInterval();
 }
 
 bool QGSlider::getPaintLabels() const {
@@ -58,11 +62,11 @@ std::string QGSlider::getType() const {
 }
 
 int QGSlider::getValue() const {
-    return _slider.value();
+    return _iqslider->value();
 }
 
 QWidget* QGSlider::getWidget() const {
-    return (QWidget*) &_slider;
+    return static_cast<QWidget*>(_iqslider);
 }
 
 void QGSlider::setChangeHandler(std::function<void()> func) {
@@ -70,11 +74,11 @@ void QGSlider::setChangeHandler(std::function<void()> func) {
 }
 
 void QGSlider::setMajorTickSpacing(int value) {
-    _slider.setTickInterval(value);
+    _iqslider->setTickInterval(value);
 }
 
 void QGSlider::setMinorTickSpacing(int value) {
-    _slider.setTickInterval(value);
+    _iqslider->setTickInterval(value);
 }
 
 void QGSlider::setPaintLabels(bool /* value */) {
@@ -82,7 +86,7 @@ void QGSlider::setPaintLabels(bool /* value */) {
 }
 
 void QGSlider::setPaintTicks(bool value) {
-    _slider.setTickPosition(value ? QSlider::TicksBothSides : QSlider::NoTicks);
+    _iqslider->setTickPosition(value ? QSlider::TicksBothSides : QSlider::NoTicks);
 }
 
 void QGSlider::setSnapToTicks(bool /* value */) {
@@ -90,5 +94,5 @@ void QGSlider::setSnapToTicks(bool /* value */) {
 }
 
 void QGSlider::setValue(int value) {
-    _slider.setValue(value);
+    _iqslider->setValue(value);
 }

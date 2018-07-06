@@ -9,7 +9,14 @@
 #include "qginteractor.h"
 #include <iostream>
 #include <sstream>
+#include "qgcolor.h"
+#include "qgfont.h"
 #include "qgui.h"
+#include "qgwindow.h"
+
+QGInteractor::QGInteractor() {
+    ensureThreadSafety();
+}
 
 void QGInteractor::clearEventHandlers() {
     _eventMap.clear();
@@ -44,13 +51,16 @@ std::function<void()> QGInteractor::getEventHandler(const std::string& eventName
 }
 
 std::string QGInteractor::getFont() const {
-    // TODO
-    return "?";
+    return QGFont::toFontString(getWidget()->font());
 }
 
 std::string QGInteractor::getIcon() const {
     // TODO
     return "?";
+}
+
+QWidget* QGInteractor::getInternalParent(QWidget* parent) const {
+    return parent ? parent : (QWidget*) QGWindow::getLastWindow();
 }
 
 char QGInteractor::getMnemonic() const {
@@ -98,28 +108,40 @@ void QGInteractor::setAccelerator(const std::string& /* accelerator */) {
     // TODO
 }
 
-void QGInteractor::setBackground(int /* rgb */) {
-    // TODO
+void QGInteractor::setBackground(int rgb) {
+    QPalette palette(getWidget()->palette());
+    palette.setColor(getWidget()->backgroundRole(), QColor(rgb));
+
+    // additional palette color settings for QGChooser and other widgets
+    // TODO: does not totally work for some widgets, e.g. QGChooser popup menu
+    palette.setColor(QPalette::Base, QColor(rgb));
+    palette.setColor(QPalette::Active, QPalette::Button, QColor(rgb));
+    palette.setColor(QPalette::Inactive, QPalette::Button, QColor(rgb));
+
+    getWidget()->setAutoFillBackground(true);
+    getWidget()->setPalette(palette);
 }
 
-void QGInteractor::setBackground(const std::string& /* color */) {
-    // TODO
+void QGInteractor::setBackground(const std::string& color) {
+    int rgb = QGColor::convertColorToRGB(color);
+    setBackground(rgb);
 }
 
 void QGInteractor::setBounds(double x, double y, double width, double height) {
     getWidget()->setGeometry((int) x, (int) y, (int) width, (int) height);
+    getWidget()->setFixedSize((int) width, (int) height);
 }
 
 void QGInteractor::setBounds(const GRectangle& size) {
     setBounds(size.getX(), size.getY(), size.getWidth(), size.getHeight());
 }
 
-void QGInteractor::setColor(int /* rgb */) {
-    // TODO
+void QGInteractor::setColor(int rgb) {
+    setForeground(rgb);
 }
 
-void QGInteractor::setColor(const std::string& /* color */) {
-    // TODO
+void QGInteractor::setColor(const std::string& color) {
+    setForeground(color);
 }
 
 void QGInteractor::setEnabled(bool value) {
@@ -130,21 +152,25 @@ void QGInteractor::setEventHandler(const std::string& eventName, std::function<v
     _eventMap[eventName] = func;
 }
 
-void QGInteractor::setForeground(int /* rgb */) {
-    // TODO
+void QGInteractor::setForeground(int rgb) {
+    QPalette palette(getWidget()->palette());
+    palette.setColor(getWidget()->foregroundRole(), QColor(rgb));
+    // TODO: does not totally work for some widgets, e.g. QGChooser popup menu
+    getWidget()->setPalette(palette);
 }
 
-void QGInteractor::setForeground(const std::string& /* color */) {
-    // TODO
+void QGInteractor::setForeground(const std::string& color) {
+    int rgb = QGColor::convertColorToRGB(color);
+    setForeground(rgb);
 }
 
-void QGInteractor::setFont(const std::string& /* font */) {
-    // TODO
-    // getWidget()->setFont(QFont&);
+void QGInteractor::setFont(const std::string& font) {
+    QFont qfont = QGFont::toQFont(font);
+    getWidget()->setFont(qfont);
 }
 
 void QGInteractor::setIcon(const std::string& /* filename */) {
-    // TODO
+    // TODO: implement in subclasses as appropriate
 }
 
 void QGInteractor::setMnemonic(char /* mnemonic */) {
@@ -152,11 +178,12 @@ void QGInteractor::setMnemonic(char /* mnemonic */) {
 }
 
 void QGInteractor::setSize(double width, double height) {
-    setBounds(GRectangle(getX(), getY(), width, height));
+    // setBounds(GRectangle(getX(), getY(), width, height));
+    getWidget()->setFixedSize((int) width, (int) height);
 }
 
 void QGInteractor::setSize(const GDimension& size) {
-    setBounds(GRectangle(getX(), getY(), size.getWidth(), size.getHeight()));
+    setSize(size.getWidth(), size.getHeight());
 }
 
 void QGInteractor::setTooltip(const std::string& tooltipText) {

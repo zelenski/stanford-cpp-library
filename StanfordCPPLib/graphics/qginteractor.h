@@ -21,6 +21,7 @@
  */
 class QGInteractor {
 public:
+    QGInteractor();
     virtual std::string getAccelerator() const;
     virtual std::string getActionCommand() const;
     virtual GRectangle getBounds() const;
@@ -61,6 +62,7 @@ protected:
     virtual void ensureThreadSafety();
     virtual void fireEvent(const std::string& eventName);
     virtual std::function<void()> getEventHandler(const std::string& eventName) const;
+    virtual QWidget* getInternalParent(QWidget* parent) const;
     virtual bool hasEventHandler(const std::string& eventName) const;
     virtual void setEventHandler(const std::string& eventName, std::function<void()> func);
 

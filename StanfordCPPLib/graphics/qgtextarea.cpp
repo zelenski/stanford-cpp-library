@@ -10,28 +10,50 @@
 #include "qgwindow.h"
 #include "strlib.h"
 
-_Q_Internal_TextArea::_Q_Internal_TextArea(QGTextArea* textArea, QWidget* parent)
+_Internal_QTextEdit::_Internal_QTextEdit(QGTextArea* qgtextArea, QWidget* parent)
         : QTextEdit(parent),
-          _qgtextarea(textArea) {
+          _qgtextarea(qgtextArea) {
     connect(this, SIGNAL(textChanged()), this, SLOT(handleTextChange()));
 }
 
-void _Q_Internal_TextArea::handleTextChange() {
+void _Internal_QTextEdit::handleTextChange() {
     _qgtextarea->fireEvent("textchange");
 }
 
-QGTextArea::QGTextArea(const std::string& text, QWidget* parent)
-        : _qtextarea(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()) {
-    ensureThreadSafety();
+QGTextArea::QGTextArea(int rows, int columns, QWidget* parent) {
+    _iqtextedit = new _Internal_QTextEdit(this, getInternalParent(parent));
+    setRowsColumns(rows, columns);
+}
+
+QGTextArea::QGTextArea(const std::string& text, QWidget* parent) {
+    _iqtextedit = new _Internal_QTextEdit(this, getInternalParent(parent));
     setText(text);
 }
 
+QGTextArea::~QGTextArea() {
+    // TODO: delete _iqtextedit;
+    _iqtextedit = nullptr;
+}
+
+int QGTextArea::getColumns() const {
+    return (int) (getHeight() / getRowColumnSize().getWidth());
+}
+
 std::string QGTextArea::getPlaceholder() const {
-    return _qtextarea.placeholderText().toStdString();
+    return _iqtextedit->placeholderText().toStdString();
+}
+
+GDimension QGTextArea::getRowColumnSize() const {
+    QFontMetrics m(_iqtextedit->font());
+    return GDimension(m.width(QString::fromStdString("m")), m.lineSpacing());
+}
+
+int QGTextArea::getRows() const {
+    return (int) (getHeight() / getRowColumnSize().getHeight());
 }
 
 std::string QGTextArea::getText() const {
-    return _qtextarea.toPlainText().toStdString();
+    return _iqtextedit->toPlainText().toStdString();
 }
 
 std::string QGTextArea::getType() const {
@@ -39,23 +61,39 @@ std::string QGTextArea::getType() const {
 }
 
 QWidget* QGTextArea::getWidget() const {
-    return (QWidget*) &_qtextarea;
+    return static_cast<QWidget*>(_iqtextedit);
 }
 
 bool QGTextArea::isEditable() const {
-    return !_qtextarea.isReadOnly();
+    return !_iqtextedit->isReadOnly();
+}
+
+void QGTextArea::setColumns(int columns) {
+    double desiredWidth = getRowColumnSize().getWidth() * columns;
+    setSize(desiredWidth, getHeight());
 }
 
 void QGTextArea::setEditable(bool value) {
-    _qtextarea.setReadOnly(!value);
+    _iqtextedit->setReadOnly(!value);
 }
 
 void QGTextArea::setPlaceholder(const std::string& text) {
-    _qtextarea.setPlaceholderText(QString::fromStdString(text));
+    _iqtextedit->setPlaceholderText(QString::fromStdString(text));
+}
+
+void QGTextArea::setRows(int rows) {
+    double desiredHeight = getRowColumnSize().getHeight() * rows;
+    setSize(getWidth(), desiredHeight);
+}
+
+void QGTextArea::setRowsColumns(int rows, int columns) {
+    double desiredWidth = getRowColumnSize().getWidth() * columns;
+    double desiredHeight = getRowColumnSize().getHeight() * rows;
+    setSize(desiredWidth, desiredHeight);
 }
 
 void QGTextArea::setText(const std::string& text) {
-    _qtextarea.setText(QString::fromStdString(text));
+    _iqtextedit->setText(QString::fromStdString(text));
 }
 
 void QGTextArea::setTextChangeHandler(std::function<void()> func) {

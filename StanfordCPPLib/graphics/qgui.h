@@ -9,6 +9,7 @@
 #ifndef _qgui_h
 #define _qgui_h
 
+#include <functional>
 #include <string>
 #include <QApplication>
 #include <QMutex>
@@ -17,7 +18,8 @@
 #include "queue.h"
 
 // function pointer (no params / no return)
-typedef void (*QGThunk)(void);
+typedef std::function<void()> QGThunk;
+typedef std::function<int()> QGThunkInt;
 
 void __initializeStanfordCppLibraryQt(int argc, char** argv, int (* mainFunc)(void));
 
@@ -26,14 +28,14 @@ class QGui;   // forward declaration
 
 class QGStudentThread : public QThread {
 public:
-    QGStudentThread(int (* mainFunc)(void));
+    QGStudentThread(QGThunkInt mainFunc);
     int getResult() const;
 
 protected:
     void run();
 
 private:
-    int (* _mainFunc)(void);
+    QGThunkInt _mainFunc;
     int _result;
 };
 
@@ -76,7 +78,7 @@ public:
     static QGui* instance();
     void runOnQtGuiThread(QGThunk func);
     void runOnQtGuiThreadAsync(QGThunk func);
-    void startBackgroundEventLoop(int (* mainFunc)(void));
+    void startBackgroundEventLoop(QGThunkInt mainFunc);
     void startEventLoop();
 
 public slots:

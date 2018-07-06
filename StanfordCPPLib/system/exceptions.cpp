@@ -229,6 +229,12 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "InitializeExceptionChain",
         "KnownExceptionFilter",
         "printStackTrace",
+        "QAbstractItemModel::",
+        "QAbstractProxyModel::",
+        "_Internal_",
+        "QMetaMethod::",
+        "QMetaObject::",
+        "QObjectPrivate::",
         "shouldFilterOutFromStackTrace",
         "stacktrace::",
         "stanfordCppLibPosixSignalHandler",
@@ -240,7 +246,7 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
 
     // prefixes to filter (don't show any func whose name starts with these)
     static const std::vector<std::string> FORBIDDEN_PREFIXES {
-        "__"
+        // "__"
     };
 
     for (const std::string& name : FORBIDDEN_NAMES) {

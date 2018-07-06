@@ -9,24 +9,28 @@
 #include "qgbutton.h"
 #include "qgwindow.h"
 
-_Q_Internal_Button::_Q_Internal_Button(QGButton* button, QWidget* parent)
+_Internal_QPushButton::_Internal_QPushButton(QGButton* button, QWidget* parent)
         : QPushButton(parent),
           _qgbutton(button) {
     connect(this, SIGNAL(clicked()), this, SLOT(handleClick()));
 }
 
-void _Q_Internal_Button::handleClick() {
+void _Internal_QPushButton::handleClick() {
     _qgbutton->fireEvent("click");
 }
 
-QGButton::QGButton(const std::string& text, QWidget* parent)
-        : _button(this, parent ? parent : (QWidget*) QGWindow::getLastWindow()) {
-    ensureThreadSafety();
+QGButton::QGButton(const std::string& text, QWidget* parent) {
+    _iqpushbutton = new _Internal_QPushButton(this, getInternalParent(parent));
     setText(text);
 }
 
+QGButton::~QGButton() {
+    // TODO: delete _button;
+    _iqpushbutton = nullptr;
+}
+
 std::string QGButton::getText() const {
-    return _button.text().toStdString();
+    return _iqpushbutton->text().toStdString();
 }
 
 std::string QGButton::getType() const {
@@ -34,15 +38,22 @@ std::string QGButton::getType() const {
 }
 
 QWidget* QGButton::getWidget() const {
-    return (QWidget*) &_button;
+    return static_cast<QWidget*>(_iqpushbutton);
 }
 
 void QGButton::setClickHandler(std::function<void()> func) {
     setEventHandler("click", func);
 }
 
+void QGButton::setIcon(const std::string& filename) {
+    QPixmap pixmap(QString::fromStdString(filename));
+    QIcon icon(pixmap);
+    _iqpushbutton->setIcon(icon);
+    // TODO: scale button to fit icon?
+}
+
 void QGButton::setText(const std::string& text) {
-    _button.setText(QString::fromStdString(text));
+    _iqpushbutton->setText(QString::fromStdString(text));
 }
 
 void QGButton::setTextPosition(QGBorderLayout::Position /* horizontal */, QGBorderLayout::Position /* vertical */) {

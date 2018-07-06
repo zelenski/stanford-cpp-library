@@ -181,12 +181,11 @@ void QGBorderLayout::clearLayout(QLayout* layout) {
     if (!layout) {
         return;
     }
-    while (!layout->isEmpty()) {
-        QLayoutItem* item = layout->itemAt(0);
-        if (item->layout()) {
-            clearLayout(item->layout());
-        }
-        layout->removeItem(item);
+
+    // http://doc.qt.io/qt-5/qlayout.html#takeAt
+    QLayoutItem* child;
+    while ((child = layout->takeAt(0))) {
+        // TODO: delete child;
     }
     layout->update();
 }

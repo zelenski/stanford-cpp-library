@@ -536,6 +536,7 @@ int testAllUrls() {
 #include "qgcanvas.h"
 #include "qgcheckbox.h"
 #include "qgchooser.h"
+#include "qgcolor.h"
 #include "qgfilechooser.h"
 #include "qglabel.h"
 #include "qgobjects.h"
@@ -601,77 +602,122 @@ void testQwindow() {
     window->setResizable(true);
     window->center();
 
-    QGLabel label("Type <b>stuff</b> <i>now</i> (North):");
-    window->addToRegion(&label, "North");
-    cout << "label:     " << label.toString() << endl;
+    QGLabel* label = new QGLabel("Type <b>stuff</b> <i>now</i> (North):");
+    label->setIcon("triangle-icon.png");
+    label->setColor(QGColor::GREEN);
+    label->setBackground(QGColor::YELLOW);
+    window->addToRegion(label, "North");
+    cout << "label:     " << label->toString() << endl;
 
     chooser = new QGChooser({"one", "two", "three four"});
+    chooser->setColor(QGColor::RED);
+    chooser->setBackground(QGColor::YELLOW);
     chooser->setChangeHandler(chooserChangeHandler);
     window->addToRegion(chooser, "South");
     cout << "chooser:   " << chooser->toString() << endl;
 
-    static QGCheckBox checkBox("Question?", true);
-    checkBox.setChangeHandler([]() {
-        cout << "checkbox clicked! " << boolalpha << checkBox.isChecked() << endl;
+    static QGCheckBox* checkBox = new QGCheckBox("Question?", true);
+    checkBox->setChangeHandler([]() {
+        cout << "checkbox clicked! " << boolalpha << checkBox->isChecked() << endl;
     });
-    window->addToRegion(&checkBox, "West");
-    cout << "checkbox:  " << checkBox.toString() << endl;
+    window->addToRegion(checkBox, "West");
+    cout << "checkbox:  " << checkBox->toString() << endl;
 
-    static QGRadioButton radio1group1("A", "group1");
-    static QGRadioButton radio2group1("B", "group1", true);
-    static QGRadioButton radio3group1("C", "group1");
-    static QGRadioButton radio1group2("XX", "group2", true);
-    static QGRadioButton radio2group2("YY", "group2");
+    static QGRadioButton* radio1group1 = new QGRadioButton("A", "group1");
+    static QGRadioButton* radio2group1 = new QGRadioButton("B", "group1", true);
+    static QGRadioButton* radio3group1 = new QGRadioButton("C", "group1");
+    static QGRadioButton* radio1group2 = new QGRadioButton("XX", "group2", true);
+    static QGRadioButton* radio2group2 = new QGRadioButton("YY", "group2");
 
     void (* radioChangeHandler)() = [] {
         cout << "checkbox clicked! " << boolalpha
-             << radio1group1.isChecked() << " "
-             << radio2group1.isChecked() << " "
-             << radio3group1.isChecked() << " "
-             << radio1group2.isChecked() << " "
-             << radio2group2.isChecked() << endl;
+             << radio1group1->isChecked() << " "
+             << radio2group1->isChecked() << " "
+             << radio3group1->isChecked() << " "
+             << radio1group2->isChecked() << " "
+             << radio2group2->isChecked() << endl;
     };
-    radio1group1.setChangeHandler(radioChangeHandler);
-    radio2group1.setChangeHandler(radioChangeHandler);
-    radio3group1.setChangeHandler(radioChangeHandler);
-    radio1group2.setChangeHandler(radioChangeHandler);
-    radio2group2.setChangeHandler(radioChangeHandler);
+    radio1group1->setChangeHandler(radioChangeHandler);
+    radio2group1->setChangeHandler(radioChangeHandler);
+    radio3group1->setChangeHandler(radioChangeHandler);
+    radio1group2->setChangeHandler(radioChangeHandler);
+    radio2group2->setChangeHandler(radioChangeHandler);
 
-    window->addToRegion(&radio1group1, "East");
-    window->addToRegion(&radio2group1, "East");
-    window->addToRegion(&radio3group1, "East");
-    window->addToRegion(&radio1group2, "East");
-    window->addToRegion(&radio2group2, "East");
-    cout << "radio:     " << radio1group1.toString() << endl;
+    window->addToRegion(radio1group1, "East");
+    window->addToRegion(radio2group1, "East");
+    window->addToRegion(radio3group1, "East");
+    window->addToRegion(radio1group2, "East");
+    window->addToRegion(radio2group2, "East");
+    cout << "radio:     " << radio1group1->toString() << endl;
 
-    static QGTextField textField("Marty");
-    textField.setPlaceholder("type your name");
-    // textField.setEditable(false);
-    textField.setAutocompleteList({"matt", "Marty", "Stuart", "steve", "yana", "yes", "no"});
-    textField.setTextChangeHandler([]() {
-        cout << "textfield text changed! text is:" << endl << textField.getText() << endl;
+    static QGTextField* textField = new QGTextField("Marty");
+    textField->setPlaceholder("type your name");
+    // textField->setEditable(false);
+    textField->setAutocompleteList({"matt", "Marty", "Stuart", "steve", "yana", "yes", "no"});
+    textField->setTextChangeHandler([]() {
+        cout << "textfield text changed! text is:" << endl << textField->getText() << endl;
     });
-    window->addToRegion(&textField, "South");
-    cout << "textfield: " << textField.toString() << endl;
+    window->addToRegion(textField, "North");
+    cout << "textfield: " << textField->toString() << endl;
 
-//    static QGTextArea textArea("This is \na multi-line\n\ntext area");
-//    textArea.setPlaceholder("type some text");
-//    textArea.setTextChangeHandler([]() {
-//        cout << "textarea text changed! text is:" << endl << textArea.getText() << endl;
-//    });
-//    window->addToRegion(&textArea, "Center");
-//    cout << "textarea:  " << textArea.toString() << endl;
+    // drawing directly onto window  (will go away when text area is added)
+    window->setColor("blue");
+    window->setFillColor("yellow");
+    window->fillOval(20, 120, 40, 60);
+    window->setColor("red");
+    window->setFillColor("green");
+    window->setLineWidth(3);
+    window->fillRect(10, 30, 120, 70);
+    window->drawLine(100, 100, 200, 150);
 
-    // canvas
-//    QGCanvas canvas;
-//    QGRect* rect = new QGRect(10, 30, 120, 70);
-//    QGOval* oval = new QGOval(20, 120, 40, 60);
-//    QGLine* line = new QGLine(100, 100, 200, 150);
-//    canvas.add(rect);
-//    canvas.add(oval);
-//    canvas.add(line);
-//    window->addToRegion(&canvas, "Center");
-//    cout << "canvas:    " << canvas.toString() << endl;
+    static QGTextArea* textArea = new QGTextArea("This is \na multi-line\n\ntext area");
+    textArea->setRowsColumns(4, 30);
+    textArea->setPlaceholder("type some text");
+    textArea->setTextChangeHandler([]() {
+        cout << "textarea text changed! text is:" << endl << textArea->getText() << endl;
+    });
+    window->addToRegion(textArea, "West");
+    cout << "textarea:  " << textArea->toString() << endl;
+
+    QGButton* button = new QGButton("");
+    button->setColor(QGColor::RED);
+    button->setBackground(QGColor::YELLOW);
+    button->setIcon("triangle-icon.png");
+    button->setClickHandler(clickHandler);
+    window->addToRegion(button, "South");
+    cout << "button:    " << button->toString() << endl;
+    cout << "button font: " << button->getFont() << endl;
+    // button->setFont("Monospaced-Bold-14");
+
+    slider = new QGSlider();
+    slider->setMinorTickSpacing(20);
+    slider->setPaintLabels(true);
+    slider->setPaintTicks(true);
+    slider->setChangeHandler(sliderChangeHandler);
+    window->addToRegion(slider, "North");
+    cout << "slider:    " << slider->toString() << endl;
+
+    // window->pause(500);
+
+    // todo
+}
+
+void testQwindowDrawing() {
+//    cout << "This is the testQwindow function! yay!" << endl;
+//    cout << "testQwindow is in thread " << QGui::instance()->getCurrentThread() << endl;
+//    cout << "testQwindow sleeping 500ms ..." << endl;
+//    QGui::instance()->getCurrentThread()->msleep(500);
+//    cout << "testQwindow done sleeping." << endl;
+//    return;
+
+    window = new QGWindow(900, 500);
+    window->setTitle("QtGui Drawing Window");
+    window->setResizable(true);
+    window->center();
+
+//    QGLabel* label = new QGLabel("Type <b>stuff</b> <i>now</i> (North):");
+//    window->addToRegion(label, "North");
+//    cout << "label:     " << label->toString() << endl;
 
     // drawing directly onto window
     window->setColor("blue");
@@ -680,28 +726,10 @@ void testQwindow() {
     window->setColor("red");
     window->setFillColor("green");
     window->setLineWidth(3);
-
-    // should be "default" fill of white? but uses yellow
     window->fillRect(10, 30, 120, 70);
     window->drawLine(100, 100, 200, 150);
-
-    QGButton button("Push me");
-    button.setClickHandler(clickHandler);
-    window->addToRegion(&button, "South");
-    cout << "button:    " << button.toString() << endl;
-
-//    slider = new QGSlider();
-//    slider->setMinorTickSpacing(20);
-//    slider->setPaintLabels(true);
-//    slider->setPaintTicks(true);
-//    slider->setChangeHandler(sliderChangeHandler);
-//    window->addToRegion(slider, "North");
-//    cout << "slider:    " << slider->toString() << endl;
-
-    // window->pause(500);
-
-    // todo
 }
+
 
 int main() {
     cout << "main is in thread " << QGui::instance()->getCurrentThread() << endl;

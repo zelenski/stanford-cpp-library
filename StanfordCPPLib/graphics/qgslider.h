@@ -18,11 +18,11 @@
 class QGSlider;
 
 // Internal class; not to be used by clients.
-class _Q_Internal_Slider : public QSlider {
+class _Internal_QSlider : public QSlider {
     Q_OBJECT
 
 public:
-    _Q_Internal_Slider(QGSlider* slider, QWidget* parent = nullptr);
+    _Internal_QSlider(QGSlider* qgslider, QWidget* parent = nullptr);
 
 public slots:
     void handleChange(int value);
@@ -41,26 +41,27 @@ public:
     static const int DEFAULT_INITIAL_VALUE;
 
     QGSlider(int min = 0, int max = 100, int value = 50, QWidget* parent = nullptr);
-    int getMajorTickSpacing() const;
-    int getMinorTickSpacing() const;
-    bool getPaintLabels() const;
-    bool getPaintTicks() const;
-    bool getSnapToTicks() const;
+    virtual ~QGSlider();
+    virtual int getMajorTickSpacing() const;
+    virtual int getMinorTickSpacing() const;
+    virtual bool getPaintLabels() const;
+    virtual bool getPaintTicks() const;
+    virtual bool getSnapToTicks() const;
     virtual std::string getType() const;
-    int getValue() const;
+    virtual int getValue() const;
     virtual QWidget* getWidget() const;
-    void setChangeHandler(std::function<void()> func);
-    void setMajorTickSpacing(int value);
-    void setMinorTickSpacing(int value);
-    void setPaintLabels(bool value);
-    void setPaintTicks(bool value);
-    void setSnapToTicks(bool value);
-    void setValue(int value);
+    virtual void setChangeHandler(std::function<void()> func);
+    virtual void setMajorTickSpacing(int value);
+    virtual void setMinorTickSpacing(int value);
+    virtual void setPaintLabels(bool value);
+    virtual void setPaintTicks(bool value);
+    virtual void setSnapToTicks(bool value);
+    virtual void setValue(int value);
 
 private:
-    _Q_Internal_Slider _slider;
+    _Internal_QSlider* _iqslider;
 
-    friend class _Q_Internal_Slider;
+    friend class _Internal_QSlider;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
