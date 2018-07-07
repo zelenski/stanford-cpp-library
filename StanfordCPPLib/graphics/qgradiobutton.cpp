@@ -21,7 +21,11 @@ _Internal_QRadioButton::_Internal_QRadioButton(QGRadioButton* qgradioButton, boo
 }
 
 void _Internal_QRadioButton::handleClick() {
-    _qgradioButton->fireEvent("change");
+    QGEvent changeEvent(
+                /* class  */ QGEvent::CHANGE_EVENT,
+                /* type   */ QGEvent::STATE_CHANGED,
+                /* name   */ "change");
+    _qgradioButton->fireEvent(changeEvent);
 }
 
 Map<std::string, QButtonGroup*> QGRadioButton::_buttonGroups;
@@ -62,7 +66,11 @@ void QGRadioButton::setChecked(bool checked) {
     _iqradioButton->setChecked(checked);
 }
 
-void QGRadioButton::setChangeHandler(std::function<void()> func) {
+void QGRadioButton::setChangeHandler(QGEventHandler func) {
+    setEventHandler("change", func);
+}
+
+void QGRadioButton::setChangeHandler(QGEventHandlerVoid func) {
     setEventHandler("change", func);
 }
 

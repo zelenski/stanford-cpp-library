@@ -19,6 +19,42 @@ _Internal_QCanvas::_Internal_QCanvas(QGCanvas* qgcanvas, QWidget* parent)
     pal.setColor(QPalette::Background, Qt::white);
     setAutoFillBackground(true);
     setPalette(pal);
+    setMouseTracking(true);   // causes mouse move events to occur
+}
+
+void _Internal_QCanvas::enterEvent(QEvent* event) {
+    if (!_qgcanvas->hasEventHandler("mouseenter")) return;
+    fireQGEvent(event, QGEvent::MOUSE_ENTERED, "mouseenter");
+}
+
+void _Internal_QCanvas::leaveEvent(QEvent* event) {
+    if (!_qgcanvas->hasEventHandler("mouseexit")) return;
+    fireQGEvent(event, QGEvent::MOUSE_EXITED, "mouseexit");
+}
+
+void _Internal_QCanvas::mouseMoveEvent(QMouseEvent* event) {
+    if (!_qgcanvas->hasEventHandler("mousemove")
+            && !_qgcanvas->hasEventHandler("mousedrag")) return;
+    fireQGEvent(event, QGEvent::MOUSE_MOVED, "mousemove");
+    if (event->buttons() != 0) {
+        // mouse drag
+        fireQGEvent(event, QGEvent::MOUSE_DRAGGED, "mousedrag");
+    }
+}
+
+void _Internal_QCanvas::mousePressEvent(QMouseEvent* event) {
+    if (!_qgcanvas->hasEventHandler("mousepress")) return;
+    fireQGEvent(event, QGEvent::MOUSE_PRESSED, "mousepress");
+}
+
+void _Internal_QCanvas::mouseReleaseEvent(QMouseEvent* event) {
+    if (_qgcanvas->hasEventHandler("mouserelease")) {
+        fireQGEvent(event, QGEvent::MOUSE_RELEASED, "mouserelease");
+    }
+
+    if (_qgcanvas->hasEventHandler("click")) {
+        fireQGEvent(event, QGEvent::MOUSE_CLICKED, "click");
+    }
 }
 
 void _Internal_QCanvas::paintEvent(QPaintEvent* event) {
@@ -31,6 +67,35 @@ void _Internal_QCanvas::paintEvent(QPaintEvent* event) {
     g.end();
 
     QWidget::paintEvent(event);
+}
+
+void _Internal_QCanvas::fireQGEvent(QEvent* /* event */,
+                                    QGEvent::EventType eventType,
+                                    const std::string& eventName) {
+    QGEvent mouseEvent(
+                /* class  */ QGEvent::MOUSE_EVENT,
+                /* type   */ eventType,
+                /* name   */ eventName,
+                /* source */ _qgcanvas);
+    // TODO
+//    mouseEvent._button = (int) event->button();
+//    mouseEvent._x = event->x;
+//    mouseEvent._y = event->y;
+    _qgcanvas->fireEvent(mouseEvent);
+}
+
+void _Internal_QCanvas::fireQGEvent(QMouseEvent* event,
+                                    QGEvent::EventType eventType,
+                                    const std::string& eventName) {
+    QGEvent mouseEvent(
+                /* class  */ QGEvent::MOUSE_EVENT,
+                /* type   */ eventType,
+                /* name   */ eventName,
+                /* source */ _qgcanvas);
+    mouseEvent.setButton((int) event->button());
+    mouseEvent.setX(event->x());
+    mouseEvent.setY(event->y());
+    _qgcanvas->fireEvent(mouseEvent);
 }
 
 QGCanvas::QGCanvas(QWidget* parent) {

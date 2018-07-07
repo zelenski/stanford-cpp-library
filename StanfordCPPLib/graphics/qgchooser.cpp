@@ -18,7 +18,11 @@ _Internal_QComboBox::_Internal_QComboBox(QGChooser* qgchooser, QWidget* parent)
 }
 
 void _Internal_QComboBox::handleChange() {
-    _qgchooser->fireEvent("change");
+    QGEvent changeEvent(
+                /* class  */ QGEvent::CHANGE_EVENT,
+                /* type   */ QGEvent::STATE_CHANGED,
+                /* name   */ "change");
+    _qgchooser->fireEvent(changeEvent);
 }
 
 
@@ -96,7 +100,11 @@ bool QGChooser::isEditable() const {
     return _iqcomboBox->isEditable();
 }
 
-void QGChooser::setChangeHandler(std::function<void()> func) {
+void QGChooser::setChangeHandler(QGEventHandler func) {
+    setEventHandler("change", func);
+}
+
+void QGChooser::setChangeHandler(QGEventHandlerVoid func) {
     setEventHandler("change", func);
 }
 

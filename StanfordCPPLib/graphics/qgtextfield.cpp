@@ -25,7 +25,11 @@ _Internal_QLineEdit::_Internal_QLineEdit(QGTextField* qgtextField, QWidget* pare
 }
 
 void _Internal_QLineEdit::handleTextChange(const QString&) {
-    _qgtextfield->fireEvent("textchange");
+    QGEvent textChangeEvent(
+                /* class  */ QGEvent::KEY_EVENT,
+                /* type   */ QGEvent::KEY_TYPED,
+                /* name   */ "textchange");
+    _qgtextfield->fireEvent(textChangeEvent);
 }
 
 QGTextField::QGTextField(const std::string& text, QWidget* parent) {
@@ -163,7 +167,11 @@ void QGTextField::setText(const std::string& text) {
     _iqlineedit->setText(QString::fromStdString(text));
 }
 
-void QGTextField::setTextChangeHandler(std::function<void()> func) {
+void QGTextField::setTextChangeHandler(QGEventHandler func) {
+    setEventHandler("textchange", func);
+}
+
+void QGTextField::setTextChangeHandler(QGEventHandlerVoid func) {
     setEventHandler("textchange", func);
 }
 

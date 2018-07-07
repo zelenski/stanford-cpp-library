@@ -11,6 +11,7 @@
 
 #include <string>
 #include <QPushButton>
+#include <QToolButton>
 #include <QWidget>
 #include "qgborderlayout.h"
 #include "qginteractor.h"
@@ -19,7 +20,7 @@
 class QGButton;
 
 // Internal class; not to be used by clients.
-class _Internal_QPushButton : public QPushButton {
+class _Internal_QPushButton : public QToolButton, public _Internal_QWidget {
     Q_OBJECT
 
 public:
@@ -37,15 +38,19 @@ private:
  */
 class QGButton : public QGInteractor {
 public:
-    QGButton(const std::string& text = "", QWidget* parent = nullptr);
+    QGButton(const std::string& text = "", const std::string& iconFileName = "", QWidget* parent = nullptr);
     virtual ~QGButton();
-    std::string getText() const;
+    virtual std::string getAccelerator() const;
+    virtual std::string getText() const;
+    virtual QGInteractor::TextPosition getTextPosition() const;
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;
-    virtual void setClickHandler(std::function<void()> func);
-    virtual void setIcon(const std::string& filename);
+    virtual void setAccelerator(const std::string& accelerator);
+    virtual void setClickHandler(QGEventHandler func);
+    virtual void setClickHandler(QGEventHandlerVoid func);
+    virtual void setIcon(const std::string& filename, bool retainIconSize = true);
     virtual void setText(const std::string& text);
-    virtual void setTextPosition(QGBorderLayout::Position horizontal, QGBorderLayout::Position vertical);
+    virtual void setTextPosition(QGInteractor::TextPosition position);
 
 private:
     _Internal_QPushButton* _iqpushbutton;

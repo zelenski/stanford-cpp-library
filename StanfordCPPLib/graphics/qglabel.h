@@ -18,7 +18,7 @@
 class QGLabel;
 
 // Internal class; not to be used by clients.
-class _Internal_QLabel : public QLabel {
+class _Internal_QLabel : public QLabel, public _Internal_QWidget {
     Q_OBJECT
 
 public:
@@ -33,15 +33,17 @@ private:
  */
 class QGLabel : public QGInteractor {
 public:
-    QGLabel(const std::string& text = "", QWidget* parent = nullptr);
+    QGLabel(const std::string& text = "", const std::string& iconFileName = "", QWidget* parent = nullptr);
     virtual ~QGLabel();
     virtual std::string getLabel() const;
     virtual std::string getText() const;
+    virtual QGInteractor::TextPosition getTextPosition() const;
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;
-    virtual void setIcon(const std::string& filename);
+    virtual void setIcon(const std::string& filename, bool retainIconSize = true);
     virtual void setLabel(const std::string& text);
     virtual void setText(const std::string& text);
+    virtual void setTextPosition(QGInteractor::TextPosition position);
 
 private:
     _Internal_QLabel* _iqlabel;

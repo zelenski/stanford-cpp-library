@@ -577,16 +577,17 @@ void clickHandler() {
     window->clear();
 }
 
-void chooserChangeHandler() {
+void chooserChangeHandler(const QGEvent&) {
     cout << "changeHandler: chooser was clicked!" << endl;
     cout << "selected: " << chooser->getSelectedIndex() << " : "
          << chooser->getSelectedItem() << endl;
     cout << "size: " << chooser->size() << endl << endl;
 }
 
-void sliderChangeHandler() {
+void sliderChangeHandler(const QGEvent& event) {
     cout << "sliderChangeHandler: slider was slid!" << endl;
     cout << "value: " << slider->getValue() << endl;
+    cout << "event: " << event << endl;
 }
 
 void testQwindow() {
@@ -617,7 +618,7 @@ void testQwindow() {
     cout << "chooser:   " << chooser->toString() << endl;
 
     static QGCheckBox* checkBox = new QGCheckBox("Question?", true);
-    checkBox->setChangeHandler([]() {
+    checkBox->setChangeHandler([](const QGEvent&) {
         cout << "checkbox clicked! " << boolalpha << checkBox->isChecked() << endl;
     });
     window->addToRegion(checkBox, "West");
@@ -629,7 +630,7 @@ void testQwindow() {
     static QGRadioButton* radio1group2 = new QGRadioButton("XX", "group2", true);
     static QGRadioButton* radio2group2 = new QGRadioButton("YY", "group2");
 
-    void (* radioChangeHandler)() = [] {
+    QGEventHandler radioChangeHandler = [](const QGEvent&) {
         cout << "checkbox clicked! " << boolalpha
              << radio1group1->isChecked() << " "
              << radio2group1->isChecked() << " "
@@ -654,7 +655,7 @@ void testQwindow() {
     textField->setPlaceholder("type your name");
     // textField->setEditable(false);
     textField->setAutocompleteList({"matt", "Marty", "Stuart", "steve", "yana", "yes", "no"});
-    textField->setTextChangeHandler([]() {
+    textField->setTextChangeHandler([](const QGEvent&) {
         cout << "textfield text changed! text is:" << endl << textField->getText() << endl;
     });
     window->addToRegion(textField, "North");
@@ -670,24 +671,27 @@ void testQwindow() {
     window->fillRect(10, 30, 120, 70);
     window->drawLine(100, 100, 200, 150);
 
-    static QGTextArea* textArea = new QGTextArea("This is \na multi-line\n\ntext area");
-    textArea->setRowsColumns(4, 30);
-    textArea->setPlaceholder("type some text");
-    textArea->setTextChangeHandler([]() {
-        cout << "textarea text changed! text is:" << endl << textArea->getText() << endl;
-    });
-    window->addToRegion(textArea, "West");
-    cout << "textarea:  " << textArea->toString() << endl;
+//    static QGTextArea* textArea = new QGTextArea("This is \na multi-line\n\ntext area");
+//    textArea->setRowsColumns(4, 30);
+//    textArea->setPlaceholder("type some text");
+//    textArea->setTextChangeHandler([](const QGEvent&) {
+//        cout << "textarea text changed! text is:" << endl << textArea->getText() << endl;
+//    });
+//    window->addToRegion(textArea, "West");
+//    cout << "textarea:  " << textArea->toString() << endl;
 
-    QGButton* button = new QGButton("");
+    QGButton* button = new QGButton("Triforce");
     button->setColor(QGColor::RED);
     button->setBackground(QGColor::YELLOW);
     button->setIcon("triangle-icon.png");
+    button->setTextPosition(QGInteractor::TEXT_BESIDE_ICON);
     button->setClickHandler(clickHandler);
+    button->setAccelerator("Ctrl-T");
     window->addToRegion(button, "South");
     cout << "button:    " << button->toString() << endl;
+    cout << "button accelerator: " << button->getAccelerator() << endl;
     cout << "button font: " << button->getFont() << endl;
-    // button->setFont("Monospaced-Bold-14");
+    button->setFont("Monospaced-Bold-14");
 
     slider = new QGSlider();
     slider->setMinorTickSpacing(20);
@@ -728,19 +732,20 @@ void testQwindowDrawing() {
     window->setLineWidth(3);
     window->fillRect(10, 30, 120, 70);
     window->drawLine(100, 100, 200, 150);
+    window->setColor("red");
+    window->setFillColor("red");
+
+    window->setMouseHandler([](QGEvent event) {
+        cout << "mouse! event=" << event << endl;
+        if (event.getType() == QGEvent::MOUSE_DRAGGED) {
+            window->drawOval(event.getX() - 1, event.getY() - 1, 3, 3);
+        }
+    });
 }
 
 
 int main() {
-    cout << "main is in thread " << QGui::instance()->getCurrentThread() << endl;
-    cout << " (qt main=" << QGui::instance()->getQtMainThread()
-         << " student=" << QGui::instance()->getStudentThread() << ")" << endl;
-    QGui::instance()->runOnQtGuiThread(testQwindow);
-    cout << "main back from running on GUI thread." << endl;
-    cout << "main sleeping 200ms ..." << endl;
-    QGui::instance()->getCurrentThread()->msleep(200);
-    cout << "main done sleeping." << endl;
-
+    QGui::instance()->runOnQtGuiThread(testQwindowDrawing);
     return 0;
 }
 

@@ -23,7 +23,7 @@
 class QGTextField;
 
 // Internal class; not to be used by clients.
-class _Internal_QLineEdit : public QLineEdit {
+class _Internal_QLineEdit : public QLineEdit, public _Internal_QWidget {
     Q_OBJECT
 
 public:
@@ -67,7 +67,8 @@ public:
     virtual void setMaxLength(int maxLength);
     virtual void setPlaceholder(const std::string& text);
     virtual void setText(const std::string& text);
-    virtual void setTextChangeHandler(std::function<void()> func);
+    virtual void setTextChangeHandler(QGEventHandler func);
+    virtual void setTextChangeHandler(QGEventHandlerVoid func);
     virtual void setValue(bool value);
     virtual void setValue(char value);
     virtual void setValue(double value);

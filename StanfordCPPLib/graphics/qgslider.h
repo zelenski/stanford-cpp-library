@@ -18,7 +18,7 @@
 class QGSlider;
 
 // Internal class; not to be used by clients.
-class _Internal_QSlider : public QSlider {
+class _Internal_QSlider : public QSlider, public _Internal_QWidget {
     Q_OBJECT
 
 public:
@@ -50,7 +50,8 @@ public:
     virtual std::string getType() const;
     virtual int getValue() const;
     virtual QWidget* getWidget() const;
-    virtual void setChangeHandler(std::function<void()> func);
+    virtual void setChangeHandler(QGEventHandler func);
+    virtual void setChangeHandler(QGEventHandlerVoid func);
     virtual void setMajorTickSpacing(int value);
     virtual void setMinorTickSpacing(int value);
     virtual void setPaintLabels(bool value);

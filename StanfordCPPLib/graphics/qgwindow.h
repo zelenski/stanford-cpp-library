@@ -173,6 +173,12 @@ public:
     virtual void setLocation(double x, double y);
     virtual void setLocation(const GPoint& p);
     virtual void setLocation(const Point& p);
+    virtual void setClickHandler(QGEventHandler func);
+    virtual void setClickHandler(QGEventHandlerVoid func);
+    virtual void setMouseHandler(QGEventHandler func);
+    virtual void setMouseHandler(QGEventHandlerVoid func);
+    virtual void setWindowHandler(QGEventHandler func);
+    virtual void setWindowHandler(QGEventHandlerVoid func);
     virtual void setPixel(double x, double y, int rgb);
     virtual void setPixelARGB(double x, double y, int argb);
     virtual void setPixels(const Grid<int>& pixels);

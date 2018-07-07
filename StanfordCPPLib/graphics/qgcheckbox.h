@@ -21,7 +21,7 @@
 class QGCheckBox;
 
 // Internal class; not to be used by clients.
-class _Internal_QCheckBox : public QCheckBox {
+class _Internal_QCheckBox : public QCheckBox, public _Internal_QWidget {
     Q_OBJECT
 
 public:
@@ -47,7 +47,8 @@ public:
     virtual bool isChecked() const;
     virtual bool isSelected() const;
     virtual void setChecked(bool checked);
-    virtual void setChangeHandler(std::function<void()> func);
+    virtual void setChangeHandler(QGEventHandler func);
+    virtual void setChangeHandler(QGEventHandlerVoid func);
     virtual void setSelected(bool selected);
     virtual void setText(const std::string& text);
 

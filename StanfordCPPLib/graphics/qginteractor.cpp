@@ -26,28 +26,24 @@ void QGInteractor::ensureThreadSafety() {
     QGui::instance()->ensureThatThisIsTheQtGuiThread();
 }
 
-void QGInteractor::fireEvent(const std::string& eventName) {
-    if (hasEventHandler(eventName)) {
-        _eventMap[eventName]();
+void QGInteractor::fireEvent(QGEvent& event) {
+    if (hasEventHandler(event.getName())) {
+        event._source = this;
+        _eventMap[event.getName()].fireEvent(event);
     }
 }
 
 std::string QGInteractor::getAccelerator() const {
-    // TODO
-    return "?";
+    // override in subclasses
+    return "";
 }
 
 std::string QGInteractor::getActionCommand() const {
-    // TODO
-    return "?";
+    return _actionCommand;
 }
 
 GRectangle QGInteractor::getBounds() const {
     return GRectangle(getX(), getY(), getWidth(), getHeight());
-}
-
-std::function<void()> QGInteractor::getEventHandler(const std::string& eventName) const {
-    return _eventMap[eventName];
 }
 
 std::string QGInteractor::getFont() const {
@@ -55,8 +51,7 @@ std::string QGInteractor::getFont() const {
 }
 
 std::string QGInteractor::getIcon() const {
-    // TODO
-    return "?";
+    return _icon;
 }
 
 QWidget* QGInteractor::getInternalParent(QWidget* parent) const {
@@ -96,16 +91,25 @@ bool QGInteractor::isVisible() const {
     return getWidget()->isVisible();
 }
 
+std::string QGInteractor::normalizeAccelerator(const std::string& accelerator) const {
+    std::string acceleratorStr = stringReplace(accelerator, "Alt-", "Alt+");
+    acceleratorStr = stringReplace(acceleratorStr, "Command-", "Command+");
+    acceleratorStr = stringReplace(acceleratorStr, "Ctrl-", "Ctrl+");
+    acceleratorStr = stringReplace(acceleratorStr, "Meta-", "Meta+");
+    acceleratorStr = stringReplace(acceleratorStr, "Shift-", "Shift+");
+    return acceleratorStr;
+}
+
 void QGInteractor::requestFocus() {
     getWidget()->setFocus();
 }
 
-void QGInteractor::setActionCommand(const std::string& /* actionCommand */) {
-    // TODO
+void QGInteractor::setActionCommand(const std::string& actionCommand) {
+    _actionCommand = actionCommand;
 }
 
 void QGInteractor::setAccelerator(const std::string& /* accelerator */) {
-    // TODO
+    // override in subclasses
 }
 
 void QGInteractor::setBackground(int rgb) {
@@ -148,8 +152,18 @@ void QGInteractor::setEnabled(bool value) {
     getWidget()->setEnabled(value);
 }
 
-void QGInteractor::setEventHandler(const std::string& eventName, std::function<void()> func) {
-    _eventMap[eventName] = func;
+void QGInteractor::setEventHandler(const std::string& eventName, QGEventHandler func) {
+    QGEvent::EventHandlerWrapper wrapper;
+    wrapper.type = QGEvent::HANDLER_EVENT;
+    wrapper.handler = func;
+    _eventMap[eventName] = wrapper;
+}
+
+void QGInteractor::setEventHandler(const std::string& eventName, QGEventHandlerVoid func) {
+    QGEvent::EventHandlerWrapper wrapper;
+    wrapper.type = QGEvent::HANDLER_VOID;
+    wrapper.handlerVoid = func;
+    _eventMap[eventName] = wrapper;
 }
 
 void QGInteractor::setForeground(int rgb) {
@@ -169,8 +183,10 @@ void QGInteractor::setFont(const std::string& font) {
     getWidget()->setFont(qfont);
 }
 
-void QGInteractor::setIcon(const std::string& /* filename */) {
-    // TODO: implement in subclasses as appropriate
+void QGInteractor::setIcon(const std::string& filename, bool /* retainIconSize */) {
+    _icon = filename;
+
+    // override in subclasses as appropriate
 }
 
 void QGInteractor::setMnemonic(char /* mnemonic */) {

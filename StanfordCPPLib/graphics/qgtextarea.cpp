@@ -17,7 +17,11 @@ _Internal_QTextEdit::_Internal_QTextEdit(QGTextArea* qgtextArea, QWidget* parent
 }
 
 void _Internal_QTextEdit::handleTextChange() {
-    _qgtextarea->fireEvent("textchange");
+    QGEvent textChangeEvent(
+                /* class  */ QGEvent::KEY_EVENT,
+                /* type   */ QGEvent::KEY_TYPED,
+                /* name   */ "textchange");
+    _qgtextarea->fireEvent(textChangeEvent);
 }
 
 QGTextArea::QGTextArea(int rows, int columns, QWidget* parent) {
@@ -96,6 +100,10 @@ void QGTextArea::setText(const std::string& text) {
     _iqtextedit->setText(QString::fromStdString(text));
 }
 
-void QGTextArea::setTextChangeHandler(std::function<void()> func) {
+void QGTextArea::setTextChangeHandler(QGEventHandler func) {
+    setEventHandler("textchange", func);
+}
+
+void QGTextArea::setTextChangeHandler(QGEventHandlerVoid func) {
     setEventHandler("textchange", func);
 }

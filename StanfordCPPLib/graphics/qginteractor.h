@@ -15,12 +15,21 @@
 #include <QWidget>
 #include "gtypes.h"
 #include "map.h"
+#include "qgevent.h"
+
+class QGWindow;   // forward declaration
 
 /*
  * ...
  */
 class QGInteractor {
 public:
+    enum TextPosition {
+        TEXT_BESIDE_ICON,
+        TEXT_UNDER_ICON,
+        TEXT_ONLY
+    };
+
     QGInteractor();
     virtual std::string getAccelerator() const;
     virtual std::string getActionCommand() const;
@@ -49,7 +58,7 @@ public:
     virtual void setForeground(int rgb);
     virtual void setForeground(const std::string& color);
     virtual void setFont(const std::string& font);
-    virtual void setIcon(const std::string& filename);
+    virtual void setIcon(const std::string& filename, bool retainIconSize = true);
     virtual void setMnemonic(char mnemonic);
     virtual void setSize(double width, double height);
     virtual void setSize(const GDimension& size);
@@ -60,13 +69,22 @@ public:
 protected:
     virtual void clearEventHandlers();
     virtual void ensureThreadSafety();
-    virtual void fireEvent(const std::string& eventName);
-    virtual std::function<void()> getEventHandler(const std::string& eventName) const;
+    virtual void fireEvent(QGEvent& event);
     virtual QWidget* getInternalParent(QWidget* parent) const;
     virtual bool hasEventHandler(const std::string& eventName) const;
-    virtual void setEventHandler(const std::string& eventName, std::function<void()> func);
+    virtual std::string normalizeAccelerator(const std::string& accelerator) const;
+    virtual void setEventHandler(const std::string& eventName, QGEventHandler func);
+    virtual void setEventHandler(const std::string& eventName, QGEventHandlerVoid func);
 
-    Map<std::string, std::function<void()>> _eventMap;
+    Map<std::string, QGEvent::EventHandlerWrapper> _eventMap;
+    std::string _actionCommand;
+    std::string _icon;
+
+    friend class QGWindow;
+};
+
+class _Internal_QWidget {
+    // empty
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

@@ -18,7 +18,11 @@ _Internal_QCheckBox::_Internal_QCheckBox(QGCheckBox* qgcheckBox, bool checked, Q
 }
 
 void _Internal_QCheckBox::handleStateChange(int /* state */) {
-    _qgcheckBox->fireEvent("change");
+    QGEvent changeEvent(
+                /* class  */ QGEvent::CHANGE_EVENT,
+                /* type   */ QGEvent::STATE_CHANGED,
+                /* name   */ "change");
+    _qgcheckBox->fireEvent(changeEvent);
 }
 
 QGCheckBox::QGCheckBox(const std::string& text, bool checked, QWidget* parent) {
@@ -59,7 +63,11 @@ void QGCheckBox::setSelected(bool selected) {
     _iqcheckBox->setChecked(selected);
 }
 
-void QGCheckBox::setChangeHandler(std::function<void()> func) {
+void QGCheckBox::setChangeHandler(QGEventHandler func) {
+    setEventHandler("change", func);
+}
+
+void QGCheckBox::setChangeHandler(QGEventHandlerVoid func) {
     setEventHandler("change", func);
 }
 

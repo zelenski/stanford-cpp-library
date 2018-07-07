@@ -20,7 +20,7 @@
 class QGChooser;
 
 // Internal class; not to be used by clients.
-class _Internal_QComboBox : public QComboBox {
+class _Internal_QComboBox : public QComboBox, public _Internal_QWidget {
     Q_OBJECT
 
 public:
@@ -53,7 +53,8 @@ public:
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;
     virtual bool isEditable() const;
-    virtual void setChangeHandler(std::function<void()> func);
+    virtual void setChangeHandler(QGEventHandler func);
+    virtual void setChangeHandler(QGEventHandlerVoid func);
     virtual void setEditable(bool editable);
     virtual void setItem(int index, const std::string& item);
     virtual void setSelectedIndex(int index);

@@ -127,7 +127,7 @@ void QGWindow::addToRegion(QGInteractor* interactor, const std::string& region) 
 
     if (layout == _iqmainwindow->_centerLayout) {
         // center holds at most one widget
-        if (_canvas) {
+        if (_canvas && widget != _canvas->getWidget()) {
             _canvas->setVisible(false);
         }
         QGBorderLayout::clearLayout(layout);
@@ -702,6 +702,46 @@ void QGWindow::setLocation(const GPoint& p) {
 
 void QGWindow::setLocation(const Point& p) {
     setLocation(p.getX(), p.getY());
+}
+
+void QGWindow::setClickHandler(QGEventHandler func) {
+    _canvas->setEventHandler("click", func);
+}
+
+void QGWindow::setClickHandler(QGEventHandlerVoid func) {
+    _canvas->setEventHandler("click", func);
+}
+
+void QGWindow::setMouseHandler(QGEventHandler func) {
+    _canvas->setEventHandler("click", func);
+    _canvas->setEventHandler("mousedrag", func);
+    _canvas->setEventHandler("mouseenter", func);
+    _canvas->setEventHandler("mouseexit", func);
+    _canvas->setEventHandler("mousemove", func);
+    _canvas->setEventHandler("mousepress", func);
+    _canvas->setEventHandler("mouserelease", func);
+}
+
+void QGWindow::setMouseHandler(QGEventHandlerVoid func) {
+    _canvas->setEventHandler("click", func);
+    _canvas->setEventHandler("mousedrag", func);
+    _canvas->setEventHandler("mouseenter", func);
+    _canvas->setEventHandler("mouseexit", func);
+    _canvas->setEventHandler("mousemove", func);
+    _canvas->setEventHandler("mousepress", func);
+    _canvas->setEventHandler("mouserelease", func);
+}
+
+void QGWindow::setWindowHandler(QGEventHandler /* func */) {
+    // TODO
+//    setEventHandler("close", func);
+//    setEventHandler("resize", func);
+}
+
+void QGWindow::setWindowHandler(QGEventHandlerVoid /* func */) {
+    // TODO
+//    setEventHandler("close", func);
+//    setEventHandler("resize", func);
 }
 
 void QGWindow::setPixel(double /* x */, double /* y */, int /* rgb */) {

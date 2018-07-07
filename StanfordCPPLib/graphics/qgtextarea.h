@@ -18,7 +18,7 @@
 class QGTextArea;
 
 // Internal class; not to be used by clients.
-class _Internal_QTextEdit : public QTextEdit {
+class _Internal_QTextEdit : public QTextEdit, public _Internal_QWidget {
     Q_OBJECT
 
 public:
@@ -52,7 +52,8 @@ public:
     virtual void setRows(int rows);
     virtual void setRowsColumns(int rows, int columns);
     virtual void setText(const std::string& text);
-    virtual void setTextChangeHandler(std::function<void()> func);
+    virtual void setTextChangeHandler(QGEventHandler func);
+    virtual void setTextChangeHandler(QGEventHandlerVoid func);
 
 private:
     _Internal_QTextEdit* _iqtextedit;

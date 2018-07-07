@@ -16,7 +16,11 @@ _Internal_QSlider::_Internal_QSlider(QGSlider* qgslider, QWidget* parent)
 }
 
 void _Internal_QSlider::handleChange(int /* value */) {
-    _qgslider->fireEvent("change");
+    QGEvent changeEvent(
+                /* class  */ QGEvent::CHANGE_EVENT,
+                /* type   */ QGEvent::STATE_CHANGED,
+                /* name   */ "change");
+    _qgslider->fireEvent(changeEvent);
 }
 
 const int QGSlider::DEFAULT_MIN_VALUE = 0;
@@ -69,7 +73,11 @@ QWidget* QGSlider::getWidget() const {
     return static_cast<QWidget*>(_iqslider);
 }
 
-void QGSlider::setChangeHandler(std::function<void()> func) {
+void QGSlider::setChangeHandler(QGEventHandler func) {
+    setEventHandler("change", func);
+}
+
+void QGSlider::setChangeHandler(QGEventHandlerVoid func) {
     setEventHandler("change", func);
 }
 
