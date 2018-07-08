@@ -205,12 +205,14 @@ public class JBEWindow extends JFrame implements JBEWindowInterface {
 			remove(paramJComponent);
 			add(this.canvas);
 			validate();
+			repaint();
 			return;
 		}
 		if (localJPanel != null) {
 			localJPanel.remove(paramJComponent);
 			localJPanel.validate();
 			validate();
+			repaint();
 		}
 	}
 	
