@@ -5,6 +5,7 @@ Autograder_QtCreatorProject/lib/autograder
 Autograder_QtCreatorProject/lib/StanfordCPPLib
 build/
 build_*/
+cp-cpplib-codestepbystep.sh
 empty-project/lib/*
 JavaBackEnd/eclipseproject/bin/*
 JavaBackEnd/eclipseproject/obf/temp/*
@@ -12,6 +13,7 @@ Karel/src/CollectNewspaper.java
 Karel/bin/*
 Karel/.settings
 local/*
+spl.jar
 StanfordCPPLib_QtCreatorProject/lib/StanfordCPPLib
 StanfordCPPLib_experimental/
 stanfordcpplib.cpp
