@@ -56,10 +56,17 @@ public:
     void close();
 
     /*
-     * Returns the most recent HTTP error code received, if any.
+     * Returns the most recent error code received, if any.
      * Returns 0 if no error codes have been issued.
      */
     int getErrorCode() const;
+
+    /*
+     * Returns the most recent HTTP status code, which may be a successful
+     * code (e.g. 200) or an error (e.g 404). If there is no HTTP status
+     * code to return, returns 0.
+     */
+    int getHttpStatusCode() const;
 
     /*
      * Returns the value of the given HTTP header for this URL request.

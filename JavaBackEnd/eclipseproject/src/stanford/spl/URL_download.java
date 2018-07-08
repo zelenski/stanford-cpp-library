@@ -22,11 +22,11 @@ public class URL_download extends JBECommand {
 		
 		int result = 0;
 		try {
-			UrlDownloader.getInstance().download(urlString, tmpFile);
+			result = UrlDownloader.getInstance().download(urlString, tmpFile);
 		} catch (MalformedURLException mfurle) {
-			result = -42;
+			result = UrlDownloader.ERR_MALFORMED_URL;
 		} catch (IOException ioe) {
-			result = -43;
+			result = UrlDownloader.ERR_IO_EXCEPTION;
 		}
 		
 		SplPipeDecoder.writeResult(result);

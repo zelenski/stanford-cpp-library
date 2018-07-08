@@ -8,6 +8,7 @@ package stanford.spl;
 import java.awt.*;
 import java.io.*;
 import javax.swing.*;
+import javax.xml.ws.http.HTTPException;
 
 public class LibraryUpdater {
 	private static final boolean AUTO_DOWNLOAD = false;
@@ -32,6 +33,10 @@ public class LibraryUpdater {
 		String latestVersion = "";
 		try {
 			latestVersion = downloader.download(latestVersionUrl);
+		} catch (HTTPException he) {
+			JOptionPane.showMessageDialog(parent,
+					"Unable to look up latest version from web: " + he.toString());
+			return false;
 		} catch (IOException ioe) {
 			JOptionPane.showMessageDialog(parent,
 					"Unable to look up latest version from web: " + ioe.toString());
@@ -132,6 +137,8 @@ public class LibraryUpdater {
 //						dialog.println("If you are not sure how to do this,");
 //						dialog.println("please seek assistance from your instructor or TA.");
 					}
+				} catch (HTTPException he) {
+					dialog.println("Unable to download library: \n" + he.toString());
 				} catch (IOException ioe) {
 					dialog.println("Unable to download library: \n" + ioe.toString());
 				}
