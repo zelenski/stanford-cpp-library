@@ -3,6 +3,9 @@
  * --------------
  * This file defines the <code>GTimer</code> class, which implements a
  * general interval timer.
+ *
+ * @version 2018/07/08
+ * - fixed bug with stale timer events after timer is destructed
  */
 
 #ifndef _gtimer_h
@@ -18,10 +21,14 @@ class Platform;
  * Friend type: GTimerData
  * -----------------------
  * This type maintains a reference count to determine when it is
- * possible to free the timer.  The address of this block is used
- * as the timer id.
+ * possible to free the timer.
  */
 struct GTimerData {
+    GTimerData();
+    ~GTimerData();
+
+    static int instanceCount;
+    int id;
     int refCount;
 };
 
@@ -56,6 +63,16 @@ public:
     virtual ~GTimer();
 
     /*
+     * Method: getID
+     * Usage: int id = timer.getID();
+     * ------------------------------
+     * Returns a unique ID string for this timer.
+     * The ID is related to the timer's memory address along with a unique number
+     * that increments each time a timer is created.
+     */
+    std::string getID() const;
+
+    /*
      * Method: start
      * Usage: timer.start();
      * ---------------------
@@ -80,7 +97,7 @@ public:
      * ------------------------
      * Checks whether the two objects refer to the same timer.
      */
-    bool operator==(GTimer t2);
+    bool operator ==(const GTimer& t2);
 
     /*
      * Friend operator: !=
@@ -88,16 +105,16 @@ public:
      * ------------------------
      * Checks whether the two objects refer to the different timers.
      */
-    bool operator!=(GTimer t2);
+    bool operator !=(const GTimer& t2);
 
     /* Private section */
-    GTimer(GTimerData *gtd);
-    GTimer(const GTimer & src);
-    GTimer & operator=(const GTimer & src);
+    GTimer(GTimerData* gtd);
+    GTimer(const GTimer& src);
+    GTimer& operator =(const GTimer& src);
 
 private:
     /* Instance variables */
-    GTimerData *gtd;
+    GTimerData* gtd;
 
     friend class stanfordcpplib::Platform;
     friend class GTimerEvent;

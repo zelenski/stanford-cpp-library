@@ -4,6 +4,8 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2018/07/08
+ * - bug fix for GTimer deletion
  * @version 2018/06/24
  * - added hyperlink events
  * @version 2018/06/23
@@ -880,34 +882,34 @@ void Platform::gtimer_pause(double milliseconds) {
 }
 
 void Platform::gtimer_constructor(const GTimer& timer, double delay) {
-    std::ostringstream os;
-    os << timer.gtd;
-    std::string id = os.str();
+    std::string id = timer.getID();
     STATIC_VARIABLE(timerTable).put(id, timer.gtd);
-    os.str("");
+    std::ostringstream os;
     os << "GTimer.create(\"" << id << "\", " << delay << ")";
     putPipe(os.str());
 }
 
 void Platform::gtimer_delete(const GTimer& timer) {
-    std::ostringstream os;
-    os << timer.gtd;
-    std::string id = os.str();
-    STATIC_VARIABLE(timerTable).remove(id);
-    os.str("");
-    os << "GTimer.deleteTimer(\"" << id << "\")";
-    putPipe(os.str());
+    std::string id = timer.getID();
+    if (STATIC_VARIABLE(timerTable).containsKey(id)) {
+        STATIC_VARIABLE(timerTable).remove(id);
+        std::ostringstream os;
+        os << "GTimer.deleteTimer(\"" << id << "\")";
+        putPipe(os.str());
+    }
 }
 
 void Platform::gtimer_start(const GTimer& timer) {
+    std::string id = timer.getID();
     std::ostringstream os;
-    os << "GTimer.startTimer(\"" << timer.gtd << "\")";
+    os << "GTimer.startTimer(\"" << id << "\")";
     putPipe(os.str());
 }
 
 void Platform::gtimer_stop(const GTimer& timer) {
+    std::string id = timer.getID();
     std::ostringstream os;
-    os << "GTimer.stopTimer(\"" << timer.gtd << "\")";
+    os << "GTimer.stopTimer(\"" << id << "\")";
     putPipe(os.str());
 }
 
@@ -3057,11 +3059,13 @@ static std::string getResult(bool consumeAcks, bool stopOnEvent,
         } else if (isEvent) {
             // a Java-originated event; enqueue it to process here
             GEvent event = parseEvent(line.substr(6));
-            STATIC_VARIABLE(eventQueue).enqueue(event);
-            if (stopOnEvent ||
-                    (event.getEventClass() == WINDOW_EVENT && event.getEventType() == CONSOLE_CLOSED
-                    && caller == "getLineConsole")) {
-                return "";
+            if (event.isValid()) {
+                STATIC_VARIABLE(eventQueue).enqueue(event);
+                if (stopOnEvent ||
+                        (event.getEventClass() == WINDOW_EVENT && event.getEventType() == CONSOLE_CLOSED
+                        && caller == "getLineConsole")) {
+                    return "";
+                }
             }
         } else {
             if (line.find("\tat ") != std::string::npos || line.find("   at ") != std::string::npos) {
@@ -3392,9 +3396,16 @@ static GEvent parseTimerEvent(TokenScanner& scanner, EventType type) {
     scanner.verifyToken(",");
     double time = scanDouble(scanner);
     scanner.verifyToken(")");
-    GTimerEvent e(type, GTimer(STATIC_VARIABLE(timerTable).get(id)));
-    e.setEventTime(time);
-    return e;
+
+    if (STATIC_VARIABLE(timerTable).containsKey(id)) {
+        GTimerEvent e(type, GTimer(STATIC_VARIABLE(timerTable).get(id)));
+        e.setEventTime(time);
+        return e;
+    } else {
+        // invalid timer ID; return an empty/invalid event
+        GTimerEvent e;
+        return e;
+    }
 }
 
 static GEvent parseWindowEvent(TokenScanner& scanner, EventType type) {

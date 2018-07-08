@@ -1,4 +1,8 @@
 /*
+ * @version 2018/07/08
+ * - cleanup parameter/variable names
+ * @version 2018/06/20
+ * - added mouseEntered, mouseExited, and mouseWheelMoved events
  * @version 2018/06/20
  * - added mouseEntered, mouseExited, and mouseWheelMoved events
  * @version 2016/11/24
@@ -103,7 +107,7 @@ public class JavaBackEnd implements
 		return ourConsoleFont;
 	}
 
-	public static void main(String[] paramArrayOfString) {
+	public static void main(String[] args) {
 		try {
 			String prop = System.getProperty(DEBUG_PROPERTY);
 			DEBUG = prop != null && (prop.startsWith("t") || prop.startsWith("1"));
@@ -111,7 +115,7 @@ public class JavaBackEnd implements
 			// empty
 		}
 		
-		new JavaBackEnd().run(paramArrayOfString);
+		new JavaBackEnd().run(args);
 	}
 	
 	private String appName;
@@ -185,8 +189,8 @@ public class JavaBackEnd implements
 		return consoleFrame;
 	}
 
-	public void run(String[] paramArrayOfString) {
-		processArguments(paramArrayOfString);
+	public void run(String[] args) {
+		processArguments(args);
 		initSystemProperties();
 		this.cmdTable = JBECommand.createCommandTable();
 		this.imageTable = new HashMap<String, Image>();
@@ -236,9 +240,9 @@ public class JavaBackEnd implements
 		commandLoop();
 	}
 
-	public void createWindow(String paramString, int paramInt1, int paramInt2,
-			TopCompound paramTopCompound) {
-		createWindow(paramString, paramInt1, paramInt2, paramTopCompound, true);
+	public void createWindow(String windowId, int width, int height,
+			TopCompound topCompound) {
+		createWindow(windowId, width, height, topCompound, true);
 	}
 	
 	// JL: SwingUtilities.invokeLater
@@ -258,11 +262,11 @@ public class JavaBackEnd implements
 			// commented out by Marty 2014/03/05;
 			// This code used to set console's size to the size of the last created window
 			// for some reason.  Why??  No.  Bad.  Turning this off.
-			// this.consoleWidth = paramInt1;
-			// this.consoleY = (50 + paramInt2);
+			// this.consoleWidth = width;
+			// this.consoleY = (50 + height);
 			jbeWindow.pack();
 			jbeWindow.setLocation(10, 10);
-//			localJBEWindow.getCanvas().initOffscreenImage();
+//			jbeWindow.getCanvas().initOffscreenImage();
 			jbeWindow.getCanvas().setTopCompound(top);
 			jbeWindow.setResizable(false);
 			this.activeWindowCount += 1;
@@ -275,36 +279,36 @@ public class JavaBackEnd implements
 		}
 	}
 
-	public void deleteWindow(String paramString) {
-		this.windowTable.remove(paramString);
+	public void deleteWindow(String windowId) {
+		this.windowTable.remove(windowId);
 	}
 
-	public void defineGObject(String paramString, GObject paramGObject) {
-		this.gobjTable.put(paramString, paramGObject);
+	public void defineGObject(String id, GObject gobj) {
+		this.gobjTable.put(id, gobj);
 	}
 
-	public void defineSource(JComponent paramJComponent, String paramString) {
-		this.sourceTable.put(paramJComponent, paramString);
+	public void defineSource(JComponent comp, String id) {
+		this.sourceTable.put(comp, id);
 	}
 
-	public void deleteGObject(String paramString) {
-		this.gobjTable.remove(paramString);
+	public void deleteGObject(String id) {
+		this.gobjTable.remove(id);
 	}
 
-	protected String getSourceId(JComponent paramJComponent) {
-		return (String) this.sourceTable.get(paramJComponent);
+	protected String getSourceId(JComponent comp) {
+		return (String) this.sourceTable.get(comp);
 	}
 
-	public GObject getGObject(String paramString) {
-		return (GObject) this.gobjTable.get(paramString);
+	public GObject getGObject(String id) {
+		return (GObject) this.gobjTable.get(id);
 	}
 
-	public JComponent getInteractor(GObject paramGObject) {
-		if ((paramGObject instanceof GInteractor)) {
-			return ((GInteractor) paramGObject).getInteractor();
+	public JComponent getInteractor(GObject gobj) {
+		if ((gobj instanceof GInteractor)) {
+			return ((GInteractor) gobj).getInteractor();
 		}
-		if ((paramGObject instanceof JBELabel)) {
-			return ((JBELabel) paramGObject).getInteractor();
+		if ((gobj instanceof JBELabel)) {
+			return ((JBELabel) gobj).getInteractor();
 		}
 		return null;
 	}
@@ -332,8 +336,8 @@ public class JavaBackEnd implements
 		this.consoleCloseOperation = op;
 	}
 
-	public void setConsoleFont(String paramString) {
-		Font font = JTFTools.decodeFont(paramString);
+	public void setConsoleFont(String fontString) {
+		Font font = JTFTools.decodeFont(fontString);
 		ourConsoleFont = font;
 		this.console.setFont(font);
 	}
@@ -366,9 +370,9 @@ public class JavaBackEnd implements
 	}
 
 	// JL: SwingUtilities.invokeLater
-	public void setConsoleSize(int paramInt1, int paramInt2) {
-		this.consoleWidth = paramInt1;
-		this.consoleHeight = paramInt2;
+	public void setConsoleSize(int width, int height) {
+		this.consoleWidth = width;
+		this.consoleHeight = height;
 //		if (this.console != null) {
 //			this.console.setPreferredSize(this.consoleWidth, this.consoleHeight);
 //			if (this.consoleFrame != null) {
@@ -393,19 +397,19 @@ public class JavaBackEnd implements
 		return this.console.readLine();
 	}
 
-	protected void putConsole(String paramString) {
-		putConsole(paramString, false);
+	protected void putConsole(String text) {
+		putConsole(text, false);
 	}
 	
-	public void putConsole(String paramString, boolean isStderr) {
+	public void putConsole(String text, boolean isStderr) {
 		if (this.consoleFrame == null) {
 			showConsole();
 		}
 		if (isStderr) {
 			ConsoleModel model = this.console.getConsoleModel();
-			model.print(paramString, ConsoleModel.ERROR_STYLE);
+			model.print(text, ConsoleModel.ERROR_STYLE);
 		} else {
-			this.console.print(paramString);
+			this.console.print(text);
 		}
 	}
 
@@ -424,9 +428,9 @@ public class JavaBackEnd implements
 		return new Date().getTime();
 	}
 
-	public void println(String paramString) {
+	public void println(String text) {
 		synchronized (this.eventLock) {
-			SplPipeDecoder.println(paramString);
+			SplPipeDecoder.println(text);
 		}
 	}
 
@@ -462,22 +466,22 @@ public class JavaBackEnd implements
 		}
 	}
 
-	protected void getNextEvent(int paramInt) {
+	protected void getNextEvent(int eventMask) {
 		synchronized (this.eventLock) {
 			this.eventAcknowledged = false;
 			this.eventPending = false;
 			acknowledgeEvent();
-			this.eventMask = paramInt;
+			this.eventMask = eventMask;
 		}
 	}
 
-	protected void waitForEvent(int paramInt) {
+	protected void waitForEvent(int eventMask) {
 		synchronized (this.eventLock) {
 			this.eventAcknowledged = false;
 			if (this.eventPending) {
 				acknowledgeEvent();
 			}
-			this.eventMask = paramInt;
+			this.eventMask = eventMask;
 		}
 	}
 
@@ -501,80 +505,80 @@ public class JavaBackEnd implements
 		this.activeWindowCount += 1;
 	}
 
-	protected void createSound(String paramString1, String paramString2) {
-		Clip localClip = getClip(paramString2);
-		this.clipIdTable.put(paramString1, localClip);
+	protected void createSound(String id, String filename) {
+		Clip clip = getClip(filename);
+		this.clipIdTable.put(id, clip);
 	}
 
-	protected void deleteSound(String paramString) {
-		this.clipIdTable.remove(paramString);
+	protected void deleteSound(String id) {
+		this.clipIdTable.remove(id);
 	}
 
-	protected void playSound(String paramString) {
-		Clip localClip = (Clip) this.clipIdTable.get(paramString);
-		if (localClip != null) {
-			localClip.stop();
-			localClip.setFramePosition(0);
-			localClip.start();
+	protected void playSound(String id) {
+		Clip clip = (Clip) this.clipIdTable.get(id);
+		if (clip != null) {
+			clip.stop();
+			clip.setFramePosition(0);
+			clip.start();
 		}
 	}
 
-	protected void createTimer(String paramString, double paramDouble) {
-		GTimer localGTimer = new GTimer(paramString, paramDouble);
-		localGTimer.addActionListener(this);
-		this.timerTable.put(paramString, localGTimer);
+	protected void createTimer(String id, double ms) {
+		GTimer timer = new GTimer(id, ms);
+		timer.addActionListener(this);
+		this.timerTable.put(id, timer);
 	}
 
-	protected void deleteTimer(String paramString) {
-		GTimer localGTimer = (GTimer) this.timerTable.get(paramString);
-		if (localGTimer != null) {
-			localGTimer.stop();
+	protected void deleteTimer(String id) {
+		GTimer timer = this.timerTable.get(id);
+		if (timer != null) {
+			timer.stop();
 		}
-		this.timerTable.remove(paramString);
+		this.timerTable.remove(id);
 	}
 
-	protected void startTimer(String paramString) {
-		GTimer localGTimer = (GTimer) this.timerTable.get(paramString);
-		if (localGTimer != null) {
-			localGTimer.start();
+	protected void startTimer(String id) {
+		GTimer timer = this.timerTable.get(id);
+		if (timer != null) {
+			timer.start();
 		}
 	}
 
-	protected void stopTimer(String paramString) {
-		GTimer localGTimer = (GTimer) this.timerTable.get(paramString);
-		if (localGTimer != null) {
-			localGTimer.stop();
+	protected void stopTimer(String id) {
+		GTimer timer = this.timerTable.get(id);
+		if (timer != null) {
+			timer.stop();
 		}
 	}
 
 	// https://docs.oracle.com/javase/7/docs/api/constant-values.html#java.awt.event.InputEvent.BUTTON1_DOWN_MASK
-	private int convertModifiers(int paramInt) {
-		int i = 0;
-		if ((paramInt & 0x40) != 0) {
-			i |= SHIFT_DOWN;
+	private int convertModifiers(int modifiers) {
+		int converted = 0;
+		if ((modifiers & 0x40) != 0) {
+			converted |= SHIFT_DOWN;
 		}
-		if ((paramInt & 0x80) != 0) {
-			i |= CTRL_DOWN;
+		if ((modifiers & 0x80) != 0) {
+			converted |= CTRL_DOWN;
 		}
-		if ((paramInt & 0x100) != 0) {
-			i |= META_DOWN;
+		if ((modifiers & 0x100) != 0) {
+			converted |= META_DOWN;
 		}
-		if ((paramInt & 0x200) != 0) {
-			i |= ALT_DOWN;
+		if ((modifiers & 0x200) != 0) {
+			converted |= ALT_DOWN;
 		}
-		if ((paramInt & 0x2000) != 0) {
-			i |= ALT_GRAPH_DOWN;
+		if ((modifiers & 0x2000) != 0) {
+			converted |= ALT_GRAPH_DOWN;
 		}
-		if ((paramInt & 0x400) != 0) {
-			i |= BUTTON1_DOWN;
+		if ((modifiers & 0x400) != 0) {
+			converted |= BUTTON1_DOWN;
 		}
-		if ((paramInt & 0x800) != 0) {
-			i |= BUTTON2_DOWN;
+		if ((modifiers & 0x800) != 0) {
+			converted |= BUTTON2_DOWN;
 		}
-		if ((paramInt & 0x1000) != 0) {
-			i |= BUTTON3_DOWN;
+		if ((modifiers & 0x1000) != 0) {
+			converted |= BUTTON3_DOWN;
 		}
-		return i;
+		return converted;
 	}
 
 	public String openFileDialog(String title, String mode, String path) {
@@ -582,67 +586,67 @@ public class JavaBackEnd implements
 		if (path == null) {
 			path = "";
 		}
-		JBEFileFilter localJBEFileFilter = new JBEFileFilter(path);
-		JFileChooser localJFileChooser = new JFileChooser(localJBEFileFilter.getDirectory());
-		localJFileChooser.setFileFilter(localJBEFileFilter);
-		localJFileChooser.setDialogTitle(title);
+		JBEFileFilter fileFilter = new JBEFileFilter(path);
+		JFileChooser fileChooser = new JFileChooser(fileFilter.getDirectory());
+		fileChooser.setFileFilter(fileFilter);
+		fileChooser.setDialogTitle(title);
 		int result = 0;
 		Component parent = null;
 		if (console != null) {
 			parent = console;
 		}
 		if (mode.equalsIgnoreCase("load")) {
-			result = localJFileChooser.showOpenDialog(parent);
+			result = fileChooser.showOpenDialog(parent);
 		} else if (mode.equalsIgnoreCase("save")) {
-			result = localJFileChooser.showSaveDialog(parent);
+			result = fileChooser.showSaveDialog(parent);
 		} else {
 			return "";
 		}
 		
 		if (result == JFileChooser.APPROVE_OPTION) {
-			return localJFileChooser.getSelectedFile().getAbsolutePath();
+			return fileChooser.getSelectedFile().getAbsolutePath();
 		} else {
 			return "";
 		}
 	}
 
-	public void actionPerformed(ActionEvent paramActionEvent) {
-		Object localObject1 = paramActionEvent.getSource();
-		Object localObject2;
-		if ((localObject1 instanceof GTimer)) {
+	public void actionPerformed(ActionEvent event) {
+		Object source = event.getSource();
+		Object sourceId;
+		if ((source instanceof GTimer)) {
 			if (listeningForEvent(TIMER_EVENT)) {
-				localObject2 = (GTimer) paramActionEvent.getSource();
+				sourceId = (GTimer) event.getSource();
 				acknowledgeEvent("event:timerTicked(\"%s\", %d)",
-						((GTimer) localObject2).getId(), (long) getEventTime());
+						((GTimer) sourceId).getId(), (long) getEventTime());
 			}
 		} else if (listeningForEvent(ACTION_EVENT)) {
-			localObject2 = getSourceId((JComponent) localObject1);
-			GInteractor localGInteractor = (GInteractor) getGObject((String) localObject2);
+			sourceId = getSourceId((JComponent) source);
+			GInteractor localGInteractor = (GInteractor) getGObject((String) sourceId);
 			String str = localGInteractor.getActionCommand();
 			// if (str != null && !str.isEmpty()) {
 				acknowledgeEvent("event:actionPerformed(\"%s\", \"%s\", %d, %d)",
-						(String) localObject2, str,
+						(String) sourceId, str,
 						(long) getEventTime(),
-						paramActionEvent.getModifiers());
+						event.getModifiers());
 			// }
 		}
 	}
 
-	public void keyPressed(KeyEvent paramKeyEvent) {
+	public void keyPressed(KeyEvent event) {
 		if (listeningForEvent(KEY_EVENT)) {
-			printEvent("keyPressed", paramKeyEvent);
+			printEvent("keyPressed", event);
 		}
 	}
 
-	public void keyReleased(KeyEvent paramKeyEvent) {
+	public void keyReleased(KeyEvent event) {
 		if (listeningForEvent(KEY_EVENT)) {
-			printEvent("keyReleased", paramKeyEvent);
+			printEvent("keyReleased", event);
 		}
 	}
 
-	public void keyTyped(KeyEvent paramKeyEvent) {
+	public void keyTyped(KeyEvent event) {
 		if (listeningForEvent(KEY_EVENT)) {
-			printEvent("keyTyped", paramKeyEvent);
+			printEvent("keyTyped", event);
 		}
 	}
 
@@ -741,46 +745,46 @@ public class JavaBackEnd implements
 		};
 	}
 
-	public void mouseClicked(MouseEvent paramMouseEvent) {
-		((Component) paramMouseEvent.getSource()).requestFocus();
+	public void mouseClicked(MouseEvent event) {
+		((Component) event.getSource()).requestFocus();
 		if (listeningForEvent(MOUSE_EVENT | CLICK_EVENT)) {
-			printEvent("mouseClicked", paramMouseEvent);
+			printEvent("mouseClicked", event);
 		}
 	}
 
-	public void mouseEntered(MouseEvent paramMouseEvent) {
+	public void mouseEntered(MouseEvent event) {
 		if (listeningForEvent(MOUSE_EVENT)) {
-			printEvent("mouseEntered", paramMouseEvent);
+			printEvent("mouseEntered", event);
 		}
 	}
 
-	public void mouseExited(MouseEvent paramMouseEvent) {
+	public void mouseExited(MouseEvent event) {
 		if (listeningForEvent(MOUSE_EVENT)) {
-			printEvent("mouseExited", paramMouseEvent);
+			printEvent("mouseExited", event);
 		}
 	}
 
-	public void mousePressed(MouseEvent paramMouseEvent) {
+	public void mousePressed(MouseEvent event) {
 		if (listeningForEvent(MOUSE_EVENT)) {
-			printEvent("mousePressed", paramMouseEvent);
+			printEvent("mousePressed", event);
 		}
 	}
 
-	public void mouseReleased(MouseEvent paramMouseEvent) {
+	public void mouseReleased(MouseEvent event) {
 		if (listeningForEvent(MOUSE_EVENT)) {
-			printEvent("mouseReleased", paramMouseEvent);
+			printEvent("mouseReleased", event);
 		}
 	}
 
-	public void mouseMoved(MouseEvent paramMouseEvent) {
+	public void mouseMoved(MouseEvent event) {
 		if (listeningForEvent(MOUSE_EVENT)) {
-			printEvent("mouseMoved", paramMouseEvent);
+			printEvent("mouseMoved", event);
 		}
 	}
 
-	public void mouseDragged(MouseEvent paramMouseEvent) {
+	public void mouseDragged(MouseEvent event) {
 		if (listeningForEvent(MOUSE_EVENT)) {
-			printEvent("mouseDragged", paramMouseEvent);
+			printEvent("mouseDragged", event);
 		}
 	}
 
@@ -803,12 +807,12 @@ public class JavaBackEnd implements
 				mouseEvent.getX(), mouseEvent.getY());
 	}
 
-	public void windowActivated(WindowEvent paramWindowEvent) {
+	public void windowActivated(WindowEvent event) {
 		// empty
 	}
 
-	public void windowClosed(WindowEvent paramWindowEvent) {
-		if (paramWindowEvent.getSource() == this.consoleFrame) {
+	public void windowClosed(WindowEvent event) {
+		if (event.getSource() == this.consoleFrame) {
 			if (consoleCloseOperation == JFrame.DO_NOTHING_ON_CLOSE) {
 				return;
 			} else if (consoleCloseOperation == JFrame.EXIT_ON_CLOSE) {
@@ -819,10 +823,10 @@ public class JavaBackEnd implements
 			
 			acknowledgeEvent("event:consoleWindowClosed()");
 		} else {
-			JBEWindow localJBEWindow = (JBEWindow) paramWindowEvent.getSource();
-			if (this.windowTable.containsKey(localJBEWindow.getWindowId())) {
-				acknowledgeEvent("event:windowClosed(\"%s\", %d)", localJBEWindow.getWindowId(), (long) getEventTime());
-				this.windowTable.remove(localJBEWindow.getWindowId());
+			JBEWindow window = (JBEWindow) event.getSource();
+			if (this.windowTable.containsKey(window.getWindowId())) {
+				acknowledgeEvent("event:windowClosed(\"%s\", %d)", window.getWindowId(), (long) getEventTime());
+				this.windowTable.remove(window.getWindowId());
 			}
 
 			this.activeWindowCount -= 1;
@@ -879,45 +883,46 @@ public class JavaBackEnd implements
 		}
 	}
 	
-	public void windowClosing(WindowEvent paramWindowEvent) {
-		if (paramWindowEvent.getSource() == this.consoleFrame) {
+	public void windowClosing(WindowEvent event) {
+		if (event.getSource() == this.consoleFrame) {
 			if (consoleCloseOperation == JFrame.DO_NOTHING_ON_CLOSE) {
 				return;
 			}
 		} else {
-			JBEWindow localJBEWindow = (JBEWindow) paramWindowEvent.getSource();
-			if (this.windowTable.containsKey(localJBEWindow.getWindowId())) {
-				acknowledgeEvent("event:windowClosing(\"%s\", %d)", localJBEWindow.getWindowId(), (long) getEventTime());
+			JBEWindow window = (JBEWindow) event.getSource();
+			if (this.windowTable.containsKey(window.getWindowId())) {
+				acknowledgeEvent("event:windowClosing(\"%s\", %d)", window.getWindowId(), (long) getEventTime());
 			}
 		}
 	}
 
-	public void windowDeactivated(WindowEvent paramWindowEvent) {
+	public void windowDeactivated(WindowEvent event) {
 		// empty
 	}
 
-	public void windowDeiconified(WindowEvent paramWindowEvent) {
+	public void windowDeiconified(WindowEvent event) {
 		// empty
 	}
 
-	public void windowIconified(WindowEvent paramWindowEvent) {
+	public void windowIconified(WindowEvent event) {
 		// empty
 	}
 
-	public void windowOpened(WindowEvent paramWindowEvent) {
-		JFrame localJFrame = (JFrame) paramWindowEvent.getSource();
-		synchronized (localJFrame) {
-			localJFrame.notifyAll();
+	public void windowOpened(WindowEvent event) {
+		JFrame frame = (JFrame) event.getSource();
+		synchronized (frame) {
+			frame.notifyAll();
 		}
 	}
 
-	private void waitForWindowActive(JFrame paramJFrame) {
-		synchronized (paramJFrame) {
-			while (!paramJFrame.isShowing()) {
+	private void waitForWindowActive(JFrame frame) {
+		synchronized (frame) {
+			while (!frame.isShowing()) {
 				try {
-					paramJFrame.wait();
-					Thread.sleep(100L);
-				} catch (InterruptedException localInterruptedException) {
+					frame.wait();
+					Thread.sleep(100);
+				} catch (InterruptedException ie) {
+					// empty
 				}
 			}
 		}
@@ -939,22 +944,23 @@ public class JavaBackEnd implements
 		}
 	}
 
-	public void componentHidden(ComponentEvent paramComponentEvent) {
+	public void componentHidden(ComponentEvent event) {
 		// empty
 	}
 
-	public void componentMoved(ComponentEvent paramComponentEvent) {
+	public void componentMoved(ComponentEvent event) {
 		// empty
 	}
 
-	public void componentResized(ComponentEvent componentEvent) {
+	public void componentResized(ComponentEvent event) {
 		if (listeningForEvent(WINDOW_EVENT)) {
-			String windowId = getWindowId(componentEvent);
+			String windowId = getWindowId(event);
 			acknowledgeEvent("event:windowResized(\"%s\", %d)", windowId, (long) getEventTime());
 		}
 	}
 
-	public void componentShown(ComponentEvent paramComponentEvent) {
+	public void componentShown(ComponentEvent event) {
+		// empty
 	}
 	
 	// returns true if the given event type (such as MOUSE_EVENT) is currently part
@@ -963,10 +969,10 @@ public class JavaBackEnd implements
 		return (this.eventMask & type) != 0;
 	}
 	
-	private void printLog(String s) {
+	private void printLog(String text) {
 		try {
 			PrintStream out = new PrintStream(new FileOutputStream(DEBUG_LOG_FILE, /* append */ true));
-			out.println(s);
+			out.println(text);
 			out.flush();
 			out.close();
 		} catch (IOException ioe) {
@@ -975,40 +981,40 @@ public class JavaBackEnd implements
 	}
 
 	private void commandLoop() {
-		BufferedReader localBufferedReader = new BufferedReader(new InputStreamReader(System.in));
-		final TokenScanner localTokenScanner = new TokenScanner();
-		localTokenScanner.ignoreWhitespace();
-		localTokenScanner.scanNumbers();
-		localTokenScanner.scanStrings();
-		localTokenScanner.addWordCharacters(".");
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		final TokenScanner scanner = new TokenScanner();
+		scanner.ignoreWhitespace();
+		scanner.scanNumbers();
+		scanner.scanStrings();
+		scanner.addWordCharacters(".");
 		try {
 			for (;;) {
-				String str1 = localBufferedReader.readLine();
-				if (str1 == null) {
+				String command = reader.readLine();
+				if (command == null) {
 					break;
 				}
 				if (DEBUG) {
-					printLog(str1);
+					printLog(command);
 				}
 				
-				if (str1.equals("LongCommand.begin()")) {
-					str1 = readLongCommand(localBufferedReader);
+				if (command.equals("LongCommand.begin()")) {
+					command = readLongCommand(reader);
 				}
 				
-				localTokenScanner.setInput(str1);
-				String str2 = localTokenScanner.nextToken();
-				final JBECommand localJBECommand = (JBECommand) this.cmdTable.get(str2);
-				if (localJBECommand == null) {
-					System.err.println("Unexpected error: unknown command \"" + str2 + "\"");
+				scanner.setInput(command);
+				String commandName = scanner.nextToken();
+				final JBECommand jbeCommand = this.cmdTable.get(commandName);
+				if (jbeCommand == null) {
+					System.err.println("Unexpected error: unknown command \"" + commandName + "\"");
 				} else {
 					// execute JBE command; some commands must be run on Swing event thread
-					if (localJBECommand.shouldRunOnSwingEventThread()) {
+					if (jbeCommand.shouldRunOnSwingEventThread()) {
 						Runnable run = new Runnable() {
 							public void run() {
-								localJBECommand.execute(localTokenScanner, JavaBackEnd.this);
+								jbeCommand.execute(scanner, JavaBackEnd.this);
 							}
 						};
-						if (localJBECommand.shouldInvokeAndWait()) {
+						if (jbeCommand.shouldInvokeAndWait()) {
 							try {
 								SwingUtilities.invokeAndWait(run);
 							} catch (InvocationTargetException ite) {
@@ -1025,15 +1031,15 @@ public class JavaBackEnd implements
 						}
 					} else {
 						// don't run on Swing event thread; just run on this current thread
-						localJBECommand.execute(localTokenScanner, this);
+						jbeCommand.execute(scanner, this);
 					}
 				}
 			}
-		} catch (Exception localException) {
-			System.err.println("Unexpected error: " + localException.getMessage());
-			localException.printStackTrace(System.err);
+		} catch (Exception ex) {
+			System.err.println("Unexpected error: " + ex.getMessage());
+			ex.printStackTrace(System.err);
 			if (DEBUG) {
-				printLog("Unexpected error: " + localException.getMessage());
+				printLog("Unexpected error: " + ex.getMessage());
 			}
 		}
 	}
@@ -1059,14 +1065,14 @@ public class JavaBackEnd implements
 		return cmd;
 	}
 
-	private void processArguments(String[] paramArrayOfString) {
+	private void processArguments(String[] args) {
 		this.appName = DEFAULT_APP_NAME;
 		this.exec = null;
-		for (int i = 0; i < paramArrayOfString.length; i++) {
-			String str = paramArrayOfString[i];
+		for (int i = 0; i < args.length; i++) {
+			String str = args[i];
 			if (str.startsWith("-")) {
 				if (str.equals("-exec")) {
-					this.exec = paramArrayOfString[(++i)];
+					this.exec = args[(++i)];
 				} else {
 					System.err.println("Error: Unrecognized option " + str);
 				}
@@ -1083,69 +1089,69 @@ public class JavaBackEnd implements
 		}
 	}
 
-	protected Image getImage(String paramString) {
-		Image localImage = (Image) this.imageTable.get(paramString);
-		if (localImage != null) {
-			return localImage;
+	protected Image getImage(String filename) {
+		Image image = this.imageTable.get(filename);
+		if (image != null) {
+			return image;
 		}
-		Toolkit localToolkit = Toolkit.getDefaultToolkit();
-		if (paramString.startsWith("http:")) {
+		Toolkit tk = Toolkit.getDefaultToolkit();
+		if (filename.startsWith("http:")) {
 			try {
-				localImage = localToolkit.getImage(new URL(paramString));
+				image = tk.getImage(new URL(filename));
 			} catch (MalformedURLException localMalformedURLException) {
 				throw new ErrorException("loadImage: Malformed URL");
 			}
 		} else {
-			File localObject = new File(paramString);
-			if (!localObject.exists() && !paramString.startsWith("/")
-					&& !paramString.startsWith(".")) {
-				localObject = new File("images/" + paramString);
+			File file = new File(filename);
+			if (!file.exists() && !filename.startsWith("/")
+					&& !filename.startsWith(".")) {
+				file = new File("images/" + filename);
 			}
-			if (!((File) localObject).exists()) {
+			if (!file.exists()) {
 				throw new ErrorException("loadImage: File not found");
 			}
-			localImage = localToolkit.getImage(((File) localObject).getAbsolutePath());
+			image = tk.getImage(file.getAbsolutePath());
 		}
-		if (localImage == null) {
+		if (image == null) {
 			throw new ErrorException("loadImage: File not found");
 		}
-		Object localObject = new MediaTracker(this.empty);
-		((MediaTracker) localObject).addImage(localImage, 0);
+		MediaTracker mt = new MediaTracker(this.empty);
+		mt.addImage(image, 0);
 		try {
-			((MediaTracker) localObject).waitForID(0);
-		} catch (InterruptedException localInterruptedException) {
+			mt.waitForID(0);
+		} catch (InterruptedException ie) {
 			throw new ErrorException("loadImage: Loading interrupted");
 		}
-		this.imageTable.put(paramString, localImage);
-		return localImage;
+		this.imageTable.put(filename, image);
+		return image;
 	}
 
-	protected Clip getClip(String paramString) {
-		Clip localClip = (Clip) this.clipTable.get(paramString);
-		if (localClip != null) {
-			return localClip;
+	protected Clip getClip(String filename) {
+		Clip clip = (Clip) this.clipTable.get(filename);
+		if (clip != null) {
+			return clip;
 		}
 		try {
-			localClip = AudioSystem.getClip();
-			File localFile = new File(paramString);
-			if ((!localFile.exists()) && (!paramString.startsWith("/"))
-					&& (!paramString.startsWith("."))) {
-				localFile = new File("sounds/" + paramString);
+			clip = AudioSystem.getClip();
+			File file = new File(filename);
+			if (!file.exists() && (!filename.startsWith("/"))
+					&& (!filename.startsWith("."))) {
+				file = new File("sounds/" + filename);
 			}
-			if (!localFile.exists()) {
+			if (!file.exists()) {
 				throw new ErrorException("createClip: File not found");
 			}
-			InputStream localFileInputStream = new BufferedInputStream(new FileInputStream(localFile));
-			AudioInputStream localAudioInputStream = AudioSystem
-					.getAudioInputStream(localFileInputStream);
-			localClip.open(localAudioInputStream);
-		} catch (IOException localIOException) {
-			throw new ErrorException("getClip: I/O error (" + new File(paramString).getAbsolutePath() + ")");
-		} catch (Exception localException) {
-			throw new ErrorException("getClip: " + localException);
+			InputStream in = new BufferedInputStream(new FileInputStream(file));
+			AudioInputStream audioStream = AudioSystem
+					.getAudioInputStream(in);
+			clip.open(audioStream);
+		} catch (IOException ioe) {
+			throw new ErrorException("getClip: I/O error (" + new File(filename).getAbsolutePath() + ")");
+		} catch (Exception ex) {
+			throw new ErrorException("getClip: " + ex);
 		}
-		this.clipTable.put(paramString, localClip);
-		return localClip;
+		this.clipTable.put(filename, clip);
+		return clip;
 	}
 	
 	public KeyListener getConsoleKeyListener() {

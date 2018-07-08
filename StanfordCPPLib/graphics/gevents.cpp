@@ -523,7 +523,6 @@ GTimerEvent::GTimerEvent(GEvent e) {
         modifiers = e.modifiers;
         eventTime = e.eventTime;
         gtd = e.gtd;
-        // gwd = e.gwd;
     }
 }
 
@@ -542,7 +541,9 @@ std::string GTimerEvent::toString() const {
     if (!valid) {
         return "GTimerEvent(?)";
     }
-    return "GTimerEvent:TIMER_TICKED()";
+    std::ostringstream out;
+    out << "GTimerEvent:TIMER_TICKED(id=" << gtd << ")";
+    return out.str();
 }
 
 

@@ -3,6 +3,8 @@
  * ----------------
  * This file implements the gtimer.h interface.
  * 
+ * @version 2018/07/08
+ * - fixed bug with stale timer events after timer is destructed
  * @version 2015/07/05
  * - removed static global Platform variable, replaced by getPlatform as needed
  * @version 2014/10/08
@@ -11,9 +13,22 @@
  */
 
 #include "gtimer.h"
+#include <iostream>
+#include <sstream>
 #include "private/platform.h"
 
 /* Implementation of the GTimer class */
+
+int GTimerData::instanceCount = 0;
+
+GTimerData::GTimerData() {
+    id = instanceCount;
+    instanceCount++;
+}
+
+GTimerData::~GTimerData() {
+    id = -1;
+}
 
 GTimer::GTimer(double milliseconds) {
     gtd = new GTimerData();
@@ -23,8 +38,16 @@ GTimer::GTimer(double milliseconds) {
 
 GTimer::~GTimer() {
     if (--gtd->refCount == 0) {
+        stanfordcpplib::getPlatform()->gtimer_delete(*this);
         delete gtd;
     }
+    gtd = nullptr;
+}
+
+std::string GTimer::getID() const {
+    std::ostringstream out;
+    out << gtd << "_" << gtd->id;
+    return out.str();
 }
 
 void GTimer::start() {
@@ -35,25 +58,25 @@ void GTimer::stop() {
     stanfordcpplib::getPlatform()->gtimer_stop(*this);
 }
 
-bool GTimer::operator==(GTimer t2) {
+bool GTimer::operator ==(const GTimer& t2) {
     return gtd == t2.gtd;
 }
 
-bool GTimer::operator!=(GTimer t2) {
+bool GTimer::operator !=(const GTimer& t2) {
     return gtd != t2.gtd;
 }
 
-GTimer::GTimer(GTimerData *gtd) {
+GTimer::GTimer(GTimerData* gtd) {
     this->gtd = gtd;
     gtd->refCount++;
 }
 
-GTimer::GTimer(const GTimer & src) {
+GTimer::GTimer(const GTimer& src) {
     this->gtd = src.gtd;
     this->gtd->refCount++;
 }
 
-GTimer & GTimer::operator=(const GTimer & src) {
+GTimer& GTimer::operator =(const GTimer& src) {
     if (this != &src) {
         if (--gtd->refCount == 0) {
             delete gtd;

@@ -900,7 +900,7 @@ public:
      * -------------------------------------------
      * Creates a <code>GTimerEvent</code> for the specified timer.
      */
-    GTimerEvent(EventType type, const GTimer & timer);
+    GTimerEvent(EventType type, const GTimer& timer);
 
     /*
      * Method: getGTimer
