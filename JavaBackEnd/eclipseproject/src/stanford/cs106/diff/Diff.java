@@ -1,4 +1,7 @@
 /*
+ * @version 2018/07/08
+ * - removed IGNORE_PUNCTUATION flag from default set of diff flags
+ *   (was making ASCII art programs like Rocket ship accept incorrect output)
  * @version 2016/10/07
  * - oops, actually IGNORE_BLANK_LINES flag was still totally broken; NOW it works!
  * @version 2016/04/28
@@ -27,7 +30,7 @@ public class Diff {
 	public static final int IGNORE_EVERYTHING   = 0x100000;
 	
 	public static final int FLAGS_DEFAULT = 0;
-	public static final int FLAGS_DEFAULT_LENIENT = IGNORE_TRAILING | IGNORE_WHITESPACE | IGNORE_BLANK_LINES | IGNORE_CASE | IGNORE_PUNCTUATION;
+	public static final int FLAGS_DEFAULT_LENIENT = IGNORE_TRAILING | IGNORE_WHITESPACE | IGNORE_BLANK_LINES | IGNORE_CASE;   // | IGNORE_PUNCTUATION;
 	public static final int FLAGS_DEFAULT_STRICT = IGNORE_TRAILING | IGNORE_BLANK_LINES;
 	
 	

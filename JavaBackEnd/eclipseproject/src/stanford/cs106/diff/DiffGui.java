@@ -1,4 +1,6 @@
 /*
+ * @version 2018/07/08
+ * - bug fix for split pane divider location (wasn't waiting for window to show)
  * @version 2018/01/23
  * - modified diff panes to use same font as JBE console if present
  */
@@ -97,7 +99,7 @@ public class DiffGui implements ActionListener, AdjustmentListener {
 		Container center = new JPanel(new GridLayout(1, 2));
 		scroll1 = new JScrollPane(area1);
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-		scroll1.setPreferredSize(new Dimension((int) (screen.width * .45), (int) (screen.height * .7)));
+		GuiUtils.ensureMinimumPreferredSize(scroll1, (int) (screen.width * .45), (int) (screen.height * .7));
 		scroll1.getVerticalScrollBar().addAdjustmentListener(this);
 		scroll2 = new JScrollPane(area2);
 		scroll2.setPreferredSize(scroll1.getPreferredSize());
@@ -116,6 +118,7 @@ public class DiffGui implements ActionListener, AdjustmentListener {
 		if (SIDE_BY_SIDE_ENABLED) {
 			diffsSouth.addTab(tab2text, new JScrollPane(sbsDiffsArea));
 		}
+		GuiUtils.setPreferredHeight(diffsSouth, 100);
 		
 		Container buttonPane = null;
 		if (checkboxes) {
@@ -185,15 +188,21 @@ public class DiffGui implements ActionListener, AdjustmentListener {
 		// splitPane.setDividerLocation(0.6);   // 60/40 split
 		GuiUtils.centerWindow(frame);
 		
-		// setting split pane doesn't really work unless you give a delay after show()
+		// set split pane's split divider location;
+		// doesn't really work unless you give a delay after show()
 		new Thread(new Runnable() {
 			public void run() {
-				try {
-					Thread.sleep(200);
-				} catch (InterruptedException ie) {
-					// empty
+				// wait for up to 5 sec
+				long ms = 0;
+				while (ms < 5000 && splitPane.getHeight() <= 1) {
+					try {
+						Thread.sleep(50);
+						ms += 50;
+					} catch (InterruptedException ie) {
+						// empty
+					}
 				}
-				splitPane.setDividerLocation(0.6);   // 60/40 split
+				splitPane.setDividerLocation(0.6);   // 60/40 split top/bottom
 			}
 		}).start();
 	}

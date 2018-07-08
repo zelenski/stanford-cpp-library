@@ -2,6 +2,8 @@
  * This class contains utility functions related to GUIs.
  *
  * @author Marty Stepp
+ * @version 2018/07/08
+ * - added ensureMinimumPreferred*
  * @version 2017/10/12
  * - added createLabel overloads with icon
  * @version 2016/11/26
@@ -351,6 +353,25 @@ public class GuiUtils {
 			panel.add(slider);
 		}
 		return slider;
+	}
+	
+	public static void ensureMinimumPreferredHeight(JComponent comp, int height) {
+		Dimension size = comp.getPreferredSize();
+		size.height = Math.max(size.height, height);
+		comp.setPreferredSize(size);
+	}
+	
+	public static void ensureMinimumPreferredSize(JComponent comp, int width, int height) {
+		Dimension size = comp.getPreferredSize();
+		size.width  = Math.max(size.width,  width);
+		size.height = Math.max(size.height, height);
+		comp.setPreferredSize(size);
+	}
+	
+	public static void ensureMinimumPreferredWidth(JComponent comp, int width) {
+		Dimension size = comp.getPreferredSize();
+		size.width = Math.max(size.width, width);
+		comp.setPreferredSize(size);
 	}
 	
 	public static FileFilter getExtensionFileFilter(String description, String... extensions) {
