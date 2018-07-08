@@ -662,7 +662,11 @@ public class JavaBackEnd implements
 	}
 	
 	private void printEvent(String type, String sourceId, HyperlinkEvent linkEvent) {
-		String url = linkEvent.getURL().toString();
+		/* The underlying URL may be null if the link can't be interpreted as a URL.
+		 * To fix this, we'll fall back on the link description, which the JavaDoc
+		 * describes as being the proper way to handle a malformed URL.
+		 */
+		String url = (linkEvent.getURL() != null? linkEvent.getURL().toString() : linkEvent.getDescription());
 		url = StringUtils.urlEncode(url);
 		acknowledgeEvent("event:%s(\"%s\", \"%s\", %d)",
 				type, sourceId, url, (long) getEventTime());
