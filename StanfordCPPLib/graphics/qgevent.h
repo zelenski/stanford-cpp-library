@@ -170,6 +170,8 @@ public:
     virtual int getButton() const;
     virtual EventClass getClass() const;
     static long getCurrentTimeMS();
+    virtual EventClass getEventClass() const;
+    virtual EventType getEventType() const;
     virtual char getKeyChar() const;
     virtual int getKeyCode() const;
     virtual int getModifiers() const;
@@ -204,6 +206,21 @@ public:
      * was held down during this event.
      */
     virtual bool isCtrlOrCommandKeyDown() const;
+
+    /*
+     * Returns true if the user pressed the left mouse button.
+     */
+    virtual bool isLeftClick() const;
+
+    /*
+     * Returns true if the user pressed the middle mouse button.
+     */
+    virtual bool isMiddleClick() const;
+
+    /*
+     * Returns true if the user pressed the right mouse button.
+     */
+    virtual bool isRightClick() const;
 
     /*
      * Method: isMetaKeyDown

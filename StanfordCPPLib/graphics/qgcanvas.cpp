@@ -116,6 +116,14 @@ void QGCanvas::add(QGObject* gobj, double x, double y) {
     _qgcompound.add(gobj, x, y);
 }
 
+void QGCanvas::add(QGObject& gobj) {
+    _qgcompound.add(gobj);
+}
+
+void QGCanvas::add(QGObject& gobj, double x, double y) {
+    _qgcompound.add(gobj, x, y);
+}
+
 void QGCanvas::clear() {
     _qgcompound.clear();
 }
@@ -149,6 +157,10 @@ bool QGCanvas::isAutoRepaint() const {
 }
 
 void QGCanvas::remove(QGObject* gobj) {
+    _qgcompound.remove(gobj);
+}
+
+void QGCanvas::remove(QGObject& gobj) {
     _qgcompound.remove(gobj);
 }
 

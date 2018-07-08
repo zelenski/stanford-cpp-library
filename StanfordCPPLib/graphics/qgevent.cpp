@@ -106,6 +106,14 @@ long QGEvent::getCurrentTimeMS() {
     return ms;
 }
 
+QGEvent::EventClass QGEvent::getEventClass() const {
+    return _class;
+}
+
+QGEvent::EventType QGEvent::getEventType() const {
+    return _type;
+}
+
 char QGEvent::getKeyChar() const {
     return _keyChar;
 }
@@ -152,6 +160,18 @@ bool QGEvent::isCtrlKeyDown() const {
 
 bool QGEvent::isCtrlOrCommandKeyDown() const {
     return isCtrlKeyDown() || isMetaKeyDown();
+}
+
+bool QGEvent::isLeftClick() const {
+    return !isMiddleClick() && !isRightClick();
+}
+
+bool QGEvent::isMiddleClick() const {
+    return _button == 4 || ((_modifiers & BUTTON3_DOWN) != 0);
+}
+
+bool QGEvent::isRightClick() const {
+    return _button == 2 || ((_modifiers & BUTTON2_DOWN) != 0);
 }
 
 bool QGEvent::isMetaKeyDown() const {

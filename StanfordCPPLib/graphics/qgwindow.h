@@ -76,6 +76,10 @@ public:
     QGWindow(double width = 0, double height = 0, bool visible = true);
     virtual ~QGWindow();
     virtual void add(QGInteractor* interactor);
+    virtual void add(QGObject* obj);
+    virtual void add(QGObject* obj, double x, double y);
+    virtual void add(QGObject& obj);
+    virtual void add(QGObject& obj, double x, double y);
     virtual void addToRegion(QGInteractor* interactor, Region region);
     virtual void addToRegion(QGInteractor* interactor, const std::string& region = "Center");
     virtual void clear();

@@ -53,6 +53,8 @@ public:
     // QGCompound methods
     virtual void add(QGObject* gobj);
     virtual void add(QGObject* gobj, double x, double y);
+    virtual void add(QGObject& gobj);
+    virtual void add(QGObject& gobj, double x, double y);
     virtual void clear();
     virtual void draw(QPainter* painter);
     virtual bool contains(double x, double y) const;
@@ -63,6 +65,7 @@ public:
     virtual QWidget* getWidget() const;
     virtual bool isAutoRepaint() const;
     virtual void remove(QGObject* gobj);
+    virtual void remove(QGObject& gobj);
     virtual void removeAll();
     virtual void repaint();
     virtual void setAutoRepaint(bool autoRepaint);

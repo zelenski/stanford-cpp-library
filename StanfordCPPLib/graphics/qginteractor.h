@@ -37,12 +37,16 @@ public:
     virtual std::string getFont() const;
     virtual double getHeight() const;
     virtual std::string getIcon() const;
+    virtual GPoint getLocation() const;
     virtual char getMnemonic() const;
+    virtual GDimension getSize() const;
     virtual std::string getType() const = 0;
     virtual QWidget* getWidget() const = 0;
     virtual double getWidth() const;
     virtual double getX() const;
     virtual double getY() const;
+    virtual bool inBounds(double x, double y) const;
+    virtual bool inBounds(int x, int y) const;
     virtual bool isEnabled() const;
     virtual bool isVisible() const;
     virtual void requestFocus();
@@ -58,12 +62,17 @@ public:
     virtual void setForeground(int rgb);
     virtual void setForeground(const std::string& color);
     virtual void setFont(const std::string& font);
+    virtual void setHeight(double height);
     virtual void setIcon(const std::string& filename, bool retainIconSize = true);
+    virtual void setLocation(double x, double y);
     virtual void setMnemonic(char mnemonic);
     virtual void setSize(double width, double height);
     virtual void setSize(const GDimension& size);
     virtual void setTooltip(const std::string& tooltipText);
     virtual void setVisible(bool visible);
+    virtual void setWidth(double width);
+    virtual void setX(double x);
+    virtual void setY(double y);
     virtual std::string toString() const;
 
 protected:

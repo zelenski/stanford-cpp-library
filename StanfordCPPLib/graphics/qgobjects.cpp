@@ -605,6 +605,14 @@ void QGCompound::add(QGObject* gobj, double x, double y) {
     add(gobj);   // calls conditionalRepaint
 }
 
+void QGCompound::add(QGObject& gobj) {
+    add(&gobj);
+}
+
+void QGCompound::add(QGObject& gobj, double x, double y) {
+    add(&gobj, x, y);
+}
+
 void QGCompound::clear() {
     removeAll();
 }
@@ -699,6 +707,10 @@ void QGCompound::remove(QGObject* gobj) {
     if (index != -1) {
         removeAt(index);   // calls conditionalRepaint
     }
+}
+
+void QGCompound::remove(QGObject& gobj) {
+    remove(&gobj);
 }
 
 void QGCompound::removeAll() {

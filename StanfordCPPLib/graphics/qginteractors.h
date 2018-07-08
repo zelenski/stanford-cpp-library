@@ -12,18 +12,22 @@
 #ifndef _qginteractors_h
 #define _qginteractors_h
 
+#include "qgbufferedimage.h"
 #include "qgbutton.h"
 #include "qgcanvas.h"
 #include "qgcheckbox.h"
 #include "qgchooser.h"
 #include "qgcolor.h"
 #include "qgfilechooser.h"
+#include "qgfont.h"
+#include "qginteractor.h"
 #include "qglabel.h"
 #include "qgoptionpane.h"
 #include "qgradiobutton.h"
 #include "qgslider.h"
 #include "qgtextarea.h"
 #include "qgtextfield.h"
+#include "qgwindow.h"
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 

@@ -50,8 +50,16 @@ std::string QGInteractor::getFont() const {
     return QGFont::toFontString(getWidget()->font());
 }
 
+double QGInteractor::getHeight() const {
+    return getWidget()->height();
+}
+
 std::string QGInteractor::getIcon() const {
     return _icon;
+}
+
+GPoint QGInteractor::getLocation() const {
+    return GPoint(getX(), getY());
 }
 
 QWidget* QGInteractor::getInternalParent(QWidget* parent) const {
@@ -63,8 +71,8 @@ char QGInteractor::getMnemonic() const {
     return '?';
 }
 
-double QGInteractor::getHeight() const {
-    return getWidget()->height();
+GDimension QGInteractor::getSize() const {
+    return GDimension(getWidth(), getHeight());
 }
 
 double QGInteractor::getWidth() const {
@@ -81,6 +89,14 @@ double QGInteractor::getY() const {
 
 bool QGInteractor::hasEventHandler(const std::string& eventName) const {
     return _eventMap.containsKey(eventName);
+}
+
+bool QGInteractor::inBounds(double x, double y) const {
+    return 0 <= x && x < getWidth() && 0 <= y && y < getHeight();
+}
+
+bool QGInteractor::inBounds(int x, int y) const {
+    return 0 <= x && x < (int) getWidth() && 0 <= y && y < (int) getHeight();
 }
 
 bool QGInteractor::isEnabled() const {
@@ -183,10 +199,18 @@ void QGInteractor::setFont(const std::string& font) {
     getWidget()->setFont(qfont);
 }
 
+void QGInteractor::setHeight(double height) {
+    setSize(getWidth(), height);
+}
+
 void QGInteractor::setIcon(const std::string& filename, bool /* retainIconSize */) {
     _icon = filename;
 
-    // override in subclasses as appropriate
+    // override in subclasses as appropriate; make sure to call super
+}
+
+void QGInteractor::setLocation(double x, double y) {
+    getWidget()->setGeometry(x, y, getWidth(), getHeight());
 }
 
 void QGInteractor::setMnemonic(char /* mnemonic */) {
@@ -208,6 +232,18 @@ void QGInteractor::setTooltip(const std::string& tooltipText) {
 
 void QGInteractor::setVisible(bool visible) {
     getWidget()->setVisible(visible);
+}
+
+void QGInteractor::setWidth(double width) {
+    setSize(width, getHeight());
+}
+
+void QGInteractor::setX(double x) {
+    setLocation(x, getY());
+}
+
+void QGInteractor::setY(double y) {
+    setLocation(getX(), y);
 }
 
 std::string QGInteractor::toString() const {

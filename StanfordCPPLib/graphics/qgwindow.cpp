@@ -111,6 +111,26 @@ void QGWindow::add(QGInteractor* interactor) {
     addToRegion(interactor, "Center");
 }
 
+void QGWindow::add(QGObject* obj) {
+    ensureCanvas();
+    _canvas->add(obj);
+}
+
+void QGWindow::add(QGObject* obj, double x, double y) {
+    ensureCanvas();
+    _canvas->add(obj, x, y);
+}
+
+void QGWindow::add(QGObject& obj) {
+    ensureCanvas();
+    _canvas->add(obj);
+}
+
+void QGWindow::add(QGObject& obj, double x, double y) {
+    ensureCanvas();
+    _canvas->add(obj, x, y);
+}
+
 void QGWindow::addToRegion(QGInteractor* interactor, Region region) {
     addToRegion(interactor, regionToString(region));
 }

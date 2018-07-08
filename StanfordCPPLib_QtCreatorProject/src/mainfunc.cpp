@@ -423,6 +423,7 @@
 #include "grid.h"
 #include "range.h"
 #include "sparsegrid.h"
+#include "timer.h"
 #include "vector.h"
 using namespace std;
 
@@ -532,21 +533,10 @@ int testAllUrls() {
 //    }
 //}
 
-#include "qgbutton.h"
-#include "qgcanvas.h"
-#include "qgcheckbox.h"
-#include "qgchooser.h"
 #include "qgcolor.h"
-#include "qgfilechooser.h"
-#include "qglabel.h"
 #include "qgobjects.h"
-#include "qgoptionpane.h"
-#include "qgradiobutton.h"
-#include "qgslider.h"
-#include "qgtextarea.h"
-#include "qgtextfield.h"
+#include "qginteractors.h"
 #include "qgui.h"
-#include "qgwindow.h"
 
 QGWindow* window;
 QGChooser* chooser;
@@ -588,6 +578,27 @@ void sliderChangeHandler(const QGEvent& event) {
     cout << "sliderChangeHandler: slider was slid!" << endl;
     cout << "value: " << slider->getValue() << endl;
     cout << "event: " << event << endl;
+}
+
+void grayscale(QGBufferedImage* image) {
+    // convert image to grayscale
+    image->setAutoRepaint(false);
+    Timer tim;
+    tim.start();
+    for (int x = 0; x < image->getWidth(); x++) {
+        for (int y = 0; y < image->getHeight(); y++) {
+            int rgb = image->getRGB(x, y);
+            int r = QGBufferedImage::getRed(rgb);
+            int g = QGBufferedImage::getGreen(rgb);
+            int b = QGBufferedImage::getBlue(rgb);
+            int avg = (r + g + b) / 3;
+            rgb = QGBufferedImage::createRgbPixel(avg, avg, avg);
+            image->setRGB(x, y, rgb);
+        }
+    }
+    image->repaint();
+    tim.stop();
+    cout << "took " << tim.elapsed() << "ms" << endl;
 }
 
 void testQwindow() {
@@ -680,12 +691,18 @@ void testQwindow() {
 //    window->addToRegion(textArea, "West");
 //    cout << "textarea:  " << textArea->toString() << endl;
 
+    static QGBufferedImage* image = new QGBufferedImage("lego.png");
+    window->addToRegion(image, "East");
+
     QGButton* button = new QGButton("Triforce");
     button->setColor(QGColor::RED);
     button->setBackground(QGColor::YELLOW);
     button->setIcon("triangle-icon.png");
     button->setTextPosition(QGInteractor::TEXT_BESIDE_ICON);
-    button->setClickHandler(clickHandler);
+    // button->setClickHandler(clickHandler);
+    button->setClickHandler([]() {
+        grayscale(image);
+    });
     button->setAccelerator("Ctrl-T");
     window->addToRegion(button, "South");
     cout << "button:    " << button->toString() << endl;
@@ -745,7 +762,7 @@ void testQwindowDrawing() {
 
 
 int main() {
-    QGui::instance()->runOnQtGuiThread(testQwindowDrawing);
+    QGui::instance()->runOnQtGuiThread(testQwindow);
     return 0;
 }
 

@@ -954,6 +954,8 @@ public:
      */
     void add(QGObject* gobj);
     void add(QGObject* gobj, double x, double y);
+    void add(QGObject& gobj);
+    void add(QGObject& gobj, double x, double y);
 
     /*
      * Method: clear
@@ -1012,6 +1014,7 @@ public:
      * Removes the specified object from the <code>QGCompound</code>.
      */
     void remove(QGObject* gobj);
+    void remove(QGObject& gobj);
 
     /*
      * Method: removeAll

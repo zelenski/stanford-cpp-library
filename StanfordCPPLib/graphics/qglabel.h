@@ -48,7 +48,7 @@ public:
 private:
     _Internal_QLabel* _iqlabel;
 
-    friend class _Internal_QLabel;
+    friend class _Internal_QImageLabel;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
