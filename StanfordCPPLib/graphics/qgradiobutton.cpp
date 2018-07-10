@@ -62,6 +62,10 @@ bool QGRadioButton::isSelected() const {
     return _iqradioButton->isChecked();
 }
 
+void QGRadioButton::removeChangeHandler() {
+    removeEventHandler("change");
+}
+
 void QGRadioButton::setChecked(bool checked) {
     _iqradioButton->setChecked(checked);
 }

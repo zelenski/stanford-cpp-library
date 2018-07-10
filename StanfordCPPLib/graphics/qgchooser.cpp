@@ -100,6 +100,10 @@ bool QGChooser::isEditable() const {
     return _iqcomboBox->isEditable();
 }
 
+void QGChooser::removeChangeHandler() {
+    removeEventHandler("change");
+}
+
 void QGChooser::setChangeHandler(QGEventHandler func) {
     setEventHandler("change", func);
 }

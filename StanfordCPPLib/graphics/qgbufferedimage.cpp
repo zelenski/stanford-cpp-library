@@ -108,11 +108,13 @@ QGBufferedImage::~QGBufferedImage() {
     _iqlabel = nullptr;
 }
 
-void QGBufferedImage::checkColor(const std::string& member, int rgb) const {
-    if (rgb < 0x0 || rgb > 0xffffff) {
-        error("QGBufferedImage::" + member
-              + ": color is outside of range 0x000000 through 0xffffff");
-    }
+void QGBufferedImage::checkColor(const std::string& /* member */, int /* rgb */) const {
+    // I think this code is wrong; it ignores the possibility of alpha values
+    // or of the top bits being set to 255 (all 1) by default by Qt libraries
+//    if (rgb < 0x0 || rgb > 0xffffff) {
+//        error("QGBufferedImage::" + member
+//              + ": color is outside of range 0x000000 through 0xffffff");
+//    }
 }
 
 void QGBufferedImage::checkIndex(const std::string& member, double x, double y) const {
@@ -203,6 +205,14 @@ int QGBufferedImage::countDiffPixels(const QGBufferedImage& image, int xmin, int
     return diffPxCount;
 }
 
+int QGBufferedImage::countDiffPixels(const QGBufferedImage* image) const {
+    return countDiffPixels(*image);
+}
+
+int QGBufferedImage::countDiffPixels(const QGBufferedImage* image, int xmin, int ymin, int xmax, int ymax) const {
+    return countDiffPixels(*image, xmin, ymin, xmax, ymax);
+}
+
 QGBufferedImage* QGBufferedImage::diff(const QGBufferedImage& image, int diffPixelColor) const {
     int w1 = (int) getWidth();
     int h1 = (int) getHeight();
@@ -235,6 +245,9 @@ QGBufferedImage* QGBufferedImage::diff(const QGBufferedImage& image, int diffPix
     return result;
 }
 
+QGBufferedImage* QGBufferedImage::diff(const QGBufferedImage* image, int diffPixelColor) const {
+    return diff(*image, diffPixelColor);
+}
 
 bool QGBufferedImage::equals(const QGBufferedImage& other) const {
     if (getSize() != other.getSize()) {
@@ -274,8 +287,13 @@ void QGBufferedImage::fromGrid(const Grid<int>& grid) {
     setSize(grid.width(), grid.height());
 
     // TODO: for each row/col, setRGB
+    for (int row = 0, width = grid.width(), height = grid.height(); row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            setPixel(col, row, grid[row][col]);
+        }
+    }
 
-    // TODO: repaint?
+    conditionalRepaint();
 }
 
 std::string QGBufferedImage::getFilename() const {
@@ -333,6 +351,8 @@ bool QGBufferedImage::isAutoRepaint() const {
 }
 
 void QGBufferedImage::load(const std::string& filename) {
+    ensureThreadSafety("QGBufferedImage::load");   // TODO: call runOnQtGuiThread?
+
     // for efficiency, let's at least check whether the file exists
     // and throw error immediately rather than contacting the back-end
     if (!fileExists(filename)) {
@@ -378,6 +398,7 @@ void QGBufferedImage::repaint() {
 }
 
 void QGBufferedImage::save(const std::string& filename) {
+    ensureThreadSafety("QGBufferedImage::save");   // TODO: call runOnQtGuiThread?
     if (!_qimage->save(QString::fromStdString(filename))) {
         error("QGBufferedImage::save: failed to save to " + filename);
     }
@@ -396,6 +417,17 @@ void QGBufferedImage::setPixel(double x, double y, int rgb) {
 }
 
 void QGBufferedImage::setPixel(double x, double y, const std::string& rgb) {
+    setPixel(x, y, QGColor::convertColorToRGB(rgb));
+}
+
+void QGBufferedImage::setPixel(int x, int y, int rgb) {
+    checkIndex("setPixel", x, y);
+    checkColor("setPixel", rgb);
+    _qimage->setPixel(x, y, rgb);
+    conditionalRepaint();
+}
+
+void QGBufferedImage::setPixel(int x, int y, const std::string& rgb) {
     setPixel(x, y, QGColor::convertColorToRGB(rgb));
 }
 
@@ -432,13 +464,17 @@ void QGBufferedImage::setSize(double width, double height) {
 
 Grid<int> QGBufferedImage::toGrid() const {
     Grid<int> grid;
-    grid.resize(getHeight(), getWidth());
-    // TODO: for each row/col, fill with rgb data
+    toGrid(grid);
     return grid;
 }
 
 void QGBufferedImage::toGrid(Grid<int>& grid) const {
-    grid = toGrid();
+    grid.resize(getHeight(), getWidth());
+    for (int row = 0, width = (int) getWidth(), height = (int) getHeight(); row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            grid[row][col] = _qimage->pixel(col, row);
+        }
+    }
 }
 
 std::string QGBufferedImage::toString() const {

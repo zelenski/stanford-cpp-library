@@ -12,16 +12,28 @@
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <QFont>
+#include <QPointF>
+#include <QPolygon>
+#include <QVector>
 #include <sstream>
+#include <string>
+#include "filelib.h"
 #include "gmath.h"
 #include "qgcolor.h"
+#include "qgfont.h"
+#include "private/static.h"
 
 
 // static constants
-static const double LINE_TOLERANCE = 1.5;
-static const double ARC_TOLERANCE = 2.5;
-static const double DEFAULT_CORNER = 10;
-static const std::string DEFAULT_GLABEL_FONT = "Dialog-13";
+STATIC_CONST_VARIABLE_DECLARE(double, LINE_TOLERANCE, 1.5)
+STATIC_CONST_VARIABLE_DECLARE(double, ARC_TOLERANCE, 2.5)
+STATIC_CONST_VARIABLE_DECLARE(double, DEFAULT_CORNER, 10)
+STATIC_CONST_VARIABLE_DECLARE(std::string, DEFAULT_GLABEL_FONT, "Dialog-13")
+
+STATIC_VARIABLE_DECLARE_BLANK(QBrush, DEFAULT_BRUSH)
+STATIC_VARIABLE_DECLARE_BLANK(QFont, DEFAULT_QFONT)
+STATIC_VARIABLE_DECLARE(bool, DEFAULT_QFONT_SET, false)
 
 /*
  * Returns the square of the distance between two points.
@@ -34,27 +46,31 @@ static double dsq(double x0, double y0, double x1, double y1);
 
 bool QGObject::_sAntiAliasing = true;
 
-QGObject::QGObject() {
-    _x = 0;
-    _y = 0;
-    _lineWidth = 1.0;
-    _color = "";
-    _fillColor = "";
-    _font = "";
-    _fillFlag = false;
-    _transformed = false;
-    _visible = true;
-    _parent = nullptr;
+QGObject::QGObject(double x, double y, double width, double height)
+        : _x(x),
+          _y(y),
+          _width(width),
+          _height(height),
+          _lineWidth(1),
+          _color(""),
+          _colorInt(0),
+          _fillColor(""),
+          _fillColorInt(0),
+          _font(""),
+          _fillFlag(false),
+          _visible(true),
+          _transformed(false),
+          _parent(nullptr) {
+    // empty
 }
 
 QGObject::~QGObject() {
-    // stanfordcpplib::getPlatform()->gobject_delete(this);
+    // empty
 }
 
 bool QGObject::contains(double x, double y) const {
     if (_transformed) {
         // TODO
-        // return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
         return getBounds().contains(x, y);
     } else {
         return getBounds().contains(x, y);
@@ -71,6 +87,15 @@ GPoint QGObject::getBottomRightLocation() const {
 
 double QGObject::getBottomY() const {
     return getY() + getHeight();
+}
+
+GRectangle QGObject::getBounds() const {
+    if (_transformed) {
+        // TODO
+        return GRectangle(getX(), getY(), getWidth(), getHeight());
+    } else {
+        return GRectangle(getX(), getY(), getWidth(), getHeight());
+    }
 }
 
 GPoint QGObject::getCenterLocation() const {
@@ -94,7 +119,7 @@ std::string QGObject::getFillColor() const {
 }
 
 double QGObject::getHeight() const {
-    return getBounds().getHeight();
+    return _height;
 }
 
 double QGObject::getLineWidth() const {
@@ -102,7 +127,7 @@ double QGObject::getLineWidth() const {
 }
 
 GPoint QGObject::getLocation() const {
-    return GPoint(_x, _y);
+    return GPoint(getX(), getY());
 }
 
 QGCompound* QGObject::getParent() const {
@@ -119,7 +144,7 @@ GDimension QGObject::getSize() const {
 }
 
 double QGObject::getWidth() const {
-    return getBounds().getWidth();
+    return _width;
 }
 
 double QGObject::getX() const {
@@ -131,33 +156,36 @@ double QGObject::getY() const {
 }
 
 void QGObject::initializeBrushAndPen(QPainter* painter) {
-    // color
+    if (!painter) {
+        return;
+    }
     _pen.setColor(QColor(_colorInt));
+    _pen.setWidth((int) _lineWidth);
+    painter->setPen(_pen);
 
     // font
-
-    // line width
-    _pen.setWidth((int) _lineWidth);
-
-    if (painter) {
-        painter->setPen(_pen);
+    if (!STATIC_VARIABLE(DEFAULT_QFONT_SET)) {
+        STATIC_VARIABLE(DEFAULT_QFONT) = painter->font();
+        STATIC_VARIABLE(DEFAULT_BRUSH).setColor(QColor(0x00ffffff));
     }
+    if (_font.empty()) {
+        painter->setFont(STATIC_VARIABLE(DEFAULT_QFONT));
+    } else {
+        painter->setFont(QGFont::toQFont(_font));
+    }
+
 
     // fill color
     if (_fillFlag) {
         _brush.setStyle(Qt::SolidPattern);
         _brush.setColor(QColor(_fillColorInt));
-
-        if (painter) {
-            painter->setBrush(_brush);
-        }
+        painter->setBrush(_brush);
     } else {
-        if (painter) {
-            static QBrush defaultBrush;
-            defaultBrush.setColor(QColor(0x00ffffff));
-            painter->setBrush(defaultBrush);
-        }
+        painter->setBrush(STATIC_VARIABLE(DEFAULT_BRUSH));
     }
+
+    // transform
+    painter->setTransform(_transform, /* combine */ false);
 }
 
 bool QGObject::isAntiAliasing() {
@@ -173,7 +201,7 @@ bool QGObject::isVisible() const {
 }
 
 void QGObject::move(double dx, double dy) {
-    setLocation(_x + dx, _y + dy);
+    setLocation(getX() + dx, getY() + dy);   // calls repaint
 }
 
 void QGObject::repaint() {
@@ -186,24 +214,26 @@ void QGObject::repaint() {
     }
 }
 
-void QGObject::rotate(double /* theta */) {
-    // Apply local transform
-    _transformed = true;
+void QGObject::resetTransform() {
+    _transform = QTransform();
+    _transformed = false;
+    repaint();
+}
 
-    // TODO
-    // stanfordcpplib::getPlatform()->gobject_rotate(this, theta);
+void QGObject::rotate(double theta) {
+    _transformed = true;
+    _transform = _transform.rotate(theta);
+    repaint();
 }
 
 void QGObject::scale(double sf) {
-    scale(sf, sf);
+    scale(sf, sf);   // calls repaint
 }
 
-void QGObject::scale(double /* sx */, double /* sy */) {
-    // Apply local transform
+void QGObject::scale(double sx, double sy) {
     _transformed = true;
-
-    // TODO
-    // stanfordcpplib::getPlatform()->gobject_scale(this, sx, sy);
+    _transform = _transform.scale(sx, sy);
+    repaint();
 }
 
 void QGObject::sendBackward() {
@@ -215,7 +245,9 @@ void QGObject::sendBackward() {
 
 void QGObject::sendForward() {
     QGCompound* parent = getParent();
-    if (parent) parent->sendForward(this);
+    if (parent) {
+        parent->sendForward(this);
+    }
 }
 
 void QGObject::sendToBack() {
@@ -227,7 +259,9 @@ void QGObject::sendToBack() {
 
 void QGObject::sendToFront() {
     QGCompound* parent = getParent();
-    if (parent) parent->sendToFront(this);
+    if (parent) {
+        parent->sendToFront(this);
+    }
 }
 
 void QGObject::setAntiAliasing(bool value) {
@@ -235,47 +269,59 @@ void QGObject::setAntiAliasing(bool value) {
 }
 
 void QGObject::setBottomY(double y) {
-    setBottomRightLocation(getRightX(), y);
+    setBottomRightLocation(getRightX(), y);   // calls repaint
 }
 
 void QGObject::setRightX(double x) {
-    setBottomRightLocation(x, getBottomY());
+    setBottomRightLocation(x, getBottomY());   // calls repaint
 }
 
 void QGObject::setBottomRightLocation(double x, double y) {
-    setLocation(x - getWidth(), y - getHeight());
+    setLocation(x - getWidth(), y - getHeight());   // calls repaint
 }
 
 void QGObject::setBottomRightLocation(const GPoint& pt) {
-    setBottomRightLocation(pt.getX(), pt.getY());
+    setBottomRightLocation(pt.getX(), pt.getY());   // calls repaint
+}
+
+void QGObject::setBounds(double x, double y, double width, double height) {
+    _x = x;
+    _y = y;
+    _width = width;
+    _height = height;
+    repaint();
+}
+
+void QGObject::setBounds(const GRectangle& bounds) {
+    setBounds(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
 }
 
 void QGObject::setCenterX(double x) {
-    setCenterLocation(x, getCenterY());
+    setCenterLocation(x, getCenterY());   // calls repaint
 }
 
 void QGObject::setCenterY(double y) {
-    setCenterLocation(getCenterX(), y);
+    setCenterLocation(getCenterX(), y);   // calls repaint
 }
 
 void QGObject::setCenterLocation(double x, double y) {
-    setLocation(x - getWidth() / 2, y - getHeight() / 2);
+    setLocation(x - getWidth() / 2, y - getHeight() / 2);   // calls repaint
 }
 
 void QGObject::setCenterLocation(const GPoint& pt) {
-    setCenterLocation(pt.getX(), pt.getY());
+    setCenterLocation(pt.getX(), pt.getY());   // calls repaint
 }
 
 void QGObject::setColor(int r, int g, int b) {
-    this->_color = QGColor::convertRGBToColor(r, g, b);
-    this->_colorInt = QGColor::convertRGBToRGB(r, g, b);
-    // stanfordcpplib::getPlatform()->gobject_setColor(this, this->color);
+    _color = QGColor::convertRGBToColor(r, g, b);
+    _colorInt = QGColor::convertRGBToRGB(r, g, b);
+    repaint();
 }
 
 void QGObject::setColor(int rgb) {
-    this->_color = QGColor::convertRGBToColor(rgb);
-    this->_colorInt = rgb;
-    // stanfordcpplib::getPlatform()->gobject_setColor(this, this->color);
+    _color = QGColor::convertRGBToColor(rgb);
+    _colorInt = rgb;
+    repaint();
 }
 
 void QGObject::setColor(const std::string& color) {
@@ -285,78 +331,92 @@ void QGObject::setColor(const std::string& color) {
 void QGObject::setFillColor(int r, int g, int b) {
     _fillColor = QGColor::convertRGBToColor(r, g, b);
     _fillColorInt = QGColor::convertRGBToRGB(r, g, b);
-    // stanfordcpplib::getPlatform()->gobject_setFillColor(this, fillColor);
+    repaint();
 }
 
 void QGObject::setFillColor(int rgb) {
     _fillColor = QGColor::convertRGBToColor(rgb);
     _fillColorInt = rgb;
-    // stanfordcpplib::getPlatform()->gobject_setFillColor(this, fillColor);
+    repaint();
 }
 
 void QGObject::setFillColor(const std::string& color) {
     _fillColor = color;
     _fillColorInt = QGColor::convertColorToRGB(color);
     if (_fillColor == "") {
-        if (isFilled()) {
-            setFilled(false);
-        }
+        _fillFlag = false;
     } else {
         _fillColor = QGColor::convertRGBToColor(QGColor::convertColorToRGB(color));
-        if (!isFilled()) {
-            setFilled(true);
-        }
+        _fillFlag = true;
     }
-    // stanfordcpplib::getPlatform()->gobject_setFillColor(this, fillColor);
+    repaint();
 }
 
 void QGObject::setFilled(bool flag) {
     _fillFlag = flag;
-    // stanfordcpplib::getPlatform()->gobject_setFilled(this, flag);
+    repaint();
 }
 
 void QGObject::setFont(const std::string& font) {
-    this->_font = font;
+    _font = font;
+    repaint();
 }
 
 void QGObject::setLineWidth(double lineWidth) {
-    this->_lineWidth = lineWidth;
-    // stanfordcpplib::getPlatform()->gobject_setLineWidth(this, lineWidth);
+    _lineWidth = lineWidth;
+    repaint();
 }
 
 void QGObject::setLocation(double x, double y) {
-    this->_x = x;
-    this->_y = y;
-    // stanfordcpplib::getPlatform()->gobject_setLocation(this, x, y);
+    _x = x;
+    _y = y;
+    repaint();
 }
 
 void QGObject::setLocation(const GPoint& pt) {
-    setLocation(pt.getX(), pt.getY());
+    setLocation(pt.getX(), pt.getY());   // calls repaint
+}
+
+void QGObject::setSize(double width, double height) {
+    if (_transformed) {
+        error("QGObject::setSize: Object has been transformed");
+    }
+    _width = width;
+    _height = height;
+    repaint();
+}
+
+void QGObject::setSize(const GDimension& size) {
+    setSize(size.getWidth(), size.getHeight());   // calls repaint
 }
 
 void QGObject::setVisible(bool flag) {
     _visible = flag;
-    // stanfordcpplib::getPlatform()->gobject_setVisible(this, flag);
+    repaint();
 }
 
 void QGObject::setX(double x) {
-    setLocation(x, getY());
+    setLocation(x, getY());   // calls repaint
 }
 
 void QGObject::setY(double y) {
-    setLocation(getX(), y);
+    setLocation(getX(), y);   // calls repaint
 }
 
 std::string QGObject::toString() const {
+    std::string extra = toStringExtra();
     return getType()
-            + "(" + toStringExtra()
-            + " x=" + doubleToString(_x)
-            + " y=" + doubleToString(_y)
-            + (_lineWidth <= 1 ? "" : (" lineWidth=" + doubleToString(_lineWidth)))
-            + (_color.empty() ? "" : (" color=" + _color))
-            + (_fillColor.empty() ? "" : (" fillColor=" + _fillColor))
-            + (_font.empty() ? "" : (" font=" + _font))
-            + (" visible=" + boolToString(_visible))
+            + "("
+            + "x=" + doubleToString(_x)
+            + ",y=" + doubleToString(_y)
+            + ",w=" + doubleToString(_width)
+            + ",h=" + doubleToString(_height)
+            + (_lineWidth <= 1 ? "" : (",lineWidth=" + doubleToString(_lineWidth)))
+            + (_color.empty() ? "" : (",color=" + _color))
+            + (_fillColor.empty() ? "" : (",fillColor=" + _fillColor))
+            + (_font.empty() ? "" : (",font=" + _font))
+            + (_visible ? "" : (",visible=" + boolToString(_visible)))
+            + (extra.empty() ? "" : ("," + extra))
             + ")";
 }
 
@@ -365,78 +425,18 @@ std::string QGObject::toStringExtra() const {
 }
 
 
-/*
- * Implementation notes: QG3DRect class
- * -----------------------------------
- * Most of the QG3DRect class is inherited from the QGRect class.
- */
-
-QG3DRect::QG3DRect(double width, double height) {
-    createQG3DRect(width, height, false);
-}
-
-QG3DRect::QG3DRect(double width, double height, bool raised) {
-    createQG3DRect(width, height, raised);
-}
-
-QG3DRect::QG3DRect(double x, double y, double width, double height) {
-    createQG3DRect(width, height, false);
-    setLocation(x, y);
-}
-
-QG3DRect::QG3DRect(double x, double y, double width, double height,
-                 bool raised) {
-    createQG3DRect(width, height, raised);
-    setLocation(x, y);
-}
-
-QG3DRect::~QG3DRect() {
+QGArc::QGArc(double width, double height, double start, double sweep)
+        : QGObject(/* x */ 0, /* y */ 0, width, height),
+          _start(start),
+          _sweep(sweep) {
     // empty
 }
 
-void QG3DRect::createQG3DRect(double width, double height, bool raised) {
-    this->_x = 0;
-    this->_y = 0;
-    this->width = width;
-    this->height = height;
-    this->raised = raised;
-    _fillFlag = false;
-    _fillColor = "";
-}
-
-std::string QG3DRect::getType() const {
-    return "QG3DRect";
-}
-
-void QG3DRect::draw(QPainter* painter) {
-    // TODO
-    initializeBrushAndPen(painter);
-}
-
-bool QG3DRect::isRaised() const {
-    return raised;
-}
-
-void QG3DRect::setRaised(bool raised) {
-    this->raised = raised;
-    // stanfordcpplib::getPlatform()->g3drect_setRaised(this, raised);
-}
-
-std::string QG3DRect::toStringExtra() const {
-    std::ostringstream oss;
-    oss << "width=" << width << " height=" << height << " raised=" << std::boolalpha << raised << ")";
-    return oss.str();
-}
-
-
-QGArc::QGArc(double width, double height, double start, double sweep) {
-    createQGArc(width, height, start, sweep);
-}
-
-QGArc::QGArc(double x, double y, double width, double height,
-           double start, double sweep) {
-    createQGArc(width, height, start, sweep);
-    setLocation(x, y);
+QGArc::QGArc(double x, double y, double width, double height, double start, double sweep)
+        : QGObject(x, y, width, height),
+          _start(start),
+          _sweep(sweep) {
+    // empty
 }
 
 bool QGArc::contains(double x, double y) const {
@@ -444,19 +444,23 @@ bool QGArc::contains(double x, double y) const {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
     }
-    double rx = frameWidth / 2;
-    double ry = frameHeight / 2;
+    double rx = getWidth() / 2;
+    double ry = getHeight() / 2;
     if (floatingPointEqual(rx, 0) || floatingPointEqual(ry, 0)) {
         return false;
     }
-    double dx = x - (this->_x + rx);
-    double dy = y - (this->_y + ry);
+    double dx = x - (getX() + rx);
+    double dy = y - (getY() + ry);
     double r = (dx * dx) / (rx * rx) + (dy * dy) / (ry * ry);
-    if (_fillFlag) {
-        if (r > 1.0) return false;
+    if (isFilled()) {
+        if (r > 1.0) {
+            return false;
+        }
     } else {
-        double t = ARC_TOLERANCE / ((rx + ry) / 2);
-        if (std::fabs(1.0 - r) > t) return false;
+        double t = STATIC_VARIABLE(ARC_TOLERANCE) / ((rx + ry) / 2);
+        if (std::fabs(1.0 - r) > t) {
+            return false;
+        }
     }
 
     // JL BUGFIX: must scale by ry, rx.
@@ -464,9 +468,11 @@ bool QGArc::contains(double x, double y) const {
 }
 
 bool QGArc::containsAngle(double theta) const {
-    double start = std::min(this->start, this->start + this->sweep);
-    double sweep = std::abs(this->sweep);
-    if (sweep >= 360) return true;
+    double start = std::min(_start, _start + _sweep);
+    double sweep = std::abs(_sweep);
+    if (sweep >= 360) {
+        return true;
+    }
     theta = (theta < 0) ? 360 - fmod(-theta, 360) : fmod(theta, 360);
     start = (start < 0) ? 360 - fmod(-start, 360) : fmod(start, 360);
     if (start + sweep > 360) {
@@ -476,27 +482,22 @@ bool QGArc::containsAngle(double theta) const {
     }
 }
 
-void QGArc::createQGArc(double width, double height, double start, double sweep) {
-    this->_x = 0;
-    this->_y = 0;
-    frameWidth = width;
-    frameHeight = height;
-    this->start = start;
-    this->sweep = sweep;
-    _fillFlag = false;
-    _fillColor = "";
-}
-
 void QGArc::draw(QPainter* painter) {
-    // TODO
+    // for some reason, Qt's arc-drawing functionality asks for angles in
+    // 1/16ths of a degree. okay sure whatever
+    static const int QT_ANGLE_SCALE_FACTOR = 16;
     initializeBrushAndPen(painter);
+    painter->drawChord((int) getX(), (int) getY(),
+                       (int) getWidth(), (int) getHeight(),
+                       (int) (_start * QT_ANGLE_SCALE_FACTOR),
+                       (int) (_sweep * QT_ANGLE_SCALE_FACTOR));
 }
 
 GPoint QGArc::getArcPoint(double theta) const {
-    double rx = frameWidth / 2;
-    double ry = frameHeight / 2;
-    double cx = _x + rx;
-    double cy = _y + ry;
+    double rx = getWidth() / 2;
+    double ry = getHeight() / 2;
+    double cx = getX() + rx;
+    double cy = getY() + ry;
     double radians = theta * PI / 180;
     return GPoint(cx + rx * cos(radians), cy - ry * sin(radians));
 }
@@ -506,12 +507,12 @@ GRectangle QGArc::getBounds() const {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
     }
-    double rx = frameWidth / 2;
-    double ry = frameHeight / 2;
-    double cx = _x + rx;
-    double cy = _y + ry;
-    double startRadians = start * PI / 180;
-    double sweepRadians = sweep * PI / 180;
+    double rx = getWidth() / 2;
+    double ry = getHeight() / 2;
+    double cx = getX() + rx;
+    double cy = getY() + ry;
+    double startRadians = _start * PI / 180;
+    double sweepRadians = _sweep * PI / 180;
     double p1x = cx + cos(startRadians) * rx;
     double p1y = cy - sin(startRadians) * ry;
     double p2x = cx + cos(startRadians + sweepRadians) * rx;
@@ -534,23 +535,23 @@ GRectangle QGArc::getBounds() const {
 }
 
 GPoint QGArc::getEndPoint() const {
-    return getArcPoint(start + sweep);
+    return getArcPoint(_start + _sweep);
 }
 
 GRectangle QGArc::getFrameRectangle() const {
-    return GRectangle(0, 0, 0, 0);
+    return getBounds();
 }
 
 double QGArc::getStartAngle() const {
-    return start;
+    return _start;
 }
 
 GPoint QGArc::getStartPoint() const {
-    return getArcPoint(start);
+    return getArcPoint(_start);
 }
 
 double QGArc::getSweepAngle() const {
-    return sweep;
+    return _sweep;
 }
 
 std::string QGArc::getType() const {
@@ -558,44 +559,37 @@ std::string QGArc::getType() const {
 }
 
 void QGArc::setFrameRectangle(double x, double y, double width, double height) {
-    this->_x = x;
-    this->_y = y;
-    frameWidth = width;
-    frameHeight = height;
-    // stanfordcpplib::getPlatform()->garc_setFrameRectangle(this, x, y, width, height);
+    setBounds(x, y, width, height);   // calls repaint
 }
 
 void QGArc::setFrameRectangle(const GRectangle& rect) {
-    setFrameRectangle(rect.getX(), rect.getY(), rect.getWidth(),
-                      rect.getHeight());
+    setFrameRectangle(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());   // calls repaint
 }
 
 void QGArc::setStartAngle(double start) {
-    this->start = start;
-    // stanfordcpplib::getPlatform()->garc_setStartAngle(this, start);
+    _start = start;
+    repaint();
 }
 
 void QGArc::setSweepAngle(double sweep) {
-    this->sweep = sweep;
-    // stanfordcpplib::getPlatform()->garc_setSweepAngle(this, sweep);
+    _sweep = sweep;
+    repaint();
 }
 
 std::string QGArc::toStringExtra() const {
     std::ostringstream oss;
-    oss << "frameWidth=" << frameWidth << " frameHeight=" << frameHeight
-        << " start=" << start << " sweep=" << sweep;
+    oss << " start=" << _start << " sweep=" << _sweep;
     return oss.str();
 }
 
 
 QGCompound::QGCompound()
         : _autoRepaint(true) {
-    // stanfordcpplib::getPlatform()->gcompound_constructor(this);
+    // empty
 }
 
 void QGCompound::add(QGObject* gobj) {
-    // stanfordcpplib::getPlatform()->gcompound_add(this, gobj);
-    contents.add(gobj);
+    _contents.add(gobj);
     gobj->_parent = this;
     conditionalRepaint();
 }
@@ -628,8 +622,8 @@ bool QGCompound::contains(double x, double y) const {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
     }
-    for (int i = 0, sz = contents.size(); i < sz; i++) {
-        if (contents[i]->contains(x, y)) {
+    for (int i = 0, sz = _contents.size(); i < sz; i++) {
+        if (_contents[i]->contains(x, y)) {
             return true;
         }
     }
@@ -638,15 +632,15 @@ bool QGCompound::contains(double x, double y) const {
 
 void QGCompound::draw(QPainter* painter) {
     initializeBrushAndPen(painter);
-    for (QGObject* obj : contents) {
+    for (QGObject* obj : _contents) {
         obj->draw(painter);
     }
 }
 
 int QGCompound::findQGObject(QGObject* gobj) const {
-    int n = contents.size();
+    int n = _contents.size();
     for (int i = 0; i < n; i++) {
-        if (contents.get(i) == gobj) {
+        if (_contents.get(i) == gobj) {
             return i;
         }
     }
@@ -662,8 +656,8 @@ GRectangle QGCompound::getBounds() const {
     double yMin = +1E20;
     double xMax = -1E20;
     double yMax = -1E20;
-    for (int i = 0; i < contents.size(); i++) {
-        GRectangle bounds = contents.get(i)->getBounds();
+    for (int i = 0; i < _contents.size(); i++) {
+        GRectangle bounds = _contents.get(i)->getBounds();
         xMin = std::min(xMin, bounds.getX());
         yMin = std::min(yMin, bounds.getY());
         xMax = std::max(xMax, bounds.getX());
@@ -674,11 +668,11 @@ GRectangle QGCompound::getBounds() const {
 }
 
 QGObject* QGCompound::getElement(int index) const {
-    return contents.get(index);
+    return _contents.get(index);
 }
 
 QGObject* QGCompound::getElementAt(double x, double y) const {
-    for (QGObject* gobj : contents) {
+    for (QGObject* gobj : _contents) {
         if (gobj && gobj->contains(x, y)) {
             return gobj;
         }
@@ -687,7 +681,7 @@ QGObject* QGCompound::getElementAt(double x, double y) const {
 }
 
 int QGCompound::getElementCount() const {
-    return contents.size();
+    return _contents.size();
 }
 
 std::string QGCompound::getType() const {
@@ -714,18 +708,18 @@ void QGCompound::remove(QGObject& gobj) {
 }
 
 void QGCompound::removeAll() {
-    Vector<QGObject*> contentsCopy = contents;
-    contents.clear();
+    Vector<QGObject*> contentsCopy = _contents;
+    _contents.clear();
     for (QGObject* obj : contentsCopy) {
         obj->_parent = nullptr;
-        // TODO: delete?
+        // TODO: delete obj;
     }
     conditionalRepaint();
 }
 
 void QGCompound::removeAt(int index) {
-    QGObject* gobj = contents[index];
-    contents.remove(index);
+    QGObject* gobj = _contents[index];
+    _contents.remove(index);
     // stanfordcpplib::getPlatform()->gobject_remove(gobj);
     gobj->_parent = nullptr;
     conditionalRepaint();
@@ -743,8 +737,8 @@ void QGCompound::sendBackward(QGObject* gobj) {
         return;
     }
     if (index != 0) {
-        contents.remove(index);
-        contents.insert(index - 1, gobj);
+        _contents.remove(index);
+        _contents.insert(index - 1, gobj);
         // stanfordcpplib::getPlatform()->gobject_sendBackward(gobj);
         conditionalRepaint();
     }
@@ -755,9 +749,9 @@ void QGCompound::sendForward(QGObject* gobj) {
     if (index == -1) {
         return;
     }
-    if (index != contents.size() - 1) {
-        contents.remove(index);
-        contents.insert(index + 1, gobj);
+    if (index != _contents.size() - 1) {
+        _contents.remove(index);
+        _contents.insert(index + 1, gobj);
         // stanfordcpplib::getPlatform()->gobject_sendForward(gobj);
         conditionalRepaint();
     }
@@ -769,8 +763,8 @@ void QGCompound::sendToBack(QGObject* gobj) {
         return;
     }
     if (index != 0) {
-        contents.remove(index);
-        contents.insert(0, gobj);
+        _contents.remove(index);
+        _contents.insert(0, gobj);
         // stanfordcpplib::getPlatform()->gobject_sendToBack(gobj);
         conditionalRepaint();
     }
@@ -781,9 +775,9 @@ void QGCompound::sendToFront(QGObject* gobj) {
     if (index == -1) {
         return;
     }
-    if (index != contents.size() - 1) {
-        contents.remove(index);
-        contents.add(gobj);
+    if (index != _contents.size() - 1) {
+        _contents.remove(index);
+        _contents.add(gobj);
         conditionalRepaint();
     }
 }
@@ -801,33 +795,36 @@ std::string QGCompound::toString() const {
 }
 
 
-void QGImage::draw(QPainter* painter) {
-    // TODO
-    initializeBrushAndPen(painter);
-}
-
-QGImage::QGImage(const std::string& filename) {
-    createQGImage(filename);
-}
-
-QGImage::QGImage(const std::string& filename, double x, double y) {
-    createQGImage(filename);
-    setLocation(x, y);
-}
-
-void QGImage::createQGImage(const std::string& filename) {
-    this->filename = filename;
-    GDimension size;   // TODO = stanfordcpplib::getPlatform()->gimage_constructor(this, filename);
-    width = size.getWidth();
-    height = size.getHeight();
-}
-
-GRectangle QGImage::getBounds() const {
-    if (_transformed) {
-        // TODO
-        // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
+QGImage::QGImage(const std::string& filename, double x, double y)
+        : QGObject(x, y),
+          _filename(filename),
+          _qimage(nullptr) {
+    if (!_filename.empty()) {
+        if (!fileExists(_filename)) {
+            error("QGImage: file not found: \"" + filename + "\"");
+        }
+        // load image
+        _qimage = new QImage;
+        if (_qimage->load(QString::fromStdString(_filename))) {
+            _width = _qimage->width();
+            _height = _qimage->height();
+        } else {
+            error("QGImage: unable to load image from: \"" + filename + "\"");
+        }
     }
-    return GRectangle(_x, _y, width, height);
+}
+
+QGImage::~QGImage() {
+    // TODO: delete _image;
+    _qimage = nullptr;
+}
+
+void QGImage::draw(QPainter* painter) {
+    painter->drawImage((int) getX(), (int) getY(), *_qimage);
+}
+
+std::string QGImage::getFileName() const {
+    return _filename;
 }
 
 std::string QGImage::getType() const {
@@ -835,23 +832,22 @@ std::string QGImage::getType() const {
 }
 
 std::string QGImage::toStringExtra() const {
-    return "filename=" + filename;
+    return "filename=\"" + _filename + "\"";
 }
 
 
-QGLine::QGLine(double x0, double y0, double x1, double y1) {
-    // stanfordcpplib::getPlatform()->gline_constructor(this, x0, y0, x1, y1);
-    _x = x0;
-    _y = y0;
-    dx = x1 - x0;
-    dy = y1 - y0;
+QGLine::QGLine(double x0, double y0, double x1, double y1)
+        : QGObject(x0, y0),
+          _dx(x1 - x0),
+          _dy(y1 - y0) {
+    // empty
 }
 
-QGLine::QGLine(const GPoint& p0, const GPoint& p1) {
-    _x = p0.getX();
-    _y = p0.getY();
-    dx = p1.getX() - p0.getX();
-    dy = p1.getY() - p1.getY();
+QGLine::QGLine(const GPoint& p0, const GPoint& p1)
+    : QGObject(p0.getX(), p0.getY()),
+      _dx(p1.getX() - p0.getX()),
+      _dy(p1.getY() - p0.getY()) {
+    // empty
 }
 
 bool QGLine::contains(double x, double y) const {
@@ -861,25 +857,25 @@ bool QGLine::contains(double x, double y) const {
     }
     double x0 = getX();
     double y0 = getY();
-    double x1 = x0 + dx;
-    double y1 = y0 + dy;
-    double tSquared = LINE_TOLERANCE * LINE_TOLERANCE;
+    double x1 = x0 + _dx;
+    double y1 = y0 + _dy;
+    double tSquared = STATIC_VARIABLE(LINE_TOLERANCE) * STATIC_VARIABLE(LINE_TOLERANCE);
     if (dsq(x, y, x0, y0) < tSquared) {
         return true;
     }
     if (dsq(x, y, x1, y1) < tSquared) {
         return true;
     }
-    if (x < std::min(x0, x1) - LINE_TOLERANCE) {
+    if (x < std::min(x0, x1) - STATIC_VARIABLE(LINE_TOLERANCE)) {
         return false;
     }
-    if (x > std::max(x0, x1) + LINE_TOLERANCE) {
+    if (x > std::max(x0, x1) + STATIC_VARIABLE(LINE_TOLERANCE)) {
         return false;
     }
-    if (y < std::min(y0, y1) - LINE_TOLERANCE) {
+    if (y < std::min(y0, y1) - STATIC_VARIABLE(LINE_TOLERANCE)) {
         return false;
     }
-    if (y > std::max(y0, y1) + LINE_TOLERANCE) {
+    if (y > std::max(y0, y1) + STATIC_VARIABLE(LINE_TOLERANCE)) {
         return false;
     }
     if (floatingPointEqual(x0 - x1, 0) && floatingPointEqual(y0 - y1, 0)) {
@@ -892,7 +888,7 @@ bool QGLine::contains(double x, double y) const {
 
 void QGLine::draw(QPainter* painter) {
     initializeBrushAndPen(painter);
-    painter->drawLine((int) _x, (int) _y, (int) (_x + dx), (int) _y + dy);
+    painter->drawLine((int) getX(), (int) getY(), (int) (getX() + _dx), (int) getY() + _dy);
 }
 
 GRectangle QGLine::getBounds() const {
@@ -900,54 +896,52 @@ GRectangle QGLine::getBounds() const {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
     }
-    double x0 = (dx < 0) ? _x + dx : _x;
-    double y0 = (dy < 0) ? _y + dy : _y;
-    return GRectangle(x0, y0, std::fabs(dx), std::fabs(dy));
+    double x0 = (_dx < 0) ? getX() + _dx : getX();
+    double y0 = (_dy < 0) ? getY() + _dy : getY();
+    return GRectangle(x0, y0, getWidth(), getHeight());
 }
 
 GPoint QGLine::getEndPoint() const {
-    return GPoint(_x + dx, _y + dy);
+    return GPoint(getX() + _dx, getY() + _dy);
 }
 
 GPoint QGLine::getStartPoint() const {
-    return GPoint(_x, _y);
+    return getLocation();
+}
+
+double QGLine::getHeight() const {
+    return std::fabs(_dy);
 }
 
 std::string QGLine::getType() const {
     return "QGLine";
 }
 
+double QGLine::getWidth() const {
+    return std::fabs(_dx);
+}
+
 void QGLine::setEndPoint(double x, double y) {
-    dx = x - this->_x;
-    dy = y - this->_y;
-    // stanfordcpplib::getPlatform()->gline_setEndPoint(this, x, y);
+    _dx = x - this->getX();
+    _dy = y - this->getY();
+    repaint();
 }
 
 void QGLine::setStartPoint(double x, double y) {
-    dx += this->_x - x;
-    dy += this->_y - y;
-    this->_x = x;
-    this->_y = y;
-    // stanfordcpplib::getPlatform()->gline_setStartPoint(this, x, y);
+    _dx += getX() - x;
+    _dy += getY() - y;
+    setLocation(x, y);   // calls repaint
 }
 
 std::string QGLine::toStringExtra() const {
     std::ostringstream oss;
-    oss << "x2=" << (_x + dx) << " y2=" << (_y + dy);
+    oss << "x2=" << (_x + _dx) << " y2=" << (_y + _dy);
     return oss.str();
 }
 
 
-QGOval::QGOval(double width, double height) {
-    createQGOval(width, height);
-}
-
-QGOval::QGOval(double x, double y, double width, double height) {
-    createQGOval(width, height);
-    setLocation(x, y);
-}
-
-QGOval::~QGOval() {
+QGOval::QGOval(double x, double y, double width, double height)
+        : QGObject(x, y, width, height) {
     // empty
 }
 
@@ -956,69 +950,23 @@ bool QGOval::contains(double x, double y) const {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
     }
-    double rx = width / 2;
-    double ry = height / 2;
+    double rx = getWidth() / 2;
+    double ry = getHeight() / 2;
     if (floatingPointEqual(rx, 0) || floatingPointEqual(ry, 0)) {
         return false;
     }
-    double dx = x - (this->_x + rx);
-    double dy = y - (this->_y + ry);
+    double dx = x - (getX() + rx);
+    double dy = y - (getY() + ry);
     return (dx * dx) / (rx * rx) + (dy * dy) / (ry * ry) <= 1.0;
-}
-
-void QGOval::createQGOval(double width, double height) {
-    this->_x = 0;
-    this->_y = 0;
-    this->width = width;
-    this->height = height;
-    _fillFlag = false;
-    _fillColor = "";
 }
 
 void QGOval::draw(QPainter* painter) {
     initializeBrushAndPen(painter);
-    painter->drawEllipse((int) _x, (int) _y, (int) width, (int) height);
-}
-
-GRectangle QGOval::getBounds() const {
-    if (_transformed) {
-        // TODO
-        // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
-        return GRectangle(_x, _y, width, height);
-    } else {
-        return GRectangle(_x, _y, width, height);
-    }
+    painter->drawEllipse((int) getX(), (int) getY(), (int) getWidth(), (int) getHeight());
 }
 
 std::string QGOval::getType() const {
     return "QGOval";
-}
-
-void QGOval::setBounds(double x, double y, double width, double height) {
-    setLocation(x, y);
-    setSize(width, height);
-}
-
-void QGOval::setBounds(const GRectangle& bounds) {
-    setLocation(bounds.getX(), bounds.getY());
-    setSize(bounds.getWidth(), bounds.getHeight());
-}
-
-void QGOval::setSize(double width, double height) {
-    if (_transformed) error("setSize: Object has been transformed");
-    this->width = width;
-    this->height = height;
-    // stanfordcpplib::getPlatform()->gobject_setSize(this, width, height);
-}
-
-void QGOval::setSize(const GDimension& size) {
-    setSize(size.getWidth(), size.getHeight());
-}
-
-std::string QGOval::toStringExtra() const {
-    std::ostringstream oss;
-    oss << "width=" << width << " height=" << height;
-    return oss.str();
 }
 
 
@@ -1035,7 +983,7 @@ QGPolygon::QGPolygon(std::initializer_list<GPoint> points) {
 }
 
 void QGPolygon::addEdge(double dx, double dy) {
-    addVertex(cx + dx, cy + dy);
+    addVertex(_cx + dx, _cy + dy);
 }
 
 void QGPolygon::addEdge(const GPoint& pt) {
@@ -1068,10 +1016,10 @@ void QGPolygon::addPolarEdge(double r, double theta) {
 }
 
 void QGPolygon::addVertex(double x, double y) {
-    cx = x;
-    cy = y;
-    vertices.add(GPoint(cx, cy));
-    // stanfordcpplib::getPlatform()->gpolygon_addVertex(this, cx, cy);
+    _cx = x;
+    _cy = y;
+    _vertices.append(QPointF(_cx, _cy));
+    repaint();
 }
 
 void QGPolygon::addVertex(const GPoint& pt) {
@@ -1105,16 +1053,18 @@ bool QGPolygon::contains(double x, double y) const {
         // return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
     }
     int crossings = 0;
-    int n = vertices.size();
-    if (n < 2) return false;
-    if (vertices[0] == vertices[n - 1]) {
+    int n = _vertices.size();
+    if (n < 2) {
+        return false;
+    }
+    if (_vertices[0] == _vertices[n - 1]) {
         n--;
     }
-    double x0 = vertices[0].getX();
-    double y0 = vertices[0].getY();
+    double x0 = _vertices[0].x();
+    double y0 = _vertices[0].y();
     for (int i = 1; i <= n; i++) {
-        double x1 = vertices[i % n].getX();
-        double y1 = vertices[i % n].getY();
+        double x1 = _vertices[i % n].x();
+        double y1 = _vertices[i % n].y();
         if ((y0 > y) != (y1 > y) && x - x0 < (x1 - x0) * (y - y0) / (y1 - y0)) {
             crossings++;
         }
@@ -1126,9 +1076,7 @@ bool QGPolygon::contains(double x, double y) const {
 
 void QGPolygon::draw(QPainter* painter) {
     initializeBrushAndPen(painter);
-    // for (int i = 1; i <= n; i++) {
-        // TODO: drawPolygon?  drawLines?
-    // }
+    painter->drawPolygon(QPolygonF(_vertices));
 }
 
 GRectangle QGPolygon::getBounds() const {
@@ -1140,9 +1088,9 @@ GRectangle QGPolygon::getBounds() const {
     double yMin = 0;
     double xMax = 0;
     double yMax = 0;
-    for (int i = 0; i < vertices.size(); i++) {
-        double x = vertices[i].getX();
-        double y = vertices[i].getY();
+    for (int i = 0; i < _vertices.size(); i++) {
+        double x = _vertices[i].x();
+        double y = _vertices[i].y();
         if (i == 0 || x < xMin) xMin = x;
         if (i == 0 || y < yMin) yMin = y;
         if (i == 0 || x > xMax) xMax = x;
@@ -1152,120 +1100,75 @@ GRectangle QGPolygon::getBounds() const {
     return GRectangle(xMin + getX(), yMin + getY(), xMax - xMin, yMax - yMin);
 }
 
+double QGPolygon::getHeight() const {
+    return getBounds().getHeight();
+}
+
 std::string QGPolygon::getType() const {
     return "QGPolygon";
 }
 
 Vector<GPoint> QGPolygon::getVertices() const {
-    return vertices;
+    Vector<GPoint> vec;
+    for (const QPointF& point : _vertices) {
+        vec.add(GPoint(point.x(), point.y()));
+    }
+    return vec;
+}
+
+double QGPolygon::getWidth() const {
+    return getBounds().getHeight();
 }
 
 std::string QGPolygon::toStringExtra() const {
     std::ostringstream oss;
-    oss << "vertices=" << vertices.size();
+    oss << "vertices=" << _vertices.size();
     return oss.str();
 }
 
 
-QGRect::QGRect(double width, double height) {
-    createQGRect(width, height);
-}
-
-QGRect::QGRect() : width(0), height(0) {
-    // Called only by the QGRoundRect and QG3DRect subclasses
-}
-
-QGRect::QGRect(double x, double y, double width, double height) {
-    createQGRect(width, height);
-    setLocation(x, y);
-}
-
-QGRect::~QGRect() {
+QGRect::QGRect(double x, double y, double width, double height)
+        : QGObject(x, y, width, height) {
     // empty
-}
-
-void QGRect::createQGRect(double width, double height) {
-    this->_x = 0;
-    this->_y = 0;
-    this->width = width;
-    this->height = height;
-    _fillFlag = false;
-    _fillColor = "";
 }
 
 void QGRect::draw(QPainter* painter) {
     initializeBrushAndPen(painter);
-    painter->drawRect((int) _x, (int) _y, (int) width, (int) height);
-}
-
-GRectangle QGRect::getBounds() const {
-    if (_transformed) {
-        // TODO
-        // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
-        return GRectangle(_x, _y, width, height);
-    } else {
-        return GRectangle(_x, _y, width, height);
-    }
+    painter->drawRect((int) getX(), (int) getY(), (int) getWidth(), (int) getHeight());
 }
 
 std::string QGRect::getType() const {
     return "QGRect";
 }
 
-void QGRect::setBounds(double x, double y, double width, double height) {
-    setLocation(x, y);
-    setSize(width, height);
-}
-
-void QGRect::setBounds(const GRectangle& bounds) {
-    setLocation(bounds.getX(), bounds.getY());
-    setSize(bounds.getWidth(), bounds.getHeight());
-}
-
-void QGRect::setSize(double width, double height) {
-    if (_transformed) error("setSize: Object has been transformed");
-    this->width = width;
-    this->height = height;
-    // stanfordcpplib::getPlatform()->gobject_setSize(this, width, height);
-}
-
-void QGRect::setSize(const GDimension& size) {
-    setSize(size.getWidth(), size.getHeight());
-}
-
-std::string QGRect::toStringExtra() const {
-    std::ostringstream oss;
-    oss << "width=" << width << " height=" << height;
-    return oss.str();
-}
-
 
 /*
  * Implementation notes: QGRoundRect class
- * --------------------------------------
+ * ---------------------------------------
  * Most of the QGRoundRect class is inherited from the QGRect class.
  */
 
-QGRoundRect::QGRoundRect(double width, double height) {
-    createQGRoundRect(width, height, DEFAULT_CORNER);
+QGRoundRect::QGRoundRect(double width, double height)
+        : QGRect(/* x */ 0, /* y */ 0, width, height),
+          _corner(STATIC_VARIABLE(DEFAULT_CORNER)) {
+    // empty
 }
 
-QGRoundRect::QGRoundRect(double width, double height, double corner) {
-    createQGRoundRect(width, height, corner);
+QGRoundRect::QGRoundRect(double width, double height, double corner)
+        : QGRect(/* x */ 0, /* y */ 0, width, height),
+          _corner(corner) {
+    // empty
 }
 
-QGRoundRect::QGRoundRect(double x, double y, double width, double height) {
-    createQGRoundRect(width, height, DEFAULT_CORNER);
-    setLocation(x, y);
+QGRoundRect::QGRoundRect(double x, double y, double width, double height)
+        : QGRect(x, y, width, height),
+          _corner(STATIC_VARIABLE(DEFAULT_CORNER)) {
+    // empty
 }
 
-QGRoundRect::QGRoundRect(double x, double y, double width, double height,
-                       double corner) {
-    createQGRoundRect(width, height, corner);
-    setLocation(x, y);
-}
-
-QGRoundRect::~QGRoundRect() {
+QGRoundRect::QGRoundRect(double x, double y, double width, double height, double corner)
+        : QGRect(x, y, width, height),
+          _corner(corner) {
     // empty
 }
 
@@ -1282,12 +1185,12 @@ bool QGRoundRect::contains(double x, double y) const {
     }
 
     // If corner diameter is too big, the largest sensible value is used by Java back end.
-    double a = std::min(corner, width) / 2;
-    double b = std::min(corner, height) / 2;
+    double a = std::min(_corner, getWidth()) / 2;
+    double b = std::min(_corner, getHeight()) / 2;
 
     // Get distances from nearest edges of bounding rectangle
-    double dx = std::min(std::abs(x - getX()), std::abs(x - (getX() + width)));
-    double dy = std::min(std::abs(y - getY()), std::abs(y - (getY() + height)));
+    double dx = std::min(std::abs(x - getX()), std::abs(x - getRightX()));
+    double dy = std::min(std::abs(y - getY()), std::abs(y - getBottomY()));
 
     if (dx > a || dy > b) {
         return true;   // in "central cross" of rounded rect
@@ -1296,54 +1199,41 @@ bool QGRoundRect::contains(double x, double y) const {
     return (dx - a) * (dx - a) / (a * a) + (dy - b) * (dy - b) / (b * b) <= 1;
 }
 
-void QGRoundRect::createQGRoundRect(double width, double height, double corner) {
-    this->_x = 0;
-    this->_y = 0;
-    this->width = width;
-    this->height = height;
-    this->corner = corner;
-    _fillFlag = false;
-    _fillColor = "";
-}
-
 void QGRoundRect::draw(QPainter* painter) {
     initializeBrushAndPen(painter);
-    painter->drawRoundRect((int) _x, (int) _y, (int) width, (int) height, (int) corner, (int) corner);
+    painter->drawRoundRect((int) getX(), (int) getY(),
+                           (int) getWidth(), (int) getHeight(),
+                           (int) _corner, (int) _corner);
+}
+
+double QGRoundRect::getCorner() const {
+    return _corner;
 }
 
 std::string QGRoundRect::getType() const {
     return "QGRoundRect";
 }
 
+void QGRoundRect::setCorner(double corner) {
+    _corner = corner;
+    repaint();
+}
+
 std::string QGRoundRect::toStringExtra() const {
-    std::ostringstream oss;
-    oss << "width=" << width << " height=" << height << " corner=" << corner;
-    return oss.str();
+    return "corner=" + doubleToString(_corner);
 }
 
 
-QGString::QGString(const std::string& str) {
-    createQGString(str);
-}
-
-QGString::QGString(const std::string& str, double x, double y) {
-    createQGString(str);
-    setLocation(x, y);
-}
-
-void QGString::createQGString(const std::string& str) {
-    this->str = str;
-    setFont(DEFAULT_GLABEL_FONT);
-    GDimension size;   // TODO = stanfordcpplib::getPlatform()->glabel_getSize(this);
-    width = size.getWidth();
-    height = size.getHeight();
-    ascent = 0;   // TODO = stanfordcpplib::getPlatform()->glabel_getFontAscent(this);
-    descent = 0;   // TODO = stanfordcpplib::getPlatform()->glabel_getFontDescent(this);
+QGString::QGString(const std::string& str, double x, double y)
+        : QGObject(x, y),
+          _text(str) {
+    _font = STATIC_VARIABLE(DEFAULT_GLABEL_FONT);
+    updateSize();
 }
 
 void QGString::draw(QPainter* painter) {
     initializeBrushAndPen(painter);
-    painter->drawText((int) _x, (int) _y, QString::fromStdString(str));
+    painter->drawText((int) getX(), (int) getY(), QString::fromStdString(_text));
 }
 
 GRectangle QGString::getBounds() const {
@@ -1351,7 +1241,7 @@ GRectangle QGString::getBounds() const {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
     }
-    return GRectangle(_x, _y - ascent, width, height);
+    return GRectangle(getX(), getY() - getFontAscent(), getWidth(), getHeight());
 }
 
 std::string QGString::getFont() const {
@@ -1359,19 +1249,21 @@ std::string QGString::getFont() const {
 }
 
 double QGString::getFontAscent() const {
-    return ascent;
+    QFontMetrics metrics(QGFont::toQFont(_font));
+    return metrics.ascent();
 }
 
 double QGString::getFontDescent() const {
-    return descent;
+    QFontMetrics metrics(QGFont::toQFont(_font));
+    return metrics.descent();
 }
 
 std::string QGString::getLabel() const {
-    return str;
+    return _text;
 }
 
 std::string QGString::getText() const {
-    return str;
+    return _text;
 }
 
 std::string QGString::getType() const {
@@ -1379,21 +1271,15 @@ std::string QGString::getType() const {
 }
 
 void QGString::setFont(const std::string& font) {
-    QGObject::setFont(font);
-    // stanfordcpplib::getPlatform()->glabel_setFont(this, font);
-    GDimension size;   // TODO = stanfordcpplib::getPlatform()->glabel_getSize(this);
-    width = size.getWidth();
-    height = size.getHeight();
-    ascent = 0;   // TODO = stanfordcpplib::getPlatform()->glabel_getFontAscent(this);
-    descent = 0;   // TODO = stanfordcpplib::getPlatform()->glabel_getFontDescent(this);
+    _font = font;
+    updateSize();
+    repaint();
 }
 
 void QGString::setLabel(const std::string& str) {
-    this->str = str;
-    // stanfordcpplib::getPlatform()->glabel_setLabel(this, str);
-    GDimension size;   // TODO = stanfordcpplib::getPlatform()->glabel_getSize(this);
-    width = size.getWidth();
-    height = size.getHeight();
+    _text = str;
+    updateSize();
+    repaint();
 }
 
 void QGString::setText(const std::string& str) {
@@ -1401,7 +1287,13 @@ void QGString::setText(const std::string& str) {
 }
 
 std::string QGString::toStringExtra() const {
-    return "text=\"" + str + "\"";
+    return "text=\"" + _text + "\"";
+}
+
+void QGString::updateSize() {
+    QFontMetrics metrics(QGFont::toQFont(_font));
+    _width = metrics.width(QString::fromStdString(_text));
+    _height = metrics.height();
 }
 
 std::ostream& operator <<(std::ostream& out, const QGObject& obj) {

@@ -12,8 +12,10 @@
 #include <string>
 #include <QWindow>
 #include <QEvent>
+#include <QKeyEvent>
 #include <QMouseEvent>
 #include <QWidget>
+#include "qgevent.h"
 #include "qginteractor.h"
 #include "qgobjects.h"
 
@@ -27,17 +29,22 @@ class _Internal_QCanvas : public QWidget, public _Internal_QWidget {
 public:
     _Internal_QCanvas(QGCanvas* qgcanvas, QWidget* parent = nullptr);
 
-    virtual void enterEvent(QEvent* event);
-    virtual void leaveEvent(QEvent* event);
-    virtual void mouseMoveEvent(QMouseEvent* event);
-    virtual void mousePressEvent(QMouseEvent* event);
-    virtual void mouseReleaseEvent(QMouseEvent* event);
+    virtual void enterEvent(QEvent* event) Q_DECL_OVERRIDE;
+    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
+    virtual void keyReleaseEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
+    virtual void leaveEvent(QEvent* event) Q_DECL_OVERRIDE;
+    virtual void mouseMoveEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
+    virtual void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
+    virtual void mouseReleaseEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
     virtual void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
+    virtual void wheelEvent(QWheelEvent* event) Q_DECL_OVERRIDE;
 
 private:
     QGCanvas* _qgcanvas;
     void fireQGEvent(QEvent* event, QGEvent::EventType eventType, const std::string& eventName);
+    void fireQGEvent(QKeyEvent* event, QGEvent::EventType eventType, const std::string& eventName);
     void fireQGEvent(QMouseEvent* event, QGEvent::EventType eventType, const std::string& eventName);
+    void fireQGEvent(QWheelEvent* event, QGEvent::EventType eventType, const std::string& eventName);
 
     friend class QGCanvas;
 };
@@ -67,8 +74,17 @@ public:
     virtual void remove(QGObject* gobj);
     virtual void remove(QGObject& gobj);
     virtual void removeAll();
+    virtual void removeClickHandler();
+    virtual void removeKeyHandler();
+    virtual void removeMouseHandler();
     virtual void repaint();
     virtual void setAutoRepaint(bool autoRepaint);
+    virtual void setClickHandler(QGEventHandler func);
+    virtual void setClickHandler(QGEventHandlerVoid func);
+    virtual void setKeyHandler(QGEventHandler func);
+    virtual void setKeyHandler(QGEventHandlerVoid func);
+    virtual void setMouseHandler(QGEventHandler func);
+    virtual void setMouseHandler(QGEventHandlerVoid func);
 
 private:
     _Internal_QCanvas* _iqcanvas;

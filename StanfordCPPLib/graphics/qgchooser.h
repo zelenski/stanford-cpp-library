@@ -53,6 +53,7 @@ public:
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;
     virtual bool isEditable() const;
+    virtual void removeChangeHandler();
     virtual void setChangeHandler(QGEventHandler func);
     virtual void setChangeHandler(QGEventHandlerVoid func);
     virtual void setEditable(bool editable);

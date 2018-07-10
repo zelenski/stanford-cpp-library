@@ -723,46 +723,131 @@ void testQwindow() {
     // todo
 }
 
+QGOval* ball = nullptr;
+QGButton* button = nullptr;
+double dx = 5;
+double dy = 3;
+double cw;
+double ch;
+
 void testQwindowDrawing() {
-//    cout << "This is the testQwindow function! yay!" << endl;
-//    cout << "testQwindow is in thread " << QGui::instance()->getCurrentThread() << endl;
-//    cout << "testQwindow sleeping 500ms ..." << endl;
-//    QGui::instance()->getCurrentThread()->msleep(500);
-//    cout << "testQwindow done sleeping." << endl;
-//    return;
+    QGui::instance()->runOnQtGuiThread([]() {
+        window = new QGWindow(900, 500);
+        window->setTitle("QtGui Drawing Window");
+        window->setResizable(true);
+        window->center();
 
-    window = new QGWindow(900, 500);
-    window->setTitle("QtGui Drawing Window");
-    window->setResizable(true);
-    window->center();
+        QGLabel* label = new QGLabel("QtGui <b>AWESOME</b> <i>cool</i> window");
+        window->addToRegion(label, "North");
+        cw = window->getCanvasWidth();
+        ch = window->getCanvasHeight();
 
-//    QGLabel* label = new QGLabel("Type <b>stuff</b> <i>now</i> (North):");
-//    window->addToRegion(label, "North");
-//    cout << "label:     " << label->toString() << endl;
+        ball = new QGOval(20, 20, 50, 50);
+        ball->setFillColor("red");
+        window->add(ball);
+
+        button = new QGButton("Tick");
+        window->addToRegion(button, "South");
+
+        window->setBackground("yellow");
+
+        window->setColor("red");
+        window->setFillColor("red");
+    });
 
     // drawing directly onto window
+//    window->setColor("blue");
+//    window->setFillColor("yellow");
+//    window->fillOval(20, 120, 40, 60);
+//    window->setColor("red");
+//    window->setFillColor("green");
+//    window->setLineWidth(3);
+//    window->fillRect(10, 30, 120, 70);
+//    window->drawLine(100, 100, 200, 150);
+
+
+    window->drawRect(20, 220, 100, 100);
+    window->fillArc(20, 220, 100, 100, 45, 120);
+
+    window->setFillColor("purple");
+    window->setFont("Monospaced-bold-16");
+    window->fillPolygon({200, 200, 250, 300, 150, 300});
+
+    window->setColor("green");
+    QGString* qgstring = new QGString("Hello, Qt!", 200, 80);
+    qgstring->setColor("green");
+    qgstring->rotate(10);
+    window->add(qgstring);
+
+    QGString* qgstring2 = new QGString("Bye, Felicia!", 220, 100);
+    qgstring2->setColor("red");
+    qgstring2->scale(1.5);
+    window->add(qgstring2);
+
+    QGImage* qgimage = new QGImage("triangle-icon.png", 200, 40);
+    window->add(qgimage);
+
     window->setColor("blue");
-    window->setFillColor("yellow");
-    window->fillOval(20, 120, 40, 60);
-    window->setColor("red");
-    window->setFillColor("green");
-    window->setLineWidth(3);
-    window->fillRect(10, 30, 120, 70);
-    window->drawLine(100, 100, 200, 150);
-    window->setColor("red");
-    window->setFillColor("red");
+    QGString* qgstring3 = new QGString("Third string", 240, 120);
+    qgstring3->setColor("blue");
+    window->add(qgstring3);
+
+    // animation loop
+    cout << "testQwindowDrawing: What thread am I? " << QGui::instance()->getCurrentThread() << endl;
+    cout << "testQwindowDrawing: Qt gui main thread = " << QGui::instance()->getQtMainThread()
+         << ", student thread = " << QGui::instance()->getStudentThread() << endl;
+
+    std::function<void()> tickFunc = []() {
+//        cout << "tick func: What thread am I? " << QGui::instance()->getCurrentThread() << endl;
+//        cout << "tick func: dx=" << dx << ",dy=" << dy << endl;
+//        cout << "tick func: ball = " << ball->toString() << endl;
+        window->pause(20);
+        ball->move(dx, dy);
+        if (ball->getX() < 0 || ball->getRightX() >= cw) {
+            dx = -dx;
+        }
+        if (ball->getY() < 0 || ball->getBottomY() >= ch) {
+            dy = -dy;
+        }
+        cout << "ball loc is now: " << ball->getLocation() << endl;
+    };
+    button->setClickHandler(tickFunc);
 
     window->setMouseHandler([](QGEvent event) {
         cout << "mouse! event=" << event << endl;
+        cout << "mouse handler: What thread am I? " << QGui::instance()->getCurrentThread() << endl;
         if (event.getType() == QGEvent::MOUSE_DRAGGED) {
-            window->drawOval(event.getX() - 1, event.getY() - 1, 3, 3);
+            // BUGBUG: color is not supposed to be white?
+            window->fillOval(event.getX() - 1, event.getY() - 1, 3, 3);
         }
     });
+
+    window->setKeyHandler([](QGEvent event) {
+        cout << "key! event=" << event << endl;
+        double balldx = 0;
+        double balldy = 0;
+        if (event.getKeyCode() == QGEvent::LEFT_ARROW_KEY) {
+            balldx = -2;
+        } else if (event.getKeyCode() == QGEvent::RIGHT_ARROW_KEY) {
+            balldx = 2;
+        } else if (event.getKeyCode() == QGEvent::UP_ARROW_KEY) {
+            balldy = -2;
+        } else if (event.getKeyCode() == QGEvent::DOWN_ARROW_KEY) {
+            balldy = 2;
+        } else if (event.getKeyCode() == 'f') {
+            ball->sendToFront();
+        }
+        ball->move(balldx, balldy);
+    });
+
+//    for (int i = 0; i < 1000; i++) {
+//        tickFunc();
+//    }
 }
 
 
 int main() {
-    QGui::instance()->runOnQtGuiThread(testQwindow);
+    testQwindowDrawing();
     return 0;
 }
 

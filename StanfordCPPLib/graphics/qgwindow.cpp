@@ -75,14 +75,14 @@ _Internal_QMainWindow::_Internal_QMainWindow(QGWindow* qgwindow, QWidget* parent
     setCentralWidget(dummyWidget);
 }
 
-bool _Internal_QMainWindow::event(QEvent* event) {
-    // TODO
-    if (event->type() == (QEvent::Type) (QEvent::User + 106)) {
-        // cout << "user event! type=" << event->type() << endl;
-    }
+//bool _Internal_QMainWindow::event(QEvent* event) {
+//    // TODO
+//    if (event->type() == (QEvent::Type) (QEvent::User + 106)) {
+//        // cout << "user event! type=" << event->type() << endl;
+//    }
 
-    return QWidget::event(event);
-}
+//    return QMainWindow::event(event);
+//}
 
 _Internal_QMainWindow* QGWindow::_lastWindow = nullptr;
 
@@ -108,6 +108,11 @@ QGWindow::~QGWindow() {
 }
 
 void QGWindow::add(QGInteractor* interactor) {
+    addToRegion(interactor, "Center");
+}
+
+void QGWindow::add(QGInteractor* interactor, double x, double y) {
+    interactor->setLocation(x, y);
     addToRegion(interactor, "Center");
 }
 
@@ -234,10 +239,17 @@ void QGWindow::draw(QGObject* obj, double x, double y) {
     _canvas->add(obj);
 }
 
+void QGWindow::drawArc(double x, double y, double width, double height, double start, double sweep) {
+    ensureCanvas();
+    QGArc* arc = new QGArc(x, y, width, height, start, sweep);
+    initializeQGObject(arc);
+    draw(arc);
+}
+
 void QGWindow::drawImage(const std::string& filename, double x, double y) {
     ensureCanvas();
     QGImage* image = new QGImage(filename, x, y);
-    _canvas->add(image);
+    draw(image);
 }
 
 void QGWindow::drawLine(const GPoint& p0, const GPoint& p1) {
@@ -248,7 +260,7 @@ void QGWindow::drawLine(double x0, double y0, double x1, double y1) {
     ensureCanvas();
     QGLine* line = new QGLine(x0, y0, x1, y1);
     initializeQGObject(line);
-    _canvas->add(line);
+    draw(line);
 }
 
 void QGWindow::drawOval(const GRectangle& bounds) {
@@ -259,7 +271,7 @@ void QGWindow::drawOval(double x, double y, double width, double height) {
     ensureCanvas();
     QGOval* oval = new QGOval(x, y, width, height);
     initializeQGObject(oval);
-    _canvas->add(oval);
+    draw(oval);
 }
 
 GPoint QGWindow::drawPolarLine(const GPoint& p0, double r, double theta) {
@@ -274,29 +286,32 @@ GPoint QGWindow::drawPolarLine(double x0, double y0, double r, double theta) {
 }
 
 void QGWindow::drawPixel(double /* x */, double /* y */) {
+    ensureCanvas();
     // TODO
 }
 
 void QGWindow::drawPixel(double /* x */, double /* y */, int /* color */) {
     // TODO
+    ensureCanvas();
 }
 
 void QGWindow::drawPixel(double /* x */, double /* y */, const std::string& /* color */) {
     // TODO
+    ensureCanvas();
 }
 
 void QGWindow::drawPolygon(std::initializer_list<double> coords) {
     ensureCanvas();
     QGPolygon* polygon = new QGPolygon(coords);
     initializeQGObject(polygon);
-    _canvas->add(polygon);
+    draw(polygon);
 }
 
 void QGWindow::drawPolygon(std::initializer_list<GPoint> points) {
     ensureCanvas();
     QGPolygon* polygon = new QGPolygon(points);
     initializeQGObject(polygon);
-    _canvas->add(polygon);
+    draw(polygon);
 }
 
 void QGWindow::drawRect(const GRectangle& bounds) {
@@ -307,14 +322,14 @@ void QGWindow::drawRect(double x, double y, double width, double height) {
     ensureCanvas();
     QGRect* rect = new QGRect(x, y, width, height);
     initializeQGObject(rect);
-    _canvas->add(rect);
+    draw(rect);
 }
 
 void QGWindow::drawString(const std::string& text, double x, double y) {
     ensureCanvas();
     QGString* str = new QGString(text, x, y);
     initializeQGObject(str);
-    _canvas->add(str);
+    draw(str);
 }
 
 void QGWindow::ensureCanvas() {
@@ -322,6 +337,13 @@ void QGWindow::ensureCanvas() {
         _canvas = new QGCanvas(_iqmainwindow);
         addToRegion(_canvas, "Center");
     }
+}
+
+void QGWindow::fillArc(double x, double y, double width, double height, double start, double sweep) {
+    ensureCanvas();
+    QGArc* arc = new QGArc(x, y, width, height, start, sweep);
+    initializeQGObject(arc, /* filled */ true);
+    draw(arc);
 }
 
 void QGWindow::fillOval(const GRectangle& bounds) {
@@ -332,14 +354,14 @@ void QGWindow::fillOval(double x, double y, double width, double height) {
     ensureCanvas();
     QGOval* oval = new QGOval(x, y, width, height);
     initializeQGObject(oval, /* filled */ true);
-    _canvas->add(oval);
+    draw(oval);
 }
 
 void QGWindow::fillPolygon(std::initializer_list<double> coords) {
     ensureCanvas();
     QGPolygon* polygon = new QGPolygon(coords);
     initializeQGObject(polygon, /* filled */ true);
-    _canvas->add(polygon);
+    draw(polygon);
 }
 
 void QGWindow::fillRect(const GRectangle& bounds) {
@@ -350,7 +372,15 @@ void QGWindow::fillRect(double x, double y, double width, double height) {
     ensureCanvas();
     QGRect* rect = new QGRect(x, y, width, height);
     initializeQGObject(rect, /* filled */ true);
-    _canvas->add(rect);
+    draw(rect);
+}
+
+std::string QGWindow::getBackground() const {
+    return _canvas->getBackground();
+}
+
+int QGWindow::getBackgroundInt() const {
+    return _canvas->getBackgroundInt();
 }
 
 double QGWindow::getCanvasHeight() const {
@@ -613,6 +643,12 @@ void QGWindow::remove(QGInteractor* interactor) {
     removeFromRegion(interactor, "Center");
 }
 
+void QGWindow::removeClickHandler() {
+    if (_canvas) {
+        _canvas->removeClickHandler();
+    }
+}
+
 void QGWindow::removeFromRegion(QGInteractor* interactor, Region region) {
     removeFromRegion(interactor, regionToString(region));
 }
@@ -633,6 +669,18 @@ void QGWindow::removeFromRegion(QGInteractor* interactor, const std::string& reg
     _iqmainwindow->update();
 }
 
+void QGWindow::removeKeyHandler() {
+    if (_canvas) {
+        _canvas->removeKeyHandler();
+    }
+}
+
+void QGWindow::removeMouseHandler() {
+    if (_canvas) {
+        _canvas->removeMouseHandler();
+    }
+}
+
 void QGWindow::repaint() {
     if (_canvas) {
         _canvas->repaint();
@@ -646,6 +694,16 @@ void QGWindow::requestFocus() {
 void QGWindow::saveCanvasPixels(const std::string& /* filename */) {
     // TODO
     ensureCanvas();
+}
+
+void QGWindow::setBackground(int color) {
+    _canvas->setBackground(color);
+    // TODO: set background of N/S/E/W regions and central region
+}
+
+void QGWindow::setBackground(const std::string& color) {
+    _canvas->setBackground(color);
+    // TODO: set background of N/S/E/W regions and central region
 }
 
 void QGWindow::setCanvasHeight(double height) {
@@ -725,31 +783,27 @@ void QGWindow::setLocation(const Point& p) {
 }
 
 void QGWindow::setClickHandler(QGEventHandler func) {
-    _canvas->setEventHandler("click", func);
+    _canvas->setClickHandler(func);
 }
 
 void QGWindow::setClickHandler(QGEventHandlerVoid func) {
-    _canvas->setEventHandler("click", func);
+    _canvas->setClickHandler(func);
+}
+
+void QGWindow::setKeyHandler(QGEventHandler func) {
+    _canvas->setKeyHandler(func);
+}
+
+void QGWindow::setKeyHandler(QGEventHandlerVoid func) {
+    _canvas->setKeyHandler(func);
 }
 
 void QGWindow::setMouseHandler(QGEventHandler func) {
-    _canvas->setEventHandler("click", func);
-    _canvas->setEventHandler("mousedrag", func);
-    _canvas->setEventHandler("mouseenter", func);
-    _canvas->setEventHandler("mouseexit", func);
-    _canvas->setEventHandler("mousemove", func);
-    _canvas->setEventHandler("mousepress", func);
-    _canvas->setEventHandler("mouserelease", func);
+    _canvas->setMouseHandler(func);
 }
 
 void QGWindow::setMouseHandler(QGEventHandlerVoid func) {
-    _canvas->setEventHandler("click", func);
-    _canvas->setEventHandler("mousedrag", func);
-    _canvas->setEventHandler("mouseenter", func);
-    _canvas->setEventHandler("mouseexit", func);
-    _canvas->setEventHandler("mousemove", func);
-    _canvas->setEventHandler("mousepress", func);
-    _canvas->setEventHandler("mouserelease", func);
+    _canvas->setMouseHandler(func);
 }
 
 void QGWindow::setWindowHandler(QGEventHandler /* func */) {

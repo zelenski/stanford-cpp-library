@@ -72,6 +72,10 @@ bool QGTextArea::isEditable() const {
     return !_iqtextedit->isReadOnly();
 }
 
+void QGTextArea::removeTextChangeHandler() {
+    removeEventHandler("textchange");
+}
+
 void QGTextArea::setColumns(int columns) {
     double desiredWidth = getRowColumnSize().getWidth() * columns;
     setSize(desiredWidth, getHeight());

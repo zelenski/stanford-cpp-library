@@ -46,6 +46,7 @@ public:
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;
     virtual bool isEditable() const;
+    virtual void removeTextChangeHandler();
     virtual void setColumns(int columns);
     virtual void setEditable(bool value);
     virtual void setPlaceholder(const std::string& text);

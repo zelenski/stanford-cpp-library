@@ -45,6 +45,7 @@ public:
     virtual QGInteractor::TextPosition getTextPosition() const;
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;
+    virtual void removeClickHandler();
     virtual void setAccelerator(const std::string& accelerator);
     virtual void setClickHandler(QGEventHandler func);
     virtual void setClickHandler(QGEventHandlerVoid func);

@@ -55,6 +55,10 @@ bool QGCheckBox::isSelected() const {
     return _iqcheckBox->isChecked();
 }
 
+void QGCheckBox::removeChangeHandler() {
+    removeEventHandler("change");
+}
+
 void QGCheckBox::setChecked(bool checked) {
     _iqcheckBox->setChecked(checked);
 }

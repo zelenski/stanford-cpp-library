@@ -59,6 +59,7 @@ public:
     virtual QWidget* getWidget() const;
     virtual bool isAutocompleteEnabled() const;
     virtual bool isEditable() const;
+    virtual void removeTextChangeHandler();
     virtual void setAutocompleteList(std::initializer_list<std::string> strings);
     virtual void setAutocompleteList(const Vector<std::string>& strings);
     virtual void setAutocompleteEnabled(bool enabled);

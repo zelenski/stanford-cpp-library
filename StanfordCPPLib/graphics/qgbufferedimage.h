@@ -138,6 +138,8 @@ public:
      */
     virtual int countDiffPixels(const QGBufferedImage& image) const;
     virtual int countDiffPixels(const QGBufferedImage& image, int xmin, int ymin, int xmax, int ymax) const;
+    virtual int countDiffPixels(const QGBufferedImage* image) const;
+    virtual int countDiffPixels(const QGBufferedImage* image, int xmin, int ymin, int xmax, int ymax) const;
 
     /*
      * Generates a new image whose content is equal to that of this image but with
@@ -145,6 +147,7 @@ public:
      * color (default purple) to highlight differences between the two.
      */
     virtual QGBufferedImage* diff(const QGBufferedImage& image, int diffPixelColor = QGBUFFEREDIMAGE_DEFAULT_DIFF_PIXEL_COLOR) const;
+    virtual QGBufferedImage* diff(const QGBufferedImage* image, int diffPixelColor = QGBUFFEREDIMAGE_DEFAULT_DIFF_PIXEL_COLOR) const;
 
     /*
      * Returns true if the two given images contain exactly the same pixel data.
@@ -251,6 +254,8 @@ public:
      */
     virtual void setPixel(double x, double y, int rgb);
     virtual void setPixel(double x, double y, const std::string& rgb);
+    virtual void setPixel(int x, int y, int rgb);
+    virtual void setPixel(int x, int y, const std::string& rgb);
     virtual void setRGB(double x, double y, int rgb);
     virtual void setRGB(double x, double y, const std::string& rgb);
     virtual void setRGB(int x, int y, int rgb);

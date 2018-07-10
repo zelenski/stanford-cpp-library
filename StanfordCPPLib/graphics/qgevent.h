@@ -133,6 +133,11 @@ public:
         TAB_KEY = 9,
         ENTER_KEY = 10,
         CLEAR_KEY = 12,
+        SHIFT_KEY = 16,
+        CTRL_KEY = 17,
+        ALT_KEY = 18,
+        PAUSE_KEY = 19,
+        CAPS_LOCK_KEY = 20,
         ESCAPE_KEY = 27,
         PAGE_UP_KEY = 33,
         PAGE_DOWN_KEY = 34,
@@ -155,10 +160,15 @@ public:
         F11_KEY = 122,
         F12_KEY = 123,
         DELETE_KEY = 127,
-        HELP_KEY = 156
+        NUM_LOCK_KEY = 144,
+        SCROLL_LOCK_KEY = 145,
+        PRINT_SCREEN_KEY = 154,
+        INSERT_KEY = 155,
+        HELP_KEY = 156,
+        META_KEY = 157,
+        WINDOWS_KEY = 524,
+        MENU_KEY = 525
     };
-
-
 
     QGEvent(EventClass eventClass = NULL_EVENT,
             EventType eventType = NULL_TYPE,
@@ -238,7 +248,13 @@ public:
      */
     virtual bool isShiftKeyDown() const;
 
+    static std::string keyCodeToString(int keyCode);
+
     virtual void setButton(int button);
+    virtual void setKeyChar(char keyChar);
+    virtual void setKeyChar(const std::string& keyCharString);
+    virtual void setKeyCode(int keyCode);
+    virtual void setModifiers(Qt::KeyboardModifiers modifiers);
     virtual void setX(double x);
     virtual void setY(double y);
 

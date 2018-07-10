@@ -47,6 +47,7 @@ public:
     virtual QWidget* getWidget() const;
     virtual bool isChecked() const;
     virtual bool isSelected() const;
+    virtual void removeChangeHandler();
     virtual void setChecked(bool checked);
     virtual void setChangeHandler(QGEventHandler func);
     virtual void setChangeHandler(QGEventHandlerVoid func);

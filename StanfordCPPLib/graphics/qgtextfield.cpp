@@ -119,6 +119,10 @@ bool QGTextField::isEditable() const {
     return !_iqlineedit->isReadOnly();
 }
 
+void QGTextField::removeTextChangeHandler() {
+    removeEventHandler("textchange");
+}
+
 void QGTextField::setAutocompleteList(std::initializer_list<std::string> strings) {
     Vector<std::string> v(strings);
     setAutocompleteList(v);

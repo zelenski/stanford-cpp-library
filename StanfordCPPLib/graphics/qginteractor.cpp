@@ -18,12 +18,16 @@ QGInteractor::QGInteractor() {
     ensureThreadSafety();
 }
 
+QGInteractor::~QGInteractor() {
+    // empty
+}
+
 void QGInteractor::clearEventHandlers() {
     _eventMap.clear();
 }
 
-void QGInteractor::ensureThreadSafety() {
-    QGui::instance()->ensureThatThisIsTheQtGuiThread();
+void QGInteractor::ensureThreadSafety(const std::string& memberName) {
+    QGui::instance()->ensureThatThisIsTheQtGuiThread(memberName);
 }
 
 void QGInteractor::fireEvent(QGEvent& event) {
@@ -40,6 +44,16 @@ std::string QGInteractor::getAccelerator() const {
 
 std::string QGInteractor::getActionCommand() const {
     return _actionCommand;
+}
+
+std::string QGInteractor::getBackground() const {
+    int rgb = getBackgroundInt();
+    return QGColor::convertRGBToColor(rgb);
+}
+
+int QGInteractor::getBackgroundInt() const {
+    QColor color = getWidget()->palette().color(getWidget()->backgroundRole());
+    return QGColor::convertRGBToRGB(color.red(), color.green(), color.blue());
 }
 
 GRectangle QGInteractor::getBounds() const {
@@ -116,6 +130,16 @@ std::string QGInteractor::normalizeAccelerator(const std::string& accelerator) c
     return acceleratorStr;
 }
 
+void QGInteractor::removeEventHandler(const std::string& eventName) {
+    _eventMap.remove(eventName);
+}
+
+void QGInteractor::removeEventHandlers(std::initializer_list<std::string> eventNames) {
+    for (std::string eventName : eventNames) {
+        removeEventHandler(eventName);
+    }
+}
+
 void QGInteractor::requestFocus() {
     getWidget()->setFocus();
 }
@@ -181,6 +205,19 @@ void QGInteractor::setEventHandler(const std::string& eventName, QGEventHandlerV
     wrapper.handlerVoid = func;
     _eventMap[eventName] = wrapper;
 }
+
+void QGInteractor::setEventHandlers(std::initializer_list<std::string> eventNames, QGEventHandler func) {
+    for (std::string eventName : eventNames) {
+        setEventHandler(eventName, func);
+    }
+}
+
+void QGInteractor::setEventHandlers(std::initializer_list<std::string> eventNames, QGEventHandlerVoid func) {
+    for (std::string eventName : eventNames) {
+        setEventHandler(eventName, func);
+    }
+}
+
 
 void QGInteractor::setForeground(int rgb) {
     QPalette palette(getWidget()->palette());

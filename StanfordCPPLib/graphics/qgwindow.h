@@ -30,7 +30,7 @@ class _Internal_QMainWindow : public QMainWindow {
 
 public:
     _Internal_QMainWindow(QGWindow* qgwindow, QWidget* parent = nullptr);
-    bool event(QEvent* event) Q_DECL_OVERRIDE;
+    // virtual bool event(QEvent* event) Q_DECL_OVERRIDE;
 
 private:
     // border layout regions for N/S/W/E/C:
@@ -76,6 +76,7 @@ public:
     QGWindow(double width = 0, double height = 0, bool visible = true);
     virtual ~QGWindow();
     virtual void add(QGInteractor* interactor);
+    virtual void add(QGInteractor* interactor, double x, double y);
     virtual void add(QGObject* obj);
     virtual void add(QGObject* obj, double x, double y);
     virtual void add(QGObject& obj);
@@ -92,6 +93,7 @@ public:
     virtual void draw(QGObject* obj);
     virtual void draw(QGObject& obj, double x, double y);
     virtual void draw(QGObject* obj, double x, double y);
+    virtual void drawArc(double x, double y, double width, double height, double start, double sweep);
     virtual void drawImage(const std::string& filename, double x = 0, double y = 0);
     virtual void drawLine(const GPoint& p0, const GPoint& p1);
     virtual void drawLine(double x0, double y0, double x1, double y1);
@@ -107,11 +109,14 @@ public:
     virtual void drawRect(const GRectangle& bounds);
     virtual void drawRect(double x, double y, double width, double height);
     virtual void drawString(const std::string& text, double x, double y);
+    virtual void fillArc(double x, double y, double width, double height, double start, double sweep);
     virtual void fillOval(const GRectangle& bounds);
     virtual void fillOval(double x, double y, double width, double height);
     virtual void fillPolygon(std::initializer_list<double> coords);
     virtual void fillRect(const GRectangle& bounds);
     virtual void fillRect(double x, double y, double width, double height);
+    virtual std::string getBackground() const;
+    virtual int getBackgroundInt() const;
     virtual double getCanvasHeight() const;
     virtual GDimension getCanvasSize() const;
     virtual double getCanvasWidth() const;
@@ -156,11 +161,16 @@ public:
     virtual void remove(QGObject* obj);
     virtual void remove(QGObject& obj);
     virtual void remove(QGInteractor* interactor);
+    virtual void removeClickHandler();
     virtual void removeFromRegion(QGInteractor* interactor, Region region);
     virtual void removeFromRegion(QGInteractor* interactor, const std::string& region);
+    virtual void removeKeyHandler();
+    virtual void removeMouseHandler();
     virtual void repaint();
     virtual void requestFocus();
     virtual void saveCanvasPixels(const std::string& filename);
+    virtual void setBackground(int color);
+    virtual void setBackground(const std::string& color);
     virtual void setCanvasHeight(double height);
     virtual void setCanvasSize(double width, double height);
     virtual void setCanvasSize(const GDimension& size);
@@ -179,6 +189,8 @@ public:
     virtual void setLocation(const Point& p);
     virtual void setClickHandler(QGEventHandler func);
     virtual void setClickHandler(QGEventHandlerVoid func);
+    virtual void setKeyHandler(QGEventHandler func);
+    virtual void setKeyHandler(QGEventHandlerVoid func);
     virtual void setMouseHandler(QGEventHandler func);
     virtual void setMouseHandler(QGEventHandlerVoid func);
     virtual void setWindowHandler(QGEventHandler func);

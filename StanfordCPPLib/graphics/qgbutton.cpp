@@ -67,6 +67,10 @@ QWidget* QGButton::getWidget() const {
     return static_cast<QWidget*>(_iqpushbutton);
 }
 
+void QGButton::removeClickHandler() {
+    removeEventHandler("click");
+}
+
 void QGButton::setAccelerator(const std::string& accelerator) {
     QKeySequence keySeq(QString::fromStdString(normalizeAccelerator(accelerator)));
     _iqpushbutton->setShortcut(keySeq);

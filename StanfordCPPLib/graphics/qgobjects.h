@@ -14,6 +14,7 @@
 
 #include <initializer_list>
 #include <iostream>
+#include <QImage>
 #include <QPainter>
 #include <QPen>
 #include <QWidget>
@@ -57,7 +58,7 @@ public:
      * Returns <code>true</code> if the specified point is inside the object.
      */
     virtual bool contains(double x, double y) const;
-    bool contains(const GPoint& pt) const;
+    virtual bool contains(const GPoint& pt) const;
 
     /*
      * Draws this object onto the given surface.
@@ -71,8 +72,8 @@ public:
      * Returns the <i>y</i>-coordinate of the bottom of the object.
      * Equivalent to the top y-coordinate plus the object's height.
      */
-    double getBottomY() const;
-    GPoint getBottomRightLocation() const;
+    virtual double getBottomY() const;
+    virtual GPoint getBottomRightLocation() const;
 
     /*
      * Method: getBounds
@@ -87,7 +88,7 @@ public:
      * <code>getBounds</code> method, by contrast, returns a rectangle that
      * covers the entire window area occupied by the string.
      */
-    virtual GRectangle getBounds() const = 0;
+    virtual GRectangle getBounds() const;
 
     /*
      * Method: getCenterX/Y
@@ -98,9 +99,9 @@ public:
      * Returns the <i>x</i>-coordinate of the center of the object.
      * Equivalent to the top/left plus half the object's size.
      */
-    GPoint getCenterLocation() const;
-    double getCenterX() const;
-    double getCenterY() const;
+    virtual GPoint getCenterLocation() const;
+    virtual double getCenterX() const;
+    virtual double getCenterY() const;
 
     /*
      * Method: getColor
@@ -112,7 +113,7 @@ public:
      * the red, green, and blue components of the color, expressed as
      * two-digit hexadecimal values.
      */
-    std::string getColor() const;
+    virtual std::string getColor() const;
 
     /*
      * Method: getFillColor
@@ -121,7 +122,7 @@ public:
      * Returns the color used to display the filled region of this object.  If
      * none has been set, <code>getFillColor</code> returns the empty string.
      */
-    std::string getFillColor() const;
+    virtual std::string getFillColor() const;
 
     /*
      * Method: getHeight
@@ -130,7 +131,7 @@ public:
      * Returns the height of this object, which is defined to be the height
      * of the bounding box.
      */
-    double getHeight() const;
+    virtual double getHeight() const;
 
     /*
      * Method: getLocation
@@ -138,7 +139,7 @@ public:
      * ---------------------------------------
      * Returns the location of the top-left corner of object as a <code>GPoint</code>.
      */
-    GPoint getLocation() const;
+    virtual GPoint getLocation() const;
 
     /*
      * Method: getLineWidth
@@ -146,7 +147,7 @@ public:
      * -----------------------------------------------
      * Returns the width of the line used to draw this object.
      */
-    double getLineWidth() const;
+    virtual double getLineWidth() const;
 
     /*
      * Method: getParent
@@ -160,7 +161,7 @@ public:
      * Calling <code>getParent</code> on the top-level <code>QGCompound</code>
      * returns <code>nullptr</code>.
      */
-    QGCompound* getParent() const;
+    virtual QGCompound* getParent() const;
 
     /*
      * Method: getRightX
@@ -169,7 +170,7 @@ public:
      * Returns the <i>x</i>-coordinate of the right side of the object.
      * Equivalent to the left x-coordinate plus the object's width.
      */
-    double getRightX() const;
+    virtual double getRightX() const;
 
     /*
      * Method: getSize
@@ -177,7 +178,7 @@ public:
      * -----------------------------------------
      * Returns the size of the object as a <code>GDimension</code>.
      */
-    GDimension getSize() const;
+    virtual GDimension getSize() const;
 
     /*
      * Method: getType
@@ -195,7 +196,7 @@ public:
      * Returns the width of this object, which is defined to be the width of
      * the bounding box.
      */
-    double getWidth() const;
+    virtual double getWidth() const;
 
     /*
      * Method: getX
@@ -203,7 +204,7 @@ public:
      * -------------------------------
      * Returns the leftmost <i>x</i>-coordinate of the object.
      */
-    double getX() const;
+    virtual double getX() const;
 
     /*
      * Method: getY
@@ -211,7 +212,7 @@ public:
      * -------------------------------
      * Returns the topmost <i>y</i>-coordinate of the object.
      */
-    double getY() const;
+    virtual double getY() const;
 
     /*
      * Returns whether we should globally anti-alias graphical objects.
@@ -225,7 +226,7 @@ public:
      * --------------------------------
      * Returns <code>true</code> if the object is filled.
      */
-    bool isFilled() const;
+    virtual bool isFilled() const;
 
     /*
      * Method: isVisible
@@ -233,7 +234,7 @@ public:
      * ---------------------------------
      * Returns <code>true</code> if this object is visible.
      */
-    bool isVisible() const;
+    virtual bool isVisible() const;
 
     /*
      * Method: move
@@ -242,12 +243,17 @@ public:
      * Moves the object on the screen using the displacements
      * <code>dx</code> and <code>dy</code>.
      */
-    void move(double dx, double dy);
+    virtual void move(double dx, double dy);
 
     /*
      * ...
      */
     virtual void repaint();
+
+    /*
+     * Undoes any previous scale/rotate transformations on this object.
+     */
+    virtual void resetTransform();
 
     /*
      * Method: rotate
@@ -256,7 +262,7 @@ public:
      * Transforms the object by rotating it <code>theta</code> degrees
      * counterclockwise around its origin.
      */
-    void rotate(double theta);
+    virtual void rotate(double theta);
 
     /*
      * Method: scale
@@ -269,8 +275,8 @@ public:
      * size of the object.  The second form applies independent scale factors
      * to the <i>x</i> and <i>y</i> dimensions.
      */
-    void scale(double sf);
-    void scale(double sx, double sy);
+    virtual void scale(double sf);
+    virtual void scale(double sx, double sy);
 
     /*
      * Method: sendBackward
@@ -279,7 +285,7 @@ public:
      * Moves this object one step toward the back in the <i>z</i> dimension.
      * If it was already at the back of the stack, nothing happens.
      */
-    void sendBackward();
+    virtual void sendBackward();
 
     /*
      * Method: sendForward
@@ -288,7 +294,7 @@ public:
      * Moves this object one step toward the front in the <i>z</i> dimension.
      * If it was already at the front of the stack, nothing happens.
      */
-    void sendForward();
+    virtual void sendForward();
 
     /*
      * Method: sendToBack
@@ -299,7 +305,7 @@ public:
      * graphical objects on the display and may be obscured by other objects
      * in front.
      */
-    void sendToBack();
+    virtual void sendToBack();
 
     /*
      * Method: sendToFront
@@ -310,7 +316,7 @@ public:
      * other graphical objects on the display and may hide any objects that
      * are further back.
      */
-    void sendToFront();
+    virtual void sendToFront();
 
     /*
      * Globally turns on/off the anti-aliasing feature that smooths out the
@@ -318,6 +324,16 @@ public:
      * Does not repaint any onscreen objects when called; you must do this yourself.
      */
     static void setAntiAliasing(bool value);
+
+    /*
+     * Method: setBounds
+     * Usage: gobj->setBounds(rect);
+     *        gobj->setBounds(x, y, width, height);
+     * --------------------------------------------
+     * Changes the bounds of this object to the specified values.
+     */
+    virtual void setBounds(double x, double y, double width, double height);
+    virtual void setBounds(const GRectangle& size);
 
     /*
      * Method: setCenter/X/Y
@@ -328,10 +344,10 @@ public:
      * ------------------------------------------
      * Sets the location of the bottom/right of this object.
      */
-    void setBottomY(double y);
-    void setRightX(double x);
-    void setBottomRightLocation(double x, double y);
-    void setBottomRightLocation(const GPoint& pt);
+    virtual void setBottomY(double y);
+    virtual void setRightX(double x);
+    virtual void setBottomRightLocation(double x, double y);
+    virtual void setBottomRightLocation(const GPoint& pt);
 
     /*
      * Method: setCenter/X/Y
@@ -342,10 +358,10 @@ public:
      * -------------------------------------
      * Sets the location of the center of this object.
      */
-    void setCenterX(double x);
-    void setCenterY(double y);
-    void setCenterLocation(double x, double y);
-    void setCenterLocation(const GPoint& pt);
+    virtual void setCenterX(double x);
+    virtual void setCenterY(double y);
+    virtual void setCenterLocation(double x, double y);
+    virtual void setCenterLocation(const GPoint& pt);
 
     /*
      * Method: setColor
@@ -377,9 +393,9 @@ public:
      * <code>bb</code> are pairs of hexadecimal digits indicating the
      * red, green, and blue components of the color, respectively.
      */
-    void setColor(int r, int g, int b);
-    void setColor(int rgb);
-    void setColor(const std::string& color);
+    virtual void setColor(int r, int g, int b);
+    virtual void setColor(int rgb);
+    virtual void setColor(const std::string& color);
 
     /*
      * Method: setFillColor
@@ -389,9 +405,9 @@ public:
      * As a side effect, sets this object to be filled (setFilled(true)).
      * If an empty string is passed, sets filled to false.
      */
-    void setFillColor(int r, int g, int b);
-    void setFillColor(int rgb);
-    void setFillColor(const std::string& color);
+    virtual void setFillColor(int r, int g, int b);
+    virtual void setFillColor(int rgb);
+    virtual void setFillColor(const std::string& color);
 
     /*
      * Method: setFilled
@@ -400,7 +416,7 @@ public:
      * Sets the fill status for the object, where <code>false</code> is
      * outlined and <code>true</code> is filled.
      */
-    void setFilled(bool flag);
+    virtual void setFilled(bool flag);
 
     /*
      * Method: setFont
@@ -425,7 +441,7 @@ public:
      * -------------------------------------
      * Sets the width of the line used to draw this object.
      */
-    void setLineWidth(double lineWidth);
+    virtual void setLineWidth(double lineWidth);
 
     /*
      * Method: setLocation
@@ -434,8 +450,18 @@ public:
      * -------------------------------
      * Sets the location of the top-left corner of this object to the specified point.
      */
-    void setLocation(double x, double y);
-    void setLocation(const GPoint& pt);
+    virtual void setLocation(double x, double y);
+    virtual void setLocation(const GPoint& pt);
+
+    /*
+     * Method: setSize
+     * Usage: rect->setSize(size);
+     *        rect->setSize(width, height);
+     * ------------------------------------
+     * Changes the size of this rectangle to the specified width and height.
+     */
+    virtual void setSize(double width, double height);
+    virtual void setSize(const GDimension& size);
 
     /*
      * Method: setVisible
@@ -443,7 +469,7 @@ public:
      * ------------------------------
      * Sets whether this object is visible.
      */
-    void setVisible(bool flag);
+    virtual void setVisible(bool flag);
 
     /*
      * Method: setX/Y
@@ -452,8 +478,8 @@ public:
      * ---------------------
      * Sets the x/y location of the top/left of this object.
      */
-    void setX(double x);
-    void setY(double y);
+    virtual void setX(double x);
+    virtual void setY(double y);
 
     /*
      * Method: toString
@@ -462,7 +488,6 @@ public:
      * Returns a printable representation of the object.
      */
     virtual std::string toString() const;
-    virtual std::string toStringExtra() const;
 
     /* Private section */
 private:
@@ -483,6 +508,8 @@ private:
 protected:
     double _x;                       // The x coordinate of the origin
     double _y;                       // The y coordinate of the origin
+    double _width;                   // The width of the bounding rectangle
+    double _height;                  // The height of the bounding rectangle
     double _lineWidth;               // The width of the line in pixels
     std::string _color;              // The color of the object
     int _colorInt;
@@ -495,13 +522,14 @@ protected:
     QGCompound* _parent;             // Pointer to the parent
     QPen _pen;                       // for outlines
     QBrush _brush;                   // for filling
+    QTransform _transform;           // for transformations (rotate, scale)
 
 protected:
-    QGObject();
+    QGObject(double x = 0, double y = 0, double width = 0, double height = 0);
 
-    void initializeBrushAndPen(QPainter* painter = nullptr);
+    virtual void initializeBrushAndPen(QPainter* painter = nullptr);
+    virtual std::string toStringExtra() const;
 
-    friend class QG3DRect;
     friend class QGArc;
     friend class QGCompound;
     friend class QGImage;
@@ -512,295 +540,6 @@ protected:
     friend class QGRect;
     friend class QGRoundRect;
     friend class QGString;
-};
-
-/*
- * Class: QGRect
- * -------------
- * This class represents a graphical object whose appearance consists of
- * a rectangular box.  For example, the following code adds a filled, red
- * <nobr>200<font class=sansserif size=-1>x</font>100</nobr> rectangle
- * at the upper left corner of the graphics window:
- *
- *<pre>
- *    int main() {
- *       QGWindow gw;
- *       cout << "This program draws a red rectangle at (0, 0)." << endl;
- *       QGRect *rect = new QGRect(0, 0, 200, 100);
- *       rect->setFilled(true);
- *       rect->setColor("RED");
- *       gw.add(rect);
- *       return 0;
- *    }
- *</pre>
- */
-class QGRect : public QGObject {
-public:
-    /*
-     * Constructor: QGRect
-     * Usage: QGRect *rect = new QGRect(width, height);
-     *        QGRect *rect = new QGRect(x, y, width, height);
-     * ----------------------------------------------------
-     * Constructs a rectangle with the specified width and height.  The first
-     * form is positioned at the origin; the second at the coordinates
-     * given by <code>x</code> and <code>y</code>.
-     */
-    QGRect();
-    QGRect(double width, double height);
-    QGRect(double x, double y, double width, double height);
-
-    /*
-     * Destructor: ~QGRect
-     * ------------------
-     * Frees any resources maintained by this object.
-     */
-    virtual ~QGRect();
-
-    void draw(QPainter* painter);
-
-    /*
-     * Method: isFilled
-     * Usage: if (rect->isFilled()) ...
-     * --------------------------------
-     * Returns <code>true</code> if the rectangle is filled.
-     */
-    bool isFilled() const;
-
-    /*
-     * Method: setBounds
-     * Usage: rect->setBounds(rect);
-     *        rect->setBounds(x, y, width, height);
-     * --------------------------------------------
-     * Changes the bounds of this rectangle to the specified values.
-     */
-    void setBounds(double x, double y, double width, double height);
-    void setBounds(const GRectangle& size);
-
-    /*
-     * Method: setFilled
-     * Usage: rect->setFilled(flag);
-     * -----------------------------
-     * Sets the fill status for the rectangle, where <code>false</code> is
-     * outlined and <code>true</code> is filled.
-     */
-    void setFilled(bool flag);
-
-    /*
-     * Method: setSize
-     * Usage: rect->setSize(size);
-     *        rect->setSize(width, height);
-     * ------------------------------------
-     * Changes the size of this rectangle to the specified width and height.
-     */
-    void setSize(double width, double height);
-    void setSize(const GDimension& size);
-
-    /* Prototypes for the virtual methods */
-    virtual GRectangle getBounds() const;
-    virtual std::string getType() const;
-    virtual std::string toStringExtra() const;
-
-protected:
-    /* Instance variables */
-    double width;           /* The width of the rectangle              */
-    double height;          /* The height of the rectangle             */
-
-    /* Protected methods */
-    virtual void createQGRect(double width, double height);
-};
-
-/*
- * Class: QGRoundRect
- * ------------------
- * This class represents a graphical object whose appearance consists
- * of a rectangular box with rounded corners.
- */
-class QGRoundRect : public QGRect {
-public:
-    /*
-     * Constructor: QGRoundRect
-     * Usage: QGRoundRect *rect = new QGRoundRect(width, height);
-     *        QGRoundRect *rect = new QGRoundRect(width, height, corner);
-     *        QGRoundRect *rect = new QGRoundRect(x, y, width, height);
-     *        QGRoundRect *rect = new QGRoundRect(x, y, width, height, corner);
-     * ----------------------------------------------------------------------
-     * Constructs a new rectangle with the specified width and height.  If
-     * the <code>x</code> and <code>y</code> parameters are specified, they
-     * are used to specify the origin.  The <code>corner</code> parameter
-     * specifies the diameter of the arc forming the corner.
-     */
-    QGRoundRect(double width, double height);
-    QGRoundRect(double width, double height, double corner);
-    QGRoundRect(double x, double y, double width, double height);
-    QGRoundRect(double x, double y, double width, double height, double corner);
-
-    /*
-     * Destructor: ~QGRoundRect
-     * -----------------------
-     * Frees any resources maintained by this object.
-     */
-    virtual ~QGRoundRect();
-
-    /*
-     * Method: contains
-     * Usage: if (grrect->contains(pt)) ...
-     *        if (grrect->contains(x, y)) ...
-     * --------------------------------------
-     * Returns <code>true</code> if the specified point is inside the object.
-     */
-    virtual bool contains(double x, double y) const;
-
-    void draw(QPainter* painter);
-
-    /* Prototypes for the virtual methods */
-    virtual std::string getType() const;
-    virtual std::string toStringExtra() const;
-
-protected:
-    double corner;
-
-    /* Protected methods */
-    void createQGRoundRect(double width, double height, double corner);
-};
-
-/*
- * Class: QG3DRect
- * ---------------
- * This graphical object subclass represents a rectangular box that can
- * be raised or lowered.
- */
-class QG3DRect : public QGRect {
-public:
-    /*
-     * Constructor: QG3DRect
-     * Usage: QG3DRect *rect = new QG3DRect(width, height);
-     *        QG3DRect *rect = new QG3DRect(width, height, raised);
-     *        QG3DRect *rect = new QG3DRect(x, y, width, height);
-     *        QG3DRect *rect = new QG3DRect(x, y, width, height, raised);
-     * ----------------------------------------------------------------
-     * Constructs a new 3D rectangle with the specified width and height.  If
-     * the <code>x</code> and <code>y</code> parameters are specified, they
-     * are used to specify the origin.  The <code>raised</code> parameter
-     * determines whether the rectangle should be drawn with highlights that
-     * suggest that it is raised about the background.
-     */
-    QG3DRect(double width, double height);
-    QG3DRect(double width, double height, bool raised);
-    QG3DRect(double x, double y, double width, double height);
-    QG3DRect(double x, double y, double width, double height, bool raised);
-
-    /*
-     * Destructor: ~QG3DRect
-     * --------------------
-     * Frees any resources maintained by this object.
-     */
-    virtual ~QG3DRect();
-
-    void draw(QPainter* painter);
-
-    /*
-     * Method: isRaised
-     * Usage: if (rect->isRaised()) ...
-     * --------------------------------
-     * Returns <code>true</code> if this object appears raised.
-     */
-    bool isRaised() const;
-
-    /*
-     * Method: setRaised
-     * Usage: rect->setRaised(raised);
-     * -------------------------------
-     * Indicates whether this object appears raised.
-     */
-    void setRaised(bool raised);
-
-    /* Prototypes for the virtual methods */
-    virtual std::string getType() const;
-    virtual std::string toStringExtra() const;
-
-protected:
-    bool raised;
-
-    /* Protected methods */
-    void createQG3DRect(double width, double height, bool raised);
-};
-
-/*
- * Class: QGOval
- * -------------
- * This graphical object subclass represents an oval inscribed in
- * a rectangular box.  For example, the following code displays a
- * filled green oval inscribed in the graphics window:
- *
- *<pre>
- *    int main() {
- *       QGWindow gw;
- *       cout << "This program draws a green oval filling the window." << endl;
- *       QGOval *oval = new QGOval(gw.getWidth(), gw.getHeight());
- *       oval->setFilled(true);
- *       oval->setColor("GREEN");
- *       gw.add(oval);
- *       return 0;
- *    }
- *</pre>
- */
-class QGOval : public QGObject {
-public:
-    /*
-     * Constructor: QGOval
-     * Usage: QGOval *oval = new QGOval(width, height);
-     *        QGOval *oval = new QGOval(x, y, width, height);
-     * ----------------------------------------------------
-     * Constructs a new oval inscribed in the specified rectangle.  The
-     * first form is positioned at the origin; the second at the coordinates
-     * given by <code>x</code> and <code>y</code>.
-     */
-    QGOval(double width, double height);
-    QGOval(double x, double y, double width, double height);
-
-    /*
-     * Destructor: ~QGOval
-     * ------------------
-     * Frees any resources maintained by this object.
-     */
-    virtual ~QGOval();
-
-    void draw(QPainter* painter);
-
-    /*
-     * Method: setSize
-     * Usage: oval->setSize(size);
-     *        oval->setSize(width, height);
-     * ------------------------------------
-     * Changes the size of the bounding rectangle to the specified width
-     * and height.
-     */
-    void setSize(double width, double height);
-    void setSize(const GDimension& size);
-
-    /*
-     * Method: setBounds
-     * Usage: oval->setBounds(rect);
-     *        oval->setBounds(x, y, width, height);
-     * --------------------------------------------
-     * Changes the bounds of the oval to the specified values.
-     */
-    void setBounds(double x, double y, double width, double height);
-    void setBounds(const GRectangle& size);
-
-    /* Prototypes for the virtual methods */
-    virtual bool contains(double x, double y) const;
-    virtual GRectangle getBounds() const;
-    virtual std::string getType() const;
-    virtual std::string toStringExtra() const;
-
-protected:
-    /* Instance variables */
-    double width;           /* The width of the bounding rectangle     */
-    double height;          /* The height of the bounding rectangle    */
-
-    /* Protected methods */
-    void createQGOval(double width, double height);
 };
 
 /*
@@ -826,8 +565,8 @@ class QGArc : public QGObject {
 public:
     /*
      * Constructor: QGArc
-     * Usage: QGArc *arc = new QGArc(width, height, start, sweep);
-     *        QGArc *arc = new QGArc(x, y, width, height, start, sweep);
+     * Usage: QGArc* arc = new QGArc(width, height, start, sweep);
+     *        QGArc* arc = new QGArc(x, y, width, height, start, sweep);
      * ---------------------------------------------------------------
      * Creates a new <code>QGArc</code> object consisting of an elliptical arc.
      * The first form creates a <code>QGArc</code> whose origin is the point
@@ -835,11 +574,10 @@ public:
      * point (<code>x</code>, <code>y</code>).
      * <include src="pictures/QGObjectDiagrams/QGArcExamples.html">
      */
-    QGArc(double width, double height, double start, double sweep);
-    QGArc(double x, double y, double width, double height,
-          double start, double sweep);
+    QGArc(double width = 0, double height = 0, double start = 0, double sweep = 0);
+    QGArc(double x, double y, double width, double height, double start, double sweep);
 
-    void draw(QPainter* painter);
+    virtual void draw(QPainter* painter);
 
     /*
      * Method: getEndPoint
@@ -847,7 +585,7 @@ public:
      * --------------------------------------
      * Returns the point at which the arc ends.
      */
-    GPoint getEndPoint() const;
+    virtual GPoint getEndPoint() const;
 
     /*
      * Method: getFrameRectangle
@@ -855,7 +593,7 @@ public:
      * --------------------------------------------------
      * Returns the boundaries of the rectangle used to frame the arc.
      */
-    GRectangle getFrameRectangle() const;
+    virtual GRectangle getFrameRectangle() const;
 
     /*
      * Method: getStartAngle
@@ -863,7 +601,7 @@ public:
      * -------------------------------------------
      * Returns the starting angle for this <code>QGArc</code> object.
      */
-    double getStartAngle() const;
+    virtual double getStartAngle() const;
 
     /*
      * Method: getStartPoint
@@ -871,7 +609,7 @@ public:
      * ----------------------------------------
      * Returns the point at which the arc starts.
      */
-    GPoint getStartPoint() const;
+    virtual GPoint getStartPoint() const;
 
     /*
      * Method: getSweepAngle
@@ -879,7 +617,7 @@ public:
      * -------------------------------------------
      * Returns the sweep angle for this <code>QGArc</code> object.
      */
-    double getSweepAngle() const;
+    virtual double getSweepAngle() const;
 
     /*
      * Method: setFrameRectangle
@@ -888,8 +626,8 @@ public:
      * ---------------------------------------------------
      * Changes the boundaries of the rectangle used to frame the arc.
      */
-    void setFrameRectangle(const GRectangle& rect);
-    void setFrameRectangle(double x, double y, double width, double height);
+    virtual void setFrameRectangle(const GRectangle& rect);
+    virtual void setFrameRectangle(double x, double y, double width, double height);
 
     /*
      * Method: setStartAngle
@@ -897,7 +635,7 @@ public:
      * ---------------------------------
      * Sets the starting angle for this <code>QGArc</code> object.
      */
-    void setStartAngle(double start);
+    virtual void setStartAngle(double start);
 
     /*
      * Method: setSweepAngle
@@ -905,7 +643,7 @@ public:
      * ---------------------------------
      * Sets the sweep angle for this <code>QGArc</code> object.
      */
-    void setSweepAngle(double start);
+    virtual void setSweepAngle(double start);
 
     /* Prototypes for the virtual methods */
     virtual bool contains(double x, double y) const;
@@ -914,15 +652,12 @@ public:
     virtual std::string toStringExtra() const;
 
 private:
-    bool containsAngle(double theta) const;
-    void createQGArc(double width, double height, double start, double sweep);
-    GPoint getArcPoint(double theta) const;
+    virtual bool containsAngle(double theta) const;
+    virtual GPoint getArcPoint(double theta) const;
 
     /* Instance variables */
-    double start;                   /* Starting angle of the arc       */
-    double sweep;                   /* How many degrees the arc runs   */
-    double frameWidth;              /* The width of the bounding box   */
-    double frameHeight;             /* The height of the bounding box  */
+    double _start;                   /* Starting angle of the arc       */
+    double _sweep;                   /* How many degrees the arc runs   */
 };
 
 /*
@@ -938,7 +673,7 @@ class QGCompound : public QGObject {
 public:
     /*
      * Constructor: QGCompound
-     * Usage: QGCompound *comp = new QGCompound();
+     * Usage: QGCompound* comp = new QGCompound();
      * -----------------------------------------
      * Creates a <code>QGCompound</code> object with no internal components.
      */
@@ -952,10 +687,10 @@ public:
      * Adds a new graphical object to the <code>QGCompound</code>.  The second
      * form moves the object to the point (<code>x</code>, <code>y</code>) first.
      */
-    void add(QGObject* gobj);
-    void add(QGObject* gobj, double x, double y);
-    void add(QGObject& gobj);
-    void add(QGObject& gobj, double x, double y);
+    virtual void add(QGObject* gobj);
+    virtual void add(QGObject* gobj, double x, double y);
+    virtual void add(QGObject& gobj);
+    virtual void add(QGObject& gobj, double x, double y);
 
     /*
      * Method: clear
@@ -964,17 +699,17 @@ public:
      * Removes all graphical objects from the <code>QGCompound</code>.
      * Equivalent to removeAll.
      */
-    void clear();
+    virtual void clear();
 
     /*
      * ...
      */
-    void conditionalRepaint();
+    virtual void conditionalRepaint();
 
     /*
      * Draws all objects stored in this compound using the given painter pen.
      */
-    void draw(QPainter* painter);
+    virtual void draw(QPainter* painter);
 
     /*
      * Method: getElement
@@ -983,7 +718,7 @@ public:
      * Returns a pointer to the graphical object at the specified index,
      * numbering from back to front in the the <i>z</i> dimension.
      */
-    QGObject* getElement(int index) const;
+    virtual QGObject* getElement(int index) const;
 
     /*
      * Method: getElementAt
@@ -992,7 +727,7 @@ public:
      * Returns a pointer to the first graphical object that contains the given
      * (x, y) point, or a null pointer if no object in this compound touches it.
      */
-    QGObject* getElementAt(double x, double y) const;
+    virtual QGObject* getElementAt(double x, double y) const;
 
     /*
      * Method: getElementCount
@@ -1001,11 +736,11 @@ public:
      * Returns the number of graphical objects stored in the
      * <code>QGCompound</code>.
      */
-    int getElementCount() const;
+    virtual int getElementCount() const;
 
-    QWidget* getWidget() const;
+    virtual QWidget* getWidget() const;
 
-    bool isAutoRepaint() const;
+    virtual bool isAutoRepaint() const;
 
     /*
      * Method: remove
@@ -1013,8 +748,8 @@ public:
      * --------------------------
      * Removes the specified object from the <code>QGCompound</code>.
      */
-    void remove(QGObject* gobj);
-    void remove(QGObject& gobj);
+    virtual void remove(QGObject* gobj);
+    virtual void remove(QGObject& gobj);
 
     /*
      * Method: removeAll
@@ -1023,13 +758,13 @@ public:
      * Removes all graphical objects from the <code>QGCompound</code>.
      * Equivalent to clear.
      */
-    void removeAll();
+    virtual void removeAll();
 
     virtual void repaint();
 
-    void setAutoRepaint(bool autoRepaint);
+    virtual void setAutoRepaint(bool autoRepaint);
 
-    void setWidget(QWidget* widget);
+    virtual void setWidget(QWidget* widget);
 
     /* Prototypes for the virtual methods */
     virtual bool contains(double x, double y) const;
@@ -1038,15 +773,15 @@ public:
     virtual std::string toString() const;
 
 private:
-    void sendBackward(QGObject* gobj);
-    void sendForward(QGObject* gobj);
-    void sendToBack(QGObject* gobj);
-    void sendToFront(QGObject* gobj);
-    int findQGObject(QGObject* gobj) const;
-    void removeAt(int index);
+    virtual void sendBackward(QGObject* gobj);
+    virtual void sendForward(QGObject* gobj);
+    virtual void sendToBack(QGObject* gobj);
+    virtual void sendToFront(QGObject* gobj);
+    virtual int findQGObject(QGObject* gobj) const;
+    virtual void removeAt(int index);
 
     /* Instance variables */
-    Vector<QGObject*> contents;
+    Vector<QGObject*> _contents;
     QWidget* _widget;    // widget containing this compound
     bool _autoRepaint;   // automatically repaint on any change; default true
 
@@ -1067,7 +802,7 @@ private:
  *    int main() {
  *       QGWindow gw;
  *       cout << "This program draws the Stanford tree." << endl;
- *       QGImage *tree = new QGImage("StanfordTree.png");
+ *       QGImage* tree = new QGImage("StanfordTree.png");
  *       double x = (gw.getWidth() - tree->getWidth()) / 2;
  *       double y = (gw.getHeight() - tree->getHeight()) / 2;
  *       gw.add(tree, x, y);
@@ -1088,155 +823,20 @@ public:
      * appears at the origin; the second form automatically sets the location
      * to the point (<code>x</code>, <code>y</code>).
      */
-    QGImage(const std::string& filename);
-    QGImage(const std::string& filename, double x, double y);
+    QGImage(const std::string& filename = "", double x = 0, double y = 0);
+    virtual ~QGImage();
 
-    void draw(QPainter* painter);
+    virtual void draw(QPainter* painter);
+
+    virtual std::string getFileName() const;
 
     /* Prototypes for the virtual methods */
-    virtual GRectangle getBounds() const;
     virtual std::string getType() const;
     virtual std::string toStringExtra() const;
 
 private:
-    std::string filename;
-    double width;
-    double height;
-
-    void createQGImage(const std::string& filename);
-};
-
-/*
- * Class: QGString
- * ---------------
- * This graphical object subclass represents a text string.  For
- * example, the following code adds a <code>QGString</code> containing
- * the string <code>"hello, world"</code> to the center of the window:
- *
- *<pre>
- *    int main() {
- *       QGWindow gw;
- *       cout << "This program draws the 'hello, world' message." << endl;
- *       QGString *label = new QGString("hello, world");
- *       label->setFont("SansSerif-18");
- *       double x = (gw.getWidth() - label->getWidth()) / 2;
- *       double y = (gw.getHeight() + label->getFontAscent()) / 2;
- *       gw.add(label, x, y);
- *       return 0;
- *    }
- *</pre>
- *
- * Controlling the appearance and positioning of a <code>QGString</code>
- * depends on understanding the following terms:
- *
- * <p><ul>
- *   <li>The <b><i>baseline</i></b> is the horizontal line on which the
- *       characters rest.
- *   <li>The <b><i>origin</i></b> is the point on the baseline at which
- *       the label begins.
- *   <li>The <b><i>height</i></b> is the distance that separate two
- *       successive lines.
- *   <li>The <b><i>ascent</i></b> is the maximum distance a character
- *       in this font extends above the baseline.
- *   <li>The <b><i>descent</i></b> is the maximum distance a character
- *       in this font extends below the baseline.
- * </ul>
- * <include src="pictures/QGObjectDiagrams/QGStringGeometry.html">
- */
-class QGString : public QGObject {
-public:
-    /*
-     * Constructor: QGString
-     * Usage: QGString *label = new QGString(str);
-     *        QGString *label = new QGString(str, x, y);
-     * ---------------------------------------------
-     * Creates a <code>QGString</code> object containing the specified string.
-     * By default, the baseline of the first character appears at the origin;
-     * the second form automatically resets the location of the
-     * <code>QGString</code> to the point (<code>x</code>, <code>y</code>).
-     */
-    QGString(const std::string& str = "");
-    QGString(const std::string& str, double x, double y);
-
-    void draw(QPainter* painter);
-
-    /*
-     * Method: getFont
-     * Usage: string font = label->getFont();
-     * --------------------------------------
-     * Returns the current font for the <code>QGString</code>.
-     */
-    std::string getFont() const;
-
-    /*
-     * Method: getFontAscent
-     * Usage: double ascent = label->getFontAscent();
-     * ----------------------------------------------
-     * Returns the maximum distance strings in this font extend above
-     * the baseline.
-     */
-    double getFontAscent() const;
-
-    /*
-     * Method: getFontDescent
-     * Usage: double descent = label->getFontDescent();
-     * ------------------------------------------------
-     * Returns the maximum distance strings in this font descend below
-     * the baseline.
-     */
-    double getFontDescent() const;
-
-    /*
-     * Method: getLabel
-     * Usage: string str = label->getLabel();
-     * --------------------------------------
-     * Returns the string displayed by this object.
-     */
-    std::string getLabel() const;
-    std::string getText() const;
-
-    /*
-     * Method: setFont
-     * Usage: gobj->setFont(font);
-     * ---------------------------
-     * Changes the font used to display the object as specified by
-     * the string <code>font</code>, which has the following format:
-     *
-     *<pre>
-     *    family-style-size
-     *</pre>
-     *
-     * where both <code>style</code> and <code>size</code> are optional.
-     * If any of these elements are missing or specified as an asterisk,
-     * the existing value is retained.
-     */
-    /* override */
-    virtual void setFont(const std::string& font);
-
-    /*
-     * Method: setLabel
-     * Usage: label->setLabel(str);
-     * ----------------------------
-     * Changes the string stored within the <code>QGString</code> object, so that
-     * a new text string appears on the display.
-     */
-    void setLabel(const std::string& str);
-    void setText(const std::string& str);
-
-    /* Prototypes for the virtual methods */
-    virtual GRectangle getBounds() const;
-    virtual std::string getType() const;
-    virtual std::string toStringExtra() const;
-
-private:
-    /* Instance variables */
-    std::string str;                /* The string displayed by the label */
-    double width;                   /* Width of the bounding box         */
-    double height;                  /* Height of the bounding box        */
-    double ascent;                  /* Font ascent                       */
-    double descent;                 /* Font descent                      */
-
-    void createQGString(const std::string& str);
+    std::string _filename;
+    QImage* _qimage;
 };
 
 /*
@@ -1261,13 +861,13 @@ public:
     /*
      * Constructor: QGLine
      * Usage: QGLine* gline = new QGLine(x0, y0, x1, y1);
-     * ------------------------------------------------
+     * --------------------------------------------------
      * Constructs a line segment from its endpoints.  The point
      * (<code>x0</code>,&nbsp;<code>y0</code>) defines the start of the
      * line and the point (<code>x1</code>,&nbsp;<code>y1</code>) defines
      * the end.
      */
-    QGLine(double x0, double y0, double x1, double y1);
+    QGLine(double x0 = 0, double y0 = 0, double x1 = 0, double y1 = 0);
 
     /*
      * Constructor: QGLine
@@ -1279,7 +879,7 @@ public:
      */
     QGLine(const GPoint& p0, const GPoint& p1);
 
-    void draw(QPainter* painter);
+    virtual void draw(QPainter* painter);
 
     /*
      * Method: getEndPoint
@@ -1287,7 +887,7 @@ public:
      * ---------------------------------------
      * Returns the point at which the line ends.
      */
-    GPoint getEndPoint() const;
+    virtual GPoint getEndPoint() const;
 
     /*
      * Method: getStartPoint
@@ -1295,7 +895,7 @@ public:
      * -----------------------------------------
      * Returns the point at which the line starts.
      */
-    GPoint getStartPoint() const;
+    virtual GPoint getStartPoint() const;
 
     /*
      * Method: setEndPoint
@@ -1305,7 +905,7 @@ public:
      * leaving the start point unchanged.  This method is therefore different from
      * <code>setLocation</code>, which moves both components of the line segment.
      */
-    void setEndPoint(double x, double y);
+    virtual void setEndPoint(double x, double y);
 
     /*
      * Method: setStartPoint
@@ -1315,18 +915,59 @@ public:
      * leaving the end point unchanged.  This method is therefore different from
      * <code>setLocation</code>, which moves both components of the line segment.
      */
-    void setStartPoint(double x, double y);
+    virtual void setStartPoint(double x, double y);
 
     /* Prototypes for the virtual methods */
     virtual bool contains(double x, double y) const;
     virtual GRectangle getBounds() const;
+    virtual double getHeight() const;
     virtual std::string getType() const;
+    virtual double getWidth() const;
     virtual std::string toStringExtra() const;
 
 protected:
     /* Instance variables */
-    double dx;                   /* The x displacement of the line */
-    double dy;                   /* The y displacement of the line */
+    double _dx;   // the x displacement of the line
+    double _dy;   // the y displacement of the line
+};
+
+/*
+ * Class: QGOval
+ * -------------
+ * This graphical object subclass represents an oval inscribed in
+ * a rectangular box.  For example, the following code displays a
+ * filled green oval inscribed in the graphics window:
+ *
+ *<pre>
+ *    int main() {
+ *       QGWindow gw;
+ *       cout << "This program draws a green oval filling the window." << endl;
+ *       QGOval* oval = new QGOval(gw.getWidth(), gw.getHeight());
+ *       oval->setFilled(true);
+ *       oval->setColor("GREEN");
+ *       gw.add(oval);
+ *       return 0;
+ *    }
+ *</pre>
+ */
+class QGOval : public QGObject {
+public:
+    /*
+     * Constructor: QGOval
+     * Usage: QGOval* oval = new QGOval(width, height);
+     *        QGOval* oval = new QGOval(x, y, width, height);
+     * ----------------------------------------------------
+     * Constructs a new oval inscribed in the specified rectangle.  The
+     * first form is positioned at the origin; the second at the coordinates
+     * given by <code>x</code> and <code>y</code>.
+     */
+    QGOval(double x = 0, double y = 0, double width = 0, double height = 0);
+
+    virtual void draw(QPainter* painter);
+
+    /* Prototypes for the virtual methods */
+    virtual bool contains(double x, double y) const;
+    virtual std::string getType() const;
 };
 
 /*
@@ -1386,8 +1027,8 @@ public:
      * Adds an edge to the polygon whose components are given by the displacements
      * <code>dx</code> and <code>dy</code> from the last vertex.
      */
-    void addEdge(double dx, double dy);
-    void addEdge(const GPoint& pt);
+    virtual void addEdge(double dx, double dy);
+    virtual void addEdge(const GPoint& pt);
 
     /*
      * Method: addEdges
@@ -1396,8 +1037,8 @@ public:
      * Adds multiple edges to the polygon whose components are given by the
      * displacements <code>dx</code> and <code>dy</code> from the last vertex.
      */
-    void addEdges(std::initializer_list<double> coords);
-    void addEdges(std::initializer_list<GPoint> points);
+    virtual void addEdges(std::initializer_list<double> coords);
+    virtual void addEdges(std::initializer_list<GPoint> points);
 
     /*
      * Method: addPolarEdge
@@ -1408,7 +1049,7 @@ public:
      * direction <code>theta</code>, measured in degrees counterclockwise
      * from the +x axis.
      */
-    void addPolarEdge(double r, double theta);
+    virtual void addPolarEdge(double r, double theta);
 
     /*
      * Method: addVertex
@@ -1417,8 +1058,8 @@ public:
      * Adds a vertex at (<code>x</code>, <code>y</code>) relative to the polygon
      * origin.
      */
-    void addVertex(double x, double y);
-    void addVertex(const GPoint& pt);
+    virtual void addVertex(double x, double y);
+    virtual void addVertex(const GPoint& pt);
 
     /*
      * Method: addVertexes
@@ -1427,10 +1068,10 @@ public:
      * Adds multiple edges to the polygon whose components are given by the
      * coordinates <code>dx</code> and <code>dy</code> relative to the polygon origin.
      */
-    void addVertexes(std::initializer_list<double> coords);
-    void addVertexes(std::initializer_list<GPoint> points);
+    virtual void addVertexes(std::initializer_list<double> coords);
+    virtual void addVertexes(std::initializer_list<GPoint> points);
 
-    void draw(QPainter* painter);
+    virtual void draw(QPainter* painter);
 
     /*
      * Method: getVertices
@@ -1438,19 +1079,238 @@ public:
      * ------------------------------------------------
      * Returns a vector of the points in the polygon.
      */
-    Vector<GPoint> getVertices() const;
+    virtual Vector<GPoint> getVertices() const;
 
     /* Prototypes for the virtual methods */
     virtual bool contains(double x, double y) const;
+    virtual GRectangle getBounds() const;
+    virtual double getHeight() const;
+    virtual std::string getType() const;
+    virtual double getWidth() const;
+    virtual std::string toStringExtra() const;
+
+private:
+    /* Instance variables */
+    QVector<QPointF> _vertices;   // the vertices of the polygon
+    double _cx;                   // the most recent x coordinate
+    double _cy;                   // the most recent y coordinate
+};
+
+/*
+ * Class: QGRect
+ * -------------
+ * This class represents a graphical object whose appearance consists of
+ * a rectangular box.  For example, the following code adds a filled, red
+ * <nobr>200<font class=sansserif size=-1>x</font>100</nobr> rectangle
+ * at the upper left corner of the graphics window:
+ *
+ *<pre>
+ *    int main() {
+ *       QGWindow gw;
+ *       cout << "This program draws a red rectangle at (0, 0)." << endl;
+ *       QGRect* rect = new QGRect(0, 0, 200, 100);
+ *       rect->setFilled(true);
+ *       rect->setColor("RED");
+ *       gw.add(rect);
+ *       return 0;
+ *    }
+ *</pre>
+ */
+class QGRect : public QGObject {
+public:
+    /*
+     * Constructor: QGRect
+     * Usage: QGRect* rect = new QGRect(width, height);
+     *        QGRect* rect = new QGRect(x, y, width, height);
+     * ----------------------------------------------------
+     * Constructs a rectangle with the specified width and height.  The first
+     * form is positioned at the origin; the second at the coordinates
+     * given by <code>x</code> and <code>y</code>.
+     */
+    QGRect(double x = 0, double y = 0, double width = 0, double height = 0);
+
+    virtual void draw(QPainter* painter);
+
+    /* Prototypes for the virtual methods */
+    virtual std::string getType() const;
+};
+
+/*
+ * Class: QGRoundRect
+ * ------------------
+ * This class represents a graphical object whose appearance consists
+ * of a rectangular box with rounded corners.
+ */
+class QGRoundRect : public QGRect {
+public:
+    /*
+     * Constructor: QGRoundRect
+     * Usage: QGRoundRect* rect = new QGRoundRect(width, height);
+     *        QGRoundRect* rect = new QGRoundRect(width, height, corner);
+     *        QGRoundRect* rect = new QGRoundRect(x, y, width, height);
+     *        QGRoundRect* rect = new QGRoundRect(x, y, width, height, corner);
+     * ------------------------------------------------------------------------
+     * Constructs a new rectangle with the specified width and height.  If
+     * the <code>x</code> and <code>y</code> parameters are specified, they
+     * are used to specify the origin.  The <code>corner</code> parameter
+     * specifies the diameter of the arc forming the corner.
+     */
+    QGRoundRect(double width = 0, double height = 0);
+    QGRoundRect(double width, double height, double corner);
+    QGRoundRect(double x, double y, double width, double height);
+    QGRoundRect(double x, double y, double width, double height, double corner);
+
+    /*
+     * Method: contains
+     * Usage: if (grrect->contains(pt)) ...
+     *        if (grrect->contains(x, y)) ...
+     * --------------------------------------
+     * Returns <code>true</code> if the specified point is inside the object.
+     */
+    virtual bool contains(double x, double y) const;
+
+    virtual void draw(QPainter* painter);
+
+    virtual double getCorner() const;
+
+    virtual void setCorner(double corner);
+
+    /* Prototypes for the virtual methods */
+    virtual std::string getType() const;
+    virtual std::string toStringExtra() const;
+
+protected:
+    double _corner;
+};
+
+/*
+ * Class: QGString
+ * ---------------
+ * This graphical object subclass represents a text string.  For
+ * example, the following code adds a <code>QGString</code> containing
+ * the string <code>"hello, world"</code> to the center of the window:
+ *
+ *<pre>
+ *    int main() {
+ *       QGWindow gw;
+ *       cout << "This program draws the 'hello, world' message." << endl;
+ *       QGString *label = new QGString("hello, world");
+ *       label->setFont("SansSerif-18");
+ *       double x = (gw.getWidth() - label->getWidth()) / 2;
+ *       double y = (gw.getHeight() + label->getFontAscent()) / 2;
+ *       gw.add(label, x, y);
+ *       return 0;
+ *    }
+ *</pre>
+ *
+ * Controlling the appearance and positioning of a <code>QGString</code>
+ * depends on understanding the following terms:
+ *
+ * <p><ul>
+ *   <li>The <b><i>baseline</i></b> is the horizontal line on which the
+ *       characters rest.
+ *   <li>The <b><i>origin</i></b> is the point on the baseline at which
+ *       the label begins.
+ *   <li>The <b><i>height</i></b> is the distance that separate two
+ *       successive lines.
+ *   <li>The <b><i>ascent</i></b> is the maximum distance a character
+ *       in this font extends above the baseline.
+ *   <li>The <b><i>descent</i></b> is the maximum distance a character
+ *       in this font extends below the baseline.
+ * </ul>
+ * <include src="pictures/QGObjectDiagrams/QGStringGeometry.html">
+ */
+class QGString : public QGObject {
+public:
+    /*
+     * Constructor: QGString
+     * Usage: QGString* label = new QGString(str);
+     *        QGString* label = new QGString(str, x, y);
+     * -------------------------------------------------
+     * Creates a <code>QGString</code> object containing the specified string.
+     * By default, the baseline of the first character appears at the origin;
+     * the second form automatically resets the location of the
+     * <code>QGString</code> to the point (<code>x</code>, <code>y</code>).
+     */
+    QGString(const std::string& str = "", double x = 0, double y = 0);
+
+    virtual void draw(QPainter* painter);
+
+    /*
+     * Method: getFont
+     * Usage: string font = label->getFont();
+     * --------------------------------------
+     * Returns the current font for the <code>QGString</code>.
+     */
+    virtual std::string getFont() const;
+
+    /*
+     * Method: getFontAscent
+     * Usage: double ascent = label->getFontAscent();
+     * ----------------------------------------------
+     * Returns the maximum distance strings in this font extend above
+     * the baseline.
+     */
+    virtual double getFontAscent() const;
+
+    /*
+     * Method: getFontDescent
+     * Usage: double descent = label->getFontDescent();
+     * ------------------------------------------------
+     * Returns the maximum distance strings in this font descend below
+     * the baseline.
+     */
+    virtual double getFontDescent() const;
+
+    /*
+     * Method: getLabel
+     * Usage: string str = label->getLabel();
+     * --------------------------------------
+     * Returns the string displayed by this object.
+     */
+    virtual std::string getLabel() const;
+    virtual std::string getText() const;
+
+    /*
+     * Method: setFont
+     * Usage: gobj->setFont(font);
+     * ---------------------------
+     * Changes the font used to display the object as specified by
+     * the string <code>font</code>, which has the following format:
+     *
+     *<pre>
+     *    family-style-size
+     *</pre>
+     *
+     * where both <code>style</code> and <code>size</code> are optional.
+     * If any of these elements are missing or specified as an asterisk,
+     * the existing value is retained.
+     */
+    /* override */
+    virtual void setFont(const std::string& font);
+
+    /*
+     * Method: setLabel
+     * Usage: label->setLabel(str);
+     * ----------------------------
+     * Changes the string stored within the <code>QGString</code> object, so that
+     * a new text string appears on the display.
+     */
+    virtual void setLabel(const std::string& str);
+    virtual void setText(const std::string& str);
+
+    /* Prototypes for the virtual methods */
     virtual GRectangle getBounds() const;
     virtual std::string getType() const;
     virtual std::string toStringExtra() const;
 
 private:
     /* Instance variables */
-    Vector<GPoint> vertices;        /* The vertices of the polygon   */
-    double cx;                      /* The most recent x coordinate  */
-    double cy;                      /* The most recent y coordinate  */
+    std::string _text;   // the string displayed by the label
+    QFont _qfont;
+
+    // update width and height when font or text changes
+    void updateSize();
 };
 
 std::ostream& operator <<(std::ostream& out, const QGObject& obj);

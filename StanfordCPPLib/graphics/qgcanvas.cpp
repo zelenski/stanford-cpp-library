@@ -27,6 +27,20 @@ void _Internal_QCanvas::enterEvent(QEvent* event) {
     fireQGEvent(event, QGEvent::MOUSE_ENTERED, "mouseenter");
 }
 
+void _Internal_QCanvas::keyPressEvent(QKeyEvent* event) {
+    if (!_qgcanvas->hasEventHandler("keypress")) return;
+    fireQGEvent(event, QGEvent::KEY_PRESSED, "keypress");
+}
+
+void _Internal_QCanvas::keyReleaseEvent(QKeyEvent* event) {
+    if (_qgcanvas->hasEventHandler("keyrelease")) {
+        fireQGEvent(event, QGEvent::KEY_RELEASED, "keyrelease");
+    }
+    if (_qgcanvas->hasEventHandler("keytype")) {
+        fireQGEvent(event, QGEvent::KEY_TYPED, "keytype");
+    }
+}
+
 void _Internal_QCanvas::leaveEvent(QEvent* event) {
     if (!_qgcanvas->hasEventHandler("mouseexit")) return;
     fireQGEvent(event, QGEvent::MOUSE_EXITED, "mouseexit");
@@ -62,26 +76,49 @@ void _Internal_QCanvas::paintEvent(QPaintEvent* event) {
     // g.setCompositionMode(QPainter::CompositionMode_DestinationOver);
     // g.setRenderHints(QPainter::HighQualityAntialiasing);
     g.setRenderHint(QPainter::Antialiasing, QGObject::isAntiAliasing());
-
     _qgcanvas->draw(&g);
     g.end();
 
     QWidget::paintEvent(event);
 }
 
+void _Internal_QCanvas::wheelEvent(QWheelEvent* event) {
+    if (event->pixelDelta().y() < 0) {
+        // scroll down
+        if (_qgcanvas->hasEventHandler("mousewheeldown")) {
+            fireQGEvent(event, QGEvent::MOUSE_WHEEL_DOWN, "mousewheeldown");
+        }
+    } else if (event->pixelDelta().y() > 0) {
+        // scroll up
+        if (_qgcanvas->hasEventHandler("mousewheelup")) {
+            fireQGEvent(event, QGEvent::MOUSE_WHEEL_UP, "mousewheelup");
+        }
+    }
+}
+
 void _Internal_QCanvas::fireQGEvent(QEvent* /* event */,
                                     QGEvent::EventType eventType,
                                     const std::string& eventName) {
-    QGEvent mouseEvent(
+    QGEvent generalEvent(
                 /* class  */ QGEvent::MOUSE_EVENT,
                 /* type   */ eventType,
                 /* name   */ eventName,
                 /* source */ _qgcanvas);
-    // TODO
-//    mouseEvent._button = (int) event->button();
-//    mouseEvent._x = event->x;
-//    mouseEvent._y = event->y;
-    _qgcanvas->fireEvent(mouseEvent);
+    _qgcanvas->fireEvent(generalEvent);
+}
+
+void _Internal_QCanvas::fireQGEvent(QKeyEvent* event,
+                                    QGEvent::EventType eventType,
+                                    const std::string& eventName) {
+    QGEvent keyEvent(
+                /* class  */ QGEvent::KEY_EVENT,
+                /* type   */ eventType,
+                /* name   */ eventName,
+                /* source */ _qgcanvas);
+    keyEvent.setKeyCode(event->key());
+    keyEvent.setKeyChar(event->text().toStdString());
+    keyEvent.setModifiers(event->modifiers());
+    _qgcanvas->fireEvent(keyEvent);
 }
 
 void _Internal_QCanvas::fireQGEvent(QMouseEvent* event,
@@ -95,7 +132,23 @@ void _Internal_QCanvas::fireQGEvent(QMouseEvent* event,
     mouseEvent.setButton((int) event->button());
     mouseEvent.setX(event->x());
     mouseEvent.setY(event->y());
+    mouseEvent.setModifiers(event->modifiers());
     _qgcanvas->fireEvent(mouseEvent);
+}
+
+void _Internal_QCanvas::fireQGEvent(QWheelEvent* event,
+                                    QGEvent::EventType eventType,
+                                    const std::string& eventName) {
+    QGEvent wheelEvent(
+                /* class  */ QGEvent::MOUSE_EVENT,
+                /* type   */ eventType,
+                /* name   */ eventName,
+                /* source */ _qgcanvas);
+    wheelEvent.setButton((int) event->buttons());
+    wheelEvent.setX(event->x());
+    wheelEvent.setY(event->y());
+    wheelEvent.setModifiers(event->modifiers());
+    _qgcanvas->fireEvent(wheelEvent);
 }
 
 QGCanvas::QGCanvas(QWidget* parent) {
@@ -168,12 +221,80 @@ void QGCanvas::removeAll() {
     _qgcompound.removeAll();
 }
 
+void QGCanvas::removeClickHandler() {
+    removeEventHandler("click");
+}
+
+void QGCanvas::removeKeyHandler() {
+    removeEventHandlers({"keypress",
+                         "keyrelease",
+                         "keytype"});
+}
+
+void QGCanvas::removeMouseHandler() {
+    removeEventHandlers({"click",
+                         "mousedrag",
+                         "mouseenter",
+                         "mouseexit",
+                         "mousemove",
+                         "mousepress",
+                         "mouserelease",
+                         "mousewheeldown",
+                         "mousewheelup"});
+}
+
 void QGCanvas::repaint() {
     _qgcompound.repaint();
 }
 
 void QGCanvas::setAutoRepaint(bool autoRepaint) {
     _qgcompound.setAutoRepaint(autoRepaint);
+}
+
+void QGCanvas::setClickHandler(QGEventHandler func) {
+    setEventHandler("click", func);
+}
+
+void QGCanvas::setClickHandler(QGEventHandlerVoid func) {
+    setEventHandler("click", func);
+}
+
+void QGCanvas::setKeyHandler(QGEventHandler func) {
+    _iqcanvas->setFocusPolicy(Qt::StrongFocus);
+    setEventHandlers({"keypress",
+                      "keyrelease",
+                      "keytype"}, func);
+}
+
+void QGCanvas::setKeyHandler(QGEventHandlerVoid func) {
+    _iqcanvas->setFocusPolicy(Qt::StrongFocus);
+    setEventHandlers({"keypress",
+                      "keyrelease",
+                      "keytype"}, func);
+}
+
+void QGCanvas::setMouseHandler(QGEventHandler func) {
+    setEventHandlers({"click",
+                      "mousedrag",
+                      "mouseenter",
+                      "mouseexit",
+                      "mousemove",
+                      "mousepress",
+                      "mouserelease",
+                      "mousewheeldown",
+                      "mousewheelup"}, func);
+}
+
+void QGCanvas::setMouseHandler(QGEventHandlerVoid func) {
+    setEventHandlers({"click",
+                      "mousedrag",
+                      "mouseenter",
+                      "mouseexit",
+                      "mousemove",
+                      "mousepress",
+                      "mouserelease",
+                      "mousewheeldown",
+                      "mousewheelup"}, func);
 }
 
 std::string QGCanvas::getType() const {

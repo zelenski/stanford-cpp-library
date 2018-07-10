@@ -73,6 +73,10 @@ QWidget* QGSlider::getWidget() const {
     return static_cast<QWidget*>(_iqslider);
 }
 
+void QGSlider::removeChangeHandler() {
+    removeEventHandler("change");
+}
+
 void QGSlider::setChangeHandler(QGEventHandler func) {
     setEventHandler("change", func);
 }

@@ -31,8 +31,11 @@ public:
     };
 
     QGInteractor();
+    virtual ~QGInteractor();
     virtual std::string getAccelerator() const;
     virtual std::string getActionCommand() const;
+    virtual std::string getBackground() const;
+    virtual int getBackgroundInt() const;
     virtual GRectangle getBounds() const;
     virtual std::string getFont() const;
     virtual double getHeight() const;
@@ -77,13 +80,17 @@ public:
 
 protected:
     virtual void clearEventHandlers();
-    virtual void ensureThreadSafety();
+    virtual void ensureThreadSafety(const std::string& memberName = "");
     virtual void fireEvent(QGEvent& event);
     virtual QWidget* getInternalParent(QWidget* parent) const;
     virtual bool hasEventHandler(const std::string& eventName) const;
     virtual std::string normalizeAccelerator(const std::string& accelerator) const;
+    virtual void removeEventHandler(const std::string& eventName);
+    virtual void removeEventHandlers(std::initializer_list<std::string> eventNames);
     virtual void setEventHandler(const std::string& eventName, QGEventHandler func);
     virtual void setEventHandler(const std::string& eventName, QGEventHandlerVoid func);
+    virtual void setEventHandlers(std::initializer_list<std::string> eventNames, QGEventHandler func);
+    virtual void setEventHandlers(std::initializer_list<std::string> eventNames, QGEventHandlerVoid func);
 
     Map<std::string, QGEvent::EventHandlerWrapper> _eventMap;
     std::string _actionCommand;
