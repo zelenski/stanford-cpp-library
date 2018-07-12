@@ -14,8 +14,9 @@
 #include <string>
 #include <QEvent>
 
-class QGInteractor;        // forward declaration
 class QGEvent;             // forward declaration
+class QGInteractor;        // forward declaration
+class QGObservable;        // forward declaration
 class _Internal_QWidget;   // forward declaration
 
 typedef std::function<void(QGEvent)> QGEventHandler;
@@ -52,6 +53,9 @@ public:
         WINDOW_RESIZED      = WINDOW_EVENT + 2,
         CONSOLE_CLOSED      = WINDOW_EVENT + 3,
         WINDOW_CLOSING      = WINDOW_EVENT + 4,
+        WINDOW_MINIMIZED    = WINDOW_EVENT + 5,
+        WINDOW_RESTORED     = WINDOW_EVENT + 6,
+        WINDOW_MAXIMIZED    = WINDOW_EVENT + 7,
 
         ACTION_PERFORMED    = ACTION_EVENT + 1,
 
@@ -173,7 +177,7 @@ public:
     QGEvent(EventClass eventClass = NULL_EVENT,
             EventType eventType = NULL_TYPE,
             const std::string& eventName = "",
-            QGInteractor* source = nullptr);
+            QGObservable* source = nullptr);
     virtual ~QGEvent();
     static std::string classToString(EventClass eventClass);
     virtual std::string getActionCommand() const;
@@ -186,7 +190,8 @@ public:
     virtual int getKeyCode() const;
     virtual int getModifiers() const;
     virtual std::string getName() const;
-    virtual QGInteractor* getSource() const;
+    virtual QGInteractor* getInteractor() const;
+    virtual QGObservable* getSource() const;
     virtual long getTime() const;
     virtual EventType getType() const;
     virtual double getX() const;
@@ -255,6 +260,7 @@ public:
     virtual void setKeyChar(const std::string& keyCharString);
     virtual void setKeyCode(int keyCode);
     virtual void setModifiers(Qt::KeyboardModifiers modifiers);
+    virtual void setSource(QGObservable* source);
     virtual void setX(double x);
     virtual void setY(double y);
 
@@ -270,7 +276,7 @@ private:
     int _keyCode;
     int _modifiers;
     std::string _name;
-    QGInteractor* _source;
+    QGObservable* _source;
     long _time;
     EventType _type;
     double _x;

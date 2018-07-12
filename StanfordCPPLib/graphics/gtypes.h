@@ -204,6 +204,14 @@ public:
     GRectangle(const GPoint& p, const GDimension& size);
 
     /*
+     * Shifts the boundaries outward by the given amount on all 4 sides.
+     * e.g. a 10x10 rectangle at position (55, 42) enlarged by 1 will become
+     *      a 12x12 rectangle at position (54, 41).
+     */
+    void enlargeBy(double amount);
+    GRectangle enlargedBy(double amount);
+
+    /*
      * Method: getX
      * Usage: double x = r.getX();
      * ---------------------------

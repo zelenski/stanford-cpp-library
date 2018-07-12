@@ -84,17 +84,64 @@ _Internal_QMainWindow::_Internal_QMainWindow(QGWindow* qgwindow, QWidget* parent
 //    return QMainWindow::event(event);
 //}
 
+void _Internal_QMainWindow::changeEvent(QEvent* event) {
+    QMainWindow::changeEvent(event);   // call super
+    if (event->type() != QEvent::WindowStateChange) {
+        return;
+    }
+
+    // https://doc.qt.io/Qt-5/qt.html#WindowState-enum
+    QWindowStateChangeEvent* stateChangeEvent = static_cast<QWindowStateChangeEvent*>(event);
+    Qt::WindowStates state = windowState();
+    bool wasMaximized = (stateChangeEvent->oldState() & Qt::WindowMaximized) != 0;
+    bool wasMinimized = (stateChangeEvent->oldState() & Qt::WindowMinimized) != 0;
+    bool isMaximized = (state & Qt::WindowMaximized) != 0;
+    bool isMinimized = (state & Qt::WindowMinimized) != 0;
+    if (!wasMaximized && isMaximized) {
+        _qgwindow->fireQGEvent(stateChangeEvent, QGEvent::WINDOW_MAXIMIZED, "maximize");
+    } else if (!wasMinimized && isMinimized) {
+        _qgwindow->fireQGEvent(stateChangeEvent, QGEvent::WINDOW_MINIMIZED, "minimize");
+    } else if ((wasMinimized || wasMaximized) && !isMinimized && !isMaximized) {
+        _qgwindow->fireQGEvent(stateChangeEvent, QGEvent::WINDOW_RESTORED, "restore");
+    }
+}
+
+void _Internal_QMainWindow::closeEvent(QCloseEvent* event) {
+    QMainWindow::closeEvent(event);   // call super
+    QGWindow::CloseOperation closeOp = _qgwindow->getCloseOperation();
+    if (closeOp == QGWindow::CLOSE_DO_NOTHING) {
+        event->ignore();
+        return;
+    }
+
+    // send "closing" event before window closes
+    _qgwindow->fireQGEvent(event, QGEvent::WINDOW_CLOSING, "closing");
+
+    // send "close" event after window closes
+    event->accept();
+    _qgwindow->fireQGEvent(event, QGEvent::WINDOW_CLOSED, "close");
+
+    if (closeOp == QGWindow::CLOSE_EXIT) {
+        // TODO: exit app
+    }
+}
+
+void _Internal_QMainWindow::resizeEvent(QResizeEvent* event) {
+    QMainWindow::resizeEvent(event);   // call super
+    _qgwindow->fireQGEvent(event, QGEvent::WINDOW_RESIZED, "resize");
+}
+
 _Internal_QMainWindow* QGWindow::_lastWindow = nullptr;
 
 QGWindow::QGWindow(double width, double height, bool visible)
         : _canvas(nullptr),
-          _lineWidth(1),
-          _resizable(true) {
+          _resizable(true),
+          _closeOperation(QGWindow::CLOSE_DISPOSE) {
     _iqmainwindow = new _Internal_QMainWindow(this);
     _lastWindow = _iqmainwindow;
 
     // go ahead and set up canvas when window is loaded
-    ensureCanvas();
+    ensureForwardTarget();
     setCanvasSize(width, height);
     setVisible(visible);
 }
@@ -117,22 +164,22 @@ void QGWindow::add(QGInteractor* interactor, double x, double y) {
 }
 
 void QGWindow::add(QGObject* obj) {
-    ensureCanvas();
+    ensureForwardTarget();
     _canvas->add(obj);
 }
 
 void QGWindow::add(QGObject* obj, double x, double y) {
-    ensureCanvas();
+    ensureForwardTarget();
     _canvas->add(obj, x, y);
 }
 
 void QGWindow::add(QGObject& obj) {
-    ensureCanvas();
+    ensureForwardTarget();
     _canvas->add(obj);
 }
 
 void QGWindow::add(QGObject& obj, double x, double y) {
-    ensureCanvas();
+    ensureForwardTarget();
     _canvas->add(obj, x, y);
 }
 
@@ -167,16 +214,28 @@ void QGWindow::addToRegion(QGInteractor* interactor, const std::string& region) 
 }
 
 void QGWindow::clear() {
+    QGForwardDrawingSurface::clear();
     clearRegion(REGION_NORTH);
     clearRegion(REGION_SOUTH);
     clearRegion(REGION_WEST);
     clearRegion(REGION_EAST);
     clearRegion(REGION_CENTER);
+    repaint();
 }
 
 void QGWindow::clearCanvas() {
+    QGForwardDrawingSurface::clear();
+}
+
+void QGWindow::clearCanvasObjects() {
     if (_canvas) {
-        _canvas->clear();
+        _canvas->clearObjects();
+    }
+}
+
+void QGWindow::clearCanvasPixels() {
+    if (_canvas) {
+        _canvas->clearPixels();
     }
 }
 
@@ -225,162 +284,12 @@ void QGWindow::compareToImage(const std::string& /* filename */, bool /* ignoreW
     // TODO
 }
 
-void QGWindow::draw(QGObject* obj) {
-    _canvas->add(obj);
-}
-
-void QGWindow::draw(QGObject& obj, double x, double y) {
-    obj.setLocation(x, y);
-    _canvas->add(&obj);
-}
-
-void QGWindow::draw(QGObject* obj, double x, double y) {
-    obj->setLocation(x, y);
-    _canvas->add(obj);
-}
-
-void QGWindow::drawArc(double x, double y, double width, double height, double start, double sweep) {
-    ensureCanvas();
-    QGArc* arc = new QGArc(x, y, width, height, start, sweep);
-    initializeQGObject(arc);
-    draw(arc);
-}
-
-void QGWindow::drawImage(const std::string& filename, double x, double y) {
-    ensureCanvas();
-    QGImage* image = new QGImage(filename, x, y);
-    draw(image);
-}
-
-void QGWindow::drawLine(const GPoint& p0, const GPoint& p1) {
-    drawLine(p0.getX(), p0.getY(), p1.getX(), p1.getY());
-}
-
-void QGWindow::drawLine(double x0, double y0, double x1, double y1) {
-    ensureCanvas();
-    QGLine* line = new QGLine(x0, y0, x1, y1);
-    initializeQGObject(line);
-    draw(line);
-}
-
-void QGWindow::drawOval(const GRectangle& bounds) {
-    drawOval(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-}
-
-void QGWindow::drawOval(double x, double y, double width, double height) {
-    ensureCanvas();
-    QGOval* oval = new QGOval(x, y, width, height);
-    initializeQGObject(oval);
-    draw(oval);
-}
-
-GPoint QGWindow::drawPolarLine(const GPoint& p0, double r, double theta) {
-    return drawPolarLine(p0.getX(), p0.getY(), r, theta);
-}
-
-GPoint QGWindow::drawPolarLine(double x0, double y0, double r, double theta) {
-    double x1 = x0 + r * cosDegrees(theta);
-    double y1 = y0 - r * sinDegrees(theta);
-    drawLine(x0, y0, x1, y1);
-    return GPoint(x1, y1);
-}
-
-void QGWindow::drawPixel(double /* x */, double /* y */) {
-    ensureCanvas();
-    // TODO
-}
-
-void QGWindow::drawPixel(double /* x */, double /* y */, int /* color */) {
-    // TODO
-    ensureCanvas();
-}
-
-void QGWindow::drawPixel(double /* x */, double /* y */, const std::string& /* color */) {
-    // TODO
-    ensureCanvas();
-}
-
-void QGWindow::drawPolygon(std::initializer_list<double> coords) {
-    ensureCanvas();
-    QGPolygon* polygon = new QGPolygon(coords);
-    initializeQGObject(polygon);
-    draw(polygon);
-}
-
-void QGWindow::drawPolygon(std::initializer_list<GPoint> points) {
-    ensureCanvas();
-    QGPolygon* polygon = new QGPolygon(points);
-    initializeQGObject(polygon);
-    draw(polygon);
-}
-
-void QGWindow::drawRect(const GRectangle& bounds) {
-    drawRect(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-}
-
-void QGWindow::drawRect(double x, double y, double width, double height) {
-    ensureCanvas();
-    QGRect* rect = new QGRect(x, y, width, height);
-    initializeQGObject(rect);
-    draw(rect);
-}
-
-void QGWindow::drawString(const std::string& text, double x, double y) {
-    ensureCanvas();
-    QGString* str = new QGString(text, x, y);
-    initializeQGObject(str);
-    draw(str);
-}
-
-void QGWindow::ensureCanvas() {
+void QGWindow::ensureForwardTarget() {
     if (!_canvas) {
         _canvas = new QGCanvas(_iqmainwindow);
+        setDrawingForwardTarget(_canvas);
         addToRegion(_canvas, "Center");
     }
-}
-
-void QGWindow::fillArc(double x, double y, double width, double height, double start, double sweep) {
-    ensureCanvas();
-    QGArc* arc = new QGArc(x, y, width, height, start, sweep);
-    initializeQGObject(arc, /* filled */ true);
-    draw(arc);
-}
-
-void QGWindow::fillOval(const GRectangle& bounds) {
-    fillOval(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-}
-
-void QGWindow::fillOval(double x, double y, double width, double height) {
-    ensureCanvas();
-    QGOval* oval = new QGOval(x, y, width, height);
-    initializeQGObject(oval, /* filled */ true);
-    draw(oval);
-}
-
-void QGWindow::fillPolygon(std::initializer_list<double> coords) {
-    ensureCanvas();
-    QGPolygon* polygon = new QGPolygon(coords);
-    initializeQGObject(polygon, /* filled */ true);
-    draw(polygon);
-}
-
-void QGWindow::fillRect(const GRectangle& bounds) {
-    fillRect(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-}
-
-void QGWindow::fillRect(double x, double y, double width, double height) {
-    ensureCanvas();
-    QGRect* rect = new QGRect(x, y, width, height);
-    initializeQGObject(rect, /* filled */ true);
-    draw(rect);
-}
-
-std::string QGWindow::getBackground() const {
-    return _canvas->getBackground();
-}
-
-int QGWindow::getBackgroundInt() const {
-    return _canvas->getBackgroundInt();
 }
 
 double QGWindow::getCanvasHeight() const {
@@ -395,20 +304,8 @@ double QGWindow::getCanvasWidth() const {
     return _canvas->getWidth();
 }
 
-std::string QGWindow::getColor() const {
-    return _color;
-}
-
-int QGWindow::getColorInt() const {
-    return _colorInt;
-}
-
-std::string QGWindow::getFillColor() const {
-    return _fillColor;
-}
-
-int QGWindow::getFillColorInt() const {
-    return _fillColorInt;
+QGWindow::CloseOperation QGWindow::getCloseOperation() const {
+    return _closeOperation;
 }
 
 QGObject* QGWindow::getQGObject(int index) const {
@@ -446,32 +343,6 @@ Point QGWindow::getLocation() const {
 
 double QGWindow::getHeight() const {
     return _iqmainwindow->geometry().height();
-}
-
-double QGWindow::getLineWidth() const {
-    return _lineWidth;
-}
-
-int QGWindow::getPixel(double /* x */, double /* y */) const {
-    // TODO
-    return 0;
-}
-
-int QGWindow::getPixelARGB(double /* x */, double /* y */) const {
-    // TODO
-    return 0;
-}
-
-Grid<int> QGWindow::getPixels() const {
-    // TODO
-    Grid<int> grid;
-    return grid;
-}
-
-Grid<int> QGWindow::getPixelsARGB() const {
-    // TODO
-    Grid<int> grid;
-    return grid;
 }
 
 double QGWindow::getRegionHeight(Region /* region */) const {
@@ -526,6 +397,10 @@ std::string QGWindow::getTitle() const {
     return _iqmainwindow->windowTitle().toStdString();
 }
 
+std::string QGWindow::getType() const {
+    return "QGWindow";
+}
+
 QWidget* QGWindow::getWidget() const {
     return static_cast<QWidget*>(_iqmainwindow);
 }
@@ -550,17 +425,13 @@ bool QGWindow::inCanvasBounds(double x, double y) const {
     return 0 <= x && x < getCanvasWidth() && 0 <= y && y < getCanvasHeight();
 }
 
-void QGWindow::initializeQGObject(QGObject* obj, bool fill) {
-    if (!obj) {
-        return;
-    }
-    obj->setColor(_color);
-    if (fill) {
-        obj->setFilled(true);
-        obj->setFillColor(_fillColor);
-    }
-    obj->setFont(_font);
-    obj->setLineWidth(_lineWidth);
+bool QGWindow::isMaximized() const {
+    return (_iqmainwindow->windowState() & Qt::WindowMaximized) != 0
+            || (_iqmainwindow->windowState() & Qt::WindowFullScreen) != 0;
+}
+
+bool QGWindow::isMinimized() const {
+    return (_iqmainwindow->windowState() & Qt::WindowMinimized) != 0;
 }
 
 bool QGWindow::isOpen() const {
@@ -681,93 +552,60 @@ void QGWindow::removeMouseHandler() {
     }
 }
 
-void QGWindow::repaint() {
-    if (_canvas) {
-        _canvas->repaint();
-    }
-}
-
 void QGWindow::requestFocus() {
     _iqmainwindow->setFocus();
 }
 
 void QGWindow::saveCanvasPixels(const std::string& /* filename */) {
     // TODO
-    ensureCanvas();
+    ensureForwardTarget();
 }
 
 void QGWindow::setBackground(int color) {
-    _canvas->setBackground(color);
-    // TODO: set background of N/S/E/W regions and central region
+    QGForwardDrawingSurface::setBackground(color);
+    // TODO: set background of N/S/E/W regions and central region?
 }
 
 void QGWindow::setBackground(const std::string& color) {
-    _canvas->setBackground(color);
-    // TODO: set background of N/S/E/W regions and central region
+    QGForwardDrawingSurface::setBackground(color);
+    // TODO: set background of N/S/E/W regions and central region?
 }
 
 void QGWindow::setCanvasHeight(double height) {
     // TODO
-    ensureCanvas();
+    ensureForwardTarget();
     setHeight(height);
 }
 
 void QGWindow::setCanvasSize(double width, double height) {
     // TODO
-    ensureCanvas();
+    ensureForwardTarget();
     setSize(width, height);
 }
 
 void QGWindow::setCanvasSize(const GDimension& size) {
     // TODO
-    ensureCanvas();
+    ensureForwardTarget();
     setSize(size);
 }
 
 void QGWindow::setCanvasWidth(double width) {
     // TODO
-    ensureCanvas();
+    ensureForwardTarget();
     setWidth(width);
 }
 
-void QGWindow::setCloseOperation(CloseOperation /* op */) {
-    // TODO
-}
-
-void QGWindow::setColor(int color) {
-    _colorInt = color;
-    _color = QGColor::convertRGBToColor(color);
-}
-
-void QGWindow::setColor(const std::string& color) {
-    _color = color;
-    _colorInt = QGColor::convertColorToRGB(color);
+void QGWindow::setCloseOperation(CloseOperation op) {
+    _closeOperation = op;
+    _iqmainwindow->setAttribute(Qt::WA_QuitOnClose, op == QGWindow::CLOSE_EXIT);
 }
 
 void QGWindow::setExitOnClose(bool /* exitOnClose */) {
     // TODO
 }
 
-void QGWindow::setFillColor(int color) {
-    _fillColorInt = color;
-    _fillColor = QGColor::convertRGBToColor(color);
-}
-
-void QGWindow::setFillColor(const std::string& color) {
-    _fillColor = color;
-    _fillColorInt = QGColor::convertColorToRGB(color);
-}
-
-void QGWindow::setFont(const std::string& font) {
-    _font = font;
-}
-
 void QGWindow::setHeight(double height) {
     setSize(getWidth(), height);
-}
-
-void QGWindow::setLineWidth(double lineWidth) {
-    _lineWidth = lineWidth;
 }
 
 void QGWindow::setLocation(double x, double y) {
@@ -806,45 +644,12 @@ void QGWindow::setMouseHandler(QGEventHandlerVoid func) {
     _canvas->setMouseHandler(func);
 }
 
-void QGWindow::setWindowHandler(QGEventHandler /* func */) {
-    // TODO
-//    setEventHandler("close", func);
-//    setEventHandler("resize", func);
-}
-
-void QGWindow::setWindowHandler(QGEventHandlerVoid /* func */) {
-    // TODO
-//    setEventHandler("close", func);
-//    setEventHandler("resize", func);
-}
-
-void QGWindow::setPixel(double /* x */, double /* y */, int /* rgb */) {
-    // TODO
-}
-
-void QGWindow::setPixelARGB(double /* x */, double /* y */, int /* argb */) {
-    // TODO
-}
-
-void QGWindow::setPixels(const Grid<int>& /* pixels */) {
-    // TODO
-}
-
-void QGWindow::setPixelsARGB(const Grid<int>& /* pixelsARGB */) {
-    // TODO
-}
-
 void QGWindow::setRegionAlignment(Region /* region */, Alignment /* align */) {
     // TODO
 }
 
 void QGWindow::setRegionAlignment(const std::string& /* region */, const std::string& /* align */) {
     // TODO
-}
-
-void QGWindow::setRepaintImmediately(bool repaintImmediately) {
-    ensureCanvas();
-    _canvas->setAutoRepaint(repaintImmediately);
 }
 
 void QGWindow::setResizable(bool resizable) {
@@ -881,6 +686,26 @@ void QGWindow::setVisible(bool visible) {
 
 void QGWindow::setWidth(double width) {
     setSize(width, getHeight());
+}
+
+void QGWindow::setWindowHandler(QGEventHandler func) {
+    setEventHandlers({"close",
+                      "closing",
+                      "maximize",
+                      "minimize",
+                      "open",
+                      "resize",
+                      "restore"}, func);
+}
+
+void QGWindow::setWindowHandler(QGEventHandlerVoid func) {
+    setEventHandlers({"close",
+                      "closing",
+                      "maximize",
+                      "minimize",
+                      "open",
+                      "resize",
+                      "restore"}, func);
 }
 
 void QGWindow::setWindowTitle(const std::string& title) {

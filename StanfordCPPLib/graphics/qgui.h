@@ -74,6 +74,8 @@ public:
     QThread* getCurrentThread();
     QThread* getQtMainThread();
     QThread* getStudentThread();
+    static bool iAmRunningOnTheQtGuiThread();
+    static bool iAmRunningOnTheStudentThread();
     void initializeQt();
     static QGui* instance();
     void runOnQtGuiThread(QGThunk func);

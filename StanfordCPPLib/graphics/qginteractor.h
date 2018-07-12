@@ -16,13 +16,14 @@
 #include "gtypes.h"
 #include "map.h"
 #include "qgevent.h"
+#include "qgobservable.h"
 
 class QGWindow;   // forward declaration
 
 /*
  * ...
  */
-class QGInteractor {
+class QGInteractor : public QGObservable {
 public:
     enum TextPosition {
         TEXT_BESIDE_ICON,
@@ -76,23 +77,11 @@ public:
     virtual void setWidth(double width);
     virtual void setX(double x);
     virtual void setY(double y);
-    virtual std::string toString() const;
 
 protected:
-    virtual void clearEventHandlers();
-    virtual void ensureThreadSafety(const std::string& memberName = "");
-    virtual void fireEvent(QGEvent& event);
     virtual QWidget* getInternalParent(QWidget* parent) const;
-    virtual bool hasEventHandler(const std::string& eventName) const;
     virtual std::string normalizeAccelerator(const std::string& accelerator) const;
-    virtual void removeEventHandler(const std::string& eventName);
-    virtual void removeEventHandlers(std::initializer_list<std::string> eventNames);
-    virtual void setEventHandler(const std::string& eventName, QGEventHandler func);
-    virtual void setEventHandler(const std::string& eventName, QGEventHandlerVoid func);
-    virtual void setEventHandlers(std::initializer_list<std::string> eventNames, QGEventHandler func);
-    virtual void setEventHandlers(std::initializer_list<std::string> eventNames, QGEventHandlerVoid func);
 
-    Map<std::string, QGEvent::EventHandlerWrapper> _eventMap;
     std::string _actionCommand;
     std::string _icon;
 

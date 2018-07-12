@@ -14,7 +14,7 @@
 QGEvent::QGEvent(EventClass eventClass,
                  EventType eventType,
                  const std::string& eventName,
-                 QGInteractor* source)
+                 QGObservable* source)
         :
           _actionCommand(""),
           _class(eventClass),
@@ -58,6 +58,9 @@ std::string QGEvent::typeToString(EventType eventType) {
     case WINDOW_RESIZED:      return "WINDOW_RESIZED";
     case CONSOLE_CLOSED:      return "CONSOLE_CLOSED";
     case WINDOW_CLOSING:      return "WINDOW_CLOSING";
+    case WINDOW_MINIMIZED:    return "WINDOW_MINIMIZED";
+    case WINDOW_RESTORED:     return "WINDOW_RESTORED";
+    case WINDOW_MAXIMIZED:    return "WINDOW_MAXIMIZED";
     case ACTION_PERFORMED:    return "ACTION_PERFORMED";
     case MOUSE_CLICKED:       return "MOUSE_CLICKED";
     case MOUSE_PRESSED:       return "MOUSE_PRESSED";
@@ -130,7 +133,11 @@ std::string QGEvent::getName() const {
     return _name;
 }
 
-QGInteractor* QGEvent::getSource() const {
+QGInteractor* QGEvent::getInteractor() const {
+    return static_cast<QGInteractor*>(_source);
+}
+
+QGObservable* QGEvent::getSource() const {
     return _source;
 }
 
@@ -390,6 +397,10 @@ void QGEvent::setModifiers(Qt::KeyboardModifiers modifiers) {
     if (modifiers & Qt::ShiftModifier) {
         _modifiers |= SHIFT_DOWN;
     }
+}
+
+void QGEvent::setSource(QGObservable* source) {
+    _source = source;
 }
 
 void QGEvent::setX(double x) {

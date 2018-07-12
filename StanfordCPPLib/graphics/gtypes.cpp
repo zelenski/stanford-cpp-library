@@ -224,6 +224,19 @@ GRectangle::GRectangle(const GPoint& p, const GDimension& size) {
     this->height = size.getHeight();
 }
 
+void GRectangle::enlargeBy(double amount) {
+    this->x -= amount;
+    this->y -= amount;
+    this->width += 2 * amount;
+    this->height += 2 * amount;
+}
+
+GRectangle GRectangle::enlargedBy(double amount) {
+    GRectangle copy(*this);
+    copy.enlargeBy(amount);
+    return copy;
+}
+
 double GRectangle::getX() const {
     return x;
 }

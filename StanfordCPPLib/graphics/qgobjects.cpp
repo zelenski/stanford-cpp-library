@@ -22,6 +22,7 @@
 #include "gmath.h"
 #include "qgcolor.h"
 #include "qgfont.h"
+#include "qgui.h"
 #include "private/static.h"
 
 
@@ -61,7 +62,11 @@ QGObject::QGObject(double x, double y, double width, double height)
           _visible(true),
           _transformed(false),
           _parent(nullptr) {
-    // empty
+    // http://doc.qt.io/qt-5/qpen.html#cap-style
+    _pen.setJoinStyle(Qt::MiterJoin);   // don't round corners of line edges
+    _pen.setMiterLimit(99.0);
+    _pen.setCapStyle(Qt::FlatCap);      // don't overextend line endpoint
+    _brush.setStyle(Qt::SolidPattern);
 }
 
 QGObject::~QGObject() {
@@ -161,6 +166,8 @@ void QGObject::initializeBrushAndPen(QPainter* painter) {
     }
     _pen.setColor(QColor(_colorInt));
     _pen.setWidth((int) _lineWidth);
+
+    // http://doc.qt.io/qt-5/qpen.html#join-style
     painter->setPen(_pen);
 
     // font
@@ -177,7 +184,6 @@ void QGObject::initializeBrushAndPen(QPainter* painter) {
 
     // fill color
     if (_fillFlag) {
-        _brush.setStyle(Qt::SolidPattern);
         _brush.setColor(QColor(_fillColorInt));
         painter->setBrush(_brush);
     } else {
@@ -205,6 +211,7 @@ void QGObject::move(double dx, double dy) {
 }
 
 void QGObject::repaint() {
+    // really instructs the GCompound parent to redraw itself
     QGCompound* parent = getParent();
     while (parent && parent->getParent()) {
         parent = parent->getParent();
@@ -591,7 +598,7 @@ QGCompound::QGCompound()
 void QGCompound::add(QGObject* gobj) {
     _contents.add(gobj);
     gobj->_parent = this;
-    conditionalRepaint();
+    conditionalRepaintRegion(gobj->getBounds().enlargedBy(1));
 }
 
 void QGCompound::add(QGObject* gobj, double x, double y) {
@@ -608,12 +615,24 @@ void QGCompound::add(QGObject& gobj, double x, double y) {
 }
 
 void QGCompound::clear() {
-    removeAll();
+    removeAll();   // calls conditionalRepaint
 }
 
 void QGCompound::conditionalRepaint() {
     if (_autoRepaint) {
         repaint();
+    }
+}
+
+void QGCompound::conditionalRepaintRegion(int x, int y, int width, int height) {
+    if (_autoRepaint) {
+        repaintRegion(x, y, width, height);
+    }
+}
+
+void QGCompound::conditionalRepaintRegion(const GRectangle& bounds) {
+    if (_autoRepaint) {
+        repaintRegion(bounds);
     }
 }
 
@@ -631,7 +650,7 @@ bool QGCompound::contains(double x, double y) const {
 }
 
 void QGCompound::draw(QPainter* painter) {
-    initializeBrushAndPen(painter);
+    // initializeBrushAndPen(painter);   //
     for (QGObject* obj : _contents) {
         obj->draw(painter);
     }
@@ -708,27 +727,58 @@ void QGCompound::remove(QGObject& gobj) {
 }
 
 void QGCompound::removeAll() {
+    bool wasEmpty = _contents.isEmpty();
     Vector<QGObject*> contentsCopy = _contents;
     _contents.clear();
     for (QGObject* obj : contentsCopy) {
         obj->_parent = nullptr;
         // TODO: delete obj;
     }
-    conditionalRepaint();
+    if (!wasEmpty) {
+        conditionalRepaint();
+    }
 }
 
 void QGCompound::removeAt(int index) {
     QGObject* gobj = _contents[index];
     _contents.remove(index);
-    // stanfordcpplib::getPlatform()->gobject_remove(gobj);
     gobj->_parent = nullptr;
-    conditionalRepaint();
+    conditionalRepaintRegion(gobj->getBounds().enlargedBy(1));
 }
 
 void QGCompound::repaint() {
-    if (_widget) {
-        _widget->repaint();
+    if (!_widget) {
+        return;
     }
+
+    // actual repainting must be done in the Qt GUI thread
+    if (QGui::instance()->iAmRunningOnTheQtGuiThread()) {
+        _widget->repaint();   // TODO: change to update()?
+    } else {
+        QGui::instance()->runOnQtGuiThread([this]() {
+            _widget->repaint();   // TODO: change to update()?
+        });
+    }
+}
+
+void QGCompound::repaintRegion(int x, int y, int width, int height) {
+    if (!_widget) {
+        return;
+    }
+
+    // actual repainting must be done in the Qt GUI thread
+    if (QGui::instance()->iAmRunningOnTheQtGuiThread()) {
+        _widget->repaint(x, y, width, height);   // TODO: change to update()?
+    } else {
+        QGui::instance()->runOnQtGuiThread([this, x, y, width, height]() {
+            _widget->repaint(x, y, width, height);   // TODO: change to update()?
+        });
+    }
+}
+
+void QGCompound::repaintRegion(const GRectangle& bounds) {
+    repaintRegion((int) bounds.getX(), (int) bounds.getY(),
+                  (int) bounds.getWidth(), (int) bounds.getHeight());
 }
 
 void QGCompound::sendBackward(QGObject* gobj) {

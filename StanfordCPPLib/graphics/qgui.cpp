@@ -30,7 +30,7 @@ int QGStudentThread::getResult() const {
 }
 
 void QGStudentThread::run() {
-    this->msleep(200);
+    this->yieldCurrentThread();
     _result = _mainFunc();
 }
 
@@ -109,8 +109,7 @@ QGui::QGui() {
 }
 
 void QGui::ensureThatThisIsTheQtGuiThread(const std::string& message) {
-    QThread* currentThread = QThread::currentThread();
-    if (_qtMainThread && currentThread != _qtMainThread) {
+    if (!iAmRunningOnTheQtGuiThread()) {
         error((message.empty() ? "" : (message + ": "))
               + "Qt GUI system must be initialized from the application's main thread.");
     }
@@ -126,6 +125,14 @@ QThread* QGui::getQtMainThread() {
 
 QThread* QGui::getStudentThread() {
     return _studentThread;
+}
+
+bool QGui::iAmRunningOnTheQtGuiThread() {
+    return _qtMainThread && _qtMainThread == QThread::currentThread();
+}
+
+bool QGui::iAmRunningOnTheStudentThread() {
+    return _studentThread && _studentThread == QThread::currentThread();
 }
 
 void QGui::initializeQt() {

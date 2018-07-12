@@ -705,6 +705,8 @@ public:
      * ...
      */
     virtual void conditionalRepaint();
+    virtual void conditionalRepaintRegion(int x, int y, int width, int height);
+    virtual void conditionalRepaintRegion(const GRectangle& bounds);
 
     /*
      * Draws all objects stored in this compound using the given painter pen.
@@ -761,6 +763,8 @@ public:
     virtual void removeAll();
 
     virtual void repaint();
+    virtual void repaintRegion(int x, int y, int width, int height);
+    virtual void repaintRegion(const GRectangle& bounds);
 
     virtual void setAutoRepaint(bool autoRepaint);
 

@@ -22,21 +22,6 @@ QGInteractor::~QGInteractor() {
     // empty
 }
 
-void QGInteractor::clearEventHandlers() {
-    _eventMap.clear();
-}
-
-void QGInteractor::ensureThreadSafety(const std::string& memberName) {
-    QGui::instance()->ensureThatThisIsTheQtGuiThread(memberName);
-}
-
-void QGInteractor::fireEvent(QGEvent& event) {
-    if (hasEventHandler(event.getName())) {
-        event._source = this;
-        _eventMap[event.getName()].fireEvent(event);
-    }
-}
-
 std::string QGInteractor::getAccelerator() const {
     // override in subclasses
     return "";
@@ -101,10 +86,6 @@ double QGInteractor::getY() const {
     return getWidget()->y();
 }
 
-bool QGInteractor::hasEventHandler(const std::string& eventName) const {
-    return _eventMap.containsKey(eventName);
-}
-
 bool QGInteractor::inBounds(double x, double y) const {
     return 0 <= x && x < getWidth() && 0 <= y && y < getHeight();
 }
@@ -128,16 +109,6 @@ std::string QGInteractor::normalizeAccelerator(const std::string& accelerator) c
     acceleratorStr = stringReplace(acceleratorStr, "Meta-", "Meta+");
     acceleratorStr = stringReplace(acceleratorStr, "Shift-", "Shift+");
     return acceleratorStr;
-}
-
-void QGInteractor::removeEventHandler(const std::string& eventName) {
-    _eventMap.remove(eventName);
-}
-
-void QGInteractor::removeEventHandlers(std::initializer_list<std::string> eventNames) {
-    for (std::string eventName : eventNames) {
-        removeEventHandler(eventName);
-    }
 }
 
 void QGInteractor::requestFocus() {
@@ -191,33 +162,6 @@ void QGInteractor::setColor(const std::string& color) {
 void QGInteractor::setEnabled(bool value) {
     getWidget()->setEnabled(value);
 }
-
-void QGInteractor::setEventHandler(const std::string& eventName, QGEventHandler func) {
-    QGEvent::EventHandlerWrapper wrapper;
-    wrapper.type = QGEvent::HANDLER_EVENT;
-    wrapper.handler = func;
-    _eventMap[eventName] = wrapper;
-}
-
-void QGInteractor::setEventHandler(const std::string& eventName, QGEventHandlerVoid func) {
-    QGEvent::EventHandlerWrapper wrapper;
-    wrapper.type = QGEvent::HANDLER_VOID;
-    wrapper.handlerVoid = func;
-    _eventMap[eventName] = wrapper;
-}
-
-void QGInteractor::setEventHandlers(std::initializer_list<std::string> eventNames, QGEventHandler func) {
-    for (std::string eventName : eventNames) {
-        setEventHandler(eventName, func);
-    }
-}
-
-void QGInteractor::setEventHandlers(std::initializer_list<std::string> eventNames, QGEventHandlerVoid func) {
-    for (std::string eventName : eventNames) {
-        setEventHandler(eventName, func);
-    }
-}
-
 
 void QGInteractor::setForeground(int rgb) {
     QPalette palette(getWidget()->palette());
@@ -281,10 +225,4 @@ void QGInteractor::setX(double x) {
 
 void QGInteractor::setY(double y) {
     setLocation(getX(), y);
-}
-
-std::string QGInteractor::toString() const {
-    std::ostringstream out;
-    out << getType() << "@" << this;
-    return out.str();
 }
