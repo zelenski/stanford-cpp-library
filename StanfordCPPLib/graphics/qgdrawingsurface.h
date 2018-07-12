@@ -63,6 +63,7 @@ public:
     virtual std::string getFont() const;
     virtual std::string getForeground() const;
     virtual int getForegroundInt() const;
+    virtual QGObject::LineStyle getLineStyle() const;
     virtual double getLineWidth() const;
     virtual int getPixel(double x, double y) const = 0;
     virtual int getPixelARGB(double x, double y) const = 0;
@@ -84,6 +85,7 @@ public:
     virtual void setForeground(int color);
     virtual void setForeground(const std::string& color);
     virtual void setLineWidth(double lineWidth);
+    virtual void setLineStyle(QGObject::LineStyle lineStyle);
     virtual void setPixel(double x, double y, int r, int g, int b);
     virtual void setPixel(double x, double y, int rgb) = 0;
     virtual void setPixel(double x, double y, const std::string& color);
@@ -105,6 +107,7 @@ protected:
     int _backgroundColorInt;
     int _colorInt;
     int _fillColorInt;
+    QGObject::LineStyle _lineStyle;
     double _lineWidth;
     bool _autoRepaint;
 

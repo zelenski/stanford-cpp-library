@@ -53,6 +53,7 @@ QGObject::QGObject(double x, double y, double width, double height)
           _width(width),
           _height(height),
           _lineWidth(1),
+          _lineStyle(QGObject::LINE_SOLID),
           _color(""),
           _colorInt(0),
           _fillColor(""),
@@ -127,6 +128,10 @@ double QGObject::getHeight() const {
     return _height;
 }
 
+QGObject::LineStyle QGObject::getLineStyle() const {
+    return _lineStyle;
+}
+
 double QGObject::getLineWidth() const {
     return _lineWidth;
 }
@@ -166,6 +171,7 @@ void QGObject::initializeBrushAndPen(QPainter* painter) {
     }
     _pen.setColor(QColor(_colorInt));
     _pen.setWidth((int) _lineWidth);
+    _pen.setStyle(toQtPenStyle(_lineStyle));
 
     // http://doc.qt.io/qt-5/qpen.html#join-style
     painter->setPen(_pen);
@@ -369,6 +375,11 @@ void QGObject::setFont(const std::string& font) {
     repaint();
 }
 
+void QGObject::setLineStyle(QGObject::LineStyle lineStyle) {
+    _lineStyle = lineStyle;
+    repaint();
+}
+
 void QGObject::setLineWidth(double lineWidth) {
     _lineWidth = lineWidth;
     repaint();
@@ -425,6 +436,24 @@ std::string QGObject::toString() const {
             + (_visible ? "" : (",visible=" + boolToString(_visible)))
             + (extra.empty() ? "" : ("," + extra))
             + ")";
+}
+
+Qt::PenStyle QGObject::toQtPenStyle(QGObject::LineStyle lineStyle) {
+    switch (lineStyle) {
+    case QGObject::LINE_DASH:
+        return Qt::DashLine;
+    case QGObject::LINE_DASH_DOT:
+        return Qt::DashDotLine;
+    case QGObject::LINE_DASH_DOT_DOT:
+        return Qt::DashDotDotLine;
+    case QGObject::LINE_DOT:
+        return Qt::DotLine;
+    case QGObject::LINE_NONE:
+        return Qt::NoPen;
+    case QGObject::LINE_SOLID:
+    default:
+        return Qt::SolidLine;
+    }
 }
 
 std::string QGObject::toStringExtra() const {
@@ -598,7 +627,7 @@ QGCompound::QGCompound()
 void QGCompound::add(QGObject* gobj) {
     _contents.add(gobj);
     gobj->_parent = this;
-    conditionalRepaintRegion(gobj->getBounds().enlargedBy(1));
+    conditionalRepaintRegion(gobj->getBounds().enlargedBy((gobj->getLineWidth() + 1) / 2));
 }
 
 void QGCompound::add(QGObject* gobj, double x, double y) {
@@ -743,7 +772,7 @@ void QGCompound::removeAt(int index) {
     QGObject* gobj = _contents[index];
     _contents.remove(index);
     gobj->_parent = nullptr;
-    conditionalRepaintRegion(gobj->getBounds().enlargedBy(1));
+    conditionalRepaintRegion(gobj->getBounds().enlargedBy((gobj->getLineWidth() + 1) / 2));
 }
 
 void QGCompound::repaint() {
@@ -886,11 +915,11 @@ std::string QGImage::toStringExtra() const {
 }
 
 
-QGLine::QGLine(double x0, double y0, double x1, double y1)
+QGLine::QGLine(double x0, double y0, double x1, double y1, QGObject::LineStyle lineStyle)
         : QGObject(x0, y0),
           _dx(x1 - x0),
           _dy(y1 - y0) {
-    // empty
+    setLineStyle(lineStyle);
 }
 
 QGLine::QGLine(const GPoint& p0, const GPoint& p1)

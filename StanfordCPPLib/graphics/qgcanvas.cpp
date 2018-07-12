@@ -177,7 +177,7 @@ void QGCanvas::draw(QGObject* gobj) {
     painter.setRenderHint(QPainter::TextAntialiasing, QGObject::isAntiAliasing());
     gobj->draw(&painter);
     painter.end();
-    conditionalRepaintRegion(gobj->getBounds().enlargedBy(1));
+    conditionalRepaintRegion(gobj->getBounds().enlargedBy((gobj->getLineWidth() + 1) / 2));
 }
 
 void QGCanvas::flatten() {

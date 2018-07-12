@@ -673,12 +673,12 @@ void testQwindow() {
     cout << "textfield: " << textField->toString() << endl;
 
     // drawing directly onto window  (will go away when text area is added)
+    window->setLineWidth(10);
     window->setColor("blue");
     window->setFillColor("yellow");
     window->fillOval(20, 120, 40, 60);
     window->setColor("red");
     window->setFillColor("green");
-    window->setLineWidth(3);
     window->fillRect(10, 30, 120, 70);
     window->drawLine(100, 100, 200, 150);
 
@@ -748,6 +748,8 @@ void testQwindowDrawing() {
 
         ball = new QGOval(20, 20, 50, 50);
         ball->setFillColor("red");
+        ball->setLineWidth(2);
+        ball->setLineStyle(QGObject::LINE_DOT);
         window->add(ball);
 
         button = new QGButton("Tick");
@@ -784,7 +786,8 @@ void testQwindowDrawing() {
 
     window->setColor("black");
     window->setFillColor("red");
-    // window->setLineWidth(3);   // BUG: affects later shapes
+    window->setLineWidth(5);   // BUG: affects later shapes
+    window->setLineStyle(QGObject::LINE_DASH);
     window->drawRect(20, 220, 100, 100);
     window->fillArc(20, 220, 100, 100, 45, 120);
 

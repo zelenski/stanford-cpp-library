@@ -20,6 +20,7 @@ QGDrawingSurface::QGDrawingSurface()
           _backgroundColorInt(0),
           _colorInt(0),
           _fillColorInt(0),
+          _lineStyle(QGObject::LINE_SOLID),
           _lineWidth(1),
           _autoRepaint(true) {
     // empty
@@ -243,8 +244,20 @@ int QGDrawingSurface::getForegroundInt() const {
     return getColorInt();
 }
 
+QGObject::LineStyle QGDrawingSurface::getLineStyle() const {
+    if (_forwardTarget) {
+        return _forwardTarget->getLineStyle();
+    } else {
+        return _lineStyle;
+    }
+}
+
 double QGDrawingSurface::getLineWidth() const {
-    return _lineWidth;
+    if (_forwardTarget) {
+        return _forwardTarget->getLineWidth();
+    } else {
+        return _lineWidth;
+    }
 }
 
 void QGDrawingSurface::initializeQGObject(QGObject* obj, bool fill) {
@@ -257,6 +270,7 @@ void QGDrawingSurface::initializeQGObject(QGObject* obj, bool fill) {
         obj->setFillColor(getFillColor());
     }
     obj->setFont(getFont());
+    obj->setLineStyle(getLineStyle());
     obj->setLineWidth(getLineWidth());
 }
 
@@ -357,6 +371,14 @@ void QGDrawingSurface::setForeground(int color) {
 
 void QGDrawingSurface::setForeground(const std::string& color) {
     setColor(color);
+}
+
+void QGDrawingSurface::setLineStyle(QGObject::LineStyle lineStyle) {
+    if (_forwardTarget) {
+        _forwardTarget->setLineStyle(lineStyle);
+    } else {
+        _lineStyle = lineStyle;
+    }
 }
 
 void QGDrawingSurface::setLineWidth(double lineWidth) {

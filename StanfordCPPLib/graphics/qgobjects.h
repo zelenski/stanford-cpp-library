@@ -43,6 +43,15 @@ class QGCompound;
  */
 class QGObject {
 public:
+    enum LineStyle {
+        LINE_NONE,
+        LINE_SOLID,
+        LINE_DASH,
+        LINE_DOT,
+        LINE_DASH_DOT,
+        LINE_DASH_DOT_DOT
+    };
+
     /*
      * Destructor: ~QGObject
      * --------------------
@@ -132,6 +141,14 @@ public:
      * of the bounding box.
      */
     virtual double getHeight() const;
+
+    /*
+     * Method: getLineStyle
+     * Usage: QGObject::LineStyle lineStyle = gobj->getLineStyle();
+     * ------------------------------------------------------------
+     * Returns the object's style such as solid or dashed.
+     */
+    virtual LineStyle getLineStyle() const;
 
     /*
      * Method: getLocation
@@ -436,6 +453,14 @@ public:
     virtual void setFont(const std::string& font);
 
     /*
+     * Method: setLineStyle
+     * Usage: gobj->setLineStyle(QGObject::LINE_DASH);
+     * ---------------------------------------------------
+     * Sets the object's style such as solid or dashed.
+     */
+    virtual void setLineStyle(LineStyle lineStyle);
+
+    /*
      * Method: setLineWidth
      * Usage: gobj->setLineWidth(lineWidth);
      * -------------------------------------
@@ -506,20 +531,21 @@ private:
 
     /* Instance variables */
 protected:
-    double _x;                       // The x coordinate of the origin
-    double _y;                       // The y coordinate of the origin
-    double _width;                   // The width of the bounding rectangle
-    double _height;                  // The height of the bounding rectangle
-    double _lineWidth;               // The width of the line in pixels
-    std::string _color;              // The color of the object
+    double _x;                       // the x coordinate of the origin
+    double _y;                       // the y coordinate of the origin
+    double _width;                   // the width of the bounding rectangle
+    double _height;                  // the height of the bounding rectangle
+    double _lineWidth;               // the width of the line in pixels
+    LineStyle _lineStyle;            // line style such as solid or dashed
+    std::string _color;              // the color of the object
     int _colorInt;
-    std::string _fillColor;          // Color used to fill the object
+    std::string _fillColor;          // color used to fill the object
     int _fillColorInt;
-    std::string _font;               // The font string of the label
-    bool _fillFlag;                  // Indicates whether the object is filled
-    bool _visible;                   // Indicates if object is visible
-    bool _transformed;               // Indicates if object is transformed
-    QGCompound* _parent;             // Pointer to the parent
+    std::string _font;               // the font string of the label
+    bool _fillFlag;                  // indicates whether the object is filled
+    bool _visible;                   // indicates if object is visible
+    bool _transformed;               // indicates if object is transformed
+    QGCompound* _parent;             // pointer to the parent
     QPen _pen;                       // for outlines
     QBrush _brush;                   // for filling
     QTransform _transform;           // for transformations (rotate, scale)
@@ -528,6 +554,7 @@ protected:
     QGObject(double x = 0, double y = 0, double width = 0, double height = 0);
 
     virtual void initializeBrushAndPen(QPainter* painter = nullptr);
+    static Qt::PenStyle toQtPenStyle(LineStyle lineStyle);
     virtual std::string toStringExtra() const;
 
     friend class QGArc;
@@ -871,7 +898,7 @@ public:
      * line and the point (<code>x1</code>,&nbsp;<code>y1</code>) defines
      * the end.
      */
-    QGLine(double x0 = 0, double y0 = 0, double x1 = 0, double y1 = 0);
+    QGLine(double x0 = 0, double y0 = 0, double x1 = 0, double y1 = 0, LineStyle lineStyle = LINE_SOLID);
 
     /*
      * Constructor: QGLine
