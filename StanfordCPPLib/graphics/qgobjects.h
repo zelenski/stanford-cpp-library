@@ -771,6 +771,8 @@ public:
 
     virtual bool isAutoRepaint() const;
 
+    virtual bool isEmpty() const;
+
     /*
      * Method: remove
      * Usage: comp->remove(gobj);

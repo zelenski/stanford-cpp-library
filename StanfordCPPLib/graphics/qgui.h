@@ -71,6 +71,7 @@ class QGui : public QObject {
 
 public:
     void ensureThatThisIsTheQtGuiThread(const std::string& message = "");
+    void exitGraphics(int exitCode = 0);
     QThread* getCurrentThread();
     QThread* getQtMainThread();
     QThread* getStudentThread();

@@ -54,6 +54,7 @@ public:
     virtual void fillPolygon(std::initializer_list<double> coords);
     virtual void fillRect(const GRectangle& bounds);
     virtual void fillRect(double x, double y, double width, double height);
+    virtual int getARGB(double x, double y) const;
     virtual std::string getBackground() const;
     virtual int getBackgroundInt() const;
     virtual std::string getColor() const;
@@ -69,6 +70,18 @@ public:
     virtual int getPixelARGB(double x, double y) const = 0;
     virtual Grid<int> getPixels() const = 0;
     virtual Grid<int> getPixelsARGB() const = 0;
+
+    /*
+     * Returns the color of the pixel at the given x/y coordinates of the image
+     * as a string such as "#ff00cc".
+     * The string that is returned comes from the <code>GWindow</code> function
+     * <code>convertRGBToColor</code>; see documentation of that function.
+     * Throws an error if the given x/y values are out of bounds.
+     */
+    virtual std::string getPixelString(double x, double y) const;
+    virtual int getRGB(double x, double y) const;
+    virtual std::string getRGBString(double x, double y) const;
+
     virtual bool isAutoRepaint() const;
     virtual bool isRepaintImmediately() const;
     virtual void repaint() = 0;
@@ -110,6 +123,21 @@ protected:
     QGObject::LineStyle _lineStyle;
     double _lineWidth;
     bool _autoRepaint;
+
+    /*
+     * Throws an error if the given x/y values are out of bounds.
+     */
+    void checkBounds(const std::string& member, double x, double y) const;
+
+    /*
+     * Throws an error if the given rgb value is not a valid color.
+     */
+    void checkColor(const std::string& member, int rgb) const;
+
+    /*
+     * Throws an error if the given width/height values are out of bounds.
+     */
+    void checkSize(const std::string& member, double width, double height) const;
 
     virtual void initializeQGObject(QGObject* obj, bool filled = false);
     virtual void setDrawingForwardTarget(QGDrawingSurface* forwardTarget);

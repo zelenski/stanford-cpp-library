@@ -14,6 +14,13 @@
 #include <QObject>
 #include <QWidget>
 #include <QWindow>
+#include <QEvent>
+#include <QCloseEvent>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QResizeEvent>
+#include <QTimerEvent>
+#include <QWheelEvent>
 #include <QWindowStateChangeEvent>
 #include "gtypes.h"
 #include "map.h"
@@ -39,6 +46,7 @@ protected:
     virtual void fireQGEvent(QKeyEvent* event, QGEvent::EventType eventType, const std::string& eventName);
     virtual void fireQGEvent(QMouseEvent* event, QGEvent::EventType eventType, const std::string& eventName);
     virtual void fireQGEvent(QResizeEvent* event, QGEvent::EventType eventType, const std::string& eventName);
+    virtual void fireQGEvent(QTimerEvent* event, QGEvent::EventType eventType, const std::string& eventName);
     virtual void fireQGEvent(QWheelEvent* event, QGEvent::EventType eventType, const std::string& eventName);
     virtual void fireQGEvent(QWindowStateChangeEvent* event, QGEvent::EventType eventType, const std::string& eventName);
     virtual bool hasEventHandler(const std::string& eventName) const;

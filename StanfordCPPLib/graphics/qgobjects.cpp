@@ -744,6 +744,10 @@ bool QGCompound::isAutoRepaint() const {
     return _autoRepaint;
 }
 
+bool QGCompound::isEmpty() const {
+    return _contents.size() == 0;
+}
+
 void QGCompound::remove(QGObject* gobj) {
     int index = findQGObject(gobj);
     if (index != -1) {

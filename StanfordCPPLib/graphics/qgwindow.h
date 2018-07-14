@@ -19,6 +19,7 @@
 #include <QRect>
 #include "grid.h"
 #include "gtypes.h"
+#include "map.h"
 #include "point.h"
 #include "qgborderlayout.h"
 #include "qgcanvas.h"
@@ -39,6 +40,10 @@ public:
     virtual void changeEvent(QEvent* event) Q_DECL_OVERRIDE;
     virtual void closeEvent(QCloseEvent* event) Q_DECL_OVERRIDE;
     virtual void resizeEvent(QResizeEvent* event) Q_DECL_OVERRIDE;
+    virtual void timerEvent(QTimerEvent* event) Q_DECL_OVERRIDE;
+    virtual bool timerExists();
+    virtual void timerStart(double ms);
+    virtual void timerStop();
 
 private:
     // border layout regions for N/S/W/E/C:
@@ -65,6 +70,9 @@ private:
     QHBoxLayout* _centerLayout;
     QHBoxLayout* _middleLayout;
     QGWindow* _qgwindow;
+    int _timerID;
+
+    void processTimerEvent();
 
     friend class QGWindow;
 };
@@ -74,8 +82,23 @@ private:
  */
 class QGWindow : public QGObservable, public virtual QGForwardDrawingSurface {
 public:
-    enum Alignment { ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT };
-    enum Region { REGION_CENTER, REGION_EAST, REGION_NORTH, REGION_SOUTH, REGION_WEST };
+    enum HorizontalAlignment {
+        ALIGN_CENTER,
+        ALIGN_LEFT,
+        ALIGN_RIGHT
+    };
+    enum VerticalAlignment {
+        ALIGN_MIDDLE,
+        ALIGN_TOP,
+        ALIGN_BOTTOM
+    };
+    enum Region {
+        REGION_CENTER,
+        REGION_EAST,
+        REGION_NORTH,
+        REGION_SOUTH,
+        REGION_WEST
+    };
     enum CloseOperation { CLOSE_DO_NOTHING = 0, CLOSE_HIDE = 1, CLOSE_DISPOSE = 2, CLOSE_EXIT = 3 };
 
     static const int DEFAULT_WIDTH = 500;
@@ -107,7 +130,7 @@ public:
     virtual QGObject* getQGObject(int index) const;
     virtual QGObject* getQGObjectAt(double x, double y) const;
     virtual int getQGObjectCount() const;
-    virtual Point getLocation() const;
+    virtual GPoint getLocation() const;
     virtual double getHeight() const;
     virtual double getRegionHeight(Region region) const;
     virtual double getRegionHeight(const std::string& region) const;
@@ -144,6 +167,8 @@ public:
     virtual void removeFromRegion(QGInteractor* interactor, const std::string& region);
     virtual void removeKeyHandler();
     virtual void removeMouseHandler();
+    virtual void removeTimerHandler();
+    virtual void removeWindowHandler();
     virtual void requestFocus();
     virtual void saveCanvasPixels(const std::string& filename);
     virtual void setBackground(int color);
@@ -164,11 +189,21 @@ public:
     virtual void setKeyHandler(QGEventHandlerVoid func);
     virtual void setMouseHandler(QGEventHandler func);
     virtual void setMouseHandler(QGEventHandlerVoid func);
-    virtual void setRegionAlignment(Region region, Alignment align);
+    virtual void setRegionAlignment(Region region, HorizontalAlignment halign);
+    virtual void setRegionAlignment(Region region, VerticalAlignment valign);
+    virtual void setRegionAlignment(Region region, HorizontalAlignment halign, VerticalAlignment valign);
     virtual void setRegionAlignment(const std::string& region, const std::string& align);
+    virtual void setRegionAlignment(const std::string& region, const std::string& halign, const std::string& valign);
+    virtual void setRegionHorizontalAlignment(Region region, HorizontalAlignment halign);
+    virtual void setRegionHorizontalAlignment(const std::string& region, const std::string& halign);
+    virtual void setRegionVerticalAlignment(const std::string& region, const std::string& valign);
+    virtual void setRegionVerticalAlignment(Region region, VerticalAlignment valign);
     virtual void setResizable(bool resizable);
     virtual void setSize(double width, double height);
     virtual void setSize(const GDimension& size);
+    virtual void setTimerHandler(double ms, QGEventHandler func);
+    virtual void setTimerHandler(double ms, QGEventHandlerVoid func);
+    // TODO: setTimerHandlerOnce
     virtual void setTitle(const std::string& title);
     virtual void setVisible(bool visible);
     virtual void setWidth(double width);
@@ -186,15 +221,24 @@ public:
 private:
     static _Internal_QMainWindow* _lastWindow;
 
+    static std::string alignmentToString(HorizontalAlignment alignment);
+    static std::string alignmentToString(VerticalAlignment alignment);
     virtual void ensureForwardTarget() Q_DECL_OVERRIDE;
-    QLayout* regionToLayout(Region region);
-    QLayout* regionToLayout(const std::string& region);
-    std::string regionToString(Region region);
+    QLayout* layoutForRegion(Region region);
+    QLayout* layoutForRegion(const std::string& region);
+    static std::string regionToString(Region region);
+    static Region stringToRegion(const std::string& regionStr);
+    static HorizontalAlignment stringToHorizontalAlignment(const std::string& alignmentStr);
+    static VerticalAlignment stringToVerticalAlignment(const std::string& alignmentStr);
+    static Qt::Alignment toQtAlignment(HorizontalAlignment alignment);
+    static Qt::Alignment toQtAlignment(VerticalAlignment alignment);
 
     _Internal_QMainWindow* _iqmainwindow;
     QGCanvas* _canvas;
     bool _resizable;
     CloseOperation _closeOperation;
+    Map<Region, HorizontalAlignment> _halignMap;
+    Map<Region, VerticalAlignment> _valignMap;
 
     friend class QGInteractor;
     friend class _Internal_QMainWindow;

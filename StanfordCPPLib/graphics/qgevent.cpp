@@ -137,6 +137,10 @@ QGInteractor* QGEvent::getInteractor() const {
     return static_cast<QGInteractor*>(_source);
 }
 
+GPoint QGEvent::getLocation() const {
+    return GPoint(getX(), getY());
+}
+
 QGObservable* QGEvent::getSource() const {
     return _source;
 }

@@ -22,7 +22,7 @@
 
 QGStudentThread::QGStudentThread(QGThunkInt mainFunc)
         : _mainFunc(mainFunc) {
-    // empty
+    this->setObjectName(QString::fromStdString("QGStudentThread"));
 }
 
 int QGStudentThread::getResult() const {
@@ -115,6 +115,17 @@ void QGui::ensureThatThisIsTheQtGuiThread(const std::string& message) {
     }
 }
 
+void QGui::exitGraphics(int exitCode) {
+    if (_app) {
+// need to temporarily turn off C++ lib exit macro to call QApplication's exit method
+#undef exit
+        _app->exit(exitCode);
+#define exit __stanfordCppLibExit
+    } else {
+        std::exit(exitCode);
+    }
+}
+
 QThread* QGui::getCurrentThread() {
     return QThread::currentThread();
 }
@@ -162,11 +173,21 @@ void QGui::runOnQtGuiThread(QGThunk func) {
     // send timer "event" telling GUI thread what to do
 //    QEvent* event = new QEvent((QEvent::Type) (QEvent::User + 106));
 //    QCoreApplication::postEvent(QGWindow::getLastWindow(), event);
-    QGuiEventQueue::instance()->runOnQtGuiThreadSync(func);
+    if (QGui::instance()->iAmRunningOnTheQtGuiThread()) {
+        // already on Qt GUI thread; just run the function!
+        func();
+    } else {
+        QGuiEventQueue::instance()->runOnQtGuiThreadSync(func);
+    }
 }
 
 void QGui::runOnQtGuiThreadAsync(QGThunk func) {
-    QGuiEventQueue::instance()->runOnQtGuiThreadAsync(func);
+    if (QGui::instance()->iAmRunningOnTheQtGuiThread()) {
+        // already on Qt GUI thread; just run the function!
+        func();
+    } else {
+        QGuiEventQueue::instance()->runOnQtGuiThreadAsync(func);
+    }
 }
 
 // this should be called by the Qt main thread

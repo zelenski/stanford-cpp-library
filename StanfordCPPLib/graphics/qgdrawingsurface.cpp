@@ -13,11 +13,11 @@
 
 QGDrawingSurface::QGDrawingSurface()
         : _forwardTarget(nullptr),
-          _backgroundColor(""),
+          _backgroundColor("0xffffffff"),
           _color(""),
           _fillColor(""),
           _font(""),
-          _backgroundColorInt(0),
+          _backgroundColorInt(0xffffffff),
           _colorInt(0),
           _fillColorInt(0),
           _lineStyle(QGObject::LINE_SOLID),
@@ -28,6 +28,37 @@ QGDrawingSurface::QGDrawingSurface()
 
 QGDrawingSurface::~QGDrawingSurface() {
     _forwardTarget = nullptr;
+}
+
+void QGDrawingSurface::checkBounds(const std::string& /* member */, double /* x */, double /* y */) const {
+//    if (!inBounds(x, y)) {
+//        error(getType() + "::" + member
+//              + ": (x=" + integerToString((int) x)
+//              + ", y=" + integerToString((int) y)
+//              + ") is out of valid range of (0, 0) through ("
+//              + integerToString((int) getWidth() - 1) + ", "
+//              + integerToString((int) getHeight() - 1) + ")");
+//    }
+}
+
+void QGDrawingSurface::checkColor(const std::string& /* member */, int /* rgb */) const {
+    // I think this code is wrong; it ignores the possibility of alpha values
+    // or of the top bits being set to 255 (all 1) by default by Qt libraries
+//    if (rgb < 0x0 || rgb > 0xffffff) {
+//        error("QGBufferedImage::" + member
+//              + ": color is outside of range 0x000000 through 0xffffff");
+//    }
+}
+
+void QGDrawingSurface::checkSize(const std::string& /* member */, double /* width */, double /* height */) const {
+//    if (width < 0 || height < 0) {
+//        error(getType() + "::" + member + ": width/height cannot be negative");
+//    }
+//    if (width > QGCanvas::WIDTH_HEIGHT_MAX
+//            || height > QGCanvas::WIDTH_HEIGHT_MAX) {
+//        error(getType() + "::" + member + ": width/height too large (cannot exceed "
+//              + integerToString(QGCanvas::WIDTH_HEIGHT_MAX));
+//    }
 }
 
 void QGDrawingSurface::conditionalRepaint() {
@@ -180,6 +211,10 @@ void QGDrawingSurface::fillRect(double x, double y, double width, double height)
     draw(rect);
 }
 
+int QGDrawingSurface::getARGB(double x, double y) const {
+    return getPixelARGB(x, y);
+}
+
 std::string QGDrawingSurface::getBackground() const {
     if (_forwardTarget) {
         return _forwardTarget->getBackground();
@@ -258,6 +293,18 @@ double QGDrawingSurface::getLineWidth() const {
     } else {
         return _lineWidth;
     }
+}
+
+std::string QGDrawingSurface::getPixelString(double x, double y) const {
+    return QGColor::convertRGBToColor(getPixel(x, y));
+}
+
+int QGDrawingSurface::getRGB(double x, double y) const {
+    return getPixel(x, y);
+}
+
+std::string QGDrawingSurface::getRGBString(double x, double y) const {
+    return QGColor::convertRGBToColor(getPixel(x, y));
 }
 
 void QGDrawingSurface::initializeQGObject(QGObject* obj, bool fill) {
@@ -559,7 +606,3 @@ void QGForwardDrawingSurface::setRepaintImmediately(bool repaintImmediately) {
     ensureForwardTarget();
     _forwardTarget->setAutoRepaint(repaintImmediately);
 }
-
-
-
-

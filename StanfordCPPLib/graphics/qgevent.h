@@ -13,6 +13,7 @@
 #include <iostream>
 #include <string>
 #include <QEvent>
+#include "gtypes.h"
 
 class QGEvent;             // forward declaration
 class QGInteractor;        // forward declaration
@@ -126,7 +127,6 @@ public:
         }
     };
 
-
     /*
      * Type: KeyCode
      * -------------
@@ -186,11 +186,12 @@ public:
     static long getCurrentTimeMS();
     virtual EventClass getEventClass() const;
     virtual EventType getEventType() const;
+    virtual QGInteractor* getInteractor() const;
     virtual char getKeyChar() const;
     virtual int getKeyCode() const;
+    virtual GPoint getLocation() const;
     virtual int getModifiers() const;
     virtual std::string getName() const;
-    virtual QGInteractor* getInteractor() const;
     virtual QGObservable* getSource() const;
     virtual long getTime() const;
     virtual EventType getType() const;

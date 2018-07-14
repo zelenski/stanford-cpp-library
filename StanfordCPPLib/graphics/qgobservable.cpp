@@ -97,6 +97,17 @@ void QGObservable::fireQGEvent(QResizeEvent* /* event */,
     fireEvent(windowEvent);
 }
 
+void QGObservable::fireQGEvent(QTimerEvent* /* event */,
+                               QGEvent::EventType /* eventType */,
+                               const std::string& /* eventName */) {
+    QGEvent timerEvent(
+                /* class  */ QGEvent::TIMER_EVENT,
+                /* type   */ QGEvent::TIMER_TICKED,
+                /* name   */ "timer",
+                /* source */ this);
+    fireEvent(timerEvent);
+}
+
 void QGObservable::fireQGEvent(QWheelEvent* event,
                                QGEvent::EventType eventType,
                                const std::string& eventName) {
