@@ -4,9 +4,12 @@
  * This file defines classes for representing points, dimensions, and
  * rectangles.
  *
+ * @version 2018/07/14
+ * - removed *= operators to restore immutability
+ * - added enlargedBy method for GRectangle
  * @version 2017/10/16
  * - added GDimension operators <, <=, >, >=
- * - added GPoint operators *, *=, <, <=, >, >=
+ * - added GPoint operators *, <, <=, >, >=
  * - added GPoint::toPolar
  * - added better GPoint support in GRectangle
  * - added GRectangle operators <, <=, >, >=
@@ -97,7 +100,6 @@ bool operator <=(const GDimension& d1, const GDimension& d2);
 bool operator >(const GDimension& d1, const GDimension& d2);
 bool operator >=(const GDimension& d1, const GDimension& d2);
 GDimension operator *(const GDimension& d, double scale);
-GDimension& operator *=(GDimension& d, double scale);
 int hashCode(const GDimension& dim);
 
 /*
@@ -165,7 +167,6 @@ private:
     friend bool operator >(const GPoint& p1, const GPoint& p2);
     friend bool operator >=(const GPoint& p1, const GPoint& p2);
     friend GPoint operator *(const GPoint& p, double scale);
-    friend GPoint& operator *=(GPoint& p, double scale);
     friend int hashCode(const GPoint& pt);
 };
 
@@ -177,7 +178,6 @@ bool operator <=(const GPoint& p1, const GPoint& p2);
 bool operator >(const GPoint& p1, const GPoint& p2);
 bool operator >=(const GPoint& p1, const GPoint& p2);
 GPoint operator *(const GPoint& p, double scale);
-GPoint& operator *=(GPoint& p, double scale);
 int hashCode(const GPoint& pt);
 
 /*
@@ -208,7 +208,6 @@ public:
      * e.g. a 10x10 rectangle at position (55, 42) enlarged by 1 will become
      *      a 12x12 rectangle at position (54, 41).
      */
-    void enlargeBy(double amount);
     GRectangle enlargedBy(double amount);
 
     /*
@@ -293,7 +292,7 @@ private:
     friend bool operator <=(const GRectangle& r1, const GRectangle& r2);
     friend bool operator >(const GRectangle& r1, const GRectangle& r2);
     friend bool operator >=(const GRectangle& r1, const GRectangle& r2);
-    friend int hashCode(const GRectangle & r);
+    friend int hashCode(const GRectangle& r);
 };
 
 std::ostream& operator <<(std::ostream& os, const GRectangle& rect);

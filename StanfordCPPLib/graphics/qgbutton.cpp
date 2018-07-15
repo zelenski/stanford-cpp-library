@@ -18,13 +18,23 @@ _Internal_QPushButton::_Internal_QPushButton(QGButton* button, QWidget* parent)
 }
 
 void _Internal_QPushButton::handleClick() {
-    QGEvent clickEvent(
-                /* class  */ QGEvent::MOUSE_EVENT,
-                /* type   */ QGEvent::MOUSE_CLICKED,
+    QGEvent actionEvent(
+                /* class  */ QGEvent::ACTION_EVENT,
+                /* type   */ QGEvent::ACTION_PERFORMED,
                 /* name   */ "click",
                 /* source */ _qgbutton);
-    _qgbutton->fireEvent(clickEvent);
+    actionEvent.setActionCommand(_qgbutton->getActionCommand());
+    _qgbutton->fireEvent(actionEvent);
 }
+
+QSize _Internal_QPushButton::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QToolButton::sizeHint();
+    }
+}
+
 
 QGButton::QGButton(const std::string& text, const std::string& iconFileName, QWidget* parent) {
     _iqpushbutton = new _Internal_QPushButton(this, getInternalParent(parent));
@@ -41,6 +51,18 @@ QGButton::~QGButton() {
 
 std::string QGButton::getAccelerator() const {
     return _iqpushbutton->shortcut().toString().toStdString();
+}
+
+std::string QGButton::getActionCommand() const {
+    if (_actionCommand.empty()) {
+        return getText();
+    } else {
+        return _actionCommand;
+    }
+}
+
+_Internal_QWidget* QGButton::getInternalWidget() const {
+    return _iqpushbutton;
 }
 
 std::string QGButton::getText() const {

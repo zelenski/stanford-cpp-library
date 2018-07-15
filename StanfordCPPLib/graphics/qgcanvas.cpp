@@ -98,6 +98,14 @@ void _Internal_QCanvas::resizeEvent(QResizeEvent* event) {
     _qgcanvas->notifyOfResize(size.width(), size.height());
 }
 
+QSize _Internal_QCanvas::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QWidget::sizeHint();
+    }
+}
+
 void _Internal_QCanvas::wheelEvent(QWheelEvent* event) {
     QWidget::wheelEvent(event);   // call super
     if (event->pixelDelta().y() < 0) {
@@ -436,6 +444,10 @@ int QGCanvas::getElementCount() const {
 
 std::string QGCanvas::getFilename() const {
     return _filename;
+}
+
+_Internal_QWidget* QGCanvas::getInternalWidget() const {
+    return _iqcanvas;
 }
 
 int QGCanvas::getPixel(double x, double y) const {

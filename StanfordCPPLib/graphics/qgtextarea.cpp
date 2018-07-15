@@ -20,9 +20,20 @@ void _Internal_QTextEdit::handleTextChange() {
     QGEvent textChangeEvent(
                 /* class  */ QGEvent::KEY_EVENT,
                 /* type   */ QGEvent::KEY_TYPED,
-                /* name   */ "textchange");
+                /* name   */ "textchange",
+                /* source */ _qgtextarea);
+    textChangeEvent.setActionCommand(_qgtextarea->getActionCommand());
     _qgtextarea->fireEvent(textChangeEvent);
 }
+
+QSize _Internal_QTextEdit::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QTextEdit::sizeHint();
+    }
+}
+
 
 QGTextArea::QGTextArea(int rows, int columns, QWidget* parent) {
     _iqtextedit = new _Internal_QTextEdit(this, getInternalParent(parent));
@@ -41,6 +52,10 @@ QGTextArea::~QGTextArea() {
 
 int QGTextArea::getColumns() const {
     return (int) (getHeight() / getRowColumnSize().getWidth());
+}
+
+_Internal_QWidget* QGTextArea::getInternalWidget() const {
+    return _iqtextedit;
 }
 
 std::string QGTextArea::getPlaceholder() const {

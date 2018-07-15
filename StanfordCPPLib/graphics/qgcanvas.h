@@ -17,6 +17,7 @@
 #include <QPainter>
 #include <QPaintEvent>
 #include <QResizeEvent>
+#include <QSize>
 #include <QWheelEvent>
 #include <QWidget>
 #include "qgdrawingsurface.h"
@@ -46,6 +47,7 @@ public:
     virtual void mouseReleaseEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
     virtual void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
     virtual void resizeEvent(QResizeEvent* event) Q_DECL_OVERRIDE;
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
     virtual void wheelEvent(QWheelEvent* event) Q_DECL_OVERRIDE;
 
 private:
@@ -197,6 +199,8 @@ public:
      * If this canvas was not associated with any file, returns "".
      */
     virtual std::string getFilename() const;
+
+    virtual _Internal_QWidget* getInternalWidget() const;
 
     /*
      * Returns the color of the pixel at the given x/y coordinates of the image

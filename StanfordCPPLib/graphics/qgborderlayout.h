@@ -11,6 +11,7 @@
 
 #include <QLayout>
 #include <QRect>
+#include <QWidget>
 
 // based on: http://doc.qt.io/qt-5.6/qtwidgets-layouts-borderlayout-example.html
 
@@ -37,6 +38,8 @@ public:
     void add(QLayoutItem* item, Position position);
 
     static void clearLayout(QLayout* layout);
+    static void forceUpdate(QWidget* widget);
+    static void invalidateLayout(QLayout* layout);
     static Position toPosition(const std::string& positionName);
 
 private:

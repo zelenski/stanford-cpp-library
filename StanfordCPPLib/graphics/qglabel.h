@@ -11,6 +11,7 @@
 
 #include <string>
 #include <QLabel>
+#include <QSize>
 #include <QWidget>
 #include "qginteractor.h"
 
@@ -23,6 +24,7 @@ class _Internal_QLabel : public QLabel, public _Internal_QWidget {
 
 public:
     _Internal_QLabel(QGLabel* qglabel, QWidget* parent = nullptr);
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
 private:
     QGLabel* _qglabel;
@@ -35,6 +37,7 @@ class QGLabel : public QGInteractor {
 public:
     QGLabel(const std::string& text = "", const std::string& iconFileName = "", QWidget* parent = nullptr);
     virtual ~QGLabel();
+    virtual _Internal_QWidget* getInternalWidget() const;
     virtual std::string getLabel() const;
     virtual std::string getText() const;
     virtual QGInteractor::TextPosition getTextPosition() const;

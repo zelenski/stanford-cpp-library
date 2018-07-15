@@ -19,9 +19,20 @@ void _Internal_QSlider::handleChange(int /* value */) {
     QGEvent changeEvent(
                 /* class  */ QGEvent::CHANGE_EVENT,
                 /* type   */ QGEvent::STATE_CHANGED,
-                /* name   */ "change");
+                /* name   */ "change",
+                /* source */ _qgslider);
+    changeEvent.setActionCommand(_qgslider->getActionCommand());
     _qgslider->fireEvent(changeEvent);
 }
+
+QSize _Internal_QSlider::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QSlider::sizeHint();
+    }
+}
+
 
 const int QGSlider::DEFAULT_MIN_VALUE = 0;
 const int QGSlider::DEFAULT_MAX_VALUE = 100;
@@ -36,6 +47,10 @@ QGSlider::QGSlider(int min, int max, int value, QWidget* parent) {
 QGSlider::~QGSlider() {
     // TODO: delete _iqslider;
     _iqslider = nullptr;
+}
+
+_Internal_QWidget* QGSlider::getInternalWidget() const {
+    return _iqslider;
 }
 
 int QGSlider::getMajorTickSpacing() const {

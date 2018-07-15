@@ -12,6 +12,7 @@
 #include <initializer_list>
 #include <string>
 #include <QComboBox>
+#include <QSize>
 #include <QWidget>
 #include "qginteractor.h"
 #include "vector.h"
@@ -25,6 +26,7 @@ class _Internal_QComboBox : public QComboBox, public _Internal_QWidget {
 
 public:
     _Internal_QComboBox(QGChooser* qgchooser, QWidget* parent = nullptr);
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
 public slots:
     void handleChange();
@@ -47,6 +49,8 @@ public:
     virtual void addItems(const std::initializer_list<std::string>& items);
     virtual void addItems(const Vector<std::string>& items);
     virtual void clearItems();
+    virtual std::string getActionCommand() const Q_DECL_OVERRIDE;
+    virtual _Internal_QWidget* getInternalWidget() const;
     virtual std::string getItem(int index) const;
     virtual int getSelectedIndex() const;
     virtual std::string getSelectedItem() const;

@@ -22,7 +22,6 @@
 #include <QTimerEvent>
 #include <QWheelEvent>
 #include <QWindowStateChangeEvent>
-#include "gtypes.h"
 #include "map.h"
 #include "qgevent.h"
 
@@ -44,7 +43,7 @@ protected:
     virtual void fireQGEvent(QEvent* event, QGEvent::EventType eventType, const std::string& eventName);
     virtual void fireQGEvent(QCloseEvent* event, QGEvent::EventType eventType, const std::string& eventName);
     virtual void fireQGEvent(QKeyEvent* event, QGEvent::EventType eventType, const std::string& eventName);
-    virtual void fireQGEvent(QMouseEvent* event, QGEvent::EventType eventType, const std::string& eventName);
+    virtual void fireQGEvent(QMouseEvent* event, QGEvent::EventType eventType, const std::string& eventName, const std::string& actionCommand = "");
     virtual void fireQGEvent(QResizeEvent* event, QGEvent::EventType eventType, const std::string& eventName);
     virtual void fireQGEvent(QTimerEvent* event, QGEvent::EventType eventType, const std::string& eventName);
     virtual void fireQGEvent(QWheelEvent* event, QGEvent::EventType eventType, const std::string& eventName);

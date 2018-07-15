@@ -10,6 +10,7 @@
 #define _qgtextarea_h
 
 #include <string>
+#include <QSize>
 #include <QTextEdit>
 #include <QWidget>
 #include "qginteractor.h"
@@ -23,6 +24,7 @@ class _Internal_QTextEdit : public QTextEdit, public _Internal_QWidget {
 
 public:
     _Internal_QTextEdit(QGTextArea* qgtextArea, QWidget* parent = nullptr);
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
 public slots:
     void handleTextChange();
@@ -40,6 +42,7 @@ public:
     QGTextArea(const std::string& text = "", QWidget* parent = nullptr);
     virtual ~QGTextArea();
     virtual int getColumns() const;
+    virtual _Internal_QWidget* getInternalWidget() const;
     virtual std::string getPlaceholder() const;
     virtual int getRows() const;
     virtual std::string getText() const;

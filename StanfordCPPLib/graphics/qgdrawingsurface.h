@@ -13,6 +13,7 @@
 #include <QWidget>
 #include "grid.h"
 #include "qgobjects.h"
+#include "qgtypes.h"
 
 /*
  * ...
@@ -26,7 +27,7 @@ public:
     virtual void clear() = 0;
     virtual void conditionalRepaint();
     virtual void conditionalRepaintRegion(int x, int y, int width, int height);
-    virtual void conditionalRepaintRegion(const GRectangle& bounds);
+    virtual void conditionalRepaintRegion(const QGRectangle& bounds);
     virtual void draw(QGObject* gobj) = 0;
     virtual void draw(QGObject* gobj, double x, double y);
     virtual void draw(QGObject& gobj);
@@ -34,25 +35,25 @@ public:
     virtual void draw(QPainter* painter) = 0;
     virtual void drawArc(double x, double y, double width, double height, double start, double sweep);
     virtual void drawImage(const std::string& filename, double x = 0, double y = 0);
-    virtual void drawLine(const GPoint& p0, const GPoint& p1);
+    virtual void drawLine(const QGPoint& p0, const QGPoint& p1);
     virtual void drawLine(double x0, double y0, double x1, double y1);
-    virtual void drawOval(const GRectangle& bounds);
+    virtual void drawOval(const QGRectangle& bounds);
     virtual void drawOval(double x, double y, double width, double height);
-    virtual GPoint drawPolarLine(const GPoint& p0, double r, double theta);
-    virtual GPoint drawPolarLine(double x0, double y0, double r, double theta);
+    virtual QGPoint drawPolarLine(const QGPoint& p0, double r, double theta);
+    virtual QGPoint drawPolarLine(double x0, double y0, double r, double theta);
     virtual void drawPixel(double x, double y);
     virtual void drawPixel(double x, double y, int color);
     virtual void drawPixel(double x, double y, const std::string& color);
     virtual void drawPolygon(std::initializer_list<double> coords);
-    virtual void drawPolygon(std::initializer_list<GPoint> points);
-    virtual void drawRect(const GRectangle& bounds);
+    virtual void drawPolygon(std::initializer_list<QGPoint> points);
+    virtual void drawRect(const QGRectangle& bounds);
     virtual void drawRect(double x, double y, double width, double height);
     virtual void drawString(const std::string& text, double x, double y);
     virtual void fillArc(double x, double y, double width, double height, double start, double sweep);
-    virtual void fillOval(const GRectangle& bounds);
+    virtual void fillOval(const QGRectangle& bounds);
     virtual void fillOval(double x, double y, double width, double height);
     virtual void fillPolygon(std::initializer_list<double> coords);
-    virtual void fillRect(const GRectangle& bounds);
+    virtual void fillRect(const QGRectangle& bounds);
     virtual void fillRect(double x, double y, double width, double height);
     virtual int getARGB(double x, double y) const;
     virtual std::string getBackground() const;
@@ -86,7 +87,7 @@ public:
     virtual bool isRepaintImmediately() const;
     virtual void repaint() = 0;
     virtual void repaintRegion(int x, int y, int width, int height) = 0;
-    virtual void repaintRegion(const GRectangle& bounds);
+    virtual void repaintRegion(const QGRectangle& bounds);
     virtual void setAutoRepaint(bool autoRepaint);
     virtual void setBackground(int color);
     virtual void setBackground(const std::string& color);

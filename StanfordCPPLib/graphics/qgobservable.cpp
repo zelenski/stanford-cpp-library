@@ -73,7 +73,8 @@ void QGObservable::fireQGEvent(QKeyEvent* event,
 
 void QGObservable::fireQGEvent(QMouseEvent* event,
                                QGEvent::EventType eventType,
-                               const std::string& eventName) {
+                               const std::string& eventName,
+                               const std::string& actionCommand) {
     QGEvent mouseEvent(
                 /* class  */ QGEvent::MOUSE_EVENT,
                 /* type   */ eventType,
@@ -83,6 +84,7 @@ void QGObservable::fireQGEvent(QMouseEvent* event,
     mouseEvent.setX(event->x());
     mouseEvent.setY(event->y());
     mouseEvent.setModifiers(event->modifiers());
+    mouseEvent.setActionCommand(actionCommand);
     fireEvent(mouseEvent);
 }
 

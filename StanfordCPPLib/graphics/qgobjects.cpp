@@ -83,29 +83,29 @@ bool QGObject::contains(double x, double y) const {
     }
 }
 
-bool QGObject::contains(const GPoint& pt) const {
+bool QGObject::contains(const QGPoint& pt) const {
     return contains(pt.getX(), pt.getY());
 }
 
-GPoint QGObject::getBottomRightLocation() const {
-    return GPoint(getRightX(), getBottomY());
+QGPoint QGObject::getBottomRightLocation() const {
+    return QGPoint(getRightX(), getBottomY());
 }
 
 double QGObject::getBottomY() const {
     return getY() + getHeight();
 }
 
-GRectangle QGObject::getBounds() const {
+QGRectangle QGObject::getBounds() const {
     if (_transformed) {
         // TODO
-        return GRectangle(getX(), getY(), getWidth(), getHeight());
+        return QGRectangle(getX(), getY(), getWidth(), getHeight());
     } else {
-        return GRectangle(getX(), getY(), getWidth(), getHeight());
+        return QGRectangle(getX(), getY(), getWidth(), getHeight());
     }
 }
 
-GPoint QGObject::getCenterLocation() const {
-    return GPoint(getCenterX(), getCenterY());
+QGPoint QGObject::getCenterLocation() const {
+    return QGPoint(getCenterX(), getCenterY());
 }
 
 double QGObject::getCenterX() const {
@@ -136,8 +136,8 @@ double QGObject::getLineWidth() const {
     return _lineWidth;
 }
 
-GPoint QGObject::getLocation() const {
-    return GPoint(getX(), getY());
+QGPoint QGObject::getLocation() const {
+    return QGPoint(getX(), getY());
 }
 
 QGCompound* QGObject::getParent() const {
@@ -148,9 +148,9 @@ double QGObject::getRightX() const {
     return getX() + getWidth();
 }
 
-GDimension QGObject::getSize() const {
-    GRectangle bounds = getBounds();
-    return GDimension(bounds.getWidth(), bounds.getHeight());
+QGDimension QGObject::getSize() const {
+    QGRectangle bounds = getBounds();
+    return QGDimension(bounds.getWidth(), bounds.getHeight());
 }
 
 double QGObject::getWidth() const {
@@ -293,7 +293,7 @@ void QGObject::setBottomRightLocation(double x, double y) {
     setLocation(x - getWidth(), y - getHeight());   // calls repaint
 }
 
-void QGObject::setBottomRightLocation(const GPoint& pt) {
+void QGObject::setBottomRightLocation(const QGPoint& pt) {
     setBottomRightLocation(pt.getX(), pt.getY());   // calls repaint
 }
 
@@ -305,7 +305,7 @@ void QGObject::setBounds(double x, double y, double width, double height) {
     repaint();
 }
 
-void QGObject::setBounds(const GRectangle& bounds) {
+void QGObject::setBounds(const QGRectangle& bounds) {
     setBounds(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
 }
 
@@ -321,7 +321,7 @@ void QGObject::setCenterLocation(double x, double y) {
     setLocation(x - getWidth() / 2, y - getHeight() / 2);   // calls repaint
 }
 
-void QGObject::setCenterLocation(const GPoint& pt) {
+void QGObject::setCenterLocation(const QGPoint& pt) {
     setCenterLocation(pt.getX(), pt.getY());   // calls repaint
 }
 
@@ -391,7 +391,7 @@ void QGObject::setLocation(double x, double y) {
     repaint();
 }
 
-void QGObject::setLocation(const GPoint& pt) {
+void QGObject::setLocation(const QGPoint& pt) {
     setLocation(pt.getX(), pt.getY());   // calls repaint
 }
 
@@ -404,7 +404,7 @@ void QGObject::setSize(double width, double height) {
     repaint();
 }
 
-void QGObject::setSize(const GDimension& size) {
+void QGObject::setSize(const QGDimension& size) {
     setSize(size.getWidth(), size.getHeight());   // calls repaint
 }
 
@@ -529,16 +529,16 @@ void QGArc::draw(QPainter* painter) {
                        (int) (_sweep * QT_ANGLE_SCALE_FACTOR));
 }
 
-GPoint QGArc::getArcPoint(double theta) const {
+QGPoint QGArc::getArcPoint(double theta) const {
     double rx = getWidth() / 2;
     double ry = getHeight() / 2;
     double cx = getX() + rx;
     double cy = getY() + ry;
     double radians = theta * PI / 180;
-    return GPoint(cx + rx * cos(radians), cy - ry * sin(radians));
+    return QGPoint(cx + rx * cos(radians), cy - ry * sin(radians));
 }
 
-GRectangle QGArc::getBounds() const {
+QGRectangle QGArc::getBounds() const {
     if (_transformed) {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
@@ -567,14 +567,14 @@ GRectangle QGArc::getBounds() const {
         xMax = std::max(xMax, cx);
         yMax = std::max(yMax, cy);
     }
-    return GRectangle(xMin, yMin, xMax - xMin, yMax - yMin);
+    return QGRectangle(xMin, yMin, xMax - xMin, yMax - yMin);
 }
 
-GPoint QGArc::getEndPoint() const {
+QGPoint QGArc::getEndPoint() const {
     return getArcPoint(_start + _sweep);
 }
 
-GRectangle QGArc::getFrameRectangle() const {
+QGRectangle QGArc::getFrameRectangle() const {
     return getBounds();
 }
 
@@ -582,7 +582,7 @@ double QGArc::getStartAngle() const {
     return _start;
 }
 
-GPoint QGArc::getStartPoint() const {
+QGPoint QGArc::getStartPoint() const {
     return getArcPoint(_start);
 }
 
@@ -598,7 +598,7 @@ void QGArc::setFrameRectangle(double x, double y, double width, double height) {
     setBounds(x, y, width, height);   // calls repaint
 }
 
-void QGArc::setFrameRectangle(const GRectangle& rect) {
+void QGArc::setFrameRectangle(const QGRectangle& rect) {
     setFrameRectangle(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());   // calls repaint
 }
 
@@ -659,7 +659,7 @@ void QGCompound::conditionalRepaintRegion(int x, int y, int width, int height) {
     }
 }
 
-void QGCompound::conditionalRepaintRegion(const GRectangle& bounds) {
+void QGCompound::conditionalRepaintRegion(const QGRectangle& bounds) {
     if (_autoRepaint) {
         repaintRegion(bounds);
     }
@@ -695,7 +695,7 @@ int QGCompound::findQGObject(QGObject* gobj) const {
     return -1;
 }
 
-GRectangle QGCompound::getBounds() const {
+QGRectangle QGCompound::getBounds() const {
     if (_transformed) {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
@@ -705,14 +705,14 @@ GRectangle QGCompound::getBounds() const {
     double xMax = -1E20;
     double yMax = -1E20;
     for (int i = 0; i < _contents.size(); i++) {
-        GRectangle bounds = _contents.get(i)->getBounds();
+        QGRectangle bounds = _contents.get(i)->getBounds();
         xMin = std::min(xMin, bounds.getX());
         yMin = std::min(yMin, bounds.getY());
         xMax = std::max(xMax, bounds.getX());
         yMin = std::max(yMax, bounds.getY());   // JL BUGFIX 2016/10/11
     }
     // JL BUGFIX: shifted anchor point
-    return GRectangle(xMin + getX(), yMin + getY(), xMax - xMin, yMax - yMin);
+    return QGRectangle(xMin + getX(), yMin + getY(), xMax - xMin, yMax - yMin);
 }
 
 QGObject* QGCompound::getElement(int index) const {
@@ -809,7 +809,7 @@ void QGCompound::repaintRegion(int x, int y, int width, int height) {
     }
 }
 
-void QGCompound::repaintRegion(const GRectangle& bounds) {
+void QGCompound::repaintRegion(const QGRectangle& bounds) {
     repaintRegion((int) bounds.getX(), (int) bounds.getY(),
                   (int) bounds.getWidth(), (int) bounds.getHeight());
 }
@@ -926,7 +926,7 @@ QGLine::QGLine(double x0, double y0, double x1, double y1, QGObject::LineStyle l
     setLineStyle(lineStyle);
 }
 
-QGLine::QGLine(const GPoint& p0, const GPoint& p1)
+QGLine::QGLine(const QGPoint& p0, const QGPoint& p1)
     : QGObject(p0.getX(), p0.getY()),
       _dx(p1.getX() - p0.getX()),
       _dy(p1.getY() - p0.getY()) {
@@ -974,21 +974,21 @@ void QGLine::draw(QPainter* painter) {
     painter->drawLine((int) getX(), (int) getY(), (int) (getX() + _dx), (int) getY() + _dy);
 }
 
-GRectangle QGLine::getBounds() const {
+QGRectangle QGLine::getBounds() const {
     if (_transformed) {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
     }
     double x0 = (_dx < 0) ? getX() + _dx : getX();
     double y0 = (_dy < 0) ? getY() + _dy : getY();
-    return GRectangle(x0, y0, getWidth(), getHeight());
+    return QGRectangle(x0, y0, getWidth(), getHeight());
 }
 
-GPoint QGLine::getEndPoint() const {
-    return GPoint(getX() + _dx, getY() + _dy);
+QGPoint QGLine::getEndPoint() const {
+    return QGPoint(getX() + _dx, getY() + _dy);
 }
 
-GPoint QGLine::getStartPoint() const {
+QGPoint QGLine::getStartPoint() const {
     return getLocation();
 }
 
@@ -1061,7 +1061,7 @@ QGPolygon::QGPolygon(std::initializer_list<double> coords) {
     addVertexes(coords);
 }
 
-QGPolygon::QGPolygon(std::initializer_list<GPoint> points) {
+QGPolygon::QGPolygon(std::initializer_list<QGPoint> points) {
     addVertexes(points);
 }
 
@@ -1069,7 +1069,7 @@ void QGPolygon::addEdge(double dx, double dy) {
     addVertex(_cx + dx, _cy + dy);
 }
 
-void QGPolygon::addEdge(const GPoint& pt) {
+void QGPolygon::addEdge(const QGPoint& pt) {
     addEdge(pt.getX(), pt.getY());
 }
 
@@ -1088,8 +1088,8 @@ void QGPolygon::addEdges(std::initializer_list<double> coords) {
     }
 }
 
-void QGPolygon::addEdges(std::initializer_list<GPoint> points) {
-    for (GPoint pt : points) {
+void QGPolygon::addEdges(std::initializer_list<QGPoint> points) {
+    for (QGPoint pt : points) {
         addEdge(pt);
     }
 }
@@ -1105,7 +1105,7 @@ void QGPolygon::addVertex(double x, double y) {
     repaint();
 }
 
-void QGPolygon::addVertex(const GPoint& pt) {
+void QGPolygon::addVertex(const QGPoint& pt) {
     addVertex(pt.getX(), pt.getY());
 }
 
@@ -1124,8 +1124,8 @@ void QGPolygon::addVertexes(std::initializer_list<double> coords) {
     }
 }
 
-void QGPolygon::addVertexes(std::initializer_list<GPoint> points) {
-    for (GPoint pt : points) {
+void QGPolygon::addVertexes(std::initializer_list<QGPoint> points) {
+    for (QGPoint pt : points) {
         addVertex(pt);
     }
 }
@@ -1162,7 +1162,7 @@ void QGPolygon::draw(QPainter* painter) {
     painter->drawPolygon(QPolygonF(_vertices));
 }
 
-GRectangle QGPolygon::getBounds() const {
+QGRectangle QGPolygon::getBounds() const {
     if (_transformed) {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
@@ -1180,7 +1180,7 @@ GRectangle QGPolygon::getBounds() const {
         if (i == 0 || y > yMax) yMax = y;
     }
     // JL BUGFIX: add getX, getY
-    return GRectangle(xMin + getX(), yMin + getY(), xMax - xMin, yMax - yMin);
+    return QGRectangle(xMin + getX(), yMin + getY(), xMax - xMin, yMax - yMin);
 }
 
 double QGPolygon::getHeight() const {
@@ -1191,10 +1191,10 @@ std::string QGPolygon::getType() const {
     return "QGPolygon";
 }
 
-Vector<GPoint> QGPolygon::getVertices() const {
-    Vector<GPoint> vec;
+Vector<QGPoint> QGPolygon::getVertices() const {
+    Vector<QGPoint> vec;
     for (const QPointF& point : _vertices) {
-        vec.add(GPoint(point.x(), point.y()));
+        vec.add(QGPoint(point.x(), point.y()));
     }
     return vec;
 }
@@ -1319,12 +1319,12 @@ void QGString::draw(QPainter* painter) {
     painter->drawText((int) getX(), (int) getY(), QString::fromStdString(_text));
 }
 
-GRectangle QGString::getBounds() const {
+QGRectangle QGString::getBounds() const {
     if (_transformed) {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
     }
-    return GRectangle(getX(), getY() - getFontAscent(), getWidth(), getHeight());
+    return QGRectangle(getX(), getY() - getFontAscent(), getWidth(), getHeight());
 }
 
 std::string QGString::getFont() const {

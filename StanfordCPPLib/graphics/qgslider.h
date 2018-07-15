@@ -10,6 +10,7 @@
 #define _qgslider_h
 
 #include <string>
+#include <QSize>
 #include <QSlider>
 #include <QWidget>
 #include "qginteractor.h"
@@ -23,6 +24,7 @@ class _Internal_QSlider : public QSlider, public _Internal_QWidget {
 
 public:
     _Internal_QSlider(QGSlider* qgslider, QWidget* parent = nullptr);
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
 public slots:
     void handleChange(int value);
@@ -42,6 +44,7 @@ public:
 
     QGSlider(int min = 0, int max = 100, int value = 50, QWidget* parent = nullptr);
     virtual ~QGSlider();
+    virtual _Internal_QWidget* getInternalWidget() const;
     virtual int getMajorTickSpacing() const;
     virtual int getMinorTickSpacing() const;
     virtual bool getPaintLabels() const;

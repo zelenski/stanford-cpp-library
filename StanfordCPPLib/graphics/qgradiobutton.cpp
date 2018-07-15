@@ -24,9 +24,20 @@ void _Internal_QRadioButton::handleClick() {
     QGEvent changeEvent(
                 /* class  */ QGEvent::CHANGE_EVENT,
                 /* type   */ QGEvent::STATE_CHANGED,
-                /* name   */ "change");
+                /* name   */ "change",
+                /* source */ _qgradioButton);
+    changeEvent.setActionCommand(_qgradioButton->getActionCommand());
     _qgradioButton->fireEvent(changeEvent);
 }
+
+QSize _Internal_QRadioButton::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QRadioButton::sizeHint();
+    }
+}
+
 
 Map<std::string, QButtonGroup*> QGRadioButton::_buttonGroups;
 
@@ -40,6 +51,18 @@ QGRadioButton::QGRadioButton(const std::string& text, const std::string& group, 
 QGRadioButton::~QGRadioButton() {
     // TODO: delete _iqradioButton;
     _iqradioButton = nullptr;
+}
+
+std::string QGRadioButton::getActionCommand() const {
+    if (_actionCommand.empty()) {
+        return getText();
+    } else {
+        return _actionCommand;
+    }
+}
+
+_Internal_QWidget* QGRadioButton::getInternalWidget() const {
+    return _iqradioButton;
 }
 
 std::string QGRadioButton::getText() const {

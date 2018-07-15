@@ -13,7 +13,7 @@
 #include <iostream>
 #include <string>
 #include <QEvent>
-#include "gtypes.h"
+#include "qgtypes.h"
 
 class QGEvent;             // forward declaration
 class QGInteractor;        // forward declaration
@@ -189,7 +189,7 @@ public:
     virtual QGInteractor* getInteractor() const;
     virtual char getKeyChar() const;
     virtual int getKeyCode() const;
-    virtual GPoint getLocation() const;
+    virtual QGPoint getLocation() const;
     virtual int getModifiers() const;
     virtual std::string getName() const;
     virtual QGObservable* getSource() const;
@@ -256,6 +256,7 @@ public:
 
     static std::string keyCodeToString(int keyCode);
 
+    virtual void setActionCommand(const std::string& actionCommand);
     virtual void setButton(int button);
     virtual void setKeyChar(char keyChar);
     virtual void setKeyChar(const std::string& keyCharString);

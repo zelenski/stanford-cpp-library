@@ -21,8 +21,18 @@ void _Internal_QCheckBox::handleStateChange(int /* state */) {
     QGEvent changeEvent(
                 /* class  */ QGEvent::CHANGE_EVENT,
                 /* type   */ QGEvent::STATE_CHANGED,
-                /* name   */ "change");
+                /* name   */ "change",
+                /* source */ _qgcheckBox);
+    changeEvent.setActionCommand(_qgcheckBox->getActionCommand());
     _qgcheckBox->fireEvent(changeEvent);
+}
+
+QSize _Internal_QCheckBox::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QCheckBox::sizeHint();
+    }
 }
 
 QGCheckBox::QGCheckBox(const std::string& text, bool checked, QWidget* parent) {
@@ -33,6 +43,18 @@ QGCheckBox::QGCheckBox(const std::string& text, bool checked, QWidget* parent) {
 QGCheckBox::~QGCheckBox() {
     // TODO: delete _iqcheckBox;
     _iqcheckBox = nullptr;
+}
+
+std::string QGCheckBox::getActionCommand() const {
+    if (_actionCommand.empty()) {
+        return getText();
+    } else {
+        return _actionCommand;
+    }
+}
+
+_Internal_QWidget* QGCheckBox::getInternalWidget() const {
+    return _iqcheckBox;
 }
 
 std::string QGCheckBox::getText() const {

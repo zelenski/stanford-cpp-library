@@ -28,47 +28,173 @@ void _Internal_QLineEdit::handleTextChange(const QString&) {
     QGEvent textChangeEvent(
                 /* class  */ QGEvent::KEY_EVENT,
                 /* type   */ QGEvent::KEY_TYPED,
-                /* name   */ "textchange");
+                /* name   */ "textchange",
+                /* source */ _qgtextfield);
+    textChangeEvent.setActionCommand(_qgtextfield->getActionCommand());
     _qgtextfield->fireEvent(textChangeEvent);
 }
 
-QGTextField::QGTextField(const std::string& text, QWidget* parent) {
-    _iqlineedit = new _Internal_QLineEdit(this, getInternalParent(parent));
-    setText(text);
+QSize _Internal_QLineEdit::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QLineEdit::sizeHint();
+    }
 }
 
-QGTextField::QGTextField(const std::string& text, int charsWide, QWidget* parent) {
-    _iqlineedit = new _Internal_QLineEdit(this, getInternalParent(parent));
-    setText(text);
-    setCharsWide(charsWide);
+_Internal_QSpinBox::_Internal_QSpinBox(QGTextField* qgtextField, int min, int max, int step, QWidget* parent)
+        : QSpinBox(parent),
+          _qgtextfield(qgtextField) {
+    setRange(min, max);
+    setSingleStep(step);
 }
 
-QGTextField::QGTextField(int charsWide, QWidget* parent) {
+void _Internal_QSpinBox::handleTextChange(const QString&) {
+    QGEvent textChangeEvent(
+                /* class  */ QGEvent::KEY_EVENT,
+                /* type   */ QGEvent::KEY_TYPED,
+                /* name   */ "textchange",
+                /* source */ _qgtextfield);
+    textChangeEvent.setActionCommand(_qgtextfield->getActionCommand());
+    _qgtextfield->fireEvent(textChangeEvent);
+}
+
+QLineEdit* _Internal_QSpinBox::lineEdit() const {
+    return QSpinBox::lineEdit();
+}
+
+QSize _Internal_QSpinBox::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QSpinBox::sizeHint();
+    }
+}
+
+_Internal_QDoubleSpinBox::_Internal_QDoubleSpinBox(QGTextField* qgtextField, double min, double max, double step, QWidget* parent)
+        : QDoubleSpinBox(parent),
+          _qgtextfield(qgtextField) {
+    setRange(min, max);
+    setSingleStep(step);
+}
+
+void _Internal_QDoubleSpinBox::handleTextChange(const QString&) {
+    QGEvent textChangeEvent(
+                /* class  */ QGEvent::KEY_EVENT,
+                /* type   */ QGEvent::KEY_TYPED,
+                /* name   */ "textchange",
+                /* source */ _qgtextfield);
+    textChangeEvent.setActionCommand(_qgtextfield->getActionCommand());
+    _qgtextfield->fireEvent(textChangeEvent);
+}
+
+QLineEdit* _Internal_QDoubleSpinBox::lineEdit() const {
+    return QDoubleSpinBox::lineEdit();
+}
+
+QSize _Internal_QDoubleSpinBox::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QDoubleSpinBox::sizeHint();
+    }
+}
+
+
+QGTextField::QGTextField(const std::string& text, int charsWide, QWidget* parent)
+        : _iqlineedit(nullptr),
+          _iqspinbox(nullptr),
+          _iqdoublespinbox(nullptr) {
     _iqlineedit = new _Internal_QLineEdit(this, getInternalParent(parent));
-    setCharsWide(charsWide);
+    _inputType = QGTextField::INPUT_TYPE_TEXT;
+    if (!text.empty()) {
+        setText(text);
+    }
+    if (charsWide > 0) {
+        setCharsWide(charsWide);
+    }
+}
+
+QGTextField::QGTextField(int charsWide, QWidget* parent)
+        : _iqlineedit(nullptr),
+          _iqspinbox(nullptr),
+          _iqdoublespinbox(nullptr) {
+    _iqlineedit = new _Internal_QLineEdit(this, getInternalParent(parent));
+    _inputType = QGTextField::INPUT_TYPE_TEXT;
+    if (charsWide > 0) {
+        setCharsWide(charsWide);
+    }
+}
+
+QGTextField::QGTextField(int value, int min, int max, int step, QWidget* parent) {
+    _iqspinbox = new _Internal_QSpinBox(this, min, max, step, getInternalParent(parent));
+    _iqspinbox->setValue(value);
+    _inputType = QGTextField::INPUT_TYPE_INTEGER;
+}
+
+QGTextField::QGTextField(double value, double min, double max, double step, QWidget* parent) {
+    _iqdoublespinbox = new _Internal_QDoubleSpinBox(this, min, max, step, getInternalParent(parent));
+    _iqdoublespinbox->setValue(value);
+    _inputType = QGTextField::INPUT_TYPE_REAL;
 }
 
 QGTextField::~QGTextField() {
     // TODO: delete _iqlineedit;
     _iqlineedit = nullptr;
+    _iqspinbox = nullptr;
+    _iqdoublespinbox = nullptr;
 }
 
 int QGTextField::getCharsWide() const {
-    QFontMetrics fm(_iqlineedit->font());
+    QFontMetrics fm(getWidget()->font());
     int mWidth = fm.width(QString::fromStdString("m"));
     return (int) (getWidth() / mWidth);
 }
 
+QGTextField::InputType QGTextField::getInputType() const {
+    return _inputType;
+}
+
+_Internal_QWidget* QGTextField::getInternalWidget() const {
+    if (_inputType == QGTextField::INPUT_TYPE_TEXT) {
+        return _iqlineedit;
+    } else if (_inputType == QGTextField::INPUT_TYPE_INTEGER) {
+        return _iqspinbox;
+    } else {
+        return _iqdoublespinbox;
+    }
+}
+
 int QGTextField::getMaxLength() const {
-    return _iqlineedit->maxLength();
+    if (_inputType == QGTextField::INPUT_TYPE_TEXT) {
+        return _iqlineedit->maxLength();
+    } else if (_inputType == QGTextField::INPUT_TYPE_INTEGER) {
+        std::string maxStr = integerToString(_iqspinbox->maximum());
+        return (int) maxStr.length();
+    } else {
+        std::string maxStr = integerToString(_iqdoublespinbox->maximum());
+        return (int) maxStr.length();   // TODO: may be incorrect w/ decimal value
+    }
 }
 
 std::string QGTextField::getPlaceholder() const {
-    return _iqlineedit->placeholderText().toStdString();
+    if (_inputType == QGTextField::INPUT_TYPE_TEXT) {
+        return _iqlineedit->placeholderText().toStdString();
+    } else if (_inputType == QGTextField::INPUT_TYPE_INTEGER) {
+        return _iqspinbox->lineEdit()->placeholderText().toStdString();
+    } else {
+        return _iqdoublespinbox->lineEdit()->placeholderText().toStdString();
+    }
 }
 
 std::string QGTextField::getText() const {
-    return _iqlineedit->text().toStdString();
+    if (_inputType == QGTextField::INPUT_TYPE_TEXT) {
+        return _iqlineedit->text().toStdString();
+    } else if (_inputType == QGTextField::INPUT_TYPE_INTEGER) {
+        return _iqspinbox->lineEdit()->text().toStdString();
+    } else {
+        return _iqdoublespinbox->lineEdit()->text().toStdString();
+    }
 }
 
 std::string QGTextField::getType() const {
@@ -108,15 +234,33 @@ int QGTextField::getValueAsInteger() const {
 }
 
 QWidget* QGTextField::getWidget() const {
-    return static_cast<QWidget*>(_iqlineedit);
+    if (_inputType == QGTextField::INPUT_TYPE_TEXT) {
+        return static_cast<QWidget*>(_iqlineedit);
+    } else if (_inputType == QGTextField::INPUT_TYPE_INTEGER) {
+        return static_cast<QWidget*>(_iqspinbox);
+    } else {
+        return static_cast<QWidget*>(_iqdoublespinbox);
+    }
 }
 
 bool QGTextField::isAutocompleteEnabled() const {
-    return _iqlineedit->completer() != nullptr;
+    if (_inputType == QGTextField::INPUT_TYPE_TEXT) {
+        return _iqlineedit->completer() != nullptr;
+    } else if (_inputType == QGTextField::INPUT_TYPE_INTEGER) {
+        return _iqspinbox->lineEdit()->completer() != nullptr;
+    } else {
+        return _iqdoublespinbox->lineEdit()->completer() != nullptr;
+    }
 }
 
 bool QGTextField::isEditable() const {
-    return !_iqlineedit->isReadOnly();
+    if (_inputType == QGTextField::INPUT_TYPE_TEXT) {
+        return !_iqlineedit->isReadOnly();
+    } else if (_inputType == QGTextField::INPUT_TYPE_INTEGER) {
+        return !_iqspinbox->lineEdit()->isReadOnly();
+    } else {
+        return !_iqdoublespinbox->lineEdit()->isReadOnly();
+    }
 }
 
 void QGTextField::removeTextChangeHandler() {
@@ -138,37 +282,74 @@ void QGTextField::setAutocompleteList(const Vector<std::string>& strings) {
     completer->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
     completer->setCaseSensitivity(Qt::CaseInsensitive);
     completer->setCompletionMode(QCompleter::PopupCompletion);
-    _iqlineedit->setCompleter(completer);
+
+    if (_inputType == QGTextField::INPUT_TYPE_TEXT) {
+        _iqlineedit->setCompleter(completer);
+    } else if (_inputType == QGTextField::INPUT_TYPE_INTEGER) {
+        _iqspinbox->lineEdit()->setCompleter(completer);
+    } else {
+        _iqdoublespinbox->lineEdit()->setCompleter(completer);
+    }
 }
 
 void QGTextField::setAutocompleteEnabled(bool enabled) {
     if (!enabled) {
-        _iqlineedit->setCompleter(nullptr);
+        if (_inputType == QGTextField::INPUT_TYPE_TEXT) {
+            _iqlineedit->setCompleter(nullptr);
+        } else if (_inputType == QGTextField::INPUT_TYPE_INTEGER) {
+            _iqspinbox->lineEdit()->setCompleter(nullptr);
+        } else {
+            _iqdoublespinbox->lineEdit()->setCompleter(nullptr);
+        }
     }
     // TODO
 }
 
 void QGTextField::setCharsWide(int charsWide) {
-    QFontMetrics fm(_iqlineedit->font());
+    QFontMetrics fm(getWidget()->font());
     int mWidth = fm.width(QString::fromStdString("m"));
-    _iqlineedit->setFixedWidth(mWidth * charsWide);
-    _iqlineedit->updateGeometry();
+    getWidget()->setFixedWidth(mWidth * charsWide);
+    getWidget()->updateGeometry();
 }
 
 void QGTextField::setEditable(bool value) {
-    _iqlineedit->setReadOnly(!value);
+    if (_inputType == QGTextField::INPUT_TYPE_TEXT) {
+        _iqlineedit->setReadOnly(!value);
+    } else if (_inputType == QGTextField::INPUT_TYPE_INTEGER) {
+        _iqspinbox->setReadOnly(!value);
+    } else {
+        _iqdoublespinbox->setReadOnly(!value);
+    }
 }
 
 void QGTextField::setMaxLength(int maxLength) {
-    _iqlineedit->setMaxLength(maxLength);
+    if (_inputType == QGTextField::INPUT_TYPE_TEXT) {
+        _iqlineedit->setMaxLength(maxLength);
+    } else if (_inputType == QGTextField::INPUT_TYPE_INTEGER) {
+        _iqspinbox->lineEdit()->setMaxLength(maxLength);
+    } else {
+        _iqdoublespinbox->lineEdit()->setMaxLength(maxLength);
+    }
 }
 
 void QGTextField::setPlaceholder(const std::string& text) {
-    _iqlineedit->setPlaceholderText(QString::fromStdString(text));
+    if (_inputType == QGTextField::INPUT_TYPE_TEXT) {
+        _iqlineedit->setPlaceholderText(QString::fromStdString(text));
+    } else if (_inputType == QGTextField::INPUT_TYPE_INTEGER) {
+        _iqspinbox->lineEdit()->setPlaceholderText(QString::fromStdString(text));
+    } else {
+        _iqdoublespinbox->lineEdit()->setPlaceholderText(QString::fromStdString(text));
+    }
 }
 
 void QGTextField::setText(const std::string& text) {
-    _iqlineedit->setText(QString::fromStdString(text));
+    if (_inputType == QGTextField::INPUT_TYPE_TEXT) {
+        _iqlineedit->setText(QString::fromStdString(text));
+    } else if (_inputType == QGTextField::INPUT_TYPE_INTEGER) {
+        _iqspinbox->lineEdit()->setText(QString::fromStdString(text));
+    } else {
+        _iqdoublespinbox->lineEdit()->setText(QString::fromStdString(text));
+    }
 }
 
 void QGTextField::setTextChangeHandler(QGEventHandler func) {

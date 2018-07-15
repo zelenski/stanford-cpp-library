@@ -77,7 +77,7 @@ void QGDrawingSurface::conditionalRepaintRegion(int x, int y, int width, int hei
     }
 }
 
-void QGDrawingSurface::conditionalRepaintRegion(const GRectangle& bounds) {
+void QGDrawingSurface::conditionalRepaintRegion(const QGRectangle& bounds) {
     if (isAutoRepaint()) {
         repaintRegion(bounds);
     }
@@ -108,7 +108,7 @@ void QGDrawingSurface::drawImage(const std::string& filename, double x, double y
     draw(image);
 }
 
-void QGDrawingSurface::drawLine(const GPoint& p0, const GPoint& p1) {
+void QGDrawingSurface::drawLine(const QGPoint& p0, const QGPoint& p1) {
     drawLine(p0.getX(), p0.getY(), p1.getX(), p1.getY());
 }
 
@@ -118,7 +118,7 @@ void QGDrawingSurface::drawLine(double x0, double y0, double x1, double y1) {
     draw(line);
 }
 
-void QGDrawingSurface::drawOval(const GRectangle& bounds) {
+void QGDrawingSurface::drawOval(const QGRectangle& bounds) {
     drawOval(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
 }
 
@@ -128,15 +128,15 @@ void QGDrawingSurface::drawOval(double x, double y, double width, double height)
     draw(oval);
 }
 
-GPoint QGDrawingSurface::drawPolarLine(const GPoint& p0, double r, double theta) {
+QGPoint QGDrawingSurface::drawPolarLine(const QGPoint& p0, double r, double theta) {
     return drawPolarLine(p0.getX(), p0.getY(), r, theta);
 }
 
-GPoint QGDrawingSurface::drawPolarLine(double x0, double y0, double r, double theta) {
+QGPoint QGDrawingSurface::drawPolarLine(double x0, double y0, double r, double theta) {
     double x1 = x0 + r * cosDegrees(theta);
     double y1 = y0 - r * sinDegrees(theta);
     drawLine(x0, y0, x1, y1);
-    return GPoint(x1, y1);
+    return QGPoint(x1, y1);
 }
 
 void QGDrawingSurface::drawPixel(double x, double y) {
@@ -157,13 +157,13 @@ void QGDrawingSurface::drawPolygon(std::initializer_list<double> coords) {
     draw(polygon);
 }
 
-void QGDrawingSurface::drawPolygon(std::initializer_list<GPoint> points) {
+void QGDrawingSurface::drawPolygon(std::initializer_list<QGPoint> points) {
     QGPolygon* polygon = new QGPolygon(points);
     initializeQGObject(polygon);
     draw(polygon);
 }
 
-void QGDrawingSurface::drawRect(const GRectangle& bounds) {
+void QGDrawingSurface::drawRect(const QGRectangle& bounds) {
     drawRect(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
 }
 
@@ -185,7 +185,7 @@ void QGDrawingSurface::fillArc(double x, double y, double width, double height, 
     draw(arc);
 }
 
-void QGDrawingSurface::fillOval(const GRectangle& bounds) {
+void QGDrawingSurface::fillOval(const QGRectangle& bounds) {
     fillOval(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
 }
 
@@ -201,7 +201,7 @@ void QGDrawingSurface::fillPolygon(std::initializer_list<double> coords) {
     draw(polygon);
 }
 
-void QGDrawingSurface::fillRect(const GRectangle& bounds) {
+void QGDrawingSurface::fillRect(const QGRectangle& bounds) {
     fillRect(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
 }
 
@@ -333,7 +333,7 @@ bool QGDrawingSurface::isRepaintImmediately() const {
     return isAutoRepaint();
 }
 
-void QGDrawingSurface::repaintRegion(const GRectangle& bounds) {
+void QGDrawingSurface::repaintRegion(const QGRectangle& bounds) {
     repaintRegion((int) bounds.getX(), (int) bounds.getY(),
                   (int) bounds.getWidth(), (int) bounds.getHeight());
 }

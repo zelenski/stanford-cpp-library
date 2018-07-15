@@ -14,6 +14,7 @@
 #include <string>
 #include <QButtonGroup>
 #include <QRadioButton>
+#include <QSize>
 #include <QWidget>
 #include "qginteractor.h"
 #include "map.h"
@@ -27,6 +28,7 @@ class _Internal_QRadioButton : public QRadioButton, public _Internal_QWidget {
 
 public:
     _Internal_QRadioButton(QGRadioButton* qgradioButton, bool checked = false, QWidget* parent = nullptr);
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
 public slots:
     void handleClick();
@@ -42,6 +44,8 @@ class QGRadioButton : public QGInteractor {
 public:
     QGRadioButton(const std::string& text = "", const std::string& group = "default", bool checked = false, QWidget* parent = nullptr);
     virtual ~QGRadioButton();
+    virtual std::string getActionCommand() const Q_DECL_OVERRIDE;
+    virtual _Internal_QWidget* getInternalWidget() const;
     virtual std::string getText() const;
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;

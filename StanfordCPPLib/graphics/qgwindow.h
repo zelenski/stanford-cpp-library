@@ -18,7 +18,7 @@
 #include <QMainWindow>
 #include <QRect>
 #include "grid.h"
-#include "gtypes.h"
+#include "qgtypes.h"
 #include "map.h"
 #include "point.h"
 #include "qgborderlayout.h"
@@ -34,11 +34,15 @@ class _Internal_QMainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
+    static const int SPACING;
+    static const int MARGIN;
+
     _Internal_QMainWindow(QGWindow* qgwindow, QWidget* parent = nullptr);
     // virtual bool event(QEvent* event) Q_DECL_OVERRIDE;
 
     virtual void changeEvent(QEvent* event) Q_DECL_OVERRIDE;
     virtual void closeEvent(QCloseEvent* event) Q_DECL_OVERRIDE;
+    virtual void fixMargins();
     virtual void resizeEvent(QResizeEvent* event) Q_DECL_OVERRIDE;
     virtual void timerEvent(QTimerEvent* event) Q_DECL_OVERRIDE;
     virtual bool timerExists();
@@ -124,24 +128,25 @@ public:
     virtual void close();
     virtual void compareToImage(const std::string& filename, bool ignoreWindowSize = true) const;
     virtual double getCanvasHeight() const;
-    virtual GDimension getCanvasSize() const;
+    virtual QGDimension getCanvasSize() const;
     virtual double getCanvasWidth() const;
     virtual CloseOperation getCloseOperation() const;
     virtual QGObject* getQGObject(int index) const;
     virtual QGObject* getQGObjectAt(double x, double y) const;
     virtual int getQGObjectCount() const;
-    virtual GPoint getLocation() const;
+    virtual QGPoint getLocation() const;
     virtual double getHeight() const;
+    virtual QGDimension getPreferredSize() const;
     virtual double getRegionHeight(Region region) const;
     virtual double getRegionHeight(const std::string& region) const;
-    virtual GDimension getRegionSize(Region region) const;
-    virtual GDimension getRegionSize(const std::string& region) const;
+    virtual QGDimension getRegionSize(Region region) const;
+    virtual QGDimension getRegionSize(const std::string& region) const;
     virtual double getRegionWidth(Region region) const;
     virtual double getRegionWidth(const std::string& region) const;
     static double getScreenHeight();
-    static GDimension getScreenSize();
+    static QGDimension getScreenSize();
     static double getScreenWidth();
-    virtual GDimension getSize() const;
+    virtual QGDimension getSize() const;
     virtual std::string getTitle() const;
     virtual std::string getType() const Q_DECL_OVERRIDE;
     virtual QWidget* getWidget() const;
@@ -175,13 +180,13 @@ public:
     virtual void setBackground(const std::string& color);
     virtual void setCanvasHeight(double height);
     virtual void setCanvasSize(double width, double height);
-    virtual void setCanvasSize(const GDimension& size);
+    virtual void setCanvasSize(const QGDimension& size);
     virtual void setCanvasWidth(double width);
     virtual void setCloseOperation(CloseOperation op);
     virtual void setExitOnClose(bool exitOnClose);
     virtual void setHeight(double width);
     virtual void setLocation(double x, double y);
-    virtual void setLocation(const GPoint& p);
+    virtual void setLocation(const QGPoint& p);
     virtual void setLocation(const Point& p);
     virtual void setClickHandler(QGEventHandler func);
     virtual void setClickHandler(QGEventHandlerVoid func);
@@ -200,7 +205,7 @@ public:
     virtual void setRegionVerticalAlignment(Region region, VerticalAlignment valign);
     virtual void setResizable(bool resizable);
     virtual void setSize(double width, double height);
-    virtual void setSize(const GDimension& size);
+    virtual void setSize(const QGDimension& size);
     virtual void setTimerHandler(double ms, QGEventHandler func);
     virtual void setTimerHandler(double ms, QGEventHandlerVoid func);
     // TODO: setTimerHandlerOnce
@@ -224,8 +229,8 @@ private:
     static std::string alignmentToString(HorizontalAlignment alignment);
     static std::string alignmentToString(VerticalAlignment alignment);
     virtual void ensureForwardTarget() Q_DECL_OVERRIDE;
-    QLayout* layoutForRegion(Region region);
-    QLayout* layoutForRegion(const std::string& region);
+    QLayout* layoutForRegion(Region region) const;
+    QLayout* layoutForRegion(const std::string& region) const;
     static std::string regionToString(Region region);
     static Region stringToRegion(const std::string& regionStr);
     static HorizontalAlignment stringToHorizontalAlignment(const std::string& alignmentStr);

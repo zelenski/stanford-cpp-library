@@ -11,6 +11,7 @@
 
 #include <string>
 #include <QPushButton>
+#include <QSize>
 #include <QToolButton>
 #include <QWidget>
 #include "qgborderlayout.h"
@@ -25,6 +26,7 @@ class _Internal_QPushButton : public QToolButton, public _Internal_QWidget {
 
 public:
     _Internal_QPushButton(QGButton* button, QWidget* parent = nullptr);
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
 public slots:
     void handleClick();
@@ -41,6 +43,8 @@ public:
     QGButton(const std::string& text = "", const std::string& iconFileName = "", QWidget* parent = nullptr);
     virtual ~QGButton();
     virtual std::string getAccelerator() const;
+    virtual std::string getActionCommand() const Q_DECL_OVERRIDE;
+    virtual _Internal_QWidget* getInternalWidget() const;
     virtual std::string getText() const;
     virtual QGInteractor::TextPosition getTextPosition() const;
     virtual std::string getType() const;

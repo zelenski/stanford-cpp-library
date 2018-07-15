@@ -632,7 +632,8 @@ void testQwindow() {
         window->setRegionAlignment("East", "Bottom Right");
         cout << "radio:     " << radio1group1->toString() << endl;
 
-        static QGTextField* textField = new QGTextField("Marty");
+        // static QGTextField* textField = new QGTextField("Marty");
+        static QGTextField* textField = new QGTextField(42.0);
         textField->setPlaceholder("type your name");
         // textField->setEditable(false);
         textField->setAutocompleteList({"matt", "Marty", "Stuart", "steve", "yana", "yes", "no"});
@@ -670,7 +671,9 @@ void testQwindow() {
         button->setBackground(QGColor::YELLOW);
         button->setIcon("triangle-icon.png");
         button->setTextPosition(QGInteractor::TEXT_BESIDE_ICON);
-        button->setClickHandler([]() {
+        button->setClickHandler([](QGEvent event) {
+            cout << "button click! event = " << event << endl;
+
             window->setResizable(!window->isResizable());
             cout << "clickHandler: button was clicked!" << endl;
             cout << "location:  " << window->getLocation() << endl;
@@ -692,17 +695,24 @@ void testQwindow() {
 
             //    string filename = QGFileChooser::showOpenDialog("", "*.txt, *.cpp, *.h");
             //    cout << "You chose: " << filename << endl;
-            window->clear();
+            // window->clear();
         });
-        button->setClickHandler([]() {
-            // grayscale(image);
-        });
+//        button->setClickHandler([]() {
+//            // grayscale(image);
+//        });
         button->setAccelerator("Ctrl-T");
         window->addToRegion(button, "South");
         cout << "button:    " << button->toString() << endl;
         cout << "button accelerator: " << button->getAccelerator() << endl;
         cout << "button font: " << button->getFont() << endl;
         button->setFont("Monospaced-Bold-14");
+
+        QGButton* button2 = new QGButton("Pack");
+        button2->setClickHandler([]() {
+            // window->setCanvasSize(666, 444);
+            // window->setRegionSize
+        });
+        window->addToRegion(button2, "South");
 
         static QGSlider* slider = new QGSlider();
         slider->setMinorTickSpacing(20);
@@ -730,34 +740,45 @@ void testQwindow() {
             }
         });
 
-        window->setTimerHandler(1000, [](QGEvent event) {
-            cout << "timer! event=" << event << endl;
+//        window->setTimerHandler(1000, [](QGEvent event) {
+//            cout << "timer! event=" << event << endl;
+//        });
+
+        window->setCanvasSize(666, 444);
+
+        window->setMouseHandler([](QGEvent event) {
+            if (event.getType() == QGEvent::MOUSE_MOVED) {
+                // cout << "mouse moved: " << event.getLocation().toString() << endl;
+            }
         });
+
     });
 }
 
-QGOval* ball = nullptr;
-QGButton* button = nullptr;
-QGButton* button2 = nullptr;
-QGButton* button3 = nullptr;
-QGButton* button4 = nullptr;
-QGButton* button5 = nullptr;
-QGButton* saveButton = nullptr;
-QGLabel* label = nullptr;
-double dx = 5;
-double dy = 3;
-
 void testQwindowDrawing() {
     static QGWindow* window = nullptr;
+    static QGOval* ball = nullptr;
+    static QGButton* button = nullptr;
+    static QGButton* button2 = nullptr;
+    static QGButton* button3 = nullptr;
+    static QGButton* button4 = nullptr;
+    static QGButton* button5 = nullptr;
+    static QGButton* saveButton = nullptr;
+    static QGLabel* label = nullptr;
+    static QGLabel* label2 = nullptr;
+    static double dx = 5;
+    static double dy = 3;
 
     QGui::instance()->runOnQtGuiThread([]() {
         window = new QGWindow(900, 500);
-        window->setResizable(false);
         window->setTitle("QtGui Drawing Window");
+        // window->setResizable(false);
         // window->setBackground("yellow");
         window->center();
 
-        QGLabel* label = new QGLabel("QtGui <b>AWESOME</b> <i>cool</i> window");
+        label = new QGLabel("QtGui <b>AWESOME</b> <i>cool</i> window");
+        label2 = new QGLabel("????????????");
+        window->addToRegion(label2, "North");
         window->addToRegion(label, "North");
 
         ball = new QGOval(20, 20, 50, 50);
@@ -768,26 +789,22 @@ void testQwindowDrawing() {
 
         window->setRegionAlignment("North", "Left");
         window->setRegionAlignment("South", "Right");
+
         button = new QGButton("Tick");
-        window->addToRegion(button, "South");
-
         button2 = new QGButton("Pixels");
-        window->addToRegion(button2, "South");
-
         button3 = new QGButton("Repaint");
-        window->addToRegion(button3, "South");
-
         button4 = new QGButton("Clear");
-        window->addToRegion(button4, "South");
-
         button5 = new QGButton("BG");
-        window->addToRegion(button5, "South");
-
         saveButton = new QGButton("Save");
+
+        window->addToRegion(button, "South");
+        window->addToRegion(button2, "South");
+        window->addToRegion(button3, "South");
+        window->addToRegion(button4, "South");
+        window->addToRegion(button5, "South");
         window->addToRegion(saveButton, "South");
 
-        label = new QGLabel("????????????");
-        window->addToRegion(label, "North");
+        window->setCanvasSize(900, 500);
 
 
 //        window->setBackground("yellow");
@@ -899,6 +916,7 @@ void testQwindowDrawing() {
             window->fillOval(event.getX() - 5, event.getY() - 5, 10, 10);
         } else if (event.getType() == QGEvent::MOUSE_MOVED) {
             label->setText(event.getLocation().toString());
+            cout << "mouse moved: " << event.getLocation().toString() << endl;
         }
     });
 
@@ -931,7 +949,7 @@ void testQwindowDrawing() {
 
 
 int main() {
-    testQwindowDrawing();
+    testQwindow();
     return 0;
 }
 

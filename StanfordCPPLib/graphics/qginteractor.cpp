@@ -14,7 +14,48 @@
 #include "qgui.h"
 #include "qgwindow.h"
 
-QGInteractor::QGInteractor() {
+_Internal_QWidget::_Internal_QWidget()
+        : _minimumSize(-1, -1),
+          _preferredSize(-1, -1) {
+    // empty
+}
+
+QSize _Internal_QWidget::getMinimumSize() const {
+    return QSize((int) _minimumSize.getWidth(), (int) _minimumSize.getHeight());
+}
+
+bool _Internal_QWidget::hasMinimumSize() const {
+    return _minimumSize.getWidth() >= 0 && _minimumSize.getHeight() >= 0;
+}
+
+QSize _Internal_QWidget::getPreferredSize() const {
+    return QSize((int) _preferredSize.getWidth(), (int) _preferredSize.getHeight());
+}
+
+bool _Internal_QWidget::hasPreferredSize() const {
+    return _preferredSize.getWidth() >= 0 && _preferredSize.getHeight() >= 0;
+}
+
+void _Internal_QWidget::setMinimumSize(double width, double height) {
+    _minimumSize = QGDimension(width, height);
+}
+
+void _Internal_QWidget::setMinimumSize(const QSize& size) {
+    setMinimumSize(size.width(), size.height());
+}
+
+void _Internal_QWidget::setPreferredSize(double width, double height) {
+    _preferredSize = QGDimension(width, height);
+}
+
+void _Internal_QWidget::setPreferredSize(const QSize& size) {
+    setPreferredSize(size.width(), size.height());
+}
+
+
+QGInteractor::QGInteractor()
+        : _actionCommand(""),
+          _icon("") {
     ensureThreadSafety();
 }
 
@@ -41,8 +82,8 @@ int QGInteractor::getBackgroundInt() const {
     return QGColor::convertRGBToRGB(color.red(), color.green(), color.blue());
 }
 
-GRectangle QGInteractor::getBounds() const {
-    return GRectangle(getX(), getY(), getWidth(), getHeight());
+QGRectangle QGInteractor::getBounds() const {
+    return QGRectangle(getX(), getY(), getWidth(), getHeight());
 }
 
 std::string QGInteractor::getFont() const {
@@ -57,12 +98,17 @@ std::string QGInteractor::getIcon() const {
     return _icon;
 }
 
-GPoint QGInteractor::getLocation() const {
-    return GPoint(getX(), getY());
+QGPoint QGInteractor::getLocation() const {
+    return QGPoint(getX(), getY());
 }
 
 QWidget* QGInteractor::getInternalParent(QWidget* parent) const {
     return parent ? parent : (QWidget*) QGWindow::getLastWindow();
+}
+
+QGDimension QGInteractor::getMinimumSize() const {
+    QSize size = getInternalWidget()->getMinimumSize();
+    return QGDimension(size.width(), size.height());
 }
 
 char QGInteractor::getMnemonic() const {
@@ -70,8 +116,13 @@ char QGInteractor::getMnemonic() const {
     return '?';
 }
 
-GDimension QGInteractor::getSize() const {
-    return GDimension(getWidth(), getHeight());
+QGDimension QGInteractor::getPreferredSize() const {
+    QSize size = getInternalWidget()->getPreferredSize();
+    return QGDimension(size.width(), size.height());
+}
+
+QGDimension QGInteractor::getSize() const {
+    return QGDimension(getWidth(), getHeight());
 }
 
 double QGInteractor::getWidth() const {
@@ -147,7 +198,7 @@ void QGInteractor::setBounds(double x, double y, double width, double height) {
     getWidget()->setFixedSize((int) width, (int) height);
 }
 
-void QGInteractor::setBounds(const GRectangle& size) {
+void QGInteractor::setBounds(const QGRectangle& size) {
     setBounds(size.getX(), size.getY(), size.getWidth(), size.getHeight());
 }
 
@@ -194,16 +245,33 @@ void QGInteractor::setLocation(double x, double y) {
     getWidget()->setGeometry(x, y, getWidth(), getHeight());
 }
 
+void QGInteractor::setMinimumSize(double width, double height) {
+    getInternalWidget()->setMinimumSize(width, height);
+}
+
+void QGInteractor::setMinimumSize(const QGDimension& size) {
+    getInternalWidget()->setMinimumSize(size.getWidth(), size.getHeight());
+}
+
 void QGInteractor::setMnemonic(char /* mnemonic */) {
     // TODO
 }
 
+void QGInteractor::setPreferredSize(double width, double height) {
+    getInternalWidget()->setPreferredSize(width, height);
+}
+
+void QGInteractor::setPreferredSize(const QGDimension& size) {
+    getInternalWidget()->setPreferredSize(size.getWidth(), size.getHeight());
+}
+
 void QGInteractor::setSize(double width, double height) {
-    // setBounds(GRectangle(getX(), getY(), width, height));
+    // setBounds(QGRectangle(getX(), getY(), width, height));
+    getWidget()->setGeometry((int) getX(), (int) getY(), (int) width, (int) height);
     getWidget()->setFixedSize((int) width, (int) height);
 }
 
-void QGInteractor::setSize(const GDimension& size) {
+void QGInteractor::setSize(const QGDimension& size) {
     setSize(size.getWidth(), size.getHeight());
 }
 

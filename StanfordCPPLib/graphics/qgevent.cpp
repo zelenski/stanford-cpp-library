@@ -137,8 +137,8 @@ QGInteractor* QGEvent::getInteractor() const {
     return static_cast<QGInteractor*>(_source);
 }
 
-GPoint QGEvent::getLocation() const {
-    return GPoint(getX(), getY());
+QGPoint QGEvent::getLocation() const {
+    return QGPoint(getX(), getY());
 }
 
 QGObservable* QGEvent::getSource() const {
@@ -238,6 +238,10 @@ std::string QGEvent::keyCodeToString(int keyCode) {
     case '\\': return "\\";
     default: return charToString((char) keyCode);
     }
+}
+
+void QGEvent::setActionCommand(const std::string& actionCommand) {
+    _actionCommand = actionCommand;
 }
 
 void QGEvent::setButton(int button) {
@@ -430,11 +434,10 @@ std::ostream& operator <<(std::ostream& out, const QGEvent& event) {
     if (event.getSource()) {
         out << ",source=" << event.getSource()->toString();
     }
-    if (event.getEventClass() == QGEvent::ACTION_EVENT) {
-        if (!event.getActionCommand().empty()) {
-            out << ",actionCommand=\"" << event.getActionCommand() << "\"";
-        }
-    } else if (event.getEventClass() == QGEvent::KEY_EVENT) {
+    if (!event.getActionCommand().empty()) {
+        out << ",actionCommand=\"" << event.getActionCommand() << "\"";
+    }
+    if (event.getEventClass() == QGEvent::KEY_EVENT) {
         out << ",key=" << event.getKeyCode()
             << "(" << QGEvent::keyCodeToString(event.getKeyCode()) << ")";
     } else if (event.getEventClass() == QGEvent::MOUSE_EVENT) {

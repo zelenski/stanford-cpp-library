@@ -14,6 +14,7 @@
 #include <functional>
 #include <string>
 #include <QCheckBox>
+#include <QSize>
 #include <QWidget>
 #include "qginteractor.h"
 
@@ -26,6 +27,7 @@ class _Internal_QCheckBox : public QCheckBox, public _Internal_QWidget {
 
 public:
     _Internal_QCheckBox(QGCheckBox* qgcheckBox, bool checked = false, QWidget* parent = nullptr);
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
 public slots:
     void handleStateChange(int);
@@ -41,6 +43,8 @@ class QGCheckBox : public QGInteractor {
 public:
     QGCheckBox(const std::string& text = "", bool checked = false, QWidget* parent = nullptr);
     virtual ~QGCheckBox();
+    virtual std::string getActionCommand() const Q_DECL_OVERRIDE;
+    virtual _Internal_QWidget* getInternalWidget() const;
     virtual std::string getText() const;
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;

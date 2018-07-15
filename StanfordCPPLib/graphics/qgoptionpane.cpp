@@ -131,7 +131,8 @@ std::string QGOptionPane::showOptionDialog(QWidget* parent,
         box.setParent(parent);
     }
     box.setText(QString::fromStdString(message));
-    box.setWindowTitle(QString::fromStdString(title));
+    box.setWindowTitle(QString::fromStdString(titleToUse));
+    box.setAttribute(Qt::WA_QuitOnClose, false);
 
     for (std::string option : options) {
         box.addButton(QString::fromStdString(option), QMessageBox::ActionRole);

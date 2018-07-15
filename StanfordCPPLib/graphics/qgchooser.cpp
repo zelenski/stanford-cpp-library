@@ -21,8 +21,18 @@ void _Internal_QComboBox::handleChange() {
     QGEvent changeEvent(
                 /* class  */ QGEvent::CHANGE_EVENT,
                 /* type   */ QGEvent::STATE_CHANGED,
-                /* name   */ "change");
+                /* name   */ "change",
+                /* source */ _qgchooser);
+    changeEvent.setActionCommand(_qgchooser->getActionCommand());
     _qgchooser->fireEvent(changeEvent);
+}
+
+QSize _Internal_QComboBox::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QComboBox::sizeHint();
+    }
 }
 
 
@@ -73,6 +83,18 @@ void QGChooser::checkIndex(const std::string& member, int index, int min, int ma
 
 void QGChooser::clearItems() {
     _iqcomboBox->clear();
+}
+
+std::string QGChooser::getActionCommand() const {
+    if (_actionCommand.empty()) {
+        return getSelectedItem();
+    } else {
+        return _actionCommand;
+    }
+}
+
+_Internal_QWidget* QGChooser::getInternalWidget() const {
+    return _iqcomboBox;
 }
 
 std::string QGChooser::getItem(int index) const {

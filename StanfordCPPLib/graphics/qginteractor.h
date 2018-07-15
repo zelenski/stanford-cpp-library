@@ -13,12 +13,31 @@
 #include <string>
 #include <QObject>
 #include <QWidget>
-#include "gtypes.h"
 #include "map.h"
 #include "qgevent.h"
 #include "qgobservable.h"
+#include "qgtypes.h"
 
 class QGWindow;   // forward declaration
+
+class _Internal_QWidget {
+public:
+    virtual QSize getMinimumSize() const;
+    virtual bool hasMinimumSize() const;
+    virtual QSize getPreferredSize() const;
+    virtual bool hasPreferredSize() const;
+    virtual void setMinimumSize(double width, double height);
+    virtual void setMinimumSize(const QSize& size);
+    virtual void setPreferredSize(double width, double height);
+    virtual void setPreferredSize(const QSize& size);
+
+protected:
+    _Internal_QWidget();
+
+private:
+    QGDimension _minimumSize;
+    QGDimension _preferredSize;
+};
 
 /*
  * ...
@@ -37,13 +56,16 @@ public:
     virtual std::string getActionCommand() const;
     virtual std::string getBackground() const;
     virtual int getBackgroundInt() const;
-    virtual GRectangle getBounds() const;
+    virtual QGRectangle getBounds() const;
     virtual std::string getFont() const;
     virtual double getHeight() const;
     virtual std::string getIcon() const;
-    virtual GPoint getLocation() const;
+    virtual _Internal_QWidget* getInternalWidget() const = 0;
+    virtual QGPoint getLocation() const;
+    virtual QGDimension getMinimumSize() const;
     virtual char getMnemonic() const;
-    virtual GDimension getSize() const;
+    virtual QGDimension getPreferredSize() const;
+    virtual QGDimension getSize() const;
     virtual std::string getType() const = 0;
     virtual QWidget* getWidget() const = 0;
     virtual double getWidth() const;
@@ -59,7 +81,7 @@ public:
     virtual void setBackground(int rgb);
     virtual void setBackground(const std::string& color);
     virtual void setBounds(double x, double y, double width, double height);
-    virtual void setBounds(const GRectangle& size);
+    virtual void setBounds(const QGRectangle& size);
     virtual void setColor(int rgb);
     virtual void setColor(const std::string& color);
     virtual void setEnabled(bool value);
@@ -69,9 +91,13 @@ public:
     virtual void setHeight(double height);
     virtual void setIcon(const std::string& filename, bool retainIconSize = true);
     virtual void setLocation(double x, double y);
+    virtual void setMinimumSize(double width, double height);
+    virtual void setMinimumSize(const QGDimension& size);
     virtual void setMnemonic(char mnemonic);
+    virtual void setPreferredSize(double width, double height);
+    virtual void setPreferredSize(const QGDimension& size);
     virtual void setSize(double width, double height);
-    virtual void setSize(const GDimension& size);
+    virtual void setSize(const QGDimension& size);
     virtual void setTooltip(const std::string& tooltipText);
     virtual void setVisible(bool visible);
     virtual void setWidth(double width);
@@ -86,10 +112,6 @@ protected:
     std::string _icon;
 
     friend class QGWindow;
-};
-
-class _Internal_QWidget {
-    // empty
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

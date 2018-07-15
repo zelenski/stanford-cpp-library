@@ -18,7 +18,7 @@
 #include <QPainter>
 #include <QPen>
 #include <QWidget>
-#include "gtypes.h"
+#include "qgtypes.h"
 #include "vector.h"
 
 // forward declaration of class
@@ -67,7 +67,7 @@ public:
      * Returns <code>true</code> if the specified point is inside the object.
      */
     virtual bool contains(double x, double y) const;
-    virtual bool contains(const GPoint& pt) const;
+    virtual bool contains(const QGPoint& pt) const;
 
     /*
      * Draws this object onto the given surface.
@@ -82,11 +82,11 @@ public:
      * Equivalent to the top y-coordinate plus the object's height.
      */
     virtual double getBottomY() const;
-    virtual GPoint getBottomRightLocation() const;
+    virtual QGPoint getBottomRightLocation() const;
 
     /*
      * Method: getBounds
-     * Usage: GRectangle rect = gobj->getBounds();
+     * Usage: QGRectangle rect = gobj->getBounds();
      * -------------------------------------------
      * Returns the bounding box of this object, which is defined to be the
      * smallest rectangle that covers everything drawn by the figure.  The
@@ -97,18 +97,18 @@ public:
      * <code>getBounds</code> method, by contrast, returns a rectangle that
      * covers the entire window area occupied by the string.
      */
-    virtual GRectangle getBounds() const;
+    virtual QGRectangle getBounds() const;
 
     /*
      * Method: getCenterX/Y
      * Usage: double centerX = gobj->getCenterX();
      *        double centerY = gobj->getCenterY();
-     *        GPoint center = gobj->getCenterLocation();
+     *        QGPoint center = gobj->getCenterLocation();
      * -------------------------------------------------
      * Returns the <i>x</i>-coordinate of the center of the object.
      * Equivalent to the top/left plus half the object's size.
      */
-    virtual GPoint getCenterLocation() const;
+    virtual QGPoint getCenterLocation() const;
     virtual double getCenterX() const;
     virtual double getCenterY() const;
 
@@ -152,11 +152,11 @@ public:
 
     /*
      * Method: getLocation
-     * Usage: GPoint pt = gobj->getLocation();
+     * Usage: QGPoint pt = gobj->getLocation();
      * ---------------------------------------
-     * Returns the location of the top-left corner of object as a <code>GPoint</code>.
+     * Returns the location of the top-left corner of object as a <code>QGPoint</code>.
      */
-    virtual GPoint getLocation() const;
+    virtual QGPoint getLocation() const;
 
     /*
      * Method: getLineWidth
@@ -191,11 +191,11 @@ public:
 
     /*
      * Method: getSize
-     * Usage: GDimension size = gobj->getSize();
+     * Usage: QQGDimension size = gobj->getSize();
      * -----------------------------------------
-     * Returns the size of the object as a <code>GDimension</code>.
+     * Returns the size of the object as a <code>QQGDimension</code>.
      */
-    virtual GDimension getSize() const;
+    virtual QGDimension getSize() const;
 
     /*
      * Method: getType
@@ -350,7 +350,7 @@ public:
      * Changes the bounds of this object to the specified values.
      */
     virtual void setBounds(double x, double y, double width, double height);
-    virtual void setBounds(const GRectangle& size);
+    virtual void setBounds(const QGRectangle& size);
 
     /*
      * Method: setCenter/X/Y
@@ -364,7 +364,7 @@ public:
     virtual void setBottomY(double y);
     virtual void setRightX(double x);
     virtual void setBottomRightLocation(double x, double y);
-    virtual void setBottomRightLocation(const GPoint& pt);
+    virtual void setBottomRightLocation(const QGPoint& pt);
 
     /*
      * Method: setCenter/X/Y
@@ -378,7 +378,7 @@ public:
     virtual void setCenterX(double x);
     virtual void setCenterY(double y);
     virtual void setCenterLocation(double x, double y);
-    virtual void setCenterLocation(const GPoint& pt);
+    virtual void setCenterLocation(const QGPoint& pt);
 
     /*
      * Method: setColor
@@ -476,7 +476,7 @@ public:
      * Sets the location of the top-left corner of this object to the specified point.
      */
     virtual void setLocation(double x, double y);
-    virtual void setLocation(const GPoint& pt);
+    virtual void setLocation(const QGPoint& pt);
 
     /*
      * Method: setSize
@@ -486,7 +486,7 @@ public:
      * Changes the size of this rectangle to the specified width and height.
      */
     virtual void setSize(double width, double height);
-    virtual void setSize(const GDimension& size);
+    virtual void setSize(const QGDimension& size);
 
     /*
      * Method: setVisible
@@ -608,19 +608,19 @@ public:
 
     /*
      * Method: getEndPoint
-     * Usage: GPoint pt = arc->getEndPoint();
+     * Usage: QGPoint pt = arc->getEndPoint();
      * --------------------------------------
      * Returns the point at which the arc ends.
      */
-    virtual GPoint getEndPoint() const;
+    virtual QGPoint getEndPoint() const;
 
     /*
      * Method: getFrameRectangle
-     * Usage: GRectangle rect = arc->getFrameRectangle();
+     * Usage: QGRectangle rect = arc->getFrameRectangle();
      * --------------------------------------------------
      * Returns the boundaries of the rectangle used to frame the arc.
      */
-    virtual GRectangle getFrameRectangle() const;
+    virtual QGRectangle getFrameRectangle() const;
 
     /*
      * Method: getStartAngle
@@ -632,11 +632,11 @@ public:
 
     /*
      * Method: getStartPoint
-     * Usage: GPoint pt = arc->getStartPoint();
+     * Usage: QGPoint pt = arc->getStartPoint();
      * ----------------------------------------
      * Returns the point at which the arc starts.
      */
-    virtual GPoint getStartPoint() const;
+    virtual QGPoint getStartPoint() const;
 
     /*
      * Method: getSweepAngle
@@ -653,7 +653,7 @@ public:
      * ---------------------------------------------------
      * Changes the boundaries of the rectangle used to frame the arc.
      */
-    virtual void setFrameRectangle(const GRectangle& rect);
+    virtual void setFrameRectangle(const QGRectangle& rect);
     virtual void setFrameRectangle(double x, double y, double width, double height);
 
     /*
@@ -674,13 +674,13 @@ public:
 
     /* Prototypes for the virtual methods */
     virtual bool contains(double x, double y) const;
-    virtual GRectangle getBounds() const;
+    virtual QGRectangle getBounds() const;
     virtual std::string getType() const;
     virtual std::string toStringExtra() const;
 
 private:
     virtual bool containsAngle(double theta) const;
-    virtual GPoint getArcPoint(double theta) const;
+    virtual QGPoint getArcPoint(double theta) const;
 
     /* Instance variables */
     double _start;                   /* Starting angle of the arc       */
@@ -733,7 +733,7 @@ public:
      */
     virtual void conditionalRepaint();
     virtual void conditionalRepaintRegion(int x, int y, int width, int height);
-    virtual void conditionalRepaintRegion(const GRectangle& bounds);
+    virtual void conditionalRepaintRegion(const QGRectangle& bounds);
 
     /*
      * Draws all objects stored in this compound using the given painter pen.
@@ -793,7 +793,7 @@ public:
 
     virtual void repaint();
     virtual void repaintRegion(int x, int y, int width, int height);
-    virtual void repaintRegion(const GRectangle& bounds);
+    virtual void repaintRegion(const QGRectangle& bounds);
 
     virtual void setAutoRepaint(bool autoRepaint);
 
@@ -801,7 +801,7 @@ public:
 
     /* Prototypes for the virtual methods */
     virtual bool contains(double x, double y) const;
-    virtual GRectangle getBounds() const;
+    virtual QGRectangle getBounds() const;
     virtual std::string getType() const;
     virtual std::string toString() const;
 
@@ -910,25 +910,25 @@ public:
      * <code>p0</code> defines the start of the line and the point
      * <code>p1</code> defines the end.
      */
-    QGLine(const GPoint& p0, const GPoint& p1);
+    QGLine(const QGPoint& p0, const QGPoint& p1);
 
     virtual void draw(QPainter* painter);
 
     /*
      * Method: getEndPoint
-     * Usage: GPoint pt = line->getEndPoint();
+     * Usage: QGPoint pt = line->getEndPoint();
      * ---------------------------------------
      * Returns the point at which the line ends.
      */
-    virtual GPoint getEndPoint() const;
+    virtual QGPoint getEndPoint() const;
 
     /*
      * Method: getStartPoint
-     * Usage: GPoint pt = line->getStartPoint();
+     * Usage: QGPoint pt = line->getStartPoint();
      * -----------------------------------------
      * Returns the point at which the line starts.
      */
-    virtual GPoint getStartPoint() const;
+    virtual QGPoint getStartPoint() const;
 
     /*
      * Method: setEndPoint
@@ -952,7 +952,7 @@ public:
 
     /* Prototypes for the virtual methods */
     virtual bool contains(double x, double y) const;
-    virtual GRectangle getBounds() const;
+    virtual QGRectangle getBounds() const;
     virtual double getHeight() const;
     virtual std::string getType() const;
     virtual double getWidth() const;
@@ -1051,7 +1051,7 @@ public:
      * Constructs a new polygon with the given vertex coordinates at the origin.
      */
     QGPolygon(std::initializer_list<double> coords);
-    QGPolygon(std::initializer_list<GPoint> points);
+    QGPolygon(std::initializer_list<QGPoint> points);
 
     /*
      * Method: addEdge
@@ -1061,7 +1061,7 @@ public:
      * <code>dx</code> and <code>dy</code> from the last vertex.
      */
     virtual void addEdge(double dx, double dy);
-    virtual void addEdge(const GPoint& pt);
+    virtual void addEdge(const QGPoint& pt);
 
     /*
      * Method: addEdges
@@ -1071,7 +1071,7 @@ public:
      * displacements <code>dx</code> and <code>dy</code> from the last vertex.
      */
     virtual void addEdges(std::initializer_list<double> coords);
-    virtual void addEdges(std::initializer_list<GPoint> points);
+    virtual void addEdges(std::initializer_list<QGPoint> points);
 
     /*
      * Method: addPolarEdge
@@ -1092,7 +1092,7 @@ public:
      * origin.
      */
     virtual void addVertex(double x, double y);
-    virtual void addVertex(const GPoint& pt);
+    virtual void addVertex(const QGPoint& pt);
 
     /*
      * Method: addVertexes
@@ -1102,21 +1102,21 @@ public:
      * coordinates <code>dx</code> and <code>dy</code> relative to the polygon origin.
      */
     virtual void addVertexes(std::initializer_list<double> coords);
-    virtual void addVertexes(std::initializer_list<GPoint> points);
+    virtual void addVertexes(std::initializer_list<QGPoint> points);
 
     virtual void draw(QPainter* painter);
 
     /*
      * Method: getVertices
-     * Usage: Vector<GPoint> vec = poly->getVertices();
+     * Usage: Vector<QGPoint> vec = poly->getVertices();
      * ------------------------------------------------
      * Returns a vector of the points in the polygon.
      */
-    virtual Vector<GPoint> getVertices() const;
+    virtual Vector<QGPoint> getVertices() const;
 
     /* Prototypes for the virtual methods */
     virtual bool contains(double x, double y) const;
-    virtual GRectangle getBounds() const;
+    virtual QGRectangle getBounds() const;
     virtual double getHeight() const;
     virtual std::string getType() const;
     virtual double getWidth() const;
@@ -1333,7 +1333,7 @@ public:
     virtual void setText(const std::string& str);
 
     /* Prototypes for the virtual methods */
-    virtual GRectangle getBounds() const;
+    virtual QGRectangle getBounds() const;
     virtual std::string getType() const;
     virtual std::string toStringExtra() const;
 

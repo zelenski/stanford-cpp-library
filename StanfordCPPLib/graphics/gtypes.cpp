@@ -3,6 +3,8 @@
  * ----------------
  * This file implements the classes in the gtypes.h interface.
  * 
+ * @version 2018/07/14
+ * - removed *= operators to restore immutability
  * @version 2017/10/16
  * - added GPoint operators *, *=
  * - added GPoint::toPolar
@@ -94,12 +96,6 @@ GDimension operator *(const GDimension& d, double scale) {
     return GDimension(d.width * scale, d.height * scale);
 }
 
-GDimension& operator *=(GDimension& d, double scale) {
-    d.width *= scale;
-    d.height *= scale;
-    return d;
-}
-
 int hashCode(const GDimension& dim) {
     return hashCode2(dim.width, dim.height);
 }
@@ -169,13 +165,6 @@ GPoint operator *(const GPoint& p, double scale) {
     return GPoint(p.x * scale, p.y * scale);
 }
 
-GPoint& operator *=(GPoint& p, double scale) {
-    p.x *= scale;
-    p.y *= scale;
-    return p;
-}
-
-
 int hashCode(const GPoint& pt) {
     return hashCode2(pt.x, pt.y);
 }
@@ -224,17 +213,8 @@ GRectangle::GRectangle(const GPoint& p, const GDimension& size) {
     this->height = size.getHeight();
 }
 
-void GRectangle::enlargeBy(double amount) {
-    this->x -= amount;
-    this->y -= amount;
-    this->width += 2 * amount;
-    this->height += 2 * amount;
-}
-
 GRectangle GRectangle::enlargedBy(double amount) {
-    GRectangle copy(*this);
-    copy.enlargeBy(amount);
-    return copy;
+    return GRectangle(x - amount, y - amount, width + 2 * amount, height + 2 * amount);
 }
 
 double GRectangle::getX() const {

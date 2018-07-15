@@ -16,6 +16,15 @@ _Internal_QLabel::_Internal_QLabel(QGLabel* qglabel, QWidget* parent)
     // empty
 }
 
+QSize _Internal_QLabel::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QLabel::sizeHint();
+    }
+}
+
+
 QGLabel::QGLabel(const std::string& text, const std::string& iconFileName, QWidget* parent) {
     _iqlabel = new _Internal_QLabel(this, getInternalParent(parent));
     setText(text);
@@ -27,6 +36,10 @@ QGLabel::QGLabel(const std::string& text, const std::string& iconFileName, QWidg
 QGLabel::~QGLabel() {
     // TODO: delete _iqlabel;
     _iqlabel = nullptr;
+}
+
+_Internal_QWidget* QGLabel::getInternalWidget() const {
+    return _iqlabel;
 }
 
 std::string QGLabel::getLabel() const {
@@ -83,7 +96,7 @@ void QGLabel::setLabel(const std::string& text) {
 
 void QGLabel::setText(const std::string& text) {
     _iqlabel->setText(QString::fromStdString(text));
-    _iqlabel->updateGeometry();
+    QGBorderLayout::forceUpdate(_iqlabel);
 }
 
 void QGLabel::setTextPosition(QGInteractor::TextPosition position) {
