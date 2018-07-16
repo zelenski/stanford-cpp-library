@@ -58,7 +58,6 @@ private:
     static QGuiEventQueue* _instance;
     Queue<QGThunk> _functionQueue;
     QMutex _queueMutex;
-    bool _alive;
 
     friend class QGui;
 };
