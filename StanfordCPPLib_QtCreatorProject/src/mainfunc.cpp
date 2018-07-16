@@ -744,7 +744,10 @@ void testQwindow() {
 //            cout << "timer! event=" << event << endl;
 //        });
 
-        window->setCanvasSize(666, 444);
+        static QGBrowserPane* browserPane = new QGBrowserPane("resfile3.html");
+        window->addToRegion(browserPane, "Center");
+
+        window->setCanvasSize(900, 500);
 
         window->setMouseHandler([](QGEvent event) {
             if (event.getType() == QGEvent::MOUSE_MOVED) {

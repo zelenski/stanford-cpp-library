@@ -12,6 +12,7 @@
 #ifndef _qginteractors_h
 #define _qginteractors_h
 
+#include "qgbrowserpane.h"
 #include "qgbufferedimage.h"
 #include "qgbutton.h"
 #include "qgcanvas.h"
