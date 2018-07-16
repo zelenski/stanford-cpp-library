@@ -7,12 +7,15 @@
  */
 
 #include "qgtextarea.h"
+#include "qgcolor.h"
+#include "qgfont.h"
 #include "qgwindow.h"
 #include "strlib.h"
 
 _Internal_QTextEdit::_Internal_QTextEdit(QGTextArea* qgtextArea, QWidget* parent)
         : QTextEdit(parent),
           _qgtextarea(qgtextArea) {
+    this->document()->setUndoRedoEnabled(false);
     connect(this, SIGNAL(textChanged()), this, SLOT(handleTextChange()));
 }
 
@@ -50,8 +53,55 @@ QGTextArea::~QGTextArea() {
     _iqtextedit = nullptr;
 }
 
+void QGTextArea::appendFormattedText(const std::string& text, const std::string& color, const std::string& font) {
+    // move text cursor to end
+    QTextCursor cursor = _iqtextedit->textCursor();
+    cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor, 1);
+    _iqtextedit->setTextCursor(cursor);
+
+    QFont oldFont = _iqtextedit->font();
+    QColor oldColor = _iqtextedit->textColor();
+    QFont newFont = QGFont::toQFont(font);
+    QColor newColor(QGColor::convertColorToRGB(color));
+    if (!font.empty()) {
+        _iqtextedit->setFont(newFont);
+    }
+    if (!color.empty()) {
+        _iqtextedit->setTextColor(newColor);
+    }
+
+    // _iqtextedit->append(QString::fromStdString(text));
+    _iqtextedit->insertPlainText(QString::fromStdString(text));
+
+    if (!font.empty()) {
+        _iqtextedit->setFont(oldFont);
+    }
+    if (!color.empty()) {
+        _iqtextedit->setTextColor(oldColor);
+    }
+
+    _iqtextedit->ensureCursorVisible();
+}
+
+void QGTextArea::appendHtml(const std::string& html) {
+    // TODO: use insertHtml for speed?
+    setHtml(getHtml() + html);
+}
+
+void QGTextArea::appendText(const std::string& text) {
+    _iqtextedit->append(QString::fromStdString(text));
+}
+
+void QGTextArea::clearText() {
+    _iqtextedit->clear();
+}
+
 int QGTextArea::getColumns() const {
     return (int) (getHeight() / getRowColumnSize().getWidth());
+}
+
+std::string QGTextArea::getHtml() const {
+    return _iqtextedit->toHtml().toStdString();
 }
 
 _Internal_QWidget* QGTextArea::getInternalWidget() const {
@@ -98,6 +148,13 @@ void QGTextArea::setColumns(int columns) {
 
 void QGTextArea::setEditable(bool value) {
     _iqtextedit->setReadOnly(!value);
+}
+
+void QGTextArea::setHtml(const std::string& html) {
+    _iqtextedit->setHtml(QString::fromStdString(html));
+    QTextCursor cursor = _iqtextedit->textCursor();
+    cursor.movePosition(QTextCursor::End);
+    _iqtextedit->setTextCursor(cursor);
 }
 
 void QGTextArea::setPlaceholder(const std::string& text) {

@@ -280,7 +280,7 @@ QMAKE_CXXFLAGS += -Wall
 QMAKE_CXXFLAGS += -Wextra
 # QMAKE_CXXFLAGS += -Weffc++
 QMAKE_CXXFLAGS += -Wcast-align
-QMAKE_CXXFLAGS += -Wfloat-equal
+#QMAKE_CXXFLAGS += -Wfloat-equal
 QMAKE_CXXFLAGS += -Wformat=2
 QMAKE_CXXFLAGS += -Wlogical-op
 #QMAKE_CXXFLAGS += -Wlong-long
@@ -303,15 +303,15 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
     QMAKE_CXXFLAGS += -Wno-useless-cast
 } else {
     #QMAKE_CXXFLAGS += -Wuseless-cast
-    QMAKE_CXXFLAGS += -Wzero-as-null-pointer-constant
-    QMAKE_CXXFLAGS += -Werror=zero-as-null-pointer-constant
+    #QMAKE_CXXFLAGS += -Wzero-as-null-pointer-constant   # TODO: re-enable for student code?
+    #QMAKE_CXXFLAGS += -Werror=zero-as-null-pointer-constant
 }
 
 # additional flags for Windows
 win32 {
     # disable inclusion of Qt core libraries (smaller,faster build)
     # CONFIG -= qt
-    QT -= core gui opengl widgets
+    # QT -= core gui opengl widgets
 
     # increase system stack size (helpful for recursive programs)
     QMAKE_LFLAGS += -Wl,--stack,268435456
@@ -330,7 +330,7 @@ macx {
 
     # disable inclusion of Qt core libraries (smaller,faster build)
     # CONFIG -= qt
-    QT -= core gui opengl widgets
+    # QT -= core gui opengl widgets
 
     # calling cache() reduces warnings on Mac OS X systems
     cache()

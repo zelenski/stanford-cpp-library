@@ -196,6 +196,8 @@ QGWindow::QGWindow(double width, double height, bool visible)
         : _canvas(nullptr),
           _resizable(true),
           _closeOperation(QGWindow::CLOSE_DISPOSE) {
+    QGui::instance()->ensureThatThisIsTheQtGuiThread("QGWindow::constructor");
+    QGui::instance()->initializeQt();
     _iqmainwindow = new _Internal_QMainWindow(this);
     _lastWindow = _iqmainwindow;
 
@@ -1012,6 +1014,13 @@ void QGWindow::setX(double x) {
 
 void QGWindow::setY(double y) {
     setLocation(getX(), y);
+}
+
+void QGWindow::sleep(double ms) {
+    QThread* thread = _iqmainwindow->thread();
+    if (thread) {
+        thread->msleep((long) ms);
+    }
 }
 
 QGWindow::HorizontalAlignment QGWindow::stringToHorizontalAlignment(const std::string& alignmentStr) {

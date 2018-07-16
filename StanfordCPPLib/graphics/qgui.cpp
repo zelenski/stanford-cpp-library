@@ -32,6 +32,17 @@ int QGStudentThread::getResult() const {
 void QGStudentThread::run() {
     this->yieldCurrentThread();
     _result = _mainFunc();
+
+    // if I get here, student's main() has finished running;
+    // indicate this by showing a new title on the graphical console
+    QGui::instance()->runOnQtGuiThreadAsync([]() {
+        // flush out any unwritten output to the standard output streams
+        std::cout.flush();
+        std::cerr.flush();
+
+        extern void __shutdownStanfordCppLibraryQt();
+        __shutdownStanfordCppLibraryQt();
+    });
 }
 
 
@@ -119,7 +130,9 @@ void QGui::exitGraphics(int exitCode) {
     if (_app) {
 // need to temporarily turn off C++ lib exit macro to call QApplication's exit method
 #undef exit
-        _app->exit(exitCode);
+        _app->quit();
+        _app = nullptr;
+        std::exit(exitCode);
 #define exit __stanfordCppLibExit
     } else {
         std::exit(exitCode);
@@ -169,15 +182,21 @@ void QGui::mySlot() {
     }
 }
 
+bool QGui::qtGuiThreadExists() {
+    return _qtMainThread != nullptr;
+}
+
 void QGui::runOnQtGuiThread(QGThunk func) {
     // send timer "event" telling GUI thread what to do
 //    QEvent* event = new QEvent((QEvent::Type) (QEvent::User + 106));
 //    QCoreApplication::postEvent(QGWindow::getLastWindow(), event);
-    if (QGui::instance()->iAmRunningOnTheQtGuiThread()) {
+    if (iAmRunningOnTheQtGuiThread()) {
         // already on Qt GUI thread; just run the function!
         func();
-    } else {
+    } else if (qtGuiThreadExists()) {
         QGuiEventQueue::instance()->runOnQtGuiThreadSync(func);
+    } else {
+        error("QGui::runOnQtGuiThread: Qt GUI thread no longer exists");
     }
 }
 
@@ -185,8 +204,10 @@ void QGui::runOnQtGuiThreadAsync(QGThunk func) {
     if (QGui::instance()->iAmRunningOnTheQtGuiThread()) {
         // already on Qt GUI thread; just run the function!
         func();
-    } else {
+    } else if (QGui::instance()->qtGuiThreadExists()) {
         QGuiEventQueue::instance()->runOnQtGuiThreadAsync(func);
+    } else {
+        error("QGui::runOnQtGuiThreadAsync: Qt GUI thread no longer exists");
     }
 }
 
@@ -210,12 +231,20 @@ void QGui::startEventLoop() {
     if (!_app) {
         error("QGui::startEventLoop: need to initialize Qt first");
     }
-    _app->exec();   // start Qt event loop on main thread; blocks
+    int exitCode = _app->exec();   // start Qt event loop on main thread; blocks
+
+    // if I get here, it means an "exit on close" window was just closed;
+    // it's time to shut down the Qt system and exit the C++ program
+    exitGraphics(exitCode);
 }
 
-#define __DONT_ENABLE_GRAPHICAL_CONSOLE
-#include "console.h"
-#undef __DONT_ENABLE_GRAPHICAL_CONSOLE
+bool QGui::studentThreadExists() {
+    return _studentThread != nullptr;
+}
+
+#define __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
+#include "qconsole.h"
+#undef __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
 
 static int (* _mainFunc)(void);
 
@@ -248,6 +277,12 @@ void __parseArgsQt(int argc, char** argv) {
     }
 }
 
+namespace stanfordcpplib {
+    namespace qtgui {
+        extern void ensureConsoleWindow();
+    }
+}
+
 // called automatically by real main() function;
 // call to this is inserted by library init.h
 // to be run in Qt main thread
@@ -271,13 +306,18 @@ void __initializeStanfordCppLibraryQt(int argc, char** argv, int (* mainFunc)(vo
     // TODO: remove/change to Qt graphical console
     static std::ios_base::Init ios_base_init;
 
+    // initialize Qt graphical console
+    if (::stanfordcpplib::qtgui::getConsoleEnabled()) {
+        ::stanfordcpplib::qtgui::ensureConsoleWindow();
+    }
+
+
 #if defined(SPL_CONSOLE_PRINT_EXCEPTIONS)
-    // TODO: remove/change to Qt graphical console
-    setConsolePrintExceptions(true);
+    ::stanfordcpplib::qtgui::setConsolePrintExceptions(true);
 #endif
 
     // TODO: remove
-    extern void initPipe();
+    // extern void initPipe();
     // initPipe();
 
     // set up student's main function
@@ -288,16 +328,15 @@ void __initializeStanfordCppLibraryQt(int argc, char** argv, int (* mainFunc)(vo
 // to be run in Qt main thread
 void __shutdownStanfordCppLibraryQt() {
     // TODO
-//    const std::string PROGRAM_COMPLETED_TITLE_SUFFIX = " [completed]";
+    const std::string PROGRAM_COMPLETED_TITLE_SUFFIX = " [completed]";
 
-
-//    if (getConsoleEnabled()) {
-//        std::string title = getConsoleWindowTitle();
-//        if (title == "") {
-//            title = "Console";
-//        }
-//        if (title.find("terminated") == std::string::npos) {
-//            ::setConsoleWindowTitle(title + PROGRAM_COMPLETED_TITLE_SUFFIX);
-//        }
-//    }
+    if (stanfordcpplib::qtgui::getConsoleEnabled()) {
+        std::string title = stanfordcpplib::qtgui::getConsoleWindowTitle();
+        if (title == "") {
+            title = "Console";
+        }
+        if (title.find("terminated") == std::string::npos) {
+            stanfordcpplib::qtgui::setConsoleWindowTitle(title + PROGRAM_COMPLETED_TITLE_SUFFIX);
+        }
+    }
 }

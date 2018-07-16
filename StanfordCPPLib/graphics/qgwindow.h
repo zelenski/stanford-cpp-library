@@ -217,6 +217,7 @@ public:
     virtual void setWindowTitle(const std::string& title);
     virtual void setX(double x);
     virtual void setY(double y);
+    virtual void sleep(double ms);
     virtual void toBack();
     virtual void toFront();
 

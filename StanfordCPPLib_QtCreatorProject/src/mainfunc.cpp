@@ -2,7 +2,7 @@
  * Test file for verifying the Stanford C++ lib functionality.
  */
 
-////#include "console.h"
+//#include "console.h"
 //#include "error.h"
 //#include "collections.h"
 //#include "exceptions.h"
@@ -537,6 +537,7 @@ int testAllUrls() {
 #include "qgobjects.h"
 #include "qginteractors.h"
 #include "qgui.h"
+#include "timer.h"
 
 void grayscale(QGBufferedImage* image) {
     // convert image to grayscale
@@ -758,318 +759,390 @@ void testQwindow() {
     });
 }
 
-void testQwindowDrawing() {
-    static QGWindow* window = nullptr;
-    static QGOval* ball = nullptr;
-    static QGButton* button = nullptr;
-    static QGButton* button2 = nullptr;
-    static QGButton* button3 = nullptr;
-    static QGButton* button4 = nullptr;
-    static QGButton* button5 = nullptr;
-    static QGButton* saveButton = nullptr;
-    static QGLabel* label = nullptr;
-    static QGLabel* label2 = nullptr;
-    static double dx = 5;
-    static double dy = 3;
+//void testQwindowDrawing() {
+//    static QGWindow* window = nullptr;
+//    static QGOval* ball = nullptr;
+//    static QGButton* button = nullptr;
+//    static QGButton* button2 = nullptr;
+//    static QGButton* button3 = nullptr;
+//    static QGButton* button4 = nullptr;
+//    static QGButton* button5 = nullptr;
+//    static QGButton* saveButton = nullptr;
+//    static QGLabel* label = nullptr;
+//    static QGLabel* label2 = nullptr;
+//    static double dx = 5;
+//    static double dy = 3;
 
-    QGui::instance()->runOnQtGuiThread([]() {
-        window = new QGWindow(900, 500);
-        window->setTitle("QtGui Drawing Window");
-        // window->setResizable(false);
-        // window->setBackground("yellow");
-        window->center();
+//    QGui::instance()->runOnQtGuiThread([]() {
+//        window = new QGWindow(900, 500);
+//        window->setTitle("QtGui Drawing Window");
+//        // window->setResizable(false);
+//        // window->setBackground("yellow");
+//        window->center();
 
-        label = new QGLabel("QtGui <b>AWESOME</b> <i>cool</i> window");
-        label2 = new QGLabel("????????????");
-        window->addToRegion(label2, "North");
-        window->addToRegion(label, "North");
+//        label = new QGLabel("QtGui <b>AWESOME</b> <i>cool</i> window");
+//        label2 = new QGLabel("????????????");
+//        window->addToRegion(label2, "North");
+//        window->addToRegion(label, "North");
 
-        ball = new QGOval(20, 20, 50, 50);
-        ball->setFillColor("red");
-        ball->setLineWidth(2);
-        ball->setLineStyle(QGObject::LINE_DOT);
-        window->add(ball);
+//        ball = new QGOval(20, 20, 50, 50);
+//        ball->setFillColor("red");
+//        ball->setLineWidth(2);
+//        ball->setLineStyle(QGObject::LINE_DOT);
+//        window->add(ball);
 
-        window->setRegionAlignment("North", "Left");
-        window->setRegionAlignment("South", "Right");
+//        window->setRegionAlignment("North", "Left");
+//        window->setRegionAlignment("South", "Right");
 
-        button = new QGButton("Tick");
-        button2 = new QGButton("Pixels");
-        button3 = new QGButton("Repaint");
-        button4 = new QGButton("Clear");
-        button5 = new QGButton("BG");
-        saveButton = new QGButton("Save");
+//        button = new QGButton("Tick");
+//        button2 = new QGButton("Pixels");
+//        button3 = new QGButton("Repaint");
+//        button4 = new QGButton("Clear");
+//        button5 = new QGButton("BG");
+//        saveButton = new QGButton("Save");
 
-        window->addToRegion(button, "South");
-        window->addToRegion(button2, "South");
-        window->addToRegion(button3, "South");
-        window->addToRegion(button4, "South");
-        window->addToRegion(button5, "South");
-        window->addToRegion(saveButton, "South");
+//        window->addToRegion(button, "South");
+//        window->addToRegion(button2, "South");
+//        window->addToRegion(button3, "South");
+//        window->addToRegion(button4, "South");
+//        window->addToRegion(button5, "South");
+//        window->addToRegion(saveButton, "South");
 
-        window->setCanvasSize(900, 500);
+//        window->setCanvasSize(900, 500);
 
 
-//        window->setBackground("yellow");
-//        window->setColor("red");
-//        window->setFillColor("red");
-    });
-
-    // drawing directly onto window
-//    window->setColor("blue");
-//    window->setFillColor("yellow");
-//    window->fillOval(20, 120, 40, 60);
-//    window->setColor("red");
-//    window->setFillColor("green");
-//    window->setLineWidth(3);
-//    window->fillRect(10, 30, 120, 70);
-//    window->drawLine(100, 100, 200, 150);
-
-    // pixely stuff
-
-    window->setColor("black");
-    window->setFillColor("red");
-    window->setLineWidth(5);   // BUG: affects later shapes
-    window->setLineStyle(QGObject::LINE_DASH);
-    window->drawRect(20, 220, 100, 100);
-    window->fillArc(20, 220, 100, 100, 45, 120);
-
-    window->setFillColor("purple");
-    window->setFont("Monospaced-bold-16");
-    window->fillPolygon({200, 200, 250, 300, 150, 300});
-
-    window->setColor("green");
-    QGString* qgstring = new QGString("Hello, Qt!", 200, 80);
-    qgstring->setColor("green");
-    qgstring->rotate(10);
-    window->add(qgstring);
-
-    QGString* qgstring2 = new QGString("Bye, Felicia!", 220, 100);
-    qgstring2->setColor("red");
-    qgstring2->scale(1.5);
-    window->add(qgstring2);
-
-    QGImage* qgimage = new QGImage("triangle-icon.png", 200, 40);
-    window->add(qgimage);
-
-    window->setColor("blue");
-    QGString* qgstring3 = new QGString("Third string", 240, 120);
-    qgstring3->setColor("blue");
-    window->add(qgstring3);
-
-//    // animation loop
-//    cout << "testQwindowDrawing: What thread am I? " << QGui::instance()->getCurrentThread() << endl;
-//    cout << "testQwindowDrawing: Qt gui main thread = " << QGui::instance()->getQtMainThread()
-//         << ", student thread = " << QGui::instance()->getStudentThread() << endl;
-
-    std::function<void()> tickFunc = []() {
-//        cout << "tick func: What thread am I? " << QGui::instance()->getCurrentThread() << endl;
-//        cout << "tick func: dx=" << dx << ",dy=" << dy << endl;
-//        cout << "tick func: ball = " << ball->toString() << endl;
-        window->pause(20);
-        ball->move(dx, dy);
-        double cw = window->getCanvasWidth();
-        double ch = window->getCanvasHeight();
-        if (ball->getX() < 0 || ball->getRightX() >= cw) {
-            dx = -dx;
-        }
-        if (ball->getY() < 0 || ball->getBottomY() >= ch) {
-            dy = -dy;
-        }
-        // cout << "ball loc is now: " << ball->getLocation() << endl;
-    };
-    button->setClickHandler(tickFunc);
-
-    button2->setClickHandler([]() {
-        for (int y = 3*window->getCanvasHeight()/4; y < window->getCanvasHeight(); y++) {
-            for (int x = 3*window->getCanvasWidth()/4; x < window->getCanvasWidth(); x++) {
-                int r = (x * 2) % 256;
-                int g = (y * 2) % 256;
-                int b = ((x+y) * 2) % 256;
-                window->setPixel(x, y, r, g, b);
-            }
-        }
-    });
-
-    button3->setClickHandler([]() {
-        window->repaint();
-    });
-
-    button4->setClickHandler([]() {
-        window->clearCanvasPixels();
-    });
-
-    button5->setClickHandler([]() {
-        window->setBackground("yellow");
-    });
-
-    saveButton->setClickHandler([]() {
-        string filename = QGFileChooser::showSaveDialog();
-        window->saveCanvasPixels(filename);
-    });
-
-    window->setMouseHandler([](QGEvent event) {
-        // cout << "mouse! event=" << event << endl;
-        // cout << "mouse handler: What thread am I? " << QGui::instance()->getCurrentThread() << endl;
-        if (event.getType() == QGEvent::MOUSE_DRAGGED) {
-            window->setColor("blue");
-            window->setFillColor("blue");
-            window->setLineStyle(QGObject::LINE_SOLID);
-            window->setLineWidth(1);
-            window->fillOval(event.getX() - 5, event.getY() - 5, 10, 10);
-        } else if (event.getType() == QGEvent::MOUSE_MOVED) {
-            label->setText(event.getLocation().toString());
-            cout << "mouse moved: " << event.getLocation().toString() << endl;
-        }
-    });
-
-    window->setKeyHandler([](QGEvent event) {
-        // cout << "key! event=" << event << endl;
-        double balldx = 0;
-        double balldy = 0;
-        if (event.getKeyCode() == QGEvent::LEFT_ARROW_KEY) {
-            balldx = -2;
-        } else if (event.getKeyCode() == QGEvent::RIGHT_ARROW_KEY) {
-            balldx = 2;
-        } else if (event.getKeyCode() == QGEvent::UP_ARROW_KEY) {
-            balldy = -2;
-        } else if (event.getKeyCode() == QGEvent::DOWN_ARROW_KEY) {
-            balldy = 2;
-        } else if (event.getKeyCode() == 'f') {
-            ball->sendToFront();
-        }
-        ball->move(balldx, balldy);
-    });
-
-//    window->setWindowHandler([](QGEvent /* event */) {
-//        // cout << "window! event=" << event << endl;
+////        window->setBackground("yellow");
+////        window->setColor("red");
+////        window->setFillColor("red");
 //    });
 
-//    for (int i = 0; i < 1000; i++) {
-//        tickFunc();
-//    }
-}
+//    // drawing directly onto window
+////    window->setColor("blue");
+////    window->setFillColor("yellow");
+////    window->fillOval(20, 120, 40, 60);
+////    window->setColor("red");
+////    window->setFillColor("green");
+////    window->setLineWidth(3);
+////    window->fillRect(10, 30, 120, 70);
+////    window->drawLine(100, 100, 200, 150);
 
+//    // pixely stuff
+
+//    window->setColor("black");
+//    window->setFillColor("red");
+//    window->setLineWidth(5);   // BUG: affects later shapes
+//    window->setLineStyle(QGObject::LINE_DASH);
+//    window->drawRect(20, 220, 100, 100);
+//    window->fillArc(20, 220, 100, 100, 45, 120);
+
+//    window->setFillColor("purple");
+//    window->setFont("Monospaced-bold-16");
+//    window->fillPolygon({200, 200, 250, 300, 150, 300});
+
+//    window->setColor("green");
+//    QGString* qgstring = new QGString("Hello, Qt!", 200, 80);
+//    qgstring->setColor("green");
+//    qgstring->rotate(10);
+//    window->add(qgstring);
+
+//    QGString* qgstring2 = new QGString("Bye, Felicia!", 220, 100);
+//    qgstring2->setColor("red");
+//    qgstring2->scale(1.5);
+//    window->add(qgstring2);
+
+//    QGImage* qgimage = new QGImage("triangle-icon.png", 200, 40);
+//    window->add(qgimage);
+
+//    window->setColor("blue");
+//    QGString* qgstring3 = new QGString("Third string", 240, 120);
+//    qgstring3->setColor("blue");
+//    window->add(qgstring3);
+
+////    // animation loop
+////    cout << "testQwindowDrawing: What thread am I? " << QGui::instance()->getCurrentThread() << endl;
+////    cout << "testQwindowDrawing: Qt gui main thread = " << QGui::instance()->getQtMainThread()
+////         << ", student thread = " << QGui::instance()->getStudentThread() << endl;
+
+//    std::function<void()> tickFunc = []() {
+////        cout << "tick func: What thread am I? " << QGui::instance()->getCurrentThread() << endl;
+////        cout << "tick func: dx=" << dx << ",dy=" << dy << endl;
+////        cout << "tick func: ball = " << ball->toString() << endl;
+//        window->pause(20);
+//        ball->move(dx, dy);
+//        double cw = window->getCanvasWidth();
+//        double ch = window->getCanvasHeight();
+//        if (ball->getX() < 0 || ball->getRightX() >= cw) {
+//            dx = -dx;
+//        }
+//        if (ball->getY() < 0 || ball->getBottomY() >= ch) {
+//            dy = -dy;
+//        }
+//        // cout << "ball loc is now: " << ball->getLocation() << endl;
+//    };
+//    button->setClickHandler(tickFunc);
+
+//    button2->setClickHandler([]() {
+//        for (int y = 3*window->getCanvasHeight()/4; y < window->getCanvasHeight(); y++) {
+//            for (int x = 3*window->getCanvasWidth()/4; x < window->getCanvasWidth(); x++) {
+//                int r = (x * 2) % 256;
+//                int g = (y * 2) % 256;
+//                int b = ((x+y) * 2) % 256;
+//                window->setPixel(x, y, r, g, b);
+//            }
+//        }
+//    });
+
+//    button3->setClickHandler([]() {
+//        window->repaint();
+//    });
+
+//    button4->setClickHandler([]() {
+//        window->clearCanvasPixels();
+//    });
+
+//    button5->setClickHandler([]() {
+//        window->setBackground("yellow");
+//    });
+
+//    saveButton->setClickHandler([]() {
+//        string filename = QGFileChooser::showSaveDialog();
+//        window->saveCanvasPixels(filename);
+//    });
+
+//    window->setMouseHandler([](QGEvent event) {
+//        // cout << "mouse! event=" << event << endl;
+//        // cout << "mouse handler: What thread am I? " << QGui::instance()->getCurrentThread() << endl;
+//        if (event.getType() == QGEvent::MOUSE_DRAGGED) {
+//            window->setColor("blue");
+//            window->setFillColor("blue");
+//            window->setLineStyle(QGObject::LINE_SOLID);
+//            window->setLineWidth(1);
+//            window->fillOval(event.getX() - 5, event.getY() - 5, 10, 10);
+//        } else if (event.getType() == QGEvent::MOUSE_MOVED) {
+//            label->setText(event.getLocation().toString());
+//            cout << "mouse moved: " << event.getLocation().toString() << endl;
+//        }
+//    });
+
+//    window->setKeyHandler([](QGEvent event) {
+//        // cout << "key! event=" << event << endl;
+//        double balldx = 0;
+//        double balldy = 0;
+//        if (event.getKeyCode() == QGEvent::LEFT_ARROW_KEY) {
+//            balldx = -2;
+//        } else if (event.getKeyCode() == QGEvent::RIGHT_ARROW_KEY) {
+//            balldx = 2;
+//        } else if (event.getKeyCode() == QGEvent::UP_ARROW_KEY) {
+//            balldy = -2;
+//        } else if (event.getKeyCode() == QGEvent::DOWN_ARROW_KEY) {
+//            balldy = 2;
+//        } else if (event.getKeyCode() == 'f') {
+//            ball->sendToFront();
+//        }
+//        ball->move(balldx, balldy);
+//    });
+
+////    window->setWindowHandler([](QGEvent /* event */) {
+////        // cout << "window! event=" << event << endl;
+////    });
+
+////    for (int i = 0; i < 1000; i++) {
+////        tickFunc();
+////    }
+//}
+
+
+//#include "qconsole.h"
+
+//void testQtConsole() {
+//    cout << "Hello, world!" << endl;
+//    cout << "This is a test of the Qt graphical console!" << endl;
+//    cout << endl;
+//    cout << "Bye bye." << endl;
+//}
+
+//int main() {
+//    // testQwindow();
+//    testQtConsole();
+//    return 0;
+//}
+
+//int otherMain() {
+//    fact(5);
+
+//    Vector<int> v {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+//    Vector<int> v2 = functional::filter(v, is_even);
+//    cout << "v  : " << v << endl;
+//    cout << "v2 : " << v2 << endl;
+
+//    Vector<int> v3 = functional::map(v, squared);
+//    cout << "v3 : " << v3 << endl;
+
+//    Vector<string> names {"Cynthia", "Marty", "Ed", "", "Bob"};
+//    Vector<int> lengths;
+//    functional::map(names, len, lengths);
+//    cout << "names  : " << names << endl;
+//    cout << "lengths: " << lengths << endl;
+
+//    int result = functional::reduce(v, add);
+//    cout << "sum: " << result << endl;
+
+//    BasicGraph graph;
+//    graph.addVertex("b");
+//    graph.addVertex("c");
+//    graph.addVertex("a");
+//    graph.addVertex("e");
+//    graph.addVertex("d");
+//    graph.addEdge("a", "d");
+//    graph.addEdge("c", "d");
+//    graph.addEdge("b", "c");
+//    graph.addEdge("a", "e");
+//    graph.addEdge("b", "d");
+//    graph.addEdge("a", "b");
+//    graph.addEdge("a", "c");
+//    graph.addEdge("c", "e");
+//    graph.addEdge("b", "e");
+//    graph.addEdge("d", "e");
+//    Set<Edge*> edges;
+//    edges = graph.getEdgeSet();
+//    cout << "graph: " << graph << endl;
+//    cout << "edges: " << edges << endl;
+
+//    Map<string, Set<string>> m = graph.toMap();
+//    cout << "map: " << m << endl;
+
+//    cout << "getVertexSet: " << graph.getVertexSet() << endl;
+//    cout << "getEdgeSet  : " << graph.getEdgeSet() << endl;
+
+//    Vector<Vertex*> vec;
+//    for (Vertex* vertex : graph) {
+//        vec.add(vertex);
+//    }
+
+//    cout << "vector: " << vec << endl;
+//    cout << endl;
+
+//    // arcs ordering
+//    for (Vertex* v : graph) {
+//        cout << "arcs      of " << v->name << ": " << v->arcs << endl;
+//        cout << "neighbors of " << v->name << ": " << graph.getNeighbors(v) << endl;
+//    }
+
+
+//    Grid<int> g;
+//    g.resize(4, 3);
+
+
+
+//    GridLocation loc {2, 1};
+//    g.set(loc, 42);
+//    cout << "Grid set: " << g << endl;
+//    cout << "Grid get: " << g.get(loc) << endl;
+
+//    g[loc] = 19;
+//    cout << "Grid [] set: " << g << endl;
+//    cout << "Grid [] get: " << g[loc] << endl;
+
+//    cout << "Grid inBounds t: " << boolalpha << g.inBounds({0, 0}) << endl;
+//    cout << "Grid inBounds f: " << boolalpha << g.inBounds({5, -1}) << endl;
+
+//    for (const GridLocation& loc : g.locations()) {
+//        cout << "loc " << loc << ": " << g[loc] << endl;
+//        for (const GridLocation& neigh : loc.neighbors()) {
+//            if (neigh == loc || !g.inBounds(neigh)) continue;
+//            cout << "    neighbor = " << neigh << endl;
+//        }
+//    }
+
+
+////    g.unset(loc);
+////    cout << "Grid [] unset: " << g << endl;
+
+//    // for (GridLocation loc; loc <= g.)
+
+//    for (int i : range(10)) {
+//        cout << "range i = " << i << endl;
+//    }
+
+//    for (Point p : range2d(2, 3, 6, 5)) {
+//        cout << "range 2d p = " << p << endl;
+//    }
+
+//    Set<string> set({"hello", "ok", "byebye", "A", "Marty", "beautiful", "Marty", "x", "hello", "hi"}, strLenLess);
+////    set.add("hello");
+////    set.add("ok");
+////    set.add("byebye");
+////    set.add("A");
+////    set.add("Marty");
+////    set.add("beautiful");
+////    set.add("Marty");
+////    set.add("x");
+////    set.add("hello");
+////    set.add("hi");
+
+//    cout << "set: " << set << endl;
+
+//    return 0;
+//}
+
+
+
+
+
+
+
+//#include "qconsole.h"
+//#include "qgui.h"
+#include <iostream>
+#include <iomanip>
+#include "error.h"
+#include "timer.h"
+using namespace std;
+
+void testQtConsole() {
+    // QGui::instance()->runOnQtGuiThread([]() {
+        //    cout << "Hello, world!" << endl;
+        //    cout << "This is a test of the Qt graphical console!" << endl;
+        //    cout << endl;
+        cout << "Hello, cout 1!" << endl;
+        cerr << "Hello, cerr 1!" << endl;
+        cout << "Hello, cout 2!" << endl;
+        cerr << "Hello, cerr 2!" << endl;
+        cout << endl;
+        cerr << "This is stderr!" << endl;
+        cerr << "So is this." << endl;
+        cout << "COUT IN THIS PART ";
+        // cout.flush();
+        cerr << "... BUT IT ALTERNATES TO CERR! ";
+        // cerr.flush();
+        cout << endl;
+
+        Timer tim;
+        tim.start();
+        for (int i = 0; i < 1001; i++) {
+            cout << setw(5) << i;
+            if (i > 0 && i % 10 == 0) {
+                cout << endl;
+                // stanfordcpplib::qtgui::getConsoleWindow()->pause(10);
+            }
+        }
+        tim.stop();
+        cout << "Took " << tim.elapsed() << "ms" << endl;
+        cout << "What about me? :-(";   // no endl
+
+        cout << "How about a nasty error?!" << endl;
+        error("oooooooooops");
+
+    // });
+
+//    cout << "How about a nasty error?!" << endl;
+//    error("oooooooooops");
+//    cout << "That was not cool." << endl;
+}
 
 int main() {
     testQwindow();
+    // testQtConsole();
     return 0;
 }
 
-int otherMain() {
-    fact(5);
-
-    Vector<int> v {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    Vector<int> v2 = functional::filter(v, is_even);
-    cout << "v  : " << v << endl;
-    cout << "v2 : " << v2 << endl;
-
-    Vector<int> v3 = functional::map(v, squared);
-    cout << "v3 : " << v3 << endl;
-
-    Vector<string> names {"Cynthia", "Marty", "Ed", "", "Bob"};
-    Vector<int> lengths;
-    functional::map(names, len, lengths);
-    cout << "names  : " << names << endl;
-    cout << "lengths: " << lengths << endl;
-
-    int result = functional::reduce(v, add);
-    cout << "sum: " << result << endl;
-
-    BasicGraph graph;
-    graph.addVertex("b");
-    graph.addVertex("c");
-    graph.addVertex("a");
-    graph.addVertex("e");
-    graph.addVertex("d");
-    graph.addEdge("a", "d");
-    graph.addEdge("c", "d");
-    graph.addEdge("b", "c");
-    graph.addEdge("a", "e");
-    graph.addEdge("b", "d");
-    graph.addEdge("a", "b");
-    graph.addEdge("a", "c");
-    graph.addEdge("c", "e");
-    graph.addEdge("b", "e");
-    graph.addEdge("d", "e");
-    Set<Edge*> edges;
-    edges = graph.getEdgeSet();
-    cout << "graph: " << graph << endl;
-    cout << "edges: " << edges << endl;
-
-    Map<string, Set<string>> m = graph.toMap();
-    cout << "map: " << m << endl;
-
-    cout << "getVertexSet: " << graph.getVertexSet() << endl;
-    cout << "getEdgeSet  : " << graph.getEdgeSet() << endl;
-
-    Vector<Vertex*> vec;
-    for (Vertex* vertex : graph) {
-        vec.add(vertex);
-    }
-
-    cout << "vector: " << vec << endl;
-    cout << endl;
-
-    // arcs ordering
-    for (Vertex* v : graph) {
-        cout << "arcs      of " << v->name << ": " << v->arcs << endl;
-        cout << "neighbors of " << v->name << ": " << graph.getNeighbors(v) << endl;
-    }
-
-
-    Grid<int> g;
-    g.resize(4, 3);
-
-
-
-    GridLocation loc {2, 1};
-    g.set(loc, 42);
-    cout << "Grid set: " << g << endl;
-    cout << "Grid get: " << g.get(loc) << endl;
-
-    g[loc] = 19;
-    cout << "Grid [] set: " << g << endl;
-    cout << "Grid [] get: " << g[loc] << endl;
-
-    cout << "Grid inBounds t: " << boolalpha << g.inBounds({0, 0}) << endl;
-    cout << "Grid inBounds f: " << boolalpha << g.inBounds({5, -1}) << endl;
-
-    for (const GridLocation& loc : g.locations()) {
-        cout << "loc " << loc << ": " << g[loc] << endl;
-        for (const GridLocation& neigh : loc.neighbors()) {
-            if (neigh == loc || !g.inBounds(neigh)) continue;
-            cout << "    neighbor = " << neigh << endl;
-        }
-    }
-
-
-//    g.unset(loc);
-//    cout << "Grid [] unset: " << g << endl;
-
-    // for (GridLocation loc; loc <= g.)
-
-    for (int i : range(10)) {
-        cout << "range i = " << i << endl;
-    }
-
-    for (Point p : range2d(2, 3, 6, 5)) {
-        cout << "range 2d p = " << p << endl;
-    }
-
-    Set<string> set({"hello", "ok", "byebye", "A", "Marty", "beautiful", "Marty", "x", "hello", "hi"}, strLenLess);
-//    set.add("hello");
-//    set.add("ok");
-//    set.add("byebye");
-//    set.add("A");
-//    set.add("Marty");
-//    set.add("beautiful");
-//    set.add("Marty");
-//    set.add("x");
-//    set.add("hello");
-//    set.add("hi");
-
-    cout << "set: " << set << endl;
-
-    return 0;
-}

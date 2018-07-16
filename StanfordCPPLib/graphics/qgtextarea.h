@@ -41,7 +41,12 @@ public:
     QGTextArea(int rows, int columns, QWidget* parent = nullptr);
     QGTextArea(const std::string& text = "", QWidget* parent = nullptr);
     virtual ~QGTextArea();
+    virtual void appendFormattedText(const std::string& text, const std::string& color = "", const std::string& font = "");
+    virtual void appendHtml(const std::string& html);
+    virtual void appendText(const std::string& text);
+    virtual void clearText();
     virtual int getColumns() const;
+    virtual std::string getHtml() const;
     virtual _Internal_QWidget* getInternalWidget() const;
     virtual std::string getPlaceholder() const;
     virtual int getRows() const;
@@ -52,6 +57,7 @@ public:
     virtual void removeTextChangeHandler();
     virtual void setColumns(int columns);
     virtual void setEditable(bool value);
+    virtual void setHtml(const std::string& html);
     virtual void setPlaceholder(const std::string& text);
     virtual void setRows(int rows);
     virtual void setRowsColumns(int rows, int columns);

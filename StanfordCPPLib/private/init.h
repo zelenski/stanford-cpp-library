@@ -29,6 +29,27 @@ namespace stanfordcpplib {
 
 extern void initializeStanfordCppLibrary();
 
+#ifdef SPL_QT_GUI
+#ifndef __StanfordCppLibraryInitializerQt_created
+#define __StanfordCppLibraryInitializerQt_created
+namespace qtgui {
+extern void initializeStanfordCppLibraryQt();
+}
+
+class __StanfordCppLibraryInitializerQt {
+public:
+    /*
+     * Code to initialize the library.
+     * Implemented as a class constructor so that it will run before the
+     * student's main function.
+     */
+    __StanfordCppLibraryInitializerQt() {
+        qtgui::initializeStanfordCppLibraryQt();
+    }
+};
+static __StanfordCppLibraryInitializerQt __stanfordcpplib_init_qt;
+#endif // __StanfordCppLibraryInitializerQt_created
+#else // SPL_QT_GUI
 #ifndef __StanfordCppLibraryInitializer_created
 #define __StanfordCppLibraryInitializer_created
 class __StanfordCppLibraryInitializer {
@@ -44,6 +65,7 @@ public:
 };
 static __StanfordCppLibraryInitializer __stanfordcpplib_init;
 #endif // __StanfordCppLibraryInitializer_created
+#endif // SPL_QT_GUI
 
 } // namespace stanfordcpplib
 

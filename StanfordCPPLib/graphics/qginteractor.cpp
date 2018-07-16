@@ -57,6 +57,7 @@ QGInteractor::QGInteractor()
         : _actionCommand(""),
           _icon("") {
     ensureThreadSafety();
+    QGui::instance()->initializeQt();   // make sure Qt system is initialized
 }
 
 QGInteractor::~QGInteractor() {

@@ -58,6 +58,7 @@ private:
     static QGuiEventQueue* _instance;
     Queue<QGThunk> _functionQueue;
     QMutex _queueMutex;
+    bool _alive;
 
     friend class QGui;
 };
@@ -81,6 +82,8 @@ public:
     static QGui* instance();
     void runOnQtGuiThread(QGThunk func);
     void runOnQtGuiThreadAsync(QGThunk func);
+    static bool qtGuiThreadExists();
+    static bool studentThreadExists();
     void startBackgroundEventLoop(QGThunkInt mainFunc);
     void startEventLoop();
 

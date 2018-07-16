@@ -178,8 +178,10 @@ static int& pout(bool check = true) {
 #include "base64.h"
 
 #define __DONT_ENABLE_GRAPHICAL_CONSOLE
+#define __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
 #include "console.h"
 #undef __DONT_ENABLE_GRAPHICAL_CONSOLE
+#undef __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
 
 #include "error.h"
 #include "exceptions.h"
@@ -227,7 +229,7 @@ static std::string getResult(bool consumeAcks = true, bool stopOnEvent = false,
                              const std::string& caller = "");
 static std::string getSplJarPath();
 static void getStatus();
-void initPipe();
+static void initPipe();
 static GEvent parseActionEvent(TokenScanner& scanner, EventType type);
 static GEvent parseEvent(const std::string& line);
 static GEvent parseChangeEvent(TokenScanner& scanner, EventType type);
@@ -3602,8 +3604,13 @@ void echoConsole(const std::string& str, bool isStderr) {
         fputs(str.c_str(), isStderr ? stderr : stdout);
 
         if (shouldFlush) {
-            fflush(stdout);   // flush both stdout and stderr
-            fflush(stderr);
+            if (isStderr) {
+                fflush(stderr);   // flush both stdout and stderr
+                fflush(stdout);
+            } else {
+                fflush(stdout);   // flush both stdout and stderr
+                fflush(stderr);
+            }
         }
     }
 }
