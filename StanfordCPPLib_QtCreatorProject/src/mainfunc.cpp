@@ -625,24 +625,30 @@ void testQwindow() {
         radio1group2->setChangeHandler(radioChangeHandler);
         radio2group2->setChangeHandler(radioChangeHandler);
 
-        window->addToRegion(radio1group1, "East");
-        window->addToRegion(radio2group1, "East");
-        window->addToRegion(radio3group1, "East");
-        window->addToRegion(radio1group2, "East");
-        window->addToRegion(radio2group2, "East");
-        window->setRegionAlignment("East", "Bottom Right");
-        cout << "radio:     " << radio1group1->toString() << endl;
+        static QGScrollBar* scrollBar = new QGScrollBar(QGScrollBar::VERTICAL, 0, 10, 0, 500);
+        scrollBar->setValueChangeHandler([]() {
+            cout << "value: " << scrollBar->getValue() << endl;
+        });
+        window->addToRegion(scrollBar, "East");
+
+//        window->addToRegion(radio1group1, "East");
+//        window->addToRegion(radio2group1, "East");
+//        window->addToRegion(radio3group1, "East");
+//        window->addToRegion(radio1group2, "East");
+//        window->addToRegion(radio2group2, "East");
+//        window->setRegionAlignment("East", "Bottom Right");
+//        cout << "radio:     " << radio1group1->toString() << endl;
 
         // static QGTextField* textField = new QGTextField("Marty");
-        static QGTextField* textField = new QGTextField(42.0);
-        textField->setPlaceholder("type your name");
-        // textField->setEditable(false);
-        textField->setAutocompleteList({"matt", "Marty", "Stuart", "steve", "yana", "yes", "no"});
-        textField->setTextChangeHandler([]() {
-            cout << "textfield text changed! text is:" << endl << textField->getText() << endl;
-        });
-        window->addToRegion(textField, "North");
-        cout << "textfield: " << textField->toString() << endl;
+//        static QGTextField* textField = new QGTextField(42.0);
+//        textField->setPlaceholder("type your name");
+//        // textField->setEditable(false);
+//        textField->setAutocompleteList({"matt", "Marty", "Stuart", "steve", "yana", "yes", "no"});
+//        textField->setTextChangeHandler([]() {
+//            cout << "textfield text changed! text is:" << endl << textField->getText() << endl;
+//        });
+//        window->addToRegion(textField, "North");
+//        cout << "textfield: " << textField->toString() << endl;
 
         // drawing directly onto window  (will go away when text area is added)
 //        window->setLineWidth(10);
