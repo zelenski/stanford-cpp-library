@@ -5,7 +5,7 @@
  * Stanford C++ library.
  *
  * @author Marty Stepp
- * @version 2018/06/24
+ * @version 2018/07/16
  */
 
 #ifndef _version_h
@@ -19,7 +19,7 @@
  *       *MUST* be zero-padded to YYYY/MM/DD format;
  *       if month or day is < 10, insert a preceding 0
  */
-#define STANFORD_CPP_LIB_VERSION "2018/06/24"
+#define STANFORD_CPP_LIB_VERSION "2018/07/16"
 
 /*
  * Minimum version of your IDE's project that is supported.

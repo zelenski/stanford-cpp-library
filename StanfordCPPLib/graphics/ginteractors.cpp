@@ -422,6 +422,91 @@ std::string GRadioButton::toString() const {
     return oss.str();
 }
 
+
+/*
+ * Implementation notes: GScrollBar class
+ * --------------------------------------
+ * None.
+ */
+
+GScrollBar::GScrollBar(GScrollBar::Orientation orientation,
+                       int value,
+                       int extent,
+                       int min,
+                       int max)
+        : _orientation(orientation),
+          _value(value),
+          _extent(extent),
+          _min(min),
+          _max(max) {
+    stanfordcpplib::getPlatform()->gscrollbar_constructor(this, orientation, value, extent, min, max);
+}
+
+int GScrollBar::getExtent() const {
+    return _extent;
+}
+
+int GScrollBar::getMax() const {
+    return _max;
+}
+
+int GScrollBar::getMin() const {
+    return _min;
+}
+
+GScrollBar::Orientation GScrollBar::getOrientation() const {
+    return _orientation;
+}
+
+int GScrollBar::getValue() const {
+    // return _value;
+    // value may have changed on server, so always fetch from JBE
+    return stanfordcpplib::getPlatform()->gscrollbar_getValue((GObject*) this);
+}
+
+void GScrollBar::setExtent(int extent) {
+    _extent = extent;
+    stanfordcpplib::getPlatform()->gscrollbar_setValues(this, _value, _extent, _min, _max);
+}
+
+void GScrollBar::setMax(int max) {
+    _max = max;
+    stanfordcpplib::getPlatform()->gscrollbar_setValues(this, _value, _extent, _min, _max);
+}
+
+void GScrollBar::setMin(int min) {
+    _min = min;
+    stanfordcpplib::getPlatform()->gscrollbar_setValues(this, _value, _extent, _min, _max);
+}
+
+void GScrollBar::setState(int value, int extent, int min, int max) {
+    _value = value;
+    _extent = extent;
+    _min = min;
+    _max = max;
+    stanfordcpplib::getPlatform()->gscrollbar_setValues(this, _value, _extent, _min, _max);
+}
+
+void GScrollBar::setValue(int value) {
+    _value = value;
+    stanfordcpplib::getPlatform()->gscrollbar_setValues(this, _value, _extent, _min, _max);
+}
+
+std::string GScrollBar::getType() const {
+    return "GScrollBar";
+}
+
+std::string GScrollBar::toString() const {
+    return std::string("GScrollBar(orientation=")
+            + (_orientation == VERTICAL ? "VERTICAL" : "HORIZONTAL")
+            + ",value=" + integerToString(getValue())
+            + ",extent=" + integerToString(_extent)
+            + ",min=" + integerToString(_min)
+            + ",max=" + integerToString(_max)
+            + ")";
+}
+
+
 /*
  * Implementation notes: GSlider class
  * -----------------------------------

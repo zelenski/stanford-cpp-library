@@ -6,6 +6,8 @@
  * the Java event model.
  * <include src="pictures/ClassHierarchies/GEventHierarchy-h.html">
  * 
+ * @version 2018/07/16
+ * - added scroll events
  * @version 2018/06/24
  * - added hyperlink events
  * @version 2018/06/23
@@ -55,6 +57,7 @@ enum EventClassType {
     SERVER_EVENT    = 0x0800,
     CHANGE_EVENT    = 0x1000,
     HYPERLINK_EVENT = 0x2000,
+    SCROLL_EVENT    = 0x4000,
 
     // ANY_EVENT should be the logical OR of all other event types,
     // to indicate that all/any events should be matched
@@ -68,6 +71,7 @@ enum EventClassType {
                  | SERVER_EVENT
                  | CHANGE_EVENT
                  | HYPERLINK_EVENT
+                 | SCROLL_EVENT
 };
 
 /*
@@ -111,7 +115,8 @@ typedef enum {
 
     STATE_CHANGED       = CHANGE_EVENT + 1,
 
-    HYPERLINK_CLICKED   = HYPERLINK_EVENT + 1
+    HYPERLINK_CLICKED   = HYPERLINK_EVENT + 1,
+    SCROLL_PERFORMED    = SCROLL_EVENT + 1
 } EventType;
 
 /*
@@ -173,6 +178,7 @@ class GHyperlinkEvent;
 class GKeyEvent;
 class GMouseEvent;
 class GObject;
+class GScrollEvent;
 class GServerEvent;
 class GTableEvent;
 class GTimerEvent;
@@ -397,6 +403,7 @@ private:
     friend class GHyperlinkEvent;
     friend class GKeyEvent;
     friend class GMouseEvent;
+    friend class GScrollEvent;
     friend class GServerEvent;
     friend class GTableEvent;
     friend class GTimerEvent;
@@ -780,6 +787,42 @@ public:
     /* Private section */
     GMouseEvent();
     GMouseEvent(GEvent e);
+};
+
+/*
+ * Class: GScrollEvent
+ * -------------------
+ * Scroll events occur when the user scrolls a GScrollBar.
+ */
+class GScrollEvent : public GEvent {
+public:
+    /*
+     * Constructor: GScrollEvent
+     * Usage: GScrollEvent changeEvent(type, source);
+     * ----------------------------------------------
+     * Creates a <code>GScrollEvent</code> with the specified type and source.
+     */
+    GScrollEvent(EventType type, GObject* source);
+
+    /*
+     * Method: getSource
+     * Usage: GObject* gobj = e.getSource();
+     * -------------------------------------
+     * Returns a pointer to the <code>GObject</code> that generated this event.
+     */
+    GObject* getSource() const;
+
+    /*
+     * Method: toString
+     * Usage: string str = e.toString();
+     * ---------------------------------
+     * Converts the event to a human-readable representation of the event.
+     */
+    std::string toString() const;
+
+    /* Private section */
+    GScrollEvent();
+    GScrollEvent(GEvent e);
 };
 
 /*

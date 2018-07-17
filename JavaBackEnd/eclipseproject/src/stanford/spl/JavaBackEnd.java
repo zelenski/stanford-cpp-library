@@ -1,4 +1,6 @@
 /*
+ * @version 2018/07/16
+ * - adjustment listener for GScrollBar
  * @version 2018/07/08
  * - cleanup parameter/variable names
  * @version 2018/06/20
@@ -660,6 +662,11 @@ public class JavaBackEnd implements
 				keyCode);
 	}
 	
+	private void printEvent(String type, String sourceId, AdjustmentEvent docEvent) {
+		acknowledgeEvent("event:%s(\"%s\", %d)",
+				type, sourceId, (long) getEventTime());
+	}
+	
 	private void printEvent(String type, String sourceId, DocumentEvent docEvent) {
 		acknowledgeEvent("event:%s(\"%s\", %d)",
 				type, sourceId, (long) getEventTime());
@@ -729,6 +736,19 @@ public class JavaBackEnd implements
 			}
 		};
 	};
+
+	/**
+	 * Returns an AdjustmentListener that listens for scrolling on the given scroll bar.
+	 */
+	public AdjustmentListener createAdjustmentListener(final GScrollBar scrollBar) {
+		return new AdjustmentListener() {
+			// required method of AdjustmentListener interface
+			public void adjustmentValueChanged(AdjustmentEvent event) {
+				String sourceId = sourceTable.get(scrollBar.getInteractor());
+				printEvent("scrollPerformed", sourceId, event);
+			}
+		};
+	}
 
 	/**
 	 * Returns a HyperlinkListener that listens for hyperlink events on the given interactor.

@@ -4,6 +4,8 @@
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
  * 
+ * @version 2018/07/16
+ * - added parsing of scroll events
  * @version 2018/07/08
  * - bug fix for GTimer deletion
  * @version 2018/06/24
@@ -232,6 +234,7 @@ static GEvent parseChangeEvent(TokenScanner& scanner, EventType type);
 static GEvent parseHyperlinkEvent(TokenScanner& scanner, EventType type);
 static GEvent parseKeyEvent(TokenScanner& scanner, EventType type);
 static GEvent parseMouseEvent(TokenScanner& scanner, EventType type);
+static GEvent parseScrollEvent(TokenScanner& scanner, EventType type);
 static GEvent parseServerEvent(TokenScanner& scanner, EventType type);
 static GEvent parseTableEvent(TokenScanner& scanner, EventType type);
 static GEvent parseTimerEvent(TokenScanner& scanner, EventType type);
@@ -766,7 +769,7 @@ void Platform::gwindow_saveCanvasPixels(const GWindow& gw, const std::string& fi
     writeQuotedString(os, filename);
     os << ")";
     putPipe(os.str());
-    getResult();   // wait for "OK"
+    getStatus();   // wait for "OK"
 }
 
 void Platform::gwindow_setSize(const GWindow& gw, int width, int height) {
@@ -1432,7 +1435,7 @@ void Platform::diffimage_compareWindowToImage(const GWindow& gwindow, const std:
     writeQuotedString(os, file2);
     os << ", " << std::boolalpha << ignoreWindowSize << ")";
     putPipe(os.str());
-    getResult();   // read "ok"; modal dialog
+    getStatus();   // read "ok"; modal dialog
 }
 
 void Platform::diffimage_show(const std::string& file1, const std::string& file2) {
@@ -1443,7 +1446,7 @@ void Platform::diffimage_show(const std::string& file1, const std::string& file2
     writeQuotedString(os, file2);
     os << ")";
     putPipe(os.str());
-    getResult();   // read "ok"; modal dialog
+    getStatus();   // read "ok"; modal dialog
 }
 
 void Platform::gbufferedimage_constructor(GObject* gobj, double x, double y,
@@ -1676,6 +1679,34 @@ void Platform::gradiobutton_setSelected(GObject* gobj, bool state) {
     os << "GRadioButton.setSelected(\"" << gobj << "\", "
        << std::boolalpha << state << ")";
     putPipe(os.str());
+}
+
+void Platform::gscrollbar_constructor(GObject* gobj, int orientation, int value, int extent, int min, int max) {
+    std::ostringstream os;
+    os << gobj;
+    STATIC_VARIABLE(sourceTable).put(os.str(), gobj);
+    os.str("");
+    os << "GScrollBar.create(\"" << gobj << "\", "
+       << orientation << ", " << value << ", " << extent << ", "
+       << min << ", " << max << ")";
+    putPipe(os.str());
+}
+
+int Platform::gscrollbar_getValue(GObject* gobj) {
+    std::ostringstream os;
+    os << "GScrollBar.getValue(\"" << gobj << "\")";
+    putPipe(os.str());
+    std::string result = getResult();
+    return stringToInteger(result);
+}
+
+void Platform::gscrollbar_setValues(GObject* gobj, int value, int extent, int min, int max) {
+    std::ostringstream os;
+    os << "GScrollBar.setValues(\"" << gobj << "\", "
+       << value << ", " << extent
+       << min << ", " << max << ")";
+    putPipe(os.str());
+    getStatus();
 }
 
 void Platform::gslider_constructor(GObject* gobj, int min, int max, int value) {
@@ -2247,7 +2278,7 @@ void Platform::gformattedpane_setContentType(GObject* gobj, const std::string& c
     writeQuotedString(os, contentType);
     os << ")";
     putPipe(os.str());
-    getResult();
+    getStatus();
 }
 
 void Platform::gformattedpane_setPage(GObject* gobj, const std::string& url) {
@@ -2256,7 +2287,7 @@ void Platform::gformattedpane_setPage(GObject* gobj, const std::string& url) {
     writeQuotedString(os, urlEncode(url));
     os << ")";
     putPipe(os.str());
-    getResult();
+    getStatus();
 }
 
 void Platform::gformattedpane_setText(GObject* gobj, const std::string& text) {
@@ -2265,7 +2296,7 @@ void Platform::gformattedpane_setText(GObject* gobj, const std::string& text) {
     writeQuotedString(os, urlEncode(text));
     os << ")";
     putPipe(os.str());
-    getResult();
+    getStatus();
 }
 
 int Platform::goptionpane_showConfirmDialog(const std::string& message, const std::string& title, int type) {
@@ -2302,7 +2333,7 @@ void Platform::goptionpane_showMessageDialog(const std::string& message, const s
     os << "," << type;
     os << ")";
     putPipe(os.str());
-    getResult();   // wait for dialog to close
+    getStatus();   // wait for dialog to close
 }
 
 int Platform::goptionpane_showOptionDialog(const std::string& message,
@@ -2345,7 +2376,7 @@ void Platform::goptionpane_showTextFileDialog(const std::string& message,
     os << "," << cols;
     os << ")";
     putPipe(os.str());
-    getResult();   // wait for dialog to close
+    getStatus();   // wait for dialog to close
 }
 
 std::string Platform::clipboard_get() {
@@ -2481,7 +2512,7 @@ void Platform::note_play(const std::string& noteString) {
     writeQuotedString(os, urlEncode(noteString));
     os << ")";
     putPipe(os.str());
-    getResult();   // wait for playing to be done
+    getStatus();   // wait for playing to be done
 }
 
 void Platform::autograderinput_addButton(const std::string& text, const std::string& input) {
@@ -3216,6 +3247,8 @@ static GEvent parseEvent(const std::string& line) {
         return parseKeyEvent(scanner, KEY_RELEASED);
     } else if (name == "keyTyped") {
         return parseKeyEvent(scanner, KEY_TYPED);
+    } else if (name == "scrollPerformed") {
+        return parseScrollEvent(scanner, SCROLL_PERFORMED);
     } else if (name == "stateChanged") {
         return parseChangeEvent(scanner, STATE_CHANGED);
     } else if (name == "hyperlinkClicked") {
@@ -3348,6 +3381,17 @@ static GEvent parseKeyEvent(TokenScanner& scanner, EventType type) {
     GKeyEvent e(type, GWindow(STATIC_VARIABLE(windowTable).get(id)), char(keyChar), keyCode);
     e.setEventTime(time);
     e.setModifiers(modifiers);
+    return e;
+}
+
+static GEvent parseScrollEvent(TokenScanner& scanner, EventType type) {
+    scanner.verifyToken("(");
+    std::string id = scanner.getStringValue(scanner.nextToken());
+    scanner.verifyToken(",");
+    double time = scanDouble(scanner);
+    scanner.verifyToken(")");
+    GScrollEvent e(type, STATIC_VARIABLE(sourceTable).get(id));
+    e.setEventTime(time);
     return e;
 }
 

@@ -5,6 +5,8 @@
  * provided in the Java Swing libraries.
  * <include src="pictures/ClassHierarchies/GInteractorHierarchy-h.html">
  * 
+ * @version 2018/07/16
+ * - added GScrollBar
  * @version 2018/06/24
  * - added GFormattedPane
  * @version 2018/06/23
@@ -588,6 +590,105 @@ public:
 private:
     std::string group;
     std::string label;
+};
+
+/*
+ * Class: GScrollBar
+ * -----------------
+ * A GScrollBar represents a horizontal or vertical scroll bar that can be
+ * dragged by the user.  The bar does not inherently cause any other interactor
+ * to scroll itself.  If you want the bar to cause any effect, you must wait
+ * for scroll events and respond to them.
+ */
+class GScrollBar : public GInteractor {
+public:
+    /*
+     * The two valid orientations of scrollbars.
+     * Since these relate to a JScrollBar in the Java back-end, their values
+     * must match those of the scrollbar orientations as defined in Java Swing
+     * in the JScrollBar class. See also:
+     * https://docs.oracle.com/javase/7/docs/api/constant-values.html#javax.swing.SwingConstants.HORIZONTAL
+     */
+    enum Orientation {
+        HORIZONTAL = 0,
+        VERTICAL   = 1
+    };
+
+    /*
+     * Constructor: GScrollBar
+     * Usage: GScrollBar* scrollBar = new GScrollBar(orientation, value, extent, min, max);
+     * ------------------------------------------------------------------------------------
+     * Creates a <code>GScrollBar</code> with the specified values.
+     * If values are omitted, creates a vertical scrollbar from 0-100.
+     */
+    GScrollBar(Orientation orientation = VERTICAL,
+               int value  =   0,
+               int extent =  10,
+               int min    =   0,
+               int max    = 100);
+
+    /*
+     * Returns the scroll bar's extent, meaning the amount of its range that is
+     * currently in view.
+     */
+    virtual int getExtent() const;
+
+    /*
+     * Returns the maximum value of the scroll bar.
+     */
+    virtual int getMax() const;
+
+    /*
+     * Returns the minimum allowed value of the scroll bar.
+     */
+    virtual int getMin() const;
+
+    /*
+     * Returns the orientation of the scroll bar, either HORIZONTAL or VERTICAL.
+     */
+    virtual Orientation getOrientation() const;
+
+    /*
+     * Returns the current value of the scroll bar.
+     */
+    virtual int getValue() const;
+
+    /*
+     * Sets the scroll bar's extent, meaning the amount of its range that is
+     * currently in view.
+     */
+    virtual void setExtent(int extent);
+
+    /*
+     * Sets the maximum value of the scroll bar.
+     */
+    virtual void setMax(int max);
+
+    /*
+     * Sets the minimum allowed value of the scroll bar.
+     */
+    virtual void setMin(int min);
+
+    /*
+     * Sets all of the relevant state of the scroll bar.
+     */
+    virtual void setState(int value, int extent, int min, int max);
+
+    /*
+     * Sets the current value of the scroll bar.
+     */
+    virtual void setValue(int value);
+
+    /* Prototypes for the virtual methods */
+    virtual std::string getType() const;
+    virtual std::string toString() const;
+
+private:
+    Orientation _orientation;
+    int _value;
+    int _extent;
+    int _min;
+    int _max;
 };
 
 /*

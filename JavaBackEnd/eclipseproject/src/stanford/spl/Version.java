@@ -1,6 +1,6 @@
 /*
  * @author Marty Stepp
- * @version 2018/07/08
+ * @version 2018/07/16
  * - If you update this file, make sure to update the @version tag above
  *   AND the String constant below! Both are needed and must be in sync. 
  * - see also: stanford/spl/LibraryUpdater.java 
@@ -11,7 +11,7 @@ package stanford.spl;
 public class Version {
 	private static final String LIBRARY_DOCS_URL = "http://stanford.edu/~stepp/cppdoc/";
 	private static final String JAVA_BACK_END_FILENAME = "spl.jar";
-	private static final String JAVA_BACK_END_VERSION = "2018/07/08";
+	private static final String JAVA_BACK_END_VERSION = "2018/07/16";
 	private static final String CPP_LIB_VERSION_UNKNOWN = "(unknown)";
 	private static String CPP_LIB_VERSION = CPP_LIB_VERSION_UNKNOWN;
 	public static final String ABOUT_MESSAGE = "";

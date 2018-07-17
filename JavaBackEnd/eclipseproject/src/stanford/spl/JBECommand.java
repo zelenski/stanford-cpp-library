@@ -1,4 +1,6 @@
 /*
+ * @version 2018/07/16
+ * - added GScrollBar_*
  * @version 2018/06/24
  * - added GFormattedPane_get/setContentType
  * @version 2018/06/23
@@ -176,6 +178,9 @@ public abstract class JBECommand {
 			GRadioButton_setSelected.class,
 			GRect_create.class,
 			GRoundRect_create.class,
+			GScrollBar_create.class,
+			GScrollBar_getValue.class,
+			GScrollBar_setValues.class,
 			GSlider_create.class,
 			GSlider_getMajorTickSpacing.class,
 			GSlider_getMinorTickSpacing.class,

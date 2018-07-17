@@ -401,6 +401,45 @@ std::string GMouseEvent::toString() const {
 }
 
 
+GScrollEvent::GScrollEvent() {
+    this->eventClass = CHANGE_EVENT;
+    valid = false;
+}
+
+GScrollEvent::GScrollEvent(GEvent e) {
+    this->eventClass = SCROLL_EVENT;
+    valid = e.valid && e.eventClass == SCROLL_EVENT;
+    if (valid) {
+        eventClass = e.eventClass;
+        eventType = e.eventType;
+        modifiers = e.modifiers;
+        eventTime = e.eventTime;
+        source = e.source;
+    }
+}
+
+GScrollEvent::GScrollEvent(EventType type, GObject* source) {
+    this->eventClass = SCROLL_EVENT;
+    this->eventType = type;
+    this->source = source;
+    valid = true;
+}
+
+GObject* GScrollEvent::getSource() const {
+    return source;
+}
+
+std::string GScrollEvent::toString() const {
+    std::ostringstream os;
+    os << "GScrollEvent(";
+    switch (eventType) {
+    case SCROLL_PERFORMED:  os << "SCROLL_PERFORMED";  break;
+    }
+    os << ")";
+    return os.str();
+}
+
+
 GServerEvent::GServerEvent(EventType type, int requestID, const std::string& requestUrl) {
     this->eventClass = SERVER_EVENT;
     this->eventType = int(type);

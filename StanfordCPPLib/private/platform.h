@@ -5,6 +5,8 @@
  * the platform-specific parts of the StanfordCPPLib package.  This file is
  * logically part of the implementation and is not interesting to clients.
  *
+ * @version 2018/07/16
+ * - added gscrollbar_*
  * @version 2018/06/24
  * - added gformattedpane_get/setContentType
  * @version 2018/06/23
@@ -248,6 +250,10 @@ public:
     void grect_constructor(GObject* gobj, double width, double height);
 
     void groundrect_constructor(GObject* gobj, double width, double height, double corner);
+
+    void gscrollbar_constructor(GObject* gobj, int orientation, int value, int extent, int min, int max);
+    int gscrollbar_getValue(GObject* gobj);
+    void gscrollbar_setValues(GObject* gobj, int value, int extent, int min, int max);
 
     void gslider_constructor(GObject* gobj, int min, int max, int value);
     int gslider_getMajorTickSpacing(const GObject* gobj);
