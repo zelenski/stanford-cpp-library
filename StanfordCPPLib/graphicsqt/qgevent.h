@@ -76,13 +76,13 @@ public:
 
         TIMER_TICKED        = TIMER_EVENT + 1,
 
-        TABLE_UPDATED       = TABLE_EVENT + 1,
-        TABLE_SELECTED      = TABLE_EVENT + 2,
-        TABLE_EDIT_BEGIN    = TABLE_EVENT + 3,
-        TABLE_REPLACE_BEGIN = TABLE_EVENT + 4,   // like an edit but wipes out previous value
-        TABLE_CUT           = TABLE_EVENT + 5,   // clipboard stuff
-        TABLE_COPY          = TABLE_EVENT + 6,
-        TABLE_PASTE         = TABLE_EVENT + 7,
+        TABLE_UPDATED       = TABLE_EVENT + 1,   // when a cell's value gets set
+        TABLE_SELECTED      = TABLE_EVENT + 2,   // cursor moves onto a cell
+        TABLE_EDIT_BEGIN    = TABLE_EVENT + 3,   // user presses F2 or double clicks to start editing a cell
+        TABLE_REPLACE_BEGIN = TABLE_EVENT + 4,   // user starts typing on a cell; like TABLE_EDIT_BEGIN but wipes out previous value
+        TABLE_CUT           = TABLE_EVENT + 5,   // user cuts cell value to clipboard
+        TABLE_COPY          = TABLE_EVENT + 6,   // user copies cell value to clipboard
+        TABLE_PASTE         = TABLE_EVENT + 7,   // user pastes cell value from clipboard
 
         SERVER_REQUEST      = SERVER_EVENT + 1,
 
@@ -183,6 +183,7 @@ public:
     virtual std::string getActionCommand() const;
     virtual int getButton() const;
     virtual EventClass getClass() const;
+    virtual int getColumn() const;
     static long getCurrentTimeMS();
     virtual EventClass getEventClass() const;
     virtual EventType getEventType() const;
@@ -192,6 +193,7 @@ public:
     virtual QGPoint getLocation() const;
     virtual int getModifiers() const;
     virtual std::string getName() const;
+    virtual int getRow() const;
     virtual QGObservable* getSource() const;
     virtual long getTime() const;
     virtual EventType getType() const;
@@ -262,6 +264,7 @@ public:
     virtual void setKeyChar(const std::string& keyCharString);
     virtual void setKeyCode(int keyCode);
     virtual void setModifiers(Qt::KeyboardModifiers modifiers);
+    virtual void setRowAndColumn(int row, int col);
     virtual void setSource(QGObservable* source);
     virtual void setX(double x);
     virtual void setY(double y);
@@ -283,6 +286,8 @@ private:
     EventType _type;
     double _x;
     double _y;
+    int _row;
+    int _col;
 
     friend class QGInteractor;
     friend class _Internal_QWidget;

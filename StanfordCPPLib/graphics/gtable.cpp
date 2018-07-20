@@ -138,6 +138,10 @@ void GTable::resize(int numRows, int numCols) {
     stanfordcpplib::getPlatform()->gtable_resize(this, numRows, numCols);
 }
 
+bool GTable::rowColumnHeadersVisible() const {
+    return rowColHeadersVisible;
+}
+
 void GTable::select(int row, int column) {
     stanfordcpplib::getPlatform()->gtable_select(this, row, column);
 }
@@ -229,6 +233,7 @@ void GTable::setEditable(bool editable) {
 }
 
 void GTable::setEditorValue(int row, int column, const std::string& text) {
+    checkIndex("setEditorValue", row, column);
     stanfordcpplib::getPlatform()->gtable_setEditorValue(this, row, column, text);
 }
 

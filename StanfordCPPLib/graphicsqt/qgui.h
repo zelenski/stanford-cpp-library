@@ -95,6 +95,8 @@ signals:
 private:
     QGui();   // forbid construction
 
+    bool _initialized;
+
     static QApplication* _app;
     static QThread* _qtMainThread;
     static QGStudentThread* _studentThread;

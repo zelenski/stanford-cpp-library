@@ -15,6 +15,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2018/07/17
+# - moved Qt graphics to lib /graphicsqt subdirectory
 # @version 2018/07/01
 # - re-enable Qt in configuration to support Qt-based GUI functionality
 # - added SPL_QT_GUI flag (default enabled)
@@ -196,6 +198,7 @@ exists($$PWD/lib/StanfordCPPLib/*.cpp) {
 }
 SOURCES *= $$files($$PWD/lib/StanfordCPPLib/collections/*.cpp)
 SOURCES *= $$files($$PWD/lib/StanfordCPPLib/graphics/*.cpp)
+SOURCES *= $$files($$PWD/lib/StanfordCPPLib/graphicsqt/*.cpp)
 SOURCES *= $$files($$PWD/lib/StanfordCPPLib/io/*.cpp)
 SOURCES *= $$files($$PWD/lib/StanfordCPPLib/private/*.cpp)
 SOURCES *= $$files($$PWD/lib/StanfordCPPLib/system/*.cpp)
@@ -215,6 +218,7 @@ exists($$PWD/lib/StanfordCPPLib/*.h) {
 }
 HEADERS *= $$files($$PWD/lib/StanfordCPPLib/collections/*.h)
 HEADERS *= $$files($$PWD/lib/StanfordCPPLib/graphics/*.h)
+HEADERS *= $$files($$PWD/lib/StanfordCPPLib/graphicsqt/*.h)
 HEADERS *= $$files($$PWD/lib/StanfordCPPLib/io/*.h)
 HEADERS *= $$files($$PWD/lib/StanfordCPPLib/private/*.h)
 HEADERS *= $$files($$PWD/lib/StanfordCPPLib/system/*.h)
@@ -233,6 +237,7 @@ exists($$PWD/$$PROJECT_FILTER*.h) {
 INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/
 INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/collections/
 INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/graphics/
+INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/graphicsqt/
 INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/io/
 INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/system/
 INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/util/

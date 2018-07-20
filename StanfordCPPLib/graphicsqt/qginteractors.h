@@ -27,6 +27,7 @@
 #include "qgradiobutton.h"
 #include "qgscrollbar.h"
 #include "qgslider.h"
+#include "qgtable.h"
 #include "qgtextarea.h"
 #include "qgtextfield.h"
 #include "qgwindow.h"

@@ -112,7 +112,8 @@ int QGui::_argc = 0;
 char** QGui::_argv = nullptr;
 QGui* QGui::_instance = nullptr;
 
-QGui::QGui() {
+QGui::QGui()
+        : _initialized(false) {
     connect(QGuiEventQueue::instance(),
             SIGNAL(mySignal()),
             this,
@@ -163,6 +164,7 @@ void QGui::initializeQt() {
     ensureThatThisIsTheQtGuiThread("QGui::initializeQt");
     if (!_app) {
         _app = new QApplication(_argc, _argv);
+        _initialized = true;
     }
 }
 
@@ -190,6 +192,11 @@ void QGui::runOnQtGuiThread(QGThunk func) {
     // send timer "event" telling GUI thread what to do
 //    QEvent* event = new QEvent((QEvent::Type) (QEvent::User + 106));
 //    QCoreApplication::postEvent(QGWindow::getLastWindow(), event);
+    if (!_initialized) {
+        // instance()->initializeQt();
+        error("QGui::runOnQtGuiThread: Qt GUI system has not been initialized.\n"
+              "You must #include one of the \"q*.h\" files in your main program file.");
+    }
     if (iAmRunningOnTheQtGuiThread()) {
         // already on Qt GUI thread; just run the function!
         func();

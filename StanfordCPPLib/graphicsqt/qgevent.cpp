@@ -26,7 +26,9 @@ QGEvent::QGEvent(EventClass eventClass,
           _time(getCurrentTimeMS()),
           _type(eventType),
           _x(0),
-          _y(0) {
+          _y(0),
+          _row(0),
+          _col(0) {
     // empty
 }
 
@@ -102,6 +104,10 @@ QGEvent::EventClass QGEvent::getClass() const {
     return _class;
 }
 
+int QGEvent::getColumn() const {
+    return _col;
+}
+
 long QGEvent::getCurrentTimeMS() {
     struct timeval tp;
     gettimeofday(&tp, nullptr);
@@ -139,6 +145,10 @@ QGInteractor* QGEvent::getInteractor() const {
 
 QGPoint QGEvent::getLocation() const {
     return QGPoint(getX(), getY());
+}
+
+int QGEvent::getRow() const {
+    return _row;
 }
 
 QGObservable* QGEvent::getSource() const {
@@ -407,6 +417,11 @@ void QGEvent::setModifiers(Qt::KeyboardModifiers modifiers) {
     }
 }
 
+void QGEvent::setRowAndColumn(int row, int col) {
+    _row = row;
+    _col = col;
+}
+
 void QGEvent::setSource(QGObservable* source) {
     _source = source;
 }
@@ -442,6 +457,8 @@ std::ostream& operator <<(std::ostream& out, const QGEvent& event) {
             << "(" << QGEvent::keyCodeToString(event.getKeyCode()) << ")";
     } else if (event.getEventClass() == QGEvent::MOUSE_EVENT) {
         out << ",x=" << event.getX() << ",y=" << event.getY() << ",button=" << event.getButton();
+    } else if (event.getEventClass() == QGEvent::TABLE_EVENT) {
+        out << ",row=" << event.getRow() << ",col=" << event.getColumn();
     }
     out << ")";
     return out;
