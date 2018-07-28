@@ -75,7 +75,14 @@ void testQtConsole() {
         double realnum = getDouble("Type a real number: ");
         cout << "You typed: " << realnum << endl;
 
-        cout << "What about me? :-(";   // no endl
+//        cout << "Let's test EOF functionality!" << endl;
+//        cout << "Type a line: ";
+//        while (getline(cin, line)) {
+//            cout << "You typed: " << line << endl;
+//            cout << "Type a line: ";
+//        }
+
+        cout << "Partial line; what about me? :-(";   // no endl
 
 //        cout << "How about a nasty error?!" << endl;
 //        error("oooooooooops");

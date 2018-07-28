@@ -86,6 +86,7 @@ private:
     bool isCursorInUserInputArea() const;
     void processBackspace(int key);
     void processCopy();
+    void processEof();
     void processKeyPress(QGEvent event);
     void processPaste();
     void processUserInputEnterKey();

@@ -98,6 +98,14 @@ public:
         blocked++;
         std::string line = myGetLineConsole();
         blocked--;
+
+        bool eof = std::cin.eof();
+        fflush(stdout);
+
+        if (eof) {
+            return EOF;
+        }
+
         int n = line.length();
         if (n + 1 >= BUFFER_SIZE) {
             error("ConsoleStreambuf::underflow: String too long");

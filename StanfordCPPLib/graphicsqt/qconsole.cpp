@@ -266,6 +266,8 @@ void QGConsoleWindow::processKeyPress(QGEvent event) {
             _textArea->setFont(DEFAULT_FONT_FAMILY + "-" + integerToString(DEFAULT_FONT_SIZE));
         } else if (keyCode == Qt::Key_C) {
             processCopy();
+        } else if (event.isCtrlKeyDown() && keyCode == Qt::Key_D) {
+            processEof();
         } else if (keyCode == Qt::Key_V) {
             processPaste();
         }
@@ -435,6 +437,13 @@ void QGConsoleWindow::processCopy() {
     }
 }
 
+void QGConsoleWindow::processEof() {
+    // only set EOF if input buffer is empty; this is the behavior on most *nix consoles
+    if (_inputBuffer.empty()) {
+        std::cin.setstate(std::ios_base::eofbit);
+    }
+}
+
 void QGConsoleWindow::processPaste() {
     if (_shutdown) {
         return;
@@ -537,7 +546,7 @@ std::string QGConsoleWindow::readLine() {
     this->_textArea->moveCursorToEnd();
     this->_textArea->scrollToBottom();
 
-    while (!_shutdown) {
+    while (!_shutdown && !std::cin.eof()) {
         _cinMutex.lockForWrite();
         _promptActive = true;
         _cinMutex.unlock();

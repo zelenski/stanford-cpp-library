@@ -16,12 +16,13 @@
  */
 
 #include "simpio.h"
-#include "strlib.h"
 #include <cctype>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
+#include "error.h"
+#include "strlib.h"
 #include "private/static.h"
 
 STATIC_CONST_VARIABLE_DECLARE(std::string, GETCHAR_DEFAULT_PROMPT, "Enter a character: ")
@@ -50,7 +51,7 @@ char getChar(const std::string& prompt,
         std::cout << promptCopy;
         std::string line;
         if (!getline(std::cin, line)) {
-            break;
+            error("getChar: End of input reached while waiting for character value.");
         }
         if (line.length() == 1) {
             value = line[0];
@@ -80,11 +81,13 @@ int getInteger(const std::string& prompt,
                const std::string& reprompt) {
     std::string promptCopy = prompt;
     appendSpace(promptCopy);
-    int value;
+    int value = 0;
     while (true) {
         std::cout << promptCopy;
         std::string line;
-        getline(std::cin, line);
+        if (!getline(std::cin, line)) {
+            error("getInteger: End of input reached while waiting for integer value.");
+        }
         trimInPlace(line);
         std::istringstream stream(line);
         stream >> value;
@@ -137,23 +140,29 @@ void getLine(const std::string& prompt,
     std::string promptCopy = prompt;
     appendSpace(promptCopy);
     std::cout << promptCopy;
-    getline(std::cin, out);
+    if (!getline(std::cin, out)) {
+        error("getLine: End of input reached while waiting for line.");
+    }
 }
 
 void getLine(std::istream& input,
              std::string& out) {
-    getline(input, out);
+    if (!getline(input, out)) {
+        error("getLine: End of input reached while waiting for line.");
+    }
 }
 
 double getReal(const std::string& prompt,
                const std::string& reprompt) {
     std::string promptCopy = prompt;
     appendSpace(promptCopy);
-    double value;
+    double value = 0.0;
     while (true) {
         std::cout << promptCopy;
         std::string line;
-        getline(std::cin, line);
+        if (!getline(std::cin, line)) {
+            error("getReal: End of input reached while waiting for real value.");
+        }
         trimInPlace(line);
         std::istringstream stream(line);
         stream >> value;
@@ -191,11 +200,13 @@ bool getYesOrNo(const std::string& prompt,
                 const std::string& defaultValue) {
     std::string promptCopy = prompt;
     appendSpace(promptCopy);
-    bool value;
+    bool value = false;
     while (true) {
         std::cout << promptCopy;
         std::string line;
-        getline(std::cin, line);
+        if (!getline(std::cin, line)) {
+            error("getYesOrNo: End of input reached while waiting for yes/no value.");
+        }
         if (line.empty()) {
             line = defaultValue;
         }
