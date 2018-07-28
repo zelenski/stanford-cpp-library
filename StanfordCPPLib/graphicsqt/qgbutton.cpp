@@ -89,8 +89,8 @@ QWidget* QGButton::getWidget() const {
     return static_cast<QWidget*>(_iqpushbutton);
 }
 
-void QGButton::removeClickHandler() {
-    removeEventHandler("click");
+void QGButton::removeActionListener() {
+    removeEventListener("click");
 }
 
 void QGButton::setAccelerator(const std::string& accelerator) {
@@ -98,12 +98,12 @@ void QGButton::setAccelerator(const std::string& accelerator) {
     _iqpushbutton->setShortcut(keySeq);
 }
 
-void QGButton::setClickHandler(QGEventHandler func) {
-    setEventHandler("click", func);
+void QGButton::setActionListener(QGEventListener func) {
+    setEventListener("click", func);
 }
 
-void QGButton::setClickHandler(QGEventHandlerVoid func) {
-    setEventHandler("click", func);
+void QGButton::setActionListener(QGEventListenerVoid func) {
+    setEventListener("click", func);
 }
 
 void QGButton::setIcon(const std::string& filename, bool retainIconSize) {

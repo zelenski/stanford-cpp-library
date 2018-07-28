@@ -21,6 +21,7 @@ public:
     static QFont deriveQFont(const QFont& font, const std::string& fontFamily, QFont::Weight weight = QFont::Normal, int size = -1);
     static std::string toFontString(const QFont& font);
     static QFont toQFont(const std::string& fontString);
+    static QFont toQFont(const QFont& font, const std::string& fontString);
 
 private:
     QGFont();

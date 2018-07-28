@@ -44,7 +44,8 @@ public:
      * student's main function.
      */
     __StanfordCppLibraryInitializerQt() {
-        qtgui::initializeStanfordCppLibraryQt();
+        // TODO: re-enable?  behavior of messages printed before main()?
+        // qtgui::initializeStanfordCppLibraryQt();
     }
 };
 static __StanfordCppLibraryInitializerQt __stanfordcpplib_init_qt;
@@ -117,7 +118,6 @@ static __StanfordCppLibraryInitializer __stanfordcpplib_init;
 
 #ifdef SPL_QT_GUI
 #define main main(int argc, char** argv) { \
-        extern void __shutdownStanfordCppLibraryQt(); \
         extern void __initializeStanfordCppLibraryQt(int argc, char** argv, int (* mainFunc)(void)); \
         extern int Main(); \
         __initializeStanfordCppLibraryQt(argc, argv, Main); \

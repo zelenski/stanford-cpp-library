@@ -26,36 +26,36 @@ _Internal_QCanvas::_Internal_QCanvas(QGCanvas* qgcanvas, QWidget* parent)
 
 void _Internal_QCanvas::enterEvent(QEvent* event) {
     QWidget::enterEvent(event);   // call super
-    if (!_qgcanvas->hasEventHandler("mouseenter")) return;
+    if (!_qgcanvas->hasEventListener("mouseenter")) return;
     _qgcanvas->fireQGEvent(event, QGEvent::MOUSE_ENTERED, "mouseenter");
 }
 
 void _Internal_QCanvas::keyPressEvent(QKeyEvent* event) {
     QWidget::keyPressEvent(event);   // call super
-    if (!_qgcanvas->hasEventHandler("keypress")) return;
+    if (!_qgcanvas->hasEventListener("keypress")) return;
     _qgcanvas->fireQGEvent(event, QGEvent::KEY_PRESSED, "keypress");
 }
 
 void _Internal_QCanvas::keyReleaseEvent(QKeyEvent* event) {
     QWidget::keyReleaseEvent(event);   // call super
-    if (_qgcanvas->hasEventHandler("keyrelease")) {
+    if (_qgcanvas->hasEventListener("keyrelease")) {
         _qgcanvas->fireQGEvent(event, QGEvent::KEY_RELEASED, "keyrelease");
     }
-    if (_qgcanvas->hasEventHandler("keytype")) {
+    if (_qgcanvas->hasEventListener("keytype")) {
         _qgcanvas->fireQGEvent(event, QGEvent::KEY_TYPED, "keytype");
     }
 }
 
 void _Internal_QCanvas::leaveEvent(QEvent* event) {
     QWidget::leaveEvent(event);   // call super
-    if (!_qgcanvas->hasEventHandler("mouseexit")) return;
+    if (!_qgcanvas->hasEventListener("mouseexit")) return;
     _qgcanvas->fireQGEvent(event, QGEvent::MOUSE_EXITED, "mouseexit");
 }
 
 void _Internal_QCanvas::mouseMoveEvent(QMouseEvent* event) {
     QWidget::mouseMoveEvent(event);   // call super
-    if (!_qgcanvas->hasEventHandler("mousemove")
-            && !_qgcanvas->hasEventHandler("mousedrag")) return;
+    if (!_qgcanvas->hasEventListener("mousemove")
+            && !_qgcanvas->hasEventListener("mousedrag")) return;
     _qgcanvas->fireQGEvent(event, QGEvent::MOUSE_MOVED, "mousemove");
     if (event->buttons() != 0) {
         // mouse drag
@@ -65,17 +65,17 @@ void _Internal_QCanvas::mouseMoveEvent(QMouseEvent* event) {
 
 void _Internal_QCanvas::mousePressEvent(QMouseEvent* event) {
     QWidget::mousePressEvent(event);   // call super
-    if (!_qgcanvas->hasEventHandler("mousepress")) return;
+    if (!_qgcanvas->hasEventListener("mousepress")) return;
     _qgcanvas->fireQGEvent(event, QGEvent::MOUSE_PRESSED, "mousepress");
 }
 
 void _Internal_QCanvas::mouseReleaseEvent(QMouseEvent* event) {
     QWidget::mouseReleaseEvent(event);   // call super
-    if (_qgcanvas->hasEventHandler("mouserelease")) {
+    if (_qgcanvas->hasEventListener("mouserelease")) {
         _qgcanvas->fireQGEvent(event, QGEvent::MOUSE_RELEASED, "mouserelease");
     }
 
-    if (_qgcanvas->hasEventHandler("click")) {
+    if (_qgcanvas->hasEventListener("click")) {
         _qgcanvas->fireQGEvent(event, QGEvent::MOUSE_CLICKED, "click");
     }
 }
@@ -110,12 +110,12 @@ void _Internal_QCanvas::wheelEvent(QWheelEvent* event) {
     QWidget::wheelEvent(event);   // call super
     if (event->pixelDelta().y() < 0) {
         // scroll down
-        if (_qgcanvas->hasEventHandler("mousewheeldown")) {
+        if (_qgcanvas->hasEventListener("mousewheeldown")) {
             _qgcanvas->fireQGEvent(event, QGEvent::MOUSE_WHEEL_DOWN, "mousewheeldown");
         }
     } else if (event->pixelDelta().y() > 0) {
         // scroll up
-        if (_qgcanvas->hasEventHandler("mousewheelup")) {
+        if (_qgcanvas->hasEventListener("mousewheelup")) {
             _qgcanvas->fireQGEvent(event, QGEvent::MOUSE_WHEEL_UP, "mousewheelup");
         }
     }
@@ -219,7 +219,7 @@ void QGCanvas::add(QGObject& gobj, double x, double y) {
     _qgcompound.add(gobj, x, y);   // calls conditionalRepaint
 }
 
-void QGCanvas::clear() {
+void QGCanvas::clearConsole() {
     clearPixels();
     clearObjects();
 }
@@ -539,18 +539,18 @@ void QGCanvas::removeAll() {
     _qgcompound.removeAll();
 }
 
-void QGCanvas::removeClickHandler() {
-    removeEventHandler("click");
+void QGCanvas::removeClickListener() {
+    removeEventListener("click");
 }
 
-void QGCanvas::removeKeyHandler() {
-    removeEventHandlers({"keypress",
+void QGCanvas::removeKeyListener() {
+    removeEventListeners({"keypress",
                          "keyrelease",
                          "keytype"});
 }
 
-void QGCanvas::removeMouseHandler() {
-    removeEventHandlers({"click",
+void QGCanvas::removeMouseListener() {
+    removeEventListeners({"click",
                          "mousedrag",
                          "mouseenter",
                          "mouseexit",
@@ -640,12 +640,12 @@ void QGCanvas::setBackground(const std::string& color) {
     setBackground(QGColor::convertColorToRGB(color));
 }
 
-void QGCanvas::setClickHandler(QGEventHandler func) {
-    setEventHandler("click", func);
+void QGCanvas::setClickListener(QGEventListener func) {
+    setEventListener("click", func);
 }
 
-void QGCanvas::setClickHandler(QGEventHandlerVoid func) {
-    setEventHandler("click", func);
+void QGCanvas::setClickListener(QGEventListenerVoid func) {
+    setEventListener("click", func);
 }
 
 void QGCanvas::setColor(int color) {
@@ -662,42 +662,42 @@ void QGCanvas::setFont(const std::string& font) {
     QGInteractor::setFont(font);
 }
 
-void QGCanvas::setKeyHandler(QGEventHandler func) {
+void QGCanvas::setKeyListener(QGEventListener func) {
     _iqcanvas->setFocusPolicy(Qt::StrongFocus);
-    setEventHandlers({"keypress",
-                      "keyrelease",
-                      "keytype"}, func);
+    setEventListeners({"keypress",
+                       "keyrelease",
+                       "keytype"}, func);
 }
 
-void QGCanvas::setKeyHandler(QGEventHandlerVoid func) {
+void QGCanvas::setKeyListener(QGEventListenerVoid func) {
     _iqcanvas->setFocusPolicy(Qt::StrongFocus);
-    setEventHandlers({"keypress",
-                      "keyrelease",
-                      "keytype"}, func);
+    setEventListeners({"keypress",
+                       "keyrelease",
+                       "keytype"}, func);
 }
 
-void QGCanvas::setMouseHandler(QGEventHandler func) {
-    setEventHandlers({"click",
-                      "mousedrag",
-                      "mouseenter",
-                      "mouseexit",
-                      "mousemove",
-                      "mousepress",
-                      "mouserelease",
-                      "mousewheeldown",
-                      "mousewheelup"}, func);
+void QGCanvas::setMouseListener(QGEventListener func) {
+    setEventListeners({"click",
+                       "mousedrag",
+                       "mouseenter",
+                       "mouseexit",
+                       "mousemove",
+                       "mousepress",
+                       "mouserelease",
+                       "mousewheeldown",
+                       "mousewheelup"}, func);
 }
 
-void QGCanvas::setMouseHandler(QGEventHandlerVoid func) {
-    setEventHandlers({"click",
-                      "mousedrag",
-                      "mouseenter",
-                      "mouseexit",
-                      "mousemove",
-                      "mousepress",
-                      "mouserelease",
-                      "mousewheeldown",
-                      "mousewheelup"}, func);
+void QGCanvas::setMouseListener(QGEventListenerVoid func) {
+    setEventListeners({"click",
+                       "mousedrag",
+                       "mouseenter",
+                       "mouseexit",
+                       "mousemove",
+                       "mousepress",
+                       "mouserelease",
+                       "mousewheeldown",
+                       "mousewheelup"}, func);
 }
 
 void QGCanvas::setPixel(double x, double y, int rgb) {

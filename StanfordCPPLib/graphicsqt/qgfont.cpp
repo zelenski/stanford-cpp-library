@@ -102,30 +102,75 @@ QFont QGFont::toQFont(const std::string& fontString) {
     }
 
     std::string fontFamily = "";
-    QFont::Weight fontWeight = QFont::Normal;
+    bool fontBold = false;
     bool fontItalic = false;
     int fontSize = 12;   // 12pt standard font size
 
     if (!tokens.isEmpty()) {
         fontFamily = trim(tokens.removeFront());
-    }
-    if (!tokens.isEmpty()) {
-        std::string fontWeightStr = toLowerCase(trim(tokens.removeFront()));
-        if (stringContains(fontWeightStr, "bold")) {
-            fontWeight = QFont::Bold;
-        }
-        if (stringContains(fontWeightStr, "italic")) {
-            fontItalic = true;
+        if (fontFamily == "*") {
+            fontFamily = "SansSerif";
         }
     }
-    if (!tokens.isEmpty()) {
-        std::string fontSizeStr = toLowerCase(trim(tokens.removeFront()));
-        if (stringIsInteger(fontSizeStr)) {
-            fontSize = stringToInteger(fontSizeStr);
+    for (int i = 0; i < 2; i++) {
+        if (!tokens.isEmpty()) {
+            // tokens 2-3 can be size-style or style-size
+            std::string fontWeightStr = toLowerCase(trim(tokens.removeFront()));
+            if (stringIsInteger(fontWeightStr)) {
+                fontSize = stringToInteger(fontWeightStr);
+            }
+            if (stringContains(fontWeightStr, "bold")) {
+                fontBold = true;
+            }
+            if (stringContains(fontWeightStr, "italic")) {
+                fontItalic = true;
+            }
         }
     }
 
-    QFont font = QFont(QString::fromStdString(fontFamily), fontSize, fontWeight, fontItalic);
+    QFont font = QFont(QString::fromStdString(fontFamily),
+                       fontSize,
+                       fontBold ? QFont::Bold : QFont::Normal,
+                       fontItalic);
+    font.setStyleHint(getStyleHint(fontFamily));
+    return font;
+}
+
+QFont QGFont::toQFont(const QFont& basisFont, const std::string& fontString) {
+    Vector<std::string> tokens = stringSplit(trim(fontString), "-");
+    if (tokens.isEmpty()) {
+        return QFont();
+    }
+
+    std::string fontFamily = "";
+    bool fontBold = basisFont.bold();
+    bool fontItalic = basisFont.italic();
+    int fontSize = basisFont.pointSize();   // 12pt standard font size
+
+    if (!tokens.isEmpty()) {
+        fontFamily = trim(tokens.removeFront());
+        if (fontFamily == "*") {
+            fontFamily = basisFont.family().toStdString();
+        }
+    }
+    for (int i = 0; i < 2; i++) {
+        if (!tokens.isEmpty()) {
+            // tokens 2-3 can be size-style or style-size
+            std::string fontWeightStr = toLowerCase(trim(tokens.removeFront()));
+            if (stringIsInteger(fontWeightStr)) {
+                fontSize = stringToInteger(fontWeightStr);
+            } else if (stringContains(fontWeightStr, "bold")) {
+                fontBold = true;
+            } else if (stringContains(fontWeightStr, "italic")) {
+                fontItalic = true;
+            }
+        }
+    }
+
+    QFont font = QFont(QString::fromStdString(fontFamily),
+                       fontSize,
+                       fontBold ? QFont::Bold : QFont::Normal,
+                       fontItalic);
     font.setStyleHint(getStyleHint(fontFamily));
     return font;
 }

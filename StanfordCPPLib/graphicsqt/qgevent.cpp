@@ -28,7 +28,8 @@ QGEvent::QGEvent(EventClass eventClass,
           _x(0),
           _y(0),
           _row(0),
-          _col(0) {
+          _col(0),
+          _internalQtEvent(nullptr) {
     // empty
 }
 
@@ -81,6 +82,7 @@ std::string QGEvent::typeToString(EventType eventType) {
     case TABLE_SELECTED:      return "TABLE_SELECTED";
     case TABLE_EDIT_BEGIN:    return "TABLE_EDIT_BEGIN";
     case TABLE_REPLACE_BEGIN: return "TABLE_REPLACE_BEGIN";
+    case TABLE_EDIT_CANCEL:   return "TABLE_EDIT_CANCEL";
     case TABLE_CUT:           return "TABLE_CUT";
     case TABLE_COPY:          return "TABLE_COPY";
     case TABLE_PASTE:         return "TABLE_PASTE";
@@ -143,6 +145,10 @@ QGInteractor* QGEvent::getInteractor() const {
     return static_cast<QGInteractor*>(_source);
 }
 
+QEvent* QGEvent::getInternalEvent() const {
+    return _internalQtEvent;
+}
+
 QGPoint QGEvent::getLocation() const {
     return QGPoint(getX(), getY());
 }
@@ -169,6 +175,12 @@ double QGEvent::getX() const {
 
 double QGEvent::getY() const {
     return _y;
+}
+
+void QGEvent::ignore() {
+    if (_internalQtEvent) {
+        _internalQtEvent->ignore();
+    }
 }
 
 bool QGEvent::isAltKeyDown() const {
@@ -258,12 +270,15 @@ void QGEvent::setButton(int button) {
     _button = button;
 }
 
+void QGEvent::setInternalEvent(QEvent* event) {
+    _internalQtEvent = event;
+}
+
 void QGEvent::setKeyChar(char keyChar) {
     if (keyChar == '\r') {
         keyChar = '\n';
     }
     _keyChar = keyChar;
-    _keyCode = (int) keyChar;
 }
 
 void QGEvent::setKeyChar(const std::string& keyCharString) {

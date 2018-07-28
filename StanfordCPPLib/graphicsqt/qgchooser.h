@@ -57,9 +57,9 @@ public:
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;
     virtual bool isEditable() const;
-    virtual void removeChangeHandler();
-    virtual void setChangeHandler(QGEventHandler func);
-    virtual void setChangeHandler(QGEventHandlerVoid func);
+    virtual void removeActionListener();
+    virtual void setActionListener(QGEventListener func);
+    virtual void setActionListener(QGEventListenerVoid func);
     virtual void setEditable(bool editable);
     virtual void setItem(int index, const std::string& item);
     virtual void setSelectedIndex(int index);

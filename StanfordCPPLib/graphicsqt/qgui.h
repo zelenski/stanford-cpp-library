@@ -12,8 +12,8 @@
 #include <functional>
 #include <string>
 #include <QApplication>
-#include <QMutex>
 #include <QObject>
+#include <QReadWriteLock>
 #include <QThread>
 #include "queue.h"
 
@@ -57,7 +57,7 @@ private:
 
     static QGuiEventQueue* _instance;
     Queue<QGThunk> _functionQueue;
-    QMutex _queueMutex;
+    QReadWriteLock _queueMutex;
 
     friend class QGui;
 };
@@ -72,9 +72,9 @@ class QGui : public QObject {
 public:
     void ensureThatThisIsTheQtGuiThread(const std::string& message = "");
     void exitGraphics(int exitCode = 0);
-    QThread* getCurrentThread();
-    QThread* getQtMainThread();
-    QThread* getStudentThread();
+    static QThread* getCurrentThread();
+    static QThread* getQtMainThread();
+    static QThread* getStudentThread();
     static bool iAmRunningOnTheQtGuiThread();
     static bool iAmRunningOnTheStudentThread();
     void initializeQt();

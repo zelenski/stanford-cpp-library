@@ -14,10 +14,14 @@
 
 #include <string>
 #include <QAbstractItemModel>
+#include <QBrush>
+#include <QFont>
 #include <QItemSelection>
+#include <QStyledItemDelegate>
 #include <QWidget>
 #include <QTableWidget>
 #include "grid.h"
+#include "map.h"
 #include "qginteractor.h"
 #include "qgobjects.h"
 #include "qgtypes.h"
@@ -26,79 +30,65 @@
 class QGTable;
 
 // Internal class; not to be used by clients.
+class _Internal_QItemDelegate : public QStyledItemDelegate {
+    Q_OBJECT
+
+public:
+    _Internal_QItemDelegate(QObject* parent = nullptr);
+    virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+    virtual void destroyEditor(QWidget* editor, const QModelIndex& index) const;
+    virtual QWidget* getEditor() const;
+
+private:
+    QWidget* _editor;
+};
+
+
+// Internal class; not to be used by clients.
 class _Internal_QTableWidget : public QTableWidget, public _Internal_QWidget {
     Q_OBJECT
 
 public:
     _Internal_QTableWidget(QGTable* qgtable, int rows, int columns, QWidget* parent = nullptr);
+    virtual bool edit(const QModelIndex& index, QAbstractItemView::EditTrigger trigger, QEvent* event) Q_DECL_OVERRIDE;
+    virtual QWidget* getEditor() const;
+    virtual _Internal_QItemDelegate* getItemDelegate() const;
     virtual bool isEditing() const;
     virtual void closeEditor(QWidget* editor, QAbstractItemDelegate::EndEditHint hint) Q_DECL_OVERRIDE;
-    virtual void closePersistentEditor(const QModelIndex& index);
-    virtual void openPersistentEditor(const QModelIndex& index);
     virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
 public slots:
-    void handleActivate(QModelIndex index);
-    void handleCellActivate(int row, int column);
     void handleCellChange(int row, int column);
-    void handleCellClick(int row, int column);
     void handleCellDoubleClick(int row, int column);
-    void handleCellEnter(int row, int column);
-    void handleCellPress(int row, int column);
-    void handleCurrentCellChange(int row, int column, int prevRow, int prevColumn);
-    void handleEnter(QModelIndex index);
-    void handleItemActivate(QTableWidgetItem* item);
-    void handleItemEnter(QTableWidgetItem* item);
-    void handleItemSelectionChange();
-    void handleModelDataChange(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int>& roles);
     void handleSelectionChange(const QItemSelection& selected, const QItemSelection& deselected);
 
 private:
     QGTable* _qgtable;
+    _Internal_QItemDelegate* _delegate;
+    int _lastKeyPressed;
 
     void fireTableEvent(QGEvent::EventType eventType, const std::string& eventName, int row = -1, int col = -1);
 };
 
 
 /*
- * A QGTable is a thin wrapper around the Java Swing component JTable.
- * It represents a graphical editable 2D table, like a mediocre facsimile
+ * A QGTable represents a graphical editable 2D table, like a mediocre facsimile
  * of an Excel spreadsheet.
  * After creating a QGTable, you can listen for table events to be notified
- * when the user types a new value into a table cell:
- *
- * <pre>
- * while (true) {
- *     GEvent event = waitForEvent(TABLE_EVENT);
- *     QGTableEvent tableEvent(event);
- *     std::cout << "table event: " << tableEvent.toString() << std::endl;
- *     ...
- * }
- * </pre>
+ * when the user types a new value into a table cell by calling setTableListener.
  *
  * All row/column indexes in this class are 0-based.
  */
 class QGTable : public QGInteractor {
 public:
     /*
-     * The three supported kinds of cell alignment.
-     * Used in the QGTable methods getHorizontalAlignment and setHorizontalAlignment.
-     * Values match the corresponding constants from javax.swing.SwingConstants.
-     */
-    enum Alignment {
-        CENTER = 0,
-        LEFT = 2,
-        RIGHT = 4
-    };
-
-    /*
      * Styles of column header labels that can be shown.
      */
     enum ColumnHeaderStyle {
-        COLUMN_HEADER_NONE = 0,
-        COLUMN_HEADER_EXCEL = 1,    // A, B, ..., Z, AA, AB, ...
-        COLUMN_HEADER_NUMERIC = 2   // 1, 2, 3, ...
+        COLUMN_HEADER_NONE,     // headers will not show
+        COLUMN_HEADER_EXCEL,    // A, B, ..., Z, AA, AB, ...
+        COLUMN_HEADER_NUMERIC   // 1, 2, 3, ...
     };
 
     /*
@@ -108,8 +98,7 @@ public:
      * This is often what you want.
      * Throws an error if the number of rows, columns, width, or height is negative.
      */
-    QGTable(int rows = 0, int columns = 0,
-            double width = 0, double height = 0,
+    QGTable(int rows = 0, int columns = 0, double width = 0, double height = 0,
             QWidget* parent = nullptr);
 
     /*
@@ -133,6 +122,11 @@ public:
      * Removes any per-cell/column/row formatting that has been applied to the table.
      */
     virtual void clearFormatting();
+
+    /*
+     * Removes any formatting that has been applied to the given cell.
+     */
+    virtual void clearCellFormatting(int row, int column);
 
     /*
      * Deselects any currently selected cell.
@@ -164,14 +158,14 @@ public:
      */
     virtual double getColumnWidth(int column) const;
 
-    /*
-     * Returns the horizontal alignment of the text in all cells in the table.
-     * The alignment can be LEFT, CENTER, or RIGHT and is initially LEFT.
-     * Currently a table's alignment is global and applies to all cells.
-     */
-    virtual Alignment getHorizontalAlignment() const;
-
     virtual _Internal_QWidget* getInternalWidget() const;
+
+    /*
+     * Returns the height of the given row index in pixels.
+     * When a table is constructed, all rows initially have equal width.
+     * Throws an error if the given row index is out of bounds.
+     */
+    virtual double getRowHeight(int row) const;
 
     /*
      * Returns the row and column of the cell that is currently selected
@@ -240,7 +234,9 @@ public:
      */
     virtual int numRows() const;
 
-    virtual void removeTableEventHandler();
+    virtual void removeTableEventListener();
+
+    virtual void requestFocus() Q_DECL_OVERRIDE;
 
     /*
      * Modifies the table to have the given number of rows and columns.
@@ -271,10 +267,16 @@ public:
     virtual void set(int row, int column, const std::string& text);
 
     /*
+     * Sets the background color that appears behind each cell.
+     */
+    virtual void setBackground(int rgb) Q_DECL_OVERRIDE;
+    virtual void setBackground(const std::string& color) Q_DECL_OVERRIDE;
+
+    /*
      * Member functions for per-cell formatting.
      * Throws an error if the given row/column index is out of bounds.
      */
-    virtual void setCellAlignment(int row, int column, Alignment alignment);
+    virtual void setCellAlignment(int row, int column, qgenum::HorizontalAlignment alignment);
     virtual void setCellBackground(int row, int column, int color);
     virtual void setCellBackground(int row, int column, const std::string& color);
     virtual void setCellFont(int row, int column, const std::string& font);
@@ -282,10 +284,17 @@ public:
     virtual void setCellForeground(int row, int column, const std::string& color);
 
     /*
+     * Sets the color used for the text of each cell.
+     * Equivalent to setForeground.
+     */
+    virtual void setColor(int rgb) Q_DECL_OVERRIDE;
+    virtual void setColor(const std::string& color) Q_DECL_OVERRIDE;
+
+    /*
      * Member functions for per-column formatting.
      * Throws an error if the given row/column index is out of bounds.
      */
-    virtual void setColumnAlignment(int column, Alignment alignment);
+    virtual void setColumnAlignment(int column, qgenum::HorizontalAlignment alignment);
     virtual void setColumnBackground(int column, int color);
     virtual void setColumnBackground(int column, const std::string& color);
     virtual void setColumnFont(int column, const std::string& font);
@@ -318,17 +327,29 @@ public:
     virtual void setEditorValue(int row, int column, const std::string& text);
 
     /*
+     * Sets the font used to display each cell's text.
+     */
+    virtual void setFont(const std::string& font) Q_DECL_OVERRIDE;
+
+    /*
+     * Sets the color used for the text of each cell.
+     * Equivalent to setColor.
+     */
+    virtual void setForeground(int rgb) Q_DECL_OVERRIDE;
+    virtual void setForeground(const std::string& color) Q_DECL_OVERRIDE;
+
+    /*
      * Sets the horizontal alignment of the text in all cells in the table.
      * The alignment can be LEFT, CENTER, or RIGHT and is initially LEFT.
      * Currently a table's alignment is global and applies to all cells.
      */
-    virtual void setHorizontalAlignment(Alignment _alignment);
+    virtual void setHorizontalAlignment(qgenum::HorizontalAlignment alignment);
 
     /*
      * Member functions for per-row formatting.
      * Throws an error if the given row/column index is out of bounds.
      */
-    virtual void setRowAlignment(int row, Alignment _alignment);
+    virtual void setRowAlignment(int row, qgenum::HorizontalAlignment _alignment);
     virtual void setRowBackground(int row, int color);
     virtual void setRowBackground(int row, const std::string& color);
     virtual void setRowFont(int row, const std::string& font);
@@ -342,6 +363,13 @@ public:
     virtual void setRowColumnHeadersVisible(bool visible);
 
     /*
+     * Sets the given row index to have the given height in pixels.
+     * Throws an error if the given row index is out of bounds
+     * or if the height is negative.
+     */
+    virtual void setRowHeight(int row, double width);
+
+    /*
      * Sets the text in the cell that is currently selected.
      * If no cell is currently selected, does nothing.
      */
@@ -350,8 +378,8 @@ public:
     /*
      * Sets the given function to be called when events occur in this table.
      */
-    virtual void setTableEventHandler(QGEventHandler func);
-    virtual void setTableEventHandler(QGEventHandlerVoid func);
+    virtual void setTableListener(QGEventListener func);
+    virtual void setTableListener(QGEventListenerVoid func);
 
     /*
      * Returns the number of columns in the table.
@@ -360,11 +388,75 @@ public:
     virtual int width() const;
 
 private:
+    // Represents cascading styles on a cell, row, column, or table.
+    struct TableStyle {
+        int background;
+        int foreground;
+        std::string font;
+        qgenum::HorizontalAlignment alignment;
+        // TODO: borders?
+
+        TableStyle() {
+            background = 0;
+            foreground = 0;
+            font = "";
+            alignment = qgenum::ALIGN_LEFT;
+        }
+
+        bool isSet() const {
+            return background >= 0
+                    && foreground >= 0
+                    && !font.empty()
+                    && alignment >= 0;
+        }
+
+        void mergeWith(const TableStyle& other) {
+            if (other.background >= 0) {
+                background = other.background;
+            }
+            if (other.foreground >= 0) {
+                foreground = other.foreground;
+            }
+            if (!other.font.empty()) {
+                font = other.font;
+            }
+            if (other.alignment >= 0) {
+                alignment = other.alignment;
+            }
+        }
+
+        TableStyle mergedWith(const TableStyle& other) {
+            TableStyle copy = *this;
+            copy.mergeWith(other);
+            return copy;
+        }
+
+        static TableStyle unset() {
+            TableStyle style;
+            style.background = -1;
+            style.foreground = -1;
+            style.font = "";
+            style.alignment = (qgenum::HorizontalAlignment) -1;
+            return style;
+        }
+    };
+
+    // static variables for default formatting:
+    // background/foreground colors
+    // font
+    // alignment
+    static TableStyle _defaultCellStyle;
+
     // member variables
     _Internal_QTableWidget* _iqtableview;
-    Alignment _alignment;
-    bool _rowColHeadersVisible;
     ColumnHeaderStyle _columnHeaderStyle;
+
+    // styles on table, rows, columns, cells
+    Map<int, TableStyle> _rowStyles;
+    Map<int, TableStyle> _columnStyles;
+    TableStyle _globalCellStyle;
+
+    void applyStyleToCell(int row, int column, const TableStyle& style);
 
     /*
      * Throws an error if the given numRows/numCols values are negative.
@@ -380,6 +472,23 @@ private:
      * Throws an error if the given width/height values are out of bounds.
      */
     void checkSize(const std::string& member, double width, double height) const;
+
+    void ensureColumnStyle(int column);
+    void ensureDefaultFormatting() const;   // const hack
+    void ensureGlobalCellStyle();
+    void ensureRowStyle(int row);
+    TableStyle getMergedStyleForCell(int row, int column);
+
+    // Internal setters for cell formatting.
+    virtual void setCellAlignmentInternal(int row, int column, qgenum::HorizontalAlignment alignment);
+    virtual void setCellBackgroundInternal(int row, int column, int color);
+    virtual void setCellFontInternal(int row, int column, const std::string& font);
+    virtual void setCellForegroundInternal(int row, int column, int color);
+
+    static std::string toExcelColumnName(int col);
+    // static GridLocation toRowColumn(const std::string& excelColumnName);
+
+    void updateColumnHeaders();
 
     friend class _Internal_QTableWidget;
 };

@@ -5,6 +5,6 @@
 #include "qgobjects.h"
 
 int main() {
-    extern int mainQtWidgets();
-    return mainQtWidgets();
+    extern int mainQtConsole();
+    return mainQtConsole();
 }

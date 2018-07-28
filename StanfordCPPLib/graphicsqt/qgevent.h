@@ -20,8 +20,8 @@ class QGInteractor;        // forward declaration
 class QGObservable;        // forward declaration
 class _Internal_QWidget;   // forward declaration
 
-typedef std::function<void(QGEvent)> QGEventHandler;
-typedef std::function<void()>        QGEventHandlerVoid;
+typedef std::function<void(QGEvent)> QGEventListener;
+typedef std::function<void()>        QGEventListenerVoid;
 
 /*
  * ...
@@ -80,9 +80,10 @@ public:
         TABLE_SELECTED      = TABLE_EVENT + 2,   // cursor moves onto a cell
         TABLE_EDIT_BEGIN    = TABLE_EVENT + 3,   // user presses F2 or double clicks to start editing a cell
         TABLE_REPLACE_BEGIN = TABLE_EVENT + 4,   // user starts typing on a cell; like TABLE_EDIT_BEGIN but wipes out previous value
-        TABLE_CUT           = TABLE_EVENT + 5,   // user cuts cell value to clipboard
-        TABLE_COPY          = TABLE_EVENT + 6,   // user copies cell value to clipboard
-        TABLE_PASTE         = TABLE_EVENT + 7,   // user pastes cell value from clipboard
+        TABLE_EDIT_CANCEL   = TABLE_EVENT + 5,   // user presses Esc or otherwise stops editing a cell
+        TABLE_CUT           = TABLE_EVENT + 6,   // user cuts cell value to clipboard
+        TABLE_COPY          = TABLE_EVENT + 7,   // user copies cell value to clipboard
+        TABLE_PASTE         = TABLE_EVENT + 8,   // user pastes cell value from clipboard
 
         SERVER_REQUEST      = SERVER_EVENT + 1,
 
@@ -108,15 +109,15 @@ public:
         BUTTON3_DOWN   = 1 << 7
     };
 
-    enum EventHandlerType {
+    enum EventListenerType {
         HANDLER_EVENT,
         HANDLER_VOID
     };
 
-    struct EventHandlerWrapper {
-        QGEventHandler handler;
-        QGEventHandlerVoid handlerVoid;
-        EventHandlerType type;
+    struct EventListenerWrapper {
+        QGEventListener handler;
+        QGEventListenerVoid handlerVoid;
+        EventListenerType type;
 
         void fireEvent(const QGEvent& event) {
             if (type == HANDLER_EVENT) {
@@ -137,41 +138,42 @@ public:
         TAB_KEY = 9,
         ENTER_KEY = 10,
         CLEAR_KEY = 12,
-        SHIFT_KEY = 16,
-        CTRL_KEY = 17,
-        ALT_KEY = 18,
+        RETURN_KEY = 13,
+        SHIFT_KEY = Qt::Key_Shift,
+        CTRL_KEY = Qt::Key_Control,
+        ALT_KEY = Qt::Key_Alt,
         PAUSE_KEY = 19,
         CAPS_LOCK_KEY = 20,
         ESCAPE_KEY = 27,
-        PAGE_UP_KEY = 33,
-        PAGE_DOWN_KEY = 34,
-        END_KEY = 35,
-        HOME_KEY = 36,
-        LEFT_ARROW_KEY = 37,
-        UP_ARROW_KEY = 38,
-        RIGHT_ARROW_KEY = 39,
-        DOWN_ARROW_KEY = 40,
-        F1_KEY = 112,
-        F2_KEY = 113,
-        F3_KEY = 114,
-        F4_KEY = 115,
-        F5_KEY = 116,
-        F6_KEY = 117,
-        F7_KEY = 118,
-        F8_KEY = 119,
-        F9_KEY = 120,
-        F10_KEY = 121,
-        F11_KEY = 122,
-        F12_KEY = 123,
+        PAGE_UP_KEY = Qt::Key_PageUp,
+        PAGE_DOWN_KEY = Qt::Key_PageDown,
+        END_KEY = Qt::Key_End,
+        HOME_KEY = Qt::Key_Home,
+        LEFT_ARROW_KEY = Qt::Key_Left,
+        UP_ARROW_KEY = Qt::Key_Up,
+        RIGHT_ARROW_KEY = Qt::Key_Right,
+        DOWN_ARROW_KEY = Qt::Key_Down,
+        F1_KEY = Qt::Key_F1,
+        F2_KEY = Qt::Key_F2,
+        F3_KEY = Qt::Key_F3,
+        F4_KEY = Qt::Key_F4,
+        F5_KEY = Qt::Key_F5,
+        F6_KEY = Qt::Key_F6,
+        F7_KEY = Qt::Key_F7,
+        F8_KEY = Qt::Key_F8,
+        F9_KEY = Qt::Key_F9,
+        F10_KEY = Qt::Key_F10,
+        F11_KEY = Qt::Key_F11,
+        F12_KEY = Qt::Key_F12,
         DELETE_KEY = 127,
-        NUM_LOCK_KEY = 144,
-        SCROLL_LOCK_KEY = 145,
-        PRINT_SCREEN_KEY = 154,
-        INSERT_KEY = 155,
-        HELP_KEY = 156,
-        META_KEY = 157,
-        WINDOWS_KEY = 524,
-        MENU_KEY = 525
+        NUM_LOCK_KEY = Qt::Key_NumLock,
+        SCROLL_LOCK_KEY = Qt::Key_ScrollLock,
+        PRINT_SCREEN_KEY = Qt::Key_Print,
+        INSERT_KEY = Qt::Key_Insert,
+        HELP_KEY = Qt::Key_Help,
+        META_KEY = Qt::Key_Meta,
+        WINDOWS_KEY = Qt::Key_Super_L,
+        MENU_KEY = Qt::Key_Menu
     };
 
     QGEvent(EventClass eventClass = NULL_EVENT,
@@ -188,6 +190,7 @@ public:
     virtual EventClass getEventClass() const;
     virtual EventType getEventType() const;
     virtual QGInteractor* getInteractor() const;
+    virtual QEvent* getInternalEvent() const;
     virtual char getKeyChar() const;
     virtual int getKeyCode() const;
     virtual QGPoint getLocation() const;
@@ -199,6 +202,8 @@ public:
     virtual EventType getType() const;
     virtual double getX() const;
     virtual double getY() const;
+
+    virtual void ignore();
 
     /*
      * Method: isAltKeyDown
@@ -260,6 +265,7 @@ public:
 
     virtual void setActionCommand(const std::string& actionCommand);
     virtual void setButton(int button);
+    virtual void setInternalEvent(QEvent* event);
     virtual void setKeyChar(char keyChar);
     virtual void setKeyChar(const std::string& keyCharString);
     virtual void setKeyCode(int keyCode);
@@ -288,6 +294,7 @@ private:
     double _y;
     int _row;
     int _col;
+    QEvent* _internalQtEvent;
 
     friend class QGInteractor;
     friend class _Internal_QWidget;

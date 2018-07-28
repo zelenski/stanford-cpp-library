@@ -57,7 +57,9 @@ char getChar(const std::string& prompt,
             break;
         }
 
-        std::cout << (reprompt.empty() ? STATIC_VARIABLE(GETCHAR_DEFAULT_REPROMPT) : reprompt) << std::endl;
+        std::cout.flush();
+        std::cerr << (reprompt.empty() ? STATIC_VARIABLE(GETCHAR_DEFAULT_REPROMPT) : reprompt) << std::endl;
+        std::cerr.flush();
         if (promptCopy.empty()) {
             promptCopy = STATIC_VARIABLE(GETCHAR_DEFAULT_PROMPT);
         }
@@ -89,7 +91,9 @@ int getInteger(const std::string& prompt,
         if (!stream.fail() && stream.eof()) {
             break;
         }
-        std::cout << (reprompt.empty() ? STATIC_VARIABLE(GETINTEGER_DEFAULT_REPROMPT) : reprompt) << std::endl;
+        std::cout.flush();
+        std::cerr << (reprompt.empty() ? STATIC_VARIABLE(GETINTEGER_DEFAULT_REPROMPT) : reprompt) << std::endl;
+        std::cerr.flush();
         if (promptCopy.empty()) {
             promptCopy = STATIC_VARIABLE(GETINTEGER_DEFAULT_PROMPT);
         }
@@ -102,8 +106,10 @@ int getIntegerBetween(const std::string& prompt, int min, int max) {
     while (true) {
         value = getInteger(prompt);
         if (value < min || value > max) {
-            std::cout << "Please type a value between " << min
+            std::cout.flush();
+            std::cerr << "Please type a value between " << min
                       << " and " << max << "." << std::endl;
+            std::cerr.flush();
         } else {
             break;
         }
@@ -154,7 +160,9 @@ double getReal(const std::string& prompt,
         if (!stream.fail() && stream.eof()) {
             break;
         }
-        std::cout << (reprompt.empty() ? STATIC_VARIABLE(GETREAL_DEFAULT_REPROMPT) : reprompt) << std::endl;
+        std::cout.flush();
+        std::cerr << (reprompt.empty() ? STATIC_VARIABLE(GETREAL_DEFAULT_REPROMPT) : reprompt) << std::endl;
+        std::cerr.flush();
         if (promptCopy.empty()) {
             promptCopy = STATIC_VARIABLE(GETREAL_DEFAULT_PROMPT);
         }
@@ -167,8 +175,10 @@ double getRealBetween(const std::string& prompt, double min, double max) {
     while (true) {
         value = getReal(prompt);
         if (value < min || value > max) {
-            std::cout << "Please type a value between " << min
+            std::cout.flush();
+            std::cerr << "Please type a value between " << min
                       << " and " << max << "." << std::endl;
+            std::cerr.flush();
         } else {
             break;
         }
@@ -199,7 +209,9 @@ bool getYesOrNo(const std::string& prompt,
                 break;
             }
         }
-        std::cout << (reprompt.empty() ? STATIC_VARIABLE(GETYESORNO_DEFAULT_REPROMPT) : reprompt) << std::endl;
+        std::cout.flush();
+        std::cerr << (reprompt.empty() ? STATIC_VARIABLE(GETYESORNO_DEFAULT_REPROMPT) : reprompt) << std::endl;
+        std::cerr.flush();
         if (promptCopy.empty()) {
             promptCopy = STATIC_VARIABLE(GETYESORNO_DEFAULT_PROMPT);
         }

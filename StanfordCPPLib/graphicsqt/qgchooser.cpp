@@ -122,16 +122,16 @@ bool QGChooser::isEditable() const {
     return _iqcomboBox->isEditable();
 }
 
-void QGChooser::removeChangeHandler() {
-    removeEventHandler("change");
+void QGChooser::removeActionListener() {
+    removeEventListener("change");
 }
 
-void QGChooser::setChangeHandler(QGEventHandler func) {
-    setEventHandler("change", func);
+void QGChooser::setActionListener(QGEventListener func) {
+    setEventListener("change", func);
 }
 
-void QGChooser::setChangeHandler(QGEventHandlerVoid func) {
-    setEventHandler("change", func);
+void QGChooser::setActionListener(QGEventListenerVoid func) {
+    setEventListener("change", func);
 }
 
 void QGChooser::setItem(int index, const std::string& item) {

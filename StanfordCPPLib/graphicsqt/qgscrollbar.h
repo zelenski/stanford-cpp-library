@@ -90,7 +90,10 @@ public:
 
     virtual QWidget* getWidget() const;
 
-    virtual void removeValueChangeHandler();
+    virtual void removeActionListener();
+
+    virtual void setActionListener(QGEventListener func);
+    virtual void setActionListener(QGEventListenerVoid func);
 
     /*
      * Sets the scroll bar's extent, meaning the amount of its range that is
@@ -117,9 +120,6 @@ public:
      * Sets the current value of the scroll bar.
      */
     virtual void setValue(int value);
-
-    virtual void setValueChangeHandler(QGEventHandler func);
-    virtual void setValueChangeHandler(QGEventHandlerVoid func);
 
 private:
     _Internal_QScrollBar* _iqscrollbar;

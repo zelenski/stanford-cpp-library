@@ -24,6 +24,11 @@ class _Internal_QTextEdit : public QTextEdit, public _Internal_QWidget {
 
 public:
     _Internal_QTextEdit(QGTextArea* qgtextArea, QWidget* parent = nullptr);
+    virtual void contextMenuEvent(QContextMenuEvent* event) Q_DECL_OVERRIDE;
+    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
+    virtual void keyReleaseEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
+    virtual void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
+    virtual void mouseReleaseEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
 public slots:
@@ -46,27 +51,45 @@ public:
     virtual void appendText(const std::string& text);
     virtual void clearText();
     virtual int getColumns() const;
+    virtual int getCursorPosition() const;
     virtual std::string getHtml() const;
     virtual _Internal_QWidget* getInternalWidget() const;
     virtual std::string getPlaceholder() const;
     virtual int getRows() const;
+    virtual std::string getSelectedText() const;
     virtual std::string getText() const;
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;
+    virtual bool isContextMenuEnabled() const;
     virtual bool isEditable() const;
-    virtual void removeTextChangeHandler();
+    virtual bool isLineWrap() const;
+    virtual void moveCursorToEnd();
+    virtual void moveCursorToStart();
+    virtual void removeKeyListener();
+    virtual void removeMouseListener();
+    virtual void removeTextChangeListener();
+    virtual void scrollToBottom();
+    virtual void scrollToTop();
     virtual void setColumns(int columns);
+    virtual void setContextMenuEnabled(bool enabled);
+    virtual void setCursorPosition(int index);
     virtual void setEditable(bool value);
     virtual void setHtml(const std::string& html);
+    virtual void setKeyListener(QGEventListener func);
+    virtual void setKeyListener(QGEventListenerVoid func);
+    virtual void setMouseListener(QGEventListener func);
+    virtual void setMouseListener(QGEventListenerVoid func);
     virtual void setPlaceholder(const std::string& text);
     virtual void setRows(int rows);
     virtual void setRowsColumns(int rows, int columns);
     virtual void setText(const std::string& text);
-    virtual void setTextChangeHandler(QGEventHandler func);
-    virtual void setTextChangeHandler(QGEventHandlerVoid func);
+    virtual void setLineWrap(bool wrap);
+    virtual void setTextChangeListener(QGEventListener func);
+    virtual void setTextChangeListener(QGEventListenerVoid func);
 
 private:
     _Internal_QTextEdit* _iqtextedit;
+    bool _contextMenuEnabled;
 
     GDimension getRowColumnSize() const;
 

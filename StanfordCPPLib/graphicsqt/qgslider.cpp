@@ -88,16 +88,16 @@ QWidget* QGSlider::getWidget() const {
     return static_cast<QWidget*>(_iqslider);
 }
 
-void QGSlider::removeChangeHandler() {
-    removeEventHandler("change");
+void QGSlider::removeActionListener() {
+    removeEventListener("change");
 }
 
-void QGSlider::setChangeHandler(QGEventHandler func) {
-    setEventHandler("change", func);
+void QGSlider::setActionListener(QGEventListener func) {
+    setEventListener("change", func);
 }
 
-void QGSlider::setChangeHandler(QGEventHandlerVoid func) {
-    setEventHandler("change", func);
+void QGSlider::setActionListener(QGEventListenerVoid func) {
+    setEventListener("change", func);
 }
 
 void QGSlider::setMajorTickSpacing(int value) {

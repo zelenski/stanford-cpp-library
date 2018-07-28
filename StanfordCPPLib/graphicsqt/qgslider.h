@@ -53,9 +53,9 @@ public:
     virtual std::string getType() const;
     virtual int getValue() const;
     virtual QWidget* getWidget() const;
-    virtual void removeChangeHandler();
-    virtual void setChangeHandler(QGEventHandler func);
-    virtual void setChangeHandler(QGEventHandlerVoid func);
+    virtual void removeActionListener();
+    virtual void setActionListener(QGEventListener func);
+    virtual void setActionListener(QGEventListenerVoid func);
     virtual void setMajorTickSpacing(int value);
     virtual void setMinorTickSpacing(int value);
     virtual void setPaintLabels(bool value);

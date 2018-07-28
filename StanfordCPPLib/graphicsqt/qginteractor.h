@@ -52,6 +52,7 @@ public:
 
     QGInteractor();
     virtual ~QGInteractor();
+    virtual bool eventsEnabled() const Q_DECL_OVERRIDE;
     virtual std::string getAccelerator() const;
     virtual std::string getActionCommand() const;
     virtual std::string getBackground() const;

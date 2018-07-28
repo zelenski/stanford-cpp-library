@@ -85,20 +85,20 @@ bool QGRadioButton::isSelected() const {
     return _iqradioButton->isChecked();
 }
 
-void QGRadioButton::removeChangeHandler() {
-    removeEventHandler("change");
+void QGRadioButton::removeActionListener() {
+    removeEventListener("change");
+}
+
+void QGRadioButton::setActionListener(QGEventListener func) {
+    setEventListener("change", func);
+}
+
+void QGRadioButton::setActionListener(QGEventListenerVoid func) {
+    setEventListener("change", func);
 }
 
 void QGRadioButton::setChecked(bool checked) {
     _iqradioButton->setChecked(checked);
-}
-
-void QGRadioButton::setChangeHandler(QGEventHandler func) {
-    setEventHandler("change", func);
-}
-
-void QGRadioButton::setChangeHandler(QGEventHandlerVoid func) {
-    setEventHandler("change", func);
 }
 
 void QGRadioButton::setSelected(bool selected) {

@@ -84,6 +84,66 @@ int hashCode(const QGDimension& dim) {
 }
 
 /*
+ * qgenum namespace
+ */
+namespace qgenum {
+std::string toString(HorizontalAlignment alignment) {
+    if (alignment == ALIGN_CENTER) {
+        return "Center";
+    } else if (alignment == ALIGN_LEFT) {
+        return "Left";
+    } else {   // if (alignment == ALIGN_RIGHT)
+        return "Right";
+    }
+}
+
+std::string toString(VerticalAlignment alignment) {
+    if (alignment == ALIGN_MIDDLE) {
+        return "Middle";
+    } else if (alignment == ALIGN_TOP) {
+        return "Top";
+    } else {   // if (alignment == ALIGN_BOTTOM)
+        return "Bottom";
+    }
+}
+
+HorizontalAlignment toHorizontalAlignment(const std::string& alignmentStr) {
+    std::string alignLC = toLowerCase(trim(alignmentStr));
+    if (stringContains(alignLC, "left")) {
+        return ALIGN_LEFT;
+    } else if (stringContains(alignLC, "right")) {
+        return ALIGN_RIGHT;
+    } else {
+        return ALIGN_CENTER;
+    }
+}
+
+Qt::Alignment toQtAlignment(HorizontalAlignment alignment) {
+    return alignment == qgenum::ALIGN_LEFT ? Qt::AlignLeft
+            : qgenum::ALIGN_CENTER ? Qt::AlignHCenter
+            : Qt::AlignRight;
+}
+
+Qt::Alignment toQtAlignment(VerticalAlignment alignment) {
+    return alignment == qgenum::ALIGN_TOP ? Qt::AlignTop
+            : qgenum::ALIGN_MIDDLE ? Qt::AlignVCenter
+            : Qt::AlignBottom;
+}
+
+VerticalAlignment toVerticalAlignment(const std::string& alignmentStr) {
+    std::string alignLC = toLowerCase(trim(alignmentStr));
+    if (stringContains(alignLC, "top")) {
+        return ALIGN_TOP;
+    } else if (stringContains(alignLC, "bottom")) {
+        return ALIGN_BOTTOM;
+    } else {
+        return ALIGN_MIDDLE;
+    }
+}
+
+} // namespace qgenum
+
+/*
  * Implementation notes: QGPoint class
  * -----------------------------------
  * The QGPoint class itself is entirely straightforward.  The relational

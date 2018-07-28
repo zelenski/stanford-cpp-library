@@ -53,7 +53,7 @@ QGuiEventQueue::QGuiEventQueue() {
 }
 
 QGThunk QGuiEventQueue::dequeue() {
-    _queueMutex.lock();
+    _queueMutex.lockForWrite();
     QGThunk thunk = _functionQueue.dequeue();
     _queueMutex.unlock();
     return thunk;
@@ -71,28 +71,28 @@ bool QGuiEventQueue::isEmpty() const {
 }
 
 QGThunk QGuiEventQueue::peek() {
-    _queueMutex.lock();
+    _queueMutex.lockForRead();
     QGThunk thunk = _functionQueue.peek();
     _queueMutex.unlock();
     return thunk;
 }
 
 void QGuiEventQueue::runOnQtGuiThreadAsync(QGThunk thunk) {
-    _queueMutex.lock();
+    _queueMutex.lockForWrite();
     _functionQueue.add(thunk);
     _queueMutex.unlock();
     emit mySignal();
 }
 
 void QGuiEventQueue::runOnQtGuiThreadSync(QGThunk thunk) {
-    _queueMutex.lock();
+    _queueMutex.lockForWrite();
     _functionQueue.add(thunk);
     _queueMutex.unlock();
     emit mySignal();
 
     // TODO: "empty" is not quite right condition
     while (true) {
-        _queueMutex.lock();
+        _queueMutex.lockForRead();
         bool empty = _functionQueue.isEmpty();
         _queueMutex.unlock();
         if (empty) {
@@ -114,10 +114,7 @@ QGui* QGui::_instance = nullptr;
 
 QGui::QGui()
         : _initialized(false) {
-    connect(QGuiEventQueue::instance(),
-            SIGNAL(mySignal()),
-            this,
-            SLOT(mySlot()));
+    connect(QGuiEventQueue::instance(), SIGNAL(mySignal()), this, SLOT(mySlot()));
 }
 
 void QGui::ensureThatThisIsTheQtGuiThread(const std::string& message) {
@@ -314,10 +311,7 @@ void __initializeStanfordCppLibraryQt(int argc, char** argv, int (* mainFunc)(vo
     static std::ios_base::Init ios_base_init;
 
     // initialize Qt graphical console
-    if (::stanfordcpplib::qtgui::getConsoleEnabled()) {
-        ::stanfordcpplib::qtgui::ensureConsoleWindow();
-    }
-
+    ::stanfordcpplib::qtgui::getConsoleEnabled();
 
 #if defined(SPL_CONSOLE_PRINT_EXCEPTIONS)
     ::stanfordcpplib::qtgui::setConsolePrintExceptions(true);
@@ -334,16 +328,6 @@ void __initializeStanfordCppLibraryQt(int argc, char** argv, int (* mainFunc)(vo
 
 // to be run in Qt main thread
 void __shutdownStanfordCppLibraryQt() {
-    // TODO
-    const std::string PROGRAM_COMPLETED_TITLE_SUFFIX = " [completed]";
-
-    if (stanfordcpplib::qtgui::getConsoleEnabled()) {
-        std::string title = stanfordcpplib::qtgui::getConsoleWindowTitle();
-        if (title == "") {
-            title = "Console";
-        }
-        if (title.find("terminated") == std::string::npos) {
-            stanfordcpplib::qtgui::setConsoleWindowTitle(title + PROGRAM_COMPLETED_TITLE_SUFFIX);
-        }
-    }
+    // shut down the Qt graphical console window
+    stanfordcpplib::qtgui::shutdownConsole();
 }

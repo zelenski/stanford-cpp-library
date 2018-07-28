@@ -31,6 +31,7 @@ class _Internal_QLineEdit : public QLineEdit, public _Internal_QWidget {
 
 public:
     _Internal_QLineEdit(QGTextField* qgtextField, QWidget* parent = nullptr);
+    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
 public slots:
@@ -85,8 +86,8 @@ public:
 
     QGTextField(const std::string& text = "", int charsWide = 0, QWidget* parent = nullptr);
     QGTextField(int charsWide, QWidget* parent = nullptr);
-    QGTextField(int value, int min = 0, int max = 100, int step = 1, QWidget* parent = nullptr);
-    QGTextField(double value, double min = 0.0, double max = 100.0, double step = 0.1, QWidget* parent = nullptr);
+    QGTextField(int value, int min, int max, int step = 1, QWidget* parent = nullptr);
+    QGTextField(double value, double min, double max, double step, QWidget* parent = nullptr);
     virtual ~QGTextField();
     virtual int getCharsWide() const;
     virtual InputType getInputType() const;
@@ -104,7 +105,10 @@ public:
     virtual QWidget* getWidget() const;
     virtual bool isAutocompleteEnabled() const;
     virtual bool isEditable() const;
-    virtual void removeTextChangeHandler();
+    virtual void removeActionListener();
+    virtual void removeTextChangeListener();
+    virtual void setActionListener(QGEventListener func);
+    virtual void setActionListener(QGEventListenerVoid func);
     virtual void setAutocompleteList(std::initializer_list<std::string> strings);
     virtual void setAutocompleteList(const Vector<std::string>& strings);
     virtual void setAutocompleteEnabled(bool enabled);
@@ -113,8 +117,8 @@ public:
     virtual void setMaxLength(int maxLength);
     virtual void setPlaceholder(const std::string& text);
     virtual void setText(const std::string& text);
-    virtual void setTextChangeHandler(QGEventHandler func);
-    virtual void setTextChangeHandler(QGEventHandlerVoid func);
+    virtual void setTextChangeListener(QGEventListener func);
+    virtual void setTextChangeListener(QGEventListenerVoid func);
     virtual void setValue(bool value);
     virtual void setValue(char value);
     virtual void setValue(double value);

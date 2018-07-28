@@ -77,8 +77,16 @@ bool QGCheckBox::isSelected() const {
     return _iqcheckBox->isChecked();
 }
 
-void QGCheckBox::removeChangeHandler() {
-    removeEventHandler("change");
+void QGCheckBox::removeActionListener() {
+    removeEventListener("change");
+}
+
+void QGCheckBox::setActionListener(QGEventListener func) {
+    setEventListener("change", func);
+}
+
+void QGCheckBox::setActionListener(QGEventListenerVoid func) {
+    setEventListener("change", func);
 }
 
 void QGCheckBox::setChecked(bool checked) {
@@ -87,14 +95,6 @@ void QGCheckBox::setChecked(bool checked) {
 
 void QGCheckBox::setSelected(bool selected) {
     _iqcheckBox->setChecked(selected);
-}
-
-void QGCheckBox::setChangeHandler(QGEventHandler func) {
-    setEventHandler("change", func);
-}
-
-void QGCheckBox::setChangeHandler(QGEventHandlerVoid func) {
-    setEventHandler("change", func);
 }
 
 void QGCheckBox::setText(const std::string& text) {

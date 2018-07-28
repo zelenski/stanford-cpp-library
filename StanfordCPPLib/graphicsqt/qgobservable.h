@@ -33,11 +33,13 @@ public:
     QGObservable();
     virtual ~QGObservable();
 
+    virtual bool eventsEnabled() const;
     virtual std::string getType() const = 0;
+    virtual void setEventsEnabled(bool eventsEnabled);
     virtual std::string toString() const;
 
 protected:
-    virtual void clearEventHandlers();
+    virtual void clearEventListeners();
     virtual void ensureThreadSafety(const std::string& memberName = "");
     virtual void fireEvent(QGEvent& event);
     virtual void fireQGEvent(QEvent* event, QGEvent::EventType eventType, const std::string& eventName);
@@ -48,15 +50,16 @@ protected:
     virtual void fireQGEvent(QTimerEvent* event, QGEvent::EventType eventType, const std::string& eventName);
     virtual void fireQGEvent(QWheelEvent* event, QGEvent::EventType eventType, const std::string& eventName);
     virtual void fireQGEvent(QWindowStateChangeEvent* event, QGEvent::EventType eventType, const std::string& eventName);
-    virtual bool hasEventHandler(const std::string& eventName) const;
-    virtual void removeEventHandler(const std::string& eventName);
-    virtual void removeEventHandlers(std::initializer_list<std::string> eventNames);
-    virtual void setEventHandler(const std::string& eventName, QGEventHandler func);
-    virtual void setEventHandler(const std::string& eventName, QGEventHandlerVoid func);
-    virtual void setEventHandlers(std::initializer_list<std::string> eventNames, QGEventHandler func);
-    virtual void setEventHandlers(std::initializer_list<std::string> eventNames, QGEventHandlerVoid func);
+    virtual bool hasEventListener(const std::string& eventName) const;
+    virtual void removeEventListener(const std::string& eventName);
+    virtual void removeEventListeners(std::initializer_list<std::string> eventNames);
+    virtual void setEventListener(const std::string& eventName, QGEventListener func);
+    virtual void setEventListener(const std::string& eventName, QGEventListenerVoid func);
+    virtual void setEventListeners(std::initializer_list<std::string> eventNames, QGEventListener func);
+    virtual void setEventListeners(std::initializer_list<std::string> eventNames, QGEventListenerVoid func);
 
-    Map<std::string, QGEvent::EventHandlerWrapper> _eventMap;
+    Map<std::string, QGEvent::EventListenerWrapper> _eventMap;
+    bool _eventsEnabled;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

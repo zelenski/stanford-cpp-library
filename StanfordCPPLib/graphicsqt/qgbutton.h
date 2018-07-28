@@ -49,10 +49,10 @@ public:
     virtual QGInteractor::TextPosition getTextPosition() const;
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;
-    virtual void removeClickHandler();
+    virtual void removeActionListener();
     virtual void setAccelerator(const std::string& accelerator);
-    virtual void setClickHandler(QGEventHandler func);
-    virtual void setClickHandler(QGEventHandlerVoid func);
+    virtual void setActionListener(QGEventListener func);
+    virtual void setActionListener(QGEventListenerVoid func);
     virtual void setIcon(const std::string& filename, bool retainIconSize = true);
     virtual void setText(const std::string& text);
     virtual void setTextPosition(QGInteractor::TextPosition position);

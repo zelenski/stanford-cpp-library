@@ -34,6 +34,20 @@ void _Internal_QLineEdit::handleTextChange(const QString&) {
     _qgtextfield->fireEvent(textChangeEvent);
 }
 
+void _Internal_QLineEdit::keyPressEvent(QKeyEvent* event) {
+    QLineEdit::keyPressEvent(event);   // call super
+    if (!_qgtextfield->hasEventListener("action")) return;
+    if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
+        QGEvent actionEvent(
+                    /* class  */ QGEvent::ACTION_EVENT,
+                    /* type   */ QGEvent::ACTION_PERFORMED,
+                    /* name   */ "action",
+                    /* source */ _qgtextfield);
+        actionEvent.setActionCommand(_qgtextfield->getActionCommand());
+        _qgtextfield->fireEvent(actionEvent);
+    }
+}
+
 QSize _Internal_QLineEdit::sizeHint() const {
     if (hasPreferredSize()) {
         return getPreferredSize();
@@ -263,8 +277,20 @@ bool QGTextField::isEditable() const {
     }
 }
 
-void QGTextField::removeTextChangeHandler() {
-    removeEventHandler("textchange");
+void QGTextField::removeActionListener() {
+    removeEventListener("action");
+}
+
+void QGTextField::removeTextChangeListener() {
+    removeEventListener("textchange");
+}
+
+void QGTextField::setActionListener(QGEventListener func) {
+    setEventListener("action", func);
+}
+
+void QGTextField::setActionListener(QGEventListenerVoid func) {
+    setEventListener("action", func);
 }
 
 void QGTextField::setAutocompleteList(std::initializer_list<std::string> strings) {
@@ -352,12 +378,12 @@ void QGTextField::setText(const std::string& text) {
     }
 }
 
-void QGTextField::setTextChangeHandler(QGEventHandler func) {
-    setEventHandler("textchange", func);
+void QGTextField::setTextChangeListener(QGEventListener func) {
+    setEventListener("textchange", func);
 }
 
-void QGTextField::setTextChangeHandler(QGEventHandlerVoid func) {
-    setEventHandler("textchange", func);
+void QGTextField::setTextChangeListener(QGEventListenerVoid func) {
+    setEventListener("textchange", func);
 }
 
 void QGTextField::setValue(bool value) {

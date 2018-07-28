@@ -122,7 +122,7 @@ public:
     virtual void add(QGObject* gobj, double x, double y);
     virtual void add(QGObject& gobj);
     virtual void add(QGObject& gobj, double x, double y);
-    virtual void clear() Q_DECL_OVERRIDE;
+    virtual void clearConsole() Q_DECL_OVERRIDE;
     virtual void clearObjects();
     virtual void clearPixels();
     virtual bool contains(double x, double y) const;
@@ -225,9 +225,9 @@ public:
     virtual void remove(QGObject* gobj);
     virtual void remove(QGObject& gobj);
     virtual void removeAll();
-    virtual void removeClickHandler();
-    virtual void removeKeyHandler();
-    virtual void removeMouseHandler();
+    virtual void removeClickListener();
+    virtual void removeKeyListener();
+    virtual void removeMouseListener();
     virtual void repaint() Q_DECL_OVERRIDE;
     virtual void repaintRegion(int x, int y, int width, int height) Q_DECL_OVERRIDE;
 
@@ -252,15 +252,15 @@ public:
     virtual void setAutoRepaint(bool autoRepaint) Q_DECL_OVERRIDE;
     virtual void setBackground(int color) Q_DECL_OVERRIDE;
     virtual void setBackground(const std::string& color) Q_DECL_OVERRIDE;
-    virtual void setClickHandler(QGEventHandler func);
-    virtual void setClickHandler(QGEventHandlerVoid func);
+    virtual void setClickListener(QGEventListener func);
+    virtual void setClickListener(QGEventListenerVoid func);
     virtual void setColor(int color) Q_DECL_OVERRIDE;
     virtual void setColor(const std::string& color) Q_DECL_OVERRIDE;
     virtual void setFont(const std::string& font) Q_DECL_OVERRIDE;
-    virtual void setKeyHandler(QGEventHandler func);
-    virtual void setKeyHandler(QGEventHandlerVoid func);
-    virtual void setMouseHandler(QGEventHandler func);
-    virtual void setMouseHandler(QGEventHandlerVoid func);
+    virtual void setKeyListener(QGEventListener func);
+    virtual void setKeyListener(QGEventListenerVoid func);
+    virtual void setMouseListener(QGEventListener func);
+    virtual void setMouseListener(QGEventListenerVoid func);
     virtual void setPixel(double x, double y, int rgb) Q_DECL_OVERRIDE;
     virtual void setPixel(double x, double y, int r, int g, int b) Q_DECL_OVERRIDE;
     virtual void setPixelARGB(double x, double y, int argb) Q_DECL_OVERRIDE;

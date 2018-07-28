@@ -10,11 +10,11 @@
 #define _qgwindow_h
 
 #include <string>
-#include <QLayout>
 #include <QApplication>
 #include <QWindow>
 #include <QCloseEvent>
 #include <QEvent>
+#include <QLayout>
 #include <QMainWindow>
 #include <QRect>
 #include "grid.h"
@@ -43,6 +43,7 @@ public:
     virtual void changeEvent(QEvent* event) Q_DECL_OVERRIDE;
     virtual void closeEvent(QCloseEvent* event) Q_DECL_OVERRIDE;
     virtual void fixMargins();
+    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
     virtual void resizeEvent(QResizeEvent* event) Q_DECL_OVERRIDE;
     virtual void timerEvent(QTimerEvent* event) Q_DECL_OVERRIDE;
     virtual bool timerExists();
@@ -86,16 +87,6 @@ private:
  */
 class QGWindow : public QGObservable, public virtual QGForwardDrawingSurface {
 public:
-    enum HorizontalAlignment {
-        ALIGN_CENTER,
-        ALIGN_LEFT,
-        ALIGN_RIGHT
-    };
-    enum VerticalAlignment {
-        ALIGN_MIDDLE,
-        ALIGN_TOP,
-        ALIGN_BOTTOM
-    };
     enum Region {
         REGION_CENTER,
         REGION_EAST,
@@ -103,7 +94,13 @@ public:
         REGION_SOUTH,
         REGION_WEST
     };
-    enum CloseOperation { CLOSE_DO_NOTHING = 0, CLOSE_HIDE = 1, CLOSE_DISPOSE = 2, CLOSE_EXIT = 3 };
+
+    enum CloseOperation {
+        CLOSE_DO_NOTHING,
+        CLOSE_HIDE,
+        CLOSE_DISPOSE,
+        CLOSE_EXIT
+    };
 
     static const int DEFAULT_WIDTH = 500;
     static const int DEFAULT_HEIGHT = 300;
@@ -118,7 +115,7 @@ public:
     virtual void add(QGObject& obj, double x, double y);
     virtual void addToRegion(QGInteractor* interactor, Region region);
     virtual void addToRegion(QGInteractor* interactor, const std::string& region = "Center");
-    virtual void clear() Q_DECL_OVERRIDE;
+    virtual void clearConsole() Q_DECL_OVERRIDE;
     virtual void clearCanvas();
     virtual void clearCanvasObjects();
     virtual void clearCanvasPixels();
@@ -127,6 +124,7 @@ public:
     virtual void center();
     virtual void close();
     virtual void compareToImage(const std::string& filename, bool ignoreWindowSize = true) const;
+    virtual bool eventsEnabled() const;
     virtual double getCanvasHeight() const;
     virtual QGDimension getCanvasSize() const;
     virtual double getCanvasWidth() const;
@@ -167,13 +165,13 @@ public:
     virtual void remove(QGObject* obj);
     virtual void remove(QGObject& obj);
     virtual void remove(QGInteractor* interactor);
-    virtual void removeClickHandler();
+    virtual void removeClickListener();
     virtual void removeFromRegion(QGInteractor* interactor, Region region);
     virtual void removeFromRegion(QGInteractor* interactor, const std::string& region);
-    virtual void removeKeyHandler();
-    virtual void removeMouseHandler();
-    virtual void removeTimerHandler();
-    virtual void removeWindowHandler();
+    virtual void removeKeyListener();
+    virtual void removeMouseListener();
+    virtual void removeTimerListener();
+    virtual void removeWindowListener();
     virtual void requestFocus();
     virtual void saveCanvasPixels(const std::string& filename);
     virtual void setBackground(int color);
@@ -188,32 +186,32 @@ public:
     virtual void setLocation(double x, double y);
     virtual void setLocation(const QGPoint& p);
     virtual void setLocation(const Point& p);
-    virtual void setClickHandler(QGEventHandler func);
-    virtual void setClickHandler(QGEventHandlerVoid func);
-    virtual void setKeyHandler(QGEventHandler func);
-    virtual void setKeyHandler(QGEventHandlerVoid func);
-    virtual void setMouseHandler(QGEventHandler func);
-    virtual void setMouseHandler(QGEventHandlerVoid func);
-    virtual void setRegionAlignment(Region region, HorizontalAlignment halign);
-    virtual void setRegionAlignment(Region region, VerticalAlignment valign);
-    virtual void setRegionAlignment(Region region, HorizontalAlignment halign, VerticalAlignment valign);
+    virtual void setClickListener(QGEventListener func);
+    virtual void setClickListener(QGEventListenerVoid func);
+    virtual void setKeyListener(QGEventListener func);
+    virtual void setKeyListener(QGEventListenerVoid func);
+    virtual void setMouseListener(QGEventListener func);
+    virtual void setMouseListener(QGEventListenerVoid func);
+    virtual void setRegionAlignment(Region region, qgenum::HorizontalAlignment halign);
+    virtual void setRegionAlignment(Region region, qgenum::VerticalAlignment valign);
+    virtual void setRegionAlignment(Region region, qgenum::HorizontalAlignment halign, qgenum::VerticalAlignment valign);
     virtual void setRegionAlignment(const std::string& region, const std::string& align);
     virtual void setRegionAlignment(const std::string& region, const std::string& halign, const std::string& valign);
-    virtual void setRegionHorizontalAlignment(Region region, HorizontalAlignment halign);
+    virtual void setRegionHorizontalAlignment(Region region, qgenum::HorizontalAlignment halign);
     virtual void setRegionHorizontalAlignment(const std::string& region, const std::string& halign);
     virtual void setRegionVerticalAlignment(const std::string& region, const std::string& valign);
-    virtual void setRegionVerticalAlignment(Region region, VerticalAlignment valign);
+    virtual void setRegionVerticalAlignment(Region region, qgenum::VerticalAlignment valign);
     virtual void setResizable(bool resizable);
     virtual void setSize(double width, double height);
     virtual void setSize(const QGDimension& size);
-    virtual void setTimerHandler(double ms, QGEventHandler func);
-    virtual void setTimerHandler(double ms, QGEventHandlerVoid func);
-    // TODO: setTimerHandlerOnce
+    virtual void setTimerListener(double ms, QGEventListener func);
+    virtual void setTimerListener(double ms, QGEventListenerVoid func);
+    // TODO: setTimerListenerOnce
     virtual void setTitle(const std::string& title);
     virtual void setVisible(bool visible);
     virtual void setWidth(double width);
-    virtual void setWindowHandler(QGEventHandler func);
-    virtual void setWindowHandler(QGEventHandlerVoid func);
+    virtual void setWindowListener(QGEventListener func);
+    virtual void setWindowListener(QGEventListenerVoid func);
     virtual void setWindowTitle(const std::string& title);
     virtual void setX(double x);
     virtual void setY(double y);
@@ -224,27 +222,24 @@ public:
     // not to be called by students
     static QMainWindow* getLastWindow();
 
+protected:
+    virtual void processKeyPressEventInternal(QKeyEvent* event);
+
 private:
     static _Internal_QMainWindow* _lastWindow;
 
-    static std::string alignmentToString(HorizontalAlignment alignment);
-    static std::string alignmentToString(VerticalAlignment alignment);
     virtual void ensureForwardTarget() Q_DECL_OVERRIDE;
     QLayout* layoutForRegion(Region region) const;
     QLayout* layoutForRegion(const std::string& region) const;
     static std::string regionToString(Region region);
     static Region stringToRegion(const std::string& regionStr);
-    static HorizontalAlignment stringToHorizontalAlignment(const std::string& alignmentStr);
-    static VerticalAlignment stringToVerticalAlignment(const std::string& alignmentStr);
-    static Qt::Alignment toQtAlignment(HorizontalAlignment alignment);
-    static Qt::Alignment toQtAlignment(VerticalAlignment alignment);
 
     _Internal_QMainWindow* _iqmainwindow;
     QGCanvas* _canvas;
     bool _resizable;
     CloseOperation _closeOperation;
-    Map<Region, HorizontalAlignment> _halignMap;
-    Map<Region, VerticalAlignment> _valignMap;
+    Map<Region, qgenum::HorizontalAlignment> _halignMap;
+    Map<Region, qgenum::VerticalAlignment> _valignMap;
 
     friend class QGInteractor;
     friend class _Internal_QMainWindow;

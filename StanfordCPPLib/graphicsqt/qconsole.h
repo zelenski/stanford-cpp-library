@@ -16,17 +16,98 @@
 #ifndef _qconsole_h
 #define _qconsole_h
 
+#include <iostream>
+#include <sstream>
 #include <string>
+#include <Qt>
+#include <QMutex>
+#include <QWindow>
+#include <QKeyEvent>
+#include <QTextEdit>
+#include <QTextFrame>
+#include "qgevent.h"
+#include "qgtextarea.h"
 #include "qgtypes.h"
+#include "qgui.h"
 #include "qgwindow.h"
+#include "queue.h"
+#include "vector.h"
+#include "private/consolestreambuf.h"
+#include "private/forwardingstreambuf.h"
 
 namespace stanfordcpplib {
 namespace qtgui {
-enum ConsoleCloseOperation {
-    CONSOLE_DO_NOTHING_ON_CLOSE = 0,
-    CONSOLE_HIDE_ON_CLOSE = 1,
-    CONSOLE_DISPOSE_ON_CLOSE = 2,
-    CONSOLE_EXIT_ON_CLOSE = 3
+class QGConsoleWindow : public QGWindow {
+public:
+    static bool consoleEnabled();
+    static QGConsoleWindow* instance();
+    static void setConsoleEnabled(bool enabled);
+
+    virtual void clearConsole();
+    virtual std::string getErrorColor() const;
+    virtual std::string getOutputColor() const;
+    virtual bool isClearEnabled() const;
+    virtual bool isEcho() const;
+    virtual bool isLocationSaved() const;
+    virtual bool isLocked() const;
+    virtual void print(const std::string& str, bool isStdErr = false);
+    virtual void println(bool isStdErr = false);
+    virtual void println(const std::string& str, bool isStdErr = false);
+    virtual std::string readLine();
+    virtual void setClearEnabled(bool clearEnabled);
+    virtual void setConsoleSize(double width, double height);
+    virtual void setEcho(bool echo);
+    virtual void setErrorColor(const std::string& errorColor);
+    virtual void setFont(const std::string& font) Q_DECL_OVERRIDE;
+    virtual void setLocationSaved(bool locationSaved);
+    virtual void setLocked(bool locked);
+    virtual void setOutputColor(const std::string& outputColor);
+    virtual void shutdown();
+
+private:
+    static const bool ALLOW_RICH_INPUT_EDITING;
+    static const double DEFAULT_WIDTH;
+    static const double DEFAULT_HEIGHT;
+    static const double DEFAULT_X;
+    static const double DEFAULT_Y;
+    static const std::string DEFAULT_WINDOW_TITLE;
+    static const std::string DEFAULT_FONT_FAMILY;
+    static const int DEFAULT_FONT_SIZE;
+    static const int MIN_FONT_SIZE;
+    static const int MAX_FONT_SIZE;
+    static const std::string USER_INPUT_COLOR;
+    static QGConsoleWindow* _instance;
+    static bool _consoleEnabled;
+
+    QGConsoleWindow();
+    QTextFragment getUserInputFragment() const;
+    int getUserInputStart() const;
+    int getUserInputEnd() const;
+    bool isCursorInUserInputArea() const;
+    void processBackspace(int key);
+    void processCopy();
+    void processKeyPress(QGEvent event);
+    void processPaste();
+    void processUserInputEnterKey();
+    void processUserInputKey(int key);
+    virtual ~QGConsoleWindow();
+
+    QGTextArea* _textArea;
+    bool _clearEnabled;
+    bool _echo;
+    bool _locationSaved;
+    bool _locked;
+    bool _promptActive;
+    bool _shutdown;
+    std::string _outputColor;
+    std::string _errorColor;
+    std::string _inputBuffer;
+    Queue<std::string> _inputLines;
+    stanfordcpplib::qtgui::ConsoleStreambufQt* _cinout_new_buf;
+    stanfordcpplib::qtgui::ConsoleStreambufQt* _cerr_new_buf;
+    QReadWriteLock _cinMutex;
+    QReadWriteLock _cinQueueMutex;
+    QMutex _coutMutex;
 };
 
 /*
@@ -54,7 +135,7 @@ bool getConsoleClearEnabled();
  * Returns what the console will do when the user hits its "close" button.
  * By default, this is CONSOLE_HIDE_ON_CLOSE unless set otherwise.
  */
-ConsoleCloseOperation getConsoleCloseOperation();
+QGWindow::CloseOperation getConsoleCloseOperation();
 
 /*
  * Function: getConsoleEcho
@@ -72,12 +153,6 @@ bool getConsoleEcho();
  * This is true if you have included "qconsole.h" in your program.
  */
 bool getConsoleEnabled();
-
-/*
- * Returns whether an event should be generated if the console
- * window is closed.  By default this is false initially.
- */
-bool getConsoleEventOnClose();
 
 /*
  * Returns whether the overall C++ program will terminate if the console
@@ -117,7 +192,7 @@ QGDimension getConsoleSize();
 
 double getConsoleWidth();
 
-QGWindow* getConsoleWindow();
+QGConsoleWindow* getConsoleWindow();
 
 /*
  * Function: getConsoleWindowTitle
@@ -144,7 +219,7 @@ void setConsoleClearEnabled(bool value);
  * ------------------------------------
  * Sets what the console should do when the user hits its "close" button.
  */
-void setConsoleCloseOperation(ConsoleCloseOperation op);
+void setConsoleCloseOperation(QGWindow::CloseOperation op);
 
 /*
  * Function: setConsoleEcho
@@ -162,12 +237,6 @@ void setConsoleEcho(bool echo);   // added by Marty
  * The color string passed should be in a hex format such as "#ffa32f";
  */
 void setConsoleErrorColor(const std::string& color);
-
-/*
- * Sets whether an event should be generated if the console
- * window is closed.  By default this is false initially.
- */
-void setConsoleEventOnClose(bool eventOnClose);
 
 /*
  * Sets whether the overall C++ program should terminate if the console
@@ -250,6 +319,14 @@ void setConsoleSize(double width, double height);
  */
 void setConsoleWindowTitle(const std::string& title);
 
+/*
+ * Function: shutdownConsole
+ * Usage: shutdownConsole();
+ * -------------------------
+ * Closes the graphical console window and turns it off.
+ */
+void shutdownConsole();
+
 } // namespace qtgui
 } // namespace stanfordcpplib
 
@@ -289,7 +366,8 @@ public:
      * student's main function.
      */
     __QtConsoleInitializer() {
-        qtgui::initializeQtGraphicalConsole();
+        // TODO: re-enable? what about prints during static phase?
+        // qtgui::initializeQtGraphicalConsole();
         qtgui::setConsoleEnabled(true);
     }
 };

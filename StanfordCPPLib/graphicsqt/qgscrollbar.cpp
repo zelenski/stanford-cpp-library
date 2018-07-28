@@ -81,8 +81,16 @@ QWidget* QGScrollBar::getWidget() const {
     return static_cast<QWidget*>(_iqscrollbar);
 }
 
-void QGScrollBar::removeValueChangeHandler() {
-    removeEventHandler("change");
+void QGScrollBar::removeActionListener() {
+    removeEventListener("change");
+}
+
+void QGScrollBar::setActionListener(QGEventListener func) {
+    setEventListener("change", func);
+}
+
+void QGScrollBar::setActionListener(QGEventListenerVoid func) {
+    setEventListener("change", func);
 }
 
 void QGScrollBar::setExtent(int extent) {
@@ -108,14 +116,6 @@ void QGScrollBar::setState(int value, int extent, int min, int max) {
 
 void QGScrollBar::setValue(int value) {
     _iqscrollbar->setValue(value);
-}
-
-void QGScrollBar::setValueChangeHandler(QGEventHandler func) {
-    setEventHandler("change", func);
-}
-
-void QGScrollBar::setValueChangeHandler(QGEventHandlerVoid func) {
-    setEventHandler("change", func);
 }
 
 void QGScrollBar::updateSize() {

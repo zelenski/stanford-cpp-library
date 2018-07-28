@@ -11,16 +11,16 @@
 #include <sstream>
 #include "qgui.h"
 
-QGObservable::QGObservable() {
+QGObservable::QGObservable()
+        : _eventsEnabled(true) {
     // empty
-    // ensureThreadSafety();
 }
 
 QGObservable::~QGObservable() {
     // empty
 }
 
-void QGObservable::clearEventHandlers() {
+void QGObservable::clearEventListeners() {
     _eventMap.clear();
 }
 
@@ -28,14 +28,18 @@ void QGObservable::ensureThreadSafety(const std::string& memberName) {
     QGui::instance()->ensureThatThisIsTheQtGuiThread(memberName);
 }
 
+bool QGObservable::eventsEnabled() const {
+    return _eventsEnabled;
+}
+
 void QGObservable::fireEvent(QGEvent& event) {
-    if (hasEventHandler(event.getName())) {
+    if (eventsEnabled() && hasEventListener(event.getName())) {
         event.setSource(this);
         _eventMap[event.getName()].fireEvent(event);
     }
 }
 
-void QGObservable::fireQGEvent(QEvent* /* event */,
+void QGObservable::fireQGEvent(QEvent* event,
                                QGEvent::EventType eventType,
                                const std::string& eventName) {
     QGEvent generalEvent(
@@ -43,10 +47,11 @@ void QGObservable::fireQGEvent(QEvent* /* event */,
                 /* type   */ eventType,
                 /* name   */ eventName,
                 /* source */ this);
+    generalEvent.setInternalEvent(event);
     fireEvent(generalEvent);
 }
 
-void QGObservable::fireQGEvent(QCloseEvent* /* event */,
+void QGObservable::fireQGEvent(QCloseEvent* event,
                                QGEvent::EventType eventType,
                                const std::string& eventName) {
     QGEvent windowEvent(
@@ -54,6 +59,7 @@ void QGObservable::fireQGEvent(QCloseEvent* /* event */,
                 /* type   */ eventType,
                 /* name   */ eventName,
                 /* source */ this);
+    windowEvent.setInternalEvent(event);
     fireEvent(windowEvent);
 }
 
@@ -66,8 +72,15 @@ void QGObservable::fireQGEvent(QKeyEvent* event,
                 /* name   */ eventName,
                 /* source */ this);
     keyEvent.setKeyCode(event->key());
-    keyEvent.setKeyChar(event->text().toStdString());
+    std::string text = event->text().toStdString();
+    if (!text.empty()) {
+        keyEvent.setKeyChar(text);
+    } else {
+        // int keyChar = event->key() & 0x0000ffff & ~Qt::KeyboardModifierMask;
+        // keyEvent.setKeyChar((char) keyChar);
+    }
     keyEvent.setModifiers(event->modifiers());
+    keyEvent.setInternalEvent(event);
     fireEvent(keyEvent);
 }
 
@@ -85,10 +98,11 @@ void QGObservable::fireQGEvent(QMouseEvent* event,
     mouseEvent.setY(event->y());
     mouseEvent.setModifiers(event->modifiers());
     mouseEvent.setActionCommand(actionCommand);
+    mouseEvent.setInternalEvent(event);
     fireEvent(mouseEvent);
 }
 
-void QGObservable::fireQGEvent(QResizeEvent* /* event */,
+void QGObservable::fireQGEvent(QResizeEvent* event,
                                QGEvent::EventType /* eventType */,
                                const std::string& eventName) {
     QGEvent windowEvent(
@@ -96,10 +110,11 @@ void QGObservable::fireQGEvent(QResizeEvent* /* event */,
                 /* type   */ QGEvent::WINDOW_RESIZED,
                 /* name   */ eventName,
                 /* source */ this);
+    windowEvent.setInternalEvent(event);
     fireEvent(windowEvent);
 }
 
-void QGObservable::fireQGEvent(QTimerEvent* /* event */,
+void QGObservable::fireQGEvent(QTimerEvent* event,
                                QGEvent::EventType /* eventType */,
                                const std::string& /* eventName */) {
     QGEvent timerEvent(
@@ -107,6 +122,7 @@ void QGObservable::fireQGEvent(QTimerEvent* /* event */,
                 /* type   */ QGEvent::TIMER_TICKED,
                 /* name   */ "timer",
                 /* source */ this);
+    timerEvent.setInternalEvent(event);
     fireEvent(timerEvent);
 }
 
@@ -122,10 +138,11 @@ void QGObservable::fireQGEvent(QWheelEvent* event,
     wheelEvent.setX(event->x());
     wheelEvent.setY(event->y());
     wheelEvent.setModifiers(event->modifiers());
+    wheelEvent.setInternalEvent(event);
     fireEvent(wheelEvent);
 }
 
-void QGObservable::fireQGEvent(QWindowStateChangeEvent* /* event */,
+void QGObservable::fireQGEvent(QWindowStateChangeEvent* event,
                                QGEvent::EventType eventType,
                                const std::string& eventName) {
     QGEvent windowEvent(
@@ -133,47 +150,52 @@ void QGObservable::fireQGEvent(QWindowStateChangeEvent* /* event */,
                 /* type   */ eventType,
                 /* name   */ eventName,
                 /* source */ this);
+    windowEvent.setInternalEvent(event);
     fireEvent(windowEvent);
 }
 
-bool QGObservable::hasEventHandler(const std::string& eventName) const {
+bool QGObservable::hasEventListener(const std::string& eventName) const {
     return _eventMap.containsKey(eventName);
 }
 
-void QGObservable::removeEventHandler(const std::string& eventName) {
+void QGObservable::removeEventListener(const std::string& eventName) {
     _eventMap.remove(eventName);
 }
 
-void QGObservable::removeEventHandlers(std::initializer_list<std::string> eventNames) {
+void QGObservable::removeEventListeners(std::initializer_list<std::string> eventNames) {
     for (std::string eventName : eventNames) {
-        removeEventHandler(eventName);
+        removeEventListener(eventName);
     }
 }
 
-void QGObservable::setEventHandler(const std::string& eventName, QGEventHandler func) {
-    QGEvent::EventHandlerWrapper wrapper;
+void QGObservable::setEventListener(const std::string& eventName, QGEventListener func) {
+    QGEvent::EventListenerWrapper wrapper;
     wrapper.type = QGEvent::HANDLER_EVENT;
     wrapper.handler = func;
     _eventMap[eventName] = wrapper;
 }
 
-void QGObservable::setEventHandler(const std::string& eventName, QGEventHandlerVoid func) {
-    QGEvent::EventHandlerWrapper wrapper;
+void QGObservable::setEventListener(const std::string& eventName, QGEventListenerVoid func) {
+    QGEvent::EventListenerWrapper wrapper;
     wrapper.type = QGEvent::HANDLER_VOID;
     wrapper.handlerVoid = func;
     _eventMap[eventName] = wrapper;
 }
 
-void QGObservable::setEventHandlers(std::initializer_list<std::string> eventNames, QGEventHandler func) {
+void QGObservable::setEventListeners(std::initializer_list<std::string> eventNames, QGEventListener func) {
     for (std::string eventName : eventNames) {
-        setEventHandler(eventName, func);
+        setEventListener(eventName, func);
     }
 }
 
-void QGObservable::setEventHandlers(std::initializer_list<std::string> eventNames, QGEventHandlerVoid func) {
+void QGObservable::setEventListeners(std::initializer_list<std::string> eventNames, QGEventListenerVoid func) {
     for (std::string eventName : eventNames) {
-        setEventHandler(eventName, func);
+        setEventListener(eventName, func);
     }
+}
+
+void QGObservable::setEventsEnabled(bool eventsEnabled) {
+    _eventsEnabled = eventsEnabled;
 }
 
 std::string QGObservable::toString() const {

@@ -64,6 +64,10 @@ QGInteractor::~QGInteractor() {
     // empty
 }
 
+bool QGInteractor::eventsEnabled() const {
+    return QGObservable::eventsEnabled() && getWidget() != nullptr && isVisible();
+}
+
 std::string QGInteractor::getAccelerator() const {
     // override in subclasses
     return "";

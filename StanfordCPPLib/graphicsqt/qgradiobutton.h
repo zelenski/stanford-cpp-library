@@ -51,10 +51,10 @@ public:
     virtual QWidget* getWidget() const;
     virtual bool isChecked() const;
     virtual bool isSelected() const;
-    virtual void removeChangeHandler();
+    virtual void removeActionListener();
+    virtual void setActionListener(QGEventListener func);
+    virtual void setActionListener(QGEventListenerVoid func);
     virtual void setChecked(bool checked);
-    virtual void setChangeHandler(QGEventHandler func);
-    virtual void setChangeHandler(QGEventHandlerVoid func);
     virtual void setSelected(bool selected);
     virtual void setText(const std::string& text);
 

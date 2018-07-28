@@ -12,6 +12,7 @@
 #define _qgtypes_h
 
 #include <iostream>
+#include <Qt>
 #include <string>
 
 /*
@@ -91,6 +92,38 @@ bool operator >(const QGDimension& d1, const QGDimension& d2);
 bool operator >=(const QGDimension& d1, const QGDimension& d2);
 QGDimension operator *(const QGDimension& d, double scale);
 int hashCode(const QGDimension& dim);
+
+/*
+ * A namespace to contain various enumerations used by the Qt GUI system.
+ */
+namespace qgenum {
+    /*
+     * The three supported kinds of horizontal alignment of a widget or
+     * onscreen object.
+     */
+    enum HorizontalAlignment {
+        ALIGN_CENTER,
+        ALIGN_LEFT,
+        ALIGN_RIGHT
+    };
+
+    /*
+     * The three supported kinds of vertical alignment of a widget or
+     * onscreen object.
+     */
+    enum VerticalAlignment {
+        ALIGN_MIDDLE,
+        ALIGN_TOP,
+        ALIGN_BOTTOM
+    };
+
+    std::string toString(HorizontalAlignment alignment);
+    std::string toString(VerticalAlignment alignment);
+    HorizontalAlignment toHorizontalAlignment(const std::string& alignmentStr);
+    Qt::Alignment toQtAlignment(HorizontalAlignment alignment);
+    Qt::Alignment toQtAlignment(VerticalAlignment alignment);
+    VerticalAlignment toVerticalAlignment(const std::string& alignmentStr);
+};
 
 /*
  * Class: QGPoint
