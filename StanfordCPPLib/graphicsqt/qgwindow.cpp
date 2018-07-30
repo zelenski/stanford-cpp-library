@@ -10,12 +10,16 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qgwindow.h"
 #include <QDesktopWidget>
+#include <QMenu>
+#include <QMenuBar>
 #include <QSizePolicy>
 #include <QStatusBar>
 #include <QThread>
 #include <QTimer>
+#include "filelib.h"
 #include "qgcolor.h"
 #include "qgui.h"
 #include "strlib.h"
@@ -27,7 +31,7 @@ _Internal_QMainWindow::_Internal_QMainWindow(QGWindow* qgwindow, QWidget* parent
         : QMainWindow(parent),
           _qgwindow(qgwindow),
           _timerID(-1) {
-    QGui::instance()->ensureThatThisIsTheQtGuiThread("QGWindow");
+    QGThread::ensureThatThisIsTheQtGuiThread("QGWindow");
 
     QWidget* dummyWidget = new QWidget(this);   // TODO: memory leak?
 
@@ -151,6 +155,16 @@ void _Internal_QMainWindow::fixMargins() {
     _eastLayout->setMargin(_eastLayout->isEmpty() ? 0 : MARGIN);
 }
 
+void _Internal_QMainWindow::handleMenuAction(const std::string& menu, const std::string& item) {
+    QGEvent actionEvent(
+                /* class  */ QGEvent::ACTION_EVENT,
+                /* type   */ QGEvent::ACTION_MENU,
+                /* name   */ "actionMenu",
+                /* source */ _qgwindow);
+    actionEvent.setActionCommand(menu + ":" + item);
+    _qgwindow->fireEvent(actionEvent);
+}
+
 void _Internal_QMainWindow::keyPressEvent(QKeyEvent* event) {
     QMainWindow::keyPressEvent(event);   // call super
     _qgwindow->processKeyPressEventInternal(event);
@@ -202,7 +216,7 @@ QGWindow::QGWindow(double width, double height, bool visible)
         : _canvas(nullptr),
           _resizable(true),
           _closeOperation(QGWindow::CLOSE_DISPOSE) {
-    QGui::instance()->ensureThatThisIsTheQtGuiThread("QGWindow::constructor");
+    QGThread::ensureThatThisIsTheQtGuiThread("QGWindow::constructor");
     QGui::instance()->initializeQt();
     _iqmainwindow = new _Internal_QMainWindow(this);
     _lastWindow = _iqmainwindow;
@@ -252,6 +266,56 @@ void QGWindow::add(QGObject& obj) {
 void QGWindow::add(QGObject& obj, double x, double y) {
     ensureForwardTarget();
     _canvas->add(obj, x, y);
+}
+
+QMenu* QGWindow::addMenu(const std::string& menu) {
+    QMenu* qmenu = _iqmainwindow->menuBar()->addMenu(QString::fromStdString(menu));
+    std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
+    _menuMap[menuKey] = qmenu;
+    return qmenu;
+}
+
+QAction* QGWindow::addMenuItem(const std::string& menu, const std::string& item, const std::string& icon) {
+    QGEventListenerVoid func = [this, menu, item]() {
+        this->_iqmainwindow->handleMenuAction(menu, item);
+    };
+    return addMenuItem(menu, item, icon, func);
+}
+
+QAction* QGWindow::addMenuItem(const std::string& menu, const std::string& item, const std::string& icon, QGEventListenerVoid func) {
+    std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
+    if (!_menuMap.containsKey(menuKey)) {
+        error("QGWindow::addMenuItem: menu \"" + menu + "\" does not exist");
+        return nullptr;
+    } else {
+        QMenu* qmenu = _menuMap[menuKey];
+        QAction* action = qmenu->addAction(QString::fromStdString(item));
+        if (!icon.empty() && fileExists(icon)) {
+            QIcon qicon(QString::fromStdString(icon));
+            action->setIcon(qicon);
+        }
+
+        // when menu item is clicked, call the function the user gave us
+        _iqmainwindow->connect(action, &QAction::triggered, _iqmainwindow, [func]() {
+            func();
+        });
+
+        // TODO: shortcut
+
+        std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
+        _menuActionMap[menuKey + ":" + itemKey] = action;
+        return action;
+    }
+}
+
+void QGWindow::addMenuSeparator(const std::string& menu) {
+    std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
+    if (!_menuMap.containsKey(menuKey)) {
+        error("QGWindow::addMenuItem: menu \"" + menu + "\" does not exist");
+    } else {
+        QMenu* qmenu = _menuMap[menuKey];
+        qmenu->addSeparator();
+    }
 }
 
 void QGWindow::addToRegion(QGInteractor* interactor, Region region) {
@@ -698,6 +762,10 @@ void QGWindow::removeKeyListener() {
     }
 }
 
+void QGWindow::removeMenuListener() {
+    removeEventListener("actionMenu");
+}
+
 void QGWindow::removeMouseListener() {
     if (_canvas) {
         _canvas->removeMouseListener();
@@ -787,6 +855,20 @@ void QGWindow::setLocation(const Point& p) {
     setLocation(p.getX(), p.getY());
 }
 
+void QGWindow::setMenuItemEnabled(const std::string& menu, const std::string& item, bool enabled) {
+    std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
+    std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
+    std::string menuItemKey = menuKey + ":" + itemKey;
+    if (!_menuMap.containsKey(menuKey)) {
+        error("QGWindow::setMenuItemEnabled: menu \"" + menu + "\" does not exist");
+    } else if (!_menuActionMap.containsKey(menuItemKey)) {
+        error("QGWindow::setMenuItemEnabled: menu item \"" + item + "\" does not exist");
+    } else {
+        QAction* action = _menuActionMap[menuItemKey];
+        action->setEnabled(enabled);
+    }
+}
+
 void QGWindow::setClickListener(QGEventListener func) {
     _canvas->setClickListener(func);
 }
@@ -801,6 +883,14 @@ void QGWindow::setKeyListener(QGEventListener func) {
 
 void QGWindow::setKeyListener(QGEventListenerVoid func) {
     _canvas->setKeyListener(func);
+}
+
+void QGWindow::setMenuListener(QGEventListener func) {
+    setEventListener("actionMenu", func);
+}
+
+void QGWindow::setMenuListener(QGEventListenerVoid func) {
+    setEventListener("actionMenu", func);
 }
 
 void QGWindow::setMouseListener(QGEventListener func) {
@@ -1039,3 +1129,5 @@ void QGWindow::toBack() {
 void QGWindow::toFront() {
     _iqmainwindow->raise();
 }
+
+#endif // SPL_QT_GUI

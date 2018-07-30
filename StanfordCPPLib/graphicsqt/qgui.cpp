@@ -6,12 +6,13 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qgui.h"
 #include <QEvent>
 #include <QThread>
 #include "error.h"
 #include "exceptions.h"
-#include "qgwindow.h"
+#include "qgthread.h"
 #include "strlib.h"
 
 #ifdef _WIN32
@@ -20,94 +21,9 @@
 #  include <unistd.h>   // for chdir
 #endif // _WIN32
 
-QGStudentThread::QGStudentThread(QGThunkInt mainFunc)
-        : _mainFunc(mainFunc) {
-    this->setObjectName(QString::fromStdString("QGStudentThread"));
-}
-
-int QGStudentThread::getResult() const {
-    return _result;
-}
-
-void QGStudentThread::run() {
-    this->yieldCurrentThread();
-    _result = _mainFunc();
-
-    // if I get here, student's main() has finished running;
-    // indicate this by showing a new title on the graphical console
-    QGui::instance()->runOnQtGuiThreadAsync([]() {
-        // flush out any unwritten output to the standard output streams
-        std::cout.flush();
-        std::cerr.flush();
-
-        extern void __shutdownStanfordCppLibraryQt();
-        __shutdownStanfordCppLibraryQt();
-    });
-}
-
-
-QGuiEventQueue* QGuiEventQueue::_instance = nullptr;
-
-QGuiEventQueue::QGuiEventQueue() {
-    // empty
-}
-
-QGThunk QGuiEventQueue::dequeue() {
-    _queueMutex.lockForWrite();
-    QGThunk thunk = _functionQueue.dequeue();
-    _queueMutex.unlock();
-    return thunk;
-}
-
-QGuiEventQueue* QGuiEventQueue::instance() {
-    if (!_instance) {
-        _instance = new QGuiEventQueue();
-    }
-    return _instance;
-}
-
-bool QGuiEventQueue::isEmpty() const {
-    return _functionQueue.isEmpty();
-}
-
-QGThunk QGuiEventQueue::peek() {
-    _queueMutex.lockForRead();
-    QGThunk thunk = _functionQueue.peek();
-    _queueMutex.unlock();
-    return thunk;
-}
-
-void QGuiEventQueue::runOnQtGuiThreadAsync(QGThunk thunk) {
-    _queueMutex.lockForWrite();
-    _functionQueue.add(thunk);
-    _queueMutex.unlock();
-    emit mySignal();
-}
-
-void QGuiEventQueue::runOnQtGuiThreadSync(QGThunk thunk) {
-    _queueMutex.lockForWrite();
-    _functionQueue.add(thunk);
-    _queueMutex.unlock();
-    emit mySignal();
-
-    // TODO: "empty" is not quite right condition
-    while (true) {
-        _queueMutex.lockForRead();
-        bool empty = _functionQueue.isEmpty();
-        _queueMutex.unlock();
-        if (empty) {
-            break;
-        } else {
-            QGui::instance()->getCurrentThread()->msleep(50);
-        }
-    }
-}
-
 
 // QGui members
 QApplication* QGui::_app = nullptr;
-QThread* QGui::_qtMainThread = nullptr;
-QGStudentThread* QGui::_studentThread = nullptr;
 int QGui::_argc = 0;
 char** QGui::_argv = nullptr;
 QGui* QGui::_instance = nullptr;
@@ -115,13 +31,6 @@ QGui* QGui::_instance = nullptr;
 QGui::QGui()
         : _initialized(false) {
     connect(QGuiEventQueue::instance(), SIGNAL(mySignal()), this, SLOT(mySlot()));
-}
-
-void QGui::ensureThatThisIsTheQtGuiThread(const std::string& message) {
-    if (!iAmRunningOnTheQtGuiThread()) {
-        error((message.empty() ? "" : (message + ": "))
-              + "Qt GUI system must be initialized from the application's main thread.");
-    }
 }
 
 void QGui::exitGraphics(int exitCode) {
@@ -137,28 +46,8 @@ void QGui::exitGraphics(int exitCode) {
     }
 }
 
-QThread* QGui::getCurrentThread() {
-    return QThread::currentThread();
-}
-
-QThread* QGui::getQtMainThread() {
-    return _qtMainThread;
-}
-
-QThread* QGui::getStudentThread() {
-    return _studentThread;
-}
-
-bool QGui::iAmRunningOnTheQtGuiThread() {
-    return _qtMainThread && _qtMainThread == QThread::currentThread();
-}
-
-bool QGui::iAmRunningOnTheStudentThread() {
-    return _studentThread && _studentThread == QThread::currentThread();
-}
-
 void QGui::initializeQt() {
-    ensureThatThisIsTheQtGuiThread("QGui::initializeQt");
+    QGThread::ensureThatThisIsTheQtGuiThread("QGui::initializeQt");
     if (!_app) {
         _app = new QApplication(_argc, _argv);
         _initialized = true;
@@ -181,57 +70,20 @@ void QGui::mySlot() {
     }
 }
 
-bool QGui::qtGuiThreadExists() {
-    return _qtMainThread != nullptr;
-}
-
-void QGui::runOnQtGuiThread(QGThunk func) {
-    // send timer "event" telling GUI thread what to do
-//    QEvent* event = new QEvent((QEvent::Type) (QEvent::User + 106));
-//    QCoreApplication::postEvent(QGWindow::getLastWindow(), event);
-    if (!_initialized) {
-        // instance()->initializeQt();
-        error("QGui::runOnQtGuiThread: Qt GUI system has not been initialized.\n"
-              "You must #include one of the \"q*.h\" files in your main program file.");
-    }
-    if (iAmRunningOnTheQtGuiThread()) {
-        // already on Qt GUI thread; just run the function!
-        func();
-    } else if (qtGuiThreadExists()) {
-        QGuiEventQueue::instance()->runOnQtGuiThreadSync(func);
-    } else {
-        error("QGui::runOnQtGuiThread: Qt GUI thread no longer exists");
-    }
-}
-
-void QGui::runOnQtGuiThreadAsync(QGThunk func) {
-    if (QGui::instance()->iAmRunningOnTheQtGuiThread()) {
-        // already on Qt GUI thread; just run the function!
-        func();
-    } else if (QGui::instance()->qtGuiThreadExists()) {
-        QGuiEventQueue::instance()->runOnQtGuiThreadAsync(func);
-    } else {
-        error("QGui::runOnQtGuiThreadAsync: Qt GUI thread no longer exists");
-    }
-}
-
 // this should be called by the Qt main thread
 void QGui::startBackgroundEventLoop(QGThunkInt mainFunc) {
-    ensureThatThisIsTheQtGuiThread("QGui::startBackgroundEventLoop");
+    QGThread::ensureThatThisIsTheQtGuiThread("QGui::startBackgroundEventLoop");
 
     // start student's main function in its own second thread
-    if (!_studentThread) {
-        _studentThread = new QGStudentThread(mainFunc);
-        _studentThread->start();
-
-        // begin Qt event loop on main thread
-        startEventLoop();
+    if (!QGThread::studentThreadExists()) {
+        QGStudentThread::startStudentThread(mainFunc);
+        startEventLoop();   // begin Qt event loop on main thread
     }
 }
 
 // this should be called by the Qt main thread
 void QGui::startEventLoop() {
-    ensureThatThisIsTheQtGuiThread("QGui::startEventLoop");
+    QGThread::ensureThatThisIsTheQtGuiThread("QGui::startEventLoop");
     if (!_app) {
         error("QGui::startEventLoop: need to initialize Qt first");
     }
@@ -240,10 +92,6 @@ void QGui::startEventLoop() {
     // if I get here, it means an "exit on close" window was just closed;
     // it's time to shut down the Qt system and exit the C++ program
     exitGraphics(exitCode);
-}
-
-bool QGui::studentThreadExists() {
-    return _studentThread != nullptr;
 }
 
 #define __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
@@ -298,20 +146,15 @@ void __initializeStanfordCppLibraryQt(int argc, char** argv, int (* mainFunc)(vo
     }
     _initialized = true;
 
-    QGui::_qtMainThread = QThread::currentThread();
+    QGThread::setMainThread();
     QGui::_argc = argc;
     QGui::_argv = argv;
     __parseArgsQt(argc, argv);
 
     QGui::instance()->initializeQt();
 
-    // declaring this object ensures that std::cin, cout, cerr are initialized
-    // properly before our lib tries to mess with them / redirect them
-    // TODO: remove/change to Qt graphical console
-    static std::ios_base::Init ios_base_init;
-
-    // initialize Qt graphical console
-    ::stanfordcpplib::qtgui::getConsoleEnabled();
+    // initialize Qt graphical console (if student #included it)
+    ::stanfordcpplib::qtgui::initializeQtGraphicalConsole();
 
 #if defined(SPL_CONSOLE_PRINT_EXCEPTIONS)
     ::stanfordcpplib::qtgui::setConsolePrintExceptions(true);
@@ -331,3 +174,5 @@ void __shutdownStanfordCppLibraryQt() {
     // shut down the Qt graphical console window
     stanfordcpplib::qtgui::shutdownConsole();
 }
+
+#endif // SPL_QT_GUI

@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qglabel.h"
 #include "qgwindow.h"
 #include "strlib.h"
@@ -109,3 +110,5 @@ void QGLabel::setTextPosition(QGInteractor::TextPosition position) {
         // _iqpushbutton->setToolButtonStyle(Qt::ToolButtonTextOnly);
     }
 }
+
+#endif // SPL_QT_GUI

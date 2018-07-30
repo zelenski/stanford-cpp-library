@@ -43,9 +43,16 @@
  */
 #define STANFORD_JAVA_BACKEND_MINIMUM_VERSION "2018/06/24"
 
+/*
+ * URL at which documentation about the libraries can be found.
+ */
+#define STANFORD_CPP_LIB_DOCS_URL "http://stanford.edu/~stepp/cppdoc/"
+
+
 namespace version {
 void ensureJavaBackEndVersion(std::string minVersion = "");
 void ensureProjectVersion(std::string minVersion = "");
+std::string getCppLibraryDocsUrl();
 std::string getCppLibraryVersion();
 std::string getJavaBackEndVersion();
 std::string getProjectVersion();

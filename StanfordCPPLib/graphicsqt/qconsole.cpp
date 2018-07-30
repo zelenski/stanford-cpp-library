@@ -7,15 +7,24 @@
  * - initial version, based on io/console.cpp
  */
 
+#ifdef SPL_QT_GUI
 #define __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
 #include "qconsole.h"
 #undef __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
 
 #include <cstdio>
+#include <QAction>
 #include "error.h"
 #include "exceptions.h"
+#include "filelib.h"
 #include "qgclipboard.h"
+#include "qgcolor.h"
+#include "qgcolorchooser.h"
+#include "qgfilechooser.h"
 #include "qgfont.h"
+#include "qgfontchooser.h"
+#include "qgoptionpane.h"
+#include "qgthread.h"
 #include "private/static.h"
 #include "private/version.h"
 
@@ -30,11 +39,15 @@ const double QGConsoleWindow::DEFAULT_WIDTH = 700;
 const double QGConsoleWindow::DEFAULT_HEIGHT = 500;
 const double QGConsoleWindow::DEFAULT_X = 10;
 const double QGConsoleWindow::DEFAULT_Y = 10;
+const std::string QGConsoleWindow::CONFIG_FILE_NAME = "spl-jar-settings.txt";
 const std::string QGConsoleWindow::DEFAULT_WINDOW_TITLE = "Console";
 const std::string QGConsoleWindow::DEFAULT_FONT_FAMILY = "Monospaced";
-const int QGConsoleWindow::DEFAULT_FONT_SIZE = 14;
+const int QGConsoleWindow::DEFAULT_FONT_SIZE = 12;
 const int QGConsoleWindow::MIN_FONT_SIZE = 4;
 const int QGConsoleWindow::MAX_FONT_SIZE = 128;
+const std::string QGConsoleWindow::DEFAULT_BACKGROUND_COLOR = "white";
+const std::string QGConsoleWindow::DEFAULT_ERROR_COLOR = "red";
+const std::string QGConsoleWindow::DEFAULT_OUTPUT_COLOR = "black";
 const std::string QGConsoleWindow::USER_INPUT_COLOR = "blue";
 QGConsoleWindow* QGConsoleWindow::_instance = nullptr;
 bool QGConsoleWindow::_consoleEnabled = false;
@@ -46,7 +59,7 @@ bool QGConsoleWindow::consoleEnabled() {
 QGConsoleWindow* QGConsoleWindow::instance() {
     if (!_instance) {
         // initialize Qt system and Qt Console window
-        QGui::instance()->runOnQtGuiThread([]() {
+        QGThread::runOnQtGuiThread([]() {
             QGui::instance()->initializeQt();
             _instance = new QGConsoleWindow();
             setConsolePropertiesQt();
@@ -61,17 +74,115 @@ void QGConsoleWindow::setConsoleEnabled(bool enabled) {
 
 QGConsoleWindow::QGConsoleWindow()
         : QGWindow(),
+          _textArea(nullptr),
           _clearEnabled(true),
           _echo(false),
           _locationSaved(false),
           _locked(false),
           _promptActive(false),
           _shutdown(false),
-          _outputColor("black"),
-          _errorColor("red"),
+          _errorColor(""),
+          _outputColor(""),
           _inputBuffer(""),
+          _lastSaveFileName(""),
           _cinout_new_buf(nullptr),
           _cerr_new_buf(nullptr) {
+    _initMenuBar();
+    _initWidgets();
+    _initStreams();
+    loadConfiguration();
+}
+
+void QGConsoleWindow::_initMenuBar() {
+    const std::string ICON_FOLDER = "icons/";
+
+    // File menu
+    addMenu("&File");
+    addMenuItem("File", "&Save", ICON_FOLDER + "save.gif",
+                [this]() { this->save(); })
+                ->setShortcut(QKeySequence::Save);
+
+    addMenuItem("File", "Save &As...", ICON_FOLDER + "save_as.gif",
+                [this]() { this->saveAs(); })
+                ->setShortcut(QKeySequence::SaveAs);
+    addMenuSeparator("File");
+
+    addMenuItem("File", "&Print", ICON_FOLDER + "print.gif",
+                [this]() { this->showPrintDialog(); })
+                ->setShortcut(QKeySequence::Print);
+    setMenuItemEnabled("File", "Print", false);
+    addMenuSeparator("File");
+
+    addMenuItem("File", "&Load Input Script...", ICON_FOLDER + "script.gif",
+                [this]() { this->showInputScriptDialog(); });
+
+    addMenuItem("File", "&Compare Output...", ICON_FOLDER + "compare_output.gif",
+                [this]() { this->compareOutput(); });
+    setMenuItemEnabled("File", "Compare Output...", false);
+
+    addMenuItem("File", "&Quit", ICON_FOLDER + "quit.gif",
+                [this]() { this->close(); /* TODO: exit app */ })
+                ->setShortcut(QKeySequence::Quit);
+
+    // Edit menu
+    addMenu("&Edit");
+    addMenuItem("Edit", "Cu&t", ICON_FOLDER + "cut.gif",
+                [this]() { this->clipboardCut(); })
+                ->setShortcut(QKeySequence::Cut);
+
+    addMenuItem("Edit", "&Copy", ICON_FOLDER + "copy.gif",
+                [this]() { this->clipboardCopy(); })
+                ->setShortcut(QKeySequence::Copy);
+
+    addMenuItem("Edit", "&Paste", ICON_FOLDER + "paste.gif",
+                [this]() { this->clipboardPaste(); })
+                ->setShortcut(QKeySequence::Paste);
+
+    addMenuItem("Edit", "Select &All", ICON_FOLDER + "select_all.gif",
+                [this]() { this->selectAll(); })
+                ->setShortcut(QKeySequence::SelectAll);
+
+    addMenuItem("Edit", "C&lear Console", ICON_FOLDER + "clear_console.gif",
+                [this]() { this->clearConsole(); })
+                ->setShortcut(QKeySequence(QString::fromStdString("Ctrl+L")));
+
+    // Options menu
+    addMenu("&Options");
+    addMenuItem("Options", "&Font...", ICON_FOLDER + "font.gif",
+                [this]() { this->showFontDialog(); });
+
+    addMenuItem("Options", "&Background Color...", ICON_FOLDER + "background_color.gif",
+                [this]() { this->showColorDialog(/* background */ true); });
+
+    addMenuItem("Options", "&Text Color...", ICON_FOLDER + "text_color.gif",
+                [this]() { this->showColorDialog(/* background */ false); });
+
+    // Help menu
+    addMenu("&Help");
+    addMenuItem("Help", "&About...", ICON_FOLDER + "about.gif",
+                [this]() { this->showAboutDialog(); })
+                ->setShortcut(QKeySequence::HelpContents);
+
+    addMenuItem("Help", "&Check for Updates", ICON_FOLDER + "check_for_updates.gif",
+                [this]() { this->checkForUpdates(); });
+    setMenuItemEnabled("Help", "Check for Updates", false);
+}
+
+void QGConsoleWindow::_initStreams() {
+    // buffer C-style stderr
+    static char stderrBuf[BUFSIZ + 10] = {'\0'};
+    std::ios::sync_with_stdio(false);
+    setbuf(stderr, stderrBuf);
+
+    // redirect cin/cout/cerr
+    _cinout_new_buf = new stanfordcpplib::qtgui::ConsoleStreambufQt();
+    _cerr_new_buf = new stanfordcpplib::qtgui::ConsoleStreambufQt(/* isStderr */ true);
+    std::cin.rdbuf(_cinout_new_buf);
+    std::cout.rdbuf(_cinout_new_buf);
+    std::cerr.rdbuf(_cerr_new_buf);
+}
+
+void QGConsoleWindow::_initWidgets() {
     _textArea = new QGTextArea();
     _textArea->setColor("black");
     _textArea->setContextMenuEnabled(false);
@@ -99,32 +210,22 @@ QGConsoleWindow::QGConsoleWindow()
         }
     });
     addToRegion(_textArea, "Center");
+
     setTitle(DEFAULT_WINDOW_TITLE);
     setCloseOperation(QGWindow::CLOSE_HIDE);
     setLocation(DEFAULT_X, DEFAULT_Y);
     setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     setResizable(false);
     setVisible(true);
-
-    // buffer C-style stderr
-    static char stderrBuf[BUFSIZ + 10] = {'\0'};
-    std::ios::sync_with_stdio(false);
-    setbuf(stderr, stderrBuf);
-
-    // redirect cin/cout/cerr
-    _cinout_new_buf = new stanfordcpplib::qtgui::ConsoleStreambufQt();
-    _cerr_new_buf = new stanfordcpplib::qtgui::ConsoleStreambufQt(/* isStderr */ true);
-    std::cin.rdbuf(_cinout_new_buf);
-    std::cout.rdbuf(_cinout_new_buf);
-    std::cerr.rdbuf(_cerr_new_buf);
-    // ::stanfordcpplib::ForwardingStreambuf* stderrStreamBuf = new ::stanfordcpplib::ForwardingStreambuf(*_cinout_new_buf, /* isStderr */ true);
-    // stderrStreamBuf->pubsetbuf(cerrBuf, BUFSIZ + 10);
-    // std::cerr.rdbuf(stderrStreamBuf);
-    // std::nounitbuf(std::cerr);   // disable buffering after each token
 }
+
 
 QGConsoleWindow::~QGConsoleWindow() {
     // empty
+}
+
+void QGConsoleWindow::checkForUpdates() {
+    // TODO
 }
 
 void QGConsoleWindow::clearConsole() {
@@ -146,12 +247,70 @@ void QGConsoleWindow::clearConsole() {
     }
 }
 
+void QGConsoleWindow::clipboardCopy() {
+    std::string selectedText = _textArea->getSelectedText();
+    if (!selectedText.empty()) {
+        QGClipboard::set(selectedText);
+    }
+}
+
+void QGConsoleWindow::clipboardCut() {
+    if (_shutdown) {
+        return;
+    }
+    clipboardCopy();   // TODO: fix
+}
+
+void QGConsoleWindow::clipboardPaste() {
+    if (_shutdown) {
+        return;
+    }
+    std::string clipboardText = QGClipboard::get();
+    for (int i = 0; i < (int) clipboardText.length(); i++) {
+        if (clipboardText[i] == '\r') {
+            continue;
+        } else if (clipboardText[i] == '\n') {
+            processUserInputEnterKey();
+        } else {
+            processUserInputKey(clipboardText[i]);
+        }
+    }
+}
+
+void QGConsoleWindow::compareOutput() {
+    // TODO
+}
+
+std::string QGConsoleWindow::getBackground() const {
+    return _textArea->getBackground();
+}
+
+int QGConsoleWindow::getBackgroundInt() const {
+    return _textArea->getBackgroundInt();
+}
+
+std::string QGConsoleWindow::getColor() const {
+    return getOutputColor();
+}
+
+int QGConsoleWindow::getColorInt() const {
+    return QGColor::convertColorToRGB(getOutputColor());
+}
+
 std::string QGConsoleWindow::getErrorColor() const {
-    return _errorColor;
+    return _errorColor.empty() ? DEFAULT_ERROR_COLOR : _errorColor;
+}
+
+std::string QGConsoleWindow::getForeground() const {
+    return getOutputColor();
+}
+
+int QGConsoleWindow::getForegroundInt() const {
+    return QGColor::convertColorToRGB(getOutputColor());
 }
 
 std::string QGConsoleWindow::getOutputColor() const {
-    return _outputColor;
+    return _outputColor.empty() ? DEFAULT_OUTPUT_COLOR : _outputColor;
 }
 
 QTextFragment QGConsoleWindow::getUserInputFragment() const {
@@ -192,6 +351,13 @@ bool QGConsoleWindow::isClearEnabled() const {
     return _clearEnabled;
 }
 
+bool QGConsoleWindow::isCursorInUserInputArea() const {
+    int cursorPosition = _textArea->getCursorPosition();
+    return _promptActive
+            && getUserInputStart() <= cursorPosition
+            && cursorPosition <= getUserInputEnd();
+}
+
 bool QGConsoleWindow::isEcho() const {
     return _echo;
 }
@@ -204,11 +370,39 @@ bool QGConsoleWindow::isLocked() const {
     return _locked;
 }
 
-bool QGConsoleWindow::isCursorInUserInputArea() const {
-    int cursorPosition = _textArea->getCursorPosition();
-    return _promptActive
-            && getUserInputStart() <= cursorPosition
-            && cursorPosition <= getUserInputEnd();
+void QGConsoleWindow::loadConfiguration() {
+    std::string configFile = getTempDirectory() + "/" + CONFIG_FILE_NAME;
+    if (fileExists(configFile)) {
+        std::ifstream infile;
+        infile.open(configFile.c_str());
+        if (!infile) {
+                return;
+        }
+        std::string line;
+        while (getline(infile, line)) {
+            line = trim(line);
+            if (line.empty() || line[0] == '#') {
+                continue;
+            }
+            Vector<std::string> tokens = stringSplit(line, "=");
+            if (tokens.size() < 2) {
+                continue;
+            }
+            std::string key   = toLowerCase(tokens[0]);
+            std::string value = tokens[1];
+            if (key == "font") {
+                setFont(value);
+            } else if (key == "background") {
+                setBackground(value);
+            } else if (key == "foreground") {
+                setForeground(value);
+            }
+        }
+    }
+}
+
+void QGConsoleWindow::loadInputScript(const std::string& /*filename*/) {
+    // TODO
 }
 
 void QGConsoleWindow::print(const std::string& str, bool isStdErr) {
@@ -224,9 +418,9 @@ void QGConsoleWindow::print(const std::string& str, bool isStdErr) {
             fflush(isStdErr ? stdout : stderr);
         }
     }
-    QGui::instance()->runOnQtGuiThreadAsync([this, str, isStdErr]() {
+    QGThread::runOnQtGuiThreadAsync([this, str, isStdErr]() {
         _coutMutex.lock();
-        this->_textArea->appendFormattedText(str, isStdErr ? _errorColor : _outputColor);
+        this->_textArea->appendFormattedText(str, isStdErr ? getErrorColor() : getOutputColor());
         this->_textArea->moveCursorToEnd();
         this->_textArea->scrollToBottom();
         _coutMutex.unlock();
@@ -265,11 +459,13 @@ void QGConsoleWindow::processKeyPress(QGEvent event) {
             // normalize font size
             _textArea->setFont(DEFAULT_FONT_FAMILY + "-" + integerToString(DEFAULT_FONT_SIZE));
         } else if (keyCode == Qt::Key_C) {
-            processCopy();
+            clipboardCopy();
         } else if (event.isCtrlKeyDown() && keyCode == Qt::Key_D) {
             processEof();
+        } else if (keyCode == Qt::Key_S) {
+            save();
         } else if (keyCode == Qt::Key_V) {
-            processPaste();
+            clipboardPaste();
         }
     }
 
@@ -430,34 +626,10 @@ void QGConsoleWindow::processBackspace(int key) {
     _cinMutex.unlock();
 }
 
-void QGConsoleWindow::processCopy() {
-    std::string selectedText = _textArea->getSelectedText();
-    if (!selectedText.empty()) {
-        QGClipboard::set(selectedText);
-    }
-}
-
 void QGConsoleWindow::processEof() {
     // only set EOF if input buffer is empty; this is the behavior on most *nix consoles
     if (_inputBuffer.empty()) {
         std::cin.setstate(std::ios_base::eofbit);
-    }
-}
-
-void QGConsoleWindow::processPaste() {
-    if (_shutdown) {
-        return;
-    }
-
-    std::string clipboardText = QGClipboard::get();
-    for (int i = 0; i < (int) clipboardText.length(); i++) {
-        if (clipboardText[i] == '\r') {
-            continue;
-        } else if (clipboardText[i] == '\n') {
-            processUserInputEnterKey();
-        } else {
-            processUserInputKey(clipboardText[i]);
-        }
     }
 }
 
@@ -546,32 +718,103 @@ std::string QGConsoleWindow::readLine() {
     this->_textArea->moveCursorToEnd();
     this->_textArea->scrollToBottom();
 
+    _cinMutex.lockForWrite();
+    _promptActive = true;
+    _cinMutex.unlock();
+
     while (!_shutdown && !std::cin.eof()) {
-        _cinMutex.lockForWrite();
-        _promptActive = true;
-        _cinMutex.unlock();
+        bool lineRead = false;
+        if (!_inputScript.isEmpty()) {
+            _cinQueueMutex.lockForWrite();
+            line = _inputScript.dequeue();
+            lineRead = true;
+            _cinQueueMutex.unlock();
+
+            // echo user input, as if the user had just typed it
+            QGThread::runOnQtGuiThreadAsync([this, line]() {
+                _coutMutex.lock();
+                _textArea->appendFormattedText(line + "\n", USER_INPUT_COLOR, "*-*-Bold");
+                _coutMutex.unlock();
+            });
+        }
 
         if (!_inputLines.isEmpty()) {
             _cinQueueMutex.lockForWrite();
             if (!_inputLines.isEmpty()) {
                 line = _inputLines.dequeue();
-
-                _cinMutex.lockForWrite();
-                _promptActive = false;
-                _cinMutex.unlock();
-
-                _cinQueueMutex.unlock();
-                break;
+                lineRead = true;
             }
+
             _cinQueueMutex.unlock();
         }
-        QGui::getCurrentThread()->msleep(50);
+
+        if (lineRead) {
+            break;
+        } else {
+            sleep(20);
+        }
     }
+
+    _cinMutex.lockForWrite();
+    _promptActive = false;
+    _cinMutex.unlock();
 
     if (_echo) {
         fprintf(stdout, "%s\n", line.c_str());
     }
     return line;
+}
+
+void QGConsoleWindow::save() {
+    saveAs(_lastSaveFileName);
+}
+
+void QGConsoleWindow::saveAs(const std::string& filename) {
+    std::string filenameToUse;
+    if (filename.empty()) {
+        filenameToUse = QGFileChooser::showSaveDialog(
+                    /* parent */ this->getWidget(),
+                    /* title */ "",
+                    getHead(_lastSaveFileName));
+    } else {
+        filenameToUse = filename;
+    }
+    if (filenameToUse.empty()) {
+        return;
+    }
+
+    std::string consoleText = _textArea->getText();
+    writeEntireFile(filenameToUse, consoleText);
+    _lastSaveFileName = filenameToUse;
+}
+
+void QGConsoleWindow::saveConfiguration(bool prompt) {
+    if (prompt && !QGOptionPane::showConfirmDialog(
+            /* parent  */  getWidget(),
+            /* message */  "Make this the default for future console windows?",
+            /* title   */  "Save configuration?")) {
+        return;
+    }
+    std::string configFile = getTempDirectory() + "/" + CONFIG_FILE_NAME;
+    std::string configText = "# Stanford C++ library configuration file\n"
+            "background=" + _textArea->getBackground() + "\n"
+            "foreground=" + getOutputColor() + "\n"
+            "font=" + _textArea->getFont() + "\n";
+    writeEntireFile(configFile, configText);
+}
+
+void QGConsoleWindow::selectAll() {
+    _textArea->selectAll();
+}
+
+void QGConsoleWindow::setBackground(int color) {
+    QGWindow::setBackground(color);   // call super
+    _textArea->setBackground(color);
+}
+
+void QGConsoleWindow::setBackground(const std::string& color) {
+    QGWindow::setBackground(color);   // call super
+    _textArea->setBackground(color);
 }
 
 void QGConsoleWindow::setClearEnabled(bool clearEnabled) {
@@ -588,6 +831,14 @@ void QGConsoleWindow::setConsoleSize(double width, double height) {
     setSize(width, height);
 }
 
+void QGConsoleWindow::setColor(int color) {
+    setOutputColor(color);
+}
+
+void QGConsoleWindow::setColor(const std::string& color) {
+    setOutputColor(color);
+}
+
 void QGConsoleWindow::setEcho(bool echo) {
     if (_locked || _shutdown) {
         return;
@@ -599,8 +850,16 @@ void QGConsoleWindow::setFont(const std::string& font) {
     if (_locked) {
         return;
     }
-    QGWindow::setFont(font);
+    QGWindow::setFont(font);   // call super
     _textArea->setFont(font);
+}
+
+void QGConsoleWindow::setForeground(int color) {
+    setOutputColor(color);
+}
+
+void QGConsoleWindow::setForeground(const std::string& color) {
+    setOutputColor(color);
 }
 
 void QGConsoleWindow::setLocationSaved(bool locationSaved) {
@@ -621,11 +880,100 @@ void QGConsoleWindow::setErrorColor(const std::string& errorColor) {
     _errorColor = errorColor;
 }
 
+void QGConsoleWindow::setOutputColor(int rgb) {
+    setOutputColor(QGColor::convertRGBToColor(rgb));
+}
+
 void QGConsoleWindow::setOutputColor(const std::string& outputColor) {
     if (_locked) {
         return;
     }
     _outputColor = outputColor;
+    _textArea->setForeground(outputColor);
+
+    // go through any past fragments and recolor them to this color
+
+    // select all previous text and change its color
+    // (BUG?: also changes user input text to be that color; desired?)
+    QTextEdit* textArea = static_cast<QTextEdit*>(this->_textArea->getWidget());
+    QTextCursor cursor = textArea->textCursor();
+    cursor.beginEditBlock();
+    cursor.setPosition(0);
+    QTextCharFormat format = cursor.charFormat();
+    cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
+    format.setForeground(QBrush(QGColor::toQColor(outputColor)));
+    textArea->setTextCursor(cursor);
+    cursor.setCharFormat(format);
+    cursor.endEditBlock();
+    _textArea->moveCursorToEnd();
+}
+
+void QGConsoleWindow::showAboutDialog() {
+    // this text roughly matches that from old spl.jar message
+    static const std::string ABOUT_MESSAGE =
+            "<html><p>"
+            "Stanford C++ Library version <b>" + version::getCppLibraryVersion() + "</b><br>\n"
+            "<br>\n"
+            "Libraries originally written by <b>Eric Roberts</b>,<br>\n"
+            "with assistance from Julie Zelenski, Keith Schwarz, et al.<br>\n"
+            "This version of the library is unofficially maintained by <b>Marty Stepp</b>.<br>\n"
+            "<br>\n"
+            "See <a href=\"" + version::getCppLibraryDocsUrl() + "\">" + version::getCppLibraryDocsUrl() + "</a> for documentation."
+            "</p></html>";
+    QGOptionPane::showMessageDialog(
+                /* parent */   getWidget(),
+                /* message */  ABOUT_MESSAGE,
+                /* title */    "About Stanford C++ Library",
+                /* type */     QGOptionPane::ABOUT);
+}
+
+void QGConsoleWindow::showColorDialog(bool background) {
+    std::string color = QGColorChooser::showDialog(
+                /* parent */   getWidget(),
+                /* title */    "",
+                /* initial */  background ? _textArea->getBackground() : _textArea->getForeground());
+    if (!color.empty()) {
+        if (background) {
+            setBackground(color);
+        } else {
+            setOutputColor(color);
+        }
+        saveConfiguration();   // prompt to save configuration
+    }
+}
+
+void QGConsoleWindow::showFontDialog() {
+    std::string font = QGFontChooser::showDialog(
+                /* parent */ getWidget(),
+                /* title  */ "",
+                /* initialFont */ _textArea->getFont());
+    if (!font.empty()) {
+        _textArea->setFont(font);
+        saveConfiguration();   // prompt to save configuration
+    }
+}
+
+void QGConsoleWindow::showInputScriptDialog() {
+    std::string filename = QGFileChooser::showOpenDialog(
+                /* parent */ getWidget(),
+                /* title  */ "Select an input script file");
+    if (!filename.empty() && fileExists(filename)) {
+        std::ifstream infile;
+        infile.open(filename.c_str());
+        Vector<std::string> lines;
+        readEntireFile(infile, lines);
+
+        _cinQueueMutex.lockForWrite();
+        _inputScript.clear();
+        for (std::string line : lines) {
+            _inputScript.enqueue(line);
+        }
+        _cinQueueMutex.unlock();
+    }
+}
+
+void QGConsoleWindow::showPrintDialog() {
+    // TODO
 }
 
 void QGConsoleWindow::shutdown() {
@@ -815,14 +1163,18 @@ void setConsolePropertiesQt() {
     setConsoleLocationSaved(true);
 #endif
 
+#if defined(SPL_CONSOLE_PRINT_EXCEPTIONS)
+    setConsolePrintExceptions(true);
+#endif
+
 #if defined(SPL_VERIFY_PROJECT_VERSION)
     version::ensureProjectVersion();
 #endif
 }
 
-// TODO: should this be in qgui?
-void initializeStanfordCppLibraryQt() {
-    // ensure that library is initialized only once
+void initializeQtGraphicalConsole() {
+#ifndef __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
+    // ensure that console is initialized only once
     static bool _initialized = false;
     if (_initialized) {
         return;
@@ -833,28 +1185,9 @@ void initializeStanfordCppLibraryQt() {
     // properly before our lib tries to mess with them / redirect them
     static std::ios_base::Init ios_base_init;
 
-#if defined(SPL_CONSOLE_PRINT_EXCEPTIONS)
-    setConsolePrintExceptions(true);
-#endif
-}
-
-void initializeQtGraphicalConsole() {
-    // ensure that console is initialized only once
-    static bool _initialized = false;
-    if (_initialized) {
-        return;
-    }
-    _initialized = true;
-
-    initializeStanfordCppLibraryQt();
-
     QGConsoleWindow::instance();   // ensure that console window is ready
-
-#ifdef _WIN32
-//    ShowWindow(GetConsoleWindow(), SW_HIDE);
-#endif // _WIN32
-
     setConsolePropertiesQt();
+#endif // __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
 }
 
 // This one is at the bottom because it's not meant to be called by students.
@@ -865,3 +1198,5 @@ void setConsoleEnabled(bool enabled) {
 } // namespace qtgui
 
 } // namespace stanfordcpplib
+
+#endif // SPL_QT_GUI

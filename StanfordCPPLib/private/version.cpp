@@ -106,6 +106,10 @@ void ensureProjectVersion(std::string minVersion) {
     ensureProjectVersionHelper(minVersion);
 }
 
+std::string getCppLibraryDocsUrl() {
+    return STANFORD_CPP_LIB_DOCS_URL;
+}
+
 std::string getCppLibraryVersion() {
     return STANFORD_CPP_LIB_VERSION;
 }

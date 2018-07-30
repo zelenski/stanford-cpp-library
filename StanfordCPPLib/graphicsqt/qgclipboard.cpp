@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qgclipboard.h"
 #include <QApplication>
 #include <QClipboard>
@@ -42,3 +43,5 @@ bool QGClipboard::isPaste(QKeyEvent* event) {
     return (ctrlOrMeta && event->key() == Qt::Key_V)
             || (shift && event->key() == Qt::Key_Insert);
 }
+
+#endif // SPL_QT_GUI

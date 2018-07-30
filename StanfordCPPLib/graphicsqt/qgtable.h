@@ -9,6 +9,7 @@
  * @since 2018/07/17
  */
 
+#ifdef SPL_QT_GUI
 #ifndef _qgtable_h
 #define _qgtable_h
 
@@ -496,3 +497,4 @@ private:
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _qgtable_h
+#endif // SPL_QT_GUI

@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #ifndef _qginteractor_h
 #define _qginteractor_h
 
@@ -58,7 +59,11 @@ public:
     virtual std::string getBackground() const;
     virtual int getBackgroundInt() const;
     virtual QGRectangle getBounds() const;
+    virtual std::string getColor() const;
+    virtual int getColorInt() const;
     virtual std::string getFont() const;
+    virtual std::string getForeground() const;
+    virtual int getForegroundInt() const;
     virtual double getHeight() const;
     virtual std::string getIcon() const;
     virtual _Internal_QWidget* getInternalWidget() const = 0;
@@ -118,3 +123,4 @@ protected:
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _qginteractor_h
+#endif // SPL_QT_GUI

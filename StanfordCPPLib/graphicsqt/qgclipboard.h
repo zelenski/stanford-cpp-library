@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #ifndef _qgclipboard_h
 #define _qgclipboard_h
 
@@ -26,3 +27,4 @@ public:
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _qgclipboard_h
+#endif // SPL_QT_GUI

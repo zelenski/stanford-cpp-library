@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qgfont.h"
 #include <iomanip>
 #include <iostream>
@@ -174,3 +175,5 @@ QFont QGFont::toQFont(const QFont& basisFont, const std::string& fontString) {
     font.setStyleHint(getStyleHint(fontFamily));
     return font;
 }
+
+#endif // SPL_QT_GUI

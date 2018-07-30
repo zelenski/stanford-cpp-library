@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #ifndef _qgchooser_h
 #define _qgchooser_h
 
@@ -77,3 +78,4 @@ private:
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _qgchooser_h
+#endif // SPL_QT_GUI

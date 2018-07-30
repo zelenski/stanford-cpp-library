@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qgchooser.h"
 #include "error.h"
 #include "qgwindow.h"
@@ -155,3 +156,5 @@ void QGChooser::setSelectedItem(const std::string& item) {
 int QGChooser::size() const {
     return _iqcomboBox->count();
 }
+
+#endif // SPL_QT_GUI

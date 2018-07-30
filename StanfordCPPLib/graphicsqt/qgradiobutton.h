@@ -8,6 +8,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #ifndef _qgradiobutton_h
 #define _qgradiobutton_h
 
@@ -70,3 +71,4 @@ private:
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _qgradiobutton_h
+#endif // SPL_QT_GUI

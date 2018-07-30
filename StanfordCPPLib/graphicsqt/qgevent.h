@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #ifndef _qgevent_h
 #define _qgevent_h
 
@@ -20,6 +21,7 @@ class QGInteractor;        // forward declaration
 class QGObservable;        // forward declaration
 class _Internal_QWidget;   // forward declaration
 
+// types for the event listener functions to be passed to various interactors
 typedef std::function<void(QGEvent)> QGEventListener;
 typedef std::function<void()>        QGEventListenerVoid;
 
@@ -28,6 +30,10 @@ typedef std::function<void()>        QGEventListenerVoid;
  */
 class QGEvent {
 public:
+    // empty event handlers that can be passed that do nothing
+    static QGEventListener EMPTY_EVENT_LISTENER;
+    static QGEventListenerVoid EMPTY_EVENT_LISTENER_VOID;
+
     enum EventClass {
         NULL_EVENT      = 0x0000,
         ACTION_EVENT    = 0x0010,
@@ -59,6 +65,7 @@ public:
         WINDOW_MAXIMIZED    = WINDOW_EVENT + 7,
 
         ACTION_PERFORMED    = ACTION_EVENT + 1,
+        ACTION_MENU         = ACTION_EVENT + 2,
 
         MOUSE_CLICKED       = MOUSE_EVENT + 1,
         MOUSE_PRESSED       = MOUSE_EVENT + 2,
@@ -305,3 +312,4 @@ std::ostream& operator <<(std::ostream& out, const QGEvent& event);
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _qgevent_h
+#endif // SPL_QT_GUI

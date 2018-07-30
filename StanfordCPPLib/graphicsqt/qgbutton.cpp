@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qgbutton.h"
 #include <QKeySequence>
 #include "qgwindow.h"
@@ -137,3 +138,5 @@ void QGButton::setTextPosition(QGInteractor::TextPosition position) {
         _iqpushbutton->setToolButtonStyle(Qt::ToolButtonTextOnly);
     }
 }
+
+#endif // SPL_QT_GUI

@@ -6,10 +6,23 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qgevent.h"
 #include <sys/time.h>
 #include "qginteractor.h"
 #include "strlib.h"
+
+static void __emptyEventListener(QGEvent) {
+    // empty
+}
+
+static void __emptyEventListenerVoid() {
+    // empty
+}
+
+QGEventListener QGEvent::EMPTY_EVENT_LISTENER = __emptyEventListener;
+QGEventListenerVoid QGEvent::EMPTY_EVENT_LISTENER_VOID = __emptyEventListenerVoid;
+
 
 QGEvent::QGEvent(EventClass eventClass,
                  EventType eventType,
@@ -65,6 +78,7 @@ std::string QGEvent::typeToString(EventType eventType) {
     case WINDOW_RESTORED:     return "WINDOW_RESTORED";
     case WINDOW_MAXIMIZED:    return "WINDOW_MAXIMIZED";
     case ACTION_PERFORMED:    return "ACTION_PERFORMED";
+    case ACTION_MENU:         return "ACTION_MENU";
     case MOUSE_CLICKED:       return "MOUSE_CLICKED";
     case MOUSE_PRESSED:       return "MOUSE_PRESSED";
     case MOUSE_RELEASED:      return "MOUSE_RELEASED";
@@ -478,3 +492,5 @@ std::ostream& operator <<(std::ostream& out, const QGEvent& event) {
     out << ")";
     return out;
 }
+
+#endif // SPL_QT_GUI

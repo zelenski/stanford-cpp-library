@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #ifndef _qglabel_h
 #define _qglabel_h
 
@@ -57,3 +58,4 @@ private:
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _qglabel_h
+#endif // SPL_QT_GUI

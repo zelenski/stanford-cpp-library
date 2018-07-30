@@ -2,10 +2,13 @@
  * File: qgwindow.h
  * ----------------
  *
+ * @version 2018/07/29
+ * - menu bars
  * @version 2018/06/25
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #ifndef _qgwindow_h
 #define _qgwindow_h
 
@@ -49,6 +52,9 @@ public:
     virtual bool timerExists();
     virtual void timerStart(double ms);
     virtual void timerStop();
+
+public slots:
+    void handleMenuAction(const std::string& menu, const std::string& item);
 
 private:
     // border layout regions for N/S/W/E/C:
@@ -113,6 +119,12 @@ public:
     virtual void add(QGObject* obj, double x, double y);
     virtual void add(QGObject& obj);
     virtual void add(QGObject& obj, double x, double y);
+    virtual QMenu* addMenu(const std::string& text);
+    virtual QAction* addMenuItem(const std::string& menu, const std::string& item,
+                                 const std::string& icon = "");
+    virtual QAction* addMenuItem(const std::string& menu, const std::string& item,
+                                 const std::string& icon, QGEventListenerVoid func);
+    virtual void addMenuSeparator(const std::string& menu);
     virtual void addToRegion(QGInteractor* interactor, Region region);
     virtual void addToRegion(QGInteractor* interactor, const std::string& region = "Center");
     virtual void clearConsole() Q_DECL_OVERRIDE;
@@ -169,6 +181,7 @@ public:
     virtual void removeFromRegion(QGInteractor* interactor, Region region);
     virtual void removeFromRegion(QGInteractor* interactor, const std::string& region);
     virtual void removeKeyListener();
+    virtual void removeMenuListener();
     virtual void removeMouseListener();
     virtual void removeTimerListener();
     virtual void removeWindowListener();
@@ -180,16 +193,19 @@ public:
     virtual void setCanvasSize(double width, double height);
     virtual void setCanvasSize(const QGDimension& size);
     virtual void setCanvasWidth(double width);
+    virtual void setClickListener(QGEventListener func);
+    virtual void setClickListener(QGEventListenerVoid func);
     virtual void setCloseOperation(CloseOperation op);
     virtual void setExitOnClose(bool exitOnClose);
     virtual void setHeight(double width);
+    virtual void setKeyListener(QGEventListener func);
+    virtual void setKeyListener(QGEventListenerVoid func);
     virtual void setLocation(double x, double y);
     virtual void setLocation(const QGPoint& p);
     virtual void setLocation(const Point& p);
-    virtual void setClickListener(QGEventListener func);
-    virtual void setClickListener(QGEventListenerVoid func);
-    virtual void setKeyListener(QGEventListener func);
-    virtual void setKeyListener(QGEventListenerVoid func);
+    virtual void setMenuItemEnabled(const std::string& menu, const std::string& item, bool enabled);
+    virtual void setMenuListener(QGEventListener func);
+    virtual void setMenuListener(QGEventListenerVoid func);
     virtual void setMouseListener(QGEventListener func);
     virtual void setMouseListener(QGEventListenerVoid func);
     virtual void setRegionAlignment(Region region, qgenum::HorizontalAlignment halign);
@@ -240,6 +256,8 @@ private:
     CloseOperation _closeOperation;
     Map<Region, qgenum::HorizontalAlignment> _halignMap;
     Map<Region, qgenum::VerticalAlignment> _valignMap;
+    Map<std::string, QMenu*> _menuMap;
+    Map<std::string, QAction*> _menuActionMap;
 
     friend class QGInteractor;
     friend class _Internal_QMainWindow;
@@ -248,3 +266,4 @@ private:
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _qgwindow_h
+#endif // SPL_QT_GUI

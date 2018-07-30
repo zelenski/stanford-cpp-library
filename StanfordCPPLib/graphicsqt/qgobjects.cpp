@@ -7,6 +7,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qgobjects.h"
 #include <algorithm>
 #include <cmath>
@@ -785,10 +786,10 @@ void QGCompound::repaint() {
     }
 
     // actual repainting must be done in the Qt GUI thread
-    if (QGui::instance()->iAmRunningOnTheQtGuiThread()) {
+    if (QGThread::iAmRunningOnTheQtGuiThread()) {
         _widget->repaint();   // TODO: change to update()?
     } else {
-        QGui::instance()->runOnQtGuiThread([this]() {
+        QGThread::runOnQtGuiThread([this]() {
             _widget->repaint();   // TODO: change to update()?
         });
     }
@@ -800,10 +801,10 @@ void QGCompound::repaintRegion(int x, int y, int width, int height) {
     }
 
     // actual repainting must be done in the Qt GUI thread
-    if (QGui::instance()->iAmRunningOnTheQtGuiThread()) {
+    if (QGThread::iAmRunningOnTheQtGuiThread()) {
         _widget->repaint(x, y, width, height);   // TODO: change to update()?
     } else {
-        QGui::instance()->runOnQtGuiThread([this, x, y, width, height]() {
+        QGThread::runOnQtGuiThread([this, x, y, width, height]() {
             _widget->repaint(x, y, width, height);   // TODO: change to update()?
         });
     }
@@ -1386,3 +1387,5 @@ std::ostream& operator <<(std::ostream& out, const QGObject& obj) {
 static double dsq(double x0, double y0, double x1, double y1) {
     return (x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0);
 }
+
+#endif // SPL_QT_GUI

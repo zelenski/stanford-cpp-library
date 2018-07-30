@@ -8,6 +8,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #ifndef _qgcheckbox_h
 #define _qgcheckbox_h
 
@@ -66,3 +67,4 @@ private:
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _qgcheckbox_h
+#endif // SPL_QT_GUI

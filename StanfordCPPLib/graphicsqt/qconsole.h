@@ -9,10 +9,15 @@
  * Once the graphical console has been enabled, it cannot easily be turned off
  * again for that program.
  * 
+ * @version 2018/07/29
+ * - menu, icons, hotkeys
+ * @version 2018/07/26
+ * - refactored QGConsoleWindow class
  * @version 2018/07/15
  * - initial version, based on io/console.h
  */
 
+#ifdef SPL_QT_GUI
 #ifndef _qconsole_h
 #define _qconsole_h
 
@@ -44,23 +49,51 @@ public:
     static void setConsoleEnabled(bool enabled);
 
     virtual void clearConsole();
+    virtual void clipboardCopy();
+    virtual void clipboardCut();
+    virtual void clipboardPaste();
+    virtual void compareOutput();
+    virtual std::string getBackground() const Q_DECL_OVERRIDE;
+    virtual int getBackgroundInt() const Q_DECL_OVERRIDE;
+    virtual std::string getColor() const Q_DECL_OVERRIDE;
+    virtual int getColorInt() const Q_DECL_OVERRIDE;
     virtual std::string getErrorColor() const;
+    virtual std::string getForeground() const Q_DECL_OVERRIDE;
+    virtual int getForegroundInt() const Q_DECL_OVERRIDE;
     virtual std::string getOutputColor() const;
     virtual bool isClearEnabled() const;
     virtual bool isEcho() const;
     virtual bool isLocationSaved() const;
     virtual bool isLocked() const;
+    virtual void loadConfiguration();
+    virtual void loadInputScript(const std::string& filename);
     virtual void print(const std::string& str, bool isStdErr = false);
     virtual void println(bool isStdErr = false);
     virtual void println(const std::string& str, bool isStdErr = false);
     virtual std::string readLine();
+    virtual void save();
+    virtual void saveAs(const std::string& filename = "");
+    virtual void saveConfiguration(bool prompt = true);
+    virtual void showAboutDialog();
+    virtual void showColorDialog(bool background = false);
+    virtual void showFontDialog();
+    virtual void showInputScriptDialog();
+    virtual void showPrintDialog();
+    virtual void selectAll();
+    virtual void setBackground(int color) Q_DECL_OVERRIDE;
+    virtual void setBackground(const std::string& color) Q_DECL_OVERRIDE;
     virtual void setClearEnabled(bool clearEnabled);
     virtual void setConsoleSize(double width, double height);
+    virtual void setColor(int color) Q_DECL_OVERRIDE;
+    virtual void setColor(const std::string& color) Q_DECL_OVERRIDE;
     virtual void setEcho(bool echo);
     virtual void setErrorColor(const std::string& errorColor);
     virtual void setFont(const std::string& font) Q_DECL_OVERRIDE;
+    virtual void setForeground(int color) Q_DECL_OVERRIDE;
+    virtual void setForeground(const std::string& color) Q_DECL_OVERRIDE;
     virtual void setLocationSaved(bool locationSaved);
     virtual void setLocked(bool locked);
+    virtual void setOutputColor(int rgb);
     virtual void setOutputColor(const std::string& outputColor);
     virtual void shutdown();
 
@@ -70,25 +103,31 @@ private:
     static const double DEFAULT_HEIGHT;
     static const double DEFAULT_X;
     static const double DEFAULT_Y;
+    static const std::string CONFIG_FILE_NAME;
     static const std::string DEFAULT_WINDOW_TITLE;
     static const std::string DEFAULT_FONT_FAMILY;
     static const int DEFAULT_FONT_SIZE;
     static const int MIN_FONT_SIZE;
     static const int MAX_FONT_SIZE;
+    static const std::string DEFAULT_BACKGROUND_COLOR;
+    static const std::string DEFAULT_ERROR_COLOR;
+    static const std::string DEFAULT_OUTPUT_COLOR;
     static const std::string USER_INPUT_COLOR;
     static QGConsoleWindow* _instance;
     static bool _consoleEnabled;
 
     QGConsoleWindow();
+    void _initMenuBar();
+    void _initWidgets();
+    void _initStreams();
+    virtual void checkForUpdates();
     QTextFragment getUserInputFragment() const;
     int getUserInputStart() const;
     int getUserInputEnd() const;
     bool isCursorInUserInputArea() const;
     void processBackspace(int key);
-    void processCopy();
     void processEof();
     void processKeyPress(QGEvent event);
-    void processPaste();
     void processUserInputEnterKey();
     void processUserInputKey(int key);
     virtual ~QGConsoleWindow();
@@ -100,10 +139,12 @@ private:
     bool _locked;
     bool _promptActive;
     bool _shutdown;
-    std::string _outputColor;
     std::string _errorColor;
+    std::string _outputColor;
     std::string _inputBuffer;
+    std::string _lastSaveFileName;
     Queue<std::string> _inputLines;
+    Queue<std::string> _inputScript;
     stanfordcpplib::qtgui::ConsoleStreambufQt* _cinout_new_buf;
     stanfordcpplib::qtgui::ConsoleStreambufQt* _cerr_new_buf;
     QReadWriteLock _cinMutex;
@@ -202,6 +243,8 @@ QGConsoleWindow* getConsoleWindow();
  * Returns the title bar text of the console window.
  */
 std::string getConsoleWindowTitle();
+
+void initializeQtGraphicalConsole();
 
 /*
  * Function: setConsoleClearEnabled
@@ -377,3 +420,4 @@ static __QtConsoleInitializer __qt_console_init;
 } // namespace stanfordcpplib
 
 #endif // __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
+#endif // SQL_QT_GUI

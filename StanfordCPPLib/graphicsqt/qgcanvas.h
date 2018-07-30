@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #ifndef _qgcanvas_h
 #define _qgcanvas_h
 
@@ -295,3 +296,4 @@ private:
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _qgcanvas_h
+#endif // SPL_QT_GUI

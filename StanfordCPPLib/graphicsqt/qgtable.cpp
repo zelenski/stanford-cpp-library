@@ -13,6 +13,7 @@
  * @since 2018/07/17
  */
 
+#ifdef SPL_QT_GUI
 #include "qgtable.h"
 #include <cstring>
 #include <iostream>
@@ -910,3 +911,5 @@ void QGTable::updateColumnHeaders() {
 int QGTable::width() const {
     return numCols();
 }
+
+#endif // SPL_QT_GUI

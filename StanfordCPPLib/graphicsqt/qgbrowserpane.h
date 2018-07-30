@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #ifndef _qgbrowserpane_h
 #define _qgbrowserpane_h
 
@@ -115,3 +116,4 @@ private:
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _qgbrowserpane_h
+#endif // SPL_QT_GUI

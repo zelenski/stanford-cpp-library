@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qgobservable.h"
 #include <iostream>
 #include <sstream>
@@ -25,7 +26,7 @@ void QGObservable::clearEventListeners() {
 }
 
 void QGObservable::ensureThreadSafety(const std::string& memberName) {
-    QGui::instance()->ensureThatThisIsTheQtGuiThread(memberName);
+    QGThread::ensureThatThisIsTheQtGuiThread(memberName);
 }
 
 bool QGObservable::eventsEnabled() const {
@@ -203,3 +204,5 @@ std::string QGObservable::toString() const {
     out << getType() << "@" << this;
     return out.str();
 }
+
+#endif // SPL_QT_GUI

@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qgradiobutton.h"
 #include "qgwindow.h"
 #include "strlib.h"
@@ -115,3 +116,5 @@ QButtonGroup* QGRadioButton::getButtonGroup(const std::string& group) {
     }
     return _buttonGroups[group];
 }
+
+#endif // SPL_QT_GUI

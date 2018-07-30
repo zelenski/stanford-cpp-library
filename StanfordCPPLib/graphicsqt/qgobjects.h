@@ -9,6 +9,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #ifndef _qgobjects_h
 #define _qgobjects_h
 
@@ -1351,3 +1352,4 @@ std::ostream& operator <<(std::ostream& out, const QGObject& obj);
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _qgobjects_h
+#endif // SPL_QT_GUI

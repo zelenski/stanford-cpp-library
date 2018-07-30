@@ -9,6 +9,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qgtextfield.h"
 #include <QCompleter>
 #include <QFontMetrics>
@@ -429,3 +430,5 @@ bool QGTextField::valueIsInteger() const {
 bool QGTextField::valueIsReal() const {
     return stringIsReal(trim(getText()));
 }
+
+#endif // SPL_QT_GUI

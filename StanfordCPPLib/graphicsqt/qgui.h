@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #ifndef _qgui_h
 #define _qgui_h
 
@@ -14,54 +15,14 @@
 #include <QApplication>
 #include <QObject>
 #include <QReadWriteLock>
-#include <QThread>
+#include "qgeventqueue.h"
+#include "qgthread.h"
+#include "qgtypes.h"
 #include "queue.h"
 
 // function pointer (no params / no return)
-typedef std::function<void()> QGThunk;
-typedef std::function<int()> QGThunkInt;
 
 void __initializeStanfordCppLibraryQt(int argc, char** argv, int (* mainFunc)(void));
-
-class QGui;   // forward declaration
-
-
-class QGStudentThread : public QThread {
-public:
-    QGStudentThread(QGThunkInt mainFunc);
-    int getResult() const;
-
-protected:
-    void run();
-
-private:
-    QGThunkInt _mainFunc;
-    int _result;
-};
-
-
-class QGuiEventQueue : public QObject {
-    Q_OBJECT
-signals:
-    void mySignal();
-
-private:
-    QGuiEventQueue();
-
-    QGThunk dequeue();
-    static QGuiEventQueue* instance();
-    bool isEmpty() const;
-    QGThunk peek();
-    void runOnQtGuiThreadAsync(QGThunk thunk);
-    void runOnQtGuiThreadSync(QGThunk thunk);
-
-    static QGuiEventQueue* _instance;
-    Queue<QGThunk> _functionQueue;
-    QReadWriteLock _queueMutex;
-
-    friend class QGui;
-};
-
 
 /*
  * ...
@@ -70,19 +31,9 @@ class QGui : public QObject {
     Q_OBJECT
 
 public:
-    void ensureThatThisIsTheQtGuiThread(const std::string& message = "");
     void exitGraphics(int exitCode = 0);
-    static QThread* getCurrentThread();
-    static QThread* getQtMainThread();
-    static QThread* getStudentThread();
-    static bool iAmRunningOnTheQtGuiThread();
-    static bool iAmRunningOnTheStudentThread();
     void initializeQt();
     static QGui* instance();
-    void runOnQtGuiThread(QGThunk func);
-    void runOnQtGuiThreadAsync(QGThunk func);
-    static bool qtGuiThreadExists();
-    static bool studentThreadExists();
     void startBackgroundEventLoop(QGThunkInt mainFunc);
     void startEventLoop();
 
@@ -112,3 +63,4 @@ private:
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _qgui_h
+#endif // SPL_QT_GUI

@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qginteractor.h"
 #include <iostream>
 #include <sstream>
@@ -84,15 +85,35 @@ std::string QGInteractor::getBackground() const {
 
 int QGInteractor::getBackgroundInt() const {
     QColor color = getWidget()->palette().color(getWidget()->backgroundRole());
-    return QGColor::convertRGBToRGB(color.red(), color.green(), color.blue());
+    return QGColor::convertQColorToRGB(color);
 }
 
 QGRectangle QGInteractor::getBounds() const {
     return QGRectangle(getX(), getY(), getWidth(), getHeight());
 }
 
+std::string QGInteractor::getColor() const {
+    int rgb = getColorInt();
+    return QGColor::convertRGBToColor(rgb);
+}
+
+int QGInteractor::getColorInt() const {
+    QColor color = getWidget()->palette().color(getWidget()->foregroundRole());
+    return QGColor::convertQColorToRGB(color);
+}
+
 std::string QGInteractor::getFont() const {
     return QGFont::toFontString(getWidget()->font());
+}
+
+std::string QGInteractor::getForeground() const {
+    int rgb = getForegroundInt();
+    return QGColor::convertRGBToColor(rgb);
+}
+
+int QGInteractor::getForegroundInt() const {
+    QColor color = getWidget()->palette().color(getWidget()->foregroundRole());
+    return QGColor::convertQColorToRGB(color);
 }
 
 double QGInteractor::getHeight() const {
@@ -299,3 +320,5 @@ void QGInteractor::setX(double x) {
 void QGInteractor::setY(double y) {
     setLocation(getX(), y);
 }
+
+#endif // SPL_QT_GUI

@@ -1,3 +1,4 @@
+#ifdef SPL_QT_GUI
 #include "qgborderlayout.h"
 #include "strlib.h"
 
@@ -253,3 +254,5 @@ QGBorderLayout::Position QGBorderLayout::toPosition(const std::string& positionN
         return QGBorderLayout::Center;
     }
 }
+
+#endif // SPL_QT_GUI

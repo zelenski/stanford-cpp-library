@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qgcheckbox.h"
 #include "qgwindow.h"
 #include "strlib.h"
@@ -100,3 +101,5 @@ void QGCheckBox::setSelected(bool selected) {
 void QGCheckBox::setText(const std::string& text) {
     _iqcheckBox->setText(QString::fromStdString(text));
 }
+
+#endif // SPL_QT_GUI

@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qgcanvas.h"
 #include "qgcolor.h"
 #include "qgwindow.h"
@@ -768,3 +769,5 @@ void QGCanvas::toGrid(Grid<int>& grid) const {
         }
     }
 }
+
+#endif // SPL_QT_GUI

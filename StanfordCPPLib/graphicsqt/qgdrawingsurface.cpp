@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qgdrawingsurface.h"
 #include <QPainter>
 #include "qgcolor.h"
@@ -606,3 +607,5 @@ void QGForwardDrawingSurface::setRepaintImmediately(bool repaintImmediately) {
     ensureForwardTarget();
     _forwardTarget->setAutoRepaint(repaintImmediately);
 }
+
+#endif // SPL_QT_GUI

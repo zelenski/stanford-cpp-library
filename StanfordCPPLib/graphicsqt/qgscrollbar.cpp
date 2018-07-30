@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qgscrollbar.h"
 #include "strlib.h"
 
@@ -127,3 +128,5 @@ void QGScrollBar::updateSize() {
         _iqscrollbar->setPreferredSize(getMax() - getMin() + 1, _iqscrollbar->sizeHint().height());
     }
 }
+
+#endif // SPL_QT_GUI

@@ -7,6 +7,7 @@
  * - initial version, based on qgtypes.h
  */
 
+#ifdef SPL_QT_GUI
 #include "qgtypes.h"
 #include <cmath>
 #include <sstream>
@@ -325,3 +326,5 @@ bool operator >=(const QGRectangle& r1, const QGRectangle& r2) {
 int hashCode(const QGRectangle& r) {
     return hashCode4(r._x, r._y, r._width, r._height);
 }
+
+#endif // SPL_QT_GUI

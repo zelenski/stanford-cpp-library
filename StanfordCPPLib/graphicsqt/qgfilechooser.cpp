@@ -9,6 +9,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qgfilechooser.h"
 #include <QFileDialog>
 #include "strlib.h"
@@ -50,3 +51,5 @@ std::string QGFileChooser::normalizeFileFilter(const std::string& fileFilter) {
     }
     return stringJoin(tokens.toStlVector(), ";;");
 }
+
+#endif // SPL_QT_GUI

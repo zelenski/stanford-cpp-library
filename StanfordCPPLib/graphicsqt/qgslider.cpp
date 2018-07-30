@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qgslider.h"
 #include "qgwindow.h"
 
@@ -123,3 +124,5 @@ void QGSlider::setSnapToTicks(bool /* value */) {
 void QGSlider::setValue(int value) {
     _iqslider->setValue(value);
 }
+
+#endif // SPL_QT_GUI

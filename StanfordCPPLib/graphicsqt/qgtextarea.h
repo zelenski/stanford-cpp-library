@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #ifndef _qgtextarea_h
 #define _qgtextarea_h
 
@@ -49,6 +50,7 @@ public:
     virtual void appendFormattedText(const std::string& text, const std::string& color = "", const std::string& font = "");
     virtual void appendHtml(const std::string& html);
     virtual void appendText(const std::string& text);
+    virtual void clearSelection();
     virtual void clearText();
     virtual int getColumns() const;
     virtual int getCursorPosition() const;
@@ -70,6 +72,8 @@ public:
     virtual void removeTextChangeListener();
     virtual void scrollToBottom();
     virtual void scrollToTop();
+    virtual void select(int startIndex, int length);
+    virtual void selectAll();
     virtual void setColumns(int columns);
     virtual void setContextMenuEnabled(bool enabled);
     virtual void setCursorPosition(int index);
@@ -99,3 +103,4 @@ private:
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _qgtextarea_h
+#endif // SPL_QT_GUI

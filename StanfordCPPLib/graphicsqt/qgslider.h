@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #ifndef _qgslider_h
 #define _qgslider_h
 
@@ -72,3 +73,4 @@ private:
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _qgslider_h
+#endif // SPL_QT_GUI

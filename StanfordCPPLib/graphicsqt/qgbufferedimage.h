@@ -11,6 +11,7 @@
  * - initial version based on GBufferedImage source
  */
 
+#ifdef SPL_QT_GUI
 #ifndef _qgbufferedimage_h
 #define _qgbufferedimage_h
 
@@ -32,3 +33,4 @@ typedef QGCanvas QGBufferedImage;
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _qgbufferedimage_h
+#endif // SPL_QT_GUI

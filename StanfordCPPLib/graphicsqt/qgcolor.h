@@ -6,11 +6,13 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #ifndef _qgcolor_h
 #define _qgcolor_h
 
 #include <string>
 #include "map.h"
+#include <QColor>
 
 /*
  * ...
@@ -82,18 +84,24 @@ public:
     static int convertARGBToARGB(int a, int r, int g, int b);
     static int convertRGBToRGB(int r, int g, int b);
 
-    static int convertRGBToQtGlobalColor(int r, int g, int b);
+    static std::string convertQColorToColor(const QColor& color);
+    static int convertQColorToRGB(const QColor& color);
+
+    static QColor toQColor(const std::string& color);
 
 private:
-    QGColor();
+    QGColor();   // forbid construction
 
     static std::string canonicalColorName(const std::string& str);
-    static Map<std::string, int>& colorTable();
+    static const Map<std::string, int>& colorTable();
+    static const Map<std::string, std::string>& colorNameTable();
     static int fixAlpha(int argb);
 
     static Map<std::string, int> _colorTable;
+    static Map<std::string, std::string> _colorNameTable;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _qgcolor_h
+#endif // SPL_QT_GUI

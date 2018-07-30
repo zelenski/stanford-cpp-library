@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qgtextarea.h"
 #include <QScrollBar>
 #include <QTextCursor>
@@ -139,6 +140,12 @@ void QGTextArea::appendText(const std::string& text) {
     moveCursorToEnd();
 }
 
+void QGTextArea::clearSelection() {
+    QTextCursor cursor = _iqtextedit->textCursor();
+    cursor.clearSelection();
+    _iqtextedit->setTextCursor(cursor);
+}
+
 void QGTextArea::clearText() {
     _iqtextedit->clear();
 }
@@ -249,6 +256,18 @@ void QGTextArea::scrollToTop() {
     scrollbar->setSliderPosition(0);
 }
 
+void QGTextArea::select(int startIndex, int length) {
+    // TODO: check bounds
+    QTextCursor cursor = _iqtextedit->textCursor();
+    cursor.setPosition(startIndex);
+    cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, length);
+    _iqtextedit->setTextCursor(cursor);
+}
+
+void QGTextArea::selectAll() {
+    _iqtextedit->selectAll();
+}
+
 void QGTextArea::setColumns(int columns) {
     double desiredWidth = getRowColumnSize().getWidth() * columns;
     setPreferredSize(desiredWidth, getHeight());
@@ -330,3 +349,5 @@ void QGTextArea::setTextChangeListener(QGEventListener func) {
 void QGTextArea::setTextChangeListener(QGEventListenerVoid func) {
     setEventListener("textchange", func);
 }
+
+#endif // SPL_QT_GUI

@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qgbrowserpane.h"
 #include <fstream>
 #include <iostream>
@@ -99,3 +100,5 @@ void QGBrowserPane::setText(const std::string& text) {
     _iqtextbrowser->setText(QString::fromStdString(text));
     // QGBorderLayout::forceUpdate(_iqtextbrowser);
 }
+
+#endif // SPL_QT_GUI

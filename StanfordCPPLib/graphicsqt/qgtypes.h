@@ -8,12 +8,18 @@
  * - initial version, based on gtypes.h
  */
 
+#ifdef SPL_QT_GUI
 #ifndef _qgtypes_h
 #define _qgtypes_h
 
+#include <functional>
 #include <iostream>
 #include <Qt>
 #include <string>
+
+// function pointer types (no params / no return)
+typedef std::function<void()> QGThunk;
+typedef std::function<int()> QGThunkInt;
 
 /*
  * Class: QGDimension
@@ -328,3 +334,4 @@ int hashCode(const QGRectangle& r);
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _qgtypes_h
+#endif // SPL_QT_GUI

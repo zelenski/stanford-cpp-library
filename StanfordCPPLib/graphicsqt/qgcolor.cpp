@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qgcolor.h"
 #include <iomanip>
 #include <iostream>
@@ -13,6 +14,7 @@
 #include "strlib.h"
 
 Map<std::string, int> QGColor::_colorTable;
+Map<std::string, std::string> QGColor::_colorNameTable;
 
 QGColor::QGColor() {
     // empty
@@ -28,7 +30,7 @@ std::string QGColor::canonicalColorName(const std::string& str) {
     return result;
 }
 
-Map<std::string, int>& QGColor::colorTable() {
+const Map<std::string, int>& QGColor::colorTable() {
     if (_colorTable.isEmpty()) {
         _colorTable["black"] = 0x000000;
         _colorTable["blue"] = 0x0000FF;
@@ -47,6 +49,27 @@ Map<std::string, int>& QGColor::colorTable() {
         _colorTable["yellow"] = 0xFFFF00;
     }
     return _colorTable;
+}
+
+const Map<std::string, std::string>& QGColor::colorNameTable() {
+    if (_colorNameTable.isEmpty()) {
+        _colorNameTable["#000000"] = "black";
+        _colorNameTable["#0000ff"] = "blue";
+        _colorNameTable["#926239"] = "brown";
+        _colorNameTable["#00ffff"] = "cyan";
+        _colorNameTable["#595959"] = "darkgray";
+        _colorNameTable["#999999"] = "gray";
+        _colorNameTable["#00ff00"] = "green";
+        _colorNameTable["#bfbfbf"] = "lightgray";
+        _colorNameTable["#ff00ff"] = "magenta";
+        _colorNameTable["#ffc800"] = "orange";
+        _colorNameTable["#ffafaf"] = "pink";
+        _colorNameTable["#ff00ff"] = "purple";
+        _colorNameTable["#ff0000"] = "red";
+        _colorNameTable["#ffffff"] = "white";
+        _colorNameTable["#ffff00"] = "yellow";
+    }
+    return _colorNameTable;
 }
 
 std::string QGColor::convertARGBToColor(int a, int r, int g, int b) {
@@ -87,7 +110,12 @@ std::string QGColor::convertRGBToColor(int rgb) {
     os << std::setw(2) << (rgb >> 16 & 0xFF);
     os << std::setw(2) << (rgb >> 8 & 0xFF);
     os << std::setw(2) << (rgb & 0xFF);
-    return os.str();
+    std::string color = os.str();
+    if (colorNameTable().containsKey(toLowerCase(color))) {
+        return colorNameTable()[toLowerCase(color)];
+    } else {
+        return color;
+    }
 }
 
 std::string QGColor::convertRGBToColor(int r, int g, int b) {
@@ -99,7 +127,12 @@ std::string QGColor::convertRGBToColor(int r, int g, int b) {
     os << std::setw(2) << (r & 0xFF);
     os << std::setw(2) << (g & 0xFF);
     os << std::setw(2) << (b & 0xFF);
-    return os.str();
+    std::string color = os.str();
+    if (colorNameTable().containsKey(toLowerCase(color))) {
+        return colorNameTable()[toLowerCase(color)];
+    } else {
+        return color;
+    }
 }
 
 int QGColor::convertARGBToARGB(int a, int r, int g, int b) {
@@ -108,6 +141,19 @@ int QGColor::convertARGBToARGB(int a, int r, int g, int b) {
 
 int QGColor::convertRGBToRGB(int r, int g, int b) {
     return (r << 16) | (g << 8) | b;
+}
+
+std::string QGColor::convertQColorToColor(const QColor& color) {
+    return convertRGBToColor(color.red(), color.green(), color.blue());
+}
+
+int QGColor::convertQColorToRGB(const QColor& color) {
+    return convertRGBToRGB(color.red(), color.green(), color.blue());
+}
+
+QColor QGColor::toQColor(const std::string& color) {
+    int rgb = convertColorToRGB(color);
+    return QColor(rgb | 0xff000000);
 }
 
 // if RGB is not completely black, but alpha is 0, assume that the
@@ -119,3 +165,5 @@ int QGColor::fixAlpha(int argb) {
     }
     return argb;
 }
+
+#endif // SPL_QT_GUI

@@ -9,6 +9,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #include "qgoptionpane.h"
 #include <QInputDialog>
 #include <QMessageBox>
@@ -97,7 +98,8 @@ void QGOptionPane::showMessageDialog(QWidget* parent,
             && type != QGOptionPane::MessageType::INFORMATION
             && type != QGOptionPane::MessageType::ERROR
             && type != QGOptionPane::MessageType::WARNING
-            && type != QGOptionPane::MessageType::QUESTION) {
+            && type != QGOptionPane::MessageType::QUESTION
+            && type != QGOptionPane::MessageType::ABOUT) {
         error("QGOptionPane::showMessageDialog: Illegal dialog type");
     }
     std::string titleToUse = title.empty() ? std::string("Message") : title;
@@ -110,6 +112,8 @@ void QGOptionPane::showMessageDialog(QWidget* parent,
         QMessageBox::warning(parent, QString::fromStdString(titleToUse), QString::fromStdString(message));
     } else if (type == QGOptionPane::MessageType::ERROR) {
         QMessageBox::critical(parent, QString::fromStdString(titleToUse), QString::fromStdString(message));
+    } else if (type == QGOptionPane::MessageType::ABOUT) {
+        QMessageBox::about(parent, QString::fromStdString(titleToUse), QString::fromStdString(message));
     }
 }
 
@@ -170,3 +174,5 @@ void QGOptionPane::showTextFileDialog(QWidget* parent,
     // TODO
     error("QGOptionPane::showTextFileDialog: not implemented");
 }
+
+#endif // SPL_QT_GUI

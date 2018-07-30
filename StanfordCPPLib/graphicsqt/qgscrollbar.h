@@ -6,6 +6,7 @@
  * - initial version
  */
 
+#ifdef SPL_QT_GUI
 #ifndef _qgscrollbar_h
 #define _qgscrollbar_h
 
@@ -132,3 +133,4 @@ private:
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _qgscrollbar_h
+#endif // SPL_QT_GUI
