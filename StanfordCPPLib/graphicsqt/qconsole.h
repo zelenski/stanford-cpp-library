@@ -118,6 +118,7 @@ private:
     static bool _consoleEnabled;
 
     QGConsoleWindow();
+    virtual ~QGConsoleWindow();
     void _initMenuBar();
     void _initWidgets();
     void _initStreams();
@@ -128,11 +129,12 @@ private:
     bool isCursorInUserInputArea() const;
     bool isSelectionInUserInputArea() const;
     void processBackspace(int key);
+    void processCommandHistory(int delta);
     void processEof();
     void processKeyPress(QGEvent event);
     void processUserInputEnterKey();
     void processUserInputKey(int key);
-    virtual ~QGConsoleWindow();
+    void setUserInput(const std::string& userInput);
 
     QGTextArea* _textArea;
     bool _clearEnabled;
@@ -141,12 +143,14 @@ private:
     bool _locked;
     bool _promptActive;
     bool _shutdown;
+    int _commandHistoryIndex;
     std::string _errorColor;
     std::string _outputColor;
     std::string _inputBuffer;
     std::string _lastSaveFileName;
     Queue<std::string> _inputLines;
     Queue<std::string> _inputScript;
+    Vector<std::string> _inputCommandHistory;
     stanfordcpplib::qtgui::ConsoleStreambufQt* _cinout_new_buf;
     stanfordcpplib::qtgui::ConsoleStreambufQt* _cerr_new_buf;
     QReadWriteLock _cinMutex;

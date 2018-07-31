@@ -82,6 +82,7 @@ QGConsoleWindow::QGConsoleWindow()
           _locked(false),
           _promptActive(false),
           _shutdown(false),
+          _commandHistoryIndex(-1),
           _errorColor(""),
           _outputColor(""),
           _inputBuffer(""),
@@ -353,39 +354,53 @@ std::string QGConsoleWindow::getOutputColor() const {
 }
 
 QTextFragment QGConsoleWindow::getUserInputFragment() const {
-    QTextEdit* textArea = static_cast<QTextEdit*>(this->_textArea->getWidget());
-    QTextBlock block = textArea->document()->end().previous();
-    while (block.isValid()) {
-        QTextBlock::iterator it;
-        for (it = block.begin(); !(it.atEnd()); ++it) {
-            QTextFragment frag = it.fragment();
-            if (frag.isValid()) {
-                std::string fragText = frag.text().toStdString();
+    if (!_inputBuffer.empty()) {
+        QTextEdit* textArea = static_cast<QTextEdit*>(this->_textArea->getWidget());
+        QTextBlock block = textArea->document()->end().previous();
+        while (block.isValid()) {
+            QTextBlock::iterator it;
+            for (it = block.begin(); !(it.atEnd()); ++it) {
+                QTextFragment frag = it.fragment();
+                if (frag.isValid()) {
+                    std::string fragText = frag.text().toStdString();
 
-                // see if it is the given user input
-//                printf("    DEBUG: getUserInputFragment fragText=\"%s\"\n", fragText.c_str());
-//                fflush(stdout);
-                if (fragText == _inputBuffer) {
-                    return frag;
+                    // see if it is the given user input
+                    if (fragText == _inputBuffer) {
+                        return frag;
+                    }
                 }
             }
+            block = block.previous();
         }
-        block = block.previous();
     }
 
-    // didn't find the fragment
+    // didn't find the fragment; this will return an 'invalid' fragment
     QTextFragment notFound;
     return notFound;
 }
 
 int QGConsoleWindow::getUserInputStart() const {
     QTextFragment frag = getUserInputFragment();
-    return frag.isValid() ? frag.position() : -1;
+    if (frag.isValid()) {
+        return frag.position();
+    } else if (_promptActive) {
+        // at end of text
+        return (int) _textArea->getText().length();
+    } else {
+        return -1;
+    }
 }
 
 int QGConsoleWindow::getUserInputEnd() const {
     QTextFragment frag = getUserInputFragment();
-    return frag.isValid() ? frag.position() + frag.length() : -1;
+    if (frag.isValid()) {
+        return frag.position() + frag.length();
+    } else if (_promptActive) {
+        // at end of text
+        return (int) _textArea->getText().length();
+    } else {
+        return -1;
+    }
 }
 
 bool QGConsoleWindow::isClearEnabled() const {
@@ -396,8 +411,6 @@ bool QGConsoleWindow::isCursorInUserInputArea() const {
     int cursorPosition = _textArea->getCursorPosition();
     int userInputStart = getUserInputStart();
     int userInputEnd   = getUserInputEnd();
-//    printf("  DEBUG: isCursorInUserInputArea start=%d, end=%d, cursor=%d\n", userInputStart, userInputEnd, cursorPosition);
-//    fflush(stdout);
     return _promptActive
             && userInputStart <= cursorPosition
             && cursorPosition <= userInputEnd;
@@ -656,9 +669,16 @@ void QGConsoleWindow::processKeyPress(QGEvent event) {
             }
             break;
         case QGEvent::UP_ARROW_KEY:
+            if (isCursorInUserInputArea()) {
+                event.ignore();
+                processCommandHistory(/* delta */ -1);
+            }
+            break;
         case QGEvent::DOWN_ARROW_KEY:
-            // TODO: command history
-            event.ignore();
+            if (isCursorInUserInputArea()) {
+                event.ignore();
+                processCommandHistory(/* delta */ 1);
+            }
             break;
         case QGEvent::TAB_KEY:
             // TODO: tab completion?
@@ -742,11 +762,9 @@ void QGConsoleWindow::processBackspace(int key) {
                 // cursor is inside the user input fragment;
                 // figure out which character it's on so we can delete it
                 indexToDelete = oldCursorPosition - frag.position() - (isBackspace ? 1 : 0);
-                printf("  DEBUG: inside fragment, indexToDelete = %d\n", indexToDelete);
             } else {
                 // cursor is outside of the user input fragment; move it there
                 cursor.setPosition(frag.position() + frag.length());
-                printf("  DEBUG: outside fragment, indexToDelete = %d\n", indexToDelete);
             }
 
             if (indexToDelete >= 0 && indexToDelete < (int) _inputBuffer.length()) {
@@ -764,6 +782,19 @@ void QGConsoleWindow::processBackspace(int key) {
     _cinMutex.unlock();
 }
 
+void QGConsoleWindow::processCommandHistory(int delta) {
+    _cinMutex.lockForRead();
+    std::string oldCommand = "";
+    _commandHistoryIndex += delta;
+    _commandHistoryIndex = std::max(-1, _commandHistoryIndex);
+    _commandHistoryIndex = std::min(_commandHistoryIndex, _inputCommandHistory.size());
+    if (0 <= _commandHistoryIndex && _commandHistoryIndex < _inputCommandHistory.size()) {
+        oldCommand = _inputCommandHistory[_commandHistoryIndex];
+    }
+    _cinMutex.unlock();
+    setUserInput(oldCommand);
+}
+
 void QGConsoleWindow::processEof() {
     // only set EOF if input buffer is empty; this is the behavior on most *nix consoles
     if (_inputBuffer.empty()) {
@@ -778,6 +809,8 @@ void QGConsoleWindow::processUserInputEnterKey() {
     _cinMutex.lockForWrite();
     _cinQueueMutex.lockForWrite();
     _inputLines.enqueue(_inputBuffer);
+    _inputCommandHistory.add(_inputBuffer);
+    _commandHistoryIndex = _inputCommandHistory.size();
     _cinQueueMutex.unlock();
     _inputBuffer = "";   // clear input buffer
     this->_textArea->appendFormattedText("\n", USER_INPUT_COLOR);
@@ -794,6 +827,7 @@ void QGConsoleWindow::processUserInputKey(int key) {
 
         std::string keyStr = charToString((char) key);
 
+        bool inserted = false;
         if (ALLOW_RICH_INPUT_EDITING && isCursorInUserInputArea()) {
             QTextFragment frag = getUserInputFragment();
             if (frag.isValid()) {
@@ -834,8 +868,11 @@ void QGConsoleWindow::processUserInputKey(int key) {
                     textArea->setTextCursor(cursor);
                 }
                 _inputBuffer.insert(indexToInsert, keyStr);
+                inserted = true;
             }
-        } else {
+        }
+
+        if (!inserted) {
             // append to end of buffer/fragment
             _inputBuffer += keyStr;
             // display in blue highlighted text
@@ -1046,6 +1083,30 @@ void QGConsoleWindow::setOutputColor(const std::string& outputColor) {
     cursor.setCharFormat(format);
     cursor.endEditBlock();
     _textArea->moveCursorToEnd();
+}
+
+void QGConsoleWindow::setUserInput(const std::string& userInput) {
+    _cinMutex.lockForWrite();
+    QTextEdit* textArea = static_cast<QTextEdit*>(_textArea->getWidget());
+
+    // delete any current user input
+    QTextFragment frag = getUserInputFragment();
+    if (frag.isValid()) {
+        QTextCursor cursor = textArea->textCursor();
+        cursor.beginEditBlock();
+        cursor.setPosition(frag.position(), QTextCursor::MoveAnchor);
+        cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, frag.length());
+        cursor.removeSelectedText();
+        cursor.endEditBlock();
+        textArea->setTextCursor(cursor);
+    }
+    _inputBuffer.clear();
+    _cinMutex.unlock();
+
+    // insert the given user input
+    for (int i = 0; i < (int) userInput.length(); i++) {
+        processUserInputKey(userInput[i]);
+    }
 }
 
 void QGConsoleWindow::showAboutDialog() {
