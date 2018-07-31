@@ -53,7 +53,7 @@ public:
     virtual void clipboardCut();
     virtual void clipboardPaste();
     virtual void close() Q_DECL_OVERRIDE;
-    virtual void compareOutput();
+    virtual void compareOutput(const std::string& filename);
     virtual std::string getBackground() const Q_DECL_OVERRIDE;
     virtual int getBackgroundInt() const Q_DECL_OVERRIDE;
     virtual std::string getColor() const Q_DECL_OVERRIDE;
@@ -67,6 +67,7 @@ public:
     virtual bool isLocationSaved() const;
     virtual bool isLocked() const;
     virtual void loadConfiguration();
+    virtual void loadInputScript(int number);
     virtual void loadInputScript(const std::string& filename);
     virtual void print(const std::string& str, bool isStdErr = false);
     virtual void println(bool isStdErr = false);
@@ -77,6 +78,7 @@ public:
     virtual void saveConfiguration(bool prompt = true);
     virtual void showAboutDialog();
     virtual void showColorDialog(bool background = false);
+    virtual void showCompareOutputDialog();
     virtual void showFontDialog();
     virtual void showInputScriptDialog();
     virtual void showPrintDialog();

@@ -119,7 +119,7 @@ void QGConsoleWindow::_initMenuBar() {
                 [this]() { this->showInputScriptDialog(); });
 
     addMenuItem("File", "&Compare Output...", ICON_FOLDER + "compare_output.gif",
-                [this]() { this->compareOutput(); });
+                [this]() { this->showCompareOutputDialog(); });
     setMenuItemEnabled("File", "Compare Output...", false);
 
     addMenuItem("File", "&Quit", ICON_FOLDER + "quit.gif",
@@ -317,7 +317,7 @@ void QGConsoleWindow::close() {
     QGWindow::close();   // call super
 }
 
-void QGConsoleWindow::compareOutput() {
+void QGConsoleWindow::compareOutput(const std::string& /*filename*/) {
     // TODO
 }
 
@@ -469,8 +469,43 @@ void QGConsoleWindow::loadConfiguration() {
     }
 }
 
-void QGConsoleWindow::loadInputScript(const std::string& /*filename*/) {
-    // TODO
+void QGConsoleWindow::loadInputScript(int number) {
+    std::string inputFile;
+    std::string expectedOutputFile;
+    for (std::string filename : listDirectory(".")) {
+        if (inputFile.empty()
+                && stringContains(filename, "input-" + integerToString(number))
+                && endsWith(filename, ".txt")) {
+            inputFile = filename;
+        } else if (expectedOutputFile.empty()
+                   && stringContains(filename, "expected-output-" + integerToString(number))
+                   && endsWith(filename, ".txt")) {
+            expectedOutputFile = filename;
+        }
+    }
+
+    if (!inputFile.empty()) {
+        loadInputScript(inputFile);
+    }
+    if (!expectedOutputFile.empty()) {
+        compareOutput(expectedOutputFile);
+    }
+}
+
+void QGConsoleWindow::loadInputScript(const std::string& filename) {
+    if (!filename.empty() && fileExists(filename)) {
+        std::ifstream infile;
+        infile.open(filename.c_str());
+        Vector<std::string> lines;
+        readEntireFile(infile, lines);
+
+        _cinQueueMutex.lockForWrite();
+        _inputScript.clear();
+        for (std::string line : lines) {
+            _inputScript.enqueue(line);
+        }
+        _cinQueueMutex.unlock();
+    }
 }
 
 void QGConsoleWindow::print(const std::string& str, bool isStdErr) {
@@ -533,6 +568,9 @@ void QGConsoleWindow::processKeyPress(QGEvent event) {
             // normalize font size
             event.ignore();
             _textArea->setFont(DEFAULT_FONT_FAMILY + "-" + integerToString(DEFAULT_FONT_SIZE));
+        } else if (keyCode >= Qt::Key_1 && keyCode <= Qt::Key_9) {
+            // load input script 1-9
+            loadInputScript(keyCode - Qt::Key_0);
         } else if (keyCode == Qt::Key_C) {
             event.ignore();
             clipboardCopy();
@@ -1143,6 +1181,10 @@ void QGConsoleWindow::showColorDialog(bool background) {
     }
 }
 
+void QGConsoleWindow::showCompareOutputDialog() {
+    // TODO
+}
+
 void QGConsoleWindow::showFontDialog() {
     std::string font = QGFontChooser::showDialog(
                 /* parent */ getWidget(),
@@ -1158,19 +1200,7 @@ void QGConsoleWindow::showInputScriptDialog() {
     std::string filename = QGFileChooser::showOpenDialog(
                 /* parent */ getWidget(),
                 /* title  */ "Select an input script file");
-    if (!filename.empty() && fileExists(filename)) {
-        std::ifstream infile;
-        infile.open(filename.c_str());
-        Vector<std::string> lines;
-        readEntireFile(infile, lines);
-
-        _cinQueueMutex.lockForWrite();
-        _inputScript.clear();
-        for (std::string line : lines) {
-            _inputScript.enqueue(line);
-        }
-        _cinQueueMutex.unlock();
-    }
+    loadInputScript(filename);
 }
 
 void QGConsoleWindow::showPrintDialog() {

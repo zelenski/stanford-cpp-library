@@ -79,7 +79,7 @@ void QGThread::setMainThread() {
 }
 
 void QGThread::sleep(double ms) {
-    getCurrentThread()->usleep((long) ms);
+    getCurrentThread()->msleep((long) ms);
 }
 
 bool QGThread::studentThreadExists() {
