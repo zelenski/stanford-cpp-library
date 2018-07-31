@@ -52,6 +52,7 @@ public:
     virtual void clipboardCopy();
     virtual void clipboardCut();
     virtual void clipboardPaste();
+    virtual void close() Q_DECL_OVERRIDE;
     virtual void compareOutput();
     virtual std::string getBackground() const Q_DECL_OVERRIDE;
     virtual int getBackgroundInt() const Q_DECL_OVERRIDE;
@@ -125,6 +126,7 @@ private:
     int getUserInputStart() const;
     int getUserInputEnd() const;
     bool isCursorInUserInputArea() const;
+    bool isSelectionInUserInputArea() const;
     void processBackspace(int key);
     void processEof();
     void processKeyPress(QGEvent event);

@@ -161,7 +161,7 @@ void _Internal_QMainWindow::handleMenuAction(const std::string& menu, const std:
                 /* type   */ QGEvent::ACTION_MENU,
                 /* name   */ "actionMenu",
                 /* source */ _qgwindow);
-    actionEvent.setActionCommand(menu + ":" + item);
+    actionEvent.setActionCommand(menu + "/" + item);
     _qgwindow->fireEvent(actionEvent);
 }
 
@@ -270,7 +270,7 @@ void QGWindow::add(QGObject& obj, double x, double y) {
 
 QMenu* QGWindow::addMenu(const std::string& menu) {
     QMenu* qmenu = _iqmainwindow->menuBar()->addMenu(QString::fromStdString(menu));
-    std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
+    std::string menuKey = toLowerCase(stringReplace(stringReplace(menu, "/", ""), "&", ""));
     _menuMap[menuKey] = qmenu;
     return qmenu;
 }
@@ -300,21 +300,77 @@ QAction* QGWindow::addMenuItem(const std::string& menu, const std::string& item,
             func();
         });
 
-        // TODO: shortcut
-
         std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
-        _menuActionMap[menuKey + ":" + itemKey] = action;
+        _menuActionMap[menuKey + "/" + itemKey] = action;
         return action;
     }
 }
 
-void QGWindow::addMenuSeparator(const std::string& menu) {
+QAction* QGWindow::addMenuItemCheckBox(const std::string& menu,
+                                       const std::string& item,
+                                       bool checked,
+                                       const std::string& icon) {
+    QGEventListenerVoid func = [this, menu, item]() {
+        this->_iqmainwindow->handleMenuAction(menu, item);
+    };
+    return addMenuItemCheckBox(menu, item, checked, icon, func);
+}
+
+QAction* QGWindow::addMenuItemCheckBox(const std::string& menu,
+                                       const std::string& item,
+                                       bool checked,
+                                       const std::string& icon,
+                                       QGEventListenerVoid func) {
     std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
     if (!_menuMap.containsKey(menuKey)) {
         error("QGWindow::addMenuItem: menu \"" + menu + "\" does not exist");
+        return nullptr;
     } else {
         QMenu* qmenu = _menuMap[menuKey];
-        qmenu->addSeparator();
+        QAction* action = qmenu->addAction(QString::fromStdString(item));
+        action->setCheckable(true);
+        action->setChecked(checked);
+        if (!icon.empty() && fileExists(icon)) {
+            QIcon qicon(QString::fromStdString(icon));
+            action->setIcon(qicon);
+        }
+
+        // when menu item is clicked, call the function the user gave us
+        _iqmainwindow->connect(action, &QAction::triggered, _iqmainwindow, [func]() {
+            func();
+        });
+
+        std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
+        _menuActionMap[menuKey + "/" + itemKey] = action;
+        return action;
+    }
+}
+
+
+QAction* QGWindow::addMenuSeparator(const std::string& menu) {
+    std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
+    if (!_menuMap.containsKey(menuKey)) {
+        error("QGWindow::addMenuItem: menu \"" + menu + "\" does not exist");
+        return nullptr;
+    } else {
+        QMenu* qmenu = _menuMap[menuKey];
+        QAction* separator = qmenu->addSeparator();
+        return separator;
+    }
+}
+
+QMenu* QGWindow::addSubMenu(const std::string& menu, const std::string& submenu) {
+    std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
+    if (!_menuMap.containsKey(menuKey)) {
+        error("QGWindow::addMenuItem: menu \"" + menu + "\" does not exist");
+        return nullptr;
+    } else {
+        QMenu* qmenu = _menuMap[menuKey];
+        QMenu* qsubmenu = qmenu->addMenu(QString::fromStdString(submenu));
+        std::string subMenuKey = menuKey + "/"
+                + toLowerCase(stringReplace(submenu, "&", ""));
+        _menuMap[subMenuKey] = qsubmenu;
+        return qsubmenu;
     }
 }
 
@@ -858,7 +914,7 @@ void QGWindow::setLocation(const Point& p) {
 void QGWindow::setMenuItemEnabled(const std::string& menu, const std::string& item, bool enabled) {
     std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
     std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
-    std::string menuItemKey = menuKey + ":" + itemKey;
+    std::string menuItemKey = menuKey + "/" + itemKey;
     if (!_menuMap.containsKey(menuKey)) {
         error("QGWindow::setMenuItemEnabled: menu \"" + menu + "\" does not exist");
     } else if (!_menuActionMap.containsKey(menuItemKey)) {

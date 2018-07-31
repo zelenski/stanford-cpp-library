@@ -190,6 +190,35 @@ std::string QGTextArea::getSelectedText() const {
     }
 }
 
+int QGTextArea::getSelectionEnd() const {
+    QTextCursor cursor = _iqtextedit->textCursor();
+    int start = cursor.selectionStart();
+    int end = cursor.selectionEnd();
+    if (end > start) {
+        return end;
+    } else {
+        return -1;
+    }
+}
+
+int QGTextArea::getSelectionLength() const {
+    QTextCursor cursor = _iqtextedit->textCursor();
+    int start = cursor.selectionStart();
+    int end = cursor.selectionEnd();
+    return end - start;
+}
+
+int QGTextArea::getSelectionStart() const {
+    QTextCursor cursor = _iqtextedit->textCursor();
+    int start = cursor.selectionStart();
+    int end = cursor.selectionEnd();
+    if (end > start) {
+        return start;
+    } else {
+        return -1;
+    }
+}
+
 std::string QGTextArea::getText() const {
     return _iqtextedit->toPlainText().toStdString();
 }
@@ -278,9 +307,9 @@ void QGTextArea::setContextMenuEnabled(bool enabled) {
     _contextMenuEnabled = enabled;
 }
 
-void QGTextArea::setCursorPosition(int index) {
+void QGTextArea::setCursorPosition(int index, bool keepAnchor) {
     QTextCursor cursor(_iqtextedit->textCursor());
-    cursor.setPosition(index, QTextCursor::MoveAnchor);
+    cursor.setPosition(index, keepAnchor ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor);
     _iqtextedit->setTextCursor(cursor);
     _iqtextedit->ensureCursorVisible();
 }

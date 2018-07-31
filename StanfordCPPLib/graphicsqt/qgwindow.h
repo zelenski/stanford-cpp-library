@@ -124,7 +124,14 @@ public:
                                  const std::string& icon = "");
     virtual QAction* addMenuItem(const std::string& menu, const std::string& item,
                                  const std::string& icon, QGEventListenerVoid func);
-    virtual void addMenuSeparator(const std::string& menu);
+    virtual QAction* addMenuItemCheckBox(const std::string& menu, const std::string& item,
+                                         bool checked = false,
+                                         const std::string& icon = "");
+    virtual QAction* addMenuItemCheckBox(const std::string& menu, const std::string& item,
+                                         bool checked,
+                                         const std::string& icon, QGEventListenerVoid func);
+    virtual QAction* addMenuSeparator(const std::string& menu);
+    virtual QMenu* addSubMenu(const std::string& menu, const std::string& submenu);
     virtual void addToRegion(QGInteractor* interactor, Region region);
     virtual void addToRegion(QGInteractor* interactor, const std::string& region = "Center");
     virtual void clearConsole() Q_DECL_OVERRIDE;

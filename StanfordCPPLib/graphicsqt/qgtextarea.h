@@ -59,6 +59,9 @@ public:
     virtual std::string getPlaceholder() const;
     virtual int getRows() const;
     virtual std::string getSelectedText() const;
+    virtual int getSelectionEnd() const;
+    virtual int getSelectionLength() const;
+    virtual int getSelectionStart() const;
     virtual std::string getText() const;
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;
@@ -76,7 +79,7 @@ public:
     virtual void selectAll();
     virtual void setColumns(int columns);
     virtual void setContextMenuEnabled(bool enabled);
-    virtual void setCursorPosition(int index);
+    virtual void setCursorPosition(int index, bool keepAnchor = false);
     virtual void setEditable(bool value);
     virtual void setHtml(const std::string& html);
     virtual void setKeyListener(QGEventListener func);

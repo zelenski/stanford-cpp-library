@@ -14,6 +14,7 @@
 
 #include <cstdio>
 #include <QAction>
+#include <QTextDocumentFragment>
 #include "error.h"
 #include "exceptions.h"
 #include "filelib.h"
@@ -34,17 +35,17 @@ namespace qtgui {
 void setConsolePropertiesQt();
 
 
-const bool QGConsoleWindow::QGConsoleWindow::ALLOW_RICH_INPUT_EDITING = false;
+const bool QGConsoleWindow::QGConsoleWindow::ALLOW_RICH_INPUT_EDITING = true;
 const double QGConsoleWindow::DEFAULT_WIDTH = 700;
 const double QGConsoleWindow::DEFAULT_HEIGHT = 500;
 const double QGConsoleWindow::DEFAULT_X = 10;
-const double QGConsoleWindow::DEFAULT_Y = 10;
+const double QGConsoleWindow::DEFAULT_Y = 40;
 const std::string QGConsoleWindow::CONFIG_FILE_NAME = "spl-jar-settings.txt";
 const std::string QGConsoleWindow::DEFAULT_WINDOW_TITLE = "Console";
 const std::string QGConsoleWindow::DEFAULT_FONT_FAMILY = "Monospaced";
 const int QGConsoleWindow::DEFAULT_FONT_SIZE = 12;
 const int QGConsoleWindow::MIN_FONT_SIZE = 4;
-const int QGConsoleWindow::MAX_FONT_SIZE = 128;
+const int QGConsoleWindow::MAX_FONT_SIZE = 255;
 const std::string QGConsoleWindow::DEFAULT_BACKGROUND_COLOR = "white";
 const std::string QGConsoleWindow::DEFAULT_ERROR_COLOR = "red";
 const std::string QGConsoleWindow::DEFAULT_OUTPUT_COLOR = "black";
@@ -255,16 +256,49 @@ void QGConsoleWindow::clipboardCopy() {
 }
 
 void QGConsoleWindow::clipboardCut() {
-    if (_shutdown) {
+    if (_shutdown || !_promptActive || !ALLOW_RICH_INPUT_EDITING) {
         return;
     }
-    clipboardCopy();   // TODO: fix
+
+    // if selection is entirely within the user input area, cut out of user input area
+    int userInputStart = getUserInputStart();
+    int userInputEnd   = getUserInputEnd();
+    int selectionStart = _textArea->getSelectionStart();
+    int selectionEnd = _textArea->getSelectionEnd();
+    if (selectionEnd > selectionStart
+            && selectionStart >= userInputStart
+            && selectionEnd <= userInputEnd) {
+        // selection is entirely user input! cut it!
+        QTextFragment frag = getUserInputFragment();
+        if (frag.isValid()) {
+            std::string selectedText = _textArea->getSelectedText();
+            QTextEdit* textArea = static_cast<QTextEdit*>(this->_textArea->getWidget());
+            QTextCursor cursor(textArea->textCursor());
+
+            int indexStart = selectionStart - userInputStart;
+            int selectionLength = _textArea->getSelectionLength();
+            _cinMutex.lockForWrite();
+            _inputBuffer.erase(indexStart, selectionLength);
+            cursor.beginEditBlock();
+            cursor.removeSelectedText();
+            cursor.endEditBlock();
+            textArea->setTextCursor(cursor);
+            _cinMutex.unlock();
+            QGClipboard::set(selectedText);
+        }
+    }
 }
 
 void QGConsoleWindow::clipboardPaste() {
     if (_shutdown) {
         return;
     }
+
+    _textArea->clearSelection();
+    if (!isCursorInUserInputArea()) {
+        _textArea->moveCursorToEnd();
+    }
+
     std::string clipboardText = QGClipboard::get();
     for (int i = 0; i < (int) clipboardText.length(); i++) {
         if (clipboardText[i] == '\r') {
@@ -275,6 +309,11 @@ void QGConsoleWindow::clipboardPaste() {
             processUserInputKey(clipboardText[i]);
         }
     }
+}
+
+void QGConsoleWindow::close() {
+    shutdown();
+    QGWindow::close();   // call super
 }
 
 void QGConsoleWindow::compareOutput() {
@@ -324,6 +363,8 @@ QTextFragment QGConsoleWindow::getUserInputFragment() const {
                 std::string fragText = frag.text().toStdString();
 
                 // see if it is the given user input
+//                printf("    DEBUG: getUserInputFragment fragText=\"%s\"\n", fragText.c_str());
+//                fflush(stdout);
                 if (fragText == _inputBuffer) {
                     return frag;
                 }
@@ -353,9 +394,13 @@ bool QGConsoleWindow::isClearEnabled() const {
 
 bool QGConsoleWindow::isCursorInUserInputArea() const {
     int cursorPosition = _textArea->getCursorPosition();
+    int userInputStart = getUserInputStart();
+    int userInputEnd   = getUserInputEnd();
+//    printf("  DEBUG: isCursorInUserInputArea start=%d, end=%d, cursor=%d\n", userInputStart, userInputEnd, cursorPosition);
+//    fflush(stdout);
     return _promptActive
-            && getUserInputStart() <= cursorPosition
-            && cursorPosition <= getUserInputEnd();
+            && userInputStart <= cursorPosition
+            && cursorPosition <= userInputEnd;
 }
 
 bool QGConsoleWindow::isEcho() const {
@@ -368,6 +413,16 @@ bool QGConsoleWindow::isLocationSaved() const {
 
 bool QGConsoleWindow::isLocked() const {
     return _locked;
+}
+
+bool QGConsoleWindow::isSelectionInUserInputArea() const {
+    int userInputStart = getUserInputStart();
+    int userInputEnd   = getUserInputEnd();
+    int selectionStart = _textArea->getSelectionStart();
+    int selectionEnd = _textArea->getSelectionEnd();
+    return userInputStart >= 0 && userInputEnd >= 0
+            && selectionStart >= userInputStart
+            && selectionEnd <= userInputEnd;
 }
 
 void QGConsoleWindow::loadConfiguration() {
@@ -443,6 +498,7 @@ void QGConsoleWindow::processKeyPress(QGEvent event) {
     if (event.isCtrlOrCommandKeyDown()) {
         if (keyCode == Qt::Key_Plus || keyCode == Qt::Key_Equal) {
             // increase font size
+            event.ignore();
             QFont font = QGFont::toQFont(_textArea->getFont());
             if (font.pointSize() + 1 <= MAX_FONT_SIZE) {
                 font.setPointSize(font.pointSize() + 1);
@@ -450,22 +506,45 @@ void QGConsoleWindow::processKeyPress(QGEvent event) {
             }
         } else if (keyCode == Qt::Key_Minus) {
             // decrease font size
+            event.ignore();
             QFont font = QGFont::toQFont(_textArea->getFont());
             if (font.pointSize() - 1 >= MIN_FONT_SIZE) {
                 font.setPointSize(font.pointSize() - 1);
                 _textArea->setFont(QGFont::toFontString(font));
             }
+        } else if (keyCode == Qt::Key_Insert) {
+            // Ctrl+Ins => Copy
+            event.ignore();
+            clipboardCopy();
         } else if (keyCode == Qt::Key_0) {
             // normalize font size
+            event.ignore();
             _textArea->setFont(DEFAULT_FONT_FAMILY + "-" + integerToString(DEFAULT_FONT_SIZE));
         } else if (keyCode == Qt::Key_C) {
+            event.ignore();
             clipboardCopy();
         } else if (event.isCtrlKeyDown() && keyCode == Qt::Key_D) {
+            event.ignore();
             processEof();
+        } else if (keyCode == Qt::Key_L) {
+            event.ignore();
+            clearConsole();
+        } else if (keyCode == Qt::Key_Q || keyCode == Qt::Key_W) {
+            event.ignore();
+            close();
         } else if (keyCode == Qt::Key_S) {
-            save();
+            event.ignore();
+            if (event.isShiftKeyDown()) {
+                saveAs();
+            } else {
+                save();
+            }
         } else if (keyCode == Qt::Key_V) {
+            event.ignore();
             clipboardPaste();
+        } else if (keyCode == Qt::Key_X) {
+            event.ignore();
+            clipboardCut();
         }
     }
 
@@ -484,10 +563,25 @@ void QGConsoleWindow::processKeyPress(QGEvent event) {
         case QGEvent::PAGE_DOWN_KEY:
             // don't ignore event
             break;
-        case QGEvent::BACKSPACE_KEY:
-        case QGEvent::DELETE_KEY: {
+        case QGEvent::BACKSPACE_KEY: {
             event.ignore();
             processBackspace(keyCode);
+            break;
+        }
+        case QGEvent::DELETE_KEY: {
+            event.ignore();
+            if (event.isShiftKeyDown()) {
+                clipboardCut();   // Shift+Del => Cut
+            } else {
+                processBackspace(keyCode);
+            }
+            break;
+        }
+        case QGEvent::INSERT_KEY: {
+            event.ignore();
+            if (event.isShiftKeyDown()) {
+                clipboardPaste();   // Shift+Ins => Paste
+            }
             break;
         }
         case QGEvent::HOME_KEY:
@@ -497,7 +591,9 @@ void QGConsoleWindow::processKeyPress(QGEvent event) {
                     event.ignore();
                     int start = getUserInputStart();
                     if (start >= 0) {
-                        _textArea->setCursorPosition(start);
+                        _textArea->setCursorPosition(
+                                start,
+                                /* keepAnchor */ event.isShiftKeyDown() && isCursorInUserInputArea());
                     } else {
                         _textArea->moveCursorToEnd();
                     }
@@ -513,7 +609,9 @@ void QGConsoleWindow::processKeyPress(QGEvent event) {
                     event.ignore();
                     int end = getUserInputEnd();
                     if (end >= 0) {
-                        _textArea->setCursorPosition(end);
+                        _textArea->setCursorPosition(
+                                end,
+                                /* keepAnchor */ event.isShiftKeyDown() && isCursorInUserInputArea());
                     } else {
                         _textArea->moveCursorToEnd();
                     }
@@ -522,10 +620,40 @@ void QGConsoleWindow::processKeyPress(QGEvent event) {
                 event.ignore();
             }
             break;
-        case QGEvent::LEFT_ARROW_KEY:
+        case QGEvent::LEFT_ARROW_KEY: {
+            // bound within user input area if a prompt is active
+            if (ALLOW_RICH_INPUT_EDITING) {
+                if (isCursorInUserInputArea()) {
+                    int cursorPosition = _textArea->getCursorPosition();
+                    int userInputStart = getUserInputStart();
+                    if (cursorPosition <= userInputStart) {
+                        event.ignore();
+                        if (!event.isShiftKeyDown()) {
+                            _textArea->clearSelection();
+                        }
+                    }
+                }
+            } else {
+                event.ignore();
+            }
+            break;
+        }
         case QGEvent::RIGHT_ARROW_KEY:
-            // TODO: allow fine-grained editing of user input value
-            event.ignore();
+            // bound within user input area if a prompt is active
+            if (ALLOW_RICH_INPUT_EDITING) {
+                if (isCursorInUserInputArea()) {
+                    int cursorPosition = _textArea->getCursorPosition();
+                    int userInputEnd   = getUserInputEnd();
+                    if (cursorPosition >= userInputEnd) {
+                        event.ignore();
+                        if (!event.isShiftKeyDown()) {
+                            _textArea->clearSelection();
+                        }
+                    }
+                }
+            } else {
+                event.ignore();
+            }
             break;
         case QGEvent::UP_ARROW_KEY:
         case QGEvent::DOWN_ARROW_KEY:
@@ -533,8 +661,14 @@ void QGConsoleWindow::processKeyPress(QGEvent event) {
             event.ignore();
             break;
         case QGEvent::TAB_KEY:
+            // TODO: tab completion?
         case QGEvent::CLEAR_KEY:
-        case QGEvent::F1_KEY:
+            break;
+        case QGEvent::F1_KEY: {
+            event.ignore();
+            showAboutDialog();
+            break;
+        }
         case QGEvent::F2_KEY:
         case QGEvent::F3_KEY:
         case QGEvent::F4_KEY:
@@ -546,7 +680,6 @@ void QGConsoleWindow::processKeyPress(QGEvent event) {
         case QGEvent::F10_KEY:
         case QGEvent::F11_KEY:
         case QGEvent::F12_KEY:
-        case QGEvent::INSERT_KEY:
         case QGEvent::HELP_KEY: {
             // various control/modifier keys: do nothing / consume event
             event.ignore();
@@ -601,8 +734,11 @@ void QGConsoleWindow::processBackspace(int key) {
             QTextCursor cursor(textArea->textCursor());
 
             int oldCursorPosition = cursor.position();
-            int indexToDelete = _inputBuffer.length() - 1;
-            if (oldCursorPosition >= frag.position() || oldCursorPosition < frag.position() + frag.length()) {
+            int indexToDelete = (int) _inputBuffer.length() - 1;
+            int userInputIndexMin = frag.position();
+            int userInputIndexMax = frag.position() + frag.length() - (isBackspace ? 0 : 1);
+
+            if (oldCursorPosition >= userInputIndexMin && oldCursorPosition < userInputIndexMax) {
                 // cursor is inside the user input fragment;
                 // figure out which character it's on so we can delete it
                 indexToDelete = oldCursorPosition - frag.position() - (isBackspace ? 1 : 0);
@@ -613,14 +749,16 @@ void QGConsoleWindow::processBackspace(int key) {
                 printf("  DEBUG: outside fragment, indexToDelete = %d\n", indexToDelete);
             }
 
-            if (isBackspace) {
-                cursor.deletePreviousChar();
-            } else {
-                cursor.deleteChar();   // Delete
-            }
+            if (indexToDelete >= 0 && indexToDelete < (int) _inputBuffer.length()) {
+                if (isBackspace || indexToDelete == (int) _inputBuffer.length() - 1) {
+                    cursor.deletePreviousChar();
+                } else {
+                    cursor.deleteChar();   // Delete
+                }
 
-            // remove last char from internal input buffer
-            _inputBuffer.erase(indexToDelete, 1);
+                // remove last char from internal input buffer
+                _inputBuffer.erase(indexToDelete, 1);
+            }
         }
     }
     _cinMutex.unlock();
@@ -656,52 +794,53 @@ void QGConsoleWindow::processUserInputKey(int key) {
 
         std::string keyStr = charToString((char) key);
 
-//        if (isCursorInUserInputArea()) {
-//            QTextFragment frag = getUserInputFragment();
-//            if (frag.isValid()) {
-//                QTextEdit* textArea = static_cast<QTextEdit*>(this->_textArea->getWidget());
-//                QTextCursor cursor(textArea->textCursor());
+        if (ALLOW_RICH_INPUT_EDITING && isCursorInUserInputArea()) {
+            QTextFragment frag = getUserInputFragment();
+            if (frag.isValid()) {
+                QTextEdit* textArea = static_cast<QTextEdit*>(this->_textArea->getWidget());
+                QTextCursor cursor(textArea->textCursor());
 
-//                int cursorPosition = cursor.position();
-//                int indexToInsert = cursorPosition - frag.position();
-//                if (indexToInsert == 0) {
-//                    // special case for inserting at start of fragment.
-//                    // example: fragment is "abcde", cursor at start, user types "x".
-//                    // if we just insert the "x" in the document, it won't be part of
-//                    // the same fragment and won't have the blue bold format.
-//                    // So what we do is temporarily insert it after the first character,
-//                    // then delete the first character, so that everything is inside
-//                    // the formatted span.
-//                    // "abcde"
-//                    //  ^
-//                    //   ^          move right by 1
-//                    // "axabcde"    insert "xa" at index 1
-//                    //     ^
-//                    //  ^           move left by 3
-//                    // "xabcde"     delete "a" from index 0
-//                    //  ^
-//                    //   ^          move right by 1
-//                    cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, 1);             // move to index 1
-//                    cursor.insertText(QString::fromStdString(keyStr + _inputBuffer.substr(0, 1)));   // insert new char + old first char
-//                    // cursor.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, 2);              // delete old copy of first char
-//                    // cursor.deleteChar();
-//                    // cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, 1);
-//                } else {
-//                    cursor.insertText(QString::fromStdString(keyStr));
-//                }
-//                _inputBuffer.insert(indexToInsert, keyStr);
-
-//                printf("  DEBUG: after insert, buffer = \"%s\", frag = \"%s\"\n",
-//                       _inputBuffer.c_str(),
-//                       (frag.isValid() ? frag.text().toStdString().c_str() : ""));
-//                fflush(stdout);
-//            }
-//        } else {
+                int cursorPosition = cursor.position();
+                int indexToInsert = cursorPosition - frag.position();
+                if (indexToInsert == 0) {
+                    // special case for inserting at start of fragment.
+                    // example: fragment is "abcde", cursor at start, user types "x".
+                    // if we just insert the "x" in the document, it won't be part of
+                    // the same fragment and won't have the blue bold format.
+                    // So what we do is temporarily insert it after the first character,
+                    // then delete the first character, so that everything is inside
+                    // the formatted span.
+                    // "abcde"
+                    //  ^
+                    //   ^          move right by 1
+                    // "axabcde"    insert "xa" at index 1
+                    //     ^
+                    //   ^          move left by 2
+                    // "xabcde"     delete previous character "a" from index 0
+                    //  ^
+                    //   ^          move right by 1
+                    cursor.beginEditBlock();
+                    cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, 1);             // move to index 1
+                    cursor.insertText(QString::fromStdString(keyStr + _inputBuffer.substr(0, 1)));   // insert new char + old first char
+                    cursor.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, 2);              // delete old copy of first char
+                    cursor.deletePreviousChar();
+                    cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, 1);             // move to index 1
+                    cursor.endEditBlock();
+                    textArea->setTextCursor(cursor);
+                } else {
+                    cursor.beginEditBlock();
+                    cursor.insertText(QString::fromStdString(keyStr));
+                    cursor.endEditBlock();
+                    textArea->setTextCursor(cursor);
+                }
+                _inputBuffer.insert(indexToInsert, keyStr);
+            }
+        } else {
             // append to end of buffer/fragment
             _inputBuffer += keyStr;
             // display in blue highlighted text
             this->_textArea->appendFormattedText(keyStr, USER_INPUT_COLOR, "*-*-Bold");
-//        }
+        }
 
         _cinMutex.unlock();
     }
@@ -758,6 +897,7 @@ std::string QGConsoleWindow::readLine() {
     _cinMutex.lockForWrite();
     _promptActive = false;
     _cinMutex.unlock();
+    this->_textArea->scrollToBottom();
 
     if (_echo) {
         fprintf(stdout, "%s\n", line.c_str());
