@@ -45,6 +45,7 @@ namespace qtgui {
 class QGConsoleWindow : public QGWindow {
 public:
     static bool consoleEnabled();
+    static std::string getDefaultFont();
     static QGConsoleWindow* instance();
     static void setConsoleEnabled(bool enabled);
 
@@ -54,6 +55,7 @@ public:
     virtual void clipboardPaste();
     virtual void close() Q_DECL_OVERRIDE;
     virtual void compareOutput(const std::string& filename);
+    virtual std::string getAllOutput() const;
     virtual std::string getBackground() const Q_DECL_OVERRIDE;
     virtual int getBackgroundInt() const Q_DECL_OVERRIDE;
     virtual std::string getColor() const Q_DECL_OVERRIDE;
@@ -109,6 +111,7 @@ private:
     static const std::string CONFIG_FILE_NAME;
     static const std::string DEFAULT_WINDOW_TITLE;
     static const std::string DEFAULT_FONT_FAMILY;
+    static const std::string DEFAULT_FONT_WEIGHT;
     static const int DEFAULT_FONT_SIZE;
     static const int MIN_FONT_SIZE;
     static const int MAX_FONT_SIZE;
@@ -155,6 +158,7 @@ private:
     Vector<std::string> _inputCommandHistory;
     stanfordcpplib::qtgui::ConsoleStreambufQt* _cinout_new_buf;
     stanfordcpplib::qtgui::ConsoleStreambufQt* _cerr_new_buf;
+    std::ostringstream _allOutputBuffer;
     QReadWriteLock _cinMutex;
     QReadWriteLock _cinQueueMutex;
     QMutex _coutMutex;

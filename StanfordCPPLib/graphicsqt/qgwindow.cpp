@@ -687,6 +687,10 @@ double QGWindow::getY() const {
     return _iqmainwindow->geometry().y();
 }
 
+void QGWindow::hide() {
+    setVisible(false);
+}
+
 bool QGWindow::inBounds(double x, double y) const {
     return 0 <= x && x < getWidth() && 0 <= y && y < getHeight();
 }
@@ -1154,6 +1158,10 @@ void QGWindow::setX(double x) {
 
 void QGWindow::setY(double y) {
     setLocation(getX(), y);
+}
+
+void QGWindow::show() {
+    setVisible(true);
 }
 
 void QGWindow::sleep(double ms) {

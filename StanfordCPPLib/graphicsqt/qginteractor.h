@@ -23,6 +23,7 @@ class QGWindow;   // forward declaration
 
 class _Internal_QWidget {
 public:
+    _Internal_QWidget();
     virtual QSize getMinimumSize() const;
     virtual bool hasMinimumSize() const;
     virtual QSize getPreferredSize() const;
@@ -31,9 +32,6 @@ public:
     virtual void setMinimumSize(const QSize& size);
     virtual void setPreferredSize(double width, double height);
     virtual void setPreferredSize(const QSize& size);
-
-protected:
-    _Internal_QWidget();
 
 private:
     QGDimension _minimumSize;
@@ -119,6 +117,38 @@ protected:
 
     friend class QGWindow;
 };
+
+/*
+ * A generic simple QGInteractor that wraps any Qt QWidget you pass it.
+ * This is meant to make the library extensible and allow you to wrap other
+ * Qt widgets that were not built into the original library.
+ */
+template <typename T>
+class QGGenericInteractor : public QGInteractor {
+public:
+    QGGenericInteractor(T* widget)
+            : _widget(widget) {
+        _iqwidget = new _Internal_QWidget();   // dummy
+    }
+
+    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE {
+        return _iqwidget;
+    }
+
+    virtual std::string getType() const {
+        std::string typeName = typeid(T).name();
+        return std::string("QGGenericInteractor<") + typeName + ">";
+    }
+
+    virtual QWidget* getWidget() const {
+        return _widget;
+    }
+
+private:
+    _Internal_QWidget* _iqwidget;
+    T* _widget;
+};
+
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 

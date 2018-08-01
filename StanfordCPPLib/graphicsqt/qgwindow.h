@@ -170,6 +170,7 @@ public:
     virtual double getWidth() const;
     virtual double getX() const;
     virtual double getY() const;
+    virtual void hide();
     virtual bool inBounds(double x, double y) const;
     virtual bool inCanvasBounds(double x, double y) const;
     virtual bool isMaximized() const;
@@ -238,6 +239,7 @@ public:
     virtual void setWindowTitle(const std::string& title);
     virtual void setX(double x);
     virtual void setY(double y);
+    virtual void show();
     virtual void sleep(double ms);
     virtual void toBack();
     virtual void toFront();

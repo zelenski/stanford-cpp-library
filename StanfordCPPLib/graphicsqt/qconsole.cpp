@@ -21,6 +21,7 @@
 #include "qgclipboard.h"
 #include "qgcolor.h"
 #include "qgcolorchooser.h"
+#include "qgdiffgui.h"
 #include "qgfilechooser.h"
 #include "qgfont.h"
 #include "qgfontchooser.h"
@@ -43,6 +44,7 @@ const double QGConsoleWindow::DEFAULT_Y = 40;
 const std::string QGConsoleWindow::CONFIG_FILE_NAME = "spl-jar-settings.txt";
 const std::string QGConsoleWindow::DEFAULT_WINDOW_TITLE = "Console";
 const std::string QGConsoleWindow::DEFAULT_FONT_FAMILY = "Monospaced";
+const std::string QGConsoleWindow::DEFAULT_FONT_WEIGHT = "";
 const int QGConsoleWindow::DEFAULT_FONT_SIZE = 12;
 const int QGConsoleWindow::MIN_FONT_SIZE = 4;
 const int QGConsoleWindow::MAX_FONT_SIZE = 255;
@@ -53,11 +55,17 @@ const std::string QGConsoleWindow::USER_INPUT_COLOR = "blue";
 QGConsoleWindow* QGConsoleWindow::_instance = nullptr;
 bool QGConsoleWindow::_consoleEnabled = false;
 
-bool QGConsoleWindow::consoleEnabled() {
+/* static */ bool QGConsoleWindow::consoleEnabled() {
     return _consoleEnabled;
 }
 
-QGConsoleWindow* QGConsoleWindow::instance() {
+/* static */ std::string QGConsoleWindow::getDefaultFont() {
+    return DEFAULT_FONT_FAMILY
+            + "-" + integerToString(DEFAULT_FONT_SIZE)
+            + (DEFAULT_FONT_WEIGHT.empty() ? "" : ("-" + DEFAULT_FONT_WEIGHT));
+}
+
+/* static */ QGConsoleWindow* QGConsoleWindow::instance() {
     if (!_instance) {
         // initialize Qt system and Qt Console window
         QGThread::runOnQtGuiThread([]() {
@@ -69,7 +77,7 @@ QGConsoleWindow* QGConsoleWindow::instance() {
     return _instance;
 }
 
-void QGConsoleWindow::setConsoleEnabled(bool enabled) {
+/* static */ void QGConsoleWindow::setConsoleEnabled(bool enabled) {
     _consoleEnabled = enabled;
 }
 
@@ -190,7 +198,7 @@ void QGConsoleWindow::_initWidgets() {
     _textArea->setContextMenuEnabled(false);
     // _textArea->setEditable(false);
     _textArea->setLineWrap(false);
-    _textArea->setFont(DEFAULT_FONT_FAMILY + "-" + integerToString(DEFAULT_FONT_SIZE));
+    _textArea->setFont(getDefaultFont());
     // _textArea->setRowsColumns(25, 70);
     QTextEdit* rawTextEdit = static_cast<QTextEdit*>(_textArea->getWidget());
     rawTextEdit->setTabChangesFocus(false);
@@ -317,8 +325,27 @@ void QGConsoleWindow::close() {
     QGWindow::close();   // call super
 }
 
-void QGConsoleWindow::compareOutput(const std::string& /*filename*/) {
-    // TODO
+void QGConsoleWindow::compareOutput(const std::string& filename) {
+    std::string expectedOutput;
+    if (!filename.empty() && fileExists(filename)) {
+        expectedOutput = readEntireFile(filename);
+    } else {
+        expectedOutput = "File not found: " + filename;
+    }
+
+    std::string studentOutput = getAllOutput();
+
+    QGDiffGui::showDialog("expected output", expectedOutput,
+                          "your output", studentOutput,
+                          /* showCheckBoxes */ false);
+}
+
+std::string QGConsoleWindow::getAllOutput() const {
+    QGConsoleWindow* thisHack = (QGConsoleWindow*) this;
+    thisHack->_coutMutex.lock();
+    std::string allOutput = thisHack->_allOutputBuffer.str();
+    thisHack->_coutMutex.unlock();
+    return allOutput;
 }
 
 std::string QGConsoleWindow::getBackground() const {
@@ -523,6 +550,7 @@ void QGConsoleWindow::print(const std::string& str, bool isStdErr) {
     }
     QGThread::runOnQtGuiThreadAsync([this, str, isStdErr]() {
         _coutMutex.lock();
+        _allOutputBuffer << str;
         this->_textArea->appendFormattedText(str, isStdErr ? getErrorColor() : getOutputColor());
         this->_textArea->moveCursorToEnd();
         this->_textArea->scrollToBottom();
@@ -850,6 +878,7 @@ void QGConsoleWindow::processUserInputEnterKey() {
     _inputCommandHistory.add(_inputBuffer);
     _commandHistoryIndex = _inputCommandHistory.size();
     _cinQueueMutex.unlock();
+    _allOutputBuffer << _inputBuffer << std::endl;
     _inputBuffer = "";   // clear input buffer
     this->_textArea->appendFormattedText("\n", USER_INPUT_COLOR);
     _cinMutex.unlock();
@@ -947,6 +976,7 @@ std::string QGConsoleWindow::readLine() {
             // echo user input, as if the user had just typed it
             QGThread::runOnQtGuiThreadAsync([this, line]() {
                 _coutMutex.lock();
+                _allOutputBuffer << line << std::endl;
                 _textArea->appendFormattedText(line + "\n", USER_INPUT_COLOR, "*-*-Bold");
                 _coutMutex.unlock();
             });
@@ -1182,7 +1212,12 @@ void QGConsoleWindow::showColorDialog(bool background) {
 }
 
 void QGConsoleWindow::showCompareOutputDialog() {
-    // TODO
+    std::string filename = QGFileChooser::showOpenDialog(
+                /* parent */ getWidget(),
+                /* title  */ "Select an expected output file");
+    if (!filename.empty() && fileExists(filename)) {
+        compareOutput(filename);
+    }
 }
 
 void QGConsoleWindow::showFontDialog() {
@@ -1200,7 +1235,9 @@ void QGConsoleWindow::showInputScriptDialog() {
     std::string filename = QGFileChooser::showOpenDialog(
                 /* parent */ getWidget(),
                 /* title  */ "Select an input script file");
-    loadInputScript(filename);
+    if (!filename.empty() && fileExists(filename)) {
+        loadInputScript(filename);
+    }
 }
 
 void QGConsoleWindow::showPrintDialog() {
@@ -1257,7 +1294,11 @@ bool getConsoleExitProgramOnClose() {
 }
 
 std::string getConsoleFont() {
+#ifdef __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
+    return QGConsoleWindow::getDefaultFont();
+#else
     return QGConsoleWindow::instance()->getFont();
+#endif
 }
 
 double getConsoleHeight() {
