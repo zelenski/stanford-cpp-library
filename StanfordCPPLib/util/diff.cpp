@@ -18,18 +18,13 @@
 #include "diff.h"
 #include <algorithm>
 #include "map.h"
-// #include "regexpr.h"
+#include "regexpr.h"
 #include "set.h"
 #include "stringutils.h"
 #include "strlib.h"
 #include "vector.h"
 
 namespace diff {
-// TODO: remove
-std::string regexReplace(const std::string& s, const std::string& /*from*/, const std::string& /*to*/) {
-    return s;
-}
-
 std::string diff(std::string s1, std::string s2, int flags) {
     Vector<std::string> lines1 = stringutils::explodeLines(s1);
     Vector<std::string> lines2 = stringutils::explodeLines(s2);

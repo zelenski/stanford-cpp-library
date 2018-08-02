@@ -655,4 +655,4 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #653; if not, your .pro has been changed!)
+# END OF FILE (this should be line #658; if not, your .pro has been changed!)

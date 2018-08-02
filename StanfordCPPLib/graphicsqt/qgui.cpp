@@ -87,7 +87,10 @@ void QGui::startEventLoop() {
     if (!_app) {
         error("QGui::startEventLoop: need to initialize Qt first");
     }
-    int exitCode = _app->exec();   // start Qt event loop on main thread; blocks
+
+    // start Qt event loop on main thread;
+    // Qt GUI main thread blocks here until student main() is done
+    int exitCode = _app->exec();
 
     // if I get here, it means an "exit on close" window was just closed;
     // it's time to shut down the Qt system and exit the C++ program

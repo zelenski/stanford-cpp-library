@@ -32,18 +32,6 @@ std::string indent(const std::string& s, int spaces);
  * Used to facilitate approximate output matching.
  */
 std::string makeSloppy(const std::string& s);
-
-/*
- * Finds all matches of the given regular expression in the given string s
- * and fills 'linesOut' with a comma-separated string representing the line
- * numbers within the string at which the matches occur, such as "2,14,27,36".
- * This is mainly useful for grading programs.
- * Returns the number of times the given regular expression is found inside
- * the given string s.  Returns 0 if there are no matches for the regexp.
- */
-int regexMatchCountWithLines(const std::string& s, const std::string& regexp,
-                             std::string& linesOut);
-
 std::string removeBlankLines(const std::string& s);
 std::string toLowerCase(const std::string& s);
 std::string trimR(const std::string& s);

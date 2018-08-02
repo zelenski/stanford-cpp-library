@@ -113,12 +113,6 @@ std::string makeSloppy(const std::string& s) {
     return collapseSpaces(removeBlankLines(s));
 }
 
-int regexMatchCountWithLines(const std::string& /*s*/, const std::string& /*regexp*/, std::string& /*linesOut*/) {
-    // return stanfordcpplib::getPlatform()->regex_matchCountWithLines(s, regexp, linesOut);
-    error("stringutils::regexMatchCountWithLines: not implemented");
-    return -1;
-}
-
 std::string removeBlankLines(const std::string& s) {
     Vector<std::string> lines = explodeLines(s);
     Vector<std::string> newLines;
