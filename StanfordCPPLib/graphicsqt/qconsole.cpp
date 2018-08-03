@@ -22,6 +22,7 @@
 #include "qgcolor.h"
 #include "qgcolorchooser.h"
 #include "qgdiffgui.h"
+#include "qgdownloader.h"
 #include "qgfilechooser.h"
 #include "qgfont.h"
 #include "qgfontchooser.h"
@@ -175,7 +176,6 @@ void QGConsoleWindow::_initMenuBar() {
 
     addMenuItem("Help", "&Check for Updates", ICON_FOLDER + "check_for_updates.gif",
                 [this]() { this->checkForUpdates(); });
-    setMenuItemEnabled("Help", "Check for Updates", false);
 }
 
 void QGConsoleWindow::_initStreams() {
@@ -210,7 +210,7 @@ void QGConsoleWindow::_initWidgets() {
             event.ignore();
         }
     });
-    _textArea->setMouseListener([this](QGEvent event) {
+    _textArea->setMouseListener([](QGEvent event) {
         // snuff out mouse-based operations:
         // - popping up context menu by right-clicking
         // - Linux-style copy/paste operations using selection plus middle-click
@@ -235,7 +235,34 @@ QGConsoleWindow::~QGConsoleWindow() {
 }
 
 void QGConsoleWindow::checkForUpdates() {
-    // TODO
+    static const std::string CPP_ZIP_VERSION_URL = version::getCppLibraryDocsUrl() + "CURRENTVERSION_CPPLIB.txt";
+    std::string currentVersion = version::getCppLibraryVersion();
+
+    QGDownloader downloader;
+    std::string latestVersion = trim(downloader.downloadAsString(CPP_ZIP_VERSION_URL));
+
+    if (latestVersion.empty()) {
+        QGOptionPane::showMessageDialog(
+                    /* parent  */ getWidget(),
+                    /* message */ "Unable to look up latest library version from web.",
+                    /* title   */ "Network error",
+                    /* type    */ QGOptionPane::ERROR);
+        return;
+    }
+
+    std::string message;
+    if (currentVersion >= latestVersion) {
+            message = "This project already has the latest version \nof the Stanford libraries (" + currentVersion + ").";
+    } else {
+            message = "<html>There is an updated version of the Stanford libraries available.\n\n"
+               "This project's library version: " + currentVersion + "\n"
+               "Current newest library version: " + latestVersion + "\n\n"
+               "Go to <a href=\"" + version::getCppLibraryDocsUrl() + "\">"
+               + version::getCppLibraryDocsUrl() + "</a> to get the new version.</html>";
+    }
+    QGOptionPane::showMessageDialog(
+                /* parent  */ getWidget(),
+                /* message */ message);
 }
 
 void QGConsoleWindow::clearConsole() {

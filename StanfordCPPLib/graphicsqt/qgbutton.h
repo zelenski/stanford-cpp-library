@@ -43,18 +43,18 @@ class QGButton : public QGInteractor {
 public:
     QGButton(const std::string& text = "", const std::string& iconFileName = "", QWidget* parent = nullptr);
     virtual ~QGButton();
-    virtual std::string getAccelerator() const;
+    virtual std::string getAccelerator() const Q_DECL_OVERRIDE;
     virtual std::string getActionCommand() const Q_DECL_OVERRIDE;
-    virtual _Internal_QWidget* getInternalWidget() const;
+    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
     virtual std::string getText() const;
     virtual QGInteractor::TextPosition getTextPosition() const;
-    virtual std::string getType() const;
-    virtual QWidget* getWidget() const;
+    virtual std::string getType() const Q_DECL_OVERRIDE;
+    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
     virtual void removeActionListener();
-    virtual void setAccelerator(const std::string& accelerator);
+    virtual void setAccelerator(const std::string& accelerator) Q_DECL_OVERRIDE;
     virtual void setActionListener(QGEventListener func);
     virtual void setActionListener(QGEventListenerVoid func);
-    virtual void setIcon(const std::string& filename, bool retainIconSize = true);
+    virtual void setIcon(const std::string& filename, bool retainIconSize = true) Q_DECL_OVERRIDE;
     virtual void setText(const std::string& text);
     virtual void setTextPosition(QGInteractor::TextPosition position);
 

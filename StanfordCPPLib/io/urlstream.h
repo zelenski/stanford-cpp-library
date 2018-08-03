@@ -113,10 +113,10 @@ public:
     void setUserAgent(const std::string& userAgent);
 
 private:
-    std::string m_url;            // URL to be opened
-    std::string m_tempFilePath;   // local temporary file path where the URL data is downloaded
-    int m_lastError;              // most recent HTTP error seen, if any (initially 0)
-    Map<std::string, std::string> m_headers;   // HTTP headers to send (name => value)
+    std::string _url;            // URL to be opened
+    std::string _tempFilePath;   // local temporary file path where the URL data is downloaded
+    int _lastError;              // most recent HTTP error seen, if any (initially 0)
+    Map<std::string, std::string> _headers;   // HTTP headers to send (name => value)
     
     /*
      * Returns the 'tail' of the given URL, for use as a file name.

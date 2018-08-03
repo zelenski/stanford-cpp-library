@@ -95,7 +95,7 @@
 
 TEMPLATE = app
 PROJECT_FILTER =
-QT       += core gui
+QT       += core gui network
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 ###############################################################################
@@ -371,6 +371,8 @@ COMPILERNAME = $$QMAKE_CXX
 COMPILERNAME ~= s|.*/|
 equals(COMPILERNAME, clang++) {
     QMAKE_CXXFLAGS += -Wno-format-nonliteral
+    QMAKE_CXXFLAGS += -Wno-inconsistent-missing-override
+    QMAKE_CXXFLAGS += -Wno-overloaded-virtual
     QMAKE_CXXFLAGS += -Wno-unknown-warning-option
 }
 

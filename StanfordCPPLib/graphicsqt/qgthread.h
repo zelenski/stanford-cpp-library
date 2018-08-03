@@ -15,6 +15,18 @@
 
 class QGStudentThread;
 
+class QGFunctionThread : public QThread {
+public:
+    QGFunctionThread(QGThunk func);
+
+protected:
+    void run();
+
+private:
+    QGThunk _func;
+};
+
+
 class QGThread : public QThread {
 public:
     // empty
@@ -25,16 +37,20 @@ public:
     static bool iAmRunningOnTheQtGuiThread();
     static bool iAmRunningOnTheStudentThread();
     static bool qtGuiThreadExists();
+    static void runInNewThread(QGThunk func);
+    static void runInNewThreadAsync(QGThunk func);
     static void runOnQtGuiThread(QGThunk func);
     static void runOnQtGuiThreadAsync(QGThunk func);
     static void setMainThread();
     static void sleep(double ms);
     static bool studentThreadExists();
+    static void yield();
 
 protected:
     static QThread* _qtMainThread;
     static QThread* _studentThread;
 };
+
 
 class QGStudentThread : public QGThread {
 public:
@@ -48,7 +64,6 @@ protected:
     void run();
 
 private:
-
     QGThunkInt _mainFunc;
     int _result;
 };

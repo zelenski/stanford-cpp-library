@@ -70,7 +70,6 @@ public:
     virtual char getMnemonic() const;
     virtual QGDimension getPreferredSize() const;
     virtual QGDimension getSize() const;
-    virtual std::string getType() const = 0;
     virtual QWidget* getWidget() const = 0;
     virtual double getWidth() const;
     virtual double getX() const;
@@ -135,12 +134,12 @@ public:
         return _iqwidget;
     }
 
-    virtual std::string getType() const {
+    virtual std::string getType() const Q_DECL_OVERRIDE {
         std::string typeName = typeid(T).name();
         return std::string("QGGenericInteractor<") + typeName + ">";
     }
 
-    virtual QWidget* getWidget() const {
+    virtual QWidget* getWidget() const Q_DECL_OVERRIDE {
         return _widget;
     }
 

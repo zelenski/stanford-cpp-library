@@ -201,7 +201,7 @@ public:
      */
     virtual std::string getFilename() const;
 
-    virtual _Internal_QWidget* getInternalWidget() const;
+    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
 
     /*
      * Returns the color of the pixel at the given x/y coordinates of the image
@@ -213,9 +213,9 @@ public:
     virtual Grid<int> getPixels() const Q_DECL_OVERRIDE;
     virtual Grid<int> getPixelsARGB() const Q_DECL_OVERRIDE;
 
-    virtual std::string getType() const;
-    virtual QWidget* getWidget() const;
-    virtual bool isAutoRepaint() const;
+    virtual std::string getType() const Q_DECL_OVERRIDE;
+    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
+    virtual bool isAutoRepaint() const Q_DECL_OVERRIDE;
 
     /*
      * Reads the canvas's pixel contents from the given image file.

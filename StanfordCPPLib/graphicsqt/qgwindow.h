@@ -176,7 +176,7 @@ public:
     virtual bool isMaximized() const;
     virtual bool isMinimized() const;
     virtual bool isOpen() const;
-    virtual bool isRepaintImmediately() const;
+    virtual bool isRepaintImmediately() const Q_DECL_OVERRIDE;
     virtual bool isResizable() const;
     virtual bool isVisible() const;
     virtual void loadCanvasPixels(const std::string& filename);
@@ -195,8 +195,8 @@ public:
     virtual void removeWindowListener();
     virtual void requestFocus();
     virtual void saveCanvasPixels(const std::string& filename);
-    virtual void setBackground(int color);
-    virtual void setBackground(const std::string& color);
+    virtual void setBackground(int color) Q_DECL_OVERRIDE;
+    virtual void setBackground(const std::string& color) Q_DECL_OVERRIDE;
     virtual void setCanvasHeight(double height);
     virtual void setCanvasSize(double width, double height);
     virtual void setCanvasSize(const QGDimension& size);

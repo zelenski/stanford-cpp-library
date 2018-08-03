@@ -10,6 +10,16 @@
 #include "qgthread.h"
 #include "qgeventqueue.h"
 
+QGFunctionThread::QGFunctionThread(QGThunk func)
+        : _func(func) {
+    // empty
+}
+
+void QGFunctionThread::run() {
+    _func();
+}
+
+
 QThread* QGThread::_qtMainThread = nullptr;
 QThread* QGThread::_studentThread = nullptr;
 
@@ -42,6 +52,19 @@ bool QGThread::iAmRunningOnTheStudentThread() {
 
 bool QGThread::qtGuiThreadExists() {
     return _qtMainThread != nullptr;
+}
+
+void QGThread::runInNewThread(QGThunk func) {
+    QGFunctionThread thread(func);
+    thread.start();
+    while (!thread.isFinished()) {
+        sleep(10);
+    }
+}
+
+void QGThread::runInNewThreadAsync(QGThunk func) {
+    QGFunctionThread thread(func);
+    thread.start();
 }
 
 void QGThread::runOnQtGuiThread(QGThunk func) {
@@ -86,6 +109,11 @@ bool QGThread::studentThreadExists() {
     return _studentThread != nullptr;
 }
 
+void QGThread::yield() {
+    QThread::yieldCurrentThread();
+}
+
+
 QGStudentThread::QGStudentThread(QGThunkInt mainFunc)
         : _mainFunc(mainFunc) {
     this->setObjectName(QString::fromStdString("QGStudentThread"));
@@ -96,7 +124,7 @@ int QGStudentThread::getResult() const {
 }
 
 void QGStudentThread::run() {
-    this->yieldCurrentThread();
+    yield();
     _result = _mainFunc();
 
     // if I get here, student's main() has finished running;

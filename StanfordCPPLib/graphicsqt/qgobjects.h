@@ -303,7 +303,7 @@ public:
      * Moves this object one step toward the back in the <i>z</i> dimension.
      * If it was already at the back of the stack, nothing happens.
      */
-    virtual void sendBackward();
+    void sendBackward();
 
     /*
      * Method: sendForward
@@ -312,7 +312,7 @@ public:
      * Moves this object one step toward the front in the <i>z</i> dimension.
      * If it was already at the front of the stack, nothing happens.
      */
-    virtual void sendForward();
+    void sendForward();
 
     /*
      * Method: sendToBack
@@ -323,7 +323,7 @@ public:
      * graphical objects on the display and may be obscured by other objects
      * in front.
      */
-    virtual void sendToBack();
+    void sendToBack();
 
     /*
      * Method: sendToFront
@@ -334,7 +334,7 @@ public:
      * other graphical objects on the display and may hide any objects that
      * are further back.
      */
-    virtual void sendToFront();
+    void sendToFront();
 
     /*
      * Globally turns on/off the anti-aliasing feature that smooths out the
@@ -807,10 +807,10 @@ public:
     virtual std::string toString() const;
 
 private:
-    virtual void sendBackward(QGObject* gobj);
-    virtual void sendForward(QGObject* gobj);
-    virtual void sendToBack(QGObject* gobj);
-    virtual void sendToFront(QGObject* gobj);
+    void sendBackward(QGObject* gobj);
+    void sendForward(QGObject* gobj);
+    void sendToBack(QGObject* gobj);
+    void sendToFront(QGObject* gobj);
     virtual int findQGObject(QGObject* gobj) const;
     virtual void removeAt(int index);
 
