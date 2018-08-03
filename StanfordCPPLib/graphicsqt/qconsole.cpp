@@ -1484,8 +1484,10 @@ void initializeQtGraphicalConsole() {
     // properly before our lib tries to mess with them / redirect them
     static std::ios_base::Init ios_base_init;
 
-    QGConsoleWindow::instance();   // ensure that console window is ready
-    setConsolePropertiesQt();
+    if (QGConsoleWindow::consoleEnabled()) {
+        QGConsoleWindow::instance();   // ensure that console window is ready
+        setConsolePropertiesQt();
+    }
 #endif // __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
 }
 

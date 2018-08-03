@@ -121,13 +121,13 @@ HorizontalAlignment toHorizontalAlignment(const std::string& alignmentStr) {
 
 Qt::Alignment toQtAlignment(HorizontalAlignment alignment) {
     return alignment == qgenum::ALIGN_LEFT ? Qt::AlignLeft
-            : qgenum::ALIGN_CENTER ? Qt::AlignHCenter
+            : alignment == qgenum::ALIGN_CENTER ? Qt::AlignHCenter
             : Qt::AlignRight;
 }
 
 Qt::Alignment toQtAlignment(VerticalAlignment alignment) {
     return alignment == qgenum::ALIGN_TOP ? Qt::AlignTop
-            : qgenum::ALIGN_MIDDLE ? Qt::AlignVCenter
+            : alignment == qgenum::ALIGN_MIDDLE ? Qt::AlignVCenter
             : Qt::AlignBottom;
 }
 

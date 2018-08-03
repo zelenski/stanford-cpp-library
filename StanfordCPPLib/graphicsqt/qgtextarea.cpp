@@ -240,7 +240,7 @@ bool QGTextArea::isEditable() const {
 }
 
 bool QGTextArea::isLineWrap() const {
-    return !_iqtextedit->lineWrapMode() != QTextEdit::NoWrap;
+    return _iqtextedit->lineWrapMode() != QTextEdit::NoWrap;
 }
 
 void QGTextArea::moveCursorToEnd() {

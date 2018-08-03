@@ -97,10 +97,6 @@ void QGui::startEventLoop() {
     exitGraphics(exitCode);
 }
 
-#define __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
-#include "qconsole.h"
-#undef __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
-
 static int (* _mainFunc)(void);
 
 // this should be roughly the same code as platform.cpp's parseArgs function
@@ -133,9 +129,10 @@ void __parseArgsQt(int argc, char** argv) {
 }
 
 namespace stanfordcpplib {
-    namespace qtgui {
-        extern void ensureConsoleWindow();
-    }
+namespace qtgui {
+extern void initializeQtGraphicalConsole();
+extern void shutdownConsole();
+}
 }
 
 // called automatically by real main() function;
@@ -154,14 +151,11 @@ void __initializeStanfordCppLibraryQt(int argc, char** argv, int (* mainFunc)(vo
     QGui::_argv = argv;
     __parseArgsQt(argc, argv);
 
+    // initialize the main Qt graphics subsystem
     QGui::instance()->initializeQt();
 
     // initialize Qt graphical console (if student #included it)
     ::stanfordcpplib::qtgui::initializeQtGraphicalConsole();
-
-#if defined(SPL_CONSOLE_PRINT_EXCEPTIONS)
-    ::stanfordcpplib::qtgui::setConsolePrintExceptions(true);
-#endif
 
     // TODO: remove
     // extern void initPipe();

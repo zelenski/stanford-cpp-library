@@ -393,6 +393,7 @@ extern void pause(double milliseconds);
 
 #endif // _qconsole_h
 
+
 /*
  * qconsole.h is weird in that a student's program must be able to #include it
  * and then magically receive the graphical console instead of the standard one;
@@ -402,15 +403,11 @@ extern void pause(double milliseconds);
  * files can set right before #include'ing qconsole.h.  If they do so, it will
  * declare the prototypes but not initialize the graphical console.
  */
-#if (!defined(__DONT_ENABLE_GRAPHICAL_CONSOLE) && !defined(__DONT_ENABLE_QT_GRAPHICAL_CONSOLE))
+#ifndef __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
 
 namespace stanfordcpplib {
-void setQtConsoleEnabled(bool enabled);
-
 namespace qtgui {
-extern void initializeQtGraphicalConsole();
 extern void setConsoleEnabled(bool);
-}
 
 #ifndef __QtConsoleInitializer_created
 #define __QtConsoleInitializer_created
@@ -418,17 +415,18 @@ class __QtConsoleInitializer {
 public:
     /*
      * Code to initialize the library.
-     * Implemented as a class constructor so that it will run before the
-     * student's main function.
+     * Implemented as a class constructor so that it will run during
+     * static initialization phase, which happens before the student's
+     * main function.
      */
     __QtConsoleInitializer() {
-        // TODO: re-enable? what about prints during static phase?
-        // qtgui::initializeQtGraphicalConsole();
-        qtgui::setConsoleEnabled(true);
+        setConsoleEnabled(true);
     }
 };
 static __QtConsoleInitializer __qt_console_init;
 #endif // __QtConsoleInitializer_created
+
+} // namespace qtgui
 } // namespace stanfordcpplib
 
 #endif // __DONT_ENABLE_QT_GRAPHICAL_CONSOLE

@@ -29,28 +29,7 @@ namespace stanfordcpplib {
 
 extern void initializeStanfordCppLibrary();
 
-#ifdef SPL_QT_GUI
-#ifndef __StanfordCppLibraryInitializerQt_created
-#define __StanfordCppLibraryInitializerQt_created
-namespace qtgui {
-extern void initializeStanfordCppLibraryQt();
-}
-
-class __StanfordCppLibraryInitializerQt {
-public:
-    /*
-     * Code to initialize the library.
-     * Implemented as a class constructor so that it will run before the
-     * student's main function.
-     */
-    __StanfordCppLibraryInitializerQt() {
-        // TODO: re-enable?  behavior of messages printed before main()?
-        // qtgui::initializeStanfordCppLibraryQt();
-    }
-};
-static __StanfordCppLibraryInitializerQt __stanfordcpplib_init_qt;
-#endif // __StanfordCppLibraryInitializerQt_created
-#else // SPL_QT_GUI
+#ifndef SPL_QT_GUI
 #ifndef __StanfordCppLibraryInitializer_created
 #define __StanfordCppLibraryInitializer_created
 class __StanfordCppLibraryInitializer {
@@ -117,6 +96,8 @@ static __StanfordCppLibraryInitializer __stanfordcpplib_init;
 #undef main
 
 #ifdef SPL_QT_GUI
+// __initializeStanfordCppLibraryQt is defined in qgui.cpp/h;
+// it initializes the Qt GUI library subsystems and Qt graphical console as needed
 #define main main(int argc, char** argv) { \
         extern void __initializeStanfordCppLibraryQt(int argc, char** argv, int (* mainFunc)(void)); \
         extern int Main(); \
