@@ -82,7 +82,7 @@ std::string IntRange::toString() const {
 }
 
 int hashCode(const IntRange& r) {
-    return hashCode2(r.min(), r.max());
+    return hashCode(r.min(), r.max());
 }
 
 IntRange range(int length) {
@@ -265,7 +265,7 @@ int IntRange2D::width() const {
 }
 
 int hashCode(const IntRange2D& r) {
-    return hashCode4(r.minX(), r.minY(), r.maxX(), r.maxY());
+    return hashCode(r.minX(), r.minY(), r.maxX(), r.maxY());
 }
 
 IntRange2D range2d(int width, int height, bool yMajor) {

@@ -214,7 +214,7 @@ std::ostream& operator <<(std::ostream& out, const Note& note) {
 }
 
 int hashCode(const Note& note) {
-    return hashCode5(
+    return hashCode(
             note.getDuration(),
             note.getPitch(),
             note.getOctave(),

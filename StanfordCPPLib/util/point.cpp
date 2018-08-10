@@ -55,5 +55,5 @@ std::ostream& operator <<(std::ostream& os, const Point& pt) {
 }
 
 int hashCode(const Point& pt) {
-    return hashCode2(pt.getX(), pt.getY());
+    return hashCode(pt.getX(), pt.getY());
 }

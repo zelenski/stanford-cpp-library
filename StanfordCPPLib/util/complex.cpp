@@ -39,7 +39,7 @@ std::string Complex::toString() const {
 }
 
 int hashCode(const Complex& c) {
-    return hashCode2(c.real(), c.imag());
+    return hashCode(c.real(), c.imag());
 }
 
 Complex operator *(const Complex& m, const Complex& n) {
