@@ -31,6 +31,7 @@ int hashCode(bool key);
 int hashCode(char key);
 int hashCode(double key);
 int hashCode(float key);
+int hashCode(long double key);
 int hashCode(int key);
 int hashCode(unsigned int key);
 int hashCode(long key);
@@ -147,3 +148,4 @@ int hashCode6(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6) {
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _hashcode_h
+
