@@ -5,6 +5,8 @@
  * Please see urlstream.h for information about how to use these classes.
  *
  * @author Marty Stepp
+ * @version 2018/08/11
+ * - open underlying file in binary mode for compatibility with Windows
  * @version 2018/06/20
  * - support for setting headers such as user agent
  * - https URL support
@@ -120,7 +122,7 @@ void iurlstream::open(const std::string& url) {
     }
 
     if (isHttpSuccess(m_lastError)) {
-        std::ifstream::open(m_tempFilePath.c_str());
+        std::ifstream::open(m_tempFilePath, std::ios::binary);
     } else {
         setstate(std::ios::failbit);
     }
