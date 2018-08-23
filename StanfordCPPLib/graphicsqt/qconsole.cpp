@@ -987,6 +987,8 @@ std::string QGConsoleWindow::readLine() {
 
     this->_textArea->moveCursorToEnd();
     this->_textArea->scrollToBottom();
+    this->toFront();   // move window to front on prompt for input
+    this->_textArea->requestFocus();
 
     _cinMutex.lockForWrite();
     _promptActive = true;

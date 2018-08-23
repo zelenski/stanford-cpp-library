@@ -8,6 +8,7 @@
 
 #ifdef SPL_QT_GUI
 #include "qgcheckbox.h"
+#include "qgthread.h"
 #include "qgwindow.h"
 #include "strlib.h"
 
@@ -37,7 +38,9 @@ QSize _Internal_QCheckBox::sizeHint() const {
 }
 
 QGCheckBox::QGCheckBox(const std::string& text, bool checked, QWidget* parent) {
-    _iqcheckBox = new _Internal_QCheckBox(this, checked, getInternalParent(parent));
+    QGThread::runOnQtGuiThread([this, checked, parent]() {
+        _iqcheckBox = new _Internal_QCheckBox(this, checked, getInternalParent(parent));
+    });
     setText(text);
 }
 
@@ -91,15 +94,19 @@ void QGCheckBox::setActionListener(QGEventListenerVoid func) {
 }
 
 void QGCheckBox::setChecked(bool checked) {
-    _iqcheckBox->setChecked(checked);
+    QGThread::runOnQtGuiThread([this, checked]() {
+        _iqcheckBox->setChecked(checked);
+    });
 }
 
 void QGCheckBox::setSelected(bool selected) {
-    _iqcheckBox->setChecked(selected);
+    setChecked(selected);
 }
 
 void QGCheckBox::setText(const std::string& text) {
-    _iqcheckBox->setText(QString::fromStdString(text));
+    QGThread::runOnQtGuiThread([this, text]() {
+        _iqcheckBox->setText(QString::fromStdString(text));
+    });
 }
 
 #endif // SPL_QT_GUI

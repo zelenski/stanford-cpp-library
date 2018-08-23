@@ -9,6 +9,7 @@
 #ifdef SPL_QT_GUI
 #include "qgcanvas.h"
 #include "qgcolor.h"
+#include "qgthread.h"
 #include "qgwindow.h"
 #include "error.h"
 #include "filelib.h"
@@ -186,9 +187,13 @@ QGCanvas::QGCanvas(double width, double height, const std::string& rgbBackground
 void QGCanvas::init(double width, double height, int rgbBackground, QWidget* parent) {
     checkSize("constructor", width, height);
     checkColor("constructor", rgbBackground);
-    _iqcanvas = new _Internal_QCanvas(this, getInternalParent(parent));
-    _qgcompound.setWidget(_iqcanvas);
-    _backgroundColor = rgbBackground;
+
+    QGThread::runOnQtGuiThread([this, parent, rgbBackground]() {
+        _iqcanvas = new _Internal_QCanvas(this, getInternalParent(parent));
+        _qgcompound.setWidget(_iqcanvas);
+        _backgroundColor = rgbBackground;
+    });
+
     if (width > 0 && height > 0) {
         setSize(width, height);
         if (rgbBackground != 0) {
@@ -220,7 +225,7 @@ void QGCanvas::add(QGObject& gobj, double x, double y) {
     _qgcompound.add(gobj, x, y);   // calls conditionalRepaint
 }
 
-void QGCanvas::clearConsole() {
+void QGCanvas::clear() {
     clearPixels();
     clearObjects();
 }
@@ -234,7 +239,9 @@ void QGCanvas::clearPixels() {
         // delete _backgroundImage;
         // _backgroundImage = nullptr;
         // keep background image buffer but fill with background color instead
-        _backgroundImage->fill(_backgroundColorInt);
+        QGThread::runOnQtGuiThread([this]() {
+            _backgroundImage->fill(_backgroundColorInt);
+        });
     }
     conditionalRepaint();
 }
@@ -351,10 +358,12 @@ void QGCanvas::draw(QGObject* gobj) {
 
 void QGCanvas::ensureBackgroundImage() {
     if (!_backgroundImage) {
-        _backgroundImage = new QImage((int) getWidth(), (int) getHeight(), QImage::Format_ARGB32);
-        if (!_backgroundColor.empty()) {
-            _backgroundImage->fill(_backgroundColorInt | 0xff000000);
-        }
+        QGThread::runOnQtGuiThread([this]() {
+            _backgroundImage = new QImage((int) getWidth(), (int) getHeight(), QImage::Format_ARGB32);
+            if (!_backgroundColor.empty()) {
+                _backgroundImage->fill(_backgroundColorInt | 0xff000000);
+            }
+        });
     }
 }
 
@@ -377,7 +386,11 @@ bool QGCanvas::equals(const QGCanvas& other) const {
 
 void QGCanvas::fill(int rgb) {
     checkColor("fill", rgb);
-    // TODO: for each row/col, setPixel
+    fillRegion(/* x */ 0,
+               /* y */ 0,
+               /* width */ getWidth(),
+               /* height */ getHeight(),
+               rgb);
 }
 
 void QGCanvas::fill(const std::string& rgb) {
@@ -388,12 +401,15 @@ void QGCanvas::fillRegion(double x, double y, double width, double height, int r
     checkBounds("fillRegion", x, y);
     checkBounds("fillRegion", x + width - 1, y + height - 1);
     checkColor("fillRegion", rgb);
+    bool wasAutoRepaint = isAutoRepaint();
+    setAutoRepaint(false);
     for (int r = (int) y; r < y + height; r++) {
         for (int c = (int) x; c < x + width; c++) {
             setRGB(/* x */ c, /* y */ r, rgb);
         }
     }
-    // TODO: repaint?
+    setAutoRepaint(wasAutoRepaint);
+    conditionalRepaint();
 }
 
 void QGCanvas::fillRegion(double x, double y, double width, double height, const std::string& rgb) {
@@ -401,26 +417,38 @@ void QGCanvas::fillRegion(double x, double y, double width, double height, const
 }
 
 void QGCanvas::flatten() {
-    ensureBackgroundImage();
-    QPainter painter(_backgroundImage);
-    painter.setRenderHint(QPainter::Antialiasing, QGObject::isAntiAliasing());
-    painter.setRenderHint(QPainter::TextAntialiasing, QGObject::isAntiAliasing());
-    _qgcompound.draw(&painter);
-    painter.end();
-    _qgcompound.clear();   // calls conditionalRepaint
+    QGThread::runOnQtGuiThread([this]() {
+        ensureBackgroundImage();
+        QPainter painter(_backgroundImage);
+        painter.setRenderHint(QPainter::Antialiasing, QGObject::isAntiAliasing());
+        painter.setRenderHint(QPainter::TextAntialiasing, QGObject::isAntiAliasing());
+        _qgcompound.draw(&painter);
+        painter.end();
+        _qgcompound.clear();   // calls conditionalRepaint
+    });
 }
 
 void QGCanvas::fromGrid(const Grid<int>& grid) {
     checkSize("fromGrid", grid.width(), grid.height());
     setSize(grid.width(), grid.height());
 
-    for (int row = 0, width = grid.width(), height = grid.height(); row < height; row++) {
-        for (int col = 0; col < width; col++) {
-            setPixel(col, row, grid[row][col]);
-        }
-    }
+    bool wasAutoRepaint = isAutoRepaint();
+    setAutoRepaint(false);
 
-    conditionalRepaint();
+    QGThread::runOnQtGuiThread([this, &grid]() {
+        ensureBackgroundImage();
+        for (int row = 0, width = grid.width(), height = grid.height(); row < height; row++) {
+            for (int col = 0; col < width; col++) {
+                // setPixel(col, row, grid[row][col]);
+                _backgroundImage->setPixel(col, row, grid[row][col] | 0xff000000);
+            }
+        }
+    });
+
+    if (wasAutoRepaint) {
+        setAutoRepaint(wasAutoRepaint);
+        conditionalRepaint();
+    }
 }
 
 std::string QGCanvas::getBackground() const {
@@ -496,35 +524,38 @@ bool QGCanvas::isAutoRepaint() const {
 }
 
 void QGCanvas::load(const std::string& filename) {
-    ensureThreadSafety("QGCanvas::load");   // TODO: call runOnQtGuiThread?
-
     // for efficiency, let's at least check whether the file exists
     // and throw error immediately rather than contacting the back-end
     if (!fileExists(filename)) {
         error("QGCanvas::load: file not found: " + filename);
     }
-    if (!_backgroundImage->load(QString::fromStdString(filename))) {
-        error("QGCanvas::load: failed to load from " + filename);
-    }
-    _filename = filename;
-    QGInteractor::setSize(_backgroundImage->width(), _backgroundImage->height());
-    // setSize(_qimage->width(), _qimage->height());
-    conditionalRepaint();
+    QGThread::runOnQtGuiThread([this, filename]() {
+        ensureBackgroundImage();
+        if (!_backgroundImage->load(QString::fromStdString(filename))) {
+            error("QGCanvas::load: failed to load from " + filename);
+        }
+        _filename = filename;
+        QGInteractor::setSize(_backgroundImage->width(), _backgroundImage->height());
+        // setSize(_qimage->width(), _qimage->height());
+        conditionalRepaint();
+    });
 }
 
 void QGCanvas::notifyOfResize(double width, double height) {
     if (_backgroundImage) {
-        // make new image buffer of the new size
-        QImage* newImage = new QImage((int) width, (int) height, QImage::Format_ARGB32);
-        newImage->fill(_backgroundColorInt);
+        QGThread::runOnQtGuiThread([this, width, height]() {
+            // make new image buffer of the new size
+            QImage* newImage = new QImage((int) width, (int) height, QImage::Format_ARGB32);
+            newImage->fill(_backgroundColorInt);
 
-        // draw any previous contents onto it
-        QPainter painter(newImage);
-        painter.drawImage(0, 0, *_backgroundImage);
+            // draw any previous contents onto it
+            QPainter painter(newImage);
+            painter.drawImage(0, 0, *_backgroundImage);
 
-        // TODO: delete _backgroundImage;
-        _backgroundImage = newImage;
-        conditionalRepaint();
+            // TODO: delete _backgroundImage;
+            _backgroundImage = newImage;
+            conditionalRepaint();
+        });
     }
 }
 
@@ -563,11 +594,15 @@ void QGCanvas::removeMouseListener() {
 }
 
 void QGCanvas::repaint() {
-    _qgcompound.repaint();
+    QGThread::runOnQtGuiThread([this]() {
+        _qgcompound.repaint();
+    });
 }
 
 void QGCanvas::repaintRegion(int x, int y, int width, int height) {
-    _qgcompound.repaintRegion(x, y, width, height);
+    QGThread::runOnQtGuiThread([this, x, y, width, height]() {
+        _qgcompound.repaintRegion(x, y, width, height);
+    });
 }
 
 void QGCanvas::resize(double width, double height, bool /* retain */) {
@@ -597,25 +632,26 @@ void QGCanvas::resize(double width, double height, bool /* retain */) {
 }
 
 void QGCanvas::save(const std::string& filename) {
-    ensureThreadSafety("QGCanvas::save");   // TODO: call runOnQtGuiThread?
-    ensureBackgroundImage();
-    if (!_qgcompound.isEmpty()) {
-        // flatten image in a copy object, then save
-        QImage imageCopy = this->_backgroundImage->copy(0, 0, (int) getWidth(), (int) getHeight());
-        QPainter painter(&imageCopy);
-        painter.setRenderHint(QPainter::Antialiasing, QGObject::isAntiAliasing());
-        painter.setRenderHint(QPainter::TextAntialiasing, QGObject::isAntiAliasing());
-        _qgcompound.draw(&painter);
-        painter.end();
-        if (!imageCopy.save(QString::fromStdString(filename))) {
-            error("QGCanvas::save: failed to save to " + filename);
+    QGThread::runOnQtGuiThread([this, filename]() {
+        ensureBackgroundImage();
+        if (!_qgcompound.isEmpty()) {
+            // flatten image in a copy object, then save
+            QImage imageCopy = this->_backgroundImage->copy(0, 0, (int) getWidth(), (int) getHeight());
+            QPainter painter(&imageCopy);
+            painter.setRenderHint(QPainter::Antialiasing, QGObject::isAntiAliasing());
+            painter.setRenderHint(QPainter::TextAntialiasing, QGObject::isAntiAliasing());
+            _qgcompound.draw(&painter);
+            painter.end();
+            if (!imageCopy.save(QString::fromStdString(filename))) {
+                error("QGCanvas::save: failed to save to " + filename);
+            }
+        } else {
+            // save it myself
+            if (!_backgroundImage->save(QString::fromStdString(filename))) {
+                error("QGCanvas::save: failed to save to " + filename);
+            }
         }
-    } else {
-        // save it myself
-        if (!_backgroundImage->save(QString::fromStdString(filename))) {
-            error("QGCanvas::save: failed to save to " + filename);
-        }
-    }
+    });
     _filename = filename;
 }
 
@@ -632,7 +668,9 @@ void QGCanvas::setBackground(int color) {
         // the shapes will get wiped out.
         // The lesson is, set the background first before drawing stuff.
         // Or add your shapes using add() rather than draw() so they sit atop the background.
-        _backgroundImage->fill(color);
+        QGThread::runOnQtGuiThread([this, color]() {
+            _backgroundImage->fill(color);
+        });
         conditionalRepaint();
     }
 }
@@ -664,14 +702,18 @@ void QGCanvas::setFont(const std::string& font) {
 }
 
 void QGCanvas::setKeyListener(QGEventListener func) {
-    _iqcanvas->setFocusPolicy(Qt::StrongFocus);
+    QGThread::runOnQtGuiThread([this]() {
+        _iqcanvas->setFocusPolicy(Qt::StrongFocus);
+    });
     setEventListeners({"keypress",
                        "keyrelease",
                        "keytype"}, func);
 }
 
 void QGCanvas::setKeyListener(QGEventListenerVoid func) {
-    _iqcanvas->setFocusPolicy(Qt::StrongFocus);
+    QGThread::runOnQtGuiThread([this]() {
+        _iqcanvas->setFocusPolicy(Qt::StrongFocus);
+    });
     setEventListeners({"keypress",
                        "keyrelease",
                        "keytype"}, func);
@@ -702,27 +744,27 @@ void QGCanvas::setMouseListener(QGEventListenerVoid func) {
 }
 
 void QGCanvas::setPixel(double x, double y, int rgb) {
-    ensureBackgroundImage();
-    _backgroundImage->setPixel((int) x, (int) y, rgb | 0xff000000);
-    conditionalRepaintRegion((int) x, (int) y, /* width */ 1, /* height */ 1);
+    QGThread::runOnQtGuiThread([this, x, y, rgb]() {
+        ensureBackgroundImage();
+        _backgroundImage->setPixel((int) x, (int) y, rgb | 0xff000000);
+        conditionalRepaintRegion((int) x, (int) y, /* width */ 1, /* height */ 1);
+    });
 }
 
 void QGCanvas::setPixel(double x, double y, int r, int g, int b) {
-    ensureBackgroundImage();
-    _backgroundImage->setPixel((int) x, (int) y, QGColor::convertRGBToRGB(r, g, b) | 0xff000000);
-    conditionalRepaintRegion((int) x, (int) y, /* width */ 1, /* height */ 1);
+    setPixel(x, y, QGColor::convertRGBToRGB(r, g, b) | 0xff000000);
 }
 
 void QGCanvas::setPixelARGB(double x, double y, int argb) {
-    ensureBackgroundImage();
-    _backgroundImage->setPixel((int) x, (int) y, argb);
-    conditionalRepaintRegion((int) x, (int) y, /* width */ 1, /* height */ 1);
+    QGThread::runOnQtGuiThread([this, x, y, argb]() {
+        ensureBackgroundImage();
+        _backgroundImage->setPixel((int) x, (int) y, argb);
+        conditionalRepaintRegion((int) x, (int) y, /* width */ 1, /* height */ 1);
+    });
 }
 
 void QGCanvas::setPixelARGB(double x, double y, int a, int r, int g, int b) {
-    ensureBackgroundImage();
-    _backgroundImage->setPixel((int) x, (int) y, QGColor::convertARGBToARGB(a, r, g, b));
-    conditionalRepaintRegion((int) x, (int) y, /* width */ 1, /* height */ 1);
+    setPixelARGB(x, y, QGColor::convertARGBToARGB(a, r, g, b));
 }
 
 void QGCanvas::setPixels(const Grid<int>& pixels) {
@@ -732,12 +774,14 @@ void QGCanvas::setPixels(const Grid<int>& pixels) {
         // resize(pixels.width(), pixels.height());
         error("QGCanvas::setPixels: wrong size");
     }
-    for (int y = 0; y < pixels.height(); y++) {
-        for (int x = 0; x < pixels.width(); x++) {
-            _backgroundImage->setPixel(x, y, pixels[y][x]);
+    QGThread::runOnQtGuiThread([this, &pixels]() {
+        for (int y = 0; y < pixels.height(); y++) {
+            for (int x = 0; x < pixels.width(); x++) {
+                _backgroundImage->setPixel(x, y, pixels[y][x]);
+            }
         }
-    }
-    conditionalRepaint();
+        conditionalRepaint();
+    });
 }
 
 void QGCanvas::setPixelsARGB(const Grid<int>& pixels) {
@@ -747,12 +791,15 @@ void QGCanvas::setPixelsARGB(const Grid<int>& pixels) {
         // resize(pixels.width(), pixels.height());
         error("QGCanvas::setPixels: wrong size");
     }
-    for (int y = 0; y < pixels.height(); y++) {
-        for (int x = 0; x < pixels.width(); x++) {
-            _backgroundImage->setPixel(x, y, pixels[y][x]);
+
+    QGThread::runOnQtGuiThread([this, &pixels]() {
+        for (int y = 0; y < pixels.height(); y++) {
+            for (int x = 0; x < pixels.width(); x++) {
+                _backgroundImage->setPixel(x, y, pixels[y][x]);
+            }
         }
-    }
-    conditionalRepaint();
+        conditionalRepaint();
+    });
 }
 
 Grid<int> QGCanvas::toGrid() const {

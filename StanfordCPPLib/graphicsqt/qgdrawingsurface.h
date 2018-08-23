@@ -25,7 +25,7 @@ public:
     virtual ~QGDrawingSurface();
 
     // QGCompound methods
-    virtual void clearConsole() = 0;
+    virtual void clear() = 0;
     virtual void conditionalRepaint();
     virtual void conditionalRepaintRegion(int x, int y, int width, int height);
     virtual void conditionalRepaintRegion(const QGRectangle& bounds);
@@ -147,7 +147,7 @@ protected:
 
 class QGForwardDrawingSurface : public virtual QGDrawingSurface {
 public:
-    virtual void clearConsole() Q_DECL_OVERRIDE;
+    virtual void clear() Q_DECL_OVERRIDE;
     virtual void draw(QGObject* gobj) Q_DECL_OVERRIDE;
     virtual void draw(QPainter* painter) Q_DECL_OVERRIDE;
     virtual int getPixel(double x, double y) const Q_DECL_OVERRIDE;

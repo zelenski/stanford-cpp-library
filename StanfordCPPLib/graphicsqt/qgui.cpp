@@ -47,11 +47,14 @@ void QGui::exitGraphics(int exitCode) {
 }
 
 void QGui::initializeQt() {
-    QGThread::ensureThatThisIsTheQtGuiThread("QGui::initializeQt");
-    if (!_app) {
-        _app = new QApplication(_argc, _argv);
-        _initialized = true;
-    }
+    if (_app) return;
+
+    QGThread::runOnQtGuiThread([this]() {
+        if (!_app) {
+            _app = new QApplication(_argc, _argv);
+            _initialized = true;
+        }
+    });
 }
 
 QGui* QGui::instance() {

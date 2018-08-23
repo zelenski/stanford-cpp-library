@@ -8,6 +8,7 @@
 
 #ifdef SPL_QT_GUI
 #include "qgslider.h"
+#include "qgthread.h"
 #include "qgwindow.h"
 
 _Internal_QSlider::_Internal_QSlider(QGSlider* qgslider, QWidget* parent)
@@ -40,9 +41,11 @@ const int QGSlider::DEFAULT_MAX_VALUE = 100;
 const int QGSlider::DEFAULT_INITIAL_VALUE = 50;
 
 QGSlider::QGSlider(int min, int max, int value, QWidget* parent) {
-    _iqslider = new _Internal_QSlider(this, getInternalParent(parent));
-    _iqslider->setRange(min, max);
-    _iqslider->setValue(value);
+    QGThread::runOnQtGuiThread([this, min, max, value, parent]() {
+        _iqslider = new _Internal_QSlider(this, getInternalParent(parent));
+        _iqslider->setRange(min, max);
+        _iqslider->setValue(value);
+    });
 }
 
 QGSlider::~QGSlider() {
@@ -102,11 +105,15 @@ void QGSlider::setActionListener(QGEventListenerVoid func) {
 }
 
 void QGSlider::setMajorTickSpacing(int value) {
-    _iqslider->setTickInterval(value);
+    QGThread::runOnQtGuiThread([this, value]() {
+        _iqslider->setTickInterval(value);
+    });
 }
 
 void QGSlider::setMinorTickSpacing(int value) {
-    _iqslider->setTickInterval(value);
+    QGThread::runOnQtGuiThread([this, value]() {
+        _iqslider->setTickInterval(value);
+    });
 }
 
 void QGSlider::setPaintLabels(bool /* value */) {
@@ -114,7 +121,9 @@ void QGSlider::setPaintLabels(bool /* value */) {
 }
 
 void QGSlider::setPaintTicks(bool value) {
-    _iqslider->setTickPosition(value ? QSlider::TicksBothSides : QSlider::NoTicks);
+    QGThread::runOnQtGuiThread([this, value]() {
+        _iqslider->setTickPosition(value ? QSlider::TicksBothSides : QSlider::NoTicks);
+    });
 }
 
 void QGSlider::setSnapToTicks(bool /* value */) {
@@ -122,7 +131,9 @@ void QGSlider::setSnapToTicks(bool /* value */) {
 }
 
 void QGSlider::setValue(int value) {
-    _iqslider->setValue(value);
+    QGThread::runOnQtGuiThread([this, value]() {
+        _iqslider->setValue(value);
+    });
 }
 
 #endif // SPL_QT_GUI

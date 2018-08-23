@@ -73,7 +73,7 @@ void QGuiEventQueue::runOnQtGuiThreadSync(QGThunk thunk) {
         if (empty) {
             break;
         } else {
-            QGThread::sleep(50);
+            QGThread::sleep(1);
         }
     }
 }

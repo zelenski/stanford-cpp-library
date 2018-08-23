@@ -466,9 +466,9 @@ void QGDrawingSurface::setRGB(double x, double y, const std::string& color) {
 }
 
 
-void QGForwardDrawingSurface::clearConsole() {
+void QGForwardDrawingSurface::clear() {
     if (_forwardTarget) {
-        _forwardTarget->clearConsole();
+        _forwardTarget->clear();
     }
 }
 

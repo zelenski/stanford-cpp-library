@@ -13,6 +13,7 @@
 #include "qgfontchooser.h"
 #include <QFontDialog>
 #include "qgfont.h"
+#include "qgthread.h"
 
 std::string QGFontChooser::showDialog(const std::string& title, const std::string& initialFont) {
     return showDialog(/* parent */ nullptr, title, initialFont);
@@ -20,13 +21,15 @@ std::string QGFontChooser::showDialog(const std::string& title, const std::strin
 
 std::string QGFontChooser::showDialog(QWidget* parent, const std::string& title, const std::string& initialFont) {
     QFont initialQFont = QGFont::toQFont(initialFont);
-    bool ok = false;
-    QFont font = QFontDialog::getFont(&ok, initialQFont, parent, QString::fromStdString(title));
-    if (ok) {
-        return QGFont::toFontString(font);
-    } else {
-        return "";
-    }
+    std::string result = "";
+    QGThread::runOnQtGuiThread([parent, title, initialQFont, &result]() {
+        bool ok = false;
+        QFont font = QFontDialog::getFont(&ok, initialQFont, parent, QString::fromStdString(title));
+        if (ok) {
+            result = QGFont::toFontString(font);
+        }
+    });
+    return result;
 }
 
 #endif // SPL_QT_GUI

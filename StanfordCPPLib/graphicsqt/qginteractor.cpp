@@ -57,7 +57,6 @@ void _Internal_QWidget::setPreferredSize(const QSize& size) {
 QGInteractor::QGInteractor()
         : _actionCommand(""),
           _icon("") {
-    ensureThreadSafety();
     QGui::instance()->initializeQt();   // make sure Qt system is initialized
 }
 
@@ -132,9 +131,17 @@ QWidget* QGInteractor::getInternalParent(QWidget* parent) const {
     return parent ? parent : (QWidget*) QGWindow::getLastWindow();
 }
 
+double QGInteractor::getMinimumHeight() const {
+    return getMinimumSize().getHeight();
+}
+
 QGDimension QGInteractor::getMinimumSize() const {
     QSize size = getInternalWidget()->getMinimumSize();
     return QGDimension(size.width(), size.height());
+}
+
+double QGInteractor::getMinimumWidth() const {
+    return getMinimumSize().getWidth();
 }
 
 char QGInteractor::getMnemonic() const {
@@ -142,9 +149,17 @@ char QGInteractor::getMnemonic() const {
     return '?';
 }
 
+double QGInteractor::getPreferredHeight() const {
+    return getPreferredSize().getHeight();
+}
+
 QGDimension QGInteractor::getPreferredSize() const {
     QSize size = getInternalWidget()->getPreferredSize();
     return QGDimension(size.width(), size.height());
+}
+
+double QGInteractor::getPreferredWidth() const {
+    return getPreferredSize().getWidth();
 }
 
 QGDimension QGInteractor::getSize() const {
@@ -201,17 +216,19 @@ void QGInteractor::setAccelerator(const std::string& /* accelerator */) {
 }
 
 void QGInteractor::setBackground(int rgb) {
-    QPalette palette(getWidget()->palette());
-    palette.setColor(getWidget()->backgroundRole(), QColor(rgb));
+    QGThread::runOnQtGuiThread([this, rgb]() {
+        QPalette palette(getWidget()->palette());
+        palette.setColor(getWidget()->backgroundRole(), QColor(rgb));
 
-    // additional palette color settings for QGChooser and other widgets
-    // TODO: does not totally work for some widgets, e.g. QGChooser popup menu
-    palette.setColor(QPalette::Base, QColor(rgb));
-    palette.setColor(QPalette::Active, QPalette::Button, QColor(rgb));
-    palette.setColor(QPalette::Inactive, QPalette::Button, QColor(rgb));
+        // additional palette color settings for QGChooser and other widgets
+        // TODO: does not totally work for some widgets, e.g. QGChooser popup menu
+        palette.setColor(QPalette::Base, QColor(rgb));
+        palette.setColor(QPalette::Active, QPalette::Button, QColor(rgb));
+        palette.setColor(QPalette::Inactive, QPalette::Button, QColor(rgb));
 
-    getWidget()->setAutoFillBackground(true);
-    getWidget()->setPalette(palette);
+        getWidget()->setAutoFillBackground(true);
+        getWidget()->setPalette(palette);
+    });
 }
 
 void QGInteractor::setBackground(const std::string& color) {
@@ -220,8 +237,10 @@ void QGInteractor::setBackground(const std::string& color) {
 }
 
 void QGInteractor::setBounds(double x, double y, double width, double height) {
-    getWidget()->setGeometry((int) x, (int) y, (int) width, (int) height);
-    getWidget()->setFixedSize((int) width, (int) height);
+    QGThread::runOnQtGuiThread([this, x, y, width, height]() {
+        getWidget()->setGeometry((int) x, (int) y, (int) width, (int) height);
+        getWidget()->setFixedSize((int) width, (int) height);
+    });
 }
 
 void QGInteractor::setBounds(const QGRectangle& size) {
@@ -237,14 +256,18 @@ void QGInteractor::setColor(const std::string& color) {
 }
 
 void QGInteractor::setEnabled(bool value) {
-    getWidget()->setEnabled(value);
+    QGThread::runOnQtGuiThread([this, value]() {
+        getWidget()->setEnabled(value);
+    });
 }
 
 void QGInteractor::setForeground(int rgb) {
-    QPalette palette(getWidget()->palette());
-    palette.setColor(getWidget()->foregroundRole(), QColor(rgb));
-    // TODO: does not totally work for some widgets, e.g. QGChooser popup menu
-    getWidget()->setPalette(palette);
+    QGThread::runOnQtGuiThread([this, rgb]() {
+        QPalette palette(getWidget()->palette());
+        palette.setColor(getWidget()->foregroundRole(), QColor(rgb));
+        // TODO: does not totally work for some widgets, e.g. QGChooser popup menu
+        getWidget()->setPalette(palette);
+    });
 }
 
 void QGInteractor::setForeground(const std::string& color) {
@@ -253,12 +276,16 @@ void QGInteractor::setForeground(const std::string& color) {
 }
 
 void QGInteractor::setFont(const std::string& font) {
-    QFont qfont = QGFont::toQFont(font);
-    getWidget()->setFont(qfont);
+    QGThread::runOnQtGuiThread([this, font]() {
+        QFont qfont = QGFont::toQFont(font);
+        getWidget()->setFont(qfont);
+    });
 }
 
 void QGInteractor::setHeight(double height) {
-    setSize(getWidth(), height);
+    QGThread::runOnQtGuiThread([this, height]() {
+        getWidget()->setFixedHeight((int) height);
+    });
 }
 
 void QGInteractor::setIcon(const std::string& filename, bool /* retainIconSize */) {
@@ -268,33 +295,53 @@ void QGInteractor::setIcon(const std::string& filename, bool /* retainIconSize *
 }
 
 void QGInteractor::setLocation(double x, double y) {
-    getWidget()->setGeometry(x, y, getWidth(), getHeight());
+    QGThread::runOnQtGuiThread([this, x, y]() {
+        getWidget()->setGeometry(x, y, getWidth(), getHeight());
+    });
 }
 
 void QGInteractor::setMinimumSize(double width, double height) {
-    getInternalWidget()->setMinimumSize(width, height);
+    QGThread::runOnQtGuiThread([this, width, height]() {
+        getInternalWidget()->setMinimumSize(width, height);
+    });
 }
 
 void QGInteractor::setMinimumSize(const QGDimension& size) {
-    getInternalWidget()->setMinimumSize(size.getWidth(), size.getHeight());
+    QGThread::runOnQtGuiThread([this, size]() {
+        getInternalWidget()->setMinimumSize(size.getWidth(), size.getHeight());
+    });
 }
 
 void QGInteractor::setMnemonic(char /* mnemonic */) {
     // TODO
 }
 
+void QGInteractor::setPreferredHeight(double height) {
+    setPreferredSize(getPreferredWidth(), height);
+}
+
 void QGInteractor::setPreferredSize(double width, double height) {
-    getInternalWidget()->setPreferredSize(width, height);
+    QGThread::runOnQtGuiThread([this, width, height]() {
+        getInternalWidget()->setPreferredSize(width, height);
+    });
 }
 
 void QGInteractor::setPreferredSize(const QGDimension& size) {
-    getInternalWidget()->setPreferredSize(size.getWidth(), size.getHeight());
+    QGThread::runOnQtGuiThread([this, size]() {
+        getInternalWidget()->setPreferredSize(size.getWidth(), size.getHeight());
+    });
+}
+
+void QGInteractor::setPreferredWidth(double width) {
+    setPreferredSize(width, getPreferredHeight());
 }
 
 void QGInteractor::setSize(double width, double height) {
-    // setBounds(QGRectangle(getX(), getY(), width, height));
-    getWidget()->setGeometry((int) getX(), (int) getY(), (int) width, (int) height);
-    getWidget()->setFixedSize((int) width, (int) height);
+    QGThread::runOnQtGuiThread([this, width, height]() {
+        // setBounds(QGRectangle(getX(), getY(), width, height));
+        getWidget()->setGeometry((int) getX(), (int) getY(), (int) width, (int) height);
+        getWidget()->setFixedSize((int) width, (int) height);
+    });
 }
 
 void QGInteractor::setSize(const QGDimension& size) {
@@ -302,15 +349,21 @@ void QGInteractor::setSize(const QGDimension& size) {
 }
 
 void QGInteractor::setTooltip(const std::string& tooltipText) {
-    getWidget()->setToolTip(QString::fromStdString(tooltipText));
+    QGThread::runOnQtGuiThread([this, tooltipText]() {
+        getWidget()->setToolTip(QString::fromStdString(tooltipText));
+    });
 }
 
 void QGInteractor::setVisible(bool visible) {
-    getWidget()->setVisible(visible);
+    QGThread::runOnQtGuiThread([this, visible]() {
+        getWidget()->setVisible(visible);
+    });
 }
 
 void QGInteractor::setWidth(double width) {
-    setSize(width, getHeight());
+    QGThread::runOnQtGuiThread([this, width]() {
+        getWidget()->setFixedWidth((int) width);
+    });
 }
 
 void QGInteractor::setX(double x) {

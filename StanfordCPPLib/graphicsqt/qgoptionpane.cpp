@@ -15,6 +15,7 @@
 #include <QMessageBox>
 #include <QWidget>
 #include "error.h"
+#include "qgthread.h"
 #include "strlib.h"
 
 QGOptionPane::QGOptionPane() {
@@ -50,20 +51,27 @@ QGOptionPane::ConfirmResult QGOptionPane::showConfirmDialog(QWidget* parent,
         buttons = QMessageBox::Ok | QMessageBox::Cancel;
     }
 
-    int result = QMessageBox::question(parent,
-            QString::fromStdString(titleToUse),
-            QString::fromStdString(message),
-            buttons,
-            defaultButton);
-    switch (result) {
-        case QMessageBox::Yes:
-            return QGOptionPane::ConfirmResult::YES;
-        case QMessageBox::No:
-            return QGOptionPane::ConfirmResult::NO;
-        case QMessageBox::Cancel:
-        default:
-            return QGOptionPane::ConfirmResult::CANCEL;
-    }
+    QGOptionPane::ConfirmResult confirmResult = QGOptionPane::CANCEL;
+    QGThread::runOnQtGuiThread([parent, titleToUse, message, buttons, defaultButton, &confirmResult]() {
+        int dialogResult = QMessageBox::question(parent,
+                QString::fromStdString(titleToUse),
+                QString::fromStdString(message),
+                buttons,
+                defaultButton);
+        switch (dialogResult) {
+            case QMessageBox::Yes:
+                confirmResult = QGOptionPane::ConfirmResult::YES;
+                break;
+            case QMessageBox::No:
+                confirmResult = QGOptionPane::ConfirmResult::NO;
+                break;
+            case QMessageBox::Cancel:
+            default:
+                confirmResult = QGOptionPane::ConfirmResult::CANCEL;
+                break;
+        }
+    });
+    return confirmResult;
 }
 
 std::string QGOptionPane::showInputDialog(const std::string& message,
@@ -77,11 +85,15 @@ std::string QGOptionPane::showInputDialog(QWidget* parent,
                                           const std::string& title,
                                           const std::string& initialValue) {
     std::string titleToUse = title.empty() ? std::string("Type a value") : title;
-    return QInputDialog::getText(parent,
-            QString::fromStdString(titleToUse),
-            QString::fromStdString(message),
-            QLineEdit::Normal,
-            QString::fromStdString(initialValue)).toStdString();
+    std::string result = "";
+    QGThread::runOnQtGuiThread([parent, titleToUse, message, initialValue, &result]() {
+        result = QInputDialog::getText(parent,
+                QString::fromStdString(titleToUse),
+                QString::fromStdString(message),
+                QLineEdit::Normal,
+                QString::fromStdString(initialValue)).toStdString();
+    });
+    return result;
 }
 
 void QGOptionPane::showMessageDialog(const std::string& message,
@@ -104,17 +116,19 @@ void QGOptionPane::showMessageDialog(QWidget* parent,
     }
     std::string titleToUse = title.empty() ? std::string("Message") : title;
 
-    if (type == QGOptionPane::MessageType::PLAIN
-            || type == QGOptionPane::MessageType::INFORMATION
-            || type == QGOptionPane::MessageType::QUESTION) {
-        QMessageBox::information(parent, QString::fromStdString(titleToUse), QString::fromStdString(message));
-    } else if (type == QGOptionPane::MessageType::WARNING) {
-        QMessageBox::warning(parent, QString::fromStdString(titleToUse), QString::fromStdString(message));
-    } else if (type == QGOptionPane::MessageType::ERROR) {
-        QMessageBox::critical(parent, QString::fromStdString(titleToUse), QString::fromStdString(message));
-    } else if (type == QGOptionPane::MessageType::ABOUT) {
-        QMessageBox::about(parent, QString::fromStdString(titleToUse), QString::fromStdString(message));
-    }
+    QGThread::runOnQtGuiThread([parent, message, titleToUse, type]() {
+        if (type == QGOptionPane::MessageType::PLAIN
+                || type == QGOptionPane::MessageType::INFORMATION
+                || type == QGOptionPane::MessageType::QUESTION) {
+            QMessageBox::information(parent, QString::fromStdString(titleToUse), QString::fromStdString(message));
+        } else if (type == QGOptionPane::MessageType::WARNING) {
+            QMessageBox::warning(parent, QString::fromStdString(titleToUse), QString::fromStdString(message));
+        } else if (type == QGOptionPane::MessageType::ERROR) {
+            QMessageBox::critical(parent, QString::fromStdString(titleToUse), QString::fromStdString(message));
+        } else if (type == QGOptionPane::MessageType::ABOUT) {
+            QMessageBox::about(parent, QString::fromStdString(titleToUse), QString::fromStdString(message));
+        }
+    });
 }
 
 std::string QGOptionPane::showOptionDialog(const std::string& message,
@@ -145,14 +159,18 @@ std::string QGOptionPane::showOptionDialog(QWidget* parent,
         // TODO: dunno how to set initially selected button properly
         // box.setDefaultButton(QString::fromStdString(initiallySelected));
     }
-    int index = box.exec();
 
-    if (index == QGOptionPane::InternalResult::CLOSED_OPTION
-            || index < 0 || index >= options.size()) {
-        return "";
-    } else {
-        return options[index];
-    }
+    std::string result = "";
+    QGThread::runOnQtGuiThread([&box, &options, &result]() {
+        int index = box.exec();
+        if (index == QGOptionPane::InternalResult::CLOSED_OPTION
+                || index < 0 || index >= options.size()) {
+            result = "";
+        } else {
+            result = options[index];
+        }
+    });
+    return result;
 }
 
 void QGOptionPane::showTextFileDialog(const std::string& message,

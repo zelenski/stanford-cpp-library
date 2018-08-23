@@ -12,6 +12,7 @@
 #include <QTextCursor>
 #include "qgcolor.h"
 #include "qgfont.h"
+#include "qgthread.h"
 #include "qgwindow.h"
 #include "strlib.h"
 
@@ -141,13 +142,17 @@ void QGTextArea::appendText(const std::string& text) {
 }
 
 void QGTextArea::clearSelection() {
-    QTextCursor cursor = _iqtextedit->textCursor();
-    cursor.clearSelection();
-    _iqtextedit->setTextCursor(cursor);
+    QGThread::runOnQtGuiThread([this]() {
+        QTextCursor cursor = _iqtextedit->textCursor();
+        cursor.clearSelection();
+        _iqtextedit->setTextCursor(cursor);
+    });
 }
 
 void QGTextArea::clearText() {
-    _iqtextedit->clear();
+    QGThread::runOnQtGuiThread([this]() {
+        _iqtextedit->clear();
+    });
 }
 
 int QGTextArea::getColumns() const {
@@ -244,17 +249,21 @@ bool QGTextArea::isLineWrap() const {
 }
 
 void QGTextArea::moveCursorToEnd() {
-    QTextCursor cursor = _iqtextedit->textCursor();
-    cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor, 1);
-    _iqtextedit->setTextCursor(cursor);
-    _iqtextedit->ensureCursorVisible();
+    QGThread::runOnQtGuiThread([this]() {
+        QTextCursor cursor = _iqtextedit->textCursor();
+        cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor, 1);
+        _iqtextedit->setTextCursor(cursor);
+        _iqtextedit->ensureCursorVisible();
+    });
 }
 
 void QGTextArea::moveCursorToStart() {
-    QTextCursor cursor = _iqtextedit->textCursor();
-    cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor, 1);
-    _iqtextedit->setTextCursor(cursor);
-    _iqtextedit->ensureCursorVisible();
+    QGThread::runOnQtGuiThread([this]() {
+        QTextCursor cursor = _iqtextedit->textCursor();
+        cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor, 1);
+        _iqtextedit->setTextCursor(cursor);
+        _iqtextedit->ensureCursorVisible();
+    });
 }
 
 
@@ -274,27 +283,35 @@ void QGTextArea::removeTextChangeListener() {
 }
 
 void QGTextArea::scrollToBottom() {
-    QScrollBar* scrollbar = _iqtextedit->verticalScrollBar();
-    scrollbar->setValue(scrollbar->maximum());
-    scrollbar->setSliderPosition(scrollbar->maximum());
+    QGThread::runOnQtGuiThread([this]() {
+        QScrollBar* scrollbar = _iqtextedit->verticalScrollBar();
+        scrollbar->setValue(scrollbar->maximum());
+        scrollbar->setSliderPosition(scrollbar->maximum());
+    });
 }
 
 void QGTextArea::scrollToTop() {
-    QScrollBar* scrollbar = _iqtextedit->verticalScrollBar();
-    scrollbar->setValue(0);
-    scrollbar->setSliderPosition(0);
+    QGThread::runOnQtGuiThread([this]() {
+        QScrollBar* scrollbar = _iqtextedit->verticalScrollBar();
+        scrollbar->setValue(0);
+        scrollbar->setSliderPosition(0);
+    });
 }
 
 void QGTextArea::select(int startIndex, int length) {
-    // TODO: check bounds
-    QTextCursor cursor = _iqtextedit->textCursor();
-    cursor.setPosition(startIndex);
-    cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, length);
-    _iqtextedit->setTextCursor(cursor);
+    QGThread::runOnQtGuiThread([this, startIndex, length]() {
+        // TODO: check bounds
+        QTextCursor cursor = _iqtextedit->textCursor();
+        cursor.setPosition(startIndex);
+        cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, length);
+        _iqtextedit->setTextCursor(cursor);
+    });
 }
 
 void QGTextArea::selectAll() {
-    _iqtextedit->selectAll();
+    QGThread::runOnQtGuiThread([this]() {
+        _iqtextedit->selectAll();
+    });
 }
 
 void QGTextArea::setColumns(int columns) {
@@ -308,22 +325,30 @@ void QGTextArea::setContextMenuEnabled(bool enabled) {
 }
 
 void QGTextArea::setCursorPosition(int index, bool keepAnchor) {
-    QTextCursor cursor(_iqtextedit->textCursor());
-    cursor.setPosition(index, keepAnchor ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor);
-    _iqtextedit->setTextCursor(cursor);
-    _iqtextedit->ensureCursorVisible();
+    QGThread::runOnQtGuiThread([this, index, keepAnchor]() {
+        QTextCursor cursor(_iqtextedit->textCursor());
+        cursor.setPosition(index, keepAnchor ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor);
+        _iqtextedit->setTextCursor(cursor);
+        _iqtextedit->ensureCursorVisible();
+    });
 }
 
 void QGTextArea::setEditable(bool value) {
-    _iqtextedit->setReadOnly(!value);
+    QGThread::runOnQtGuiThread([this, value]() {
+        _iqtextedit->setReadOnly(!value);
+    });
 }
 
 void QGTextArea::setHtml(const std::string& html) {
-    _iqtextedit->setHtml(QString::fromStdString(html));
+    QGThread::runOnQtGuiThread([this, html]() {
+        _iqtextedit->setHtml(QString::fromStdString(html));
+    });
 }
 
 void QGTextArea::setPlaceholder(const std::string& text) {
-    _iqtextedit->setPlaceholderText(QString::fromStdString(text));
+    QGThread::runOnQtGuiThread([this, text]() {
+        _iqtextedit->setPlaceholderText(QString::fromStdString(text));
+    });
 }
 
 void QGTextArea::setRows(int rows) {
@@ -340,18 +365,24 @@ void QGTextArea::setRowsColumns(int rows, int columns) {
 }
 
 void QGTextArea::setText(const std::string& text) {
-    _iqtextedit->setText(QString::fromStdString(text));
+    QGThread::runOnQtGuiThread([this, text]() {
+        _iqtextedit->setText(QString::fromStdString(text));
+    });
 }
 
 void QGTextArea::setKeyListener(QGEventListener func) {
-    _iqtextedit->setFocusPolicy(Qt::StrongFocus);
+    QGThread::runOnQtGuiThread([this]() {
+        _iqtextedit->setFocusPolicy(Qt::StrongFocus);
+    });
     setEventListeners({"keypress",
                        "keyrelease",
                        "keytype"}, func);
 }
 
 void QGTextArea::setKeyListener(QGEventListenerVoid func) {
-    _iqtextedit->setFocusPolicy(Qt::StrongFocus);
+    QGThread::runOnQtGuiThread([this]() {
+        _iqtextedit->setFocusPolicy(Qt::StrongFocus);
+    });
     setEventListeners({"keypress",
                        "keyrelease",
                        "keytype"}, func);
@@ -368,7 +399,9 @@ void QGTextArea::setMouseListener(QGEventListenerVoid func) {
 }
 
 void QGTextArea::setLineWrap(bool wrap) {
-    _iqtextedit->setLineWrapMode(wrap ? QTextEdit::WidgetWidth : QTextEdit::NoWrap);
+    QGThread::runOnQtGuiThread([this, wrap]() {
+        _iqtextedit->setLineWrapMode(wrap ? QTextEdit::WidgetWidth : QTextEdit::NoWrap);
+    });
 }
 
 void QGTextArea::setTextChangeListener(QGEventListener func) {

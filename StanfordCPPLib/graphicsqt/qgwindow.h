@@ -134,7 +134,7 @@ public:
     virtual QMenu* addSubMenu(const std::string& menu, const std::string& submenu);
     virtual void addToRegion(QGInteractor* interactor, Region region);
     virtual void addToRegion(QGInteractor* interactor, const std::string& region = "Center");
-    virtual void clearConsole() Q_DECL_OVERRIDE;
+    virtual void clear() Q_DECL_OVERRIDE;
     virtual void clearCanvas();
     virtual void clearCanvasObjects();
     virtual void clearCanvasPixels();

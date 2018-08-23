@@ -13,6 +13,7 @@
 #include "qgcolorchooser.h"
 #include <QColorDialog>
 #include "qgcolor.h"
+#include "qgthread.h"
 
 std::string QGColorChooser::showDialog(const std::string& title, int initialColor) {
     return showDialog(/* parent */ nullptr, title, initialColor);
@@ -28,12 +29,14 @@ std::string QGColorChooser::showDialog(const std::string& title, const std::stri
 
 std::string QGColorChooser::showDialog(QWidget* parent, const std::string& title, const std::string& initialColor) {
     QColor initialQColor = initialColor.empty() ? Qt::white : QGColor::toQColor(initialColor);
-    QColor selectedColor = QColorDialog::getColor(initialQColor, parent, QString::fromStdString(title));
-    if (selectedColor.isValid()) {
-        return QGColor::convertQColorToColor(selectedColor);
-    } else {
-        return "";
-    }
+    std::string result = "";
+    QGThread::runOnQtGuiThread([parent, title, initialQColor, &result]() {
+        QColor selectedColor = QColorDialog::getColor(initialQColor, parent, QString::fromStdString(title));
+        if (selectedColor.isValid()) {
+            result = QGColor::convertQColorToColor(selectedColor);
+        }
+    });
+    return result;
 }
 
 #endif // SPL_QT_GUI

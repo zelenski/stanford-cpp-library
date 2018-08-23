@@ -8,6 +8,7 @@
 
 #ifdef SPL_QT_GUI
 #include "qgradiobutton.h"
+#include "qgthread.h"
 #include "qgwindow.h"
 #include "strlib.h"
 
@@ -43,9 +44,11 @@ QSize _Internal_QRadioButton::sizeHint() const {
 Map<std::string, QButtonGroup*> QGRadioButton::_buttonGroups;
 
 QGRadioButton::QGRadioButton(const std::string& text, const std::string& group, bool checked, QWidget* parent) {
-    _iqradioButton = new _Internal_QRadioButton(this, checked, getInternalParent(parent));
-    QButtonGroup* buttonGroup = getButtonGroup(group);
-    buttonGroup->addButton(_iqradioButton);
+    QGThread::runOnQtGuiThread([this, text, group, checked, parent]() {
+        _iqradioButton = new _Internal_QRadioButton(this, checked, getInternalParent(parent));
+        QButtonGroup* buttonGroup = getButtonGroup(group);
+        buttonGroup->addButton(_iqradioButton);
+    });
     setText(text);
 }
 
@@ -99,20 +102,26 @@ void QGRadioButton::setActionListener(QGEventListenerVoid func) {
 }
 
 void QGRadioButton::setChecked(bool checked) {
-    _iqradioButton->setChecked(checked);
+    QGThread::runOnQtGuiThread([this, checked]() {
+        _iqradioButton->setChecked(checked);
+    });
 }
 
 void QGRadioButton::setSelected(bool selected) {
-    _iqradioButton->setChecked(selected);
+    setChecked(selected);
 }
 
 void QGRadioButton::setText(const std::string& text) {
-    _iqradioButton->setText(QString::fromStdString(text));
+    QGThread::runOnQtGuiThread([this, text]() {
+        _iqradioButton->setText(QString::fromStdString(text));
+    });
 }
 
 QButtonGroup* QGRadioButton::getButtonGroup(const std::string& group) {
     if (!_buttonGroups.containsKey(group)) {
-        _buttonGroups.put(group, new QButtonGroup());
+        QGThread::runOnQtGuiThread([group]() {
+            _buttonGroups.put(group, new QButtonGroup());
+        });
     }
     return _buttonGroups[group];
 }

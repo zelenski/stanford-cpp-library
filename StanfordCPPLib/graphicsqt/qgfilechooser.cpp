@@ -12,6 +12,7 @@
 #ifdef SPL_QT_GUI
 #include "qgfilechooser.h"
 #include <QFileDialog>
+#include "qgthread.h"
 #include "strlib.h"
 #include "vector.h"
 
@@ -24,10 +25,14 @@ std::string QGFileChooser::showOpenDialog(QWidget* parent, const std::string& ti
     // If you want multiple filters, separate them with ';;', for example:
     // "Images (*.png *.xpm *.jpg);;Text files (*.txt);;XML files (*.xml)"
 
-    return QFileDialog::getOpenFileName(parent,
-            QString::fromStdString(title),
-            QString::fromStdString(currentDir),
-            QString::fromStdString(normalizeFileFilter(fileFilter))).toStdString();
+    std::string result = "";
+    QGThread::runOnQtGuiThread([parent, title, currentDir, fileFilter, &result]() {
+        result = QFileDialog::getOpenFileName(parent,
+                QString::fromStdString(title),
+                QString::fromStdString(currentDir),
+                QString::fromStdString(normalizeFileFilter(fileFilter))).toStdString();
+    });
+    return result;
 }
 
 std::string QGFileChooser::showSaveDialog(const std::string& title, const std::string& currentDir, const std::string& fileFilter) {
@@ -35,10 +40,14 @@ std::string QGFileChooser::showSaveDialog(const std::string& title, const std::s
 }
 
 std::string QGFileChooser::showSaveDialog(QWidget* parent, const std::string& title, const std::string& currentDir, const std::string& fileFilter) {
-    return QFileDialog::getSaveFileName(parent,
-            QString::fromStdString(title),
-            QString::fromStdString(currentDir),
-            QString::fromStdString(normalizeFileFilter(fileFilter))).toStdString();
+    std::string result = "";
+    QGThread::runOnQtGuiThread([parent, title, currentDir, fileFilter, &result]() {
+        result = QFileDialog::getSaveFileName(parent,
+                QString::fromStdString(title),
+                QString::fromStdString(currentDir),
+                QString::fromStdString(normalizeFileFilter(fileFilter))).toStdString();
+    });
+    return result;
 }
 
 std::string QGFileChooser::normalizeFileFilter(const std::string& fileFilter) {

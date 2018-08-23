@@ -66,9 +66,13 @@ public:
     virtual std::string getIcon() const;
     virtual _Internal_QWidget* getInternalWidget() const = 0;
     virtual QGPoint getLocation() const;
+    virtual double getMinimumHeight() const;
     virtual QGDimension getMinimumSize() const;
+    virtual double getMinimumWidth() const;
     virtual char getMnemonic() const;
+    virtual double getPreferredHeight() const;
     virtual QGDimension getPreferredSize() const;
+    virtual double getPreferredWidth() const;
     virtual QGDimension getSize() const;
     virtual QWidget* getWidget() const = 0;
     virtual double getWidth() const;
@@ -97,8 +101,10 @@ public:
     virtual void setMinimumSize(double width, double height);
     virtual void setMinimumSize(const QGDimension& size);
     virtual void setMnemonic(char mnemonic);
+    virtual void setPreferredHeight(double height);
     virtual void setPreferredSize(double width, double height);
     virtual void setPreferredSize(const QGDimension& size);
+    virtual void setPreferredWidth(double width);
     virtual void setSize(double width, double height);
     virtual void setSize(const QGDimension& size);
     virtual void setTooltip(const std::string& tooltipText);

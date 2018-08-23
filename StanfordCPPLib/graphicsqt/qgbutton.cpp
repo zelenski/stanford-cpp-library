@@ -9,6 +9,7 @@
 #ifdef SPL_QT_GUI
 #include "qgbutton.h"
 #include <QKeySequence>
+#include "qgthread.h"
 #include "qgwindow.h"
 
 _Internal_QPushButton::_Internal_QPushButton(QGButton* button, QWidget* parent)
@@ -38,7 +39,9 @@ QSize _Internal_QPushButton::sizeHint() const {
 
 
 QGButton::QGButton(const std::string& text, const std::string& iconFileName, QWidget* parent) {
-    _iqpushbutton = new _Internal_QPushButton(this, getInternalParent(parent));
+    QGThread::runOnQtGuiThread([this, parent]() {
+        _iqpushbutton = new _Internal_QPushButton(this, getInternalParent(parent));
+    });
     setText(text);
     if (!iconFileName.empty()) {
         setIcon(iconFileName);
@@ -95,8 +98,10 @@ void QGButton::removeActionListener() {
 }
 
 void QGButton::setAccelerator(const std::string& accelerator) {
-    QKeySequence keySeq(QString::fromStdString(normalizeAccelerator(accelerator)));
-    _iqpushbutton->setShortcut(keySeq);
+    QGThread::runOnQtGuiThread([this, accelerator]() {
+        QKeySequence keySeq(QString::fromStdString(normalizeAccelerator(accelerator)));
+        _iqpushbutton->setShortcut(keySeq);
+    });
 }
 
 void QGButton::setActionListener(QGEventListener func) {
@@ -109,34 +114,40 @@ void QGButton::setActionListener(QGEventListenerVoid func) {
 
 void QGButton::setIcon(const std::string& filename, bool retainIconSize) {
     QGInteractor::setIcon(filename, retainIconSize);
-    if (filename.empty()) {
-        _iqpushbutton->setIcon(QIcon());
-    } else {
-        QPixmap pixmap(QString::fromStdString(filename));
-        QIcon icon(pixmap);
-        _iqpushbutton->setIcon(icon);
-        _iqpushbutton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-        if (retainIconSize) {
-            _iqpushbutton->setIconSize(pixmap.size());
-            _iqpushbutton->updateGeometry();
-            _iqpushbutton->update();
+    QGThread::runOnQtGuiThread([this, filename, retainIconSize]() {
+        if (filename.empty()) {
+            _iqpushbutton->setIcon(QIcon());
+        } else {
+            QPixmap pixmap(QString::fromStdString(filename));
+            QIcon icon(pixmap);
+            _iqpushbutton->setIcon(icon);
+            _iqpushbutton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+            if (retainIconSize) {
+                _iqpushbutton->setIconSize(pixmap.size());
+                _iqpushbutton->updateGeometry();
+                _iqpushbutton->update();
+            }
         }
-    }
+    });
 }
 
 void QGButton::setText(const std::string& text) {
-    _iqpushbutton->setText(QString::fromStdString(text));
+    QGThread::runOnQtGuiThread([this, text]() {
+        _iqpushbutton->setText(QString::fromStdString(text));
+    });
     setActionCommand(text);
 }
 
 void QGButton::setTextPosition(QGInteractor::TextPosition position) {
-    if (position == QGInteractor::TEXT_UNDER_ICON) {
-        _iqpushbutton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    } else if (position == QGInteractor::TEXT_BESIDE_ICON) {
-        _iqpushbutton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    } else if (position == QGInteractor::TEXT_ONLY) {
-        _iqpushbutton->setToolButtonStyle(Qt::ToolButtonTextOnly);
-    }
+    QGThread::runOnQtGuiThread([this, position]() {
+        if (position == QGInteractor::TEXT_UNDER_ICON) {
+            _iqpushbutton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+        } else if (position == QGInteractor::TEXT_BESIDE_ICON) {
+            _iqpushbutton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+        } else if (position == QGInteractor::TEXT_ONLY) {
+            _iqpushbutton->setToolButtonStyle(Qt::ToolButtonTextOnly);
+        }
+    });
 }
 
 #endif // SPL_QT_GUI

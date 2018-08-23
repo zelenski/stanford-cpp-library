@@ -123,7 +123,7 @@ public:
     virtual void add(QGObject* gobj, double x, double y);
     virtual void add(QGObject& gobj);
     virtual void add(QGObject& gobj, double x, double y);
-    virtual void clearConsole() Q_DECL_OVERRIDE;
+    virtual void clear() Q_DECL_OVERRIDE;
     virtual void clearObjects();
     virtual void clearPixels();
     virtual bool contains(double x, double y) const;

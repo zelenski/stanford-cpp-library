@@ -8,6 +8,7 @@
 
 #ifdef SPL_QT_GUI
 #include "qglabel.h"
+#include "qgthread.h"
 #include "qgwindow.h"
 #include "strlib.h"
 
@@ -27,7 +28,9 @@ QSize _Internal_QLabel::sizeHint() const {
 
 
 QGLabel::QGLabel(const std::string& text, const std::string& iconFileName, QWidget* parent) {
-    _iqlabel = new _Internal_QLabel(this, getInternalParent(parent));
+    QGThread::runOnQtGuiThread([this, parent]() {
+        _iqlabel = new _Internal_QLabel(this, getInternalParent(parent));
+    });
     setText(text);
     if (!iconFileName.empty()) {
         setIcon(iconFileName);
@@ -76,19 +79,21 @@ QWidget* QGLabel::getWidget() const {
 
 void QGLabel::setIcon(const std::string& filename, bool retainIconSize) {
     QGInteractor::setIcon(filename, retainIconSize);
-    if (filename.empty()) {
-        _iqlabel->setPixmap(QPixmap());
-    } else {
-        QPixmap pixmap(QString::fromStdString(filename));
-        _iqlabel->setPixmap(pixmap);
-        if (retainIconSize) {
-            // TODO
-            // _iqlabel->setIconSize(pixmap.size());
-            _iqlabel->updateGeometry();
-            _iqlabel->update();
+    QGThread::runOnQtGuiThread([this, filename, retainIconSize]() {
+        if (filename.empty()) {
+            _iqlabel->setPixmap(QPixmap());
+        } else {
+            QPixmap pixmap(QString::fromStdString(filename));
+            _iqlabel->setPixmap(pixmap);
+            if (retainIconSize) {
+                // TODO
+                // _iqlabel->setIconSize(pixmap.size());
+                _iqlabel->updateGeometry();
+                _iqlabel->update();
+            }
+            // TODO: loses text; how to have both icon and text in same label?
         }
-        // TODO: loses text; how to have both icon and text in same label?
-    }
+    });
 }
 
 void QGLabel::setLabel(const std::string& text) {
@@ -96,8 +101,10 @@ void QGLabel::setLabel(const std::string& text) {
 }
 
 void QGLabel::setText(const std::string& text) {
-    _iqlabel->setText(QString::fromStdString(text));
-    QGBorderLayout::forceUpdate(_iqlabel);
+    QGThread::runOnQtGuiThread([this, text]() {
+        _iqlabel->setText(QString::fromStdString(text));
+        QGBorderLayout::forceUpdate(_iqlabel);
+    });
 }
 
 void QGLabel::setTextPosition(QGInteractor::TextPosition position) {

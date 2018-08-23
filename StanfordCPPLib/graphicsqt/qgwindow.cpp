@@ -31,7 +31,7 @@ _Internal_QMainWindow::_Internal_QMainWindow(QGWindow* qgwindow, QWidget* parent
         : QMainWindow(parent),
           _qgwindow(qgwindow),
           _timerID(-1) {
-    QGThread::ensureThatThisIsTheQtGuiThread("QGWindow");
+    QGThread::ensureThatThisIsTheQtGuiThread("QGWindow internal initialization");
 
     QWidget* dummyWidget = new QWidget(this);   // TODO: memory leak?
 
@@ -216,19 +216,20 @@ QGWindow::QGWindow(double width, double height, bool visible)
         : _canvas(nullptr),
           _resizable(true),
           _closeOperation(QGWindow::CLOSE_DISPOSE) {
-    QGThread::ensureThatThisIsTheQtGuiThread("QGWindow::constructor");
-    QGui::instance()->initializeQt();
-    _iqmainwindow = new _Internal_QMainWindow(this);
-    _lastWindow = _iqmainwindow;
+    QGThread::runOnQtGuiThread([this, width, height, visible]() {
+        QGui::instance()->initializeQt();
+        _iqmainwindow = new _Internal_QMainWindow(this);
+        _lastWindow = _iqmainwindow;
 
-    // go ahead and set up canvas when window is loaded
-    ensureForwardTarget();
-    if (width > 0 && height > 0) {
-        setSize(width, height);
-    }
-    setVisible(visible);
+        // go ahead and set up canvas when window is loaded
+        ensureForwardTarget();
+        if (width > 0 && height > 0) {
+            setSize(width, height);
+        }
+        setVisible(visible);
 
-    _iqmainwindow->updateGeometry();
+        _iqmainwindow->updateGeometry();
+    });
 }
 
 QGWindow::~QGWindow() {
@@ -269,9 +270,12 @@ void QGWindow::add(QGObject& obj, double x, double y) {
 }
 
 QMenu* QGWindow::addMenu(const std::string& menu) {
-    QMenu* qmenu = _iqmainwindow->menuBar()->addMenu(QString::fromStdString(menu));
-    std::string menuKey = toLowerCase(stringReplace(stringReplace(menu, "/", ""), "&", ""));
-    _menuMap[menuKey] = qmenu;
+    QMenu* qmenu = nullptr;
+    QGThread::runOnQtGuiThread([this, menu, &qmenu]() {
+        qmenu = _iqmainwindow->menuBar()->addMenu(QString::fromStdString(menu));
+        std::string menuKey = toLowerCase(stringReplace(stringReplace(menu, "/", ""), "&", ""));
+        _menuMap[menuKey] = qmenu;
+    });
     return qmenu;
 }
 
@@ -283,13 +287,16 @@ QAction* QGWindow::addMenuItem(const std::string& menu, const std::string& item,
 }
 
 QAction* QGWindow::addMenuItem(const std::string& menu, const std::string& item, const std::string& icon, QGEventListenerVoid func) {
+    QAction* action = nullptr;
     std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
     if (!_menuMap.containsKey(menuKey)) {
         error("QGWindow::addMenuItem: menu \"" + menu + "\" does not exist");
         return nullptr;
-    } else {
+    }
+
+    QGThread::runOnQtGuiThread([this, menu, item, icon, func, menuKey, &action]() {
         QMenu* qmenu = _menuMap[menuKey];
-        QAction* action = qmenu->addAction(QString::fromStdString(item));
+        action = qmenu->addAction(QString::fromStdString(item));
         if (!icon.empty() && fileExists(icon)) {
             QIcon qicon(QString::fromStdString(icon));
             action->setIcon(qicon);
@@ -302,8 +309,8 @@ QAction* QGWindow::addMenuItem(const std::string& menu, const std::string& item,
 
         std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
         _menuActionMap[menuKey + "/" + itemKey] = action;
-        return action;
-    }
+    });
+    return action;
 }
 
 QAction* QGWindow::addMenuItemCheckBox(const std::string& menu,
@@ -321,13 +328,16 @@ QAction* QGWindow::addMenuItemCheckBox(const std::string& menu,
                                        bool checked,
                                        const std::string& icon,
                                        QGEventListenerVoid func) {
+    QAction* action = nullptr;
     std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
     if (!_menuMap.containsKey(menuKey)) {
         error("QGWindow::addMenuItem: menu \"" + menu + "\" does not exist");
         return nullptr;
-    } else {
+    }
+
+    QGThread::runOnQtGuiThread([this, menu, item, icon, checked, func, menuKey, &action]() {
         QMenu* qmenu = _menuMap[menuKey];
-        QAction* action = qmenu->addAction(QString::fromStdString(item));
+        action = qmenu->addAction(QString::fromStdString(item));
         action->setCheckable(true);
         action->setChecked(checked);
         if (!icon.empty() && fileExists(icon)) {
@@ -342,8 +352,8 @@ QAction* QGWindow::addMenuItemCheckBox(const std::string& menu,
 
         std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
         _menuActionMap[menuKey + "/" + itemKey] = action;
-        return action;
-    }
+    });
+    return action;
 }
 
 
@@ -352,11 +362,14 @@ QAction* QGWindow::addMenuSeparator(const std::string& menu) {
     if (!_menuMap.containsKey(menuKey)) {
         error("QGWindow::addMenuItem: menu \"" + menu + "\" does not exist");
         return nullptr;
-    } else {
-        QMenu* qmenu = _menuMap[menuKey];
-        QAction* separator = qmenu->addSeparator();
-        return separator;
     }
+
+    QAction* separator = nullptr;
+    QGThread::runOnQtGuiThread([this, menuKey, &separator]() {
+        QMenu* qmenu = _menuMap[menuKey];
+        separator = qmenu->addSeparator();
+    });
+    return separator;
 }
 
 QMenu* QGWindow::addSubMenu(const std::string& menu, const std::string& submenu) {
@@ -365,11 +378,14 @@ QMenu* QGWindow::addSubMenu(const std::string& menu, const std::string& submenu)
         error("QGWindow::addMenuItem: menu \"" + menu + "\" does not exist");
         return nullptr;
     } else {
-        QMenu* qmenu = _menuMap[menuKey];
-        QMenu* qsubmenu = qmenu->addMenu(QString::fromStdString(submenu));
-        std::string subMenuKey = menuKey + "/"
-                + toLowerCase(stringReplace(submenu, "&", ""));
-        _menuMap[subMenuKey] = qsubmenu;
+        QMenu* qsubmenu = nullptr;
+        QGThread::runOnQtGuiThread([this, menu, menuKey, submenu, &qsubmenu]() {
+            QMenu* qmenu = _menuMap[menuKey];
+            qsubmenu = qmenu->addMenu(QString::fromStdString(submenu));
+            std::string subMenuKey = menuKey + "/"
+                    + toLowerCase(stringReplace(submenu, "&", ""));
+            _menuMap[subMenuKey] = qsubmenu;
+        });
         return qsubmenu;
     }
 }
@@ -384,61 +400,69 @@ void QGWindow::addToRegion(QGInteractor* interactor, Region region) {
         return;
     }
 
-    if (layout == _iqmainwindow->_centerLayout) {
-        // center holds at most one widget
-        if (_canvas && widget != _canvas->getWidget()) {
-            _canvas->setVisible(false);
+    QGThread::runOnQtGuiThread([this, region, widget, layout]() {
+        if (layout == _iqmainwindow->_centerLayout) {
+            // center holds at most one widget
+            if (_canvas && widget != _canvas->getWidget()) {
+                _canvas->setVisible(false);
+            }
+            QGBorderLayout::clearLayout(layout);
+            layout->addWidget(widget);
+        } else {
+            // add to end of the list of widgets in this region
+            ((QBoxLayout*) layout)->insertWidget(/* index */ layout->count() - 1, widget);
         }
-        QGBorderLayout::clearLayout(layout);
-        layout->addWidget(widget);
-    } else {
-        // add to end of the list of widgets in this region
-        ((QBoxLayout*) layout)->insertWidget(/* index */ layout->count() - 1, widget);
-    }
 
-    // set alignment of widget
-    if (_halignMap.containsKey(region) && _valignMap.containsKey(region)) {
-        layout->setAlignment(widget, toQtAlignment(_halignMap[region]) | toQtAlignment(_valignMap[region]));
-    } else if (_halignMap.containsKey(region)) {
-        layout->setAlignment(widget, toQtAlignment(_halignMap[region]));
-    } else if (_valignMap.containsKey(region)) {
-        layout->setAlignment(widget, toQtAlignment(_valignMap[region]));
-    }
+        // set alignment of widget
+        if (_halignMap.containsKey(region) && _valignMap.containsKey(region)) {
+            layout->setAlignment(widget, toQtAlignment(_halignMap[region]) | toQtAlignment(_valignMap[region]));
+        } else if (_halignMap.containsKey(region)) {
+            layout->setAlignment(widget, toQtAlignment(_halignMap[region]));
+        } else if (_valignMap.containsKey(region)) {
+            layout->setAlignment(widget, toQtAlignment(_valignMap[region]));
+        }
 
-//    layout->update();
-//    _iqmainwindow->updateGeometry();
-//    _iqmainwindow->update();
-    _iqmainwindow->fixMargins();
-    QGBorderLayout::forceUpdate(_iqmainwindow->centralWidget());
+//      layout->update();
+//      _iqmainwindow->updateGeometry();
+//      _iqmainwindow->update();
+        _iqmainwindow->fixMargins();
+        QGBorderLayout::forceUpdate(_iqmainwindow->centralWidget());
+    });
 }
 
 void QGWindow::addToRegion(QGInteractor* interactor, const std::string& region) {
     addToRegion(interactor, stringToRegion(region));
 }
 
-void QGWindow::clearConsole() {
-    QGForwardDrawingSurface::clearConsole();
-    clearRegion(REGION_NORTH);
-    clearRegion(REGION_SOUTH);
-    clearRegion(REGION_WEST);
-    clearRegion(REGION_EAST);
-    clearRegion(REGION_CENTER);
-    repaint();
+void QGWindow::clear() {
+    QGThread::runOnQtGuiThread([this]() {
+        clearRegion(REGION_NORTH);
+        clearRegion(REGION_SOUTH);
+        clearRegion(REGION_WEST);
+        clearRegion(REGION_EAST);
+        clearRegion(REGION_CENTER);
+    });
 }
 
 void QGWindow::clearCanvas() {
-    QGForwardDrawingSurface::clearConsole();
+    QGThread::runOnQtGuiThread([this]() {
+        QGForwardDrawingSurface::clear();
+        if (_canvas) {
+            _canvas->clear();
+        }
+        repaint();
+    });
 }
 
 void QGWindow::clearCanvasObjects() {
     if (_canvas) {
-        _canvas->clearObjects();
+        _canvas->clearObjects();   // runs on Qt GUI thread
     }
 }
 
 void QGWindow::clearCanvasPixels() {
     if (_canvas) {
-        _canvas->clearPixels();
+        _canvas->clearPixels();   // runs on Qt GUI thread
     }
 }
 
@@ -448,24 +472,26 @@ void QGWindow::clearRegion(Region region) {
         return;
     }
 
-    if (layout == _iqmainwindow->_centerLayout) {
-        QGBorderLayout::clearLayout(layout);
+    QGThread::runOnQtGuiThread([this, layout]() {
+        if (layout == _iqmainwindow->_centerLayout) {
+            QGBorderLayout::clearLayout(layout);
 
-        // put the canvas back in the center if there is nothing else there
-        // TODO: remove this?
-        if (_canvas) {
-            layout->addWidget(_canvas->getWidget());
-            _canvas->setVisible(true);
+            // put the canvas back in the center if there is nothing else there
+            // TODO: remove this?
+            if (_canvas) {
+                layout->addWidget(_canvas->getWidget());
+                _canvas->setVisible(true);
+            }
+        } else {
+            // for N/S/W/E, leave 2 elements in the layout (stretchers at start/end)
+            while (layout->count() > 2) {
+                layout->removeItem(layout->itemAt(1));
+            }
         }
-    } else {
-        // for N/S/W/E, leave 2 elements in the layout (stretchers at start/end)
-        while (layout->count() > 2) {
-            layout->removeItem(layout->itemAt(1));
-        }
-    }
-    layout->update();
-    _iqmainwindow->updateGeometry();
-    _iqmainwindow->update();
+        layout->update();
+        _iqmainwindow->updateGeometry();
+        _iqmainwindow->update();
+    });
 }
 
 void QGWindow::clearRegion(const std::string& region) {
@@ -480,7 +506,9 @@ void QGWindow::center() {
 }
 
 void QGWindow::close() {
-    _iqmainwindow->close();
+    QGThread::runOnQtGuiThread([this]() {
+        _iqmainwindow->close();
+    });
 }
 
 void QGWindow::compareToImage(const std::string& /* filename */, bool /* ignoreWindowSize */) const {
@@ -490,10 +518,12 @@ void QGWindow::compareToImage(const std::string& /* filename */, bool /* ignoreW
 void QGWindow::ensureForwardTarget() {
     if (!_canvas) {
         // tell canvas to take any unclaimed space in the window
-        _canvas = new QGCanvas(_iqmainwindow);
-        _canvas->getWidget()->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        setDrawingForwardTarget(_canvas);
-        addToRegion(_canvas, "Center");
+        QGThread::runOnQtGuiThread([this]() {
+            _canvas = new QGCanvas(_iqmainwindow);
+            _canvas->getWidget()->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+            setDrawingForwardTarget(_canvas);
+            addToRegion(_canvas, "Center");
+        });
     }
 }
 
@@ -727,7 +757,7 @@ bool QGWindow::isVisible() const {
 
 void QGWindow::loadCanvasPixels(const std::string& filename) {
     ensureForwardTarget();
-    _canvas->load(filename);
+    _canvas->load(filename);   // runs on Qt GUI thread
 }
 
 void QGWindow::pack() {
@@ -735,10 +765,7 @@ void QGWindow::pack() {
 }
 
 void QGWindow::pause(double ms) {
-    QThread* thread = _iqmainwindow->thread();
-    if (thread) {
-        thread->msleep((long) ms);
-    }
+    QGThread::sleep(ms);
 }
 
 QLayout* QGWindow::layoutForRegion(Region region) const {
@@ -772,13 +799,13 @@ std::string QGWindow::regionToString(Region region) {
 
 void QGWindow::remove(QGObject* obj) {
     if (_canvas) {
-        _canvas->remove(obj);
+        _canvas->remove(obj);   // runs on Qt GUI thread
     }
 }
 
 void QGWindow::remove(QGObject& obj) {
     if (_canvas) {
-        _canvas->remove(&obj);
+        _canvas->remove(&obj);   // runs on Qt GUI thread
     }
 }
 
@@ -792,7 +819,7 @@ void QGWindow::remove(QGInteractor* interactor) {
 
 void QGWindow::removeClickListener() {
     if (_canvas) {
-        _canvas->removeClickListener();
+        _canvas->removeClickListener();   // runs on Qt GUI thread
     }
 }
 
@@ -806,10 +833,12 @@ void QGWindow::removeFromRegion(QGInteractor* interactor, Region region) {
         return;
     }
 
-    layout->removeWidget(widget);
-    layout->update();
-    _iqmainwindow->updateGeometry();
-    _iqmainwindow->update();
+    QGThread::runOnQtGuiThread([this, widget, layout]() {
+        layout->removeWidget(widget);
+        layout->update();
+        _iqmainwindow->updateGeometry();
+        _iqmainwindow->update();
+    });
 }
 
 void QGWindow::removeFromRegion(QGInteractor* interactor, const std::string& region) {
@@ -818,7 +847,7 @@ void QGWindow::removeFromRegion(QGInteractor* interactor, const std::string& reg
 
 void QGWindow::removeKeyListener() {
     if (_canvas) {
-        _canvas->removeKeyListener();
+        _canvas->removeKeyListener();   // runs on Qt GUI thread
     }
 }
 
@@ -828,7 +857,7 @@ void QGWindow::removeMenuListener() {
 
 void QGWindow::removeMouseListener() {
     if (_canvas) {
-        _canvas->removeMouseListener();
+        _canvas->removeMouseListener();   // runs on Qt GUI thread
     }
 }
 
@@ -847,22 +876,28 @@ void QGWindow::removeWindowListener() {
 }
 
 void QGWindow::requestFocus() {
-    _iqmainwindow->setFocus();
+    QGThread::runOnQtGuiThread([this]() {
+        _iqmainwindow->setFocus();
+    });
 }
 
 void QGWindow::saveCanvasPixels(const std::string& filename) {
     ensureForwardTarget();
-    _canvas->save(filename);
+    _canvas->save(filename);   // runs on Qt GUI thread
 }
 
 void QGWindow::setBackground(int color) {
-    QGForwardDrawingSurface::setBackground(color);
-    // TODO: set background of N/S/E/W regions and central region?
+    QGThread::runOnQtGuiThread([this, color]() {
+        QGForwardDrawingSurface::setBackground(color);
+        // TODO: set background of N/S/E/W regions and central region?
+    });
 }
 
 void QGWindow::setBackground(const std::string& color) {
-    QGForwardDrawingSurface::setBackground(color);
-    // TODO: set background of N/S/E/W regions and central region?
+    QGThread::runOnQtGuiThread([this, color]() {
+        QGForwardDrawingSurface::setBackground(color);
+        // TODO: set background of N/S/E/W regions and central region?
+    });
 }
 
 void QGWindow::setCanvasHeight(double height) {
@@ -872,7 +907,7 @@ void QGWindow::setCanvasHeight(double height) {
 
 void QGWindow::setCanvasSize(double width, double height) {
     ensureForwardTarget();
-    _canvas->setMinimumSize(width, height);
+    _canvas->setMinimumSize(width, height);    // runs on Qt GUI thread
     _canvas->setPreferredSize(width, height);
     pack();
 }
@@ -887,8 +922,10 @@ void QGWindow::setCanvasWidth(double width) {
 }
 
 void QGWindow::setCloseOperation(CloseOperation op) {
-    _closeOperation = op;
-    _iqmainwindow->setAttribute(Qt::WA_QuitOnClose, op == QGWindow::CLOSE_EXIT);
+    QGThread::runOnQtGuiThread([this, op]() {
+        _closeOperation = op;
+        _iqmainwindow->setAttribute(Qt::WA_QuitOnClose, op == QGWindow::CLOSE_EXIT);
+    });
 }
 
 void QGWindow::setExitOnClose(bool exitOnClose) {
@@ -904,7 +941,9 @@ void QGWindow::setHeight(double height) {
 }
 
 void QGWindow::setLocation(double x, double y) {
-    _iqmainwindow->setGeometry((int) x, (int) y, getWidth(), getHeight());
+    QGThread::runOnQtGuiThread([this, x, y]() {
+        _iqmainwindow->setGeometry((int) x, (int) y, getWidth(), getHeight());
+    });
 }
 
 void QGWindow::setLocation(const QGPoint& p) {
@@ -916,49 +955,51 @@ void QGWindow::setLocation(const Point& p) {
 }
 
 void QGWindow::setMenuItemEnabled(const std::string& menu, const std::string& item, bool enabled) {
-    std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
-    std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
-    std::string menuItemKey = menuKey + "/" + itemKey;
-    if (!_menuMap.containsKey(menuKey)) {
-        error("QGWindow::setMenuItemEnabled: menu \"" + menu + "\" does not exist");
-    } else if (!_menuActionMap.containsKey(menuItemKey)) {
-        error("QGWindow::setMenuItemEnabled: menu item \"" + item + "\" does not exist");
-    } else {
-        QAction* action = _menuActionMap[menuItemKey];
-        action->setEnabled(enabled);
-    }
+    QGThread::runOnQtGuiThread([this, menu, item, enabled]() {
+        std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
+        std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
+        std::string menuItemKey = menuKey + "/" + itemKey;
+        if (!_menuMap.containsKey(menuKey)) {
+            error("QGWindow::setMenuItemEnabled: menu \"" + menu + "\" does not exist");
+        } else if (!_menuActionMap.containsKey(menuItemKey)) {
+            error("QGWindow::setMenuItemEnabled: menu item \"" + item + "\" does not exist");
+        } else {
+            QAction* action = _menuActionMap[menuItemKey];
+            action->setEnabled(enabled);
+        }
+    });
 }
 
 void QGWindow::setClickListener(QGEventListener func) {
-    _canvas->setClickListener(func);
+    _canvas->setClickListener(func);   // runs on Qt GUI thread
 }
 
 void QGWindow::setClickListener(QGEventListenerVoid func) {
-    _canvas->setClickListener(func);
+    _canvas->setClickListener(func);   // runs on Qt GUI thread
 }
 
 void QGWindow::setKeyListener(QGEventListener func) {
-    _canvas->setKeyListener(func);
+    _canvas->setKeyListener(func);   // runs on Qt GUI thread
 }
 
 void QGWindow::setKeyListener(QGEventListenerVoid func) {
-    _canvas->setKeyListener(func);
+    _canvas->setKeyListener(func);   // runs on Qt GUI thread
 }
 
 void QGWindow::setMenuListener(QGEventListener func) {
-    setEventListener("actionMenu", func);
+    setEventListener("actionMenu", func);   // runs on Qt GUI thread
 }
 
 void QGWindow::setMenuListener(QGEventListenerVoid func) {
-    setEventListener("actionMenu", func);
+    setEventListener("actionMenu", func);   // runs on Qt GUI thread
 }
 
 void QGWindow::setMouseListener(QGEventListener func) {
-    _canvas->setMouseListener(func);
+    _canvas->setMouseListener(func);   // runs on Qt GUI thread
 }
 
 void QGWindow::setMouseListener(QGEventListenerVoid func) {
-    _canvas->setMouseListener(func);
+    _canvas->setMouseListener(func);   // runs on Qt GUI thread
 }
 
 void QGWindow::setRegionAlignment(Region region, qgenum::HorizontalAlignment halign) {
@@ -992,39 +1033,41 @@ void QGWindow::setRegionHorizontalAlignment(Region region, qgenum::HorizontalAli
         return;
     }
 
-    _halignMap[region] = halign;
-    if (layout == _iqmainwindow->_centerLayout) {
-        // disallow?
-        return;
-    }
-
-    if (layout == _iqmainwindow->_westLayout || layout == _iqmainwindow->_eastLayout) {
-        // set each widget's horizontal alignment individually
-        Qt::Alignment qtAlign = toQtAlignment(halign);
-        for (int i = 0; i < layout->count(); i++) {
-            QWidget* widget = layout->itemAt(i)->widget();
-            layout->setAlignment(widget, qtAlign);
+    QGThread::runOnQtGuiThread([this, region, halign, layout]() {
+        _halignMap[region] = halign;
+        if (layout == _iqmainwindow->_centerLayout) {
+            // disallow?
+            return;
         }
-    } else if (layout == _iqmainwindow->_northLayout || layout == _iqmainwindow->_southLayout) {
-        // to align "left", limit first stretch;
-        // to align "right", limit last stretch
-        layout->removeItem(layout->itemAt(0));
-        layout->removeItem(layout->itemAt(layout->count() - 1));
-        if (halign == qgenum::ALIGN_LEFT) {
-            ((QHBoxLayout*) layout)->insertStretch(0, /* stretch */ 0);
-            ((QHBoxLayout*) layout)->addStretch(/* stretch */ 99);
-        } else if (halign == qgenum::ALIGN_RIGHT) {
-            ((QHBoxLayout*) layout)->insertStretch(0, /* stretch */ 99);
-            ((QHBoxLayout*) layout)->addStretch(/* stretch */ 0);
-        } else {   // halign == qgenum::ALIGN_CENTER
-            ((QHBoxLayout*) layout)->insertStretch(0, /* stretch */ 99);
-            ((QHBoxLayout*) layout)->addStretch(/* stretch */ 99);
-        }
-    }
 
-    layout->update();
-    _iqmainwindow->updateGeometry();
-    _iqmainwindow->update();
+        if (layout == _iqmainwindow->_westLayout || layout == _iqmainwindow->_eastLayout) {
+            // set each widget's horizontal alignment individually
+            Qt::Alignment qtAlign = toQtAlignment(halign);
+            for (int i = 0; i < layout->count(); i++) {
+                QWidget* widget = layout->itemAt(i)->widget();
+                layout->setAlignment(widget, qtAlign);
+            }
+        } else if (layout == _iqmainwindow->_northLayout || layout == _iqmainwindow->_southLayout) {
+            // to align "left", limit first stretch;
+            // to align "right", limit last stretch
+            layout->removeItem(layout->itemAt(0));
+            layout->removeItem(layout->itemAt(layout->count() - 1));
+            if (halign == qgenum::ALIGN_LEFT) {
+                ((QHBoxLayout*) layout)->insertStretch(0, /* stretch */ 0);
+                ((QHBoxLayout*) layout)->addStretch(/* stretch */ 99);
+            } else if (halign == qgenum::ALIGN_RIGHT) {
+                ((QHBoxLayout*) layout)->insertStretch(0, /* stretch */ 99);
+                ((QHBoxLayout*) layout)->addStretch(/* stretch */ 0);
+            } else {   // halign == qgenum::ALIGN_CENTER
+                ((QHBoxLayout*) layout)->insertStretch(0, /* stretch */ 99);
+                ((QHBoxLayout*) layout)->addStretch(/* stretch */ 99);
+            }
+        }
+
+        layout->update();
+        _iqmainwindow->updateGeometry();
+        _iqmainwindow->update();
+    });
 }
 
 void QGWindow::setRegionHorizontalAlignment(const std::string& region, const std::string& halign) {
@@ -1037,39 +1080,41 @@ void QGWindow::setRegionVerticalAlignment(Region region, qgenum::VerticalAlignme
         return;
     }
 
-    _valignMap[region] = valign;
-    if (layout == _iqmainwindow->_centerLayout) {
-        // disallow?
-        return;
-    }
-
-    if (layout == _iqmainwindow->_westLayout || layout == _iqmainwindow->_eastLayout) {
-        // to align "top", limit first stretch;
-        // to align "bottom", limit last stretch
-        layout->removeItem(layout->itemAt(0));
-        layout->removeItem(layout->itemAt(layout->count() - 1));
-        if (valign == qgenum::ALIGN_TOP) {
-            ((QVBoxLayout*) layout)->insertStretch(0, /* stretch */ 0);
-            ((QVBoxLayout*) layout)->addStretch(/* stretch */ 99);
-        } else if (valign == qgenum::ALIGN_BOTTOM) {
-            ((QVBoxLayout*) layout)->insertStretch(0, /* stretch */ 99);
-            ((QVBoxLayout*) layout)->addStretch(/* stretch */ 0);
-        } else {   // valign == qgenum::ALIGN_MIDDLE
-            ((QVBoxLayout*) layout)->insertStretch(0, /* stretch */ 99);
-            ((QVBoxLayout*) layout)->addStretch(/* stretch */ 99);
+    QGThread::runOnQtGuiThread([this, region, valign, layout]() {
+        _valignMap[region] = valign;
+        if (layout == _iqmainwindow->_centerLayout) {
+            // disallow?
+            return;
         }
-    } else if (layout == _iqmainwindow->_northLayout || layout == _iqmainwindow->_southLayout) {
-        // set each widget's vertical alignment individually
-        Qt::Alignment qtAlign = toQtAlignment(valign);
-        for (int i = 0; i < layout->count(); i++) {
-            QWidget* widget = layout->itemAt(i)->widget();
-            layout->setAlignment(widget, qtAlign);
-        }
-    }
 
-    layout->update();
-    _iqmainwindow->updateGeometry();
-    _iqmainwindow->update();
+        if (layout == _iqmainwindow->_westLayout || layout == _iqmainwindow->_eastLayout) {
+            // to align "top", limit first stretch;
+            // to align "bottom", limit last stretch
+            layout->removeItem(layout->itemAt(0));
+            layout->removeItem(layout->itemAt(layout->count() - 1));
+            if (valign == qgenum::ALIGN_TOP) {
+                ((QVBoxLayout*) layout)->insertStretch(0, /* stretch */ 0);
+                ((QVBoxLayout*) layout)->addStretch(/* stretch */ 99);
+            } else if (valign == qgenum::ALIGN_BOTTOM) {
+                ((QVBoxLayout*) layout)->insertStretch(0, /* stretch */ 99);
+                ((QVBoxLayout*) layout)->addStretch(/* stretch */ 0);
+            } else {   // valign == qgenum::ALIGN_MIDDLE
+                ((QVBoxLayout*) layout)->insertStretch(0, /* stretch */ 99);
+                ((QVBoxLayout*) layout)->addStretch(/* stretch */ 99);
+            }
+        } else if (layout == _iqmainwindow->_northLayout || layout == _iqmainwindow->_southLayout) {
+            // set each widget's vertical alignment individually
+            Qt::Alignment qtAlign = toQtAlignment(valign);
+            for (int i = 0; i < layout->count(); i++) {
+                QWidget* widget = layout->itemAt(i)->widget();
+                layout->setAlignment(widget, qtAlign);
+            }
+        }
+
+        layout->update();
+        _iqmainwindow->updateGeometry();
+        _iqmainwindow->update();
+    });
 }
 
 void QGWindow::setRegionVerticalAlignment(const std::string& region, const std::string& valign) {
@@ -1077,29 +1122,33 @@ void QGWindow::setRegionVerticalAlignment(const std::string& region, const std::
 }
 
 void QGWindow::setResizable(bool resizable) {
-    if (resizable) {
-        if (!_resizable) {
-            _iqmainwindow->resize((int) getWidth(), (int) getHeight());
-            _iqmainwindow->setMinimumSize(_iqmainwindow->minimumSizeHint());
-            QGDimension screenSize = getScreenSize();
-            _iqmainwindow->setMaximumSize((int) screenSize.getWidth(), (int) screenSize.getHeight());
-            _iqmainwindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    QGThread::runOnQtGuiThread([this, resizable]() {
+        if (resizable) {
+            if (!_resizable) {
+                _iqmainwindow->resize((int) getWidth(), (int) getHeight());
+                _iqmainwindow->setMinimumSize(_iqmainwindow->minimumSizeHint());
+                QGDimension screenSize = getScreenSize();
+                _iqmainwindow->setMaximumSize((int) screenSize.getWidth(), (int) screenSize.getHeight());
+                _iqmainwindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+            }
+        } else {
+            if (_resizable) {
+                _iqmainwindow->setFixedSize(_iqmainwindow->size());
+                _iqmainwindow->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+            }
         }
-    } else {
-        if (_resizable) {
-            _iqmainwindow->setFixedSize(_iqmainwindow->size());
-            _iqmainwindow->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        }
-    }
-    _resizable = resizable;
+        _resizable = resizable;
+    });
 }
 
 void QGWindow::setSize(double width, double height) {
-    if (isResizable()) {
-        _iqmainwindow->resize((int) width, (int) height);
-    } else {
-        _iqmainwindow->setFixedSize((int) width, (int) height);
-    }
+    QGThread::runOnQtGuiThread([this, width, height]() {
+        if (isResizable()) {
+            _iqmainwindow->resize((int) width, (int) height);
+        } else {
+            _iqmainwindow->setFixedSize((int) width, (int) height);
+        }
+    });
 }
 
 void QGWindow::setSize(const QGDimension& size) {
@@ -1108,20 +1157,28 @@ void QGWindow::setSize(const QGDimension& size) {
 
 void QGWindow::setTimerListener(double ms, QGEventListener func) {
     setEventListener("timer", func);
-    _iqmainwindow->timerStart(ms);
+    QGThread::runOnQtGuiThread([this, ms]() {
+        _iqmainwindow->timerStart(ms);
+    });
 }
 
 void QGWindow::setTimerListener(double ms, QGEventListenerVoid func) {
     setEventListener("timer", func);
-    _iqmainwindow->timerStart(ms);
+    QGThread::runOnQtGuiThread([this, ms]() {
+        _iqmainwindow->timerStart(ms);
+    });
 }
 
 void QGWindow::setTitle(const std::string& title) {
-    _iqmainwindow->setWindowTitle(QString::fromStdString(title));
+    QGThread::runOnQtGuiThread([this, title]() {
+        _iqmainwindow->setWindowTitle(QString::fromStdString(title));
+    });
 }
 
 void QGWindow::setVisible(bool visible) {
-    _iqmainwindow->setVisible(visible);
+    QGThread::runOnQtGuiThread([this, visible]() {
+        _iqmainwindow->setVisible(visible);
+    });
 }
 
 void QGWindow::setWidth(double width) {
@@ -1165,10 +1222,7 @@ void QGWindow::show() {
 }
 
 void QGWindow::sleep(double ms) {
-    QThread* thread = _iqmainwindow->thread();
-    if (thread) {
-        thread->msleep((long) ms);
-    }
+    QGThread::sleep(ms);
 }
 
 QGWindow::Region QGWindow::stringToRegion(const std::string& regionStr) {
@@ -1187,11 +1241,16 @@ QGWindow::Region QGWindow::stringToRegion(const std::string& regionStr) {
 }
 
 void QGWindow::toBack() {
-    _iqmainwindow->lower();
+    QGThread::runOnQtGuiThread([this]() {
+        _iqmainwindow->lower();
+    });
 }
 
 void QGWindow::toFront() {
-    _iqmainwindow->raise();
+    QGThread::runOnQtGuiThread([this]() {
+        _iqmainwindow->raise();
+        _iqmainwindow->setFocus();
+    });
 }
 
 #endif // SPL_QT_GUI

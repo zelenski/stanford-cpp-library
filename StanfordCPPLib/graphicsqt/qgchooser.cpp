@@ -9,6 +9,7 @@
 #ifdef SPL_QT_GUI
 #include "qgchooser.h"
 #include "error.h"
+#include "qgthread.h"
 #include "qgwindow.h"
 #include "strlib.h"
 
@@ -38,16 +39,22 @@ QSize _Internal_QComboBox::sizeHint() const {
 
 
 QGChooser::QGChooser(QWidget* parent) {
-    _iqcomboBox = new _Internal_QComboBox(this, getInternalParent(parent));
+    QGThread::runOnQtGuiThread([this, parent]() {
+        _iqcomboBox = new _Internal_QComboBox(this, getInternalParent(parent));
+    });
 }
 
 QGChooser::QGChooser(const std::initializer_list<std::string>& items, QWidget* parent) {
-    _iqcomboBox = new _Internal_QComboBox(this, getInternalParent(parent));
+    QGThread::runOnQtGuiThread([this, parent]() {
+        _iqcomboBox = new _Internal_QComboBox(this, getInternalParent(parent));
+    });
     addItems(items);
 }
 
 QGChooser::QGChooser(const Vector<std::string>& items, QWidget* parent) {
-    _iqcomboBox = new _Internal_QComboBox(this, getInternalParent(parent));
+    QGThread::runOnQtGuiThread([this, parent]() {
+        _iqcomboBox = new _Internal_QComboBox(this, getInternalParent(parent));
+    });
     addItems(items);
 }
 
@@ -57,19 +64,25 @@ QGChooser::~QGChooser() {
 }
 
 void QGChooser::addItem(const std::string& item) {
-    _iqcomboBox->addItem(QString::fromStdString(item));
+    QGThread::runOnQtGuiThread([this, item]() {
+        _iqcomboBox->addItem(QString::fromStdString(item));
+    });
 }
 
 void QGChooser::addItems(const std::initializer_list<std::string>& items) {
-    for (const std::string& item : items) {
-        addItem(item);
-    }
+    QGThread::runOnQtGuiThread([this, &items]() {
+        for (const std::string& item : items) {
+            _iqcomboBox->addItem(QString::fromStdString(item));
+        }
+    });
 }
 
 void QGChooser::addItems(const Vector<std::string>& items) {
-    for (const std::string& item : items) {
-        addItem(item);
-    }
+    QGThread::runOnQtGuiThread([this, &items]() {
+        for (const std::string& item : items) {
+            _iqcomboBox->addItem(QString::fromStdString(item));
+        }
+    });
 }
 
 void QGChooser::checkIndex(const std::string& member, int index, int min, int max) const {
@@ -83,7 +96,9 @@ void QGChooser::checkIndex(const std::string& member, int index, int min, int ma
 }
 
 void QGChooser::clearItems() {
-    _iqcomboBox->clear();
+    QGThread::runOnQtGuiThread([this]() {
+        _iqcomboBox->clear();
+    });
 }
 
 std::string QGChooser::getActionCommand() const {
@@ -137,20 +152,28 @@ void QGChooser::setActionListener(QGEventListenerVoid func) {
 
 void QGChooser::setItem(int index, const std::string& item) {
     checkIndex("QGChooser::setItem", index);
-    _iqcomboBox->setItemText(index, QString::fromStdString(item));
+    QGThread::runOnQtGuiThread([this, index, item]() {
+        _iqcomboBox->setItemText(index, QString::fromStdString(item));
+    });
 }
 
 void QGChooser::setSelectedIndex(int index) {
     checkIndex("QGChooser::setSelectedIndex", index);
-    _iqcomboBox->setCurrentIndex(index);
+    QGThread::runOnQtGuiThread([this, index]() {
+        _iqcomboBox->setCurrentIndex(index);
+    });
 }
 
 void QGChooser::setEditable(bool editable) {
-    _iqcomboBox->setEditable(editable);
+    QGThread::runOnQtGuiThread([this, editable]() {
+        _iqcomboBox->setEditable(editable);
+    });
 }
 
 void QGChooser::setSelectedItem(const std::string& item) {
-    _iqcomboBox->setCurrentText(QString::fromStdString(item));
+    QGThread::runOnQtGuiThread([this, item]() {
+        _iqcomboBox->setCurrentText(QString::fromStdString(item));
+    });
 }
 
 int QGChooser::size() const {

@@ -27,6 +27,7 @@
 #include "qgcolor.h"
 #include "qgevent.h"
 #include "qgfont.h"
+#include "qgthread.h"
 #include "strlib.h"
 
 _Internal_QItemDelegate::_Internal_QItemDelegate(QObject* parent)
@@ -212,9 +213,11 @@ QGTable::TableStyle QGTable::_defaultCellStyle = QGTable::TableStyle::unset();
 QGTable::QGTable(int rows, int columns, double width, double height, QWidget* parent)
         : _iqtableview(nullptr),
           _columnHeaderStyle(QGTable::COLUMN_HEADER_NONE) {
-    _iqtableview = new _Internal_QTableWidget(this, rows, columns, getInternalParent(parent));
-    _iqtableview->setSelectionMode(QAbstractItemView::SingleSelection);
-    _globalCellStyle = TableStyle::unset();
+    QGThread::runOnQtGuiThread([this, rows, columns, parent]() {
+        _iqtableview = new _Internal_QTableWidget(this, rows, columns, getInternalParent(parent));
+        _iqtableview->setSelectionMode(QAbstractItemView::SingleSelection);
+        _globalCellStyle = TableStyle::unset();
+    });
     checkDimensions("constructor", rows, columns);
     checkSize("constructor", width, height);
 }
@@ -227,7 +230,9 @@ void QGTable::applyStyleToCell(int row, int column, const TableStyle& style) {
 }
 
 void QGTable::autofitColumnWidths() {
-    _iqtableview->resizeColumnsToContents();
+    QGThread::runOnQtGuiThread([this]() {
+        _iqtableview->resizeColumnsToContents();
+    });
 }
 
 void QGTable::checkDimensions(const std::string& member, int numRows, int numCols) const {
@@ -259,9 +264,11 @@ void QGTable::checkSize(const std::string& member, double width, double height) 
 }
 
 void QGTable::clear() {
-    _iqtableview->clear();
-    // for some reason, clearing a table also wipes the Excel-style column headers
-    updateColumnHeaders();
+    QGThread::runOnQtGuiThread([this]() {
+        _iqtableview->clear();
+        // for some reason, clearing a table also wipes the Excel-style column headers
+        updateColumnHeaders();
+    });
 }
 
 void QGTable::clearCell(int row, int column) {
@@ -270,39 +277,45 @@ void QGTable::clearCell(int row, int column) {
 }
 
 void QGTable::clearFormatting() {
-    // clear out all records of row, column, and global table styles
-    _columnStyles.clear();
-    _rowStyles.clear();
-    _globalCellStyle = TableStyle::unset();
+    QGThread::runOnQtGuiThread([this]() {
+        // clear out all records of row, column, and global table styles
+        _columnStyles.clear();
+        _rowStyles.clear();
+        _globalCellStyle = TableStyle::unset();
 
-    // set the formatting on each cell
-    for (int row = 0, nr = numRows(), nc = numCols(); row < nr; row++) {
-        for (int col = 0; col < nc; col++) {
-            clearCellFormatting(row, col);
+        // set the formatting on each cell
+        for (int row = 0, nr = numRows(), nc = numCols(); row < nr; row++) {
+            for (int col = 0; col < nc; col++) {
+                clearCellFormatting(row, col);
+            }
         }
-    }
+    });
 }
 
 void QGTable::clearCellFormatting(int row, int column) {
     checkIndex("clearCellFormatting", row, column);
-    ensureDefaultFormatting();
-    TableStyle style = _defaultCellStyle;
-    if (style.background >= 0) {
-        setCellBackgroundInternal(row, column, style.background);
-    }
-    if (!style.font.empty()) {
-        setCellFontInternal(row, column, style.font);
-    }
-    if (style.foreground >= 0) {
-        setCellForegroundInternal(row, column, style.foreground);
-    }
-    if (style.alignment >= 0) {
-        setCellAlignmentInternal(row, column, style.alignment);
-    }
+    QGThread::runOnQtGuiThread([this, row, column]() {
+        ensureDefaultFormatting();
+        TableStyle style = _defaultCellStyle;
+        if (style.background >= 0) {
+            setCellBackgroundInternal(row, column, style.background);
+        }
+        if (!style.font.empty()) {
+            setCellFontInternal(row, column, style.font);
+        }
+        if (style.foreground >= 0) {
+            setCellForegroundInternal(row, column, style.foreground);
+        }
+        if (style.alignment >= 0) {
+            setCellAlignmentInternal(row, column, style.alignment);
+        }
+    });
 }
 
 void QGTable::clearSelection() {
-    _iqtableview->clearSelection();
+    QGThread::runOnQtGuiThread([this]() {
+        _iqtableview->clearSelection();
+    });
 }
 
 void QGTable::ensureColumnStyle(int column) {
@@ -331,13 +344,15 @@ void QGTable::ensureRowStyle(int row) {
 }
 
 void QGTable::fill(const std::string& text) {
-    int nr = numRows();
-    int nc = numCols();
-    for (int r = 0; r < nr; r++) {
-        for (int c = 0; c < nc; c++) {
-            set(r, c, text);
+    QGThread::runOnQtGuiThread([this, text]() {
+        int nr = numRows();
+        int nc = numCols();
+        for (int r = 0; r < nr; r++) {
+            for (int c = 0; c < nc; c++) {
+                set(r, c, text);
+            }
         }
-    }
+    });
 }
 
 std::string QGTable::get(int row, int column) const {
@@ -458,35 +473,39 @@ void QGTable::requestFocus() {
     bool wasEditing = _iqtableview->isEditing();
     QGInteractor::requestFocus();
     if (!wasEditing && hasSelectedCell()) {
-        GridLocation loc = getSelectedCell();
-        _iqtableview->closePersistentEditor(_iqtableview->item(loc.row, loc.col));
+        QGThread::runOnQtGuiThread([this]() {
+            GridLocation loc = getSelectedCell();
+            _iqtableview->closePersistentEditor(_iqtableview->item(loc.row, loc.col));
+        });
     }
 }
 
 void QGTable::resize(int newNumRows, int newNumCols) {
     checkDimensions("resize", newNumRows, newNumCols);
-    int oldNumRows = numRows();
-    int oldNumCols = numCols();
-    _iqtableview->setRowCount(newNumRows);
-    _iqtableview->setColumnCount(newNumCols);
+    QGThread::runOnQtGuiThread([this, newNumRows, newNumCols]() {
+        int oldNumRows = numRows();
+        int oldNumCols = numCols();
+        _iqtableview->setRowCount(newNumRows);
+        _iqtableview->setColumnCount(newNumCols);
 
-    // make sure proper headers showing on each column
-    if (newNumCols > oldNumCols) {
-        updateColumnHeaders();
-    }
+        // make sure proper headers showing on each column
+        if (newNumCols > oldNumCols) {
+            updateColumnHeaders();
+        }
 
-    // apply appropriate styles to newly added cells
-    if (newNumRows > oldNumRows || newNumCols > oldNumCols) {
-        for (int row = 0; row < newNumRows; row++) {
-            for (int col = 0; col < newNumCols; col++) {
-                if (row >= oldNumRows || col >= oldNumCols) {
-                    // figure out appropriate style (row, col, global, etc.) and apply it
-                    TableStyle style = getMergedStyleForCell(row, col);
-                    applyStyleToCell(row, col, style);
+        // apply appropriate styles to newly added cells
+        if (newNumRows > oldNumRows || newNumCols > oldNumCols) {
+            for (int row = 0; row < newNumRows; row++) {
+                for (int col = 0; col < newNumCols; col++) {
+                    if (row >= oldNumRows || col >= oldNumCols) {
+                        // figure out appropriate style (row, col, global, etc.) and apply it
+                        TableStyle style = getMergedStyleForCell(row, col);
+                        applyStyleToCell(row, col, style);
+                    }
                 }
             }
         }
-    }
+    });
 }
 
 bool QGTable::rowColumnHeadersVisible() const {
@@ -495,40 +514,46 @@ bool QGTable::rowColumnHeadersVisible() const {
 }
 
 void QGTable::select(int row, int column) {
-    QModelIndex index = _iqtableview->model()->index(row, column);
-    _iqtableview->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
+    QGThread::runOnQtGuiThread([this, row, column]() {
+        QModelIndex index = _iqtableview->model()->index(row, column);
+        _iqtableview->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
+    });
 }
 
 void QGTable::set(int row, int column, const std::string& text) {
     checkIndex("set", row, column);
-    QModelIndex index = _iqtableview->model()->index(row, column);
-    _iqtableview->model()->setData(index, QVariant(text.c_str()));
+    QGThread::runOnQtGuiThread([this, row, column, text]() {
+        QModelIndex index = _iqtableview->model()->index(row, column);
+        _iqtableview->model()->setData(index, QVariant(text.c_str()));
+    });
 }
 
 void QGTable::setBackground(int rgb) {
     // QGInteractor::setBackground(rgb);
     // (don't call super; that will set the BG of the headers and everything)
 
-    // save this background color in the global cell style (for later cells on resize() etc)
-    ensureDefaultFormatting();
-    _globalCellStyle.background = rgb;
+    QGThread::runOnQtGuiThread([this, rgb]() {
+        // save this background color in the global cell style (for later cells on resize() etc)
+        ensureDefaultFormatting();
+        _globalCellStyle.background = rgb;
 
-    // remove background colors from any row/column styles because they are
-    // now overridden by this global background color style
-    TableStyle unset = TableStyle::unset();
-    for (int row : _rowStyles) {
-        _rowStyles[row].background = unset.background;
-    }
-    for (int col : _columnStyles) {
-        _columnStyles[col].background = unset.background;
-    }
-
-    // set each cell's background color
-    for (int row = 0, nr = numRows(); row < nr; row++) {
-        for (int col = 0, nc = numCols(); col < nc; col++) {
-            setCellBackgroundInternal(row, col, rgb);
+        // remove background colors from any row/column styles because they are
+        // now overridden by this global background color style
+        TableStyle unset = TableStyle::unset();
+        for (int row : _rowStyles) {
+            _rowStyles[row].background = unset.background;
         }
-    }
+        for (int col : _columnStyles) {
+            _columnStyles[col].background = unset.background;
+        }
+
+        // set each cell's background color
+        for (int row = 0, nr = numRows(); row < nr; row++) {
+            for (int col = 0, nc = numCols(); col < nc; col++) {
+                setCellBackgroundInternal(row, col, rgb);
+            }
+        }
+    });
 }
 
 void QGTable::setBackground(const std::string& color) {
@@ -537,7 +562,9 @@ void QGTable::setBackground(const std::string& color) {
 
 void QGTable::setCellAlignment(int row, int column, qgenum::HorizontalAlignment alignment) {
     checkIndex("setCellAlignment", row, column);
-    setCellAlignmentInternal(row, column, alignment);   // do the actual work
+    QGThread::runOnQtGuiThread([this, row, column, alignment]() {
+        setCellAlignmentInternal(row, column, alignment);   // do the actual work
+    });
 }
 
 void QGTable::setCellAlignmentInternal(int row, int column, qgenum::HorizontalAlignment alignment) {
@@ -548,7 +575,9 @@ void QGTable::setCellAlignmentInternal(int row, int column, qgenum::HorizontalAl
 
 void QGTable::setCellBackground(int row, int column, int rgb) {
     checkIndex("setCellBackground", row, column);
-    setCellBackgroundInternal(row, column, rgb);   // do the actual work
+    QGThread::runOnQtGuiThread([this, row, column, rgb]() {
+        setCellBackgroundInternal(row, column, rgb);   // do the actual work
+    });
 }
 
 void QGTable::setCellBackground(int row, int column, const std::string& color) {
@@ -561,7 +590,9 @@ void QGTable::setCellBackgroundInternal(int row, int column, int rgb) {
 
 void QGTable::setCellFont(int row, int column, const std::string& font) {
     checkIndex("setCellFont", row, column);
-    setCellFontInternal(row, column, font);   // do the actual work
+    QGThread::runOnQtGuiThread([this, row, column, font]() {
+        setCellFontInternal(row, column, font);   // do the actual work
+    });
 }
 
 void QGTable::setCellFontInternal(int row, int column, const std::string& font) {
@@ -570,16 +601,18 @@ void QGTable::setCellFontInternal(int row, int column, const std::string& font) 
 
 void QGTable::setCellForeground(int row, int column, int rgb) {
     checkIndex("setCellForeground", row, column);
-    setCellForegroundInternal(row, column, rgb);   // do the actual work
+    QGThread::runOnQtGuiThread([this, row, column, rgb]() {
+        setCellForegroundInternal(row, column, rgb);   // do the actual work
+    });
 }
 
 void QGTable::setCellForegroundInternal(int row, int column, int rgb) {
+    ensureDefaultFormatting();
     _iqtableview->item(row, column)->setForeground(QBrush(QColor(rgb)));
 }
 
 void QGTable::setCellForeground(int row, int column, const std::string& color) {
     checkIndex("setCellForeground", row, column);
-    ensureDefaultFormatting();
     setCellForeground(row, column, QGColor::convertColorToRGB(color));
 }
 
@@ -594,27 +627,31 @@ void QGTable::setColor(const std::string& color) {
 void QGTable::setColumnAlignment(int column, qgenum::HorizontalAlignment alignment) {
     checkIndex("setColumnAlignment", /* row */ 0, column);
 
-    // save this alignment in the column style (for later cells on resize() etc)
-    ensureColumnStyle(column);
-    _columnStyles[column].alignment = alignment;
+    QGThread::runOnQtGuiThread([this, column, alignment]() {
+        // save this alignment in the column style (for later cells on resize() etc)
+        ensureColumnStyle(column);
+        _columnStyles[column].alignment = alignment;
 
-    // set each cell's alignment in that column
-    for (int row = 0, nr = numRows(); row < nr; row++) {
-        setCellAlignmentInternal(row, column, alignment);
-    }
+        // set each cell's alignment in that column
+        for (int row = 0, nr = numRows(); row < nr; row++) {
+            setCellAlignmentInternal(row, column, alignment);
+        }
+    });
 }
 
 void QGTable::setColumnBackground(int column, int rgb) {
     checkIndex("setColumnBackground", /* row */ 0, column);
 
-    // save this background color in the column style (for later cells on resize() etc)
-    ensureColumnStyle(column);
-    _columnStyles[column].background = rgb;
+    QGThread::runOnQtGuiThread([this, column, rgb]() {
+        // save this background color in the column style (for later cells on resize() etc)
+        ensureColumnStyle(column);
+        _columnStyles[column].background = rgb;
 
-    // set each cell's background color in that column
-    for (int row = 0, nr = numRows(); row < nr; row++) {
-        setCellBackgroundInternal(row, column, rgb);
-    }
+        // set each cell's background color in that column
+        for (int row = 0, nr = numRows(); row < nr; row++) {
+            setCellBackgroundInternal(row, column, rgb);
+        }
+    });
 }
 
 void QGTable::setColumnBackground(int column, const std::string& color) {
@@ -624,27 +661,31 @@ void QGTable::setColumnBackground(int column, const std::string& color) {
 void QGTable::setColumnFont(int column, const std::string& font) {
     checkIndex("setColumnFont", /* row */ 0, column);
 
-    // save this font in the column style (for later cells on resize() etc)
-    ensureColumnStyle(column);
-    _columnStyles[column].font = font;
+    QGThread::runOnQtGuiThread([this, column, font]() {
+        // save this font in the column style (for later cells on resize() etc)
+        ensureColumnStyle(column);
+        _columnStyles[column].font = font;
 
-    // set each cell's font in that column
-    for (int row = 0, nr = numRows(); row < nr; row++) {
-        setCellFontInternal(row, column, font);
-    }
+        // set each cell's font in that column
+        for (int row = 0, nr = numRows(); row < nr; row++) {
+            setCellFontInternal(row, column, font);
+        }
+    });
 }
 
 void QGTable::setColumnForeground(int column, int rgb) {
     checkIndex("setColumnForeground", /* row */ 0, column);
 
-    // save this foreground color in the column style (for later cells on resize() etc)
-    ensureColumnStyle(column);
-    _columnStyles[column].foreground = rgb;
+    QGThread::runOnQtGuiThread([this, column, rgb]() {
+        // save this foreground color in the column style (for later cells on resize() etc)
+        ensureColumnStyle(column);
+        _columnStyles[column].foreground = rgb;
 
-    // set each cell's foreground color in that column
-    for (int row = 0, nr = numRows(); row < nr; row++) {
-        setCellForegroundInternal(row, column, rgb);
-    }
+        // set each cell's foreground color in that column
+        for (int row = 0, nr = numRows(); row < nr; row++) {
+            setCellForegroundInternal(row, column, rgb);
+        }
+    });
 }
 
 void QGTable::setColumnForeground(int column, const std::string& color) {
@@ -652,17 +693,19 @@ void QGTable::setColumnForeground(int column, const std::string& color) {
 }
 
 void QGTable::setColumnHeaderStyle(QGTable::ColumnHeaderStyle style) {
-    _columnHeaderStyle = style;
-    if (style == QGTable::COLUMN_HEADER_NONE) {
-        // no headers
-        setRowColumnHeadersVisible(false);
-        return;
-    } else {
-        // build list of column names to display
-        updateColumnHeaders();
-        _iqtableview->horizontalHeader()->setVisible(true);
-        _iqtableview->verticalHeader()->setVisible(true);
-    }
+    QGThread::runOnQtGuiThread([this, style]() {
+        _columnHeaderStyle = style;
+        if (style == QGTable::COLUMN_HEADER_NONE) {
+            // no headers
+            setRowColumnHeadersVisible(false);
+            return;
+        } else {
+            // build list of column names to display
+            updateColumnHeaders();
+            _iqtableview->horizontalHeader()->setVisible(true);
+            _iqtableview->verticalHeader()->setVisible(true);
+        }
+    });
 }
 
 void QGTable::setColumnWidth(int column, double width) {
@@ -670,81 +713,91 @@ void QGTable::setColumnWidth(int column, double width) {
     if (width < 0) {
         error("QGTable::setColumnWidth: width cannot be negative");
     }
-    _iqtableview->setColumnWidth(column, (int) width);
+    QGThread::runOnQtGuiThread([this, column, width]() {
+        _iqtableview->setColumnWidth(column, (int) width);
+    });
 }
 
 void QGTable::setEditable(bool editable) {
-    if (editable) {
-        _iqtableview->setEditTriggers(
-                    QAbstractItemView::CurrentChanged
-                    | QAbstractItemView::DoubleClicked
-                    | QAbstractItemView::EditKeyPressed
-                    | QAbstractItemView::AnyKeyPressed);
-    } else {
-        _iqtableview->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    }
+    QGThread::runOnQtGuiThread([this, editable]() {
+        if (editable) {
+            _iqtableview->setEditTriggers(
+                        QAbstractItemView::CurrentChanged
+                        | QAbstractItemView::DoubleClicked
+                        | QAbstractItemView::EditKeyPressed
+                        | QAbstractItemView::AnyKeyPressed);
+        } else {
+            _iqtableview->setEditTriggers(QAbstractItemView::NoEditTriggers);
+        }
+    });
 }
 
 void QGTable::setEditorValue(int row, int column, const std::string& text) {
     checkIndex("setEditorValue", row, column);
-    _Internal_QItemDelegate* delegate = _iqtableview->getItemDelegate();
-    if (delegate != nullptr) {
-        QWidget* editor = delegate->getEditor();
-        if (QLineEdit* lineEdit = qobject_cast<QLineEdit*>(editor)) {
-            lineEdit->setText(QString::fromStdString(text));
+    QGThread::runOnQtGuiThread([this, text]() {
+        _Internal_QItemDelegate* delegate = _iqtableview->getItemDelegate();
+        if (delegate != nullptr) {
+            QWidget* editor = delegate->getEditor();
+            if (QLineEdit* lineEdit = qobject_cast<QLineEdit*>(editor)) {
+                lineEdit->setText(QString::fromStdString(text));
+            }
         }
-    }
+    });
 }
 
 void QGTable::setFont(const std::string& font) {
     QGInteractor::setFont(font);   // call super
 
-    // save this font in the global cell style (for later cells on resize() etc)
-    ensureDefaultFormatting();
-    _globalCellStyle.font = font;
+    QGThread::runOnQtGuiThread([this, font]() {
+        // save this font in the global cell style (for later cells on resize() etc)
+        ensureDefaultFormatting();
+        _globalCellStyle.font = font;
 
-    // remove fonts from any row/column styles because they are
-    // now overridden by this global font style
-    TableStyle unset = TableStyle::unset();
-    for (int row : _rowStyles) {
-        _rowStyles[row].font = unset.font;
-    }
-    for (int col : _columnStyles) {
-        _columnStyles[col].font = unset.font;
-    }
-
-    // set each cell's foreground color
-    for (int row = 0, nr = numRows(); row < nr; row++) {
-        for (int col = 0, nc = numCols(); col < nc; col++) {
-            setCellFontInternal(row, col, font);
+        // remove fonts from any row/column styles because they are
+        // now overridden by this global font style
+        TableStyle unset = TableStyle::unset();
+        for (int row : _rowStyles) {
+            _rowStyles[row].font = unset.font;
         }
-    }
+        for (int col : _columnStyles) {
+            _columnStyles[col].font = unset.font;
+        }
+
+        // set each cell's foreground color
+        for (int row = 0, nr = numRows(); row < nr; row++) {
+            for (int col = 0, nc = numCols(); col < nc; col++) {
+                setCellFontInternal(row, col, font);
+            }
+        }
+    });
 }
 
 void QGTable::setForeground(int rgb) {
-    // QGInteractor::setForeground(rgb);
-    // (don't call super; that will set the FG of the scrollbars and everything)
+    QGThread::runOnQtGuiThread([this, rgb]() {
+        // QGInteractor::setForeground(rgb);
+        // (don't call super; that will set the FG of the scrollbars and everything)
 
-    // save this foreground color in the global cell style (for later cells on resize() etc)
-    ensureDefaultFormatting();
-    _globalCellStyle.foreground = rgb;
+        // save this foreground color in the global cell style (for later cells on resize() etc)
+        ensureDefaultFormatting();
+        _globalCellStyle.foreground = rgb;
 
-    // remove foreground colors from any row/column styles because they are
-    // now overridden by this global foreground color style
-    TableStyle unset = TableStyle::unset();
-    for (int row : _rowStyles) {
-        _rowStyles[row].foreground = unset.foreground;
-    }
-    for (int col : _columnStyles) {
-        _columnStyles[col].foreground = unset.foreground;
-    }
-
-    // set each cell's foreground color
-    for (int row = 0, nr = numRows(); row < nr; row++) {
-        for (int col = 0, nc = numCols(); col < nc; col++) {
-            setCellForegroundInternal(row, col, rgb);
+        // remove foreground colors from any row/column styles because they are
+        // now overridden by this global foreground color style
+        TableStyle unset = TableStyle::unset();
+        for (int row : _rowStyles) {
+            _rowStyles[row].foreground = unset.foreground;
         }
-    }
+        for (int col : _columnStyles) {
+            _columnStyles[col].foreground = unset.foreground;
+        }
+
+        // set each cell's foreground color
+        for (int row = 0, nr = numRows(); row < nr; row++) {
+            for (int col = 0, nc = numCols(); col < nc; col++) {
+                setCellForegroundInternal(row, col, rgb);
+            }
+        }
+    });
 }
 
 void QGTable::setForeground(const std::string& color) {
@@ -752,52 +805,59 @@ void QGTable::setForeground(const std::string& color) {
 }
 
 void QGTable::setHorizontalAlignment(qgenum::HorizontalAlignment alignment) {
-    // save this alignment in the global cell style (for later cells on resize() etc)
-    ensureDefaultFormatting();
-    _globalCellStyle.alignment = alignment;
+    QGThread::runOnQtGuiThread([this, alignment]() {
+        // save this alignment in the global cell style (for later cells on resize() etc)
+        ensureDefaultFormatting();
 
-    // remove alignment from any row/column styles because they are
-    // now overridden by this global alignment style
-    TableStyle unset = TableStyle::unset();
-    for (int row : _rowStyles) {
-        _rowStyles[row].alignment = unset.alignment;
-    }
-    for (int col : _columnStyles) {
-        _columnStyles[col].alignment = unset.alignment;
-    }
+        _globalCellStyle.alignment = alignment;
 
-    // set each cell's horizontal alignment
-    for (int row = 0, nr = numRows(), nc = numCols(); row < nr; row++) {
-        for (int col = 0; col < nc; col++) {
-            setCellAlignmentInternal(row, col, alignment);
+        // remove alignment from any row/column styles because they are
+        // now overridden by this global alignment style
+        TableStyle unset = TableStyle::unset();
+        for (int row : _rowStyles) {
+            _rowStyles[row].alignment = unset.alignment;
         }
-    }
+        for (int col : _columnStyles) {
+            _columnStyles[col].alignment = unset.alignment;
+        }
+
+        // set each cell's horizontal alignment
+        for (int row = 0, nr = numRows(), nc = numCols(); row < nr; row++) {
+            for (int col = 0; col < nc; col++) {
+                setCellAlignmentInternal(row, col, alignment);
+            }
+        }
+    });
 }
 
 void QGTable::setRowAlignment(int row, qgenum::HorizontalAlignment alignment) {
     checkIndex("setRowAlignment", row, /* column */ 0);
 
     // save this alignment in the row style (for later cells on resize() etc)
-    ensureRowStyle(row);
-    _rowStyles[row].alignment = alignment;
+    QGThread::runOnQtGuiThread([this, row, alignment]() {
+        ensureRowStyle(row);
+        _rowStyles[row].alignment = alignment;
 
-    // set each cell's alignment in that row
-    for (int col = 0, nc = numCols(); col < nc; col++) {
-        setCellAlignmentInternal(row, col, alignment);
-    }
+        // set each cell's alignment in that row
+        for (int col = 0, nc = numCols(); col < nc; col++) {
+            setCellAlignmentInternal(row, col, alignment);
+        }
+    });
 }
 
 void QGTable::setRowBackground(int row, int rgb) {
     checkIndex("setRowBackground", row, /* column */ 0);
 
     // save this background color in the row style (for later cells on resize() etc)
-    ensureRowStyle(row);
-    _rowStyles[row].background = rgb;
+    QGThread::runOnQtGuiThread([this, row, rgb]() {
+        ensureRowStyle(row);
+        _rowStyles[row].background = rgb;
 
-    // set each cell's background color in that row
-    for (int col = 0, nc = numCols(); col < nc; col++) {
-        setCellBackgroundInternal(row, col, rgb);
-    }
+        // set each cell's background color in that row
+        for (int col = 0, nc = numCols(); col < nc; col++) {
+            setCellBackgroundInternal(row, col, rgb);
+        }
+    });
 }
 
 void QGTable::setRowBackground(int row, const std::string& color) {
@@ -808,26 +868,30 @@ void QGTable::setRowFont(int row, const std::string& font) {
     checkIndex("setRowFont", row, /* column */ 0);
 
     // save this font in the row style (for later cells on resize() etc)
-    ensureRowStyle(row);
-    _rowStyles[row].font = font;
+    QGThread::runOnQtGuiThread([this, row, font]() {
+        ensureRowStyle(row);
+        _rowStyles[row].font = font;
 
-    // set each cell's font in that row
-    for (int col = 0, nc = numCols(); col < nc; col++) {
-        setCellFontInternal(row, col, font);
-    }
+        // set each cell's font in that row
+        for (int col = 0, nc = numCols(); col < nc; col++) {
+            setCellFontInternal(row, col, font);
+        }
+    });
 }
 
 void QGTable::setRowForeground(int row, int rgb) {
     checkIndex("setRowForeground", row, /* column */ 0);
 
     // save this foreground color in the row style (for later cells on resize() etc)
-    ensureRowStyle(row);
-    _rowStyles[row].foreground = rgb;
+    QGThread::runOnQtGuiThread([this, row, rgb]() {
+        ensureRowStyle(row);
+        _rowStyles[row].foreground = rgb;
 
-    // set each cell's foreground color in that row
-    for (int col = 0, nc = numCols(); col < nc; col++) {
-        setCellForegroundInternal(row, col, rgb);
-    }
+        // set each cell's foreground color in that row
+        for (int col = 0, nc = numCols(); col < nc; col++) {
+            setCellForegroundInternal(row, col, rgb);
+        }
+    });
 }
 
 void QGTable::setRowForeground(int row, const std::string& color) {
@@ -836,8 +900,10 @@ void QGTable::setRowForeground(int row, const std::string& color) {
 }
 
 void QGTable::setRowColumnHeadersVisible(bool visible) {
-    _iqtableview->horizontalHeader()->setVisible(visible);
-    _iqtableview->verticalHeader()->setVisible(visible);
+    QGThread::runOnQtGuiThread([this, visible]() {
+        _iqtableview->horizontalHeader()->setVisible(visible);
+        _iqtableview->verticalHeader()->setVisible(visible);
+    });
 }
 
 void QGTable::setRowHeight(int row, double height) {
@@ -845,7 +911,9 @@ void QGTable::setRowHeight(int row, double height) {
     if (height < 0) {
         error("QGTable::setRowHeight: height cannot be negative");
     }
-    _iqtableview->setRowHeight(row, (int) height);
+    QGThread::runOnQtGuiThread([this, row, height]() {
+        _iqtableview->setRowHeight(row, (int) height);
+    });
 }
 
 void QGTable::setSelectedCellValue(const std::string& text) {
@@ -890,22 +958,24 @@ std::string QGTable::toExcelColumnName(int col) {
 }
 
 void QGTable::updateColumnHeaders() {
-    if (_columnHeaderStyle == QGTable::COLUMN_HEADER_NONE) {
-        return;
-    }
-
-    // Qt wants me to put the headers into a string list, and apparently
-    // you add things to the list using << like it was a ostream (bleh)
-    QStringList columnHeaders;
-    for (int col = 0, nc = numCols(); col < nc; col++) {
-        if (_columnHeaderStyle == QGTable::COLUMN_HEADER_EXCEL) {
-            columnHeaders << QString::fromStdString(toExcelColumnName(col));
-        } else {
-            // style == QGTable::COLUMN_HEADER_NUMERIC
-            columnHeaders << QString::fromStdString(integerToString(col));
+    QGThread::runOnQtGuiThread([this]() {
+        if (_columnHeaderStyle == QGTable::COLUMN_HEADER_NONE) {
+            return;
         }
-    }
-    _iqtableview->setHorizontalHeaderLabels(columnHeaders);
+
+        // Qt wants me to put the headers into a string list, and apparently
+        // you add things to the list using << like it was a ostream (bleh)
+        QStringList columnHeaders;
+        for (int col = 0, nc = numCols(); col < nc; col++) {
+            if (_columnHeaderStyle == QGTable::COLUMN_HEADER_EXCEL) {
+                columnHeaders << QString::fromStdString(toExcelColumnName(col));
+            } else {
+                // style == QGTable::COLUMN_HEADER_NUMERIC
+                columnHeaders << QString::fromStdString(integerToString(col));
+            }
+        }
+        _iqtableview->setHorizontalHeaderLabels(columnHeaders);
+    });
 }
 
 int QGTable::width() const {

@@ -8,6 +8,7 @@
 
 #ifdef SPL_QT_GUI
 #include "qgscrollbar.h"
+#include "qgthread.h"
 #include "strlib.h"
 
 _Internal_QScrollBar::_Internal_QScrollBar(QGScrollBar* qgscrollbar, Qt::Orientation orientation, QWidget* parent)
@@ -41,7 +42,9 @@ QGScrollBar::QGScrollBar(QGScrollBar::Orientation orientation,
                          int min,
                          int max,
                          QWidget* parent) {
-    _iqscrollbar = new _Internal_QScrollBar(this, orientation == VERTICAL ? Qt::Vertical : Qt::Horizontal, getInternalParent(parent));
+    QGThread::runOnQtGuiThread([this, orientation, parent]() {
+        _iqscrollbar = new _Internal_QScrollBar(this, orientation == VERTICAL ? Qt::Vertical : Qt::Horizontal, getInternalParent(parent));
+    });
     setState(value, extent, min, max);
 }
 
@@ -95,38 +98,50 @@ void QGScrollBar::setActionListener(QGEventListenerVoid func) {
 }
 
 void QGScrollBar::setExtent(int extent) {
-    _iqscrollbar->setPageStep(extent);
+    QGThread::runOnQtGuiThread([this, extent]() {
+        _iqscrollbar->setPageStep(extent);
+    });
 }
 
 void QGScrollBar::setMax(int max) {
-    _iqscrollbar->setMaximum(max);
+    QGThread::runOnQtGuiThread([this, max]() {
+        _iqscrollbar->setMaximum(max);
+    });
     updateSize();
 }
 
 void QGScrollBar::setMin(int min) {
-    _iqscrollbar->setMinimum(min);
+    QGThread::runOnQtGuiThread([this, min]() {
+        _iqscrollbar->setMinimum(min);
+    });
     updateSize();
 }
 
 void QGScrollBar::setState(int value, int extent, int min, int max) {
-    _iqscrollbar->setRange(min, max);
-    _iqscrollbar->setValue(value);
-    _iqscrollbar->setPageStep(extent);
+    QGThread::runOnQtGuiThread([this, value, extent, min, max]() {
+        _iqscrollbar->setRange(min, max);
+        _iqscrollbar->setValue(value);
+        _iqscrollbar->setPageStep(extent);
+    });
     updateSize();
 }
 
 void QGScrollBar::setValue(int value) {
-    _iqscrollbar->setValue(value);
+    QGThread::runOnQtGuiThread([this, value]() {
+        _iqscrollbar->setValue(value);
+    });
 }
 
 void QGScrollBar::updateSize() {
-    _iqscrollbar->update();
-    _iqscrollbar->updateGeometry();
-    if (getOrientation() == VERTICAL) {
-        _iqscrollbar->setPreferredSize(_iqscrollbar->sizeHint().width(), getMax() - getMin() + 1);
-    } else {
-        _iqscrollbar->setPreferredSize(getMax() - getMin() + 1, _iqscrollbar->sizeHint().height());
-    }
+    QGThread::runOnQtGuiThread([this]() {
+        _iqscrollbar->update();
+        _iqscrollbar->updateGeometry();
+        if (getOrientation() == VERTICAL) {
+            _iqscrollbar->setPreferredSize(_iqscrollbar->sizeHint().width(), getMax() - getMin() + 1);
+        } else {
+            _iqscrollbar->setPreferredSize(getMax() - getMin() + 1, _iqscrollbar->sizeHint().height());
+        }
+    });
 }
 
 #endif // SPL_QT_GUI
