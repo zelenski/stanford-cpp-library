@@ -543,7 +543,7 @@ public:
         }
 
         ValueType* operator ->() {
-            return mapit;
+            return &**this;
         }
     };
 
