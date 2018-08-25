@@ -22,7 +22,10 @@
 #include <cstdlib>
 #include <cmath>
 #include <ctime>
+#include <iostream>
+#include <iomanip>
 #include <queue>
+#include <sstream>
 #include "private/static.h"
 
 /* Private function prototype */
@@ -85,11 +88,15 @@ int randomColor() {
     return rand() & 0x00ffffff;
 }
 
-// don't want to depend on gwindow.h
-extern std::string convertRGBToColor(int rgb);
-
+// see convertRGBToColor in gcolor.h (repeated here to avoid Qt dependency)
 std::string randomColorString() {
-    return convertRGBToColor(randomColor());
+    int rgb = randomColor();
+    std::ostringstream os;
+    os << std::hex << std::setfill('0') << std::uppercase << "#";
+    os << std::setw(2) << (rgb >> 16 & 0xFF);
+    os << std::setw(2) << (rgb >> 8 & 0xFF);
+    os << std::setw(2) << (rgb & 0xFF);
+    return os.str();
 }
 
 /*

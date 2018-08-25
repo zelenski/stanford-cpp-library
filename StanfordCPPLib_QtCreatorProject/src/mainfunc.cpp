@@ -2,9 +2,11 @@
  * Test file for verifying the Stanford C++ lib functionality.
  */
 
-#include "qgobjects.h"
+#include "gobjects.h"
 
 int main() {
-    extern int mainQtConsole();
-    return mainQtConsole();
+    // extern int mainQt2dGraphics();
+    // return mainQt2dGraphics();
+    extern int mainQtWidgets();
+    return mainQtWidgets();
 }

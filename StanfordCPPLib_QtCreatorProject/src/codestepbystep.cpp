@@ -10,7 +10,6 @@
 #include "codestepbystep.h"
 #include "exceptions.h"
 #include "plainconsole.h"
-#include "private/platform.h"
 
 extern void startupMainDontRunMain(int argc, char** argv);
 
@@ -347,7 +346,8 @@ static void __terminateHandler() {
 
 void main_begin(int argc, char** argv) {
     // initialize Stanford library
-    __initializeStanfordCppLibrary(argc, argv);
+    // TODO
+    // __initializeStanfordCppLibrary(argc, argv);
 
     // set up signal handler to process serious errors
     CodeStepByStep::__setupSignalHandler();

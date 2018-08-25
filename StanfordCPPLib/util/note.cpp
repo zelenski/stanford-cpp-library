@@ -18,7 +18,6 @@
 #include "error.h"
 #include "gmath.h"
 #include "hashcode.h"
-#include "private/platform.h"
 
 // line e.g. "1.5 G 5 NATURAL false"
 Note::Note(std::string line) {
@@ -144,7 +143,8 @@ void Note::play() const {
         printf("%s\n", toString().c_str());
     }
 #endif // NOTE_DEBUG
-    stanfordcpplib::getPlatform()->note_play(toString());
+    // TODO
+    // stanfordcpplib::getPlatform()->note_play(toString());
 }
 
 void Note::setAccidental(Note::Accidental accidental) {

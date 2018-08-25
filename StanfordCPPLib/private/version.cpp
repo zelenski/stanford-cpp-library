@@ -21,7 +21,6 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include "private/platform.h"
 
 namespace version {
 #ifdef SPL_PROJECT_VERSION
@@ -42,25 +41,8 @@ static std::string macroIntegerToDate(int macroInteger) {
 }
 #endif // SPL_PROJECT_VERSION
 
-static void ensureJavaBackEndVersionHelper(std::string minVersion) {
-    std::string backendVersion = stanfordcpplib::getPlatform()->cpplib_getJavaBackEndVersion();
-    if (backendVersion < minVersion) {
-        // use stderr directly rather than cerr because graphical console is unreachable
-        fputs("\n", stderr);
-        fputs("***\n", stderr);
-        fputs("*** STANFORD C++ LIBRARY ERROR:\n", stderr);
-        fputs("*** The Java back-end library 'spl.jar' detected is too old\n", stderr);
-        fputs("*** and is not compatible with this version of the C++ library.\n", stderr);
-        fputs("*** Exiting immediately to avoid compatibility errors.\n", stderr);
-        fputs("*** Please update your spl.jar to a newer compatible version.\n", stderr);
-        fprintf(stderr, "*** Java back-end spl.jar found: %s\n", backendVersion.c_str());
-        fprintf(stderr, "*** Minimum version accepted   : %s\n", minVersion.c_str());
-        fputs("***\n", stderr);
-        fputs("\n", stderr);
-        fflush(stderr);
-        
-        std::exit(1);
-    }
+static void ensureJavaBackEndVersionHelper(std::string /*minVersion*/) {
+    // empty
 }
 
 static void ensureProjectVersionHelper(std::string minVersion) {
@@ -115,7 +97,8 @@ std::string getCppLibraryVersion() {
 }
 
 std::string getJavaBackEndVersion() {
-    return stanfordcpplib::getPlatform()->cpplib_getJavaBackEndVersion();
+    return "?";
+    // return stanfordcpplib::getPlatform()->cpplib_getJavaBackEndVersion();
 }
 
 /*

@@ -1,32 +1,27 @@
 /*
  * File: goptionpane.h
  * -------------------
- * This file defines the <code>GOptionPane</code> class which supports
- * popping up graphical dialog boxes for user input.
- * 
- * This class is inspired by, extremely similar to, and implemented on
- * the back-end by, Java's JOptionPane class, so you may wish to consult
- * that class's documentation in the Java API Specification for more
- * information.
- * 
+ *
  * @author Marty Stepp
- * @version 2017/10/12
- * - added initialValue to showInputDialog
- * - modified functions to accept const string& instead of string
- * @version 2014/10/26
- * - added showTextFileDialog
- * @version 2014/10/09
- * - finished implementation of showOptionDialog; added dialog types and other fixes
- * - enum rearrangement for clearer client code and better error messages
- * @since 2014/07/09
+ * @version 2018/08/23
+ * - renamed to goptionpane.h to replace Java version
+ * @version 2018/06/28
+ * - initial version
  */
 
 #ifndef _goptionpane_h
 #define _goptionpane_h
 
 #include <string>
+#include "ginteractor.h"
 #include "vector.h"
 
+// forward declaration
+class GOptionPane;
+
+/*
+ * ...
+ */
 class GOptionPane {
 public:
     /*
@@ -51,7 +46,7 @@ public:
         OK = 2,        // for ok/cancel dialogs
         YES = 1        // 1 so that 'yes' is 'truthy'
     };
-    
+
     /*
      * Constants for showMessageDialog types, taken from Java's JOptionPane
      */
@@ -59,8 +54,9 @@ public:
         ERROR = 0,
         INFORMATION = 1,
         PLAIN = -1,
+        WARNING = 2,
         QUESTION = 3,
-        WARNING = 2
+        ABOUT = 4
     };
 
     /*
@@ -69,17 +65,28 @@ public:
      * GOptionPaneResult enumeration constants is returned.
      * The caller can supply an optional window title; if none is passed, a default is used.
      */
-    static ConfirmResult showConfirmDialog(const std::string& message, const std::string& title = "",
+    static ConfirmResult showConfirmDialog(const std::string& message,
+                                           const std::string& title = "",
                                            ConfirmType type = YES_NO);
-    
+    static ConfirmResult showConfirmDialog(QWidget* parent,
+                                           const std::string& message,
+                                           const std::string& title = "",
+                                           ConfirmType type = YES_NO);
+
     /*
      * Pops up an input box with a text field where the user can type a
      * response, which is returned.
      * The caller can supply an optional window title; if none is passed, a default is used.
      * If the user cancels the box, an empty string is returned.
      */
-    static std::string showInputDialog(const std::string& message, const std::string& title = "", const std::string& initialValue = "");
-    
+    static std::string showInputDialog(const std::string& message,
+                                       const std::string& title = "",
+                                       const std::string& initialValue = "");
+    static std::string showInputDialog(QWidget* parent,
+                                       const std::string& message,
+                                       const std::string& title = "",
+                                       const std::string& initialValue = "");
+
     /*
      * Displays an output message dialog to the user.
      * The user must click the 'OK' button to close the dialog.
@@ -88,9 +95,14 @@ public:
      * WARNING_MESSAGE, or QUESTION_MESSAGE; this slightly affects the dialog's
      * appearance.  The default is PLAIN_MESSAGE.
      */
-    static void showMessageDialog(const std::string& message, const std::string& title = "",
+    static void showMessageDialog(const std::string& message,
+                                  const std::string& title = "",
                                   MessageType type = PLAIN);
-    
+    static void showMessageDialog(QWidget* parent,
+                                  const std::string& message,
+                                  const std::string& title = "",
+                                  MessageType type = PLAIN);
+
     /*
      * Shows a general input box with a set of buttons from which the user may
      * choose one option.  The button the user clicks is returned as a string.
@@ -98,15 +110,28 @@ public:
      * The caller can supply an optional window title; if none is passed, a default is used.
      * The caller can supply an optional initially selected value from the list.
      */
-    static std::string showOptionDialog(const std::string& message, const Vector<std::string>& options,
-                                        const std::string& title = "", const std::string& initiallySelected = "");
+    static std::string showOptionDialog(const std::string& message,
+                                        const Vector<std::string>& options,
+                                        const std::string& title = "",
+                                        const std::string& initiallySelected = "");
+    static std::string showOptionDialog(QWidget* parent,
+                                        const std::string& message,
+                                        const Vector<std::string>& options,
+                                        const std::string& title = "",
+                                        const std::string& initiallySelected = "");
 
     /*
      * Displays the given text in a scrolling monospaced text area.
      * rows/cols parameters control size to show; set to <= 0 for a default limit.
      */
-    static void showTextFileDialog(const std::string& message, const std::string& title = "", int rows = -1, int cols = -1);
-    
+    static void showTextFileDialog(const std::string& message,
+                                   const std::string& title = "",
+                                   int rows = -1, int cols = -1);
+    static void showTextFileDialog(QWidget* parent,
+                                   const std::string& message,
+                                   const std::string& title = "",
+                                   int rows = -1, int cols = -1);
+
 private:
     /*
      * Private constructor so that clients don't try to construct
@@ -114,7 +139,7 @@ private:
      * static methods, not by instantiation.
      */
     GOptionPane();
-    
+
     enum InternalResult {
         /*
          * The results that can come back from showConfirmDialog.

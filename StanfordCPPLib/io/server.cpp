@@ -14,12 +14,11 @@
 #include "filelib.h"
 #include "map.h"
 #include "strlib.h"
-#include "private/platform.h"
 #include "private/static.h"
 
 namespace HttpServer {
 STATIC_CONST_VARIABLE_DECLARE(std::string, CONTENT_TYPE_DEFAULT, "text/html")
-STATIC_CONST_VARIABLE_DECLARE(std::string, CONTENT_TYPE_ERROR, "text/plain")
+// STATIC_CONST_VARIABLE_DECLARE(std::string, CONTENT_TYPE_ERROR, "text/plain")
 STATIC_VARIABLE_DECLARE(bool, isRunning, false)
 
 bool isRunning() {
@@ -192,28 +191,31 @@ std::string getUrlExtension(const std::string& url) {
     return url2;
 }
 
-void sendResponse(const GServerEvent& event, const std::string& responseText,
+void sendResponse(const GEvent& /*event*/, const std::string& /* responseText */,
                   const std::string& contentType) {
     if (!isRunning()) {
         error("HttpServer::sendResponse: server is not running");
     }
     std::string contentTypeActual = contentType;
     if (contentTypeActual.empty()) {
-        contentTypeActual = getContentType(getUrlExtension(event.getRequestURL()));
+        // TODO
+        // contentTypeActual = getContentType(getUrlExtension(event.getRequestURL()));
     }
-    stanfordcpplib::getPlatform()->httpserver_sendResponse(event.getRequestID(), HTTP_ERROR_OK, contentTypeActual, responseText);
+    // TODO
+    // stanfordcpplib::getPlatform()->httpserver_sendResponse(event.getRequestID(), HTTP_ERROR_OK, contentTypeActual, responseText);
 }
 
-void sendResponseError(const GServerEvent& event, int httpErrorCode,
+void sendResponseError(const GEvent& /*event*/, int httpErrorCode,
                        const std::string& errorMessage) {
     std::string errorMessageActual = errorMessage;
     if (errorMessageActual.empty()) {
         errorMessageActual = getErrorMessage(httpErrorCode);
     }
-    stanfordcpplib::getPlatform()->httpserver_sendResponse(event.getRequestID(), httpErrorCode, STATIC_VARIABLE(CONTENT_TYPE_ERROR), errorMessageActual);
+    // TODO
+    // stanfordcpplib::getPlatform()->httpserver_sendResponse(event.getRequestID(), httpErrorCode, STATIC_VARIABLE(CONTENT_TYPE_ERROR), errorMessageActual);
 }
 
-void sendResponseFile(const GServerEvent& event, const std::string& responseFilePath,
+void sendResponseFile(const GEvent& /*event*/, const std::string& responseFilePath,
                       const std::string& contentType) {
     if (!isRunning()) {
         error("HttpServer::sendResponse: server is not running");
@@ -222,13 +224,14 @@ void sendResponseFile(const GServerEvent& event, const std::string& responseFile
     if (contentTypeActual.empty()) {
         contentTypeActual = getContentType(getExtension(responseFilePath));
     }
-    stanfordcpplib::getPlatform()->httpserver_sendResponseFile(event.getRequestID(), contentType, responseFilePath);
+    // TODO
+    // stanfordcpplib::getPlatform()->httpserver_sendResponseFile(event.getRequestID(), contentType, responseFilePath);
 }
 
 
-void startServer(int port) {
+void startServer(int /*port*/) {
     if (!STATIC_VARIABLE(isRunning)) {
-        stanfordcpplib::getPlatform()->httpserver_start(port);
+        // stanfordcpplib::getPlatform()->httpserver_start(port);
         STATIC_VARIABLE(isRunning) = true;
     }
 }
@@ -236,7 +239,7 @@ void startServer(int port) {
 void stopServer() {
     if (STATIC_VARIABLE(isRunning)) {
         STATIC_VARIABLE(isRunning) = false;
-        stanfordcpplib::getPlatform()->httpserver_stop();
+        // stanfordcpplib::getPlatform()->httpserver_stop();
     }
 }
 } // namespace HttpServer

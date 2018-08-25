@@ -21,13 +21,8 @@
 #include <string>
 #include "error.h"
 #include "filelib.h"
+#include "gdownloader.h"
 #include "strlib.h"
-
-#ifdef SPL_QT_GUI
-#include "qgdownloader.h"
-#else
-#include "private/platform.h"
-#endif // SPL_QT_GUI
 
 namespace {
     /* Given a status code, determines whether it's successful. All successful HTTP
@@ -119,17 +114,11 @@ void iurlstream::open(const std::string& url) {
     
     // insert/send headers to backend if needed
     if (_headers.isEmpty()) {
-#ifdef SPL_QT_GUI
-
-#else
-        _lastError = stanfordcpplib::getPlatform()->url_download(_url, filename);
-
-#endif // SPL_QT_GUI
+        // TODO
+        // _lastError = stanfordcpplib::getPlatform()->url_download(_url, filename);
     } else {
-#ifdef SPL_QT_GUI
-#else
-        _lastError = stanfordcpplib::getPlatform()->url_downloadWithHeaders(_url, filename, _headers);
-#endif // SPL_QT_GUI
+        // TODO
+        // _lastError = stanfordcpplib::getPlatform()->url_downloadWithHeaders(_url, filename, _headers);
     }
 
     if (isHttpSuccess(_lastError)) {

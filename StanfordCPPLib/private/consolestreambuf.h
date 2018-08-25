@@ -17,10 +17,6 @@
 
 namespace stanfordcpplib {
 
-extern void endLineConsole(bool isStderr);
-extern std::string getLineConsole();
-extern void putConsole(const std::string& str, bool isStderr);
-
 class ConsoleStreambuf : public std::streambuf {
 protected:
     /* Constants */
@@ -32,17 +28,11 @@ protected:
     int blocked;
 
     // to be overridden in subclasses
-    virtual void myEndLineConsole(bool isStderr) {
-        endLineConsole(isStderr);
-    }
+    virtual void myEndLineConsole(bool isStderr) = 0;
 
-    virtual std::string myGetLineConsole() {
-        return getLineConsole();
-    }
+    virtual std::string myGetLineConsole() = 0;
 
-    virtual void myPutConsole(const std::string& str, bool isStderr) {
-        return putConsole(str, isStderr);
-    }
+    virtual void myPutConsole(const std::string& str, bool isStderr) = 0;
 
 public:
     ConsoleStreambuf() {
@@ -120,9 +110,6 @@ public:
     }
 };
 
-
-#ifdef SPL_QT_GUI
-
 namespace qtgui {
 
 extern void endLineConsoleQt(bool isStderr);
@@ -163,8 +150,6 @@ private:
 };
 
 } // namespace qtgui
-
-#endif // SPL_QT_GUI
 
 } // namespace stanfordcpplib
 

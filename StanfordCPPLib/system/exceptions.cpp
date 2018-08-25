@@ -51,7 +51,6 @@
 #  undef MOUSE_MOVED
 #  undef HELP_KEY
 #endif
-#include "private/platform.h"
 
 // uncomment the definition below to use an alternative 'signal stack'
 // which helps in handling stack overflow errors

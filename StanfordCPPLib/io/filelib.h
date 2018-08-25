@@ -416,6 +416,26 @@ bool writeEntireFile(const std::string& filename,
                      const std::string& text,
                      bool append = false);
 
+/*
+ * Platform-dependent functions that differ by operating system.
+ */
+namespace platform {
+    std::string file_openFileDialog(const std::string& title, const std::string& mode, const std::string& path);
+    void filelib_createDirectory(const std::string& path);
+    void filelib_deleteFile(const std::string& path);
+    std::string filelib_expandPathname(const std::string& filename);
+    bool filelib_fileExists(const std::string& filename);
+    std::string filelib_getCurrentDirectory();
+    std::string filelib_getDirectoryPathSeparator();
+    std::string filelib_getSearchPathSeparator();
+    std::string filelib_getTempDirectory();
+    bool filelib_isDirectory(const std::string& filename);
+    bool filelib_isFile(const std::string& filename);
+    bool filelib_isSymbolicLink(const std::string& filename);
+    void filelib_listDirectory(const std::string& path, std::vector<std::string>& list);
+    void filelib_setCurrentDirectory(const std::string& path);
+}
+
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
-#endif
+#endif // _filelib_h
