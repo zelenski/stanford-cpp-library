@@ -316,7 +316,7 @@ public:
     void gtextlabel_constructor(GObject* gobj, const std::string& label);
 
     void gtimer_constructor(const GTimer& timer, double delay);
-    void gtimer_delete(const GTimer& timer);
+    void gtimer_delete(const std::string& timerID);
     void gtimer_pause(double milliseconds);
     void gtimer_start(const GTimer& timer);
     void gtimer_stop(const GTimer& timer);

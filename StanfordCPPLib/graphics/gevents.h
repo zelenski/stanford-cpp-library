@@ -32,6 +32,7 @@
 #define _gevents_h
 
 #include <string>
+#include <cstdint>
 #include "gtable.h"
 #include "gtimer.h"
 #include "gwindow.h"
@@ -394,8 +395,17 @@ private:
     int column;
     std::string value;
 
-    /* Timer events */
-    GTimerData* gtd;
+    /* Timer events. We hold a weak pointer to the event rather than a shared_ptr
+     * so that if we're the last person to hold on to a GTimer, that timer gets
+     * deallocated.
+     *
+     * There's an auxiliary issue that this addresses: if, at program shutdown,
+     * there are GEvents sitting in the event queue that need to get cleaned up and
+     * they hold live references to internal IDs, there is a risk that, due to the
+     * nondeterministic order of static destruction, we'd try to touch the static
+     * table of GTimer IDs, which may have been destroyed before us.
+     */
+    std::weak_ptr<std::int64_t> gtd;
 
     /* Friend specifications */
     friend class GActionEvent;

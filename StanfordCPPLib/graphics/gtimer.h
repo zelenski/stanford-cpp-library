@@ -12,25 +12,12 @@
 #define _gtimer_h
 
 #include <string>
+#include <memory>
+#include <cstdint>
 
 namespace stanfordcpplib {
 class Platform;
 }
-
-/*
- * Friend type: GTimerData
- * -----------------------
- * This type maintains a reference count to determine when it is
- * possible to free the timer.
- */
-struct GTimerData {
-    GTimerData();
-    ~GTimerData();
-
-    static int instanceCount;
-    int id;
-    int refCount;
-};
 
 /*
  * Class: GTimer
@@ -54,13 +41,6 @@ public:
      * class.
      */
     GTimer(double milliseconds);
-
-    /*
-     * Destructor: ~GTimer
-     * -------------------
-     * Frees the resources associated with the timer.
-     */
-    virtual ~GTimer();
 
     /*
      * Method: getID
@@ -107,14 +87,20 @@ public:
      */
     bool operator !=(const GTimer& t2);
 
-    /* Private section */
-    GTimer(GTimerData* gtd);
-    GTimer(const GTimer& src);
-    GTimer& operator =(const GTimer& src);
+    /**
+     * Constructor: GTimer(shared_ptr<int64_t> id);
+     * ----------------------------------
+     * Creates a timer that shares state with another timer. This is used
+     * internally by the event system, and you should not use this
+     * constructor on your own.
+     */
+    GTimer(std::shared_ptr<std::int64_t> id);
 
 private:
     /* Instance variables */
-    GTimerData* gtd;
+    std::shared_ptr<std::int64_t> gtd;
+
+    static std::int64_t nextID;
 
     friend class stanfordcpplib::Platform;
     friend class GTimerEvent;
