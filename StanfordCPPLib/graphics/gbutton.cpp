@@ -48,6 +48,7 @@ GButton::GButton(const std::string& text, const std::string& iconFileName, QWidg
     if (!iconFileName.empty()) {
         setIcon(iconFileName);
     }
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GButton::~GButton() {

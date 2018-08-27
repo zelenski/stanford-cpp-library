@@ -29,6 +29,22 @@ void GLayout::clearLayout(QLayout* layout) {
     layout->update();
 }
 
+bool GLayout::contains(QLayout* layout, QWidget* widget) {
+    if (!layout || !widget) {
+        return false;
+    }
+
+    for (int i = 0; i < layout->count(); i++) {
+        QLayoutItem* child = layout->takeAt(i);
+        QWidget* childWidget = child->widget();
+        if (childWidget == widget) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 /**
  * Forces the given widget to update, even if it's hidden.
  * from https://stackoverflow.com/questions/2427103/qt-how-to-force-a-hidden-widget-to-calculate-its-layout
@@ -37,9 +53,6 @@ void GLayout::forceUpdate(QWidget* widget) {
     if (!widget) return;
 
     // Update all child widgets.
-    widget->setAttribute(Qt::WA_DontShowOnScreen);   // TODO: remove?
-    widget->show();
-
     for (int i = 0; i < widget->children().size(); i++) {
         QObject* child = widget->children()[i];
         if (child->isWidgetType()) {
@@ -54,6 +67,10 @@ void GLayout::forceUpdate(QWidget* widget) {
     if (widget->layout()) {
         invalidateLayout(widget->layout());
     }
+
+    widget->setAttribute(Qt::WA_DontShowOnScreen, true);   // TODO: remove?
+    widget->setAttribute(Qt::WA_DontShowOnScreen, false);
+    widget->show();
 }
 
 /**

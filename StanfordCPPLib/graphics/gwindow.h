@@ -118,6 +118,8 @@ public:
     virtual ~GWindow();
     virtual void add(GInteractor* interactor);
     virtual void add(GInteractor* interactor, double x, double y);
+    virtual void add(GInteractor& interactor);
+    virtual void add(GInteractor& interactor, double x, double y);
     virtual void add(GObject* obj);
     virtual void add(GObject* obj, double x, double y);
     virtual void add(GObject& obj);
@@ -137,6 +139,8 @@ public:
     virtual QMenu* addSubMenu(const std::string& menu, const std::string& submenu);
     virtual void addToRegion(GInteractor* interactor, Region region);
     virtual void addToRegion(GInteractor* interactor, const std::string& region = "Center");
+    virtual void addToRegion(GInteractor& interactor, Region region);
+    virtual void addToRegion(GInteractor& interactor, const std::string& region = "Center");
     virtual void clear() Q_DECL_OVERRIDE;
     virtual void clearCanvas();
     virtual void clearCanvasObjects();
@@ -188,9 +192,12 @@ public:
     virtual void remove(GObject* obj);
     virtual void remove(GObject& obj);
     virtual void remove(GInteractor* interactor);
+    virtual void remove(GInteractor& interactor);
     virtual void removeClickListener();
     virtual void removeFromRegion(GInteractor* interactor, Region region);
     virtual void removeFromRegion(GInteractor* interactor, const std::string& region);
+    virtual void removeFromRegion(GInteractor& interactor, Region region);
+    virtual void removeFromRegion(GInteractor& interactor, const std::string& region);
     virtual void removeKeyListener();
     virtual void removeMenuListener();
     virtual void removeMouseListener();

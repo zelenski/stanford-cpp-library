@@ -14,7 +14,7 @@
 
 /* Implementation of the GTimer class */
 
-GTimer::GTimer(double milliseconds) {
+GTimer::GTimer(double /*milliseconds*/) {
     gtd = new GTimerData();
     gtd->refCount = 1;
 

@@ -44,6 +44,7 @@ GChooser::GChooser(QWidget* parent) {
     GThread::runOnQtGuiThread([this, parent]() {
         _iqcomboBox = new _Internal_QComboBox(this, getInternalParent(parent));
     });
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GChooser::GChooser(const std::initializer_list<std::string>& items, QWidget* parent) {
@@ -51,6 +52,7 @@ GChooser::GChooser(const std::initializer_list<std::string>& items, QWidget* par
         _iqcomboBox = new _Internal_QComboBox(this, getInternalParent(parent));
     });
     addItems(items);
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GChooser::GChooser(const Vector<std::string>& items, QWidget* parent) {
@@ -58,6 +60,7 @@ GChooser::GChooser(const Vector<std::string>& items, QWidget* parent) {
         _iqcomboBox = new _Internal_QComboBox(this, getInternalParent(parent));
     });
     addItems(items);
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GChooser::~GChooser() {

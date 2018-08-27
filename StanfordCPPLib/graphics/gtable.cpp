@@ -221,6 +221,7 @@ GTable::GTable(int rows, int columns, double width, double height, QWidget* pare
     });
     checkDimensions("constructor", rows, columns);
     checkSize("constructor", width, height);
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 void GTable::applyStyleToCell(int row, int column, const TableStyle& style) {

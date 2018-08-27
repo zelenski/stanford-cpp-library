@@ -35,6 +35,7 @@ GBrowserPane::GBrowserPane(const std::string& url, QWidget* parent) {
     if (!url.empty()) {
         readTextFromUrl(url);
     }
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GBrowserPane::~GBrowserPane() {

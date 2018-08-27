@@ -53,6 +53,7 @@ public:
 
     GInteractor();
     virtual ~GInteractor();
+    virtual void addActionListener() Q_DECL_DEPRECATED;   // does nothing
     virtual bool eventsEnabled() const Q_DECL_OVERRIDE;
     virtual std::string getAccelerator() const;
     virtual std::string getActionCommand() const;
@@ -76,6 +77,7 @@ public:
     virtual GDimension getPreferredSize() const;
     virtual double getPreferredWidth() const;
     virtual GDimension getSize() const;
+    virtual std::string getType() const = 0;
     virtual QWidget* getWidget() const = 0;
     virtual double getWidth() const;
     virtual double getX() const;
@@ -94,15 +96,15 @@ public:
     virtual void setColor(int rgb);
     virtual void setColor(const std::string& color);
     virtual void setEnabled(bool value);
+    virtual void setFont(const std::string& font);
     virtual void setForeground(int rgb);
     virtual void setForeground(const std::string& color);
-    virtual void setFont(const std::string& font);
     virtual void setHeight(double height);
     virtual void setIcon(const std::string& filename, bool retainIconSize = true);
     virtual void setLocation(double x, double y);
     virtual void setMinimumSize(double width, double height);
     virtual void setMinimumSize(const GDimension& size);
-    virtual void setMnemonic(char mnemonic);
+    virtual void setMnemonic(char mnemonic) Q_DECL_DEPRECATED;
     virtual void setPreferredHeight(double height);
     virtual void setPreferredSize(double width, double height);
     virtual void setPreferredSize(const GDimension& size);

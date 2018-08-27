@@ -487,6 +487,21 @@ void GForwardDrawingSurface::draw(GObject* obj) {
     _forwardTarget->draw(obj);
 }
 
+void GForwardDrawingSurface::draw(GObject* obj, double x, double y) {
+    ensureForwardTarget();
+    _forwardTarget->draw(obj, x, y);
+}
+
+void GForwardDrawingSurface::draw(GObject& obj) {
+    ensureForwardTarget();
+    _forwardTarget->draw(obj);
+}
+
+void GForwardDrawingSurface::draw(GObject& obj, double x, double y) {
+    ensureForwardTarget();
+    _forwardTarget->draw(obj, x, y);
+}
+
 void GForwardDrawingSurface::draw(QPainter* painter) {
     ensureForwardTarget();
     _forwardTarget->draw(painter);

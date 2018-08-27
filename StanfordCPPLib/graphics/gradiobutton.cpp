@@ -52,6 +52,7 @@ GRadioButton::GRadioButton(const std::string& text, const std::string& group, bo
         buttonGroup->addButton(_iqradioButton);
     });
     setText(text);
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GRadioButton::~GRadioButton() {

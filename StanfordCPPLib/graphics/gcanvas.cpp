@@ -200,6 +200,8 @@ void GCanvas::init(double width, double height, int rgbBackground, QWidget* pare
             fill(rgbBackground);
         }
     }
+
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 

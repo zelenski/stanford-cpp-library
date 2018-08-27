@@ -133,6 +133,7 @@ GTextField::GTextField(const std::string& text, int charsWide, QWidget* parent)
     if (charsWide > 0) {
         setCharsWide(charsWide);
     }
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GTextField::GTextField(int charsWide, QWidget* parent)
@@ -146,6 +147,7 @@ GTextField::GTextField(int charsWide, QWidget* parent)
     if (charsWide > 0) {
         setCharsWide(charsWide);
     }
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GTextField::GTextField(int value, int min, int max, int step, QWidget* parent) {
@@ -154,6 +156,7 @@ GTextField::GTextField(int value, int min, int max, int step, QWidget* parent) {
         _iqspinbox->setValue(value);
         _inputType = GTextField::INPUT_TYPE_INTEGER;
     });
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GTextField::GTextField(double value, double min, double max, double step, QWidget* parent) {
@@ -162,6 +165,7 @@ GTextField::GTextField(double value, double min, double max, double step, QWidge
         _iqdoublespinbox->setValue(value);
         _inputType = GTextField::INPUT_TYPE_REAL;
     });
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GTextField::~GTextField() {

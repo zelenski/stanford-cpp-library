@@ -67,6 +67,10 @@ GInteractor::~GInteractor() {
     // empty
 }
 
+void GInteractor::addActionListener() {
+    // empty
+}
+
 bool GInteractor::eventsEnabled() const {
     return GObservable::eventsEnabled() && getWidget() != nullptr && isVisible();
 }
@@ -316,7 +320,7 @@ void GInteractor::setMinimumSize(const GDimension& size) {
 }
 
 void GInteractor::setMnemonic(char /* mnemonic */) {
-    // TODO
+    // empty; use an & before mnemonic character instead
 }
 
 void GInteractor::setPreferredHeight(double height) {

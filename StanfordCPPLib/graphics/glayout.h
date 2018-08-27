@@ -16,13 +16,12 @@
 #include <QRect>
 #include <QWidget>
 
-// based on: http://doc.qt.io/qt-5.6/qtwidgets-layouts-borderlayout-example.html
-
 class GLayout {
 public:
     enum Position { West, North, South, East, Center };
 
     static void clearLayout(QLayout* layout);
+    static bool contains(QLayout* layout, QWidget* widget);
     static void forceUpdate(QWidget* widget);
     static void invalidateLayout(QLayout* layout);
     static Position toPosition(const std::string& positionName);
@@ -31,11 +30,12 @@ private:
     GLayout();   // forbid construction
 };
 
+// based on: http://doc.qt.io/qt-5.6/qtwidgets-layouts-borderlayout-example.html
 class GBorderLayout : public QLayout {
 public:
     GBorderLayout(QWidget* parent, int margin = 0, int spacing = -1);
     GBorderLayout(int spacing = -1);
-    ~GBorderLayout();
+    virtual ~GBorderLayout();
 
     void addItem(QLayoutItem* item) Q_DECL_OVERRIDE;
     void addWidget(QWidget* widget);

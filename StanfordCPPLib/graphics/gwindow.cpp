@@ -22,6 +22,7 @@
 #include <QTimer>
 #include "filelib.h"
 #include "gcolor.h"
+#include "glabel.h"
 #include "gthread.h"
 #include "qtgui.h"
 #include "strlib.h"
@@ -251,6 +252,14 @@ void GWindow::add(GInteractor* interactor, double x, double y) {
     addToRegion(interactor, "Center");
 }
 
+void GWindow::add(GInteractor& interactor) {
+    add(&interactor);
+}
+
+void GWindow::add(GInteractor& interactor, double x, double y) {
+    add(&interactor, x, y);
+}
+
 void GWindow::add(GObject* obj) {
     ensureForwardTarget();
     _canvas->add(obj);
@@ -402,6 +411,15 @@ void GWindow::addToRegion(GInteractor* interactor, Region region) {
         return;
     }
 
+    // special case: labels in "GString" mode are added to canvas
+    if (layout == _iqmainwindow->_centerLayout && interactor->getType() == "GLabel") {
+        GLabel* label = (GLabel*) interactor;
+        if (label->hasGString()) {
+            add(label->getGString());
+            return;
+        }
+    }
+
     GThread::runOnQtGuiThread([this, region, widget, layout]() {
         if (layout == _iqmainwindow->_centerLayout) {
             // center holds at most one widget
@@ -414,6 +432,7 @@ void GWindow::addToRegion(GInteractor* interactor, Region region) {
             // add to end of the list of widgets in this region
             ((QBoxLayout*) layout)->insertWidget(/* index */ layout->count() - 1, widget);
         }
+        widget->setVisible(true);
 
         // set alignment of widget
         if (_halignMap.containsKey(region) && _valignMap.containsKey(region)) {
@@ -424,9 +443,6 @@ void GWindow::addToRegion(GInteractor* interactor, Region region) {
             layout->setAlignment(widget, toQtAlignment(_valignMap[region]));
         }
 
-//      layout->update();
-//      _iqmainwindow->updateGeometry();
-//      _iqmainwindow->update();
         _iqmainwindow->fixMargins();
         GLayout::forceUpdate(_iqmainwindow->centralWidget());
     });
@@ -435,6 +451,15 @@ void GWindow::addToRegion(GInteractor* interactor, Region region) {
 void GWindow::addToRegion(GInteractor* interactor, const std::string& region) {
     addToRegion(interactor, stringToRegion(region));
 }
+
+void GWindow::addToRegion(GInteractor& interactor, Region region) {
+    addToRegion(&interactor, region);
+}
+
+void GWindow::addToRegion(GInteractor& interactor, const std::string& region) {
+    addToRegion(&interactor, region);
+}
+
 
 void GWindow::clear() {
     GThread::runOnQtGuiThread([this]() {
@@ -526,6 +551,17 @@ void GWindow::ensureForwardTarget() {
             addToRegion(_canvas, "Center");
         });
     }
+//    else if (!_canvas->isVisible()) {
+//        // put canvas back in center region
+//        GThread::runOnQtGuiThread([this]() {
+//            QLayout* centerLayout = layoutForRegion(REGION_CENTER);
+//            if (!GLayout::contains(centerLayout, _canvas->getWidget())) {
+//                GLayout::clearLayout(centerLayout);
+//                addToRegion(_canvas, "Center");
+//                _canvas->setVisible(true);
+//            }
+//        });
+//    }
 }
 
 bool GWindow::eventsEnabled() const {
@@ -811,11 +847,22 @@ void GWindow::remove(GObject& obj) {
 }
 
 void GWindow::remove(GInteractor* interactor) {
-    removeFromRegion(interactor, "North");
-    removeFromRegion(interactor, "South");
-    removeFromRegion(interactor, "East");
-    removeFromRegion(interactor, "West");
-    removeFromRegion(interactor, "Center");
+    QWidget* widget = interactor->getWidget();
+    if (!widget) {
+        return;
+    }
+
+    Vector<Region> regions = {REGION_CENTER, REGION_NORTH, REGION_SOUTH, REGION_WEST, REGION_EAST};
+    for (Region region : regions) {
+        QLayout* layout = layoutForRegion(region);
+        if (GLayout::contains(layout, widget)) {
+            removeFromRegion(interactor, region);
+        }
+    }
+}
+
+void GWindow::remove(GInteractor& interactor) {
+    remove(&interactor);
 }
 
 void GWindow::removeClickListener() {
@@ -834,6 +881,15 @@ void GWindow::removeFromRegion(GInteractor* interactor, Region region) {
         return;
     }
 
+    // special case: labels in "GString" mode are added to canvas
+    if (layout == _iqmainwindow->_centerLayout && interactor->getType() == "GLabel") {
+        GLabel* label = (GLabel*) interactor;
+        if (label->hasGString()) {
+            remove(label->getGString());
+            return;
+        }
+    }
+
     GThread::runOnQtGuiThread([this, widget, layout]() {
         layout->removeWidget(widget);
         layout->update();
@@ -844,6 +900,14 @@ void GWindow::removeFromRegion(GInteractor* interactor, Region region) {
 
 void GWindow::removeFromRegion(GInteractor* interactor, const std::string& region) {
     removeFromRegion(interactor, stringToRegion(region));
+}
+
+void GWindow::removeFromRegion(GInteractor& interactor, Region region) {
+    removeFromRegion(&interactor, region);
+}
+
+void GWindow::removeFromRegion(GInteractor& interactor, const std::string& region) {
+    removeFromRegion(&interactor, region);
 }
 
 void GWindow::removeKeyListener() {

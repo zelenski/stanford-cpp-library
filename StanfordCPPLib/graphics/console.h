@@ -10,6 +10,8 @@
  * again for that program.
  * 
  * @author Marty Stepp
+ * @version 2018/08/27
+ * - cleaned up comments
  * @version 2018/08/23
  * - renamed to console.h to replace Java version
  * - separated out gconsolewindow.h/cpp
@@ -19,6 +21,8 @@
  * - refactored GConsoleWindow class
  * @version 2018/07/15
  * - initial version, based on io/console.h
+ *
+ * \defgroup Console Console functions
  */
 
 #ifndef _console_h
@@ -34,6 +38,8 @@
  * Usage: clearConsole();
  * ----------------------
  * Erases the contents of the console window.
+ *
+ * \ingroup Console
  */
 void clearConsole();
 
@@ -44,6 +50,8 @@ void clearConsole();
  * Returns whether the console's "clear" function should be enabled.
  * Default true.  If false, clear() will just print a message
  * rather than actually clearing the console.
+ *
+ * \ingroup Console
  */
 bool getConsoleClearEnabled();
 
@@ -74,15 +82,45 @@ bool getConsoleEcho();
 bool getConsoleEnabled();
 
 /*
+ * Returns whether an event should be generated if the console
+ * window is closed.  By default this is false initially.
+ */
+bool getConsoleEventOnClose() Q_DECL_DEPRECATED;
+
+/*
  * Returns whether the overall C++ program will terminate if the console
  * window is closed.  By default this is false initially.
  */
 bool getConsoleExitProgramOnClose();
 
+/*
+ * Function: getConsoleFont
+ * Usage: string font = getConsoleFont();
+ * --------------------------------------
+ * Returns the font currently being used by the console.  The font
+ * is typically a string in the form <code>family-style-size</code>.
+ * In this string, <code>family</code> is the name of the font family;
+ * <code>style</code> is either missing (indicating a plain font) or one
+ * of the strings <code>Bold</code>, <code>Italic</code>, or
+ * <code>BoldItalic</code>; and <code>size</code> is an integer
+ * indicating the point size.
+ */
 std::string getConsoleFont();
 
+/*
+ * Function: getConsoleHeight
+ * Usage: double height = getConsoleHeight();
+ * ------------------------------------------
+ * Returns the height of the console window in pixels.
+ */
 double getConsoleHeight();
 
+/*
+ * Function: getConsoleLocation
+ * Usage: GPoint point = getConsoleLocation();
+ * -------------------------------------------
+ * Returns the x/y position of the top-left corner of the console window.
+ */
 GPoint getConsoleLocation();
 
 /*
@@ -107,8 +145,20 @@ bool getConsolePrintExceptions();
  */
 bool getConsoleSettingsLocked();
 
+/*
+ * Function: getConsoleSize
+ * Usage: GDimension size = getConsoleSize();
+ * ------------------------------------------
+ * Returns the size of the console window in pixels.
+ */
 GDimension getConsoleSize();
 
+/*
+ * Function: getConsoleWidth
+ * Usage: double width = getConsoleWidth();
+ * ----------------------------------------
+ * Returns the width of the console window in pixels.
+ */
 double getConsoleWidth();
 
 GConsoleWindow* getConsoleWindow();
@@ -158,6 +208,12 @@ void setConsoleEcho(bool echo);   // added by Marty
  * The color string passed should be in a hex format such as "#ffa32f";
  */
 void setConsoleErrorColor(const std::string& color);
+
+/*
+ * Sets whether an event should be generated if the console
+ * window is closed.  By default this is false initially.
+ */
+void setConsoleEventOnClose(bool eventOnClose) Q_DECL_DEPRECATED;
 
 /*
  * Sets whether the overall C++ program should terminate if the console
@@ -267,9 +323,10 @@ extern void pause(double milliseconds);
  */
 #ifndef __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
 
+extern void setConsoleEnabled(bool);
+
 namespace stanfordcpplib {
 namespace qtgui {
-extern void setConsoleEnabled(bool);
 
 #ifndef __QtConsoleInitializer_created
 #define __QtConsoleInitializer_created

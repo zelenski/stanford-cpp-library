@@ -1,59 +1,61 @@
 /*
- * File: range.cpp
- * ---------------
- * This file implements the <code>Range</code> class.
- * See range.h for the declarations of each member.
+ * File: intrange.cpp
+ * ------------------
+ * This file implements the <code>IntRange</code> class.
+ * See intrange.h for the declarations of each member.
  *
+ * @version 2018/08/25
+ * - renamed from range.cpp to intrange.cpp
  * @version 2018/03/12
  * - initial version
  */
 
-#include "range.h"
+#include "intrange.h"
 #include <sstream>
 #include "hashcode.h"
 
-Range::Range(int length)
+IntRange::IntRange(int length)
     : _min(0),
       _max(length - 1) {
     // empty
 }
 
-Range::Range(int minValue, int maxValue)
+IntRange::IntRange(int minValue, int maxValue)
     : _min(minValue),
       _max(maxValue) {
     // empty
 }
 
-Range::RangeIterator Range::begin() const {
-    return RangeIterator(this, /* end */ false);
+IntRange::IntRangeIterator IntRange::begin() const {
+    return IntRangeIterator(this, /* end */ false);
 }
 
-bool Range::contains(int n) const {
+bool IntRange::contains(int n) const {
     return _min <= n && n <= _max;
 }
 
-bool Range::contains(const Range& r) const {
+bool IntRange::contains(const IntRange& r) const {
     return _min <= r._min && _max >= r._max;
 }
 
-bool Range::empty() const {
+bool IntRange::empty() const {
     return _max < _min;
 }
 
-Range::RangeIterator Range::end() const {
-    return RangeIterator(this, /* end */ true);
+IntRange::IntRangeIterator IntRange::end() const {
+    return IntRangeIterator(this, /* end */ true);
 }
 
-//bool Range::intersects(const Range& r) const {
+//bool IntRange::intersects(const IntRange& r) const {
 //    return (_min <= r._min && r._min <= _max)
 //            || (_min <= r._max && r._max <= _max);
 //}
 
-bool Range::isEmpty() const {
+bool IntRange::isEmpty() const {
     return _max < _min;
 }
 
-int Range::length() const {
+int IntRange::length() const {
     if (isEmpty()) {
         return 0;
     } else {
@@ -61,66 +63,66 @@ int Range::length() const {
     }
 }
 
-int Range::max() const {
+int IntRange::max() const {
     return _max;
 }
 
-int Range::min() const {
+int IntRange::min() const {
     return _min;
 }
 
-int Range::size() const {
+int IntRange::size() const {
     return length();
 }
 
-std::string Range::toString() const {
+std::string IntRange::toString() const {
     std::ostringstream out;
     out << *this;
     return out.str();
 }
 
-int hashCode(const Range& r) {
+int hashCode(const IntRange& r) {
     return hashCode2(r.min(), r.max());
 }
 
-Range range(int length) {
-    return Range(length);
+IntRange range(int length) {
+    return IntRange(length);
 }
 
-Range range(int min, int max) {
-    return Range(min, max);
+IntRange range(int min, int max) {
+    return IntRange(min, max);
 }
 
-bool operator <(const Range& r1, const Range& r2) {
+bool operator <(const IntRange& r1, const IntRange& r2) {
     return r1.min() < r2.min() ||
             (r1.min() == r2.min() && r1.max() < r2.max());
 }
 
-bool operator <=(const Range& r1, const Range& r2) {
+bool operator <=(const IntRange& r1, const IntRange& r2) {
     return r1 < r2 || r1 == r2;
 }
 
-bool operator ==(const Range& r1, const Range& r2) {
+bool operator ==(const IntRange& r1, const IntRange& r2) {
     return r1.min() == r2.min() && r1.max() == r2.max();
 }
 
-bool operator !=(const Range& r1, const Range& r2) {
+bool operator !=(const IntRange& r1, const IntRange& r2) {
     return !(r1 == r2);
 }
 
-bool operator >(const Range& r1, const Range& r2) {
+bool operator >(const IntRange& r1, const IntRange& r2) {
     return r2 < r1;
 }
 
-bool operator >=(const Range& r1, const Range& r2) {
+bool operator >=(const IntRange& r1, const IntRange& r2) {
     return !(r1 < r2);
 }
 
-std::ostream& operator <<(std::ostream& out, const Range& r) {
+std::ostream& operator <<(std::ostream& out, const IntRange& r) {
     return out << "[" << r.min() << " .. " << r.max() << "]";
 }
 
-std::istream& operator >>(std::istream& input, Range& r) {
+std::istream& operator >>(std::istream& input, IntRange& r) {
     // read '['
     input.get();
     if (!input) {
@@ -166,10 +168,10 @@ std::istream& operator >>(std::istream& input, Range& r) {
 }
 
 /////////////////////////////////////////////////////////////////////
-// Range2D
+// IntRange2D
 /////////////////////////////////////////////////////////////////////
 
-Range2D::Range2D(int width, int height, bool yMajor)
+IntRange2D::IntRange2D(int width, int height, bool yMajor)
     : _minX(0),
       _minY(0),
       _maxX(width - 1),
@@ -178,7 +180,7 @@ Range2D::Range2D(int width, int height, bool yMajor)
     // empty
 }
 
-Range2D::Range2D(int minX, int minY, int maxX, int maxY, bool yMajor)
+IntRange2D::IntRange2D(int minX, int minY, int maxX, int maxY, bool yMajor)
     : _minX(minX),
       _minY(minY),
       _maxX(maxX),
@@ -187,28 +189,28 @@ Range2D::Range2D(int minX, int minY, int maxX, int maxY, bool yMajor)
     // empty
 }
 
-Range2D::Range2DIterator Range2D::begin() const {
-    return Range2DIterator(this, /* end */ false);
+IntRange2D::IntRange2DIterator IntRange2D::begin() const {
+    return IntRange2DIterator(this, /* end */ false);
 }
 
-bool Range2D::contains(int x, int y) const {
+bool IntRange2D::contains(int x, int y) const {
     return _minX <= x && x <= _maxX
             && _minY <= y && y <= _maxY;
 }
 
-bool Range2D::contains(const Range2D& r) const {
+bool IntRange2D::contains(const IntRange2D& r) const {
     return contains(r._minX, r._minY) && contains(r._maxX, r._maxY);
 }
 
-bool Range2D::empty() const {
+bool IntRange2D::empty() const {
     return _maxX < _minX || _maxY < _minY;
 }
 
-Range2D::Range2DIterator Range2D::end() const {
-    return Range2DIterator(this, /* end */ true);
+IntRange2D::IntRange2DIterator IntRange2D::end() const {
+    return IntRange2DIterator(this, /* end */ true);
 }
 
-int Range2D::height() const {
+int IntRange2D::height() const {
     if (_maxY < _minY) {
         return 0;
     } else {
@@ -216,45 +218,45 @@ int Range2D::height() const {
     }
 }
 
-//bool Range2D::intersects(const Range2D& r) const {
+//bool IntRange2D::intersects(const IntRange2D& r) const {
 //    // TODO
 //}
 
-bool Range2D::isEmpty() const {
+bool IntRange2D::isEmpty() const {
     return _maxX < _minX || _maxY < _minY;
 }
 
-bool Range2D::isYMajor() const {
+bool IntRange2D::isYMajor() const {
     return _yMajor;
 }
 
-int Range2D::maxX() const {
+int IntRange2D::maxX() const {
     return _maxX;
 }
 
-int Range2D::maxY() const {
+int IntRange2D::maxY() const {
     return _maxY;
 }
 
-int Range2D::minX() const {
+int IntRange2D::minX() const {
     return _minX;
 }
 
-int Range2D::minY() const {
+int IntRange2D::minY() const {
     return _minY;
 }
 
-int Range2D::size() const {
+int IntRange2D::size() const {
     return width() * height();
 }
 
-std::string Range2D::toString() const {
+std::string IntRange2D::toString() const {
     std::ostringstream out;
     out << *this;
     return out.str();
 }
 
-int Range2D::width() const {
+int IntRange2D::width() const {
     if (_maxX < _minX) {
         return 0;
     } else {
@@ -262,19 +264,19 @@ int Range2D::width() const {
     }
 }
 
-int hashCode(const Range2D& r) {
+int hashCode(const IntRange2D& r) {
     return hashCode4(r.minX(), r.minY(), r.maxX(), r.maxY());
 }
 
-Range2D range2d(int width, int height, bool yMajor) {
-    return Range2D(width, height, yMajor);
+IntRange2D range2d(int width, int height, bool yMajor) {
+    return IntRange2D(width, height, yMajor);
 }
 
-Range2D range2d(int minX, int minY, int maxX, int maxY, bool yMajor) {
-    return Range2D(minX, minY, maxX, maxY, yMajor);
+IntRange2D range2d(int minX, int minY, int maxX, int maxY, bool yMajor) {
+    return IntRange2D(minX, minY, maxX, maxY, yMajor);
 }
 
-bool operator <(const Range2D& r1, const Range2D& r2) {
+bool operator <(const IntRange2D& r1, const IntRange2D& r2) {
     if (r1.minX() != r2.minX()) {
         return r1.minX() < r2.minX();
     } else if (r1.minY() != r2.minY()) {
@@ -290,11 +292,11 @@ bool operator <(const Range2D& r1, const Range2D& r2) {
     }
 }
 
-bool operator <=(const Range2D& r1, const Range2D& r2) {
+bool operator <=(const IntRange2D& r1, const IntRange2D& r2) {
     return r1 < r2 || r1 == r2;
 }
 
-bool operator ==(const Range2D& r1, const Range2D& r2) {
+bool operator ==(const IntRange2D& r1, const IntRange2D& r2) {
     return r1.minX() == r2.minX()
             && r1.minY() == r2.minY()
             && r1.maxX() == r2.maxX()
@@ -302,19 +304,19 @@ bool operator ==(const Range2D& r1, const Range2D& r2) {
             && r1.isYMajor() == r2.isYMajor();
 }
 
-bool operator !=(const Range2D& r1, const Range2D& r2) {
+bool operator !=(const IntRange2D& r1, const IntRange2D& r2) {
     return !(r1 == r2);
 }
 
-bool operator >(const Range2D& r1, const Range2D& r2) {
+bool operator >(const IntRange2D& r1, const IntRange2D& r2) {
     return r2 < r1;
 }
 
-bool operator >=(const Range2D& r1, const Range2D& r2) {
+bool operator >=(const IntRange2D& r1, const IntRange2D& r2) {
     return !(r1 < r2);
 }
 
-std::ostream& operator <<(std::ostream& out, const Range2D& r) {
+std::ostream& operator <<(std::ostream& out, const IntRange2D& r) {
     return out << "["
                << r.minX() << "," << r.minY()
                << " .. "
@@ -322,7 +324,7 @@ std::ostream& operator <<(std::ostream& out, const Range2D& r) {
                << "]";
 }
 
-std::istream& operator >>(std::istream& input, Range2D& r) {
+std::istream& operator >>(std::istream& input, IntRange2D& r) {
     // read '['
     input.get();
     if (!input) {

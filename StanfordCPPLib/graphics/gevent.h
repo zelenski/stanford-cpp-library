@@ -337,16 +337,28 @@ typedef GEvent GWindowEvent;
  * fashion as <code>waitForEvent</code>; if not, <code>getNextEvent</code>
  * returns an invalid event.  The <code>mask</code> parameter is optional.
  * If it is missing, <code>getNextEvent</code> accepts any event.
+ *
+ * @deprecated
+ * This function is deprecated and discouraged from use.
+ * Instead of calling waitForClick in an event loop, you should attach an
+ * event-listening function to the widget of choice using that object's methods
+ * such as setActionListener or setMouseListener.
  */
-GEvent getNextEvent(int mask = ANY_EVENT);
+GEvent getNextEvent(int mask = ANY_EVENT) Q_DECL_DEPRECATED;
 
 /*
  * Function: waitForClick
  * Usage: GMouseEvent event = waitForClick();
  * ------------------------------------------
  * Waits for a mouse click to occur anywhere in any window.
+ *
+ * @deprecated
+ * This function is deprecated and discouraged from use.
+ * Instead of calling waitForClick in an event loop, you should attach an
+ * event-listening function to the widget of choice using that object's methods
+ * such as setActionListener or setMouseListener.
  */
-GMouseEvent waitForClick();
+GMouseEvent waitForClick() Q_DECL_DEPRECATED;
 
 /*
  * Function: waitForEvent
@@ -386,8 +398,14 @@ GMouseEvent waitForClick();
  *       }
  *    }
  *</pre>
+ *
+ * @deprecated
+ * This function is deprecated and discouraged from use.
+ * Instead of calling waitForClick in an event loop, you should attach an
+ * event-listening function to the widget of choice using that object's methods
+ * such as setActionListener or setMouseListener.
  */
-GEvent waitForEvent(int mask = ANY_EVENT);
+GEvent waitForEvent(int mask = ANY_EVENT) Q_DECL_DEPRECATED;
 
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

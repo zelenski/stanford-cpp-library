@@ -412,6 +412,8 @@ public:
      * <code>"#rrggbb"</code> where <code>rr</code>, <code>gg</code>, and
      * <code>bb</code> are pairs of hexadecimal digits indicating the
      * red, green, and blue components of the color, respectively.
+     *
+     * Equivalent to setForeground.
      */
     virtual void setColor(int r, int g, int b);
     virtual void setColor(int rgb);
@@ -456,6 +458,51 @@ public:
     virtual void setFont(const std::string& font);
 
     /*
+     * Method: setForeground
+     * Usage: gobj->setForeground(color);
+     * -----------------------------
+     * Sets the color used to display this object.  The <code>color</code>
+     * string is usually one of the predefined color names:
+     *
+     *    <code>BLACK</code>,
+     *    <code>BLUE</code>,
+     *    <code>CYAN</code>,
+     *    <code>DARK_GRAY</code>,
+     *    <code>GRAY</code>,
+     *    <code>GREEN</code>,
+     *    <code>LIGHT_GRAY</code>,
+     *    <code>MAGENTA</code>,
+     *    <code>ORANGE</code>,
+     *    <code>PINK</code>,
+     *    <code>RED</code>,
+     *    <code>WHITE</code>, and
+     *    <code>YELLOW</code>.
+     *
+     * The case of the individual letters in the color name is ignored, as
+     * are spaces and underscores, so that the color <code>DARK_GRAY</code>
+     * can be written as <code>"Dark Gray"</code>.
+     *
+     * <p>The color can also be specified as a string in the form
+     * <code>"#rrggbb"</code> where <code>rr</code>, <code>gg</code>, and
+     * <code>bb</code> are pairs of hexadecimal digits indicating the
+     * red, green, and blue components of the color, respectively.
+     *
+     * Equivalent to setColor.
+     */
+    virtual void setForeground(int r, int g, int b);
+    virtual void setForeground(int rgb);
+    virtual void setForeground(const std::string& color);
+
+    /*
+     * Method: setHeight
+     * Usage: gobj->setHeight(height);
+     * -------------------------------
+     * Changes the height of this object to the specified height
+     * without changing its width.
+     */
+    virtual void setHeight(double height);
+
+    /*
      * Method: setLineStyle
      * Usage: gobj->setLineStyle(GObject::LINE_DASH);
      * ---------------------------------------------------
@@ -483,10 +530,10 @@ public:
 
     /*
      * Method: setSize
-     * Usage: rect->setSize(size);
-     *        rect->setSize(width, height);
+     * Usage: gobj->setSize(size);
+     *        gobj->setSize(width, height);
      * ------------------------------------
-     * Changes the size of this rectangle to the specified width and height.
+     * Changes the size of this object to the specified width and height.
      */
     virtual void setSize(double width, double height);
     virtual void setSize(const GDimension& size);
@@ -498,6 +545,15 @@ public:
      * Sets whether this object is visible.
      */
     virtual void setVisible(bool flag);
+
+    /*
+     * Method: setWidth
+     * Usage: gobj->setWidth(width);
+     * -----------------------------
+     * Changes the width of this object to the specified width
+     * without changing its height.
+     */
+    virtual void setWidth(double width);
 
     /*
      * Method: setX/Y

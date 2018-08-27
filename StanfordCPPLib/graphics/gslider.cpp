@@ -48,6 +48,7 @@ GSlider::GSlider(int min, int max, int value, QWidget* parent) {
         _iqslider->setRange(min, max);
         _iqslider->setValue(value);
     });
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GSlider::~GSlider() {

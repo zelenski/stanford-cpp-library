@@ -17,9 +17,11 @@
 #include <QSize>
 #include <QWidget>
 #include "ginteractor.h"
+#include "gobjects.h"
 
 // forward declaration
 class GLabel;
+class GWindow;
 
 // Internal class; not to be used by clients.
 class _Internal_QLabel : public QLabel, public _Internal_QWidget {
@@ -46,15 +48,36 @@ public:
     virtual GInteractor::TextPosition getTextPosition() const;
     virtual std::string getType() const;
     virtual QWidget* getWidget() const;
+    virtual void setBounds(double x, double y, double width, double height) Q_DECL_OVERRIDE;
+    virtual void setBounds(const GRectangle& size) Q_DECL_OVERRIDE;
+    virtual void setColor(int rgb) Q_DECL_OVERRIDE;
+    virtual void setColor(const std::string& color) Q_DECL_OVERRIDE;
+    virtual void setFont(const std::string& font) Q_DECL_OVERRIDE;
+    virtual void setForeground(int rgb) Q_DECL_OVERRIDE;
+    virtual void setForeground(const std::string& color) Q_DECL_OVERRIDE;
+    virtual void setHeight(double height) Q_DECL_OVERRIDE;
     virtual void setIcon(const std::string& filename, bool retainIconSize = true);
     virtual void setLabel(const std::string& text);
+    virtual void setLocation(double x, double y) Q_DECL_OVERRIDE;
+    virtual void setSize(double width, double height) Q_DECL_OVERRIDE;
+    virtual void setSize(const GDimension& size) Q_DECL_OVERRIDE;
     virtual void setText(const std::string& text);
     virtual void setTextPosition(GInteractor::TextPosition position);
+    virtual void setVisible(bool visible) Q_DECL_OVERRIDE;
+    virtual void setWidth(double width) Q_DECL_OVERRIDE;
+    virtual void setX(double x) Q_DECL_OVERRIDE;
+    virtual void setY(double y) Q_DECL_OVERRIDE;
 
 private:
     _Internal_QLabel* _iqlabel;
+    GString* _gstring;
+
+    void ensureGString();
+    GString* getGString() const;
+    bool hasGString() const;
 
     friend class _Internal_QImageLabel;
+    friend class GWindow;
 };
 
 // alias GTextLabel for GLabel for backward compatibility

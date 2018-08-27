@@ -95,12 +95,14 @@ GTextArea::GTextArea(int rows, int columns, QWidget* parent)
         : _contextMenuEnabled(true) {
     _iqtextedit = new _Internal_QTextEdit(this, getInternalParent(parent));
     setRowsColumns(rows, columns);
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GTextArea::GTextArea(const std::string& text, QWidget* parent)
         : _contextMenuEnabled(true) {
     _iqtextedit = new _Internal_QTextEdit(this, getInternalParent(parent));
     setText(text);
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GTextArea::~GTextArea() {

@@ -15,6 +15,7 @@
 #include "error.h"
 #include "gmath.h"
 #include "hashcode.h"
+#include "point.h"
 #include "strlib.h"
 
 /*
@@ -149,6 +150,11 @@ GPoint::GPoint(double x, double y)
         : _x(x),
           _y(y) {
     // empty
+}
+
+GPoint::GPoint(const Point& point) {
+    _x = point.getX();
+    _y = point.getY();
 }
 
 double GPoint::getX() const {

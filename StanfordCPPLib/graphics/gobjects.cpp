@@ -378,6 +378,22 @@ void GObject::setFont(const std::string& font) {
     repaint();
 }
 
+void GObject::setForeground(int r, int g, int b) {
+    setColor(r, g, b);
+}
+
+void GObject::setForeground(int rgb) {
+    setColor(rgb);
+}
+
+void GObject::setForeground(const std::string& color) {
+    setColor(color);
+}
+
+void GObject::setHeight(double height) {
+    setSize(getWidth(), height);
+}
+
 void GObject::setLineStyle(GObject::LineStyle lineStyle) {
     _lineStyle = lineStyle;
     repaint();
@@ -414,6 +430,10 @@ void GObject::setSize(const GDimension& size) {
 void GObject::setVisible(bool flag) {
     _visible = flag;
     repaint();
+}
+
+void GObject::setWidth(double width) {
+    setSize(width, getHeight());
 }
 
 void GObject::setX(double x) {

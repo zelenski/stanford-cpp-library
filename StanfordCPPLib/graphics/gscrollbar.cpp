@@ -48,6 +48,7 @@ GScrollBar::GScrollBar(GScrollBar::Orientation orientation,
         _iqscrollbar = new _Internal_QScrollBar(this, orientation == VERTICAL ? Qt::Vertical : Qt::Horizontal, getInternalParent(parent));
     });
     setState(value, extent, min, max);
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GScrollBar::~GScrollBar() {

@@ -20,6 +20,8 @@
 typedef std::function<void()> GThunk;
 typedef std::function<int()> GThunkInt;
 
+class Point;   // forward declaration
+
 /*
  * Class: GDimension
  * -----------------
@@ -156,6 +158,7 @@ public:
      * the default constructor sets these fields to 0.
      */
     GPoint(double x = 0, double y = 0);
+    GPoint(const Point& point);
 
     /*
      * Method: getX

@@ -10,6 +10,8 @@
 
 #include <string>
 
+class GPoint;   // forward declaration
+
 /*
  * Class: Point
  * ------------
@@ -31,6 +33,7 @@ public:
      */
     Point();
     Point(int x, int y);
+    Point(const GPoint& point);
 
     /*
      * Method: getX

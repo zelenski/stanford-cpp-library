@@ -151,6 +151,9 @@ class GForwardDrawingSurface : public virtual GDrawingSurface {
 public:
     virtual void clear() Q_DECL_OVERRIDE;
     virtual void draw(GObject* gobj) Q_DECL_OVERRIDE;
+    virtual void draw(GObject* gobj, double x, double y) Q_DECL_OVERRIDE;
+    virtual void draw(GObject& gobj) Q_DECL_OVERRIDE;
+    virtual void draw(GObject& gobj, double x, double y) Q_DECL_OVERRIDE;
     virtual void draw(QPainter* painter) Q_DECL_OVERRIDE;
     virtual int getPixel(double x, double y) const Q_DECL_OVERRIDE;
     virtual int getPixelARGB(double x, double y) const Q_DECL_OVERRIDE;

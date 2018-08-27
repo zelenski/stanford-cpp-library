@@ -44,6 +44,7 @@ GCheckBox::GCheckBox(const std::string& text, bool checked, QWidget* parent) {
         _iqcheckBox = new _Internal_QCheckBox(this, checked, getInternalParent(parent));
     });
     setText(text);
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GCheckBox::~GCheckBox() {

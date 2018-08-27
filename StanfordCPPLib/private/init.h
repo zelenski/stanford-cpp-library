@@ -25,29 +25,31 @@
 #include <cstdlib>
 #include <stdio.h>
 
-namespace stanfordcpplib {
+//namespace stanfordcpplib {
 
-extern void initializeStanfordCppLibrary();
+//extern void initializeStanfordCppLibrary();
 
-#ifndef SPL_QT_GUI
-#ifndef __StanfordCppLibraryInitializer_created
-#define __StanfordCppLibraryInitializer_created
-class __StanfordCppLibraryInitializer {
-public:
-    /*
-     * Code to initialize the library.
-     * Implemented as a class constructor so that it will run before the
-     * student's main function.
-     */
-    __StanfordCppLibraryInitializer() {
-        initializeStanfordCppLibrary();
-    }
-};
-static __StanfordCppLibraryInitializer __stanfordcpplib_init;
-#endif // __StanfordCppLibraryInitializer_created
-#endif // SPL_QT_GUI
+//#ifndef __StanfordCppLibraryInitializer_created
+//#define __StanfordCppLibraryInitializer_created
+//class __StanfordCppLibraryInitializer {
+//public:
+//    /*
+//     * Code to initialize the library.
+//     * Implemented as a class constructor so that it will run before the
+//     * student's main function.
+//     * Here we put anything that we need to initialize during the static
+//     * phase before main() runs.
+//     * Presently there is nothing that requires such initialization,
+//     * so this is blank.
+//     */
+//    __StanfordCppLibraryInitializer() {
+//        // initializeStanfordCppLibrary();
+//    }
+//};
+//static __StanfordCppLibraryInitializer __stanfordcpplib_init;
+//#endif // __StanfordCppLibraryInitializer_created
 
-} // namespace stanfordcpplib
+//} // namespace stanfordcpplib
 
 
 
@@ -95,7 +97,6 @@ static __StanfordCppLibraryInitializer __stanfordcpplib_init;
 
 #undef main
 
-#ifdef SPL_QT_GUI
 // __initializeStanfordCppLibraryQt is defined in qgui.cpp/h;
 // it initializes the Qt GUI library subsystems and Qt graphical console as needed
 #define main main(int argc, char** argv) { \
@@ -105,18 +106,6 @@ static __StanfordCppLibraryInitializer __stanfordcpplib_init;
         return 0; \
     } \
     int Main
-#else // SPL_QT_GUI
-#define main main(int argc, char** argv) { \
-        extern void __shutdownStanfordCppLibrary(); \
-        extern void __initializeStanfordCppLibrary(int argc, char** argv); \
-        __initializeStanfordCppLibrary(argc, argv); \
-        extern int Main(); \
-        Main(); \
-        __shutdownStanfordCppLibrary(); \
-        return 0; \
-    } \
-    int Main
-#endif // SPL_QT_GUI
 
 // TODO: figure out how to support both 0-arg and 2-arg main()
 

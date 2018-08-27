@@ -160,7 +160,7 @@ GEvent getNextEvent(int mask) {
 }
 
 GMouseEvent waitForClick() {
-    return waitForEvent(CLICK_EVENT);
+    return GEventQueue::instance()->waitForEvent(CLICK_EVENT);
 }
 
 GEvent waitForEvent(int mask) {
