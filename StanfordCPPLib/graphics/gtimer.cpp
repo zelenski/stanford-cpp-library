@@ -19,35 +19,28 @@
 
 /* Implementation of the GTimer class */
 
-int GTimerData::instanceCount = 0;
-
-GTimerData::GTimerData() {
-    id = instanceCount;
-    instanceCount++;
-}
-
-GTimerData::~GTimerData() {
-    id = -1;
-}
+std::int64_t GTimer::nextID = 0;
 
 GTimer::GTimer(double milliseconds) {
-    gtd = new GTimerData();
-    gtd->refCount = 1;
+    /* Assign a unique ID to this GTimer, and set the deleter on the
+     * shared_ptr so that it will tell the system when we're done with
+     * that underlying timer.
+     */
+    std::int64_t myID = nextID++;
+    gtd = std::shared_ptr<std::int64_t>(new std::int64_t(myID), [myID](std::int64_t* memory) {
+        stanfordcpplib::getPlatform()->gtimer_delete(std::to_string(myID));
+        delete memory;
+    });
+
     stanfordcpplib::getPlatform()->gtimer_constructor(*this, milliseconds);
 }
 
-GTimer::~GTimer() {
-    if (--gtd->refCount == 0) {
-        stanfordcpplib::getPlatform()->gtimer_delete(*this);
-        delete gtd;
-    }
-    gtd = nullptr;
+GTimer::GTimer(std::shared_ptr<std::int64_t> id) : gtd(id) {
+    // Handled in initializer list
 }
 
 std::string GTimer::getID() const {
-    std::ostringstream out;
-    out << gtd << "_" << gtd->id;
-    return out.str();
+    return gtd? std::to_string(*gtd) : "-1";
 }
 
 void GTimer::start() {
@@ -64,25 +57,4 @@ bool GTimer::operator ==(const GTimer& t2) {
 
 bool GTimer::operator !=(const GTimer& t2) {
     return gtd != t2.gtd;
-}
-
-GTimer::GTimer(GTimerData* gtd) {
-    this->gtd = gtd;
-    gtd->refCount++;
-}
-
-GTimer::GTimer(const GTimer& src) {
-    this->gtd = src.gtd;
-    this->gtd->refCount++;
-}
-
-GTimer& GTimer::operator =(const GTimer& src) {
-    if (this != &src) {
-        if (--gtd->refCount == 0) {
-            delete gtd;
-        }
-        this->gtd = src.gtd;
-        this->gtd->refCount++;
-    }
-    return *this;
 }

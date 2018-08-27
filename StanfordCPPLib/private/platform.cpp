@@ -3,7 +3,7 @@
  * ------------------
  * This file implements the platform interface by passing commands to
  * a Java back end that manages the display.
- * 
+ *
  * @version 2018/07/16
  * - added parsing of scroll events
  * @version 2018/07/08
@@ -161,6 +161,7 @@ static int& pout(bool check = true) {
 #include <algorithm>
 #include <cctype>
 #include <cstdio>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
@@ -171,6 +172,7 @@ static int& pout(bool check = true) {
 #include <sstream>
 #include <string>
 #include <vector>
+#include <memory>
 #include "private/consolestreambuf.h"
 #include "private/forwardingstreambuf.h"
 #include "private/static.h"
@@ -204,7 +206,7 @@ STATIC_CONST_VARIABLE_DECLARE(size_t, PIPE_MAX_COMMAND_LENGTH, 2048)
 
 /* Private data */
 STATIC_VARIABLE_DECLARE_COLLECTION_EMPTY(Queue<GEvent>, eventQueue)
-STATIC_VARIABLE_DECLARE_MAP_EMPTY(HashMap, std::string, GTimerData*, timerTable)
+STATIC_VARIABLE_DECLARE_MAP_EMPTY(HashMap, std::string, std::weak_ptr<std::int64_t>, timerTable)
 STATIC_VARIABLE_DECLARE_MAP_EMPTY(HashMap, std::string, GWindowData*, windowTable)
 STATIC_VARIABLE_DECLARE_MAP_EMPTY(HashMap, std::string, GObject*, sourceTable)
 STATIC_VARIABLE_DECLARE(stanfordcpplib::ConsoleStreambuf*, cinout_new_buf, nullptr)
@@ -684,7 +686,7 @@ std::string Platform::file_openFileDialog(const std::string& title, const std::s
     os << "File.openFileDialog(";
     writeQuotedString(os, title);
     os << ", \"" << mode << "\", ";
-    
+
     // BUGFIX: (2014/10/09) wasn't working if dirs didn't have slashes at end
     std::string sep = getDirectoryPathSeparator();
     bool needSep = isDirectory(path) && !endsWith(path, sep);
@@ -892,8 +894,7 @@ void Platform::gtimer_constructor(const GTimer& timer, double delay) {
     putPipe(os.str());
 }
 
-void Platform::gtimer_delete(const GTimer& timer) {
-    std::string id = timer.getID();
+void Platform::gtimer_delete(const std::string& id) {
     if (STATIC_VARIABLE(timerTable).containsKey(id)) {
         STATIC_VARIABLE(timerTable).remove(id);
         std::ostringstream os;
@@ -2829,7 +2830,7 @@ static void putPipe(const std::string& line) {
         putPipeLongString(line);
         return;
     }
-    
+
     DWORD nch;
 #ifdef PIPE_DEBUG
     fprintf(stderr, "putPipe(\"%s\")\n", line.c_str());  fflush(stderr);
@@ -2899,7 +2900,7 @@ static void sigPipeHandler(int /*signum*/) {
 // Unix implementation; see Windows implementation elsewhere in this file
 static void initPipe() {
     std::string jarName = getSplJarPath();
-    
+
     int toJBE[2], fromJBE[2];
     if (pipe(toJBE) != 0) {
         error("Unable to establish pipe to Java back-end; exiting.");
@@ -2918,7 +2919,7 @@ static void initPipe() {
         close(fromJBE[0]);
         close(fromJBE[1]);
         std::string javaCommand = getJavaCommand();
-        
+
 #ifdef __APPLE__
         std::string option = "-Xdock:name=" + programName();
         int execlpResult = execlp(javaCommand.c_str(), javaCommand.c_str(), option.c_str(), "-jar", jarName.c_str(),
@@ -2933,14 +2934,14 @@ static void initPipe() {
         std::string fullCommand = javaCommand + " -Djava.awt.headless=true -jar " + jarName + " " + programName();
 #endif // SPL_HEADLESS_MODE
 #endif // APPLE
-        
+
         // if we get here, the execlp call failed, so show error message
         // use stderr directly rather than cerr because graphical console is unreachable
 #ifndef SPL_HEADLESS_MODE
         if (execlpResult != 0) {
             char* lastError = strerror(errno);
             std::string workingDir = getCurrentDirectory();
-            
+
             fputs("\n", stderr);
             fputs("***\n", stderr);
             fputs("*** STANFORD C++ LIBRARY ERROR:\n", stderr);
@@ -2965,7 +2966,7 @@ static void initPipe() {
         pout(/* check */ false) = toJBE[1];
         close(fromJBE[1]);
         close(toJBE[0]);
-        
+
         // stop the pipe from generating a SIGPIPE when JBE is closed
 #ifndef SPL_HEADLESS_MODE
         signal(SIGPIPE, sigPipeHandler);
@@ -3026,7 +3027,7 @@ static std::string getResult(bool consumeAcks, bool stopOnEvent,
         fprintf(stderr, "getResult(): calling getPipe() ...\n");  fflush(stderr);
 #endif
         std::string line = getPipe();
-        
+
         bool isResult        = startsWith(line, "result:");
         bool isResultLong    = startsWith(line, "result_long:");
         bool isEvent         = startsWith(line, "event:");
@@ -3131,7 +3132,7 @@ static std::string getJavaCommand() {
         if (path.empty()) {
             return DEFAULT_JAVA_COMMAND;
         }
-        
+
         std::string pathSep = getDirectoryPathSeparator();
         if (!endsWith(path, pathSep)) {
             path += pathSep;
@@ -3442,14 +3443,26 @@ static GEvent parseTimerEvent(TokenScanner& scanner, EventType type) {
     scanner.verifyToken(")");
 
     if (STATIC_VARIABLE(timerTable).containsKey(id)) {
-        GTimerEvent e(type, GTimer(STATIC_VARIABLE(timerTable).get(id)));
-        e.setEventTime(time);
-        return e;
-    } else {
-        // invalid timer ID; return an empty/invalid event
-        GTimerEvent e;
-        return e;
+        /* Pull the weak pointer and lock it. The underlying object might no longer
+         * exist.
+         */
+        auto idPtr = STATIC_VARIABLE(timerTable).get(id).lock();
+
+        /* If the pointer is still valid, great! Wrap it up and return it. */
+        if (idPtr) {
+            GTimerEvent e(type, GTimer(idPtr));
+            e.setEventTime(time);
+            return e;
+        }
+
+        /* Otherwise, the pointer has expired. Pull this out of our table. */
+        STATIC_VARIABLE(timerTable).remove(id);
     }
+
+    /* If we're here, either there never was an object with this ID (oops) or there was
+     * one, but it's no longer valid. Either way, return an invalid event.
+     */
+    return GTimerEvent();
 }
 
 static GEvent parseWindowEvent(TokenScanner& scanner, EventType type) {
@@ -3706,15 +3719,15 @@ void setConsoleProperties() {
 #if defined(SPL_CONSOLE_EXIT_ON_CLOSE)
     setConsoleExitProgramOnClose(true);
 #endif
-    
+
 #if defined(SPL_CONSOLE_LOCATION_SAVED)
     setConsoleLocationSaved(true);
 #endif
-    
+
 #if defined(SPL_VERIFY_JAVA_BACKEND_VERSION)
     version::ensureJavaBackEndVersion();
 #endif
-    
+
 #if defined(SPL_VERIFY_PROJECT_VERSION)
     version::ensureProjectVersion();
 #endif

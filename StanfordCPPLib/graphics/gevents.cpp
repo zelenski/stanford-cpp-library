@@ -57,7 +57,6 @@ GEvent::GEvent() {
     eventTime = 0.0;
     gwd = nullptr;
     source = nullptr;
-    gtd = nullptr;
     x = 0;
     y = 0;
     keyChar = 0;
@@ -573,7 +572,7 @@ GTimerEvent::GTimerEvent(EventType type, const GTimer& timer) {
 }
 
 GTimer GTimerEvent::getGTimer() const {
-    return GTimer(gtd);
+    return GTimer(gtd.lock());
 }
 
 std::string GTimerEvent::toString() const {
@@ -581,7 +580,7 @@ std::string GTimerEvent::toString() const {
         return "GTimerEvent(?)";
     }
     std::ostringstream out;
-    out << "GTimerEvent:TIMER_TICKED(id=" << gtd << ")";
+    out << "GTimerEvent:TIMER_TICKED(id=" << *gtd.lock() << ")";
     return out.str();
 }
 
