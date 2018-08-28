@@ -813,8 +813,12 @@ GCompound::GCompound() {
 }
 
 void GCompound::add(GObject* gobj) {
+    /* Don't add the same object multiple times. */
+    if (presences.contains(gobj)) return;
+
     stanfordcpplib::getPlatform()->gcompound_add(this, gobj);
     contents.add(gobj);
+    presences.add(gobj);
     gobj->parent = this;
 }
 
@@ -897,6 +901,7 @@ void GCompound::removeAll() {
 void GCompound::removeAt(int index) {
     GObject* gobj = contents[index];
     contents.remove(index);
+    presences.remove(gobj);
     stanfordcpplib::getPlatform()->gobject_remove(gobj);
     gobj->parent = nullptr;
 }
