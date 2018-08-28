@@ -28,6 +28,7 @@
 #include "gtypes.h"
 #include "gwindow.h"
 #include "vector.h"
+#include "hashset.h"
 
 // forward declaration of class
 class GCompound;
@@ -1054,7 +1055,8 @@ private:
     void removeAt(int index);
 
     /* Instance variables */
-    Vector<GObject*> contents;
+    Vector<GObject*>  contents;
+    HashSet<GObject*> presences;
 
     /* Friend declarations */
     friend class GObject;
