@@ -157,6 +157,10 @@ std::string GEvent::getName() const {
     return _name;
 }
 
+std::string GEvent::getRequestURL() const {
+    return _requestUrl;
+}
+
 GInteractor* GEvent::getInteractor() const {
     return static_cast<GInteractor*>(_source);
 }
@@ -446,6 +450,10 @@ void GEvent::setModifiers(Qt::KeyboardModifiers modifiers) {
     if (modifiers & Qt::ShiftModifier) {
         _modifiers |= SHIFT_DOWN;
     }
+}
+
+void GEvent::setRequestURL(const std::string& requestUrl) {
+    _requestUrl = requestUrl;
 }
 
 void GEvent::setRowAndColumn(int row, int col) {

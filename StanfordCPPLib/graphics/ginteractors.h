@@ -22,6 +22,7 @@
 #include "gcheckbox.h"
 #include "gchooser.h"
 #include "gcolor.h"
+#include "gcontainer.h"
 #include "gfilechooser.h"
 #include "gfont.h"
 #include "ginteractor.h"

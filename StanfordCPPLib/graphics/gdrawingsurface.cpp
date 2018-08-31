@@ -177,7 +177,7 @@ void GDrawingSurface::drawRect(double x, double y, double width, double height) 
 }
 
 void GDrawingSurface::drawString(const std::string& text, double x, double y) {
-    GString* str = new GString(text, x, y);
+    GText* str = new GText(text, x, y);
     initializeGObject(str);
     draw(str);
 }

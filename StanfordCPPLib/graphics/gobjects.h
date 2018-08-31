@@ -94,7 +94,7 @@ public:
      * Returns the bounding box of this object, which is defined to be the
      * smallest rectangle that covers everything drawn by the figure.  The
      * coordinates of this rectangle do not necessarily match the location
-     * returned by <code>getLocation</code>.  Given a <code>GString</code>
+     * returned by <code>getLocation</code>.  Given a <code>GText</code>
      * object, for example, <code>getLocation</code> returns the coordinates
      * of the point on the baseline at which the string begins; the
      * <code>getBounds</code> method, by contrast, returns a rectangle that
@@ -625,7 +625,7 @@ protected:
     friend class GPolygon;
     friend class GRect;
     friend class GRoundRect;
-    friend class GString;
+    friend class GText;
 };
 
 /*
@@ -1276,17 +1276,17 @@ protected:
 };
 
 /*
- * Class: GString
- * --------------
+ * Class: GText
+ * ------------
  * This graphical object subclass represents a text string.  For
- * example, the following code adds a <code>GString</code> containing
+ * example, the following code adds a <code>GText</code> containing
  * the string <code>"hello, world"</code> to the center of the window:
  *
  *<pre>
  *    int main() {
  *       GWindow gw;
  *       cout << "This program draws the 'hello, world' message." << endl;
- *       GString *label = new GString("hello, world");
+ *       GText* label = new GText("hello, world");
  *       label->setFont("SansSerif-18");
  *       double x = (gw.getWidth() - label->getWidth()) / 2;
  *       double y = (gw.getHeight() + label->getFontAscent()) / 2;
@@ -1295,7 +1295,7 @@ protected:
  *    }
  *</pre>
  *
- * Controlling the appearance and positioning of a <code>GString</code>
+ * Controlling the appearance and positioning of a <code>GText</code>
  * depends on understanding the following terms:
  *
  * <p><ul>
@@ -1310,21 +1310,21 @@ protected:
  *   <li>The <b><i>descent</i></b> is the maximum distance a character
  *       in this font extends below the baseline.
  * </ul>
- * <include src="pictures/GObjectDiagrams/GStringGeometry.html">
+ * <include src="pictures/GObjectDiagrams/GTextGeometry.html">
  */
-class GString : public GObject {
+class GText : public GObject {
 public:
     /*
-     * Constructor: GString
-     * Usage: GString* label = new GString(str);
-     *        GString* label = new GString(str, x, y);
+     * Constructor: GText
+     * Usage: GText* label = new GText(str);
+     *        GText* label = new GText(str, x, y);
      * -------------------------------------------------
-     * Creates a <code>GString</code> object containing the specified string.
+     * Creates a <code>GText</code> object containing the specified string.
      * By default, the baseline of the first character appears at the origin;
      * the second form automatically resets the location of the
-     * <code>GString</code> to the point (<code>x</code>, <code>y</code>).
+     * <code>GText</code> to the point (<code>x</code>, <code>y</code>).
      */
-    GString(const std::string& str = "", double x = 0, double y = 0);
+    GText(const std::string& str = "", double x = 0, double y = 0);
 
     virtual void draw(QPainter* painter);
 
@@ -1332,7 +1332,7 @@ public:
      * Method: getFont
      * Usage: string font = label->getFont();
      * --------------------------------------
-     * Returns the current font for the <code>GString</code>.
+     * Returns the current font for the <code>GText</code>.
      */
     virtual std::string getFont() const;
 
@@ -1385,7 +1385,7 @@ public:
      * Method: setLabel
      * Usage: label->setLabel(str);
      * ----------------------------
-     * Changes the string stored within the <code>GString</code> object, so that
+     * Changes the string stored within the <code>GText</code> object, so that
      * a new text string appears on the display.
      */
     virtual void setLabel(const std::string& str);

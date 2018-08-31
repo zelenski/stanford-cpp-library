@@ -1330,19 +1330,19 @@ std::string GRoundRect::toStringExtra() const {
 }
 
 
-GString::GString(const std::string& str, double x, double y)
+GText::GText(const std::string& str, double x, double y)
         : GObject(x, y),
           _text(str) {
     _font = STATIC_VARIABLE(DEFAULT_GLABEL_FONT);
     updateSize();
 }
 
-void GString::draw(QPainter* painter) {
+void GText::draw(QPainter* painter) {
     initializeBrushAndPen(painter);
     painter->drawText((int) getX(), (int) getY(), QString::fromStdString(_text));
 }
 
-GRectangle GString::getBounds() const {
+GRectangle GText::getBounds() const {
     if (_transformed) {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
@@ -1350,53 +1350,53 @@ GRectangle GString::getBounds() const {
     return GRectangle(getX(), getY() - getFontAscent(), getWidth(), getHeight());
 }
 
-std::string GString::getFont() const {
+std::string GText::getFont() const {
     return _font;
 }
 
-double GString::getFontAscent() const {
+double GText::getFontAscent() const {
     QFontMetrics metrics(GFont::toQFont(_font));
     return metrics.ascent();
 }
 
-double GString::getFontDescent() const {
+double GText::getFontDescent() const {
     QFontMetrics metrics(GFont::toQFont(_font));
     return metrics.descent();
 }
 
-std::string GString::getLabel() const {
+std::string GText::getLabel() const {
     return _text;
 }
 
-std::string GString::getText() const {
+std::string GText::getText() const {
     return _text;
 }
 
-std::string GString::getType() const {
+std::string GText::getType() const {
     return "GString";
 }
 
-void GString::setFont(const std::string& font) {
+void GText::setFont(const std::string& font) {
     _font = font;
     updateSize();
     repaint();
 }
 
-void GString::setLabel(const std::string& str) {
+void GText::setLabel(const std::string& str) {
     _text = str;
     updateSize();
     repaint();
 }
 
-void GString::setText(const std::string& str) {
+void GText::setText(const std::string& str) {
     setLabel(str);
 }
 
-std::string GString::toStringExtra() const {
+std::string GText::toStringExtra() const {
     return "text=\"" + _text + "\"";
 }
 
-void GString::updateSize() {
+void GText::updateSize() {
     QFontMetrics metrics(GFont::toQFont(_font));
     _width = metrics.width(QString::fromStdString(_text));
     _height = metrics.height();

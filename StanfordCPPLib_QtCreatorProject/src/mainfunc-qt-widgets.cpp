@@ -20,7 +20,7 @@ void testQwindow() {
     static GWindow* window = new GWindow(700, 300);
     window->setTitle("QtGui Window");
     window->setResizable(true);
-    window->setExitOnClose(false);
+    window->setExitOnClose(true);
     window->center();
 
     GLabel* label = new GLabel("Type <b>stuff</b> <i>now</i> (North):");
@@ -210,6 +210,23 @@ void testQwindow() {
         table->clearFormatting();
     });
     window->addToRegion(button3, "South");
+
+    static GButton* button4 = new GButton("HI!");
+    window->addToRegion(button4, "South");
+
+    static GCheckBox* checkboxs = new GCheckBox("&Visible?", /* checked */ true);
+    checkboxs->setActionListener([]() {
+        // button4->setVisible(checkboxs->isChecked());
+        if (checkboxs->isChecked()) {
+            window->addToRegion(button4, "South");
+        } else {
+            window->removeFromRegion(button4, "South");
+        }
+    });
+    window->addToRegion(checkboxs, "South");
+
+    GLabel* oopsButton = new GLabel("I should not show up!!!!!");
+    oopsButton->setVisible(true);
 
     static GSlider* slider = new GSlider();
     slider->setMinorTickSpacing(20);

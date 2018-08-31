@@ -160,7 +160,7 @@ public:
      */
     virtual double getColumnWidth(int column) const;
 
-    virtual _Internal_QWidget* getInternalWidget() const;
+    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
 
     /*
      * Returns the height of the given row index in pixels.
@@ -196,9 +196,9 @@ public:
     virtual int getSelectedRow() const;
 
     /* virtual methods from GInteractor */
-    virtual std::string getType() const;
+    virtual std::string getType() const Q_DECL_OVERRIDE;
 
-    virtual QWidget* getWidget() const;
+    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
 
     /*
      * Returns true if a cell is currently selected.

@@ -22,10 +22,6 @@
 #include "gtypes.h"
 #include "queue.h"
 
-// function pointer (no params / no return)
-
-void __initializeStanfordCppLibraryQt(int argc, char** argv, int (* mainFunc)(void));
-
 /*
  * ...
  */
@@ -36,7 +32,9 @@ public:
     void exitGraphics(int exitCode = 0);
     void initializeQt();
     static QtGui* instance();
+    void setArgs(int argc, char** argv);
     void startBackgroundEventLoop(GThunkInt mainFunc);
+    void startBackgroundEventLoopVoid(GThunk mainFunc);
     void startEventLoop();
 
 public slots:
@@ -49,15 +47,14 @@ private:
     QtGui();   // forbid construction
 
     bool _initialized;
+    int _argc;
+    char** _argv;
 
     static QApplication* _app;
     static QThread* _qtMainThread;
     static GStudentThread* _studentThread;
-    static int _argc;
-    static char** _argv;
     static QtGui* _instance;
 
-    friend void __initializeStanfordCppLibraryQt(int argc, char** argv, int (* mainFunc)(void));
     friend class GStudentThread;
     friend class GEventQueue;
 };

@@ -48,10 +48,10 @@ public:
     GRadioButton(const std::string& text = "", const std::string& group = "default", bool checked = false, QWidget* parent = nullptr);
     virtual ~GRadioButton();
     virtual std::string getActionCommand() const Q_DECL_OVERRIDE;
-    virtual _Internal_QWidget* getInternalWidget() const;
+    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
     virtual std::string getText() const;
-    virtual std::string getType() const;
-    virtual QWidget* getWidget() const;
+    virtual std::string getType() const Q_DECL_OVERRIDE;
+    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
     virtual bool isChecked() const;
     virtual bool isSelected() const;
     virtual void removeActionListener();

@@ -47,15 +47,15 @@ public:
 
     GSlider(int min = 0, int max = 100, int value = 50, QWidget* parent = nullptr);
     virtual ~GSlider();
-    virtual _Internal_QWidget* getInternalWidget() const;
+    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
     virtual int getMajorTickSpacing() const;
     virtual int getMinorTickSpacing() const;
     virtual bool getPaintLabels() const;
     virtual bool getPaintTicks() const;
     virtual bool getSnapToTicks() const;
-    virtual std::string getType() const;
+    virtual std::string getType() const Q_DECL_OVERRIDE;
     virtual int getValue() const;
-    virtual QWidget* getWidget() const;
+    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
     virtual void removeActionListener();
     virtual void setActionListener(GEventListener func);
     virtual void setActionListener(GEventListenerVoid func);

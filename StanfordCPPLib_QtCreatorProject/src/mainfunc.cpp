@@ -7,6 +7,6 @@
 int main() {
     // extern int mainQt2dGraphics();
     // return mainQt2dGraphics();
-    extern int mainQtWidgets();
-    return mainQtWidgets();
+    extern int mainQtLayout();
+    return mainQtLayout();
 }

@@ -21,6 +21,9 @@
 class GBrowserPane;
 
 // Internal class; not to be used by clients.
+/*
+ * @private
+ */
 class _Internal_QTextBrowser : public QTextBrowser, public _Internal_QWidget {
     Q_OBJECT
 
@@ -33,7 +36,7 @@ private:
 };
 
 /*
- * ...
+ *
  */
 class GBrowserPane : public GInteractor {
 public:
@@ -68,8 +71,8 @@ public:
      */
     virtual std::string getText() const;
 
-    virtual std::string getType() const;
-    virtual QWidget* getWidget() const;
+    virtual std::string getType() const Q_DECL_OVERRIDE;
+    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
 
     /*
      * Reads text from the given file and displays the entire file's text as the

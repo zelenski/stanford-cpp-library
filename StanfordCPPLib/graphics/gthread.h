@@ -56,8 +56,10 @@ protected:
 class GStudentThread : public GThread {
 public:
     static void startStudentThread(GThunkInt mainFunc);
+    static void startStudentThreadVoid(GThunk mainFunc);
     static bool studentThreadExists();
 
+    GStudentThread(GThunk mainFunc);
     GStudentThread(GThunkInt mainFunc);
     int getResult() const;
 
@@ -66,6 +68,7 @@ protected:
 
 private:
     GThunkInt _mainFunc;
+    GThunk _mainFuncVoid;
     int _result;
 };
 

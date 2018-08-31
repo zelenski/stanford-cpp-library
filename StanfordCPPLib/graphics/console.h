@@ -21,8 +21,6 @@
  * - refactored GConsoleWindow class
  * @version 2018/07/15
  * - initial version, based on io/console.h
- *
- * \defgroup Console Console functions
  */
 
 #ifndef _console_h
@@ -38,8 +36,6 @@
  * Usage: clearConsole();
  * ----------------------
  * Erases the contents of the console window.
- *
- * \ingroup Console
  */
 void clearConsole();
 
@@ -50,8 +46,6 @@ void clearConsole();
  * Returns whether the console's "clear" function should be enabled.
  * Default true.  If false, clear() will just print a message
  * rather than actually clearing the console.
- *
- * \ingroup Console
  */
 bool getConsoleClearEnabled();
 
@@ -330,6 +324,9 @@ namespace qtgui {
 
 #ifndef __QtConsoleInitializer_created
 #define __QtConsoleInitializer_created
+/*
+ * @private
+ */
 class __QtConsoleInitializer {
 public:
     /*
@@ -342,6 +339,8 @@ public:
         setConsoleEnabled(true);
     }
 };
+
+/* @private */
 static __QtConsoleInitializer __qt_console_init;
 #endif // __QtConsoleInitializer_created
 

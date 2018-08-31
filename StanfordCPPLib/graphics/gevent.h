@@ -208,6 +208,7 @@ public:
     virtual GPoint getLocation() const;
     virtual int getModifiers() const;
     virtual std::string getName() const;
+    virtual std::string getRequestURL() const;
     virtual int getRow() const;
     virtual GObservable* getSource() const;
     virtual long getTime() const;
@@ -282,6 +283,7 @@ public:
     virtual void setKeyChar(const std::string& keyCharString);
     virtual void setKeyCode(int keyCode);
     virtual void setModifiers(Qt::KeyboardModifiers modifiers);
+    virtual void setRequestURL(const std::string& requestUrl);
     virtual void setRowAndColumn(int row, int col);
     virtual void setSource(GObservable* source);
     virtual void setX(double x);
@@ -299,6 +301,7 @@ private:
     int _keyCode;
     int _modifiers;
     std::string _name;
+    std::string _requestUrl;
     GObservable* _source;
     long _time;
     EventType _type;

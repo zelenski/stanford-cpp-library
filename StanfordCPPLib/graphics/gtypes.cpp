@@ -106,9 +106,9 @@ std::string toString(VerticalAlignment alignment) {
 
 HorizontalAlignment toHorizontalAlignment(const std::string& alignmentStr) {
     std::string alignLC = toLowerCase(trim(alignmentStr));
-    if (stringContains(alignLC, "left")) {
+    if (stringContains(alignLC, "left") || stringContains(alignLC, "west")) {
         return ALIGN_LEFT;
-    } else if (stringContains(alignLC, "right")) {
+    } else if (stringContains(alignLC, "right") || stringContains(alignLC, "east")) {
         return ALIGN_RIGHT;
     } else {
         return ALIGN_CENTER;
@@ -129,9 +129,9 @@ Qt::Alignment toQtAlignment(VerticalAlignment alignment) {
 
 VerticalAlignment toVerticalAlignment(const std::string& alignmentStr) {
     std::string alignLC = toLowerCase(trim(alignmentStr));
-    if (stringContains(alignLC, "top")) {
+    if (stringContains(alignLC, "top") || stringContains(alignLC, "north")) {
         return ALIGN_TOP;
-    } else if (stringContains(alignLC, "bottom")) {
+    } else if (stringContains(alignLC, "bottom") || stringContains(alignLC, "south")) {
         return ALIGN_BOTTOM;
     } else {
         return ALIGN_MIDDLE;

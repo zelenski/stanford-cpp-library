@@ -57,7 +57,7 @@ public:
     virtual int getColumns() const;
     virtual int getCursorPosition() const;
     virtual std::string getHtml() const;
-    virtual _Internal_QWidget* getInternalWidget() const;
+    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
     virtual std::string getPlaceholder() const;
     virtual int getRows() const;
     virtual std::string getSelectedText() const;
@@ -65,8 +65,8 @@ public:
     virtual int getSelectionLength() const;
     virtual int getSelectionStart() const;
     virtual std::string getText() const;
-    virtual std::string getType() const;
-    virtual QWidget* getWidget() const;
+    virtual std::string getType() const Q_DECL_OVERRIDE;
+    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
     virtual bool isContextMenuEnabled() const;
     virtual bool isEditable() const;
     virtual bool isLineWrap() const;

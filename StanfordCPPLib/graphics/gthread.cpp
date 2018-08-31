@@ -81,7 +81,9 @@ void GThread::runOnQtGuiThread(GThunk func) {
     } else if (qtGuiThreadExists()) {
         GEventQueue::instance()->runOnQtGuiThreadSync(func);
     } else {
-        error("QGui::runOnQtGuiThread: Qt GUI thread no longer exists");
+        error("GThread::runOnQtGuiThread: Qt GUI thread has not been initialized properly. \n"
+              "Make sure that the file containing your main() function #includes at least \n"
+              "one .h header from the Stanford C++ library.");
     }
 }
 
@@ -92,7 +94,9 @@ void GThread::runOnQtGuiThreadAsync(GThunk func) {
     } else if (qtGuiThreadExists()) {
         GEventQueue::instance()->runOnQtGuiThreadAsync(func);
     } else {
-        error("QGui::runOnQtGuiThreadAsync: Qt GUI thread no longer exists");
+        error("GThread::runOnQtGuiThreadAsync: Qt GUI thread has not been initialized properly. \n"
+              "Make sure that the file containing your main() function #includes at least \n"
+              "one .h header from the Stanford C++ library.");
     }
 }
 
@@ -116,7 +120,14 @@ void GThread::yield() {
 
 
 GStudentThread::GStudentThread(GThunkInt mainFunc)
-        : _mainFunc(mainFunc) {
+        : _mainFunc(mainFunc),
+          _mainFuncVoid(nullptr) {
+    this->setObjectName(QString::fromStdString("GStudentThread"));
+}
+
+GStudentThread::GStudentThread(GThunk mainFunc)
+        : _mainFunc(nullptr),
+          _mainFuncVoid(mainFunc) {
     this->setObjectName(QString::fromStdString("GStudentThread"));
 }
 
@@ -126,7 +137,11 @@ int GStudentThread::getResult() const {
 
 void GStudentThread::run() {
     yield();
-    _result = _mainFunc();
+    if (_mainFunc) {
+        _result = _mainFunc();
+    } else {
+        _mainFuncVoid();
+    }
 
     // if I get here, student's main() has finished running;
     // indicate this by showing a new title on the graphical console
@@ -134,13 +149,17 @@ void GStudentThread::run() {
         // flush out any unwritten output to the standard output streams
         std::cout.flush();
         std::cerr.flush();
-
-        extern void __shutdownStanfordCppLibraryQt();
-        __shutdownStanfordCppLibraryQt();
     });
 }
 
 void GStudentThread::startStudentThread(GThunkInt mainFunc) {
+    if (!_studentThread) {
+        _studentThread = new GStudentThread(mainFunc);
+        _studentThread->start();
+    }
+}
+
+void GStudentThread::startStudentThreadVoid(GThunk mainFunc) {
     if (!_studentThread) {
         _studentThread = new GStudentThread(mainFunc);
         _studentThread->start();

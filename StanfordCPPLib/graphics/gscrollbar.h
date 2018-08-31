@@ -67,7 +67,7 @@ public:
      */
     virtual int getExtent() const;
 
-    virtual _Internal_QWidget* getInternalWidget() const;
+    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
 
     /*
      * Returns the maximum value of the scroll bar.
@@ -84,14 +84,14 @@ public:
      */
     virtual Orientation getOrientation() const;
 
-    virtual std::string getType() const;
+    virtual std::string getType() const Q_DECL_OVERRIDE;
 
     /*
      * Returns the current value of the scroll bar.
      */
     virtual int getValue() const;
 
-    virtual QWidget* getWidget() const;
+    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
 
     virtual void removeActionListener();
 

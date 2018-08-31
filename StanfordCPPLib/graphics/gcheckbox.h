@@ -47,10 +47,10 @@ public:
     GCheckBox(const std::string& text = "", bool checked = false, QWidget* parent = nullptr);
     virtual ~GCheckBox();
     virtual std::string getActionCommand() const Q_DECL_OVERRIDE;
-    virtual _Internal_QWidget* getInternalWidget() const;
+    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
     virtual std::string getText() const;
-    virtual std::string getType() const;
-    virtual QWidget* getWidget() const;
+    virtual std::string getType() const Q_DECL_OVERRIDE;
+    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
     virtual bool isChecked() const;
     virtual bool isSelected() const;
     virtual void removeActionListener();

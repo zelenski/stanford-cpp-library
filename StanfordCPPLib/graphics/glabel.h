@@ -42,12 +42,12 @@ class GLabel : public GInteractor {
 public:
     GLabel(const std::string& text = "", const std::string& iconFileName = "", QWidget* parent = nullptr);
     virtual ~GLabel();
-    virtual _Internal_QWidget* getInternalWidget() const;
+    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
     virtual std::string getLabel() const;
     virtual std::string getText() const;
     virtual GInteractor::TextPosition getTextPosition() const;
-    virtual std::string getType() const;
-    virtual QWidget* getWidget() const;
+    virtual std::string getType() const Q_DECL_OVERRIDE;
+    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
     virtual void setBounds(double x, double y, double width, double height) Q_DECL_OVERRIDE;
     virtual void setBounds(const GRectangle& size) Q_DECL_OVERRIDE;
     virtual void setColor(int rgb) Q_DECL_OVERRIDE;
@@ -70,11 +70,11 @@ public:
 
 private:
     _Internal_QLabel* _iqlabel;
-    GString* _gstring;
+    GText* _gtext;
 
-    void ensureGString();
-    GString* getGString() const;
-    bool hasGString() const;
+    void ensureGText();
+    GText* getGText() const;
+    bool hasGText() const;
 
     friend class _Internal_QImageLabel;
     friend class GWindow;

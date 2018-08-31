@@ -189,10 +189,11 @@ public:
     virtual void loadCanvasPixels(const std::string& filename);
     virtual void pack();
     virtual void pause(double ms);
-    virtual void remove(GObject* obj);
-    virtual void remove(GObject& obj);
+    virtual void rememberPosition();
     virtual void remove(GInteractor* interactor);
     virtual void remove(GInteractor& interactor);
+    virtual void remove(GObject* obj);
+    virtual void remove(GObject& obj);
     virtual void removeClickListener();
     virtual void removeFromRegion(GInteractor* interactor, Region region);
     virtual void removeFromRegion(GInteractor* interactor, const std::string& region);
@@ -256,6 +257,11 @@ public:
 
     // not to be called by students
     static QMainWindow* getLastWindow();
+
+    // These functions are effectively private and should not be called by students.
+    static void _autograder_setExitGraphicsEnabled(bool enabled);
+    static void _autograder_setPauseEnabled(bool enabled);
+    virtual void _autograder_setIsAutograderWindow(bool isAutograderWindow);
 
 protected:
     virtual void processKeyPressEventInternal(QKeyEvent* event);

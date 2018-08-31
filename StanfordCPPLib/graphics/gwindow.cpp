@@ -243,6 +243,18 @@ GWindow::~GWindow() {
     _iqmainwindow = nullptr;
 }
 
+void GWindow::_autograder_setIsAutograderWindow(bool /*isAutograderWindow*/) {
+    // TODO
+}
+
+void GWindow::_autograder_setExitGraphicsEnabled(bool /*enabled*/) {
+    // TODO
+}
+
+void GWindow::_autograder_setPauseEnabled(bool /*enabled*/) {
+    // TODO
+}
+
 void GWindow::add(GInteractor* interactor) {
     addToRegion(interactor, "Center");
 }
@@ -411,11 +423,11 @@ void GWindow::addToRegion(GInteractor* interactor, Region region) {
         return;
     }
 
-    // special case: labels in "GString" mode are added to canvas
+    // special case: labels in "GText mode" are added to canvas
     if (layout == _iqmainwindow->_centerLayout && interactor->getType() == "GLabel") {
         GLabel* label = (GLabel*) interactor;
-        if (label->hasGString()) {
-            add(label->getGString());
+        if (label->hasGText()) {
+            add(label->getGText());
             return;
         }
     }
@@ -834,6 +846,10 @@ std::string GWindow::regionToString(Region region) {
            region == REGION_EAST  ? "East" : "Center";
 }
 
+void GWindow::rememberPosition() {
+    // TODO
+}
+
 void GWindow::remove(GObject* obj) {
     if (_canvas) {
         _canvas->remove(obj);   // runs on Qt GUI thread
@@ -881,16 +897,17 @@ void GWindow::removeFromRegion(GInteractor* interactor, Region region) {
         return;
     }
 
-    // special case: labels in "GString" mode are added to canvas
+    // special case: labels in "GText mode" are added to canvas
     if (layout == _iqmainwindow->_centerLayout && interactor->getType() == "GLabel") {
         GLabel* label = (GLabel*) interactor;
-        if (label->hasGString()) {
-            remove(label->getGString());
+        if (label->hasGText()) {
+            remove(label->getGText());
             return;
         }
     }
 
     GThread::runOnQtGuiThread([this, widget, layout]() {
+        widget->setVisible(false);
         layout->removeWidget(widget);
         layout->update();
         _iqmainwindow->updateGeometry();

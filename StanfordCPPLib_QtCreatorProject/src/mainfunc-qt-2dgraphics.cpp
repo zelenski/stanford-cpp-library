@@ -116,23 +116,23 @@ void testQwindowDrawing() {
     window->fillPolygon({200, 200, 250, 300, 150, 300});
 
     window->setColor("green");
-    GString* gstring = new GString("Hello, Qt!", 200, 80);
-    gstring->setColor("green");
-    gstring->rotate(10);
-    window->add(gstring);
+    GText* gtext = new GText("Hello, Qt!", 200, 80);
+    gtext->setColor("green");
+    gtext->rotate(10);
+    window->add(gtext);
 
-    GString* gstring2 = new GString("Bye, Felicia!", 220, 100);
-    gstring2->setColor("red");
-    gstring2->scale(1.5);
-    window->add(gstring2);
+    GText* gtext2 = new GText("Bye, Felicia!", 220, 100);
+    gtext2->setColor("red");
+    gtext2->scale(1.5);
+    window->add(gtext2);
 
     GImage* gimage = new GImage("triangle-icon.png", 200, 40);
     window->add(gimage);
 
     window->setColor("blue");
-    GString* gstring3 = new GString("Third string", 240, 120);
-    gstring3->setColor("blue");
-    window->add(gstring3);
+    GText* gtext3 = new GText("Third string", 240, 120);
+    gtext3->setColor("blue");
+    window->add(gtext3);
 
 //    // animation loop
 //    cout << "testQwindowDrawing: What thread am I? " << QGui::instance()->getCurrentThread() << endl;
