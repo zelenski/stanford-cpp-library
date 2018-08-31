@@ -82,7 +82,8 @@ void gbufferedImageTest() {
     gw.add(label, 10, 60);
     
     std::cout << "About to construct GBufferedImage." << std::endl;
-    GBufferedImage* img = new GBufferedImage(10, 80, 200, 250);
+    GBufferedImage* img = new GBufferedImage(200, 250);
+    img->setLocation(10, 80);
     std::cout << "Done constructing GBufferedImage." << std::endl;
     gw.add(img, 50, 50);
     // gw.addToRegion(img, "SOUTH");

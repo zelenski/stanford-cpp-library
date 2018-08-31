@@ -15,7 +15,6 @@
 #include "stylecheck.h"
 #include "vector.h"
 #include "testcases.h"
-#include "private/platform.h"
 #include "private/version.h"
 #include "exceptions.h"
 using namespace std;

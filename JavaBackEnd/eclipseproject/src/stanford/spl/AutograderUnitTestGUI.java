@@ -142,7 +142,7 @@ public class AutograderUnitTestGUI extends Observable
 		
 		descriptionLabel = new JLabel(TESTS_TITLE);
 		if (NORMAL_COLOR == null) {
-			NORMAL_COLOR= descriptionLabel.getForeground();
+			NORMAL_COLOR = descriptionLabel.getForeground();
 		}
 		descriptionLabel.setHorizontalAlignment(JLabel.CENTER);
 		descriptionLabel.setAlignmentX(0.5f);
