@@ -50,7 +50,7 @@
 #include "autograder.h"
 #include <cstdio>
 #include "autograderunittestgui.h"
-#include "console.h"
+#include "consoletext.h"
 #include "exceptions.h"
 #include "filelib.h"
 #include "gbufferedimage.h"
@@ -577,7 +577,7 @@ int autograderTextMain(int argc, char** argv) {
     return result;
 }
 
-static std::string addAutograderButton(GWindow* gui, const std::string& text, const std::string& icon) {
+static GButton* addAutograderButton(GWindow* gui, const std::string& text, const std::string& icon) {
     static Set<char> usedMnemonics;
 
     std::string html = "<html><center>" + stringReplace(text, "\n", "<br>") + "</center></html>";
@@ -603,16 +603,17 @@ static std::string addAutograderButton(GWindow* gui, const std::string& text, co
         // button->setTextPosition(SwingConstants::SWING_CENTER, SwingConstants::SWING_BOTTOM);
     }
     gui->addToRegion(button, "SOUTH");
-    return html;
+    return button;
 }
 
 int autograderGraphicalMain(int argc, char** argv) {
-    GWindow* gui = new GWindow(500, 300, /* visible */ false);
+    static GWindow* gui = new GWindow(500, 300, /* visible */ false);
     gui->setTitle(STATIC_VARIABLE(FLAGS).assignmentName + " Autograder");
     gui->setCanvasSize(0, 0);
     gui->_autograder_setIsAutograderWindow(true);
     gui->rememberPosition();
     gui->setExitOnClose(true);
+    setConsoleExitProgramOnClose(true);
     
     GLabel* startLabel = new GLabel("");
     if (!STATIC_VARIABLE(FLAGS).startMessage.empty()) {
@@ -629,103 +630,102 @@ int autograderGraphicalMain(int argc, char** argv) {
         gui->addToRegion(startLabel, "NORTH");
     }
     
-    std::string autogradeText = addAutograderButton(gui, "Automated\ntests", "check.gif");
-    std::string manualText = addAutograderButton(gui, "Run\nmanually", "play.gif");
-    std::string styleCheckText = addAutograderButton(gui, "Style\nchecker", "magnifier.gif");
-    for (int i = 0; i < STATIC_VARIABLE(FLAGS).callbackButtons.size(); i++) {
-        STATIC_VARIABLE(FLAGS).callbackButtons[i].text = addAutograderButton(gui, STATIC_VARIABLE(FLAGS).callbackButtons[i].text, STATIC_VARIABLE(FLAGS).callbackButtons[i].icon);
-    }
-    std::string lateDayText = addAutograderButton(gui, "Late days\ninfo", "calendar.gif");
-    std::string aboutText = addAutograderButton(gui, "About\nGrader", "help.gif");
-    std::string exitText = addAutograderButton(gui, "Exit\nGrader", "stop.gif");
-    gui->pack();
-    gui->setVisible(true);
-    
     int result = 0;
-    while (true) {
-        GEvent event = waitForEvent(ACTION_EVENT);
-        if (event.getEventClass() == ACTION_EVENT) {
-            GActionEvent actionEvent(event);
-            std::string cmd = actionEvent.getActionCommand();
-            if (cmd == autogradeText) {
-                if (STATIC_VARIABLE(FLAGS).callbackStart) {
-                    STATIC_VARIABLE(FLAGS).callbackStart();
-                }
-                
-                // stanfordcpplib::autograder::AutograderUnitTestGui::instance()->clearTests();
-                stanfordcpplib::autograder::AutograderUnitTestGui::instance()->clearTestResults();
-                stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setTestingCompleted(false);
-                stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setVisible(true);
-                result = mainRunAutograderTestCases(argc, argv);
-                stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setTestingCompleted(true);
-                
-                // if style checker is merged, also run it now
-                if (stylecheck::isStyleCheckMergedWithUnitTests()) {
-                    mainRunStyleChecker();
-                }
-
-                if (STATIC_VARIABLE(FLAGS).callbackEnd) {
-                    STATIC_VARIABLE(FLAGS).callbackEnd();
-                }
-            } else if (cmd == manualText) {
-                // set up buttons to automatically enter user input
-                if (STATIC_VARIABLE(FLAGS).showInputPanel) {
-                    GInputPanel::instance()->load(STATIC_VARIABLE(FLAGS).inputPanelFilename);
-                }
-                
-                // actually run the student's program
-                // (While program is running, if we close console, exit entire
-                // autograder program because we might be blocked on console I/O.
-                // But after it's done running, set behavior to just hide the
-                // console, since the grader will probably try to close it and then
-                // proceed with more grading and tests afterward.
-                // A little wonky, but it avoids most of the surprise cases of
-                // "I closed the student's console and it killed the autograder".
-                clearConsole();
-                getConsoleWindow()->setVisible(true);
-                getConsoleWindow()->toFront();
-                // setConsoleCloseOperation(ConsoleCloseOperation::CONSOLE_EXIT_ON_CLOSE);
-
-                stanfordcpplib::setExitEnabled(false);   // block exit() call
-                setConsoleCloseOperation(GWindow::CLOSE_HIDE);
-
-                studentMain();
-
-                // gwindowSetExitGraphicsEnabled(true);
-            } else if (cmd == styleCheckText) {
-                mainRunStyleChecker();
-            } else if (cmd == lateDayText) {
-                showLateDays();
-            } else if (cmd == aboutText) {
-                GOptionPane::showMessageDialog(STATIC_VARIABLE(FLAGS).aboutText, "About Autograder",
-                                               GOptionPane::MessageType::INFORMATION);
-            } else if (cmd == exitText) {
-                stanfordcpplib::setExitEnabled(true);   // don't block exit() call
-
-                // free up memory used by graphical interactors
-                for (GButton* button : STATIC_VARIABLE(AUTOGRADER_BUTTONS)) {
-                    delete button;
-                }
-                STATIC_VARIABLE(AUTOGRADER_BUTTONS).clear();
-
-                gui->close();   // exits program; will not return
-                break;
-            } else {
-                for (CallbackButtonInfo buttonInfo : STATIC_VARIABLE(FLAGS).callbackButtons) {
-                    if (cmd == buttonInfo.text) {
-                        buttonInfo.func();
-                        break;
-                    }
-                }
-            }
+    GButton* autogradeButton = addAutograderButton(gui, "Automated\ntests", "check.gif");
+    autogradeButton->setActionListener([&result, argc, argv]() {
+        if (STATIC_VARIABLE(FLAGS).callbackStart) {
+            STATIC_VARIABLE(FLAGS).callbackStart();
         }
+
+        // stanfordcpplib::autograder::AutograderUnitTestGui::instance()->clearTests();
+        stanfordcpplib::autograder::AutograderUnitTestGui::instance()->clearTestResults();
+        stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setTestingCompleted(false);
+        stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setVisible(true);
+        result = mainRunAutograderTestCases(argc, argv);
+        stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setTestingCompleted(true);
+
+        // if style checker is merged, also run it now
+        if (stylecheck::isStyleCheckMergedWithUnitTests()) {
+            mainRunStyleChecker();
+        }
+
+        if (STATIC_VARIABLE(FLAGS).callbackEnd) {
+            STATIC_VARIABLE(FLAGS).callbackEnd();
+        }
+    });
+
+    GButton* manualButton = addAutograderButton(gui, "Run\nmanually", "play.gif");
+    manualButton->setActionListener([]() {
+        // set up buttons to automatically enter user input
+        if (STATIC_VARIABLE(FLAGS).showInputPanel) {
+            GInputPanel::instance()->load(STATIC_VARIABLE(FLAGS).inputPanelFilename);
+        }
+
+        // actually run the student's program
+        // (While program is running, if we close console, exit entire
+        // autograder program because we might be blocked on console I/O.
+        // But after it's done running, set behavior to just hide the
+        // console, since the grader will probably try to close it and then
+        // proceed with more grading and tests afterward.
+        // A little wonky, but it avoids most of the surprise cases of
+        // "I closed the student's console and it killed the autograder".
+        clearConsole();
+        getConsoleWindow()->setVisible(true);
+        getConsoleWindow()->toFront();
+        // setConsoleCloseOperation(ConsoleCloseOperation::CONSOLE_EXIT_ON_CLOSE);
+
+        stanfordcpplib::setExitEnabled(false);   // block exit() call
+        setConsoleCloseOperation(GWindow::CLOSE_HIDE);
+
+        studentMain();
+
+        // gwindowSetExitGraphicsEnabled(true);
+    });
+
+    GButton* styleCheckButton = addAutograderButton(gui, "Style\nchecker", "magnifier.gif");
+    styleCheckButton->setActionListener([]() {
+        mainRunStyleChecker();
+    });
+
+    for (int i = 0; i < STATIC_VARIABLE(FLAGS).callbackButtons.size(); i++) {
+        GButton* callbackButton = addAutograderButton(gui, STATIC_VARIABLE(FLAGS).callbackButtons[i].text, STATIC_VARIABLE(FLAGS).callbackButtons[i].icon);
+        callbackButton->setActionListener([i]() {
+            STATIC_VARIABLE(FLAGS).callbackButtons[i].func();
+        });
     }
 
-    // free up memory used by graphical interactors
-    for (GButton* button : STATIC_VARIABLE(AUTOGRADER_BUTTONS)) {
-        delete button;
-    }
-    STATIC_VARIABLE(AUTOGRADER_BUTTONS).clear();
+    GButton* lateDayButton = addAutograderButton(gui, "Late days\ninfo", "calendar.gif");
+    lateDayButton->setActionListener([]() {
+        showLateDays();
+    });
+
+    GButton* aboutButton = addAutograderButton(gui, "About\nGrader", "help.gif");
+    aboutButton->setActionListener([]() {
+        GOptionPane::showMessageDialog(STATIC_VARIABLE(FLAGS).aboutText, "About Autograder",
+                               GOptionPane::MessageType::INFORMATION);
+    });
+
+    GButton* exitButton = addAutograderButton(gui, "Exit\nGrader", "stop.gif");
+    exitButton->setActionListener([]() {
+        stanfordcpplib::setExitEnabled(true);   // don't block exit() call
+
+        // free up memory used by graphical interactors
+        for (GButton* button : STATIC_VARIABLE(AUTOGRADER_BUTTONS)) {
+            delete button;
+        }
+        STATIC_VARIABLE(AUTOGRADER_BUTTONS).clear();
+
+        gui->close();   // exits program; will not return
+    });
+
+    gui->pack();
+    gui->show();
+    
+    // TODO: free up memory used by graphical interactors
+//    for (GButton* button : STATIC_VARIABLE(AUTOGRADER_BUTTONS)) {
+//        delete button;
+//    }
+//    STATIC_VARIABLE(AUTOGRADER_BUTTONS).clear();
     
     return result;
 }

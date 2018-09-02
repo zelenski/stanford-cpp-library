@@ -33,63 +33,7 @@
 #include "point.h"
 
 // forward declaration
-class GWindow;
-
-// Internal class; not to be used by clients.
-class _Internal_QMainWindow : public QMainWindow {
-    Q_OBJECT
-
-public:
-    static const int SPACING;
-    static const int MARGIN;
-
-    _Internal_QMainWindow(GWindow* gwindow, QWidget* parent = nullptr);
-    // virtual bool event(QEvent* event) Q_DECL_OVERRIDE;
-
-    virtual void changeEvent(QEvent* event) Q_DECL_OVERRIDE;
-    virtual void closeEvent(QCloseEvent* event) Q_DECL_OVERRIDE;
-    virtual void fixMargins();
-    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual void resizeEvent(QResizeEvent* event) Q_DECL_OVERRIDE;
-    virtual void timerEvent(QTimerEvent* event) Q_DECL_OVERRIDE;
-    virtual bool timerExists();
-    virtual void timerStart(double ms);
-    virtual void timerStop();
-
-public slots:
-    void handleMenuAction(const std::string& menu, const std::string& item);
-
-private:
-    // border layout regions for N/S/W/E/C:
-    // +------------------------+
-    // |         north          |
-    // |------------------------|
-    // |         middle         |
-    // |+----------------------+|
-    // || west | center | east ||
-    // |+----------------------+|
-    // |------------------------|
-    // |         south          |
-    // +------------------------+
-    // sizing/stretching rules:
-    // - N/S expand horizontally
-    // - W/E expand vertically
-    // - C takes all remaining space
-    // - each widget other than Center widget appears at its preferred ("hinted") size
-    QVBoxLayout* _overallLayout;
-    QHBoxLayout* _northLayout;
-    QHBoxLayout* _southLayout;
-    QVBoxLayout* _westLayout;
-    QVBoxLayout* _eastLayout;
-    QHBoxLayout* _centerLayout;
-    QHBoxLayout* _middleLayout;
-    GWindow* _gwindow;
-    int _timerID;
-
-    void processTimerEvent();
-
-    friend class GWindow;
-};
+class _Internal_QMainWindow;
 
 /*
  * ...
@@ -267,6 +211,8 @@ protected:
     virtual void processKeyPressEventInternal(QKeyEvent* event);
 
 private:
+    Q_DISABLE_COPY(GWindow)
+
     static _Internal_QMainWindow* _lastWindow;
 
     virtual void ensureForwardTarget() Q_DECL_OVERRIDE;
@@ -363,6 +309,62 @@ void pause(double milliseconds);
  * a result, most clients never need to call repaint explicitly.
  */
 void repaint();
+
+// Internal class; not to be used by clients.
+class _Internal_QMainWindow : public QMainWindow {
+    Q_OBJECT
+
+public:
+    static const int SPACING;
+    static const int MARGIN;
+
+    _Internal_QMainWindow(GWindow* gwindow, QWidget* parent = nullptr);
+    // virtual bool event(QEvent* event) Q_DECL_OVERRIDE;
+
+    virtual void changeEvent(QEvent* event) Q_DECL_OVERRIDE;
+    virtual void closeEvent(QCloseEvent* event) Q_DECL_OVERRIDE;
+    virtual void fixMargins();
+    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
+    virtual void resizeEvent(QResizeEvent* event) Q_DECL_OVERRIDE;
+    virtual void timerEvent(QTimerEvent* event) Q_DECL_OVERRIDE;
+    virtual bool timerExists();
+    virtual void timerStart(double ms);
+    virtual void timerStop();
+
+public slots:
+    void handleMenuAction(const std::string& menu, const std::string& item);
+
+private:
+    // border layout regions for N/S/W/E/C:
+    // +------------------------+
+    // |         north          |
+    // |------------------------|
+    // |         middle         |
+    // |+----------------------+|
+    // || west | center | east ||
+    // |+----------------------+|
+    // |------------------------|
+    // |         south          |
+    // +------------------------+
+    // sizing/stretching rules:
+    // - N/S expand horizontally
+    // - W/E expand vertically
+    // - C takes all remaining space
+    // - each widget other than Center widget appears at its preferred ("hinted") size
+    QVBoxLayout* _overallLayout;
+    QHBoxLayout* _northLayout;
+    QHBoxLayout* _southLayout;
+    QVBoxLayout* _westLayout;
+    QVBoxLayout* _eastLayout;
+    QHBoxLayout* _centerLayout;
+    QHBoxLayout* _middleLayout;
+    GWindow* _gwindow;
+    int _timerID;
+
+    void processTimerEvent();
+
+    friend class GWindow;
+};
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 

@@ -1115,6 +1115,14 @@ void GConsoleWindow::setEcho(bool echo) {
     _echo = echo;
 }
 
+void GConsoleWindow::setFont(const QFont& font) {
+    if (_locked) {
+        return;
+    }
+    GWindow::setFont(font);   // call super
+    _textArea->setFont(font);
+}
+
 void GConsoleWindow::setFont(const std::string& font) {
     if (_locked) {
         return;

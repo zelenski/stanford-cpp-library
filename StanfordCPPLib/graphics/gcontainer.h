@@ -13,6 +13,7 @@
 #include <QBoxLayout>
 #include <QLayout>
 #include "ginteractor.h"
+#include "vector.h"
 
 class _Internal_QContainer;   // forward declaration
 
@@ -51,20 +52,38 @@ public:
     virtual void clear();
     virtual void clearRegion(Region region);
     virtual void clearRegion(const std::string& region);
+    virtual GInteractor* getInteractor(int i) const;
+    virtual int getInteractorCount() const;
+    virtual GInteractor* getInteractorByRegion(int i, Region region) const;
+    virtual GInteractor* getInteractorByRegion(int i, const std::string& region = "Center") const;
+    virtual int getInteractorCountByRegion(Region region) const;
+    virtual int getInteractorCountByRegion(const std::string& region = "Center") const;
     virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
     virtual double getMargin() const;
+    virtual double getPadding() const;
     virtual double getSpacing() const;
     virtual std::string getType() const Q_DECL_OVERRIDE;
     virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
+    virtual void insert(int index, GInteractor* interactor);
+    virtual void insert(int index, GInteractor& interactor);
+    virtual void insertToRegion(int index, GInteractor* interactor, Region region);
+    virtual void insertToRegion(int index, GInteractor* interactor, const std::string& region = "Center");
+    virtual void insertToRegion(int index, GInteractor& interactor, Region region);
+    virtual void insertToRegion(int index, GInteractor& interactor, const std::string& region = "Center");
+    virtual bool isEmpty() const;
     virtual void remove(GInteractor* interactor);
     virtual void remove(GInteractor& interactor);
+    virtual void remove(int index);
     virtual void removeFromRegion(GInteractor* interactor, Region region);
     virtual void removeFromRegion(GInteractor* interactor, const std::string& region);
     virtual void removeFromRegion(GInteractor& interactor, Region region);
     virtual void removeFromRegion(GInteractor& interactor, const std::string& region);
+    virtual void removeFromRegion(int index, Region region);
+    virtual void removeFromRegion(int index, const std::string& region);
     virtual void setAlignment(HorizontalAlignment halign, VerticalAlignment valign);
     virtual void setHorizontalAlignment(HorizontalAlignment halign);
     virtual void setMargin(double px);
+    virtual void setPadding(double px);
     virtual void setVerticalAlignment(VerticalAlignment valign);
     virtual void setRegionAlignment(Region region, HorizontalAlignment halign);
     virtual void setRegionAlignment(Region region, VerticalAlignment valign);
@@ -78,7 +97,11 @@ public:
     virtual void setSpacing(double px);
 
 private:
+    Q_DISABLE_COPY(GContainer)
+
     _Internal_QContainer* _iqcontainer;
+    Vector<GInteractor*> _interactors;
+    Map<Region, Vector<GInteractor*>> _interactorsByRegion;
     Layout _layout;
 
     friend class _Internal_QContainer;
@@ -98,7 +121,7 @@ public:
 
 private:
     GContainer* _gcontainer;
-    GContainer::Layout _layout;
+    GContainer::Layout _layoutType;
     HorizontalAlignment _halign;
     VerticalAlignment _valign;
     int _margin;
@@ -137,15 +160,20 @@ private:
     virtual void addToRegion(QWidget* widget, GContainer::Region region);
     virtual void clear();
     virtual void clearRegion(GContainer::Region region);
+    virtual void fixAlignment(QWidget* widget, GContainer::Region region = GContainer::REGION_CENTER);
     virtual HorizontalAlignment getHorizontalAlignment() const;
     virtual VerticalAlignment getVerticalAlignment() const;
     virtual GContainer::Layout getLayoutType() const;
     virtual int getMargin() const;
     virtual QLayout* getQLayout() const;
     virtual int getSpacing() const;
+    virtual void insert(int i, QWidget* widget);
+    virtual void insertToRegion(int i, QWidget* widget, GContainer::Region region);
     virtual QLayout* layoutForRegion(GContainer::Region region) const;
     virtual void remove(QWidget* widget);
     virtual void removeFromRegion(QWidget* widget, GContainer::Region region);
+    virtual void remove(int i);
+    virtual void removeFromRegion(int i, GContainer::Region region);
     virtual void setHorizontalAlignment(HorizontalAlignment halign);
     virtual void setLayoutType(GContainer::Layout layout);
     virtual void setMargin(int margin);

@@ -28,51 +28,7 @@
 #include "gobjects.h"
 #include "gtypes.h"
 
-// forward declaration
-class GTable;
-
-// Internal class; not to be used by clients.
-class _Internal_QItemDelegate : public QStyledItemDelegate {
-    Q_OBJECT
-
-public:
-    _Internal_QItemDelegate(QObject* parent = nullptr);
-    virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
-    virtual void destroyEditor(QWidget* editor, const QModelIndex& index) const;
-    virtual QWidget* getEditor() const;
-
-private:
-    QWidget* _editor;
-};
-
-
-// Internal class; not to be used by clients.
-class _Internal_QTableWidget : public QTableWidget, public _Internal_QWidget {
-    Q_OBJECT
-
-public:
-    _Internal_QTableWidget(GTable* gtable, int rows, int columns, QWidget* parent = nullptr);
-    virtual bool edit(const QModelIndex& index, QAbstractItemView::EditTrigger trigger, QEvent* event) Q_DECL_OVERRIDE;
-    virtual QWidget* getEditor() const;
-    virtual _Internal_QItemDelegate* getItemDelegate() const;
-    virtual bool isEditing() const;
-    virtual void closeEditor(QWidget* editor, QAbstractItemDelegate::EndEditHint hint) Q_DECL_OVERRIDE;
-    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
-
-public slots:
-    void handleCellChange(int row, int column);
-    void handleCellDoubleClick(int row, int column);
-    void handleSelectionChange(const QItemSelection& selected, const QItemSelection& deselected);
-
-private:
-    GTable* _gtable;
-    _Internal_QItemDelegate* _delegate;
-    int _lastKeyPressed;
-
-    void fireTableEvent(EventType eventType, const std::string& eventName, int row = -1, int col = -1);
-};
-
+class _Internal_QTableWidget;
 
 /*
  * A QGTable represents a graphical editable 2D table, like a mediocre facsimile
@@ -331,6 +287,7 @@ public:
     /*
      * Sets the font used to display each cell's text.
      */
+    virtual void setFont(const QFont& font) Q_DECL_OVERRIDE;
     virtual void setFont(const std::string& font) Q_DECL_OVERRIDE;
 
     /*
@@ -390,6 +347,8 @@ public:
     virtual int width() const;
 
 private:
+    Q_DISABLE_COPY(GTable)
+
     // Represents cascading styles on a cell, row, column, or table.
     struct TableStyle {
         int background;
@@ -493,6 +452,48 @@ private:
     void updateColumnHeaders();
 
     friend class _Internal_QTableWidget;
+};
+
+// Internal class; not to be used by clients.
+class _Internal_QItemDelegate : public QStyledItemDelegate {
+    Q_OBJECT
+
+public:
+    _Internal_QItemDelegate(QObject* parent = nullptr);
+    virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+    virtual void destroyEditor(QWidget* editor, const QModelIndex& index) const;
+    virtual QWidget* getEditor() const;
+
+private:
+    QWidget* _editor;
+};
+
+
+// Internal class; not to be used by clients.
+class _Internal_QTableWidget : public QTableWidget, public _Internal_QWidget {
+    Q_OBJECT
+
+public:
+    _Internal_QTableWidget(GTable* gtable, int rows, int columns, QWidget* parent = nullptr);
+    virtual bool edit(const QModelIndex& index, QAbstractItemView::EditTrigger trigger, QEvent* event) Q_DECL_OVERRIDE;
+    virtual QWidget* getEditor() const;
+    virtual _Internal_QItemDelegate* getItemDelegate() const;
+    virtual bool isEditing() const;
+    virtual void closeEditor(QWidget* editor, QAbstractItemDelegate::EndEditHint hint) Q_DECL_OVERRIDE;
+    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+
+public slots:
+    void handleCellChange(int row, int column);
+    void handleCellDoubleClick(int row, int column);
+    void handleSelectionChange(const QItemSelection& selected, const QItemSelection& deselected);
+
+private:
+    GTable* _gtable;
+    _Internal_QItemDelegate* _delegate;
+    int _lastKeyPressed;
+
+    void fireTableEvent(EventType eventType, const std::string& eventName, int row = -1, int col = -1);
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

@@ -12,15 +12,12 @@
 #include "qtgui.h"
 #include <QEvent>
 #include <QThread>
+#include "consoletext.h"
 #include "error.h"
 #include "exceptions.h"
 #include "gthread.h"
 #include "strlib.h"
 #include "private/static.h"
-
-#define __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
-#include "console.h"
-#undef __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
 
 #ifdef _WIN32
 #  include <direct.h>   // for chdir

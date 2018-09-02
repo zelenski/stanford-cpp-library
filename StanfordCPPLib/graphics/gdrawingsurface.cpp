@@ -12,6 +12,7 @@
 #include "gdrawingsurface.h"
 #include <QPainter>
 #include "gcolor.h"
+#include "gfont.h"
 #include "strlib.h"
 
 GDrawingSurface::GDrawingSurface()
@@ -415,6 +416,14 @@ void GDrawingSurface::setFillColor(const std::string& color) {
     }
 }
 
+void GDrawingSurface::setFont(const QFont& font) {
+    if (_forwardTarget) {
+        _forwardTarget->setFont(font);
+    } else {
+        _font = GFont::toFontString(font);
+    }
+}
+
 void GDrawingSurface::setFont(const std::string& font) {
     if (_forwardTarget) {
         _forwardTarget->setFont(font);
@@ -586,6 +595,11 @@ void GForwardDrawingSurface::setFillColor(int color) {
 void GForwardDrawingSurface::setFillColor(const std::string& color) {
     ensureForwardTarget();
     _forwardTarget->setFillColor(color);
+}
+
+void GForwardDrawingSurface::setFont(const QFont& font) {
+    ensureForwardTarget();
+    _forwardTarget->setFont(font);
 }
 
 void GForwardDrawingSurface::setFont(const std::string& font) {

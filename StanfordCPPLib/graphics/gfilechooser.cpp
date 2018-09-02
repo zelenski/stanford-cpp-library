@@ -17,6 +17,10 @@
 #include "strlib.h"
 #include "vector.h"
 
+GFileChooser::GFileChooser() {
+    // empty
+}
+
 std::string GFileChooser::showOpenDialog(const std::string& title, const std::string& currentDir, const std::string& fileFilter) {
     return showOpenDialog(/* parent */ nullptr, title, currentDir, fileFilter);
 }

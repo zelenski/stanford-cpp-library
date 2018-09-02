@@ -1,5 +1,5 @@
 #include "testcases.h"
-#include "console.h"
+#include "consoletext.h"
 #include "error.h"
 #include "regexpr.h"
 #include "simpio.h"

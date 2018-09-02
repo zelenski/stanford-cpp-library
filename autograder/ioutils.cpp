@@ -18,7 +18,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include "console.h"
+#include "consoletext.h"
 #include "error.h"
 #include "private/echoinputstreambuf.h"
 #include "private/limitoutputstreambuf.h"

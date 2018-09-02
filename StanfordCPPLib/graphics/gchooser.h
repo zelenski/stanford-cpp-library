@@ -20,23 +20,7 @@
 #include "ginteractor.h"
 #include "vector.h"
 
-// forward declaration
-class GChooser;
-
-// Internal class; not to be used by clients.
-class _Internal_QComboBox : public QComboBox, public _Internal_QWidget {
-    Q_OBJECT
-
-public:
-    _Internal_QComboBox(GChooser* gchooser, QWidget* parent = nullptr);
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
-
-public slots:
-    void handleChange();
-
-private:
-    GChooser* _gchooser;
-};
+class _Internal_QComboBox;
 
 /*
  * ...
@@ -70,11 +54,28 @@ public:
     virtual int size() const;
 
 private:
+    Q_DISABLE_COPY(GChooser)
+
     _Internal_QComboBox* _iqcomboBox;
 
     void checkIndex(const std::string& member, int index, int min = 0, int max = -1) const;
 
     friend class _Internal_QComboBox;
+};
+
+// Internal class; not to be used by clients.
+class _Internal_QComboBox : public QComboBox, public _Internal_QWidget {
+    Q_OBJECT
+
+public:
+    _Internal_QComboBox(GChooser* gchooser, QWidget* parent = nullptr);
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+
+public slots:
+    void handleChange();
+
+private:
+    GChooser* _gchooser;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

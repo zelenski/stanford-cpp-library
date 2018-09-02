@@ -680,6 +680,10 @@ void GCanvas::setColor(const std::string& color) {
     setColor(GColor::convertColorToRGB(color));
 }
 
+void GCanvas::setFont(const QFont& font) {
+    GDrawingSurface::setFont(font);
+}
+
 void GCanvas::setFont(const std::string& font) {
     GDrawingSurface::setFont(font);
 }

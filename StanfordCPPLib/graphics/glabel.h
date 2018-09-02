@@ -20,20 +20,8 @@
 #include "gobjects.h"
 
 // forward declaration
-class GLabel;
+class _Internal_QLabel;
 class GWindow;
-
-// Internal class; not to be used by clients.
-class _Internal_QLabel : public QLabel, public _Internal_QWidget {
-    Q_OBJECT
-
-public:
-    _Internal_QLabel(GLabel* qglabel, QWidget* parent = nullptr);
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
-
-private:
-    GLabel* _glabel;
-};
 
 /*
  * ...
@@ -52,6 +40,7 @@ public:
     virtual void setBounds(const GRectangle& size) Q_DECL_OVERRIDE;
     virtual void setColor(int rgb) Q_DECL_OVERRIDE;
     virtual void setColor(const std::string& color) Q_DECL_OVERRIDE;
+    virtual void setFont(const QFont& font) Q_DECL_OVERRIDE;
     virtual void setFont(const std::string& font) Q_DECL_OVERRIDE;
     virtual void setForeground(int rgb) Q_DECL_OVERRIDE;
     virtual void setForeground(const std::string& color) Q_DECL_OVERRIDE;
@@ -69,6 +58,8 @@ public:
     virtual void setY(double y) Q_DECL_OVERRIDE;
 
 private:
+    Q_DISABLE_COPY(GLabel)
+
     _Internal_QLabel* _iqlabel;
     GText* _gtext;
 
@@ -82,6 +73,18 @@ private:
 
 // alias GTextLabel for GLabel for backward compatibility
 typedef GLabel GTextLabel;
+
+// Internal class; not to be used by clients.
+class _Internal_QLabel : public QLabel, public _Internal_QWidget {
+    Q_OBJECT
+
+public:
+    _Internal_QLabel(GLabel* glabel, QWidget* parent = nullptr);
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+
+private:
+    GLabel* _glabel;
+};
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 

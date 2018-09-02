@@ -14,20 +14,25 @@
 
 #include <string>
 #include <QFont>
+#include "ginteractor.h"
 
 /*
  * ...
  */
 class GFont {
 public:
+    static void changeFontSize(GInteractor* interactor, int dsize);
+    static QFont changeFontSize(const QFont& font, int dsize);
     static QFont deriveQFont(const QFont& font, QFont::Weight weight = QFont::Normal, int size = -1);
     static QFont deriveQFont(const QFont& font, const std::string& fontFamily, QFont::Weight weight = QFont::Normal, int size = -1);
+    static QFont deriveQFont(const std::string& font, QFont::Weight weight = QFont::Normal, int size = -1);
+    static QFont deriveQFont(const std::string& font, const std::string& fontFamily, QFont::Weight weight = QFont::Normal, int size = -1);
     static std::string toFontString(const QFont& font);
     static QFont toQFont(const std::string& fontString);
     static QFont toQFont(const QFont& font, const std::string& fontString);
 
 private:
-    GFont();
+    GFont();   // prevent construction
     static QFont::StyleHint getStyleHint(const std::string& fontFamily);
 };
 

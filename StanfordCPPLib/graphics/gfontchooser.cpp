@@ -16,6 +16,10 @@
 #include "gfont.h"
 #include "gthread.h"
 
+GFontChooser::GFontChooser() {
+    // empty
+}
+
 std::string GFontChooser::showDialog(const std::string& title, const std::string& initialFont) {
     return showDialog(/* parent */ nullptr, title, initialFont);
 }

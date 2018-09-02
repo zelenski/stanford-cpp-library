@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 #include "autograder.h"
-#include "console.h"
+#include "consoletext.h"
 #include "gtest-marty.h"
 #include "queue.h"
 #include "simpio.h"

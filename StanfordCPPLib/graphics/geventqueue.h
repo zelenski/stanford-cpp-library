@@ -40,6 +40,8 @@ signals:
     void mySignal();
 
 private:
+    Q_DISABLE_COPY(GEventQueue)
+
     GEventQueue();
 
     GThunk dequeue();

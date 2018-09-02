@@ -19,22 +19,7 @@
 #include "ginteractor.h"
 
 // forward declaration
-class GScrollBar;
-
-// Internal class; not to be used by clients.
-class _Internal_QScrollBar : public QScrollBar, public _Internal_QWidget {
-    Q_OBJECT
-
-public:
-    _Internal_QScrollBar(GScrollBar* qgscrollbar, Qt::Orientation orientation, QWidget* parent = nullptr);
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
-
-public slots:
-    void handleValueChange(int value);
-
-private:
-    GScrollBar* _gscrollbar;
-};
+class _Internal_QScrollBar;
 
 /*
  * Class: GScrollBar
@@ -125,11 +110,28 @@ public:
     virtual void setValue(int value);
 
 private:
+    Q_DISABLE_COPY(GScrollBar)
+
     _Internal_QScrollBar* _iqscrollbar;
 
     friend class _Internal_QScrollBar;
 
     void updateSize();
+};
+
+// Internal class; not to be used by clients.
+class _Internal_QScrollBar : public QScrollBar, public _Internal_QWidget {
+    Q_OBJECT
+
+public:
+    _Internal_QScrollBar(GScrollBar* qgscrollbar, Qt::Orientation orientation, QWidget* parent = nullptr);
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+
+public slots:
+    void handleValueChange(int value);
+
+private:
+    GScrollBar* _gscrollbar;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

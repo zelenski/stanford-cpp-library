@@ -282,11 +282,14 @@ void GInteractor::setForeground(const std::string& color) {
     setForeground(rgb);
 }
 
-void GInteractor::setFont(const std::string& font) {
+void GInteractor::setFont(const QFont& font) {
     GThread::runOnQtGuiThread([this, font]() {
-        QFont qfont = GFont::toQFont(font);
-        getWidget()->setFont(qfont);
+        getWidget()->setFont(font);
     });
+}
+
+void GInteractor::setFont(const std::string& font) {
+    setFont(GFont::toQFont(font));
 }
 
 void GInteractor::setHeight(double height) {

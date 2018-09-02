@@ -30,6 +30,7 @@
 #include "goptionpane.h"
 #include "gradiobutton.h"
 #include "gscrollbar.h"
+#include "gscrollpane.h"
 #include "gslider.h"
 #include "gtable.h"
 #include "gtextarea.h"

@@ -10,6 +10,7 @@
  */
 
 #include "gfont.h"
+#include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include "error.h"
@@ -20,12 +21,30 @@ GFont::GFont() {
     // empty
 }
 
+void GFont::changeFontSize(GInteractor* interactor, int dsize) {
+    QFont newFont = changeFontSize(toQFont(interactor->getFont()), dsize);
+    interactor->setFont(toFontString(newFont));
+}
+
+QFont GFont::changeFontSize(const QFont& font, int dsize) {
+    int newSize = std::max(1, font.pointSize() + dsize);
+    return QFont(font.family(), newSize, font.weight(), font.italic());
+}
+
 QFont GFont::deriveQFont(const QFont& font, QFont::Weight weight, int size) {
     return QFont(font.family(), size, weight, /* italic */ font.italic());
 }
 
 QFont GFont::deriveQFont(const QFont& font, const std::string& fontFamily, QFont::Weight weight, int size) {
     return QFont(QString::fromStdString(fontFamily), size, weight, /* italic */ font.italic());
+}
+
+QFont GFont::deriveQFont(const std::string& font, QFont::Weight weight, int size) {
+    return deriveQFont(toQFont(font), weight, size);
+}
+
+QFont GFont::deriveQFont(const std::string& font, const std::string& fontFamily, QFont::Weight weight, int size) {
+    return deriveQFont(toQFont(font), fontFamily, weight, size);
 }
 
 // http://doc.qt.io/qt-5/qfont.html#StyleHint-enum

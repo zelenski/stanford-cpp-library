@@ -96,6 +96,7 @@ public:
     virtual void setColor(int rgb);
     virtual void setColor(const std::string& color);
     virtual void setEnabled(bool value);
+    virtual void setFont(const QFont& font);
     virtual void setFont(const std::string& font);
     virtual void setForeground(int rgb);
     virtual void setForeground(const std::string& color);

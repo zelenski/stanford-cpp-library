@@ -21,6 +21,9 @@ class GFontChooser {
 public:
     static std::string showDialog(const std::string& title = "", const std::string& initialFont = "");
     static std::string showDialog(QWidget* parent, const std::string& title = "", const std::string& initialFont = "");
+
+private:
+    GFontChooser();   // prevent construction
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

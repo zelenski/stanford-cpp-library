@@ -747,6 +747,10 @@ void GTable::setEditorValue(int row, int column, const std::string& text) {
     });
 }
 
+void GTable::setFont(const QFont& font) {
+    setFont(GFont::toFontString(font));
+}
+
 void GTable::setFont(const std::string& font) {
     GInteractor::setFont(font);   // call super
 

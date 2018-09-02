@@ -25,56 +25,9 @@
 #include "ginteractor.h"
 #include "vector.h"
 
-// forward declaration
-class GTextField;
-
-// Internal class; not to be used by clients.
-class _Internal_QLineEdit : public QLineEdit, public _Internal_QWidget {
-    Q_OBJECT
-
-public:
-    _Internal_QLineEdit(GTextField* gtextField, QWidget* parent = nullptr);
-    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
-
-public slots:
-    void handleTextChange(const QString&);
-
-private:
-    GTextField* _gtextfield;
-};
-
-// Internal class; not to be used by clients.
-class _Internal_QSpinBox : public QSpinBox, public _Internal_QWidget {
-    Q_OBJECT
-
-public:
-    _Internal_QSpinBox(GTextField* qgtextField, int min, int max, int step = 1, QWidget* parent = nullptr);
-    virtual QLineEdit* lineEdit() const;
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
-
-public slots:
-    void handleTextChange(const QString&);
-
-private:
-    GTextField* _gtextfield;
-};
-
-// Internal class; not to be used by clients.
-class _Internal_QDoubleSpinBox : public QDoubleSpinBox, public _Internal_QWidget {
-    Q_OBJECT
-
-public:
-    _Internal_QDoubleSpinBox(GTextField* qgtextField, double min, double max, double step = 0.1, QWidget* parent = nullptr);
-    virtual QLineEdit* lineEdit() const;
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
-
-public slots:
-    void handleTextChange(const QString&);
-
-private:
-    GTextField* _gtextfield;
-};
+class _Internal_QLineEdit;
+class _Internal_QSpinBox;
+class _Internal_QDoubleSpinBox;
 
 /*
  * ...
@@ -135,6 +88,8 @@ public:
     virtual bool valueIsReal() const;
 
 private:
+    Q_DISABLE_COPY(GTextField)
+
     _Internal_QLineEdit* _iqlineedit;
     _Internal_QSpinBox* _iqspinbox;
     _Internal_QDoubleSpinBox* _iqdoublespinbox;
@@ -143,6 +98,54 @@ private:
     friend class _Internal_QLineEdit;
     friend class _Internal_QSpinBox;
     friend class _Internal_QDoubleSpinBox;
+};
+
+// Internal class; not to be used by clients.
+class _Internal_QLineEdit : public QLineEdit, public _Internal_QWidget {
+    Q_OBJECT
+
+public:
+    _Internal_QLineEdit(GTextField* gtextField, QWidget* parent = nullptr);
+    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+
+public slots:
+    void handleTextChange(const QString&);
+
+private:
+    GTextField* _gtextfield;
+};
+
+// Internal class; not to be used by clients.
+class _Internal_QSpinBox : public QSpinBox, public _Internal_QWidget {
+    Q_OBJECT
+
+public:
+    _Internal_QSpinBox(GTextField* qgtextField, int min, int max, int step = 1, QWidget* parent = nullptr);
+    virtual QLineEdit* lineEdit() const;
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+
+public slots:
+    void handleTextChange(const QString&);
+
+private:
+    GTextField* _gtextfield;
+};
+
+// Internal class; not to be used by clients.
+class _Internal_QDoubleSpinBox : public QDoubleSpinBox, public _Internal_QWidget {
+    Q_OBJECT
+
+public:
+    _Internal_QDoubleSpinBox(GTextField* qgtextField, double min, double max, double step = 0.1, QWidget* parent = nullptr);
+    virtual QLineEdit* lineEdit() const;
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+
+public slots:
+    void handleTextChange(const QString&);
+
+private:
+    GTextField* _gtextfield;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

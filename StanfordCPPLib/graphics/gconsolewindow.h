@@ -4,7 +4,7 @@
  * 
  * @author Marty Stepp
  * @version 2018/08/23
- * - initial version, separated out from console.h
+ * - initial version, separated out from console .cpp/h
  */
 
 #ifndef _gconsolewindow_h
@@ -81,6 +81,7 @@ public:
     virtual void setColor(const std::string& color) Q_DECL_OVERRIDE;
     virtual void setEcho(bool echo);
     virtual void setErrorColor(const std::string& errorColor);
+    virtual void setFont(const QFont& font) Q_DECL_OVERRIDE;
     virtual void setFont(const std::string& font) Q_DECL_OVERRIDE;
     virtual void setForeground(int color) Q_DECL_OVERRIDE;
     virtual void setForeground(const std::string& color) Q_DECL_OVERRIDE;
@@ -109,6 +110,8 @@ private:
     static const std::string USER_INPUT_COLOR;
     static GConsoleWindow* _instance;
     static bool _consoleEnabled;
+
+    Q_DISABLE_COPY(GConsoleWindow)
 
     GConsoleWindow();
     virtual ~GConsoleWindow();

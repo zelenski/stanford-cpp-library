@@ -13,6 +13,7 @@
 #define _gdrawingsurface_h
 
 #include <string>
+#include <QFont>
 #include <QWidget>
 #include "grid.h"
 #include "gobjects.h"
@@ -98,6 +99,7 @@ public:
     virtual void setColor(const std::string& color);
     virtual void setFillColor(int color);
     virtual void setFillColor(const std::string& color);
+    virtual void setFont(const QFont& font);
     virtual void setFont(const std::string& font);
     virtual void setForeground(int color);
     virtual void setForeground(const std::string& color);
@@ -169,6 +171,7 @@ public:
     virtual void setColor(const std::string& color) Q_DECL_OVERRIDE;
     virtual void setFillColor(int color) Q_DECL_OVERRIDE;
     virtual void setFillColor(const std::string& color) Q_DECL_OVERRIDE;
+    virtual void setFont(const QFont& font) Q_DECL_OVERRIDE;
     virtual void setFont(const std::string& font) Q_DECL_OVERRIDE;
     virtual void setLineWidth(double lineWidth) Q_DECL_OVERRIDE;
     virtual void setPixel(double x, double y, int rgb) Q_DECL_OVERRIDE;

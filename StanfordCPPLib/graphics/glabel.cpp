@@ -125,6 +125,13 @@ void GLabel::setColor(const std::string& color) {
     GInteractor::setColor(color);   // call super
 }
 
+void GLabel::setFont(const QFont& font) {
+    if (_gtext) {
+        _gtext->setFont(font);
+    }
+    GInteractor::setFont(font);   // call super
+}
+
 void GLabel::setFont(const std::string& font) {
     if (_gtext) {
         _gtext->setFont(font);

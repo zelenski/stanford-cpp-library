@@ -18,28 +18,7 @@
 #include <QWidget>
 #include "ginteractor.h"
 
-// forward declaration
-class GTextArea;
-
-// Internal class; not to be used by clients.
-class _Internal_QTextEdit : public QTextEdit, public _Internal_QWidget {
-    Q_OBJECT
-
-public:
-    _Internal_QTextEdit(GTextArea* gtextArea, QWidget* parent = nullptr);
-    virtual void contextMenuEvent(QContextMenuEvent* event) Q_DECL_OVERRIDE;
-    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual void keyReleaseEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
-    virtual void mouseReleaseEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
-
-public slots:
-    void handleTextChange();
-
-private:
-    GTextArea* _gtextarea;
-};
+class _Internal_QTextEdit;
 
 /*
  * ...
@@ -97,12 +76,34 @@ public:
     virtual void setTextChangeListener(GEventListenerVoid func);
 
 private:
+    Q_DISABLE_COPY(GTextArea)
+
     _Internal_QTextEdit* _iqtextedit;
     bool _contextMenuEnabled;
 
     GDimension getRowColumnSize() const;
 
     friend class _Internal_QTextEdit;
+};
+
+// Internal class; not to be used by clients.
+class _Internal_QTextEdit : public QTextEdit, public _Internal_QWidget {
+    Q_OBJECT
+
+public:
+    _Internal_QTextEdit(GTextArea* gtextArea, QWidget* parent = nullptr);
+    virtual void contextMenuEvent(QContextMenuEvent* event) Q_DECL_OVERRIDE;
+    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
+    virtual void keyReleaseEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
+    virtual void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
+    virtual void mouseReleaseEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+
+public slots:
+    void handleTextChange();
+
+private:
+    GTextArea* _gtextarea;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

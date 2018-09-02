@@ -23,22 +23,7 @@
 #include "map.h"
 
 // forward declaration
-class GRadioButton;
-
-// Internal class; not to be used by clients.
-class _Internal_QRadioButton : public QRadioButton, public _Internal_QWidget {
-    Q_OBJECT
-
-public:
-    _Internal_QRadioButton(GRadioButton* gradioButton, bool checked = false, QWidget* parent = nullptr);
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
-
-public slots:
-    void handleClick();
-
-private:
-    GRadioButton* _gradioButton;
-};
+class _Internal_QRadioButton;
 
 /*
  * ...
@@ -62,12 +47,29 @@ public:
     virtual void setText(const std::string& text);
 
 private:
+    Q_DISABLE_COPY(GRadioButton)
+
     static Map<std::string, QButtonGroup*> _buttonGroups;
     QButtonGroup* getButtonGroup(const std::string& group);
 
     _Internal_QRadioButton* _iqradioButton;
 
     friend class _Internal_QRadioButton;
+};
+
+// Internal class; not to be used by clients.
+class _Internal_QRadioButton : public QRadioButton, public _Internal_QWidget {
+    Q_OBJECT
+
+public:
+    _Internal_QRadioButton(GRadioButton* gradioButton, bool checked = false, QWidget* parent = nullptr);
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+
+public slots:
+    void handleClick();
+
+private:
+    GRadioButton* _gradioButton;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

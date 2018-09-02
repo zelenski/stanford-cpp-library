@@ -17,23 +17,7 @@
 #include <QWidget>
 #include "ginteractor.h"
 
-// forward declaration
-class GBrowserPane;
-
-// Internal class; not to be used by clients.
-/*
- * @private
- */
-class _Internal_QTextBrowser : public QTextBrowser, public _Internal_QWidget {
-    Q_OBJECT
-
-public:
-    _Internal_QTextBrowser(GBrowserPane* gbrowserpane, QWidget* parent = nullptr);
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
-
-private:
-    GBrowserPane* _gbrowserpane;
-};
+class _Internal_QTextBrowser;
 
 /*
  *
@@ -109,12 +93,29 @@ public:
     virtual void setText(const std::string& text);
 
 private:
+    Q_DISABLE_COPY(GBrowserPane)
+
     std::string _pageUrl;   // url/filename of the most recently loaded page
 
 private:
     _Internal_QTextBrowser* _iqtextbrowser;
 
     friend class _Internal_QTextBrowser;
+};
+
+// Internal class; not to be used by clients.
+/*
+ * @private
+ */
+class _Internal_QTextBrowser : public QTextBrowser, public _Internal_QWidget {
+    Q_OBJECT
+
+public:
+    _Internal_QTextBrowser(GBrowserPane* gbrowserpane, QWidget* parent = nullptr);
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+
+private:
+    GBrowserPane* _gbrowserpane;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

@@ -19,6 +19,7 @@
 #define _ginputpanel_h
 
 #include <string>
+#include <QObject>
 
 class GInputPanel {
 public:
@@ -71,6 +72,8 @@ public:
     void setVisible(bool value = true);
 
 private:
+    Q_DISABLE_COPY(GInputPanel)
+
     GInputPanel();   // prevent construction
 
     static GInputPanel* _instance;

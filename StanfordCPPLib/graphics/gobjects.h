@@ -17,6 +17,7 @@
 
 #include <initializer_list>
 #include <iostream>
+#include <QFont>
 #include <QImage>
 #include <QPainter>
 #include <QPen>
@@ -455,6 +456,7 @@ public:
      * If any of these elements are missing or specified as an asterisk,
      * the existing value is retained.
      */
+    virtual void setFont(const QFont& font);
     virtual void setFont(const std::string& font);
 
     /*
@@ -1378,8 +1380,8 @@ public:
      * If any of these elements are missing or specified as an asterisk,
      * the existing value is retained.
      */
-    /* override */
-    virtual void setFont(const std::string& font);
+    virtual void setFont(const QFont& font) Q_DECL_OVERRIDE;
+    virtual void setFont(const std::string& font) Q_DECL_OVERRIDE;
 
     /*
      * Method: setLabel

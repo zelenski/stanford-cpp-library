@@ -16,6 +16,10 @@
 #include "gcolor.h"
 #include "gthread.h"
 
+GColorChooser::GColorChooser() {
+    // empty
+}
+
 std::string GColorChooser::showDialog(const std::string& title, int initialColor) {
     return showDialog(/* parent */ nullptr, title, initialColor);
 }

@@ -15,6 +15,7 @@
 #include <QLayout>
 #include <QRect>
 #include <QWidget>
+#include "ginteractor.h"
 
 class GLayout {
 public:
@@ -22,6 +23,7 @@ public:
 
     static void clearLayout(QLayout* layout);
     static bool contains(QLayout* layout, QWidget* widget);
+    static void forceUpdate(GInteractor* interactor);
     static void forceUpdate(QWidget* widget);
     static void invalidateLayout(QLayout* layout);
     static Position toPosition(const std::string& positionName);
@@ -52,6 +54,8 @@ public:
     void add(QLayoutItem* item, GLayout::Position position);
 
 private:
+    Q_DISABLE_COPY(GBorderLayout)
+
     struct ItemWrapper {
         ItemWrapper(QLayoutItem* i, GLayout::Position p) {
             item = i;
@@ -63,6 +67,7 @@ private:
     };
 
     enum SizeType { MinimumSize, SizeHint };
+
     QSize calculateSize(SizeType sizeType) const;
 
     QList<ItemWrapper*> list;

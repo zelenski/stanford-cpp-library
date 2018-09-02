@@ -90,6 +90,8 @@ private slots:
     void fileDownloadFinished();
 
 private:
+    Q_DISABLE_COPY(GDownloader)
+
     QNetworkAccessManager* _manager;
     QNetworkReply* _reply;
     Map<std::string, std::string> _headers;   // HTTP headers to send (name => value)

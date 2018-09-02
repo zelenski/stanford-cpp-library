@@ -20,23 +20,7 @@
 #include "glayout.h"
 #include "ginteractor.h"
 
-// forward declaration
-class GButton;
-
-// Internal class; not to be used by clients.
-class _Internal_QPushButton : public QToolButton, public _Internal_QWidget {
-    Q_OBJECT
-
-public:
-    _Internal_QPushButton(GButton* button, QWidget* parent = nullptr);
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
-
-public slots:
-    void handleClick();
-
-private:
-    GButton* _gbutton;
-};
+class _Internal_QPushButton;
 
 /*
  * ...
@@ -62,9 +46,25 @@ public:
     virtual void setTextPosition(SwingConstants horizontal, SwingConstants vertical) Q_DECL_DEPRECATED;
 
 private:
+    Q_DISABLE_COPY(GButton)
     _Internal_QPushButton* _iqpushbutton;
 
     friend class _Internal_QPushButton;
+};
+
+// Internal class; not to be used by clients.
+class _Internal_QPushButton : public QToolButton, public _Internal_QWidget {
+    Q_OBJECT
+
+public:
+    _Internal_QPushButton(GButton* button, QWidget* parent = nullptr);
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+
+public slots:
+    void handleClick();
+
+private:
+    GButton* _gbutton;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

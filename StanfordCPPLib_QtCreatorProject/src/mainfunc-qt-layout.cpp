@@ -61,6 +61,18 @@ void testQlayout() {
     center->addToRegion(new GButton("CCenter"), "Center");
     window->addToRegion(center, "Center");
 
+    GContainer* east = new GContainer(GContainer::LAYOUT_FLOW_VERTICAL);
+    GContainer* east1 = new GContainer(GContainer::LAYOUT_FLOW_HORIZONTAL);
+    GContainer* east2 = new GContainer(GContainer::LAYOUT_FLOW_HORIZONTAL);
+    east->add(east1);
+    east->add(east2);
+    window->addToRegion(east, "East");
+    east1->add(new GButton("E11"));
+    east1->add(new GButton("East12"));
+    east1->add(new GButton("E13"));
+    east2->add(new GButton("East11"));
+    east2->add(new GButton("E12"));
+
     // southern area of overall window tests grid layout
     int rows = 4;
     int cols = 3;

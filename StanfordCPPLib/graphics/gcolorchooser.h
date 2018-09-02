@@ -23,6 +23,9 @@ public:
     static std::string showDialog(QWidget* parent, const std::string& title, int initialColor);
     static std::string showDialog(const std::string& title = "", const std::string& initialColor = "");
     static std::string showDialog(QWidget* parent, const std::string& title = "", const std::string& initialColor = "");
+
+private:
+    GColorChooser();   // prevent construction
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

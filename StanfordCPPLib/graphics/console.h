@@ -307,12 +307,12 @@ extern void pause(double milliseconds);
 
 
 /*
- * qconsole.h is weird in that a student's program must be able to #include it
+ * console.h is weird in that a student's program must be able to #include it
  * and then magically receive the graphical console instead of the standard one;
  * but we want other lib files to be able to include console.h to get the
  * function prototypes without actually turning the graphical console on.
  * To achieve this, we have the __DONT_ENABLE_QT_GRAPHICAL_CONSOLE flag that lib
- * files can set right before #include'ing qconsole.h.  If they do so, it will
+ * files can set right before #include'ing console.h.  If they do so, it will
  * declare the prototypes but not initialize the graphical console.
  */
 #ifndef __DONT_ENABLE_QT_GRAPHICAL_CONSOLE

@@ -34,6 +34,8 @@ private:
              const std::string& text2,
              bool showCheckBoxes = false);   // forbid construction
 
+    Q_DISABLE_COPY(GDiffGui)
+
     GWindow* _window;
     QSplitter* _hsplitter;
     QSplitter* _vsplitter;

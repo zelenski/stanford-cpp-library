@@ -373,6 +373,10 @@ void GObject::setFilled(bool flag) {
     repaint();
 }
 
+void GObject::setFont(const QFont& font) {
+    setFont(GFont::toFontString(font));
+}
+
 void GObject::setFont(const std::string& font) {
     _font = font;
     repaint();
@@ -1374,6 +1378,10 @@ std::string GText::getText() const {
 
 std::string GText::getType() const {
     return "GString";
+}
+
+void GText::setFont(const QFont& font) {
+    setFont(GFont::toFontString(font));
 }
 
 void GText::setFont(const std::string& font) {

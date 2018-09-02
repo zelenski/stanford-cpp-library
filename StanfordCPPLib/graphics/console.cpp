@@ -1,20 +1,17 @@
 /*
  * File: console.cpp
  * -----------------
- * This file implements the console.h interface.
+ * This file implements the console .h interface.
  *
  * @author Marty Stepp
  * @version 2018/08/23
- * - renamed to console.h to replace Java version
+ * - renamed to console .cpp/h to replace Java version
  * - separated out gconsolewindow.h/cpp
  * @version 2018/07/15
- * - initial version, based on io/console.cpp
+ * - initial version, based on io/console .cpp
  */
 
-#define __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
-#include "console.h"
-#undef __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
-
+#include "consoletext.h"
 #include <cstdio>
 #include "error.h"
 #include "exceptions.h"

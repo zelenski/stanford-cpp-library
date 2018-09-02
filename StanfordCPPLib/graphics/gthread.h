@@ -24,6 +24,8 @@ protected:
     void run();
 
 private:
+    Q_DISABLE_COPY(GFunctionThread)
+
     GThunk _func;
 };
 
@@ -67,6 +69,8 @@ protected:
     void run();
 
 private:
+    Q_DISABLE_COPY(GStudentThread)
+
     GThunkInt _mainFunc;
     GThunk _mainFuncVoid;
     int _result;

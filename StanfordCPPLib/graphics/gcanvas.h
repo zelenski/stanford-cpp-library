@@ -260,6 +260,7 @@ public:
     virtual void setClickListener(GEventListenerVoid func);
     virtual void setColor(int color) Q_DECL_OVERRIDE;
     virtual void setColor(const std::string& color) Q_DECL_OVERRIDE;
+    virtual void setFont(const QFont& font) Q_DECL_OVERRIDE;
     virtual void setFont(const std::string& font) Q_DECL_OVERRIDE;
     virtual void setForeground(int rgb) Q_DECL_OVERRIDE;
     virtual void setForeground(const std::string& color) Q_DECL_OVERRIDE;
@@ -285,6 +286,8 @@ public:
     virtual void toGrid(Grid<int>& grid) const;
 
 private:
+    Q_DISABLE_COPY(GCanvas)
+
     _Internal_QCanvas* _iqcanvas;
     GCompound _gcompound;
     QImage* _backgroundImage;

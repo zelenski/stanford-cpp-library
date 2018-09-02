@@ -8,6 +8,7 @@
  */
 
 #include "gcontainer.h"
+#include "error.h"
 #include "glabel.h"
 #include "glayout.h"
 #include "gthread.h"
@@ -45,6 +46,7 @@ void GContainer::add(GInteractor* interactor) {
         widget->setParent(_iqcontainer);
         _iqcontainer->add(widget);
     });
+    _interactors.add(interactor);
 }
 
 void GContainer::add(GInteractor& interactor) {
@@ -53,6 +55,8 @@ void GContainer::add(GInteractor& interactor) {
 
 void GContainer::addToRegion(GInteractor* interactor, Region region) {
     _iqcontainer->addToRegion(interactor->getWidget(), region);
+    _interactors.add(interactor);
+    _interactorsByRegion[region].add(interactor);
 }
 
 void GContainer::addToRegion(GInteractor* interactor, const std::string& region) {
@@ -69,15 +73,46 @@ void GContainer::addToRegion(GInteractor& interactor, const std::string& region)
 
 void GContainer::clear() {
     _iqcontainer->clear();
+    _interactors.clear();
+    _interactorsByRegion.clear();
 }
 
 void GContainer::clearRegion(Region region) {
     _iqcontainer->clearRegion(region);
+    for (GInteractor* interactor : _interactorsByRegion[region]) {
+        _interactors.removeValue(interactor);
+    }
+    _interactorsByRegion.remove(region);
 }
 
 void GContainer::clearRegion(const std::string& region) {
-    _iqcontainer->clearRegion(stringToRegion(region));
+    clearRegion(stringToRegion(region));
 }
+
+GInteractor* GContainer::getInteractor(int i) const {
+    return _interactors[i];
+}
+
+int GContainer::getInteractorCount() const {
+    return _interactors.size();
+}
+
+GInteractor* GContainer::getInteractorByRegion(int i, Region region) const {
+    return _interactorsByRegion[region][i];
+}
+
+GInteractor* GContainer::getInteractorByRegion(int i, const std::string& region) const {
+    return getInteractorByRegion(i, stringToRegion(region));
+}
+
+int GContainer::getInteractorCountByRegion(Region region) const {
+    return _interactorsByRegion[region].size();
+}
+
+int GContainer::getInteractorCountByRegion(const std::string& region) const {
+    return getInteractorCountByRegion(stringToRegion(region));
+}
+
 
 _Internal_QWidget* GContainer::getInternalWidget() const {
     return _iqcontainer;
@@ -85,6 +120,12 @@ _Internal_QWidget* GContainer::getInternalWidget() const {
 
 double GContainer::getMargin() const {
     return _iqcontainer->getMargin();
+}
+
+double GContainer::getPadding() const {
+    int left, right, top, bottom;
+    _iqcontainer->getContentsMargins(&left, &top, &right, &bottom);
+    return (left + top + right + bottom) / 4.0;
 }
 
 double GContainer::getSpacing() const {
@@ -99,16 +140,55 @@ QWidget* GContainer::getWidget() const {
     return static_cast<QWidget*>(_iqcontainer);
 }
 
+void GContainer::insert(int index, GInteractor* interactor) {
+    _iqcontainer->insert(index, interactor->getWidget());
+    _interactors.insert(index, interactor);
+}
+
+void GContainer::insert(int index, GInteractor& interactor) {
+    insert(index, &interactor);
+}
+
+void GContainer::insertToRegion(int index, GInteractor* interactor, Region region) {
+    _iqcontainer->insertToRegion(index, interactor->getWidget(), region);
+    _interactors.add(interactor);
+    _interactorsByRegion[region].insert(index, interactor);
+}
+
+void GContainer::insertToRegion(int index, GInteractor* interactor, const std::string& region) {
+    insertToRegion(index, interactor, stringToRegion(region));
+}
+
+void GContainer::insertToRegion(int index, GInteractor& interactor, Region region) {
+    insertToRegion(index, &interactor, region);
+}
+
+void GContainer::insertToRegion(int index, GInteractor& interactor, const std::string& region) {
+    insertToRegion(index, &interactor, stringToRegion(region));
+}
+
+bool GContainer::isEmpty() const {
+    return getInteractorCount() == 0;
+}
+
 void GContainer::remove(GInteractor* interactor) {
     _iqcontainer->remove(interactor->getWidget());
+    _interactors.removeValue(interactor);
 }
 
 void GContainer::remove(GInteractor& interactor) {
     remove(&interactor);
 }
 
+void GContainer::remove(int index) {
+    _iqcontainer->remove(index);
+    _interactors.remove(index);
+}
+
 void GContainer::removeFromRegion(GInteractor* interactor, Region region) {
     _iqcontainer->removeFromRegion(interactor->getWidget(), region);
+    _interactors.removeValue(interactor);
+    _interactorsByRegion[region].removeValue(interactor);
 }
 
 void GContainer::removeFromRegion(GInteractor* interactor, const std::string& region) {
@@ -123,17 +203,32 @@ void GContainer::removeFromRegion(GInteractor& interactor, const std::string& re
     removeFromRegion(&interactor, region);
 }
 
+void GContainer::removeFromRegion(int index, Region region) {
+    _iqcontainer->removeFromRegion(index, region);
+    GInteractor* interactor = _interactorsByRegion[region][index];
+    _interactors.removeValue(interactor);
+    _interactorsByRegion[region].remove(index);
+}
+
+void GContainer::removeFromRegion(int index, const std::string& region) {
+    removeFromRegion(index, stringToRegion(region));
+}
+
 void GContainer::setAlignment(HorizontalAlignment halign, VerticalAlignment valign) {
     setHorizontalAlignment(halign);
     setVerticalAlignment(valign);
+}
+
+void GContainer::setHorizontalAlignment(HorizontalAlignment halign) {
+    _iqcontainer->setHorizontalAlignment(halign);
 }
 
 void GContainer::setMargin(double px) {
     _iqcontainer->setMargin((int) px);
 }
 
-void GContainer::setHorizontalAlignment(HorizontalAlignment halign) {
-    _iqcontainer->setHorizontalAlignment(halign);
+void GContainer::setPadding(double px) {
+    _iqcontainer->setContentsMargins((int) px, (int) px, (int) px, (int) px);
 }
 
 void GContainer::setVerticalAlignment(VerticalAlignment valign) {
@@ -205,7 +300,7 @@ GContainer::Region GContainer::stringToRegion(const std::string& regionStr) {
 _Internal_QContainer::_Internal_QContainer(GContainer* gcontainer, GContainer::Layout layoutType, QWidget* parent)
         : QWidget(parent),
           _gcontainer(gcontainer),
-          _layout(GContainer::LAYOUT_NONE),
+          _layoutType(GContainer::LAYOUT_NONE),
           _halign(ALIGN_CENTER),
           _valign(ALIGN_MIDDLE),
           _margin(GContainer::MARGIN_DEFAULT),
@@ -229,7 +324,7 @@ _Internal_QContainer::_Internal_QContainer(GContainer* gcontainer, GContainer::L
 _Internal_QContainer::_Internal_QContainer(GContainer* gcontainer, int rows, int cols, QWidget* parent)
         : QWidget(parent),
           _gcontainer(gcontainer),
-          _layout(GContainer::LAYOUT_NONE),
+          _layoutType(GContainer::LAYOUT_NONE),
           _halign(ALIGN_CENTER),
           _valign(ALIGN_MIDDLE),
           _margin(GContainer::MARGIN_DEFAULT),
@@ -251,7 +346,7 @@ _Internal_QContainer::_Internal_QContainer(GContainer* gcontainer, int rows, int
 }
 
 void _Internal_QContainer::add(QWidget* widget) {
-    switch (_layout) {
+    switch (_layoutType) {
         case GContainer::LAYOUT_BORDER: {
             addToRegion(widget, GContainer::REGION_CENTER);
             break;
@@ -265,28 +360,22 @@ void _Internal_QContainer::add(QWidget* widget) {
             break;
         }
         case GContainer::LAYOUT_FLOW_HORIZONTAL:
-        case GContainer::LAYOUT_FLOW_VERTICAL:
-        default: {
+        case GContainer::LAYOUT_FLOW_VERTICAL: {
             // add to end of the list of widgets in this region
             QBoxLayout* boxLayout = (QBoxLayout*) getQLayout();
             boxLayout->insertWidget(/* index */ boxLayout->count() - 1, widget);
+            break;
+        }
+        default: {
+            error("GContainer::add: no layout has been set");
             break;
         }
     }
 }
 
 void _Internal_QContainer::addToRegion(QWidget* widget, GContainer::Region region) {
-    if (_layout == GContainer::LAYOUT_BORDER) {
+    if (_layoutType == GContainer::LAYOUT_BORDER) {
         QLayout* layout = layoutForRegion(region);
-//        // special case: labels in "GText mode" are added to canvas
-//        if (layout == _centerLayout && interactor->getType() == "GLabel") {
-//            GLabel* label = (GLabel*) interactor;
-//            if (label->hasGText()) {
-//                add(label->getGText());
-//                return;
-//            }
-//        }
-
         GThread::runOnQtGuiThread([this, region, widget, layout]() {
             if (layout == _centerLayout) {
                 // center holds at most one widget
@@ -301,13 +390,7 @@ void _Internal_QContainer::addToRegion(QWidget* widget, GContainer::Region regio
             widget->setVisible(true);
 
             // set alignment of widget
-            if (_halignMap.containsKey(region) && _valignMap.containsKey(region)) {
-                layout->setAlignment(widget, toQtAlignment(_halignMap[region]) | toQtAlignment(_valignMap[region]));
-            } else if (_halignMap.containsKey(region)) {
-                layout->setAlignment(widget, toQtAlignment(_halignMap[region]));
-            } else if (_valignMap.containsKey(region)) {
-                layout->setAlignment(widget, toQtAlignment(_valignMap[region]));
-            }
+            fixAlignment(widget, region);
 
             // fixMargins();
             GLayout::forceUpdate(this);
@@ -318,7 +401,7 @@ void _Internal_QContainer::addToRegion(QWidget* widget, GContainer::Region regio
 }
 
 void _Internal_QContainer::clear() {
-    if (_layout == GContainer::LAYOUT_BORDER) {
+    if (_layoutType == GContainer::LAYOUT_BORDER) {
         clearRegion(GContainer::REGION_NORTH);
         clearRegion(GContainer::REGION_SOUTH);
         clearRegion(GContainer::REGION_WEST);
@@ -333,7 +416,7 @@ void _Internal_QContainer::clear() {
 }
 
 void _Internal_QContainer::clearRegion(GContainer::Region region) {
-    if (_layout == GContainer::LAYOUT_BORDER) {
+    if (_layoutType == GContainer::LAYOUT_BORDER) {
         QLayout* layout = layoutForRegion(region);
         GLayout::clearLayout(layout);
         GLayout::forceUpdate(this);
@@ -342,12 +425,28 @@ void _Internal_QContainer::clearRegion(GContainer::Region region) {
     }
 }
 
+void _Internal_QContainer::fixAlignment(QWidget* widget, GContainer::Region region) {
+    // needs to be run on GUI thread
+    if (_layoutType == GContainer::LAYOUT_BORDER) {
+        QLayout* layout = layoutForRegion(region);
+        if (_halignMap.containsKey(region) && _valignMap.containsKey(region)) {
+            layout->setAlignment(widget, toQtAlignment(_halignMap[region]) | toQtAlignment(_valignMap[region]));
+        } else if (_halignMap.containsKey(region)) {
+            layout->setAlignment(widget, toQtAlignment(_halignMap[region]));
+        } else if (_valignMap.containsKey(region)) {
+            layout->setAlignment(widget, toQtAlignment(_valignMap[region]));
+        }
+    } else {
+        layout()->setAlignment(widget, toQtAlignment(_halign) | toQtAlignment(_valign));
+    }
+}
+
 HorizontalAlignment _Internal_QContainer::getHorizontalAlignment() const {
     return _halign;
 }
 
 GContainer::Layout _Internal_QContainer::getLayoutType() const {
-    return _layout;
+    return _layoutType;
 }
 
 int _Internal_QContainer::getMargin() const {
@@ -366,6 +465,57 @@ VerticalAlignment _Internal_QContainer::getVerticalAlignment() const {
     return _valign;
 }
 
+void _Internal_QContainer::insert(int i, QWidget* widget) {
+    switch (_layoutType) {
+        case GContainer::LAYOUT_BORDER: {
+            insertToRegion(i, widget, GContainer::REGION_CENTER);
+            break;
+        }
+        case GContainer::LAYOUT_GRID: {
+            int row = _cols <= 0 ? 0 : i / _cols;
+            int col = _cols <= 0 ? 0 : i % _cols;
+            QGridLayout* gridLayout = (QGridLayout*) getQLayout();
+            gridLayout->addWidget(widget, row, col);
+            break;
+        }
+        case GContainer::LAYOUT_FLOW_HORIZONTAL:
+        case GContainer::LAYOUT_FLOW_VERTICAL:
+        default: {
+            // index is off by 1 because of 'stretch' widgets at start/end
+            QBoxLayout* boxLayout = (QBoxLayout*) getQLayout();
+            boxLayout->insertWidget(/* index */ i - 1, widget);
+            break;
+        }
+    }
+}
+
+void _Internal_QContainer::insertToRegion(int i, QWidget* widget, GContainer::Region region) {
+    if (_layoutType == GContainer::LAYOUT_BORDER) {
+        QLayout* layout = layoutForRegion(region);
+        GThread::runOnQtGuiThread([this, i, widget, region, layout]() {
+            if (layout == _centerLayout) {
+                // center holds at most one widget
+                GLayout::clearLayout(layout);
+                layout->addWidget(widget);
+                widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+            } else {
+                // index is off by 1 because of 'stretch' widgets at start/end
+                ((QBoxLayout*) layout)->insertWidget(/* index */ i + 1, widget);
+                widget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+            }
+            widget->setVisible(true);
+
+            // set alignment of widget
+            fixAlignment(widget, region);
+
+            // fixMargins();
+            GLayout::forceUpdate(this);
+        });
+    } else {
+        insert(i, widget);
+    }
+}
+
 QLayout* _Internal_QContainer::layoutForRegion(GContainer::Region region) const {
     if (region == GContainer::REGION_NORTH) {
         return _northLayout;
@@ -381,7 +531,7 @@ QLayout* _Internal_QContainer::layoutForRegion(GContainer::Region region) const 
 }
 
 void _Internal_QContainer::remove(QWidget* widget) {
-    if (_layout == GContainer::LAYOUT_BORDER) {
+    if (_layoutType == GContainer::LAYOUT_BORDER) {
         QLayout* layout = layoutForRegion(GContainer::REGION_CENTER);
         layout->removeWidget(widget);
         layout->update();
@@ -393,9 +543,8 @@ void _Internal_QContainer::remove(QWidget* widget) {
 }
 
 void _Internal_QContainer::removeFromRegion(QWidget* widget, GContainer::Region region) {
-    if (_layout == GContainer::LAYOUT_BORDER) {
+    if (_layoutType == GContainer::LAYOUT_BORDER) {
         QLayout* layout = layoutForRegion(region);
-
         GThread::runOnQtGuiThread([this, widget, layout]() {
             widget->setVisible(false);
             layout->removeWidget(widget);
@@ -408,8 +557,46 @@ void _Internal_QContainer::removeFromRegion(QWidget* widget, GContainer::Region 
     }
 }
 
+void _Internal_QContainer::remove(int i) {
+    if (_layoutType == GContainer::LAYOUT_BORDER) {
+        removeFromRegion(i, GContainer::REGION_CENTER);
+    } else {
+        GThread::runOnQtGuiThread([this, i]() {
+            QWidget* widget = layout()->itemAt(i)->widget();
+            widget->setVisible(false);
+            // add +1 to the index to account for the 'stretch' at start
+            layout()->removeItem(layout()->itemAt(i + 1));
+            layout()->update();
+            // fixMargins();
+            GLayout::forceUpdate(this);
+        });
+    }
+}
+
+void _Internal_QContainer::removeFromRegion(int i, GContainer::Region region) {
+    if (_layoutType == GContainer::LAYOUT_BORDER) {
+        QLayout* layout = layoutForRegion(region);
+        GThread::runOnQtGuiThread([this, i, layout]() {
+            QWidget* widget = layout->itemAt(i)->widget();
+            widget->setVisible(false);
+            if (layout == _centerLayout) {
+                layout->removeItem(layout->itemAt(i));
+            } else {
+                // add +1 to the index to account for the 'stretch' at start
+                layout->removeItem(layout->itemAt(i + 1));
+            }
+            layout->update();
+            // fixMargins();
+            GLayout::forceUpdate(this);
+        });
+    } else {
+        remove(i);
+    }
+}
+
+
 void _Internal_QContainer::setHorizontalAlignment(HorizontalAlignment halign) {
-    switch (_layout) {
+    switch (_layoutType) {
         case GContainer::LAYOUT_FLOW_HORIZONTAL: {
             // to align "left", limit first stretch;
             // to align "right", limit last stretch
@@ -451,6 +638,7 @@ void _Internal_QContainer::setHorizontalAlignment(HorizontalAlignment halign) {
             break;
         }
         // TODO: border
+        // - set h/valign of ALL regions in align map
         default: {
             break;
         }
@@ -458,11 +646,11 @@ void _Internal_QContainer::setHorizontalAlignment(HorizontalAlignment halign) {
 }
 
 void _Internal_QContainer::setLayoutType(GContainer::Layout layoutType) {
-    if (layoutType == _layout) {
+    if (layoutType == _layoutType) {
         return;   // don't do work if it's the same layout
     }
 
-    if (_layout == GContainer::LAYOUT_BORDER
+    if (_layoutType == GContainer::LAYOUT_BORDER
             && layoutType != GContainer::LAYOUT_BORDER) {
         // get rid of the now-unneeded inner layouts
         _overallLayout = nullptr;
@@ -474,7 +662,7 @@ void _Internal_QContainer::setLayoutType(GContainer::Layout layoutType) {
         _middleLayout  = nullptr;
     }
 
-    _layout = layoutType;
+    _layoutType = layoutType;
     switch (layoutType) {
         case GContainer::LAYOUT_BORDER: {
             // set up border regions
@@ -582,7 +770,7 @@ void _Internal_QContainer::setLayoutType(GContainer::Layout layoutType) {
 void _Internal_QContainer::setMargin(int margin) {
     _margin = margin;
     if (layout()) {
-        if (_layout == GContainer::LAYOUT_BORDER) {
+        if (_layoutType == GContainer::LAYOUT_BORDER) {
             _northLayout->setMargin(margin);
             _southLayout->setMargin(margin);
             _westLayout->setMargin(margin);
@@ -674,7 +862,7 @@ void _Internal_QContainer::setRegionVerticalAlignment(GContainer::Region region,
 void _Internal_QContainer::setSpacing(int spacing) {
     _spacing = spacing;
     if (layout()) {
-        if (_layout == GContainer::LAYOUT_BORDER) {
+        if (_layoutType == GContainer::LAYOUT_BORDER) {
             _northLayout->setSpacing(spacing);
             _southLayout->setSpacing(spacing);
             _westLayout->setSpacing(spacing);
@@ -687,7 +875,7 @@ void _Internal_QContainer::setSpacing(int spacing) {
 }
 
 void _Internal_QContainer::setVerticalAlignment(VerticalAlignment valign) {
-    switch (_layout) {
+    switch (_layoutType) {
         case GContainer::LAYOUT_FLOW_HORIZONTAL: {
             // set each widget's vertical alignment individually
             QVBoxLayout* layout = (QVBoxLayout*) getQLayout();

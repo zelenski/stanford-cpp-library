@@ -12,10 +12,8 @@
 #include "gdiffgui.h"
 #include <iostream>
 #include <string>
+#include "consoletext.h"
 #include "diff.h"
-#define __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
-#include "console.h"
-#undef __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
 
 void GDiffGui::showDialog(const std::string& name1,
                           const std::string& text1,

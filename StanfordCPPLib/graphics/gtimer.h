@@ -80,7 +80,7 @@ public:
      * ------------------------
      * Checks whether the two objects refer to the same timer.
      */
-    bool operator==(GTimer t2);
+    bool operator ==(GTimer t2);
 
     /*
      * Friend operator: !=
@@ -88,16 +88,16 @@ public:
      * ------------------------
      * Checks whether the two objects refer to the different timers.
      */
-    bool operator!=(GTimer t2);
+    bool operator !=(GTimer t2);
 
     /* Private section */
-    GTimer(GTimerData *gtd);
-    GTimer(const GTimer & src);
-    GTimer & operator=(const GTimer & src);
+    GTimer(GTimerData* gtd);
+    GTimer(const GTimer& src);
+    GTimer& operator=(const GTimer& src);
 
 private:
     /* Instance variables */
-    GTimerData *gtd;
+    GTimerData* gtd;
 
     friend class stanfordcpplib::Platform;
     friend class GTimerEvent;

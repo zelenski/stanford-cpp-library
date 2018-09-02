@@ -44,6 +44,8 @@ signals:
     void mySignal();
 
 private:
+    Q_DISABLE_COPY(QtGui)
+
     QtGui();   // forbid construction
 
     bool _initialized;

@@ -21,23 +21,7 @@
 #include <QWidget>
 #include "ginteractor.h"
 
-// forward declaration
-class GCheckBox;
-
-// Internal class; not to be used by clients.
-class _Internal_QCheckBox : public QCheckBox, public _Internal_QWidget {
-    Q_OBJECT
-
-public:
-    _Internal_QCheckBox(GCheckBox* gcheckBox, bool checked = false, QWidget* parent = nullptr);
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
-
-public slots:
-    void handleStateChange(int);
-
-private:
-    GCheckBox* _gcheckBox;
-};
+class _Internal_QCheckBox;
 
 /*
  * ...
@@ -61,9 +45,26 @@ public:
     virtual void setText(const std::string& text);
 
 private:
+    Q_DISABLE_COPY(GCheckBox)
+
     _Internal_QCheckBox* _iqcheckBox;
 
     friend class _Internal_QCheckBox;
+};
+
+// Internal class; not to be used by clients.
+class _Internal_QCheckBox : public QCheckBox, public _Internal_QWidget {
+    Q_OBJECT
+
+public:
+    _Internal_QCheckBox(GCheckBox* gcheckBox, bool checked = false, QWidget* parent = nullptr);
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+
+public slots:
+    void handleStateChange(int);
+
+private:
+    GCheckBox* _gcheckBox;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

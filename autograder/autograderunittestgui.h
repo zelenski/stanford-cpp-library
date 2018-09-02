@@ -3,6 +3,8 @@
  * -----------------------------
  * 
  * @author Marty Stepp
+ * @version 2018/08/31
+ * - added containers for each unit test
  * @version 2018/08/27
  * - initial version, to replace old Java back-end version
  */
@@ -12,6 +14,7 @@
 
 #include <string>
 #include "gcheckbox.h"
+#include "gcontainer.h"
 #include "glabel.h"
 #include "gwindow.h"
 #include "map.h"
@@ -31,12 +34,13 @@ public:
 
     static AutograderUnitTestGui* instance(bool isStyleCheck = false);
 
-    void addCategory(const std::string& category);
-    void addTest(const std::string& test, const std::string& category);
+    void addCategory(const std::string& categoryName);
+    void addTest(const std::string& testName, const std::string& categoryName = "");
     bool catchExceptions() const;
     void clearTestResults();
     void clearTests();
     bool isChecked(const std::string& testFullName) const;
+    bool isStyleCheck() const;
     bool runTestsInSeparateThreads() const;
     void setCatchExceptions(bool catchExceptions);
     void setRunTestsInSeparateThreads(bool runInSeparateThreads);
@@ -49,21 +53,44 @@ public:
     void setWindowDescription(const std::string& description);
 
 private:
+    struct TestInfo {
+        std::string name;
+        std::string category;
+        GCheckBox* checkbox;
+        GLabel* descriptionLabel;
+        GLabel* resultLabel;
+        ::autograder::UnitTestDetails details;
+
+        std::string getFullName() const {
+            return category.empty() ? name : (category + "_" + name);
+        }
+    };
+
     AutograderUnitTestGui();   // forbid construction
 
     int getCheckedTestCount() const;
+    void minimize(GContainer* category);
+    void selectAll(GContainer* category, bool selected);
     void updateSouthText();
 
     static AutograderUnitTestGui* _instance;
     static AutograderUnitTestGui* _instanceStyleCheck;
+    static const std::string PASS_COLOR;
+    static const std::string FAIL_COLOR;
+    static const std::string WARN_COLOR;
+    static const std::string ZEBRA_STRIPE_COLOR_1;
+    static const std::string ZEBRA_STRIPE_COLOR_2;
 
     GWindow* _window;
+    GContainer* _center;
     GCheckBox* _catchErrorsBox;
     GCheckBox* _runTestsInThreadsBox;
     GLabel* _descriptionLabel;
     GLabel* _southLabel;
+    GContainer* _currentCategory;
 
-    Map<std::string, std::string> _allCategories;
+    Map<std::string, GContainer*> _allCategories;
+    Map<std::string, TestInfo*> _allTestInfo;
 
     int _passCount;
     int _testCount;
@@ -71,6 +98,7 @@ private:
     // bool _allCategoriesHidden = false;
     // bool _checkboxesShown = true;
     bool _catchExceptions;
+    bool _checkboxesShown;
     bool _runInSeparateThreads;
     bool _testingIsInProgress;
 };

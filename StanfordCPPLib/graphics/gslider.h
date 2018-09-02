@@ -18,23 +18,7 @@
 #include <QWidget>
 #include "ginteractor.h"
 
-// forward declaration
-class GSlider;
-
-// Internal class; not to be used by clients.
-class _Internal_QSlider : public QSlider, public _Internal_QWidget {
-    Q_OBJECT
-
-public:
-    _Internal_QSlider(GSlider* qgslider, QWidget* parent = nullptr);
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
-
-public slots:
-    void handleChange(int value);
-
-private:
-    GSlider* _gslider;
-};
+class _Internal_QSlider;
 
 /*
  * ...
@@ -67,9 +51,26 @@ public:
     virtual void setValue(int value);
 
 private:
+    Q_DISABLE_COPY(GSlider)
+
     _Internal_QSlider* _iqslider;
 
     friend class _Internal_QSlider;
+};
+
+// Internal class; not to be used by clients.
+class _Internal_QSlider : public QSlider, public _Internal_QWidget {
+    Q_OBJECT
+
+public:
+    _Internal_QSlider(GSlider* qgslider, QWidget* parent = nullptr);
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+
+public slots:
+    void handleChange(int value);
+
+private:
+    GSlider* _gslider;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

@@ -25,6 +25,8 @@ public:
     static std::string showSaveDialog(QWidget* parent, const std::string& title = "Open file", const std::string& currentDir = "", const std::string& fileFilter = "");
 
 private:
+    GFileChooser();   // prevent construction
+
     /*
      * Constants for dialog types, similar to those in Java's JFileChooser
      */

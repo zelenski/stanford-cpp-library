@@ -45,6 +45,10 @@ bool GLayout::contains(QLayout* layout, QWidget* widget) {
     return false;
 }
 
+void GLayout::forceUpdate(GInteractor* interactor) {
+    forceUpdate(interactor->getWidget());
+}
+
 /**
  * Forces the given widget to update, even if it's hidden.
  * from https://stackoverflow.com/questions/2427103/qt-how-to-force-a-hidden-widget-to-calculate-its-layout
