@@ -10,6 +10,7 @@
  */
 
 #include "gevent.h"
+#include <iostream>
 #include <sys/time.h>
 #include "ginteractor.h"
 #include "strlib.h"
@@ -22,8 +23,13 @@ static void __emptyEventListenerVoid() {
     // empty
 }
 
+static void __logEventListener(GEvent event) {
+    std::cout << "log event: " << event << std::endl;
+}
+
 GEventListener GEvent::EMPTY_EVENT_LISTENER = __emptyEventListener;
 GEventListenerVoid GEvent::EMPTY_EVENT_LISTENER_VOID = __emptyEventListenerVoid;
+GEventListener GEvent::LOG_EVENT = __logEventListener;
 
 
 GEvent::GEvent(EventClass eventClass,
@@ -71,41 +77,42 @@ std::string GEvent::classToString(EventClass eventClass) {
 
 std::string GEvent::typeToString(EventType eventType) {
     switch (eventType) {
-    case NULL_TYPE:           return "NULL_TYPE";
-    case WINDOW_CLOSED:       return "WINDOW_CLOSED";
-    case WINDOW_RESIZED:      return "WINDOW_RESIZED";
-    case CONSOLE_CLOSED:      return "CONSOLE_CLOSED";
-    case WINDOW_CLOSING:      return "WINDOW_CLOSING";
-    case WINDOW_MINIMIZED:    return "WINDOW_MINIMIZED";
-    case WINDOW_RESTORED:     return "WINDOW_RESTORED";
-    case WINDOW_MAXIMIZED:    return "WINDOW_MAXIMIZED";
-    case ACTION_PERFORMED:    return "ACTION_PERFORMED";
-    case ACTION_MENU:         return "ACTION_MENU";
-    case MOUSE_CLICKED:       return "MOUSE_CLICKED";
-    case MOUSE_PRESSED:       return "MOUSE_PRESSED";
-    case MOUSE_RELEASED:      return "MOUSE_RELEASED";
-    case MOUSE_MOVED:         return "MOUSE_MOVED";
-    case MOUSE_DRAGGED:       return "MOUSE_DRAGGED";
-    case MOUSE_ENTERED:       return "MOUSE_ENTERED";
-    case MOUSE_EXITED:        return "MOUSE_EXITED";
-    case MOUSE_WHEEL_DOWN:    return "MOUSE_WHEEL_DOWN";
-    case MOUSE_WHEEL_UP:      return "MOUSE_WHEEL_UP";
-    case KEY_PRESSED:         return "KEY_PRESSED";
-    case KEY_RELEASED:        return "KEY_RELEASED";
-    case KEY_TYPED:           return "KEY_TYPED";
-    case TIMER_TICKED:        return "TIMER_TICKED";
-    case TABLE_UPDATED:       return "TABLE_UPDATED";
-    case TABLE_SELECTED:      return "TABLE_SELECTED";
-    case TABLE_EDIT_BEGIN:    return "TABLE_EDIT_BEGIN";
-    case TABLE_REPLACE_BEGIN: return "TABLE_REPLACE_BEGIN";
-    case TABLE_EDIT_CANCEL:   return "TABLE_EDIT_CANCEL";
-    case TABLE_CUT:           return "TABLE_CUT";
-    case TABLE_COPY:          return "TABLE_COPY";
-    case TABLE_PASTE:         return "TABLE_PASTE";
-    case SERVER_REQUEST:      return "SERVER_REQUEST";
-    case STATE_CHANGED:       return "STATE_CHANGED";
-    case HYPERLINK_CLICKED:   return "HYPERLINK_CLICKED";
-    default:                  return "UNKNOWN";
+    case NULL_TYPE:            return "NULL_TYPE";
+    case WINDOW_CLOSED:        return "WINDOW_CLOSED";
+    case WINDOW_RESIZED:       return "WINDOW_RESIZED";
+    case CONSOLE_CLOSED:       return "CONSOLE_CLOSED";
+    case WINDOW_CLOSING:       return "WINDOW_CLOSING";
+    case WINDOW_MINIMIZED:     return "WINDOW_MINIMIZED";
+    case WINDOW_RESTORED:      return "WINDOW_RESTORED";
+    case WINDOW_MAXIMIZED:     return "WINDOW_MAXIMIZED";
+    case ACTION_PERFORMED:     return "ACTION_PERFORMED";
+    case ACTION_MENU:          return "ACTION_MENU";
+    case MOUSE_CLICKED:        return "MOUSE_CLICKED";
+    case MOUSE_PRESSED:        return "MOUSE_PRESSED";
+    case MOUSE_RELEASED:       return "MOUSE_RELEASED";
+    case MOUSE_MOVED:          return "MOUSE_MOVED";
+    case MOUSE_DRAGGED:        return "MOUSE_DRAGGED";
+    case MOUSE_ENTERED:        return "MOUSE_ENTERED";
+    case MOUSE_EXITED:         return "MOUSE_EXITED";
+    case MOUSE_WHEEL_DOWN:     return "MOUSE_WHEEL_DOWN";
+    case MOUSE_WHEEL_UP:       return "MOUSE_WHEEL_UP";
+    case MOUSE_DOUBLE_CLICKED: return "MOUSE_DOUBLE_CLICKED";
+    case KEY_PRESSED:          return "KEY_PRESSED";
+    case KEY_RELEASED:         return "KEY_RELEASED";
+    case KEY_TYPED:            return "KEY_TYPED";
+    case TIMER_TICKED:         return "TIMER_TICKED";
+    case TABLE_UPDATED:        return "TABLE_UPDATED";
+    case TABLE_SELECTED:       return "TABLE_SELECTED";
+    case TABLE_EDIT_BEGIN:     return "TABLE_EDIT_BEGIN";
+    case TABLE_REPLACE_BEGIN:  return "TABLE_REPLACE_BEGIN";
+    case TABLE_EDIT_CANCEL:    return "TABLE_EDIT_CANCEL";
+    case TABLE_CUT:            return "TABLE_CUT";
+    case TABLE_COPY:           return "TABLE_COPY";
+    case TABLE_PASTE:          return "TABLE_PASTE";
+    case SERVER_REQUEST:       return "SERVER_REQUEST";
+    case STATE_CHANGED:        return "STATE_CHANGED";
+    case HYPERLINK_CLICKED:    return "HYPERLINK_CLICKED";
+    default:                   return "UNKNOWN";
     }
 }
 
@@ -213,6 +220,10 @@ bool GEvent::isCtrlKeyDown() const {
 
 bool GEvent::isCtrlOrCommandKeyDown() const {
     return isCtrlKeyDown() || isMetaKeyDown();
+}
+
+bool GEvent::isDoubleClick() const {
+    return _type == MOUSE_DOUBLE_CLICKED || _name == "doubleclick";
 }
 
 bool GEvent::isLeftClick() const {

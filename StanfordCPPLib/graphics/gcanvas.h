@@ -3,6 +3,8 @@
  * ---------------
  *
  * @author Marty Stepp
+ * @version 2018/09/04
+ * - added double-click event support
  * @version 2018/08/23
  * - renamed to gcanvas.h to replace Java version
  * @version 2018/06/30
@@ -31,33 +33,7 @@
 // default color used to highlight pixels that do not match between two images
 #define GCANVAS_DEFAULT_DIFF_PIXEL_COLOR 0xdd00dd
 
-// forward declaration
-class GCanvas;
-
-// Internal class; not to be used by clients.
-class _Internal_QCanvas : public QWidget, public _Internal_QWidget {
-    Q_OBJECT
-
-public:
-    _Internal_QCanvas(GCanvas* gcanvas, QWidget* parent = nullptr);
-
-    virtual void enterEvent(QEvent* event) Q_DECL_OVERRIDE;
-    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual void keyReleaseEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual void leaveEvent(QEvent* event) Q_DECL_OVERRIDE;
-    virtual void mouseMoveEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
-    virtual void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
-    virtual void mouseReleaseEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
-    virtual void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
-    virtual void resizeEvent(QResizeEvent* event) Q_DECL_OVERRIDE;
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
-    virtual void wheelEvent(QWheelEvent* event) Q_DECL_OVERRIDE;
-
-private:
-    GCanvas* _gcanvas;
-
-    friend class GCanvas;
-};
+class _Internal_QCanvas;
 
 /*
  * ...
@@ -230,6 +206,7 @@ public:
     virtual void remove(GObject& gobj);
     virtual void removeAll();
     virtual void removeClickListener();
+    virtual void removeDoubleClickListener();
     virtual void removeKeyListener();
     virtual void removeMouseListener();
     virtual void repaint() Q_DECL_OVERRIDE;
@@ -260,6 +237,8 @@ public:
     virtual void setClickListener(GEventListenerVoid func);
     virtual void setColor(int color) Q_DECL_OVERRIDE;
     virtual void setColor(const std::string& color) Q_DECL_OVERRIDE;
+    virtual void setDoubleClickListener(GEventListener func);
+    virtual void setDoubleClickListener(GEventListenerVoid func);
     virtual void setFont(const QFont& font) Q_DECL_OVERRIDE;
     virtual void setFont(const std::string& font) Q_DECL_OVERRIDE;
     virtual void setForeground(int rgb) Q_DECL_OVERRIDE;
@@ -299,6 +278,38 @@ private:
     void ensureBackgroundImageConstHack() const;
     void init(double width, double height, int rgbBackground, QWidget* parent);
     void notifyOfResize(double width, double height);
+};
+
+
+// Internal class; not to be used by clients.
+class _Internal_QCanvas : public QWidget, public _Internal_QWidget {
+    Q_OBJECT
+
+public:
+    _Internal_QCanvas(GCanvas* gcanvas, QWidget* parent = nullptr);
+
+    virtual void enterEvent(QEvent* event) Q_DECL_OVERRIDE;
+    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
+    virtual void keyReleaseEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
+    virtual void leaveEvent(QEvent* event) Q_DECL_OVERRIDE;
+    virtual void mouseMoveEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
+    virtual void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
+    virtual void mouseReleaseEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
+    virtual void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
+    virtual void resizeEvent(QResizeEvent* event) Q_DECL_OVERRIDE;
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+    virtual void wheelEvent(QWheelEvent* event) Q_DECL_OVERRIDE;
+
+signals:
+    void doubleClicked();
+
+protected:
+    void mouseDoubleClickEvent(QMouseEvent* e) Q_DECL_OVERRIDE;
+
+private:
+    GCanvas* _gcanvas;
+
+    friend class GCanvas;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

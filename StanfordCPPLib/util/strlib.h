@@ -4,6 +4,8 @@
  * This file exports several useful string functions that are not
  * included in the C++ string library.
  * 
+ * @version 2018/09/02
+ * - added padLeft, padRight
  * @version 2016/11/09
  * - added boolalpha to writeGenericValue (improves bool printing in
  *   collection toString output)
@@ -144,6 +146,36 @@ std::string integerToString(int n, int radix = 10);
  * the string <code>"123"</code>.
  */
 std::string longToString(long n, int radix = 10);
+
+/*
+ * Function: padLeft
+ * Usage: string s = padLeft("hello", 8);   // "   hello"
+ * ------------------------------------------------------
+ * Inserts spaces at the start of the given string until it is at least
+ * the given length.
+ * You can optionally pass a fill character (other than space) as a third parameter.
+ *
+ * Note that if you are printing strings and want your output to line up
+ * at a given number of characters, you may be better served using the built-in
+ * C++ ostream manipulators such as setw(int), left, and right, as defined in
+ * the iomanip library.
+ */
+std::string padLeft(const std::string& s, int length, char fill = ' ');
+
+/*
+ * Function: padRight
+ * Usage: string s = padRight("hello", 8);   // "hello   "
+ * -------------------------------------------------------
+ * Inserts spaces at the end of the given string until it is at least
+ * the given length.
+ * You can optionally pass a fill character (other than space) as a third parameter.
+ *
+ * Note that if you are printing strings and want your output to line up
+ * at a given number of characters, you may be better served using the built-in
+ * C++ ostream manipulators such as setw(int), left, and right, as defined in
+ * the iomanip library.
+ */
+std::string padRight(const std::string& s, int length);
 
 /*
  * Returns a hexadecimal string for the given pointer, such as "0x3f0427b".

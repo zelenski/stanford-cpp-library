@@ -52,7 +52,9 @@ public:
     virtual void clear();
     virtual void clearRegion(Region region);
     virtual void clearRegion(const std::string& region);
+    virtual Vector<GInteractor*> getDescendents(const std::string& type = "") const;
     virtual GInteractor* getInteractor(int i) const;
+    virtual const Vector<GInteractor*>& getInteractors() const;
     virtual int getInteractorCount() const;
     virtual GInteractor* getInteractorByRegion(int i, Region region) const;
     virtual GInteractor* getInteractorByRegion(int i, const std::string& region = "Center") const;
@@ -61,6 +63,10 @@ public:
     virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
     virtual double getMargin() const;
     virtual double getPadding() const;
+    virtual double getPaddingBottom() const;
+    virtual double getPaddingLeft() const;
+    virtual double getPaddingRight() const;
+    virtual double getPaddingTop() const;
     virtual double getSpacing() const;
     virtual std::string getType() const Q_DECL_OVERRIDE;
     virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
@@ -84,6 +90,8 @@ public:
     virtual void setHorizontalAlignment(HorizontalAlignment halign);
     virtual void setMargin(double px);
     virtual void setPadding(double px);
+    virtual void setPadding(double topBottom, double leftRight);
+    virtual void setPadding(double top, double right, double bottom, double left);
     virtual void setVerticalAlignment(VerticalAlignment valign);
     virtual void setRegionAlignment(Region region, HorizontalAlignment halign);
     virtual void setRegionAlignment(Region region, VerticalAlignment valign);
@@ -110,8 +118,9 @@ private:
     static Region stringToRegion(const std::string& regionStr);
 };
 
+
 // Internal class; not to be used by clients.
-class _Internal_QContainer : public QWidget,  public _Internal_QWidget {
+class _Internal_QContainer : public QWidget, public _Internal_QWidget {
     Q_OBJECT
 
 public:
@@ -155,6 +164,7 @@ private:
     QHBoxLayout* _middleLayout;
     Map<GContainer::Region, HorizontalAlignment> _halignMap;
     Map<GContainer::Region, VerticalAlignment> _valignMap;
+    Map<GContainer::Region, bool> _regionStretchMap;
 
     virtual void add(QWidget* widget);
     virtual void addToRegion(QWidget* widget, GContainer::Region region);
@@ -169,6 +179,7 @@ private:
     virtual int getSpacing() const;
     virtual void insert(int i, QWidget* widget);
     virtual void insertToRegion(int i, QWidget* widget, GContainer::Region region);
+    virtual bool isRegionStretch(GContainer::Region region) const;
     virtual QLayout* layoutForRegion(GContainer::Region region) const;
     virtual void remove(QWidget* widget);
     virtual void removeFromRegion(QWidget* widget, GContainer::Region region);
@@ -177,11 +188,14 @@ private:
     virtual void setHorizontalAlignment(HorizontalAlignment halign);
     virtual void setLayoutType(GContainer::Layout layout);
     virtual void setMargin(int margin);
+    virtual void setPadding(int padding);
+    virtual void setPadding(int left, int top, int right, int bottom);
     virtual void setRegionAlignment(GContainer::Region region,
                                     HorizontalAlignment halign,
                                     VerticalAlignment valign);
     virtual void setRegionHorizontalAlignment(GContainer::Region region,
                                               HorizontalAlignment halign);
+    virtual void setRegionStretch(GContainer::Region region, bool stretch = true);
     virtual void setRegionVerticalAlignment(GContainer::Region region,
                                             VerticalAlignment valign);
     virtual void setSpacing(int spacing);

@@ -444,7 +444,9 @@ void GWindow::addToRegion(GInteractor* interactor, Region region) {
             // add to end of the list of widgets in this region
             ((QBoxLayout*) layout)->insertWidget(/* index */ layout->count() - 1, widget);
         }
-        widget->setVisible(true);
+        if (!widget->isVisible()) {
+            widget->setVisible(true);
+        }
 
         // set alignment of widget
         if (_halignMap.containsKey(region) && _valignMap.containsKey(region)) {
@@ -518,7 +520,9 @@ void GWindow::clearRegion(Region region) {
             // TODO: remove this?
             if (_canvas) {
                 layout->addWidget(_canvas->getWidget());
-                _canvas->setVisible(true);
+                if (!_canvas->isVisible()) {
+                    _canvas->setVisible(true);
+                }
             }
         } else {
             // for N/S/W/E, leave 2 elements in the layout (stretchers at start/end)

@@ -13,7 +13,9 @@
 
 GScrollPane::GScrollPane(GInteractor* interactor, QWidget* parent)
         : _iqscrollarea(nullptr),
-          _interactor(interactor) {
+          _interactor(interactor),
+          _horizontalScrollBarPolicy(GScrollPane::SCROLLBAR_AS_NEEDED),
+          _verticalScrollBarPolicy(GScrollPane::SCROLLBAR_AS_NEEDED) {
     GThread::runOnQtGuiThread([this, parent]() {
         _iqscrollarea = new _Internal_QScrollArea(this, getInternalParent(parent));
     });
@@ -25,6 +27,10 @@ GScrollPane::GScrollPane(GInteractor* interactor, QWidget* parent)
 GScrollPane::~GScrollPane() {
     // TODO: delete _iqscrollarea;
     _iqscrollarea = nullptr;
+}
+
+GScrollPane::ScrollBarPolicy GScrollPane::getHorizontalScrollBarPolicy() const {
+    return _horizontalScrollBarPolicy;
 }
 
 GInteractor* GScrollPane::getInteractor() const {
@@ -39,8 +45,35 @@ std::string GScrollPane::getType() const {
     return "GScrollPane";
 }
 
+GScrollPane::ScrollBarPolicy GScrollPane::getVerticalScrollBarPolicy() const {
+    return _verticalScrollBarPolicy;
+}
+
 QWidget* GScrollPane::getWidget() const {
     return static_cast<QWidget*>(_iqscrollarea);
+}
+
+bool GScrollPane::isInteractorStretch() const {
+    return _iqscrollarea->widgetResizable();
+}
+
+void GScrollPane::setHorizontalScrollBarPolicy(ScrollBarPolicy policy) {
+    GThread::runOnQtGuiThread([this, policy]() {
+        Qt::ScrollBarPolicy qtScrollBarPolicy = toQtScrollBarPolicy(policy);
+        _iqscrollarea->setHorizontalScrollBarPolicy(qtScrollBarPolicy);
+    });
+}
+
+void GScrollPane::setScrollBarPolicy(ScrollBarPolicy policy) {
+    setHorizontalScrollBarPolicy(policy);
+    setVerticalScrollBarPolicy(policy);
+}
+
+void GScrollPane::setVerticalScrollBarPolicy(ScrollBarPolicy policy) {
+    GThread::runOnQtGuiThread([this, policy]() {
+        Qt::ScrollBarPolicy qtScrollBarPolicy = toQtScrollBarPolicy(policy);
+        _iqscrollarea->setVerticalScrollBarPolicy(qtScrollBarPolicy);
+    });
 }
 
 void GScrollPane::setInteractor(GInteractor* interactor) {
@@ -55,6 +88,18 @@ void GScrollPane::setInteractorStretch(bool stretch) {
         _iqscrollarea->setWidgetResizable(stretch);
         GLayout::forceUpdate(_iqscrollarea);
     });
+}
+
+Qt::ScrollBarPolicy GScrollPane::toQtScrollBarPolicy(ScrollBarPolicy policy) {
+    switch (policy) {
+        case GScrollPane::SCROLLBAR_ALWAYS:
+            return Qt::ScrollBarAlwaysOn;
+        case GScrollPane::SCROLLBAR_NEVER:
+            return Qt::ScrollBarAlwaysOff;
+        case GScrollPane::SCROLLBAR_AS_NEEDED:
+        default:
+            return Qt::ScrollBarAsNeeded;
+    }
 }
 
 

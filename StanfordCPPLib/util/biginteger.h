@@ -395,9 +395,6 @@ private:
     // multiply two big integers as string and return result; used by operator *
     static std::string multiply(const std::string& n1, const std::string& n2);
 
-    // pads left side with 0s until s reaches given length
-    static std::string padLeft(const std::string& s, int length);
-
     // removes leading 0s except one from given number
     static std::string removeLeadingZeros(const std::string& s);
 

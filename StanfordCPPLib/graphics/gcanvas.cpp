@@ -1,12 +1,15 @@
 /*
- * File: GCanvas.cpp
- * ------------------
+ * File: gcanvas.cpp
+ * -----------------
  *
+ * @version 2018/09/04
+ * - added double-click event support
+ * @version 2018/08/23
+ * - renamed to gcanvas.cpp to replace Java version
  * @version 2018/06/30
  * - initial version
  */
 
-#ifdef SPL_QT_GUI
 #include "gcanvas.h"
 #include "gcolor.h"
 #include "gthread.h"
@@ -14,115 +17,6 @@
 #include "error.h"
 #include "filelib.h"
 #include "strlib.h"
-
-_Internal_QCanvas::_Internal_QCanvas(GCanvas* gcanvas, QWidget* parent)
-        : QWidget(parent),
-          _gcanvas(gcanvas) {
-    // set default white background color
-    QPalette pal = palette();
-    pal.setColor(QPalette::Background, Qt::white);
-    setAutoFillBackground(true);
-    setPalette(pal);
-    setMouseTracking(true);   // causes mouse move events to occur
-}
-
-void _Internal_QCanvas::enterEvent(QEvent* event) {
-    QWidget::enterEvent(event);   // call super
-    if (!_gcanvas->isAcceptingEvent("mouseenter")) return;
-    _gcanvas->fireGEvent(event, MOUSE_ENTERED, "mouseenter");
-}
-
-void _Internal_QCanvas::keyPressEvent(QKeyEvent* event) {
-    QWidget::keyPressEvent(event);   // call super
-    if (!_gcanvas->isAcceptingEvent("keypress")) return;
-    _gcanvas->fireGEvent(event, KEY_PRESSED, "keypress");
-}
-
-void _Internal_QCanvas::keyReleaseEvent(QKeyEvent* event) {
-    QWidget::keyReleaseEvent(event);   // call super
-    if (_gcanvas->isAcceptingEvent("keyrelease")) {
-        _gcanvas->fireGEvent(event, KEY_RELEASED, "keyrelease");
-    }
-    if (_gcanvas->isAcceptingEvent("keytype")) {
-        _gcanvas->fireGEvent(event, KEY_TYPED, "keytype");
-    }
-}
-
-void _Internal_QCanvas::leaveEvent(QEvent* event) {
-    QWidget::leaveEvent(event);   // call super
-    if (!_gcanvas->isAcceptingEvent("mouseexit")) return;
-    _gcanvas->fireGEvent(event, MOUSE_EXITED, "mouseexit");
-}
-
-void _Internal_QCanvas::mouseMoveEvent(QMouseEvent* event) {
-    QWidget::mouseMoveEvent(event);   // call super
-    if (!_gcanvas->isAcceptingEvent("mousemove")
-            && !_gcanvas->isAcceptingEvent("mousedrag")) return;
-    _gcanvas->fireGEvent(event, MOUSE_MOVED, "mousemove");
-    if (event->buttons() != 0) {
-        // mouse drag
-        _gcanvas->fireGEvent(event, MOUSE_DRAGGED, "mousedrag");
-    }
-}
-
-void _Internal_QCanvas::mousePressEvent(QMouseEvent* event) {
-    QWidget::mousePressEvent(event);   // call super
-    if (!_gcanvas->isAcceptingEvent("mousepress")) return;
-    _gcanvas->fireGEvent(event, MOUSE_PRESSED, "mousepress");
-}
-
-void _Internal_QCanvas::mouseReleaseEvent(QMouseEvent* event) {
-    QWidget::mouseReleaseEvent(event);   // call super
-    if (_gcanvas->isAcceptingEvent("mouserelease")) {
-        _gcanvas->fireGEvent(event, MOUSE_RELEASED, "mouserelease");
-    }
-
-    if (_gcanvas->isAcceptingEvent("click")) {
-        _gcanvas->fireGEvent(event, MOUSE_CLICKED, "click");
-    }
-}
-
-void _Internal_QCanvas::paintEvent(QPaintEvent* event) {
-    QWidget::paintEvent(event);   // call super
-
-    QPainter painter(this);
-    // g.setCompositionMode(QPainter::CompositionMode_DestinationOver);
-    // g.setRenderHints(QPainter::HighQualityAntialiasing);
-    painter.setRenderHint(QPainter::Antialiasing, GObject::isAntiAliasing());
-    painter.setRenderHint(QPainter::TextAntialiasing, GObject::isAntiAliasing());
-    _gcanvas->draw(&painter);
-    painter.end();
-}
-
-void _Internal_QCanvas::resizeEvent(QResizeEvent* event) {
-    QWidget::resizeEvent(event);   // call super
-    QSize size = event->size();
-    _gcanvas->notifyOfResize(size.width(), size.height());
-}
-
-QSize _Internal_QCanvas::sizeHint() const {
-    if (hasPreferredSize()) {
-        return getPreferredSize();
-    } else {
-        return QWidget::sizeHint();
-    }
-}
-
-void _Internal_QCanvas::wheelEvent(QWheelEvent* event) {
-    QWidget::wheelEvent(event);   // call super
-    if (event->pixelDelta().y() < 0) {
-        // scroll down
-        if (_gcanvas->isAcceptingEvent("mousewheeldown")) {
-            _gcanvas->fireGEvent(event, MOUSE_WHEEL_DOWN, "mousewheeldown");
-        }
-    } else if (event->pixelDelta().y() > 0) {
-        // scroll up
-        if (_gcanvas->isAcceptingEvent("mousewheelup")) {
-            _gcanvas->fireGEvent(event, MOUSE_WHEEL_UP, "mousewheelup");
-        }
-    }
-}
-
 
 #define CHAR_TO_HEX(ch) ((ch >= '0' && ch <= '9') ? (ch - '0') : (ch - 'a' + 10))
 
@@ -581,6 +475,10 @@ void GCanvas::removeClickListener() {
     removeEventListener("click");
 }
 
+void GCanvas::removeDoubleClickListener() {
+    removeEventListener("doubleclick");
+}
+
 void GCanvas::removeKeyListener() {
     removeEventListeners({"keypress",
                          "keyrelease",
@@ -678,6 +576,14 @@ void GCanvas::setColor(int color) {
 
 void GCanvas::setColor(const std::string& color) {
     setColor(GColor::convertColorToRGB(color));
+}
+
+void GCanvas::setDoubleClickListener(GEventListener func) {
+    setEventListener("doubleclick", func);
+}
+
+void GCanvas::setDoubleClickListener(GEventListenerVoid func) {
+    setEventListener("doubleclick", func);
 }
 
 void GCanvas::setFont(const QFont& font) {
@@ -812,4 +718,127 @@ void GCanvas::toGrid(Grid<int>& grid) const {
     }
 }
 
-#endif // SPL_QT_GUI
+
+_Internal_QCanvas::_Internal_QCanvas(GCanvas* gcanvas, QWidget* parent)
+        : QWidget(parent),
+          _gcanvas(gcanvas) {
+    // set default white background color
+    QPalette pal = palette();
+    pal.setColor(QPalette::Background, Qt::white);
+    setAutoFillBackground(true);
+    setPalette(pal);
+    setMouseTracking(true);   // causes mouse move events to occur
+}
+
+void _Internal_QCanvas::enterEvent(QEvent* event) {
+    QWidget::enterEvent(event);   // call super
+    if (!_gcanvas->isAcceptingEvent("mouseenter")) return;
+    _gcanvas->fireGEvent(event, MOUSE_ENTERED, "mouseenter");
+}
+
+void _Internal_QCanvas::keyPressEvent(QKeyEvent* event) {
+    QWidget::keyPressEvent(event);   // call super
+    if (!_gcanvas->isAcceptingEvent("keypress")) return;
+    _gcanvas->fireGEvent(event, KEY_PRESSED, "keypress");
+}
+
+void _Internal_QCanvas::keyReleaseEvent(QKeyEvent* event) {
+    QWidget::keyReleaseEvent(event);   // call super
+    if (_gcanvas->isAcceptingEvent("keyrelease")) {
+        _gcanvas->fireGEvent(event, KEY_RELEASED, "keyrelease");
+    }
+    if (_gcanvas->isAcceptingEvent("keytype")) {
+        _gcanvas->fireGEvent(event, KEY_TYPED, "keytype");
+    }
+}
+
+void _Internal_QCanvas::leaveEvent(QEvent* event) {
+    QWidget::leaveEvent(event);   // call super
+    if (!_gcanvas->isAcceptingEvent("mouseexit")) return;
+    _gcanvas->fireGEvent(event, MOUSE_EXITED, "mouseexit");
+}
+
+void _Internal_QCanvas::mouseDoubleClickEvent(QMouseEvent* event) {
+    QWidget::mouseDoubleClickEvent(event);   // call super
+    emit doubleClicked();
+    if (!_gcanvas->isAcceptingEvent("doubleclick")) return;
+    GEvent mouseEvent(
+                /* class  */ MOUSE_EVENT,
+                /* type   */ MOUSE_DOUBLE_CLICKED,
+                /* name   */ "doubleclick",
+                /* source */ _gcanvas);
+    mouseEvent.setActionCommand(_gcanvas->getActionCommand());
+    mouseEvent.setButton((int) event->button());
+    mouseEvent.setX(event->x());
+    mouseEvent.setY(event->y());
+    _gcanvas->fireEvent(mouseEvent);
+}
+
+void _Internal_QCanvas::mouseMoveEvent(QMouseEvent* event) {
+    QWidget::mouseMoveEvent(event);   // call super
+    if (!_gcanvas->isAcceptingEvent("mousemove")
+            && !_gcanvas->isAcceptingEvent("mousedrag")) return;
+    _gcanvas->fireGEvent(event, MOUSE_MOVED, "mousemove");
+    if (event->buttons() != 0) {
+        // mouse drag
+        _gcanvas->fireGEvent(event, MOUSE_DRAGGED, "mousedrag");
+    }
+}
+
+void _Internal_QCanvas::mousePressEvent(QMouseEvent* event) {
+    QWidget::mousePressEvent(event);   // call super
+    if (!_gcanvas->isAcceptingEvent("mousepress")) return;
+    _gcanvas->fireGEvent(event, MOUSE_PRESSED, "mousepress");
+}
+
+void _Internal_QCanvas::mouseReleaseEvent(QMouseEvent* event) {
+    QWidget::mouseReleaseEvent(event);   // call super
+    if (_gcanvas->isAcceptingEvent("mouserelease")) {
+        _gcanvas->fireGEvent(event, MOUSE_RELEASED, "mouserelease");
+    }
+
+    if (_gcanvas->isAcceptingEvent("click")) {
+        _gcanvas->fireGEvent(event, MOUSE_CLICKED, "click");
+    }
+}
+
+void _Internal_QCanvas::paintEvent(QPaintEvent* event) {
+    QWidget::paintEvent(event);   // call super
+
+    QPainter painter(this);
+    // g.setCompositionMode(QPainter::CompositionMode_DestinationOver);
+    // g.setRenderHints(QPainter::HighQualityAntialiasing);
+    painter.setRenderHint(QPainter::Antialiasing, GObject::isAntiAliasing());
+    painter.setRenderHint(QPainter::TextAntialiasing, GObject::isAntiAliasing());
+    _gcanvas->draw(&painter);
+    painter.end();
+}
+
+void _Internal_QCanvas::resizeEvent(QResizeEvent* event) {
+    QWidget::resizeEvent(event);   // call super
+    QSize size = event->size();
+    _gcanvas->notifyOfResize(size.width(), size.height());
+}
+
+QSize _Internal_QCanvas::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QWidget::sizeHint();
+    }
+}
+
+void _Internal_QCanvas::wheelEvent(QWheelEvent* event) {
+    QWidget::wheelEvent(event);   // call super
+    if (event->pixelDelta().y() < 0) {
+        // scroll down
+        if (_gcanvas->isAcceptingEvent("mousewheeldown")) {
+            _gcanvas->fireGEvent(event, MOUSE_WHEEL_DOWN, "mousewheeldown");
+        }
+    } else if (event->pixelDelta().y() > 0) {
+        // scroll up
+        if (_gcanvas->isAcceptingEvent("mousewheelup")) {
+            _gcanvas->fireGEvent(event, MOUSE_WHEEL_UP, "mousewheelup");
+        }
+    }
+}

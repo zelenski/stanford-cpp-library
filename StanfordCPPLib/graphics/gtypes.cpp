@@ -110,6 +110,8 @@ HorizontalAlignment toHorizontalAlignment(const std::string& alignmentStr) {
         return ALIGN_LEFT;
     } else if (stringContains(alignLC, "right") || stringContains(alignLC, "east")) {
         return ALIGN_RIGHT;
+    } else if (stringContains(alignLC, "stretch") || stringContains(alignLC, "justify")) {
+        return ALIGN_HORIZONTAL_STRETCH;
     } else {
         return ALIGN_CENTER;
     }
@@ -118,12 +120,14 @@ HorizontalAlignment toHorizontalAlignment(const std::string& alignmentStr) {
 Qt::Alignment toQtAlignment(HorizontalAlignment alignment) {
     return alignment == ALIGN_LEFT ? Qt::AlignLeft
             : alignment == ALIGN_CENTER ? Qt::AlignHCenter
+            : alignment == ALIGN_HORIZONTAL_STRETCH ? Qt::AlignJustify
             : Qt::AlignRight;
 }
 
 Qt::Alignment toQtAlignment(VerticalAlignment alignment) {
     return alignment == ALIGN_TOP ? Qt::AlignTop
             : alignment == ALIGN_MIDDLE ? Qt::AlignVCenter
+            : alignment == ALIGN_VERTICAL_STRETCH ? Qt::AlignTop
             : Qt::AlignBottom;
 }
 
@@ -133,6 +137,8 @@ VerticalAlignment toVerticalAlignment(const std::string& alignmentStr) {
         return ALIGN_TOP;
     } else if (stringContains(alignLC, "bottom") || stringContains(alignLC, "south")) {
         return ALIGN_BOTTOM;
+    } else if (stringContains(alignLC, "stretch") || stringContains(alignLC, "justify")) {
+        return ALIGN_VERTICAL_STRETCH;
     } else {
         return ALIGN_MIDDLE;
     }

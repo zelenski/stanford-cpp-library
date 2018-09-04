@@ -3,6 +3,10 @@
  * --------------
  *
  * @author Marty Stepp
+ * @version 2018/09/04
+ * - added double-click event support
+ * @version 2018/09/03
+ * - added addActionListener methods for clickable labels
  * @version 2018/08/23
  * - renamed to glabel.h to replace Java version
  * @version 2018/06/25
@@ -13,7 +17,10 @@
 #define _glabel_h
 
 #include <string>
+#include <QWindow>
+#include <QEvent>
 #include <QLabel>
+#include <QMouseEvent>
 #include <QSize>
 #include <QWidget>
 #include "ginteractor.h"
@@ -36,10 +43,16 @@ public:
     virtual GInteractor::TextPosition getTextPosition() const;
     virtual std::string getType() const Q_DECL_OVERRIDE;
     virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
+    virtual void removeActionListener();
+    virtual void removeDoubleClickListener();
+    virtual void setActionListener(GEventListener func);
+    virtual void setActionListener(GEventListenerVoid func);
     virtual void setBounds(double x, double y, double width, double height) Q_DECL_OVERRIDE;
     virtual void setBounds(const GRectangle& size) Q_DECL_OVERRIDE;
     virtual void setColor(int rgb) Q_DECL_OVERRIDE;
     virtual void setColor(const std::string& color) Q_DECL_OVERRIDE;
+    virtual void setDoubleClickListener(GEventListener func);
+    virtual void setDoubleClickListener(GEventListenerVoid func);
     virtual void setFont(const QFont& font) Q_DECL_OVERRIDE;
     virtual void setFont(const std::string& font) Q_DECL_OVERRIDE;
     virtual void setForeground(int rgb) Q_DECL_OVERRIDE;
@@ -59,7 +72,6 @@ public:
 
 private:
     Q_DISABLE_COPY(GLabel)
-
     _Internal_QLabel* _iqlabel;
     GText* _gtext;
 
@@ -67,12 +79,13 @@ private:
     GText* getGText() const;
     bool hasGText() const;
 
-    friend class _Internal_QImageLabel;
+    friend class _Internal_QLabel;
     friend class GWindow;
 };
 
 // alias GTextLabel for GLabel for backward compatibility
 typedef GLabel GTextLabel;
+
 
 // Internal class; not to be used by clients.
 class _Internal_QLabel : public QLabel, public _Internal_QWidget {
@@ -81,6 +94,14 @@ class _Internal_QLabel : public QLabel, public _Internal_QWidget {
 public:
     _Internal_QLabel(GLabel* glabel, QWidget* parent = nullptr);
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+
+signals:
+    void clicked();
+    void doubleClicked();
+
+protected:
+    void mouseDoubleClickEvent(QMouseEvent* e) Q_DECL_OVERRIDE;
+    void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
 
 private:
     GLabel* _glabel;

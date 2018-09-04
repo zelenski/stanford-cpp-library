@@ -3,6 +3,10 @@
  * ----------------
  *
  * @author Marty Stepp
+ * @version 2018/09/04
+ * - added double-click event support
+ * @version 2018/09/03
+ * - added addActionListener methods for clickable labels
  * @version 2018/08/23
  * - renamed to glabel.cpp to replace Java version
  * @version 2018/06/25
@@ -14,21 +18,6 @@
 #include "gthread.h"
 #include "gwindow.h"
 #include "strlib.h"
-
-_Internal_QLabel::_Internal_QLabel(GLabel* glabel, QWidget* parent)
-        : QLabel(parent),
-          _glabel(glabel) {
-    // empty
-}
-
-QSize _Internal_QLabel::sizeHint() const {
-    if (hasPreferredSize()) {
-        return getPreferredSize();
-    } else {
-        return QLabel::sizeHint();
-    }
-}
-
 
 GLabel::GLabel(const std::string& text, const std::string& iconFileName, QWidget* parent)
         : _gtext(nullptr) {
@@ -95,6 +84,30 @@ QWidget* GLabel::getWidget() const {
 
 bool GLabel::hasGText() const {
     return _gtext != nullptr;
+}
+
+void GLabel::removeActionListener() {
+    removeEventListener("click");
+}
+
+void GLabel::removeDoubleClickListener() {
+    removeEventListener("doubleclick");
+}
+
+void GLabel::setActionListener(GEventListener func) {
+    setEventListener("click", func);
+}
+
+void GLabel::setActionListener(GEventListenerVoid func) {
+    setEventListener("click", func);
+}
+
+void GLabel::setDoubleClickListener(GEventListener func) {
+    setEventListener("doubleclick", func);
+}
+
+void GLabel::setDoubleClickListener(GEventListenerVoid func) {
+    setEventListener("doubleclick", func);
 }
 
 void GLabel::setBounds(double x, double y, double width, double height) {
@@ -244,4 +257,59 @@ void GLabel::setY(double y) {
     ensureGText();   // setting location triggers GText mode
     _gtext->setY(y);
     GInteractor::setY(y);
+}
+
+
+_Internal_QLabel::_Internal_QLabel(GLabel* glabel, QWidget* parent)
+        : QLabel(parent),
+          _glabel(glabel) {
+    // empty
+}
+
+void _Internal_QLabel::mouseDoubleClickEvent(QMouseEvent* event) {
+    QWidget::mouseDoubleClickEvent(event);   // call super
+    emit doubleClicked();
+    if (!_glabel->isAcceptingEvent("doubleclick")) return;
+    GEvent mouseEvent(
+                /* class  */ MOUSE_EVENT,
+                /* type   */ MOUSE_DOUBLE_CLICKED,
+                /* name   */ "doubleclick",
+                /* source */ _glabel);
+    mouseEvent.setActionCommand(_glabel->getActionCommand());
+    mouseEvent.setButton((int) event->button());
+    mouseEvent.setX(event->x());
+    mouseEvent.setY(event->y());
+    _glabel->fireEvent(mouseEvent);
+}
+
+void _Internal_QLabel::mousePressEvent(QMouseEvent* event) {
+    QWidget::mousePressEvent(event);   // call super
+
+    // fire the signal/event only for left-clicks
+    if (!(event->button() & Qt::LeftButton)) {
+        return;
+    }
+
+    emit clicked();
+
+    if (!_glabel->isAcceptingEvent("click")) return;
+
+    GEvent actionEvent(
+                /* class  */ ACTION_EVENT,
+                /* type   */ ACTION_PERFORMED,
+                /* name   */ "click",
+                /* source */ _glabel);
+    actionEvent.setActionCommand(_glabel->getActionCommand());
+    actionEvent.setButton((int) event->button());
+    actionEvent.setX(event->x());
+    actionEvent.setY(event->y());
+    _glabel->fireEvent(actionEvent);
+}
+
+QSize _Internal_QLabel::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QLabel::sizeHint();
+    }
 }

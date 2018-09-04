@@ -60,6 +60,7 @@
 #include "goptionpane.h"
 #include "gwindow.h"
 #include "map.h"
+#include "qtgui.h"
 #include "simpio.h"
 #include "version.h"
 #include "private/static.h"
@@ -445,7 +446,7 @@ static bool autograderYesOrNo(std::string prompt, std::string reprompt = "", std
 }
 
 
-static int mainRunAutograderTestCases(int argc, char** argv) {
+int mainRunAutograderTestCases() {
     static bool gtestInitialized = false;   // static OK
     
     // set up a few initial settings and lock-down the program
@@ -457,6 +458,8 @@ static int mainRunAutograderTestCases(int argc, char** argv) {
 
     if (!gtestInitialized) {
         gtestInitialized = true;
+        int argc = QtGui::instance()->getArgc();
+        char** argv = QtGui::instance()->getArgv();
         ::testing::InitGoogleTest(&argc, argv);
 
         // set up 'test result printer' to better format test results and errors
@@ -514,7 +517,7 @@ static void mainRunStyleChecker() {
     stanfordcpplib::autograder::AutograderUnitTestGui::instance(/* styleCheck */ true)->setTestingCompleted(true);
 }
 
-int autograderTextMain(int argc, char** argv) {
+int autograderTextMain() {
     std::cout << STATIC_VARIABLE(FLAGS).assignmentName << " Autograder" << std::endl
               << AUTOGRADER_OUTPUT_SEPARATOR << std::endl;
     
@@ -531,7 +534,7 @@ int autograderTextMain(int argc, char** argv) {
             STATIC_VARIABLE(FLAGS).callbackStart();
         }
         
-        result = mainRunAutograderTestCases(argc, argv);
+        result = mainRunAutograderTestCases();
         
         // a hook to allow per-assignment code to run at the start
         if (STATIC_VARIABLE(FLAGS).callbackEnd) {
@@ -580,7 +583,11 @@ int autograderTextMain(int argc, char** argv) {
 static GButton* addAutograderButton(GWindow* gui, const std::string& text, const std::string& icon) {
     static Set<char> usedMnemonics;
 
-    std::string html = "<html><center>" + stringReplace(text, "\n", "<br>") + "</center></html>";
+    std::string html = text;
+
+    // add HTML tags around text
+    // html = "<html><center>" + stringReplace(html, "\n", "<br>") + "</center></html>";
+
     GButton* button = new GButton(html);
     STATIC_VARIABLE(AUTOGRADER_BUTTONS).add(button);
 
@@ -602,12 +609,13 @@ static GButton* addAutograderButton(GWindow* gui, const std::string& text, const
         button->setIcon(icon);
         // button->setTextPosition(SwingConstants::SWING_CENTER, SwingConstants::SWING_BOTTOM);
     }
-    gui->addToRegion(button, "SOUTH");
+    gui->addToRegion(button, GWindow::REGION_SOUTH);
     return button;
 }
 
-int autograderGraphicalMain(int argc, char** argv) {
-    static GWindow* gui = new GWindow(500, 300, /* visible */ false);
+int autograderGraphicalMain() {
+    // static GWindow* gui = new GWindow(500, 300, /* visible */ false);
+    static GWindow* gui = new GWindow(500, 300);
     gui->setTitle(STATIC_VARIABLE(FLAGS).assignmentName + " Autograder");
     gui->setCanvasSize(0, 0);
     gui->_autograder_setIsAutograderWindow(true);
@@ -627,12 +635,12 @@ int autograderGraphicalMain(int argc, char** argv) {
         }
         
         startLabel->setText(startMessage);
-        gui->addToRegion(startLabel, "NORTH");
+        gui->addToRegion(startLabel, GWindow::REGION_NORTH);
     }
     
     int result = 0;
     GButton* autogradeButton = addAutograderButton(gui, "Automated\ntests", "check.gif");
-    autogradeButton->setActionListener([&result, argc, argv]() {
+    autogradeButton->setActionListener([&result]() {
         if (STATIC_VARIABLE(FLAGS).callbackStart) {
             STATIC_VARIABLE(FLAGS).callbackStart();
         }
@@ -641,7 +649,7 @@ int autograderGraphicalMain(int argc, char** argv) {
         stanfordcpplib::autograder::AutograderUnitTestGui::instance()->clearTestResults();
         stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setTestingCompleted(false);
         stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setVisible(true);
-        result = mainRunAutograderTestCases(argc, argv);
+        result = mainRunAutograderTestCases();
         stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setTestingCompleted(true);
 
         // if style checker is merged, also run it now
@@ -789,12 +797,11 @@ int main(int argc, char** argv) {
     stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setVisible(true);
 
     // your assignment-specific autograder main runs here
-    // TODO: doesn't work
-    stanfordcpplib::runMainInThreadVoid(::autograderMain);
+    ::autograderMain();
     
     if (autograder::isGraphicalUI()) {
-        return autograder::autograderGraphicalMain(argc, argv);
+        QtGui::instance()->startBackgroundEventLoop(autograder::autograderGraphicalMain);
     } else {
-        return autograder::autograderTextMain(argc, argv);
+        QtGui::instance()->startBackgroundEventLoop(autograder::autograderTextMain);
     }
 }

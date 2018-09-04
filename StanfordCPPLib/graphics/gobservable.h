@@ -28,6 +28,9 @@
 #include "map.h"
 #include "gevent.h"
 
+class GInteractor;
+class _Internal_QWidget;
+
 /*
  * ...
  */
@@ -66,6 +69,10 @@ protected:
 
     Map<std::string, GEvent::EventListenerWrapper> _eventMap;
     bool _eventsEnabled;
+
+    // allow all interactors and their inner QWidgets to call observable methods
+    friend class GInteractor;
+    friend class _Internal_QWidget;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

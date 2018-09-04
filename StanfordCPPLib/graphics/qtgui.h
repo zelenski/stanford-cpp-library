@@ -30,12 +30,14 @@ class QtGui : public QObject {
 
 public:
     void exitGraphics(int exitCode = 0);
+    int getArgc() const;
+    char** getArgv() const;
     void initializeQt();
     static QtGui* instance();
     void setArgs(int argc, char** argv);
-    void startBackgroundEventLoop(GThunkInt mainFunc);
-    void startBackgroundEventLoopVoid(GThunk mainFunc);
-    void startEventLoop();
+    void startBackgroundEventLoop(GThunkInt mainFunc, bool exitAfter = true);
+    void startBackgroundEventLoopVoid(GThunk mainFunc, bool exitAfter = true);
+    void startEventLoop(bool exitAfter = true);
 
 public slots:
     void mySlot();

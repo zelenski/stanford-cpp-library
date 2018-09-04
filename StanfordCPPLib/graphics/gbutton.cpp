@@ -3,6 +3,8 @@
  * ------------------
  *
  * @author Marty Stepp
+ * @version 2018/09/04
+ * - added double-click event support
  * @version 2018/08/23
  * - renamed to gbutton.cpp to replace Java version
  * @version 2018/06/25
@@ -13,32 +15,6 @@
 #include <QKeySequence>
 #include "gthread.h"
 #include "gwindow.h"
-
-_Internal_QPushButton::_Internal_QPushButton(GButton* button, QWidget* parent)
-        : QToolButton(parent),
-          _gbutton(button) {
-    setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    connect(this, SIGNAL(clicked()), this, SLOT(handleClick()));
-}
-
-void _Internal_QPushButton::handleClick() {
-    GEvent actionEvent(
-                /* class  */ ACTION_EVENT,
-                /* type   */ ACTION_PERFORMED,
-                /* name   */ "click",
-                /* source */ _gbutton);
-    actionEvent.setActionCommand(_gbutton->getActionCommand());
-    _gbutton->fireEvent(actionEvent);
-}
-
-QSize _Internal_QPushButton::sizeHint() const {
-    if (hasPreferredSize()) {
-        return getPreferredSize();
-    } else {
-        return QToolButton::sizeHint();
-    }
-}
-
 
 GButton::GButton(const std::string& text, const std::string& iconFileName, QWidget* parent) {
     GThread::runOnQtGuiThread([this, parent]() {
@@ -100,6 +76,10 @@ void GButton::removeActionListener() {
     removeEventListener("click");
 }
 
+void GButton::removeDoubleClickListener() {
+    removeEventListener("doubleclick");
+}
+
 void GButton::setAccelerator(const std::string& accelerator) {
     GThread::runOnQtGuiThread([this, accelerator]() {
         QKeySequence keySeq(QString::fromStdString(normalizeAccelerator(accelerator)));
@@ -113,6 +93,14 @@ void GButton::setActionListener(GEventListener func) {
 
 void GButton::setActionListener(GEventListenerVoid func) {
     setEventListener("click", func);
+}
+
+void GButton::setDoubleClickListener(GEventListener func) {
+    setEventListener("doubleclick", func);
+}
+
+void GButton::setDoubleClickListener(GEventListenerVoid func) {
+    setEventListener("doubleclick", func);
 }
 
 void GButton::setIcon(const std::string& filename, bool retainIconSize) {
@@ -154,6 +142,49 @@ void GButton::setTextPosition(GInteractor::TextPosition position) {
 }
 
 void GButton::setTextPosition(SwingConstants /*horizontal*/, SwingConstants /*vertical*/) {
-    // not really supported
+    // TODO: not really supported
     setTextPosition(GInteractor::TEXT_UNDER_ICON);
+}
+
+
+_Internal_QPushButton::_Internal_QPushButton(GButton* button, QWidget* parent)
+        : QToolButton(parent),
+          _gbutton(button) {
+    setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    connect(this, SIGNAL(clicked()), this, SLOT(handleClick()));
+}
+
+void _Internal_QPushButton::handleClick() {
+    if (!_gbutton->isAcceptingEvent("click")) return;
+    GEvent actionEvent(
+                /* class  */ ACTION_EVENT,
+                /* type   */ ACTION_PERFORMED,
+                /* name   */ "click",
+                /* source */ _gbutton);
+    actionEvent.setActionCommand(_gbutton->getActionCommand());
+    _gbutton->fireEvent(actionEvent);
+}
+
+void _Internal_QPushButton::mouseDoubleClickEvent(QMouseEvent* event) {
+    QWidget::mouseDoubleClickEvent(event);   // call super
+    emit doubleClicked();
+    if (!_gbutton->isAcceptingEvent("doubleclick")) return;
+    GEvent mouseEvent(
+                /* class  */ MOUSE_EVENT,
+                /* type   */ MOUSE_DOUBLE_CLICKED,
+                /* name   */ "doubleclick",
+                /* source */ _gbutton);
+    mouseEvent.setActionCommand(_gbutton->getActionCommand());
+    mouseEvent.setButton((int) event->button());
+    mouseEvent.setX(event->x());
+    mouseEvent.setY(event->y());
+    _gbutton->fireEvent(mouseEvent);
+}
+
+QSize _Internal_QPushButton::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QToolButton::sizeHint();
+    }
 }

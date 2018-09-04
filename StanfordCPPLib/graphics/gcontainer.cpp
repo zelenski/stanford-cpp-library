@@ -89,8 +89,30 @@ void GContainer::clearRegion(const std::string& region) {
     clearRegion(stringToRegion(region));
 }
 
+Vector<GInteractor*> GContainer::getDescendents(const std::string& type) const {
+    Vector<GInteractor*> result;
+    for (GInteractor* interactor : _interactors) {
+        // pre-order traversal; add parent and then visit children
+        if (type.empty() || type == "*" || equalsIgnoreCase(type, interactor->getType())) {
+            result.add(interactor);
+        }
+
+        if (equalsIgnoreCase(interactor->getType(), "GContainer")) {
+            // recursively get all descendents of this child
+            GContainer* subcontainer = static_cast<GContainer*>(interactor);
+            Vector<GInteractor*> descendents = subcontainer->getDescendents(type);
+            result.addAll(descendents);
+        }
+    }
+    return result;
+}
+
 GInteractor* GContainer::getInteractor(int i) const {
     return _interactors[i];
+}
+
+const Vector<GInteractor*>& GContainer::getInteractors() const {
+    return _interactors;
 }
 
 int GContainer::getInteractorCount() const {
@@ -126,6 +148,30 @@ double GContainer::getPadding() const {
     int left, right, top, bottom;
     _iqcontainer->getContentsMargins(&left, &top, &right, &bottom);
     return (left + top + right + bottom) / 4.0;
+}
+
+double GContainer::getPaddingBottom() const {
+    int left, right, top, bottom;
+    _iqcontainer->getContentsMargins(&left, &top, &right, &bottom);
+    return bottom;
+}
+
+double GContainer::getPaddingLeft() const {
+    int left, right, top, bottom;
+    _iqcontainer->getContentsMargins(&left, &top, &right, &bottom);
+    return left;
+}
+
+double GContainer::getPaddingRight() const {
+    int left, right, top, bottom;
+    _iqcontainer->getContentsMargins(&left, &top, &right, &bottom);
+    return right;
+}
+
+double GContainer::getPaddingTop() const {
+    int left, right, top, bottom;
+    _iqcontainer->getContentsMargins(&left, &top, &right, &bottom);
+    return top;
 }
 
 double GContainer::getSpacing() const {
@@ -228,7 +274,15 @@ void GContainer::setMargin(double px) {
 }
 
 void GContainer::setPadding(double px) {
-    _iqcontainer->setContentsMargins((int) px, (int) px, (int) px, (int) px);
+    _iqcontainer->setPadding((int) px, (int) px, (int) px, (int) px);
+}
+
+void GContainer::setPadding(double topBottom, double leftRight) {
+    _iqcontainer->setPadding((int) topBottom, (int) leftRight, (int) topBottom, (int) leftRight);
+}
+
+void GContainer::setPadding(double top, double right, double bottom, double left) {
+    _iqcontainer->setPadding((int) top, (int) right, (int) bottom, (int) left);
 }
 
 void GContainer::setVerticalAlignment(VerticalAlignment valign) {
@@ -516,6 +570,10 @@ void _Internal_QContainer::insertToRegion(int i, QWidget* widget, GContainer::Re
     }
 }
 
+bool _Internal_QContainer::isRegionStretch(GContainer::Region region) const {
+    return _regionStretchMap[region];
+}
+
 QLayout* _Internal_QContainer::layoutForRegion(GContainer::Region region) const {
     if (region == GContainer::REGION_NORTH) {
         return _northLayout;
@@ -563,7 +621,9 @@ void _Internal_QContainer::remove(int i) {
     } else {
         GThread::runOnQtGuiThread([this, i]() {
             QWidget* widget = layout()->itemAt(i)->widget();
-            widget->setVisible(false);
+            if (widget) {
+                widget->setVisible(false);
+            }
             // add +1 to the index to account for the 'stretch' at start
             layout()->removeItem(layout()->itemAt(i + 1));
             layout()->update();
@@ -594,6 +654,23 @@ void _Internal_QContainer::removeFromRegion(int i, GContainer::Region region) {
     }
 }
 
+void _Internal_QContainer::setPadding(int padding) {
+    setPadding(padding, padding, padding, padding);
+}
+
+void _Internal_QContainer::setPadding(int top, int right, int bottom, int left) {
+    QWidget::setContentsMargins(left, top, right, bottom);   // call super
+    if (_layoutType == GContainer::LAYOUT_BORDER) {
+        _overallLayout->setContentsMargins(left, top, right, bottom);
+        _northLayout->setContentsMargins(left, top, right, bottom);
+        _southLayout->setContentsMargins(left, top, right, bottom);
+        _westLayout->setContentsMargins(left, top, right, bottom);
+        _eastLayout->setContentsMargins(left, top, right, bottom);
+        _middleLayout->setContentsMargins(left, top, right, bottom);
+        _centerLayout->setContentsMargins(left, top, right, bottom);
+    }
+    GLayout::forceUpdate(this);
+}
 
 void _Internal_QContainer::setHorizontalAlignment(HorizontalAlignment halign) {
     switch (_layoutType) {
@@ -623,7 +700,9 @@ void _Internal_QContainer::setHorizontalAlignment(HorizontalAlignment halign) {
             Qt::Alignment qtAlign = toQtAlignment(halign);
             for (int i = 1; i < layout->count() - 1; i++) {
                 QWidget* widget = layout->itemAt(i)->widget();
-                layout->setAlignment(widget, qtAlign);
+                if (widget) {
+                    layout->setAlignment(widget, qtAlign);
+                }
             }
             break;
         }
@@ -633,7 +712,9 @@ void _Internal_QContainer::setHorizontalAlignment(HorizontalAlignment halign) {
             Qt::Alignment qtAlign = toQtAlignment(halign);
             for (int i = 0; i < layout->count(); i++) {
                 QWidget* widget = layout->itemAt(i)->widget();
-                layout->setAlignment(widget, qtAlign);
+                if (widget) {
+                    layout->setAlignment(widget, qtAlign);
+                }
             }
             break;
         }
@@ -736,7 +817,9 @@ void _Internal_QContainer::setLayoutType(GContainer::Layout layoutType) {
                 // transfer over from previous layout
                 for (int i = 1; i < layout()->count() - 1; i++) {
                     QWidget* widget = layout()->itemAt(i)->widget();
-                    qlayout->addWidget(widget);
+                    if (widget) {
+                        qlayout->addWidget(widget);
+                    }
                 }
             }
             qlayout->addStretch(99);   // bottom side stretch
@@ -794,33 +877,42 @@ void _Internal_QContainer::setRegionHorizontalAlignment(GContainer::Region regio
     GThread::runOnQtGuiThread([this, region, halign]() {
         _halignMap[region] = halign;
         QLayout* layout = layoutForRegion(region);
-        if (layout == _centerLayout || layout == _westLayout || layout == _eastLayout) {
+        if (layout == _westLayout || layout == _eastLayout || layout == _centerLayout) {
             // set each widget's horizontal alignment individually
             Qt::Alignment qtAlign = toQtAlignment(halign);
+            QSizePolicy::Policy hSizePolicy = ((qtAlign & Qt::AlignJustify) != 0) ? QSizePolicy::Expanding : QSizePolicy::Preferred;
             for (int i = 0; i < layout->count(); i++) {
                 QWidget* widget = layout->itemAt(i)->widget();
+                if (!widget) {
+                    continue;
+                }
                 layout->setAlignment(widget, qtAlign);
+                widget->setSizePolicy(
+                        /* horizontal */ hSizePolicy,
+                        /* vertical */   widget->sizePolicy().verticalPolicy());
             }
         } else if (layout == _northLayout || layout == _southLayout) {
             // to align "left", limit first stretch;
             // to align "right", limit last stretch
-            layout->removeItem(layout->itemAt(0));
-            layout->removeItem(layout->itemAt(layout->count() - 1));
-            if (halign == ALIGN_LEFT) {
-                ((QHBoxLayout*) layout)->insertStretch(0, /* stretch */ 0);
-                ((QHBoxLayout*) layout)->addStretch(/* stretch */ 99);
-            } else if (halign == ALIGN_RIGHT) {
-                ((QHBoxLayout*) layout)->insertStretch(0, /* stretch */ 99);
-                ((QHBoxLayout*) layout)->addStretch(/* stretch */ 0);
-            } else {   // halign == ALIGN_CENTER
-                ((QHBoxLayout*) layout)->insertStretch(0, /* stretch */ 99);
-                ((QHBoxLayout*) layout)->addStretch(/* stretch */ 99);
-            }
+            QHBoxLayout* boxLayout = (QHBoxLayout*) layout;
+            boxLayout->removeItem(layout->itemAt(0));
+            boxLayout->removeItem(layout->itemAt(layout->count() - 1));
+            int beforeStretch = (halign == ALIGN_CENTER || halign == ALIGN_RIGHT)  ? 99 : 0;
+            int afterStretch  = (halign == ALIGN_LEFT   || halign == ALIGN_CENTER) ? 99 : 0;
+            boxLayout->insertStretch(0, beforeStretch);
+            boxLayout->addStretch(afterStretch);
         }
 
         layout->update();
         GLayout::forceUpdate(this);
     });
+
+}
+
+void _Internal_QContainer::setRegionStretch(GContainer::Region region, bool stretch) {
+    _regionStretchMap[region] = stretch;
+
+    // stretch / de-stretch any widgets in that region
 
 }
 
@@ -832,25 +924,26 @@ void _Internal_QContainer::setRegionVerticalAlignment(GContainer::Region region,
         if (layout == _westLayout || layout == _eastLayout) {
             // to align "top", limit first stretch;
             // to align "bottom", limit last stretch
-            layout->removeItem(layout->itemAt(0));
-            layout->removeItem(layout->itemAt(layout->count() - 1));
-            if (valign == ALIGN_TOP) {
-                ((QVBoxLayout*) layout)->insertStretch(0, /* stretch */ 0);
-                ((QVBoxLayout*) layout)->addStretch(/* stretch */ 99);
-            } else if (valign == ALIGN_BOTTOM) {
-                ((QVBoxLayout*) layout)->insertStretch(0, /* stretch */ 99);
-                ((QVBoxLayout*) layout)->addStretch(/* stretch */ 0);
-            } else {   // valign == ALIGN_MIDDLE
-                ((QVBoxLayout*) layout)->insertStretch(0, /* stretch */ 99);
-                ((QVBoxLayout*) layout)->addStretch(/* stretch */ 99);
-            }
-        } else if (layout == _northLayout || layout == _southLayout
-                   || layout == _centerLayout) {
+            QVBoxLayout* boxLayout = (QVBoxLayout*) layout;
+            boxLayout->removeItem(layout->itemAt(0));
+            boxLayout->removeItem(layout->itemAt(layout->count() - 1));
+            int beforeStretch = (valign == ALIGN_MIDDLE || valign == ALIGN_BOTTOM) ? 99 : 0;
+            int afterStretch  = (valign == ALIGN_TOP    || valign == ALIGN_MIDDLE) ? 99 : 0;
+            boxLayout->insertStretch(0, beforeStretch);
+            boxLayout->addStretch(afterStretch);
+        } else if (layout == _northLayout || layout == _southLayout || layout == _centerLayout) {
             // set each widget's vertical alignment individually
             Qt::Alignment qtAlign = toQtAlignment(valign);
+            QSizePolicy::Policy vSizePolicy = ((qtAlign & Qt::AlignJustify) != 0) ? QSizePolicy::Expanding : QSizePolicy::Preferred;
             for (int i = 0; i < layout->count(); i++) {
                 QWidget* widget = layout->itemAt(i)->widget();
+                if (!widget) {
+                    continue;
+                }
                 layout->setAlignment(widget, qtAlign);
+                widget->setSizePolicy(
+                        /* horizontal */ widget->sizePolicy().horizontalPolicy(),
+                        /* vertical */   vSizePolicy);
             }
         }
 
@@ -882,6 +975,9 @@ void _Internal_QContainer::setVerticalAlignment(VerticalAlignment valign) {
             Qt::Alignment qtAlign = toQtAlignment(valign);
             for (int i = 1; i < layout->count() - 1; i++) {
                 QWidget* widget = layout->itemAt(i)->widget();
+                if (!widget) {
+                    continue;
+                }
                 layout->setAlignment(widget, qtAlign);
             }
             break;
@@ -912,6 +1008,9 @@ void _Internal_QContainer::setVerticalAlignment(VerticalAlignment valign) {
             Qt::Alignment qtAlign = toQtAlignment(valign);
             for (int i = 0; i < layout->count(); i++) {
                 QWidget* widget = layout->itemAt(i)->widget();
+                if (!widget) {
+                    continue;
+                }
                 layout->setAlignment(widget, qtAlign);
             }
             break;

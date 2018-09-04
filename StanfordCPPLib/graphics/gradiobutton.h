@@ -3,6 +3,8 @@
  * --------------------
  *
  * @author Marty Stepp
+ * @version 2018/09/04
+ * - added double-click event support
  * @version 2018/08/23
  * - renamed to gradiobutton.h to replace Java version
  * @version 2018/06/29
@@ -15,7 +17,10 @@
 #define _gradiobutton_h
 
 #include <string>
+#include <QWindow>
+#include <QEvent>
 #include <QButtonGroup>
+#include <QMouseEvent>
 #include <QRadioButton>
 #include <QSize>
 #include <QWidget>
@@ -40,8 +45,11 @@ public:
     virtual bool isChecked() const;
     virtual bool isSelected() const;
     virtual void removeActionListener();
+    virtual void removeDoubleClickListener();
     virtual void setActionListener(GEventListener func);
     virtual void setActionListener(GEventListenerVoid func);
+    virtual void setDoubleClickListener(GEventListener func);
+    virtual void setDoubleClickListener(GEventListenerVoid func);
     virtual void setChecked(bool checked);
     virtual void setSelected(bool selected);
     virtual void setText(const std::string& text);
@@ -57,6 +65,7 @@ private:
     friend class _Internal_QRadioButton;
 };
 
+
 // Internal class; not to be used by clients.
 class _Internal_QRadioButton : public QRadioButton, public _Internal_QWidget {
     Q_OBJECT
@@ -65,8 +74,14 @@ public:
     _Internal_QRadioButton(GRadioButton* gradioButton, bool checked = false, QWidget* parent = nullptr);
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
+signals:
+    void doubleClicked();
+
 public slots:
     void handleClick();
+
+protected:
+    void mouseDoubleClickEvent(QMouseEvent* e) Q_DECL_OVERRIDE;
 
 private:
     GRadioButton* _gradioButton;

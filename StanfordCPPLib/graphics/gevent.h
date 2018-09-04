@@ -27,6 +27,11 @@ class _Internal_QWidget;   // forward declaration
 typedef std::function<void(GEvent)> GEventListener;
 typedef std::function<void()>       GEventListenerVoid;
 
+/*
+ * The EventClass enumeration represents all major categories of events.
+ * Note: If you add any new classes of events, you must also add logic to the
+ * GEvent::classToString function in gevent.cpp.
+ */
 enum EventClass {
     NULL_EVENT      = 0x0000,
     ACTION_EVENT    = 0x0010,
@@ -45,54 +50,56 @@ enum EventClass {
 };
 
 /*
- * Type: EventType
- * ---------------
- * This enumeration type defines the event types for all events.
+ * This enumeration type defines the event subtypes for all events.
+ * An event type is a subcategory within an event class.
+ * Note: If you add any new classes of events, you must also add logic to the
+ * GEvent::typeToString function in gevent.cpp.
  */
 enum EventType {
-    NULL_TYPE           = 0,
+    NULL_TYPE            = 0,
 
-    WINDOW_CLOSED       = WINDOW_EVENT + 1,
-    WINDOW_RESIZED      = WINDOW_EVENT + 2,
-    CONSOLE_CLOSED      = WINDOW_EVENT + 3,
-    WINDOW_CLOSING      = WINDOW_EVENT + 4,
-    WINDOW_MINIMIZED    = WINDOW_EVENT + 5,
-    WINDOW_RESTORED     = WINDOW_EVENT + 6,
-    WINDOW_MAXIMIZED    = WINDOW_EVENT + 7,
+    WINDOW_CLOSED        = WINDOW_EVENT + 1,
+    WINDOW_RESIZED       = WINDOW_EVENT + 2,
+    CONSOLE_CLOSED       = WINDOW_EVENT + 3,
+    WINDOW_CLOSING       = WINDOW_EVENT + 4,
+    WINDOW_MINIMIZED     = WINDOW_EVENT + 5,
+    WINDOW_RESTORED      = WINDOW_EVENT + 6,
+    WINDOW_MAXIMIZED     = WINDOW_EVENT + 7,
 
-    ACTION_PERFORMED    = ACTION_EVENT + 1,
-    ACTION_MENU         = ACTION_EVENT + 2,
+    ACTION_PERFORMED     = ACTION_EVENT + 1,
+    ACTION_MENU          = ACTION_EVENT + 2,
 
-    MOUSE_CLICKED       = MOUSE_EVENT + 1,
-    MOUSE_PRESSED       = MOUSE_EVENT + 2,
-    MOUSE_RELEASED      = MOUSE_EVENT + 3,
-    MOUSE_MOVED         = MOUSE_EVENT + 4,
-    MOUSE_DRAGGED       = MOUSE_EVENT + 5,
-    MOUSE_ENTERED       = MOUSE_EVENT + 6,
-    MOUSE_EXITED        = MOUSE_EVENT + 7,
-    MOUSE_WHEEL_DOWN    = MOUSE_EVENT + 8,
-    MOUSE_WHEEL_UP      = MOUSE_EVENT + 9,
+    MOUSE_CLICKED        = MOUSE_EVENT + 1,
+    MOUSE_PRESSED        = MOUSE_EVENT + 2,
+    MOUSE_RELEASED       = MOUSE_EVENT + 3,
+    MOUSE_MOVED          = MOUSE_EVENT + 4,
+    MOUSE_DRAGGED        = MOUSE_EVENT + 5,
+    MOUSE_ENTERED        = MOUSE_EVENT + 6,
+    MOUSE_EXITED         = MOUSE_EVENT + 7,
+    MOUSE_WHEEL_DOWN     = MOUSE_EVENT + 8,
+    MOUSE_WHEEL_UP       = MOUSE_EVENT + 9,
+    MOUSE_DOUBLE_CLICKED = MOUSE_EVENT + 10,
 
-    KEY_PRESSED         = KEY_EVENT + 1,
-    KEY_RELEASED        = KEY_EVENT + 2,
-    KEY_TYPED           = KEY_EVENT + 3,
+    KEY_PRESSED          = KEY_EVENT + 1,
+    KEY_RELEASED         = KEY_EVENT + 2,
+    KEY_TYPED            = KEY_EVENT + 3,
 
-    TIMER_TICKED        = TIMER_EVENT + 1,
+    TIMER_TICKED         = TIMER_EVENT + 1,
 
-    TABLE_UPDATED       = TABLE_EVENT + 1,   // when a cell's value gets set
-    TABLE_SELECTED      = TABLE_EVENT + 2,   // cursor moves onto a cell
-    TABLE_EDIT_BEGIN    = TABLE_EVENT + 3,   // user presses F2 or double clicks to start editing a cell
-    TABLE_REPLACE_BEGIN = TABLE_EVENT + 4,   // user starts typing on a cell; like TABLE_EDIT_BEGIN but wipes out previous value
-    TABLE_EDIT_CANCEL   = TABLE_EVENT + 5,   // user presses Esc or otherwise stops editing a cell
-    TABLE_CUT           = TABLE_EVENT + 6,   // user cuts cell value to clipboard
-    TABLE_COPY          = TABLE_EVENT + 7,   // user copies cell value to clipboard
-    TABLE_PASTE         = TABLE_EVENT + 8,   // user pastes cell value from clipboard
+    TABLE_UPDATED        = TABLE_EVENT + 1,   // when a cell's value gets set
+    TABLE_SELECTED       = TABLE_EVENT + 2,   // cursor moves onto a cell
+    TABLE_EDIT_BEGIN     = TABLE_EVENT + 3,   // user presses F2 or double clicks to start editing a cell
+    TABLE_REPLACE_BEGIN  = TABLE_EVENT + 4,   // user starts typing on a cell; like TABLE_EDIT_BEGIN but wipes out previous value
+    TABLE_EDIT_CANCEL    = TABLE_EVENT + 5,   // user presses Esc or otherwise stops editing a cell
+    TABLE_CUT            = TABLE_EVENT + 6,   // user cuts cell value to clipboard
+    TABLE_COPY           = TABLE_EVENT + 7,   // user copies cell value to clipboard
+    TABLE_PASTE          = TABLE_EVENT + 8,   // user pastes cell value from clipboard
 
-    SERVER_REQUEST      = SERVER_EVENT + 1,
+    SERVER_REQUEST       = SERVER_EVENT + 1,
 
-    STATE_CHANGED       = CHANGE_EVENT + 1,
+    STATE_CHANGED        = CHANGE_EVENT + 1,
 
-    HYPERLINK_CLICKED   = HYPERLINK_EVENT + 1
+    HYPERLINK_CLICKED    = HYPERLINK_EVENT + 1
 };
 
 /*
@@ -120,6 +127,9 @@ public:
     // empty event handlers that can be passed that do nothing
     static GEventListener EMPTY_EVENT_LISTENER;
     static GEventListenerVoid EMPTY_EVENT_LISTENER_VOID;
+
+    // an event listener that just prints the event that occurred; for debugging
+    static GEventListener LOG_EVENT;
 
     enum EventListenerType {
         HANDLER_EVENT,
@@ -242,6 +252,11 @@ public:
      * was held down during this event.
      */
     virtual bool isCtrlOrCommandKeyDown() const;
+
+    /*
+     * Returns true if the user pressed the mouse button multiple times.
+     */
+    virtual bool isDoubleClick() const;
 
     /*
      * Returns true if the user pressed the left mouse button.

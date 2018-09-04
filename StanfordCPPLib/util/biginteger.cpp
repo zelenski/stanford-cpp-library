@@ -336,18 +336,6 @@ std::string BigInteger::multiply(const std::string& n1, const std::string& n2) {
     return product;
 }
 
-std::string BigInteger::padLeft(const std::string& s, int length) {
-    size_t lenS = s.length();
-    if ((int) lenS < length) {
-        // left-pad numbers with 0s to be the same length as needed
-        std::string scopy = s;
-        scopy.insert(0, (length - lenS), '0');
-        return scopy;
-    } else {
-        return s;
-    }
-}
-
 BigInteger BigInteger::pow(long exp) const {
     if (exp < 0) {
         error("negative exponent: " + longToString(exp));
@@ -806,8 +794,8 @@ BigInteger operator &(const BigInteger& b1, const BigInteger& b2) {
     std::string s1 = b1.toString(2);
     std::string s2 = b2.toString(2);
     int len = (int) (s1.length() > s2.length() ? s1.length() : s2.length());
-    s1 = BigInteger::padLeft(s1, len);
-    s2 = BigInteger::padLeft(s2, len);
+    s1 = padLeft(s1, len);
+    s2 = padLeft(s2, len);
 
     // loop over each bit, performing & operation; store into s1
     for (int i = 0; i < len; i++) {
@@ -825,8 +813,8 @@ BigInteger operator |(const BigInteger& b1, const BigInteger& b2) {
     std::string s1 = b1.toString(2);
     std::string s2 = b2.toString(2);
     int len = (int) (s1.length() > s2.length() ? s1.length() : s2.length());
-    s1 = BigInteger::padLeft(s1, len);
-    s2 = BigInteger::padLeft(s2, len);
+    s1 = padLeft(s1, len);
+    s2 = padLeft(s2, len);
 
     // loop over each bit, performing | operation; store into s1
     for (int i = 0; i < len; i++) {
@@ -845,8 +833,8 @@ BigInteger operator ^(const BigInteger& b1, const BigInteger& b2) {
     std::string s1 = b1.toString(2);
     std::string s2 = b2.toString(2);
     int len = (int) (s1.length() > s2.length() ? s1.length() : s2.length());
-    s1 = BigInteger::padLeft(s1, len);
-    s2 = BigInteger::padLeft(s2, len);
+    s1 = padLeft(s1, len);
+    s2 = padLeft(s2, len);
 
     // loop over each bit, performing ^ operation; store into s1
     for (int i = 0; i < len; i++) {

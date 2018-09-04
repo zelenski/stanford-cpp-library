@@ -11,6 +11,7 @@
 
 #include "qtgui.h"
 #include <QEvent>
+#include <QtGlobal>
 #include <QThread>
 #include "consoletext.h"
 #include "error.h"
@@ -49,11 +50,25 @@ void QtGui::exitGraphics(int exitCode) {
     }
 }
 
+int QtGui::getArgc() const {
+    return _argc;
+}
+
+char** QtGui::getArgv() const {
+    return _argv;
+}
+
 void QtGui::initializeQt() {
     if (_app) return;
 
     GThread::runOnQtGuiThread([this]() {
         if (!_app) {
+            qSetMessagePattern(
+                    "Qt internal warning: %{message}\n"
+                    "  - pid: %{pid}\n"
+                    "  - thread: %{threadid}\n"
+                    "  - stack:\n"
+                    "      %{backtrace depth=20 separator=\"\n      \"}");
             _app = new QApplication(_argc, _argv);
             _initialized = true;
         }
@@ -82,29 +97,29 @@ void QtGui::setArgs(int argc, char** argv) {
 }
 
 // this should be called by the Qt main thread
-void QtGui::startBackgroundEventLoop(GThunkInt mainFunc) {
+void QtGui::startBackgroundEventLoop(GThunkInt mainFunc, bool exitAfter) {
     GThread::ensureThatThisIsTheQtGuiThread("QtGui::startBackgroundEventLoop");
 
     // start student's main function in its own second thread
     if (!GThread::studentThreadExists()) {
         GStudentThread::startStudentThread(mainFunc);
-        startEventLoop();   // begin Qt event loop on main thread
+        startEventLoop(exitAfter);   // begin Qt event loop on main thread
     }
 }
 
 // this should be called by the Qt main thread
-void QtGui::startBackgroundEventLoopVoid(GThunk mainFunc) {
+void QtGui::startBackgroundEventLoopVoid(GThunk mainFunc, bool exitAfter) {
     GThread::ensureThatThisIsTheQtGuiThread("QtGui::startBackgroundEventLoop");
 
     // start student's main function in its own second thread
     if (!GThread::studentThreadExists()) {
         GStudentThread::startStudentThreadVoid(mainFunc);
-        startEventLoop();   // begin Qt event loop on main thread
+        startEventLoop(exitAfter);   // begin Qt event loop on main thread
     }
 }
 
 // this should be called by the Qt main thread
-void QtGui::startEventLoop() {
+void QtGui::startEventLoop(bool exitAfter) {
     GThread::ensureThatThisIsTheQtGuiThread("QtGui::startEventLoop");
     if (!_app) {
         error("QtGui::startEventLoop: need to initialize Qt first");
@@ -116,5 +131,7 @@ void QtGui::startEventLoop() {
 
     // if I get here, it means an "exit on close" window was just closed;
     // it's time to shut down the Qt system and exit the C++ program
-    exitGraphics(exitCode);
+    if (exitAfter) {
+        exitGraphics(exitCode);
+    }
 }

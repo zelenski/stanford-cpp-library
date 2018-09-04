@@ -3,6 +3,8 @@
  * ---------------------
  *
  * @author Marty Stepp
+ * @version 2018/09/04
+ * - added get/setName, getID
  * @version 2018/08/23
  * - renamed to ginteractor.cpp to replace Java version
  * @version 2018/06/29
@@ -17,50 +19,17 @@
 #include "gthread.h"
 #include "gwindow.h"
 #include "qtgui.h"
+#include "strlib.h"
 
-_Internal_QWidget::_Internal_QWidget()
-        : _minimumSize(-1, -1),
-          _preferredSize(-1, -1) {
-    // empty
-}
-
-QSize _Internal_QWidget::getMinimumSize() const {
-    return QSize((int) _minimumSize.getWidth(), (int) _minimumSize.getHeight());
-}
-
-bool _Internal_QWidget::hasMinimumSize() const {
-    return _minimumSize.getWidth() >= 0 && _minimumSize.getHeight() >= 0;
-}
-
-QSize _Internal_QWidget::getPreferredSize() const {
-    return QSize((int) _preferredSize.getWidth(), (int) _preferredSize.getHeight());
-}
-
-bool _Internal_QWidget::hasPreferredSize() const {
-    return _preferredSize.getWidth() >= 0 && _preferredSize.getHeight() >= 0;
-}
-
-void _Internal_QWidget::setMinimumSize(double width, double height) {
-    _minimumSize = GDimension(width, height);
-}
-
-void _Internal_QWidget::setMinimumSize(const QSize& size) {
-    setMinimumSize(size.width(), size.height());
-}
-
-void _Internal_QWidget::setPreferredSize(double width, double height) {
-    _preferredSize = GDimension(width, height);
-}
-
-void _Internal_QWidget::setPreferredSize(const QSize& size) {
-    setPreferredSize(size.width(), size.height());
-}
-
+int GInteractor::_interactorCount = 0;
 
 GInteractor::GInteractor()
         : _actionCommand(""),
-          _icon("") {
+          _icon(""),
+          _name(""),
+          _id(-1) {
     QtGui::instance()->initializeQt();   // make sure Qt system is initialized
+    _id = ++_interactorCount;            // set ID to number of interactors + 1
 }
 
 GInteractor::~GInteractor() {
@@ -108,6 +77,10 @@ int GInteractor::getColorInt() const {
     return GColor::convertQColorToRGB(color);
 }
 
+std::string GInteractor::getDefaultInteractorName() const {
+    return getType() + "_" + integerToString(getID());
+}
+
 std::string GInteractor::getFont() const {
     return GFont::toFontString(getWidget()->font());
 }
@@ -124,6 +97,10 @@ int GInteractor::getForegroundInt() const {
 
 double GInteractor::getHeight() const {
     return getWidget()->height();
+}
+
+int GInteractor::getID() const {
+    return _id;
 }
 
 std::string GInteractor::getIcon() const {
@@ -154,6 +131,14 @@ double GInteractor::getMinimumWidth() const {
 char GInteractor::getMnemonic() const {
     // TODO
     return '?';
+}
+
+std::string GInteractor::getName() const {
+    if (_name.empty()) {
+        return getDefaultInteractorName();
+    } else {
+        return _name;
+    }
 }
 
 double GInteractor::getPreferredHeight() const {
@@ -326,6 +311,11 @@ void GInteractor::setMnemonic(char /* mnemonic */) {
     // empty; use an & before mnemonic character instead
 }
 
+void GInteractor::setName(const std::string& name) {
+    _name = name;
+    // TODO: getWidget()->setObjectName() ?
+}
+
 void GInteractor::setPreferredHeight(double height) {
     setPreferredSize(getPreferredWidth(), height);
 }
@@ -382,4 +372,43 @@ void GInteractor::setX(double x) {
 
 void GInteractor::setY(double y) {
     setLocation(getX(), y);
+}
+
+
+_Internal_QWidget::_Internal_QWidget()
+        : _minimumSize(-1, -1),
+          _preferredSize(-1, -1) {
+    // empty
+}
+
+QSize _Internal_QWidget::getMinimumSize() const {
+    return QSize((int) _minimumSize.getWidth(), (int) _minimumSize.getHeight());
+}
+
+bool _Internal_QWidget::hasMinimumSize() const {
+    return _minimumSize.getWidth() >= 0 && _minimumSize.getHeight() >= 0;
+}
+
+QSize _Internal_QWidget::getPreferredSize() const {
+    return QSize((int) _preferredSize.getWidth(), (int) _preferredSize.getHeight());
+}
+
+bool _Internal_QWidget::hasPreferredSize() const {
+    return _preferredSize.getWidth() >= 0 && _preferredSize.getHeight() >= 0;
+}
+
+void _Internal_QWidget::setMinimumSize(double width, double height) {
+    _minimumSize = GDimension(width, height);
+}
+
+void _Internal_QWidget::setMinimumSize(const QSize& size) {
+    setMinimumSize(size.width(), size.height());
+}
+
+void _Internal_QWidget::setPreferredSize(double width, double height) {
+    _preferredSize = GDimension(width, height);
+}
+
+void _Internal_QWidget::setPreferredSize(const QSize& size) {
+    setPreferredSize(size.width(), size.height());
 }

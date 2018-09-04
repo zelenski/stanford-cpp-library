@@ -3,6 +3,8 @@
  * ----------------------
  *
  * @author Marty Stepp
+ * @version 2018/09/04
+ * - added double-click event support
  * @version 2018/08/23
  * - renamed to gradiobutton.cpp to replace Java version
  * @version 2018/06/25
@@ -13,35 +15,6 @@
 #include "gthread.h"
 #include "gwindow.h"
 #include "strlib.h"
-
-_Internal_QRadioButton::_Internal_QRadioButton(GRadioButton* gradioButton, bool checked, QWidget* parent)
-        : QRadioButton(parent),
-          _gradioButton(gradioButton) {
-    setChecked(checked);
-    // We handle the clicked signal rather than toggled because, in a radio button group,
-    // the toggled signal will fire twice: once for the radio button clicked, and once
-    // for the other button that was unchecked.
-    connect(this, SIGNAL(clicked()), this, SLOT(handleClick()));
-}
-
-void _Internal_QRadioButton::handleClick() {
-    GEvent changeEvent(
-                /* class  */ CHANGE_EVENT,
-                /* type   */ STATE_CHANGED,
-                /* name   */ "change",
-                /* source */ _gradioButton);
-    changeEvent.setActionCommand(_gradioButton->getActionCommand());
-    _gradioButton->fireEvent(changeEvent);
-}
-
-QSize _Internal_QRadioButton::sizeHint() const {
-    if (hasPreferredSize()) {
-        return getPreferredSize();
-    } else {
-        return QRadioButton::sizeHint();
-    }
-}
-
 
 Map<std::string, QButtonGroup*> GRadioButton::_buttonGroups;
 
@@ -96,12 +69,24 @@ void GRadioButton::removeActionListener() {
     removeEventListener("change");
 }
 
+void GRadioButton::removeDoubleClickListener() {
+    removeEventListener("doubleclick");
+}
+
 void GRadioButton::setActionListener(GEventListener func) {
     setEventListener("change", func);
 }
 
 void GRadioButton::setActionListener(GEventListenerVoid func) {
     setEventListener("change", func);
+}
+
+void GRadioButton::setDoubleClickListener(GEventListener func) {
+    setEventListener("doubleclick", func);
+}
+
+void GRadioButton::setDoubleClickListener(GEventListenerVoid func) {
+    setEventListener("doubleclick", func);
 }
 
 void GRadioButton::setChecked(bool checked) {
@@ -127,4 +112,49 @@ QButtonGroup* GRadioButton::getButtonGroup(const std::string& group) {
         });
     }
     return _buttonGroups[group];
+}
+
+
+_Internal_QRadioButton::_Internal_QRadioButton(GRadioButton* gradioButton, bool checked, QWidget* parent)
+        : QRadioButton(parent),
+          _gradioButton(gradioButton) {
+    setChecked(checked);
+    // We handle the clicked signal rather than toggled because, in a radio button group,
+    // the toggled signal will fire twice: once for the radio button clicked, and once
+    // for the other button that was unchecked.
+    connect(this, SIGNAL(clicked()), this, SLOT(handleClick()));
+}
+
+void _Internal_QRadioButton::handleClick() {
+    GEvent changeEvent(
+                /* class  */ CHANGE_EVENT,
+                /* type   */ STATE_CHANGED,
+                /* name   */ "change",
+                /* source */ _gradioButton);
+    changeEvent.setActionCommand(_gradioButton->getActionCommand());
+    _gradioButton->fireEvent(changeEvent);
+}
+
+void _Internal_QRadioButton::mouseDoubleClickEvent(QMouseEvent* event) {
+    QWidget::mouseDoubleClickEvent(event);   // call super
+    emit doubleClicked();
+    if (!_gradioButton->isAcceptingEvent("doubleclick")) return;
+    GEvent mouseEvent(
+                /* class  */ MOUSE_EVENT,
+                /* type   */ MOUSE_DOUBLE_CLICKED,
+                /* name   */ "doubleclick",
+                /* source */ _gradioButton);
+    mouseEvent.setActionCommand(_gradioButton->getActionCommand());
+    mouseEvent.setButton((int) event->button());
+    mouseEvent.setX(event->x());
+    mouseEvent.setY(event->y());
+    _gradioButton->fireEvent(mouseEvent);
+}
+
+QSize _Internal_QRadioButton::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QRadioButton::sizeHint();
+    }
 }

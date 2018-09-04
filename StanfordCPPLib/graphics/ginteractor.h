@@ -21,24 +21,8 @@
 #include "gobservable.h"
 #include "gtypes.h"
 
-class GWindow;   // forward declaration
-
-class _Internal_QWidget {
-public:
-    _Internal_QWidget();
-    virtual QSize getMinimumSize() const;
-    virtual bool hasMinimumSize() const;
-    virtual QSize getPreferredSize() const;
-    virtual bool hasPreferredSize() const;
-    virtual void setMinimumSize(double width, double height);
-    virtual void setMinimumSize(const QSize& size);
-    virtual void setPreferredSize(double width, double height);
-    virtual void setPreferredSize(const QSize& size);
-
-private:
-    GDimension _minimumSize;
-    GDimension _preferredSize;
-};
+class GWindow;
+class _Internal_QWidget;
 
 /*
  * ...
@@ -66,6 +50,7 @@ public:
     virtual std::string getForeground() const;
     virtual int getForegroundInt() const;
     virtual double getHeight() const;
+    virtual int getID() const;
     virtual std::string getIcon() const;
     virtual _Internal_QWidget* getInternalWidget() const = 0;
     virtual GPoint getLocation() const;
@@ -73,6 +58,7 @@ public:
     virtual GDimension getMinimumSize() const;
     virtual double getMinimumWidth() const;
     virtual char getMnemonic() const;
+    virtual std::string getName() const;
     virtual double getPreferredHeight() const;
     virtual GDimension getPreferredSize() const;
     virtual double getPreferredWidth() const;
@@ -106,6 +92,7 @@ public:
     virtual void setMinimumSize(double width, double height);
     virtual void setMinimumSize(const GDimension& size);
     virtual void setMnemonic(char mnemonic) Q_DECL_DEPRECATED;
+    virtual void setName(const std::string& name);
     virtual void setPreferredHeight(double height);
     virtual void setPreferredSize(double width, double height);
     virtual void setPreferredSize(const GDimension& size);
@@ -119,13 +106,40 @@ public:
     virtual void setY(double y);
 
 protected:
+    virtual std::string getDefaultInteractorName() const;
     virtual QWidget* getInternalParent(QWidget* parent) const;
     virtual std::string normalizeAccelerator(const std::string& accelerator) const;
 
     std::string _actionCommand;
     std::string _icon;
+    std::string _name;
+    int _id;
 
     friend class GWindow;
+    friend class _Internal_QWidget;
+
+private:
+    static int _interactorCount;
+};
+
+
+class _Internal_QWidget {
+public:
+    _Internal_QWidget();
+    virtual QSize getMinimumSize() const;
+    virtual bool hasMinimumSize() const;
+    virtual QSize getPreferredSize() const;
+    virtual bool hasPreferredSize() const;
+    virtual void setMinimumSize(double width, double height);
+    virtual void setMinimumSize(const QSize& size);
+    virtual void setPreferredSize(double width, double height);
+    virtual void setPreferredSize(const QSize& size);
+
+private:
+    GDimension _minimumSize;
+    GDimension _preferredSize;
+
+    friend class GInteractor;
 };
 
 /*
@@ -158,7 +172,6 @@ private:
     _Internal_QWidget* _iqwidget;
     T* _widget;
 };
-
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 

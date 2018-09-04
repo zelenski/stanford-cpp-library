@@ -107,7 +107,8 @@ int hashCode(const GDimension& dim);
 enum HorizontalAlignment {
     ALIGN_CENTER,
     ALIGN_LEFT,
-    ALIGN_RIGHT
+    ALIGN_RIGHT,
+    ALIGN_HORIZONTAL_STRETCH
 };
 
 /*
@@ -117,7 +118,8 @@ enum HorizontalAlignment {
 enum VerticalAlignment {
     ALIGN_MIDDLE,
     ALIGN_TOP,
-    ALIGN_BOTTOM
+    ALIGN_BOTTOM,
+    ALIGN_VERTICAL_STRETCH
 };
 
 /*

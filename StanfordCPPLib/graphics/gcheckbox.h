@@ -3,6 +3,8 @@
  * -----------------
  *
  * @author Marty Stepp
+ * @version 2018/09/04
+ * - added double-click event support
  * @version 2018/08/23
  * - renamed to gcheckbox.h to replace Java version
  * @version 2018/06/29
@@ -16,7 +18,10 @@
 
 #include <functional>
 #include <string>
+#include <QWindow>
+#include <QEvent>
 #include <QCheckBox>
+#include <QMouseEvent>
 #include <QSize>
 #include <QWidget>
 #include "ginteractor.h"
@@ -38,8 +43,11 @@ public:
     virtual bool isChecked() const;
     virtual bool isSelected() const;
     virtual void removeActionListener();
+    virtual void removeDoubleClickListener();
     virtual void setActionListener(GEventListener func);
     virtual void setActionListener(GEventListenerVoid func);
+    virtual void setDoubleClickListener(GEventListener func);
+    virtual void setDoubleClickListener(GEventListenerVoid func);
     virtual void setChecked(bool checked);
     virtual void setSelected(bool selected);
     virtual void setText(const std::string& text);
@@ -60,8 +68,14 @@ public:
     _Internal_QCheckBox(GCheckBox* gcheckBox, bool checked = false, QWidget* parent = nullptr);
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
+signals:
+    void doubleClicked();
+
 public slots:
     void handleStateChange(int);
+
+protected:
+    void mouseDoubleClickEvent(QMouseEvent* e) Q_DECL_OVERRIDE;
 
 private:
     GCheckBox* _gcheckBox;
