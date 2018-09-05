@@ -13,31 +13,6 @@
 #include "gthread.h"
 #include "gwindow.h"
 
-_Internal_QSlider::_Internal_QSlider(GSlider* gslider, QWidget* parent)
-        : QSlider(Qt::Horizontal, parent),
-          _gslider(gslider) {
-    connect(this, SIGNAL(valueChanged(int)), this, SLOT(handleChange(int)));
-}
-
-void _Internal_QSlider::handleChange(int /* value */) {
-    GEvent changeEvent(
-                /* class  */ CHANGE_EVENT,
-                /* type   */ STATE_CHANGED,
-                /* name   */ "change",
-                /* source */ _gslider);
-    changeEvent.setActionCommand(_gslider->getActionCommand());
-    _gslider->fireEvent(changeEvent);
-}
-
-QSize _Internal_QSlider::sizeHint() const {
-    if (hasPreferredSize()) {
-        return getPreferredSize();
-    } else {
-        return QSlider::sizeHint();
-    }
-}
-
-
 const int GSlider::DEFAULT_MIN_VALUE = 0;
 const int GSlider::DEFAULT_MAX_VALUE = 100;
 const int GSlider::DEFAULT_INITIAL_VALUE = 50;
@@ -137,4 +112,30 @@ void GSlider::setValue(int value) {
     GThread::runOnQtGuiThread([this, value]() {
         _iqslider->setValue(value);
     });
+}
+
+
+_Internal_QSlider::_Internal_QSlider(GSlider* gslider, QWidget* parent)
+        : QSlider(Qt::Horizontal, parent),
+          _gslider(gslider) {
+    setObjectName(QString::fromStdString("_Internal_QSlider_" + integerToString(gslider->getID())));
+    connect(this, SIGNAL(valueChanged(int)), this, SLOT(handleChange(int)));
+}
+
+void _Internal_QSlider::handleChange(int /* value */) {
+    GEvent changeEvent(
+                /* class  */ CHANGE_EVENT,
+                /* type   */ STATE_CHANGED,
+                /* name   */ "change",
+                /* source */ _gslider);
+    changeEvent.setActionCommand(_gslider->getActionCommand());
+    _gslider->fireEvent(changeEvent);
+}
+
+QSize _Internal_QSlider::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QSlider::sizeHint();
+    }
 }

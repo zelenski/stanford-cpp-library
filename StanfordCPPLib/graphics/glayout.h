@@ -25,6 +25,9 @@ public:
     static bool contains(QLayout* layout, QWidget* widget);
     static void forceUpdate(GInteractor* interactor);
     static void forceUpdate(QWidget* widget);
+    static QSize getProperSize(QLayout* layout);
+    static QSize getPreferredSize(QWidget* widget);
+    static QSize getProperSize(QWidget* widget);
     static void invalidateLayout(QLayout* layout);
     static Position toPosition(const std::string& positionName);
 

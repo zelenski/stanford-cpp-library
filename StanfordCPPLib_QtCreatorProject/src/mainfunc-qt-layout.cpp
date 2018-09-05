@@ -62,6 +62,7 @@ void testQlayout() {
     window->addToRegion(center, "Center");
 
     GContainer* east = new GContainer(GContainer::LAYOUT_FLOW_VERTICAL);
+    east->setBackground("cyan");
     GContainer* east1 = new GContainer(GContainer::LAYOUT_FLOW_HORIZONTAL);
     GContainer* east2 = new GContainer(GContainer::LAYOUT_FLOW_HORIZONTAL);
     east->add(east1);
@@ -82,12 +83,12 @@ void testQlayout() {
     south->add(new GButton("r0c1"));
     south->add(new GButton("r0c2"));
     south->add(new GButton("r1c0"));
-    south->add(new GButton("r1 long\ntall c1"));
-    south->add(new GButton("r1c2"));
-    south->add(new GButton("r2c0"));
-    south->add(new GButton("r2 long c1"));
-    south->add(new GButton("r2 ok c2"));
-    south->add(new GButton("r3 ok c0\ntall\ntall!"));
+    south->addToGrid(new GButton("r1 c1 row/colspan\ntall BOOYAH\nYAY!!!!!"), 1, 1, 2, 2);
+//    south->add(new GButton("r1c2"));
+    south->addToGrid(new GButton("r2c0"), 2, 0);
+//    south->add(new GButton("r2 long c1"));
+//    south->add(new GButton("r2 ok c2"));
+    south->addToGrid(new GButton("r3 ok c0\ntall\ntall!"), 3, 0);
     south->add(new GButton("r3 ok c1"));
     south->add(new GButton("r3 ok c2"));
     south->setHorizontalAlignment(ALIGN_RIGHT);

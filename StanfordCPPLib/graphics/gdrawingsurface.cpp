@@ -102,13 +102,13 @@ void GDrawingSurface::draw(GObject& gobj, double x, double y) {
 }
 
 void GDrawingSurface::drawArc(double x, double y, double width, double height, double start, double sweep) {
-    GArc* arc = new GArc(x, y, width, height, start, sweep);
+    GArc arc(x, y, width, height, start, sweep);
     initializeGObject(arc);
     draw(arc);
 }
 
 void GDrawingSurface::drawImage(const std::string& filename, double x, double y) {
-    GImage* image = new GImage(filename, x, y);
+    GImage image(filename, x, y);
     draw(image);
 }
 
@@ -117,7 +117,7 @@ void GDrawingSurface::drawLine(const GPoint& p0, const GPoint& p1) {
 }
 
 void GDrawingSurface::drawLine(double x0, double y0, double x1, double y1) {
-    GLine* line = new GLine(x0, y0, x1, y1);
+    GLine line(x0, y0, x1, y1);
     initializeGObject(line);
     draw(line);
 }
@@ -127,7 +127,7 @@ void GDrawingSurface::drawOval(const GRectangle& bounds) {
 }
 
 void GDrawingSurface::drawOval(double x, double y, double width, double height) {
-    GOval* oval = new GOval(x, y, width, height);
+    GOval oval(x, y, width, height);
     initializeGObject(oval);
     draw(oval);
 }
@@ -156,13 +156,13 @@ void GDrawingSurface::drawPixel(double x, double y, const std::string& color) {
 }
 
 void GDrawingSurface::drawPolygon(std::initializer_list<double> coords) {
-    GPolygon* polygon = new GPolygon(coords);
+    GPolygon polygon(coords);
     initializeGObject(polygon);
     draw(polygon);
 }
 
 void GDrawingSurface::drawPolygon(std::initializer_list<GPoint> points) {
-    GPolygon* polygon = new GPolygon(points);
+    GPolygon polygon(points);
     initializeGObject(polygon);
     draw(polygon);
 }
@@ -172,19 +172,19 @@ void GDrawingSurface::drawRect(const GRectangle& bounds) {
 }
 
 void GDrawingSurface::drawRect(double x, double y, double width, double height) {
-    GRect* rect = new GRect(x, y, width, height);
+    GRect rect(x, y, width, height);
     initializeGObject(rect);
     draw(rect);
 }
 
 void GDrawingSurface::drawString(const std::string& text, double x, double y) {
-    GText* str = new GText(text, x, y);
+    GText str(text, x, y);
     initializeGObject(str);
     draw(str);
 }
 
 void GDrawingSurface::fillArc(double x, double y, double width, double height, double start, double sweep) {
-    GArc* arc = new GArc(x, y, width, height, start, sweep);
+    GArc arc(x, y, width, height, start, sweep);
     initializeGObject(arc, /* filled */ true);
     draw(arc);
 }
@@ -194,13 +194,13 @@ void GDrawingSurface::fillOval(const GRectangle& bounds) {
 }
 
 void GDrawingSurface::fillOval(double x, double y, double width, double height) {
-    GOval* oval = new GOval(x, y, width, height);
+    GOval oval(x, y, width, height);
     initializeGObject(oval, /* filled */ true);
     draw(oval);
 }
 
 void GDrawingSurface::fillPolygon(std::initializer_list<double> coords) {
-    GPolygon* polygon = new GPolygon(coords);
+    GPolygon polygon(coords);
     initializeGObject(polygon, /* filled */ true);
     draw(polygon);
 }
@@ -210,7 +210,7 @@ void GDrawingSurface::fillRect(const GRectangle& bounds) {
 }
 
 void GDrawingSurface::fillRect(double x, double y, double width, double height) {
-    GRect* rect = new GRect(x, y, width, height);
+    GRect rect(x, y, width, height);
     initializeGObject(rect, /* filled */ true);
     draw(rect);
 }
@@ -309,6 +309,10 @@ int GDrawingSurface::getRGB(double x, double y) const {
 
 std::string GDrawingSurface::getRGBString(double x, double y) const {
     return GColor::convertRGBToColor(getPixel(x, y));
+}
+
+void GDrawingSurface::initializeGObject(GObject& obj, bool fill) {
+    initializeGObject(&obj, fill);
 }
 
 void GDrawingSurface::initializeGObject(GObject* obj, bool fill) {

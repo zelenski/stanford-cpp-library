@@ -3,6 +3,8 @@
  * ---------------
  *
  * @author Marty Stepp
+ * @version 2018/09/05
+ * - refactored to use a border layout GContainer "content pane" for storing all interactors
  * @version 2018/08/23
  * - renamed to gwindow.h to replace Java version
  * @version 2018/07/29
@@ -23,6 +25,7 @@
 #include <QMainWindow>
 #include <QRect>
 #include "gcanvas.h"
+#include "gcontainer.h"
 #include "gdrawingsurface.h"
 #include "geventqueue.h"
 #include "ginteractor.h"
@@ -41,11 +44,11 @@ class _Internal_QMainWindow;
 class GWindow : public GObservable, public virtual GForwardDrawingSurface {
 public:
     enum Region {
-        REGION_CENTER,
-        REGION_EAST,
-        REGION_NORTH,
-        REGION_SOUTH,
-        REGION_WEST
+        REGION_CENTER = GContainer::REGION_CENTER,
+        REGION_EAST = GContainer::REGION_EAST,
+        REGION_NORTH = GContainer::REGION_NORTH,
+        REGION_SOUTH = GContainer::REGION_SOUTH,
+        REGION_WEST = GContainer::REGION_WEST
     };
 
     enum CloseOperation {
@@ -55,8 +58,9 @@ public:
         CLOSE_EXIT
     };
 
-    static const int DEFAULT_WIDTH = 500;
-    static const int DEFAULT_HEIGHT = 300;
+    static const int DEFAULT_WIDTH;
+    static const int DEFAULT_HEIGHT;
+    static const std::string DEFAULT_ICON_FILENAME;
 
     GWindow(double width = 0, double height = 0, bool visible = true);
     virtual ~GWindow();
@@ -189,6 +193,7 @@ public:
     virtual void setTitle(const std::string& title);
     virtual void setVisible(bool visible);
     virtual void setWidth(double width);
+    virtual void setWindowIcon(const std::string& iconFile);
     virtual void setWindowListener(GEventListener func);
     virtual void setWindowListener(GEventListenerVoid func);
     virtual void setWindowTitle(const std::string& title);
@@ -216,17 +221,13 @@ private:
     static _Internal_QMainWindow* _lastWindow;
 
     virtual void ensureForwardTarget() Q_DECL_OVERRIDE;
-    QLayout* layoutForRegion(Region region) const;
-    QLayout* layoutForRegion(const std::string& region) const;
-    static std::string regionToString(Region region);
     static Region stringToRegion(const std::string& regionStr);
 
     _Internal_QMainWindow* _iqmainwindow;
+    GContainer* _contentPane;
     GCanvas* _canvas;
     bool _resizable;
     CloseOperation _closeOperation;
-    Map<Region, HorizontalAlignment> _halignMap;
-    Map<Region, VerticalAlignment> _valignMap;
     Map<std::string, QMenu*> _menuMap;
     Map<std::string, QAction*> _menuActionMap;
 
@@ -310,20 +311,16 @@ void pause(double milliseconds);
  */
 void repaint();
 
+
 // Internal class; not to be used by clients.
 class _Internal_QMainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    static const int SPACING;
-    static const int MARGIN;
-
     _Internal_QMainWindow(GWindow* gwindow, QWidget* parent = nullptr);
-    // virtual bool event(QEvent* event) Q_DECL_OVERRIDE;
 
     virtual void changeEvent(QEvent* event) Q_DECL_OVERRIDE;
     virtual void closeEvent(QCloseEvent* event) Q_DECL_OVERRIDE;
-    virtual void fixMargins();
     virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
     virtual void resizeEvent(QResizeEvent* event) Q_DECL_OVERRIDE;
     virtual void timerEvent(QTimerEvent* event) Q_DECL_OVERRIDE;
@@ -335,29 +332,6 @@ public slots:
     void handleMenuAction(const std::string& menu, const std::string& item);
 
 private:
-    // border layout regions for N/S/W/E/C:
-    // +------------------------+
-    // |         north          |
-    // |------------------------|
-    // |         middle         |
-    // |+----------------------+|
-    // || west | center | east ||
-    // |+----------------------+|
-    // |------------------------|
-    // |         south          |
-    // +------------------------+
-    // sizing/stretching rules:
-    // - N/S expand horizontally
-    // - W/E expand vertically
-    // - C takes all remaining space
-    // - each widget other than Center widget appears at its preferred ("hinted") size
-    QVBoxLayout* _overallLayout;
-    QHBoxLayout* _northLayout;
-    QHBoxLayout* _southLayout;
-    QVBoxLayout* _westLayout;
-    QVBoxLayout* _eastLayout;
-    QHBoxLayout* _centerLayout;
-    QHBoxLayout* _middleLayout;
     GWindow* _gwindow;
     int _timerID;
 

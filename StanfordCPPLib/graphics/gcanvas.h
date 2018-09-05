@@ -297,6 +297,7 @@ public:
     virtual void mouseReleaseEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
     virtual void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
     virtual void resizeEvent(QResizeEvent* event) Q_DECL_OVERRIDE;
+    virtual void setCanvasSize(double width, double height);
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
     virtual void wheelEvent(QWheelEvent* event) Q_DECL_OVERRIDE;
 

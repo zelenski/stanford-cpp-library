@@ -2,6 +2,8 @@
  * File: gwindow.cpp
  * -----------------
  *
+ * @version 2018/09/05
+ * - refactored to use a border layout GContainer "content pane" for storing all interactors
  * @version 2018/08/23
  * - renamed to gwindow.h to replace Java version
  * @version 2018/07/03
@@ -27,196 +29,15 @@
 #include "qtgui.h"
 #include "strlib.h"
 
-const int _Internal_QMainWindow::SPACING = 5;
-const int _Internal_QMainWindow::MARGIN = 5;
-
-_Internal_QMainWindow::_Internal_QMainWindow(GWindow* gwindow, QWidget* parent)
-        : QMainWindow(parent),
-          _gwindow(gwindow),
-          _timerID(-1) {
-    GThread::ensureThatThisIsTheQtGuiThread("GWindow internal initialization");
-
-    QWidget* dummyWidget = new QWidget(this);   // TODO: memory leak?
-
-    _overallLayout = new QVBoxLayout;   // TODO: set parent? to dummyWidget or this?
-    _northLayout   = new QHBoxLayout;
-    _southLayout   = new QHBoxLayout;
-    _westLayout    = new QVBoxLayout;
-    _eastLayout    = new QVBoxLayout;
-    _centerLayout  = new QHBoxLayout;
-    _middleLayout  = new QHBoxLayout;
-
-    // squish margins/padding
-    _overallLayout->setSpacing(0);
-    _northLayout->setSpacing(SPACING);
-    _southLayout->setSpacing(SPACING);
-    _westLayout->setSpacing(SPACING);
-    _eastLayout->setSpacing(SPACING);
-    _centerLayout->setSpacing(0);
-    _middleLayout->setSpacing(0);
-
-    _overallLayout->setMargin(0);
-    _northLayout->setMargin(0);
-    _southLayout->setMargin(0);
-    _westLayout->setMargin(0);
-    _eastLayout->setMargin(0);
-    _centerLayout->setMargin(0);
-    _middleLayout->setMargin(0);
-
-//    _overallLayout->setContentsMargins(0, 0, 0, 0);
-//    _northLayout->setContentsMargins(0, 0, 0, 0);
-//    _southLayout->setContentsMargins(0, 0, 0, 0);
-//    _westLayout->setContentsMargins(0, 0, 0, 0);
-//    _eastLayout->setContentsMargins(0, 0, 0, 0);
-//    _centerLayout->setContentsMargins(0, 0, 0, 0);
-//    _middleLayout->setContentsMargins(0, 0, 0, 0);
-
-    _northLayout->addStretch(99);
-    _northLayout->addStretch(99);
-    _southLayout->addStretch(99);
-    _southLayout->addStretch(99);
-    _westLayout->addStretch(99);
-    _westLayout->addStretch(99);
-    _eastLayout->addStretch(99);
-    _eastLayout->addStretch(99);
-
-    _overallLayout->addLayout(_northLayout, /* stretch */ 0);
-    _middleLayout->addLayout(_westLayout, /* stretch */ 0);
-    _middleLayout->addLayout(_centerLayout, /* stretch */ 99);
-    _middleLayout->addLayout(_eastLayout, /* stretch */ 0);
-    _overallLayout->addLayout(_middleLayout, /* stretch */ 99);
-    _overallLayout->addLayout(_southLayout, /* stretch */ 0);
-    dummyWidget->setLayout(_overallLayout);
-    layout()->setSpacing(0);
-    layout()->setMargin(0);
-//    layout()->setContentsMargins(0, 0, 0, 0);
-
-    setCentralWidget(dummyWidget);
-}
-
-//bool _Internal_QMainWindow::event(QEvent* event) {
-//    // TODO
-//    if (event->type() == (QEvent::Type) (QEvent::User + 106)) {
-//        // cout << "user event! type=" << event->type() << endl;
-//    }
-
-//    return QMainWindow::event(event);
-//}
-
-void _Internal_QMainWindow::changeEvent(QEvent* event) {
-    QMainWindow::changeEvent(event);   // call super
-    if (event->type() != QEvent::WindowStateChange) {
-        return;
-    }
-
-    // https://doc.qt.io/Qt-5/qt.html#WindowState-enum
-    QWindowStateChangeEvent* stateChangeEvent = static_cast<QWindowStateChangeEvent*>(event);
-    Qt::WindowStates state = windowState();
-    bool wasMaximized = (stateChangeEvent->oldState() & Qt::WindowMaximized) != 0;
-    bool wasMinimized = (stateChangeEvent->oldState() & Qt::WindowMinimized) != 0;
-    bool isMaximized = (state & Qt::WindowMaximized) != 0;
-    bool isMinimized = (state & Qt::WindowMinimized) != 0;
-    if (!wasMaximized && isMaximized) {
-        _gwindow->fireGEvent(stateChangeEvent, WINDOW_MAXIMIZED, "maximize");
-    } else if (!wasMinimized && isMinimized) {
-        _gwindow->fireGEvent(stateChangeEvent, WINDOW_MINIMIZED, "minimize");
-    } else if ((wasMinimized || wasMaximized) && !isMinimized && !isMaximized) {
-        _gwindow->fireGEvent(stateChangeEvent, WINDOW_RESTORED, "restore");
-    }
-}
-
-void _Internal_QMainWindow::closeEvent(QCloseEvent* event) {
-    // send "closing" event before window closes
-    _gwindow->fireGEvent(event, WINDOW_CLOSING, "closing");
-
-    GWindow::CloseOperation closeOp = _gwindow->getCloseOperation();
-    if (closeOp == GWindow::CLOSE_DO_NOTHING) {
-        event->ignore();
-        return;
-    }
-
-    // send "close" event after window closes
-    event->accept();
-    QMainWindow::closeEvent(event);   // call super
-    _gwindow->fireGEvent(event, WINDOW_CLOSED, "close");
-
-    if (closeOp == GWindow::CLOSE_EXIT) {
-        // exit app
-        QtGui::instance()->exitGraphics();
-    }
-}
-
-void _Internal_QMainWindow::fixMargins() {
-//    _northLayout->setSpacing(_northLayout->isEmpty() ? 0 : SPACING);
-//    _southLayout->setSpacing(_southLayout->isEmpty() ? 0 : SPACING);
-//    _westLayout->setSpacing(_westLayout->isEmpty() ? 0 : SPACING);
-//    _eastLayout->setSpacing(_eastLayout->isEmpty() ? 0 : SPACING);
-
-    _northLayout->setMargin(_northLayout->isEmpty() ? 0 : MARGIN);
-    _southLayout->setMargin(_southLayout->isEmpty() ? 0 : MARGIN);
-    _westLayout->setMargin(_westLayout->isEmpty() ? 0 : MARGIN);
-    _eastLayout->setMargin(_eastLayout->isEmpty() ? 0 : MARGIN);
-}
-
-void _Internal_QMainWindow::handleMenuAction(const std::string& menu, const std::string& item) {
-    GEvent actionEvent(
-                /* class  */ ACTION_EVENT,
-                /* type   */ ACTION_MENU,
-                /* name   */ "actionMenu",
-                /* source */ _gwindow);
-    actionEvent.setActionCommand(menu + "/" + item);
-    _gwindow->fireEvent(actionEvent);
-}
-
-void _Internal_QMainWindow::keyPressEvent(QKeyEvent* event) {
-    QMainWindow::keyPressEvent(event);   // call super
-    _gwindow->processKeyPressEventInternal(event);
-}
-
-void _Internal_QMainWindow::resizeEvent(QResizeEvent* event) {
-    QMainWindow::resizeEvent(event);   // call super
-    _gwindow->fireGEvent(event, WINDOW_RESIZED, "resize");
-}
-
-void _Internal_QMainWindow::timerEvent(QTimerEvent* event) {
-    QMainWindow::timerEvent(event);   // call super
-    _gwindow->fireGEvent(event, TIMER_TICKED, "timer");
-}
-
-bool _Internal_QMainWindow::timerExists() {
-    return _timerID >= 0;
-}
-
-void _Internal_QMainWindow::timerStart(double ms) {
-    // TODO: start from Qt GUI thread?
-    // QTimer* timer = new QTimer(this);
-    // connect(timer, SIGNAL(timeout()), this, SLOT(processTimerEvent()));
-    // timer->start((int) ms);
-    // TODO: when to free timer memory?
-
-    if (timerExists()) {
-        timerStop();
-    }
-    _timerID = startTimer((int) ms);
-}
-
-void _Internal_QMainWindow::timerStop() {
-    // TODO: start from Qt GUI thread?
-    // QTimer* timer = new QTimer(this);
-    // connect(timer, SIGNAL(timeout()), this, SLOT(processTimerEvent()));
-    // timer->start((int) ms);
-    // TODO: when to free timer memory?
-
-    if (timerExists()) {
-        killTimer(_timerID);
-        _timerID = -1;
-    }
-}
-
 _Internal_QMainWindow* GWindow::_lastWindow = nullptr;
+const int GWindow::DEFAULT_WIDTH = 500;
+const int GWindow::DEFAULT_HEIGHT = 300;
+const std::string GWindow::DEFAULT_ICON_FILENAME = "splicon-large.png";
 
 GWindow::GWindow(double width, double height, bool visible)
-        : _canvas(nullptr),
+        : _iqmainwindow(nullptr),
+          _contentPane(nullptr),
+          _canvas(nullptr),
           _resizable(true),
           _closeOperation(GWindow::CLOSE_DISPOSE) {
     GThread::runOnQtGuiThread([this, width, height, visible]() {
@@ -224,11 +45,19 @@ GWindow::GWindow(double width, double height, bool visible)
         _iqmainwindow = new _Internal_QMainWindow(this);
         _lastWindow = _iqmainwindow;
 
+        _contentPane = new GContainer(GContainer::LAYOUT_BORDER);
+//        _contentPane->setMargin(0);
+//        _contentPane->setPadding(0);
+//        _contentPane->setSpacing(0);
+        _iqmainwindow->setCentralWidget(_contentPane->getWidget());
+
         // go ahead and set up canvas when window is loaded
-        ensureForwardTarget();
+        // ensureForwardTarget();
         if (width > 0 && height > 0) {
             setSize(width, height);
         }
+
+        setWindowIcon(DEFAULT_ICON_FILENAME);
         setVisible(visible);
 
         _iqmainwindow->updateGeometry();
@@ -256,20 +85,21 @@ void GWindow::_autograder_setPauseEnabled(bool /*enabled*/) {
 }
 
 void GWindow::add(GInteractor* interactor) {
-    addToRegion(interactor, "Center");
+    addToRegion(interactor, REGION_CENTER);
 }
 
 void GWindow::add(GInteractor* interactor, double x, double y) {
     interactor->setLocation(x, y);
-    addToRegion(interactor, "Center");
+    addToRegion(interactor, REGION_CENTER);
 }
 
 void GWindow::add(GInteractor& interactor) {
-    add(&interactor);
+    addToRegion(&interactor, REGION_CENTER);
 }
 
 void GWindow::add(GInteractor& interactor, double x, double y) {
-    add(&interactor, x, y);
+    interactor.setLocation(x, y);
+    addToRegion(&interactor, REGION_CENTER);
 }
 
 void GWindow::add(GObject* obj) {
@@ -414,52 +244,17 @@ QMenu* GWindow::addSubMenu(const std::string& menu, const std::string& submenu) 
 }
 
 void GWindow::addToRegion(GInteractor* interactor, Region region) {
-    QWidget* widget = interactor->getWidget();
-    if (!widget) {
-        return;
-    }
-    QLayout* layout = layoutForRegion(region);
-    if (!layout) {
-        return;
-    }
-
-    // special case: labels in "GText mode" are added to canvas
-    if (layout == _iqmainwindow->_centerLayout && interactor->getType() == "GLabel") {
-        GLabel* label = (GLabel*) interactor;
-        if (label->hasGText()) {
-            add(label->getGText());
-            return;
-        }
-    }
-
-    GThread::runOnQtGuiThread([this, region, widget, layout]() {
-        if (layout == _iqmainwindow->_centerLayout) {
-            // center holds at most one widget
-            if (_canvas && widget != _canvas->getWidget()) {
-                _canvas->setVisible(false);
+    if (region == REGION_CENTER) {
+        // labels in "GText mode" are added as GText objects to canvas
+        if (interactor->getType() == "GLabel") {
+            GLabel* label = (GLabel*) interactor;
+            if (label->hasGText()) {
+                add(label->getGText());
+                return;
             }
-            GLayout::clearLayout(layout);
-            layout->addWidget(widget);
-        } else {
-            // add to end of the list of widgets in this region
-            ((QBoxLayout*) layout)->insertWidget(/* index */ layout->count() - 1, widget);
         }
-        if (!widget->isVisible()) {
-            widget->setVisible(true);
-        }
-
-        // set alignment of widget
-        if (_halignMap.containsKey(region) && _valignMap.containsKey(region)) {
-            layout->setAlignment(widget, toQtAlignment(_halignMap[region]) | toQtAlignment(_valignMap[region]));
-        } else if (_halignMap.containsKey(region)) {
-            layout->setAlignment(widget, toQtAlignment(_halignMap[region]));
-        } else if (_valignMap.containsKey(region)) {
-            layout->setAlignment(widget, toQtAlignment(_valignMap[region]));
-        }
-
-        _iqmainwindow->fixMargins();
-        GLayout::forceUpdate(_iqmainwindow->centralWidget());
-    });
+    }
+    _contentPane->addToRegion(interactor, (GContainer::Region) region);
 }
 
 void GWindow::addToRegion(GInteractor* interactor, const std::string& region) {
@@ -474,24 +269,17 @@ void GWindow::addToRegion(GInteractor& interactor, const std::string& region) {
     addToRegion(&interactor, region);
 }
 
-
 void GWindow::clear() {
-    GThread::runOnQtGuiThread([this]() {
-        clearRegion(REGION_NORTH);
-        clearRegion(REGION_SOUTH);
-        clearRegion(REGION_WEST);
-        clearRegion(REGION_EAST);
-        clearRegion(REGION_CENTER);
-    });
+    _contentPane->clear();
 }
 
 void GWindow::clearCanvas() {
-    GThread::runOnQtGuiThread([this]() {
-        GForwardDrawingSurface::clear();
-        if (_canvas) {
+    if (_canvas) {
+        GThread::runOnQtGuiThread([this]() {
+            GForwardDrawingSurface::clear();
             _canvas->clear();
-        }
-    });
+        });
+    }
 }
 
 void GWindow::clearCanvasObjects() {
@@ -507,33 +295,7 @@ void GWindow::clearCanvasPixels() {
 }
 
 void GWindow::clearRegion(Region region) {
-    QLayout* layout = layoutForRegion(region);
-    if (!layout) {
-        return;
-    }
-
-    GThread::runOnQtGuiThread([this, layout]() {
-        if (layout == _iqmainwindow->_centerLayout) {
-            GLayout::clearLayout(layout);
-
-            // put the canvas back in the center if there is nothing else there
-            // TODO: remove this?
-            if (_canvas) {
-                layout->addWidget(_canvas->getWidget());
-                if (!_canvas->isVisible()) {
-                    _canvas->setVisible(true);
-                }
-            }
-        } else {
-            // for N/S/W/E, leave 2 elements in the layout (stretchers at start/end)
-            while (layout->count() > 2) {
-                layout->removeItem(layout->itemAt(1));
-            }
-        }
-        layout->update();
-        _iqmainwindow->updateGeometry();
-        _iqmainwindow->update();
-    });
+    _contentPane->clearRegion((GContainer::Region) region);
 }
 
 void GWindow::clearRegion(const std::string& region) {
@@ -564,7 +326,7 @@ void GWindow::ensureForwardTarget() {
             _canvas = new GCanvas(_iqmainwindow);
             _canvas->getWidget()->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
             setDrawingForwardTarget(_canvas);
-            addToRegion(_canvas, "Center");
+            addToRegion(_canvas, REGION_CENTER);
         });
     }
 //    else if (!_canvas->isVisible()) {
@@ -638,94 +400,31 @@ double GWindow::getHeight() const {
 }
 
 GDimension GWindow::getPreferredSize() const {
-    // make sure the layout has calculated everybody's position/size
-    GLayout::forceUpdate(_iqmainwindow->centralWidget());
-
-//    QRect windowGeom = _iqmainwindow->geometry();
-//    QRect frameGeom = _iqmainwindow->frameGeometry();
-
-//    QSize centralWidgetSize = _iqmainwindow->centralWidget()->sizeHint();
-//    QRect centralWidgetGeom = _iqmainwindow->centralWidget()->geometry();
-
-//    QSize size = _iqmainwindow->sizeHint();
-    QRect northGeom = _iqmainwindow->_northLayout->geometry();
-    QSize north = _iqmainwindow->_northLayout->sizeHint();
-//    QSize northMin = _iqmainwindow->_northLayout->minimumSize();
-
-//    QRect middleGeom = _iqmainwindow->_middleLayout->geometry();
-//    QSize middle = _iqmainwindow->_middleLayout->sizeHint();
-//    QSize middleMin = _iqmainwindow->_middleLayout->minimumSize();
-
-    QRect southGeom = _iqmainwindow->_southLayout->geometry();
-    QSize south = _iqmainwindow->_southLayout->sizeHint();
-//    QSize southMin = _iqmainwindow->_southLayout->minimumSize();
-
-    QRect westGeom = _iqmainwindow->_westLayout->geometry();
-    QSize west = _iqmainwindow->_westLayout->sizeHint();
-//    QSize westMin = _iqmainwindow->_westLayout->minimumSize();
-
-    QRect eastGeom = _iqmainwindow->_eastLayout->geometry();
-    QSize east = _iqmainwindow->_eastLayout->sizeHint();
-//    QSize eastMin = _iqmainwindow->_eastLayout->minimumSize();
-
-//    QRect centerGeom = _iqmainwindow->_centerLayout->geometry();
-    QSize center = _iqmainwindow->_centerLayout->sizeHint();
-//    QSize centerMin = _iqmainwindow->_centerLayout->minimumSize();
-
-//    QRect canvasGeom = _canvas->getWidget()->geometry();
-//    QSize canvas = _canvas->getWidget()->sizeHint();
-//    QSize canvasMin = _canvas->getWidget()->minimumSize();
-
-//    double northHeight = centerGeom.y();
-//    double westEastPadding = centerGeom.x() - westMin.width();
-//    double northSouthPadding = northHeight - northMin.height();
-
-//    double westEastPadding = _Internal_QMainWindow::MARGIN;
-//    double northSouthPadding = _Internal_QMainWindow::MARGIN;
-
-    double northHeight = northGeom.height() > 0 ? northGeom.height() : north.height();
-    double southHeight = southGeom.height() > 0 ? southGeom.height() : south.height();
-    double westWidth = westGeom.width() > 0 ? westGeom.width() : west.width();
-    double eastWidth = eastGeom.width() > 0 ? eastGeom.width() : east.width();
-
-    double centerWidth = _canvas && _canvas->isVisible() ? _canvas->getPreferredSize().getWidth()
-                                                         : (double) center.width();
-    double centerHeight = _canvas && _canvas->isVisible() ? _canvas->getPreferredSize().getHeight()
-                                                          : (double) center.height();
-
-    double windowPreferredWidth = centerWidth + westWidth + eastWidth;
-    double windowPreferredHeight = centerHeight + northHeight + southHeight;
-    return GDimension(windowPreferredWidth, windowPreferredHeight);
+    return _contentPane->getPreferredSize();
 }
 
 double GWindow::getRegionHeight(Region region) const {
-    return getRegionSize(region).getHeight();
+    return _contentPane->getRegionHeight((GContainer::Region) region);
 }
 
 double GWindow::getRegionHeight(const std::string& region) const {
-    return getRegionHeight(stringToRegion(region));
+    return _contentPane->getRegionHeight(region);
 }
 
 GDimension GWindow::getRegionSize(Region region) const {
-    QLayout* layout = layoutForRegion(region);
-    if (!layout) {
-        return GDimension();
-    } else {
-        QRect geom = layout->geometry();
-        return GDimension(geom.width(), geom.height());
-    }
+    return _contentPane->getRegionSize((GContainer::Region) region);
 }
 
 GDimension GWindow::getRegionSize(const std::string& region) const {
-    return getRegionSize(stringToRegion(region));
+    return _contentPane->getRegionSize(region);
 }
 
 double GWindow::getRegionWidth(Region region) const {
-    return getRegionSize(region).getWidth();
+    return _contentPane->getRegionWidth((GContainer::Region) region);
 }
 
 double GWindow::getRegionWidth(const std::string& region) const {
-    return getRegionWidth(stringToRegion(region));
+    return _contentPane->getRegionWidth(region);
 }
 
 double GWindow::getScreenHeight() {
@@ -796,8 +495,7 @@ bool GWindow::isOpen() const {
 }
 
 bool GWindow::isRepaintImmediately() const {
-    // TODO
-    return true;
+    return _canvas && _canvas->isRepaintImmediately();
 }
 
 bool GWindow::isResizable() const {
@@ -815,39 +513,16 @@ void GWindow::loadCanvasPixels(const std::string& filename) {
 
 void GWindow::pack() {
     setSize(getPreferredSize());
+//    QSize minimumSize = _iqmainwindow->centralWidget()->minimumSizeHint();
+//    setSize(minimumSize.width(), minimumSize.height());
 }
 
 void GWindow::pause(double ms) {
     GThread::sleep(ms);
 }
 
-QLayout* GWindow::layoutForRegion(Region region) const {
-    if (region == REGION_NORTH) {
-        return _iqmainwindow->_northLayout;
-    } else if (region == REGION_SOUTH) {
-        return _iqmainwindow->_southLayout;
-    } else if (region == REGION_WEST) {
-        return _iqmainwindow->_westLayout;
-    } else if (region == REGION_EAST) {
-        return _iqmainwindow->_eastLayout;
-    } else {
-        return _iqmainwindow->_centerLayout;
-    }
-}
-
-QLayout* GWindow::layoutForRegion(const std::string& region) const {
-    return layoutForRegion(stringToRegion(region));
-}
-
 void GWindow::processKeyPressEventInternal(QKeyEvent* /* event */) {
     // empty; override me
-}
-
-std::string GWindow::regionToString(Region region) {
-    return region == REGION_NORTH ? "North" :
-           region == REGION_SOUTH ? "South" :
-           region == REGION_WEST  ? "West" :
-           region == REGION_EAST  ? "East" : "Center";
 }
 
 void GWindow::rememberPosition() {
@@ -867,18 +542,7 @@ void GWindow::remove(GObject& obj) {
 }
 
 void GWindow::remove(GInteractor* interactor) {
-    QWidget* widget = interactor->getWidget();
-    if (!widget) {
-        return;
-    }
-
-    Vector<Region> regions = {REGION_CENTER, REGION_NORTH, REGION_SOUTH, REGION_WEST, REGION_EAST};
-    for (Region region : regions) {
-        QLayout* layout = layoutForRegion(region);
-        if (GLayout::contains(layout, widget)) {
-            removeFromRegion(interactor, region);
-        }
-    }
+    _contentPane->remove(interactor);
 }
 
 void GWindow::remove(GInteractor& interactor) {
@@ -892,17 +556,8 @@ void GWindow::removeClickListener() {
 }
 
 void GWindow::removeFromRegion(GInteractor* interactor, Region region) {
-    QWidget* widget = interactor->getWidget();
-    if (!widget) {
-        return;
-    }
-    QLayout* layout = layoutForRegion(region);
-    if (!layout) {
-        return;
-    }
-
     // special case: labels in "GText mode" are added to canvas
-    if (layout == _iqmainwindow->_centerLayout && interactor->getType() == "GLabel") {
+    if (region == REGION_CENTER && interactor->getType() == "GLabel") {
         GLabel* label = (GLabel*) interactor;
         if (label->hasGText()) {
             remove(label->getGText());
@@ -910,13 +565,7 @@ void GWindow::removeFromRegion(GInteractor* interactor, Region region) {
         }
     }
 
-    GThread::runOnQtGuiThread([this, widget, layout]() {
-        widget->setVisible(false);
-        layout->removeWidget(widget);
-        layout->update();
-        _iqmainwindow->updateGeometry();
-        _iqmainwindow->update();
-    });
+    _contentPane->removeFromRegion(interactor, (GContainer::Region) region);
 }
 
 void GWindow::removeFromRegion(GInteractor* interactor, const std::string& region) {
@@ -973,13 +622,14 @@ void GWindow::saveCanvasPixels(const std::string& filename) {
 }
 
 void GWindow::setBackground(int color) {
+    _contentPane->setBackground(color);
     GThread::runOnQtGuiThread([this, color]() {
         GForwardDrawingSurface::setBackground(color);
-        // TODO: set background of N/S/E/W regions and central region?
     });
 }
 
 void GWindow::setBackground(const std::string& color) {
+    _contentPane->setBackground(color);
     GThread::runOnQtGuiThread([this, color]() {
         GForwardDrawingSurface::setBackground(color);
         // TODO: set background of N/S/E/W regions and central region?
@@ -1089,122 +739,39 @@ void GWindow::setMouseListener(GEventListenerVoid func) {
 }
 
 void GWindow::setRegionAlignment(Region region, HorizontalAlignment halign) {
-    setRegionHorizontalAlignment(region, halign);
+    _contentPane->setRegionAlignment((GContainer::Region) region, halign);
 }
 
 void GWindow::setRegionAlignment(Region region, VerticalAlignment valign) {
-    setRegionVerticalAlignment(region, valign);
+    _contentPane->setRegionAlignment((GContainer::Region) region, valign);
 }
 
 void GWindow::setRegionAlignment(Region region, HorizontalAlignment halign, VerticalAlignment valign) {
-    setRegionHorizontalAlignment(region, halign);
-    setRegionVerticalAlignment(region, valign);
+    _contentPane->setRegionAlignment((GContainer::Region) region, halign, valign);
 }
 
 void GWindow::setRegionAlignment(const std::string& region, const std::string& align) {
-    HorizontalAlignment halignment = toHorizontalAlignment(align);
-    VerticalAlignment valignment = toVerticalAlignment(align);
-    setRegionAlignment(stringToRegion(region), halignment, valignment);
+    _contentPane->setRegionAlignment(region, align);
 }
 
 void GWindow::setRegionAlignment(const std::string& region, const std::string& halign, const std::string& valign) {
-    HorizontalAlignment halignment = toHorizontalAlignment(halign);
-    VerticalAlignment valignment = toVerticalAlignment(valign);
-    setRegionAlignment(stringToRegion(region), halignment, valignment);
+    _contentPane->setRegionAlignment(region, halign, valign);
 }
 
 void GWindow::setRegionHorizontalAlignment(Region region, HorizontalAlignment halign) {
-    QLayout* layout = layoutForRegion(region);
-    if (!layout) {
-        return;
-    }
-
-    GThread::runOnQtGuiThread([this, region, halign, layout]() {
-        _halignMap[region] = halign;
-        if (layout == _iqmainwindow->_centerLayout) {
-            // disallow?
-            return;
-        }
-
-        if (layout == _iqmainwindow->_westLayout || layout == _iqmainwindow->_eastLayout) {
-            // set each widget's horizontal alignment individually
-            Qt::Alignment qtAlign = toQtAlignment(halign);
-            for (int i = 0; i < layout->count(); i++) {
-                QWidget* widget = layout->itemAt(i)->widget();
-                layout->setAlignment(widget, qtAlign);
-            }
-        } else if (layout == _iqmainwindow->_northLayout || layout == _iqmainwindow->_southLayout) {
-            // to align "left", limit first stretch;
-            // to align "right", limit last stretch
-            layout->removeItem(layout->itemAt(0));
-            layout->removeItem(layout->itemAt(layout->count() - 1));
-            if (halign == ALIGN_LEFT) {
-                ((QHBoxLayout*) layout)->insertStretch(0, /* stretch */ 0);
-                ((QHBoxLayout*) layout)->addStretch(/* stretch */ 99);
-            } else if (halign == ALIGN_RIGHT) {
-                ((QHBoxLayout*) layout)->insertStretch(0, /* stretch */ 99);
-                ((QHBoxLayout*) layout)->addStretch(/* stretch */ 0);
-            } else {   // halign == ALIGN_CENTER
-                ((QHBoxLayout*) layout)->insertStretch(0, /* stretch */ 99);
-                ((QHBoxLayout*) layout)->addStretch(/* stretch */ 99);
-            }
-        }
-
-        layout->update();
-        _iqmainwindow->updateGeometry();
-        _iqmainwindow->update();
-    });
+    _contentPane->setRegionHorizontalAlignment((GContainer::Region) region, halign);
 }
 
 void GWindow::setRegionHorizontalAlignment(const std::string& region, const std::string& halign) {
-    setRegionHorizontalAlignment(stringToRegion(region), toHorizontalAlignment(halign));
+    _contentPane->setRegionHorizontalAlignment(region, halign);
 }
 
 void GWindow::setRegionVerticalAlignment(Region region, VerticalAlignment valign) {
-    QLayout* layout = layoutForRegion(region);
-    if (!layout) {
-        return;
-    }
-
-    GThread::runOnQtGuiThread([this, region, valign, layout]() {
-        _valignMap[region] = valign;
-        if (layout == _iqmainwindow->_centerLayout) {
-            // disallow?
-            return;
-        }
-
-        if (layout == _iqmainwindow->_westLayout || layout == _iqmainwindow->_eastLayout) {
-            // to align "top", limit first stretch;
-            // to align "bottom", limit last stretch
-            layout->removeItem(layout->itemAt(0));
-            layout->removeItem(layout->itemAt(layout->count() - 1));
-            if (valign == ALIGN_TOP) {
-                ((QVBoxLayout*) layout)->insertStretch(0, /* stretch */ 0);
-                ((QVBoxLayout*) layout)->addStretch(/* stretch */ 99);
-            } else if (valign == ALIGN_BOTTOM) {
-                ((QVBoxLayout*) layout)->insertStretch(0, /* stretch */ 99);
-                ((QVBoxLayout*) layout)->addStretch(/* stretch */ 0);
-            } else {   // valign == ALIGN_MIDDLE
-                ((QVBoxLayout*) layout)->insertStretch(0, /* stretch */ 99);
-                ((QVBoxLayout*) layout)->addStretch(/* stretch */ 99);
-            }
-        } else if (layout == _iqmainwindow->_northLayout || layout == _iqmainwindow->_southLayout) {
-            // set each widget's vertical alignment individually
-            Qt::Alignment qtAlign = toQtAlignment(valign);
-            for (int i = 0; i < layout->count(); i++) {
-                QWidget* widget = layout->itemAt(i)->widget();
-                layout->setAlignment(widget, qtAlign);
-            }
-        }
-
-        layout->update();
-        _iqmainwindow->updateGeometry();
-        _iqmainwindow->update();
-    });
+    _contentPane->setRegionVerticalAlignment((GContainer::Region) region, valign);
 }
 
 void GWindow::setRegionVerticalAlignment(const std::string& region, const std::string& valign) {
-    setRegionVerticalAlignment(stringToRegion(region), toVerticalAlignment(valign));
+    _contentPane->setRegionVerticalAlignment(region, valign);
 }
 
 void GWindow::setResizable(bool resizable) {
@@ -1271,6 +838,15 @@ void GWindow::setWidth(double width) {
     setSize(width, getHeight());
 }
 
+void GWindow::setWindowIcon(const std::string& iconFile) {
+    if (fileExists(iconFile)) {
+        GThread::runOnQtGuiThread([this, iconFile]() {
+            QIcon qicon(QString::fromStdString(iconFile));
+            _iqmainwindow->setWindowIcon(qicon);
+        });
+    }
+}
+
 void GWindow::setWindowListener(GEventListener func) {
     setEventListeners({"close",
                       "closing",
@@ -1313,13 +889,13 @@ void GWindow::sleep(double ms) {
 
 GWindow::Region GWindow::stringToRegion(const std::string& regionStr) {
     std::string regionLC = toLowerCase(trim(regionStr));
-    if (stringContains(regionLC, "north")) {
+    if (stringContains(regionLC, "north") || stringContains(regionLC, "top")) {
         return GWindow::REGION_NORTH;
-    } else if (stringContains(regionLC, "south")) {
+    } else if (stringContains(regionLC, "south") || stringContains(regionLC, "bottom")) {
         return GWindow::REGION_SOUTH;
-    } else if (stringContains(regionLC, "west")) {
+    } else if (stringContains(regionLC, "west") || stringContains(regionLC, "left")) {
         return GWindow::REGION_WEST;
-    } else if (stringContains(regionLC, "east")) {
+    } else if (stringContains(regionLC, "east") || stringContains(regionLC, "right")) {
         return GWindow::REGION_EAST;
     } else {
         return GWindow::REGION_CENTER;
@@ -1351,7 +927,7 @@ std::string convertRGBToColor(int rgb) {
 }
 
 void exitGraphics() {
-    // TODO
+    QtGui::instance()->exitGraphics();
 }
 
 double getScreenHeight() {
@@ -1376,4 +952,111 @@ void repaint() {
         lastWindow->repaint();
     }
     // TODO: other windows?
+}
+
+
+_Internal_QMainWindow::_Internal_QMainWindow(GWindow* gwindow, QWidget* parent)
+        : QMainWindow(parent),
+          _gwindow(gwindow),
+          _timerID(-1) {
+    GThread::ensureThatThisIsTheQtGuiThread("GWindow internal initialization");
+    setObjectName(QString::fromStdString("_Internal_QMainWindow"));
+}
+
+void _Internal_QMainWindow::changeEvent(QEvent* event) {
+    QMainWindow::changeEvent(event);   // call super
+    if (event->type() != QEvent::WindowStateChange) {
+        return;
+    }
+
+    // https://doc.qt.io/Qt-5/qt.html#WindowState-enum
+    QWindowStateChangeEvent* stateChangeEvent = static_cast<QWindowStateChangeEvent*>(event);
+    Qt::WindowStates state = windowState();
+    bool wasMaximized = (stateChangeEvent->oldState() & Qt::WindowMaximized) != 0;
+    bool wasMinimized = (stateChangeEvent->oldState() & Qt::WindowMinimized) != 0;
+    bool isMaximized = (state & Qt::WindowMaximized) != 0;
+    bool isMinimized = (state & Qt::WindowMinimized) != 0;
+    if (!wasMaximized && isMaximized) {
+        _gwindow->fireGEvent(stateChangeEvent, WINDOW_MAXIMIZED, "maximize");
+    } else if (!wasMinimized && isMinimized) {
+        _gwindow->fireGEvent(stateChangeEvent, WINDOW_MINIMIZED, "minimize");
+    } else if ((wasMinimized || wasMaximized) && !isMinimized && !isMaximized) {
+        _gwindow->fireGEvent(stateChangeEvent, WINDOW_RESTORED, "restore");
+    }
+}
+
+void _Internal_QMainWindow::closeEvent(QCloseEvent* event) {
+    // send "closing" event before window closes
+    _gwindow->fireGEvent(event, WINDOW_CLOSING, "closing");
+
+    GWindow::CloseOperation closeOp = _gwindow->getCloseOperation();
+    if (closeOp == GWindow::CLOSE_DO_NOTHING) {
+        event->ignore();
+        return;
+    }
+
+    // send "close" event after window closes
+    event->accept();
+    QMainWindow::closeEvent(event);   // call super
+    _gwindow->fireGEvent(event, WINDOW_CLOSED, "close");
+
+    if (closeOp == GWindow::CLOSE_EXIT) {
+        // exit app
+        QtGui::instance()->exitGraphics();
+    }
+}
+
+void _Internal_QMainWindow::handleMenuAction(const std::string& menu, const std::string& item) {
+    GEvent actionEvent(
+                /* class  */ ACTION_EVENT,
+                /* type   */ ACTION_MENU,
+                /* name   */ "actionMenu",
+                /* source */ _gwindow);
+    actionEvent.setActionCommand(menu + "/" + item);
+    _gwindow->fireEvent(actionEvent);
+}
+
+void _Internal_QMainWindow::keyPressEvent(QKeyEvent* event) {
+    QMainWindow::keyPressEvent(event);   // call super
+    _gwindow->processKeyPressEventInternal(event);
+}
+
+void _Internal_QMainWindow::resizeEvent(QResizeEvent* event) {
+    QMainWindow::resizeEvent(event);   // call super
+    _gwindow->fireGEvent(event, WINDOW_RESIZED, "resize");
+}
+
+void _Internal_QMainWindow::timerEvent(QTimerEvent* event) {
+    QMainWindow::timerEvent(event);   // call super
+    _gwindow->fireGEvent(event, TIMER_TICKED, "timer");
+}
+
+bool _Internal_QMainWindow::timerExists() {
+    return _timerID >= 0;
+}
+
+void _Internal_QMainWindow::timerStart(double ms) {
+    // TODO: start from Qt GUI thread?
+    // QTimer* timer = new QTimer(this);
+    // connect(timer, SIGNAL(timeout()), this, SLOT(processTimerEvent()));
+    // timer->start((int) ms);
+    // TODO: when to free timer memory?
+
+    if (timerExists()) {
+        timerStop();
+    }
+    _timerID = startTimer((int) ms);
+}
+
+void _Internal_QMainWindow::timerStop() {
+    // TODO: start from Qt GUI thread?
+    // QTimer* timer = new QTimer(this);
+    // connect(timer, SIGNAL(timeout()), this, SLOT(processTimerEvent()));
+    // timer->start((int) ms);
+    // TODO: when to free timer memory?
+
+    if (timerExists()) {
+        killTimer(_timerID);
+        _timerID = -1;
+    }
 }

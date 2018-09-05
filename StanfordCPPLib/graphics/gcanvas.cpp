@@ -82,7 +82,7 @@ void GCanvas::init(double width, double height, int rgbBackground, QWidget* pare
     checkSize("constructor", width, height);
     checkColor("constructor", rgbBackground);
 
-    GThread::runOnQtGuiThread([this, parent, rgbBackground]() {
+    GThread::runOnQtGuiThread([this, rgbBackground, parent]() {
         _iqcanvas = new _Internal_QCanvas(this, getInternalParent(parent));
         _gcompound.setWidget(_iqcanvas);
         _backgroundColor = rgbBackground;
@@ -722,6 +722,8 @@ void GCanvas::toGrid(Grid<int>& grid) const {
 _Internal_QCanvas::_Internal_QCanvas(GCanvas* gcanvas, QWidget* parent)
         : QWidget(parent),
           _gcanvas(gcanvas) {
+    setObjectName(QString::fromStdString("_Internal_QCanvas_" + integerToString(gcanvas->getID())));
+
     // set default white background color
     QPalette pal = palette();
     pal.setColor(QPalette::Background, Qt::white);
@@ -818,6 +820,10 @@ void _Internal_QCanvas::resizeEvent(QResizeEvent* event) {
     QWidget::resizeEvent(event);   // call super
     QSize size = event->size();
     _gcanvas->notifyOfResize(size.width(), size.height());
+}
+
+void _Internal_QCanvas::setCanvasSize(double width, double height) {
+    QWidget::setMinimumSize(QSize((int) width, (int) height));
 }
 
 QSize _Internal_QCanvas::sizeHint() const {

@@ -22,8 +22,8 @@ class _Internal_QContainer;   // forward declaration
  */
 class GContainer : public GInteractor {
 public:
-    static const int MARGIN_DEFAULT = 5;
-    static const int SPACING_DEFAULT = 5;
+    static const int MARGIN_DEFAULT;
+    static const int SPACING_DEFAULT;
 
     enum Layout {
         LAYOUT_NONE,
@@ -32,6 +32,7 @@ public:
         LAYOUT_BORDER,
         LAYOUT_GRID
     };
+
     enum Region {
         REGION_CENTER,
         REGION_EAST,
@@ -45,6 +46,8 @@ public:
     virtual ~GContainer();
     virtual void add(GInteractor* interactor);
     virtual void add(GInteractor& interactor);
+    virtual void addToGrid(GInteractor* interactor, int row, int col, int rowspan = 1, int colspan = 1);
+    virtual void addToGrid(GInteractor& interactor, int row, int col, int rowspan = 1, int colspan = 1);
     virtual void addToRegion(GInteractor* interactor, Region region);
     virtual void addToRegion(GInteractor* interactor, const std::string& region = "Center");
     virtual void addToRegion(GInteractor& interactor, Region region);
@@ -67,6 +70,13 @@ public:
     virtual double getPaddingLeft() const;
     virtual double getPaddingRight() const;
     virtual double getPaddingTop() const;
+    virtual GDimension getPreferredSize() const Q_DECL_OVERRIDE;
+    virtual double getRegionHeight(Region region) const;
+    virtual double getRegionHeight(const std::string& region) const;
+    virtual GDimension getRegionSize(Region region) const;
+    virtual GDimension getRegionSize(const std::string& region) const;
+    virtual double getRegionWidth(Region region) const;
+    virtual double getRegionWidth(const std::string& region) const;
     virtual double getSpacing() const;
     virtual std::string getType() const Q_DECL_OVERRIDE;
     virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
@@ -167,14 +177,17 @@ private:
     Map<GContainer::Region, bool> _regionStretchMap;
 
     virtual void add(QWidget* widget);
+    virtual void addToGrid(QWidget* widget, int row, int col, int rowspan = 1, int colspan = 1);
     virtual void addToRegion(QWidget* widget, GContainer::Region region);
     virtual void clear();
     virtual void clearRegion(GContainer::Region region);
     virtual void fixAlignment(QWidget* widget, GContainer::Region region = GContainer::REGION_CENTER);
+    virtual void fixMargin(QLayout* layout, bool hasStretch = false);
     virtual HorizontalAlignment getHorizontalAlignment() const;
     virtual VerticalAlignment getVerticalAlignment() const;
     virtual GContainer::Layout getLayoutType() const;
     virtual int getMargin() const;
+    virtual QSize getPreferredSize() const Q_DECL_OVERRIDE;
     virtual QLayout* getQLayout() const;
     virtual int getSpacing() const;
     virtual void insert(int i, QWidget* widget);

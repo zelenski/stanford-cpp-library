@@ -15,21 +15,6 @@
 #include "server.h"
 #include "strlib.h"
 
-_Internal_QTextBrowser::_Internal_QTextBrowser(GBrowserPane* gbrowserpane, QWidget* parent)
-        : QTextBrowser(parent),
-          _gbrowserpane(gbrowserpane) {
-    // empty
-}
-
-QSize _Internal_QTextBrowser::sizeHint() const {
-    if (hasPreferredSize()) {
-        return getPreferredSize();
-    } else {
-        return QTextBrowser::sizeHint();
-    }
-}
-
-
 GBrowserPane::GBrowserPane(const std::string& url, QWidget* parent) {
     _iqtextbrowser = new _Internal_QTextBrowser(this, getInternalParent(parent));
     if (!url.empty()) {
@@ -100,4 +85,19 @@ void GBrowserPane::setContentType(const std::string& /* contentType */) {
 
 void GBrowserPane::setText(const std::string& text) {
     _iqtextbrowser->setText(QString::fromStdString(text));
+}
+
+
+_Internal_QTextBrowser::_Internal_QTextBrowser(GBrowserPane* gbrowserpane, QWidget* parent)
+        : QTextBrowser(parent),
+          _gbrowserpane(gbrowserpane) {
+    setObjectName(QString::fromStdString("_Internal_QTextBrowser_" + integerToString(gbrowserpane->getID())));
+}
+
+QSize _Internal_QTextBrowser::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QTextBrowser::sizeHint();
+    }
 }

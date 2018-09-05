@@ -13,31 +13,6 @@
 #include "gthread.h"
 #include "strlib.h"
 
-_Internal_QScrollBar::_Internal_QScrollBar(GScrollBar* gscrollbar, Qt::Orientation orientation, QWidget* parent)
-        : QScrollBar(orientation, parent),
-          _gscrollbar(gscrollbar) {
-    connect(this, SIGNAL(valueChanged(int)), this, SLOT(handleValueChange(int)));
-}
-
-void _Internal_QScrollBar::handleValueChange(int /* value */) {
-    GEvent changeEvent(
-                /* class  */ CHANGE_EVENT,
-                /* type   */ STATE_CHANGED,
-                /* name   */ "change",
-                /* source */ _gscrollbar);
-    changeEvent.setActionCommand(_gscrollbar->getActionCommand());
-    _gscrollbar->fireEvent(changeEvent);
-}
-
-QSize _Internal_QScrollBar::sizeHint() const {
-    if (hasPreferredSize()) {
-        return getPreferredSize();
-    } else {
-        return QScrollBar::sizeHint();
-    }
-}
-
-
 GScrollBar::GScrollBar(GScrollBar::Orientation orientation,
                          int value,
                          int extent,
@@ -145,4 +120,30 @@ void GScrollBar::updateSize() {
             _iqscrollbar->setPreferredSize(getMax() - getMin() + 1, _iqscrollbar->sizeHint().height());
         }
     });
+}
+
+
+_Internal_QScrollBar::_Internal_QScrollBar(GScrollBar* gscrollbar, Qt::Orientation orientation, QWidget* parent)
+        : QScrollBar(orientation, parent),
+          _gscrollbar(gscrollbar) {
+    setObjectName(QString::fromStdString("_Internal_QScrollBar_" + integerToString(gscrollbar->getID())));
+    connect(this, SIGNAL(valueChanged(int)), this, SLOT(handleValueChange(int)));
+}
+
+void _Internal_QScrollBar::handleValueChange(int /* value */) {
+    GEvent changeEvent(
+                /* class  */ CHANGE_EVENT,
+                /* type   */ STATE_CHANGED,
+                /* name   */ "change",
+                /* source */ _gscrollbar);
+    changeEvent.setActionCommand(_gscrollbar->getActionCommand());
+    _gscrollbar->fireEvent(changeEvent);
+}
+
+QSize _Internal_QScrollBar::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QScrollBar::sizeHint();
+    }
 }

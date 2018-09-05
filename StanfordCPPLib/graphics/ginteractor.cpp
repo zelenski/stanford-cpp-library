@@ -27,7 +27,8 @@ GInteractor::GInteractor()
         : _actionCommand(""),
           _icon(""),
           _name(""),
-          _id(-1) {
+          _id(-1),
+          _container(nullptr) {
     QtGui::instance()->initializeQt();   // make sure Qt system is initialized
     _id = ++_interactorCount;            // set ID to number of interactors + 1
 }
@@ -75,6 +76,10 @@ std::string GInteractor::getColor() const {
 int GInteractor::getColorInt() const {
     QColor color = getWidget()->palette().color(getWidget()->foregroundRole());
     return GColor::convertQColorToRGB(color);
+}
+
+GContainer* GInteractor::getContainer() const {
+    return _container;
 }
 
 std::string GInteractor::getDefaultInteractorName() const {
@@ -214,9 +219,11 @@ void GInteractor::setBackground(int rgb) {
 
         // additional palette color settings for GChooser and other widgets
         // TODO: does not totally work for some widgets, e.g. GChooser popup menu
-        palette.setColor(QPalette::Base, QColor(rgb));
-        palette.setColor(QPalette::Active, QPalette::Button, QColor(rgb));
-        palette.setColor(QPalette::Inactive, QPalette::Button, QColor(rgb));
+        if (getType() == "GChooser") {
+            palette.setColor(QPalette::Base, QColor(rgb));
+            palette.setColor(QPalette::Active, QPalette::Button, QColor(rgb));
+            palette.setColor(QPalette::Inactive, QPalette::Button, QColor(rgb));
+        }
 
         getWidget()->setAutoFillBackground(true);
         getWidget()->setPalette(palette);
@@ -245,6 +252,19 @@ void GInteractor::setColor(int rgb) {
 
 void GInteractor::setColor(const std::string& color) {
     setForeground(color);
+}
+
+void GInteractor::setContainer(GContainer* container) {
+    _container = container;
+    if (!container) {
+        // widgets that are not in any container should not be shown on screen
+        // (they will awkwardly hover at (0, 0) if they are shown)
+        QWidget* widget = getWidget();
+        GThread::runOnQtGuiThread([widget]() {
+            widget->setParent(nullptr);
+        });
+        setVisible(false);
+    }
 }
 
 void GInteractor::setEnabled(bool value) {
@@ -341,6 +361,7 @@ void GInteractor::setSize(double width, double height) {
         // setBounds(GRectangle(getX(), getY(), width, height));
         getWidget()->setGeometry((int) getX(), (int) getY(), (int) width, (int) height);
         getWidget()->setFixedSize((int) width, (int) height);
+        getWidget()->setMinimumSize((int) width, (int) height);
     });
 }
 
@@ -355,9 +376,12 @@ void GInteractor::setTooltip(const std::string& tooltipText) {
 }
 
 void GInteractor::setVisible(bool visible) {
-    GThread::runOnQtGuiThread([this, visible]() {
-        getWidget()->setVisible(visible);
-    });
+    // don't allow setting visible to true unless widget is in a container
+    if (!visible || _container) {
+        GThread::runOnQtGuiThread([this, visible]() {
+            getWidget()->setVisible(visible);
+        });
+    }
 }
 
 void GInteractor::setWidth(double width) {

@@ -35,7 +35,7 @@ bool GLayout::contains(QLayout* layout, QWidget* widget) {
     }
 
     for (int i = 0; i < layout->count(); i++) {
-        QLayoutItem* child = layout->takeAt(i);
+        QLayoutItem* child = layout->itemAt(i);
         QWidget* childWidget = child->widget();
         if (childWidget == widget) {
             return true;
@@ -75,6 +75,30 @@ void GLayout::forceUpdate(QWidget* widget) {
     widget->setAttribute(Qt::WA_DontShowOnScreen, true);   // TODO: remove?
     widget->setAttribute(Qt::WA_DontShowOnScreen, false);
     widget->show();
+}
+
+QSize GLayout::getProperSize(QLayout* layout) {
+    QRect geom = layout->geometry();
+    QSize hint = layout->sizeHint();
+    int height = geom.height() > 0 ? geom.height() : hint.height();
+    int width = geom.width() > 0 ? geom.width() : hint.width();
+    return QSize(width, height);
+}
+
+QSize GLayout::getPreferredSize(QWidget* widget) {
+    QRect geom = widget->geometry();
+    QSize hint = widget->sizeHint();
+    int height = hint.height() > 0 ? hint.height() : geom.height();
+    int width = hint.width() > 0 ? hint.width() : geom.width();
+    return QSize(width, height);
+}
+
+QSize GLayout::getProperSize(QWidget* widget) {
+    QRect geom = widget->geometry();
+    QSize hint = widget->sizeHint();
+    int height = geom.height() > 0 ? geom.height() : hint.height();
+    int width = geom.width() > 0 ? geom.width() : hint.width();
+    return QSize(width, height);
 }
 
 /**

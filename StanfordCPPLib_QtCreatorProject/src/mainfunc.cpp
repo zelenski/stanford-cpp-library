@@ -5,8 +5,8 @@
 #include "gobjects.h"
 
 int main() {
-    // extern int mainQt2dGraphics();
-    // return mainQt2dGraphics();
+//    extern int mainQt2dGraphics();
+//    return mainQt2dGraphics();
 //    extern int mainQtLayout();
 //    return mainQtLayout();
     extern int mainQtWidgets();

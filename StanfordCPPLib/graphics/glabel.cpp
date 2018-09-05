@@ -14,6 +14,7 @@
  */
 
 #include "glabel.h"
+#include <iostream>
 #include "glayout.h"
 #include "gthread.h"
 #include "gwindow.h"
@@ -186,7 +187,11 @@ void GLabel::setIcon(const std::string& filename, bool retainIconSize) {
                 _iqlabel->updateGeometry();
                 _iqlabel->update();
             }
+
             // TODO: loses text; how to have both icon and text in same label?
+            if (!getText().empty()) {
+                std::cerr << "Warning: a GLabel cannot currently have both text and icon." << std::endl;
+            }
         }
     });
 }
@@ -263,7 +268,7 @@ void GLabel::setY(double y) {
 _Internal_QLabel::_Internal_QLabel(GLabel* glabel, QWidget* parent)
         : QLabel(parent),
           _glabel(glabel) {
-    // empty
+    setObjectName(QString::fromStdString("_Internal_QLabel_" + integerToString(glabel->getID())));
 }
 
 void _Internal_QLabel::mouseDoubleClickEvent(QMouseEvent* event) {

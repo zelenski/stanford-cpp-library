@@ -105,6 +105,7 @@ void GCheckBox::setText(const std::string& text) {
 _Internal_QCheckBox::_Internal_QCheckBox(GCheckBox* gcheckBox, bool checked, QWidget* parent)
         : QCheckBox(parent),
           _gcheckBox(gcheckBox) {
+    setObjectName(QString::fromStdString("_Internal_QCheckBox_" + integerToString(gcheckBox->getID())));
     setChecked(checked);
     connect(this, SIGNAL(stateChanged(int)), this, SLOT(handleStateChange(int)));
 }

@@ -145,6 +145,7 @@ protected:
      */
     void checkSize(const std::string& member, double width, double height) const;
 
+    virtual void initializeGObject(GObject& obj, bool filled = false);
     virtual void initializeGObject(GObject* obj, bool filled = false);
     virtual void setDrawingForwardTarget(GDrawingSurface* forwardTarget);
 };

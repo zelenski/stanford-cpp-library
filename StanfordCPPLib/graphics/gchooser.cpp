@@ -15,31 +15,6 @@
 #include "gwindow.h"
 #include "strlib.h"
 
-_Internal_QComboBox::_Internal_QComboBox(GChooser* gchooser, QWidget* parent)
-        : QComboBox(parent),
-          _gchooser(gchooser) {
-    connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(handleChange()));
-}
-
-void _Internal_QComboBox::handleChange() {
-    GEvent changeEvent(
-                /* class  */ CHANGE_EVENT,
-                /* type   */ STATE_CHANGED,
-                /* name   */ "change",
-                /* source */ _gchooser);
-    changeEvent.setActionCommand(_gchooser->getActionCommand());
-    _gchooser->fireEvent(changeEvent);
-}
-
-QSize _Internal_QComboBox::sizeHint() const {
-    if (hasPreferredSize()) {
-        return getPreferredSize();
-    } else {
-        return QComboBox::sizeHint();
-    }
-}
-
-
 GChooser::GChooser(QWidget* parent) {
     GThread::runOnQtGuiThread([this, parent]() {
         _iqcomboBox = new _Internal_QComboBox(this, getInternalParent(parent));
@@ -183,4 +158,30 @@ void GChooser::setSelectedItem(const std::string& item) {
 
 int GChooser::size() const {
     return _iqcomboBox->count();
+}
+
+
+_Internal_QComboBox::_Internal_QComboBox(GChooser* gchooser, QWidget* parent)
+        : QComboBox(parent),
+          _gchooser(gchooser) {
+    setObjectName(QString::fromStdString("_Internal_QComboBox_" + integerToString(gchooser->getID())));
+    connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(handleChange()));
+}
+
+void _Internal_QComboBox::handleChange() {
+    GEvent changeEvent(
+                /* class  */ CHANGE_EVENT,
+                /* type   */ STATE_CHANGED,
+                /* name   */ "change",
+                /* source */ _gchooser);
+    changeEvent.setActionCommand(_gchooser->getActionCommand());
+    _gchooser->fireEvent(changeEvent);
+}
+
+QSize _Internal_QComboBox::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QComboBox::sizeHint();
+    }
 }

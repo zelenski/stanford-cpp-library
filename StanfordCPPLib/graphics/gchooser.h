@@ -3,6 +3,8 @@
  * ----------------
  *
  * @author Marty Stepp
+ * @version 2018/09/04
+ * - added GComboBox alias
  * @version 2018/08/23
  * - renamed to gchooser.h to replace Java version
  * @version 2018/06/28
@@ -77,6 +79,9 @@ public slots:
 private:
     GChooser* _gchooser;
 };
+
+// alias GComboBox for GChooser for name compatibility with Java and Qt
+typedef GChooser GComboBox;
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 

@@ -18,89 +18,20 @@
 #include "gwindow.h"
 #include "strlib.h"
 
-_Internal_QTextEdit::_Internal_QTextEdit(GTextArea* gtextArea, QWidget* parent)
-        : QTextEdit(parent),
-          _gtextarea(gtextArea) {
-    ensureCursorVisible();
-    this->document()->setUndoRedoEnabled(false);
-    connect(this, SIGNAL(textChanged()), this, SLOT(handleTextChange()));
-}
-
-void _Internal_QTextEdit::contextMenuEvent(QContextMenuEvent* event) {
-    if (_gtextarea->isContextMenuEnabled()) {
-        event->accept();
-    } else {
-        event->ignore();
-    }
-}
-
-void _Internal_QTextEdit::handleTextChange() {
-    GEvent textChangeEvent(
-                /* class  */ KEY_EVENT,
-                /* type   */ KEY_TYPED,
-                /* name   */ "textchange",
-                /* source */ _gtextarea);
-    textChangeEvent.setActionCommand(_gtextarea->getActionCommand());
-    _gtextarea->fireEvent(textChangeEvent);
-}
-
-void _Internal_QTextEdit::keyPressEvent(QKeyEvent* event) {
-    event->accept();
-    _gtextarea->fireGEvent(event, KEY_PRESSED, "keypress");
-    if (event->isAccepted()) {
-        QTextEdit::keyPressEvent(event);   // call super
-    }
-}
-
-void _Internal_QTextEdit::keyReleaseEvent(QKeyEvent* event) {
-    event->accept();
-    _gtextarea->fireGEvent(event, KEY_RELEASED, "keyrelease");
-    if (event->isAccepted()) {
-        QTextEdit::keyReleaseEvent(event);   // call super
-    }
-}
-
-void _Internal_QTextEdit::mousePressEvent(QMouseEvent* event) {
-    event->accept();
-    if (!_gtextarea->isAcceptingEvent("mousepress")) return;
-    if (_gtextarea->isAcceptingEvent("mousepress")) {
-        _gtextarea->fireGEvent(event, MOUSE_PRESSED, "mousepress");
-    }
-    if (event->isAccepted()) {
-        QTextEdit::mousePressEvent(event);   // call super
-    }
-}
-
-void _Internal_QTextEdit::mouseReleaseEvent(QMouseEvent* event) {
-    event->accept();
-    if (!_gtextarea->isAcceptingEvent("mouserelease")) return;
-    if (_gtextarea->isAcceptingEvent("mouserelease")) {
-        _gtextarea->fireGEvent(event, MOUSE_RELEASED, "mouserelease");
-    }
-    if (event->isAccepted()) {
-        QTextEdit::mouseReleaseEvent(event);   // call super
-    }
-}
-
-QSize _Internal_QTextEdit::sizeHint() const {
-    if (hasPreferredSize()) {
-        return getPreferredSize();
-    } else {
-        return QTextEdit::sizeHint();
-    }
-}
-
-
 GTextArea::GTextArea(int rows, int columns, QWidget* parent)
         : _contextMenuEnabled(true) {
-    _iqtextedit = new _Internal_QTextEdit(this, getInternalParent(parent));
+    GThread::runOnQtGuiThread([this, parent]() {
+        _iqtextedit = new _Internal_QTextEdit(this, getInternalParent(parent));
+    });
     setRowsColumns(rows, columns);
     setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GTextArea::GTextArea(const std::string& text, QWidget* parent)
         : _contextMenuEnabled(true) {
-    _iqtextedit = new _Internal_QTextEdit(this, getInternalParent(parent));
+    GThread::runOnQtGuiThread([this, parent]() {
+        _iqtextedit = new _Internal_QTextEdit(this, getInternalParent(parent));
+    });
     setText(text);
     setVisible(false);   // all widgets are not shown until added to a window
 }
@@ -127,8 +58,10 @@ void GTextArea::appendFormattedText(const std::string& text, const std::string& 
     cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor, 1);
     cursor.insertText(QString::fromStdString(text), format);
     cursor.endEditBlock();
-    _iqtextedit->setTextCursor(cursor);
-    _iqtextedit->ensureCursorVisible();
+    GThread::runOnQtGuiThread([this, cursor]() {
+        _iqtextedit->setTextCursor(cursor);
+        _iqtextedit->ensureCursorVisible();
+    });
 
     moveCursorToEnd();
 }
@@ -180,8 +113,8 @@ std::string GTextArea::getPlaceholder() const {
 }
 
 GDimension GTextArea::getRowColumnSize() const {
-    QFontMetrics m(_iqtextedit->font());
-    return GDimension(m.width(QString::fromStdString("mmmmmmmmmm")) / 10.0, m.lineSpacing() + 2);
+    QFontMetrics metrics(_iqtextedit->font());
+    return GDimension(metrics.width(QString::fromStdString("mmmmmmmmmm")) / 10.0, metrics.lineSpacing() + 2);
 }
 
 int GTextArea::getRows() const {
@@ -269,7 +202,6 @@ void GTextArea::moveCursorToStart() {
         _iqtextedit->ensureCursorVisible();
     });
 }
-
 
 void GTextArea::removeKeyListener() {
     removeEventListeners({"keypress",
@@ -414,4 +346,78 @@ void GTextArea::setTextChangeListener(GEventListener func) {
 
 void GTextArea::setTextChangeListener(GEventListenerVoid func) {
     setEventListener("textchange", func);
+}
+
+
+_Internal_QTextEdit::_Internal_QTextEdit(GTextArea* gtextArea, QWidget* parent)
+        : QTextEdit(parent),
+          _gtextarea(gtextArea) {
+    setObjectName(QString::fromStdString("_Internal_QTextEdit_" + integerToString(gtextArea->getID())));
+    ensureCursorVisible();
+    this->document()->setUndoRedoEnabled(false);
+    connect(this, SIGNAL(textChanged()), this, SLOT(handleTextChange()));
+}
+
+void _Internal_QTextEdit::contextMenuEvent(QContextMenuEvent* event) {
+    if (_gtextarea->isContextMenuEnabled()) {
+        event->accept();
+    } else {
+        event->ignore();
+    }
+}
+
+void _Internal_QTextEdit::handleTextChange() {
+    GEvent textChangeEvent(
+                /* class  */ KEY_EVENT,
+                /* type   */ KEY_TYPED,
+                /* name   */ "textchange",
+                /* source */ _gtextarea);
+    textChangeEvent.setActionCommand(_gtextarea->getActionCommand());
+    _gtextarea->fireEvent(textChangeEvent);
+}
+
+void _Internal_QTextEdit::keyPressEvent(QKeyEvent* event) {
+    event->accept();
+    _gtextarea->fireGEvent(event, KEY_PRESSED, "keypress");
+    if (event->isAccepted()) {
+        QTextEdit::keyPressEvent(event);   // call super
+    }
+}
+
+void _Internal_QTextEdit::keyReleaseEvent(QKeyEvent* event) {
+    event->accept();
+    _gtextarea->fireGEvent(event, KEY_RELEASED, "keyrelease");
+    if (event->isAccepted()) {
+        QTextEdit::keyReleaseEvent(event);   // call super
+    }
+}
+
+void _Internal_QTextEdit::mousePressEvent(QMouseEvent* event) {
+    event->accept();
+    if (!_gtextarea->isAcceptingEvent("mousepress")) return;
+    if (_gtextarea->isAcceptingEvent("mousepress")) {
+        _gtextarea->fireGEvent(event, MOUSE_PRESSED, "mousepress");
+    }
+    if (event->isAccepted()) {
+        QTextEdit::mousePressEvent(event);   // call super
+    }
+}
+
+void _Internal_QTextEdit::mouseReleaseEvent(QMouseEvent* event) {
+    event->accept();
+    if (!_gtextarea->isAcceptingEvent("mouserelease")) return;
+    if (_gtextarea->isAcceptingEvent("mouserelease")) {
+        _gtextarea->fireGEvent(event, MOUSE_RELEASED, "mouserelease");
+    }
+    if (event->isAccepted()) {
+        QTextEdit::mouseReleaseEvent(event);   // call super
+    }
+}
+
+QSize _Internal_QTextEdit::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QTextEdit::sizeHint();
+    }
 }

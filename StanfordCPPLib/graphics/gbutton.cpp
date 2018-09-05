@@ -150,6 +150,7 @@ void GButton::setTextPosition(SwingConstants /*horizontal*/, SwingConstants /*ve
 _Internal_QPushButton::_Internal_QPushButton(GButton* button, QWidget* parent)
         : QToolButton(parent),
           _gbutton(button) {
+    setObjectName(QString::fromStdString("_Internal_QPushButton_" + integerToString(button->getID())));
     setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     connect(this, SIGNAL(clicked()), this, SLOT(handleClick()));
 }

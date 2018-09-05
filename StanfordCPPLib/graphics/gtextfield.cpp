@@ -22,103 +22,6 @@
 #include "gwindow.h"
 #include "strlib.h"
 
-_Internal_QLineEdit::_Internal_QLineEdit(GTextField* gtextField, QWidget* parent)
-        : QLineEdit(parent),
-          _gtextfield(gtextField) {
-    connect(this, SIGNAL(textChanged(QString)), this, SLOT(handleTextChange(const QString&)));
-}
-
-void _Internal_QLineEdit::handleTextChange(const QString&) {
-    GEvent textChangeEvent(
-                /* class  */ KEY_EVENT,
-                /* type   */ KEY_TYPED,
-                /* name   */ "textchange",
-                /* source */ _gtextfield);
-    textChangeEvent.setActionCommand(_gtextfield->getActionCommand());
-    _gtextfield->fireEvent(textChangeEvent);
-}
-
-void _Internal_QLineEdit::keyPressEvent(QKeyEvent* event) {
-    QLineEdit::keyPressEvent(event);   // call super
-    if (!_gtextfield->isAcceptingEvent("action")) return;
-    if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
-        GEvent actionEvent(
-                    /* class  */ ACTION_EVENT,
-                    /* type   */ ACTION_PERFORMED,
-                    /* name   */ "action",
-                    /* source */ _gtextfield);
-        actionEvent.setActionCommand(_gtextfield->getActionCommand());
-        _gtextfield->fireEvent(actionEvent);
-    }
-}
-
-QSize _Internal_QLineEdit::sizeHint() const {
-    if (hasPreferredSize()) {
-        return getPreferredSize();
-    } else {
-        return QLineEdit::sizeHint();
-    }
-}
-
-_Internal_QSpinBox::_Internal_QSpinBox(GTextField* GTextField, int min, int max, int step, QWidget* parent)
-        : QSpinBox(parent),
-          _gtextfield(GTextField) {
-    setRange(min, max);
-    setSingleStep(step);
-}
-
-void _Internal_QSpinBox::handleTextChange(const QString&) {
-    GEvent textChangeEvent(
-                /* class  */ KEY_EVENT,
-                /* type   */ KEY_TYPED,
-                /* name   */ "textchange",
-                /* source */ _gtextfield);
-    textChangeEvent.setActionCommand(_gtextfield->getActionCommand());
-    _gtextfield->fireEvent(textChangeEvent);
-}
-
-QLineEdit* _Internal_QSpinBox::lineEdit() const {
-    return QSpinBox::lineEdit();
-}
-
-QSize _Internal_QSpinBox::sizeHint() const {
-    if (hasPreferredSize()) {
-        return getPreferredSize();
-    } else {
-        return QSpinBox::sizeHint();
-    }
-}
-
-_Internal_QDoubleSpinBox::_Internal_QDoubleSpinBox(GTextField* gtextField, double min, double max, double step, QWidget* parent)
-        : QDoubleSpinBox(parent),
-          _gtextfield(gtextField) {
-    setRange(min, max);
-    setSingleStep(step);
-}
-
-void _Internal_QDoubleSpinBox::handleTextChange(const QString&) {
-    GEvent textChangeEvent(
-                /* class  */ KEY_EVENT,
-                /* type   */ KEY_TYPED,
-                /* name   */ "textchange",
-                /* source */ _gtextfield);
-    textChangeEvent.setActionCommand(_gtextfield->getActionCommand());
-    _gtextfield->fireEvent(textChangeEvent);
-}
-
-QLineEdit* _Internal_QDoubleSpinBox::lineEdit() const {
-    return QDoubleSpinBox::lineEdit();
-}
-
-QSize _Internal_QDoubleSpinBox::sizeHint() const {
-    if (hasPreferredSize()) {
-        return getPreferredSize();
-    } else {
-        return QDoubleSpinBox::sizeHint();
-    }
-}
-
-
 GTextField::GTextField(const std::string& text, int charsWide, QWidget* parent)
         : _iqlineedit(nullptr),
           _iqspinbox(nullptr),
@@ -458,4 +361,104 @@ bool GTextField::valueIsInteger() const {
 
 bool GTextField::valueIsReal() const {
     return stringIsReal(trim(getText()));
+}
+
+
+_Internal_QLineEdit::_Internal_QLineEdit(GTextField* gtextField, QWidget* parent)
+        : QLineEdit(parent),
+          _gtextfield(gtextField) {
+    setObjectName(QString::fromStdString("_Internal_QLineEdit_" + integerToString(gtextField->getID())));
+    connect(this, SIGNAL(textChanged(QString)), this, SLOT(handleTextChange(const QString&)));
+}
+
+void _Internal_QLineEdit::handleTextChange(const QString&) {
+    GEvent textChangeEvent(
+                /* class  */ KEY_EVENT,
+                /* type   */ KEY_TYPED,
+                /* name   */ "textchange",
+                /* source */ _gtextfield);
+    textChangeEvent.setActionCommand(_gtextfield->getActionCommand());
+    _gtextfield->fireEvent(textChangeEvent);
+}
+
+void _Internal_QLineEdit::keyPressEvent(QKeyEvent* event) {
+    QLineEdit::keyPressEvent(event);   // call super
+    if (!_gtextfield->isAcceptingEvent("action")) return;
+    if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
+        GEvent actionEvent(
+                    /* class  */ ACTION_EVENT,
+                    /* type   */ ACTION_PERFORMED,
+                    /* name   */ "action",
+                    /* source */ _gtextfield);
+        actionEvent.setActionCommand(_gtextfield->getActionCommand());
+        _gtextfield->fireEvent(actionEvent);
+    }
+}
+
+QSize _Internal_QLineEdit::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QLineEdit::sizeHint();
+    }
+}
+
+_Internal_QSpinBox::_Internal_QSpinBox(GTextField* gtextField, int min, int max, int step, QWidget* parent)
+        : QSpinBox(parent),
+          _gtextfield(gtextField) {
+    setObjectName(QString::fromStdString("_Internal_QSpinBox_" + integerToString(gtextField->getID())));
+    setRange(min, max);
+    setSingleStep(step);
+}
+
+void _Internal_QSpinBox::handleTextChange(const QString&) {
+    GEvent textChangeEvent(
+                /* class  */ KEY_EVENT,
+                /* type   */ KEY_TYPED,
+                /* name   */ "textchange",
+                /* source */ _gtextfield);
+    textChangeEvent.setActionCommand(_gtextfield->getActionCommand());
+    _gtextfield->fireEvent(textChangeEvent);
+}
+
+QLineEdit* _Internal_QSpinBox::lineEdit() const {
+    return QSpinBox::lineEdit();
+}
+
+QSize _Internal_QSpinBox::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QSpinBox::sizeHint();
+    }
+}
+
+_Internal_QDoubleSpinBox::_Internal_QDoubleSpinBox(GTextField* gtextField, double min, double max, double step, QWidget* parent)
+        : QDoubleSpinBox(parent),
+          _gtextfield(gtextField) {
+    setObjectName(QString::fromStdString("_Internal_QDoubleSpinBox_" + integerToString(gtextField->getID())));
+    setRange(min, max);
+    setSingleStep(step);
+}
+
+void _Internal_QDoubleSpinBox::handleTextChange(const QString&) {
+    GEvent textChangeEvent(
+                /* class  */ KEY_EVENT,
+                /* type   */ KEY_TYPED,
+                /* name   */ "textchange",
+                /* source */ _gtextfield);
+    textChangeEvent.setActionCommand(_gtextfield->getActionCommand());
+    _gtextfield->fireEvent(textChangeEvent);
+}
+
+QLineEdit* _Internal_QDoubleSpinBox::lineEdit() const {
+    return QDoubleSpinBox::lineEdit();
+}
+
+QSize _Internal_QDoubleSpinBox::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QDoubleSpinBox::sizeHint();
+    }
 }

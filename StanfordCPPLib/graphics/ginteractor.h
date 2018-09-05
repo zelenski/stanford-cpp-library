@@ -3,6 +3,8 @@
  * -------------------
  *
  * @author Marty Stepp
+ * @version 2018/09/05
+ * - added getContainer and is/setVisible logic
  * @version 2018/08/23
  * - renamed to ginteractor.h to replace Java version
  * @version 2018/06/25
@@ -21,6 +23,7 @@
 #include "gobservable.h"
 #include "gtypes.h"
 
+class GContainer;
 class GWindow;
 class _Internal_QWidget;
 
@@ -46,6 +49,7 @@ public:
     virtual GRectangle getBounds() const;
     virtual std::string getColor() const;
     virtual int getColorInt() const;
+    virtual GContainer* getContainer() const;
     virtual std::string getFont() const;
     virtual std::string getForeground() const;
     virtual int getForegroundInt() const;
@@ -106,15 +110,18 @@ public:
     virtual void setY(double y);
 
 protected:
-    virtual std::string getDefaultInteractorName() const;
-    virtual QWidget* getInternalParent(QWidget* parent) const;
-    virtual std::string normalizeAccelerator(const std::string& accelerator) const;
-
     std::string _actionCommand;
     std::string _icon;
     std::string _name;
     int _id;
+    GContainer* _container;
 
+    virtual std::string getDefaultInteractorName() const;
+    virtual QWidget* getInternalParent(QWidget* parent) const;
+    virtual std::string normalizeAccelerator(const std::string& accelerator) const;
+    virtual void setContainer(GContainer* container);
+
+    friend class GContainer;
     friend class GWindow;
     friend class _Internal_QWidget;
 

@@ -31,185 +31,7 @@
 #include "gthread.h"
 #include "strlib.h"
 
-_Internal_QItemDelegate::_Internal_QItemDelegate(QObject* parent)
-        : QStyledItemDelegate(parent),
-          _editor(nullptr) {
-    // empty
-}
-
-QWidget* _Internal_QItemDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const {
-    QWidget* editor = QStyledItemDelegate::createEditor(parent, option, index);
-    _Internal_QItemDelegate* hack = (_Internal_QItemDelegate*) this;
-    hack->_editor = editor;
-    return editor;
-}
-
-void _Internal_QItemDelegate::destroyEditor(QWidget* editor, const QModelIndex& index) const {
-    _Internal_QItemDelegate* hack = (_Internal_QItemDelegate*) this;
-    hack->_editor = nullptr;
-    QStyledItemDelegate::destroyEditor(editor, index);
-}
-
-QWidget* _Internal_QItemDelegate::getEditor() const {
-    return _editor;
-}
-
-
-_Internal_QTableWidget::_Internal_QTableWidget(GTable* gtable, int rows, int columns, QWidget* parent)
-        : QTableWidget(rows, columns, parent),
-          _gtable(gtable),
-          _delegate(nullptr) {
-    _delegate = new _Internal_QItemDelegate();
-    setItemDelegate(_delegate);
-    horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    connect(this, SIGNAL(cellChanged(int, int)), this, SLOT(handleCellChange(int, int)));
-    connect(this, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(handleCellDoubleClick(int, int)));
-    connect(this->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(handleSelectionChange(const QItemSelection&, const QItemSelection&)));
-}
-
-void _Internal_QTableWidget::fireTableEvent(EventType eventType, const std::string& eventName, int row, int col) {
-    GEvent tableEvent(
-                /* class  */ TABLE_EVENT,
-                /* type   */ eventType,
-                /* name   */ eventName,
-                /* source */ _gtable);
-    if (row < 0 && col < 0) {
-        tableEvent.setRowAndColumn(_gtable->getSelectedRow(), _gtable->getSelectedColumn());
-    } else {
-        tableEvent.setRowAndColumn(row, col);
-    }
-    tableEvent.setActionCommand(_gtable->getActionCommand());
-    _gtable->fireEvent(tableEvent);
-}
-
-bool _Internal_QTableWidget::edit(const QModelIndex& index, QAbstractItemView::EditTrigger trigger, QEvent* event) {
-    bool result = QAbstractItemView::edit(index, trigger, event);   // call super
-    if (result) {
-        bool isEdit = _lastKeyPressed == 0 || _lastKeyPressed == Qt::Key_F2 || _lastKeyPressed == Qt::Key_Tab;
-        _lastKeyPressed = 0;
-        if (isEdit) {
-            fireTableEvent(TABLE_EDIT_BEGIN, "tableeditbegin", index.row(), index.column());
-        } else {
-            fireTableEvent(TABLE_REPLACE_BEGIN, "tablereplacebegin", index.row(), index.column());
-        }
-    }
-    return result;
-}
-
-QWidget* _Internal_QTableWidget::getEditor() const {
-    return _delegate->getEditor();
-}
-
-_Internal_QItemDelegate* _Internal_QTableWidget::getItemDelegate() const {
-    return _delegate;
-}
-
-bool _Internal_QTableWidget::isEditing() const {
-    return getEditor() != nullptr;
-}
-
-void _Internal_QTableWidget::closeEditor(QWidget* editor, QAbstractItemDelegate::EndEditHint hint) {
-    QTableWidget::closeEditor(editor, hint);
-    // TODO: doesn't this fire even if the edit is committed?
-    fireTableEvent(TABLE_EDIT_CANCEL, "tableeditcancel");
-}
-
-void _Internal_QTableWidget::handleCellChange(int row, int column) {
-    fireTableEvent(TABLE_UPDATED, "tableupdate", row, column);
-}
-
-void _Internal_QTableWidget::handleCellDoubleClick(int /*row*/, int /*column*/) {
-    _lastKeyPressed = Qt::Key_F2;   // pretend we pressed F2
-    // edit/replace begin event will be fired by edit()
-    // fireTableEvent(GEvent::TABLE_EDIT_BEGIN, "tableeditbegin", row, column);
-}
-
-void _Internal_QTableWidget::handleSelectionChange(const QItemSelection& selected, const QItemSelection& /*deselected*/) {
-    QItemSelectionRange range;
-    if (!selected.empty()) {
-        range = selected.at(0);
-        QPersistentModelIndex index = range.topLeft();
-        fireTableEvent(TABLE_SELECTED, "tableselect", index.row(), index.column());
-    }
-}
-
-void _Internal_QTableWidget::keyPressEvent(QKeyEvent* event) {
-    _lastKeyPressed = event->key();
-    bool wasEditing = isEditing();
-    if (!wasEditing && event->key() == Qt::Key_Delete) {
-        // clear data from selected cell
-        if (_gtable->hasSelectedCell()) {
-            GridLocation loc = _gtable->getSelectedCell();
-            _gtable->clearCell(loc.row, loc.col);
-            return;
-        }
-    }
-
-    // any other key
-    if (wasEditing || !_gtable->hasSelectedCell()) {
-        QTableWidget::keyPressEvent(event);   // call super
-        return;
-    }
-
-    bool nowEditing = isEditing();
-
-    if (GClipboard::isCut(event)) {
-        // keyboard "cut" command; remove data from cell into clipboard
-        GridLocation loc = _gtable->getSelectedCell();
-        std::string cellValue = _gtable->get(loc.row, loc.col);
-        GClipboard::set(cellValue);
-        _gtable->clearCell(loc.row, loc.col);
-        QTableWidget::keyPressEvent(event);   // call super
-        fireTableEvent(TABLE_CUT, "tablecut");
-        return;
-    }
-
-    if (GClipboard::isCopy(event)) {
-        // keyboard "copy" command; copy data from cell into clipboard
-        std::string cellValue = _gtable->getSelectedCellValue();
-        GClipboard::set(cellValue);
-        QTableWidget::keyPressEvent(event);   // call super
-        fireTableEvent(TABLE_COPY, "tablecopy");
-        return;
-    }
-
-    if (GClipboard::isPaste(event)) {
-        // keyboard "paste" command; copy data from clipboard into cell
-        std::string cellValue = GClipboard::get();
-        _gtable->setSelectedCellValue(cellValue);
-        QTableWidget::keyPressEvent(event);   // call super
-        fireTableEvent(TABLE_PASTE, "tablepaste");
-        return;
-    }
-
-    // if cell went from non-editing state to editing state, edit has begun
-    if (nowEditing) {
-        if (event->key() == Qt::Key_F2) {
-            // F2 key begins editing existing value for a cell
-            // edit_begin will be fired by edit() method
-            // fireTableEvent(GEvent::TABLE_EDIT_BEGIN, "tableeditbegin");
-        } else if (event->key() == Qt::Key_Tab) {
-            // Tab key jumps to edit the neighboring cell
-        } else {
-            // any other text starts replacing the value with a new value
-            // replace_begin will be fired by edit() method
-            // fireTableEvent(GEvent::TABLE_REPLACE_BEGIN, "tablereplacebegin");
-        }
-    }
-    QTableWidget::keyPressEvent(event);   // call super
-}
-
-QSize _Internal_QTableWidget::sizeHint() const {
-    if (hasPreferredSize()) {
-        return getPreferredSize();
-    } else {
-        return QTableWidget::sizeHint();
-    }
-}
-
-
 GTable::TableStyle GTable::_defaultCellStyle = GTable::TableStyle::unset();
-
 
 GTable::GTable(int rows, int columns, double width, double height, QWidget* parent)
         : _iqtableview(nullptr),
@@ -986,4 +808,182 @@ void GTable::updateColumnHeaders() {
 
 int GTable::width() const {
     return numCols();
+}
+
+
+_Internal_QItemDelegate::_Internal_QItemDelegate(QObject* parent)
+        : QStyledItemDelegate(parent),
+          _editor(nullptr) {
+    // empty
+}
+
+QWidget* _Internal_QItemDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const {
+    QWidget* editor = QStyledItemDelegate::createEditor(parent, option, index);
+    _Internal_QItemDelegate* hack = (_Internal_QItemDelegate*) this;
+    hack->_editor = editor;
+    return editor;
+}
+
+void _Internal_QItemDelegate::destroyEditor(QWidget* editor, const QModelIndex& index) const {
+    _Internal_QItemDelegate* hack = (_Internal_QItemDelegate*) this;
+    hack->_editor = nullptr;
+    QStyledItemDelegate::destroyEditor(editor, index);
+}
+
+QWidget* _Internal_QItemDelegate::getEditor() const {
+    return _editor;
+}
+
+
+_Internal_QTableWidget::_Internal_QTableWidget(GTable* gtable, int rows, int columns, QWidget* parent)
+        : QTableWidget(rows, columns, parent),
+          _gtable(gtable),
+          _delegate(nullptr) {
+    setObjectName(QString::fromStdString("_Internal_QTableWidget_" + integerToString(gtable->getID())));
+    _delegate = new _Internal_QItemDelegate();
+    setItemDelegate(_delegate);
+    horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    connect(this, SIGNAL(cellChanged(int, int)), this, SLOT(handleCellChange(int, int)));
+    connect(this, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(handleCellDoubleClick(int, int)));
+    connect(this->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(handleSelectionChange(const QItemSelection&, const QItemSelection&)));
+}
+
+void _Internal_QTableWidget::fireTableEvent(EventType eventType, const std::string& eventName, int row, int col) {
+    GEvent tableEvent(
+                /* class  */ TABLE_EVENT,
+                /* type   */ eventType,
+                /* name   */ eventName,
+                /* source */ _gtable);
+    if (row < 0 && col < 0) {
+        tableEvent.setRowAndColumn(_gtable->getSelectedRow(), _gtable->getSelectedColumn());
+    } else {
+        tableEvent.setRowAndColumn(row, col);
+    }
+    tableEvent.setActionCommand(_gtable->getActionCommand());
+    _gtable->fireEvent(tableEvent);
+}
+
+bool _Internal_QTableWidget::edit(const QModelIndex& index, QAbstractItemView::EditTrigger trigger, QEvent* event) {
+    bool result = QAbstractItemView::edit(index, trigger, event);   // call super
+    if (result) {
+        bool isEdit = _lastKeyPressed == 0 || _lastKeyPressed == Qt::Key_F2 || _lastKeyPressed == Qt::Key_Tab;
+        _lastKeyPressed = 0;
+        if (isEdit) {
+            fireTableEvent(TABLE_EDIT_BEGIN, "tableeditbegin", index.row(), index.column());
+        } else {
+            fireTableEvent(TABLE_REPLACE_BEGIN, "tablereplacebegin", index.row(), index.column());
+        }
+    }
+    return result;
+}
+
+QWidget* _Internal_QTableWidget::getEditor() const {
+    return _delegate->getEditor();
+}
+
+_Internal_QItemDelegate* _Internal_QTableWidget::getItemDelegate() const {
+    return _delegate;
+}
+
+bool _Internal_QTableWidget::isEditing() const {
+    return getEditor() != nullptr;
+}
+
+void _Internal_QTableWidget::closeEditor(QWidget* editor, QAbstractItemDelegate::EndEditHint hint) {
+    QTableWidget::closeEditor(editor, hint);
+    // TODO: doesn't this fire even if the edit is committed?
+    fireTableEvent(TABLE_EDIT_CANCEL, "tableeditcancel");
+}
+
+void _Internal_QTableWidget::handleCellChange(int row, int column) {
+    fireTableEvent(TABLE_UPDATED, "tableupdate", row, column);
+}
+
+void _Internal_QTableWidget::handleCellDoubleClick(int /*row*/, int /*column*/) {
+    _lastKeyPressed = Qt::Key_F2;   // pretend we pressed F2
+    // edit/replace begin event will be fired by edit()
+    // fireTableEvent(GEvent::TABLE_EDIT_BEGIN, "tableeditbegin", row, column);
+}
+
+void _Internal_QTableWidget::handleSelectionChange(const QItemSelection& selected, const QItemSelection& /*deselected*/) {
+    QItemSelectionRange range;
+    if (!selected.empty()) {
+        range = selected.at(0);
+        QPersistentModelIndex index = range.topLeft();
+        fireTableEvent(TABLE_SELECTED, "tableselect", index.row(), index.column());
+    }
+}
+
+void _Internal_QTableWidget::keyPressEvent(QKeyEvent* event) {
+    _lastKeyPressed = event->key();
+    bool wasEditing = isEditing();
+    if (!wasEditing && event->key() == Qt::Key_Delete) {
+        // clear data from selected cell
+        if (_gtable->hasSelectedCell()) {
+            GridLocation loc = _gtable->getSelectedCell();
+            _gtable->clearCell(loc.row, loc.col);
+            return;
+        }
+    }
+
+    // any other key
+    if (wasEditing || !_gtable->hasSelectedCell()) {
+        QTableWidget::keyPressEvent(event);   // call super
+        return;
+    }
+
+    bool nowEditing = isEditing();
+
+    if (GClipboard::isCut(event)) {
+        // keyboard "cut" command; remove data from cell into clipboard
+        GridLocation loc = _gtable->getSelectedCell();
+        std::string cellValue = _gtable->get(loc.row, loc.col);
+        GClipboard::set(cellValue);
+        _gtable->clearCell(loc.row, loc.col);
+        QTableWidget::keyPressEvent(event);   // call super
+        fireTableEvent(TABLE_CUT, "tablecut");
+        return;
+    }
+
+    if (GClipboard::isCopy(event)) {
+        // keyboard "copy" command; copy data from cell into clipboard
+        std::string cellValue = _gtable->getSelectedCellValue();
+        GClipboard::set(cellValue);
+        QTableWidget::keyPressEvent(event);   // call super
+        fireTableEvent(TABLE_COPY, "tablecopy");
+        return;
+    }
+
+    if (GClipboard::isPaste(event)) {
+        // keyboard "paste" command; copy data from clipboard into cell
+        std::string cellValue = GClipboard::get();
+        _gtable->setSelectedCellValue(cellValue);
+        QTableWidget::keyPressEvent(event);   // call super
+        fireTableEvent(TABLE_PASTE, "tablepaste");
+        return;
+    }
+
+    // if cell went from non-editing state to editing state, edit has begun
+    if (nowEditing) {
+        if (event->key() == Qt::Key_F2) {
+            // F2 key begins editing existing value for a cell
+            // edit_begin will be fired by edit() method
+            // fireTableEvent(GEvent::TABLE_EDIT_BEGIN, "tableeditbegin");
+        } else if (event->key() == Qt::Key_Tab) {
+            // Tab key jumps to edit the neighboring cell
+        } else {
+            // any other text starts replacing the value with a new value
+            // replace_begin will be fired by edit() method
+            // fireTableEvent(GEvent::TABLE_REPLACE_BEGIN, "tablereplacebegin");
+        }
+    }
+    QTableWidget::keyPressEvent(event);   // call super
+}
+
+QSize _Internal_QTableWidget::sizeHint() const {
+    if (hasPreferredSize()) {
+        return getPreferredSize();
+    } else {
+        return QTableWidget::sizeHint();
+    }
 }

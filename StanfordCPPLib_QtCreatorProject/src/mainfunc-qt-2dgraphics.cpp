@@ -85,9 +85,6 @@ void testQwindowDrawing() {
     window->addToRegion(button5, "South");
     window->addToRegion(saveButton, "South");
 
-    window->setCanvasSize(900, 500);
-
-
 //        window->setBackground("yellow");
 //        window->setColor("red");
 //        window->setFillColor("red");
@@ -225,4 +222,6 @@ void testQwindowDrawing() {
 //    for (int i = 0; i < 1000; i++) {
 //        tickFunc();
 //    }
+
+    window->setCanvasSize(900, 500);
 }

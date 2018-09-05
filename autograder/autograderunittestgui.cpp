@@ -213,7 +213,8 @@ void AutograderUnitTestGui::addTest(const std::string& testName, const std::stri
     if (!isStyleCheck() && _checkboxesShown) {
         testWest->add(testInfo->checkbox);
     }
-    _allTestInfo[testInfo->getFullName()] = testInfo;
+    std::string testFullName = testInfo->getFullName();
+    _allTestInfo[testFullName] = testInfo;
 
     GLabel* testNumberLabel = new GLabel(padLeft(integerToString(_testCount), /* digits */ 3, /* fill */ '0') + ". ");
     // TODO: put into map?
@@ -227,8 +228,8 @@ void AutograderUnitTestGui::addTest(const std::string& testName, const std::stri
     testInfo->descriptionLabel->setTooltip("Click to see detailed results from this test.");
     GFont::changeFontSize(testInfo->descriptionLabel, -1);
     testInfo->descriptionLabel->setFont(GFont::deriveQFont(testInfo->descriptionLabel->getFont(), QFont::Bold));
-    testInfo->descriptionLabel->setActionListener([this, testName]() {
-        showTestDetails(testName);
+    testInfo->descriptionLabel->setActionListener([this, testFullName]() {
+        showTestDetails(testFullName);
     });
     test->addToRegion(testInfo->descriptionLabel, GContainer::REGION_CENTER);
     // TODO: set mouse/click listener
@@ -262,6 +263,9 @@ bool AutograderUnitTestGui::catchExceptions() const {
 void AutograderUnitTestGui::clearTestResults() {
     _passCount = 0;
     for (TestInfo* testInfo : _allTestInfo.values()) {
+        if (!testInfo) {
+            continue;
+        }
         ::autograder::UnitTestDetails deets;   // clear it out
         testInfo->details = deets;
         testInfo->descriptionLabel->setForeground(COLOR_NORMAL);
@@ -281,10 +285,11 @@ int AutograderUnitTestGui::getCheckedTestCount() const {
 }
 
 AutograderUnitTestGui::TestResult AutograderUnitTestGui::getTestResult(const std::string& testFullName) const {
-    TestInfo* testInfo = _allTestInfo[testFullName];
-    if (testInfo == nullptr) {
+    if (!_allTestInfo.containsKey(testFullName)) {
         return TEST_RESULT_UNKNOWN;
-    } else if (testInfo->descriptionLabel->getForeground() == COLOR_FAIL) {
+    }
+    TestInfo* testInfo = _allTestInfo[testFullName];
+    if (testInfo->descriptionLabel->getForeground() == COLOR_FAIL) {
         return TEST_RESULT_FAIL;
     } else if (testInfo->descriptionLabel->getForeground() == COLOR_WARN) {
         return TEST_RESULT_WARN;
@@ -298,12 +303,8 @@ AutograderUnitTestGui::TestResult AutograderUnitTestGui::getTestResult(const std
 }
 
 bool AutograderUnitTestGui::isChecked(const std::string& testFullName) const {
-    TestInfo* testInfo = _allTestInfo[testFullName];
-    if (testInfo == nullptr) {
-        return false;
-    } else {
-        return testInfo->checkbox->isChecked();
-    }
+    return _allTestInfo.containsKey(testFullName)
+            && _allTestInfo[testFullName]->checkbox->isChecked();
 }
 
 bool AutograderUnitTestGui::isStyleCheck() const {
@@ -359,14 +360,21 @@ void AutograderUnitTestGui::setTestCounts(int passCount, int testCount) {
 }
 
 void AutograderUnitTestGui::setTestDetails(const std::string& testFullName, ::autograder::UnitTestDetails deets) {
-    TestInfo* testInfo = _allTestInfo[testFullName];
-    if (testInfo == nullptr) {
+    if (!_allTestInfo.containsKey(testFullName)) {
         return;
     }
 
-    testInfo->details = deets;
+    TestInfo* testInfo = _allTestInfo[testFullName];
 
-    // TODO
+    // don't replace test details if a test already failed here
+    TestResult existingResult = getTestResult(testFullName);
+    if (existingResult == TEST_RESULT_FAIL || existingResult == TEST_RESULT_WARN) {
+        if (!deets.overwrite) {
+            return;
+        }
+    }
+
+    testInfo->details = deets;
 }
 
 void AutograderUnitTestGui::setTestingCompleted(bool completed) {
@@ -379,7 +387,7 @@ bool AutograderUnitTestGui::setTestResult(const std::string& testFullName, TestR
         return false;   // test not found
     }
 
-    // BUGFIX: if test already failed previously, don't set back to passed
+    // if test already failed previously, don't set back to passed
     TestResult existingResult = getTestResult(testFullName);
     if ((existingResult == TEST_RESULT_FAIL || existingResult == TEST_RESULT_WARN)
             && result != TEST_RESULT_FAIL) {

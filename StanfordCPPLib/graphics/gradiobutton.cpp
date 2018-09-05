@@ -118,6 +118,7 @@ QButtonGroup* GRadioButton::getButtonGroup(const std::string& group) {
 _Internal_QRadioButton::_Internal_QRadioButton(GRadioButton* gradioButton, bool checked, QWidget* parent)
         : QRadioButton(parent),
           _gradioButton(gradioButton) {
+    setObjectName(QString::fromStdString("_Internal_QRadioButton_" + integerToString(gradioButton->getID())));
     setChecked(checked);
     // We handle the clicked signal rather than toggled because, in a radio button group,
     // the toggled signal will fire twice: once for the radio button clicked, and once

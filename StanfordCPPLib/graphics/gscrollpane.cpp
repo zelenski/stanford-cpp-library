@@ -106,7 +106,7 @@ Qt::ScrollBarPolicy GScrollPane::toQtScrollBarPolicy(ScrollBarPolicy policy) {
 _Internal_QScrollArea::_Internal_QScrollArea(GScrollPane* gscrollpane, QWidget* parent)
         : QScrollArea(parent),
           _gscrollpane(gscrollpane) {
-    // empty
+    setObjectName(QString::fromStdString("_Internal_QScrollArea_" + integerToString(gscrollpane->getID())));
 }
 
 QSize _Internal_QScrollArea::sizeHint() const {
