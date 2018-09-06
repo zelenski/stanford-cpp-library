@@ -5,7 +5,7 @@
  * Stanford C++ library.
  *
  * @author Marty Stepp
- * @version 2018/09/04
+ * @version 2018/09/06
  */
 
 #ifndef _version_h
@@ -19,7 +19,7 @@
  *       *MUST* be zero-padded to YYYY/MM/DD format;
  *       if month or day is < 10, insert a preceding 0
  */
-#define STANFORD_CPP_LIB_VERSION "2018/09/04"
+#define STANFORD_CPP_LIB_VERSION "2018/09/06"
 
 /*
  * Minimum version of your IDE's project that is supported.
@@ -30,18 +30,7 @@
  *       *MUST* be zero-padded to YYYY/MM/DD format;
  *       if month or day is < 10, insert a preceding 0
  */
-#define STANFORD_CPP_PROJECT_MINIMUM_VERSION "2017/10/18"
-
-/*
- * Minimum version of Java back-end spl.jar that is supported.
- * platform.cpp checks this and exits if spl.jar is older than
- * this to avoid incompatible versions.
- *
- * NOTE: This value and the other date values here all
- *       *MUST* be zero-padded to YYYY/MM/DD format;
- *       if month or day is < 10, insert a preceding 0
- */
-#define STANFORD_JAVA_BACKEND_MINIMUM_VERSION "2018/06/24"
+#define STANFORD_CPP_PROJECT_MINIMUM_VERSION "2018/09/06"
 
 /*
  * URL at which documentation about the libraries can be found.
@@ -50,11 +39,11 @@
 
 
 namespace version {
-void ensureJavaBackEndVersion(std::string minVersion = "");
+void ensureJavaBackEndVersion(std::string minVersion = "") /* deprecated */;
 void ensureProjectVersion(std::string minVersion = "");
 std::string getCppLibraryDocsUrl();
 std::string getCppLibraryVersion();
-std::string getJavaBackEndVersion();
+std::string getJavaBackEndVersion() /* deprecated */;
 std::string getProjectVersion();
 } // namespace version
 

@@ -41,10 +41,6 @@ static std::string macroIntegerToDate(int macroInteger) {
 }
 #endif // SPL_PROJECT_VERSION
 
-static void ensureJavaBackEndVersionHelper(std::string /*minVersion*/) {
-    // empty
-}
-
 static void ensureProjectVersionHelper(std::string minVersion) {
 #ifdef SPL_PROJECT_VERSION
     std::string projectVersion = macroIntegerToDate(SPL_PROJECT_VERSION);
@@ -70,11 +66,8 @@ static void ensureProjectVersionHelper(std::string minVersion) {
     }
 }
 
-void ensureJavaBackEndVersion(std::string minVersion) {
-    if (minVersion.empty()) {
-        minVersion = STANFORD_JAVA_BACKEND_MINIMUM_VERSION;
-    }
-    ensureJavaBackEndVersionHelper(minVersion);
+void ensureJavaBackEndVersion(std::string /*minVersion*/) {
+    // empty
 }
 
 void ensureProjectVersion(std::string minVersion) {
@@ -98,7 +91,6 @@ std::string getCppLibraryVersion() {
 
 std::string getJavaBackEndVersion() {
     return "?";
-    // return stanfordcpplib::getPlatform()->cpplib_getJavaBackEndVersion();
 }
 
 /*

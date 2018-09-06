@@ -15,9 +15,10 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2018/09/06
+# - removed references to old Java back-end spl.jar
 # @version 2018/07/01
-# - re-enable Qt in configuration to support Qt-based GUI functionality
-# - added SPL_QT_GUI flag (default enabled)
+# - enable Qt in configuration to support Qt-based GUI functionality
 # - remove some compiler warnings (long-long, useless-cast) because they trigger in Qt
 # @version 2018/02/28
 # - flag to disable some BasicGraph Vertex/Edge members
@@ -141,24 +142,13 @@ BAD_CHARS ~= s|[a-zA-Z0-9_ ().\/:;-]+|
     error(Exiting.)
 }
 
-# checks to ensure that the Stanford C++ library and its associated
-# Java back-end are both present in this project
+# checks to ensure that the Stanford C++ library is present in this project
 !exists($$PWD/lib/StanfordCPPLib/private/version.h) {
     message("")
     message(*******************************************************************)
     message(*** ERROR: Stanford C++ library not found!)
     message(*** This project cannot run without the folder lib/StanfordCPPLib/.)
     message(*** Place that folder into your project and try again.)
-    message(*******************************************************************)
-    message("")
-    error(Exiting.)
-}
-!exists($$PWD/lib/spl.jar) {
-    message("")
-    message(*******************************************************************)
-    message(*** ERROR: Stanford Java back-end library 'spl.jar' not found!)
-    message(*** This project cannot run without spl.jar present.)
-    message(*** Place that file into your lib/ folder and try again.)
     message(*******************************************************************)
     message("")
     error(Exiting.)
@@ -377,7 +367,7 @@ equals(COMPILERNAME, clang++) {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20180701
+DEFINES += SPL_PROJECT_VERSION=20180906
 
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1
@@ -393,9 +383,6 @@ DEFINES += SPL_CONSOLE_ECHO
 
 # quit the C++ program when the graphical console is closed?
 DEFINES += SPL_CONSOLE_EXIT_ON_CLOSE
-
-# crash if the Java back-end version is older than that specified in version.h?
-DEFINES += SPL_VERIFY_JAVA_BACKEND_VERSION
 
 # crash if the .pro is older than the minimum specified in version.h? (SPL_PROJECT_VERSION)
 DEFINES += SPL_VERIFY_PROJECT_VERSION
@@ -421,9 +408,6 @@ DEFINES += SPL_THROW_ON_INVALID_ITERATOR
 # for years this was true, but the C++ standard says you should just silently
 # set the fail bit on the stream and exit, so that has been made the default.
 # DEFINES += SPL_ERROR_ON_STREAM_EXTRACT
-
-# enable the new Qt-based GUI system, meant to replace the Java back-end GUI?
-DEFINES += SPL_QT_GUI
 
 # build-specific options (debug vs release)
 
@@ -490,7 +474,7 @@ CONFIG(release, debug|release) {
 ###############################################################################
 
 # This function copies the given files to the destination directory.
-# Used to place important resources from res/ and spl.jar into build/ folder.
+# Used to place important resources from res/ into build/ folder.
 defineTest(copyToDestdir) {
     files = $$1
     for(FILE, files) {
@@ -515,7 +499,6 @@ defineTest(copyToDestdir) {
 # specify files to copy on non-Windows systems
 !win32 {
     copyToDestdir($$files($$PWD/res/*))
-    copyToDestdir($$files($$PWD/lib/*.jar))
     exists($$PWD/*.txt) {
         copyToDestdir($$files($$PWD/*.txt))
     }
@@ -524,7 +507,6 @@ defineTest(copyToDestdir) {
 # specify files to copy on Windows systems
 win32 {
     copyToDestdir($$PWD/res)
-    copyToDestdir($$PWD/lib/*.jar)
     copyToDestdir($$PWD/lib/addr2line.exe)
     exists($$PWD/*.txt) {
         copyToDestdir($$PWD/*.txt)
@@ -548,8 +530,7 @@ exists($$PWD/output/*) {
     export(copydata.commands)
 }
 
-# copy support files such as library JAR and addr2line
-copyResources.input *= $$files($$PWD/lib/*.jar)
+# copy support files such as addr2line
 win32 {
     copyResources.input *= $$files($$PWD/lib/addr2line.exe)
 }
@@ -652,4 +633,4 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #655; if not, your .pro has been changed!)
+# END OF FILE (this should be line #636; if not, your .pro has been changed!)

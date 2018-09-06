@@ -112,13 +112,13 @@ void iurlstream::open(const std::string& url) {
     std::string filename = getUrlFilename(_url);
     _tempFilePath = tempDir + getDirectoryPathSeparator() + filename;
     
-    // insert/send headers to backend if needed
+    // insert/send headers if needed
     if (_headers.isEmpty()) {
         // TODO
-        // _lastError = stanfordcpplib::getPlatform()->url_download(_url, filename);
+        // _lastError = url_download(_url, filename);
     } else {
         // TODO
-        // _lastError = stanfordcpplib::getPlatform()->url_downloadWithHeaders(_url, filename, _headers);
+        // _lastError = url_downloadWithHeaders(_url, filename, _headers);
     }
 
     if (isHttpSuccess(_lastError)) {
