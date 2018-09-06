@@ -420,19 +420,11 @@ private:
     void applyStyleToCell(int row, int column, const TableStyle& style);
 
     /*
-     * Throws an error if the given numRows/numCols values are negative.
-     */
-    void checkDimensions(const std::string& member, int numRows, int numCols) const;
-
-    /*
      * Throws an error if the given row/column values are out of bounds.
      */
+    void checkColumn(const std::string& member, int column) const;
     void checkIndex(const std::string& member, int row, int column) const;
-
-    /*
-     * Throws an error if the given width/height values are out of bounds.
-     */
-    void checkSize(const std::string& member, double width, double height) const;
+    void checkRow(const std::string& member, int row) const;
 
     void ensureColumnStyle(int column);
     void ensureDefaultFormatting() const;   // const hack

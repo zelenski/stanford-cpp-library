@@ -10,6 +10,7 @@
  */
 
 #include "glayout.h"
+#include "require.h"
 #include "strlib.h"
 
 GLayout::GLayout() {
@@ -46,7 +47,9 @@ bool GLayout::contains(QLayout* layout, QWidget* widget) {
 }
 
 void GLayout::forceUpdate(GInteractor* interactor) {
-    forceUpdate(interactor->getWidget());
+    if (interactor) {
+        forceUpdate(interactor->getWidget());
+    }
 }
 
 /**
@@ -54,7 +57,9 @@ void GLayout::forceUpdate(GInteractor* interactor) {
  * from https://stackoverflow.com/questions/2427103/qt-how-to-force-a-hidden-widget-to-calculate-its-layout
  */
 void GLayout::forceUpdate(QWidget* widget) {
-    if (!widget) return;
+    if (!widget) {
+        return;
+    }
 
     // Update all child widgets.
     for (int i = 0; i < widget->children().size(); i++) {
@@ -77,15 +82,8 @@ void GLayout::forceUpdate(QWidget* widget) {
     widget->show();
 }
 
-QSize GLayout::getProperSize(QLayout* layout) {
-    QRect geom = layout->geometry();
-    QSize hint = layout->sizeHint();
-    int height = geom.height() > 0 ? geom.height() : hint.height();
-    int width = geom.width() > 0 ? geom.width() : hint.width();
-    return QSize(width, height);
-}
-
 QSize GLayout::getPreferredSize(QWidget* widget) {
+    require::nonNull(widget, "GLayout::getPreferredSize", "widget");
     QRect geom = widget->geometry();
     QSize hint = widget->sizeHint();
     int height = hint.height() > 0 ? hint.height() : geom.height();
@@ -93,7 +91,17 @@ QSize GLayout::getPreferredSize(QWidget* widget) {
     return QSize(width, height);
 }
 
+QSize GLayout::getProperSize(QLayout* layout) {
+    require::nonNull(layout, "GLayout::getProperSize", "layout");
+    QRect geom = layout->geometry();
+    QSize hint = layout->sizeHint();
+    int height = geom.height() > 0 ? geom.height() : hint.height();
+    int width = geom.width() > 0 ? geom.width() : hint.width();
+    return QSize(width, height);
+}
+
 QSize GLayout::getProperSize(QWidget* widget) {
+    require::nonNull(widget, "GLayout::getProperSize", "widget");
     QRect geom = widget->geometry();
     QSize hint = widget->sizeHint();
     int height = geom.height() > 0 ? geom.height() : hint.height();
@@ -106,7 +114,9 @@ QSize GLayout::getProperSize(QWidget* widget) {
  * from https://stackoverflow.com/questions/2427103/qt-how-to-force-a-hidden-widget-to-calculate-its-layout
  */
 void GLayout::invalidateLayout(QLayout* layout) {
-    if (!layout) return;
+    if (!layout) {
+        return;
+    }
 
     // Recompute the given layout and all its child layouts.
     for (int i = 0; i < layout->count(); i++) {
@@ -155,6 +165,7 @@ GBorderLayout::~GBorderLayout() {
 }
 
 void GBorderLayout::addItem(QLayoutItem* item) {
+    require::nonNull(item, "GBorderLayout::addItem");
     add(item, GLayout::North);
 }
 
@@ -163,6 +174,7 @@ void GBorderLayout::addWidget(QWidget* widget) {
 }
 
 void GBorderLayout::addWidget(QWidget* widget, GLayout::Position position) {
+    require::nonNull(widget, "GBorderLayout::addWidget", "widget");
     add(new QWidgetItem(widget), position);
 }
 
@@ -178,7 +190,7 @@ int GBorderLayout::count() const {
     return list.size();
 }
 
-QLayoutItem *GBorderLayout::itemAt(int index) const {
+QLayoutItem* GBorderLayout::itemAt(int index) const {
     ItemWrapper* wrapper = list.value(index);
     if (wrapper) {
         return wrapper->item;
@@ -281,11 +293,13 @@ QLayoutItem* GBorderLayout::takeAt(int index) {
     if (index >= 0 && index < list.size()) {
         ItemWrapper* layoutStruct = list.takeAt(index);
         return layoutStruct->item;
+    } else {
+        return nullptr;
     }
-    return nullptr;
 }
 
 void GBorderLayout::add(QLayoutItem* item, GLayout::Position position) {
+    require::nonNull(item, "GBorderLayout::add");
     list.append(new ItemWrapper(item, position));
 }
 

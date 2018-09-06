@@ -11,6 +11,7 @@
 
 #include "gslider.h"
 #include "gthread.h"
+#include "require.h"
 #include "gwindow.h"
 
 const int GSlider::DEFAULT_MIN_VALUE = 0;
@@ -18,6 +19,8 @@ const int GSlider::DEFAULT_MAX_VALUE = 100;
 const int GSlider::DEFAULT_INITIAL_VALUE = 50;
 
 GSlider::GSlider(int min, int max, int value, QWidget* parent) {
+    require::require(min <= max, "GSlider::constructor", "min (" + integerToString(min) + ") cannot be greater than max (" + integerToString(max) + ")");
+    require::inRange(value, min, max, "GSlider::constructor", "value");
     GThread::runOnQtGuiThread([this, min, max, value, parent]() {
         _iqslider = new _Internal_QSlider(this, getInternalParent(parent));
         _iqslider->setRange(min, max);
@@ -37,6 +40,14 @@ _Internal_QWidget* GSlider::getInternalWidget() const {
 
 int GSlider::getMajorTickSpacing() const {
     return _iqslider->tickInterval();
+}
+
+int GSlider::getMax() const {
+    return _iqslider->maximum();
+}
+
+int GSlider::getMin() const {
+    return _iqslider->minimum();
 }
 
 int GSlider::getMinorTickSpacing() const {
@@ -88,6 +99,22 @@ void GSlider::setMajorTickSpacing(int value) {
     });
 }
 
+void GSlider::setMax(int max) {
+    int min = getMin();
+    require::require(min <= max, "GSlider::setMax", "max (" + integerToString(max) + ") cannot be less than min (" + integerToString(min) + ")");
+    GThread::runOnQtGuiThread([this, max]() {
+        _iqslider->setMaximum(max);
+    });
+}
+
+void GSlider::setMin(int min) {
+    int max = getMax();
+    require::require(min <= max, "GSlider::setMin", "min (" + integerToString(min) + ") cannot be greater than max (" + integerToString(max) + ")");
+    GThread::runOnQtGuiThread([this, min]() {
+        _iqslider->setMinimum(min);
+    });
+}
+
 void GSlider::setMinorTickSpacing(int value) {
     GThread::runOnQtGuiThread([this, value]() {
         _iqslider->setTickInterval(value);
@@ -104,11 +131,19 @@ void GSlider::setPaintTicks(bool value) {
     });
 }
 
+void GSlider::setRange(int min, int max) {
+    require::require(min <= max, "GSlider::setRange", "min (" + integerToString(min) + ") cannot be greater than max (" + integerToString(max) + ")");
+    GThread::runOnQtGuiThread([this, min, max]() {
+        _iqslider->setRange(min, max);
+    });
+}
+
 void GSlider::setSnapToTicks(bool /* value */) {
     // TODO
 }
 
 void GSlider::setValue(int value) {
+    require::inRange(value, getMin(), getMax(), "GSlider::setValue", "value");
     GThread::runOnQtGuiThread([this, value]() {
         _iqslider->setValue(value);
     });
@@ -118,6 +153,7 @@ void GSlider::setValue(int value) {
 _Internal_QSlider::_Internal_QSlider(GSlider* gslider, QWidget* parent)
         : QSlider(Qt::Horizontal, parent),
           _gslider(gslider) {
+    require::nonNull(gslider, "_Internal_QSlider::constructor");
     setObjectName(QString::fromStdString("_Internal_QSlider_" + integerToString(gslider->getID())));
     connect(this, SIGNAL(valueChanged(int)), this, SLOT(handleChange(int)));
 }

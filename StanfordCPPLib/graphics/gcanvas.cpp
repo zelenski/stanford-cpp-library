@@ -16,6 +16,7 @@
 #include "gwindow.h"
 #include "error.h"
 #include "filelib.h"
+#include "require.h"
 #include "strlib.h"
 
 #define CHAR_TO_HEX(ch) ((ch >= '0' && ch <= '9') ? (ch - '0') : (ch - 'a' + 10))
@@ -79,8 +80,8 @@ GCanvas::GCanvas(double width, double height, const std::string& rgbBackground, 
 }
 
 void GCanvas::init(double width, double height, int rgbBackground, QWidget* parent) {
-    checkSize("constructor", width, height);
-    checkColor("constructor", rgbBackground);
+    checkSize("GCanvas::constructor", width, height);
+    checkColor("GCanvas::constructor", rgbBackground);
 
     GThread::runOnQtGuiThread([this, rgbBackground, parent]() {
         _iqcanvas = new _Internal_QCanvas(this, getInternalParent(parent));
@@ -232,10 +233,14 @@ GCanvas* GCanvas::diff(const GCanvas& image, int diffPixelColor) const {
 }
 
 GCanvas* GCanvas::diff(const GCanvas* image, int diffPixelColor) const {
+    require::nonNull(image, "GCanvas::diff", "image");
     return diff(*image, diffPixelColor);
 }
 
 void GCanvas::draw(QPainter* painter) {
+    if (!painter) {
+        return;
+    }
     if (_backgroundImage) {
         painter->drawImage(/* x */ 0, /* y */ 0, *_backgroundImage);
     }
@@ -243,6 +248,7 @@ void GCanvas::draw(QPainter* painter) {
 }
 
 void GCanvas::draw(GObject* gobj) {
+    require::nonNull(gobj, "GCanvas::draw");
     ensureBackgroundImage();
     QPainter painter(_backgroundImage);
     painter.setRenderHint(QPainter::Antialiasing, GObject::isAntiAliasing());
@@ -281,7 +287,7 @@ bool GCanvas::equals(const GCanvas& other) const {
 }
 
 void GCanvas::fill(int rgb) {
-    checkColor("fill", rgb);
+    checkColor("GCanvas::fill", rgb);
     fillRegion(/* x */ 0,
                /* y */ 0,
                /* width */ getWidth(),
@@ -294,9 +300,9 @@ void GCanvas::fill(const std::string& rgb) {
 }
 
 void GCanvas::fillRegion(double x, double y, double width, double height, int rgb) {
-    checkBounds("fillRegion", x, y);
-    checkBounds("fillRegion", x + width - 1, y + height - 1);
-    checkColor("fillRegion", rgb);
+    checkBounds("GCanvas::fillRegion", x, y, getWidth(), getHeight());
+    checkBounds("GCanvas::fillRegion", x + width - 1, y + height - 1, getWidth(), getHeight());
+    checkColor("GCanvas::fillRegion", rgb);
     bool wasAutoRepaint = isAutoRepaint();
     setAutoRepaint(false);
     for (int r = (int) y; r < y + height; r++) {
@@ -325,7 +331,7 @@ void GCanvas::flatten() {
 }
 
 void GCanvas::fromGrid(const Grid<int>& grid) {
-    checkSize("fromGrid", grid.width(), grid.height());
+    checkSize("GCanvas::fromGrid", grid.width(), grid.height());
     setSize(grid.width(), grid.height());
 
     bool wasAutoRepaint = isAutoRepaint();
@@ -380,11 +386,13 @@ _Internal_QWidget* GCanvas::getInternalWidget() const {
 }
 
 int GCanvas::getPixel(double x, double y) const {
+    checkBounds("GCanvas::getPixel", x, y, getWidth(), getHeight());
     ensureBackgroundImageConstHack();
     return _backgroundImage->pixel((int) x, (int) y) & 0x00ffffff;
 }
 
 int GCanvas::getPixelARGB(double x, double y) const {
+    checkBounds("GCanvas::getPixelARGB", x, y, getWidth(), getHeight());
     ensureBackgroundImageConstHack();
     return _backgroundImage->pixel((int) x, (int) y);
 }
@@ -429,16 +437,24 @@ void GCanvas::load(const std::string& filename) {
     if (!fileExists(filename)) {
         error("GCanvas::load: file not found: " + filename);
     }
-    GThread::runOnQtGuiThread([this, filename]() {
+
+    bool hasError = false;
+    GThread::runOnQtGuiThread([this, filename, &hasError]() {
         ensureBackgroundImage();
         if (!_backgroundImage->load(QString::fromStdString(filename))) {
-            error("GCanvas::load: failed to load from " + filename);
+            hasError = true;
+            return;
         }
+
         _filename = filename;
         GInteractor::setSize(_backgroundImage->width(), _backgroundImage->height());
         // setSize(_qimage->width(), _qimage->height());
         conditionalRepaint();
     });
+
+    if (hasError) {
+        error("GCanvas::load: failed to load from " + filename);
+    }
 }
 
 void GCanvas::notifyOfResize(double width, double height) {
@@ -506,7 +522,7 @@ void GCanvas::repaintRegion(int x, int y, int width, int height) {
 }
 
 void GCanvas::resize(double width, double height, bool /* retain */) {
-    checkSize("resize", width, height);
+    checkSize("GCanvas::resize", width, height);
 
     // TODO
     setSize(width, height);

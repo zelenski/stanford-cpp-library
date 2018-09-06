@@ -20,6 +20,7 @@
 #include <QStringListModel>
 #include "gthread.h"
 #include "gwindow.h"
+#include "require.h"
 #include "strlib.h"
 
 GTextField::GTextField(const std::string& text, int charsWide, QWidget* parent)
@@ -54,6 +55,8 @@ GTextField::GTextField(int charsWide, QWidget* parent)
 }
 
 GTextField::GTextField(int value, int min, int max, int step, QWidget* parent) {
+    require::require(min <= max, "GTextField::constructor", "min (" + integerToString(min) + ") cannot be greater than max (" + integerToString(max) + ")");
+    require::inRange(value, min, max, "GTextField::constructor", "value");
     GThread::runOnQtGuiThread([this, value, min, max, step, parent]() {
         _iqspinbox = new _Internal_QSpinBox(this, min, max, step, getInternalParent(parent));
         _iqspinbox->setValue(value);
@@ -63,6 +66,8 @@ GTextField::GTextField(int value, int min, int max, int step, QWidget* parent) {
 }
 
 GTextField::GTextField(double value, double min, double max, double step, QWidget* parent) {
+    require::require(min <= max, "GTextField::constructor", "min (" + doubleToString(min) + ") cannot be greater than max (" + doubleToString(max) + ")");
+    require::inRange(value, min, max, "GTextField::constructor", "value");
     GThread::runOnQtGuiThread([this, value, min, max, step, parent]() {
         _iqdoublespinbox = new _Internal_QDoubleSpinBox(this, min, max, step, getInternalParent(parent));
         _iqdoublespinbox->setValue(value);
@@ -221,7 +226,9 @@ void GTextField::setAutocompleteList(const Vector<std::string>& strings) {
     GThread::runOnQtGuiThread([this, &strings]() {
         QStringList stringList;
         for (std::string s : strings) {
-            stringList.push_back(QString::fromStdString(s));
+            if (!s.empty()) {
+                stringList.push_back(QString::fromStdString(s));
+            }
         }
         QStringListModel* model = new QStringListModel(stringList, _iqlineedit);   // TODO: MEMORY LEAK
         QCompleter* completer = new QCompleter(model, _iqlineedit);                // TODO: MEMORY LEAK
@@ -251,10 +258,11 @@ void GTextField::setAutocompleteEnabled(bool enabled) {
             }
         }
     });
-    // TODO
+    // TODO: ability to set back to false
 }
 
 void GTextField::setCharsWide(int charsWide) {
+    require::nonNegative(charsWide, "GTextField::setCharsWide");
     GThread::runOnQtGuiThread([this, charsWide]() {
         QFontMetrics fm(getWidget()->font());
         int mWidth = fm.width(QString::fromStdString("m"));
@@ -367,6 +375,7 @@ bool GTextField::valueIsReal() const {
 _Internal_QLineEdit::_Internal_QLineEdit(GTextField* gtextField, QWidget* parent)
         : QLineEdit(parent),
           _gtextfield(gtextField) {
+    require::nonNull(gtextField, "_Internal_QLineEdit::constructor");
     setObjectName(QString::fromStdString("_Internal_QLineEdit_" + integerToString(gtextField->getID())));
     connect(this, SIGNAL(textChanged(QString)), this, SLOT(handleTextChange(const QString&)));
 }
@@ -382,6 +391,7 @@ void _Internal_QLineEdit::handleTextChange(const QString&) {
 }
 
 void _Internal_QLineEdit::keyPressEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QLineEdit::keyPressEvent", "event");
     QLineEdit::keyPressEvent(event);   // call super
     if (!_gtextfield->isAcceptingEvent("action")) return;
     if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
@@ -406,6 +416,7 @@ QSize _Internal_QLineEdit::sizeHint() const {
 _Internal_QSpinBox::_Internal_QSpinBox(GTextField* gtextField, int min, int max, int step, QWidget* parent)
         : QSpinBox(parent),
           _gtextfield(gtextField) {
+    require::nonNull(gtextField, "_Internal_QSpinBox::constructor");
     setObjectName(QString::fromStdString("_Internal_QSpinBox_" + integerToString(gtextField->getID())));
     setRange(min, max);
     setSingleStep(step);
@@ -436,6 +447,7 @@ QSize _Internal_QSpinBox::sizeHint() const {
 _Internal_QDoubleSpinBox::_Internal_QDoubleSpinBox(GTextField* gtextField, double min, double max, double step, QWidget* parent)
         : QDoubleSpinBox(parent),
           _gtextfield(gtextField) {
+    require::nonNull(gtextField, "_Internal_QDoubleSpinBox::constructor");
     setObjectName(QString::fromStdString("_Internal_QDoubleSpinBox_" + integerToString(gtextField->getID())));
     setRange(min, max);
     setSingleStep(step);

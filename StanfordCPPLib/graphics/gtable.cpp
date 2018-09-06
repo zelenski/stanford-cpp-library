@@ -5,6 +5,8 @@
  * See that file for documentation of each member.
  *
  * @author Marty Stepp
+ * @version 2018/09/06
+ * - added bounds-checking and require() calls
  * @version 2018/08/23
  * - renamed to gtable.cpp to replace Java version
  * @version 2018/07/21
@@ -29,6 +31,7 @@
 #include "gevent.h"
 #include "gfont.h"
 #include "gthread.h"
+#include "require.h"
 #include "strlib.h"
 
 GTable::TableStyle GTable::_defaultCellStyle = GTable::TableStyle::unset();
@@ -41,8 +44,8 @@ GTable::GTable(int rows, int columns, double width, double height, QWidget* pare
         _iqtableview->setSelectionMode(QAbstractItemView::SingleSelection);
         _globalCellStyle = TableStyle::unset();
     });
-    checkDimensions("constructor", rows, columns);
-    checkSize("constructor", width, height);
+    require::nonNegative2D(rows, columns, "GTable::constructor", "rows", "columns");
+    require::nonNegative2D(width, height, "GTable::constructor", "width", "height");
     setVisible(false);   // all widgets are not shown until added to a window
 }
 
@@ -59,32 +62,16 @@ void GTable::autofitColumnWidths() {
     });
 }
 
-void GTable::checkDimensions(const std::string& member, int numRows, int numCols) const {
-    if (numRows < 0 || numCols < 0) {
-        std::ostringstream out;
-        out << "GTable::" << member << ": numRows/numCols cannot be negative";
-        error(out.str());
-    }
+void GTable::checkColumn(const std::string& member, int column) const {
+    require::inRange(column, 0, numCols(), "GTable::" + member, "column");
 }
 
 void GTable::checkIndex(const std::string& member, int row, int column) const {
-    if (!inBounds(row, column)) {
-        std::ostringstream out;
-        out << "GTable::" << member
-            << ": (row=" << row
-            << ", col=" << column
-            << ") is out of valid range of (0, 0) through ("
-            << numRows() << ", " << numCols() << ")";
-        error(out.str());
-    }
+    require::inRange2D(row, column, 0, 0, numRows(), numCols(), "GTable::" + member, "row", "column");
 }
 
-void GTable::checkSize(const std::string& member, double width, double height) const {
-    if (width < 0 || height < 0) {
-        std::ostringstream out;
-        out << "GTable::" << member << ": width/height cannot be negative";
-        error(out.str());
-    }
+void GTable::checkRow(const std::string& member, int row) const {
+    require::inRange(row, 0, numRows(), "GTable::" + member, "row");
 }
 
 void GTable::clear() {
@@ -189,7 +176,7 @@ GTable::ColumnHeaderStyle GTable::getColumnHeaderStyle() const {
 }
 
 double GTable::getColumnWidth(int column) const {
-    checkIndex("getColumnWidth", /* row */ 0, column);
+    checkColumn("getColumnWidth", column);
     return _iqtableview->columnWidth(column);
 }
 
@@ -212,7 +199,7 @@ GTable::TableStyle GTable::getMergedStyleForCell(int row, int column) {
 }
 
 double GTable::getRowHeight(int row) const {
-    checkIndex("getRowHeight", row, /* column */ 0);
+    checkRow("getRowHeight", row);
     return _iqtableview->rowHeight(row);
 }
 
@@ -305,7 +292,7 @@ void GTable::requestFocus() {
 }
 
 void GTable::resize(int newNumRows, int newNumCols) {
-    checkDimensions("resize", newNumRows, newNumCols);
+    require::nonNegative2D(newNumRows, newNumCols, "GTable::resize", "rows", "columns");
     GThread::runOnQtGuiThread([this, newNumRows, newNumCols]() {
         int oldNumRows = numRows();
         int oldNumCols = numCols();
@@ -338,6 +325,7 @@ bool GTable::rowColumnHeadersVisible() const {
 }
 
 void GTable::select(int row, int column) {
+    checkIndex("select", row, column);
     GThread::runOnQtGuiThread([this, row, column]() {
         QModelIndex index = _iqtableview->model()->index(row, column);
         _iqtableview->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
@@ -449,7 +437,7 @@ void GTable::setColor(const std::string& color) {
 }
 
 void GTable::setColumnAlignment(int column, HorizontalAlignment alignment) {
-    checkIndex("setColumnAlignment", /* row */ 0, column);
+    checkColumn("setColumnAlignment", column);
 
     GThread::runOnQtGuiThread([this, column, alignment]() {
         // save this alignment in the column style (for later cells on resize() etc)
@@ -464,7 +452,7 @@ void GTable::setColumnAlignment(int column, HorizontalAlignment alignment) {
 }
 
 void GTable::setColumnBackground(int column, int rgb) {
-    checkIndex("setColumnBackground", /* row */ 0, column);
+    checkColumn("setColumnBackground", column);
 
     GThread::runOnQtGuiThread([this, column, rgb]() {
         // save this background color in the column style (for later cells on resize() etc)
@@ -483,7 +471,7 @@ void GTable::setColumnBackground(int column, const std::string& color) {
 }
 
 void GTable::setColumnFont(int column, const std::string& font) {
-    checkIndex("setColumnFont", /* row */ 0, column);
+    checkColumn("setColumnFont", column);
 
     GThread::runOnQtGuiThread([this, column, font]() {
         // save this font in the column style (for later cells on resize() etc)
@@ -498,7 +486,7 @@ void GTable::setColumnFont(int column, const std::string& font) {
 }
 
 void GTable::setColumnForeground(int column, int rgb) {
-    checkIndex("setColumnForeground", /* row */ 0, column);
+    checkColumn("setColumnForeground", column);
 
     GThread::runOnQtGuiThread([this, column, rgb]() {
         // save this foreground color in the column style (for later cells on resize() etc)
@@ -533,7 +521,7 @@ void GTable::setColumnHeaderStyle(GTable::ColumnHeaderStyle style) {
 }
 
 void GTable::setColumnWidth(int column, double width) {
-    checkIndex("setColumnWidth", /* row */ 0, column);
+    checkColumn("setColumnWidth", column);
     if (width < 0) {
         error("GTable::setColumnWidth: width cannot be negative");
     }
@@ -659,7 +647,7 @@ void GTable::setHorizontalAlignment(HorizontalAlignment alignment) {
 }
 
 void GTable::setRowAlignment(int row, HorizontalAlignment alignment) {
-    checkIndex("setRowAlignment", row, /* column */ 0);
+    checkRow("setRowAlignment", row);
 
     // save this alignment in the row style (for later cells on resize() etc)
     GThread::runOnQtGuiThread([this, row, alignment]() {
@@ -674,7 +662,7 @@ void GTable::setRowAlignment(int row, HorizontalAlignment alignment) {
 }
 
 void GTable::setRowBackground(int row, int rgb) {
-    checkIndex("setRowBackground", row, /* column */ 0);
+    checkRow("setRowBackground", row);
 
     // save this background color in the row style (for later cells on resize() etc)
     GThread::runOnQtGuiThread([this, row, rgb]() {
@@ -693,7 +681,7 @@ void GTable::setRowBackground(int row, const std::string& color) {
 }
 
 void GTable::setRowFont(int row, const std::string& font) {
-    checkIndex("setRowFont", row, /* column */ 0);
+    checkRow("setRowFont", row);
 
     // save this font in the row style (for later cells on resize() etc)
     GThread::runOnQtGuiThread([this, row, font]() {
@@ -708,7 +696,7 @@ void GTable::setRowFont(int row, const std::string& font) {
 }
 
 void GTable::setRowForeground(int row, int rgb) {
-    checkIndex("setRowForeground", row, /* column */ 0);
+    checkRow("setRowForeground", row);
 
     // save this foreground color in the row style (for later cells on resize() etc)
     GThread::runOnQtGuiThread([this, row, rgb]() {
@@ -723,7 +711,7 @@ void GTable::setRowForeground(int row, int rgb) {
 }
 
 void GTable::setRowForeground(int row, const std::string& color) {
-    checkIndex("setRowForeground", row, /* column */ 0);
+    checkRow("setRowForeground", row);
     setRowForeground(row, GColor::convertColorToRGB(color));
 }
 
@@ -735,7 +723,7 @@ void GTable::setRowColumnHeadersVisible(bool visible) {
 }
 
 void GTable::setRowHeight(int row, double height) {
-    checkIndex("setRowHeight", row, /* column */ 0);
+    checkRow("setRowHeight", row);
     if (height < 0) {
         error("GTable::setRowHeight: height cannot be negative");
     }
@@ -839,6 +827,7 @@ _Internal_QTableWidget::_Internal_QTableWidget(GTable* gtable, int rows, int col
         : QTableWidget(rows, columns, parent),
           _gtable(gtable),
           _delegate(nullptr) {
+    require::nonNull(gtable, "_Internal_QTableWidget::constructor");
     setObjectName(QString::fromStdString("_Internal_QTableWidget_" + integerToString(gtable->getID())));
     _delegate = new _Internal_QItemDelegate();
     setItemDelegate(_delegate);
@@ -915,6 +904,7 @@ void _Internal_QTableWidget::handleSelectionChange(const QItemSelection& selecte
 }
 
 void _Internal_QTableWidget::keyPressEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QTableWidget::keyPressEvent", "event");
     _lastKeyPressed = event->key();
     bool wasEditing = isEditing();
     if (!wasEditing && event->key() == Qt::Key_Delete) {

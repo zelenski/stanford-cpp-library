@@ -13,6 +13,7 @@
 #include "error.h"
 #include "gthread.h"
 #include "gwindow.h"
+#include "require.h"
 #include "strlib.h"
 
 GChooser::GChooser(QWidget* parent) {
@@ -44,6 +45,7 @@ GChooser::~GChooser() {
 }
 
 void GChooser::addItem(const std::string& item) {
+    require::nonEmpty(item, "GChooser::addItem", "item");
     GThread::runOnQtGuiThread([this, item]() {
         _iqcomboBox->addItem(QString::fromStdString(item));
     });
@@ -52,7 +54,9 @@ void GChooser::addItem(const std::string& item) {
 void GChooser::addItems(const std::initializer_list<std::string>& items) {
     GThread::runOnQtGuiThread([this, &items]() {
         for (const std::string& item : items) {
-            _iqcomboBox->addItem(QString::fromStdString(item));
+            if (!item.empty()) {
+                _iqcomboBox->addItem(QString::fromStdString(item));
+            }
         }
     });
 }
@@ -60,7 +64,9 @@ void GChooser::addItems(const std::initializer_list<std::string>& items) {
 void GChooser::addItems(const Vector<std::string>& items) {
     GThread::runOnQtGuiThread([this, &items]() {
         for (const std::string& item : items) {
-            _iqcomboBox->addItem(QString::fromStdString(item));
+            if (!item.empty()) {
+                _iqcomboBox->addItem(QString::fromStdString(item));
+            }
         }
     });
 }
@@ -69,10 +75,7 @@ void GChooser::checkIndex(const std::string& member, int index, int min, int max
     if (max < 0) {
         max = size() - 1;
     }
-    if (index < min || index > max) {
-        error(member + ": index was " + integerToString(index) + " but must be between "
-              + integerToString(min) + " and " + integerToString(max) + " inclusive");
-    }
+    require::inRange(index, min, max, member, "index");
 }
 
 void GChooser::clearItems() {
@@ -164,6 +167,7 @@ int GChooser::size() const {
 _Internal_QComboBox::_Internal_QComboBox(GChooser* gchooser, QWidget* parent)
         : QComboBox(parent),
           _gchooser(gchooser) {
+    require::nonNull(gchooser, "_Internal_QComboBox::constructor");
     setObjectName(QString::fromStdString("_Internal_QComboBox_" + integerToString(gchooser->getID())));
     connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(handleChange()));
 }

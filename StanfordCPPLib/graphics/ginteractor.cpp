@@ -116,7 +116,7 @@ GPoint GInteractor::getLocation() const {
     return GPoint(getX(), getY());
 }
 
-QWidget* GInteractor::getInternalParent(QWidget* parent) const {
+/* static */ QWidget* GInteractor::getInternalParent(QWidget* parent) {
     return parent ? parent : (QWidget*) GWindow::getLastWindow();
 }
 
@@ -191,7 +191,7 @@ bool GInteractor::isVisible() const {
     return getWidget()->isVisible();
 }
 
-std::string GInteractor::normalizeAccelerator(const std::string& accelerator) const {
+std::string GInteractor::normalizeAccelerator(const std::string& accelerator) {
     std::string acceleratorStr = stringReplace(accelerator, "Alt-", "Alt+");
     acceleratorStr = stringReplace(acceleratorStr, "Command-", "Command+");
     acceleratorStr = stringReplace(acceleratorStr, "Ctrl-", "Ctrl+");

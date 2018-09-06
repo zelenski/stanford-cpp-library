@@ -116,5 +116,3 @@ Direction operator ++(Direction& dir, int) {
     dir = Direction(dir + 1);
     return old;
 }
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized

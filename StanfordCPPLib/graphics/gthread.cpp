@@ -10,6 +10,7 @@
 
 #include "gthread.h"
 #include "geventqueue.h"
+#include "require.h"
 
 GFunctionThread::GFunctionThread(GThunk func)
         : _func(func) {
@@ -107,6 +108,7 @@ void GThread::setMainThread() {
 }
 
 void GThread::sleep(double ms) {
+    require::nonNegative(ms, "GThread::sleep", "delay (ms)");
     getCurrentThread()->msleep((long) ms);
 }
 

@@ -33,6 +33,8 @@ public:
     virtual ~GSlider();
     virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
     virtual int getMajorTickSpacing() const;
+    virtual int getMax() const;
+    virtual int getMin() const;
     virtual int getMinorTickSpacing() const;
     virtual bool getPaintLabels() const;
     virtual bool getPaintTicks() const;
@@ -44,9 +46,12 @@ public:
     virtual void setActionListener(GEventListener func);
     virtual void setActionListener(GEventListenerVoid func);
     virtual void setMajorTickSpacing(int value);
+    virtual void setMax(int max);
+    virtual void setMin(int min);
     virtual void setMinorTickSpacing(int value);
     virtual void setPaintLabels(bool value);
     virtual void setPaintTicks(bool value);
+    virtual void setRange(int min, int max);
     virtual void setSnapToTicks(bool value);
     virtual void setValue(int value);
 

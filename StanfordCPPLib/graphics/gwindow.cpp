@@ -27,6 +27,7 @@
 #include "glabel.h"
 #include "gthread.h"
 #include "qtgui.h"
+#include "require.h"
 #include "strlib.h"
 
 _Internal_QMainWindow* GWindow::_lastWindow = nullptr;
@@ -40,19 +41,16 @@ GWindow::GWindow(double width, double height, bool visible)
           _canvas(nullptr),
           _resizable(true),
           _closeOperation(GWindow::CLOSE_DISPOSE) {
+    require::nonNegative2D(width, height, "GWindow::constructor", "width", "height");
+
     GThread::runOnQtGuiThread([this, width, height, visible]() {
         QtGui::instance()->initializeQt();
         _iqmainwindow = new _Internal_QMainWindow(this);
         _lastWindow = _iqmainwindow;
 
         _contentPane = new GContainer(GContainer::LAYOUT_BORDER);
-//        _contentPane->setMargin(0);
-//        _contentPane->setPadding(0);
-//        _contentPane->setSpacing(0);
         _iqmainwindow->setCentralWidget(_contentPane->getWidget());
 
-        // go ahead and set up canvas when window is loaded
-        // ensureForwardTarget();
         if (width > 0 && height > 0) {
             setSize(width, height);
         }
@@ -85,10 +83,12 @@ void GWindow::_autograder_setPauseEnabled(bool /*enabled*/) {
 }
 
 void GWindow::add(GInteractor* interactor) {
+    require::nonNull(interactor, "GWindow::add");
     addToRegion(interactor, REGION_CENTER);
 }
 
 void GWindow::add(GInteractor* interactor, double x, double y) {
+    require::nonNull(interactor, "GWindow::add");
     interactor->setLocation(x, y);
     addToRegion(interactor, REGION_CENTER);
 }
@@ -103,11 +103,13 @@ void GWindow::add(GInteractor& interactor, double x, double y) {
 }
 
 void GWindow::add(GObject* obj) {
+    require::nonNull(obj, "GWindow::add");
     ensureForwardTarget();
     _canvas->add(obj);
 }
 
 void GWindow::add(GObject* obj, double x, double y) {
+    require::nonNull(obj, "GWindow::add");
     ensureForwardTarget();
     _canvas->add(obj, x, y);
 }
@@ -244,6 +246,7 @@ QMenu* GWindow::addSubMenu(const std::string& menu, const std::string& submenu) 
 }
 
 void GWindow::addToRegion(GInteractor* interactor, Region region) {
+    require::nonNull(interactor, "GWindow::addToRegion");
     if (region == REGION_CENTER) {
         // labels in "GText mode" are added as GText objects to canvas
         if (interactor->getType() == "GLabel") {
@@ -386,7 +389,7 @@ int GWindow::getGObjectCount() const {
     }
 }
 
-QMainWindow* GWindow::getLastWindow() {
+/* static */ QMainWindow* GWindow::getLastWindow() {
     return _lastWindow;
 }
 
@@ -513,11 +516,10 @@ void GWindow::loadCanvasPixels(const std::string& filename) {
 
 void GWindow::pack() {
     setSize(getPreferredSize());
-//    QSize minimumSize = _iqmainwindow->centralWidget()->minimumSizeHint();
-//    setSize(minimumSize.width(), minimumSize.height());
 }
 
 void GWindow::pause(double ms) {
+    require::nonNegative(ms, "GWindow::pause", "milliseconds");
     GThread::sleep(ms);
 }
 
@@ -530,8 +532,9 @@ void GWindow::rememberPosition() {
 }
 
 void GWindow::remove(GObject* obj) {
+    require::nonNull(obj, "GWindow::remove");
     if (_canvas) {
-        _canvas->remove(obj);   // runs on Qt GUI thread
+        _canvas->remove(obj);
     }
 }
 
@@ -542,6 +545,7 @@ void GWindow::remove(GObject& obj) {
 }
 
 void GWindow::remove(GInteractor* interactor) {
+    require::nonNull(interactor, "GWindow::remove");
     _contentPane->remove(interactor);
 }
 
@@ -556,6 +560,8 @@ void GWindow::removeClickListener() {
 }
 
 void GWindow::removeFromRegion(GInteractor* interactor, Region region) {
+    require::nonNull(interactor, "GWindow::removeFromRegion");
+
     // special case: labels in "GText mode" are added to canvas
     if (region == REGION_CENTER && interactor->getType() == "GLabel") {
         GLabel* label = (GLabel*) interactor;
@@ -642,6 +648,7 @@ void GWindow::setCanvasHeight(double height) {
 }
 
 void GWindow::setCanvasSize(double width, double height) {
+    require::nonNegative2D(width, height, "GWindow::setCanvasSize", "width", "height");
     ensureForwardTarget();
     _canvas->setMinimumSize(width, height);    // runs on Qt GUI thread
     _canvas->setPreferredSize(width, height);
@@ -795,6 +802,7 @@ void GWindow::setResizable(bool resizable) {
 }
 
 void GWindow::setSize(double width, double height) {
+    require::nonNegative2D(width, height, "GWindow::setSize", "width", "height");
     GThread::runOnQtGuiThread([this, width, height]() {
         if (isResizable()) {
             _iqmainwindow->resize((int) width, (int) height);
@@ -809,6 +817,7 @@ void GWindow::setSize(const GDimension& size) {
 }
 
 void GWindow::setTimerListener(double ms, GEventListener func) {
+    require::nonNegative(ms, "GWindow::setTimerListener", "delay (ms)");
     setEventListener("timer", func);
     GThread::runOnQtGuiThread([this, ms]() {
         _iqmainwindow->timerStart(ms);
@@ -816,6 +825,7 @@ void GWindow::setTimerListener(double ms, GEventListener func) {
 }
 
 void GWindow::setTimerListener(double ms, GEventListenerVoid func) {
+    require::nonNegative(ms, "GWindow::setTimerListener", "delay (ms)");
     setEventListener("timer", func);
     GThread::runOnQtGuiThread([this, ms]() {
         _iqmainwindow->timerStart(ms);
@@ -884,6 +894,7 @@ void GWindow::show() {
 }
 
 void GWindow::sleep(double ms) {
+    require::nonNegative(ms, "GWindow::sleep", "delay (ms)");
     GThread::sleep(ms);
 }
 
@@ -958,11 +969,13 @@ void repaint() {
 _Internal_QMainWindow::_Internal_QMainWindow(GWindow* gwindow, QWidget* parent)
         : QMainWindow(parent),
           _gwindow(gwindow) {
+    require::nonNull(gwindow, "_Internal_QMainWindow::constructor");
     GThread::ensureThatThisIsTheQtGuiThread("GWindow internal initialization");
     setObjectName(QString::fromStdString("_Internal_QMainWindow"));
 }
 
 void _Internal_QMainWindow::changeEvent(QEvent* event) {
+    require::nonNull(event, "_Internal_QMainWindow::changeEvent", "event");
     QMainWindow::changeEvent(event);   // call super
     if (event->type() != QEvent::WindowStateChange) {
         return;
@@ -985,6 +998,7 @@ void _Internal_QMainWindow::changeEvent(QEvent* event) {
 }
 
 void _Internal_QMainWindow::closeEvent(QCloseEvent* event) {
+    require::nonNull(event, "_Internal_QMainWindow::closeEvent", "event");
     // send "closing" event before window closes
     _gwindow->fireGEvent(event, WINDOW_CLOSING, "closing");
 
@@ -1016,16 +1030,19 @@ void _Internal_QMainWindow::handleMenuAction(const std::string& menu, const std:
 }
 
 void _Internal_QMainWindow::keyPressEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QMainWindow::keyPressEvent", "event");
     QMainWindow::keyPressEvent(event);   // call super
     _gwindow->processKeyPressEventInternal(event);
 }
 
 void _Internal_QMainWindow::resizeEvent(QResizeEvent* event) {
+    require::nonNull(event, "_Internal_QMainWindow::resizeEvent", "event");
     QMainWindow::resizeEvent(event);   // call super
     _gwindow->fireGEvent(event, WINDOW_RESIZED, "resize");
 }
 
 void _Internal_QMainWindow::timerEvent(QTimerEvent* event) {
+    require::nonNull(event, "_Internal_QMainWindow::timerEvent", "event");
     QMainWindow::timerEvent(event);   // call super
     _gwindow->fireGEvent(event, TIMER_TICKED, "timer");
 }
@@ -1039,12 +1056,7 @@ bool _Internal_QMainWindow::timerExists(int id) {
 }
 
 int _Internal_QMainWindow::timerStart(double ms) {
-    // TODO: start from Qt GUI thread?
-    // QTimer* timer = new QTimer(this);
-    // connect(timer, SIGNAL(timeout()), this, SLOT(processTimerEvent()));
-    // timer->start((int) ms);
-    // TODO: when to free timer memory?
-
+    require::nonNegative(ms, "_Internal_QMainWindow::timerStart", "delay (ms)");
     int timerID = startTimer((int) ms);
     _timerIDs.add(timerID);
     return timerID;

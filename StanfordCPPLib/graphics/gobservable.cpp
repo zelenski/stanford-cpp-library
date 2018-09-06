@@ -14,6 +14,7 @@
 #include <sstream>
 #include "geventqueue.h"
 #include "gthread.h"
+#include "require.h"
 #include "strlib.h"
 
 GObservable::GObservable()
@@ -52,6 +53,7 @@ void GObservable::fireEvent(GEvent& event) {
 void GObservable::fireGEvent(QEvent* event,
                              EventType eventType,
                              const std::string& eventName) {
+    require::nonNull(event, "GObservable::fireGEvent", "event");
     GEvent generalEvent(
                 /* class  */ MOUSE_EVENT,
                 /* type   */ eventType,
@@ -64,6 +66,7 @@ void GObservable::fireGEvent(QEvent* event,
 void GObservable::fireGEvent(QCloseEvent* event,
                              EventType eventType,
                              const std::string& eventName) {
+    require::nonNull(event, "GObservable::fireGEvent", "event");
     GEvent windowEvent(
                 /* class  */ WINDOW_EVENT,
                 /* type   */ eventType,
@@ -76,6 +79,7 @@ void GObservable::fireGEvent(QCloseEvent* event,
 void GObservable::fireGEvent(QKeyEvent* event,
                              EventType eventType,
                              const std::string& eventName) {
+    require::nonNull(event, "GObservable::fireGEvent", "event");
     GEvent keyEvent(
                 /* class  */ KEY_EVENT,
                 /* type   */ eventType,
@@ -98,6 +102,7 @@ void GObservable::fireGEvent(QMouseEvent* event,
                              EventType eventType,
                              const std::string& eventName,
                              const std::string& actionCommand) {
+    require::nonNull(event, "GObservable::fireGEvent", "event");
     GEvent mouseEvent(
                 /* class  */ MOUSE_EVENT,
                 /* type   */ eventType,
@@ -115,6 +120,7 @@ void GObservable::fireGEvent(QMouseEvent* event,
 void GObservable::fireGEvent(QResizeEvent* event,
                              EventType /* eventType */,
                              const std::string& eventName) {
+    require::nonNull(event, "GObservable::fireGEvent", "event");
     GEvent windowEvent(
                 /* class  */ WINDOW_EVENT,
                 /* type   */ WINDOW_RESIZED,
@@ -127,6 +133,7 @@ void GObservable::fireGEvent(QResizeEvent* event,
 void GObservable::fireGEvent(QTimerEvent* event,
                              EventType /* eventType */,
                              const std::string& /* eventName */) {
+    require::nonNull(event, "GObservable::fireGEvent", "event");
     GEvent timerEvent(
                 /* class  */ TIMER_EVENT,
                 /* type   */ TIMER_TICKED,
@@ -139,6 +146,7 @@ void GObservable::fireGEvent(QTimerEvent* event,
 void GObservable::fireGEvent(QWheelEvent* event,
                              EventType eventType,
                              const std::string& eventName) {
+    require::nonNull(event, "GObservable::fireGEvent", "event");
     GEvent wheelEvent(
                 /* class  */ MOUSE_EVENT,
                 /* type   */ eventType,
@@ -155,6 +163,7 @@ void GObservable::fireGEvent(QWheelEvent* event,
 void GObservable::fireGEvent(QWindowStateChangeEvent* event,
                              EventType eventType,
                              const std::string& eventName) {
+    require::nonNull(event, "GObservable::fireGEvent", "event");
     GEvent windowEvent(
                 /* class  */ WINDOW_EVENT,
                 /* type   */ eventType,

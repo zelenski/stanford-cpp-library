@@ -28,7 +28,7 @@ public:
         SCROLLBAR_NEVER
     };
 
-    GScrollPane(GInteractor* interactor = nullptr, QWidget* parent = nullptr);
+    GScrollPane(GInteractor* interactor, QWidget* parent = nullptr);
     virtual ~GScrollPane();
     virtual ScrollBarPolicy getHorizontalScrollBarPolicy() const;
     virtual ScrollBarPolicy getVerticalScrollBarPolicy() const;
@@ -40,7 +40,6 @@ public:
     virtual void setHorizontalScrollBarPolicy(ScrollBarPolicy policy);
     virtual void setScrollBarPolicy(ScrollBarPolicy policy);
     virtual void setVerticalScrollBarPolicy(ScrollBarPolicy policy);
-    virtual void setInteractor(GInteractor* interactor);
     virtual void setInteractorStretch(bool stretch);
 
 private:

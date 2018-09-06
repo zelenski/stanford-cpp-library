@@ -15,6 +15,7 @@
 #include <QKeySequence>
 #include "gthread.h"
 #include "gwindow.h"
+#include "require.h"
 
 GButton::GButton(const std::string& text, const std::string& iconFileName, QWidget* parent) {
     GThread::runOnQtGuiThread([this, parent]() {
@@ -150,6 +151,7 @@ void GButton::setTextPosition(SwingConstants /*horizontal*/, SwingConstants /*ve
 _Internal_QPushButton::_Internal_QPushButton(GButton* button, QWidget* parent)
         : QToolButton(parent),
           _gbutton(button) {
+    require::nonNull(button, "_Internal_QPushButton::constructor");
     setObjectName(QString::fromStdString("_Internal_QPushButton_" + integerToString(button->getID())));
     setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     connect(this, SIGNAL(clicked()), this, SLOT(handleClick()));
@@ -167,6 +169,7 @@ void _Internal_QPushButton::handleClick() {
 }
 
 void _Internal_QPushButton::mouseDoubleClickEvent(QMouseEvent* event) {
+    require::nonNull(event, "_Internal_QPushButton::mouseDoubleClickEvent", "event");
     QWidget::mouseDoubleClickEvent(event);   // call super
     emit doubleClicked();
     if (!_gbutton->isAcceptingEvent("doubleclick")) return;

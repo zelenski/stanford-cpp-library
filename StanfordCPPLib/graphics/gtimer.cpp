@@ -14,13 +14,14 @@
 #include "error.h"
 #include "gthread.h"
 #include "gwindow.h"
+#include "require.h"
 
 /* Implementation of the GTimer class */
 
 GTimer::GTimer(double milliseconds)
-        : _ms(milliseconds),
+        : _ms(0),
           _id(-1) {
-    // empty
+    setDelay(milliseconds);
 }
 
 double GTimer::getDelay() const {
@@ -37,6 +38,7 @@ void GTimer::restart() {
 }
 
 void GTimer::setDelay(double ms) {
+    require::positive(ms, "GTimer::setDelay", "delay (ms)");
     _ms = ms;
     if (isStarted()) {
         restart();

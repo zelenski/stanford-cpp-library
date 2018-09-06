@@ -14,6 +14,7 @@
 #include "gcheckbox.h"
 #include "gthread.h"
 #include "gwindow.h"
+#include "require.h"
 #include "strlib.h"
 
 GCheckBox::GCheckBox(const std::string& text, bool checked, QWidget* parent) {
@@ -105,6 +106,7 @@ void GCheckBox::setText(const std::string& text) {
 _Internal_QCheckBox::_Internal_QCheckBox(GCheckBox* gcheckBox, bool checked, QWidget* parent)
         : QCheckBox(parent),
           _gcheckBox(gcheckBox) {
+    require::nonNull(gcheckBox, "_Internal_QCheckBox::constructor");
     setObjectName(QString::fromStdString("_Internal_QCheckBox_" + integerToString(gcheckBox->getID())));
     setChecked(checked);
     connect(this, SIGNAL(stateChanged(int)), this, SLOT(handleStateChange(int)));
@@ -121,6 +123,7 @@ void _Internal_QCheckBox::handleStateChange(int /* state */) {
 }
 
 void _Internal_QCheckBox::mouseDoubleClickEvent(QMouseEvent* event) {
+    require::nonNull(event, "_Internal_QCheckBox::mouseDoubleClickEvent");
     QWidget::mouseDoubleClickEvent(event);   // call super
     emit doubleClicked();
     if (!_gcheckBox->isAcceptingEvent("doubleclick")) return;

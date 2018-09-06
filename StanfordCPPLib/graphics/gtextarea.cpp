@@ -16,6 +16,7 @@
 #include "gfont.h"
 #include "gthread.h"
 #include "gwindow.h"
+#include "require.h"
 #include "strlib.h"
 
 GTextArea::GTextArea(int rows, int columns, QWidget* parent)
@@ -251,6 +252,7 @@ void GTextArea::selectAll() {
 }
 
 void GTextArea::setColumns(int columns) {
+    require::nonNegative(columns, "GTextArea::setColumns");
     double desiredWidth = getRowColumnSize().getWidth() * columns;
     setPreferredSize(desiredWidth, getHeight());
     setSize(desiredWidth, getHeight());
@@ -288,12 +290,14 @@ void GTextArea::setPlaceholder(const std::string& text) {
 }
 
 void GTextArea::setRows(int rows) {
+    require::nonNegative(rows, "GTextArea::setRows");
     double desiredHeight = getRowColumnSize().getHeight() * rows;
     setPreferredSize(getWidth(), desiredHeight);
     setSize(getWidth(), desiredHeight);
 }
 
 void GTextArea::setRowsColumns(int rows, int columns) {
+    require::nonNegative2D(rows, columns, "GTextArea::setRowsColumns", "rows", "columns");
     double desiredWidth = getRowColumnSize().getWidth() * columns;
     double desiredHeight = getRowColumnSize().getHeight() * rows;
     setPreferredSize(desiredWidth, desiredHeight);
@@ -352,6 +356,7 @@ void GTextArea::setTextChangeListener(GEventListenerVoid func) {
 _Internal_QTextEdit::_Internal_QTextEdit(GTextArea* gtextArea, QWidget* parent)
         : QTextEdit(parent),
           _gtextarea(gtextArea) {
+    require::nonNull(gtextArea, "_Internal_QTextEdit::constructor");
     setObjectName(QString::fromStdString("_Internal_QTextEdit_" + integerToString(gtextArea->getID())));
     ensureCursorVisible();
     this->document()->setUndoRedoEnabled(false);
@@ -377,6 +382,7 @@ void _Internal_QTextEdit::handleTextChange() {
 }
 
 void _Internal_QTextEdit::keyPressEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QTextEdit::keyPressEvent", "event");
     event->accept();
     _gtextarea->fireGEvent(event, KEY_PRESSED, "keypress");
     if (event->isAccepted()) {
@@ -385,6 +391,7 @@ void _Internal_QTextEdit::keyPressEvent(QKeyEvent* event) {
 }
 
 void _Internal_QTextEdit::keyReleaseEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QTextEdit::keyPressEvent", "event");
     event->accept();
     _gtextarea->fireGEvent(event, KEY_RELEASED, "keyrelease");
     if (event->isAccepted()) {
@@ -393,6 +400,7 @@ void _Internal_QTextEdit::keyReleaseEvent(QKeyEvent* event) {
 }
 
 void _Internal_QTextEdit::mousePressEvent(QMouseEvent* event) {
+    require::nonNull(event, "_Internal_QTextEdit::keyPressEvent", "event");
     event->accept();
     if (!_gtextarea->isAcceptingEvent("mousepress")) return;
     if (_gtextarea->isAcceptingEvent("mousepress")) {
@@ -404,6 +412,7 @@ void _Internal_QTextEdit::mousePressEvent(QMouseEvent* event) {
 }
 
 void _Internal_QTextEdit::mouseReleaseEvent(QMouseEvent* event) {
+    require::nonNull(event, "_Internal_QTextEdit::keyPressEvent", "event");
     event->accept();
     if (!_gtextarea->isAcceptingEvent("mouserelease")) return;
     if (_gtextarea->isAcceptingEvent("mouserelease")) {

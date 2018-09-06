@@ -58,7 +58,7 @@ private:
     Q_DISABLE_COPY(GRadioButton)
 
     static Map<std::string, QButtonGroup*> _buttonGroups;
-    QButtonGroup* getButtonGroup(const std::string& group);
+    static QButtonGroup* getButtonGroup(const std::string& group);
 
     _Internal_QRadioButton* _iqradioButton;
 

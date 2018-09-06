@@ -14,6 +14,7 @@
 #include "gradiobutton.h"
 #include "gthread.h"
 #include "gwindow.h"
+#include "require.h"
 #include "strlib.h"
 
 Map<std::string, QButtonGroup*> GRadioButton::_buttonGroups;
@@ -105,7 +106,7 @@ void GRadioButton::setText(const std::string& text) {
     });
 }
 
-QButtonGroup* GRadioButton::getButtonGroup(const std::string& group) {
+/* static */ QButtonGroup* GRadioButton::getButtonGroup(const std::string& group) {
     if (!_buttonGroups.containsKey(group)) {
         GThread::runOnQtGuiThread([group]() {
             _buttonGroups.put(group, new QButtonGroup());
@@ -118,6 +119,7 @@ QButtonGroup* GRadioButton::getButtonGroup(const std::string& group) {
 _Internal_QRadioButton::_Internal_QRadioButton(GRadioButton* gradioButton, bool checked, QWidget* parent)
         : QRadioButton(parent),
           _gradioButton(gradioButton) {
+    require::nonNull(gradioButton, "_Internal_QRadioButton::constructor");
     setObjectName(QString::fromStdString("_Internal_QRadioButton_" + integerToString(gradioButton->getID())));
     setChecked(checked);
     // We handle the clicked signal rather than toggled because, in a radio button group,
@@ -137,6 +139,7 @@ void _Internal_QRadioButton::handleClick() {
 }
 
 void _Internal_QRadioButton::mouseDoubleClickEvent(QMouseEvent* event) {
+    require::nonNull(event, "_Internal_QRadioButton::mouseDoubleClickEvent");
     QWidget::mouseDoubleClickEvent(event);   // call super
     emit doubleClicked();
     if (!_gradioButton->isAcceptingEvent("doubleclick")) return;

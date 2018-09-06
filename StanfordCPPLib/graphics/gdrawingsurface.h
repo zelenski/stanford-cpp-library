@@ -133,7 +133,7 @@ protected:
     /*
      * Throws an error if the given x/y values are out of bounds.
      */
-    void checkBounds(const std::string& member, double x, double y) const;
+    void checkBounds(const std::string& member, double x, double y, double width, double height) const;
 
     /*
      * Throws an error if the given rgb value is not a valid color.

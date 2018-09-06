@@ -228,14 +228,14 @@ void testQwindow() {
     textArea->setTextChangeListener([](GEvent) {
         cout << "textarea text changed! text is:" << endl << textArea->getText() << endl;
     });
-    // window->addToRegion(textArea, "Center");
+    window->addToRegion(textArea, "Center");
     cout << "textarea:  " << textArea->toString() << endl;
 
 
     // window->pack();
 
-    while (true) {
-        GEvent event = waitForEvent(TIMER_EVENT);
-        cout << "event: " << event << endl;
-    }
+//    while (true) {
+//        GEvent event = waitForEvent(TIMER_EVENT);
+//        cout << "event: " << event << endl;
+//    }
 }

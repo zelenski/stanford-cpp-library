@@ -18,6 +18,7 @@
 #include "glayout.h"
 #include "gthread.h"
 #include "gwindow.h"
+#include "require.h"
 #include "strlib.h"
 
 GLabel::GLabel(const std::string& text, const std::string& iconFileName, QWidget* parent)
@@ -229,7 +230,7 @@ void GLabel::setText(const std::string& text) {
 }
 
 void GLabel::setTextPosition(GInteractor::TextPosition position) {
-    // TODO
+    // TODO: doesn't really work because a label can't have both text and icon in Qt
     if (position == GInteractor::TEXT_UNDER_ICON) {
         // _iqpushbutton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     } else if (position == GInteractor::TEXT_BESIDE_ICON) {
@@ -268,10 +269,12 @@ void GLabel::setY(double y) {
 _Internal_QLabel::_Internal_QLabel(GLabel* glabel, QWidget* parent)
         : QLabel(parent),
           _glabel(glabel) {
+    require::nonNull(glabel, "_Internal_QLabel::constructor");
     setObjectName(QString::fromStdString("_Internal_QLabel_" + integerToString(glabel->getID())));
 }
 
 void _Internal_QLabel::mouseDoubleClickEvent(QMouseEvent* event) {
+    require::nonNull(event, "_Internal_QLabel::mouseDoubleClickEvent", "event");
     QWidget::mouseDoubleClickEvent(event);   // call super
     emit doubleClicked();
     if (!_glabel->isAcceptingEvent("doubleclick")) return;
@@ -288,6 +291,7 @@ void _Internal_QLabel::mouseDoubleClickEvent(QMouseEvent* event) {
 }
 
 void _Internal_QLabel::mousePressEvent(QMouseEvent* event) {
+    require::nonNull(event, "_Internal_QLabel::mousePressEvent", "event");
     QWidget::mousePressEvent(event);   // call super
 
     // fire the signal/event only for left-clicks

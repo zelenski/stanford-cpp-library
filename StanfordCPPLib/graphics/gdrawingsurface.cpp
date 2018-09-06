@@ -13,6 +13,7 @@
 #include <QPainter>
 #include "gcolor.h"
 #include "gfont.h"
+#include "require.h"
 #include "strlib.h"
 
 GDrawingSurface::GDrawingSurface()
@@ -34,29 +35,21 @@ GDrawingSurface::~GDrawingSurface() {
     _forwardTarget = nullptr;
 }
 
-void GDrawingSurface::checkBounds(const std::string& /* member */, double /* x */, double /* y */) const {
-//    if (!inBounds(x, y)) {
-//        error(getType() + "::" + member
-//              + ": (x=" + integerToString((int) x)
-//              + ", y=" + integerToString((int) y)
-//              + ") is out of valid range of (0, 0) through ("
-//              + integerToString((int) getWidth() - 1) + ", "
-//              + integerToString((int) getHeight() - 1) + ")");
-//    }
+void GDrawingSurface::checkBounds(const std::string& member, double x, double y, double width, double height) const {
+    require::inRange2D(x, y, width - 1, height - 1, member);
 }
 
 void GDrawingSurface::checkColor(const std::string& /* member */, int /* rgb */) const {
     // I think this code is wrong; it ignores the possibility of alpha values
     // or of the top bits being set to 255 (all 1) by default by Qt libraries
 //    if (rgb < 0x0 || rgb > 0xffffff) {
-//        error("GBufferedImage::" + member
-//              + ": color is outside of range 0x000000 through 0xffffff");
+//        error(member + ": color is outside of range 0x000000 through 0xffffff");
 //    }
 }
 
 void GDrawingSurface::checkSize(const std::string& /* member */, double /* width */, double /* height */) const {
 //    if (width < 0 || height < 0) {
-//        error(getType() + "::" + member + ": width/height cannot be negative");
+//        error(member + ": width/height cannot be negative");
 //    }
 //    if (width > GCanvas::WIDTH_HEIGHT_MAX
 //            || height > GCanvas::WIDTH_HEIGHT_MAX) {
@@ -88,6 +81,7 @@ void GDrawingSurface::conditionalRepaintRegion(const GRectangle& bounds) {
 }
 
 void GDrawingSurface::draw(GObject* gobj, double x, double y) {
+    require::nonNull(gobj, "GDrawingSurface::draw");
     gobj->setLocation(x, y);
     draw(gobj);
 }

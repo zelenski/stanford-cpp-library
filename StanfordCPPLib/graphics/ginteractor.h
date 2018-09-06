@@ -116,9 +116,9 @@ protected:
     int _id;
     GContainer* _container;
 
+    static QWidget* getInternalParent(QWidget* parent);
+    static std::string normalizeAccelerator(const std::string& accelerator);
     virtual std::string getDefaultInteractorName() const;
-    virtual QWidget* getInternalParent(QWidget* parent) const;
-    virtual std::string normalizeAccelerator(const std::string& accelerator) const;
     virtual void setContainer(GContainer* container);
 
     friend class GContainer;

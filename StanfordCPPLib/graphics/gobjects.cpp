@@ -26,6 +26,7 @@
 #include "gcolor.h"
 #include "gfont.h"
 #include "gthread.h"
+#include "require.h"
 #include "private/static.h"
 
 
@@ -652,12 +653,14 @@ GCompound::GCompound()
 }
 
 void GCompound::add(GObject* gobj) {
+    require::nonNull(gobj, "GCompound::add");
     _contents.add(gobj);
     gobj->_parent = this;
     conditionalRepaintRegion(gobj->getBounds().enlargedBy((gobj->getLineWidth() + 1) / 2));
 }
 
 void GCompound::add(GObject* gobj, double x, double y) {
+    require::nonNull(gobj, "GCompound::add");
     gobj->setLocation(x, y);
     add(gobj);   // calls conditionalRepaint
 }
@@ -706,6 +709,9 @@ bool GCompound::contains(double x, double y) const {
 }
 
 void GCompound::draw(QPainter* painter) {
+    if (!painter) {
+        return;
+    }
     // initializeBrushAndPen(painter);   //
     for (GObject* obj : _contents) {
         obj->draw(painter);
@@ -776,6 +782,7 @@ bool GCompound::isEmpty() const {
 }
 
 void GCompound::remove(GObject* gobj) {
+    require::nonNull(gobj, "GCompound::remove");
     int index = findGObject(gobj);
     if (index != -1) {
         removeAt(index);   // calls conditionalRepaint
@@ -828,10 +835,10 @@ void GCompound::repaintRegion(int x, int y, int width, int height) {
 
     // actual repainting must be done in the Qt GUI thread
     if (GThread::iAmRunningOnTheQtGuiThread()) {
-        _widget->repaint(x, y, width, height);   // TODO: change to update()?
+        _widget->repaint(x, y, width, height);
     } else {
         GThread::runOnQtGuiThread([this, x, y, width, height]() {
-            _widget->repaint(x, y, width, height);   // TODO: change to update()?
+            _widget->repaint(x, y, width, height);
         });
     }
 }
@@ -842,6 +849,7 @@ void GCompound::repaintRegion(const GRectangle& bounds) {
 }
 
 void GCompound::sendBackward(GObject* gobj) {
+    require::nonNull(gobj, "GCompound::sendBackward");
     int index = findGObject(gobj);
     if (index == -1) {
         return;
@@ -855,6 +863,7 @@ void GCompound::sendBackward(GObject* gobj) {
 }
 
 void GCompound::sendForward(GObject* gobj) {
+    require::nonNull(gobj, "GCompound::sendForward");
     int index = findGObject(gobj);
     if (index == -1) {
         return;
@@ -868,6 +877,7 @@ void GCompound::sendForward(GObject* gobj) {
 }
 
 void GCompound::sendToBack(GObject* gobj) {
+    require::nonNull(gobj, "GCompound::sendToBack");
     int index = findGObject(gobj);
     if (index == -1) {
         return;
@@ -881,6 +891,7 @@ void GCompound::sendToBack(GObject* gobj) {
 }
 
 void GCompound::sendToFront(GObject* gobj) {
+    require::nonNull(gobj, "GCompound::sendToFront");
     int index = findGObject(gobj);
     if (index == -1) {
         return;
@@ -914,11 +925,18 @@ GImage::GImage(const std::string& filename, double x, double y)
             error("GImage: file not found: \"" + filename + "\"");
         }
         // load image
-        _qimage = new QImage;
-        if (_qimage->load(QString::fromStdString(_filename))) {
-            _width = _qimage->width();
-            _height = _qimage->height();
-        } else {
+        bool hasError = false;
+        GThread::runOnQtGuiThread([this, filename, &hasError]() {
+            _qimage = new QImage;
+            if (_qimage->load(QString::fromStdString(_filename))) {
+                _width = _qimage->width();
+                _height = _qimage->height();
+            } else {
+                hasError = true;
+            }
+        });
+
+        if (hasError) {
             error("GImage: unable to load image from: \"" + filename + "\"");
         }
     }
@@ -930,6 +948,9 @@ GImage::~GImage() {
 }
 
 void GImage::draw(QPainter* painter) {
+    if (!painter) {
+        return;
+    }
     painter->drawImage((int) getX(), (int) getY(), *_qimage);
 }
 
@@ -954,9 +975,9 @@ GLine::GLine(double x0, double y0, double x1, double y1, GObject::LineStyle line
 }
 
 GLine::GLine(const GPoint& p0, const GPoint& p1)
-    : GObject(p0.getX(), p0.getY()),
-      _dx(p1.getX() - p0.getX()),
-      _dy(p1.getY() - p0.getY()) {
+        : GObject(p0.getX(), p0.getY()),
+          _dx(p1.getX() - p0.getX()),
+          _dy(p1.getY() - p0.getY()) {
     // empty
 }
 
@@ -997,6 +1018,9 @@ bool GLine::contains(double x, double y) const {
 }
 
 void GLine::draw(QPainter* painter) {
+    if (!painter) {
+        return;
+    }
     initializeBrushAndPen(painter);
     painter->drawLine((int) getX(), (int) getY(), (int) (getX() + _dx), (int) getY() + _dy);
 }
@@ -1071,6 +1095,9 @@ bool GOval::contains(double x, double y) const {
 }
 
 void GOval::draw(QPainter* painter) {
+    if (!painter) {
+        return;
+    }
     initializeBrushAndPen(painter);
     painter->drawEllipse((int) getX(), (int) getY(), (int) getWidth(), (int) getHeight());
 }
@@ -1185,6 +1212,9 @@ bool GPolygon::contains(double x, double y) const {
 }
 
 void GPolygon::draw(QPainter* painter) {
+    if (!painter) {
+        return;
+    }
     initializeBrushAndPen(painter);
     painter->drawPolygon(QPolygonF(_vertices));
 }
@@ -1243,6 +1273,9 @@ GRect::GRect(double x, double y, double width, double height)
 }
 
 void GRect::draw(QPainter* painter) {
+    if (!painter) {
+        return;
+    }
     initializeBrushAndPen(painter);
     painter->drawRect((int) getX(), (int) getY(), (int) getWidth(), (int) getHeight());
 }
@@ -1267,7 +1300,7 @@ GRoundRect::GRoundRect(double width, double height)
 GRoundRect::GRoundRect(double width, double height, double corner)
         : GRect(/* x */ 0, /* y */ 0, width, height),
           _corner(corner) {
-    // empty
+    require::nonNegative(corner, "GRoundRect::constructor", "corner");
 }
 
 GRoundRect::GRoundRect(double x, double y, double width, double height)
@@ -1279,7 +1312,7 @@ GRoundRect::GRoundRect(double x, double y, double width, double height)
 GRoundRect::GRoundRect(double x, double y, double width, double height, double corner)
         : GRect(x, y, width, height),
           _corner(corner) {
-    // empty
+    require::nonNegative(corner, "GRoundRect::constructor", "corner");
 }
 
 bool GRoundRect::contains(double x, double y) const {
@@ -1310,6 +1343,9 @@ bool GRoundRect::contains(double x, double y) const {
 }
 
 void GRoundRect::draw(QPainter* painter) {
+    if (!painter) {
+        return;
+    }
     initializeBrushAndPen(painter);
     painter->drawRoundRect((int) getX(), (int) getY(),
                            (int) getWidth(), (int) getHeight(),
@@ -1325,6 +1361,7 @@ std::string GRoundRect::getType() const {
 }
 
 void GRoundRect::setCorner(double corner) {
+    require::nonNegative(corner, "GRoundRect::setCorner", "corner");
     _corner = corner;
     repaint();
 }
@@ -1342,6 +1379,9 @@ GText::GText(const std::string& str, double x, double y)
 }
 
 void GText::draw(QPainter* painter) {
+    if (!painter) {
+        return;
+    }
     initializeBrushAndPen(painter);
     painter->drawText((int) getX(), (int) getY(), QString::fromStdString(_text));
 }
