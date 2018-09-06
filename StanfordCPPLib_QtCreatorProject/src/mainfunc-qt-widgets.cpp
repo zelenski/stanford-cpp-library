@@ -6,6 +6,7 @@
 #include "gcolor.h"
 #include "gobjects.h"
 #include "ginteractors.h"
+#include "gtimer.h"
 #include "timer.h"
 using namespace std;
 
@@ -199,6 +200,20 @@ void testQwindow() {
     });
     window->addToRegion(checkboxs, "South");
 
+    GButton* timerButton = new GButton("Timer");
+    GTimer* timer = nullptr;
+    timerButton->setActionListener([&timer]() {
+        if (timer) {
+            timer->stop();
+            delete timer;
+            timer = nullptr;
+        } else {
+            timer = new GTimer(1000);
+            timer->start();
+        }
+    });
+    window->addToRegion(timerButton, "South");
+
 //    window->setRegionAlignment("South", "Center");
 
     // GLabel* oopsButton = new GLabel("I should not show up!!!!!");
@@ -218,4 +233,9 @@ void testQwindow() {
 
 
     // window->pack();
+
+    while (true) {
+        GEvent event = waitForEvent(TIMER_EVENT);
+        cout << "event: " << event << endl;
+    }
 }

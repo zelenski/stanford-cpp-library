@@ -34,6 +34,7 @@
 #include "gtypes.h"
 #include "map.h"
 #include "point.h"
+#include "set.h"
 
 // forward declaration
 class _Internal_QMainWindow;
@@ -324,16 +325,16 @@ public:
     virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
     virtual void resizeEvent(QResizeEvent* event) Q_DECL_OVERRIDE;
     virtual void timerEvent(QTimerEvent* event) Q_DECL_OVERRIDE;
-    virtual bool timerExists();
-    virtual void timerStart(double ms);
-    virtual void timerStop();
+    virtual bool timerExists(int id = -1);
+    virtual int timerStart(double ms);
+    virtual void timerStop(int id = -1);
 
 public slots:
     void handleMenuAction(const std::string& menu, const std::string& item);
 
 private:
     GWindow* _gwindow;
-    int _timerID;
+    Set<int> _timerIDs;
 
     void processTimerEvent();
 

@@ -10,21 +10,6 @@
 
 #include <string>
 
-namespace stanfordcpplib {
-class Platform;
-}
-
-/*
- * Friend type: GTimerData
- * -----------------------
- * This type maintains a reference count to determine when it is
- * possible to free the timer.  The address of this block is used
- * as the timer id.
- */
-struct GTimerData {
-    int refCount;
-};
-
 /*
  * Class: GTimer
  * -------------
@@ -42,18 +27,52 @@ public:
      * Creates a timer object that generates a <code>GTimerEvent</code>
      * each time the specified number of milliseconds has elapsed.  No
      * events are generated until the client calls <code>start</code>
-     * on the timer.  For more details on using timers, see the documentation
+     * on the timer.
+     *
+     * Due to implementation details, you must create at least one GWindow
+     * before you can start() a GTimer object.
+     *
+     * For more details on using timers, see the documentation
      * for the <a href="GTimerEvent-class.html"><code>GTimerEvent</code></a>
      * class.
      */
     GTimer(double milliseconds);
 
     /*
-     * Destructor: ~GTimer
-     * -------------------
-     * Frees the resources associated with the timer.
+     * Method: getDelay
+     * Usage: double delay = timer.getDelay();
+     * ---------------------------------------
+     * Returns the delay in milliseconds between each tick of this timer.
      */
-    virtual ~GTimer();
+    double getDelay() const;
+
+    /*
+     * Method: isStarted
+     * Usage: if (timer.isStarted()) { ... }
+     * -------------------------------------
+     * Returns true if the given timer has been started (via start()).
+     * If you stop the timer or have not started it yet,
+     * this method will return false.
+     */
+    bool isStarted() const;
+
+    /*
+     * Method: restart
+     * Usage: timer.restart();
+     * -----------------------
+     * Stops the timer (if it was started) and then starts it again.
+     */
+    void restart();
+
+    /*
+     * Method: setDelay
+     * Usage: timer.setDelay(delay);
+     * -----------------------------
+     * Changes the delay in milliseconds between each tick of this timer.
+     * If the timer is currently running, calling this method will stop
+     * and restart the timer with the new delay.
+     */
+    void setDelay(double ms);
 
     /*
      * Method: start
@@ -74,33 +93,10 @@ public:
      */
     void stop();
 
-    /*
-     * Friend operator: ==
-     * Usage: if (t1 == t2) ...
-     * ------------------------
-     * Checks whether the two objects refer to the same timer.
-     */
-    bool operator ==(GTimer t2);
-
-    /*
-     * Friend operator: !=
-     * Usage: if (t1 != t2) ...
-     * ------------------------
-     * Checks whether the two objects refer to the different timers.
-     */
-    bool operator !=(GTimer t2);
-
-    /* Private section */
-    GTimer(GTimerData* gtd);
-    GTimer(const GTimer& src);
-    GTimer& operator=(const GTimer& src);
-
 private:
     /* Instance variables */
-    GTimerData* gtd;
-
-    friend class stanfordcpplib::Platform;
-    friend class GTimerEvent;
+    double _ms;
+    int _id;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

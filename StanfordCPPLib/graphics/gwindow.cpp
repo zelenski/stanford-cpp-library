@@ -957,8 +957,7 @@ void repaint() {
 
 _Internal_QMainWindow::_Internal_QMainWindow(GWindow* gwindow, QWidget* parent)
         : QMainWindow(parent),
-          _gwindow(gwindow),
-          _timerID(-1) {
+          _gwindow(gwindow) {
     GThread::ensureThatThisIsTheQtGuiThread("GWindow internal initialization");
     setObjectName(QString::fromStdString("_Internal_QMainWindow"));
 }
@@ -1031,32 +1030,33 @@ void _Internal_QMainWindow::timerEvent(QTimerEvent* event) {
     _gwindow->fireGEvent(event, TIMER_TICKED, "timer");
 }
 
-bool _Internal_QMainWindow::timerExists() {
-    return _timerID >= 0;
-}
-
-void _Internal_QMainWindow::timerStart(double ms) {
-    // TODO: start from Qt GUI thread?
-    // QTimer* timer = new QTimer(this);
-    // connect(timer, SIGNAL(timeout()), this, SLOT(processTimerEvent()));
-    // timer->start((int) ms);
-    // TODO: when to free timer memory?
-
-    if (timerExists()) {
-        timerStop();
+bool _Internal_QMainWindow::timerExists(int id) {
+    if (id >= 0) {
+        return _timerIDs.contains(id);
+    } else {
+        return !_timerIDs.isEmpty();
     }
-    _timerID = startTimer((int) ms);
 }
 
-void _Internal_QMainWindow::timerStop() {
+int _Internal_QMainWindow::timerStart(double ms) {
     // TODO: start from Qt GUI thread?
     // QTimer* timer = new QTimer(this);
     // connect(timer, SIGNAL(timeout()), this, SLOT(processTimerEvent()));
     // timer->start((int) ms);
     // TODO: when to free timer memory?
 
-    if (timerExists()) {
-        killTimer(_timerID);
-        _timerID = -1;
+    int timerID = startTimer((int) ms);
+    _timerIDs.add(timerID);
+    return timerID;
+}
+
+void _Internal_QMainWindow::timerStop(int id) {
+    if (id < 0 && timerExists()) {
+        id = _timerIDs.first();
+    }
+
+    if (timerExists(id)) {
+        killTimer(id);
+        _timerIDs.remove(id);
     }
 }
