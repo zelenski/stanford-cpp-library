@@ -1099,7 +1099,16 @@ void _Internal_QContainer::setRegionAlignment(GContainer::Region region,
 void _Internal_QContainer::setRegionHorizontalAlignment(GContainer::Region region,
                                                         HorizontalAlignment halign) {
     _halignMap[region] = halign;
+    if (_layoutType != GContainer::LAYOUT_BORDER) {
+        setHorizontalAlignment(halign);
+        return;
+    }
+
     QLayout* layout = layoutForRegion(region);
+    if (!layout) {
+        return;
+    }
+
     if (layout == _westLayout || layout == _eastLayout || layout == _centerLayout) {
         // set each widget's horizontal alignment individually
         Qt::Alignment qtAlign = toQtAlignment(halign);
@@ -1140,7 +1149,16 @@ void _Internal_QContainer::setRegionStretch(GContainer::Region region, bool stre
 void _Internal_QContainer::setRegionVerticalAlignment(GContainer::Region region,
                                                       VerticalAlignment valign) {
     _valignMap[region] = valign;
+    if (_layoutType != GContainer::LAYOUT_BORDER) {
+        setVerticalAlignment(valign);
+        return;
+    }
+
     QLayout* layout = layoutForRegion(region);
+    if (!layout) {
+        return;
+    }
+
     if (layout == _westLayout || layout == _eastLayout) {
         // to align "top", limit first stretch;
         // to align "bottom", limit last stretch

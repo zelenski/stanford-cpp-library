@@ -133,6 +133,10 @@ void BigInteger::checkStringIsNumeric(const std::string& s, int radix) {
 }
 
 std::pair<std::string, long> BigInteger::divide(const std::string& n, long den) {
+    if (den == 0) {
+        error("Cannot divide by zero");
+    }
+
     long rem = 0;
     std::string result;
     result.resize(STRING_SIZE_MAX);
@@ -156,7 +160,9 @@ std::pair<std::string, long> BigInteger::divide(const std::string& n, long den) 
 // https://en.wikipedia.org/wiki/Division_algorithm#Division_by_repeated_subtraction
 // pre: b2 != 0
 std::pair<BigInteger, BigInteger> BigInteger::divideBig(const BigInteger& numerator, const BigInteger& denominator) {
-    if (denominator.isNegative()) {
+    if (denominator == ZERO) {
+        error("Cannot divide by zero");
+    } else if (denominator.isNegative()) {
         std::pair<BigInteger, BigInteger> result = divideBig(numerator, -denominator);
         result.second = -result.second;
         return result;

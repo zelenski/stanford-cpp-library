@@ -3,6 +3,8 @@
  * --------------------
  *
  * @author Marty Stepp
+ * @version 2018/09/08
+ * - added doc comments for new documentation generation
  * @version 2018/09/04
  * - added double-click event support
  * @version 2018/08/23
@@ -27,31 +29,119 @@
 #include "ginteractor.h"
 #include "map.h"
 
-// forward declaration
 class _Internal_QRadioButton;
 
-/*
- * ...
+/**
+ * This interactor subclass represents an onscreen radio button.
+ * Radio buttons are round buttons that can be "checked" by clicking them.
+ * A radio button differs from a checkbox in that it is often part of a mutually
+ * exclusive group of options, where at most one of the buttons can be checked
+ * at a time.  Clicking one radio button from a group checks it and also unchecks
+ * any other checked radio button from that same group.
+ *
+ * You can listen for clicks on a radio button using the setActionListener method,
+ * passing the function you want to call on each click.
  */
 class GRadioButton : public GInteractor {
 public:
+    /**
+     * Creates a new radio button with the given text.
+     * You can pass a string representing a logical group of radio buttons;
+     * if you do, this radio button will be internally managed so that at most
+     * one radio button from that group will be checked at any given time.
+     * If no group is supplied, the radio button is put into a default group.
+     */
     GRadioButton(const std::string& text = "", const std::string& group = "default", bool checked = false, QWidget* parent = nullptr);
+
+    /**
+     * Frees memory allocated internally by the radio button.
+     */
     virtual ~GRadioButton();
+
+    /* @inherit */
     virtual std::string getActionCommand() const Q_DECL_OVERRIDE;
+
+    /* @inherit */
     virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
+
+    /**
+     * Returns the text next to the radio button.
+     */
     virtual std::string getText() const;
+
+    /* @inherit */
     virtual std::string getType() const Q_DECL_OVERRIDE;
+
+    /* @inherit */
     virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
+
+    /**
+     * Returns true if the radio button is currently checked.
+     * Equivalent to isSelected.
+     */
     virtual bool isChecked() const;
+
+    /**
+     * Returns true if the radio button is currently checked.
+     * Equivalent to isChecked.
+     */
     virtual bool isSelected() const;
+
+    /**
+     * Removes the action listener from this radio button so that it will
+     * no longer call it when events occur.
+     */
     virtual void removeActionListener();
+
+    /**
+     * Removes the double-click listener from this radio button so that it will
+     * no longer call it when events occur.
+     */
     virtual void removeDoubleClickListener();
+
+    /**
+     * Sets an action listener on this radio button so that it will be called
+     * when the radio button is clicked.
+     * Any existing action listener will be replaced.
+     */
     virtual void setActionListener(GEventListener func);
+
+    /**
+     * Sets an action listener on this radio button so that it will be called
+     * when the radio button is clicked.
+     * Any existing action listener will be replaced.
+     */
     virtual void setActionListener(GEventListenerVoid func);
+
+    /**
+     * Sets a listener on this radio button so that it will be called
+     * when the radio button is double-clicked.
+     * Any existing double-click listener will be replaced.
+     */
     virtual void setDoubleClickListener(GEventListener func);
+
+    /**
+     * Sets a listener on this radio button so that it will be called
+     * when the radio button is double-clicked.
+     * Any existing double-click listener will be replaced.
+     */
     virtual void setDoubleClickListener(GEventListenerVoid func);
+
+    /**
+     * Sets whether the radio button should be checked.
+     * Equivalent to setSelected.
+     */
     virtual void setChecked(bool checked);
+
+    /**
+     * Sets whether the radio button should be checked.
+     * Equivalent to setChecked.
+     */
     virtual void setSelected(bool selected);
+
+    /**
+     * Sets the text that will appear next to the radio button.
+     */
     virtual void setText(const std::string& text);
 
 private:
@@ -66,7 +156,10 @@ private:
 };
 
 
-// Internal class; not to be used by clients.
+/**
+ * Internal class; not to be used by clients.
+ * @private
+ */
 class _Internal_QRadioButton : public QRadioButton, public _Internal_QWidget {
     Q_OBJECT
 

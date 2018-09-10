@@ -21,6 +21,10 @@
 #include <string>
 #include <QObject>
 
+/**
+ * TODO: document
+ * @private
+ */
 class GInputPanel {
 public:
     static GInputPanel* instance();

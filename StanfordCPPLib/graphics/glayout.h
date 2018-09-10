@@ -3,22 +3,30 @@
  * ---------------
  *
  * @author Marty Stepp
+ * @version 2018/09/07
+ * - added doc comments for new documentation generation
  * @version 2018/08/23
  * - renamed to glayout.h to replace Java version
  * @version 2018/06/25
  * - initial version
  */
 
-#ifndef _gborderlayout_h
-#define _gborderlayout_h
+#ifndef _glayout_h
+#define _glayout_h
 
 #include <QLayout>
 #include <QRect>
 #include <QWidget>
 #include "ginteractor.h"
 
+/**
+ * A helper class with functionality related to container layout management.
+ * Clients generally do not need to use this class directly.
+ * @private
+ */
 class GLayout {
 public:
+
     enum Position { West, North, South, East, Center };
 
     static void clearLayout(QLayout* layout);
@@ -35,7 +43,16 @@ private:
     GLayout();   // forbid construction
 };
 
-// based on: http://doc.qt.io/qt-5.6/qtwidgets-layouts-borderlayout-example.html
+/**
+ * A Qt layout manager that performs a "border" layout a la Java AWT's.
+ * This class currently does not work properly.
+ *
+ * based on: http://doc.qt.io/qt-5.6/qtwidgets-layouts-borderlayout-example.html
+ *
+ * TODO: finish/debug or remove
+ *
+ * @private
+ */
 class GBorderLayout : public QLayout {
 public:
     GBorderLayout(QWidget* parent, int margin = 0, int spacing = -1);
@@ -78,4 +95,4 @@ private:
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
-#endif // _gborderlayout_h
+#endif // _glayout_h

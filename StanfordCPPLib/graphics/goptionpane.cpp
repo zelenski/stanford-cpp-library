@@ -18,6 +18,7 @@
 #include <QWidget>
 #include "error.h"
 #include "gthread.h"
+#include "gwindow.h"
 #include "strlib.h"
 
 GOptionPane::GOptionPane() {
@@ -27,7 +28,14 @@ GOptionPane::GOptionPane() {
 GOptionPane::ConfirmResult GOptionPane::showConfirmDialog(const std::string& message,
                                                           const std::string& title,
                                                           ConfirmType type) {
-    return showConfirmDialog(/* parent */ nullptr, message, title, type);
+    return showConfirmDialog(/* parent */ (QWidget*) nullptr, message, title, type);
+}
+
+GOptionPane::ConfirmResult GOptionPane::showConfirmDialog(GWindow* parent,
+                                                          const std::string& message,
+                                                          const std::string& title,
+                                                          ConfirmType type) {
+    return showConfirmDialog(parent ? parent->getWidget() : nullptr, message, title, type);
 }
 
 GOptionPane::ConfirmResult GOptionPane::showConfirmDialog(QWidget* parent,
@@ -79,7 +87,14 @@ GOptionPane::ConfirmResult GOptionPane::showConfirmDialog(QWidget* parent,
 std::string GOptionPane::showInputDialog(const std::string& message,
                                          const std::string& title,
                                          const std::string& initialValue) {
-    return showInputDialog(/* parent */ nullptr, message, title, initialValue);
+    return showInputDialog(/* parent */ (QWidget*) nullptr, message, title, initialValue);
+}
+
+std::string GOptionPane::showInputDialog(GWindow* parent,
+                                         const std::string& message,
+                                         const std::string& title,
+                                         const std::string& initialValue) {
+    return showInputDialog(parent ? parent->getWidget() : nullptr, message, title, initialValue);
 }
 
 std::string GOptionPane::showInputDialog(QWidget* parent,
@@ -101,7 +116,14 @@ std::string GOptionPane::showInputDialog(QWidget* parent,
 void GOptionPane::showMessageDialog(const std::string& message,
                                     const std::string& title,
                                     MessageType type) {
-    showMessageDialog(/* parent */ nullptr, message, title, type);
+    showMessageDialog(/* parent */ (QWidget*) nullptr, message, title, type);
+}
+
+void GOptionPane::showMessageDialog(GWindow* parent,
+                                    const std::string& message,
+                                    const std::string& title,
+                                    MessageType type) {
+    showMessageDialog(parent ? parent->getWidget() : nullptr, message, title, type);
 }
 
 void GOptionPane::showMessageDialog(QWidget* parent,
@@ -137,7 +159,15 @@ std::string GOptionPane::showOptionDialog(const std::string& message,
                                           const Vector<std::string>& options,
                                           const std::string& title,
                                           const std::string& initiallySelected) {
-    return showOptionDialog(/* parent */ nullptr, message, options, title, initiallySelected);
+    return showOptionDialog(/* parent */ (QWidget*) nullptr, message, options, title, initiallySelected);
+}
+
+std::string GOptionPane::showOptionDialog(GWindow* parent,
+                                          const std::string& message,
+                                          const Vector<std::string>& options,
+                                          const std::string& title,
+                                          const std::string& initiallySelected) {
+    return showOptionDialog(parent ? parent->getWidget() : nullptr, message, options, title, initiallySelected);
 }
 
 std::string GOptionPane::showOptionDialog(QWidget* parent,
@@ -184,6 +214,15 @@ void GOptionPane::showTextFileDialog(const std::string& message,
     // TODO
     error("GOptionPane::showTextFileDialog: not implemented");
 }
+
+void GOptionPane::showTextFileDialog(GWindow* parent,
+                                     const std::string& message,
+                                     const std::string& title,
+                                     int rows,
+                                     int cols) {
+    showTextFileDialog(parent ? parent->getWidget() : nullptr, message, title, rows, cols);
+}
+
 void GOptionPane::showTextFileDialog(QWidget* parent,
                                      const std::string& message,
                                      const std::string& title,

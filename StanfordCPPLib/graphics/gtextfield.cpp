@@ -104,15 +104,22 @@ _Internal_QWidget* GTextField::getInternalWidget() const {
 }
 
 int GTextField::getMaxLength() const {
+    int maxLength = _iqlineedit->maxLength();
+
+    // Qt has default max text length of 32767
+    maxLength = maxLength == 32767 ? 0 : maxLength;
+
     if (_inputType == GTextField::INPUT_TYPE_TEXT) {
-        return _iqlineedit->maxLength();
+        // empty
     } else if (_inputType == GTextField::INPUT_TYPE_INTEGER) {
         std::string maxStr = integerToString(_iqspinbox->maximum());
-        return (int) maxStr.length();
+        maxLength = std::max(maxLength, (int) maxStr.length());
     } else {
         std::string maxStr = integerToString(_iqdoublespinbox->maximum());
-        return (int) maxStr.length();   // TODO: may be incorrect w/ decimal value
+        maxLength = std::max(maxLength, (int) maxStr.length());   // TODO: may be incorrect w/ decimal value
     }
+
+    return maxLength;
 }
 
 std::string GTextField::getPlaceholder() const {

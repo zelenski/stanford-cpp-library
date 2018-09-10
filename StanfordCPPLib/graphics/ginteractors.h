@@ -39,4 +39,4 @@
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
-#endif // _ginteractor_h
+#endif // _ginteractors_h

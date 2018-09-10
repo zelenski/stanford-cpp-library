@@ -3,6 +3,8 @@
  * -------------------
  *
  * @author Marty Stepp
+ * @version 2018/09/08
+ * - added doc comments for new documentation generation
  * @version 2018/08/23
  * - renamed to gscrollbar.h to replace Java version
  * @version 2018/07/16
@@ -18,94 +20,121 @@
 #include <QWidget>
 #include "ginteractor.h"
 
-// forward declaration
 class _Internal_QScrollBar;
 
-/*
- * Class: GScrollBar
- * -----------------
+/**
  * A GScrollBar represents a horizontal or vertical scroll bar that can be
  * dragged by the user.  The bar does not inherently cause any other interactor
  * to scroll itself.  If you want the bar to cause any effect, you must wait
  * for scroll events and respond to them.
+ *
+ * A given scroll bar has a range of values it can represent, with a min and max,
+ * along with a current value.
+ * The "extent" of a scrollbar represents the amount of the scrollbar in view.
  */
 class GScrollBar : public GInteractor {
 public:
-    /*
+    /**
      * The two valid orientations of scrollbars.
-     * Since these relate to a JScrollBar in the Java back-end, their values
-     * must match those of the scrollbar orientations as defined in Java Swing
-     * in the JScrollBar class. See also:
-     * https://docs.oracle.com/javase/7/docs/api/constant-values.html#javax.swing.SwingConstants.HORIZONTAL
      */
     enum Orientation {
         HORIZONTAL = 0,
         VERTICAL   = 1
     };
 
+    /**
+     * Creates a new scroll bar with the given orientation and value range.
+     * @throw ErrorException if min > max or value is not between min and max
+     */
     GScrollBar(Orientation orientation = VERTICAL, int value = 0, int extent = 10, int min = 0, int max = 100, QWidget* parent = nullptr);
+
+    /**
+     * Frees memory allocated internally by the scroll bar.
+     */
     virtual ~GScrollBar();
 
-    /*
+    /**
      * Returns the scroll bar's extent, meaning the amount of its range that is
      * currently in view.
      */
     virtual int getExtent() const;
 
+    /* @inherit */
     virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
 
-    /*
-     * Returns the maximum value of the scroll bar.
+    /**
+     * Returns the maximum allowed value of the scroll bar.
      */
     virtual int getMax() const;
 
-    /*
+    /**
      * Returns the minimum allowed value of the scroll bar.
      */
     virtual int getMin() const;
 
-    /*
+    /**
      * Returns the orientation of the scroll bar, either HORIZONTAL or VERTICAL.
      */
     virtual Orientation getOrientation() const;
 
+    /* @inherit */
     virtual std::string getType() const Q_DECL_OVERRIDE;
 
-    /*
+    /**
      * Returns the current value of the scroll bar.
      */
     virtual int getValue() const;
 
+    /* @inherit */
     virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
 
+    /**
+     * Removes the action listener from this scroll bar so that it will no longer
+     * call it when events occur.
+     */
     virtual void removeActionListener();
 
+    /**
+     * Sets an action listener on this scroll bar so that it will be called
+     * when the user scrolls.
+     * Any existing action listener will be replaced.
+     */
     virtual void setActionListener(GEventListener func);
+
+    /**
+     * Sets an action listener on this scroll bar so that it will be called
+     * when the user scrolls.
+     * Any existing action listener will be replaced.
+     */
     virtual void setActionListener(GEventListenerVoid func);
 
-    /*
+    /**
      * Sets the scroll bar's extent, meaning the amount of its range that is
      * currently in view.
      */
     virtual void setExtent(int extent);
 
-    /*
-     * Sets the maximum value of the scroll bar.
+    /**
+     * Sets the maximum allowed value of the scroll bar.
+     * @throw ErrorException if min > max
      */
     virtual void setMax(int max);
 
-    /*
+    /**
      * Sets the minimum allowed value of the scroll bar.
+     * @throw ErrorException if min > max
      */
     virtual void setMin(int min);
 
-    /*
+    /**
      * Sets all of the relevant state of the scroll bar.
+     * @throw ErrorException if min > max or value is not between min and max
      */
     virtual void setState(int value, int extent, int min, int max);
 
-    /*
+    /**
      * Sets the current value of the scroll bar.
+     * @throw ErrorException if value is not between min and max
      */
     virtual void setValue(int value);
 
@@ -119,7 +148,10 @@ private:
     void updateSize();
 };
 
-// Internal class; not to be used by clients.
+/**
+ * Internal class; not to be used by clients.
+ * @private
+ */
 class _Internal_QScrollBar : public QScrollBar, public _Internal_QWidget {
     Q_OBJECT
 

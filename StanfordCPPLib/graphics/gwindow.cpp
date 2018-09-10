@@ -35,13 +35,42 @@ const int GWindow::DEFAULT_WIDTH = 500;
 const int GWindow::DEFAULT_HEIGHT = 300;
 const std::string GWindow::DEFAULT_ICON_FILENAME = "splicon-large.png";
 
+GWindow::GWindow(bool visible)
+        : _iqmainwindow(nullptr),
+          _contentPane(nullptr),
+          _canvas(nullptr),
+          _resizable(true),
+          _closeOperation(GWindow::CLOSE_DISPOSE) {
+    _init(DEFAULT_WIDTH, DEFAULT_HEIGHT, visible);
+}
+
 GWindow::GWindow(double width, double height, bool visible)
         : _iqmainwindow(nullptr),
           _contentPane(nullptr),
           _canvas(nullptr),
           _resizable(true),
           _closeOperation(GWindow::CLOSE_DISPOSE) {
+    _init(width, height, visible);
+}
+
+GWindow::GWindow(double x, double y, double width, double height, bool visible)
+        : _iqmainwindow(nullptr),
+          _contentPane(nullptr),
+          _canvas(nullptr),
+          _resizable(true),
+          _closeOperation(GWindow::CLOSE_DISPOSE) {
+    _init(width, height, visible);
+    setLocation(x, y);
+}
+
+void GWindow::_init(double width, double height, bool visible) {
     require::nonNegative2D(width, height, "GWindow::constructor", "width", "height");
+    if (width == 0) {
+        width = DEFAULT_WIDTH;
+    }
+    if (height == 0) {
+        height = DEFAULT_HEIGHT;
+    }
 
     GThread::runOnQtGuiThread([this, width, height, visible]() {
         QtGui::instance()->initializeQt();
@@ -51,9 +80,7 @@ GWindow::GWindow(double width, double height, bool visible)
         _contentPane = new GContainer(GContainer::LAYOUT_BORDER);
         _iqmainwindow->setCentralWidget(_contentPane->getWidget());
 
-        if (width > 0 && height > 0) {
-            setSize(width, height);
-        }
+        setSize(width, height);
 
         setWindowIcon(DEFAULT_ICON_FILENAME);
         setVisible(visible);
@@ -125,6 +152,12 @@ void GWindow::add(GObject& obj, double x, double y) {
 }
 
 QMenu* GWindow::addMenu(const std::string& menu) {
+    std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
+    if (_menuMap.containsKey(menuKey)) {
+        // duplicate; do not create again
+        return _menuMap[menuKey];
+    }
+
     QMenu* qmenu = nullptr;
     GThread::runOnQtGuiThread([this, menu, &qmenu]() {
         qmenu = _iqmainwindow->menuBar()->addMenu(QString::fromStdString(menu));
@@ -149,7 +182,14 @@ QAction* GWindow::addMenuItem(const std::string& menu, const std::string& item, 
         return nullptr;
     }
 
-    GThread::runOnQtGuiThread([this, menu, item, icon, func, menuKey, &action]() {
+    std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
+    std::string menuItemKey = menuKey + "/" + itemKey;
+    if (_menuActionMap.containsKey(menuItemKey)) {
+        // duplicate; do not create again
+        return _menuActionMap[menuItemKey];
+    }
+
+    GThread::runOnQtGuiThread([this, menu, item, icon, func, menuKey, menuItemKey, &action]() {
         QMenu* qmenu = _menuMap[menuKey];
         action = qmenu->addAction(QString::fromStdString(item));
         if (!icon.empty() && fileExists(icon)) {
@@ -161,9 +201,7 @@ QAction* GWindow::addMenuItem(const std::string& menu, const std::string& item, 
         _iqmainwindow->connect(action, &QAction::triggered, _iqmainwindow, [func]() {
             func();
         });
-
-        std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
-        _menuActionMap[menuKey + "/" + itemKey] = action;
+        _menuActionMap[menuItemKey] = action;
     });
     return action;
 }
@@ -232,17 +270,17 @@ QMenu* GWindow::addSubMenu(const std::string& menu, const std::string& submenu) 
     if (!_menuMap.containsKey(menuKey)) {
         error("GWindow::addMenuItem: menu \"" + menu + "\" does not exist");
         return nullptr;
-    } else {
-        QMenu* qsubmenu = nullptr;
-        GThread::runOnQtGuiThread([this, menu, menuKey, submenu, &qsubmenu]() {
-            QMenu* qmenu = _menuMap[menuKey];
-            qsubmenu = qmenu->addMenu(QString::fromStdString(submenu));
-            std::string subMenuKey = menuKey + "/"
-                    + toLowerCase(stringReplace(submenu, "&", ""));
-            _menuMap[subMenuKey] = qsubmenu;
-        });
-        return qsubmenu;
     }
+
+    QMenu* qsubmenu = nullptr;
+    GThread::runOnQtGuiThread([this, menu, menuKey, submenu, &qsubmenu]() {
+        QMenu* qmenu = _menuMap[menuKey];
+        qsubmenu = qmenu->addMenu(QString::fromStdString(submenu));
+        std::string subMenuKey = menuKey + "/"
+                + toLowerCase(stringReplace(submenu, "&", ""));
+        _menuMap[subMenuKey] = qsubmenu;
+    });
+    return qsubmenu;
 }
 
 void GWindow::addToRegion(GInteractor* interactor, Region region) {
@@ -347,6 +385,10 @@ void GWindow::ensureForwardTarget() {
 
 bool GWindow::eventsEnabled() const {
     return getWidget() != nullptr && isVisible();
+}
+
+GCanvas* GWindow::getCanvas() const {
+    return _canvas;
 }
 
 double GWindow::getCanvasHeight() const {
@@ -514,6 +556,18 @@ void GWindow::loadCanvasPixels(const std::string& filename) {
     _canvas->load(filename);   // runs on Qt GUI thread
 }
 
+void GWindow::maximize() {
+    GThread::runOnQtGuiThread([this]() {
+        _iqmainwindow->setWindowState(Qt::WindowMaximized);
+    });
+}
+
+void GWindow::minimize() {
+    GThread::runOnQtGuiThread([this]() {
+        _iqmainwindow->setWindowState(Qt::WindowMinimized);
+    });
+}
+
 void GWindow::pack() {
     setSize(getPreferredSize());
 }
@@ -622,6 +676,12 @@ void GWindow::requestFocus() {
     });
 }
 
+void GWindow::restore() {
+    GThread::runOnQtGuiThread([this]() {
+        _iqmainwindow->setWindowState(Qt::WindowActive);
+    });
+}
+
 void GWindow::saveCanvasPixels(const std::string& filename) {
     ensureForwardTarget();
     _canvas->save(filename);   // runs on Qt GUI thread
@@ -698,18 +758,18 @@ void GWindow::setLocation(const Point& p) {
 }
 
 void GWindow::setMenuItemEnabled(const std::string& menu, const std::string& item, bool enabled) {
-    GThread::runOnQtGuiThread([this, menu, item, enabled]() {
-        std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
-        std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
-        std::string menuItemKey = menuKey + "/" + itemKey;
-        if (!_menuMap.containsKey(menuKey)) {
-            error("GWindow::setMenuItemEnabled: menu \"" + menu + "\" does not exist");
-        } else if (!_menuActionMap.containsKey(menuItemKey)) {
-            error("GWindow::setMenuItemEnabled: menu item \"" + item + "\" does not exist");
-        } else {
-            QAction* action = _menuActionMap[menuItemKey];
-            action->setEnabled(enabled);
-        }
+    std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
+    std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
+    std::string menuItemKey = menuKey + "/" + itemKey;
+    if (!_menuMap.containsKey(menuKey)) {
+        error("GWindow::setMenuItemEnabled: menu \"" + menu + "\" does not exist");
+    } else if (!_menuActionMap.containsKey(menuItemKey)) {
+        error("GWindow::setMenuItemEnabled: menu item \"" + item + "\" does not exist");
+    }
+
+    QAction* action = _menuActionMap[menuItemKey];
+    GThread::runOnQtGuiThread([action, enabled]() {
+        action->setEnabled(enabled);
     });
 }
 

@@ -3,6 +3,8 @@
  * ----------------------
  * 
  * @author Marty Stepp
+ * @version 2018/09/07
+ * - added doc comments for new documentation generation
  * @version 2018/08/23
  * - initial version, separated out from console .cpp/h
  */
@@ -30,6 +32,18 @@
 #include "private/consolestreambuf.h"
 #include "private/forwardingstreambuf.h"
 
+/**
+ * A GConsoleWindow represents the system console.
+ * Most students/clients do not need to utilize this class directly.
+ * Output is implicitly printed to the console when you use cout/cerr.
+ * But if you want to access the console window directly and interact with it
+ * as you would a normal GWindow, you can do so by calling the global function
+ * getConsoleWindow.
+ *
+ * @private
+ *
+ * TODO: document
+ */
 class GConsoleWindow : public GWindow {
 public:
     static bool consoleEnabled();

@@ -3,6 +3,10 @@
  * --------------
  * This file defines the <code>GTimer</code> class, which implements a
  * general interval timer.
+ *
+ * @version 2018/09/09
+ * - updated to use new Qt GUI timer interface
+ * - added doc comments for new documentation generation
  */
 
 #ifndef _gtimer_h
@@ -10,20 +14,13 @@
 
 #include <string>
 
-/*
- * Class: GTimer
- * -------------
+/**
  * This class implements a simple interval timer that generates a
- * <code>GTimerEvent</code> with a specified frequency.  Copying
- * a <code>GTimer</code> object is legal and creates an object that
- * refers to the same internal timer.
+ * <code>GTimerEvent</code> with a specified frequency.
  */
 class GTimer {
 public:
-    /*
-     * Constructor: GTimer
-     * Usage: GTimer timer(milliseconds);
-     * ----------------------------------
+    /**
      * Creates a timer object that generates a <code>GTimerEvent</code>
      * each time the specified number of milliseconds has elapsed.  No
      * events are generated until the client calls <code>start</code>
@@ -32,21 +29,16 @@ public:
      * Due to implementation details, you must create at least one GWindow
      * before you can start() a GTimer object.
      *
-     * For more details on using timers, see the documentation
-     * for the <a href="GTimerEvent-class.html"><code>GTimerEvent</code></a>
-     * class.
+     * @throw ErrorException if milliseconds is negative
      */
     GTimer(double milliseconds);
 
-    /*
-     * Method: getDelay
-     * Usage: double delay = timer.getDelay();
-     * ---------------------------------------
+    /**
      * Returns the delay in milliseconds between each tick of this timer.
      */
     double getDelay() const;
 
-    /*
+    /**
      * Method: isStarted
      * Usage: if (timer.isStarted()) { ... }
      * -------------------------------------
@@ -56,28 +48,21 @@ public:
      */
     bool isStarted() const;
 
-    /*
-     * Method: restart
-     * Usage: timer.restart();
-     * -----------------------
+    /**
      * Stops the timer (if it was started) and then starts it again.
      */
     void restart();
 
-    /*
-     * Method: setDelay
-     * Usage: timer.setDelay(delay);
-     * -----------------------------
+    /**
      * Changes the delay in milliseconds between each tick of this timer.
      * If the timer is currently running, calling this method will stop
      * and restart the timer with the new delay.
+     *
+     * @throw ErrorException if milliseconds is negative
      */
     void setDelay(double ms);
 
-    /*
-     * Method: start
-     * Usage: timer.start();
-     * ---------------------
+    /**
      * Starts the timer.  A timer continues to generate timer events until it
      * is stopped; to achieve the effect of a one-shot timer, the simplest
      * approach is to call the <code>stop</code> method inside the event
@@ -85,16 +70,12 @@ public:
      */
     void start();
 
-    /*
-     * Method: stop
-     * Usage: timer.stop();
-     * --------------------
+    /**
      * Stops the timer so that it stops generating events until it is restarted.
      */
     void stop();
 
 private:
-    /* Instance variables */
     double _ms;
     int _id;
 };

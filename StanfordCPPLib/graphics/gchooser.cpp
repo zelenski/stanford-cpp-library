@@ -101,6 +101,10 @@ std::string GChooser::getItem(int index) const {
     return _iqcomboBox->itemText(index).toStdString();
 }
 
+int GChooser::getItemCount() const {
+    return _iqcomboBox->count();
+}
+
 int GChooser::getSelectedIndex() const {
     return _iqcomboBox->currentIndex();
 }
@@ -119,6 +123,10 @@ QWidget* GChooser::getWidget() const {
 
 bool GChooser::isEditable() const {
     return _iqcomboBox->isEditable();
+}
+
+bool GChooser::isEmpty() const {
+    return getItemCount() == 0;
 }
 
 void GChooser::removeActionListener() {
@@ -154,9 +162,13 @@ void GChooser::setEditable(bool editable) {
 }
 
 void GChooser::setSelectedItem(const std::string& item) {
-    GThread::runOnQtGuiThread([this, item]() {
-        _iqcomboBox->setCurrentText(QString::fromStdString(item));
-    });
+    for (int i = 0, len = getItemCount(); i < len; i++) {
+        std::string thisItem = _iqcomboBox->itemText(i).toStdString();
+        if (thisItem == item) {
+            setSelectedIndex(i);
+            break;
+        }
+    }
 }
 
 int GChooser::size() const {

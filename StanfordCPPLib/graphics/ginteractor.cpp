@@ -19,6 +19,7 @@
 #include "gthread.h"
 #include "gwindow.h"
 #include "qtgui.h"
+#include "require.h"
 #include "strlib.h"
 
 int GInteractor::_interactorCount = 0;
@@ -298,6 +299,7 @@ void GInteractor::setFont(const std::string& font) {
 }
 
 void GInteractor::setHeight(double height) {
+    require::nonNegative(height, "GInteractor::setHeight", "height");
     GThread::runOnQtGuiThread([this, height]() {
         getWidget()->setFixedHeight((int) height);
     });
@@ -316,19 +318,19 @@ void GInteractor::setLocation(double x, double y) {
 }
 
 void GInteractor::setMinimumSize(double width, double height) {
+    require::nonNegative(width, "GInteractor::setMinimumSize", "width");
+    require::nonNegative(height, "GInteractor::setMinimumSize", "height");
     GThread::runOnQtGuiThread([this, width, height]() {
         getInternalWidget()->setMinimumSize(width, height);
     });
 }
 
 void GInteractor::setMinimumSize(const GDimension& size) {
-    GThread::runOnQtGuiThread([this, size]() {
-        getInternalWidget()->setMinimumSize(size.getWidth(), size.getHeight());
-    });
+    setMinimumSize(size.getWidth(), size.getHeight());
 }
 
 void GInteractor::setMnemonic(char /* mnemonic */) {
-    // empty; use an & before mnemonic character instead
+    // empty; use an & before mnemonic character in interactor's text instead
 }
 
 void GInteractor::setName(const std::string& name) {
@@ -341,6 +343,8 @@ void GInteractor::setPreferredHeight(double height) {
 }
 
 void GInteractor::setPreferredSize(double width, double height) {
+    require::nonNegative(width, "GInteractor::setPreferredSize", "width");
+    require::nonNegative(height, "GInteractor::setPreferredSize", "height");
     GThread::runOnQtGuiThread([this, width, height]() {
         getInternalWidget()->setPreferredSize(width, height);
     });
@@ -357,6 +361,8 @@ void GInteractor::setPreferredWidth(double width) {
 }
 
 void GInteractor::setSize(double width, double height) {
+    require::nonNegative(width, "GInteractor::setSize", "width");
+    require::nonNegative(height, "GInteractor::setSize", "height");
     GThread::runOnQtGuiThread([this, width, height]() {
         // setBounds(GRectangle(getX(), getY(), width, height));
         getWidget()->setGeometry((int) getX(), (int) getY(), (int) width, (int) height);

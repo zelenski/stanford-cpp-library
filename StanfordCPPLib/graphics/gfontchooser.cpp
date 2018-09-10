@@ -5,6 +5,8 @@
  * See gfilechooser.h for documentation of each member.
  * 
  * @author Marty Stepp
+ * @version 2018/09/07
+ * - added overloads that accept GWindow* parent
  * @version 2018/08/23
  * - renamed to gfontchooser.cpp to replace Java version
  * @version 2018/07/29
@@ -21,7 +23,11 @@ GFontChooser::GFontChooser() {
 }
 
 std::string GFontChooser::showDialog(const std::string& title, const std::string& initialFont) {
-    return showDialog(/* parent */ nullptr, title, initialFont);
+    return showDialog(/* parent */ (QWidget*) nullptr, title, initialFont);
+}
+
+std::string GFontChooser::showDialog(GWindow* parent, const std::string& title, const std::string& initialFont) {
+    return showDialog(parent ? parent->getWidget() : nullptr, title, initialFont);
 }
 
 std::string GFontChooser::showDialog(QWidget* parent, const std::string& title, const std::string& initialFont) {

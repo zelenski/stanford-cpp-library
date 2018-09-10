@@ -14,6 +14,7 @@
 #include <iomanip>
 #include <iostream>
 #include "error.h"
+#include "require.h"
 #include "strlib.h"
 #include "vector.h"
 
@@ -22,6 +23,7 @@ GFont::GFont() {
 }
 
 void GFont::changeFontSize(GInteractor* interactor, int dsize) {
+    require::nonNull(interactor, "GFont::changeFontSize", "interactor");
     QFont newFont = changeFontSize(toQFont(interactor->getFont()), dsize);
     interactor->setFont(toFontString(newFont));
 }
@@ -105,7 +107,7 @@ std::string GFont::toFontString(const QFont& font) {
     }
     if (font.italic()) {
         if (!dashPrinted) {
-            dashPrinted = true;
+            // dashPrinted = true;
             out << "-";
         }
         out << "italic";

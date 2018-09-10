@@ -15,6 +15,7 @@
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <QBrush>
 #include <QFont>
 #include <QPointF>
 #include <QPolygon>
@@ -30,19 +31,20 @@
 #include "private/static.h"
 
 
+const double GRoundRect::DEFAULT_CORNER = 10.0;
+const std::string GText::DEFAULT_FONT = "Dialog-13";
+
 // static constants
 STATIC_CONST_VARIABLE_DECLARE(double, LINE_TOLERANCE, 1.5)
 STATIC_CONST_VARIABLE_DECLARE(double, ARC_TOLERANCE, 2.5)
-STATIC_CONST_VARIABLE_DECLARE(double, DEFAULT_CORNER, 10)
-STATIC_CONST_VARIABLE_DECLARE(std::string, DEFAULT_GLABEL_FONT, "Dialog-13")
-
 STATIC_VARIABLE_DECLARE_BLANK(QBrush, DEFAULT_BRUSH)
 STATIC_VARIABLE_DECLARE_BLANK(QFont, DEFAULT_QFONT)
 STATIC_VARIABLE_DECLARE(bool, DEFAULT_QFONT_SET, false)
 
-/*
+/**
  * Returns the square of the distance between two points.
  * Used when checking to see if a line touches a given point.
+ * @private
  */
 static double dsq(double x0, double y0, double x1, double y1);
 
@@ -742,7 +744,7 @@ GRectangle GCompound::getBounds() const {
         xMin = std::min(xMin, bounds.getX());
         yMin = std::min(yMin, bounds.getY());
         xMax = std::max(xMax, bounds.getX());
-        yMin = std::max(yMax, bounds.getY());   // JL BUGFIX 2016/10/11
+        yMax = std::max(yMax, bounds.getY());   // JL BUGFIX 2016/10/11
     }
     // JL BUGFIX: shifted anchor point
     return GRectangle(xMin + getX(), yMin + getY(), xMax - xMin, yMax - yMin);
@@ -1039,12 +1041,28 @@ GPoint GLine::getEndPoint() const {
     return GPoint(getX() + _dx, getY() + _dy);
 }
 
-GPoint GLine::getStartPoint() const {
-    return getLocation();
+double GLine::getEndX() const {
+    return getX() + _dx;
+}
+
+double GLine::getEndY() const {
+    return getY() + _dy;
 }
 
 double GLine::getHeight() const {
     return std::fabs(_dy);
+}
+
+GPoint GLine::getStartPoint() const {
+    return getLocation();
+}
+
+double GLine::getStartX() const {
+    return getX();
+}
+
+double GLine::getStartY() const {
+    return getY();
 }
 
 std::string GLine::getType() const {
@@ -1184,6 +1202,11 @@ void GPolygon::addVertexes(std::initializer_list<GPoint> points) {
     }
 }
 
+void GPolygon::clear() {
+    _vertices.clear();
+    repaint();
+}
+
 bool GPolygon::contains(double x, double y) const {
     if (_transformed) {
         // TODO
@@ -1248,6 +1271,14 @@ std::string GPolygon::getType() const {
     return "GPolygon";
 }
 
+GPoint GPolygon::getVertex(int i) const {
+    return GPoint(_vertices[i].x(), _vertices[i].y());
+}
+
+int GPolygon::getVertexCount() const {
+    return _vertices.size();
+}
+
 Vector<GPoint> GPolygon::getVertices() const {
     Vector<GPoint> vec;
     for (const QPointF& point : _vertices) {
@@ -1258,6 +1289,12 @@ Vector<GPoint> GPolygon::getVertices() const {
 
 double GPolygon::getWidth() const {
     return getBounds().getHeight();
+}
+
+void GPolygon::setVertex(int i, GPoint point) {
+    _vertices[i].setX(point.getX());
+    _vertices[i].setY(point.getY());
+    repaint();
 }
 
 std::string GPolygon::toStringExtra() const {
@@ -1291,22 +1328,10 @@ std::string GRect::getType() const {
  * Most of the GRoundRect class is inherited from the GRect class.
  */
 
-GRoundRect::GRoundRect(double width, double height)
-        : GRect(/* x */ 0, /* y */ 0, width, height),
-          _corner(STATIC_VARIABLE(DEFAULT_CORNER)) {
-    // empty
-}
-
 GRoundRect::GRoundRect(double width, double height, double corner)
         : GRect(/* x */ 0, /* y */ 0, width, height),
           _corner(corner) {
     require::nonNegative(corner, "GRoundRect::constructor", "corner");
-}
-
-GRoundRect::GRoundRect(double x, double y, double width, double height)
-        : GRect(x, y, width, height),
-          _corner(STATIC_VARIABLE(DEFAULT_CORNER)) {
-    // empty
 }
 
 GRoundRect::GRoundRect(double x, double y, double width, double height, double corner)
@@ -1374,7 +1399,7 @@ std::string GRoundRect::toStringExtra() const {
 GText::GText(const std::string& str, double x, double y)
         : GObject(x, y),
           _text(str) {
-    _font = STATIC_VARIABLE(DEFAULT_GLABEL_FONT);
+    _font = DEFAULT_FONT;
     updateSize();
 }
 

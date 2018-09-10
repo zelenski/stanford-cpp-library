@@ -144,6 +144,7 @@ void testQwindow() {
     button->setTextPosition(GInteractor::TEXT_BESIDE_ICON);
     button->setActionListener([](GEvent event) {
         cout << "button click! event = " << event << endl;
+        window->restore();
 
 //        window->setResizable(!window->isResizable());
 //        cout << "clickHandler: button was clicked!" << endl;
@@ -230,6 +231,8 @@ void testQwindow() {
     });
     window->addToRegion(textArea, "Center");
     cout << "textarea:  " << textArea->toString() << endl;
+
+    window->maximize();
 
 
     // window->pack();

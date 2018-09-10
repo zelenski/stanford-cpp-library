@@ -3,6 +3,8 @@
  * -------------------
  *
  * @author Marty Stepp
+ * @version 2018/09/07
+ * - added doc comments for new documentation generation
  * @version 2018/08/23
  * - renamed to geventqueue.h
  * @version 2018/07/03
@@ -19,11 +21,22 @@
 #include "gtypes.h"
 #include "queue.h"
 
-// forward declarations
 class GObservable;
 class GThread;
 class QtGui;
 
+/**
+ * The GEventQueue is a first-in, first-out (FIFO) queue of events that occur
+ * on graphical interactors.
+ *
+ * This queue is used by our interactor classes (GButton, GCheckBox, etc.)
+ * internally.  When events occur on these widgets, we place them into a GEventQueue
+ * so that they can be sent out to the various event listeners in client code.
+ *
+ * Most clients do not need to use GEventQueue directly.
+ *
+ * @private
+ */
 class GEventQueue : public QObject {
     Q_OBJECT
 

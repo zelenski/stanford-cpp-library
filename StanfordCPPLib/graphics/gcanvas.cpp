@@ -193,10 +193,12 @@ int GCanvas::countDiffPixels(const GCanvas& image, int xmin, int ymin, int xmax,
 }
 
 int GCanvas::countDiffPixels(const GCanvas* image) const {
+    require::nonNull(image, "GCanvas::countDiffPixels");
     return countDiffPixels(*image);
 }
 
 int GCanvas::countDiffPixels(const GCanvas* image, int xmin, int ymin, int xmax, int ymax) const {
+    require::nonNull(image, "GCanvas::countDiffPixels");
     return countDiffPixels(*image, xmin, ymin, xmax, ymax);
 }
 
@@ -233,7 +235,7 @@ GCanvas* GCanvas::diff(const GCanvas& image, int diffPixelColor) const {
 }
 
 GCanvas* GCanvas::diff(const GCanvas* image, int diffPixelColor) const {
-    require::nonNull(image, "GCanvas::diff", "image");
+    require::nonNull(image, "GCanvas::diff");
     return diff(*image, diffPixelColor);
 }
 
@@ -661,6 +663,8 @@ void GCanvas::setMouseListener(GEventListenerVoid func) {
 }
 
 void GCanvas::setPixel(double x, double y, int rgb) {
+    require::inRange2D(x, y, getWidth(), getHeight(), "GCanvas::setPixel", "x", "y");
+    checkColor("GCanvas::setPixel", rgb);
     GThread::runOnQtGuiThread([this, x, y, rgb]() {
         ensureBackgroundImage();
         _backgroundImage->setPixel((int) x, (int) y, rgb | 0xff000000);
@@ -673,6 +677,8 @@ void GCanvas::setPixel(double x, double y, int r, int g, int b) {
 }
 
 void GCanvas::setPixelARGB(double x, double y, int argb) {
+    require::inRange2D(x, y, getWidth(), getHeight(), "GCanvas::setPixelARGB", "x", "y");
+    checkColor("GCanvas::setPixel", argb);
     GThread::runOnQtGuiThread([this, x, y, argb]() {
         ensureBackgroundImage();
         _backgroundImage->setPixel((int) x, (int) y, argb);
@@ -738,6 +744,7 @@ void GCanvas::toGrid(Grid<int>& grid) const {
 _Internal_QCanvas::_Internal_QCanvas(GCanvas* gcanvas, QWidget* parent)
         : QWidget(parent),
           _gcanvas(gcanvas) {
+    require::nonNull(gcanvas, "_Internal_QCanvas::constructor");
     setObjectName(QString::fromStdString("_Internal_QCanvas_" + integerToString(gcanvas->getID())));
 
     // set default white background color

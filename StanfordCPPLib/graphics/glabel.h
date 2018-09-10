@@ -3,6 +3,8 @@
  * --------------
  *
  * @author Marty Stepp
+ * @version 2018/09/07
+ * - added doc comments for new documentation generation
  * @version 2018/09/04
  * - added double-click event support
  * @version 2018/09/03
@@ -30,44 +32,161 @@
 class _Internal_QLabel;
 class GWindow;
 
-/*
- * ...
+/**
+ * A GLabel represents a text string.
+ * A label can contain text and/or an image icon.
+ *
+ * GLabels can be made clickable with the setActionListener and
+ * setDoubleClickListener methods, but generally if you want a clickable
+ * interactor with text on it, you may prefer a GButton.
  */
 class GLabel : public GInteractor {
 public:
+    /**
+     * Creates a label with the specified text label and optional icon.
+     */
     GLabel(const std::string& text = "", const std::string& iconFileName = "", QWidget* parent = nullptr);
+
+    /**
+     * Frees memory allocated internally by the label.
+     */
     virtual ~GLabel();
+
+    /* @inherit */
     virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
+
+    /**
+     * Returns the string displayed by the label.
+     * Equivalent to getText.
+     */
     virtual std::string getLabel() const;
+
+    /**
+     * Returns the string displayed by the label.
+     * Equivalent to getLabel.
+     */
     virtual std::string getText() const;
+
+    /**
+     * Returns the label's text position relative to its icon.
+     * The default is TEXT_BESIDE_ICON, but it can be changed to TEXT_UNDER_ICON
+     * by calling the setTextPosition method.
+     */
     virtual GInteractor::TextPosition getTextPosition() const;
+
+    /* @inherit */
     virtual std::string getType() const Q_DECL_OVERRIDE;
+
+    /* @inherit */
     virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
+
+    /**
+     * Removes the action listener from this button so that it will no longer
+     * call it when events occur.
+     */
     virtual void removeActionListener();
+
+    /**
+     * Removes the double-click listener from this button so that it will no longer
+     * call it when events occur.
+     */
     virtual void removeDoubleClickListener();
+
+    /**
+     * Sets an action listener on this button so that it will be called
+     * when the button is clicked.
+     * Any existing action listener will be replaced.
+     */
     virtual void setActionListener(GEventListener func);
+
+    /**
+     * Sets an action listener on this button so that it will be called
+     * when the button is clicked.
+     * Any existing action listener will be replaced.
+     */
     virtual void setActionListener(GEventListenerVoid func);
+
+    /* @inherit */
     virtual void setBounds(double x, double y, double width, double height) Q_DECL_OVERRIDE;
+
+    /* @inherit */
     virtual void setBounds(const GRectangle& size) Q_DECL_OVERRIDE;
+
+    /* @inherit */
     virtual void setColor(int rgb) Q_DECL_OVERRIDE;
+
+    /* @inherit */
     virtual void setColor(const std::string& color) Q_DECL_OVERRIDE;
+
+    /**
+     * Sets a listener on this button so that it will be called
+     * when the button is double-clicked.
+     * Any existing double-click listener will be replaced.
+     */
     virtual void setDoubleClickListener(GEventListener func);
+
+    /**
+     * Sets a listener on this button so that it will be called
+     * when the button is double-clicked.
+     * Any existing double-click listener will be replaced.
+     */
     virtual void setDoubleClickListener(GEventListenerVoid func);
+
+    /* @inherit */
     virtual void setFont(const QFont& font) Q_DECL_OVERRIDE;
+
+    /* @inherit */
     virtual void setFont(const std::string& font) Q_DECL_OVERRIDE;
+
+    /* @inherit */
     virtual void setForeground(int rgb) Q_DECL_OVERRIDE;
+
+    /* @inherit */
     virtual void setForeground(const std::string& color) Q_DECL_OVERRIDE;
+
+    /* @inherit */
     virtual void setHeight(double height) Q_DECL_OVERRIDE;
-    virtual void setIcon(const std::string& filename, bool retainIconSize = true);
+
+    /* @inherit */
+    virtual void setIcon(const std::string& filename, bool retainIconSize = true) Q_DECL_OVERRIDE;
+
+    /**
+     * Sets the text on the label to be the given text.
+     * Equivalent to setText.
+     */
     virtual void setLabel(const std::string& text);
+
+    /* @inherit */
     virtual void setLocation(double x, double y) Q_DECL_OVERRIDE;
+
+    /* @inherit */
     virtual void setSize(double width, double height) Q_DECL_OVERRIDE;
+
+    /* @inherit */
     virtual void setSize(const GDimension& size) Q_DECL_OVERRIDE;
+
+    /**
+     * Sets the text on the label to be the given text.
+     * Equivalent to setLabel.
+     */
     virtual void setText(const std::string& text);
+
+    /**
+     * Sets the label's text position relative to its icon.
+     * The default is TEXT_BESIDE_ICON, but it can be changed to TEXT_UNDER_ICON.
+     */
     virtual void setTextPosition(GInteractor::TextPosition position);
+
+    /* @inherit */
     virtual void setVisible(bool visible) Q_DECL_OVERRIDE;
+
+    /* @inherit */
     virtual void setWidth(double width) Q_DECL_OVERRIDE;
+
+    /* @inherit */
     virtual void setX(double x) Q_DECL_OVERRIDE;
+
+    /* @inherit */
     virtual void setY(double y) Q_DECL_OVERRIDE;
 
 private:
@@ -87,7 +206,10 @@ private:
 typedef GLabel GTextLabel;
 
 
-// Internal class; not to be used by clients.
+/**
+ * Internal class; not to be used by clients.
+ * @private
+ */
 class _Internal_QLabel : public QLabel, public _Internal_QWidget {
     Q_OBJECT
 

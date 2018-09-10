@@ -494,7 +494,7 @@ std::ostream& operator <<(std::ostream& out, const TokenScanner& scanner) {
     }
     if (scanner.ignoreCommentsFlag) {
         out << (first ? "" : ",") << "ignoreComments";
-        first = false;
+        // first = false;
     }
     out << "}";
     return out;

@@ -158,8 +158,6 @@ QColor GColor::toQColor(const std::string& color) {
     return QColor(rgb | 0xff000000);
 }
 
-// if RGB is not completely black, but alpha is 0, assume that the
-// client meant to use an opaque color and add ff as alpha channel
 int GColor::fixAlpha(int argb) {
     int alpha = ((argb & 0xff000000) >> 24) & 0x000000ff;
     if (alpha == 0 && (argb & 0x00ffffff) != 0) {

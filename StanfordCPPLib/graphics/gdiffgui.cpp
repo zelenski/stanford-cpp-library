@@ -64,3 +64,15 @@ GDiffGui::GDiffGui(const std::string& name1,
     _window->center();
     _window->show();
 }
+
+GDiffGui::~GDiffGui() {
+    // TODO: delete
+    _window = nullptr;
+    _hsplitter = nullptr;
+    _vsplitter = nullptr;
+    _textAreaLeft = nullptr;
+    _textAreaRight = nullptr;
+    _textAreaBottom = nullptr;
+    _hsplitterInteractor = nullptr;
+    _vsplitterInteractor = nullptr;
+}

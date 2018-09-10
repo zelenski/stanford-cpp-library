@@ -25,6 +25,10 @@ void GFunctionThread::run() {
 QThread* GThread::_qtMainThread = nullptr;
 QThread* GThread::_studentThread = nullptr;
 
+GThread::GThread() {
+    // empty
+}
+
 void GThread::ensureThatThisIsTheQtGuiThread(const std::string& message) {
     if (!iAmRunningOnTheQtGuiThread()) {
         error((message.empty() ? "" : (message + ": "))
@@ -123,7 +127,8 @@ void GThread::yield() {
 
 GStudentThread::GStudentThread(GThunkInt mainFunc)
         : _mainFunc(mainFunc),
-          _mainFuncVoid(nullptr) {
+          _mainFuncVoid(nullptr),
+          _result(0) {
     this->setObjectName(QString::fromStdString("GStudentThread"));
 }
 

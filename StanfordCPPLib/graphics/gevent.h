@@ -3,6 +3,8 @@
  * --------------
  *
  * @author Marty Stepp
+ * @version 2018/09/07
+ * - added doc comments for new documentation generation
  * @version 2018/08/23
  * - renamed to gevent.h to replace Java version
  * @version 2018/07/06
@@ -18,19 +20,22 @@
 #include <QEvent>
 #include "gtypes.h"
 
-class GEvent;              // forward declaration
-class GInteractor;         // forward declaration
-class GObservable;         // forward declaration
-class _Internal_QWidget;   // forward declaration
+class GEvent;
+class GInteractor;
+class GObservable;
+class _Internal_QCanvas;
+class _Internal_QCheckBox;
+class _Internal_QPushButton;
+class _Internal_QWidget;
 
-// types for the event listener functions to be passed to various interactors
+/** Types for the event listener functions to be passed to various interactors. */
 typedef std::function<void(GEvent)> GEventListener;
+
+/** Types for the event listener functions to be passed to various interactors. */
 typedef std::function<void()>       GEventListenerVoid;
 
-/*
- * The EventClass enumeration represents all major categories of events.
- * Note: If you add any new classes of events, you must also add logic to the
- * GEvent::classToString function in gevent.cpp.
+/**
+ * Represents all major categories of events.
  */
 enum EventClass {
     NULL_EVENT      = 0x0000,
@@ -48,12 +53,13 @@ enum EventClass {
                     | MOUSE_EVENT | CLICK_EVENT | TABLE_EVENT | SERVER_EVENT
                     | CHANGE_EVENT | HYPERLINK_EVENT
 };
+// Note: If you add any new classes of events, you must also add logic to the
+// GEvent::classToString function in gevent.cpp.
 
-/*
- * This enumeration type defines the event subtypes for all events.
+
+/**
+ * Defines the event subtypes for all events.
  * An event type is a subcategory within an event class.
- * Note: If you add any new classes of events, you must also add logic to the
- * GEvent::typeToString function in gevent.cpp.
  */
 enum EventType {
     NULL_TYPE            = 0,
@@ -101,12 +107,12 @@ enum EventType {
 
     HYPERLINK_CLICKED    = HYPERLINK_EVENT + 1
 };
+// Note: If you add any new classes of events, you must also add logic to the
+// GEvent::typeToString function in gevent.cpp.
 
-/*
- * Type: Modifier
- * --------------
- * This enumeration type defines a set of constants used to check whether
- * modifiers are in effect.
+/**
+ * A set of constants used to check whether various event modifiers are in effect.
+ * These constants can be combined in a single modifier int using bitwise operators.
  */
 enum Modifier {
     SHIFT_DOWN     = 1 << 0,
@@ -119,36 +125,36 @@ enum Modifier {
     BUTTON3_DOWN   = 1 << 7
 };
 
-/*
- * ...
+/**
+ * A GEvent represents a user action that has occurred on a graphical interactor.
+ *
+ * Older versions of this library used an event-polling model where the client
+ * was encouraged to write a while (true) loop and call waitForEvent(...) to
+ * get each event and process it.
+ * The current design instead prefers that you attach event listener functions
+ * to be called when events occur.
+ * These listener functions can accept an optional GEvent as a parameter.
+ * The GEvent object will contain information about the event that occurred.
+ *
+ * Older versions of this library had an inheritance hierarchy for various
+ * event types, such as GMouseEvent, GKeyEvent, etc.
+ * The current design has a single type GEvent that is a union of all data
+ * needed by any kind of event.
+ * The previous subclass names such as GMouseEvent are retained for backward
+ * compatibility, but they are now just aliases for the type GEvent.
  */
 class GEvent {
 public:
-    // empty event handlers that can be passed that do nothing
+    /**
+     * An empty event handler that can be passed that does nothing.
+     */
     static GEventListener EMPTY_EVENT_LISTENER;
-    static GEventListenerVoid EMPTY_EVENT_LISTENER_VOID;
 
-    // an event listener that just prints the event that occurred; for debugging
+    /**
+     * An event listener that just prints the event that occurred.
+     * This listener is useful for debugging.
+     */
     static GEventListener LOG_EVENT;
-
-    enum EventListenerType {
-        HANDLER_EVENT,
-        HANDLER_VOID
-    };
-
-    struct EventListenerWrapper {
-        GEventListener handler;
-        GEventListenerVoid handlerVoid;
-        EventListenerType type;
-
-        void fireEvent(const GEvent& event) {
-            if (type == HANDLER_EVENT) {
-                handler(event);
-            } else {
-                handlerVoid();
-            }
-        }
-    };
 
     /*
      * Type: KeyCode
@@ -198,117 +204,325 @@ public:
         MENU_KEY = Qt::Key_Menu
     };
 
+    /**
+     * Creates a new event of the given type.
+     */
     GEvent(EventClass eventClass = NULL_EVENT,
             EventType eventType = NULL_TYPE,
             const std::string& eventName = "",
             GObservable* source = nullptr);
+
+    /**
+     * Frees memory allocated internally by the event.
+     */
     virtual ~GEvent();
+
+    /**
+     * Converts an event class such as ACTION_PERFORMED
+     * to a string such as "ACTION_PERFORMED".
+     * @private
+     */
     static std::string classToString(EventClass eventClass);
+
+    /**
+     * Returns the action command associated with the event.
+     * For some interactors such as buttons, this will be the text of the
+     * interactor.
+     */
     virtual std::string getActionCommand() const;
+
+    /**
+     * Returns which mouse button was clicked, if this is a mouse event.
+     * If this is not a mouse event, returns 0.
+     */
     virtual int getButton() const;
+
+    /**
+     * Returns this event's class (minor type such as MOUSE_PRESSED).
+     * Equivalent to getEventClass.
+     */
     virtual EventClass getClass() const;
+
+    /**
+     * Returns the column that was interacted with, if this is a table event.
+     * If this is not a table event, returns 0.
+     */
     virtual int getColumn() const;
+
+    /**
+     * Returns the current time as a number of milliseconds elapsed since the
+     * epoch of 1970/01/01 12:00am.
+     * Used to supply timestamps to individual events.
+     * @private
+     */
     static long getCurrentTimeMS();
+
+    /**
+     * Returns this event's class (minor type such as MOUSE_PRESSED).
+     * Equivalent to getClass.
+     */
     virtual EventClass getEventClass() const;
+
+    /**
+     * Returns the event's type (major type such as MOUSE_EVENT).
+     * Equivalent to getType.
+     */
     virtual EventType getEventType() const;
+
+    /**
+     * Returns the source interactor that generated this event.
+     */
     virtual GInteractor* getInteractor() const;
+
+    /**
+     * Returns the Qt event being wrapped by this event, if any.
+     * If this event does not wrap a Qt event, returns nullptr.
+     */
     virtual QEvent* getInternalEvent() const;
+
+    /**
+     * Returns the key character that was typed, if this is a key event.
+     * If this is not a key event, returns '\0'.
+     */
     virtual char getKeyChar() const;
+
+    /**
+     * Returns the integer key code that was typed, if this is a key event.
+     * See the KeyCode enumeration for helpful constants for comparing key values.
+     * If this is not a key event, returns 0.
+     */
     virtual int getKeyCode() const;
+
+    /**
+     * Returns an (x, y) point representing the mouse position within the interactor
+     * when this event occurred.
+     * If this is not a mouse event, returns (0, 0).
+     */
     virtual GPoint getLocation() const;
+
+    /**
+     * Returns the modifiers active during this event.
+     * See the Modifiers enumeration for more information.
+     */
     virtual int getModifiers() const;
+
+    /**
+     * Returns this event's name such as "click" or "keydown" or "actionperformed".
+     */
     virtual std::string getName() const;
+
+    /**
+     * Returns this event's request URL, if this is a server URL event.
+     * If this is not a server URL event, returns an empty string.
+     */
     virtual std::string getRequestURL() const;
+
+    /**
+     * Returns the row that was interacted with, if this is a table event.
+     * If this is not a table event, returns 0.
+     */
     virtual int getRow() const;
+
+    /**
+     * Returns the source object that generated this event.
+     */
     virtual GObservable* getSource() const;
+
+    /**
+     * Returns this event's timestamp, as a number of milliseconds elapsed
+     * since the epoch of 1970/01/01 12:00am.
+     */
     virtual long getTime() const;
+
+    /**
+     * Returns the event's type (major type such as MOUSE_EVENT).
+     * Equivalent to getEventType.
+     */
     virtual EventType getType() const;
+
+    /**
+     * Returns the x-coordinate of the mouse position within the interactor
+     * when this event occurred.
+     * If this is not a mouse event, returns 0.
+     */
     virtual double getX() const;
+
+    /**
+     * Returns the y-coordinate of the mouse position within the interactor
+     * when this event occurred.
+     * If this is not a mouse event, returns 0.
+     */
     virtual double getY() const;
 
+    /**
+     * Instructs the GUI system to ignore or cancel this event.
+     * For example, if you listen to window-closing events and ignore them,
+     * the window will stay open.
+     */
     virtual void ignore();
 
-    /*
-     * Method: isAltKeyDown
-     * Usage: if (e.isAltKeyDown()) ...
-     * --------------------------------
+    /**
      * Returns <code>true</code> if the Alt key was held down during this event.
+     * If this is not a mouse or key event, returns false.
      */
     virtual bool isAltKeyDown() const;
 
-    /*
-     * Method: isCtrlKeyDown
-     * Usage: if (e.isCtrlKeyDown()) ...
-     * ---------------------------------
+    /**
      * Returns <code>true</code> if the Ctrl key was held down during this event.
+     * If this is not a mouse or key event, returns false.
      */
     virtual bool isCtrlKeyDown() const;
 
-    /*
-     * Method: isCtrlOrCommandKeyDown
-     * Usage: if (e.isCtrlOrCommandKeyDown()) ...
-     * ---------------------------------
+    /**
      * Returns <code>true</code> if the Ctrl key, or the Command key (Mac),
      * was held down during this event.
+     * If this is not a mouse or key event, returns false.
      */
     virtual bool isCtrlOrCommandKeyDown() const;
 
-    /*
+    /**
      * Returns true if the user pressed the mouse button multiple times.
+     * If this is not a mouse event, returns false.
      */
     virtual bool isDoubleClick() const;
 
-    /*
+    /**
      * Returns true if the user pressed the left mouse button.
+     * If this is not a mouse event, returns false.
      */
     virtual bool isLeftClick() const;
 
-    /*
+    /**
      * Returns true if the user pressed the middle mouse button.
+     * (Note that not every mouse has a simple delineation of "left, right,
+     * and middle" buttons; this was implemented on a standard 3-button mouse
+     * with scroll wheel.)
+     * If this is not a mouse event, returns false.
      */
     virtual bool isMiddleClick() const;
 
-    /*
+    /**
      * Returns true if the user pressed the right mouse button.
+     * If this is not a mouse event, returns false.
      */
     virtual bool isRightClick() const;
 
-    /*
-     * Method: isMetaKeyDown
-     * Usage: if (e.isMetaKeyDown()) ...
-     * ---------------------------------
+    /**
      * Returns <code>true</code> if the Meta/Command key was held down during this event.
+     * If this is not a mouse or key event, returns false.
      */
     virtual bool isMetaKeyDown() const;
 
-    /*
-     * Method: isShiftKeyDown
-     * Usage: if (e.isShiftKeyDown()) ...
-     * ----------------------------------
+    /**
      * Returns <code>true</code> if the Shift key was held down during this event.
+     * If this is not a mouse or key event, returns false.
      */
     virtual bool isShiftKeyDown() const;
 
+    /**
+     * Converts a key code such as 67 into a string such as "A".
+     * Works for special keys such as "Enter" and "Tab".
+     */
     static std::string keyCodeToString(int keyCode);
 
+    /**
+     * @private
+     */
     virtual void setActionCommand(const std::string& actionCommand);
+
+    /**
+     * @private
+     */
     virtual void setButton(int button);
+
+    /**
+     * @private
+     */
     virtual void setInternalEvent(QEvent* event);
+
+    /**
+     * @private
+     */
     virtual void setKeyChar(char keyChar);
+
+    /**
+     * @private
+     */
     virtual void setKeyChar(const std::string& keyCharString);
+
+    /**
+     * @private
+     */
     virtual void setKeyCode(int keyCode);
+
+    /**
+     * @private
+     */
     virtual void setModifiers(Qt::KeyboardModifiers modifiers);
+
+    /**
+     * @private
+     */
     virtual void setRequestURL(const std::string& requestUrl);
+
+    /**
+     * @private
+     */
     virtual void setRowAndColumn(int row, int col);
+
+    /**
+     * @private
+     */
     virtual void setSource(GObservable* source);
+
+    /**
+     * @private
+     */
     virtual void setX(double x);
+
+    /**
+     * @private
+     */
     virtual void setY(double y);
 
+    /**
+     * Returns a text representation of the event for debugging.
+     */
     virtual std::string toString() const;
+
+    /**
+     * Converts an event type such as MOUSE_EVENT to a string such as
+     * "MOUSE_EVENT".
+     */
     static std::string typeToString(EventType eventType);
 
-
 private:
+    /*
+     * Represents the two types of event listeners.
+     */
+    enum EventListenerType {
+        HANDLER_EVENT,
+        HANDLER_VOID
+    };
+
+    /*
+     * A wrapper that can hold either of the two types of event listeners.
+     */
+    struct EventListenerWrapper {
+        GEventListener handler;
+        GEventListenerVoid handlerVoid;
+        EventListenerType type;
+
+        void fireEvent(const GEvent& event) {
+            if (type == HANDLER_EVENT) {
+                handler(event);
+            } else {
+                handlerVoid();
+            }
+        }
+    };
+
+    // member variables
     std::string _actionCommand;
     int _button;
     EventClass _class;
@@ -327,9 +541,13 @@ private:
     QEvent* _internalQtEvent;
 
     friend class GInteractor;
+    friend class GObservable;
     friend class _Internal_QWidget;
 };
 
+/**
+ * Writes the given event to the given output stream.
+ */
 std::ostream& operator <<(std::ostream& out, const GEvent& event);
 
 // alias GEvent to all event types
@@ -346,10 +564,7 @@ typedef GEvent GWindowEvent;
 // global functions for backward compatibility
 // see geventqueue.cpp for implementation
 
-/*
- * Function: getNextEvent
- * Usage: GEvent e = getNextEvent(mask);
- * -------------------------------------
+/**
  * Checks to see if there are any events of the desired type waiting on the
  * event queue.  If so, this function returns the event in exactly the same
  * fashion as <code>waitForEvent</code>; if not, <code>getNextEvent</code>
@@ -364,11 +579,9 @@ typedef GEvent GWindowEvent;
  */
 GEvent getNextEvent(int mask = ANY_EVENT) Q_DECL_DEPRECATED;
 
-/*
- * Function: waitForClick
- * Usage: GMouseEvent event = waitForClick();
- * ------------------------------------------
- * Waits for a mouse click to occur anywhere in any window.
+/**
+ * Waits for a mouse click to occur anywhere in any window,
+ * returning the event that occurred.
  *
  * @deprecated
  * This function is deprecated and discouraged from use.
@@ -378,10 +591,7 @@ GEvent getNextEvent(int mask = ANY_EVENT) Q_DECL_DEPRECATED;
  */
 GMouseEvent waitForClick() Q_DECL_DEPRECATED;
 
-/*
- * Function: waitForEvent
- * Usage: GEvent e = waitForEvent(mask);
- * -------------------------------------
+/**
  * Dismisses the process until an event occurs whose type is covered by
  * the event mask.  The mask parameter is a combination of the events of
  * interest.  For example, to wait for a mouse event or an action event,

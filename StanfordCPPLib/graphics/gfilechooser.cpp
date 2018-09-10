@@ -5,6 +5,8 @@
  * See gfilechooser.h for documentation of each member.
  * 
  * @author Marty Stepp
+ * @version 2018/09/07
+ * - added overloads that accept GWindow* parent
  * @version 2018/08/23
  * - renamed to gfilechooser.cpp to replace Java version
  * @version 2018/06/28
@@ -22,7 +24,11 @@ GFileChooser::GFileChooser() {
 }
 
 std::string GFileChooser::showOpenDialog(const std::string& title, const std::string& currentDir, const std::string& fileFilter) {
-    return showOpenDialog(/* parent */ nullptr, title, currentDir, fileFilter);
+    return showOpenDialog(/* parent */ (QWidget*) nullptr, title, currentDir, fileFilter);
+}
+
+std::string GFileChooser::showOpenDialog(GWindow* parent, const std::string& title, const std::string& currentDir, const std::string& fileFilter) {
+    return showOpenDialog(parent ? parent->getWidget() : nullptr, title, currentDir, fileFilter);
 }
 
 std::string GFileChooser::showOpenDialog(QWidget* parent, const std::string& title, const std::string& currentDir, const std::string& fileFilter) {
@@ -41,7 +47,11 @@ std::string GFileChooser::showOpenDialog(QWidget* parent, const std::string& tit
 }
 
 std::string GFileChooser::showSaveDialog(const std::string& title, const std::string& currentDir, const std::string& fileFilter) {
-    return showSaveDialog(/* parent */ nullptr, title, currentDir, fileFilter);
+    return showSaveDialog(/* parent */ (QWidget*) nullptr, title, currentDir, fileFilter);
+}
+
+std::string GFileChooser::showSaveDialog(GWindow* parent, const std::string& title, const std::string& currentDir, const std::string& fileFilter) {
+    return showSaveDialog(parent ? parent->getWidget() : nullptr, title, currentDir, fileFilter);
 }
 
 std::string GFileChooser::showSaveDialog(QWidget* parent, const std::string& title, const std::string& currentDir, const std::string& fileFilter) {

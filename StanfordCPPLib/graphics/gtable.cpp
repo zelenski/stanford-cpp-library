@@ -269,7 +269,7 @@ int GTable::numRows() const {
     return _iqtableview->model()->rowCount();
 }
 
-void GTable::removeTableEventListener() {
+void GTable::removeTableListener() {
     removeEventListeners({"table",
                           "tableupdate",
                           "tableselect",

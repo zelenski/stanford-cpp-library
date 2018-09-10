@@ -19,16 +19,11 @@ static void __emptyEventListener(GEvent) {
     // empty
 }
 
-static void __emptyEventListenerVoid() {
-    // empty
-}
-
 static void __logEventListener(GEvent event) {
     std::cout << "log event: " << event << std::endl;
 }
 
 GEventListener GEvent::EMPTY_EVENT_LISTENER = __emptyEventListener;
-GEventListenerVoid GEvent::EMPTY_EVENT_LISTENER_VOID = __emptyEventListenerVoid;
 GEventListener GEvent::LOG_EVENT = __logEventListener;
 
 

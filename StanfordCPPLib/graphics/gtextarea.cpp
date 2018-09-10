@@ -140,6 +140,7 @@ int GTextArea::getSelectionEnd() const {
     if (end > start) {
         return end;
     } else {
+        // no selection; cursor sets selection start/end to be equal
         return -1;
     }
 }
@@ -236,8 +237,9 @@ void GTextArea::scrollToTop() {
 }
 
 void GTextArea::select(int startIndex, int length) {
+    require::nonNegative(startIndex, 0, "GTextArea::select", "startIndex");
+    require::nonNegative(length, 0, "GTextArea::select", "length");
     GThread::runOnQtGuiThread([this, startIndex, length]() {
-        // TODO: check bounds
         QTextCursor cursor = _iqtextedit->textCursor();
         cursor.setPosition(startIndex);
         cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, length);
@@ -263,6 +265,7 @@ void GTextArea::setContextMenuEnabled(bool enabled) {
 }
 
 void GTextArea::setCursorPosition(int index, bool keepAnchor) {
+    require::nonNegative(index, "TextArea::setCursorPosition", "index");
     GThread::runOnQtGuiThread([this, index, keepAnchor]() {
         QTextCursor cursor(_iqtextedit->textCursor());
         cursor.setPosition(index, keepAnchor ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor);

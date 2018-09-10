@@ -9,14 +9,15 @@
 
 #include "gscrollpane.h"
 #include "glayout.h"
-#include "require.h"
 #include "gthread.h"
+#include "require.h"
 
 GScrollPane::GScrollPane(GInteractor* interactor, QWidget* parent)
         : _iqscrollarea(nullptr),
           _interactor(interactor),
           _horizontalScrollBarPolicy(GScrollPane::SCROLLBAR_AS_NEEDED),
           _verticalScrollBarPolicy(GScrollPane::SCROLLBAR_AS_NEEDED) {
+    require::nonNull(interactor, "GScrollPane::constructor", "interactor");
     GThread::runOnQtGuiThread([this, interactor, parent]() {
         _iqscrollarea = new _Internal_QScrollArea(this, getInternalParent(parent));
         _iqscrollarea->setWidget(interactor->getWidget());
