@@ -388,18 +388,22 @@ bool GWindow::eventsEnabled() const {
 }
 
 GCanvas* GWindow::getCanvas() const {
+    ensureForwardTargetConstHack();
     return _canvas;
 }
 
 double GWindow::getCanvasHeight() const {
+    ensureForwardTargetConstHack();
     return _canvas->getHeight();
 }
 
 GDimension GWindow::getCanvasSize() const {
+    ensureForwardTargetConstHack();
     return GDimension(_canvas->getWidth(), _canvas->getHeight());
 }
 
 double GWindow::getCanvasWidth() const {
+    ensureForwardTargetConstHack();
     return _canvas->getWidth();
 }
 

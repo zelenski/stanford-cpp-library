@@ -39,7 +39,7 @@ static void _errorMessage(const std::string& caller, const std::string& valueNam
         _errorMessage((caller), _default((valueName), "value"), (details)); \
     }
 
-#define _default(value, defaultValue) ((value) == "" ? (defaultValue) : (value))
+#define _default(value, defaultValue) ((value) == std::string("") ? (defaultValue) : (value))
 
 void inRange(double value, double min, double max, const std::string& caller, const std::string& valueName, const std::string& details) {
     _spl_assert(min <= value && value <= max, caller, _default(valueName, "value"), _default(details, "must be between " + doubleToString(min) + " and " + doubleToString(max) + " inclusive but was " + doubleToString(value)));
