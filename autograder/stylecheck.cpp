@@ -6,6 +6,8 @@
  * See sylecheck.h for documentation of each function.
  * 
  * @author Marty Stepp
+ * @version 2018/08/27
+ * - refactored to use AutograderUnitTestGui cpp class
  * @version 2016/12/01
  * - fixed bugs with full test names to match 12/01 versions
  * @version 2016/10/28
@@ -27,6 +29,7 @@
 #include "stylecheck.h"
 #include <cstring>
 #include "autograder.h"
+#include "autograderunittestgui.h"
 #include "filelib.h"
 #include "gtest-marty.h"
 #include "rapidxml.h"
@@ -34,7 +37,6 @@
 #include "stringutils.h"
 #include "strlib.h"
 #include "xmlutils.h"
-#include "private/platform.h"
 #include "private/static.h"
 
 namespace stylecheck {
@@ -66,19 +68,19 @@ static bool processPatternNode(const std::string& codeFileName,
     bool patternList = xmlutils::getAttributeBool(patternNode, "list", true);
     bool showCounts = xmlutils::getAttributeBool(patternNode, "showcounts", true);
     
-    std::string failType = "";   // default
+    stanfordcpplib::autograder::AutograderUnitTestGui::TestResult failResult =
+            stanfordcpplib::autograder::AutograderUnitTestGui::TEST_RESULT_WARN;   // default
     if (xmlutils::hasAttribute(patternNode, "failtype")) {
-        failType = trim(xmlutils::getAttribute(patternNode, "failtype"));
-    }
-    if (failType.empty()) {
-        failType = "warn";   // default
+        std::string failTypeStr = trim(xmlutils::getAttribute(patternNode, "failtype"));
+        failResult = failTypeStr == "warn" ? stanfordcpplib::autograder::AutograderUnitTestGui::TEST_RESULT_WARN
+                                           : stanfordcpplib::autograder::AutograderUnitTestGui::TEST_RESULT_FAIL;
     }
 
     // see if student's code text matches the regex
     std::string linesStr;
     int matchCount;
     if (patternList) {
-        matchCount = stringutils::regexMatchCountWithLines(codeFileText, patternRegex, linesStr);
+        matchCount = regexMatchCountWithLines(codeFileText, patternRegex, linesStr);
     } else {
         matchCount = regexMatchCount(codeFileText, patternRegex);
     }
@@ -120,13 +122,12 @@ static bool processPatternNode(const std::string& codeFileName,
     if (!pass || !omitOnPass) {
         out << "    STYLE CHECK " << (pass ? "PASSED : " : "WARNING: ") << patternDescription << std::endl;
         if (autograder::isGraphicalUI()) {
-            std::string resultStr = pass ? "pass" : failType;
-            stanfordcpplib::getPlatform()->autograderunittest_addTest(
-                        testName, prefix + categoryName,
-                        /* styleCheck */ !STATIC_VARIABLE(styleChecksMerged));
-            stanfordcpplib::getPlatform()->autograderunittest_setTestResult(
-                        testFullName, resultStr,
-                        /* styleCheck */ !STATIC_VARIABLE(styleChecksMerged));
+            stanfordcpplib::autograder::AutograderUnitTestGui::TestResult result = pass
+                    ? stanfordcpplib::autograder::AutograderUnitTestGui::TEST_RESULT_PASS : failResult;
+            stanfordcpplib::autograder::AutograderUnitTestGui::instance(/* styleCheck */ !STATIC_VARIABLE(styleChecksMerged))->addTest(
+                        testName, prefix + categoryName);
+            stanfordcpplib::autograder::AutograderUnitTestGui::instance(/* styleCheck */ !STATIC_VARIABLE(styleChecksMerged))->setTestResult(
+                        testFullName, result);
             autograder::UnitTestDetails deets;
             deets.message = patternDescription;
             deets.passed = pass;
@@ -139,9 +140,8 @@ static bool processPatternNode(const std::string& codeFileName,
             deets.valueType = "T";
             out.str("");
             out << deets;
-            stanfordcpplib::getPlatform()->autograderunittest_setTestDetails(
-                        testFullName, out.str(),
-                        /* styleCheck */ !STATIC_VARIABLE(styleChecksMerged));
+            stanfordcpplib::autograder::AutograderUnitTestGui::instance(/* styleCheck */ !STATIC_VARIABLE(styleChecksMerged))->setTestDetails(
+                        testFullName, deets);
             out.str("");
         } else {
             if (showCounts) {
@@ -204,10 +204,10 @@ void styleCheck(const std::string& codeFileName, const std::string& styleXmlFile
         }
         if (autograder::isGraphicalUI()) {
             if (STATIC_VARIABLE(styleChecksMerged)) {
-                // stanfordcpplib::getPlatform()->autograderunittest_setWindowDescriptionText(out.str(), /* styleCheck */ true);
+                // stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setWindowDescriptionText(out.str(), /* styleCheck */ true);
             } else {
-                stanfordcpplib::getPlatform()->autograderunittest_clearTests(/* styleCheck */ true);
-                stanfordcpplib::getPlatform()->autograderunittest_setWindowDescriptionText(out.str(), /* styleCheck */ true);
+                stanfordcpplib::autograder::AutograderUnitTestGui::instance(/* styleCheck */ true)->clearTests();
+                stanfordcpplib::autograder::AutograderUnitTestGui::instance(/* styleCheck */ true)->setWindowDescription(out.str());
             }
             out.str("");
         }

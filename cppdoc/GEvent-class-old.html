@@ -1,0 +1,263 @@
+<html>
+<head>
+<title>GEvent</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="gevents.html">#include "gevents.h"</a></div>
+<h1 class=header><code>class GEvent</code></h1>
+This class is the root of the hierarchy for all events.
+The structure of the <code>GEvent</code> hierarchy looks like this:
+
+<p><div class=inset>
+<img src="images/GEventHierarchy.png"
+     width=558 usemap="#GEventMap" alt="GEventHierarchy">
+</div>
+<map name="GEventMap">
+  <area shape=rect coords="0,132,102,159" href="GWindowEvent-class.html"
+        alt="GWindowEvent">
+  <area shape=rect coords="114,132,216,159" href="GActionEvent-class.html"
+        alt="GActionEvent">
+  <area shape=rect coords="228,132,330,159" href="GMouseEvent-class.html"
+        alt="GMouseEvent">
+  <area shape=rect coords="342,132,444,159" href="GKeyEvent-class.html"
+        alt="GKeyEvent">
+  <area shape=rect coords="456,132,558,159" href="GTimerEvent-class.html"
+        alt="GTimerEvent">
+</map>
+
+<p>The standard paradigm for using <code>GEvent</code> is illustrated
+by the following program, which allows the user to draw lines on the
+graphics window:
+
+<pre>
+   int main() {
+      GWindow gw;
+      GLine* line;
+      cout &lt;&lt; &quot;This program lets the user draw lines by dragging.&quot; &lt;&lt; endl;
+      while (true) {
+         GMouseEvent e = waitForEvent(MOUSE_EVENT);
+         if (e.getEventType() == MOUSE_PRESSED) {
+            line = new GLine(e.getX(), e.getY(), e.getX(), e.getY());
+            gw.add(line);
+         } else if (e.getEventType() == MOUSE_DRAGGED) {
+            line-&gt;setEndPoint(e.getX(), e.getY());
+         }
+      }
+   }
+</pre>
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Methods</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getEventClass">getEventClass()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the enumerated type constant indicating the class of the event.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getEventTime">getEventTime()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the system time in milliseconds at which the event occurred.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getEventType">getEventType()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the enumerated type constant corresponding to the specific event type.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getModifiers">getModifiers()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns an integer whose bits indicate what modifiers are in effect.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:isValid">isValid()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the event is valid.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setEventTime">setEventTime(<var>time</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the event time field for this event.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setModifiers">setModifiers(<var>modifiers</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the modifiers field for this event.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts the event to a human-readable representation of the event.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getNextEvent">getNextEvent(<var>mask</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Checks to see if there are any events of the desired type waiting on the event queue.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:waitForClick">waitForClick()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Waits for a mouse click in any window, discarding any other events.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:waitForEvent">waitForEvent(<var>mask</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Dismisses the process until an event occurs whose type is covered by the event mask.</td></tr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:getEventClass"></a>
+<pre class=detailCode>
+EventClassType getEventClass() const;
+</pre>
+<div class=detailHTML>
+Returns the enumerated type constant indicating the class of the
+event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+EventClassType eventClass = e.getEventClass();
+</pre>
+<hr>
+<a name="Method:getEventType"></a>
+<pre class=detailCode>
+EventType getEventType() const;
+</pre>
+<div class=detailHTML>
+Returns the enumerated type constant corresponding to the specific
+event type.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+EventType type = e.getEventType();
+</pre>
+<hr>
+<a name="Method:getEventTime"></a>
+<pre class=detailCode>
+double getEventTime() const;
+</pre>
+<div class=detailHTML>
+Returns the system time in milliseconds at which the event occurred.
+To ensure portability among systems that represent time in different
+ways, the StanfordCPPLib packages use type <code>double</code> to
+represent time, which is always encoded as the number of milliseconds
+that have elapsed since 00:00:00 UTC on January 1, 1970, which is
+the conventional zero point for computer-based time systems.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double time = e.getEventTime();
+</pre>
+<hr>
+<a name="Method:getModifiers"></a>
+<pre class=detailCode>
+int getModifiers() const;
+</pre>
+<div class=detailHTML>
+Returns an integer whose bits indicate what modifiers are in effect.
+To check whether the shift key is down, for example, one could use
+the following code:
+
+<pre>
+   if (e.getModifiers() & SHIFT_DOWN) ...
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int modifiers = e.getModifiers();
+</pre>
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Converts the event to a human-readable representation of the event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = e.toString();
+</pre>
+<hr>
+<a name="Method:isValid"></a>
+<pre class=detailCode>
+bool isValid();
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the event is valid.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (e.isValid()) ...
+</pre>
+<hr>
+<a name="Method:setEventTime"></a>
+<pre class=detailCode>
+void setEventTime(double time);
+</pre>
+<div class=detailHTML>
+Sets the event time field for this event.  The event system needs
+access to this method, but conventional clients don't.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+e.setEventTime(time);
+</pre>
+<hr>
+<a name="Method:setModifiers"></a>
+<pre class=detailCode>
+void setModifiers(int modifiers);
+</pre>
+<div class=detailHTML>
+Sets the modifiers field for this event.  The event system needs
+access to this method, but conventional clients don't.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+e.setModifiers(modifiers);
+</pre>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:waitForClick"></a>
+<pre class=detailCode>
+void waitForClick();
+</pre>
+<div class=detailHTML>
+Waits for a mouse click in any window, discarding any other events.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+waitForClick();
+</pre>
+<hr>
+<a name="Function:waitForEvent"></a>
+<pre class=detailCode>
+GEvent waitForEvent(int mask = ANY_EVENT);
+</pre>
+<div class=detailHTML>
+Dismisses the process until an event occurs whose type is covered by
+the event mask.  The mask parameter is a combination of the events of
+interest.  For example, to wait for a mouse event or an action event,
+clients can use the following call:
+
+<pre>
+   e = waitForEvent(MOUSE_EVENT + ACTION_EVENT);
+</pre>
+
+The <code>mask</code> parameter is optional.  If it is missing,
+<code>waitForEvent</code> accepts any event.
+
+<p>As a more sophisticated example, the following code is the canonical
+event loop for an animated application that needs to respond to mouse,
+key, and timer events:
+
+<pre>
+   GTimer timer(ANIMATION_DELAY_IN_MILLISECONDS);
+   timer.start();
+   while (true) {
+      GEvent e = waitForEvent(TIMER_EVENT + MOUSE_EVENT + KEY_EVENT);
+      switch (e.getEventClass()) {
+       case TIMER_EVENT:
+         takeAnimationStep();
+         break;
+       case MOUSE_EVENT:
+         handleMouseEvent(GMouseEvent(e));
+         break;
+       case KEY_EVENT:
+         handleKeyEvent(GKeyEvent(e));
+         break;
+      }
+   }
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GEvent e = waitForEvent(mask);
+</pre>
+<hr>
+<a name="Function:getNextEvent"></a>
+<pre class=detailCode>
+GEvent getNextEvent(int mask = ANY_EVENT);
+</pre>
+<div class=detailHTML>
+Checks to see if there are any events of the desired type waiting on the
+event queue.  If so, this function returns the event in exactly the same
+fashion as <code>waitForEvent</code>; if not, <code>getNextEvent</code>
+returns an invalid event.  The <code>mask</code> parameter is optional.
+If it is missing, <code>getNextEvent</code> accepts any event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GEvent e = getNextEvent(mask);
+</pre>
+<hr>
+</table>
+</body>
+</html>

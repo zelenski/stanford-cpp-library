@@ -2,20 +2,9 @@
  * File: gtypes.cpp
  * ----------------
  * This file implements the classes in the gtypes.h interface.
- * 
- * @version 2017/10/16
- * - added GPoint operators *, *=
- * - added GPoint::toPolar
- * - added better GPoint support in GRectangle
- * - alphabetized members
- * @version 2017/09/29
- * - updated to use composite hashCode function
- * @version 2016/10/14
- * - modified floating-point equality tests to use floatingPointEqual function
- * @version 2015/07/05
- * - using global hashing functions rather than global variables
- * @version 2014/10/08
- * - removed 'using namespace' statement
+ *
+ * @version 2018/07/14
+ * - initial version, based on gtypes.cpp
  */
 
 #include "gtypes.h"
@@ -26,6 +15,7 @@
 #include "error.h"
 #include "gmath.h"
 #include "hashcode.h"
+#include "point.h"
 #include "strlib.h"
 
 /*
@@ -36,22 +26,18 @@
  * The hashCode function computes the exclusive-or of the individual words.
  */
 
-GDimension::GDimension() {
-    width = 0;
-    height = 0;
-}
-
-GDimension::GDimension(double width, double height) {
-    this->width = width;
-    this->height = height;
+GDimension::GDimension(double width, double height)
+        : _width(width),
+          _height(height) {
+    // empty
 }
 
 double GDimension::getWidth() const {
-    return width;
+    return _width;
 }
 
 double GDimension::getHeight() const {
-    return height;
+    return _height;
 }
 
 std::string GDimension::toString() const {
@@ -61,12 +47,12 @@ std::string GDimension::toString() const {
 }
 
 std::ostream& operator <<(std::ostream& os, const GDimension& dim) {
-    return os << "(" << dim.width << ", " << dim.height << ")";
+    return os << "(" << dim._width << ", " << dim._height << ")";
 }
 
 bool operator ==(const GDimension& d1, const GDimension& d2) {
-    return floatingPointEqual(d1.width, d2.width)
-            && floatingPointEqual(d1.height, d2.height);
+    return floatingPointEqual(d1._width, d2._width)
+            && floatingPointEqual(d1._height, d2._height);
 }
 
 bool operator !=(const GDimension& d1, const GDimension& d2) {
@@ -74,8 +60,8 @@ bool operator !=(const GDimension& d1, const GDimension& d2) {
 }
 
 bool operator <(const GDimension& d1, const GDimension& d2) {
-    return d1.width < d2.width
-            || (floatingPointEqual(d1.width, d2.width) && d1.height < d2.height);
+    return d1._width < d2._width
+            || (floatingPointEqual(d1._width, d2._width) && d1._height < d2._height);
 }
 
 bool operator <=(const GDimension& d1, const GDimension& d2) {
@@ -91,17 +77,71 @@ bool operator >=(const GDimension& d1, const GDimension& d2) {
 }
 
 GDimension operator *(const GDimension& d, double scale) {
-    return GDimension(d.width * scale, d.height * scale);
-}
-
-GDimension& operator *=(GDimension& d, double scale) {
-    d.width *= scale;
-    d.height *= scale;
-    return d;
+    return GDimension(d._width * scale, d._height * scale);
 }
 
 int hashCode(const GDimension& dim) {
-    return hashCode2(dim.width, dim.height);
+    return hashCode2(dim._width, dim._height);
+}
+
+std::string toString(HorizontalAlignment alignment) {
+    if (alignment == ALIGN_CENTER) {
+        return "Center";
+    } else if (alignment == ALIGN_LEFT) {
+        return "Left";
+    } else {   // if (alignment == ALIGN_RIGHT)
+        return "Right";
+    }
+}
+
+std::string toString(VerticalAlignment alignment) {
+    if (alignment == ALIGN_MIDDLE) {
+        return "Middle";
+    } else if (alignment == ALIGN_TOP) {
+        return "Top";
+    } else {   // if (alignment == ALIGN_BOTTOM)
+        return "Bottom";
+    }
+}
+
+HorizontalAlignment toHorizontalAlignment(const std::string& alignmentStr) {
+    std::string alignLC = toLowerCase(trim(alignmentStr));
+    if (stringContains(alignLC, "left") || stringContains(alignLC, "west")) {
+        return ALIGN_LEFT;
+    } else if (stringContains(alignLC, "right") || stringContains(alignLC, "east")) {
+        return ALIGN_RIGHT;
+    } else if (stringContains(alignLC, "stretch") || stringContains(alignLC, "justify")) {
+        return ALIGN_HORIZONTAL_STRETCH;
+    } else {
+        return ALIGN_CENTER;
+    }
+}
+
+Qt::Alignment toQtAlignment(HorizontalAlignment alignment) {
+    return alignment == ALIGN_LEFT ? Qt::AlignLeft
+            : alignment == ALIGN_CENTER ? Qt::AlignHCenter
+            : alignment == ALIGN_HORIZONTAL_STRETCH ? Qt::AlignJustify
+            : Qt::AlignRight;
+}
+
+Qt::Alignment toQtAlignment(VerticalAlignment alignment) {
+    return alignment == ALIGN_TOP ? Qt::AlignTop
+            : alignment == ALIGN_MIDDLE ? Qt::AlignVCenter
+            : alignment == ALIGN_VERTICAL_STRETCH ? Qt::AlignTop
+            : Qt::AlignBottom;
+}
+
+VerticalAlignment toVerticalAlignment(const std::string& alignmentStr) {
+    std::string alignLC = toLowerCase(trim(alignmentStr));
+    if (stringContains(alignLC, "top") || stringContains(alignLC, "north")) {
+        return ALIGN_TOP;
+    } else if (stringContains(alignLC, "bottom") || stringContains(alignLC, "south")) {
+        return ALIGN_BOTTOM;
+    } else if (stringContains(alignLC, "stretch") || stringContains(alignLC, "justify")) {
+        return ALIGN_VERTICAL_STRETCH;
+    } else {
+        return ALIGN_MIDDLE;
+    }
 }
 
 /*
@@ -112,22 +152,23 @@ int hashCode(const GDimension& dim) {
  * The hashCode function computes the exclusive-or of the individual words.
  */
 
-GPoint::GPoint() {
-    x = 0;
-    y = 0;
+GPoint::GPoint(double x, double y)
+        : _x(x),
+          _y(y) {
+    // empty
 }
 
-GPoint::GPoint(double x, double y) {
-    this->x = x;
-    this->y = y;
+GPoint::GPoint(const Point& point) {
+    _x = point.getX();
+    _y = point.getY();
 }
 
 double GPoint::getX() const {
-    return x;
+    return _x;
 }
 
 double GPoint::getY() const {
-    return y;
+    return _y;
 }
 
 std::string GPoint::toString() const {
@@ -137,12 +178,12 @@ std::string GPoint::toString() const {
 }
 
 std::ostream& operator <<(std::ostream& os, const GPoint& pt) {
-    return os << "(" << pt.x << ", " << pt.y << ")";
+    return os << "(" << pt._x << ", " << pt._y << ")";
 }
 
 bool operator ==(const GPoint& p1, const GPoint& p2) {
-    return floatingPointEqual(p1.x, p2.x)
-            && floatingPointEqual(p1.y, p2.y);
+    return floatingPointEqual(p1._x, p2._x)
+            && floatingPointEqual(p1._y, p2._y);
 }
 
 bool operator !=(const GPoint& p1, const GPoint& p2) {
@@ -150,7 +191,7 @@ bool operator !=(const GPoint& p1, const GPoint& p2) {
 }
 
 bool operator <(const GPoint& p1, const GPoint& p2) {
-    return p1.x < p2.x || (floatingPointEqual(p1.x, p2.x) && p1.y < p2.y);
+    return p1._x < p2._x || (floatingPointEqual(p1._x, p2._x) && p1._y < p2._y);
 }
 
 bool operator <=(const GPoint& p1, const GPoint& p2) {
@@ -166,18 +207,11 @@ bool operator >=(const GPoint& p1, const GPoint& p2) {
 }
 
 GPoint operator *(const GPoint& p, double scale) {
-    return GPoint(p.x * scale, p.y * scale);
+    return GPoint(p._x * scale, p._y * scale);
 }
-
-GPoint& operator *=(GPoint& p, double scale) {
-    p.x *= scale;
-    p.y *= scale;
-    return p;
-}
-
 
 int hashCode(const GPoint& pt) {
-    return hashCode2(pt.x, pt.y);
+    return hashCode2(pt._x, pt._y);
 }
 
 /*
@@ -189,65 +223,66 @@ int hashCode(const GPoint& pt) {
  * of the individual words.
  */
 
-GRectangle::GRectangle() {
-    x = 0;
-    y = 0;
-    width = 0;
-    height = 0;
+GRectangle::GRectangle(double x, double y, double width, double height)
+        : _x(x),
+          _y(y),
+          _width(width),
+          _height(height) {
+    // empty
 }
 
-GRectangle::GRectangle(double x, double y, double width, double height) {
-    this->x = x;
-    this->y = y;
-    this->width = width;
-    this->height = height;
+GRectangle::GRectangle(double x, double y, const GDimension& size)
+        : _x(x),
+          _y(y),
+          _width(size.getWidth()),
+          _height(size.getHeight()) {
+    // empty
 }
 
-GRectangle::GRectangle(double x, double y, const GDimension& size) {
-    this->x = x;
-    this->y = y;
-    this->width = size.getWidth();
-    this->height = size.getHeight();
+GRectangle::GRectangle(const GPoint& p, double width, double height)
+        : _x(p.getX()),
+          _y(p.getY()),
+          _width(width),
+          _height(height) {
+    // empty
 }
 
-GRectangle::GRectangle(const GPoint& p, double width, double height) {
-    this->x = p.getX();
-    this->y = p.getY();
-    this->width = width;
-    this->height = height;
+GRectangle::GRectangle(const GPoint& p, const GDimension& size)
+        : _x(p.getX()),
+          _y(p.getY()),
+          _width(size.getWidth()),
+          _height(size.getHeight()) {
+    // empty
 }
 
-GRectangle::GRectangle(const GPoint& p, const GDimension& size) {
-    this->x = p.getX();
-    this->y = p.getY();
-    this->width = size.getWidth();
-    this->height = size.getHeight();
+GRectangle GRectangle::enlargedBy(double amount) {
+    return GRectangle(_x - amount, _y - amount, _width + 2 * amount, _height + 2 * amount);
 }
 
 double GRectangle::getX() const {
-    return x;
+    return _x;
 }
 
 double GRectangle::getY() const {
-    return y;
+    return _y;
 }
 
 double GRectangle::getWidth() const {
-    return width;
+    return _width;
 }
 
 double GRectangle::getHeight() const {
-    return height;
+    return _height;
 }
 
 bool GRectangle::isEmpty() const {
-    return width <= 0 || height <= 0;
+    return _width <= 0 || _height <= 0;
 }
 
 bool GRectangle::contains(double x, double y) const {
-    return x >= this->x && y >= this->y
-            && x < this->x + width
-            && y < this->y + height;
+    return x >= this->_x && y >= this->_y
+            && x < this->_x + _width
+            && y < this->_y + _height;
 }
 
 bool GRectangle::contains(const GPoint& pt) const {
@@ -266,10 +301,10 @@ std::ostream& operator <<(std::ostream& os, const GRectangle& rect) {
 }
 
 bool operator ==(const GRectangle& r1, const GRectangle& r2) {
-    return floatingPointEqual(r1.x, r2.x)
-            && floatingPointEqual(r1.y, r2.y)
-            && floatingPointEqual(r1.width, r2.width)
-            && floatingPointEqual(r1.height, r2.height);
+    return floatingPointEqual(r1._x, r2._x)
+            && floatingPointEqual(r1._y, r2._y)
+            && floatingPointEqual(r1._width, r2._width)
+            && floatingPointEqual(r1._height, r2._height);
 }
 
 bool operator !=(const GRectangle& r1, const GRectangle& r2) {
@@ -278,7 +313,7 @@ bool operator !=(const GRectangle& r1, const GRectangle& r2) {
 
 bool operator <(const GRectangle& r1, const GRectangle& r2) {
     return stanfordcpplib::collections::compareTo4(
-            r1.x, r2.x, r1.y, r2.y, r1.width, r2.width, r1.height, r2.height) < 0;
+            r1._x, r2._x, r1._y, r2._y, r1._width, r2._width, r1._height, r2._height) < 0;
 }
 
 bool operator <=(const GRectangle& r1, const GRectangle& r2) {
@@ -294,5 +329,5 @@ bool operator >=(const GRectangle& r1, const GRectangle& r2) {
 }
 
 int hashCode(const GRectangle& r) {
-    return hashCode4(r.x, r.y, r.width, r.height);
+    return hashCode4(r._x, r._y, r._width, r._height);
 }

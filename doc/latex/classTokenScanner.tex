@@ -1,0 +1,208 @@
+\hypertarget{classTokenScanner}{}\section{Token\+Scanner Class Reference}
+\label{classTokenScanner}\index{Token\+Scanner@{Token\+Scanner}}
+
+
+{\ttfamily \#include $<$tokenscanner.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classTokenScanner_a284595cf3c3df7d3e70ef2dcdc1f0292}{Token\+Scanner}} ()
+\item 
+\mbox{\hyperlink{classTokenScanner_aa82b5fa6beae663f87eaa0ae964a48b3}{Token\+Scanner}} (std\+::istream \&infile)
+\item 
+\mbox{\hyperlink{classTokenScanner_a55859460fe8f07596fbc93d91314254a}{Token\+Scanner}} (const std\+::string \&str)
+\item 
+virtual \mbox{\hyperlink{classTokenScanner_a38bfeb2d700fbb486f5b3a4283419ae5}{$\sim$\+Token\+Scanner}} ()
+\item 
+void \mbox{\hyperlink{classTokenScanner_a5256bb7e66b4509946204727182994f9}{add\+Operator}} (const std\+::string \&op)
+\item 
+void \mbox{\hyperlink{classTokenScanner_aed3e8321a04deee5d8bebce0d6d715ac}{add\+Word\+Characters}} (const std\+::string \&str)
+\item 
+int \mbox{\hyperlink{classTokenScanner_aa1ac28f13062f093eb32a49dce4c63f8}{get\+Char}} ()
+\item 
+std\+::string \mbox{\hyperlink{classTokenScanner_ae2c34694d98dc66a7493339061a4358e}{get\+Input}} () const
+\item 
+int \mbox{\hyperlink{classTokenScanner_a6c9c9aa34f1ae28cd7a4f150e2df8201}{get\+Position}} () const
+\item 
+std\+::string \mbox{\hyperlink{classTokenScanner_ac9f2b60ecc3007903307c3cb49fd5df1}{get\+String\+Value}} (const std\+::string \&token) const
+\item 
+Token\+Type \mbox{\hyperlink{classTokenScanner_a50ed7613c93d2b3618830c3c5a4341ca}{get\+Token\+Type}} (const std\+::string \&token) const
+\item 
+bool \mbox{\hyperlink{classTokenScanner_af690597352ca6f48a9f86b527cd754da}{has\+More\+Tokens}} ()
+\item 
+void \mbox{\hyperlink{classTokenScanner_a2948758a40dec8f13f9de47352afcc9f}{ignore\+Comments}} ()
+\item 
+void \mbox{\hyperlink{classTokenScanner_a1dd9d28ae227b7e0313be6dd0ecca373}{ignore\+Whitespace}} ()
+\item 
+bool \mbox{\hyperlink{classTokenScanner_ad3446183cc2011a6bb3ebe1ce1c3391a}{is\+Word\+Character}} (char ch) const
+\item 
+std\+::string \mbox{\hyperlink{classTokenScanner_ad515fb115cc77b70c2a498049ba16256}{next\+Token}} ()
+\item 
+void \mbox{\hyperlink{classTokenScanner_a6ca063c69febcb61e6b49a210563194f}{save\+Token}} (const std\+::string \&token)
+\item 
+void \mbox{\hyperlink{classTokenScanner_a0bebe5cb8dd72954dc34cf5338db03dc}{scan\+Numbers}} ()
+\item 
+void \mbox{\hyperlink{classTokenScanner_af85e801b4ef298db6ddbfd539a8f45db}{scan\+Strings}} ()
+\item 
+void \mbox{\hyperlink{classTokenScanner_adb06e967f852573750bd97c5a76c790c}{set\+Input}} (std\+::istream \&infile)
+\item 
+void \mbox{\hyperlink{classTokenScanner_a3c337c514c15a062c8e3dd04e0e9a824}{set\+Input}} (const std\+::string \&str)
+\item 
+void \mbox{\hyperlink{classTokenScanner_a44b49340cfed6b94e9f625c9f2f73fbf}{unget\+Char}} (int ch)
+\item 
+void \mbox{\hyperlink{classTokenScanner_ad7ae526d42faff3aca1c860f302cbb76}{verify\+Token}} (const std\+::string \&expected)
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classTokenScanner_a284595cf3c3df7d3e70ef2dcdc1f0292}\label{classTokenScanner_a284595cf3c3df7d3e70ef2dcdc1f0292}} 
+\index{Token\+Scanner@{Token\+Scanner}!Token\+Scanner@{Token\+Scanner}}
+\index{Token\+Scanner@{Token\+Scanner}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{Token\+Scanner()}{TokenScanner()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classTokenScanner}{Token\+Scanner}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classTokenScanner_aa82b5fa6beae663f87eaa0ae964a48b3}\label{classTokenScanner_aa82b5fa6beae663f87eaa0ae964a48b3}} 
+\index{Token\+Scanner@{Token\+Scanner}!Token\+Scanner@{Token\+Scanner}}
+\index{Token\+Scanner@{Token\+Scanner}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{Token\+Scanner()}{TokenScanner()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classTokenScanner}{Token\+Scanner}} (\begin{DoxyParamCaption}\item[{std\+::istream \&}]{infile }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classTokenScanner_a55859460fe8f07596fbc93d91314254a}\label{classTokenScanner_a55859460fe8f07596fbc93d91314254a}} 
+\index{Token\+Scanner@{Token\+Scanner}!Token\+Scanner@{Token\+Scanner}}
+\index{Token\+Scanner@{Token\+Scanner}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{Token\+Scanner()}{TokenScanner()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classTokenScanner}{Token\+Scanner}} (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{str }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classTokenScanner_a38bfeb2d700fbb486f5b3a4283419ae5}\label{classTokenScanner_a38bfeb2d700fbb486f5b3a4283419ae5}} 
+\index{Token\+Scanner@{Token\+Scanner}!````~Token\+Scanner@{$\sim$\+Token\+Scanner}}
+\index{````~Token\+Scanner@{$\sim$\+Token\+Scanner}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{$\sim$\+Token\+Scanner()}{~TokenScanner()}}
+{\footnotesize\ttfamily $\sim$\mbox{\hyperlink{classTokenScanner}{Token\+Scanner}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classTokenScanner_a5256bb7e66b4509946204727182994f9}\label{classTokenScanner_a5256bb7e66b4509946204727182994f9}} 
+\index{Token\+Scanner@{Token\+Scanner}!add\+Operator@{add\+Operator}}
+\index{add\+Operator@{add\+Operator}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{add\+Operator()}{addOperator()}}
+{\footnotesize\ttfamily void add\+Operator (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{op }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classTokenScanner_aed3e8321a04deee5d8bebce0d6d715ac}\label{classTokenScanner_aed3e8321a04deee5d8bebce0d6d715ac}} 
+\index{Token\+Scanner@{Token\+Scanner}!add\+Word\+Characters@{add\+Word\+Characters}}
+\index{add\+Word\+Characters@{add\+Word\+Characters}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{add\+Word\+Characters()}{addWordCharacters()}}
+{\footnotesize\ttfamily void add\+Word\+Characters (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{str }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classTokenScanner_aa1ac28f13062f093eb32a49dce4c63f8}\label{classTokenScanner_aa1ac28f13062f093eb32a49dce4c63f8}} 
+\index{Token\+Scanner@{Token\+Scanner}!get\+Char@{get\+Char}}
+\index{get\+Char@{get\+Char}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{get\+Char()}{getChar()}}
+{\footnotesize\ttfamily int get\+Char (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classTokenScanner_ae2c34694d98dc66a7493339061a4358e}\label{classTokenScanner_ae2c34694d98dc66a7493339061a4358e}} 
+\index{Token\+Scanner@{Token\+Scanner}!get\+Input@{get\+Input}}
+\index{get\+Input@{get\+Input}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{get\+Input()}{getInput()}}
+{\footnotesize\ttfamily std\+::string get\+Input (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classTokenScanner_a6c9c9aa34f1ae28cd7a4f150e2df8201}\label{classTokenScanner_a6c9c9aa34f1ae28cd7a4f150e2df8201}} 
+\index{Token\+Scanner@{Token\+Scanner}!get\+Position@{get\+Position}}
+\index{get\+Position@{get\+Position}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{get\+Position()}{getPosition()}}
+{\footnotesize\ttfamily int get\+Position (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classTokenScanner_ac9f2b60ecc3007903307c3cb49fd5df1}\label{classTokenScanner_ac9f2b60ecc3007903307c3cb49fd5df1}} 
+\index{Token\+Scanner@{Token\+Scanner}!get\+String\+Value@{get\+String\+Value}}
+\index{get\+String\+Value@{get\+String\+Value}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{get\+String\+Value()}{getStringValue()}}
+{\footnotesize\ttfamily std\+::string get\+String\+Value (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{token }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classTokenScanner_a50ed7613c93d2b3618830c3c5a4341ca}\label{classTokenScanner_a50ed7613c93d2b3618830c3c5a4341ca}} 
+\index{Token\+Scanner@{Token\+Scanner}!get\+Token\+Type@{get\+Token\+Type}}
+\index{get\+Token\+Type@{get\+Token\+Type}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{get\+Token\+Type()}{getTokenType()}}
+{\footnotesize\ttfamily Token\+Type get\+Token\+Type (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{token }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classTokenScanner_af690597352ca6f48a9f86b527cd754da}\label{classTokenScanner_af690597352ca6f48a9f86b527cd754da}} 
+\index{Token\+Scanner@{Token\+Scanner}!has\+More\+Tokens@{has\+More\+Tokens}}
+\index{has\+More\+Tokens@{has\+More\+Tokens}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{has\+More\+Tokens()}{hasMoreTokens()}}
+{\footnotesize\ttfamily bool has\+More\+Tokens (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classTokenScanner_a2948758a40dec8f13f9de47352afcc9f}\label{classTokenScanner_a2948758a40dec8f13f9de47352afcc9f}} 
+\index{Token\+Scanner@{Token\+Scanner}!ignore\+Comments@{ignore\+Comments}}
+\index{ignore\+Comments@{ignore\+Comments}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{ignore\+Comments()}{ignoreComments()}}
+{\footnotesize\ttfamily void ignore\+Comments (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classTokenScanner_a1dd9d28ae227b7e0313be6dd0ecca373}\label{classTokenScanner_a1dd9d28ae227b7e0313be6dd0ecca373}} 
+\index{Token\+Scanner@{Token\+Scanner}!ignore\+Whitespace@{ignore\+Whitespace}}
+\index{ignore\+Whitespace@{ignore\+Whitespace}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{ignore\+Whitespace()}{ignoreWhitespace()}}
+{\footnotesize\ttfamily void ignore\+Whitespace (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classTokenScanner_ad3446183cc2011a6bb3ebe1ce1c3391a}\label{classTokenScanner_ad3446183cc2011a6bb3ebe1ce1c3391a}} 
+\index{Token\+Scanner@{Token\+Scanner}!is\+Word\+Character@{is\+Word\+Character}}
+\index{is\+Word\+Character@{is\+Word\+Character}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{is\+Word\+Character()}{isWordCharacter()}}
+{\footnotesize\ttfamily bool is\+Word\+Character (\begin{DoxyParamCaption}\item[{char}]{ch }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classTokenScanner_ad515fb115cc77b70c2a498049ba16256}\label{classTokenScanner_ad515fb115cc77b70c2a498049ba16256}} 
+\index{Token\+Scanner@{Token\+Scanner}!next\+Token@{next\+Token}}
+\index{next\+Token@{next\+Token}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{next\+Token()}{nextToken()}}
+{\footnotesize\ttfamily std\+::string next\+Token (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classTokenScanner_a6ca063c69febcb61e6b49a210563194f}\label{classTokenScanner_a6ca063c69febcb61e6b49a210563194f}} 
+\index{Token\+Scanner@{Token\+Scanner}!save\+Token@{save\+Token}}
+\index{save\+Token@{save\+Token}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{save\+Token()}{saveToken()}}
+{\footnotesize\ttfamily void save\+Token (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{token }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classTokenScanner_a0bebe5cb8dd72954dc34cf5338db03dc}\label{classTokenScanner_a0bebe5cb8dd72954dc34cf5338db03dc}} 
+\index{Token\+Scanner@{Token\+Scanner}!scan\+Numbers@{scan\+Numbers}}
+\index{scan\+Numbers@{scan\+Numbers}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{scan\+Numbers()}{scanNumbers()}}
+{\footnotesize\ttfamily void scan\+Numbers (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classTokenScanner_af85e801b4ef298db6ddbfd539a8f45db}\label{classTokenScanner_af85e801b4ef298db6ddbfd539a8f45db}} 
+\index{Token\+Scanner@{Token\+Scanner}!scan\+Strings@{scan\+Strings}}
+\index{scan\+Strings@{scan\+Strings}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{scan\+Strings()}{scanStrings()}}
+{\footnotesize\ttfamily void scan\+Strings (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classTokenScanner_adb06e967f852573750bd97c5a76c790c}\label{classTokenScanner_adb06e967f852573750bd97c5a76c790c}} 
+\index{Token\+Scanner@{Token\+Scanner}!set\+Input@{set\+Input}}
+\index{set\+Input@{set\+Input}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{set\+Input()}{setInput()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void set\+Input (\begin{DoxyParamCaption}\item[{std\+::istream \&}]{infile }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classTokenScanner_a3c337c514c15a062c8e3dd04e0e9a824}\label{classTokenScanner_a3c337c514c15a062c8e3dd04e0e9a824}} 
+\index{Token\+Scanner@{Token\+Scanner}!set\+Input@{set\+Input}}
+\index{set\+Input@{set\+Input}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{set\+Input()}{setInput()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void set\+Input (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{str }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classTokenScanner_a44b49340cfed6b94e9f625c9f2f73fbf}\label{classTokenScanner_a44b49340cfed6b94e9f625c9f2f73fbf}} 
+\index{Token\+Scanner@{Token\+Scanner}!unget\+Char@{unget\+Char}}
+\index{unget\+Char@{unget\+Char}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{unget\+Char()}{ungetChar()}}
+{\footnotesize\ttfamily void unget\+Char (\begin{DoxyParamCaption}\item[{int}]{ch }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classTokenScanner_ad7ae526d42faff3aca1c860f302cbb76}\label{classTokenScanner_ad7ae526d42faff3aca1c860f302cbb76}} 
+\index{Token\+Scanner@{Token\+Scanner}!verify\+Token@{verify\+Token}}
+\index{verify\+Token@{verify\+Token}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{verify\+Token()}{verifyToken()}}
+{\footnotesize\ttfamily void verify\+Token (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{expected }\end{DoxyParamCaption})}
+
+
+
+\subsection{Friends And Related Function Documentation}
+\mbox{\Hypertarget{classTokenScanner_a23b7e3f2cb864430084bde0951947124}\label{classTokenScanner_a23b7e3f2cb864430084bde0951947124}} 
+\index{Token\+Scanner@{Token\+Scanner}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!Token\+Scanner@{Token\+Scanner}}
+\subsubsection{\texorpdfstring{operator$<$$<$}{operator<<}}
+{\footnotesize\ttfamily std\+::ostream\& operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{out,  }\item[{const \mbox{\hyperlink{classTokenScanner}{Token\+Scanner}} \&}]{scanner }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
+

@@ -1,0 +1,95 @@
+\hypertarget{classGColorChooser}{}\section{G\+Color\+Chooser Class Reference}
+\label{classGColorChooser}\index{G\+Color\+Chooser@{G\+Color\+Chooser}}
+
+
+The \mbox{\hyperlink{classGColorChooser}{G\+Color\+Chooser}} class contains static methods for popping up color-\/choosing dialog boxes that allow the user to select a color.  
+
+
+
+
+{\ttfamily \#include $<$gcolorchooser.\+h$>$}
+
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static std\+::string \mbox{\hyperlink{classGColorChooser_a606489cbaca9144ee0a8e22d7646182a}{show\+Dialog}} (const std\+::string \&title, int initial\+Color)
+\begin{DoxyCompactList}\small\item\em Pops up a color chooser dialog with the given top title text, with the given initial color selected. \end{DoxyCompactList}\item 
+static std\+::string \mbox{\hyperlink{classGColorChooser_a2c513cab2b8e569b35327f89117b077f}{show\+Dialog}} (\mbox{\hyperlink{classGWindow}{G\+Window}} $\ast$parent, const std\+::string \&title, int initial\+Color)
+\begin{DoxyCompactList}\small\item\em Pops up a color chooser dialog with the given top title text, with the given initial color selected. \end{DoxyCompactList}\item 
+static std\+::string \mbox{\hyperlink{classGColorChooser_a8bac6bfe2b583f676c2ede745053fff6}{show\+Dialog}} (Q\+Widget $\ast$parent, const std\+::string \&title, int initial\+Color)
+\begin{DoxyCompactList}\small\item\em Pops up a color chooser dialog with the given top title text, with the given initial color selected. \end{DoxyCompactList}\item 
+static std\+::string \mbox{\hyperlink{classGColorChooser_ab649c9d45542c25fa22096c5afa831e7}{show\+Dialog}} (const std\+::string \&title=\char`\"{}\char`\"{}, const std\+::string \&initial\+Color=\char`\"{}\char`\"{})
+\begin{DoxyCompactList}\small\item\em Pops up a color chooser dialog with the given top title text, with the given initial color selected. \end{DoxyCompactList}\item 
+static std\+::string \mbox{\hyperlink{classGColorChooser_a38b9e47e162e84e985c38c7a8ab69278}{show\+Dialog}} (\mbox{\hyperlink{classGWindow}{G\+Window}} $\ast$parent, const std\+::string \&title=\char`\"{}\char`\"{}, const std\+::string \&initial\+Color=\char`\"{}\char`\"{})
+\begin{DoxyCompactList}\small\item\em Pops up a color chooser dialog with the given top title text, with the given initial color selected. \end{DoxyCompactList}\item 
+static std\+::string \mbox{\hyperlink{classGColorChooser_ab17d15e0eeebb06c853c197a63949d13}{show\+Dialog}} (Q\+Widget $\ast$parent, const std\+::string \&title=\char`\"{}\char`\"{}, const std\+::string \&initial\+Color=\char`\"{}\char`\"{})
+\begin{DoxyCompactList}\small\item\em Pops up a color chooser dialog with the given top title text, with the given initial color selected. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The \mbox{\hyperlink{classGColorChooser}{G\+Color\+Chooser}} class contains static methods for popping up color-\/choosing dialog boxes that allow the user to select a color. 
+
+Each method blocks until the color is chosen and the dialog is closed, returning the color the user chose (or an empty string if the user canceled). 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classGColorChooser_a606489cbaca9144ee0a8e22d7646182a}\label{classGColorChooser_a606489cbaca9144ee0a8e22d7646182a}} 
+\index{G\+Color\+Chooser@{G\+Color\+Chooser}!show\+Dialog@{show\+Dialog}}
+\index{show\+Dialog@{show\+Dialog}!G\+Color\+Chooser@{G\+Color\+Chooser}}
+\subsubsection{\texorpdfstring{show\+Dialog()}{showDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [1/6]}}
+{\footnotesize\ttfamily std\+::string show\+Dialog (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{title,  }\item[{int}]{initial\+Color }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Pops up a color chooser dialog with the given top title text, with the given initial color selected. 
+
+Returns the color that was chosen as a color string such as \char`\"{}\#ff0077\char`\"{} or \char`\"{}blue\char`\"{}. \mbox{\Hypertarget{classGColorChooser_a2c513cab2b8e569b35327f89117b077f}\label{classGColorChooser_a2c513cab2b8e569b35327f89117b077f}} 
+\index{G\+Color\+Chooser@{G\+Color\+Chooser}!show\+Dialog@{show\+Dialog}}
+\index{show\+Dialog@{show\+Dialog}!G\+Color\+Chooser@{G\+Color\+Chooser}}
+\subsubsection{\texorpdfstring{show\+Dialog()}{showDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [2/6]}}
+{\footnotesize\ttfamily std\+::string show\+Dialog (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classGWindow}{G\+Window}} $\ast$}]{parent,  }\item[{const std\+::string \&}]{title,  }\item[{int}]{initial\+Color }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Pops up a color chooser dialog with the given top title text, with the given initial color selected. 
+
+Returns the color that was chosen as a color string such as \char`\"{}\#ff0077\char`\"{} or \char`\"{}blue\char`\"{}. \mbox{\Hypertarget{classGColorChooser_a8bac6bfe2b583f676c2ede745053fff6}\label{classGColorChooser_a8bac6bfe2b583f676c2ede745053fff6}} 
+\index{G\+Color\+Chooser@{G\+Color\+Chooser}!show\+Dialog@{show\+Dialog}}
+\index{show\+Dialog@{show\+Dialog}!G\+Color\+Chooser@{G\+Color\+Chooser}}
+\subsubsection{\texorpdfstring{show\+Dialog()}{showDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [3/6]}}
+{\footnotesize\ttfamily std\+::string show\+Dialog (\begin{DoxyParamCaption}\item[{Q\+Widget $\ast$}]{parent,  }\item[{const std\+::string \&}]{title,  }\item[{int}]{initial\+Color }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Pops up a color chooser dialog with the given top title text, with the given initial color selected. 
+
+Returns the color that was chosen as a color string such as \char`\"{}\#ff0077\char`\"{} or \char`\"{}blue\char`\"{}. \mbox{\Hypertarget{classGColorChooser_ab649c9d45542c25fa22096c5afa831e7}\label{classGColorChooser_ab649c9d45542c25fa22096c5afa831e7}} 
+\index{G\+Color\+Chooser@{G\+Color\+Chooser}!show\+Dialog@{show\+Dialog}}
+\index{show\+Dialog@{show\+Dialog}!G\+Color\+Chooser@{G\+Color\+Chooser}}
+\subsubsection{\texorpdfstring{show\+Dialog()}{showDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [4/6]}}
+{\footnotesize\ttfamily std\+::string show\+Dialog (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{const std\+::string \&}]{initial\+Color = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Pops up a color chooser dialog with the given top title text, with the given initial color selected. 
+
+Returns the color that was chosen as a color string such as \char`\"{}\#ff0077\char`\"{} or \char`\"{}blue\char`\"{}. \mbox{\Hypertarget{classGColorChooser_a38b9e47e162e84e985c38c7a8ab69278}\label{classGColorChooser_a38b9e47e162e84e985c38c7a8ab69278}} 
+\index{G\+Color\+Chooser@{G\+Color\+Chooser}!show\+Dialog@{show\+Dialog}}
+\index{show\+Dialog@{show\+Dialog}!G\+Color\+Chooser@{G\+Color\+Chooser}}
+\subsubsection{\texorpdfstring{show\+Dialog()}{showDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [5/6]}}
+{\footnotesize\ttfamily std\+::string show\+Dialog (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classGWindow}{G\+Window}} $\ast$}]{parent,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{const std\+::string \&}]{initial\+Color = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Pops up a color chooser dialog with the given top title text, with the given initial color selected. 
+
+Returns the color that was chosen as a color string such as \char`\"{}\#ff0077\char`\"{} or \char`\"{}blue\char`\"{}. \mbox{\Hypertarget{classGColorChooser_ab17d15e0eeebb06c853c197a63949d13}\label{classGColorChooser_ab17d15e0eeebb06c853c197a63949d13}} 
+\index{G\+Color\+Chooser@{G\+Color\+Chooser}!show\+Dialog@{show\+Dialog}}
+\index{show\+Dialog@{show\+Dialog}!G\+Color\+Chooser@{G\+Color\+Chooser}}
+\subsubsection{\texorpdfstring{show\+Dialog()}{showDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [6/6]}}
+{\footnotesize\ttfamily std\+::string show\+Dialog (\begin{DoxyParamCaption}\item[{Q\+Widget $\ast$}]{parent,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{const std\+::string \&}]{initial\+Color = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Pops up a color chooser dialog with the given top title text, with the given initial color selected. 
+
+Returns the color that was chosen as a color string such as \char`\"{}\#ff0077\char`\"{} or \char`\"{}blue\char`\"{}. 

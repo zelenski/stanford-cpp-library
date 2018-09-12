@@ -47,15 +47,15 @@
 //    std::string _msg;
 //};
 
-//#define ASSERT(condition, ...) do { \
-//  if (!(condition)) Assert(__LINE__, __FILE__, #condition, ##__VA_ARGS__); \
-// } while(0)
+/*#define ASSERT(condition, ...) do { \
+  if (!(condition)) Assert(__LINE__, __FILE__, #condition, ##__VA_ARGS__); \
+} while(0) */
 
-//#define ASSERTFG(f,g) do { \
-//  double fr = (f); double gr = (g); double diff = (fr-gr); \
-//  if (diff > 1.0e-10 || diff < -1.0e-10) \
-//  Assert(__LINE__, __FILE__, #f "," #g, "%f, %f, %f", fr, gr, diff); \
-// } while(0)
+/*#define ASSERTFG(f,g) do { \
+  double fr = (f); double gr = (g); double diff = (fr-gr); \
+  if (diff > 1.0e-10 || diff < -1.0e-10) \
+  Assert(__LINE__, __FILE__, #f "," #g, "%f, %f, %f", fr, gr, diff); \
+} while(0) */
 
 //static void Assert(
 //    int line,

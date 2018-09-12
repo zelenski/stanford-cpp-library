@@ -3,6 +3,8 @@
  * ----------------
  * This file implements the strlib.h interface.
  * 
+ * @version 2018/09/02
+ * - added padLeft, padRight
  * @version 2017/10/24
  * - print nullptr instead of null in uppercase
  * @version 2016/11/07
@@ -155,6 +157,32 @@ std::string longToString(long n, int radix) {
     }
     stream << n;
     return stream.str();
+}
+
+std::string padLeft(const std::string& s, int length, char fill) {
+    if ((int) s.length() >= length) {
+        return s;
+    } else {
+        std::ostringstream out;
+        for (int i = 0, count = length - (int) s.length(); i < count; i++) {
+            out << fill;
+        }
+        out << s;
+        return out.str();
+    }
+}
+
+std::string padRight(const std::string& s, int length, char fill) {
+    if ((int) s.length() >= length) {
+        return s;
+    } else {
+        std::ostringstream out;
+        out << s;
+        for (int i = 0, count = length - (int) s.length(); i < count; i++) {
+            out << fill;
+        }
+        return out.str();
+    }
 }
 
 std::string pointerToString(void* p) {

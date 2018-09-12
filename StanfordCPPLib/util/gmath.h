@@ -91,7 +91,7 @@ double toRadians(double degrees);
  * Computes the distance between the origin and the specified point.
  */
 
-double vectorDistance(const GPoint & pt);
+double vectorDistance(const GPoint& pt);
 double vectorDistance(double x, double y);
 
 /*
@@ -105,7 +105,7 @@ double vectorDistance(double x, double y);
  * Cartesian plane.
  */
 
-double vectorAngle(const GPoint & pt);
+double vectorAngle(const GPoint& pt);
 double vectorAngle(double x, double y);
 
 /*

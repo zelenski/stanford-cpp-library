@@ -69,24 +69,25 @@ static void border(GBufferedImage* img) {
 }
 
 void gbufferedImageTest() {
-    GWindow gw;
-    gw.setSize(900, 700);
-    gw.setTitle("Test");
+    GWindow* gw = new GWindow;
+    gw->setSize(900, 700);
+    gw->setTitle("Test");
 
     GButton* button1 = new GButton("Click Me 1");
-    gw.add(button1, 250, 80);
+    gw->add(button1, 250, 80);
     //GButton* button2 = new GButton("Click Me 2");
-    //gw.addToRegion(button2, "NORTH");
+    //gw->addToRegion(button2, "NORTH");
 
     GLabel* label = new GLabel("test!");
-    gw.add(label, 10, 60);
+    gw->add(label, 10, 60);
     
     std::cout << "About to construct GBufferedImage." << std::endl;
-    GBufferedImage* img = new GBufferedImage(10, 80, 200, 250);
+    GBufferedImage* img = new GBufferedImage(200, 250);
+    img->setLocation(10, 80);
     std::cout << "Done constructing GBufferedImage." << std::endl;
-    gw.add(img, 50, 50);
-    // gw.addToRegion(img, "SOUTH");
-    gw.setVisible(true);
+    gw->add(img, 50, 50);
+    // gw->addToRegion(img, "SOUTH");
+    gw->setVisible(true);
     
 //    GBufferedImage* img2 = new GBufferedImage(20, 20);
 //    img2->fill(GBufferedImage::createRgbPixel(255, 0, 255));
@@ -99,12 +100,12 @@ void gbufferedImageTest() {
 //    }
 //    cout << "grid of pixels after: " << grid << endl;
 //    img2->fromGrid(grid);
-//    gw.add(img2, 350, 20);
+//    gw->add(img2, 350, 20);
     
     GBufferedImage* img3 = new GBufferedImage();
     img3->load("rainbow.png");
     cout << "adding the image!" << endl;
-    gw.add(img3, 10, 20);
+    gw->add(img3, 10, 20);
     // pause(2000);
     
     cout << "start toGrid" << endl;
@@ -156,126 +157,117 @@ void gbufferedImageTest() {
     
     std::cout << "About to remove other shit." << std::endl;
     pause(200);
-    gw.remove(label);
-    gw.remove(button1);
-    //gw.removeFromRegion(button2, "NORTH");
+    gw->remove(label);
+    gw->remove(button1);
+    //gw->removeFromRegion(button2, "NORTH");
     pause(200);
     
     std::cout << "About to remove GBufferedImage." << std::endl;
     pause(200);
-    gw.remove(img);
-    // gw.removeFromRegion(img, "SOUTH");
+    gw->remove(img);
+    // gw->removeFromRegion(img, "SOUTH");
     pause(200);
     std::cout << "Test complete." << std::endl;
     std::cout << std::endl;
 }
 
 void gtableTest() {
-    GWindow gw;
-    gw.setTitle("GTable Test");
+    GWindow* gw = new GWindow;
+    gw->setTitle("GTable Test");
     
     GTable* table = new GTable(5, 3);
-    // table->setColor("#0000cc");
-    // table->setFont("Monospaced-Bold-20");
-    // table->setHorizontalAlignment(GTable::Alignment::RIGHT);
     table->select(0, 1);
-    gw.addToRegion(table, "NORTH");
-    
-//    GTable* table2 = new GTable(4, 2, 0, 0, 100, 400);
-//    gw.addToRegion(table2, "EAST");
+    table->setTableListener([](GTableEvent tableEvent) {
+        std::cout << "cell updated: " << tableEvent.toString() << std::endl;
+    });
+    gw->addToRegion(table, "NORTH");
     
     GButton* buttget = new GButton("Get All");
-    gw.addToRegion(buttget, "SOUTH");
+    buttget->setActionListener([=]() {
+        for (int row = 0; row < table->numRows(); row++) {
+            for (int col = 0; col < table->numCols(); col++) {
+                cout << "R" << row << "C" << col << "=\"" << table->get(row, col) << "\" ";
+            }
+            cout << endl;
+        }
+        int row, col;
+        table->getSelectedCell(row, col);
+        cout << "selected: R" << row << "C" << col << endl;
+    });
+    gw->addToRegion(buttget, "SOUTH");
     
     GButton* buttset = new GButton("Set All");
-    gw.addToRegion(buttset, "SOUTH");
+    buttset->setActionListener([=]() {
+        for (int row = 0; row < table->numRows(); row++) {
+            for (int col = 0; col < table->numCols(); col++) {
+                std::string value = "R" + integerToString(row) + "C" + integerToString(col);
+                table->set(row, col, value);
+            }
+        }
+        table->select(1, 2);
+    });
+    gw->addToRegion(buttset, "SOUTH");
     
     GButton* buttclear = new GButton("Clear");
-    gw.addToRegion(buttclear, "SOUTH");
+    buttclear->setActionListener([=]() {
+        table->clear();
+    });
+    gw->addToRegion(buttclear, "SOUTH");
     
     GButton* buttrowadd = new GButton("+R");
-    gw.addToRegion(buttrowadd, "SOUTH");
+    buttrowadd->setActionListener([=]() {
+        table->resize(table->numRows() + 1, table->numCols());
+    });
+    gw->addToRegion(buttrowadd, "SOUTH");
     
     GButton* buttrowrem = new GButton("-R");
-    gw.addToRegion(buttrowrem, "SOUTH");
+    buttrowrem->setActionListener([=]() {
+        table->resize(table->numRows() - 1, table->numCols());
+    });
+    gw->addToRegion(buttrowrem, "SOUTH");
     
     GButton* buttcoladd = new GButton("+C");
-    gw.addToRegion(buttcoladd, "SOUTH");
+    buttcoladd->setActionListener([=]() {
+        table->resize(table->numRows(), table->numCols() + 1);
+    });
+    gw->addToRegion(buttcoladd, "SOUTH");
     
     GButton* buttcolrem = new GButton("-C");
-    gw.addToRegion(buttcolrem, "SOUTH");
+    buttcolrem->setActionListener([=]() {
+        table->resize(table->numRows(), table->numCols() - 1);
+    });
+    gw->addToRegion(buttcolrem, "SOUTH");
     
     GButton* buttwidthadd = new GButton("+W");
-    gw.addToRegion(buttwidthadd, "SOUTH");
+    buttwidthadd->setActionListener([=]() {
+        table->setColumnWidth(1, table->getColumnWidth(1) + 20);
+    });
+    gw->addToRegion(buttwidthadd, "SOUTH");
     
     GButton* buttwidthrem = new GButton("-W");
-    gw.addToRegion(buttwidthrem, "SOUTH");
+    buttwidthrem->setActionListener([=]() {
+        table->setColumnWidth(1, table->getColumnWidth(1) - 20);
+    });
+    gw->addToRegion(buttwidthrem, "SOUTH");
     
-    gw.setVisible(true);
-    
-    while (true) {
-        GEvent event = waitForEvent(ACTION_EVENT | TABLE_EVENT | WINDOW_EVENT);
-        if (event.getEventClass() == ACTION_EVENT) {
-            GActionEvent actionEvent(event);
-            if (actionEvent.getSource() == buttget) {
-                for (int row = 0; row < table->numRows(); row++) {
-                    for (int col = 0; col < table->numCols(); col++) {
-                        cout << "R" << row << "C" << col << "=\"" << table->get(row, col) << "\" ";
-                    }
-                    cout << endl;
-                }
-                int row, col;
-                table->getSelectedCell(row, col);
-                cout << "selected: R" << row << "C" << col << endl;
-            } else if (actionEvent.getSource() == buttset) {
-                for (int row = 0; row < table->numRows(); row++) {
-                    for (int col = 0; col < table->numCols(); col++) {
-                        std::string value = "R" + integerToString(row) + "C" + integerToString(col);
-                        table->set(row, col, value);
-                    }
-                }
-                table->select(1, 2);
-            } else if (actionEvent.getSource() == buttclear) {
-                table->clear();
-            } else if (actionEvent.getSource() == buttrowadd) {
-                table->resize(table->numRows() + 1, table->numCols());
-            } else if (actionEvent.getSource() == buttrowrem) {
-                table->resize(table->numRows() - 1, table->numCols());
-            } else if (actionEvent.getSource() == buttcoladd) {
-                table->resize(table->numRows(), table->numCols() + 1);
-            } else if (actionEvent.getSource() == buttcolrem) {
-                table->resize(table->numRows(), table->numCols() - 1);
-            } else if (actionEvent.getSource() == buttwidthadd) {
-                table->setColumnWidth(1, table->getColumnWidth(1) + 20);
-            } else if (actionEvent.getSource() == buttwidthrem) {
-                table->setColumnWidth(1, table->getColumnWidth(1) - 20);
-            }
-        } else if (event.getEventClass() == WINDOW_EVENT) {
-            if (event.getEventType() == WINDOW_CLOSED) {
-                break;
-            }
-        } else if (event.getEventClass() == TABLE_EVENT) {
-            GTableEvent tableEvent(event);
-            std::cout << "cell updated: " << tableEvent.toString() << std::endl;
-        }
-    }
+    gw->setVisible(true);
 }
 
 void radioButtonTest() {
-    GWindow gw;
-    gw.setTitle("Radio Button Test");
+    GWindow* gw = new GWindow;
+    gw->setTitle("Radio Button Test");
     GRadioButton* rb1 = new GRadioButton("Red");
     GRadioButton* rb2 = new GRadioButton("Green", "", true);
     GRadioButton* rb3 = new GRadioButton("Blue");
-    gw.addToRegion(rb1, "SOUTH");
-    gw.addToRegion(rb2, "SOUTH");
-    gw.addToRegion(rb3, "SOUTH");
+    gw->addToRegion(rb1, "SOUTH");
+    gw->addToRegion(rb2, "SOUTH");
+    gw->addToRegion(rb3, "SOUTH");
 
     // a second group of buttons
     GRadioButton* rb4 = new GRadioButton("Black", "N", true);
     GRadioButton* rb5 = new GRadioButton("White", "N");
-    gw.addToRegion(rb4, "NORTH");
-    gw.addToRegion(rb5, "NORTH");
+    gw->addToRegion(rb4, "NORTH");
+    gw->addToRegion(rb5, "NORTH");
     
-    gw.setVisible(true);
+    gw->setVisible(true);
 }

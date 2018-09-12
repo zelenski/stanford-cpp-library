@@ -1,0 +1,105 @@
+<html>
+<head>
+<title>GKeyEvent</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="gevents.html">#include "gevents.h"</a></div>
+<h1 class=header><code>class GKeyEvent : public <a href="GEvent-class.html">GEvent</a></code></h1>
+This event subclass represents a key event.  Each key event records
+the event type along with two representations of the key.  The
+<code>getKeyChar</code> function is more generally useful and
+returns the character after taking into account modifier keys.
+The <code>getKeyCode</code> function returns an integer identifying
+the key, which can be a function key as well as a standard key.
+The codes return by <code>getKeyCode</code> are listed in the
+<code>KeyCodes</code> enumeration.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Constructor</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GKeyEvent">GKeyEvent(<var>type</var>,&nbsp;<var>gw</var>,&nbsp;<var>keyChar</var>,&nbsp;<var>keyCode</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GKeyEvent</code> using the specified parameters.</td></tr>
+<tr><td class=indexHead colspan=2>Methods</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getGWindow">getGWindow()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the graphics window in which this event occurred.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getKeyChar">getKeyChar()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the character represented by the keystroke, taking the modifier keys into account.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getKeyCode">getKeyCode()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the integer code associated with the key in the event.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts the event to a human-readable representation of the event.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GKeyEvent"></a>
+<pre class=detailCode>
+GKeyEvent(EventType type, const GWindow&amp; gw, int keyChar, int keyCode);
+</pre>
+<div class=detailHTML>
+Creates a <code>GKeyEvent</code> using the specified parameters.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GKeyEvent keyEvent(type, gw, keyChar, keyCode);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:getGWindow"></a>
+<pre class=detailCode>
+GWindow getGWindow() const;
+</pre>
+<div class=detailHTML>
+Returns the graphics window in which this event occurred.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GWindow gw = e.getGWindow();
+</pre>
+<hr>
+<a name="Method:getKeyChar"></a>
+<pre class=detailCode>
+char getKeyChar() const;
+</pre>
+<div class=detailHTML>
+Returns the character represented by the keystroke, taking the modifier
+keys into account.  For example, if the user types the <code>'a'</code>
+key with the shift key down, <code>getKeyChar</code> will return
+<code>'A'</code>.  If the key code in the event does not correspond
+to a character, <code>getKeyChar</code> returns the null character.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+char ch = e.getKeyChar();
+</pre>
+<hr>
+<a name="Method:getKeyCode"></a>
+<pre class=detailCode>
+int getKeyCode() const;
+</pre>
+<div class=detailHTML>
+Returns the integer code associated with the key in the event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int key = getKeyCode();
+</pre>
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Converts the event to a human-readable representation of the event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = e.toString();
+</pre>
+<hr>
+</table>
+</body>
+</html>

@@ -23,11 +23,11 @@ std::string getContentType(const std::string& extension);
 std::string getErrorMessage(int httpErrorCode);
 std::string getUrlExtension(const std::string& url);
 bool isRunning();
-void sendResponse(const GServerEvent& event, const std::string& responseText,
+void sendResponse(const GEvent& event, const std::string& responseText,
                   const std::string& contentType = "");
-void sendResponseError(const GServerEvent& event, int httpErrorCode,
+void sendResponseError(const GEvent& event, int httpErrorCode,
                   const std::string& errorMessage = "");
-void sendResponseFile(const GServerEvent& event, const std::string& responseFilePath,
+void sendResponseFile(const GEvent& event, const std::string& responseFilePath,
                       const std::string& contentType = "" /* auto */);
 void startServer(int port = DEFAULT_PORT);
 void stopServer();

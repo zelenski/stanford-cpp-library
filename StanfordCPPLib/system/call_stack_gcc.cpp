@@ -45,7 +45,6 @@
 #include "call_stack.h"
 #include "exceptions.h"
 #include "strlib.h"
-#include "private/platform.h"
 #include "private/static.h"
 
 namespace stacktrace {
@@ -99,7 +98,7 @@ int execAndCapture(std::string cmd, std::string& output) {
             nullptr,               // use parent's current directory
             &siStartInfo,          // STARTUPINFO pointer
             &piProcInfo)) {        // receives PROCESS_INFORMATION
-        std::cerr << "CREATE PROCESS FAIL: " << stanfordcpplib::getPlatform()->os_getLastError() << std::endl;
+        std::cerr << "CREATE PROCESS FAIL: " << platform::os_getLastError() << std::endl;
         std::cerr << cmd << std::endl;
         return 1;   // fail
     }

@@ -133,6 +133,10 @@ void BigInteger::checkStringIsNumeric(const std::string& s, int radix) {
 }
 
 std::pair<std::string, long> BigInteger::divide(const std::string& n, long den) {
+    if (den == 0) {
+        error("Cannot divide by zero");
+    }
+
     long rem = 0;
     std::string result;
     result.resize(STRING_SIZE_MAX);
@@ -156,7 +160,9 @@ std::pair<std::string, long> BigInteger::divide(const std::string& n, long den) 
 // https://en.wikipedia.org/wiki/Division_algorithm#Division_by_repeated_subtraction
 // pre: b2 != 0
 std::pair<BigInteger, BigInteger> BigInteger::divideBig(const BigInteger& numerator, const BigInteger& denominator) {
-    if (denominator.isNegative()) {
+    if (denominator == ZERO) {
+        error("Cannot divide by zero");
+    } else if (denominator.isNegative()) {
         std::pair<BigInteger, BigInteger> result = divideBig(numerator, -denominator);
         result.second = -result.second;
         return result;
@@ -334,18 +340,6 @@ std::string BigInteger::multiply(const std::string& n1, const std::string& n2) {
     // erase leading zeros
     product = removeLeadingZeros(product);
     return product;
-}
-
-std::string BigInteger::padLeft(const std::string& s, int length) {
-    size_t lenS = s.length();
-    if ((int) lenS < length) {
-        // left-pad numbers with 0s to be the same length as needed
-        std::string scopy = s;
-        scopy.insert(0, (length - lenS), '0');
-        return scopy;
-    } else {
-        return s;
-    }
 }
 
 BigInteger BigInteger::pow(long exp) const {
@@ -806,8 +800,8 @@ BigInteger operator &(const BigInteger& b1, const BigInteger& b2) {
     std::string s1 = b1.toString(2);
     std::string s2 = b2.toString(2);
     int len = (int) (s1.length() > s2.length() ? s1.length() : s2.length());
-    s1 = BigInteger::padLeft(s1, len);
-    s2 = BigInteger::padLeft(s2, len);
+    s1 = padLeft(s1, len);
+    s2 = padLeft(s2, len);
 
     // loop over each bit, performing & operation; store into s1
     for (int i = 0; i < len; i++) {
@@ -825,8 +819,8 @@ BigInteger operator |(const BigInteger& b1, const BigInteger& b2) {
     std::string s1 = b1.toString(2);
     std::string s2 = b2.toString(2);
     int len = (int) (s1.length() > s2.length() ? s1.length() : s2.length());
-    s1 = BigInteger::padLeft(s1, len);
-    s2 = BigInteger::padLeft(s2, len);
+    s1 = padLeft(s1, len);
+    s2 = padLeft(s2, len);
 
     // loop over each bit, performing | operation; store into s1
     for (int i = 0; i < len; i++) {
@@ -845,8 +839,8 @@ BigInteger operator ^(const BigInteger& b1, const BigInteger& b2) {
     std::string s1 = b1.toString(2);
     std::string s2 = b2.toString(2);
     int len = (int) (s1.length() > s2.length() ? s1.length() : s2.length());
-    s1 = BigInteger::padLeft(s1, len);
-    s2 = BigInteger::padLeft(s2, len);
+    s1 = padLeft(s1, len);
+    s2 = padLeft(s2, len);
 
     // loop over each bit, performing ^ operation; store into s1
     for (int i = 0; i < len; i++) {

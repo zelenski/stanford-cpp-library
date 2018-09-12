@@ -1,0 +1,192 @@
+\hypertarget{namespacestanfordcpplib_1_1collections}{}\section{stanfordcpplib\+:\+:collections Namespace Reference}
+\label{namespacestanfordcpplib_1_1collections}\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename Collection\+Type , typename Iterator\+Type $>$ }\\void \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_a91290b45c9efbe37b0c013fddfc8e4c4}{check\+Version}} (const Collection\+Type \&, const Iterator\+Type \&, const std\+::string \&=\char`\"{}\char`\"{})
+\item 
+{\footnotesize template$<$typename Collection\+Type $>$ }\\int \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_a6d113dfaa3d28a3894990c64411ff03c}{compare}} (const Collection\+Type \&coll1, const Collection\+Type \&coll2)
+\item 
+{\footnotesize template$<$typename Map\+Type $>$ }\\int \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_a1ed84a88db8dc524f50a355ef92bd7fb}{compare\+Maps}} (const Map\+Type \&map1, const Map\+Type \&map2)
+\item 
+{\footnotesize template$<$typename T $>$ }\\int \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_a95fe9aa150f4b638394d31c4cf38360b}{compare\+To}} (T t1, T t2)
+\item 
+{\footnotesize template$<$typename T1 , typename T2 $>$ }\\int \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_a69f00286f1ec18906424498a9a5f6bcc}{compare\+To2}} (T1 t1, T1 t2, T2 t3, T2 t4)
+\item 
+{\footnotesize template$<$typename T1 , typename T2 , typename T3 $>$ }\\int \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_a654565af1c2d8e1b559f4606b0c9477e}{compare\+To3}} (T1 t1, T1 t2, T2 t3, T2 t4, T3 t5, T3 t6)
+\item 
+{\footnotesize template$<$typename T1 , typename T2 , typename T3 , typename T4 $>$ }\\int \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_a0bf3548b5f27ad723062d6935604a849}{compare\+To4}} (T1 t1, T1 t2, T2 t3, T2 t4, T3 t5, T3 t6, T4 t7, T4 t8)
+\item 
+{\footnotesize template$<$typename T1 , typename T2 , typename T3 , typename T4 , typename T5 $>$ }\\int \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_a411062409fa1acb094ac1260ccfa135e}{compare\+To5}} (T1 t1, T1 t2, T2 t3, T2 t4, T3 t5, T3 t6, T4 t7, T4 t8, T5 t9, T5 t10)
+\item 
+{\footnotesize template$<$typename Collection\+Type $>$ }\\bool \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_a7ffc19787c4a86528a81d8a7b2d6d963}{equals}} (const Collection\+Type \&coll1, const Collection\+Type \&coll2)
+\item 
+{\footnotesize template$<$typename Collection\+Type $>$ }\\bool \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_ae626c392f1fc8926386ed9e5c232524c}{equals\+Double}} (const Collection\+Type \&coll1, const Collection\+Type \&coll2)
+\item 
+{\footnotesize template$<$typename Map\+Type $>$ }\\bool \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_af183b0e3f1ca38661646f2a5ba389090}{equals\+Map}} (const Map\+Type \&map1, const Map\+Type \&map2)
+\item 
+{\footnotesize template$<$typename Collection\+Type $>$ }\\int \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_a4bde4f51efc44d308c1c5f34a3ce68f0}{hash\+Code\+Collection}} (const Collection\+Type \&collection, bool order\+Matters=true)
+\item 
+{\footnotesize template$<$typename Iterator\+Type $>$ }\\int \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_ab25ff6237487d8f8de80deac63917870}{hash\+Code\+Iterable}} (Iterator\+Type begin, Iterator\+Type end, bool order\+Matters=true)
+\item 
+{\footnotesize template$<$typename Map\+Type $>$ }\\int \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_aac709e6defed173090838d4115bdfcc5}{hash\+Code\+Map}} (const Map\+Type \&map, bool order\+Matters=true)
+\item 
+{\footnotesize template$<$template$<$ typename $>$ class Collection\+Type, class Element\+Type $>$ }\\const Element\+Type \& \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_abb527b0a95625acf221bb506fcdf6f65}{random\+Element}} (const Collection\+Type$<$ Element\+Type $>$ \&collection)
+\item 
+{\footnotesize template$<$template$<$ typename $>$ class Collection\+Type, class Element\+Type $>$ }\\const Element\+Type \& \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_acec813d0f7952ab557a897ffb0e4b430}{random\+Element\+Indexed}} (const Collection\+Type$<$ Element\+Type $>$ \&collection)
+\item 
+{\footnotesize template$<$typename Collection\+Type , typename Element\+Type $>$ }\\std\+::istream \& \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_a367f8a5aa711274547c7b1628c3a42c6}{read\+Collection}} (std\+::istream \&input, Collection\+Type \&collection, Element\+Type \&element, std\+::string)
+\item 
+{\footnotesize template$<$typename Map\+Type , typename Key\+Type , typename Value\+Type $>$ }\\std\+::istream \& \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_a7e92c7237edb0503f7a9a8666186dbf4}{read\+Map}} (std\+::istream \&input, Map\+Type \&map, Key\+Type \&key, Value\+Type \&value, std\+::string)
+\item 
+{\footnotesize template$<$typename Collection\+Type $>$ }\\std\+::ostream \& \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_aa0fa77893be51108c73f38f0baf30a02}{write\+Collection}} (std\+::ostream \&out, Collection\+Type collection)
+\item 
+{\footnotesize template$<$typename Collection\+Type $>$ }\\std\+::ostream \& \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_a0476c2f41f266287172ae36ba9a66266}{write\+Collection\+Of\+Pointers}} (std\+::ostream \&out, Collection\+Type collection)
+\item 
+{\footnotesize template$<$typename Iterator\+Type $>$ }\\std\+::ostream \& \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_ad5dc1381a951235f3246d586de1bffb9}{write\+Iterable}} (std\+::ostream \&out, Iterator\+Type begin, Iterator\+Type end)
+\item 
+{\footnotesize template$<$typename Iterator\+Type $>$ }\\std\+::ostream \& \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_a8e61f75a91cbd6dc48440214b8ea509d}{write\+Iterable\+Of\+Pointers}} (std\+::ostream \&out, Iterator\+Type begin, Iterator\+Type end)
+\item 
+{\footnotesize template$<$typename Map\+Type $>$ }\\std\+::ostream \& \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_a76ae42d89473ff4e20eef94f8bd6d942}{write\+Map}} (std\+::ostream \&out, const Map\+Type \&map)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_a91290b45c9efbe37b0c013fddfc8e4c4}\label{namespacestanfordcpplib_1_1collections_a91290b45c9efbe37b0c013fddfc8e4c4}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!check\+Version@{check\+Version}}
+\index{check\+Version@{check\+Version}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{check\+Version()}{checkVersion()}}
+{\footnotesize\ttfamily void stanfordcpplib\+::collections\+::check\+Version (\begin{DoxyParamCaption}\item[{const Collection\+Type \&}]{,  }\item[{const Iterator\+Type \&}]{,  }\item[{const std\+::string \&}]{ = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_a6d113dfaa3d28a3894990c64411ff03c}\label{namespacestanfordcpplib_1_1collections_a6d113dfaa3d28a3894990c64411ff03c}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!compare@{compare}}
+\index{compare@{compare}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{compare()}{compare()}}
+{\footnotesize\ttfamily int stanfordcpplib\+::collections\+::compare (\begin{DoxyParamCaption}\item[{const Collection\+Type \&}]{coll1,  }\item[{const Collection\+Type \&}]{coll2 }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_a1ed84a88db8dc524f50a355ef92bd7fb}\label{namespacestanfordcpplib_1_1collections_a1ed84a88db8dc524f50a355ef92bd7fb}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!compare\+Maps@{compare\+Maps}}
+\index{compare\+Maps@{compare\+Maps}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{compare\+Maps()}{compareMaps()}}
+{\footnotesize\ttfamily int stanfordcpplib\+::collections\+::compare\+Maps (\begin{DoxyParamCaption}\item[{const Map\+Type \&}]{map1,  }\item[{const Map\+Type \&}]{map2 }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_a95fe9aa150f4b638394d31c4cf38360b}\label{namespacestanfordcpplib_1_1collections_a95fe9aa150f4b638394d31c4cf38360b}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!compare\+To@{compare\+To}}
+\index{compare\+To@{compare\+To}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{compare\+To()}{compareTo()}}
+{\footnotesize\ttfamily int stanfordcpplib\+::collections\+::compare\+To (\begin{DoxyParamCaption}\item[{T}]{t1,  }\item[{T}]{t2 }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_a69f00286f1ec18906424498a9a5f6bcc}\label{namespacestanfordcpplib_1_1collections_a69f00286f1ec18906424498a9a5f6bcc}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!compare\+To2@{compare\+To2}}
+\index{compare\+To2@{compare\+To2}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{compare\+To2()}{compareTo2()}}
+{\footnotesize\ttfamily int stanfordcpplib\+::collections\+::compare\+To2 (\begin{DoxyParamCaption}\item[{T1}]{t1,  }\item[{T1}]{t2,  }\item[{T2}]{t3,  }\item[{T2}]{t4 }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_a654565af1c2d8e1b559f4606b0c9477e}\label{namespacestanfordcpplib_1_1collections_a654565af1c2d8e1b559f4606b0c9477e}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!compare\+To3@{compare\+To3}}
+\index{compare\+To3@{compare\+To3}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{compare\+To3()}{compareTo3()}}
+{\footnotesize\ttfamily int stanfordcpplib\+::collections\+::compare\+To3 (\begin{DoxyParamCaption}\item[{T1}]{t1,  }\item[{T1}]{t2,  }\item[{T2}]{t3,  }\item[{T2}]{t4,  }\item[{T3}]{t5,  }\item[{T3}]{t6 }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_a0bf3548b5f27ad723062d6935604a849}\label{namespacestanfordcpplib_1_1collections_a0bf3548b5f27ad723062d6935604a849}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!compare\+To4@{compare\+To4}}
+\index{compare\+To4@{compare\+To4}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{compare\+To4()}{compareTo4()}}
+{\footnotesize\ttfamily int stanfordcpplib\+::collections\+::compare\+To4 (\begin{DoxyParamCaption}\item[{T1}]{t1,  }\item[{T1}]{t2,  }\item[{T2}]{t3,  }\item[{T2}]{t4,  }\item[{T3}]{t5,  }\item[{T3}]{t6,  }\item[{T4}]{t7,  }\item[{T4}]{t8 }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_a411062409fa1acb094ac1260ccfa135e}\label{namespacestanfordcpplib_1_1collections_a411062409fa1acb094ac1260ccfa135e}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!compare\+To5@{compare\+To5}}
+\index{compare\+To5@{compare\+To5}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{compare\+To5()}{compareTo5()}}
+{\footnotesize\ttfamily int stanfordcpplib\+::collections\+::compare\+To5 (\begin{DoxyParamCaption}\item[{T1}]{t1,  }\item[{T1}]{t2,  }\item[{T2}]{t3,  }\item[{T2}]{t4,  }\item[{T3}]{t5,  }\item[{T3}]{t6,  }\item[{T4}]{t7,  }\item[{T4}]{t8,  }\item[{T5}]{t9,  }\item[{T5}]{t10 }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_a7ffc19787c4a86528a81d8a7b2d6d963}\label{namespacestanfordcpplib_1_1collections_a7ffc19787c4a86528a81d8a7b2d6d963}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!equals@{equals}}
+\index{equals@{equals}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{equals()}{equals()}}
+{\footnotesize\ttfamily bool stanfordcpplib\+::collections\+::equals (\begin{DoxyParamCaption}\item[{const Collection\+Type \&}]{coll1,  }\item[{const Collection\+Type \&}]{coll2 }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_ae626c392f1fc8926386ed9e5c232524c}\label{namespacestanfordcpplib_1_1collections_ae626c392f1fc8926386ed9e5c232524c}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!equals\+Double@{equals\+Double}}
+\index{equals\+Double@{equals\+Double}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{equals\+Double()}{equalsDouble()}}
+{\footnotesize\ttfamily bool stanfordcpplib\+::collections\+::equals\+Double (\begin{DoxyParamCaption}\item[{const Collection\+Type \&}]{coll1,  }\item[{const Collection\+Type \&}]{coll2 }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_af183b0e3f1ca38661646f2a5ba389090}\label{namespacestanfordcpplib_1_1collections_af183b0e3f1ca38661646f2a5ba389090}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!equals\+Map@{equals\+Map}}
+\index{equals\+Map@{equals\+Map}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{equals\+Map()}{equalsMap()}}
+{\footnotesize\ttfamily bool stanfordcpplib\+::collections\+::equals\+Map (\begin{DoxyParamCaption}\item[{const Map\+Type \&}]{map1,  }\item[{const Map\+Type \&}]{map2 }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_a4bde4f51efc44d308c1c5f34a3ce68f0}\label{namespacestanfordcpplib_1_1collections_a4bde4f51efc44d308c1c5f34a3ce68f0}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!hash\+Code\+Collection@{hash\+Code\+Collection}}
+\index{hash\+Code\+Collection@{hash\+Code\+Collection}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{hash\+Code\+Collection()}{hashCodeCollection()}}
+{\footnotesize\ttfamily int stanfordcpplib\+::collections\+::hash\+Code\+Collection (\begin{DoxyParamCaption}\item[{const Collection\+Type \&}]{collection,  }\item[{bool}]{order\+Matters = {\ttfamily true} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_ab25ff6237487d8f8de80deac63917870}\label{namespacestanfordcpplib_1_1collections_ab25ff6237487d8f8de80deac63917870}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!hash\+Code\+Iterable@{hash\+Code\+Iterable}}
+\index{hash\+Code\+Iterable@{hash\+Code\+Iterable}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{hash\+Code\+Iterable()}{hashCodeIterable()}}
+{\footnotesize\ttfamily int stanfordcpplib\+::collections\+::hash\+Code\+Iterable (\begin{DoxyParamCaption}\item[{Iterator\+Type}]{begin,  }\item[{Iterator\+Type}]{end,  }\item[{bool}]{order\+Matters = {\ttfamily true} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_aac709e6defed173090838d4115bdfcc5}\label{namespacestanfordcpplib_1_1collections_aac709e6defed173090838d4115bdfcc5}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!hash\+Code\+Map@{hash\+Code\+Map}}
+\index{hash\+Code\+Map@{hash\+Code\+Map}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{hash\+Code\+Map()}{hashCodeMap()}}
+{\footnotesize\ttfamily int stanfordcpplib\+::collections\+::hash\+Code\+Map (\begin{DoxyParamCaption}\item[{const Map\+Type \&}]{map,  }\item[{bool}]{order\+Matters = {\ttfamily true} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_abb527b0a95625acf221bb506fcdf6f65}\label{namespacestanfordcpplib_1_1collections_abb527b0a95625acf221bb506fcdf6f65}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!random\+Element@{random\+Element}}
+\index{random\+Element@{random\+Element}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{random\+Element()}{randomElement()}}
+{\footnotesize\ttfamily const Element\+Type\& stanfordcpplib\+::collections\+::random\+Element (\begin{DoxyParamCaption}\item[{const Collection\+Type$<$ Element\+Type $>$ \&}]{collection }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_acec813d0f7952ab557a897ffb0e4b430}\label{namespacestanfordcpplib_1_1collections_acec813d0f7952ab557a897ffb0e4b430}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!random\+Element\+Indexed@{random\+Element\+Indexed}}
+\index{random\+Element\+Indexed@{random\+Element\+Indexed}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{random\+Element\+Indexed()}{randomElementIndexed()}}
+{\footnotesize\ttfamily const Element\+Type\& stanfordcpplib\+::collections\+::random\+Element\+Indexed (\begin{DoxyParamCaption}\item[{const Collection\+Type$<$ Element\+Type $>$ \&}]{collection }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_a367f8a5aa711274547c7b1628c3a42c6}\label{namespacestanfordcpplib_1_1collections_a367f8a5aa711274547c7b1628c3a42c6}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!read\+Collection@{read\+Collection}}
+\index{read\+Collection@{read\+Collection}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{read\+Collection()}{readCollection()}}
+{\footnotesize\ttfamily std\+::istream\& stanfordcpplib\+::collections\+::read\+Collection (\begin{DoxyParamCaption}\item[{std\+::istream \&}]{input,  }\item[{Collection\+Type \&}]{collection,  }\item[{Element\+Type \&}]{element,  }\item[{std\+::string}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_a7e92c7237edb0503f7a9a8666186dbf4}\label{namespacestanfordcpplib_1_1collections_a7e92c7237edb0503f7a9a8666186dbf4}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!read\+Map@{read\+Map}}
+\index{read\+Map@{read\+Map}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{read\+Map()}{readMap()}}
+{\footnotesize\ttfamily std\+::istream\& stanfordcpplib\+::collections\+::read\+Map (\begin{DoxyParamCaption}\item[{std\+::istream \&}]{input,  }\item[{Map\+Type \&}]{map,  }\item[{Key\+Type \&}]{key,  }\item[{Value\+Type \&}]{value,  }\item[{std\+::string}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_aa0fa77893be51108c73f38f0baf30a02}\label{namespacestanfordcpplib_1_1collections_aa0fa77893be51108c73f38f0baf30a02}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!write\+Collection@{write\+Collection}}
+\index{write\+Collection@{write\+Collection}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{write\+Collection()}{writeCollection()}}
+{\footnotesize\ttfamily std\+::ostream\& stanfordcpplib\+::collections\+::write\+Collection (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{out,  }\item[{Collection\+Type}]{collection }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_a0476c2f41f266287172ae36ba9a66266}\label{namespacestanfordcpplib_1_1collections_a0476c2f41f266287172ae36ba9a66266}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!write\+Collection\+Of\+Pointers@{write\+Collection\+Of\+Pointers}}
+\index{write\+Collection\+Of\+Pointers@{write\+Collection\+Of\+Pointers}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{write\+Collection\+Of\+Pointers()}{writeCollectionOfPointers()}}
+{\footnotesize\ttfamily std\+::ostream\& stanfordcpplib\+::collections\+::write\+Collection\+Of\+Pointers (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{out,  }\item[{Collection\+Type}]{collection }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_ad5dc1381a951235f3246d586de1bffb9}\label{namespacestanfordcpplib_1_1collections_ad5dc1381a951235f3246d586de1bffb9}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!write\+Iterable@{write\+Iterable}}
+\index{write\+Iterable@{write\+Iterable}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{write\+Iterable()}{writeIterable()}}
+{\footnotesize\ttfamily std\+::ostream\& stanfordcpplib\+::collections\+::write\+Iterable (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{out,  }\item[{Iterator\+Type}]{begin,  }\item[{Iterator\+Type}]{end }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_a8e61f75a91cbd6dc48440214b8ea509d}\label{namespacestanfordcpplib_1_1collections_a8e61f75a91cbd6dc48440214b8ea509d}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!write\+Iterable\+Of\+Pointers@{write\+Iterable\+Of\+Pointers}}
+\index{write\+Iterable\+Of\+Pointers@{write\+Iterable\+Of\+Pointers}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{write\+Iterable\+Of\+Pointers()}{writeIterableOfPointers()}}
+{\footnotesize\ttfamily std\+::ostream\& stanfordcpplib\+::collections\+::write\+Iterable\+Of\+Pointers (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{out,  }\item[{Iterator\+Type}]{begin,  }\item[{Iterator\+Type}]{end }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestanfordcpplib_1_1collections_a76ae42d89473ff4e20eef94f8bd6d942}\label{namespacestanfordcpplib_1_1collections_a76ae42d89473ff4e20eef94f8bd6d942}} 
+\index{stanfordcpplib\+::collections@{stanfordcpplib\+::collections}!write\+Map@{write\+Map}}
+\index{write\+Map@{write\+Map}!stanfordcpplib\+::collections@{stanfordcpplib\+::collections}}
+\subsubsection{\texorpdfstring{write\+Map()}{writeMap()}}
+{\footnotesize\ttfamily std\+::ostream\& stanfordcpplib\+::collections\+::write\+Map (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{out,  }\item[{const Map\+Type \&}]{map }\end{DoxyParamCaption})}
+

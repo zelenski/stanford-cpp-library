@@ -6,6 +6,8 @@
  * See testresultprinter.h for declarations and documentation.
  *
  * @author Marty Stepp
+ * @version 2018/08/27
+ * - refactored to use AutograderUnitTestGui cpp class
  * @version 2018/01/23
  * - fixed bug with not overwriting bad/vague test output on diffs ("expected true, got false" etc.)
  * @version 2016/12/01
@@ -21,8 +23,8 @@
 
 #include "testresultprinter.h"
 #include "autograder.h"
+#include "autograderunittestgui.h"
 #include "stringutils.h"
-#include "private/platform.h"
 #include "private/static.h"
 
 static std::string UNIT_TEST_TYPE_NAMES[11] = {
@@ -172,14 +174,14 @@ void MartyTestResultPrinter::setTestNameWidth(int width) {
 const int MartyGraphicalTestResultPrinter::TEST_RUNTIME_MIN_TO_DISPLAY_MS = 100;
 
 void MartyGraphicalTestResultPrinter::setFailDetails(AutograderTest& test, const UnitTestDetails& deets) {
-    stanfordcpplib::getPlatform()->autograderunittest_setTestDetails(
-                test.getFullName(), deets.toString());
+    stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setTestDetails(
+                test.getFullName(), deets);
 }
 
 void MartyGraphicalTestResultPrinter::setFailDetails(const UnitTestDetails& deets) {
     std::string curTest = autograder::getCurrentTestCaseName();
-    stanfordcpplib::getPlatform()->autograderunittest_setTestDetails(
-                curTest, deets.toString());
+    stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setTestDetails(
+                curTest, deets);
 }
 
 void MartyGraphicalTestResultPrinter::OnTestStart(const ::testing::TestInfo& test_info) {
@@ -197,25 +199,31 @@ void MartyGraphicalTestResultPrinter::OnTestEnd(const ::testing::TestInfo& test_
     }
 
     if (test_info.result()->Failed()) {
-        stanfordcpplib::getPlatform()->autograderunittest_setTestResult(testFullName, "fail");
+        stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setTestResult(
+                    testFullName,
+                    stanfordcpplib::autograder::AutograderUnitTestGui::TEST_RESULT_FAIL);
         for (int i = 0; i < test_info.result()->total_part_count(); i++) {
             testing::TestPartResult part = test_info.result()->GetTestPartResult(i);
             if (part.failed()) {
                 UnitTestDetails deets(autograder::UnitTestType::TEST_FAIL, part.message());
                 deets.overwrite = false;   // BUGFIX for bad test details on Windows
-                stanfordcpplib::getPlatform()->autograderunittest_setTestDetails(testFullName, deets.toString());
+                stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setTestDetails(
+                            testFullName, deets);
                 break;
             }
         }
     } else {
-        stanfordcpplib::getPlatform()->autograderunittest_setTestResult(testFullName, "pass");
+        stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setTestResult(
+                    testFullName,
+                    stanfordcpplib::autograder::AutograderUnitTestGui::TEST_RESULT_PASS);
     }
 
     if (autograder::getFlags().testTimers.containsKey(testFullName)) {
         autograder::getFlags().testTimers[testFullName].stop();
         int runtimeMS = (int) autograder::getFlags().testTimers[testFullName].elapsed();
         if (runtimeMS >= TEST_RUNTIME_MIN_TO_DISPLAY_MS) {
-            stanfordcpplib::getPlatform()->autograderunittest_setTestRuntime(testFullName, runtimeMS);
+            stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setTestRuntime(
+                        testFullName, runtimeMS);
         }
     }
 }

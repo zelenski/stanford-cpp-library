@@ -82,10 +82,10 @@ import java.util.zip.*;
 
 abstract class AbstractKarel implements KarelInterface, ProgramInterface, Runnable {
 	/* Private constants */
-	private static final int NORTH = KarelWorld.NORTH;
-	private static final int EAST = KarelWorld.EAST;
-	private static final int SOUTH = KarelWorld.SOUTH;
-	private static final int WEST = KarelWorld.WEST;
+	public static final int NORTH = KarelWorld.NORTH;
+	public static final int EAST = KarelWorld.EAST;
+	public static final int SOUTH = KarelWorld.SOUTH;
+	public static final int WEST = KarelWorld.WEST;
 	// private static final int INFINITE = KarelWorld.INFINITE;
 
 	/* List of jar files to skip */

@@ -1,10 +1,11 @@
 /*
  * File: graph.h
  * -------------
- * This file exports a parameterized <code>Graph</code> class used
- * to represent <b><i>graphs,</i></b> which consist of a set of
- * <b><i>nodes</i></b> (vertices) and a set of <b><i>arcs</i></b> (edges).
+ * This file exports a parameterized Graph class used to represent graphs,
+ * which consist of a set of nodes (vertices) and a set of arcs (edges).
  * 
+ * @version 2018/09/07
+ * - reformatted doc-style comments
  * @version 2018/03/10
  * - added methods front, back
  * - fixed compiler issue with getArcSet call
@@ -54,9 +55,7 @@
 #include "set.h"
 #include "tokenscanner.h"
 
-/*
- * Class: Graph<NodeType, ArcType>
- * -------------------------------
+/**
  * This class represents a graph with the specified node and arc types.
  * The <code>NodeType</code> and <code>ArcType</code> parameters indicate
  * the structure type or class used for nodes and arcs, respectively.
@@ -76,463 +75,540 @@
  *   <li>A <code>NodeType *</code> field called <code>finish</code>
  * </ul>
  */
-
 template <typename NodeType, typename ArcType>
 class Graph {
 public:
-    /*
-     * Constructor: Graph
-     * Usage: Graph<NodeType,ArcType> g;
-     * ---------------------------------
-     * Creates an empty <code>Graph</code> object.
+    /**
+     * Creates an empty graph.
+     * @bigoh O(1)
      */
     Graph();
     
-    /*
-     * Destructor: ~Graph
-     * ------------------
+    /**
      * Frees the internal storage allocated to represent the graph.
+     * @bigoh O(V + E)
      */
     virtual ~Graph();
     
-    /*
-     * Method: addArc
-     * Usage: g.addArc(s1, s2);
-     *        g.addArc(n1, n2);
-     *        g.addArc(arc);
-     * ------------------------
-     * Adds an arc to the graph.  The endpoints of the arc can be specified
-     * either as strings indicating the names of the nodes or as pointers
-     * to the node structures.  Alternatively, the client can create the arc
-     * structure explicitly and pass that pointer to the <code>addArc</code>
-     * method.  All three of these versions return a pointer to the arc in
-     * case the client needs to capture this value.
-     * If the third form is called and the start/finish nodes passed are not
-     * already part of the graph, they are added to the graph.
-     * If any pointer passed is null, throws an error.
-     *
-     * Memory management: If you use the ArcType* version of this method,
-     * once you hand me this pointer, I own it.  It's mine.
-     * I will delete/free it when I am done with it.
-     * You do not need to (and should not) free it yourself.
+    /**
+     * Adds a directed arc to the graph from node n1 to n2.
+     * If either node is not found in the graph, said node will be added to the graph.
+     * Returns a pointer to the arc in case the client needs to capture this value.
+     * @bigoh O(log V + log E)
      */
-    ArcType* addArc(const std::string& s1, const std::string& s2);
+    ArcType* addArc(const std::string& n1, const std::string& n2);
+
+    /**
+     * Adds a directed arc to the graph from node n1 to n2.
+     * If either node is not found in the graph, said node will be added to the graph.
+     * Returns a pointer to the arc in case the client needs to capture this value.
+     *
+     * @throw ErrorException if any pointer passed is null
+     * @bigoh O(log V + log E)
+     */
     ArcType* addArc(NodeType* n1, NodeType* n2);
+
+    /**
+     * Adds the given arc to the graph.
+     * If the start/finish nodes passed are not already part of the graph,
+     * they are added to the graph.
+     * Returns a pointer to the arc in case the client needs to capture this value.
+     *
+     * Memory management: Once you hand me this ArcType* pointer, our code owns it.
+     * We will delete/free it when done with it.
+     * You do not need to (and should not) free it yourself.
+     *
+     * @throw ErrorException if any pointer passed is null
+     * @bigoh O(log V + log E)
+     */
     ArcType* addArc(ArcType* arc);
 
-    /*
-     * Method: addNode
-     * Usage: NodeType* node = g.addNode(name);
-     *        NodeType* node = g.addNode(node);
-     * ----------------------------------------
+    /**
      * Adds a node to the graph.  The first version of this method
      * creates a new node of the appropriate type and initializes its
      * fields; the second assumes that the client has already created
-     * the node and simply adds it to the graph.  Both versions of this
-     * method return a pointer to the node.
+     * the node and simply adds it to the graph.
+     * Returns a pointer to the node.
      * If a node with the given name is already present, does nothing.
-     * If any pointer passed is null, throws an error.
      *
-     * Memory management: If you use the NodeType* version of this method,
-     * once you hand me this pointer, I own it.  It's mine.
-     * I will delete/free it when I am done with it.
+     * Memory management: Once you hand me this NodeType* pointer, our code owns it.
+     * We will delete/free it when done with it.
      * You do not need to (and should not) free it yourself.
+     *
+     * @throw ErrorException if any pointer passed is null
+     * @bigoh O(log V)
      */
     NodeType* addNode(const std::string& name);
+
+    /**
+     * Adds a node to the graph.
+     * This version assumes that the client has already created the node structure
+     * and simply adds it to the graph.
+     * Returns a pointer to the node.
+     * If a node with the given name is already present, does nothing.
+     *
+     * Memory management: Once you hand me this NodeType* pointer, our code owns it.
+     * We will delete/free it when done with it.
+     * You do not need to (and should not) free it yourself.
+     *
+     * @throw ErrorException if any pointer passed is null
+     * @bigoh O(log V)
+     */
     NodeType* addNode(NodeType* node);
 
-    /*
-     * Method: arcCount
-     * Usage: int count = g.arcCount();
-     * --------------------------------
+    /**
      * Returns the number of arcs in the graph.
+     * @bigoh O(1)
      */
     int arcCount() const;
 
-    /*
-     * Method: back
-     * Usage: NodeType* node = graph.back();
-     * -------------------------------------
-     * Returns the last node in the graph in the order established by the
-     * <code>foreach</code> macro.  If the graph is empty, generates an error.
+    /**
+     * Returns the last node in the graph in the order as would be returned by
+     * a for-each loop or iterator.
+     * @throw ErrorException if the graph is empty
+     * @bigoh O(1)
      */
     NodeType* back() const;
 
-    /*
-     * Method: clear
-     * Usage: g.clear();
-     * -----------------
+    /**
      * Reinitializes the graph to be empty, removing all nodes and arcs
      * and freeing any heap storage used by their corresponding internal structures.
+     * @bigoh O(V + E)
      */
     void clear();
 
-    /*
-     * Method: clearArcs
-     * Usage: g.clearArcs();
-     * ---------------------
+    /**
      * Removes all arcs from the graph, freeing the heap storage used by their
      * corresponding internal structures. The graph's nodes remain intact.
+     * @bigoh O(E)
      */
     void clearArcs();
 
-    /*
-     * Method: clearArcs
-     * Usage: g.clearArcs(node);
-     * ---------------------
+    /**
      * Removes all arcs from the graph that start from the given node,
      * freeing the heap storage used by their corresponding internal structures.
      * The graph's nodes remain intact.
+     * If the given node pointer is null or not found in the graph, has no effect.
+     * @bigoh O(log V + E)
      */
     void clearArcs(NodeType* node);
+
+    /**
+     * Removes all arcs from the graph that start from the given node,
+     * freeing the heap storage used by their corresponding internal structures.
+     * The graph's nodes remain intact.
+     * If the given node is not found in the graph, has no effect.
+     * @bigoh O(E log E)
+     */
     void clearArcs(const std::string& name);
 
-    /*
-     * Method: containsArc
-     * Usage: if (g.containsArc(n1, n2)) ...
-     * -------------------------------------
-     * Returns true if there exists an arc directly between the given
-     * two nodes, and false if not.
-     * If either node is not contained in this graph, returns false.
+    /**
+     * Returns true if there exists an arc directly between the given two nodes.
+     * If either node is null or is not contained in this graph, returns false.
+     * @bigoh O(log E)
      */
     bool containsArc(NodeType* node1, NodeType* node2) const;
+
+    /**
+     * Returns true if there exists an arc directly between the given two nodes.
+     * If either node is not contained in this graph, returns false.
+     * @bigoh O(log E)
+     */
     bool containsArc(const std::string& node1, const std::string& node2) const;
+
+    /**
+     * Returns true if the given arc exists in this graph.
+     * If the given arc is null or either of its nodes are not contained in
+     * this graph, returns false.
+     * @bigoh O(log E)
+     */
     bool containsArc(ArcType* arc) const;
 
-    /*
-     * Method: containsNode
-     * Usage: if (g.containsNode(name)) ...
-     * -------------------------------------
-     * Returns true if there exists a node with the given name,
-     * and false if not.
-     * Returns false if the pointer passed is null.
+    /**
+     * Returns true if there exists a node in this graph with the given name.
+     * @bigoh O(log V)
      */
     bool containsNode(const std::string& name) const;
+
+    /**
+     * Returns true if the given node is part of this graph.
+     * If the pointer passed is null, returns false.
+     * @bigoh O(log V)
+     */
     bool containsNode(NodeType* node) const;
 
-    /*
-     * Method: equals
-     * Usage: if (graph.equals(graph2)) ...
-     * ------------------------------------
+    /**
      * Compares two graphs for equality.
      * Returns <code>true</code> if this graph contains exactly the same
      * nodes, arcs, and connections as the given other graph.
      * Identical in behavior to the == operator.
+     * @bigoh O(V log V + E log E)
      */
     bool equals(const Graph<NodeType, ArcType>& graph2) const;
     
-    /*
-     * Method: front
-     * Usage: NodeType* node = graph.front();
-     * --------------------------------------
-     * Returns the first node in the graph in the order established by the
-     * <code>foreach</code> macro.  If the graph is empty, generates an error.
+    /**
+     * Returns the first node in the graph in the order as would be returned by
+     * a for-each loop or iterator.
+     * @throw ErrorException if the graph is empty
+     * @bigoh O(1)
      */
     NodeType* front() const;
 
-    /*
+    /**
      * Returns the arc, if any, from node1 to node2.
-     * If no such arc exists, returns a null pointer.
+     * If multiple arcs exist between the given two nodes, which is returned is unspecified.
+     * If either pointer passed is null or no such arc exists, returns a null pointer.
+     * @bigoh O(log V + log E)
      */
     ArcType* getArc(NodeType* node1, NodeType* node2) const;
+
+    /**
+     * Returns the arc, if any, from node1 to node2.
+     * If multiple arcs exist between the given two nodes, which is returned is unspecified.
+     * If no such arc exists, returns a null pointer.
+     * @bigoh O(log V + log E)
+     */
     ArcType* getArc(const std::string& node1, const std::string& node2) const;
 
-    /*
-     * Method: getArcSet
-     * Usage: for (ArcType* arc : g.getArcSet()) ...
-     *        for (ArcType* arc : g.getArcSet(node)) ...
-     *        for (ArcType* arc : g.getArcSet(name)) ...
-     * -------------------------------------------------
-     * Returns the set of all arcs in the graph or, in the second and
-     * third forms, the arcs that start at the specified node, which
-     * can be indicated either as a pointer or by name.
-     * If any pointer passed is null, throws an error.
+    /**
+     * Returns the set of all arcs in the graph.
+     * @bigoh O(1)
      */
     const Set<ArcType*>& getArcSet() const;
+
+    /**
+     * Returns the set of all arcs that start at the specified node,
+     * indicated as a pointer to its node structure.
+     * If the pointer passed is null or the given node is not found in the graph,
+     * returns an empty set.
+     * @bigoh O(1)
+     */
     const Set<ArcType*>& getArcSet(NodeType* node) const;
+
+    /**
+     * Returns the set of all arcs that start at the specified node.
+     * If the given node is not found in the graph, returns an empty set.
+     * @bigoh O(1)
+     */
     const Set<ArcType*>& getArcSet(const std::string& name) const;
 
-    /*
-     * Method: getInverseArcSet
-     * Usage: for (ArcType* arc : g.getInverseArcSet(node)) ...
-     *        for (ArcType* arc : g.getInverseArcSet(name)) ...
-     * -------------------------------------------------------------
+    /**
      * Returns the set of outbound arcs to the given node from other nodes.
-     * The given node can be indicated either as a pointer or by name.
      * In other words, getInverseArcSet(n1) is the set of all nodes n2
      * such that there exists an arc E starting from n2 and ending at n1.
+     *
      * If any pointer passed is null, or if the given node is not found
-     * in this graph, throws an error.
+     * in this graph, returns an empty set.
+     * @bigoh O(E)
      */
     const Set<ArcType*> getInverseArcSet(NodeType* node) const;
+
+    /**
+     * Returns the set of outbound arcs to the given node from other nodes.
+     * In other words, getInverseArcSet(n1) is the set of all nodes n2
+     * such that there exists an arc E starting from n2 and ending at n1.
+     *
+     * If the given node is not found in this graph, returns an empty set.
+     * @bigoh O(E)
+     */
     const Set<ArcType*> getInverseArcSet(const std::string& name) const;
 
-    /*
-     * Method: getInverseNeighborNames
-     * Usage: for (string neighbor : g.getInverseNeighborNames(node)) ...
-     *        for (string neighbor : g.getInverseNeighborNames(name)) ...
-     * -------------------------------------------------------------
+    /**
      * Returns the set of strings of names of nodes that are neighbors of the
-     * given node, which can be indicated either as a pointer or by name.
+     * given node.
      * In other words, getInverseNeighborNames(n1) is the set of all strings n2
      * such that there exists an arc E starting from n2 and ending at n1.
+     *
      * If any pointer passed is null, or if the given node is not found
      * in this graph, returns an empty set.
+     * @bigoh O(E)
      */
     Set<std::string> getInverseNeighborNames(NodeType* node) const;
+
+    /**
+     * Returns the set of strings of names of nodes that are neighbors of the
+     * given node.
+     * In other words, getInverseNeighborNames(n1) is the set of all strings n2
+     * such that there exists an arc E starting from n2 and ending at n1.
+     *
+     * If the given node is not found in this graph, returns an empty set.
+     * @bigoh O(E)
+     */
     Set<std::string> getInverseNeighborNames(const std::string& node) const;
 
-    /*
-     * Method: getInverseNeighbors
-     * Usage: for (NodeType* node : g.getInverseNeighbors(node)) ...
-     *        for (NodeType* node : g.getInverseNeighbors(name)) ...
-     * -------------------------------------------------------------
-     * Returns the set of nodes that are neighbors of the specified
-     * node, which can be indicated either as a pointer or by name.
+    /**
+     * Returns the set of nodes that are neighbors of the specified node.
      * In other words, getInverseNeighbors(n1) is the set of all nodes n2
      * such that there exists an arc E starting from n2 and ending at n1.
+     *
      * If any pointer passed is null, or if the given node is not found
      * in this graph, returns an empty set.
+     * @bigoh O(E)
      */
     Set<NodeType*> getInverseNeighbors(NodeType* node) const;
+
+    /**
+     * Returns the set of nodes that are neighbors of the specified node.
+     * In other words, getInverseNeighbors(n1) is the set of all nodes n2
+     * such that there exists an arc E starting from n2 and ending at n1.
+     *
+     * If the given node is not found in this graph, returns an empty set.
+     * @bigoh O(E)
+     */
     Set<NodeType*> getInverseNeighbors(const std::string& node) const;
 
-    /*
-     * Method: getNeighbors
-     * Usage: for (string neighbor : g.getNeighbors(node)) ...
-     *        for (string neighbor : g.getNeighbors(name)) ...
-     * ------------------------------------------------------
-     * Returns the set of node names that are neighbors of the specified
-     * node, which can be indicated either as a pointer or by name.
+    /**
+     * Returns the set of node names that are neighbors of the specified node.
      * In other words, getNeighbors(n1) is the set of all strings n2
      * such that there exists an arc E starting from n1 and ending at n2.
+     *
      * If any pointer passed is null, or if the given node is not found
      * in this graph, returns an empty set.
+     * @bigoh O(log V)
      */
     Set<std::string> getNeighborNames(NodeType* node) const;
+
+    /**
+     * Returns the set of node names that are neighbors of the specified node.
+     * In other words, getNeighbors(n1) is the set of all strings n2
+     * such that there exists an arc E starting from n1 and ending at n2.
+     *
+     * If the given node is not found in this graph, returns an empty set.
+     * @bigoh O(log V)
+     */
     Set<std::string> getNeighborNames(const std::string& node) const;
 
-    /*
-     * Method: getNeighbors
-     * Usage: for (NodeType* node : g.getNeighbors(node)) ...
-     *        for (NodeType* node : g.getNeighbors(name)) ...
-     * ------------------------------------------------------
-     * Returns the set of nodes that are neighbors of the specified
-     * node, which can be indicated either as a pointer or by name.
+    /**
+     * Returns the set of nodes that are neighbors of the specified node.
      * In other words, getNeighbors(n1) is the set of all nodes n2
      * such that there exists an arc E starting from n1 and ending at n2.
+     *
      * If any pointer passed is null, or if the given node is not found
      * in this graph, returns an empty set.
+     * @bigoh O(log V)
      */
     Set<NodeType*> getNeighbors(NodeType* node) const;
+
+    /**
+     * Returns the set of nodes that are neighbors of the specified node.
+     * In other words, getNeighbors(n1) is the set of all nodes n2
+     * such that there exists an arc E starting from n1 and ending at n2.
+     *
+     * If the given node is not found in this graph, returns an empty set.
+     * @bigoh O(log V)
+     */
     Set<NodeType*> getNeighbors(const std::string& node) const;
 
-    /*
-     * Method: getNode
-     * Usage: NodeType* node = g.getNode(name);
-     * ----------------------------------------
+    /**
      * Looks up a node in the name table attached to the graph and
-     * returns a pointer to that node.  If no node with the specified
-     * name exists, returns <code>nullptr</code>.
+     * returns a pointer to that node.
+     * If no node with the specified name exists, returns <code>nullptr</code>.
+     * @bigoh O(log V)
      */
     NodeType* getNode(const std::string& name) const;
 
-    /*
-     * Method: getNodeNames
-     * Usage: for (NodeType* node : g.getNodeNames()) ...
-     * --------------------------------------------------
+    /**
      * Returns the set of the names of all nodes in the graph.
      * Similar to getNodeSet but returns a set of strings rather than a set
      * of pointers to nodes.
+     * @bigoh O(V log V)
      */
     Set<std::string> getNodeNames() const;
     
-    /*
-     * Method: getNodeSet
-     * Usage: for (NodeType* node : g.getNodeSet()) ...
-     * ------------------------------------------------
+    /**
      * Returns the set of all nodes in the graph.
+     * These are direct pointers to the internal NodeType* structures in the
+     * graph, so any modifications you make to them will be reflected in the graph.
+     * @bigoh O(1)
      */
     const Set<NodeType*>& getNodeSet() const;
 
-    /*
-     * Method: isConnected
-     * Usage: if (g.isConnected(n1, n2)) ...
-     *        if (g.isConnected(s1, s2)) ...
-     * -------------------------------------
+    /**
      * Returns <code>true</code> if the graph contains an arc from
-     * <code>n1</code> to <code>n2</code>.  As in the <code>addArc</code>
-     * method, nodes can be specified either as node pointers or by name.
+     * <code>n1</code> to <code>n2</code>.
      * If any pointer passed is null, or if either node is not contained
      * in this graph, returns false.
+     * @bigoh O(log V)
      */
     bool isConnected(NodeType* n1, NodeType* n2) const;
+
+    /**
+     * Returns <code>true</code> if the graph contains an arc from
+     * <code>n1</code> to <code>n2</code>.
+     * If either node is not contained in this graph, returns false.
+     * @bigoh O(log V)
+     */
     bool isConnected(const std::string& s1, const std::string& s2) const;
 
+    /**
+     * Returns true if the graph contains an edge from v1 to v2.
+     * If either of the vertexes supplied is not found in the graph, returns false.
+     * @bigoh O(log V)
+     */
     bool isNeighbor(const std::string& node1, const std::string& node2) const;
+
+    /**
+     * Returns true if the graph contains an edge from v1 to v2.
+     * If either of the vertexes supplied is null or is not found in the graph, returns false.
+     * @bigoh O(log V)
+     */
     bool isNeighbor(NodeType* node1, NodeType* node2) const;
-    /*
-     * Method: isEmpty
-     * Usage: if (g.isEmpty()) ...
-     * ---------------------------
-     * Returns <code>true</code> if the graph is empty.
+
+    /**
+     * Returns <code>true</code> if the graph contains no vertexes.
+     * @bigoh O(1)
      */
     bool isEmpty() const;
 
-    /*
-     * Method: nodeCount
-     * Usage: int count = g.nodeCount();
-     * ---------------------------------
+    /**
      * Returns the number of nodes in the graph.
      * Equivalent to size().
+     * @bigoh O(1)
      */
     int nodeCount() const;
 
-    /*
-     * Method: removeArc
-     * Usage: g.removeArc(s1, s2);
-     *        g.removeArc(n1, n2);
-     *        g.removeArc(arc);
-     * ---------------------------
-     * Removes an arc from the graph, where the arc can be specified in any
-     * of three ways: by the names of its endpoints, by the node pointers
-     * at its endpoints, or as an arc pointer.  If more than one arc
-     * connects the specified endpoints, all of them are removed.
+    /**
+     * Removes an arc from v1 to v2 in the graph, specified by the names of its endpoints.
+     * If more than one arc connects the specified endpoints, all of them are removed.
+     * If no arc connects the given endpoints, or the given arc is not found,
+     * the call has no effect.
+     * @bigoh O(E + log V)
+     */
+    void removeArc(const std::string& s1, const std::string& s2);
+
+    /**
+     * Removes an arc from v1 to v2 in the graph, specified by the node pointers
+     * at its endpoints.
+     * If more than one arc connects the specified endpoints, all of them are removed.
+     * If no arc connects the given endpoints, or the given arc is not found,
+     * the call has no effect.
+     * @bigoh O(E + log V)
+     */
+    void removeArc(NodeType* n1, NodeType* n2);
+
+    /**
+     * Removes the given arc from the graph, specified as an arc pointer.
+     * If more than one arc connects the specified endpoints, all of them are removed.
      * If no arc connects the given endpoints, or the given arc is not found,
      * the call has no effect.
      *
-     * Memory management: If you use the ArcType* version of this method,
-     * I will delete/free the ArcType* object when I am done with it.
+     * Memory management: Our code will delete/free the ArcType* object when done with it.
      * You do not need to (and should not) free it yourself.
+     * @bigoh O(log E + log V)
      */
-    void removeArc(const std::string& s1, const std::string& s2);
-    void removeArc(NodeType* n1, NodeType* n2);
     void removeArc(ArcType* arc);
 
-    /*
-     * Method: removeNode
-     * Usage: g.removeNode(name);
-     *        g.removeNode(node);
-     * --------------------------
-     * Removes a node from the graph, where the node can be specified
-     * either by its name or as a pointer value.  Removing a node also
-     * removes all arcs that contain that node.
-     * If a node or name is passed that is not part of the graph,
+    /**
+     * Removes the node with the given name from the graph.
+     * Removing a node also removes all arcs that contain that node.
+     * If a node name is passed that is not part of the graph,
      * the call has no effect.
-     *
-     * Memory management: If you use the NodeType* version of this method,
-     * I will delete/free the NodeType* object when I am done with it.
-     * You do not need to (and should not) free it yourself.
+     * @bigoh O(E + log V)
      */
     void removeNode(const std::string& name);
+
+    /**
+     * Removes a node from the graph, specified as a pointer value.
+     * Removing a node also removes all arcs that contain that node.
+     * If a node or name is passed that is null or is not part of the graph,
+     * the call has no effect.
+     *
+     * Memory management: Our code will delete/free the NodeType* object when done with it.
+     * You do not need to (and should not) free it yourself.
+     * @bigoh O(E + log V)
+     */
     void removeNode(NodeType* node);
 
-    /*
-     * Friend method: scanArcData
-     * Usage: scanArcData(scanner, forward, backward);
-     * -----------------------------------------------
-     * Reads the data for an arc from the scanner.  The <code>forward</code>
-     * argument points to the arc in the forward direction.  If the arc is
-     * undirected, <code>backward</code> points to the reverse arc; for
-     * directed arcs, the <code>backward</code> pointer is <code>nullptr</code>.
-     * The default implementation of this method is empty.  Clients that want
-     * to initialize other fields in the arc must override this method so
-     * that it initializes one or both arc, as appropriate.
+    /**
+     * Reads the data for an arc from the scanner.
+     * The <code>forward</code> argument points to the arc in the forward direction.
+     * If the arc is undirected, <code>backward</code> points to the reverse arc;
+     * for directed arcs, the <code>backward</code> pointer is <code>nullptr</code>.
+     *
+     * The default implementation of this method is empty.
+     * Clients that want to initialize other fields in the arc must override
+     * this method so that it initializes one or both arc, as appropriate.
      */
-    virtual void scanArcData(TokenScanner &,
-                             ArcType* /*forward*/, ArcType* /*backward*/) {
-        /* Empty */
+    virtual void scanArcData(TokenScanner &, ArcType* /*forward*/, ArcType* /*backward*/) {
+        // empty
     }
 
-    /*
-     * Friend method: scanGraphEntry
-     * Usage: while (g.scanGraphEntry(scanner)) { }
-     * --------------------------------------------
+    /**
      * This method reads one "entry" for the graph, which is either a node
      * description or an arc description.  The <code>scanGraphEntry</code>
      * method returns <code>true</code> if it reads an entry, and
      * <code>false</code> at the end of file or at text that cannot be
      * recognized as a graph entry.
      *
-     * <p>Node entries consist of the name of a node (which may be quoted
+     * Node entries consist of the name of a node (which may be quoted
      * if it contains special characters), optionally followed by data for
      * the node.  Arc descriptions have one of the following forms:
      *
-     *<pre>
-     *    n1 -> n2
-     *    n1 - n2
-     *</pre>
+     * <pre>
+     * n1 -> n2
+     * n1 - n2
+     * </pre>
      *
-     * either of which can be followed by data for the arc.  The first form
-     * creates a single directed arc; the second creates two arcs, one in
-     * each direction.
+     * either of which can be followed by data for the arc.
+     * The first form creates a single directed arc; the second creates two arcs,
+     * one in each direction.
      *
-     * <p>Clients who want to read node or arc data must override the empty
+     * Clients who want to read node or arc data must override the empty
      * versions of <code>scanNodeData</code> and <code>scanArcData</code>
      * included in this interface.
      */
     virtual bool scanGraphEntry(TokenScanner& scanner);
 
-    /*
-     * Friend method: scanNodeData
-     * Usage: scanNodeData(scanner, node);
-     * -----------------------------------
-     * Reads the data for the specified node from the scanner.  The default
-     * implementation of this method is empty.  Clients that want to initialize
-     * other fields in the node from the token stream must override this method.
+    /**
+     * Reads the data for the specified node from the scanner.
+     * The default implementation of this method is empty.
+     * Clients that want to initialize other fields in the node from the token
+     * stream must override this method.
      */
     virtual void scanNodeData(TokenScanner&, NodeType*) {
         /* Empty */
     }
 
-    /*
-     * Method: size
-     * Usage: int size = g.size();
-     * ---------------------------
+    /**
      * Returns the number of nodes in the graph.
+     * Equivalent to nodeCount.
+     * @bigoh O(1)
      */
     int size() const;
 
-    /*
-     * Method: toString
-     * Usage: string str = g.toString();
-     * ---------------------------------
+    /**
      * Converts the graph to a printable string representation.
+     * @return a string such as <code>"{A, B, C, D, A - B, B - D, C - D}"</code>.
+     * @bigoh O(V + E)
      */
     std::string toString() const;
     
-    /*
-     * Friend method: writeArcData
-     * Usage: writeArcData(os, arc);
-     * -----------------------------
-     * Writes the data for the arc to the output stream.  The default
-     * implementation of this method is empty.  Clients that want to store
-     * other fields from the arc must override this method so that it writes
-     * that data in a form that scanArcData can read.
+    /**
+     * Writes the data for the arc to the output stream.
+     * The default implementation of this method is empty.
+     * Clients that want to store other fields from the arc must override this
+     * method so that it writes that data in a form that scanArcData can read.
      */
     virtual void writeArcData(std::ostream&, ArcType*) const {
-        /* Empty */
+        // empty
     }
 
-    /*
-     * Friend method: writeNodeData
-     * Usage: writeNodeData(os, node);
-     * -------------------------------
-     * Writes the data for the node to the output stream.  The default
-     * implementation of this method is empty.  Clients that want to store
-     * other fields from the node must override this method so that it
-     * writes that data in a form that scanNodeData can read.
+    /**
+     * Writes the data for the node to the output stream.
+     * The default implementation of this method is empty.
+     * Clients that want to store other fields from the node must override this
+     * method so that it writes that data in a form that scanNodeData can read.
      */
     virtual void writeNodeData(std::ostream&, NodeType*) const {
-        /* Empty */
+        // empty
     }
 
-    /*
-     * Iterator support
-     * ----------------
+    /**
      * The classes in the StanfordCPPLib collection implement input
      * iterators so that they work symmetrically with respect to the
      * corresponding STL classes.
+     *
+     * @private
      */
     class graph_iterator : public std::iterator<std::input_iterator_tag, NodeType*> {
     public:
@@ -588,31 +664,68 @@ public:
         typename Set<NodeType*>::iterator m_itr;
     };
     
+    /**
+     * Returns an STL iterator positioned at the first vertex in the graph.
+     * @bigoh O(1)
+     */
     graph_iterator begin() const {
         return graph_iterator(*this, /* end */ false);
     }
 
+    /**
+     * Returns an STL iterator positioned after the last vertex in the graph.
+     * @bigoh O(1)
+     */
     graph_iterator end() const {
         return graph_iterator(*this, /* end */ true);
     }
     
-    /*
-     * Operators: ==, !=, <, >, <=, >=
-     * Usage: if (graph1 == graph2) ...
-     * Usage: if (graph1 < graph2) ...
-     * ...
-     * --------------------------------
+    /**
      * Relational operators to compare two graphs.
      * The ==, != operators require that the ValueType has a == operator
      * so that the elements can be tested for equality.
-     * The <, >, <=, >= operators require that the ValueType has a < operator
-     * so that the elements can be compared pairwise.
+     * @bigoh O(V log V + E log E)
      */
     bool operator ==(const Graph& graph2) const;
+
+    /**
+     * Relational operators to compare two graphs.
+     * The ==, != operators require that the ValueType has a == operator
+     * so that the elements can be tested for equality.
+     * @bigoh O(V log V + E log E)
+     */
     bool operator !=(const Graph& graph2) const;
+
+    /**
+     * Relational operators to compare two graphs.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
+     * @bigoh O(V log V + E log E)
+     */
     bool operator <(const Graph& graph2) const;
+
+    /**
+     * Relational operators to compare two graphs.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
+     * @bigoh O(V log V + E log E)
+     */
     bool operator <=(const Graph& graph2) const;
+
+    /**
+     * Relational operators to compare two graphs.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
+     * @bigoh O(V log V + E log E)
+     */
     bool operator >(const Graph& graph2) const;
+
+    /**
+     * Relational operators to compare two graphs.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
+     * @bigoh O(V log V + E log E)
+     */
     bool operator >=(const Graph& graph2) const;
 
     
@@ -623,9 +736,7 @@ public:
     /* of the implementation and should not be of interest to clients.    */
     /**********************************************************************/
 
-    /*
-     * Private class: GraphComparator
-     * ------------------------------
+    /**
      * This template class establishes the ordering for nodes and arcs.
      * Nodes are processed in alphabetical order by node name; arcs are
      * compared in much the same way, looking first at the start node and
@@ -636,35 +747,48 @@ public:
      * of nodes (which is perfectly legal in the graph abstraction and can
      * be used, for example, to represent multiple modes of travel between
      * two nodes), those arcs are not the same.
+     *
+     * @private
      */
     class GraphComparator {
     public:
-        bool operator()(NodeType* n1, NodeType* n2) {
+        bool operator ()(NodeType* n1, NodeType* n2) {
             return compare(n1, n2) < 0;
         }
 
-        bool operator()(ArcType* a1, ArcType* a2) {
+        bool operator ()(ArcType* a1, ArcType* a2) {
             return compare(a1, a2) < 0;
         }
     };
 
 private:
-    /* Instance variables */
     Set<NodeType*> nodes;                  /* The set of nodes in the graph */
     Set<ArcType*> arcs;                    /* The set of arcs in the graph  */
     Map<std::string, NodeType*> nodeMap;   /* A map from names to nodes     */
     GraphComparator comparator;            /* The comparator for this graph */
 
 public:
-    /*
-     * Functions: operator=, copy constructor
-     * --------------------------------------
+    /**
      * These functions are part of the public interface of the class but are
      * defined here to avoid adding confusion to the Graph class.
+     *
+     * @private
      */
     Graph& operator =(const Graph& src);
+
+    /**
+     * These functions are part of the public interface of the class but are
+     * defined here to avoid adding confusion to the Graph class.
+     *
+     * @private
+     */
     Graph(const Graph& src);
 
+    /**
+     * Compares two nodes for ordering within a set.
+     *
+     * @private
+     */
     static int compare(NodeType* n1, NodeType* n2) {
         if (n1 == n2) {
             return 0;
@@ -678,6 +802,11 @@ public:
         return (n1 < n2) ? -1 : +1;
     }
 
+    /**
+     * Compares two arcs for ordering within a set.
+     *
+     * @private
+     */
     static int compare(ArcType* a1, ArcType* a2) {
         if (a1 == a2) {
             return 0;
@@ -1372,9 +1501,11 @@ void Graph<NodeType, ArcType>::deepCopy(const Graph& src) {
 }
 
 
-/*
+/**
  * Compares two graphs for <, <=, ==, !=, >, >= relational operators.
  * Vertices are compared, including their neighboring arcs.
+ *
+ * @private
  */
 template <typename NodeType, typename ArcType>
 int Graph<NodeType, ArcType>::graphCompare(const Graph<NodeType, ArcType>& graph2) const {
@@ -1489,9 +1620,8 @@ bool Graph<NodeType, ArcType>::operator >=(const Graph& graph2) const {
     return graphCompare(graph2) >= 0;
 }
 
-/*
- * Implementation notes: << and >>
- * -------------------------------
+/**
+ * Writes the given graph to the given output stream.
  * The insertion and extraction operators for graphs are more complicated
  * than for the standard collection types because the nodes and arcs can
  * contain client-specific data.  To ensure that this information is
@@ -1520,6 +1650,14 @@ std::ostream& operator <<(std::ostream& os, const Graph<NodeType, ArcType>& g) {
     return os << "}";
 }
 
+/**
+ * Reads the given graph from the given input stream.
+ * The insertion and extraction operators for graphs are more complicated
+ * than for the standard collection types because the nodes and arcs can
+ * contain client-specific data.  To ensure that this information is
+ * correctly written and read by these operators, clients must override
+ * the methods writeNodeData, writeArcData, scanNodeData, and scanArcData.
+ */
 template <typename NodeType, typename ArcType>
 std::istream& operator >>(std::istream& is, Graph<NodeType, ArcType>& g) {
     TokenScanner scanner(is);
@@ -1559,7 +1697,7 @@ std::istream& operator >>(std::istream& is, Graph<NodeType, ArcType>& g) {
     return is;
 }
 
-/*
+/**
  * Template hash function for graphs.
  */
 template <typename NodeType, typename ArcType>

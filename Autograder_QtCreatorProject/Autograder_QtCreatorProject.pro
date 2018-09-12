@@ -3,16 +3,22 @@
 # This file specifies the information about your project to Qt Creator.
 # You should not need to modify this file to complete your assignment.
 #
-# If you need to add files or folders to your project, we recommend
-# that you "re-initialize" your project by doing the following:
-#
-# 1- close Qt Creator.
-# 2- delete your ".pro.user" file and "build_xxxxxxx" directory.
-# 3- place the new files/folders into your project directory.
-# 4- re-open and "Configure" your project again.
+#####################################################################
+## If you need to add files or folders to your project, we suggest ##
+## that you "re-initialize" your project by doing the following:   ##
+##                                                                 ##
+## 1- close Qt Creator.                                            ##
+## 2- delete your ".pro.user" file and "build_xxxxxxx" directory.  ##
+## 3- place the new files/folders into your project directory.     ##
+## 4- re-open and "Configure" your project again.                  ##
+#####################################################################
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2018/07/01
+# - re-enable Qt in configuration to support Qt-based GUI functionality
+# - added SPL_QT_GUI flag (default enabled)
+# - remove some compiler warnings (long-long, useless-cast) because they trigger in Qt
 # @version 2018/02/28
 # - flag to disable some BasicGraph Vertex/Edge members
 # @version 2018/01/23
@@ -87,6 +93,8 @@
 
 TEMPLATE = app
 PROJECT_FILTER =
+QT       += core gui network
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 ###############################################################################
 # BEGIN SECTION FOR SPECIFYING SOURCE/LIBRARY/RESOURCE FILES OF PROJECT       #
@@ -272,10 +280,10 @@ QMAKE_CXXFLAGS += -Wall
 QMAKE_CXXFLAGS += -Wextra
 # QMAKE_CXXFLAGS += -Weffc++
 QMAKE_CXXFLAGS += -Wcast-align
-QMAKE_CXXFLAGS += -Wfloat-equal
+#QMAKE_CXXFLAGS += -Wfloat-equal
 QMAKE_CXXFLAGS += -Wformat=2
 QMAKE_CXXFLAGS += -Wlogical-op
-QMAKE_CXXFLAGS += -Wlong-long
+#QMAKE_CXXFLAGS += -Wlong-long
 QMAKE_CXXFLAGS += -Wno-missing-field-initializers
 QMAKE_CXXFLAGS += -Wno-sign-compare
 QMAKE_CXXFLAGS += -Wno-sign-conversion
@@ -294,16 +302,16 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
     QMAKE_CXXFLAGS += -Wno-unused-function
     QMAKE_CXXFLAGS += -Wno-useless-cast
 } else {
-    QMAKE_CXXFLAGS += -Wuseless-cast
-    QMAKE_CXXFLAGS += -Wzero-as-null-pointer-constant
-    QMAKE_CXXFLAGS += -Werror=zero-as-null-pointer-constant
+    #QMAKE_CXXFLAGS += -Wuseless-cast
+    #QMAKE_CXXFLAGS += -Wzero-as-null-pointer-constant   # TODO: re-enable for student code?
+    #QMAKE_CXXFLAGS += -Werror=zero-as-null-pointer-constant
 }
 
 # additional flags for Windows
 win32 {
     # disable inclusion of Qt core libraries (smaller,faster build)
-    CONFIG -= qt
-    QT -= core gui opengl widgets
+    # CONFIG -= qt
+    # QT -= core gui opengl widgets
 
     # increase system stack size (helpful for recursive programs)
     QMAKE_LFLAGS += -Wl,--stack,268435456
@@ -321,8 +329,8 @@ macx {
     # QMAKE_LFLAGS += -Wl,-stack_size -Wl,0x8000000
 
     # disable inclusion of Qt core libraries (smaller,faster build)
-    CONFIG -= qt
-    QT -= core gui opengl widgets
+    # CONFIG -= qt
+    # QT -= core gui opengl widgets
 
     # calling cache() reduces warnings on Mac OS X systems
     cache()
@@ -332,7 +340,7 @@ macx {
 # additional flags for Linux
 unix:!macx {
     # disable inclusion of Qt core libraries (smaller,faster build)
-    CONFIG -= qt
+    # CONFIG -= qt
     # QT -= core gui opengl widgets
 
     unix-g++ {
@@ -358,6 +366,8 @@ COMPILERNAME = $$QMAKE_CXX
 COMPILERNAME ~= s|.*/|
 equals(COMPILERNAME, clang++) {
     QMAKE_CXXFLAGS += -Wno-format-nonliteral
+    QMAKE_CXXFLAGS += -Wno-inconsistent-missing-override
+    QMAKE_CXXFLAGS += -Wno-overloaded-virtual
     QMAKE_CXXFLAGS += -Wno-unknown-warning-option
 }
 
@@ -367,7 +377,7 @@ equals(COMPILERNAME, clang++) {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20171115
+DEFINES += SPL_PROJECT_VERSION=20180701
 
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1
@@ -411,6 +421,9 @@ DEFINES += SPL_THROW_ON_INVALID_ITERATOR
 # for years this was true, but the C++ standard says you should just silently
 # set the fail bit on the stream and exit, so that has been made the default.
 # DEFINES += SPL_ERROR_ON_STREAM_EXTRACT
+
+# enable the new Qt-based GUI system, meant to replace the Java back-end GUI?
+DEFINES += SPL_QT_GUI
 
 # build-specific options (debug vs release)
 
@@ -639,4 +652,4 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #642; if not, your .pro has been changed!)
+# END OF FILE (this should be line #655; if not, your .pro has been changed!)

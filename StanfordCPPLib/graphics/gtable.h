@@ -4,330 +4,658 @@
  * This file exports the GTable class for a graphical editable 2D table.
  *
  * @author Marty Stepp
- * @version 2016/11/26
- * - added autofitColumnWidths
- * - added per-cell/column/row formatting: background/foreground color, font
- * @version 2016/11/18
- * - added column header methods
- * @version 2015/12/01
- * - added setEventEnabled to turn on/off table update/selection events
- * - added isEditable, setEditable
- * @since 2015/11/07
+ * @version 2018/08/23
+ * - renamed to gtable.h to replace Java version
+ * @version 2018/07/17
+ * - initial version, based on gtable.h
+ * @since 2018/07/17
  */
 
 #ifndef _gtable_h
 #define _gtable_h
 
+#include <string>
+#include <QAbstractItemModel>
+#include <QBrush>
+#include <QFont>
+#include <QItemSelection>
+#include <QStyledItemDelegate>
+#include <QWidget>
+#include <QTableWidget>
 #include "grid.h"
-#include "ginteractors.h"
+#include "map.h"
+#include "ginteractor.h"
 #include "gobjects.h"
 #include "gtypes.h"
 
-/*
- * A GTable is a thin wrapper around the Java Swing component JTable.
- * It represents a graphical editable 2D table, like a mediocre facsimile
+class _Internal_QTableWidget;
+
+/**
+ * A GTable represents a graphical editable 2D table, like a mediocre facsimile
  * of an Excel spreadsheet.
+ *
  * After creating a GTable, you can listen for table events to be notified
- * when the user types a new value into a table cell:
- * 
- * <pre>
- * while (true) {
- *     GEvent event = waitForEvent(TABLE_EVENT);
- *     GTableEvent tableEvent(event);
- *     std::cout << "table event: " << tableEvent.toString() << std::endl;
- *     ...
- * }
- * </pre>
- * 
+ * when the user types a new value into a table cell by calling setTableListener.
+ *
+ * An editable table has a semi-complex editing model where the user can begin
+ * modifying a cell by highlighting it and typing, which replaces the existing
+ * value, or by double-clicking it, which edits the existing value.
+ * You can also press F2 on a cell to edit it, equivalent to a double-click.
+ * During editing, you can press Esc to cancel editing, or Tab or Enter to
+ * complete editing and move to the next cell.
+ *
  * All row/column indexes in this class are 0-based.
  */
 class GTable : public GInteractor {
 public:
-    /*
-     * The three supported kinds of cell alignment.
-     * Used in the GTable methods getHorizontalAlignment and setHorizontalAlignment.
-     * Values match the corresponding constants from javax.swing.SwingConstants.
-     */
-    enum Alignment {
-        CENTER = 0,
-        LEFT = 2,
-        RIGHT = 4
-    };
-
-    /*
+    /**
      * Styles of column header labels that can be shown.
+     * The "Excel" style is to use column names A-Z, then AA-AZ, BA-BZ, ...,
+     * ZA-ZZ, then AAA, AAB, and so on.
+     * The "numeric" style is to use simple numbers like 1, 2, 3, ...
+     * The "none" style means not to use any column headers at all.
      */
     enum ColumnHeaderStyle {
-        COLUMN_HEADER_NONE = 0,
-        COLUMN_HEADER_EXCEL = 1,    // A, B, ..., Z, AA, AB, ...
-        COLUMN_HEADER_NUMERIC = 2   // 1, 2, 3, ...
+        COLUMN_HEADER_NONE,     // headers will not show
+        COLUMN_HEADER_EXCEL,    // A, B, ..., Z, AA, AB, ...
+        COLUMN_HEADER_NUMERIC   // 1, 2, 3, ...
     };
-    
-    /*
+
+    /**
      * Constructs a new table with the given dimensions and (optional) size.
      * If x, y, width, or height are omitted, they are set automatically by
      * the layout manager of the GWindow into which the table is placed.
      * This is often what you want.
-     * Throws an error if the number of rows, columns, width, or height is negative.
+     * @throw ErrorException if the number of rows, columns, width, or height is negative.
      */
-    GTable(int rows = 0, int columns = 0,
-           double x = 0, double y = 0,
-           double width = 0, double height = 0);
-    
-    /* virtual methods from GInteractor */
-    virtual GRectangle getBounds() const;
-    virtual std::string getType() const;
-    virtual std::string toString() const;
+    GTable(int rows = 0, int columns = 0, double width = 0, double height = 0,
+            QWidget* parent = nullptr);
 
-    /* unique GTable behavior */
-
-    /*
+    /**
      * Changes widths of all columns to be perfectly large enough
      * to fit their contents.
      */
-    void autofitColumnWidths();
+    virtual void autofitColumnWidths();
 
-    /*
+    /**
      * Sets all cells in the table to store an empty string value.
      */
-    void clear();
+    virtual void clear();
 
-    /*
+    /**
+     * Sets the given cell to store an empty string value.
+     * @throw ErrorException if the given row/column index is out of bounds
+     */
+    virtual void clearCell(int row, int column);
+
+    /**
      * Removes any per-cell/column/row formatting that has been applied to the table.
      */
-    void clearFormatting();
+    virtual void clearFormatting();
 
-    /*
+    /**
+     * Removes any formatting that has been applied to the given cell.
+     */
+    virtual void clearCellFormatting(int row, int column);
+
+    /**
      * Deselects any currently selected cell.
      * If no cell is selected, calling this has no effect.
      */
-    void clearSelection();
+    virtual void clearSelection();
 
-    /*
-     * Returns the text stored in the given cell.
-     * Throws an error if the given row or column are out of bounds.
+    /**
+     * Sets every cell in the table to have the given value.
      */
-    std::string get(int row, int column) const;
+    virtual void fill(const std::string& text);
 
-    /*
+    /**
+     * Returns the text stored in the given cell.
+     * @throw ErrorException if the given row or column are out of bounds
+     */
+    virtual std::string get(int row, int column) const;
+
+    /**
      * Returns the column headers to use the given style.
      * Default is none, but can be set to Excel style or numeric instead.
      */
-    ColumnHeaderStyle getColumnHeaderStyle() const;
+    virtual ColumnHeaderStyle getColumnHeaderStyle() const;
 
-    /*
+    /**
      * Returns the width of the given column index in pixels.
      * When a table is constructed, all columns initially have equal width.
-     * Throws an error if the given column index is out of bounds.
+     * @throw ErrorException if the given column index is out of bounds
      */
-    double getColumnWidth(int column) const;
-    
-    /*
-     * Returns the font used in the cells of this table.
-     * If the font has never been explicitly set, returns "*-*-*".
-     * See also: GWindow documentation on font strings.
+    virtual double getColumnWidth(int column) const;
+
+    /* @inherit */
+    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
+
+    /**
+     * Returns the height of the given row index in pixels.
+     * When a table is constructed, all rows initially have equal height.
+     * @throw ErrorException if the given row index is out of bounds
      */
-    std::string getFont() const;
-    
-    /*
-     * Returns the horizontal alignment of the text in all cells in the table.
-     * The alignment can be LEFT, CENTER, or RIGHT and is initially LEFT.
-     * Currently a table's alignment is global and applies to all cells.
+    virtual double getRowHeight(int row) const;
+
+    /**
+     * Returns the row and column of the cell that is currently selected.
+     * Sets both row and column to -1 if no cell is currently selected.
      */
-    Alignment getHorizontalAlignment() const;
-    
-    /*
+    virtual GridLocation getSelectedCell() const;
+
+    /**
      * Returns the row and column of the cell that is currently selected
      * by filling the given reference parameters.
      * Sets both row and column to -1 if no cell is currently selected.
      */
-    void getSelectedCell(int& row, int& column) const;
-    
-    /*
+    virtual void getSelectedCell(int& row, int& column) const;
+
+    /**
+     * Returns the text in the cell that is currently selected.
+     * If no cell is currently selected, returns an empty string.
+     */
+    virtual std::string getSelectedCellValue() const;
+
+    /**
      * Returns the column of the cell that is currently selected, or -1 if no cell
      * is currently selected.
      */
-    int getSelectedColumn() const;
-    
-    /*
+    virtual int getSelectedColumn() const;
+
+    /**
      * Returns the row of the cell that is currently selected, or -1 if no cell
      * is currently selected.
      */
-    int getSelectedRow() const;
-    
-    /*
+    virtual int getSelectedRow() const;
+
+    /* @inherit */
+    virtual std::string getType() const Q_DECL_OVERRIDE;
+
+    /* @inherit */
+    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
+
+    /**
+     * Returns true if a cell is currently selected.
+     */
+    virtual bool hasSelectedCell() const;
+
+    /**
      * Returns the number of rows in the table.
      * Equivalent to numRows().
      */
-    int height() const;
-    
-    /*
+    virtual int height() const;
+
+    /**
      * Returns true if the given 0-based row/column index is within the bounds
      * of the table.  In other words, whether the index is between (0, 0)
      * and (numRows-1, numCols-1) inclusive.
      */
-    bool inBounds(int row, int column) const;
-    
-    /*
+    virtual bool inBounds(int row, int column) const;
+
+    /**
      * Returns whether cells of the table can be edited.
      * Defaults to true when a table is initially created.
      */
-    bool isEditable() const;
-    
-    /*
+    virtual bool isEditable() const;
+
+    /**
      * Returns the number of columns in the table.
      * Equivalent to width().
      */
-    int numCols() const;
-    
-    /*
+    virtual int numCols() const;
+
+    /**
      * Returns the number of rows in the table.
      * Equivalent to height().
      */
-    int numRows() const;
-    
-    /*
+    virtual int numRows() const;
+
+    /**
+     * Removes the table listener from this button so that it will no longer
+     * call it when events occur.
+     */
+    virtual void removeTableListener();
+
+    /* @inherit */
+    virtual void requestFocus() Q_DECL_OVERRIDE;
+
+    /**
      * Modifies the table to have the given number of rows and columns.
      * Any existing data is retained, and any new cells are empty.
-     * Throws an error if numRows or numCols is negative.
+     * @throw ErrorException if numRows or numCols is negative
      */
-    void resize(int numRows, int numCols);
+    virtual void resize(int numRows, int numCols);
 
-    /*
+    /**
      * Returns whether row and column headers are shown in the table.
      * Initially false.
      */
-    bool rowColumnHeadersVisible() const;
+    virtual bool rowColumnHeadersVisible() const;
 
-    /*
+    /**
      * Sets the given cell to become currently selected,
      * replacing any previous selection.
      * Note that the user can click a different cell to select it afterward.
-     * If the given row/column index is out of bounds, no cell is selected
-     * and any currently selected cell is deselected.
+     * To indicate that you do not want to select any cell, call clearSelection.
+     * @throw ErrorException if the given row or column are out of bounds
      */
-    void select(int row, int column);
-    
-    /*
+    virtual void select(int row, int column);
+
+    /**
      * Modifies the value in the given cell to store the given text.
-     * Throws an error if the given row or column are out of bounds.
+     * @throw ErrorException if the given row or column are out of bounds
      */
-    void set(int row, int column, const std::string& text);
+    virtual void set(int row, int column, const std::string& text);
 
-    /*
-     * Member functions for per-cell formatting.
+    /**
+     * Sets the background color that appears behind each cell.
+     * See gcolor.h for more detail about colors.
      */
-    void setCellAlignment(int row, int column, Alignment alignment);
-    void setCellBackground(int row, int column, int color);
-    void setCellBackground(int row, int column, const std::string& color);
-    void setCellFont(int row, int column, const std::string& font);
-    void setCellForeground(int row, int column, int color);
-    void setCellForeground(int row, int column, const std::string& color);
+    virtual void setBackground(int rgb) Q_DECL_OVERRIDE;
 
-    /*
-     * Member functions for per-column formatting.
+    /**
+     * Sets the background color that appears behind each cell.
+     * See gcolor.h for more detail about colors.
      */
-    void setColumnAlignment(int column, Alignment alignment);
-    void setColumnBackground(int column, int color);
-    void setColumnBackground(int column, const std::string& color);
-    void setColumnFont(int column, const std::string& font);
-    void setColumnForeground(int column, int color);
-    void setColumnForeground(int column, const std::string& color);
+    virtual void setBackground(const std::string& color) Q_DECL_OVERRIDE;
 
-    /*
+    /**
+     * Sets the horizontal alignment of the given cell.
+     * The row/column is specified by a 0-based row/column index from the top/left of the table.
+     * @throw ErrorException if the given row/column index is out of bounds
+     */
+    virtual void setCellAlignment(int row, int column, HorizontalAlignment alignment);
+
+    /**
+     * Sets the background color of the given cell to the given color.
+     * The row/column is specified by a 0-based row/column index from the top/left of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given row/column index is out of bounds
+     */
+    virtual void setCellBackground(int row, int column, int color);
+
+    /**
+     * Sets the background color of the given cell to the given color.
+     * The row/column is specified by a 0-based row/column index from the top/left of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given row/column index is out of bounds
+     */
+    virtual void setCellBackground(int row, int column, const std::string& color);
+
+    /**
+     * Sets the text font of the given cell to the given RGB color.
+     * The row/column is specified by a 0-based row/column index from the top/left of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given row/column index is out of bounds
+     */
+    virtual void setCellFont(int row, int column, const std::string& font);
+
+    /**
+     * Sets the foreground/text color of the given cell to the given color.
+     * The row/column is specified by a 0-based row/column index from the top/left of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given row/column index is out of bounds
+     */
+    virtual void setCellForeground(int row, int column, int color);
+
+    /**
+     * Sets the foreground/text color of the given cell to the given color.
+     * The row/column is specified by a 0-based row/column index from the top/left of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given row/column index is out of bounds
+     */
+    virtual void setCellForeground(int row, int column, const std::string& color);
+
+    /**
+     * Sets the color used for the text of each cell.
+     * Equivalent to setForeground.
+     * See gcolor.h for more detail about colors.
+     */
+    virtual void setColor(int rgb) Q_DECL_OVERRIDE;
+
+    /**
+     * Sets the color used for the text of each cell.
+     * Equivalent to setForeground.
+     * See gcolor.h for more detail about colors.
+     */
+    virtual void setColor(const std::string& color) Q_DECL_OVERRIDE;
+
+    /**
+     * Sets the horizontal alignment of the given column.
+     * The column is specified by a 0-based column index from the left of the table.
+     * @throw ErrorException if the given column index is out of bounds
+     */
+    virtual void setColumnAlignment(int column, HorizontalAlignment alignment);
+
+    /**
+     * Sets the background color of the given column to the given color.
+     * The column is specified by a 0-based column index from the left of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given column index is out of bounds
+     */
+    virtual void setColumnBackground(int column, int color);
+
+    /**
+     * Sets the background color of the given column to the given color.
+     * The column is specified by a 0-based column index from the left of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given column index is out of bounds
+     */
+    virtual void setColumnBackground(int column, const std::string& color);
+
+    /**
+     * Sets the text font of the given column to the given RGB color.
+     * The column is specified by a 0-based column index from the left of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given column index is out of bounds
+     */
+    virtual void setColumnFont(int column, const std::string& font);
+
+    /**
+     * Sets the foreground/text color of the given column to the given color.
+     * The column is specified by a 0-based column index from the left of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given column index is out of bounds
+     */
+    virtual void setColumnForeground(int column, int color);
+
+    /**
+     * Sets the foreground/text color of the given column to the given color.
+     * The column is specified by a 0-based column index from the left of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given column index is out of bounds
+     */
+    virtual void setColumnForeground(int column, const std::string& color);
+
+    /**
      * Sets the given column index to have the given width in pixels.
-     * Throws an error if the given column index is out of bounds
-     * or if the width is negative.
+     * @throw ErrorException if the given column index is out of bounds
+     *        or if the width is negative
      */
-    void setColumnWidth(int column, double width);
+    virtual void setColumnWidth(int column, double width);
 
-    /*
+    /**
      * Sets the column headers to use the given style.
      * Default is none, but can be set to Excel style or numeric instead.
      */
-    void setColumnHeaderStyle(ColumnHeaderStyle style);
+    virtual void setColumnHeaderStyle(ColumnHeaderStyle style);
 
-    /*
+    /**
      * Sets whether cells of the table can be edited.
+     * Initially true.
      */
-    void setEditable(bool editable);
+    virtual void setEditable(bool editable);
 
-    /*
-     * Modifies the value in the cell that is currently being edited to store the given text.
-     * This does not modify the value in the table cell but merely the value in the editor widget.
-     * Throws an error if the given row or column are out of bounds.
+    /**
+     * Modifies the value in the cell that is currently being edited to store
+     * the given text. This does not modify the value in the table cell but
+     * merely the value in the editor widget.
+     * @throw ErrorException if the given row or column are out of bounds
      */
-    void setEditorValue(int row, int column, const std::string& text);
+    virtual void setEditorValue(int row, int column, const std::string& text);
 
-    /*
-     * Sets whether the given kind of event should be enabled on tables.
-     * Must be a table event type such as TABLE_SELECTED or TABLE_UPDATED.
+    /**
+     * Sets the font used to display each cell's text.
      */
-    void setEventEnabled(int type, bool enabled = true);
-    
-    /*
-     * Sets the cells of this table to display their text in the given font.
-     * See also: GWindow documentation on font strings.
+    virtual void setFont(const QFont& font) Q_DECL_OVERRIDE;
+
+    /**
+     * Sets the font used to display each cell's text.
+     * See gfont.h for more detail about fonts.
      */
-    void setFont(const std::string& font);
-    
-    /*
+    virtual void setFont(const std::string& font) Q_DECL_OVERRIDE;
+
+    /**
+     * Sets the color used for the text of each cell.
+     * Equivalent to setColor.
+     * See gcolor.h for more detail about colors.
+     */
+    virtual void setForeground(int rgb) Q_DECL_OVERRIDE;
+
+    /**
+     * Sets the color used for the text of each cell.
+     * Equivalent to setColor.
+     * See gcolor.h for more detail about colors.
+     */
+    virtual void setForeground(const std::string& color) Q_DECL_OVERRIDE;
+
+    /**
      * Sets the horizontal alignment of the text in all cells in the table.
      * The alignment can be LEFT, CENTER, or RIGHT and is initially LEFT.
-     * Currently a table's alignment is global and applies to all cells.
      */
-    void setHorizontalAlignment(Alignment alignment);
+    virtual void setHorizontalAlignment(HorizontalAlignment alignment);
 
-    /*
-     * Member functions for per-row formatting.
+    /**
+     * Sets the horizontal alignment of the given row.
+     * The row is specified by a 0-based row index from the top of the table.
+     * @throw ErrorException if the given row index is out of bounds
      */
-    void setRowAlignment(int row, Alignment alignment);
-    void setRowBackground(int row, int color);
-    void setRowBackground(int row, const std::string& color);
-    void setRowFont(int row, const std::string& font);
-    void setRowForeground(int row, int color);
-    void setRowForeground(int row, const std::string& color);
+    virtual void setRowAlignment(int row, HorizontalAlignment alignment);
 
-    /*
+    /**
+     * Sets the background color of the given row to the given RGB color.
+     * The row is specified by a 0-based row index from the top of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given row index is out of bounds
+     */
+    virtual void setRowBackground(int row, int rgb);
+
+    /**
+     * Sets the background color of the given row to the given color.
+     * The row is specified by a 0-based row index from the top of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given row index is out of bounds
+     */
+    virtual void setRowBackground(int row, const std::string& color);
+
+    /**
+     * Sets the text font of the given row to the given font.
+     * The row is specified by a 0-based row index from the top of the table.
+     * See gfont.h for more detail about fonts.
+     * @throw ErrorException if the given row index is out of bounds
+     */
+    virtual void setRowFont(int row, const std::string& font);
+
+    /**
+     * Sets the foreground/text color of the given row to the given color.
+     * The row is specified by a 0-based row index from the top of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given row index is out of bounds
+     */
+    virtual void setRowForeground(int row, int rgb);
+
+    /**
+     * Sets the foreground/text color of the given row to the given color.
+     * The row is specified by a 0-based row index from the top of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given row index is out of bounds
+     */
+    virtual void setRowForeground(int row, const std::string& color);
+
+    /**
      * Sets whether row and column headers should be shown in the table.
      * Initially false.
      */
-    void setRowColumnHeadersVisible(bool visible);
+    virtual void setRowColumnHeadersVisible(bool visible);
 
-    /*
+    /**
+     * Sets the given row index to have the given height in pixels.
+     * @throw ErrorException if the given row index is out of bounds
+     *        or if the height is negative
+     */
+    virtual void setRowHeight(int row, double width);
+
+    /**
+     * Sets the text in the cell that is currently selected.
+     * If no cell is currently selected, does nothing.
+     */
+    virtual void setSelectedCellValue(const std::string& text);
+
+    /**
+     * Sets the given function to be called when events occur in this table.
+     * Any existing table listener will be replaced.
+     */
+    virtual void setTableListener(GEventListener func);
+
+    /**
+     * Sets the given function to be called when events occur in this table.
+     * Any existing table listener will be replaced.
+     */
+    virtual void setTableListener(GEventListenerVoid func);
+
+    /**
      * Returns the number of columns in the table.
      * Equivalent to numCols().
      */
-    int width() const;
+    virtual int width() const;
 
 private:
+    Q_DISABLE_COPY(GTable)
+
+    // Represents cascading styles on a cell, row, column, or table.
+    struct TableStyle {
+        int background;
+        int foreground;
+        std::string font;
+        HorizontalAlignment alignment;
+        // TODO: borders?
+
+        TableStyle() {
+            background = 0;
+            foreground = 0;
+            font = "";
+            alignment = ALIGN_LEFT;
+        }
+
+        bool isSet() const {
+            return background >= 0
+                    && foreground >= 0
+                    && !font.empty()
+                    && alignment >= 0;
+        }
+
+        void mergeWith(const TableStyle& other) {
+            if (other.background >= 0) {
+                background = other.background;
+            }
+            if (other.foreground >= 0) {
+                foreground = other.foreground;
+            }
+            if (!other.font.empty()) {
+                font = other.font;
+            }
+            if (other.alignment >= 0) {
+                alignment = other.alignment;
+            }
+        }
+
+        TableStyle mergedWith(const TableStyle& other) {
+            TableStyle copy = *this;
+            copy.mergeWith(other);
+            return copy;
+        }
+
+        static TableStyle unset() {
+            TableStyle style;
+            style.background = -1;
+            style.foreground = -1;
+            style.font = "";
+            style.alignment = (HorizontalAlignment) -1;
+            return style;
+        }
+    };
+
+    // static variables for default formatting:
+    // background/foreground colors
+    // font
+    // alignment
+    static TableStyle _defaultCellStyle;
+
     // member variables
-    int rows;
-    int columns;
-    double m_x;
-    double m_y;
-    double m_width;
-    double m_height;
-    std::string font;
-    Alignment alignment;
-    bool editable;
-    bool rowColHeadersVisible;
-    ColumnHeaderStyle columnHeaderStyle;
+    _Internal_QTableWidget* _iqtableview;
+    ColumnHeaderStyle _columnHeaderStyle;
+
+    // styles on table, rows, columns, cells
+    Map<int, TableStyle> _rowStyles;
+    Map<int, TableStyle> _columnStyles;
+    TableStyle _globalCellStyle;
+
+    void applyStyleToCell(int row, int column, const TableStyle& style);
 
     /*
-     * Throws an error if the given numRows/numCols values are negative.
+     * @throw ErrorException if the given row/column values are out of bounds.
      */
-    void checkDimensions(const std::string& member, int numRows, int numCols) const;
-    
-    /*
-     * Throws an error if the given row/column values are out of bounds.
-     */
+    void checkColumn(const std::string& member, int column) const;
     void checkIndex(const std::string& member, int row, int column) const;
+    void checkRow(const std::string& member, int row) const;
 
-    /*
-     * Throws an error if the given width/height values are out of bounds.
-     */
-    void checkSize(const std::string& member, double width, double height) const;
+    void ensureColumnStyle(int column);
+    void ensureDefaultFormatting() const;   // const hack
+    void ensureGlobalCellStyle();
+    void ensureRowStyle(int row);
+    TableStyle getMergedStyleForCell(int row, int column);
+
+    // Internal setters for cell formatting.
+    virtual void setCellAlignmentInternal(int row, int column, HorizontalAlignment alignment);
+    virtual void setCellBackgroundInternal(int row, int column, int color);
+    virtual void setCellFontInternal(int row, int column, const std::string& font);
+    virtual void setCellForegroundInternal(int row, int column, int color);
+
+    static std::string toExcelColumnName(int col);
+    // static GridLocation toRowColumn(const std::string& excelColumnName);
+
+    void updateColumnHeaders();
+
+    friend class _Internal_QTableWidget;
+};
+
+/**
+ * Internal class; not to be used by clients.
+ * @private
+ */
+class _Internal_QItemDelegate : public QStyledItemDelegate {
+    Q_OBJECT
+
+public:
+    _Internal_QItemDelegate(QObject* parent = nullptr);
+    virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+    virtual void destroyEditor(QWidget* editor, const QModelIndex& index) const;
+    virtual QWidget* getEditor() const;
+
+private:
+    QWidget* _editor;
+};
+
+
+/**
+ * Internal class; not to be used by clients.
+ * @private
+ */
+class _Internal_QTableWidget : public QTableWidget, public _Internal_QWidget {
+    Q_OBJECT
+
+public:
+    _Internal_QTableWidget(GTable* gtable, int rows, int columns, QWidget* parent = nullptr);
+    virtual bool edit(const QModelIndex& index, QAbstractItemView::EditTrigger trigger, QEvent* event) Q_DECL_OVERRIDE;
+    virtual QWidget* getEditor() const;
+    virtual _Internal_QItemDelegate* getItemDelegate() const;
+    virtual bool isEditing() const;
+    virtual void closeEditor(QWidget* editor, QAbstractItemDelegate::EndEditHint hint) Q_DECL_OVERRIDE;
+    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+
+public slots:
+    void handleCellChange(int row, int column);
+    void handleCellDoubleClick(int row, int column);
+    void handleSelectionChange(const QItemSelection& selected, const QItemSelection& deselected);
+
+private:
+    GTable* _gtable;
+    _Internal_QItemDelegate* _delegate;
+    int _lastKeyPressed;
+
+    void fireTableEvent(EventType eventType, const std::string& eventName, int row = -1, int col = -1);
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

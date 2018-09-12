@@ -14,7 +14,7 @@
 
 #include "autogradertest.h"
 #include "autograder.h"
-#include "private/platform.h"
+#include "autograderunittestgui.h"
 
 namespace autograder {
 
@@ -80,7 +80,7 @@ std::string AutograderTest::getFullName() const {
 
 bool AutograderTest::shouldRun() {
     if (autograder::isGraphicalUI()) {
-        return stanfordcpplib::getPlatform()->autograderunittest_isChecked(this->getFullName());
+        return stanfordcpplib::autograder::AutograderUnitTestGui::instance()->isChecked(this->getFullName());
     } else {
         return true;
     }

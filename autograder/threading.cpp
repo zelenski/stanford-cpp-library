@@ -5,6 +5,8 @@
  * with a timeout, possibly in a separate thread depending on the platform.
  *
  * @author Marty Stepp
+ * @version 2018/08/27
+ * - refactored to use AutograderUnitTestGui cpp class
  * @version 2018/01/23
  * - added code to check whether to run each unit test in its own thread
  * @version 2016/10/22
@@ -19,8 +21,8 @@
 
 #include "autograder.h"
 #include "autogradertest.h"
+#include "autograderunittestgui.h"
 #include "exceptions.h"
-#include "private/platform.h"
 #include "private/static.h"
 
 STATIC_CONST_VARIABLE_DECLARE(std::string, TIMEOUT_ERROR_MESSAGE, "test timed out! possible infinite loop")
@@ -40,14 +42,14 @@ STATIC_CONST_VARIABLE_DECLARE(std::string, TIMEOUT_ERROR_MESSAGE, "test timed ou
  */
 static DWORD WINAPI runTestInItsOwnThread(LPVOID lpParam) {
     autograder::AutograderTest* test = (autograder::AutograderTest*) lpParam;
-    stanfordcpplib::getPlatform()->autograderunittest_setTestResult(test->getName(), "progress");
+    stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setTestResult(test->getName(), "progress");
     test->TestRealBody();
     return (DWORD) 0;
 }
 
 void runTestWithTimeout(autograder::AutograderTest* test) {
     // ask autograder GUI whether test should run in its own thread
-    bool runInThread = stanfordcpplib::getPlatform()->autograderunittest_runTestsInSeparateThreads();
+    bool runInThread = stanfordcpplib::autograder::AutograderUnitTestGui::instance()->runTestsInSeparateThreads();
     test->setShouldRunInOwnThread(runInThread);
 
     if (test->shouldRunInOwnThread()) {
@@ -60,7 +62,8 @@ void runTestWithTimeout(autograder::AutograderTest* test) {
             0,                      // use default creation flags
             &threadID);             // returns the thread identifier
         if (!hThread) {
-            std::string errorMsg = stanfordcpplib::getPlatform()->os_getLastError();
+            // TODO
+            std::string errorMsg = "?????";   // stanfordcpplib::getPlatform()->os_getLastError();
             error("Unable to run test case thread: " + errorMsg);
 
             // NOTE: On some Windows systems we are getting errors of
@@ -170,7 +173,8 @@ static void failWithException(autograder::AutograderTest* test, std::string kind
     autograder::setFailDetails(*test, autograder::UnitTestDetails(
         autograder::UnitTestType::TEST_EXCEPTION,
         errorMessage));
-    stanfordcpplib::getPlatform()->autograderunittest_setTestResult(test->getFullName(), "fail");
+    stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setTestResult(
+                test->getFullName(), stanfordcpplib::autograder::AutograderUnitTestGui::TEST_RESULT_FAIL);
     pthread_exit((void*) nullptr);
 }
 
@@ -200,10 +204,10 @@ static void* runTestInItsOwnThread(void* arg) {
     pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, nullptr);
     
     // ask autograder GUI whether test should run in its own thread
-    bool runInThread = stanfordcpplib::getPlatform()->autograderunittest_runTestsInSeparateThreads();
+    bool runInThread = stanfordcpplib::autograder::AutograderUnitTestGui::instance()->runTestsInSeparateThreads();
     test->setShouldRunInOwnThread(runInThread);
 
-    bool catchAll = stanfordcpplib::getPlatform()->autograderunittest_catchExceptions();
+    bool catchAll = stanfordcpplib::autograder::AutograderUnitTestGui::instance()->catchExceptions();
     if (catchAll) {
         try {
             // run and catch exceptions/errors thrown during test execution
@@ -243,7 +247,7 @@ static void* runTestInItsOwnThread(void* arg) {
  */
 void runTestWithTimeout(autograder::AutograderTest* test) {
     // ask autograder GUI whether test should run in its own thread
-    bool runInThread = stanfordcpplib::getPlatform()->autograderunittest_runTestsInSeparateThreads();
+    bool runInThread = stanfordcpplib::autograder::AutograderUnitTestGui::instance()->runTestsInSeparateThreads();
     test->setShouldRunInOwnThread(runInThread);
 
     if (test->shouldRunInOwnThread()) {

@@ -1,0 +1,61 @@
+<html>
+<head>
+<title>GImage</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="gobjects.html">#include "gobjects.h"</a></div>
+<h1 class=header><code>class GImage : public <a href="GObject-class.html">GObject</a></code></h1>
+This graphical object subclass represents an image from a file.
+For example, the following code displays a <code>GImage</code>
+containing the Stanford tree at the center of the window, assuming
+that the image file <code>StanfordTree.png</code> exists, either in
+the current directory or an <code>images</code> subdirectory:
+
+<pre>
+   int main() {
+      GWindow gw;
+      cout &lt;&lt; &quot;This program draws the Stanford tree.&quot; &lt;&lt; endl;
+      GImage* tree = new GImage(&quot;StanfordTree.png&quot;);
+      double x = (gw.getWidth() - tree->getWidth()) / 2;
+      double y = (gw.getHeight() - tree->getHeight()) / 2;
+      gw.add(tree, x, y);
+      return 0;
+   }
+</pre>
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Constructor</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GImage">GImage(<var>filename</var>)</a><br>
+<a href="#Constructor:GImage">GImage(<var>filename</var>,&nbsp;<var>x</var>,&nbsp;<var>y</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Constructs a new image by loading the image from the specified file, which is either in the current directory or a subdirectory named <code>images</code>.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GImage"></a>
+<pre class=detailCode>
+GImage(string filename);
+GImage(string filename, double x, double y);
+</pre>
+<div class=detailHTML>
+Constructs a new image by loading the image from the specified
+file, which is either in the current directory or a subdirectory named
+<code>images</code>.  By default, the upper left corner of the image
+appears at the origin; the second form automatically sets the location
+to the point (<code>x</code>, <code>y</code>).
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GImage* image = new GImage(filename);
+GImage* image = new GImage(filename, x, y);
+</pre>
+<hr>
+</table>
+</body>
+</html>

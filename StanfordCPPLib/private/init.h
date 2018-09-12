@@ -1,6 +1,6 @@
 /*
- * File: private/init.h
- * --------------------
+ * File: init.h
+ * ------------
  * This file contains code to check whether the Stanford C++ library has been
  * initialized, and if not, to initialize it.
  * This file must be included by every student-facing header in the Stanford
@@ -13,8 +13,14 @@
  * - simplicity/consolidation
  * - allow student to NOT include console.h and use plain text console
  *
+ * @version 2018/08/28
+ * - refactor to use stanfordcpplib namespace and init.cpp
+ * @version 2018/07/03
+ * - add code to handle Qt GUI library initialization
  * @version 2017/04/25
  * - wrap library initializer in an #ifndef to avoid multiple declaration
+ *
+ * TODO: figure out how to support both 0-arg and 2-arg main()
  */
 
 #ifndef _init_h
@@ -25,7 +31,13 @@
 
 namespace stanfordcpplib {
 
-extern void initializeStanfordCppLibrary();
+bool exitEnabled();
+void initializeLibrary(int argc, char** argv);
+void runMainInThread(int (* mainFunc)(void));
+void runMainInThreadVoid(void (* mainFuncVoid)(void));
+void setExitEnabled(bool enabled);
+void shutdownLibrary();
+void staticInitializeLibrary();
 
 #ifndef __StanfordCppLibraryInitializer_created
 #define __StanfordCppLibraryInitializer_created
@@ -35,9 +47,13 @@ public:
      * Code to initialize the library.
      * Implemented as a class constructor so that it will run before the
      * student's main function.
+     * Here we put anything that we need to initialize during the static
+     * phase before main() runs.
+     * Presently there is nothing that requires such initialization,
+     * so this is blank.
      */
     __StanfordCppLibraryInitializer() {
-        initializeStanfordCppLibrary();
+        staticInitializeLibrary();
     }
 };
 static __StanfordCppLibraryInitializer __stanfordcpplib_init;
@@ -88,45 +104,29 @@ static __StanfordCppLibraryInitializer __stanfordcpplib_init;
 #ifdef SPL_AUTOGRADER_MODE
 #define main studentMain
 #else // not SPL_AUTOGRADER_MODE
-
 #undef main
+
+// __initializeStanfordCppLibraryQt is defined in qgui.cpp/h;
+// it initializes the Qt GUI library subsystems and Qt graphical console as needed
 #define main main(int argc, char** argv) { \
-        extern void __shutdownStanfordCppLibrary(); \
-        extern void __initializeStanfordCppLibrary(int argc, char** argv); \
-        __initializeStanfordCppLibrary(argc, argv); \
         extern int Main(); \
-        Main(); \
-        __shutdownStanfordCppLibrary(); \
+        stanfordcpplib::initializeLibrary(argc, argv); \
+        stanfordcpplib::runMainInThread(Main); \
+        stanfordcpplib::shutdownLibrary(); \
         return 0; \
     } \
     int Main
 
-// TODO: figure out how to support both 0-arg and 2-arg main()
-
-//#define main2 main(int argc, char** argv) { \/
-//        extern void exceptions::setProgramNameForStackTrace(char*); \/
-//        if (argc >= 1) { \/
-//            exceptions::setProgramNameForStackTrace(argv[0]); \/
-//        } \/
-//        stanfordcpplib::initializeStanfordCppLibrary(); \/
-//        extern int Main(int argc, char** argv); \/
-//        Main(argc, argv); \/
-//        return 0; \/
-//    } \/
-//    int Main
-
-//#define main(...) MAIN(main, ##__VA_ARGS__)
-
-#  endif  // SPL_AUTOGRADER_MODE
+#endif  // SPL_AUTOGRADER_MODE
 extern int mainWrapper(int argc, char **argv);
 
 // bypass std::exit function
 namespace std {
-void __stanfordCppLibExit(int status);
+void __stanfordcpplib__exitLibrary(int status);
 } // namespace std
 
 #define __EXIT __std_exit_function_
-#define exit __stanfordCppLibExit
+#define exit __stanfordcpplib__exitLibrary
 
 #ifdef SPL_OVERLOAD_PROBLEMATIC_POINTER_ARITHMETIC
 #include "pointers.h"

@@ -1,0 +1,547 @@
+\hypertarget{classLexicon}{}\section{Lexicon Class Reference}
+\label{classLexicon}\index{Lexicon@{Lexicon}}
+
+
+{\ttfamily \#include $<$lexicon.\+h$>$}
+
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classLexicon_1_1iterator}{iterator}}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classLexicon_ac38cafae91a89528e71f257cbad724fd}{Lexicon}} ()
+\item 
+\mbox{\hyperlink{classLexicon_a6e60e4bcfef0337c5133d3bedcccd06f}{Lexicon}} (std\+::istream \&input)
+\item 
+\mbox{\hyperlink{classLexicon_a64a064a38897e1e4ce9b755a238723f4}{Lexicon}} (const std\+::string \&filename)
+\item 
+\mbox{\hyperlink{classLexicon_a0acc6dfba69bc35cba25ee02ac91c4e5}{Lexicon}} (std\+::initializer\+\_\+list$<$ std\+::string $>$ list)
+\item 
+\mbox{\hyperlink{classLexicon_acd310b995d41180f2f29bd68bec7d290}{Lexicon}} (const \mbox{\hyperlink{classLexicon}{Lexicon}} \&src)
+\item 
+virtual \mbox{\hyperlink{classLexicon_a9d71fdc56ec42614e240463e6724969e}{$\sim$\+Lexicon}} ()
+\item 
+bool \mbox{\hyperlink{classLexicon_ae678e727fb107637268e8f00cd759889}{add}} (const std\+::string \&word)
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \& \mbox{\hyperlink{classLexicon_a9d62d8dcb351ae40c8a2220a9871348b}{add\+All}} (const \mbox{\hyperlink{classLexicon}{Lexicon}} \&lex)
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \& \mbox{\hyperlink{classLexicon_a554e59039648403990042d16710855e0}{add\+All}} (std\+::initializer\+\_\+list$<$ std\+::string $>$ list)
+\item 
+void \mbox{\hyperlink{classLexicon_a215fcead487aace2e89b04863e326ba6}{add\+Words\+From\+File}} (std\+::istream \&input)
+\item 
+void \mbox{\hyperlink{classLexicon_a3891deaa85aee9a52b6ca258d1514716}{add\+Words\+From\+File}} (const std\+::string \&filename)
+\item 
+std\+::string \mbox{\hyperlink{classLexicon_a324ff6b85a0d392036efefc95b5d5e83}{back}} () const
+\item 
+\mbox{\hyperlink{classLexicon_1_1iterator}{iterator}} \mbox{\hyperlink{classLexicon_a0c62c15c8ed609e7e5e9518cf5f5c712}{begin}} () const
+\item 
+void \mbox{\hyperlink{classLexicon_ac8bb3912a3ce86b15842e79d0b421204}{clear}} ()
+\item 
+bool \mbox{\hyperlink{classLexicon_a479b1bac4a3c243907c80e5c6f9b05d5}{contains}} (const std\+::string \&word) const
+\item 
+bool \mbox{\hyperlink{classLexicon_a9cc56f4fc1106ca74a59fceb9d68b3e9}{contains\+All}} (const \mbox{\hyperlink{classLexicon}{Lexicon}} \&set2) const
+\item 
+bool \mbox{\hyperlink{classLexicon_a3934298595e72e6540e5f81d47ab763a}{contains\+All}} (std\+::initializer\+\_\+list$<$ std\+::string $>$ list) const
+\item 
+bool \mbox{\hyperlink{classLexicon_a0b8e0b0b6f72ba6b88b56bd074b1dc32}{contains\+Prefix}} (const std\+::string \&prefix) const
+\item 
+\mbox{\hyperlink{classLexicon_1_1iterator}{iterator}} \mbox{\hyperlink{classLexicon_a68b688a51bd0cf6fb5bc2cba292209a8}{end}} () const
+\item 
+bool \mbox{\hyperlink{classLexicon_a7dd6de171cb80bc7e2b48d53bd1e9276}{equals}} (const \mbox{\hyperlink{classLexicon}{Lexicon}} \&lex2) const
+\item 
+std\+::string \mbox{\hyperlink{classLexicon_aba89eab0637bde14f9ded33e9e9c6aa5}{first}} () const
+\item 
+std\+::string \mbox{\hyperlink{classLexicon_a054217ec9f3229ceedee9d7bde075587}{front}} () const
+\item 
+void \mbox{\hyperlink{classLexicon_a1a017af6eb755b5c83e70f61e2bda2c7}{insert}} (const std\+::string \&word)
+\item 
+bool \mbox{\hyperlink{classLexicon_acf82f9b2937375c7b1cf3dccb3df3312}{is\+Empty}} () const
+\item 
+bool \mbox{\hyperlink{classLexicon_a6c118f41dad8941a624c3ff479987e3d}{is\+Subset\+Of}} (const \mbox{\hyperlink{classLexicon}{Lexicon}} \&lex2) const
+\item 
+bool \mbox{\hyperlink{classLexicon_a2a0f1241b53bcf0b31103b79cb01b87d}{is\+Subset\+Of}} (std\+::initializer\+\_\+list$<$ std\+::string $>$ list) const
+\item 
+bool \mbox{\hyperlink{classLexicon_ad6a4796a72905df1e33f4b100cb91f32}{is\+Superset\+Of}} (const \mbox{\hyperlink{classLexicon}{Lexicon}} \&lex2) const
+\item 
+bool \mbox{\hyperlink{classLexicon_a217cbc1e6ba9f694645608c8a17c1943}{is\+Superset\+Of}} (std\+::initializer\+\_\+list$<$ std\+::string $>$ list) const
+\item 
+void \mbox{\hyperlink{classLexicon_a2e4e14ffb291ba4d5475b9b66d2a12c8}{map\+All}} (void($\ast$fn)(std\+::string)) const
+\item 
+void \mbox{\hyperlink{classLexicon_abab83598d63d43b15cf018fa020e1ddf}{map\+All}} (void($\ast$fn)(const std\+::string \&)) const
+\item 
+{\footnotesize template$<$typename Functor\+Type $>$ }\\void \mbox{\hyperlink{classLexicon_a8dc32c1e45704cfae41daf8adb4e66dc}{map\+All}} (Functor\+Type fn) const
+\item 
+bool \mbox{\hyperlink{classLexicon_af42d8a30a8c4b2d33a6be3b12258e152}{operator!=}} (const \mbox{\hyperlink{classLexicon}{Lexicon}} \&lex2) const
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \mbox{\hyperlink{classLexicon_a62286f0f5d7c1229b3003b855bf54ba3}{operator$\ast$}} (const \mbox{\hyperlink{classLexicon}{Lexicon}} \&lex2) const
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \mbox{\hyperlink{classLexicon_a5da3a8f0f6332bccefe7b2cb48d8a8d6}{operator$\ast$}} (std\+::initializer\+\_\+list$<$ std\+::string $>$ list) const
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \& \mbox{\hyperlink{classLexicon_ab81e3c0d6a5637202849784ef00b9cd5}{operator$\ast$=}} (const \mbox{\hyperlink{classLexicon}{Lexicon}} \&lex2)
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \& \mbox{\hyperlink{classLexicon_a79ada3cb64d9f074114ce895c67be781}{operator$\ast$=}} (std\+::initializer\+\_\+list$<$ std\+::string $>$ list)
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \mbox{\hyperlink{classLexicon_acfc41a903b549304f3b70e48fd2e52e4}{operator+}} (const \mbox{\hyperlink{classLexicon}{Lexicon}} \&lex2) const
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \mbox{\hyperlink{classLexicon_a4436a915b6de75438364ed061e0e9491}{operator+}} (std\+::initializer\+\_\+list$<$ std\+::string $>$ list) const
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \mbox{\hyperlink{classLexicon_a44774af5311cf2c8fd054ecf8ff8e76b}{operator+}} (const std\+::string \&word) const
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \& \mbox{\hyperlink{classLexicon_afa70421c28007f127e7c4b24666ecc3a}{operator+=}} (const \mbox{\hyperlink{classLexicon}{Lexicon}} \&lex2)
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \& \mbox{\hyperlink{classLexicon_a3080ac30a072160945adc5f860ca1785}{operator+=}} (std\+::initializer\+\_\+list$<$ std\+::string $>$ list)
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \& \mbox{\hyperlink{classLexicon_a051f30ebfa7b8fbb7ea1dc5af23d3004}{operator+=}} (const std\+::string \&word)
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \& \mbox{\hyperlink{classLexicon_a75f32eb2f65c3c3968193cfd72bdfd1a}{operator,}} (const std\+::string \&word)
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \mbox{\hyperlink{classLexicon_a487624601a6357e1b6d64053f9ebb5e2}{operator-\/}} (const \mbox{\hyperlink{classLexicon}{Lexicon}} \&lex2) const
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \mbox{\hyperlink{classLexicon_a0cd415d08567bfae9eae12afe2169cb5}{operator-\/}} (std\+::initializer\+\_\+list$<$ std\+::string $>$ list) const
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \mbox{\hyperlink{classLexicon_a14c8fea4b958b02ea5ee55d5509db8e6}{operator-\/}} (const std\+::string \&word) const
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \& \mbox{\hyperlink{classLexicon_ac51e54102d6257c1a0a48c99ad2520f6}{operator-\/=}} (const \mbox{\hyperlink{classLexicon}{Lexicon}} \&lex2)
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \& \mbox{\hyperlink{classLexicon_a1b3ac9124341c069a604d760190789b1}{operator-\/=}} (std\+::initializer\+\_\+list$<$ std\+::string $>$ list)
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \& \mbox{\hyperlink{classLexicon_a4acb1cafdecdbf77b1d62f2372a6d244}{operator-\/=}} (const std\+::string \&value)
+\item 
+bool \mbox{\hyperlink{classLexicon_aad808851ca0fffc8b60fd0b69ad097bd}{operator$<$}} (const \mbox{\hyperlink{classLexicon}{Lexicon}} \&lex2) const
+\item 
+bool \mbox{\hyperlink{classLexicon_a236ec3f5ec721fb4ca4551bf49123eac}{operator$<$=}} (const \mbox{\hyperlink{classLexicon}{Lexicon}} \&lex2) const
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \& \mbox{\hyperlink{classLexicon_ab9766b3af1f48ed51a1bcf037e08de43}{operator=}} (const \mbox{\hyperlink{classLexicon}{Lexicon}} \&src)
+\item 
+bool \mbox{\hyperlink{classLexicon_a4fcab616682564bf55eb0b096a35219d}{operator==}} (const \mbox{\hyperlink{classLexicon}{Lexicon}} \&lex2) const
+\item 
+bool \mbox{\hyperlink{classLexicon_a04139ff41f8d25adbf5958ff2b01b068}{operator$>$}} (const \mbox{\hyperlink{classLexicon}{Lexicon}} \&lex2) const
+\item 
+bool \mbox{\hyperlink{classLexicon_a05b7f6593b8b859858cf21ffbc9e5ab1}{operator$>$=}} (const \mbox{\hyperlink{classLexicon}{Lexicon}} \&lex2) const
+\item 
+bool \mbox{\hyperlink{classLexicon_affc6169b054fb3bbc4d72694e1a5834e}{remove}} (const std\+::string \&word)
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \& \mbox{\hyperlink{classLexicon_a606a7338945745d8ac9ce21f456f08d9}{remove\+All}} (const \mbox{\hyperlink{classLexicon}{Lexicon}} \&lex)
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \& \mbox{\hyperlink{classLexicon_a8ef0b8a849b2d33d83bc9689c4c4d090}{remove\+All}} (std\+::initializer\+\_\+list$<$ std\+::string $>$ list)
+\item 
+bool \mbox{\hyperlink{classLexicon_a998af18a2f0af7d18ce689acee75ca59}{remove\+Prefix}} (const std\+::string \&prefix)
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \& \mbox{\hyperlink{classLexicon_a38501eec95ff302cb83dae17ab478b81}{retain\+All}} (const \mbox{\hyperlink{classLexicon}{Lexicon}} \&lex)
+\item 
+\mbox{\hyperlink{classLexicon}{Lexicon}} \& \mbox{\hyperlink{classLexicon_a17b175aadba16c14093da01963914b33}{retain\+All}} (std\+::initializer\+\_\+list$<$ std\+::string $>$ list)
+\item 
+int \mbox{\hyperlink{classLexicon_af9593d4a5ff4274efaf429cb4f9e57cc}{size}} () const
+\item 
+std\+::set$<$ std\+::string $>$ \mbox{\hyperlink{classLexicon_a56b9ca7800c467295cab333fd9815291}{to\+Stl\+Set}} () const
+\item 
+std\+::string \mbox{\hyperlink{classLexicon_a1fe5121d6528fdea3f243321b3fa3a49}{to\+String}} () const
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classLexicon_ac38cafae91a89528e71f257cbad724fd}\label{classLexicon_ac38cafae91a89528e71f257cbad724fd}} 
+\index{Lexicon@{Lexicon}!Lexicon@{Lexicon}}
+\index{Lexicon@{Lexicon}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{Lexicon()}{Lexicon()}\hspace{0.1cm}{\footnotesize\ttfamily [1/5]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a6e60e4bcfef0337c5133d3bedcccd06f}\label{classLexicon_a6e60e4bcfef0337c5133d3bedcccd06f}} 
+\index{Lexicon@{Lexicon}!Lexicon@{Lexicon}}
+\index{Lexicon@{Lexicon}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{Lexicon()}{Lexicon()}\hspace{0.1cm}{\footnotesize\ttfamily [2/5]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} (\begin{DoxyParamCaption}\item[{std\+::istream \&}]{input }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a64a064a38897e1e4ce9b755a238723f4}\label{classLexicon_a64a064a38897e1e4ce9b755a238723f4}} 
+\index{Lexicon@{Lexicon}!Lexicon@{Lexicon}}
+\index{Lexicon@{Lexicon}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{Lexicon()}{Lexicon()}\hspace{0.1cm}{\footnotesize\ttfamily [3/5]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a0acc6dfba69bc35cba25ee02ac91c4e5}\label{classLexicon_a0acc6dfba69bc35cba25ee02ac91c4e5}} 
+\index{Lexicon@{Lexicon}!Lexicon@{Lexicon}}
+\index{Lexicon@{Lexicon}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{Lexicon()}{Lexicon()}\hspace{0.1cm}{\footnotesize\ttfamily [4/5]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::string $>$}]{list }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a9d71fdc56ec42614e240463e6724969e}\label{classLexicon_a9d71fdc56ec42614e240463e6724969e}} 
+\index{Lexicon@{Lexicon}!````~Lexicon@{$\sim$\+Lexicon}}
+\index{````~Lexicon@{$\sim$\+Lexicon}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{$\sim$\+Lexicon()}{~Lexicon()}}
+{\footnotesize\ttfamily $\sim$\mbox{\hyperlink{classLexicon}{Lexicon}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+\mbox{\Hypertarget{classLexicon_acd310b995d41180f2f29bd68bec7d290}\label{classLexicon_acd310b995d41180f2f29bd68bec7d290}} 
+\index{Lexicon@{Lexicon}!Lexicon@{Lexicon}}
+\index{Lexicon@{Lexicon}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{Lexicon()}{Lexicon()}\hspace{0.1cm}{\footnotesize\ttfamily [5/5]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{src }\end{DoxyParamCaption})}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classLexicon_ae678e727fb107637268e8f00cd759889}\label{classLexicon_ae678e727fb107637268e8f00cd759889}} 
+\index{Lexicon@{Lexicon}!add@{add}}
+\index{add@{add}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{add()}{add()}}
+{\footnotesize\ttfamily bool add (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{word }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a9d62d8dcb351ae40c8a2220a9871348b}\label{classLexicon_a9d62d8dcb351ae40c8a2220a9871348b}} 
+\index{Lexicon@{Lexicon}!add\+All@{add\+All}}
+\index{add\+All@{add\+All}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{add\+All()}{addAll()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} \& add\+All (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{lex }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a554e59039648403990042d16710855e0}\label{classLexicon_a554e59039648403990042d16710855e0}} 
+\index{Lexicon@{Lexicon}!add\+All@{add\+All}}
+\index{add\+All@{add\+All}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{add\+All()}{addAll()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} \& add\+All (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::string $>$}]{list }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a215fcead487aace2e89b04863e326ba6}\label{classLexicon_a215fcead487aace2e89b04863e326ba6}} 
+\index{Lexicon@{Lexicon}!add\+Words\+From\+File@{add\+Words\+From\+File}}
+\index{add\+Words\+From\+File@{add\+Words\+From\+File}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{add\+Words\+From\+File()}{addWordsFromFile()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void add\+Words\+From\+File (\begin{DoxyParamCaption}\item[{std\+::istream \&}]{input }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a3891deaa85aee9a52b6ca258d1514716}\label{classLexicon_a3891deaa85aee9a52b6ca258d1514716}} 
+\index{Lexicon@{Lexicon}!add\+Words\+From\+File@{add\+Words\+From\+File}}
+\index{add\+Words\+From\+File@{add\+Words\+From\+File}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{add\+Words\+From\+File()}{addWordsFromFile()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void add\+Words\+From\+File (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a324ff6b85a0d392036efefc95b5d5e83}\label{classLexicon_a324ff6b85a0d392036efefc95b5d5e83}} 
+\index{Lexicon@{Lexicon}!back@{back}}
+\index{back@{back}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{back()}{back()}}
+{\footnotesize\ttfamily std\+::string back (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a0c62c15c8ed609e7e5e9518cf5f5c712}\label{classLexicon_a0c62c15c8ed609e7e5e9518cf5f5c712}} 
+\index{Lexicon@{Lexicon}!begin@{begin}}
+\index{begin@{begin}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{begin()}{begin()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon_1_1iterator}{iterator}} begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classLexicon_ac8bb3912a3ce86b15842e79d0b421204}\label{classLexicon_ac8bb3912a3ce86b15842e79d0b421204}} 
+\index{Lexicon@{Lexicon}!clear@{clear}}
+\index{clear@{clear}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{clear()}{clear()}}
+{\footnotesize\ttfamily void clear (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a479b1bac4a3c243907c80e5c6f9b05d5}\label{classLexicon_a479b1bac4a3c243907c80e5c6f9b05d5}} 
+\index{Lexicon@{Lexicon}!contains@{contains}}
+\index{contains@{contains}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{contains()}{contains()}}
+{\footnotesize\ttfamily bool contains (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{word }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a9cc56f4fc1106ca74a59fceb9d68b3e9}\label{classLexicon_a9cc56f4fc1106ca74a59fceb9d68b3e9}} 
+\index{Lexicon@{Lexicon}!contains\+All@{contains\+All}}
+\index{contains\+All@{contains\+All}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{contains\+All()}{containsAll()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily bool contains\+All (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{set2 }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a3934298595e72e6540e5f81d47ab763a}\label{classLexicon_a3934298595e72e6540e5f81d47ab763a}} 
+\index{Lexicon@{Lexicon}!contains\+All@{contains\+All}}
+\index{contains\+All@{contains\+All}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{contains\+All()}{containsAll()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily bool contains\+All (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::string $>$}]{list }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a0b8e0b0b6f72ba6b88b56bd074b1dc32}\label{classLexicon_a0b8e0b0b6f72ba6b88b56bd074b1dc32}} 
+\index{Lexicon@{Lexicon}!contains\+Prefix@{contains\+Prefix}}
+\index{contains\+Prefix@{contains\+Prefix}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{contains\+Prefix()}{containsPrefix()}}
+{\footnotesize\ttfamily bool contains\+Prefix (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{prefix }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a68b688a51bd0cf6fb5bc2cba292209a8}\label{classLexicon_a68b688a51bd0cf6fb5bc2cba292209a8}} 
+\index{Lexicon@{Lexicon}!end@{end}}
+\index{end@{end}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{end()}{end()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon_1_1iterator}{iterator}} end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classLexicon_a7dd6de171cb80bc7e2b48d53bd1e9276}\label{classLexicon_a7dd6de171cb80bc7e2b48d53bd1e9276}} 
+\index{Lexicon@{Lexicon}!equals@{equals}}
+\index{equals@{equals}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{equals()}{equals()}}
+{\footnotesize\ttfamily bool equals (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{lex2 }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_aba89eab0637bde14f9ded33e9e9c6aa5}\label{classLexicon_aba89eab0637bde14f9ded33e9e9c6aa5}} 
+\index{Lexicon@{Lexicon}!first@{first}}
+\index{first@{first}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{first()}{first()}}
+{\footnotesize\ttfamily std\+::string first (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a054217ec9f3229ceedee9d7bde075587}\label{classLexicon_a054217ec9f3229ceedee9d7bde075587}} 
+\index{Lexicon@{Lexicon}!front@{front}}
+\index{front@{front}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{front()}{front()}}
+{\footnotesize\ttfamily std\+::string front (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a1a017af6eb755b5c83e70f61e2bda2c7}\label{classLexicon_a1a017af6eb755b5c83e70f61e2bda2c7}} 
+\index{Lexicon@{Lexicon}!insert@{insert}}
+\index{insert@{insert}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{insert()}{insert()}}
+{\footnotesize\ttfamily void insert (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{word }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_acf82f9b2937375c7b1cf3dccb3df3312}\label{classLexicon_acf82f9b2937375c7b1cf3dccb3df3312}} 
+\index{Lexicon@{Lexicon}!is\+Empty@{is\+Empty}}
+\index{is\+Empty@{is\+Empty}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{is\+Empty()}{isEmpty()}}
+{\footnotesize\ttfamily bool is\+Empty (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a6c118f41dad8941a624c3ff479987e3d}\label{classLexicon_a6c118f41dad8941a624c3ff479987e3d}} 
+\index{Lexicon@{Lexicon}!is\+Subset\+Of@{is\+Subset\+Of}}
+\index{is\+Subset\+Of@{is\+Subset\+Of}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{is\+Subset\+Of()}{isSubsetOf()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily bool is\+Subset\+Of (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{lex2 }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a2a0f1241b53bcf0b31103b79cb01b87d}\label{classLexicon_a2a0f1241b53bcf0b31103b79cb01b87d}} 
+\index{Lexicon@{Lexicon}!is\+Subset\+Of@{is\+Subset\+Of}}
+\index{is\+Subset\+Of@{is\+Subset\+Of}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{is\+Subset\+Of()}{isSubsetOf()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily bool is\+Subset\+Of (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::string $>$}]{list }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_ad6a4796a72905df1e33f4b100cb91f32}\label{classLexicon_ad6a4796a72905df1e33f4b100cb91f32}} 
+\index{Lexicon@{Lexicon}!is\+Superset\+Of@{is\+Superset\+Of}}
+\index{is\+Superset\+Of@{is\+Superset\+Of}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{is\+Superset\+Of()}{isSupersetOf()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily bool is\+Superset\+Of (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{lex2 }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a217cbc1e6ba9f694645608c8a17c1943}\label{classLexicon_a217cbc1e6ba9f694645608c8a17c1943}} 
+\index{Lexicon@{Lexicon}!is\+Superset\+Of@{is\+Superset\+Of}}
+\index{is\+Superset\+Of@{is\+Superset\+Of}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{is\+Superset\+Of()}{isSupersetOf()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily bool is\+Superset\+Of (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::string $>$}]{list }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a2e4e14ffb291ba4d5475b9b66d2a12c8}\label{classLexicon_a2e4e14ffb291ba4d5475b9b66d2a12c8}} 
+\index{Lexicon@{Lexicon}!map\+All@{map\+All}}
+\index{map\+All@{map\+All}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{map\+All()}{mapAll()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily void map\+All (\begin{DoxyParamCaption}\item[{void($\ast$)(std\+::string)}]{fn }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_abab83598d63d43b15cf018fa020e1ddf}\label{classLexicon_abab83598d63d43b15cf018fa020e1ddf}} 
+\index{Lexicon@{Lexicon}!map\+All@{map\+All}}
+\index{map\+All@{map\+All}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{map\+All()}{mapAll()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily void map\+All (\begin{DoxyParamCaption}\item[{void($\ast$)(const std\+::string \&)}]{fn }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a8dc32c1e45704cfae41daf8adb4e66dc}\label{classLexicon_a8dc32c1e45704cfae41daf8adb4e66dc}} 
+\index{Lexicon@{Lexicon}!map\+All@{map\+All}}
+\index{map\+All@{map\+All}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{map\+All()}{mapAll()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily void map\+All (\begin{DoxyParamCaption}\item[{Functor\+Type}]{fn }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_af42d8a30a8c4b2d33a6be3b12258e152}\label{classLexicon_af42d8a30a8c4b2d33a6be3b12258e152}} 
+\index{Lexicon@{Lexicon}!operator"!=@{operator"!=}}
+\index{operator"!=@{operator"!=}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator"!=()}{operator!=()}}
+{\footnotesize\ttfamily bool operator!= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{lex2 }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a62286f0f5d7c1229b3003b855bf54ba3}\label{classLexicon_a62286f0f5d7c1229b3003b855bf54ba3}} 
+\index{Lexicon@{Lexicon}!operator$\ast$@{operator$\ast$}}
+\index{operator$\ast$@{operator$\ast$}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator$\ast$()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} operator$\ast$ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{lex2 }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a5da3a8f0f6332bccefe7b2cb48d8a8d6}\label{classLexicon_a5da3a8f0f6332bccefe7b2cb48d8a8d6}} 
+\index{Lexicon@{Lexicon}!operator$\ast$@{operator$\ast$}}
+\index{operator$\ast$@{operator$\ast$}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator$\ast$()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} operator$\ast$ (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::string $>$}]{list }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_ab81e3c0d6a5637202849784ef00b9cd5}\label{classLexicon_ab81e3c0d6a5637202849784ef00b9cd5}} 
+\index{Lexicon@{Lexicon}!operator$\ast$=@{operator$\ast$=}}
+\index{operator$\ast$=@{operator$\ast$=}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator$\ast$=()}{operator*=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} \& operator$\ast$= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{lex2 }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a79ada3cb64d9f074114ce895c67be781}\label{classLexicon_a79ada3cb64d9f074114ce895c67be781}} 
+\index{Lexicon@{Lexicon}!operator$\ast$=@{operator$\ast$=}}
+\index{operator$\ast$=@{operator$\ast$=}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator$\ast$=()}{operator*=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} \& operator$\ast$= (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::string $>$}]{list }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_acfc41a903b549304f3b70e48fd2e52e4}\label{classLexicon_acfc41a903b549304f3b70e48fd2e52e4}} 
+\index{Lexicon@{Lexicon}!operator+@{operator+}}
+\index{operator+@{operator+}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator+()}{operator+()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} operator+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{lex2 }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a4436a915b6de75438364ed061e0e9491}\label{classLexicon_a4436a915b6de75438364ed061e0e9491}} 
+\index{Lexicon@{Lexicon}!operator+@{operator+}}
+\index{operator+@{operator+}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator+()}{operator+()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} operator+ (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::string $>$}]{list }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a44774af5311cf2c8fd054ecf8ff8e76b}\label{classLexicon_a44774af5311cf2c8fd054ecf8ff8e76b}} 
+\index{Lexicon@{Lexicon}!operator+@{operator+}}
+\index{operator+@{operator+}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator+()}{operator+()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} operator+ (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{word }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_afa70421c28007f127e7c4b24666ecc3a}\label{classLexicon_afa70421c28007f127e7c4b24666ecc3a}} 
+\index{Lexicon@{Lexicon}!operator+=@{operator+=}}
+\index{operator+=@{operator+=}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator+=()}{operator+=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} \& operator+= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{lex2 }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a3080ac30a072160945adc5f860ca1785}\label{classLexicon_a3080ac30a072160945adc5f860ca1785}} 
+\index{Lexicon@{Lexicon}!operator+=@{operator+=}}
+\index{operator+=@{operator+=}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator+=()}{operator+=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} \& operator+= (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::string $>$}]{list }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a051f30ebfa7b8fbb7ea1dc5af23d3004}\label{classLexicon_a051f30ebfa7b8fbb7ea1dc5af23d3004}} 
+\index{Lexicon@{Lexicon}!operator+=@{operator+=}}
+\index{operator+=@{operator+=}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator+=()}{operator+=()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} \& operator+= (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{word }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a75f32eb2f65c3c3968193cfd72bdfd1a}\label{classLexicon_a75f32eb2f65c3c3968193cfd72bdfd1a}} 
+\index{Lexicon@{Lexicon}!operator,@{operator,}}
+\index{operator,@{operator,}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator,()}{operator,()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} \& operator, (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{word }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a487624601a6357e1b6d64053f9ebb5e2}\label{classLexicon_a487624601a6357e1b6d64053f9ebb5e2}} 
+\index{Lexicon@{Lexicon}!operator-\/@{operator-\/}}
+\index{operator-\/@{operator-\/}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator-\/()}{operator-()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} operator-\/ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{lex2 }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a0cd415d08567bfae9eae12afe2169cb5}\label{classLexicon_a0cd415d08567bfae9eae12afe2169cb5}} 
+\index{Lexicon@{Lexicon}!operator-\/@{operator-\/}}
+\index{operator-\/@{operator-\/}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator-\/()}{operator-()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} operator-\/ (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::string $>$}]{list }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a14c8fea4b958b02ea5ee55d5509db8e6}\label{classLexicon_a14c8fea4b958b02ea5ee55d5509db8e6}} 
+\index{Lexicon@{Lexicon}!operator-\/@{operator-\/}}
+\index{operator-\/@{operator-\/}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator-\/()}{operator-()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} operator-\/ (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{word }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_ac51e54102d6257c1a0a48c99ad2520f6}\label{classLexicon_ac51e54102d6257c1a0a48c99ad2520f6}} 
+\index{Lexicon@{Lexicon}!operator-\/=@{operator-\/=}}
+\index{operator-\/=@{operator-\/=}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator-\/=()}{operator-=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} \& operator-\/= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{lex2 }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a1b3ac9124341c069a604d760190789b1}\label{classLexicon_a1b3ac9124341c069a604d760190789b1}} 
+\index{Lexicon@{Lexicon}!operator-\/=@{operator-\/=}}
+\index{operator-\/=@{operator-\/=}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator-\/=()}{operator-=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} \& operator-\/= (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::string $>$}]{list }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a4acb1cafdecdbf77b1d62f2372a6d244}\label{classLexicon_a4acb1cafdecdbf77b1d62f2372a6d244}} 
+\index{Lexicon@{Lexicon}!operator-\/=@{operator-\/=}}
+\index{operator-\/=@{operator-\/=}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator-\/=()}{operator-=()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} \& operator-\/= (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{value }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_aad808851ca0fffc8b60fd0b69ad097bd}\label{classLexicon_aad808851ca0fffc8b60fd0b69ad097bd}} 
+\index{Lexicon@{Lexicon}!operator$<$@{operator$<$}}
+\index{operator$<$@{operator$<$}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator$<$()}{operator<()}}
+{\footnotesize\ttfamily bool operator$<$ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{lex2 }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a236ec3f5ec721fb4ca4551bf49123eac}\label{classLexicon_a236ec3f5ec721fb4ca4551bf49123eac}} 
+\index{Lexicon@{Lexicon}!operator$<$=@{operator$<$=}}
+\index{operator$<$=@{operator$<$=}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator$<$=()}{operator<=()}}
+{\footnotesize\ttfamily bool operator$<$= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{lex2 }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_ab9766b3af1f48ed51a1bcf037e08de43}\label{classLexicon_ab9766b3af1f48ed51a1bcf037e08de43}} 
+\index{Lexicon@{Lexicon}!operator=@{operator=}}
+\index{operator=@{operator=}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} \& operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{src }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a4fcab616682564bf55eb0b096a35219d}\label{classLexicon_a4fcab616682564bf55eb0b096a35219d}} 
+\index{Lexicon@{Lexicon}!operator==@{operator==}}
+\index{operator==@{operator==}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator==()}{operator==()}}
+{\footnotesize\ttfamily bool operator== (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{lex2 }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a04139ff41f8d25adbf5958ff2b01b068}\label{classLexicon_a04139ff41f8d25adbf5958ff2b01b068}} 
+\index{Lexicon@{Lexicon}!operator$>$@{operator$>$}}
+\index{operator$>$@{operator$>$}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator$>$()}{operator>()}}
+{\footnotesize\ttfamily bool operator$>$ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{lex2 }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a05b7f6593b8b859858cf21ffbc9e5ab1}\label{classLexicon_a05b7f6593b8b859858cf21ffbc9e5ab1}} 
+\index{Lexicon@{Lexicon}!operator$>$=@{operator$>$=}}
+\index{operator$>$=@{operator$>$=}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator$>$=()}{operator>=()}}
+{\footnotesize\ttfamily bool operator$>$= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{lex2 }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_affc6169b054fb3bbc4d72694e1a5834e}\label{classLexicon_affc6169b054fb3bbc4d72694e1a5834e}} 
+\index{Lexicon@{Lexicon}!remove@{remove}}
+\index{remove@{remove}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{remove()}{remove()}}
+{\footnotesize\ttfamily bool remove (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{word }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a606a7338945745d8ac9ce21f456f08d9}\label{classLexicon_a606a7338945745d8ac9ce21f456f08d9}} 
+\index{Lexicon@{Lexicon}!remove\+All@{remove\+All}}
+\index{remove\+All@{remove\+All}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{remove\+All()}{removeAll()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} \& remove\+All (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{lex }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a8ef0b8a849b2d33d83bc9689c4c4d090}\label{classLexicon_a8ef0b8a849b2d33d83bc9689c4c4d090}} 
+\index{Lexicon@{Lexicon}!remove\+All@{remove\+All}}
+\index{remove\+All@{remove\+All}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{remove\+All()}{removeAll()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} \& remove\+All (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::string $>$}]{list }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a998af18a2f0af7d18ce689acee75ca59}\label{classLexicon_a998af18a2f0af7d18ce689acee75ca59}} 
+\index{Lexicon@{Lexicon}!remove\+Prefix@{remove\+Prefix}}
+\index{remove\+Prefix@{remove\+Prefix}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{remove\+Prefix()}{removePrefix()}}
+{\footnotesize\ttfamily bool remove\+Prefix (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{prefix }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a38501eec95ff302cb83dae17ab478b81}\label{classLexicon_a38501eec95ff302cb83dae17ab478b81}} 
+\index{Lexicon@{Lexicon}!retain\+All@{retain\+All}}
+\index{retain\+All@{retain\+All}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{retain\+All()}{retainAll()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} \& retain\+All (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{lex }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_a17b175aadba16c14093da01963914b33}\label{classLexicon_a17b175aadba16c14093da01963914b33}} 
+\index{Lexicon@{Lexicon}!retain\+All@{retain\+All}}
+\index{retain\+All@{retain\+All}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{retain\+All()}{retainAll()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLexicon}{Lexicon}} \& retain\+All (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::string $>$}]{list }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classLexicon_af9593d4a5ff4274efaf429cb4f9e57cc}\label{classLexicon_af9593d4a5ff4274efaf429cb4f9e57cc}} 
+\index{Lexicon@{Lexicon}!size@{size}}
+\index{size@{size}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily int size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a56b9ca7800c467295cab333fd9815291}\label{classLexicon_a56b9ca7800c467295cab333fd9815291}} 
+\index{Lexicon@{Lexicon}!to\+Stl\+Set@{to\+Stl\+Set}}
+\index{to\+Stl\+Set@{to\+Stl\+Set}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{to\+Stl\+Set()}{toStlSet()}}
+{\footnotesize\ttfamily std\+::set$<$ std\+::string $>$ to\+Stl\+Set (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classLexicon_a1fe5121d6528fdea3f243321b3fa3a49}\label{classLexicon_a1fe5121d6528fdea3f243321b3fa3a49}} 
+\index{Lexicon@{Lexicon}!to\+String@{to\+String}}
+\index{to\+String@{to\+String}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{to\+String()}{toString()}}
+{\footnotesize\ttfamily std\+::string to\+String (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+\subsection{Friends And Related Function Documentation}
+\mbox{\Hypertarget{classLexicon_af4dde954854b1ec1072266b3042d44a6}\label{classLexicon_af4dde954854b1ec1072266b3042d44a6}} 
+\index{Lexicon@{Lexicon}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator$<$$<$}{operator<<}}
+{\footnotesize\ttfamily std\+::ostream\& operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{os,  }\item[{const \mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{lex }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
+
+\mbox{\Hypertarget{classLexicon_a1f966ac4d3b3849aa4bc556d995c24ba}\label{classLexicon_a1f966ac4d3b3849aa4bc556d995c24ba}} 
+\index{Lexicon@{Lexicon}!operator$>$$>$@{operator$>$$>$}}
+\index{operator$>$$>$@{operator$>$$>$}!Lexicon@{Lexicon}}
+\subsubsection{\texorpdfstring{operator$>$$>$}{operator>>}}
+{\footnotesize\ttfamily std\+::istream\& operator$>$$>$ (\begin{DoxyParamCaption}\item[{std\+::istream \&}]{is,  }\item[{\mbox{\hyperlink{classLexicon}{Lexicon}} \&}]{lex }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
+

@@ -6,6 +6,8 @@
  * See autograder.h for documentation of each member.
  * 
  * @author Marty Stepp
+ * @version 2018/08/27
+ * - refactored to use AutograderUnitTestGui cpp class
  * @version 2017/10/05
  * - avoid error on file-not-found in showStudentTextFile
  * - made autograder window remember position
@@ -47,23 +49,24 @@
 
 #include "autograder.h"
 #include <cstdio>
-#include "console.h"
+#include "autograderunittestgui.h"
+#include "consoletext.h"
 #include "exceptions.h"
 #include "filelib.h"
 #include "gbufferedimage.h"
 #include "gevents.h"
+#include "ginputpanel.h"
 #include "ginteractors.h"
 #include "goptionpane.h"
 #include "gwindow.h"
 #include "map.h"
+#include "qtgui.h"
 #include "simpio.h"
 #include "version.h"
-#include "private/platform.h"
 #include "private/static.h"
 
 #include "date.h"
 #include "gtest-marty.h"
-#include "inputpanel.h"
 #include "ioutils.h"
 #include "stringutils.h"
 #include "stylecheck.h"
@@ -207,14 +210,6 @@ void setCurrentTestShouldRun(bool shouldRun) {
     STATIC_VARIABLE(FLAGS).currentTestShouldRun = shouldRun;
 }
 
-bool exitEnabled() {
-    return stanfordcpplib::exitEnabled();
-}
-
-void setExitEnabled(bool enabled) {
-    stanfordcpplib::setExitEnabled(enabled);
-}
-
 void setFailDetails(AutograderTest& test, const autograder::UnitTestDetails& deets) {
     if (STATIC_VARIABLE(FLAGS).graphicalUI) {
         MartyGraphicalTestResultPrinter::setFailDetails(test, deets);
@@ -266,7 +261,8 @@ void setStudentProgramFileName(const std::string& filename) {
 }
 
 void setTestCounts(int passCount, int testCount, bool isStyleCheck) {
-    stanfordcpplib::getPlatform()->autograderunittest_setTestCounts(passCount, testCount, isStyleCheck);
+    stanfordcpplib::autograder::AutograderUnitTestGui::instance(isStyleCheck)->setTestCounts(
+                passCount, testCount);
 }
 
 void setTestNameWidth(int width) {
@@ -450,18 +446,20 @@ static bool autograderYesOrNo(std::string prompt, std::string reprompt = "", std
 }
 
 
-static int mainRunAutograderTestCases(int argc, char** argv) {
+int mainRunAutograderTestCases() {
     static bool gtestInitialized = false;   // static OK
     
     // set up a few initial settings and lock-down the program
     ioutils::setConsoleEchoUserInput(true);
     setConsoleClearEnabled(false);
-    gwindowSetPauseEnabled(false);
-    gwindowSetExitGraphicsEnabled(false);
+    GWindow::_autograder_setPauseEnabled(false);
+    GWindow::_autograder_setExitGraphicsEnabled(false);
     setConsoleSettingsLocked(true);
 
     if (!gtestInitialized) {
         gtestInitialized = true;
+        int argc = QtGui::instance()->getArgc();
+        char** argv = QtGui::instance()->getArgv();
         ::testing::InitGoogleTest(&argc, argv);
 
         // set up 'test result printer' to better format test results and errors
@@ -489,8 +487,8 @@ static int mainRunAutograderTestCases(int argc, char** argv) {
     setConsoleSettingsLocked(false);
     ioutils::setConsoleEchoUserInput(false);
     setConsoleClearEnabled(true);
-    gwindowSetPauseEnabled(true);
-    gwindowSetExitGraphicsEnabled(true);
+    GWindow::_autograder_setPauseEnabled(true);
+    GWindow::_autograder_setExitGraphicsEnabled(true);
 
     if (!STATIC_VARIABLE(FLAGS).graphicalUI) {
         std::cout << AUTOGRADER_OUTPUT_SEPARATOR << std::endl;
@@ -501,9 +499,9 @@ static int mainRunAutograderTestCases(int argc, char** argv) {
 }
 
 static void mainRunStyleChecker() {
-    stanfordcpplib::getPlatform()->jbeconsole_toFront();
+    getConsoleWindow()->toFront();
     if (!stylecheck::isStyleCheckMergedWithUnitTests()) {
-        stanfordcpplib::getPlatform()->autograderunittest_setVisible(true, /* styleCheck */ true);
+        stanfordcpplib::autograder::AutograderUnitTestGui::instance(/* styleCheck */ true)->setVisible(true);
     }
     int styleCheckCount = 0;
     for (std::string filename : STATIC_VARIABLE(FLAGS).styleCheckFiles) {
@@ -516,17 +514,12 @@ static void mainRunStyleChecker() {
         }
         styleCheckCount++;
     }
-    stanfordcpplib::getPlatform()->autograderunittest_setTestingCompleted(true, /* styleCheck */ true);
+    stanfordcpplib::autograder::AutograderUnitTestGui::instance(/* styleCheck */ true)->setTestingCompleted(true);
 }
 
-int autograderTextMain(int argc, char** argv) {
+int autograderTextMain() {
     std::cout << STATIC_VARIABLE(FLAGS).assignmentName << " Autograder" << std::endl
               << AUTOGRADER_OUTPUT_SEPARATOR << std::endl;
-    
-    // set up buttons to automatically enter user input
-    if (STATIC_VARIABLE(FLAGS).showInputPanel) {
-        inputpanel::load(STATIC_VARIABLE(FLAGS).inputPanelFilename);
-    }
     
     std::string autogradeYesNoMessage = STATIC_VARIABLE(FLAGS).startMessage;
     if (!autogradeYesNoMessage.empty()) {
@@ -541,7 +534,7 @@ int autograderTextMain(int argc, char** argv) {
             STATIC_VARIABLE(FLAGS).callbackStart();
         }
         
-        result = mainRunAutograderTestCases(argc, argv);
+        result = mainRunAutograderTestCases();
         
         // a hook to allow per-assignment code to run at the start
         if (STATIC_VARIABLE(FLAGS).callbackEnd) {
@@ -552,13 +545,13 @@ int autograderTextMain(int argc, char** argv) {
     // manual testing
     bool manualGrade = autograderYesOrNo("Run program for manual testing (y/N)? ", "", "n");
     if (manualGrade) {
-        gwindowSetExitGraphicsEnabled(false);
+        GWindow::_autograder_setExitGraphicsEnabled(false);
         while (manualGrade) {
             studentMain();
             std::cout << AUTOGRADER_OUTPUT_SEPARATOR << std::endl;
             manualGrade = autograderYesOrNo("Run program again (y/N)? ", "", "n");
         }
-        gwindowSetExitGraphicsEnabled(true);
+        GWindow::_autograder_setExitGraphicsEnabled(true);
     }
     std::cout << AUTOGRADER_OUTPUT_SEPARATOR << std::endl;
     
@@ -587,10 +580,14 @@ int autograderTextMain(int argc, char** argv) {
     return result;
 }
 
-static std::string addAutograderButton(GWindow& gui, const std::string& text, const std::string& icon) {
+static GButton* addAutograderButton(GWindow* gui, const std::string& text, const std::string& icon) {
     static Set<char> usedMnemonics;
 
-    std::string html = "<html><center>" + stringReplace(text, "\n", "<br>") + "</center></html>";
+    std::string html = text;
+
+    // add HTML tags around text
+    // html = "<html><center>" + stringReplace(html, "\n", "<br>") + "</center></html>";
+
     GButton* button = new GButton(html);
     STATIC_VARIABLE(AUTOGRADER_BUTTONS).add(button);
 
@@ -604,27 +601,29 @@ static std::string addAutograderButton(GWindow& gui, const std::string& text, co
     }
     if (mnemonic) {
         usedMnemonics.add(mnemonic);
-        button->setMnemonic(mnemonic);
+        // button->setMnemonic(mnemonic);
         button->setAccelerator("ctrl " + charToString(mnemonic));
     }
 
     if (!icon.empty()) {
         button->setIcon(icon);
-        button->setTextPosition(SwingConstants::SWING_CENTER, SwingConstants::SWING_BOTTOM);
+        // button->setTextPosition(SwingConstants::SWING_CENTER, SwingConstants::SWING_BOTTOM);
     }
-    gui.addToRegion(button, "SOUTH");
-    return html;
+    gui->addToRegion(button, GWindow::REGION_SOUTH);
+    return button;
 }
 
-int autograderGraphicalMain(int argc, char** argv) {
-    GWindow gui(500, 300, /* visible */ false);
-    gui.setTitle(STATIC_VARIABLE(FLAGS).assignmentName + " Autograder");
-    gui.setCanvasSize(0, 0);
-    autograder::gwindowSetIsAutograderWindow(gui, true);
-    autograder::gwindowRememberPosition(gui);
-    gui.setExitOnClose(true);
+int autograderGraphicalMain() {
+    // static GWindow* gui = new GWindow(500, 300, /* visible */ false);
+    static GWindow* gui = new GWindow(500, 300);
+    gui->setTitle(STATIC_VARIABLE(FLAGS).assignmentName + " Autograder");
+    gui->setCanvasSize(0, 0);
+    gui->_autograder_setIsAutograderWindow(true);
+    gui->rememberPosition();
+    gui->setExitOnClose(true);
+    setConsoleExitProgramOnClose(true);
     
-    GTextLabel startLabel("");
+    GLabel* startLabel = new GLabel("");
     if (!STATIC_VARIABLE(FLAGS).startMessage.empty()) {
         std::string startMessage = STATIC_VARIABLE(FLAGS).startMessage;
         if (!stringContains(startMessage, "<html>")) {
@@ -635,106 +634,106 @@ int autograderGraphicalMain(int argc, char** argv) {
                     + "</body></html>";
         }
         
-        startLabel.setText(startMessage);
-        gui.addToRegion(&startLabel, "NORTH");
+        startLabel->setText(startMessage);
+        gui->addToRegion(startLabel, GWindow::REGION_NORTH);
     }
-    
-    std::string autogradeText = addAutograderButton(gui, "Automated\ntests", "check.gif");
-    std::string manualText = addAutograderButton(gui, "Run\nmanually", "play.gif");
-    std::string styleCheckText = addAutograderButton(gui, "Style\nchecker", "magnifier.gif");
-    for (int i = 0; i < STATIC_VARIABLE(FLAGS).callbackButtons.size(); i++) {
-        STATIC_VARIABLE(FLAGS).callbackButtons[i].text = addAutograderButton(gui, STATIC_VARIABLE(FLAGS).callbackButtons[i].text, STATIC_VARIABLE(FLAGS).callbackButtons[i].icon);
-    }
-    std::string lateDayText = addAutograderButton(gui, "Late days\ninfo", "calendar.gif");
-    std::string aboutText = addAutograderButton(gui, "About\nGrader", "help.gif");
-    std::string exitText = addAutograderButton(gui, "Exit\nGrader", "stop.gif");
-    gui.pack();
-    gui.setVisible(true);
     
     int result = 0;
-    while (true) {
-        GEvent event = waitForEvent(ACTION_EVENT);
-        if (event.getEventClass() == ACTION_EVENT) {
-            GActionEvent actionEvent(event);
-            std::string cmd = actionEvent.getActionCommand();
-            if (cmd == autogradeText) {
-                if (STATIC_VARIABLE(FLAGS).callbackStart) {
-                    STATIC_VARIABLE(FLAGS).callbackStart();
-                }
-                
-                // stanfordcpplib::getPlatform()->autograderunittest_clearTests();
-                stanfordcpplib::getPlatform()->autograderunittest_clearTestResults();
-                stanfordcpplib::getPlatform()->autograderunittest_setTestingCompleted(false);
-                stanfordcpplib::getPlatform()->autograderunittest_setVisible(true);
-                result = mainRunAutograderTestCases(argc, argv);
-                stanfordcpplib::getPlatform()->autograderunittest_setTestingCompleted(true);
-                
-                // if style checker is merged, also run it now
-                if (stylecheck::isStyleCheckMergedWithUnitTests()) {
-                    mainRunStyleChecker();
-                }
-
-                if (STATIC_VARIABLE(FLAGS).callbackEnd) {
-                    STATIC_VARIABLE(FLAGS).callbackEnd();
-                }
-            } else if (cmd == manualText) {
-                // set up buttons to automatically enter user input
-                if (STATIC_VARIABLE(FLAGS).showInputPanel) {
-                    inputpanel::load(STATIC_VARIABLE(FLAGS).inputPanelFilename);
-                }
-                
-                // actually run the student's program
-                // (While program is running, if we close console, exit entire
-                // autograder program because we might be blocked on console I/O.
-                // But after it's done running, set behavior to just hide the
-                // console, since the grader will probably try to close it and then
-                // proceed with more grading and tests afterward.
-                // A little wonky, but it avoids most of the surprise cases of
-                // "I closed the student's console and it killed the autograder".
-                stanfordcpplib::getPlatform()->jbeconsole_clear();
-                stanfordcpplib::getPlatform()->jbeconsole_setVisible(true);
-                stanfordcpplib::getPlatform()->jbeconsole_toFront();
-                // setConsoleCloseOperation(ConsoleCloseOperation::CONSOLE_EXIT_ON_CLOSE);
-                autograder::setExitEnabled(false);   // block exit() call
-                setConsoleCloseOperation(ConsoleCloseOperation::CONSOLE_HIDE_ON_CLOSE);
-
-                studentMain();
-
-                // gwindowSetExitGraphicsEnabled(true);
-            } else if (cmd == styleCheckText) {
-                mainRunStyleChecker();
-            } else if (cmd == lateDayText) {
-                showLateDays();
-            } else if (cmd == aboutText) {
-                GOptionPane::showMessageDialog(STATIC_VARIABLE(FLAGS).aboutText, "About Autograder",
-                                               GOptionPane::MessageType::INFORMATION);
-            } else if (cmd == exitText) {
-                autograder::setExitEnabled(true);   // don't block exit() call
-
-                // free up memory used by graphical interactors
-                for (GButton* button : STATIC_VARIABLE(AUTOGRADER_BUTTONS)) {
-                    delete button;
-                }
-                STATIC_VARIABLE(AUTOGRADER_BUTTONS).clear();
-
-                gui.close();   // exits program; will not return
-                break;
-            } else {
-                for (CallbackButtonInfo buttonInfo : STATIC_VARIABLE(FLAGS).callbackButtons) {
-                    if (cmd == buttonInfo.text) {
-                        buttonInfo.func();
-                        break;
-                    }
-                }
-            }
+    GButton* autogradeButton = addAutograderButton(gui, "Automated\ntests", "check.gif");
+    autogradeButton->setActionListener([&result]() {
+        if (STATIC_VARIABLE(FLAGS).callbackStart) {
+            STATIC_VARIABLE(FLAGS).callbackStart();
         }
+
+        // stanfordcpplib::autograder::AutograderUnitTestGui::instance()->clearTests();
+        stanfordcpplib::autograder::AutograderUnitTestGui::instance()->clearTestResults();
+        stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setTestingCompleted(false);
+        stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setVisible(true);
+        result = mainRunAutograderTestCases();
+        stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setTestingCompleted(true);
+
+        // if style checker is merged, also run it now
+        if (stylecheck::isStyleCheckMergedWithUnitTests()) {
+            mainRunStyleChecker();
+        }
+
+        if (STATIC_VARIABLE(FLAGS).callbackEnd) {
+            STATIC_VARIABLE(FLAGS).callbackEnd();
+        }
+    });
+
+    GButton* manualButton = addAutograderButton(gui, "Run\nmanually", "play.gif");
+    manualButton->setActionListener([]() {
+        // set up buttons to automatically enter user input
+        if (STATIC_VARIABLE(FLAGS).showInputPanel) {
+            GInputPanel::instance()->load(STATIC_VARIABLE(FLAGS).inputPanelFilename);
+        }
+
+        // actually run the student's program
+        // (While program is running, if we close console, exit entire
+        // autograder program because we might be blocked on console I/O.
+        // But after it's done running, set behavior to just hide the
+        // console, since the grader will probably try to close it and then
+        // proceed with more grading and tests afterward.
+        // A little wonky, but it avoids most of the surprise cases of
+        // "I closed the student's console and it killed the autograder".
+        clearConsole();
+        getConsoleWindow()->setVisible(true);
+        getConsoleWindow()->toFront();
+        // setConsoleCloseOperation(ConsoleCloseOperation::CONSOLE_EXIT_ON_CLOSE);
+
+        stanfordcpplib::setExitEnabled(false);   // block exit() call
+        setConsoleCloseOperation(GWindow::CLOSE_HIDE);
+
+        studentMain();
+
+        // gwindowSetExitGraphicsEnabled(true);
+    });
+
+    GButton* styleCheckButton = addAutograderButton(gui, "Style\nchecker", "magnifier.gif");
+    styleCheckButton->setActionListener([]() {
+        mainRunStyleChecker();
+    });
+
+    for (int i = 0; i < STATIC_VARIABLE(FLAGS).callbackButtons.size(); i++) {
+        GButton* callbackButton = addAutograderButton(gui, STATIC_VARIABLE(FLAGS).callbackButtons[i].text, STATIC_VARIABLE(FLAGS).callbackButtons[i].icon);
+        callbackButton->setActionListener([i]() {
+            STATIC_VARIABLE(FLAGS).callbackButtons[i].func();
+        });
     }
 
-    // free up memory used by graphical interactors
-    for (GButton* button : STATIC_VARIABLE(AUTOGRADER_BUTTONS)) {
-        delete button;
-    }
-    STATIC_VARIABLE(AUTOGRADER_BUTTONS).clear();
+    GButton* lateDayButton = addAutograderButton(gui, "Late days\ninfo", "calendar.gif");
+    lateDayButton->setActionListener([]() {
+        showLateDays();
+    });
+
+    GButton* aboutButton = addAutograderButton(gui, "About\nGrader", "help.gif");
+    aboutButton->setActionListener([]() {
+        GOptionPane::showMessageDialog(STATIC_VARIABLE(FLAGS).aboutText, "About Autograder",
+                               GOptionPane::MessageType::INFORMATION);
+    });
+
+    GButton* exitButton = addAutograderButton(gui, "Exit\nGrader", "stop.gif");
+    exitButton->setActionListener([]() {
+        stanfordcpplib::setExitEnabled(true);   // don't block exit() call
+
+        // free up memory used by graphical interactors
+        for (GButton* button : STATIC_VARIABLE(AUTOGRADER_BUTTONS)) {
+            delete button;
+        }
+        STATIC_VARIABLE(AUTOGRADER_BUTTONS).clear();
+
+        gui->close();   // exits program; will not return
+    });
+
+    gui->pack();
+    gui->show();
+    
+    // TODO: free up memory used by graphical interactors
+//    for (GButton* button : STATIC_VARIABLE(AUTOGRADER_BUTTONS)) {
+//        delete button;
+//    }
+//    STATIC_VARIABLE(AUTOGRADER_BUTTONS).clear();
     
     return result;
 }
@@ -771,7 +770,7 @@ void assertEqualsImage(const std::string& msg,
                        const std::string& imagefile2) {
     GBufferedImage image1(imagefile1);
     GBufferedImage image2(imagefile2);
-    bool imagesAreEqual = image1 == image2;
+    bool imagesAreEqual = image1.equals(image2);
 
     autograder::setFailDetails(autograder::UnitTestDetails(
         autograder::UnitTestType::TEST_ASSERT_DIFF_IMAGE,
@@ -783,26 +782,26 @@ void assertEqualsImage(const std::string& msg,
 #undef main
 int main(int argc, char** argv) {
     // initialize Stanford libraries and graphical console
-    ::__initializeStanfordCppLibrary(argc, argv);
+    stanfordcpplib::initializeLibrary(argc, argv);
 
     setConsoleLocationSaved(true);
-    setConsoleCloseOperation(ConsoleCloseOperation::CONSOLE_HIDE_ON_CLOSE);
+    setConsoleCloseOperation(GWindow::CLOSE_HIDE);
     
     // tell the GUI the names of all tests so that it can display them
-    stanfordcpplib::getPlatform()->autograderunittest_setVisible(false);
+    stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setVisible(false);
     for (std::string category : autograder::AutograderTest::getAllCategories()) {
         for (std::string test : autograder::AutograderTest::getAllTests(category)) {
-            stanfordcpplib::getPlatform()->autograderunittest_addTest(test, category);
+            stanfordcpplib::autograder::AutograderUnitTestGui::instance()->addTest(test, category);
         }
     }
-    stanfordcpplib::getPlatform()->autograderunittest_setVisible(true);
+    stanfordcpplib::autograder::AutograderUnitTestGui::instance()->setVisible(true);
 
     // your assignment-specific autograder main runs here
     ::autograderMain();
     
     if (autograder::isGraphicalUI()) {
-        return autograder::autograderGraphicalMain(argc, argv);
+        QtGui::instance()->startBackgroundEventLoop(autograder::autograderGraphicalMain);
     } else {
-        return autograder::autograderTextMain(argc, argv);
+        QtGui::instance()->startBackgroundEventLoop(autograder::autograderTextMain);
     }
 }

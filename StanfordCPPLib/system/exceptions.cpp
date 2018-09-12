@@ -51,7 +51,6 @@
 #  undef MOUSE_MOVED
 #  undef HELP_KEY
 #endif
-#include "private/platform.h"
 
 // uncomment the definition below to use an alternative 'signal stack'
 // which helps in handling stack overflow errors
@@ -229,6 +228,15 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "InitializeExceptionChain",
         "KnownExceptionFilter",
         "printStackTrace",
+        "QAbstractItemModel::",
+        "QAbstractProxyModel::",
+        "QCoreApplication::",
+        "_Internal_",
+        "QMetaMethod::",
+        "QMetaObject::",
+        "QObjectPrivate::",
+        "QWidget::",
+        "QWidgetBackingStore::",
         "shouldFilterOutFromStackTrace",
         "stacktrace::",
         "stanfordCppLibPosixSignalHandler",
@@ -240,7 +248,7 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
 
     // prefixes to filter (don't show any func whose name starts with these)
     static const std::vector<std::string> FORBIDDEN_PREFIXES {
-        "__"
+        // "__"
     };
 
     for (const std::string& name : FORBIDDEN_NAMES) {

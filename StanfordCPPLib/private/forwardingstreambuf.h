@@ -12,9 +12,11 @@
 #ifndef _forwardingstreambuf_h
 #define _forwardingstreambuf_h
 
+#include <ios>
 #include <iostream>
 #include <locale>
 #include <streambuf>
+#include "private/consolestreambuf.h"
 
 namespace stanfordcpplib {
 /*
@@ -32,7 +34,7 @@ public:
         // empty
     }
 
-    bool isBlocked() {
+    virtual bool isBlocked() {
         return delegate.isBlocked();
     }
 
@@ -58,64 +60,64 @@ public:
 
     // functions below are overridden for completeness,
     // but all just delegate to underlying ConsoleStreambuf
-    std::streamsize in_avail() {
+    virtual std::streamsize in_avail() {
         return delegate.in_avail();
     }
 
-    int snextc() {
+    virtual int snextc() {
         return delegate.snextc();
     }
 
-    int sbumpc() {
+    virtual int sbumpc() {
         return delegate.sbumpc();
     }
 
-    int sgetc() {
+    virtual int sgetc() {
         return delegate.sgetc();
     }
 
-    std::streamsize sgetn(char* s, std::streamsize n) {
+    virtual std::streamsize sgetn(char* s, std::streamsize n) {
         return delegate.sgetn(s, n);
     }
 
-    int sputbackc(char c) {
+    virtual int sputbackc(char c) {
         return delegate.sputbackc(c);
     }
 
-    int sungetc() {
+    virtual int sungetc() {
         return delegate.sungetc();
     }
 
-    int sputc(char c) {
+    virtual int sputc(char c) {
         return delegate.sputc(c);
     }
 
-    std::streamsize sputn(const char* s, std::streamsize n) {
+    virtual std::streamsize sputn(const char* s, std::streamsize n) {
         return delegate.sputn(s, n);
     }
 
-    std::locale pubimbue(const std::locale& loc) {
+    virtual std::locale pubimbue(const std::locale& loc) {
         return delegate.pubimbue(loc);
     }
 
-    std::locale getloc() const {
+    virtual std::locale getloc() const {
         return delegate.getloc();
     }
 
-    std::streambuf* pubsetbuf(char* s, std::streamsize n) {
+    virtual std::streambuf* pubsetbuf(char* s, std::streamsize n) {
         return delegate.pubsetbuf(s, n);
     }
 
-    std::streampos pubseekoff(std::streamoff off, std::ios_base::seekdir way,
+    virtual std::streampos pubseekoff(std::streamoff off, std::ios_base::seekdir way,
                           std::ios_base::openmode which = std::ios_base::in | std::ios_base::out) {
         return delegate.pubseekoff(off, way, which);
     }
 
-    std::streampos pubseekpos(std::streampos pos, std::ios_base::openmode which = std::ios_base::in | std::ios_base::out) {
+    virtual std::streampos pubseekpos(std::streampos pos, std::ios_base::openmode which = std::ios_base::in | std::ios_base::out) {
         return delegate.pubseekpos(pos, which);
     }
 
-    int pubsync() {
+    virtual int pubsync() {
         return delegate.pubsync();
     }
 };

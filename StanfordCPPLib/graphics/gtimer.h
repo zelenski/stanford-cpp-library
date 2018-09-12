@@ -4,8 +4,9 @@
  * This file defines the <code>GTimer</code> class, which implements a
  * general interval timer.
  *
- * @version 2018/07/08
- * - fixed bug with stale timer events after timer is destructed
+ * @version 2018/09/09
+ * - updated to use new Qt GUI timer interface
+ * - added doc comments for new documentation generation
  */
 
 #ifndef _gtimer_h
@@ -13,69 +14,55 @@
 
 #include <string>
 
-namespace stanfordcpplib {
-class Platform;
-}
-
-/*
- * Friend type: GTimerData
- * -----------------------
- * This type maintains a reference count to determine when it is
- * possible to free the timer.
- */
-struct GTimerData {
-    GTimerData();
-    ~GTimerData();
-
-    static int instanceCount;
-    int id;
-    int refCount;
-};
-
-/*
- * Class: GTimer
- * -------------
+/**
  * This class implements a simple interval timer that generates a
- * <code>GTimerEvent</code> with a specified frequency.  Copying
- * a <code>GTimer</code> object is legal and creates an object that
- * refers to the same internal timer.
+ * <code>GTimerEvent</code> with a specified frequency.
  */
 class GTimer {
 public:
-    /*
-     * Constructor: GTimer
-     * Usage: GTimer timer(milliseconds);
-     * ----------------------------------
+    /**
      * Creates a timer object that generates a <code>GTimerEvent</code>
      * each time the specified number of milliseconds has elapsed.  No
      * events are generated until the client calls <code>start</code>
-     * on the timer.  For more details on using timers, see the documentation
-     * for the <a href="GTimerEvent-class.html"><code>GTimerEvent</code></a>
-     * class.
+     * on the timer.
+     *
+     * Due to implementation details, you must create at least one GWindow
+     * before you can start() a GTimer object.
+     *
+     * @throw ErrorException if milliseconds is negative
      */
     GTimer(double milliseconds);
 
-    /*
-     * Destructor: ~GTimer
-     * -------------------
-     * Frees the resources associated with the timer.
+    /**
+     * Returns the delay in milliseconds between each tick of this timer.
      */
-    virtual ~GTimer();
+    double getDelay() const;
 
-    /*
-     * Method: getID
-     * Usage: int id = timer.getID();
-     * ------------------------------
-     * Returns a unique ID string for this timer.
-     * The ID is related to the timer's memory address along with a unique number
-     * that increments each time a timer is created.
+    /**
+     * Method: isStarted
+     * Usage: if (timer.isStarted()) { ... }
+     * -------------------------------------
+     * Returns true if the given timer has been started (via start()).
+     * If you stop the timer or have not started it yet,
+     * this method will return false.
      */
-    std::string getID() const;
+    bool isStarted() const;
 
-    /*
-     * Method: start
-     * Usage: timer.start();
-     * ---------------------
+    /**
+     * Stops the timer (if it was started) and then starts it again.
+     */
+    void restart();
+
+    /**
+     * Changes the delay in milliseconds between each tick of this timer.
+     * If the timer is currently running, calling this method will stop
+     * and restart the timer with the new delay.
+     *
+     * @throw ErrorException if milliseconds is negative
+     */
+    void setDelay(double ms);
+
+    /**
      * Starts the timer.  A timer continues to generate timer events until it
      * is stopped; to achieve the effect of a one-shot timer, the simplest
      * approach is to call the <code>stop</code> method inside the event
@@ -83,41 +70,14 @@ public:
      */
     void start();
 
-    /*
-     * Method: stop
-     * Usage: timer.stop();
-     * --------------------
+    /**
      * Stops the timer so that it stops generating events until it is restarted.
      */
     void stop();
 
-    /*
-     * Friend operator: ==
-     * Usage: if (t1 == t2) ...
-     * ------------------------
-     * Checks whether the two objects refer to the same timer.
-     */
-    bool operator ==(const GTimer& t2);
-
-    /*
-     * Friend operator: !=
-     * Usage: if (t1 != t2) ...
-     * ------------------------
-     * Checks whether the two objects refer to the different timers.
-     */
-    bool operator !=(const GTimer& t2);
-
-    /* Private section */
-    GTimer(GTimerData* gtd);
-    GTimer(const GTimer& src);
-    GTimer& operator =(const GTimer& src);
-
 private:
-    /* Instance variables */
-    GTimerData* gtd;
-
-    friend class stanfordcpplib::Platform;
-    friend class GTimerEvent;
+    double _ms;
+    int _id;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

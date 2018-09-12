@@ -1,0 +1,314 @@
+\hypertarget{classGOptionPane}{}\section{G\+Option\+Pane Class Reference}
+\label{classGOptionPane}\index{G\+Option\+Pane@{G\+Option\+Pane}}
+
+
+This class provides static methods that pop up graphical input/output dialog boxes on the screen.  
+
+
+
+
+{\ttfamily \#include $<$goptionpane.\+h$>$}
+
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{classGOptionPane_a1cc9e8685029e39646671ed71f32d47d}{Confirm\+Result}} \{ \mbox{\hyperlink{classGOptionPane_a1cc9e8685029e39646671ed71f32d47dae4842754cb17e5234637e3a85a7f3d90}{C\+A\+N\+C\+EL}} = -\/1, 
+\mbox{\hyperlink{classGOptionPane_a1cc9e8685029e39646671ed71f32d47da0d077f5b932ce05e5b9f30c6087a2f31}{NO}} = 0, 
+\mbox{\hyperlink{classGOptionPane_a1cc9e8685029e39646671ed71f32d47da99f136a862ba5c7d16967231c29f09d6}{Y\+ES}} = 1, 
+\mbox{\hyperlink{classGOptionPane_a1cc9e8685029e39646671ed71f32d47da2bc49ec37d6a5715dd23e85f1ff5bb59}{OK}} = 2
+ \}
+\begin{DoxyCompactList}\small\item\em The various results that can be returned from some option dialogs. \end{DoxyCompactList}\item 
+enum \mbox{\hyperlink{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049}{Confirm\+Type}} \{ \mbox{\hyperlink{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049a23d16d66a433471aa62deadacecfc08d}{Y\+E\+S\+\_\+\+NO}} = 0, 
+\mbox{\hyperlink{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049a1c39d83120c95b0b233ddde75ee298b6}{Y\+E\+S\+\_\+\+N\+O\+\_\+\+C\+A\+N\+C\+EL}} = 1, 
+\mbox{\hyperlink{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049ade4e249d688548d74ae16c0feb84728c}{O\+K\+\_\+\+C\+A\+N\+C\+EL}} = 2
+ \}
+\begin{DoxyCompactList}\small\item\em Types used by show\+Confirm\+Dialog, representing the three kinds of confirmation dialogs\+: Yes/\+No, Yes/\+No/\+Cancel, or O\+K/\+Cancel. \end{DoxyCompactList}\item 
+enum \mbox{\hyperlink{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013}{Message\+Type}} \{ \mbox{\hyperlink{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013a2fd6f336d08340583bd620a7f5694c90}{E\+R\+R\+OR}} = 0, 
+\mbox{\hyperlink{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013ad2d78669dc69197336728cd0b2845b96}{I\+N\+F\+O\+R\+M\+A\+T\+I\+ON}} = 1, 
+\mbox{\hyperlink{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013a8386f3e3e7be0b7b603636867c133a5d}{P\+L\+A\+IN}} = -\/1, 
+\mbox{\hyperlink{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013a984de77c680eaff141ec910e25568a81}{W\+A\+R\+N\+I\+NG}} = 2, 
+\mbox{\hyperlink{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013ad126f509c35e1661274f8b72693c7848}{Q\+U\+E\+S\+T\+I\+ON}} = 3, 
+\mbox{\hyperlink{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013aaef4dc1e4f450a4c9e61a3699d75af0a}{A\+B\+O\+UT}} = 4
+ \}
+\begin{DoxyCompactList}\small\item\em Types used by show\+Message\+Dialog, representing the various kinds of message dialogs. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \mbox{\hyperlink{classGOptionPane_a1cc9e8685029e39646671ed71f32d47d}{Confirm\+Result}} \mbox{\hyperlink{classGOptionPane_a5aa43cc516e91b8befcd129ac11ebc96}{show\+Confirm\+Dialog}} (const std\+::string \&message, const std\+::string \&title=\char`\"{}\char`\"{}, \mbox{\hyperlink{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049}{Confirm\+Type}} type=\mbox{\hyperlink{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049a23d16d66a433471aa62deadacecfc08d}{Y\+E\+S\+\_\+\+NO}})
+\begin{DoxyCompactList}\small\item\em Pops up a yes/no confirmation box. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{classGOptionPane_a1cc9e8685029e39646671ed71f32d47d}{Confirm\+Result}} \mbox{\hyperlink{classGOptionPane_a67b4bfe05d029f3575a4b9e341e786ec}{show\+Confirm\+Dialog}} (\mbox{\hyperlink{classGWindow}{G\+Window}} $\ast$parent, const std\+::string \&message, const std\+::string \&title=\char`\"{}\char`\"{}, \mbox{\hyperlink{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049}{Confirm\+Type}} type=\mbox{\hyperlink{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049a23d16d66a433471aa62deadacecfc08d}{Y\+E\+S\+\_\+\+NO}})
+\begin{DoxyCompactList}\small\item\em Pops up a yes/no confirmation box. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{classGOptionPane_a1cc9e8685029e39646671ed71f32d47d}{Confirm\+Result}} \mbox{\hyperlink{classGOptionPane_a19401c5fe238589904bc44319cc80b41}{show\+Confirm\+Dialog}} (Q\+Widget $\ast$parent, const std\+::string \&message, const std\+::string \&title=\char`\"{}\char`\"{}, \mbox{\hyperlink{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049}{Confirm\+Type}} type=\mbox{\hyperlink{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049a23d16d66a433471aa62deadacecfc08d}{Y\+E\+S\+\_\+\+NO}})
+\begin{DoxyCompactList}\small\item\em Pops up a yes/no confirmation box. \end{DoxyCompactList}\item 
+static std\+::string \mbox{\hyperlink{classGOptionPane_a50fdc381453e6b8c495e3f9fe07b7bec}{show\+Input\+Dialog}} (const std\+::string \&message, const std\+::string \&title=\char`\"{}\char`\"{}, const std\+::string \&initial\+Value=\char`\"{}\char`\"{})
+\begin{DoxyCompactList}\small\item\em Pops up an input box with a text field where the user can type a response, which is returned. \end{DoxyCompactList}\item 
+static std\+::string \mbox{\hyperlink{classGOptionPane_a035a6d874c9e81773e7c61305dbecabb}{show\+Input\+Dialog}} (\mbox{\hyperlink{classGWindow}{G\+Window}} $\ast$parent, const std\+::string \&message, const std\+::string \&title=\char`\"{}\char`\"{}, const std\+::string \&initial\+Value=\char`\"{}\char`\"{})
+\begin{DoxyCompactList}\small\item\em Pops up an input box with a text field where the user can type a response, which is returned. \end{DoxyCompactList}\item 
+static std\+::string \mbox{\hyperlink{classGOptionPane_aabd3a04a3cdc998ee0e7e7e31676df17}{show\+Input\+Dialog}} (Q\+Widget $\ast$parent, const std\+::string \&message, const std\+::string \&title=\char`\"{}\char`\"{}, const std\+::string \&initial\+Value=\char`\"{}\char`\"{})
+\begin{DoxyCompactList}\small\item\em Pops up an input box with a text field where the user can type a response, which is returned. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classGOptionPane_ac72936da553721b532ea51a831a2993a}{show\+Message\+Dialog}} (const std\+::string \&message, const std\+::string \&title=\char`\"{}\char`\"{}, \mbox{\hyperlink{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013}{Message\+Type}} type=\mbox{\hyperlink{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013a8386f3e3e7be0b7b603636867c133a5d}{P\+L\+A\+IN}})
+\begin{DoxyCompactList}\small\item\em Displays an output message dialog to the user. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classGOptionPane_a72a54f763487c83c587a79611e8ae685}{show\+Message\+Dialog}} (\mbox{\hyperlink{classGWindow}{G\+Window}} $\ast$parent, const std\+::string \&message, const std\+::string \&title=\char`\"{}\char`\"{}, \mbox{\hyperlink{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013}{Message\+Type}} type=\mbox{\hyperlink{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013a8386f3e3e7be0b7b603636867c133a5d}{P\+L\+A\+IN}})
+\begin{DoxyCompactList}\small\item\em Displays an output message dialog to the user. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classGOptionPane_a98590e47196bf04738c2b97e9b7f6d0b}{show\+Message\+Dialog}} (Q\+Widget $\ast$parent, const std\+::string \&message, const std\+::string \&title=\char`\"{}\char`\"{}, \mbox{\hyperlink{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013}{Message\+Type}} type=\mbox{\hyperlink{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013a8386f3e3e7be0b7b603636867c133a5d}{P\+L\+A\+IN}})
+\begin{DoxyCompactList}\small\item\em Displays an output message dialog to the user. \end{DoxyCompactList}\item 
+static std\+::string \mbox{\hyperlink{classGOptionPane_ab97ebcd9d5b5827fbb9292b7c045c72f}{show\+Option\+Dialog}} (const std\+::string \&message, const \mbox{\hyperlink{classVector}{Vector}}$<$ std\+::string $>$ \&options, const std\+::string \&title=\char`\"{}\char`\"{}, const std\+::string \&initially\+Selected=\char`\"{}\char`\"{})
+\begin{DoxyCompactList}\small\item\em Shows a general input box with a set of buttons from which the user may choose one option. \end{DoxyCompactList}\item 
+static std\+::string \mbox{\hyperlink{classGOptionPane_a611d2c1c7209b39b3c74d9039c28821c}{show\+Option\+Dialog}} (\mbox{\hyperlink{classGWindow}{G\+Window}} $\ast$parent, const std\+::string \&message, const \mbox{\hyperlink{classVector}{Vector}}$<$ std\+::string $>$ \&options, const std\+::string \&title=\char`\"{}\char`\"{}, const std\+::string \&initially\+Selected=\char`\"{}\char`\"{})
+\begin{DoxyCompactList}\small\item\em Shows a general input box with a set of buttons from which the user may choose one option. \end{DoxyCompactList}\item 
+static std\+::string \mbox{\hyperlink{classGOptionPane_ae710ab30d0f4995523abed1180559d35}{show\+Option\+Dialog}} (Q\+Widget $\ast$parent, const std\+::string \&message, const \mbox{\hyperlink{classVector}{Vector}}$<$ std\+::string $>$ \&options, const std\+::string \&title=\char`\"{}\char`\"{}, const std\+::string \&initially\+Selected=\char`\"{}\char`\"{})
+\begin{DoxyCompactList}\small\item\em Shows a general input box with a set of buttons from which the user may choose one option. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classGOptionPane_ac23d3f6bc00fb83d71f7168bfe162abf}{show\+Text\+File\+Dialog}} (const std\+::string \&message, const std\+::string \&title=\char`\"{}\char`\"{}, int rows=-\/1, int cols=-\/1)
+\begin{DoxyCompactList}\small\item\em Displays the given text in a scrolling monospaced text area. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classGOptionPane_a7e1e9057ebd16b8769a93dba306a9f55}{show\+Text\+File\+Dialog}} (\mbox{\hyperlink{classGWindow}{G\+Window}} $\ast$parent, const std\+::string \&message, const std\+::string \&title=\char`\"{}\char`\"{}, int rows=-\/1, int cols=-\/1)
+\begin{DoxyCompactList}\small\item\em Displays the given text in a scrolling monospaced text area. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classGOptionPane_a684cc543d7d7cb206355b534e261d0c9}{show\+Text\+File\+Dialog}} (Q\+Widget $\ast$parent, const std\+::string \&message, const std\+::string \&title=\char`\"{}\char`\"{}, int rows=-\/1, int cols=-\/1)
+\begin{DoxyCompactList}\small\item\em Displays the given text in a scrolling monospaced text area. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This class provides static methods that pop up graphical input/output dialog boxes on the screen. 
+
+\subsection{Member Enumeration Documentation}
+\mbox{\Hypertarget{classGOptionPane_a1cc9e8685029e39646671ed71f32d47d}\label{classGOptionPane_a1cc9e8685029e39646671ed71f32d47d}} 
+\index{G\+Option\+Pane@{G\+Option\+Pane}!Confirm\+Result@{Confirm\+Result}}
+\index{Confirm\+Result@{Confirm\+Result}!G\+Option\+Pane@{G\+Option\+Pane}}
+\subsubsection{\texorpdfstring{Confirm\+Result}{ConfirmResult}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{classGOptionPane_a1cc9e8685029e39646671ed71f32d47d}{Confirm\+Result}}}
+
+
+
+The various results that can be returned from some option dialogs. 
+
+\mbox{\hyperlink{classNote}{Note}} that NO has the value 0 and Y\+E\+S/\+OK have nonzero values, so you can use a Confirm\+Result in a boolean context. \begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{C\+A\+N\+C\+EL@{C\+A\+N\+C\+EL}!G\+Option\+Pane@{G\+Option\+Pane}}\index{G\+Option\+Pane@{G\+Option\+Pane}!C\+A\+N\+C\+EL@{C\+A\+N\+C\+EL}}}\mbox{\Hypertarget{classGOptionPane_a1cc9e8685029e39646671ed71f32d47dae4842754cb17e5234637e3a85a7f3d90}\label{classGOptionPane_a1cc9e8685029e39646671ed71f32d47dae4842754cb17e5234637e3a85a7f3d90}} 
+C\+A\+N\+C\+EL&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{NO@{NO}!G\+Option\+Pane@{G\+Option\+Pane}}\index{G\+Option\+Pane@{G\+Option\+Pane}!NO@{NO}}}\mbox{\Hypertarget{classGOptionPane_a1cc9e8685029e39646671ed71f32d47da0d077f5b932ce05e5b9f30c6087a2f31}\label{classGOptionPane_a1cc9e8685029e39646671ed71f32d47da0d077f5b932ce05e5b9f30c6087a2f31}} 
+NO&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Y\+ES@{Y\+ES}!G\+Option\+Pane@{G\+Option\+Pane}}\index{G\+Option\+Pane@{G\+Option\+Pane}!Y\+ES@{Y\+ES}}}\mbox{\Hypertarget{classGOptionPane_a1cc9e8685029e39646671ed71f32d47da99f136a862ba5c7d16967231c29f09d6}\label{classGOptionPane_a1cc9e8685029e39646671ed71f32d47da99f136a862ba5c7d16967231c29f09d6}} 
+Y\+ES&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OK@{OK}!G\+Option\+Pane@{G\+Option\+Pane}}\index{G\+Option\+Pane@{G\+Option\+Pane}!OK@{OK}}}\mbox{\Hypertarget{classGOptionPane_a1cc9e8685029e39646671ed71f32d47da2bc49ec37d6a5715dd23e85f1ff5bb59}\label{classGOptionPane_a1cc9e8685029e39646671ed71f32d47da2bc49ec37d6a5715dd23e85f1ff5bb59}} 
+OK&\\
+\hline
+
+\end{DoxyEnumFields}
+\mbox{\Hypertarget{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049}\label{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049}} 
+\index{G\+Option\+Pane@{G\+Option\+Pane}!Confirm\+Type@{Confirm\+Type}}
+\index{Confirm\+Type@{Confirm\+Type}!G\+Option\+Pane@{G\+Option\+Pane}}
+\subsubsection{\texorpdfstring{Confirm\+Type}{ConfirmType}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049}{Confirm\+Type}}}
+
+
+
+Types used by show\+Confirm\+Dialog, representing the three kinds of confirmation dialogs\+: Yes/\+No, Yes/\+No/\+Cancel, or O\+K/\+Cancel. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Y\+E\+S\+\_\+\+NO@{Y\+E\+S\+\_\+\+NO}!G\+Option\+Pane@{G\+Option\+Pane}}\index{G\+Option\+Pane@{G\+Option\+Pane}!Y\+E\+S\+\_\+\+NO@{Y\+E\+S\+\_\+\+NO}}}\mbox{\Hypertarget{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049a23d16d66a433471aa62deadacecfc08d}\label{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049a23d16d66a433471aa62deadacecfc08d}} 
+Y\+E\+S\+\_\+\+NO&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Y\+E\+S\+\_\+\+N\+O\+\_\+\+C\+A\+N\+C\+EL@{Y\+E\+S\+\_\+\+N\+O\+\_\+\+C\+A\+N\+C\+EL}!G\+Option\+Pane@{G\+Option\+Pane}}\index{G\+Option\+Pane@{G\+Option\+Pane}!Y\+E\+S\+\_\+\+N\+O\+\_\+\+C\+A\+N\+C\+EL@{Y\+E\+S\+\_\+\+N\+O\+\_\+\+C\+A\+N\+C\+EL}}}\mbox{\Hypertarget{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049a1c39d83120c95b0b233ddde75ee298b6}\label{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049a1c39d83120c95b0b233ddde75ee298b6}} 
+Y\+E\+S\+\_\+\+N\+O\+\_\+\+C\+A\+N\+C\+EL&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{O\+K\+\_\+\+C\+A\+N\+C\+EL@{O\+K\+\_\+\+C\+A\+N\+C\+EL}!G\+Option\+Pane@{G\+Option\+Pane}}\index{G\+Option\+Pane@{G\+Option\+Pane}!O\+K\+\_\+\+C\+A\+N\+C\+EL@{O\+K\+\_\+\+C\+A\+N\+C\+EL}}}\mbox{\Hypertarget{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049ade4e249d688548d74ae16c0feb84728c}\label{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049ade4e249d688548d74ae16c0feb84728c}} 
+O\+K\+\_\+\+C\+A\+N\+C\+EL&\\
+\hline
+
+\end{DoxyEnumFields}
+\mbox{\Hypertarget{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013}\label{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013}} 
+\index{G\+Option\+Pane@{G\+Option\+Pane}!Message\+Type@{Message\+Type}}
+\index{Message\+Type@{Message\+Type}!G\+Option\+Pane@{G\+Option\+Pane}}
+\subsubsection{\texorpdfstring{Message\+Type}{MessageType}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013}{Message\+Type}}}
+
+
+
+Types used by show\+Message\+Dialog, representing the various kinds of message dialogs. 
+
+The type often slightly varies the dialog\textquotesingle{}s appearance, such as changing its icons or font. \begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{E\+R\+R\+OR@{E\+R\+R\+OR}!G\+Option\+Pane@{G\+Option\+Pane}}\index{G\+Option\+Pane@{G\+Option\+Pane}!E\+R\+R\+OR@{E\+R\+R\+OR}}}\mbox{\Hypertarget{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013a2fd6f336d08340583bd620a7f5694c90}\label{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013a2fd6f336d08340583bd620a7f5694c90}} 
+E\+R\+R\+OR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{I\+N\+F\+O\+R\+M\+A\+T\+I\+ON@{I\+N\+F\+O\+R\+M\+A\+T\+I\+ON}!G\+Option\+Pane@{G\+Option\+Pane}}\index{G\+Option\+Pane@{G\+Option\+Pane}!I\+N\+F\+O\+R\+M\+A\+T\+I\+ON@{I\+N\+F\+O\+R\+M\+A\+T\+I\+ON}}}\mbox{\Hypertarget{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013ad2d78669dc69197336728cd0b2845b96}\label{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013ad2d78669dc69197336728cd0b2845b96}} 
+I\+N\+F\+O\+R\+M\+A\+T\+I\+ON&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{P\+L\+A\+IN@{P\+L\+A\+IN}!G\+Option\+Pane@{G\+Option\+Pane}}\index{G\+Option\+Pane@{G\+Option\+Pane}!P\+L\+A\+IN@{P\+L\+A\+IN}}}\mbox{\Hypertarget{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013a8386f3e3e7be0b7b603636867c133a5d}\label{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013a8386f3e3e7be0b7b603636867c133a5d}} 
+P\+L\+A\+IN&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{W\+A\+R\+N\+I\+NG@{W\+A\+R\+N\+I\+NG}!G\+Option\+Pane@{G\+Option\+Pane}}\index{G\+Option\+Pane@{G\+Option\+Pane}!W\+A\+R\+N\+I\+NG@{W\+A\+R\+N\+I\+NG}}}\mbox{\Hypertarget{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013a984de77c680eaff141ec910e25568a81}\label{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013a984de77c680eaff141ec910e25568a81}} 
+W\+A\+R\+N\+I\+NG&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Q\+U\+E\+S\+T\+I\+ON@{Q\+U\+E\+S\+T\+I\+ON}!G\+Option\+Pane@{G\+Option\+Pane}}\index{G\+Option\+Pane@{G\+Option\+Pane}!Q\+U\+E\+S\+T\+I\+ON@{Q\+U\+E\+S\+T\+I\+ON}}}\mbox{\Hypertarget{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013ad126f509c35e1661274f8b72693c7848}\label{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013ad126f509c35e1661274f8b72693c7848}} 
+Q\+U\+E\+S\+T\+I\+ON&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{A\+B\+O\+UT@{A\+B\+O\+UT}!G\+Option\+Pane@{G\+Option\+Pane}}\index{G\+Option\+Pane@{G\+Option\+Pane}!A\+B\+O\+UT@{A\+B\+O\+UT}}}\mbox{\Hypertarget{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013aaef4dc1e4f450a4c9e61a3699d75af0a}\label{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013aaef4dc1e4f450a4c9e61a3699d75af0a}} 
+A\+B\+O\+UT&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classGOptionPane_a5aa43cc516e91b8befcd129ac11ebc96}\label{classGOptionPane_a5aa43cc516e91b8befcd129ac11ebc96}} 
+\index{G\+Option\+Pane@{G\+Option\+Pane}!show\+Confirm\+Dialog@{show\+Confirm\+Dialog}}
+\index{show\+Confirm\+Dialog@{show\+Confirm\+Dialog}!G\+Option\+Pane@{G\+Option\+Pane}}
+\subsubsection{\texorpdfstring{show\+Confirm\+Dialog()}{showConfirmDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classGOptionPane_a1cc9e8685029e39646671ed71f32d47d}{G\+Option\+Pane\+::\+Confirm\+Result}} show\+Confirm\+Dialog (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{message,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{\mbox{\hyperlink{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049}{Confirm\+Type}}}]{type = {\ttfamily \mbox{\hyperlink{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049a23d16d66a433471aa62deadacecfc08d}{Y\+E\+S\+\_\+\+NO}}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Pops up a yes/no confirmation box. 
+
+Once the user clicks a button to close the box, one of the G\+Option\+Pane\+Result enumeration constants is returned. The caller can supply an optional window title; if none is passed, a default is used. \mbox{\Hypertarget{classGOptionPane_a67b4bfe05d029f3575a4b9e341e786ec}\label{classGOptionPane_a67b4bfe05d029f3575a4b9e341e786ec}} 
+\index{G\+Option\+Pane@{G\+Option\+Pane}!show\+Confirm\+Dialog@{show\+Confirm\+Dialog}}
+\index{show\+Confirm\+Dialog@{show\+Confirm\+Dialog}!G\+Option\+Pane@{G\+Option\+Pane}}
+\subsubsection{\texorpdfstring{show\+Confirm\+Dialog()}{showConfirmDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classGOptionPane_a1cc9e8685029e39646671ed71f32d47d}{G\+Option\+Pane\+::\+Confirm\+Result}} show\+Confirm\+Dialog (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classGWindow}{G\+Window}} $\ast$}]{parent,  }\item[{const std\+::string \&}]{message,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{\mbox{\hyperlink{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049}{Confirm\+Type}}}]{type = {\ttfamily \mbox{\hyperlink{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049a23d16d66a433471aa62deadacecfc08d}{Y\+E\+S\+\_\+\+NO}}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Pops up a yes/no confirmation box. 
+
+Once the user clicks a button to close the box, one of the G\+Option\+Pane\+Result enumeration constants is returned. The caller can supply an optional window title; if none is passed, a default is used. \mbox{\Hypertarget{classGOptionPane_a19401c5fe238589904bc44319cc80b41}\label{classGOptionPane_a19401c5fe238589904bc44319cc80b41}} 
+\index{G\+Option\+Pane@{G\+Option\+Pane}!show\+Confirm\+Dialog@{show\+Confirm\+Dialog}}
+\index{show\+Confirm\+Dialog@{show\+Confirm\+Dialog}!G\+Option\+Pane@{G\+Option\+Pane}}
+\subsubsection{\texorpdfstring{show\+Confirm\+Dialog()}{showConfirmDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classGOptionPane_a1cc9e8685029e39646671ed71f32d47d}{G\+Option\+Pane\+::\+Confirm\+Result}} show\+Confirm\+Dialog (\begin{DoxyParamCaption}\item[{Q\+Widget $\ast$}]{parent,  }\item[{const std\+::string \&}]{message,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{\mbox{\hyperlink{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049}{Confirm\+Type}}}]{type = {\ttfamily \mbox{\hyperlink{classGOptionPane_a6a1aaf19c06f5a6bef89ea6415547049a23d16d66a433471aa62deadacecfc08d}{Y\+E\+S\+\_\+\+NO}}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Pops up a yes/no confirmation box. 
+
+Once the user clicks a button to close the box, one of the G\+Option\+Pane\+Result enumeration constants is returned. The caller can supply an optional window title; if none is passed, a default is used. \mbox{\Hypertarget{classGOptionPane_a50fdc381453e6b8c495e3f9fe07b7bec}\label{classGOptionPane_a50fdc381453e6b8c495e3f9fe07b7bec}} 
+\index{G\+Option\+Pane@{G\+Option\+Pane}!show\+Input\+Dialog@{show\+Input\+Dialog}}
+\index{show\+Input\+Dialog@{show\+Input\+Dialog}!G\+Option\+Pane@{G\+Option\+Pane}}
+\subsubsection{\texorpdfstring{show\+Input\+Dialog()}{showInputDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily std\+::string show\+Input\+Dialog (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{message,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{const std\+::string \&}]{initial\+Value = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Pops up an input box with a text field where the user can type a response, which is returned. 
+
+The caller can supply an optional window title; if none is passed, a default is used. If the user cancels the box, an empty string is returned. \mbox{\Hypertarget{classGOptionPane_a035a6d874c9e81773e7c61305dbecabb}\label{classGOptionPane_a035a6d874c9e81773e7c61305dbecabb}} 
+\index{G\+Option\+Pane@{G\+Option\+Pane}!show\+Input\+Dialog@{show\+Input\+Dialog}}
+\index{show\+Input\+Dialog@{show\+Input\+Dialog}!G\+Option\+Pane@{G\+Option\+Pane}}
+\subsubsection{\texorpdfstring{show\+Input\+Dialog()}{showInputDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily std\+::string show\+Input\+Dialog (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classGWindow}{G\+Window}} $\ast$}]{parent,  }\item[{const std\+::string \&}]{message,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{const std\+::string \&}]{initial\+Value = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Pops up an input box with a text field where the user can type a response, which is returned. 
+
+The caller can supply an optional window title; if none is passed, a default is used. If the user cancels the box, an empty string is returned. \mbox{\Hypertarget{classGOptionPane_aabd3a04a3cdc998ee0e7e7e31676df17}\label{classGOptionPane_aabd3a04a3cdc998ee0e7e7e31676df17}} 
+\index{G\+Option\+Pane@{G\+Option\+Pane}!show\+Input\+Dialog@{show\+Input\+Dialog}}
+\index{show\+Input\+Dialog@{show\+Input\+Dialog}!G\+Option\+Pane@{G\+Option\+Pane}}
+\subsubsection{\texorpdfstring{show\+Input\+Dialog()}{showInputDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily std\+::string show\+Input\+Dialog (\begin{DoxyParamCaption}\item[{Q\+Widget $\ast$}]{parent,  }\item[{const std\+::string \&}]{message,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{const std\+::string \&}]{initial\+Value = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Pops up an input box with a text field where the user can type a response, which is returned. 
+
+The caller can supply an optional window title; if none is passed, a default is used. If the user cancels the box, an empty string is returned. \mbox{\Hypertarget{classGOptionPane_ac72936da553721b532ea51a831a2993a}\label{classGOptionPane_ac72936da553721b532ea51a831a2993a}} 
+\index{G\+Option\+Pane@{G\+Option\+Pane}!show\+Message\+Dialog@{show\+Message\+Dialog}}
+\index{show\+Message\+Dialog@{show\+Message\+Dialog}!G\+Option\+Pane@{G\+Option\+Pane}}
+\subsubsection{\texorpdfstring{show\+Message\+Dialog()}{showMessageDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily void show\+Message\+Dialog (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{message,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{\mbox{\hyperlink{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013}{Message\+Type}}}]{type = {\ttfamily \mbox{\hyperlink{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013a8386f3e3e7be0b7b603636867c133a5d}{P\+L\+A\+IN}}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Displays an output message dialog to the user. 
+
+The user must click the \textquotesingle{}OK\textquotesingle{} button to close the dialog. The caller can supply an optional window title; if none is passed, a default is used. The optional \textquotesingle{}type\textquotesingle{} parameter must be one of P\+L\+A\+I\+N\+\_\+\+M\+E\+S\+S\+A\+GE, I\+N\+F\+O\+R\+M\+A\+T\+I\+O\+N\+\_\+\+M\+E\+S\+S\+A\+GE, W\+A\+R\+N\+I\+N\+G\+\_\+\+M\+E\+S\+S\+A\+GE, or Q\+U\+E\+S\+T\+I\+O\+N\+\_\+\+M\+E\+S\+S\+A\+GE; this slightly affects the dialog\textquotesingle{}s appearance. The default is P\+L\+A\+I\+N\+\_\+\+M\+E\+S\+S\+A\+GE. \mbox{\Hypertarget{classGOptionPane_a72a54f763487c83c587a79611e8ae685}\label{classGOptionPane_a72a54f763487c83c587a79611e8ae685}} 
+\index{G\+Option\+Pane@{G\+Option\+Pane}!show\+Message\+Dialog@{show\+Message\+Dialog}}
+\index{show\+Message\+Dialog@{show\+Message\+Dialog}!G\+Option\+Pane@{G\+Option\+Pane}}
+\subsubsection{\texorpdfstring{show\+Message\+Dialog()}{showMessageDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily void show\+Message\+Dialog (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classGWindow}{G\+Window}} $\ast$}]{parent,  }\item[{const std\+::string \&}]{message,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{\mbox{\hyperlink{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013}{Message\+Type}}}]{type = {\ttfamily \mbox{\hyperlink{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013a8386f3e3e7be0b7b603636867c133a5d}{P\+L\+A\+IN}}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Displays an output message dialog to the user. 
+
+The user must click the \textquotesingle{}OK\textquotesingle{} button to close the dialog. The caller can supply an optional window title; if none is passed, a default is used. The optional \textquotesingle{}type\textquotesingle{} parameter must be one of P\+L\+A\+I\+N\+\_\+\+M\+E\+S\+S\+A\+GE, I\+N\+F\+O\+R\+M\+A\+T\+I\+O\+N\+\_\+\+M\+E\+S\+S\+A\+GE, W\+A\+R\+N\+I\+N\+G\+\_\+\+M\+E\+S\+S\+A\+GE, or Q\+U\+E\+S\+T\+I\+O\+N\+\_\+\+M\+E\+S\+S\+A\+GE; this slightly affects the dialog\textquotesingle{}s appearance. The default is P\+L\+A\+I\+N\+\_\+\+M\+E\+S\+S\+A\+GE. \mbox{\Hypertarget{classGOptionPane_a98590e47196bf04738c2b97e9b7f6d0b}\label{classGOptionPane_a98590e47196bf04738c2b97e9b7f6d0b}} 
+\index{G\+Option\+Pane@{G\+Option\+Pane}!show\+Message\+Dialog@{show\+Message\+Dialog}}
+\index{show\+Message\+Dialog@{show\+Message\+Dialog}!G\+Option\+Pane@{G\+Option\+Pane}}
+\subsubsection{\texorpdfstring{show\+Message\+Dialog()}{showMessageDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily void show\+Message\+Dialog (\begin{DoxyParamCaption}\item[{Q\+Widget $\ast$}]{parent,  }\item[{const std\+::string \&}]{message,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{\mbox{\hyperlink{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013}{Message\+Type}}}]{type = {\ttfamily \mbox{\hyperlink{classGOptionPane_ac6606ebe91c8ac66a2c314c79f5ab013a8386f3e3e7be0b7b603636867c133a5d}{P\+L\+A\+IN}}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Displays an output message dialog to the user. 
+
+The user must click the \textquotesingle{}OK\textquotesingle{} button to close the dialog. The caller can supply an optional window title; if none is passed, a default is used. The optional \textquotesingle{}type\textquotesingle{} parameter must be one of P\+L\+A\+I\+N\+\_\+\+M\+E\+S\+S\+A\+GE, I\+N\+F\+O\+R\+M\+A\+T\+I\+O\+N\+\_\+\+M\+E\+S\+S\+A\+GE, W\+A\+R\+N\+I\+N\+G\+\_\+\+M\+E\+S\+S\+A\+GE, or Q\+U\+E\+S\+T\+I\+O\+N\+\_\+\+M\+E\+S\+S\+A\+GE; this slightly affects the dialog\textquotesingle{}s appearance. The default is P\+L\+A\+I\+N\+\_\+\+M\+E\+S\+S\+A\+GE. \mbox{\Hypertarget{classGOptionPane_ab97ebcd9d5b5827fbb9292b7c045c72f}\label{classGOptionPane_ab97ebcd9d5b5827fbb9292b7c045c72f}} 
+\index{G\+Option\+Pane@{G\+Option\+Pane}!show\+Option\+Dialog@{show\+Option\+Dialog}}
+\index{show\+Option\+Dialog@{show\+Option\+Dialog}!G\+Option\+Pane@{G\+Option\+Pane}}
+\subsubsection{\texorpdfstring{show\+Option\+Dialog()}{showOptionDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily std\+::string show\+Option\+Dialog (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{message,  }\item[{const \mbox{\hyperlink{classVector}{Vector}}$<$ std\+::string $>$ \&}]{options,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{const std\+::string \&}]{initially\+Selected = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Shows a general input box with a set of buttons from which the user may choose one option. 
+
+The button the user clicks is returned as a string. If the user cancels the box, an empty string is returned. The caller can supply an optional window title; if none is passed, a default is used. The caller can supply an optional initially selected value from the list. \mbox{\Hypertarget{classGOptionPane_a611d2c1c7209b39b3c74d9039c28821c}\label{classGOptionPane_a611d2c1c7209b39b3c74d9039c28821c}} 
+\index{G\+Option\+Pane@{G\+Option\+Pane}!show\+Option\+Dialog@{show\+Option\+Dialog}}
+\index{show\+Option\+Dialog@{show\+Option\+Dialog}!G\+Option\+Pane@{G\+Option\+Pane}}
+\subsubsection{\texorpdfstring{show\+Option\+Dialog()}{showOptionDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily std\+::string show\+Option\+Dialog (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classGWindow}{G\+Window}} $\ast$}]{parent,  }\item[{const std\+::string \&}]{message,  }\item[{const \mbox{\hyperlink{classVector}{Vector}}$<$ std\+::string $>$ \&}]{options,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{const std\+::string \&}]{initially\+Selected = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Shows a general input box with a set of buttons from which the user may choose one option. 
+
+The button the user clicks is returned as a string. If the user cancels the box, an empty string is returned. The caller can supply an optional window title; if none is passed, a default is used. The caller can supply an optional initially selected value from the list. \mbox{\Hypertarget{classGOptionPane_ae710ab30d0f4995523abed1180559d35}\label{classGOptionPane_ae710ab30d0f4995523abed1180559d35}} 
+\index{G\+Option\+Pane@{G\+Option\+Pane}!show\+Option\+Dialog@{show\+Option\+Dialog}}
+\index{show\+Option\+Dialog@{show\+Option\+Dialog}!G\+Option\+Pane@{G\+Option\+Pane}}
+\subsubsection{\texorpdfstring{show\+Option\+Dialog()}{showOptionDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily std\+::string show\+Option\+Dialog (\begin{DoxyParamCaption}\item[{Q\+Widget $\ast$}]{parent,  }\item[{const std\+::string \&}]{message,  }\item[{const \mbox{\hyperlink{classVector}{Vector}}$<$ std\+::string $>$ \&}]{options,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{const std\+::string \&}]{initially\+Selected = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Shows a general input box with a set of buttons from which the user may choose one option. 
+
+The button the user clicks is returned as a string. If the user cancels the box, an empty string is returned. The caller can supply an optional window title; if none is passed, a default is used. The caller can supply an optional initially selected value from the list. \mbox{\Hypertarget{classGOptionPane_ac23d3f6bc00fb83d71f7168bfe162abf}\label{classGOptionPane_ac23d3f6bc00fb83d71f7168bfe162abf}} 
+\index{G\+Option\+Pane@{G\+Option\+Pane}!show\+Text\+File\+Dialog@{show\+Text\+File\+Dialog}}
+\index{show\+Text\+File\+Dialog@{show\+Text\+File\+Dialog}!G\+Option\+Pane@{G\+Option\+Pane}}
+\subsubsection{\texorpdfstring{show\+Text\+File\+Dialog()}{showTextFileDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily void show\+Text\+File\+Dialog (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{message,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{int}]{rows = {\ttfamily -\/1},  }\item[{int}]{cols = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Displays the given text in a scrolling monospaced text area. 
+
+rows/cols parameters control size to show; set to $<$= 0 for a default limit. \mbox{\Hypertarget{classGOptionPane_a7e1e9057ebd16b8769a93dba306a9f55}\label{classGOptionPane_a7e1e9057ebd16b8769a93dba306a9f55}} 
+\index{G\+Option\+Pane@{G\+Option\+Pane}!show\+Text\+File\+Dialog@{show\+Text\+File\+Dialog}}
+\index{show\+Text\+File\+Dialog@{show\+Text\+File\+Dialog}!G\+Option\+Pane@{G\+Option\+Pane}}
+\subsubsection{\texorpdfstring{show\+Text\+File\+Dialog()}{showTextFileDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily void show\+Text\+File\+Dialog (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classGWindow}{G\+Window}} $\ast$}]{parent,  }\item[{const std\+::string \&}]{message,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{int}]{rows = {\ttfamily -\/1},  }\item[{int}]{cols = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Displays the given text in a scrolling monospaced text area. 
+
+rows/cols parameters control size to show; set to $<$= 0 for a default limit. \mbox{\Hypertarget{classGOptionPane_a684cc543d7d7cb206355b534e261d0c9}\label{classGOptionPane_a684cc543d7d7cb206355b534e261d0c9}} 
+\index{G\+Option\+Pane@{G\+Option\+Pane}!show\+Text\+File\+Dialog@{show\+Text\+File\+Dialog}}
+\index{show\+Text\+File\+Dialog@{show\+Text\+File\+Dialog}!G\+Option\+Pane@{G\+Option\+Pane}}
+\subsubsection{\texorpdfstring{show\+Text\+File\+Dialog()}{showTextFileDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily void show\+Text\+File\+Dialog (\begin{DoxyParamCaption}\item[{Q\+Widget $\ast$}]{parent,  }\item[{const std\+::string \&}]{message,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{int}]{rows = {\ttfamily -\/1},  }\item[{int}]{cols = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Displays the given text in a scrolling monospaced text area. 
+
+rows/cols parameters control size to show; set to $<$= 0 for a default limit. 

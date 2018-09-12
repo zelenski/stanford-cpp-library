@@ -11,6 +11,7 @@
 
 #include "point.h"
 #include <string>
+#include "gtypes.h"
 #include "hashcode.h"
 #include "strlib.h"
 
@@ -22,6 +23,11 @@ Point::Point() {
 Point::Point(int x, int y) {
     this->x = x;
     this->y = y;
+}
+
+Point::Point(const GPoint& point) {
+    this->x = (int) point.getX();
+    this->y = (int) point.getY();
 }
 
 int Point::getX() const {

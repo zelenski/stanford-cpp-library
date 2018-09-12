@@ -17,12 +17,8 @@
 
 namespace stanfordcpplib {
 
-extern void endLineConsole(bool isStderr);
-extern std::string getLineConsole();
-extern void putConsole(const std::string& str, bool isStderr);
-
 class ConsoleStreambuf : public std::streambuf {
-private:
+protected:
     /* Constants */
     static const int BUFFER_SIZE = 4096;
 
@@ -30,6 +26,13 @@ private:
     char inBuffer[BUFFER_SIZE];
     char outBuffer[BUFFER_SIZE];
     int blocked;
+
+    // to be overridden in subclasses
+    virtual void myEndLineConsole(bool isStderr) = 0;
+
+    virtual std::string myGetLineConsole() = 0;
+
+    virtual void myPutConsole(const std::string& str, bool isStderr) = 0;
 
 public:
     ConsoleStreambuf() {
@@ -42,7 +45,7 @@ public:
         /* Empty */
     }
 
-    bool isBlocked() {
+    virtual bool isBlocked() {
         return blocked > 0;
     }
 
@@ -54,15 +57,15 @@ public:
         std::string line = "";
         for (char *cp = pbase(); cp < pptr(); cp++) {
             if (*cp == '\n') {
-                putConsole(line, isStderr);
-                endLineConsole(isStderr);
+                myPutConsole(line, isStderr);
+                myEndLineConsole(isStderr);
                 line = "";
             } else {
                 line += *cp;
             }
         }
         if (line != "") {
-            putConsole(line, isStderr);
+            myPutConsole(line, isStderr);
         }
         setp(outBuffer, outBuffer + BUFFER_SIZE);
         if (ch != EOF) {
@@ -83,8 +86,16 @@ public:
     virtual int underflow() {
         // Allow long strings at some point
         blocked++;
-        std::string line = getLineConsole();
+        std::string line = myGetLineConsole();
         blocked--;
+
+        bool eof = std::cin.eof();
+        fflush(stdout);
+
+        if (eof) {
+            return EOF;
+        }
+
         int n = line.length();
         if (n + 1 >= BUFFER_SIZE) {
             error("ConsoleStreambuf::underflow: String too long");
@@ -98,6 +109,48 @@ public:
         return inBuffer[0];
     }
 };
+
+namespace qtgui {
+
+extern void endLineConsoleQt(bool isStderr);
+extern std::string getLineConsoleQt();
+extern void putConsoleQt(const std::string& str, bool isStderr);
+
+/*
+ * The following class is an exact copy of the ConsoleStreambuf class above,
+ * except using different Qt-related functions for output.
+ */
+class ConsoleStreambufQt : public ::stanfordcpplib::ConsoleStreambuf {
+public:
+    ConsoleStreambufQt(bool isStderr = false)
+            : ConsoleStreambuf(),
+              _isStderr(isStderr) {
+        // empty
+    }
+
+    ~ConsoleStreambufQt() {
+        /* Empty */
+    }
+
+protected:
+    virtual void myEndLineConsole(bool /* isStderr */) {
+        endLineConsoleQt(_isStderr);
+    }
+
+    virtual std::string myGetLineConsole() {
+        return getLineConsoleQt();
+    }
+
+    virtual void myPutConsole(const std::string& str, bool /* isStderr */) {
+        return putConsoleQt(str, _isStderr);
+    }
+
+private:
+    bool _isStderr;
+};
+
+} // namespace qtgui
+
 } // namespace stanfordcpplib
 
 #endif // _consolestreambuf_h

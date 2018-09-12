@@ -1,0 +1,397 @@
+<html>
+<head>
+<title>GObject</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="gobjects.html">#include "gobjects.h"</a></div>
+<h1 class=header><code>class GObject</code></h1>
+This class is the common superclass of all graphical objects that can
+be displayed on a graphical window.  The class <code>GObject</code>
+itself is an <b><i>abstract class</i></b>, which means that you are not
+allowed to construct a <code>GObject</code> directly but must instead
+construct one of the concrete subclasses.
+These subclasses form a hierarchy that looks like this:
+
+<p><div class=inset>
+<img src="images/GObjectHierarchy.png"
+     width=768 usemap="#GObjectMap" alt="GObjectHierarchy">
+</div>
+<map name="GObjectMap">
+  <area shape=rect coords="0,177,86,204" href="GArc-class.html"
+        alt="GArc">
+  <area shape=rect coords="98,177,184,204" href="GImage-class.html"
+        alt="GImage">
+  <area shape=rect coords="195,177,281,204" href="GLabel-class.html"
+        alt="GLabel">
+  <area shape=rect coords="293,177,379,204" href="GLine-class.html"
+        alt="GLine">
+  <area shape=rect coords="390,177,476,204" href="GOval-class.html"
+        alt="GOval">
+  <area shape=rect coords="488,177,574,204" href="GRect-class.html"
+        alt="GRect">
+  <area shape=rect coords="585,177,671,204" href="GPolygon-class.html"
+        alt="GPolygon">
+  <area shape=rect coords="683,177,769,204" href="GCompound-class.html"
+        alt="GCompound">
+  <area shape=rect coords="439,270,525,297" href="G3DRect-class.html"
+        alt="G3DRect">
+  <area shape=rect coords="536,270,622,297" href="GRoundRect-class.html"
+        alt="GRoundRect">
+</map>
+
+<p>Most methods used for graphics take a pointer to a <code>GObject</code>
+rather than the <code>GObject</code> itself.  Applications that use
+<code>GObject</code> pointers therefore use the arrow operator
+(<code>-&gt;</code>) to apply methods to the object pointer.
+For examples illustrating the use of the <code>GObject</code> class, see
+the descriptions of the individual subclasses.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Methods</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:contains">contains(<var>pt</var>)</a><br>
+<a href="#Method:contains">contains(<var>x</var>,&nbsp;<var>y</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the specified point is inside the object.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getBounds">getBounds()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the bounding box of this object, which is defined to be the smallest rectangle that covers everything drawn by the figure.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getColor">getColor()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the color used to display this object.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getHeight">getHeight()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the height of this object, which is defined to be the height of the bounding box.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getLocation">getLocation()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the location of this object as a <code>GPoint</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getParent">getParent()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a pointer to the <code>GCompound</code> that contains this object.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getSize">getSize()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the size of the object as a <code>GDimension</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getType">getType()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the concrete type of the object as a string, as in <code>"GOval"</code> or <code>"GRect"</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getWidth">getWidth()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the width of this object, which is defined to be the width of the bounding box.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getX">getX()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <i>x</i>-coordinate of the object.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getY">getY()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <i>y</i>-coordinate of the object.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:isVisible">isVisible()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if this object is visible.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:move">move(<var>dx</var>,&nbsp;<var>dy</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Moves the object on the screen using the displacements <code>dx</code> and <code>dy</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:sendBackward">sendBackward()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Moves this object one step toward the back in the <i>z</i> dimension.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:sendForward">sendForward()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Moves this object one step toward the front in the <i>z</i> dimension.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:sendToBack">sendToBack()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Moves this object to the back of the display in the <i>z</i> dimension.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:sendToFront">sendToFront()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Moves this object to the front of the display in the <i>z</i> dimension.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setColor">setColor(<var>color</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the color used to display this object.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setLocation">setLocation(<var>pt</var>)</a><br>
+<a href="#Method:setLocation">setLocation(<var>x</var>,&nbsp;<var>y</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the location of this object to the specified point.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setVisible">setVisible(<var>flag</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets whether this object is visible.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a printable representation of the object.</td></tr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:getX"></a>
+<pre class=detailCode>
+double getX() const;
+</pre>
+<div class=detailHTML>
+Returns the <i>x</i>-coordinate of the object.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double x = gobj-&gt;getX();
+</pre>
+<hr>
+<a name="Method:getY"></a>
+<pre class=detailCode>
+double getY() const;
+</pre>
+<div class=detailHTML>
+Returns the <i>y</i>-coordinate of the object.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double y = gobj-&gt;getY();
+</pre>
+<hr>
+<a name="Method:getLocation"></a>
+<pre class=detailCode>
+GPoint getLocation() const;
+</pre>
+<div class=detailHTML>
+Returns the location of this object as a <code>GPoint</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GPoint pt = gobj-&gt;getLocation();
+</pre>
+<hr>
+<a name="Method:setLocation"></a>
+<pre class=detailCode>
+void setLocation(const GPoint&amp; pt);
+void setLocation(double x, double y);
+</pre>
+<div class=detailHTML>
+Sets the location of this object to the specified point.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gobj-&gt;setLocation(pt);
+gobj-&gt;setLocation(x, y);
+</pre>
+<hr>
+<a name="Method:move"></a>
+<pre class=detailCode>
+void move(double dx, double dy);
+</pre>
+<div class=detailHTML>
+Moves the object on the screen using the displacements
+<code>dx</code> and <code>dy</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gobj-&gt;move(dx, dy);
+</pre>
+<hr>
+<a name="Method:getWidth"></a>
+<pre class=detailCode>
+double getWidth() const;
+</pre>
+<div class=detailHTML>
+Returns the width of this object, which is defined to be the width of
+the bounding box.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double width = gobj-&gt;getWidth();
+</pre>
+<hr>
+<a name="Method:getHeight"></a>
+<pre class=detailCode>
+double getHeight() const;
+</pre>
+<div class=detailHTML>
+Returns the height of this object, which is defined to be the height
+of the bounding box.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double height = gobj-&gt;getHeight();
+</pre>
+<hr>
+<a name="Method:getSize"></a>
+<pre class=detailCode>
+GDimension getSize() const;
+</pre>
+<div class=detailHTML>
+Returns the size of the object as a <code>GDimension</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GDimension size = gobj-&gt;getSize();
+</pre>
+<hr>
+<a name="Method:getBounds"></a>
+<pre class=detailCode>
+GRectangle getBounds() const;
+</pre>
+<div class=detailHTML>
+Returns the bounding box of this object, which is defined to be the
+smallest rectangle that covers everything drawn by the figure.  The
+coordinates of this rectangle do not necessarily match the location
+returned by <code>getLocation</code>.  Given a <code>GLabel</code>
+object, for example, <code>getLocation</code> returns the coordinates
+of the point on the baseline at which the string begins; the
+<code>getBounds</code> method, by contrast, returns a rectangle that
+covers the entire window area occupied by the string.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GRectangle rect = gobj-&gt;getBounds();
+</pre>
+<hr>
+<a name="Method:setColor"></a>
+<pre class=detailCode>
+void setColor(string color);
+void setColor(int rgb);
+</pre>
+<div class=detailHTML>
+Sets the color used to display this object.  The <code>color</code>
+string is usually one of the predefined color names:
+
+   <code>BLACK</code>,
+   <code>BLUE</code>,
+   <code>CYAN</code>,
+   <code>DARK_GRAY</code>,
+   <code>GRAY</code>,
+   <code>GREEN</code>,
+   <code>LIGHT_GRAY</code>,
+   <code>MAGENTA</code>,
+   <code>ORANGE</code>,
+   <code>PINK</code>,
+   <code>RED</code>,
+   <code>WHITE</code>, and
+   <code>YELLOW</code>.
+
+The case of the individual letters in the color name is ignored, as
+are spaces and underscores, so that the color <code>DARK_GRAY</code>
+can be written as <code>"Dark Gray"</code>.
+
+<p>The color can also be specified as a string in the form
+<code>"#rrggbb"</code> where <code>rr</code>, <code>gg</code>, and
+<code>bb</code> are pairs of hexadecimal digits indicating the
+red, green, and blue components of the color, respectively.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gobj-&gt;setColor(color);
+</pre>
+<hr>
+<a name="Method:getColor"></a>
+<pre class=detailCode>
+string getColor() const;
+</pre>
+<div class=detailHTML>
+Returns the color used to display this object.  This color is
+always returned as a string in the form <code>"#rrggbb"</code>,
+where <code>rr</code>, <code>gg</code>, and <code>bb</code> are
+the red, green, and blue components of the color, expressed as
+two-digit hexadecimal values.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string color = gobj-&gt;getColor();
+</pre>
+<hr>
+<a name="Method:setVisible"></a>
+<pre class=detailCode>
+void setVisible(bool flag);
+</pre>
+<div class=detailHTML>
+Sets whether this object is visible.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gobj-&gt;setVisible(flag);
+</pre>
+<hr>
+<a name="Method:isVisible"></a>
+<pre class=detailCode>
+bool isVisible() const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if this object is visible.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (gobj-&gt;isVisible()) ...
+</pre>
+<hr>
+<a name="Method:sendForward"></a>
+<pre class=detailCode>
+void sendForward();
+</pre>
+<div class=detailHTML>
+Moves this object one step toward the front in the <i>z</i> dimension.
+If it was already at the front of the stack, nothing happens.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gobj-&gt;sendForward();
+</pre>
+<hr>
+<a name="Method:sendToFront"></a>
+<pre class=detailCode>
+void sendToFront();
+</pre>
+<div class=detailHTML>
+Moves this object to the front of the display in the <i>z</i> dimension.
+By moving it to the front, this object will appear to be on top of the
+other graphical objects on the display and may hide any objects that
+are further back.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gobj-&gt;sendToFront();
+</pre>
+<hr>
+<a name="Method:sendBackward"></a>
+<pre class=detailCode>
+void sendBackward();
+</pre>
+<div class=detailHTML>
+Moves this object one step toward the back in the <i>z</i> dimension.
+If it was already at the back of the stack, nothing happens.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gobj-&gt;sendBackward();
+</pre>
+<hr>
+<a name="Method:sendToBack"></a>
+<pre class=detailCode>
+void sendToBack();
+</pre>
+<div class=detailHTML>
+Moves this object to the back of the display in the <i>z</i> dimension.
+By moving it to the back, this object will appear to be behind the other
+graphical objects on the display and may be obscured by other objects
+in front.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gobj-&gt;sendToBack();
+</pre>
+<hr>
+<a name="Method:contains"></a>
+<pre class=detailCode>
+bool contains(GPoint pt) const;
+bool contains(double x, double y) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the specified point is inside the object.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (gobj-&gt;contains(pt)) ...
+if (gobj-&gt;contains(x, y)) ...
+</pre>
+<hr>
+<a name="Method:getType"></a>
+<pre class=detailCode>
+string getType() const;
+</pre>
+<div class=detailHTML>
+Returns the concrete type of the object as a string, as in
+<code>"GOval"</code> or <code>"GRect"</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string type = gobj-&gt;getType();
+</pre>
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Returns a printable representation of the object.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gobj-&gt;toString();
+</pre>
+<hr>
+<a name="Method:getParent"></a>
+<pre class=detailCode>
+GCompound* getParent() const;
+</pre>
+<div class=detailHTML>
+Returns a pointer to the <code>GCompound</code> that contains this
+object.  Every <code>GWindow</code> is initialized to contain a single
+<code>GCompound</code> that is aligned with the window.  Adding
+objects to the window adds them to that <code>GCompound</code>,
+which means that every object you add to the window has a parent.
+Calling <code>getParent</code> on the top-level <code>GCompound</code>
+returns <code>NULL</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GCompound* parent = gobj-&gt;getParent();
+</pre>
+<hr>
+</table>
+</body>
+</html>

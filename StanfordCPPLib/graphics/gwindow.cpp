@@ -1,998 +1,756 @@
 /*
  * File: gwindow.cpp
  * -----------------
- * This file implements the GWindow class, passing most calls directly
- * to the appropriate methods in the Platform class, which is implemented
- * separately for each architecture.
- * 
- * @version 2017/12/18
- * - added drawImage
- * @version 2017/10/25
- * - fixed bug where clearCanvas didn't clear gwd->top
- * @version 2017/10/16
- * - added add, remove that accept GObject references (avoid pointers)
- * @version 2017/10/12
- * - made setRepaintImmediately notify back-end
- * @version 2017/10/05
- * - added autograder::get/clear/closeLastGWindow
- * @version 2016/11/24
- * - added setCloseOperation
- * @version 2016/11/02
- * - added drawString, setFont methods
- * @version 2016/10/26
- * - bug fix for compiler error in clang for getAlignment/Region
- * @version 2016/10/18
- * - fixed alpha bugs in get/setPixels
- * - added get/setPixel[s]ARGB to retain transparency channel
- * @version 2016/10/16
- * - added get/setPixel[s], get/setWidth/Height
- * - alphabetized methods
- * @version 2016/10/08
- * - added toBack/Front
- * @version 2016/10/07
- * - added getCanvasWidth, getCanvasHeight methods
- * @version 2016/10/04
- * - removed all static variables (replaced with STATIC_VARIABLE macros)
- * @version 2016/08/02
- * - added saveCanvasPixels method
- * - re-enabled setVisible(bool) method
- * @version 2016/07/22
- * - fixed autograder bug with exit() call in notifyOnClose function
- * @version 2015/07/05
- * - removed static global Platform variable, replaced by getPlatform as needed
- * @version 2014/11/20
- * - added clearCanvas method
- * @version 2014/11/18
- * - added setResizable method
- * @version 2014/10/13
- * - added gwindowSetExitGraphicsEnabled function for autograders
- * - removed 'using namespace' statement
+ *
+ * @version 2018/09/05
+ * - refactored to use a border layout GContainer "content pane" for storing all interactors
+ * @version 2018/08/23
+ * - renamed to gwindow.h to replace Java version
+ * @version 2018/07/03
+ * - thread safety code
+ * @version 2018/07/01
+ * - 2D graphics/painting functions
+ * @version 2018/06/25
+ * - initial version
  */
 
 #include "gwindow.h"
-#include <cstdarg>
-#include <iomanip>
-#include <iostream>
-#include <sstream>
-#include <string>
-#include "gbufferedimage.h"
-#include "gevents.h"
-#include "gmath.h"
-#include "gobjects.h"
-#include "gtypes.h"
-#include "map.h"
+#include <QDesktopWidget>
+#include <QMenu>
+#include <QMenuBar>
+#include <QSizePolicy>
+#include <QStatusBar>
+#include <QThread>
+#include <QTimer>
+#include "filelib.h"
+#include "gcolor.h"
+#include "glabel.h"
+#include "gthread.h"
+#include "qtgui.h"
+#include "require.h"
 #include "strlib.h"
-#include "vector.h"
-#include "private/platform.h"
-#include "private/static.h"
 
-/* Constants */
+_Internal_QMainWindow* GWindow::_lastWindow = nullptr;
+const int GWindow::DEFAULT_WIDTH = 500;
+const int GWindow::DEFAULT_HEIGHT = 300;
+const std::string GWindow::DEFAULT_ICON_FILENAME = "splicon-large.png";
 
-// variables and functions for auditing calls to pause();
-// used to facilitate creation of autograde programs
-STATIC_VARIABLE_DECLARE(int, gwindowPauses, 0)
-STATIC_VARIABLE_DECLARE(double, gwindowLastPauseMS, 0.0)
-STATIC_VARIABLE_DECLARE(bool, gwindowExitGraphicsEnabled, true)
-STATIC_VARIABLE_DECLARE(bool, gwindowPauseEnabled, true)
+GWindow::GWindow(bool visible)
+        : _iqmainwindow(nullptr),
+          _contentPane(nullptr),
+          _canvas(nullptr),
+          _resizable(true),
+          _closeOperation(GWindow::CLOSE_DISPOSE) {
+    _init(DEFAULT_WIDTH, DEFAULT_HEIGHT, visible);
+}
 
-/* Private function prototypes */
+GWindow::GWindow(double width, double height, bool visible)
+        : _iqmainwindow(nullptr),
+          _contentPane(nullptr),
+          _canvas(nullptr),
+          _resizable(true),
+          _closeOperation(GWindow::CLOSE_DISPOSE) {
+    _init(width, height, visible);
+}
 
-static std::string canonicalColorName(const std::string& str);
-static int fixAlpha(int argb);
+GWindow::GWindow(double x, double y, double width, double height, bool visible)
+        : _iqmainwindow(nullptr),
+          _contentPane(nullptr),
+          _canvas(nullptr),
+          _resizable(true),
+          _closeOperation(GWindow::CLOSE_DISPOSE) {
+    _init(width, height, visible);
+    setLocation(x, y);
+}
 
-/*
- * Global variable: colorTable
- * ---------------------------
- * This variable holds the translation table that maps colors into
- * their RGB values.  This color table is shared throughout the
- * application and cannot be manipulated by any clients.  If you
- * need to define color names for application specific colors, you
- * should do so by defining string constants with the appropriate
- * hexadecimal values, as in
- *
- *     const string MAGENTA = "0xFF00FF";
- */
-
-static Map<std::string, int>& colorTable() {
-    static Map<std::string, int> __colorTable;
-    if (__colorTable.isEmpty()) {
-        __colorTable["black"] = 0x000000;
-        __colorTable["blue"] = 0x0000FF;
-        __colorTable["brown"] = 0x926239;
-        __colorTable["cyan"] = 0x00FFFF;
-        __colorTable["darkgray"] = 0x595959;
-        __colorTable["gray"] = 0x999999;
-        __colorTable["green"] = 0x00FF00;
-        __colorTable["lightgray"] = 0xBFBFBF;
-        __colorTable["magenta"] = 0xFF00FF;
-        __colorTable["orange"] = 0xFFC800;
-        __colorTable["pink"] = 0xFFAFAF;
-        __colorTable["purple"] = 0xFF00FF;
-        __colorTable["red"] = 0xFF0000;
-        __colorTable["white"] = 0xFFFFFF;
-        __colorTable["yellow"] = 0xFFFF00;
+void GWindow::_init(double width, double height, bool visible) {
+    require::nonNegative2D(width, height, "GWindow::constructor", "width", "height");
+    if (width == 0) {
+        width = DEFAULT_WIDTH;
     }
-    return __colorTable;
-}
-
-namespace autograder {
-STATIC_VARIABLE_DECLARE(bool, __lastGWindowDataEnabled, false)
-STATIC_VARIABLE_DECLARE_COLLECTION_EMPTY(Vector<GWindowData*>, __lastGWindowData)
-
-// private function to be called by GWindow objects
-static void gwindowPrevDataAdd(GWindowData* gwd) {
-    if (gwindowPrevDataIsStarted() && gwd) {
-        STATIC_VARIABLE(__lastGWindowData).add(gwd);
+    if (height == 0) {
+        height = DEFAULT_HEIGHT;
     }
-}
 
-const Vector<GWindowData*>& gwindowPrevDataAll() {
-    return STATIC_VARIABLE(__lastGWindowData);
-}
+    GThread::runOnQtGuiThread([this, width, height, visible]() {
+        QtGui::instance()->initializeQt();
+        _iqmainwindow = new _Internal_QMainWindow(this);
+        _lastWindow = _iqmainwindow;
 
-void gwindowPrevDataCloseAll() {
-    Vector<GWindowData*>& vec = STATIC_VARIABLE(__lastGWindowData);
-    for (int i = vec.size() - 1; i >= 0; i--) {
-        GWindowData* gwd = vec[i];
-        if (gwd && gwd->visible) {
-            GWindow gw(gwd);
-            gw.setCloseOperation(GWindow::CLOSE_DISPOSE);
-            gw.close();
-        }
-    }
-    STATIC_VARIABLE(__lastGWindowData).clear();
-    pause(100);   // give it a sec to sink in yo
-}
+        _contentPane = new GContainer(GContainer::LAYOUT_BORDER);
+        _iqmainwindow->setCentralWidget(_contentPane->getWidget());
 
-GWindowData* gwindowPrevDataGetLast() {
-    Vector<GWindowData*>& vec = STATIC_VARIABLE(__lastGWindowData);
-    if (vec.isEmpty()) {
-        return nullptr;
-    } else {
-        return vec[vec.size() - 1];
-    }
-}
+        setSize(width, height);
 
-bool gwindowPrevDataIsStarted() {
-    return STATIC_VARIABLE(__lastGWindowDataEnabled);
-}
+        setWindowIcon(DEFAULT_ICON_FILENAME);
+        setVisible(visible);
 
-// private function to be called by GWindow objects
-// (commented out because unused)
-//static void gwindowPrevDataRemove(GWindowData* gwd) {
-//    if (gwindowPrevDataIsStarted() && gwd) {
-//        Vector<GWindowData*>& vec = STATIC_VARIABLE(__lastGWindowData);
-//        for (int i = 0; i < vec.size(); i++) {
-//            if (vec[i] == gwd) {
-//                vec.remove(i);
-//                break;
-//            }
-//        }
-//    }
-//}
-
-void gwindowPrevDataStart() {
-    STATIC_VARIABLE(__lastGWindowDataEnabled) = true;
-    STATIC_VARIABLE(__lastGWindowData).clear();
-}
-
-void gwindowPrevDataStop() {
-    STATIC_VARIABLE(__lastGWindowDataEnabled) = false;
-    STATIC_VARIABLE(__lastGWindowData).clear();
-}
-
-void gwindowRememberPosition(GWindow& gw) {
-    stanfordcpplib::getPlatform()->gwindow_rememberPosition(gw);
-}
-
-void gwindowSetIsAutograderWindow(GWindow& gw, bool autograderWindow) {
-    gw.getWindowDataPointer()->autograderWindow = autograderWindow;
-}
-} // namespace autograder
-
-GWindow::GWindow() {
-    initGWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, /* visible */ true);
-}
-
-GWindow::GWindow(bool visible) {
-    initGWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, visible);
-}
-
-GWindow::GWindow(double width, double height) {
-    initGWindow(width, height, true);
-}
-
-GWindow::GWindow(double width, double height, bool visible) {
-    initGWindow(width, height, visible);
-}
-
-GWindow::GWindow(GWindowData* gwd) {
-    this->gwd = gwd;
-}
-
-void GWindow::initGWindow(double width, double height, bool visible) {
-    gwd = new GWindowData();
-    gwd->windowWidth = width;
-    gwd->windowHeight = height;
-    gwd->windowX = 0;
-    gwd->windowY = 0;
-    gwd->top = new GCompound();
-    gwd->colorInt = 0;
-    gwd->closed = false;
-    gwd->visible = visible;
-    gwd->resizable = false;
-    gwd->exitOnClose = false;
-    gwd->repaintImmediately = true;
-    gwd->autograderWindow = false;
-    stanfordcpplib::getPlatform()->gwindow_constructor(*this, width, height, gwd->top, visible);
-    autograder::gwindowPrevDataAdd(gwd);
-    setColor("BLACK");
-    setVisible(visible);
-    pause(100); // Temporary fix for race condition in back-end.
+        _iqmainwindow->updateGeometry();
+    });
 }
 
 GWindow::~GWindow() {
-    if (gwd) {
-        // commented out because for some reason it crashes to free this memory
-//        if (gwd->top) {
-//            delete gwd->top;
-//            gwd->top = nullptr;
-//        }
-//        delete gwd;
-        gwd = nullptr;
+    if (_lastWindow == _iqmainwindow) {
+        _lastWindow = nullptr;
     }
+    // TODO: delete _iqmainwindow;
+    _iqmainwindow = nullptr;
 }
 
-void GWindow::add(GObject* gobj) {
-    if (isOpen()) {
-        if (gwd) {
-            gwd->top->add(gobj);
+void GWindow::_autograder_setIsAutograderWindow(bool /*isAutograderWindow*/) {
+    // TODO
+}
+
+void GWindow::_autograder_setExitGraphicsEnabled(bool /*enabled*/) {
+    // TODO
+}
+
+void GWindow::_autograder_setPauseEnabled(bool /*enabled*/) {
+    // TODO
+}
+
+void GWindow::add(GInteractor* interactor) {
+    require::nonNull(interactor, "GWindow::add");
+    addToRegion(interactor, REGION_CENTER);
+}
+
+void GWindow::add(GInteractor* interactor, double x, double y) {
+    require::nonNull(interactor, "GWindow::add");
+    interactor->setLocation(x, y);
+    addToRegion(interactor, REGION_CENTER);
+}
+
+void GWindow::add(GInteractor& interactor) {
+    addToRegion(&interactor, REGION_CENTER);
+}
+
+void GWindow::add(GInteractor& interactor, double x, double y) {
+    interactor.setLocation(x, y);
+    addToRegion(&interactor, REGION_CENTER);
+}
+
+void GWindow::add(GObject* obj) {
+    require::nonNull(obj, "GWindow::add");
+    ensureForwardTarget();
+    _canvas->add(obj);
+}
+
+void GWindow::add(GObject* obj, double x, double y) {
+    require::nonNull(obj, "GWindow::add");
+    ensureForwardTarget();
+    _canvas->add(obj, x, y);
+}
+
+void GWindow::add(GObject& obj) {
+    ensureForwardTarget();
+    _canvas->add(obj);
+}
+
+void GWindow::add(GObject& obj, double x, double y) {
+    ensureForwardTarget();
+    _canvas->add(obj, x, y);
+}
+
+QMenu* GWindow::addMenu(const std::string& menu) {
+    std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
+    if (_menuMap.containsKey(menuKey)) {
+        // duplicate; do not create again
+        return _menuMap[menuKey];
+    }
+
+    QMenu* qmenu = nullptr;
+    GThread::runOnQtGuiThread([this, menu, &qmenu]() {
+        qmenu = _iqmainwindow->menuBar()->addMenu(QString::fromStdString(menu));
+        std::string menuKey = toLowerCase(stringReplace(stringReplace(menu, "/", ""), "&", ""));
+        _menuMap[menuKey] = qmenu;
+    });
+    return qmenu;
+}
+
+QAction* GWindow::addMenuItem(const std::string& menu, const std::string& item, const std::string& icon) {
+    GEventListenerVoid func = [this, menu, item]() {
+        this->_iqmainwindow->handleMenuAction(menu, item);
+    };
+    return addMenuItem(menu, item, icon, func);
+}
+
+QAction* GWindow::addMenuItem(const std::string& menu, const std::string& item, const std::string& icon, GEventListenerVoid func) {
+    QAction* action = nullptr;
+    std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
+    if (!_menuMap.containsKey(menuKey)) {
+        error("GWindow::addMenuItem: menu \"" + menu + "\" does not exist");
+        return nullptr;
+    }
+
+    std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
+    std::string menuItemKey = menuKey + "/" + itemKey;
+    if (_menuActionMap.containsKey(menuItemKey)) {
+        // duplicate; do not create again
+        return _menuActionMap[menuItemKey];
+    }
+
+    GThread::runOnQtGuiThread([this, menu, item, icon, func, menuKey, menuItemKey, &action]() {
+        QMenu* qmenu = _menuMap[menuKey];
+        action = qmenu->addAction(QString::fromStdString(item));
+        if (!icon.empty() && fileExists(icon)) {
+            QIcon qicon(QString::fromStdString(icon));
+            action->setIcon(qicon);
+        }
+
+        // when menu item is clicked, call the function the user gave us
+        _iqmainwindow->connect(action, &QAction::triggered, _iqmainwindow, [func]() {
+            func();
+        });
+        _menuActionMap[menuItemKey] = action;
+    });
+    return action;
+}
+
+QAction* GWindow::addMenuItemCheckBox(const std::string& menu,
+                                      const std::string& item,
+                                      bool checked,
+                                      const std::string& icon) {
+    GEventListenerVoid func = [this, menu, item]() {
+        this->_iqmainwindow->handleMenuAction(menu, item);
+    };
+    return addMenuItemCheckBox(menu, item, checked, icon, func);
+}
+
+QAction* GWindow::addMenuItemCheckBox(const std::string& menu,
+                                      const std::string& item,
+                                      bool checked,
+                                      const std::string& icon,
+                                      GEventListenerVoid func) {
+    QAction* action = nullptr;
+    std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
+    if (!_menuMap.containsKey(menuKey)) {
+        error("GWindow::addMenuItem: menu \"" + menu + "\" does not exist");
+        return nullptr;
+    }
+
+    GThread::runOnQtGuiThread([this, menu, item, icon, checked, func, menuKey, &action]() {
+        QMenu* qmenu = _menuMap[menuKey];
+        action = qmenu->addAction(QString::fromStdString(item));
+        action->setCheckable(true);
+        action->setChecked(checked);
+        if (!icon.empty() && fileExists(icon)) {
+            QIcon qicon(QString::fromStdString(icon));
+            action->setIcon(qicon);
+        }
+
+        // when menu item is clicked, call the function the user gave us
+        _iqmainwindow->connect(action, &QAction::triggered, _iqmainwindow, [func]() {
+            func();
+        });
+
+        std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
+        _menuActionMap[menuKey + "/" + itemKey] = action;
+    });
+    return action;
+}
+
+
+QAction* GWindow::addMenuSeparator(const std::string& menu) {
+    std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
+    if (!_menuMap.containsKey(menuKey)) {
+        error("GWindow::addMenuItem: menu \"" + menu + "\" does not exist");
+        return nullptr;
+    }
+
+    QAction* separator = nullptr;
+    GThread::runOnQtGuiThread([this, menuKey, &separator]() {
+        QMenu* qmenu = _menuMap[menuKey];
+        separator = qmenu->addSeparator();
+    });
+    return separator;
+}
+
+QMenu* GWindow::addSubMenu(const std::string& menu, const std::string& submenu) {
+    std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
+    if (!_menuMap.containsKey(menuKey)) {
+        error("GWindow::addMenuItem: menu \"" + menu + "\" does not exist");
+        return nullptr;
+    }
+
+    QMenu* qsubmenu = nullptr;
+    GThread::runOnQtGuiThread([this, menu, menuKey, submenu, &qsubmenu]() {
+        QMenu* qmenu = _menuMap[menuKey];
+        qsubmenu = qmenu->addMenu(QString::fromStdString(submenu));
+        std::string subMenuKey = menuKey + "/"
+                + toLowerCase(stringReplace(submenu, "&", ""));
+        _menuMap[subMenuKey] = qsubmenu;
+    });
+    return qsubmenu;
+}
+
+void GWindow::addToRegion(GInteractor* interactor, Region region) {
+    require::nonNull(interactor, "GWindow::addToRegion");
+    if (region == REGION_CENTER) {
+        // labels in "GText mode" are added as GText objects to canvas
+        if (interactor->getType() == "GLabel") {
+            GLabel* label = (GLabel*) interactor;
+            if (label->hasGText()) {
+                add(label->getGText());
+                return;
+            }
         }
     }
+    _contentPane->addToRegion(interactor, (GContainer::Region) region);
 }
 
-void GWindow::add(GObject* gobj, double x, double y) {
-    if (isOpen()) {
-        gobj->setLocation(x, y);
-        add(gobj);
-    }
+void GWindow::addToRegion(GInteractor* interactor, const std::string& region) {
+    addToRegion(interactor, stringToRegion(region));
 }
 
-void GWindow::add(GArc& gobj) {
-    add(&gobj);
+void GWindow::addToRegion(GInteractor& interactor, Region region) {
+    addToRegion(&interactor, region);
 }
 
-void GWindow::add(GArc& gobj, double x, double y) {
-    add(&gobj, x, y);
-}
-
-void GWindow::add(GCompound& gobj) {
-    add(&gobj);
-}
-
-void GWindow::add(GCompound& gobj, double x, double y) {
-    add(&gobj, x, y);
-}
-
-void GWindow::add(GImage& gobj) {
-    add(&gobj);
-}
-
-void GWindow::add(GImage& gobj, double x, double y) {
-    add(&gobj, x, y);
-}
-
-void GWindow::add(GLabel& gobj) {
-    add(&gobj);
-}
-
-void GWindow::add(GLabel& gobj, double x, double y) {
-    add(&gobj, x, y);
-}
-
-void GWindow::add(GLine& gobj) {
-    add(&gobj);
-}
-
-void GWindow::add(GLine& gobj, double x, double y) {
-    add(&gobj, x, y);
-}
-
-void GWindow::add(GOval& gobj) {
-    add(&gobj);
-}
-
-void GWindow::add(GOval& gobj, double x, double y) {
-    add(&gobj, x, y);
-}
-
-void GWindow::add(GPolygon& gobj) {
-    add(&gobj);
-}
-
-void GWindow::add(GPolygon& gobj, double x, double y) {
-    add(&gobj, x, y);
-}
-
-void GWindow::add(GRect& gobj) {
-    add(&gobj);
-}
-
-void GWindow::add(GRect& gobj, double x, double y) {
-    add(&gobj, x, y);
-}
-
-void GWindow::addToRegion(GInteractor* gobj, Region region) {
-    addToRegion(gobj, regionToString(region));
-}
-
-void GWindow::addToRegion(GInteractor* gobj, const std::string& region) {
-    if (isOpen()) {
-        stanfordcpplib::getPlatform()->gwindow_addToRegion(*this, (GObject *) gobj, region);
-    }
-}
-
-void GWindow::addToRegion(GInteractor& gobj, Region region) {
-    addToRegion(&gobj, region);
-}
-
-void GWindow::addToRegion(GInteractor& gobj, const std::string& region) {
-    addToRegion(&gobj, region);
-}
-
-
-void GWindow::addToRegion(GLabel* gobj, Region region) {
-    addToRegion(gobj, regionToString(region));
-}
-
-void GWindow::addToRegion(GLabel* gobj, const std::string& region) {
-    if (isOpen()) {
-        stanfordcpplib::getPlatform()->gwindow_addToRegion(*this, (GObject *) gobj, region);
-    }
-}
-
-void GWindow::addToRegion(GLabel& gobj, Region region) {
-    addToRegion(&gobj, region);
-}
-
-void GWindow::addToRegion(GLabel& gobj, const std::string& region) {
-    addToRegion(&gobj, region);
-}
-
-std::string GWindow::alignmentToString(Alignment alignment) {
-    if (alignment == GWindow::ALIGN_CENTER) {
-        return "CENTER";
-    } else if (alignment == GWindow::ALIGN_LEFT) {
-        return "LEFT";
-    } else if (alignment == GWindow::ALIGN_RIGHT) {
-        return "RIGHT";
-    } else {
-        error("Invalid alignment: " + integerToString(alignment));
-        return "";
-    }
-}
-
-std::string GWindow::regionToString(Region region) {
-    if (region == GWindow::REGION_CENTER) {
-        return "CENTER";
-    } else if (region == GWindow::REGION_EAST) {
-        return "EAST";
-    } else if (region == GWindow::REGION_NORTH) {
-        return "NORTH";
-    } else if (region == GWindow::REGION_SOUTH) {
-        return "SOUTH";
-    } else if (region == GWindow::REGION_WEST) {
-        return "WEST";
-    } else {
-        error("Invalid region: " + integerToString(region));
-        return "";
-    }
-}
-
-
-void GWindow::center() {
-    setLocation(CENTER_MAGIC_VALUE, CENTER_MAGIC_VALUE);
+void GWindow::addToRegion(GInteractor& interactor, const std::string& region) {
+    addToRegion(&interactor, region);
 }
 
 void GWindow::clear() {
-    if (isOpen()) {
-        if (gwd && gwd->top) {
-            gwd->top->removeAll();
-        }
-        stanfordcpplib::getPlatform()->gwindow_clear(*this);
-    }
+    _contentPane->clear();
 }
 
 void GWindow::clearCanvas() {
-    if (isOpen()) {
-        if (gwd && gwd->top) {
-            gwd->top->removeAll();
-        }
-        stanfordcpplib::getPlatform()->gwindow_clearCanvas(*this);
+    if (_canvas) {
+        GThread::runOnQtGuiThread([this]() {
+            GForwardDrawingSurface::clear();
+            _canvas->clear();
+        });
     }
+}
+
+void GWindow::clearCanvasObjects() {
+    if (_canvas) {
+        _canvas->clearObjects();   // runs on Qt GUI thread
+    }
+}
+
+void GWindow::clearCanvasPixels() {
+    if (_canvas) {
+        _canvas->clearPixels();   // runs on Qt GUI thread
+    }
+}
+
+void GWindow::clearRegion(Region region) {
+    _contentPane->clearRegion((GContainer::Region) region);
+}
+
+void GWindow::clearRegion(const std::string& region) {
+    clearRegion(stringToRegion(region));
+}
+
+void GWindow::center() {
+    GDimension screenSize = getScreenSize();
+    GDimension windowSize = getSize();
+    setLocation(screenSize.getWidth()  / 2 - windowSize.getWidth()  / 2,
+                screenSize.getHeight() / 2 - windowSize.getHeight() / 2);
 }
 
 void GWindow::close() {
-    if (gwd) {
-        gwd->visible = false;
-        gwd->closed = true;
+    GThread::runOnQtGuiThread([this]() {
+        _iqmainwindow->close();
+    });
+}
+
+void GWindow::compareToImage(const std::string& /* filename */, bool /* ignoreWindowSize */) const {
+    // TODO
+}
+
+void GWindow::ensureForwardTarget() {
+    if (!_canvas) {
+        // tell canvas to take any unclaimed space in the window
+        GThread::runOnQtGuiThread([this]() {
+            _canvas = new GCanvas(_iqmainwindow);
+            _canvas->getWidget()->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+            setDrawingForwardTarget(_canvas);
+            addToRegion(_canvas, REGION_CENTER);
+        });
     }
-    stanfordcpplib::getPlatform()->gwindow_close(*this);
-    stanfordcpplib::getPlatform()->gwindow_delete(*this);
-    if (gwd && gwd->exitOnClose) {
-        // I was closed by the student's program.
-        // I need to inform JBE so that it will shut down.
-        if (STATIC_VARIABLE(gwindowExitGraphicsEnabled)) {
-            exitGraphics();
-        } else {
-            stanfordcpplib::getPlatform()->gwindow_exitGraphics();   // calls exit(0);
-        }
-    }
+//    else if (!_canvas->isVisible()) {
+//        // put canvas back in center region
+//        GThread::runOnQtGuiThread([this]() {
+//            QLayout* centerLayout = layoutForRegion(REGION_CENTER);
+//            if (!GLayout::contains(centerLayout, _canvas->getWidget())) {
+//                GLayout::clearLayout(centerLayout);
+//                addToRegion(_canvas, "Center");
+//                _canvas->setVisible(true);
+//            }
+//        });
+//    }
 }
 
-void GWindow::compareToImage(const std::string& filename, bool ignoreWindowSize) const {
-    stanfordcpplib::getPlatform()->diffimage_compareWindowToImage(*this, filename, ignoreWindowSize);
+bool GWindow::eventsEnabled() const {
+    return getWidget() != nullptr && isVisible();
 }
 
-void GWindow::draw(const GObject& gobj) {
-    if (isOpen()) {
-        draw(&gobj);
-    }
-}
-
-void GWindow::draw(GObject* gobj) {
-    if (isOpen()) {
-        if (!gwd || gwd->repaintImmediately) {
-            stanfordcpplib::getPlatform()->gwindow_draw(*this, gobj);
-        } else {
-            stanfordcpplib::getPlatform()->gwindow_drawInBackground(*this, gobj);
-        }
-    }
-}
-
-void GWindow::draw(const GObject* gobj) {
-    if (isOpen()) {
-        if (!gwd || gwd->repaintImmediately) {
-            stanfordcpplib::getPlatform()->gwindow_draw(*this, gobj);
-        } else {
-            stanfordcpplib::getPlatform()->gwindow_drawInBackground(*this, gobj);
-        }
-    }
-}
-
-void GWindow::draw(GObject& gobj, double x, double y) {
-    if (isOpen()) {
-        draw(&gobj, x, y);
-    }
-}
-
-void GWindow::draw(GObject* gobj, double x, double y) {
-    if (isOpen()) {
-        gobj->setLocation(x, y);
-        if (!gwd || gwd->repaintImmediately) {
-            stanfordcpplib::getPlatform()->gwindow_draw(*this, gobj);
-        } else {
-            stanfordcpplib::getPlatform()->gwindow_drawInBackground(*this, gobj);
-        }
-    }
-}
-
-void GWindow::drawLine(double x0, double y0, double x1, double y1) {
-    if (isOpen()) {
-        GLine line(x0, y0, x1, y1);
-        if (gwd) {
-            line.setColor(gwd->color);
-        }
-        draw(line);
-    }
-}
-
-void GWindow::drawImage(const std::string& filename) {
-    GBufferedImage img(filename);
-    setSize(img.getWidth(), img.getHeight());
-    setPixels(img.toGrid());
-}
-
-void GWindow::drawLine(const GPoint& p0, const GPoint& p1) {
-    if (isOpen()) {
-        drawLine(p0.getX(), p0.getY(), p1.getX(), p1.getY());
-    }
-}
-
-void GWindow::drawOval(double x, double y, double width, double height) {
-    if (isOpen()) {
-        GOval oval(x, y, width, height);
-        if (gwd) {
-            oval.setColor(gwd->color);
-        }
-        draw(oval);
-    }
-}
-
-void GWindow::drawOval(const GRectangle& bounds) {
-    if (isOpen()) {
-        drawOval(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-    }
-}
-
-void GWindow::drawPixel(double x, double y) {
-    setPixel(x, y, getColorInt());
-}
-
-void GWindow::drawPixel(double x, double y, int color) {
-    setPixel(x, y, color);
-}
-
-void GWindow::drawPixel(double x, double y, const std::string& color) {
-    setPixel(x, y, convertColorToRGB(color));
-}
-
-void GWindow::drawPolygon(std::initializer_list<double> coords) {
-    GPolygon polygon(coords);
-    if (gwd) {
-        polygon.setColor(gwd->color);
-    }
-    draw(polygon);
-}
-
-GPoint GWindow::drawPolarLine(double x0, double y0, double r, double theta) {
-    double x1 = x0 + r * cosDegrees(theta);
-    double y1 = y0 - r * sinDegrees(theta);
-    drawLine(x0, y0, x1, y1);
-    return GPoint(x1, y1);
-}
-
-GPoint GWindow::drawPolarLine(const GPoint& p0, double r, double theta) {
-    return drawPolarLine(p0.getX(), p0.getY(), r, theta);
-}
-
-void GWindow::drawRect(double x, double y, double width, double height) {
-    if (isOpen()) {
-        GRect rect(x, y, width, height);
-        if (gwd) {
-            rect.setColor(gwd->color);
-        }
-        draw(rect);
-    }
-}
-
-void GWindow::drawRect(const GRectangle& bounds) {
-    if (isOpen()) {
-        drawRect(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-    }
-}
-
-void GWindow::drawString(const std::string& text, double x, double y) {
-    if (isOpen()) {
-        GLabel label(text, x, y);
-        if (gwd) {
-            label.setColor(gwd->color);
-            if (!gwd->font.empty()) {
-                label.setFont(gwd->font);
-            }
-        }
-        draw(label);
-    }
-}
-
-void GWindow::fillOval(double x, double y, double width, double height) {
-    if (isOpen()) {
-        GOval oval(x, y, width, height);
-        if (gwd) {
-            oval.setColor(gwd->color);
-            oval.setFillColor(gwd->color);
-        }
-        oval.setFilled(true);
-        draw(oval);
-    }
-}
-
-void GWindow::fillOval(const GRectangle & bounds) {
-    if (isOpen()) {
-        fillOval(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-    }
-}
-
-void GWindow::fillPolygon(std::initializer_list<double> coords) {
-    GPolygon polygon(coords);
-    if (gwd) {
-        polygon.setColor(gwd->color);
-    }
-    polygon.setFilled(true);
-    draw(polygon);
-}
-
-void GWindow::fillRect(double x, double y, double width, double height) {
-    if (isOpen()) {
-        GRect rect(x, y, width, height);
-        if (gwd) {
-            rect.setColor(gwd->color);
-            rect.setFillColor(gwd->color);
-        }
-        rect.setFilled(true);
-        draw(rect);
-    }
-}
-
-void GWindow::fillRect(const GRectangle& bounds) {
-    if (isOpen()) {
-        fillRect(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-    }
+GCanvas* GWindow::getCanvas() const {
+    ensureForwardTargetConstHack();
+    return _canvas;
 }
 
 double GWindow::getCanvasHeight() const {
-    return getCanvasSize().getHeight();
+    ensureForwardTargetConstHack();
+    return _canvas->getHeight();
 }
 
 GDimension GWindow::getCanvasSize() const {
-    GDimension size = stanfordcpplib::getPlatform()->gwindow_getContentPaneSize(*this);
-    return GDimension(size.getWidth() - getRegionWidth("West") - getRegionWidth("East"),
-                      size.getHeight() - getRegionHeight("North") - getRegionHeight("South"));
+    ensureForwardTargetConstHack();
+    return GDimension(_canvas->getWidth(), _canvas->getHeight());
 }
 
 double GWindow::getCanvasWidth() const {
-    return getCanvasSize().getWidth();
+    ensureForwardTargetConstHack();
+    return _canvas->getWidth();
 }
 
-std::string GWindow::getColor() const {
-    return gwd->color;
-}
-
-int GWindow::getColorInt() const {
-    return gwd->colorInt;
+GWindow::CloseOperation GWindow::getCloseOperation() const {
+    return _closeOperation;
 }
 
 GObject* GWindow::getGObject(int index) const {
-    if (gwd && gwd->top && 0 <= index && index < getGObjectCount()) {
-        return gwd->top->getElement(index);
+    if (_canvas) {
+        return _canvas->getElement(index);
     } else {
         return nullptr;
     }
 }
 
 GObject* GWindow::getGObjectAt(double x, double y) const {
-    if (gwd && gwd->top) {
-        int n = gwd->top->getElementCount();
-        for (int i = n - 1; i >= 0; i--) {
-            GObject* gobj = gwd->top->getElement(i);
-            if (gobj->contains(x, y)) {
-                return gobj;
-            }
-        }
+    if (_canvas) {
+        return _canvas->getElementAt(x, y);
+    } else {
+        return nullptr;
     }
-    return nullptr;
 }
 
 int GWindow::getGObjectCount() const {
-    if (gwd && gwd->top) {
-        return gwd->top->getElementCount();
+    if (_canvas) {
+        return _canvas->getElementCount();
     } else {
         return 0;
     }
 }
 
+/* static */ QMainWindow* GWindow::getLastWindow() {
+    return _lastWindow;
+}
+
+GPoint GWindow::getLocation() const {
+    QRect geom = _iqmainwindow->geometry();
+    return GPoint(geom.x(), geom.y());
+}
+
 double GWindow::getHeight() const {
-    if (!gwd || isResizable()) {
-        // have to ask the back-end for height because the user might have
-        // resized the window since its size was last set
-        return getSize().getHeight();
-    } else {
-        return gwd->windowHeight;
-    }
+    return _iqmainwindow->geometry().height();
 }
 
-Point GWindow::getLocation() const {
-    Point loc = stanfordcpplib::getPlatform()->gwindow_getLocation(*this);
-    if (gwd) {
-        gwd->windowX = loc.getX();
-        gwd->windowY = loc.getY();
-    }
-    return loc;
-}
-
-// TODO: bounds-checking?
-int GWindow::getPixel(double x, double y) const {
-    int rgb = stanfordcpplib::getPlatform()->gwindow_getPixel(*this, (int) x, (int) y);
-    rgb = rgb & 0x00ffffff;   // strip alpha component
-    return rgb;
-}
-
-// TODO: bounds-checking?
-int GWindow::getPixelARGB(double x, double y) const {
-    int rgb = stanfordcpplib::getPlatform()->gwindow_getPixel(*this, (int) x, (int) y);
-    rgb = fixAlpha(rgb);
-    return rgb;
-}
-
-Grid<int> GWindow::getPixels() const {
-    Grid<int> pixels = stanfordcpplib::getPlatform()->gwindow_getPixels(*this);
-    for (int row = 0, rows = pixels.numRows(); row < rows; row++) {
-        for (int col = 0, cols = pixels.numCols(); col < cols; col++) {
-            pixels[row][col] = pixels[row][col] & 0x00ffffff;   // strip alpha component
-        }
-    }
-    return pixels;
-}
-
-Grid<int> GWindow::getPixelsARGB() const {
-    Grid<int> pixels = stanfordcpplib::getPlatform()->gwindow_getPixels(*this);
-    for (int row = 0, rows = pixels.numRows(); row < rows; row++) {
-        for (int col = 0, cols = pixels.numCols(); col < cols; col++) {
-            pixels[row][col] = fixAlpha(pixels[row][col]);
-        }
-    }
-    return pixels;
+GDimension GWindow::getPreferredSize() const {
+    return _contentPane->getPreferredSize();
 }
 
 double GWindow::getRegionHeight(Region region) const {
-    return getRegionHeight(regionToString(region));
+    return _contentPane->getRegionHeight((GContainer::Region) region);
 }
 
 double GWindow::getRegionHeight(const std::string& region) const {
-    return getRegionSize(region).getHeight();   // inefficient but oh well
+    return _contentPane->getRegionHeight(region);
 }
 
 GDimension GWindow::getRegionSize(Region region) const {
-    return getRegionSize(regionToString(region));
+    return _contentPane->getRegionSize((GContainer::Region) region);
 }
 
 GDimension GWindow::getRegionSize(const std::string& region) const {
-    return stanfordcpplib::getPlatform()->gwindow_getRegionSize(*this, region);
+    return _contentPane->getRegionSize(region);
 }
 
 double GWindow::getRegionWidth(Region region) const {
-    return getRegionWidth(regionToString(region));
+    return _contentPane->getRegionWidth((GContainer::Region) region);
 }
 
 double GWindow::getRegionWidth(const std::string& region) const {
-    return getRegionSize(region).getWidth();   // inefficient but oh well
+    return _contentPane->getRegionWidth(region);
+}
+
+double GWindow::getScreenHeight() {
+    return getScreenSize().getHeight();
+}
+
+GDimension GWindow::getScreenSize() {
+    QRect rec = QApplication::desktop()->availableGeometry();
+    return GDimension(rec.width(), rec.height());
+}
+
+double GWindow::getScreenWidth() {
+    return getScreenSize().getWidth();
 }
 
 GDimension GWindow::getSize() const {
-    if (!gwd || isResizable()) {
-        // have to ask the back-end for size because the user might have
-        // resized the window since its size was last set
-        GDimension size = stanfordcpplib::getPlatform()->gwindow_getSize(*this);
-        if (gwd) {
-            gwd->windowWidth = size.getWidth();
-            gwd->windowHeight = size.getHeight();
-        }
-        return size;
-    } else {
-        // can just use our locally cached width/height
-        return GDimension(gwd->windowWidth, gwd->windowHeight);
-    }
+    QRect geom = _iqmainwindow->geometry();
+    return GDimension(geom.width(), geom.height());
 }
 
 std::string GWindow::getTitle() const {
-    return gwd->windowTitle;
+    return _iqmainwindow->windowTitle().toStdString();
+}
+
+std::string GWindow::getType() const {
+    return "GWindow";
+}
+
+QWidget* GWindow::getWidget() const {
+    return static_cast<QWidget*>(_iqmainwindow);
 }
 
 double GWindow::getWidth() const {
-    if (!gwd || isResizable()) {
-        // have to ask the back-end for width because the user might have
-        // resized the window since its size was last set
-        return getSize().getWidth();
-    } else {
-        return gwd->windowWidth;
-    }
-}
-
-std::string GWindow::getWindowData() const {
-    std::ostringstream os;
-    os << gwd;
-    return os.str();
-}
-
-GWindowData* GWindow::getWindowDataPointer() const {
-    return gwd;
-}
-
-std::string GWindow::getWindowTitle() const {
-    return gwd->windowTitle;
+    return _iqmainwindow->geometry().width();
 }
 
 double GWindow::getX() const {
-    return getLocation().getX();
+    return _iqmainwindow->geometry().x();
 }
 
 double GWindow::getY() const {
-    return getLocation().getX();
+    return _iqmainwindow->geometry().y();
+}
+
+void GWindow::hide() {
+    setVisible(false);
 }
 
 bool GWindow::inBounds(double x, double y) const {
-    GDimension contentPaneSize = stanfordcpplib::getPlatform()->gwindow_getContentPaneSize(*this);
-    return x >= 0 && x < contentPaneSize.getWidth()
-            && y >= 0 && y < contentPaneSize.getHeight();
+    return 0 <= x && x < getWidth() && 0 <= y && y < getHeight();
 }
 
 bool GWindow::inCanvasBounds(double x, double y) const {
-    GDimension canvasSize = getCanvasSize();
-    return x >= 0 && x < canvasSize.getWidth()
-            && y >= 0 && y < canvasSize.getHeight();
+    return 0 <= x && x < getCanvasWidth() && 0 <= y && y < getCanvasHeight();
+}
+
+bool GWindow::isMaximized() const {
+    return (_iqmainwindow->windowState() & Qt::WindowMaximized) != 0
+            || (_iqmainwindow->windowState() & Qt::WindowFullScreen) != 0;
+}
+
+bool GWindow::isMinimized() const {
+    return (_iqmainwindow->windowState() & Qt::WindowMinimized) != 0;
 }
 
 bool GWindow::isOpen() const {
-    return !gwd || !gwd->closed;
+    return isVisible();
 }
 
 bool GWindow::isRepaintImmediately() const {
-    return !gwd || gwd->repaintImmediately;
+    return _canvas && _canvas->isRepaintImmediately();
 }
 
 bool GWindow::isResizable() const {
-    return gwd && gwd->resizable;
+    return _resizable;
 }
 
 bool GWindow::isVisible() const {
-    return gwd && gwd->visible;
+    return _iqmainwindow->isVisible();
 }
 
-void GWindow::notifyOfClose() {
-    if (gwd) {
-        gwd->visible = false;
-        gwd->closed = true;
-        if (gwd->exitOnClose) {
-            // JBE notified me that I was closed by the user.
-            // JBE is already going to shut itself down.
-            // I just have to shut down the C++ process.
-            std::exit(0);
-        }
-    }
+void GWindow::loadCanvasPixels(const std::string& filename) {
+    ensureForwardTarget();
+    _canvas->load(filename);   // runs on Qt GUI thread
+}
+
+void GWindow::maximize() {
+    GThread::runOnQtGuiThread([this]() {
+        _iqmainwindow->setWindowState(Qt::WindowMaximized);
+    });
+}
+
+void GWindow::minimize() {
+    GThread::runOnQtGuiThread([this]() {
+        _iqmainwindow->setWindowState(Qt::WindowMinimized);
+    });
 }
 
 void GWindow::pack() {
-    if (isOpen()) {
-        stanfordcpplib::getPlatform()->gwindow_pack(*this);
+    setSize(getPreferredSize());
+}
+
+void GWindow::pause(double ms) {
+    require::nonNegative(ms, "GWindow::pause", "milliseconds");
+    GThread::sleep(ms);
+}
+
+void GWindow::processKeyPressEventInternal(QKeyEvent* /* event */) {
+    // empty; override me
+}
+
+void GWindow::rememberPosition() {
+    // TODO
+}
+
+void GWindow::remove(GObject* obj) {
+    require::nonNull(obj, "GWindow::remove");
+    if (_canvas) {
+        _canvas->remove(obj);
     }
 }
 
-void GWindow::remove(GObject* gobj) {
-    if (isOpen()) {
-        if (gwd && gwd->top) {
-            gwd->top->remove(gobj);
+void GWindow::remove(GObject& obj) {
+    if (_canvas) {
+        _canvas->remove(&obj);   // runs on Qt GUI thread
+    }
+}
+
+void GWindow::remove(GInteractor* interactor) {
+    require::nonNull(interactor, "GWindow::remove");
+    _contentPane->remove(interactor);
+}
+
+void GWindow::remove(GInteractor& interactor) {
+    remove(&interactor);
+}
+
+void GWindow::removeClickListener() {
+    if (_canvas) {
+        _canvas->removeClickListener();   // runs on Qt GUI thread
+    }
+}
+
+void GWindow::removeFromRegion(GInteractor* interactor, Region region) {
+    require::nonNull(interactor, "GWindow::removeFromRegion");
+
+    // special case: labels in "GText mode" are added to canvas
+    if (region == REGION_CENTER && interactor->getType() == "GLabel") {
+        GLabel* label = (GLabel*) interactor;
+        if (label->hasGText()) {
+            remove(label->getGText());
+            return;
         }
     }
+
+    _contentPane->removeFromRegion(interactor, (GContainer::Region) region);
 }
 
-void GWindow::remove(GArc& gobj) {
-    remove(&gobj);
+void GWindow::removeFromRegion(GInteractor* interactor, const std::string& region) {
+    removeFromRegion(interactor, stringToRegion(region));
 }
 
-void GWindow::remove(GCompound& gobj) {
-    remove(&gobj);
+void GWindow::removeFromRegion(GInteractor& interactor, Region region) {
+    removeFromRegion(&interactor, region);
 }
 
-void GWindow::remove(GImage& gobj) {
-    remove(&gobj);
+void GWindow::removeFromRegion(GInteractor& interactor, const std::string& region) {
+    removeFromRegion(&interactor, region);
 }
 
-void GWindow::remove(GLabel& gobj) {
-    remove(&gobj);
-}
-
-void GWindow::remove(GLine& gobj) {
-    remove(&gobj);
-}
-
-void GWindow::remove(GOval& gobj) {
-    remove(&gobj);
-}
-
-void GWindow::remove(GPolygon& gobj) {
-    remove(&gobj);
-}
-
-void GWindow::remove(GRect& gobj) {
-    remove(&gobj);
-}
-
-void GWindow::removeFromRegion(GInteractor* gobj, Region region) {
-    removeFromRegion(gobj, regionToString(region));
-}
-
-void GWindow::removeFromRegion(GInteractor* gobj, const std::string& region) {
-    if (isOpen()) {
-        stanfordcpplib::getPlatform()->gwindow_removeFromRegion(*this, (GObject*) gobj, region);
+void GWindow::removeKeyListener() {
+    if (_canvas) {
+        _canvas->removeKeyListener();   // runs on Qt GUI thread
     }
 }
 
-void GWindow::removeFromRegion(GLabel* gobj, Region region) {
-    removeFromRegion(gobj, regionToString(region));
+void GWindow::removeMenuListener() {
+    removeEventListener("actionMenu");
 }
 
-void GWindow::removeFromRegion(GLabel* gobj, const std::string& region) {
-    if (isOpen()) {
-        stanfordcpplib::getPlatform()->gwindow_removeFromRegion(*this, (GObject*) gobj, region);
+void GWindow::removeMouseListener() {
+    if (_canvas) {
+        _canvas->removeMouseListener();   // runs on Qt GUI thread
     }
 }
 
-void GWindow::repaint() {
-    if (isOpen()) {
-        stanfordcpplib::getPlatform()->gwindow_repaint(*this);
-    }
+void GWindow::removeTimerListener() {
+    removeEventListener("timer");
+}
+
+void GWindow::removeWindowListener() {
+    removeEventListeners({"close",
+                         "closing",
+                         "maximize",
+                         "minimize",
+                         "open",
+                         "resize",
+                         "restore"});
 }
 
 void GWindow::requestFocus() {
-    if (isOpen()) {
-        stanfordcpplib::getPlatform()->gwindow_requestFocus(*this);
-    }
+    GThread::runOnQtGuiThread([this]() {
+        _iqmainwindow->setFocus();
+    });
+}
+
+void GWindow::restore() {
+    GThread::runOnQtGuiThread([this]() {
+        _iqmainwindow->setWindowState(Qt::WindowActive);
+    });
 }
 
 void GWindow::saveCanvasPixels(const std::string& filename) {
-    stanfordcpplib::getPlatform()->gwindow_saveCanvasPixels(*this, filename);
+    ensureForwardTarget();
+    _canvas->save(filename);   // runs on Qt GUI thread
+}
+
+void GWindow::setBackground(int color) {
+    _contentPane->setBackground(color);
+    GThread::runOnQtGuiThread([this, color]() {
+        GForwardDrawingSurface::setBackground(color);
+    });
+}
+
+void GWindow::setBackground(const std::string& color) {
+    _contentPane->setBackground(color);
+    GThread::runOnQtGuiThread([this, color]() {
+        GForwardDrawingSurface::setBackground(color);
+        // TODO: set background of N/S/E/W regions and central region?
+    });
 }
 
 void GWindow::setCanvasHeight(double height) {
-    if (isOpen()) {
-        stanfordcpplib::getPlatform()->gwindow_setCanvasSize(*this, (int) getCanvasWidth(), (int) height);
-    }
+    ensureForwardTarget();
+    setCanvasSize(getCanvasWidth(), height);
 }
 
 void GWindow::setCanvasSize(double width, double height) {
-    if (isOpen()) {
-        stanfordcpplib::getPlatform()->gwindow_setCanvasSize(*this, (int) width, (int) height);
-    }
+    require::nonNegative2D(width, height, "GWindow::setCanvasSize", "width", "height");
+    ensureForwardTarget();
+    _canvas->setMinimumSize(width, height);    // runs on Qt GUI thread
+    _canvas->setPreferredSize(width, height);
+    pack();
+}
+
+void GWindow::setCanvasSize(const GDimension& size) {
+    setCanvasSize(size.getWidth(), size.getHeight());
 }
 
 void GWindow::setCanvasWidth(double width) {
-    if (isOpen()) {
-        stanfordcpplib::getPlatform()->gwindow_setCanvasSize(*this, (int) width, (int) getCanvasHeight());
-    }
+    ensureForwardTarget();
+    setCanvasSize(width, getCanvasHeight());
 }
 
 void GWindow::setCloseOperation(CloseOperation op) {
-    stanfordcpplib::getPlatform()->gwindow_setCloseOperation(*this, (int) op);
+    GThread::runOnQtGuiThread([this, op]() {
+        _closeOperation = op;
+        _iqmainwindow->setAttribute(Qt::WA_QuitOnClose, op == GWindow::CLOSE_EXIT);
+    });
 }
 
-void GWindow::setColor(int rgb) {
-    if (gwd) {
-        gwd->color = convertRGBToColor(rgb);
-        gwd->colorInt = rgb;
-    }
-}
-
-void GWindow::setColor(const std::string& color) {
-    if (gwd) {
-        gwd->color = color;
-        gwd->colorInt = convertColorToRGB(color);
-    }
-}
-
-void GWindow::setExitOnClose(bool value) {
-    if (!STATIC_VARIABLE(gwindowExitGraphicsEnabled) && (!gwd || !gwd->autograderWindow)) {
-        return;
-    }
-    if (gwd) {
-        gwd->exitOnClose = value;
-    }
-    stanfordcpplib::getPlatform()->gwindow_setExitOnClose(*this, value);
-}
-
-void GWindow::setFont(const std::string& font) {
-    if (gwd) {
-        gwd->font = font;
+void GWindow::setExitOnClose(bool exitOnClose) {
+    if (exitOnClose) {
+        setCloseOperation(GWindow::CLOSE_EXIT);
+    } else {
+        setCloseOperation(_closeOperation == GWindow::CLOSE_EXIT ? GWindow::CLOSE_HIDE : _closeOperation);
     }
 }
 
 void GWindow::setHeight(double height) {
-    if (isOpen()) {
-        GDimension size = getSize();
-        stanfordcpplib::getPlatform()->gwindow_setSize(*this, (int) size.getWidth(), (int) height);
-        if (gwd) {
-            gwd->windowHeight = height;
-        }
-    }
+    setSize(getWidth(), height);
 }
 
 void GWindow::setLocation(double x, double y) {
-    if (isOpen()) {
-        if (gwd) {
-            gwd->windowX = x;
-            gwd->windowY = y;
-        }
-        stanfordcpplib::getPlatform()->gwindow_setLocation(*this, (int) x, (int) y);
-    }
+    GThread::runOnQtGuiThread([this, x, y]() {
+        _iqmainwindow->setGeometry((int) x, (int) y, getWidth(), getHeight());
+    });
 }
 
 void GWindow::setLocation(const GPoint& p) {
@@ -1003,99 +761,188 @@ void GWindow::setLocation(const Point& p) {
     setLocation(p.getX(), p.getY());
 }
 
-void GWindow::setLocationSaved(bool value) {
-    if (isOpen()) {
-        stanfordcpplib::getPlatform()->gwindow_setLocationSaved(*this, value);
+void GWindow::setMenuItemEnabled(const std::string& menu, const std::string& item, bool enabled) {
+    std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
+    std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
+    std::string menuItemKey = menuKey + "/" + itemKey;
+    if (!_menuMap.containsKey(menuKey)) {
+        error("GWindow::setMenuItemEnabled: menu \"" + menu + "\" does not exist");
+    } else if (!_menuActionMap.containsKey(menuItemKey)) {
+        error("GWindow::setMenuItemEnabled: menu item \"" + item + "\" does not exist");
     }
+
+    QAction* action = _menuActionMap[menuItemKey];
+    GThread::runOnQtGuiThread([action, enabled]() {
+        action->setEnabled(enabled);
+    });
 }
 
-// TODO: bounds-checking?
-void GWindow::setPixel(double x, double y, int rgb) {
-    rgb = fixAlpha(rgb);
-    stanfordcpplib::getPlatform()->gwindow_setPixel(*this, (int) x, (int) y, rgb, gwd->repaintImmediately);
+void GWindow::setClickListener(GEventListener func) {
+    _canvas->setClickListener(func);   // runs on Qt GUI thread
 }
 
-// TODO: bounds-checking?
-void GWindow::setPixelARGB(double x, double y, int argb) {
-    stanfordcpplib::getPlatform()->gwindow_setPixel(*this, (int) x, (int) y, argb, gwd->repaintImmediately);
+void GWindow::setClickListener(GEventListenerVoid func) {
+    _canvas->setClickListener(func);   // runs on Qt GUI thread
 }
 
-void GWindow::setPixels(const Grid<int>& pixels) {
-    // TODO: fixAlpha on all pixels?
-    stanfordcpplib::getPlatform()->gwindow_setPixels(*this, pixels);
+void GWindow::setKeyListener(GEventListener func) {
+    _canvas->setKeyListener(func);   // runs on Qt GUI thread
 }
 
-void GWindow::setPixelsARGB(const Grid<int>& pixelsARGB) {
-    stanfordcpplib::getPlatform()->gwindow_setPixels(*this, pixelsARGB);
+void GWindow::setKeyListener(GEventListenerVoid func) {
+    _canvas->setKeyListener(func);   // runs on Qt GUI thread
 }
 
-void GWindow::setRegionAlignment(Region region, Alignment align) {
-    setRegionAlignment(regionToString(region), alignmentToString(align));
+void GWindow::setMenuListener(GEventListener func) {
+    setEventListener("actionMenu", func);   // runs on Qt GUI thread
+}
+
+void GWindow::setMenuListener(GEventListenerVoid func) {
+    setEventListener("actionMenu", func);   // runs on Qt GUI thread
+}
+
+void GWindow::setMouseListener(GEventListener func) {
+    _canvas->setMouseListener(func);   // runs on Qt GUI thread
+}
+
+void GWindow::setMouseListener(GEventListenerVoid func) {
+    _canvas->setMouseListener(func);   // runs on Qt GUI thread
+}
+
+void GWindow::setRegionAlignment(Region region, HorizontalAlignment halign) {
+    _contentPane->setRegionAlignment((GContainer::Region) region, halign);
+}
+
+void GWindow::setRegionAlignment(Region region, VerticalAlignment valign) {
+    _contentPane->setRegionAlignment((GContainer::Region) region, valign);
+}
+
+void GWindow::setRegionAlignment(Region region, HorizontalAlignment halign, VerticalAlignment valign) {
+    _contentPane->setRegionAlignment((GContainer::Region) region, halign, valign);
 }
 
 void GWindow::setRegionAlignment(const std::string& region, const std::string& align) {
-    if (isOpen()) {
-        stanfordcpplib::getPlatform()->gwindow_setRegionAlignment(*this, region, align);
-    }
+    _contentPane->setRegionAlignment(region, align);
 }
 
-void GWindow::setRepaintImmediately(bool value) {
-    if (gwd && gwd->repaintImmediately != value) {
-        gwd->repaintImmediately = value;
-        stanfordcpplib::getPlatform()->gwindow_setRepaintImmediately(*this, value);
-    }
+void GWindow::setRegionAlignment(const std::string& region, const std::string& halign, const std::string& valign) {
+    _contentPane->setRegionAlignment(region, halign, valign);
+}
+
+void GWindow::setRegionHorizontalAlignment(Region region, HorizontalAlignment halign) {
+    _contentPane->setRegionHorizontalAlignment((GContainer::Region) region, halign);
+}
+
+void GWindow::setRegionHorizontalAlignment(const std::string& region, const std::string& halign) {
+    _contentPane->setRegionHorizontalAlignment(region, halign);
+}
+
+void GWindow::setRegionVerticalAlignment(Region region, VerticalAlignment valign) {
+    _contentPane->setRegionVerticalAlignment((GContainer::Region) region, valign);
+}
+
+void GWindow::setRegionVerticalAlignment(const std::string& region, const std::string& valign) {
+    _contentPane->setRegionVerticalAlignment(region, valign);
 }
 
 void GWindow::setResizable(bool resizable) {
-    if (isOpen()) {
-        stanfordcpplib::getPlatform()->gwindow_setResizable(*this, resizable);
-    }
+    GThread::runOnQtGuiThread([this, resizable]() {
+        if (resizable) {
+            if (!_resizable) {
+                _iqmainwindow->resize((int) getWidth(), (int) getHeight());
+                _iqmainwindow->setMinimumSize(_iqmainwindow->minimumSizeHint());
+                GDimension screenSize = getScreenSize();
+                _iqmainwindow->setMaximumSize((int) screenSize.getWidth(), (int) screenSize.getHeight());
+                _iqmainwindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+            }
+        } else {
+            if (_resizable) {
+                _iqmainwindow->setFixedSize(_iqmainwindow->size());
+                _iqmainwindow->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+            }
+        }
+        _resizable = resizable;
+    });
 }
 
 void GWindow::setSize(double width, double height) {
-    if (isOpen()) {
-        stanfordcpplib::getPlatform()->gwindow_setSize(*this, (int) width, (int) height);
-        if (gwd) {
-            gwd->windowWidth = width;
-            gwd->windowHeight = height;
+    require::nonNegative2D(width, height, "GWindow::setSize", "width", "height");
+    GThread::runOnQtGuiThread([this, width, height]() {
+        if (isResizable()) {
+            _iqmainwindow->resize((int) width, (int) height);
+        } else {
+            _iqmainwindow->setFixedSize((int) width, (int) height);
         }
-    }
+    });
 }
 
 void GWindow::setSize(const GDimension& size) {
     setSize(size.getWidth(), size.getHeight());
 }
 
-void GWindow::setTitle(const std::string& title) {
-    setWindowTitle(title);
+void GWindow::setTimerListener(double ms, GEventListener func) {
+    require::nonNegative(ms, "GWindow::setTimerListener", "delay (ms)");
+    setEventListener("timer", func);
+    GThread::runOnQtGuiThread([this, ms]() {
+        _iqmainwindow->timerStart(ms);
+    });
 }
 
-void GWindow::setVisible(bool flag) {
-    if (isOpen()) {
-        if (gwd) {
-            gwd->visible = flag;
-        }
-        stanfordcpplib::getPlatform()->gwindow_setVisible(*this, flag);
-    }
+void GWindow::setTimerListener(double ms, GEventListenerVoid func) {
+    require::nonNegative(ms, "GWindow::setTimerListener", "delay (ms)");
+    setEventListener("timer", func);
+    GThread::runOnQtGuiThread([this, ms]() {
+        _iqmainwindow->timerStart(ms);
+    });
+}
+
+void GWindow::setTitle(const std::string& title) {
+    GThread::runOnQtGuiThread([this, title]() {
+        _iqmainwindow->setWindowTitle(QString::fromStdString(title));
+    });
+}
+
+void GWindow::setVisible(bool visible) {
+    GThread::runOnQtGuiThread([this, visible]() {
+        _iqmainwindow->setVisible(visible);
+    });
 }
 
 void GWindow::setWidth(double width) {
-    if (isOpen()) {
-        GDimension size = getSize();
-        stanfordcpplib::getPlatform()->gwindow_setSize(*this, (int) width, (int) size.getHeight());
-        if (gwd) {
-            gwd->windowWidth = width;
-        }
+    setSize(width, getHeight());
+}
+
+void GWindow::setWindowIcon(const std::string& iconFile) {
+    if (fileExists(iconFile)) {
+        GThread::runOnQtGuiThread([this, iconFile]() {
+            QIcon qicon(QString::fromStdString(iconFile));
+            _iqmainwindow->setWindowIcon(qicon);
+        });
     }
 }
 
+void GWindow::setWindowListener(GEventListener func) {
+    setEventListeners({"close",
+                      "closing",
+                      "maximize",
+                      "minimize",
+                      "open",
+                      "resize",
+                      "restore"}, func);
+}
+
+void GWindow::setWindowListener(GEventListenerVoid func) {
+    setEventListeners({"close",
+                      "closing",
+                      "maximize",
+                      "minimize",
+                      "open",
+                      "resize",
+                      "restore"}, func);
+}
+
 void GWindow::setWindowTitle(const std::string& title) {
-    if (isOpen()) {
-        if (gwd) {
-            gwd->windowTitle = title;
-        }
-        stanfordcpplib::getPlatform()->gwindow_setTitle(*this, title);
-    }
+    setTitle(title);
 }
 
 void GWindow::setX(double x) {
@@ -1106,152 +953,186 @@ void GWindow::setY(double y) {
     setLocation(getX(), y);
 }
 
+void GWindow::show() {
+    setVisible(true);
+}
+
+void GWindow::sleep(double ms) {
+    require::nonNegative(ms, "GWindow::sleep", "delay (ms)");
+    GThread::sleep(ms);
+}
+
+GWindow::Region GWindow::stringToRegion(const std::string& regionStr) {
+    std::string regionLC = toLowerCase(trim(regionStr));
+    if (stringContains(regionLC, "north") || stringContains(regionLC, "top")) {
+        return GWindow::REGION_NORTH;
+    } else if (stringContains(regionLC, "south") || stringContains(regionLC, "bottom")) {
+        return GWindow::REGION_SOUTH;
+    } else if (stringContains(regionLC, "west") || stringContains(regionLC, "left")) {
+        return GWindow::REGION_WEST;
+    } else if (stringContains(regionLC, "east") || stringContains(regionLC, "right")) {
+        return GWindow::REGION_EAST;
+    } else {
+        return GWindow::REGION_CENTER;
+    }
+}
+
 void GWindow::toBack() {
-    stanfordcpplib::getPlatform()->gwindow_toBack(*this);
+    GThread::runOnQtGuiThread([this]() {
+        _iqmainwindow->lower();
+    });
 }
 
 void GWindow::toFront() {
-    stanfordcpplib::getPlatform()->gwindow_toFront(*this);
-}
-
-bool GWindow::operator ==(const GWindow& w2) {
-    return gwd == w2.gwd;
-}
-
-bool GWindow::operator !=(const GWindow& w2) {
-    return gwd != w2.gwd;
+    GThread::runOnQtGuiThread([this]() {
+        _iqmainwindow->raise();
+        _iqmainwindow->setFocus();
+    });
 }
 
 
-// free functions
-
-static std::string canonicalColorName(const std::string& str) {
-    std::string result = "";
-    int nChars = str.length();
-    for (int i = 0; i < nChars; i++) {
-        char ch = str[i];
-        if (!isspace(ch) && ch != '_') result += tolower(ch);
-    }
-    return result;
-}
+// global functions for compatibility
 
 int convertColorToRGB(const std::string& colorName) {
-    if (colorName == "") return -1;
-    if (colorName[0] == '#') {
-        std::istringstream is(colorName.substr(1) + "@");
-        int rgb;
-        char terminator = '\0';
-        is >> std::hex >> rgb >> terminator;
-        if (terminator != '@') {
-            error("convertColorToRGB: Illegal color - " + colorName);
-        }
-        return rgb;
-    }
-    std::string name = canonicalColorName(colorName);
-    if (!colorTable().containsKey(name)) {
-        error("convertColorToRGB: Undefined color - " + colorName);
-    }
-    return colorTable()[name];
+    return GColor::convertColorToRGB(colorName);
 }
 
 std::string convertRGBToColor(int rgb) {
-    std::ostringstream os;
-    os << std::hex << std::setfill('0') << std::uppercase << "#";
-    os << std::setw(2) << (rgb >> 16 & 0xFF);
-    os << std::setw(2) << (rgb >> 8 & 0xFF);
-    os << std::setw(2) << (rgb & 0xFF);
-    return os.str();
-}
-
-std::string convertRGBToColor(int r, int g, int b) {
-    if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
-        error("convertRGBToColor: invalid RGB value (must be 0-255)");
-    }
-    std::ostringstream os;
-    os << std::hex << std::setfill('0') << std::uppercase << "#";
-    os << std::setw(2) << (r & 0xFF);
-    os << std::setw(2) << (g & 0xFF);
-    os << std::setw(2) << (b & 0xFF);
-    return os.str();
-}
-
-std::string convertARGBToColor(int a, int r, int g, int b) {
-    if (a < 0 || a > 255 || r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
-        error("convertARGBToColor: invalid ARGB value (must be 0-255)");
-    }
-    std::ostringstream os;
-    os << std::hex << std::setfill('0') << std::uppercase << "#";
-    os << std::setw(2) << (a & 0xFF);
-    os << std::setw(2) << (r & 0xFF);
-    os << std::setw(2) << (g & 0xFF);
-    os << std::setw(2) << (b & 0xFF);
-    return os.str();
+    return GColor::convertRGBToColor(rgb);
 }
 
 void exitGraphics() {
-    if (STATIC_VARIABLE(gwindowExitGraphicsEnabled)) {
-        stanfordcpplib::getPlatform()->gwindow_exitGraphics();   // calls exit(0);
-    }
-}
-
-// if RGB is not completely black, but alpha is 0, assume that the
-// client meant to use an opaque color and add ff as alpha channel
-static int fixAlpha(int argb) {
-    int alpha = ((argb & 0xff000000) >> 24) & 0x000000ff;
-    if (alpha == 0 && (argb & 0x00ffffff) != 0) {
-        argb = argb | 0xff000000;   // set full 255 alpha
-    }
-    return argb;
+    QtGui::instance()->exitGraphics();
 }
 
 double getScreenHeight() {
-    return stanfordcpplib::getPlatform()->gwindow_getScreenHeight();   // BUGBUG: was returning getScreenWidth
+    return GWindow::getScreenHeight();
 }
 
 GDimension getScreenSize() {
-    return stanfordcpplib::getPlatform()->gwindow_getScreenSize();
+    return GWindow::getScreenSize();
 }
 
 double getScreenWidth() {
-    return stanfordcpplib::getPlatform()->gwindow_getScreenWidth();
-}
-
-double gwindowGetLastPauseMS() {
-    return STATIC_VARIABLE(gwindowLastPauseMS);
-}
-
-int gwindowGetNumPauses() {
-    return STATIC_VARIABLE(gwindowPauses);
-}
-
-void gwindowResetLastPauseMS() {
-    STATIC_VARIABLE(gwindowLastPauseMS) = 0.0;
-}
-
-void gwindowResetNumPauses() {
-    STATIC_VARIABLE(gwindowPauses) = 0;
-}
-
-void gwindowSetExitGraphicsEnabled(bool value) {
-    STATIC_VARIABLE(gwindowExitGraphicsEnabled) = value;
-}
-
-void gwindowSetPauseEnabled(bool value) {
-    STATIC_VARIABLE(gwindowPauseEnabled) = value;
+    return GWindow::getScreenWidth();
 }
 
 void pause(double milliseconds) {
-    if (STATIC_VARIABLE(gwindowPauseEnabled)) {
-        stanfordcpplib::getPlatform()->gtimer_pause(milliseconds);
-    }
-    STATIC_VARIABLE(gwindowPauses)++;
-    STATIC_VARIABLE(gwindowLastPauseMS) = milliseconds;
+    GThread::sleep(milliseconds);
 }
 
-// end free functions
+void repaint() {
+    QMainWindow* lastWindow = GWindow::getLastWindow();
+    if (lastWindow) {
+        lastWindow->repaint();
+    }
+    // TODO: other windows?
+}
 
-// some flag stuff for error reporting on Windows
-#if defined (_MSC_VER) && (_MSC_VER >= 1200)
-#  include <windows.h>
-#  define MSC_ERROR_FLAGS (MB_OK | MB_ICONSTOP | MB_TOPMOST)
-#endif
+
+_Internal_QMainWindow::_Internal_QMainWindow(GWindow* gwindow, QWidget* parent)
+        : QMainWindow(parent),
+          _gwindow(gwindow) {
+    require::nonNull(gwindow, "_Internal_QMainWindow::constructor");
+    GThread::ensureThatThisIsTheQtGuiThread("GWindow internal initialization");
+    setObjectName(QString::fromStdString("_Internal_QMainWindow"));
+}
+
+void _Internal_QMainWindow::changeEvent(QEvent* event) {
+    require::nonNull(event, "_Internal_QMainWindow::changeEvent", "event");
+    QMainWindow::changeEvent(event);   // call super
+    if (event->type() != QEvent::WindowStateChange) {
+        return;
+    }
+
+    // https://doc.qt.io/Qt-5/qt.html#WindowState-enum
+    QWindowStateChangeEvent* stateChangeEvent = static_cast<QWindowStateChangeEvent*>(event);
+    Qt::WindowStates state = windowState();
+    bool wasMaximized = (stateChangeEvent->oldState() & Qt::WindowMaximized) != 0;
+    bool wasMinimized = (stateChangeEvent->oldState() & Qt::WindowMinimized) != 0;
+    bool isMaximized = (state & Qt::WindowMaximized) != 0;
+    bool isMinimized = (state & Qt::WindowMinimized) != 0;
+    if (!wasMaximized && isMaximized) {
+        _gwindow->fireGEvent(stateChangeEvent, WINDOW_MAXIMIZED, "maximize");
+    } else if (!wasMinimized && isMinimized) {
+        _gwindow->fireGEvent(stateChangeEvent, WINDOW_MINIMIZED, "minimize");
+    } else if ((wasMinimized || wasMaximized) && !isMinimized && !isMaximized) {
+        _gwindow->fireGEvent(stateChangeEvent, WINDOW_RESTORED, "restore");
+    }
+}
+
+void _Internal_QMainWindow::closeEvent(QCloseEvent* event) {
+    require::nonNull(event, "_Internal_QMainWindow::closeEvent", "event");
+    // send "closing" event before window closes
+    _gwindow->fireGEvent(event, WINDOW_CLOSING, "closing");
+
+    GWindow::CloseOperation closeOp = _gwindow->getCloseOperation();
+    if (closeOp == GWindow::CLOSE_DO_NOTHING) {
+        event->ignore();
+        return;
+    }
+
+    // send "close" event after window closes
+    event->accept();
+    QMainWindow::closeEvent(event);   // call super
+    _gwindow->fireGEvent(event, WINDOW_CLOSED, "close");
+
+    if (closeOp == GWindow::CLOSE_EXIT) {
+        // exit app
+        QtGui::instance()->exitGraphics();
+    }
+}
+
+void _Internal_QMainWindow::handleMenuAction(const std::string& menu, const std::string& item) {
+    GEvent actionEvent(
+                /* class  */ ACTION_EVENT,
+                /* type   */ ACTION_MENU,
+                /* name   */ "actionMenu",
+                /* source */ _gwindow);
+    actionEvent.setActionCommand(menu + "/" + item);
+    _gwindow->fireEvent(actionEvent);
+}
+
+void _Internal_QMainWindow::keyPressEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QMainWindow::keyPressEvent", "event");
+    QMainWindow::keyPressEvent(event);   // call super
+    _gwindow->processKeyPressEventInternal(event);
+}
+
+void _Internal_QMainWindow::resizeEvent(QResizeEvent* event) {
+    require::nonNull(event, "_Internal_QMainWindow::resizeEvent", "event");
+    QMainWindow::resizeEvent(event);   // call super
+    _gwindow->fireGEvent(event, WINDOW_RESIZED, "resize");
+}
+
+void _Internal_QMainWindow::timerEvent(QTimerEvent* event) {
+    require::nonNull(event, "_Internal_QMainWindow::timerEvent", "event");
+    QMainWindow::timerEvent(event);   // call super
+    _gwindow->fireGEvent(event, TIMER_TICKED, "timer");
+}
+
+bool _Internal_QMainWindow::timerExists(int id) {
+    if (id >= 0) {
+        return _timerIDs.contains(id);
+    } else {
+        return !_timerIDs.isEmpty();
+    }
+}
+
+int _Internal_QMainWindow::timerStart(double ms) {
+    require::nonNegative(ms, "_Internal_QMainWindow::timerStart", "delay (ms)");
+    int timerID = startTimer((int) ms);
+    _timerIDs.add(timerID);
+    return timerID;
+}
+
+void _Internal_QMainWindow::timerStop(int id) {
+    if (id < 0 && timerExists()) {
+        id = _timerIDs.first();
+    }
+
+    if (timerExists(id)) {
+        killTimer(id);
+        _timerIDs.remove(id);
+    }
+}

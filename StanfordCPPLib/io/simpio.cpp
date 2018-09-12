@@ -16,12 +16,13 @@
  */
 
 #include "simpio.h"
-#include "strlib.h"
 #include <cctype>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
+#include "error.h"
+#include "strlib.h"
 #include "private/static.h"
 
 STATIC_CONST_VARIABLE_DECLARE(std::string, GETCHAR_DEFAULT_PROMPT, "Enter a character: ")
@@ -50,14 +51,16 @@ char getChar(const std::string& prompt,
         std::cout << promptCopy;
         std::string line;
         if (!getline(std::cin, line)) {
-            break;
+            error("getChar: End of input reached while waiting for character value.");
         }
         if (line.length() == 1) {
             value = line[0];
             break;
         }
 
-        std::cout << (reprompt.empty() ? STATIC_VARIABLE(GETCHAR_DEFAULT_REPROMPT) : reprompt) << std::endl;
+        std::cout.flush();
+        std::cerr << (reprompt.empty() ? STATIC_VARIABLE(GETCHAR_DEFAULT_REPROMPT) : reprompt) << std::endl;
+        std::cerr.flush();
         if (promptCopy.empty()) {
             promptCopy = STATIC_VARIABLE(GETCHAR_DEFAULT_PROMPT);
         }
@@ -78,18 +81,22 @@ int getInteger(const std::string& prompt,
                const std::string& reprompt) {
     std::string promptCopy = prompt;
     appendSpace(promptCopy);
-    int value;
+    int value = 0;
     while (true) {
         std::cout << promptCopy;
         std::string line;
-        getline(std::cin, line);
+        if (!getline(std::cin, line)) {
+            error("getInteger: End of input reached while waiting for integer value.");
+        }
         trimInPlace(line);
         std::istringstream stream(line);
         stream >> value;
         if (!stream.fail() && stream.eof()) {
             break;
         }
-        std::cout << (reprompt.empty() ? STATIC_VARIABLE(GETINTEGER_DEFAULT_REPROMPT) : reprompt) << std::endl;
+        std::cout.flush();
+        std::cerr << (reprompt.empty() ? STATIC_VARIABLE(GETINTEGER_DEFAULT_REPROMPT) : reprompt) << std::endl;
+        std::cerr.flush();
         if (promptCopy.empty()) {
             promptCopy = STATIC_VARIABLE(GETINTEGER_DEFAULT_PROMPT);
         }
@@ -102,8 +109,10 @@ int getIntegerBetween(const std::string& prompt, int min, int max) {
     while (true) {
         value = getInteger(prompt);
         if (value < min || value > max) {
-            std::cout << "Please type a value between " << min
+            std::cout.flush();
+            std::cerr << "Please type a value between " << min
                       << " and " << max << "." << std::endl;
+            std::cerr.flush();
         } else {
             break;
         }
@@ -131,30 +140,38 @@ void getLine(const std::string& prompt,
     std::string promptCopy = prompt;
     appendSpace(promptCopy);
     std::cout << promptCopy;
-    getline(std::cin, out);
+    if (!getline(std::cin, out)) {
+        error("getLine: End of input reached while waiting for line.");
+    }
 }
 
 void getLine(std::istream& input,
              std::string& out) {
-    getline(input, out);
+    if (!getline(input, out)) {
+        error("getLine: End of input reached while waiting for line.");
+    }
 }
 
 double getReal(const std::string& prompt,
                const std::string& reprompt) {
     std::string promptCopy = prompt;
     appendSpace(promptCopy);
-    double value;
+    double value = 0.0;
     while (true) {
         std::cout << promptCopy;
         std::string line;
-        getline(std::cin, line);
+        if (!getline(std::cin, line)) {
+            error("getReal: End of input reached while waiting for real value.");
+        }
         trimInPlace(line);
         std::istringstream stream(line);
         stream >> value;
         if (!stream.fail() && stream.eof()) {
             break;
         }
-        std::cout << (reprompt.empty() ? STATIC_VARIABLE(GETREAL_DEFAULT_REPROMPT) : reprompt) << std::endl;
+        std::cout.flush();
+        std::cerr << (reprompt.empty() ? STATIC_VARIABLE(GETREAL_DEFAULT_REPROMPT) : reprompt) << std::endl;
+        std::cerr.flush();
         if (promptCopy.empty()) {
             promptCopy = STATIC_VARIABLE(GETREAL_DEFAULT_PROMPT);
         }
@@ -167,8 +184,10 @@ double getRealBetween(const std::string& prompt, double min, double max) {
     while (true) {
         value = getReal(prompt);
         if (value < min || value > max) {
-            std::cout << "Please type a value between " << min
+            std::cout.flush();
+            std::cerr << "Please type a value between " << min
                       << " and " << max << "." << std::endl;
+            std::cerr.flush();
         } else {
             break;
         }
@@ -181,11 +200,13 @@ bool getYesOrNo(const std::string& prompt,
                 const std::string& defaultValue) {
     std::string promptCopy = prompt;
     appendSpace(promptCopy);
-    bool value;
+    bool value = false;
     while (true) {
         std::cout << promptCopy;
         std::string line;
-        getline(std::cin, line);
+        if (!getline(std::cin, line)) {
+            error("getYesOrNo: End of input reached while waiting for yes/no value.");
+        }
         if (line.empty()) {
             line = defaultValue;
         }
@@ -199,7 +220,9 @@ bool getYesOrNo(const std::string& prompt,
                 break;
             }
         }
-        std::cout << (reprompt.empty() ? STATIC_VARIABLE(GETYESORNO_DEFAULT_REPROMPT) : reprompt) << std::endl;
+        std::cout.flush();
+        std::cerr << (reprompt.empty() ? STATIC_VARIABLE(GETYESORNO_DEFAULT_REPROMPT) : reprompt) << std::endl;
+        std::cerr.flush();
         if (promptCopy.empty()) {
             promptCopy = STATIC_VARIABLE(GETYESORNO_DEFAULT_PROMPT);
         }

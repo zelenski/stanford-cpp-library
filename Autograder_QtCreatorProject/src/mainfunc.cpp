@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 #include "autograder.h"
-#include "console.h"
+#include "consoletext.h"
 #include "gtest-marty.h"
 #include "queue.h"
 #include "simpio.h"
@@ -15,7 +15,6 @@
 #include "stylecheck.h"
 #include "vector.h"
 #include "testcases.h"
-#include "private/platform.h"
 #include "private/version.h"
 #include "exceptions.h"
 using namespace std;

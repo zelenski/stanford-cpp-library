@@ -43,7 +43,6 @@
 #include "exceptions.h"
 #include "strlib.h"
 #include <cxxabi.h>
-#include "private/platform.h"
 #include "private/static.h"
 
 namespace stacktrace {
@@ -171,7 +170,7 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
                 nullptr,      // User-defined short name of the module (it can be null)
                 BaseAddr,     // Base address of the module (cannot be null if .PDB file is used, otherwise it can be null)
                 FileSize)) {      // Size of the file (cannot be null if .PDB file is used, otherwise it can be null)
-            // std::cout << "Error: SymLoadModule() failed: " << getPlatform()->os_getLastError() << std::endl;
+            // std::cout << "Error: SymLoadModule() failed: " << platform::os_getLastError() << std::endl;
             // return;
         }
     }

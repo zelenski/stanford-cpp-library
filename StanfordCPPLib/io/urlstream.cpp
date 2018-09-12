@@ -21,8 +21,8 @@
 #include <string>
 #include "error.h"
 #include "filelib.h"
+#include "gdownloader.h"
 #include "strlib.h"
-#include "private/platform.h"
 
 namespace {
     /* Given a status code, determines whether it's successful. All successful HTTP
@@ -34,48 +34,48 @@ namespace {
 }
 
 iurlstream::iurlstream()
-        : m_url(""),
-          m_tempFilePath(""),
-          m_lastError(0) {
+        : _url(""),
+          _tempFilePath(""),
+          _lastError(0) {
     // empty
 }
 
 iurlstream::iurlstream(const std::string& url)
-        : m_url(url),
-          m_tempFilePath(""),
-          m_lastError(0) {
+        : _url(url),
+          _tempFilePath(""),
+          _lastError(0) {
     open(url);
 }
 
 void iurlstream::close() {
     std::ifstream::close();
-    if (!m_tempFilePath.empty() && fileExists(m_tempFilePath)) {
-        deleteFile(m_tempFilePath);
+    if (!_tempFilePath.empty() && fileExists(_tempFilePath)) {
+        deleteFile(_tempFilePath);
     }
-    m_tempFilePath = "";
-    m_lastError = 0;
+    _tempFilePath = "";
+    _lastError = 0;
 }
 
 int iurlstream::getErrorCode() const {
-    return isHttpSuccess(m_lastError)? 0 : m_lastError;
+    return isHttpSuccess(_lastError)? 0 : _lastError;
 }
 
 int iurlstream::getHttpStatusCode() const {
     /* All HTTP status codes are between 1xx and 5xx, inclusive. */
-    return m_lastError >= 100 && m_lastError <= 599? m_lastError : 0;
+    return _lastError >= 100 && _lastError <= 599? _lastError : 0;
 }
 
 std::string iurlstream::getHeader(const std::string& name) const {
-    return m_headers[name];
+    return _headers[name];
 }
 
 std::string iurlstream::getUrl() const {
-    return m_url;
+    return _url;
 }
 
 std::string iurlstream::getUserAgent() const {
-    if (m_headers.containsKey("User-Agent")) {
-        return m_headers["User-Agent"];
+    if (_headers.containsKey("User-Agent")) {
+        return _headers["User-Agent"];
     } else {
         return "";
     }
@@ -104,30 +104,32 @@ std::string iurlstream::getUrlFilename(const std::string& url) const {
 
 void iurlstream::open(const std::string& url) {
     if (!url.empty()) {
-        m_url = url;
+        _url = url;
     }
     
     // download the entire URL to a temp file, put into stringbuf for reading
     std::string tempDir = getTempDirectory();
-    std::string filename = getUrlFilename(m_url);
-    m_tempFilePath = tempDir + getDirectoryPathSeparator() + filename;
+    std::string filename = getUrlFilename(_url);
+    _tempFilePath = tempDir + getDirectoryPathSeparator() + filename;
     
-    // insert/send headers to backend if needed
-    if (m_headers.isEmpty()) {
-        m_lastError = stanfordcpplib::getPlatform()->url_download(m_url, filename);
+    // insert/send headers if needed
+    if (_headers.isEmpty()) {
+        // TODO
+        // _lastError = url_download(_url, filename);
     } else {
-        m_lastError = stanfordcpplib::getPlatform()->url_downloadWithHeaders(m_url, filename, m_headers);
+        // TODO
+        // _lastError = url_downloadWithHeaders(_url, filename, _headers);
     }
 
-    if (isHttpSuccess(m_lastError)) {
-        std::ifstream::open(m_tempFilePath.c_str());
+    if (isHttpSuccess(_lastError)) {
+        std::ifstream::open(_tempFilePath.c_str());
     } else {
         setstate(std::ios::failbit);
     }
 }
 
 void iurlstream::setHeader(const std::string& name, const std::string& value) {
-    m_headers[name] = value;
+    _headers[name] = value;
 }
 
 void iurlstream::setUserAgent(const std::string& userAgent) {
