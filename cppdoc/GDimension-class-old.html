@@ -1,0 +1,89 @@
+<html>
+<head>
+<title>GDimension</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="gtypes.html">#include "gtypes.h"</a></div>
+<h1 class=header><code>class GDimension</code></h1>
+This class contains real-valued width and height fields.  It is used
+to indicate the size of a graphical object.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Constructor</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GDimension">GDimension()</a><br>
+<a href="#Constructor:GDimension">GDimension(<var>width</var>,&nbsp;<var>height</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GDimension</code> object with the specified <code>width</code> and <code>height</code> coordinates.</td></tr>
+<tr><td class=indexHead colspan=2>Methods</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getHeight">getHeight()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the height component of the <code>GDimension</code> object.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getWidth">getWidth()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the width component of the <code>GDimension</code> object.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts the <code>GDimension</code> to a string in the form <code>"(</code><i>width</i><code>,</code>&nbsp;<i>height</i><code>)"</code>.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GDimension"></a>
+<pre class=detailCode>
+GDimension();
+GDimension(double width, double height);
+</pre>
+<div class=detailHTML>
+Creates a <code>GDimension</code> object with the specified
+<code>width</code> and <code>height</code> coordinates.  If the
+coordinates are not supplied, the default constructor sets these
+fields to 0.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GDimension empty;
+GDimension dim(width, height);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:getWidth"></a>
+<pre class=detailCode>
+double getWidth() const;
+</pre>
+<div class=detailHTML>
+Returns the width component of the <code>GDimension</code> object.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double width = dim.getWidth();
+</pre>
+<hr>
+<a name="Method:getHeight"></a>
+<pre class=detailCode>
+double getHeight() const;
+</pre>
+<div class=detailHTML>
+Returns the height component of the <code>GDimension</code> object.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double height = dim.getHeight();
+</pre>
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Converts the <code>GDimension</code> to a string in the form
+<code>"(</code><i>width</i><code>,</code>&nbsp;<i>height</i><code>)"</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = dim.toString();
+</pre>
+<hr>
+</table>
+</body>
+</html>

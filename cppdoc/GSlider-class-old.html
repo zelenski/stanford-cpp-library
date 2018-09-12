@@ -1,0 +1,89 @@
+<html>
+<head>
+<title>GSlider</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="ginteractors.html">#include "ginteractors.h"</a></div>
+<h1 class=header><code>class GSlider : public <a href="GInteractor-class.html">GInteractor</a></code></h1>
+This interactor subclass represents an onscreen slider.  Dragging
+the slider control generates an <code>ActionEvent</code> if the
+slider has a nonempty action command.
+<p>The display image of a slider is machine-dependent, but the declaration
+
+<pre>
+    GSlider* slider = new GSlider();
+</pre>
+
+typically produces a slider that looks something like this:
+
+<p><div class=inset>
+<img src="images/GSlider.png" alt="GSlider">
+</div>
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Constructor</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GSlider">GSlider()</a><br>
+<a href="#Constructor:GSlider">GSlider(<var>min</var>,&nbsp;<var>max</var>,&nbsp;<var>value</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a horizontal <code>GSlider</code>.</td></tr>
+<tr><td class=indexHead colspan=2>Methods</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getValue">getValue()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the current value of the slider.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setValue">setValue(<var>value</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the current value of the slider.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GSlider"></a>
+<pre class=detailCode>
+GSlider();
+GSlider(int min, int max, int value);
+</pre>
+<div class=detailHTML>
+Creates a horizontal <code>GSlider</code>.  The second form allows
+the client to specify the minimum value, maximum value, and current
+value of the slider.  The first form is equivalent to calling
+<code>GSlider(0, 100, 50)</code>.  Assigning an action command
+to the slider causes the slider to generate an action event whenever
+the slider value changes.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GSlider* slider = new GSlider();
+GSlider* slider = new GSlider(min, max, value);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:setValue"></a>
+<pre class=detailCode>
+void setValue(int value);
+</pre>
+<div class=detailHTML>
+Sets the current value of the slider.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+slider-&gt;setValue(value);
+</pre>
+<hr>
+<a name="Method:getValue"></a>
+<pre class=detailCode>
+int getValue();
+</pre>
+<div class=detailHTML>
+Returns the current value of the slider.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int value = slider-&gt;getValue();
+</pre>
+<hr>
+</table>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<html>
+<head>
+<title>GLabel</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="gobjects.html">#include "gobjects.h"</a></div>
+<h1 class=header><code>class GLabel : public <a href="GObject-class.html">GObject</a></code></h1>
+This graphical object subclass represents a text string.  For
+example, the following code adds a <code>GLabel</code> containing
+the string <code>"hello, world"</code> to the center of the window:
+
+<pre>
+   int main() {
+      GWindow gw;
+      cout &lt;&lt; &quot;This program draws the 'hello, world' message.&quot; &lt;&lt; endl;
+      GLabel* label = new GLabel(&quot;hello, world&quot;);
+      label-&gt;setFont(&quot;SansSerif-18&quot;);
+      double x = (gw.getWidth() - label->getWidth()) / 2;
+      double y = (gw.getHeight() + label->getFontAscent()) / 2;
+      gw.add(label, x, y);
+      return 0;
+   }
+</pre>
+
+Controlling the appearance and positioning of a <code>GLabel</code>
+depends on understanding the following terms:
+
+<p><ul>
+  <li>The <b><i>baseline</i></b> is the horizontal line on which the
+      characters rest.
+  <li>The <b><i>origin</i></b> is the point on the baseline at which
+      the label begins.
+  <li>The <b><i>height</i></b> is the distance that separate two
+      successive lines.
+  <li>The <b><i>ascent</i></b> is the maximum distance a character
+      in this font extends above the baseline.
+  <li>The <b><i>descent</i></b> is the maximum distance a character
+      in this font extends below the baseline.
+</ul>
+<p>The following diagram illustrates the interpretation of these terms:
+
+<p><div class=inset>
+<img src="images/GLabelGeometry.png" width=625 alt="GLabelGeometry">
+</div>
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Constructor</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GLabel">GLabel(<var>str</var>)</a><br>
+<a href="#Constructor:GLabel">GLabel(<var>str</var>,&nbsp;<var>x</var>,&nbsp;<var>y</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GLabel</code> object containing the specified string.</td></tr>
+<tr><td class=indexHead colspan=2>Methods</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getFont">getFont()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the current font for the <code>GLabel</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getFontAscent">getFontAscent()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the maximum distance strings in this font extend above the baseline.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getFontDescent">getFontDescent()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the maximum distance strings in this font descend below the baseline.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getLabel">getLabel()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the string displayed by this object.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setFont">setFont(<var>font</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the font used to display the <code>GLabel</code> as specified by the string <code>font</code>, which has the following format:  <pre>    family-style-size </pre>  where both <code>style</code> and <code>size</code> are optional.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setLabel">setLabel(<var>str</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the string stored within the <code>GLabel</code> object, so that a new text string appears on the display.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GLabel"></a>
+<pre class=detailCode>
+GLabel(string str);
+GLabel(string str, double x, double y);
+</pre>
+<div class=detailHTML>
+Creates a <code>GLabel</code> object containing the specified string.
+By default, the baseline of the first character appears at the origin;
+the second form automatically resets the location of the
+<code>GLabel</code> to the point (<code>x</code>, <code>y</code>).
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GLabel* label = new GLabel(str);
+GLabel* label = new GLabel(str, x, y);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:setFont"></a>
+<pre class=detailCode>
+void setFont(string font);
+</pre>
+<div class=detailHTML>
+Changes the font used to display the <code>GLabel</code> as specified by
+the string <code>font</code>, which has the following format:
+
+<pre>
+   family-style-size
+</pre>
+
+where both <code>style</code> and <code>size</code> are optional.
+If any of these elements are missing or specified as an asterisk,
+the existing value is retained.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+label-&gt;setFont(font);
+</pre>
+<hr>
+<a name="Method:getFont"></a>
+<pre class=detailCode>
+string getFont() const;
+</pre>
+<div class=detailHTML>
+Returns the current font for the <code>GLabel</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string font = label-&gt;getFont();
+</pre>
+<hr>
+<a name="Method:setLabel"></a>
+<pre class=detailCode>
+void setLabel(string str);
+</pre>
+<div class=detailHTML>
+Changes the string stored within the <code>GLabel</code> object, so that
+a new text string appears on the display.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+label-&gt;setLabel(str);
+</pre>
+<hr>
+<a name="Method:getLabel"></a>
+<pre class=detailCode>
+string getLabel() const;
+</pre>
+<div class=detailHTML>
+Returns the string displayed by this object.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = label-&gt;getLabel();
+</pre>
+<hr>
+<a name="Method:getFontAscent"></a>
+<pre class=detailCode>
+double getFontAscent() const;
+</pre>
+<div class=detailHTML>
+Returns the maximum distance strings in this font extend above
+the baseline.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double ascent = label-&gt;getFontAscent();
+</pre>
+<hr>
+<a name="Method:getFontDescent"></a>
+<pre class=detailCode>
+double getFontDescent() const;
+</pre>
+<div class=detailHTML>
+Returns the maximum distance strings in this font descend below
+the baseline.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double descent = label-&gt;getFontDescent();
+</pre>
+<hr>
+</table>
+</body>
+</html>

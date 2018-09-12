@@ -1,0 +1,184 @@
+<html>
+<head>
+<title>GPolygon</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="gobjects.html">#include "gobjects.h"</a></div>
+<h1 class=header><code>class GPolygon : public <a href="GObject-class.html">GObject</a></code></h1>
+This graphical object subclass represents a polygon bounded by
+line segments.  The <code>GPolygon</code> constructor creates an
+empty polygon.  To complete the figure, you need to add vertices
+to the polygon using the methods
+<a href="#Method:addVertex"><code>addVertex</code></a>,
+<a href="#Method:addEdge"><code>addEdge</code></a>,
+and <a href="#Method:addPolarEdge"><code>addPolarEdge</code></a>.
+As an example, the following code adds a filled red octagon to
+the center of the window:
+
+<pre>
+   int main() {
+      GWindow gw;
+      cout &lt;&lt; &quot;This program draws a red octagon.&quot; &lt;&lt; endl;
+      double edge = 75;
+      GPolygon* stopSign = new GPolygon();
+      stopSign-&gt;addVertex(-edge / 2, edge / 2 + edge / sqrt(2.0));
+      for (int i = 0; i &lt; 8; i++) {
+         stopSign-&gt;addPolarEdge(edge, 45 * i);
+      }
+      stopSign-&gt;setFilled(true);
+      stopSign-&gt;setColor(&quot;RED&quot;);
+      gw.add(stopSign, gw.getWidth() / 2, gw.getHeight() / 2);
+      return 0;
+   }
+</pre>
+<p>The program results in the following picture:
+
+<p><div class=inset>
+<img src="images/StopSign.png" width=322 alt="StopSign">
+</div>
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Constructor</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GPolygon">GPolygon()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Constructs a new empty polygon at the origin.</td></tr>
+<tr><td class=indexHead colspan=2>Methods</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:addEdge">addEdge(<var>dx</var>,&nbsp;<var>dy</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds an edge to the polygon whose components are given by the displacements <code>dx</code> and <code>dy</code> from the last vertex.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:addPolarEdge">addPolarEdge(<var>r</var>,&nbsp;<var>theta</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds an edge to the polygon specified in polar coordinates.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:addVertex">addVertex(<var>x</var>,&nbsp;<var>y</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds a vertex at (<code>x</code>, <code>y</code>) relative to the polygon origin.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getFillColor">getFillColor()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the color used to display the filled region of this polygon.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getVertices">getVertices()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a vector of the points in the polygon.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:isFilled">isFilled()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the polygon is filled.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setFillColor">setFillColor(<var>color</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the color used to display the filled region of this polygon.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setFilled">setFilled(<var>flag</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the fill status for the polygon, where <code>false</code> is outlined and <code>true</code> is filled.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GPolygon"></a>
+<pre class=detailCode>
+GPolygon();
+</pre>
+<div class=detailHTML>
+Constructs a new empty polygon at the origin.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GPolygon* poly = new GPolygon();
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:addVertex"></a>
+<pre class=detailCode>
+void addVertex(double x, double y);
+</pre>
+<div class=detailHTML>
+Adds a vertex at (<code>x</code>, <code>y</code>) relative to the polygon
+origin.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+poly-&gt;addVertex(x, y);
+</pre>
+<hr>
+<a name="Method:addEdge"></a>
+<pre class=detailCode>
+void addEdge(double dx, double dy);
+</pre>
+<div class=detailHTML>
+Adds an edge to the polygon whose components are given by the displacements
+<code>dx</code> and <code>dy</code> from the last vertex.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+poly-&gt;addEdge(dx, dy);
+</pre>
+<hr>
+<a name="Method:addPolarEdge"></a>
+<pre class=detailCode>
+void addPolarEdge(double r, double theta);
+</pre>
+<div class=detailHTML>
+Adds an edge to the polygon specified in polar coordinates.  The length
+of the edge is given by <code>r</code>, and the edge extends in
+direction <code>theta</code>, measured in degrees counterclockwise
+from the +x axis.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+poly-&gt;addPolarEdge(r, theta);
+</pre>
+<hr>
+<a name="Method:getVertices"></a>
+<pre class=detailCode>
+Vector&lt;GPoint&gt; getVertices() const;
+</pre>
+<div class=detailHTML>
+Returns a vector of the points in the polygon.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Vector&lt;GPoint&gt; vec = poly-&gt;getVertices();
+</pre>
+<hr>
+<a name="Method:setFilled"></a>
+<pre class=detailCode>
+void setFilled(bool flag);
+</pre>
+<div class=detailHTML>
+Sets the fill status for the polygon, where <code>false</code> is
+outlined and <code>true</code> is filled.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+poly-&gt;setFilled(flag);
+</pre>
+<hr>
+<a name="Method:isFilled"></a>
+<pre class=detailCode>
+bool isFilled() const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the polygon is filled.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (poly-&gt;isFilled()) ...
+</pre>
+<hr>
+<a name="Method:setFillColor"></a>
+<pre class=detailCode>
+void setFillColor(string color);
+void setFillColor(int rgb);
+</pre>
+<div class=detailHTML>
+Sets the color used to display the filled region of this polygon.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+poly-&gt;setFillColor(color);
+</pre>
+<hr>
+<a name="Method:getFillColor"></a>
+<pre class=detailCode>
+string getFillColor() const;
+</pre>
+<div class=detailHTML>
+Returns the color used to display the filled region of this polygon.  If
+none has been set, <code>getFillColor</code> returns the empty string.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string color = poly-&gt;getFillColor();
+</pre>
+<hr>
+</table>
+</body>
+</html>

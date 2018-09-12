@@ -1,0 +1,109 @@
+<html>
+<head>
+<title>GInteractor</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="ginteractors.html">#include "ginteractors.h"</a></div>
+<h1 class=header><code>class GInteractor : public <a href="GObject-class.html">GObject</a></code></h1>
+This abstract class is the superclass for all graphical interactors.
+In most applications, interactors will be added to a control strip
+along one of the sides of the <code>GWindow</code>, but they can
+also be placed in specific positions just like any other
+<code>GObject</code>.
+The structure of the <code>GInteractor</code> hierarchy looks like this:
+
+<p><div class=inset>
+<img src="images/GInteractorHierarchy.png"
+<img src="images/GInteractorHierarchy.png"
+     width=513 usemap="#GInteractorMap" alt="GInteractorHierarchy">
+</div>
+<map name="GInteractorMap">
+  <area shape=rect coords="210,0,303,27" href="GObject-class.html"
+        alt="GObject">
+  <area shape=rect coords="0,219,93,246" href="GButton-class.html"
+        alt="GButton">
+  <area shape=rect coords="105,219,198,246" href="GCheckBox-class.html"
+        alt="GCheckBox">
+  <area shape=rect coords="210,219,303,246" href="GChooser-class.html"
+        alt="GChooser">
+  <area shape=rect coords="315,219,408,246" href="GSlider-class.html"
+        alt="GSlider">
+  <area shape=rect coords="420,219,513,246" href="GTextField-class.html"
+        alt="GTextField">
+</map>
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Methods</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getActionCommand">getActionCommand()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the action command associated with the interactor.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setActionCommand">setActionCommand(<var>cmd</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the action command to the indicated string.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setBounds">setBounds(<var>rect</var>)</a><br>
+<a href="#Method:setBounds">setBounds(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>width</var>,&nbsp;<var>height</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the bounds of the interactor to the specified values.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setSize">setSize(<var>size</var>)</a><br>
+<a href="#Method:setSize">setSize(<var>width</var>,&nbsp;<var>height</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the size of the interactor to the specified width and height.</td></tr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:setActionCommand"></a>
+<pre class=detailCode>
+void setActionCommand(string cmd);
+</pre>
+<div class=detailHTML>
+Sets the action command to the indicated string.  If the string is not
+empty, activating the interactor generates a <code>GActionEvent</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+interactor.setActionCommand(cmd);
+</pre>
+<hr>
+<a name="Method:getActionCommand"></a>
+<pre class=detailCode>
+string getActionCommand();
+</pre>
+<div class=detailHTML>
+Returns the action command associated with the interactor.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string cmd = interactor.getActionCommand();
+</pre>
+<hr>
+<a name="Method:setSize"></a>
+<pre class=detailCode>
+void setSize(const GDimension &amp; size);
+void setSize(double width, double height);
+</pre>
+<div class=detailHTML>
+Changes the size of the interactor to the specified width and height.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+interactor.setSize(size);
+interactor.setSize(width, height);
+</pre>
+<hr>
+<a name="Method:setBounds"></a>
+<pre class=detailCode>
+void setBounds(const GRectangle &amp; size);
+void setBounds(double x, double y, double width, double height);
+</pre>
+<div class=detailHTML>
+Changes the bounds of the interactor to the specified values.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+interactor.setBounds(rect);
+interactor.setBounds(x, y, width, height);
+</pre>
+<hr>
+</table>
+</body>
+</html>

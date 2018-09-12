@@ -3,16 +3,23 @@
 # This file specifies the information about your project to Qt Creator.
 # You should not need to modify this file to complete your assignment.
 #
-# If you need to add files or folders to your project, we recommend
-# that you "re-initialize" your project by doing the following:
-#
-# 1- close Qt Creator.
-# 2- delete your ".pro.user" file and "build_xxxxxxx" directory.
-# 3- place the new files/folders into your project directory.
-# 4- re-open and "Configure" your project again.
+#####################################################################
+## If you need to add files or folders to your project, we suggest ##
+## that you "re-initialize" your project by doing the following:   ##
+##                                                                 ##
+## 1- close Qt Creator.                                            ##
+## 2- delete your ".pro.user" file and "build_xxxxxxx" directory.  ##
+## 3- place the new files/folders into your project directory.     ##
+## 4- re-open and "Configure" your project again.                  ##
+#####################################################################
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2018/09/06
+# - removed references to old Java back-end spl.jar
+# @version 2018/07/01
+# - enable Qt in configuration to support Qt-based GUI functionality
+# - remove some compiler warnings (long-long, useless-cast) because they trigger in Qt
 # @version 2018/02/28
 # - flag to disable some BasicGraph Vertex/Edge members
 # @version 2018/01/23
@@ -87,6 +94,8 @@
 
 TEMPLATE = app
 PROJECT_FILTER =
+QT       += core gui network
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 ###############################################################################
 # BEGIN SECTION FOR SPECIFYING SOURCE/LIBRARY/RESOURCE FILES OF PROJECT       #
@@ -133,24 +142,13 @@ BAD_CHARS ~= s|[a-zA-Z0-9_ ().\/:;-]+|
     error(Exiting.)
 }
 
-# checks to ensure that the Stanford C++ library and its associated
-# Java back-end are both present in this project
+# checks to ensure that the Stanford C++ library is present in this project
 !exists($$PWD/lib/StanfordCPPLib/private/version.h) {
     message("")
     message(*******************************************************************)
     message(*** ERROR: Stanford C++ library not found!)
     message(*** This project cannot run without the folder lib/StanfordCPPLib/.)
     message(*** Place that folder into your project and try again.)
-    message(*******************************************************************)
-    message("")
-    error(Exiting.)
-}
-!exists($$PWD/lib/spl.jar) {
-    message("")
-    message(*******************************************************************)
-    message(*** ERROR: Stanford Java back-end library 'spl.jar' not found!)
-    message(*** This project cannot run without spl.jar present.)
-    message(*** Place that file into your lib/ folder and try again.)
     message(*******************************************************************)
     message("")
     error(Exiting.)
@@ -272,10 +270,10 @@ QMAKE_CXXFLAGS += -Wall
 QMAKE_CXXFLAGS += -Wextra
 # QMAKE_CXXFLAGS += -Weffc++
 QMAKE_CXXFLAGS += -Wcast-align
-QMAKE_CXXFLAGS += -Wfloat-equal
+#QMAKE_CXXFLAGS += -Wfloat-equal
 QMAKE_CXXFLAGS += -Wformat=2
 QMAKE_CXXFLAGS += -Wlogical-op
-QMAKE_CXXFLAGS += -Wlong-long
+#QMAKE_CXXFLAGS += -Wlong-long
 QMAKE_CXXFLAGS += -Wno-missing-field-initializers
 QMAKE_CXXFLAGS += -Wno-sign-compare
 QMAKE_CXXFLAGS += -Wno-sign-conversion
@@ -294,16 +292,16 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
     QMAKE_CXXFLAGS += -Wno-unused-function
     QMAKE_CXXFLAGS += -Wno-useless-cast
 } else {
-    QMAKE_CXXFLAGS += -Wuseless-cast
-    QMAKE_CXXFLAGS += -Wzero-as-null-pointer-constant
-    QMAKE_CXXFLAGS += -Werror=zero-as-null-pointer-constant
+    #QMAKE_CXXFLAGS += -Wuseless-cast
+    #QMAKE_CXXFLAGS += -Wzero-as-null-pointer-constant   # TODO: re-enable for student code?
+    #QMAKE_CXXFLAGS += -Werror=zero-as-null-pointer-constant
 }
 
 # additional flags for Windows
 win32 {
     # disable inclusion of Qt core libraries (smaller,faster build)
-    CONFIG -= qt
-    QT -= core gui opengl widgets
+    # CONFIG -= qt
+    # QT -= core gui opengl widgets
 
     # increase system stack size (helpful for recursive programs)
     QMAKE_LFLAGS += -Wl,--stack,268435456
@@ -321,8 +319,8 @@ macx {
     # QMAKE_LFLAGS += -Wl,-stack_size -Wl,0x8000000
 
     # disable inclusion of Qt core libraries (smaller,faster build)
-    CONFIG -= qt
-    QT -= core gui opengl widgets
+    # CONFIG -= qt
+    # QT -= core gui opengl widgets
 
     # calling cache() reduces warnings on Mac OS X systems
     cache()
@@ -332,7 +330,7 @@ macx {
 # additional flags for Linux
 unix:!macx {
     # disable inclusion of Qt core libraries (smaller,faster build)
-    CONFIG -= qt
+    # CONFIG -= qt
     # QT -= core gui opengl widgets
 
     unix-g++ {
@@ -358,6 +356,8 @@ COMPILERNAME = $$QMAKE_CXX
 COMPILERNAME ~= s|.*/|
 equals(COMPILERNAME, clang++) {
     QMAKE_CXXFLAGS += -Wno-format-nonliteral
+    QMAKE_CXXFLAGS += -Wno-inconsistent-missing-override
+    QMAKE_CXXFLAGS += -Wno-overloaded-virtual
     QMAKE_CXXFLAGS += -Wno-unknown-warning-option
 }
 
@@ -367,7 +367,7 @@ equals(COMPILERNAME, clang++) {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20171115
+DEFINES += SPL_PROJECT_VERSION=20180906
 
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1
@@ -383,9 +383,6 @@ DEFINES += SPL_CONSOLE_ECHO
 
 # quit the C++ program when the graphical console is closed?
 DEFINES += SPL_CONSOLE_EXIT_ON_CLOSE
-
-# crash if the Java back-end version is older than that specified in version.h?
-DEFINES += SPL_VERIFY_JAVA_BACKEND_VERSION
 
 # crash if the .pro is older than the minimum specified in version.h? (SPL_PROJECT_VERSION)
 DEFINES += SPL_VERIFY_PROJECT_VERSION
@@ -477,7 +474,7 @@ CONFIG(release, debug|release) {
 ###############################################################################
 
 # This function copies the given files to the destination directory.
-# Used to place important resources from res/ and spl.jar into build/ folder.
+# Used to place important resources from res/ into build/ folder.
 defineTest(copyToDestdir) {
     files = $$1
     for(FILE, files) {
@@ -502,7 +499,6 @@ defineTest(copyToDestdir) {
 # specify files to copy on non-Windows systems
 !win32 {
     copyToDestdir($$files($$PWD/res/*))
-    copyToDestdir($$files($$PWD/lib/*.jar))
     exists($$PWD/*.txt) {
         copyToDestdir($$files($$PWD/*.txt))
     }
@@ -511,7 +507,6 @@ defineTest(copyToDestdir) {
 # specify files to copy on Windows systems
 win32 {
     copyToDestdir($$PWD/res)
-    copyToDestdir($$PWD/lib/*.jar)
     copyToDestdir($$PWD/lib/addr2line.exe)
     exists($$PWD/*.txt) {
         copyToDestdir($$PWD/*.txt)
@@ -535,8 +530,7 @@ exists($$PWD/output/*) {
     export(copydata.commands)
 }
 
-# copy support files such as library JAR and addr2line
-copyResources.input *= $$files($$PWD/lib/*.jar)
+# copy support files such as addr2line
 win32 {
     copyResources.input *= $$files($$PWD/lib/addr2line.exe)
 }
@@ -639,4 +633,4 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #642; if not, your .pro has been changed!)
+# END OF FILE (this should be line #636; if not, your .pro has been changed!)

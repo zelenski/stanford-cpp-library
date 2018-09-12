@@ -1,0 +1,117 @@
+<html>
+<head>
+<title>GCompound</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="gobjects.html">#include "gobjects.h"</a></div>
+<h1 class=header><code>class GCompound : public <a href="GObject-class.html">GObject</a></code></h1>
+This graphical object subclass consists of a collection
+of other graphical objects.  Once assembled, the internal objects
+can be manipulated as a unit.  The <code>GCompound</code> keeps
+track of its own position, and all items within it are drawn
+relative to that location.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Constructor</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GCompound">GCompound()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GCompound</code> object with no internal components.</td></tr>
+<tr><td class=indexHead colspan=2>Methods</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:add">add(<var>gobj</var>)</a><br>
+<a href="#Method:add">add(<var>gobj</var>,&nbsp;<var>x</var>,&nbsp;<var>y</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds a new graphical object to the <code>GCompound</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getElement">getElement(<var>index</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a pointer to the graphical object at the specified index, numbering from back to front in the the <i>z</i> dimension.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getElementCount">getElementCount()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of graphical objects stored in the <code>GCompound</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:remove">remove(<var>gobj</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes the specified object from the <code>GCompound</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:removeAll">removeAll()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes all graphical objects from the <code>GCompound</code>.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GCompound"></a>
+<pre class=detailCode>
+GCompound();
+</pre>
+<div class=detailHTML>
+Creates a <code>GCompound</code> object with no internal components.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GCompound* comp = new GCompound();
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:add"></a>
+<pre class=detailCode>
+void add(GObject* gobj);
+void add(GObject* gobj, double x, double y);
+</pre>
+<div class=detailHTML>
+Adds a new graphical object to the <code>GCompound</code>.  The second
+form moves the object to the point (<code>x</code>, <code>y</code>) first.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+comp-&gt;add(gobj);
+comp-&gt;add(gobj, x, y);
+</pre>
+<hr>
+<a name="Method:remove"></a>
+<pre class=detailCode>
+void remove(GObject* gobj);
+</pre>
+<div class=detailHTML>
+Removes the specified object from the <code>GCompound</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+comp-&gt;remove(gobj);
+</pre>
+<hr>
+<a name="Method:removeAll"></a>
+<pre class=detailCode>
+void removeAll();
+</pre>
+<div class=detailHTML>
+Removes all graphical objects from the <code>GCompound</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+comp-&gt;removeAll();
+</pre>
+<hr>
+<a name="Method:getElementCount"></a>
+<pre class=detailCode>
+int getElementCount();
+</pre>
+<div class=detailHTML>
+Returns the number of graphical objects stored in the
+<code>GCompound</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int n = comp-&gt;getElementCount();
+</pre>
+<hr>
+<a name="Method:getElement"></a>
+<pre class=detailCode>
+GObject* getElement(int index);
+</pre>
+<div class=detailHTML>
+Returns a pointer to the graphical object at the specified index,
+numbering from back to front in the the <i>z</i> dimension.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GObject* gobj = comp-&gt;getElement(index);
+</pre>
+<hr>
+</table>
+</body>
+</html>
