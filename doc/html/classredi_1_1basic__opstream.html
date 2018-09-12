@@ -78,7 +78,7 @@ $(function() {
 <p>Class template for Output PStreams.  
  <a href="classredi_1_1basic__opstream.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="pstream_8h_source.html">pstream.h</a>&gt;</code></p>
+<p><code>#include "<a class="el" href="pstream_8h_source.html">pstream.h</a>"</code></p>
 <div class="dynheader">
 Inheritance diagram for redi::basic_opstream&lt; CharT, Traits &gt;:</div>
 <div class="dyncontent">
@@ -107,7 +107,7 @@ typedef std::ios_base::openmode&#160;</td><td class="memItemRight" valign="botto
 <tr class="memdesc:a1eae4aad88812af03a0fbb3ec13c50b7 inherit pub_types_structredi_1_1pstreams"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type used to specify how to connect to the process. <br /></td></tr>
 <tr class="separator:a1eae4aad88812af03a0fbb3ec13c50b7 inherit pub_types_structredi_1_1pstreams"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af902b894b095c1875e96c10129489467 inherit pub_types_structredi_1_1pstreams"><td class="memItemLeft" align="right" valign="top"><a id="af902b894b095c1875e96c10129489467"></a>
-typedef std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structredi_1_1pstreams.html#af902b894b095c1875e96c10129489467">argv_type</a></td></tr>
+typedef std::vector&lt; string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structredi_1_1pstreams.html#af902b894b095c1875e96c10129489467">argv_type</a></td></tr>
 <tr class="memdesc:af902b894b095c1875e96c10129489467 inherit pub_types_structredi_1_1pstreams"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type used to hold the arguments for a command. <br /></td></tr>
 <tr class="separator:af902b894b095c1875e96c10129489467 inherit pub_types_structredi_1_1pstreams"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add0b7eaed16eb6c22a56012958d85b1d inherit pub_types_structredi_1_1pstreams"><td class="memItemLeft" align="right" valign="top"><a id="add0b7eaed16eb6c22a56012958d85b1d"></a>
@@ -121,35 +121,35 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1basic__opstream.html#a43ed3a24aba89347e88a1bf30583cac1">basic_opstream</a> ()</td></tr>
 <tr class="memdesc:a43ed3a24aba89347e88a1bf30583cac1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor, creates an uninitialised stream. <br /></td></tr>
 <tr class="separator:a43ed3a24aba89347e88a1bf30583cac1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac7d4fc3ce22a34257cb43b4f35969605"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1basic__opstream.html#ac7d4fc3ce22a34257cb43b4f35969605">basic_opstream</a> (const std::string &amp;cmd, <a class="el" href="structredi_1_1pstreams.html#a1eae4aad88812af03a0fbb3ec13c50b7">pmode</a> mode=<a class="el" href="structredi_1_1pstreams.html#a7a976ce992db857f86a0cc3352e42d3a">pstdin</a>)</td></tr>
+<tr class="memitem:ac7d4fc3ce22a34257cb43b4f35969605"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1basic__opstream.html#ac7d4fc3ce22a34257cb43b4f35969605">basic_opstream</a>(string cmd, <a class="el" href="structredi_1_1pstreams.html#a1eae4aad88812af03a0fbb3ec13c50b7">pmode</a> mode=<a class="el" href="structredi_1_1pstreams.html#a7a976ce992db857f86a0cc3352e42d3a">pstdin</a>)</td></tr>
 <tr class="memdesc:ac7d4fc3ce22a34257cb43b4f35969605"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor that initialises the stream by starting a process.  <a href="#ac7d4fc3ce22a34257cb43b4f35969605">More...</a><br /></td></tr>
 <tr class="separator:ac7d4fc3ce22a34257cb43b4f35969605"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a23394be0be6f4f8f7f17981f456b552d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1basic__opstream.html#a23394be0be6f4f8f7f17981f456b552d">basic_opstream</a> (const std::string &amp;file, const <a class="el" href="structredi_1_1pstreams.html#af902b894b095c1875e96c10129489467">argv_type</a> &amp;argv, <a class="el" href="structredi_1_1pstreams.html#a1eae4aad88812af03a0fbb3ec13c50b7">pmode</a> mode=<a class="el" href="structredi_1_1pstreams.html#a7a976ce992db857f86a0cc3352e42d3a">pstdin</a>)</td></tr>
+<tr class="memitem:a23394be0be6f4f8f7f17981f456b552d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1basic__opstream.html#a23394be0be6f4f8f7f17981f456b552d">basic_opstream</a>(string file, const <a class="el" href="structredi_1_1pstreams.html#af902b894b095c1875e96c10129489467">argv_type</a> &amp;argv, <a class="el" href="structredi_1_1pstreams.html#a1eae4aad88812af03a0fbb3ec13c50b7">pmode</a> mode=<a class="el" href="structredi_1_1pstreams.html#a7a976ce992db857f86a0cc3352e42d3a">pstdin</a>)</td></tr>
 <tr class="memdesc:a23394be0be6f4f8f7f17981f456b552d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor that initialises the stream by starting a process.  <a href="#a23394be0be6f4f8f7f17981f456b552d">More...</a><br /></td></tr>
 <tr class="separator:a23394be0be6f4f8f7f17981f456b552d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a10095c2f36cf31f537934ad3d34aa8aa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1basic__opstream.html#a10095c2f36cf31f537934ad3d34aa8aa">basic_opstream</a> (const <a class="el" href="structredi_1_1pstreams.html#af902b894b095c1875e96c10129489467">argv_type</a> &amp;argv, <a class="el" href="structredi_1_1pstreams.html#a1eae4aad88812af03a0fbb3ec13c50b7">pmode</a> mode=<a class="el" href="structredi_1_1pstreams.html#a7a976ce992db857f86a0cc3352e42d3a">pstdin</a>)</td></tr>
+<tr class="memitem:a10095c2f36cf31f537934ad3d34aa8aa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1basic__opstream.html#a10095c2f36cf31f537934ad3d34aa8aa">basic_opstream</a>(const <a class="el" href="structredi_1_1pstreams.html#af902b894b095c1875e96c10129489467">argv_type</a> &amp;argv, <a class="el" href="structredi_1_1pstreams.html#a1eae4aad88812af03a0fbb3ec13c50b7">pmode</a> mode=<a class="el" href="structredi_1_1pstreams.html#a7a976ce992db857f86a0cc3352e42d3a">pstdin</a>)</td></tr>
 <tr class="memdesc:a10095c2f36cf31f537934ad3d34aa8aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor that initialises the stream by starting a process.  <a href="#a10095c2f36cf31f537934ad3d34aa8aa">More...</a><br /></td></tr>
 <tr class="separator:a10095c2f36cf31f537934ad3d34aa8aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab66a34987ca0dd5b1a60e21ac9b396d0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1basic__opstream.html#ab66a34987ca0dd5b1a60e21ac9b396d0">~basic_opstream</a> ()</td></tr>
+<tr class="memitem:ab66a34987ca0dd5b1a60e21ac9b396d0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1basic__opstream.html#ab66a34987ca0dd5b1a60e21ac9b396d0">~basic_opstream</a>()</td></tr>
 <tr class="memdesc:ab66a34987ca0dd5b1a60e21ac9b396d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <a href="#ab66a34987ca0dd5b1a60e21ac9b396d0">More...</a><br /></td></tr>
 <tr class="separator:ab66a34987ca0dd5b1a60e21ac9b396d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad7a0f17e3b135712a40f55868aaee1f6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1basic__opstream.html#ad7a0f17e3b135712a40f55868aaee1f6">open</a> (const std::string &amp;cmd, <a class="el" href="structredi_1_1pstreams.html#a1eae4aad88812af03a0fbb3ec13c50b7">pmode</a> mode=<a class="el" href="structredi_1_1pstreams.html#a7a976ce992db857f86a0cc3352e42d3a">pstdin</a>)</td></tr>
+<tr class="memitem:ad7a0f17e3b135712a40f55868aaee1f6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1basic__opstream.html#ad7a0f17e3b135712a40f55868aaee1f6">open</a>(string cmd, <a class="el" href="structredi_1_1pstreams.html#a1eae4aad88812af03a0fbb3ec13c50b7">pmode</a> mode=<a class="el" href="structredi_1_1pstreams.html#a7a976ce992db857f86a0cc3352e42d3a">pstdin</a>)</td></tr>
 <tr class="memdesc:ad7a0f17e3b135712a40f55868aaee1f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a process.  <a href="#ad7a0f17e3b135712a40f55868aaee1f6">More...</a><br /></td></tr>
 <tr class="separator:ad7a0f17e3b135712a40f55868aaee1f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e19af861168cde3fc595c47b81ca47a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1basic__opstream.html#a0e19af861168cde3fc595c47b81ca47a">open</a> (const std::string &amp;file, const <a class="el" href="structredi_1_1pstreams.html#af902b894b095c1875e96c10129489467">argv_type</a> &amp;argv, <a class="el" href="structredi_1_1pstreams.html#a1eae4aad88812af03a0fbb3ec13c50b7">pmode</a> mode=<a class="el" href="structredi_1_1pstreams.html#a7a976ce992db857f86a0cc3352e42d3a">pstdin</a>)</td></tr>
+<tr class="memitem:a0e19af861168cde3fc595c47b81ca47a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1basic__opstream.html#a0e19af861168cde3fc595c47b81ca47a">open</a>(string file, const <a class="el" href="structredi_1_1pstreams.html#af902b894b095c1875e96c10129489467">argv_type</a> &amp;argv, <a class="el" href="structredi_1_1pstreams.html#a1eae4aad88812af03a0fbb3ec13c50b7">pmode</a> mode=<a class="el" href="structredi_1_1pstreams.html#a7a976ce992db857f86a0cc3352e42d3a">pstdin</a>)</td></tr>
 <tr class="memdesc:a0e19af861168cde3fc595c47b81ca47a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a process.  <a href="#a0e19af861168cde3fc595c47b81ca47a">More...</a><br /></td></tr>
 <tr class="separator:a0e19af861168cde3fc595c47b81ca47a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classredi_1_1pstream__common"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classredi_1_1pstream__common')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classredi_1_1pstream__common.html">redi::pstream_common&lt; CharT, Traits &gt;</a></td></tr>
-<tr class="memitem:ab06458ed9aea84a33489f05ec8ed0899 inherit pub_methods_classredi_1_1pstream__common"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1pstream__common.html#ab06458ed9aea84a33489f05ec8ed0899">close</a> ()</td></tr>
+<tr class="memitem:ab06458ed9aea84a33489f05ec8ed0899 inherit pub_methods_classredi_1_1pstream__common"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1pstream__common.html#ab06458ed9aea84a33489f05ec8ed0899">close</a>()</td></tr>
 <tr class="memdesc:ab06458ed9aea84a33489f05ec8ed0899 inherit pub_methods_classredi_1_1pstream__common"><td class="mdescLeft">&#160;</td><td class="mdescRight">Close the pipe.  <a href="classredi_1_1pstream__common.html#ab06458ed9aea84a33489f05ec8ed0899">More...</a><br /></td></tr>
 <tr class="separator:ab06458ed9aea84a33489f05ec8ed0899 inherit pub_methods_classredi_1_1pstream__common"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d5ec13821e09f4bb2ab5096721551a5 inherit pub_methods_classredi_1_1pstream__common"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1pstream__common.html#a8d5ec13821e09f4bb2ab5096721551a5">is_open</a> () const</td></tr>
+<tr class="memitem:a8d5ec13821e09f4bb2ab5096721551a5 inherit pub_methods_classredi_1_1pstream__common"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1pstream__common.html#a8d5ec13821e09f4bb2ab5096721551a5">is_open</a>() const</td></tr>
 <tr class="memdesc:a8d5ec13821e09f4bb2ab5096721551a5 inherit pub_methods_classredi_1_1pstream__common"><td class="mdescLeft">&#160;</td><td class="mdescRight">Report whether the stream's buffer has been initialised.  <a href="classredi_1_1pstream__common.html#a8d5ec13821e09f4bb2ab5096721551a5">More...</a><br /></td></tr>
 <tr class="separator:a8d5ec13821e09f4bb2ab5096721551a5 inherit pub_methods_classredi_1_1pstream__common"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc3ad87315e0bce58714314b303b4b53 inherit pub_methods_classredi_1_1pstream__common"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1pstream__common.html#acc3ad87315e0bce58714314b303b4b53">command</a> () const</td></tr>
+<tr class="memitem:acc3ad87315e0bce58714314b303b4b53 inherit pub_methods_classredi_1_1pstream__common"><td class="memItemLeft" align="right" valign="top">string &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1pstream__common.html#acc3ad87315e0bce58714314b303b4b53">command</a>() const</td></tr>
 <tr class="memdesc:acc3ad87315e0bce58714314b303b4b53 inherit pub_methods_classredi_1_1pstream__common"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the command used to initialise the stream.  <a href="classredi_1_1pstream__common.html#acc3ad87315e0bce58714314b303b4b53">More...</a><br /></td></tr>
 <tr class="separator:acc3ad87315e0bce58714314b303b4b53 inherit pub_methods_classredi_1_1pstream__common"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5414d5a3f3d91a9483d5c9128434db26 inherit pub_methods_classredi_1_1pstream__common"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classredi_1_1basic__pstreambuf.html">streambuf_type</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1pstream__common.html#a5414d5a3f3d91a9483d5c9128434db26">rdbuf</a> () const</td></tr>
+<tr class="memitem:a5414d5a3f3d91a9483d5c9128434db26 inherit pub_methods_classredi_1_1pstream__common"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classredi_1_1basic__pstreambuf.html">streambuf_type</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1pstream__common.html#a5414d5a3f3d91a9483d5c9128434db26">rdbuf</a>() const</td></tr>
 <tr class="memdesc:a5414d5a3f3d91a9483d5c9128434db26 inherit pub_methods_classredi_1_1pstream__common"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a pointer to the stream buffer.  <a href="classredi_1_1pstream__common.html#a5414d5a3f3d91a9483d5c9128434db26">More...</a><br /></td></tr>
 <tr class="separator:a5414d5a3f3d91a9483d5c9128434db26 inherit pub_methods_classredi_1_1pstream__common"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -158,7 +158,7 @@ Related Functions</h2></td></tr>
 <tr><td class="ititle" colspan="2"><p>(<a class="el" href="classNote.html" title="Each Note object represents a musical note or rest. ">Note</a> that these are not member functions.) </p>
 </td></tr>
 <tr class="memitem:ae478e003f69d83bfcc8121f5f16f538d"><td class="memTemplParams" colspan="2">template&lt;typename C , typename T &gt; </td></tr>
-<tr class="memitem:ae478e003f69d83bfcc8121f5f16f538d"><td class="memTemplItemLeft" align="right" valign="top">std::basic_ostream&lt; C, T &gt; &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classredi_1_1basic__opstream.html#ae478e003f69d83bfcc8121f5f16f538d">peof</a> (std::basic_ostream&lt; C, T &gt; &amp;s)</td></tr>
+<tr class="memitem:ae478e003f69d83bfcc8121f5f16f538d"><td class="memTemplItemLeft" align="right" valign="top">std::basic_ostream&lt; C, T &gt; &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classredi_1_1basic__opstream.html#ae478e003f69d83bfcc8121f5f16f538d">peof</a>(std::basic_ostream&lt; C, T &gt; &amp;s)</td></tr>
 <tr class="memdesc:ae478e003f69d83bfcc8121f5f16f538d"><td class="mdescLeft">&#160;</td><td class="mdescRight">When inserted into an output pstream the manipulator calls <a class="el" href="classredi_1_1basic__pstreambuf.html#a6937e84719c4eaf08f2a2e514ff98e93" title="Close the pipe connected to the process&#39; stdin. ">basic_pstreambuf&lt;C,T&gt;::peof()</a> to close the output pipe, causing the child process to receive the end-of-file indicator on subsequent reads from its <code>stdin</code> stream.  <a href="#ae478e003f69d83bfcc8121f5f16f538d">More...</a><br /></td></tr>
 <tr class="separator:ae478e003f69d83bfcc8121f5f16f538d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -199,27 +199,27 @@ typedef <a class="el" href="structredi_1_1pstreams.html#af902b894b095c1875e96c10
  }</td></tr>
 <tr class="separator:af92512e6281229147c3991acc020ddaa inherit pro_types_structredi_1_1pstreams"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classredi_1_1pstream__common"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classredi_1_1pstream__common')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classredi_1_1pstream__common.html">redi::pstream_common&lt; CharT, Traits &gt;</a></td></tr>
-<tr class="memitem:a14266d3a2f7089ed99d5537a6a1d9831 inherit pro_methods_classredi_1_1pstream__common"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1pstream__common.html#a14266d3a2f7089ed99d5537a6a1d9831">pstream_common</a> ()</td></tr>
+<tr class="memitem:a14266d3a2f7089ed99d5537a6a1d9831 inherit pro_methods_classredi_1_1pstream__common"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1pstream__common.html#a14266d3a2f7089ed99d5537a6a1d9831">pstream_common</a>()</td></tr>
 <tr class="memdesc:a14266d3a2f7089ed99d5537a6a1d9831 inherit pro_methods_classredi_1_1pstream__common"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <a href="classredi_1_1pstream__common.html#a14266d3a2f7089ed99d5537a6a1d9831">More...</a><br /></td></tr>
 <tr class="separator:a14266d3a2f7089ed99d5537a6a1d9831 inherit pro_methods_classredi_1_1pstream__common"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a41a3cff7a8743a81b2d6e1e6051f3d30 inherit pro_methods_classredi_1_1pstream__common"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1pstream__common.html#a41a3cff7a8743a81b2d6e1e6051f3d30">pstream_common</a> (const std::string &amp;cmd, <a class="el" href="structredi_1_1pstreams.html#a1eae4aad88812af03a0fbb3ec13c50b7">pmode</a> mode)</td></tr>
+<tr class="memitem:a41a3cff7a8743a81b2d6e1e6051f3d30 inherit pro_methods_classredi_1_1pstream__common"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1pstream__common.html#a41a3cff7a8743a81b2d6e1e6051f3d30">pstream_common</a>(string cmd, <a class="el" href="structredi_1_1pstreams.html#a1eae4aad88812af03a0fbb3ec13c50b7">pmode</a> mode)</td></tr>
 <tr class="memdesc:a41a3cff7a8743a81b2d6e1e6051f3d30 inherit pro_methods_classredi_1_1pstream__common"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor that initialises the stream by starting a process.  <a href="classredi_1_1pstream__common.html#a41a3cff7a8743a81b2d6e1e6051f3d30">More...</a><br /></td></tr>
 <tr class="separator:a41a3cff7a8743a81b2d6e1e6051f3d30 inherit pro_methods_classredi_1_1pstream__common"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3dc6e49c84bf1b2b3ebbea92a9ee3f6b inherit pro_methods_classredi_1_1pstream__common"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1pstream__common.html#a3dc6e49c84bf1b2b3ebbea92a9ee3f6b">pstream_common</a> (const std::string &amp;file, const <a class="el" href="structredi_1_1pstreams.html#af902b894b095c1875e96c10129489467">argv_type</a> &amp;argv, <a class="el" href="structredi_1_1pstreams.html#a1eae4aad88812af03a0fbb3ec13c50b7">pmode</a> mode)</td></tr>
+<tr class="memitem:a3dc6e49c84bf1b2b3ebbea92a9ee3f6b inherit pro_methods_classredi_1_1pstream__common"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1pstream__common.html#a3dc6e49c84bf1b2b3ebbea92a9ee3f6b">pstream_common</a>(string file, const <a class="el" href="structredi_1_1pstreams.html#af902b894b095c1875e96c10129489467">argv_type</a> &amp;argv, <a class="el" href="structredi_1_1pstreams.html#a1eae4aad88812af03a0fbb3ec13c50b7">pmode</a> mode)</td></tr>
 <tr class="memdesc:a3dc6e49c84bf1b2b3ebbea92a9ee3f6b inherit pro_methods_classredi_1_1pstream__common"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor that initialises the stream by starting a process.  <a href="classredi_1_1pstream__common.html#a3dc6e49c84bf1b2b3ebbea92a9ee3f6b">More...</a><br /></td></tr>
 <tr class="separator:a3dc6e49c84bf1b2b3ebbea92a9ee3f6b inherit pro_methods_classredi_1_1pstream__common"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78c3e085c582816ece1fb83fd4f4a652 inherit pro_methods_classredi_1_1pstream__common"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1pstream__common.html#a78c3e085c582816ece1fb83fd4f4a652">~pstream_common</a> ()=0</td></tr>
+<tr class="memitem:a78c3e085c582816ece1fb83fd4f4a652 inherit pro_methods_classredi_1_1pstream__common"><td class="memItemLeft" align="right" valign="top"></td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1pstream__common.html#a78c3e085c582816ece1fb83fd4f4a652">~pstream_common</a>()=0</td></tr>
 <tr class="memdesc:a78c3e085c582816ece1fb83fd4f4a652 inherit pro_methods_classredi_1_1pstream__common"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual destructor.  <a href="classredi_1_1pstream__common.html#a78c3e085c582816ece1fb83fd4f4a652">More...</a><br /></td></tr>
 <tr class="separator:a78c3e085c582816ece1fb83fd4f4a652 inherit pro_methods_classredi_1_1pstream__common"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2505ab3e3a834b92d98b5bcb97734dfe inherit pro_methods_classredi_1_1pstream__common"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1pstream__common.html#a2505ab3e3a834b92d98b5bcb97734dfe">do_open</a> (const std::string &amp;cmd, <a class="el" href="structredi_1_1pstreams.html#a1eae4aad88812af03a0fbb3ec13c50b7">pmode</a> mode)</td></tr>
+<tr class="memitem:a2505ab3e3a834b92d98b5bcb97734dfe inherit pro_methods_classredi_1_1pstream__common"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1pstream__common.html#a2505ab3e3a834b92d98b5bcb97734dfe">do_open</a>(string cmd, <a class="el" href="structredi_1_1pstreams.html#a1eae4aad88812af03a0fbb3ec13c50b7">pmode</a> mode)</td></tr>
 <tr class="memdesc:a2505ab3e3a834b92d98b5bcb97734dfe inherit pro_methods_classredi_1_1pstream__common"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a process.  <a href="classredi_1_1pstream__common.html#a2505ab3e3a834b92d98b5bcb97734dfe">More...</a><br /></td></tr>
 <tr class="separator:a2505ab3e3a834b92d98b5bcb97734dfe inherit pro_methods_classredi_1_1pstream__common"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a352b77fa600f7ebe0d8f1582be05ae4d inherit pro_methods_classredi_1_1pstream__common"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1pstream__common.html#a352b77fa600f7ebe0d8f1582be05ae4d">do_open</a> (const std::string &amp;file, const <a class="el" href="structredi_1_1pstreams.html#af902b894b095c1875e96c10129489467">argv_type</a> &amp;argv, <a class="el" href="structredi_1_1pstreams.html#a1eae4aad88812af03a0fbb3ec13c50b7">pmode</a> mode)</td></tr>
+<tr class="memitem:a352b77fa600f7ebe0d8f1582be05ae4d inherit pro_methods_classredi_1_1pstream__common"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1pstream__common.html#a352b77fa600f7ebe0d8f1582be05ae4d">do_open</a>(string file, const <a class="el" href="structredi_1_1pstreams.html#af902b894b095c1875e96c10129489467">argv_type</a> &amp;argv, <a class="el" href="structredi_1_1pstreams.html#a1eae4aad88812af03a0fbb3ec13c50b7">pmode</a> mode)</td></tr>
 <tr class="memdesc:a352b77fa600f7ebe0d8f1582be05ae4d inherit pro_methods_classredi_1_1pstream__common"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a process.  <a href="classredi_1_1pstream__common.html#a352b77fa600f7ebe0d8f1582be05ae4d">More...</a><br /></td></tr>
 <tr class="separator:a352b77fa600f7ebe0d8f1582be05ae4d inherit pro_methods_classredi_1_1pstream__common"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classredi_1_1pstream__common"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classredi_1_1pstream__common')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classredi_1_1pstream__common.html">redi::pstream_common&lt; CharT, Traits &gt;</a></td></tr>
 <tr class="memitem:aa97d67284ce2fb39e26fa504d611b50c inherit pro_attribs_classredi_1_1pstream__common"><td class="memItemLeft" align="right" valign="top"><a id="aa97d67284ce2fb39e26fa504d611b50c"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1pstream__common.html#aa97d67284ce2fb39e26fa504d611b50c">command_</a></td></tr>
+string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classredi_1_1pstream__common.html#aa97d67284ce2fb39e26fa504d611b50c">command_</a></td></tr>
 <tr class="memdesc:aa97d67284ce2fb39e26fa504d611b50c inherit pro_attribs_classredi_1_1pstream__common"><td class="mdescLeft">&#160;</td><td class="mdescRight">The command used to start the process. <br /></td></tr>
 <tr class="separator:aa97d67284ce2fb39e26fa504d611b50c inherit pro_attribs_classredi_1_1pstream__common"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59dd7e8a056e4e66d67f31c1ef0bfff4 inherit pro_attribs_classredi_1_1pstream__common"><td class="memItemLeft" align="right" valign="top"><a id="a59dd7e8a056e4e66d67f31c1ef0bfff4"></a>
@@ -248,7 +248,7 @@ template&lt;typename CharT , typename Traits  = std::char_traits&lt;CharT&gt;&gt
         <tr>
           <td class="memname"><a class="el" href="classredi_1_1basic__opstream.html">redi::basic_opstream</a>&lt; CharT, Traits &gt;::<a class="el" href="classredi_1_1basic__opstream.html">basic_opstream</a> </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>cmd</em>, </td>
         </tr>
         <tr>
@@ -279,7 +279,7 @@ template&lt;typename CharT , typename Traits  = std::char_traits&lt;CharT&gt;&gt
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classredi_1_1pstream__common.html#a2505ab3e3a834b92d98b5bcb97734dfe" title="Start a process. ">do_open(const std::string&amp;, pmode)</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classredi_1_1pstream__common.html#a2505ab3e3a834b92d98b5bcb97734dfe" title="Start a process. ">do_open(const string&amp;, pmode)</a> </dd></dl>
 
 </div>
 </div>
@@ -297,7 +297,7 @@ template&lt;typename CharT , typename Traits  = std::char_traits&lt;CharT&gt;&gt
         <tr>
           <td class="memname"><a class="el" href="classredi_1_1basic__opstream.html">redi::basic_opstream</a>&lt; CharT, Traits &gt;::<a class="el" href="classredi_1_1basic__opstream.html">basic_opstream</a> </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>file</em>, </td>
         </tr>
         <tr>
@@ -335,7 +335,7 @@ template&lt;typename CharT , typename Traits  = std::char_traits&lt;CharT&gt;&gt
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classredi_1_1pstream__common.html#a352b77fa600f7ebe0d8f1582be05ae4d" title="Start a process. ">do_open(const std::string&amp;, const argv_type&amp;, pmode)</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classredi_1_1pstream__common.html#a352b77fa600f7ebe0d8f1582be05ae4d" title="Start a process. ">do_open(const string&amp;, const argv_type&amp;, pmode)</a> </dd></dl>
 
 </div>
 </div>
@@ -384,7 +384,7 @@ template&lt;typename CharT , typename Traits  = std::char_traits&lt;CharT&gt;&gt
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classredi_1_1pstream__common.html#a352b77fa600f7ebe0d8f1582be05ae4d" title="Start a process. ">do_open(const std::string&amp;, const argv_type&amp;, pmode)</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classredi_1_1pstream__common.html#a352b77fa600f7ebe0d8f1582be05ae4d" title="Start a process. ">do_open(const string&amp;, const argv_type&amp;, pmode)</a> </dd></dl>
 
 </div>
 </div>
@@ -433,7 +433,7 @@ template&lt;typename CharT , typename Traits  = std::char_traits&lt;CharT&gt;&gt
         <tr>
           <td class="memname">void <a class="el" href="classredi_1_1basic__opstream.html">redi::basic_opstream</a>&lt; CharT, Traits &gt;::open </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>cmd</em>, </td>
         </tr>
         <tr>
@@ -464,7 +464,7 @@ template&lt;typename CharT , typename Traits  = std::char_traits&lt;CharT&gt;&gt
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classredi_1_1pstream__common.html#a2505ab3e3a834b92d98b5bcb97734dfe" title="Start a process. ">do_open(const std::string&amp;, pmode)</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classredi_1_1pstream__common.html#a2505ab3e3a834b92d98b5bcb97734dfe" title="Start a process. ">do_open(const string&amp;, pmode)</a> </dd></dl>
 
 </div>
 </div>
@@ -482,7 +482,7 @@ template&lt;typename CharT , typename Traits  = std::char_traits&lt;CharT&gt;&gt
         <tr>
           <td class="memname">void <a class="el" href="classredi_1_1basic__opstream.html">redi::basic_opstream</a>&lt; CharT, Traits &gt;::open </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>file</em>, </td>
         </tr>
         <tr>
@@ -520,7 +520,7 @@ template&lt;typename CharT , typename Traits  = std::char_traits&lt;CharT&gt;&gt
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classredi_1_1pstream__common.html#a352b77fa600f7ebe0d8f1582be05ae4d" title="Start a process. ">do_open(const std::string&amp;, const argv_type&amp;, pmode)</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classredi_1_1pstream__common.html#a352b77fa600f7ebe0d8f1582be05ae4d" title="Start a process. ">do_open(const string&amp;, const argv_type&amp;, pmode)</a> </dd></dl>
 
 </div>
 </div>

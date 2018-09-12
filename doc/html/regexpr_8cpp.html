@@ -90,15 +90,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ad4f506701f57a66c6b194de8cd99942f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regexpr_8cpp.html#ad4f506701f57a66c6b194de8cd99942f">regexMatch</a> (const std::string &amp;s, const std::string &amp;regexp)</td></tr>
+<tr class="memitem:ad4f506701f57a66c6b194de8cd99942f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regexpr_8cpp.html#ad4f506701f57a66c6b194de8cd99942f">regexMatch</a>(string s, string regexp)</td></tr>
 <tr class="separator:ad4f506701f57a66c6b194de8cd99942f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a368e7b85795537659adad81f8ae506d1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regexpr_8cpp.html#a368e7b85795537659adad81f8ae506d1">regexMatchCount</a> (const std::string &amp;s, const std::string &amp;regexp)</td></tr>
+<tr class="memitem:a368e7b85795537659adad81f8ae506d1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regexpr_8cpp.html#a368e7b85795537659adad81f8ae506d1">regexMatchCount</a>(string s, string regexp)</td></tr>
 <tr class="separator:a368e7b85795537659adad81f8ae506d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6481c952ca0c94485bc54f018d4d116d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regexpr_8cpp.html#a6481c952ca0c94485bc54f018d4d116d">regexMatchCountWithLines</a> (const std::string &amp;s, const std::string &amp;regexp, std::string &amp;linesOut)</td></tr>
+<tr class="memitem:a6481c952ca0c94485bc54f018d4d116d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regexpr_8cpp.html#a6481c952ca0c94485bc54f018d4d116d">regexMatchCountWithLines</a>(string s, string regexp, string &amp;linesOut)</td></tr>
 <tr class="separator:a6481c952ca0c94485bc54f018d4d116d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6eca3e4fd03bc90ed2b772def1e73e9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regexpr_8cpp.html#aa6eca3e4fd03bc90ed2b772def1e73e9">regexMatchCountWithLines</a> (const std::string &amp;s, const std::string &amp;regexp, <a class="el" href="classVector.html">Vector</a>&lt; int &gt; &amp;linesOut)</td></tr>
+<tr class="memitem:aa6eca3e4fd03bc90ed2b772def1e73e9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regexpr_8cpp.html#aa6eca3e4fd03bc90ed2b772def1e73e9">regexMatchCountWithLines</a>(string s, string regexp, <a class="el" href="classVector.html">Vector</a>&lt; int &gt; &amp;linesOut)</td></tr>
 <tr class="separator:aa6eca3e4fd03bc90ed2b772def1e73e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3825fcb1d179d31d1b04f7c852bde0c4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regexpr_8cpp.html#a3825fcb1d179d31d1b04f7c852bde0c4">regexReplace</a> (const std::string &amp;s, const std::string &amp;regexp, const std::string &amp;replacement, int limit)</td></tr>
+<tr class="memitem:a3825fcb1d179d31d1b04f7c852bde0c4"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regexpr_8cpp.html#a3825fcb1d179d31d1b04f7c852bde0c4">regexReplace</a>(string s, string regexp, string replacement, int limit)</td></tr>
 <tr class="separator:a3825fcb1d179d31d1b04f7c852bde0c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
@@ -111,13 +111,13 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">bool regexMatch </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>s</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>regexp</em>&#160;</td>
         </tr>
         <tr>
@@ -139,13 +139,13 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">int regexMatchCount </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>s</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>regexp</em>&#160;</td>
         </tr>
         <tr>
@@ -167,19 +167,19 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">int regexMatchCountWithLines </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>s</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>regexp</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramtype">string &amp;&#160;</td>
           <td class="paramname"><em>linesOut</em>&#160;</td>
         </tr>
         <tr>
@@ -201,13 +201,13 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void regexMatchCountWithLines </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>s</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>regexp</em>, </td>
         </tr>
         <tr>
@@ -233,21 +233,21 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::string regexReplace </td>
+          <td class="memname">string regexReplace </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>s</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>regexp</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>replacement</em>, </td>
         </tr>
         <tr>

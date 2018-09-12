@@ -76,7 +76,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-static-attribs">Static Protected Attributes</a> &#124;
-<a href="#friends">Friends</a> &#124;
 <a href="classGThread-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">GThread Class Reference</div>  </div>
@@ -86,7 +85,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>The <a class="el" href="classGThread.html" title="The GThread class is a utility class containing static methods that allow you to run code on various ...">GThread</a> class is a utility class containing static methods that allow you to run code on various system threads.  
  <a href="classGThread.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="gthread_8h_source.html">gthread.h</a>&gt;</code></p>
+<p><code>#include "<a class="el" href="gthread_8h_source.html">gthread.h</a>"</code></p>
 <div class="dynheader">
 Inheritance diagram for GThread:</div>
 <div class="dyncontent">
@@ -98,49 +97,49 @@ Inheritance diagram for GThread:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a27a1f5f9657637e4a4b6a7127ca9da33"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#a27a1f5f9657637e4a4b6a7127ca9da33">ensureThatThisIsTheQtGuiThread</a> (const std::string &amp;message=&quot;&quot;)</td></tr>
+<tr class="memitem:a27a1f5f9657637e4a4b6a7127ca9da33"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#a27a1f5f9657637e4a4b6a7127ca9da33">ensureThatThisIsTheQtGuiThread</a>(string message=&quot;&quot;)</td></tr>
 <tr class="memdesc:a27a1f5f9657637e4a4b6a7127ca9da33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates an error if the caller is not running on the Qt GUI main thread.  <a href="#a27a1f5f9657637e4a4b6a7127ca9da33">More...</a><br /></td></tr>
 <tr class="separator:a27a1f5f9657637e4a4b6a7127ca9da33"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7bf03645e8eb0dd26b54b4e48b5206e1"><td class="memItemLeft" align="right" valign="top">static QThread *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#a7bf03645e8eb0dd26b54b4e48b5206e1">getCurrentThread</a> ()</td></tr>
+<tr class="memitem:a7bf03645e8eb0dd26b54b4e48b5206e1"><td class="memItemLeft" align="right" valign="top">static QThread *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#a7bf03645e8eb0dd26b54b4e48b5206e1">getCurrentThread</a>()</td></tr>
 <tr class="memdesc:a7bf03645e8eb0dd26b54b4e48b5206e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the caller's Qt thread object.  <a href="#a7bf03645e8eb0dd26b54b4e48b5206e1">More...</a><br /></td></tr>
 <tr class="separator:a7bf03645e8eb0dd26b54b4e48b5206e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1309b5071a8c56775d3c82a6d8ccd4d"><td class="memItemLeft" align="right" valign="top">static QThread *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#ad1309b5071a8c56775d3c82a6d8ccd4d">getQtMainThread</a> ()</td></tr>
+<tr class="memitem:ad1309b5071a8c56775d3c82a6d8ccd4d"><td class="memItemLeft" align="right" valign="top">static QThread *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#ad1309b5071a8c56775d3c82a6d8ccd4d">getQtMainThread</a>()</td></tr>
 <tr class="memdesc:ad1309b5071a8c56775d3c82a6d8ccd4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the Qt thread object representing the main thread for the application, also referred to as the Qt GUI thread.  <a href="#ad1309b5071a8c56775d3c82a6d8ccd4d">More...</a><br /></td></tr>
 <tr class="separator:ad1309b5071a8c56775d3c82a6d8ccd4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad230888eab766cd189ab09365776c41e"><td class="memItemLeft" align="right" valign="top">static QThread *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#ad230888eab766cd189ab09365776c41e">getStudentThread</a> ()</td></tr>
+<tr class="memitem:ad230888eab766cd189ab09365776c41e"><td class="memItemLeft" align="right" valign="top">static QThread *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#ad230888eab766cd189ab09365776c41e">getStudentThread</a>()</td></tr>
 <tr class="memdesc:ad230888eab766cd189ab09365776c41e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the Qt thread object representing the thread on which the student's main() function runs.  <a href="#ad230888eab766cd189ab09365776c41e">More...</a><br /></td></tr>
 <tr class="separator:ad230888eab766cd189ab09365776c41e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a410c93ed2a5eb78ea24013ef35e49eed"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#a410c93ed2a5eb78ea24013ef35e49eed">iAmRunningOnTheQtGuiThread</a> ()</td></tr>
+<tr class="memitem:a410c93ed2a5eb78ea24013ef35e49eed"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#a410c93ed2a5eb78ea24013ef35e49eed">iAmRunningOnTheQtGuiThread</a>()</td></tr>
 <tr class="memdesc:a410c93ed2a5eb78ea24013ef35e49eed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the caller is running on the Qt GUI thread.  <a href="#a410c93ed2a5eb78ea24013ef35e49eed">More...</a><br /></td></tr>
 <tr class="separator:a410c93ed2a5eb78ea24013ef35e49eed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e60d512067e765b4e2d7c0c5bec39fa"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#a3e60d512067e765b4e2d7c0c5bec39fa">iAmRunningOnTheStudentThread</a> ()</td></tr>
+<tr class="memitem:a3e60d512067e765b4e2d7c0c5bec39fa"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#a3e60d512067e765b4e2d7c0c5bec39fa">iAmRunningOnTheStudentThread</a>()</td></tr>
 <tr class="memdesc:a3e60d512067e765b4e2d7c0c5bec39fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the caller is running on the student thread.  <a href="#a3e60d512067e765b4e2d7c0c5bec39fa">More...</a><br /></td></tr>
 <tr class="separator:a3e60d512067e765b4e2d7c0c5bec39fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afee663b5d7998135c2aab0585b2ad37f"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#afee663b5d7998135c2aab0585b2ad37f">qtGuiThreadExists</a> ()</td></tr>
+<tr class="memitem:afee663b5d7998135c2aab0585b2ad37f"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#afee663b5d7998135c2aab0585b2ad37f">qtGuiThreadExists</a>()</td></tr>
 <tr class="memdesc:afee663b5d7998135c2aab0585b2ad37f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the Qt GUI thread has been created.  <a href="#afee663b5d7998135c2aab0585b2ad37f">More...</a><br /></td></tr>
 <tr class="separator:afee663b5d7998135c2aab0585b2ad37f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9475674a195d39d457307b3e7365ddd"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#ac9475674a195d39d457307b3e7365ddd">runInNewThread</a> (GThunk func)</td></tr>
+<tr class="memitem:ac9475674a195d39d457307b3e7365ddd"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#ac9475674a195d39d457307b3e7365ddd">runInNewThread</a>(GThunk func)</td></tr>
 <tr class="memdesc:ac9475674a195d39d457307b3e7365ddd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs the given void function in its own new thread, blocking the current thread to wait until it is done.  <a href="#ac9475674a195d39d457307b3e7365ddd">More...</a><br /></td></tr>
 <tr class="separator:ac9475674a195d39d457307b3e7365ddd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad40c76521d01473a3eea90c01000d9e2"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#ad40c76521d01473a3eea90c01000d9e2">runInNewThreadAsync</a> (GThunk func)</td></tr>
+<tr class="memitem:ad40c76521d01473a3eea90c01000d9e2"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#ad40c76521d01473a3eea90c01000d9e2">runInNewThreadAsync</a>(GThunk func)</td></tr>
 <tr class="memdesc:ad40c76521d01473a3eea90c01000d9e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs the given void function in its own new thread in the background; the current thread does not block and keeps going.  <a href="#ad40c76521d01473a3eea90c01000d9e2">More...</a><br /></td></tr>
 <tr class="separator:ad40c76521d01473a3eea90c01000d9e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a33da0c87717269710ac7a564a1ebbe64"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#a33da0c87717269710ac7a564a1ebbe64">runOnQtGuiThread</a> (GThunk func)</td></tr>
+<tr class="memitem:a33da0c87717269710ac7a564a1ebbe64"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#a33da0c87717269710ac7a564a1ebbe64">runOnQtGuiThread</a>(GThunk func)</td></tr>
 <tr class="memdesc:a33da0c87717269710ac7a564a1ebbe64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs the given void function on the Qt GUI thread, blocking the current thread to wait until it is done.  <a href="#a33da0c87717269710ac7a564a1ebbe64">More...</a><br /></td></tr>
 <tr class="separator:a33da0c87717269710ac7a564a1ebbe64"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4445680030c65d610b9e348d8d0cffc8"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#a4445680030c65d610b9e348d8d0cffc8">runOnQtGuiThreadAsync</a> (GThunk func)</td></tr>
+<tr class="memitem:a4445680030c65d610b9e348d8d0cffc8"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#a4445680030c65d610b9e348d8d0cffc8">runOnQtGuiThreadAsync</a>(GThunk func)</td></tr>
 <tr class="memdesc:a4445680030c65d610b9e348d8d0cffc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs the given void function on the Qt GUI thread in the background; the current thread does not block and keeps going.  <a href="#a4445680030c65d610b9e348d8d0cffc8">More...</a><br /></td></tr>
 <tr class="separator:a4445680030c65d610b9e348d8d0cffc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3381590c1ef33c08000c2fbb2bf0dd0"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#aa3381590c1ef33c08000c2fbb2bf0dd0">sleep</a> (double ms)</td></tr>
+<tr class="memitem:aa3381590c1ef33c08000c2fbb2bf0dd0"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#aa3381590c1ef33c08000c2fbb2bf0dd0">sleep</a>(double ms)</td></tr>
 <tr class="memdesc:aa3381590c1ef33c08000c2fbb2bf0dd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Causes the current thread to pause itself for the given number of milliseconds.  <a href="#aa3381590c1ef33c08000c2fbb2bf0dd0">More...</a><br /></td></tr>
 <tr class="separator:aa3381590c1ef33c08000c2fbb2bf0dd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58c8b2ad0ea491a6642e5e1cbd358c89"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#a58c8b2ad0ea491a6642e5e1cbd358c89">yield</a> ()</td></tr>
+<tr class="memitem:a58c8b2ad0ea491a6642e5e1cbd358c89"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#a58c8b2ad0ea491a6642e5e1cbd358c89">yield</a>()</td></tr>
 <tr class="memdesc:a58c8b2ad0ea491a6642e5e1cbd358c89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates that the current thread is willing to yield execution to any other threads that want to run.  <a href="#a58c8b2ad0ea491a6642e5e1cbd358c89">More...</a><br /></td></tr>
 <tr class="separator:a58c8b2ad0ea491a6642e5e1cbd358c89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a7db4904140090c18f864e09283f2b529"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#a7db4904140090c18f864e09283f2b529">GThread</a> ()</td></tr>
+<tr class="memitem:a7db4904140090c18f864e09283f2b529"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#a7db4904140090c18f864e09283f2b529">GThread</a>()</td></tr>
 <tr class="separator:a7db4904140090c18f864e09283f2b529"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-static-attribs"></a>
@@ -149,13 +148,6 @@ Static Protected Attributes</h2></td></tr>
 <tr class="separator:aa69140e62a4dad275e74a6c1174eb4e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a15ae7c95a54d17d2c307ebba42fe3405"><td class="memItemLeft" align="right" valign="top">static QThread *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#a15ae7c95a54d17d2c307ebba42fe3405">_studentThread</a> = nullptr</td></tr>
 <tr class="separator:a15ae7c95a54d17d2c307ebba42fe3405"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
-Friends</h2></td></tr>
-<tr class="memitem:a78e6068a40352424a09cd3753706c619"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#a78e6068a40352424a09cd3753706c619">QtGui</a></td></tr>
-<tr class="separator:a78e6068a40352424a09cd3753706c619"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f1fcd681e2cf92d1b04e5e8a33dbe47"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGThread.html#a4f1fcd681e2cf92d1b04e5e8a33dbe47">stanfordcpplib::initializeLibrary</a> (int argc, char **argv)</td></tr>
-<tr class="separator:a4f1fcd681e2cf92d1b04e5e8a33dbe47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="classGThread.html" title="The GThread class is a utility class containing static methods that allow you to run code on various ...">GThread</a> class is a utility class containing static methods that allow you to run code on various system threads. </p>
@@ -210,7 +202,7 @@ Friends</h2></td></tr>
         <tr>
           <td class="memname">void ensureThatThisIsTheQtGuiThread </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>message</em> = <code>&quot;&quot;</code></td><td>)</td>
           <td></td>
         </tr>

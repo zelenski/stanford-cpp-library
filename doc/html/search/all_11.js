@@ -52,7 +52,7 @@ var searchData=
   ['removenode',['removeNode',['../classGraph.html#a2d5f7ee89176144ed4c5c6b08a233aa6',1,'Graph::removeNode(const std::string &amp;name)'],['../classGraph.html#a2dfe63019975561914e0ed79551de108',1,'Graph::removeNode(NodeType *node)']]],
   ['removeobserver',['removeObserver',['../classObservable.html#a2fbb493a74c7c4a7604326bffcd75dbd',1,'Observable::removeObserver(Observer&lt; T &gt; *obs)'],['../classObservable.html#a36b9c4607c1cab08dc800daa5aa38b82',1,'Observable::removeObserver(Observer&lt; T &gt; &amp;obs)']]],
   ['removeprefix',['removePrefix',['../classLexicon.html#a998af18a2f0af7d18ce689acee75ca59',1,'Lexicon']]],
-  ['removetablelistener',['removeTableListener',['../classGTable.html#aed391150e258bc6c2962f10b810681c9',1,'GTable']]],
+  ['removetablelistener',['removeTableListener',['../classGTable.html#a5c18bacaf370f9c3da545f5c6e6e9515',1,'GTable']]],
   ['removetextchangelistener',['removeTextChangeListener',['../classGTextArea.html#a69c940b99d01eb7c353763ce4b0942a4',1,'GTextArea::removeTextChangeListener()'],['../classGTextField.html#a69c940b99d01eb7c353763ce4b0942a4',1,'GTextField::removeTextChangeListener()']]],
   ['removetimerlistener',['removeTimerListener',['../classGWindow.html#a8ca9bf0f8dfd3755d73d07ee01e3455f',1,'GWindow']]],
   ['removevalue',['removeValue',['../classLinkedList.html#a10e8154a489093d2b1f20596342bcd78',1,'LinkedList::removeValue()'],['../classVector.html#a10e8154a489093d2b1f20596342bcd78',1,'Vector::removeValue()']]],

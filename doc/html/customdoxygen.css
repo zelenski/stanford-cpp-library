@@ -1618,4 +1618,10 @@ address.footer {
 	display: none;
 }
 
+.deprecated {
+	color: #777;
+	font-size: smaller;
+	font-style: italic;
+}
+
 /* @end */
