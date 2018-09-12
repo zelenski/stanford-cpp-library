@@ -1,0 +1,165 @@
+\hypertarget{classIntRange2D}{}\section{Int\+Range2D Class Reference}
+\label{classIntRange2D}\index{Int\+Range2D@{Int\+Range2D}}
+
+
+{\ttfamily \#include $<$intrange.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classIntRange2D_a39f2016ab50300a0d0e76d60fe958356}{Int\+Range2D}} (int \mbox{\hyperlink{classIntRange2D_ad72663daf610f2a0833a2fc3d78e4fdf}{width}}=0, int \mbox{\hyperlink{classIntRange2D_ad3774f6419003470f54fd495124ef51f}{height}}=0, bool y\+Major=true)
+\item 
+\mbox{\hyperlink{classIntRange2D_a22f22b7ce16863ba7acc111a2b26018b}{Int\+Range2D}} (int \mbox{\hyperlink{classIntRange2D_a1a1724b4b31e3d3d251e5816c7d9e448}{minX}}, int \mbox{\hyperlink{classIntRange2D_a2337641dec44ff553785d9c143c3aafd}{minY}}, int \mbox{\hyperlink{classIntRange2D_aa9493e60175cb4e130ae4cfba2b55907}{maxX}}, int \mbox{\hyperlink{classIntRange2D_a015dcf4989cbafff40d5a345b9d9f959}{maxY}}, bool y\+Major=true)
+\item 
+Int\+Range2\+D\+Iterator \mbox{\hyperlink{classIntRange2D_a5840f252f949c3f9c0bd1085250a8615}{begin}} () const
+\item 
+bool \mbox{\hyperlink{classIntRange2D_a39725eb73188fbf2a4b790b1a6849815}{contains}} (int x, int y) const
+\item 
+bool \mbox{\hyperlink{classIntRange2D_a3c4705ae7b99ee1d5cd6326e5f2869bf}{contains}} (const \mbox{\hyperlink{classIntRange2D}{Int\+Range2D}} \&r) const
+\item 
+bool \mbox{\hyperlink{classIntRange2D_a644718bb2fb240de962dc3c9a1fdf0dc}{empty}} () const
+\item 
+Int\+Range2\+D\+Iterator \mbox{\hyperlink{classIntRange2D_aa7bf3d68f7aec8215aa12584f8c47443}{end}} () const
+\item 
+int \mbox{\hyperlink{classIntRange2D_ad3774f6419003470f54fd495124ef51f}{height}} () const
+\item 
+bool \mbox{\hyperlink{classIntRange2D_acf82f9b2937375c7b1cf3dccb3df3312}{is\+Empty}} () const
+\item 
+bool \mbox{\hyperlink{classIntRange2D_a7387191f7e5206084124db7bc29d1891}{is\+Y\+Major}} () const
+\item 
+int \mbox{\hyperlink{classIntRange2D_aa9493e60175cb4e130ae4cfba2b55907}{maxX}} () const
+\item 
+int \mbox{\hyperlink{classIntRange2D_a015dcf4989cbafff40d5a345b9d9f959}{maxY}} () const
+\item 
+int \mbox{\hyperlink{classIntRange2D_a1a1724b4b31e3d3d251e5816c7d9e448}{minX}} () const
+\item 
+int \mbox{\hyperlink{classIntRange2D_a2337641dec44ff553785d9c143c3aafd}{minY}} () const
+\item 
+int \mbox{\hyperlink{classIntRange2D_af9593d4a5ff4274efaf429cb4f9e57cc}{size}} () const
+\item 
+std\+::string \mbox{\hyperlink{classIntRange2D_a1fe5121d6528fdea3f243321b3fa3a49}{to\+String}} () const
+\item 
+int \mbox{\hyperlink{classIntRange2D_ad72663daf610f2a0833a2fc3d78e4fdf}{width}} () const
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+std\+::istream \& \mbox{\hyperlink{classIntRange2D_a1785cf1b9660abbc492b9fcabe2f7af5}{operator$>$$>$}} (std\+::istream \&input, \mbox{\hyperlink{classIntRange2D}{Int\+Range2D}} \&r)
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classIntRange2D_a39f2016ab50300a0d0e76d60fe958356}\label{classIntRange2D_a39f2016ab50300a0d0e76d60fe958356}} 
+\index{Int\+Range2D@{Int\+Range2D}!Int\+Range2D@{Int\+Range2D}}
+\index{Int\+Range2D@{Int\+Range2D}!Int\+Range2D@{Int\+Range2D}}
+\subsubsection{\texorpdfstring{Int\+Range2\+D()}{IntRange2D()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classIntRange2D}{Int\+Range2D}} (\begin{DoxyParamCaption}\item[{int}]{width = {\ttfamily 0},  }\item[{int}]{height = {\ttfamily 0},  }\item[{bool}]{y\+Major = {\ttfamily true} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classIntRange2D_a22f22b7ce16863ba7acc111a2b26018b}\label{classIntRange2D_a22f22b7ce16863ba7acc111a2b26018b}} 
+\index{Int\+Range2D@{Int\+Range2D}!Int\+Range2D@{Int\+Range2D}}
+\index{Int\+Range2D@{Int\+Range2D}!Int\+Range2D@{Int\+Range2D}}
+\subsubsection{\texorpdfstring{Int\+Range2\+D()}{IntRange2D()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classIntRange2D}{Int\+Range2D}} (\begin{DoxyParamCaption}\item[{int}]{minX,  }\item[{int}]{minY,  }\item[{int}]{maxX,  }\item[{int}]{maxY,  }\item[{bool}]{y\+Major = {\ttfamily true} }\end{DoxyParamCaption})}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classIntRange2D_a5840f252f949c3f9c0bd1085250a8615}\label{classIntRange2D_a5840f252f949c3f9c0bd1085250a8615}} 
+\index{Int\+Range2D@{Int\+Range2D}!begin@{begin}}
+\index{begin@{begin}!Int\+Range2D@{Int\+Range2D}}
+\subsubsection{\texorpdfstring{begin()}{begin()}}
+{\footnotesize\ttfamily Int\+Range2\+D\+::\+Int\+Range2\+D\+Iterator begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classIntRange2D_a39725eb73188fbf2a4b790b1a6849815}\label{classIntRange2D_a39725eb73188fbf2a4b790b1a6849815}} 
+\index{Int\+Range2D@{Int\+Range2D}!contains@{contains}}
+\index{contains@{contains}!Int\+Range2D@{Int\+Range2D}}
+\subsubsection{\texorpdfstring{contains()}{contains()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily bool contains (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classIntRange2D_a3c4705ae7b99ee1d5cd6326e5f2869bf}\label{classIntRange2D_a3c4705ae7b99ee1d5cd6326e5f2869bf}} 
+\index{Int\+Range2D@{Int\+Range2D}!contains@{contains}}
+\index{contains@{contains}!Int\+Range2D@{Int\+Range2D}}
+\subsubsection{\texorpdfstring{contains()}{contains()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily bool contains (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classIntRange2D}{Int\+Range2D}} \&}]{r }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classIntRange2D_a644718bb2fb240de962dc3c9a1fdf0dc}\label{classIntRange2D_a644718bb2fb240de962dc3c9a1fdf0dc}} 
+\index{Int\+Range2D@{Int\+Range2D}!empty@{empty}}
+\index{empty@{empty}!Int\+Range2D@{Int\+Range2D}}
+\subsubsection{\texorpdfstring{empty()}{empty()}}
+{\footnotesize\ttfamily bool empty (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classIntRange2D_aa7bf3d68f7aec8215aa12584f8c47443}\label{classIntRange2D_aa7bf3d68f7aec8215aa12584f8c47443}} 
+\index{Int\+Range2D@{Int\+Range2D}!end@{end}}
+\index{end@{end}!Int\+Range2D@{Int\+Range2D}}
+\subsubsection{\texorpdfstring{end()}{end()}}
+{\footnotesize\ttfamily Int\+Range2\+D\+::\+Int\+Range2\+D\+Iterator end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classIntRange2D_ad3774f6419003470f54fd495124ef51f}\label{classIntRange2D_ad3774f6419003470f54fd495124ef51f}} 
+\index{Int\+Range2D@{Int\+Range2D}!height@{height}}
+\index{height@{height}!Int\+Range2D@{Int\+Range2D}}
+\subsubsection{\texorpdfstring{height()}{height()}}
+{\footnotesize\ttfamily int height (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classIntRange2D_acf82f9b2937375c7b1cf3dccb3df3312}\label{classIntRange2D_acf82f9b2937375c7b1cf3dccb3df3312}} 
+\index{Int\+Range2D@{Int\+Range2D}!is\+Empty@{is\+Empty}}
+\index{is\+Empty@{is\+Empty}!Int\+Range2D@{Int\+Range2D}}
+\subsubsection{\texorpdfstring{is\+Empty()}{isEmpty()}}
+{\footnotesize\ttfamily bool is\+Empty (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classIntRange2D_a7387191f7e5206084124db7bc29d1891}\label{classIntRange2D_a7387191f7e5206084124db7bc29d1891}} 
+\index{Int\+Range2D@{Int\+Range2D}!is\+Y\+Major@{is\+Y\+Major}}
+\index{is\+Y\+Major@{is\+Y\+Major}!Int\+Range2D@{Int\+Range2D}}
+\subsubsection{\texorpdfstring{is\+Y\+Major()}{isYMajor()}}
+{\footnotesize\ttfamily bool is\+Y\+Major (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classIntRange2D_aa9493e60175cb4e130ae4cfba2b55907}\label{classIntRange2D_aa9493e60175cb4e130ae4cfba2b55907}} 
+\index{Int\+Range2D@{Int\+Range2D}!maxX@{maxX}}
+\index{maxX@{maxX}!Int\+Range2D@{Int\+Range2D}}
+\subsubsection{\texorpdfstring{max\+X()}{maxX()}}
+{\footnotesize\ttfamily int maxX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classIntRange2D_a015dcf4989cbafff40d5a345b9d9f959}\label{classIntRange2D_a015dcf4989cbafff40d5a345b9d9f959}} 
+\index{Int\+Range2D@{Int\+Range2D}!maxY@{maxY}}
+\index{maxY@{maxY}!Int\+Range2D@{Int\+Range2D}}
+\subsubsection{\texorpdfstring{max\+Y()}{maxY()}}
+{\footnotesize\ttfamily int maxY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classIntRange2D_a1a1724b4b31e3d3d251e5816c7d9e448}\label{classIntRange2D_a1a1724b4b31e3d3d251e5816c7d9e448}} 
+\index{Int\+Range2D@{Int\+Range2D}!minX@{minX}}
+\index{minX@{minX}!Int\+Range2D@{Int\+Range2D}}
+\subsubsection{\texorpdfstring{min\+X()}{minX()}}
+{\footnotesize\ttfamily int minX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classIntRange2D_a2337641dec44ff553785d9c143c3aafd}\label{classIntRange2D_a2337641dec44ff553785d9c143c3aafd}} 
+\index{Int\+Range2D@{Int\+Range2D}!minY@{minY}}
+\index{minY@{minY}!Int\+Range2D@{Int\+Range2D}}
+\subsubsection{\texorpdfstring{min\+Y()}{minY()}}
+{\footnotesize\ttfamily int minY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classIntRange2D_af9593d4a5ff4274efaf429cb4f9e57cc}\label{classIntRange2D_af9593d4a5ff4274efaf429cb4f9e57cc}} 
+\index{Int\+Range2D@{Int\+Range2D}!size@{size}}
+\index{size@{size}!Int\+Range2D@{Int\+Range2D}}
+\subsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily int size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classIntRange2D_a1fe5121d6528fdea3f243321b3fa3a49}\label{classIntRange2D_a1fe5121d6528fdea3f243321b3fa3a49}} 
+\index{Int\+Range2D@{Int\+Range2D}!to\+String@{to\+String}}
+\index{to\+String@{to\+String}!Int\+Range2D@{Int\+Range2D}}
+\subsubsection{\texorpdfstring{to\+String()}{toString()}}
+{\footnotesize\ttfamily std\+::string to\+String (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classIntRange2D_ad72663daf610f2a0833a2fc3d78e4fdf}\label{classIntRange2D_ad72663daf610f2a0833a2fc3d78e4fdf}} 
+\index{Int\+Range2D@{Int\+Range2D}!width@{width}}
+\index{width@{width}!Int\+Range2D@{Int\+Range2D}}
+\subsubsection{\texorpdfstring{width()}{width()}}
+{\footnotesize\ttfamily int width (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+\subsection{Friends And Related Function Documentation}
+\mbox{\Hypertarget{classIntRange2D_a1785cf1b9660abbc492b9fcabe2f7af5}\label{classIntRange2D_a1785cf1b9660abbc492b9fcabe2f7af5}} 
+\index{Int\+Range2D@{Int\+Range2D}!operator$>$$>$@{operator$>$$>$}}
+\index{operator$>$$>$@{operator$>$$>$}!Int\+Range2D@{Int\+Range2D}}
+\subsubsection{\texorpdfstring{operator$>$$>$}{operator>>}}
+{\footnotesize\ttfamily std\+::istream\& operator$>$$>$ (\begin{DoxyParamCaption}\item[{std\+::istream \&}]{input,  }\item[{\mbox{\hyperlink{classIntRange2D}{Int\+Range2D}} \&}]{r }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
+
