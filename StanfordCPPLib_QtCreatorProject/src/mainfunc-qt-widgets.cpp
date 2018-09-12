@@ -224,16 +224,13 @@ void testQwindow() {
     // CENTER AREA
 
     static GTextArea* textArea = new GTextArea("This is \na multi-line\n\ntext area");
-    textArea->setRowsColumns(4, 30);
     textArea->setPlaceholder("type some text");
     textArea->setTextChangeListener([](GEvent) {
         cout << "textarea text changed! text is:" << endl << textArea->getText() << endl;
     });
     window->addToRegion(textArea, "Center");
+
     cout << "textarea:  " << textArea->toString() << endl;
-
-    window->maximize();
-
 
     // window->pack();
 

@@ -590,17 +590,24 @@ void _Internal_QContainer::addToGrid(QWidget* widget, int row, int col, int rows
 
 void _Internal_QContainer::addToRegion(QWidget* widget, GContainer::Region region) {
     if (_layoutType == GContainer::LAYOUT_BORDER) {
-        QLayout* layout = layoutForRegion(region);
+        QBoxLayout* layout = (QBoxLayout*) layoutForRegion(region);
         if (region == GContainer::REGION_CENTER) {
             // center holds at most one widget
             GLayout::clearLayout(layout);
-            // widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-            widget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-            layout->addWidget(widget);
+
+            // http://doc.qt.io/qt-5/qsizepolicy.html
+            QSizePolicy sizePolicy;
+            sizePolicy.setHorizontalPolicy(QSizePolicy::Ignored);
+            sizePolicy.setVerticalPolicy(QSizePolicy::Ignored);
+            sizePolicy.setHorizontalStretch(999);
+            sizePolicy.setVerticalStretch(999);
+            widget->setSizePolicy(sizePolicy);
+
+            layout->addWidget(widget, /* stretch */ 999);
         } else {
             // add to end of the list of widgets in this region
             widget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-            ((QBoxLayout*) layout)->insertWidget(/* index */ layout->count() - 1, widget);
+            layout->insertWidget(/* index */ layout->count() - 1, widget, /* stretch */ 0);
         }
         widget->setVisible(true);
 
