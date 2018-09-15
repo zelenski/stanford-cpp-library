@@ -1,0 +1,403 @@
+<html>
+<head>
+<title>generic.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="generic-h.html"><code>generic.h</code></a></h1>
+This interface defines those functions that apply to more than one type.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Type</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:GenericType">GenericType</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Union capable of holding any of the primitive types.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:add">add(arg,&nbsp;...)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds a value to the collection.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:clear">clear(arg)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes all elements from the collection.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:clone">clone(arg)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a copy of the collection.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:contains">contains(arg,&nbsp;...)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Checks whether a set contains the value specified by the argument list, which may vary according to the base type.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:containsKey">containsKey(arg,&nbsp;key)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Checks whether the specified key is in the map.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:dequeue">dequeue(arg)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes and returns the first item in the queue.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:enqueue">enqueue(arg,&nbsp;...)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds a new value to the queue.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:equals">equals(s1,&nbsp;s2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the sets are equal.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:get">get(arg,&nbsp;...)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Gets a value from the collection.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getHeight">getHeight(any)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the height component of the value.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getWidth">getWidth(any)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the width component of the value.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getX">getX(any)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the x component of the value.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getY">getY(any)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the y component of the value.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:intersection">intersection(s1,&nbsp;s2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the intersection of the <code>s1</code> and <code>s2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isEmpty">isEmpty(arg)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the collection is empty.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isSubset">isSubset(s1,&nbsp;s2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if <code>s1</code> is a subset of <code>s2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isVisible">isVisible(arg)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the argument is visible.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:peek">peek(arg)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the first item in the collection without removing it.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:put">put(arg,&nbsp;...)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Puts a value into the collection.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:remove">remove(arg,&nbsp;...)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes a value from the collection.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:set">set(arg,&nbsp;...)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets a specific element in the collection.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setColor">setColor(arg,&nbsp;color)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the color of the argument.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setDifference">setDifference(s1,&nbsp;s2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the set difference of <code>s1</code> and <code>s2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setVisible">setVisible(arg,&nbsp;flag)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets whether the argument is visible.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:size">size(arg)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of elements in the collection.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:union">union(s1,&nbsp;s2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the union of <code>s1</code> and <code>s2</code>.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:GenericType"></a>
+<pre class=detailCode>
+typedef union {
+    int intRep;
+    short shortRep;
+    long longRep;
+    float floatRep;
+    double doubleRep;
+    char charRep;
+    bool boolRep;
+    unsigned unsignedRep;
+    unsigned short unsignedShortRep;
+    unsigned long unsignedLongRep;
+    unsigned char unsignedCharRep;
+    void *pointerRep;
+} GenericType;
+</pre>
+<div class=detailHTML>
+Union capable of holding any of the primitive types.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:size"></a>
+<pre class=detailCode>
+int size(void *arg);
+</pre>
+<div class=detailHTML>
+Returns the number of elements in the collection.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+n = size(arg);
+</pre>
+<hr>
+<a name="Function:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty(int size, ...);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the collection is empty.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isEmpty(arg)) . . .
+</pre>
+<hr>
+<a name="Function:clear"></a>
+<pre class=detailCode>
+void clear(void *arg);
+</pre>
+<div class=detailHTML>
+Removes all elements from the collection.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+clear(arg);
+</pre>
+<hr>
+<a name="Function:clone"></a>
+<pre class=detailCode>
+void *clone(void *arg);
+</pre>
+<div class=detailHTML>
+Creates a copy of the collection.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+clone(arg);
+</pre>
+<hr>
+<a name="Function:get"></a>
+<pre class=detailCode>
+void *get(void *arg, ...);
+</pre>
+<div class=detailHTML>
+Gets a value from the collection.  The format of the argument list
+depends on the collection type.  See the documentation of the
+individual type for details.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+value = get(arg, ...);
+</pre>
+<hr>
+<a name="Function:set"></a>
+<pre class=detailCode>
+void set(void *arg, ...);
+</pre>
+<div class=detailHTML>
+Sets a specific element in the collection.  The format of the argument
+list depends on the collection type.  See the documentation of the
+individual type for details.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set(arg, ...);
+</pre>
+<hr>
+<a name="Function:put"></a>
+<pre class=detailCode>
+void put(void *arg, ...);
+</pre>
+<div class=detailHTML>
+Puts a value into the collection.  By convention, this verb is used
+in preference to <code>set</code> or <code>add</code> for maps.  The
+format of the argument list depends on the collection type.  See the
+documentation of the individual type for details.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+put(arg, ...);
+</pre>
+<hr>
+<a name="Function:containsKey"></a>
+<pre class=detailCode>
+bool containsKey(void *arg, void *key);
+</pre>
+<div class=detailHTML>
+Checks whether the specified key is in the map.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (containsKey(arg, key)) . . .
+</pre>
+<hr>
+<a name="Function:contains"></a>
+<pre class=detailCode>
+bool contains(int size, ...);
+</pre>
+<div class=detailHTML>
+Checks whether a set contains the value specified by the argument list,
+which may vary according to the base type.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (contains(arg, ...)) . . .
+</pre>
+<hr>
+<a name="Function:add"></a>
+<pre class=detailCode>
+void add(void *arg, ...);
+</pre>
+<div class=detailHTML>
+Adds a value to the collection.  The format of the argument list depends
+on the collection type.  See the documentation of the individual type
+for details.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+add(arg, ...);
+</pre>
+<hr>
+<a name="Function:remove"></a>
+<pre class=detailCode>
+void remove(void *arg, ...);
+</pre>
+<div class=detailHTML>
+Removes a value from the collection.  The format of the argument list
+depends on the collection type.  See the documentation of the individual
+type for details.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+remove(arg, ...);
+</pre>
+<hr>
+<a name="Function:enqueue"></a>
+<pre class=detailCode>
+void enqueue(void *arg, ...);
+</pre>
+<div class=detailHTML>
+Adds a new value to the queue.  The format of the argument list differs
+slightly for the <code>Queue</code> and <code>PriorityQueue</code> types.
+See the documentation of the individual type for details.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+enqueue(arg, ...);
+</pre>
+<hr>
+<a name="Function:dequeue"></a>
+<pre class=detailCode>
+void *dequeue(void *arg);
+</pre>
+<div class=detailHTML>
+Removes and returns the first item in the queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+value = dequeue(arg);
+</pre>
+<hr>
+<a name="Function:peek"></a>
+<pre class=detailCode>
+void *peek(void *arg);
+</pre>
+<div class=detailHTML>
+Returns the first item in the collection without removing it.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+peek(arg);
+</pre>
+<hr>
+<a name="Function:equals"></a>
+<pre class=detailCode>
+bool equals(void *s1, void *s2);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the sets are equal.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (equals(s1, s2)) . . .
+</pre>
+<hr>
+<a name="Function:isSubset"></a>
+<pre class=detailCode>
+bool isSubset(void *s1, void *s2);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if <code>s1</code> is a subset of
+<code>s2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isSubset(s1, s2)) . . .
+</pre>
+<hr>
+<a name="Function:union"></a>
+<pre class=detailCode>
+void *union(void *s1, void *s2);
+</pre>
+<div class=detailHTML>
+Returns the union of <code>s1</code> and <code>s2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set = union(s1, s2);
+</pre>
+<hr>
+<a name="Function:intersection"></a>
+<pre class=detailCode>
+void *intersection(void *s1, void *s2);
+</pre>
+<div class=detailHTML>
+Returns the intersection of the <code>s1</code> and <code>s2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set = intersection(s1, s2);
+</pre>
+<hr>
+<a name="Function:setDifference"></a>
+<pre class=detailCode>
+void *setDifference(void *s1, void *s2);
+</pre>
+<div class=detailHTML>
+Returns the set difference of <code>s1</code> and <code>s2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set = setDifference(s1, s2);
+</pre>
+<hr>
+<a name="Function:getX"></a>
+<pre class=detailCode>
+double getX(int size, ...);
+</pre>
+<div class=detailHTML>
+Returns the x component of the value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+x = getX(any);
+</pre>
+<hr>
+<a name="Function:getY"></a>
+<pre class=detailCode>
+double getY(int size, ...);
+</pre>
+<div class=detailHTML>
+Returns the y component of the value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+y = getY(any);
+</pre>
+<hr>
+<a name="Function:getWidth"></a>
+<pre class=detailCode>
+double getWidth(int size, ...);
+</pre>
+<div class=detailHTML>
+Returns the width component of the value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+width = getWidth(any);
+</pre>
+<hr>
+<a name="Function:getHeight"></a>
+<pre class=detailCode>
+double getHeight(int size, ...);
+</pre>
+<div class=detailHTML>
+Returns the height component of the value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+height = getHeight(any);
+</pre>
+<hr>
+<a name="Function:setVisible"></a>
+<pre class=detailCode>
+void setVisible(void *arg, bool flag);
+</pre>
+<div class=detailHTML>
+Sets whether the argument is visible.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setVisible(arg, flag);
+</pre>
+<hr>
+<a name="Function:isVisible"></a>
+<pre class=detailCode>
+bool isVisible(void *arg);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the argument is visible.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isVisible(arg)) . . .
+</pre>
+<hr>
+<a name="Function:setColor"></a>
+<pre class=detailCode>
+void setColor(void *arg, string color);
+</pre>
+<div class=detailHTML>
+Sets the color of the argument.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setColor(arg, color);
+</pre>
+<hr>
+</table>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<html>
+<head>
+<title>include/gtypes.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: gtypes.h
+ * --------------
+ * This file defines two classes that are used throughout the graphics
+ * library to encapsulate basic geometrical concepts:
+ *
+ *   GPoint     - A point containing an x and y value
+ *   GRectangle - A rectangle with x, y, width, height
+ */
+</scan>
+#ifndef _gtypes_h
+#define _gtypes_h
+
+<a name="Class:GPoint"><scan class=comment>/*
+ * Class: GPoint
+ * -------------
+ * This class represents a point on the real-valued graphics plane.
+ */
+</scan>
+class GPoint {
+
+public:
+
+<a name="Constructor:GPoint"><scan class=comment>/*
+ * Constructor: GPoint
+ * Usage: GPoint origin;
+ *        GPoint pt(x, y);
+ * -----------------------
+ * Creates a GPoint object with the specified x and y coordinates.  If the
+ * coordinates are not supplied, the default constructor sets these fields
+ * to 0.
+ */
+</scan>
+   GPoint();
+   GPoint(double x, double y);
+
+<a name="Method:getX"><scan class=comment>/*
+ * Method: getX
+ * Usage: double x = pt.getX();
+ * ----------------------------
+ * Returns the x component of the point.
+ */
+</scan>
+   double getX();
+
+<a name="Method:getY"><scan class=comment>/*
+ * Method: getY
+ * Usage: double y = pt.getY();
+ * ----------------------------
+ * Returns the y component of the point.
+ */
+</scan>
+   double getY();
+
+<a name="Method:toString"><scan class=comment>/*
+ * Method: toString
+ * Usage: string str = pt.toString();
+ * ----------------------------------
+ * Converts the GPoint to a string in the form "(x, y)".
+ */
+</scan>
+   string toString();
+
+#include "private/gpointpriv.h"
+
+};
+
+<a name="Class:GRectangle"><scan class=comment>/*
+ * Class: GRectangle
+ * -----------------
+ * This class represents a rectangle on the graphics plane and is
+ * conventionally used to denote the bounding box for an object.
+ */
+</scan>
+class GRectangle {
+
+public:
+
+<a name="Constructor:GRectangle"><scan class=comment>/*
+ * Constructor: GRectangle
+ * Usage: GRectangle empty;
+ *        GRectangle r(x, y, width, height);
+ * -----------------------------------------
+ * Creates a GRectangle object with the specified components.  If these
+ * parameters are not supplied, the default constructor sets these fields
+ * to 0.
+ */
+</scan>
+   GRectangle();
+   GRectangle(double x, double y, double width, double height);
+
+<a name="Method:getX"><scan class=comment>/*
+ * Method: getX
+ * Usage: double x = r.getX();
+ * ---------------------------
+ * Returns the x component of the rectangle.
+ */
+</scan>
+   double getX();
+
+<a name="Method:getY"><scan class=comment>/*
+ * Method: getY
+ * Usage: double y = pt.getY();
+ * ----------------------------
+ * Returns the y component of the rectangle.
+ */
+</scan>
+   double getY();
+
+<a name="Method:getWidth"><scan class=comment>/*
+ * Method: getWidth
+ * Usage: double width = r.getWidth();
+ * -----------------------------------
+ * Returns the width component of the rectangle.
+ */
+</scan>
+   double getWidth();
+
+<a name="Method:getHeight"><scan class=comment>/*
+ * Method: getHeight
+ * Usage: double height = pt.getHeight();
+ * --------------------------------------
+ * Returns the height component of the rectangle.
+ */
+</scan>
+   double getHeight();
+
+<a name="Method:isEmpty"><scan class=comment>/*
+ * Method: isEmpty
+ * Usage: if (r.isEmpty()) . . .
+ * -----------------------------
+ * Returns true if the rectangle is empty.
+ */
+</scan>
+   bool isEmpty();
+
+<a name="Method:contains"><scan class=comment>/*
+ * Method: contains
+ * Usage: if (r.contains(pt)) . . .
+ *        if (r.contains(x, y)) . . .
+ * ----------------------------------
+ * Returns true if the rectangle contains the given point, which may be
+ * specified either as a point or as distinct coordinates.
+ */
+</scan>
+   bool contains(GPoint pt);
+   bool contains(double x, double y);
+
+<a name="Method:toString"><scan class=comment>/*
+ * Method: toString
+ * Usage: string str = r.toString();
+ * ---------------------------------
+ * Converts the GRectangle to a string in the form "(x, y, width, height)".
+ */
+</scan>
+   string toString();
+
+#include "private/grectanglepriv.h"
+
+};
+
+#include "private/gtypescompare.h"
+
+#endif
+</pre>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<html>
+<head>
+<title>stack.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="stack-h.html"><code>stack.h</code></a></h1>
+This interface exports an abstraction for stacks.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Type</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:Stack">Stack</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>The abstract data type for the stack.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newStack">newStack()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Allocates and returns a new stack, which is initially empty.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:freeStack">freeStack(stack)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Frees the storage associated with the stack.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:push">push(stack,&nbsp;element)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Pushes the specified element onto the stack.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:pop">pop(stack)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Pops the top element from the stack and returns that value.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:peek">peek(stack)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the top element from the stack without removing it.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isEmpty">isEmpty(stack)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Tests whether the stack is empty.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:size">size(stack)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of elements currently pushed on the stack.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:clear">clear(stack)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes all elements from the stack.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:clone">clone(stack)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a copy of the stack.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:Stack"></a>
+<pre class=detailCode>
+typedef struct StackCDT *Stack;
+</pre>
+<div class=detailHTML>
+The abstract data type for the stack.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:newStack"></a>
+<pre class=detailCode>
+Stack newStack(void);
+</pre>
+<div class=detailHTML>
+Allocates and returns a new stack, which is initially empty.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+stack = newStack();
+</pre>
+<hr>
+<a name="Function:freeStack"></a>
+<pre class=detailCode>
+void freeStack(Stack stack);
+</pre>
+<div class=detailHTML>
+Frees the storage associated with the stack.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+freeStack(stack);
+</pre>
+<hr>
+<a name="Function:push"></a>
+<pre class=detailCode>
+void push(Stack stack, void *element);
+</pre>
+<div class=detailHTML>
+Pushes the specified element onto the stack.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+push(stack, element);
+</pre>
+<hr>
+<a name="Function:pop"></a>
+<pre class=detailCode>
+void *pop(Stack stack);
+</pre>
+<div class=detailHTML>
+Pops the top element from the stack and returns that value.
+The first value popped is always the last one  that was pushed.
+If the stack is empty when <code>pop</code> is called, the
+implementation calls <code>error</code> with an appropriate message.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+element = pop(stack);
+</pre>
+<hr>
+<a name="Function:peek"></a>
+<pre class=detailCode>
+void *peek(Stack stack);
+</pre>
+<div class=detailHTML>
+Returns the top element from the stack without removing it.
+If the stack is empty when <code>pop</code> is called, the
+implementation calls <code>error</code> with an appropriate message.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+element = peek(stack);
+</pre>
+<hr>
+<a name="Function:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty(Stack stack);
+</pre>
+<div class=detailHTML>
+Tests whether the stack is empty.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isEmpty(stack)) . . .
+</pre>
+<hr>
+<a name="Function:size"></a>
+<pre class=detailCode>
+int size(Stack stack);
+</pre>
+<div class=detailHTML>
+Returns the number of elements currently pushed on the stack.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+n = size(stack);
+</pre>
+<hr>
+<a name="Function:clear"></a>
+<pre class=detailCode>
+void clear(Stack stack);
+</pre>
+<div class=detailHTML>
+Removes all elements from the stack.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+clear(stack);
+</pre>
+<hr>
+<a name="Function:clone"></a>
+<pre class=detailCode>
+Stack clone(Stack stack);
+</pre>
+<div class=detailHTML>
+Creates a copy of the stack.  The <code>clone</code> function copies
+only the first level of the structure and does not copy the individual
+elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+newstack = clone(stack);
+</pre>
+<hr>
+</table>
+</body>
+</html>

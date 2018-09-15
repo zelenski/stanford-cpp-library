@@ -1,0 +1,117 @@
+#include <booktools.ps>
+
+/DIAMOND_ASPECT_RATIO 22 36 div def
+/TRAPEZOID_ASPECT_RATIO 2 def
+/TRAPEZOID_ANGLE 60 def
+/T_THICKNESS_RATIO 0.3 def
+/X_OFFSET 7 def
+/Y_OFFSET 5 def
+
+/SIZE 55 def
+/DX 6.0 inch SIZE 4 mul sub 4 div def
+/YC 75 SIZE 2 div sub Y_OFFSET sub def
+/YT 4 def
+/X1 DX SIZE add 2 div X_OFFSET sub def
+/X2 X1 SIZE DX add add def
+/X3 X2 SIZE DX add add def
+/X4 X3 SIZE DX add add def
+
+/drawDiamond {
+  10 dict begin
+    gsave
+      0.5 setlinewidth
+      /size exch def
+      translate
+      /dx size 2 div DIAMOND_ASPECT_RATIO mul def
+      /dy size 2 div def
+      newpath
+        dx neg 0 moveto
+        dx dy rlineto
+        dx dy neg rlineto
+        dx neg dy neg rlineto
+        dx neg dy rlineto
+      closepath stroke
+    grestore
+  end
+} def
+
+/drawTrapezoid {
+  10 dict begin
+    gsave
+      0.5 setlinewidth
+      /size exch def
+      translate
+      /x0 size 2 div neg def
+      /y0 x0 TRAPEZOID_ASPECT_RATIO div def
+      /h size TRAPEZOID_ASPECT_RATIO div def
+      newpath
+        x0 y0 moveto
+        h TRAPEZOID_ANGLE tan div h rlineto
+        size h TRAPEZOID_ANGLE tan div 2 mul sub 0 rlineto
+        h TRAPEZOID_ANGLE tan div h neg rlineto
+        size neg 0 rlineto
+      closepath stroke
+    grestore
+  end
+} def
+
+/drawTShape {
+  10 dict begin
+    gsave
+      0.5 setlinewidth
+      /size exch def
+      translate
+      /x0 size 2 div neg def
+      /y0 size 2 div def
+      /delta size T_THICKNESS_RATIO mul def
+      newpath
+        x0 y0 moveto
+        size 0 rlineto
+        0 delta neg rlineto
+        size delta sub 2 div neg 0 rlineto
+        0 size delta sub neg rlineto
+        delta neg 0 rlineto
+        0 size delta sub rlineto
+        size delta sub 2 div neg 0 rlineto
+        0 delta rlineto
+      closepath stroke
+    grestore
+  end
+} def
+
+/drawStar {
+  10 dict begin
+    gsave
+      0.5 setlinewidth
+      /size exch def
+      translate
+      /sin18 18 sin def
+      /b 0.5 sin18 mul sin18 1 add div def
+      /edge 0.5 b sub def
+      size size neg scale
+      currentlinewidth size div setlinewidth
+      newpath
+        -0.5 b neg moveto
+        /theta 0 def
+        1 1 5 {
+          pop
+          edge theta cos mul edge theta sin mul neg rlineto
+          edge theta 72 add cos mul edge theta 72 add sin mul neg rlineto
+          /theta theta 72 sub def
+        } for
+      closepath stroke
+    grestore
+  end
+} def
+
+gsave
+  /Helvetica-Bold findfont 9 scalefont setfont
+  X1 YC SIZE drawDiamond
+  X1 YT (diamond) cshow
+  X2 YC SIZE drawTrapezoid
+  X2 YT (trapezoid) cshow
+  X3 YC SIZE drawTShape
+  X3 YT (T-shape) cshow
+  X4 YC SIZE drawStar
+  X4 YT (five-pointed star) cshow
+grestore

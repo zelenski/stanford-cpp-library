@@ -1,0 +1,49 @@
+<html>
+<head>
+<title>../sexpcdt.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: sexpcdt.h
+ * ---------------
+ * This file contains the concrete data type definitions for S-expressions,
+ * atoms, and dotted-pairs.  These details are included in an interface so
+ * that the primitive list functions can be implemented as macros for
+ * efficiency.  In no cases should clients depend on this representation.
+ */
+</scan>
+#ifndef _sexpcdt_h
+#define _sexpcdt_h
+
+#include "cslib.h"
+struct atomCDT {
+    string _PName;
+    sexp _Binding;
+    sexp _PList;
+    sexp _SymLink;
+};
+
+struct dtprCDT {
+    sexp _Car, _Cdr;
+};
+
+struct sexpCDT {
+    int SxType;
+    union {
+        struct atomCDT AtomRep;
+        struct dtprCDT DtprRep;
+        long IntRep;
+        double RealRep;
+        string StringRep;
+        char CharRep;
+        bool BoolRep;
+        void *PointerRep;
+    } SxValue;
+};
+
+#endif
+</pre>
+</body>
+</html>

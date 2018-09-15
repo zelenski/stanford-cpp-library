@@ -1,0 +1,61 @@
+<html>
+<head>
+<title>include/simpio.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: simpio.h
+ * --------------
+ * This interface exports a set of functions that simplify input/output
+ * operations in C++ and provide some error-checking on console input.
+ */
+</scan>
+#ifndef _simpio_h
+#define _simpio_h
+
+<a name="Function:getInteger"><scan class=comment>/*
+ * Function: getInteger
+ * Usage: int n = getInteger(prompt);
+ * ----------------------------------
+ * Reads a complete line from cin and tries to scan it as an integer.  If
+ * it succeeds, the integer value is returned.  If the input is not a legal
+ * integer or if extraneous characters (other than whitespace) appear on
+ * the input line, the user is given a chance to reenter the value.  If
+ * supplied, the optional prompt string is printed before reading the
+ * value.
+ */
+</scan>
+int getInteger(string prompt = "");
+
+<a name="Function:getReal"><scan class=comment>/*
+ * Function: getReal
+ * Usage: double x = getReal(prompt);
+ * ----------------------------------
+ * Reads a complete line from cin and tries to scan it as a floating-point
+ * number.  If it succeeds, that value is returned.  If the input is not a
+ * legal number or if extraneous characters (other than whitespace) appear
+ * on the input line, the user is given a chance to reenter the value.  If
+ * supplied, the optional prompt string is printed before reading the
+ * value.
+ */
+</scan>
+double getReal(string prompt = "");
+
+<a name="Function:getLine"><scan class=comment>/*
+ * Function: getLine
+ * Usage: string line = getLine(prompt);
+ * -------------------------------------
+ * Reads a line of text from cin and returns that line as a string.  The
+ * newline character that terminates the input is not stored as part of the
+ * return value.  If supplied, the optional prompt string is printed before
+ * reading the value.
+ */
+</scan>
+string getLine(string prompt = "");
+
+#endif
+</pre>
+</body>
+</html>

@@ -2,6 +2,9 @@
  * File: gwindow.cpp
  * -----------------
  *
+ * @version 2018/09/13
+ * - updated cast syntax to remove warnings in new compiler versions
+ * - updated window parent semantics
  * @version 2018/09/05
  * - refactored to use a border layout GContainer "content pane" for storing all interactors
  * @version 2018/08/23
@@ -16,6 +19,7 @@
 
 #include "gwindow.h"
 #include <QDesktopWidget>
+#include "gdiffgui.h"
 #include <QMenu>
 #include <QMenuBar>
 #include <QSizePolicy>
@@ -65,10 +69,10 @@ GWindow::GWindow(double x, double y, double width, double height, bool visible)
 
 void GWindow::_init(double width, double height, bool visible) {
     require::nonNegative2D(width, height, "GWindow::constructor", "width", "height");
-    if (width == 0) {
+    if (static_cast<int>(width) == 0) {
         width = DEFAULT_WIDTH;
     }
-    if (height == 0) {
+    if (static_cast<int>(height) == 0) {
         height = DEFAULT_HEIGHT;
     }
 
@@ -288,14 +292,14 @@ void GWindow::addToRegion(GInteractor* interactor, Region region) {
     if (region == REGION_CENTER) {
         // labels in "GText mode" are added as GText objects to canvas
         if (interactor->getType() == "GLabel") {
-            GLabel* label = (GLabel*) interactor;
+            GLabel* label = static_cast<GLabel*>(interactor);
             if (label->hasGText()) {
                 add(label->getGText());
                 return;
             }
         }
     }
-    _contentPane->addToRegion(interactor, (GContainer::Region) region);
+    _contentPane->addToRegion(interactor, static_cast<GContainer::Region>(region));
 }
 
 void GWindow::addToRegion(GInteractor* interactor, const std::string& region) {
@@ -336,7 +340,7 @@ void GWindow::clearCanvasPixels() {
 }
 
 void GWindow::clearRegion(Region region) {
-    _contentPane->clearRegion((GContainer::Region) region);
+    _contentPane->clearRegion(static_cast<GContainer::Region>(region));
 }
 
 void GWindow::clearRegion(const std::string& region) {
@@ -356,8 +360,13 @@ void GWindow::close() {
     });
 }
 
-void GWindow::compareToImage(const std::string& /* filename */, bool /* ignoreWindowSize */) const {
+void GWindow::compareToImage(const std::string& filename, bool /*ignoreWindowSize*/) const {
+    ensureForwardTargetConstHack();
+    GCanvas* fileCanvas = new GCanvas(filename);
+    _canvas->diff(*fileCanvas);
+
     // TODO
+    // delete fileCanvas;
 }
 
 void GWindow::ensureForwardTarget() {
@@ -453,7 +462,7 @@ GDimension GWindow::getPreferredSize() const {
 }
 
 double GWindow::getRegionHeight(Region region) const {
-    return _contentPane->getRegionHeight((GContainer::Region) region);
+    return _contentPane->getRegionHeight(static_cast<GContainer::Region>(region));
 }
 
 double GWindow::getRegionHeight(const std::string& region) const {
@@ -461,7 +470,7 @@ double GWindow::getRegionHeight(const std::string& region) const {
 }
 
 GDimension GWindow::getRegionSize(Region region) const {
-    return _contentPane->getRegionSize((GContainer::Region) region);
+    return _contentPane->getRegionSize(static_cast<GContainer::Region>(region));
 }
 
 GDimension GWindow::getRegionSize(const std::string& region) const {
@@ -469,7 +478,7 @@ GDimension GWindow::getRegionSize(const std::string& region) const {
 }
 
 double GWindow::getRegionWidth(Region region) const {
-    return _contentPane->getRegionWidth((GContainer::Region) region);
+    return _contentPane->getRegionWidth(static_cast<GContainer::Region>(region));
 }
 
 double GWindow::getRegionWidth(const std::string& region) const {
@@ -622,14 +631,14 @@ void GWindow::removeFromRegion(GInteractor* interactor, Region region) {
 
     // special case: labels in "GText mode" are added to canvas
     if (region == REGION_CENTER && interactor->getType() == "GLabel") {
-        GLabel* label = (GLabel*) interactor;
+        GLabel* label = static_cast<GLabel*>(interactor);
         if (label->hasGText()) {
             remove(label->getGText());
             return;
         }
     }
 
-    _contentPane->removeFromRegion(interactor, (GContainer::Region) region);
+    _contentPane->removeFromRegion(interactor, static_cast<GContainer::Region>(region));
 }
 
 void GWindow::removeFromRegion(GInteractor* interactor, const std::string& region) {
@@ -749,7 +758,10 @@ void GWindow::setHeight(double height) {
 
 void GWindow::setLocation(double x, double y) {
     GThread::runOnQtGuiThread([this, x, y]() {
-        _iqmainwindow->setGeometry((int) x, (int) y, getWidth(), getHeight());
+        _iqmainwindow->setGeometry(static_cast<int>(x),
+                                   static_cast<int>(y),
+                                   static_cast<int>(getWidth()),
+                                   static_cast<int>(getHeight()));
     });
 }
 
@@ -810,15 +822,15 @@ void GWindow::setMouseListener(GEventListenerVoid func) {
 }
 
 void GWindow::setRegionAlignment(Region region, HorizontalAlignment halign) {
-    _contentPane->setRegionAlignment((GContainer::Region) region, halign);
+    _contentPane->setRegionAlignment(static_cast<GContainer::Region>(region), halign);
 }
 
 void GWindow::setRegionAlignment(Region region, VerticalAlignment valign) {
-    _contentPane->setRegionAlignment((GContainer::Region) region, valign);
+    _contentPane->setRegionAlignment(static_cast<GContainer::Region>(region), valign);
 }
 
 void GWindow::setRegionAlignment(Region region, HorizontalAlignment halign, VerticalAlignment valign) {
-    _contentPane->setRegionAlignment((GContainer::Region) region, halign, valign);
+    _contentPane->setRegionAlignment(static_cast<GContainer::Region>(region), halign, valign);
 }
 
 void GWindow::setRegionAlignment(const std::string& region, const std::string& align) {
@@ -830,7 +842,7 @@ void GWindow::setRegionAlignment(const std::string& region, const std::string& h
 }
 
 void GWindow::setRegionHorizontalAlignment(Region region, HorizontalAlignment halign) {
-    _contentPane->setRegionHorizontalAlignment((GContainer::Region) region, halign);
+    _contentPane->setRegionHorizontalAlignment(static_cast<GContainer::Region>(region), halign);
 }
 
 void GWindow::setRegionHorizontalAlignment(const std::string& region, const std::string& halign) {
@@ -838,7 +850,7 @@ void GWindow::setRegionHorizontalAlignment(const std::string& region, const std:
 }
 
 void GWindow::setRegionVerticalAlignment(Region region, VerticalAlignment valign) {
-    _contentPane->setRegionVerticalAlignment((GContainer::Region) region, valign);
+    _contentPane->setRegionVerticalAlignment(static_cast<GContainer::Region>(region), valign);
 }
 
 void GWindow::setRegionVerticalAlignment(const std::string& region, const std::string& valign) {
@@ -849,10 +861,12 @@ void GWindow::setResizable(bool resizable) {
     GThread::runOnQtGuiThread([this, resizable]() {
         if (resizable) {
             if (!_resizable) {
-                _iqmainwindow->resize((int) getWidth(), (int) getHeight());
+                _iqmainwindow->resize(static_cast<int>(getWidth()),
+                                      static_cast<int>(getHeight()));
                 _iqmainwindow->setMinimumSize(_iqmainwindow->minimumSizeHint());
                 GDimension screenSize = getScreenSize();
-                _iqmainwindow->setMaximumSize((int) screenSize.getWidth(), (int) screenSize.getHeight());
+                _iqmainwindow->setMaximumSize(static_cast<int>(screenSize.getWidth()),
+                                              static_cast<int>(screenSize.getHeight()));
                 _iqmainwindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
             }
         } else {
@@ -869,9 +883,11 @@ void GWindow::setSize(double width, double height) {
     require::nonNegative2D(width, height, "GWindow::setSize", "width", "height");
     GThread::runOnQtGuiThread([this, width, height]() {
         if (isResizable()) {
-            _iqmainwindow->resize((int) width, (int) height);
+            _iqmainwindow->resize(static_cast<int>(width),
+                                  static_cast<int>(height));
         } else {
-            _iqmainwindow->setFixedSize((int) width, (int) height);
+            _iqmainwindow->setFixedSize(static_cast<int>(width),
+                                        static_cast<int>(height));
         }
     });
 }
@@ -1121,7 +1137,7 @@ bool _Internal_QMainWindow::timerExists(int id) {
 
 int _Internal_QMainWindow::timerStart(double ms) {
     require::nonNegative(ms, "_Internal_QMainWindow::timerStart", "delay (ms)");
-    int timerID = startTimer((int) ms);
+    int timerID = startTimer(static_cast<int>(ms));
     _timerIDs.add(timerID);
     return timerID;
 }

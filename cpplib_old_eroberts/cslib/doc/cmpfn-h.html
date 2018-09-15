@@ -1,0 +1,143 @@
+<html>
+<head>
+<title>../cmpfn.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: cmpfn.h
+ * -------------
+ * This interface exports several comparison functions for use with the
+ * other library packages.
+ */
+</scan>
+#ifndef _cmpfn_h
+#define _cmpfn_h
+
+#include "cslib.h"
+
+<a name="Type:CompareFn"><scan class=comment>/*
+ * Type: CompareFn
+ * ---------------
+ * This type defines the type space of comparison functions, each of which
+ * take the addresses of their arguments and return an integer from the set
+ * {-1, 0, +1} depending on whether the first argument is less than, equal
+ * to, or greater than the second.
+ */
+</scan>
+typedef int (*CompareFn)(const void *p1, const void *p2);
+
+<a name="Function:intCmpFn"><scan class=comment>/*
+ * Function: intCmpFn
+ * ------------------
+ * Compares two values of type int whose addresses are supplied by the
+ * pointer arguments p1 and p2.
+ */
+</scan>
+int intCmpFn(const void *p1, const void *p2);
+
+<a name="Function:shortCmpFn"><scan class=comment>/*
+ * Function: shortCmpFn
+ * --------------------
+ * Compares two values of type short whose addresses are supplied by the
+ * pointer arguments p1 and p2.
+ */
+</scan>
+int shortCmpFn(const void *p1, const void *p2);
+
+<a name="Function:longCmpFn"><scan class=comment>/*
+ * Function: longCmpFn
+ * -------------------
+ * Compares two values of type long whose addresses are supplied by the
+ * pointer arguments p1 and p2.
+ */
+</scan>
+int longCmpFn(const void *p1, const void *p2);
+
+<a name="Function:charCmpFn"><scan class=comment>/*
+ * Function: charCmpFn
+ * -------------------
+ * Compares two values of type char whose addresses are supplied by the
+ * pointer arguments p1 and p2.
+ */
+</scan>
+int charCmpFn(const void *p1, const void *p2);
+
+<a name="Function:floatCmpFn"><scan class=comment>/*
+ * Function: floatCmpFn
+ * --------------------
+ * Compares two values of type float whose addresses are supplied by the
+ * pointer arguments p1 and p2.
+ */
+</scan>
+int floatCmpFn(const void *p1, const void *p2);
+
+<a name="Function:doubleCmpFn"><scan class=comment>/*
+ * Function: doubleCmpFn
+ * ---------------------
+ * Compares two values of type double whose addresses are supplied by the
+ * pointer arguments p1 and p2.
+ */
+</scan>
+int doubleCmpFn(const void *p1, const void *p2);
+
+<a name="Function:unsignedCmpFn"><scan class=comment>/*
+ * Function: unsignedCmpFn
+ * -----------------------
+ * Compares two values of type unsigned whose addresses are supplied by the
+ * pointer arguments p1 and p2.
+ */
+</scan>
+int unsignedCmpFn(const void *p1, const void *p2);
+
+<a name="Function:unsignedShortCmpFn"><scan class=comment>/*
+ * Function: unsignedShortCmpFn
+ * ----------------------------
+ * Compares two values of type unsignedshort whose addresses are supplied
+ * by the pointer arguments p1 and p2.
+ */
+</scan>
+int unsignedShortCmpFn(const void *p1, const void *p2);
+
+<a name="Function:unsignedLongCmpFn"><scan class=comment>/*
+ * Function: unsignedLongCmpFn
+ * ---------------------------
+ * Compares two values of type unsignedlong whose addresses are supplied by
+ * the pointer arguments p1 and p2.
+ */
+</scan>
+int unsignedLongCmpFn(const void *p1, const void *p2);
+
+<a name="Function:unsignedCharCmpFn"><scan class=comment>/*
+ * Function: unsignedCharCmpFn
+ * ---------------------------
+ * Compares two values of type unsignedchar whose addresses are supplied by
+ * the pointer arguments p1 and p2.
+ */
+</scan>
+int unsignedCharCmpFn(const void *p1, const void *p2);
+
+<a name="Function:stringCmpFn"><scan class=comment>/*
+ * Function: stringCmpFn
+ * ---------------------
+ * Compares two values of type string whose addresses are supplied by the
+ * pointer arguments p1 and p2.
+ */
+</scan>
+int stringCmpFn(const void *p1, const void *p2);
+
+<a name="Function:pointerCmpFn"><scan class=comment>/*
+ * Function: pointerCmpFn
+ * ----------------------
+ * Compares two values of type pointer whose addresses are supplied by the
+ * pointer arguments p1 and p2.  Pointer comparison is based on the numeric
+ * equivalent of the pointer.
+ */
+</scan>
+int pointerCmpFn(const void *p1, const void *p2);
+
+#endif
+</pre>
+</body>
+</html>

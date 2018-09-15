@@ -6,6 +6,9 @@
  * <include src="pictures/ClassHierarchies/GObjectHierarchy-h.html">
  *
  * @author Marty Stepp
+ * @version 2018/09/14
+ * - added opacity support
+ * - added GCanvas-to-GImage conversion support
  * @version 2018/09/08
  * - added doc comments for new documentation generation
  * @version 2018/08/23
@@ -27,6 +30,7 @@
 #include "gtypes.h"
 #include "vector.h"
 
+class GCanvas;
 class GCompound;
 
 /**
@@ -149,15 +153,21 @@ public:
     virtual LineStyle getLineStyle() const;
 
     /**
+     * Returns the width of the line used to draw this object.
+     * @return default 1
+     */
+    virtual double getLineWidth() const;
+
+    /**
      * Returns the location of the top-left corner of object.
      */
     virtual GPoint getLocation() const;
 
     /**
-     * Returns the width of the line used to draw this object.
-     * @return default 1
+     * Returns how opaque (non-transparent) this object will appear from 0.0
+     * (completely transparent) to 1.0 (completely opaque, default).
      */
-    virtual double getLineWidth() const;
+    virtual double getOpacity() const;
 
     /**
      * Returns a pointer to the <code>GCompound</code> that contains this
@@ -496,6 +506,13 @@ public:
     virtual void setLocation(const GPoint& pt);
 
     /**
+     * Sets how opaque (non-transparent) this object will appear from 0.0
+     * (completely transparent) to 1.0 (completely opaque, default).
+     * @throw ErrorException if opacity is out of range [0.0, 1.0]
+     */
+    virtual void setOpacity(double opacity);
+
+    /**
      * Changes the size of this object to the specified width and height.
      */
     virtual void setSize(double width, double height);
@@ -554,6 +571,7 @@ protected:
     double _width;                   // the width of the bounding rectangle
     double _height;                  // the height of the bounding rectangle
     double _lineWidth;               // the width of the line in pixels
+    double _opacity;                 // 0.0 (transparent) - 1.0 (opaque, default)
     LineStyle _lineStyle;            // line style such as solid or dashed
     std::string _color;              // the color of the object
     int _colorInt;
@@ -927,15 +945,43 @@ public:
      */
     virtual std::string getFileName() const;
 
+    /**
+     * Returns the color of the pixel at the given x/y location as an RGB integer.
+     * @throw ErrorException if x/y is out of range
+     */
+    virtual int getPixel(int x, int y) const;
+
     /* @inherit */
     virtual std::string getType() const Q_DECL_OVERRIDE;
 
     /* @inherit */
     virtual std::string toStringExtra() const Q_DECL_OVERRIDE;
 
+protected:
+    /**
+     * Creates a blank GImage of the given width and height.
+     * Called by GCanvas when converting to an image.
+     */
+    GImage(double width, double height);
+
+    /**
+     * Creates a GImage wrapping the given Qt image.
+     * Called by GCanvas when converting canvas to an image.
+     */
+    GImage(QImage* qimage);
+
+    /**
+     * Sets the pixel at the given x/y location to the given color,
+     * represented as an RGB integer.
+     * @throw ErrorException if x/y is out of range
+     */
+    virtual void setPixel(int x, int y, int rgb);
+
 private:
     std::string _filename;
     QImage* _qimage;
+
+    friend class GCanvas;
 };
 
 /**

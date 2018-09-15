@@ -1,0 +1,119 @@
+<html>
+<head>
+<title>include/stack.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: stack.h
+ * -------------
+ * This interface exports the Stack class, which implements a collection
+ * that processes values in a last-in/first-out (LIFO) order.
+ */
+</scan>
+#ifndef _stack_h
+#define _stack_h
+
+#include "error.h"
+#include "vector.h"
+
+<a name="Class:Stack<ValueType>"><scan class=comment>/*
+ * Class: Stack&lt;ValueType&gt;
+ * -----------------------
+ * This class models a linear structure called a stack in which values are
+ * added and removed only from one end.  This discipline gives rise to a
+ * last-in/first-out behavior (LIFO) that is the defining feature of
+ * stacks.  The fundamental stack operations are push (add to top) and pop
+ * (remove from top).
+ */
+</scan>
+template &lt;typename ValueType&gt;
+class Stack {
+
+public:
+
+<a name="Constructor:Stack"><scan class=comment>/*
+ * Constructor: Stack
+ * Usage: Stack&lt;ValueType&gt; stack;
+ * ------------------------------
+ * Initializes a new empty stack.
+ */
+</scan>
+   Stack();
+
+<a name="Destructor:~Stack"><scan class=comment>/*
+ * Destructor: ~Stack
+ * Usage: (usually implicit)
+ * -------------------------
+ * Frees any heap storage associated with this stack.
+ */
+</scan>
+   ~Stack();
+
+<a name="Method:size"><scan class=comment>/*
+ * Method: size
+ * Usage: int n = stack.size();
+ * ----------------------------
+ * Returns the number of values in this stack.
+ */
+</scan>
+   int size();
+
+<a name="Method:isEmpty"><scan class=comment>/*
+ * Method: isEmpty
+ * Usage: if (stack.isEmpty()) . . .
+ * ---------------------------------
+ * Returns true if this stack contains no elements.
+ */
+</scan>
+   bool isEmpty();
+
+<a name="Method:clear"><scan class=comment>/*
+ * Method: clear
+ * Usage: stack.clear();
+ * ---------------------
+ * Removes all elements from this stack.
+ */
+</scan>
+   void clear();
+
+<a name="Method:push"><scan class=comment>/*
+ * Method: push
+ * Usage: stack.push(value);
+ * -------------------------
+ * Pushes the specified value onto this stack.
+ */
+</scan>
+   void push(ValueType value);
+
+<a name="Method:pop"><scan class=comment>/*
+ * Method: pop
+ * Usage: ValueType top = stack.pop();
+ * -----------------------------------
+ * Removes the top element from this stack and returns it.  This method
+ * signals an error if called on an empty stack.
+ */
+</scan>
+   ValueType pop();
+
+<a name="Method:peek"><scan class=comment>/*
+ * Method: peek
+ * Usage: ValueType top = stack.peek();
+ * ------------------------------------
+ * Returns the value of top element from this stack, without removing it. 
+ * This method signals an error if called on an empty stack.
+ */
+</scan>
+   ValueType peek();
+
+#include "private/stackpriv.h"
+
+};
+
+#include "private/stackimpl.cpp"
+
+#endif
+</pre>
+</body>
+</html>

@@ -1,0 +1,70 @@
+#include <booktools.ps>
+#include <brace.ps>
+
+/DOT_RADIUS 2 def
+/X0 0.6 inch def
+/Y0 0.8 inch def
+/POINTSIZE 32 def
+/ARROWHEAD_BREADTH 6 def
+/ARROWHEAD_LENGTH 4 def
+/ARROW_LENGTH 0.2 inch def
+/EXTRA_BASELINE 8 def
+/EXTRA_Y_LINE 5 def
+/ASCENT POINTSIZE 0.72 mul def
+/DESCENT POINTSIZE 0.22 mul def
+
+gsave
+  /x X0 def
+  /y1 Y0 def
+  /y2 y1 POINTSIZE sub def
+  0.3 setlinewidth
+  gsave
+    /Helvetica findfont POINTSIZE scalefont setfont
+    /width (jumped over the lazy dog) stringwidth pop def
+    /rule (lazy dog) stringwidth pop EXTRA_BASELINE add 2 add def
+  grestore
+  gsave
+    black
+    [1.5 2] 0 setdash
+    x EXTRA_BASELINE sub y1 width EXTRA_BASELINE 2 mul add 0 drawline
+    x EXTRA_BASELINE sub y2 width EXTRA_BASELINE 2 mul add 0 drawline
+    x y1 ASCENT add EXTRA_Y_LINE add 0 ASCENT POINTSIZE add DESCENT add
+      EXTRA_Y_LINE 2 mul add neg drawline
+    [1.5 2] 1 setdash
+    x width add EXTRA_BASELINE add y2 ASCENT add rule neg 0 drawline
+    x width add EXTRA_BASELINE add y2 DESCENT sub rule neg 0 drawline
+    [] 0 setdash
+    x y1 DOT_RADIUS fillcircle
+  grestore
+  gsave
+    10 italicfont
+    /root2 2 sqrt def
+    /tx x (origin) stringwidth pop ARROW_LENGTH root2 div add 4 add sub def
+    tx y1 ARROW_LENGTH root2 div add 4 add moveto 
+    (origin) show
+    currentpoint /ay exch def 2 add /ax exch def
+    ax ay ARROW_LENGTH root2 div 1 sub dup neg drawline
+    ax ARROW_LENGTH root2 div add ay ARROW_LENGTH root2 div sub ARROWHEAD_LENGTH ARROWHEAD_BREADTH -45 arrowhead
+    x width add EXTRA_BASELINE add 3 add y1 3 sub moveto
+    (baseline) show
+  grestore
+  gsave
+    10 italicfont
+    x EXTRA_BASELINE sub 4 sub y1 y2 add 2 div 3 POINTSIZE leftbrace
+    x EXTRA_BASELINE sub 9 sub y1 y2 add 2 div 3 sub (height) rshow
+    x width add EXTRA_BASELINE add 4 add y2 ASCENT 2 div add 2.5 ASCENT
+      1 sub rightbrace
+    x width add EXTRA_BASELINE add 8 add y2 ASCENT 2 div add 3 sub moveto
+    (ascent) show
+    x width add EXTRA_BASELINE add 4 add y2 DESCENT 2 div sub 1.5
+      DESCENT rightbrace
+    x width add EXTRA_BASELINE add 8 add y2 DESCENT 2 div sub 3 sub moveto
+    (descent) show
+  grestore
+  gsave
+    /Helvetica findfont POINTSIZE scalefont setfont
+    red
+    x y1 moveto (The quick brown fox) show
+    x y2 moveto (jumped over the lazy dog) show
+  grestore
+grestore

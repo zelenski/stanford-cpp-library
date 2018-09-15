@@ -1,0 +1,22 @@
+#include <jtftools.ps>
+
+/WIDTH 3.2 inch def
+/HEIGHT 1.4 inch def
+/SF 0.8 def
+/TITLE-SIZE 12 def
+/TEXT-SIZE 11 def
+/SYSTEM MAC-OSX def
+/RADIUS 25 def
+
+gsave
+  SF dup scale
+  0 0 WIDTH SF div HEIGHT SF div (PacMan) drawGraphicsWindow
+  0.5 setlinewidth
+  clipToGCanvas
+  windowWidth 2 div windowHeight 2 div translate
+  1 -1 scale
+  newpath
+    0 0 moveto
+    0 0 RADIUS 45 315 arc
+  closepath gsave yellow fill grestore stroke
+grestore

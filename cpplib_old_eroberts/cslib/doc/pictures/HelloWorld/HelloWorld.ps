@@ -1,0 +1,27 @@
+500 dict begin
+
+#include <defs.ps>
+#include <jtftools.ps>
+
+/WIDTH 3.8 inch def
+/HEIGHT 1.8 inch def
+/SF 0.8 def
+/TITLE_SIZE 12 def
+/TEXT_SIZE 11 def
+/SYSTEM MAC_OSX def
+
+gsave
+  SF dup scale
+  0 0 WIDTH SF div HEIGHT SF div (HelloWorld) drawGraphicsWindow
+  /xc WIDTH SF div 2 div def
+  /yc HEIGHT SF div getTitleBarHeight sub 2 div def
+  /msg (hello, world) def
+  magenta
+  xc yc 100 50 fillOval
+  black
+  /Helvetica findfont 24 scalefont setfont
+  xc msg stringwidth pop 2 div sub yc 0.35 24 mul sub moveto
+  msg show
+grestore
+
+end

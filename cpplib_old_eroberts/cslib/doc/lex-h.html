@@ -1,0 +1,333 @@
+<html>
+<head>
+<title>../lex.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: lex.h
+ * -----------
+ * This package implements a simple lexical analyzer.  The lexical analyzer
+ * package is intimately tied to the S-expression package (see sexp.h), and
+ * it is necessary to understand the types in that interface before using
+ * this one.  For most applications, the tokenscanner.h interface is easier
+ * to use.
+ */
+</scan>
+#ifndef _lex_h
+#define _lex_h
+
+#include "cslib.h"
+#include "sexp.h"
+
+<a name="Type:Lexer"><scan class=comment>/*
+ * Type: Lexer
+ * -----------
+ * Defines the abstract data type for a lexical analyzer.
+ */
+</scan>
+typedef struct LexerCDT *Lexer;
+
+<a name="Type:lexhook"><scan class=comment>/*
+ * Type: lexhook
+ * -------------
+ * Defines a type for the lexical hook functions.
+ */
+</scan>
+typedef sexp (*lexhook)(Lexer lexer);
+
+<scan class=comment>/* Section 1: Public procedures */</scan>
+
+<a name="Function:newLexicalAnalyzer"><scan class=comment>/*
+ * Function: newLexicalAnalyzer
+ * Usage: lexer = newLexicalAnalyzer();
+ * ------------------------------------
+ * Creates a new lexical analyzer and returns its lexical lexer block,
+ * which is then passed to the other functions in this package.  Before
+ * using the lexical analyzer, the input stream later initialized by using
+ * the functions lexFromStream or lexFromString.
+ */
+</scan>
+Lexer newLexicalAnalyzer(void);
+
+<a name="Function:lexFromStream"><scan class=comment>/*
+ * Function: lexFromStream
+ * Usage: lexFromStream(lexer, infile);
+ * ------------------------------------
+ * Initializes the lexer specified by the lexer block to read from the
+ * input stream given by infile.
+ */
+</scan>
+void lexFromStream(Lexer lexer, FILE *infile);
+
+<a name="Function:lexFromString"><scan class=comment>/*
+ * Function: lexFromString
+ * Usage: lexFromString(lexer, input);
+ * -----------------------------------
+ * Initializes the lexer specified by the lexer block to read from the
+ * character string input.
+ */
+</scan>
+void lexFromString(Lexer lexer, string input);
+
+<a name="Function:readLex"><scan class=comment>/*
+ * Function: readLex
+ * Usage: sx = readLex(lexer);
+ * ---------------------------
+ * Reads the next lexical token from the input stream.  For tokens that are
+ * part of the basic S-expression set, the returned token is of that type. 
+ * For single-character operator tokens and the end-of-file token, the
+ * lexer returns an S-expression whose type is the character code.
+ */
+</scan>
+sexp readLex(Lexer lexer);
+
+<a name="Function:peekLex"><scan class=comment>/*
+ * Function: peekLex
+ * Usage: sx = peekLex(lexer);
+ * ---------------------------
+ * Returns the same token that readLex would, but does not remove the token
+ * from the lexical stream.  Thus, after calling peekLex, the next call to
+ * readLex will return the same token.
+ */
+</scan>
+sexp peekLex(Lexer lexer);
+
+<a name="Function:pushLex"><scan class=comment>/*
+ * Function: pushLex
+ * Usage: pushLex(lexer, token);
+ * -----------------------------
+ * Pushes the specified token back into the lexical stream so that it will
+ * be read as the next lexeme.
+ */
+</scan>
+void pushLex(Lexer lexer, sexp token);
+
+<a name="Function:setLexClientData"><scan class=comment>/*
+ * Function: setLexClientData
+ * Usage: setLexClientData(lexer, data);
+ * -------------------------------------
+ * Sets the client-data field in the lexical lexer.
+ */
+</scan>
+void setLexClientData(Lexer lexer, void *data);
+
+<a name="Function:getLexClientData"><scan class=comment>/*
+ * Function: getLexClientData
+ * Usage: data = getLexClientData(lexer);
+ * --------------------------------------
+ * Gets the client-data field from the lexical lexer.
+ */
+</scan>
+void *getLexClientData(Lexer lexer);
+
+<a name="Function:setLexIgnoreCase"><scan class=comment>/*
+ * Function: setLexIgnoreCase
+ * Usage: setLexIgnoreCase(lexer, ignore);
+ * ---------------------------------------
+ * Specifies whether lexical tokens are treated as case-independent.  If
+ * the ignore argument is TRUE, the lexer will ignore case distinctions in
+ * atoms.
+ */
+</scan>
+void setLexIgnoreCase(Lexer lexer, bool ignore);
+
+<a name="Function:setLexNumericBase"><scan class=comment>/*
+ * Function: setLexNumericBase
+ * Usage: setLexNumericBase(lexer, base);
+ * --------------------------------------
+ * Sets the default base for numbers, which must be either 8, 10, 16, or 0
+ * (initial default).  If 0 is set, then decimal is assumed for numbers
+ * except those beginning with 0, which are assumed to be octal, as in C. 
+ * If 10 is set explicitly, leading zeros do not affect the base.
+ */
+</scan>
+void setLexNumericBase(Lexer lexer, int base);
+
+<scan class=comment>/* Section 2: Hooks */</scan>
+
+<scan class=comment>/*
+ * This section defines mechanisms for changing the behavior
+ * of the lexical analyzer through the use of "hook"
+ * procedures.  When a hook is provided, the client-specified
+ * routine will be called with the Lexer block as its
+ * single argument.  The client function can then read
+ * characters from the input stream using lexGetC (and
+ * LexUngetC if necessary at the end).  Hooks return a
+ * token which is returned from the lexical analyzer.  Hooks
+ * may also return NIL, which usually indicates that no token
+ * was found.
+ */</scan>
+
+<a name="Function:setLexNewlineHook"><scan class=comment>/*
+ * Function: setLexNewlineHook
+ * Usage: setLexNewlineHook(lexer, hook);
+ * --------------------------------------
+ * Specifies a hook function is called whenever a newline is read.  If the
+ * procedure returns NIL, the newline is ignored.  If it returns a non-NIL
+ * token, that  token is returned
+ *  as the value of readLex.
+ */
+</scan>
+void setLexNewlineHook(Lexer lexer, lexhook hook);
+
+<a name="Function:setLexOperatorHook"><scan class=comment>/*
+ * Function: setLexOperatorHook
+ * Usage: setLexOperatorHook(lexer, hook);
+ * ---------------------------------------
+ * Specifies a hook function is that is called whenever an operator
+ * character is read.  If the procedure returns a  non-NIL token, that
+ * token is returned.  The character read to trigger this call has been
+ * pushed back, and the hook is required to read at least this character.
+ */
+</scan>
+void setLexOperatorHook(Lexer lexer, lexhook hook);
+
+<a name="Function:setLexCommentHook"><scan class=comment>/*
+ * Function: setLexCommentHook
+ * Usage: setLexCommentHook(lexer, hook);
+ * --------------------------------------
+ * Specifies a hook function is that is called whenever the computer has
+ * finished reading whitespace, which is typically used to scan and ignore
+ * comments.  This hook function typically returns NIL after reading the
+ * comment, but it may return a token just like the other hooks.
+ */
+</scan>
+void setLexCommentHook(Lexer lexer, lexhook hook);
+
+<a name="Function:lexGetC"><scan class=comment>/*
+ * Function: lexGetC
+ * Usage: ch = lexGetC(lexer);
+ * ---------------------------
+ * Reads the next character from the token stream.  This function is
+ * typically called only by hook functions.
+ */
+</scan>
+int lexGetC(Lexer lexer);
+
+<a name="Function:lexPushC"><scan class=comment>/*
+ * Function: lexPushC
+ * Usage: lexPushC(lexer, ch);
+ * ---------------------------
+ * Pushes the character ch back on the input stream.
+ */
+</scan>
+void lexPushC(Lexer lexer, int ch);
+
+<a name="Function:lexTell"><scan class=comment>/*
+ * Function: lexTell
+ * Usage: n = lexTell(lexer)
+ * -------------------------
+ * Returns the position in the lexical stream of the current lexical point,
+ * taking account of any characters that have been pushed back.  This
+ * function does not update the count after calls to pushLex.
+ */
+</scan>
+long lexTell(Lexer lexer);
+
+<a name="Function:addTokenChar"><scan class=comment>/*
+ * Function: addTokenChar
+ * Usage: addTokenChar(lexer, ch);
+ * -------------------------------
+ * add a character to the internal token buffer, which expands as needed
+ * when characters are added.
+ */
+</scan>
+void addTokenChar(Lexer lexer, int ch);
+
+<a name="Function:getTokenBuffer"><scan class=comment>/*
+ * Function: getTokenBuffer
+ * Usage: str = getTokenBuffer(lexer);
+ * -----------------------------------
+ * Retrieves the contents of internal token buffer.
+ */
+</scan>
+string getTokenBuffer(Lexer lexer);
+
+<a name="Constant:newlineIsTerminator"><scan class=comment>/*
+ * Constant: newlineIsTerminator
+ * -----------------------------
+ * If used as a newline hook, this function causes newlines in the input to
+ * appear as end-of-file markers.
+ */
+</scan>
+sexp newlineIsTerminator(Lexer lexer);
+
+<a name="Constant:newlineIsOperator"><scan class=comment>/*
+ * Constant: newlineIsOperator
+ * ---------------------------
+ * If used as a newline hook, this function causes newlines to be scanned
+ * as tokens.
+ */
+</scan>
+sexp newlineIsOperator(Lexer lexer);
+
+<a name="Constant:lexOperatorsAsAtoms"><scan class=comment>/*
+ * Constant: lexOperatorsAsAtoms
+ * -----------------------------
+ * If used as an operator hook, this function causes operators to be
+ * returned as atoms.
+ */
+</scan>
+sexp lexOperatorsAsAtoms(Lexer lexer);
+
+<a name="Constant:semicolonComments"><scan class=comment>/*
+ * Constant: semicolonComments
+ * ---------------------------
+ * If used as an operator hook, this function supports comments that begin
+ * with a semicolon and continue up to the end of the line.
+ */
+</scan>
+sexp semicolonComments(Lexer lexer);
+
+<a name="Constant:cStyleComments"><scan class=comment>/*
+ * Constant: cStyleComments
+ * ------------------------
+ * If used as an operator hook, this function supports comments in the
+ * style of C, C++, and Java.
+ */
+</scan>
+sexp cStyleComments(Lexer lexer);
+
+<scan class=comment>/* Section 4: Yacc entry points */</scan>
+
+#define YYSTYPE sexp
+
+extern sexp yylval;
+extern Lexer yylstate;
+extern bool yytrace;
+
+<scan class=comment>/*
+ * Yacc entry to lex package.  To use yacc with this lexer,
+ * the variable yylstate must first be set by calling
+ * newLexicalAnalyzer, followed by either lexFromStream or
+ * lexFromString.
+ */</scan>
+
+int yylex(void);
+
+<scan class=comment>/*
+ * Yacc error entry.  It calls error with the yacc message
+ * which may be trapped using the exception mechanism if
+ * necessary.
+ */</scan>
+
+int yyerror(string);
+
+<a name="Function:defineYaccKeyword"><scan class=comment>/*
+ * Function: defineYaccKeyword
+ * Usage: defineYaccKeyword(s, code);
+ * ----------------------------------
+ * Defines the keyword with the print name s to return the specified code. 
+ * If case is being ignored in the lexer, the string should be in upper
+ * case.  This function returns the atom for the keyword, but this value is
+ * often ignored.
+ */
+</scan>
+sexp defineYaccKeyword(string s, int code);
+
+#endif
+</pre>
+</body>
+</html>

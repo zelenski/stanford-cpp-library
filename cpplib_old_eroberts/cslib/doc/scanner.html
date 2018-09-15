@@ -1,0 +1,333 @@
+<html>
+<head>
+<title>scanner.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1><a href="scanner-h.html"><code>scanner.h</code></a></h1>
+The <code>TokenScanner</code> type is an abstract type used to
+dividing a string into logical units called <i>tokens</i>.
+Each token is either
+
+<ol>
+<li>A string of consecutive letters and digits representing a word
+<li>A one-character string representing punctuation or a separator
+</ol>
+
+<p>To use this package, you must first create an instance of a
+<code>TokenScanner</code> by calling
+
+<pre>
+    scanner = newScanner();
+</pre>
+
+<p>All other calls to the scanner package take this variable as their
+first argument to identify a particular instance of the abstract
+scanner type.
+
+<p>You initialize the scanner to hold a particular string by calling
+
+<pre>
+    setScannerString(scanner, str);
+</pre>
+
+<p>where <code>str</code> is the string from which tokens should be read.
+To retrieve each individual token, you make the following call:
+
+<pre>
+    token = readToken(scanner);
+</pre>
+
+<p>To determine whether any tokens remain to be read, you can call
+the predicate function <code>moreTokensExist(scanner)</code>.
+The <code>readToken</code> function returns the empty string after
+the last token is read.
+
+<p>The following code fragment serves as an idiom for processing
+each token in the string <code>inputString</code>:
+
+<pre>
+    scanner = newScanner();
+    setScannerString(scanner, inputString);
+    while (moreTokensExist(scanner)) {
+        token = readToken(scanner);
+        . . . process the token . . .
+    }
+</pre>
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Type</td></tr>
+<tr><td class=indexKey><a href="#Type:TokenScanner">TokenScanner</a>&nbsp;</td><td class=indexSynopsis width=100%>This type is the ADT used to represent a scanner.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><a href="#Function:newScanner">newScanner()</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a new scanner instance.</td></tr>
+<tr><td class=indexKey><a href="#Function:freeScanner">freeScanner(scanner)</a>&nbsp;</td><td class=indexSynopsis width=100%>Frees the storage associated with scanner.</td></tr>
+<tr><td class=indexKey><a href="#Function:setScannerString">setScannerString(scanner,&nbsp;str)</a>&nbsp;</td><td class=indexSynopsis width=100%>Initializes the scanner so that it will start extracting tokens from the string <code>str</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:readToken">readToken(scanner)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the next token from scanner.</td></tr>
+<tr><td class=indexKey><a href="#Function:moreTokensExist">moreTokensExist(scanner)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> as long as there are additional tokens for the scanner to read.</td></tr>
+<tr><td class=indexKey><a href="#Function:saveToken">saveToken(scanner,&nbsp;token)</a>&nbsp;</td><td class=indexSynopsis width=100%>Stores the token in the scanner data structure in such a way that the next time <code>readToken</code> is called, it will return that token without reading any additional characters from the input.</td></tr>
+<tr><td class=indexKey><a href="#Function:setScannerSpaceOption">setScannerSpaceOption(scanner,&nbsp;option)</a>&nbsp;</td><td class=indexSynopsis width=100%>Controls whether the scanner ignores whitespace characters or treats them as valid tokens.</td></tr>
+<tr><td class=indexKey><a href="#Function:getScannerSpaceOption">getScannerSpaceOption(scanner)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the setting of the space option set by the most recent call to <code>setScannerSpaceOption</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:setScannerNumberOption">setScannerNumberOption(scanner,&nbsp;option)</a>&nbsp;</td><td class=indexSynopsis width=100%>Controls whether the scanner treats numeric values specially.</td></tr>
+<tr><td class=indexKey><a href="#Function:getScannerNumberOption">getScannerNumberOption(scanner)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the setting of the number option set by the most recent call to <code>setScannerNumberOption</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:setScannerStringOption">setScannerStringOption(scanner,&nbsp;option)</a>&nbsp;</td><td class=indexSynopsis width=100%>Controls how the scanner treats double quotation marks in the input.</td></tr>
+<tr><td class=indexKey><a href="#Function:getScannerStringOption">getScannerStringOption(scanner)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the setting of the string option set by the most recent call to <code>setScannerStringOption</code>.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:TokenScanner"></a>
+<pre class=detailCode>
+typedef struct TokenScannerCDT *TokenScanner;
+
+typedef enum {
+    PreserveSpaces,
+    IgnoreSpaces
+} spaceOptionT;
+
+typedef enum {
+    ScanNumbersAsWords,
+    ScanNumbersAsIntegers,
+    ScanNumbersAsReals
+} numberOptionT;
+
+typedef enum {
+    ScanQuotesAsPunctuation,
+    ScanQuotesAsStrings
+} stringOptionT;
+</pre>
+<div class=detailHTML>
+This type is the ADT used to represent a scanner.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:newScanner"></a>
+<pre class=detailCode>
+TokenScanner newScanner(void);
+</pre>
+<div class=detailHTML>
+Creates a new scanner instance.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+scanner = newScanner();
+</pre>
+<hr>
+<a name="Function:freeScanner"></a>
+<pre class=detailCode>
+void freeScanner(TokenScanner scanner);
+</pre>
+<div class=detailHTML>
+Frees the storage associated with scanner.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+freeScanner(scanner);
+</pre>
+<hr>
+<a name="Function:setScannerString"></a>
+<pre class=detailCode>
+void setScannerString(TokenScanner scanner, string str);
+</pre>
+<div class=detailHTML>
+Initializes the scanner so that it will start extracting tokens from
+the string <code>str</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setScannerString(scanner, str);
+</pre>
+<hr>
+<a name="Function:readToken"></a>
+<pre class=detailCode>
+string readToken(TokenScanner scanner);
+</pre>
+<div class=detailHTML>
+Returns the next token from scanner.  If <code>readToken</code>
+is called when no tokens are available, it returns the empty string.
+The token returned by <code>readToken</code> is always allocated in
+the heap, which means that clients can call <code>freeBlock</code>
+when the token is no longer needed.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+token = readToken(scanner);
+</pre>
+<hr>
+<a name="Function:moreTokensExist"></a>
+<pre class=detailCode>
+bool moreTokensExist(TokenScanner scanner);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> as long as there are additional tokens for
+the scanner to read.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (moreTokensExist(scanner)) . . .
+</pre>
+<hr>
+<a name="Function:saveToken"></a>
+<pre class=detailCode>
+void saveToken(TokenScanner scanner, string token);
+</pre>
+<div class=detailHTML>
+Stores the token in the scanner data structure in such a way that
+the next time <code>readToken</code> is called, it will return that
+token without reading any additional characters from the input.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+saveToken(scanner, token);
+</pre>
+<hr>
+<a name="Function:setScannerSpaceOption"></a>
+<pre class=detailCode>
+void setScannerSpaceOption(TokenScanner scanner, spaceOptionT option);
+</pre>
+<div class=detailHTML>
+Controls whether the scanner ignores whitespace characters or treats
+them as valid tokens.  By default, the <code>readToken</code> function
+treats whitespace characters, such as spaces and tabs, just like any
+other punctuation mark.  If, however, you call
+
+<pre>
+  setScannerSpaceOption(scanner, IgnoreSpaces);
+</pre>
+
+<p>the scanner will skip over any white space before reading a token.
+You can restore the original behavior by calling
+
+<pre>
+  setScannerSpaceOption(scanner, PreserveSpaces);
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setScannerSpaceOption(scanner, option);
+</pre>
+<hr>
+<a name="Function:getScannerSpaceOption"></a>
+<pre class=detailCode>
+spaceOptionT getScannerSpaceOption(TokenScanner scanner);
+</pre>
+<div class=detailHTML>
+Returns the setting of the space option set by the most recent call
+to <code>setScannerSpaceOption</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+option = getScannerSpaceOption(scanner);
+</pre>
+<hr>
+<a name="Function:setScannerNumberOption"></a>
+<pre class=detailCode>
+void setScannerNumberOption(TokenScanner scanner,
+                                      numberOptionT option);
+</pre>
+<div class=detailHTML>
+Controls whether the scanner treats numeric values specially.
+The default behavior for the scanner is to treat digits exactly like
+letters, which means that they are scanned as words.  If you call
+
+<pre>
+  setScannerNumberOption(scanner, ScanNumbersAsIntegers);
+</pre>
+
+<p>a token beginning with a digit will end at the first nondigit.
+(Note that digits can still be scanned as part of a token as in
+the token <code>x1</code>.)  If you call
+
+<pre>
+  setScannerNumberOption(scanner, ScanNumbersAsReals);
+</pre>
+
+<p>the scanner will return the longest token string that represents
+a real number, if the next character to be scanned is a digit.
+The format for a real number is a sequence of digit characters
+that may include at most one decimal point, optionally followed
+by the letter <code>E</code> or <code>e</code>, an optional sign,
+and an exponent.  You can restore the default behavior by calling
+
+<pre>
+  setScannerNumberOption(scanner, ScanNumbersAsWords);
+</pre>
+
+Even if the number options are enabled, <code>readToken</code> always
+returns its result as a string, which means that you need to call
+<code>stringToInteger</code> or <code>stringToReal</code> to convert
+the token to a number.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setScannerNumberOption(scanner, option);
+</pre>
+<hr>
+<a name="Function:getScannerNumberOption"></a>
+<pre class=detailCode>
+numberOptionT getScannerNumberOption(TokenScanner scanner);
+</pre>
+<div class=detailHTML>
+Returns the setting of the number option set by the most recent call
+to <code>setScannerNumberOption</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+option = getScannerNumberOption(scanner);
+</pre>
+<hr>
+<a name="Function:setScannerStringOption"></a>
+<pre class=detailCode>
+void setScannerStringOption(TokenScanner scanner,
+                                      stringOptionT option);
+</pre>
+<div class=detailHTML>
+Controls how the scanner treats double quotation marks in the input.
+The default behavior for the scanner is to treat quotes just like any
+other punctuation character.  If, however, you call
+
+<pre>
+  setScannerStringOption(scanner, ScanQuotesAsStrings);
+</pre>
+
+a token beginning with a quotation mark will be scanned up to
+the closing quotation mark.  The quotation marks are returned
+as part of the scanned token so that clients can differentiate
+strings from other token types.  The original behavior can be
+restored by calling
+
+<pre>
+  setScannerStringOption(scanner, ScanQuotesAsPunctuation);
+</pre>
+
+<p>When scanning a string, the scanner recognizes the standard escape
+sequences from ANSI C, such as <code>\n</code> and <code>\t</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setScannerStringOption(scanner, option);
+</pre>
+<hr>
+<a name="Function:getScannerStringOption"></a>
+<pre class=detailCode>
+stringOptionT getScannerStringOption(TokenScanner scanner);
+</pre>
+<div class=detailHTML>
+Returns the setting of the string option set by the most recent call
+to <code>setScannerStringOption</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+option = getScannerStringOption(scanner);
+</pre>
+<hr>
+</table>
+</body>
+</html>

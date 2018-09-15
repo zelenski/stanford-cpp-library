@@ -1,0 +1,876 @@
+<html>
+<head>
+<title>../sexp.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: sexp.h
+ * ------------
+ * This file specifies the interface to a Lisp-like S-expression facility.
+ */
+</scan>
+#ifndef _sexp_h
+#define _sexp_h
+
+#include "cslib.h"
+
+<a name="Type:sexp"><scan class=comment>/*
+ * Type: sexp
+ * ----------
+ * The abstract data type representing an S-expression object.
+ */
+</scan>
+typedef struct sexpCDT *sexp;
+
+<a name="Type:expression type codes"><scan class=comment>/*
+ * Type: expression type codes
+ * ---------------------------
+ * This list may be expanded by the client, so the typecode must be
+ * represented as an integer and not as a closed enumeration type. 
+ * Expanded type codes behave like the pointer type and may be converted to
+ * pointers.
+ */
+</scan>
+#define NIL_TYPE      0
+#define ATOM_TYPE     1
+#define DTPR_TYPE     2
+#define INT_TYPE      3
+#define REAL_TYPE     4
+#define STRING_TYPE   5
+#define CHAR_TYPE     6
+#define BOOL_TYPE     7
+#define POINTER_TYPE  8
+
+<a name="Constant:NULL"><scan class=comment>/*
+ * Constant: NULL
+ * --------------
+ * Represents an empty list.
+ */
+</scan>
+#define NIL NULL
+
+<a name="Constant:AExclamation"><scan class=comment>/*
+ * Constant: AExclamation
+ * ----------------------
+ * Atom for the exclamation point symbol (!).
+ */
+</scan>
+extern sexp AExclamation;
+
+<a name="Constant:ADoubleQuote"><scan class=comment>/*
+ * Constant: ADoubleQuote
+ * ----------------------
+ * Atom for the double quote symbol (").
+ */
+</scan>
+extern sexp ADoubleQuote;
+
+<a name="Constant:ASharp"><scan class=comment>/*
+ * Constant: ASharp
+ * ----------------
+ * Atom for the sharp symbol (#).
+ */
+</scan>
+extern sexp ASharp;
+
+<a name="Constant:ADollarSign"><scan class=comment>/*
+ * Constant: ADollarSign
+ * ---------------------
+ * Atom for the dollar-sign symbol ($).
+ */
+</scan>
+extern sexp ADollarSign;
+
+<a name="Constant:APercent"><scan class=comment>/*
+ * Constant: APercent
+ * ------------------
+ * Atom for the percent symbol (%).
+ */
+</scan>
+extern sexp APercent;
+
+<a name="Constant:AAmpersand"><scan class=comment>/*
+ * Constant: AAmpersand
+ * --------------------
+ * Atom for the ampersand symbol (&amp;).
+ */
+</scan>
+extern sexp AAmpersand;
+
+<a name="Constant:ASingleQuote"><scan class=comment>/*
+ * Constant: ASingleQuote
+ * ----------------------
+ * Atom for the single quote symbol (').
+ */
+</scan>
+extern sexp ASingleQuote;
+
+<a name="Constant:ALeftParen"><scan class=comment>/*
+ * Constant: ALeftParen
+ * --------------------
+ * Atom for the left parenthesis symbol (().
+ */
+</scan>
+extern sexp ALeftParen;
+
+<a name="Constant:ARightParen"><scan class=comment>/*
+ * Constant: ARightParen
+ * ---------------------
+ * Atom for the right parenthesis symbol ()).
+ */
+</scan>
+extern sexp ARightParen;
+
+<a name="Constant:AStar"><scan class=comment>/*
+ * Constant: AStar
+ * ---------------
+ * Atom for the star symbol (*).
+ */
+</scan>
+extern sexp AStar;
+
+<a name="Constant:APlus"><scan class=comment>/*
+ * Constant: APlus
+ * ---------------
+ * Atom for the plus symbol (+).
+ */
+</scan>
+extern sexp APlus;
+
+<a name="Constant:AComma"><scan class=comment>/*
+ * Constant: AComma
+ * ----------------
+ * Atom for the comma symbol (,).
+ */
+</scan>
+extern sexp AComma;
+
+<a name="Constant:AMinus"><scan class=comment>/*
+ * Constant: AMinus
+ * ----------------
+ * Atom for the minus symbol (-).
+ */
+</scan>
+extern sexp AMinus;
+
+<a name="Constant:APeriod"><scan class=comment>/*
+ * Constant: APeriod
+ * -----------------
+ * Atom for the period symbol (.).
+ */
+</scan>
+extern sexp APeriod;
+
+<a name="Constant:ASlash"><scan class=comment>/*
+ * Constant: ASlash
+ * ----------------
+ * Atom for the slash symbol (/).
+ */
+</scan>
+extern sexp ASlash;
+
+<a name="Constant:AColon"><scan class=comment>/*
+ * Constant: AColon
+ * ----------------
+ * Atom for the colon symbol (:).
+ */
+</scan>
+extern sexp AColon;
+
+<a name="Constant:ASemicolon"><scan class=comment>/*
+ * Constant: ASemicolon
+ * --------------------
+ * Atom for the semicolon symbol (;).
+ */
+</scan>
+extern sexp ASemicolon;
+
+<a name="Constant:ALessThan"><scan class=comment>/*
+ * Constant: ALessThan
+ * -------------------
+ * Atom for the less-than symbol (&lt;).
+ */
+</scan>
+extern sexp ALessThan;
+
+<a name="Constant:AEqualSign"><scan class=comment>/*
+ * Constant: AEqualSign
+ * --------------------
+ * Atom for the equal-sign symbol (=).
+ */
+</scan>
+extern sexp AEqualSign;
+
+<a name="Constant:AGreaterThan"><scan class=comment>/*
+ * Constant: AGreaterThan
+ * ----------------------
+ * Atom for the greater-than symbol (&gt;).
+ */
+</scan>
+extern sexp AGreaterThan;
+
+<a name="Constant:AQuestionMark"><scan class=comment>/*
+ * Constant: AQuestionMark
+ * -----------------------
+ * Atom for the questionmark symbol (?).
+ */
+</scan>
+extern sexp AQuestionMark;
+
+<a name="Constant:AAtSign"><scan class=comment>/*
+ * Constant: AAtSign
+ * -----------------
+ * Atom for the at-sign symbol (@).
+ */
+</scan>
+extern sexp AAtSign;
+
+<a name="Constant:ALeftBracket"><scan class=comment>/*
+ * Constant: ALeftBracket
+ * ----------------------
+ * Atom for the left bracket symbol ([).
+ */
+</scan>
+extern sexp ALeftBracket;
+
+<a name="Constant:ABackslash"><scan class=comment>/*
+ * Constant: ABackslash
+ * --------------------
+ * Atom for the backslash symbol (\).
+ */
+</scan>
+extern sexp ABackslash;
+
+<a name="Constant:ARightBracket"><scan class=comment>/*
+ * Constant: ARightBracket
+ * -----------------------
+ * Atom for the right bracket symbol (]).
+ */
+</scan>
+extern sexp ARightBracket;
+
+<a name="Constant:ACarat"><scan class=comment>/*
+ * Constant: ACarat
+ * ----------------
+ * Atom for the carat symbol (^).
+ */
+</scan>
+extern sexp ACarat;
+
+<a name="Constant:AUnderscore"><scan class=comment>/*
+ * Constant: AUnderscore
+ * ---------------------
+ * Atom for the underscore symbol (_).
+ */
+</scan>
+extern sexp AUnderscore;
+
+<a name="Constant:ABackquote"><scan class=comment>/*
+ * Constant: ABackquote
+ * --------------------
+ * Atom for the backquote symbol (`).
+ */
+</scan>
+extern sexp ABackquote;
+
+<a name="Constant:ALeftBrace"><scan class=comment>/*
+ * Constant: ALeftBrace
+ * --------------------
+ * Atom for the left brace symbol ({).
+ */
+</scan>
+extern sexp ALeftBrace;
+
+<a name="Constant:AVerticalBar"><scan class=comment>/*
+ * Constant: AVerticalBar
+ * ----------------------
+ * Atom for the vertical bar symbol (|).
+ */
+</scan>
+extern sexp AVerticalBar;
+
+<a name="Constant:ARightBrace"><scan class=comment>/*
+ * Constant: ARightBrace
+ * ---------------------
+ * Atom for the right brace symbol (}).
+ */
+</scan>
+extern sexp ARightBrace;
+
+<a name="Constant:ATilde"><scan class=comment>/*
+ * Constant: ATilde
+ * ----------------
+ * Atom for the tilde symbol (~).
+ */
+</scan>
+extern sexp ATilde;
+
+<scan class=comment>/* Section 1: Lisp-style functions */</scan>
+
+<a name="Function:car"><scan class=comment>/*
+ * Function: car
+ * Usage: car = car(sx);
+ * ---------------------
+ * Returns the car of the S-expression sx.  If the expression is not a
+ * dotted pair, this function throws a runtime error.
+ */
+</scan>
+sexp car(sexp sx);
+
+<a name="Function:cdr"><scan class=comment>/*
+ * Function: cdr
+ * Usage: cdr = cdr(sx);
+ * ---------------------
+ * Returns the cdr of the S-expression sx.  If the expression is not a
+ * dotted pair, this function throws a runtime error.
+ */
+</scan>
+sexp cdr(sexp sx);
+
+<a name="Function:caar"><scan class=comment>/*
+ * Function: caar
+ * Usage: caar = caar(sx);
+ * -----------------------
+ * Returns the car of the car of the S-expression sx.
+ */
+</scan>
+#ifdef __javadoc__
+    sexp caar(sexp sx);
+#else
+#   define caar(sx) car(car(sx))
+#endif
+
+<a name="Function:cadr"><scan class=comment>/*
+ * Function: cadr
+ * Usage: cadr = cadr(sx);
+ * -----------------------
+ * Returns the car of the cdr of the S-expression sx.
+ */
+</scan>
+#ifdef __javadoc__
+    sexp cadr(sexp sx);
+#else
+#   define cadr(sx) car(cdr(sx))
+#endif
+
+<a name="Function:cdar"><scan class=comment>/*
+ * Function: cdar
+ * Usage: cdar = cdar(sx);
+ * -----------------------
+ * Returns the cdr of the car of the S-expression sx.
+ */
+</scan>
+#ifdef __javadoc__
+    sexp cdar(sexp sx);
+#else
+#   define cdar(sx) cdr(car(sx))
+#endif
+
+<a name="Function:cddr"><scan class=comment>/*
+ * Function: cddr
+ * Usage: cddr = cddr(sx);
+ * -----------------------
+ * Returns the cdr of the cdr of the S-expression sx.
+ */
+</scan>
+#ifdef __javadoc__
+    sexp cddr(sexp sx);
+#else
+#   define cddr(sx) cdr(cdr(sx))
+#endif
+
+<a name="Function:first"><scan class=comment>/*
+ * Function: first
+ * Usage: sx = first(list);
+ * ------------------------
+ * Returns the first element in the list list.
+ */
+</scan>
+#ifdef __javadoc__
+    first(list);
+#else
+#   define first(list) car(list)
+#endif
+
+<a name="Function:second"><scan class=comment>/*
+ * Function: second
+ * Usage: sx = second(list);
+ * -------------------------
+ * Returns the second element in the list list.
+ */
+</scan>
+#ifdef __javadoc__
+    second(list);
+#else
+#   define second(list) car(cdr(list))
+#endif
+
+<a name="Function:third"><scan class=comment>/*
+ * Function: third
+ * Usage: sx = third(list);
+ * ------------------------
+ * Returns the third element in the list list.
+ */
+</scan>
+#ifdef __javadoc__
+    third(list);
+#else
+#   define third(list) car(cdr(cdr(list)))
+#endif
+
+<a name="Function:fourth"><scan class=comment>/*
+ * Function: fourth
+ * Usage: sx = fourth(list);
+ * -------------------------
+ * Returns the fourth element in the list list.
+ */
+</scan>
+#ifdef __javadoc__
+    fourth(list);
+#else
+#   define fourth(list) car(cdr(cdr(cdr(list))))
+#endif
+
+<a name="Function:fifth"><scan class=comment>/*
+ * Function: fifth
+ * Usage: sx = fifth(list);
+ * ------------------------
+ * Returns the fifth element in the list list.
+ */
+</scan>
+#ifdef __javadoc__
+    fifth(list);
+#else
+#   define fifth(list) car(cdr(cdr(cdr(cdr(list)))))
+#endif
+
+<a name="Function:cons"><scan class=comment>/*
+ * Function: cons
+ * Usage: sx = cons(car, cdr);
+ * ---------------------------
+ * Constructs a new dotted pair with the specified car and cdr.
+ */
+</scan>
+sexp cons(sexp car, sexp cdr);
+
+<a name="Function:typeCode"><scan class=comment>/*
+ * Function: typeCode
+ * Usage: tc = typeCode(sx);
+ * -------------------------
+ * Returns the type code of the S-expression sx.
+ */
+</scan>
+int typeCode(sexp sx);
+
+<a name="Function:sexpTypeName"><scan class=comment>/*
+ * Function: sexpTypeName
+ * Usage: str = sexpTypeName(sx);
+ * ------------------------------
+ * Returns the type code name of the S-expression sx.
+ */
+</scan>
+string sexpTypeName(sexp sx);
+
+<a name="Function:readSexp"><scan class=comment>/*
+ * Function: readSexp
+ * Usage: sx = readSexp(infile);
+ * -----------------------------
+ * Reads the next S-expression from the specified input file.  This
+ * function returns NIL at the end of the file.
+ */
+</scan>
+sexp readSexp(FILE *infile);
+
+<a name="Function:printSexp"><scan class=comment>/*
+ * Function: printSexp
+ * Usage: printSexp(outfile, sx);
+ * ------------------------------
+ * Writes the S-expression to the indicated output stream.
+ */
+</scan>
+void printSexp(FILE *outfile, sexp sx);
+
+<a name="Function:parseSexp"><scan class=comment>/*
+ * Function: parseSexp
+ * Usage: sx = parseSexp(str);
+ * ---------------------------
+ * Parses an S-expression from the string.
+ */
+</scan>
+sexp parseSexp(string str);
+
+<a name="Function:unparseSexp"><scan class=comment>/*
+ * Function: unparseSexp
+ * Usage: string unparseSexp(sx);
+ * ------------------------------
+ * Unparses the S-expression and returns it as a string.
+ */
+</scan>
+string unparseSexp(sexp sx);
+
+<a name="Function:listLength"><scan class=comment>/*
+ * Function: listLength
+ * Usage: n = listLength(list);
+ * ----------------------------
+ * Returns the top-level length of the list.
+ */
+</scan>
+int listLength(sexp list);
+
+<a name="Function:nthElement"><scan class=comment>/*
+ * Function: nthElement
+ * Usage: sx = nthElement(n, list);
+ * --------------------------------
+ * Returns the nth element in the list.  If n is greater than the length of
+ * the list, nthElement returns NIL.
+ */
+</scan>
+sexp nthElement(int n, sexp list);
+
+<a name="Function:memberP"><scan class=comment>/*
+ * Function: memberP
+ * Usage: if (memberP(sx, list)) ...
+ * ---------------------------------
+ * Checks to see whether sx occurs in the top level of the list and returns
+ * TRUE or FALSE accordingly.
+ */
+</scan>
+bool memberP(sexp sx, sexp list);
+
+<a name="Function:equal"><scan class=comment>/*
+ * Function: equal
+ * Usage: if (equal(x, y)) ...
+ * ---------------------------
+ * Checks to see if x and y are equal.
+ */
+</scan>
+bool equal(sexp x, sexp y);
+
+<a name="Function:list0"><scan class=comment>/*
+ * Function: list0
+ * Usage: list = list0();
+ * ----------------------
+ * Creates a list with no elements.
+ */
+</scan>
+sexp list0(void);
+
+<a name="Function:list1"><scan class=comment>/*
+ * Function: list1
+ * Usage: list = list1(a);
+ * -----------------------
+ * Creates a list with a single element.
+ */
+</scan>
+sexp list1(sexp a);
+
+<a name="Function:list2"><scan class=comment>/*
+ * Function: list2
+ * Usage: list = list2(a, b);
+ * --------------------------
+ * Creates a list with two elements.
+ */
+</scan>
+sexp list2(sexp a, sexp b);
+
+<a name="Function:list3"><scan class=comment>/*
+ * Function: list3
+ * Usage: list = list3(a, b, c);
+ * -----------------------------
+ * Creates a list with three elements.
+ */
+</scan>
+sexp list3(sexp a, sexp b, sexp c);
+
+<a name="Function:list4"><scan class=comment>/*
+ * Function: list4
+ * Usage: list = list4(a, b, c, d);
+ * --------------------------------
+ * Creates a list with four elements.
+ */
+</scan>
+sexp list4(sexp a, sexp b, sexp c, sexp d);
+
+<a name="Function:list5"><scan class=comment>/*
+ * Function: list5
+ * Usage: list = list5(a, b, c, d, e);
+ * -----------------------------------
+ * Creates a list with five elements.
+ */
+</scan>
+sexp list5(sexp a, sexp b, sexp c, sexp d, sexp e);
+
+<a name="Function:list6"><scan class=comment>/*
+ * Function: list6
+ * Usage: list = list6(a, b, c, d, e, f);
+ * --------------------------------------
+ * Creates a list with six elements.
+ */
+</scan>
+sexp list6(sexp a, sexp b, sexp c, sexp d, sexp e, sexp f);
+
+<a name="Section 2:Conversion functions"><scan class=comment>/*
+ * Section 2: Conversion functions
+ * -------------------------------
+ * In order to use the basic C types in S-expressions, it is necessary to
+ * convert those types in each direction.  For each of the types int, real,
+ * string, char, bool, and void *, this package defines two conversion
+ * functions: one that converts the basic type into an sexp, and one that
+ * converts the sexp back into that type.  For example, a real number r may
+ * be converted back and forth into an sexp sx by using the following
+ * functions:
+ *
+ *             sx = realToSexp(r);
+ *             r = sexpToReal(sx);
+ *
+ * Similarly named functions are defined for each of the other types. 
+ * Converting an sexp into a type generates an error if the sexp is not of
+ * the requested type.  Thus, the above sexpToReal call would fail if sx
+ * did not have type code REAL_TYPE.
+ */
+</scan>
+<a name="Function:intToSexp"><scan class=comment>/*
+ * Function: intToSexp
+ * Usage: sx = intToSexp(value);
+ * -----------------------------
+ * Converts an int into an S-expression.
+ */
+</scan>
+sexp intToSexp(int value);
+
+<a name="Function:sexpToInt"><scan class=comment>/*
+ * Function: sexpToInt
+ * Usage: value = sexpToInt(sexp sx);
+ * ----------------------------------
+ * Converts an S-expression to an int.  If the S-expression does not have
+ * the correct type, this function throws an error.
+ */
+</scan>
+int sexpToInt(sexp sx);
+
+<a name="Function:longToSexp"><scan class=comment>/*
+ * Function: longToSexp
+ * Usage: sx = longToSexp(value);
+ * ------------------------------
+ * Converts a long into an S-expression.  Note: All integers are stored
+ * internally in this package using the type long.  This function allows
+ * clients to return the complete internal value.
+ */
+</scan>
+sexp longToSexp(long value);
+
+<a name="Function:sexpToLong"><scan class=comment>/*
+ * Function: sexpToLong
+ * Usage: value = sexpToLong(sexp sx);
+ * -----------------------------------
+ * Converts an S-expression to a long.  If the S-expression does not have
+ * the correct type, this function throws an error.
+ */
+</scan>
+long sexpToLong(sexp sx);
+
+<a name="Function:realToSexp"><scan class=comment>/*
+ * Function: realToSexp
+ * Usage: sx = realToSexp(value);
+ * ------------------------------
+ * Converts a double into an S-expression.
+ */
+</scan>
+sexp realToSexp(double value);
+
+<a name="Function:sexpToReal"><scan class=comment>/*
+ * Function: sexpToReal
+ * Usage: value = sexpToReal(sexp sx);
+ * -----------------------------------
+ * Converts an S-expression to a double.  If the S-expression does not have
+ * the correct type, this function throws an error.
+ */
+</scan>
+double sexpToReal(sexp sx);
+
+<a name="Function:stringToSexp"><scan class=comment>/*
+ * Function: stringToSexp
+ * Usage: sx = stringToSexp(value);
+ * --------------------------------
+ * Converts a string into an S-expression.
+ */
+</scan>
+sexp stringToSexp(string value);
+
+<a name="Function:sexpToString"><scan class=comment>/*
+ * Function: sexpToString
+ * Usage: value = sexpToString(sexp sx);
+ * -------------------------------------
+ * Converts an S-expression to a string.  If the S-expression does not have
+ * the correct type, this function throws an error.
+ */
+</scan>
+string sexpToString(sexp sx);
+
+<a name="Function:charToSexp"><scan class=comment>/*
+ * Function: charToSexp
+ * Usage: sx = charToSexp(value);
+ * ------------------------------
+ * Converts a char into an S-expression.
+ */
+</scan>
+sexp charToSexp(int value);
+
+<a name="Function:sexpToChar"><scan class=comment>/*
+ * Function: sexpToChar
+ * Usage: value = sexpToChar(sexp sx);
+ * -----------------------------------
+ * Converts an S-expression to a char.  If the S-expression does not have
+ * the correct type, this function throws an error.
+ */
+</scan>
+char sexpToChar(sexp sx);
+
+<a name="Function:boolToSexp"><scan class=comment>/*
+ * Function: boolToSexp
+ * Usage: sx = boolToSexp(value);
+ * ------------------------------
+ * Converts a bool into an S-expression.
+ */
+</scan>
+sexp boolToSexp(bool value);
+
+<a name="Function:sexpToBool"><scan class=comment>/*
+ * Function: sexpToBool
+ * Usage: value = sexpToBool(sexp sx);
+ * -----------------------------------
+ * Converts an S-expression to a bool.  If the S-expression does not have
+ * the correct type, this function throws an error.
+ */
+</scan>
+bool sexpToBool(sexp sx);
+
+<a name="Function:pointerToSexp"><scan class=comment>/*
+ * Function: pointerToSexp
+ * Usage: sx = pointerToSexp(value);
+ * ---------------------------------
+ * Converts a void * pointer into an S-expression.
+ */
+</scan>
+sexp pointerToSexp(void *value);
+
+<a name="Function:sexpToPointer"><scan class=comment>/*
+ * Function: sexpToPointer
+ * Usage: value = sexpToPointer(sexp sx);
+ * --------------------------------------
+ * Converts an S-expression to a void * pointer.  If the S-expression does
+ * not have the correct type, this function throws an error.
+ */
+</scan>
+void *sexpToPointer(sexp sx);
+
+<a name="Function:clientTypeToSexp"><scan class=comment>/*
+ * Function: clientTypeToSexp
+ * Usage: sx = clientTypeToSexp(tc, value)
+ * ---------------------------------------
+ * Creates a value of a client-defined type S-expression type, with the
+ * indicated type code and the pointer value, which may be recovered using
+ * sexpToPointer.
+ */
+</scan>
+sexp clientTypeToSexp(int tc, void *value);
+
+<scan class=comment>/* Section 3: Functions on atoms */</scan>
+
+<a name="Function:initAtoms"><scan class=comment>/*
+ * Function: initAtoms
+ * Usage: initAtoms();
+ * -------------------
+ * Initializes the built-in atom constants.
+ */
+</scan>
+void initAtoms();
+
+<a name="Function:createAtom"><scan class=comment>/*
+ * Function: createAtom
+ * Usage: atom = createAtom(name);
+ * -------------------------------
+ * Creates an atom with the indicated name string.  Atoms are unique, so
+ * that a second call to createAtom with the same string will return the
+ * same atom and will not create a new one.  The binding and property list
+ * fields of a newly created atom are both NIL.
+ *
+ * @result The unique atom with the specified name
+ */
+</scan>
+sexp createAtom(string name);
+
+<a name="Function:printName"><scan class=comment>/*
+ * Function: printName
+ * Usage: str = printName(atom)
+ * ----------------------------
+ * Returns the print name of the atom.
+ *
+ * @result The name of the atom
+ */
+</scan>
+string printName(sexp atom);
+
+<a name="Function:getBinding"><scan class=comment>/*
+ * Function: getBinding
+ * Usage: value = getBinding(atom);
+ * --------------------------------
+ * Returns the binding of the atom.
+ */
+</scan>
+sexp getBinding(sexp atom);
+
+<a name="Function:setBinding"><scan class=comment>/*
+ * Function: setBinding
+ * Usage: setBinding(atom, value);
+ * -------------------------------
+ * Sets the binding of the atom to the specified value.
+ */
+</scan>
+void setBinding(sexp atom, sexp value);
+
+<a name="Function:getPList"><scan class=comment>/*
+ * Function: getPList
+ * Usage: plist = getPList(atom);
+ * ------------------------------
+ * Returns the property list of the atom.
+ */
+</scan>
+sexp getPList(sexp atom);
+
+<a name="Function:setPList"><scan class=comment>/*
+ * Function: setPList
+ * Usage: setPList(atom, plist);
+ * -----------------------------
+ * Sets the property list of the atom.
+ */
+</scan>
+void setPList(sexp atom, sexp plist);
+
+<a name="Function:getProp"><scan class=comment>/*
+ * Function: getProp
+ * Usage: value = getProp(atom, key);
+ * ----------------------------------
+ * Finds the property of the atom associated with key and returns the
+ * corresponding value.  If no value has been associated with this key for
+ * this atom, this function returns NIL.
+ */
+</scan>
+sexp getProp(sexp atom, sexp key);
+
+<a name="Function:putProp"><scan class=comment>/*
+ * Function: putProp
+ * Usage: putProp(atom, key, value);
+ * ---------------------------------
+ * Associates the specified key and value in the property list for this
+ * atom.
+ */
+</scan>
+void putProp(sexp atom, sexp key, sexp value);
+
+#endif
+</pre>
+</body>
+</html>

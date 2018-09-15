@@ -4,6 +4,9 @@
  * This file implements the gobjects.h interface.
  *
  * @author Marty Stepp
+ * @version 2018/09/14
+ * - added opacity support
+ * - added GCanvas-to-GImage conversion support
  * @version 2018/08/23
  * - renamed to gobjects.cpp to replace Java version
  * @version 2018/06/30
@@ -59,6 +62,7 @@ GObject::GObject(double x, double y, double width, double height)
           _width(width),
           _height(height),
           _lineWidth(1),
+          _opacity(1.0),
           _lineStyle(GObject::LINE_SOLID),
           _color(""),
           _colorInt(0),
@@ -146,6 +150,10 @@ GPoint GObject::getLocation() const {
     return GPoint(getX(), getY());
 }
 
+double GObject::getOpacity() const {
+    return _opacity;
+}
+
 GCompound* GObject::getParent() const {
     return _parent;
 }
@@ -201,6 +209,9 @@ void GObject::initializeBrushAndPen(QPainter* painter) {
     } else {
         painter->setBrush(STATIC_VARIABLE(DEFAULT_BRUSH));
     }
+
+    // opacity
+    painter->setOpacity(_opacity);
 
     // transform
     painter->setTransform(_transform, /* combine */ false);
@@ -419,6 +430,12 @@ void GObject::setLocation(double x, double y) {
 
 void GObject::setLocation(const GPoint& pt) {
     setLocation(pt.getX(), pt.getY());   // calls repaint
+}
+
+void GObject::setOpacity(double opacity) {
+    require::inRange(opacity, 0.0, 1.0, "GObject::setOpacity");
+    _opacity = opacity;
+    repaint();
 }
 
 void GObject::setSize(double width, double height) {
@@ -714,6 +731,7 @@ void GCompound::draw(QPainter* painter) {
     if (!painter) {
         return;
     }
+    // TODO: uncomment this? need settings to apply to every shape
     // initializeBrushAndPen(painter);   //
     for (GObject* obj : _contents) {
         obj->draw(painter);
@@ -944,6 +962,22 @@ GImage::GImage(const std::string& filename, double x, double y)
     }
 }
 
+GImage::GImage(double width, double height) {
+    require::nonNegative2D(width, height, "GImage::constructor", "width", "height");
+    _width = width;
+    _height = height;
+    GThread::runOnQtGuiThread([this]() {
+        _qimage = new QImage(static_cast<int>(_width), static_cast<int>(_height), QImage::Format_ARGB32);
+    });
+}
+
+GImage::GImage(QImage* qimage) {
+    require::nonNull(qimage, "GImage::constructor");
+    _qimage = qimage;
+    _width = _qimage->width();
+    _height = _qimage->height();
+}
+
 GImage::~GImage() {
     // TODO: delete _image;
     _qimage = nullptr;
@@ -953,6 +987,7 @@ void GImage::draw(QPainter* painter) {
     if (!painter) {
         return;
     }
+    painter->setOpacity(_opacity);
     painter->drawImage((int) getX(), (int) getY(), *_qimage);
 }
 
@@ -960,8 +995,17 @@ std::string GImage::getFileName() const {
     return _filename;
 }
 
+int GImage::getPixel(int x, int y) const {
+    require::inRange2D(x, y, (int) getWidth() - 1, (int) getHeight() - 1, "GImage::getPixel", "x", "y");
+    return (int) _qimage->pixel(x, y);
+}
+
 std::string GImage::getType() const {
     return "GImage";
+}
+
+void GImage::setPixel(int x, int y, int rgb) {
+    _qimage->setPixel(x, y, rgb);
 }
 
 std::string GImage::toStringExtra() const {

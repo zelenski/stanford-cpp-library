@@ -1,0 +1,87 @@
+<html>
+<head>
+<title>sound.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="sound-h.html"><code>sound.h</code></a></h1>
+This interface defines an abstract type that represents a sound.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Type</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:Sound">Sound</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type encapsulates a sound file.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newSound">newSound(filename)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>Sound</code> object from the specified file.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:freeSound">freeSound(sound)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Frees the memory associated with the sound.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:play">play(sound)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Starts playing the sound.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:Sound"></a>
+<pre class=detailCode>
+typedef struct SoundCDT *Sound;
+</pre>
+<div class=detailHTML>
+This type encapsulates a sound file.  The sound file is specified in the
+constructor and must be a file in either the current directory or a
+subdirectory named <code>sounds</code>.
+
+<p>The following code, for example, plays the sound file
+<code>ringtone.wav</code>:
+
+<pre>
+   Sound ringtone = newSound("ringtone.wav");
+   play(ringtone);
+</pre>
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:newSound"></a>
+<pre class=detailCode>
+Sound newSound(string filename);
+</pre>
+<div class=detailHTML>
+Creates a <code>Sound</code> object from the specified file.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sound = newSound(filename);
+</pre>
+<hr>
+<a name="Function:freeSound"></a>
+<pre class=detailCode>
+void freeSound(Sound sound);
+</pre>
+<div class=detailHTML>
+Frees the memory associated with the sound.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+freeSound(sound);
+</pre>
+<hr>
+<a name="Function:play"></a>
+<pre class=detailCode>
+void play(Sound sound);
+</pre>
+<div class=detailHTML>
+Starts playing the sound.  This call returns immediately without waiting
+for the sound to finish.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+play(sound);
+</pre>
+<hr>
+</table>
+</body>
+</html>

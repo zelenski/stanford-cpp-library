@@ -1,0 +1,88 @@
+<html>
+<head>
+<title>random.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="random-h.html"><code>random.h</code></a></h1>
+This interface exports functions for generating pseudorandom numbers.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:randomInteger">randomInteger(low,&nbsp;high)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a random integer in the range <code>low</code> to <code>high</code>, inclusive.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:randomReal">randomReal(low,&nbsp;high)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a random real number in the half-open interval [<code>low</code>&nbsp;..&nbsp;<code>high</code>).</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:randomChance">randomChance(p)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> with the probability indicated by <code>p</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setRandomSeed">setRandomSeed(seed)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the internal random number seed to the specified value.</td></tr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:randomInteger"></a>
+<pre class=detailCode>
+int randomInteger(int low, int high);
+</pre>
+<div class=detailHTML>
+Returns a random integer in the range <code>low</code> to
+<code>high</code>, inclusive.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+n = randomInteger(low, high);
+</pre>
+<hr>
+<a name="Function:randomReal"></a>
+<pre class=detailCode>
+double randomReal(double low, double high);
+</pre>
+<div class=detailHTML>
+Returns a random real number in the half-open interval
+[<code>low</code>&nbsp;..&nbsp;<code>high</code>).  A half-open
+interval includes the first endpoint but not the second, which
+means that the result is always greater than or equal to
+<code>low</code> but strictly less than <code>high</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+d = randomReal(low, high);
+</pre>
+<hr>
+<a name="Function:randomChance"></a>
+<pre class=detailCode>
+bool randomChance(double p);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> with the probability indicated by <code>p</code>.
+The argument <code>p</code> must be a floating-point number between
+0 (never) and 1 (always).  For example, calling
+<code>randomChance(.30)</code> returns <code>true</code> 30 percent
+of the time.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (randomChance(p)) . . .
+</pre>
+<hr>
+<a name="Function:setRandomSeed"></a>
+<pre class=detailCode>
+void setRandomSeed(int seed);
+</pre>
+<div class=detailHTML>
+Sets the internal random number seed to the specified value.  You
+can use this function to set a specific starting point for the
+pseudorandom sequence or to ensure that program behavior is
+repeatable during the debugging phase.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setRandomSeed(seed);
+</pre>
+<hr>
+</table>
+</body>
+</html>

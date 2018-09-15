@@ -1,0 +1,168 @@
+<html>
+<head>
+<title>include/lexicon.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: lexicon.h
+ * ---------------
+ * This interface exports the Lexicon class, which is a compact structure
+ * for storing a list of words.
+ */
+</scan>
+#ifndef _lexicon_h
+#define _lexicon_h
+
+#include "foreach.h"
+#include "set.h"
+#include "stack.h"
+
+<a name="Class:Lexicon"><scan class=comment>/*
+ * Class: Lexicon
+ * --------------
+ * This class is used to represent a lexicon, or word list.  The main
+ * difference between a lexicon and a dictionary is that a lexicon does not
+ * provide any mechanism for storing definitions; the lexicon contains only
+ * words, with no associated information.  It is therefore similar to a set
+ * of strings, but with a more space-efficient internal representation. 
+ * The Lexicon class supports efficient lookup operations for words and
+ * prefixes.
+ */
+</scan>
+#include &lt;cctype&gt;
+
+class Lexicon {
+
+public:
+
+<a name="Constructor:Lexicon"><scan class=comment>/*
+ * Constructor: Lexicon
+ * Usage: Lexicon lex;
+ *        Lexicon lex(filename);
+ * -----------------------------
+ * Initializes a new lexicon.  The default constructor creates an empty
+ * lexicon.  The second form reads in the contents of the lexicon from the
+ * specified data file.  The data file must be in one of two formats: (1) a
+ * space-efficient precompiled binary format or (2) a text file containing
+ * one word per line.  The Stanford library distribution includes a binary
+ * lexicon file named English.dat containing a list of words in English. 
+ * The standard code pattern to initialize that lexicon looks like this:
+ *
+ *    Lexicon english("English.dat");
+ */
+</scan>
+   Lexicon();
+   Lexicon(string filename);
+
+<a name="Destructor:~Lexicon"><scan class=comment>/*
+ * Destructor: ~Lexicon
+ * Usage: (usually implicit)
+ * -------------------------
+ * The destructor deallocates any storage associated with the lexicon.
+ */
+</scan>
+   ~Lexicon();
+
+<a name="Method:size"><scan class=comment>/*
+ * Method: size
+ * Usage: int n = lex.size();
+ * --------------------------
+ * Returns the number of words contained in the lexicon.
+ */
+</scan>
+   int size();
+
+<a name="Method:isEmpty"><scan class=comment>/*
+ * Method: isEmpty
+ * Usage: if (lex.isEmpty()) . . .
+ * -------------------------------
+ * Returns true if the lexicon contains no words.
+ */
+</scan>
+   bool isEmpty();
+
+<a name="Method:clear"><scan class=comment>/*
+ * Method: clear
+ * Usage: lex.clear();
+ * -------------------
+ * Removes all words from the lexicon.
+ */
+</scan>
+   void clear();
+
+<a name="Method:add"><scan class=comment>/*
+ * Method: add
+ * Usage: lex.add(word);
+ * ---------------------
+ * Adds the specified word to the lexicon.
+ */
+</scan>
+   void add(string word);
+
+<a name="Method:addWordsFromFile"><scan class=comment>/*
+ * Method: addWordsFromFile
+ * Usage: lex.addWordsFromFile(filename);
+ * --------------------------------------
+ * Reads the file and adds all of its words to the lexicon.
+ */
+</scan>
+   void addWordsFromFile(string filename);
+
+<a name="Method:containsWord"><scan class=comment>/*
+ * Method: containsWord
+ * Usage: if (lex.containsWord(word)) . . .
+ * ----------------------------------------
+ * Returns true if word is contained in the lexicon.  In the Lexicon class,
+ * the case of letters is ignored, so "Zoo" is the same as "ZOO" or "zoo".
+ */
+</scan>
+   bool containsWord(string word);
+
+<a name="Method:containsPrefix"><scan class=comment>/*
+ * Method: containsPrefix
+ * Usage: if (lex.containsPrefix(prefix)) . . .
+ * --------------------------------------------
+ * Returns true if any words in the lexicon begin with prefix.  Like
+ * containsWord, this method ignores the case of letters so that "MO" is a
+ * prefix of "monkey" or "Monday".
+ */
+</scan>
+   bool containsPrefix(string prefix);
+
+<a name="Macro:foreach"><scan class=comment>/*
+ * Macro: foreach
+ * Usage: foreach (string word in lexicon) . . .
+ * ---------------------------------------------
+ * Iterates over the words in the lexicon in alphabetical order.
+ */
+</scan>
+   <scan class=comment>/* The foreach macro is defined in foreach.h */</scan>
+
+<a name="Method:mapAll"><scan class=comment>/*
+ * Method: mapAll
+ * Usage: lexicon.mapAll(fn);
+ *        lexicon.mapAll(fn, data);
+ * --------------------------------
+ * Calls the specified function on each word in the lexicon.  The second
+ * form of the call allows the client to pass a data value of any type to
+ * the callback function.
+ */
+</scan>
+   void mapAll(void (*fn)(string value));
+
+   template &lt;typename ClientDataType&gt;
+   void mapAll(void (*fn)(string value, ClientDataType &amp; data),
+               ClientDataType &amp; data);
+
+#include "private/lexiconpriv.h"
+
+};
+
+#include "private/lexiconimpl.cpp"
+
+#endif
+</pre>
+</body>
+</html>

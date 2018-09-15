@@ -1,0 +1,195 @@
+<html>
+<head>
+<title>hashmap.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="hashmap-h.html"><code>hashmap.h</code></a></h1>
+This interface defines a map abstraction that associates string
+keys with values.  The implementation uses a hash table, which
+offers constant-time performance but does not support iterating
+through the keys in order.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:HashMap">HashMap</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type is the ADT used to represent a map from strings to values.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newHashMap">newHashMap()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Allocates a new map with no entries.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:freeHashMap">freeHashMap(map)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Frees the storage associated with the map.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:size">size(map)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of elements in the map.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isEmpty">isEmpty(map)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the map has no entries.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:clear">clear(map)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes all entries from the map.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:clone">clone(map)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a copy of the map.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:put">put(map,&nbsp;key,&nbsp;value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Associates <code>key</code> with <code>value</code> in the map.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:get">get(map,&nbsp;key)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the value associated with <code>key</code> in the map, or <code>NULL</code>, if no such value exists.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:containsKey">containsKey(map,&nbsp;key)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Checks to see if the map contains the specified key.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:remove">remove(map,&nbsp;key)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes the key and its value from the map.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:map">map(map,&nbsp;fn,&nbsp;data)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Iterates through the map and calls the function <code>fn</code> on each entry.</td></tr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:HashMap"></a>
+<pre class=detailCode>
+typedef struct HashMapCDT *HashMap;
+</pre>
+<div class=detailHTML>
+This type is the ADT used to represent a map from strings to values.
+</div>
+<hr>
+<a name="Function:newHashMap"></a>
+<pre class=detailCode>
+HashMap newHashMap(void);
+</pre>
+<div class=detailHTML>
+Allocates a new map with no entries.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map = newHashMap();
+</pre>
+<hr>
+<a name="Function:freeHashMap"></a>
+<pre class=detailCode>
+void freeHashMap(HashMap map);
+</pre>
+<div class=detailHTML>
+Frees the storage associated with the map.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+freeHashMap(map);
+</pre>
+<hr>
+<a name="Function:size"></a>
+<pre class=detailCode>
+int size(HashMap map);
+</pre>
+<div class=detailHTML>
+Returns the number of elements in the map.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+n = size(map);
+</pre>
+<hr>
+<a name="Function:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty(HashMap map);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the map has no entries.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isEmpty(map)) . . .
+</pre>
+<hr>
+<a name="Function:clear"></a>
+<pre class=detailCode>
+void clear(HashMap map);
+</pre>
+<div class=detailHTML>
+Removes all entries from the map.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+clear(map);
+</pre>
+<hr>
+<a name="Function:clone"></a>
+<pre class=detailCode>
+HashMap clone(HashMap map);
+</pre>
+<div class=detailHTML>
+Creates a copy of the map.  The <code>clone</code> function copies
+only the first level of the structure and does not copy the individual
+elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+newmap = clone(map);
+</pre>
+<hr>
+<a name="Function:put"></a>
+<pre class=detailCode>
+void put(HashMap map, string key, void *value);
+</pre>
+<div class=detailHTML>
+Associates <code>key</code> with <code>value</code> in the map.
+Each call to <code>put</code> supersedes any previous definition
+for <code>key</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+put(map, key, value);
+</pre>
+<hr>
+<a name="Function:get"></a>
+<pre class=detailCode>
+void *get(HashMap map, string key);
+</pre>
+<div class=detailHTML>
+Returns the value associated with <code>key</code> in the map,
+or <code>NULL</code>, if no such value exists.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+void *value = get(map, key);
+</pre>
+<hr>
+<a name="Function:containsKey"></a>
+<pre class=detailCode>
+bool containsKey(HashMap map, string key);
+</pre>
+<div class=detailHTML>
+Checks to see if the map contains the specified key.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (containsKey(map, key)) . . .
+</pre>
+<hr>
+<a name="Function:remove"></a>
+<pre class=detailCode>
+void remove(HashMap map, string key);
+</pre>
+<div class=detailHTML>
+Removes the key and its value from the map.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+remove(map, key);
+</pre>
+<hr>
+<a name="Function:map"></a>
+<pre class=detailCode>
+void map(HashMap map, proc fn, void *data);
+</pre>
+<div class=detailHTML>
+Iterates through the map and calls the function <code>fn</code> on
+each entry.  The callback function takes the following arguments:
+
+<ul>
+ <li>The key string
+ <li>The associated value
+ <li>The <code>data</code> pointer
+</ul>
+
+The <code>data</code> pointer allows the client to pass state
+information to the function <code>fn</code>, if necessary.  If no such
+information is required, this argument should be <code>NULL</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map(map, fn, data);
+</pre>
+<hr>
+</table>
+</body>
+</html>

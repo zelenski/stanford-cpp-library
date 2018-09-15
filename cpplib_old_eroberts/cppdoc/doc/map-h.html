@@ -1,0 +1,175 @@
+<html>
+<head>
+<title>include/map.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: map.h
+ * -----------
+ * This interface exports the template class Map, which maintains a
+ * collection of key-value pairs.
+ */
+</scan>
+#ifndef _map_h
+#define _map_h
+
+#include &lt;cstdlib&gt;
+#include "cmpfn.h"
+#include "error.h"
+#include "foreach.h"
+#include "stack.h"
+
+<a name="Class:Map<KeyType,ValueType>"><scan class=comment>/*
+ * Class: Map&lt;KeyType,ValueType&gt;
+ * -----------------------------
+ * The Map class maintains an association between keys and values.  The
+ * types used for keys and values are specified using templates, which
+ * makes it possible to use this structure with any data type.
+ */
+</scan>
+template &lt;typename KeyType, typename ValueType&gt;
+class Map {
+
+public:
+
+<a name="Constructor:Map"><scan class=comment>/*
+ * Constructor: Map
+ * Usage: Map&lt;KeyType,ValueType&gt; map;
+ *        Map&lt;KeyType,ValueType&gt; map(cmpFn);
+ * -----------------------------------------
+ * Initializes a new empty map that associates keys and values of the
+ * specified types.  The optional argument specifies a comparison function,
+ * which is called to compare data values.  This argument is typically
+ * omitted, in which case the implementation uses the operatorCmp function
+ * from cmpfn.h, which applies the built-in operators &lt; and == to determine
+ * the ordering.
+ */
+</scan>
+   Map(int (*cmpFn)(KeyType, KeyType) = operatorCmp);
+
+<a name="Destructor:~Map"><scan class=comment>/*
+ * Destructor: ~Map
+ * Usage: (usually implicit)
+ * -------------------------
+ * Frees any heap storage associated with this map.
+ */
+</scan>
+   ~Map();
+
+<a name="Method:size"><scan class=comment>/*
+ * Method: size
+ * Usage: int nEntries = map.size();
+ * ---------------------------------
+ * Returns the number of entries in this map.
+ */
+</scan>
+   int size();
+
+<a name="Method:isEmpty"><scan class=comment>/*
+ * Method: isEmpty
+ * Usage: if (map.isEmpty()) . . .
+ * -------------------------------
+ * Returns true if this map contains no entries.
+ */
+</scan>
+   bool isEmpty();
+
+<a name="Method:put"><scan class=comment>/*
+ * Method: put
+ * Usage: map.put(key, value);
+ * ---------------------------
+ * Associates key with value in this map.  Any previous value associated
+ * with key is replaced by the new value.
+ */
+</scan>
+   void put(KeyType key, ValueType value);
+
+<a name="Method:get"><scan class=comment>/*
+ * Method: get
+ * Usage: ValueType value = map.get(key);
+ * --------------------------------------
+ * Returns the value associated with key in this map.  If key is not found,
+ * the get method signals an error.
+ */
+</scan>
+   ValueType get(KeyType key);
+
+<a name="Method:containsKey"><scan class=comment>/*
+ * Method: containsKey
+ * Usage: if (map.containsKey(key)) . . .
+ * --------------------------------------
+ * Returns true if there is an entry for key in this map.
+ */
+</scan>
+   bool containsKey(KeyType key);
+
+<a name="Method:remove"><scan class=comment>/*
+ * Method: remove
+ * Usage: map.remove(key);
+ * -----------------------
+ * Removes any entry for key from this map.
+ */
+</scan>
+   void remove(KeyType key);
+
+<a name="Method:clear"><scan class=comment>/*
+ * Method: clear
+ * Usage: map.clear();
+ * -------------------
+ * Removes all entries from this map.
+ */
+</scan>
+   void clear();
+
+<a name="Operator:[]"><scan class=comment>/*
+ * Operator: []
+ * Usage: oldValue = map[key];
+ *        map[key] = newValue;
+ * ---------------------------
+ * Selects the value associated with key.  This syntax makes it easy to
+ * think of a map as an "associative array" indexed by the key type.  If
+ * key is already present in the map, this function returns a reference to
+ * its associated value.  If key is not present in the map, a new entry is
+ * created whose value is set to the default for the value type.
+ */
+</scan>
+   ValueType &amp; operator[](KeyType key);
+
+<a name="Macro:foreach"><scan class=comment>/*
+ * Macro: foreach
+ * Usage: foreach (KeyType key in map) . . .
+ * -----------------------------------------
+ * Iterates over the keys in the map. The keys are processed in ascending
+ * order, as defined by the comparison function.
+ */
+</scan>
+   <scan class=comment>/* The foreach macro is defined in foreach.h */</scan>
+
+<a name="Method:mapAll"><scan class=comment>/*
+ * Method: mapAll
+ * Usage: map.mapAll(fn);
+ *        map.mapAll(fn, data);
+ * ----------------------------
+ * Iterates through the keys in this map and calls fn(key) for each one. 
+ * The keys are processed in ascending order, as defined by the comparison
+ * function.  The second form of the call allows the client to pass a data
+ * value of any type to the callback function.
+ */
+</scan>
+   void mapAll(void (*fn)(KeyType key));
+
+   template &lt;typename ClientDataType&gt;
+   void mapAll(void (*fn)(KeyType, ClientDataType &amp;), ClientDataType &amp; data);
+
+#include "private/mappriv.h"
+
+};
+
+#include "private/mapimpl.cpp"
+
+#endif
+</pre>
+</body>
+</html>

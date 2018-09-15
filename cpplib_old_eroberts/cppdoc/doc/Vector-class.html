@@ -1,0 +1,224 @@
+<html>
+<head>
+<title>class Vector&lt;ValueType&gt;</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="vector-h.html">class Vector&lt;ValueType&gt;</a></h1>
+This class stores an ordered list of values similar to an array.
+It supports traditional array selection using square brackets, but
+also supports inserting and deleting elements.
+<h2>Constructor</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Constructor:Vector">Vector()</a><br><a href="#Constructor:Vector">Vector(n,&nbsp;value)</a><br><a href="#Constructor:Vector">Vector(initializers)</a>&nbsp;</td><td class=indexSynopsis width=100%>Initializes a new vector.</td></tr>
+</table>
+<h2>Methods</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Method:size">size()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the number of elements in this vector.</td></tr>
+<tr><td class=indexKey><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> if this vector contains no elements.</td></tr>
+<tr><td class=indexKey><a href="#Method:clear">clear()</a>&nbsp;</td><td class=indexSynopsis width=100%>Removes all elements from this vector.</td></tr>
+<tr><td class=indexKey><a href="#Method:getAt">getAt(index)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the element at the specified index in this vector.</td></tr>
+<tr><td class=indexKey><a href="#Method:setAt">setAt(index,&nbsp;value)</a>&nbsp;</td><td class=indexSynopsis width=100%>Replaces the element at the specified index in this vector with a new value.</td></tr>
+<tr><td class=indexKey><a href="#Method:insertAt">insertAt(0,&nbsp;value)</a>&nbsp;</td><td class=indexSynopsis width=100%>Inserts the element into this vector before the specified index.</td></tr>
+<tr><td class=indexKey><a href="#Method:removeAt">removeAt(index)</a>&nbsp;</td><td class=indexSynopsis width=100%>Removes the element at the specified index from this vector.</td></tr>
+<tr><td class=indexKey><a href="#Method:add">add(value)</a>&nbsp;</td><td class=indexSynopsis width=100%>Adds a new value to the end of this vector.</td></tr>
+<tr><td class=indexKey><a href="#Method:mapAll">mapAll(fn)</a><br><a href="#Method:mapAll">mapAll(fn,&nbsp;data)</a>&nbsp;</td><td class=indexSynopsis width=100%>Calls the specified function on each element of the vector in ascending index order.</td></tr>
+</table>
+<h2>Operator</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Operator:[]">operator[]</a>&nbsp;</td><td class=indexSynopsis width=100%>Overloads <code>[]</code> to select elements from this vector.</td></tr>
+</table>
+<h2>Macro</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Macro:foreach">foreach(ValueType&nbsp;value&nbsp;in&nbsp;vec)</a>&nbsp;</td><td class=indexSynopsis width=100%>Iterates over the elements of the vector in ascending index order.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:Vector"></a>
+<pre class=detailCode>
+Vector();
+Vector(int n, ValueType value = ValueType());
+</pre>
+<div class=detailHTML>
+Initializes a new vector.  The default constructor creates an
+empty vector.  The second form creates an array with <code>n</code>
+elements, each of which is initialized to <code>value</code>;
+if <code>value</code> is missing, the elements are initialized
+to the default value for the type.  The third form sets the
+elements of the vector from an initialized C++ array, as
+illustrated by the following example:
+
+<pre>
+   int initializers[] = { 'a', 'e', 'i', 'o', 'u' };
+   Vector<char> vowels(initializers);
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Vector&lt;ValueType&gt; vec;
+Vector&lt;ValueType&gt; vec(n, value);
+Vector&lt;ValueType&gt; vec(initializers);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size();
+</pre>
+<div class=detailHTML>
+Returns the number of elements in this vector.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int nElems = vec.size();
+</pre>
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty();
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if this vector contains no elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (vec.isEmpty()) . . .
+</pre>
+<hr>
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Removes all elements from this vector.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+vec.clear();
+</pre>
+<hr>
+<a name="Method:getAt"></a>
+<pre class=detailCode>
+ValueType getAt(int index);
+</pre>
+<div class=detailHTML>
+Returns the element at the specified index in this vector.  This
+method signals an error if the index is not in the array range.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType val = vec.getAt(index);
+</pre>
+<hr>
+<a name="Method:setAt"></a>
+<pre class=detailCode>
+void setAt(int index, ValueType value);
+</pre>
+<div class=detailHTML>
+Replaces the element at the specified index in this vector with
+a new value.  The previous value at that index is overwritten.
+This method signals an error if the index is not in the array range.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+vec.setAt(index, value);
+</pre>
+<hr>
+<a name="Method:insertAt"></a>
+<pre class=detailCode>
+void insertAt(int index, ValueType value);
+</pre>
+<div class=detailHTML>
+Inserts the element into this vector before the specified index.
+All subsequent elements are shifted one position to the right.  This
+method signals an error if the index is outside the range from 0
+up to and including the length of the vector.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+vec.insertAt(0, value);
+</pre>
+<hr>
+<a name="Method:removeAt"></a>
+<pre class=detailCode>
+void removeAt(int index);
+</pre>
+<div class=detailHTML>
+Removes the element at the specified index from this vector.
+All subsequent elements are shifted one position to the left.  This
+method signals an error if the index is outside the array range.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+vec.removeAt(index);
+</pre>
+<hr>
+<a name="Method:add"></a>
+<pre class=detailCode>
+void add(ValueType value);
+void push_back(ValueType value);
+</pre>
+<div class=detailHTML>
+Adds a new value to the end of this vector.  To ensure compatibility
+with the <code>vector</code> class in the Standard Template Library,
+this method is also called <code>push_back</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+vec.add(value);
+</pre>
+<hr>
+<a name="Method:mapAll"></a>
+<pre class=detailCode>
+void mapAll(void (*fn)(ValueType value));
+
+template &lt;typename ClientDataType&gt;
+void mapAll(void (*fn)(ValueType value, ClientDataType &amp; data),
+            ClientDataType &amp; data);
+</pre>
+<div class=detailHTML>
+Calls the specified function on each element of the vector in
+ascending index order.  The second form of the call allows the
+client to pass a data value of any type to the callback function.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+vec.mapAll(fn);
+vec.mapAll(fn, data);
+</pre>
+<hr>
+</table>
+<h2>Operator detail</h2>
+<hr>
+<a name="Operator:[]"></a>
+<pre class=detailCode>
+ValueType &amp; operator[](int index);
+</pre>
+<div class=detailHTML>
+Overloads <code>[]</code> to select elements from this vector.
+This extension enables the use of traditional array notation to
+get or set individual elements.  This method signals an error if
+the index is outside the array range.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+value = vec[index];
+vec[index] = value;
+</pre>
+<hr>
+</table>
+<h2>Macro detail</h2>
+<hr>
+<a name="Macro:foreach"></a>
+<pre class=detailCode>
+foreach (ValueType value in vec) . . .
+</pre>
+<div class=detailHTML>
+Iterates over the elements of the vector in ascending index order.
+</div>
+<hr>
+</table>
+</body>
+</html>

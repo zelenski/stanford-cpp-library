@@ -1,0 +1,172 @@
+<html>
+<head>
+<title>class Grid&lt;ValueType&gt;</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="grid-h.html">class Grid&lt;ValueType&gt;</a></h1>
+The <code>Grid</code> class stores an indexed, two-dimensional
+array.  The following function, for example, creates an identity
+matrix of size <code>n</code>, in which the elements are 1.0
+along the main diagonal and 0.0 everywhere else:
+
+<pre>
+   Grid<double> createIdentityMatrix(int n) {
+      Grid<double> matrix(n, n);
+      for (int i = 0; i < n; i++) {
+         matrix[i][i] = 1.0;
+      }
+      return matrix;
+   }
+</pre>
+<h2>Constructor</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Constructor:Grid">Grid()</a><br><a href="#Constructor:Grid">Grid(nRows,&nbsp;nCols)</a>&nbsp;</td><td class=indexSynopsis width=100%>Initializes a new grid.</td></tr>
+</table>
+<h2>Methods</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Method:numRows">numRows()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the number of rows in the grid.</td></tr>
+<tr><td class=indexKey><a href="#Method:numCols">numCols()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the number of columns in the grid.</td></tr>
+<tr><td class=indexKey><a href="#Method:resize">resize(nRows,&nbsp;nCols)</a>&nbsp;</td><td class=indexSynopsis width=100%>Reinitializes the grid to have the specified number of rows and columns.</td></tr>
+<tr><td class=indexKey><a href="#Method:inBounds">inBounds(row,&nbsp;col)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> if the specified row and column position is inside the bounds of the grid.</td></tr>
+<tr><td class=indexKey><a href="#Method:mapAll">mapAll(fn)</a><br><a href="#Method:mapAll">mapAll(fn,&nbsp;data)</a>&nbsp;</td><td class=indexSynopsis width=100%>Calls the specified function on each element of the grid.</td></tr>
+</table>
+<h2>Operator</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Operator:[]">operator[]</a>&nbsp;</td><td class=indexSynopsis width=100%>Overloads <code>[]</code> to select elements from this vector.</td></tr>
+</table>
+<h2>Macro</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Macro:foreach">foreach(ValueType&nbsp;value&nbsp;in&nbsp;grid)</a>&nbsp;</td><td class=indexSynopsis width=100%>Iterates over the elements of the grid in <i>row-major order,</i> in which all the elements of row 0 are processed, followed by the elements in row 1, and so on.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:Grid"></a>
+<pre class=detailCode>
+Grid();
+Grid(int nRows, int nCols);
+</pre>
+<div class=detailHTML>
+Initializes a new grid.  The second form of the constructor is
+more common and creates a grid with the specified number of rows
+and columns.  Each element of the grid is initialized to the
+default value for the type.  The default constructor creates an
+empty grid for which the client must call <code>resize</code> to
+set the dimensions.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Grid&lt;ValueType&gt; grid;
+Grid&lt;ValueType&gt; grid(nRows, nCols);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:numRows"></a>
+<pre class=detailCode>
+int numRows();
+</pre>
+<div class=detailHTML>
+Returns the number of rows in the grid.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int nRows = grid.numRows();
+</pre>
+<hr>
+<a name="Method:numCols"></a>
+<pre class=detailCode>
+int numCols();
+</pre>
+<div class=detailHTML>
+Returns the number of columns in the grid.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int nCols = grid.numCols();
+</pre>
+<hr>
+<a name="Method:resize"></a>
+<pre class=detailCode>
+void resize(int nRows, int nCols);
+</pre>
+<div class=detailHTML>
+Reinitializes the grid to have the specified number of rows
+and columns.  Any previous grid contents are discarded.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+grid.resize(nRows, nCols);
+</pre>
+<hr>
+<a name="Method:inBounds"></a>
+<pre class=detailCode>
+bool inBounds(int row, int col);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the specified row and column position
+is inside the bounds of the grid.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (grid.inBounds(row, col)) . . .
+</pre>
+<hr>
+<a name="Method:mapAll"></a>
+<pre class=detailCode>
+void mapAll(void (*fn)(ValueType value));
+
+template &lt;typename ClientDataType&gt;
+void mapAll(void (*fn)(ValueType value, ClientDataType &amp; data),
+            ClientDataType &amp; data);
+</pre>
+<div class=detailHTML>
+Calls the specified function on each element of the grid.  The
+elements are processed in <i>row-major order,</i> in which all
+the elements of row 0 are processed, followed by the elements
+in row 1, and so on.  The second form of the call allows the
+client to pass a data value of any type to the callback function.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+grid.mapAll(fn);
+grid.mapAll(fn, data);
+</pre>
+<hr>
+</table>
+<h2>Operator detail</h2>
+<hr>
+<a name="Operator:[]"></a>
+<pre class=detailCode>
+GridRow operator[](int row);
+</pre>
+<div class=detailHTML>
+Overloads <code>[]</code> to select elements from this vector.
+This extension enables the use of traditional array notation to
+get or set individual elements.  This method signals an error if
+the <code>row</code> and <code>col</code> arguments are outside
+the grid boundaries.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+value = grid[row][col];
+grid[row][col] = value;
+</pre>
+<hr>
+</table>
+<h2>Macro detail</h2>
+<hr>
+<a name="Macro:foreach"></a>
+<pre class=detailCode>
+foreach (ValueType value in grid) . . .
+</pre>
+<div class=detailHTML>
+Iterates over the elements of the grid in <i>row-major order,</i>
+in which all the elements of row 0 are processed, followed by
+the elements in row 1, and so on.
+</div>
+<hr>
+</table>
+</body>
+</html>

@@ -4,6 +4,8 @@
  * Windows implementation of the call_stack class.
  *
  * @author Marty Stepp
+ * @version 2018/09/12
+ * - fixed compiler errors with os_getLastError and other misc warnings
  * @version 2017/10/24
  * - removed SYMOPT_DEBUG from SymSetOptions to avoid spurious console output
  * @version 2017/10/20
@@ -159,10 +161,10 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
         }
 
         // try to load module symbol information; this always fails for me  :-/
-        DWORD64 BaseAddr = 0;
-        DWORD   FileSize = 0;
+        DWORD BaseAddr = 0;
+        DWORD FileSize = 0;
         const char* progFileC = exceptions::getProgramNameForStackTrace().c_str();
-        char* progFile = (char*) progFileC;
+        char* progFile = const_cast<char*>(progFileC);
         if (!::SymLoadModule(
                 process,      // Process handle of the current process
                 nullptr,      // Handle to the module's image file (not needed)
@@ -170,7 +172,7 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
                 nullptr,      // User-defined short name of the module (it can be null)
                 BaseAddr,     // Base address of the module (cannot be null if .PDB file is used, otherwise it can be null)
                 FileSize)) {      // Size of the file (cannot be null if .PDB file is used, otherwise it can be null)
-            // std::cout << "Error: SymLoadModule() failed: " << platform::os_getLastError() << std::endl;
+            // std::cerr << "Error: SymLoadModule() failed: " << platform::os_getLastError() << std::endl;
             // return;
         }
     }

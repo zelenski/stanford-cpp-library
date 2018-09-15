@@ -1,0 +1,103 @@
+<html>
+<head>
+<title>thread.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="thread-h.html">thread.h</a></h1>
+This interface exports a simple, platform-independent thread
+abstraction, along with simple tools for concurrency control.
+<h2>Classes</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="Thread-class.html">Thread</a>&nbsp;</td><td class=indexSynopsis width=100%>The <code>Thread</code> class encapsulates a lightweight process running in the same address space as the creator.</td></tr>
+<tr><td class=indexKey><a href="Lock-class.html">Lock</a>&nbsp;</td><td class=indexSynopsis width=100%>This class represents a simple lock used to control concurrency.</td></tr>
+</table>
+<h2>Statement</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Statement:synchronized">synchronized(lock)</a>&nbsp;</td><td class=indexSynopsis width=100%>Defines a critical section protected by the specified lock.</td></tr>
+</table>
+<h2>Functions</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Function:fork">fork(fn)</a><br><a href="#Function:fork">fork(fn,&nbsp;data)</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a child thread that calls <code>fn</code> in an address space shared with the current thread.</td></tr>
+<tr><td class=indexKey><a href="#Function:join">join(thread)</a>&nbsp;</td><td class=indexSynopsis width=100%>Waits for the specified thread to finish before proceeding.</td></tr>
+<tr><td class=indexKey><a href="#Function:yield">yield()</a>&nbsp;</td><td class=indexSynopsis width=100%>Yields the processor to allow another thread to run.</td></tr>
+<tr><td class=indexKey><a href="#Function:getCurrentThread">getCurrentThread()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the currently executing thread.</td></tr>
+</table>
+<h2>Statement detail</h2>
+<hr>
+<a name="Statement:synchronized"></a>
+<pre class=detailCode>
+synchronized (lock) . . .
+</pre>
+<div class=detailHTML>
+Defines a critical section protected by the specified lock.  The
+general strategy for using this facility is shown in the following
+paradigmatic pattern:<p>
+
+<pre>
+   synchronized (lock) {
+      . . . statements in the critical section . . .
+   }
+</pre>
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:fork"></a>
+<pre class=detailCode>
+Thread fork(void (*fn)());
+
+template &lt;typename ClientType&gt;
+Thread fork(void (*fn)(ClientType &amp; data), ClientType &amp; data);
+</pre>
+<div class=detailHTML>
+Creates a child thread that calls <code>fn</code> in an address space
+shared with the current thread.  The second form makes it possible to
+pass an argument to <code>fn</code>, which may be of any type.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Thread child = fork(fn);
+Thread child = fork(fn, data);
+</pre>
+<hr>
+<a name="Function:join"></a>
+<pre class=detailCode>
+void join(Thread &amp; thread);
+</pre>
+<div class=detailHTML>
+Waits for the specified thread to finish before proceeding.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+join(thread);
+</pre>
+<hr>
+<a name="Function:yield"></a>
+<pre class=detailCode>
+void yield();
+</pre>
+<div class=detailHTML>
+Yields the processor to allow another thread to run.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+yield();
+</pre>
+<hr>
+<a name="Function:getCurrentThread"></a>
+<pre class=detailCode>
+Thread getCurrentThread();
+</pre>
+<div class=detailHTML>
+Returns the currently executing thread.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Thread self = getCurrentThread();
+</pre>
+<hr>
+</table>
+</body>
+</html>

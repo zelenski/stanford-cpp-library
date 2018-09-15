@@ -1,0 +1,206 @@
+<html>
+<head>
+<title>options.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="options-h.html"><code>options.h</code></a></h1>
+This interface defines a set of options that can be scanned on
+the command line.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:parseOptions">parseOptions</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Parses shell arguments into a table of options and a list of unprocessed values.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:parseShellArgs">parseShellArgs</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Parses a string into individual arguments in the style of the various implementations of the Unix shell.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getOption">getOption</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Gets an option value from the table, supplying a default value if the option is undefined.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getArgList">getArgList</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Gets the list of arguments that were not interpreted by the option parser.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getIntOption">getIntOption</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Gets an integer option from the table, supplying a default value if the option is undefined.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getDoubleOption">getDoubleOption</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Gets a numeric option from the table, supplying a default value if the option is undefined.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getCharOption">getCharOption</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Gets a character option from the table, supplying a default value if the option is undefined.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getBoolOption">getBoolOption</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Gets a Boolean option from the table, supplying a default value if the option is undefined.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getUnitsOption">getUnitsOption</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Gets a units value from an option table.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getColorOption">getColorOption</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Gets a color value from an option table, which is returned here as a PostScript string that sets the color to the desired value.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:showUsage">showUsage</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Displays a message describing the command line and its options.</td></tr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:parseOptions"></a>
+<pre class=detailCode>
+HashMap parseOptions(string args[], string optionSpec[]);
+</pre>
+<div class=detailHTML>
+Parses shell arguments into a table of options and a list of
+unprocessed values.  The general pattern of use is
+
+<pre>
+   options = parseOptions(args, optionSpec);
+</pre>
+
+where <code>args</code> is a <code>NULL</code>-terminated list of
+strings and <code>optionSpec</code> is a <code>NULL</code>-terminated
+array of strings (typically initialized at compile time)
+indicating what options are legal.  The return value is a
+<code>HashMap</code> that contains both the bindings of the option
+names (including the leading minus sign) and a special entry under
+the name <code>args</code> that is a <code>NULL</code>-terminated
+array of the remaining arguments.
+
+<p>Each element of <code>optionSpec</code> is a string that
+begins with the option name and then includes an additional
+field to specify the value that appears in the next argument
+position.  The standard fields are:
+
+<p><table>
+<tr><td><code>&lt;int&gt;</code></td>
+    <td>An integer value</td></tr>
+<tr><td><code>&lt;double&gt;</code></td>
+    <td>A floating-point value</td></tr>
+<tr><td><code>&lt;string&gt;</code></td>
+    <td>An arbitrary string</td></tr>
+<tr><td><code>&lt;char&gt;</code></td>
+    <td>A single character</td></tr>
+<tr><td><code>&lt;bool&gt;</code></td>
+    <td>A boolean value</td></tr>
+<tr><td><code>x|y|z</code></td>
+    <td>One of the specified options</td></tr>
+</table></p>
+
+Any argument class that is not defined in the above list is treated
+as a string, and the client is responsible for checking that the
+supplied value is valid.
+</div>
+<hr>
+<a name="Function:parseShellArgs"></a>
+<pre class=detailCode>
+string *parseShellArgs(string line);
+</pre>
+<div class=detailHTML>
+Parses a string into individual arguments in the style of the
+various implementations of the Unix shell.  Argument tokens
+are separated by whitespace.  This implementation recognizes
+the quoting conventions of a single backslash (which quotes
+the next character) and either single or double quotation marks,
+which quote the intervening characters.  No other metacharacters
+are recognized.
+</div>
+<hr>
+<a name="Function:getOption"></a>
+<pre class=detailCode>
+string getOption(HashMap options, string key, string def);
+</pre>
+<div class=detailHTML>
+Gets an option value from the table, supplying a default value
+if the option is undefined.
+</div>
+<hr>
+<a name="Function:getArgList"></a>
+<pre class=detailCode>
+string *getArgList(HashMap options);
+</pre>
+<div class=detailHTML>
+Gets the list of arguments that were not interpreted by the option
+parser.
+</div>
+<hr>
+<a name="Function:getIntOption"></a>
+<pre class=detailCode>
+int getIntOption(HashMap options, string key, int def);
+</pre>
+<div class=detailHTML>
+Gets an integer option from the table, supplying a default value
+if the option is undefined.
+</div>
+<hr>
+<a name="Function:getDoubleOption"></a>
+<pre class=detailCode>
+double getDoubleOption(HashMap options, string key, double def);
+</pre>
+<div class=detailHTML>
+Gets a numeric option from the table, supplying a default value
+if the option is undefined.
+</div>
+<hr>
+<a name="Function:getCharOption"></a>
+<pre class=detailCode>
+int getCharOption(HashMap options, string key, char def);
+</pre>
+<div class=detailHTML>
+Gets a character option from the table, supplying a default value
+if the option is undefined.
+</div>
+<hr>
+<a name="Function:getBoolOption"></a>
+<pre class=detailCode>
+bool getBoolOption(HashMap options, string key, bool def);
+</pre>
+<div class=detailHTML>
+Gets a Boolean option from the table, supplying a default value
+if the option is undefined.
+</div>
+<hr>
+<a name="Function:getUnitsOption"></a>
+<pre class=detailCode>
+double getUnitsOption(HashMap options, string key, double def);
+</pre>
+<div class=detailHTML>
+Gets a units value from an option table.  The value for the units
+option consists of a number followed by a unit specification, which
+can be any of the following: <code>in</code> (or <code>i</code>),
+<code>cm</code>, <code>pt</code>, or <code>px</code>.
+</div>
+<hr>
+<a name="Function:getColorOption"></a>
+<pre class=detailCode>
+string getColorOption(HashMap options, string key, string def);
+</pre>
+<div class=detailHTML>
+Gets a color value from an option table, which is returned here as
+a PostScript string that sets the color to the desired value.  The
+supplied argument can be any of the following:
+
+<table>
+  <tr>
+    <td valign=top><i>name</i></td><td>&nbsp;&nbsp;</td>
+    <td>A standard color name</td>
+  </tr>
+  <tr>
+    <td valign=top><code>rrggbb</code></td><td>&nbsp;&nbsp;</td>
+    <td>A hexadecimal RGB value</td>
+  </tr>
+  <tr>
+    <td valign=top><code>0xrrggbb</code></td><td>&nbsp;&nbsp;</td>
+    <td>A hexadecimal RGB value using C style</td>
+  </tr>
+  <tr>
+    <td valign=top><code>#rrggbb</code></td><td>&nbsp;&nbsp;</td>
+    <td>A hexadecimal RGB value using HTML style</td>
+  </tr>
+  <tr>
+    <td valign=top><i>grayscale</i></td><td>&nbsp;&nbsp;</td>
+    <td>A floating-point value between 0 and 1 indicating grayscale</td>
+  </tr>
+  <tr>
+    <td valign=top><i>screen</i><code>%</code></td><td>&nbsp;&nbsp;</td>
+    <td>A percentage value of the second-color screen</td>
+  </tr>
+</table>
+</div>
+<hr>
+<a name="Function:showUsage"></a>
+<pre class=detailCode>
+void showUsage(string usage, string spec[]);
+</pre>
+<div class=detailHTML>
+Displays a message describing the command line and its options.
+</div>
+<hr>
+</table>
+</body>
+</html>

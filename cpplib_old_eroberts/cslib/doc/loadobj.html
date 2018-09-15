@@ -1,0 +1,67 @@
+<html>
+<head>
+<title>loadobj.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="loadobj-h.html"><code>loadobj.h</code></a></h1>
+This interface supports dynamic loading of functions from object files.
+Any references in the object file to previously defined objects are
+allowed, but no additional searching or unresolved references are
+supported.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:loadObject">loadObject(pathname)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Loads the object file into the current executable.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:loadSymbols">loadSymbols(progname)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Loads the symbols from the executable program.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:findFunction">findFunction(fnname)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Looks up the function in the symbol table and returns a pointer to the code.</td></tr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:loadObject"></a>
+<pre class=detailCode>
+void loadObject(string pathname);
+</pre>
+<div class=detailHTML>
+Loads the object file into the current executable.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+loadObject(pathname);
+</pre>
+<hr>
+<a name="Function:loadSymbols"></a>
+<pre class=detailCode>
+void loadSymbols(string progname);
+</pre>
+<div class=detailHTML>
+Loads the symbols from the executable program.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+loadSymbols(progname);
+</pre>
+<hr>
+<a name="Function:findFunction"></a>
+<pre class=detailCode>
+proc findFunction(string fnname);
+</pre>
+<div class=detailHTML>
+Looks up the function in the symbol table and returns a pointer to the
+code.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+fn = findFunction(fnname);
+</pre>
+<hr>
+</table>
+</body>
+</html>

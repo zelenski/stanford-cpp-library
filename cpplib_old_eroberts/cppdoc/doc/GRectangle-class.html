@@ -1,0 +1,136 @@
+<html>
+<head>
+<title>class GRectangle</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="gtypes-h.html">class GRectangle</a></h1>
+This class represents a rectangle on the graphics plane and is
+conventionally used to denote the bounding box for an object.
+<h2>Constructor</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Constructor:GRectangle">GRectangle()</a><br><a href="#Constructor:GRectangle">GRectangle(x,&nbsp;y,&nbsp;width,&nbsp;height)</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a <code>GRectangle</code> object with the specified components.</td></tr>
+</table>
+<h2>Methods</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Method:getX">getX()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the <i>x</i> component of the rectangle.</td></tr>
+<tr><td class=indexKey><a href="#Method:getY">getY()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the <i>y</i> component of the rectangle.</td></tr>
+<tr><td class=indexKey><a href="#Method:getWidth">getWidth()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the <i>width</i> component of the rectangle.</td></tr>
+<tr><td class=indexKey><a href="#Method:getHeight">getHeight()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the <i>height</i> component of the rectangle.</td></tr>
+<tr><td class=indexKey><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> if the rectangle is empty.</td></tr>
+<tr><td class=indexKey><a href="#Method:contains">contains(pt)</a><br><a href="#Method:contains">contains(x,&nbsp;y)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> if the rectangle contains the given point, which may be specified either as a point or as distinct coordinates.</td></tr>
+<tr><td class=indexKey><a href="#Method:toString">toString()</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts the <code>GRectangle</code> to a string in the form <code>"(</code><i>x</i><code>,</code>&nbsp;<i>y</i><code>,</code> <i>width</i><code>,</code>&nbsp;<i>height</i><code>)"</code>.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GRectangle"></a>
+<pre class=detailCode>
+GRectangle();
+GRectangle(double x, double y, double width, double height);
+</pre>
+<div class=detailHTML>
+Creates a <code>GRectangle</code> object with the specified components.
+If these parameters are not supplied, the default constructor sets
+these fields to 0.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GRectangle empty;
+GRectangle r(x, y, width, height);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:getX"></a>
+<pre class=detailCode>
+double getX();
+</pre>
+<div class=detailHTML>
+Returns the <i>x</i> component of the rectangle.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double x = r.getX();
+</pre>
+<hr>
+<a name="Method:getY"></a>
+<pre class=detailCode>
+double getY();
+</pre>
+<div class=detailHTML>
+Returns the <i>y</i> component of the rectangle.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double y = pt.getY();
+</pre>
+<hr>
+<a name="Method:getWidth"></a>
+<pre class=detailCode>
+double getWidth();
+</pre>
+<div class=detailHTML>
+Returns the <i>width</i> component of the rectangle.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double width = r.getWidth();
+</pre>
+<hr>
+<a name="Method:getHeight"></a>
+<pre class=detailCode>
+double getHeight();
+</pre>
+<div class=detailHTML>
+Returns the <i>height</i> component of the rectangle.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double height = pt.getHeight();
+</pre>
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty();
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the rectangle is empty.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (r.isEmpty()) . . .
+</pre>
+<hr>
+<a name="Method:contains"></a>
+<pre class=detailCode>
+bool contains(GPoint pt);
+bool contains(double x, double y);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the rectangle contains the given point,
+which may be specified either as a point or as distinct coordinates.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (r.contains(pt)) . . .
+if (r.contains(x, y)) . . .
+</pre>
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString();
+</pre>
+<div class=detailHTML>
+Converts the <code>GRectangle</code> to a string in the form
+<code>"(</code><i>x</i><code>,</code>&nbsp;<i>y</i><code>,</code>
+<i>width</i><code>,</code>&nbsp;<i>height</i><code>)"</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = r.toString();
+</pre>
+<hr>
+</table>
+</body>
+</html>

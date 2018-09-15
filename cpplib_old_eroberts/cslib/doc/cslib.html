@@ -1,0 +1,168 @@
+<html>
+<head>
+<title>cslib.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="cslib-h.html"><code>cslib.h</code></a></h1>
+This interface defines a basic set of definitions that are shared
+among all interfaces in the package.  These basic definitions include:
+
+<ol>
+ <li>Declarations for several new &ldquo;primitive&rdquo; types used
+     throughout the libraries as fundamental types.
+
+ <li>A function for error handling.
+
+ <li>A flexible set of functions for memory allocation.
+</ol>
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Types</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:bool">bool</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type defines the space of Boolean data using the constants <code>false</code> and <code>true</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:string">string</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type is defined to be identical with <code>char *</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:proc">proc</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This function type represents an arbitrary procedure that can be passed to an abstraction and then called back from the implementation.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getBlock">getBlock(nbytes)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Allocates a block of memory of the given size.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:freeBlock">freeBlock(ptr)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Frees the memory associated with <code>ptr</code>, which must have been allocated using <code>getBlock</code>, <code>newBlock</code>, or <code>newArray</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getBlockType">getBlockType(ptr)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a string indicating the type of the block.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setBlockData">setBlockData(ptr,&nbsp;value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the data field inside the block to the specified value.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getBlockData">getBlockData(ptr)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the data field inside the block.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:error">error(msg,&nbsp;.&nbsp;.&nbsp;.)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Generates an error string, expanding <code>%</code> constructions appearing in the error message string just as <code>printf</code> does.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:bool"></a>
+<pre class=detailCode>
+</pre>
+<div class=detailHTML>
+This type defines the space of Boolean data using the constants
+<code>false</code> and <code>true</code>.
+</div>
+<hr>
+<a name="Type:string"></a>
+<pre class=detailCode>
+typedef char *string;
+</pre>
+<div class=detailHTML>
+This type is defined to be identical with <code>char *</code>.
+</div>
+<hr>
+<a name="Type:proc"></a>
+<pre class=detailCode>
+typedef void proc(*proc)();
+</pre>
+<div class=detailHTML>
+This function type represents an arbitrary procedure that can be passed
+to an abstraction and then called back from the implementation.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:getBlock"></a>
+<pre class=detailCode>
+void *getBlock(size_t nbytes);
+</pre>
+<div class=detailHTML>
+Allocates a block of memory of the given size.  If no memory is
+available, <code>getBlock</code> generates an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ptr = getBlock(nbytes);
+</pre>
+<hr>
+<a name="Function:freeBlock"></a>
+<pre class=detailCode>
+void freeBlock(void *ptr);
+</pre>
+<div class=detailHTML>
+Frees the memory associated with <code>ptr</code>, which must have
+been allocated using <code>getBlock</code>, <code>newBlock</code>, or
+<code>newArray</code>.  If the block appears to be in static memory
+or allocated by <code>malloc</code>, the call to <code>freeBlock</code>
+has no effect.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+freeBlock(ptr);
+</pre>
+<hr>
+<a name="Function:getBlockType"></a>
+<pre class=detailCode>
+string getBlockType(void *ptr);
+</pre>
+<div class=detailHTML>
+Returns a string indicating the type of the block.  If the block is
+created using the <code>newBlock</code> macro, the string is the type
+argument.  If the block is created using <code>newArray</code>, the
+string consists of the base type followed by the string <code>"[]"</code>.
+In all other cases, the type is returned as <code>"?"</code>.  This
+string is constant and should not be freed.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+type = getBlockType(ptr);
+</pre>
+<hr>
+<a name="Function:setBlockData"></a>
+<pre class=detailCode>
+void setBlockData(void *ptr, void *value);
+</pre>
+<div class=detailHTML>
+Sets the data field inside the block to the specified value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setBlockData(ptr, value);
+</pre>
+<hr>
+<a name="Function:getBlockData"></a>
+<pre class=detailCode>
+void *getBlockData(void *ptr);
+</pre>
+<div class=detailHTML>
+Returns the data field inside the block.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+value = getBlockData(ptr);
+</pre>
+<hr>
+<a name="Function:error"></a>
+<pre class=detailCode>
+void error(string msg, ...);
+</pre>
+<div class=detailHTML>
+Generates an error string, expanding <code>%</code> constructions
+appearing in the error message string just as <code>printf</code> does.
+The behavior depends on whether the call is compiled in C or C++.
+
+<p>In C, calling <code>error</code> first checks to see if there is a
+handler for <code>ErrorException</code>.  If so, calling
+<code>error</code> throws an <code>ErrorException</code>
+exception with the expanded error string as argument.  If
+there is no <code>ErrorException</code> handler, the program
+prints the message to the standard error channel and exits
+with a status code indicating failure (as given by the
+constant <code>ERROR_EXIT_STATUS</code>).
+
+<p>In C++, calling <code>error</code> throws an exception with the
+expanded error string (defined as a C++ string) as its value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+error(msg, . . .);
+</pre>
+<hr>
+</table>
+</body>
+</html>

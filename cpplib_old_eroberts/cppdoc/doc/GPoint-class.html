@@ -1,0 +1,79 @@
+<html>
+<head>
+<title>class GPoint</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="gtypes-h.html">class GPoint</a></h1>
+This class represents a point on the real-valued graphics plane.
+<h2>Constructor</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Constructor:GPoint">GPoint()</a><br><a href="#Constructor:GPoint">GPoint(x,&nbsp;y)</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a <code>GPoint</code> object with the specified <code>x</code> and <code>y</code> coordinates.</td></tr>
+</table>
+<h2>Methods</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Method:getX">getX()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the <i>x</i> component of the point.</td></tr>
+<tr><td class=indexKey><a href="#Method:getY">getY()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the <i>y</i> component of the point.</td></tr>
+<tr><td class=indexKey><a href="#Method:toString">toString()</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts the <code>GPoint</code> to a string in the form <code>"(</code><i>x</i><code>,</code>&nbsp;<i>y</i><code>)"</code>.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GPoint"></a>
+<pre class=detailCode>
+GPoint();
+GPoint(double x, double y);
+</pre>
+<div class=detailHTML>
+Creates a <code>GPoint</code> object with the specified <code>x</code>
+and <code>y</code> coordinates.  If the coordinates are not supplied,
+the default constructor sets these fields to 0.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GPoint origin;
+GPoint pt(x, y);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:getX"></a>
+<pre class=detailCode>
+double getX();
+</pre>
+<div class=detailHTML>
+Returns the <i>x</i> component of the point.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double x = pt.getX();
+</pre>
+<hr>
+<a name="Method:getY"></a>
+<pre class=detailCode>
+double getY();
+</pre>
+<div class=detailHTML>
+Returns the <i>y</i> component of the point.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double y = pt.getY();
+</pre>
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString();
+</pre>
+<div class=detailHTML>
+Converts the <code>GPoint</code> to a string in the form
+<code>"(</code><i>x</i><code>,</code>&nbsp;<i>y</i><code>)"</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = pt.toString();
+</pre>
+<hr>
+</table>
+</body>
+</html>

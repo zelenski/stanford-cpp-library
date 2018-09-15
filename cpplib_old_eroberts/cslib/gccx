@@ -1,0 +1,100 @@
+#! /bin/csh -f
+set INCLUDE = "-I$HOME/include"
+set CC = gcc
+set OPTIONS = "-g"
+set FILES = ""
+set LIBRARIES = "-L. -L$HOME/lib -lcs -lm -lpthread"
+set CARBONFLAG = 0
+set COMPILEFLAG = 0
+set OSXFLAG = 0
+set XWINFLAG = 0
+set SHAREDFLAG = 0
+set APPFLAG = 0
+set APPNAME = ""
+set TEST = ""
+set X11LIBS = (`ls -dt .[.] /usr/X11*/lib/libX11.a | grep '...'`)
+if ($#X11LIBS == 0) then
+  if (0 && -d /usr/include/X11) then
+    set XWINFLAG = 1
+    set LIBRARIES = "$LIBRARIES -lX11"
+  endif
+else
+  set XWINFLAG = 1
+  set LIBRARIES = "-L$X11LIBS[1]:h $LIBRARIES -lX11"
+endif
+if (-x /usr/bin/sw_vers) then
+  set OSXFLAG = `/usr/bin/sw_vers | fgrep 'Mac OS X' | wc -l`
+endif
+if ($OSXFLAG) then
+  set OPTIONS = "$OPTIONS -D__macosx__ -D__unix__ -D__linux__"
+  set CARBONFLAG = 1
+endif
+if ($XWINFLAG) then
+  set OPTIONS = "$OPTIONS -D__xwindows__"
+endif
+while ($#argv > 0)
+  switch ($1)
+    case -t:
+      set TEST = "echo"
+      breaksw
+    case -c:
+      set LIBRARIES = ""
+      set OPTIONS = "$OPTIONS -c"
+      set COMPILEFLAG = 1
+      breaksw
+    case -c[+][+]:
+      set CC = "g++"
+      breaksw
+    case -carbon:
+      set CARBONFLAG = 1
+      breaksw
+    case -dynamic:
+      set NORFLAG = `gcc -rdynamic |& fgrep 'unrecognized option' | wc -l`
+      if ($NORFLAG) then
+        set OPTIONS = "$OPTIONS -dynamic"
+      else
+        set OPTIONS = "$OPTIONS -rdynamic"
+      endif
+      set LIBRARIES = "$LIBRARIES -lloadobj"
+      breaksw
+    case -shared:
+      if ($OSXFLAG) then
+        set OPTIONS = "$OPTIONS -fno-common -bundle -flat_namespace"
+        set OPTIONS = "$OPTIONS -undefined suppress"
+        set CARBONFLAG = 0
+      else
+        set OPTIONS = "$OPTIONS -shared"
+      endif
+      set SHAREDFLAG = 1
+      breaksw
+    case -framework:
+      shift
+      set OPTIONS = "-framework $1 $OPTIONS"
+      set CARBONFLAG = 0
+      breaksw
+    case -o:
+      shift
+      set APPFLAG = 1
+      set APPNAME = "$1"
+      set OPTIONS = "$OPTIONS -o $1"
+      breaksw
+    case -l*:
+      set LIBRARIES = "$1 $LIBRARIES"
+      breaksw
+    case -*:
+      set OPTIONS = "$OPTIONS $1"
+      breaksw
+    case *.cpp:
+      set CC = "g++"
+      set FILES = ($FILES $1)
+      breaksw
+    default:
+      set FILES = ($FILES $1)
+  endsw
+  shift
+end
+if ($CARBONFLAG && ! $COMPILEFLAG) then
+  $TEST $CC $OPTIONS $INCLUDE $FILES $LIBRARIES -framework Carbon
+else
+  $TEST $CC $OPTIONS $INCLUDE $FILES $LIBRARIES
+endif

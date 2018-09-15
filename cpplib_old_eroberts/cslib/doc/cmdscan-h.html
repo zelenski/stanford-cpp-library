@@ -1,0 +1,176 @@
+<html>
+<head>
+<title>../cmdscan.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: cmdscan.h
+ * ---------------
+ * This interface exports a simple command-line scanner.
+ */
+</scan>
+#ifndef _cmdscan_h
+#define _cmdscan_h
+
+#include "cslib.h"
+#include "tokenscanner.h"
+
+<a name="Type:CommandScanner"><scan class=comment>/*
+ * Type: CommandScanner
+ * --------------------
+ * The CommandScanner type offers a simple command-scanning abstraction
+ * that is primarily used to construct test programs.  The typical pattern
+ * of use requires the following steps:
+ *
+ *
+ * Call newCommandScanner to create an empty command scanner.  Call
+ * defineCommand to associate commands with functions.  Call commandLoop to
+ * execute a command loop.
+ *
+ *
+ * Command scanners are implemented as a collection type, so that iterating
+ * over the scanner returns the name of each command in lexicographic
+ * order.
+ */
+</scan>
+typedef struct CommandScannerCDT *CommandScanner;
+
+<a name="Type:CommandFn"><scan class=comment>/*
+ * Type: CommandFn
+ * ---------------
+ * This type represents the space of functions that can be used as
+ * commands.  Each command takes the entire command scanner as an argument,
+ * which gives the callback function access to the various data fields
+ * associated with the scanner.
+ */
+</scan>
+typedef void (*CommandFn)(CommandScanner cs);
+
+<a name="Function:newCommandScanner"><scan class=comment>/*
+ * Function: newCommandScanner
+ * Usage: cs = newCommandScanner();
+ * --------------------------------
+ * Allocates a new command scanner.
+ */
+</scan>
+CommandScanner newCommandScanner(void);
+
+<a name="Function:freeCommandScanner"><scan class=comment>/*
+ * Function: freeCommandScanner
+ * Usage: freeCommandScanner(cs);
+ * ------------------------------
+ * Frees the specified command scanner.
+ */
+</scan>
+void freeCommandScanner(CommandScanner cs);
+
+<a name="Function:defineCommand"><scan class=comment>/*
+ * Function: defineCommand
+ * Usage: defineCommand(cs, cmdName, cmdFn);
+ * -----------------------------------------
+ * Adds an entry to the internal command table for the command scanner by
+ * associating the specified command name with the corresponding function.
+ */
+</scan>
+void defineCommand(CommandScanner cs, string cmdName, CommandFn cmdFn);
+
+<a name="Function:commandLoop"><scan class=comment>/*
+ * Function: commandLoop
+ * Usage: commandLoop(cs, prompt);
+ * -------------------------------
+ * Executes a loop that reads and executes commands from the user.  On each
+ * cycle, commandLoop performs the following operations:
+ *
+ *  Prints the specified prompt Reads in a line from the user Checks to see
+ * if the first token on the line is a command Executes the function
+ * associated with that command 
+ *
+ * If a command is undefined, commandLoop displays a message to that effect
+ * and allows the user to enter a new command.  If any errors occur in the
+ * command processing, they are caught by the command loop.
+ */
+</scan>
+void commandLoop(CommandScanner cs, string prompt);
+
+<a name="Function:executeCommand"><scan class=comment>/*
+ * Function: executeCommand
+ * Usage: ok = executeCommand(cs, line);
+ * -------------------------------------
+ * Executes a command line as if it were entered by the user.  The function
+ * returns true if the command is defined, and false otherwise.
+ */
+</scan>
+bool executeCommand(CommandScanner cs, string line);
+
+<a name="Function:setCommandData"><scan class=comment>/*
+ * Function: setCommandData
+ * Usage: setCommandData(cs, data);
+ * --------------------------------
+ * Associates a data block with the command scanner.  The pointer to the
+ * data block is passed to the callback functions for the various commands.
+ */
+</scan>
+void setCommandData(CommandScanner cs, void *data);
+
+<a name="Function:getCommandData"><scan class=comment>/*
+ * Function: getCommandData
+ * Usage: data = getCommandData(cs);
+ * ---------------------------------
+ * Returns the data block associated with the command scanner.
+ */
+</scan>
+void *getCommandData(CommandScanner cs);
+
+<a name="Function:readCommandToken"><scan class=comment>/*
+ * Function: readCommandToken
+ * Usage: token = readCommandToken(cs);
+ * ------------------------------------
+ * Reads the next token from the command line, which is returned as a
+ * string.  If no more tokens exist, readCommandToken returns the empty
+ * string.
+ */
+</scan>
+string readCommandToken(CommandScanner cs);
+
+<a name="Function:getCommandLine"><scan class=comment>/*
+ * Function: getCommandLine
+ * Usage: line = getCommandLine(cs);
+ * ---------------------------------
+ * Returns the current command line.
+ */
+</scan>
+string getCommandLine(CommandScanner cs);
+
+<a name="Function:getCommandName"><scan class=comment>/*
+ * Function: getCommandName
+ * Usage: name = getCommandName(cs);
+ * ---------------------------------
+ * Returns the current command name.
+ */
+</scan>
+string getCommandName(CommandScanner cs);
+
+<a name="Function:getTokenScanner"><scan class=comment>/*
+ * Function: getTokenScanner
+ * Usage: scanner = getTokenScanner(cs);
+ * -------------------------------------
+ * Returns the TokenScanner used internally to parse tokens.
+ */
+</scan>
+TokenScanner getTokenScanner(CommandScanner cs);
+
+<a name="Function:quitCommand"><scan class=comment>/*
+ * Function: quitCommand
+ * Usage: defineCommand(cs, "quit", quitCommand);
+ * ----------------------------------------------
+ * This callback function exits from the command scanner.
+ */
+</scan>
+void quitCommand(CommandScanner cs);
+
+#endif
+</pre>
+</body>
+</html>

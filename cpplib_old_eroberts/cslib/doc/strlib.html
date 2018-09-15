@@ -1,0 +1,587 @@
+<html>
+<head>
+<title>strlib.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="strlib-h.html"><code>strlib.h</code></a></h1>
+This interface defines a general library for dynamically allocated
+strings.  The major differences between traditional C strings and
+those defined using this interface are:
+
+<ol>
+ <li>The <code>strlib.h</code> interface takes care of memory
+     allocation, ensuring that there is sufficient space to hold
+     the result of each string operation.
+ <li>Clients of the <code>strlib.h</code> interface are expected
+     to treat all strings as immutable and refrain from writing
+     into the character array.
+</ol>
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Type</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:StringBuffer">StringBuffer</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type provides an efficient, memory-safe mechanism for strings that grow by the addition of characters.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:concat">concat(s1,&nbsp;s2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Concatenates two strings by joining them end to end.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:charAt">charAt(s,&nbsp;i)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the character at position <code>i</code> in the string <code>s</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:substring">substring(s,&nbsp;p1,&nbsp;p2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a copy of the substring of <code>s</code> consisting of the characters between index positions <code>p1</code> and <code>p2</code>, inclusive.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:charToString">charToString(ch)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Takes a single character and returns a one-character string consisting of that character.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:stringLength">stringLength(s)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the length of the string <code>s</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:copyString">copyString(s)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Copies the string <code>s</code> into dynamically allocated storage and returns the new string.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:stringEqual">stringEqual(s1,&nbsp;s2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the strings <code>s1</code> and <code>s2</code> are equal.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:stringEqualIgnoreCase">stringEqualIgnoreCase(s1,&nbsp;s2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the strings <code>s1</code> and <code>s2</code> are equal, ignoring differences in case.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:stringCompare">stringCompare(s1,&nbsp;s2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns -1 if string <code>s1</code> comes before <code>s2</code> in lexicographic order, 0 if they are equal, and +1 if <code>s1</code> comes after <code>s2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:startsWith">startsWith(s1,&nbsp;s2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if <code>s1</code> starts with <code>s2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:endsWith">endsWith(s1,&nbsp;s2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if <code>s1</code> ends with <code>s2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:findChar">findChar(ch,&nbsp;text,&nbsp;start)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Searches for the character <code>ch</code> beginning at position <code>start</code> in the string <code>text</code> and returns the first index at which it appears or -1 if no match is found.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:findString">findString(str,&nbsp;text,&nbsp;start)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Searches for the string <code>str</code> beginning at position <code>start</code> in the string <code>text</code> and returns the first index at which it appears or -1 if no match is found.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:findLastChar">findLastChar(ch,&nbsp;text)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the last index of <code>ch</code> in <code>text</code>, or -1 if the search value does not appear.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:findLastString">findLastString(str,&nbsp;text)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the last index of <code>str</code> in <code>text</code>, or -1 if the search value does not appear.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:toLowerCase">toLowerCase(s)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a new string with all alphabetic characters converted to lowercase.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:toUpperCase">toUpperCase(s)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a new string with all alphabetic characters converted to uppercase.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:integerToString">integerToString(n)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts an integer into the corresponding string of digits.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:stringToInteger">stringToInteger(s)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts a string of digits into an integer.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:realToString">realToString(d)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts a floating-point number into the corresponding string form.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:stringToReal">stringToReal(s)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts a string representing a real number into its corresponding value.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:trim">trim(str)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a new string after removing any whitespace characters from the beginning and end of the argument.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:quoteString">quoteString(str)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a quoted string that can be read by the C parser.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:quoteHTML">quoteHTML(str)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a string that appears correctly in HTML by changing HTML special characters to character entities.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:stringArrayLength">stringArrayLength(array)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the length of a <code>NULL</code>-terminated string array.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:searchStringArray">searchStringArray(str,&nbsp;array)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Finds a string in a <code>NULL</code>-terminated string array and returns the first index at which the string appears, or -1 if it is not found.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newStringBuffer">newStringBuffer()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a new string buffer that expands dynamically if needed.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:freeStringBuffer">freeStringBuffer(sb)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Frees the storage associated with the string buffer.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:pushChar">pushChar(sb,&nbsp;ch)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Appends (pushes) the character <code>ch</code> onto the end of the string buffer.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:popChar">popChar(sb)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Pops and removes the last character from the string buffer.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:appendString">appendString(sb,&nbsp;str)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Appends the string <code>str</code> to the end of the string buffer.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:sbprintf">sbprintf(sb,&nbsp;format,&nbsp;...)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Expands a <code>printf</code>-style format string and arguments onto the end of the string buffer.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isEmpty">isEmpty(sb)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the string buffer is empty.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:size">size(sb)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of characters in the string buffer.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:clear">clear(sb)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes all characters from the string buffer.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:toString">toString(sb)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the string stored inside the buffer.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:StringBuffer"></a>
+<pre class=detailCode>
+typedef struct StringBufferCDT *StringBuffer;
+</pre>
+<div class=detailHTML>
+This type provides an efficient, memory-safe mechanism for strings
+that grow by the addition of characters.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+index = searchStringArray(str, array);
+</pre>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:concat"></a>
+<pre class=detailCode>
+string concat(string s1, string s2);
+</pre>
+<div class=detailHTML>
+Concatenates two strings by joining them end to end.  For
+example, <code>concat("ABC", "DE")</code> returns the
+string <code>"ABCDE"</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+s = concat(s1, s2);
+</pre>
+<hr>
+<a name="Function:charAt"></a>
+<pre class=detailCode>
+char charAt(string s, int i);
+</pre>
+<div class=detailHTML>
+Returns the character at position <code>i</code> in the
+string <code>s</code>.  This function is included in the
+library to make the type <code>string</code> a true abstract
+type in the sense that all of the necessary operations can be
+invoked using functions.  Calling <code>charAt(s, i)</code>
+is like selecting <code>s[i]</code>, except that
+<code>charAt</code> checks to see if <code>i</code> is
+within the range of legal index positions, which extend
+from 0 to <code>stringLength(s)</code>.  Calling
+<code>charAt(s, stringLength(s))</code returns the null
+character at the end of the string.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ch = charAt(s, i);
+</pre>
+<hr>
+<a name="Function:substring"></a>
+<pre class=detailCode>
+string substring(string s, int p1, int p2);
+</pre>
+<div class=detailHTML>
+Returns a copy of the substring of <code>s</code> consisting of the
+characters between index positions <code>p1</code> and <code>p2</code>,
+inclusive.  The following special cases apply:
+
+<ol>
+ <li> If <code>p1</code> is less than 0, it is assumed to be 0.
+ <li> If <code>p2</code> is greater than or equal to the length of the
+      string, <code>p2</code> is set to <code>stringLength(s) - 1</code>.
+ <li> If <code>p2 &lt; p1</code>, <code>substring</code> returns the
+      empty string.
+</ol>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+t = substring(s, p1, p2);
+</pre>
+<hr>
+<a name="Function:charToString"></a>
+<pre class=detailCode>
+string charToString(char ch);
+</pre>
+<div class=detailHTML>
+Takes a single character and returns a one-character string
+consisting of that character.  The <code>charToString</code>
+function is useful, for example, if you need to concatenate
+a string and a character.  Since <code>concat</code> requires
+two strings, you must first convert the character into a string.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+s = charToString(ch);
+</pre>
+<hr>
+<a name="Function:stringLength"></a>
+<pre class=detailCode>
+int stringLength(string s);
+</pre>
+<div class=detailHTML>
+Returns the length of the string <code>s</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+len = stringLength(s);
+</pre>
+<hr>
+<a name="Function:copyString"></a>
+<pre class=detailCode>
+string copyString(string s);
+</pre>
+<div class=detailHTML>
+Copies the string <code>s</code> into dynamically allocated storage
+and returns the new string.  This function is not ordinarily required
+when this package is used on its own but is often necessary when you
+are working with more than one string package.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+newstr = copyString(s);
+</pre>
+<hr>
+<a name="Function:stringEqual"></a>
+<pre class=detailCode>
+bool stringEqual(string s1, string s2);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the strings <code>s1</code>
+and <code>s2</code> are equal.  For the strings to be
+considered equal, every character in one string must
+precisely match the corresponding character in the other.
+Uppercase and lowercase characters are considered to be
+different.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (stringEqual(s1, s2)) ...
+</pre>
+<hr>
+<a name="Function:stringEqualIgnoreCase"></a>
+<pre class=detailCode>
+bool stringEqualIgnoreCase(string s1, string s2);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the strings <code>s1</code>
+and <code>s2</code> are equal, ignoring differences in case.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (stringEqualIgnoreCase(s1, s2)) ...
+</pre>
+<hr>
+<a name="Function:stringCompare"></a>
+<pre class=detailCode>
+int stringCompare(string s1, string s2);
+</pre>
+<div class=detailHTML>
+Returns -1 if string <code>s1</code> comes before <code>s2</code>
+in lexicographic order, 0 if they are equal, and +1 if
+<code>s1</code> comes after <code>s2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (stringCompare(s1, s2) &lt; 0) ...
+</pre>
+<hr>
+<a name="Function:startsWith"></a>
+<pre class=detailCode>
+bool startsWith(string s1, string s2);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if <code>s1</code> starts with <code>s2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (startsWith(s1, s2)) ...
+</pre>
+<hr>
+<a name="Function:endsWith"></a>
+<pre class=detailCode>
+bool endsWith(string s1, string s2);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if <code>s1</code> ends with <code>s2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (endsWith(s1, s2)) ...
+</pre>
+<hr>
+<a name="Function:findChar"></a>
+<pre class=detailCode>
+int findChar(char ch, string text, int start);
+</pre>
+<div class=detailHTML>
+Searches for the character <code>ch</code> beginning at position
+<code>start</code> in the string <code>text</code> and returns
+the first index at which it appears or -1 if no match is found.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+p = findChar(ch, text, start);
+</pre>
+<hr>
+<a name="Function:findString"></a>
+<pre class=detailCode>
+int findString(string str, string text, int start);
+</pre>
+<div class=detailHTML>
+Searches for the string <code>str</code> beginning at position
+<code>start</code> in the string <code>text</code> and returns
+the first index at which it appears or -1 if no match is found.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+p = findString(str, text, start);
+</pre>
+<hr>
+<a name="Function:findLastChar"></a>
+<pre class=detailCode>
+int findLastChar(char ch, string text);
+</pre>
+<div class=detailHTML>
+Returns the last index of <code>ch</code> in <code>text</code>,
+or -1 if the search value does not appear.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+p = findLastChar(ch, text);
+</pre>
+<hr>
+<a name="Function:findLastString"></a>
+<pre class=detailCode>
+int findLastString(string str, string text);
+</pre>
+<div class=detailHTML>
+Returns the last index of <code>str</code> in <code>text</code>,
+or -1 if the search value does not appear.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+p = findLastString(str, text);
+</pre>
+<hr>
+<a name="Function:toLowerCase"></a>
+<pre class=detailCode>
+string toLowerCase(string s);
+</pre>
+<div class=detailHTML>
+Returns a new string with all alphabetic characters converted
+to lowercase.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+s = toLowerCase(s);
+</pre>
+<hr>
+<a name="Function:toUpperCase"></a>
+<pre class=detailCode>
+string toUpperCase(string s);
+</pre>
+<div class=detailHTML>
+Returns a new string with all alphabetic characters converted
+to uppercase.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+s = toUpperCase(s);
+</pre>
+<hr>
+<a name="Function:integerToString"></a>
+<pre class=detailCode>
+string integerToString(int n);
+</pre>
+<div class=detailHTML>
+Converts an integer into the corresponding string of digits.
+For example, <code>integerToString(123)</code> returns
+<code>"123"</code> as a string.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+s = integerToString(n);
+</pre>
+<hr>
+<a name="Function:stringToInteger"></a>
+<pre class=detailCode>
+int stringToInteger(string s);
+</pre>
+<div class=detailHTML>
+Converts a string of digits into an integer.  If the string
+is not a legal integer or contains extraneous characters,
+<code>stringToInteger</code> signals an error condition.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+n = stringToInteger(s);
+</pre>
+<hr>
+<a name="Function:realToString"></a>
+<pre class=detailCode>
+string realToString(double d);
+</pre>
+<div class=detailHTML>
+Converts a floating-point number into the corresponding string
+form.  For example, calling <code>realToString(23.45)</code>
+returns </code>"23.45"</code>.  The conversion is the same as
+that used for <code>"%G"</code> format in <code>printf</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string  s = realToString(d);
+</pre>
+<hr>
+<a name="Function:stringToReal"></a>
+<pre class=detailCode>
+double stringToReal(string s);
+</pre>
+<div class=detailHTML>
+Converts a string representing a real number into its
+corresponding value.  If the string is not a legal
+floating-point number or if it contains extraneous characters,
+<code>stringToReal</code> signals an error condition.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+d = stringToReal(s);
+</pre>
+<hr>
+<a name="Function:trim"></a>
+<pre class=detailCode>
+string trim(string str);
+</pre>
+<div class=detailHTML>
+Returns a new string after removing any whitespace characters
+from the beginning and end of the argument.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+trimmed = trim(str);
+</pre>
+<hr>
+<a name="Function:quoteString"></a>
+<pre class=detailCode>
+string quoteString(string str);
+</pre>
+<div class=detailHTML>
+Returns a quoted string that can be read by the C parser.
+This string includes double quotes around the entire value,
+and uses standard escape sequences to indicate special
+characters.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+quoted = quoteString(str);
+</pre>
+<hr>
+<a name="Function:quoteHTML"></a>
+<pre class=detailCode>
+string quoteHTML(string str);
+</pre>
+<div class=detailHTML>
+Returns a string that appears correctly in HTML by changing HTML special
+characters to character entities.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+quoted = quoteHTML(str);
+</pre>
+<hr>
+<a name="Function:stringArrayLength"></a>
+<pre class=detailCode>
+int stringArrayLength(string array[]);
+</pre>
+<div class=detailHTML>
+Returns the length of a <code>NULL</code>-terminated string array.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+len = stringArrayLength(array);
+</pre>
+<hr>
+<a name="Function:searchStringArray"></a>
+<pre class=detailCode>
+int searchStringArray(string str, string array[]);
+</pre>
+<div class=detailHTML>
+Finds a string in a <code>NULL</code>-terminated string array and
+returns the first index at which the string appears, or -1 if it
+is not found.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+index = searchStringArray(str, array);
+</pre>
+<hr>
+<a name="Function:newStringBuffer"></a>
+<pre class=detailCode>
+StringBuffer newStringBuffer();
+</pre>
+<div class=detailHTML>
+Creates a new string buffer that expands dynamically if needed.
+The buffer is initially empty.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sb = newStringBuffer();
+</pre>
+<hr>
+<a name="Function:freeStringBuffer"></a>
+<pre class=detailCode>
+void freeStringBuffer(StringBuffer sb);
+</pre>
+<div class=detailHTML>
+Frees the storage associated with the string buffer.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+freeStringBuffer(sb);
+</pre>
+<hr>
+<a name="Function:pushChar"></a>
+<pre class=detailCode>
+void pushChar(StringBuffer sb, char ch);
+</pre>
+<div class=detailHTML>
+Appends (pushes) the character <code>ch</code> onto the end of the
+string buffer.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+pushChar(sb, ch);
+</pre>
+<hr>
+<a name="Function:popChar"></a>
+<pre class=detailCode>
+char popChar(StringBuffer sb);
+</pre>
+<div class=detailHTML>
+Pops and removes the last character from the string buffer.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ch = popChar(sb);
+</pre>
+<hr>
+<a name="Function:appendString"></a>
+<pre class=detailCode>
+void appendString(StringBuffer sb, string str);
+</pre>
+<div class=detailHTML>
+Appends the string <code>str</code> to the end of the string buffer.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+appendString(sb, str);
+</pre>
+<hr>
+<a name="Function:sbprintf"></a>
+<pre class=detailCode>
+void sbprintf(StringBuffer sb, string format, ...);
+</pre>
+<div class=detailHTML>
+Expands a <code>printf</code>-style format string and arguments onto
+the end of the string buffer.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sbprintf(sb, format, ...);
+</pre>
+<hr>
+<a name="Function:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty(StringBuffer vec);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the string buffer is empty.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isEmpty(sb)) . . .
+</pre>
+<hr>
+<a name="Function:size"></a>
+<pre class=detailCode>
+int size(StringBuffer vector);
+</pre>
+<div class=detailHTML>
+Returns the number of characters in the string buffer.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+n = size(sb);
+</pre>
+<hr>
+<a name="Function:clear"></a>
+<pre class=detailCode>
+void clear(StringBuffer sb);
+</pre>
+<div class=detailHTML>
+Removes all characters from the string buffer.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+clear(sb);
+</pre>
+<hr>
+<a name="Function:toString"></a>
+<pre class=detailCode>
+string toString(StringBuffer sb);
+</pre>
+<div class=detailHTML>
+Returns the string stored inside the buffer.  Clients must copy this
+string if they need to retain it.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+str = toString(sb);
+</pre>
+<hr>
+</table>
+</body>
+</html>

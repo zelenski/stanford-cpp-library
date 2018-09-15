@@ -1,0 +1,241 @@
+<html>
+<head>
+<title>gtypes.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="gtypes-h.html"><code>gtypes.h</code></a></h1>
+This interface defines types for representing points, dimensions, and
+rectangles.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Types</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:GPoint">GPoint</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type contains real-valued x and y fields.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:GDimension">GDimension</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type contains real-valued width and height fields.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:GRectangle">GRectangle</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type contains real-valued x, y, width, and height fields.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:createGPoint">createGPoint(x,&nbsp;y)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GPoint</code> structure with the specified <code>x</code> and <code>y</code> coordinates.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getX">getX(pt)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the x component of the <code>GPoint</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getY">getY(pt)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the y component of the <code>GPoint</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:createGDimension">createGDimension(width,&nbsp;height)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GDimension</code> value with the specified <code>width</code> and <code>height</code> coordinates.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getWidth">getWidth(dim)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the width component of the <code>GDimension</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getHeight">getHeight(dim)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the width component of the <code>GDimension</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:createGRectangle">createGRectangle(x,&nbsp;y,&nbsp;width,&nbsp;height)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GRectangle</code> value with the specified components.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getX">getX(r)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the x component of the rectangle.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getY">getY(r)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the y component of the rectangle.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getWidth">getWidth(r)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the width component of the <code>GRectangle</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getHeight">getHeight(r)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the width component of the <code>GRectangle</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isEmpty">isEmpty(r)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the rectangle is empty.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:contains">contains(r,&nbsp;pt)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the rectangle contains the given point.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:GPoint"></a>
+<pre class=detailCode>
+typedef struct {
+   double x;
+   double y;
+} GPoint;
+</pre>
+<div class=detailHTML>
+This type contains real-valued x and y fields.  It is used to
+represent a location on the graphics plane.
+</div>
+<hr>
+<a name="Type:GDimension"></a>
+<pre class=detailCode>
+typedef struct {
+   double width;
+   double height;
+} GDimension;
+</pre>
+<div class=detailHTML>
+This type contains real-valued width and height fields.  It is used
+to indicate the size of a graphical object.
+</div>
+<hr>
+<a name="Type:GRectangle"></a>
+<pre class=detailCode>
+typedef struct {
+   double x;
+   double y;
+   double width;
+   double height;
+} GRectangle;
+</pre>
+<div class=detailHTML>
+This type contains real-valued x, y, width, and height fields.  It is
+used to represent the bounding box of a graphical object.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:createGPoint"></a>
+<pre class=detailCode>
+GPoint createGPoint(double x, double y);
+</pre>
+<div class=detailHTML>
+Creates a <code>GPoint</code> structure with the specified <code>x</code>
+and <code>y</code> coordinates.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+pt = createGPoint(x, y);
+</pre>
+<hr>
+<a name="Function:getX"></a>
+<pre class=detailCode>
+double getX(GPoint pt);
+</pre>
+<div class=detailHTML>
+Returns the x component of the <code>GPoint</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+x = getX(pt);
+</pre>
+<hr>
+<a name="Function:getY"></a>
+<pre class=detailCode>
+double getY(GPoint pt);
+</pre>
+<div class=detailHTML>
+Returns the y component of the <code>GPoint</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+y = getY(pt);
+</pre>
+<hr>
+<a name="Function:createGDimension"></a>
+<pre class=detailCode>
+GDimension createGDimension(double width, double height);
+</pre>
+<div class=detailHTML>
+Creates a <code>GDimension</code> value with the specified
+<code>width</code> and <code>height</code> coordinates.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+dim = createGDimension(width, height);
+</pre>
+<hr>
+<a name="Function:getWidth"></a>
+<pre class=detailCode>
+double getWidth(GDimension dim);
+</pre>
+<div class=detailHTML>
+Returns the width component of the <code>GDimension</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+width = getWidth(dim);
+</pre>
+<hr>
+<a name="Function:getHeight"></a>
+<pre class=detailCode>
+double getHeight(GDimension dim);
+</pre>
+<div class=detailHTML>
+Returns the width component of the <code>GDimension</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+width = getHeight(dim);
+</pre>
+<hr>
+<a name="Function:createGRectangle"></a>
+<pre class=detailCode>
+GRectangle createGRectangle(double x, double y, double width, double height);
+</pre>
+<div class=detailHTML>
+Creates a <code>GRectangle</code> value with the specified components.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+r = createGRectangle(x, y, width, height);
+</pre>
+<hr>
+<a name="Function:getX"></a>
+<pre class=detailCode>
+double getX(GRectangle r);
+</pre>
+<div class=detailHTML>
+Returns the x component of the rectangle.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double x = getX(r);
+</pre>
+<hr>
+<a name="Function:getY"></a>
+<pre class=detailCode>
+double getY(GRectangle r);
+</pre>
+<div class=detailHTML>
+Returns the y component of the rectangle.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double y = getY(r);
+</pre>
+<hr>
+<a name="Function:getWidth"></a>
+<pre class=detailCode>
+double getWidth(GRectangle r);
+</pre>
+<div class=detailHTML>
+Returns the width component of the <code>GRectangle</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+width = getWidth(r);
+</pre>
+<hr>
+<a name="Function:getHeight"></a>
+<pre class=detailCode>
+double getHeight(GRectangle r);
+</pre>
+<div class=detailHTML>
+Returns the width component of the <code>GRectangle</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+width = getHeight(r);
+</pre>
+<hr>
+<a name="Function:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty(GRectangle r);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the rectangle is empty.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isEmpty(r)) . . .
+</pre>
+<hr>
+<a name="Function:contains"></a>
+<pre class=detailCode>
+bool contains(GRectangle r, GPoint pt);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the rectangle contains the given point.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (contains(r, pt)) . . .
+</pre>
+<hr>
+</table>
+</body>
+</html>

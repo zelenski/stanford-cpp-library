@@ -1,0 +1,69 @@
+<html>
+<head>
+<title>simpio.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="simpio-h.html">simpio.h</a></h1>
+This interface exports a set of functions that simplify input/output
+operations in C++ and provide some error-checking on console input.
+<h2>Functions</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Function:getInteger">getInteger(prompt)</a>&nbsp;</td><td class=indexSynopsis width=100%>Reads a complete line from <code>cin</code> and tries to scan it as an integer.</td></tr>
+<tr><td class=indexKey><a href="#Function:getReal">getReal(prompt)</a>&nbsp;</td><td class=indexSynopsis width=100%>Reads a complete line from <code>cin</code> and tries to scan it as a floating-point number.</td></tr>
+<tr><td class=indexKey><a href="#Function:getLine">getLine(prompt)</a>&nbsp;</td><td class=indexSynopsis width=100%>Reads a line of text from <code>cin</code> and returns that line as a string.</td></tr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:getInteger"></a>
+<pre class=detailCode>
+int getInteger(string prompt = "");
+</pre>
+<div class=detailHTML>
+Reads a complete line from <code>cin</code> and tries to scan it as
+an integer.  If it succeeds, the integer value is returned.  If
+the input is not a legal integer or if extraneous characters
+(other than whitespace) appear on the input line, the user is
+given a chance to reenter the value.  If supplied, the optional
+<code>prompt</code> string is printed before reading the value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int n = getInteger(prompt);
+</pre>
+<hr>
+<a name="Function:getReal"></a>
+<pre class=detailCode>
+double getReal(string prompt = "");
+</pre>
+<div class=detailHTML>
+Reads a complete line from <code>cin</code> and tries to scan it as
+a floating-point number.  If it succeeds, that value is returned.
+If the input is not a legal number or if extraneous characters
+(other than whitespace) appear on the input line, the user is
+given a chance to reenter the value.  If supplied, the optional
+<code>prompt</code> string is printed before reading the value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double x = getReal(prompt);
+</pre>
+<hr>
+<a name="Function:getLine"></a>
+<pre class=detailCode>
+string getLine(string prompt = "");
+</pre>
+<div class=detailHTML>
+Reads a line of text from <code>cin</code> and returns that line
+as a string.  The newline character that terminates the input is
+not stored as part of the return value.  If supplied, the optional
+<code>prompt</code> string is printed before reading the value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string line = getLine(prompt);
+</pre>
+<hr>
+</table>
+</body>
+</html>

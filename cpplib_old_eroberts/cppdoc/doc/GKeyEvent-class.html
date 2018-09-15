@@ -1,0 +1,97 @@
+<html>
+<head>
+<title>class GKeyEvent</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="gevents-h.html">class GKeyEvent</a></h1>
+This event subclass represents a key event.
+<h2>Constructor</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Constructor:GKeyEvent">GKeyEvent()</a><br><a href="#Constructor:GKeyEvent">GKeyEvent(e)</a><br><a href="#Constructor:GKeyEvent">GKeyEvent(type,&nbsp;key)</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a <code>GKeyEvent</code> using the specified parameters or those taken from the more general event <code>e</code>.</td></tr>
+</table>
+<h2>Methods</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Method:getEventType">getEventType()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the enumerated type constant corresponding to the specific type of key event.</td></tr>
+<tr><td class=indexKey><a href="#Method:getKey">getKey()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the integer code associated with the key in the event.</td></tr>
+<tr><td class=indexKey><a href="#Method:getChar">getChar()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the character code for the key value after applying modifier keys.</td></tr>
+<tr><td class=indexKey><a href="#Method:toString">toString()</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts the event to a human-readable representation of the event.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GKeyEvent"></a>
+<pre class=detailCode>
+GKeyEvent();
+GKeyEvent(GEvent e);
+GKeyEvent(KeyEventType type, int key);
+</pre>
+<div class=detailHTML>
+Creates a <code>GKeyEvent</code> using the specified parameters or
+those taken from the more general event <code>e</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GKeyEvent keyEvent;
+GKeyEvent keyEvent(e);
+GKeyEvent keyEvent(type, key);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:getEventType"></a>
+<pre class=detailCode>
+KeyEventType getEventType();
+</pre>
+<div class=detailHTML>
+Returns the enumerated type constant corresponding to the specific
+type of key event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+KeyEventType type = e.getEventType();
+</pre>
+<hr>
+<a name="Method:getKey"></a>
+<pre class=detailCode>
+int getKey();
+</pre>
+<div class=detailHTML>
+Returns the integer code associated with the key in the event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int key = getKey();
+</pre>
+<hr>
+<a name="Method:getChar"></a>
+<pre class=detailCode>
+char getChar();
+</pre>
+<div class=detailHTML>
+Returns the character code for the key value after applying modifier
+keys.  For example, if the user types the <code>'a'</code> key with
+the shift key down, <code>getChar</code> will return <code>'A'</code>.
+If the key code in the event does not correspond to a character,
+<code>getChar</code> returns the null character (<code>'\0'</code>).
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+char ch = e.getChar();
+</pre>
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString();
+</pre>
+<div class=detailHTML>
+Converts the event to a human-readable representation of the event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = e.toString();
+</pre>
+<hr>
+</table>
+</body>
+</html>

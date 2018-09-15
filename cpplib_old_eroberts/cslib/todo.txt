@@ -1,0 +1,14 @@
++ Change all Javadoc to cppdoc
++ Implement block tagging in newBlock/freeBlock
++ Implement polymorphic functions in generic.h
++ Implement StringBuffer ADT in strlib.h
++ Change implementation and all clients of scanner.h to tokenscanner.h model
++ Unit tests for copy(...)
++ Unit test for random.c
+- Make all implementations as memory safe as possible
+- Unit test for cmdscan.c
+- Implement all platform.h functionality
+- Improve documentation
+- Add rehash to hashmap
+? Reintegrate CharSet into Set(char) ?
+? Add high-level graph operations to graph.h ?

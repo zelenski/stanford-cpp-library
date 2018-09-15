@@ -1,0 +1,95 @@
+<html>
+<head>
+<title>class GMouseEvent</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="gevents-h.html">class GMouseEvent</a></h1>
+This event subclass represents a mouse event.
+<h2>Constructor</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Constructor:GMouseEvent">GMouseEvent()</a><br><a href="#Constructor:GMouseEvent">GMouseEvent(e)</a><br><a href="#Constructor:GMouseEvent">GMouseEvent(type,&nbsp;x,&nbsp;y)</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a <code>GMouseEvent</code> using the specified parameters or those taken from the more general event <code>e</code>.</td></tr>
+</table>
+<h2>Methods</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Method:getEventType">getEventType()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the enumerated type constant corresponding to the specific type of mouse event.</td></tr>
+<tr><td class=indexKey><a href="#Method:getX">getX()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the <i>x</i> coordinate at which the event occurred relative to the window origin at the upper left corner of the window.</td></tr>
+<tr><td class=indexKey><a href="#Method:getY">getY()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the <i>y</i> coordinate at which the event occurred relative to the window origin at the upper left corner of the window.</td></tr>
+<tr><td class=indexKey><a href="#Method:toString">toString()</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts the event to a human-readable representation of the event.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GMouseEvent"></a>
+<pre class=detailCode>
+GMouseEvent();
+GMouseEvent(GEvent e);
+GMouseEvent(MouseEventType type, double x, double y);
+</pre>
+<div class=detailHTML>
+Creates a <code>GMouseEvent</code> using the specified parameters or
+those taken from the more general event <code>e</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GMouseEvent mouseEvent;
+GMouseEvent mouseEvent(e);
+GMouseEvent mouseEvent(type, x, y);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:getEventType"></a>
+<pre class=detailCode>
+MouseEventType getEventType();
+</pre>
+<div class=detailHTML>
+Returns the enumerated type constant corresponding to the specific
+type of mouse event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+MouseEventType type = e.getEventType();
+</pre>
+<hr>
+<a name="Method:getX"></a>
+<pre class=detailCode>
+double getX();
+</pre>
+<div class=detailHTML>
+Returns the <i>x</i> coordinate at which the event occurred relative
+to the window origin at the upper left corner of the window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double x = getX();
+</pre>
+<hr>
+<a name="Method:getY"></a>
+<pre class=detailCode>
+double getY();
+</pre>
+<div class=detailHTML>
+Returns the <i>y</i> coordinate at which the event occurred relative
+to the window origin at the upper left corner of the window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double y = getY();
+</pre>
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString();
+</pre>
+<div class=detailHTML>
+Converts the event to a human-readable representation of the event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = e.toString();
+</pre>
+<hr>
+</table>
+</body>
+</html>

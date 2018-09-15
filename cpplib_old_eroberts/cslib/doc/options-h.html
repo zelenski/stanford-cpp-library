@@ -1,0 +1,185 @@
+<html>
+<head>
+<title>../options.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: options.h
+ * ---------------
+ * This interface defines a set of options that can be scanned on the
+ * command line.
+ */
+</scan>
+#ifndef _cmdscan_h
+#define _cmdscan_h
+
+#include "cslib.h"
+#include "hashmap.h"
+
+<a name="Function:parseOptions"><scan class=comment>/*
+ * Function: parseOptions
+ * ----------------------
+ * Parses shell arguments into a table of options and a list of unprocessed
+ * values.  The general pattern of use is
+ *
+ *    options = parseOptions(args, optionSpec);
+ *
+ * where args is a NULL-terminated list of strings and optionSpec is a
+ * NULL-terminated array of strings (typically initialized at compile time)
+ * indicating what options are legal.  The return value is a HashMap that
+ * contains both the bindings of the option names (including the leading
+ * minus sign) and a special entry under the name args that is a
+ * NULL-terminated array of the remaining arguments.
+ *
+ * Each element of optionSpec is a string that begins with the option name
+ * and then includes an additional field to specify the value that appears
+ * in the next argument position.  The standard fields are:
+ *
+ *
+ * &lt;int&gt;
+ *     An integer value
+ * &lt;double&gt;
+ *     A floating-point value
+ * &lt;string&gt;
+ *     An arbitrary string
+ * &lt;char&gt;
+ *     A single character
+ * &lt;bool&gt;
+ *     A boolean value
+ * x|y|z
+ *     One of the specified options
+ *
+ *
+ * Any argument class that is not defined in the above list is treated as a
+ * string, and the client is responsible for checking that the supplied
+ * value is valid.
+ */
+</scan>
+HashMap parseOptions(string args[], string optionSpec[]);
+
+<a name="Function:parseShellArgs"><scan class=comment>/*
+ * Function: parseShellArgs
+ * ------------------------
+ * Parses a string into individual arguments in the style of the various
+ * implementations of the Unix shell.  Argument tokens are separated by
+ * whitespace.  This implementation recognizes the quoting conventions of a
+ * single backslash (which quotes the next character) and either single or
+ * double quotation marks, which quote the intervening characters.  No
+ * other metacharacters are recognized.
+ */
+</scan>
+string *parseShellArgs(string line);
+
+<a name="Function:getOption"><scan class=comment>/*
+ * Function: getOption
+ * -------------------
+ * Gets an option value from the table, supplying a default value if the
+ * option is undefined.
+ */
+</scan>
+string getOption(HashMap options, string key, string def);
+
+<a name="Function:getArgList"><scan class=comment>/*
+ * Function: getArgList
+ * --------------------
+ * Gets the list of arguments that were not interpreted by the option
+ * parser.
+ */
+</scan>
+string *getArgList(HashMap options);
+
+<a name="Function:getIntOption"><scan class=comment>/*
+ * Function: getIntOption
+ * ----------------------
+ * Gets an integer option from the table, supplying a default value if the
+ * option is undefined.
+ */
+</scan>
+int getIntOption(HashMap options, string key, int def);
+
+<a name="Function:getDoubleOption"><scan class=comment>/*
+ * Function: getDoubleOption
+ * -------------------------
+ * Gets a numeric option from the table, supplying a default value if the
+ * option is undefined.
+ */
+</scan>
+double getDoubleOption(HashMap options, string key, double def);
+
+<a name="Function:getCharOption"><scan class=comment>/*
+ * Function: getCharOption
+ * -----------------------
+ * Gets a character option from the table, supplying a default value if the
+ * option is undefined.
+ */
+</scan>
+int getCharOption(HashMap options, string key, char def);
+
+<a name="Function:getBoolOption"><scan class=comment>/*
+ * Function: getBoolOption
+ * -----------------------
+ * Gets a Boolean option from the table, supplying a default value if the
+ * option is undefined.
+ */
+</scan>
+bool getBoolOption(HashMap options, string key, bool def);
+
+<a name="Function:getUnitsOption"><scan class=comment>/*
+ * Function: getUnitsOption
+ * ------------------------
+ * Gets a units value from an option table.  The value for the units option
+ * consists of a number followed by a unit specification, which can be any
+ * of the following: in (or i), cm, pt, or px.
+ */
+</scan>
+double getUnitsOption(HashMap options, string key, double def);
+
+<a name="Function:getColorOption"><scan class=comment>/*
+ * Function: getColorOption
+ * ------------------------
+ * Gets a color value from an option table, which is returned here as a
+ * PostScript string that sets the color to the desired value.  The
+ * supplied argument can be any of the following:
+ *
+ *   
+ *     name  
+ *     A standard color name
+ *   
+ *   
+ *     rrggbb  
+ *     A hexadecimal RGB value
+ *   
+ *   
+ *     0xrrggbb  
+ *     A hexadecimal RGB value using C style
+ *   
+ *   
+ *     #rrggbb  
+ *     A hexadecimal RGB value using HTML style
+ *   
+ *   
+ *     grayscale  
+ *     A floating-point value between 0 and 1 indicating grayscale
+ *   
+ *   
+ *     screen%  
+ *     A percentage value of the second-color screen
+ *   
+ */
+</scan>
+string getColorOption(HashMap options, string key, string def);
+
+<a name="Function:showUsage"><scan class=comment>/*
+ * Function: showUsage
+ * -------------------
+ * Displays a message describing the command line and its options.
+ */
+</scan>
+void showUsage(string usage, string spec[]);
+
+#endif
+</pre>
+</body>
+</html>

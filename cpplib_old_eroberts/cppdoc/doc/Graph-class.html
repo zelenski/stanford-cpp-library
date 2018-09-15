@@ -1,0 +1,258 @@
+<html>
+<head>
+<title>class Graph&lt;NodeType,ArcType&gt;</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="graph-h.html">class Graph&lt;NodeType,ArcType&gt;</a></h1>
+This class represents a graph with the specified node and arc types.
+The <code>NodeType</code> and <code>ArcType</code> parameters indicate
+the structure type or class used for nodes and arcs, respectively.
+These types can contain any fields or methods required by the client,
+but must contain the following public fields required by the
+<code>Graph</code> package itself:
+
+The <code>NodeType</code> definition must include:
+  - A <code>string</code> field called <code>name</code>
+  - A <code>Set&lt;ArcType *&gt;</code> field called <code>arcs</code>
+
+The <code>ArcType</code> definition must include:
+  - A <code>NodeType *</code> field called <code>start</code>
+  - A <code>NodeType *</code> field called <code>finish</code>
+<h2>Constructor</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Constructor:Graph">Graph()</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates an empty <code>Graph</code> object.</td></tr>
+</table>
+<h2>Methods</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Method:size">size()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the number of nodes in the graph.</td></tr>
+<tr><td class=indexKey><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> if the graph is empty.</td></tr>
+<tr><td class=indexKey><a href="#Method:clear">clear()</a>&nbsp;</td><td class=indexSynopsis width=100%>Reinitializes the graph to be empty, freeing any heap storage.</td></tr>
+<tr><td class=indexKey><a href="#Method:addNode">addNode(name)</a><br><a href="#Method:addNode">addNode(node)</a>&nbsp;</td><td class=indexSynopsis width=100%>Adds a node to the graph.</td></tr>
+<tr><td class=indexKey><a href="#Method:removeNode">removeNode(name)</a><br><a href="#Method:removeNode">removeNode(node)</a>&nbsp;</td><td class=indexSynopsis width=100%>Removes a node from the graph, where the node can be specified either by its name or as a pointer value.</td></tr>
+<tr><td class=indexKey><a href="#Method:getNode">getNode(name)</a>&nbsp;</td><td class=indexSynopsis width=100%>Looks up a node in the name table attached to the graph and returns a pointer to that node.</td></tr>
+<tr><td class=indexKey><a href="#Method:nodeExists">nodeExists(name)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> if a node with the given name exists.</td></tr>
+<tr><td class=indexKey><a href="#Method:addArc">addArc(s1,&nbsp;s2)</a><br><a href="#Method:addArc">addArc(n1,&nbsp;n2)</a><br><a href="#Method:addArc">addArc(arc)</a>&nbsp;</td><td class=indexSynopsis width=100%>Adds an arc to the graph.</td></tr>
+<tr><td class=indexKey><a href="#Method:removeArc">removeArc(s1,&nbsp;s2)</a><br><a href="#Method:removeArc">removeArc(n1,&nbsp;n2)</a><br><a href="#Method:removeArc">removeArc(arc)</a>&nbsp;</td><td class=indexSynopsis width=100%>Removes an arc from the graph, where the arc can be specified in any of three ways: by the names of its endpoints, by the node pointers at its endpoints, or as an arc pointer.</td></tr>
+<tr><td class=indexKey><a href="#Method:isConnected">isConnected(n1,&nbsp;n2)</a><br><a href="#Method:isConnected">isConnected(s1,&nbsp;s2)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> if the graph contains an arc from <code>n1</code> to <code>n2</code>.</td></tr>
+<tr><td class=indexKey><a href="#Method:getNodeSet">getNodeSet()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the set of all nodes in the graph.</td></tr>
+<tr><td class=indexKey><a href="#Method:getArcSet">getArcSet()</a><br><a href="#Method:getArcSet">getArcSet(node)</a><br><a href="#Method:getArcSet">getArcSet(name)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the set of all arcs in the graph or, in the second and third forms, the arcs that start at the specified node, which can be indicated either as a pointer or by name.</td></tr>
+<tr><td class=indexKey><a href="#Method:getNeighbors">getNeighbors(node)</a><br><a href="#Method:getNeighbors">getNeighbors(name)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the set of nodes that are neighbors of the specified node, which can be indicated either as a pointer or by name.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:Graph"></a>
+<pre class=detailCode>
+Graph();
+</pre>
+<div class=detailHTML>
+Creates an empty <code>Graph</code> object.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Graph&lt;NodeType,ArcType&gt; g;
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size();
+</pre>
+<div class=detailHTML>
+Returns the number of nodes in the graph.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int size = g.size();
+</pre>
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty();
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the graph is empty.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (g.isEmpty()) . . .
+</pre>
+<hr>
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Reinitializes the graph to be empty, freeing any heap storage.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+g.clear();
+</pre>
+<hr>
+<a name="Method:addNode"></a>
+<pre class=detailCode>
+NodeType *addNode(string name);
+NodeType *addNode(NodeType *node);
+</pre>
+<div class=detailHTML>
+Adds a node to the graph.  The first version of this method
+creates a new node of the appropriate type and initializes its
+fields; the second assumes that the client has already created
+the node and simply adds it to the graph.  Both versions of this
+method return a pointer to the node.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+NodeType *node = g.addNode(name);
+NodeType *node = g.addNode(node);
+</pre>
+<hr>
+<a name="Method:removeNode"></a>
+<pre class=detailCode>
+void removeNode(string name);
+void removeNode(NodeType *node);
+</pre>
+<div class=detailHTML>
+Removes a node from the graph, where the node can be specified
+either by its name or as a pointer value.  Removing a node also
+removes all arcs that contain that node.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+g.removeNode(name);
+g.removeNode(node);
+</pre>
+<hr>
+<a name="Method:getNode"></a>
+<pre class=detailCode>
+NodeType *getNode(string name);
+</pre>
+<div class=detailHTML>
+Looks up a node in the name table attached to the graph and
+returns a pointer to that node.  If no node with the specified
+name exists, <code>getNode</code> signals an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+NodeType *node = g.getNode(name);
+</pre>
+<hr>
+<a name="Method:nodeExists"></a>
+<pre class=detailCode>
+bool nodeExists(string name);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if a node with the given name exists.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (g.nodeExists(name)) . . .
+</pre>
+<hr>
+<a name="Method:addArc"></a>
+<pre class=detailCode>
+ArcType *addArc(string s1, string s2);
+ArcType *addArc(NodeType *n1, NodeType *n2);
+ArcType *addArc(ArcType *arc);
+</pre>
+<div class=detailHTML>
+Adds an arc to the graph.  The endpoints of the arc can be specified
+either as strings indicating the names of the nodes or as pointers
+to the node structures.  Alternatively, the client can create the arc
+structure explicitly and pass that pointer to the <code>addArc</code>
+method.  All three of these versions return a pointer to the arc in
+case the client needs to capture this value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+g.addArc(s1, s2);
+g.addArc(n1, n2);
+g.addArc(arc);
+</pre>
+<hr>
+<a name="Method:removeArc"></a>
+<pre class=detailCode>
+void removeArc(string s1, string s2);
+void removeArc(NodeType *n1, NodeType *n2);
+void removeArc(ArcType *arc);
+</pre>
+<div class=detailHTML>
+Removes an arc from the graph, where the arc can be specified in any
+of three ways: by the names of its endpoints, by the node pointers
+at its endpoints, or as an arc pointer.  If more than one arc
+connects the specified endpoints, all of them are removed.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+g.removeArc(s1, s2);
+g.removeArc(n1, n2);
+g.removeArc(arc);
+</pre>
+<hr>
+<a name="Method:isConnected"></a>
+<pre class=detailCode>
+bool isConnected(NodeType *n1, NodeType *n2);
+bool isConnected(string s1, string s2);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the graph contains an arc from
+<code>n1</code> to <code>n2</code>.  As in the <code>addArc</code>
+method, nodes can be specified either as node pointers or by name.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (g.isConnected(n1, n2)) . . .
+if (g.isConnected(s1, s2)) . . .
+</pre>
+<hr>
+<a name="Method:getNodeSet"></a>
+<pre class=detailCode>
+Set&lt;NodeType *&gt; &amp; getNodeSet();
+</pre>
+<div class=detailHTML>
+Returns the set of all nodes in the graph.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+foreach (NodeType *node in g.getNodeSet()) . . .
+</pre>
+<hr>
+<a name="Method:getArcSet"></a>
+<pre class=detailCode>
+Set&lt;ArcType *&gt; &amp; getArcSet();
+Set&lt;ArcType *&gt; &amp; getArcSet(NodeType *node);
+Set&lt;ArcType *&gt; &amp; getArcSet(string name);
+</pre>
+<div class=detailHTML>
+Returns the set of all arcs in the graph or, in the second and
+third forms, the arcs that start at the specified node, which
+can be indicated either as a pointer or by name.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+foreach (ArcType *arc in g.getArcSet()) . . .
+foreach (ArcType *arc in g.getArcSet(node)) . . .
+foreach (ArcType *arc in g.getArcSet(name)) . . .
+</pre>
+<hr>
+<a name="Method:getNeighbors"></a>
+<pre class=detailCode>
+Set&lt;NodeType *&gt; getNeighbors(NodeType *node);
+Set&lt;NodeType *&gt; getNeighbors(string node);
+</pre>
+<div class=detailHTML>
+Returns the set of nodes that are neighbors of the specified
+node, which can be indicated either as a pointer or by name.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+foreach (NodeType *node in g.getNeighbors(node)) . . .
+foreach (NodeType *node in g.getNeighbors(name)) . . .
+</pre>
+<hr>
+</table>
+</body>
+</html>

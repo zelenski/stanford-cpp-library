@@ -1,0 +1,81 @@
+<html>
+<head>
+<title>class Point</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="point-h.html">class Point</a></h1>
+This class represents an <i>x</i>-<i>y</i> coordinate point on a
+two-dimensional integer grid.  If you need to work with real-valued
+points, you should use the <code>gtypes.h</code> interface instead.
+<h2>Constructor</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Constructor:Point">Point()</a><br><a href="#Constructor:Point">Point(x,&nbsp;y)</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a Point object with the specified x and y coordinates.</td></tr>
+</table>
+<h2>Methods</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Method:getX">getX()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the <i>x</i>-coordinate of the point.</td></tr>
+<tr><td class=indexKey><a href="#Method:getY">getY()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the <i>y</i>-coordinate of the point.</td></tr>
+<tr><td class=indexKey><a href="#Method:toString">toString()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns a string representation of the <code>Point</code> in the form <code>"(x, y)"</code>.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:Point"></a>
+<pre class=detailCode>
+Point();
+Point(int x, int y);
+</pre>
+<div class=detailHTML>
+Creates a Point object with the specified x and y coordinates.  If
+the coordinates are not supplied, the default constructor sets these
+fields to 0.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Point origin;
+Point pt(x, y);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:getX"></a>
+<pre class=detailCode>
+int getX();
+</pre>
+<div class=detailHTML>
+Returns the <i>x</i>-coordinate of the point.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int x = pt.getX();
+</pre>
+<hr>
+<a name="Method:getY"></a>
+<pre class=detailCode>
+int getY();
+</pre>
+<div class=detailHTML>
+Returns the <i>y</i>-coordinate of the point.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int y = pt.getY();
+</pre>
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString();
+</pre>
+<div class=detailHTML>
+Returns a string representation of the <code>Point</code> in the form
+<code>"(x, y)"</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = pt.toString();
+</pre>
+<hr>
+</table>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<html>
+<head>
+<title>../graph.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: graph.h
+ * -------------
+ * This interface exports a simple graph abstraction.  In this abstraction,
+ * graphs closely model their mathematical formulation as a set of nodes
+ * connected by a set of arcs.
+ */
+</scan>
+#ifndef _graph_h
+#define _graph_h
+
+#include "cslib.h"
+#include "cmpfn.h"
+#include "set.h"
+
+<a name="Type:Graph"><scan class=comment>/*
+ * Type: Graph
+ * -----------
+ * This type represents the abstract type for a graph.  Conceptually, a
+ * Graph consists of a set of nodes together with a set of arcs.  Each arc
+ * connects two nodes in one direction.  Undirected graphs must include two
+ * arcs for each bidirectional connection.
+ */
+</scan>
+typedef struct GraphCDT *Graph;
+
+<a name="Type:Node"><scan class=comment>/*
+ * Type: Node
+ * ----------
+ * This type is the abstract type for a node in a graph.  Clients can store
+ * their own data in a node by using the functions getBlockData and
+ * setBlockData described in cslib.h.
+ */
+</scan>
+typedef struct NodeCDT *Node;
+
+<a name="Type:Arc"><scan class=comment>/*
+ * Type: Arc
+ * ---------
+ * This type is the abstract type for an arc in a graph.  Clients can store
+ * their own data in an arc by using the functions getBlockData and
+ * setBlockData described in cslib.h.
+ */
+</scan>
+typedef struct ArcCDT *Arc;
+
+<a name="Function:newGraph"><scan class=comment>/*
+ * Function: newGraph
+ * Usage: g = newGraph();
+ * ----------------------
+ * Returns a new graph with no nodes or arcs.
+ */
+</scan>
+Graph newGraph(void);
+
+<a name="Function:freeGraph"><scan class=comment>/*
+ * Function: freeGraph
+ * Usage: freeGraph(g);
+ * --------------------
+ * Frees the storage for the graph, along with its nodes and arcs.
+ */
+</scan>
+void freeGraph(Graph g);
+
+<a name="Function:addNode"><scan class=comment>/*
+ * Function: addNode
+ * Usage: node = addNode(g, name);
+ * -------------------------------
+ * Adds a node to the graph with the specified name.  If there is already a
+ * node with that name, addNode generates an error.  The function returns
+ * the Node value.
+ */
+</scan>
+Node addNode(Graph g, string name);
+
+<a name="Function:removeNode"><scan class=comment>/*
+ * Function: removeNode
+ * Usage: removeNode(g, node);
+ * ---------------------------
+ * Removes and frees the specified node from the graph, along with any arcs
+ * that enter or leave that node.
+ */
+</scan>
+void removeNode(Graph g, Node node);
+
+<a name="Function:getNode"><scan class=comment>/*
+ * Function: getNode
+ * Usage: node = getNode(g, name);
+ * -------------------------------
+ * Returns the node in the graph that has the specified name.  If there is
+ * no such node, getNode returns NULL.
+ */
+</scan>
+Node getNode(Graph g, string name);
+
+<a name="Function:addArc"><scan class=comment>/*
+ * Function: addArc
+ * Usage: arc = addArc(g, n1, n2);
+ * -------------------------------
+ * Adds a new arc to the graph connecting nodes n1 and n2.  The function
+ * returns the Arc value.
+ */
+</scan>
+Arc addArc(Graph g, Node n1, Node n2);
+
+<a name="Function:removeArc"><scan class=comment>/*
+ * Function: removeArc
+ * Usage: removeArc(g, arc);
+ * -------------------------
+ * Removes and frees the specified arc.
+ */
+</scan>
+void removeArc(Graph g, Arc arc);
+
+<a name="Function:isConnected"><scan class=comment>/*
+ * Function: isConnected
+ * Usage: if (isConnected(n1, n2)) . . .
+ * -------------------------------------
+ * Returns true if there is an arc from n1 to n2.
+ */
+</scan>
+bool isConnected(Node n1, Node n2);
+
+<a name="Function:getNodeSet"><scan class=comment>/*
+ * Function: getNodeSet
+ * Usage: nodeSet = getNodeSet(g);
+ * -------------------------------
+ * Returns a set consisting of all nodes in the graph.  This function is
+ * typically used in conjunction with the foreach macro to initialize an
+ * iterator.  For example, the following idiom iterates over the nodes in
+ * the specified graph:
+ *
+ *    foreach (node in getNodeSet(g)) . . .
+ */
+</scan>
+Set getNodeSet(Graph g);
+
+<a name="Function:getArcSet"><scan class=comment>/*
+ * Function: getArcSet
+ * Usage: arcSet = getArcSet(g);
+ *        arcSet = getArcSet(node);
+ * --------------------------------
+ * Returns a set consisting of all arcs, either in the graph or starting at
+ * the specified node.  This function is typically used in conjunction with
+ * the foreach macro to initialize an iterator.  For example, the following
+ * idiom iterates over the arcs in the specified graph:
+ *
+ *    foreach (arc in getArcSet(g)) . . .
+ */
+</scan>
+Set getArcSet(void *arg);
+
+<a name="Function:getNeighbors"><scan class=comment>/*
+ * Function: getNeighbors
+ * Usage: nodeSet = getNeighbors(node);
+ * ------------------------------------
+ * Returns a set consisting of the nodes to which a given node is
+ * connected.  This function is typically used in conjunction with the
+ * foreach macro to initialize an iterator.  For example, the following
+ * idiom iterates over the nodes to which the node start is connected:
+ *
+ *    foreach (node in getNeighbors(start)) . . .
+ */
+</scan>
+Set getNeighbors(Node node);
+
+<a name="Function:getName"><scan class=comment>/*
+ * Function: getName
+ * Usage: str = getName(node);
+ * ---------------------------
+ * Returns the name of the node.
+ */
+</scan>
+string getName(Node node);
+
+<a name="Function:startOfArc"><scan class=comment>/*
+ * Function: startOfArc
+ * Usage: node = startOfArc(arc);
+ * ------------------------------
+ * Returns the node at the beginning of the specified arc.
+ */
+</scan>
+Node startOfArc(Arc arc);
+
+<a name="Function:endOfArc"><scan class=comment>/*
+ * Function: endOfArc
+ * Usage: node = endOfArc(arc);
+ * ----------------------------
+ * Returns the node at the end of the specified arc.
+ */
+</scan>
+Node endOfArc(Arc arc);
+
+<a name="Function:getCost"><scan class=comment>/*
+ * Function: getCost
+ * Usage: cost = getCost(arc);
+ * ---------------------------
+ * Returns the "cost" associated with traversing an arc.  This cost need
+ * not be economic and will often refer to some other metric, such as
+ * distance.
+ */
+</scan>
+double getCost(Arc arc);
+
+<a name="Function:setCost"><scan class=comment>/*
+ * Function: setCost
+ * Usage: setCost(arc, cost);
+ * --------------------------
+ * Sets the cost of traversing the arc.
+ */
+</scan>
+void setCost(Arc arc, double cost);
+
+<a name="Function:setNodeOrdering"><scan class=comment>/*
+ * Function: setNodeOrdering
+ * Usage: setNodeOrdering(graph, cmpFn);
+ * -------------------------------------
+ * Sets the comparison function used to order the nodes in a graph when
+ * they are enumerated.  By default, nodes are sorted in alphabetical order
+ * by name.
+ */
+</scan>
+void setNodeOrdering(Graph graph, CompareFn cmpFn);
+
+<a name="Function:setArcOrdering"><scan class=comment>/*
+ * Function: setArcOrdering
+ * Usage: setArcOrdering(graph, cmpFn);
+ * ------------------------------------
+ * Sets the comparison function used to order the arcs in a graph when they
+ * are enumerated.  By default, arcs are sorted in alphabetical order by
+ * the name of the start node followed by the name of the end node.
+ */
+</scan>
+void setArcOrdering(Graph graph, CompareFn cmpFn);
+
+#endif
+</pre>
+</body>
+</html>

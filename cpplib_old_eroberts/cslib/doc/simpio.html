@@ -1,0 +1,133 @@
+<html>
+<head>
+<title>simpio.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="simpio-h.html"><code>simpio.h</code></a></h1>
+This interface exports several functions that simplify the
+reading of input data.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getInteger">getInteger()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a line of text from standard input and scans it as an integer.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getLong">getLong()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a line of text from standard input and scans it as a <code>long</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getReal">getReal()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a line of text from standard input and scans it as a <code>double</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getLine">getLine()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a line of text from standard input and returns the line as a string.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:readLine">readLine(infile)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a line of text from the input file and returns the line as a string.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:readLinesFromStream">readLinesFromStream(infile)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads an entire file into a <code>NULL</code>-terminated array of lines.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:readLinesFromFile">readLinesFromFile(filename)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads an entire file into a <code>NULL</code>-terminated array of lines.</td></tr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:getInteger"></a>
+<pre class=detailCode>
+int getInteger(void);
+</pre>
+<div class=detailHTML>
+Reads a line of text from standard input and scans it as an integer.
+If an integer cannot be scanned or if extraneous characters follow
+the number, the user is given a chance to retry.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+n = getInteger();
+</pre>
+<hr>
+<a name="Function:getLong"></a>
+<pre class=detailCode>
+long getLong(void);
+</pre>
+<div class=detailHTML>
+Reads a line of text from standard input and scans it as a
+<code>long</code>.  If an integer cannot be scanned or if
+extraneous characters follow the number, the user is given
+a chance to retry.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+l = getLong();
+</pre>
+<hr>
+<a name="Function:getReal"></a>
+<pre class=detailCode>
+double getReal(void);
+</pre>
+<div class=detailHTML>
+Reads a line of text from standard input and scans it as a
+<code>double</code>.  If an number cannot be scanned or if
+extraneous characters follow the number, the user is given
+a chance to retry.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+d = getReal();
+</pre>
+<hr>
+<a name="Function:getLine"></a>
+<pre class=detailCode>
+string getLine(void);
+</pre>
+<div class=detailHTML>
+Reads a line of text from standard input and returns the line
+as a string.  The newline character that terminates the input
+is not stored as part of the result.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+s = getLine();
+</pre>
+<hr>
+<a name="Function:readLine"></a>
+<pre class=detailCode>
+string readLine(FILE *infile);
+</pre>
+<div class=detailHTML>
+Reads a line of text from the input file and returns the line
+as a string.  The newline character that terminates the input
+is not stored as part of the result.  The <code>readLine</code>
+function returns <code>NULL</code> if <code>infile</code> is
+at the end-of-file position.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+s = readLine(infile);
+</pre>
+<hr>
+<a name="Function:readLinesFromStream"></a>
+<pre class=detailCode>
+string *readLinesFromStream(FILE *infile);
+</pre>
+<div class=detailHTML>
+Reads an entire file into a <code>NULL</code>-terminated array of lines.
+Opening and closing the file stream is the responsibility of the caller.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string *array = readLinesFromStream(infile);
+</pre>
+<hr>
+<a name="Function:readLinesFromFile"></a>
+<pre class=detailCode>
+string *readLinesFromFile(string filename);
+</pre>
+<div class=detailHTML>
+Reads an entire file into a <code>NULL</code>-terminated array of lines.
+This version opens the file, reads it, and closes it at the end.  If the
+file name is <code>"-"</code>, the function reads from <code>stdin</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string *array = readLinesFromFile(filename);
+</pre>
+<hr>
+</table>
+</body>
+</html>

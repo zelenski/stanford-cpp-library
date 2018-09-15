@@ -1,0 +1,55 @@
+#include <bookdefs.ps>
+#include <fakeuml.ps>
+#include "hierarchy.ps"
+
+/UML_BOX_WIDTH 68 def
+
+/DY0 70 def
+/DX 8 def
+
+/X0 400 def
+/Y0 400 def
+
+/Y1 Y0 UML_BOX_HEIGHT sub DY0 sub def
+
+/EVENT_CLASSES [
+  (GWindowEvent)
+  (GActionEvent)
+  (GMouseEvent)
+  (GKeyEvent)
+  (GTimerEvent)
+] def
+
+/UML_HTML_LINK true def
+X0 UML_BOX_WIDTH 2 div sub Y0 (GEvent) drawAbstractClass
+X0 Y1 (GEvent) EVENT_CLASSES drawSubclasses
+
+/dumpHTML {
+  9 dict begin
+    /text exch def
+    /filename exch def
+    /ok true def
+    errordict /invalidfileaccess { /ok false def } put
+    filename (w) file /out exch def
+    ok {
+      /width EVENT_CLASSES length dup UML_BOX_WIDTH mul exch 1 sub DX mul
+        add def
+      out text writestring
+      out (<p><div class=inset>\n) writestring
+      out (<img src="images/GEventHierarchy.png"\n) writestring
+      out (     width=) writestring
+      out width UML_SF mul 0.5 add cvi 10 string cvs writestring
+      out ( usemap="#GEventMap" alt="GEventHierarchy">\n) writestring
+      out (</div>\n) writestring
+      out (<map name="GEventMap">\n) writestring
+      out (GEvent) (#Type:GEvent) dumpAreaTag
+      EVENT_CLASSES { out exch dup (#Type:) exch conc dumpAreaTag } forall
+      out (</map>\n) writestring
+      out closefile
+    } if
+  end
+} def
+
+(GEventHierarchy.html)
+(The structure of the <code>GEvent</code> hierarchy looks like this:\n\n)
+dumpHTML

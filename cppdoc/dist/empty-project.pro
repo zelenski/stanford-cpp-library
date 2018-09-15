@@ -274,7 +274,10 @@ QMAKE_CXXFLAGS += -Wcast-align
 QMAKE_CXXFLAGS += -Wformat=2
 QMAKE_CXXFLAGS += -Wlogical-op
 #QMAKE_CXXFLAGS += -Wlong-long
+QMAKE_CXXFLAGS += -Wno-keyword-macro
 QMAKE_CXXFLAGS += -Wno-missing-field-initializers
+QMAKE_CXXFLAGS += -Wno-old-style-cast
+QMAKE_CXXFLAGS += -Wno-reserved-id-macro
 QMAKE_CXXFLAGS += -Wno-sign-compare
 QMAKE_CXXFLAGS += -Wno-sign-conversion
 QMAKE_CXXFLAGS += -Wno-write-strings

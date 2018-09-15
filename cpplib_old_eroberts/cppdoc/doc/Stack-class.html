@@ -1,0 +1,120 @@
+<html>
+<head>
+<title>class Stack&lt;ValueType&gt;</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="stack-h.html">class Stack&lt;ValueType&gt;</a></h1>
+This class models a linear structure called a <i>stack</i>
+in which values are added and removed only from one end.
+This discipline gives rise to a last-in/first-out behavior (LIFO)
+that is the defining feature of stacks.  The fundamental stack
+operations are <code>push</code> (add to top) and <code>pop</code>
+(remove from top).
+<h2>Constructor</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Constructor:Stack">Stack()</a>&nbsp;</td><td class=indexSynopsis width=100%>Initializes a new empty stack.</td></tr>
+</table>
+<h2>Methods</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Method:size">size()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the number of values in this stack.</td></tr>
+<tr><td class=indexKey><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> if this stack contains no elements.</td></tr>
+<tr><td class=indexKey><a href="#Method:clear">clear()</a>&nbsp;</td><td class=indexSynopsis width=100%>Removes all elements from this stack.</td></tr>
+<tr><td class=indexKey><a href="#Method:push">push(value)</a>&nbsp;</td><td class=indexSynopsis width=100%>Pushes the specified value onto this stack.</td></tr>
+<tr><td class=indexKey><a href="#Method:pop">pop()</a>&nbsp;</td><td class=indexSynopsis width=100%>Removes the top element from this stack and returns it.</td></tr>
+<tr><td class=indexKey><a href="#Method:peek">peek()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the value of top element from this stack, without removing it.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:Stack"></a>
+<pre class=detailCode>
+Stack();
+</pre>
+<div class=detailHTML>
+Initializes a new empty stack.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Stack&lt;ValueType&gt; stack;
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size();
+</pre>
+<div class=detailHTML>
+Returns the number of values in this stack.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int n = stack.size();
+</pre>
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty();
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if this stack contains no elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (stack.isEmpty()) . . .
+</pre>
+<hr>
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Removes all elements from this stack.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+stack.clear();
+</pre>
+<hr>
+<a name="Method:push"></a>
+<pre class=detailCode>
+void push(ValueType value);
+</pre>
+<div class=detailHTML>
+Pushes the specified value onto this stack.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+stack.push(value);
+</pre>
+<hr>
+<a name="Method:pop"></a>
+<pre class=detailCode>
+ValueType pop();
+</pre>
+<div class=detailHTML>
+Removes the top element from this stack and returns it.  This
+method signals an error if called on an empty stack.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType top = stack.pop();
+</pre>
+<hr>
+<a name="Method:peek"></a>
+<pre class=detailCode>
+ValueType peek();
+</pre>
+<div class=detailHTML>
+Returns the value of top element from this stack, without removing
+it.  This method signals an error if called on an empty stack.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType top = stack.peek();
+</pre>
+<hr>
+</table>
+</body>
+</html>

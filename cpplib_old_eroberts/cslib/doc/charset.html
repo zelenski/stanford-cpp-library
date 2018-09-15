@@ -1,0 +1,239 @@
+<html>
+<head>
+<title>charset.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="charset-h.html"><code>charset.h</code></a></h1>
+This interface exports an abstract type that represents sets of characters.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Type</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:CharSet">CharSet</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Defines the abstract type used to represent sets of characters </td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newCharSet">newCharSet()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates an empty set capable of holding characters.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:freeCharSet">freeCharSet(set)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Frees the storage associated with a character set.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:size">size(set)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of elements in the set.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isEmpty">isEmpty(set)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the set has no elements.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:clear">clear(set)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes all characters from the set.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:clone">clone(set)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a copy of the set.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:contains">contains(set,&nbsp;ch)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the character <code>ch</code> is a member of the set.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:add">add(set,&nbsp;ch)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds the character <code>ch</code> to the set.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:addString">addString(set,&nbsp;str)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds the characters in <code>str</code> to the set.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:remove">remove(set,&nbsp;ch)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes an element from the set.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:equals">equals(s1,&nbsp;s2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if <code>s1</code> and <code>s2</code> are equal, which means that they contain the same elements.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isSubset">isSubset(s1,&nbsp;s2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if <code>s1</code> is a subset of <code>s2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:union">union(s1,&nbsp;s2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a new set consisting of all elements in either <code>s1</code> or <code>s2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:intersection">intersection(s1,&nbsp;s2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a new set consisting of all elements in both <code>s1</code> and <code>s2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setDifference">setDifference(s1,&nbsp;s2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a new set consisting of all elements in <code>s1</code> that are not elements of <code>s2</code>.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:CharSet"></a>
+<pre class=detailCode>
+typedef struct CharSetCDT *CharSet;
+</pre>
+<div class=detailHTML>
+Defines the abstract type used to represent sets of characters
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:newCharSet"></a>
+<pre class=detailCode>
+CharSet newCharSet();
+</pre>
+<div class=detailHTML>
+Creates an empty set capable of holding characters.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set = newCharSet();
+</pre>
+<hr>
+<a name="Function:freeCharSet"></a>
+<pre class=detailCode>
+void freeCharSet(CharSet set);
+</pre>
+<div class=detailHTML>
+Frees the storage associated with a character set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+freeCharSet(set);
+</pre>
+<hr>
+<a name="Function:size"></a>
+<pre class=detailCode>
+int size(CharSet set);
+</pre>
+<div class=detailHTML>
+Returns the number of elements in the set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+n = size(set);
+</pre>
+<hr>
+<a name="Function:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty(CharSet set);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the set has no elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isEmpty(set)) . . .
+</pre>
+<hr>
+<a name="Function:clear"></a>
+<pre class=detailCode>
+void clear(CharSet set);
+</pre>
+<div class=detailHTML>
+Removes all characters from the set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+clear(set);
+</pre>
+<hr>
+<a name="Function:clone"></a>
+<pre class=detailCode>
+CharSet clone(CharSet set);
+</pre>
+<div class=detailHTML>
+Creates a copy of the set.  The <code>clone</code> function copies
+only the first level of the structure and does not copy the individual
+elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+newset = clone(set);
+</pre>
+<hr>
+<a name="Function:contains"></a>
+<pre class=detailCode>
+bool contains(CharSet set, char ch);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the character <code>ch</code> is a member
+of the set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (contains(set, ch)) . . .
+</pre>
+<hr>
+<a name="Function:add"></a>
+<pre class=detailCode>
+void add(CharSet set, char ch);
+</pre>
+<div class=detailHTML>
+Adds the character <code>ch</code> to the set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+add(set, ch);
+</pre>
+<hr>
+<a name="Function:addString"></a>
+<pre class=detailCode>
+void addString(CharSet set, string str);
+</pre>
+<div class=detailHTML>
+Adds the characters in <code>str</code> to the set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+addString(set, str);
+</pre>
+<hr>
+<a name="Function:remove"></a>
+<pre class=detailCode>
+void remove(CharSet set, char ch);
+</pre>
+<div class=detailHTML>
+Removes an element from the set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+remove(set, ch);
+</pre>
+<hr>
+<a name="Function:equals"></a>
+<pre class=detailCode>
+bool equals(CharSet s1, CharSet s2);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if <code>s1</code> and <code>s2</code>
+are equal, which means that they contain the same elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (equals(s1, s2)) . . .
+</pre>
+<hr>
+<a name="Function:isSubset"></a>
+<pre class=detailCode>
+bool isSubset(CharSet s1, CharSet s2);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if <code>s1</code> is a subset of <code>s2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isSubset(s1, s2)) . . .
+</pre>
+<hr>
+<a name="Function:union"></a>
+<pre class=detailCode>
+CharSet union(CharSet s1, CharSet s2);
+</pre>
+<div class=detailHTML>
+Returns a new set consisting of all elements in either <code>s1</code>
+or <code>s2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set = union(s1, s2);
+</pre>
+<hr>
+<a name="Function:intersection"></a>
+<pre class=detailCode>
+CharSet intersection(CharSet s1, CharSet s2);
+</pre>
+<div class=detailHTML>
+Returns a new set consisting of all elements in both <code>s1</code>
+and <code>s2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set = intersection(s1, s2);
+</pre>
+<hr>
+<a name="Function:setDifference"></a>
+<pre class=detailCode>
+CharSet setDifference(CharSet s1, CharSet s2);
+</pre>
+<div class=detailHTML>
+Returns a new set consisting of all elements in <code>s1</code> that
+are not elements of <code>s2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set = setDifference(s1, s2);
+</pre>
+<hr>
+</table>
+</body>
+</html>

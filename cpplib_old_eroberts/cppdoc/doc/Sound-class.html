@@ -1,0 +1,81 @@
+<html>
+<head>
+<title>class Sound</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="sound-h.html">class Sound</a></h1>
+This class encapsulates a sound file, which is typically
+specified in the constructor.
+<h2>Constructor</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Constructor:Sound">Sound()</a><br><a href="#Constructor:Sound">Sound(filename)</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a <code>Sound</code> object.</td></tr>
+</table>
+<h2>Methods</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Method:play">play()</a>&nbsp;</td><td class=indexSynopsis width=100%>Plays the sound synchronously and waits for the sound to finish before returning.</td></tr>
+<tr><td class=indexKey><a href="#Method:start">start()</a>&nbsp;</td><td class=indexSynopsis width=100%>Starts playing the sound asynchronously.</td></tr>
+<tr><td class=indexKey><a href="#Method:stop">stop()</a>&nbsp;</td><td class=indexSynopsis width=100%>Stops playing the sound.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:Sound"></a>
+<pre class=detailCode>
+Sound();
+Sound(string filename);
+</pre>
+<div class=detailHTML>
+Creates a <code>Sound</code> object.  The default constructor
+creates an empty sound that cannot be played.  The second form
+initializes the sound by reading in the contents of the specified
+file.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Sound sound;
+Sound sound(filename);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:play"></a>
+<pre class=detailCode>
+void play();
+</pre>
+<div class=detailHTML>
+Plays the sound synchronously and waits for the sound to finish before
+returning.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sound.play();
+</pre>
+<hr>
+<a name="Method:start"></a>
+<pre class=detailCode>
+void start();
+</pre>
+<div class=detailHTML>
+Starts playing the sound asynchronously.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sound.start();
+</pre>
+<hr>
+<a name="Method:stop"></a>
+<pre class=detailCode>
+void stop();
+</pre>
+<div class=detailHTML>
+Stops playing the sound.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sound.stop();
+</pre>
+<hr>
+</table>
+</body>
+</html>

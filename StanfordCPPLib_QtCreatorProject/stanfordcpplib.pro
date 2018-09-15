@@ -274,7 +274,10 @@ QMAKE_CXXFLAGS += -Wcast-align
 QMAKE_CXXFLAGS += -Wformat=2
 QMAKE_CXXFLAGS += -Wlogical-op
 #QMAKE_CXXFLAGS += -Wlong-long
+QMAKE_CXXFLAGS += -Wno-keyword-macro
 QMAKE_CXXFLAGS += -Wno-missing-field-initializers
+QMAKE_CXXFLAGS += -Wno-old-style-cast
+QMAKE_CXXFLAGS += -Wno-reserved-id-macro
 QMAKE_CXXFLAGS += -Wno-sign-compare
 QMAKE_CXXFLAGS += -Wno-sign-conversion
 QMAKE_CXXFLAGS += -Wno-write-strings
@@ -348,8 +351,9 @@ unix:!macx {
     #QMAKE_CXXFLAGS += -Wno-dangling-field
     QMAKE_CXXFLAGS += -Wno-unused-const-variable
     LIBS += -ldl
-    LIBS += -lpthread
 }
+
+LIBS += -lpthread
 
 # additional flags for clang compiler (default on Mac)
 COMPILERNAME = $$QMAKE_CXX
@@ -607,7 +611,6 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
         copyToDestdir($$PWD/res/autograder)
     }
     !win32 {
-        LIBS += -lpthread
         copyToDestdir($$files($$PWD/res/autograder/*))
     }
 

@@ -50,6 +50,10 @@ void QtGui::exitGraphics(int exitCode) {
     }
 }
 
+QApplication* QtGui::getApplication() {
+    return _app;
+}
+
 int QtGui::getArgc() const {
     return _argc;
 }
@@ -67,8 +71,11 @@ void QtGui::initializeQt() {
                     "Qt internal warning: %{message}\n"
                     "  - pid: %{pid}\n"
                     "  - thread: %{threadid}\n"
-                    "  - stack:\n"
-                    "      %{backtrace depth=20 separator=\"\n      \"}");
+
+                    // backtrace doesn't work on windows and some other builds
+                    // "  - stack:\n"
+                    // "      %{backtrace depth=20 separator=\"\n      \"}"
+            );
             _app = new QApplication(_argc, _argv);
             _initialized = true;
         }
