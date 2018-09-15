@@ -3,6 +3,8 @@
  * ---------------
  *
  * @author Marty Stepp
+ * @version 2018/09/14
+ * - added boldFont, italicFont
  * @version 2018/08/23
  * - renamed to gfont.cpp to replace Java version
  * @version 2018/07/05
@@ -22,10 +24,16 @@ GFont::GFont() {
     // empty
 }
 
+void GFont::boldFont(GInteractor* interactor) {
+    require::nonNull(interactor, "GFont::boldFont", "interactor");
+    QFont newFont = deriveQFont(toQFont(interactor->getFont()), /* weight */ QFont::Bold);
+    interactor->setFont(newFont);
+}
+
 void GFont::changeFontSize(GInteractor* interactor, int dsize) {
     require::nonNull(interactor, "GFont::changeFontSize", "interactor");
     QFont newFont = changeFontSize(toQFont(interactor->getFont()), dsize);
-    interactor->setFont(toFontString(newFont));
+    interactor->setFont(newFont);
 }
 
 QFont GFont::changeFontSize(const QFont& font, int dsize) {
@@ -82,6 +90,13 @@ QFont::StyleHint GFont::getStyleHint(const std::string& fontFamily) {
     }
 }
 
+void GFont::italicFont(GInteractor* interactor) {
+    require::nonNull(interactor, "GFont::boldFont", "interactor");
+    QFont oldFont = toQFont(interactor->getFont());
+    QFont newFont(oldFont.family(), oldFont.pointSize(), oldFont.weight(), /* italic */ true);
+    interactor->setFont(newFont);
+}
+
 // example font string:
 // "Courier New-Bold-12"
 std::string GFont::toFontString(const QFont& font) {
@@ -97,12 +112,14 @@ std::string GFont::toFontString(const QFont& font) {
         case QFont::Black:
             out << "-bold";
             dashPrinted = true;
+            break;
         case QFont::Thin:
         case QFont::ExtraLight:
         case QFont::Light:
         case QFont::Normal:
         case QFont::Medium:
         default:
+            // not bold
             break;
     }
     if (font.italic()) {

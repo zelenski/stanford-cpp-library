@@ -129,7 +129,7 @@ GStudentThread::GStudentThread(GThunkInt mainFunc)
         : _mainFunc(mainFunc),
           _mainFuncVoid(nullptr),
           _result(0) {
-    this->setObjectName(QString::fromStdString("GStudentThread"));
+    this->setObjectName(QString::fromStdString("GStudentThread"));   // TODO: unique name
 }
 
 GStudentThread::GStudentThread(GThunk mainFunc)

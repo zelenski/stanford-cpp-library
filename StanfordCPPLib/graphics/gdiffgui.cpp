@@ -1,6 +1,6 @@
 /*
- * File: GDiffGui.cpp
- * -------------------
+ * File: gdiffgui.cpp
+ * ------------------
  * 
  * @author Marty Stepp
  * @version 2018/08/23

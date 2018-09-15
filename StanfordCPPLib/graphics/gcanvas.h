@@ -669,6 +669,11 @@ public:
     virtual void setPixelsARGB(const Grid<int>& pixelsARGB) Q_DECL_OVERRIDE;
 
     /**
+     * Converts the pixels of the canvas into a GImage object.
+     */
+    virtual GImage* toGImage() const;
+
+    /**
      * Converts this canvas's pixel data into a grid of RGB pixels.
      * The grid's first index is a row or y-index, and its second index
      * is the column or x-index.

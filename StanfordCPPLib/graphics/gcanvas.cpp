@@ -32,7 +32,7 @@ int GCanvas::createRgbPixel(int red, int green, int blue) {
 
 int GCanvas::getAlpha(int argb) {
     // have to & a second time because of sign-extension on >> shift
-    return ((argb & 0xff000000) >> 24) & 0x000000ff;
+    return ((static_cast<unsigned int>(argb) & 0xff000000) >> 24) & 0x000000ff;
 }
 
 int GCanvas::getBlue(int rgb) {
@@ -86,7 +86,8 @@ void GCanvas::init(double width, double height, int rgbBackground, QWidget* pare
     GThread::runOnQtGuiThread([this, rgbBackground, parent]() {
         _iqcanvas = new _Internal_QCanvas(this, getInternalParent(parent));
         _gcompound.setWidget(_iqcanvas);
-        _backgroundColor = rgbBackground;
+        _backgroundColor = GColor::convertRGBToColor(rgbBackground);
+        _backgroundColorInt = rgbBackground;
     });
 
     if (width > 0 && height > 0) {
@@ -137,7 +138,7 @@ void GCanvas::clearPixels() {
         // _backgroundImage = nullptr;
         // keep background image buffer but fill with background color instead
         GThread::runOnQtGuiThread([this]() {
-            _backgroundImage->fill(_backgroundColorInt);
+            _backgroundImage->fill(static_cast<unsigned int>(_backgroundColorInt));
         });
     }
     conditionalRepaint();
@@ -148,10 +149,10 @@ bool GCanvas::contains(double x, double y) const {
 }
 
 int GCanvas::countDiffPixels(const GCanvas& image) const {
-    int w1 = (int) getWidth();
-    int h1 = (int) getHeight();
-    int w2 = (int) image.getWidth();
-    int h2 = (int) image.getHeight();
+    int w1 = static_cast<int>(getWidth());
+    int h1 = static_cast<int>(getHeight());
+    int w2 = static_cast<int>(image.getWidth());
+    int h2 = static_cast<int>(image.getHeight());
 
     int wmin = std::min(w1, w2);
     int hmin = std::min(h1, h2);
@@ -173,10 +174,10 @@ int GCanvas::countDiffPixels(const GCanvas& image) const {
 }
 
 int GCanvas::countDiffPixels(const GCanvas& image, int xmin, int ymin, int xmax, int ymax) const {
-    int w1 = (int) getWidth();
-    int h1 = (int) getHeight();
-    int w2 = (int) image.getWidth();
-    int h2 = (int) image.getHeight();
+    int w1 = static_cast<int>(getWidth());
+    int h1 = static_cast<int>(getHeight());
+    int w2 = static_cast<int>(image.getWidth());
+    int h2 = static_cast<int>(image.getHeight());
     int diffPxCount = 0;
 
     for (int y = ymin; y < ymax; y++) {
@@ -203,10 +204,10 @@ int GCanvas::countDiffPixels(const GCanvas* image, int xmin, int ymin, int xmax,
 }
 
 GCanvas* GCanvas::diff(const GCanvas& image, int diffPixelColor) const {
-    int w1 = (int) getWidth();
-    int h1 = (int) getHeight();
-    int w2 = (int) image.getWidth();
-    int h2 = (int) image.getHeight();
+    int w1 = static_cast<int>(getWidth());
+    int h1 = static_cast<int>(getHeight());
+    int w2 = static_cast<int>(image.getWidth());
+    int h2 = static_cast<int>(image.getHeight());
     int wmin = std::min(w1, w2);
     int hmin = std::min(h1, h2);
     int wmax = std::max(w1, w2);
@@ -263,9 +264,12 @@ void GCanvas::draw(GObject* gobj) {
 void GCanvas::ensureBackgroundImage() {
     if (!_backgroundImage) {
         GThread::runOnQtGuiThread([this]() {
-            _backgroundImage = new QImage((int) getWidth(), (int) getHeight(), QImage::Format_ARGB32);
+            _backgroundImage = new QImage(
+                        static_cast<int>(getWidth()),
+                        static_cast<int>(getHeight()),
+                        QImage::Format_ARGB32);
             if (!_backgroundColor.empty()) {
-                _backgroundImage->fill(_backgroundColorInt | 0xff000000);
+                _backgroundImage->fill(static_cast<unsigned int>(_backgroundColorInt) | 0xff000000);
             }
         });
     }
@@ -275,7 +279,7 @@ void GCanvas::ensureBackgroundImageConstHack() const {
     if (!_backgroundImage) {
         // Your whole life has been a lie.
         // Also, this code is bad and I should feel bad.
-        GCanvas* hack = (GCanvas*) this;
+        GCanvas* hack = const_cast<GCanvas*>(this);
         hack->ensureBackgroundImage();
     }
 }
@@ -307,8 +311,8 @@ void GCanvas::fillRegion(double x, double y, double width, double height, int rg
     checkColor("GCanvas::fillRegion", rgb);
     bool wasAutoRepaint = isAutoRepaint();
     setAutoRepaint(false);
-    for (int r = (int) y; r < y + height; r++) {
-        for (int c = (int) x; c < x + width; c++) {
+    for (int r = static_cast<int>(y); r < y + height; r++) {
+        for (int c = static_cast<int>(x); c < x + width; c++) {
             setRGB(/* x */ c, /* y */ r, rgb);
         }
     }
@@ -344,7 +348,7 @@ void GCanvas::fromGrid(const Grid<int>& grid) {
         for (int row = 0, width = grid.width(), height = grid.height(); row < height; row++) {
             for (int col = 0; col < width; col++) {
                 // setPixel(col, row, grid[row][col]);
-                _backgroundImage->setPixel(col, row, grid[row][col] | 0xff000000);
+                _backgroundImage->setPixel(col, row, static_cast<unsigned int>(grid[row][col]) | 0xff000000);
             }
         }
     });
@@ -390,20 +394,20 @@ _Internal_QWidget* GCanvas::getInternalWidget() const {
 int GCanvas::getPixel(double x, double y) const {
     checkBounds("GCanvas::getPixel", x, y, getWidth(), getHeight());
     ensureBackgroundImageConstHack();
-    return _backgroundImage->pixel((int) x, (int) y) & 0x00ffffff;
+    return _backgroundImage->pixel(static_cast<int>(x), static_cast<int>(y)) & 0x00ffffff;
 }
 
 int GCanvas::getPixelARGB(double x, double y) const {
     checkBounds("GCanvas::getPixelARGB", x, y, getWidth(), getHeight());
     ensureBackgroundImageConstHack();
-    return _backgroundImage->pixel((int) x, (int) y);
+    return static_cast<int>(_backgroundImage->pixel(static_cast<int>(x), static_cast<int>(y)));
 }
 
 Grid<int> GCanvas::getPixels() const {
     ensureBackgroundImageConstHack();
-    Grid<int> grid((int) getHeight(), (int) getWidth());
-    for (int y = 0; y < (int) getHeight(); y++) {
-        for (int x = 0; x < (int) getWidth(); x++) {
+    Grid<int> grid(static_cast<int>(getHeight()), static_cast<int>(getWidth()));
+    for (int y = 0; y < static_cast<int>(getHeight()); y++) {
+        for (int x = 0; x < static_cast<int>(getWidth()); x++) {
             grid[y][x] = _backgroundImage->pixel(x, y) & 0x00ffffff;
         }
     }
@@ -412,10 +416,10 @@ Grid<int> GCanvas::getPixels() const {
 
 Grid<int> GCanvas::getPixelsARGB() const {
     ensureBackgroundImageConstHack();
-    Grid<int> grid((int) getHeight(), (int) getWidth());
-    for (int y = 0; y < (int) getHeight(); y++) {
-        for (int x = 0; x < (int) getWidth(); x++) {
-            grid[y][x] = _backgroundImage->pixel(x, y);
+    Grid<int> grid(static_cast<int>(getHeight()), static_cast<int>(getWidth()));
+    for (int y = 0; y < static_cast<int>(getHeight()); y++) {
+        for (int x = 0; x < static_cast<int>(getWidth()); x++) {
+            grid[y][x] = static_cast<int>(_backgroundImage->pixel(x, y));
         }
     }
     return grid;
@@ -463,8 +467,10 @@ void GCanvas::notifyOfResize(double width, double height) {
     if (_backgroundImage) {
         GThread::runOnQtGuiThread([this, width, height]() {
             // make new image buffer of the new size
-            QImage* newImage = new QImage((int) width, (int) height, QImage::Format_ARGB32);
-            newImage->fill(_backgroundColorInt);
+            QImage* newImage = new QImage(
+                        static_cast<int>(width),
+                        static_cast<int>(height), QImage::Format_ARGB32);
+            newImage->fill(static_cast<unsigned int>(_backgroundColorInt));
 
             // draw any previous contents onto it
             QPainter painter(newImage);
@@ -537,7 +543,9 @@ void GCanvas::save(const std::string& filename) {
         ensureBackgroundImage();
         if (!_gcompound.isEmpty()) {
             // flatten image in a copy object, then save
-            QImage imageCopy = this->_backgroundImage->copy(0, 0, (int) getWidth(), (int) getHeight());
+            QImage imageCopy = this->_backgroundImage->copy(
+                        0, 0,
+                        static_cast<int>(getWidth()), static_cast<int>(getHeight()));
             QPainter painter(&imageCopy);
             painter.setRenderHint(QPainter::Antialiasing, GObject::isAntiAliasing());
             painter.setRenderHint(QPainter::TextAntialiasing, GObject::isAntiAliasing());
@@ -570,7 +578,7 @@ void GCanvas::setBackground(int color) {
         // The lesson is, set the background first before drawing stuff.
         // Or add your shapes using add() rather than draw() so they sit atop the background.
         GThread::runOnQtGuiThread([this, color]() {
-            _backgroundImage->fill(color);
+            _backgroundImage->fill(static_cast<unsigned int>(color));
         });
         conditionalRepaint();
     }
@@ -667,8 +675,15 @@ void GCanvas::setPixel(double x, double y, int rgb) {
     checkColor("GCanvas::setPixel", rgb);
     GThread::runOnQtGuiThread([this, x, y, rgb]() {
         ensureBackgroundImage();
-        _backgroundImage->setPixel((int) x, (int) y, rgb | 0xff000000);
-        conditionalRepaintRegion((int) x, (int) y, /* width */ 1, /* height */ 1);
+        _backgroundImage->setPixel(
+                static_cast<int>(x),
+                static_cast<int>(y),
+                static_cast<unsigned int>(rgb) | 0xff000000);
+        conditionalRepaintRegion(
+                static_cast<int>(x),
+                static_cast<int>(y),
+                /* width */ 1,
+                /* height */ 1);
     });
 }
 
@@ -723,6 +738,27 @@ void GCanvas::setPixelsARGB(const Grid<int>& pixels) {
         }
         conditionalRepaint();
     });
+}
+
+GImage* GCanvas::toGImage() const {
+    ensureBackgroundImageConstHack();
+    return new GImage(_backgroundImage);
+
+//    GCanvas* that = const_cast<GCanvas*>(this);
+//    QImage* backgroundImage = _backgroundImage;
+//    GImage* gimage = nullptr;
+//    GThread::runOnQtGuiThread([that, backgroundImage, &gimage]() {
+//        QImage* copy = new QImage((int) that->getWidth(), (int) that->getHeight(), QImage::Format_ARGB32);
+//        *copy = backgroundImage->copy();
+//        QPainter painter(copy);
+//        painter.setRenderHint(QPainter::Antialiasing, GObject::isAntiAliasing());
+//        painter.setRenderHint(QPainter::TextAntialiasing, GObject::isAntiAliasing());
+//        that->_gcompound.draw(&painter);
+//        painter.end();
+
+//        gimage = new GImage(copy);
+//    });
+//    return gimage;
 }
 
 Grid<int> GCanvas::toGrid() const {

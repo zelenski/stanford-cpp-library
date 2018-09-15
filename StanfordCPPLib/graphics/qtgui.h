@@ -24,6 +24,8 @@
 #include "gtypes.h"
 #include "queue.h"
 
+class GWindow;
+
 /**
  * This class contains functionality for initializing and managing the overall
  * Qt-based GUI system of the library.
@@ -103,6 +105,12 @@ private:
 
     QtGui();   // forbid construction
 
+    /**
+     * Returns a pointer to the overall Qt application.
+     * This will be null if the application has not yet been initialized.
+     */
+    QApplication* getApplication();
+
     bool _initialized;
     int _argc;
     char** _argv;
@@ -112,8 +120,9 @@ private:
     static GStudentThread* _studentThread;
     static QtGui* _instance;
 
-    friend class GStudentThread;
     friend class GEventQueue;
+    friend class GStudentThread;
+    friend class GWindow;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

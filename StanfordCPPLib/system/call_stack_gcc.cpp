@@ -29,13 +29,14 @@
 #include <tchar.h>
 #include <stdio.h>
 #include <strsafe.h>
-#  undef MOUSE_EVENT
-#  undef KEY_EVENT
-#  undef MOUSE_MOVED
-#  undef HELP_KEY
-#else
+#undef MOUSE_EVENT
+#undef KEY_EVENT
+#undef MOUSE_MOVED
+#undef HELP_KEY
+#else // _WIN32
 #include <execinfo.h>
 #include <dlfcn.h>
+#include <cstring>
 #endif // _WIN32
 #endif // __GNUC__
 #include <iomanip>
@@ -46,6 +47,33 @@
 #include "exceptions.h"
 #include "strlib.h"
 #include "private/static.h"
+
+namespace platform {
+std::string os_getLastError() {
+#ifdef _WIN32
+    // Windows error-reporting code
+    DWORD lastErrorCode = ::GetLastError();
+    char* errorMsg = nullptr;
+    // Ask Windows to prepare a standard message for a GetLastError() code:
+    ::FormatMessageA(
+                   /* dwFlags */ FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                   /* lpSource */ nullptr,
+                   /* dwMessageId */ lastErrorCode,
+                   /* dwLanguageId */ LANG_NEUTRAL,
+                   /* lpBuffer */ reinterpret_cast<LPSTR>(&errorMsg),
+                   /* dwSize */ 0,
+                   /* arguments */ nullptr);
+    if (errorMsg) {
+        return std::string(errorMsg);
+    } else {
+        return "";
+    }
+#else
+    // Linux/Mac error-reporting code
+    return std::string(strerror(errno));
+#endif // _WIN32
+}
+} // namespace platform
 
 namespace stacktrace {
 
@@ -89,15 +117,15 @@ int execAndCapture(std::string cmd, std::string& output) {
 
     if (!CreateProcessA(
             nullptr,
-            (char*) cmd.c_str(),   // command line
-            nullptr,               // process security attributes
-            nullptr,               // primary thread security attributes
-            TRUE,                  // handles are inherited
-            CREATE_NO_WINDOW,      // creation flags
-            nullptr,               // use parent's environment
-            nullptr,               // use parent's current directory
-            &siStartInfo,          // STARTUPINFO pointer
-            &piProcInfo)) {        // receives PROCESS_INFORMATION
+            const_cast<char*>(cmd.c_str()),    // command line
+            nullptr,                           // process security attributes
+            nullptr,                           // primary thread security attributes
+            TRUE,                              // handles are inherited
+            CREATE_NO_WINDOW,                  // creation flags
+            nullptr,                           // use parent's environment
+            nullptr,                           // use parent's current directory
+            &siStartInfo,                      // STARTUPINFO pointer
+            &piProcInfo)) {                    // receives PROCESS_INFORMATION
         std::cerr << "CREATE PROCESS FAIL: " << platform::os_getLastError() << std::endl;
         std::cerr << cmd << std::endl;
         return 1;   // fail
@@ -116,7 +144,7 @@ int execAndCapture(std::string cmd, std::string& output) {
         return 1;
     }
     std::ostringstream out;
-    for (int i = 0; i < (int) dwRead; i++) {
+    for (int i = 0; i < static_cast<int>(dwRead); i++) {
         out.put(chBuf[i]);
     }
 
@@ -174,7 +202,7 @@ std::string addr2line_clean(std::string line) {
 }
 
 int addr2line_all(std::vector<void*> addrsVector, std::string& output) {
-    int length = (int) addrsVector.size();
+    int length = static_cast<int>(addrsVector.size());
     void* addrs[length];
     for (int i = 0; i < length; i++) {
         addrs[i] = addrsVector[i];

@@ -108,7 +108,7 @@ static __StanfordCppLibraryInitializer __stanfordcpplib_init;
 
 // __initializeStanfordCppLibraryQt is defined in qgui.cpp/h;
 // it initializes the Qt GUI library subsystems and Qt graphical console as needed
-#define main main(int argc, char** argv) { \
+#define main ma##in(int argc, char** argv) { \
         extern int Main(); \
         stanfordcpplib::initializeLibrary(argc, argv); \
         stanfordcpplib::runMainInThread(Main); \
@@ -131,5 +131,8 @@ void __stanfordcpplib__exitLibrary(int status);
 #ifdef SPL_OVERLOAD_PROBLEMATIC_POINTER_ARITHMETIC
 #include "pointers.h"
 #endif // SPL_OVERLOAD_PROBLEMATIC_POINTER_ARITHMETIC
+
+// make sure Qt does not try to override our 'main' definition
+#undef QT_NEEDS_QMAIN
 
 #endif // _init_h

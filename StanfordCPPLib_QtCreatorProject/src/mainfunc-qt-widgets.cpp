@@ -4,16 +4,19 @@
 
 #include <iostream>
 #include "gcolor.h"
+#include "gdiffimage.h"
 #include "gobjects.h"
 #include "ginteractors.h"
 #include "gtimer.h"
 #include "timer.h"
 using namespace std;
 
+void testDiffImage();
 void testQwindow();
 
 int mainQtWidgets() {
-    testQwindow();
+    // testQwindow();
+    testDiffImage();
     return 0;
 }
 
@@ -238,4 +241,8 @@ void testQwindow() {
 //        GEvent event = waitForEvent(TIMER_EVENT);
 //        cout << "event: " << event << endl;
 //    }
+}
+
+void testDiffImage() {
+    GDiffImage::showDialog("ponies1", "my-little-pony-small.png", "legos2", "lego.png");
 }
