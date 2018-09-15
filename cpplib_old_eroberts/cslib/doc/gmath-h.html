@@ -1,0 +1,106 @@
+<html>
+<head>
+<title>../gmath.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: gmath.h
+ * -------------
+ * This interface exports several functions for working with graphical
+ * geometry along with the constants PI and E.
+ */
+</scan>
+#ifndef _gmath_h
+#define _gmath_h
+
+<a name="Constant:PI"><scan class=comment>/*
+ * Constant: PI
+ * ------------
+ * The mathematical constant pi, which is the ratio of the circumference of
+ * a circle to its diameter.
+ */
+</scan>
+#define PI 3.14159265358979323846
+
+<a name="Constant:E"><scan class=comment>/*
+ * Constant: E
+ * -----------
+ * The mathematical constant e, which is the base of natural logarithms.
+ */
+</scan>
+#define E 2.71828182845904523536
+
+<a name="Function:sinDegrees"><scan class=comment>/*
+ * Function: sinDegrees
+ * Usage: sine = sinDegrees(angle);
+ * --------------------------------
+ * Returns the trigonometric sine of angle, which is expressed in degrees.
+ */
+</scan>
+double sinDegrees(double angle);
+
+<a name="Function:cosDegrees"><scan class=comment>/*
+ * Function: cosDegrees
+ * Usage: cosine = cosDegrees(angle);
+ * ----------------------------------
+ * Returns the trigonometric cosine of angle, which is expressed in
+ * degrees.
+ */
+</scan>
+double cosDegrees(double angle);
+
+<a name="Function:tanDegrees"><scan class=comment>/*
+ * Function: tanDegrees
+ * Usage: tangent = tanDegrees(angle);
+ * -----------------------------------
+ * Returns the trigonometric tangent of angle, which is expressed in
+ * degrees.
+ */
+</scan>
+double tanDegrees(double angle);
+
+<a name="Function:toDegrees"><scan class=comment>/*
+ * Function: toDegrees
+ * Usage: degrees = toDegrees(radians);
+ * ------------------------------------
+ * Converts an angle from radians to degrees.
+ */
+</scan>
+double toDegrees(double radians);
+
+<a name="Function:toRadians"><scan class=comment>/*
+ * Function: toRadians
+ * Usage: radians = toRadians(degrees);
+ * ------------------------------------
+ * Converts an angle from degrees to radians.
+ */
+</scan>
+double toRadians(double degrees);
+
+<a name="Function:vectorDistance"><scan class=comment>/*
+ * Function: vectorDistance
+ * Usage: r = vectorDistance(x, y);
+ * --------------------------------
+ * Computes the distance between the origin and the specified point.
+ */
+</scan>
+double vectorDistance(double x, double y);
+
+<a name="Function:vectorAngle"><scan class=comment>/*
+ * Function: vectorAngle
+ * Usage: angle = vectorAngle(x, y);
+ * ---------------------------------
+ * Returns the angle in degrees from the origin to the specified point. 
+ * This function takes account of the fact that the graphics coordinate
+ * system is flipped in the y direction from the traditional Cartesian
+ * plane.
+ */
+</scan>
+double vectorAngle(double x, double y);
+
+#endif
+</pre>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<html>
+<head>
+<title>unittest.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="unittest-h.html"><code>unittest.h</code></a></h1>
+This interface exports several functions that facilitate writing unit
+tests for packages.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:trace">trace(exp)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Tests to make sure that a procedure does not generate any calls to <code>error</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:test">test(exp,&nbsp;value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Tests to make sure that a function computes a specified value.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:testError">testError(exp)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Tests to make sure that a method call generates an error.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:testModule">testModule(name,&nbsp;fn)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Runs the specified test method and generates a report.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setVerboseTestingFlag">setVerboseTestingFlag(flag)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets a global flag that determines whether the test process traces all the test operations.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getVerboseTestingFlag">getVerboseTestingFlag()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the setting of the verbose testing flag.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:reportError">reportError(msg,&nbsp;...)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reports an error in the current package.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:reportMessage">reportMessage(msg,&nbsp;...)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Generates a line of output if verbose tracing in enabled.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setReportIndentation">setReportIndentation(indent)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the indentation in the <code>reportError</code> and <code>reportMessage</code>, which allows test script designers to improve readability of the verbose output.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getReportIndentation">getReportIndentation()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Gets the current indentation used in the <code>reportError</code> and <code>reportMessage</code> calls.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:adjustReportIndentation">adjustReportIndentation(delta)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adjusts the indentation in the <code>reportError</code> and <code>reportMessage</code> calls to improve readability of the verbose output.</td></tr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:trace"></a>
+<pre class=detailCode>
+</pre>
+<div class=detailHTML>
+Tests to make sure that a procedure does not generate any calls
+to <code>error</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+trace(exp);
+</pre>
+<hr>
+<a name="Function:test"></a>
+<pre class=detailCode>
+</pre>
+<div class=detailHTML>
+Tests to make sure that a function computes a specified value.  The
+first argument is an expression (typically a function call in the
+module under test), and the second argument is the expected value,
+which must be of one of the following types:
+
+<p><ul>
+<li><code>bool</code>
+<li><code>char</code>
+<li><code>double</code>
+<li><code>int</code>
+<li><code>string</code>
+</ul>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+test(exp, value);
+</pre>
+<hr>
+<a name="Function:testError"></a>
+<pre class=detailCode>
+</pre>
+<div class=detailHTML>
+Tests to make sure that a method call generates an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+testError(exp);
+</pre>
+<hr>
+<a name="Function:testModule"></a>
+<pre class=detailCode>
+int testModule(string name, proc fn);
+</pre>
+<div class=detailHTML>
+Runs the specified test method and generates a report.  The
+second parameter must be the name of a test function inside
+the named package.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+errorCount = testModule(name, fn);
+</pre>
+<hr>
+<a name="Function:setVerboseTestingFlag"></a>
+<pre class=detailCode>
+void setVerboseTestingFlag(bool flag);
+</pre>
+<div class=detailHTML>
+Sets a global flag that determines whether the test process
+traces all the test operations.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setVerboseTestingFlag(flag);
+</pre>
+<hr>
+<a name="Function:getVerboseTestingFlag"></a>
+<pre class=detailCode>
+bool getVerboseTestingFlag(void);
+</pre>
+<div class=detailHTML>
+Returns the setting of the verbose testing flag.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+flag = getVerboseTestingFlag();
+</pre>
+<hr>
+<a name="Function:reportError"></a>
+<pre class=detailCode>
+void reportError(string msg, ...);
+</pre>
+<div class=detailHTML>
+Reports an error in the current package.  If <code>msg</code> is
+<code>NULL</code>, the error counter is incremented, but no
+message is generated.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+reportError(msg, ...);
+</pre>
+<hr>
+<a name="Function:reportMessage"></a>
+<pre class=detailCode>
+void reportMessage(string msg, ...);
+</pre>
+<div class=detailHTML>
+Generates a line of output if verbose tracing in enabled.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+reportMessage(msg, ...);
+</pre>
+<hr>
+<a name="Function:setReportIndentation"></a>
+<pre class=detailCode>
+void setReportIndentation(int indent);
+</pre>
+<div class=detailHTML>
+Sets the indentation in the <code>reportError</code> and
+<code>reportMessage</code>, which allows test script designers
+to improve readability of the verbose output.  In most cases,
+clients will not use <code>setReportIndentation</code> directly
+but will instead rely on <code>adjustReportIndentation</code>.
+This call, however, is necessary for tests that throw errors
+or other exceptions.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setReportIndentation(indent);
+</pre>
+<hr>
+<a name="Function:getReportIndentation"></a>
+<pre class=detailCode>
+int getReportIndentation(void);
+</pre>
+<div class=detailHTML>
+Gets the current indentation used in the <code>reportError</code>
+and <code>reportMessage</code> calls.  In most cases, clients
+will not use <code>getReportIndentation</code> directly but will
+instead rely on <code>adjustReportIndentation</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+indent = getReportIndentation();
+</pre>
+<hr>
+<a name="Function:adjustReportIndentation"></a>
+<pre class=detailCode>
+void adjustReportIndentation(int delta);
+</pre>
+<div class=detailHTML>
+Adjusts the indentation in the <code>reportError</code> and
+<code>reportMessage</code> calls to improve readability of
+the verbose output.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+adjustReportIndentation(delta);
+</pre>
+<hr>
+</table>
+</body>
+</html>

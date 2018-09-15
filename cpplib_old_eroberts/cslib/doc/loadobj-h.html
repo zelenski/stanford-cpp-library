@@ -1,0 +1,53 @@
+<html>
+<head>
+<title>../loadobj.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: loadobj.h
+ * ---------------
+ * This interface supports dynamic loading of functions from object files. 
+ * Any references in the object file to previously defined objects are
+ * allowed, but no additional searching or unresolved references are
+ * supported.
+ */
+</scan>
+#ifndef _loadobj_h
+#define _loadobj_h
+
+#include "cslib.h"
+
+<a name="Function:loadObject"><scan class=comment>/*
+ * Function: loadObject
+ * Usage: loadObject(pathname);
+ * ----------------------------
+ * Loads the object file into the current executable.
+ */
+</scan>
+void loadObject(string pathname);
+
+<a name="Function:loadSymbols"><scan class=comment>/*
+ * Function: loadSymbols
+ * Usage: loadSymbols(progname);
+ * -----------------------------
+ * Loads the symbols from the executable program.
+ */
+</scan>
+void loadSymbols(string progname);
+
+<a name="Function:findFunction"><scan class=comment>/*
+ * Function: findFunction
+ * Usage: fn = findFunction(fnname);
+ * ---------------------------------
+ * Looks up the function in the symbol table and returns a pointer to the
+ * code.
+ */
+</scan>
+proc findFunction(string fnname);
+
+#endif
+</pre>
+</body>
+</html>

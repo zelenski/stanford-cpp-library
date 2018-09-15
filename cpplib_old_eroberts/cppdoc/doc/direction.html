@@ -1,0 +1,85 @@
+<html>
+<head>
+<title>direction.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="direction-h.html">direction.h</a></h1>
+This interface exports an enumerated type called <code>Direction</code>
+whose elements are the four compass points: <code>NORTH</code>,
+<code>EAST</code>, <code>SOUTH</code>, and <code>WEST</code>.
+<h2>Type</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Type:Direction">Direction</a>&nbsp;</td><td class=indexSynopsis width=100%>This enumerated type is used to represent the four compass directions.</td></tr>
+</table>
+<h2>Functions</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Function:leftFrom">leftFrom(dir)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the direction that is to the left of the argument.</td></tr>
+<tr><td class=indexKey><a href="#Function:rightFrom">rightFrom(dir)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the direction that is to the right of the argument.</td></tr>
+<tr><td class=indexKey><a href="#Function:opposite">opposite(dir)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the direction that is opposite to the argument.</td></tr>
+<tr><td class=indexKey><a href="#Function:toString">toString(dir)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the name of the direction as a string.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:Direction"></a>
+<pre class=detailCode>
+enum Direction { NORTH, EAST, SOUTH, WEST };
+</pre>
+<div class=detailHTML>
+This enumerated type is used to represent the four compass directions.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:leftFrom"></a>
+<pre class=detailCode>
+Direction leftFrom(Direction dir);
+</pre>
+<div class=detailHTML>
+Returns the direction that is to the left of the argument.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Direction newdir = leftFrom(dir);
+</pre>
+<hr>
+<a name="Function:rightFrom"></a>
+<pre class=detailCode>
+Direction rightFrom(Direction dir);
+</pre>
+<div class=detailHTML>
+Returns the direction that is to the right of the argument.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Direction newdir = rightFrom(dir);
+</pre>
+<hr>
+<a name="Function:opposite"></a>
+<pre class=detailCode>
+Direction opposite(Direction dir);
+</pre>
+<div class=detailHTML>
+Returns the direction that is opposite to the argument.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Direction newdir = opposite(dir);
+</pre>
+<hr>
+<a name="Function:toString"></a>
+<pre class=detailCode>
+string toString(Direction dir);
+</pre>
+<div class=detailHTML>
+Returns the name of the direction as a string.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = toString(dir);
+</pre>
+<hr>
+</table>
+</body>
+</html>

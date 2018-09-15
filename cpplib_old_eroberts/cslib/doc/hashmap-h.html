@@ -1,0 +1,150 @@
+<html>
+<head>
+<title>../hashmap.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: hashmap.h
+ * ---------------
+ * This interface defines a map abstraction that associates string keys
+ * with values.  The implementation uses a hash table, which offers
+ * constant-time performance but does not support iterating through the
+ * keys in order.
+ */
+</scan>
+#ifndef _hashmap_h
+#define _hashmap_h
+
+#include "cslib.h"
+#include "generic.h"
+#include "iterator.h"
+
+<a name="Function:HashMap"><scan class=comment>/*
+ * Function: HashMap
+ * -----------------
+ * This type is the ADT used to represent a map from strings to values.
+ */
+</scan>
+typedef struct HashMapCDT *HashMap;
+
+<scan class=comment>/* Exported entries */</scan>
+
+<a name="Function:newHashMap"><scan class=comment>/*
+ * Function: newHashMap
+ * Usage: map = newHashMap();
+ * --------------------------
+ * Allocates a new map with no entries.
+ */
+</scan>
+HashMap newHashMap(void);
+
+<a name="Function:freeHashMap"><scan class=comment>/*
+ * Function: freeHashMap
+ * Usage: freeHashMap(map);
+ * ------------------------
+ * Frees the storage associated with the map.
+ */
+</scan>
+void freeHashMap(HashMap map);
+
+<a name="Function:size"><scan class=comment>/*
+ * Function: size
+ * Usage: n = size(map);
+ * ---------------------
+ * Returns the number of elements in the map.
+ */
+</scan>
+int sizeHashMap(HashMap map);
+
+<a name="Function:isEmpty"><scan class=comment>/*
+ * Function: isEmpty
+ * Usage: if (isEmpty(map)) . . .
+ * ------------------------------
+ * Returns true if the map has no entries.
+ */
+</scan>
+bool isEmptyHashMap(HashMap map);
+
+<a name="Function:clear"><scan class=comment>/*
+ * Function: clear
+ * Usage: clear(map);
+ * ------------------
+ * Removes all entries from the map.
+ */
+</scan>
+void clearHashMap(HashMap map);
+
+<a name="Function:clone"><scan class=comment>/*
+ * Function: clone
+ * Usage: newmap = clone(map);
+ * ---------------------------
+ * Creates a copy of the map.  The clone function copies only the first
+ * level of the structure and does not copy the individual elements.
+ */
+</scan>
+HashMap cloneHashMap(HashMap map);
+
+<a name="Function:put"><scan class=comment>/*
+ * Function: put
+ * Usage: put(map, key, value);
+ * ----------------------------
+ * Associates key with value in the map.  Each call to put supersedes any
+ * previous definition for key.
+ */
+</scan>
+void putHashMap(HashMap map, string key, void *value);
+
+<a name="Function:get"><scan class=comment>/*
+ * Function: get
+ * Usage: void *value = get(map, key);
+ * -----------------------------------
+ * Returns the value associated with key in the map, or NULL, if no such
+ * value exists.
+ */
+</scan>
+void *getHashMap(HashMap map, string key);
+
+<a name="Function:containsKey"><scan class=comment>/*
+ * Function: containsKey
+ * Usage: if (containsKey(map, key)) . . .
+ * ---------------------------------------
+ * Checks to see if the map contains the specified key.
+ */
+</scan>
+bool containsKeyHashMap(HashMap map, string key);
+
+<a name="Function:remove"><scan class=comment>/*
+ * Function: remove
+ * Usage: remove(map, key);
+ * ------------------------
+ * Removes the key and its value from the map.
+ */
+</scan>
+void removeHashMap(HashMap map, string key);
+
+<a name="Function:map"><scan class=comment>/*
+ * Function: map
+ * Usage: map(map, fn, data);
+ * --------------------------
+ * Iterates through the map and calls the function fn on each entry.  The
+ * callback function takes the following arguments:
+ *
+ *
+ *  The key string
+ *  The associated value
+ *  The data pointer
+ *
+ *
+ * The data pointer allows the client to pass state information to the
+ * function fn, if necessary.  If no such information is required, this
+ * argument should be NULL.
+ */
+</scan>
+void mapHashMap(HashMap map, proc fn, void *data);
+
+#endif
+</pre>
+</body>
+</html>

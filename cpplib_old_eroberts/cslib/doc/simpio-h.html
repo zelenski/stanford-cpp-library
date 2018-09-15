@@ -1,0 +1,100 @@
+<html>
+<head>
+<title>../simpio.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: simpio.h
+ * --------------
+ * This interface exports several functions that simplify the reading of
+ * input data.
+ */
+</scan>
+#ifndef _simpio_h
+#define _simpio_h
+
+#include "cslib.h"
+
+<a name="Function:getInteger"><scan class=comment>/*
+ * Function: getInteger
+ * Usage: n = getInteger();
+ * ------------------------
+ * Reads a line of text from standard input and scans it as an integer.  If
+ * an integer cannot be scanned or if extraneous characters follow the
+ * number, the user is given a chance to retry.
+ */
+</scan>
+int getInteger(void);
+
+<a name="Function:getLong"><scan class=comment>/*
+ * Function: getLong
+ * Usage: l = getLong();
+ * ---------------------
+ * Reads a line of text from standard input and scans it as a long.  If an
+ * integer cannot be scanned or if extraneous characters follow the number,
+ * the user is given a chance to retry.
+ */
+</scan>
+long getLong(void);
+
+<a name="Function:getReal"><scan class=comment>/*
+ * Function: getReal
+ * Usage: d = getReal();
+ * ---------------------
+ * Reads a line of text from standard input and scans it as a double.  If
+ * an number cannot be scanned or if extraneous characters follow the
+ * number, the user is given a chance to retry.
+ */
+</scan>
+double getReal(void);
+
+<a name="Function:getLine"><scan class=comment>/*
+ * Function: getLine
+ * Usage: s = getLine();
+ * ---------------------
+ * Reads a line of text from standard input and returns the line as a
+ * string.  The newline character that terminates the input is not stored
+ * as part of the result.
+ */
+</scan>
+string getLine(void);
+
+<a name="Function:readLine"><scan class=comment>/*
+ * Function: readLine
+ * Usage: s = readLine(infile);
+ * ----------------------------
+ * Reads a line of text from the input file and returns the line as a
+ * string.  The newline character that terminates the input is not stored
+ * as part of the result.  The readLine function returns NULL if infile is
+ * at the end-of-file position.
+ */
+</scan>
+string readLine(FILE *infile);
+
+<a name="Function:readLinesFromStream"><scan class=comment>/*
+ * Function: readLinesFromStream
+ * Usage: string *array = readLinesFromStream(infile);
+ * ---------------------------------------------------
+ * Reads an entire file into a NULL-terminated array of lines.  Opening and
+ * closing the file stream is the responsibility of the caller.
+ */
+</scan>
+string *readLinesFromStream(FILE *infile);
+
+<a name="Function:readLinesFromFile"><scan class=comment>/*
+ * Function: readLinesFromFile
+ * Usage: string *array = readLinesFromFile(filename);
+ * ---------------------------------------------------
+ * Reads an entire file into a NULL-terminated array of lines.  This
+ * version opens the file, reads it, and closes it at the end.  If the file
+ * name is "-", the function reads from stdin.
+ */
+</scan>
+string *readLinesFromFile(string filename);
+
+#endif
+</pre>
+</body>
+</html>

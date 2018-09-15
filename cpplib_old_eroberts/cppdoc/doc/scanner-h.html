@@ -1,0 +1,283 @@
+<html>
+<head>
+<title>include/scanner.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: scanner.h
+ * ---------------
+ * This file exports a TokenScanner class that divides a string into
+ * individual logical units called tokens.
+ */
+</scan>
+#ifndef _scanner_h
+#define _scanner_h
+
+#include &lt;string&gt;
+#include &lt;iostream&gt;
+#include "lexicon.h"
+#include "stack.h"
+
+<a name="Type:TokenType"><scan class=comment>/*
+ * Type: TokenType
+ * ---------------
+ * This enumerated type defines the values of the getTokenType method.
+ */
+</scan>
+enum TokenType { SEPARATOR, WORD, NUMBER, STRING, OPERATOR };
+
+<a name="Class:TokenScanner"><scan class=comment>/*
+ * Class: TokenScanner
+ * -------------------
+ * This class divides a string into individual tokens.  The typical use of
+ * the TokenScanner class is illustrated by the following pattern, which
+ * reads the tokens in the string variable input:
+ *
+ *    TokenScanner scanner;
+ *    scanner.setInput(input);
+ *    while (scanner.hasMoreTokens()) {
+ *       string token = scanner.nextToken();
+ *       . . . process the token . . .
+ *    }
+ *
+ * The TokenScanner class exports several additional methods that give
+ * clients more control over its behavior.  Those methods are described
+ * individually in the documentation.
+ */
+</scan>
+class TokenScanner {
+
+public:
+
+<a name="Constructor:TokenScanner"><scan class=comment>/*
+ * Constructor: TokenScanner
+ * Usage: TokenScanner scanner;
+ *        TokenScanner scanner(str);
+ *        TokenScanner scanner(infile);
+ * ------------------------------------
+ * Initializes a scanner object.  The initial token stream comes from the
+ * specified string or input stream, if supplied.  If no parameter is
+ * specified, the client must call setInput before reading tokens.
+ */
+</scan>
+   TokenScanner();
+   TokenScanner(string str);
+   TokenScanner(istream &amp; infile);
+
+<a name="Destructor:~TokenScanner"><scan class=comment>/*
+ * Destructor: ~TokenScanner
+ * Usage: (usually implicit)
+ * -------------------------
+ * Deallocates the storage associated with this scanner.
+ */
+</scan>
+   ~TokenScanner();
+
+<a name="Method:setInput"><scan class=comment>/*
+ * Method: setInput
+ * Usage: scanner.setInput(str);
+ *        scanner.setInput(infile);
+ * --------------------------------
+ * Sets the token stream for this scanner to the specified string or input
+ * stream.  Any previous token stream is discarded.
+ */
+</scan>
+   void setInput(string str);
+   void setInput(istream &amp; infile);
+
+<a name="Method:hasMoreTokens"><scan class=comment>/*
+ * Method: hasMoreTokens
+ * Usage: if (scanner.hasMoreTokens()) . . .
+ * -----------------------------------------
+ * Returns true if there are additional tokens for this scanner to read.
+ */
+</scan>
+   bool hasMoreTokens();
+
+<a name="Method:nextToken"><scan class=comment>/*
+ * Method: nextToken
+ * Usage: token = scanner.nextToken();
+ * -----------------------------------
+ * Returns the next token from this scanner.  If nextToken is called when
+ * no tokens are available, it returns the empty string.
+ */
+</scan>
+   string nextToken();
+
+<a name="Method:saveToken"><scan class=comment>/*
+ * Method: saveToken
+ * Usage: scanner.saveToken(token);
+ * --------------------------------
+ * Pushes the specified token back into this scanner's input stream.  On
+ * the next call to nextToken, the scanner will return the saved token
+ * without reading any additional characters from the token stream.
+ */
+</scan>
+   void saveToken(string token);
+
+<a name="Method:setIgnoreWhitespaceFlag"><scan class=comment>/*
+ * Method: setIgnoreWhitespaceFlag
+ * Usage: scanner.setIgnoreWhitespaceFlag(flag);
+ * ---------------------------------------------
+ * Controls whether this scanner ignores whitespace characters.  By
+ * default, the nextToken method treats whitespace characters (typically
+ * spaces and tabs) just like any other punctuation mark and returns them
+ * as single-character tokens.  Calling
+ *
+ *    scanner.setIgnoreWhitespaceFlag(true);
+ *
+ * changes this behavior so that the scanner ignore whitespace characters. 
+ * Clients can restore the original behavior by calling
+ *
+ *    scanner.setIgnoreWhitespaceFlag(false);
+ */
+</scan>
+   void setIgnoreWhitespaceFlag(bool flag);
+
+<a name="Method:setIgnoreCommentsFlag"><scan class=comment>/*
+ * Method: setIgnoreCommentsFlag
+ * Usage: scanner.setIgnoreCommentsFlag(flag);
+ * -------------------------------------------
+ * Controls whether this scanner ignores comments.  This scanner recognizes
+ * both the slash-star and slash-slash comment format from the C-based
+ * family of languages.  Calling
+ *
+ *    scanner.setIgnoreCommentsFlag(true);
+ *
+ * sets the parser to ignore comments.  Clients can restore the original
+ * behavior by calling
+ *
+ *    scanner.setIgnoreCommentsFlag(false);
+ */
+</scan>
+   void setIgnoreCommentsFlag(bool flag);
+
+<a name="Method:setScanNumbersFlag"><scan class=comment>/*
+ * Method: setScanNumbersFlag
+ * Usage: scanner.setScanNumbersFlag(flag);
+ * ----------------------------------------
+ * Controls how the scanner treats tokens that begin with a digit.  By
+ * default, the nextToken method treats numbers and letters identically and
+ * therefore does not provide any special processing for numbers.  Calling
+ *
+ *    scanner.setScanNumbersFlag(true);
+ *
+ * changes this behavior so that nextToken returns the longest substring
+ * that can be interpreted as a real number.  Clients can restore the
+ * default behavior by calling
+ *
+ *    scanner.setScanNumbersFlag(false);
+ */
+</scan>
+   void setScanNumbersFlag(bool flag);
+
+<a name="Method:setScanStringsFlag"><scan class=comment>/*
+ * Method: setScanStringsFlag
+ * Usage: scanner.setScanStringsFlag(flag);
+ * ----------------------------------------
+ * Controls how the scanner treats tokens enclosed in quotation marks.  By
+ * default, quotation marks (either single or double) are treated just like
+ * any other punctuation character.  Calling
+ *
+ *    scanner.setScanStringsFlag(true);
+ *
+ * changes this assumption so that nextToken returns a single token
+ * consisting of all characters through the matching quotation mark.  The
+ * quotation marks are returned as part of the scanned token so that
+ * clients can differentiate strings from other token types.  Clients can
+ * restore the default behavior by calling
+ *
+ *    scanner.setScanStringsFlag(false);
+ */
+</scan>
+   void setScanStringsFlag(bool flag);
+
+<a name="Method:addWordCharacters"><scan class=comment>/*
+ * Method: addWordCharacters
+ * Usage: scanner.addWordCharacters(str);
+ * --------------------------------------
+ * Adds the characters in str to the set of characters legal in a word. 
+ * For example, calling addWordCharacters("_") adds the underscore to the
+ * set of word characters.
+ */
+</scan>
+   void addWordCharacters(string str);
+
+<a name="Method:defineOperator"><scan class=comment>/*
+ * Method: defineOperator
+ * Usage: scanner.defineOperator(op);
+ * ----------------------------------
+ * Defines a new multicharacter operator.  Whenever you call nextToken when
+ * the input stream contains operator characters, the scanner returns the
+ * longest possible operator string that can be read at that point.
+ */
+</scan>
+   void defineOperator(string op);
+
+<a name="Method:getPosition"><scan class=comment>/*
+ * Method: getPosition
+ * Usage: int pos = scanner.getPosition();
+ * ---------------------------------------
+ * Returns the current position of the scanner in the input stream.  If
+ * saveToken has been called, this position corresponds to the beginning of
+ * the saved token.  If saveToken is called more than once, the position is
+ * unavailable.
+ */
+</scan>
+   int getPosition();
+
+<a name="Method:isValidIdentifier"><scan class=comment>/*
+ * Method: isValidIdentifier
+ * Usage: if (scanner.isValidIdentifier(token)) . . .
+ * --------------------------------------------------
+ * Returns true if the token is a valid identifier.
+ */
+</scan>
+   bool isValidIdentifier(string token);
+
+<a name="Method:isWordCharacter"><scan class=comment>/*
+ * Method: isWordCharacter
+ * Usage: if (scanner.isWordCharacter(ch)) . . .
+ * ---------------------------------------------
+ * Returns true if the character is valid in a word.
+ */
+</scan>
+   bool isWordCharacter(char ch);
+
+<a name="Method:verifyToken"><scan class=comment>/*
+ * Method: verifyToken
+ * Usage: scanner.verifyToken(expected);
+ * -------------------------------------
+ * Reads the next token and makes sure it matches the string expected.  If
+ * it does not, verifyToken throws an error.
+ */
+</scan>
+   void verifyToken(string expected);
+
+<a name="Method:getTokenType"><scan class=comment>/*
+ * Method: getTokenType
+ * Usage: TokenType type = scanner.getTokenType(token);
+ * ----------------------------------------------------
+ * Returns the type of this token.  This type will match one of the
+ * following enumerated type constants:
+ *
+ *    EOF,
+ *    SEPARATOR,
+ *    WORD,
+ *    NUMBER,
+ *    STRING, or
+ *    OPERATOR.
+ */
+</scan>
+TokenType getTokenType(string token);
+
+#include "private/scannerpriv.h"
+
+};
+
+#endif
+</pre>
+</body>
+</html>

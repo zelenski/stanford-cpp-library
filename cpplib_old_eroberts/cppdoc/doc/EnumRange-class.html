@@ -1,0 +1,28 @@
+<html>
+<head>
+<title>class EnumRange&lt;BaseType&gt;</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="foreach-h.html">class EnumRange&lt;BaseType&gt;</a></h1>
+This class is used to support iteration over enumeration types.
+Calling the <code>EnumRange</code> constructor with the first and
+last elements produces an iterable collection of those items, as
+illustrated by the following example:
+
+<pre>
+   enum Direction { NORTH, SOUTH, EAST, WEST };
+
+   foreach (Direction dir in EnumRange<Direction>(NORTH, WEST)) . . .
+</pre>
+
+By convention, enumerated types exported by the libraries (such as
+<code>Direction</code>) export an enumerated range as a constant
+whose name is the type followed by an <code>"s"</code>.  This
+convention makes it possible to write this loop header as follows:
+
+<pre>
+   foreach (Direction dir in Directions) . . .
+</pre>
+</body>
+</html>

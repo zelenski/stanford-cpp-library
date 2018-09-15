@@ -1,0 +1,84 @@
+<html>
+<head>
+<title>../iterator.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: iterator.h
+ * ----------------
+ * This interface exports a polymorphic iterator abstraction for C.
+ */
+</scan>
+#ifndef _iterator_h
+#define _iterator_h
+
+#include "cslib.h"
+
+<a name="Type:Iterator"><scan class=comment>/*
+ * Type: Iterator
+ * --------------
+ * An abstract type used to iterate over the elements of any collection.
+ */
+</scan>
+typedef struct IteratorCDT *Iterator;
+
+<scan class=comment>/* Exported entries */</scan>
+
+<scan class=comment>/*
+ * General overview
+ * ----------------
+ * The newIterator, stepIterator, and freeIterator functions make it
+ * possible to iterate over the elements in any collection that supports
+ * iteration.  In most cases, clients will simply use the foreach macro,
+ * which automatically invokes these methods.  They can also be used as
+ * shown in the following standalone paradigm:
+ *
+ *    iterator = newIterator(collection);
+ *    while (stepIterator(iterator, 
+ *       . . . body of loop . . .
+ *    }
+ *    freeIterator(iterator);
+ *
+ * The call to stepIterator advances the iterator and returns the next
+ * element using the reference parameter.  The stepIterator function
+ * returns true until the elements are exhausted, after which it returns
+ * false.  The freeIterator function releases any storage associated with
+ * the iterator.
+ */
+</scan>
+<a name="Function:newIterator"><scan class=comment>/*
+ * Function: newIterator
+ * Usage: iterator = newIterator(collection);
+ * ------------------------------------------
+ * Creates a new iterator for the specified collection.
+ */
+</scan>
+Iterator newIterator(void *collection);
+
+<a name="Function:stepIterator"><scan class=comment>/*
+ * Function: stepIterator
+ * Usage: hasMoreElements = stepIterator(iterator, &amp;element);
+ * ----------------------------------------------------------
+ * Advances the iterator and stores the next element through the element
+ * pointer provided as a reference parameter.  The stepIterator function
+ * returns true until the elements are exhausted, after which it returns
+ * false.
+ */
+</scan>
+bool stepIterator(Iterator iterator, void *dst);
+
+<a name="Function:freeIterator"><scan class=comment>/*
+ * Function: freeIterator
+ * Usage: freeIterator(iterator, &amp;element);
+ * ----------------------------------------
+ * Frees any storage associated with the iterator.
+ */
+</scan>
+void freeIterator(Iterator iterator);
+
+#endif
+</pre>
+</body>
+</html>

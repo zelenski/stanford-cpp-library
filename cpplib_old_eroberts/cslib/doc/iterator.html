@@ -1,0 +1,79 @@
+<html>
+<head>
+<title>iterator.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="iterator-h.html"><code>iterator.h</code></a></h1>
+This interface exports a polymorphic iterator abstraction for C.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Type</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:Iterator">Iterator</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>An abstract type used to iterate over the elements of any collection.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:freeIterator">freeIterator(iterator,&nbsp;&element)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Frees any storage associated with the iterator.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newIterator">newIterator(collection)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a new iterator for the specified collection.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:stepIterator">stepIterator(iterator,&nbsp;&element)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Advances the iterator and stores the next element through the element pointer provided as a reference parameter.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:Iterator"></a>
+<pre class=detailCode>
+typedef struct IteratorCDT *Iterator;
+</pre>
+<div class=detailHTML>
+An abstract type used to iterate over the elements of any collection.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:newIterator"></a>
+<pre class=detailCode>
+Iterator newIterator(void *collection);
+</pre>
+<div class=detailHTML>
+Creates a new iterator for the specified collection.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+iterator = newIterator(collection);
+</pre>
+<hr>
+<a name="Function:stepIterator"></a>
+<pre class=detailCode>
+bool stepIterator(Iterator iterator, void *dst);
+</pre>
+<div class=detailHTML>
+Advances the iterator and stores the next element through the
+element pointer provided as a reference parameter.  The
+<code>stepIterator</code> function returns <code>true</code> until
+the elements are exhausted, after which it returns <code>false</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+hasMoreElements = stepIterator(iterator, &amp;element);
+</pre>
+<hr>
+<a name="Function:freeIterator"></a>
+<pre class=detailCode>
+void freeIterator(Iterator iterator);
+</pre>
+<div class=detailHTML>
+Frees any storage associated with the iterator.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+freeIterator(iterator, &amp;element);
+</pre>
+<hr>
+</table>
+</body>
+</html>

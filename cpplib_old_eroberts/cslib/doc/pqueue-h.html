@@ -1,0 +1,133 @@
+<html>
+<head>
+<title>../pqueue.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: pqueue.h
+ * --------------
+ * This interface defines a queue abstraction that dequeues elements in
+ * priority order.  In keeping with traditional English usage, lower
+ * priority numbers have higher priority, so that priority 1 items appear
+ * before priority 2 items.
+ */
+</scan>
+#ifndef _pqueue_h
+#define _pqueue_h
+
+#include "cslib.h"
+#include "generic.h"
+
+<a name="Type:PriorityQueue"><scan class=comment>/*
+ * Type: PriorityQueue
+ * -------------------
+ * This type defines the abstract type for a queue.
+ */
+</scan>
+typedef struct PriorityQueueCDT *PriorityQueue;
+
+<a name="Function:newPriorityQueue"><scan class=comment>/*
+ * Function: newPriorityQueue
+ * Usage: pq = newPriorityQueue();
+ * -------------------------------
+ * Allocates and returns an empty priority queue.
+ */
+</scan>
+PriorityQueue newPriorityQueue(void);
+
+<a name="Function:freePriorityQueue"><scan class=comment>/*
+ * Function: freePriorityQueue
+ * Usage: freePriorityQueue(pq);
+ * -----------------------------
+ * Frees the storage associated with the specified priority queue.
+ */
+</scan>
+void freePriorityQueue(PriorityQueue pq);
+
+<a name="Function:enqueue"><scan class=comment>/*
+ * Function: enqueue
+ * Usage: enqueue(pq, value, priority);
+ * ------------------------------------
+ * Adds a value to the queue in the order specified by priority.  In C, the
+ * priority argument must have type double, which means that constants used
+ * to express priorities in the call to the generic enqueue function must
+ * include a decimal point.
+ */
+</scan>
+void enqueuePriorityQueue(PriorityQueue pq, void *value, double priority);
+
+<a name="Function:dequeue"><scan class=comment>/*
+ * Function: dequeue
+ * Usage: value = dequeue(pq);
+ * ---------------------------
+ * Removes the data value at the head of the queue and returns it to the
+ * client.  If the queue is empty, dequeue calls error with an appropriate
+ * message.
+ */
+</scan>
+void *dequeuePriorityQueue(PriorityQueue pq);
+
+<a name="Function:peek"><scan class=comment>/*
+ * Function: peek
+ * Usage: value = peek(pq);
+ * ------------------------
+ * Returns the data value at the head of the queue without removing it.  If
+ * the queue is empty, peek calls error with an appropriate message.
+ */
+</scan>
+void *peekPriorityQueue(PriorityQueue pq);
+
+<a name="Function:peekPriority"><scan class=comment>/*
+ * Function: peekPriority
+ * Usage: priority = peekPriority(pq);
+ * -----------------------------------
+ * Returns the priority of the first entry in the queue, without removing
+ * it.
+ */
+</scan>
+double peekPriority(PriorityQueue pq);
+
+<a name="Function:isEmpty"><scan class=comment>/*
+ * Function: isEmpty
+ * Usage: if (isEmpty(pq)) . . .
+ * -----------------------------
+ * Tests whether the queue is empty.
+ */
+</scan>
+bool isEmptyPriorityQueue(PriorityQueue pq);
+
+<a name="Function:size"><scan class=comment>/*
+ * Function: size
+ * Usage: n = size(pq);
+ * --------------------
+ * Returns the number of values in the queue.
+ */
+</scan>
+int sizePriorityQueue(PriorityQueue pq);
+
+<a name="Function:clear"><scan class=comment>/*
+ * Function: clear
+ * Usage: clear(pq);
+ * -----------------
+ * Removes all values from the queue.
+ */
+</scan>
+void clearPriorityQueue(PriorityQueue pq);
+
+<a name="Function:clone"><scan class=comment>/*
+ * Function: clone
+ * Usage: newpq = clone(pq);
+ * -------------------------
+ * Creates a copy of the priority queue.  The clone function copies only
+ * the first level of the structure and does not copy the individual
+ * elements.
+ */
+</scan>
+PriorityQueue clonePriorityQueue(PriorityQueue pq);
+
+#endif
+</pre>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<html>
+<head>
+<title>../thread.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: thread.h
+ * --------------
+ * This interface exports a platform-independent thread abstraction, along
+ * with simple functions for concurrency control.
+ */
+</scan>
+#ifndef _thread_h
+#define _thread_h
+
+#include &lt;setjmp.h&gt;
+#include "cslib.h"
+
+#ifdef __macosx__
+#  define getCurrentThread XgetCurrentThread
+#endif
+
+<a name="Type:Thread"><scan class=comment>/*
+ * Type: Thread
+ * ------------
+ * The Thread type is used to represent a thread, which is a lightweight
+ * process running in the same address space as the creator.
+ */
+</scan>
+typedef struct ThreadCDT *Thread;
+
+<a name="Type:Lock"><scan class=comment>/*
+ * Type: Lock
+ * ----------
+ * The Lock type is used to manage concurrent access to some data structure
+ * within an application.  Only one thread can hold a lock at any point in
+ * time; other threads seeking to gain access queue on the lock until it is
+ * released by the thread that originally obtained it.  The general
+ * strategy for using a lock is to use the synchronized statement to
+ * protect a critical region of code, as illustrated in the discussion of
+ * synchronized later in this file.
+ */
+</scan>
+typedef struct LockCDT *Lock;
+
+<scan class=comment>/* Exported entries */</scan>
+
+<a name="Function:forkThread"><scan class=comment>/*
+ * Function: forkThread
+ * Usage: thread = forkThread(fn, data);
+ * -------------------------------------
+ * Forks a new thread to invokes the specified function, passing data as an
+ * argument.  Threads created by forkThread become dormant on completion
+ * and wait for the client to synchronize with them using a joinThread
+ * operation.
+ */
+</scan>
+Thread forkThread(proc fn, void *data);
+
+<a name="Function:joinThread"><scan class=comment>/*
+ * Function: joinThread
+ * Usage: joinThread(thread);
+ * --------------------------
+ * Waits for the specified thread to finish before proceeding.
+ */
+</scan>
+void joinThread(Thread thread);
+
+<a name="Function:yield"><scan class=comment>/*
+ * Function: yield
+ * Usage: yield();
+ * ---------------
+ * Yields the processor to allow another thread to run.
+ */
+</scan>
+void yield(void);
+
+<a name="Function:getCurrentThread"><scan class=comment>/*
+ * Function: getCurrentThread
+ * Usage: self = getCurrentThread();
+ * ---------------------------------
+ * Returns the currently executing thread.
+ */
+</scan>
+Thread getCurrentThread(void);
+
+<a name="Function:setThreadName"><scan class=comment>/*
+ * Function: setThreadName
+ * Usage: setThreadName(thread, name);
+ * -----------------------------------
+ * Sets the name of a thread to the given string.  This name is used
+ * primarily for debugging purposes.
+ */
+</scan>
+void setThreadName(Thread thread, string name);
+
+<a name="Function:getThreadName"><scan class=comment>/*
+ * Function: getThreadName
+ * Usage: name = getThreadName(thread);
+ * ------------------------------------
+ * Returns the name of the specified thread.  If no name has been set for
+ * the thread, this function returns a string in the form Thread&lt;xxx&gt;,
+ * where xxx is an integer uniquely identifying the thread.
+ */
+</scan>
+string getThreadName(Thread thread);
+
+<a name="Function:newLock"><scan class=comment>/*
+ * Function: newLock
+ * Usage: lock = newLock();
+ * ------------------------
+ * Creates a new Lock object.
+ */
+</scan>
+Lock newLock(void);
+
+<a name="Macro:synchronized"><scan class=comment>/*
+ * Macro: synchronized
+ * Usage: synchronized (lock) { . . . }
+ * ------------------------------------
+ * Defines a critical section protected by the specified lock.  The general
+ * strategy for using this facility is shown in the following paradigmatic
+ * pattern:
+ *
+ *    synchronized (lock) {
+ *       . . . statements in the critical section . . .
+ *    }
+ */
+</scan>
+#define synchronized(lock) for ( ; startSync(lock) ; endSync(lock))
+
+<a name="Function:waitThread"><scan class=comment>/*
+ * Function: waitThread
+ * Usage: waitThread(lock);
+ * ------------------------
+ * Waits for some other thread to issue a call to signalThread on this
+ * lock.  This call requires that the lock be owned by the calling thread. 
+ * The effect of this function is to release the lock and then wait until
+ * the desired signalThread operation occurs, at which point the lock is
+ * reacquired and control passes to the statement following the waitThread.
+ *
+ * The waitThread function is useful only if the call is embedded inside a
+ * while loop that checks a condition before proceeding.  That while
+ * statement must itself be embedded inside a synchronized statement that
+ * acquires the lock.  Thus, the standard paradigm for using the waitThread
+ * function looks like this:
+ *
+ *    synchronized (lock) {
+ *        while (conditional test) {
+ *            waitThread(lock);
+ *        }
+ *        . . . code to manipulate the locked resource . . .
+ *    }
+ */
+</scan>
+void waitThread(Lock lock);
+
+<a name="Function:signalThread"><scan class=comment>/*
+ * Function: signalThread
+ * Usage: signalThread(lock);
+ * --------------------------
+ * Signals all threads waiting on the lock so that they wake up and recheck
+ * the corresponding condition.
+ */
+</scan>
+void signalThread(Lock lock);
+
+<scan class=comment>/* Internal entry points -- see implementation for details */</scan>
+
+bool startSync(Lock lock);
+void endSync(Lock lock);
+void lockInternal(Lock lock);
+void unlockInternal(Lock lock);
+
+#endif
+</pre>
+</body>
+</html>

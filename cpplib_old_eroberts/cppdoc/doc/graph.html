@@ -1,0 +1,42 @@
+<html>
+<head>
+<title>graph.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="graph-h.html">graph.h</a></h1>
+This interface exports a parameterized <code>Graph</code> class used
+to represent <i>graphs,</i> which consist of a set of <i>nodes</i>
+and a set of <i>arcs</i>.
+<h2>Class</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="Graph-class.html">Graph&lt;NodeType,ArcType&gt;</a>&nbsp;</td><td class=indexSynopsis width=100%>This class represents a graph with the specified node and arc types.</td></tr>
+</table>
+<h2>Functions</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Function:nodeCompare">nodeCompare</a>&nbsp;</td><td class=indexSynopsis width=100%>Standard comparison function for nodes.</td></tr>
+<tr><td class=indexKey><a href="#Function:arcCompare">arcCompare</a>&nbsp;</td><td class=indexSynopsis width=100%>Standard comparison function for arcs.</td></tr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:nodeCompare"></a>
+<pre class=detailCode>
+template &lt;typename NodeType&gt;
+int nodeCompare(NodeType *n1, NodeType *n2);
+</pre>
+<div class=detailHTML>
+Standard comparison function for nodes.
+</div>
+<hr>
+<a name="Function:arcCompare"></a>
+<pre class=detailCode>
+template &lt;typename NodeType,typename ArcType&gt;
+int arcCompare(ArcType *a1, ArcType *a2);
+</pre>
+<div class=detailHTML>
+Standard comparison function for arcs.
+</div>
+<hr>
+</table>
+</body>
+</html>

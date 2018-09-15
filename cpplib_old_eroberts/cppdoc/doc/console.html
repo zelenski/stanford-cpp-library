@@ -1,0 +1,57 @@
+<html>
+<head>
+<title>console.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="console-h.html">console.h</a></h1>
+This header file redirects the <code>cin</code>, <code>cout</code>,
+and <code>cerr</code> channels to use a console window.  This file
+must be included in the source file that contains the <code>main</code>
+method, although it may be included in other source files as well.
+<h2>Functions</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Function:setConsoleFont">setConsoleFont(font)</a>&nbsp;</td><td class=indexSynopsis width=100%>Changes the font used for the console.</td></tr>
+<tr><td class=indexKey><a href="#Function:setConsoleSize">setConsoleSize(width,&nbsp;height)</a>&nbsp;</td><td class=indexSynopsis width=100%>Changes the size of the console to the specified dimensions, measured in pixels.</td></tr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:setConsoleFont"></a>
+<pre class=detailCode>
+void setConsoleFont(string font);
+</pre>
+<div class=detailHTML>
+Changes the font used for the console.  The <code>font</code>
+parameter is typically a string in the form
+<i>family</i><code>-</code><i>style</i><code>-</code><i>size</i>.
+In this string, <i>family</i> is the name of the font family;
+<i>style</i> is either missing (indicating a plain font) or one
+of the strings <code>Bold</code>, <code>Italic</code>, or
+<code>BoldItalic</code>; and <code>size</code> is an integer
+indicating the point size.  If any of these components is
+specified as an asterisk, the existing value is retained.
+The <code>font</code> parameter can also be a sequence of
+such specifications separated by semicolons, in which the
+first available font on the system is used.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setConsoleFont(font);
+</pre>
+<hr>
+<a name="Function:setConsoleSize"></a>
+<pre class=detailCode>
+void setConsoleSize(double width, double height);
+</pre>
+<div class=detailHTML>
+Changes the size of the console to the specified dimensions, measured
+in pixels.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setConsoleSize(width, height);
+</pre>
+<hr>
+</table>
+</body>
+</html>

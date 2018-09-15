@@ -1,0 +1,71 @@
+<html>
+<head>
+<title>../gtimer.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: gtimer.h
+ * --------------
+ * This interface exports a general interval timer.
+ */
+</scan>
+#ifndef _gtimer_h
+#define _gtimer_h
+
+#include "cslib.h"
+
+<a name="Type:GTimer"><scan class=comment>/*
+ * Type: GTimer
+ * ------------
+ * This type implements a simple interval timer that generates a timer
+ * event with a specified frequency.
+ */
+</scan>
+typedef struct GTimerCDT *GTimer;
+
+<a name="Function:newGTimer"><scan class=comment>/*
+ * Function: newGTimer
+ * Usage: timer = newGTimer(milliseconds);
+ * ---------------------------------------
+ * Creates a timer that generates a timer event each time the specified
+ * number of milliseconds has elapsed.  No events are generated until the
+ * client calls startTimer.
+ */
+</scan>
+GTimer newGTimer(double milliseconds);
+
+<a name="Function:freeGTimer"><scan class=comment>/*
+ * Function: freeGTimer
+ * Usage: freeGTimer(timer);
+ * -------------------------
+ * Frees the resources associated with the timer.
+ */
+</scan>
+void freeGTimer(GTimer timer);
+
+<a name="Function:startTimer"><scan class=comment>/*
+ * Function: startTimer
+ * Usage: startTimer(timer);
+ * -------------------------
+ * Starts the timer.  A timer continues to generate timer events until it
+ * is stopped; to achieve the effect of a one-shot timer, the simplest
+ * approach is to call the stop function inside the event handler.
+ */
+</scan>
+void startTimer(GTimer timer);
+
+<a name="Function:stopTimer"><scan class=comment>/*
+ * Function: stopTimer
+ * Usage: stopTimer(timer);
+ * ------------------------
+ * Stops the timer so that it stops generating events.
+ */
+</scan>
+void stopTimer(GTimer timer);
+
+#endif
+</pre>
+</body>
+</html>

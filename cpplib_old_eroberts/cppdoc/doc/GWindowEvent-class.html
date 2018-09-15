@@ -1,0 +1,80 @@
+<html>
+<head>
+<title>class GWindowEvent</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="gevents-h.html">class GWindowEvent</a></h1>
+This event subclass represents a window event.
+<h2>Constructor</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Constructor:GWindowEvent">GWindowEvent()</a><br><a href="#Constructor:GWindowEvent">GWindowEvent(e)</a><br><a href="#Constructor:GWindowEvent">GWindowEvent(type,&nbsp;gw)</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a <code>GWindowEvent</code> using the specified parameters or those taken from the more general event <code>e</code>.</td></tr>
+</table>
+<h2>Methods</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Method:getEventType">getEventType()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the enumerated type constant corresponding to the specific type of window event.</td></tr>
+<tr><td class=indexKey><a href="#Method:getWindow">getWindow()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the graphics window in which this event occurred.</td></tr>
+<tr><td class=indexKey><a href="#Method:toString">toString()</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts the event to a human-readable representation of the event.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GWindowEvent"></a>
+<pre class=detailCode>
+GWindowEvent();
+GWindowEvent(GEvent e);
+GWindowEvent(WindowEventType type, GWindow gw);
+</pre>
+<div class=detailHTML>
+Creates a <code>GWindowEvent</code> using the specified parameters or
+those taken from the more general event <code>e</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GWindowEvent windowEvent;
+GWindowEvent windowEvent(e);
+GWindowEvent windowEvent(type, gw);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:getEventType"></a>
+<pre class=detailCode>
+WindowEventType getEventType();
+</pre>
+<div class=detailHTML>
+Returns the enumerated type constant corresponding to the specific
+type of window event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+WindowEventType type = e.getEventType();
+</pre>
+<hr>
+<a name="Method:getWindow"></a>
+<pre class=detailCode>
+GWindow getWindow();
+</pre>
+<div class=detailHTML>
+Returns the graphics window in which this event occurred.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GWindow gw = e.getWindow();
+</pre>
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString();
+</pre>
+<div class=detailHTML>
+Converts the event to a human-readable representation of the event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = e.toString();
+</pre>
+<hr>
+</table>
+</body>
+</html>

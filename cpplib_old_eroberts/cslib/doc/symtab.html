@@ -1,0 +1,137 @@
+<html>
+<head>
+<title>symtab.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1><a href="symtab-h.html"><code>symtab.h</code></a></h1>
+This package implements a symbol table abstraction.  Clients
+create new key/value by calling <code>enter</code> and look up
+existing bindings by calling <code>lookup</code>.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><a href="#Function:HashMap">HashMap</a>&nbsp;</td><td class=indexSynopsis width=100%>This type is the ADT used to represent a symbol table.</td></tr>
+<tr><td class=indexKey><a href="#Function:void">void</a>&nbsp;</td><td class=indexSynopsis width=100%>This type defines the class of functions that can be used to map over the entries in a symbol table.</td></tr>
+<tr><td class=indexKey><a href="#Function:newSymbolTable">newSymbolTable()</a>&nbsp;</td><td class=indexSynopsis width=100%>Allocates a new symbol table with no entries.</td></tr>
+<tr><td class=indexKey><a href="#Function:freeSymbolTable">freeSymbolTable(table)</a>&nbsp;</td><td class=indexSynopsis width=100%>Frees the storage associated with the symbol table.</td></tr>
+<tr><td class=indexKey><a href="#Function:enter">enter(table,&nbsp;key,&nbsp;value)</a>&nbsp;</td><td class=indexSynopsis width=100%>Associates <code>key</code> with <code>value</code> in the symbol table.</td></tr>
+<tr><td class=indexKey><a href="#Function:lookup">lookup(table,&nbsp;key)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the value associated with <code>key</code> in the symbol table, or <code>UNDEFINED</code>, if no such value exists.</td></tr>
+<tr><td class=indexKey><a href="#Function:containsKey">containsKey(table,&nbsp;key)</a>&nbsp;</td><td class=indexSynopsis width=100%>Checks to see if the table contains the specified key.</td></tr>
+<tr><td class=indexKey><a href="#Function:mapSymbolTable">mapSymbolTable(fn,&nbsp;table,&nbsp;data)</a>&nbsp;</td><td class=indexSynopsis width=100%>Iterates through every entry in the symbol table and calls the function <code>fn</code>, passing it the following arguments:  <ul>   <li>The current key   <li>The associated value   <li>The <code>data</code> passed to <code>mapSymbolTable</code> </ul>  The <code>data</code> pointer allows the client to pass state information to the function <code>fn</code>, if necessary.</td></tr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:HashMap"></a>
+<pre class=detailCode>
+typedef struct HashMapCDT *HashMap;
+</pre>
+<div class=detailHTML>
+This type is the ADT used to represent a symbol table.
+</div>
+<hr>
+<a name="Function:void"></a>
+<pre class=detailCode>
+typedef void void(*symtabFnT)(string key, void *value, void *data);
+</pre>
+<div class=detailHTML>
+This type defines the class of functions that can be used to
+map over the entries in a symbol table.
+</div>
+<hr>
+<a name="Function:newSymbolTable"></a>
+<pre class=detailCode>
+HashMap newSymbolTable(void);
+</pre>
+<div class=detailHTML>
+Allocates a new symbol table with no entries.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+HashMap table = newSymbolTable();
+</pre>
+<hr>
+<a name="Function:freeSymbolTable"></a>
+<pre class=detailCode>
+void freeSymbolTable(HashMap table);
+</pre>
+<div class=detailHTML>
+Frees the storage associated with the symbol table.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+freeSymbolTable(table);
+</pre>
+<hr>
+<a name="Function:enter"></a>
+<pre class=detailCode>
+void enter(HashMap table, string key, void *value);
+</pre>
+<div class=detailHTML>
+Associates <code>key</code> with <code>value</code> in the symbol
+table.  Each call to <code>enter</code> supersedes any previous
+definition for <code>key</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+enter(table, key, value);
+</pre>
+<hr>
+<a name="Function:lookup"></a>
+<pre class=detailCode>
+void *lookup(HashMap table, string key);
+</pre>
+<div class=detailHTML>
+Returns the value associated with <code>key</code> in the symbol
+table, or <code>UNDEFINED</code>, if no such value exists.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+void *value = lookup(table, key);
+</pre>
+<hr>
+<a name="Function:containsKey"></a>
+<pre class=detailCode>
+bool containsKey(HashMap table, string key);
+</pre>
+<div class=detailHTML>
+Checks to see if the table contains the specified key.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (containsKey(table, key)) . . .
+</pre>
+<hr>
+<a name="Function:mapSymbolTable"></a>
+<pre class=detailCode>
+void mapSymbolTable(symtabFnT fn, HashMap table, void *data);
+</pre>
+<div class=detailHTML>
+Iterates through every entry in the symbol table and calls
+the function <code>fn</code>, passing it the following arguments:
+
+<ul>
+  <li>The current key
+  <li>The associated value
+  <li>The <code>data</code> passed to <code>mapSymbolTable</code>
+</ul>
+
+The <code>data</code> pointer allows the client to pass state
+information to the function <code>fn</code>, if necessary.  If no such
+information is required, this argument should be <code>NULL</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+mapSymbolTable(fn, table, data);
+</pre>
+<hr>
+</table>
+</body>
+</html>

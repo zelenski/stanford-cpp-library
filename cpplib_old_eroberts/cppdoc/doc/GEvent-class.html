@@ -1,0 +1,295 @@
+<html>
+<head>
+<title>class GEvent</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="gevents-h.html">class GEvent</a></h1>
+This class is the root of the hierarchy for all events.  The
+primary purpose of this general class is as the parameter to
+the <code>waitForEvent</code> and <code>getNextEvent</code>
+functions.  Code that uses these functions to wait for events
+of more than one class must typically cast the event to the
+appropriate subclass, as illustrated in the sample code that
+accompanies the prototypes for those functions.
+<h2>Constructor</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Constructor:GEvent">GEvent()</a>&nbsp;</td><td class=indexSynopsis width=100%>Ensures that an event is properly initialized to a <code>NULL</code> event.</td></tr>
+</table>
+<h2>Methods</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Method:getEventClass">getEventClass()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the enumerated type constant indicating the class of the event.</td></tr>
+<tr><td class=indexKey><a href="#Method:getEventTime">getEventTime()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the system time in milliseconds at which the event occurred.</td></tr>
+<tr><td class=indexKey><a href="#Method:getModifiers">getModifiers()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns an integer whose bits indicate what modifiers are in effect.</td></tr>
+<tr><td class=indexKey><a href="#Method:toString">toString()</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts the event to a human-readable representation of the event.</td></tr>
+</table>
+<h2>Operator</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Operator:bool">operator bool</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts the event to a Boolean value which is <code>true</code> if the event is valid.</td></tr>
+</table>
+<h2>Functions</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Function:startIntervalTimer">startIntervalTimer(delay)</a><br><a href="#Function:startIntervalTimer">startIntervalTimer(delay,&nbsp;count)</a>&nbsp;</td><td class=indexSynopsis width=100%>Starts an interval timer that fires a timer event repeatedly every <code>delay</code> milliseconds.</td></tr>
+<tr><td class=indexKey><a href="#Function:stopIntervalTimer">stopIntervalTimer()</a>&nbsp;</td><td class=indexSynopsis width=100%>Stops the interval timer.</td></tr>
+<tr><td class=indexKey><a href="#Function:postEvent">postEvent(e)</a>&nbsp;</td><td class=indexSynopsis width=100%>Adds the event to the end of the event queue.</td></tr>
+<tr><td class=indexKey><a href="#Function:waitForEvent">waitForEvent(e)</a>&nbsp;</td><td class=indexSynopsis width=100%>Dismisses the process until an event occurs.</td></tr>
+<tr><td class=indexKey><a href="#Function:waitForClick">waitForClick()</a><br><a href="#Function:waitForClick">waitForClick(mouseEvent)</a>&nbsp;</td><td class=indexSynopsis width=100%>Waits for a mouse click to occur anywhere in the window, discarding any other events.</td></tr>
+<tr><td class=indexKey><a href="#Function:getNextEvent">getNextEvent(e)</a>&nbsp;</td><td class=indexSynopsis width=100%>Checks to see if there are any events waiting on the event queue.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GEvent"></a>
+<pre class=detailCode>
+GEvent();
+</pre>
+<div class=detailHTML>
+Ensures that an event is properly initialized to a <code>NULL</code>
+event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GEvent event;
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:getEventClass"></a>
+<pre class=detailCode>
+EventClassType getEventClass();
+</pre>
+<div class=detailHTML>
+Returns the enumerated type constant indicating the class of the
+event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+EventClassType eventClass = e.getEventClass();
+</pre>
+<hr>
+<a name="Method:getEventTime"></a>
+<pre class=detailCode>
+double getEventTime();
+</pre>
+<div class=detailHTML>
+Returns the system time in milliseconds at which the event occurred.
+To ensure portability among systems that represent time in different
+ways, the StanfordCPPLib packages use type <code>double</code> to
+represent time, which is always encoded as the number of milliseconds
+that have elapsed since 00:00:00 UTC on January 1, 1970, which is
+the conventional zero point for computer-based time systems.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double time = e.getEventTime();
+</pre>
+<hr>
+<a name="Method:getModifiers"></a>
+<pre class=detailCode>
+int getModifiers();
+</pre>
+<div class=detailHTML>
+Returns an integer whose bits indicate what modifiers are in effect.
+To check whether the shift key is down, for example, one could use
+the following code:
+
+<pre>
+   if (e.getModifiers() & SHIFT_DOWN) . . .
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int modifiers = e.getModifiers();
+</pre>
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+virtual string toString();
+</pre>
+<div class=detailHTML>
+Converts the event to a human-readable representation of the event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = e.toString();
+</pre>
+<hr>
+</table>
+<h2>Operator detail</h2>
+<hr>
+<a name="Operator:bool"></a>
+<pre class=detailCode>
+operator bool();
+</pre>
+<div class=detailHTML>
+Converts the event to a Boolean value which is <code>true</code> if the
+event is valid.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (e) . . .
+</pre>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:startIntervalTimer"></a>
+<pre class=detailCode>
+void startIntervalTimer(double delay);
+void startIntervalTimer(double delay, int count);
+</pre>
+<div class=detailHTML>
+Starts an interval timer that fires a timer event repeatedly every
+<code>delay</code> milliseconds.  The <code>count</code> parameter,
+if specified, indicates the maximum number of events to fire; if
+this parameter is missing, the timer continues to fire until it is
+stopped.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+startIntervalTimer(delay);
+startIntervalTimer(delay, count);
+</pre>
+<hr>
+<a name="Function:stopIntervalTimer"></a>
+<pre class=detailCode>
+void stopIntervalTimer();
+</pre>
+<div class=detailHTML>
+Stops the interval timer.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+stopIntervalTimer();
+</pre>
+<hr>
+<a name="Function:postEvent"></a>
+<pre class=detailCode>
+void postEvent(GEvent e);
+</pre>
+<div class=detailHTML>
+Adds the event to the end of the event queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+postEvent(e);
+</pre>
+<hr>
+<a name="Function:waitForEvent"></a>
+<pre class=detailCode>
+void waitForEvent(GEvent &amp; e);
+void waitForEvent(GWindowEvent &amp; e);
+void waitForEvent(GActionEvent &amp; e);
+void waitForEvent(GTimerEvent &amp; e);
+void waitForEvent(GMouseEvent &amp; e);
+void waitForEvent(GKeyEvent &amp; e);
+</pre>
+<div class=detailHTML>
+Dismisses the process until an event occurs.  When it does, the
+<code>waitForEvent</code> function returns with the details of
+the event.  The parameter <code>e</code> can be either a general
+<code>GEvent</code> variable or one of the specific subclasses.
+In the former case, the function returns when any event occurs.
+Clients should use this approach if they need to respond to more
+than one class of event.  As an example, the following code is
+the canonical event loop for an animated application that
+needs to respond to mouse, key, and timer events:
+
+<pre>
+   startIntervalTimer(ANIMATION_DELAY_IN_MILLISECONDS);
+   while (true) {
+      GEvent e;
+      waitForEvent(e);
+      switch (e.getEventClass()) {
+       case TIMER_EVENT:
+         takeAnimationStep();
+         break;
+       case MOUSE_EVENT:
+         handleMouseEvent(GMouseEvent(e));
+         break;
+       case KEY_EVENT:
+         handleKeyEvent(GKeyEvent(e));
+         break;
+      }
+   }
+</pre>
+
+For applications that are interested only in mouse events,
+for example, this code can be simplified as follows:
+
+<pre>
+   while (true) {
+      GMouseEvent e;
+      waitForEvent(e);
+      handleMouseEvent(e);
+   }
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+waitForEvent(e);
+</pre>
+<hr>
+<a name="Function:waitForClick"></a>
+<pre class=detailCode>
+void waitForClick();
+void waitForClick(GMouseEvent &amp; mouseEvent);
+</pre>
+<div class=detailHTML>
+Waits for a mouse click to occur anywhere in the window, discarding
+any other events.  If the client passes a <code>GMouseEvent</code>
+as a reference parameter, the function will fill in the details of
+the click event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+waitForClick();
+waitForClick(mouseEvent);
+</pre>
+<hr>
+<a name="Function:getNextEvent"></a>
+<pre class=detailCode>
+bool getNextEvent(GEvent &amp; e);
+bool getNextEvent(GWindowEvent &amp; e);
+bool getNextEvent(GActionEvent &amp; e);
+bool getNextEvent(GTimerEvent &amp; e);
+bool getNextEvent(GMouseEvent &amp; e);
+bool getNextEvent(GKeyEvent &amp; e);
+</pre>
+<div class=detailHTML>
+Checks to see if there are any events waiting on the event queue.
+If so, <code>getNextEvent</code> fills in the structure of the event
+with the first event in the queue and returns <code>true</code>.  If
+there are no events, <code>getNextEvent</code> returns <code>false</code>.
+As with <code>waitForEvent</code>, the parameter <code>e</code> can
+be either a <code>GEvent</code> variable or one of the specific
+subclasses.  Clients should use this form of the call if they
+need to support animation in the main thread, as in the following
+code example:
+
+<pre>
+   while (true) {
+      GEvent e;
+      if (getNextEvent(e)) {
+         switch (e.getEventClass()) {
+          case MOUSE_EVENT:
+            handleMouseEvent(GMouseEvent(e));
+            break;
+          case KEY_EVENT:
+            handleKeyEvent(GKeyEvent(e));
+            break;
+         }
+      } else {
+         takeAnimationStep();
+      }
+   }
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (getNextEvent(e)) . . .
+</pre>
+<hr>
+</table>
+</body>
+</html>

@@ -1,0 +1,268 @@
+<html>
+<head>
+<title>set.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="set-h.html"><code>set.h</code></a></h1>
+This interface exports an abstract type that represents sets of values.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Type</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:Set">Set</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Defines the abstract type used to represent sets.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newSet">newSet(type)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates an empty set of values of the specified base type.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newSetFromType">newSetFromType(baseType)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a new set of values with the specified base type expressed as a string.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:freeSet">freeSet(set)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Frees the storage associated with a set.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:size">size(set)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of elements in the set.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isEmpty">isEmpty(set)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the set has no elements.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:clear">clear(set)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes all elements from the set.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:clone">clone(set)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a copy of the set.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:contains">contains(set,&nbsp;value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the specified value is a member of the set.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:add">add(set,&nbsp;value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds the specified value to the set.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:remove">remove(set,&nbsp;value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes the specified value from the set.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:equals">equals(s1,&nbsp;s2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if <code>s1</code> and <code>s2</code> are equal, which means that they contain the same elements.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isSubset">isSubset(s1,&nbsp;s2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if <code>s1</code> is a subset of <code>s2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:union">union(s1,&nbsp;s2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a new set consisting of all elements in either <code>s1</code> or <code>s2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:intersection">intersection(s1,&nbsp;s2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a new set consisting of all elements in both <code>s1</code> and <code>s2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setDifference">setDifference(s1,&nbsp;s2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a new set consisting of all elements in <code>s1</code> that are not elements of <code>s2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setCompareFn">setCompareFn(set,&nbsp;cmpFn)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the comparison function for elements in the set.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getCompareFn">getCompareFn(set)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the comparison function for elements in the set.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:Set"></a>
+<pre class=detailCode>
+typedef struct SetCDT *Set;
+</pre>
+<div class=detailHTML>
+Defines the abstract type used to represent sets.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:newSet"></a>
+<pre class=detailCode>
+</pre>
+<div class=detailHTML>
+Creates an empty set of values of the specified base type.  The
+<code>type</code> parameter must be an explicit type name like
+<code>int</code> or <code>string</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set = newSet(type);
+</pre>
+<hr>
+<a name="Function:newSetFromType"></a>
+<pre class=detailCode>
+Set newSetFromType(string baseType);
+</pre>
+<div class=detailHTML>
+Creates a new set of values with the specified base type expressed as
+a string.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set = newSetFromType(baseType);
+</pre>
+<hr>
+<a name="Function:freeSet"></a>
+<pre class=detailCode>
+void freeSet(Set set);
+</pre>
+<div class=detailHTML>
+Frees the storage associated with a set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+freeSet(set);
+</pre>
+<hr>
+<a name="Function:size"></a>
+<pre class=detailCode>
+int size(Set set);
+</pre>
+<div class=detailHTML>
+Returns the number of elements in the set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+n = size(set);
+</pre>
+<hr>
+<a name="Function:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty(Set set);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the set has no elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isEmpty(set)) . . .
+</pre>
+<hr>
+<a name="Function:clear"></a>
+<pre class=detailCode>
+void clear(Set set);
+</pre>
+<div class=detailHTML>
+Removes all elements from the set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+clear(set);
+</pre>
+<hr>
+<a name="Function:clone"></a>
+<pre class=detailCode>
+Set clone(Set set);
+</pre>
+<div class=detailHTML>
+Creates a copy of the set.  The <code>clone</code> function copies
+only the first level of the structure and does not copy the individual
+elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+newset = clone(set);
+</pre>
+<hr>
+<a name="Function:contains"></a>
+<pre class=detailCode>
+bool contains(Set set, ...);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the specified value is a member of the set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (contains(set, value)) . . .
+</pre>
+<hr>
+<a name="Function:add"></a>
+<pre class=detailCode>
+void add(Set set, ...);
+</pre>
+<div class=detailHTML>
+Adds the specified value to the set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+add(set, value);
+</pre>
+<hr>
+<a name="Function:remove"></a>
+<pre class=detailCode>
+void remove(Set set, ...);
+</pre>
+<div class=detailHTML>
+Removes the specified value from the set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+remove(set, value);
+</pre>
+<hr>
+<a name="Function:equals"></a>
+<pre class=detailCode>
+bool equals(Set s1, Set s2);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if <code>s1</code> and <code>s2</code>
+are equal, which means that they contain the same elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (equals(s1, s2)) . . .
+</pre>
+<hr>
+<a name="Function:isSubset"></a>
+<pre class=detailCode>
+bool isSubset(Set s1, Set s2);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if <code>s1</code> is a subset of
+<code>s2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isSubset(s1, s2)) . . .
+</pre>
+<hr>
+<a name="Function:union"></a>
+<pre class=detailCode>
+Set union(Set s1, Set s2);
+</pre>
+<div class=detailHTML>
+Returns a new set consisting of all elements in either <code>s1</code>
+or <code>s2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set = union(s1, s2);
+</pre>
+<hr>
+<a name="Function:intersection"></a>
+<pre class=detailCode>
+Set intersection(Set s1, Set s2);
+</pre>
+<div class=detailHTML>
+Returns a new set consisting of all elements in both <code>s1</code>
+and <code>s2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set = intersection(s1, s2);
+</pre>
+<hr>
+<a name="Function:setDifference"></a>
+<pre class=detailCode>
+Set setDifference(Set s1, Set s2);
+</pre>
+<div class=detailHTML>
+Returns a new set consisting of all elements in <code>s1</code>
+that are not elements of <code>s2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set = setDifference(s1, s2);
+</pre>
+<hr>
+<a name="Function:setCompareFn"></a>
+<pre class=detailCode>
+void setCompareFn(Set set, CompareFn cmpFn);
+</pre>
+<div class=detailHTML>
+Sets the comparison function for elements in the set.  Clients who are
+using primitive types as base types will not need to call this function.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setCompareFn(set, cmpFn);
+</pre>
+<hr>
+<a name="Function:getCompareFn"></a>
+<pre class=detailCode>
+CompareFn getCompareFn(Set set);
+</pre>
+<div class=detailHTML>
+Returns the comparison function for elements in the set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+cmpFn = getCompareFn(set);
+</pre>
+<hr>
+</table>
+</body>
+</html>

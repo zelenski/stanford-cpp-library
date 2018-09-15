@@ -1,0 +1,63 @@
+#include <bookdefs.ps>
+#include <fakeuml.ps>
+#include "hierarchy.ps"
+
+/UML_BOX_WIDTH 62 def
+
+/DY0 40 def
+/DY1 70 def
+/DX 8 def
+
+/X0 400 def
+/Y0 400 def
+
+/Y1 Y0 UML_BOX_HEIGHT sub DY0 sub def
+/Y2 Y1 UML_BOX_HEIGHT sub DY1 sub def
+
+/INTERACTOR_CLASSES [
+  (GButton)
+  (GCheckBox)
+  (GChooser)
+  (GSlider)
+  (GTextField)
+] def
+
+/UML_HTML_LINK true def
+X0 UML_BOX_WIDTH 2 div sub Y0 (GObject) drawAbstractClass
+X0 UML_BOX_WIDTH 2 div sub Y1 (GInteractor) drawAbstractClass
+(GObject) (GInteractor) drawSubclassArrow
+X0 Y2 (GInteractor) INTERACTOR_CLASSES drawSubclasses
+
+/dumpHTML {
+  9 dict begin
+    /text exch def
+    /filename exch def
+    /ok true def
+    errordict /invalidfileaccess { /ok false def } put
+    filename (w) file /out exch def
+    ok {
+      /width INTERACTOR_CLASSES length dup UML_BOX_WIDTH mul exch 1 sub DX mul
+        add def
+      out text writestring
+      out (<p><div class=inset>\n) writestring
+      out (<img src="images/GInteractorHierarchy.png"\n) writestring
+      out (<img src="images/GInteractorHierarchy.png"\n) writestring
+      out (     width=) writestring
+      out width UML_SF mul 0.5 add cvi 10 string cvs writestring
+      out ( usemap="#GInteractorMap" alt="GInteractorHierarchy">\n) writestring
+      out (</div>\n) writestring
+      out (<map name="GInteractorMap">\n) writestring
+      out (GObject) (gobjects.html#Type:GObject) dumpAreaTag
+      LINK_TO_SELF {
+        out (GInteractor) (#Type:GInteractor) dumpAreaTag
+      } if
+      INTERACTOR_CLASSES { out exch dup (#Type:) exch conc dumpAreaTag } forall
+      out (</map>\n) writestring
+      out closefile
+    } if
+  end
+} def
+
+(GInteractorHierarchy.html)
+(The structure of the <code>GInteractor</code> hierarchy looks like this:\n\n)
+dumpHTML

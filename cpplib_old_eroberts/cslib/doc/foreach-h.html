@@ -1,0 +1,47 @@
+<html>
+<head>
+<title>../foreach.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: foreach.h
+ * ---------------
+ * This interface provides a simple syntactic extension for iterators that
+ * makes them much easier to read.  The general form of the foreach
+ * statement looks like this:
+ *
+ *    foreach (var in collection) {
+ *       statements
+ *    }
+ *
+ * In C, the variable var must be declared outside the loop.
+ */
+</scan>
+#ifndef _foreach_h
+#define _foreach_h
+
+#include "cslib.h"
+
+<a name="Macro:foreach"><scan class=comment>/*
+ * Macro: foreach
+ * Usage: foreach (element in collection) { . . . }
+ * ------------------------------------------------
+ * This macro definition creates a new statement form that simplifies the
+ * use of iterators.  The variable element must be declared in the current
+ * scope and must be compatible with the base type of the collection.
+ */
+</scan>
+#define in : (void *) (
+#define foreach(arg) \
+    for (initForEach(1 ? (void *) &amp;arg), 0 ? &amp;arg)); \
+         stepForEach(1 ? (void *) &amp;arg)); )
+
+void initForEach(void *dst, void *collection);
+bool stepForEach(void *dst);
+
+#endif
+</pre>
+</body>
+</html>

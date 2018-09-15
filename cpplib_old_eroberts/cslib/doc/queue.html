@@ -1,0 +1,161 @@
+<html>
+<head>
+<title>queue.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="queue-h.html"><code>queue.h</code></a></h1>
+This interface defines a queue abstraction with first-in/first-out
+semantics.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Type</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:Queue">Queue</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type defines the abstract type for a queue.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newQueue">newQueue()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Allocates and returns an empty queue.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:freeQueue">freeQueue(queue)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Frees the storage associated with the specified queue.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:enqueue">enqueue(queue,&nbsp;element)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds an element to the end of the queue.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:dequeue">dequeue(queue)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes the data value at the head of the queue and returns it to the client.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:peek">peek(queue)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the data value at the head of the queue without removing it.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isEmpty">isEmpty(queue)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Tests whether the queue is empty.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:size">size(queue)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of elements in the queue.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:clear">clear(queue)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes all elements from the queue.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:clone">clone(queue)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a copy of the queue.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:Queue"></a>
+<pre class=detailCode>
+typedef struct QueueCDT *Queue;
+</pre>
+<div class=detailHTML>
+This type defines the abstract type for a queue.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:newQueue"></a>
+<pre class=detailCode>
+Queue newQueue(void);
+</pre>
+<div class=detailHTML>
+Allocates and returns an empty queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+queue = newQueue();
+</pre>
+<hr>
+<a name="Function:freeQueue"></a>
+<pre class=detailCode>
+void freeQueue(Queue queue);
+</pre>
+<div class=detailHTML>
+Frees the storage associated with the specified queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+freeQueue(queue);
+</pre>
+<hr>
+<a name="Function:enqueue"></a>
+<pre class=detailCode>
+void enqueue(Queue queue, void *element);
+</pre>
+<div class=detailHTML>
+Adds an element to the end of the queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+enqueue(queue, element);
+</pre>
+<hr>
+<a name="Function:dequeue"></a>
+<pre class=detailCode>
+void *dequeue(Queue queue);
+</pre>
+<div class=detailHTML>
+Removes the data value at the head of the queue and returns it
+to the client.  If the queue is empty, <code>dequeue</code> calls
+<code>error</code> with an appropriate message.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+element = dequeue(queue);
+</pre>
+<hr>
+<a name="Function:peek"></a>
+<pre class=detailCode>
+void *peek(Queue queue);
+</pre>
+<div class=detailHTML>
+Returns the data value at the head of the queue without removing it.
+If the queue is empty, <code>peek</code> calls <code>error</code> with
+an appropriate message.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+element = peek(queue);
+</pre>
+<hr>
+<a name="Function:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty(Queue queue);
+</pre>
+<div class=detailHTML>
+Tests whether the queue is empty.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isEmpty(queue)) . . .
+</pre>
+<hr>
+<a name="Function:size"></a>
+<pre class=detailCode>
+int size(Queue queue);
+</pre>
+<div class=detailHTML>
+Returns the number of elements in the queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+n = size(queue);
+</pre>
+<hr>
+<a name="Function:clear"></a>
+<pre class=detailCode>
+void clear(Queue queue);
+</pre>
+<div class=detailHTML>
+Removes all elements from the queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+clear(queue);
+</pre>
+<hr>
+<a name="Function:clone"></a>
+<pre class=detailCode>
+Queue clone(Queue queue);
+</pre>
+<div class=detailHTML>
+Creates a copy of the queue.  The <code>clone</code> function copies
+only the first level of the structure and does not copy the individual
+elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+newqueue = clone(queue);
+</pre>
+<hr>
+</table>
+</body>
+</html>

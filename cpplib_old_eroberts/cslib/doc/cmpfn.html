@@ -1,0 +1,163 @@
+<html>
+<head>
+<title>cmpfn.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="cmpfn-h.html"><code>cmpfn.h</code></a></h1>
+This interface exports several comparison functions for use with the
+other library packages.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Type</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:CompareFn">CompareFn</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type defines the type space of comparison functions, each of which take the addresses of their arguments and return an integer from the set {-1, 0, +1} depending on whether the first argument is less than, equal to, or greater than the second.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:intCmpFn">intCmpFn</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Compares two values of type <code>int</code> whose addresses are supplied by the pointer arguments <code>p1</code> and <code>p2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:shortCmpFn">shortCmpFn</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Compares two values of type <code>short</code> whose addresses are supplied by the pointer arguments <code>p1</code> and <code>p2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:longCmpFn">longCmpFn</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Compares two values of type <code>long</code> whose addresses are supplied by the pointer arguments <code>p1</code> and <code>p2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:charCmpFn">charCmpFn</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Compares two values of type <code>char</code> whose addresses are supplied by the pointer arguments <code>p1</code> and <code>p2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:floatCmpFn">floatCmpFn</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Compares two values of type <code>float</code> whose addresses are supplied by the pointer arguments <code>p1</code> and <code>p2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:doubleCmpFn">doubleCmpFn</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Compares two values of type <code>double</code> whose addresses are supplied by the pointer arguments <code>p1</code> and <code>p2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:unsignedCmpFn">unsignedCmpFn</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Compares two values of type <code>unsigned</code> whose addresses are supplied by the pointer arguments <code>p1</code> and <code>p2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:unsignedShortCmpFn">unsignedShortCmpFn</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Compares two values of type <code>unsignedshort</code> whose addresses are supplied by the pointer arguments <code>p1</code> and <code>p2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:unsignedLongCmpFn">unsignedLongCmpFn</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Compares two values of type <code>unsignedlong</code> whose addresses are supplied by the pointer arguments <code>p1</code> and <code>p2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:unsignedCharCmpFn">unsignedCharCmpFn</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Compares two values of type <code>unsignedchar</code> whose addresses are supplied by the pointer arguments <code>p1</code> and <code>p2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:stringCmpFn">stringCmpFn</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Compares two values of type <code>string</code> whose addresses are supplied by the pointer arguments <code>p1</code> and <code>p2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:pointerCmpFn">pointerCmpFn</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Compares two values of type <code>pointer</code> whose addresses are supplied by the pointer arguments <code>p1</code> and <code>p2</code>.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:CompareFn"></a>
+<pre class=detailCode>
+typedef int CompareFn(*CompareFn)(const void *p1, const void *p2);
+</pre>
+<div class=detailHTML>
+This type defines the type space of comparison functions,
+each of which take the addresses of their arguments and
+return an integer from the set {-1, 0, +1} depending on
+whether the first argument is less than, equal to, or
+greater than the second.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:intCmpFn"></a>
+<pre class=detailCode>
+int intCmpFn(const void *p1, const void *p2);
+</pre>
+<div class=detailHTML>
+Compares two values of type <code>int</code> whose addresses are
+supplied by the pointer arguments <code>p1</code> and <code>p2</code>.
+</div>
+<hr>
+<a name="Function:shortCmpFn"></a>
+<pre class=detailCode>
+int shortCmpFn(const void *p1, const void *p2);
+</pre>
+<div class=detailHTML>
+Compares two values of type <code>short</code> whose addresses are
+supplied by the pointer arguments <code>p1</code> and <code>p2</code>.
+</div>
+<hr>
+<a name="Function:longCmpFn"></a>
+<pre class=detailCode>
+int longCmpFn(const void *p1, const void *p2);
+</pre>
+<div class=detailHTML>
+Compares two values of type <code>long</code> whose addresses are
+supplied by the pointer arguments <code>p1</code> and <code>p2</code>.
+</div>
+<hr>
+<a name="Function:charCmpFn"></a>
+<pre class=detailCode>
+int charCmpFn(const void *p1, const void *p2);
+</pre>
+<div class=detailHTML>
+Compares two values of type <code>char</code> whose addresses are
+supplied by the pointer arguments <code>p1</code> and <code>p2</code>.
+</div>
+<hr>
+<a name="Function:floatCmpFn"></a>
+<pre class=detailCode>
+int floatCmpFn(const void *p1, const void *p2);
+</pre>
+<div class=detailHTML>
+Compares two values of type <code>float</code> whose addresses are
+supplied by the pointer arguments <code>p1</code> and <code>p2</code>.
+</div>
+<hr>
+<a name="Function:doubleCmpFn"></a>
+<pre class=detailCode>
+int doubleCmpFn(const void *p1, const void *p2);
+</pre>
+<div class=detailHTML>
+Compares two values of type <code>double</code> whose addresses are
+supplied by the pointer arguments <code>p1</code> and <code>p2</code>.
+</div>
+<hr>
+<a name="Function:unsignedCmpFn"></a>
+<pre class=detailCode>
+int unsignedCmpFn(const void *p1, const void *p2);
+</pre>
+<div class=detailHTML>
+Compares two values of type <code>unsigned</code> whose addresses are
+supplied by the pointer arguments <code>p1</code> and <code>p2</code>.
+</div>
+<hr>
+<a name="Function:unsignedShortCmpFn"></a>
+<pre class=detailCode>
+int unsignedShortCmpFn(const void *p1, const void *p2);
+</pre>
+<div class=detailHTML>
+Compares two values of type <code>unsignedshort</code> whose addresses are
+supplied by the pointer arguments <code>p1</code> and <code>p2</code>.
+</div>
+<hr>
+<a name="Function:unsignedLongCmpFn"></a>
+<pre class=detailCode>
+int unsignedLongCmpFn(const void *p1, const void *p2);
+</pre>
+<div class=detailHTML>
+Compares two values of type <code>unsignedlong</code> whose addresses are
+supplied by the pointer arguments <code>p1</code> and <code>p2</code>.
+</div>
+<hr>
+<a name="Function:unsignedCharCmpFn"></a>
+<pre class=detailCode>
+int unsignedCharCmpFn(const void *p1, const void *p2);
+</pre>
+<div class=detailHTML>
+Compares two values of type <code>unsignedchar</code> whose addresses are
+supplied by the pointer arguments <code>p1</code> and <code>p2</code>.
+</div>
+<hr>
+<a name="Function:stringCmpFn"></a>
+<pre class=detailCode>
+int stringCmpFn(const void *p1, const void *p2);
+</pre>
+<div class=detailHTML>
+Compares two values of type <code>string</code> whose addresses are
+supplied by the pointer arguments <code>p1</code> and <code>p2</code>.
+</div>
+<hr>
+<a name="Function:pointerCmpFn"></a>
+<pre class=detailCode>
+int pointerCmpFn(const void *p1, const void *p2);
+</pre>
+<div class=detailHTML>
+Compares two values of type <code>pointer</code> whose addresses are
+supplied by the pointer arguments <code>p1</code> and <code>p2</code>.
+Pointer comparison is based on the numeric equivalent of the pointer.
+</div>
+<hr>
+</table>
+</body>
+</html>

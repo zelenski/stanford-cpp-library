@@ -1,0 +1,452 @@
+<html>
+<head>
+<title>filelib.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="filelib-h.html"><code>filelib.h</code></a></h1>
+This interface exports a standardized set of tools for working with
+files across various platforms.  It is implemented for each of the
+following platforms: Mac OSX, Windows, and Linux.  Directory and
+search paths are allowed to contain separators in any of the
+supported styles, which often makes it possible to use the same
+code on different platforms.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getDirectoryPathSeparator">getDirectoryPathSeparator()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the standard directory path separator used on this platform.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getSearchPathSeparator">getSearchPathSeparator()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the standard search path separator used on this platform.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getRoot">getRoot(filename)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the root of a <code>filename.ext</code> pair, which consists of everything in <code>filename</code> up to the last dot and the subsequent extension.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getExtension">getExtension(filename)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the extension component of <code>filename</code>, which consists of the separating dot and all subsequent characters.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getHead">getHead(pathname)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns all but the last component of a path name, where the components are names separated by any of the directory path separators (forward or reverse slashes).</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getTail">getTail(pathname)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the last component of a path name, where the components are names separated by any of the directory path separators (forward or reverse slashes).</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:defaultExtension">defaultExtension(filename,&nbsp;ext)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds an extension to a file name if none already exists.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:openOnPath">openOnPath(path,&nbsp;filename,&nbsp;mode)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Opens a files by searching directories in a search path for the first matching file.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:findOnPath">findOnPath(path,&nbsp;filename)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a canonical name of a file found using a search path.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:deleteFile">deleteFile(filename)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Deletes the specified file.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:renameFile">renameFile(oldname,&nbsp;newname)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Renames a file.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:fileExists">fileExists(pathname)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the specified file exists.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isFile">isFile(pathname)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the specified file is a regular file.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isSymbolicLink">isSymbolicLink(pathname)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the specified file is a symbolic link.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isDirectory">isDirectory(pathname)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the specified file is a directory.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:createDirectory">createDirectory(pathname)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a new directory for the specified pathname.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:createDirectoryPath">createDirectoryPath(pathname)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a new directory for the specified pathname.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setCurrentDirectory">setCurrentDirectory(pathname)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the current directory to the specified path.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getCurrentDirectory">getCurrentDirectory()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns an absolute pathname for the current directory.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:expandPathname">expandPathname(pathname)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Expands a pathname into a canonical name for the platform.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:listDirectory">listDirectory(dir)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns an alphabetical list of all the files in the specified directory, excluding the unix <code>.</code> and <code>..</code> entries.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newDirectoryIterator">newDirectoryIterator(dir)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a new directory iterator that will step through the files in the specified directory.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newDirectoryTreeIterator">newDirectoryTreeIterator(dir)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a new directory iterator that will walk recursively through the files in the specified directory and its subdirectories.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:matchFilenamePattern">matchFilenamePattern(filename,&nbsp;pattern)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Determines whether the filename matches the specified pattern.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getFileType">getFileType(filename)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Gets the file type of a Macintosh file, which is a four-character string.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getFileCreator">getFileCreator(filename)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Gets the creator code of a Macintosh file, which is a four-character string.</td></tr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:getDirectoryPathSeparator"></a>
+<pre class=detailCode>
+string getDirectoryPathSeparator(void);
+</pre>
+<div class=detailHTML>
+Returns the standard directory path separator used on this platform.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sep = getDirectoryPathSeparator();
+</pre>
+<hr>
+<a name="Function:getSearchPathSeparator"></a>
+<pre class=detailCode>
+string getSearchPathSeparator(void);
+</pre>
+<div class=detailHTML>
+Returns the standard search path separator used on this platform.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sep = getSearchPathSeparator();
+</pre>
+<hr>
+<a name="Function:getRoot"></a>
+<pre class=detailCode>
+string getRoot(string filename);
+</pre>
+<div class=detailHTML>
+Returns the root of a <code>filename.ext</code> pair, which
+consists of everything in <code>filename</code> up to the last dot and
+the subsequent extension.  If no dot appears, <code>getRoot</code>
+returns the entire name.
+
+        the extension
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+root = getRoot(filename);
+</pre>
+<hr>
+<a name="Function:getExtension"></a>
+<pre class=detailCode>
+string getExtension(string filename);
+</pre>
+<div class=detailHTML>
+Returns the extension component of <code>filename</code>, which
+consists of the separating dot and all subsequent characters.
+If no dot exists in the final component, <code>extension</code>
+returns the empty string.  Note that this interpretation is
+different than one used by the <code>:e</code> substitution in
+the shell.  The semantics were chosen so that the expression
+
+<pre>
+   concat(getRoot(filename), getExtension(filename))
+</pre>
+
+is equal to the original <code>filename</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ext = getExtension(filename);
+</pre>
+<hr>
+<a name="Function:getHead"></a>
+<pre class=detailCode>
+string getHead(string pathname);
+</pre>
+<div class=detailHTML>
+Returns all but the last component of a path name, where the
+components are names separated by any of the directory path
+separators (forward or reverse slashes).  The special cases are
+illustrated by the following examples:
+
+<pre>
+   getHead("a/b")  = "a"
+   getHead("a")    = ""
+   getHead("/a")   = "/"
+   getHead("/")    = "/"
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+head = getHead(pathname);
+</pre>
+<hr>
+<a name="Function:getTail"></a>
+<pre class=detailCode>
+string getTail(string pathname);
+</pre>
+<div class=detailHTML>
+Returns the last component of a path name, where the components
+are names separated by any of the directory path separators
+(forward or reverse slashes).  The special cases are illustrated
+by the following examples:
+
+<pre>
+   getTail("a/b")   = "b"
+   getTail("a")     = "a"
+   getTail("/a")    = "a"
+   getTail("/")     = ""
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+tail = getTail(pathname);
+</pre>
+<hr>
+<a name="Function:defaultExtension"></a>
+<pre class=detailCode>
+string defaultExtension(string filename, string ext);
+</pre>
+<div class=detailHTML>
+Adds an extension to a file name if none already exists.  If the
+<code>extension</code> argument begins with a leading <code>*</code>,
+any existing extension in <code>filename</code> is replaced by
+<code>ext</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+newname = defaultExtension(filename, ext);
+</pre>
+<hr>
+<a name="Function:openOnPath"></a>
+<pre class=detailCode>
+FILE *openOnPath(string path, string filename, string mode);
+</pre>
+<div class=detailHTML>
+Opens a files by searching directories in a search path for the
+first matching file.  The <code>openOnPath</code> routine has
+the same structure as <code>fopen</code> in the standard library
+and the filename and mode arguments are the same as in that
+call.  The path argument consists of a list of directories
+which are prepended to the filename, unless the filename begins
+with an absolute directory marker, such as <code>/</code> or
+<code>~</code>.  The directories in the search path may be
+separated either by colons (Unix style) or semicolons (Windows
+style).  The <code>openOnPath</code> function returns an open
+stream to the indicated file, or <code>NULL</code>, if no
+existing file is found.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+FILE *file = openOnPath(path, filename, mode);
+</pre>
+<hr>
+<a name="Function:findOnPath"></a>
+<pre class=detailCode>
+string findOnPath(string path, string filename);
+</pre>
+<div class=detailHTML>
+Returns a canonical name of a file found using a search path.
+The <code>findOnPath</code> function is similar to
+<code>openOnPath</code>, except that it returns the name of
+the file instead of trying to open in.  If no matching file
+is found, findOnPath returns <code>NULL</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+pathname = findOnPath(path, filename);
+</pre>
+<hr>
+<a name="Function:deleteFile"></a>
+<pre class=detailCode>
+void deleteFile(string filename);
+</pre>
+<div class=detailHTML>
+Deletes the specified file.  Errors are reported by calling
+<code>error</code> in the implementation.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+deleteFile(filename);
+</pre>
+<hr>
+<a name="Function:renameFile"></a>
+<pre class=detailCode>
+void renameFile(string oldname, string newname);
+</pre>
+<div class=detailHTML>
+Renames a file.  Errors are reported by calling
+<code>error</code> in the implementation.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+renameFile(oldname, newname);
+</pre>
+<hr>
+<a name="Function:fileExists"></a>
+<pre class=detailCode>
+bool fileExists(string pathname);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the specified file exists.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (fileExists(pathname)) . . .
+</pre>
+<hr>
+<a name="Function:isFile"></a>
+<pre class=detailCode>
+bool isFile(string pathname);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the specified file is a regular file.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isFile(pathname)) . . .
+</pre>
+<hr>
+<a name="Function:isSymbolicLink"></a>
+<pre class=detailCode>
+bool isSymbolicLink(string pathname);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the specified file is a symbolic link.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isSymbolicLink(pathname)) . . .
+</pre>
+<hr>
+<a name="Function:isDirectory"></a>
+<pre class=detailCode>
+bool isDirectory(string pathname);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the specified file is a directory.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isDirectory(pathname)) . . .
+</pre>
+<hr>
+<a name="Function:createDirectory"></a>
+<pre class=detailCode>
+void createDirectory(string pathname);
+</pre>
+<div class=detailHTML>
+Creates a new directory for the specified pathname.  The
+<code>createDirectory</code> function does not report an error if
+the directory already exists.  Unlike <code>createDirectoryPath</code>,
+<code>createDirectory</code> does not create missing directories
+along the path.  If some component of <code>pathname</code> does
+not exist, this function signals an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+createDirectory(pathname);
+</pre>
+<hr>
+<a name="Function:createDirectoryPath"></a>
+<pre class=detailCode>
+void createDirectoryPath(string pathname);
+</pre>
+<div class=detailHTML>
+Creates a new directory for the specified pathname.   If intermediate
+components of the pathname do not exist, this function creates them
+as needed.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+createDirectoryPath(pathname);
+</pre>
+<hr>
+<a name="Function:setCurrentDirectory"></a>
+<pre class=detailCode>
+void setCurrentDirectory(string path);
+</pre>
+<div class=detailHTML>
+Changes the current directory to the specified path.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setCurrentDirectory(pathname);
+</pre>
+<hr>
+<a name="Function:getCurrentDirectory"></a>
+<pre class=detailCode>
+string getCurrentDirectory(void);
+</pre>
+<div class=detailHTML>
+Returns an absolute pathname for the current directory.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+pathname = getCurrentDirectory();
+</pre>
+<hr>
+<a name="Function:expandPathname"></a>
+<pre class=detailCode>
+string expandPathname(string filename);
+</pre>
+<div class=detailHTML>
+Expands a pathname into a canonical name for the platform.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+fullname = expandPathname(pathname);
+</pre>
+<hr>
+<a name="Function:listDirectory"></a>
+<pre class=detailCode>
+string *listDirectory(string dir);
+</pre>
+<div class=detailHTML>
+Returns an alphabetical list of all the files in the specified
+directory, excluding the unix <code>.</code> and <code>..</code>
+entries.  The array is terminated with a <code>NULL</code> entry.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string array[] = listDirectory(dir);
+</pre>
+<hr>
+<a name="Function:newDirectoryIterator"></a>
+<pre class=detailCode>
+Iterator newDirectoryIterator(string dir);
+</pre>
+<div class=detailHTML>
+Creates a new directory iterator that will step through the files
+in the specified directory.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+foreach (name in newDirectoryIterator(dir)) . . .
+</pre>
+<hr>
+<a name="Function:newDirectoryTreeIterator"></a>
+<pre class=detailCode>
+Iterator newDirectoryTreeIterator(string dir);
+</pre>
+<div class=detailHTML>
+Creates a new directory iterator that will walk recursively through the
+files in the specified directory and its subdirectories.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+foreach (name in newDirectoryTreeIterator(dir)) . . .
+</pre>
+<hr>
+<a name="Function:matchFilenamePattern"></a>
+<pre class=detailCode>
+bool matchFilenamePattern(string filename, string pattern);
+</pre>
+<div class=detailHTML>
+Determines whether the filename matches the specified pattern.  The
+pattern string is interpreted in much the same way that a Unix shell
+expands filenames and supports the following wildcard options:
+
+<p><table>
+<tr><td align=center><code>?</code></td>
+    <td>Matches any single character</td></tr>
+<tr><td align=center><code>*</code></td>
+    <td>Matches any sequence of characters</td></tr>
+<tr><td align=center><code>[...]</code></td>
+    <td>Matches any of the specified characters</td></tr>
+<tr><td align=center><code>[^...]</code></td>
+    <td>Matches any character <i>except</i> the specified ones</td></tr>
+</table><p>
+
+The last two options allow a range of characters to be specified in the
+form <code>a-z</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (matchFilenamePattern(filename, pattern)) . . .
+</pre>
+<hr>
+<a name="Function:getFileType"></a>
+<pre class=detailCode>
+string getFileType(string filename);
+</pre>
+<div class=detailHTML>
+Gets the file type of a Macintosh file, which is a four-character
+string.  This function returns the string "????" on other platforms.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+type = getFileType(filename);
+</pre>
+<hr>
+<a name="Function:getFileCreator"></a>
+<pre class=detailCode>
+string getFileCreator(string filename);
+</pre>
+<div class=detailHTML>
+Gets the creator code of a Macintosh file, which is a four-character
+string.  This function returns the string "????" on other platforms.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+type = getFileCreator(filename);
+</pre>
+<hr>
+</table>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<html>
+<head>
+<title>thread.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="thread-h.html"><code>thread.h</code></a></h1>
+This interface exports a platform-independent thread abstraction,
+along with simple functions for concurrency control.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Types</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:Thread">Thread</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>The <code>Thread</code> type is used to represent a <i>thread,</i> which is a lightweight process running in the same address space as the creator.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:Lock">Lock</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>The <code>Lock</code> type is used to manage concurrent access to some data structure within an application.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:forkThread">forkThread(fn,&nbsp;data)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Forks a new thread to invokes the specified function, passing <code>data</code> as an argument.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:joinThread">joinThread(thread)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Waits for the specified thread to finish before proceeding.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:yield">yield()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Yields the processor to allow another thread to run.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getCurrentThread">getCurrentThread()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the currently executing thread.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setThreadName">setThreadName(thread,&nbsp;name)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the name of a thread to the given string.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getThreadName">getThreadName(thread)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the name of the specified thread.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newLock">newLock()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a new <code>Lock</code> object.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:waitThread">waitThread(lock)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Waits for some other thread to issue a call to <code>signalThread</code> on this lock.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:signalThread">signalThread(lock)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Signals all threads waiting on the lock so that they wake up and recheck the corresponding condition.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:Thread"></a>
+<pre class=detailCode>
+typedef struct ThreadCDT *Thread;
+</pre>
+<div class=detailHTML>
+The <code>Thread</code> type is used to represent a <i>thread,</i>
+which is a lightweight process running in the same address space
+as the creator.
+</div>
+<hr>
+<a name="Type:Lock"></a>
+<pre class=detailCode>
+typedef struct LockCDT *Lock;
+</pre>
+<div class=detailHTML>
+The <code>Lock</code> type is used to manage concurrent access
+to some data structure within an application.  Only one thread
+can hold a lock at any point in time; other threads seeking to
+gain access queue on the lock until it is released by the thread
+that originally obtained it.  The general strategy for using a
+lock is to use the <code>synchronized</code> statement to
+protect a critical region of code, as illustrated in the
+discussion of <code>synchronized</code> later in this file.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:forkThread"></a>
+<pre class=detailCode>
+Thread forkThread(proc fn, void *data);
+</pre>
+<div class=detailHTML>
+Forks a new thread to invokes the specified function, passing
+<code>data</code> as an argument.  Threads created by
+<code>forkThread</code> become dormant on completion and
+wait for the client to synchronize with them using a
+<code>joinThread</code> operation.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+thread = forkThread(fn, data);
+</pre>
+<hr>
+<a name="Function:joinThread"></a>
+<pre class=detailCode>
+void joinThread(Thread thread);
+</pre>
+<div class=detailHTML>
+Waits for the specified thread to finish before proceeding.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+joinThread(thread);
+</pre>
+<hr>
+<a name="Function:yield"></a>
+<pre class=detailCode>
+void yield(void);
+</pre>
+<div class=detailHTML>
+Yields the processor to allow another thread to run.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+yield();
+</pre>
+<hr>
+<a name="Function:getCurrentThread"></a>
+<pre class=detailCode>
+Thread getCurrentThread(void);
+</pre>
+<div class=detailHTML>
+Returns the currently executing thread.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+self = getCurrentThread();
+</pre>
+<hr>
+<a name="Function:setThreadName"></a>
+<pre class=detailCode>
+void setThreadName(Thread thread, string name);
+</pre>
+<div class=detailHTML>
+Sets the name of a thread to the given string.  This name
+is used primarily for debugging purposes.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setThreadName(thread, name);
+</pre>
+<hr>
+<a name="Function:getThreadName"></a>
+<pre class=detailCode>
+string getThreadName(Thread thread);
+</pre>
+<div class=detailHTML>
+Returns the name of the specified thread.  If no name has been
+set for the thread, this function returns a string in the form
+<code>Thread&lt;xxx&gt;</code>, where <code>xxx</code> is an
+integer uniquely identifying the thread.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+name = getThreadName(thread);
+</pre>
+<hr>
+<a name="Function:newLock"></a>
+<pre class=detailCode>
+Lock newLock(void);
+</pre>
+<div class=detailHTML>
+Creates a new <code>Lock</code> object.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+lock = newLock();
+</pre>
+<hr>
+<a name="Function:waitThread"></a>
+<pre class=detailCode>
+void waitThread(Lock lock);
+</pre>
+<div class=detailHTML>
+Waits for some other thread to issue a call to <code>signalThread</code>
+on this lock.  This call requires that the lock be owned by the
+calling thread.  The effect of this function is to release the
+lock and then wait until the desired <code>signalThread</code> operation
+occurs, at which point the lock is reacquired and control passes
+to the statement following the <code>waitThread</code>.
+
+<p>The <code>waitThread</code> function is useful only if the call is
+embedded inside a <code>while</code> loop that checks a condition
+before proceeding.  That <code>while</code> statement must itself
+be embedded inside a <code>synchronized</code> statement that
+acquires the lock.  Thus, the standard paradigm for using the
+<code>waitThread</code> function looks like this:<p>
+
+<pre>
+   synchronized (lock) {
+       while (conditional test) {
+           waitThread(lock);
+       }
+       . . . code to manipulate the locked resource . . .
+   }
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+waitThread(lock);
+</pre>
+<hr>
+<a name="Function:signalThread"></a>
+<pre class=detailCode>
+void signalThread(Lock lock);
+</pre>
+<div class=detailHTML>
+Signals all threads waiting on the lock so that they wake up and
+recheck the corresponding condition.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+signalThread(lock);
+</pre>
+<hr>
+</table>
+</body>
+</html>

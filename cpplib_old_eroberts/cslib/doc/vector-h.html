@@ -1,0 +1,155 @@
+<html>
+<head>
+<title>../vector.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: vector.h
+ * --------------
+ * This interface exports an array-like indexed collection type.
+ */
+</scan>
+#ifndef _vector_h_
+#define _vector_h_
+
+#include "cslib.h"
+#include "generic.h"
+
+<a name="Type:Vector"><scan class=comment>/*
+ * Type: Vector
+ * ------------
+ * This type defines the abstract vector type.
+ */
+</scan>
+typedef struct VectorCDT *Vector;
+
+<scan class=comment>/* Exported entries */</scan>
+
+<a name="Function:newVector"><scan class=comment>/*
+ * Function: newVector
+ * Usage: vector = newVector();
+ * ----------------------------
+ * Returns an empty Vector.
+ */
+</scan>
+Vector newVector(void);
+
+<a name="Function:freeVector"><scan class=comment>/*
+ * Function: freeVector
+ * Usage: freeVector(vector);
+ * --------------------------
+ * Frees the storage associated with vector.
+ */
+</scan>
+void freeVector(Vector vector);
+
+<a name="Function:arrayToVector"><scan class=comment>/*
+ * Function: arrayToVector
+ * Usage: vector = arrayToVector(array, n);
+ * ----------------------------------------
+ * Creates a vector from an array of void * pointers.  If the array
+ * argument is NULL, this function returns NULL.
+ */
+</scan>
+Vector arrayToVector(void *array[], int n);
+
+<a name="Function:vectorToArray"><scan class=comment>/*
+ * Function: vectorToArray
+ * Usage: array = vectorToArray(vector);
+ * -------------------------------------
+ * Returns a NULL-terminated array with the same elements as vector.  If
+ * vector is NULL, this function returns NULL.
+ */
+</scan>
+void **vectorToArray(Vector vector);
+
+<a name="Function:isEmpty"><scan class=comment>/*
+ * Function: isEmpty
+ * Usage: if (isEmpty(vector)) . . .
+ * ---------------------------------
+ * Returns true if the vector is empty.
+ */
+</scan>
+bool isEmptyVector(Vector vector);
+
+<a name="Function:size"><scan class=comment>/*
+ * Function: size
+ * Usage: n = size(vector);
+ * ------------------------
+ * Returns the number of elements in the vector.
+ */
+</scan>
+int sizeVector(Vector vector);
+
+<a name="Function:clear"><scan class=comment>/*
+ * Function: clear
+ * Usage: clear(vector);
+ * ---------------------
+ * Removes all elements from the vector.
+ */
+</scan>
+void clearVector(Vector vector);
+
+<a name="Function:clone"><scan class=comment>/*
+ * Function: clone
+ * Usage: newvec = clone(vector);
+ * ------------------------------
+ * Creates a copy of the vector.  The clone function copies only the first
+ * level of the structure and does not copy the individual elements.
+ */
+</scan>
+Vector cloneVector(Vector vector);
+
+<a name="Function:get"><scan class=comment>/*
+ * Function: get
+ * Usage: value = get(vector, index);
+ * ----------------------------------
+ * Gets the element at the specified index position, raising an error if
+ * the index is out of range.
+ */
+</scan>
+void *getVector(Vector vector, int index);
+
+<a name="Function:set"><scan class=comment>/*
+ * Function: set
+ * Usage: set(vector, index, value);
+ * ---------------------------------
+ * Sets the element at the specified index position, raising an error if
+ * the index is out of range.
+ */
+</scan>
+void setVector(Vector vector, int index, void *value);
+
+<a name="Function:add"><scan class=comment>/*
+ * Function: add
+ * Usage: add(vector, value);
+ * --------------------------
+ * Adds a new value to the end of the vector.
+ */
+</scan>
+void addVector(Vector vector, void *value);
+
+<a name="Function:insert"><scan class=comment>/*
+ * Function: insert
+ * Usage: insert(vector, index, value);
+ * ------------------------------------
+ * Inserts a new value before the specified index position.
+ */
+</scan>
+void insert(Vector vector, int index, void *value);
+
+<a name="Function:remove"><scan class=comment>/*
+ * Function: remove
+ * Usage: remove(vector, index);
+ * -----------------------------
+ * Deletes the element at the specified index position.
+ */
+</scan>
+void removeVector(Vector vector, int index);
+
+#endif
+</pre>
+</body>
+</html>

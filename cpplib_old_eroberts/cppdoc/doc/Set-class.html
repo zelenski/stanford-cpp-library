@@ -1,0 +1,293 @@
+<html>
+<head>
+<title>class Set&lt;ValueType&gt;</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="set-h.html">class Set&lt;ValueType&gt;</a></h1>
+This template class stores a collection of distinct elements.
+<h2>Constructor</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Constructor:Set">Set()</a><br><a href="#Constructor:Set">Set(cmpFn)</a><br><a href="#Constructor:Set">Set(initializers)</a><br><a href="#Constructor:Set">Set(initializers,&nbsp;cmpFn)</a>&nbsp;</td><td class=indexSynopsis width=100%>Initializes a set of the specified element type, which is either empty or initialized to match the elements of the C++ array passed as the <code>initializers</code> parameter.</td></tr>
+</table>
+<h2>Methods</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Method:size">size()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the number of elements in this set.</td></tr>
+<tr><td class=indexKey><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> if this set contains no elements.</td></tr>
+<tr><td class=indexKey><a href="#Method:add">add(value)</a>&nbsp;</td><td class=indexSynopsis width=100%>Adds an element to this set, if it was not already there.</td></tr>
+<tr><td class=indexKey><a href="#Method:remove">remove(value)</a>&nbsp;</td><td class=indexSynopsis width=100%>Removes an element from this set.</td></tr>
+<tr><td class=indexKey><a href="#Method:contains">contains(value)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> if the specified value is in this set.</td></tr>
+<tr><td class=indexKey><a href="#Method:isSubsetOf">isSubsetOf(set2)</a>&nbsp;</td><td class=indexSynopsis width=100%>Implements the subset relation on sets.</td></tr>
+<tr><td class=indexKey><a href="#Method:clear">clear()</a>&nbsp;</td><td class=indexSynopsis width=100%>Removes all elements from this set.</td></tr>
+<tr><td class=indexKey><a href="#Method:mapAll">mapAll(fn)</a><br><a href="#Method:mapAll">mapAll(fn,&nbsp;data)</a>&nbsp;</td><td class=indexSynopsis width=100%>Iterates through the elements of the set and calls <code>fn(value)</code> for each one.</td></tr>
+</table>
+<h2>Operators</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Operator:==">operator==</a>&nbsp;</td><td class=indexSynopsis width=100%>Implements the equality relation on sets.</td></tr>
+<tr><td class=indexKey><a href="#Operator:+">operator+</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the union of sets <code>set1</code> and <code>set2</code>, which is the set of elements that appear in at least one of the two sets.</td></tr>
+<tr><td class=indexKey><a href="#Operator:*">operator*</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the intersection of sets <code>set1</code> and <code>set2</code>, which is the set of all elements that appear in both.</td></tr>
+<tr><td class=indexKey><a href="#Operator:-">operator-</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the difference of sets <code>set1</code> and <code>set2</code>, which is all of the elements that appear in <code>set1</code> but not <code>set2</code>.</td></tr>
+<tr><td class=indexKey><a href="#Operator:+=">operator+=</a>&nbsp;</td><td class=indexSynopsis width=100%>Adds all of the elements from <code>set2</code> (or the single specified value) to <code>set1</code>.</td></tr>
+<tr><td class=indexKey><a href="#Operator:*=">operator*=</a>&nbsp;</td><td class=indexSynopsis width=100%>Removes any elements from <code>set1</code> that are not present in <code>set2</code>.</td></tr>
+<tr><td class=indexKey><a href="#Operator:-=">operator-=</a>&nbsp;</td><td class=indexSynopsis width=100%>Removes the elements from <code>set2</code> (or the single specified value) from <code>set1</code>.</td></tr>
+</table>
+<h2>Macro</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Macro:foreach">foreach(ValueType&nbsp;value&nbsp;in&nbsp;set)</a>&nbsp;</td><td class=indexSynopsis width=100%>Iterates over the elements of the set.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:Set"></a>
+<pre class=detailCode>
+Set(int (*cmpFn)(ValueType, ValueType) = operatorCmp);
+</pre>
+<div class=detailHTML>
+Initializes a set of the specified element type, which is either
+empty or initialized to match the elements of the C++ array
+passed as the <code>initializers</code> parameter.  The optional
+<code>cmpFn</code> argument specifies a comparison function, which
+is called to compare data values.  This argument is typically omitted,
+in which case the implementation uses the <code>operatorCmp</code>
+function from <code>cmpfn.h</code>, which applies the built-in
+operators <code>&lt;</code> and <code>==</code> to determine
+the ordering.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Set&lt;ValueType&gt; set;
+Set&lt;ValueType&gt; set(cmpFn);
+Set&lt;ValueType&gt; set(initializers);
+Set&lt;ValueType&gt; set(initializers, cmpFn);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size();
+</pre>
+<div class=detailHTML>
+Returns the number of elements in this set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+count = set.size();
+</pre>
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty();
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if this set contains no elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (set.isEmpty()) . . .
+</pre>
+<hr>
+<a name="Method:add"></a>
+<pre class=detailCode>
+void add(const ValueType &amp; value);
+void insert(const ValueType &amp; value);
+</pre>
+<div class=detailHTML>
+Adds an element to this set, if it was not already there.  For
+compatibility with the STL <code>set</code> class, this method
+is also exported as <code>insert</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set.add(value);
+</pre>
+<hr>
+<a name="Method:remove"></a>
+<pre class=detailCode>
+void remove(const ValueType &amp; value);
+</pre>
+<div class=detailHTML>
+Removes an element from this set.  If the value was not
+contained in the set, no error is generated and the set
+remains unchanged.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set.remove(value);
+</pre>
+<hr>
+<a name="Method:contains"></a>
+<pre class=detailCode>
+bool contains(const ValueType &amp; value);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the specified value is in this set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (set.contains(value)) . . .
+</pre>
+<hr>
+<a name="Method:isSubsetOf"></a>
+<pre class=detailCode>
+bool isSubsetOf(const Set &amp; set2);
+</pre>
+<div class=detailHTML>
+Implements the subset relation on sets.  It returns
+<code>true</code> if every element of this set is
+contained in <code>set2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (set.isSubsetOf(set2)) . . .
+</pre>
+<hr>
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Removes all elements from this set.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set.clear();
+</pre>
+<hr>
+<a name="Method:mapAll"></a>
+<pre class=detailCode>
+void mapAll(void (*fn)(ValueType value));
+
+template &lt;typename ClientDataType&gt;
+void mapAll(void (*fn)(ValueType, ClientDataType &amp;), ClientDataType &amp; data);
+</pre>
+<div class=detailHTML>
+Iterates through the elements of the set and calls <code>fn(value)</code>
+for each one.  The values are processed in ascending order, as defined
+by the comparison function.  The second form of the call allows the
+client to pass a data value of any type to the callback function.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set.mapAll(fn);
+set.mapAll(fn, data);
+</pre>
+<hr>
+</table>
+<h2>Operator detail</h2>
+<hr>
+<a name="Operator:=="></a>
+<pre class=detailCode>
+bool operator==(const Set &amp; set2);
+bool operator!=(const Set &amp; set2);
+</pre>
+<div class=detailHTML>
+Implements the equality relation on sets.  The <code>==</code>
+operator returns <code>true</code> if <code>set1</code> and
+<code>set2</code> contain exactly the same elements; the
+<code>!=</code> returns the opposite value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (set1 == set2) . . .
+if (set1 != set2) . . .
+</pre>
+<hr>
+<a name="Operator:+"></a>
+<pre class=detailCode>
+Set operator+(const Set &amp; set2);
+</pre>
+<div class=detailHTML>
+Returns the union of sets <code>set1</code> and <code>set2</code>, which
+is the set of elements that appear in at least one of the two sets.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set1 + set2;
+</pre>
+<hr>
+<a name="Operator:*"></a>
+<pre class=detailCode>
+Set operator*(const Set &amp; set2);
+</pre>
+<div class=detailHTML>
+Returns the intersection of sets <code>set1</code> and <code>set2</code>,
+which is the set of all elements that appear in both.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set1 * set2;
+</pre>
+<hr>
+<a name="Operator:-"></a>
+<pre class=detailCode>
+Set operator-(const Set &amp; set2);
+</pre>
+<div class=detailHTML>
+Returns the difference of sets <code>set1</code> and <code>set2</code>,
+which is all of the elements that appear in <code>set1</code> but
+not <code>set2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set1 - set2;
+</pre>
+<hr>
+<a name="Operator:+="></a>
+<pre class=detailCode>
+Set &amp; operator+=(const Set &amp; set2);
+Set &amp; operator+=(const ValueType &amp; value);
+</pre>
+<div class=detailHTML>
+Adds all of the elements from <code>set2</code> (or the single
+specified value) to <code>set1</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set1 += set2;
+set1 += value;
+</pre>
+<hr>
+<a name="Operator:*="></a>
+<pre class=detailCode>
+Set &amp; operator*=(const Set &amp; set2);
+</pre>
+<div class=detailHTML>
+Removes any elements from <code>set1</code> that are not present in
+<code>set2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set1 *= set2;
+</pre>
+<hr>
+<a name="Operator:-="></a>
+<pre class=detailCode>
+Set &amp; operator-=(const Set &amp; set2);
+Set &amp; operator-=(const ValueType &amp; value);
+</pre>
+<div class=detailHTML>
+Removes the elements from <code>set2</code> (or the single
+specified value) from <code>set1</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set1 -= set2;
+set1 -= value;
+</pre>
+<hr>
+</table>
+<h2>Macro detail</h2>
+<hr>
+<a name="Macro:foreach"></a>
+<pre class=detailCode>
+foreach (ValueType value in set) . . .
+</pre>
+<div class=detailHTML>
+Iterates over the elements of the set. The values are returned
+in ascending order, as defined by the comparison function.
+</div>
+<hr>
+</table>
+</body>
+</html>

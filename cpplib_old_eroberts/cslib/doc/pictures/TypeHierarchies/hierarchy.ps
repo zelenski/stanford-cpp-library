@@ -1,0 +1,59 @@
+%% File: hierarchy.ps
+
+/UML_SF 1.5 def
+/UML_BOX_WIDTH 57 def
+/UML_BOX_HEIGHT 18 def
+/UML_ARROWHEAD_LENGTH 5 def
+/UML_ARROWHEAD_BREADTH 6 def
+/LABEL_DY -6 def
+
+/LINK_TO_SELF where {
+  pop
+} {
+  /LINK_TO_SELF false def
+} ifelse
+
+/drawSubclasses {
+  9 dict begin
+    /classes exch def
+    /n classes length def
+    /width n UML_BOX_WIDTH mul n 1 sub DX mul add def
+    /parent exch def
+    /y0 exch def
+    width 2 div sub /x0 exch def
+    0 1 n 1 sub {
+      /i exch def
+      /name classes i get def
+      x0 i UML_BOX_WIDTH DX add mul add y0 name drawClass
+      /fraction i n 1 sub div def
+      n 2 eq { /fraction i 0 eq { 0.3 } { 0.7 } ifelse def } if
+      parent name fraction drawSubclassArrow
+    } for
+  end
+} def
+
+/dumpAreaTag { %% out name link dumpAreaTag
+  9 dict begin
+    /link exch def
+    /name exch def
+    /out exch def
+    classTable name get split
+    Y0 exch sub UML_SF mul 0.5 add cvi /y0 exch def
+    width 2 div X0 sub add UML_SF mul 0.5 add cvi /x0 exch def
+    /x1 x0 UML_BOX_WIDTH UML_SF mul add 0.5 add cvi def
+    /y1 y0 UML_BOX_HEIGHT UML_SF mul add 0.5 add cvi def
+    out (  <area shape=rect coords=") writestring
+    out x0 10 string cvs writestring
+    out (,) writestring
+    out y0 10 string cvs writestring
+    out (,) writestring
+    out x1 10 string cvs writestring
+    out (,) writestring
+    out y1 10 string cvs writestring
+    out (" href=") writestring
+    out link writestring
+    out ("\n        alt=") writestring
+    out name writestring
+    out (">\n) writestring
+  end
+} def

@@ -1,0 +1,79 @@
+<html>
+<head>
+<title>include/foreach.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: foreach.h
+ * ---------------
+ * This interface defines the foreach keyword, which is used to simplify
+ * iteration.  All iterable classes import this interface, so clients never
+ * need to do so explicitly.  This version of the interface also supports
+ * C++ strings and arrays.
+ */
+</scan>
+#ifndef _foreach_h
+#define _foreach_h
+
+<a name="Statement:foreach"><scan class=comment>/*
+ * Statement: foreach
+ * Usage: foreach (type var in collection) { . . . }
+ * -------------------------------------------------
+ * The foreach statement steps through the elements in a collection.  It
+ * works correctly with the collection classes in both the Standard
+ * Template Library and the Stanford C++ libraries, but can also be used
+ * with C++ strings and statically initialized arrays.
+ *
+ * The following code, for example, prints every element in the string
+ * vector lines:
+ *
+ *    foreach (string str in lines) {
+ *       cout &lt;&lt; str &lt;&lt; endl;
+ *    }
+ *
+ * Similarly, the following function calculates the sum of the character
+ * codes in a string:
+ *
+ *    int sumCharacterCodes(string str) {
+ *       int sum = 0;
+ *       foreach (char ch in str) sum += ch;
+ *       return sum;
+ *    }
+ *
+ * As a simplification when iterating over maps, the foreach macro iterates
+ * through the keys rather than the key/value pairs.
+ */
+</scan>
+   <scan class=comment>/* The foreach and in macros are defined in the foreachpriv.h file */</scan>
+
+<a name="Class:EnumRange<BaseType>"><scan class=comment>/*
+ * Class: EnumRange&lt;BaseType&gt;
+ * --------------------------
+ * This class is used to support iteration over enumeration types.  Calling
+ * the EnumRange constructor with the first and last elements produces an
+ * iterable collection of those items, as illustrated by the following
+ * example:
+ *
+ *    enum Direction { NORTH, SOUTH, EAST, WEST };
+ *
+ *    foreach (Direction dir in EnumRange&lt;Direction&gt;(NORTH, WEST)) . . .
+ *
+ * By convention, enumerated types exported by the libraries (such as
+ * Direction) export an enumerated range as a constant whose name is the
+ * type followed by an "s".  This convention makes it possible to write
+ * this loop header as follows:
+ *
+ *    foreach (Direction dir in Directions) . . .
+ */
+</scan>
+template &lt;typename BaseType&gt;
+class EnumRange;
+
+#include "private/foreachpriv.h"
+
+#endif
+</pre>
+</body>
+</html>

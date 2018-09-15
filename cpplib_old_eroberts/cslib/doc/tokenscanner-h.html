@@ -1,0 +1,266 @@
+<html>
+<head>
+<title>../tokenscanner.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: tokenscanner.h
+ * --------------------
+ * This interface exports a scanner facility that divides a string into
+ * individual tokens.
+ */
+</scan>
+#ifndef _tokenscanner_h
+#define _tokenscanner_h
+
+#include "cslib.h"
+
+<a name="Type:TokenType"><scan class=comment>/*
+ * Type: TokenType
+ * ---------------
+ * This enumerated type defines the values of the getTokenType method.
+ */
+</scan>
+typedef enum { SEPARATOR, WORD, NUMBER, STRING, OPERATOR } TokenType;
+
+<a name="Type:TokenScanner"><scan class=comment>/*
+ * Type: TokenScanner
+ * ------------------
+ * This abstract type divides a string into individual tokens.  The typical
+ * use of the TokenScanner ADT is illustrated by the following pattern,
+ * which reads the tokens in the string variable input:
+ *
+ *    string token;
+ *    TokenScanner scanner;
+ *
+ *    scanner = newTokenScanner();
+ *    setInputString(scanner, input);
+ *    while (hasMoreTokens(scanner)) {
+ *       token = nextToken(scanner);
+ *       . . . process the token . . .
+ *       freeBlock(token);
+ *    }
+ *    freeTokenScanner(scanner);
+ *
+ * The TokenScanner ADT exports several additional methods that give
+ * clients more control over its behavior.  Those methods are described
+ * individually in the documentation.
+ */
+</scan>
+typedef struct TokenScannerCDT *TokenScanner;
+
+<a name="Function:newTokenScanner"><scan class=comment>/*
+ * Function: newTokenScanner
+ * Usage: scanner = newTokenScanner();
+ * -----------------------------------
+ * Creates a new TokenScanner with an empty token stream.  Before using the
+ * scanner, an input stream must be set by calling either setInputString or
+ * setInputFile.
+ */
+</scan>
+TokenScanner newTokenScanner(void);
+
+<a name="Function:freeTokenScanner"><scan class=comment>/*
+ * Function: freeTokenScanner
+ * Usage: freeTokenScanner(scanner);
+ * ---------------------------------
+ * Frees the storage associated with the TokenScanner.
+ */
+</scan>
+void freeTokenScanner();
+
+<a name="Function:setInputString"><scan class=comment>/*
+ * Function: setInputString
+ * Usage: setInputString(scanner, str);
+ * ------------------------------------
+ * Sets the token stream for this scanner to the specified string.
+ */
+</scan>
+void setInputString(TokenScanner scanner, string str);
+
+<a name="Function:setInputFile"><scan class=comment>/*
+ * Function: setInputFile
+ * Usage: setInputFile(scanner, infile);
+ * -------------------------------------
+ * Sets the token stream for this scanner to the specified file, which must
+ * be open for input.
+ */
+</scan>
+void setInputFile(TokenScanner scanner, FILE *infile);
+
+<a name="Function:hasMoreTokens"><scan class=comment>/*
+ * Function: hasMoreTokens
+ * Usage: if (hasMoreTokens(scanner)) . . .
+ * ----------------------------------------
+ * Returns true if there are additional tokens for this scanner to read.
+ */
+</scan>
+bool hasMoreTokens(TokenScanner scanner);
+
+<a name="Function:nextToken"><scan class=comment>/*
+ * Function: nextToken
+ * Usage: token = nextToken(scanner);
+ * ----------------------------------
+ * Returns the next token from this   If nextToken is called when no tokens
+ * are available, it returns the empty string.
+ */
+</scan>
+string nextToken(TokenScanner scanner);
+
+<a name="Function:saveToken"><scan class=comment>/*
+ * Function: saveToken
+ * Usage: saveToken(scanner, token);
+ * ---------------------------------
+ * Pushes the specified token back into this scanner's input stream.  On
+ * the next call to nextToken, the scanner will return the saved token
+ * without reading any additional characters from the token stream.
+ */
+</scan>
+void saveToken(TokenScanner scanner, string token);
+
+<a name="Function:getPosition"><scan class=comment>/*
+ * Function: getPosition
+ * Usage: pos = getPosition(scanner);
+ * ----------------------------------
+ * Returns the current position of the scanner in the input stream.  If
+ * saveToken has been called, this position corresponds to the beginning of
+ * the saved token.  If saveToken is called more than once, getPosition
+ * returns -1.
+ */
+</scan>
+int getPosition(TokenScanner scanner);
+
+<a name="Function:ignoreWhitespace"><scan class=comment>/*
+ * Function: ignoreWhitespace
+ * Usage: ignoreWhitespace(scanner);
+ * ---------------------------------
+ * Tells the scanner to ignore whitespace characters.  By default, the
+ * nextToken method treats whitespace characters (typically spaces and
+ * tabs) just like any other punctuation mark and returns them as
+ * single-character tokens.  Calling
+ *
+ *    ignoreWhitespace(scanner);
+ *
+ * changes this behavior so that the scanner ignore whitespace characters.
+ */
+</scan>
+void ignoreWhitespace(TokenScanner scanner);
+
+<a name="Function:ignoreComments"><scan class=comment>/*
+ * Function: ignoreComments
+ * Usage: ignoreComments(scanner);
+ * -------------------------------
+ * Tells the scanner to ignore comments.  The scanner package recognizes
+ * both the slash-star and slash-slash comment format from the C-based
+ * family of languages.  Calling
+ *
+ *    ignoreComments(scanner);
+ *
+ * sets the parser to ignore comments.
+ */
+</scan>
+void ignoreComments(TokenScanner scanner);
+
+<a name="Function:scanNumbers"><scan class=comment>/*
+ * Function: scanNumbers
+ * Usage: scanNumbers(scanner);
+ * ----------------------------
+ * Controls how the scanner treats tokens that begin with a digit.  By
+ * default, the nextToken method treats numbers and letters identically and
+ * therefore does not provide any special processing for numbers.  Calling
+ *
+ *    scanNumbers(scanner);
+ *
+ * changes this behavior so that nextToken returns the longest substring
+ * that can be interpreted as a real number.
+ */
+</scan>
+void scanNumbers(TokenScanner scanner);
+
+<a name="Function:scanStrings"><scan class=comment>/*
+ * Function: scanStrings
+ * Usage: scanStrings(scanner);
+ * ----------------------------
+ * Controls how the scanner treats tokens enclosed in quotation marks.  By
+ * default, quotation marks (either single or double) are treated just like
+ * any other punctuation character.  Calling
+ *
+ *    scanStrings(scanner);
+ *
+ * changes this assumption so that nextToken returns a single token
+ * consisting of all characters through the matching quotation mark.  The
+ * quotation marks are returned as part of the scanned token so that
+ * clients can differentiate strings from other token types.
+ */
+</scan>
+void scanStrings(TokenScanner scanner);
+
+<a name="Function:addWordCharacters"><scan class=comment>/*
+ * Function: addWordCharacters
+ * Usage: addWordCharacters(scanner, str);
+ * ---------------------------------------
+ * Adds the characters in str to the set of characters legal in a WORD
+ * token.  For example, calling addWordCharacters("_") adds the underscore
+ * to the set of characters that are accepted as part of a word.
+ */
+</scan>
+void addWordCharacters(TokenScanner scanner, string str);
+
+<a name="Function:isWordCharacter"><scan class=comment>/*
+ * Function: isWordCharacter
+ * Usage: if (isWordCharacter(scanner, ch)) . . .
+ * ----------------------------------------------
+ * Returns true if the character is valid in a word.
+ */
+</scan>
+bool isWordCharacter(TokenScanner scanner, char ch);
+
+<a name="Function:addOperator"><scan class=comment>/*
+ * Function: addOperator
+ * Usage: addOperator(scanner, op);
+ * --------------------------------
+ * Defines a new multicharacter operator.  Whenever you call nextToken when
+ * the input stream contains operator characters, the scanner returns the
+ * longest possible operator string that can be read at that point.
+ */
+</scan>
+void addOperator(TokenScanner scanner, string op);
+
+<a name="Function:verifyToken"><scan class=comment>/*
+ * Function: verifyToken
+ * Usage: verifyToken(scanner, expected);
+ * --------------------------------------
+ * Reads the next token and makes sure it matches the string expected.  If
+ * it does not, verifyToken throws an error.
+ */
+</scan>
+void verifyToken(TokenScanner scanner, string expected);
+
+<a name="Function:getTokenType"><scan class=comment>/*
+ * Function: getTokenType
+ * Usage: type = getTokenType(scanner, token);
+ * -------------------------------------------
+ * Returns the type of this token.  This type will match one of the
+ * following enumerated type constants: EOF, SEPARATOR, WORD, NUMBER,
+ * STRING, or OPERATOR.
+ */
+</scan>
+TokenType getTokenType(TokenScanner scanner, string token);
+
+<a name="Function:getStringValue"><scan class=comment>/*
+ * Function: getStringValue
+ * Usage: str = getStringValue(token);
+ * -----------------------------------
+ * Returns the string value of a token.  This value is formed by removing
+ * any surrounding quotation marks and replacing escape sequences by the
+ * appropriate characters.
+ */
+</scan>
+string getStringValue(string token);
+
+#endif
+</pre>
+</body>
+</html>

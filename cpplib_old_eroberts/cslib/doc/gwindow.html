@@ -1,0 +1,466 @@
+<html>
+<head>
+<title>gwindow.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="gwindow-h.html"><code>gwindow.h</code></a></h1>
+This interface defines an abstract type representing a graphics window.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Type</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:GWindow">GWindow</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type represents a graphics window that supports simple graphics.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newGWindow">newGWindow(width,&nbsp;height)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates and displays a graphics window with the specified dimensions.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:closeGWindow">closeGWindow(gw)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Deletes the window from the screen.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:requestFocus">requestFocus(gw)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Asks the system to assign the keyboard focus to the window, which brings it to the top and ensures that key events are delivered to the window.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:clear">clear(gw)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Clears the contents of the window.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setVisible">setVisible(gw,&nbsp;flag)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Determines whether the window is visible on the screen.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isVisible">isVisible(gw)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Tests whether the window is visible.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:drawLine">drawLine(gw,&nbsp;x0,&nbsp;y0,&nbsp;x1,&nbsp;y1)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Draws a line connecting the specified points.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:drawPolarLine">drawPolarLine(gw,&nbsp;x,&nbsp;y,&nbsp;r,&nbsp;theta)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Draws a line of length <code>r</code> in the direction <code>theta</code> from the initial point.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:drawOval">drawOval(gw,&nbsp;x,&nbsp;y,&nbsp;width,&nbsp;height)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Draws the frame of a oval with the specified bounds.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:fillOval">fillOval(gw,&nbsp;x,&nbsp;y,&nbsp;width,&nbsp;height)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Fills the frame of a oval with the specified bounds.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:drawRect">drawRect(gw,&nbsp;x,&nbsp;y,&nbsp;width,&nbsp;height)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Draws the frame of a rectangle with the specified bounds.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:fillRect">fillRect(gw,&nbsp;x,&nbsp;y,&nbsp;width,&nbsp;height)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Fills the frame of a rectangle with the specified bounds.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setColor">setColor(gw,&nbsp;color)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the color used for drawing.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getColor">getColor(gw)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the current color as a string in the form <code>"#rrggbb"</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getWidth">getWidth(gw)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the width of the graphics window in pixels.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getHeight">getHeight(gw)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the height of the graphics window in pixels.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:repaint">repaint(gw)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Schedule a repaint on the graphics window.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setWindowTitle">setWindowTitle(gw,&nbsp;title)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the title of the graphics window.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getWindowTitle">getWindowTitle(gw)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the title of the graphics window.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:draw">draw(gw,&nbsp;gobj)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Draws the <code>GObject</code> on the background layer.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:drawAt">drawAt(gw,&nbsp;gobj,&nbsp;x,&nbsp;y)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Moves the <code>GObject</code> to (<code>x</code>, <code>y</code>) and then draws it on the window.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:add">add(gw,&nbsp;gobj)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds the <code>GObject</code> to the foreground layer of the window.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:addAt">addAt(gw,&nbsp;gobj,&nbsp;x,&nbsp;y)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds the <code>GObject</code> to the foreground layer of the window after moving it to the point (<code>x</code>, <code>y</code>).</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:addToRegion">addToRegion(gw,&nbsp;gobj,&nbsp;region)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds the <code>GObject</code> (which must be an interactor or a label) to the control strip specified by <code>region</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:remove">remove(gw,&nbsp;gobj)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes the object from its container or region.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getGObjectAt">getGObjectAt(gw,&nbsp;x,&nbsp;y)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a pointer to the topmost <code>GObject</code> containing the point (<code>x</code>, <code>y</code>), or <code>NULL</code> if no such object exists.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setRegionAlignment">setRegionAlignment(gw,&nbsp;region,&nbsp;align)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the alignment of the specified side region as specified by the string <code>align</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:pause">pause(milliseconds)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Pauses for the indicated number of milliseconds.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:GWindow"></a>
+<pre class=detailCode>
+typedef struct GWindowCDT *GWindow;
+</pre>
+<div class=detailHTML>
+This type represents a graphics window that supports simple graphics.
+Each <code>GWindow</code> consists of two layers.  The background layer
+provides a surface for drawing static pictures that involve no animation.
+Graphical objects drawn in the background layer are persistent and do
+not require the client to update the contents of the window.  The
+foreground layer contains graphical objects that are redrawn as necessary.
+
+<p>The <code>GWindow</code> type includes several functions that draw
+lines, rectangles, and ovals on the background layer without making
+use of the facilities of the <code>gobjects.h</code> interface.  For
+example, the following program draws a diamond, rectangle, and oval
+at the center of the window.
+
+<pre>
+   main() {
+      double width, height;
+      GWindow gw;
+
+      gw = newGWindow(500, 300);
+      width = getWidth(gw);
+      height = getHeight(gw);
+      drawLine(gw, 0, height / 2, width / 2, 0);
+      drawLine(gw, width / 2, 0, width, height / 2);
+      drawLine(gw, width, height / 2, width / 2, height);
+      drawLine(gw, width / 2, height, 0, height / 2);
+      setColor(gw, "BLUE");
+      fillRect(gw, width / 4, height / 4, width / 2, height / 2);
+      setColor(gw, "GRAY");
+      fillOval(gw, width / 4, height / 4, width / 2, height / 2);
+   }
+</pre>
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:newGWindow"></a>
+<pre class=detailCode>
+GWindow newGWindow(double width, double height);
+</pre>
+<div class=detailHTML>
+Creates and displays a graphics window with the specified dimensions.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gw = newGWindow(width, height);
+</pre>
+<hr>
+<a name="Function:closeGWindow"></a>
+<pre class=detailCode>
+void closeGWindow(GWindow gw);
+</pre>
+<div class=detailHTML>
+Deletes the window from the screen.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+closeGWindow(gw);
+</pre>
+<hr>
+<a name="Function:requestFocus"></a>
+<pre class=detailCode>
+void requestFocus(GWindow gw);
+</pre>
+<div class=detailHTML>
+Asks the system to assign the keyboard focus to the window, which
+brings it to the top and ensures that key events are delivered to
+the window.  Clicking in the window automatically requests the focus.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+requestFocus(gw);
+</pre>
+<hr>
+<a name="Function:clear"></a>
+<pre class=detailCode>
+void clear(GWindow gw);
+</pre>
+<div class=detailHTML>
+Clears the contents of the window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+clear(gw);
+</pre>
+<hr>
+<a name="Function:setVisible"></a>
+<pre class=detailCode>
+void setVisible(GWindow gw, bool flag);
+</pre>
+<div class=detailHTML>
+Determines whether the window is visible on the screen.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setVisible(gw, flag);
+</pre>
+<hr>
+<a name="Function:isVisible"></a>
+<pre class=detailCode>
+bool isVisible(GWindow gw);
+</pre>
+<div class=detailHTML>
+Tests whether the window is visible.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isVisible(gw)) . . .
+</pre>
+<hr>
+<a name="Function:drawLine"></a>
+<pre class=detailCode>
+void drawLine(GWindow gw, double x0, double y0, double x1, double y1);
+</pre>
+<div class=detailHTML>
+Draws a line connecting the specified points.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+drawLine(gw, x0, y0, x1, y1);
+</pre>
+<hr>
+<a name="Function:drawPolarLine"></a>
+<pre class=detailCode>
+GPoint drawPolarLine(GWindow gw, double x, double y, double r, double theta);
+</pre>
+<div class=detailHTML>
+Draws a line of length <code>r</code> in the direction <code>theta</code>
+from the initial point.  The angle <code>theta</code> is measured in
+degrees counterclockwise from the +<i>x</i> axis.  The method returns
+the end point of the line.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+pt = drawPolarLine(gw, x, y, r, theta);
+</pre>
+<hr>
+<a name="Function:drawOval"></a>
+<pre class=detailCode>
+void drawOval(GWindow gw, double x, double y, double width, double height);
+</pre>
+<div class=detailHTML>
+Draws the frame of a oval with the specified bounds.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+drawOval(gw, x, y, width, height);
+</pre>
+<hr>
+<a name="Function:fillOval"></a>
+<pre class=detailCode>
+void fillOval(GWindow gw, double x, double y, double width, double height);
+</pre>
+<div class=detailHTML>
+Fills the frame of a oval with the specified bounds.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+fillOval(gw, x, y, width, height);
+</pre>
+<hr>
+<a name="Function:drawRect"></a>
+<pre class=detailCode>
+void drawRect(GWindow gw, double x, double y, double width, double height);
+</pre>
+<div class=detailHTML>
+Draws the frame of a rectangle with the specified bounds.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+drawRect(gw, x, y, width, height);
+</pre>
+<hr>
+<a name="Function:fillRect"></a>
+<pre class=detailCode>
+void fillRect(GWindow gw, double x, double y, double width, double height);
+</pre>
+<div class=detailHTML>
+Fills the frame of a rectangle with the specified bounds.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+fillRect(gw, x, y, width, height);
+</pre>
+<hr>
+<a name="Function:setColor"></a>
+<pre class=detailCode>
+void setColor(GWindow gw, string color);
+</pre>
+<div class=detailHTML>
+Sets the color used for drawing.  The <code>color</code> parameter is
+usually one of the predefined color names from Java: <code>BLACK</code>,
+<code>BLUE</code>, <code>CYAN</code>, <code>DARK_GRAY</code>,
+<code>GRAY</code>, <code>GREEN</code>, <code>LIGHT_GRAY</code>,
+<code>MAGENTA</code>, <code>ORANGE</code>, <code>PINK</code>,
+<code>RED</code>, <code>WHITE</code>, or <code>YELLOW</code>.
+The case of the individual letters in the color name is ignored,
+as are spaces and underscores, so that the Java color
+<code>DARK_GRAY</code> could be written as <code>"Dark&nbsp;Gray"</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setColor(gw, color);
+</pre>
+<hr>
+<a name="Function:getColor"></a>
+<pre class=detailCode>
+string getColor(GWindow gw);
+</pre>
+<div class=detailHTML>
+Returns the current color as a string in the form <code>"#rrggbb"</code>.
+In this string, the values <code>rr</code>, <code>gg</code>,
+and <code>bb</code> are two-digit hexadecimal values representing
+the red, green, and blue components of the color, respectively.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+color = getColor(gw);
+</pre>
+<hr>
+<a name="Function:getWidth"></a>
+<pre class=detailCode>
+double getWidth(GWindow gw);
+</pre>
+<div class=detailHTML>
+Returns the width of the graphics window in pixels.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+width = getWidth(gw);
+</pre>
+<hr>
+<a name="Function:getHeight"></a>
+<pre class=detailCode>
+double getHeight(GWindow gw);
+</pre>
+<div class=detailHTML>
+Returns the height of the graphics window in pixels.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+height = getHeight(gw);
+</pre>
+<hr>
+<a name="Function:repaint"></a>
+<pre class=detailCode>
+void repaint(GWindow gw);
+</pre>
+<div class=detailHTML>
+Schedule a repaint on the graphics window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+repaint(gw);
+</pre>
+<hr>
+<a name="Function:setWindowTitle"></a>
+<pre class=detailCode>
+void setWindowTitle(GWindow gw, string title);
+</pre>
+<div class=detailHTML>
+Sets the title of the graphics window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setWindowTitle(gw, title);
+</pre>
+<hr>
+<a name="Function:getWindowTitle"></a>
+<pre class=detailCode>
+string getWindowTitle(GWindow gw);
+</pre>
+<div class=detailHTML>
+Returns the title of the graphics window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+title = getWindowTitle(gw);
+</pre>
+<hr>
+<a name="Function:draw"></a>
+<pre class=detailCode>
+void draw(GWindow gw, GObject gobj);
+</pre>
+<div class=detailHTML>
+Draws the <code>GObject</code> on the background layer.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+draw(gw, gobj);
+</pre>
+<hr>
+<a name="Function:drawAt"></a>
+<pre class=detailCode>
+void drawAt(GWindow gw, GObject gobj, double x, double y);
+</pre>
+<div class=detailHTML>
+Moves the <code>GObject</code> to (<code>x</code>, <code>y</code>)
+and then draws it on the window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+drawAt(gw, gobj, x, y);
+</pre>
+<hr>
+<a name="Function:add"></a>
+<pre class=detailCode>
+void add(GWindow gw, GObject gobj);
+</pre>
+<div class=detailHTML>
+Adds the <code>GObject</code> to the foreground layer of the window.
+Adding a <code>GObject</code> to a <code>GWindow</code> transfers
+control of the memory for that object from the client to the graphics
+package.  Freeing a <code>GWindow</code> automatically frees
+any <nobr><code>GObject</code><font size=-1>s</font></nobr> it contains.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+add(gw, gobj);
+</pre>
+<hr>
+<a name="Function:addAt"></a>
+<pre class=detailCode>
+void addAt(GWindow gw, GObject gobj, double x, double y);
+</pre>
+<div class=detailHTML>
+Adds the <code>GObject</code> to the foreground layer of the window
+after moving it to the point (<code>x</code>, <code>y</code>).
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+addAt(gw, gobj, x, y);
+</pre>
+<hr>
+<a name="Function:addToRegion"></a>
+<pre class=detailCode>
+void addToRegion(GWindow gw, GObject gobj, string region);
+</pre>
+<div class=detailHTML>
+Adds the <code>GObject</code> (which must be an interactor or a label)
+to the control strip specified by <code>region</code>.
+The <code>region</code> parameter must be one of the strings
+<code>"NORTH"</code>, <code>"EAST"</code>, <code>"SOUTH"</code>,
+or <code>"WEST"</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+addToRegion(gw, gobj, region);
+</pre>
+<hr>
+<a name="Function:remove"></a>
+<pre class=detailCode>
+void remove(GWindow gw, GObject gobj);
+</pre>
+<div class=detailHTML>
+Removes the object from its container or region.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+remove(gw, gobj);
+</pre>
+<hr>
+<a name="Function:getGObjectAt"></a>
+<pre class=detailCode>
+GObject getGObjectAt(GWindow gw, double x, double y);
+</pre>
+<div class=detailHTML>
+Returns a pointer to the topmost <code>GObject</code> containing the
+point (<code>x</code>, <code>y</code>), or <code>NULL</code> if no such
+object exists.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gobj = getGObjectAt(gw, x, y);
+</pre>
+<hr>
+<a name="Function:setRegionAlignment"></a>
+<pre class=detailCode>
+void setRegionAlignment(GWindow gw, string region, string align);
+</pre>
+<div class=detailHTML>
+Sets the alignment of the specified side region as specified by the
+string <code>align</code>.  The <code>region</code> parameter must be
+one of the strings <code>"NORTH"</code>, <code>"EAST"</code>,
+<code>"SOUTH"</code>, or <code>"WEST"</code> and the <code>align</code>
+parameter must be <code>"LEFT"</code>, <code>"RIGHT"</code>, or
+<code>"CENTER"</code>.  By default, side panels use
+<code>CENTER</code> alignment.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setRegionAlignment(gw, region, align);
+</pre>
+<hr>
+<a name="Function:pause"></a>
+<pre class=detailCode>
+void pause(double milliseconds);
+</pre>
+<div class=detailHTML>
+Pauses for the indicated number of milliseconds.  This function is
+useful for animation where the motion would otherwise be too fast.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+pause(milliseconds);
+</pre>
+<hr>
+</table>
+</body>
+</html>

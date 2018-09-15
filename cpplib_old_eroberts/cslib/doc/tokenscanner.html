@@ -1,0 +1,366 @@
+<html>
+<head>
+<title>tokenscanner.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="tokenscanner-h.html"><code>tokenscanner.h</code></a></h1>
+This interface exports a scanner facility that divides a string into
+individual tokens.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Types</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:TokenType">TokenType</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This enumerated type defines the values of the <code>getTokenType</code> method.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:TokenScanner">TokenScanner</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This abstract type divides a string into individual tokens.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newTokenScanner">newTokenScanner()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a new <code>TokenScanner</code> with an empty token stream.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:freeTokenScanner">freeTokenScanner(scanner)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Frees the storage associated with the <code>TokenScanner</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setInputString">setInputString(scanner,&nbsp;str)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the token stream for this scanner to the specified string.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setInputFile">setInputFile(scanner,&nbsp;infile)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the token stream for this scanner to the specified file, which must be open for input.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:hasMoreTokens">hasMoreTokens(scanner)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if there are additional tokens for this scanner to read.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:nextToken">nextToken(scanner)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the next token from this   If <code>nextToken</code> is called when no tokens are available, it returns the empty string.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:saveToken">saveToken(scanner,&nbsp;token)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Pushes the specified token back into this scanner's input stream.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getPosition">getPosition(scanner)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the current position of the scanner in the input stream.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:ignoreWhitespace">ignoreWhitespace(scanner)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Tells the scanner to ignore whitespace characters.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:ignoreComments">ignoreComments(scanner)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Tells the scanner to ignore comments.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:scanNumbers">scanNumbers(scanner)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Controls how the scanner treats tokens that begin with a digit.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:scanStrings">scanStrings(scanner)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Controls how the scanner treats tokens enclosed in quotation marks.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:addWordCharacters">addWordCharacters(scanner,&nbsp;str)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds the characters in <code>str</code> to the set of characters legal in a <code>WORD</code> token.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isWordCharacter">isWordCharacter(scanner,&nbsp;ch)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the character is valid in a word.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:addOperator">addOperator(scanner,&nbsp;op)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Defines a new multicharacter operator.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:verifyToken">verifyToken(scanner,&nbsp;expected)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads the next token and makes sure it matches the string <code>expected</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getTokenType">getTokenType(scanner,&nbsp;token)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the type of this token.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getStringValue">getStringValue(token)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the string value of a token.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:TokenType"></a>
+<pre class=detailCode>
+typedef enum { SEPARATOR, WORD, NUMBER, STRING, OPERATOR } TokenType;
+</pre>
+<div class=detailHTML>
+This enumerated type defines the values of the
+<code>getTokenType</code> method.
+</div>
+<hr>
+<a name="Type:TokenScanner"></a>
+<pre class=detailCode>
+typedef struct TokenScannerCDT *TokenScanner;
+</pre>
+<div class=detailHTML>
+This abstract type divides a string into individual tokens.  The
+typical use of the <code>TokenScanner</code> ADT is illustrated by
+the following pattern, which reads the tokens in the string variable
+<code>input</code>:
+
+<pre>
+   string token;
+   TokenScanner scanner;
+
+   scanner = newTokenScanner();
+   setInputString(scanner, input);
+   while (hasMoreTokens(scanner)) {
+      token = nextToken(scanner);
+      . . . process the token . . .
+      freeBlock(token);
+   }
+   freeTokenScanner(scanner);
+</pre>
+
+The <code>TokenScanner</code> ADT exports several additional methods
+that give clients more control over its behavior.  Those methods are
+described individually in the documentation.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:newTokenScanner"></a>
+<pre class=detailCode>
+TokenScanner newTokenScanner(void);
+</pre>
+<div class=detailHTML>
+Creates a new <code>TokenScanner</code> with an empty token stream.
+Before using the scanner, an input stream must be set by calling
+either <code>setInputString</code> or <code>setInputFile</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+scanner = newTokenScanner();
+</pre>
+<hr>
+<a name="Function:freeTokenScanner"></a>
+<pre class=detailCode>
+void freeTokenScanner();
+</pre>
+<div class=detailHTML>
+Frees the storage associated with the <code>TokenScanner</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+freeTokenScanner(scanner);
+</pre>
+<hr>
+<a name="Function:setInputString"></a>
+<pre class=detailCode>
+void setInputString(TokenScanner scanner, string str);
+</pre>
+<div class=detailHTML>
+Sets the token stream for this scanner to the specified string.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setInputString(scanner, str);
+</pre>
+<hr>
+<a name="Function:setInputFile"></a>
+<pre class=detailCode>
+void setInputFile(TokenScanner scanner, FILE *infile);
+</pre>
+<div class=detailHTML>
+Sets the token stream for this scanner to the specified file,
+which must be open for input.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setInputFile(scanner, infile);
+</pre>
+<hr>
+<a name="Function:hasMoreTokens"></a>
+<pre class=detailCode>
+bool hasMoreTokens(TokenScanner scanner);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if there are additional tokens for this
+scanner to read.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (hasMoreTokens(scanner)) . . .
+</pre>
+<hr>
+<a name="Function:nextToken"></a>
+<pre class=detailCode>
+string nextToken(TokenScanner scanner);
+</pre>
+<div class=detailHTML>
+Returns the next token from this   If <code>nextToken</code>
+is called when no tokens are available, it returns the empty string.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+token = nextToken(scanner);
+</pre>
+<hr>
+<a name="Function:saveToken"></a>
+<pre class=detailCode>
+void saveToken(TokenScanner scanner, string token);
+</pre>
+<div class=detailHTML>
+Pushes the specified token back into this scanner's input stream.
+On the next call to <code>nextToken</code>, the scanner will return
+the saved token without reading any additional characters from the
+token stream.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+saveToken(scanner, token);
+</pre>
+<hr>
+<a name="Function:getPosition"></a>
+<pre class=detailCode>
+int getPosition(TokenScanner scanner);
+</pre>
+<div class=detailHTML>
+Returns the current position of the scanner in the input stream.
+If <code>saveToken</code> has been called, this position corresponds
+to the beginning of the saved token.  If <code>saveToken</code> is
+called more than once, <code>getPosition</code> returns -1.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+pos = getPosition(scanner);
+</pre>
+<hr>
+<a name="Function:ignoreWhitespace"></a>
+<pre class=detailCode>
+void ignoreWhitespace(TokenScanner scanner);
+</pre>
+<div class=detailHTML>
+Tells the scanner to ignore whitespace characters.  By default,
+the <code>nextToken</code> method treats whitespace characters
+(typically spaces and tabs) just like any other punctuation mark
+and returns them as single-character tokens.
+Calling
+
+<pre>
+   ignoreWhitespace(scanner);
+</pre>
+
+changes this behavior so that the scanner ignore whitespace characters.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ignoreWhitespace(scanner);
+</pre>
+<hr>
+<a name="Function:ignoreComments"></a>
+<pre class=detailCode>
+void ignoreComments(TokenScanner scanner);
+</pre>
+<div class=detailHTML>
+Tells the scanner to ignore comments.  The scanner package recognizes
+both the slash-star and slash-slash comment format from the C-based
+family of languages.  Calling
+
+<pre>
+   ignoreComments(scanner);
+</pre>
+
+sets the parser to ignore comments.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ignoreComments(scanner);
+</pre>
+<hr>
+<a name="Function:scanNumbers"></a>
+<pre class=detailCode>
+void scanNumbers(TokenScanner scanner);
+</pre>
+<div class=detailHTML>
+Controls how the scanner treats tokens that begin with a digit.  By
+default, the <code>nextToken</code> method treats numbers and letters
+identically and therefore does not provide any special processing for
+numbers.  Calling
+
+<pre>
+   scanNumbers(scanner);
+</pre>
+
+changes this behavior so that <code>nextToken</code> returns the
+longest substring that can be interpreted as a real number.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+scanNumbers(scanner);
+</pre>
+<hr>
+<a name="Function:scanStrings"></a>
+<pre class=detailCode>
+void scanStrings(TokenScanner scanner);
+</pre>
+<div class=detailHTML>
+Controls how the scanner treats tokens enclosed in quotation marks.  By
+default, quotation marks (either single or double) are treated just like
+any other punctuation character.  Calling
+
+<pre>
+   scanStrings(scanner);
+</pre>
+
+changes this assumption so that <code>nextToken</code> returns a single
+token consisting of all characters through the matching quotation mark.
+The quotation marks are returned as part of the scanned token so that
+clients can differentiate strings from other token types.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+scanStrings(scanner);
+</pre>
+<hr>
+<a name="Function:addWordCharacters"></a>
+<pre class=detailCode>
+void addWordCharacters(TokenScanner scanner, string str);
+</pre>
+<div class=detailHTML>
+Adds the characters in <code>str</code> to the set of characters
+legal in a <code>WORD</code> token.  For example, calling
+<code>addWordCharacters("_")</code> adds the underscore to the
+set of characters that are accepted as part of a word.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+addWordCharacters(scanner, str);
+</pre>
+<hr>
+<a name="Function:isWordCharacter"></a>
+<pre class=detailCode>
+bool isWordCharacter(TokenScanner scanner, char ch);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the character is valid in a word.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isWordCharacter(scanner, ch)) . . .
+</pre>
+<hr>
+<a name="Function:addOperator"></a>
+<pre class=detailCode>
+void addOperator(TokenScanner scanner, string op);
+</pre>
+<div class=detailHTML>
+Defines a new multicharacter operator.  Whenever you call
+<code>nextToken</code> when the input stream contains operator
+characters, the scanner returns the longest possible operator
+string that can be read at that point.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+addOperator(scanner, op);
+</pre>
+<hr>
+<a name="Function:verifyToken"></a>
+<pre class=detailCode>
+void verifyToken(TokenScanner scanner, string expected);
+</pre>
+<div class=detailHTML>
+Reads the next token and makes sure it matches the string
+<code>expected</code>.  If it does not, <code>verifyToken</code>
+throws an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+verifyToken(scanner, expected);
+</pre>
+<hr>
+<a name="Function:getTokenType"></a>
+<pre class=detailCode>
+TokenType getTokenType(TokenScanner scanner, string token);
+</pre>
+<div class=detailHTML>
+Returns the type of this token.  This type will match one of the
+following enumerated type constants: <code>EOF</code>,
+<code>SEPARATOR</code>, <code>WORD</code>, <code>NUMBER</code>,
+<code>STRING</code>, or <code>OPERATOR</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+type = getTokenType(scanner, token);
+</pre>
+<hr>
+<a name="Function:getStringValue"></a>
+<pre class=detailCode>
+string getStringValue(string token);
+</pre>
+<div class=detailHTML>
+Returns the string value of a token.  This value is formed by removing
+any surrounding quotation marks and replacing escape sequences by the
+appropriate characters.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+str = getStringValue(token);
+</pre>
+<hr>
+</table>
+</body>
+</html>

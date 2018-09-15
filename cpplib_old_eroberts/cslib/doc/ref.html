@@ -1,0 +1,311 @@
+<html>
+<head>
+<title>ref.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="ref-h.html"><code>ref.h</code></a></h1>
+This interface exports several simple functions for allocating
+pointers to the atomic types.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newRefInt">newRefInt(value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Allocates a ref pointing to the specified <code>int</code> value.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newRefShort">newRefShort(value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Allocates a ref pointing to the specified <code>short</code> value.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newRefLong">newRefLong(value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Allocates a ref pointing to the specified <code>long</code> value.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newRefFloat">newRefFloat(value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Allocates a ref pointing to the specified <code>float</code> value.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newRefDouble">newRefDouble(value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Allocates a ref pointing to the specified <code>double</code> value.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newRefChar">newRefChar(value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Allocates a ref pointing to the specified <code>char</code> value.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newRefBool">newRefBool(value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Allocates a ref pointing to the specified <code>bool</code> value.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newRefUnsigned">newRefUnsigned(value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Allocates a ref pointing to the specified <code>unsigned</code> value.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newRefUnsignedShort">newRefUnsignedShort(value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Allocates a ref pointing to the specified <code>unsigned short</code> value.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newRefUnsignedLong">newRefUnsignedLong(value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Allocates a ref pointing to the specified <code>unsigned long</code> value.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newRefUnsignedChar">newRefUnsignedChar(value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Allocates a ref pointing to the specified <code>unsigned char</code> value.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:refToInt">refToInt(ref)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <code>int</code> to which this reference points.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:refToShort">refToShort(ref)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <code>short</code> to which this reference points.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:refToLong">refToLong(ref)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <code>long</code> to which this reference points.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:refToFloat">refToFloat(ref)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <code>float</code> to which this reference points.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:refToDouble">refToDouble(ref)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <code>double</code> to which this reference points.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:refToChar">refToChar(ref)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <code>char</code> to which this reference points.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:refToBool">refToBool(ref)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <code>bool</code> to which this reference points.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:refToUnsigned">refToUnsigned(ref)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <code>unsigned</code> to which this reference points.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:refToUnsignedShort">refToUnsignedShort(ref)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <code>unsigned short</code> to which this reference points.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:refToUnsignedLong">refToUnsignedLong(ref)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <code>unsigned long</code> to which this reference points.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:refToUnsignedChar">refToUnsignedChar(ref)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <code>unsigned char</code> to which this reference points.</td></tr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:newRefInt"></a>
+<pre class=detailCode>
+void *newRefInt(int value);
+</pre>
+<div class=detailHTML>
+Allocates a ref pointing to the specified <code>int</code> value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ref = newRefInt(value);
+</pre>
+<hr>
+<a name="Function:newRefShort"></a>
+<pre class=detailCode>
+void *newRefShort(short value);
+</pre>
+<div class=detailHTML>
+Allocates a ref pointing to the specified <code>short</code> value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ref = newRefShort(value);
+</pre>
+<hr>
+<a name="Function:newRefLong"></a>
+<pre class=detailCode>
+void *newRefLong(long value);
+</pre>
+<div class=detailHTML>
+Allocates a ref pointing to the specified <code>long</code> value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ref = newRefLong(value);
+</pre>
+<hr>
+<a name="Function:newRefFloat"></a>
+<pre class=detailCode>
+void *newRefFloat(float value);
+</pre>
+<div class=detailHTML>
+Allocates a ref pointing to the specified <code>float</code> value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ref = newRefFloat(value);
+</pre>
+<hr>
+<a name="Function:newRefDouble"></a>
+<pre class=detailCode>
+void *newRefDouble(double value);
+</pre>
+<div class=detailHTML>
+Allocates a ref pointing to the specified <code>double</code> value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ref = newRefDouble(value);
+</pre>
+<hr>
+<a name="Function:newRefChar"></a>
+<pre class=detailCode>
+void *newRefChar(char value);
+</pre>
+<div class=detailHTML>
+Allocates a ref pointing to the specified <code>char</code> value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ref = newRefChar(value);
+</pre>
+<hr>
+<a name="Function:newRefBool"></a>
+<pre class=detailCode>
+void *newRefBool(bool value);
+</pre>
+<div class=detailHTML>
+Allocates a ref pointing to the specified <code>bool</code> value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ref = newRefBool(value);
+</pre>
+<hr>
+<a name="Function:newRefUnsigned"></a>
+<pre class=detailCode>
+void *newRefUnsigned(unsigned value);
+</pre>
+<div class=detailHTML>
+Allocates a ref pointing to the specified <code>unsigned</code> value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ref = newRefUnsigned(value);
+</pre>
+<hr>
+<a name="Function:newRefUnsignedShort"></a>
+<pre class=detailCode>
+void *newRefUnsignedShort(unsigned short value);
+</pre>
+<div class=detailHTML>
+Allocates a ref pointing to the specified <code>unsigned short</code> value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ref = newRefUnsignedShort(value);
+</pre>
+<hr>
+<a name="Function:newRefUnsignedLong"></a>
+<pre class=detailCode>
+void *newRefUnsignedLong(unsigned long value);
+</pre>
+<div class=detailHTML>
+Allocates a ref pointing to the specified <code>unsigned long</code> value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ref = newRefUnsignedLong(value);
+</pre>
+<hr>
+<a name="Function:newRefUnsignedChar"></a>
+<pre class=detailCode>
+void *newRefUnsignedChar(unsigned char value);
+</pre>
+<div class=detailHTML>
+Allocates a ref pointing to the specified <code>unsigned char</code> value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ref = newRefUnsignedChar(value);
+</pre>
+<hr>
+<a name="Function:refToInt"></a>
+<pre class=detailCode>
+int refToInt(void *ref);
+</pre>
+<div class=detailHTML>
+Returns the <code>int</code> to which this reference points.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+i = refToInt(ref);
+</pre>
+<hr>
+<a name="Function:refToShort"></a>
+<pre class=detailCode>
+short refToShort(void *ref);
+</pre>
+<div class=detailHTML>
+Returns the <code>short</code> to which this reference points.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+s = refToShort(ref);
+</pre>
+<hr>
+<a name="Function:refToLong"></a>
+<pre class=detailCode>
+long refToLong(void *ref);
+</pre>
+<div class=detailHTML>
+Returns the <code>long</code> to which this reference points.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+l = refToLong(ref);
+</pre>
+<hr>
+<a name="Function:refToFloat"></a>
+<pre class=detailCode>
+float refToFloat(void *ref);
+</pre>
+<div class=detailHTML>
+Returns the <code>float</code> to which this reference points.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+f = refToFloat(ref);
+</pre>
+<hr>
+<a name="Function:refToDouble"></a>
+<pre class=detailCode>
+double refToDouble(void *ref);
+</pre>
+<div class=detailHTML>
+Returns the <code>double</code> to which this reference points.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+d = refToDouble(ref);
+</pre>
+<hr>
+<a name="Function:refToChar"></a>
+<pre class=detailCode>
+char refToChar(void *ref);
+</pre>
+<div class=detailHTML>
+Returns the <code>char</code> to which this reference points.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+c = refToChar(ref);
+</pre>
+<hr>
+<a name="Function:refToBool"></a>
+<pre class=detailCode>
+bool refToBool(void *ref);
+</pre>
+<div class=detailHTML>
+Returns the <code>bool</code> to which this reference points.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+b = refToBool(ref);
+</pre>
+<hr>
+<a name="Function:refToUnsigned"></a>
+<pre class=detailCode>
+unsigned refToUnsigned(void *ref);
+</pre>
+<div class=detailHTML>
+Returns the <code>unsigned</code> to which this reference points.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+u = refToUnsigned(ref);
+</pre>
+<hr>
+<a name="Function:refToUnsignedShort"></a>
+<pre class=detailCode>
+unsigned short refToUnsignedShort(void *ref);
+</pre>
+<div class=detailHTML>
+Returns the <code>unsigned short</code> to which this reference points.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+us = refToUnsignedShort(ref);
+</pre>
+<hr>
+<a name="Function:refToUnsignedLong"></a>
+<pre class=detailCode>
+unsigned long refToUnsignedLong(void *ref);
+</pre>
+<div class=detailHTML>
+Returns the <code>unsigned long</code> to which this reference points.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ul = refToUnsignedLong(ref);
+</pre>
+<hr>
+<a name="Function:refToUnsignedChar"></a>
+<pre class=detailCode>
+unsigned char refToUnsignedChar(void *ref);
+</pre>
+<div class=detailHTML>
+Returns the <code>unsigned char</code> to which this reference points.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+uc = refToUnsignedChar(ref);
+</pre>
+<hr>
+</table>
+</body>
+</html>

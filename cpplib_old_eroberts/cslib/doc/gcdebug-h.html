@@ -1,0 +1,53 @@
+<html>
+<head>
+<title>../gcdebug.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: gcdebug.h
+ * ---------------
+ * This file specifies various debugging functions for the
+ * garbage-collecting allocator.
+ */
+</scan>
+#ifndef _gcdebug_h
+#define _gcdebug_h
+
+#include "cslib.h"
+
+<a name="Type:gcStateT"><scan class=comment>/*
+ * Type: gcStateT
+ * --------------
+ * This enumeration type holds the possible states of blocks being managed
+ * by the garbage collector:
+ *
+ *   GCInUseBlock is in use  GCOnFreeListBlock is on  use  GCIUnknown
+ *     Block is unknown to the allocator
+ */
+</scan>typedef enum { GCInUse, GCOnFreeList, GCUnknown } gcStateT;
+
+<a name="Function:gcTrace"><scan class=comment>/*
+ * Function: gcTrace
+ * Usage: gcTrace(flag);
+ * ---------------------
+ * Enables a trace of garbage collection events, which is printed to
+ * stderr.
+ */
+</scan>
+void gcTrace(bool flag);
+
+<a name="Function:gcCheckBlock"><scan class=comment>/*
+ * Function: gcCheckBlock
+ * Usage: state = gcCheckBlock(ptr);
+ * ---------------------------------
+ * Returns the state of the block at the specified address.
+ */
+</scan>
+gcStateT gcCheckBlock(void *ptr);
+
+#endif
+</pre>
+</body>
+</html>

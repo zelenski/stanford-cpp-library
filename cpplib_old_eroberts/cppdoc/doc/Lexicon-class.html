@@ -1,0 +1,184 @@
+<html>
+<head>
+<title>class Lexicon</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="lexicon-h.html">class Lexicon</a></h1>
+This class is used to represent a <i>lexicon,</i> or word list.
+The main difference between a lexicon and a dictionary is that
+a lexicon does not provide any mechanism for storing definitions;
+the lexicon contains only words, with no associated information.
+It is therefore similar to a set of strings, but with a more
+space-efficient internal representation.  The <code>Lexicon</code>
+class supports efficient lookup operations for words and prefixes.
+<h2>Constructor</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Constructor:Lexicon">Lexicon()</a><br><a href="#Constructor:Lexicon">Lexicon(filename)</a>&nbsp;</td><td class=indexSynopsis width=100%>Initializes a new lexicon.</td></tr>
+</table>
+<h2>Methods</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Method:size">size()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the number of words contained in the lexicon.</td></tr>
+<tr><td class=indexKey><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> if the lexicon contains no words.</td></tr>
+<tr><td class=indexKey><a href="#Method:clear">clear()</a>&nbsp;</td><td class=indexSynopsis width=100%>Removes all words from the lexicon.</td></tr>
+<tr><td class=indexKey><a href="#Method:add">add(word)</a>&nbsp;</td><td class=indexSynopsis width=100%>Adds the specified word to the lexicon.</td></tr>
+<tr><td class=indexKey><a href="#Method:addWordsFromFile">addWordsFromFile(filename)</a>&nbsp;</td><td class=indexSynopsis width=100%>Reads the file and adds all of its words to the lexicon.</td></tr>
+<tr><td class=indexKey><a href="#Method:containsWord">containsWord(word)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> if <code>word</code> is contained in the lexicon.</td></tr>
+<tr><td class=indexKey><a href="#Method:containsPrefix">containsPrefix(prefix)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns true if any words in the lexicon begin with <code>prefix</code>.</td></tr>
+<tr><td class=indexKey><a href="#Method:mapAll">mapAll(fn)</a><br><a href="#Method:mapAll">mapAll(fn,&nbsp;data)</a>&nbsp;</td><td class=indexSynopsis width=100%>Calls the specified function on each word in the lexicon.</td></tr>
+</table>
+<h2>Macro</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Macro:foreach">foreach(string&nbsp;word&nbsp;in&nbsp;lexicon)</a>&nbsp;</td><td class=indexSynopsis width=100%>Iterates over the words in the lexicon in alphabetical order.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:Lexicon"></a>
+<pre class=detailCode>
+Lexicon();
+Lexicon(string filename);
+</pre>
+<div class=detailHTML>
+Initializes a new lexicon.  The default constructor creates an empty
+lexicon.  The second form reads in the contents of the lexicon from
+the specified data file.  The data file must be in one of two formats:
+(1) a space-efficient precompiled binary format or (2) a text file
+containing one word per line.  The Stanford library distribution
+includes a binary lexicon file named <code>English.dat</code>
+containing a list of words in English.  The standard code pattern
+to initialize that lexicon looks like this:
+
+<pre>
+   Lexicon english("English.dat");
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Lexicon lex;
+Lexicon lex(filename);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size();
+</pre>
+<div class=detailHTML>
+Returns the number of words contained in the lexicon.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int n = lex.size();
+</pre>
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty();
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the lexicon contains no words.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (lex.isEmpty()) . . .
+</pre>
+<hr>
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Removes all words from the lexicon.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+lex.clear();
+</pre>
+<hr>
+<a name="Method:add"></a>
+<pre class=detailCode>
+void add(string word);
+</pre>
+<div class=detailHTML>
+Adds the specified word to the lexicon.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+lex.add(word);
+</pre>
+<hr>
+<a name="Method:addWordsFromFile"></a>
+<pre class=detailCode>
+void addWordsFromFile(string filename);
+</pre>
+<div class=detailHTML>
+Reads the file and adds all of its words to the lexicon.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+lex.addWordsFromFile(filename);
+</pre>
+<hr>
+<a name="Method:containsWord"></a>
+<pre class=detailCode>
+bool containsWord(string word);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if <code>word</code> is contained in the
+lexicon.  In the <code>Lexicon</code> class, the case of letters is
+ignored, so "Zoo" is the same as "ZOO" or "zoo".
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (lex.containsWord(word)) . . .
+</pre>
+<hr>
+<a name="Method:containsPrefix"></a>
+<pre class=detailCode>
+bool containsPrefix(string prefix);
+</pre>
+<div class=detailHTML>
+Returns true if any words in the lexicon begin with <code>prefix</code>.
+Like <code>containsWord</code>, this method ignores the case of letters
+so that "MO" is a prefix of "monkey" or "Monday".
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (lex.containsPrefix(prefix)) . . .
+</pre>
+<hr>
+<a name="Method:mapAll"></a>
+<pre class=detailCode>
+void mapAll(void (*fn)(string value));
+
+template &lt;typename ClientDataType&gt;
+void mapAll(void (*fn)(string value, ClientDataType &amp; data),
+            ClientDataType &amp; data);
+</pre>
+<div class=detailHTML>
+Calls the specified function on each word in the lexicon.  The second
+form of the call allows the client to pass a data value of any type
+to the callback function.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+lexicon.mapAll(fn);
+lexicon.mapAll(fn, data);
+</pre>
+<hr>
+</table>
+<h2>Macro detail</h2>
+<hr>
+<a name="Macro:foreach"></a>
+<pre class=detailCode>
+foreach (string word in lexicon) . . .
+</pre>
+<div class=detailHTML>
+Iterates over the words in the lexicon in alphabetical order.
+</div>
+<hr>
+</table>
+</body>
+</html>

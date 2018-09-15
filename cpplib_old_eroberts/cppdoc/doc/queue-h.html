@@ -1,0 +1,128 @@
+<html>
+<head>
+<title>include/queue.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: queue.h
+ * -------------
+ * This interface exports the Queue class, a collection in which values are
+ * ordinarily processed in a first-in/first-out (FIFO) order.  This version
+ * of the queue.h interface also supports priority queues.
+ */
+</scan>
+#ifndef _queue_h
+#define _queue_h
+
+#include "error.h"
+#include "vector.h"
+
+<a name="Class:Queue<ValueType>"><scan class=comment>/*
+ * Class: Queue&lt;ValueType&gt;
+ * -----------------------
+ * This class models a linear structure called a queue in which values are
+ * added at one end and removed from the other.  This discipline gives rise
+ * to a first-in/first-out behavior (FIFO) that is the defining feature of
+ * queues.  To provide additional flexibility, the Queue class also
+ * supports the concept of a priority queue in which elements are returned
+ * in priority order.  As in conventional English usage, lower priority
+ * numbers correspond to higher effective priorities, so that a priority 1
+ * item takes precedence over a priority 2 item.
+ */
+</scan>
+template &lt;typename ValueType&gt;
+class Queue {
+
+public:
+
+<a name="Constructor:Queue"><scan class=comment>/*
+ * Constructor: Queue
+ * Usage: Queue&lt;ValueType&gt; queue;
+ * ------------------------------
+ * Initializes a new empty queue.  The queue operates as a standard
+ * first-in/first-out queue unless values are enqueued with a nonzero
+ * priority.
+ */
+</scan>
+   Queue();
+
+<a name="Destructor:~Queue"><scan class=comment>/*
+ * Destructor: ~Queue
+ * Usage: (usually implicit)
+ * -------------------------
+ * Frees any heap storage associated with this queue.
+ */
+</scan>
+   ~Queue();
+
+<a name="Method:size"><scan class=comment>/*
+ * Method: size
+ * Usage: int n = queue.size();
+ * ----------------------------
+ * Returns the number of values in the queue.
+ */
+</scan>
+   int size();
+
+<a name="Method:isEmpty"><scan class=comment>/*
+ * Method: isEmpty
+ * Usage: if (queue.isEmpty()) . . .
+ * ---------------------------------
+ * Returns true if the queue contains no elements.
+ */
+</scan>
+   bool isEmpty();
+
+<a name="Method:clear"><scan class=comment>/*
+ * Method: clear
+ * Usage: queue.clear();
+ * ---------------------
+ * Removes all elements from the queue.
+ */
+</scan>
+   void clear();
+
+<a name="Method:enqueue"><scan class=comment>/*
+ * Method: enqueue
+ * Usage: queue.enqueue(value, priority);
+ * --------------------------------------
+ * Adds value to the queue with the specified priority.  Lower priority
+ * numbers correspond to higher priorities, which means that all priority 1
+ * elements are dequeued before any priority 2 elements.  If the priority
+ * argument is omitted, elements are added at priority 0.
+ */
+</scan>
+   void enqueue(ValueType value, double priority = 0);
+
+<a name="Method:dequeue"><scan class=comment>/*
+ * Method: dequeue
+ * Usage: ValueType first = queue.dequeue();
+ * -----------------------------------------
+ * Removes and return the highest priority value.  If multiple entries in
+ * the queue have the same priority, those values are dequeued in the same
+ * order in which they were enqueued.
+ */
+</scan>
+   ValueType dequeue();
+
+<a name="Method:peek"><scan class=comment>/*
+ * Method: peek
+ * Usage: ValueType first = queue.peek();
+ * --------------------------------------
+ * Returns the value of highest priority in the queue, without removing it.
+ */
+</scan>
+   ValueType peek();
+
+#include "private/queuepriv.h"
+
+};
+
+#include "private/queueimpl.cpp"
+
+#endif
+</pre>
+</body>
+</html>

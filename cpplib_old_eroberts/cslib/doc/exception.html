@@ -1,0 +1,177 @@
+<html>
+<head>
+<title>exception.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="exception-h.html"><code>exception.h</code></a></h1>
+This interface exports a portable exception-handling mechanism for C.
+
+<p>The <code>exception.h</code> interface makes it possible for
+clients to specify a handler for an exceptional conditions in a
+syntactically readable way.  As a client, your first step
+is to declare an exception condition name by declaring
+a variable of type exception, as in
+
+<pre>
+   exception MyException;
+</pre>
+
+<p>Normal visibility rules apply, so that you should declare the
+exception variable at the appropriate level.  For example, if an
+exception is local to an implementation, it should be declared
+statically within that module.  If an exception condition is
+shared by many modules, the exception variable should be declared
+in an interface and exported to all clients that need it.  This
+package defines and exports the exception <code>ErrorException</code>,
+which is likely to be sufficient for many clients.
+
+<p>The basic functionality of exceptions is that one piece of code
+can "throw" an exception so that it can then be "caught" by
+special code in a dynamically enclosing section of the program.
+Exceptions are triggered by calling the pseudo-function
+<code>throw</code> with the exception name, as in
+
+<pre>
+   throw(MyException);
+</pre>
+
+<p>Exceptions are handled using the <code>try</code> statement
+(actually implemented using macros), which has the form:
+
+<pre>
+   try {
+      . . . statements in the body of the block . . .
+   } catch (exception1) {
+      . . . statements to handle exception 1 . . .
+   } catch (exception2) {
+      . . . statements to handle exception 2 . . .
+   } catch (ANY) {
+      . . . statements to handle any exception . . .
+   } finally {
+      . . . statements to be executed before exit in all cases . . .
+   } endtry
+</pre>
+
+<p>Any number of <code>catch</code> clauses may appear.  The
+<code>ANY</code> and <code>finally</code> clauses are optional.
+
+<p>When the program encounters the <code>try</code> statement, the
+statements in the body are executed.  If no exception conditions
+are thrown during that execution, either in this block or by a
+function call nested inside this block, control passes to the end
+of the <code>try</code> statement when the last statement in the
+block is executed.  If an exception is thrown during the dynamic
+execution of the block, control immediately passes to the statements
+in the appropriate <code>catch</code> clause.  Only the statements
+in that clause are executed; no <code>break</code> statement is
+required to exit the block.
+
+<p>The <code>try</code> statement guarantees that the statements in
+the <code>finally</code> clause, if present, will always be executed,
+even if an exception is thrown that is caught at a higher level.
+
+<p>If no handler for the exception appears anywhere in the
+control history, the program exits with an error.
+
+<p>Examples of use:
+
+<p>1.  Catching errors
+
+<p>The following code fragment traps calls to <code>error</code>, so
+that the program does not quit but instead returns to the top-level
+read-and-execute loop.
+
+<pre>
+   while (true) {
+       try {
+           printf("> ");
+           cmd = readCommand();
+           executeCommand(cmd);
+       } catch (ErrorException) {
+           printf("error: %s\n", (string) getExceptionValue());
+           -- additional handling code, if any --
+       } endtry
+   }
+</pre>
+
+<p>If either <code>readCommand</code> or <code>executeCommand</code>
+calls <code>error</code>, control will be passed back to the main
+loop, after executing any additional handler code.  The error
+message is passed as the exception value and can be printed as
+shown in the example.
+
+<p>2.  Handling control-C (Unix systems)
+
+<p>The following code extends the example above so that typing
+<code>^C</code> also returns to top-level:
+
+<pre>
+   #include <signal.h>
+&nbsp;
+   static exception ControlCException;
+   static int errorCount = 0;
+   static int controlCHandler();
+&nbsp;
+   main() {
+       string cmd;
+&nbsp;
+       signal(SIGINT, controlCHandler);
+       while (true) {
+           try {
+               printf("> ");
+               cmd = readCommand();
+               executeCommand(cmd);
+           } catch (ControlCException) {
+               printf("^C\n");
+               signal(SIGINT, controlCHandler);
+           } catch (ErrorException) {
+               errorCount++;
+           } endtry
+       }
+   }
+&nbsp;
+   static int controlCHandler() {
+       throw(ControlCException);
+   }
+</pre>
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Types</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:exception">exception</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type is used to define the general class of exceptions.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:ErrorException">ErrorException</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Predefined exception type for the <code>error</code> function.</td></tr>
+<tr><td class=indexHead colspan=2>Constant</td></tr>
+<tr><td class=indexKey><nobr>ANY&nbsp;</nobr></td><td class=indexSynopsis width=100%>Predefined exception type that allows handlers to catch an arbitrary exception.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:exception"></a>
+<pre class=detailCode>
+typedef struct { string name; } exception;
+</pre>
+<div class=detailHTML>
+This type is used to define the general class of exceptions.
+Exceptions are specified by their address, so that the
+actual structure does not matter.  Strings are used here
+so that exporters of exceptions can store the exception
+name for the use of debuggers and other tools.
+</div>
+<hr>
+<a name="Type:ErrorException"></a>
+<pre class=detailCode>
+extern exception ErrorException;
+</pre>
+<div class=detailHTML>
+Predefined exception type for the <code>error</code> function.
+</div>
+<hr>
+</table>
+</body>
+</html>

@@ -1,0 +1,369 @@
+<html>
+<head>
+<title>graphics.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="graphics-h.html">graphics.h</a></h1>
+This interface provides access to an extremely simple graphics library
+that makes it possible to draw lines, rectangles, and ovals.  More
+sophisticated operations and a wider range of graphical objects are
+available in other libraries that extend these basic facilities, most
+notably the graphical objects defined by the <code>gobjects.h</code>
+interface.
+<h2>Functions</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Function:initGraphics">initGraphics()</a><br><a href="#Function:initGraphics">initGraphics(width,&nbsp;height)</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates the graphics window on the screen.</td></tr>
+<tr><td class=indexKey><a href="#Function:drawArc">drawArc(x,&nbsp;y,&nbsp;width,&nbsp;height,&nbsp;start,&nbsp;sweep)</a>&nbsp;</td><td class=indexSynopsis width=100%>Draws an elliptical arc inscribed in a rectangle.</td></tr>
+<tr><td class=indexKey><a href="#Function:fillArc">fillArc(x,&nbsp;y,&nbsp;width,&nbsp;height,&nbsp;start,&nbsp;sweep)</a>&nbsp;</td><td class=indexSynopsis width=100%>Fills a wedge-shaped area of an elliptical arc.</td></tr>
+<tr><td class=indexKey><a href="#Function:drawImage">drawImage(filename,&nbsp;x,&nbsp;y)</a>&nbsp;</td><td class=indexSynopsis width=100%>Draws the image from the specified file with its upper left corner at the point (<code>x</code>, <code>y</code>).</td></tr>
+<tr><td class=indexKey><a href="#Function:drawLine">drawLine(x0,&nbsp;y0,&nbsp;x1,&nbsp;y1)</a>&nbsp;</td><td class=indexSynopsis width=100%>Draws a line from the point <nobr>(<code>x0</code>,&nbsp;<code>y0</code>)</nobr> to the point <nobr>(<code>x1</code>,&nbsp;<code>y1</code>).</nobr> </td></tr>
+<tr><td class=indexKey><a href="#Function:drawOval">drawOval(x,&nbsp;y,&nbsp;width,&nbsp;height)</a>&nbsp;</td><td class=indexSynopsis width=100%>Draws the frame of a oval with the specified bounds.</td></tr>
+<tr><td class=indexKey><a href="#Function:fillOval">fillOval(x,&nbsp;y,&nbsp;width,&nbsp;height)</a>&nbsp;</td><td class=indexSynopsis width=100%>Fills the frame of a oval with the specified bounds.</td></tr>
+<tr><td class=indexKey><a href="#Function:drawRect">drawRect(x,&nbsp;y,&nbsp;width,&nbsp;height)</a>&nbsp;</td><td class=indexSynopsis width=100%>Draws the frame of a rectangle with the specified bounds.</td></tr>
+<tr><td class=indexKey><a href="#Function:fillRect">fillRect(x,&nbsp;y,&nbsp;width,&nbsp;height)</a>&nbsp;</td><td class=indexSynopsis width=100%>Fills the frame of a rectangle with the specified bounds.</td></tr>
+<tr><td class=indexKey><a href="#Function:drawString">drawString(str,&nbsp;x,&nbsp;y)</a>&nbsp;</td><td class=indexSynopsis width=100%>Draws the string <code>str</code> so that its origin appears at the point (<code>x</code>, <code>y</code>) using the current font and color.</td></tr>
+<tr><td class=indexKey><a href="#Function:getStringWidth">getStringWidth(str)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the width of the string <code>str</code> when displayed in the current font.</td></tr>
+<tr><td class=indexKey><a href="#Function:setFont">setFont(font)</a>&nbsp;</td><td class=indexSynopsis width=100%>Sets a new font.</td></tr>
+<tr><td class=indexKey><a href="#Function:getFont">getFont()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the current font.</td></tr>
+<tr><td class=indexKey><a href="#Function:setColor">setColor(color)</a>&nbsp;</td><td class=indexSynopsis width=100%>Sets the color used for drawing.</td></tr>
+<tr><td class=indexKey><a href="#Function:getColor">getColor()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the current color as a string in the form <code>"#rrggbb"</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:saveGraphicsState">saveGraphicsState()</a>&nbsp;</td><td class=indexSynopsis width=100%>Saves the state of the graphics context.</td></tr>
+<tr><td class=indexKey><a href="#Function:restoreGraphicsState">restoreGraphicsState()</a>&nbsp;</td><td class=indexSynopsis width=100%>Restores the graphics state from the most recent call to <code>saveGraphicsState()</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:getWindowWidth">getWindowWidth()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the width of the graphics window, in pixels.</td></tr>
+<tr><td class=indexKey><a href="#Function:getWindowHeight">getWindowHeight()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the width of the graphics window, in pixels.</td></tr>
+<tr><td class=indexKey><a href="#Function:updateDisplay">updateDisplay()</a>&nbsp;</td><td class=indexSynopsis width=100%>Initiates an immediate update of the graphics window.</td></tr>
+<tr><td class=indexKey><a href="#Function:pause">pause(milliseconds)</a>&nbsp;</td><td class=indexSynopsis width=100%>Updates the graphics window and then pauses for the indicated number of milliseconds.</td></tr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:initGraphics"></a>
+<pre class=detailCode>
+void initGraphics();
+void initGraphics(int width, int height);
+</pre>
+<div class=detailHTML>
+Creates the graphics window on the screen.  The first form
+creates a window with a default size of 500x300; the second
+allows the client to specify the size of the window.  The call
+to <code>initGraphics</code> must precede any console output
+or calls to other functions in this interface.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+initGraphics();
+initGraphics(width, height);
+</pre>
+<hr>
+<a name="Function:drawArc"></a>
+<pre class=detailCode>
+void drawArc(double x, double y, double width, double height,
+                                 double start, double sweep);
+</pre>
+<div class=detailHTML>
+Draws an elliptical arc inscribed in a rectangle.   The parameters
+<code>x</code>, <code>y</code>, <code>width</code>, and <code>height</code>
+specify the coordinates and dimensions of the bounding rectangle.
+The <code>start</code> parameter indicates the angle at which the
+arc begins and is measured in degrees counterclockwise from the
++<i>x</i> axis.  Thus, a <code>start</code> angle of 0 indicates
+an arc that begins along the line running eastward from the center,
+a <code>start</code> angle of 135 begins along the line running
+northwest, and a <code>start</code> angle of -90 begins along
+the line running south.  The <code>sweep</code> parameter indicates
+the extent of the arc and is also measured in degrees counterclockwise.
+A <code>sweep</code> angle of 90 defines a quarter circle extending
+counterclockwise from the <code>start</code> angle, and a
+<code>sweep</code> angle of -180 defines a semicircle extending
+clockwise.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+drawArc(x, y, width, height, start, sweep);
+</pre>
+<hr>
+<a name="Function:fillArc"></a>
+<pre class=detailCode>
+void fillArc(double x, double y, double width, double height,
+                                 double start, double sweep);
+</pre>
+<div class=detailHTML>
+Fills a wedge-shaped area of an elliptical arc.  The parameters are
+interpreted in the same way as those for <code>drawArc</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+fillArc(x, y, width, height, start, sweep);
+</pre>
+<hr>
+<a name="Function:drawImage"></a>
+<pre class=detailCode>
+void drawImage(string str, double x, double y);
+</pre>
+<div class=detailHTML>
+Draws the image from the specified file with its upper left corner
+at the point (<code>x</code>, <code>y</code>).
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+drawImage(filename, x, y);
+</pre>
+<hr>
+<a name="Function:drawLine"></a>
+<pre class=detailCode>
+void drawLine(double x0, double y0, double x1, double y1);
+</pre>
+<div class=detailHTML>
+Draws a line from the point
+<nobr>(<code>x0</code>,&nbsp;<code>y0</code>)</nobr>
+to the point
+<nobr>(<code>x1</code>,&nbsp;<code>y1</code>).</nobr>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+drawLine(x0, y0, x1, y1);
+</pre>
+<hr>
+<a name="Function:drawOval"></a>
+<pre class=detailCode>
+void drawOval(double x, double y, double width, double height);
+</pre>
+<div class=detailHTML>
+Draws the frame of a oval with the specified bounds.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+drawOval(x, y, width, height);
+</pre>
+<hr>
+<a name="Function:fillOval"></a>
+<pre class=detailCode>
+void fillOval(double x, double y, double width, double height);
+</pre>
+<div class=detailHTML>
+Fills the frame of a oval with the specified bounds.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+fillOval(x, y, width, height);
+</pre>
+<hr>
+<a name="Function:drawRect"></a>
+<pre class=detailCode>
+void drawRect(double x, double y, double width, double height);
+</pre>
+<div class=detailHTML>
+Draws the frame of a rectangle with the specified bounds.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+drawRect(x, y, width, height);
+</pre>
+<hr>
+<a name="Function:fillRect"></a>
+<pre class=detailCode>
+void fillRect(double x, double y, double width, double height);
+</pre>
+<div class=detailHTML>
+Fills the frame of a rectangle with the specified bounds.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+fillRect(x, y, width, height);
+</pre>
+<hr>
+<a name="Function:drawString"></a>
+<pre class=detailCode>
+void drawString(string str, double x, double y);
+</pre>
+<div class=detailHTML>
+Draws the string <code>str</code> so that its origin appears at
+the point (<code>x</code>, <code>y</code>) using the current
+font and color.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+drawString(str, x, y);
+</pre>
+<hr>
+<a name="Function:getStringWidth"></a>
+<pre class=detailCode>
+double getStringWidth(string str);
+</pre>
+<div class=detailHTML>
+Returns the width of the string <code>str</code> when displayed in
+the current font.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double width = getStringWidth(str);
+</pre>
+<hr>
+<a name="Function:setFont"></a>
+<pre class=detailCode>
+void setFont(string font);
+</pre>
+<div class=detailHTML>
+Sets a new font.  The <code>font</code> parameter is a string in the
+form <i>family</i><code>-</code><i>style</i><code>-</code><i>size</i>.
+In this string, <i>family</i> is the name of the font family;
+<i>style</i> is either missing (indicating a plain font) or one
+of the strings <code>Bold</code>, <code>Italic</code>, or
+<code>BoldItalic</code>; and <code>size</code> is an integer
+indicating the point size.  If any of these components is
+specified as an asterisk, the existing value is retained.
+The <code>font</code> parameter can also be a sequence of
+such specifications separated by semicolons, in which the
+first available font on the system is used.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setFont(font);
+</pre>
+<hr>
+<a name="Function:getFont"></a>
+<pre class=detailCode>
+string getFont();
+</pre>
+<div class=detailHTML>
+Returns the current font.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string font = getFont();
+</pre>
+<hr>
+<a name="Function:setColor"></a>
+<pre class=detailCode>
+void setColor(string color);
+</pre>
+<div class=detailHTML>
+Sets the color used for drawing.  The <code>color</code> parameter
+is usually one of the predefined color names from Java:
+
+   <code>BLACK</code>,
+   <code>BLUE</code>,
+   <code>CYAN</code>,
+   <code>DARK_GRAY</code>,
+   <code>GRAY</code>,
+   <code>GREEN</code>,
+   <code>LIGHT_GRAY</code>,
+   <code>MAGENTA</code>,
+   <code>ORANGE</code>,
+   <code>PINK</code>,
+   <code>RED</code>,
+   <code>WHITE</code>, or
+   <code>YELLOW</code>.
+
+<p>The case of the individual letters in the color name is ignored,
+as are spaces and underscores, so that the Java color
+<code>DARK_GRAY</code> could be written as <code>"Dark Gray"</code>.
+
+<p>The color can also be specified as a string in the form
+<code>"#rrggbb"</code> where <code>rr</code>, <code>gg</code>, and
+<code>bb</code> are pairs of hexadecimal digits indicating the
+red, green, and blue components of the color.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setColor(color);
+</pre>
+<hr>
+<a name="Function:getColor"></a>
+<pre class=detailCode>
+string getColor();
+</pre>
+<div class=detailHTML>
+Returns the current color as a string in the form <code>"#rrggbb"</code>.
+In this string, the values <code>rr</code>, <code>gg</code>,
+and <code>bb</code> are two-digit hexadecimal values representing
+the red, green, and blue components of the color, respectively.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string color = getColor();
+</pre>
+<hr>
+<a name="Function:saveGraphicsState"></a>
+<pre class=detailCode>
+void saveGraphicsState();
+</pre>
+<div class=detailHTML>
+Saves the state of the graphics context.  This function is used
+in conjunction with <code>restoreGraphicsState()</code> to avoid
+changing the state set up by the client.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+saveGraphicsState();
+</pre>
+<hr>
+<a name="Function:restoreGraphicsState"></a>
+<pre class=detailCode>
+void restoreGraphicsState();
+</pre>
+<div class=detailHTML>
+Restores the graphics state from the most recent call to
+<code>saveGraphicsState()</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+restoreGraphicsState();
+</pre>
+<hr>
+<a name="Function:getWindowWidth"></a>
+<pre class=detailCode>
+double getWindowWidth();
+</pre>
+<div class=detailHTML>
+Returns the width of the graphics window, in pixels.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double width = getWindowWidth();
+</pre>
+<hr>
+<a name="Function:getWindowHeight"></a>
+<pre class=detailCode>
+double getWindowHeight();
+</pre>
+<div class=detailHTML>
+Returns the width of the graphics window, in pixels.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double height = getWindowHeight();
+</pre>
+<hr>
+<a name="Function:updateDisplay"></a>
+<pre class=detailCode>
+void updateDisplay();
+</pre>
+<div class=detailHTML>
+Initiates an immediate update of the graphics window.  This
+call is necessary when the graphics library is used for
+animation.  Ordinarily, the graphics window is updated only
+when the program waits for user input.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+updateDisplay();
+</pre>
+<hr>
+<a name="Function:pause"></a>
+<pre class=detailCode>
+void pause(double milliseconds);
+</pre>
+<div class=detailHTML>
+Updates the graphics window and then pauses for the indicated number
+of milliseconds.  This function is useful for animation where the
+motion would otherwise be too fast.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+pause(milliseconds);
+</pre>
+<hr>
+</table>
+</body>
+</html>

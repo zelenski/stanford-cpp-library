@@ -1,0 +1,505 @@
+<html>
+<head>
+<title>class GWindow</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="gwindow-h.html">class GWindow</a></h1>
+This class represents a graphics window that can be displayed on
+the screen.  The public <code>GWindow</code> class stores only a
+reference to the internal data stored inside the machine-specific
+implementation, so that <code>GWindow</code> objects can be freely
+copied and continue to refer to the same window on the screen.
+<h2>Constructor</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Constructor:GWindow">GWindow()</a><br><a href="#Constructor:GWindow">GWindow(width,&nbsp;height)</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a window of the specified size but does not display it on the screen until the client calls <code>setVisible(true)</code>.</td></tr>
+</table>
+<h2>Methods</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Method:close">close()</a>&nbsp;</td><td class=indexSynopsis width=100%>Deletes the window from the screen.</td></tr>
+<tr><td class=indexKey><a href="#Method:draw">draw(obj)</a><br><a href="#Method:draw">draw(obj,&nbsp;x,&nbsp;y)</a>&nbsp;</td><td class=indexSynopsis width=100%>Draws the specified object into the window.</td></tr>
+<tr><td class=indexKey><a href="#Method:add">add(obj)</a><br><a href="#Method:add">add(obj,&nbsp;x,&nbsp;y)</a>&nbsp;</td><td class=indexSynopsis width=100%>Adds the specified <code>GObject</code> to the end of the display list for this window.</td></tr>
+<tr><td class=indexKey><a href="#Method:remove">remove(obj)</a>&nbsp;</td><td class=indexSynopsis width=100%>Removes the specified <code>GObject</code> from the graphics window.</td></tr>
+<tr><td class=indexKey><a href="#Method:setVisible">setVisible(flag)</a>&nbsp;</td><td class=indexSynopsis width=100%>Determines whether the window is visible on the screen.</td></tr>
+<tr><td class=indexKey><a href="#Method:isVisible">isVisible()</a>&nbsp;</td><td class=indexSynopsis width=100%>Tests whether the window is visible.</td></tr>
+<tr><td class=indexKey><a href="#Method:setColor">setColor(color)</a>&nbsp;</td><td class=indexSynopsis width=100%>Sets the color used for drawing.</td></tr>
+<tr><td class=indexKey><a href="#Method:getColor">getColor()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the current color as a string in the form <code>"#rrggbb"</code> where <code>rr</code>, <code>gg</code>, and <code>bb</code> are 2-digit hexadecimal numbers.</td></tr>
+<tr><td class=indexKey><a href="#Method:setFont">setFont(font)</a>&nbsp;</td><td class=indexSynopsis width=100%>Sets a new font according to the <code>font</code> parameter, which is typically a string in the form <i>family</i><code>-</code><i>style</i><code>-</code><i>size</i>.</td></tr>
+<tr><td class=indexKey><a href="#Method:getFont">getFont()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the current font, as set by the most recent call to <code>setFont</code>.</td></tr>
+<tr><td class=indexKey><a href="#Method:saveGraphicsState">saveGraphicsState()</a>&nbsp;</td><td class=indexSynopsis width=100%>Saves the state of the graphics context.</td></tr>
+<tr><td class=indexKey><a href="#Method:restoreGraphicsState">restoreGraphicsState()</a>&nbsp;</td><td class=indexSynopsis width=100%>Restores the graphics state from the most recent call to <code>saveGraphicsState()</code>.</td></tr>
+<tr><td class=indexKey><a href="#Method:getGObjectAt">getGObjectAt(pt)</a><br><a href="#Method:getGObjectAt">getGObjectAt(x,&nbsp;y)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the topmost object in the window that contains the specified point.</td></tr>
+<tr><td class=indexKey><a href="#Method:getWindowWidth">getWindowWidth()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the width of the graphics window, in pixels.</td></tr>
+<tr><td class=indexKey><a href="#Method:getWindowHeight">getWindowHeight()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the width of the graphics window, in pixels.</td></tr>
+<tr><td class=indexKey><a href="#Method:repaint">repaint()</a>&nbsp;</td><td class=indexSynopsis width=100%>Schedule a repaint on this window.</td></tr>
+<tr><td class=indexKey><a href="#Method:updateDisplay">updateDisplay()</a>&nbsp;</td><td class=indexSynopsis width=100%>Initiates an immediate update of the graphics window.</td></tr>
+<tr><td class=indexKey><a href="#Method:setWindowTitle">setWindowTitle(title)</a>&nbsp;</td><td class=indexSynopsis width=100%>Sets the title of the graphics window.</td></tr>
+<tr><td class=indexKey><a href="#Method:getWindowTitle">getWindowTitle()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the title of the graphics window.</td></tr>
+<tr><td class=indexKey><a href="#Method:getTopLevelCompound">getTopLevelCompound()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the top-level <code>GCompound</code> for this window.</td></tr>
+</table>
+<h2>Functions</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Function:getGObjectAt">getGObjectAt(pt)</a><br><a href="#Function:getGObjectAt">getGObjectAt(x,&nbsp;y)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the topmost object in the primary window containing the specified point.</td></tr>
+<tr><td class=indexKey><a href="#Function:setWindowTitle">setWindowTitle(title)</a>&nbsp;</td><td class=indexSynopsis width=100%>Sets the title of the primary graphics window.</td></tr>
+<tr><td class=indexKey><a href="#Function:getWindowTitle">getWindowTitle()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the title of the primary graphics window.</td></tr>
+<tr><td class=indexKey><a href="#Function:getFullScreenWidth">getFullScreenWidth()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the width of the entire display screen.</td></tr>
+<tr><td class=indexKey><a href="#Function:getFullScreenHeight">getFullScreenHeight()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the height of the entire display screen.</td></tr>
+<tr><td class=indexKey><a href="#Function:exitGraphics">exitGraphics()</a>&nbsp;</td><td class=indexSynopsis width=100%>Closes the graphics window and exits from the application without waiting for any additional user interaction.</td></tr>
+<tr><td class=indexKey><a href="#Function:getGraphicsWindow">getGraphicsWindow()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns a reference to the graphics window created by <code>initGraphics</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:convertColorToRGB">convertColorToRGB(colorName)</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts a color name into an integer that encodes the red, green, and blue components of the color.</td></tr>
+<tr><td class=indexKey><a href="#Function:convertRGBToColor">convertRGBToColor(rgb)</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts an <code>rgb</code> value into a color name in the form <code>"#rrggbb"</code>.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GWindow"></a>
+<pre class=detailCode>
+GWindow();
+GWindow(double width, double height);
+</pre>
+<div class=detailHTML>
+Creates a window of the specified size but does not display it on the
+screen until the client calls <code>setVisible(true)</code>.  The
+default constructor creates a closed window that cannot be used
+until a valid window is assigned to it.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GWindow gw;
+GWindow gw(width, height);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:close"></a>
+<pre class=detailCode>
+void close();
+</pre>
+<div class=detailHTML>
+Deletes the window from the screen.  Calling any method on a window
+that has been closed generates an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gw.close();
+</pre>
+<hr>
+<a name="Method:draw"></a>
+<pre class=detailCode>
+void draw(GObject obj);
+void draw(GObject obj, double x, double y);
+</pre>
+<div class=detailHTML>
+Draws the specified object into the window.  The second form moves
+the object to the point (<code>x</code>,&nbsp;<code>y</code>) before
+drawing it.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gw.draw(obj)
+gw.draw(obj, x, y);
+</pre>
+<hr>
+<a name="Method:add"></a>
+<pre class=detailCode>
+void add(GObject obj);
+void add(GObject obj, double x, double y);
+</pre>
+<div class=detailHTML>
+Adds the specified <code>GObject</code> to the end of the display
+list for this window.  The second form moves the object to the point
+(<code>x</code>,&nbsp;<code>y</code>) before adding it to the window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gw.add(obj);
+gw.add(obj, x, y);
+</pre>
+<hr>
+<a name="Method:remove"></a>
+<pre class=detailCode>
+void remove(GObject obj);
+</pre>
+<div class=detailHTML>
+Removes the specified <code>GObject</code> from the graphics window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gw.remove(obj);
+</pre>
+<hr>
+<a name="Method:setVisible"></a>
+<pre class=detailCode>
+void setVisible(bool flag);
+</pre>
+<div class=detailHTML>
+Determines whether the window is visible on the screen.  Windows
+are created in an invisible state and must be made visible before
+they appear.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gw.setVisible(flag);
+</pre>
+<hr>
+<a name="Method:isVisible"></a>
+<pre class=detailCode>
+bool isVisible();
+</pre>
+<div class=detailHTML>
+Tests whether the window is visible.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (gw.isVisible()) . . .
+</pre>
+<hr>
+<a name="Method:setColor"></a>
+<pre class=detailCode>
+void setColor(string color);
+</pre>
+<div class=detailHTML>
+Sets the color used for drawing.  The <code>color</code> parameter
+is usually one of the predefined color names from Java:
+
+   <code>BLACK</code>,
+   <code>BLUE</code>,
+   <code>CYAN</code>,
+   <code>DARK_GRAY</code>,
+   <code>GRAY</code>,
+   <code>GREEN</code>,
+   <code>LIGHT_GRAY</code>,
+   <code>MAGENTA</code>,
+   <code>ORANGE</code>,
+   <code>PINK</code>,
+   <code>RED</code>,
+   <code>WHITE</code>, or
+   <code>YELLOW</code>.
+
+The case of the individual letters in the color name is ignored,
+as are spaces and underscores, so that the Java color
+<code>DARK_GRAY</code> could be written as <code>"Dark&nbsp;Gray"</code>.
+
+<p>The color can also be specified as a string in the form
+<code>"#rrggbb"</code> where <code>rr</code>, <code>gg</code>, and
+<code>bb</code> are pairs of hexadecimal digits indicating the
+red, green, and blue components of the color.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gw.setColor(color);
+</pre>
+<hr>
+<a name="Method:getColor"></a>
+<pre class=detailCode>
+string getColor();
+</pre>
+<div class=detailHTML>
+Returns the current color as a string in the form <code>"#rrggbb"</code>
+where <code>rr</code>, <code>gg</code>, and <code>bb</code> are
+2-digit hexadecimal numbers.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string color = gw.getColor();
+</pre>
+<hr>
+<a name="Method:setFont"></a>
+<pre class=detailCode>
+void setFont(string font);
+</pre>
+<div class=detailHTML>
+Sets a new font according to the <code>font</code> parameter,
+which is typically a string in the form
+<i>family</i><code>-</code><i>style</i><code>-</code><i>size</i>.
+In this string, <i>family</i> is the name of the font family;
+<i>style</i> is either missing (indicating a plain font) or one
+of the strings <code>Bold</code>, <code>Italic</code>, or
+<code>BoldItalic</code>; and <code>size</code> is an integer
+indicating the point size.  If any of these components is
+specified as an asterisk, the existing value is retained.
+The <code>font</code> parameter can also be a sequence of
+such specifications separated by semicolons, in which the
+first available font on the system is used.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gw.setFont(font);
+</pre>
+<hr>
+<a name="Method:getFont"></a>
+<pre class=detailCode>
+string getFont();
+</pre>
+<div class=detailHTML>
+Returns the current font, as set by the most recent call to
+<code>setFont</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string font = gw.getFont();
+</pre>
+<hr>
+<a name="Method:saveGraphicsState"></a>
+<pre class=detailCode>
+void saveGraphicsState();
+</pre>
+<div class=detailHTML>
+Saves the state of the graphics context.  This method is used
+in conjunction with <code>restoreGraphicsState()</code> to avoid
+changing the state set up by the client.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gw.saveGraphicsState();
+</pre>
+<hr>
+<a name="Method:restoreGraphicsState"></a>
+<pre class=detailCode>
+void restoreGraphicsState();
+</pre>
+<div class=detailHTML>
+Restores the graphics state from the most recent call to
+<code>saveGraphicsState()</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gw.restoreGraphicsState();
+</pre>
+<hr>
+<a name="Method:getGObjectAt"></a>
+<pre class=detailCode>
+GObject getGObjectAt(GPoint pt);
+GObject getGObjectAt(double x, double y);
+</pre>
+<div class=detailHTML>
+Returns the topmost object in the window that contains the specified
+point.  If no such object exists, this function returns an
+uninitialized <code>GObject</code>.  The pattern for using
+<code>getGObjectAt</code> looks like this:
+
+<pre>
+   GObject obj = gw.getGObjectAt(x, y);
+   if (obj.exists()) . . .
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GObject obj = gw.getGObjectAt(pt);
+GObject obj = gw.getGObjectAt(x, y);
+</pre>
+<hr>
+<a name="Method:getWindowWidth"></a>
+<pre class=detailCode>
+double getWindowWidth();
+</pre>
+<div class=detailHTML>
+Returns the width of the graphics window, in pixels.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double width = gw.getWindowWidth();
+</pre>
+<hr>
+<a name="Method:getWindowHeight"></a>
+<pre class=detailCode>
+double getWindowHeight();
+</pre>
+<div class=detailHTML>
+Returns the width of the graphics window, in pixels.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double height = gw.getWindowHeight();
+</pre>
+<hr>
+<a name="Method:repaint"></a>
+<pre class=detailCode>
+void repaint();
+</pre>
+<div class=detailHTML>
+Schedule a repaint on this window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gw.repaint();
+</pre>
+<hr>
+<a name="Method:updateDisplay"></a>
+<pre class=detailCode>
+void updateDisplay();
+</pre>
+<div class=detailHTML>
+Initiates an immediate update of the graphics window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gw.updateDisplay();
+</pre>
+<hr>
+<a name="Method:setWindowTitle"></a>
+<pre class=detailCode>
+void setWindowTitle(string title);
+</pre>
+<div class=detailHTML>
+Sets the title of the graphics window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gw.setWindowTitle(title);
+</pre>
+<hr>
+<a name="Method:getWindowTitle"></a>
+<pre class=detailCode>
+string getWindowTitle();
+</pre>
+<div class=detailHTML>
+Returns the title of the graphics window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string title = gw.getWindowTitle();
+</pre>
+<hr>
+<a name="Method:getTopLevelCompound"></a>
+<pre class=detailCode>
+GCompound getTopLevelCompound();
+</pre>
+<div class=detailHTML>
+Returns the top-level <code>GCompound</code> for this window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GCompound compound = getTopLevelCompound();
+</pre>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:getGObjectAt"></a>
+<pre class=detailCode>
+GObject getGObjectAt(GPoint pt);
+GObject getGObjectAt(double x, double y);
+</pre>
+<div class=detailHTML>
+Returns the topmost object in the primary window containing the
+specified point.  If no such object exists, this function returns
+an uninitialized <code>GObject</code>.  The pattern for using
+<code>getGObjectAt</code> is:
+
+<pre>
+   GObject obj = getGObjectAt(x, y);
+   if (obj.exists()) . . .
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GObject obj = getGObjectAt(pt);
+GObject obj = getGObjectAt(x, y);
+</pre>
+<hr>
+<a name="Function:setWindowTitle"></a>
+<pre class=detailCode>
+void setWindowTitle(string title);
+</pre>
+<div class=detailHTML>
+Sets the title of the primary graphics window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setWindowTitle(title);
+</pre>
+<hr>
+<a name="Function:getWindowTitle"></a>
+<pre class=detailCode>
+string getWindowTitle();
+</pre>
+<div class=detailHTML>
+Returns the title of the primary graphics window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string title = getWindowTitle();
+</pre>
+<hr>
+<a name="Function:getFullScreenWidth"></a>
+<pre class=detailCode>
+double getFullScreenWidth();
+</pre>
+<div class=detailHTML>
+Returns the width of the entire display screen.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+width = getFullScreenWidth();
+</pre>
+<hr>
+<a name="Function:getFullScreenHeight"></a>
+<pre class=detailCode>
+double getFullScreenHeight();
+</pre>
+<div class=detailHTML>
+Returns the height of the entire display screen.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+height = getFullScreenHeight();
+</pre>
+<hr>
+<a name="Function:exitGraphics"></a>
+<pre class=detailCode>
+void exitGraphics();
+</pre>
+<div class=detailHTML>
+Closes the graphics window and exits from the application without
+waiting for any additional user interaction.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+exitGraphics();
+</pre>
+<hr>
+<a name="Function:getGraphicsWindow"></a>
+<pre class=detailCode>
+GWindow &amp; getGraphicsWindow();
+</pre>
+<div class=detailHTML>
+Returns a reference to the graphics window created by
+<code>initGraphics</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GWindow gw = getGraphicsWindow();
+</pre>
+<hr>
+<a name="Function:convertColorToRGB"></a>
+<pre class=detailCode>
+int convertColorToRGB(string colorName);
+</pre>
+<div class=detailHTML>
+Converts a color name into an integer that encodes the
+red, green, and blue components of the color.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int rgb = convertColorToRGB(colorName);
+</pre>
+<hr>
+<a name="Function:convertRGBToColor"></a>
+<pre class=detailCode>
+string convertRGBToColor(int rgb);
+</pre>
+<div class=detailHTML>
+Converts an <code>rgb</code> value into a color name in the
+form <code>"#rrggbb"</code>.  Each of the <code>rr</code>,
+<code>gg</code>, and <code>bb</code> values are two-digit
+hexadecimal numbers indicating the intensity of that component.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int colorName = convertRGBToColor(rgb);
+</pre>
+<hr>
+</table>
+</body>
+</html>

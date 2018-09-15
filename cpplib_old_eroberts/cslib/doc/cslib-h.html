@@ -1,0 +1,201 @@
+<html>
+<head>
+<title>../cslib.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: cslib.h
+ * -------------
+ * This interface defines a basic set of definitions that are shared among
+ * all interfaces in the package.  These basic definitions include:
+ *
+ *
+ *  Declarations for several new primitive types used
+ *      throughout the libraries as fundamental types.
+ *
+ *  A function for error handling.
+ *
+ *  A flexible set of functions for memory allocation.
+ *
+ */
+</scan>
+#ifndef _cslib_h
+#define _cslib_h
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stddef.h&gt;
+
+<scan class=comment>/* Section 1 -- Define new "primitive" types */</scan>
+
+<a name="Type:bool"><scan class=comment>/*
+ * Type: bool
+ * ----------
+ * This type defines the space of Boolean data using the constants false
+ * and true.
+ */
+</scan>
+#ifdef bool
+#  undef bool
+#endif
+
+#ifdef false
+#  undef false
+#endif
+
+#ifdef true
+#  undef true
+#endif
+
+typedef enum {false, true} bool;
+
+<a name="Type:string"><scan class=comment>/*
+ * Type: string
+ * ------------
+ * This type is defined to be identical with char *.
+ */
+</scan>
+typedef char *string;
+
+<a name="Type:proc"><scan class=comment>/*
+ * Type: proc
+ * ----------
+ * This function type represents an arbitrary procedure that can be passed
+ * to an abstraction and then called back from the implementation.
+ */
+</scan>
+typedef void (*proc)();
+
+<scan class=comment>/* Section 2 -- Memory allocation */</scan>
+
+<scan class=comment>/*
+ * General notes
+ * -------------
+ * These functions provide a common interface for memory allocation.  All
+ * functions in the library that allocate memory do so using getBlock and
+ * freeBlock.  Even though the ANSI standard defines malloc and free for
+ * the same purpose, using getBlock and freeBlock provides greater
+ * compatibility with non-ANSI implementations, automatic out-of-memory
+ * error detection, limited type checking, and the possibility of
+ * installing a garbage-collecting allocator.
+ */
+</scan>
+<a name="Function:getBlock"><scan class=comment>/*
+ * Function: getBlock
+ * Usage: ptr = getBlock(nbytes);
+ * ------------------------------
+ * Allocates a block of memory of the given size.  If no memory is
+ * available, getBlock generates an error.
+ */
+</scan>
+void *getBlock(size_t nbytes);
+
+<a name="Private function:getTypedBlock"><scan class=comment>/*
+ * Private function: getTypedBlock
+ * -------------------------------
+ * Returns a block with the indicated type marker.  This function is called
+ * from the newBlock and newArray macros and should not be invoked by
+ * clients.
+ */
+</scan>
+void *getTypedBlock(size_t nbytes, string type);
+
+<a name="Function:freeBlock"><scan class=comment>/*
+ * Function: freeBlock
+ * Usage: freeBlock(ptr);
+ * ----------------------
+ * Frees the memory associated with ptr, which must have been allocated
+ * using getBlock, newBlock, or newArray.  If the block appears to be in
+ * static memory or allocated by malloc, the call to freeBlock has no
+ * effect.
+ */
+</scan>
+void freeBlock(void *ptr);
+
+<a name="Function:getBlockType"><scan class=comment>/*
+ * Function: getBlockType
+ * Usage: type = getBlockType(ptr);
+ * --------------------------------
+ * Returns a string indicating the type of the block.  If the block is
+ * created using the newBlock macro, the string is the type argument.  If
+ * the block is created using newArray, the string consists of the base
+ * type followed by the string "[]".  In all other cases, the type is
+ * returned as "?".  This string is constant and should not be freed.
+ */
+</scan>
+string getBlockType(void *ptr);
+
+<a name="Function:setBlockData"><scan class=comment>/*
+ * Function: setBlockData
+ * Usage: setBlockData(ptr, value);
+ * --------------------------------
+ * Sets the data field inside the block to the specified value.
+ */
+</scan>
+void setBlockData(void *ptr, void *value);
+
+<a name="Function:getBlockData"><scan class=comment>/*
+ * Function: getBlockData
+ * Usage: value = getBlockData(ptr);
+ * ---------------------------------
+ * Returns the data field inside the block.
+ */
+</scan>
+void *getBlockData(void *ptr);
+
+<a name="Macro:newBlock"><scan class=comment>/*
+ * Macro: newBlock
+ * Usage: ptr = (type) newBlock(type);
+ * -----------------------------------
+ * Allocates enough space to hold an object of the type to which type
+ * points (note that type must be a pointer type).  Note that newBlock is
+ * different from the new operator used in C++; the former takes a pointer
+ * type and the latter takes the target type.
+ */
+</scan>
+#define newBlock(type) ((type) getTypedBlock(sizeof *((type) NULL), #type))
+
+<a name="Macro:newArray"><scan class=comment>/*
+ * Macro: newArray
+ * Usage: ptr = newArray(n, type);
+ * -------------------------------
+ * Allocates enough space to hold an array of n values of the specified
+ * type.
+ */
+</scan>
+#define newArray(n, type) \
+   ((type *) getTypedBlock((n) * sizeof(type), #type "[]"))
+
+<scan class=comment>/* Section 3 -- error handling */</scan>
+
+<a name="Function:error"><scan class=comment>/*
+ * Function: error
+ * Usage: error(msg, . . .);
+ * -------------------------
+ * Generates an error string, expanding % constructions appearing in the
+ * error message string just as printf does.  The behavior depends on
+ * whether the call is compiled in C or C++.
+ *
+ * In C, calling error first checks to see if there is a handler for
+ * ErrorException.  If so, calling error throws an ErrorException exception
+ * with the expanded error string as argument.  If there is no
+ * ErrorException handler, the program prints the message to the standard
+ * error channel and exits with a status code indicating failure (as given
+ * by the constant ERROR_EXIT_STATUS).
+ *
+ * In C++, calling error throws an exception with the expanded error string
+ * (defined as a C++ string) as its value.
+ */
+</scan>
+   void error(string msg, ...);
+
+<scan class=comment>/* Section 4 -- Redefine main */</scan>
+
+#define main main_
+
+#endif
+</pre>
+</body>
+</html>

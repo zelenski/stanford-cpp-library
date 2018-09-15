@@ -1,0 +1,204 @@
+<html>
+<head>
+<title>include/gobjects.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: gobjects.h
+ * ----------------
+ * This file imports a set of header files that provide access to a
+ * collection of graphical objects designed to be compatible with the ACM
+ * Graphics library for Java.
+ */
+</scan>
+<a name="Class:GObject"><scan class=comment>/*
+ * Class: GObject
+ * --------------
+ * This abstract class is the root of the graphics hierarchy.  All object
+ * of this class and its subclasses implement the following methods:
+ *
+ *   double getX();
+ *   double getY();
+ *   void setLocation(GPoint pt);
+ *   void setLocation(double x, double y);
+ *   void move(double dx, double dy);
+ *   double getWidth();
+ *   double getHeight();
+ *   string getColor();
+ *   void setColor(string color);
+ *   void setVisible(bool flag);
+ *   bool isVisible();
+ *   void sendForward();
+ *   void sendToFront();
+ *   void sendBackward();
+ *   void sendToBack();
+ *   bool contains(GPoint pt);
+ *   bool contains(double x, double y);
+ *   bool exists();
+ *   string getType();
+ *   string toString();
+ */
+</scan>
+<a name="Class:GRect"><scan class=comment>/*
+ * Class: GRect
+ * ------------
+ * This class represents a rectangle.  In addition to the ones it inherits
+ * from GObject, the GRect class defines the following methods:
+ *
+ *   GRect(double width, double height);
+ *   GRect(double x, double y, double width, double height);
+ *   void setSize(double width, double height);
+ *   void setBounds(GRectangle bounds);
+ *   void setBounds(double x, double y, double width, double height);
+ *   void setFilled(bool flag);
+ *   bool isFilled();
+ *   void setFillColor(string color);
+ *   string getFillColor();
+ */
+</scan>
+<a name="Class:GOval"><scan class=comment>/*
+ * Class: GOval
+ * ------------
+ * This class represents an ellipse.  In addition to the ones it inherits
+ * from GObject, the GOval class defines the following methods:
+ *
+ *   GOval(double width, double height);
+ *   GOval(double x, double y, double width, double height);
+ *   void setSize(double width, double height);
+ *   void setBounds(GRectangle bounds);
+ *   void setBounds(double x, double y, double width, double height);
+ *   void setFilled(bool flag);
+ *   bool isFilled();
+ *   void setFillColor(string color);
+ *   string getFillColor();
+ */
+</scan>
+<a name="Class:GArc"><scan class=comment>/*
+ * Class: GArc
+ * -----------
+ * This class represents an elliptical arc.  In addition to the ones it
+ * inherits from GObject, the GArc class defines the following methods:
+ *
+ *   GArc(double x, double y, double start, double sweep);
+ *   GArc(double x, double y, double width, double height,
+ *                            double start, double sweep);
+ *   void setStartAngle(double start);
+ *   double getStartAngle();
+ *   void setSweepAngle(double sweep);
+ *   double getSweepAngle();
+ *   void setFrameRectangle(GRectangle bounds);
+ *   void setFrameRectangle(double x, double y, double width, double height);
+ *   void setFilled(bool flag);
+ *   bool isFilled();
+ *   void setFillColor(string color);
+ *   string getFillColor();
+ */
+</scan>
+<a name="Class:GLine"><scan class=comment>/*
+ * Class: GLine
+ * ------------
+ * This class represents a line segment.  In addition to the ones it
+ * inherits from GObject, the GLine class defines the following methods:
+ *
+ *   GLine(double x0, double y0, double x1, double y1);
+ *   void setStartPoint(double x, double y);
+ *   void setEndPoint(double x, double y);
+ */
+</scan>
+<a name="Class:GImage"><scan class=comment>/*
+ * Class: GImage
+ * -------------
+ * This class represents a graphical image, usually read in from a file. 
+ * In addition to the ones it inherits from GObject, the GImage class
+ * defines the following methods:
+ *
+ *   GImage(string filename);
+ *   GImage(string filename, double x, double y);
+ *   int getWidth();
+ *   int getHeight();
+ */
+</scan>
+<a name="Class:GLabel"><scan class=comment>/*
+ * Class: GLabel
+ * -------------
+ * This class represents a text string.  In addition to the ones it
+ * inherits from GObject, the GLabel class defines the following methods:
+ *
+ *   GLabel(string str);
+ *   GLabel(string str, double x, double y);
+ *   void setFont(string font);
+ *   string getFont();
+ *   void setLabel(string str);
+ *   string getLabel();
+ *   double getFontAscent();
+ *   double getFontDescent();
+ */
+</scan>
+<a name="Class:GPolygon"><scan class=comment>/*
+ * Class: GPolygon
+ * ---------------
+ * This class represents a polygon.  The constructor creates an empty
+ * polygon to which edges can be added.  In addition to the ones it
+ * inherits from GObject, the GPolygon class defines the following methods:
+ *
+ *   GPolygon();
+ *   void addVertex(double x, double y);
+ *   void addVertex(double x, double y);
+ *   void addEdge(double dx, double dy);
+ *   void addPolarEdge(double r, double theta);
+ *   void setFilled(bool flag);
+ *   bool isFilled();
+ *   void setFillColor(string color);
+ *   string getFillColor();
+ */
+</scan>
+<a name="Class:GCompound"><scan class=comment>/*
+ * Class: GCompound
+ * ----------------
+ * This class represents a compound of other graphical objects.  In
+ * addition to the ones it inherits from GObject, the GCompound class
+ * defines the following methods:
+ *
+ *   GCompound();
+ *   void add(GObject gobj);
+ *   void add(GObject gobj, GPoint pt);
+ *   void add(GObject gobj, double x, double y);
+ *   void remove(GObject gobj);
+ *   void removeAll();
+ *   int getElementCount();
+ */
+</scan>
+#ifndef _gobjects_h
+#define _gobjects_h
+
+#include "graphics.h"
+#include "gtypes.h"
+#include "stack.h"
+#include "vector.h"
+#include "gobjects/gobject.h"
+#include "gobjects/garc.h"
+#include "gobjects/gcompound.h"
+#include "gobjects/gimage.h"
+#include "gobjects/glabel.h"
+#include "gobjects/gline.h"
+#include "gobjects/goval.h"
+#include "gobjects/gpolygon.h"
+#include "gobjects/grect.h"
+#include "gobjects/gobjectrecord.h"
+#include "gobjects/garcrecord.h"
+#include "gobjects/gcompoundrecord.h"
+#include "gobjects/gimagerecord.h"
+#include "gobjects/glabelrecord.h"
+#include "gobjects/glinerecord.h"
+#include "gobjects/govalrecord.h"
+#include "gobjects/gpolygonrecord.h"
+#include "gobjects/grectrecord.h"
+#include "gevents.h"
+#include "gwindow.h"
+
+#endif
+</pre>
+</body>
+</html>

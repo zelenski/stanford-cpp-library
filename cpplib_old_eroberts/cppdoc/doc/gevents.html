@@ -1,0 +1,340 @@
+<html>
+<head>
+<title>gevents.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="gevents-h.html">gevents.h</a></h1>
+This interface defines the event types used in the
+<code>StanfordCPPLib</code> graphics libraries.  The structure
+of this package is adapted from the Java event model.
+<h2>Classes</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="GEvent-class.html">GEvent</a>&nbsp;</td><td class=indexSynopsis width=100%>This class is the root of the hierarchy for all events.</td></tr>
+<tr><td class=indexKey><a href="GWindowEvent-class.html">GWindowEvent</a>&nbsp;</td><td class=indexSynopsis width=100%>This event subclass represents a window event.</td></tr>
+<tr><td class=indexKey><a href="GActionEvent-class.html">GActionEvent</a>&nbsp;</td><td class=indexSynopsis width=100%>This event subclass represents an action event.</td></tr>
+<tr><td class=indexKey><a href="GTimerEvent-class.html">GTimerEvent</a>&nbsp;</td><td class=indexSynopsis width=100%>This event subclass represents a timer event.</td></tr>
+<tr><td class=indexKey><a href="GMouseEvent-class.html">GMouseEvent</a>&nbsp;</td><td class=indexSynopsis width=100%>This event subclass represents a mouse event.</td></tr>
+<tr><td class=indexKey><a href="GKeyEvent-class.html">GKeyEvent</a>&nbsp;</td><td class=indexSynopsis width=100%>This event subclass represents a key event.</td></tr>
+</table>
+<h2>Types</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Type:EventClassType">EventClassType</a>&nbsp;</td><td class=indexSynopsis width=100%>This enumeration type defines the event classes.</td></tr>
+<tr><td class=indexKey><a href="#Type:WindowEventType">WindowEventType</a>&nbsp;</td><td class=indexSynopsis width=100%>This enumeration type defines the event types for window events.</td></tr>
+<tr><td class=indexKey><a href="#Type:ActionEventType">ActionEventType</a>&nbsp;</td><td class=indexSynopsis width=100%>This enumeration type defines the event types for action events.</td></tr>
+<tr><td class=indexKey><a href="#Type:TimerEventType">TimerEventType</a>&nbsp;</td><td class=indexSynopsis width=100%>This enumeration type defines the event types for timer events.</td></tr>
+<tr><td class=indexKey><a href="#Type:MouseEventType">MouseEventType</a>&nbsp;</td><td class=indexSynopsis width=100%>This enumeration type defines the event types for mouse events.</td></tr>
+<tr><td class=indexKey><a href="#Type:KeyEventType">KeyEventType</a>&nbsp;</td><td class=indexSynopsis width=100%>This enumeration type defines the event types for keyboard events.</td></tr>
+<tr><td class=indexKey><a href="#Type:ModifierCodes">ModifierCodes</a>&nbsp;</td><td class=indexSynopsis width=100%>This enumeration type defines a set of constants used to check whether modifiers are in effect.</td></tr>
+<tr><td class=indexKey><a href="#Type:KeyCodes">KeyCodes</a>&nbsp;</td><td class=indexSynopsis width=100%>This enumeration type defines the constants for the special keys on the keyboard.</td></tr>
+</table>
+<h2>Functions</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Function:startIntervalTimer">startIntervalTimer(delay)</a><br><a href="#Function:startIntervalTimer">startIntervalTimer(delay,&nbsp;count)</a>&nbsp;</td><td class=indexSynopsis width=100%>Starts an interval timer that fires a timer event repeatedly every <code>delay</code> milliseconds.</td></tr>
+<tr><td class=indexKey><a href="#Function:stopIntervalTimer">stopIntervalTimer()</a>&nbsp;</td><td class=indexSynopsis width=100%>Stops the interval timer.</td></tr>
+<tr><td class=indexKey><a href="#Function:postEvent">postEvent(e)</a>&nbsp;</td><td class=indexSynopsis width=100%>Adds the event to the end of the event queue.</td></tr>
+<tr><td class=indexKey><a href="#Function:waitForEvent">waitForEvent(e)</a>&nbsp;</td><td class=indexSynopsis width=100%>Dismisses the process until an event occurs.</td></tr>
+<tr><td class=indexKey><a href="#Function:waitForClick">waitForClick()</a><br><a href="#Function:waitForClick">waitForClick(mouseEvent)</a>&nbsp;</td><td class=indexSynopsis width=100%>Waits for a mouse click to occur anywhere in the window, discarding any other events.</td></tr>
+<tr><td class=indexKey><a href="#Function:getNextEvent">getNextEvent(e)</a>&nbsp;</td><td class=indexSynopsis width=100%>Checks to see if there are any events waiting on the event queue.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:EventClassType"></a>
+<pre class=detailCode>
+enum EventClassType {
+   NULL_EVENT,         <span class=comment>/* Indicates an uninitialized event              */</span>
+   WINDOW_EVENT,       <span class=comment>/* Indicates a window-system event               */</span>
+   ACTION_EVENT,       <span class=comment>/* Indicates an event with an associated action  */</span>
+   TIMER_EVENT,        <span class=comment>/* Indicates an interval timer event             */</span>
+   MOUSE_EVENT,        <span class=comment>/* Indicates a mouse event                       */</span>
+   KEY_EVENT           <span class=comment>/* Indicates an event generated by the keyboard  */</span>
+};
+</pre>
+<div class=detailHTML>
+This enumeration type defines the event classes.
+</div>
+<hr>
+<a name="Type:WindowEventType"></a>
+<pre class=detailCode>
+enum WindowEventType {
+   WINDOW_ACTIVATED,   <span class=comment>/* Generated when the window gains focus         */</span>
+   WINDOW_CLOSED,      <span class=comment>/* Generated when the window is finally closed   */</span>
+   WINDOW_CLOSING,     <span class=comment>/* Generated when the user clicks the close box  */</span>
+   WINDOW_DEACTIVATED, <span class=comment>/* Generated when the window loses focus         */</span>
+   WINDOW_DEICONIFIED, <span class=comment>/* Generated when the window is expanded         */</span>
+   WINDOW_ICONIFIED,   <span class=comment>/* Generated when the window is minimized        */</span>
+   WINDOW_OPENED       <span class=comment>/* Generated when the window is opened           */</span>
+};
+</pre>
+<div class=detailHTML>
+This enumeration type defines the event types for window events.
+</div>
+<hr>
+<a name="Type:ActionEventType"></a>
+<pre class=detailCode>
+enum ActionEventType {
+   ACTION_PERFORMED    <span class=comment>/* Generated when a user action is performed     */</span>
+};
+</pre>
+<div class=detailHTML>
+This enumeration type defines the event types for action events.
+</div>
+<hr>
+<a name="Type:TimerEventType"></a>
+<pre class=detailCode>
+enum TimerEventType {
+   TIMER_TICKED        <span class=comment>/* Generated when the interval timer ticks       */</span>
+};
+</pre>
+<div class=detailHTML>
+This enumeration type defines the event types for timer events.
+</div>
+<hr>
+<a name="Type:MouseEventType"></a>
+<pre class=detailCode>
+enum MouseEventType {
+   MOUSE_PRESSED,      <span class=comment>/* Generated when the mouse button is pressed     */</span>
+   MOUSE_RELEASED,     <span class=comment>/* Generated when the mouse button is released    */</span>
+   MOUSE_CLICKED,      <span class=comment>/* Generated on clicks after PRESSED and RELEASED */</span>
+   MOUSE_MOVED,        <span class=comment>/* Generated when the mouse is moved              */</span>
+   MOUSE_DRAGGED       <span class=comment>/* Generated on mouse motion with the button down */</span>
+};
+</pre>
+<div class=detailHTML>
+This enumeration type defines the event types for mouse events.
+</div>
+<hr>
+<a name="Type:KeyEventType"></a>
+<pre class=detailCode>
+enum KeyEventType {
+   KEY_PRESSED,        <span class=comment>/* Generated when a key is pressed                */</span>
+   KEY_RELEASED,       <span class=comment>/* Generated when a key is released               */</span>
+   KEY_TYPED           <span class=comment>/* Generated after PRESSED and RELEASED on a key  */</span>
+};
+</pre>
+<div class=detailHTML>
+This enumeration type defines the event types for keyboard events.
+</div>
+<hr>
+<a name="Type:ModifierCodes"></a>
+<pre class=detailCode>
+enum ModifierCodes {
+   SHIFT_DOWN     = 1 &lt;&lt; 0,
+   CTRL_DOWN      = 1 &lt;&lt; 1,
+   META_DOWN      = 1 &lt;&lt; 2,
+   ALT_DOWN       = 1 &lt;&lt; 3,
+   ALT_GRAPH_DOWN = 1 &lt;&lt; 4,
+   BUTTON1_DOWN   = 1 &lt;&lt; 5,
+   BUTTON2_DOWN   = 1 &lt;&lt; 6,
+   BUTTON3_DOWN   = 1 &lt;&lt; 7
+};
+</pre>
+<div class=detailHTML>
+This enumeration type defines a set of constants used to check whether
+modifiers are in effect.
+</div>
+<hr>
+<a name="Type:KeyCodes"></a>
+<pre class=detailCode>
+enum KeyCodes {
+   ESCAPE_KEY = 256,
+   DELETE_KEY,
+   TAB_KEY,
+   RETURN_KEY,
+   CLEAR_KEY,
+   ENTER_KEY,
+   UP_ARROW_KEY,
+   DOWN_ARROW_KEY,
+   LEFT_ARROW_KEY,
+   RIGHT_ARROW_KEY,
+   HELP_KEY,
+   HOME_KEY,
+   PAGE_UP_KEY,
+   PAGE_DOWN_KEY,
+   FORWARD_DEL_KEY,
+   END_KEY,
+   F1_KEY,
+   F2_KEY,
+   F3_KEY,
+   F4_KEY,
+   F5_KEY,
+   F6_KEY,
+   F7_KEY,
+   F8_KEY,
+   F9_KEY,
+   F10_KEY,
+   F11_KEY,
+   F12_KEY,
+   F13_KEY,
+   F14_KEY,
+   F15_KEY,
+};
+</pre>
+<div class=detailHTML>
+This enumeration type defines the constants for the special keys on the
+keyboard.  These values begin after the <code>char</code> range.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:startIntervalTimer"></a>
+<pre class=detailCode>
+void startIntervalTimer(double delay);
+void startIntervalTimer(double delay, int count);
+</pre>
+<div class=detailHTML>
+Starts an interval timer that fires a timer event repeatedly every
+<code>delay</code> milliseconds.  The <code>count</code> parameter,
+if specified, indicates the maximum number of events to fire; if
+this parameter is missing, the timer continues to fire until it is
+stopped.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+startIntervalTimer(delay);
+startIntervalTimer(delay, count);
+</pre>
+<hr>
+<a name="Function:stopIntervalTimer"></a>
+<pre class=detailCode>
+void stopIntervalTimer();
+</pre>
+<div class=detailHTML>
+Stops the interval timer.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+stopIntervalTimer();
+</pre>
+<hr>
+<a name="Function:postEvent"></a>
+<pre class=detailCode>
+void postEvent(GEvent e);
+</pre>
+<div class=detailHTML>
+Adds the event to the end of the event queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+postEvent(e);
+</pre>
+<hr>
+<a name="Function:waitForEvent"></a>
+<pre class=detailCode>
+void waitForEvent(GEvent &amp; e);
+void waitForEvent(GWindowEvent &amp; e);
+void waitForEvent(GActionEvent &amp; e);
+void waitForEvent(GTimerEvent &amp; e);
+void waitForEvent(GMouseEvent &amp; e);
+void waitForEvent(GKeyEvent &amp; e);
+</pre>
+<div class=detailHTML>
+Dismisses the process until an event occurs.  When it does, the
+<code>waitForEvent</code> function returns with the details of
+the event.  The parameter <code>e</code> can be either a general
+<code>GEvent</code> variable or one of the specific subclasses.
+In the former case, the function returns when any event occurs.
+Clients should use this approach if they need to respond to more
+than one class of event.  As an example, the following code is
+the canonical event loop for an animated application that
+needs to respond to mouse, key, and timer events:
+
+<pre>
+   startIntervalTimer(ANIMATION_DELAY_IN_MILLISECONDS);
+   while (true) {
+      GEvent e;
+      waitForEvent(e);
+      switch (e.getEventClass()) {
+       case TIMER_EVENT:
+         takeAnimationStep();
+         break;
+       case MOUSE_EVENT:
+         handleMouseEvent(GMouseEvent(e));
+         break;
+       case KEY_EVENT:
+         handleKeyEvent(GKeyEvent(e));
+         break;
+      }
+   }
+</pre>
+
+For applications that are interested only in mouse events,
+for example, this code can be simplified as follows:
+
+<pre>
+   while (true) {
+      GMouseEvent e;
+      waitForEvent(e);
+      handleMouseEvent(e);
+   }
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+waitForEvent(e);
+</pre>
+<hr>
+<a name="Function:waitForClick"></a>
+<pre class=detailCode>
+void waitForClick();
+void waitForClick(GMouseEvent &amp; mouseEvent);
+</pre>
+<div class=detailHTML>
+Waits for a mouse click to occur anywhere in the window, discarding
+any other events.  If the client passes a <code>GMouseEvent</code>
+as a reference parameter, the function will fill in the details of
+the click event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+waitForClick();
+waitForClick(mouseEvent);
+</pre>
+<hr>
+<a name="Function:getNextEvent"></a>
+<pre class=detailCode>
+bool getNextEvent(GEvent &amp; e);
+bool getNextEvent(GWindowEvent &amp; e);
+bool getNextEvent(GActionEvent &amp; e);
+bool getNextEvent(GTimerEvent &amp; e);
+bool getNextEvent(GMouseEvent &amp; e);
+bool getNextEvent(GKeyEvent &amp; e);
+</pre>
+<div class=detailHTML>
+Checks to see if there are any events waiting on the event queue.
+If so, <code>getNextEvent</code> fills in the structure of the event
+with the first event in the queue and returns <code>true</code>.  If
+there are no events, <code>getNextEvent</code> returns <code>false</code>.
+As with <code>waitForEvent</code>, the parameter <code>e</code> can
+be either a <code>GEvent</code> variable or one of the specific
+subclasses.  Clients should use this form of the call if they
+need to support animation in the main thread, as in the following
+code example:
+
+<pre>
+   while (true) {
+      GEvent e;
+      if (getNextEvent(e)) {
+         switch (e.getEventClass()) {
+          case MOUSE_EVENT:
+            handleMouseEvent(GMouseEvent(e));
+            break;
+          case KEY_EVENT:
+            handleKeyEvent(GKeyEvent(e));
+            break;
+         }
+      } else {
+         takeAnimationStep();
+      }
+   }
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (getNextEvent(e)) . . .
+</pre>
+<hr>
+</table>
+</body>
+</html>

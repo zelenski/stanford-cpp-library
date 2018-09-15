@@ -1,0 +1,205 @@
+<html>
+<head>
+<title>map.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="map-h.html"><code>map.h</code></a></h1>
+This interface defines a map abstraction that associates string-valued
+keys with values.  In contrast to the <code>HashMap</code> type defined
+in the <code>hashmap.h</code> interface, the implementation of the
+<code>Map</code> type uses a balanced binary tree, which offers
+logarithmic performance and sorted iteration.
+
+<p>In most applications, the restriction of keys to strings is easy
+to circumvent.  The simplest strategy is to convert key values to
+strings before inserting them into the map.  A more general strategy
+is to use the <code>bst.h</code> interface instead.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Type</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:Map">Map</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type is the ADT used to represent the map.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newMap">newMap()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Allocates a new map with no entries.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:freeMap">freeMap(map)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Frees the storage associated with the map.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:size">size(map)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of elements in the map.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isEmpty">isEmpty(map)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the map has no entries.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:clear">clear(map)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes all entries from the map.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:clone">clone(map)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a copy of the map.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:put">put(map,&nbsp;key,&nbsp;value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Associates <code>key</code> with <code>value</code> in the map.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:get">get(map,&nbsp;key)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the value associated with <code>key</code> in the map, or <code>NULL</code>, if no such value exists.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:containsKey">containsKey(map,&nbsp;key)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Checks to see if the map contains the specified key.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:remove">remove(map,&nbsp;key)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes the key and its value from the map.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:map">map(map,&nbsp;fn,&nbsp;data)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Iterates through the map and calls the function <code>fn</code> on each entry.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:Map"></a>
+<pre class=detailCode>
+typedef struct MapCDT *Map;
+</pre>
+<div class=detailHTML>
+This type is the ADT used to represent the map.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:newMap"></a>
+<pre class=detailCode>
+Map newMap();
+</pre>
+<div class=detailHTML>
+Allocates a new map with no entries.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map = newMap();
+</pre>
+<hr>
+<a name="Function:freeMap"></a>
+<pre class=detailCode>
+void freeMap(Map map);
+</pre>
+<div class=detailHTML>
+Frees the storage associated with the map.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+freeMap(map);
+</pre>
+<hr>
+<a name="Function:size"></a>
+<pre class=detailCode>
+int size(Map map);
+</pre>
+<div class=detailHTML>
+Returns the number of elements in the map.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+n = size(map);
+</pre>
+<hr>
+<a name="Function:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty(Map map);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the map has no entries.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isEmpty(map)) . . .
+</pre>
+<hr>
+<a name="Function:clear"></a>
+<pre class=detailCode>
+void clear(Map map);
+</pre>
+<div class=detailHTML>
+Removes all entries from the map.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+clear(map);
+</pre>
+<hr>
+<a name="Function:clone"></a>
+<pre class=detailCode>
+Map clone(Map map);
+</pre>
+<div class=detailHTML>
+Creates a copy of the map.  The <code>clone</code> function copies
+only the first level of the structure and does not copy the individual
+elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+newmap = clone(map);
+</pre>
+<hr>
+<a name="Function:put"></a>
+<pre class=detailCode>
+void put(Map map, string key, void *value);
+</pre>
+<div class=detailHTML>
+Associates <code>key</code> with <code>value</code> in the map.
+Each call to <code>put</code> supersedes any previous definition
+for <code>key</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+put(map, key, value);
+</pre>
+<hr>
+<a name="Function:get"></a>
+<pre class=detailCode>
+void *get(Map map, string key);
+</pre>
+<div class=detailHTML>
+Returns the value associated with <code>key</code> in the map,
+or <code>NULL</code>, if no such value exists.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+void *value = get(map, key);
+</pre>
+<hr>
+<a name="Function:containsKey"></a>
+<pre class=detailCode>
+bool containsKey(Map map, string key);
+</pre>
+<div class=detailHTML>
+Checks to see if the map contains the specified key.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (containsKey(map, key)) . . .
+</pre>
+<hr>
+<a name="Function:remove"></a>
+<pre class=detailCode>
+void remove(Map map, string key);
+</pre>
+<div class=detailHTML>
+Removes the key and its value from the map.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+remove(map, key);
+</pre>
+<hr>
+<a name="Function:map"></a>
+<pre class=detailCode>
+void map(Map map, proc fn, void *data);
+</pre>
+<div class=detailHTML>
+Iterates through the map and calls the function <code>fn</code> on
+each entry.  The callback function takes the following arguments:
+
+<ul>
+ <li>The key
+ <li>The associated value
+ <li>The <code>data</code> pointer
+</ul>
+
+The <code>data</code> pointer allows the client to pass state
+information to the function <code>fn</code>, if necessary.  If no such
+information is required, this argument should be <code>NULL</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map(map, fn, data);
+</pre>
+<hr>
+</table>
+</body>
+</html>

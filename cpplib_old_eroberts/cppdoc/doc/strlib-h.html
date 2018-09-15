@@ -1,0 +1,145 @@
+<html>
+<head>
+<title>include/strlib.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: strlib.h
+ * --------------
+ * This interface exports several useful string functions that are not
+ * included in the C++ string library.
+ */
+</scan>
+#ifndef _strlib_h
+#define _strlib_h
+
+#include &lt;string&gt;
+
+<a name="Function:integerToString"><scan class=comment>/*
+ * Function: integerToString
+ * Usage: string s = integerToString(n);
+ * -------------------------------------
+ * Converts an integer into the corresponding string of digits.  For
+ * example, calling integerToString(123) returns the string "123".
+ */
+</scan>
+string integerToString(int n);
+
+<a name="Function:stringToInteger"><scan class=comment>/*
+ * Function: stringToInteger
+ * Usage: int n = stringToInteger(str);
+ * ------------------------------------
+ * Converts a string of digits into an integer.  If the string is not a
+ * legal integer or contains extraneous characters other than whitespace,
+ * stringToInteger calls error with an appropriate message.
+ */
+</scan>
+int stringToInteger(string str);
+
+<a name="Function:realToString"><scan class=comment>/*
+ * Function: realToString
+ * Usage: string s = realToString(d);
+ * ----------------------------------
+ * Converts a floating-point number into the corresponding string form. 
+ * For example, calling realToString(23.45) returns the string "23.45".
+ */
+</scan>
+string realToString(double d);
+
+<a name="Function:stringToReal"><scan class=comment>/*
+ * Function: stringToReal
+ * Usage: double d = stringToReal(str);
+ * ------------------------------------
+ * Converts a string representing a real number into its corresponding
+ * value.  If the string is not a legal floating-point number or contains
+ * extraneous characters other than whitespace, stringToReal calls error
+ * with an appropriate message.
+ */
+</scan>
+double stringToReal(string str);
+
+<a name="Function:toUpperCase"><scan class=comment>/*
+ * Function: toUpperCase
+ * Usage: string s = toUpperCase(str);
+ * -----------------------------------
+ * Returns a new string in which all lowercase characters have been
+ * converted into their uppercase equivalents.
+ */
+</scan>
+string toUpperCase(string str);
+
+<a name="Function:toLowerCase"><scan class=comment>/*
+ * Function: toLowerCase
+ * Usage: string s = toLowerCase(str);
+ * -----------------------------------
+ * Returns a new string in which all uppercase characters have been
+ * converted into their lowercase equivalents.
+ */
+</scan>
+string toLowerCase(string str);
+
+<a name="Function:toUpperCaseInPlace"><scan class=comment>/*
+ * Function: toUpperCaseInPlace
+ * Usage: toUpperCaseInPlace(str);
+ * -------------------------------
+ * Changes any lowercase characters in str to their uppercase equivalents.
+ */
+</scan>
+void toUpperCaseInPlace(string &amp; str);
+
+<a name="Function:toLowerCaseInPlace"><scan class=comment>/*
+ * Function: toLowerCaseInPlace
+ * Usage: toLowerCaseInPlace(str);
+ * -------------------------------
+ * Changes any uppercase characters in str to their lowercase equivalents.
+ */
+</scan>
+void toLowerCaseInPlace(string &amp; str);
+
+<a name="Function:equalsIgnoreCase"><scan class=comment>/*
+ * Function: equalsIgnoreCase
+ * Usage: if (equalsIgnoreCase(s1, s2)) . . .
+ * ------------------------------------------
+ * Returns true if s1 and s2 are equal discounting differences in case.
+ */
+</scan>
+bool equalsIgnoreCase(string s1, string s2);
+
+<a name="Function:startsWith"><scan class=comment>/*
+ * Function: startsWith
+ * Usage: if (startsWith(str, prefix)) . . .
+ * -----------------------------------------
+ * Returns true if the string str starts with the specified prefix, which
+ * may be either a string or a character.
+ */
+</scan>
+bool startsWith(string str, string prefix);
+bool startsWith(string str, char prefix);
+
+<a name="Function:endsWith"><scan class=comment>/*
+ * Function: endsWith
+ * Usage: if (endsWith(str, suffix)) . . .
+ * ---------------------------------------
+ * Returns true if the string str ends with the specified suffix, which may
+ * be either a string or a character.
+ */
+</scan>
+bool endsWith(string str, string suffix);
+bool endsWith(string str, char suffix);
+
+<a name="Function:trim"><scan class=comment>/*
+ * Function: trim
+ * Usage: string trimmed = trim(str);
+ * ----------------------------------
+ * Returns a new string after removing any whitespace characters from the
+ * beginning and end of the argument.
+ */
+</scan>
+string trim(string str);
+
+#endif
+</pre>
+</body>
+</html>

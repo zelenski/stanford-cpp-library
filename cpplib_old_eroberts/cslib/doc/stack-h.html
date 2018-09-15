@@ -1,0 +1,118 @@
+<html>
+<head>
+<title>../stack.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: stack.h
+ * -------------
+ * This interface exports an abstraction for stacks.
+ */
+</scan>
+#ifndef _stack_h
+#define _stack_h
+
+#include "cslib.h"
+#include "generic.h"
+
+<a name="Type:Stack"><scan class=comment>/*
+ * Type: Stack
+ * -----------
+ * The abstract data type for the stack.
+ */
+</scan>
+typedef struct StackCDT *Stack;
+
+<a name="Function:newStack"><scan class=comment>/*
+ * Function: newStack
+ * Usage: stack = newStack();
+ * --------------------------
+ * Allocates and returns a new stack, which is initially empty.
+ */
+</scan>
+Stack newStack(void);
+
+<a name="Function:freeStack"><scan class=comment>/*
+ * Function: freeStack
+ * Usage: freeStack(stack);
+ * ------------------------
+ * Frees the storage associated with the stack.
+ */
+</scan>
+void freeStack(Stack stack);
+
+<a name="Function:push"><scan class=comment>/*
+ * Function: push
+ * Usage: push(stack, element);
+ * ----------------------------
+ * Pushes the specified element onto the stack.
+ */
+</scan>
+void push(Stack stack, void *element);
+
+<a name="Function:pop"><scan class=comment>/*
+ * Function: pop
+ * Usage: element = pop(stack);
+ * ----------------------------
+ * Pops the top element from the stack and returns that value.  The first
+ * value popped is always the last one  that was pushed.  If the stack is
+ * empty when pop is called, the implementation calls error with an
+ * appropriate message.
+ */
+</scan>
+void *pop(Stack stack);
+
+<a name="Function:peek"><scan class=comment>/*
+ * Function: peek
+ * Usage: element = peek(stack);
+ * -----------------------------
+ * Returns the top element from the stack without removing it.  If the
+ * stack is empty when pop is called, the implementation calls error with
+ * an appropriate message.
+ */
+</scan>
+void *peekStack(Stack stack);
+
+<a name="Function:isEmpty"><scan class=comment>/*
+ * Function: isEmpty
+ * Usage: if (isEmpty(stack)) . . .
+ * --------------------------------
+ * Tests whether the stack is empty.
+ */
+</scan>
+bool isEmptyStack(Stack stack);
+
+<a name="Function:size"><scan class=comment>/*
+ * Function: size
+ * Usage: n = size(stack);
+ * -----------------------
+ * Returns the number of elements currently pushed on the stack.
+ */
+</scan>
+int sizeStack(Stack stack);
+
+<a name="Function:clear"><scan class=comment>/*
+ * Function: clear
+ * Usage: clear(stack);
+ * --------------------
+ * Removes all elements from the stack.
+ */
+</scan>
+void clearStack(Stack stack);
+
+<a name="Function:clone"><scan class=comment>/*
+ * Function: clone
+ * Usage: newstack = clone(stack);
+ * -------------------------------
+ * Creates a copy of the stack.  The clone function copies only the first
+ * level of the structure and does not copy the individual elements.
+ */
+</scan>
+Stack cloneStack(Stack stack);
+
+#endif
+</pre>
+</body>
+</html>

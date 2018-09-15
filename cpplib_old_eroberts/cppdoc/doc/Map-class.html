@@ -1,0 +1,202 @@
+<html>
+<head>
+<title>class Map&lt;KeyType,ValueType&gt;</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="map-h.html">class Map&lt;KeyType,ValueType&gt;</a></h1>
+The <code>Map</code> class maintains an association between
+keys and values.  The types used for keys and values are
+specified using templates, which makes it possible to use
+this structure with any data type.
+<h2>Constructor</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Constructor:Map">Map()</a><br><a href="#Constructor:Map">Map(cmpFn)</a>&nbsp;</td><td class=indexSynopsis width=100%>Initializes a new empty map that associates keys and values of the specified types.</td></tr>
+</table>
+<h2>Methods</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Method:size">size()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the number of entries in this map.</td></tr>
+<tr><td class=indexKey><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> if this map contains no entries.</td></tr>
+<tr><td class=indexKey><a href="#Method:put">put(key,&nbsp;value)</a>&nbsp;</td><td class=indexSynopsis width=100%>Associates <code>key</code> with <code>value</code> in this map.</td></tr>
+<tr><td class=indexKey><a href="#Method:get">get(key)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the value associated with <code>key</code> in this map.</td></tr>
+<tr><td class=indexKey><a href="#Method:containsKey">containsKey(key)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> if there is an entry for <code>key</code> in this map.</td></tr>
+<tr><td class=indexKey><a href="#Method:remove">remove(key)</a>&nbsp;</td><td class=indexSynopsis width=100%>Removes any entry for <code>key</code> from this map.</td></tr>
+<tr><td class=indexKey><a href="#Method:clear">clear()</a>&nbsp;</td><td class=indexSynopsis width=100%>Removes all entries from this map.</td></tr>
+<tr><td class=indexKey><a href="#Method:mapAll">mapAll(fn)</a><br><a href="#Method:mapAll">mapAll(fn,&nbsp;data)</a>&nbsp;</td><td class=indexSynopsis width=100%>Iterates through the keys in this map and calls <code>fn(key)</code> for each one.</td></tr>
+</table>
+<h2>Operator</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Operator:[]">operator[]</a>&nbsp;</td><td class=indexSynopsis width=100%>Selects the value associated with <code>key</code>.</td></tr>
+</table>
+<h2>Macro</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Macro:foreach">foreach(KeyType&nbsp;key&nbsp;in&nbsp;map)</a>&nbsp;</td><td class=indexSynopsis width=100%>Iterates over the keys in the map.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:Map"></a>
+<pre class=detailCode>
+Map(int (*cmpFn)(KeyType, KeyType) = operatorCmp);
+</pre>
+<div class=detailHTML>
+Initializes a new empty map that associates keys and values of
+the specified types.  The optional argument specifies a comparison
+function, which is called to compare data values.  This argument
+is typically omitted, in which case the implementation uses
+the <code>operatorCmp</code> function from <code>cmpfn.h</code>,
+which applies the built-in operators <code>&lt;</code> and
+<code>==</code> to determine the ordering.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Map&lt;KeyType,ValueType&gt; map;
+Map&lt;KeyType,ValueType&gt; map(cmpFn);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size();
+</pre>
+<div class=detailHTML>
+Returns the number of entries in this map.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int nEntries = map.size();
+</pre>
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty();
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if this map contains no entries.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (map.isEmpty()) . . .
+</pre>
+<hr>
+<a name="Method:put"></a>
+<pre class=detailCode>
+void put(KeyType key, ValueType value);
+</pre>
+<div class=detailHTML>
+Associates <code>key</code> with <code>value</code> in this map.
+Any previous value associated with <code>key</code> is replaced
+by the new value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map.put(key, value);
+</pre>
+<hr>
+<a name="Method:get"></a>
+<pre class=detailCode>
+ValueType get(KeyType key);
+</pre>
+<div class=detailHTML>
+Returns the value associated with <code>key</code> in this map.
+If <code>key</code> is not found, the <code>get</code> method
+signals an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType value = map.get(key);
+</pre>
+<hr>
+<a name="Method:containsKey"></a>
+<pre class=detailCode>
+bool containsKey(KeyType key);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if there is an entry for <code>key</code>
+in this map.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (map.containsKey(key)) . . .
+</pre>
+<hr>
+<a name="Method:remove"></a>
+<pre class=detailCode>
+void remove(KeyType key);
+</pre>
+<div class=detailHTML>
+Removes any entry for <code>key</code> from this map.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map.remove(key);
+</pre>
+<hr>
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Removes all entries from this map.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map.clear();
+</pre>
+<hr>
+<a name="Method:mapAll"></a>
+<pre class=detailCode>
+void mapAll(void (*fn)(KeyType key));
+
+template &lt;typename ClientDataType&gt;
+void mapAll(void (*fn)(KeyType, ClientDataType &amp;), ClientDataType &amp; data);
+</pre>
+<div class=detailHTML>
+Iterates through the keys in this map and calls <code>fn(key)</code>
+for each one.  The keys are processed in ascending order, as defined
+by the comparison function.  The second form of the call allows the
+client to pass a data value of any type to the callback function.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map.mapAll(fn);
+map.mapAll(fn, data);
+</pre>
+<hr>
+</table>
+<h2>Operator detail</h2>
+<hr>
+<a name="Operator:[]"></a>
+<pre class=detailCode>
+ValueType &amp; operator[](KeyType key);
+</pre>
+<div class=detailHTML>
+Selects the value associated with <code>key</code>.  This syntax
+makes it easy to think of a map as an "associative array"
+indexed by the key type.  If <code>key</code> is already present
+in the map, this function returns a reference to its associated
+value.  If key is not present in the map, a new entry is created
+whose value is set to the default for the value type.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+oldValue = map[key];
+map[key] = newValue;
+</pre>
+<hr>
+</table>
+<h2>Macro detail</h2>
+<hr>
+<a name="Macro:foreach"></a>
+<pre class=detailCode>
+foreach (KeyType key in map) . . .
+</pre>
+<div class=detailHTML>
+Iterates over the keys in the map. The keys are processed in
+ascending order, as defined by the comparison function.
+</div>
+<hr>
+</table>
+</body>
+</html>

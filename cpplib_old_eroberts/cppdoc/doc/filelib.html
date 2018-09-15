@@ -1,0 +1,408 @@
+<html>
+<head>
+<title>filelib.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="filelib-h.html">filelib.h</a></h1>
+This file exports a standardized set of tools for working with
+files.  The library offers at least some portability across the
+file systems used in the three supported platforms: Mac OSX,
+Windows, and Linux.  Directory and search paths are allowed to
+contain separators in any of the supported styles, which usually
+makes it possible to use the same code on different platforms.
+<h2>Functions</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Function:openFile">openFile(stream,&nbsp;filename)</a>&nbsp;</td><td class=indexSynopsis width=100%>Opens the filestream <code>stream</code> using the specified filename.</td></tr>
+<tr><td class=indexKey><a href="#Function:getFile">getFile(stream,&nbsp;prompt)</a>&nbsp;</td><td class=indexSynopsis width=100%>Asks the user for the name of an input file.</td></tr>
+<tr><td class=indexKey><a href="#Function:getRoot">getRoot(filename)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the root of <code>filename</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:getExtension">getExtension(filename)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the extension of <code>filename</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:getHead">getHead(filename)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns all but the last component of a path name.</td></tr>
+<tr><td class=indexKey><a href="#Function:getTail">getTail(filename)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the last component of a path name.</td></tr>
+<tr><td class=indexKey><a href="#Function:defaultExtension">defaultExtension(filename,&nbsp;ext)</a>&nbsp;</td><td class=indexSynopsis width=100%>Adds an extension to a file name if none already exists.</td></tr>
+<tr><td class=indexKey><a href="#Function:openOnPath">openOnPath(stream,&nbsp;path,&nbsp;filename)</a>&nbsp;</td><td class=indexSynopsis width=100%>Opens a file using a search path.</td></tr>
+<tr><td class=indexKey><a href="#Function:findOnPath">findOnPath(path,&nbsp;filename)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the canonical name of a file found using a search path.</td></tr>
+<tr><td class=indexKey><a href="#Function:deleteFile">deleteFile(filename)</a>&nbsp;</td><td class=indexSynopsis width=100%>Deletes the specified file.</td></tr>
+<tr><td class=indexKey><a href="#Function:renameFile">renameFile(oldname,&nbsp;newname)</a>&nbsp;</td><td class=indexSynopsis width=100%>Renames a file.</td></tr>
+<tr><td class=indexKey><a href="#Function:fileExists">fileExists(filename)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> if the specified file exists.</td></tr>
+<tr><td class=indexKey><a href="#Function:isFile">isFile(filename)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> if the specified file is a regular file.</td></tr>
+<tr><td class=indexKey><a href="#Function:isSymbolicLink">isSymbolicLink(filename)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> if the specified file is a symbolic link.</td></tr>
+<tr><td class=indexKey><a href="#Function:isDirectory">isDirectory(filename)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> if the specified file is a directory.</td></tr>
+<tr><td class=indexKey><a href="#Function:setCurrentDirectory">setCurrentDirectory(filename)</a>&nbsp;</td><td class=indexSynopsis width=100%>Changes the current directory to the specified path.</td></tr>
+<tr><td class=indexKey><a href="#Function:getCurrentDirectory">getCurrentDirectory()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns an absolute filename for the current directory.</td></tr>
+<tr><td class=indexKey><a href="#Function:createDirectory">createDirectory(filename)</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a new directory for the specified filename.</td></tr>
+<tr><td class=indexKey><a href="#Function:createDirectoryPath">createDirectoryPath(filename)</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a new directory for the specified filename.</td></tr>
+<tr><td class=indexKey><a href="#Function:expandPathname">expandPathname(filename)</a>&nbsp;</td><td class=indexSynopsis width=100%>Expands a filename into a canonical name for the platform.</td></tr>
+<tr><td class=indexKey><a href="#Function:listDirectory">listDirectory(dir,&nbsp;list)</a>&nbsp;</td><td class=indexSynopsis width=100%>Adds an alphabetized list of the files in the specified directory to the string vector <code>list</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:matchFilenamePattern">matchFilenamePattern(filename,&nbsp;pattern)</a>&nbsp;</td><td class=indexSynopsis width=100%>Determines whether the filename matches the specified pattern.</td></tr>
+<tr><td class=indexKey><a href="#Function:getDirectoryPathSeparator">getDirectoryPathSeparator()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the standard directory path separator used on this platform.</td></tr>
+<tr><td class=indexKey><a href="#Function:getSearchPathSeparator">getSearchPathSeparator()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the standard search path separator used on this platform.</td></tr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:openFile"></a>
+<pre class=detailCode>
+bool openFile(ifstream &amp; stream, string filename);
+bool openFile(ofstream &amp; stream, string filename);
+</pre>
+<div class=detailHTML>
+Opens the filestream <code>stream</code> using the specified
+filename.  This function is similar to the <code>open</code>
+method of the stream classes, but uses a C++ <code>string</code>
+object instead of the older C-style string.  If the operation
+succeeds, <code>openFile</code> returns <code>true</code>;
+if it fails, <code>openFile</code> sets the failure flag in the
+stream and returns <code>false</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (openFile(stream, filename)) . . .
+</pre>
+<hr>
+<a name="Function:getFile"></a>
+<pre class=detailCode>
+string getFile(ifstream &amp; stream, string prompt = "");
+string getFile(ofstream &amp; stream, string prompt = "");
+</pre>
+<div class=detailHTML>
+Asks the user for the name of an input file.  The file is opened
+using the reference parameter <code>stream</code>, and the function
+returns the name of the file.  If the requested file cannot be,
+opened the user is given additional chances to enter a valid file.
+The optional <code>prompt</code> argument provides an input prompt
+for the user.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string filename = getFile(stream, prompt);
+</pre>
+<hr>
+<a name="Function:getRoot"></a>
+<pre class=detailCode>
+string getRoot(string filename);
+</pre>
+<div class=detailHTML>
+Returns the root of <code>filename</code>.  The root consists
+of everything in <code>filename</code> up to the last dot and
+the subsequent extension.  If no dot appears, <code>getRoot</code>
+returns the entire name.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string root = getRoot(filename);
+</pre>
+<hr>
+<a name="Function:getExtension"></a>
+<pre class=detailCode>
+string getExtension(string filename);
+</pre>
+<div class=detailHTML>
+Returns the extension of <code>filename</code>.  The extension
+consists of the separating dot and all subsequent characters.
+If no dot exists in the final component, <code>extension</code>
+returns the empty string.  These semantics ensure that concatenating
+the root and the extension always returns the original filename.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ext = getExtension(filename);
+</pre>
+<hr>
+<a name="Function:getHead"></a>
+<pre class=detailCode>
+string getHead(string filename);
+</pre>
+<div class=detailHTML>
+Returns all but the last component of a path name.  The components
+of the path name can be separated by any of the directory path
+separators (forward or reverse slashes).  The special cases are
+illustrated by the following examples:
+
+<pre>
+   getHead("a/b")  = "a"     getTail("a/b")   = "b"
+   getHead("a")    = ""      getTail("a")     = "a"
+   getHead("/a")   = "/"     getTail("/a")    = "a"
+   getHead("/")    = "/"     getTail("/")     = ""
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+head = getHead(filename);
+</pre>
+<hr>
+<a name="Function:getTail"></a>
+<pre class=detailCode>
+string getTail(string filename);
+</pre>
+<div class=detailHTML>
+Returns the last component of a path name.  The components of the
+path name can be separated by any of the directory path separators
+(forward or reverse slashes).  For details on the interpretation of
+special cases, see the comments for the <code>getHead</code> function.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+tail = getTail(filename);
+</pre>
+<hr>
+<a name="Function:defaultExtension"></a>
+<pre class=detailCode>
+string defaultExtension(string filename, string ext);
+</pre>
+<div class=detailHTML>
+Adds an extension to a file name if none already exists.  If the
+<code>extension</code> argument begins with a leading <code>*</code>,
+any existing extension in <code>filename</code> is replaced by
+<code>ext</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string newname = defaultExtension(filename, ext);
+</pre>
+<hr>
+<a name="Function:openOnPath"></a>
+<pre class=detailCode>
+string openOnPath(ifstream &amp; stream, string path, string filename);
+string openOnPath(ofstream &amp; stream, string path, string filename);
+</pre>
+<div class=detailHTML>
+Opens a file using a search path.  If <code>openOnPath</code>
+is successful, it returns the first path name on the search path
+for which <code>stream.open</code> succeeds.  The <code>path</code>
+argument consists of a list of directories that are prepended to the
+filename, unless <code>filename</code> begins with an absolute
+directory marker, such as <code>/</code> or <code>~</code>.
+The directories in the search path may be separated either
+by colons (Unix or Mac OS) or semicolons (Windows).  If the file
+cannot be opened, the failure bit is set in the <code>stream</code>
+parameter, and the <code>openOnPath</code> function returns the
+empty string.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string pathname = openOnPath(stream, path, filename);
+</pre>
+<hr>
+<a name="Function:findOnPath"></a>
+<pre class=detailCode>
+string findOnPath(string path, string filename);
+</pre>
+<div class=detailHTML>
+Returns the canonical name of a file found using a search path.
+The <code>findOnPath</code> function is similar to
+<code>openOnPath</code>, except that it doesn't actually
+return an open stream.  If no matching file is found,
+<code>findOnPath</code> returns the empty string.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string pathname = findOnPath(path, filename);
+</pre>
+<hr>
+<a name="Function:deleteFile"></a>
+<pre class=detailCode>
+void deleteFile(string filename);
+</pre>
+<div class=detailHTML>
+Deletes the specified file.  Errors are reported by calling
+<code>error</code> in the implementation.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+deleteFile(filename);
+</pre>
+<hr>
+<a name="Function:renameFile"></a>
+<pre class=detailCode>
+void deleteFile(string filename);
+</pre>
+<div class=detailHTML>
+Renames a file.  Errors are reported by calling
+<code>error</code> in the implementation.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+renameFile(oldname, newname);
+</pre>
+<hr>
+<a name="Function:fileExists"></a>
+<pre class=detailCode>
+bool fileExists(string filename);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the specified file exists.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (fileExists(filename)) . . .
+</pre>
+<hr>
+<a name="Function:isFile"></a>
+<pre class=detailCode>
+bool isFile(string filename);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the specified file is a regular file.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isFile(filename)) . . .
+</pre>
+<hr>
+<a name="Function:isSymbolicLink"></a>
+<pre class=detailCode>
+bool isSymbolicLink(string filename);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the specified file is a symbolic link.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isSymbolicLink(filename)) . . .
+</pre>
+<hr>
+<a name="Function:isDirectory"></a>
+<pre class=detailCode>
+bool isDirectory(string filename);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the specified file is a directory.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isDirectory(filename)) . . .
+</pre>
+<hr>
+<a name="Function:setCurrentDirectory"></a>
+<pre class=detailCode>
+void setCurrentDirectory(string path);
+</pre>
+<div class=detailHTML>
+Changes the current directory to the specified path.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setCurrentDirectory(filename);
+</pre>
+<hr>
+<a name="Function:getCurrentDirectory"></a>
+<pre class=detailCode>
+string getCurrentDirectory();
+</pre>
+<div class=detailHTML>
+Returns an absolute filename for the current directory.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string filename = getCurrentDirectory();
+</pre>
+<hr>
+<a name="Function:createDirectory"></a>
+<pre class=detailCode>
+void createDirectory(string filename);
+</pre>
+<div class=detailHTML>
+Creates a new directory for the specified filename.  The
+<code>createDirectory</code> function does not report an error if
+the directory already exists.  Unlike <code>createDirectoryPath</code>,
+<code>createDirectory</code> does not create missing directories
+along the path.  If some component of <code>filename</code> does
+not exist, this function signals an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+createDirectory(filename);
+</pre>
+<hr>
+<a name="Function:createDirectoryPath"></a>
+<pre class=detailCode>
+void createDirectoryPath(string filename);
+</pre>
+<div class=detailHTML>
+Creates a new directory for the specified filename.   If intermediate
+components of the filename do not exist, this function creates them
+as needed.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+createDirectoryPath(filename);
+</pre>
+<hr>
+<a name="Function:expandPathname"></a>
+<pre class=detailCode>
+string expandPathname(string filename);
+</pre>
+<div class=detailHTML>
+Expands a filename into a canonical name for the platform.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string pathname = expandPathname(filename);
+</pre>
+<hr>
+<a name="Function:listDirectory"></a>
+<pre class=detailCode>
+void listDirectory(string dir, Vector&lt;string&gt; &amp; list);
+void listDirectory(string dir, vector&lt;string&gt; &amp; list);
+</pre>
+<div class=detailHTML>
+Adds an alphabetized list of the files in the specified directory
+to the string vector <code>list</code>.  This list excludes the
+names <code>.</code> and <code>..</code> entries.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+listDirectory(dir, list);
+</pre>
+<hr>
+<a name="Function:matchFilenamePattern"></a>
+<pre class=detailCode>
+bool matchFilenamePattern(string filename, string pattern);
+</pre>
+<div class=detailHTML>
+Determines whether the filename matches the specified pattern.  The
+pattern string is interpreted in much the same way that a Unix shell
+expands filenames and supports the following wildcard options:
+
+<pre>
+   ?      Matches any single character
+   *      Matches any sequence of characters
+   [...]  Matches any of the specified characters
+   [^...] Matches any character <i>except</i> the specified ones
+</pre>
+
+The last two options allow a range of characters to be specified in the
+form <code>a-z</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (matchFilenamePattern(filename, pattern)) . . .
+</pre>
+<hr>
+<a name="Function:getDirectoryPathSeparator"></a>
+<pre class=detailCode>
+string getDirectoryPathSeparator();
+</pre>
+<div class=detailHTML>
+Returns the standard directory path separator used on this platform.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string sep = getDirectoryPathSeparator();
+</pre>
+<hr>
+<a name="Function:getSearchPathSeparator"></a>
+<pre class=detailCode>
+string getSearchPathSeparator();
+</pre>
+<div class=detailHTML>
+Returns the standard search path separator used on this platform.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string sep = getSearchPathSeparator();
+</pre>
+<hr>
+</table>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<html>
+<head>
+<title>include/set.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: set.h
+ * -----------
+ * This interface exports the Set class, a collection for efficiently
+ * storing a set of distinct elements.
+ */
+</scan>
+#ifndef _set_h
+#define _set_h
+
+#include "cmpfn.h"
+#include "error.h"
+#include "foreach.h"
+#include "map.h"
+#include "vector.h"
+
+<a name="Class:Set<ValueType>"><scan class=comment>/*
+ * Class: Set&lt;ValueType&gt;
+ * ---------------------
+ * This template class stores a collection of distinct elements.
+ */
+</scan>
+template &lt;typename ValueType&gt;
+class Set {
+
+public:
+
+<a name="Constructor:Set"><scan class=comment>/*
+ * Constructor: Set
+ * Usage: Set&lt;ValueType&gt; set;
+ *        Set&lt;ValueType&gt; set(cmpFn);
+ *        Set&lt;ValueType&gt; set(initializers);
+ *        Set&lt;ValueType&gt; set(initializers, cmpFn);
+ * -----------------------------------------------
+ * Initializes a set of the specified element type, which is either empty
+ * or initialized to match the elements of the C++ array passed as the
+ * initializers parameter.  The optional cmpFn argument specifies a
+ * comparison function, which is called to compare data values.  This
+ * argument is typically omitted, in which case the implementation uses the
+ * operatorCmp function from cmpfn.h, which applies the built-in operators
+ * &lt; and == to determine the ordering.
+ */
+</scan>
+   Set(int (*cmpFn)(ValueType, ValueType) = operatorCmp);
+
+<a name="Destructor:~Set"><scan class=comment>/*
+ * Destructor: ~Set
+ * Usage: (usually implicit)
+ * -------------------------
+ * Frees any heap storage associated with set.
+ */
+</scan>
+   ~Set();
+
+<a name="Method:size"><scan class=comment>/*
+ * Method: size
+ * Usage: count = set.size();
+ * --------------------------
+ * Returns the number of elements in this set.
+ */
+</scan>
+   int size();
+
+<a name="Method:isEmpty"><scan class=comment>/*
+ * Method: isEmpty
+ * Usage: if (set.isEmpty()) . . .
+ * -------------------------------
+ * Returns true if this set contains no elements.
+ */
+</scan>
+   bool isEmpty();
+
+<a name="Method:add"><scan class=comment>/*
+ * Method: add
+ * Usage: set.add(value);
+ * ----------------------
+ * Adds an element to this set, if it was not already there.  For
+ * compatibility with the STL set class, this method is also exported as
+ * insert.
+ */
+</scan>
+   void add(const ValueType &amp; value);
+   void insert(const ValueType &amp; value);
+
+<a name="Method:remove"><scan class=comment>/*
+ * Method: remove
+ * Usage: set.remove(value);
+ * -------------------------
+ * Removes an element from this set.  If the value was not contained in the
+ * set, no error is generated and the set remains unchanged.
+ */
+</scan>
+   void remove(const ValueType &amp; value);
+
+<a name="Method:contains"><scan class=comment>/*
+ * Method: contains
+ * Usage: if (set.contains(value)) . . .
+ * -------------------------------------
+ * Returns true if the specified value is in this set.
+ */
+</scan>
+   bool contains(const ValueType &amp; value);
+
+<a name="Method:isSubsetOf"><scan class=comment>/*
+ * Method: isSubsetOf
+ * Usage: if (set.isSubsetOf(set2)) . . .
+ * --------------------------------------
+ * Implements the subset relation on sets.  It returns true if every
+ * element of this set is contained in set2.
+ */
+</scan>
+   bool isSubsetOf(const Set &amp; set2);
+
+<a name="Method:clear"><scan class=comment>/*
+ * Method: clear
+ * Usage: set.clear();
+ * -------------------
+ * Removes all elements from this set.
+ */
+</scan>
+   void clear();
+
+<a name="Operator:=="><scan class=comment>/*
+ * Operator: ==
+ * Usage: if (set1 == set2) . . .
+ *        if (set1 != set2) . . .
+ * ------------------------------
+ * Implements the equality relation on sets.  The == operator returns true
+ * if set1 and set2 contain exactly the same elements; the != returns the
+ * opposite value.
+ */
+</scan>
+   bool operator==(const Set &amp; set2);
+   bool operator!=(const Set &amp; set2);
+
+<a name="Operator:+"><scan class=comment>/*
+ * Operator: +
+ * Usage: set1 + set2;
+ * -------------------
+ * Returns the union of sets set1 and set2, which is the set of elements
+ * that appear in at least one of the two sets.
+ */
+</scan>
+   Set operator+(const Set &amp; set2);
+
+<a name="Operator:*"><scan class=comment>/*
+ * Operator: *
+ * Usage: set1 * set2;
+ * -------------------
+ * Returns the intersection of sets set1 and set2, which is the set of all
+ * elements that appear in both.
+ */
+</scan>
+   Set operator*(const Set &amp; set2);
+
+<a name="Operator:-"><scan class=comment>/*
+ * Operator: -
+ * Usage: set1 - set2;
+ * -------------------
+ * Returns the difference of sets set1 and set2, which is all of the
+ * elements that appear in set1 but not set2.
+ */
+</scan>
+   Set operator-(const Set &amp; set2);
+
+<a name="Operator:+="><scan class=comment>/*
+ * Operator: +=
+ * Usage: set1 += set2;
+ *        set1 += value;
+ * ---------------------
+ * Adds all of the elements from set2 (or the single specified value) to
+ * set1.
+ */
+</scan>
+   Set &amp; operator+=(const Set &amp; set2);
+   Set &amp; operator+=(const ValueType &amp; value);
+
+<a name="Operator:*="><scan class=comment>/*
+ * Operator: *=
+ * Usage: set1 *= set2;
+ * --------------------
+ * Removes any elements from set1 that are not present in set2.
+ */
+</scan>
+   Set &amp; operator*=(const Set &amp; set2);
+
+<a name="Operator:-="><scan class=comment>/*
+ * Operator: -=
+ * Usage: set1 -= set2;
+ *        set1 -= value;
+ * ---------------------
+ * Removes the elements from set2 (or the single specified value) from
+ * set1.
+ */
+</scan>
+   Set &amp; operator-=(const Set &amp; set2);
+   Set &amp; operator-=(const ValueType &amp; value);
+
+<a name="Macro:foreach"><scan class=comment>/*
+ * Macro: foreach
+ * Usage: foreach (ValueType value in set) . . .
+ * ---------------------------------------------
+ * Iterates over the elements of the set. The values are returned in
+ * ascending order, as defined by the comparison function.
+ */
+</scan>
+   <scan class=comment>/* The foreach macro is defined in foreach.h */</scan>
+
+<a name="Method:mapAll"><scan class=comment>/*
+ * Method: mapAll
+ * Usage: set.mapAll(fn);
+ *        set.mapAll(fn, data);
+ * ----------------------------
+ * Iterates through the elements of the set and calls fn(value) for each
+ * one.  The values are processed in ascending order, as defined by the
+ * comparison function.  The second form of the call allows the client to
+ * pass a data value of any type to the callback function.
+ */
+</scan>
+   void mapAll(void (*fn)(ValueType value));
+
+   template &lt;typename ClientDataType&gt;
+   void mapAll(void (*fn)(ValueType, ClientDataType &amp;), ClientDataType &amp; data);
+
+#include "private/setpriv.h"
+
+};
+
+#include "private/setimpl.cpp"
+
+#endif
+</pre>
+</body>
+</html>
