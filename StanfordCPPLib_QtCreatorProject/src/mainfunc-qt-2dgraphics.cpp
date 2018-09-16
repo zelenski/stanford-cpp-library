@@ -102,6 +102,9 @@ void testQwindowDrawing() {
     // pixely stuff
 
     window->setColor("black");
+    window->add(new GRect(400, 100, 50, 50));
+    window->drawRect(400, 200, 50, 50);
+
     window->setFillColor("red");
     window->setLineWidth(5);   // BUG: affects later shapes
     window->setLineStyle(GObject::LINE_DASH);
@@ -192,7 +195,8 @@ void testQwindowDrawing() {
             window->setLineWidth(1);
             window->fillOval(event.getX() - 5, event.getY() - 5, 10, 10);
         } else if (event.getType() == MOUSE_MOVED) {
-            label->setText(event.getLocation().toString());
+            label->setText(event.getLocation().toString()
+                           + " " + window->getPixelString(event.getX(), event.getY()));
             cout << "mouse moved: " << event.getLocation().toString() << endl;
         }
     });

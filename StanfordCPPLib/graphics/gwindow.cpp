@@ -374,6 +374,7 @@ void GWindow::ensureForwardTarget() {
         // tell canvas to take any unclaimed space in the window
         GThread::runOnQtGuiThread([this]() {
             _canvas = new GCanvas(_iqmainwindow);
+            _canvas->setBackground(GColor::WHITE);
             _canvas->getWidget()->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
             setDrawingForwardTarget(_canvas);
             addToRegion(_canvas, REGION_CENTER);

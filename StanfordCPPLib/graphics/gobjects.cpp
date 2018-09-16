@@ -1358,7 +1358,9 @@ void GRect::draw(QPainter* painter) {
         return;
     }
     initializeBrushAndPen(painter);
+    painter->setRenderHint(QPainter::Antialiasing, false);
     painter->drawRect((int) getX(), (int) getY(), (int) getWidth(), (int) getHeight());
+    painter->setRenderHint(QPainter::Antialiasing, GObject::isAntiAliasing());
 }
 
 std::string GRect::getType() const {
