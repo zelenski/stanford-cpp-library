@@ -15,6 +15,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2018/09/16
+# - removed stack-size increase code on Windows that broke thread creation
 # @version 2018/09/06
 # - removed references to old Java back-end spl.jar
 # @version 2018/07/01
@@ -280,6 +282,7 @@ QMAKE_CXXFLAGS += -Wno-old-style-cast
 QMAKE_CXXFLAGS += -Wno-reserved-id-macro
 QMAKE_CXXFLAGS += -Wno-sign-compare
 QMAKE_CXXFLAGS += -Wno-sign-conversion
+QMAKE_CXXFLAGS += -Wno-unused-const-variable
 QMAKE_CXXFLAGS += -Wno-write-strings
 QMAKE_CXXFLAGS += -Wreturn-type
 QMAKE_CXXFLAGS += -Werror=return-type
@@ -302,29 +305,16 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
 
 # additional flags for Windows
 win32 {
-    # disable inclusion of Qt core libraries (smaller,faster build)
-    # CONFIG -= qt
-    # QT -= core gui opengl widgets
-
-    # increase system stack size (helpful for recursive programs)
-    QMAKE_LFLAGS += -Wl,--stack,268435456
     LIBS += -lDbghelp
     LIBS += -lbfd
     LIBS += -limagehlp
     cache()
+} else {
+    LIBS += -ldl
 }
 
 # additional flags for Mac OS X
 macx {
-    # increase system stack size (helpful for recursive programs)
-    # (this was previously disabled because it led to crashes on some systems,
-    #  but it seems to be working again, so we are going to re-enable it)
-    # QMAKE_LFLAGS += -Wl,-stack_size -Wl,0x8000000
-
-    # disable inclusion of Qt core libraries (smaller,faster build)
-    # CONFIG -= qt
-    # QT -= core gui opengl widgets
-
     # calling cache() reduces warnings on Mac OS X systems
     cache()
     QMAKE_MAC_SDK = macosx
@@ -332,10 +322,6 @@ macx {
 
 # additional flags for Linux
 unix:!macx {
-    # disable inclusion of Qt core libraries (smaller,faster build)
-    # CONFIG -= qt
-    # QT -= core gui opengl widgets
-
     unix-g++ {
         QMAKE_CXXFLAGS += -rdynamic
         QMAKE_CXXFLAGS += -Wl,--export-dynamic
@@ -346,13 +332,8 @@ unix:!macx {
     cache()
 }
 
-# additional flags for non-Windows systems (Mac and Linux)
-!win32 {
-    #QMAKE_CXXFLAGS += -Wno-dangling-field
-    QMAKE_CXXFLAGS += -Wno-unused-const-variable
-    LIBS += -ldl
-    LIBS += -lpthread
-}
+# libraries for all OSes
+LIBS += -lpthread
 
 # additional flags for clang compiler (default on Mac)
 COMPILERNAME = $$QMAKE_CXX
@@ -370,7 +351,7 @@ equals(COMPILERNAME, clang++) {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20180906
+DEFINES += SPL_PROJECT_VERSION=20180916
 
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1
@@ -418,8 +399,6 @@ DEFINES += SPL_THROW_ON_INVALID_ITERATOR
 # and catch/print to console any uncaught exceptions thrown by the program
 CONFIG(debug, debug|release) {
     QMAKE_CXXFLAGS += -g3
-    #QMAKE_CXXFLAGS += -O0
-    #QMAKE_CXXFLAGS += -ggdb3
     QMAKE_CXXFLAGS += -fno-inline
     QMAKE_CXXFLAGS += -fno-omit-frame-pointer
 
@@ -438,7 +417,6 @@ CONFIG(release, debug|release) {
         QMAKE_LFLAGS += -static
         QMAKE_LFLAGS += -static-libgcc
         QMAKE_LFLAGS += -static-libstdc++
-        #QMAKE_POST_LINK += 'rm $${OUT_PWD}/*.o && rm $${OUT_PWD}/Makefile'
     }
     win32 {
         TARGET_PATH = $${OUT_PWD}/release/$${TARGET}.exe
@@ -452,7 +430,6 @@ CONFIG(release, debug|release) {
         REMOVE_FILES += '"'$${OUT_PWD}/Makefile'"'
         REMOVE_FILES += '"'$${OUT_PWD}/Makefile.Debug'"'
         REMOVE_FILES += '"'$${OUT_PWD}/Makefile.Release'"'
-        #REMOVE_FILES += '"'$${OUT_PWD}/object_script.$${TARGET}.Release'"'
         REMOVE_FILES += '"'$${OUT_PWD}/object_script.$${TARGET}.Debug'"'
         REMOVE_DIRS ~= s,/,\\,g
         REMOVE_FILES ~= s,/,\\,g
@@ -461,9 +438,6 @@ CONFIG(release, debug|release) {
         QMAKE_LFLAGS += -static-libgcc
         QMAKE_LFLAGS += -static-libstdc++
         QMAKE_POST_LINK += copy '"'$${TARGET_PATH}'"' '"'$${OUT_PATH}'"'
-        #QMAKE_POST_LINK += copy '"'$${TARGET_PATH}'"' '"'$${OUT_PATH} \#
-        #    && rmdir /s /q $${REMOVE_DIRS} \
-        #    && del $${REMOVE_FILES}
     }
 }
 
@@ -491,10 +465,6 @@ defineTest(copyToDestdir) {
             # Mac/Linux
             copyResources.commands += cp -rf '"'$$FILE'"' '"'$$DDIR'"' $$escape_expand(\\n\\t\\n\\t)
         }
-
-        # QMAKE_COPY command is supposed to be a platform-independent copying command,
-        # but it seems to fail on Windows machines that have Cygwin or Windows Services for Unix installed
-        # copyResources.commands += $$QMAKE_COPY $$quote($$FILE) $$quote($$DDIR) $$escape_expand(\\n\\t\\n\\t)
     }
     export(copyResources.commands)
 }
@@ -549,7 +519,6 @@ exists($$PWD/output/*) {
 }
 
 QMAKE_EXTRA_TARGETS += copyResources first copydata
-#QMAKE_EXTRA_TARGETS += copyResources
 POST_TARGETDEPS += copyResources
 
 ###############################################################################
@@ -565,17 +534,11 @@ POST_TARGETDEPS += copyResources
 exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
     # include the various autograder source code and libraries in the build process
     SOURCES *= $$files($$PWD/lib/autograder/*.cpp)
-    #exists($$PWD/src/autograder/$$PROJECT_FILTER*.cpp) {
-    #    SOURCES *= $$files($$PWD/src/autograder/$$PROJECT_FILTER*.cpp)
-    #}
     exists($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp) {
         SOURCES *= $$files($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp)
     }
 
     HEADERS *= $$PWD/lib/autograder/*.h
-    #exists($$PWD/src/autograder/$$PROJECT_FILTER*.h) {
-    #    HEADERS *= $$files($$PWD/src/autograder/$$PROJECT_FILTER*.h)
-    #}
     exists($$PWD/src/autograder/$$PROJECT_FILTER/*.h) {
         HEADERS *= $$files($$PWD/src/autograder/$$PROJECT_FILTER/*.h)
     }
@@ -610,7 +573,6 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
         copyToDestdir($$PWD/res/autograder)
     }
     !win32 {
-        LIBS += -lpthread
         copyToDestdir($$files($$PWD/res/autograder/*))
     }
 
@@ -636,4 +598,4 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #636; if not, your .pro has been changed!)
+# END OF FILE (this should be line #600; if not, your .pro has been changed!)
