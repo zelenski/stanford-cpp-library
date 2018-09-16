@@ -108,6 +108,12 @@ std::string GColor::convertARGBToColor(int a, int r, int g, int b) {
     return os.str();
 }
 
+std::string GColor::convertARGBToColor(int argb) {
+    int a, r, g, b;
+    splitARGB(argb, a, r, g, b);
+    return convertARGBToColor(a, r, g, b);
+}
+
 int GColor::convertColorToARGB(const std::string& colorName) {
     return convertColorToRGB(colorName);
 }

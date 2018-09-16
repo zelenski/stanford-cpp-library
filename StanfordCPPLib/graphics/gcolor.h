@@ -95,6 +95,12 @@ public:
     static std::string convertARGBToColor(int a, int r, int g, int b);
 
     /**
+     * Converts the given ARGB integer into a color name in the
+     * form <code>"#aarrggbb"</code>.
+     */
+    static std::string convertARGBToColor(int argb);
+
+    /**
      * Converts four integer RGB values from 0-255 into an ARGB integer of the
      * form <code>0xaarrggbb</code>.  Each of the <code>aa</code>, <code>rr</code>,
      * <code>gg</code>, and <code>bb</code> values are two-digit
@@ -129,10 +135,8 @@ public:
     static int convertQColorToRGB(const QColor& color);
 
     /**
-     * Converts an <code>rgb</code> value into a color name in the
-     * form <code>"#rrggbb"</code>.  Each of the <code>rr</code>,
-     * <code>gg</code>, and <code>bb</code> values are two-digit
-     * hexadecimal numbers indicating the intensity of that component.
+     * Converts an RGB integer value into a color name in the
+     * form <code>"#rrggbb"</code>.
      * Does not preserve alpha transparency.
      */
     static std::string convertRGBToColor(int rgb);
