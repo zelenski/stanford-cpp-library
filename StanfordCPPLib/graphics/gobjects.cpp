@@ -183,7 +183,11 @@ void GObject::initializeBrushAndPen(QPainter* painter) {
     if (!painter) {
         return;
     }
-    _pen.setColor(QColor(_colorInt));
+    if (GColor::hasAlpha(_color)) {
+        _pen.setColor(GColor::toQColorARGB(_colorInt));   // allow alpha
+    } else {
+        _pen.setColor(QColor(_colorInt));
+    }
     _pen.setWidth((int) _lineWidth);
     _pen.setStyle(toQtPenStyle(_lineStyle));
 
@@ -204,7 +208,11 @@ void GObject::initializeBrushAndPen(QPainter* painter) {
 
     // fill color
     if (_fillFlag) {
-        _brush.setColor(QColor(_fillColorInt));
+        if (GColor::hasAlpha(_fillColor)) {
+            _brush.setColor(GColor::toQColorARGB(_fillColorInt));   // allow alpha
+        } else {
+            _brush.setColor(QColor(_fillColorInt));
+        }
         painter->setBrush(_brush);
     } else {
         painter->setBrush(STATIC_VARIABLE(DEFAULT_BRUSH));
@@ -355,7 +363,13 @@ void GObject::setColor(int rgb) {
 }
 
 void GObject::setColor(const std::string& color) {
-    setColor(GColor::convertColorToRGB(color));
+    if (GColor::hasAlpha(color)) {
+        _color = color;
+        _colorInt = GColor::convertColorToRGB(color);
+        repaint();
+    } else {
+        setColor(GColor::convertColorToRGB(color));
+    }
 }
 
 void GObject::setFillColor(int r, int g, int b) {
@@ -376,7 +390,9 @@ void GObject::setFillColor(const std::string& color) {
     if (_fillColor == "") {
         _fillFlag = false;
     } else {
-        _fillColor = GColor::convertRGBToColor(GColor::convertColorToRGB(color));
+        if (!GColor::hasAlpha(color)) {
+            _fillColor = GColor::convertRGBToColor(_fillColorInt);
+        }
         _fillFlag = true;
     }
     repaint();
@@ -673,8 +689,10 @@ GCompound::GCompound()
 
 void GCompound::add(GObject* gobj) {
     require::nonNull(gobj, "GCompound::add");
-    if (_contents.contains(gobj)) {
-        return;
+    for (int i = _contents.size() - 1; i >= 0; i--) {   // avoid duplicates
+        if (_contents[i] == gobj) {
+            return;
+        }
     }
     _contents.add(gobj);
     gobj->_parent = this;

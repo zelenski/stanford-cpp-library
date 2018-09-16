@@ -3,6 +3,8 @@
  * ----------------
  *
  * @author Marty Stepp
+ * @version 2018/09/16
+ * - added splitRGB/ARGB, hasAlpha; better ARGB support
  * @version 2018/08/23
  * - renamed to gcolor.cpp to replace Java version
  * @version 2018/06/30
@@ -24,7 +26,7 @@ GColor::GColor() {
 
 std::string GColor::canonicalColorName(const std::string& str) {
     std::string result = "";
-    int nChars = str.length();
+    int nChars = static_cast<int>(str.length());
     for (int i = 0; i < nChars; i++) {
         char ch = str[i];
         if (!isspace(ch) && ch != '_') result += tolower(ch);
@@ -56,22 +58,41 @@ const Map<std::string, int>& GColor::colorTable() {
 const Map<std::string, std::string>& GColor::colorNameTable() {
     if (_colorNameTable.isEmpty()) {
         _colorNameTable["#000000"] = "black";
+        _colorNameTable["#ff000000"] = "black";
         _colorNameTable["#0000ff"] = "blue";
+        _colorNameTable["#ff0000ff"] = "blue";
         _colorNameTable["#926239"] = "brown";
+        _colorNameTable["#ff926239"] = "brown";
         _colorNameTable["#00ffff"] = "cyan";
+        _colorNameTable["#ff00ffff"] = "cyan";
         _colorNameTable["#595959"] = "darkgray";
+        _colorNameTable["#ff595959"] = "darkgray";
         _colorNameTable["#999999"] = "gray";
+        _colorNameTable["#ff999999"] = "gray";
         _colorNameTable["#00ff00"] = "green";
+        _colorNameTable["#ff00ff00"] = "green";
         _colorNameTable["#bfbfbf"] = "lightgray";
+        _colorNameTable["#ffbfbfbf"] = "lightgray";
         _colorNameTable["#ff00ff"] = "magenta";
+        _colorNameTable["#ffff00ff"] = "magenta";
         _colorNameTable["#ffc800"] = "orange";
+        _colorNameTable["#ffffc800"] = "orange";
         _colorNameTable["#ffafaf"] = "pink";
+        _colorNameTable["#ffffafaf"] = "pink";
         _colorNameTable["#ff00ff"] = "purple";
+        _colorNameTable["#ffff00ff"] = "purple";
         _colorNameTable["#ff0000"] = "red";
+        _colorNameTable["#ffff0000"] = "red";
         _colorNameTable["#ffffff"] = "white";
+        _colorNameTable["#ffffffff"] = "white";
         _colorNameTable["#ffff00"] = "yellow";
+        _colorNameTable["#ffffff00"] = "yellow";
     }
     return _colorNameTable;
+}
+
+int GColor::convertARGBToARGB(int a, int r, int g, int b) {
+    return (a << 24) | (r << 16) | (g << 8) | b;
 }
 
 std::string GColor::convertARGBToColor(int a, int r, int g, int b) {
@@ -87,23 +108,35 @@ std::string GColor::convertARGBToColor(int a, int r, int g, int b) {
     return os.str();
 }
 
+int GColor::convertColorToARGB(const std::string& colorName) {
+    return convertColorToRGB(colorName);
+}
+
 int GColor::convertColorToRGB(const std::string& colorName) {
     if (colorName == "") return -1;
     if (colorName[0] == '#') {
         std::istringstream is(colorName.substr(1) + "@");
-        int rgb;
+        unsigned int rgb;
         char terminator = '\0';
         is >> std::hex >> rgb >> terminator;
         if (terminator != '@') {
-            error("convertColorToRGB: Illegal color - " + colorName);
+            error("GColor::convertColorToRGB: Illegal color - \"" + colorName + "\"");
         }
-        return rgb;
+        return static_cast<int>(rgb & 0xffffffff);
     }
     std::string name = canonicalColorName(colorName);
     if (!colorTable().containsKey(name)) {
-        error("convertColorToRGB: Undefined color - " + colorName);
+        error("GColor::convertColorToRGB: Undefined color - \"" + colorName + "\"");
     }
     return colorTable()[name];
+}
+
+std::string GColor::convertQColorToColor(const QColor& color) {
+    return convertRGBToColor(color.red(), color.green(), color.blue());
+}
+
+int GColor::convertQColorToRGB(const QColor& color) {
+    return convertRGBToRGB(color.red(), color.green(), color.blue());
 }
 
 std::string GColor::convertRGBToColor(int rgb) {
@@ -137,25 +170,44 @@ std::string GColor::convertRGBToColor(int r, int g, int b) {
     }
 }
 
-int GColor::convertARGBToARGB(int a, int r, int g, int b) {
-    return (a << 24) | (r << 16) | (g << 8) | b;
-}
-
 int GColor::convertRGBToRGB(int r, int g, int b) {
     return (r << 16) | (g << 8) | b;
 }
 
-std::string GColor::convertQColorToColor(const QColor& color) {
-    return convertRGBToColor(color.red(), color.green(), color.blue());
+bool GColor::hasAlpha(const std::string& color) {
+    return static_cast<int>(color.length()) == 9
+            && color[0] == '#';
 }
 
-int GColor::convertQColorToRGB(const QColor& color) {
-    return convertRGBToRGB(color.red(), color.green(), color.blue());
+void GColor::splitARGB(int argb, int& a, int& r, int& g, int& b) {
+    a = ((static_cast<unsigned int>(argb) & 0xff000000) >> 24) & 0x000000ff;
+    r = (argb & 0x00ff0000) >> 16;
+    g = (argb & 0x0000ff00) >> 8;
+    b = (argb & 0x000000ff);
+}
+
+void GColor::splitRGB(int rgb, int& r, int& g, int& b) {
+    r = (rgb & 0x00ff0000) >> 16;
+    g = (rgb & 0x0000ff00) >> 8;
+    b = (rgb & 0x000000ff);
 }
 
 QColor GColor::toQColor(const std::string& color) {
-    int rgb = convertColorToRGB(color);
-    return QColor(rgb | 0xff000000);
+    if (hasAlpha(color)) {
+        int argb = convertColorToARGB(color);
+        int a, r, g, b;
+        splitARGB(argb, a, r, g, b);
+        return QColor(r, g, b, a);
+    } else {
+        int rgb = convertColorToRGB(color);
+        return QColor(rgb | 0xff000000);
+    }
+}
+
+QColor GColor::toQColorARGB(int argb) {
+    int a, r, g, b;
+    splitARGB(argb, a, r, g, b);
+    return QColor(r, g, b, a);
 }
 
 int GColor::fixAlpha(int argb) {

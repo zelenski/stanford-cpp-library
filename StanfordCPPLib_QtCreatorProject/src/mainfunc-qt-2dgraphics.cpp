@@ -63,7 +63,7 @@ void testQwindowDrawing() {
     window->addToRegion(label, "North");
 
     ball = new GOval(20, 20, 50, 50);
-    ball->setFillColor("red");
+    ball->setFillColor("#aaff0033");
     ball->setLineWidth(2);
     ball->setLineStyle(GObject::LINE_DOT);
     window->add(ball);
@@ -127,6 +127,7 @@ void testQwindowDrawing() {
     window->add(gtext2);
 
     GImage* gimage = new GImage("triangle-icon.png", 200, 40);
+    gimage->setOpacity(0.6);
     window->add(gimage);
 
     window->setColor("blue");

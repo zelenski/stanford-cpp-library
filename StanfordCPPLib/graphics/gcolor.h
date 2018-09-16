@@ -3,6 +3,8 @@
  * --------------
  *
  * @author Marty Stepp
+ * @version 2018/09/16
+ * - added splitRGB/ARGB, hasAlpha; better ARGB support
  * @version 2018/09/07
  * - added doc comments for new documentation generation
  * @version 2018/08/23
@@ -57,6 +59,8 @@
  * <code>"#rrggbb"</code> where <code>rr</code>, <code>gg</code>, and
  * <code>bb</code> are pairs of hexadecimal digits indicating the
  * red, green, and blue components of the color, respectively.
+ * You can also include an alpha (opacity) channel by writing the hex string
+ * in ARGB form as <code>"#aarrggbb"</code>.
  */
 class GColor {
 public:
@@ -91,8 +95,8 @@ public:
     static std::string convertARGBToColor(int a, int r, int g, int b);
 
     /**
-     * Converts four integer RGB values from 0-255 into a color name in the
-     * form <code>"#aarrggbb"</code>.  Each of the <code>aa</code>, <code>rr</code>,
+     * Converts four integer RGB values from 0-255 into an ARGB integer of the
+     * form <code>0xaarrggbb</code>.  Each of the <code>aa</code>, <code>rr</code>,
      * <code>gg</code>, and <code>bb</code> values are two-digit
      * hexadecimal numbers indicating the intensity of that component.
      * If any of a, r, g, or b is outside the range of 0-255, throws an error.
@@ -100,18 +104,27 @@ public:
     static int convertARGBToARGB(int a, int r, int g, int b);
 
     /**
+     * Converts a color name into an ARGB integer that encodes the
+     * alpha (opacity), red, green, and blue components of the color.
+     */
+    static int convertColorToARGB(const std::string& colorName);
+
+    /**
      * Converts a color name into an integer that encodes the
      * red, green, and blue components of the color.
+     * This function is also compatible with ARGB colors.
      */
     static int convertColorToRGB(const std::string& colorName);
 
     /**
-     * Converts a Qt color object into a color string.
+     * Converts a Qt RGB color object into a color string.
+     * Does not preserve alpha transparency.
      */
     static std::string convertQColorToColor(const QColor& color);
 
     /**
      * Converts a Qt color object into an RGB integer.
+     * Does not preserve alpha transparency.
      */
     static int convertQColorToRGB(const QColor& color);
 
@@ -120,6 +133,7 @@ public:
      * form <code>"#rrggbb"</code>.  Each of the <code>rr</code>,
      * <code>gg</code>, and <code>bb</code> values are two-digit
      * hexadecimal numbers indicating the intensity of that component.
+     * Does not preserve alpha transparency.
      */
     static std::string convertRGBToColor(int rgb);
 
@@ -141,31 +155,61 @@ public:
     static int convertRGBToRGB(int r, int g, int b);
 
     /**
+     * Returns true if the given color string is of the 8-hex-character form
+     * that contains an alpha channel in the highest order two characters,
+     * preceded by a hash sign, such as "#aaff0033".
+     */
+    static bool hasAlpha(const std::string& color);
+
+    /**
+     * Splits the given ARGB integer into four integer RGB values from 0-255.
+     * Each of the <code>aa</code>, <code>rr</code>,
+     * <code>gg</code>, and <code>bb</code> values are two-digit
+     * hexadecimal numbers indicating the intensity of that component.
+     */
+    static void splitARGB(int argb, int& a, int& r, int& g, int& b);
+
+    /**
+     * Splits the given RGB integer into three integer RGB values from 0-255.
+     * Each of the <code>rr</code>, <code>gg</code>, and <code>bb</code> values
+     * are two-digit hexadecimal numbers indicating the intensity of that component.
+     * Ignores alpha transparency.
+     */
+    static void splitRGB(int rgb, int& r, int& g, int& b);
+
+    /**
      * Converts a color string into a Qt color object.
+     * Preserves alpha transparency if the color string contains an alpha component.
      */
     static QColor toQColor(const std::string& color);
+
+    /**
+     * Converts an ARGB integer into a Qt color object.
+     * Preserves alpha transparency in the QColor object.
+     */
+    static QColor toQColorARGB(int argb);
 
 private:
     GColor();   // forbid construction
 
-    /*
+    /**
      * Strips casing and punctuation; e.g. "Dark Gray" => "darkgray"
      */
     static std::string canonicalColorName(const std::string& str);
 
-    /*
+    /**
      * Returns a reference to the table of common colors,
      * mapping from names to RGB integers.
      */
     static const Map<std::string, int>& colorTable();
 
-    /*
+    /**
      * Returns a reference to the table of common colors,
      * mapping from names to color strings.
      */
     static const Map<std::string, std::string>& colorNameTable();
 
-    /*
+    /**
      * Sets the 'alpha' (high order bits) of the given integer to ff.
      * If RGB is not completely black, but alpha is 0, assumes that the
      * client meant to use an opaque color and add ff as alpha channel.
