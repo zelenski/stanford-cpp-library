@@ -17,8 +17,6 @@ import java.net.*;
 import java.nio.channels.*;
 import java.util.*;
 
-import javax.xml.ws.http.HTTPException;
-
 public class UrlDownloader {
 	/**
 	 * constants to represent URL errors;
@@ -38,7 +36,7 @@ public class UrlDownloader {
 		return instance;
 	}
 	
-	public String download(String urlString) throws IOException {
+	public String download(String urlString) throws IOException, HTTPDownloadException {
 		URL url = new URL(urlString);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		int result = connection.getResponseCode();
@@ -52,7 +50,7 @@ public class UrlDownloader {
 			reader.close();
 			return sb.toString();
 		} else {
-			throw new HTTPException(result);
+			throw new HTTPDownloadException(result);
 		}
 	}
 	
