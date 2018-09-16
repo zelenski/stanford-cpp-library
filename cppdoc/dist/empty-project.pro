@@ -1,4 +1,7 @@
-# Stanford CS 106 B/X Qt Creator project file
+#####################################################################
+## Stanford CS 106 B/X Qt Creator project file                     ##
+## (now compatible with Qt-based GUI system!)                      ##
+#####################################################################
 #
 # This file specifies the information about your project to Qt Creator.
 # You should not need to modify this file to complete your assignment.
@@ -598,4 +601,4 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #600; if not, your .pro has been changed!)
+# END OF FILE (this should be line #604; if not, your .pro has been changed!)
