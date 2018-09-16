@@ -673,6 +673,9 @@ GCompound::GCompound()
 
 void GCompound::add(GObject* gobj) {
     require::nonNull(gobj, "GCompound::add");
+    if (_contents.contains(gobj)) {
+        return;
+    }
     _contents.add(gobj);
     gobj->_parent = this;
     conditionalRepaintRegion(gobj->getBounds().enlargedBy((gobj->getLineWidth() + 1) / 2));

@@ -742,14 +742,18 @@ public:
     GCompound();
 
     /**
-     * Adds a new graphical object to the compound.
+     * Adds a new graphical object to the compound, if that object was not
+     * already present in the compound.
+     * If the object is already stored in this compound, has no effect.
      * @throw ErrorException if the object is null
      */
     virtual void add(GObject* gobj);
 
     /**
-     * Adds a new graphical object to the compound.
+     * Adds a new graphical object to the compound, if that object was not
+     * already present in the compound.
      * This form moves the object to the point (<code>x</code>, <code>y</code>) first.
+     * If the object is already stored in this compound, has no effect.
      * @throw ErrorException if the object is null
      */
     virtual void add(GObject* gobj, double x, double y);
@@ -760,8 +764,10 @@ public:
     virtual void add(GObject& gobj);
 
     /**
-     * Adds a new graphical object to the compound.
+     * Adds a new graphical object to the compound, if that object was not
+     * already present in the compound.
      * This form moves the object to the point (<code>x</code>, <code>y</code>) first.
+     * If the object is already stored in this compound, has no effect.
      */
     virtual void add(GObject& gobj, double x, double y);
 
