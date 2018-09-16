@@ -232,8 +232,28 @@ void GInteractor::setBackground(int rgb) {
 }
 
 void GInteractor::setBackground(const std::string& color) {
-    int rgb = GColor::convertColorToRGB(color);
-    setBackground(rgb);
+    if (GColor::hasAlpha(color)) {
+        int argb = GColor::convertColorToARGB(color);
+        GThread::runOnQtGuiThread([this, argb]() {
+            QColor qcolor = GColor::toQColorARGB(argb);
+            QPalette palette(getWidget()->palette());
+            palette.setColor(getWidget()->backgroundRole(), qcolor);
+
+            // additional palette color settings for GChooser and other widgets
+            // TODO: does not totally work for some widgets, e.g. GChooser popup menu
+            if (getType() == "GChooser") {
+                palette.setColor(QPalette::Base, qcolor);
+                palette.setColor(QPalette::Active, QPalette::Button, qcolor);
+                palette.setColor(QPalette::Inactive, QPalette::Button, qcolor);
+            }
+
+            getWidget()->setAutoFillBackground(true);
+            getWidget()->setPalette(palette);
+        });
+    } else {
+        int rgb = GColor::convertColorToRGB(color);
+        setBackground(rgb);
+    }
 }
 
 void GInteractor::setBounds(double x, double y, double width, double height) {
@@ -284,8 +304,18 @@ void GInteractor::setForeground(int rgb) {
 }
 
 void GInteractor::setForeground(const std::string& color) {
-    int rgb = GColor::convertColorToRGB(color);
-    setForeground(rgb);
+    if (GColor::hasAlpha(color)) {
+        int argb = GColor::convertColorToARGB(color);
+        GThread::runOnQtGuiThread([this, argb]() {
+            QPalette palette(getWidget()->palette());
+            palette.setColor(getWidget()->foregroundRole(), GColor::toQColorARGB(argb));
+            // TODO: does not totally work for some widgets, e.g. GChooser popup menu
+            getWidget()->setPalette(palette);
+        });
+    } else {
+        int rgb = GColor::convertColorToRGB(color);
+        setForeground(rgb);
+    }
 }
 
 void GInteractor::setFont(const QFont& font) {

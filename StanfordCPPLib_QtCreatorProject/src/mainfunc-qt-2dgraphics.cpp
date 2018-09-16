@@ -76,6 +76,8 @@ void testQwindowDrawing() {
     button3 = new GButton("Repaint");
     button4 = new GButton("Clear");
     button5 = new GButton("BG");
+    button5->setBackground("#77ff00ff");
+    button5->setColor("#77000000");
     saveButton = new GButton("Save");
 
     window->addToRegion(button, "South");
