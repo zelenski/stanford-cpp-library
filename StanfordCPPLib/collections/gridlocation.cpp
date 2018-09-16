@@ -29,7 +29,7 @@ std::string GridLocation::toString() const {
 }
 
 int hashCode(const GridLocation& loc) {
-    return hashCode2(loc.row, loc.col);
+    return hashCode(loc.row, loc.col);
 }
 
 bool operator <(const GridLocation& loc1, const GridLocation& loc2) {

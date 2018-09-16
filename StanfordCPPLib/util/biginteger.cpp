@@ -719,7 +719,7 @@ std::string bigIntegerToString(const BigInteger& bi, int radix) {
 }
 
 int hashCode(const BigInteger& b) {
-    return hashCode2(b.getNumber(), b.getSign());
+    return hashCode(b.getNumber(), b.getSign());
 }
 
 BigInteger operator +(const BigInteger& b1, const BigInteger& b2) {

@@ -81,7 +81,7 @@ GDimension operator *(const GDimension& d, double scale) {
 }
 
 int hashCode(const GDimension& dim) {
-    return hashCode2(dim._width, dim._height);
+    return hashCode(dim._width, dim._height);
 }
 
 std::string toString(HorizontalAlignment alignment) {
@@ -211,7 +211,7 @@ GPoint operator *(const GPoint& p, double scale) {
 }
 
 int hashCode(const GPoint& pt) {
-    return hashCode2(pt._x, pt._y);
+    return hashCode(pt._x, pt._y);
 }
 
 /*
@@ -329,5 +329,5 @@ bool operator >=(const GRectangle& r1, const GRectangle& r2) {
 }
 
 int hashCode(const GRectangle& r) {
-    return hashCode4(r._x, r._y, r._width, r._height);
+    return hashCode(r._x, r._y, r._width, r._height);
 }
