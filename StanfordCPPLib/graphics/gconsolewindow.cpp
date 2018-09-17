@@ -33,13 +33,13 @@
 void setConsolePropertiesQt();
 
 const bool GConsoleWindow::GConsoleWindow::ALLOW_RICH_INPUT_EDITING = true;
-const double GConsoleWindow::DEFAULT_WIDTH = 700;
+const double GConsoleWindow::DEFAULT_WIDTH = 800;
 const double GConsoleWindow::DEFAULT_HEIGHT = 500;
 const double GConsoleWindow::DEFAULT_X = 10;
 const double GConsoleWindow::DEFAULT_Y = 40;
 const std::string GConsoleWindow::CONFIG_FILE_NAME = "spl-jar-settings.txt";
 const std::string GConsoleWindow::DEFAULT_WINDOW_TITLE = "Console";
-const std::string GConsoleWindow::DEFAULT_FONT_FAMILY = "Monospaced";
+const std::string GConsoleWindow::DEFAULT_FONT_FAMILY = "Monospace";
 const std::string GConsoleWindow::DEFAULT_FONT_WEIGHT = "";
 const int GConsoleWindow::DEFAULT_FONT_SIZE = 12;
 const int GConsoleWindow::MIN_FONT_SIZE = 4;

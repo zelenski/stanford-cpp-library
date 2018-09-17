@@ -1,4 +1,7 @@
-# Stanford CS 106 B/X Qt Creator project file
+#####################################################################
+## Stanford CS 106 B/X Qt Creator project file                     ##
+## (now compatible with Qt-based GUI system!)                      ##
+#####################################################################
 #
 # This file specifies the information about your project to Qt Creator.
 # You should not need to modify this file to complete your assignment.
@@ -15,9 +18,12 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2018/09/16
+# - removed stack-size increase code on Windows that broke thread creation
+# @version 2018/09/06
+# - removed references to old Java back-end spl.jar
 # @version 2018/07/01
-# - re-enable Qt in configuration to support Qt-based GUI functionality
-# - added SPL_QT_GUI flag (default enabled)
+# - enable Qt in configuration to support Qt-based GUI functionality
 # - remove some compiler warnings (long-long, useless-cast) because they trigger in Qt
 # @version 2018/02/28
 # - flag to disable some BasicGraph Vertex/Edge members
@@ -141,24 +147,13 @@ BAD_CHARS ~= s|[a-zA-Z0-9_ ().\/:;-]+|
     error(Exiting.)
 }
 
-# checks to ensure that the Stanford C++ library and its associated
-# Java back-end are both present in this project
+# checks to ensure that the Stanford C++ library is present in this project
 !exists($$PWD/lib/StanfordCPPLib/private/version.h) {
     message("")
     message(*******************************************************************)
     message(*** ERROR: Stanford C++ library not found!)
     message(*** This project cannot run without the folder lib/StanfordCPPLib/.)
     message(*** Place that folder into your project and try again.)
-    message(*******************************************************************)
-    message("")
-    error(Exiting.)
-}
-!exists($$PWD/lib/spl.jar) {
-    message("")
-    message(*******************************************************************)
-    message(*** ERROR: Stanford Java back-end library 'spl.jar' not found!)
-    message(*** This project cannot run without spl.jar present.)
-    message(*** Place that file into your lib/ folder and try again.)
     message(*******************************************************************)
     message("")
     error(Exiting.)
@@ -284,9 +279,13 @@ QMAKE_CXXFLAGS += -Wcast-align
 QMAKE_CXXFLAGS += -Wformat=2
 QMAKE_CXXFLAGS += -Wlogical-op
 #QMAKE_CXXFLAGS += -Wlong-long
+QMAKE_CXXFLAGS += -Wno-keyword-macro
 QMAKE_CXXFLAGS += -Wno-missing-field-initializers
+QMAKE_CXXFLAGS += -Wno-old-style-cast
+QMAKE_CXXFLAGS += -Wno-reserved-id-macro
 QMAKE_CXXFLAGS += -Wno-sign-compare
 QMAKE_CXXFLAGS += -Wno-sign-conversion
+QMAKE_CXXFLAGS += -Wno-unused-const-variable
 QMAKE_CXXFLAGS += -Wno-write-strings
 QMAKE_CXXFLAGS += -Wreturn-type
 QMAKE_CXXFLAGS += -Werror=return-type
@@ -309,29 +308,16 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
 
 # additional flags for Windows
 win32 {
-    # disable inclusion of Qt core libraries (smaller,faster build)
-    # CONFIG -= qt
-    # QT -= core gui opengl widgets
-
-    # increase system stack size (helpful for recursive programs)
-    QMAKE_LFLAGS += -Wl,--stack,268435456
     LIBS += -lDbghelp
     LIBS += -lbfd
     LIBS += -limagehlp
     cache()
+} else {
+    LIBS += -ldl
 }
 
 # additional flags for Mac OS X
 macx {
-    # increase system stack size (helpful for recursive programs)
-    # (this was previously disabled because it led to crashes on some systems,
-    #  but it seems to be working again, so we are going to re-enable it)
-    # QMAKE_LFLAGS += -Wl,-stack_size -Wl,0x8000000
-
-    # disable inclusion of Qt core libraries (smaller,faster build)
-    # CONFIG -= qt
-    # QT -= core gui opengl widgets
-
     # calling cache() reduces warnings on Mac OS X systems
     cache()
     QMAKE_MAC_SDK = macosx
@@ -339,10 +325,6 @@ macx {
 
 # additional flags for Linux
 unix:!macx {
-    # disable inclusion of Qt core libraries (smaller,faster build)
-    # CONFIG -= qt
-    # QT -= core gui opengl widgets
-
     unix-g++ {
         QMAKE_CXXFLAGS += -rdynamic
         QMAKE_CXXFLAGS += -Wl,--export-dynamic
@@ -353,13 +335,8 @@ unix:!macx {
     cache()
 }
 
-# additional flags for non-Windows systems (Mac and Linux)
-!win32 {
-    #QMAKE_CXXFLAGS += -Wno-dangling-field
-    QMAKE_CXXFLAGS += -Wno-unused-const-variable
-    LIBS += -ldl
-    LIBS += -lpthread
-}
+# libraries for all OSes
+LIBS += -lpthread
 
 # additional flags for clang compiler (default on Mac)
 COMPILERNAME = $$QMAKE_CXX
@@ -377,7 +354,7 @@ equals(COMPILERNAME, clang++) {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20180701
+DEFINES += SPL_PROJECT_VERSION=20180916
 
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1
@@ -393,9 +370,6 @@ DEFINES += SPL_CONSOLE_ECHO
 
 # quit the C++ program when the graphical console is closed?
 DEFINES += SPL_CONSOLE_EXIT_ON_CLOSE
-
-# crash if the Java back-end version is older than that specified in version.h?
-DEFINES += SPL_VERIFY_JAVA_BACKEND_VERSION
 
 # crash if the .pro is older than the minimum specified in version.h? (SPL_PROJECT_VERSION)
 DEFINES += SPL_VERIFY_PROJECT_VERSION
@@ -422,17 +396,12 @@ DEFINES += SPL_THROW_ON_INVALID_ITERATOR
 # set the fail bit on the stream and exit, so that has been made the default.
 # DEFINES += SPL_ERROR_ON_STREAM_EXTRACT
 
-# enable the new Qt-based GUI system, meant to replace the Java back-end GUI?
-DEFINES += SPL_QT_GUI
-
 # build-specific options (debug vs release)
 
 # make 'debug' target (default) use no optimization, generate debugger symbols,
 # and catch/print to console any uncaught exceptions thrown by the program
 CONFIG(debug, debug|release) {
     QMAKE_CXXFLAGS += -g3
-    #QMAKE_CXXFLAGS += -O0
-    #QMAKE_CXXFLAGS += -ggdb3
     QMAKE_CXXFLAGS += -fno-inline
     QMAKE_CXXFLAGS += -fno-omit-frame-pointer
 
@@ -451,7 +420,6 @@ CONFIG(release, debug|release) {
         QMAKE_LFLAGS += -static
         QMAKE_LFLAGS += -static-libgcc
         QMAKE_LFLAGS += -static-libstdc++
-        #QMAKE_POST_LINK += 'rm $${OUT_PWD}/*.o && rm $${OUT_PWD}/Makefile'
     }
     win32 {
         TARGET_PATH = $${OUT_PWD}/release/$${TARGET}.exe
@@ -465,7 +433,6 @@ CONFIG(release, debug|release) {
         REMOVE_FILES += '"'$${OUT_PWD}/Makefile'"'
         REMOVE_FILES += '"'$${OUT_PWD}/Makefile.Debug'"'
         REMOVE_FILES += '"'$${OUT_PWD}/Makefile.Release'"'
-        #REMOVE_FILES += '"'$${OUT_PWD}/object_script.$${TARGET}.Release'"'
         REMOVE_FILES += '"'$${OUT_PWD}/object_script.$${TARGET}.Debug'"'
         REMOVE_DIRS ~= s,/,\\,g
         REMOVE_FILES ~= s,/,\\,g
@@ -474,9 +441,6 @@ CONFIG(release, debug|release) {
         QMAKE_LFLAGS += -static-libgcc
         QMAKE_LFLAGS += -static-libstdc++
         QMAKE_POST_LINK += copy '"'$${TARGET_PATH}'"' '"'$${OUT_PATH}'"'
-        #QMAKE_POST_LINK += copy '"'$${TARGET_PATH}'"' '"'$${OUT_PATH} \#
-        #    && rmdir /s /q $${REMOVE_DIRS} \
-        #    && del $${REMOVE_FILES}
     }
 }
 
@@ -490,7 +454,7 @@ CONFIG(release, debug|release) {
 ###############################################################################
 
 # This function copies the given files to the destination directory.
-# Used to place important resources from res/ and spl.jar into build/ folder.
+# Used to place important resources from res/ into build/ folder.
 defineTest(copyToDestdir) {
     files = $$1
     for(FILE, files) {
@@ -504,10 +468,6 @@ defineTest(copyToDestdir) {
             # Mac/Linux
             copyResources.commands += cp -rf '"'$$FILE'"' '"'$$DDIR'"' $$escape_expand(\\n\\t\\n\\t)
         }
-
-        # QMAKE_COPY command is supposed to be a platform-independent copying command,
-        # but it seems to fail on Windows machines that have Cygwin or Windows Services for Unix installed
-        # copyResources.commands += $$QMAKE_COPY $$quote($$FILE) $$quote($$DDIR) $$escape_expand(\\n\\t\\n\\t)
     }
     export(copyResources.commands)
 }
@@ -515,7 +475,6 @@ defineTest(copyToDestdir) {
 # specify files to copy on non-Windows systems
 !win32 {
     copyToDestdir($$files($$PWD/res/*))
-    copyToDestdir($$files($$PWD/lib/*.jar))
     exists($$PWD/*.txt) {
         copyToDestdir($$files($$PWD/*.txt))
     }
@@ -524,7 +483,6 @@ defineTest(copyToDestdir) {
 # specify files to copy on Windows systems
 win32 {
     copyToDestdir($$PWD/res)
-    copyToDestdir($$PWD/lib/*.jar)
     copyToDestdir($$PWD/lib/addr2line.exe)
     exists($$PWD/*.txt) {
         copyToDestdir($$PWD/*.txt)
@@ -548,8 +506,7 @@ exists($$PWD/output/*) {
     export(copydata.commands)
 }
 
-# copy support files such as library JAR and addr2line
-copyResources.input *= $$files($$PWD/lib/*.jar)
+# copy support files such as addr2line
 win32 {
     copyResources.input *= $$files($$PWD/lib/addr2line.exe)
 }
@@ -565,7 +522,6 @@ exists($$PWD/output/*) {
 }
 
 QMAKE_EXTRA_TARGETS += copyResources first copydata
-#QMAKE_EXTRA_TARGETS += copyResources
 POST_TARGETDEPS += copyResources
 
 ###############################################################################
@@ -581,17 +537,11 @@ POST_TARGETDEPS += copyResources
 exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
     # include the various autograder source code and libraries in the build process
     SOURCES *= $$files($$PWD/lib/autograder/*.cpp)
-    #exists($$PWD/src/autograder/$$PROJECT_FILTER*.cpp) {
-    #    SOURCES *= $$files($$PWD/src/autograder/$$PROJECT_FILTER*.cpp)
-    #}
     exists($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp) {
         SOURCES *= $$files($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp)
     }
 
     HEADERS *= $$PWD/lib/autograder/*.h
-    #exists($$PWD/src/autograder/$$PROJECT_FILTER*.h) {
-    #    HEADERS *= $$files($$PWD/src/autograder/$$PROJECT_FILTER*.h)
-    #}
     exists($$PWD/src/autograder/$$PROJECT_FILTER/*.h) {
         HEADERS *= $$files($$PWD/src/autograder/$$PROJECT_FILTER/*.h)
     }
@@ -626,7 +576,6 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
         copyToDestdir($$PWD/res/autograder)
     }
     !win32 {
-        LIBS += -lpthread
         copyToDestdir($$files($$PWD/res/autograder/*))
     }
 
@@ -652,4 +601,4 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #655; if not, your .pro has been changed!)
+# END OF FILE (this should be line #604; if not, your .pro has been changed!)

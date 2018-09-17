@@ -17,6 +17,7 @@
 #include "autogradertest.h"
 #include "gfont.h"
 #include "ginteractors.h"
+#include "glayout.h"
 #include "gthread.h"
 #include "regexpr.h"
 #include "strlib.h"

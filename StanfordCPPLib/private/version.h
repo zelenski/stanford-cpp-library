@@ -30,7 +30,7 @@
  *       *MUST* be zero-padded to YYYY/MM/DD format;
  *       if month or day is < 10, insert a preceding 0
  */
-#define STANFORD_CPP_PROJECT_MINIMUM_VERSION "2018/09/06"
+#define STANFORD_CPP_PROJECT_MINIMUM_VERSION "2018/09/16"
 
 /*
  * URL at which documentation about the libraries can be found.
