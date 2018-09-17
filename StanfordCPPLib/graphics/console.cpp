@@ -130,7 +130,11 @@ void setConsoleFont(const std::string& font) {
 
 void setConsoleLocation(double x, double y) {
     if (GConsoleWindow::instance()->isLocked()) { return; }
-    GConsoleWindow::instance()->setLocation(x, y);
+    if (floatingPointEqual(x, -1) && floatingPointEqual(y, -1)) {
+        GConsoleWindow::instance()->center();
+    } else {
+        GConsoleWindow::instance()->setLocation(x, y);
+    }
 }
 
 void setConsoleLocationSaved(bool value) {
