@@ -208,7 +208,7 @@ public:
      * Displays the given text in a scrolling monospaced text area.
      * rows/cols parameters control size to show; set to <= 0 for a default limit.
      */
-    static void showTextFileDialog(const std::string& message,
+    static void showTextFileDialog(const std::string& fileText,
                                    const std::string& title = "",
                                    int rows = -1, int cols = -1);
 
@@ -217,7 +217,7 @@ public:
      * rows/cols parameters control size to show; set to <= 0 for a default limit.
      */
     static void showTextFileDialog(GWindow* parent,
-                                   const std::string& message,
+                                   const std::string& fileText,
                                    const std::string& title = "",
                                    int rows = -1, int cols = -1);
 
@@ -226,19 +226,19 @@ public:
      * rows/cols parameters control size to show; set to <= 0 for a default limit.
      */
     static void showTextFileDialog(QWidget* parent,
-                                   const std::string& message,
+                                   const std::string& fileText,
                                    const std::string& title = "",
                                    int rows = -1, int cols = -1);
 
 private:
-    /*
+    /**
      * Private constructor so that clients don't try to construct
      * GOptionPane objects.  The class is meant to be used via its
      * static methods, not by instantiation.
      */
     GOptionPane();
 
-    /*
+    /**
      * The results that can come back from showConfirmDialog.
      * These are converted into Result enum values.
      */
