@@ -2,6 +2,9 @@
  * File: gbrowserpane.cpp
  * ----------------------
  *
+ * @version 2018/09/17
+ * - fixed thread safety bugs
+ * - added link listener events
  * @version 2018/08/23
  * - renamed to gbrowserpane.h to replace Java version
  * @version 2018/07/15
@@ -12,11 +15,15 @@
 #include <fstream>
 #include <iostream>
 #include "filelib.h"
+#include "gthread.h"
+#include "require.h"
 #include "server.h"
 #include "strlib.h"
 
 GBrowserPane::GBrowserPane(const std::string& url, QWidget* parent) {
-    _iqtextbrowser = new _Internal_QTextBrowser(this, getInternalParent(parent));
+    GThread::runOnQtGuiThread([this, url, parent]() {
+        _iqtextbrowser = new _Internal_QTextBrowser(this, getInternalParent(parent));
+    });
     if (!url.empty()) {
         readTextFromUrl(url);
     }
@@ -29,8 +36,7 @@ GBrowserPane::~GBrowserPane() {
 }
 
 std::string GBrowserPane::getContentType() const {
-    // TODO
-    return "";
+    return _contentType;
 }
 
 std::string GBrowserPane::getPageUrl() const {
@@ -73,25 +79,87 @@ void GBrowserPane::readTextFromFile(const std::string& filename) {
 }
 
 void GBrowserPane::readTextFromUrl(const std::string& url) {
-    QUrl qurl(QString::fromStdString(url));
-    //_iqtextbrowser->
-    _iqtextbrowser->setSource(qurl);
     this->_pageUrl = url;
+    GThread::runOnQtGuiThread([this, url]() {
+        QUrl qurl(QString::fromStdString(url));
+        _iqtextbrowser->setSource(qurl);
+    });
 }
 
-void GBrowserPane::setContentType(const std::string& /* contentType */) {
-    // TODO
+void GBrowserPane::removeLinkListener() {
+    removeEventListener("linkclick");
+}
+
+void GBrowserPane::setContentType(const std::string& contentType) {
+    _contentType = contentType;
+}
+
+void GBrowserPane::setLinkListener(GEventListener func) {
+    setEventListener("linkclick", func);
+}
+
+void GBrowserPane::setLinkListener(GEventListenerVoid func) {
+    setEventListener("linkclick", func);
 }
 
 void GBrowserPane::setText(const std::string& text) {
-    _iqtextbrowser->setText(QString::fromStdString(text));
+    GThread::runOnQtGuiThread([this, text]() {
+        _iqtextbrowser->setText(QString::fromStdString(text));
+    });
 }
 
 
 _Internal_QTextBrowser::_Internal_QTextBrowser(GBrowserPane* gbrowserpane, QWidget* parent)
         : QTextBrowser(parent),
           _gbrowserpane(gbrowserpane) {
+    require::nonNull(gbrowserpane, "_Internal_QTextBrowser::constructor");
     setObjectName(QString::fromStdString("_Internal_QTextBrowser_" + integerToString(gbrowserpane->getID())));
+}
+
+void _Internal_QTextBrowser::mousePressEvent(QMouseEvent* event) {
+    QTextBrowser::mousePressEvent(event);
+    if (!_gbrowserpane->isAcceptingEvent("linkclick")) return;
+    if (!(event->button() & Qt::LeftButton)) {
+        return;
+    }
+    QString clickedAnchor = anchorAt(event->pos());
+    if (clickedAnchor.isEmpty()) {
+        return;
+    }
+    _clickedLink = clickedAnchor;
+}
+
+void _Internal_QTextBrowser::mouseReleaseEvent(QMouseEvent* event) {
+    if (!_gbrowserpane->isAcceptingEvent("linkclick")) {
+        QTextBrowser::mouseReleaseEvent(event);   // call super
+        return;
+    }
+    if (!(event->button() & Qt::LeftButton)) {
+        QTextBrowser::mouseReleaseEvent(event);   // call super
+        return;
+    }
+    QString clickedAnchor = anchorAt(event->pos());
+    if (clickedAnchor.isEmpty() || _clickedLink.isEmpty()
+            || clickedAnchor != _clickedLink) {
+        QTextBrowser::mouseReleaseEvent(event);   // call super
+        return;
+    }
+
+    _clickedLink = QString::fromStdString("");   // clear
+
+    GEvent linkEvent(
+                /* class  */ HYPERLINK_EVENT,
+                /* type   */ HYPERLINK_CLICKED,
+                /* name   */ "linkclick",
+                /* source */ _gbrowserpane);
+    linkEvent.setButton(static_cast<int>(event->button()));
+    linkEvent.setX(event->x());
+    linkEvent.setY(event->y());
+    linkEvent.setModifiers(event->modifiers());
+    linkEvent.setRequestURL(clickedAnchor.toStdString());
+    linkEvent.setActionCommand(_gbrowserpane->getActionCommand());
+    linkEvent.setInternalEvent(event);
+    _gbrowserpane->fireEvent(linkEvent);
 }
 
 QSize _Internal_QTextBrowser::sizeHint() const {

@@ -15,8 +15,8 @@ void testDiffImage();
 void testQwindow();
 
 int mainQtWidgets() {
-    // testQwindow();
-    testDiffImage();
+    testQwindow();
+    // testDiffImage();
     return 0;
 }
 
@@ -41,7 +41,7 @@ void testQwindow() {
         label->setBackground(label->getBackground() == "cyan" ? "yellow" : "cyan");
     });
     label->setDoubleClickListener(GEvent::LOG_EVENT);
-    window->addToRegion(label, "North");
+    window->addToRegion(label, GWindow::REGION_NORTH);
     cout << "label:     " << label->toString() << endl;
 
     //        static GTextField* textField = new GTextField(42.0);
@@ -55,7 +55,7 @@ void testQwindow() {
     textField->setActionListener([]() {
         cout << "textfield action performed! text is:" << endl << textField->getText() << endl;
     });
-    window->addToRegion(textField, "North");
+    window->addToRegion(textField, GWindow::REGION_NORTH);
     cout << "textfield: " << textField->toString() << endl;
 
     static GSlider* slider = new GSlider();
@@ -69,7 +69,7 @@ void testQwindow() {
         window->removeTimerListener();
     });
 
-    window->addToRegion(slider, "North");
+    window->addToRegion(slider, GWindow::REGION_NORTH);
     cout << "slider:    " << slider->toString() << endl;
 
 
@@ -79,10 +79,10 @@ void testQwindow() {
     checkBox->setActionListener([](const GEvent&) {
         cout << "checkbox clicked! " << boolalpha << checkBox->isChecked() << endl;
     });
-    window->addToRegion(checkBox, "West");
-    window->addToRegion(new GLabel("Hi!"), "West");
-    window->addToRegion(new GLabel("^_^"), "West");
-    // window->setRegionAlignment("West", "Top Right");
+    window->addToRegion(checkBox, GWindow::REGION_WEST);
+    window->addToRegion(new GLabel("Hi!"), GWindow::REGION_WEST);
+    window->addToRegion(new GLabel("^_^"), GWindow::REGION_WEST);
+    // window->setRegionAlignment(GWindow::REGION_WEST, "Top Right");
     cout << "checkbox:  " << checkBox->toString() << endl;
 
 
@@ -115,14 +115,14 @@ void testQwindow() {
 //    scrollBar->setValueChangeHandler([]() {
 //        cout << "value: " << scrollBar->getValue() << endl;
 //    });
-//    window->addToRegion(scrollBar, "East");
+//    window->addToRegion(scrollBar, GWindow::REGION_EAST);
 
-    window->addToRegion(radio1group1, "East");
-    window->addToRegion(radio2group1, "East");
-    window->addToRegion(radio3group1, "East");
-    window->addToRegion(radio1group2, "East");
-    window->addToRegion(radio2group2, "East");
-    // window->setRegionAlignment("East", "Bottom Left");
+    window->addToRegion(radio1group1, GWindow::REGION_EAST);
+    window->addToRegion(radio2group1, GWindow::REGION_EAST);
+    window->addToRegion(radio3group1, GWindow::REGION_EAST);
+    window->addToRegion(radio1group2, GWindow::REGION_EAST);
+    window->addToRegion(radio2group2, GWindow::REGION_EAST);
+    // window->setRegionAlignment(GWindow::REGION_EAST, "Bottom Left");
 //    cout << "radio:     " << radio1group1->toString() << endl;
 
 
@@ -137,7 +137,7 @@ void testQwindow() {
              << chooser->getSelectedItem() << endl;
         cout << "size: " << chooser->size() << endl << endl;
     });
-    window->addToRegion(chooser, "South");
+    window->addToRegion(chooser, GWindow::REGION_SOUTH);
     cout << "chooser:   " << chooser->toString() << endl;
 
     GButton* button = new GButton("Triforce");
@@ -180,29 +180,29 @@ void testQwindow() {
         cout << "button double-click! event = " << event << endl;
     });
     button->setAccelerator("Ctrl-T");
-    window->addToRegion(button, "South");
+    window->addToRegion(button, GWindow::REGION_SOUTH);
     cout << "button:    " << button->toString() << endl;
     cout << "button accelerator: " << button->getAccelerator() << endl;
     cout << "button font: " << button->getFont() << endl;
     button->setFont("Monospaced-Bold-14");
 
     static GButton* button4 = new GButton("HI!");
-    window->addToRegion(button4, "South");
+    window->addToRegion(button4, GWindow::REGION_SOUTH);
 
     static GCheckBox* checkboxs = new GCheckBox("&Visible?", /* checked */ true);
     checkboxs->setActionListener([]() {
         std::cout << "checkbox clicked!" << std::endl;
         // button4->setVisible(checkboxs->isChecked());
         if (checkboxs->isChecked()) {
-            window->addToRegion(button4, "South");
+            window->addToRegion(button4, GWindow::REGION_SOUTH);
         } else {
-            window->removeFromRegion(button4, "South");
+            window->removeFromRegion(button4, GWindow::REGION_SOUTH);
         }
     });
     checkboxs->setDoubleClickListener([]() {
         std::cout << "checkbox double-clicked!" << std::endl;
     });
-    window->addToRegion(checkboxs, "South");
+    window->addToRegion(checkboxs, GWindow::REGION_SOUTH);
 
     GButton* timerButton = new GButton("Timer");
     GTimer* timer = nullptr;
@@ -216,9 +216,9 @@ void testQwindow() {
             timer->start();
         }
     });
-    window->addToRegion(timerButton, "South");
+    window->addToRegion(timerButton, GWindow::REGION_SOUTH);
 
-//    window->setRegionAlignment("South", "Center");
+//    window->setRegionAlignment(GWindow::REGION_SOUTH, "Center");
 
     // GLabel* oopsButton = new GLabel("I should not show up!!!!!");
     // oopsButton->setVisible(true);
@@ -226,14 +226,20 @@ void testQwindow() {
 
     // CENTER AREA
 
-    static GTextArea* textArea = new GTextArea("This is \na multi-line\n\ntext area");
-    textArea->setPlaceholder("type some text");
-    textArea->setTextChangeListener([](GEvent) {
-        cout << "textarea text changed! text is:" << endl << textArea->getText() << endl;
-    });
-    window->addToRegion(textArea, "Center");
+//    static GTextArea* textArea = new GTextArea("This is \na multi-line\n\ntext area");
+//    textArea->setPlaceholder("type some text");
+//    textArea->setTextChangeListener([](GEvent) {
+//        cout << "textarea text changed! text is:" << endl << textArea->getText() << endl;
+//    });
+//    window->addToRegion(textArea, "Center");
 
-    cout << "textarea:  " << textArea->toString() << endl;
+    GBrowserPane* pane = new GBrowserPane();
+    pane->readTextFromFile("resfile3.html");
+    pane->setLinkListener([](GEvent event) {
+        cout << "event: " << event << ", url: " << event.getRequestURL() << endl;
+    });
+    window->addToRegion(pane, GWindow::REGION_CENTER);
+    cout << "browser:  " << pane->toString() << endl;
 
     // window->pack();
 

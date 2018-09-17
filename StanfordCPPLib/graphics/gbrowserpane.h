@@ -2,6 +2,9 @@
  * File: gbrowserpane.h
  * --------------------
  *
+ * @version 2018/09/17
+ * - fixed thread safety bugs
+ * - added link listener events
  * @version 2018/09/08
  * - added doc comments for new documentation generation
  * @version 2018/08/23
@@ -17,6 +20,7 @@
 #include <QSize>
 #include <QTextBrowser>
 #include <QWidget>
+#include "gevent.h"
 #include "ginteractor.h"
 
 class _Internal_QTextBrowser;
@@ -96,6 +100,12 @@ public:
     virtual void readTextFromUrl(const std::string& url);
 
     /**
+     * Removes the link listener from the canvas so that it will no longer
+     * call it when hyperlink events occur.
+     */
+    virtual void removeLinkListener();
+
+    /**
      * Sets the MIME content type being used to display the current/future pages.
      * The default content type is "text/html".
      * The suggested use of this function would be to call it just before calling
@@ -104,6 +114,20 @@ public:
      * consider using the HttpServer::getContentType(extension) function.)
      */
     virtual void setContentType(const std::string& contentType);
+
+    /**
+     * Sets a link listener on this canvas so that it will be called
+     * when the user clicks on hyperlinks on the pane.
+     * Any existing mouse listener will be replaced.
+     */
+    virtual void setLinkListener(GEventListener func);
+
+    /**
+     * Sets a link listener on this canvas so that it will be called
+     * when the user clicks on hyperlinks on the pane.
+     * Any existing mouse listener will be replaced.
+     */
+    virtual void setLinkListener(GEventListenerVoid func);
 
     /**
      * Sets the pane to display to the given contents using its current content type.
@@ -116,8 +140,7 @@ private:
     Q_DISABLE_COPY(GBrowserPane)
 
     std::string _pageUrl;   // url/filename of the most recently loaded page
-
-private:
+    std::string _contentType;
     _Internal_QTextBrowser* _iqtextbrowser;
 
     friend class _Internal_QTextBrowser;
@@ -132,10 +155,13 @@ class _Internal_QTextBrowser : public QTextBrowser, public _Internal_QWidget {
 
 public:
     _Internal_QTextBrowser(GBrowserPane* gbrowserpane, QWidget* parent = nullptr);
+    virtual void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
+    virtual void mouseReleaseEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
 private:
     GBrowserPane* _gbrowserpane;
+    QString _clickedLink;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

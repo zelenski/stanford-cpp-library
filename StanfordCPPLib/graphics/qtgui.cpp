@@ -73,8 +73,10 @@ void QtGui::initializeQt() {
                     "  - thread: %{threadid}\n"
 
                     // backtrace doesn't work on windows and some other builds
-                    // "  - stack:\n"
-                    // "      %{backtrace depth=20 separator=\"\n      \"}"
+#ifndef _WIN32
+                    "  - stack:\n"
+                    "      %{backtrace depth=20 separator=\"\n      \"}"
+#endif // _WIN32
             );
             _app = new QApplication(_argc, _argv);
             _initialized = true;
