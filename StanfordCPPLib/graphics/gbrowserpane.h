@@ -155,6 +155,7 @@ class _Internal_QTextBrowser : public QTextBrowser, public _Internal_QWidget {
 
 public:
     _Internal_QTextBrowser(GBrowserPane* gbrowserpane, QWidget* parent = nullptr);
+    QVariant loadResource(int type, const QUrl &url) Q_DECL_OVERRIDE;
     virtual void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
     virtual void mouseReleaseEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
