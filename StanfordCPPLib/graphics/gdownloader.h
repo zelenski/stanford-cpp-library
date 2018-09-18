@@ -1,11 +1,21 @@
 /*
  * File: gdownloader.h
  * -------------------
+ * A GDownloader can download data from URLs and save them to files or return
+ * the data as a string.
+ *
+ * Note that because the downloader uses a pure-C++ implementation, your project
+ * must include the 'network' component of Qt to function properly.
+ * If you get errors when trying to connect to HTTPS URLs, you may also need to
+ * install various SSL packages on your system, such as openssl, libssl-dev,
+ * libssl1.0, and so on.  This varies by operating system.
  *
  * Based somewhat on this source:
  * https://wiki.qt.io/Download_Data_from_URL
  *
  * @author Marty Stepp
+ * @version 2018/09/18
+ * - working version; had to fix various threading / Qt signal issues
  * @version 2018/09/07
  * - added doc comments for new documentation generation
  * @version 2018/08/23
@@ -19,6 +29,7 @@
 
 #include <string>
 #include <QtCore>
+#include <QtNetwork>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -27,7 +38,7 @@
 
 /**
  * A GDownloader can download files and data over an internet connection.
- *
+ * It can save the data to a file or return the data as a string.
  */
 class GDownloader : public QObject {
     Q_OBJECT
@@ -56,6 +67,12 @@ public:
     void downloadToFile(const std::string& url, const std::string& file);
 
     /**
+     * Returns the last HTTP error message that occurred.
+     * If no HTTP errors have occurred, returns "".
+     */
+    std::string getErrorMessage() const;
+
+    /**
      * Returns the value of the given HTTP header for this URL request.
      * If the given header is not defined, returns an empty string.
      */
@@ -73,6 +90,12 @@ public:
      * or an empty string if the user agent has not been set.
      */
     std::string getUserAgent() const;
+
+    /**
+     * Returns true if the HTTP connection failed and had an error.
+     * You can see what the error was by calling getErrorMessage.
+     */
+    bool hasError() const;
 
     /**
      * Performs an HTTP GET request to the given URL.
@@ -113,21 +136,25 @@ signals:
 
 private slots:
     void downloadInternal();
-    void fileDownloaded(QNetworkReply* reply);
     void fileDownloadError(QNetworkReply::NetworkError);
-    void fileDownloadFinished();
+    void saveDownloadedData(const std::string& member, const std::string& filename = "");
+    void sslErrors(QList<QSslError>);
+    void waitForDownload();
 
 private:
     Q_DISABLE_COPY(GDownloader)
 
+    static std::string qtNetworkErrorToString(QNetworkReply::NetworkError nerror);
+
     QNetworkAccessManager* _manager;
     QNetworkReply* _reply;
     Map<std::string, std::string> _headers;   // HTTP headers to send (name => value)
-    int _lastError;
+    int _httpStatusCode;
     bool _downloadComplete;
     std::string _url;
     std::string _filename;
     std::string _filedata;
+    std::string _lastErrorMessage;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

@@ -220,7 +220,6 @@ void GConsoleWindow::_initWidgets() {
     setCloseOperation(GWindow::CLOSE_HIDE);
     setLocation(DEFAULT_X, DEFAULT_Y);
     setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-    setResizable(false);
     setVisible(true);
 }
 

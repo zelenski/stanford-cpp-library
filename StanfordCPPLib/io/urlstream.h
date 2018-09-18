@@ -10,6 +10,9 @@
  * This is not an ideal implementation, but it is platform independent and easier to get working.
  * 
  * @author Marty Stepp
+ * @version 2018/09/18
+ * - refactored to integrate with pure-C++ GDownloader implementation
+ * - added getErrorMessage method
  * @version 2018/06/20
  * - support for setting headers such as user agent
  * - https URL support
@@ -28,105 +31,94 @@
 #include <string>
 #include "map.h"
 
-class iurlstream : public std::ifstream {
+class iurlstream : public std::stringstream {
 public:
-    /*
-     * Constructor: iurlstream
-     * Usage: iurlstream stream;
-     * -------------------------
+    /**
      * Initializes a new iurlstream that is not attached to any source.
      * Use this constructor if you want to set various properties of the URL
      * connection (such as user agent or other headers) before downloading.
      */
     iurlstream();
 
-    /*
-     * Constructor: iurlstream
-     * Usage: iurlstream stream("http://www.google.com/");
-     * ---------------------------------------------------
+    /**
      * Initializes a new iurlstream that is attached to the given source URL.
      * The data from that URL is downloaded immediately.
      */
     iurlstream(const std::string& url);
 
-    /*
-     * Closes the currently-opened URL connection, if it is open.
-     * If the stream is not open, puts the stream into a fail state.
-     */
-    void close();
-
-    /*
+    /**
      * Returns the most recent error code received, if any.
      * Returns 0 if no error codes have been issued.
      */
     int getErrorCode() const;
 
-    /*
+    /**
+     * Returns a message about the most recent error, if any.
+     * Returns "" if no errors have occurred.
+     */
+    std::string getErrorMessage() const;
+
+    /**
      * Returns the most recent HTTP status code, which may be a successful
      * code (e.g. 200) or an error (e.g 404). If there is no HTTP status
      * code to return, returns 0.
      */
     int getHttpStatusCode() const;
 
-    /*
+    /**
      * Returns the value of the given HTTP header for this URL request.
      * If the given header is not defined, returns an empty string.
      */
     std::string getHeader(const std::string& name) const;
 
-    /*
+    /**
      * Returns the URL sent to the stream's constructor or to the last call
      * to open(...).
      */
     std::string getUrl() const;
 
-    /*
+    /**
      * Returns the value of the HTTP "User-Agent" header for this URL request,
      * or an empty string if the user agent has not been set.
      */
     std::string getUserAgent() const;
 
-    /*
+    /**
      * Opens the given URL for reading.
+     * If no URL is passed, uses the URL passed to the constructor.
      */
     void open(const std::string& url = "");
 
-    /*
+    /**
      * Sets the value of the given HTTP header for this URL request.
      * Must be called before open(), and the stream must have been created
      * with the parameterless constructor.
      *
-     * Example:
-     * stream.setHeader("Referer", "http://cs106b.stanford.edu/");
+     * @example stream.setHeader("Referer", "http://cs106b.stanford.edu/");
      */
     void setHeader(const std::string& name, const std::string& value);
 
-    /*
+    /**
      * Sets the value of the HTTP "User-Agent" header for this URL request.
      * Must be called before open(), and the stream must have been created
      * with the parameterless constructor.
      * Equivalent to calling setHeader with "User-Agent" as the header's name.
      *
-     * Example:
-     * stream.setUserAgent("Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+     * @example stream.setUserAgent("Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
      */
     void setUserAgent(const std::string& userAgent);
 
 private:
-    std::string _url;            // URL to be opened
-    std::string _tempFilePath;   // local temporary file path where the URL data is downloaded
-    int _lastError;              // most recent HTTP error seen, if any (initially 0)
+    std::string _url;                         // URL to be opened
+    int _httpStatusCode;                      // most recent HTTP error seen, if any (initially 0)
     Map<std::string, std::string> _headers;   // HTTP headers to send (name => value)
-    
-    /*
-     * Returns the 'tail' of the given URL, for use as a file name.
-     * Slightly different from filelib's getTail because it strips URL query strings.
-     * e.g. getUrlFilename("http://foobar.com/junk/page.php?foo=bar&baz=qux") returns "page.php".
-     */
-    std::string getUrlFilename(const std::string& url) const;
+    std::string _errorMessage;                // error message of what went wrong, if anything
 };
 
-// return type
+/**
+ * Constants for HTTP return codes.
+ * @private
+ */
 typedef enum {
     // client side errors
     ERRHOST = -1,    // no such host
