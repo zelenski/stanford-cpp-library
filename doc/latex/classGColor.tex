@@ -33,23 +33,35 @@ enum \{ \mbox{\hyperlink{classGColor_a06fc87d81c62e9abb8790b6e5713c55baf77fb6715
 \begin{DoxyCompactItemize}
 \item 
 static int \mbox{\hyperlink{classGColor_a9678f670b71cc46a68b746bda9765f4b}{convert\+A\+R\+G\+B\+To\+A\+R\+GB}} (int a, int r, int g, int b)
-\begin{DoxyCompactList}\small\item\em Converts four integer R\+GB values from 0-\/255 into a color name in the form {\ttfamily \char`\"{}\#aarrggbb\char`\"{}}. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Converts four integer R\+GB values from 0-\/255 into an A\+R\+GB integer of the form {\ttfamily 0xaarrggbb}. \end{DoxyCompactList}\item 
 static std\+::string \mbox{\hyperlink{classGColor_abc3a0188f264217b768e4a9a63fbc54e}{convert\+A\+R\+G\+B\+To\+Color}} (int a, int r, int g, int b)
 \begin{DoxyCompactList}\small\item\em Converts four integer R\+GB values from 0-\/255 into a color name in the form {\ttfamily \char`\"{}\#aarrggbb\char`\"{}}. \end{DoxyCompactList}\item 
+static std\+::string \mbox{\hyperlink{classGColor_aba032cfdc6b7936c6b828f8dfc2a9a90}{convert\+A\+R\+G\+B\+To\+Color}} (int argb)
+\begin{DoxyCompactList}\small\item\em Converts the given A\+R\+GB integer into a color name in the form {\ttfamily \char`\"{}\#aarrggbb\char`\"{}}. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classGColor_a5efa1612c4ccfff89eca4ed3cfd0206d}{convert\+Color\+To\+A\+R\+GB}} (const std\+::string \&color\+Name)
+\begin{DoxyCompactList}\small\item\em Converts a color name into an A\+R\+GB integer that encodes the alpha (opacity), red, green, and blue components of the color. \end{DoxyCompactList}\item 
 static int \mbox{\hyperlink{classGColor_aab4a1480d396f913220aea51d117eb94}{convert\+Color\+To\+R\+GB}} (const std\+::string \&color\+Name)
 \begin{DoxyCompactList}\small\item\em Converts a color name into an integer that encodes the red, green, and blue components of the color. \end{DoxyCompactList}\item 
 static std\+::string \mbox{\hyperlink{classGColor_a2ad78585a77dad65eb23299714545f7c}{convert\+Q\+Color\+To\+Color}} (const Q\+Color \&color)
-\begin{DoxyCompactList}\small\item\em Converts a Qt color object into a color string. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Converts a Qt R\+GB color object into a color string. \end{DoxyCompactList}\item 
 static int \mbox{\hyperlink{classGColor_a30f06933a10f00500d6b7991f8b61dde}{convert\+Q\+Color\+To\+R\+GB}} (const Q\+Color \&color)
 \begin{DoxyCompactList}\small\item\em Converts a Qt color object into an R\+GB integer. \end{DoxyCompactList}\item 
 static std\+::string \mbox{\hyperlink{classGColor_a64353dd79967412aeebe46219e4a71df}{convert\+R\+G\+B\+To\+Color}} (int rgb)
-\begin{DoxyCompactList}\small\item\em Converts an {\ttfamily rgb} value into a color name in the form {\ttfamily \char`\"{}\#rrggbb\char`\"{}}. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Converts an R\+GB integer value into a color name in the form {\ttfamily \char`\"{}\#rrggbb\char`\"{}}. \end{DoxyCompactList}\item 
 static std\+::string \mbox{\hyperlink{classGColor_a906729a293e62f8d112037016af21f9f}{convert\+R\+G\+B\+To\+Color}} (int r, int g, int b)
 \begin{DoxyCompactList}\small\item\em Converts three integer R\+GB values from 0-\/255 into a color name in the form {\ttfamily \char`\"{}\#rrggbb\char`\"{}}. \end{DoxyCompactList}\item 
 static int \mbox{\hyperlink{classGColor_a7c4acb134cfa913f8a127b300a4b10a0}{convert\+R\+G\+B\+To\+R\+GB}} (int r, int g, int b)
 \begin{DoxyCompactList}\small\item\em Converts three integer R\+GB values from 0-\/255 into a single R\+GB integer. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classGColor_ac3793cbac78369b75b4d8967d8cb2b7a}{has\+Alpha}} (const std\+::string \&color)
+\begin{DoxyCompactList}\small\item\em Returns true if the given color string is of the 8-\/hex-\/character form that contains an alpha channel in the highest order two characters, preceded by a hash sign, such as \char`\"{}\#aaff0033\char`\"{}. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classGColor_aa0ad89394f00240bdc0ec3b893eca6aa}{split\+A\+R\+GB}} (int argb, int \&a, int \&r, int \&g, int \&b)
+\begin{DoxyCompactList}\small\item\em Splits the given A\+R\+GB integer into four integer R\+GB values from 0-\/255. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classGColor_a32dea18e982a160b7b1ce8b4e881c0f9}{split\+R\+GB}} (int rgb, int \&r, int \&g, int \&b)
+\begin{DoxyCompactList}\small\item\em Splits the given R\+GB integer into three integer R\+GB values from 0-\/255. \end{DoxyCompactList}\item 
 static Q\+Color \mbox{\hyperlink{classGColor_a23f62da01b905b62266904a01cfb3745}{to\+Q\+Color}} (const std\+::string \&color)
-\begin{DoxyCompactList}\small\item\em Converts a color string into a Qt color object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Converts a color string into a Qt color object. \end{DoxyCompactList}\item 
+static Q\+Color \mbox{\hyperlink{classGColor_a979586dd4aaf299d42cf19619ee89280}{to\+Q\+Color\+A\+R\+GB}} (int argb)
+\begin{DoxyCompactList}\small\item\em Converts an A\+R\+GB integer into a Qt color object. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Public Attributes}
 \begin{DoxyCompactItemize}
 \item 
@@ -77,7 +89,7 @@ A color can also be specified as a string. A color string can be one of the pred
 
 The case of the individual letters in the color name is ignored, as are spaces and underscores, so that the color {\ttfamily D\+A\+R\+K\+\_\+\+G\+R\+AY} can be written as {\ttfamily \char`\"{}\+Dark Gray\char`\"{}}.
 
-Lastly, the color can also be specified as a string in the form {\ttfamily \char`\"{}\#rrggbb\char`\"{}} where {\ttfamily rr}, {\ttfamily gg}, and {\ttfamily bb} are pairs of hexadecimal digits indicating the red, green, and blue components of the color, respectively. 
+Lastly, the color can also be specified as a string in the form {\ttfamily \char`\"{}\#rrggbb\char`\"{}} where {\ttfamily rr}, {\ttfamily gg}, and {\ttfamily bb} are pairs of hexadecimal digits indicating the red, green, and blue components of the color, respectively. You can also include an alpha (opacity) channel by writing the hex string in A\+R\+GB form as {\ttfamily \char`\"{}\#aarrggbb\char`\"{}}. 
 
 \subsection{Member Enumeration Documentation}
 \mbox{\Hypertarget{classGColor_a06fc87d81c62e9abb8790b6e5713c55b}\label{classGColor_a06fc87d81c62e9abb8790b6e5713c55b}} 
@@ -161,19 +173,39 @@ Y\+E\+L\+L\+OW&\\
 
 
 
-Converts four integer R\+GB values from 0-\/255 into a color name in the form {\ttfamily \char`\"{}\#aarrggbb\char`\"{}}. 
+Converts four integer R\+GB values from 0-\/255 into an A\+R\+GB integer of the form {\ttfamily 0xaarrggbb}. 
 
 Each of the {\ttfamily aa}, {\ttfamily rr}, {\ttfamily gg}, and {\ttfamily bb} values are two-\/digit hexadecimal numbers indicating the intensity of that component. If any of a, r, g, or b is outside the range of 0-\/255, throws an error. \mbox{\Hypertarget{classGColor_abc3a0188f264217b768e4a9a63fbc54e}\label{classGColor_abc3a0188f264217b768e4a9a63fbc54e}} 
 \index{G\+Color@{G\+Color}!convert\+A\+R\+G\+B\+To\+Color@{convert\+A\+R\+G\+B\+To\+Color}}
 \index{convert\+A\+R\+G\+B\+To\+Color@{convert\+A\+R\+G\+B\+To\+Color}!G\+Color@{G\+Color}}
-\subsubsection{\texorpdfstring{convert\+A\+R\+G\+B\+To\+Color()}{convertARGBToColor()}}
+\subsubsection{\texorpdfstring{convert\+A\+R\+G\+B\+To\+Color()}{convertARGBToColor()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily std\+::string convert\+A\+R\+G\+B\+To\+Color (\begin{DoxyParamCaption}\item[{int}]{a,  }\item[{int}]{r,  }\item[{int}]{g,  }\item[{int}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
 
 
 Converts four integer R\+GB values from 0-\/255 into a color name in the form {\ttfamily \char`\"{}\#aarrggbb\char`\"{}}. 
 
-Each of the {\ttfamily aa}, {\ttfamily rr}, {\ttfamily gg}, and {\ttfamily bb} values are two-\/digit hexadecimal numbers indicating the intensity of that component. If any of a, r, g, or b is outside the range of 0-\/255, throws an error. \mbox{\Hypertarget{classGColor_aab4a1480d396f913220aea51d117eb94}\label{classGColor_aab4a1480d396f913220aea51d117eb94}} 
+Each of the {\ttfamily aa}, {\ttfamily rr}, {\ttfamily gg}, and {\ttfamily bb} values are two-\/digit hexadecimal numbers indicating the intensity of that component. If any of a, r, g, or b is outside the range of 0-\/255, throws an error. \mbox{\Hypertarget{classGColor_aba032cfdc6b7936c6b828f8dfc2a9a90}\label{classGColor_aba032cfdc6b7936c6b828f8dfc2a9a90}} 
+\index{G\+Color@{G\+Color}!convert\+A\+R\+G\+B\+To\+Color@{convert\+A\+R\+G\+B\+To\+Color}}
+\index{convert\+A\+R\+G\+B\+To\+Color@{convert\+A\+R\+G\+B\+To\+Color}!G\+Color@{G\+Color}}
+\subsubsection{\texorpdfstring{convert\+A\+R\+G\+B\+To\+Color()}{convertARGBToColor()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily std\+::string convert\+A\+R\+G\+B\+To\+Color (\begin{DoxyParamCaption}\item[{int}]{argb }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Converts the given A\+R\+GB integer into a color name in the form {\ttfamily \char`\"{}\#aarrggbb\char`\"{}}. 
+
+\mbox{\Hypertarget{classGColor_a5efa1612c4ccfff89eca4ed3cfd0206d}\label{classGColor_a5efa1612c4ccfff89eca4ed3cfd0206d}} 
+\index{G\+Color@{G\+Color}!convert\+Color\+To\+A\+R\+GB@{convert\+Color\+To\+A\+R\+GB}}
+\index{convert\+Color\+To\+A\+R\+GB@{convert\+Color\+To\+A\+R\+GB}!G\+Color@{G\+Color}}
+\subsubsection{\texorpdfstring{convert\+Color\+To\+A\+R\+G\+B()}{convertColorToARGB()}}
+{\footnotesize\ttfamily int convert\+Color\+To\+A\+R\+GB (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{color\+Name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Converts a color name into an A\+R\+GB integer that encodes the alpha (opacity), red, green, and blue components of the color. 
+
+\mbox{\Hypertarget{classGColor_aab4a1480d396f913220aea51d117eb94}\label{classGColor_aab4a1480d396f913220aea51d117eb94}} 
 \index{G\+Color@{G\+Color}!convert\+Color\+To\+R\+GB@{convert\+Color\+To\+R\+GB}}
 \index{convert\+Color\+To\+R\+GB@{convert\+Color\+To\+R\+GB}!G\+Color@{G\+Color}}
 \subsubsection{\texorpdfstring{convert\+Color\+To\+R\+G\+B()}{convertColorToRGB()}}
@@ -183,7 +215,7 @@ Each of the {\ttfamily aa}, {\ttfamily rr}, {\ttfamily gg}, and {\ttfamily bb} v
 
 Converts a color name into an integer that encodes the red, green, and blue components of the color. 
 
-\mbox{\Hypertarget{classGColor_a2ad78585a77dad65eb23299714545f7c}\label{classGColor_a2ad78585a77dad65eb23299714545f7c}} 
+This function is also compatible with A\+R\+GB colors. \mbox{\Hypertarget{classGColor_a2ad78585a77dad65eb23299714545f7c}\label{classGColor_a2ad78585a77dad65eb23299714545f7c}} 
 \index{G\+Color@{G\+Color}!convert\+Q\+Color\+To\+Color@{convert\+Q\+Color\+To\+Color}}
 \index{convert\+Q\+Color\+To\+Color@{convert\+Q\+Color\+To\+Color}!G\+Color@{G\+Color}}
 \subsubsection{\texorpdfstring{convert\+Q\+Color\+To\+Color()}{convertQColorToColor()}}
@@ -191,9 +223,9 @@ Converts a color name into an integer that encodes the red, green, and blue comp
 
 
 
-Converts a Qt color object into a color string. 
+Converts a Qt R\+GB color object into a color string. 
 
-\mbox{\Hypertarget{classGColor_a30f06933a10f00500d6b7991f8b61dde}\label{classGColor_a30f06933a10f00500d6b7991f8b61dde}} 
+Does not preserve alpha transparency. \mbox{\Hypertarget{classGColor_a30f06933a10f00500d6b7991f8b61dde}\label{classGColor_a30f06933a10f00500d6b7991f8b61dde}} 
 \index{G\+Color@{G\+Color}!convert\+Q\+Color\+To\+R\+GB@{convert\+Q\+Color\+To\+R\+GB}}
 \index{convert\+Q\+Color\+To\+R\+GB@{convert\+Q\+Color\+To\+R\+GB}!G\+Color@{G\+Color}}
 \subsubsection{\texorpdfstring{convert\+Q\+Color\+To\+R\+G\+B()}{convertQColorToRGB()}}
@@ -203,7 +235,7 @@ Converts a Qt color object into a color string.
 
 Converts a Qt color object into an R\+GB integer. 
 
-\mbox{\Hypertarget{classGColor_a64353dd79967412aeebe46219e4a71df}\label{classGColor_a64353dd79967412aeebe46219e4a71df}} 
+Does not preserve alpha transparency. \mbox{\Hypertarget{classGColor_a64353dd79967412aeebe46219e4a71df}\label{classGColor_a64353dd79967412aeebe46219e4a71df}} 
 \index{G\+Color@{G\+Color}!convert\+R\+G\+B\+To\+Color@{convert\+R\+G\+B\+To\+Color}}
 \index{convert\+R\+G\+B\+To\+Color@{convert\+R\+G\+B\+To\+Color}!G\+Color@{G\+Color}}
 \subsubsection{\texorpdfstring{convert\+R\+G\+B\+To\+Color()}{convertRGBToColor()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
@@ -211,9 +243,9 @@ Converts a Qt color object into an R\+GB integer.
 
 
 
-Converts an {\ttfamily rgb} value into a color name in the form {\ttfamily \char`\"{}\#rrggbb\char`\"{}}. 
+Converts an R\+GB integer value into a color name in the form {\ttfamily \char`\"{}\#rrggbb\char`\"{}}. 
 
-Each of the {\ttfamily rr}, {\ttfamily gg}, and {\ttfamily bb} values are two-\/digit hexadecimal numbers indicating the intensity of that component. \mbox{\Hypertarget{classGColor_a906729a293e62f8d112037016af21f9f}\label{classGColor_a906729a293e62f8d112037016af21f9f}} 
+Does not preserve alpha transparency. \mbox{\Hypertarget{classGColor_a906729a293e62f8d112037016af21f9f}\label{classGColor_a906729a293e62f8d112037016af21f9f}} 
 \index{G\+Color@{G\+Color}!convert\+R\+G\+B\+To\+Color@{convert\+R\+G\+B\+To\+Color}}
 \index{convert\+R\+G\+B\+To\+Color@{convert\+R\+G\+B\+To\+Color}!G\+Color@{G\+Color}}
 \subsubsection{\texorpdfstring{convert\+R\+G\+B\+To\+Color()}{convertRGBToColor()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
@@ -233,7 +265,37 @@ Each of the {\ttfamily rr}, {\ttfamily gg}, and {\ttfamily bb} values are two-\/
 
 Converts three integer R\+GB values from 0-\/255 into a single R\+GB integer. 
 
-Each of the {\ttfamily rr}, {\ttfamily gg}, and {\ttfamily bb} values are two-\/digit hexadecimal numbers indicating the intensity of that component. If any of r, g, or b is outside the range of 0-\/255, throws an error. \mbox{\Hypertarget{classGColor_a23f62da01b905b62266904a01cfb3745}\label{classGColor_a23f62da01b905b62266904a01cfb3745}} 
+Each of the {\ttfamily rr}, {\ttfamily gg}, and {\ttfamily bb} values are two-\/digit hexadecimal numbers indicating the intensity of that component. If any of r, g, or b is outside the range of 0-\/255, throws an error. \mbox{\Hypertarget{classGColor_ac3793cbac78369b75b4d8967d8cb2b7a}\label{classGColor_ac3793cbac78369b75b4d8967d8cb2b7a}} 
+\index{G\+Color@{G\+Color}!has\+Alpha@{has\+Alpha}}
+\index{has\+Alpha@{has\+Alpha}!G\+Color@{G\+Color}}
+\subsubsection{\texorpdfstring{has\+Alpha()}{hasAlpha()}}
+{\footnotesize\ttfamily bool has\+Alpha (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{color }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns true if the given color string is of the 8-\/hex-\/character form that contains an alpha channel in the highest order two characters, preceded by a hash sign, such as \char`\"{}\#aaff0033\char`\"{}. 
+
+\mbox{\Hypertarget{classGColor_aa0ad89394f00240bdc0ec3b893eca6aa}\label{classGColor_aa0ad89394f00240bdc0ec3b893eca6aa}} 
+\index{G\+Color@{G\+Color}!split\+A\+R\+GB@{split\+A\+R\+GB}}
+\index{split\+A\+R\+GB@{split\+A\+R\+GB}!G\+Color@{G\+Color}}
+\subsubsection{\texorpdfstring{split\+A\+R\+G\+B()}{splitARGB()}}
+{\footnotesize\ttfamily void split\+A\+R\+GB (\begin{DoxyParamCaption}\item[{int}]{argb,  }\item[{int \&}]{a,  }\item[{int \&}]{r,  }\item[{int \&}]{g,  }\item[{int \&}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Splits the given A\+R\+GB integer into four integer R\+GB values from 0-\/255. 
+
+Each of the {\ttfamily aa}, {\ttfamily rr}, {\ttfamily gg}, and {\ttfamily bb} values are two-\/digit hexadecimal numbers indicating the intensity of that component. \mbox{\Hypertarget{classGColor_a32dea18e982a160b7b1ce8b4e881c0f9}\label{classGColor_a32dea18e982a160b7b1ce8b4e881c0f9}} 
+\index{G\+Color@{G\+Color}!split\+R\+GB@{split\+R\+GB}}
+\index{split\+R\+GB@{split\+R\+GB}!G\+Color@{G\+Color}}
+\subsubsection{\texorpdfstring{split\+R\+G\+B()}{splitRGB()}}
+{\footnotesize\ttfamily void split\+R\+GB (\begin{DoxyParamCaption}\item[{int}]{rgb,  }\item[{int \&}]{r,  }\item[{int \&}]{g,  }\item[{int \&}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Splits the given R\+GB integer into three integer R\+GB values from 0-\/255. 
+
+Each of the {\ttfamily rr}, {\ttfamily gg}, and {\ttfamily bb} values are two-\/digit hexadecimal numbers indicating the intensity of that component. Ignores alpha transparency. \mbox{\Hypertarget{classGColor_a23f62da01b905b62266904a01cfb3745}\label{classGColor_a23f62da01b905b62266904a01cfb3745}} 
 \index{G\+Color@{G\+Color}!to\+Q\+Color@{to\+Q\+Color}}
 \index{to\+Q\+Color@{to\+Q\+Color}!G\+Color@{G\+Color}}
 \subsubsection{\texorpdfstring{to\+Q\+Color()}{toQColor()}}
@@ -243,7 +305,17 @@ Each of the {\ttfamily rr}, {\ttfamily gg}, and {\ttfamily bb} values are two-\/
 
 Converts a color string into a Qt color object. 
 
+Preserves alpha transparency if the color string contains an alpha component. \mbox{\Hypertarget{classGColor_a979586dd4aaf299d42cf19619ee89280}\label{classGColor_a979586dd4aaf299d42cf19619ee89280}} 
+\index{G\+Color@{G\+Color}!to\+Q\+Color\+A\+R\+GB@{to\+Q\+Color\+A\+R\+GB}}
+\index{to\+Q\+Color\+A\+R\+GB@{to\+Q\+Color\+A\+R\+GB}!G\+Color@{G\+Color}}
+\subsubsection{\texorpdfstring{to\+Q\+Color\+A\+R\+G\+B()}{toQColorARGB()}}
+{\footnotesize\ttfamily Q\+Color to\+Q\+Color\+A\+R\+GB (\begin{DoxyParamCaption}\item[{int}]{argb }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
+
+
+Converts an A\+R\+GB integer into a Qt color object. 
+
+Preserves alpha transparency in the Q\+Color object. 
 
 \subsection{Member Data Documentation}
 \mbox{\Hypertarget{classGColor_a829e668b6af432af22e4fe68feff8c9a}\label{classGColor_a829e668b6af432af22e4fe68feff8c9a}} 

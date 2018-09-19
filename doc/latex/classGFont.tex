@@ -12,6 +12,8 @@ This class contains static methods for dealing with fonts in our G\+UI system.
 \subsection*{Static Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
+static void \mbox{\hyperlink{classGFont_ae709c4560c613217490269d4df94602c}{bold\+Font}} (\mbox{\hyperlink{classGInteractor}{G\+Interactor}} $\ast$interactor)
+\begin{DoxyCompactList}\small\item\em Makes the given interactor\textquotesingle{}s font bold. \end{DoxyCompactList}\item 
 static void \mbox{\hyperlink{classGFont_ae6714d087455b3431d6dce6f1202659f}{change\+Font\+Size}} (\mbox{\hyperlink{classGInteractor}{G\+Interactor}} $\ast$interactor, int dsize)
 \begin{DoxyCompactList}\small\item\em Modifies the font of the given interactor, changing its size by the given number of points. \end{DoxyCompactList}\item 
 static Q\+Font \mbox{\hyperlink{classGFont_a1f55c64940d99e62528d5bfc634123f8}{change\+Font\+Size}} (const Q\+Font \&font, int dsize)
@@ -24,6 +26,8 @@ static Q\+Font \mbox{\hyperlink{classGFont_a6fdde28adfdce9b43b7eb4d4a47ca23b}{de
 \begin{DoxyCompactList}\small\item\em Modifies the given font object, changing its weight and/or size to the given values, and returning the new modified font. \end{DoxyCompactList}\item 
 static Q\+Font \mbox{\hyperlink{classGFont_a50c41ebc7de0a4a038852b0764d3a6f2}{derive\+Q\+Font}} (const std\+::string \&font, const std\+::string \&font\+Family, Q\+Font\+::\+Weight weight=Q\+Font\+::\+Normal, int size=-\/1)
 \begin{DoxyCompactList}\small\item\em Modifies the given font object, changing its font family, weight, and/or size to the given values, and returning the new modified font. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classGFont_a3f37291f3e288376754c056a10b64f90}{italic\+Font}} (\mbox{\hyperlink{classGInteractor}{G\+Interactor}} $\ast$interactor)
+\begin{DoxyCompactList}\small\item\em Makes the given interactor\textquotesingle{}s font italic. \end{DoxyCompactList}\item 
 static std\+::string \mbox{\hyperlink{classGFont_a1e897239fcf0fa78a33f3021a98b0029}{to\+Font\+String}} (const Q\+Font \&font)
 \begin{DoxyCompactList}\small\item\em Converts the given Qt font object into a font string such as \char`\"{}\+Helvetica-\/12-\/\+Bold\char`\"{}. \end{DoxyCompactList}\item 
 static Q\+Font \mbox{\hyperlink{classGFont_aea0f70979b631219291103391bfacc6e}{to\+Q\+Font}} (const std\+::string \&font\+String)
@@ -46,6 +50,21 @@ A font string has the following format\+:
 where both {\ttfamily style} and {\ttfamily size} are optional. If any of these elements are missing or specified as an asterisk, the existing value is retained. 
 
 \subsection{Member Function Documentation}
+\mbox{\Hypertarget{classGFont_ae709c4560c613217490269d4df94602c}\label{classGFont_ae709c4560c613217490269d4df94602c}} 
+\index{G\+Font@{G\+Font}!bold\+Font@{bold\+Font}}
+\index{bold\+Font@{bold\+Font}!G\+Font@{G\+Font}}
+\subsubsection{\texorpdfstring{bold\+Font()}{boldFont()}}
+{\footnotesize\ttfamily void bold\+Font (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classGInteractor}{G\+Interactor}} $\ast$}]{interactor }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Makes the given interactor\textquotesingle{}s font bold. 
+
+The font name and size are unchanged. 
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the interactor is null \\
+\hline
+\end{DoxyExceptions}
 \mbox{\Hypertarget{classGFont_ae6714d087455b3431d6dce6f1202659f}\label{classGFont_ae6714d087455b3431d6dce6f1202659f}} 
 \index{G\+Font@{G\+Font}!change\+Font\+Size@{change\+Font\+Size}}
 \index{change\+Font\+Size@{change\+Font\+Size}!G\+Font@{G\+Font}}
@@ -111,7 +130,22 @@ The font you pass should be a font string such as \char`\"{}\+Helvetica-\/12-\/\
 
 Modifies the given font object, changing its font family, weight, and/or size to the given values, and returning the new modified font. 
 
-The font you pass should be a font string such as \char`\"{}\+Helvetica-\/12-\/\+Bold\char`\"{}. \mbox{\Hypertarget{classGFont_a1e897239fcf0fa78a33f3021a98b0029}\label{classGFont_a1e897239fcf0fa78a33f3021a98b0029}} 
+The font you pass should be a font string such as \char`\"{}\+Helvetica-\/12-\/\+Bold\char`\"{}. \mbox{\Hypertarget{classGFont_a3f37291f3e288376754c056a10b64f90}\label{classGFont_a3f37291f3e288376754c056a10b64f90}} 
+\index{G\+Font@{G\+Font}!italic\+Font@{italic\+Font}}
+\index{italic\+Font@{italic\+Font}!G\+Font@{G\+Font}}
+\subsubsection{\texorpdfstring{italic\+Font()}{italicFont()}}
+{\footnotesize\ttfamily void italic\+Font (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classGInteractor}{G\+Interactor}} $\ast$}]{interactor }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Makes the given interactor\textquotesingle{}s font italic. 
+
+The font name and size are unchanged. 
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the interactor is null \\
+\hline
+\end{DoxyExceptions}
+\mbox{\Hypertarget{classGFont_a1e897239fcf0fa78a33f3021a98b0029}\label{classGFont_a1e897239fcf0fa78a33f3021a98b0029}} 
 \index{G\+Font@{G\+Font}!to\+Font\+String@{to\+Font\+String}}
 \index{to\+Font\+String@{to\+Font\+String}!G\+Font@{G\+Font}}
 \subsubsection{\texorpdfstring{to\+Font\+String()}{toFontString()}}

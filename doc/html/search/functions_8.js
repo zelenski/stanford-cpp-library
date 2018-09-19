@@ -1,6 +1,8 @@
 var searchData=
 [
+  ['hasalpha',['hasAlpha',['../classGColor.html#ac3793cbac78369b75b4d8967d8cb2b7a',1,'GColor']]],
   ['hasattribute',['hasAttribute',['../namespacexmlutils.html#ae8f64d4332fabd1d2a4b2f623522003b',1,'xmlutils']]],
+  ['haserror',['hasError',['../classGDownloader.html#a81dd125e253592aaef5fea33dfc50c42',1,'GDownloader']]],
   ['haseventlistener',['hasEventListener',['../classGObservable.html#a9f6faaa25942923bafa1c44020c49fa9',1,'GObservable']]],
   ['hashcodecollection',['hashCodeCollection',['../namespacestanfordcpplib_1_1collections.html#a4bde4f51efc44d308c1c5f34a3ce68f0',1,'stanfordcpplib::collections']]],
   ['hashcodeiterable',['hashCodeIterable',['../namespacestanfordcpplib_1_1collections.html#ab25ff6237487d8f8de80deac63917870',1,'stanfordcpplib::collections']]],

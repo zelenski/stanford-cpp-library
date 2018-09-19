@@ -3,11 +3,9 @@
  * -----------------
  * This file exports the <code>iurlstream</code> class, which
  * implements an input stream for reading data from URLs.
- * It is implemented as a thin wrapper around a file input stream (ifstream).
- * The implementation simply downloads the URL's data using Java's java.net.URL class
- * and saves it into a temporary file, then reads from a stream on that file.
- * Upon close()ing the iurlstream, the temporary file is deleted.
- * This is not an ideal implementation, but it is platform independent and easier to get working.
+ * It is implemented as a thin wrapper around a standard C++ stringstream.
+ * The implementation downloads the URL's data into a memory buffer, then
+ * exposes that memory buffer for reading.
  * 
  * @author Marty Stepp
  * @version 2018/09/18
@@ -31,6 +29,12 @@
 #include <string>
 #include "map.h"
 
+/**
+ * An <code>iurlstream</code> is an input stream for reading data from URLs.
+ * It is implemented as a thin wrapper around a standard C++ stringstream.
+ * The data from the given URL is downloaded into a memory buffer, from which
+ * you can read it as you would any other input stream.
+ */
 class iurlstream : public std::stringstream {
 public:
     /**

@@ -111,22 +111,28 @@ Public Types</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a9678f670b71cc46a68b746bda9765f4b"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGColor.html#a9678f670b71cc46a68b746bda9765f4b">convertARGBToARGB</a>(int a, int r, int g, int b)</td></tr>
-<tr class="memdesc:a9678f670b71cc46a68b746bda9765f4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts four integer RGB values from 0-255 into a color name in the form <code>"#aarrggbb"</code>.  <a href="#a9678f670b71cc46a68b746bda9765f4b">More...</a><br /></td></tr>
+<tr class="memdesc:a9678f670b71cc46a68b746bda9765f4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts four integer RGB values from 0-255 into an ARGB integer of the form <code>0xaarrggbb</code>.  <a href="#a9678f670b71cc46a68b746bda9765f4b">More...</a><br /></td></tr>
 <tr class="separator:a9678f670b71cc46a68b746bda9765f4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc3a0188f264217b768e4a9a63fbc54e"><td class="memItemLeft" align="right" valign="top">static string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGColor.html#abc3a0188f264217b768e4a9a63fbc54e">convertARGBToColor</a>(int a, int r, int g, int b)</td></tr>
 <tr class="memdesc:abc3a0188f264217b768e4a9a63fbc54e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts four integer RGB values from 0-255 into a color name in the form <code>"#aarrggbb"</code>.  <a href="#abc3a0188f264217b768e4a9a63fbc54e">More...</a><br /></td></tr>
 <tr class="separator:abc3a0188f264217b768e4a9a63fbc54e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba032cfdc6b7936c6b828f8dfc2a9a90"><td class="memItemLeft" align="right" valign="top">static string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGColor.html#aba032cfdc6b7936c6b828f8dfc2a9a90">convertARGBToColor</a>(int argb)</td></tr>
+<tr class="memdesc:aba032cfdc6b7936c6b828f8dfc2a9a90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the given ARGB integer into a color name in the form <code>"#aarrggbb"</code>.  <a href="#aba032cfdc6b7936c6b828f8dfc2a9a90">More...</a><br /></td></tr>
+<tr class="separator:aba032cfdc6b7936c6b828f8dfc2a9a90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5efa1612c4ccfff89eca4ed3cfd0206d"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGColor.html#a5efa1612c4ccfff89eca4ed3cfd0206d">convertColorToARGB</a>(string colorName)</td></tr>
+<tr class="memdesc:a5efa1612c4ccfff89eca4ed3cfd0206d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a color name into an ARGB integer that encodes the alpha (opacity), red, green, and blue components of the color.  <a href="#a5efa1612c4ccfff89eca4ed3cfd0206d">More...</a><br /></td></tr>
+<tr class="separator:a5efa1612c4ccfff89eca4ed3cfd0206d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aab4a1480d396f913220aea51d117eb94"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGColor.html#aab4a1480d396f913220aea51d117eb94">convertColorToRGB</a>(string colorName)</td></tr>
 <tr class="memdesc:aab4a1480d396f913220aea51d117eb94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a color name into an integer that encodes the red, green, and blue components of the color.  <a href="#aab4a1480d396f913220aea51d117eb94">More...</a><br /></td></tr>
 <tr class="separator:aab4a1480d396f913220aea51d117eb94"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ad78585a77dad65eb23299714545f7c"><td class="memItemLeft" align="right" valign="top">static string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGColor.html#a2ad78585a77dad65eb23299714545f7c">convertQColorToColor</a>(const QColor &amp;color)</td></tr>
-<tr class="memdesc:a2ad78585a77dad65eb23299714545f7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a Qt color object into a color string.  <a href="#a2ad78585a77dad65eb23299714545f7c">More...</a><br /></td></tr>
+<tr class="memdesc:a2ad78585a77dad65eb23299714545f7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a Qt RGB color object into a color string.  <a href="#a2ad78585a77dad65eb23299714545f7c">More...</a><br /></td></tr>
 <tr class="separator:a2ad78585a77dad65eb23299714545f7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a30f06933a10f00500d6b7991f8b61dde"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGColor.html#a30f06933a10f00500d6b7991f8b61dde">convertQColorToRGB</a>(const QColor &amp;color)</td></tr>
 <tr class="memdesc:a30f06933a10f00500d6b7991f8b61dde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a Qt color object into an RGB integer.  <a href="#a30f06933a10f00500d6b7991f8b61dde">More...</a><br /></td></tr>
 <tr class="separator:a30f06933a10f00500d6b7991f8b61dde"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a64353dd79967412aeebe46219e4a71df"><td class="memItemLeft" align="right" valign="top">static string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGColor.html#a64353dd79967412aeebe46219e4a71df">convertRGBToColor</a>(int rgb)</td></tr>
-<tr class="memdesc:a64353dd79967412aeebe46219e4a71df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts an <code>rgb</code> value into a color name in the form <code>"#rrggbb"</code>.  <a href="#a64353dd79967412aeebe46219e4a71df">More...</a><br /></td></tr>
+<tr class="memdesc:a64353dd79967412aeebe46219e4a71df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts an RGB integer value into a color name in the form <code>"#rrggbb"</code>.  <a href="#a64353dd79967412aeebe46219e4a71df">More...</a><br /></td></tr>
 <tr class="separator:a64353dd79967412aeebe46219e4a71df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a906729a293e62f8d112037016af21f9f"><td class="memItemLeft" align="right" valign="top">static string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGColor.html#a906729a293e62f8d112037016af21f9f">convertRGBToColor</a>(int r, int g, int b)</td></tr>
 <tr class="memdesc:a906729a293e62f8d112037016af21f9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts three integer RGB values from 0-255 into a color name in the form <code>"#rrggbb"</code>.  <a href="#a906729a293e62f8d112037016af21f9f">More...</a><br /></td></tr>
@@ -134,9 +140,21 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a7c4acb134cfa913f8a127b300a4b10a0"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGColor.html#a7c4acb134cfa913f8a127b300a4b10a0">convertRGBToRGB</a>(int r, int g, int b)</td></tr>
 <tr class="memdesc:a7c4acb134cfa913f8a127b300a4b10a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts three integer RGB values from 0-255 into a single RGB integer.  <a href="#a7c4acb134cfa913f8a127b300a4b10a0">More...</a><br /></td></tr>
 <tr class="separator:a7c4acb134cfa913f8a127b300a4b10a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3793cbac78369b75b4d8967d8cb2b7a"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGColor.html#ac3793cbac78369b75b4d8967d8cb2b7a">hasAlpha</a>(string color)</td></tr>
+<tr class="memdesc:ac3793cbac78369b75b4d8967d8cb2b7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the given color string is of the 8-hex-character form that contains an alpha channel in the highest order two characters, preceded by a hash sign, such as "#aaff0033".  <a href="#ac3793cbac78369b75b4d8967d8cb2b7a">More...</a><br /></td></tr>
+<tr class="separator:ac3793cbac78369b75b4d8967d8cb2b7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0ad89394f00240bdc0ec3b893eca6aa"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGColor.html#aa0ad89394f00240bdc0ec3b893eca6aa">splitARGB</a>(int argb, int &amp;a, int &amp;r, int &amp;g, int &amp;b)</td></tr>
+<tr class="memdesc:aa0ad89394f00240bdc0ec3b893eca6aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Splits the given ARGB integer into four integer RGB values from 0-255.  <a href="#aa0ad89394f00240bdc0ec3b893eca6aa">More...</a><br /></td></tr>
+<tr class="separator:aa0ad89394f00240bdc0ec3b893eca6aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32dea18e982a160b7b1ce8b4e881c0f9"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGColor.html#a32dea18e982a160b7b1ce8b4e881c0f9">splitRGB</a>(int rgb, int &amp;r, int &amp;g, int &amp;b)</td></tr>
+<tr class="memdesc:a32dea18e982a160b7b1ce8b4e881c0f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Splits the given RGB integer into three integer RGB values from 0-255.  <a href="#a32dea18e982a160b7b1ce8b4e881c0f9">More...</a><br /></td></tr>
+<tr class="separator:a32dea18e982a160b7b1ce8b4e881c0f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23f62da01b905b62266904a01cfb3745"><td class="memItemLeft" align="right" valign="top">static QColor&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGColor.html#a23f62da01b905b62266904a01cfb3745">toQColor</a>(string color)</td></tr>
 <tr class="memdesc:a23f62da01b905b62266904a01cfb3745"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a color string into a Qt color object.  <a href="#a23f62da01b905b62266904a01cfb3745">More...</a><br /></td></tr>
 <tr class="separator:a23f62da01b905b62266904a01cfb3745"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a979586dd4aaf299d42cf19619ee89280"><td class="memItemLeft" align="right" valign="top">static QColor&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGColor.html#a979586dd4aaf299d42cf19619ee89280">toQColorARGB</a>(int argb)</td></tr>
+<tr class="memdesc:a979586dd4aaf299d42cf19619ee89280"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts an ARGB integer into a Qt color object.  <a href="#a979586dd4aaf299d42cf19619ee89280">More...</a><br /></td></tr>
+<tr class="separator:a979586dd4aaf299d42cf19619ee89280"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -155,7 +173,7 @@ Public Attributes</h2></td></tr>
 </pre><p>A color can also be specified as a string. A color string can be one of the predefined color names:</p>
 <p><code>BLACK</code>, <code>BLUE</code>, <code>CYAN</code>, <code>DARK_GRAY</code>, <code>GRAY</code>, <code>GREEN</code>, <code>LIGHT_GRAY</code>, <code>MAGENTA</code>, <code>ORANGE</code>, <code>PINK</code>, <code>RED</code>, <code>WHITE</code>, and <code>YELLOW</code>.</p>
 <p>The case of the individual letters in the color name is ignored, as are spaces and underscores, so that the color <code>DARK_GRAY</code> can be written as <code>"Dark Gray"</code>.</p>
-<p>Lastly, the color can also be specified as a string in the form <code>"#rrggbb"</code> where <code>rr</code>, <code>gg</code>, and <code>bb</code> are pairs of hexadecimal digits indicating the red, green, and blue components of the color, respectively. </p>
+<p>Lastly, the color can also be specified as a string in the form <code>"#rrggbb"</code> where <code>rr</code>, <code>gg</code>, and <code>bb</code> are pairs of hexadecimal digits indicating the red, green, and blue components of the color, respectively. You can also include an alpha (opacity) channel by writing the hex string in ARGB form as <code>"#aarrggbb"</code>. </p>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>
 <a id="a06fc87d81c62e9abb8790b6e5713c55b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a06fc87d81c62e9abb8790b6e5713c55b">&#9670;&nbsp;</a></span>anonymous enum</h2>
@@ -237,13 +255,13 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Converts four integer RGB values from 0-255 into a color name in the form <code>"#aarrggbb"</code>. </p>
+<p>Converts four integer RGB values from 0-255 into an ARGB integer of the form <code>0xaarrggbb</code>. </p>
 <p>Each of the <code>aa</code>, <code>rr</code>, <code>gg</code>, and <code>bb</code> values are two-digit hexadecimal numbers indicating the intensity of that component. If any of a, r, g, or b is outside the range of 0-255, throws an error. </p>
 
 </div>
 </div>
 <a id="abc3a0188f264217b768e4a9a63fbc54e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abc3a0188f264217b768e4a9a63fbc54e">&#9670;&nbsp;</a></span>convertARGBToColor()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#abc3a0188f264217b768e4a9a63fbc54e">&#9670;&nbsp;</a></span>convertARGBToColor() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -293,6 +311,62 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="aba032cfdc6b7936c6b828f8dfc2a9a90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba032cfdc6b7936c6b828f8dfc2a9a90">&#9670;&nbsp;</a></span>convertARGBToColor() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">string convertARGBToColor </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>argb</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Converts the given ARGB integer into a color name in the form <code>"#aarrggbb"</code>. </p>
+
+</div>
+</div>
+<a id="a5efa1612c4ccfff89eca4ed3cfd0206d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5efa1612c4ccfff89eca4ed3cfd0206d">&#9670;&nbsp;</a></span>convertColorToARGB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int convertColorToARGB </td>
+          <td>(</td>
+          <td class="paramtype">string &#160;</td>
+          <td class="paramname"><em>colorName</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Converts a color name into an ARGB integer that encodes the alpha (opacity), red, green, and blue components of the color. </p>
+
+</div>
+</div>
 <a id="aab4a1480d396f913220aea51d117eb94"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aab4a1480d396f913220aea51d117eb94">&#9670;&nbsp;</a></span>convertColorToRGB()</h2>
 
@@ -318,6 +392,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Converts a color name into an integer that encodes the red, green, and blue components of the color. </p>
+<p>This function is also compatible with ARGB colors. </p>
 
 </div>
 </div>
@@ -345,7 +420,8 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Converts a Qt color object into a color string. </p>
+<p>Converts a Qt RGB color object into a color string. </p>
+<p>Does not preserve alpha transparency. </p>
 
 </div>
 </div>
@@ -374,6 +450,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Converts a Qt color object into an RGB integer. </p>
+<p>Does not preserve alpha transparency. </p>
 
 </div>
 </div>
@@ -401,8 +478,8 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Converts an <code>rgb</code> value into a color name in the form <code>"#rrggbb"</code>. </p>
-<p>Each of the <code>rr</code>, <code>gg</code>, and <code>bb</code> values are two-digit hexadecimal numbers indicating the intensity of that component. </p>
+<p>Converts an RGB integer value into a color name in the form <code>"#rrggbb"</code>. </p>
+<p>Does not preserve alpha transparency. </p>
 
 </div>
 </div>
@@ -496,6 +573,142 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="ac3793cbac78369b75b4d8967d8cb2b7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3793cbac78369b75b4d8967d8cb2b7a">&#9670;&nbsp;</a></span>hasAlpha()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool hasAlpha </td>
+          <td>(</td>
+          <td class="paramtype">string &#160;</td>
+          <td class="paramname"><em>color</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns true if the given color string is of the 8-hex-character form that contains an alpha channel in the highest order two characters, preceded by a hash sign, such as "#aaff0033". </p>
+
+</div>
+</div>
+<a id="aa0ad89394f00240bdc0ec3b893eca6aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0ad89394f00240bdc0ec3b893eca6aa">&#9670;&nbsp;</a></span>splitARGB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void splitARGB </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>argb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Splits the given ARGB integer into four integer RGB values from 0-255. </p>
+<p>Each of the <code>aa</code>, <code>rr</code>, <code>gg</code>, and <code>bb</code> values are two-digit hexadecimal numbers indicating the intensity of that component. </p>
+
+</div>
+</div>
+<a id="a32dea18e982a160b7b1ce8b4e881c0f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32dea18e982a160b7b1ce8b4e881c0f9">&#9670;&nbsp;</a></span>splitRGB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void splitRGB </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rgb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Splits the given RGB integer into three integer RGB values from 0-255. </p>
+<p>Each of the <code>rr</code>, <code>gg</code>, and <code>bb</code> values are two-digit hexadecimal numbers indicating the intensity of that component. Ignores alpha transparency. </p>
+
+</div>
+</div>
 <a id="a23f62da01b905b62266904a01cfb3745"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a23f62da01b905b62266904a01cfb3745">&#9670;&nbsp;</a></span>toQColor()</h2>
 
@@ -521,6 +734,36 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Converts a color string into a Qt color object. </p>
+<p>Preserves alpha transparency if the color string contains an alpha component. </p>
+
+</div>
+</div>
+<a id="a979586dd4aaf299d42cf19619ee89280"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a979586dd4aaf299d42cf19619ee89280">&#9670;&nbsp;</a></span>toQColorARGB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QColor toQColorARGB </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>argb</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Converts an ARGB integer into a Qt color object. </p>
+<p>Preserves alpha transparency in the QColor object. </p>
 
 </div>
 </div>

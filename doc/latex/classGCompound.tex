@@ -32,13 +32,13 @@ enum \mbox{\hyperlink{classGObject_a86e0f5648542856159bb40775c854aa7}{Line\+Styl
 \mbox{\hyperlink{classGCompound_a96d2773de31d81df96135d8621cf47df}{G\+Compound}} ()
 \begin{DoxyCompactList}\small\item\em Creates a compound with no internal components. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGCompound_afe8277e7b2627513c6f7452fb0b2847d}{add}} (\mbox{\hyperlink{classGObject}{G\+Object}} $\ast$gobj)
-\begin{DoxyCompactList}\small\item\em Adds a new graphical object to the compound. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Adds a new graphical object to the compound, if that object was not already present in the compound. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGCompound_a8bb36f245efc7806414a1339c2befa1c}{add}} (\mbox{\hyperlink{classGObject}{G\+Object}} $\ast$gobj, double x, double y)
-\begin{DoxyCompactList}\small\item\em Adds a new graphical object to the compound. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Adds a new graphical object to the compound, if that object was not already present in the compound. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGCompound_ac732fc2123d7a6d7e2de145fe9bbd8e8}{add}} (\mbox{\hyperlink{classGObject}{G\+Object}} \&gobj)
 \begin{DoxyCompactList}\small\item\em Adds a new graphical object to the compound. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGCompound_a5b11b532869632a6c26b098b0858eac5}{add}} (\mbox{\hyperlink{classGObject}{G\+Object}} \&gobj, double x, double y)
-\begin{DoxyCompactList}\small\item\em Adds a new graphical object to the compound. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Adds a new graphical object to the compound, if that object was not already present in the compound. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGCompound_ac8bb3912a3ce86b15842e79d0b421204}{clear}} ()
 \begin{DoxyCompactList}\small\item\em Removes all graphical objects from the compound. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGCompound_a221b3e75bb3d9d0bfea62b3364e6773b}{conditional\+Repaint}} ()
@@ -81,6 +81,8 @@ virtual double \mbox{\hyperlink{classGObject_a85ff266dc3eb63d9f2d8e5a4487fd3c0}{
 \begin{DoxyCompactList}\small\item\em Returns the width of the line used to draw this object. \end{DoxyCompactList}\item 
 virtual \mbox{\hyperlink{classGPoint}{G\+Point}} \mbox{\hyperlink{classGObject_a4f83802015511edeb63b892830812c11}{get\+Location}} () const
 \begin{DoxyCompactList}\small\item\em Returns the location of the top-\/left corner of object. \end{DoxyCompactList}\item 
+virtual double \mbox{\hyperlink{classGObject_a1ae3fc278cc5b71b9f2d96a8a83cdf26}{get\+Opacity}} () const
+\begin{DoxyCompactList}\small\item\em Returns how opaque (non-\/transparent) this object will appear from 0.\+0 (completely transparent) to 1.\+0 (completely opaque, default). \end{DoxyCompactList}\item 
 virtual \mbox{\hyperlink{classGCompound}{G\+Compound}} $\ast$ \mbox{\hyperlink{classGObject_a3e53cef70541b1a14eade4ad0984d0b4}{get\+Parent}} () const
 \begin{DoxyCompactList}\small\item\em Returns a pointer to the {\ttfamily \mbox{\hyperlink{classGCompound}{G\+Compound}}} that contains this object. \end{DoxyCompactList}\item 
 virtual double \mbox{\hyperlink{classGObject_a798cc79daaa10145b28f60bcdfdb0ee9}{get\+RightX}} () const
@@ -187,6 +189,8 @@ virtual void \mbox{\hyperlink{classGObject_a04594e8ba9b98513a64f1da00dcae18c}{se
 \begin{DoxyCompactList}\small\item\em Sets the location of the top-\/left corner of this object to the specified coordinates. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGObject_aa8480c0b7166cdf8f784cece06ab353f}{set\+Location}} (const \mbox{\hyperlink{classGPoint}{G\+Point}} \&pt)
 \begin{DoxyCompactList}\small\item\em Sets the location of the top-\/left corner of this object to the specified point. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{classGObject_a04af1866cc1bae4a1226695794a50539}{set\+Opacity}} (double opacity)
+\begin{DoxyCompactList}\small\item\em Sets how opaque (non-\/transparent) this object will appear from 0.\+0 (completely transparent) to 1.\+0 (completely opaque, default). \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGObject_a3c90b758cdc2c911c9ef76c4360eb912}{set\+RightX}} (double x)
 \begin{DoxyCompactList}\small\item\em Sets the location of the rightmost x-\/coordinate of this object. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGObject_aca25d49481f9bf5fc8f7df4c086c4ce7}{set\+Size}} (double width, double height)
@@ -237,6 +241,8 @@ double \mbox{\hyperlink{classGObject_ad05df29e7f27fc504abd743e3d8b4e73}{\+\_\+he
 \mbox{\hyperlink{classGObject_a86e0f5648542856159bb40775c854aa7}{Line\+Style}} \mbox{\hyperlink{classGObject_a89bafecaafb7c72d55c7efc10b7d0523}{\+\_\+line\+Style}}
 \item 
 double \mbox{\hyperlink{classGObject_a16e9033665937f13de2e163dc2184aff}{\+\_\+line\+Width}}
+\item 
+double \mbox{\hyperlink{classGObject_a20eff8eb7af27182edc9bfc54768b6f3}{\+\_\+opacity}}
 \item 
 \mbox{\hyperlink{classGCompound}{G\+Compound}} $\ast$ \mbox{\hyperlink{classGObject_ac9452c1eaff70eebddbb318196aa3835}{\+\_\+parent}}
 \item 
@@ -322,9 +328,9 @@ Creates a compound with no internal components.
 
 
 
-Adds a new graphical object to the compound. 
+Adds a new graphical object to the compound, if that object was not already present in the compound. 
 
-
+If the object is already stored in this compound, has no effect. 
 \begin{DoxyExceptions}{Exceptions}
 {\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the object is null \\
 \hline
@@ -337,9 +343,9 @@ Adds a new graphical object to the compound.
 
 
 
-Adds a new graphical object to the compound. 
+Adds a new graphical object to the compound, if that object was not already present in the compound. 
 
-This form moves the object to the point ({\ttfamily x}, {\ttfamily y}) first. 
+This form moves the object to the point ({\ttfamily x}, {\ttfamily y}) first. If the object is already stored in this compound, has no effect. 
 \begin{DoxyExceptions}{Exceptions}
 {\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the object is null \\
 \hline
@@ -362,9 +368,9 @@ Adds a new graphical object to the compound.
 
 
 
-Adds a new graphical object to the compound. 
+Adds a new graphical object to the compound, if that object was not already present in the compound. 
 
-This form moves the object to the point ({\ttfamily x}, {\ttfamily y}) first. \mbox{\Hypertarget{classGCompound_ac8bb3912a3ce86b15842e79d0b421204}\label{classGCompound_ac8bb3912a3ce86b15842e79d0b421204}} 
+This form moves the object to the point ({\ttfamily x}, {\ttfamily y}) first. If the object is already stored in this compound, has no effect. \mbox{\Hypertarget{classGCompound_ac8bb3912a3ce86b15842e79d0b421204}\label{classGCompound_ac8bb3912a3ce86b15842e79d0b421204}} 
 \index{G\+Compound@{G\+Compound}!clear@{clear}}
 \index{clear@{clear}!G\+Compound@{G\+Compound}}
 \subsubsection{\texorpdfstring{clear()}{clear()}}
@@ -593,6 +599,16 @@ default 1
 
 
 Returns the location of the top-\/left corner of object. 
+
+\mbox{\Hypertarget{classGObject_a1ae3fc278cc5b71b9f2d96a8a83cdf26}\label{classGObject_a1ae3fc278cc5b71b9f2d96a8a83cdf26}} 
+\index{G\+Compound@{G\+Compound}!get\+Opacity@{get\+Opacity}}
+\index{get\+Opacity@{get\+Opacity}!G\+Compound@{G\+Compound}}
+\subsubsection{\texorpdfstring{get\+Opacity()}{getOpacity()}}
+{\footnotesize\ttfamily double get\+Opacity (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [inherited]}}
+
+
+
+Returns how opaque (non-\/transparent) this object will appear from 0.\+0 (completely transparent) to 1.\+0 (completely opaque, default). 
 
 \mbox{\Hypertarget{classGObject_a3e53cef70541b1a14eade4ad0984d0b4}\label{classGObject_a3e53cef70541b1a14eade4ad0984d0b4}} 
 \index{G\+Compound@{G\+Compound}!get\+Parent@{get\+Parent}}
@@ -1247,6 +1263,21 @@ Sets the location of the top-\/left corner of this object to the specified coord
 
 Sets the location of the top-\/left corner of this object to the specified point. 
 
+\mbox{\Hypertarget{classGObject_a04af1866cc1bae4a1226695794a50539}\label{classGObject_a04af1866cc1bae4a1226695794a50539}} 
+\index{G\+Compound@{G\+Compound}!set\+Opacity@{set\+Opacity}}
+\index{set\+Opacity@{set\+Opacity}!G\+Compound@{G\+Compound}}
+\subsubsection{\texorpdfstring{set\+Opacity()}{setOpacity()}}
+{\footnotesize\ttfamily void set\+Opacity (\begin{DoxyParamCaption}\item[{double}]{opacity }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [inherited]}}
+
+
+
+Sets how opaque (non-\/transparent) this object will appear from 0.\+0 (completely transparent) to 1.\+0 (completely opaque, default). 
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if opacity is out of range \mbox{[}0.\+0, 1.\+0\mbox{]} \\
+\hline
+\end{DoxyExceptions}
 \mbox{\Hypertarget{classGObject_a3c90b758cdc2c911c9ef76c4360eb912}\label{classGObject_a3c90b758cdc2c911c9ef76c4360eb912}} 
 \index{G\+Compound@{G\+Compound}!set\+RightX@{set\+RightX}}
 \index{set\+RightX@{set\+RightX}!G\+Compound@{G\+Compound}}
@@ -1416,6 +1447,12 @@ Reimplemented in \mbox{\hyperlink{classGText_a85b5bcebac42ec5f130b0c3851383a23}{
 \index{\+\_\+line\+Width@{\+\_\+line\+Width}!G\+Compound@{G\+Compound}}
 \subsubsection{\texorpdfstring{\+\_\+line\+Width}{\_lineWidth}}
 {\footnotesize\ttfamily double \+\_\+line\+Width\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}
+
+\mbox{\Hypertarget{classGObject_a20eff8eb7af27182edc9bfc54768b6f3}\label{classGObject_a20eff8eb7af27182edc9bfc54768b6f3}} 
+\index{G\+Compound@{G\+Compound}!\+\_\+opacity@{\+\_\+opacity}}
+\index{\+\_\+opacity@{\+\_\+opacity}!G\+Compound@{G\+Compound}}
+\subsubsection{\texorpdfstring{\+\_\+opacity}{\_opacity}}
+{\footnotesize\ttfamily double \+\_\+opacity\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}
 
 \mbox{\Hypertarget{classGObject_ac9452c1eaff70eebddbb318196aa3835}\label{classGObject_ac9452c1eaff70eebddbb318196aa3835}} 
 \index{G\+Compound@{G\+Compound}!\+\_\+parent@{\+\_\+parent}}

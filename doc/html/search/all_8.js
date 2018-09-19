@@ -1,6 +1,8 @@
 var searchData=
 [
+  ['hasalpha',['hasAlpha',['../classGColor.html#ac3793cbac78369b75b4d8967d8cb2b7a',1,'GColor']]],
   ['hasattribute',['hasAttribute',['../namespacexmlutils.html#ae8f64d4332fabd1d2a4b2f623522003b',1,'xmlutils']]],
+  ['haserror',['hasError',['../classGDownloader.html#a81dd125e253592aaef5fea33dfc50c42',1,'GDownloader']]],
   ['haseventlistener',['hasEventListener',['../classGObservable.html#a9f6faaa25942923bafa1c44020c49fa9',1,'GObservable']]],
   ['hashcode',['hashCode',['../classDeque.html#aa9e4a693df95cedc23d501cce865d9af',1,'Deque::hashCode()'],['../classQueue.html#aacd62c6f29c1e575d1290a1088dd29e1',1,'Queue::hashCode()'],['../classStack.html#add24e0ce849c0b2045c24ee3fba490ea',1,'Stack::hashCode()'],['../classGDimension.html#a234b578e512fa99a9f3a829f5e461454',1,'GDimension::hashCode()'],['../classGPoint.html#a1dead3b1190947a8b1f8dcb48eb918de',1,'GPoint::hashCode()'],['../classGRectangle.html#ab57157a3dc26b4cf53d7b84e281bf7d5',1,'GRectangle::hashCode()'],['../classBigInteger.html#ac74a763169d0fe1d4d76a891535c8578',1,'BigInteger::hashCode()']]],
   ['hashcodecollection',['hashCodeCollection',['../namespacestanfordcpplib_1_1collections.html#a4bde4f51efc44d308c1c5f34a3ce68f0',1,'stanfordcpplib::collections']]],

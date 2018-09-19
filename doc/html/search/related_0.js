@@ -1,6 +1,7 @@
 var searchData=
 [
   ['garc',['GArc',['../classGObject.html#ad88985f5140de2a6ea19ea0da42c780b',1,'GObject']]],
+  ['gcanvas',['GCanvas',['../classGImage.html#a6574c8670867d0419505dbf9a106d1c7',1,'GImage']]],
   ['gcompound',['GCompound',['../classGObject.html#a9ccfe89a3db690195253139d336fe193',1,'GObject']]],
   ['gcontainer',['GContainer',['../classGInteractor.html#a7e79036e488380b40d7785365a9c2c4d',1,'GInteractor']]],
   ['gimage',['GImage',['../classGObject.html#a119b85bc8c403de4d6b5ba92bc9470d9',1,'GObject']]],

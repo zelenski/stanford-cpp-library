@@ -76,6 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classGImage-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -162,9 +163,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4f83802015511edeb63b892830812c11"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGPoint.html">GPoint</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#a4f83802015511edeb63b892830812c11">getLocation</a>() const</td></tr>
 <tr class="memdesc:a4f83802015511edeb63b892830812c11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the location of the top-left corner of object.  <a href="#a4f83802015511edeb63b892830812c11">More...</a><br /></td></tr>
 <tr class="separator:a4f83802015511edeb63b892830812c11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ae3fc278cc5b71b9f2d96a8a83cdf26"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#a1ae3fc278cc5b71b9f2d96a8a83cdf26">getOpacity</a>() const</td></tr>
+<tr class="memdesc:a1ae3fc278cc5b71b9f2d96a8a83cdf26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns how opaque (non-transparent) this object will appear from 0.0 (completely transparent) to 1.0 (completely opaque, default).  <a href="#a1ae3fc278cc5b71b9f2d96a8a83cdf26">More...</a><br /></td></tr>
+<tr class="separator:a1ae3fc278cc5b71b9f2d96a8a83cdf26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3e53cef70541b1a14eade4ad0984d0b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGCompound.html">GCompound</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#a3e53cef70541b1a14eade4ad0984d0b4">getParent</a>() const</td></tr>
 <tr class="memdesc:a3e53cef70541b1a14eade4ad0984d0b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the <code><a class="el" href="classGCompound.html" title="This graphical object subclass consists of a collection of other graphical objects. ">GCompound</a></code> that contains this object.  <a href="#a3e53cef70541b1a14eade4ad0984d0b4">More...</a><br /></td></tr>
 <tr class="separator:a3e53cef70541b1a14eade4ad0984d0b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea1d2892c78b0ed846db7116cb6a7c2e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGImage.html#aea1d2892c78b0ed846db7116cb6a7c2e">getPixel</a>(int x, int y) const</td></tr>
+<tr class="memdesc:aea1d2892c78b0ed846db7116cb6a7c2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the color of the pixel at the given x/y location as an RGB integer.  <a href="#aea1d2892c78b0ed846db7116cb6a7c2e">More...</a><br /></td></tr>
+<tr class="separator:aea1d2892c78b0ed846db7116cb6a7c2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a798cc79daaa10145b28f60bcdfdb0ee9"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#a798cc79daaa10145b28f60bcdfdb0ee9">getRightX</a>() const</td></tr>
 <tr class="memdesc:a798cc79daaa10145b28f60bcdfdb0ee9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the <em>x</em>-coordinate of the right side of the object.  <a href="#a798cc79daaa10145b28f60bcdfdb0ee9">More...</a><br /></td></tr>
 <tr class="separator:a798cc79daaa10145b28f60bcdfdb0ee9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -297,6 +304,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa8480c0b7166cdf8f784cece06ab353f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#aa8480c0b7166cdf8f784cece06ab353f">setLocation</a>(const <a class="el" href="classGPoint.html">GPoint</a> &amp;pt)</td></tr>
 <tr class="memdesc:aa8480c0b7166cdf8f784cece06ab353f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the location of the top-left corner of this object to the specified point.  <a href="#aa8480c0b7166cdf8f784cece06ab353f">More...</a><br /></td></tr>
 <tr class="separator:aa8480c0b7166cdf8f784cece06ab353f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04af1866cc1bae4a1226695794a50539"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#a04af1866cc1bae4a1226695794a50539">setOpacity</a>(double opacity)</td></tr>
+<tr class="memdesc:a04af1866cc1bae4a1226695794a50539"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets how opaque (non-transparent) this object will appear from 0.0 (completely transparent) to 1.0 (completely opaque, default).  <a href="#a04af1866cc1bae4a1226695794a50539">More...</a><br /></td></tr>
+<tr class="separator:a04af1866cc1bae4a1226695794a50539"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c90b758cdc2c911c9ef76c4360eb912"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#a3c90b758cdc2c911c9ef76c4360eb912">setRightX</a>(double x)</td></tr>
 <tr class="memdesc:a3c90b758cdc2c911c9ef76c4360eb912"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the location of the rightmost x-coordinate of this object.  <a href="#a3c90b758cdc2c911c9ef76c4360eb912">More...</a><br /></td></tr>
 <tr class="separator:a3c90b758cdc2c911c9ef76c4360eb912"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -334,6 +344,18 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memdesc:a1e43371668ae850193cebedb44e1bbe3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Globally turns on/off the anti-aliasing feature that smooths out the edges of onscreen shapes.  <a href="#a1e43371668ae850193cebedb44e1bbe3">More...</a><br /></td></tr>
 <tr class="separator:a1e43371668ae850193cebedb44e1bbe3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:ac106706c2a94c64f002934a273f8f4e7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGImage.html#ac106706c2a94c64f002934a273f8f4e7">GImage</a>(double width, double height)</td></tr>
+<tr class="memdesc:ac106706c2a94c64f002934a273f8f4e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a blank <a class="el" href="classGImage.html" title="This graphical object subclass represents an image from a file. ">GImage</a> of the given width and height.  <a href="#ac106706c2a94c64f002934a273f8f4e7">More...</a><br /></td></tr>
+<tr class="separator:ac106706c2a94c64f002934a273f8f4e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3444f37769d2b073dacd164dc2a1f45a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGImage.html#a3444f37769d2b073dacd164dc2a1f45a">GImage</a>(QImage *qimage)</td></tr>
+<tr class="memdesc:a3444f37769d2b073dacd164dc2a1f45a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a <a class="el" href="classGImage.html" title="This graphical object subclass represents an image from a file. ">GImage</a> wrapping the given Qt image.  <a href="#a3444f37769d2b073dacd164dc2a1f45a">More...</a><br /></td></tr>
+<tr class="separator:a3444f37769d2b073dacd164dc2a1f45a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a555e64433357e4e01b523498814b8e74"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGImage.html#a555e64433357e4e01b523498814b8e74">setPixel</a>(int x, int y, int rgb)</td></tr>
+<tr class="memdesc:a555e64433357e4e01b523498814b8e74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the pixel at the given x/y location to the given color, represented as an RGB integer.  <a href="#a555e64433357e4e01b523498814b8e74">More...</a><br /></td></tr>
+<tr class="separator:a555e64433357e4e01b523498814b8e74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:aab24462ec896b596d99911767b0912d0"><td class="memItemLeft" align="right" valign="top">QBrush&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#aab24462ec896b596d99911767b0912d0">_brush</a></td></tr>
@@ -356,6 +378,8 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a89bafecaafb7c72d55c7efc10b7d0523"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16e9033665937f13de2e163dc2184aff"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#a16e9033665937f13de2e163dc2184aff">_lineWidth</a></td></tr>
 <tr class="separator:a16e9033665937f13de2e163dc2184aff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20eff8eb7af27182edc9bfc54768b6f3"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#a20eff8eb7af27182edc9bfc54768b6f3">_opacity</a></td></tr>
+<tr class="separator:a20eff8eb7af27182edc9bfc54768b6f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac9452c1eaff70eebddbb318196aa3835"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGCompound.html">GCompound</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#ac9452c1eaff70eebddbb318196aa3835">_parent</a></td></tr>
 <tr class="separator:ac9452c1eaff70eebddbb318196aa3835"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb69d172743f868299847174eb1b6bc8"><td class="memItemLeft" align="right" valign="top">QPen&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#afb69d172743f868299847174eb1b6bc8">_pen</a></td></tr>
@@ -411,7 +435,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ae37cc9f566bd18108a4efed39c16e505"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae37cc9f566bd18108a4efed39c16e505">&#9670;&nbsp;</a></span>GImage()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ae37cc9f566bd18108a4efed39c16e505">&#9670;&nbsp;</a></span>GImage() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -476,6 +500,74 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Frees memory allocated internally by the image. </p>
+
+</div>
+</div>
+<a id="ac106706c2a94c64f002934a273f8f4e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac106706c2a94c64f002934a273f8f4e7">&#9670;&nbsp;</a></span>GImage() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGImage.html">GImage</a> </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a blank <a class="el" href="classGImage.html" title="This graphical object subclass represents an image from a file. ">GImage</a> of the given width and height. </p>
+<p>Called by <a class="el" href="classGCanvas.html" title="A GCanvas is a graphical drawing surface on which you can draw shapes, lines, and colors...">GCanvas</a> when converting to an image. </p>
+
+</div>
+</div>
+<a id="a3444f37769d2b073dacd164dc2a1f45a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3444f37769d2b073dacd164dc2a1f45a">&#9670;&nbsp;</a></span>GImage() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGImage.html">GImage</a> </td>
+          <td>(</td>
+          <td class="paramtype">QImage *&#160;</td>
+          <td class="paramname"><em>qimage</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a <a class="el" href="classGImage.html" title="This graphical object subclass represents an image from a file. ">GImage</a> wrapping the given Qt image. </p>
+<p>Called by <a class="el" href="classGCanvas.html" title="A GCanvas is a graphical drawing surface on which you can draw shapes, lines, and colors...">GCanvas</a> when converting canvas to an image. </p>
 
 </div>
 </div>
@@ -911,6 +1003,33 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a1ae3fc278cc5b71b9f2d96a8a83cdf26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ae3fc278cc5b71b9f2d96a8a83cdf26">&#9670;&nbsp;</a></span>getOpacity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double getOpacity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns how opaque (non-transparent) this object will appear from 0.0 (completely transparent) to 1.0 (completely opaque, default). </p>
+
+</div>
+</div>
 <a id="a3e53cef70541b1a14eade4ad0984d0b4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3e53cef70541b1a14eade4ad0984d0b4">&#9670;&nbsp;</a></span>getParent()</h2>
 
@@ -936,6 +1055,50 @@ Protected Attributes</h2></td></tr>
 
 <p>Returns a pointer to the <code><a class="el" href="classGCompound.html" title="This graphical object subclass consists of a collection of other graphical objects. ">GCompound</a></code> that contains this object. </p>
 <p>Every <code><a class="el" href="classGWindow.html" title="This class represents a graphics window that supports simple graphics. ">GWindow</a></code> is initialized to contain a single <code><a class="el" href="classGCompound.html" title="This graphical object subclass consists of a collection of other graphical objects. ">GCompound</a></code> that is aligned with the window. Adding objects to the window adds them to that <code><a class="el" href="classGCompound.html" title="This graphical object subclass consists of a collection of other graphical objects. ">GCompound</a></code>, which means that every object you add to the window has a parent. Calling <code>getParent</code> on the top-level <code><a class="el" href="classGCompound.html" title="This graphical object subclass consists of a collection of other graphical objects. ">GCompound</a></code> returns <code>nullptr</code>. </p>
+
+</div>
+</div>
+<a id="aea1d2892c78b0ed846db7116cb6a7c2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea1d2892c78b0ed846db7116cb6a7c2e">&#9670;&nbsp;</a></span>getPixel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int getPixel </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the color of the pixel at the given x/y location as an RGB integer. </p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if x/y is out of range </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2417,6 +2580,90 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a04af1866cc1bae4a1226695794a50539"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04af1866cc1bae4a1226695794a50539">&#9670;&nbsp;</a></span>setOpacity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void setOpacity </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>opacity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets how opaque (non-transparent) this object will appear from 0.0 (completely transparent) to 1.0 (completely opaque, default). </p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if opacity is out of range [0.0, 1.0] </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a555e64433357e4e01b523498814b8e74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a555e64433357e4e01b523498814b8e74">&#9670;&nbsp;</a></span>setPixel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void setPixel </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rgb</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the pixel at the given x/y location to the given color, represented as an RGB integer. </p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if x/y is out of range </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a3c90b758cdc2c911c9ef76c4360eb912"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3c90b758cdc2c911c9ef76c4360eb912">&#9670;&nbsp;</a></span>setRightX()</h2>
 
@@ -2682,6 +2929,29 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<h2 class="groupheader">Friends And Related Function Documentation</h2>
+<a id="a6574c8670867d0419505dbf9a106d1c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6574c8670867d0419505dbf9a106d1c7">&#9670;&nbsp;</a></span>GCanvas</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classGCanvas.html">GCanvas</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Member Data Documentation</h2>
 <a id="aab24462ec896b596d99911767b0912d0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aab24462ec896b596d99911767b0912d0">&#9670;&nbsp;</a></span>_brush</h2>
@@ -2892,6 +3162,28 @@ Protected Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">double _lineWidth</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a20eff8eb7af27182edc9bfc54768b6f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20eff8eb7af27182edc9bfc54768b6f3">&#9670;&nbsp;</a></span>_opacity</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double _opacity</td>
         </tr>
       </table>
   </td>

@@ -114,6 +114,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0bf57f044cc66c8aab40f3f2179caf21"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGDownloader.html#a0bf57f044cc66c8aab40f3f2179caf21">downloadToFile</a>(string url, string file)</td></tr>
 <tr class="memdesc:a0bf57f044cc66c8aab40f3f2179caf21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Downloads the text contents of the given URL, saving it to the given output file.  <a href="#a0bf57f044cc66c8aab40f3f2179caf21">More...</a><br /></td></tr>
 <tr class="separator:a0bf57f044cc66c8aab40f3f2179caf21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf0cc934eff26878cdf2018259997a4a"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGDownloader.html#adf0cc934eff26878cdf2018259997a4a">getErrorMessage</a>() const</td></tr>
+<tr class="memdesc:adf0cc934eff26878cdf2018259997a4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the last HTTP error message that occurred.  <a href="#adf0cc934eff26878cdf2018259997a4a">More...</a><br /></td></tr>
+<tr class="separator:adf0cc934eff26878cdf2018259997a4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a736d777b29179f52ba753317d84b1087"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGDownloader.html#a736d777b29179f52ba753317d84b1087">getHeader</a>(string name) const</td></tr>
 <tr class="memdesc:a736d777b29179f52ba753317d84b1087"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the value of the given HTTP header for this URL request.  <a href="#a736d777b29179f52ba753317d84b1087">More...</a><br /></td></tr>
 <tr class="separator:a736d777b29179f52ba753317d84b1087"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -123,6 +126,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a479f109234aad1c792be804bf6320c62"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGDownloader.html#a479f109234aad1c792be804bf6320c62">getUserAgent</a>() const</td></tr>
 <tr class="memdesc:a479f109234aad1c792be804bf6320c62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the value of the HTTP "User-Agent" header for this URL request, or an empty string if the user agent has not been set.  <a href="#a479f109234aad1c792be804bf6320c62">More...</a><br /></td></tr>
 <tr class="separator:a479f109234aad1c792be804bf6320c62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81dd125e253592aaef5fea33dfc50c42"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGDownloader.html#a81dd125e253592aaef5fea33dfc50c42">hasError</a>() const</td></tr>
+<tr class="memdesc:a81dd125e253592aaef5fea33dfc50c42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the HTTP connection failed and had an error.  <a href="#a81dd125e253592aaef5fea33dfc50c42">More...</a><br /></td></tr>
+<tr class="separator:a81dd125e253592aaef5fea33dfc50c42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4bafb98a98bc6edc2403a3734c985618"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGDownloader.html#a4bafb98a98bc6edc2403a3734c985618">httpGet</a>(string url)</td></tr>
 <tr class="memdesc:a4bafb98a98bc6edc2403a3734c985618"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs an HTTP GET request to the given URL.  <a href="#a4bafb98a98bc6edc2403a3734c985618">More...</a><br /></td></tr>
 <tr class="separator:a4bafb98a98bc6edc2403a3734c985618"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -136,6 +142,7 @@ Public Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A <a class="el" href="classGDownloader.html" title="A GDownloader can download files and data over an internet connection. ">GDownloader</a> can download files and data over an internet connection. </p>
+<p>It can save the data to a file or return the data as a string. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a03a6336ad3aebf9d5904c50ce0cdc1dc"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a03a6336ad3aebf9d5904c50ce0cdc1dc">&#9670;&nbsp;</a></span>GDownloader()</h2>
@@ -263,6 +270,26 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="adf0cc934eff26878cdf2018259997a4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf0cc934eff26878cdf2018259997a4a">&#9670;&nbsp;</a></span>getErrorMessage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">string getErrorMessage </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the last HTTP error message that occurred. </p>
+<p>If no HTTP errors have occurred, returns "". </p>
+
+</div>
+</div>
 <a id="a736d777b29179f52ba753317d84b1087"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a736d777b29179f52ba753317d84b1087">&#9670;&nbsp;</a></span>getHeader()</h2>
 
@@ -320,6 +347,26 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns the value of the HTTP "User-Agent" header for this URL request, or an empty string if the user agent has not been set. </p>
+
+</div>
+</div>
+<a id="a81dd125e253592aaef5fea33dfc50c42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81dd125e253592aaef5fea33dfc50c42">&#9670;&nbsp;</a></span>hasError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool hasError </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns true if the HTTP connection failed and had an error. </p>
+<p>You can see what the error was by calling getErrorMessage. </p>
 
 </div>
 </div>

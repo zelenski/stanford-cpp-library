@@ -236,6 +236,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a68ff415e722130964bc9e1de826f4869"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGBrowserPane.html#a68ff415e722130964bc9e1de826f4869">readTextFromUrl</a>(string url)</td></tr>
 <tr class="memdesc:a68ff415e722130964bc9e1de826f4869"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads text from the given web page URL and displays the entire page's text as the contents of this formatted pane.  <a href="#a68ff415e722130964bc9e1de826f4869">More...</a><br /></td></tr>
 <tr class="separator:a68ff415e722130964bc9e1de826f4869"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a263a2282597ca9f0f73301fb202ae390"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGBrowserPane.html#a263a2282597ca9f0f73301fb202ae390">removeLinkListener</a>()</td></tr>
+<tr class="memdesc:a263a2282597ca9f0f73301fb202ae390"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the link listener from the canvas so that it will no longer call it when hyperlink events occur.  <a href="#a263a2282597ca9f0f73301fb202ae390">More...</a><br /></td></tr>
+<tr class="separator:a263a2282597ca9f0f73301fb202ae390"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a519fb2ac767f8b2febbb50b898b8c8cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGInteractor.html#a519fb2ac767f8b2febbb50b898b8c8cb">requestFocus</a>()</td></tr>
 <tr class="memdesc:a519fb2ac767f8b2febbb50b898b8c8cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfers keyboard focus to this interactor.  <a href="#a519fb2ac767f8b2febbb50b898b8c8cb">More...</a><br /></td></tr>
 <tr class="separator:a519fb2ac767f8b2febbb50b898b8c8cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -290,6 +293,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a762e139aa311461c3984d3ad28293f64"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGInteractor.html#a762e139aa311461c3984d3ad28293f64">setIcon</a>(string filename, bool retainIconSize=true)</td></tr>
 <tr class="memdesc:a762e139aa311461c3984d3ad28293f64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the file name of the icon associated with this interactor, or an empty string if no icon has been set.  <a href="#a762e139aa311461c3984d3ad28293f64">More...</a><br /></td></tr>
 <tr class="separator:a762e139aa311461c3984d3ad28293f64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa849c4aed1fa43178314f5c76e43081"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGBrowserPane.html#aaa849c4aed1fa43178314f5c76e43081">setLinkListener</a>(GEventListener func)</td></tr>
+<tr class="memdesc:aaa849c4aed1fa43178314f5c76e43081"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a link listener on this canvas so that it will be called when the user clicks on hyperlinks on the pane.  <a href="#aaa849c4aed1fa43178314f5c76e43081">More...</a><br /></td></tr>
+<tr class="separator:aaa849c4aed1fa43178314f5c76e43081"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca745635b2c4ceb74587ca5cfc26f0c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGBrowserPane.html#aca745635b2c4ceb74587ca5cfc26f0c3">setLinkListener</a>(GEventListenerVoid func)</td></tr>
+<tr class="memdesc:aca745635b2c4ceb74587ca5cfc26f0c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a link listener on this canvas so that it will be called when the user clicks on hyperlinks on the pane.  <a href="#aca745635b2c4ceb74587ca5cfc26f0c3">More...</a><br /></td></tr>
+<tr class="separator:aca745635b2c4ceb74587ca5cfc26f0c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a04594e8ba9b98513a64f1da00dcae18c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGInteractor.html#a04594e8ba9b98513a64f1da00dcae18c">setLocation</a>(double x, double y)</td></tr>
 <tr class="memdesc:a04594e8ba9b98513a64f1da00dcae18c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the onscreen x/y-coordinate of the top-left corner of the interactor relative to its window.  <a href="#a04594e8ba9b98513a64f1da00dcae18c">More...</a><br /></td></tr>
 <tr class="separator:a04594e8ba9b98513a64f1da00dcae18c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -2290,6 +2299,33 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a263a2282597ca9f0f73301fb202ae390"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a263a2282597ca9f0f73301fb202ae390">&#9670;&nbsp;</a></span>removeLinkListener()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void removeLinkListener </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Removes the link listener from the canvas so that it will no longer call it when hyperlink events occur. </p>
+
+</div>
+</div>
 <a id="a519fb2ac767f8b2febbb50b898b8c8cb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a519fb2ac767f8b2febbb50b898b8c8cb">&#9670;&nbsp;</a></span>requestFocus()</h2>
 
@@ -3074,6 +3110,64 @@ Protected Member Functions</h2></td></tr>
 </dl>
 
 <p>Reimplemented in <a class="el" href="classGLabel.html#a75753a3d7d3364185f8088d63b664cb1">GLabel</a>, and <a class="el" href="classGButton.html#a75753a3d7d3364185f8088d63b664cb1">GButton</a>.</p>
+
+</div>
+</div>
+<a id="aaa849c4aed1fa43178314f5c76e43081"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa849c4aed1fa43178314f5c76e43081">&#9670;&nbsp;</a></span>setLinkListener() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void setLinkListener </td>
+          <td>(</td>
+          <td class="paramtype">GEventListener&#160;</td>
+          <td class="paramname"><em>func</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets a link listener on this canvas so that it will be called when the user clicks on hyperlinks on the pane. </p>
+<p>Any existing mouse listener will be replaced. </p>
+
+</div>
+</div>
+<a id="aca745635b2c4ceb74587ca5cfc26f0c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca745635b2c4ceb74587ca5cfc26f0c3">&#9670;&nbsp;</a></span>setLinkListener() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void setLinkListener </td>
+          <td>(</td>
+          <td class="paramtype">GEventListenerVoid&#160;</td>
+          <td class="paramname"><em>func</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets a link listener on this canvas so that it will be called when the user clicks on hyperlinks on the pane. </p>
+<p>Any existing mouse listener will be replaced. </p>
 
 </div>
 </div>

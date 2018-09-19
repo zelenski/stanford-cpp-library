@@ -80,6 +80,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p>An <code>iurlstream</code> is an input stream for reading data from URLs.  
+ <a href="classiurlstream.html#details">More...</a></p>
+
 <p><code>#include "<a class="el" href="urlstream_8h_source.html">urlstream.h</a>"</code></p>
 <div class="dynheader">
 Inheritance diagram for iurlstream:</div>
@@ -93,29 +96,41 @@ Inheritance diagram for iurlstream:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aa78011981facda77bed9acf0e88ebdab"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classiurlstream.html#aa78011981facda77bed9acf0e88ebdab">iurlstream</a>()</td></tr>
+<tr class="memdesc:aa78011981facda77bed9acf0e88ebdab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new iurlstream that is not attached to any source.  <a href="#aa78011981facda77bed9acf0e88ebdab">More...</a><br /></td></tr>
 <tr class="separator:aa78011981facda77bed9acf0e88ebdab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5fa5ba70cbe8c2ad3f93876c381464cb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classiurlstream.html#a5fa5ba70cbe8c2ad3f93876c381464cb">iurlstream</a>(string url)</td></tr>
+<tr class="memdesc:a5fa5ba70cbe8c2ad3f93876c381464cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new iurlstream that is attached to the given source URL.  <a href="#a5fa5ba70cbe8c2ad3f93876c381464cb">More...</a><br /></td></tr>
 <tr class="separator:a5fa5ba70cbe8c2ad3f93876c381464cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5ae591df94fc66ccb85cbb6565368bca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classiurlstream.html#a5ae591df94fc66ccb85cbb6565368bca">close</a>()</td></tr>
-<tr class="separator:a5ae591df94fc66ccb85cbb6565368bca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e79924a3e50273b08ab5b3a8c12a221"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classiurlstream.html#a9e79924a3e50273b08ab5b3a8c12a221">getErrorCode</a>() const</td></tr>
+<tr class="memdesc:a9e79924a3e50273b08ab5b3a8c12a221"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the most recent error code received, if any.  <a href="#a9e79924a3e50273b08ab5b3a8c12a221">More...</a><br /></td></tr>
 <tr class="separator:a9e79924a3e50273b08ab5b3a8c12a221"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf0cc934eff26878cdf2018259997a4a"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classiurlstream.html#adf0cc934eff26878cdf2018259997a4a">getErrorMessage</a>() const</td></tr>
+<tr class="memdesc:adf0cc934eff26878cdf2018259997a4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a message about the most recent error, if any.  <a href="#adf0cc934eff26878cdf2018259997a4a">More...</a><br /></td></tr>
+<tr class="separator:adf0cc934eff26878cdf2018259997a4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a736d777b29179f52ba753317d84b1087"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classiurlstream.html#a736d777b29179f52ba753317d84b1087">getHeader</a>(string name) const</td></tr>
+<tr class="memdesc:a736d777b29179f52ba753317d84b1087"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the value of the given HTTP header for this URL request.  <a href="#a736d777b29179f52ba753317d84b1087">More...</a><br /></td></tr>
 <tr class="separator:a736d777b29179f52ba753317d84b1087"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6c069ef77f1319830dcfd90eed6a2ce"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classiurlstream.html#ab6c069ef77f1319830dcfd90eed6a2ce">getHttpStatusCode</a>() const</td></tr>
+<tr class="memdesc:ab6c069ef77f1319830dcfd90eed6a2ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the most recent HTTP status code, which may be a successful code (e.g.  <a href="#ab6c069ef77f1319830dcfd90eed6a2ce">More...</a><br /></td></tr>
 <tr class="separator:ab6c069ef77f1319830dcfd90eed6a2ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0cbda75589e2fb500bbe875b72f66682"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classiurlstream.html#a0cbda75589e2fb500bbe875b72f66682">getUrl</a>() const</td></tr>
+<tr class="memdesc:a0cbda75589e2fb500bbe875b72f66682"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the URL sent to the stream's constructor or to the last call to open(...).  <a href="#a0cbda75589e2fb500bbe875b72f66682">More...</a><br /></td></tr>
 <tr class="separator:a0cbda75589e2fb500bbe875b72f66682"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a479f109234aad1c792be804bf6320c62"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classiurlstream.html#a479f109234aad1c792be804bf6320c62">getUserAgent</a>() const</td></tr>
+<tr class="memdesc:a479f109234aad1c792be804bf6320c62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the value of the HTTP "User-Agent" header for this URL request, or an empty string if the user agent has not been set.  <a href="#a479f109234aad1c792be804bf6320c62">More...</a><br /></td></tr>
 <tr class="separator:a479f109234aad1c792be804bf6320c62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9759fd1c1bf1427fa02340c2dabd47d6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classiurlstream.html#a9759fd1c1bf1427fa02340c2dabd47d6">open</a>(string url=&quot;&quot;)</td></tr>
+<tr class="memdesc:a9759fd1c1bf1427fa02340c2dabd47d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens the given URL for reading.  <a href="#a9759fd1c1bf1427fa02340c2dabd47d6">More...</a><br /></td></tr>
 <tr class="separator:a9759fd1c1bf1427fa02340c2dabd47d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af7065da3945b84ffb547b8bad9ddf8dc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classiurlstream.html#af7065da3945b84ffb547b8bad9ddf8dc">setHeader</a>(string name, string value)</td></tr>
 <tr class="separator:af7065da3945b84ffb547b8bad9ddf8dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a766286050e9b8fe08919f8353ecb4031"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classiurlstream.html#a766286050e9b8fe08919f8353ecb4031">setUserAgent</a>(string userAgent)</td></tr>
 <tr class="separator:a766286050e9b8fe08919f8353ecb4031"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>An <code>iurlstream</code> is an input stream for reading data from URLs. </p>
+<p>It is implemented as a thin wrapper around a standard C++ stringstream. The data from the given URL is downloaded into a memory buffer, from which you can read it as you would any other input stream. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aa78011981facda77bed9acf0e88ebdab"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa78011981facda77bed9acf0e88ebdab">&#9670;&nbsp;</a></span>iurlstream() <span class="overload">[1/2]</span></h2>
 
@@ -130,6 +145,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Initializes a new iurlstream that is not attached to any source. </p>
+<p>Use this constructor if you want to set various properties of the URL connection (such as user agent or other headers) before downloading. </p>
 
 </div>
 </div>
@@ -149,26 +167,12 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Initializes a new iurlstream that is attached to the given source URL. </p>
+<p>The data from that URL is downloaded immediately. </p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a5ae591df94fc66ccb85cbb6565368bca"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5ae591df94fc66ccb85cbb6565368bca">&#9670;&nbsp;</a></span>close()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void close </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a9e79924a3e50273b08ab5b3a8c12a221"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9e79924a3e50273b08ab5b3a8c12a221">&#9670;&nbsp;</a></span>getErrorCode()</h2>
 
@@ -183,6 +187,29 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns the most recent error code received, if any. </p>
+<p>Returns 0 if no error codes have been issued. </p>
+
+</div>
+</div>
+<a id="adf0cc934eff26878cdf2018259997a4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf0cc934eff26878cdf2018259997a4a">&#9670;&nbsp;</a></span>getErrorMessage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">string getErrorMessage </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a message about the most recent error, if any. </p>
+<p>Returns "" if no errors have occurred. </p>
 
 </div>
 </div>
@@ -202,6 +229,9 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns the value of the given HTTP header for this URL request. </p>
+<p>If the given header is not defined, returns an empty string. </p>
+
 </div>
 </div>
 <a id="ab6c069ef77f1319830dcfd90eed6a2ce"></a>
@@ -218,6 +248,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns the most recent HTTP status code, which may be a successful code (e.g. </p>
+<p>200) or an error (e.g 404). If there is no HTTP status code to return, returns 0. </p>
 
 </div>
 </div>
@@ -236,6 +269,8 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns the URL sent to the stream's constructor or to the last call to open(...). </p>
+
 </div>
 </div>
 <a id="a479f109234aad1c792be804bf6320c62"></a>
@@ -252,6 +287,8 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns the value of the HTTP "User-Agent" header for this URL request, or an empty string if the user agent has not been set. </p>
 
 </div>
 </div>
@@ -270,6 +307,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Opens the given URL for reading. </p>
+<p>If no URL is passed, uses the URL passed to the constructor. </p>
 
 </div>
 </div>

@@ -63,8 +63,12 @@ virtual double \mbox{\hyperlink{classGObject_a85ff266dc3eb63d9f2d8e5a4487fd3c0}{
 \begin{DoxyCompactList}\small\item\em Returns the width of the line used to draw this object. \end{DoxyCompactList}\item 
 virtual \mbox{\hyperlink{classGPoint}{G\+Point}} \mbox{\hyperlink{classGObject_a4f83802015511edeb63b892830812c11}{get\+Location}} () const
 \begin{DoxyCompactList}\small\item\em Returns the location of the top-\/left corner of object. \end{DoxyCompactList}\item 
+virtual double \mbox{\hyperlink{classGObject_a1ae3fc278cc5b71b9f2d96a8a83cdf26}{get\+Opacity}} () const
+\begin{DoxyCompactList}\small\item\em Returns how opaque (non-\/transparent) this object will appear from 0.\+0 (completely transparent) to 1.\+0 (completely opaque, default). \end{DoxyCompactList}\item 
 virtual \mbox{\hyperlink{classGCompound}{G\+Compound}} $\ast$ \mbox{\hyperlink{classGObject_a3e53cef70541b1a14eade4ad0984d0b4}{get\+Parent}} () const
 \begin{DoxyCompactList}\small\item\em Returns a pointer to the {\ttfamily \mbox{\hyperlink{classGCompound}{G\+Compound}}} that contains this object. \end{DoxyCompactList}\item 
+virtual int \mbox{\hyperlink{classGImage_aea1d2892c78b0ed846db7116cb6a7c2e}{get\+Pixel}} (int x, int y) const
+\begin{DoxyCompactList}\small\item\em Returns the color of the pixel at the given x/y location as an R\+GB integer. \end{DoxyCompactList}\item 
 virtual double \mbox{\hyperlink{classGObject_a798cc79daaa10145b28f60bcdfdb0ee9}{get\+RightX}} () const
 \begin{DoxyCompactList}\small\item\em Returns the {\itshape x}-\/coordinate of the right side of the object. \end{DoxyCompactList}\item 
 virtual \mbox{\hyperlink{classGDimension}{G\+Dimension}} \mbox{\hyperlink{classGObject_a7b4eec96a2bdc6420695d5796a78eea9}{get\+Size}} () const
@@ -153,6 +157,8 @@ virtual void \mbox{\hyperlink{classGObject_a04594e8ba9b98513a64f1da00dcae18c}{se
 \begin{DoxyCompactList}\small\item\em Sets the location of the top-\/left corner of this object to the specified coordinates. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGObject_aa8480c0b7166cdf8f784cece06ab353f}{set\+Location}} (const \mbox{\hyperlink{classGPoint}{G\+Point}} \&pt)
 \begin{DoxyCompactList}\small\item\em Sets the location of the top-\/left corner of this object to the specified point. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{classGObject_a04af1866cc1bae4a1226695794a50539}{set\+Opacity}} (double opacity)
+\begin{DoxyCompactList}\small\item\em Sets how opaque (non-\/transparent) this object will appear from 0.\+0 (completely transparent) to 1.\+0 (completely opaque, default). \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGObject_a3c90b758cdc2c911c9ef76c4360eb912}{set\+RightX}} (double x)
 \begin{DoxyCompactList}\small\item\em Sets the location of the rightmost x-\/coordinate of this object. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGObject_aca25d49481f9bf5fc8f7df4c086c4ce7}{set\+Size}} (double width, double height)
@@ -178,6 +184,15 @@ static bool \mbox{\hyperlink{classGObject_a93be0e1fe1b1bf1a1da732470c94f42b}{is\
 \begin{DoxyCompactList}\small\item\em Returns whether we should globally anti-\/alias graphical objects. \end{DoxyCompactList}\item 
 static void \mbox{\hyperlink{classGObject_a1e43371668ae850193cebedb44e1bbe3}{set\+Anti\+Aliasing}} (bool value)
 \begin{DoxyCompactList}\small\item\em Globally turns on/off the anti-\/aliasing feature that smooths out the edges of onscreen shapes. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classGImage_ac106706c2a94c64f002934a273f8f4e7}{G\+Image}} (double width, double height)
+\begin{DoxyCompactList}\small\item\em Creates a blank \mbox{\hyperlink{classGImage}{G\+Image}} of the given width and height. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classGImage_a3444f37769d2b073dacd164dc2a1f45a}{G\+Image}} (Q\+Image $\ast$qimage)
+\begin{DoxyCompactList}\small\item\em Creates a \mbox{\hyperlink{classGImage}{G\+Image}} wrapping the given Qt image. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{classGImage_a555e64433357e4e01b523498814b8e74}{set\+Pixel}} (int x, int y, int rgb)
+\begin{DoxyCompactList}\small\item\em Sets the pixel at the given x/y location to the given color, represented as an R\+GB integer. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Protected Attributes}
 \begin{DoxyCompactItemize}
 \item 
@@ -200,6 +215,8 @@ double \mbox{\hyperlink{classGObject_ad05df29e7f27fc504abd743e3d8b4e73}{\+\_\+he
 \mbox{\hyperlink{classGObject_a86e0f5648542856159bb40775c854aa7}{Line\+Style}} \mbox{\hyperlink{classGObject_a89bafecaafb7c72d55c7efc10b7d0523}{\+\_\+line\+Style}}
 \item 
 double \mbox{\hyperlink{classGObject_a16e9033665937f13de2e163dc2184aff}{\+\_\+line\+Width}}
+\item 
+double \mbox{\hyperlink{classGObject_a20eff8eb7af27182edc9bfc54768b6f3}{\+\_\+opacity}}
 \item 
 \mbox{\hyperlink{classGCompound}{G\+Compound}} $\ast$ \mbox{\hyperlink{classGObject_ac9452c1eaff70eebddbb318196aa3835}{\+\_\+parent}}
 \item 
@@ -265,7 +282,7 @@ L\+I\+N\+E\+\_\+\+D\+A\+S\+H\+\_\+\+D\+O\+T\+\_\+\+D\+OT&\\
 \mbox{\Hypertarget{classGImage_ae37cc9f566bd18108a4efed39c16e505}\label{classGImage_ae37cc9f566bd18108a4efed39c16e505}} 
 \index{G\+Image@{G\+Image}!G\+Image@{G\+Image}}
 \index{G\+Image@{G\+Image}!G\+Image@{G\+Image}}
-\subsubsection{\texorpdfstring{G\+Image()}{GImage()}}
+\subsubsection{\texorpdfstring{G\+Image()}{GImage()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classGImage}{G\+Image}} (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename = {\ttfamily \char`\"{}\char`\"{}},  }\item[{double}]{x = {\ttfamily 0},  }\item[{double}]{y = {\ttfamily 0} }\end{DoxyParamCaption})}
 
 
@@ -287,7 +304,27 @@ By default, the upper left corner of the image appears at the origin, but you ca
 
 Frees memory allocated internally by the image. 
 
+\mbox{\Hypertarget{classGImage_ac106706c2a94c64f002934a273f8f4e7}\label{classGImage_ac106706c2a94c64f002934a273f8f4e7}} 
+\index{G\+Image@{G\+Image}!G\+Image@{G\+Image}}
+\index{G\+Image@{G\+Image}!G\+Image@{G\+Image}}
+\subsubsection{\texorpdfstring{G\+Image()}{GImage()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classGImage}{G\+Image}} (\begin{DoxyParamCaption}\item[{double}]{width,  }\item[{double}]{height }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
 
+
+
+Creates a blank \mbox{\hyperlink{classGImage}{G\+Image}} of the given width and height. 
+
+Called by \mbox{\hyperlink{classGCanvas}{G\+Canvas}} when converting to an image. \mbox{\Hypertarget{classGImage_a3444f37769d2b073dacd164dc2a1f45a}\label{classGImage_a3444f37769d2b073dacd164dc2a1f45a}} 
+\index{G\+Image@{G\+Image}!G\+Image@{G\+Image}}
+\index{G\+Image@{G\+Image}!G\+Image@{G\+Image}}
+\subsubsection{\texorpdfstring{G\+Image()}{GImage()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classGImage}{G\+Image}} (\begin{DoxyParamCaption}\item[{Q\+Image $\ast$}]{qimage }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Creates a \mbox{\hyperlink{classGImage}{G\+Image}} wrapping the given Qt image. 
+
+Called by \mbox{\hyperlink{classGCanvas}{G\+Canvas}} when converting canvas to an image. 
 
 \subsection{Member Function Documentation}
 \mbox{\Hypertarget{classGObject_abb6a5d7c03e6eaaae97264c4799ce7c3}\label{classGObject_abb6a5d7c03e6eaaae97264c4799ce7c3}} 
@@ -455,6 +492,16 @@ default 1
 
 Returns the location of the top-\/left corner of object. 
 
+\mbox{\Hypertarget{classGObject_a1ae3fc278cc5b71b9f2d96a8a83cdf26}\label{classGObject_a1ae3fc278cc5b71b9f2d96a8a83cdf26}} 
+\index{G\+Image@{G\+Image}!get\+Opacity@{get\+Opacity}}
+\index{get\+Opacity@{get\+Opacity}!G\+Image@{G\+Image}}
+\subsubsection{\texorpdfstring{get\+Opacity()}{getOpacity()}}
+{\footnotesize\ttfamily double get\+Opacity (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [inherited]}}
+
+
+
+Returns how opaque (non-\/transparent) this object will appear from 0.\+0 (completely transparent) to 1.\+0 (completely opaque, default). 
+
 \mbox{\Hypertarget{classGObject_a3e53cef70541b1a14eade4ad0984d0b4}\label{classGObject_a3e53cef70541b1a14eade4ad0984d0b4}} 
 \index{G\+Image@{G\+Image}!get\+Parent@{get\+Parent}}
 \index{get\+Parent@{get\+Parent}!G\+Image@{G\+Image}}
@@ -465,7 +512,22 @@ Returns the location of the top-\/left corner of object.
 
 Returns a pointer to the {\ttfamily \mbox{\hyperlink{classGCompound}{G\+Compound}}} that contains this object. 
 
-Every {\ttfamily \mbox{\hyperlink{classGWindow}{G\+Window}}} is initialized to contain a single {\ttfamily \mbox{\hyperlink{classGCompound}{G\+Compound}}} that is aligned with the window. Adding objects to the window adds them to that {\ttfamily \mbox{\hyperlink{classGCompound}{G\+Compound}}}, which means that every object you add to the window has a parent. Calling {\ttfamily get\+Parent} on the top-\/level {\ttfamily \mbox{\hyperlink{classGCompound}{G\+Compound}}} returns {\ttfamily nullptr}. \mbox{\Hypertarget{classGObject_a798cc79daaa10145b28f60bcdfdb0ee9}\label{classGObject_a798cc79daaa10145b28f60bcdfdb0ee9}} 
+Every {\ttfamily \mbox{\hyperlink{classGWindow}{G\+Window}}} is initialized to contain a single {\ttfamily \mbox{\hyperlink{classGCompound}{G\+Compound}}} that is aligned with the window. Adding objects to the window adds them to that {\ttfamily \mbox{\hyperlink{classGCompound}{G\+Compound}}}, which means that every object you add to the window has a parent. Calling {\ttfamily get\+Parent} on the top-\/level {\ttfamily \mbox{\hyperlink{classGCompound}{G\+Compound}}} returns {\ttfamily nullptr}. \mbox{\Hypertarget{classGImage_aea1d2892c78b0ed846db7116cb6a7c2e}\label{classGImage_aea1d2892c78b0ed846db7116cb6a7c2e}} 
+\index{G\+Image@{G\+Image}!get\+Pixel@{get\+Pixel}}
+\index{get\+Pixel@{get\+Pixel}!G\+Image@{G\+Image}}
+\subsubsection{\texorpdfstring{get\+Pixel()}{getPixel()}}
+{\footnotesize\ttfamily int get\+Pixel (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Returns the color of the pixel at the given x/y location as an R\+GB integer. 
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if x/y is out of range \\
+\hline
+\end{DoxyExceptions}
+\mbox{\Hypertarget{classGObject_a798cc79daaa10145b28f60bcdfdb0ee9}\label{classGObject_a798cc79daaa10145b28f60bcdfdb0ee9}} 
 \index{G\+Image@{G\+Image}!get\+RightX@{get\+RightX}}
 \index{get\+RightX@{get\+RightX}!G\+Image@{G\+Image}}
 \subsubsection{\texorpdfstring{get\+Right\+X()}{getRightX()}}
@@ -1023,6 +1085,36 @@ Sets the location of the top-\/left corner of this object to the specified coord
 
 Sets the location of the top-\/left corner of this object to the specified point. 
 
+\mbox{\Hypertarget{classGObject_a04af1866cc1bae4a1226695794a50539}\label{classGObject_a04af1866cc1bae4a1226695794a50539}} 
+\index{G\+Image@{G\+Image}!set\+Opacity@{set\+Opacity}}
+\index{set\+Opacity@{set\+Opacity}!G\+Image@{G\+Image}}
+\subsubsection{\texorpdfstring{set\+Opacity()}{setOpacity()}}
+{\footnotesize\ttfamily void set\+Opacity (\begin{DoxyParamCaption}\item[{double}]{opacity }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [inherited]}}
+
+
+
+Sets how opaque (non-\/transparent) this object will appear from 0.\+0 (completely transparent) to 1.\+0 (completely opaque, default). 
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if opacity is out of range \mbox{[}0.\+0, 1.\+0\mbox{]} \\
+\hline
+\end{DoxyExceptions}
+\mbox{\Hypertarget{classGImage_a555e64433357e4e01b523498814b8e74}\label{classGImage_a555e64433357e4e01b523498814b8e74}} 
+\index{G\+Image@{G\+Image}!set\+Pixel@{set\+Pixel}}
+\index{set\+Pixel@{set\+Pixel}!G\+Image@{G\+Image}}
+\subsubsection{\texorpdfstring{set\+Pixel()}{setPixel()}}
+{\footnotesize\ttfamily void set\+Pixel (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y,  }\item[{int}]{rgb }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [virtual]}}
+
+
+
+Sets the pixel at the given x/y location to the given color, represented as an R\+GB integer. 
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if x/y is out of range \\
+\hline
+\end{DoxyExceptions}
 \mbox{\Hypertarget{classGObject_a3c90b758cdc2c911c9ef76c4360eb912}\label{classGObject_a3c90b758cdc2c911c9ef76c4360eb912}} 
 \index{G\+Image@{G\+Image}!set\+RightX@{set\+RightX}}
 \index{set\+RightX@{set\+RightX}!G\+Image@{G\+Image}}
@@ -1123,6 +1215,15 @@ Reimplemented from \mbox{\hyperlink{classGObject_a4fcdf8de5c6de92242a975d83d8f23
 
 
 
+\subsection{Friends And Related Function Documentation}
+\mbox{\Hypertarget{classGImage_a6574c8670867d0419505dbf9a106d1c7}\label{classGImage_a6574c8670867d0419505dbf9a106d1c7}} 
+\index{G\+Image@{G\+Image}!G\+Canvas@{G\+Canvas}}
+\index{G\+Canvas@{G\+Canvas}!G\+Image@{G\+Image}}
+\subsubsection{\texorpdfstring{G\+Canvas}{GCanvas}}
+{\footnotesize\ttfamily friend class \mbox{\hyperlink{classGCanvas}{G\+Canvas}}\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
 \subsection{Member Data Documentation}
 \mbox{\Hypertarget{classGObject_aab24462ec896b596d99911767b0912d0}\label{classGObject_aab24462ec896b596d99911767b0912d0}} 
 \index{G\+Image@{G\+Image}!\+\_\+brush@{\+\_\+brush}}
@@ -1183,6 +1284,12 @@ Reimplemented from \mbox{\hyperlink{classGObject_a4fcdf8de5c6de92242a975d83d8f23
 \index{\+\_\+line\+Width@{\+\_\+line\+Width}!G\+Image@{G\+Image}}
 \subsubsection{\texorpdfstring{\+\_\+line\+Width}{\_lineWidth}}
 {\footnotesize\ttfamily double \+\_\+line\+Width\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}
+
+\mbox{\Hypertarget{classGObject_a20eff8eb7af27182edc9bfc54768b6f3}\label{classGObject_a20eff8eb7af27182edc9bfc54768b6f3}} 
+\index{G\+Image@{G\+Image}!\+\_\+opacity@{\+\_\+opacity}}
+\index{\+\_\+opacity@{\+\_\+opacity}!G\+Image@{G\+Image}}
+\subsubsection{\texorpdfstring{\+\_\+opacity}{\_opacity}}
+{\footnotesize\ttfamily double \+\_\+opacity\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}
 
 \mbox{\Hypertarget{classGObject_ac9452c1eaff70eebddbb318196aa3835}\label{classGObject_ac9452c1eaff70eebddbb318196aa3835}} 
 \index{G\+Image@{G\+Image}!\+\_\+parent@{\+\_\+parent}}

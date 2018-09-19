@@ -94,9 +94,8 @@ Several of the interfaces
 <a href="random.html"><code>random.h</code></a>,
 <a href="regexpr.html"><code>regexpr.h</code></a>,
 <a href="simpio.html"><code>simpio.h</code></a>,
-<a href="strlib.html"><code>strlib.h</code></a>,
-<a href="thread.html"><code>thread.h</code></a>) export collections
-of free functions instead of classes.
+<a href="strlib.html"><code>strlib.h</code></a>
+export collections of free functions instead of classes.
 
 <ul>
 	<li>
@@ -137,55 +136,59 @@ to support graphics.  These classes can themselves be broken down into
 the following categories:
 
 <ul>
-<li>The <a href="GWindow-class.html"><code>GWindow</code></a> class,
+<li>The <a href="doxygen/classGWindow.html"><code>GWindow</code></a> class,
 which represents a window that appears on the display screen
 
 <li>A collection of graphics objects, each of which is a subclass of
-<a href="GObject-class.html"><code>GObject</code></a>
-(<a href="GArc-class.html"><code>GArc</code></a>,
-<a href="GBufferedImage-class.html"><code>GBufferedImage</code></a>,
-<a href="GCompound-class.html"><code>GCompound</code></a>,
-<a href="GImage-class.html"><code>GImage</code></a>,
-<a href="GLabel-class.html"><code>GLabel</code></a>,
-<a href="GLine-class.html"><code>GLine</code></a>,
-<a href="GOval-class.html"><code>GOval</code></a>,
-<a href="GPolygon-class.html"><code>GPolygon</code></a>,
-<a href="GRect-class.html"><code>GRect</code></a>,
-<a href="G3DRect-class.html"><code>G3DRect</code></a>,
-<a href="GRoundRect-class.html"><code>GRoundRect</code></a>)
+<a href="doxygen/classGObject.html"><code>GObject</code></a>
+(<a href="doxygen/classG3DRect.html"><code>G3DRect</code></a>,
+<a href="doxygen/classGArc.html"><code>GArc</code></a>,
+<a href="doxygen/classGCompound.html"><code>GCompound</code></a>,
+<a href="doxygen/classGImage.html"><code>GImage</code></a>,
+<a href="doxygen/classGLine.html"><code>GLine</code></a>,
+<a href="doxygen/classGOval.html"><code>GOval</code></a>,
+<a href="doxygen/classGPolygon.html"><code>GPolygon</code></a>,
+<a href="doxygen/classGRect.html"><code>GRect</code></a>,
+<a href="doxygen/classGRoundRect.html"><code>GRoundRect</code></a>
+<a href="doxygen/classGText.html"><code>GText</code></a>)
 
 <li>A set of onscreen interactors
-(<a href="GButton-class.html"><code>GButton</code></a>,
-<a href="GCheckBox-class.html"><code>GCheckBox</code></a>,
-<a href="GChooser-class.html"><code>GChooser</code></a>,
-<a href="GOptionPane-class.html"><code>GOptionPane</code></a>,
-<a href="GSlider-class.html"><code>GSlider</code></a>,
-<a href="GTable-class.html"><code>GTable</code></a>,
-<a href="GTextField-class.html"><code>GTextField</code></a>)
+(<a href="doxygen/classGBrowserPane.html"><code>GBrowserPane</code></a>,
+<a href="doxygen/classGButton.html"><code>GButton</code></a>,
+<a href="doxygen/classGCanvas.html"><code>GCanvas</code></a>,
+<a href="doxygen/classGCheckBox.html"><code>GCheckBox</code></a>,
+<a href="doxygen/classGChooser.html"><code>GChooser</code></a>,
+<a href="doxygen/classGColor.html"><code>GColor</code></a>,
+<a href="doxygen/classGColorChooser.html"><code>GColorChooser</code></a>,
+<a href="doxygen/classGConsoleWindow.html"><code>GConsoleWindow</code></a>,
+<a href="doxygen/classGContainer.html"><code>GContainer</code></a>,
+<a href="doxygen/classGFileChooser.html"><code>GFileChooser</code></a>,
+<a href="doxygen/classGFont.html"><code>GFont</code></a>,
+<a href="doxygen/classGLabel.html"><code>GLabel</code></a>,
+<a href="doxygen/classGOptionPane.html"><code>GOptionPane</code></a>,
+<a href="doxygen/classGRadioButton.html"><code>GRadioButton</code></a>,
+<a href="doxygen/classGScrollBar.html"><code>GScrollBar</code></a>,
+<a href="doxygen/classGScrollPane.html"><code>GScrollPane</code></a>,
+<a href="doxygen/classGSlider.html"><code>GSlider</code></a>,
+<a href="doxygen/classGTable.html"><code>GTable</code></a>,
+<a href="doxygen/classGTextArea.html"><code>GTextArea</code></a>,
+<a href="doxygen/classGTextField.html"><code>GTextField</code></a>)
 
-<li>A hierarchical set of classes for fielding events
-(<a href="GEvent-class.html"><code>GEvent</code></a>,
-<a href="GActionEvent-class.html"><code>GActionEvent</code></a>,
-<a href="GKeyEvent-class.html"><code>GKeyEvent</code></a>,
-<a href="GMouseEvent-class.html"><code>GMouseEvent</code></a>,
-<a href="GTableEvent-class.html"><code>GTableEvent</code></a>,
-<a href="GTimerEvent-class.html"><code>GTimerEvent</code></a>,
-<a href="GWindowEvent-class.html"><code>GWindowEvent</code></a>)
+<li>A class for fielding events
+(<a href="classGEvent.html"><code>GEvent</code></a>)
 
 <li>A set of classes to encapsulate geometric information
-(<a href="GDimension-class.html"><code>GDimension</code></a>,
-<a href="GPoint-class.html"><code>GPoint</code></a>,
-<a href="GRectangle-class.html"><code>GRectangle</code></a>)
+(<a href="classGDimension.html"><code>GDimension</code></a>,
+<a href="classGPoint.html"><code>GPoint</code></a>,
+<a href="classGRectangle.html"><code>GRectangle</code></a>)
 </ul>
 
 <br><li><b><i>Utility classes.</i></b>
 The libraries also export several utility classes that don&rsquo;t
 fit easily into the other categories
 (<a href="ErrorException-class.html"><code>ErrorException</code></a>,
-<a href="Lock-class.html"><code>Lock</code></a>,
 <a href="Point-class.html"><code>Point</code></a>,
 <a href="Sound-class.html"><code>Sound</code></a>,
-<a href="Thread-class.html"><code>Thread</code></a>,
 <a href="TokenScanner-class.html"><code>TokenScanner</code></a>).
 </ol>
 
@@ -198,40 +201,49 @@ classes, along with sample code.
 <tr><td class=indexKey><nobr><a href="Deque-class.html">Deque</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class is used to represent a <b><i>deque,</i></b> or double-ended queue.</td></tr>
 <tr><td class=indexKey><nobr><a href="Edge-class.html">Edge</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents edges (arcs) in a graph.</td></tr>
 <tr><td class=indexKey><nobr><a href="ErrorException-class.html">ErrorException</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This exception is thrown by calls to the <code>error</code> function.</td></tr>
-<tr><td class=indexKey><nobr><a href="G3DRect-class.html">G3DRect</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This graphical object subclass represents a rectangular box that can be raised or lowered.</td></tr>
-<tr><td class=indexKey><nobr><a href="GActionEvent-class.html">GActionEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This event subclass represents an action event.</td></tr>
-<tr><td class=indexKey><nobr><a href="GArc-class.html">GArc</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This graphical object subclass represents an elliptical arc.</td></tr>
-<tr><td class=indexKey><nobr><a href="GBufferedImage-class.html">GBufferedImage</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class implements a 2D region of colored pixels that can be read/set individually.</td></tr>
-<tr><td class=indexKey><nobr><a href="GButton-class.html">GButton</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subclass represents an onscreen button.</td></tr>
-<tr><td class=indexKey><nobr><a href="GCheckBox-class.html">GCheckBox</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subclass represents an onscreen check box.</td></tr>
-<tr><td class=indexKey><nobr><a href="GChooser-class.html">GChooser</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subclass represents a selectable list.</td></tr>
-<tr><td class=indexKey><nobr><a href="GCompound-class.html">GCompound</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This graphical object subclass consists of a collection of other graphical objects.</td></tr>
-<tr><td class=indexKey><nobr><a href="GDimension-class.html">GDimension</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class contains real-valued width and height fields.</td></tr>
-<tr><td class=indexKey><nobr><a href="GEvent-class.html">GEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class is the root of the hierarchy for all events.</td></tr>
-<tr><td class=indexKey><nobr><a href="GImage-class.html">GImage</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This graphical object subclass represents an image from a file.</td></tr>
-<tr><td class=indexKey><nobr><a href="GInteractor-class.html">GInteractor</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This abstract class is the superclass for all graphical interactors.</td></tr>
-<tr><td class=indexKey><nobr><a href="GKeyEvent-class.html">GKeyEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This event subclass represents a key event.</td></tr>
-<tr><td class=indexKey><nobr><a href="GLabel-class.html">GLabel</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This graphical object subclass represents a text string.</td></tr>
-<tr><td class=indexKey><nobr><a href="GLine-class.html">GLine</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This graphical object subclass represents a line segment.</td></tr>
-<tr><td class=indexKey><nobr><a href="GMouseEvent-class.html">GMouseEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This event subclass represents a mouse event.</td></tr>
-<tr><td class=indexKey><nobr><a href="GObject-class.html">GObject</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class is the common superclass of all graphical objects that can be displayed on a graphical window.</td></tr>
-<tr><td class=indexKey><nobr><a href="GOptionPane-class.html">GOptionPane</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents graphical input/output dialog boxes that can be popped up on the screen.</td></tr>
-<tr><td class=indexKey><nobr><a href="GOval-class.html">GOval</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This graphical object subclass represents an oval inscribed in a rectangular box.</td></tr>
-<tr><td class=indexKey><nobr><a href="GPoint-class.html">GPoint</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class contains real-valued x and y fields.</td></tr>
-<tr><td class=indexKey><nobr><a href="GPolygon-class.html">GPolygon</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This graphical object subclass represents a polygon bounded by line segments.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classG3DRect.html">G3DRect</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This graphical object subclass represents a rectangular box that can be raised or lowered.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGArc.html">GArc</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This graphical object subclass represents an elliptical arc.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGBrowserPane.html">GBrowserPane</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subclass represents a richly formatted pane that can render HTML pages.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGButton.html">GButton</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subclass represents an onscreen button.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGCanvas.html">GCanvas</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class implements a 2D region of colored pixels that can be read/set individually.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGCheckBox.html">GCheckBox</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subclass represents an onscreen check box.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGChooser.html">GChooser</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subclass represents a selectable list.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGClipboard.html">GClipboard</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class contains utility methods for copying and pasting text from the system clipboard.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGColor.html">GColor</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class contains utility methods for working with colors.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGColorChooser.html">GColorChooser</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents a dialog box for selecting a color from a swatch.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGCompound.html">GCompound</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This graphical object subclass consists of a collection of other graphical objects.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGConsoleWindow.html">GConsoleWindow</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents our onscreen graphical console window.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGContainer.html">GContainer</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents layout containers for graphical interactors.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGDimension.html">GDimension</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class contains real-valued width and height fields.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGDownloader.html">GDownloader</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class helps download resources from URLs.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGEvent.html">GEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class is the root of the hierarchy for all events.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGFileChooser.html">GFileChooser</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents a dialog box for selecting a file.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGFont.html">GFont</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class contains utility methods for working with fonts.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGFontChooser.html">GFontChooser</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents a dialog box for selecting a font from a list.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGImage.html">GImage</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This graphical object subclass represents an image from a file.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGInteractor.html">GInteractor</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This abstract class is the superclass for all graphical interactors.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGLabel.html">GLabel</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This graphical object subclass represents a text string.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGLine.html">GLine</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This graphical object subclass represents a line segment.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGObject.html">GObject</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class is the common superclass of all graphical objects that can be displayed on a graphical window.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGOptionPane.html">GOptionPane</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents graphical input/output dialog boxes that can be popped up on the screen.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGOval.html">GOval</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This graphical object subclass represents an oval inscribed in a rectangular box.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGPoint.html">GPoint</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class contains real-valued x and y fields.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGPolygon.html">GPolygon</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This graphical object subclass represents a polygon bounded by line segments.</td></tr>
 <tr><td class=indexKey><nobr><a href="Graph-class.html">Graph&lt;<var>NodeType</var>,&nbsp;<var>ArcType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents a graph with the specified node and arc types.</td></tr>
-<tr><td class=indexKey><nobr><a href="GRect-class.html">GRect</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents a graphical object whose appearance consists of a rectangular box.</td></tr>
-<tr><td class=indexKey><nobr><a href="GRectangle-class.html">GRectangle</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type contains real-valued x, y, width, and height fields.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGRadioButton.html">GRadioButton</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents a checkable circle button that is part of a mutually exclusive group.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGRect.html">GRect</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents a graphical object whose appearance consists of a rectangular box.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGRectangle.html">GRectangle</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type contains real-valued x, y, width, and height fields.</td></tr>
 <tr><td class=indexKey><nobr><a href="Grid-class.html">Grid&lt;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class stores an indexed, two-dimensional array.</td></tr>
-<tr><td class=indexKey><nobr><a href="GRoundRect-class.html">GRoundRect</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents a graphical object whose appearance consists of a rectangular box with rounded corners.</td></tr>
-<tr><td class=indexKey><nobr><a href="GSlider-class.html">GSlider</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subclass represents an onscreen slider.</td></tr>
-<tr><td class=indexKey><nobr><a href="GTable-class.html">GTable</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subclass represents a 2D editable table of rows and columns.</td></tr>
-<tr><td class=indexKey><nobr><a href="GTableEvent-class.html">GTableEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This event subclass represents a table event.</td></tr>
-<tr><td class=indexKey><nobr><a href="GTextField-class.html">GTextField</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subclass represents a text field for entering short text strings.</td></tr>
-<tr><td class=indexKey><nobr><a href="GTimer-class.html">GTimer</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class implements a simple interval timer that generates a <code>GTimerEvent</code> with a specified frequency.</td></tr>
-<tr><td class=indexKey><nobr><a href="GTimerEvent-class.html">GTimerEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This event subclass represents a timer event.</td></tr>
-<tr><td class=indexKey><nobr><a href="GWindow-class.html">GWindow</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents a graphics window that supports simple graphics.</td></tr>
-<tr><td class=indexKey><nobr><a href="GWindowEvent-class.html">GWindowEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This event subclass represents a window event.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGRoundRect.html">GRoundRect</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents a graphical object whose appearance consists of a rectangular box with rounded corners.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGScrollBar.html">GScrollBar</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subclass represents a vertical or horizontal scroll bar.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGScrollPane.html">GScrollPane</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subclass represents a container that can wrap vertical and/or horizontal scroll bars around another interactor.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGSlider.html">GSlider</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subclass represents an onscreen slider.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGTable.html">GTable</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subclass represents a 2D editable table of rows and columns.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGTextArea.html">GTextArea</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subclass represents a multi-line text field for entering long text strings.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGTextField.html">GTextField</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subclass represents a one-line text field for entering short text strings.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGThread.html">GThread</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents threads used for parallel execution.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGTimer.html">GTimer</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class implements a simple interval timer that generates a <code>GTimerEvent</code> with a specified frequency.</td></tr>
+<tr><td class=indexKey><nobr><a href="doxygen/classGWindow.html">GWindow</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class represents a graphics window that supports simple graphics.</td></tr>
 <tr><td class=indexKey><nobr><a href="HashMap-class.html">HashMap&lt;<var>KeyType</var>,&nbsp;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class implements an efficient association between <b><i>keys</i></b> and <b><i>values</i></b>.</td></tr>
 <tr><td class=indexKey><nobr><a href="HashSet-class.html">HashSet&lt;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class implements an efficient abstraction for storing sets of distinct elements.</td></tr>
 <tr><td class=indexKey><nobr><a href="ibitstream-class.html">ibitstream</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This base class reads bits of data from various input sources.</td></tr>
@@ -253,7 +265,6 @@ classes, along with sample code.
 <tr><td class=indexKey><nobr><a href="Sound-class.html">Sound</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class encapsulates a sound file.</td></tr>
 <tr><td class=indexKey><nobr><a href="SparseGrid-class.html">SparseGrid&lt;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class stores an indexed, two-dimensional array.</td></tr>
 <tr><td class=indexKey><nobr><a href="Stack-class.html">Stack&lt;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class models a linear structure called a <b><i>stack</i></b> in which values are added and removed only from one end.</td></tr>
-<tr><td class=indexKey><nobr><a href="Thread-class.html">Thread</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class encapsulates a lightweight process running in the same address space as the creator.</td></tr>
 <tr><td class=indexKey><nobr><a href="Timer-class.html">Timer</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class measures intervals of time while a program is running.</td></tr>
 <tr><td class=indexKey><nobr><a href="TokenScanner-class.html">TokenScanner</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class divides a string into individual tokens.</td></tr>
 <tr><td class=indexKey><nobr><a href="Vector-class.html">Vector&lt;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This class stores an ordered list of values similar to an array.</td></tr>
@@ -270,16 +281,12 @@ classes, along with sample code.
 <tr><td class=indexKey><nobr><a href="direction.html">direction.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports an enumerated type called <code>Direction</code> whose elements are the four compass points: <code>NORTH</code>, <code>EAST</code>, <code>SOUTH</code>, and <code>WEST</code>.</td></tr>
 <tr><td class=indexKey><nobr><a href="error.html">error.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file defines the <code>ErrorException</code> class and the <code>error</code> function.</td></tr>
 <tr><td class=indexKey><nobr><a href="filelib.html">filelib.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports a standardized set of tools for working with files.</td></tr>
-<tr class="deprecated"><td class=indexKey><nobr><a href="foreach.html">foreach.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%><em>Deprecated.</em>  This file defines the <code>foreach</code> keyword, which implements a substitute for the range-based <code>for</code> loop from C++11.  We do not recommend that you include this header in current programs.</td></tr>
-<tr><td class=indexKey><nobr><a href="gbufferedimage.html">gbufferedimage.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports the <code>GBufferedImage</code> class for 2D images of pixels.</td></tr>
-<tr><td class=indexKey><nobr><a href="gevents.html">gevents.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file defines the event types used in the StanfordCPPLib graphics libraries.</td></tr>
+<tr><td class=indexKey><nobr><a href="gevent.html">gevent.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file defines the event types used in the StanfordCPPLib graphics libraries.</td></tr>
 <tr><td class=indexKey><nobr><a href="ginteractors.html">ginteractors.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports a hierarchy of graphical interactors similar to those provided in the Java Swing libraries.</td></tr>
 <tr><td class=indexKey><nobr><a href="gmath.html">gmath.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports several functions for working with graphical geometry along with the mathematical constants <code>PI</code> and <code>E</code>.</td></tr>
 <tr><td class=indexKey><nobr><a href="gobjects.html">gobjects.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports a hierarchy of graphical shapes based on the model developed for the ACM Java Graphics.</td></tr>
-<tr><td class=indexKey><nobr><a href="goptionpane.html">goptionpane.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports the <code>GOptionPane</code> class for graphical input/output dialog boxes.</td></tr>
 <tr><td class=indexKey><nobr><a href="graph.html">graph.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports a parameterized <code>Graph</code> class used to represent <b><i>graphs,</i></b> which consist of a set of <b><i>nodes</i></b> and a set of <b><i>arcs</i></b>.</td></tr>
 <tr><td class=indexKey><nobr><a href="grid.html">grid.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports the <code>Grid</code> class, which offers a convenient abstraction for representing a two-dimensional array.</td></tr>
-<tr><td class=indexKey><nobr><a href="gtable.html">gtable.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file defines the <code>GTable</code> class.</td></tr>
 <tr><td class=indexKey><nobr><a href="gtimer.html">gtimer.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file defines the <code>GTimer</code> class, which implements a general interval timer.</td></tr>
 <tr><td class=indexKey><nobr><a href="gtypes.html">gtypes.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file defines classes for representing points, dimensions, and rectangles.</td></tr>
 <tr><td class=indexKey><nobr><a href="gwindow.html">gwindow.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file defines the <code>GWindow</code> class which supports drawing graphical objects on the screen.</td></tr>
@@ -302,7 +309,6 @@ classes, along with sample code.
 <tr><td class=indexKey><nobr><a href="sparsegrid.html">sparsegrid.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports the <code>SparseGrid</code> class, which offers a convenient abstraction for representing a two-dimensional array.</td></tr>
 <tr><td class=indexKey><nobr><a href="stack.html">stack.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports the <code>Stack</code> class, which implements a collection that processes values in a last-in/first-out (LIFO) order.</td></tr>
 <tr><td class=indexKey><nobr><a href="strlib.html">strlib.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports several useful string functions that are not included in the C++ string library.</td></tr>
-<tr><td class=indexKey><nobr><a href="thread.html">thread.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports a simple, platform-independent thread abstraction, along with simple tools for concurrency control.</td></tr>
 <tr><td class=indexKey><nobr><a href="timer.html">timer.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports a class for measuring intervals of time.</td></tr>
 <tr><td class=indexKey><nobr><a href="tokenscanner.html">tokenscanner.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports a <code>TokenScanner</code> class that divides a string into individual logical units called <b><i>tokens</i></b>.</td></tr>
 <tr><td class=indexKey><nobr><a href="vector.html">vector.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports the <code>Vector</code> class, which provides an efficient, safe, convenient replacement for the array type in C++.</td></tr>

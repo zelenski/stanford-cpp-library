@@ -65,6 +65,10 @@ virtual void \mbox{\hyperlink{classGContainer_a47f0cc45498a78757fa4d0e6befc2981}
 \begin{DoxyCompactList}\small\item\em Removes all interactors from the given region of this container, which is assumed to use a border layout. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGContainer_aeba526cb4d6d6f3d8d6f376656af8dc8}{clear\+Region}} (const std\+::string \&region)
 \begin{DoxyCompactList}\small\item\em Removes all interactors from the given region of this container, which is assumed to use a border layout. \end{DoxyCompactList}\item 
+virtual bool \mbox{\hyperlink{classGContainer_a29e67f98cd36414c67475b8941d861a6}{contains}} (\mbox{\hyperlink{classGInteractor}{G\+Interactor}} $\ast$interactor) const
+\begin{DoxyCompactList}\small\item\em Returns true if the given interactor is found in this container. \end{DoxyCompactList}\item 
+virtual bool \mbox{\hyperlink{classGContainer_a62fe1c67f06f657fea8b9b28672516a0}{contains}} (\mbox{\hyperlink{classGInteractor}{G\+Interactor}} \&interactor) const
+\begin{DoxyCompactList}\small\item\em Returns true if the given interactor is found in this container. \end{DoxyCompactList}\item 
 virtual bool \mbox{\hyperlink{classGInteractor_ac05ba5b92e2e5146d416fe7f842a0969}{events\+Enabled}} () const Q\+\_\+\+D\+E\+C\+L\+\_\+\+O\+V\+E\+R\+R\+I\+DE
 \begin{DoxyCompactList}\small\item\em Returns true if this interactor is currently accepting events. \end{DoxyCompactList}\item 
 virtual std\+::string \mbox{\hyperlink{classGInteractor_a69f8d23ed8f207fbecad99960776e942}{get\+Accelerator}} () const
@@ -189,6 +193,14 @@ virtual bool \mbox{\hyperlink{classGInteractor_aacb819fb241851fd9fc045271baa4034
 \begin{DoxyCompactList}\small\item\em Returns true if this interactor is currently enabled. \end{DoxyCompactList}\item 
 virtual bool \mbox{\hyperlink{classGInteractor_a9d8a6cfb13917785c143e74d40e4e2be}{is\+Visible}} () const
 \begin{DoxyCompactList}\small\item\em Returns true if the interactor is visible on the screen. \end{DoxyCompactList}\item 
+virtual bool \mbox{\hyperlink{classGContainer_a8909db9abf4dc80058f9e4a7b90ea2d0}{region\+Contains}} (\mbox{\hyperlink{classGInteractor}{G\+Interactor}} $\ast$interactor, \mbox{\hyperlink{classGContainer_a81a01a86de31071a92e6cce0bab9bc4b}{Region}} region) const
+\begin{DoxyCompactList}\small\item\em Returns true if the given interactor is found in the given region of this container, which is assumed to use a border layout. \end{DoxyCompactList}\item 
+virtual bool \mbox{\hyperlink{classGContainer_a84a56bae6b8883d27e44d51c31b2bfc5}{region\+Contains}} (\mbox{\hyperlink{classGInteractor}{G\+Interactor}} $\ast$interactor, const std\+::string \&region) const
+\begin{DoxyCompactList}\small\item\em Returns true if the given interactor is found in the given region of this container, which is assumed to use a border layout. \end{DoxyCompactList}\item 
+virtual bool \mbox{\hyperlink{classGContainer_aa4cf95952747fd421a2b005eedbc662c}{region\+Contains}} (\mbox{\hyperlink{classGInteractor}{G\+Interactor}} \&interactor, \mbox{\hyperlink{classGContainer_a81a01a86de31071a92e6cce0bab9bc4b}{Region}} region) const
+\begin{DoxyCompactList}\small\item\em Returns true if the given interactor is found in the given region of this container, which is assumed to use a border layout. \end{DoxyCompactList}\item 
+virtual bool \mbox{\hyperlink{classGContainer_ad67deacd62d3248fbe57ccbd4e96fb50}{region\+Contains}} (\mbox{\hyperlink{classGInteractor}{G\+Interactor}} \&interactor, const std\+::string \&region) const
+\begin{DoxyCompactList}\small\item\em Returns true if the given interactor is found in the given region of this container, which is assumed to use a border layout. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGContainer_a1c12b1fde5c2ef10d79d4ee51e670efa}{remove}} (\mbox{\hyperlink{classGInteractor}{G\+Interactor}} $\ast$interactor)
 \begin{DoxyCompactList}\small\item\em Removes the given interactor from this container. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGContainer_ade2376c458ac401a0bd2dbe44271509e}{remove}} (\mbox{\hyperlink{classGInteractor}{G\+Interactor}} \&interactor)
@@ -638,7 +650,27 @@ If the container does not use a border layout, has no effect. \mbox{\Hypertarget
 
 Removes all interactors from the given region of this container, which is assumed to use a border layout. 
 
-If the container does not use a border layout, has no effect. \mbox{\Hypertarget{classGObservable_a284f31528c0520f8e545c03ac9eeac74}\label{classGObservable_a284f31528c0520f8e545c03ac9eeac74}} 
+If the container does not use a border layout, has no effect. \mbox{\Hypertarget{classGContainer_a29e67f98cd36414c67475b8941d861a6}\label{classGContainer_a29e67f98cd36414c67475b8941d861a6}} 
+\index{G\+Container@{G\+Container}!contains@{contains}}
+\index{contains@{contains}!G\+Container@{G\+Container}}
+\subsubsection{\texorpdfstring{contains()}{contains()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily bool contains (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classGInteractor}{G\+Interactor}} $\ast$}]{interactor }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Returns true if the given interactor is found in this container. 
+
+Returns false if the interactor is null \mbox{\Hypertarget{classGContainer_a62fe1c67f06f657fea8b9b28672516a0}\label{classGContainer_a62fe1c67f06f657fea8b9b28672516a0}} 
+\index{G\+Container@{G\+Container}!contains@{contains}}
+\index{contains@{contains}!G\+Container@{G\+Container}}
+\subsubsection{\texorpdfstring{contains()}{contains()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily bool contains (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classGInteractor}{G\+Interactor}} \&}]{interactor }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Returns true if the given interactor is found in this container. 
+
+\mbox{\Hypertarget{classGObservable_a284f31528c0520f8e545c03ac9eeac74}\label{classGObservable_a284f31528c0520f8e545c03ac9eeac74}} 
 \index{G\+Container@{G\+Container}!ensure\+Thread\+Safety@{ensure\+Thread\+Safety}}
 \index{ensure\+Thread\+Safety@{ensure\+Thread\+Safety}!G\+Container@{G\+Container}}
 \subsubsection{\texorpdfstring{ensure\+Thread\+Safety()}{ensureThreadSafety()}}
@@ -1520,7 +1552,57 @@ Most interactors begin as enabled but can be disabled to stop them from being ab
 
 Returns true if the interactor is visible on the screen. 
 
-Interactors will not be visible until they are added to an onscreen window or container. \mbox{\Hypertarget{classGContainer_a1c12b1fde5c2ef10d79d4ee51e670efa}\label{classGContainer_a1c12b1fde5c2ef10d79d4ee51e670efa}} 
+Interactors will not be visible until they are added to an onscreen window or container. \mbox{\Hypertarget{classGContainer_a8909db9abf4dc80058f9e4a7b90ea2d0}\label{classGContainer_a8909db9abf4dc80058f9e4a7b90ea2d0}} 
+\index{G\+Container@{G\+Container}!region\+Contains@{region\+Contains}}
+\index{region\+Contains@{region\+Contains}!G\+Container@{G\+Container}}
+\subsubsection{\texorpdfstring{region\+Contains()}{regionContains()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily bool region\+Contains (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classGInteractor}{G\+Interactor}} $\ast$}]{interactor,  }\item[{\mbox{\hyperlink{classGContainer_a81a01a86de31071a92e6cce0bab9bc4b}{G\+Container\+::\+Region}}}]{region }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Returns true if the given interactor is found in the given region of this container, which is assumed to use a border layout. 
+
+If the container does not use a border layout, equivalent to \mbox{\hyperlink{classGContainer_a29e67f98cd36414c67475b8941d861a6}{contains()}}. 
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the interactor is null \\
+\hline
+\end{DoxyExceptions}
+\mbox{\Hypertarget{classGContainer_a84a56bae6b8883d27e44d51c31b2bfc5}\label{classGContainer_a84a56bae6b8883d27e44d51c31b2bfc5}} 
+\index{G\+Container@{G\+Container}!region\+Contains@{region\+Contains}}
+\index{region\+Contains@{region\+Contains}!G\+Container@{G\+Container}}
+\subsubsection{\texorpdfstring{region\+Contains()}{regionContains()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily bool region\+Contains (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classGInteractor}{G\+Interactor}} $\ast$}]{interactor,  }\item[{const std\+::string \&}]{region }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Returns true if the given interactor is found in the given region of this container, which is assumed to use a border layout. 
+
+If the container does not use a border layout, equivalent to \mbox{\hyperlink{classGContainer_a29e67f98cd36414c67475b8941d861a6}{contains()}}. 
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the interactor is null \\
+\hline
+\end{DoxyExceptions}
+\mbox{\Hypertarget{classGContainer_aa4cf95952747fd421a2b005eedbc662c}\label{classGContainer_aa4cf95952747fd421a2b005eedbc662c}} 
+\index{G\+Container@{G\+Container}!region\+Contains@{region\+Contains}}
+\index{region\+Contains@{region\+Contains}!G\+Container@{G\+Container}}
+\subsubsection{\texorpdfstring{region\+Contains()}{regionContains()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily bool region\+Contains (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classGInteractor}{G\+Interactor}} \&}]{interactor,  }\item[{\mbox{\hyperlink{classGContainer_a81a01a86de31071a92e6cce0bab9bc4b}{G\+Container\+::\+Region}}}]{region }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Returns true if the given interactor is found in the given region of this container, which is assumed to use a border layout. 
+
+If the container does not use a border layout, equivalent to \mbox{\hyperlink{classGContainer_a29e67f98cd36414c67475b8941d861a6}{contains()}}. \mbox{\Hypertarget{classGContainer_ad67deacd62d3248fbe57ccbd4e96fb50}\label{classGContainer_ad67deacd62d3248fbe57ccbd4e96fb50}} 
+\index{G\+Container@{G\+Container}!region\+Contains@{region\+Contains}}
+\index{region\+Contains@{region\+Contains}!G\+Container@{G\+Container}}
+\subsubsection{\texorpdfstring{region\+Contains()}{regionContains()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily bool region\+Contains (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classGInteractor}{G\+Interactor}} \&}]{interactor,  }\item[{const std\+::string \&}]{region }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Returns true if the given interactor is found in the given region of this container, which is assumed to use a border layout. 
+
+If the container does not use a border layout, equivalent to \mbox{\hyperlink{classGContainer_a29e67f98cd36414c67475b8941d861a6}{contains()}}. \mbox{\Hypertarget{classGContainer_a1c12b1fde5c2ef10d79d4ee51e670efa}\label{classGContainer_a1c12b1fde5c2ef10d79d4ee51e670efa}} 
 \index{G\+Container@{G\+Container}!remove@{remove}}
 \index{remove@{remove}!G\+Container@{G\+Container}}
 \subsubsection{\texorpdfstring{remove()}{remove()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}

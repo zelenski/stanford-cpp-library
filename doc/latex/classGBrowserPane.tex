@@ -112,6 +112,8 @@ virtual void \mbox{\hyperlink{classGBrowserPane_a58c4154aa0c23bc980d45bf9de7cc95
 \begin{DoxyCompactList}\small\item\em Reads text from the given file and displays the entire file\textquotesingle{}s text as the contents of this formatted pane. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGBrowserPane_a68ff415e722130964bc9e1de826f4869}{read\+Text\+From\+Url}} (const std\+::string \&url)
 \begin{DoxyCompactList}\small\item\em Reads text from the given web page U\+RL and displays the entire page\textquotesingle{}s text as the contents of this formatted pane. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{classGBrowserPane_a263a2282597ca9f0f73301fb202ae390}{remove\+Link\+Listener}} ()
+\begin{DoxyCompactList}\small\item\em Removes the link listener from the canvas so that it will no longer call it when hyperlink events occur. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGInteractor_a519fb2ac767f8b2febbb50b898b8c8cb}{request\+Focus}} ()
 \begin{DoxyCompactList}\small\item\em Transfers keyboard focus to this interactor. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGInteractor_ad15f102f62e2960576012f1aa0ba4b2e}{set\+Accelerator}} (const std\+::string \&accelerator)
@@ -148,6 +150,10 @@ virtual void \mbox{\hyperlink{classGInteractor_a9e280bfc4544dfaf8e4376c4e1a74357
 \begin{DoxyCompactList}\small\item\em Sets the onscreen height of the interactor in pixels. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGInteractor_a762e139aa311461c3984d3ad28293f64}{set\+Icon}} (const std\+::string \&filename, bool retain\+Icon\+Size=true)
 \begin{DoxyCompactList}\small\item\em Sets the file name of the icon associated with this interactor, or an empty string if no icon has been set. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{classGBrowserPane_aaa849c4aed1fa43178314f5c76e43081}{set\+Link\+Listener}} (G\+Event\+Listener func)
+\begin{DoxyCompactList}\small\item\em Sets a link listener on this canvas so that it will be called when the user clicks on hyperlinks on the pane. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{classGBrowserPane_aca745635b2c4ceb74587ca5cfc26f0c3}{set\+Link\+Listener}} (G\+Event\+Listener\+Void func)
+\begin{DoxyCompactList}\small\item\em Sets a link listener on this canvas so that it will be called when the user clicks on hyperlinks on the pane. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGInteractor_a04594e8ba9b98513a64f1da00dcae18c}{set\+Location}} (double x, double y)
 \begin{DoxyCompactList}\small\item\em Sets the onscreen x/y-\/coordinate of the top-\/left corner of the interactor relative to its window. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGInteractor_a0cf428e207b7f22cc08138a90b1b87b2}{set\+Minimum\+Size}} (double width, double height)
@@ -942,6 +948,16 @@ Removes any event listener from this observable object that would respond to the
 
 Removes any event listener from this observable object that would respond to the given types of events, such as \char`\"{}click\char`\"{} or \char`\"{}keydown\char`\"{}. 
 
+\mbox{\Hypertarget{classGBrowserPane_a263a2282597ca9f0f73301fb202ae390}\label{classGBrowserPane_a263a2282597ca9f0f73301fb202ae390}} 
+\index{G\+Browser\+Pane@{G\+Browser\+Pane}!remove\+Link\+Listener@{remove\+Link\+Listener}}
+\index{remove\+Link\+Listener@{remove\+Link\+Listener}!G\+Browser\+Pane@{G\+Browser\+Pane}}
+\subsubsection{\texorpdfstring{remove\+Link\+Listener()}{removeLinkListener()}}
+{\footnotesize\ttfamily void remove\+Link\+Listener (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Removes the link listener from the canvas so that it will no longer call it when hyperlink events occur. 
+
 \mbox{\Hypertarget{classGInteractor_a519fb2ac767f8b2febbb50b898b8c8cb}\label{classGInteractor_a519fb2ac767f8b2febbb50b898b8c8cb}} 
 \index{G\+Browser\+Pane@{G\+Browser\+Pane}!request\+Focus@{request\+Focus}}
 \index{request\+Focus@{request\+Focus}!G\+Browser\+Pane@{G\+Browser\+Pane}}
@@ -1270,7 +1286,27 @@ Not all types of interactors support icons.
 
 Reimplemented in \mbox{\hyperlink{classGLabel_a75753a3d7d3364185f8088d63b664cb1}{G\+Label}}, and \mbox{\hyperlink{classGButton_a75753a3d7d3364185f8088d63b664cb1}{G\+Button}}.
 
-\mbox{\Hypertarget{classGInteractor_a04594e8ba9b98513a64f1da00dcae18c}\label{classGInteractor_a04594e8ba9b98513a64f1da00dcae18c}} 
+\mbox{\Hypertarget{classGBrowserPane_aaa849c4aed1fa43178314f5c76e43081}\label{classGBrowserPane_aaa849c4aed1fa43178314f5c76e43081}} 
+\index{G\+Browser\+Pane@{G\+Browser\+Pane}!set\+Link\+Listener@{set\+Link\+Listener}}
+\index{set\+Link\+Listener@{set\+Link\+Listener}!G\+Browser\+Pane@{G\+Browser\+Pane}}
+\subsubsection{\texorpdfstring{set\+Link\+Listener()}{setLinkListener()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void set\+Link\+Listener (\begin{DoxyParamCaption}\item[{G\+Event\+Listener}]{func }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Sets a link listener on this canvas so that it will be called when the user clicks on hyperlinks on the pane. 
+
+Any existing mouse listener will be replaced. \mbox{\Hypertarget{classGBrowserPane_aca745635b2c4ceb74587ca5cfc26f0c3}\label{classGBrowserPane_aca745635b2c4ceb74587ca5cfc26f0c3}} 
+\index{G\+Browser\+Pane@{G\+Browser\+Pane}!set\+Link\+Listener@{set\+Link\+Listener}}
+\index{set\+Link\+Listener@{set\+Link\+Listener}!G\+Browser\+Pane@{G\+Browser\+Pane}}
+\subsubsection{\texorpdfstring{set\+Link\+Listener()}{setLinkListener()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void set\+Link\+Listener (\begin{DoxyParamCaption}\item[{G\+Event\+Listener\+Void}]{func }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Sets a link listener on this canvas so that it will be called when the user clicks on hyperlinks on the pane. 
+
+Any existing mouse listener will be replaced. \mbox{\Hypertarget{classGInteractor_a04594e8ba9b98513a64f1da00dcae18c}\label{classGInteractor_a04594e8ba9b98513a64f1da00dcae18c}} 
 \index{G\+Browser\+Pane@{G\+Browser\+Pane}!set\+Location@{set\+Location}}
 \index{set\+Location@{set\+Location}!G\+Browser\+Pane@{G\+Browser\+Pane}}
 \subsubsection{\texorpdfstring{set\+Location()}{setLocation()}}

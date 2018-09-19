@@ -30,7 +30,7 @@ enum \mbox{\hyperlink{classGInteractor_a8e0d441725a81d2bbdebbea09078260e}{Text\+
 \begin{DoxyCompactList}\small\item\em Creates an empty canvas with a default size of 0x0 pixels and a default background and foreground color of black. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classGCanvas_a0a9de139286d0fc9146928aff8f0538c}{G\+Canvas}} (const std\+::string \&filename, Q\+Widget $\ast$parent=nullptr)
 \begin{DoxyCompactList}\small\item\em Creates a canvas that loads its background layer pixel data from the given image file name. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classGCanvas_a43d162947a216bef2c35eeaed9c7b88f}{G\+Canvas}} (double width, double height, int rgb\+Background=0x000000, Q\+Widget $\ast$parent=nullptr)
+\mbox{\hyperlink{classGCanvas_a2c096b9b7c402dd90a507523c8012794}{G\+Canvas}} (double width, double height, int rgb\+Background=0xffffff, Q\+Widget $\ast$parent=nullptr)
 \begin{DoxyCompactList}\small\item\em Creates an empty canvas of the specified size and optional background color. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classGCanvas_acc055a20116c6767125897b0a851e5cb}{G\+Canvas}} (double width, double height, const std\+::string \&rgb\+Background, Q\+Widget $\ast$parent=nullptr)
 \begin{DoxyCompactList}\small\item\em Creates an empty canvas of the specified size and background color. \end{DoxyCompactList}\item 
@@ -388,6 +388,8 @@ virtual void \mbox{\hyperlink{classGInteractor_a9c18fcc579333bf9653d13ad2b372e39
 \begin{DoxyCompactList}\small\item\em Sets the onscreen x-\/coordinate of the top-\/left corner of the interactor relative to its window. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGInteractor_a7d57e2a5c35d27feb58fd498a3cf82b9}{setY}} (double y)
 \begin{DoxyCompactList}\small\item\em Sets the onscreen y-\/coordinate of the top-\/left corner of the interactor relative to its window. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{classGImage}{G\+Image}} $\ast$ \mbox{\hyperlink{classGCanvas_aa2b5affed24054a09bddfe568d11200b}{to\+G\+Image}} () const
+\begin{DoxyCompactList}\small\item\em Converts the pixels of the canvas into a \mbox{\hyperlink{classGImage}{G\+Image}} object. \end{DoxyCompactList}\item 
 virtual \mbox{\hyperlink{classGrid}{Grid}}$<$ int $>$ \mbox{\hyperlink{classGCanvas_a2f9b15856aaf66aa95cfd7405bd972cc}{to\+Grid}} () const
 \begin{DoxyCompactList}\small\item\em Converts this canvas\textquotesingle{}s pixel data into a grid of R\+GB pixels. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGCanvas_a11c06bec679dda1519ed914bca68900a}{to\+Grid}} (\mbox{\hyperlink{classGrid}{Grid}}$<$ int $>$ \&grid) const
@@ -564,17 +566,17 @@ Creates a canvas that loads its background layer pixel data from the given image
 {\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the given file does not exist or cannot be read as a valid image file \\
 \hline
 \end{DoxyExceptions}
-\mbox{\Hypertarget{classGCanvas_a43d162947a216bef2c35eeaed9c7b88f}\label{classGCanvas_a43d162947a216bef2c35eeaed9c7b88f}} 
+\mbox{\Hypertarget{classGCanvas_a2c096b9b7c402dd90a507523c8012794}\label{classGCanvas_a2c096b9b7c402dd90a507523c8012794}} 
 \index{G\+Canvas@{G\+Canvas}!G\+Canvas@{G\+Canvas}}
 \index{G\+Canvas@{G\+Canvas}!G\+Canvas@{G\+Canvas}}
 \subsubsection{\texorpdfstring{G\+Canvas()}{GCanvas()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classGCanvas}{G\+Canvas}} (\begin{DoxyParamCaption}\item[{double}]{width,  }\item[{double}]{height,  }\item[{int}]{rgb\+Background = {\ttfamily 0x000000},  }\item[{Q\+Widget $\ast$}]{parent = {\ttfamily nullptr} }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \mbox{\hyperlink{classGCanvas}{G\+Canvas}} (\begin{DoxyParamCaption}\item[{double}]{width,  }\item[{double}]{height,  }\item[{int}]{rgb\+Background = {\ttfamily 0xffffff},  }\item[{Q\+Widget $\ast$}]{parent = {\ttfamily nullptr} }\end{DoxyParamCaption})}
 
 
 
 Creates an empty canvas of the specified size and optional background color. 
 
-If no background color is passed, the default of black is used. 
+If no background color is passed, the default of white is used. 
 \begin{DoxyExceptions}{Exceptions}
 {\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the given width/height ranges are negative \\
 \hline
@@ -3132,6 +3134,16 @@ Sets the onscreen y-\/coordinate of the top-\/left corner of the interactor rela
 Generally clients should not call this and should instead use containers and layout regions to position interactors. 
 
 Reimplemented in \mbox{\hyperlink{classGLabel_a59633abb35b676c54d88ea6cd384fc55}{G\+Label}}.
+
+\mbox{\Hypertarget{classGCanvas_aa2b5affed24054a09bddfe568d11200b}\label{classGCanvas_aa2b5affed24054a09bddfe568d11200b}} 
+\index{G\+Canvas@{G\+Canvas}!to\+G\+Image@{to\+G\+Image}}
+\index{to\+G\+Image@{to\+G\+Image}!G\+Canvas@{G\+Canvas}}
+\subsubsection{\texorpdfstring{to\+G\+Image()}{toGImage()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classGImage}{G\+Image}} $\ast$ to\+G\+Image (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Converts the pixels of the canvas into a \mbox{\hyperlink{classGImage}{G\+Image}} object. 
 
 \mbox{\Hypertarget{classGCanvas_a2f9b15856aaf66aa95cfd7405bd972cc}\label{classGCanvas_a2f9b15856aaf66aa95cfd7405bd972cc}} 
 \index{G\+Canvas@{G\+Canvas}!to\+Grid@{to\+Grid}}

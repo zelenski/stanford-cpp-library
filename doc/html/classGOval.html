@@ -157,6 +157,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4f83802015511edeb63b892830812c11"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGPoint.html">GPoint</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#a4f83802015511edeb63b892830812c11">getLocation</a>() const</td></tr>
 <tr class="memdesc:a4f83802015511edeb63b892830812c11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the location of the top-left corner of object.  <a href="#a4f83802015511edeb63b892830812c11">More...</a><br /></td></tr>
 <tr class="separator:a4f83802015511edeb63b892830812c11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ae3fc278cc5b71b9f2d96a8a83cdf26"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#a1ae3fc278cc5b71b9f2d96a8a83cdf26">getOpacity</a>() const</td></tr>
+<tr class="memdesc:a1ae3fc278cc5b71b9f2d96a8a83cdf26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns how opaque (non-transparent) this object will appear from 0.0 (completely transparent) to 1.0 (completely opaque, default).  <a href="#a1ae3fc278cc5b71b9f2d96a8a83cdf26">More...</a><br /></td></tr>
+<tr class="separator:a1ae3fc278cc5b71b9f2d96a8a83cdf26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3e53cef70541b1a14eade4ad0984d0b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGCompound.html">GCompound</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#a3e53cef70541b1a14eade4ad0984d0b4">getParent</a>() const</td></tr>
 <tr class="memdesc:a3e53cef70541b1a14eade4ad0984d0b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the <code><a class="el" href="classGCompound.html" title="This graphical object subclass consists of a collection of other graphical objects. ">GCompound</a></code> that contains this object.  <a href="#a3e53cef70541b1a14eade4ad0984d0b4">More...</a><br /></td></tr>
 <tr class="separator:a3e53cef70541b1a14eade4ad0984d0b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -292,6 +295,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa8480c0b7166cdf8f784cece06ab353f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#aa8480c0b7166cdf8f784cece06ab353f">setLocation</a>(const <a class="el" href="classGPoint.html">GPoint</a> &amp;pt)</td></tr>
 <tr class="memdesc:aa8480c0b7166cdf8f784cece06ab353f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the location of the top-left corner of this object to the specified point.  <a href="#aa8480c0b7166cdf8f784cece06ab353f">More...</a><br /></td></tr>
 <tr class="separator:aa8480c0b7166cdf8f784cece06ab353f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04af1866cc1bae4a1226695794a50539"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#a04af1866cc1bae4a1226695794a50539">setOpacity</a>(double opacity)</td></tr>
+<tr class="memdesc:a04af1866cc1bae4a1226695794a50539"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets how opaque (non-transparent) this object will appear from 0.0 (completely transparent) to 1.0 (completely opaque, default).  <a href="#a04af1866cc1bae4a1226695794a50539">More...</a><br /></td></tr>
+<tr class="separator:a04af1866cc1bae4a1226695794a50539"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c90b758cdc2c911c9ef76c4360eb912"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#a3c90b758cdc2c911c9ef76c4360eb912">setRightX</a>(double x)</td></tr>
 <tr class="memdesc:a3c90b758cdc2c911c9ef76c4360eb912"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the location of the rightmost x-coordinate of this object.  <a href="#a3c90b758cdc2c911c9ef76c4360eb912">More...</a><br /></td></tr>
 <tr class="separator:a3c90b758cdc2c911c9ef76c4360eb912"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -354,6 +360,8 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a89bafecaafb7c72d55c7efc10b7d0523"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16e9033665937f13de2e163dc2184aff"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#a16e9033665937f13de2e163dc2184aff">_lineWidth</a></td></tr>
 <tr class="separator:a16e9033665937f13de2e163dc2184aff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20eff8eb7af27182edc9bfc54768b6f3"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#a20eff8eb7af27182edc9bfc54768b6f3">_opacity</a></td></tr>
+<tr class="separator:a20eff8eb7af27182edc9bfc54768b6f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac9452c1eaff70eebddbb318196aa3835"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGCompound.html">GCompound</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#ac9452c1eaff70eebddbb318196aa3835">_parent</a></td></tr>
 <tr class="separator:ac9452c1eaff70eebddbb318196aa3835"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb69d172743f868299847174eb1b6bc8"><td class="memItemLeft" align="right" valign="top">QPen&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#afb69d172743f868299847174eb1b6bc8">_pen</a></td></tr>
@@ -853,6 +861,33 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns the location of the top-left corner of object. </p>
+
+</div>
+</div>
+<a id="a1ae3fc278cc5b71b9f2d96a8a83cdf26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ae3fc278cc5b71b9f2d96a8a83cdf26">&#9670;&nbsp;</a></span>getOpacity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double getOpacity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns how opaque (non-transparent) this object will appear from 0.0 (completely transparent) to 1.0 (completely opaque, default). </p>
 
 </div>
 </div>
@@ -2362,6 +2397,40 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a04af1866cc1bae4a1226695794a50539"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04af1866cc1bae4a1226695794a50539">&#9670;&nbsp;</a></span>setOpacity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void setOpacity </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>opacity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets how opaque (non-transparent) this object will appear from 0.0 (completely transparent) to 1.0 (completely opaque, default). </p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if opacity is out of range [0.0, 1.0] </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a3c90b758cdc2c911c9ef76c4360eb912"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3c90b758cdc2c911c9ef76c4360eb912">&#9670;&nbsp;</a></span>setRightX()</h2>
 
@@ -2837,6 +2906,28 @@ Protected Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">double _lineWidth</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a20eff8eb7af27182edc9bfc54768b6f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20eff8eb7af27182edc9bfc54768b6f3">&#9670;&nbsp;</a></span>_opacity</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double _opacity</td>
         </tr>
       </table>
   </td>

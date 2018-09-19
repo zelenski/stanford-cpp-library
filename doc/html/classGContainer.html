@@ -167,6 +167,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aeba526cb4d6d6f3d8d6f376656af8dc8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGContainer.html#aeba526cb4d6d6f3d8d6f376656af8dc8">clearRegion</a>(string region)</td></tr>
 <tr class="memdesc:aeba526cb4d6d6f3d8d6f376656af8dc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes all interactors from the given region of this container, which is assumed to use a border layout.  <a href="#aeba526cb4d6d6f3d8d6f376656af8dc8">More...</a><br /></td></tr>
 <tr class="separator:aeba526cb4d6d6f3d8d6f376656af8dc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29e67f98cd36414c67475b8941d861a6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGContainer.html#a29e67f98cd36414c67475b8941d861a6">contains</a>(<a class="el" href="classGInteractor.html">GInteractor</a> *interactor) const</td></tr>
+<tr class="memdesc:a29e67f98cd36414c67475b8941d861a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the given interactor is found in this container.  <a href="#a29e67f98cd36414c67475b8941d861a6">More...</a><br /></td></tr>
+<tr class="separator:a29e67f98cd36414c67475b8941d861a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62fe1c67f06f657fea8b9b28672516a0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGContainer.html#a62fe1c67f06f657fea8b9b28672516a0">contains</a>(<a class="el" href="classGInteractor.html">GInteractor</a> &amp;interactor) const</td></tr>
+<tr class="memdesc:a62fe1c67f06f657fea8b9b28672516a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the given interactor is found in this container.  <a href="#a62fe1c67f06f657fea8b9b28672516a0">More...</a><br /></td></tr>
+<tr class="separator:a62fe1c67f06f657fea8b9b28672516a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac05ba5b92e2e5146d416fe7f842a0969"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGInteractor.html#ac05ba5b92e2e5146d416fe7f842a0969">eventsEnabled</a>() const </td></tr>
 <tr class="memdesc:ac05ba5b92e2e5146d416fe7f842a0969"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this interactor is currently accepting events.  <a href="#ac05ba5b92e2e5146d416fe7f842a0969">More...</a><br /></td></tr>
 <tr class="separator:ac05ba5b92e2e5146d416fe7f842a0969"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -353,6 +359,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9d8a6cfb13917785c143e74d40e4e2be"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGInteractor.html#a9d8a6cfb13917785c143e74d40e4e2be">isVisible</a>() const</td></tr>
 <tr class="memdesc:a9d8a6cfb13917785c143e74d40e4e2be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the interactor is visible on the screen.  <a href="#a9d8a6cfb13917785c143e74d40e4e2be">More...</a><br /></td></tr>
 <tr class="separator:a9d8a6cfb13917785c143e74d40e4e2be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8909db9abf4dc80058f9e4a7b90ea2d0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGContainer.html#a8909db9abf4dc80058f9e4a7b90ea2d0">regionContains</a>(<a class="el" href="classGInteractor.html">GInteractor</a> *interactor, <a class="el" href="classGContainer.html#a81a01a86de31071a92e6cce0bab9bc4b">Region</a> region) const</td></tr>
+<tr class="memdesc:a8909db9abf4dc80058f9e4a7b90ea2d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the given interactor is found in the given region of this container, which is assumed to use a border layout.  <a href="#a8909db9abf4dc80058f9e4a7b90ea2d0">More...</a><br /></td></tr>
+<tr class="separator:a8909db9abf4dc80058f9e4a7b90ea2d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84a56bae6b8883d27e44d51c31b2bfc5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGContainer.html#a84a56bae6b8883d27e44d51c31b2bfc5">regionContains</a>(<a class="el" href="classGInteractor.html">GInteractor</a> *interactor, string region) const</td></tr>
+<tr class="memdesc:a84a56bae6b8883d27e44d51c31b2bfc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the given interactor is found in the given region of this container, which is assumed to use a border layout.  <a href="#a84a56bae6b8883d27e44d51c31b2bfc5">More...</a><br /></td></tr>
+<tr class="separator:a84a56bae6b8883d27e44d51c31b2bfc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4cf95952747fd421a2b005eedbc662c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGContainer.html#aa4cf95952747fd421a2b005eedbc662c">regionContains</a>(<a class="el" href="classGInteractor.html">GInteractor</a> &amp;interactor, <a class="el" href="classGContainer.html#a81a01a86de31071a92e6cce0bab9bc4b">Region</a> region) const</td></tr>
+<tr class="memdesc:aa4cf95952747fd421a2b005eedbc662c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the given interactor is found in the given region of this container, which is assumed to use a border layout.  <a href="#aa4cf95952747fd421a2b005eedbc662c">More...</a><br /></td></tr>
+<tr class="separator:aa4cf95952747fd421a2b005eedbc662c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad67deacd62d3248fbe57ccbd4e96fb50"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGContainer.html#ad67deacd62d3248fbe57ccbd4e96fb50">regionContains</a>(<a class="el" href="classGInteractor.html">GInteractor</a> &amp;interactor, string region) const</td></tr>
+<tr class="memdesc:ad67deacd62d3248fbe57ccbd4e96fb50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the given interactor is found in the given region of this container, which is assumed to use a border layout.  <a href="#ad67deacd62d3248fbe57ccbd4e96fb50">More...</a><br /></td></tr>
+<tr class="separator:ad67deacd62d3248fbe57ccbd4e96fb50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1c12b1fde5c2ef10d79d4ee51e670efa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGContainer.html#a1c12b1fde5c2ef10d79d4ee51e670efa">remove</a>(<a class="el" href="classGInteractor.html">GInteractor</a> *interactor)</td></tr>
 <tr class="memdesc:a1c12b1fde5c2ef10d79d4ee51e670efa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the given interactor from this container.  <a href="#a1c12b1fde5c2ef10d79d4ee51e670efa">More...</a><br /></td></tr>
 <tr class="separator:a1c12b1fde5c2ef10d79d4ee51e670efa"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1270,6 +1288,63 @@ Protected Member Functions</h2></td></tr>
 
 <p>Removes all interactors from the given region of this container, which is assumed to use a border layout. </p>
 <p>If the container does not use a border layout, has no effect. </p>
+
+</div>
+</div>
+<a id="a29e67f98cd36414c67475b8941d861a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29e67f98cd36414c67475b8941d861a6">&#9670;&nbsp;</a></span>contains() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool contains </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGInteractor.html">GInteractor</a> *&#160;</td>
+          <td class="paramname"><em>interactor</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns true if the given interactor is found in this container. </p>
+<p>Returns false if the interactor is null </p>
+
+</div>
+</div>
+<a id="a62fe1c67f06f657fea8b9b28672516a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62fe1c67f06f657fea8b9b28672516a0">&#9670;&nbsp;</a></span>contains() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool contains </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGInteractor.html">GInteractor</a> &amp;&#160;</td>
+          <td class="paramname"><em>interactor</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns true if the given interactor is found in this container. </p>
 
 </div>
 </div>
@@ -3719,6 +3794,172 @@ Protected Member Functions</h2></td></tr>
 
 <p>Returns true if the interactor is visible on the screen. </p>
 <p>Interactors will not be visible until they are added to an onscreen window or container. </p>
+
+</div>
+</div>
+<a id="a8909db9abf4dc80058f9e4a7b90ea2d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8909db9abf4dc80058f9e4a7b90ea2d0">&#9670;&nbsp;</a></span>regionContains() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool regionContains </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGInteractor.html">GInteractor</a> *&#160;</td>
+          <td class="paramname"><em>interactor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classGContainer.html#a81a01a86de31071a92e6cce0bab9bc4b">GContainer::Region</a>&#160;</td>
+          <td class="paramname"><em>region</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns true if the given interactor is found in the given region of this container, which is assumed to use a border layout. </p>
+<p>If the container does not use a border layout, equivalent to <a class="el" href="classGContainer.html#a29e67f98cd36414c67475b8941d861a6" title="Returns true if the given interactor is found in this container. ">contains()</a>. </p><dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the interactor is null </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a84a56bae6b8883d27e44d51c31b2bfc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84a56bae6b8883d27e44d51c31b2bfc5">&#9670;&nbsp;</a></span>regionContains() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool regionContains </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGInteractor.html">GInteractor</a> *&#160;</td>
+          <td class="paramname"><em>interactor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string &#160;</td>
+          <td class="paramname"><em>region</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns true if the given interactor is found in the given region of this container, which is assumed to use a border layout. </p>
+<p>If the container does not use a border layout, equivalent to <a class="el" href="classGContainer.html#a29e67f98cd36414c67475b8941d861a6" title="Returns true if the given interactor is found in this container. ">contains()</a>. </p><dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the interactor is null </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa4cf95952747fd421a2b005eedbc662c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4cf95952747fd421a2b005eedbc662c">&#9670;&nbsp;</a></span>regionContains() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool regionContains </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGInteractor.html">GInteractor</a> &amp;&#160;</td>
+          <td class="paramname"><em>interactor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classGContainer.html#a81a01a86de31071a92e6cce0bab9bc4b">GContainer::Region</a>&#160;</td>
+          <td class="paramname"><em>region</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns true if the given interactor is found in the given region of this container, which is assumed to use a border layout. </p>
+<p>If the container does not use a border layout, equivalent to <a class="el" href="classGContainer.html#a29e67f98cd36414c67475b8941d861a6" title="Returns true if the given interactor is found in this container. ">contains()</a>. </p>
+
+</div>
+</div>
+<a id="ad67deacd62d3248fbe57ccbd4e96fb50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad67deacd62d3248fbe57ccbd4e96fb50">&#9670;&nbsp;</a></span>regionContains() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool regionContains </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGInteractor.html">GInteractor</a> &amp;&#160;</td>
+          <td class="paramname"><em>interactor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string &#160;</td>
+          <td class="paramname"><em>region</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns true if the given interactor is found in the given region of this container, which is assumed to use a border layout. </p>
+<p>If the container does not use a border layout, equivalent to <a class="el" href="classGContainer.html#a29e67f98cd36414c67475b8941d861a6" title="Returns true if the given interactor is found in this container. ">contains()</a>. </p>
 
 </div>
 </div>

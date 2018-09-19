@@ -11,6 +11,7 @@ var searchData=
   ['black',['BLACK',['../classGColor.html#a06fc87d81c62e9abb8790b6e5713c55baf77fb67151d0c18d397069ad8c271ba3',1,'GColor']]],
   ['blocked',['blocked',['../classstanfordcpplib_1_1ConsoleStreambuf.html#ac74e3d5a1b1eeb5c8e32867ad62823f0',1,'stanfordcpplib::ConsoleStreambuf']]],
   ['blue',['BLUE',['../classGColor.html#a06fc87d81c62e9abb8790b6e5713c55ba35d6719cb4d7577c031b3d79057a1b79',1,'GColor']]],
+  ['boldfont',['boldFont',['../classGFont.html#ae709c4560c613217490269d4df94602c',1,'GFont']]],
   ['brown',['BROWN',['../classGColor.html#a06fc87d81c62e9abb8790b6e5713c55ba1fa14482e7e4dc1332ab8c9d995fe570',1,'GColor']]],
   ['buffer_5fsize',['BUFFER_SIZE',['../classstanfordcpplib_1_1ConsoleStreambuf.html#a91f806c1bc7c1f4f402a627773840252',1,'stanfordcpplib::ConsoleStreambuf']]]
 ];

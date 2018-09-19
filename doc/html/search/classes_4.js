@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['dawglexicon',['DawgLexicon',['../classDawgLexicon.html',1,'']]],
-  ['deque',['Deque',['../classDeque.html',1,'']]],
-  ['deque_5fiterator',['deque_iterator',['../classDeque_1_1deque__iterator.html',1,'Deque']]]
+  ['echoingstreambuf',['EchoingStreambuf',['../classplainconsole_1_1EchoingStreambuf.html',1,'plainconsole']]],
+  ['echoinputstreambuf',['EchoInputStreambuf',['../classstanfordcpplib_1_1EchoInputStreambuf.html',1,'stanfordcpplib']]],
+  ['entry',['entry',['../structstacktrace_1_1entry.html',1,'stacktrace']]],
+  ['errorexception',['ErrorException',['../classErrorException.html',1,'']]]
 ];

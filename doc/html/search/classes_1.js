@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['arrayrange',['ArrayRange',['../struct__fe_1_1ArrayRange.html',1,'_fe']]]
+  ['basicgraphgen',['BasicGraphGen',['../classBasicGraphGen.html',1,'']]],
+  ['biginteger',['BigInteger',['../classBigInteger.html',1,'']]]
 ];

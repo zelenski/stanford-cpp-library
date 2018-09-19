@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['_5f_5fstanfordcpplibraryinitializer',['__StanfordCppLibraryInitializer',['../classstanfordcpplib_1_1____StanfordCppLibraryInitializer.html',1,'__StanfordCppLibraryInitializer'],['../classstanfordcpplib_1_1____StanfordCppLibraryInitializer.html#ac5c5e49047ac854db1577ac4b70f3be1',1,'stanfordcpplib::__StanfordCppLibraryInitializer::__StanfordCppLibraryInitializer()']]],
   ['_5fautograder_5fsetexitgraphicsenabled',['_autograder_setExitGraphicsEnabled',['../classGWindow.html#a2e528e6ab0611fb2bd33810b4a610403',1,'GWindow']]],
   ['_5fautograder_5fsetisautograderwindow',['_autograder_setIsAutograderWindow',['../classGWindow.html#a458811bab688db3875a6806b3ba4d938',1,'GWindow']]],
   ['_5fautograder_5fsetpauseenabled',['_autograder_setPauseEnabled',['../classGWindow.html#ae51372f06b62dd7ffef8678b147cc70a',1,'GWindow']]],
@@ -22,6 +21,7 @@ var searchData=
   ['_5fheight',['_height',['../classGObject.html#ad05df29e7f27fc504abd743e3d8b4e73',1,'GObject']]],
   ['_5flinestyle',['_lineStyle',['../classGDrawingSurface.html#ae15d02c66691247a6824dc5943a620e2',1,'GDrawingSurface::_lineStyle()'],['../classGObject.html#a89bafecaafb7c72d55c7efc10b7d0523',1,'GObject::_lineStyle()']]],
   ['_5flinewidth',['_lineWidth',['../classGDrawingSurface.html#a16e9033665937f13de2e163dc2184aff',1,'GDrawingSurface::_lineWidth()'],['../classGObject.html#a16e9033665937f13de2e163dc2184aff',1,'GObject::_lineWidth()']]],
+  ['_5fopacity',['_opacity',['../classGObject.html#a20eff8eb7af27182edc9bfc54768b6f3',1,'GObject']]],
   ['_5fparent',['_parent',['../classGObject.html#ac9452c1eaff70eebddbb318196aa3835',1,'GObject']]],
   ['_5fpen',['_pen',['../classGObject.html#afb69d172743f868299847174eb1b6bc8',1,'GObject']]],
   ['_5fqtmainthread',['_qtMainThread',['../classGThread.html#aa69140e62a4dad275e74a6c1174eb4e5',1,'GThread']]],

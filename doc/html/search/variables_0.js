@@ -17,6 +17,7 @@ var searchData=
   ['_5fheight',['_height',['../classGObject.html#ad05df29e7f27fc504abd743e3d8b4e73',1,'GObject']]],
   ['_5flinestyle',['_lineStyle',['../classGDrawingSurface.html#ae15d02c66691247a6824dc5943a620e2',1,'GDrawingSurface::_lineStyle()'],['../classGObject.html#a89bafecaafb7c72d55c7efc10b7d0523',1,'GObject::_lineStyle()']]],
   ['_5flinewidth',['_lineWidth',['../classGDrawingSurface.html#a16e9033665937f13de2e163dc2184aff',1,'GDrawingSurface::_lineWidth()'],['../classGObject.html#a16e9033665937f13de2e163dc2184aff',1,'GObject::_lineWidth()']]],
+  ['_5fopacity',['_opacity',['../classGObject.html#a20eff8eb7af27182edc9bfc54768b6f3',1,'GObject']]],
   ['_5fparent',['_parent',['../classGObject.html#ac9452c1eaff70eebddbb318196aa3835',1,'GObject']]],
   ['_5fpen',['_pen',['../classGObject.html#afb69d172743f868299847174eb1b6bc8',1,'GObject']]],
   ['_5fqtmainthread',['_qtMainThread',['../classGThread.html#aa69140e62a4dad275e74a6c1174eb4e5',1,'GThread']]],

@@ -118,9 +118,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0a9de139286d0fc9146928aff8f0538c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGCanvas.html#a0a9de139286d0fc9146928aff8f0538c">GCanvas</a>(string filename, QWidget* parent=nullptr)</td></tr>
 <tr class="memdesc:a0a9de139286d0fc9146928aff8f0538c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a canvas that loads its background layer pixel data from the given image file name.  <a href="#a0a9de139286d0fc9146928aff8f0538c">More...</a><br /></td></tr>
 <tr class="separator:a0a9de139286d0fc9146928aff8f0538c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a43d162947a216bef2c35eeaed9c7b88f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGCanvas.html#a43d162947a216bef2c35eeaed9c7b88f">GCanvas</a>(double width, double height, int rgbBackground=0x000000, QWidget* parent=nullptr)</td></tr>
-<tr class="memdesc:a43d162947a216bef2c35eeaed9c7b88f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an empty canvas of the specified size and optional background color.  <a href="#a43d162947a216bef2c35eeaed9c7b88f">More...</a><br /></td></tr>
-<tr class="separator:a43d162947a216bef2c35eeaed9c7b88f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c096b9b7c402dd90a507523c8012794"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGCanvas.html#a2c096b9b7c402dd90a507523c8012794">GCanvas</a>(double width, double height, int rgbBackground=0xffffff, QWidget* parent=nullptr)</td></tr>
+<tr class="memdesc:a2c096b9b7c402dd90a507523c8012794"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an empty canvas of the specified size and optional background color.  <a href="#a2c096b9b7c402dd90a507523c8012794">More...</a><br /></td></tr>
+<tr class="separator:a2c096b9b7c402dd90a507523c8012794"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc055a20116c6767125897b0a851e5cb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGCanvas.html#acc055a20116c6767125897b0a851e5cb">GCanvas</a>(double width, double height, string rgbBackground, QWidget* parent=nullptr)</td></tr>
 <tr class="memdesc:acc055a20116c6767125897b0a851e5cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an empty canvas of the specified size and background color.  <a href="#acc055a20116c6767125897b0a851e5cb">More...</a><br /></td></tr>
 <tr class="separator:acc055a20116c6767125897b0a851e5cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -655,6 +655,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7d57e2a5c35d27feb58fd498a3cf82b9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGInteractor.html#a7d57e2a5c35d27feb58fd498a3cf82b9">setY</a>(double y)</td></tr>
 <tr class="memdesc:a7d57e2a5c35d27feb58fd498a3cf82b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the onscreen y-coordinate of the top-left corner of the interactor relative to its window.  <a href="#a7d57e2a5c35d27feb58fd498a3cf82b9">More...</a><br /></td></tr>
 <tr class="separator:a7d57e2a5c35d27feb58fd498a3cf82b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2b5affed24054a09bddfe568d11200b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGImage.html">GImage</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGCanvas.html#aa2b5affed24054a09bddfe568d11200b">toGImage</a>() const</td></tr>
+<tr class="memdesc:aa2b5affed24054a09bddfe568d11200b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the pixels of the canvas into a <a class="el" href="classGImage.html" title="This graphical object subclass represents an image from a file. ">GImage</a> object.  <a href="#aa2b5affed24054a09bddfe568d11200b">More...</a><br /></td></tr>
+<tr class="separator:aa2b5affed24054a09bddfe568d11200b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f9b15856aaf66aa95cfd7405bd972cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGrid.html">Grid</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGCanvas.html#a2f9b15856aaf66aa95cfd7405bd972cc">toGrid</a>() const</td></tr>
 <tr class="memdesc:a2f9b15856aaf66aa95cfd7405bd972cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts this canvas's pixel data into a grid of RGB pixels.  <a href="#a2f9b15856aaf66aa95cfd7405bd972cc">More...</a><br /></td></tr>
 <tr class="separator:a2f9b15856aaf66aa95cfd7405bd972cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -893,8 +896,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a43d162947a216bef2c35eeaed9c7b88f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a43d162947a216bef2c35eeaed9c7b88f">&#9670;&nbsp;</a></span>GCanvas() <span class="overload">[3/4]</span></h2>
+<a id="a2c096b9b7c402dd90a507523c8012794"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c096b9b7c402dd90a507523c8012794">&#9670;&nbsp;</a></span>GCanvas() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -915,7 +918,7 @@ Protected Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>rgbBackground</em> = <code>0x000000</code>, </td>
+          <td class="paramname"><em>rgbBackground</em> = <code>0xffffff</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -932,7 +935,7 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Creates an empty canvas of the specified size and optional background color. </p>
-<p>If no background color is passed, the default of black is used. </p><dl class="exception"><dt>Exceptions</dt><dd>
+<p>If no background color is passed, the default of white is used. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the given width/height ranges are negative </td></tr>
     <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the given rgb value is invalid or out of range </td></tr>
@@ -8415,6 +8418,33 @@ Protected Attributes</h2></td></tr>
 <p>Generally clients should not call this and should instead use containers and layout regions to position interactors. </p>
 
 <p>Reimplemented in <a class="el" href="classGLabel.html#a59633abb35b676c54d88ea6cd384fc55">GLabel</a>.</p>
+
+</div>
+</div>
+<a id="aa2b5affed24054a09bddfe568d11200b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2b5affed24054a09bddfe568d11200b">&#9670;&nbsp;</a></span>toGImage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGImage.html">GImage</a> * toGImage </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Converts the pixels of the canvas into a <a class="el" href="classGImage.html" title="This graphical object subclass represents an image from a file. ">GImage</a> object. </p>
 
 </div>
 </div>

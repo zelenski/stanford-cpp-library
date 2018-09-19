@@ -58,11 +58,11 @@ static std\+::string \mbox{\hyperlink{classGOptionPane_a611d2c1c7209b39b3c74d903
 \begin{DoxyCompactList}\small\item\em Shows a general input box with a set of buttons from which the user may choose one option. \end{DoxyCompactList}\item 
 static std\+::string \mbox{\hyperlink{classGOptionPane_ae710ab30d0f4995523abed1180559d35}{show\+Option\+Dialog}} (Q\+Widget $\ast$parent, const std\+::string \&message, const \mbox{\hyperlink{classVector}{Vector}}$<$ std\+::string $>$ \&options, const std\+::string \&title=\char`\"{}\char`\"{}, const std\+::string \&initially\+Selected=\char`\"{}\char`\"{})
 \begin{DoxyCompactList}\small\item\em Shows a general input box with a set of buttons from which the user may choose one option. \end{DoxyCompactList}\item 
-static void \mbox{\hyperlink{classGOptionPane_ac23d3f6bc00fb83d71f7168bfe162abf}{show\+Text\+File\+Dialog}} (const std\+::string \&message, const std\+::string \&title=\char`\"{}\char`\"{}, int rows=-\/1, int cols=-\/1)
+static void \mbox{\hyperlink{classGOptionPane_a8c5008daa752e1e66585def05a70e925}{show\+Text\+File\+Dialog}} (const std\+::string \&file\+Text, const std\+::string \&title=\char`\"{}\char`\"{}, int rows=-\/1, int cols=-\/1)
 \begin{DoxyCompactList}\small\item\em Displays the given text in a scrolling monospaced text area. \end{DoxyCompactList}\item 
-static void \mbox{\hyperlink{classGOptionPane_a7e1e9057ebd16b8769a93dba306a9f55}{show\+Text\+File\+Dialog}} (\mbox{\hyperlink{classGWindow}{G\+Window}} $\ast$parent, const std\+::string \&message, const std\+::string \&title=\char`\"{}\char`\"{}, int rows=-\/1, int cols=-\/1)
+static void \mbox{\hyperlink{classGOptionPane_af8cf594b9d9b1c6569fc8a3ca2ee0602}{show\+Text\+File\+Dialog}} (\mbox{\hyperlink{classGWindow}{G\+Window}} $\ast$parent, const std\+::string \&file\+Text, const std\+::string \&title=\char`\"{}\char`\"{}, int rows=-\/1, int cols=-\/1)
 \begin{DoxyCompactList}\small\item\em Displays the given text in a scrolling monospaced text area. \end{DoxyCompactList}\item 
-static void \mbox{\hyperlink{classGOptionPane_a684cc543d7d7cb206355b534e261d0c9}{show\+Text\+File\+Dialog}} (Q\+Widget $\ast$parent, const std\+::string \&message, const std\+::string \&title=\char`\"{}\char`\"{}, int rows=-\/1, int cols=-\/1)
+static void \mbox{\hyperlink{classGOptionPane_a6d1d2769369649efbc5142804ff8b165}{show\+Text\+File\+Dialog}} (Q\+Widget $\ast$parent, const std\+::string \&file\+Text, const std\+::string \&title=\char`\"{}\char`\"{}, int rows=-\/1, int cols=-\/1)
 \begin{DoxyCompactList}\small\item\em Displays the given text in a scrolling monospaced text area. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
@@ -281,31 +281,31 @@ The button the user clicks is returned as a string. If the user cancels the box,
 
 Shows a general input box with a set of buttons from which the user may choose one option. 
 
-The button the user clicks is returned as a string. If the user cancels the box, an empty string is returned. The caller can supply an optional window title; if none is passed, a default is used. The caller can supply an optional initially selected value from the list. \mbox{\Hypertarget{classGOptionPane_ac23d3f6bc00fb83d71f7168bfe162abf}\label{classGOptionPane_ac23d3f6bc00fb83d71f7168bfe162abf}} 
+The button the user clicks is returned as a string. If the user cancels the box, an empty string is returned. The caller can supply an optional window title; if none is passed, a default is used. The caller can supply an optional initially selected value from the list. \mbox{\Hypertarget{classGOptionPane_a8c5008daa752e1e66585def05a70e925}\label{classGOptionPane_a8c5008daa752e1e66585def05a70e925}} 
 \index{G\+Option\+Pane@{G\+Option\+Pane}!show\+Text\+File\+Dialog@{show\+Text\+File\+Dialog}}
 \index{show\+Text\+File\+Dialog@{show\+Text\+File\+Dialog}!G\+Option\+Pane@{G\+Option\+Pane}}
 \subsubsection{\texorpdfstring{show\+Text\+File\+Dialog()}{showTextFileDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
-{\footnotesize\ttfamily void show\+Text\+File\+Dialog (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{message,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{int}]{rows = {\ttfamily -\/1},  }\item[{int}]{cols = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily void show\+Text\+File\+Dialog (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{file\+Text,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{int}]{rows = {\ttfamily -\/1},  }\item[{int}]{cols = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
 
 
 Displays the given text in a scrolling monospaced text area. 
 
-rows/cols parameters control size to show; set to $<$= 0 for a default limit. \mbox{\Hypertarget{classGOptionPane_a7e1e9057ebd16b8769a93dba306a9f55}\label{classGOptionPane_a7e1e9057ebd16b8769a93dba306a9f55}} 
+rows/cols parameters control size to show; set to $<$= 0 for a default limit. \mbox{\Hypertarget{classGOptionPane_af8cf594b9d9b1c6569fc8a3ca2ee0602}\label{classGOptionPane_af8cf594b9d9b1c6569fc8a3ca2ee0602}} 
 \index{G\+Option\+Pane@{G\+Option\+Pane}!show\+Text\+File\+Dialog@{show\+Text\+File\+Dialog}}
 \index{show\+Text\+File\+Dialog@{show\+Text\+File\+Dialog}!G\+Option\+Pane@{G\+Option\+Pane}}
 \subsubsection{\texorpdfstring{show\+Text\+File\+Dialog()}{showTextFileDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
-{\footnotesize\ttfamily void show\+Text\+File\+Dialog (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classGWindow}{G\+Window}} $\ast$}]{parent,  }\item[{const std\+::string \&}]{message,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{int}]{rows = {\ttfamily -\/1},  }\item[{int}]{cols = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily void show\+Text\+File\+Dialog (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classGWindow}{G\+Window}} $\ast$}]{parent,  }\item[{const std\+::string \&}]{file\+Text,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{int}]{rows = {\ttfamily -\/1},  }\item[{int}]{cols = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
 
 
 Displays the given text in a scrolling monospaced text area. 
 
-rows/cols parameters control size to show; set to $<$= 0 for a default limit. \mbox{\Hypertarget{classGOptionPane_a684cc543d7d7cb206355b534e261d0c9}\label{classGOptionPane_a684cc543d7d7cb206355b534e261d0c9}} 
+rows/cols parameters control size to show; set to $<$= 0 for a default limit. \mbox{\Hypertarget{classGOptionPane_a6d1d2769369649efbc5142804ff8b165}\label{classGOptionPane_a6d1d2769369649efbc5142804ff8b165}} 
 \index{G\+Option\+Pane@{G\+Option\+Pane}!show\+Text\+File\+Dialog@{show\+Text\+File\+Dialog}}
 \index{show\+Text\+File\+Dialog@{show\+Text\+File\+Dialog}!G\+Option\+Pane@{G\+Option\+Pane}}
 \subsubsection{\texorpdfstring{show\+Text\+File\+Dialog()}{showTextFileDialog()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
-{\footnotesize\ttfamily void show\+Text\+File\+Dialog (\begin{DoxyParamCaption}\item[{Q\+Widget $\ast$}]{parent,  }\item[{const std\+::string \&}]{message,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{int}]{rows = {\ttfamily -\/1},  }\item[{int}]{cols = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily void show\+Text\+File\+Dialog (\begin{DoxyParamCaption}\item[{Q\+Widget $\ast$}]{parent,  }\item[{const std\+::string \&}]{file\+Text,  }\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}},  }\item[{int}]{rows = {\ttfamily -\/1},  }\item[{int}]{cols = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
 
 
