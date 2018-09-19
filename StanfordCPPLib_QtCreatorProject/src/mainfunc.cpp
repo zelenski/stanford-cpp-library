@@ -9,6 +9,9 @@ int main() {
 //    return mainQt2dGraphics();
 //    extern int mainQtLayout();
 //    return mainQtLayout();
-    extern int mainQtWidgets();
-    return mainQtWidgets();
+//    extern int mainQtWidgets();
+//    return mainQtWidgets();
+
+    extern int mainUrlStream();
+    return mainUrlStream();
 }

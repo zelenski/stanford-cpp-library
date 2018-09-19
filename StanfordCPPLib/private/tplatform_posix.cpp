@@ -27,7 +27,7 @@
 #include <pthread.h>
 #include "error.h"
 #include "map.h"
-#include "tplatform.h"
+#include "private/tplatform.h"
 
 #define __macosx__ 1
 #ifdef __macosx__

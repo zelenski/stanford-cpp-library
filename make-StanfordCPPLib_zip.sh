@@ -1,30 +1,24 @@
 #!/bin/bash
 OUTDIR=cppdoc/dist
-SPLJARFILE=JavaBackEnd/eclipseproject/obf/spl.jar
-#echo "Updating $SPLJARFILE in lib projects ..."
-#cp $SPLJARFILE StanfordCPPLib_QtCreatorProject/lib/spl.jar
-#cp $SPLJARFILE Autograder_QtCreatorProject/lib/spl.jar
+CPPLIBZIPFILE=$OUTDIR/StanfordCPPLib.zip
 
-#echo "Copying $SPLJARFILE ..."
-#cp -f $SPLJARFILE $OUTDIR
+echo "This script prepares ZIPs of the Stanford C++ library"
+echo "for distribution and posting on the web."
+echo "====================================================="
+echo "Building $CPPLIBZIPFILE ..."
+rm $CPPLIBZIPFILE 2>/dev/null
+zip -rq $CPPLIBZIPFILE StanfordCPPLib/
+zip -q --update $CPPLIBZIPFILE -j $OUTDIR/addr2line.exe
 
-CPPLIBFILE=$OUTDIR/StanfordCPPLib.zip
-echo "Building $CPPLIBFILE ..."
-rm $CPPLIBFILE 2>/dev/null
-zip -rq $CPPLIBFILE StanfordCPPLib/
-#zip -q --update $CPPLIBFILE -j JavaBackEnd/eclipseproject/obf/spl.jar
-zip -q --update $CPPLIBFILE -j $OUTDIR/addr2line.exe
-
-EMPTYPROJECTFILE=cppdoc/dist/empty-project.zip
-echo "Building $EMPTYPROJECTFILE ..."
+EMPTYPROJECTZIPFILE=cppdoc/dist/empty-project.zip
+echo "Building $EMPTYPROJECTZIPFILE ..."
 cp -f StanfordCPPLib_QtCreatorProject/stanfordcpplib.pro empty-project/empty-project.pro
 rm -rf empty-project/lib/StanfordCPPLib/
 mkdir empty-project/lib/StanfordCPPLib/
 cp -r StanfordCPPLib/* empty-project/lib/StanfordCPPLib/
-rm -f empty-project/lib/spl.jar
-#cp -f $SPLJARFILE empty-project/lib/spl.jar
-rm $EMPTYPROJECTFILE 2>/dev/null
-zip -rq $EMPTYPROJECTFILE empty-project/
+./pack-lib-into-single-cpp-file.sh
+rm $EMPTYPROJECTZIPFILE 2>/dev/null
+zip -rq $EMPTYPROJECTZIPFILE empty-project/
 cp -f empty-project/empty-project.pro $OUTDIR
 
 echo "Done."

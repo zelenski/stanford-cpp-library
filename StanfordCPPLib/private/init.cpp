@@ -11,7 +11,7 @@
  * - initial version
  */
 
-#include "init.h"
+#include "private/init.h"
 
 #include "consoletext.h"
 #include "exceptions.h"
@@ -127,7 +127,7 @@ void __stanfordcpplib__exitLibrary(int status) {
 #ifdef exit
 #undef exit
         std::exit(status);
-#define exit ::stanfordcpplib::exitLibrary
+#define exit __stanfordcpplib__exitLibrary
 #endif // exit
 
     } else {
