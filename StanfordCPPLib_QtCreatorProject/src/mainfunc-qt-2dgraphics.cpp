@@ -38,6 +38,10 @@ void grayscale(GBufferedImage* image) {
 }
 
 void testQwindowDrawing() {
+    static const bool TEST_BACKGROUND = true;
+    static const bool TEST_FOREGROUND = true;
+    static const bool TEST_LAYOUT_WIDGETS = true;
+
     static GWindow* window = nullptr;
     static GOval* ball = nullptr;
     static GButton* button = nullptr;
@@ -45,6 +49,7 @@ void testQwindowDrawing() {
     static GButton* button3 = nullptr;
     static GButton* button4 = nullptr;
     static GButton* button5 = nullptr;
+    static GButton* clearButton = nullptr;
     static GButton* saveButton = nullptr;
     static GLabel* label = nullptr;
     static GLabel* label2 = nullptr;
@@ -52,40 +57,40 @@ void testQwindowDrawing() {
     static double dy = 3;
 
     window = new GWindow(900, 500);
+    // window->setCanvasSize(900, 500);
     window->setTitle("QtGui Drawing Window");
     // window->setResizable(false);
     // window->setBackground("yellow");
+    window->setExitOnClose(true);
     window->center();
 
-    label = new GLabel("QtGui <b>AWESOME</b> <i>cool</i> window");
-    label2 = new GLabel("????????????");
-    window->addToRegion(label2, "North");
-    window->addToRegion(label, "North");
+    if (TEST_LAYOUT_WIDGETS) {
+        label = new GLabel("QtGui <b>AWESOME</b> <i>cool</i> window");
+        label2 = new GLabel("????????????");
+        window->addToRegion(label2, "North");
+        window->addToRegion(label, "North");
 
-    ball = new GOval(20, 20, 50, 50);
-    ball->setFillColor("#aaff0033");
-    ball->setLineWidth(2);
-    ball->setLineStyle(GObject::LINE_DOT);
-    window->add(ball);
+        window->setRegionAlignment("North", "Left");
+        window->setRegionAlignment("South", "Right");
 
-    window->setRegionAlignment("North", "Left");
-    window->setRegionAlignment("South", "Right");
+        button = new GButton("Tick");
+        button2 = new GButton("Pixels");
+        button3 = new GButton("Repaint");
+        button4 = new GButton("Clear PX");
+        button5 = new GButton("BG");
+        button5->setBackground("#77ff00ff");
+        button5->setColor("#77000000");
+        clearButton = new GButton("Clear");
+        saveButton = new GButton("Save");
 
-    button = new GButton("Tick");
-    button2 = new GButton("Pixels");
-    button3 = new GButton("Repaint");
-    button4 = new GButton("Clear");
-    button5 = new GButton("BG");
-    button5->setBackground("#77ff00ff");
-    button5->setColor("#77000000");
-    saveButton = new GButton("Save");
-
-    window->addToRegion(button, "South");
-    window->addToRegion(button2, "South");
-    window->addToRegion(button3, "South");
-    window->addToRegion(button4, "South");
-    window->addToRegion(button5, "South");
-    window->addToRegion(saveButton, "South");
+        window->addToRegion(button, "South");
+        window->addToRegion(button2, "South");
+        window->addToRegion(button3, "South");
+        window->addToRegion(button4, "South");
+        window->addToRegion(button5, "South");
+        window->addToRegion(saveButton, "South");
+        window->addToRegion(clearButton, "South");
+    }
 
 //        window->setBackground("yellow");
 //        window->setColor("red");
@@ -103,124 +108,139 @@ void testQwindowDrawing() {
 
     // pixely stuff
 
-    window->setColor("black");
-    window->add(new GRect(400, 100, 50, 50));
-    window->drawRect(400, 200, 50, 50);
+    // background layer
+    if (TEST_BACKGROUND) {
+        window->setColor("black");
+        window->drawRect(400, 200, 50, 50);
 
-    window->setFillColor("red");
-    window->setLineWidth(5);   // BUG: affects later shapes
-    window->setLineStyle(GObject::LINE_DASH);
-    window->drawRect(20, 220, 100, 100);
-    window->fillArc(20, 220, 100, 100, 45, 120);
+        window->setFillColor("red");
+        window->setLineWidth(5);   // BUG: affects later shapes
+        window->setLineStyle(GObject::LINE_DASH);
+        window->drawRect(20, 220, 100, 100);
+        window->fillArc(20, 220, 100, 100, 45, 120);
 
-    window->setFillColor("purple");
-    window->setFont("Monospaced-bold-16");
-    window->fillPolygon({200, 200, 250, 300, 150, 300});
+        window->setFillColor("purple");
+        window->setFont("Monospaced-bold-16");
+        window->fillPolygon({200, 200, 250, 300, 150, 300});
+    }
 
-    window->setColor("green");
-    GText* gtext = new GText("Hello, Qt!", 200, 80);
-    gtext->setColor("green");
-    gtext->rotate(10);
-    window->add(gtext);
+    // foreground layer
+    if (TEST_FOREGROUND) {
+        ball = new GOval(20, 20, 50, 50);
+        ball->setFillColor("#aaff0033");
+        ball->setLineWidth(2);
+        ball->setLineStyle(GObject::LINE_DOT);
+        window->add(ball);
 
-    GText* gtext2 = new GText("Bye, Felicia!", 220, 100);
-    gtext2->setColor("red");
-    gtext2->scale(1.5);
-    window->add(gtext2);
+        window->add(new GRect(400, 100, 50, 50));
 
-    GImage* gimage = new GImage("triangle-icon.png", 200, 40);
-    gimage->setOpacity(0.6);
-    window->add(gimage);
+        window->setColor("green");
+        GText* gtext = new GText("Hello, Qt!", 200, 80);
+        gtext->setColor("green");
+        gtext->rotate(10);
+        window->add(gtext);
 
-    window->setColor("blue");
-    GText* gtext3 = new GText("Third string", 240, 120);
-    gtext3->setColor("blue");
-    window->add(gtext3);
+        GText* gtext2 = new GText("Bye, Felicia!", 220, 100);
+        gtext2->setColor("red");
+        gtext2->scale(1.5);
+        window->add(gtext2);
 
-//    // animation loop
-//    cout << "testQwindowDrawing: What thread am I? " << QGui::instance()->getCurrentThread() << endl;
-//    cout << "testQwindowDrawing: Qt gui main thread = " << QGui::instance()->getQtMainThread()
-//         << ", student thread = " << QGui::instance()->getStudentThread() << endl;
+        GImage* gimage = new GImage("triangle-icon.png", 200, 40);
+        gimage->setOpacity(0.6);
+        window->add(gimage);
 
-    std::function<void()> tickFunc = []() {
-//        cout << "tick func: What thread am I? " << QGui::instance()->getCurrentThread() << endl;
-//        cout << "tick func: dx=" << dx << ",dy=" << dy << endl;
-//        cout << "tick func: ball = " << ball->toString() << endl;
-        window->pause(20);
-        ball->move(dx, dy);
-        double cw = window->getCanvasWidth();
-        double ch = window->getCanvasHeight();
-        if (ball->getX() < 0 || ball->getRightX() >= cw) {
-            dx = -dx;
-        }
-        if (ball->getY() < 0 || ball->getBottomY() >= ch) {
-            dy = -dy;
-        }
-        // cout << "ball loc is now: " << ball->getLocation() << endl;
-    };
-    button->setActionListener(tickFunc);
+        window->setColor("blue");
+        GText* gtext3 = new GText("Third string", 240, 120);
+        gtext3->setColor("blue");
+        window->add(gtext3);
+    }
 
-    button2->setActionListener([]() {
-        for (int y = 3*window->getCanvasHeight()/4; y < window->getCanvasHeight(); y++) {
-            for (int x = 3*window->getCanvasWidth()/4; x < window->getCanvasWidth(); x++) {
-                int r = (x * 2) % 256;
-                int g = (y * 2) % 256;
-                int b = ((x+y) * 2) % 256;
-                window->setPixel(x, y, r, g, b);
+    if (TEST_LAYOUT_WIDGETS) {
+        std::function<void()> tickFunc = []() {
+            window->pause(20);
+            ball->move(dx, dy);
+            double cw = window->getCanvasWidth();
+            double ch = window->getCanvasHeight();
+            if (ball->getX() < 0 || ball->getRightX() >= cw) {
+                dx = -dx;
             }
-        }
-    });
+            if (ball->getY() < 0 || ball->getBottomY() >= ch) {
+                dy = -dy;
+            }
+            // cout << "ball loc is now: " << ball->getLocation() << endl;
+        };
+        button->setActionListener(tickFunc);
 
-    button3->setActionListener([]() {
-        window->repaint();
-    });
+        button2->setActionListener([]() {
+            for (int y = 3*window->getCanvasHeight()/4; y < window->getCanvasHeight(); y++) {
+                for (int x = 3*window->getCanvasWidth()/4; x < window->getCanvasWidth(); x++) {
+                    int r = (x * 2) % 256;
+                    int g = (y * 2) % 256;
+                    int b = ((x+y) * 2) % 256;
+                    window->setPixel(x, y, r, g, b);
+                }
+            }
+        });
 
-    button4->setActionListener([]() {
-        window->clearCanvasPixels();
-    });
+        button3->setActionListener([]() {
+            window->repaint();
+        });
 
-    button5->setActionListener([]() {
-        window->setBackground("yellow");
-    });
+        button4->setActionListener([]() {
+            window->clearCanvasPixels();
+        });
 
-    saveButton->setActionListener([]() {
-        string filename = GFileChooser::showSaveDialog();
-        window->saveCanvasPixels(filename);
-    });
+        button5->setActionListener([]() {
+            window->setBackground("yellow");
+        });
 
-    window->setMouseListener([](GEvent event) {
-        // cout << "mouse! event=" << event << endl;
-        // cout << "mouse handler: What thread am I? " << QGui::instance()->getCurrentThread() << endl;
-        if (event.getType() == MOUSE_DRAGGED) {
-            window->setColor("blue");
-            window->setFillColor("blue");
-            window->setLineStyle(GObject::LINE_SOLID);
-            window->setLineWidth(1);
-            window->fillOval(event.getX() - 5, event.getY() - 5, 10, 10);
-        } else if (event.getType() == MOUSE_MOVED) {
-            label->setText(event.getLocation().toString()
-                           + " " + window->getPixelString(event.getX(), event.getY()));
-            cout << "mouse moved: " << event.getLocation().toString() << endl;
-        }
-    });
+        clearButton->setActionListener([]() {
+            window->clear();
+        });
 
-    window->setKeyListener([](GEvent event) {
-        // cout << "key! event=" << event << endl;
-        double balldx = 0;
-        double balldy = 0;
-        if (event.getKeyCode() == GEvent::LEFT_ARROW_KEY) {
-            balldx = -2;
-        } else if (event.getKeyCode() == GEvent::RIGHT_ARROW_KEY) {
-            balldx = 2;
-        } else if (event.getKeyCode() == GEvent::UP_ARROW_KEY) {
-            balldy = -2;
-        } else if (event.getKeyCode() == GEvent::DOWN_ARROW_KEY) {
-            balldy = 2;
-        } else if (event.getKeyCode() == 'f') {
-            ball->sendToFront();
-        }
-        ball->move(balldx, balldy);
-    });
+        saveButton->setActionListener([]() {
+            string filename = GFileChooser::showSaveDialog();
+            window->saveCanvasPixels(filename);
+        });
+    }
+
+    if (TEST_LAYOUT_WIDGETS && TEST_BACKGROUND) {
+        window->setMouseListener([](GEvent event) {
+            // cout << "mouse! event=" << event << endl;
+            // cout << "mouse handler: What thread am I? " << QGui::instance()->getCurrentThread() << endl;
+            if (event.getType() == MOUSE_DRAGGED) {
+                window->setColor("blue");
+                window->setFillColor("blue");
+                window->setLineStyle(GObject::LINE_SOLID);
+                window->setLineWidth(1);
+                window->fillOval(event.getX() - 5, event.getY() - 5, 10, 10);
+            } else if (event.getType() == MOUSE_MOVED) {
+                label->setText(event.getLocation().toString()
+                               + " " + window->getPixelString(event.getX(), event.getY()));
+                cout << "mouse moved: " << event.getLocation().toString() << endl;
+            }
+        });
+    }
+
+    if (TEST_FOREGROUND) {
+        window->setKeyListener([](GEvent event) {
+            // cout << "key! event=" << event << endl;
+            double balldx = 0;
+            double balldy = 0;
+            if (event.getKeyCode() == GEvent::LEFT_ARROW_KEY) {
+                balldx = -2;
+            } else if (event.getKeyCode() == GEvent::RIGHT_ARROW_KEY) {
+                balldx = 2;
+            } else if (event.getKeyCode() == GEvent::UP_ARROW_KEY) {
+                balldy = -2;
+            } else if (event.getKeyCode() == GEvent::DOWN_ARROW_KEY) {
+                balldy = 2;
+            } else if (event.getKeyCode() == 'f') {
+                ball->sendToFront();
+            }
+            ball->move(balldx, balldy);
+        });
+    }
 
 //    window->setWindowHandler([](GEvent /* event */) {
 //        // cout << "window! event=" << event << endl;
@@ -229,6 +249,4 @@ void testQwindowDrawing() {
 //    for (int i = 0; i < 1000; i++) {
 //        tickFunc();
 //    }
-
-    window->setCanvasSize(900, 500);
 }

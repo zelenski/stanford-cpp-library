@@ -61,16 +61,17 @@ bool GThread::qtGuiThreadExists() {
 }
 
 void GThread::runInNewThread(GThunk func) {
-    GFunctionThread thread(func);
-    thread.start();
-    while (!thread.isFinished()) {
+    GFunctionThread* thread = new GFunctionThread(func);
+    thread->start();
+    while (!thread->isFinished()) {
         sleep(10);
     }
+    delete thread;
 }
 
 void GThread::runInNewThreadAsync(GThunk func) {
-    GFunctionThread thread(func);
-    thread.start();
+    GFunctionThread* thread = new GFunctionThread(func);
+    thread->start();
 }
 
 void GThread::runOnQtGuiThread(GThunk func) {

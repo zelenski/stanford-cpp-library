@@ -3,6 +3,9 @@
  * --------------------
  *
  * @author Marty Stepp
+ * @version 2018/09/19
+ * - added contains, regionContains methods
+ * - added argument checking with require.h
  * @version 2018/09/05
  * - thread safety improvements
  * - added setContainer logic to child interactors
@@ -15,6 +18,7 @@
 #include "glabel.h"
 #include "glayout.h"
 #include "gthread.h"
+#include "require.h"
 #include "strlib.h"
 
 // margin  - around container, but outside of its background color area (like CSS)
@@ -49,6 +53,7 @@ GContainer::~GContainer() {
 }
 
 void GContainer::add(GInteractor* interactor) {
+    require::nonNull(interactor, "GContainer::add");
     QWidget* widget = interactor->getWidget();
     if (!widget) {
         return;
@@ -68,6 +73,7 @@ void GContainer::add(GInteractor& interactor) {
 }
 
 void GContainer::addToGrid(GInteractor* interactor, int row, int col, int rowspan, int colspan) {
+    require::nonNull(interactor, "GContainer::addToGrid");
     QWidget* widget = interactor->getWidget();
     if (!widget) {
         return;
@@ -83,6 +89,7 @@ void GContainer::addToGrid(GInteractor& interactor, int row, int col, int rowspa
 }
 
 void GContainer::addToRegion(GInteractor* interactor, Region region) {
+    require::nonNull(interactor, "GContainer::addToRegion");
     QWidget* widget = interactor->getWidget();
     if (!widget) {
         return;
@@ -129,6 +136,7 @@ void GContainer::clear() {
 void GContainer::clearRegion(Region region) {
     for (GInteractor* interactor : _interactorsByRegion[region]) {
         interactor->setContainer(nullptr);
+        interactor->setVisible(false);
         _interactors.removeValue(interactor);
     }
     _interactorsByRegion.remove(region);
@@ -140,6 +148,18 @@ void GContainer::clearRegion(Region region) {
 
 void GContainer::clearRegion(const std::string& region) {
     clearRegion(stringToRegion(region));
+}
+
+bool GContainer::contains(GInteractor* interactor) const {
+    if (!interactor) {
+        return false;
+    } else {
+        return _iqcontainer->contains(interactor->getWidget());
+    }
+}
+
+bool GContainer::contains(GInteractor& interactor) const {
+    return contains(&interactor);
 }
 
 Vector<GInteractor*> GContainer::getDescendents(const std::string& type) const {
@@ -275,6 +295,7 @@ QWidget* GContainer::getWidget() const {
 }
 
 void GContainer::insert(int index, GInteractor* interactor) {
+    require::nonNull(interactor, "GContainer::insert");
     QWidget* widget = interactor->getWidget();
     if (!widget) {
         return;
@@ -293,6 +314,7 @@ void GContainer::insert(int index, GInteractor& interactor) {
 }
 
 void GContainer::insertToRegion(int index, GInteractor* interactor, Region region) {
+    require::nonNull(interactor, "GContainer::insertToRegion");
     QWidget* widget = interactor->getWidget();
     if (!widget) {
         return;
@@ -323,7 +345,29 @@ bool GContainer::isEmpty() const {
     return getInteractorCount() == 0;
 }
 
+bool GContainer::regionContains(GInteractor* interactor, GContainer::Region region) const {
+    if (!interactor) {
+        return false;
+    } else {
+        return _iqcontainer->regionContains(interactor->getWidget(), region);
+    }
+}
+
+bool GContainer::regionContains(GInteractor* interactor, const std::string& region) const {
+    return regionContains(interactor, stringToRegion(region));
+}
+
+bool GContainer::regionContains(GInteractor& interactor, GContainer::Region region) const {
+    return regionContains(&interactor, region);
+}
+
+bool GContainer::regionContains(GInteractor& interactor, const std::string& region) const {
+    return regionContains(interactor, stringToRegion(region));
+}
+
+
 void GContainer::remove(GInteractor* interactor) {
+    require::nonNull(interactor, "GContainer::remove");
     QWidget* widget = interactor->getWidget();
     if (!widget) {
         return;
@@ -352,6 +396,7 @@ void GContainer::remove(int index) {
 }
 
 void GContainer::removeFromRegion(GInteractor* interactor, Region region) {
+    require::nonNull(interactor, "GContainer::removeFromRegion");
     QWidget* widget = interactor->getWidget();
     if (!widget) {
         return;
@@ -516,6 +561,7 @@ _Internal_QContainer::_Internal_QContainer(GContainer* gcontainer, GContainer::L
           _eastLayout(nullptr),
           _centerLayout(nullptr),
           _middleLayout(nullptr) {
+    require::nonNull(gcontainer, "_Internal_QContainer::constructor");
     setLayoutType(layoutType);
     if (layout()) {
         setSpacing(GContainer::SPACING_DEFAULT);
@@ -643,6 +689,18 @@ void _Internal_QContainer::clearRegion(GContainer::Region region) {
         GLayout::forceUpdate(this);
     } else {
         clear();
+    }
+}
+
+bool _Internal_QContainer::contains(QWidget* widget) const {
+    if (_layoutType == GContainer::LAYOUT_BORDER) {
+        return GLayout::contains(_northLayout, widget)
+                || GLayout::contains(_southLayout, widget)
+                || GLayout::contains(_westLayout, widget)
+                || GLayout::contains(_eastLayout, widget)
+                || GLayout::contains(_centerLayout, widget);
+    } else {
+        return GLayout::contains(getQLayout(), widget);
     }
 }
 
@@ -787,6 +845,15 @@ QLayout* _Internal_QContainer::layoutForRegion(GContainer::Region region) const 
         return _eastLayout;
     } else {
         return _centerLayout;
+    }
+}
+
+bool _Internal_QContainer::regionContains(QWidget* widget, GContainer::Region region) const {
+    if (_layoutType == GContainer::LAYOUT_BORDER) {
+        QLayout* layout = layoutForRegion(region);
+        return GLayout::contains(layout, widget);
+    } else {
+        return contains(widget);
     }
 }
 

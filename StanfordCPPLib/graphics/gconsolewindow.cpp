@@ -128,7 +128,6 @@ void GConsoleWindow::_initMenuBar() {
 
     addMenuItem("File", "&Compare Output...", ICON_FOLDER + "compare_output.gif",
                 [this]() { this->showCompareOutputDialog(); });
-    setMenuItemEnabled("File", "Compare Output...", false);
 
     addMenuItem("File", "&Quit", ICON_FOLDER + "quit.gif",
                 [this]() { this->close(); /* TODO: exit app */ })
@@ -233,34 +232,36 @@ GConsoleWindow::~GConsoleWindow() {
 }
 
 void GConsoleWindow::checkForUpdates() {
-    static const std::string CPP_ZIP_VERSION_URL = version::getCppLibraryDocsUrl() + "CURRENTVERSION_CPPLIB.txt";
-    std::string currentVersion = version::getCppLibraryVersion();
+    GThread::runInNewThreadAsync([this]() {
+        static const std::string CPP_ZIP_VERSION_URL = version::getCppLibraryDocsUrl() + "CURRENTVERSION_CPPLIB.txt";
+        std::string currentVersion = version::getCppLibraryVersion();
 
-    GDownloader downloader;
-    std::string latestVersion = trim(downloader.downloadAsString(CPP_ZIP_VERSION_URL));
+        GDownloader downloader;
+        std::string latestVersion = trim(downloader.downloadAsString(CPP_ZIP_VERSION_URL));
 
-    if (latestVersion.empty()) {
+        if (latestVersion.empty()) {
+            GOptionPane::showMessageDialog(
+                    /* parent  */ getWidget(),
+                    /* message */ "Unable to look up latest library version from web.",
+                    /* title   */ "Network error",
+                    /* type    */ GOptionPane::ERROR);
+            return;
+        }
+
+        std::string message;
+        if (currentVersion >= latestVersion) {
+                message = "This project already has the latest version \nof the Stanford libraries (" + currentVersion + ").";
+        } else {
+                message = "<html>There is an updated version of the Stanford libraries available.\n\n"
+                   "This project's library version: " + currentVersion + "\n"
+                   "Current newest library version: " + latestVersion + "\n\n"
+                   "Go to <a href=\"" + version::getCppLibraryDocsUrl() + "\">"
+                   + version::getCppLibraryDocsUrl() + "</a> to get the new version.</html>";
+        }
         GOptionPane::showMessageDialog(
-                /* parent  */ getWidget(),
-                /* message */ "Unable to look up latest library version from web.",
-                /* title   */ "Network error",
-                /* type    */ GOptionPane::ERROR);
-        return;
-    }
-
-    std::string message;
-    if (currentVersion >= latestVersion) {
-            message = "This project already has the latest version \nof the Stanford libraries (" + currentVersion + ").";
-    } else {
-            message = "<html>There is an updated version of the Stanford libraries available.\n\n"
-               "This project's library version: " + currentVersion + "\n"
-               "Current newest library version: " + latestVersion + "\n\n"
-               "Go to <a href=\"" + version::getCppLibraryDocsUrl() + "\">"
-               + version::getCppLibraryDocsUrl() + "</a> to get the new version.</html>";
-    }
-    GOptionPane::showMessageDialog(
-                /* parent  */ getWidget(),
-                /* message */ message);
+                    /* parent  */ getWidget(),
+                    /* message */ message);
+    });
 }
 
 void GConsoleWindow::clearConsole() {

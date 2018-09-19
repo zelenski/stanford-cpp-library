@@ -16,9 +16,20 @@ cp -f StanfordCPPLib_QtCreatorProject/stanfordcpplib.pro empty-project/empty-pro
 rm -rf empty-project/lib/StanfordCPPLib/
 mkdir empty-project/lib/StanfordCPPLib/
 cp -r StanfordCPPLib/* empty-project/lib/StanfordCPPLib/
-./pack-lib-into-single-cpp-file.sh
+./pack-lib-into-single-cpp-file.sh empty-project
 rm $EMPTYPROJECTZIPFILE 2>/dev/null
 zip -rq $EMPTYPROJECTZIPFILE empty-project/
 cp -f empty-project/empty-project.pro $OUTDIR
+
+SAMPLEPROJECTZIPFILE=cppdoc/dist/sample-project.zip
+echo "Building $SAMPLEPROJECTZIPFILE ..."
+cp -f StanfordCPPLib_QtCreatorProject/stanfordcpplib.pro sample-project/sample-project.pro
+rm -rf sample-project/lib/StanfordCPPLib/
+mkdir sample-project/lib/StanfordCPPLib/
+cp -r StanfordCPPLib/* sample-project/lib/StanfordCPPLib/
+./pack-lib-into-single-cpp-file.sh sample-project
+rm $SAMPLEPROJECTZIPFILE 2>/dev/null
+zip -rq $SAMPLEPROJECTZIPFILE sample-project/
+cp -f sample-project/sample-project.pro $OUTDIR
 
 echo "Done."

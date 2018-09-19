@@ -2,6 +2,8 @@
  * File: gwindow.cpp
  * -----------------
  *
+ * @version 2018/09/19
+ * - bug fix for clear() method
  * @version 2018/09/13
  * - updated cast syntax to remove warnings in new compiler versions
  * - updated window parent semantics
@@ -29,6 +31,7 @@
 #include "filelib.h"
 #include "gcolor.h"
 #include "glabel.h"
+#include "glayout.h"
 #include "gthread.h"
 #include "qtgui.h"
 #include "require.h"
@@ -76,21 +79,18 @@ void GWindow::_init(double width, double height, bool visible) {
         height = DEFAULT_HEIGHT;
     }
 
-    GThread::runOnQtGuiThread([this, width, height, visible]() {
+    GThread::runOnQtGuiThread([this]() {
         QtGui::instance()->initializeQt();
         _iqmainwindow = new _Internal_QMainWindow(this);
         _lastWindow = _iqmainwindow;
-
         _contentPane = new GContainer(GContainer::LAYOUT_BORDER);
         _iqmainwindow->setCentralWidget(_contentPane->getWidget());
-
-        setSize(width, height);
-
-        setWindowIcon(DEFAULT_ICON_FILENAME);
-        setVisible(visible);
-
-        _iqmainwindow->updateGeometry();
     });
+
+    ensureForwardTarget();
+    setCanvasSize(width, height);
+    setWindowIcon(DEFAULT_ICON_FILENAME);
+    setVisible(visible);
 }
 
 GWindow::~GWindow() {
@@ -315,15 +315,26 @@ void GWindow::addToRegion(GInteractor& interactor, const std::string& region) {
 }
 
 void GWindow::clear() {
-    _contentPane->clear();
+    // TODO: reimplement to clear out widgets rather than just canvas
+    clearCanvas();
+
+//    bool hasCanvas = _canvas && _contentPane->regionContains(_canvas, GContainer::REGION_CENTER);
+//    _contentPane->clearRegion(GContainer::REGION_NORTH);
+//    _contentPane->clearRegion(GContainer::REGION_SOUTH);
+//    _contentPane->clearRegion(GContainer::REGION_WEST);
+//    _contentPane->clearRegion(GContainer::REGION_EAST);
+//    if (hasCanvas) {
+//        clearCanvas();
+//    } else {
+//        // don't remove canvas, but do remove any other widgets in center
+//        _contentPane->clearRegion(GContainer::REGION_CENTER);
+//        ensureForwardTarget();
+//    }
 }
 
 void GWindow::clearCanvas() {
     if (_canvas) {
-        GThread::runOnQtGuiThread([this]() {
-            GForwardDrawingSurface::clear();
-            _canvas->clear();
-        });
+        _canvas->clear();
     }
 }
 
@@ -375,7 +386,6 @@ void GWindow::ensureForwardTarget() {
         GThread::runOnQtGuiThread([this]() {
             _canvas = new GCanvas(_iqmainwindow);
             _canvas->setBackground(GColor::WHITE);
-            _canvas->getWidget()->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
             setDrawingForwardTarget(_canvas);
             addToRegion(_canvas, REGION_CENTER);
         });

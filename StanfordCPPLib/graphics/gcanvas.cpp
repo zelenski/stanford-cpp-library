@@ -57,13 +57,13 @@ void GCanvas::getRedGreenBlue(int rgb, int& red, int& green, int& blue) {
 GCanvas::GCanvas(QWidget* parent)
         : _backgroundImage(nullptr),
           _filename("") {
-    init(/* width */ -1, /* height */ -1, /* background */ 0x0, parent);
+    init(/* width */ -1, /* height */ -1, /* background */ 0xffffff, parent);
 }
 
 GCanvas::GCanvas(const std::string& filename, QWidget* parent)
         : _backgroundImage(nullptr),
           _filename(filename) {
-    init(/* width */ -1, /* height */ -1, /* background */ 0x0, parent);
+    init(/* width */ -1, /* height */ -1, /* background */ 0xffffff, parent);
     load(filename);
 }
 
@@ -124,8 +124,8 @@ void GCanvas::add(GObject& gobj, double x, double y) {
 }
 
 void GCanvas::clear() {
-    clearPixels();
     clearObjects();
+    clearPixels();   // calls conditionalRepaint
 }
 
 void GCanvas::clearObjects() {
@@ -138,7 +138,11 @@ void GCanvas::clearPixels() {
         // _backgroundImage = nullptr;
         // keep background image buffer but fill with background color instead
         GThread::runOnQtGuiThread([this]() {
-            _backgroundImage->fill(static_cast<unsigned int>(_backgroundColorInt));
+            if (GColor::hasAlpha(_backgroundColor)) {
+                _backgroundImage->fill(static_cast<unsigned int>(_backgroundColorInt));
+            } else {
+                _backgroundImage->fill(static_cast<unsigned int>(_backgroundColorInt) | 0xff000000);
+            }
         });
     }
     conditionalRepaint();
@@ -253,12 +257,14 @@ void GCanvas::draw(QPainter* painter) {
 void GCanvas::draw(GObject* gobj) {
     require::nonNull(gobj, "GCanvas::draw");
     ensureBackgroundImage();
-    QPainter painter(_backgroundImage);
-    painter.setRenderHint(QPainter::Antialiasing, GObject::isAntiAliasing());
-    painter.setRenderHint(QPainter::TextAntialiasing, GObject::isAntiAliasing());
-    gobj->draw(&painter);
-    painter.end();
-    conditionalRepaintRegion(gobj->getBounds().enlargedBy((gobj->getLineWidth() + 1) / 2));
+    if (_backgroundImage && _backgroundImage->paintEngine()) {
+        QPainter painter(_backgroundImage);
+        painter.setRenderHint(QPainter::Antialiasing, GObject::isAntiAliasing());
+        painter.setRenderHint(QPainter::TextAntialiasing, GObject::isAntiAliasing());
+        gobj->draw(&painter);
+        painter.end();
+        conditionalRepaintRegion(gobj->getBounds().enlargedBy((gobj->getLineWidth() + 1) / 2));
+    }
 }
 
 void GCanvas::ensureBackgroundImage() {
@@ -269,7 +275,11 @@ void GCanvas::ensureBackgroundImage() {
                         static_cast<int>(getHeight()),
                         QImage::Format_ARGB32);
             if (!_backgroundColor.empty()) {
-                _backgroundImage->fill(static_cast<unsigned int>(_backgroundColorInt) | 0xff000000);
+                if (GColor::hasAlpha(_backgroundColor)) {
+                    _backgroundImage->fill(static_cast<unsigned int>(_backgroundColorInt));
+                } else {
+                    _backgroundImage->fill(static_cast<unsigned int>(_backgroundColorInt) | 0xff000000);
+                }
             }
         });
     }
@@ -470,11 +480,19 @@ void GCanvas::notifyOfResize(double width, double height) {
             QImage* newImage = new QImage(
                         static_cast<int>(width),
                         static_cast<int>(height), QImage::Format_ARGB32);
-            newImage->fill(static_cast<unsigned int>(_backgroundColorInt));
+            if (!_backgroundColor.empty()) {
+                if (GColor::hasAlpha(_backgroundColor)) {
+                    newImage->fill(static_cast<unsigned int>(_backgroundColorInt));
+                } else {
+                    newImage->fill(static_cast<unsigned int>(_backgroundColorInt) | 0xff000000);
+                }
+            }
 
             // draw any previous contents onto it
-            QPainter painter(newImage);
-            painter.drawImage(0, 0, *_backgroundImage);
+            if (newImage->paintEngine()) {
+                QPainter painter(newImage);
+                painter.drawImage(0, 0, *_backgroundImage);
+            }
 
             // TODO: delete _backgroundImage;
             _backgroundImage = newImage;
@@ -522,11 +540,17 @@ void GCanvas::removeMouseListener() {
 }
 
 void GCanvas::repaint() {
-    _gcompound.repaint();   // runs on Qt GUI thread
+    GThread::runOnQtGuiThreadAsync([this]() {
+        getWidget()->repaint();
+        // _gcompound.repaint();   // runs on Qt GUI thread
+    });
 }
 
 void GCanvas::repaintRegion(int x, int y, int width, int height) {
-    _gcompound.repaintRegion(x, y, width, height);   // runs on Qt GUI thread
+    GThread::runOnQtGuiThreadAsync([this, x, y, width, height]() {
+        getWidget()->repaint(x, y, width, height);
+        // _gcompound.repaintRegion(x, y, width, height);   // runs on Qt GUI thread
+    });
 }
 
 void GCanvas::resize(double width, double height, bool /* retain */) {
@@ -784,10 +808,10 @@ _Internal_QCanvas::_Internal_QCanvas(GCanvas* gcanvas, QWidget* parent)
     setObjectName(QString::fromStdString("_Internal_QCanvas_" + integerToString(gcanvas->getID())));
 
     // set default white background color
-    QPalette pal = palette();
-    pal.setColor(QPalette::Background, Qt::white);
-    setAutoFillBackground(true);
-    setPalette(pal);
+//    QPalette pal = palette();
+//    pal.setColor(QPalette::Background, Qt::white);
+//    setAutoFillBackground(true);
+//    setPalette(pal);
     setMouseTracking(true);   // causes mouse move events to occur
 }
 
