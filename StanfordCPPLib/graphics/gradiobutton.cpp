@@ -162,3 +162,7 @@ QSize _Internal_QRadioButton::sizeHint() const {
         return QRadioButton::sizeHint();
     }
 }
+
+#ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#include "moc_gradiobutton.cpp"   // speeds up compilation of auto-generated Qt files
+#endif // SPL_PRECOMPILE_QT_MOC_FILES

@@ -18,6 +18,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2018/09/18
+# - added flags for precompilation of Qt MOC resources
 # @version 2018/09/16
 # - removed stack-size increase code on Windows that broke thread creation
 # @version 2018/09/06
@@ -109,7 +111,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 # checks to make sure we haven't accidentally opened the project
 # from within a ZIP archive (common mistake on Windows)
 
-# TODO: *= instead of +=
 win32 {
     contains(PWD, .*\.zip.*) | contains(PWD, .*\.ZIP.*) {
         message("")
@@ -168,9 +169,12 @@ win32 {
         message(*** Place that file into your lib/ folder and try again.)
         message(*******************************************************************)
         message("")
-        error(Exiting.)
+        warning(Exiting.)
     }
 }
+
+# precompiled header speeds up build times
+PRECOMPILED_HEADER = $$PWD/lib/StanfordCPPLib/private/precompiled.h
 
 # honeypot to trick Qt Creator so that adding files works from within IDE;
 # Qt looks for first 'SOURCES *=' line and adds newly added .cpp/h files there.
@@ -270,15 +274,12 @@ CONFIG -= c++11            # turn off default -std=gnu++11
 CONFIG += c++11
 #CONFIG += nocache
 
-#QMAKE_CXXFLAGS += -std=c++11
 QMAKE_CXXFLAGS += -Wall
 QMAKE_CXXFLAGS += -Wextra
-# QMAKE_CXXFLAGS += -Weffc++
 QMAKE_CXXFLAGS += -Wcast-align
 #QMAKE_CXXFLAGS += -Wfloat-equal
 QMAKE_CXXFLAGS += -Wformat=2
 QMAKE_CXXFLAGS += -Wlogical-op
-#QMAKE_CXXFLAGS += -Wlong-long
 QMAKE_CXXFLAGS += -Wno-keyword-macro
 QMAKE_CXXFLAGS += -Wno-missing-field-initializers
 QMAKE_CXXFLAGS += -Wno-old-style-cast
@@ -289,9 +290,6 @@ QMAKE_CXXFLAGS += -Wno-unused-const-variable
 QMAKE_CXXFLAGS += -Wno-write-strings
 QMAKE_CXXFLAGS += -Wreturn-type
 QMAKE_CXXFLAGS += -Werror=return-type
-#QMAKE_CXXFLAGS += -Wshadow
-#QMAKE_CXXFLAGS += -Wswitch-default
-#QMAKE_CXXFLAGS += -Wundef
 QMAKE_CXXFLAGS += -Werror=uninitialized
 QMAKE_CXXFLAGS += -Wunreachable-code
 exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
@@ -354,7 +352,7 @@ equals(COMPILERNAME, clang++) {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20180916
+DEFINES += SPL_PROJECT_VERSION=20180918
 
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1
@@ -395,6 +393,13 @@ DEFINES += SPL_THROW_ON_INVALID_ITERATOR
 # for years this was true, but the C++ standard says you should just silently
 # set the fail bit on the stream and exit, so that has been made the default.
 # DEFINES += SPL_ERROR_ON_STREAM_EXTRACT
+
+# is the .cpp portion of the library merged into a single .cpp file
+# to speed up compilation?
+DEFINES += SPL_MERGED_LIBRARY_SINGLE_FILE
+
+# should we attempt to precompile the Qt moc_*.cpp files for speed?
+DEFINES += SPL_PRECOMPILE_QT_MOC_FILES
 
 # build-specific options (debug vs release)
 
@@ -601,4 +606,4 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #604; if not, your .pro has been changed!)
+# END OF FILE (this should be line #609; if not, your .pro has been changed!)

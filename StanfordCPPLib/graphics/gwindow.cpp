@@ -1153,3 +1153,7 @@ void _Internal_QMainWindow::timerStop(int id) {
         _timerIDs.remove(id);
     }
 }
+
+#ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#include "moc_gwindow.cpp"   // speeds up compilation of auto-generated Qt files
+#endif // SPL_PRECOMPILE_QT_MOC_FILES

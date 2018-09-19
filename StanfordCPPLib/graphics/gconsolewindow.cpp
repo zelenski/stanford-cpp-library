@@ -4,6 +4,10 @@
  * This file implements the gconsolewindow.h interface.
  *
  * @author Marty Stepp
+ * @version 2018/09/18
+ * - window size/location fixes
+ * @version 2018/09/17
+ * - fixes for monospaced font on Mac OS X
  * @version 2018/08/23
  * - initial version, separated out from console.cpp
  */
@@ -78,7 +82,7 @@ bool GConsoleWindow::_consoleEnabled = false;
 }
 
 GConsoleWindow::GConsoleWindow()
-        : GWindow(),
+        : GWindow(/* visible */ false),
           _textArea(nullptr),
           _clearEnabled(true),
           _echo(false),

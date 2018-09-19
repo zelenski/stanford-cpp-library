@@ -977,3 +977,7 @@ QSize _Internal_QTableWidget::sizeHint() const {
         return QTableWidget::sizeHint();
     }
 }
+
+#ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#include "moc_gtable.cpp"   // speeds up compilation of auto-generated Qt files
+#endif // SPL_PRECOMPILE_QT_MOC_FILES

@@ -907,3 +907,7 @@ void _Internal_QCanvas::wheelEvent(QWheelEvent* event) {
         }
     }
 }
+
+#ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#include "moc_gcanvas.cpp"   // speeds up compilation of auto-generated Qt files
+#endif // SPL_PRECOMPILE_QT_MOC_FILES

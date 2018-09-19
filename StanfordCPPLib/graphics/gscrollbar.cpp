@@ -156,3 +156,7 @@ QSize _Internal_QScrollBar::sizeHint() const {
         return QScrollBar::sizeHint();
     }
 }
+
+#ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#include "moc_gscrollbar.cpp"   // speeds up compilation of auto-generated Qt files
+#endif // SPL_PRECOMPILE_QT_MOC_FILES

@@ -201,3 +201,7 @@ QSize _Internal_QComboBox::sizeHint() const {
         return QComboBox::sizeHint();
     }
 }
+
+#ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#include "moc_gchooser.cpp"   // speeds up compilation of auto-generated Qt files
+#endif // SPL_PRECOMPILE_QT_MOC_FILES

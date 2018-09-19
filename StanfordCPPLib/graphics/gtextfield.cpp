@@ -481,3 +481,7 @@ QSize _Internal_QDoubleSpinBox::sizeHint() const {
         return QDoubleSpinBox::sizeHint();
     }
 }
+
+#ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#include "moc_gtextfield.cpp"   // speeds up compilation of auto-generated Qt files
+#endif // SPL_PRECOMPILE_QT_MOC_FILES

@@ -8,6 +8,8 @@ echo '' > $OUTDIR/$OUTFILE
 for file in $FILES; do
 	# echo $file
 	cat $INDIR/$file >> $OUTDIR/$OUTFILE
-	rm $OUTDIR/$file
+	if [ -e $OUTDIR/$file ]; then
+		rm $OUTDIR/$file
+	fi
 done
 # echo "Done."

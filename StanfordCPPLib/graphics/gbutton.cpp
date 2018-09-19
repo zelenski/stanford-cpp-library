@@ -192,3 +192,7 @@ QSize _Internal_QPushButton::sizeHint() const {
         return QToolButton::sizeHint();
     }
 }
+
+#ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#include "moc_gbutton.cpp"   // speeds up compilation of auto-generated Qt files
+#endif // SPL_PRECOMPILE_QT_MOC_FILES

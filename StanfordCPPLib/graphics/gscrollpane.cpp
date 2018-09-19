@@ -112,3 +112,7 @@ QSize _Internal_QScrollArea::sizeHint() const {
         return QScrollArea::sizeHint();
     }
 }
+
+#ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#include "moc_gscrollpane.cpp"   // speeds up compilation of auto-generated Qt files
+#endif // SPL_PRECOMPILE_QT_MOC_FILES

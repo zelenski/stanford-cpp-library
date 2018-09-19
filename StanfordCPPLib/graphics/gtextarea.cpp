@@ -444,3 +444,7 @@ QSize _Internal_QTextEdit::sizeHint() const {
         return QTextEdit::sizeHint();
     }
 }
+
+#ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#include "moc_gtextarea.cpp"   // speeds up compilation of auto-generated Qt files
+#endif // SPL_PRECOMPILE_QT_MOC_FILES

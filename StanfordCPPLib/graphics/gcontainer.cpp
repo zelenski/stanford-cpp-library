@@ -1281,3 +1281,7 @@ QSize _Internal_QContainer::sizeHint() const {
         return QWidget::sizeHint();
     }
 }
+
+#ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#include "moc_gcontainer.cpp"   // speeds up compilation of auto-generated Qt files
+#endif // SPL_PRECOMPILE_QT_MOC_FILES
