@@ -12597,6 +12597,8 @@ void _Internal_QCanvas::wheelEvent(QWheelEvent* event) {
  * ---------------------
  *
  * @author Marty Stepp
+ * @version 2018/09/20
+ * - bug fix for requestFocus threading
  * @version 2018/09/04
  * - added get/setName, getID
  * @version 2018/08/23
@@ -12796,7 +12798,9 @@ std::string GInteractor::normalizeAccelerator(const std::string& accelerator) {
 }
 
 void GInteractor::requestFocus() {
-    getWidget()->setFocus();
+    GThread::runOnQtGuiThread([this]() {
+        getWidget()->setFocus();
+    });
 }
 
 void GInteractor::setActionCommand(const std::string& actionCommand) {
