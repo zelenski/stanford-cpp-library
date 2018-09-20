@@ -18,6 +18,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2018/09/20
+# - fixed static linking for release builds
 # @version 2018/09/18
 # - added flags for precompilation of Qt MOC resources
 # @version 2018/09/16
@@ -323,13 +325,6 @@ macx {
 
 # additional flags for Linux
 unix:!macx {
-    unix-g++ {
-        QMAKE_CXXFLAGS += -rdynamic
-        QMAKE_CXXFLAGS += -Wl,--export-dynamic
-    }
-
-    QMAKE_LFLAGS += -rdynamic
-    QMAKE_LFLAGS += -Wl,--export-dynamic
     cache()
 }
 
@@ -410,6 +405,9 @@ CONFIG(debug, debug|release) {
     QMAKE_CXXFLAGS += -fno-inline
     QMAKE_CXXFLAGS += -fno-omit-frame-pointer
 
+    QMAKE_LFLAGS += -rdynamic
+    QMAKE_LFLAGS += -Wl,--export-dynamic
+
     # print details about uncaught exceptions with red error text / stack trace
     DEFINES += SPL_CONSOLE_PRINT_EXCEPTIONS
 }
@@ -422,7 +420,8 @@ CONFIG(release, debug|release) {
         #QMAKE_POST_LINK += 'macdeployqt $${OUT_PWD}/$${TARGET}.app && rm $${OUT_PWD}/*.o && rm $${OUT_PWD}/Makefile'
     }
     unix:!macx {
-        QMAKE_LFLAGS += -static
+        # commenting out -static because it doesn't link to Qt libraries properly
+        #QMAKE_LFLAGS += -static
         QMAKE_LFLAGS += -static-libgcc
         QMAKE_LFLAGS += -static-libstdc++
     }
@@ -606,4 +605,4 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #609; if not, your .pro has been changed!)
+# END OF FILE (this should be line #608; if not, your .pro has been changed!)

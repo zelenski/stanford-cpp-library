@@ -52,6 +52,6 @@ void testFunctional() {
     cout << "names  : " << names << endl;
     cout << "lengths: " << lengths << endl;
 
-    int result = functional::reduce(v, add);
-    cout << "sum: " << result << endl;
+//    int result = functional::reduce(v, add);
+//    cout << "sum: " << result << endl;
 }

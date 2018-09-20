@@ -6,6 +6,8 @@
 #include "gcolor.h"
 #include "gobjects.h"
 #include "ginteractors.h"
+#include "gtimer.h"
+#include "random.h"
 #include "timer.h"
 using namespace std;
 
@@ -38,8 +40,8 @@ void grayscale(GBufferedImage* image) {
 }
 
 void testQwindowDrawing() {
-    static const bool TEST_BACKGROUND = true;
-    static const bool TEST_FOREGROUND = true;
+    static const bool TEST_BACKGROUND = false;
+    static const bool TEST_FOREGROUND = false;
     static const bool TEST_LAYOUT_WIDGETS = true;
 
     static GWindow* window = nullptr;
@@ -205,21 +207,21 @@ void testQwindowDrawing() {
     }
 
     if (TEST_LAYOUT_WIDGETS && TEST_BACKGROUND) {
-        window->setMouseListener([](GEvent event) {
-            // cout << "mouse! event=" << event << endl;
-            // cout << "mouse handler: What thread am I? " << QGui::instance()->getCurrentThread() << endl;
-            if (event.getType() == MOUSE_DRAGGED) {
-                window->setColor("blue");
-                window->setFillColor("blue");
-                window->setLineStyle(GObject::LINE_SOLID);
-                window->setLineWidth(1);
-                window->fillOval(event.getX() - 5, event.getY() - 5, 10, 10);
-            } else if (event.getType() == MOUSE_MOVED) {
-                label->setText(event.getLocation().toString()
-                               + " " + window->getPixelString(event.getX(), event.getY()));
-                cout << "mouse moved: " << event.getLocation().toString() << endl;
-            }
-        });
+//        window->setMouseListener([](GEvent event) {
+//            // cout << "mouse! event=" << event << endl;
+//            // cout << "mouse handler: What thread am I? " << QGui::instance()->getCurrentThread() << endl;
+//            if (event.getType() == MOUSE_DRAGGED) {
+//                window->setColor("blue");
+//                window->setFillColor("blue");
+//                window->setLineStyle(GObject::LINE_SOLID);
+//                window->setLineWidth(1);
+//                window->fillOval(event.getX() - 5, event.getY() - 5, 10, 10);
+//            } else if (event.getType() == MOUSE_MOVED) {
+//                label->setText(event.getLocation().toString()
+//                               + " " + window->getPixelString(event.getX(), event.getY()));
+//                cout << "mouse moved: " << event.getLocation().toString() << endl;
+//            }
+//        });
     }
 
     if (TEST_FOREGROUND) {
@@ -249,4 +251,14 @@ void testQwindowDrawing() {
 //    for (int i = 0; i < 1000; i++) {
 //        tickFunc();
 //    }
+
+    GTimer timer(2);
+    timer.start();
+    while (true) {
+        GEvent event = waitForEvent(MOUSE_EVENT | TIMER_EVENT);
+        int x = randomInteger(0, 800);
+        int y = randomInteger(0, 400);
+        GOval* oval = new GOval(x, y, 10, 20);
+        window->add(oval);
+    }
 }
