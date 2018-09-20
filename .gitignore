@@ -14,6 +14,7 @@ Karel/src/CollectNewspaper.java
 Karel/bin/*
 Karel/.settings
 local/*
+sample-project/lib/*
 spl.jar
 StanfordCPPLib_QtCreatorProject/lib/StanfordCPPLib
 StanfordCPPLib_experimental/

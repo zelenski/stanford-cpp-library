@@ -2,6 +2,8 @@
  * File: gcanvas.cpp
  * -----------------
  *
+ * @version 2018/09/20
+ * - added read/write lock for canvas contents to avoid race conditions
  * @version 2018/09/04
  * - added double-click event support
  * @version 2018/08/23
@@ -100,27 +102,41 @@ void GCanvas::init(double width, double height, int rgbBackground, QWidget* pare
     setVisible(false);   // all widgets are not shown until added to a window
 }
 
-
-
 GCanvas::~GCanvas() {
     // TODO: delete _GCanvas;
     _iqcanvas = nullptr;
 }
 
 void GCanvas::add(GObject* gobj) {
-    _gcompound.add(gobj);   // calls conditionalRepaint
+    GThread::runOnQtGuiThread([this, gobj]() {
+        lockForWrite();
+        _gcompound.add(gobj);   // calls conditionalRepaint
+        unlock();
+    });
 }
 
 void GCanvas::add(GObject* gobj, double x, double y) {
-    _gcompound.add(gobj, x, y);   // calls conditionalRepaint
+    GThread::runOnQtGuiThread([this, gobj, x, y]() {
+        lockForWrite();
+        _gcompound.add(gobj, x, y);   // calls conditionalRepaint
+        unlock();
+    });
 }
 
 void GCanvas::add(GObject& gobj) {
-    _gcompound.add(gobj);   // calls conditionalRepaint
+    GThread::runOnQtGuiThread([this, &gobj]() {
+        lockForWrite();
+        _gcompound.add(gobj);   // calls conditionalRepaint
+        unlock();
+    });
 }
 
 void GCanvas::add(GObject& gobj, double x, double y) {
-    _gcompound.add(gobj, x, y);   // calls conditionalRepaint
+    GThread::runOnQtGuiThread([this, &gobj, x, y]() {
+        lockForWrite();
+        _gcompound.add(gobj, x, y);   // calls conditionalRepaint
+        unlock();
+    });
 }
 
 void GCanvas::clear() {
@@ -129,30 +145,42 @@ void GCanvas::clear() {
 }
 
 void GCanvas::clearObjects() {
-    _gcompound.clear();   // calls conditionalRepaint
+    GThread::runOnQtGuiThread([this]() {
+        lockForWrite();
+        _gcompound.clear();   // calls conditionalRepaint
+        unlock();
+    });
 }
 
 void GCanvas::clearPixels() {
-    if (_backgroundImage) {
-        // delete _backgroundImage;
-        // _backgroundImage = nullptr;
-        // keep background image buffer but fill with background color instead
-        GThread::runOnQtGuiThread([this]() {
-            if (GColor::hasAlpha(_backgroundColor)) {
-                _backgroundImage->fill(static_cast<unsigned int>(_backgroundColorInt));
-            } else {
-                _backgroundImage->fill(static_cast<unsigned int>(_backgroundColorInt) | 0xff000000);
-            }
-        });
-    }
+    GThread::runOnQtGuiThread([this]() {
+        lockForWrite();
+        if (_backgroundImage) {
+            // delete _backgroundImage;
+            // _backgroundImage = nullptr;
+            // keep background image buffer but fill with background color instead
+            GThread::runOnQtGuiThread([this]() {
+                if (GColor::hasAlpha(_backgroundColor)) {
+                    _backgroundImage->fill(static_cast<unsigned int>(_backgroundColorInt));
+                } else {
+                    _backgroundImage->fill(static_cast<unsigned int>(_backgroundColorInt) | 0xff000000);
+                }
+            });
+        }
+        unlock();
+    });
     conditionalRepaint();
 }
 
 bool GCanvas::contains(double x, double y) const {
-    return _gcompound.contains(x, y);
+    lockForReadConst();
+    bool result = _gcompound.contains(x, y);
+    unlockConst();
+    return result;
 }
 
 int GCanvas::countDiffPixels(const GCanvas& image) const {
+    lockForReadConst();
     int w1 = static_cast<int>(getWidth());
     int h1 = static_cast<int>(getHeight());
     int w2 = static_cast<int>(image.getWidth());
@@ -166,18 +194,20 @@ int GCanvas::countDiffPixels(const GCanvas& image) const {
 
     for (int y = 0; y < hmin; y++) {
         for (int x = 0; x < wmin; x++) {
-            int px1 = getRGB(x, y);
-            int px2 = image.getRGB(x, y);
+            int px1 = _backgroundImage->pixel(static_cast<int>(x), static_cast<int>(y)) & 0x00ffffff;
+            int px2 = image._backgroundImage->pixel(static_cast<int>(x), static_cast<int>(y)) & 0x00ffffff;
             if (px1 != px2) {
                 diffPxCount++;
             }
         }
     }
 
+    unlockConst();
     return diffPxCount;
 }
 
 int GCanvas::countDiffPixels(const GCanvas& image, int xmin, int ymin, int xmax, int ymax) const {
+    lockForReadConst();
     int w1 = static_cast<int>(getWidth());
     int h1 = static_cast<int>(getHeight());
     int w2 = static_cast<int>(image.getWidth());
@@ -186,14 +216,15 @@ int GCanvas::countDiffPixels(const GCanvas& image, int xmin, int ymin, int xmax,
 
     for (int y = ymin; y < ymax; y++) {
         for (int x = xmin; x < xmax; x++) {
-            int px1 = x < w1 && y < h1 ? getRGB(x, y) : -1;
-            int px2 = x < w2 && y < h2 ? image.getRGB(x, y) : -1;
+            int px1 = x < w1 && y < h1 ? (_backgroundImage->pixel(static_cast<int>(x), static_cast<int>(y)) & 0x00ffffff) : -1;
+            int px2 = x < w2 && y < h2 ? (image._backgroundImage->pixel(static_cast<int>(x), static_cast<int>(y)) & 0x00ffffff) : -1;
             if (px1 != px2) {
                 diffPxCount++;
             }
         }
     }
 
+    unlockConst();
     return diffPxCount;
 }
 
@@ -208,6 +239,7 @@ int GCanvas::countDiffPixels(const GCanvas* image, int xmin, int ymin, int xmax,
 }
 
 GCanvas* GCanvas::diff(const GCanvas& image, int diffPixelColor) const {
+    lockForReadConst();
     int w1 = static_cast<int>(getWidth());
     int h1 = static_cast<int>(getHeight());
     int w2 = static_cast<int>(image.getWidth());
@@ -227,8 +259,8 @@ GCanvas* GCanvas::diff(const GCanvas& image, int diffPixelColor) const {
     }
     for (int y = 0; y < hmin; y++) {
         for (int x = 0; x < wmin; x++) {
-            int px1 = getRGB(x, y);
-            int px2 = image.getRGB(x, y);
+            int px1 = _backgroundImage->pixel(static_cast<int>(x), static_cast<int>(y)) & 0x00ffffff;
+            int px2 = image._backgroundImage->pixel(static_cast<int>(x), static_cast<int>(y)) & 0x00ffffff;
             if (px1 != px2) {
                 resultGrid[y][x] = diffPixelColor;
             }
@@ -236,6 +268,7 @@ GCanvas* GCanvas::diff(const GCanvas& image, int diffPixelColor) const {
     }
     GCanvas* result = new GCanvas(wmax, hmax);
     result->fromGrid(resultGrid);
+    unlockConst();
     return result;
 }
 
@@ -248,21 +281,27 @@ void GCanvas::draw(QPainter* painter) {
     if (!painter) {
         return;
     }
+    // lockForRead();
     if (_backgroundImage) {
         painter->drawImage(/* x */ 0, /* y */ 0, *_backgroundImage);
     }
     _gcompound.draw(painter);   // calls conditionalRepaint
+    // unlock();
 }
 
 void GCanvas::draw(GObject* gobj) {
     require::nonNull(gobj, "GCanvas::draw");
     ensureBackgroundImage();
     if (_backgroundImage && _backgroundImage->paintEngine()) {
-        QPainter painter(_backgroundImage);
-        painter.setRenderHint(QPainter::Antialiasing, GObject::isAntiAliasing());
-        painter.setRenderHint(QPainter::TextAntialiasing, GObject::isAntiAliasing());
-        gobj->draw(&painter);
-        painter.end();
+        GThread::runOnQtGuiThread([this, gobj]() {
+            lockForWrite();
+            QPainter painter(_backgroundImage);
+            painter.setRenderHint(QPainter::Antialiasing, GObject::isAntiAliasing());
+            painter.setRenderHint(QPainter::TextAntialiasing, GObject::isAntiAliasing());
+            gobj->draw(&painter);
+            painter.end();
+            unlock();
+        });
         conditionalRepaintRegion(gobj->getBounds().enlargedBy((gobj->getLineWidth() + 1) / 2));
     }
 }
@@ -270,6 +309,7 @@ void GCanvas::draw(GObject* gobj) {
 void GCanvas::ensureBackgroundImage() {
     if (!_backgroundImage) {
         GThread::runOnQtGuiThread([this]() {
+            lockForWrite();
             _backgroundImage = new QImage(
                         static_cast<int>(getWidth()),
                         static_cast<int>(getHeight()),
@@ -281,6 +321,7 @@ void GCanvas::ensureBackgroundImage() {
                     _backgroundImage->fill(static_cast<unsigned int>(_backgroundColorInt) | 0xff000000);
                 }
             }
+            unlock();
         });
     }
 }
@@ -337,12 +378,14 @@ void GCanvas::fillRegion(double x, double y, double width, double height, const 
 void GCanvas::flatten() {
     GThread::runOnQtGuiThread([this]() {
         ensureBackgroundImage();
+        lockForWrite();
         QPainter painter(_backgroundImage);
         painter.setRenderHint(QPainter::Antialiasing, GObject::isAntiAliasing());
         painter.setRenderHint(QPainter::TextAntialiasing, GObject::isAntiAliasing());
         _gcompound.draw(&painter);
         painter.end();
         _gcompound.clear();   // calls conditionalRepaint
+        unlock();
     });
 }
 
@@ -355,12 +398,14 @@ void GCanvas::fromGrid(const Grid<int>& grid) {
 
     GThread::runOnQtGuiThread([this, &grid]() {
         ensureBackgroundImage();
+        lockForWrite();
         for (int row = 0, width = grid.width(), height = grid.height(); row < height; row++) {
             for (int col = 0; col < width; col++) {
                 // setPixel(col, row, grid[row][col]);
                 _backgroundImage->setPixel(col, row, static_cast<unsigned int>(grid[row][col]) | 0xff000000);
             }
         }
+        unlock();
     });
 
     if (wasAutoRepaint) {
@@ -378,15 +423,24 @@ int GCanvas::getBackgroundInt() const {
 }
 
 GObject* GCanvas::getElement(int index) const {
-    return _gcompound.getElement(index);
+    lockForReadConst();
+    GObject* result = _gcompound.getElement(index);
+    unlockConst();
+    return result;
 }
 
 GObject* GCanvas::getElementAt(double x, double y) const {
-    return _gcompound.getElementAt(x, y);
+    lockForReadConst();
+    GObject* result = _gcompound.getElementAt(x, y);
+    unlockConst();
+    return result;
 }
 
 int GCanvas::getElementCount() const {
-    return _gcompound.getElementCount();
+    lockForReadConst();
+    int result = _gcompound.getElementCount();
+    unlockConst();
+    return result;
 }
 
 std::string GCanvas::getFilename() const {
@@ -404,34 +458,44 @@ _Internal_QWidget* GCanvas::getInternalWidget() const {
 int GCanvas::getPixel(double x, double y) const {
     checkBounds("GCanvas::getPixel", x, y, getWidth(), getHeight());
     ensureBackgroundImageConstHack();
-    return _backgroundImage->pixel(static_cast<int>(x), static_cast<int>(y)) & 0x00ffffff;
+    lockForReadConst();
+    int pixel = _backgroundImage->pixel(static_cast<int>(x), static_cast<int>(y)) & 0x00ffffff;
+    unlockConst();
+    return pixel;
 }
 
 int GCanvas::getPixelARGB(double x, double y) const {
     checkBounds("GCanvas::getPixelARGB", x, y, getWidth(), getHeight());
     ensureBackgroundImageConstHack();
-    return static_cast<int>(_backgroundImage->pixel(static_cast<int>(x), static_cast<int>(y)));
+    lockForReadConst();
+    int pixel = static_cast<int>(_backgroundImage->pixel(static_cast<int>(x), static_cast<int>(y)));
+    unlockConst();
+    return pixel;
 }
 
 Grid<int> GCanvas::getPixels() const {
     ensureBackgroundImageConstHack();
+    lockForReadConst();
     Grid<int> grid(static_cast<int>(getHeight()), static_cast<int>(getWidth()));
     for (int y = 0; y < static_cast<int>(getHeight()); y++) {
         for (int x = 0; x < static_cast<int>(getWidth()); x++) {
             grid[y][x] = _backgroundImage->pixel(x, y) & 0x00ffffff;
         }
     }
+    unlockConst();
     return grid;
 }
 
 Grid<int> GCanvas::getPixelsARGB() const {
     ensureBackgroundImageConstHack();
+    lockForReadConst();
     Grid<int> grid(static_cast<int>(getHeight()), static_cast<int>(getWidth()));
     for (int y = 0; y < static_cast<int>(getHeight()); y++) {
         for (int x = 0; x < static_cast<int>(getWidth()); x++) {
             grid[y][x] = static_cast<int>(_backgroundImage->pixel(x, y));
         }
     }
+    unlockConst();
     return grid;
 }
 
@@ -457,6 +521,7 @@ void GCanvas::load(const std::string& filename) {
     bool hasError = false;
     GThread::runOnQtGuiThread([this, filename, &hasError]() {
         ensureBackgroundImage();
+        lockForWrite();
         if (!_backgroundImage->load(QString::fromStdString(filename))) {
             hasError = true;
             return;
@@ -465,6 +530,7 @@ void GCanvas::load(const std::string& filename) {
         _filename = filename;
         GInteractor::setSize(_backgroundImage->width(), _backgroundImage->height());
         // setSize(_qimage->width(), _qimage->height());
+        unlock();
         conditionalRepaint();
     });
 
@@ -477,6 +543,7 @@ void GCanvas::notifyOfResize(double width, double height) {
     if (_backgroundImage) {
         GThread::runOnQtGuiThread([this, width, height]() {
             // make new image buffer of the new size
+            lockForWrite();
             QImage* newImage = new QImage(
                         static_cast<int>(width),
                         static_cast<int>(height), QImage::Format_ARGB32);
@@ -496,21 +563,34 @@ void GCanvas::notifyOfResize(double width, double height) {
 
             // TODO: delete _backgroundImage;
             _backgroundImage = newImage;
+            unlock();
             conditionalRepaint();
         });
     }
 }
 
 void GCanvas::remove(GObject* gobj) {
-    _gcompound.remove(gobj);
+    GThread::runOnQtGuiThread([this, gobj]() {
+        lockForWrite();
+        _gcompound.remove(gobj);
+        unlock();
+    });
 }
 
 void GCanvas::remove(GObject& gobj) {
-    _gcompound.remove(gobj);
+    GThread::runOnQtGuiThread([this, &gobj]() {
+        lockForWrite();
+        _gcompound.remove(gobj);
+        unlock();
+    });
 }
 
 void GCanvas::removeAll() {
-    _gcompound.removeAll();
+    GThread::runOnQtGuiThread([this]() {
+        lockForWrite();
+        _gcompound.removeAll();
+        unlock();
+    });
 }
 
 void GCanvas::removeClickListener() {
@@ -541,14 +621,18 @@ void GCanvas::removeMouseListener() {
 
 void GCanvas::repaint() {
     GThread::runOnQtGuiThreadAsync([this]() {
+        lockForRead();
         getWidget()->repaint();
+        unlock();
         // _gcompound.repaint();   // runs on Qt GUI thread
     });
 }
 
 void GCanvas::repaintRegion(int x, int y, int width, int height) {
     GThread::runOnQtGuiThreadAsync([this, x, y, width, height]() {
+        lockForRead();
         getWidget()->repaint(x, y, width, height);
+        unlock();
         // _gcompound.repaintRegion(x, y, width, height);   // runs on Qt GUI thread
     });
 }
@@ -565,6 +649,7 @@ void GCanvas::resize(double width, double height, bool /* retain */) {
 void GCanvas::save(const std::string& filename) {
     GThread::runOnQtGuiThread([this, filename]() {
         ensureBackgroundImage();
+        lockForRead();
         if (!_gcompound.isEmpty()) {
             // flatten image in a copy object, then save
             QImage imageCopy = this->_backgroundImage->copy(
@@ -575,12 +660,16 @@ void GCanvas::save(const std::string& filename) {
             painter.setRenderHint(QPainter::TextAntialiasing, GObject::isAntiAliasing());
             _gcompound.draw(&painter);
             painter.end();
-            if (!imageCopy.save(QString::fromStdString(filename))) {
+            bool result = imageCopy.save(QString::fromStdString(filename));
+            unlock();
+            if (!result) {
                 error("GCanvas::save: failed to save to " + filename);
             }
         } else {
             // save it myself
-            if (!_backgroundImage->save(QString::fromStdString(filename))) {
+            bool result = _backgroundImage->save(QString::fromStdString(filename));
+            unlock();
+            if (!result) {
                 error("GCanvas::save: failed to save to " + filename);
             }
         }
@@ -589,7 +678,11 @@ void GCanvas::save(const std::string& filename) {
 }
 
 void GCanvas::setAutoRepaint(bool autoRepaint) {
-    _gcompound.setAutoRepaint(autoRepaint);
+    GThread::runOnQtGuiThread([this, autoRepaint]() {
+        lockForWrite();
+        _gcompound.setAutoRepaint(autoRepaint);
+        unlock();
+    });
 }
 
 void GCanvas::setBackground(int color) {
@@ -602,7 +695,9 @@ void GCanvas::setBackground(int color) {
         // The lesson is, set the background first before drawing stuff.
         // Or add your shapes using add() rather than draw() so they sit atop the background.
         GThread::runOnQtGuiThread([this, color]() {
+            lockForWrite();
             _backgroundImage->fill(static_cast<unsigned int>(color));
+            unlock();
         });
         conditionalRepaint();
     }
@@ -654,7 +749,9 @@ void GCanvas::setForeground(const std::string& color) {
 
 void GCanvas::setKeyListener(GEventListener func) {
     GThread::runOnQtGuiThread([this]() {
+        lockForWrite();
         _iqcanvas->setFocusPolicy(Qt::StrongFocus);
+        unlock();
     });
     setEventListeners({"keypress",
                        "keyrelease",
@@ -663,7 +760,9 @@ void GCanvas::setKeyListener(GEventListener func) {
 
 void GCanvas::setKeyListener(GEventListenerVoid func) {
     GThread::runOnQtGuiThread([this]() {
+        lockForWrite();
         _iqcanvas->setFocusPolicy(Qt::StrongFocus);
+        unlock();
     });
     setEventListeners({"keypress",
                        "keyrelease",
@@ -699,10 +798,12 @@ void GCanvas::setPixel(double x, double y, int rgb) {
     checkColor("GCanvas::setPixel", rgb);
     GThread::runOnQtGuiThread([this, x, y, rgb]() {
         ensureBackgroundImage();
+        lockForWrite();
         _backgroundImage->setPixel(
                 static_cast<int>(x),
                 static_cast<int>(y),
                 static_cast<unsigned int>(rgb) | 0xff000000);
+        unlock();
         conditionalRepaintRegion(
                 static_cast<int>(x),
                 static_cast<int>(y),
@@ -720,7 +821,9 @@ void GCanvas::setPixelARGB(double x, double y, int argb) {
     checkColor("GCanvas::setPixel", argb);
     GThread::runOnQtGuiThread([this, x, y, argb]() {
         ensureBackgroundImage();
+        lockForWrite();
         _backgroundImage->setPixel((int) x, (int) y, argb);
+        unlock();
         conditionalRepaintRegion((int) x, (int) y, /* width */ 1, /* height */ 1);
     });
 }
@@ -737,11 +840,13 @@ void GCanvas::setPixels(const Grid<int>& pixels) {
         error("GCanvas::setPixels: wrong size");
     }
     GThread::runOnQtGuiThread([this, &pixels]() {
+        lockForWrite();
         for (int y = 0; y < pixels.height(); y++) {
             for (int x = 0; x < pixels.width(); x++) {
                 _backgroundImage->setPixel(x, y, pixels[y][x]);
             }
         }
+        unlock();
         conditionalRepaint();
     });
 }
@@ -755,18 +860,23 @@ void GCanvas::setPixelsARGB(const Grid<int>& pixels) {
     }
 
     GThread::runOnQtGuiThread([this, &pixels]() {
+        lockForWrite();
         for (int y = 0; y < pixels.height(); y++) {
             for (int x = 0; x < pixels.width(); x++) {
                 _backgroundImage->setPixel(x, y, pixels[y][x]);
             }
         }
+        unlock();
         conditionalRepaint();
     });
 }
 
 GImage* GCanvas::toGImage() const {
     ensureBackgroundImageConstHack();
-    return new GImage(_backgroundImage);
+    lockForReadConst();
+    GImage* image = new GImage(_backgroundImage);
+    unlockConst();
+    return image;
 
 //    GCanvas* that = const_cast<GCanvas*>(this);
 //    QImage* backgroundImage = _backgroundImage;
@@ -793,11 +903,13 @@ Grid<int> GCanvas::toGrid() const {
 
 void GCanvas::toGrid(Grid<int>& grid) const {
     grid.resize(getHeight(), getWidth());
+    lockForReadConst();
     for (int row = 0, width = (int) getWidth(), height = (int) getHeight(); row < height; row++) {
         for (int col = 0; col < width; col++) {
             grid[row][col] = _backgroundImage->pixel(col, row);
         }
     }
+    unlockConst();
 }
 
 

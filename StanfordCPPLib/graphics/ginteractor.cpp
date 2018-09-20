@@ -31,7 +31,8 @@ GInteractor::GInteractor()
           _icon(""),
           _name(""),
           _id(-1),
-          _container(nullptr) {
+          _container(nullptr),
+          _lock(QReadWriteLock::Recursive) {
     QtGui::instance()->initializeQt();   // make sure Qt system is initialized
     _id = ++_interactorCount;            // set ID to number of interactors + 1
 }
@@ -192,6 +193,33 @@ bool GInteractor::isEnabled() const {
 
 bool GInteractor::isVisible() const {
     return getWidget()->isVisible();
+}
+
+void GInteractor::lockForRead() {
+    _lock.lockForRead();
+}
+
+void GInteractor::lockForReadConst() const {
+    GInteractor* that = const_cast<GInteractor*>(this);
+    that->lockForRead();
+}
+
+void GInteractor::lockForWrite() {
+    _lock.lockForWrite();
+}
+
+void GInteractor::lockForWriteConst() const {
+    GInteractor* that = const_cast<GInteractor*>(this);
+    that->lockForWrite();
+}
+
+void GInteractor::unlock() {
+    _lock.unlock();
+}
+
+void GInteractor::unlockConst() const {
+    GInteractor* that = const_cast<GInteractor*>(this);
+    that->unlock();
 }
 
 std::string GInteractor::normalizeAccelerator(const std::string& accelerator) {

@@ -3,6 +3,8 @@
  * --------------
  *
  * @author Marty Stepp
+ * @version 2018/09/20
+ * - removed deprecation warning on waitForEvent/Click global functions (for now)
  * @version 2018/09/07
  * - added doc comments for new documentation generation
  * @version 2018/08/23
@@ -577,7 +579,7 @@ typedef GEvent GWindowEvent;
  * event-listening function to the widget of choice using that object's methods
  * such as setActionListener or setMouseListener.
  */
-GEvent getNextEvent(int mask = ANY_EVENT) Q_DECL_DEPRECATED;
+GEvent getNextEvent(int mask = ANY_EVENT) /*Q_DECL_DEPRECATED*/;
 
 /**
  * Waits for a mouse click to occur anywhere in any window,
@@ -589,7 +591,7 @@ GEvent getNextEvent(int mask = ANY_EVENT) Q_DECL_DEPRECATED;
  * event-listening function to the widget of choice using that object's methods
  * such as setActionListener or setMouseListener.
  */
-GMouseEvent waitForClick() Q_DECL_DEPRECATED;
+GMouseEvent waitForClick() /*Q_DECL_DEPRECATED*/;
 
 /**
  * Dismisses the process until an event occurs whose type is covered by
@@ -633,7 +635,7 @@ GMouseEvent waitForClick() Q_DECL_DEPRECATED;
  * event-listening function to the widget of choice using that object's methods
  * such as setActionListener or setMouseListener.
  */
-GEvent waitForEvent(int mask = ANY_EVENT) Q_DECL_DEPRECATED;
+GEvent waitForEvent(int mask = ANY_EVENT) /*Q_DECL_DEPRECATED*/;
 
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

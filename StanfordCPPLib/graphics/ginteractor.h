@@ -3,6 +3,8 @@
  * -------------------
  *
  * @author Marty Stepp
+ * @version 2018/09/20
+ * - added read/write lock to avoid race conditions
  * @version 2018/09/05
  * - added getContainer and is/setVisible logic
  * @version 2018/08/23
@@ -17,6 +19,7 @@
 #include <functional>
 #include <string>
 #include <QObject>
+#include <QReadWriteLock>
 #include <QWidget>
 #include "map.h"
 #include "gevent.h"
@@ -574,6 +577,11 @@ protected:
     /**
      * @private
      */
+    QReadWriteLock _lock;    // avoid thread race conditions
+
+    /**
+     * @private
+     */
     static QWidget* getInternalParent(QWidget* parent);
 
     /**
@@ -589,7 +597,37 @@ protected:
     /**
      * @private
      */
+    virtual void lockForRead();
+
+    /**
+     * @private
+     */
+    virtual void lockForReadConst() const;
+
+    /**
+     * @private
+     */
+    virtual void lockForWrite();
+
+    /**
+     * @private
+     */
+    virtual void lockForWriteConst() const;
+
+    /**
+     * @private
+     */
     virtual void setContainer(GContainer* container);
+
+    /**
+     * @private
+     */
+    virtual void unlock();
+
+    /**
+     * @private
+     */
+    virtual void unlockConst() const;
 
     friend class GContainer;
     friend class GWindow;
