@@ -755,7 +755,9 @@ void GCompound::draw(QPainter* painter) {
     // TODO: uncomment this? need settings to apply to every shape
     // initializeBrushAndPen(painter);   //
     for (GObject* obj : _contents) {
-        obj->draw(painter);
+        if (obj->isVisible()) {
+            obj->draw(painter);
+        }
     }
 }
 
