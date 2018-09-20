@@ -119,7 +119,7 @@ _Internal_QTextBrowser::_Internal_QTextBrowser(GBrowserPane* gbrowserpane, QWidg
 QVariant _Internal_QTextBrowser::loadResource(int type, const QUrl &url) {
     // patch to work properly for data:... URLs
     if (type == QTextDocument::ImageResource && url.scheme() == QLatin1String("data")) {
-        QRegExp regex("^image/[^;]+;base64,(.+)==$");
+        QRegExp regex("^image/[^;]+;base64,(.+)={0,2}$");
         if (regex.indexIn(url.path()) >= 0) {
             QImage img;
             if (img.loadFromData(QByteArray::fromBase64(regex.cap(1).toLatin1()))) {
