@@ -40,8 +40,8 @@ void grayscale(GBufferedImage* image) {
 }
 
 void testQwindowDrawing() {
-    static const bool TEST_BACKGROUND = false;
-    static const bool TEST_FOREGROUND = false;
+    static const bool TEST_BACKGROUND = true;
+    static const bool TEST_FOREGROUND = true;
     static const bool TEST_LAYOUT_WIDGETS = true;
 
     static GWindow* window = nullptr;
@@ -53,6 +53,9 @@ void testQwindowDrawing() {
     static GButton* button5 = nullptr;
     static GButton* clearButton = nullptr;
     static GButton* saveButton = nullptr;
+    static GButton* scaleButton = nullptr;
+    static GButton* rotateButton = nullptr;
+    static GButton* setSizeButton = nullptr;
     static GLabel* label = nullptr;
     static GLabel* label2 = nullptr;
     static double dx = 5;
@@ -84,6 +87,9 @@ void testQwindowDrawing() {
         button5->setColor("#77000000");
         clearButton = new GButton("Clear");
         saveButton = new GButton("Save");
+        scaleButton = new GButton("Scale");
+        rotateButton = new GButton("Rotate");
+        setSizeButton = new GButton("setSize");
 
         window->addToRegion(button, "South");
         window->addToRegion(button2, "South");
@@ -92,6 +98,9 @@ void testQwindowDrawing() {
         window->addToRegion(button5, "South");
         window->addToRegion(saveButton, "South");
         window->addToRegion(clearButton, "South");
+        window->addToRegion(scaleButton, "South");
+        window->addToRegion(rotateButton, "South");
+        window->addToRegion(setSizeButton, "South");
     }
 
 //        window->setBackground("yellow");
@@ -127,10 +136,12 @@ void testQwindowDrawing() {
     }
 
     // foreground layer
+    static GImage* gimage = nullptr;
     if (TEST_FOREGROUND) {
         ball = new GOval(20, 20, 50, 50);
         ball->setFillColor("#aaff0033");
         ball->setLineWidth(2);
+        ball->scale(1.5);
         ball->setLineStyle(GObject::LINE_DOT);
         window->add(ball);
 
@@ -147,7 +158,7 @@ void testQwindowDrawing() {
         gtext2->scale(1.5);
         window->add(gtext2);
 
-        GImage* gimage = new GImage("triangle-icon.png", 200, 40);
+        gimage = new GImage("triangle-icon.png", 200, 40);
         gimage->setOpacity(0.6);
         window->add(gimage);
 
@@ -204,24 +215,36 @@ void testQwindowDrawing() {
             string filename = GFileChooser::showSaveDialog();
             window->saveCanvasPixels(filename);
         });
+
+        scaleButton->setActionListener([]() {
+            gimage->scale(1.2);
+        });
+
+        rotateButton->setActionListener([]() {
+            gimage->rotate(1);
+        });
+
+        setSizeButton->setActionListener([]() {
+            gimage->setSize(gimage->getWidth() * 1.1, gimage->getHeight() * 1.1);
+        });
     }
 
     if (TEST_LAYOUT_WIDGETS && TEST_BACKGROUND) {
-//        window->setMouseListener([](GEvent event) {
-//            // cout << "mouse! event=" << event << endl;
-//            // cout << "mouse handler: What thread am I? " << QGui::instance()->getCurrentThread() << endl;
-//            if (event.getType() == MOUSE_DRAGGED) {
-//                window->setColor("blue");
-//                window->setFillColor("blue");
-//                window->setLineStyle(GObject::LINE_SOLID);
-//                window->setLineWidth(1);
-//                window->fillOval(event.getX() - 5, event.getY() - 5, 10, 10);
-//            } else if (event.getType() == MOUSE_MOVED) {
-//                label->setText(event.getLocation().toString()
-//                               + " " + window->getPixelString(event.getX(), event.getY()));
-//                cout << "mouse moved: " << event.getLocation().toString() << endl;
-//            }
-//        });
+        window->setMouseListener([](GEvent event) {
+            // cout << "mouse! event=" << event << endl;
+            // cout << "mouse handler: What thread am I? " << QGui::instance()->getCurrentThread() << endl;
+            if (event.getType() == MOUSE_DRAGGED) {
+                window->setColor("blue");
+                window->setFillColor("blue");
+                window->setLineStyle(GObject::LINE_SOLID);
+                window->setLineWidth(1);
+                window->fillOval(event.getX() - 5, event.getY() - 5, 10, 10);
+            } else if (event.getType() == MOUSE_MOVED) {
+                label->setText(event.getLocation().toString()
+                               + " " + window->getPixelString(event.getX(), event.getY()));
+                cout << "mouse moved: " << event.getLocation().toString() << endl;
+            }
+        });
     }
 
     if (TEST_FOREGROUND) {
@@ -252,13 +275,13 @@ void testQwindowDrawing() {
 //        tickFunc();
 //    }
 
-    GTimer timer(2);
-    timer.start();
-    while (true) {
-        GEvent event = waitForEvent(MOUSE_EVENT | TIMER_EVENT);
-        int x = randomInteger(0, 800);
-        int y = randomInteger(0, 400);
-        GOval* oval = new GOval(x, y, 10, 20);
-        window->add(oval);
-    }
+//    GTimer timer(2);
+//    timer.start();
+//    while (true) {
+//        GEvent event = waitForEvent(MOUSE_EVENT | TIMER_EVENT);
+//        int x = randomInteger(0, 800);
+//        int y = randomInteger(0, 400);
+//        GOval* oval = new GOval(x, y, 10, 20);
+//        window->add(oval);
+//    }
 }

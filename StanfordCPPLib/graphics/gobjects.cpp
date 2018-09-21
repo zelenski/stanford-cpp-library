@@ -85,7 +85,7 @@ GObject::~GObject() {
 }
 
 bool GObject::contains(double x, double y) const {
-    if (_transformed) {
+    if (isTransformed()) {
         // TODO
         return getBounds().contains(x, y);
     } else {
@@ -106,7 +106,7 @@ double GObject::getBottomY() const {
 }
 
 GRectangle GObject::getBounds() const {
-    if (_transformed) {
+    if (isTransformed()) {
         // TODO
         return GRectangle(getX(), getY(), getWidth(), getHeight());
     } else {
@@ -231,6 +231,10 @@ bool GObject::isAntiAliasing() {
 
 bool GObject::isFilled() const {
     return _fillFlag;
+}
+
+bool GObject::isTransformed() const {
+    return _transformed;
 }
 
 bool GObject::isVisible() const {
@@ -455,7 +459,7 @@ void GObject::setOpacity(double opacity) {
 }
 
 void GObject::setSize(double width, double height) {
-    if (_transformed) {
+    if (isTransformed()) {
         error("GObject::setSize: Object has been transformed");
     }
     _width = width;
@@ -539,7 +543,7 @@ GArc::GArc(double x, double y, double width, double height, double start, double
 }
 
 bool GArc::contains(double x, double y) const {
-    if (_transformed) {
+    if (isTransformed()) {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
     }
@@ -602,7 +606,7 @@ GPoint GArc::getArcPoint(double theta) const {
 }
 
 GRectangle GArc::getBounds() const {
-    if (_transformed) {
+    if (isTransformed()) {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
     }
@@ -696,7 +700,11 @@ void GCompound::add(GObject* gobj) {
     }
     _contents.add(gobj);
     gobj->_parent = this;
-    conditionalRepaintRegion(gobj->getBounds().enlargedBy((gobj->getLineWidth() + 1) / 2));
+    if (gobj->isTransformed()) {
+        conditionalRepaint();
+    } else {
+        conditionalRepaintRegion(gobj->getBounds().enlargedBy((gobj->getLineWidth() + 1) / 2));
+    }
 }
 
 void GCompound::add(GObject* gobj, double x, double y) {
@@ -736,7 +744,7 @@ void GCompound::conditionalRepaintRegion(const GRectangle& bounds) {
 }
 
 bool GCompound::contains(double x, double y) const {
-    if (_transformed) {
+    if (isTransformed()) {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
     }
@@ -770,7 +778,7 @@ int GCompound::findGObject(GObject* gobj) const {
 }
 
 GRectangle GCompound::getBounds() const {
-    if (_transformed) {
+    if (isTransformed()) {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
     }
@@ -851,7 +859,11 @@ void GCompound::removeAt(int index) {
     GObject* gobj = _contents[index];
     _contents.remove(index);
     gobj->_parent = nullptr;
-    conditionalRepaintRegion(gobj->getBounds().enlargedBy((gobj->getLineWidth() + 1) / 2));
+    if (gobj->isTransformed()) {
+        conditionalRepaint();
+    } else {
+        conditionalRepaintRegion(gobj->getBounds().enlargedBy((gobj->getLineWidth() + 1) / 2));
+    }
 }
 
 void GCompound::repaint() {
@@ -1008,8 +1020,22 @@ void GImage::draw(QPainter* painter) {
     if (!painter) {
         return;
     }
+    double myX = getX();
+    double myY = getY();
+    double myWidth = getWidth();
+    double myHeight = getHeight();
+    double imgWidth = _qimage->width();
+    double imgHeight = _qimage->height();
     painter->setOpacity(_opacity);
-    painter->drawImage((int) getX(), (int) getY(), *_qimage);
+    painter->setTransform(_transform, /* combine */ false);
+    if (floatingPointEqual(myWidth, imgWidth) && floatingPointEqual(myHeight, imgHeight)) {
+        // draw unscaled
+        painter->drawImage((int) myX, (int) myY, *_qimage);
+    } else {
+        // draw scaled
+        QRectF rect(myX, myY, myWidth, myHeight);
+        painter->drawImage(rect, *_qimage);
+    }
 }
 
 std::string GImage::getFileName() const {
@@ -1049,7 +1075,7 @@ GLine::GLine(const GPoint& p0, const GPoint& p1)
 }
 
 bool GLine::contains(double x, double y) const {
-    if (_transformed) {
+    if (isTransformed()) {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
     }
@@ -1093,7 +1119,7 @@ void GLine::draw(QPainter* painter) {
 }
 
 GRectangle GLine::getBounds() const {
-    if (_transformed) {
+    if (isTransformed()) {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
     }
@@ -1163,7 +1189,7 @@ GOval::GOval(double x, double y, double width, double height)
 }
 
 bool GOval::contains(double x, double y) const {
-    if (_transformed) {
+    if (isTransformed()) {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
     }
@@ -1273,7 +1299,7 @@ void GPolygon::clear() {
 }
 
 bool GPolygon::contains(double x, double y) const {
-    if (_transformed) {
+    if (isTransformed()) {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
     }
@@ -1308,7 +1334,7 @@ void GPolygon::draw(QPainter* painter) {
 }
 
 GRectangle GPolygon::getBounds() const {
-    if (_transformed) {
+    if (isTransformed()) {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
     }
@@ -1408,7 +1434,7 @@ GRoundRect::GRoundRect(double x, double y, double width, double height, double c
 }
 
 bool GRoundRect::contains(double x, double y) const {
-    if (_transformed) {
+    if (isTransformed()) {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
     }
@@ -1479,7 +1505,7 @@ void GText::draw(QPainter* painter) {
 }
 
 GRectangle GText::getBounds() const {
-    if (_transformed) {
+    if (isTransformed()) {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
     }

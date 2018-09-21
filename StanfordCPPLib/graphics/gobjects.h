@@ -226,6 +226,14 @@ public:
     virtual bool isFilled() const;
 
     /**
+     * Returns <code>true</code> if this object has been transformed
+     * by calling methods such as rotate() or scale() on it.
+     * Certain operations (such as setSize) cannot be performed after
+     * a graphical object has been transformed.
+     */
+    virtual bool isTransformed() const;
+
+    /**
      * Returns <code>true</code> if this object is visible on screen.
      */
     virtual bool isVisible() const;
@@ -249,6 +257,9 @@ public:
     /**
      * Transforms the object by rotating it <code>theta</code> degrees
      * counterclockwise around its origin.
+     * After calling this method on a graphical object, <code>isTransformed</code>
+     * will return <code>true</code> for that object unless you subsequently
+     * call <code>resetTransform</code> on it.
      */
     virtual void rotate(double theta);
 
@@ -256,6 +267,9 @@ public:
      * Scales the object by the specified scale factor.  This form
      * scales the object by <code>sf</code> in both dimensions, so that
      * invoking <code>gobj->scale(2);</code> doubles the size of the object.
+     * After calling this method on a graphical object, <code>isTransformed</code>
+     * will return <code>true</code> for that object unless you subsequently
+     * call <code>resetTransform</code> on it.
      */
     virtual void scale(double sf);
 
@@ -264,6 +278,9 @@ public:
      * <code>gobj->scale(2, 2);</code> doubles the size of the object.
      * This form applies independent scale factors to the <i>x</i> and <i>y</i>
      * dimensions.
+     * After calling this method on a graphical object, <code>isTransformed</code>
+     * will return <code>true</code> for that object unless you subsequently
+     * call <code>resetTransform</code> on it.
      */
     virtual void scale(double sx, double sy);
 
