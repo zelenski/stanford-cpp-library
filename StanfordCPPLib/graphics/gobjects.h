@@ -930,7 +930,7 @@ private:
 
     // instance variables
     Vector<GObject*> _contents;
-    QWidget* _widget;    // widget containing this compound
+    QWidget* _widget = nullptr;    // widget containing this compound
     bool _autoRepaint;   // automatically repaint on any change; default true
 
     friend class GObject;

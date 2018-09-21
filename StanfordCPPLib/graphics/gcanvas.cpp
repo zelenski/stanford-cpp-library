@@ -295,11 +295,13 @@ void GCanvas::draw(GObject* gobj) {
     if (_backgroundImage && _backgroundImage->paintEngine()) {
         GThread::runOnQtGuiThread([this, gobj]() {
             lockForWrite();
-            QPainter painter(_backgroundImage);
-            painter.setRenderHint(QPainter::Antialiasing, GObject::isAntiAliasing());
-            painter.setRenderHint(QPainter::TextAntialiasing, GObject::isAntiAliasing());
-            gobj->draw(&painter);
-            painter.end();
+            if (gobj->isVisible()) {
+                QPainter painter(_backgroundImage);
+                painter.setRenderHint(QPainter::Antialiasing, GObject::isAntiAliasing());
+                painter.setRenderHint(QPainter::TextAntialiasing, GObject::isAntiAliasing());
+                gobj->draw(&painter);
+                painter.end();
+            }
             unlock();
         });
         conditionalRepaintRegion(gobj->getBounds().enlargedBy((gobj->getLineWidth() + 1) / 2));
