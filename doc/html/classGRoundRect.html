@@ -191,6 +191,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a11c404f106940c201b6f326e0355c150"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#a11c404f106940c201b6f326e0355c150">isFilled</a>() const</td></tr>
 <tr class="memdesc:a11c404f106940c201b6f326e0355c150"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <code>true</code> if the object is filled with color.  <a href="#a11c404f106940c201b6f326e0355c150">More...</a><br /></td></tr>
 <tr class="separator:a11c404f106940c201b6f326e0355c150"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9de207581cfa4ca1eaa06da5f29b75fc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#a9de207581cfa4ca1eaa06da5f29b75fc">isTransformed</a>() const</td></tr>
+<tr class="memdesc:a9de207581cfa4ca1eaa06da5f29b75fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <code>true</code> if this object has been transformed by calling methods such as <a class="el" href="classGObject.html#ae1ffaa12185dfd5ba464f7d87c329e26" title="Transforms the object by rotating it theta degrees counterclockwise around its origin. ">rotate()</a> or <a class="el" href="classGObject.html#ad2e1900f730475c2d044817db03b38d6" title="Scales the object by the specified scale factor. ">scale()</a> on it.  <a href="#a9de207581cfa4ca1eaa06da5f29b75fc">More...</a><br /></td></tr>
+<tr class="separator:a9de207581cfa4ca1eaa06da5f29b75fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d8a6cfb13917785c143e74d40e4e2be"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGObject.html#a9d8a6cfb13917785c143e74d40e4e2be">isVisible</a>() const</td></tr>
 <tr class="memdesc:a9d8a6cfb13917785c143e74d40e4e2be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <code>true</code> if this object is visible on screen.  <a href="#a9d8a6cfb13917785c143e74d40e4e2be">More...</a><br /></td></tr>
 <tr class="separator:a9d8a6cfb13917785c143e74d40e4e2be"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1227,6 +1230,34 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a9de207581cfa4ca1eaa06da5f29b75fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9de207581cfa4ca1eaa06da5f29b75fc">&#9670;&nbsp;</a></span>isTransformed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool isTransformed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns <code>true</code> if this object has been transformed by calling methods such as <a class="el" href="classGObject.html#ae1ffaa12185dfd5ba464f7d87c329e26" title="Transforms the object by rotating it theta degrees counterclockwise around its origin. ">rotate()</a> or <a class="el" href="classGObject.html#ad2e1900f730475c2d044817db03b38d6" title="Scales the object by the specified scale factor. ">scale()</a> on it. </p>
+<p>Certain operations (such as setSize) cannot be performed after a graphical object has been transformed. </p>
+
+</div>
+</div>
 <a id="a9d8a6cfb13917785c143e74d40e4e2be"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9d8a6cfb13917785c143e74d40e4e2be">&#9670;&nbsp;</a></span>isVisible()</h2>
 
@@ -1373,6 +1404,7 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Transforms the object by rotating it <code>theta</code> degrees counterclockwise around its origin. </p>
+<p>After calling this method on a graphical object, <code>isTransformed</code> will return <code>true</code> for that object unless you subsequently call <code>resetTransform</code> on it. </p>
 
 </div>
 </div>
@@ -1401,7 +1433,7 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Scales the object by the specified scale factor. </p>
-<p>This form scales the object by <code>sf</code> in both dimensions, so that invoking <code>gobj-&gt;scale(2);</code> doubles the size of the object. </p>
+<p>This form scales the object by <code>sf</code> in both dimensions, so that invoking <code>gobj-&gt;scale(2);</code> doubles the size of the object. After calling this method on a graphical object, <code>isTransformed</code> will return <code>true</code> for that object unless you subsequently call <code>resetTransform</code> on it. </p>
 
 </div>
 </div>
@@ -1440,7 +1472,7 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Scales the object by the specified scale factors. </p>
-<p>For example, <code>gobj-&gt;scale(2, 2);</code> doubles the size of the object. This form applies independent scale factors to the <em>x</em> and <em>y</em> dimensions. </p>
+<p>For example, <code>gobj-&gt;scale(2, 2);</code> doubles the size of the object. This form applies independent scale factors to the <em>x</em> and <em>y</em> dimensions. After calling this method on a graphical object, <code>isTransformed</code> will return <code>true</code> for that object unless you subsequently call <code>resetTransform</code> on it. </p>
 
 </div>
 </div>

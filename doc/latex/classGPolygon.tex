@@ -107,6 +107,8 @@ virtual double \mbox{\hyperlink{classGObject_aafa51c7f8f38a09febbb9ce7853f77b4}{
 \begin{DoxyCompactList}\small\item\em Returns the topmost {\itshape y}-\/coordinate of the object. \end{DoxyCompactList}\item 
 virtual bool \mbox{\hyperlink{classGObject_a11c404f106940c201b6f326e0355c150}{is\+Filled}} () const
 \begin{DoxyCompactList}\small\item\em Returns {\ttfamily true} if the object is filled with color. \end{DoxyCompactList}\item 
+virtual bool \mbox{\hyperlink{classGObject_a9de207581cfa4ca1eaa06da5f29b75fc}{is\+Transformed}} () const
+\begin{DoxyCompactList}\small\item\em Returns {\ttfamily true} if this object has been transformed by calling methods such as \mbox{\hyperlink{classGObject_ae1ffaa12185dfd5ba464f7d87c329e26}{rotate()}} or \mbox{\hyperlink{classGObject_ad2e1900f730475c2d044817db03b38d6}{scale()}} on it. \end{DoxyCompactList}\item 
 virtual bool \mbox{\hyperlink{classGObject_a9d8a6cfb13917785c143e74d40e4e2be}{is\+Visible}} () const
 \begin{DoxyCompactList}\small\item\em Returns {\ttfamily true} if this object is visible on screen. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGObject_a5973d8dda83afb36e2c56855515be392}{move}} (double dx, double dy)
@@ -725,7 +727,17 @@ On by default. \mbox{\Hypertarget{classGObject_a11c404f106940c201b6f326e0355c150
 
 Returns {\ttfamily true} if the object is filled with color. 
 
-\mbox{\Hypertarget{classGObject_a9d8a6cfb13917785c143e74d40e4e2be}\label{classGObject_a9d8a6cfb13917785c143e74d40e4e2be}} 
+\mbox{\Hypertarget{classGObject_a9de207581cfa4ca1eaa06da5f29b75fc}\label{classGObject_a9de207581cfa4ca1eaa06da5f29b75fc}} 
+\index{G\+Polygon@{G\+Polygon}!is\+Transformed@{is\+Transformed}}
+\index{is\+Transformed@{is\+Transformed}!G\+Polygon@{G\+Polygon}}
+\subsubsection{\texorpdfstring{is\+Transformed()}{isTransformed()}}
+{\footnotesize\ttfamily bool is\+Transformed (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [inherited]}}
+
+
+
+Returns {\ttfamily true} if this object has been transformed by calling methods such as \mbox{\hyperlink{classGObject_ae1ffaa12185dfd5ba464f7d87c329e26}{rotate()}} or \mbox{\hyperlink{classGObject_ad2e1900f730475c2d044817db03b38d6}{scale()}} on it. 
+
+Certain operations (such as set\+Size) cannot be performed after a graphical object has been transformed. \mbox{\Hypertarget{classGObject_a9d8a6cfb13917785c143e74d40e4e2be}\label{classGObject_a9d8a6cfb13917785c143e74d40e4e2be}} 
 \index{G\+Polygon@{G\+Polygon}!is\+Visible@{is\+Visible}}
 \index{is\+Visible@{is\+Visible}!G\+Polygon@{G\+Polygon}}
 \subsubsection{\texorpdfstring{is\+Visible()}{isVisible()}}
@@ -779,7 +791,7 @@ Undoes any previous scale/rotate transformations on this object.
 
 Transforms the object by rotating it {\ttfamily theta} degrees counterclockwise around its origin. 
 
-\mbox{\Hypertarget{classGObject_ad2e1900f730475c2d044817db03b38d6}\label{classGObject_ad2e1900f730475c2d044817db03b38d6}} 
+After calling this method on a graphical object, {\ttfamily is\+Transformed} will return {\ttfamily true} for that object unless you subsequently call {\ttfamily reset\+Transform} on it. \mbox{\Hypertarget{classGObject_ad2e1900f730475c2d044817db03b38d6}\label{classGObject_ad2e1900f730475c2d044817db03b38d6}} 
 \index{G\+Polygon@{G\+Polygon}!scale@{scale}}
 \index{scale@{scale}!G\+Polygon@{G\+Polygon}}
 \subsubsection{\texorpdfstring{scale()}{scale()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
@@ -789,7 +801,7 @@ Transforms the object by rotating it {\ttfamily theta} degrees counterclockwise 
 
 Scales the object by the specified scale factor. 
 
-This form scales the object by {\ttfamily sf} in both dimensions, so that invoking {\ttfamily gobj-\/$>$scale(2);} doubles the size of the object. \mbox{\Hypertarget{classGObject_a63641f69d610d0b951357d35a0c3b1e3}\label{classGObject_a63641f69d610d0b951357d35a0c3b1e3}} 
+This form scales the object by {\ttfamily sf} in both dimensions, so that invoking {\ttfamily gobj-\/$>$scale(2);} doubles the size of the object. After calling this method on a graphical object, {\ttfamily is\+Transformed} will return {\ttfamily true} for that object unless you subsequently call {\ttfamily reset\+Transform} on it. \mbox{\Hypertarget{classGObject_a63641f69d610d0b951357d35a0c3b1e3}\label{classGObject_a63641f69d610d0b951357d35a0c3b1e3}} 
 \index{G\+Polygon@{G\+Polygon}!scale@{scale}}
 \index{scale@{scale}!G\+Polygon@{G\+Polygon}}
 \subsubsection{\texorpdfstring{scale()}{scale()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
@@ -799,7 +811,7 @@ This form scales the object by {\ttfamily sf} in both dimensions, so that invoki
 
 Scales the object by the specified scale factors. 
 
-For example, {\ttfamily gobj-\/$>$scale(2, 2);} doubles the size of the object. This form applies independent scale factors to the {\itshape x} and {\itshape y} dimensions. \mbox{\Hypertarget{classGObject_ab6747f40313c531c2db32edb5b63b9b7}\label{classGObject_ab6747f40313c531c2db32edb5b63b9b7}} 
+For example, {\ttfamily gobj-\/$>$scale(2, 2);} doubles the size of the object. This form applies independent scale factors to the {\itshape x} and {\itshape y} dimensions. After calling this method on a graphical object, {\ttfamily is\+Transformed} will return {\ttfamily true} for that object unless you subsequently call {\ttfamily reset\+Transform} on it. \mbox{\Hypertarget{classGObject_ab6747f40313c531c2db32edb5b63b9b7}\label{classGObject_ab6747f40313c531c2db32edb5b63b9b7}} 
 \index{G\+Polygon@{G\+Polygon}!send\+Backward@{send\+Backward}}
 \index{send\+Backward@{send\+Backward}!G\+Polygon@{G\+Polygon}}
 \subsubsection{\texorpdfstring{send\+Backward()}{sendBackward()}}
