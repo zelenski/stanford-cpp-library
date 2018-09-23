@@ -124,7 +124,7 @@ std::string TokenScanner::getStringValue(const std::string& token) const {
     return str;
 }
 
-TokenType TokenScanner::getTokenType(const std::string& token) const {
+TokenScanner::TokenType TokenScanner::getTokenType(const std::string& token) const {
     if (token.empty()) {
         return TokenType(EOF);
     }

@@ -3,6 +3,8 @@
  * -------------------
  *
  * @author Marty Stepp
+ * @version 2018/09/23
+ * - renamed enum constants to avoid name collisions (may break some client code)
  * @version 2018/09/08
  * - added doc comments for new documentation generation
  * @version 2018/08/23
@@ -33,9 +35,9 @@ public:
      * confirmation dialogs: Yes/No, Yes/No/Cancel, or OK/Cancel.
      */
     enum ConfirmType {
-        YES_NO = 0,
-        YES_NO_CANCEL = 1,
-        OK_CANCEL = 2
+        CONFIRM_YES_NO = 0,
+        CONFIRM_YES_NO_CANCEL = 1,
+        CONFIRM_OK_CANCEL = 2
     };
 
     /**
@@ -44,10 +46,10 @@ public:
      * can use a ConfirmResult in a boolean context.
      */
     enum ConfirmResult {
-        CANCEL = -1,   // for yes/no/cancel dialogs
-        NO = 0,        // 0 so that 'no' is 'falsey'
-        YES = 1,       // 1 so that 'yes' is 'truthy'
-        OK = 2         // for ok/cancel dialogs
+        CONFIRM_CANCEL = -1,   // for yes/no/cancel dialogs
+        CONFIRM_NO = 0,        // 0 so that 'no' is 'falsey'
+        CONFIRM_YES = 1,       // 1 so that 'yes' is 'truthy'
+        CONFIRM_OK = 2         // for ok/cancel dialogs
     };
 
     /**
@@ -56,12 +58,12 @@ public:
      * such as changing its icons or font.
      */
     enum MessageType {
-        ERROR = 0,
-        INFORMATION = 1,
-        PLAIN = -1,
-        WARNING = 2,
-        QUESTION = 3,
-        ABOUT = 4
+        MESSAGE_ERROR = 0,
+        MESSAGE_INFORMATION = 1,
+        MESSAGE_PLAIN = -1,
+        MESSAGE_WARNING = 2,
+        MESSAGE_QUESTION = 3,
+        MESSAGE_ABOUT = 4
     };
 
     /**
@@ -72,7 +74,7 @@ public:
      */
     static ConfirmResult showConfirmDialog(const std::string& message,
                                            const std::string& title = "",
-                                           ConfirmType type = YES_NO);
+                                           ConfirmType type = CONFIRM_YES_NO);
 
     /**
      * Pops up a yes/no confirmation box.
@@ -83,7 +85,7 @@ public:
     static ConfirmResult showConfirmDialog(GWindow* parent,
                                            const std::string& message,
                                            const std::string& title = "",
-                                           ConfirmType type = YES_NO);
+                                           ConfirmType type = CONFIRM_YES_NO);
 
     /**
      * Pops up a yes/no confirmation box.
@@ -94,7 +96,7 @@ public:
     static ConfirmResult showConfirmDialog(QWidget* parent,
                                            const std::string& message,
                                            const std::string& title = "",
-                                           ConfirmType type = YES_NO);
+                                           ConfirmType type = CONFIRM_YES_NO);
 
     /**
      * Pops up an input box with a text field where the user can type a
@@ -138,7 +140,7 @@ public:
      */
     static void showMessageDialog(const std::string& message,
                                   const std::string& title = "",
-                                  MessageType type = PLAIN);
+                                  MessageType type = MESSAGE_PLAIN);
 
     /**
      * Displays an output message dialog to the user.
@@ -151,7 +153,7 @@ public:
     static void showMessageDialog(GWindow* parent,
                                   const std::string& message,
                                   const std::string& title = "",
-                                  MessageType type = PLAIN);
+                                  MessageType type = MESSAGE_PLAIN);
 
     /**
      * Displays an output message dialog to the user.
@@ -164,7 +166,7 @@ public:
     static void showMessageDialog(QWidget* parent,
                                   const std::string& message,
                                   const std::string& title = "",
-                                  MessageType type = PLAIN);
+                                  MessageType type = MESSAGE_PLAIN);
 
     /**
      * Shows a general input box with a set of buttons from which the user may
@@ -243,11 +245,11 @@ private:
      * These are converted into Result enum values.
      */
     enum InternalResult {
-        CANCEL_OPTION = 2,
-        CLOSED_OPTION = -1,
-        NO_OPTION = 1,
-        OK_OPTION = 0,
-        YES_OPTION = 0
+        INTERNAL_CANCEL_OPTION = 2,
+        INTERNAL_CLOSED_OPTION = -1,
+        INTERNAL_NO_OPTION = 1,
+        INTERNAL_OK_OPTION = 0,
+        INTERNAL_YES_OPTION = 0
     };
 };
 

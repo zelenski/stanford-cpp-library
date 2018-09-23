@@ -44,9 +44,9 @@ GOptionPane::ConfirmResult GOptionPane::showConfirmDialog(QWidget* parent,
                                                           const std::string& message,
                                                           const std::string& title,
                                                           ConfirmType type) {
-    if (type != GOptionPane::ConfirmType::YES_NO
-            && type != GOptionPane::ConfirmType::YES_NO_CANCEL
-            && type != GOptionPane::ConfirmType::OK_CANCEL) {
+    if (type != GOptionPane::ConfirmType::CONFIRM_YES_NO
+            && type != GOptionPane::ConfirmType::CONFIRM_YES_NO_CANCEL
+            && type != GOptionPane::ConfirmType::CONFIRM_OK_CANCEL) {
         error("GOptionPane::showConfirmDialog: Illegal dialog type");
     }
     std::string titleToUse = title.empty() ? std::string("Select an option") : title;
@@ -54,16 +54,16 @@ GOptionPane::ConfirmResult GOptionPane::showConfirmDialog(QWidget* parent,
     // convert our enum types to Qt's button enum type
     QMessageBox::StandardButtons buttons;
     QMessageBox::StandardButton defaultButton = QMessageBox::Cancel;
-    if (type == GOptionPane::ConfirmType::YES_NO) {
+    if (type == GOptionPane::ConfirmType::CONFIRM_YES_NO) {
         buttons = QMessageBox::Yes | QMessageBox::No;
         defaultButton = QMessageBox::No;
-    } else if (type == GOptionPane::ConfirmType::YES_NO_CANCEL) {
+    } else if (type == GOptionPane::ConfirmType::CONFIRM_YES_NO_CANCEL) {
         buttons = QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel;
-    } else if (type == GOptionPane::ConfirmType::OK_CANCEL) {
+    } else if (type == GOptionPane::ConfirmType::CONFIRM_OK_CANCEL) {
         buttons = QMessageBox::Ok | QMessageBox::Cancel;
     }
 
-    GOptionPane::ConfirmResult confirmResult = GOptionPane::CANCEL;
+    GOptionPane::ConfirmResult confirmResult = GOptionPane::CONFIRM_CANCEL;
     GThread::runOnQtGuiThread([parent, titleToUse, message, buttons, defaultButton, &confirmResult]() {
         int dialogResult = QMessageBox::question(parent,
                 QString::fromStdString(titleToUse),
@@ -72,14 +72,14 @@ GOptionPane::ConfirmResult GOptionPane::showConfirmDialog(QWidget* parent,
                 defaultButton);
         switch (dialogResult) {
             case QMessageBox::Yes:
-                confirmResult = GOptionPane::ConfirmResult::YES;
+                confirmResult = GOptionPane::ConfirmResult::CONFIRM_YES;
                 break;
             case QMessageBox::No:
-                confirmResult = GOptionPane::ConfirmResult::NO;
+                confirmResult = GOptionPane::ConfirmResult::CONFIRM_NO;
                 break;
             case QMessageBox::Cancel:
             default:
-                confirmResult = GOptionPane::ConfirmResult::CANCEL;
+                confirmResult = GOptionPane::ConfirmResult::CONFIRM_CANCEL;
                 break;
         }
     });
@@ -132,26 +132,26 @@ void GOptionPane::showMessageDialog(QWidget* parent,
                                     const std::string& message,
                                     const std::string& title,
                                     MessageType type) {
-    if (type != GOptionPane::MessageType::PLAIN
-            && type != GOptionPane::MessageType::INFORMATION
-            && type != GOptionPane::MessageType::ERROR
-            && type != GOptionPane::MessageType::WARNING
-            && type != GOptionPane::MessageType::QUESTION
-            && type != GOptionPane::MessageType::ABOUT) {
+    if (type != GOptionPane::MessageType::MESSAGE_PLAIN
+            && type != GOptionPane::MessageType::MESSAGE_INFORMATION
+            && type != GOptionPane::MessageType::MESSAGE_ERROR
+            && type != GOptionPane::MessageType::MESSAGE_WARNING
+            && type != GOptionPane::MessageType::MESSAGE_QUESTION
+            && type != GOptionPane::MessageType::MESSAGE_ABOUT) {
         error("GOptionPane::showMessageDialog: Illegal dialog type");
     }
     std::string titleToUse = title.empty() ? std::string("Message") : title;
 
     GThread::runOnQtGuiThread([parent, message, titleToUse, type]() {
-        if (type == GOptionPane::MessageType::PLAIN
-                || type == GOptionPane::MessageType::INFORMATION
-                || type == GOptionPane::MessageType::QUESTION) {
+        if (type == GOptionPane::MessageType::MESSAGE_PLAIN
+                || type == GOptionPane::MessageType::MESSAGE_INFORMATION
+                || type == GOptionPane::MessageType::MESSAGE_QUESTION) {
             QMessageBox::information(parent, QString::fromStdString(titleToUse), QString::fromStdString(message));
-        } else if (type == GOptionPane::MessageType::WARNING) {
+        } else if (type == GOptionPane::MessageType::MESSAGE_WARNING) {
             QMessageBox::warning(parent, QString::fromStdString(titleToUse), QString::fromStdString(message));
-        } else if (type == GOptionPane::MessageType::ERROR) {
+        } else if (type == GOptionPane::MessageType::MESSAGE_ERROR) {
             QMessageBox::critical(parent, QString::fromStdString(titleToUse), QString::fromStdString(message));
-        } else if (type == GOptionPane::MessageType::ABOUT) {
+        } else if (type == GOptionPane::MessageType::MESSAGE_ABOUT) {
             QMessageBox::about(parent, QString::fromStdString(titleToUse), QString::fromStdString(message));
         }
     });
@@ -197,7 +197,7 @@ std::string GOptionPane::showOptionDialog(QWidget* parent,
     std::string result = "";
     GThread::runOnQtGuiThread([&box, &options, &result]() {
         int index = box.exec();
-        if (index == GOptionPane::InternalResult::CLOSED_OPTION
+        if (index == GOptionPane::InternalResult::INTERNAL_CLOSED_OPTION
                 || index < 0 || index >= options.size()) {
             result = "";
         } else {

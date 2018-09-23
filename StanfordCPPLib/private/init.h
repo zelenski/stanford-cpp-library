@@ -61,12 +61,10 @@ static StanfordCppLibraryInitializer __stanfordcpplib_init;
 
 } // namespace stanfordcpplib
 
-/*
- * ...
- */
-
-// keep in sync with definition in private/main.cpp
+// keep in sync with definition in private/mainwrapper.cpp
+#ifndef QT_NEEDS_QMAIN
 #define main studentMain
+#endif // QT_NEEDS_QMAIN
 
 // bypass std::exit function
 namespace std {
@@ -79,8 +77,5 @@ void __stanfordcpplib__exitLibrary(int status);
 #ifdef SPL_OVERLOAD_PROBLEMATIC_POINTER_ARITHMETIC
 #include "pointers.h"
 #endif // SPL_OVERLOAD_PROBLEMATIC_POINTER_ARITHMETIC
-
-// make sure Qt does not try to override our 'main' definition
-#undef QT_NEEDS_QMAIN
 
 #endif // _init_h

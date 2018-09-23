@@ -11,6 +11,7 @@
 #include <QSysInfo>
 #include "strlib.h"
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
 /*static*/ std::string OS::getName() {
     std::string productName = QSysInfo::prettyProductName().toStdString();
     return productName;
@@ -44,6 +45,27 @@ bool OS::isWindows() {
     return stringContains(kernelType, "windows")
             || stringContains(productType, "windows");
 }
+#else
+/*static*/ std::string OS::getName() {
+    return "unknown";
+}
+
+/*static*/ std::string OS::getVersion() {
+    return "unknown";
+}
+
+bool OS::isLinux() {
+    return false;
+}
+
+bool OS::isMac() {
+    return false;
+}
+
+bool OS::isWindows() {
+    return true;   // most old versions of Qt occur on old Windows installs
+}
+#endif // QT_VERSION
 
 OS::OS() {
     // empty

@@ -17,6 +17,7 @@
 #include "regexpr.h"
 #include <iterator>
 #include <regex>
+#include <QtGlobal>
 #include "error.h"
 #include "stringutils.h"
 
@@ -26,12 +27,18 @@ bool regexMatch(const std::string& s, const std::string& regexp) {
     return std::regex_search(s, match, reg);
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
 int regexMatchCount(const std::string& s, const std::string& regexp) {
     std::regex reg(regexp);
     auto it1 = std::sregex_iterator(s.begin(), s.end(), reg);
     auto it2 = std::sregex_iterator();
     return std::distance(it1, it2);
 }
+#else
+int regexMatchCount(const std::string& /*s*/, const std::string& /*regexp*/) {
+    return 0;   // not supported
+}
+#endif // QT_VERSION
 
 int regexMatchCountWithLines(const std::string& s, const std::string& regexp, std::string& linesOut) {
     Vector<int> linesOutVec;
@@ -48,6 +55,7 @@ int regexMatchCountWithLines(const std::string& s, const std::string& regexp, st
     return linesOutVec.size();
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
 void regexMatchCountWithLines(const std::string& s, const std::string& regexp,
                              Vector<int>& linesOut) {
     linesOut.clear();
@@ -74,7 +82,14 @@ void regexMatchCountWithLines(const std::string& s, const std::string& regexp,
         linesOut.add(currentLine);
     }
 }
+#else
+void regexMatchCountWithLines(const std::string& /*s*/, const std::string& /*regexp*/,
+                             Vector<int>& /*linesOut*/) {
+    // empty
+}
+#endif // QT_VERSION
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
 std::string regexReplace(const std::string& s, const std::string& regexp, const std::string& replacement, int limit) {
     std::regex reg(regexp);
     std::string result;
@@ -90,3 +105,8 @@ std::string regexReplace(const std::string& s, const std::string& regexp, const 
     }
     return result;
 }
+#else
+std::string regexReplace(const std::string& s, const std::string& /*regexp*/, const std::string& /*replacement*/, int /*limit*/) {
+    return s;   // not supported
+}
+#endif // QT_VERSION

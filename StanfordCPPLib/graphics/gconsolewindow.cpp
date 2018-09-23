@@ -4,6 +4,9 @@
  * This file implements the gconsolewindow.h interface.
  *
  * @author Marty Stepp
+ * @version 2018/09/23
+ * - added getFont
+ * - bug fix for loading input scripts
  * @version 2018/09/18
  * - window size/location fixes
  * @version 2018/09/17
@@ -244,7 +247,7 @@ void GConsoleWindow::checkForUpdates() {
                     /* parent  */ getWidget(),
                     /* message */ "Unable to look up latest library version from web.",
                     /* title   */ "Network error",
-                    /* type    */ GOptionPane::ERROR);
+                    /* type    */ GOptionPane::MESSAGE_ERROR);
             return;
         }
 
@@ -394,6 +397,10 @@ std::string GConsoleWindow::getErrorColor() const {
     return _errorColor.empty() ? DEFAULT_ERROR_COLOR : _errorColor;
 }
 
+std::string GConsoleWindow::getFont() const {
+    return _textArea->getFont();
+}
+
 std::string GConsoleWindow::getForeground() const {
     return getOutputColor();
 }
@@ -523,17 +530,30 @@ void GConsoleWindow::loadConfiguration() {
 }
 
 void GConsoleWindow::loadInputScript(int number) {
+    std::string sep = getDirectoryPathSeparator();
+    static std::initializer_list<std::string> directoriesToCheck {
+            ".",
+            "." + sep + "input",
+            "." + sep + "output"
+    };
     std::string inputFile;
     std::string expectedOutputFile;
-    for (std::string filename : listDirectory(".")) {
-        if (inputFile.empty()
-                && stringContains(filename, "input-" + integerToString(number))
-                && endsWith(filename, ".txt")) {
-            inputFile = filename;
-        } else if (expectedOutputFile.empty()
-                   && stringContains(filename, "expected-output-" + integerToString(number))
-                   && endsWith(filename, ".txt")) {
-            expectedOutputFile = filename;
+    for (std::string dir : directoriesToCheck) {
+        if (!isDirectory(dir)) {
+            continue;
+        }
+
+        for (std::string filename : listDirectory(dir)) {
+            filename = dir + sep + filename;
+            if (inputFile.empty()
+                    && stringContains(filename, "input-" + integerToString(number))
+                    && endsWith(filename, ".txt")) {
+                inputFile = filename;
+            } else if (expectedOutputFile.empty()
+                       && stringContains(filename, "expected-output-" + integerToString(number))
+                       && endsWith(filename, ".txt")) {
+                expectedOutputFile = filename;
+            }
         }
     }
 
@@ -604,7 +624,7 @@ void GConsoleWindow::processKeyPress(GEvent event) {
             QFont font = GFont::toQFont(_textArea->getFont());
             if (font.pointSize() + 1 <= MAX_FONT_SIZE) {
                 font.setPointSize(font.pointSize() + 1);
-                _textArea->setFont(GFont::toFontString(font));
+                setFont(GFont::toFontString(font));
             }
         } else if (keyCode == Qt::Key_Minus) {
             // decrease font size
@@ -612,7 +632,7 @@ void GConsoleWindow::processKeyPress(GEvent event) {
             QFont font = GFont::toQFont(_textArea->getFont());
             if (font.pointSize() - 1 >= MIN_FONT_SIZE) {
                 font.setPointSize(font.pointSize() - 1);
-                _textArea->setFont(GFont::toFontString(font));
+                setFont(GFont::toFontString(font));
             }
         } else if (keyCode == Qt::Key_Insert) {
             // Ctrl+Ins => Copy
@@ -621,7 +641,7 @@ void GConsoleWindow::processKeyPress(GEvent event) {
         } else if (keyCode == Qt::Key_0) {
             // normalize font size
             event.ignore();
-            _textArea->setFont(DEFAULT_FONT_FAMILY + "-" + integerToString(DEFAULT_FONT_SIZE));
+            setFont(DEFAULT_FONT_FAMILY + "-" + integerToString(DEFAULT_FONT_SIZE));
         } else if (keyCode >= Qt::Key_1 && keyCode <= Qt::Key_9) {
             // load input script 1-9
             loadInputScript(keyCode - Qt::Key_0);
@@ -1120,17 +1140,11 @@ void GConsoleWindow::setEcho(bool echo) {
 }
 
 void GConsoleWindow::setFont(const QFont& font) {
-    if (_locked) {
-        return;
-    }
     GWindow::setFont(font);   // call super
     _textArea->setFont(font);
 }
 
 void GConsoleWindow::setFont(const std::string& font) {
-    if (_locked) {
-        return;
-    }
     GWindow::setFont(font);   // call super
     _textArea->setFont(font);
 }
@@ -1144,9 +1158,6 @@ void GConsoleWindow::setForeground(const std::string& color) {
 }
 
 void GConsoleWindow::setLocationSaved(bool locationSaved) {
-    if (_locked) {
-        return;
-    }
     _locationSaved = locationSaved;
 }
 
@@ -1155,9 +1166,6 @@ void GConsoleWindow::setLocked(bool locked) {
 }
 
 void GConsoleWindow::setErrorColor(const std::string& errorColor) {
-    if (_locked) {
-        return;
-    }
     _errorColor = errorColor;
 }
 
@@ -1166,9 +1174,6 @@ void GConsoleWindow::setOutputColor(int rgb) {
 }
 
 void GConsoleWindow::setOutputColor(const std::string& outputColor) {
-    if (_locked) {
-        return;
-    }
     _outputColor = outputColor;
     _textArea->setForeground(outputColor);
 
@@ -1229,7 +1234,7 @@ void GConsoleWindow::showAboutDialog() {
                 /* parent */   getWidget(),
                 /* message */  ABOUT_MESSAGE,
                 /* title */    "About Stanford C++ Library",
-                /* type */     GOptionPane::ABOUT);
+                /* type */     GOptionPane::MESSAGE_ABOUT);
 }
 
 void GConsoleWindow::showColorDialog(bool background) {
@@ -1282,6 +1287,8 @@ void GConsoleWindow::showPrintDialog() {
 
 void GConsoleWindow::shutdown() {
     const std::string PROGRAM_COMPLETED_TITLE_SUFFIX = " [completed]";
+    std::cout.flush();
+    std::cerr.flush();
     _shutdown = true;
     _textArea->setEditable(false);
     std::string title = getTitle();

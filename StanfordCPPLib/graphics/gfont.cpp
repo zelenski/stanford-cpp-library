@@ -3,6 +3,8 @@
  * ---------------
  *
  * @author Marty Stepp
+ * @version 2018/09/23
+ * - added macro checks to improve compatibility with old Qt versions
  * @version 2018/09/14
  * - added boldFont, italicFont
  * @version 2018/08/23
@@ -15,6 +17,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
+#include <QtGlobal>
 #include "error.h"
 #include "require.h"
 #include "strlib.h"
@@ -108,16 +111,22 @@ std::string GFont::toFontString(const QFont& font) {
     switch (font.weight()) {
         case QFont::DemiBold:
         case QFont::Bold:
+#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
         case QFont::ExtraBold:
+#endif // QT_VERSION
         case QFont::Black:
             out << "-bold";
             dashPrinted = true;
             break;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
         case QFont::Thin:
         case QFont::ExtraLight:
+#endif // QT_VERSION
         case QFont::Light:
         case QFont::Normal:
+#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
         case QFont::Medium:
+#endif // QT_VERSION
         default:
             // not bold
             break;

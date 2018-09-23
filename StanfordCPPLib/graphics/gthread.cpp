@@ -2,6 +2,8 @@
  * File: gthread.cpp
  * -----------------
  *
+ * @version 2018/09/23
+ * - bug fix to shut down console at end of program
  * @version 2018/08/23
  * - renamed to gthread.h to replace Java version
  * @version 2018/07/28
@@ -9,7 +11,10 @@
  */
 
 #include "gthread.h"
+#include "consoletext.h"
+#include "gconsolewindow.h"
 #include "geventqueue.h"
+#include "qtgui.h"
 #include "require.h"
 
 GFunctionThread::GFunctionThread(GThunk func)
@@ -152,12 +157,16 @@ void GStudentThread::run() {
     }
 
     // if I get here, student's main() has finished running;
-    // indicate this by showing a new title on the graphical console
-    runOnQtGuiThreadAsync([]() {
-        // flush out any unwritten output to the standard output streams
-        std::cout.flush();
-        std::cerr.flush();
-    });
+    // indicate this by showing a completed title on the graphical console
+    if (getConsoleEnabled()) {
+        GConsoleWindow* console = getConsoleWindow();
+        if (console) {
+            console->shutdown();
+        }
+    } else {
+        // need to exit here else program will not terminate
+        QtGui::instance()->exitGraphics(_result);
+    }
 }
 
 void GStudentThread::startStudentThread(GThunkInt mainFunc) {

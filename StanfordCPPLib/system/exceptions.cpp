@@ -5,6 +5,8 @@
  * by student code on the console.
  * 
  * @author Marty Stepp
+ * @version 2016/12/23
+ * - added more function names for stack trace filtering (mainly thread stuff)
  * @version 2016/12/09
  * - added insertStarsBeforeEachLine
  * @version 2016/11/07
@@ -85,6 +87,7 @@ std::string cleanupFunctionNameForStackTrace(std::string function) {
     // remove references to std:: namespace
     stringReplaceInPlace(function, "std::", "");
     stringReplaceInPlace(function, "__cxx11::", "");
+    stringReplaceInPlace(function, "__cxxabi::", "");
     stringReplaceInPlace(function, "[abi:cxx11]", "");
     stringReplaceInPlace(function, "__1::", "");   // on Mac
 
@@ -219,11 +222,17 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
     // substrings to filter (don't show any func whose name contains these)
     static const std::vector<std::string> FORBIDDEN_SUBSTRINGS {
         " error(",
+        "_endthreadex",
+        "_Function_handler",
+        "_Internal_",
+        "_M_invoke",
         "_sigtramp",
         "autograderMain"
         "BaseThreadInitThunk",
         "crtexe.c",
         "ErrorException::ErrorException",
+        "function::operator",
+        "GetModuleFileName",
         "GetProfileString",
         "InitializeExceptionChain",
         "KnownExceptionFilter",
@@ -231,7 +240,6 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "QAbstractItemModel::",
         "QAbstractProxyModel::",
         "QCoreApplication::",
-        "_Internal_",
         "QMetaMethod::",
         "QMetaObject::",
         "QObjectPrivate::",

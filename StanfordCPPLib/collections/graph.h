@@ -1423,9 +1423,9 @@ template <typename NodeType, typename ArcType>
 NodeType* Graph<NodeType, ArcType>::scanNode(TokenScanner& scanner) {
     std::string token = scanner.nextToken();
     switch (scanner.getTokenType(token)) {
-    case WORD:
+    case TokenScanner::WORD:
         break;
-    case STRING:
+    case TokenScanner::STRING:
         token = scanner.getStringValue(token);
         break;
     default:

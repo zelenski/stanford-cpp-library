@@ -2,6 +2,8 @@
  * File: gwindow.cpp
  * -----------------
  *
+ * @version 2018/09/23
+ * - bug fixes for Windows/MinGW compatibility
  * @version 2018/09/19
  * - bug fix for clear() method
  * @version 2018/09/13
@@ -501,7 +503,10 @@ double GWindow::getScreenHeight() {
 }
 
 GDimension GWindow::getScreenSize() {
-    QRect rec = QApplication::desktop()->availableGeometry();
+    QRect rec;
+    GThread::runOnQtGuiThread([&rec]() {
+        rec = QApplication::desktop()->availableGeometry();
+    });
     return GDimension(rec.width(), rec.height());
 }
 

@@ -18,6 +18,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2018/09/23
+# - fixed some compiler flags to fix build on Win/Mac
 # @version 2018/09/20
 # - fixed static linking for release builds
 # @version 2018/09/18
@@ -176,7 +178,9 @@ win32 {
 }
 
 # precompiled header speeds up build times
-PRECOMPILED_HEADER = $$PWD/lib/StanfordCPPLib/private/precompiled.h
+!win32 {
+PRECOMPILED_HEADER = $$files($$PWD/lib/StanfordCPPLib/private/precompiled.h)
+}
 
 # honeypot to trick Qt Creator so that adding files works from within IDE;
 # Qt looks for first 'SOURCES *=' line and adds newly added .cpp/h files there.
@@ -282,13 +286,10 @@ QMAKE_CXXFLAGS += -Wcast-align
 #QMAKE_CXXFLAGS += -Wfloat-equal
 QMAKE_CXXFLAGS += -Wformat=2
 QMAKE_CXXFLAGS += -Wlogical-op
-QMAKE_CXXFLAGS += -Wno-keyword-macro
 QMAKE_CXXFLAGS += -Wno-missing-field-initializers
 QMAKE_CXXFLAGS += -Wno-old-style-cast
-QMAKE_CXXFLAGS += -Wno-reserved-id-macro
 QMAKE_CXXFLAGS += -Wno-sign-compare
 QMAKE_CXXFLAGS += -Wno-sign-conversion
-QMAKE_CXXFLAGS += -Wno-unused-const-variable
 QMAKE_CXXFLAGS += -Wno-write-strings
 QMAKE_CXXFLAGS += -Wreturn-type
 QMAKE_CXXFLAGS += -Werror=return-type
@@ -306,13 +307,17 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
     #QMAKE_CXXFLAGS += -Werror=zero-as-null-pointer-constant
 }
 
-# additional flags for Windows
 win32 {
+    # additional flags for Windows
     LIBS += -lDbghelp
     LIBS += -lbfd
     LIBS += -limagehlp
     cache()
 } else {
+    # flags that don't work on Windows MinGW compiler
+    QMAKE_CXXFLAGS += -Wno-keyword-macro
+    QMAKE_CXXFLAGS += -Wno-reserved-id-macro
+    QMAKE_CXXFLAGS += -Wno-unused-const-variable
     LIBS += -ldl
 }
 
@@ -347,7 +352,7 @@ equals(COMPILERNAME, clang++) {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20180918
+DEFINES += SPL_PROJECT_VERSION=20180923
 
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1
@@ -405,8 +410,14 @@ CONFIG(debug, debug|release) {
     QMAKE_CXXFLAGS += -fno-inline
     QMAKE_CXXFLAGS += -fno-omit-frame-pointer
 
-    QMAKE_LFLAGS += -rdynamic
-    QMAKE_LFLAGS += -Wl,--export-dynamic
+    #unix:!macx
+    unix-g++ {
+        QMAKE_CXXFLAGS += -rdynamic
+        QMAKE_CXXFLAGS += -Wl,--export-dynamic
+    }
+    equals(COMPILERNAME, clang++) {
+        QMAKE_CXXFLAGS += -Wl,--export-dynamic
+    }
 
     # print details about uncaught exceptions with red error text / stack trace
     DEFINES += SPL_CONSOLE_PRINT_EXCEPTIONS
@@ -605,4 +616,4 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #608; if not, your .pro has been changed!)
+# END OF FILE (this should be line #619; if not, your .pro has been changed!)

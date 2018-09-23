@@ -3,6 +3,8 @@
  * ----------------------
  * 
  * @author Marty Stepp
+ * @version 2018/09/23
+ * - added getFont
  * @version 2018/09/07
  * - added doc comments for new documentation generation
  * @version 2018/08/23
@@ -63,6 +65,7 @@ public:
     virtual std::string getColor() const Q_DECL_OVERRIDE;
     virtual int getColorInt() const Q_DECL_OVERRIDE;
     virtual std::string getErrorColor() const;
+    virtual std::string getFont() const Q_DECL_OVERRIDE;
     virtual std::string getForeground() const Q_DECL_OVERRIDE;
     virtual int getForegroundInt() const Q_DECL_OVERRIDE;
     virtual std::string getOutputColor() const;
