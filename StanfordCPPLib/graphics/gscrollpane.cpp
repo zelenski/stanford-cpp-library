@@ -99,8 +99,8 @@ Qt::ScrollBarPolicy GScrollPane::toQtScrollBarPolicy(ScrollBarPolicy policy) {
 
 
 _Internal_QScrollArea::_Internal_QScrollArea(GScrollPane* gscrollpane, QWidget* parent)
-        : QScrollArea(parent),
-          _gscrollpane(gscrollpane) {
+        : QScrollArea(parent)
+          /*_gscrollpane(gscrollpane)*/ {
     require::nonNull(gscrollpane, "_Internal_QScrollArea::constructor");
     setObjectName(QString::fromStdString("_Internal_QScrollArea_" + integerToString(gscrollpane->getID())));
 }

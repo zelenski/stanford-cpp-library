@@ -4,7 +4,6 @@
 
 #include <iostream>
 #include <string>
-#include "console.h"
 #include "functional.h"
 #include "vector.h"
 using namespace std;

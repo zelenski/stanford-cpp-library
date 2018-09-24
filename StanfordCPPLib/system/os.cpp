@@ -4,6 +4,10 @@
  * This file implements the OS class declared in os.h.
  * 
  * @author Marty Stepp
+ * @version 2018/09/23
+ * - bug fix for isMac
+ * @version 2018/09/17
+ * - initial version
  */
 
 #include "os.h"
@@ -32,11 +36,13 @@ bool OS::isMac() {
     std::string kernelType = toLowerCase(QSysInfo::kernelType().toStdString());
     std::string productType = toLowerCase(QSysInfo::productType().toStdString());
     return stringContains(kernelType, "apple")
+            || stringContains(kernelType, "darwin")
             || stringContains(kernelType, "mac")
             || stringContains(kernelType, "ios")
             || stringContains(productType, "apple")
+            || stringContains(productType, "ios")
             || stringContains(productType, "mac")
-            || stringContains(productType, "ios");
+            || stringContains(productType, "osx");
 }
 
 bool OS::isWindows() {

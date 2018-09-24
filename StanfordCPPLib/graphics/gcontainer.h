@@ -649,7 +649,7 @@ private:
     VerticalAlignment _valign;
     int _margin;
     int _spacing;
-    int _rows;
+    // int _rows;
     int _cols;
     int _currentIndex;
 

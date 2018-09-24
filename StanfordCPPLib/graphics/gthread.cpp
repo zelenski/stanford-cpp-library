@@ -163,10 +163,11 @@ void GStudentThread::run() {
         if (console) {
             console->shutdown();
         }
-    } else {
-        // need to exit here else program will not terminate
-        QtGui::instance()->exitGraphics(_result);
     }
+//    else {
+//        // need to exit here else program will not terminate
+//        QtGui::instance()->exitGraphics(_result);
+//    }
 }
 
 void GStudentThread::startStudentThread(GThunkInt mainFunc) {

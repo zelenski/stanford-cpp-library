@@ -147,6 +147,7 @@ void testQwindow() {
     button->setTextPosition(GInteractor::TEXT_BESIDE_ICON);
     button->setActionListener([](GEvent event) {
         cout << "button click! event = " << event << endl;
+        cout.flush();
         window->restore();
 
 //        window->setResizable(!window->isResizable());

@@ -7,6 +7,7 @@
  * @version 2018/09/23
  * - added getFont
  * - bug fix for loading input scripts
+ * - bug fix for default font on Mac
  * @version 2018/09/18
  * - window size/location fixes
  * @version 2018/09/17
@@ -32,6 +33,7 @@
 #include "gfontchooser.h"
 #include "goptionpane.h"
 #include "gthread.h"
+#include "os.h"
 #include "qtgui.h"
 #include "private/static.h"
 #include "private/version.h"
@@ -63,9 +65,16 @@ bool GConsoleWindow::_consoleEnabled = false;
 }
 
 /* static */ std::string GConsoleWindow::getDefaultFont() {
-    return DEFAULT_FONT_FAMILY
-            + "-" + integerToString(DEFAULT_FONT_SIZE)
-            + (DEFAULT_FONT_WEIGHT.empty() ? "" : ("-" + DEFAULT_FONT_WEIGHT));
+    if (OS::isMac()) {
+        // for some reason, using "Monospace" doesn't work for me on Mac testing
+        return "Menlo-"
+                + integerToString(DEFAULT_FONT_SIZE + 1)
+                + (DEFAULT_FONT_WEIGHT.empty() ? "" : ("-" + DEFAULT_FONT_WEIGHT));
+    } else {
+        return DEFAULT_FONT_FAMILY
+                + "-" + integerToString(DEFAULT_FONT_SIZE)
+                + (DEFAULT_FONT_WEIGHT.empty() ? "" : ("-" + DEFAULT_FONT_WEIGHT));
+    }
 }
 
 /* static */ GConsoleWindow* GConsoleWindow::instance() {

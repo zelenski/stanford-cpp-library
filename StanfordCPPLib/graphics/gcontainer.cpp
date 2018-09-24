@@ -551,7 +551,7 @@ _Internal_QContainer::_Internal_QContainer(GContainer* gcontainer, GContainer::L
           _valign(ALIGN_MIDDLE),
           _margin(GContainer::MARGIN_DEFAULT),
           _spacing(GContainer::SPACING_DEFAULT),
-          _rows(0),
+          // _rows(0),
           _cols(0),
           _currentIndex(-1),
           _overallLayout(nullptr),
@@ -568,7 +568,7 @@ _Internal_QContainer::_Internal_QContainer(GContainer* gcontainer, GContainer::L
     }
 }
 
-_Internal_QContainer::_Internal_QContainer(GContainer* gcontainer, int rows, int cols, QWidget* parent)
+_Internal_QContainer::_Internal_QContainer(GContainer* gcontainer, int /*rows*/, int cols, QWidget* parent)
         : QWidget(parent),
           _gcontainer(gcontainer),
           _layoutType(GContainer::LAYOUT_NONE),
@@ -576,7 +576,7 @@ _Internal_QContainer::_Internal_QContainer(GContainer* gcontainer, int rows, int
           _valign(ALIGN_MIDDLE),
           _margin(GContainer::MARGIN_DEFAULT),
           _spacing(GContainer::SPACING_DEFAULT),
-          _rows(rows),
+          // _rows(rows),
           _cols(cols),
           _currentIndex(-1),
           _overallLayout(nullptr),

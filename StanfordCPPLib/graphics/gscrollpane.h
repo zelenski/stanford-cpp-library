@@ -123,8 +123,8 @@ public:
     _Internal_QScrollArea(GScrollPane* gscrollpane, QWidget* parent = nullptr);
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
-private:
-    GScrollPane* _gscrollpane;
+// private:
+    // GScrollPane* _gscrollpane;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
