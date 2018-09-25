@@ -10,7 +10,7 @@
 #define _stack_exception_h
 #include <stdexcept>
 #include <string>
-#include "stacktrace/call_stack.h"
+#include "system/call_stack.h"
 
 namespace stacktrace {
 

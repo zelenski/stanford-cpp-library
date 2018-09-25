@@ -80,6 +80,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p><br />
+ This exception is thrown by calls to the <code>error</code> function.  
+ <a href="classErrorException.html#details">More...</a></p>
+
 <p><code>#include "<a class="el" href="error_8h_source.html">error.h</a>"</code></p>
 <div class="dynheader">
 Inheritance diagram for ErrorException:</div>
@@ -103,7 +107,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8d4b96162e93e11e5816d83702578af8"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classErrorException.html#a8d4b96162e93e11e5816d83702578af8">what</a>() const  throw ()</td></tr>
 <tr class="separator:a8d4b96162e93e11e5816d83702578af8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p><br />
+ This exception is thrown by calls to the <code>error</code> function. </p>
+<p>Typical code for catching errors looks like this:</p>
+<pre>
+     try {
+        ... code in which an error might occur ...
+     } catch (<a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a>&amp; ex) {
+        ... code to handle the error condition ...
+     }
+*</pre><p>If an <code><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></code> is thrown at any point in the range of the <code>try</code> (including in functions called from that code), control will jump immediately to the error handler. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a4f422b01fff7cc16eea81e00638f44d2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4f422b01fff7cc16eea81e00638f44d2">&#9670;&nbsp;</a></span>ErrorException()</h2>
 

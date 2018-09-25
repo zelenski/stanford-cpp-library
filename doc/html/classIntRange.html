@@ -81,38 +81,56 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p>An <a class="el" href="classIntRange.html" title="An IntRange is an iterable contiguous range of integers. ">IntRange</a> is an iterable contiguous range of integers.  
+ <a href="classIntRange.html#details">More...</a></p>
+
 <p><code>#include "<a class="el" href="intrange_8h_source.html">intrange.h</a>"</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a1371e812388f10db89e8cea0edeec000"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIntRange.html#a1371e812388f10db89e8cea0edeec000">IntRange</a>(int <a class="el" href="classIntRange.html#a91213974fa3ac3959b1c355a9e588f8d">length</a>=0)</td></tr>
+<tr class="memdesc:a1371e812388f10db89e8cea0edeec000"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a range from 0 (inclusive) of the given length.  <a href="#a1371e812388f10db89e8cea0edeec000">More...</a><br /></td></tr>
 <tr class="separator:a1371e812388f10db89e8cea0edeec000"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e8543f0451b16061adafee2d9ad0f84"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIntRange.html#a9e8543f0451b16061adafee2d9ad0f84">IntRange</a>(int minValue, int maxValue)</td></tr>
+<tr class="memdesc:a9e8543f0451b16061adafee2d9ad0f84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a range from minValue to maxValue (inclusive).  <a href="#a9e8543f0451b16061adafee2d9ad0f84">More...</a><br /></td></tr>
 <tr class="separator:a9e8543f0451b16061adafee2d9ad0f84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71b24b84d58ec13662a463eddc2e085c"><td class="memItemLeft" align="right" valign="top">IntRangeIterator&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIntRange.html#a71b24b84d58ec13662a463eddc2e085c">begin</a>() const</td></tr>
+<tr class="memdesc:a71b24b84d58ec13662a463eddc2e085c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an iterator over the elements of this range.  <a href="#a71b24b84d58ec13662a463eddc2e085c">More...</a><br /></td></tr>
 <tr class="separator:a71b24b84d58ec13662a463eddc2e085c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab0197de90231da6a241cf66cd6b16edc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIntRange.html#ab0197de90231da6a241cf66cd6b16edc">contains</a>(int n) const</td></tr>
+<tr class="memdesc:ab0197de90231da6a241cf66cd6b16edc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the given integer is within the bounds of this range.  <a href="#ab0197de90231da6a241cf66cd6b16edc">More...</a><br /></td></tr>
 <tr class="separator:ab0197de90231da6a241cf66cd6b16edc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71626971ecae788078a3ba3e7ffc7201"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIntRange.html#a71626971ecae788078a3ba3e7ffc7201">contains</a>(const <a class="el" href="classIntRange.html">IntRange</a> &amp;r) const</td></tr>
+<tr class="memdesc:a71626971ecae788078a3ba3e7ffc7201"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the given range is entirely contained within this range.  <a href="#a71626971ecae788078a3ba3e7ffc7201">More...</a><br /></td></tr>
 <tr class="separator:a71626971ecae788078a3ba3e7ffc7201"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a644718bb2fb240de962dc3c9a1fdf0dc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIntRange.html#a644718bb2fb240de962dc3c9a1fdf0dc">empty</a>() const</td></tr>
+<tr class="memdesc:a644718bb2fb240de962dc3c9a1fdf0dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this range contains no integers, meaning that its max is less than its min.  <a href="#a644718bb2fb240de962dc3c9a1fdf0dc">More...</a><br /></td></tr>
 <tr class="separator:a644718bb2fb240de962dc3c9a1fdf0dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad919bd40bd4298cafd0955b8031f4bef"><td class="memItemLeft" align="right" valign="top">IntRangeIterator&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIntRange.html#ad919bd40bd4298cafd0955b8031f4bef">end</a>() const</td></tr>
 <tr class="separator:ad919bd40bd4298cafd0955b8031f4bef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf82f9b2937375c7b1cf3dccb3df3312"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIntRange.html#acf82f9b2937375c7b1cf3dccb3df3312">isEmpty</a>() const</td></tr>
+<tr class="memdesc:acf82f9b2937375c7b1cf3dccb3df3312"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this range contains no integers, meaning that its max is less than its min.  <a href="#acf82f9b2937375c7b1cf3dccb3df3312">More...</a><br /></td></tr>
 <tr class="separator:acf82f9b2937375c7b1cf3dccb3df3312"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a91213974fa3ac3959b1c355a9e588f8d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIntRange.html#a91213974fa3ac3959b1c355a9e588f8d">length</a>() const</td></tr>
+<tr class="memdesc:a91213974fa3ac3959b1c355a9e588f8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of integers in the range.  <a href="#a91213974fa3ac3959b1c355a9e588f8d">More...</a><br /></td></tr>
 <tr class="separator:a91213974fa3ac3959b1c355a9e588f8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a86ad4228f3fccc681e8716ac9c68ab4d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIntRange.html#a86ad4228f3fccc681e8716ac9c68ab4d">max</a>() const</td></tr>
+<tr class="memdesc:a86ad4228f3fccc681e8716ac9c68ab4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the maximum value in the range, inclusive.  <a href="#a86ad4228f3fccc681e8716ac9c68ab4d">More...</a><br /></td></tr>
 <tr class="separator:a86ad4228f3fccc681e8716ac9c68ab4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ec1ccea7eddbc7355ba5d00afcaec2d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIntRange.html#a4ec1ccea7eddbc7355ba5d00afcaec2d">min</a>() const</td></tr>
+<tr class="memdesc:a4ec1ccea7eddbc7355ba5d00afcaec2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the minimum value in the range.  <a href="#a4ec1ccea7eddbc7355ba5d00afcaec2d">More...</a><br /></td></tr>
 <tr class="separator:a4ec1ccea7eddbc7355ba5d00afcaec2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9593d4a5ff4274efaf429cb4f9e57cc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIntRange.html#af9593d4a5ff4274efaf429cb4f9e57cc">size</a>() const</td></tr>
+<tr class="memdesc:af9593d4a5ff4274efaf429cb4f9e57cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of integers in the range.  <a href="#af9593d4a5ff4274efaf429cb4f9e57cc">More...</a><br /></td></tr>
 <tr class="separator:af9593d4a5ff4274efaf429cb4f9e57cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1fe5121d6528fdea3f243321b3fa3a49"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIntRange.html#a1fe5121d6528fdea3f243321b3fa3a49">toString</a>() const</td></tr>
+<tr class="memdesc:a1fe5121d6528fdea3f243321b3fa3a49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a string representation of this range, such as "[1 .. 10]".  <a href="#a1fe5121d6528fdea3f243321b3fa3a49">More...</a><br /></td></tr>
 <tr class="separator:a1fe5121d6528fdea3f243321b3fa3a49"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>An <a class="el" href="classIntRange.html" title="An IntRange is an iterable contiguous range of integers. ">IntRange</a> is an iterable contiguous range of integers. </p>
+<p>It can be processed using a for-each loop. The integers are not actually all stored in this object, so it does not require O(N) memory usage. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a1371e812388f10db89e8cea0edeec000"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1371e812388f10db89e8cea0edeec000">&#9670;&nbsp;</a></span>IntRange() <span class="overload">[1/2]</span></h2>
 
@@ -128,6 +146,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Constructs a range from 0 (inclusive) of the given length. </p>
+<p>Its endpoints are [0 .. length-1]. </p>
 
 </div>
 </div>
@@ -157,6 +178,8 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Constructs a range from minValue to maxValue (inclusive). </p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -174,6 +197,8 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns an iterator over the elements of this range. </p>
 
 </div>
 </div>
@@ -193,6 +218,8 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns true if the given integer is within the bounds of this range. </p>
+
 </div>
 </div>
 <a id="a71626971ecae788078a3ba3e7ffc7201"></a>
@@ -211,6 +238,8 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns true if the given range is entirely contained within this range. </p>
+
 </div>
 </div>
 <a id="a644718bb2fb240de962dc3c9a1fdf0dc"></a>
@@ -227,6 +256,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns true if this range contains no integers, meaning that its max is less than its min. </p>
+<p>Equivalent to isEmpty. </p>
 
 </div>
 </div>
@@ -262,6 +294,9 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns true if this range contains no integers, meaning that its max is less than its min. </p>
+<p>Equivalent to empty. </p>
+
 </div>
 </div>
 <a id="a91213974fa3ac3959b1c355a9e588f8d"></a>
@@ -278,6 +313,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns the number of integers in the range. </p>
+<p>Equivalent to size. </p>
 
 </div>
 </div>
@@ -296,6 +334,8 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns the maximum value in the range, inclusive. </p>
+
 </div>
 </div>
 <a id="a4ec1ccea7eddbc7355ba5d00afcaec2d"></a>
@@ -312,6 +352,8 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns the minimum value in the range. </p>
 
 </div>
 </div>
@@ -330,6 +372,9 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns the number of integers in the range. </p>
+<p>Equivalent to length. </p>
+
 </div>
 </div>
 <a id="a1fe5121d6528fdea3f243321b3fa3a49"></a>
@@ -346,6 +391,8 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns a string representation of this range, such as "[1 .. 10]". </p>
 
 </div>
 </div>
@@ -383,6 +430,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Reads the given range to the given input stream in its toString format. </p>
 
 </div>
 </div>

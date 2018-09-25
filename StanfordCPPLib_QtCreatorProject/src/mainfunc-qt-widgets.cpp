@@ -20,6 +20,15 @@ int mainQtWidgets() {
     return 0;
 }
 
+void b() {
+    Vector<int> v;
+    v[5];   // will crash
+}
+
+void a() {
+    b();
+}
+
 void testQwindow() {
     static GWindow* window = new GWindow(900, 300);
     window->setTitle("QtGui Window");
@@ -150,6 +159,8 @@ void testQwindow() {
         cout.flush();
         window->restore();
 
+        a();
+
 //        window->setResizable(!window->isResizable());
 //        cout << "clickHandler: button was clicked!" << endl;
 //        cout << "location:  " << window->getLocation() << endl;
@@ -248,6 +259,8 @@ void testQwindow() {
 //        GEvent event = waitForEvent(TIMER_EVENT);
 //        cout << "event: " << event << endl;
 //    }
+
+    // error("OOOOOOOOOOPS");
 }
 
 void testDiffImage() {

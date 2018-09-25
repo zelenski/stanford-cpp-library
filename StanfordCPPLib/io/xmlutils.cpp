@@ -14,11 +14,13 @@
  * @since 2014/03/01
  */
 
+#define INTERNAL_INCLUDE 1
 #include "xmlutils.h"
 #include <cstring>
 #include "filelib.h"
 #include "rapidxml.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 namespace xmlutils {
 int getAttributeInt(rapidxml::xml_node<>* node, const std::string& attrName, int defaultValue) {

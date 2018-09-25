@@ -13,10 +13,12 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gcolorchooser.h"
 #include <QColorDialog>
 #include "gcolor.h"
 #include "gthread.h"
+#undef INTERNAL_INCLUDE
 
 GColorChooser::GColorChooser() {
     // empty

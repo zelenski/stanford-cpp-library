@@ -15,6 +15,7 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gdownloader.h"
 #include <iomanip>
 #include <iostream>
@@ -25,6 +26,7 @@
 #include "error.h"
 #include "gthread.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 GDownloader::GDownloader()
         : _manager(nullptr),

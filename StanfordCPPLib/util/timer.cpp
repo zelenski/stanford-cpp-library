@@ -4,39 +4,41 @@
  * Implementation of the Timer class as declared in timer.h.
  */
 
+#define INTERNAL_INCLUDE 1
 #include "timer.h"
 #include <sys/time.h>
 #include "error.h"
+#undef INTERNAL_INCLUDE
 
 Timer::Timer(bool autostart) {
-    m_startMS = 0;
-    m_stopMS = 0;
-    m_isStarted = false;
+    _startMS = 0;
+    _stopMS = 0;
+    _isStarted = false;
     if (autostart) {
         start();
     }
 }
 
 long Timer::elapsed() const {
-    return m_stopMS - m_startMS;
+    return _stopMS - _startMS;
 }
 
 bool Timer::isStarted() const {
-    return m_isStarted;
+    return _isStarted;
 }
 
 void Timer::start() {
-    m_startMS = currentTimeMS();
-    m_isStarted = true;
+    _startMS = currentTimeMS();
+    _isStarted = true;
 }
 
 long Timer::stop() {
-    m_stopMS = currentTimeMS();
-    if (!m_isStarted) {
+    _stopMS = currentTimeMS();
+    if (!_isStarted) {
         // error("Timer is not started");
-        m_startMS = m_stopMS;
+        _startMS = _stopMS;
     }
-    m_isStarted = false;
+    _isStarted = false;
     return elapsed();
 }
 

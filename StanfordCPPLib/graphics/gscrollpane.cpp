@@ -7,10 +7,12 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gscrollpane.h"
 #include "glayout.h"
 #include "gthread.h"
 #include "require.h"
+#undef INTERNAL_INCLUDE
 
 GScrollPane::GScrollPane(GInteractor* interactor, QWidget* parent)
         : _iqscrollarea(nullptr),

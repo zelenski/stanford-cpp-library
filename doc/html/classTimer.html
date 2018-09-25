@@ -81,27 +81,47 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p><br />
+ A <a class="el" href="classTimer.html" title="  A Timer object is useful for measuring the elapsed time of a program in milliseconds over a given i...">Timer</a> object is useful for measuring the elapsed time of a program in milliseconds over a given interval.  
+ <a href="classTimer.html#details">More...</a></p>
+
 <p><code>#include "<a class="el" href="timer_8h_source.html">timer.h</a>"</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a706556016b105bfe8459770ee1540dd9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTimer.html#a706556016b105bfe8459770ee1540dd9">Timer</a>(bool autostart=false)</td></tr>
+<tr class="memdesc:a706556016b105bfe8459770ee1540dd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a new timer.  <a href="#a706556016b105bfe8459770ee1540dd9">More...</a><br /></td></tr>
 <tr class="separator:a706556016b105bfe8459770ee1540dd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c3fc68815831690cadc2f7cc65890fb"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTimer.html#a4c3fc68815831690cadc2f7cc65890fb">elapsed</a>() const</td></tr>
+<tr class="memdesc:a4c3fc68815831690cadc2f7cc65890fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of milliseconds that have elapsed since this timer was started.  <a href="#a4c3fc68815831690cadc2f7cc65890fb">More...</a><br /></td></tr>
 <tr class="separator:a4c3fc68815831690cadc2f7cc65890fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac1991ea0e286fbb461b60c8c9299d781"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTimer.html#ac1991ea0e286fbb461b60c8c9299d781">isStarted</a>() const</td></tr>
+<tr class="memdesc:ac1991ea0e286fbb461b60c8c9299d781"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the timer has been started.  <a href="#ac1991ea0e286fbb461b60c8c9299d781">More...</a><br /></td></tr>
 <tr class="separator:ac1991ea0e286fbb461b60c8c9299d781"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a60de64d75454385b23995437f1d72669"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTimer.html#a60de64d75454385b23995437f1d72669">start</a>()</td></tr>
+<tr class="memdesc:a60de64d75454385b23995437f1d72669"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts the timer.  <a href="#a60de64d75454385b23995437f1d72669">More...</a><br /></td></tr>
 <tr class="separator:a60de64d75454385b23995437f1d72669"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeaafdf74a35ee2a5308e0b421f87b6a5"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTimer.html#aeaafdf74a35ee2a5308e0b421f87b6a5">stop</a>()</td></tr>
+<tr class="memdesc:aeaafdf74a35ee2a5308e0b421f87b6a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops the timer and returns the number of elapsed milliseconds.  <a href="#aeaafdf74a35ee2a5308e0b421f87b6a5">More...</a><br /></td></tr>
 <tr class="separator:aeaafdf74a35ee2a5308e0b421f87b6a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a15da52f140db2287f84e933d49314a11"><td class="memItemLeft" align="right" valign="top">static long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTimer.html#a15da52f140db2287f84e933d49314a11">currentTimeMS</a>()</td></tr>
+<tr class="memdesc:a15da52f140db2287f84e933d49314a11"><td class="mdescLeft">&#160;</td><td class="mdescRight">A static utility function for getting the current time as a Unix timestamp of milliseconds since the epoch.  <a href="#a15da52f140db2287f84e933d49314a11">More...</a><br /></td></tr>
 <tr class="separator:a15da52f140db2287f84e933d49314a11"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p><br />
+ A <a class="el" href="classTimer.html" title="  A Timer object is useful for measuring the elapsed time of a program in milliseconds over a given i...">Timer</a> object is useful for measuring the elapsed time of a program in milliseconds over a given interval. </p>
+<p>Usage example:</p>
+<pre>
+  <a class="el" href="classTimer.html" title="  A Timer object is useful for measuring the elapsed time of a program in milliseconds over a given i...">Timer</a> tim;
+  tim.start();
+  ... code that takes a while ...
+  tim.stop();
+  cout &lt;&lt; "That took " &lt;&lt; tim.elapsed() &lt;&lt; "ms." &lt;&lt; endl;
+*</pre> </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a706556016b105bfe8459770ee1540dd9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a706556016b105bfe8459770ee1540dd9">&#9670;&nbsp;</a></span>Timer()</h2>
 
@@ -117,6 +137,9 @@ Static Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Constructs a new timer. </p>
+<p>If an optional bool parameter of true is passed, also starts the timer. </p>
 
 </div>
 </div>
@@ -144,6 +167,8 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>A static utility function for getting the current time as a Unix timestamp of milliseconds since the epoch. </p>
+
 </div>
 </div>
 <a id="a4c3fc68815831690cadc2f7cc65890fb"></a>
@@ -160,6 +185,9 @@ Static Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns the number of milliseconds that have elapsed since this timer was started. </p>
+<p>Returns 0 if the timer was never started. </p>
 
 </div>
 </div>
@@ -178,6 +206,8 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns true if the timer has been started. </p>
+
 </div>
 </div>
 <a id="a60de64d75454385b23995437f1d72669"></a>
@@ -195,6 +225,9 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Starts the timer. </p>
+<p>If the timer was already started, restarts it such that its 'elapsed' time will be 0 at the moment of the call. </p>
+
 </div>
 </div>
 <a id="aeaafdf74a35ee2a5308e0b421f87b6a5"></a>
@@ -211,6 +244,9 @@ Static Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Stops the timer and returns the number of elapsed milliseconds. </p>
+<p>If the timer was never started, 0 ms will be considered to have elapsed. </p>
 
 </div>
 </div>

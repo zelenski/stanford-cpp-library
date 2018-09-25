@@ -13,6 +13,7 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gcontainer.h"
 #include "error.h"
 #include "glabel.h"
@@ -20,6 +21,7 @@
 #include "gthread.h"
 #include "require.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 // margin  - around container, but outside of its background color area (like CSS)
 // padding - around container, but within its background color area (like CSS)
@@ -211,6 +213,10 @@ int GContainer::getInteractorCountByRegion(const std::string& region) const {
 
 _Internal_QWidget* GContainer::getInternalWidget() const {
     return _iqcontainer;
+}
+
+GContainer::Layout GContainer::getLayout() const {
+    return _layout;
 }
 
 double GContainer::getMargin() const {

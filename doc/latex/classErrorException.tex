@@ -2,6 +2,12 @@
 \label{classErrorException}\index{Error\+Exception@{Error\+Exception}}
 
 
+~\newline
+ This exception is thrown by calls to the {\ttfamily error} function.  
+
+
+
+
 {\ttfamily \#include $<$error.\+h$>$}
 
 Inheritance diagram for Error\+Exception\+:\begin{figure}[H]
@@ -24,6 +30,24 @@ virtual std\+::string \mbox{\hyperlink{classErrorException_a79ec2353dbf71c4867c6
 virtual const char $\ast$ \mbox{\hyperlink{classErrorException_a8d4b96162e93e11e5816d83702578af8}{what}} () const  throw ()
 \end{DoxyCompactItemize}
 
+
+\subsection{Detailed Description}
+~\newline
+ This exception is thrown by calls to the {\ttfamily error} function. 
+
+Typical code for catching errors looks like this\+:
+
+
+\begin{DoxyPre}
+     try \{
+        ... code in which an error might occur ...
+     \} catch (\mbox{\hyperlink{classErrorException}{ErrorException}}\& ex) \{
+        ... code to handle the error condition ...
+     \}
+*\end{DoxyPre}
+
+
+If an {\ttfamily \mbox{\hyperlink{classErrorException}{Error\+Exception}}} is thrown at any point in the range of the {\ttfamily try} (including in functions called from that code), control will jump immediately to the error handler. 
 
 \subsection{Constructor \& Destructor Documentation}
 \mbox{\Hypertarget{classErrorException_a4f422b01fff7cc16eea81e00638f44d2}\label{classErrorException_a4f422b01fff7cc16eea81e00638f44d2}} 

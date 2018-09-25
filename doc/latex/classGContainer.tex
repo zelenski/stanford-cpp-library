@@ -2,6 +2,11 @@
 \label{classGContainer}\index{G\+Container@{G\+Container}}
 
 
+A \mbox{\hyperlink{classGContainer}{G\+Container}} is a logical grouping for interactors.  
+
+
+
+
 {\ttfamily \#include $<$gcontainer.\+h$>$}
 
 Inheritance diagram for G\+Container\+:\begin{figure}[H]
@@ -39,7 +44,7 @@ enum \mbox{\hyperlink{classGInteractor_a8e0d441725a81d2bbdebbea09078260e}{Text\+
 \begin{DoxyCompactList}\small\item\em Creates a new container with the given layout. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classGContainer_a042cb94e18801664efa748e8a8fa74c1}{G\+Container}} (\mbox{\hyperlink{classGContainer_a1b7da28ed84c0763e8f92cde2df4799b}{Layout}} layout, int rows, int cols, Q\+Widget $\ast$parent=nullptr)
 \begin{DoxyCompactList}\small\item\em Creates a new container with the given number of rows and columns. \end{DoxyCompactList}\item 
-virtual \mbox{\hyperlink{classGContainer_aa7f04c9e10de9145c56d123473ba013d}{$\sim$\+G\+Container}} ()
+virtual \mbox{\hyperlink{classGContainer_a0a3b11ccad0281e55a509da7e1d94543}{$\sim$\+G\+Container}} () Q\+\_\+\+D\+E\+C\+L\+\_\+\+O\+V\+E\+R\+R\+I\+DE
 \begin{DoxyCompactList}\small\item\em Frees memory allocated internally by the container. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGContainer_a6f99b7c841256dbdc5acaafbbca4e685}{add}} (\mbox{\hyperlink{classGInteractor}{G\+Interactor}} $\ast$interactor)
 \begin{DoxyCompactList}\small\item\em Adds the given interactor to the end of the list of interactors in this container. \end{DoxyCompactList}\item 
@@ -117,6 +122,8 @@ virtual const \mbox{\hyperlink{classVector}{Vector}}$<$ \mbox{\hyperlink{classGI
 \begin{DoxyCompactList}\small\item\em Returns a vector of all children interactors in this container. \end{DoxyCompactList}\item 
 virtual \+\_\+\+Internal\+\_\+\+Q\+Widget $\ast$ \mbox{\hyperlink{classGContainer_a208ce13c1da40bf0ddb509daf99d6588}{get\+Internal\+Widget}} () const Q\+\_\+\+D\+E\+C\+L\+\_\+\+O\+V\+E\+R\+R\+I\+DE
 \begin{DoxyCompactList}\small\item\em Returns a direct pointer to the internal Qt widget being wrapped by this interactor. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{classGContainer_a1b7da28ed84c0763e8f92cde2df4799b}{Layout}} \mbox{\hyperlink{classGContainer_aeebcf77b7fdc91a1ba0371cc9b91d5e2}{get\+Layout}} () const
+\begin{DoxyCompactList}\small\item\em Returns the type of layout used by this container. \end{DoxyCompactList}\item 
 virtual \mbox{\hyperlink{classGPoint}{G\+Point}} \mbox{\hyperlink{classGInteractor_a4f83802015511edeb63b892830812c11}{get\+Location}} () const
 \begin{DoxyCompactList}\small\item\em Returns an (x, y) point representing the onscreen location of the top-\/left corner of this interactor within its containing window. \end{DoxyCompactList}\item 
 virtual double \mbox{\hyperlink{classGContainer_ae2b63e249b9251e1893dae87aaf4cc3d}{get\+Margin}} () const
@@ -373,6 +380,63 @@ virtual void \mbox{\hyperlink{classGObservable_a7867184bbb686f74fae8a4db927da799
 \begin{DoxyCompactList}\small\item\em Adds an event listener from this observable object to respond to the given types of events, such as \char`\"{}click\char`\"{} or \char`\"{}keydown\char`\"{}. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
+\subsection{Detailed Description}
+A \mbox{\hyperlink{classGContainer}{G\+Container}} is a logical grouping for interactors. 
+
+The container manages the position and size of the interactors inside it. This class is very similar to the Java concept of a container, represented in Swing by the J\+Panel class.
+
+A container has a layout that guides how it positions its interactors. Supported layouts include border (put interactors in the N/\+S/\+W/\+E/\+Center), grid (rows and columns of interactors), and flow (interactors go in a single horizontal or vertical line).
+
+Containers also use a \char`\"{}box model\char`\"{} similar to the C\+SS box model with margins and padding around each interactor, and spacing between neighboring widgets\+:
+
+
+\begin{DoxyPre}
+ container
++-------------------+
+|      margin       |
+|  +---border----+  |
+|  |   padding   |  |
+|  |   content   |  |
+|  |   padding   |  |
+|  +-------------+  |
+\tabulinesep=1mm
+\begin{longtabu} spread 0pt [c]{*{1}{|X[-1]}|}
+\hline
+\rowcolor{\tableheadbgcolor}\textbf{  margin 
+  
+  }\\\cline{1-1}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\rowcolor{\tableheadbgcolor}\textbf{  margin 
+  
+  }\\\cline{1-1}
+\endhead
+ spacing 
+  
+  \\\cline{1-1}
+  
+  
+  \\\cline{1-1}
+ margin 
+  
+  \\\cline{1-1}
+ +---border----+ 
+  
+\\\cline{1-1}
+\end{longtabu}
+
+|  |   padding   |  |
+|  |   content   |  |
+|  |   padding   |  |
+|  +-------------+  |
+|      margin       |
+|       ...         |
++-------------------+
+\end{DoxyPre}
+ 
+
 \subsection{Member Enumeration Documentation}
 \mbox{\Hypertarget{classGContainer_a1b7da28ed84c0763e8f92cde2df4799b}\label{classGContainer_a1b7da28ed84c0763e8f92cde2df4799b}} 
 \index{G\+Container@{G\+Container}!Layout@{Layout}}
@@ -485,7 +549,7 @@ Creates a new container with the given layout.
 
 Creates a new container with the given number of rows and columns. 
 
-Meant to be used for grid layouts. \mbox{\Hypertarget{classGContainer_aa7f04c9e10de9145c56d123473ba013d}\label{classGContainer_aa7f04c9e10de9145c56d123473ba013d}} 
+Meant to be used for grid layouts. \mbox{\Hypertarget{classGContainer_a0a3b11ccad0281e55a509da7e1d94543}\label{classGContainer_a0a3b11ccad0281e55a509da7e1d94543}} 
 \index{G\+Container@{G\+Container}!````~G\+Container@{$\sim$\+G\+Container}}
 \index{````~G\+Container@{$\sim$\+G\+Container}!G\+Container@{G\+Container}}
 \subsubsection{\texorpdfstring{$\sim$\+G\+Container()}{~GContainer()}}
@@ -1079,6 +1143,16 @@ Returns a direct pointer to the internal Qt widget being wrapped by this interac
 This must be overridden by all interactor subclasses. Students/clients generally should not need to call this. 
 
 Implements \mbox{\hyperlink{classGInteractor}{G\+Interactor}}.
+
+\mbox{\Hypertarget{classGContainer_aeebcf77b7fdc91a1ba0371cc9b91d5e2}\label{classGContainer_aeebcf77b7fdc91a1ba0371cc9b91d5e2}} 
+\index{G\+Container@{G\+Container}!get\+Layout@{get\+Layout}}
+\index{get\+Layout@{get\+Layout}!G\+Container@{G\+Container}}
+\subsubsection{\texorpdfstring{get\+Layout()}{getLayout()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classGContainer_a1b7da28ed84c0763e8f92cde2df4799b}{G\+Container\+::\+Layout}} get\+Layout (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Returns the type of layout used by this container. 
 
 \mbox{\Hypertarget{classGInteractor_a4f83802015511edeb63b892830812c11}\label{classGInteractor_a4f83802015511edeb63b892830812c11}} 
 \index{G\+Container@{G\+Container}!get\+Location@{get\+Location}}

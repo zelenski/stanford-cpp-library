@@ -8,12 +8,14 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "complex.h"
 #include <cctype>
 #include <cmath>
 #include <sstream>
 #include "gmath.h"
 #include "hashcode.h"
+#undef INTERNAL_INCLUDE
 
 Complex::Complex(double a, double b) {
     this->a = a;

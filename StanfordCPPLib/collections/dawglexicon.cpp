@@ -35,6 +35,7 @@
  * - BUGFIX: operator << now shows "" marks around words to match Lexicon
  */
 
+#define INTERNAL_INCLUDE 1
 #include "dawglexicon.h"
 #include <algorithm>
 #include <cstdlib>
@@ -48,6 +49,7 @@
 #include "error.h"
 #include "hashcode.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 static uint32_t my_ntohl(uint32_t arg);
 

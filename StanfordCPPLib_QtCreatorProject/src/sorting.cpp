@@ -5,6 +5,7 @@
  * @version 2015/07/21
  */
 
+#define INTERNAL_INCLUDE 1
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -13,8 +14,7 @@
 #include "searchingsorting.h"
 #include "vector.h"
 #include "timer.h"
-
-using namespace std;
+#undef INTERNAL_INCLUDE
 
 void mergeSort(Vector<int>& v, string indent) {
     cout << indent << v << endl;

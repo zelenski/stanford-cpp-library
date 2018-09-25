@@ -14,6 +14,11 @@
 #ifndef _glayout_h
 #define _glayout_h
 
+// signal that GUI system is in use (so it will be initialized)
+#ifndef INTERNAL_INCLUDE
+#define SPL_QT_GUI_IN_USE 1
+#endif // INTERNAL_INCLUDE
+
 #include <QLayout>
 #include <QRect>
 #include <QWidget>
@@ -57,7 +62,7 @@ class GBorderLayout : public QLayout {
 public:
     GBorderLayout(QWidget* parent, int margin = 0, int spacing = -1);
     GBorderLayout(int spacing = -1);
-    virtual ~GBorderLayout();
+    virtual ~GBorderLayout() Q_DECL_OVERRIDE;
 
     void addItem(QLayoutItem* item) Q_DECL_OVERRIDE;
     void addWidget(QWidget* widget);
@@ -96,3 +101,7 @@ private:
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _glayout_h
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE

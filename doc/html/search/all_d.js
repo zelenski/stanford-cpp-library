@@ -8,7 +8,6 @@ var searchData=
   ['next_5fattribute',['next_attribute',['../classrapidxml_1_1xml__attribute.html#a7393ae5940d5766aa90dc9f8f92465df',1,'rapidxml::xml_attribute']]],
   ['next_5fsibling',['next_sibling',['../classrapidxml_1_1xml__node.html#a365211719a7337837a502699275c5db6',1,'rapidxml::xml_node']]],
   ['nexttoken',['nextToken',['../classTokenScanner.html#ad515fb115cc77b70c2a498049ba16256',1,'TokenScanner']]],
-  ['no',['NO',['../classGOptionPane.html#a1cc9e8685029e39646671ed71f32d47da0d077f5b932ce05e5b9f30c6087a2f31',1,'GOptionPane']]],
   ['no_5fdiffs_5fmessage',['NO_DIFFS_MESSAGE',['../namespacediff.html#a4f8bdb0eae6c54a481aba9358db1e9ab',1,'diff']]],
   ['node_5fcdata',['node_cdata',['../namespacerapidxml.html#a6a276b85e2da28c5f9c3dbce61c55682a3a51c199de37009778e9e34f817d7093',1,'rapidxml']]],
   ['node_5fcomment',['node_comment',['../namespacerapidxml.html#a6a276b85e2da28c5f9c3dbce61c55682aa31101aa86d3d2789f3cb0ec05124789',1,'rapidxml']]],
@@ -28,6 +27,7 @@ var searchData=
   ['notifyobservers',['notifyObservers',['../classObservable.html#a337380718b992689248fac2927145c62',1,'Observable']]],
   ['nullstr',['nullstr',['../classrapidxml_1_1xml__base.html#a641d0b8df8e0c3c7e0db06ced0e0749f',1,'rapidxml::xml_base']]],
   ['num_5flock_5fkey',['NUM_LOCK_KEY',['../classGEvent.html#a7885f47644a0388f981f416fa20389b2ae1026f2a198d4e7aa63043b67818d9ea',1,'GEvent']]],
+  ['number',['NUMBER',['../classTokenScanner.html#aa520fbf142ba1e7e659590c07da31921a12a90dfe20486bbe3e075afcd19ef2d0',1,'TokenScanner']]],
   ['numcols',['numCols',['../classGrid.html#a5997e103e56aae1db12e1f7f02e136c5',1,'Grid::numCols()'],['../classSparseGrid.html#a5997e103e56aae1db12e1f7f02e136c5',1,'SparseGrid::numCols()'],['../classGTable.html#a5997e103e56aae1db12e1f7f02e136c5',1,'GTable::numCols()']]],
   ['numrows',['numRows',['../classGrid.html#a00b7e69dd5c43e42cc91db26c459ad8b',1,'Grid::numRows()'],['../classSparseGrid.html#a00b7e69dd5c43e42cc91db26c459ad8b',1,'SparseGrid::numRows()'],['../classGTable.html#a00b7e69dd5c43e42cc91db26c459ad8b',1,'GTable::numRows()']]]
 ];

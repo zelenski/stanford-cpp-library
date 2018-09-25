@@ -31,12 +31,56 @@
 
 namespace stanfordcpplib {
 
+/**
+ * Returns true if the std::exit function is enabled.
+ * This will be true unless disabled by, say, an autograder.
+ */
 bool exitEnabled();
+
+/**
+ * Initializes the Stanford C++ library.
+ * A call to this function is inserted before the student's main() runs.
+ * This should be run from the Qt GUI (main) thread.
+ */
 void initializeLibrary(int argc, char** argv);
+
+/**
+ * This is for any initialization that needs to be done in the student's thread
+ * rather than on the Qt GUI main thread.
+ * Currently this is used primarily to set up exception handlers for the
+ * student's thread so we can print usable stack traces.
+ */
+void initializeLibraryStudentThread();
+
+/**
+ * Runs the student's main function in its own thread, creating that thread
+ * as an object of type GStudentThread.
+ */
 void runMainInThread(int (* mainFunc)(void));
+
+/**
+ * Runs the student's main function in its own thread, creating that thread
+ * as an object of type GStudentThread.
+ */
 void runMainInThreadVoid(void (* mainFuncVoid)(void));
+
+/**
+ * Sets whether the std::exit function will be enabled or not.
+ * If disabled, an error() will be thrown if student tries to exit().
+ */
 void setExitEnabled(bool enabled);
+
+/**
+ * Shuts down the Stanford C++ library.
+ * A call to this function is inserted after the student's main().
+ */
 void shutdownLibrary();
+
+/**
+ * Performs any initialization needed by the library during static-init phase,
+ * which occurs before main() is launched.
+ * The StanfordCppLibraryInitializer class below helps us do this properly.
+ */
 void staticInitializeLibrary();
 
 #ifndef StanfordCppLibraryInitializer_created
@@ -60,11 +104,6 @@ static StanfordCppLibraryInitializer __stanfordcpplib_init;
 #endif // __StanfordCppLibraryInitializer_created
 
 } // namespace stanfordcpplib
-
-// keep in sync with definition in private/mainwrapper.cpp
-#ifndef QT_NEEDS_QMAIN
-#define main studentMain
-#endif // QT_NEEDS_QMAIN
 
 // bypass std::exit function
 namespace std {

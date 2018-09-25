@@ -80,14 +80,23 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p>An object that wishes to be notified when the state of an observable object changes.  
+ <a href="classObserver.html#details">More...</a></p>
+
 <p><code>#include "<a class="el" href="observable_8h_source.html">observable.h</a>"</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a8800f4bd3e48ece6f15db487ebad3712"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classObserver.html#a8800f4bd3e48ece6f15db487ebad3712">update</a>(<a class="el" href="classObservable.html">Observable</a>&lt; T &gt; *obs, const T &amp;arg=T())=0</td></tr>
+<tr class="memdesc:a8800f4bd3e48ece6f15db487ebad3712"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called by an <a class="el" href="classObservable.html" title="This abstract superclass allows objects to store lists of observers, which are other objects that wou...">Observable</a> to inform this observer that its state changed.  <a href="#a8800f4bd3e48ece6f15db487ebad3712">More...</a><br /></td></tr>
 <tr class="separator:a8800f4bd3e48ece6f15db487ebad3712"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename T&gt;<br />
+class Observer&lt; T &gt;</h3>
+
+<p>An object that wishes to be notified when the state of an observable object changes. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a8800f4bd3e48ece6f15db487ebad3712"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8800f4bd3e48ece6f15db487ebad3712">&#9670;&nbsp;</a></span>update()</h2>
 
@@ -121,6 +130,9 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Called by an <a class="el" href="classObservable.html" title="This abstract superclass allows objects to store lists of observers, which are other objects that wou...">Observable</a> to inform this observer that its state changed. </p>
+<p>The 'obs' parameter will be a pointer to the observable object itself on which the state change occurred. The 'arg' parameter will be the extra information passed by the <a class="el" href="classObservable.html" title="This abstract superclass allows objects to store lists of observers, which are other objects that wou...">Observable</a> when it called notifyObservers, if any. </p>
 
 </div>
 </div>

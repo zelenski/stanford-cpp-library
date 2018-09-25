@@ -3,10 +3,11 @@
  * - replaced null in uppercase with nullptr
  */
 
+#define INTERNAL_INCLUDE 1
 #include "graphsupport.h"
 #include <iomanip>
 #include "gmath.h"
-using namespace std;
+#undef INTERNAL_INCLUDE
 
 // definitions for colors
 const int NUM_COLORS = 7;

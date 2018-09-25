@@ -21,6 +21,7 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
 #include <QDesktopWidget>
 #include "gdiffgui.h"
@@ -38,6 +39,7 @@
 #include "qtgui.h"
 #include "require.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 _Internal_QMainWindow* GWindow::_lastWindow = nullptr;
 const int GWindow::DEFAULT_WIDTH = 500;

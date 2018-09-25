@@ -30,12 +30,12 @@ int Base64decode(char* plain_dst, const char* coded_src);
 #include <string>
 
 namespace Base64 {
-/*
+/**
  * Returns a Base64-encoded equivalent of the given string.
  */
 std::string encode(const std::string& s);
 
-/*
+/**
  * Decodes the given Base64-encoded string and returns the decoded
  * original contents.
  */

@@ -13,10 +13,12 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gfontchooser.h"
 #include <QFontDialog>
 #include "gfont.h"
 #include "gthread.h"
+#undef INTERNAL_INCLUDE
 
 GFontChooser::GFontChooser() {
     // empty

@@ -10,7 +10,9 @@
  * - removed unused include statements
  */
 
+#define INTERNAL_INCLUDE 1
 #include "sound.h"
+#undef INTERNAL_INCLUDE
 
 Sound::Sound(std::string /*filename*/) {
     // TODO

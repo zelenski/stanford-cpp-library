@@ -14,12 +14,14 @@
  * @since 2014/03/01
  */
 
+#define INTERNAL_INCLUDE 1
 #include "regexpr.h"
 #include <iterator>
 #include <regex>
 #include <QtGlobal>
 #include "error.h"
 #include "stringutils.h"
+#undef INTERNAL_INCLUDE
 
 bool regexMatch(const std::string& s, const std::string& regexp) {
     std::regex reg(regexp);

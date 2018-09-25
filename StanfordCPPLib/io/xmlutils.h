@@ -18,6 +18,9 @@
 #include <vector>
 #include "rapidxml.h"
 
+/**
+ * @private
+ */
 namespace xmlutils {
     int getAttributeInt(rapidxml::xml_node<>* node, const std::string& attrName, int defaultValue = 0);
     bool getAttributeBool(rapidxml::xml_node<>* node, const std::string& attrName, bool defaultValue = false);

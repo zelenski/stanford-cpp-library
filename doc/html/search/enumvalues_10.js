@@ -1,9 +1,7 @@
 var searchData=
 [
-  ['scroll_5flock_5fkey',['SCROLL_LOCK_KEY',['../classGEvent.html#a7885f47644a0388f981f416fa20389b2aa189be6124151fd231b280648d22c357',1,'GEvent']]],
-  ['scrollbar_5falways',['SCROLLBAR_ALWAYS',['../classGScrollPane.html#af276320d3d533d494547cb40e5025cc9a3086c0729648b58fde342be1ea988402',1,'GScrollPane']]],
-  ['scrollbar_5fas_5fneeded',['SCROLLBAR_AS_NEEDED',['../classGScrollPane.html#af276320d3d533d494547cb40e5025cc9a19cb69e101cb6454130c8307fe4c0103',1,'GScrollPane']]],
-  ['scrollbar_5fnever',['SCROLLBAR_NEVER',['../classGScrollPane.html#af276320d3d533d494547cb40e5025cc9af26a409c3bd6d0476b7d67fe29a0858f',1,'GScrollPane']]],
-  ['sharp',['SHARP',['../classNote.html#a48ac9ae5104f19cec526c22b5323f5d9aad63db67a2284cd7e3ffe382b6d6ea82',1,'Note']]],
-  ['shift_5fkey',['SHIFT_KEY',['../classGEvent.html#a7885f47644a0388f981f416fa20389b2a2bbaf2a7978d88e9522825aa6f145265',1,'GEvent']]]
+  ['tab_5fkey',['TAB_KEY',['../classGEvent.html#a7885f47644a0388f981f416fa20389b2ad538ab9675c9668313689f95378a4b55',1,'GEvent']]],
+  ['text_5fbeside_5ficon',['TEXT_BESIDE_ICON',['../classGInteractor.html#a8e0d441725a81d2bbdebbea09078260ea4cd6f2e7d5a08d6f4dc052df2358f774',1,'GInteractor']]],
+  ['text_5fonly',['TEXT_ONLY',['../classGInteractor.html#a8e0d441725a81d2bbdebbea09078260ea39a6f388a30ac4fefb6eb13e846bc9f2',1,'GInteractor']]],
+  ['text_5funder_5ficon',['TEXT_UNDER_ICON',['../classGInteractor.html#a8e0d441725a81d2bbdebbea09078260eaa88490f63d8de68d44c83bdb2ecde3b3',1,'GInteractor']]]
 ];

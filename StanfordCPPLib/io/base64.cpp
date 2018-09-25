@@ -15,9 +15,11 @@
  * @since 2014/08/03
  */
 
+#define INTERNAL_INCLUDE 1
 #include "base64.h"
 #include <cstring>
 #include <sstream>
+#undef INTERNAL_INCLUDE
 
 /* aaaack but it's fast and const should make it shared text page. */
 static const unsigned char pr2six[256] = {

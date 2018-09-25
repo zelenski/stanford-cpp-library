@@ -82,20 +82,28 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a5461ca18351950c6bfd41a5848e5cc21"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceexceptions.html#a5461ca18351950c6bfd41a5848e5cc21">cleanupFunctionNameForStackTrace</a>(string function)</td></tr>
+<tr class="memdesc:a5461ca18351950c6bfd41a5848e5cc21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strips some extraneous text from a function's name/header to make it look better when printed in a stack trace.  <a href="#a5461ca18351950c6bfd41a5848e5cc21">More...</a><br /></td></tr>
 <tr class="separator:a5461ca18351950c6bfd41a5848e5cc21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0ad190a25caba8c9ce8b2083205cd63"><td class="memItemLeft" align="right" valign="top">string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceexceptions.html#ad0ad190a25caba8c9ce8b2083205cd63">getProgramNameForStackTrace</a>()</td></tr>
+<tr class="memdesc:ad0ad190a25caba8c9ce8b2083205cd63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called by C++ lib's main wrapper so that the stack trace knows the program's name.  <a href="#ad0ad190a25caba8c9ce8b2083205cd63">More...</a><br /></td></tr>
 <tr class="separator:ad0ad190a25caba8c9ce8b2083205cd63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a3658a12893a1ea2acaa6fc6e8b6d82"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceexceptions.html#a6a3658a12893a1ea2acaa6fc6e8b6d82">getTopLevelExceptionHandlerEnabled</a>()</td></tr>
+<tr class="memdesc:a6a3658a12893a1ea2acaa6fc6e8b6d82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether the top-level exception handler is enabled.  <a href="#a6a3658a12893a1ea2acaa6fc6e8b6d82">More...</a><br /></td></tr>
 <tr class="separator:a6a3658a12893a1ea2acaa6fc6e8b6d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aead48c8fee26adf26f493d0856d73830"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceexceptions.html#aead48c8fee26adf26f493d0856d73830">printStackTrace</a>()</td></tr>
+<tr class="memdesc:aead48c8fee26adf26f493d0856d73830"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a stack trace to the system standard error console (cerr).  <a href="#aead48c8fee26adf26f493d0856d73830">More...</a><br /></td></tr>
 <tr class="separator:aead48c8fee26adf26f493d0856d73830"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af5ab86e2f23863043ddcdaf18b8b9f28"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceexceptions.html#af5ab86e2f23863043ddcdaf18b8b9f28">printStackTrace</a>(std::ostream &amp;out)</td></tr>
+<tr class="memdesc:af5ab86e2f23863043ddcdaf18b8b9f28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a stack trace to the given output stream.  <a href="#af5ab86e2f23863043ddcdaf18b8b9f28">More...</a><br /></td></tr>
 <tr class="separator:af5ab86e2f23863043ddcdaf18b8b9f28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0e98551ca679408334da24bdf4e4584"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceexceptions.html#ad0e98551ca679408334da24bdf4e4584">setProgramNameForStackTrace</a>(char *programName)</td></tr>
+<tr class="memdesc:ad0e98551ca679408334da24bdf4e4584"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called by C++ lib's main wrapper so that the stack trace knows the program's name.  <a href="#ad0e98551ca679408334da24bdf4e4584">More...</a><br /></td></tr>
 <tr class="separator:ad0e98551ca679408334da24bdf4e4584"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aecffab3c2119276b44cb55564b11e520"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceexceptions.html#aecffab3c2119276b44cb55564b11e520">setTopLevelExceptionHandlerEnabled</a>(bool enabled)</td></tr>
-<tr class="separator:aecffab3c2119276b44cb55564b11e520"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad979db40ba52ed7b58c8b78493dcaf84"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceexceptions.html#ad979db40ba52ed7b58c8b78493dcaf84">setTopLevelExceptionHandlerEnabled</a>(bool enabled, bool force=false)</td></tr>
+<tr class="memdesc:ad979db40ba52ed7b58c8b78493dcaf84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets whether the top-level exception handler is enabled.  <a href="#ad979db40ba52ed7b58c8b78493dcaf84">More...</a><br /></td></tr>
+<tr class="separator:ad979db40ba52ed7b58c8b78493dcaf84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac20de63bd41bb6c1f95bd2af4c3eaf53"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceexceptions.html#ac20de63bd41bb6c1f95bd2af4c3eaf53">shouldFilterOutFromStackTrace</a>(string function)</td></tr>
+<tr class="memdesc:ac20de63bd41bb6c1f95bd2af4c3eaf53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the given function should be filtered out when displaying a stack trace.  <a href="#ac20de63bd41bb6c1f95bd2af4c3eaf53">More...</a><br /></td></tr>
 <tr class="separator:ac20de63bd41bb6c1f95bd2af4c3eaf53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af5fc12dcfd6bf28b568340210c9cc291"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceexceptions.html#af5fc12dcfd6bf28b568340210c9cc291">stanfordCppLibPosixSignalHandler</a>(int sig, siginfo_t *, void *)</td></tr>
 <tr class="separator:af5fc12dcfd6bf28b568340210c9cc291"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -117,6 +125,9 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Strips some extraneous text from a function's name/header to make it look better when printed in a stack trace. </p>
+<p>e.g. basic_string -&gt; string, removes std::, removes some weird compiler gibberish. </p>
+
 </div>
 </div>
 <a id="ad0ad190a25caba8c9ce8b2083205cd63"></a>
@@ -133,6 +144,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Called by C++ lib's main wrapper so that the stack trace knows the program's name. </p>
+<p>(Taken from argv[0].) </p>
 
 </div>
 </div>
@@ -151,6 +165,9 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns whether the top-level exception handler is enabled. </p>
+<p>Initially false. </p>
+
 </div>
 </div>
 <a id="aead48c8fee26adf26f493d0856d73830"></a>
@@ -167,6 +184,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Prints a stack trace to the system standard error console (cerr). </p>
+<p>(<a class="el" href="classStack.html">Stack</a> traces are highly OS- and compiler-dependent, so this function may not work perfectly on all platforms. It has been tested to work on Linux with GCC/G++, Mac <a class="el" href="classOS.html" title="This class contains useful static methods for asking about what operating system the program is curre...">OS</a> X with clang++, and Windows with MinGW.) </p>
 
 </div>
 </div>
@@ -186,6 +206,9 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Prints a stack trace to the given output stream. </p>
+<p>Defaults to the system standard error console (cerr). (<a class="el" href="classStack.html">Stack</a> traces are highly OS- and compiler-dependent, so this function may not work perfectly on all platforms. It has been tested to work on Linux with GCC/G++, Mac <a class="el" href="classOS.html" title="This class contains useful static methods for asking about what operating system the program is curre...">OS</a> X with clang++, and Windows with MinGW.) </p>
+
 </div>
 </div>
 <a id="ad0e98551ca679408334da24bdf4e4584"></a>
@@ -204,10 +227,13 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Called by C++ lib's main wrapper so that the stack trace knows the program's name. </p>
+<p>(Taken from argv[0].) </p>
+
 </div>
 </div>
-<a id="aecffab3c2119276b44cb55564b11e520"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aecffab3c2119276b44cb55564b11e520">&#9670;&nbsp;</a></span>setTopLevelExceptionHandlerEnabled()</h2>
+<a id="ad979db40ba52ed7b58c8b78493dcaf84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad979db40ba52ed7b58c8b78493dcaf84">&#9670;&nbsp;</a></span>setTopLevelExceptionHandlerEnabled()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -216,11 +242,24 @@ Functions</h2></td></tr>
           <td class="memname">void setTopLevelExceptionHandlerEnabled </td>
           <td>(</td>
           <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>force</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Sets whether the top-level exception handler is enabled. </p>
+<p>If the optional 'force' parameter is passed, will set the handler again even if it was set before. </p>
 
 </div>
 </div>
@@ -239,6 +278,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Whether the given function should be filtered out when displaying a stack trace. </p>
+<p>Not meant to be called by clients. </p>
 
 </div>
 </div>

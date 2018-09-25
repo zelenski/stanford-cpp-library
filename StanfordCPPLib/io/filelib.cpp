@@ -23,6 +23,7 @@
  * - removed 'using namespace' statement
  */
 
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
 #include <algorithm>
 #include <cctype>
@@ -34,6 +35,7 @@
 #include "simpio.h"
 #include "strlib.h"
 #include "vector.h"
+#undef INTERNAL_INCLUDE
 
 /* Prototypes */
 

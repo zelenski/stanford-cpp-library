@@ -12,6 +12,7 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gtextfield.h"
 #include <QCompleter>
 #include <QFontMetrics>
@@ -22,6 +23,7 @@
 #include "gwindow.h"
 #include "require.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 GTextField::GTextField(const std::string& text, int charsWide, QWidget* parent)
         : _iqlineedit(nullptr),

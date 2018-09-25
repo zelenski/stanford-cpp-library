@@ -6,7 +6,9 @@
  * @version 2015/07/21
  */
 
+#define INTERNAL_INCLUDE 1
 #include "BinaryTree.h"
+#undef INTERNAL_INCLUDE
 
 BinaryTree::BinaryTree(BinaryTreeNode* root) {
     this->root = root;

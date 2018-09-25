@@ -7,9 +7,11 @@
  * - added assert* methods
  */
 
+#define INTERNAL_INCLUDE 1
 #include "codestepbystep.h"
 #include "exceptions.h"
 #include "plainconsole.h"
+#undef INTERNAL_INCLUDE
 
 extern void startupMainDontRunMain(int argc, char** argv);
 

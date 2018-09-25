@@ -9,10 +9,12 @@
  * - modified floating-point equality tests to use floatingPointEqual function
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gmath.h"
 #include <cmath>
 #include "error.h"
 #include "gtypes.h"
+#undef INTERNAL_INCLUDE
 
 extern const double PI = 3.14159265358979323846;
 extern const double E  = 2.71828182845904523536;

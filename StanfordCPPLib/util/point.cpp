@@ -9,11 +9,13 @@
  * - removed 'using namespace' statement
  */
 
+#define INTERNAL_INCLUDE 1
 #include "point.h"
 #include <string>
 #include "gtypes.h"
 #include "hashcode.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 Point::Point() {
     x = 0;

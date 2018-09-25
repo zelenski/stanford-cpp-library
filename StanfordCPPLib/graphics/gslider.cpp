@@ -9,10 +9,12 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gslider.h"
 #include "gthread.h"
 #include "require.h"
 #include "gwindow.h"
+#undef INTERNAL_INCLUDE
 
 const int GSlider::DEFAULT_MIN_VALUE = 0;
 const int GSlider::DEFAULT_MAX_VALUE = 100;

@@ -14,6 +14,7 @@
  */
 
 #ifdef PROCESS_H_ENABLED   // won't be enabled
+#define INTERNAL_INCLUDE 1
 #include "process.h"
 #include <csignal>
 #include <cstdio>
@@ -33,7 +34,7 @@
 #  include <stdint.h>
 #  include <unistd.h>
 #endif // _WIN32
-
+#undef INTERNAL_INCLUDE
 
 const int Process::TIMEOUT_MS_DEFAULT = 5000;
 

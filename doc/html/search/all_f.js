@@ -32,7 +32,6 @@ var searchData=
   ['pid',['pid',['../structThreadData.html#a7c985d404b7736d1398a5e5cc33ce683',1,'ThreadData']]],
   ['pink',['PINK',['../classGColor.html#a06fc87d81c62e9abb8790b6e5713c55ba186598537092d140eaa60720ec7e0821',1,'GColor']]],
   ['pitch',['Pitch',['../classNote.html#a6753778520a0d8493f6c18f6e6818542',1,'Note']]],
-  ['plain',['PLAIN',['../classGOptionPane.html#ac6606ebe91c8ac66a2c314c79f5ab013a8386f3e3e7be0b7b603636867c133a5d',1,'GOptionPane']]],
   ['plainconsole',['plainconsole',['../namespaceplainconsole.html',1,'']]],
   ['platform',['platform',['../namespaceplatform.html',1,'']]],
   ['play',['play',['../classNote.html#af351bf66fe7175bc6de020b7083f3fb3',1,'Note::play()'],['../classSound.html#a6d58098c6cf63c241ed03bc797256bb1',1,'Sound::play()']]],

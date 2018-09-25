@@ -10,10 +10,12 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "os.h"
 #include <QString>
 #include <QSysInfo>
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
 /*static*/ std::string OS::getName() {

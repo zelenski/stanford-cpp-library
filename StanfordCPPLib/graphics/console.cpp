@@ -11,6 +11,7 @@
  * - initial version, based on io/console .cpp
  */
 
+#define INTERNAL_INCLUDE 1
 #include "consoletext.h"
 #include <cstdio>
 #include "error.h"
@@ -20,7 +21,7 @@
 #include "gthread.h"
 #include "private/static.h"
 #include "private/version.h"
-
+#undef INTERNAL_INCLUDE
 
 void clearConsole() {
     GConsoleWindow::instance()->clearConsole();
@@ -145,9 +146,9 @@ void setConsoleOutputColor(const std::string& color) {
     GConsoleWindow::instance()->setOutputColor(color);
 }
 
-void setConsolePrintExceptions(bool printExceptions) {
+void setConsolePrintExceptions(bool printExceptions, bool force) {
     if (GConsoleWindow::instance()->isLocked()) { return; }
-    exceptions::setTopLevelExceptionHandlerEnabled(printExceptions);
+    exceptions::setTopLevelExceptionHandlerEnabled(printExceptions, force);
 }
 
 void setConsoleSettingsLocked(bool value) {
@@ -226,6 +227,8 @@ void initializeQtGraphicalConsole() {
         GConsoleWindow::instance();   // ensure that console window is ready
         setConsolePropertiesQt();
     }
+
+
 #endif // __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
 }
 

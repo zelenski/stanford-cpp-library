@@ -14,6 +14,11 @@
 #ifndef _qtgui_h
 #define _qtgui_h
 
+// signal that GUI system is in use (so it will be initialized)
+#ifndef INTERNAL_INCLUDE
+#define SPL_QT_GUI_IN_USE 1
+#endif // INTERNAL_INCLUDE
+
 #include <functional>
 #include <string>
 #include <QApplication>
@@ -128,3 +133,7 @@ private:
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _qtgui_h
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE

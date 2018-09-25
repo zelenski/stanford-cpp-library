@@ -10,12 +10,14 @@
 // TODO: add checkbox for highlighting diffs in color
 // TODO: free memory
 
+#define INTERNAL_INCLUDE 1
 #include "gdiffimage.h"
 #include <iostream>
 #include <string>
 #include "gcolor.h"
 #include "gfont.h"
 #include "require.h"
+#undef INTERNAL_INCLUDE
 
 /*static*/ const int GDiffImage::HIGHLIGHT_COLOR_DEFAULT = 0x8c1414;   // 140, 20, 20
 

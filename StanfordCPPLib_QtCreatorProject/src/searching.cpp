@@ -12,6 +12,7 @@
  * @version 2015/07/21
  */
 
+#define INTERNAL_INCLUDE 1
 #include "searchingsorting.h"
 #include <fstream>
 #include <iomanip>
@@ -20,8 +21,7 @@
 #include "random.h"
 #include "vector.h"
 #include "timer.h"
-
-using namespace std;
+#undef INTERNAL_INCLUDE
 
 /*
  * This recursive helper function implements the bulk of the

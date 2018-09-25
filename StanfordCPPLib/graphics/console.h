@@ -240,7 +240,7 @@ void setConsoleOutputColor(const std::string& color);
  * Note that using this feature may make it harder to get a stack trace in the
  * debugger if you are debugging the cause of an exception.
  */
-void setConsolePrintExceptions(bool printExceptions);
+void setConsolePrintExceptions(bool printExceptions, bool force = false);
 
 /**
  * If set to true, disables functions like setConsoleFont or setConsoleSize,
@@ -285,6 +285,9 @@ extern void pause(double milliseconds);
  */
 #ifndef __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
 
+// signal that graphical console is in use (so it will be initialized)
+#define SPL_GRAPHICAL_CONSOLE_IN_USE 1
+
 extern void setConsoleEnabled(bool);
 
 namespace stanfordcpplib {
@@ -318,3 +321,7 @@ static __QtConsoleInitializer __qt_console_init;
 } // namespace stanfordcpplib
 
 #endif // __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE

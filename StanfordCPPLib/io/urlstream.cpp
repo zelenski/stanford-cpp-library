@@ -19,6 +19,7 @@
  * @since 2014/10/08
  */
 
+#define INTERNAL_INCLUDE 1
 #include "urlstream.h"
 #include <sstream>
 #include <string>
@@ -26,6 +27,7 @@
 #include "filelib.h"
 #include "gdownloader.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 namespace {
     /*

@@ -27,6 +27,8 @@
  * Note that better Big Integer libraries exist in other places for more
  * serious work and can be found using your favorite search engine.
  *
+ * @version 2018/09/25
+ * - added doc comments for new documentation generation
  * @version 2017/10/28
  * - initial version
  */
@@ -61,33 +63,29 @@ public:
     /**
      * Constructs a new big integer set to zero.
      *
-     * Example:
-     * BigInteger bi;
+     * @example BigInteger bi;
      */
     BigInteger();
 
     /**
      * Constructs a new big integer whose value is a copy of another big integer.
      *
-     * Example:
-     * BigInteger bi1(bi2);
+     * @example BigInteger bi1(bi2);
      */
     BigInteger(const BigInteger& other);
 
     /**
      * Constructs a new big integer set to the given value.
      *
-     * Example:
-     * BigInteger bi("1234567890123456789");
+     * @example BigInteger bi("1234567890123456789");
      */
     BigInteger(const std::string& s, int radix = 10);
 
     /**
      * Constructs a new big integer set to the given value.
      *
-     * Example:
-     * BigInteger bi(12345);
-     * BigInteger bi2(-42);
+     * @example BigInteger bi(12345);
+     * @example BigInteger bi2(-42);
      */
     BigInteger(long n);
 
@@ -152,35 +150,35 @@ public:
 
     /**
      * Returns a new BigInteger whose value is (this ^^ exp) % m.
-     * Throws an ErrorException if exp is negative or if m is 0.
+     * @throw ErrorException if exp is negative or if m is 0.
      */
     BigInteger modPow(const BigInteger& exp, const BigInteger& m) const;
 
     /**
      * Returns a new BigInteger whose value is the value of this BigInteger
      * raised to the given exponent.
-     * Throws an ErrorException if the exponent is negative.
+     * @throw ErrorException if the exponent is negative.
      */
     BigInteger pow(long exp) const;
 
     /**
      * Returns a new BigInteger whose value is the value of this BigInteger
      * raised to the given exponent.
-     * Throws an ErrorException if the exponent is negative.
+     * @throw ErrorException if the exponent is negative.
      */
     BigInteger pow(const BigInteger& exp) const;
 
     /**
      * Returns an int representation of this BigInteger, such as
      * -12345678.
-     * Throws an error if this BigInteger is out of the range of int.
+     * @throw ErrorException if this BigInteger is out of the range of int.
      */
     int toInt() const;
 
     /**
      * Returns a long representation of this BigInteger, such as
      * -123456789.
-     * Throws an error if this BigInteger is out of the range of long.
+     * @throw ErrorException if this BigInteger is out of the range of long.
      */
     long toLong() const;
 
@@ -231,16 +229,16 @@ public:
     /**
      * Assigns this BigInteger to store the quotient of dividing
      * itself by the given other BigInteger.
-     * Throws an ErrorException if denominator is 0.
-     * Throws an ErrorException if denominator is not within the range of type long.
+     * @throw ErrorException if denominator is 0.
+     * @throw ErrorException if denominator is not within the range of type long.
      */
     BigInteger& operator /=(const BigInteger& b);
 
     /**
      * Assigns this BigInteger to store the remainder of dividing
      * itself by the given other BigInteger.
-     * Throws an ErrorException if denominator is 0.
-     * Throws an ErrorException if denominator is not within the range of type long.
+     * @throw ErrorException if denominator is 0.
+     * @throw ErrorException if denominator is not within the range of type long.
      */
     BigInteger& operator %=(const BigInteger& b);
 
@@ -319,25 +317,25 @@ public:
 
     /**
      * Converts this BigInteger into a double.
-     * Throws an ErrorException if this big integer is not within the range of type long.
+     * @throw ErrorException if this big integer is not within the range of type long.
      */
     // explicit operator double() const;
 
     /**
      * Converts this BigInteger into a float.
-     * Throws an ErrorException if this big integer is not within the range of type long.
+     * @throw ErrorException if this big integer is not within the range of type long.
      */
     // explicit operator float() const;
 
     /**
      * Converts this BigInteger into an integer.
-     * Throws an ErrorException if this big integer is not within the range of type int.
+     * @throw ErrorException if this big integer is not within the range of type int.
      */
     explicit operator int() const;
 
     /**
      * Converts this BigInteger into a long.
-     * Throws an ErrorException if this big integer is not within the range of type long.
+     * @throw ErrorException if this big integer is not within the range of type long.
      */
     explicit operator long() const;
 
@@ -452,14 +450,14 @@ private:
     bool sign;            // true if number is negative
 };
 
-/*
+/**
  * Returns a string representation of the given big integer.
  * Equivalent to calling bi.toString().
  * Provided for consistency with the other lib functions like integerToString.
  */
 std::string bigIntegerToString(const BigInteger& bi, int radix = 10);
 
-/*
+/**
  * Returns an integer hash code for the given BigInteger.
  */
 int hashCode(const BigInteger& b);
@@ -485,16 +483,16 @@ BigInteger operator *(const BigInteger& b1, const BigInteger& b2);
 /**
  * Returns a new BigInteger that is the quotient of dividing
  * this BigInteger by the given other BigInteger.
- * Throws an ErrorException if denominator is 0.
- * Throws an ErrorException if denominator is not within the range of type long.
+ * @throw ErrorException if denominator is 0.
+ * @throw ErrorException if denominator is not within the range of type long.
  */
 BigInteger operator /(const BigInteger& b1, const BigInteger& b2);
 
 /**
  * Returns a new BigInteger that is the remainder of dividing
  * this BigInteger by the given other BigInteger.
- * Throws an ErrorException if denominator is 0.
- * Throws an ErrorException if denominator is not within the range of type long.
+ * @throw ErrorException if denominator is 0.
+ * @throw ErrorException if denominator is not within the range of type long.
  */
 BigInteger operator %(const BigInteger& b1, const BigInteger& b2);
 
@@ -548,12 +546,12 @@ bool operator >=(const BigInteger& b1, const BigInteger& b2);
  */
 bool operator <=(const BigInteger& b1, const BigInteger& b2);
 
-/*
+/**
  * Reads a BigInteger from the given input stream.
  */
 std::istream& operator >>(std::istream& input, BigInteger& b);
 
-/*
+/**
  * Writes this BigInteger to the given output stream.
  */
 std::ostream& operator <<(std::ostream& out, const BigInteger& b);

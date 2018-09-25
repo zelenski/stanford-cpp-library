@@ -13,11 +13,13 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gfilechooser.h"
 #include <QFileDialog>
 #include "gthread.h"
 #include "strlib.h"
 #include "vector.h"
+#undef INTERNAL_INCLUDE
 
 GFileChooser::GFileChooser() {
     // empty

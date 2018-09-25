@@ -9,6 +9,7 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gtextarea.h"
 #include <QScrollBar>
 #include <QTextCursor>
@@ -18,6 +19,7 @@
 #include "gwindow.h"
 #include "require.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 GTextArea::GTextArea(int rows, int columns, QWidget* parent)
         : _contextMenuEnabled(true) {

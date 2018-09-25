@@ -10,12 +10,14 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
 #include "consoletext.h"
 #include "gconsolewindow.h"
 #include "geventqueue.h"
 #include "qtgui.h"
 #include "require.h"
+#undef INTERNAL_INCLUDE
 
 GFunctionThread::GFunctionThread(GThunk func)
         : _func(func) {
@@ -150,6 +152,10 @@ int GStudentThread::getResult() const {
 
 void GStudentThread::run() {
     yield();
+
+    // perform any thread-specific initialization
+    stanfordcpplib::initializeLibraryStudentThread();
+
     if (_mainFunc) {
         _result = _mainFunc();
     } else {

@@ -13,6 +13,7 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "ginteractor.h"
 #include <iostream>
 #include <sstream>
@@ -23,6 +24,7 @@
 #include "qtgui.h"
 #include "require.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 int GInteractor::_interactorCount = 0;
 

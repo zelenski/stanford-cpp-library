@@ -18,6 +18,7 @@ var searchData=
   ['togrid',['toGrid',['../classGCanvas.html#a2f9b15856aaf66aa95cfd7405bd972cc',1,'GCanvas::toGrid() const'],['../classGCanvas.html#a11c06bec679dda1519ed914bca68900a',1,'GCanvas::toGrid(Grid&lt; int &gt; &amp;grid) const']]],
   ['toint',['toInt',['../classBigInteger.html#a8cc7782de081ce702a9be163b4cb8f84',1,'BigInteger']]],
   ['tokenscanner',['TokenScanner',['../classTokenScanner.html',1,'TokenScanner'],['../classTokenScanner.html#a284595cf3c3df7d3e70ef2dcdc1f0292',1,'TokenScanner::TokenScanner()'],['../classTokenScanner.html#aa82b5fa6beae663f87eaa0ae964a48b3',1,'TokenScanner::TokenScanner(std::istream &amp;infile)'],['../classTokenScanner.html#a55859460fe8f07596fbc93d91314254a',1,'TokenScanner::TokenScanner(const std::string &amp;str)']]],
+  ['tokentype',['TokenType',['../classTokenScanner.html#aa520fbf142ba1e7e659590c07da31921',1,'TokenScanner']]],
   ['tolong',['toLong',['../classBigInteger.html#aa762dbabd60643be2be9aa9eb14deddb',1,'BigInteger']]],
   ['tolowercase',['toLowerCase',['../namespacestringutils.html#a55769baf0b588c5d12813228a2e00389',1,'stringutils']]],
   ['tomap',['toMap',['../classBasicGraphGen.html#a66498d3675a5bc08fa30a032d41764f7',1,'BasicGraphGen']]],

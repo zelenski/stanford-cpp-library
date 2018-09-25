@@ -1,5 +1,7 @@
+//#define INTERNAL_INCLUDE 1
 //#include "bigfloat.h"
 //#include <limits>
+//#undef INTERNAL_INCLUDE
 
 //bool BigFloatCache::_isInitialized = false;
 //BigFloat BigFloatCache::_e;

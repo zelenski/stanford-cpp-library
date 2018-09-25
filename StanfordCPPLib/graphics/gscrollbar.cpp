@@ -9,10 +9,12 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gscrollbar.h"
 #include "gthread.h"
 #include "require.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 GScrollBar::GScrollBar(GScrollBar::Orientation orientation,
                          int value,

@@ -15,11 +15,13 @@
  * @since 2014/10/14
  */
 
+#define INTERNAL_INCLUDE 1
 #include "ginputpanel.h"
 #include "filelib.h"
 #include "strlib.h"
 #include "xmlutils.h"
 #include "private/static.h"
+#undef INTERNAL_INCLUDE
 
 GInputPanel* GInputPanel::_instance = nullptr;
 

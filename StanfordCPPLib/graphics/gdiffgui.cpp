@@ -9,11 +9,13 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gdiffgui.h"
 #include <iostream>
 #include <string>
 #include "consoletext.h"
 #include "diff.h"
+#undef INTERNAL_INCLUDE
 
 void GDiffGui::showDialog(const std::string& name1,
                           const std::string& text1,

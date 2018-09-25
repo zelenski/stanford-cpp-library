@@ -18,6 +18,11 @@
 #ifndef _gwindow_h
 #define _gwindow_h
 
+// signal that GUI system is in use (so it will be initialized)
+#ifndef INTERNAL_INCLUDE
+#define SPL_QT_GUI_IN_USE 1
+#endif // INTERNAL_INCLUDE
+
 #include <string>
 #include <QApplication>
 #include <QWindow>
@@ -147,7 +152,7 @@ public:
     /**
      * Frees memory allocated internally by the window.
      */
-    virtual ~GWindow();
+    virtual ~GWindow() Q_DECL_OVERRIDE;
 
     /**
      * Adds the given interactor to the center region of the window.
@@ -364,7 +369,7 @@ public:
      * This will be true if the window has been initialized and is visible.
      * @private
      */
-    virtual bool eventsEnabled() const;
+    virtual bool eventsEnabled() const Q_DECL_OVERRIDE;
 
     /**
      * Returns a direct pointer to the window's internal graphical canvas
@@ -1152,3 +1157,7 @@ private:
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _gwindow_h
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE

@@ -128,9 +128,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac66942f456baa6c43ecd0ed60138fe36"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGWindow.html#ac66942f456baa6c43ecd0ed60138fe36">GWindow</a>(double x, double y, double width, double height, bool visible=true)</td></tr>
 <tr class="memdesc:ac66942f456baa6c43ecd0ed60138fe36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new window of the given location and size.  <a href="#ac66942f456baa6c43ecd0ed60138fe36">More...</a><br /></td></tr>
 <tr class="separator:ac66942f456baa6c43ecd0ed60138fe36"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2323cfadb32625a10de927b7f1fb92cb"><td class="memItemLeft" align="right" valign="top"></td><td class="memItemRight" valign="bottom"><a class="el" href="classGWindow.html#a2323cfadb32625a10de927b7f1fb92cb">~GWindow</a>()</td></tr>
-<tr class="memdesc:a2323cfadb32625a10de927b7f1fb92cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees memory allocated internally by the window.  <a href="#a2323cfadb32625a10de927b7f1fb92cb">More...</a><br /></td></tr>
-<tr class="separator:a2323cfadb32625a10de927b7f1fb92cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e024d2943027c4d4213a36fef7cfb23"><td class="memItemLeft" align="right" valign="top"></td><td class="memItemRight" valign="bottom"><a class="el" href="classGWindow.html#a4e024d2943027c4d4213a36fef7cfb23">~GWindow</a>() </td></tr>
+<tr class="memdesc:a4e024d2943027c4d4213a36fef7cfb23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees memory allocated internally by the window.  <a href="#a4e024d2943027c4d4213a36fef7cfb23">More...</a><br /></td></tr>
+<tr class="separator:a4e024d2943027c4d4213a36fef7cfb23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a458811bab688db3875a6806b3ba4d938"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGWindow.html#a458811bab688db3875a6806b3ba4d938">_autograder_setIsAutograderWindow</a>(bool isAutograderWindow)</td></tr>
 <tr class="memdesc:a458811bab688db3875a6806b3ba4d938"><td class="mdescLeft">&#160;</td><td class="mdescRight">An internal function that sets whether the current window is part of an autograder program.  <a href="#a458811bab688db3875a6806b3ba4d938">More...</a><br /></td></tr>
 <tr class="separator:a458811bab688db3875a6806b3ba4d938"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -866,7 +866,7 @@ Protected Attributes</h2></td></tr>
 <div class="textblock"><p>This class represents a graphics window that supports simple graphics. </p>
 <p>A <a class="el" href="classGWindow.html" title="This class represents a graphics window that supports simple graphics. ">GWindow</a> is a first-class citizen in our GUI subsystem; all graphical programs will create at least one <a class="el" href="classGWindow.html" title="This class represents a graphics window that supports simple graphics. ">GWindow</a> to hold other interactors and graphical objects for display on the screen.</p>
 <p>A <a class="el" href="classGWindow.html" title="This class represents a graphics window that supports simple graphics. ">GWindow</a> simultaneously serves two major graphical purposes:</p>
-<p>1) A top-level container for interactors. You can call the addToRegion and add methods to add interactors to the north, south, west, east, and center regions of the window. The center region holds at most one interactor that expands in both dimensions to fill pixels not occupied by the other four regions. This is analogous to Java AWT/Swing's BorderLayout system. The window uses an internal <a class="el" href="classGContainer.html">GContainer</a> that we call its "content pane" to layout the positions and sizes of these interactors. See <a class="el" href="gcontainer_8h_source.html">gcontainer.h</a> for more detail about layout and containers.</p>
+<p>1) A top-level container for interactors. You can call the addToRegion and add methods to add interactors to the north, south, west, east, and center regions of the window. The center region holds at most one interactor that expands in both dimensions to fill pixels not occupied by the other four regions. This is analogous to Java AWT/Swing's BorderLayout system. The window uses an internal <a class="el" href="classGContainer.html" title="A GContainer is a logical grouping for interactors. ">GContainer</a> that we call its "content pane" to layout the positions and sizes of these interactors. See <a class="el" href="gcontainer_8h_source.html">gcontainer.h</a> for more detail about layout and containers.</p>
 <p>2) A graphical canvas for drawing shapes, lines, and colors. A <a class="el" href="classGWindow.html" title="This class represents a graphics window that supports simple graphics. ">GWindow</a> contains a central graphical canvas that is implemented as an object of type <a class="el" href="classGCanvas.html" title="A GCanvas is a graphical drawing surface on which you can draw shapes, lines, and colors...">GCanvas</a>. The canvas will appear on the window the moment you call any drawing method on the window.</p>
 <p>The graphical canvas consists of two layers. The background layer provides a surface for drawing static pictures that involve no animation, or for 2D pixel-based drawing algorithms. See <a class="el" href="gcanvas_8h_source.html">gcanvas.h</a> and <a class="el" href="gobjects_8h_source.html">gobjects.h</a> for more detail about drawing shapes, objects, and pixels.</p>
 <p>The <a class="el" href="classGWindow.html" title="This class represents a graphics window that supports simple graphics. ">GWindow</a> class includes several drawXxx and fillXxx methods that draw lines, rectangles, and ovals on the background layer without the client needing to directly create objects from the <a class="el" href="gobjects_8h_source.html">gobjects.h</a> hierarchy.</p>
@@ -1024,8 +1024,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a2323cfadb32625a10de927b7f1fb92cb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2323cfadb32625a10de927b7f1fb92cb">&#9670;&nbsp;</a></span>~GWindow()</h2>
+<a id="a4e024d2943027c4d4213a36fef7cfb23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e024d2943027c4d4213a36fef7cfb23">&#9670;&nbsp;</a></span>~GWindow()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1166,7 +1166,7 @@ Protected Attributes</h2></td></tr>
 <p>Adds the given interactor to the center region of the window. </p>
 <p>This replaces the graphical canvas and causes the canvas to be hidden. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the interactor is null </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the interactor is null </td></tr>
   </table>
   </dd>
 </dl>
@@ -1216,7 +1216,7 @@ Protected Attributes</h2></td></tr>
 <p>Adds the given interactor to the center region of the window and moves it to the given x/y location. </p>
 <p>This replaces the graphical canvas and causes the canvas to be hidden. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the interactor is null </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the interactor is null </td></tr>
   </table>
   </dd>
 </dl>
@@ -1324,7 +1324,7 @@ Protected Attributes</h2></td></tr>
 <p>Adds the given graphical object to the window's canvas. </p>
 <p>This causes the graphical canvas to appear if it was not already showing. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the interactor is null </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the interactor is null </td></tr>
   </table>
   </dd>
 </dl>
@@ -1374,7 +1374,7 @@ Protected Attributes</h2></td></tr>
 <p>Adds the given graphical object to the window's canvas and moves it to the given x/y location. </p>
 <p>This causes the graphical canvas to appear if it was not already showing. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the interactor is null </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the interactor is null </td></tr>
   </table>
   </dd>
 </dl>
@@ -1527,7 +1527,7 @@ Protected Attributes</h2></td></tr>
 <p>Adds a new menu item to the given menu. </p>
 <p>If the given menu item already exists in this menu, returns it without adding it again. You can supply an optional icon to show next to the menu item. When the menu item is clicked, an ACTION_MENU action event will occur. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the given menu does not exist </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the given menu does not exist </td></tr>
   </table>
   </dd>
 </dl>
@@ -1583,7 +1583,7 @@ Protected Attributes</h2></td></tr>
 <p>Adds a new menu item to the given menu. </p>
 <p>If the given menu item already exists in this menu, returns it without adding it again. You can supply an optional icon to show next to the menu item. When the menu item is clicked, the given listener function will be called. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the given menu does not exist </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the given menu does not exist </td></tr>
   </table>
   </dd>
 </dl>
@@ -1639,7 +1639,7 @@ Protected Attributes</h2></td></tr>
 <p>Adds a new checkbox menu item to the given menu. </p>
 <p>If the given menu item already exists in this menu, returns it without adding it again. You can supply an optional icon to show next to the menu item. When the menu item is clicked, an ACTION_MENU action event will occur. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the given menu does not exist </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the given menu does not exist </td></tr>
   </table>
   </dd>
 </dl>
@@ -1701,7 +1701,7 @@ Protected Attributes</h2></td></tr>
 <p>Adds a new checkbox menu item to the given menu. </p>
 <p>If the given menu item already exists in this menu, returns it without adding it again. You can supply an optional icon to show next to the menu item. When the menu item is clicked, the given listener function will be called. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the given menu does not exist </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the given menu does not exist </td></tr>
   </table>
   </dd>
 </dl>
@@ -1735,7 +1735,7 @@ Protected Attributes</h2></td></tr>
 <p>Adds a horizontal line separator to the end of the given menu. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the given menu does not exist </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the given menu does not exist </td></tr>
   </table>
   </dd>
 </dl>
@@ -1780,7 +1780,7 @@ Protected Attributes</h2></td></tr>
 <p>You can later add items to this sub-menu using:</p>
 <p>myWindow-&gt;addMenuItem(menu + "/" + submenu, item); </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the given menu does not exist </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the given menu does not exist </td></tr>
   </table>
   </dd>
 </dl>
@@ -1824,7 +1824,7 @@ Protected Attributes</h2></td></tr>
 <p>Adds the given interactor to the given region in this window. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the interactor is null </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the interactor is null </td></tr>
   </table>
   </dd>
 </dl>
@@ -1868,7 +1868,7 @@ Protected Attributes</h2></td></tr>
 <p>Adds the given interactor to the given region in this window. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the interactor is null </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the interactor is null </td></tr>
   </table>
   </dd>
 </dl>
@@ -2712,7 +2712,7 @@ Protected Attributes</h2></td></tr>
 <p>Draws an image loaded from the given file name onto the background pixel layer of this interactor at the given x/y location. </p>
 <p>See <a class="el" href="gobjects_8h_source.html">gobjects.h</a> for explanation of <a class="el" href="classGImage.html" title="This graphical object subclass represents an image from a file. ">GImage</a> parameters. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the given file is not found or cannot be loaded as a valid image file </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the given file is not found or cannot be loaded as a valid image file </td></tr>
   </table>
   </dd>
 </dl>
@@ -4444,7 +4444,7 @@ Protected Attributes</h2></td></tr>
 <p>Returns the graphical object at the given 0-based index in the window's graphical canvas. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the index is out of bounds </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the index is out of bounds </td></tr>
   </table>
   </dd>
 </dl>
@@ -5023,7 +5023,7 @@ Protected Attributes</h2></td></tr>
 <p>Equivalent to getPixel.</p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the given x/y values are out of bounds. </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the given x/y values are out of bounds. </td></tr>
   </table>
   </dd>
 </dl>
@@ -5068,7 +5068,7 @@ Protected Attributes</h2></td></tr>
 <p><a class="el" href="classNote.html" title="Each Note object represents a musical note or rest. ">Note</a> that if you are planning to set many pixels in the background and want maximum performance, you should instead call getPixels to extract all pixels into a <a class="el" href="classGrid.html">Grid</a>, then manipulate all desired pixels in that <a class="el" href="classGrid.html">Grid</a>, then call setPixels to submit all of your changes.</p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the given x/y values are out of bounds. </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the given x/y values are out of bounds. </td></tr>
   </table>
   </dd>
 </dl>
@@ -5835,7 +5835,7 @@ Protected Attributes</h2></td></tr>
 <p>Reads pixel data from the file with the given name and loads it into the window's canvas area. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the file is not found or cannot be loaded as an image </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the file is not found or cannot be loaded as an image </td></tr>
   </table>
   </dd>
 </dl>
@@ -5951,7 +5951,7 @@ Protected Attributes</h2></td></tr>
 <p>Causes the current thread to pause itself for the given number of milliseconds. </p>
 <p>Equivalent to <a class="el" href="classGWindow.html#aa3381590c1ef33c08000c2fbb2bf0dd0" title="Causes the current thread to pause itself for the given number of milliseconds. ">sleep()</a>. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if ms is negative </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if ms is negative </td></tr>
   </table>
   </dd>
 </dl>
@@ -5985,7 +5985,7 @@ Protected Attributes</h2></td></tr>
 <p>Removes the given interactor from the window. </p>
 <p>This will work regardless of which region you added the interactor to. If the given interactor is not found in this container, has no effect. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the interactor is null </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the interactor is null </td></tr>
   </table>
   </dd>
 </dl>
@@ -6048,7 +6048,7 @@ Protected Attributes</h2></td></tr>
 <p>Removes the given graphical object from the canvas of this window, if it was present. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the graphical object is null </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the graphical object is null </td></tr>
   </table>
   </dd>
 </dl>
@@ -6203,7 +6203,7 @@ Protected Attributes</h2></td></tr>
 <p>Removes the given interactor from the given region within this window. </p>
 <p>If the given interactor is not found in the given region, has no effect. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the interactor is null </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the interactor is null </td></tr>
   </table>
   </dd>
 </dl>
@@ -6247,7 +6247,7 @@ Protected Attributes</h2></td></tr>
 <p>Removes the given interactor from the given region within this window. </p>
 <p>If the given interactor is not found in the given region, has no effect. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the interactor is null </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the interactor is null </td></tr>
   </table>
   </dd>
 </dl>
@@ -6651,7 +6651,7 @@ Protected Attributes</h2></td></tr>
 <p>Writes the contents of the window's graphical canvas to the given output filename. </p>
 <p>This will write all shapes from the foreground layer as well as all pixels from the background layer. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the file cannot be saved </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the file cannot be saved </td></tr>
   </table>
   </dd>
 </dl>
@@ -7657,7 +7657,7 @@ Protected Attributes</h2></td></tr>
 <p>Sets whether the given item in the given menu is enabled or disabled. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the menu and/or item does not exist </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the menu and/or item does not exist </td></tr>
   </table>
   </dd>
 </dl>
@@ -7824,7 +7824,7 @@ Protected Attributes</h2></td></tr>
 <p><a class="el" href="classNote.html" title="Each Note object represents a musical note or rest. ">Note</a> that if you are planning to set many pixels in the background and want maximum performance, you should instead call getPixels to extract all pixels into a <a class="el" href="classGrid.html">Grid</a>, then manipulate all desired pixels in that <a class="el" href="classGrid.html">Grid</a>, then call setPixels to submit all of your changes. Equivalent to setRGB.</p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if x/y is out of range </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if x/y is out of range </td></tr>
   </table>
   </dd>
 </dl>
@@ -8534,7 +8534,7 @@ Protected Attributes</h2></td></tr>
 <p><a class="el" href="classNote.html" title="Each Note object represents a musical note or rest. ">Note</a> that if you are planning to set many pixels in the background and want maximum performance, you should instead call getPixels to extract all pixels into a <a class="el" href="classGrid.html">Grid</a>, then manipulate all desired pixels in that <a class="el" href="classGrid.html">Grid</a>, then call setPixels to submit all of your changes. Equivalent to setPixel.</p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if x/y is out of range or rgb is an invalid color </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if x/y is out of range or rgb is an invalid color </td></tr>
   </table>
   </dd>
 </dl>
@@ -8597,7 +8597,7 @@ Protected Attributes</h2></td></tr>
 <p><a class="el" href="classNote.html" title="Each Note object represents a musical note or rest. ">Note</a> that if you are planning to set many pixels in the background and want maximum performance, you should instead call getPixels to extract all pixels into a <a class="el" href="classGrid.html">Grid</a>, then manipulate all desired pixels in that <a class="el" href="classGrid.html">Grid</a>, then call setPixels to submit all of your changes. Equivalent to setPixel.</p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if x/y is out of range or r,g,b are not between 0-255 </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if x/y is out of range or r,g,b are not between 0-255 </td></tr>
   </table>
   </dd>
 </dl>
@@ -8648,7 +8648,7 @@ Protected Attributes</h2></td></tr>
 <p><a class="el" href="classNote.html" title="Each Note object represents a musical note or rest. ">Note</a> that if you are planning to set many pixels in the background and want maximum performance, you should instead call getPixels to extract all pixels into a <a class="el" href="classGrid.html">Grid</a>, then manipulate all desired pixels in that <a class="el" href="classGrid.html">Grid</a>, then call setPixels to submit all of your changes. Equivalent to setPixel.</p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if x/y is out of range </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if x/y is out of range </td></tr>
   </table>
   </dd>
 </dl>
@@ -9113,7 +9113,7 @@ Protected Attributes</h2></td></tr>
 <p>Causes the current thread to pause itself for the given number of milliseconds. </p>
 <p>Equivalent to <a class="el" href="classGWindow.html#adc7d99bb2dc43b8337e89b7d54cab9d3" title="Causes the current thread to pause itself for the given number of milliseconds. ">pause()</a>. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if ms is negative </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if ms is negative </td></tr>
   </table>
   </dd>
 </dl>

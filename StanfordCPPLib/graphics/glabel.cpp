@@ -13,6 +13,7 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "glabel.h"
 #include <iostream>
 #include "glayout.h"
@@ -20,6 +21,7 @@
 #include "gwindow.h"
 #include "require.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 GLabel::GLabel(const std::string& text, const std::string& iconFileName, QWidget* parent)
         : _gtext(nullptr) {

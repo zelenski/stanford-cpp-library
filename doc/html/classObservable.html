@@ -80,22 +80,36 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p>This abstract superclass allows objects to store lists of observers, which are other objects that would like to be notified when some part of the state of the observable object changes.  
+ <a href="classObservable.html#details">More...</a></p>
+
 <p><code>#include "<a class="el" href="observable_8h_source.html">observable.h</a>"</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a7fa6df797eb4680c2776371f2937a1b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classObservable.html#a7fa6df797eb4680c2776371f2937a1b2">addObserver</a>(<a class="el" href="classObserver.html">Observer</a>&lt; T &gt; *obs)</td></tr>
+<tr class="memdesc:a7fa6df797eb4680c2776371f2937a1b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds the given observer object to this observable object's internal list of observers.  <a href="#a7fa6df797eb4680c2776371f2937a1b2">More...</a><br /></td></tr>
 <tr class="separator:a7fa6df797eb4680c2776371f2937a1b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49fbc8dd9a3300429f7f575dc7ba0be8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classObservable.html#a49fbc8dd9a3300429f7f575dc7ba0be8">addObserver</a>(<a class="el" href="classObserver.html">Observer</a>&lt; T &gt; &amp;obs)</td></tr>
+<tr class="memdesc:a49fbc8dd9a3300429f7f575dc7ba0be8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds the given observer object to this observable object's internal list of observers.  <a href="#a49fbc8dd9a3300429f7f575dc7ba0be8">More...</a><br /></td></tr>
 <tr class="separator:a49fbc8dd9a3300429f7f575dc7ba0be8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a337380718b992689248fac2927145c62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classObservable.html#a337380718b992689248fac2927145c62">notifyObservers</a>(T arg=T())</td></tr>
+<tr class="memdesc:a337380718b992689248fac2927145c62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls the update method of all observers that have been added previously to this observable object.  <a href="#a337380718b992689248fac2927145c62">More...</a><br /></td></tr>
 <tr class="separator:a337380718b992689248fac2927145c62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2fbb493a74c7c4a7604326bffcd75dbd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classObservable.html#a2fbb493a74c7c4a7604326bffcd75dbd">removeObserver</a>(<a class="el" href="classObserver.html">Observer</a>&lt; T &gt; *obs)</td></tr>
+<tr class="memdesc:a2fbb493a74c7c4a7604326bffcd75dbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the given observer object from this observable object's internal list of observers.  <a href="#a2fbb493a74c7c4a7604326bffcd75dbd">More...</a><br /></td></tr>
 <tr class="separator:a2fbb493a74c7c4a7604326bffcd75dbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a36b9c4607c1cab08dc800daa5aa38b82"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classObservable.html#a36b9c4607c1cab08dc800daa5aa38b82">removeObserver</a>(<a class="el" href="classObserver.html">Observer</a>&lt; T &gt; &amp;obs)</td></tr>
+<tr class="memdesc:a36b9c4607c1cab08dc800daa5aa38b82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the given observer object from this observable object's internal list of observers.  <a href="#a36b9c4607c1cab08dc800daa5aa38b82">More...</a><br /></td></tr>
 <tr class="separator:a36b9c4607c1cab08dc800daa5aa38b82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename T&gt;<br />
+class Observable&lt; T &gt;</h3>
+
+<p>This abstract superclass allows objects to store lists of observers, which are other objects that would like to be notified when some part of the state of the observable object changes. </p>
+<p>The intended usage is that you should extend <a class="el" href="classObservable.html" title="This abstract superclass allows objects to store lists of observers, which are other objects that wou...">Observable</a> in the object you want to be watched, then call notifyObservers in its code at appropriate places. Then create some other object that extends <a class="el" href="classObserver.html" title="An object that wishes to be notified when the state of an observable object changes. ">Observer</a> and defines an update method, and attach it to the <a class="el" href="classObservable.html" title="This abstract superclass allows objects to store lists of observers, which are other objects that wou...">Observable</a> so it will be notified. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a7fa6df797eb4680c2776371f2937a1b2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7fa6df797eb4680c2776371f2937a1b2">&#9670;&nbsp;</a></span>addObserver() <span class="overload">[1/2]</span></h2>
 
@@ -111,6 +125,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Adds the given observer object to this observable object's internal list of observers. </p>
+<p>The observer's update method will be called when the notifyObservers method is called afterward. Precondition: obs != nullptr </p>
 
 </div>
 </div>
@@ -130,6 +147,9 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Adds the given observer object to this observable object's internal list of observers. </p>
+<p>The observer's update method will be called when the notifyObservers method is called afterward. </p>
+
 </div>
 </div>
 <a id="a337380718b992689248fac2927145c62"></a>
@@ -147,6 +167,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Calls the update method of all observers that have been added previously to this observable object. </p>
+<p>The given argument can be passed to provide extra information to the observers if necessary. If no argument is passed, nullptr is used. </p>
 
 </div>
 </div>
@@ -166,6 +189,9 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Removes the given observer object from this observable object's internal list of observers. </p>
+<p>The observer will no longer be notified. </p>
+
 </div>
 </div>
 <a id="a36b9c4607c1cab08dc800daa5aa38b82"></a>
@@ -183,6 +209,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Removes the given observer object from this observable object's internal list of observers. </p>
+<p>The observer will no longer be notified. </p>
 
 </div>
 </div>

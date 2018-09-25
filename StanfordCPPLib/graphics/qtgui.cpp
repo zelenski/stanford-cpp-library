@@ -9,6 +9,7 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
 #include <QEvent>
 #include <QtGlobal>
@@ -25,6 +26,8 @@
 #else // _WIN32
 #  include <unistd.h>   // for chdir
 #endif // _WIN32
+
+#undef INTERNAL_INCLUDE
 
 
 // QtGui members

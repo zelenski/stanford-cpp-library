@@ -11,12 +11,13 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "private/init.h"
-
 #include "consoletext.h"
 #include "exceptions.h"
 #include "qtgui.h"
 #include "private/static.h"
+#undef INTERNAL_INCLUDE
 
 #ifdef _WIN32
 #  include <direct.h>   // for chdir
@@ -42,7 +43,7 @@ bool exitEnabled() {
 
 // called automatically by real main() function;
 // call to this is inserted by library init.h
-// to be run in Qt main thread
+// to be run in Qt GUI main thread
 void initializeLibrary(int argc, char** argv) {
     // ensure that library is initialized only once
     static bool _initialized = false;
@@ -60,6 +61,12 @@ void initializeLibrary(int argc, char** argv) {
 
     // initialize Qt graphical console (if student #included it)
     initializeQtGraphicalConsole();
+}
+
+void initializeLibraryStudentThread() {
+#if defined(SPL_CONSOLE_PRINT_EXCEPTIONS)
+    setConsolePrintExceptions(true, /* force */ true);
+#endif
 }
 
 // this should be roughly the same code as platform.cpp's parseArgs function

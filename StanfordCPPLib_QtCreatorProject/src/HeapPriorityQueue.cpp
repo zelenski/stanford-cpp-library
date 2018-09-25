@@ -5,13 +5,13 @@
  * @version 2015/07/29
  */
 
+#define INTERNAL_INCLUDE 1
 #include "HeapPriorityQueue.h"
 #include <string>
 #include "error.h"
 #include "strlib.h"
 #include "vector.h"
-
-using namespace std;
+#undef INTERNAL_INCLUDE
 
 HeapPriorityQueue::HeapPriorityQueue(PQEntry* elements, int capacity, int mysize) {
     this->elements = elements;

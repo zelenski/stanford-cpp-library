@@ -6,10 +6,11 @@
  * - added initializer_list support to match other lib collections
  */
 
+#define INTERNAL_INCLUDE 1
 #include "ArrayIntList.h"
 #include "error.h"
 #include "strlib.h"
-using namespace std;
+#undef INTERNAL_INCLUDE
 
 /*
  * Constructs a new empty list (capacity 10).

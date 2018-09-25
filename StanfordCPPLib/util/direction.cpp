@@ -9,10 +9,12 @@
  * - removed 'using namespace' statement
  */
 
+#define INTERNAL_INCLUDE 1
 #include "direction.h"
 #include "error.h"
 #include "strlib.h"
 #include "tokenscanner.h"
+#undef INTERNAL_INCLUDE
 
 /*
  * Implementation notes: leftFrom, rightFrom, opposite

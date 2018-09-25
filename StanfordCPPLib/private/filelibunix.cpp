@@ -1,6 +1,7 @@
 /*
  */
 
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
 
 // define all of the following only on non-Windows OS
@@ -23,6 +24,7 @@
 #include <ios>
 #include <string>
 #include "error.h"
+#undef INTERNAL_INCLUDE
 
 namespace platform {
 

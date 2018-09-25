@@ -11,6 +11,7 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gbrowserpane.h"
 #include <fstream>
 #include <iostream>
@@ -19,6 +20,7 @@
 #include "require.h"
 #include "server.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 GBrowserPane::GBrowserPane(const std::string& url, QWidget* parent) {
     GThread::runOnQtGuiThread([this, url, parent]() {

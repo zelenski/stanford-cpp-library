@@ -9,6 +9,7 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gobservable.h"
 #include <iostream>
 #include <sstream>
@@ -16,6 +17,7 @@
 #include "gthread.h"
 #include "require.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 GObservable::GObservable()
         : _eventsEnabled(true) {

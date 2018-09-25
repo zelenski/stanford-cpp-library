@@ -2,6 +2,11 @@
 \label{classistringbitstream}\index{istringbitstream@{istringbitstream}}
 
 
+A variant on C++\textquotesingle{}s istringstream class, which acts as a stream that reads its data from a string.  
+
+
+
+
 {\ttfamily \#include $<$bitstream.\+h$>$}
 
 Inheritance diagram for istringbitstream\+:\begin{figure}[H]
@@ -14,20 +19,25 @@ Inheritance diagram for istringbitstream\+:\begin{figure}[H]
 \begin{DoxyCompactItemize}
 \item 
 \mbox{\hyperlink{classistringbitstream_ae086e9a41bc91c4c64af792ff0aff81d}{istringbitstream}} (const std\+::string \&s=\char`\"{}\char`\"{})
-\item 
+\begin{DoxyCompactList}\small\item\em Constructs an istringbitstream reading the specified string. \end{DoxyCompactList}\item 
 virtual bool \mbox{\hyperlink{classibitstream_a2f57f54d8c03b615bb31eee091d8a88a}{is\+\_\+open}} ()
-\item 
+\begin{DoxyCompactList}\small\item\em Returns whether or not this ibitstream is opened. \end{DoxyCompactList}\item 
 int \mbox{\hyperlink{classibitstream_aa8c615fa7957fb0232a0873dadbd39e8}{read\+Bit}} ()
-\item 
+\begin{DoxyCompactList}\small\item\em Reads a single bit from the ibitstream and returns 0 or 1 depending on the bit value. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classibitstream_ab8734e666421c9fe3b6380a818c6c727}{rewind}} ()
-\item 
+\begin{DoxyCompactList}\small\item\em Rewinds the ibitstream back to the beginning so that subsequent reads start again from the beginning. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classibitstream_ad916b4624eb09d375514964f867b475c}{set\+Fake}} (bool fake)
-\item 
+\begin{DoxyCompactList}\small\item\em Sets \textquotesingle{}fake\textquotesingle{} mode, where it actually reads bytes when you say read\+Bit. \end{DoxyCompactList}\item 
 long \mbox{\hyperlink{classibitstream_a22727e9c338fb1aaa6722031445373c3}{size}} ()
-\item 
+\begin{DoxyCompactList}\small\item\em Returns the size in bytes of the data attached to this stream. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classistringbitstream_a4a07e41ddf13ced3f7e3997886b48805}{str}} (const std\+::string \&s)
-\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Sets the underlying string of the istringbitstream. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
+
+\subsection{Detailed Description}
+A variant on C++\textquotesingle{}s istringstream class, which acts as a stream that reads its data from a string. 
+
+This is mostly used by the testing code to test your Huffman encoding without having to read or write files on disk, but you can use it in your own testing if you would like. 
 
 \subsection{Constructor \& Destructor Documentation}
 \mbox{\Hypertarget{classistringbitstream_ae086e9a41bc91c4c64af792ff0aff81d}\label{classistringbitstream_ae086e9a41bc91c4c64af792ff0aff81d}} 
@@ -35,6 +45,10 @@ void \mbox{\hyperlink{classistringbitstream_a4a07e41ddf13ced3f7e3997886b48805}{s
 \index{istringbitstream@{istringbitstream}!istringbitstream@{istringbitstream}}
 \subsubsection{\texorpdfstring{istringbitstream()}{istringbitstream()}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classistringbitstream}{istringbitstream}} (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{s = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})}
+
+
+
+Constructs an istringbitstream reading the specified string. 
 
 
 
@@ -47,6 +61,10 @@ void \mbox{\hyperlink{classistringbitstream_a4a07e41ddf13ced3f7e3997886b48805}{s
 
 
 
+Returns whether or not this ibitstream is opened. 
+
+This only has meaning if the ibitstream is a file stream; otherwise it always returns true. 
+
 Reimplemented in \mbox{\hyperlink{classifbitstream_a2f57f54d8c03b615bb31eee091d8a88a}{ifbitstream}}.
 
 \mbox{\Hypertarget{classibitstream_aa8c615fa7957fb0232a0873dadbd39e8}\label{classibitstream_aa8c615fa7957fb0232a0873dadbd39e8}} 
@@ -55,17 +73,29 @@ Reimplemented in \mbox{\hyperlink{classifbitstream_a2f57f54d8c03b615bb31eee091d8
 \subsubsection{\texorpdfstring{read\+Bit()}{readBit()}}
 {\footnotesize\ttfamily int read\+Bit (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inherited]}}
 
-\mbox{\Hypertarget{classibitstream_ab8734e666421c9fe3b6380a818c6c727}\label{classibitstream_ab8734e666421c9fe3b6380a818c6c727}} 
+
+
+Reads a single bit from the ibitstream and returns 0 or 1 depending on the bit value. 
+
+If the stream is exhausted, E\+OF (-\/1) is returned. Raises an error if this ibitstream has not been properly opened. \mbox{\Hypertarget{classibitstream_ab8734e666421c9fe3b6380a818c6c727}\label{classibitstream_ab8734e666421c9fe3b6380a818c6c727}} 
 \index{istringbitstream@{istringbitstream}!rewind@{rewind}}
 \index{rewind@{rewind}!istringbitstream@{istringbitstream}}
 \subsubsection{\texorpdfstring{rewind()}{rewind()}}
 {\footnotesize\ttfamily void rewind (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inherited]}}
 
-\mbox{\Hypertarget{classibitstream_ad916b4624eb09d375514964f867b475c}\label{classibitstream_ad916b4624eb09d375514964f867b475c}} 
+
+
+Rewinds the ibitstream back to the beginning so that subsequent reads start again from the beginning. 
+
+Raises an error if this ibitstream has not been properly opened. \mbox{\Hypertarget{classibitstream_ad916b4624eb09d375514964f867b475c}\label{classibitstream_ad916b4624eb09d375514964f867b475c}} 
 \index{istringbitstream@{istringbitstream}!set\+Fake@{set\+Fake}}
 \index{set\+Fake@{set\+Fake}!istringbitstream@{istringbitstream}}
 \subsubsection{\texorpdfstring{set\+Fake()}{setFake()}}
 {\footnotesize\ttfamily void set\+Fake (\begin{DoxyParamCaption}\item[{bool}]{fake }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inherited]}}
+
+
+
+Sets \textquotesingle{}fake\textquotesingle{} mode, where it actually reads bytes when you say read\+Bit. 
 
 \mbox{\Hypertarget{classibitstream_a22727e9c338fb1aaa6722031445373c3}\label{classibitstream_a22727e9c338fb1aaa6722031445373c3}} 
 \index{istringbitstream@{istringbitstream}!size@{size}}
@@ -73,9 +103,17 @@ Reimplemented in \mbox{\hyperlink{classifbitstream_a2f57f54d8c03b615bb31eee091d8
 \subsubsection{\texorpdfstring{size()}{size()}}
 {\footnotesize\ttfamily long size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inherited]}}
 
-\mbox{\Hypertarget{classistringbitstream_a4a07e41ddf13ced3f7e3997886b48805}\label{classistringbitstream_a4a07e41ddf13ced3f7e3997886b48805}} 
+
+
+Returns the size in bytes of the data attached to this stream. 
+
+Raises an error if this ibitstream has not been properly opened. \mbox{\Hypertarget{classistringbitstream_a4a07e41ddf13ced3f7e3997886b48805}\label{classistringbitstream_a4a07e41ddf13ced3f7e3997886b48805}} 
 \index{istringbitstream@{istringbitstream}!str@{str}}
 \index{str@{str}!istringbitstream@{istringbitstream}}
 \subsubsection{\texorpdfstring{str()}{str()}}
 {\footnotesize\ttfamily void str (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{s }\end{DoxyParamCaption})}
+
+
+
+Sets the underlying string of the istringbitstream. 
 

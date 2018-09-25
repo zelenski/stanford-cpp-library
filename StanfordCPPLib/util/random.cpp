@@ -18,6 +18,7 @@
  * - removed 'using namespace' statement
  */
 
+#define INTERNAL_INCLUDE 1
 #include "random.h"
 #include <cstdlib>
 #include <cmath>
@@ -27,6 +28,7 @@
 #include <queue>
 #include <sstream>
 #include "private/static.h"
+#undef INTERNAL_INCLUDE
 
 /* Private function prototype */
 

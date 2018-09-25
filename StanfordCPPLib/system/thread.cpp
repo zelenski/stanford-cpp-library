@@ -22,11 +22,13 @@
 /* along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 /*************************************************************************/
 
+#define INTERNAL_INCLUDE 1
 #include <iostream>
 #include <sstream>
 #include <string>
 #include "thread.h"
 #include "private/tplatform.h"
+#undef INTERNAL_INCLUDE
 
 Thread::Thread() {
     id = -1;

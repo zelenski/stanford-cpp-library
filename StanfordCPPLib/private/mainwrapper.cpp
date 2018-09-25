@@ -17,45 +17,52 @@
  * - initial version
  */
 
-#include "private/init.h"
-
 int qMain(int argc, char** argv);
 
-// sidestep Qt's main wrapper on Windows
-#ifdef QT_NEEDS_QMAIN
-#define studentMainFunction qMain
-#else
-#define studentMainFunction main
-#endif // QT_NEEDS_QMAIN
-
-// initializes the Qt GUI library subsystems and Qt graphical console as needed
-int qMain(int argc, char** argv) {
-    extern int studentMainFunction();
-    stanfordcpplib::initializeLibrary(argc, argv);
-
-    //////////////////////////////////////////////////////////////////////////
-    /// NOTE TO STUDENT!                                                   ///
-    /// If you are directed here by a compiler error,                      ///
-    /// it means that you have not written a main function or that it has  ///
-    /// the wrong parameters.                                              ///
-    /// The heading of your main function must be:                         ///
-    ///                                                                    ///
-    /// int main() { ... }                                                 ///
-    ///                                                                    ///
-    /// (Our library secretly renames your main function to "studentMain"  ///
-    ///  so that we can actually control the main flow of execution.)      ///
-    //////////////////////////////////////////////////////////////////////////
-    stanfordcpplib::runMainInThread(studentMainFunction);
-
-    stanfordcpplib::shutdownLibrary();
-    return 0;
+// function prototype declarations;
+// I declare these rather than including init.h to avoid
+// triggering library initialization if lib is not used
+// (keep in sync with init.h/cpp)
+namespace stanfordcpplib {
+extern void initializeLibrary(int argc, char** argv);
+extern void runMainInThread(int (* mainFunc)(void));
+extern void shutdownLibrary();
 }
 
-// keep in sync with definition in private/init.h
 #ifndef QT_NEEDS_QMAIN
 #undef main
 int main(int argc, char** argv) {
     return qMain(argc, argv);
 }
-#define main studentMain
+// keep in sync with definition in .pro file
+#ifdef REPLACE_MAIN_FUNCTION
+#define main _main_
+#endif // REPLACE_MAIN_FUNCTION
 #endif // QT_NEEDS_QMAIN
+
+// initializes the Qt GUI library subsystems and Qt graphical console as needed
+int qMain(int argc, char** argv) {
+    extern int main();
+    stanfordcpplib::initializeLibrary(argc, argv);
+
+    //////////////////////////////////////////////////////////////////////////
+    /// NOTE TO STUDENT!                                                   ///
+    /// If you are directed here by a compiler error,                      ///
+    /// it means that you have not written a main function or that it      ///
+    /// has the wrong parameters.                                          ///
+    /// The heading of your main function must be:                         ///
+    ///                                                                    ///
+    /// int main() { ... }                                                 ///
+    ///                                                                    ///
+    /// (Our library secretly renames your main function to "_main_"       ///
+    ///  so that we can actually control the main flow of execution.)      ///
+    ///                                                                    ///
+    /// You may also need to include a .h header from the Stanford         ///
+    /// C++ library in the file of your project that contains the          ///
+    /// 'main' function.                                                   ///
+    //////////////////////////////////////////////////////////////////////////
+    stanfordcpplib::runMainInThread(main);
+
+    stanfordcpplib::shutdownLibrary();
+    return 0;
+}

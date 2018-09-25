@@ -5,7 +5,9 @@
  * - made into template class
  */
 
+#define INTERNAL_INCLUDE 1
 #include "LinkedIntList.h"
+#undef INTERNAL_INCLUDE
 
 LinkedIntList::LinkedIntList()
         : front(nullptr), m_locked(false) {

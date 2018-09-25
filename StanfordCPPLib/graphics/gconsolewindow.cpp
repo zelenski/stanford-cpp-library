@@ -16,6 +16,7 @@
  * - initial version, separated out from console.cpp
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gconsolewindow.h"
 #include <cstdio>
 #include <QAction>
@@ -37,7 +38,7 @@
 #include "qtgui.h"
 #include "private/static.h"
 #include "private/version.h"
-
+#undef INTERNAL_INCLUDE
 
 void setConsolePropertiesQt();
 

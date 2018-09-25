@@ -12,6 +12,10 @@
  * Using Java's is a compromise for now.
  *
  * @author Marty Stepp
+ * @version 2018/09/25
+ * - added doc comments for new documentation generation
+ * @version 2018/09/20
+ * - added Qt version checking around some regex functions for compatibility
  * @version 2014/10/14
  * - removed regexMatchCountWithLines for simplicity
  * @since 2014/03/01
@@ -23,21 +27,21 @@
 #include <string>
 #include "vector.h"
 
-/*
+/**
  * Returns true if the given string s matches the given regular expression
  * as a substring.
  * For an exact match instead, put "^" and "$" in your regex as start/end anchors.
  */
 bool regexMatch(const std::string& s, const std::string& regexp);
 
-/*
+/**
  * Returns the number of times the given regular expression is found inside
  * the given string s.
  * Returns 0 if there are no matches for the regexp.
  */
 int regexMatchCount(const std::string& s, const std::string& regexp);
 
-/*
+/**
  * Finds all matches of the given regular expression in the given string s
  * and fills 'linesOut' with a comma-separated string representing the line
  * numbers within the string at which the matches occur, such as "2,14,27,36".
@@ -47,10 +51,19 @@ int regexMatchCount(const std::string& s, const std::string& regexp);
  */
 int regexMatchCountWithLines(const std::string& s, const std::string& regexp,
                              std::string& linesOut);
+
+/**
+ * Finds all matches of the given regular expression in the given string s
+ * and fills 'linesOut' with the line numbers within the string at which the
+ * matches occur, such as [2, 14, 27, 36].
+ * This is mainly useful for grading programs.
+ * Returns the number of times the given regular expression is found inside
+ * the given string s.  Returns 0 if there are no matches for the regexp.
+ */
 void regexMatchCountWithLines(const std::string& s, const std::string& regexp,
                               Vector<int>& linesOut);
 
-/*
+/**
  * Replaces occurrences of the given regular expression in s with the given
  * replacement text, and returns the resulting string.
  * If limit >  0 is passed, replaces that many occurrences of the regex.

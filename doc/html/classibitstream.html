@@ -80,6 +80,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p>Defines a class for reading files with all the functionality of istream along with an added member function for reading a single bit and convenience functions for rewinding the stream back to the beginning and getting the stream size.  
+ <a href="classibitstream.html#details">More...</a></p>
+
 <p><code>#include "<a class="el" href="bitstream_8h_source.html">bitstream.h</a>"</code></p>
 <div class="dynheader">
 Inheritance diagram for ibitstream:</div>
@@ -87,27 +90,36 @@ Inheritance diagram for ibitstream:</div>
  <div class="center">
   <img src="classibitstream.png" usemap="#ibitstream_map" alt=""/>
   <map id="ibitstream_map" name="ibitstream_map">
-<area href="classifbitstream.html" alt="ifbitstream" shape="rect" coords="0,280,139,304"/>
-<area href="classistringbitstream.html" alt="istringbitstream" shape="rect" coords="149,280,288,304"/>
+<area href="classifbitstream.html" title="A class for reading files in all of the usual ways, plus bit-by-bit. " alt="ifbitstream" shape="rect" coords="0,280,139,304"/>
+<area href="classistringbitstream.html" title="A variant on C++&#39;s istringstream class, which acts as a stream that reads its data from a string..." alt="istringbitstream" shape="rect" coords="149,280,288,304"/>
 </map>
  </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a72d1e7b784e2782d57a9ce3954a1f94f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classibitstream.html#a72d1e7b784e2782d57a9ce3954a1f94f">ibitstream</a>()</td></tr>
+<tr class="memdesc:a72d1e7b784e2782d57a9ce3954a1f94f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new ibitstream that is not attached to any source.  <a href="#a72d1e7b784e2782d57a9ce3954a1f94f">More...</a><br /></td></tr>
 <tr class="separator:a72d1e7b784e2782d57a9ce3954a1f94f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f57f54d8c03b615bb31eee091d8a88a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classibitstream.html#a2f57f54d8c03b615bb31eee091d8a88a">is_open</a>()</td></tr>
+<tr class="memdesc:a2f57f54d8c03b615bb31eee091d8a88a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether or not this ibitstream is opened.  <a href="#a2f57f54d8c03b615bb31eee091d8a88a">More...</a><br /></td></tr>
 <tr class="separator:a2f57f54d8c03b615bb31eee091d8a88a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa8c615fa7957fb0232a0873dadbd39e8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classibitstream.html#aa8c615fa7957fb0232a0873dadbd39e8">readBit</a>()</td></tr>
+<tr class="memdesc:aa8c615fa7957fb0232a0873dadbd39e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads a single bit from the ibitstream and returns 0 or 1 depending on the bit value.  <a href="#aa8c615fa7957fb0232a0873dadbd39e8">More...</a><br /></td></tr>
 <tr class="separator:aa8c615fa7957fb0232a0873dadbd39e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab8734e666421c9fe3b6380a818c6c727"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classibitstream.html#ab8734e666421c9fe3b6380a818c6c727">rewind</a>()</td></tr>
+<tr class="memdesc:ab8734e666421c9fe3b6380a818c6c727"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rewinds the ibitstream back to the beginning so that subsequent reads start again from the beginning.  <a href="#ab8734e666421c9fe3b6380a818c6c727">More...</a><br /></td></tr>
 <tr class="separator:ab8734e666421c9fe3b6380a818c6c727"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad916b4624eb09d375514964f867b475c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classibitstream.html#ad916b4624eb09d375514964f867b475c">setFake</a>(bool fake)</td></tr>
+<tr class="memdesc:ad916b4624eb09d375514964f867b475c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets 'fake' mode, where it actually reads bytes when you say readBit.  <a href="#ad916b4624eb09d375514964f867b475c">More...</a><br /></td></tr>
 <tr class="separator:ad916b4624eb09d375514964f867b475c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a22727e9c338fb1aaa6722031445373c3"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classibitstream.html#a22727e9c338fb1aaa6722031445373c3">size</a>()</td></tr>
+<tr class="memdesc:a22727e9c338fb1aaa6722031445373c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the size in bytes of the data attached to this stream.  <a href="#a22727e9c338fb1aaa6722031445373c3">More...</a><br /></td></tr>
 <tr class="separator:a22727e9c338fb1aaa6722031445373c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Defines a class for reading files with all the functionality of istream along with an added member function for reading a single bit and convenience functions for rewinding the stream back to the beginning and getting the stream size. </p>
+<p>You will probably not create instances of this class directly. Instead, you will create ifbitstreams or istringbitstreams to read from files or string buffers. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a72d1e7b784e2782d57a9ce3954a1f94f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a72d1e7b784e2782d57a9ce3954a1f94f">&#9670;&nbsp;</a></span>ibitstream()</h2>
 
@@ -122,6 +134,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Initializes a new ibitstream that is not attached to any source. </p>
+<p>You are unlikely to use this function directly. </p>
 
 </div>
 </div>
@@ -149,6 +164,9 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Returns whether or not this ibitstream is opened. </p>
+<p>This only has meaning if the ibitstream is a file stream; otherwise it always returns true. </p>
+
 <p>Reimplemented in <a class="el" href="classifbitstream.html#a2f57f54d8c03b615bb31eee091d8a88a">ifbitstream</a>.</p>
 
 </div>
@@ -168,6 +186,9 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Reads a single bit from the ibitstream and returns 0 or 1 depending on the bit value. </p>
+<p>If the stream is exhausted, EOF (-1) is returned. Raises an error if this ibitstream has not been properly opened. </p>
+
 </div>
 </div>
 <a id="ab8734e666421c9fe3b6380a818c6c727"></a>
@@ -184,6 +205,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Rewinds the ibitstream back to the beginning so that subsequent reads start again from the beginning. </p>
+<p>Raises an error if this ibitstream has not been properly opened. </p>
 
 </div>
 </div>
@@ -203,6 +227,8 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Sets 'fake' mode, where it actually reads bytes when you say readBit. </p>
+
 </div>
 </div>
 <a id="a22727e9c338fb1aaa6722031445373c3"></a>
@@ -219,6 +245,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns the size in bytes of the data attached to this stream. </p>
+<p>Raises an error if this ibitstream has not been properly opened. </p>
 
 </div>
 </div>

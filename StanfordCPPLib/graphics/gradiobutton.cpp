@@ -11,11 +11,13 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gradiobutton.h"
 #include "gthread.h"
 #include "gwindow.h"
 #include "require.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 Map<std::string, QButtonGroup*> GRadioButton::_buttonGroups;
 

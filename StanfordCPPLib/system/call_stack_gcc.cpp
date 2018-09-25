@@ -21,6 +21,7 @@
    License: BSD licence (http://www.opensource.org/licenses/bsd-license.php)
    Based on: http://stupefydeveloper.blogspot.com/2008/10/cc-call-stack.html */
 
+#define INTERNAL_INCLUDE 1
 #ifdef __GNUC__
 #include <stdio.h>
 #include <cxxabi.h>
@@ -47,6 +48,7 @@
 #include "exceptions.h"
 #include "strlib.h"
 #include "private/static.h"
+#undef INTERNAL_INCLUDE
 
 namespace platform {
 std::string os_getLastError() {
@@ -219,7 +221,7 @@ int addr2line_all(void** addrs, int length, std::string& output) {
     std::string addrsStr = out.str();
     out.str("");
 
-    // have addr2line map the address to the relent line in the code
+    // have addr2line map the address to the relevant line in the code
 #if defined(__APPLE__)
     // Mac OS X
     // JL : change "atos" to "xcrun atos"?
@@ -259,7 +261,7 @@ void*& fakeCallStackPointer() {
 
 namespace stacktrace {
 STATIC_CONST_VARIABLE_DECLARE(int, STACK_FRAMES_TO_SKIP, 0)
-STATIC_CONST_VARIABLE_DECLARE(int, STACK_FRAMES_MAX, 20)
+STATIC_CONST_VARIABLE_DECLARE(int, STACK_FRAMES_MAX, 50)
 
 std::ostream& operator <<(std::ostream& out, const entry& ent) {
     return out << ent.toString();

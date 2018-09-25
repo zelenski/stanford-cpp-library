@@ -9,9 +9,11 @@
  * - removed 'using namespace' statement
  */
 
+#define INTERNAL_INCLUDE 1
 #include "error.h"
 #include "exceptions.h"
 #include <sstream>
+#undef INTERNAL_INCLUDE
 
 /* Definitions for the ErrorException class */
 

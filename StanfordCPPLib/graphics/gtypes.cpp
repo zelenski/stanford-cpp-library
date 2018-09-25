@@ -7,6 +7,7 @@
  * - initial version, based on gtypes.cpp
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gtypes.h"
 #include <cmath>
 #include <sstream>
@@ -17,6 +18,7 @@
 #include "hashcode.h"
 #include "point.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 /*
  * Implementation notes: GDimension class

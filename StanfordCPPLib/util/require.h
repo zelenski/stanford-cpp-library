@@ -2,6 +2,8 @@
  * File: require.h
  * ---------------
  *
+ * This file contains assertion functions for argument checking within the
+ * code of the Stanford C++ library itself.
  */
 
 #ifndef _require_h
@@ -9,6 +11,9 @@
 
 #include <string>
 
+/**
+ * @private
+ */
 namespace require {
 
 void inRange(double value, double min, double max, const std::string& caller = "", const std::string& valueName = "", const std::string& details = "");

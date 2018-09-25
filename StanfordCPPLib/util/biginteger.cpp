@@ -12,6 +12,7 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "biginteger.h"
 #include <algorithm>
 #include <cctype>
@@ -22,6 +23,7 @@
 #include <sstream>
 #include "error.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 static int STRING_SIZE_MAX = 10000;   // for strings
 

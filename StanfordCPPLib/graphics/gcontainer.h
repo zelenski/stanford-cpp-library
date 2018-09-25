@@ -3,6 +3,8 @@
  * ------------------
  *
  * @author Marty Stepp
+ * @version 2018/09/25
+ * - added getLayout method
  * @version 2018/09/19
  * - added contains, regionContains methods
  * @version 2018/09/07
@@ -14,6 +16,11 @@
 #ifndef _gcontainer_h
 #define _gcontainer_h
 
+// signal that GUI system is in use (so it will be initialized)
+#ifndef INTERNAL_INCLUDE
+#define SPL_QT_GUI_IN_USE 1
+#endif // INTERNAL_INCLUDE
+
 #include <QBoxLayout>
 #include <QLayout>
 #include "ginteractor.h"
@@ -21,7 +28,7 @@
 
 class _Internal_QContainer;   // forward declaration
 
-/*
+/**
  * A GContainer is a logical grouping for interactors.
  * The container manages the position and size of the interactors inside it.
  * This class is very similar to the Java concept of a container, represented
@@ -108,7 +115,7 @@ public:
     /**
      * Frees memory allocated internally by the container.
      */
-    virtual ~GContainer();
+    virtual ~GContainer() Q_DECL_OVERRIDE;
 
     /**
      * Adds the given interactor to the end of the list of interactors in this container.
@@ -261,6 +268,11 @@ public:
 
     /* @inherit */
     virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
+
+    /**
+     * Returns the type of layout used by this container.
+     */
+    virtual Layout getLayout() const;
 
     /**
      * Returns the margin around each widget in this container in pixels.
@@ -726,3 +738,7 @@ private:
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _gcontainer_h
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE

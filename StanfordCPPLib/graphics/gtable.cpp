@@ -17,6 +17,7 @@
  * @since 2018/07/17
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gtable.h"
 #include <cstring>
 #include <iostream>
@@ -33,6 +34,7 @@
 #include "gthread.h"
 #include "require.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 GTable::TableStyle GTable::_defaultCellStyle = GTable::TableStyle::unset();
 

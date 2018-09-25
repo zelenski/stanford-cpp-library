@@ -7,10 +7,11 @@
  * @version 2015/07/21
  */
 
+#define INTERNAL_INCLUDE 1
 #include <string>
 #include "BinaryTreeMap.h"
 #include "strlib.h"
-using namespace std;
+#undef INTERNAL_INCLUDE
 
 BinaryTreeMap::BinaryTreeMap() {
     m_root = nullptr;

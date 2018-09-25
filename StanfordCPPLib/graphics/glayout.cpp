@@ -9,9 +9,11 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "glayout.h"
 #include "require.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 GLayout::GLayout() {
     // empty

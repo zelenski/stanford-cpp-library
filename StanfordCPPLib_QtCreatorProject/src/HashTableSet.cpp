@@ -7,10 +7,11 @@
  * @version 2015/07/21
  */
 
+#define INTERNAL_INCLUDE 1
 #include <iostream>
 #include <iomanip>
 #include "HashTableSet.h"
-using namespace std;
+#undef INTERNAL_INCLUDE
 
 HashTableSet::HashTableSet() {
     m_size = 0;
@@ -50,13 +51,13 @@ void HashTableSet::remove(int /*value*/) {
 
 void HashTableSet::printStructure() const {
     for (int i = 0; i < m_capacity; i++) {
-        cout << "[" << setw(2) << i << "]:";
+        std::cout << "[" << std::setw(2) << i << "]:";
         HashTableNode* curr = m_elements[i];
         while (curr) {
-            cout << " -> " << setw(2) << curr->data;
+            std::cout << " -> " << std::setw(2) << curr->data;
             curr = curr->next;
         }
-        cout << " /" << endl;
+        std::cout << " /" << std::endl;
     }
     // cout << "size = " << m_size << ", load factor = " << loadFactor() << endl;
 }

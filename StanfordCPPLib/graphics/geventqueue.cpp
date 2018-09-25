@@ -9,6 +9,7 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
 #include <QEvent>
 #include <QThread>
@@ -16,6 +17,7 @@
 #include "exceptions.h"
 #include "gwindow.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 #ifdef _WIN32
 #  include <direct.h>   // for chdir

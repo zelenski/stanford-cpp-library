@@ -15,6 +15,7 @@
  * @since 2014/10/14
  */
 
+#define INTERNAL_INCLUDE 1
 #include "diff.h"
 #include <algorithm>
 #include "map.h"
@@ -23,6 +24,7 @@
 #include "stringutils.h"
 #include "strlib.h"
 #include "vector.h"
+#undef INTERNAL_INCLUDE
 
 namespace diff {
 std::string diff(std::string s1, std::string s2, int flags) {

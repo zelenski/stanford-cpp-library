@@ -18,6 +18,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2018/09/25
+# - flags to rename main function and other linker fixes
 # @version 2018/09/23
 # - fixed some compiler flags to fix build on Win/Mac
 # @version 2018/09/20
@@ -352,7 +354,12 @@ equals(COMPILERNAME, clang++) {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20180923
+DEFINES += SPL_PROJECT_VERSION=20180925
+
+# wrapper name for 'main' function (needed so student can write 'int main'
+# but our library can grab the actual main function to initialize itself)
+DEFINES += REPLACE_MAIN_FUNCTION=1
+DEFINES += main=_main_
 
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1
@@ -413,7 +420,7 @@ CONFIG(debug, debug|release) {
     #unix:!macx
     unix-g++ {
         QMAKE_CXXFLAGS += -rdynamic
-        QMAKE_CXXFLAGS += -Wl,--export-dynamic
+        QMAKE_LFLAGS += -Wl,--export-dynamic
     }
 
     # print details about uncaught exceptions with red error text / stack trace
@@ -613,4 +620,4 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #616; if not, your .pro has been changed!)
+# END OF FILE (this should be line #623; if not, your .pro has been changed!)

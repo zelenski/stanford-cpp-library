@@ -80,6 +80,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p>Defines a class for writing files with all the functionality of ostream along with an added member function for writing a single bit and a convenience function for getting the stream size.  
+ <a href="classobitstream.html#details">More...</a></p>
+
 <p><code>#include "<a class="el" href="bitstream_8h_source.html">bitstream.h</a>"</code></p>
 <div class="dynheader">
 Inheritance diagram for obitstream:</div>
@@ -87,25 +90,33 @@ Inheritance diagram for obitstream:</div>
  <div class="center">
   <img src="classobitstream.png" usemap="#obitstream_map" alt=""/>
   <map id="obitstream_map" name="obitstream_map">
-<area href="classofbitstream.html" alt="ofbitstream" shape="rect" coords="0,280,143,304"/>
-<area href="classostringbitstream.html" alt="ostringbitstream" shape="rect" coords="153,280,296,304"/>
+<area href="classofbitstream.html" title="A class for writing files in all of the usual ways, plus bit-by-bit. " alt="ofbitstream" shape="rect" coords="0,280,143,304"/>
+<area href="classostringbitstream.html" title="A variant on C++&#39;s ostringstream class, which acts as a stream that writes its data to a string..." alt="ostringbitstream" shape="rect" coords="153,280,296,304"/>
 </map>
  </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:affc1b0bda48ee1c09b796e92ad7f8954"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classobitstream.html#affc1b0bda48ee1c09b796e92ad7f8954">obitstream</a>()</td></tr>
+<tr class="memdesc:affc1b0bda48ee1c09b796e92ad7f8954"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new obitstream that is not attached to any file.  <a href="#affc1b0bda48ee1c09b796e92ad7f8954">More...</a><br /></td></tr>
 <tr class="separator:affc1b0bda48ee1c09b796e92ad7f8954"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f57f54d8c03b615bb31eee091d8a88a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classobitstream.html#a2f57f54d8c03b615bb31eee091d8a88a">is_open</a>()</td></tr>
+<tr class="memdesc:a2f57f54d8c03b615bb31eee091d8a88a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether or not this obitstream is opened.  <a href="#a2f57f54d8c03b615bb31eee091d8a88a">More...</a><br /></td></tr>
 <tr class="separator:a2f57f54d8c03b615bb31eee091d8a88a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad916b4624eb09d375514964f867b475c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classobitstream.html#ad916b4624eb09d375514964f867b475c">setFake</a>(bool fake)</td></tr>
+<tr class="memdesc:ad916b4624eb09d375514964f867b475c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets 'fake' mode, where it actually writes bytes when you say writeBit.  <a href="#ad916b4624eb09d375514964f867b475c">More...</a><br /></td></tr>
 <tr class="separator:ad916b4624eb09d375514964f867b475c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a22727e9c338fb1aaa6722031445373c3"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classobitstream.html#a22727e9c338fb1aaa6722031445373c3">size</a>()</td></tr>
+<tr class="memdesc:a22727e9c338fb1aaa6722031445373c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the size in bytes of the file attached to this stream.  <a href="#a22727e9c338fb1aaa6722031445373c3">More...</a><br /></td></tr>
 <tr class="separator:a22727e9c338fb1aaa6722031445373c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a487c88ba2560a4657d18c3edb7d9d247"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classobitstream.html#a487c88ba2560a4657d18c3edb7d9d247">writeBit</a>(int bit)</td></tr>
+<tr class="memdesc:a487c88ba2560a4657d18c3edb7d9d247"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a single bit to the obitstream.  <a href="#a487c88ba2560a4657d18c3edb7d9d247">More...</a><br /></td></tr>
 <tr class="separator:a487c88ba2560a4657d18c3edb7d9d247"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Defines a class for writing files with all the functionality of ostream along with an added member function for writing a single bit and a convenience function for getting the stream size. </p>
+<p>You are unlikely to instantiate this class directly; instead, instantiate one of the subclasses. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="affc1b0bda48ee1c09b796e92ad7f8954"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#affc1b0bda48ee1c09b796e92ad7f8954">&#9670;&nbsp;</a></span>obitstream()</h2>
 
@@ -120,6 +131,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Initializes a new obitstream that is not attached to any file. </p>
+<p>Use the open member function from ofstream to attach the stream to a file. </p>
 
 </div>
 </div>
@@ -147,6 +161,9 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Returns whether or not this obitstream is opened. </p>
+<p>This only has meaning if the obitstream is a file stream; otherwise it always returns true. </p>
+
 <p>Reimplemented in <a class="el" href="classofbitstream.html#a2f57f54d8c03b615bb31eee091d8a88a">ofbitstream</a>.</p>
 
 </div>
@@ -167,6 +184,8 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Sets 'fake' mode, where it actually writes bytes when you say writeBit. </p>
+
 </div>
 </div>
 <a id="a22727e9c338fb1aaa6722031445373c3"></a>
@@ -183,6 +202,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns the size in bytes of the file attached to this stream. </p>
+<p>Raises an error if this obitstream has not been properly opened. </p>
 
 </div>
 </div>
@@ -201,6 +223,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Writes a single bit to the obitstream. </p>
+<p>Raises an error if this obitstream has not been properly opened. </p>
 
 </div>
 </div>

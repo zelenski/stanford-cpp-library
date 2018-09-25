@@ -2,9 +2,13 @@
  * Test file for verifying the Stanford C++ lib functionality.
  */
 
-#include "gobjects.h"
+//#include "gobjects.h"
+#include <iostream>
+//#include "console.h"
 
 int main() {
+    std::cout << "main!" << std::endl;
+
 //    extern int mainQt2dGraphics();
 //    return mainQt2dGraphics();
 //    extern int mainQtLayout();
@@ -14,4 +18,5 @@ int main() {
 
 //    extern int mainQtConsole();
 //    return mainQtConsole();
+//    return 0;
 }

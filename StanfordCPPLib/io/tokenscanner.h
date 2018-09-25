@@ -4,6 +4,8 @@
  * This file exports a <code>TokenScanner</code> class that divides
  * a string into individual logical units called <b><i>tokens</i></b>.
  *
+ * @version 2018/09/25
+ * - added doc comments for new documentation generation
  * @version 2018/09/23
  * - moved TokenType enum to inside TokenScanner class to avoid namespace conflicts
  *   (may break some client code)

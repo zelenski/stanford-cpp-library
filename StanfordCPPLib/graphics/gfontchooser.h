@@ -17,6 +17,11 @@
 #ifndef _gfontchooser_h
 #define _gfontchooser_h
 
+// signal that GUI system is in use (so it will be initialized)
+#ifndef INTERNAL_INCLUDE
+#define SPL_QT_GUI_IN_USE 1
+#endif // INTERNAL_INCLUDE
+
 #include <string>
 #include <QWidget>
 #include "gwindow.h"
@@ -62,3 +67,7 @@ private:
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _gfontchooser_h
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE

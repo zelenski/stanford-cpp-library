@@ -13,6 +13,7 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gobjects.h"
 #include <algorithm>
 #include <cmath>
@@ -32,7 +33,7 @@
 #include "gthread.h"
 #include "require.h"
 #include "private/static.h"
-
+#undef INTERNAL_INCLUDE
 
 const double GRoundRect::DEFAULT_CORNER = 10.0;
 const std::string GText::DEFAULT_FONT = "Dialog-13";

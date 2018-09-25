@@ -4,6 +4,8 @@
  * This file defines the <code>ErrorException</code> class and the
  * <code>error</code> function.
  *
+ * @version 2018/09/25
+ * - added doc comments for new documentation generation
  * @version 2017/11/29
  * - fix for undefined SIGUSR1 on Windows systems
  * @version 2016/11/29
@@ -25,9 +27,7 @@
 #define SIGUSR1 10
 #endif // SIGUSR2
 
-/*
- * Class: ErrorException
- * ---------------------
+/**
  * This exception is thrown by calls to the <code>error</code>
  * function.  Typical code for catching errors looks like this:
  *
@@ -43,7 +43,6 @@
  * range of the <code>try</code> (including in functions called from
  * that code), control will jump immediately to the error handler.
  */
-
 class ErrorException : public std::exception {
 public:
     ErrorException(std::string msg);
@@ -57,27 +56,31 @@ private:
     std::string stackTrace;
 };
 
+/**
+ * Prints the error exception to the given output stream.
+ */
 std::ostream& operator <<(std::ostream& out, const ErrorException& ex);
 
-/*
+/**
  * Thrown when a blocking I/O call is interrupted by closing the program.
  */
 class InterruptedIOException : public std::exception {
     // empty
 };
 
-/*
- * Function: error
- * Usage: error(msg);
- * ------------------
+// TODO: use [[noreturn]] to indicate that function does not ever return
+// (added in c++11; still incompatible with some compilers?)
+
+/**
  * Signals an error condition in a program by throwing an
  * <code>ErrorException</code> with the specified message.
- *
- * TODO: use [[noreturn]] to indicate that function does not ever return
- * (added in c++11; still incompatible with some compilers?)
  */
 /* [[noreturn]] */ void error(const std::string& msg);
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
-#endif
+#endif // _error_h
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE

@@ -2,6 +2,11 @@
  * File: sound.h
  * -------------
  * This file defines a class that represents a sound.
+ *
+ * TODO: reimplement using Qt/C++
+ *
+ * @version 2018/09/25
+ * - added doc comments for new documentation generation
  */
 
 #ifndef _sound_h
@@ -9,9 +14,7 @@
 
 #include <string>
 
-/*
- * Class: Sound
- * ------------
+/**
  * This class encapsulates a sound file.  The sound file is specified in the
  * constructor and must be a file in either the current directory or a
  * subdirectory named <code>sounds</code>.
@@ -26,31 +29,20 @@
  */
 class Sound {
 public:
-    /*
-     * Constructor: Sound
-     * Usage: Sound sound;
-     *        Sound sound(filename);
-     * -----------------------------
-     * Creates a <code>Sound</code> object.  The default constructor
-     * creates an empty sound that cannot be played.  The second form
-     * initializes the sound by reading in the contents of the specified
-     * file.
+    /**
+     * Creates a <code>Sound</code> object by reading in the contents of the
+     * specified file.
      */
     Sound(std::string filename);
 
-    /*
-     * Destructor: ~Sound
-     * ------------------
+    /**
      * Frees the memory associated with the sound.
      */
     virtual ~Sound();
 
-    /*
-     * Method: play
-     * Usage: sound.play();
-     * --------------------
-     * Starts playing the sound.  This call returns immediately without waiting
-     * for the sound to finish.
+    /**
+     * Starts playing the sound.
+     * This call returns immediately without waiting for the sound to finish.
      */
     void play();
 };

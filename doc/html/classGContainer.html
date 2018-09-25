@@ -83,6 +83,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p>A <a class="el" href="classGContainer.html" title="A GContainer is a logical grouping for interactors. ">GContainer</a> is a logical grouping for interactors.  
+ <a href="classGContainer.html#details">More...</a></p>
+
 <p><code>#include "<a class="el" href="gcontainer_8h_source.html">gcontainer.h</a>"</code></p>
 <div class="dynheader">
 Inheritance diagram for GContainer:</div>
@@ -128,9 +131,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a042cb94e18801664efa748e8a8fa74c1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGContainer.html#a042cb94e18801664efa748e8a8fa74c1">GContainer</a>(<a class="el" href="classGContainer.html#a1b7da28ed84c0763e8f92cde2df4799b">Layout</a> layout, int rows, int cols, QWidget* parent=nullptr)</td></tr>
 <tr class="memdesc:a042cb94e18801664efa748e8a8fa74c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new container with the given number of rows and columns.  <a href="#a042cb94e18801664efa748e8a8fa74c1">More...</a><br /></td></tr>
 <tr class="separator:a042cb94e18801664efa748e8a8fa74c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa7f04c9e10de9145c56d123473ba013d"><td class="memItemLeft" align="right" valign="top"></td><td class="memItemRight" valign="bottom"><a class="el" href="classGContainer.html#aa7f04c9e10de9145c56d123473ba013d">~GContainer</a>()</td></tr>
-<tr class="memdesc:aa7f04c9e10de9145c56d123473ba013d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees memory allocated internally by the container.  <a href="#aa7f04c9e10de9145c56d123473ba013d">More...</a><br /></td></tr>
-<tr class="separator:aa7f04c9e10de9145c56d123473ba013d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a3b11ccad0281e55a509da7e1d94543"><td class="memItemLeft" align="right" valign="top"></td><td class="memItemRight" valign="bottom"><a class="el" href="classGContainer.html#a0a3b11ccad0281e55a509da7e1d94543">~GContainer</a>() </td></tr>
+<tr class="memdesc:a0a3b11ccad0281e55a509da7e1d94543"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees memory allocated internally by the container.  <a href="#a0a3b11ccad0281e55a509da7e1d94543">More...</a><br /></td></tr>
+<tr class="separator:a0a3b11ccad0281e55a509da7e1d94543"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f99b7c841256dbdc5acaafbbca4e685"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGContainer.html#a6f99b7c841256dbdc5acaafbbca4e685">add</a>(<a class="el" href="classGInteractor.html">GInteractor</a> *interactor)</td></tr>
 <tr class="memdesc:a6f99b7c841256dbdc5acaafbbca4e685"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds the given interactor to the end of the list of interactors in this container.  <a href="#a6f99b7c841256dbdc5acaafbbca4e685">More...</a><br /></td></tr>
 <tr class="separator:a6f99b7c841256dbdc5acaafbbca4e685"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -245,6 +248,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a208ce13c1da40bf0ddb509daf99d6588"><td class="memItemLeft" align="right" valign="top">_Internal_QWidget* &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGContainer.html#a208ce13c1da40bf0ddb509daf99d6588">getInternalWidget</a>() const </td></tr>
 <tr class="memdesc:a208ce13c1da40bf0ddb509daf99d6588"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a direct pointer to the internal Qt widget being wrapped by this interactor.  <a href="#a208ce13c1da40bf0ddb509daf99d6588">More...</a><br /></td></tr>
 <tr class="separator:a208ce13c1da40bf0ddb509daf99d6588"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeebcf77b7fdc91a1ba0371cc9b91d5e2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGContainer.html#a1b7da28ed84c0763e8f92cde2df4799b">Layout</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGContainer.html#aeebcf77b7fdc91a1ba0371cc9b91d5e2">getLayout</a>() const</td></tr>
+<tr class="memdesc:aeebcf77b7fdc91a1ba0371cc9b91d5e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the type of layout used by this container.  <a href="#aeebcf77b7fdc91a1ba0371cc9b91d5e2">More...</a><br /></td></tr>
+<tr class="separator:aeebcf77b7fdc91a1ba0371cc9b91d5e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4f83802015511edeb63b892830812c11"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGPoint.html">GPoint</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGInteractor.html#a4f83802015511edeb63b892830812c11">getLocation</a>() const</td></tr>
 <tr class="memdesc:a4f83802015511edeb63b892830812c11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an (x, y) point representing the onscreen location of the top-left corner of this interactor within its containing window.  <a href="#a4f83802015511edeb63b892830812c11">More...</a><br /></td></tr>
 <tr class="separator:a4f83802015511edeb63b892830812c11"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -624,7 +630,51 @@ Protected Member Functions</h2></td></tr>
 <tr class="memdesc:a7867184bbb686f74fae8a4db927da799"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds an event listener from this observable object to respond to the given types of events, such as "click" or "keydown".  <a href="#a7867184bbb686f74fae8a4db927da799">More...</a><br /></td></tr>
 <tr class="separator:a7867184bbb686f74fae8a4db927da799"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Enumeration Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A <a class="el" href="classGContainer.html" title="A GContainer is a logical grouping for interactors. ">GContainer</a> is a logical grouping for interactors. </p>
+<p>The container manages the position and size of the interactors inside it. This class is very similar to the Java concept of a container, represented in Swing by the JPanel class.</p>
+<p>A container has a layout that guides how it positions its interactors. Supported layouts include border (put interactors in the N/S/W/E/Center), grid (rows and columns of interactors), and flow (interactors go in a single horizontal or vertical line).</p>
+<p>Containers also use a "box model" similar to the CSS box model with margins and padding around each interactor, and spacing between neighboring widgets:</p>
+<pre>
+ container
++----------------&mdash;+
+|      margin       |
+|  +&mdash;border-&mdash;+  |
+|  |   padding   |  |
+|  |   content   |  |
+|  |   padding   |  |
+|  +----------&mdash;+  |
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone"> margin 
+  
+  </th></tr>
+<tr class="markdownTableBody" class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"> spacing 
+  
+  </td></tr>
+<tr class="markdownTableBody" class="markdownTableRowEven">
+<td class="markdownTableBodyNone">  
+  
+  </td></tr>
+<tr class="markdownTableBody" class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"> margin 
+  
+  </td></tr>
+<tr class="markdownTableBody" class="markdownTableRowEven">
+<td class="markdownTableBodyNone"> +&mdash;border-&mdash;+ 
+  
+</td></tr>
+</table>
+
+|  |   padding   |  |
+|  |   content   |  |
+|  |   padding   |  |
+|  +----------&mdash;+  |
+|      margin       |
+|       ...         |
++----------------&mdash;+
+</pre> </div><h2 class="groupheader">Member Enumeration Documentation</h2>
 <a id="a1b7da28ed84c0763e8f92cde2df4799b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1b7da28ed84c0763e8f92cde2df4799b">&#9670;&nbsp;</a></span>Layout</h2>
 
@@ -775,8 +825,8 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aa7f04c9e10de9145c56d123473ba013d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa7f04c9e10de9145c56d123473ba013d">&#9670;&nbsp;</a></span>~GContainer()</h2>
+<a id="a0a3b11ccad0281e55a509da7e1d94543"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a3b11ccad0281e55a509da7e1d94543">&#9670;&nbsp;</a></span>~GContainer()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -830,7 +880,7 @@ Protected Member Functions</h2></td></tr>
 <p>Adds the given interactor to the end of the list of interactors in this container. </p>
 <p>If the container uses a grid layout, adds the interactor to the next available row/column. If it uses a border layout, adds to the center region. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the interactor is null </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the interactor is null </td></tr>
   </table>
   </dd>
 </dl>
@@ -949,7 +999,7 @@ Protected Member Functions</h2></td></tr>
 <p>Adds the given interactor to the given row and column in this container, which is assumed to use a grid layout. </p>
 <p>If the rowspan and/or colspan arguments are passed, the item will occupy multiple rows or columns' worth of space. If the container does not use a grid layout, equivalent to <a class="el" href="classGContainer.html#a6f99b7c841256dbdc5acaafbbca4e685" title="Adds the given interactor to the end of the list of interactors in this container. ">add()</a>. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the interactor is null </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the interactor is null </td></tr>
   </table>
   </dd>
 </dl>
@@ -1050,7 +1100,7 @@ Protected Member Functions</h2></td></tr>
 <p>Adds the given interactor to the given region in this container, which is assumed to use a border layout. </p>
 <p>If the container does not use a border layout, equivalent to <a class="el" href="classGContainer.html#a6f99b7c841256dbdc5acaafbbca4e685" title="Adds the given interactor to the end of the list of interactors in this container. ">add()</a>. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the interactor is null </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the interactor is null </td></tr>
   </table>
   </dd>
 </dl>
@@ -1094,7 +1144,7 @@ Protected Member Functions</h2></td></tr>
 <p>Adds the given interactor to the given region in this container, which is assumed to use a border layout. </p>
 <p>If the container does not use a border layout, equivalent to <a class="el" href="classGContainer.html#a6f99b7c841256dbdc5acaafbbca4e685" title="Adds the given interactor to the end of the list of interactors in this container. ">add()</a>. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the interactor is null </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the interactor is null </td></tr>
   </table>
   </dd>
 </dl>
@@ -2248,7 +2298,7 @@ Protected Member Functions</h2></td></tr>
 <p>Returns the child interactor at the given 0-based index in this container. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the index is out of bounds </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the index is out of bounds </td></tr>
   </table>
   </dd>
 </dl>
@@ -2292,7 +2342,7 @@ Protected Member Functions</h2></td></tr>
 <p>Returns the child interactor at the given 0-based index within the given region in this container, which is assumed to use a border layout. </p>
 <p>If the container does not use a border layout, returns nullptr. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the index is out of bounds </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the index is out of bounds </td></tr>
   </table>
   </dd>
 </dl>
@@ -2336,7 +2386,7 @@ Protected Member Functions</h2></td></tr>
 <p>Returns the child interactor at the given 0-based index within the given region in this container, which is assumed to use a border layout. </p>
 <p>If the container does not use a border layout, returns nullptr. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the index is out of bounds </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the index is out of bounds </td></tr>
   </table>
   </dd>
 </dl>
@@ -2482,6 +2532,33 @@ Protected Member Functions</h2></td></tr>
 <p>This must be overridden by all interactor subclasses. Students/clients generally should not need to call this. </p>
 
 <p>Implements <a class="el" href="classGInteractor.html">GInteractor</a>.</p>
+
+</div>
+</div>
+<a id="aeebcf77b7fdc91a1ba0371cc9b91d5e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeebcf77b7fdc91a1ba0371cc9b91d5e2">&#9670;&nbsp;</a></span>getLayout()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGContainer.html#a1b7da28ed84c0763e8f92cde2df4799b">GContainer::Layout</a> getLayout </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the type of layout used by this container. </p>
 
 </div>
 </div>
@@ -3378,7 +3455,7 @@ Protected Member Functions</h2></td></tr>
 <p>Adds the given interactor to this container just before the given index. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the index is out of bounds or interactor is null </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the index is out of bounds or interactor is null </td></tr>
   </table>
   </dd>
 </dl>
@@ -3422,7 +3499,7 @@ Protected Member Functions</h2></td></tr>
 <p>Adds the given interactor to this container just before the given index. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the index is out of bounds </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the index is out of bounds </td></tr>
   </table>
   </dd>
 </dl>
@@ -3472,7 +3549,7 @@ Protected Member Functions</h2></td></tr>
 <p>Adds the given interactor to the given layout region within this container just before the given index. </p>
 <p>The container is assumed to use a border layout; if it does not, equivalent to <a class="el" href="classGContainer.html#afffb8f789ff9a8466fbae5b846a0ebe7" title="Adds the given interactor to this container just before the given index. ">insert()</a>. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the index is out of bounds or interactor is null </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the index is out of bounds or interactor is null </td></tr>
   </table>
   </dd>
 </dl>
@@ -3522,7 +3599,7 @@ Protected Member Functions</h2></td></tr>
 <p>Adds the given interactor to the given layout region within this container just before the given index. </p>
 <p>The container is assumed to use a border layout; if it does not, equivalent to <a class="el" href="classGContainer.html#afffb8f789ff9a8466fbae5b846a0ebe7" title="Adds the given interactor to this container just before the given index. ">insert()</a>. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the index is out of bounds or interactor is null </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the index is out of bounds or interactor is null </td></tr>
   </table>
   </dd>
 </dl>
@@ -3572,7 +3649,7 @@ Protected Member Functions</h2></td></tr>
 <p>Adds the given interactor to the given layout region within this container just before the given index. </p>
 <p>The container is assumed to use a border layout; if it does not, equivalent to <a class="el" href="classGContainer.html#afffb8f789ff9a8466fbae5b846a0ebe7" title="Adds the given interactor to this container just before the given index. ">insert()</a>. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the index is out of bounds </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the index is out of bounds </td></tr>
   </table>
   </dd>
 </dl>
@@ -3622,7 +3699,7 @@ Protected Member Functions</h2></td></tr>
 <p>Adds the given interactor to the given layout region within this container just before the given index. </p>
 <p>The container is assumed to use a border layout; if it does not, equivalent to <a class="el" href="classGContainer.html#afffb8f789ff9a8466fbae5b846a0ebe7" title="Adds the given interactor to this container just before the given index. ">insert()</a>. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the index is out of bounds </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the index is out of bounds </td></tr>
   </table>
   </dd>
 </dl>
@@ -3834,7 +3911,7 @@ Protected Member Functions</h2></td></tr>
 <p>Returns true if the given interactor is found in the given region of this container, which is assumed to use a border layout. </p>
 <p>If the container does not use a border layout, equivalent to <a class="el" href="classGContainer.html#a29e67f98cd36414c67475b8941d861a6" title="Returns true if the given interactor is found in this container. ">contains()</a>. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the interactor is null </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the interactor is null </td></tr>
   </table>
   </dd>
 </dl>
@@ -3878,7 +3955,7 @@ Protected Member Functions</h2></td></tr>
 <p>Returns true if the given interactor is found in the given region of this container, which is assumed to use a border layout. </p>
 <p>If the container does not use a border layout, equivalent to <a class="el" href="classGContainer.html#a29e67f98cd36414c67475b8941d861a6" title="Returns true if the given interactor is found in this container. ">contains()</a>. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the interactor is null </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the interactor is null </td></tr>
   </table>
   </dd>
 </dl>
@@ -3990,7 +4067,7 @@ Protected Member Functions</h2></td></tr>
 <p>Removes the given interactor from this container. </p>
 <p>Works for any layout. If the given interactor is not found in this container, has no effect. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the interactor is null </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the interactor is null </td></tr>
   </table>
   </dd>
 </dl>
@@ -4053,7 +4130,7 @@ Protected Member Functions</h2></td></tr>
 <p>Removes the child interactor at the given 0-based index from this container. </p>
 <p>Works for any layout. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the index is out of bounds </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the index is out of bounds </td></tr>
   </table>
   </dd>
 </dl>
@@ -4153,7 +4230,7 @@ Protected Member Functions</h2></td></tr>
 <p>Removes the given interactor from the given region within this container, which is assumed to use a border layout. </p>
 <p>If the container does not use a border layout, equivalent to <a class="el" href="classGContainer.html#a1c12b1fde5c2ef10d79d4ee51e670efa" title="Removes the given interactor from this container. ">remove()</a>. If the given interactor is not found in the given region, has no effect. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the interactor is null </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the interactor is null </td></tr>
   </table>
   </dd>
 </dl>
@@ -4197,7 +4274,7 @@ Protected Member Functions</h2></td></tr>
 <p>Removes the given interactor from the given region within this container, which is assumed to use a border layout. </p>
 <p>If the container does not use a border layout, equivalent to <a class="el" href="classGContainer.html#a1c12b1fde5c2ef10d79d4ee51e670efa" title="Removes the given interactor from this container. ">remove()</a>. If the given interactor is not found in the given region, has no effect. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the interactor is null </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the interactor is null </td></tr>
   </table>
   </dd>
 </dl>
@@ -4319,7 +4396,7 @@ Protected Member Functions</h2></td></tr>
 <p>Removes the child interactor at the given 0-based index from the given region of this container, which is assumed to use a border layout. </p>
 <p>If the container does not use a border layout, has no effect. If the given interactor is not found in the given region, has no effect. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the index is out of bounds </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the index is out of bounds </td></tr>
   </table>
   </dd>
 </dl>
@@ -4363,7 +4440,7 @@ Protected Member Functions</h2></td></tr>
 <p>Removes the child interactor at the given 0-based index from the given region of this container, which is assumed to use a border layout. </p>
 <p>If the container does not use a border layout, has no effect. If the given interactor is not found in the given region, has no effect. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if the index is out of bounds </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the index is out of bounds </td></tr>
   </table>
   </dd>
 </dl>
@@ -5110,7 +5187,7 @@ Protected Member Functions</h2></td></tr>
 <p>Sets the onscreen height of the interactor in pixels. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if height is negative </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if height is negative </td></tr>
   </table>
   </dd>
 </dl>
@@ -5300,7 +5377,7 @@ Protected Member Functions</h2></td></tr>
 <p>Sets the minimum size in pixels that this interactor will permit itself to be resized to. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if width or height is negative </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if width or height is negative </td></tr>
   </table>
   </dd>
 </dl>
@@ -5334,7 +5411,7 @@ Protected Member Functions</h2></td></tr>
 <p>Sets the minimum size in pixels that this interactor will permit itself to be resized to. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if width or height is negative </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if width or height is negative </td></tr>
   </table>
   </dd>
 </dl>
@@ -6017,7 +6094,7 @@ Protected Member Functions</h2></td></tr>
 <p>Sets the onscreen width and height of the interactor in pixels. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if width or height is negative </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if width or height is negative </td></tr>
   </table>
   </dd>
 </dl>
@@ -6053,7 +6130,7 @@ Protected Member Functions</h2></td></tr>
 <p>Sets the onscreen width and height of the interactor in pixels. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if width or height is negative </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if width or height is negative </td></tr>
   </table>
   </dd>
 </dl>
@@ -6205,7 +6282,7 @@ Protected Member Functions</h2></td></tr>
 <p>Sets the onscreen width of the interactor in pixels. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classErrorException.html">ErrorException</a></td><td>if width is negative </td></tr>
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if width is negative </td></tr>
   </table>
   </dd>
 </dl>

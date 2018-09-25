@@ -35,6 +35,7 @@
  * - removed 'using namespace' statement
  */
 
+#define INTERNAL_INCLUDE 1
 #include "lexicon.h"
 #include <cctype>
 #include <cstdlib>
@@ -49,6 +50,7 @@
 #include "filelib.h"
 #include "hashcode.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 static bool scrub(std::string& str);
 

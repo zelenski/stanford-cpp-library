@@ -10,11 +10,13 @@
  * - removed unneeded include statements
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gtimer.h"
 #include "error.h"
 #include "gthread.h"
 #include "gwindow.h"
 #include "require.h"
+#undef INTERNAL_INCLUDE
 
 /* Implementation of the GTimer class */
 

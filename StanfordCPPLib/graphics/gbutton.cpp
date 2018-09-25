@@ -11,11 +11,13 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gbutton.h"
 #include <QKeySequence>
 #include "gthread.h"
 #include "gwindow.h"
 #include "require.h"
+#undef INTERNAL_INCLUDE
 
 GButton::GButton(const std::string& text, const std::string& iconFileName, QWidget* parent) {
     GThread::runOnQtGuiThread([this, parent]() {

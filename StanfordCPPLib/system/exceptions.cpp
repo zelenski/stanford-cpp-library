@@ -5,6 +5,8 @@
  * by student code on the console.
  * 
  * @author Marty Stepp
+ * @version 2018/09/25
+ * - modify setTopLevelExceptionHandlerEnabled to work better with threads
  * @version 2016/12/23
  * - added more function names for stack trace filtering (mainly thread stuff)
  * @version 2016/12/09
@@ -35,6 +37,7 @@
  * @since 2014/11/05
  */
 
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
 #include <csignal>
 #include <iomanip>
@@ -53,6 +56,7 @@
 #  undef MOUSE_MOVED
 #  undef HELP_KEY
 #endif
+#undef INTERNAL_INCLUDE
 
 // uncomment the definition below to use an alternative 'signal stack'
 // which helps in handling stack overflow errors
@@ -127,6 +131,11 @@ std::string cleanupFunctionNameForStackTrace(std::string function) {
     // addr2line oddly writes "const Foo&" as "Foo const&"
     stringReplaceInPlace(function, "string const&", "const string&");
 
+    // small patch for renamed main function
+    if (function == "_main_") {
+        function = "main";
+    }
+
     return function;
 }
 
@@ -177,11 +186,15 @@ LONG WINAPI UnhandledException(LPEXCEPTION_POINTERS exceptionInfo) {
 }
 #endif // _WIN32
 
-void setTopLevelExceptionHandlerEnabled(bool enabled) {
+void setTopLevelExceptionHandlerEnabled(bool enabled, bool force) {
     static void (* old_terminate)() = nullptr;
 
-    if (!STATIC_VARIABLE(topLevelExceptionHandlerEnabled) && enabled) {
-        old_terminate = std::set_terminate(stanfordCppLibTerminateHandler);
+    if ((!STATIC_VARIABLE(topLevelExceptionHandlerEnabled) || force) && enabled) {
+        if (!old_terminate) {
+            old_terminate = std::set_terminate(stanfordCppLibTerminateHandler);
+        } else {
+            std::set_terminate(stanfordCppLibTerminateHandler);
+        }
 #ifdef _WIN32
         // disabling this code for now because it messes with the
         // newly added uncaught signal handler
@@ -197,7 +210,7 @@ void setTopLevelExceptionHandlerEnabled(bool enabled) {
         
         // also set up a signal handler for things like segfaults / null-pointer-dereferences
         signalHandlerEnable();
-    } else if (STATIC_VARIABLE(topLevelExceptionHandlerEnabled) && !enabled) {
+    } else if ((STATIC_VARIABLE(topLevelExceptionHandlerEnabled) || force) && !enabled) {
         std::set_terminate(old_terminate);
     }
     STATIC_VARIABLE(topLevelExceptionHandlerEnabled) = enabled;
@@ -212,6 +225,7 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
     static const std::vector<std::string> FORBIDDEN_NAMES {
         "??",
         "_clone",
+        "__libc_start_main",
         "_start",
         "_Unwind_Resume",
         "error",
@@ -223,28 +237,31 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
     static const std::vector<std::string> FORBIDDEN_SUBSTRINGS {
         " error(",
         "_endthreadex",
-        "_Function_handler",
+        // "_Function_handler",
         "_Internal_",
-        "_M_invoke",
+        // "_M_invoke",
         "_sigtramp",
         "autograderMain"
         "BaseThreadInitThunk",
         "crtexe.c",
         "ErrorException::ErrorException",
-        "function::operator",
+        // "function::operator",
         "GetModuleFileName",
         "GetProfileString",
         "InitializeExceptionChain",
         "KnownExceptionFilter",
         "printStackTrace",
-        "QAbstractItemModel::",
-        "QAbstractProxyModel::",
+        // "QAbstractItemModel::",
+        // "QAbstractProxyModel::",
+        "QApplicationPrivate::",
         "QCoreApplication::",
+        "QGuiApplicationPrivate::",
         "QMetaMethod::",
         "QMetaObject::",
         "QObjectPrivate::",
-        "QWidget::",
+        // "QWidget::",
         "QWidgetBackingStore::",
+        "QWindowSystemInterface::",
         "shouldFilterOutFromStackTrace",
         "stacktrace::",
         "stanfordCppLibPosixSignalHandler",

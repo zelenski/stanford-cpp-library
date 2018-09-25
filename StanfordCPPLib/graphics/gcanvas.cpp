@@ -12,6 +12,7 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gcanvas.h"
 #include "gcolor.h"
 #include "gthread.h"
@@ -20,6 +21,7 @@
 #include "filelib.h"
 #include "require.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 #define CHAR_TO_HEX(ch) ((ch >= '0' && ch <= '9') ? (ch - '0') : (ch - 'a' + 10))
 

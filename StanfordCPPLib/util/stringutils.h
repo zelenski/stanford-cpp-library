@@ -19,6 +19,9 @@
 #include <string>
 #include "vector.h"
 
+/**
+ * @private
+ */
 namespace stringutils {
 int charsDifferent(const std::string& s1, const std::string& s2);
 std::string collapseSpaces(const std::string& s);

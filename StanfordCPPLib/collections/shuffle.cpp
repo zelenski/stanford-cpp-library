@@ -10,7 +10,9 @@
  * @since 2014/02/01
  */
 
+#define INTERNAL_INCLUDE 1
 #include "shuffle.h"
+#undef INTERNAL_INCLUDE
 
 /*
  * Randomly rearranges the characters of the given string and returns the

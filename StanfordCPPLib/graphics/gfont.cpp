@@ -13,6 +13,7 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gfont.h"
 #include <algorithm>
 #include <iomanip>
@@ -22,6 +23,7 @@
 #include "require.h"
 #include "strlib.h"
 #include "vector.h"
+#undef INTERNAL_INCLUDE
 
 GFont::GFont() {
     // empty

@@ -22,12 +22,14 @@
 /* along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 /*************************************************************************/
 
+#define INTERNAL_INCLUDE 1
 #include <iostream>
 #include <string>
 #include <pthread.h>
 #include "error.h"
 #include "map.h"
 #include "private/tplatform.h"
+#undef INTERNAL_INCLUDE
 
 #define __macosx__ 1
 #ifdef __macosx__

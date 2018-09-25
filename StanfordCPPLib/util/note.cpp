@@ -13,11 +13,13 @@
  * @since 2016/09/26
  */
 
+#define INTERNAL_INCLUDE 1
 #include "note.h"
 #include <sstream>
 #include "error.h"
 #include "gmath.h"
 #include "hashcode.h"
+#undef INTERNAL_INCLUDE
 
 // line e.g. "1.5 G 5 NATURAL false"
 Note::Note(std::string line) {

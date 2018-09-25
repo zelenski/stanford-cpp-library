@@ -3,6 +3,9 @@
  * -------------
  * This file exports a class representing an integer-valued <i>x</i>-<i>y</i>
  * pair.
+ *
+ * @version 2018/09/25
+ * - added doc comments for new documentation generation
  */
 
 #ifndef _point_h
@@ -12,9 +15,7 @@
 
 class GPoint;   // forward declaration
 
-/*
- * Class: Point
- * ------------
+/**
  * This class represents an <i>x</i>-<i>y</i> coordinate point on a
  * two-dimensional integer grid.  If you need to work with real-valued points,
  * you should use the <a href="gtypes.html"><code>gtypes.h</code></a>
@@ -22,61 +23,49 @@ class GPoint;   // forward declaration
  */
 class Point {
 public:
-    /*
-     * Constructor: Point
-     * Usage: Point origin;
-     *        Point pt(x, y);
-     * ----------------------
-     * Creates a <code>Point</code> object with the specified x and y coordinates.
-     * If the coordinates are not supplied, the default constructor sets these
-     * fields to 0.
+    /**
+     * Creates a <code>Point</code> object at (0, 0).
      */
     Point();
+
+    /**
+     * Creates a <code>Point</code> object with the specified x and y coordinates.
+     */
     Point(int x, int y);
+
+    /**
+     * Creates a <code>Point</code> object with the same x and y coordinates
+     * as the given other point.
+     */
     Point(const GPoint& point);
 
-    /*
-     * Method: getX
-     * Usage: int x = pt.getX();
-     * -------------------------
+    /**
      * Returns the <i>x</i>-coordinate of the point.
      */
     int getX() const;
 
-    /*
-     * Method: getY
-     * Usage: int y = pt.getY();
-     * -------------------------
+    /**
      * Returns the <i>y</i>-coordinate of the point.
      */
     int getY() const;
 
-    /*
-     * Method: toString
-     * Usage: string str = pt.toString();
-     * ----------------------------------
+    /**
      * Returns a string representation of the <code>Point</code> in the form
      * <code>"(x, y)"</code>.
      */
     std::string toString() const;
 
-    /*
-     * Friend operator: ==
-     * Usage: if (p1 == p2) ...
-     * ------------------------
+    /**
      * Returns <code>true</code> if <code>p1</code> and <code>p2</code>
      * are the same point.
      */
-    bool operator==(const Point & p2) const;
+    bool operator ==(const Point& p2) const;
 
-    /*
-     * Friend operator: !=
-     * Usage: if (p1 != p2) ...
-     * ------------------------
+    /**
      * Returns <code>true</code> if <code>p1</code> and <code>p2</code>
      * are different.
      */
-    bool operator!=(const Point & p2) const;
+    bool operator !=(const Point& p2) const;
 
     /* Private section */
 
@@ -86,21 +75,20 @@ public:
     /**********************************************************************/
 
 private:
-    /* Instance variables */
-    int x;                         /* The x-coordinate of the point */
-    int y;                         /* The y-coordinate of the point */
+    // instance variables
+    int x;                         // the x-coordinate of the point
+    int y;                         // the y-coordinate of the point
 };
 
-/*
- * Operator: <<
- * Usage: cout << pt;
- * ------------------
+/**
  * Overloads the <code>&lt;&lt;</code> operator so that it is able
  * to display <code>Point</code> values.
  */
 std::ostream& operator <<(std::ostream& os, const Point& pt);
 
-// hash code function for Point objects
+/**
+ * Hash code function for Point objects.
+ */
 int hashCode(const Point& pt);
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

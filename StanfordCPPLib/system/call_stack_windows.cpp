@@ -17,6 +17,7 @@
  * @version 2015/05/28
  */
 
+#define INTERNAL_INCLUDE 1
 #ifdef _WIN32
 #include "call_stack.h"
 #include <windows.h>
@@ -46,6 +47,7 @@
 #include "strlib.h"
 #include <cxxabi.h>
 #include "private/static.h"
+#undef INTERNAL_INCLUDE
 
 namespace stacktrace {
 STATIC_CONST_VARIABLE_DECLARE(int, STACK_FRAMES_TO_SKIP, 0)

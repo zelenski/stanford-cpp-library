@@ -4,7 +4,9 @@
  * @version 2015/08/10
  */
 
+#define INTERNAL_INCLUDE 1
 #include "types.h"
+#undef INTERNAL_INCLUDE
 
 Domino::Domino(int f, int s) {
     first = f;

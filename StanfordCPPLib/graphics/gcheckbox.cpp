@@ -11,11 +11,13 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gcheckbox.h"
 #include "gthread.h"
 #include "gwindow.h"
 #include "require.h"
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 GCheckBox::GCheckBox(const std::string& text, bool checked, QWidget* parent) {
     GThread::runOnQtGuiThread([this, checked, parent]() {
