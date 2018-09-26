@@ -7,8 +7,6 @@
 //#include "console.h"
 
 int main() {
-    std::cout << "main!" << std::endl;
-
 //    extern int mainQt2dGraphics();
 //    return mainQt2dGraphics();
 //    extern int mainQtLayout();

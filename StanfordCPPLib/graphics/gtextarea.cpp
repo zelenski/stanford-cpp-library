@@ -53,7 +53,9 @@ void GTextArea::appendFormattedText(const std::string& text, const std::string& 
         format.setForeground(QBrush(GColor::convertColorToRGB(color)));
     }
     if (!font.empty()) {
-        format.setFont(GFont::toQFont(_iqtextedit->font(), font));
+        // carry over only the font's weight, not size/face
+        QFont qfont = GFont::toQFont(_iqtextedit->font(), font);
+        format.setFontWeight(qfont.weight());
     }
 
     QTextCursor cursor = _iqtextedit->textCursor();

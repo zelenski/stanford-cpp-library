@@ -957,6 +957,17 @@ void GConsoleWindow::processUserInputKey(int key) {
                 QTextEdit* textArea = static_cast<QTextEdit*>(this->_textArea->getWidget());
                 QTextCursor cursor(textArea->textCursor());
 
+                // BUGFIX: if there is any selected text, remove it first
+                int fragStart = frag.position();
+                int selectionStart = cursor.selectionStart() - fragStart;
+                int selectionEnd = cursor.selectionEnd() - fragStart;
+                if (selectionEnd > selectionStart
+                        && selectionStart >= 0
+                        && selectionEnd <= (int) _inputBuffer.length()) {
+                    cursor.removeSelectedText();
+                    _inputBuffer.erase(selectionStart, selectionEnd - selectionStart);
+                }
+
                 int cursorPosition = cursor.position();
                 int indexToInsert = cursorPosition - frag.position();
                 if (indexToInsert == 0) {
@@ -977,6 +988,7 @@ void GConsoleWindow::processUserInputKey(int key) {
                     //  ^
                     //   ^          move right by 1
                     cursor.beginEditBlock();
+
                     cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, 1);             // move to index 1
                     cursor.insertText(QString::fromStdString(keyStr + _inputBuffer.substr(0, 1)));   // insert new char + old first char
                     cursor.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, 2);              // delete old copy of first char
