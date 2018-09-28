@@ -428,6 +428,11 @@ CONFIG(debug, debug|release) {
             QMAKE_LFLAGS += -rdynamic
         }
     }
+    unix:macx {
+        equals(COMPILERNAME, clang++) {
+            QMAKE_LFLAGS += -rdynamic
+        }
+    }
 
     # print details about uncaught exceptions with red error text / stack trace
     DEFINES += SPL_CONSOLE_PRINT_EXCEPTIONS

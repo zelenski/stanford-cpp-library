@@ -382,7 +382,15 @@ void printStackTrace(std::ostream& out) {
             if (lineStr == "?? ??:0") {
                 lineStr = "(unknown)";
             }
-        } else if (entry.line > 0) {
+
+            if (entry.line == 0 && stringContains(lineStr, ":")) {
+                Vector<std::string> tokens = stringSplit(lineStr, ":");
+                if (stringIsInteger(tokens[tokens.size() - 1])) {
+                    entry.line = stringToInteger(tokens[tokens.size() - 1]);
+                }
+            }
+        }
+        if (entry.lineStr.empty() && entry.line > 0) {
             lineStr = "line " + integerToString(entry.line);
         }
         
