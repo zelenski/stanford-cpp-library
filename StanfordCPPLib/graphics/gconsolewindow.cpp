@@ -4,6 +4,8 @@
  * This file implements the gconsolewindow.h interface.
  *
  * @author Marty Stepp
+ * @version 2018/09/27
+ * - bug fix for printing strings with line breaks (remove \r, favor \n)
  * @version 2018/09/23
  * - added getFont
  * - bug fix for loading input scripts
@@ -380,7 +382,7 @@ void GConsoleWindow::compareOutput(const std::string& filename) {
 }
 
 std::string GConsoleWindow::getAllOutput() const {
-    GConsoleWindow* thisHack = (GConsoleWindow*) this;
+    GConsoleWindow* thisHack = const_cast<GConsoleWindow*>(this);
     thisHack->_coutMutex.lock();
     std::string allOutput = thisHack->_allOutputBuffer.str();
     thisHack->_coutMutex.unlock();
@@ -569,9 +571,13 @@ void GConsoleWindow::loadInputScript(int number) {
 
     if (!inputFile.empty()) {
         loadInputScript(inputFile);
+        pause(500);
     }
     if (!expectedOutputFile.empty()) {
-        compareOutput(expectedOutputFile);
+        GThread::runInNewThreadAsync([this, expectedOutputFile]() {
+            pause(500);
+            compareOutput(expectedOutputFile);
+        });
     }
 }
 
@@ -604,10 +610,16 @@ void GConsoleWindow::print(const std::string& str, bool isStdErr) {
             fflush(isStdErr ? stdout : stderr);
         }
     }
-    GThread::runOnQtGuiThreadAsync([this, str, isStdErr]() {
+
+    // clean up line breaks (remove \r)
+    std::string strToPrint = str;
+    stringReplaceInPlace(strToPrint, "\r\n", "\n");
+    stringReplaceInPlace(strToPrint, "\r", "\n");
+
+    GThread::runOnQtGuiThreadAsync([this, strToPrint, isStdErr]() {
         _coutMutex.lock();
-        _allOutputBuffer << str;
-        this->_textArea->appendFormattedText(str, isStdErr ? getErrorColor() : getOutputColor());
+        _allOutputBuffer << strToPrint;
+        this->_textArea->appendFormattedText(strToPrint, isStdErr ? getErrorColor() : getOutputColor());
         this->_textArea->moveCursorToEnd();
         this->_textArea->scrollToBottom();
         _coutMutex.unlock();

@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
 }
 // keep in sync with definition in .pro file
 #ifdef REPLACE_MAIN_FUNCTION
-#define main _main_
+#define main qMain
 #endif // REPLACE_MAIN_FUNCTION
 #endif // QT_NEEDS_QMAIN
 
@@ -54,7 +54,7 @@ int qMain(int argc, char** argv) {
     ///                                                                    ///
     /// int main() { ... }                                                 ///
     ///                                                                    ///
-    /// (Our library secretly renames your main function to "_main_"       ///
+    /// (Our library secretly renames your main function to "qMain"        ///
     ///  so that we can actually control the main flow of execution.)      ///
     ///                                                                    ///
     /// You may also need to include a .h header from the Stanford         ///

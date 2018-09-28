@@ -5,6 +5,8 @@
  * by student code on the console.
  * 
  * @author Marty Stepp
+ * @version 2018/09/27
+ * - bug fixes to print better stack traces when used with threads
  * @version 2018/09/25
  * - modify setTopLevelExceptionHandlerEnabled to work better with threads
  * @version 2016/12/23
@@ -92,6 +94,7 @@ std::string cleanupFunctionNameForStackTrace(std::string function) {
     stringReplaceInPlace(function, "std::", "");
     stringReplaceInPlace(function, "__cxx11::", "");
     stringReplaceInPlace(function, "__cxxabi::", "");
+    stringReplaceInPlace(function, "__cxxabiv1::", "");
     stringReplaceInPlace(function, "[abi:cxx11]", "");
     stringReplaceInPlace(function, "__1::", "");   // on Mac
 
@@ -225,31 +228,36 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
     static const std::vector<std::string> FORBIDDEN_NAMES {
         "??",
         "_clone",
+        "clone",
+        "error",
+        "error(const string&)",
+        "error(string)",
         "__libc_start_main",
         "_start",
-        "_Unwind_Resume",
-        "error",
-        "error(string)",
-        "startupMain(int, char**)"
+        "startupMain(int, char**)",
+        "_Unwind_Resume"
     };
 
     // substrings to filter (don't show any func whose name contains these)
     static const std::vector<std::string> FORBIDDEN_SUBSTRINGS {
         " error(",
+        "__cxa_rethrow",
         "_endthreadex",
-        // "_Function_handler",
+        "_Function_handler",
         "_Internal_",
-        // "_M_invoke",
+        "_M_invoke",
         "_sigtramp",
         "autograderMain"
         "BaseThreadInitThunk",
         "crtexe.c",
         "ErrorException::ErrorException",
-        // "function::operator",
+        "function::operator",
         "GetModuleFileName",
         "GetProfileString",
         "InitializeExceptionChain",
         "KnownExceptionFilter",
+        "M_invoke",
+        "operator",
         "printStackTrace",
         // "QAbstractItemModel::",
         // "QAbstractProxyModel::",
@@ -360,6 +368,11 @@ void printStackTrace(std::ostream& out) {
 
         // fix main to hide int/char**
         if (entry.function == "main(int, char**)") {
+            entry.function = "main()";
+        }
+
+        // fix qMain => main to hide Qt main renaming
+        if (entry.function == "qMain()") {
             entry.function = "main()";
         }
 
@@ -563,12 +576,11 @@ static void stanfordCppLibTerminateHandler() {
         signalHandlerDisable();   // don't want both a signal AND a terminate() call
         throw;   // re-throws the exception that already occurred
     } catch (const ErrorException& ex) {
-        FILL_IN_EXCEPTION_TRACE(ex, "An ErrorException", insertStarsBeforeEachLine(ex.what()));
-    } catch (const InterruptedIOException& /* iex */) {
-        // blocked console I/O was interrupted; just exit program immediately
-        // (doesn't close any other JBE-generated GUI windows, but oh well)
-        std::cout.flush();
-        std::exit(0);
+        if (ex.hasStackTrace()) {
+            ex.dump();
+        } else {
+            FILL_IN_EXCEPTION_TRACE(ex, "An ErrorException", insertStarsBeforeEachLine(ex.what()));
+        }
     } catch (const std::exception& ex) {
         FILL_IN_EXCEPTION_TRACE(ex, "A C++ exception", insertStarsBeforeEachLine(ex.what()));
     } catch (std::string str) {

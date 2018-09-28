@@ -18,6 +18,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2018/09/28
+# - simplify/improve resource-file-copying logic
 # @version 2018/09/25
 # - flags to rename main function and other linker fixes
 # @version 2018/09/23
@@ -276,11 +278,10 @@ exists($$PWD/output/*) {
 # set up flags for the C++ compiler
 # (In general, many warnings/errors are enabled to tighten compile-time checking.
 # A few overly pedantic/confusing errors are turned off for simplicity.)
-CONFIG += no_include_pwd   # make sure we do not accidentally #include files placed in 'resources'
-#CONFIG += warn_off         # turn off default -Wall (we will add it back ourselves)
-CONFIG -= c++11            # turn off default -std=gnu++11
+CONFIG += no_include_pwd         # make sure we do not accidentally #include files placed in 'resources'
+CONFIG += sdk_no_version_check   # removes spurious warnings on Mac OS X
+CONFIG -= c++11                  # turn off default -std=gnu++11
 CONFIG += c++11
-#CONFIG += nocache
 
 QMAKE_CXXFLAGS += -Wall
 QMAKE_CXXFLAGS += -Wextra
@@ -354,12 +355,12 @@ equals(COMPILERNAME, clang++) {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20180925
+DEFINES += SPL_PROJECT_VERSION=20180928
 
 # wrapper name for 'main' function (needed so student can write 'int main'
 # but our library can grab the actual main function to initialize itself)
 DEFINES += REPLACE_MAIN_FUNCTION=1
-DEFINES += main=_main_
+DEFINES += main=qMain
 
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1
@@ -417,10 +418,15 @@ CONFIG(debug, debug|release) {
     QMAKE_CXXFLAGS += -fno-inline
     QMAKE_CXXFLAGS += -fno-omit-frame-pointer
 
-    #unix:!macx
-    unix-g++ {
+    unix:!macx {
         QMAKE_CXXFLAGS += -rdynamic
-        QMAKE_LFLAGS += -Wl,--export-dynamic
+        equals(COMPILERNAME, g++) {
+            # on Linux g++, these flags help us gather line numbers for stack traces
+            QMAKE_CXXFLAGS += -export-dynamic
+            QMAKE_CXXFLAGS += -Wl,--export-dynamic
+            QMAKE_LFLAGS += -export-dynamic
+            QMAKE_LFLAGS += -rdynamic
+        }
     }
 
     # print details about uncaught exceptions with red error text / stack trace
@@ -456,7 +462,7 @@ CONFIG(release, debug|release) {
         REMOVE_DIRS ~= s,/,\\,g
         REMOVE_FILES ~= s,/,\\,g
 
-        QMAKE_LFLAGS += -static
+        #QMAKE_LFLAGS += -static
         QMAKE_LFLAGS += -static-libgcc
         QMAKE_LFLAGS += -static-libstdc++
         QMAKE_POST_LINK += copy '"'$${TARGET_PATH}'"' '"'$${OUT_PATH}'"'
@@ -472,76 +478,38 @@ CONFIG(release, debug|release) {
 # BEGIN SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING            #
 ###############################################################################
 
-# This function copies the given files to the destination directory.
-# Used to place important resources from res/ into build/ folder.
-defineTest(copyToDestdir) {
-    files = $$1
-    for(FILE, files) {
-        DDIR = $$OUT_PWD
-        win32 {
-            # Replace slashes in paths with backslashes for Windows
-            FILE ~= s,/,\\,g
-            DDIR ~= s,/,\\,g
-            copyResources.commands += xcopy /s /q /y /i '"'$$FILE'"' '"'$$DDIR'"' $$escape_expand(\\n\\t\\n\\t)
-        } else {
-            # Mac/Linux
-            copyResources.commands += cp -rf '"'$$FILE'"' '"'$$DDIR'"' $$escape_expand(\\n\\t\\n\\t)
-        }
-    }
-    export(copyResources.commands)
+# copy res/* to root of build directory (input files, etc.)
+exists($$PWD/res/*) {
+    COPY_RESOURCE_FILES_INPUT = $$PWD/lib/addr2line.exe $$PWD/res/*
+    copy_resource_files.name = Copy resource files to the build directory
+    copy_resource_files.commands = ${COPY_FILE} ${QMAKE_FILE_IN} ${QMAKE_FILE_OUT}
+    copy_resource_files.input = COPY_RESOURCE_FILES_INPUT
+    copy_resource_files.output = $${OUT_PWD}/${QMAKE_FILE_BASE}${QMAKE_FILE_EXT}
+    copy_resource_files.CONFIG = no_link target_predeps
+    QMAKE_EXTRA_COMPILERS += copy_resource_files
 }
 
-# specify files to copy on non-Windows systems
-!win32 {
-    copyToDestdir($$files($$PWD/res/*))
-    exists($$PWD/*.txt) {
-        copyToDestdir($$files($$PWD/*.txt))
-    }
-}
-
-# specify files to copy on Windows systems
-win32 {
-    copyToDestdir($$PWD/res)
-    copyToDestdir($$PWD/lib/addr2line.exe)
-    exists($$PWD/*.txt) {
-        copyToDestdir($$PWD/*.txt)
-    }
-}
-
-# copy output/ dir to an output/ subdir of the build directory
-exists($$PWD/output/*) {
-    PROJECTOUTDIR = $$PWD/output
-    BUILDOUTDIR = $$OUT_PWD
-    win32 {
-        # on windows, must change / to \ in paths,
-        # and include \output at end of dest dir
-        PROJECTOUTDIR ~= s,/,\\,g
-        BUILDOUTDIR = $$OUT_PWD/output
-        BUILDOUTDIR ~= s,/,\\,g
-    }
-    copydata.commands = $(COPY_DIR) '"'$$PROJECTOUTDIR'"' '"'$$BUILDOUTDIR'"'
-    first.depends = $(first) copydata
-    export(first.depends)
-    export(copydata.commands)
-}
-
-# copy support files such as addr2line
-win32 {
-    copyResources.input *= $$files($$PWD/lib/addr2line.exe)
-}
-copyResources.input *= $$files($$PWD/res/*)
-exists($$PWD/*.txt) {
-    copyResources.input *= $$files($$PWD/*.txt)
-}
+# copy input/* to input/ subfolder of build directory (console input scripts)
 exists($$PWD/input/*) {
-    copyResources.input *= $$files(input/*)
-}
-exists($$PWD/output/*) {
-    copyResources.input *= $$files(output/*)
+    COPY_INPUT_FILES_INPUT = $$PWD/input/
+    copy_input_files.name = Copy input directory to the build directory
+    copy_input_files.commands = ${COPY_DIR} ${QMAKE_FILE_IN} '"'$${OUT_PWD}'"'
+    copy_input_files.input = COPY_INPUT_FILES_INPUT
+    copy_input_files.output = $${OUT_PWD}/${QMAKE_FILE_BASE}${QMAKE_FILE_EXT}
+    copy_input_files.CONFIG = no_link no_clean target_predeps
+    QMAKE_EXTRA_COMPILERS += copy_input_files
 }
 
-QMAKE_EXTRA_TARGETS += copyResources first copydata
-POST_TARGETDEPS += copyResources
+# copy output/* to output/ subfolder of build directory (console expected output logs)
+exists($$PWD/output/*) {
+    COPY_OUTPUT_FILES_INPUT = $$PWD/output/
+    copy_output_files.name = Copy output directory to the build directory
+    copy_output_files.commands = ${COPY_DIR} ${QMAKE_FILE_IN} '"'$${OUT_PWD}'"'
+    copy_output_files.input = COPY_OUTPUT_FILES_INPUT
+    copy_output_files.output = $${OUT_PWD}/${QMAKE_FILE_BASE}${QMAKE_FILE_EXT}
+    copy_output_files.CONFIG = no_link no_clean target_predeps
+    QMAKE_EXTRA_COMPILERS += copy_output_files
+}
 
 ###############################################################################
 # END SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING              #
@@ -554,6 +522,28 @@ POST_TARGETDEPS += copyResources
 
 # settings specific to CS 106 B/X auto-grading programs; do not modify
 exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
+    # This function copies the given files to the destination directory.
+    # Used to place important resources from res/ into build/ folder.
+    defineTest(copyToDestdir) {
+        files = $$1
+        for(FILE, files) {
+            DDIR = $$OUT_PWD
+            win32 {
+                # Replace slashes in paths with backslashes for Windows
+                FILE ~= s,/,\\,g
+                DDIR ~= s,/,\\,g
+                copyResources.commands += xcopy /s /q /y /i '"'$$FILE'"' '"'$$DDIR'"' $$escape_expand(\\n\\t\\n\\t)
+            } else {
+                # Mac/Linux
+                copyResources.commands += cp -rf '"'$$FILE'"' '"'$$DDIR'"' $$escape_expand(\\n\\t\\n\\t)
+            }
+        }
+        export(copyResources.commands)
+    }
+
+    QMAKE_EXTRA_TARGETS += copyResources first copydata
+    POST_TARGETDEPS += copyResources
+
     # include the various autograder source code and libraries in the build process
     SOURCES *= $$files($$PWD/lib/autograder/*.cpp)
     exists($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp) {
@@ -620,4 +610,4 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #623; if not, your .pro has been changed!)
+# END OF FILE (this should be line #610; if not, your .pro has been changed!)

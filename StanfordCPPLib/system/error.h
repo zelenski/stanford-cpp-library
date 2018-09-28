@@ -47,13 +47,21 @@ class ErrorException : public std::exception {
 public:
     ErrorException(std::string msg);
     virtual ~ErrorException() throw ();
+    virtual void dump() const;
+    virtual void dump(std::ostream& out) const;
     virtual std::string getMessage() const;
     virtual std::string getStackTrace() const;
+    virtual bool hasStackTrace() const;
     virtual const char* what() const throw ();
 
+protected:
+    void setStackTrace(const std::string& stackTrace);
+
 private:
-    std::string msg;
-    std::string stackTrace;
+    std::string _msg;
+    std::string _stackTrace;
+
+    static std::string insertStarsBeforeEachLine(const std::string& s);
 };
 
 /**
@@ -61,14 +69,7 @@ private:
  */
 std::ostream& operator <<(std::ostream& out, const ErrorException& ex);
 
-/**
- * Thrown when a blocking I/O call is interrupted by closing the program.
- */
-class InterruptedIOException : public std::exception {
-    // empty
-};
-
-// TODO: use [[noreturn]] to indicate that function does not ever return
+// TODO: use [[noreturn]] or Q_NO_RETURN to indicate that function does not ever return
 // (added in c++11; still incompatible with some compilers?)
 
 /**

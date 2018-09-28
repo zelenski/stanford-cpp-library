@@ -24,7 +24,6 @@
 #endif // INTERNAL_INCLUDE
 
 #include <string>
-#include <QApplication>
 #include <QWindow>
 #include <QCloseEvent>
 #include <QEvent>

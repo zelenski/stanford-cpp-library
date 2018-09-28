@@ -9,7 +9,7 @@
  * - The student uses any of the graphical classes based on Qt.
  *
  * We initialize the library by inserting a main function that wraps around
- * the student's main (renaming theirs to _main_).
+ * the student's main (renaming theirs to qMain).
  *
  * @version 2018/09/25
  * - initial version
@@ -22,7 +22,7 @@
 #define _initstudent_h
 #ifndef QT_NEEDS_QMAIN
 #ifdef REPLACE_MAIN_FUNCTION
-#define main _main_
+#define main qMain
 #endif // REPLACE_MAIN_FUNCTION
 #endif // QT_NEEDS_QMAIN
 

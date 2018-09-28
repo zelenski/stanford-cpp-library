@@ -20,9 +20,13 @@ int mainQtWidgets() {
     return 0;
 }
 
-void b() {
+void c() {
     Vector<int> v;
     v[5];   // will crash
+}
+
+void b() {
+    c();
 }
 
 void a() {
@@ -260,7 +264,10 @@ void testQwindow() {
 //        cout << "event: " << event << endl;
 //    }
 
-    // error("OOOOOOOOOOPS");
+    a();
+
+//    int* x = nullptr;
+//    (*x)++;   // boom
 }
 
 void testDiffImage() {

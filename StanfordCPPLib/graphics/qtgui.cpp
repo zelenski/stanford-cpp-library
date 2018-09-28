@@ -29,9 +29,28 @@
 
 #undef INTERNAL_INCLUDE
 
+// QSPLApplication members
+QSPLApplication::QSPLApplication(int& argc, char *argv[])
+        : QApplication(argc, argv) {
+    // empty
+}
+
+bool QSPLApplication::notify(QObject* receiver, QEvent* e) {
+#if defined(SPL_CONSOLE_PRINT_EXCEPTIONS)
+    try {
+        return QApplication::notify(receiver, e);
+    } catch (ErrorException& ex) {
+        ex.dump();
+        return false;
+    }
+#else
+    return QApplication::notify(receiver, e);   // call super
+#endif
+}
+
 
 // QtGui members
-QApplication* QtGui::_app = nullptr;
+QSPLApplication* QtGui::_app = nullptr;
 QtGui* QtGui::_instance = nullptr;
 
 QtGui::QtGui()
@@ -53,7 +72,7 @@ void QtGui::exitGraphics(int exitCode) {
     }
 }
 
-QApplication* QtGui::getApplication() {
+QSPLApplication* QtGui::getApplication() {
     return _app;
 }
 
@@ -81,7 +100,7 @@ void QtGui::initializeQt() {
                     "      %{backtrace depth=20 separator=\"\n      \"}"
 #endif // _WIN32
             );
-            _app = new QApplication(_argc, _argv);
+            _app = new QSPLApplication(_argc, _argv);
             _initialized = true;
         }
     });
