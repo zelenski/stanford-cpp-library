@@ -382,6 +382,7 @@ public:
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
 public slots:
+    void handleScroll(int value);
     void handleTextChange();
 
 private:

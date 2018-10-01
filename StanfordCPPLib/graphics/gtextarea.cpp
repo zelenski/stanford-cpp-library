@@ -369,6 +369,7 @@ _Internal_QTextEdit::_Internal_QTextEdit(GTextArea* gtextArea, QWidget* parent)
     setTabChangesFocus(false);
     document()->setUndoRedoEnabled(false);
     connect(this, SIGNAL(textChanged()), this, SLOT(handleTextChange()));
+    connect(this->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(handleScroll(int)));
 }
 
 void _Internal_QTextEdit::contextMenuEvent(QContextMenuEvent* event) {
@@ -379,19 +380,34 @@ void _Internal_QTextEdit::contextMenuEvent(QContextMenuEvent* event) {
     }
 }
 
+void _Internal_QTextEdit::handleScroll(int value) {
+    if (_gtextarea && _gtextarea->isAcceptingEvent("scroll")) {
+        GEvent scrollEvent(
+                    /* class  */ SCROLL_EVENT,
+                    /* type   */ SCROLL_SCROLLED,
+                    /* name   */ "scroll",
+                    /* source */ _gtextarea);
+        scrollEvent.setActionCommand(_gtextarea->getActionCommand());
+        scrollEvent.setY(value);   // approximate
+        _gtextarea->fireEvent(scrollEvent);
+    }
+}
+
 void _Internal_QTextEdit::handleTextChange() {
-    GEvent textChangeEvent(
-                /* class  */ KEY_EVENT,
-                /* type   */ KEY_TYPED,
-                /* name   */ "textchange",
-                /* source */ _gtextarea);
-    textChangeEvent.setActionCommand(_gtextarea->getActionCommand());
-    _gtextarea->fireEvent(textChangeEvent);
+    if (_gtextarea && _gtextarea->isAcceptingEvent("textchange")) {
+        GEvent textChangeEvent(
+                    /* class  */ KEY_EVENT,
+                    /* type   */ KEY_TYPED,
+                    /* name   */ "textchange",
+                    /* source */ _gtextarea);
+        textChangeEvent.setActionCommand(_gtextarea->getActionCommand());
+        _gtextarea->fireEvent(textChangeEvent);
+    }
 }
 
 void _Internal_QTextEdit::keyPressEvent(QKeyEvent* event) {
     require::nonNull(event, "_Internal_QTextEdit::keyPressEvent", "event");
-    if (_gtextarea->isAcceptingEvent("keypress")) {
+    if (_gtextarea && _gtextarea->isAcceptingEvent("keypress")) {
         event->accept();
         _gtextarea->fireGEvent(event, KEY_PRESSED, "keypress");
         if (event->isAccepted()) {
@@ -404,7 +420,7 @@ void _Internal_QTextEdit::keyPressEvent(QKeyEvent* event) {
 
 void _Internal_QTextEdit::keyReleaseEvent(QKeyEvent* event) {
     require::nonNull(event, "_Internal_QTextEdit::keyPressEvent", "event");
-    if (_gtextarea->isAcceptingEvent("keyrelease")) {
+    if (_gtextarea && _gtextarea->isAcceptingEvent("keyrelease")) {
         event->accept();
         _gtextarea->fireGEvent(event, KEY_RELEASED, "keyrelease");
         if (event->isAccepted()) {
@@ -430,7 +446,7 @@ void _Internal_QTextEdit::mousePressEvent(QMouseEvent* event) {
 
 void _Internal_QTextEdit::mouseReleaseEvent(QMouseEvent* event) {
     require::nonNull(event, "_Internal_QTextEdit::mouseReleaseEvent", "event");
-    if (_gtextarea->isAcceptingEvent("mouserelease")) {
+    if (_gtextarea && _gtextarea->isAcceptingEvent("mouserelease")) {
         event->accept();
         _gtextarea->fireGEvent(event, MOUSE_RELEASED, "mouserelease");
         if (event->isAccepted()) {

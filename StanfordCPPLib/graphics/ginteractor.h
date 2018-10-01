@@ -32,6 +32,7 @@
 #include "gtypes.h"
 
 class GContainer;
+class GDiffGui;
 class GWindow;
 class _Internal_QWidget;
 
@@ -635,6 +636,7 @@ protected:
     virtual void unlockConst() const;
 
     friend class GContainer;
+    friend class GDiffGui;
     friend class GWindow;
     friend class _Internal_QWidget;
 
@@ -653,6 +655,7 @@ private:
 class _Internal_QWidget {
 public:
     _Internal_QWidget();
+    virtual ~_Internal_QWidget();
     virtual QSize getMinimumSize() const;
     virtual bool hasMinimumSize() const;
     virtual QSize getPreferredSize() const;

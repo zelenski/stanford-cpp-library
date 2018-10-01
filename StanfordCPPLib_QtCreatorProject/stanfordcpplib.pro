@@ -18,8 +18,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
-# @version 2018/09/28
-# - simplify/improve resource-file-copying logic
+# @version 2018/09/29
+# - simplify/improve resource-file-copying logic (with Windows fixes)
 # @version 2018/09/25
 # - flags to rename main function and other linker fixes
 # @version 2018/09/23
@@ -255,7 +255,9 @@ exists($$PWD/src/test/*.h) {
 }
 
 # directories listed as "Other files" in left Project pane of Qt Creator
-OTHER_FILES *= res/*
+exists($$PWD/res/*) {
+    OTHER_FILES *= $$files($$PWD/res/*)
+}
 exists($$PWD/*.txt) {
     OTHER_FILES *= $$files($$PWD/*.txt)
 }
@@ -355,7 +357,7 @@ equals(COMPILERNAME, clang++) {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20180928
+DEFINES += SPL_PROJECT_VERSION=20180929
 
 # wrapper name for 'main' function (needed so student can write 'int main'
 # but our library can grab the actual main function to initialize itself)
@@ -484,37 +486,37 @@ CONFIG(release, debug|release) {
 ###############################################################################
 
 # copy res/* to root of build directory (input files, etc.)
+COPY_RESOURCE_FILES_INPUT = ""
+win32 {
+    exists($$PWD/lib/addr2line.exe) {
+        COPY_RESOURCE_FILES_INPUT += $$PWD/lib/addr2line.exe
+    }
+}
 exists($$PWD/res/*) {
-    COPY_RESOURCE_FILES_INPUT = $$PWD/lib/addr2line.exe $$PWD/res/*
-    copy_resource_files.name = Copy resource files to the build directory
-    copy_resource_files.commands = ${COPY_FILE} ${QMAKE_FILE_IN} ${QMAKE_FILE_OUT}
-    copy_resource_files.input = COPY_RESOURCE_FILES_INPUT
-    copy_resource_files.output = $${OUT_PWD}/${QMAKE_FILE_BASE}${QMAKE_FILE_EXT}
-    copy_resource_files.CONFIG = no_link target_predeps
-    QMAKE_EXTRA_COMPILERS += copy_resource_files
+    COPY_RESOURCE_FILES_INPUT += $$PWD/res/*
 }
-
-# copy input/* to input/ subfolder of build directory (console input scripts)
 exists($$PWD/input/*) {
-    COPY_INPUT_FILES_INPUT = $$PWD/input/
-    copy_input_files.name = Copy input directory to the build directory
-    copy_input_files.commands = ${COPY_DIR} ${QMAKE_FILE_IN} '"'$${OUT_PWD}'"'
-    copy_input_files.input = COPY_INPUT_FILES_INPUT
-    copy_input_files.output = $${OUT_PWD}/${QMAKE_FILE_BASE}${QMAKE_FILE_EXT}
-    copy_input_files.CONFIG = no_link no_clean target_predeps
-    QMAKE_EXTRA_COMPILERS += copy_input_files
+    COPY_RESOURCE_FILES_INPUT += $$PWD/input
+}
+exists($$PWD/output/*) {
+    COPY_RESOURCE_FILES_INPUT += $$PWD/output
 }
 
-# copy output/* to output/ subfolder of build directory (console expected output logs)
-exists($$PWD/output/*) {
-    COPY_OUTPUT_FILES_INPUT = $$PWD/output/
-    copy_output_files.name = Copy output directory to the build directory
-    copy_output_files.commands = ${COPY_DIR} ${QMAKE_FILE_IN} '"'$${OUT_PWD}'"'
-    copy_output_files.input = COPY_OUTPUT_FILES_INPUT
-    copy_output_files.output = $${OUT_PWD}/${QMAKE_FILE_BASE}${QMAKE_FILE_EXT}
-    copy_output_files.CONFIG = no_link no_clean target_predeps
-    QMAKE_EXTRA_COMPILERS += copy_output_files
+copy_resource_files.name = Copy resource files to the build directory
+win32 {
+    # https://support.microsoft.com/en-us/help/289483/switches-that-you-can-use-with-xcopy-and-xcopy32-commands
+    # /s - copy subfolders
+    # /q - quiet (no verbose output)
+    # /y - overwrite without prompting
+    # /i - if destination does not exist and copying more than one file, assumes destination is a folder
+    copy_resource_files.commands = xcopy /s /q /y /i ${QMAKE_FILE_IN}
+} else {
+    copy_resource_files.commands = cp -rf ${QMAKE_FILE_IN} .
 }
+copy_resource_files.input = COPY_RESOURCE_FILES_INPUT
+copy_resource_files.output = $${OUT_PWD}/${QMAKE_FILE_BASE}${QMAKE_FILE_EXT}
+copy_resource_files.CONFIG = no_link no_clean target_predeps
+QMAKE_EXTRA_COMPILERS += copy_resource_files
 
 ###############################################################################
 # END SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING              #
@@ -615,4 +617,4 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #610; if not, your .pro has been changed!)
+# END OF FILE (this should be line #620; if not, your .pro has been changed!)

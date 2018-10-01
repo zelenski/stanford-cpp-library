@@ -43,6 +43,11 @@ public:
                            bool showCheckBoxes = false);
 
 private:
+    static const bool LINE_NUMBERS;
+    static const std::string COLOR_EXPECTED;
+    static const std::string COLOR_LINE_NUMBERS;
+    static const std::string COLOR_STUDENT;
+
     GDiffGui(const std::string& name1,
              const std::string& text1,
              const std::string& name2,
@@ -51,6 +56,10 @@ private:
     virtual ~GDiffGui();
 
     Q_DISABLE_COPY(GDiffGui)
+
+    void setupDiffText(const std::string& diffs);
+    void setupLeftRightText(GTextArea* textArea, const std::string& text);
+    void syncScrollBars(bool left);
 
     GWindow* _window;
     QSplitter* _hsplitter;

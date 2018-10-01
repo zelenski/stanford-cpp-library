@@ -68,6 +68,7 @@ std::string GEvent::classToString(EventClass eventClass) {
     case SERVER_EVENT:    return "SERVER_EVENT";
     case CHANGE_EVENT:    return "CHANGE_EVENT";
     case HYPERLINK_EVENT: return "HYPERLINK_EVENT";
+    case SCROLL_EVENT:    return "SCROLL_EVENT";
     default:              return "UNKNOWN";
     }
 }
@@ -109,6 +110,7 @@ std::string GEvent::typeToString(EventType eventType) {
     case SERVER_REQUEST:       return "SERVER_REQUEST";
     case STATE_CHANGED:        return "STATE_CHANGED";
     case HYPERLINK_CLICKED:    return "HYPERLINK_CLICKED";
+    case SCROLL_SCROLLED:      return "SCROLL_SCROLLED";
     default:                   return "UNKNOWN";
     }
 }

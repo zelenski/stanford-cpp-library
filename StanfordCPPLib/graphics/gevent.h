@@ -56,9 +56,10 @@ enum EventClass {
     SERVER_EVENT    = 0x0800,
     CHANGE_EVENT    = 0x1000,
     HYPERLINK_EVENT = 0x2000,
+    SCROLL_EVENT    = 0x4000,
     ANY_EVENT       = ACTION_EVENT | KEY_EVENT | TIMER_EVENT | WINDOW_EVENT
                     | MOUSE_EVENT | CLICK_EVENT | TABLE_EVENT | SERVER_EVENT
-                    | CHANGE_EVENT | HYPERLINK_EVENT
+                    | CHANGE_EVENT | HYPERLINK_EVENT | SCROLL_EVENT
 };
 // Note: If you add any new classes of events, you must also add logic to the
 // GEvent::classToString function in gevent.cpp.
@@ -112,7 +113,9 @@ enum EventType {
 
     STATE_CHANGED        = CHANGE_EVENT + 1,
 
-    HYPERLINK_CLICKED    = HYPERLINK_EVENT + 1
+    HYPERLINK_CLICKED    = HYPERLINK_EVENT + 1,
+
+    SCROLL_SCROLLED      = SCROLL_EVENT + 1
 };
 // Note: If you add any new classes of events, you must also add logic to the
 // GEvent::typeToString function in gevent.cpp.
@@ -563,6 +566,7 @@ typedef GEvent GChangeEvent;
 typedef GEvent GHyperlinkEvent;
 typedef GEvent GKeyEvent;
 typedef GEvent GMouseEvent;
+typedef GEvent GScrollEvent;
 typedef GEvent GServerEvent;
 typedef GEvent GTableEvent;
 typedef GEvent GTimerEvent;

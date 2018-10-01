@@ -86,6 +86,7 @@ void GWindow::_init(double width, double height, bool visible) {
     GThread::runOnQtGuiThread([this]() {
         QtGui::instance()->initializeQt();
         _iqmainwindow = new _Internal_QMainWindow(this);
+        _iqmainwindow->setAttribute(Qt::WA_QuitOnClose, false);
         _lastWindow = _iqmainwindow;
         _contentPane = new GContainer(GContainer::LAYOUT_BORDER);
         _iqmainwindow->setCentralWidget(_contentPane->getWidget());

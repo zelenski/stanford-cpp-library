@@ -475,6 +475,10 @@ _Internal_QWidget::_Internal_QWidget()
     // empty
 }
 
+_Internal_QWidget::~_Internal_QWidget() {
+    // empty
+}
+
 QSize _Internal_QWidget::getMinimumSize() const {
     return QSize((int) _minimumSize.getWidth(), (int) _minimumSize.getHeight());
 }

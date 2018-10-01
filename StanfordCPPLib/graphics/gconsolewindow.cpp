@@ -200,9 +200,9 @@ void GConsoleWindow::_initStreams() {
     // redirect cin/cout/cerr
     _cinout_new_buf = new stanfordcpplib::qtgui::ConsoleStreambufQt();
     _cerr_new_buf = new stanfordcpplib::qtgui::ConsoleStreambufQt(/* isStderr */ true);
-    std::cin.rdbuf(_cinout_new_buf);
-    std::cout.rdbuf(_cinout_new_buf);
-    std::cerr.rdbuf(_cerr_new_buf);
+    _cin_old_buf = std::cin.rdbuf(_cinout_new_buf);
+    _cout_old_buf = std::cout.rdbuf(_cinout_new_buf);
+    _cerr_old_buf = std::cerr.rdbuf(_cerr_new_buf);
 }
 
 void GConsoleWindow::_initWidgets() {
@@ -234,6 +234,13 @@ void GConsoleWindow::_initWidgets() {
     });
     addToRegion(_textArea, "Center");
 
+    // tell window to shut down when it is closed
+    setWindowListener([this](GEvent event) {
+        if (event.getEventType() == WINDOW_CLOSING) {
+            shutdown();
+        }
+    });
+
     setTitle(DEFAULT_WINDOW_TITLE);
     setCloseOperation(GWindow::CLOSE_HIDE);
     setLocation(DEFAULT_X, DEFAULT_Y);
@@ -243,7 +250,12 @@ void GConsoleWindow::_initWidgets() {
 
 
 GConsoleWindow::~GConsoleWindow() {
-    // empty
+    // TODO: delete?
+    _cinout_new_buf = nullptr;
+    _cerr_new_buf = nullptr;
+    _cin_old_buf = nullptr;
+    _cout_old_buf = nullptr;
+    _cerr_old_buf = nullptr;
 }
 
 void GConsoleWindow::checkForUpdates() {
@@ -299,6 +311,9 @@ void GConsoleWindow::clearConsole() {
 }
 
 void GConsoleWindow::clipboardCopy() {
+    if (_shutdown) {
+        return;
+    }
     std::string selectedText = _textArea->getSelectedText();
     if (!selectedText.empty()) {
         GClipboard::set(selectedText);
@@ -367,6 +382,9 @@ void GConsoleWindow::close() {
 }
 
 void GConsoleWindow::compareOutput(const std::string& filename) {
+    if (_shutdown) {
+        return;
+    }
     std::string expectedOutput;
     if (!filename.empty() && fileExists(filename)) {
         expectedOutput = readEntireFile(filename);
@@ -376,12 +394,15 @@ void GConsoleWindow::compareOutput(const std::string& filename) {
 
     std::string studentOutput = getAllOutput();
 
-    GDiffGui::showDialog("expected output", expectedOutput,
-                         "your output", studentOutput,
+    GDiffGui::showDialog("Expected Output", expectedOutput,
+                         "Your Output", studentOutput,
                          /* showCheckBoxes */ false);
 }
 
 std::string GConsoleWindow::getAllOutput() const {
+    if (_shutdown) {
+        return "";
+    }
     GConsoleWindow* thisHack = const_cast<GConsoleWindow*>(this);
     thisHack->_coutMutex.lock();
     std::string allOutput = thisHack->_allOutputBuffer.str();
@@ -390,38 +411,65 @@ std::string GConsoleWindow::getAllOutput() const {
 }
 
 std::string GConsoleWindow::getBackground() const {
+    if (_shutdown) {
+        return "";
+    }
     return _textArea->getBackground();
 }
 
 int GConsoleWindow::getBackgroundInt() const {
+    if (_shutdown) {
+        return 0;
+    }
     return _textArea->getBackgroundInt();
 }
 
 std::string GConsoleWindow::getColor() const {
+    if (_shutdown) {
+        return "";
+    }
     return getOutputColor();
 }
 
 int GConsoleWindow::getColorInt() const {
+    if (_shutdown) {
+        return 0;
+    }
     return GColor::convertColorToRGB(getOutputColor());
 }
 
 std::string GConsoleWindow::getErrorColor() const {
+    if (_shutdown) {
+        return "";
+    }
     return _errorColor.empty() ? DEFAULT_ERROR_COLOR : _errorColor;
 }
 
 std::string GConsoleWindow::getFont() const {
+    if (_shutdown) {
+        return "";
+    }
     return _textArea->getFont();
 }
 
 std::string GConsoleWindow::getForeground() const {
+    if (_shutdown) {
+        return "";
+    }
     return getOutputColor();
 }
 
 int GConsoleWindow::getForegroundInt() const {
+    if (_shutdown) {
+        return 0;
+    }
     return GColor::convertColorToRGB(getOutputColor());
 }
 
 std::string GConsoleWindow::getOutputColor() const {
+    if (_shutdown) {
+        return "";
+    }
     return _outputColor.empty() ? DEFAULT_OUTPUT_COLOR : _outputColor;
 }
 
@@ -511,6 +559,9 @@ bool GConsoleWindow::isSelectionInUserInputArea() const {
 }
 
 void GConsoleWindow::loadConfiguration() {
+    if (_shutdown) {
+        return;
+    }
     std::string configFile = getTempDirectory() + "/" + CONFIG_FILE_NAME;
     if (fileExists(configFile)) {
         std::ifstream infile;
@@ -542,6 +593,9 @@ void GConsoleWindow::loadConfiguration() {
 }
 
 void GConsoleWindow::loadInputScript(int number) {
+    if (_shutdown) {
+        return;
+    }
     std::string sep = getDirectoryPathSeparator();
     static std::initializer_list<std::string> directoriesToCheck {
             ".",
@@ -582,6 +636,9 @@ void GConsoleWindow::loadInputScript(int number) {
 }
 
 void GConsoleWindow::loadInputScript(const std::string& filename) {
+    if (_shutdown) {
+        return;
+    }
     if (!filename.empty() && fileExists(filename)) {
         std::ifstream infile;
         infile.open(filename.c_str());
@@ -617,7 +674,13 @@ void GConsoleWindow::print(const std::string& str, bool isStdErr) {
     stringReplaceInPlace(strToPrint, "\r", "\n");
 
     GThread::runOnQtGuiThreadAsync([this, strToPrint, isStdErr]() {
+        if (_shutdown) {
+            return;
+        }
         _coutMutex.lock();
+        if (_shutdown) {
+            return;
+        }
         _allOutputBuffer << strToPrint;
         this->_textArea->appendFormattedText(strToPrint, isStdErr ? getErrorColor() : getOutputColor());
         this->_textArea->moveCursorToEnd();
@@ -635,6 +698,9 @@ void GConsoleWindow::println(const std::string& str, bool isStdErr) {
 }
 
 void GConsoleWindow::processKeyPress(GEvent event) {
+    if (_shutdown) {
+        return;
+    }
     // TODO: should this be done in a different thread?
     char key = event.getKeyChar();
     int keyCode = event.getKeyCode();
@@ -917,6 +983,9 @@ void GConsoleWindow::processBackspace(int key) {
 }
 
 void GConsoleWindow::processCommandHistory(int delta) {
+    if (_shutdown) {
+        return;
+    }
     _cinMutex.lockForRead();
     std::string oldCommand = "";
     _commandHistoryIndex += delta;
@@ -930,6 +999,9 @@ void GConsoleWindow::processCommandHistory(int delta) {
 }
 
 void GConsoleWindow::processEof() {
+    if (_shutdown) {
+        return;
+    }
     // only set EOF if input buffer is empty; this is the behavior on most *nix consoles
     if (_inputBuffer.empty()) {
         std::cin.setstate(std::ios_base::eofbit);
@@ -1097,6 +1169,9 @@ void GConsoleWindow::save() {
 }
 
 void GConsoleWindow::saveAs(const std::string& filename) {
+    if (_shutdown) {
+        return;
+    }
     std::string filenameToUse;
     if (filename.empty()) {
         filenameToUse = GFileChooser::showSaveDialog(
@@ -1116,6 +1191,9 @@ void GConsoleWindow::saveAs(const std::string& filename) {
 }
 
 void GConsoleWindow::saveConfiguration(bool prompt) {
+    if (_shutdown) {
+        return;
+    }
     if (prompt && !GOptionPane::showConfirmDialog(
             /* parent  */  getWidget(),
             /* message */  "Make this the default for future console windows?",
@@ -1131,15 +1209,24 @@ void GConsoleWindow::saveConfiguration(bool prompt) {
 }
 
 void GConsoleWindow::selectAll() {
+    if (_shutdown) {
+        return;
+    }
     _textArea->selectAll();
 }
 
 void GConsoleWindow::setBackground(int color) {
+    if (_shutdown) {
+        return;
+    }
     GWindow::setBackground(color);   // call super
     _textArea->setBackground(color);
 }
 
 void GConsoleWindow::setBackground(const std::string& color) {
+    if (_shutdown) {
+        return;
+    }
     GWindow::setBackground(color);   // call super
     _textArea->setBackground(color);
 }
@@ -1152,6 +1239,9 @@ void GConsoleWindow::setClearEnabled(bool clearEnabled) {
 }
 
 void GConsoleWindow::setConsoleSize(double width, double height) {
+    if (_shutdown) {
+        return;
+    }
     // TODO: base on text area's preferred size / packing window
     // _textArea->setPreferredSize(width, height);
     // pack();
@@ -1159,10 +1249,16 @@ void GConsoleWindow::setConsoleSize(double width, double height) {
 }
 
 void GConsoleWindow::setColor(int color) {
+    if (_shutdown) {
+        return;
+    }
     setOutputColor(color);
 }
 
 void GConsoleWindow::setColor(const std::string& color) {
+    if (_shutdown) {
+        return;
+    }
     setOutputColor(color);
 }
 
@@ -1174,16 +1270,25 @@ void GConsoleWindow::setEcho(bool echo) {
 }
 
 void GConsoleWindow::setFont(const QFont& font) {
+    if (_shutdown) {
+        return;
+    }
     GWindow::setFont(font);   // call super
     _textArea->setFont(font);
 }
 
 void GConsoleWindow::setFont(const std::string& font) {
+    if (_shutdown) {
+        return;
+    }
     GWindow::setFont(font);   // call super
     _textArea->setFont(font);
 }
 
 void GConsoleWindow::setForeground(int color) {
+    if (_shutdown) {
+        return;
+    }
     setOutputColor(color);
 }
 
@@ -1208,6 +1313,9 @@ void GConsoleWindow::setOutputColor(int rgb) {
 }
 
 void GConsoleWindow::setOutputColor(const std::string& outputColor) {
+    if (_shutdown) {
+        return;
+    }
     _outputColor = outputColor;
     _textArea->setForeground(outputColor);
 
@@ -1229,6 +1337,9 @@ void GConsoleWindow::setOutputColor(const std::string& outputColor) {
 }
 
 void GConsoleWindow::setUserInput(const std::string& userInput) {
+    if (_shutdown) {
+        return;
+    }
     _cinMutex.lockForWrite();
     QTextEdit* textArea = static_cast<QTextEdit*>(_textArea->getWidget());
 
@@ -1253,6 +1364,9 @@ void GConsoleWindow::setUserInput(const std::string& userInput) {
 }
 
 void GConsoleWindow::showAboutDialog() {
+    if (_shutdown) {
+        return;
+    }
     // this text roughly matches that from old spl.jar message
     static const std::string ABOUT_MESSAGE =
             "<html><p>"
@@ -1272,6 +1386,9 @@ void GConsoleWindow::showAboutDialog() {
 }
 
 void GConsoleWindow::showColorDialog(bool background) {
+    if (_shutdown) {
+        return;
+    }
     std::string color = GColorChooser::showDialog(
                 /* parent */   getWidget(),
                 /* title */    "",
@@ -1287,6 +1404,9 @@ void GConsoleWindow::showColorDialog(bool background) {
 }
 
 void GConsoleWindow::showCompareOutputDialog() {
+    if (_shutdown) {
+        return;
+    }
     std::string filename = GFileChooser::showOpenDialog(
                 /* parent */ getWidget(),
                 /* title  */ "Select an expected output file");
@@ -1296,6 +1416,9 @@ void GConsoleWindow::showCompareOutputDialog() {
 }
 
 void GConsoleWindow::showFontDialog() {
+    if (_shutdown) {
+        return;
+    }
     std::string font = GFontChooser::showDialog(
                 /* parent */ getWidget(),
                 /* title  */ "",
@@ -1307,6 +1430,9 @@ void GConsoleWindow::showFontDialog() {
 }
 
 void GConsoleWindow::showInputScriptDialog() {
+    if (_shutdown) {
+        return;
+    }
     std::string filename = GFileChooser::showOpenDialog(
                 /* parent */ getWidget(),
                 /* title  */ "Select an input script file");
@@ -1321,9 +1447,24 @@ void GConsoleWindow::showPrintDialog() {
 
 void GConsoleWindow::shutdown() {
     const std::string PROGRAM_COMPLETED_TITLE_SUFFIX = " [completed]";
+    _shutdown = true;
     std::cout.flush();
     std::cerr.flush();
-    _shutdown = true;
+
+    // restore old cin, cout, cerr
+    if (_cin_old_buf) {
+        _coutMutex.lock();
+        std::cin.rdbuf(_cin_old_buf);
+        std::cout.rdbuf(_cout_old_buf);
+        std::cerr.rdbuf(_cerr_old_buf);
+        _cin_old_buf = nullptr;
+        _cout_old_buf = nullptr;
+        _cerr_old_buf = nullptr;
+        std::cout.flush();
+        std::cerr.flush();
+        _coutMutex.unlock();
+    }
+
     _textArea->setEditable(false);
     std::string title = getTitle();
     if (title.find(PROGRAM_COMPLETED_TITLE_SUFFIX) == std::string::npos) {

@@ -171,6 +171,9 @@ private:
     Vector<std::string> _inputCommandHistory;
     stanfordcpplib::qtgui::ConsoleStreambufQt* _cinout_new_buf;
     stanfordcpplib::qtgui::ConsoleStreambufQt* _cerr_new_buf;
+    std::streambuf* _cin_old_buf;
+    std::streambuf* _cout_old_buf;
+    std::streambuf* _cerr_old_buf;
     std::ostringstream _allOutputBuffer;
     QReadWriteLock _cinMutex;
     QReadWriteLock _cinQueueMutex;

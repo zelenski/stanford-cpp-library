@@ -293,12 +293,12 @@ extern void setConsoleEnabled(bool);
 namespace stanfordcpplib {
 namespace qtgui {
 
-#ifndef __QtConsoleInitializer_created
-#define __QtConsoleInitializer_created
+#ifndef QtConsoleInitializer_created
+#define QtConsoleInitializer_created
 /**
  * @private
  */
-class __QtConsoleInitializer {
+class QtConsoleInitializer_private {
 public:
     /*
      * Code to initialize the library.
@@ -306,7 +306,7 @@ public:
      * static initialization phase, which happens before the student's
      * main function.
      */
-    __QtConsoleInitializer() {
+    QtConsoleInitializer_private() {
         setConsoleEnabled(true);
     }
 };
@@ -314,8 +314,8 @@ public:
 /**
  * @private
  */
-static __QtConsoleInitializer __qt_console_init;
-#endif // __QtConsoleInitializer_created
+static QtConsoleInitializer_private __qt_console_init;
+#endif // QtConsoleInitializer_created
 
 } // namespace qtgui
 } // namespace stanfordcpplib
