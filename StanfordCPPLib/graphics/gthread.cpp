@@ -2,6 +2,8 @@
  * File: gthread.cpp
  * -----------------
  *
+ * @version 2018/10/01
+ * - bug fix where output wasn't showing up on the console if main ended too soon
  * @version 2018/09/23
  * - bug fix to shut down console at end of program
  * @version 2018/08/23
@@ -161,6 +163,10 @@ void GStudentThread::run() {
     } else {
         _mainFuncVoid();
     }
+
+    // briefly wait for the console to finish printing any/all output
+    yield();
+    pause(1);
 
     // if I get here, student's main() has finished running;
     // indicate this by showing a completed title on the graphical console

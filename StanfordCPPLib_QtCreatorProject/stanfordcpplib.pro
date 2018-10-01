@@ -320,8 +320,8 @@ win32 {
     cache()
 } else {
     # flags that don't work on Windows MinGW compiler
-    QMAKE_CXXFLAGS += -Wno-keyword-macro
-    QMAKE_CXXFLAGS += -Wno-reserved-id-macro
+    # QMAKE_CXXFLAGS += -Wno-keyword-macro
+    # QMAKE_CXXFLAGS += -Wno-reserved-id-macro
     QMAKE_CXXFLAGS += -Wno-unused-const-variable
     LIBS += -ldl
 }

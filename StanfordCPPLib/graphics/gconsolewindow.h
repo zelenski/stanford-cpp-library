@@ -56,6 +56,7 @@ public:
     static bool consoleEnabled();
     static std::string getDefaultFont();
     static GConsoleWindow* instance();
+    static bool isInitialized();
     static void setConsoleEnabled(bool enabled);
 
     virtual void clearConsole();

@@ -264,7 +264,8 @@ void testQwindow() {
 //        cout << "event: " << event << endl;
 //    }
 
-    a();
+    // will crash
+    // a();
 
 //    int* x = nullptr;
 //    (*x)++;   // boom

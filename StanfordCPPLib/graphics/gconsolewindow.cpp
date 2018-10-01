@@ -84,12 +84,18 @@ bool GConsoleWindow::_consoleEnabled = false;
     if (!_instance) {
         // initialize Qt system and Qt Console window
         GThread::runOnQtGuiThread([]() {
-            QtGui::instance()->initializeQt();
-            _instance = new GConsoleWindow();
-            setConsolePropertiesQt();
+            if (!_instance) {
+                QtGui::instance()->initializeQt();
+                _instance = new GConsoleWindow();
+                setConsolePropertiesQt();
+            }
         });
     }
     return _instance;
+}
+
+/* static */ bool GConsoleWindow::isInitialized() {
+    return _instance != nullptr;
 }
 
 /* static */ void GConsoleWindow::setConsoleEnabled(bool enabled) {
@@ -111,7 +117,10 @@ GConsoleWindow::GConsoleWindow()
           _inputBuffer(""),
           _lastSaveFileName(""),
           _cinout_new_buf(nullptr),
-          _cerr_new_buf(nullptr) {
+          _cerr_new_buf(nullptr),
+          _cin_old_buf(nullptr),
+          _cout_old_buf(nullptr),
+          _cerr_old_buf(nullptr) {
     _initMenuBar();
     _initWidgets();
     _initStreams();
@@ -673,7 +682,7 @@ void GConsoleWindow::print(const std::string& str, bool isStdErr) {
     stringReplaceInPlace(strToPrint, "\r\n", "\n");
     stringReplaceInPlace(strToPrint, "\r", "\n");
 
-    GThread::runOnQtGuiThreadAsync([this, strToPrint, isStdErr]() {
+    GThread::runOnQtGuiThread([this, strToPrint, isStdErr]() {
         if (_shutdown) {
             return;
         }

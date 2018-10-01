@@ -4,6 +4,8 @@
  * This file implements the console .h interface.
  *
  * @author Marty Stepp
+ * @version 2018/10/01
+ * - bug fix for graphical console popping up even if not included
  * @version 2018/08/23
  * - renamed to console .cpp/h to replace Java version
  * - separated out gconsolewindow.h/cpp
@@ -76,7 +78,8 @@ bool getConsolePrintExceptions() {
 }
 
 bool getConsoleSettingsLocked() {
-    return GConsoleWindow::instance()->isLocked();
+    return GConsoleWindow::isInitialized()
+            && GConsoleWindow::instance()->isLocked();
 }
 
 GDimension getConsoleSize() {
@@ -96,22 +99,22 @@ std::string getConsoleWindowTitle() {
 }
 
 void setConsoleClearEnabled(bool value) {
-    if (GConsoleWindow::instance()->isLocked()) { return; }
+    if (getConsoleSettingsLocked()) { return; }
     GConsoleWindow::instance()->setClearEnabled(value);
 }
 
 void setConsoleCloseOperation(GWindow::CloseOperation op) {
-    if (GConsoleWindow::instance()->isLocked()) { return; }
+    if (getConsoleSettingsLocked()) { return; }
     GConsoleWindow::instance()->setCloseOperation(op);
 }
 
 void setConsoleEcho(bool echo) {
-    if (GConsoleWindow::instance()->isLocked()) { return; }
+    if (getConsoleSettingsLocked()) { return; }
     GConsoleWindow::instance()->setEcho(echo);
 }
 
 void setConsoleErrorColor(const std::string& color) {
-    if (GConsoleWindow::instance()->isLocked()) { return; }
+    if (getConsoleSettingsLocked()) { return; }
     GConsoleWindow::instance()->setErrorColor(color);
 }
 
@@ -120,17 +123,17 @@ void setConsoleEventOnClose(bool /*eventOnClose*/) {
 }
 
 void setConsoleExitProgramOnClose(bool exitOnClose) {
-    if (GConsoleWindow::instance()->isLocked()) { return; }
+    if (getConsoleSettingsLocked()) { return; }
     GConsoleWindow::instance()->setExitOnClose(exitOnClose);
 }
 
 void setConsoleFont(const std::string& font) {
-    if (GConsoleWindow::instance()->isLocked()) { return; }
+    if (getConsoleSettingsLocked()) { return; }
     GConsoleWindow::instance()->setFont(font);
 }
 
 void setConsoleLocation(double x, double y) {
-    if (GConsoleWindow::instance()->isLocked()) { return; }
+    if (getConsoleSettingsLocked()) { return; }
     if (floatingPointEqual(x, -1) && floatingPointEqual(y, -1)) {
         GConsoleWindow::instance()->center();
     } else {
@@ -147,7 +150,7 @@ void setConsoleOutputColor(const std::string& color) {
 }
 
 void setConsolePrintExceptions(bool printExceptions, bool force) {
-    if (GConsoleWindow::instance()->isLocked()) { return; }
+    if (getConsoleSettingsLocked()) { return; }
     exceptions::setTopLevelExceptionHandlerEnabled(printExceptions, force);
 }
 
@@ -156,12 +159,12 @@ void setConsoleSettingsLocked(bool value) {
 }
 
 void setConsoleSize(double width, double height) {
-    if (GConsoleWindow::instance()->isLocked()) { return; }
+    if (getConsoleSettingsLocked()) { return; }
     GConsoleWindow::instance()->setConsoleSize(width, height);
 }
 
 void setConsoleWindowTitle(const std::string& title) {
-    if (GConsoleWindow::instance()->isLocked()) { return; }
+    if (getConsoleSettingsLocked()) { return; }
     GConsoleWindow::instance()->setTitle(title);
 }
 
