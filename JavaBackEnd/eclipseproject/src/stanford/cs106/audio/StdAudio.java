@@ -179,6 +179,7 @@ public final class StdAudio {
 	/**
 	 * Loop a sound file (in .wav or .au format) in a background thread.
 	 */
+	@SuppressWarnings("deprecation")
 	public static void loop(String filename) {
 		if (muted) {
 			return;
@@ -272,6 +273,7 @@ public final class StdAudio {
 	/**
 	 * Play a sound file (in .wav or .au format) in a background thread.
 	 */
+	@SuppressWarnings("deprecation")
 	public static void play(String filename) {
 		prePlay();
 		URL url = null;

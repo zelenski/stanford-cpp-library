@@ -52,6 +52,10 @@ public class IOConsole extends Container implements IOModel {
 
 	public void print(String paramString) {
 		getWriter().print(paramString);
+		if (echo) {
+			System.out.print(paramString);
+			System.out.flush();
+		}
 	}
 
 	public final void print(boolean paramBoolean) {
@@ -84,10 +88,18 @@ public class IOConsole extends Container implements IOModel {
 
 	public void println() {
 		getWriter().println();
+		if (echo) {
+			System.out.println();
+			System.out.flush();
+		}
 	}
 
 	public void println(String paramString) {
 		getWriter().println(paramString);
+		if (echo) {
+			System.out.println(paramString);
+			System.out.flush();
+		}
 	}
 
 	public final void println(boolean paramBoolean) {
@@ -134,7 +146,12 @@ public class IOConsole extends Container implements IOModel {
 		}
 		this.consoleModel.requestFocus();
 		try {
-			return getReader().readLine();
+			String line = getReader().readLine();
+			if (echo) {
+				System.out.println(line);
+				System.out.flush();
+			}
+			return line;
 		} catch (IOException localIOException) {
 			throw new ErrorException(localIOException);
 		}
@@ -215,6 +232,10 @@ public class IOConsole extends Container implements IOModel {
 				paramString = GETREAL_DEFAULT_PROMPT;
 			}
 		}
+	}
+	
+	public void setEcho(boolean echo) {
+		this.echo = echo;
 	}
 
 	protected void setReadDoubleDefaultPrompt(String prompt) {
@@ -563,6 +584,7 @@ public class IOConsole extends Container implements IOModel {
 			"Print Console", "Script", "Cut", "Copy", "Paste", "Select All", "Clear Console" };
 	private ConsoleModel consoleModel;
 	private boolean exceptionOnError;
+	private boolean echo;
 	private Color inputColor;
 	private int inputStyle;
 	private Color errorColor;

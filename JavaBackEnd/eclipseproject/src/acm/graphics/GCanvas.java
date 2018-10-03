@@ -1646,6 +1646,7 @@ public class GCanvas extends JComponent
 		 * effective source and <code>eventID</code>; all other fields are
 		 * copied from the event <code>e</code>.
 		 */
+		@SuppressWarnings("deprecation")
 		public GMouseEvent(Object gobj, int eventID, MouseEvent e) {
 			super(e.getComponent(), eventID, e.getWhen(), e.getModifiers(),
 					e.getX(), e.getY(), e.getClickCount(), e.isPopupTrigger());

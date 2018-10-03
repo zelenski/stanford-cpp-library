@@ -1377,7 +1377,7 @@ public class GTable extends GInteractor {
 				this.startNumber = startingNumber;
 				int j = 0;
 				for (int i = startingNumber; i < maxNumber + startNumber; i++) {
-					numbersList.add(new Integer(j + startNumber));
+					numbersList.add(Integer.valueOf(j + startNumber));
 					j++;
 				}
 			}
@@ -1421,9 +1421,9 @@ public class GTable extends GInteractor {
 				if (numbersList.size() != 0) {
 					Integer maxNum = (Integer) numbersList.get(numbersList.size() - 1);
 
-					numbersList.add(numbersList.size(), new Integer(maxNum.intValue() + 1));
+					numbersList.add(numbersList.size(), Integer.valueOf(maxNum.intValue() + 1));
 				} else {
-					numbersList.add(numbersList.size(), new Integer(startNumber));
+					numbersList.add(numbersList.size(), Integer.valueOf(startNumber));
 				}
 				this.fireTableDataChanged();
 			}
@@ -1471,7 +1471,7 @@ public class GTable extends GInteractor {
 				modelValue = (Integer) rowHeadersTable.getModel().getValueAt(row, 0);
 			} else {
 				RowHeadersTableModel tm = (RowHeadersTableModel) rowHeadersTable.getModel();
-				modelValue = new Integer(tm.getMaxIntValue());
+				modelValue = Integer.valueOf(tm.getMaxIntValue());
 			}
 
 			label.setText("" + modelValue);

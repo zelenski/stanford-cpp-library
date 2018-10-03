@@ -143,6 +143,7 @@ import javax.swing.event.*;
  * to define a static <code>main</code> method as described in the comments
  * for the standard implementation of <a href="#main(String[])"><code>main</code></a>.
  */
+@SuppressWarnings("deprecation")
 public abstract class Program
 		extends JApplet
 		implements ActionListener,
@@ -2840,7 +2841,7 @@ public abstract class Program
 		} else {
 			super.remove(comp);
 		}
-		invisibleObjects.remove(comp);
+		// invisibleObjects.remove(comp);
 	}
 
 	/* Overridden method: removeAll() */

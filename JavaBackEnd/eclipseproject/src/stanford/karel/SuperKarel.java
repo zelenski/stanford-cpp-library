@@ -8,6 +8,8 @@ package stanford.karel;
 
 import java.awt.*;
 
+import acm.graphics.GObject;
+
 /**
  * Extended Karel class . . .
  */
@@ -37,18 +39,25 @@ public class SuperKarel extends Karel {
 	}
 
 	public void turnRight() {
+		maybeEcho("turn right");
 		checkWorld("turnRight");
-		setDirection(KarelWorld.rightFrom(getDirection()));
+		int newdir = KarelWorld.rightFrom(getDirection());
+		setDirection(newdir);
 		getWorld().trace();
+		maybeEcho("  Karel is facing " + KarelWorld.directionName(newdir).toLowerCase());
 	}
 
 	public void turnAround() {
+		maybeEcho("turn around");
 		checkWorld("turnAround");
-		setDirection(KarelWorld.oppositeDirection(getDirection()));
+		int newdir = KarelWorld.oppositeDirection(getDirection());
+		setDirection(newdir);
 		getWorld().trace();
+		maybeEcho("  Karel is facing " + KarelWorld.directionName(newdir).toLowerCase());
 	}
 
 	public void paintCorner(Color color) {
+		maybeEcho("paint corner " + GObject.colorNameFriendly(color.getRGB()));
 		KarelWorld world = getWorld();
 		Point pt = getLocation();
 		checkWorld("paintCorner");

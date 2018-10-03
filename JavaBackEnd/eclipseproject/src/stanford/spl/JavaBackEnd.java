@@ -33,6 +33,7 @@ import javax.sound.sampled.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+@SuppressWarnings("deprecation")
 public class JavaBackEnd implements
 		ActionListener,
 		ChangeListener,

@@ -45,10 +45,11 @@ package stanford.spl;
 
 import acm.util.TokenScanner;
 import stanford.cs106.reflect.ReflectionRuntimeException;
-
+import stanford.cs106.util.ExceptionUtils;
 import java.io.BufferedReader;
 import java.io.Reader;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.util.*;
 
@@ -334,12 +335,16 @@ public abstract class JBECommand {
 		String className = commandClass.getSimpleName();
 		className = className.replace("_", ".");
 		try {
-			JBECommand command = commandClass.newInstance();
+			JBECommand command = commandClass.getDeclaredConstructor().newInstance();
 			commandMap.put(className, command);
 		} catch (IllegalAccessException iae) {
 			throw new ReflectionRuntimeException(iae);
 		} catch (InstantiationException ie) {
 			throw new ReflectionRuntimeException(ie);
+		} catch (InvocationTargetException ite) {
+			throw new ReflectionRuntimeException(ExceptionUtils.getUnderlyingCause(ite));
+		} catch (NoSuchMethodException nsme) {
+			throw new ReflectionRuntimeException(nsme);
 		}
 	}
 

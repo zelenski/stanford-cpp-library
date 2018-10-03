@@ -1,4 +1,6 @@
 /*
+ * @version 2018/10/02
+ * - setEcho for accessibility
  * @version 2017/07/14
  * - bug fix for readInt/Double/Boolean/Line with null prompt
  * @version 2017/04/26
@@ -346,10 +348,20 @@ public abstract class ConsoleProgram extends AbstractConsoleProgram {
 			line = inputReader.readInputLine();
 			println(line + "\t<readLine>");
 		} else {
-			line = super.readLine(prompt); 
+			line = super.readLine(prompt);
 		}
 		
 		return line; 
+	}
+	
+	public void setEcho() {
+		setEcho(true);
+	}
+
+	public void setEcho(boolean echo) {
+		if (getOutputModel() instanceof IOConsole) {
+			((IOConsole) getOutputModel()).setEcho(echo);
+		}
 	}
 
 	/* Support Methods */

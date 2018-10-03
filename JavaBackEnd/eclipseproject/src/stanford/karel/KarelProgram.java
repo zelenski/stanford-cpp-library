@@ -2,6 +2,8 @@
  * This file implements the KarelProgram class.
  * 
  * @author Marty Stepp (based on Eric Roberts version)
+ * @version 2018/10/02
+ * - focus Start button so you can press Enter to run
  * @version 2016/06/01
  * - refactored augmentMenuBar logic into ProgramMenuBar class and menuAction method
  * - new "Interactive Mode" checkbox for keyboard Karel controls
@@ -20,6 +22,8 @@
 package stanford.karel;
 
 import acm.program.*;
+import stanford.cs106.util.ExceptionUtils;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -98,6 +102,8 @@ public class KarelProgram extends Program {
 		add(statusLabel, BorderLayout.SOUTH);
 		
 		validate();
+		
+		controlPanel.focusStartButton();
 	}
 
 	/**
@@ -195,6 +201,7 @@ public class KarelProgram extends Program {
 		world.add(karel);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean menuAction(ActionEvent event) {
 		String cmd = event.getActionCommand().intern();
@@ -252,6 +259,7 @@ public class KarelProgram extends Program {
 		if (worldName == null)
 			worldName = karelClass;
 		try {
+			@SuppressWarnings("deprecation")
 			URL url = new URL(getCodeBase(), WORLDS_DIRECTORY + File.separator + worldName + WORLD_EXTENSION);
 			URLConnection connection = url.openConnection();
 			world.load(new InputStreamReader(connection.getInputStream()));
@@ -260,6 +268,7 @@ public class KarelProgram extends Program {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	protected void startRun() {
 		if (!isAppletMode()) {
 			loadConfiguration();
@@ -275,9 +284,9 @@ public class KarelProgram extends Program {
 			karelClass = karelClass.substring(karelClass.lastIndexOf(".") + 1);
 		} else {
 			try {
-				karel = (KarelInterface) Class.forName(karelClass).newInstance();
+				karel = (KarelInterface) Class.forName(karelClass).getDeclaredConstructor().newInstance();
 			} catch (Exception ex) {
-				System.out.println("Exception: " + ex);
+				System.out.println("Exception: " + ExceptionUtils.getUnderlyingCause(ex));
 			}
 		}
 		if (karel != null) {
@@ -293,6 +302,12 @@ public class KarelProgram extends Program {
 		world.repaint();
 		while (true) {
 			started = false;
+			
+			if (karel instanceof Karel) {
+				((Karel) karel).maybeEchoInitialState();
+				controlPanel.focusStartButton();
+			}
+			
 			synchronized (this) {
 				while (!started) {
 					try {
@@ -308,7 +323,12 @@ public class KarelProgram extends Program {
 				if (karel == null) {
 					main();
 				} else {
+					// run the student's Karel program now!
 					karel.run();
+					
+					if (karel instanceof Karel) {
+						((Karel) karel).maybeEchoFinalState();
+					}
 					setStatus("Finished running.");
 				}
 				world.setRepaintFlag(true);

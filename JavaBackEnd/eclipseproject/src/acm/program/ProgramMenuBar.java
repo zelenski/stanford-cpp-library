@@ -533,6 +533,7 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 	 * @param key
 	 *            The integer value of the keystroke accelerator
 	 */
+	@SuppressWarnings("deprecation")
 	public void setAccelerator(JMenuItem item, int key) {
 		int mask = (Platform.isMac()) ? KeyEvent.META_MASK : KeyEvent.CTRL_MASK;
 		if (key > 0x10000) {
@@ -577,6 +578,7 @@ public class ProgramMenuBar extends JMenuBar implements Iterable<JMenuItem> {
 	 *            A descendant of the frame in which the menu is to be installed
 	 */
 	public void install(Component comp) {
+		@SuppressWarnings("deprecation")
 		Component contentPane = program.getContentPane();
 		while (comp != null && !(comp instanceof JFrame)) {
 			comp = comp.getParent();

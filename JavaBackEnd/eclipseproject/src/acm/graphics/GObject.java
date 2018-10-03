@@ -239,6 +239,15 @@ public abstract class GObject implements Cloneable, Serializable, GScalable {
 	}
 	
 	/**
+	 * Translates a color to a string representation such as "#ff00ff" or "dark gray".
+	 *
+	 * @noshow
+	 */
+	public static String colorNameFriendly(Color color) {
+		return colorNameFriendly(color.getRGB());
+	}
+
+	/**
 	 * Translates a color RGB int to a string representation such as "#ff00ff" or "dark gray".
 	 *
 	 * @noshow

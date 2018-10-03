@@ -2,6 +2,8 @@
  * This class implements Karel's control panel.
  * 
  * @author Marty Stepp (based on Eric Roberts version)
+ * @version 2018/10/02
+ * - added focusStartButton method so you can press Enter to run
  * @version 2015/06/20
  * - fixed bugs in Reset button
  * @version 2015/04/02
@@ -24,8 +26,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JSlider;
@@ -33,6 +34,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import acm.util.JTFTools;
 
+@SuppressWarnings("deprecation")
 public class KarelControlPanel extends CardPanel implements KarelWorldMonitor,
 		ActionListener, AdjustmentListener, ChangeListener, Observer {
 
@@ -236,7 +238,12 @@ public class KarelControlPanel extends CardPanel implements KarelWorldMonitor,
 		hPanel.add("/center/width:100", speedBar);
 		hPanel.add("/center", new Label(" Fast"));
 		vPanel.add("/center/top:8", hPanel);
+		
 		return vPanel;
+	}
+	
+	public void focusStartButton() {
+		startButton.requestFocus();
 	}
 
 	protected JComponent createResizePanel() {

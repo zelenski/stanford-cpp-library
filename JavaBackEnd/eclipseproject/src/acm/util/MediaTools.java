@@ -70,6 +70,7 @@ import stanford.cs106.audio.*;
  * This class implements a standard mechanism for loading images, sounds, and
  * data files from the resources associated with a jar file.
  */
+@SuppressWarnings("deprecation")
 public class MediaTools {
 	
 	private static final boolean DEBUG = false;
@@ -1127,6 +1128,7 @@ class HexInputStream extends InputStream {
  * browsers. The clip is created through reflection in order to avoid a
  * compile-time dependency on the sources for <code>sun.audio</code>.
  */
+@SuppressWarnings("deprecation")
 class SunAudioClip implements AudioClip {
 
 	/* Constructor: SunAudioClip(in) */
@@ -1246,6 +1248,7 @@ class SunAudioClip implements AudioClip {
  * This class implements the <code>AudioClip</code> interface with a stub that
  * ignores all of the calls.
  */
+@SuppressWarnings("deprecation")
 class NullAudioClip implements AudioClip {
 
 	public void play() {

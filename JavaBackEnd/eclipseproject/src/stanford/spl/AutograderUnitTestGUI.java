@@ -50,6 +50,7 @@ import stanford.cs106.io.*;
 import stanford.cs106.junit.*;
 import stanford.cs106.util.*;
 
+@SuppressWarnings("deprecation")
 public class AutograderUnitTestGUI extends Observable
 		implements ActionListener, JUnitListener, MouseListener {
 	private static final int DIALOG_WIDTH = 500;   // px

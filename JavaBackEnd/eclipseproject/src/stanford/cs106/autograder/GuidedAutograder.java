@@ -1209,7 +1209,7 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 			this.callInitAndRun = callInitAndRun;
 			try {
 				if (Program.class.isAssignableFrom(clazz)) {
-					this.program = (Program) clazz.newInstance();
+					this.program = (Program) clazz.getDeclaredConstructor().newInstance();
 					this.program.setExitOnClose(false);
 					ReflectionPanel panel = reflectionPanels.get(STUDENT_CLASS);
 					if (panel != null) {
@@ -1218,8 +1218,12 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 				}
 			} catch (InstantiationException ie) {
 				throw new ReflectionRuntimeException(ie);
-			} catch (IllegalAccessException ie) {
-				throw new ReflectionRuntimeException(ie);
+			} catch (IllegalAccessException iae) {
+				throw new ReflectionRuntimeException(iae);
+			} catch (InvocationTargetException ite) {
+				throw new ReflectionRuntimeException(ExceptionUtils.getUnderlyingCause(ite));
+			} catch (NoSuchMethodException nsme) {
+				throw new ReflectionRuntimeException(nsme);
 			}
 		}
 
@@ -1231,6 +1235,7 @@ public abstract class GuidedAutograder implements ActionListener, ChangeListener
 			return program.getJFrame();
 		}
 
+		@SuppressWarnings("deprecation")
 		public void killMe() {
 			if (program != null) {
 				program.stop();

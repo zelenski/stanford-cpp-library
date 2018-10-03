@@ -140,7 +140,7 @@ public class PatchingClassLoader extends ClassLoader {
 				  case CONSTANT_NameAndType: in.skip(4); break;
 				  case CONSTANT_Class:
 					int offset = in.read() << 8 | in.read();
-					classTable.put(new Integer(i), new Integer(offset));
+					classTable.put(Integer.valueOf(i), Integer.valueOf(offset));
 					break;
 				  case CONSTANT_Utf8:
 					int nChars = in.read() << 8 | in.read();
@@ -149,7 +149,7 @@ public class PatchingClassLoader extends ClassLoader {
 				}
 			}
 			in.skip(4);
-			return classTable.get(new Integer(in.read() << 8 | in.read())).intValue();
+			return classTable.get(Integer.valueOf(in.read() << 8 | in.read())).intValue();
 		} catch (IOException ex) {
 			throw new ErrorException(ex);
 		}

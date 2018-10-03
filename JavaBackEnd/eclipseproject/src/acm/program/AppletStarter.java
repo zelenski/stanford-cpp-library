@@ -42,7 +42,7 @@ class AppletStarter implements Runnable {
 			// TODO: no such class?
 			Class<?> scheduledExecutorClass = Class.forName("java.util.concurrent.ScheduledExecutor");
 			Class<?>[] types1 = { Integer.TYPE };
-			Object[] args1 = { new Integer(1) };
+			Object[] args1 = { Integer.valueOf(1) };
 			Constructor<?> constructor = scheduledExecutorClass.getConstructor(types1);
 			executor = constructor.newInstance(args1);
 			Class<?> timeUnitClass = java.util.concurrent.TimeUnit.class;
@@ -51,7 +51,7 @@ class AppletStarter implements Runnable {
 			Class<?>[] types2 = { java.lang.Runnable.class,
 					Long.TYPE,
 					java.util.concurrent.TimeUnit.class };
-			Object[] args2 = { this, new Long(0), seconds };
+			Object[] args2 = { this, Long.valueOf(0), seconds };
 			Method schedule = executor.getClass().getMethod("schedule", types2);
 			schedule.invoke(executor, args2);
 		} catch (Exception ex) {

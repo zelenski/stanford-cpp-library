@@ -1,15 +1,22 @@
 /*
  * This class implements the basic Karel-the-Robot object.
- * - 2015/03/31: Fixed warning by closing resources.
- * - 2015/03/31: Commented out unused constant INFINITE.
- * - 2015/03/31: Changed to OS system look and feel.
+ * 
+ * @version 2018/10/02
+ * - added echo functionality for screen readers
+ * - alphabetized methods
+ * @version 2015/03/31
+ * - fixed warning by closing resources
+ * - commented out unused constant INFINITE
+ * - changed to OS system look and feel
  */
 
 package stanford.karel;
 
+import acm.graphics.GObject;
 import acm.program.*;
 import acm.util.*;
 import stanford.cs106.gui.GuiUtils;
+import stanford.cs106.reflect.ClassUtils;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -83,7 +90,6 @@ import java.util.zip.*;
  * </tr>
  * </table>
  */
-
 public class Karel extends Program implements KarelInterface, Runnable {
 	/* Private constants */
 	private static final int NORTH = KarelWorld.NORTH;
@@ -101,6 +107,7 @@ public class Karel extends Program implements KarelInterface, Runnable {
 	private int y;
 	private int dir;
 	private int beepers;
+	private boolean echo;   // for blind accessibility
 
 	/* Constructor */
 	public Karel() {
@@ -108,88 +115,7 @@ public class Karel extends Program implements KarelInterface, Runnable {
 		y = 1;
 		dir = EAST;
 		world = null;
-	}
-
-	public void run() {
-		/* Empty */
-	}
-
-	public void move() {
-		checkWorld("move");
-		if (world.checkWall(x, y, dir)) {
-			throw new ErrorException("Karel is blocked");
-		}
-		setLocation(KarelWorld.adjacentPoint(x, y, dir));
-		world.trace();
-	}
-
-	public void turnLeft() {
-		checkWorld("turnLeft");
-		setDirection(KarelWorld.leftFrom(dir));
-		world.trace();
-	}
-
-	public void pickBeeper() {
-		checkWorld("pickBeeper");
-		int nb = world.getBeepersOnCorner(x, y);
-		if (nb < 1) {
-			throw new ErrorException("pickBeeper: No beepers on this corner");
-		}
-		world.setBeepersOnCorner(x, y, KarelWorld.adjustBeepers(nb, -1));
-		setBeepersInBag(KarelWorld.adjustBeepers(getBeepersInBag(), +1));
-		world.trace();
-	}
-
-	public void putBeeper() {
-		checkWorld("putBeeper");
-		int nBag = getBeepersInBag();
-		if (nBag < 1) {
-			throw new ErrorException("putBeeper: No beepers in bag");
-		}
-		int nCorner = world.getBeepersOnCorner(x, y);
-		world.setBeepersOnCorner(x, y, KarelWorld.adjustBeepers(nCorner, +1));
-		setBeepersInBag(KarelWorld.adjustBeepers(nBag, -1));
-		world.trace();
-	}
-
-	public boolean frontIsClear() {
-		checkWorld("frontIsClear");
-		return !world.checkWall(x, y, dir);
-	}
-
-	public boolean frontIsBlocked() {
-		checkWorld("frontIsBlocked");
-		return world.checkWall(x, y, dir);
-	}
-
-	public boolean leftIsClear() {
-		checkWorld("leftIsClear");
-		return !world.checkWall(x, y, KarelWorld.leftFrom(dir));
-	}
-
-	public boolean leftIsBlocked() {
-		checkWorld("leftIsBlocked");
-		return world.checkWall(x, y, KarelWorld.leftFrom(dir));
-	}
-
-	public boolean rightIsClear() {
-		checkWorld("rightIsClear");
-		return !world.checkWall(x, y, KarelWorld.rightFrom(dir));
-	}
-
-	public boolean rightIsBlocked() {
-		checkWorld("rightIsBlocked");
-		return world.checkWall(x, y, KarelWorld.rightFrom(dir));
-	}
-
-	public boolean beepersPresent() {
-		checkWorld("beepersPresent");
-		return world.getBeepersOnCorner(x, y) > 0;
-	}
-
-	public boolean noBeepersPresent() {
-		checkWorld("noBeepersPresent");
-		return world.getBeepersOnCorner(x, y) == 0;
+		echo = false;
 	}
 
 	public boolean beepersInBag() {
@@ -197,19 +123,26 @@ public class Karel extends Program implements KarelInterface, Runnable {
 		return getBeepersInBag() > 0;
 	}
 
-	public boolean noBeepersInBag() {
-		checkWorld("noBeepersInBag");
-		return getBeepersInBag() == 0;
+	public boolean beepersPresent() {
+		checkWorld("beepersPresent");
+		return world.getBeepersOnCorner(x, y) > 0;
 	}
 
-	public boolean facingNorth() {
-		checkWorld("facingNorth");
-		return dir == NORTH;
+	protected void checkWorld(String caller) {
+		if (world == null) {
+			throwErrorException(caller
+					+ ": Karel is not living in a world");
+		}
 	}
 
 	public boolean facingEast() {
 		checkWorld("facingEast");
 		return dir == EAST;
+	}
+
+	public boolean facingNorth() {
+		checkWorld("facingNorth");
+		return dir == NORTH;
 	}
 
 	public boolean facingSouth() {
@@ -222,14 +155,140 @@ public class Karel extends Program implements KarelInterface, Runnable {
 		return dir == WEST;
 	}
 
-	public boolean notFacingNorth() {
-		checkWorld("notFacingNorth");
-		return dir != NORTH;
+	public boolean frontIsBlocked() {
+		checkWorld("frontIsBlocked");
+		return world.checkWall(x, y, dir);
+	}
+
+	public boolean frontIsClear() {
+		checkWorld("frontIsClear");
+		return !world.checkWall(x, y, dir);
+	}
+
+	public int getBeepersInBag() {
+		return (beepers);
+	}
+
+	public int getDirection() {
+		return dir;
+	}
+
+	public Point getLocation() {
+		return new Point(x, y);
+	}
+
+	public KarelWorld getWorld() {
+		return world;
+	}
+
+	public boolean leftIsBlocked() {
+		checkWorld("leftIsBlocked");
+		return world.checkWall(x, y, KarelWorld.leftFrom(dir));
+	}
+
+	public boolean leftIsClear() {
+		checkWorld("leftIsClear");
+		return !world.checkWall(x, y, KarelWorld.leftFrom(dir));
+	}
+
+	protected void maybeEcho(String text) {
+		if (echo) {
+			System.err.flush();
+			pause(10);
+			System.out.println(text);
+			System.out.flush();
+		}
+	}
+	
+	protected void maybeEchoError(String text) {
+		if (echo) {
+			System.out.println();
+			System.out.flush();
+			pause(10);
+			System.err.println(text);
+			System.err.flush();
+		}
+	}
+	
+	public void maybeEchoCurrentState() {
+		Point loc = getLocation();
+		int nCorner = world.getBeepersOnCorner(loc);
+		Color color = world.getCornerColor(loc);
+		maybeEcho("  Karel is at " + loc.x + ", " + loc.y
+				+ (nCorner > 0 ? ", " + nCorner + " beeper" + (nCorner == 1 ? "" : "s") : "")
+				+ (color != null ? ", color " + GObject.colorNameFriendly(color) : ""));
+	}
+	
+	public void maybeEchoFinalState() {
+		// world size
+		maybeEcho("Final state:");
+
+		Point loc = getLocation();
+		int nCorner = world.getBeepersOnCorner(loc);
+		Color color = world.getCornerColor(loc);
+		maybeEcho("  Karel ends at location " + loc.x + ", " + loc.y
+				+ (nCorner > 0 ? ", which contains " + nCorner + " beeper" + (nCorner == 1 ? "" : "s") : "")
+				+ (color != null ? ", color " + GObject.colorNameFriendly(color) : ""));
+		
+		int nBag = getBeepersInBag();
+		if (nBag != KarelWorld.INFINITE) {
+			maybeEcho("  Beepers in bag:    " + nBag);
+		}
+	}
+	
+	public void maybeEchoInitialState() {
+		// world size
+		maybeEcho("Karel is ready! Initial state:");
+		maybeEcho("  Karel is in a world of size "
+				+ world.getColumns() + " by " + world.getRows()); 
+
+		Point loc = getLocation();
+		int nCorner = world.getBeepersOnCorner(loc);
+		Color color = world.getCornerColor(loc);
+		maybeEcho("  Karel begins at location " + loc.x + ", " + loc.y
+				+ (nCorner > 0 ? ", which contains " + nCorner + " beeper" + (nCorner == 1 ? "" : "s") : "")
+				+ (color != null ? ", color " + GObject.colorNameFriendly(color) : ""));
+		
+		int nBag = getBeepersInBag();
+		maybeEcho("  Beepers in bag: " + (nBag == KarelWorld.INFINITE ? "infinite" : String.valueOf(nBag)));
+		maybeEcho("Press Enter to run.");
+	}
+	
+	@Override
+	public boolean menuAction(ActionEvent event) {
+		return super.menuAction(event);
+	}
+
+	public void move() {
+		maybeEcho("move");
+		checkWorld("move");
+		if (world.checkWall(x, y, dir)) {
+			throwErrorException("Karel is blocked");
+		}
+		Point loc = KarelWorld.adjacentPoint(x, y, dir);
+		setLocation(loc);
+		world.trace();
+		maybeEchoCurrentState();
+	}
+
+	public boolean noBeepersPresent() {
+		checkWorld("noBeepersPresent");
+		return world.getBeepersOnCorner(x, y) == 0;
+	}
+
+	public boolean noBeepersInBag() {
+		checkWorld("noBeepersInBag");
+		return getBeepersInBag() == 0;
 	}
 
 	public boolean notFacingEast() {
 		checkWorld("notFacingEast");
 		return dir != EAST;
+	}
+
+	public boolean notFacingNorth() {
+		checkWorld("notFacingNorth");
+		return dir != NORTH;
 	}
 
 	public boolean notFacingSouth() {
@@ -242,71 +301,82 @@ public class Karel extends Program implements KarelInterface, Runnable {
 		return dir != WEST;
 	}
 
-	/* Entry points for program operation */
+	public void pickBeeper() {
+		maybeEcho("pick beeper");
+		checkWorld("pickBeeper");
+		int nCorner = world.getBeepersOnCorner(x, y);
+		if (nCorner < 1) {
+			throwErrorException("pickBeeper: No beepers on this corner");
+		}
+		nCorner = KarelWorld.adjustBeepers(nCorner, -1);
+		world.setBeepersOnCorner(x, y, nCorner);
+		
+		int nBag = getBeepersInBag();
+		nBag = KarelWorld.adjustBeepers(nBag, +1);
+		setBeepersInBag(nBag);
+		world.trace();
+		
+		if (nCorner > 0) {
+			maybeEcho("  Beepers still on corner: " + nCorner);
+		}
+		if (nBag != KarelWorld.INFINITE) {
+			maybeEcho("  Beepers in bag: " + nBag);
+		}
+	}
 
-	public static void main(String[] args) {
-		GuiUtils.setSystemLookAndFeel();
-		ArrayList<String> argList = new ArrayList<String>();
-		boolean codeFlag = false;
-		for (int i = 0; i < args.length; i++) {
-			argList.add(args[i]);
-			if (args[i].startsWith("code="))
-				codeFlag = true;
+	public void putBeeper() {
+		maybeEcho("put beeper");
+		checkWorld("putBeeper");
+		int nBag = getBeepersInBag();
+		if (nBag < 1) {
+			throwErrorException("putBeeper: No beepers in bag");
 		}
-		if (!codeFlag) {
-			String className = getMainClassName();
-			if (className.endsWith(".class")) {
-				className = className.substring(0, className.length() - 6);
-			}
-			className = className.replace('/', '.');
-			argList.add("code=" + className);
+		nBag = KarelWorld.adjustBeepers(nBag, -1);
+		setBeepersInBag(nBag);
+		
+		int nCorner = world.getBeepersOnCorner(x, y);
+		nCorner = KarelWorld.adjustBeepers(nCorner, +1);
+		world.setBeepersOnCorner(x, y, nCorner);
+		world.trace();
+		
+		maybeEcho("  Beepers on corner: " + nCorner);
+		if (nBag != KarelWorld.INFINITE) {
+			maybeEcho("  Beepers in bag:    " + nBag);
 		}
-		argList.add("program=stanford.karel.KarelProgram");
-		String[] argArray = new String[argList.size()];
-		for (int i = 0; i < argArray.length; i++) {
-			argArray[i] = argList.get(i);
-		}
-		KarelProgram.main(argArray);
+	}
 
+	public boolean rightIsBlocked() {
+		checkWorld("rightIsBlocked");
+		return world.checkWall(x, y, KarelWorld.rightFrom(dir));
+	}
+
+	public boolean rightIsClear() {
+		checkWorld("rightIsClear");
+		return !world.checkWall(x, y, KarelWorld.rightFrom(dir));
+	}
+
+	public void run() {
+		/* Empty */
 	}
 	
-	@Override
-	public boolean menuAction(ActionEvent event) {
-		return super.menuAction(event);
+	public void setEcho() {
+		setEcho(true);
 	}
-
-	/* Protected method: start(args) */
-	/**
-	 * Starts a <code>KarelProgram</code> containing this Karel instance,
-	 * passing it the specified arguments.
-	 */
-
-	public void start(String[] args) {
-		KarelProgram program = new KarelProgram();
-		program.setStartupObject(this);
-		program.start(args);
+	
+	public void setEcho(boolean echo) {
+		this.echo = echo;
 	}
-
-	/* Protected methods */
-
-	public Point getLocation() {
-		return new Point(x, y);
-	}
-
-	public void setLocation(Point pt) {
-		setLocation(pt.x, pt.y);
-	}
-
+	
 	public void setLocation(int x, int y) {
 		if (world != null) {
 			if (world.outOfBounds(x, y)) {
-				throw new ErrorException("setLocation: Out of bounds");
+				throwErrorException("setLocation: Out of bounds");
 			}
 			Karel occupant = world.getKarelOnSquare(x, y);
 			if (occupant == this)
 				return;
 			if (occupant != null) {
-				throw new ErrorException("setLocation: Square is occupied");
+				throwErrorException("setLocation: Square is occupied");
 			}
 		}
 		int x0 = this.x;
@@ -319,8 +389,8 @@ public class Karel extends Program implements KarelInterface, Runnable {
 		}
 	}
 
-	public int getDirection() {
-		return dir;
+	public void setLocation(Point pt) {
+		setLocation(pt.x, pt.y);
 	}
 
 	public void setDirection(int dir) {
@@ -329,34 +399,61 @@ public class Karel extends Program implements KarelInterface, Runnable {
 			world.updateCorner(x, y);
 	}
 
-	public int getBeepersInBag() {
-		return (beepers);
-	}
-
 	public void setBeepersInBag(int nBeepers) {
 		beepers = nBeepers;
-	}
-
-	public KarelWorld getWorld() {
-		return world;
 	}
 
 	public void setWorld(KarelWorld world) {
 		this.world = world;
 	}
 
-	protected void checkWorld(String caller) {
-		if (world == null) {
-			throw new ErrorException(caller
-					+ ": Karel is not living in a world");
-		}
-	}
-
 	public void setDisplayOneFlag(boolean flag) {
 		world.setDisplayOneFlag(flag);
 	}
 
-	/* Private methods */
+	/**
+	 * Starts a <code>KarelProgram</code> containing this Karel instance,
+	 * passing it the specified arguments.
+	 */
+	public void start(String[] args) {
+		KarelProgram program = new KarelProgram();
+		program.setStartupObject(this);
+		program.start(args);
+	}
+	
+	protected void throwErrorException(String message) {
+		ErrorException ex = new ErrorException(message);
+		if (echo) {
+			String errorEchoText = "Error: " + message + "\n";
+			for (StackTraceElement stack : ex.getStackTrace()) {
+				String clazz = stack.getClassName();
+				if (clazz.startsWith("acm.")
+						|| clazz.startsWith("stanford.")
+						|| clazz.startsWith("java.")
+						|| clazz.startsWith("javax.")
+						|| clazz.startsWith("javazoom.")
+						|| clazz.startsWith("com.")
+						|| clazz.startsWith("sun.")) {
+					// don't print library classes
+					continue;
+				}
+				errorEchoText += "  " + stack.getFileName() + ", line " + stack.getLineNumber()
+						+ ", " + ClassUtils.stripPackages(stack.getClassName()) + "." + stack.getMethodName() + "\n";
+			}
+			maybeEchoError(errorEchoText);
+		}
+		throw ex;
+	}
+
+	public void turnLeft() {
+		maybeEcho("turn left");
+		checkWorld("turnLeft");
+		int newdir = KarelWorld.leftFrom(dir);
+		setDirection(newdir);
+		world.trace();
+		maybeEcho("  Karel is facing " + KarelWorld.directionName(newdir).toLowerCase());
+	}
+
 
 	private static String getMainClassName() {
 		String result = null;
@@ -415,6 +512,31 @@ public class Karel extends Program implements KarelInterface, Runnable {
 		return result;
 	}
 
+	public static void main(String[] args) {
+		GuiUtils.setSystemLookAndFeel();
+		ArrayList<String> argList = new ArrayList<String>();
+		boolean codeFlag = false;
+		for (int i = 0; i < args.length; i++) {
+			argList.add(args[i]);
+			if (args[i].startsWith("code="))
+				codeFlag = true;
+		}
+		if (!codeFlag) {
+			String className = getMainClassName();
+			if (className.endsWith(".class")) {
+				className = className.substring(0, className.length() - 6);
+			}
+			className = className.replace('/', '.');
+			argList.add("code=" + className);
+		}
+		argList.add("program=stanford.karel.KarelProgram");
+		String[] argArray = new String[argList.size()];
+		for (int i = 0; i < argArray.length; i++) {
+			argArray[i] = argList.get(i);
+		}
+		KarelProgram.main(argArray);
+	}
+	
 	private static boolean nameAppears(String name, String[] array) {
 		for (int i = 0; i < array.length; i++) {
 			if (array[i].equals(name))

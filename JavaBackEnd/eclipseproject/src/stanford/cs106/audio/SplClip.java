@@ -8,6 +8,7 @@ import javax.sound.sampled.*;
 
 import javazoom.jlgui.basicplayer.*;
 
+@SuppressWarnings("deprecation")
 public class SplClip implements AudioClip, BasicPlayerListener, Runnable {
 	private static final Set<String> SUPPORTED_EXTENSIONS = new TreeSet<String>(
 			Arrays.asList(
@@ -121,7 +122,6 @@ public class SplClip implements AudioClip, BasicPlayerListener, Runnable {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public void stop() {
 		if (control != null) {
 			control.stop();

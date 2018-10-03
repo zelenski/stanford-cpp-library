@@ -1,11 +1,11 @@
 package stanford.karel;
 
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 /**
  * An event is an improved version of a java.util.Observable.
  */
+@SuppressWarnings("deprecation")
 public class Event<T> extends Observable {
 	private String name = "Event";
 

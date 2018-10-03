@@ -1757,7 +1757,7 @@ public class KarelWorld extends JComponent {
 		if (nextToken() != StreamTokenizer.TT_WORD) {
 			throw new ErrorException("I expected a number");
 		}
-		double speed = new Double(tokenizer.sval).doubleValue();
+		double speed = Double.valueOf(tokenizer.sval).doubleValue();
 		verifyToken(StreamTokenizer.TT_EOL);
 		if (monitor != null)
 			monitor.setSpeed(speed);
