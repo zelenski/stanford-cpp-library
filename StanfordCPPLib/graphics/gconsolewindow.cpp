@@ -4,6 +4,8 @@
  * This file implements the gconsolewindow.h interface.
  *
  * @author Marty Stepp
+ * @version 2018/10/04
+ * - changed default line wrap to true
  * @version 2018/09/27
  * - bug fix for printing strings with line breaks (remove \r, favor \n)
  * @version 2018/09/23
@@ -219,7 +221,7 @@ void GConsoleWindow::_initWidgets() {
     _textArea->setColor("black");
     _textArea->setContextMenuEnabled(false);
     // _textArea->setEditable(false);
-    _textArea->setLineWrap(false);
+    _textArea->setLineWrap(true);
     _textArea->setFont(getDefaultFont());
     // _textArea->setRowsColumns(25, 70);
     QTextEdit* rawTextEdit = static_cast<QTextEdit*>(_textArea->getWidget());
@@ -301,9 +303,6 @@ void GConsoleWindow::checkForUpdates() {
 }
 
 void GConsoleWindow::clearConsole() {
-    if (_shutdown) {
-        return;
-    }
     std::string msg = "==================== (console cleared) ====================";
     if (_clearEnabled) {
         // print to standard console (not Stanford graphical console)
@@ -391,9 +390,6 @@ void GConsoleWindow::close() {
 }
 
 void GConsoleWindow::compareOutput(const std::string& filename) {
-    if (_shutdown) {
-        return;
-    }
     std::string expectedOutput;
     if (!filename.empty() && fileExists(filename)) {
         expectedOutput = readEntireFile(filename);
@@ -409,9 +405,6 @@ void GConsoleWindow::compareOutput(const std::string& filename) {
 }
 
 std::string GConsoleWindow::getAllOutput() const {
-    if (_shutdown) {
-        return "";
-    }
     GConsoleWindow* thisHack = const_cast<GConsoleWindow*>(this);
     thisHack->_coutMutex.lock();
     std::string allOutput = thisHack->_allOutputBuffer.str();
@@ -420,65 +413,38 @@ std::string GConsoleWindow::getAllOutput() const {
 }
 
 std::string GConsoleWindow::getBackground() const {
-    if (_shutdown) {
-        return "";
-    }
     return _textArea->getBackground();
 }
 
 int GConsoleWindow::getBackgroundInt() const {
-    if (_shutdown) {
-        return 0;
-    }
     return _textArea->getBackgroundInt();
 }
 
 std::string GConsoleWindow::getColor() const {
-    if (_shutdown) {
-        return "";
-    }
     return getOutputColor();
 }
 
 int GConsoleWindow::getColorInt() const {
-    if (_shutdown) {
-        return 0;
-    }
     return GColor::convertColorToRGB(getOutputColor());
 }
 
 std::string GConsoleWindow::getErrorColor() const {
-    if (_shutdown) {
-        return "";
-    }
     return _errorColor.empty() ? DEFAULT_ERROR_COLOR : _errorColor;
 }
 
 std::string GConsoleWindow::getFont() const {
-    if (_shutdown) {
-        return "";
-    }
     return _textArea->getFont();
 }
 
 std::string GConsoleWindow::getForeground() const {
-    if (_shutdown) {
-        return "";
-    }
     return getOutputColor();
 }
 
 int GConsoleWindow::getForegroundInt() const {
-    if (_shutdown) {
-        return 0;
-    }
     return GColor::convertColorToRGB(getOutputColor());
 }
 
 std::string GConsoleWindow::getOutputColor() const {
-    if (_shutdown) {
-        return "";
-    }
     return _outputColor.empty() ? DEFAULT_OUTPUT_COLOR : _outputColor;
 }
 
@@ -568,9 +534,6 @@ bool GConsoleWindow::isSelectionInUserInputArea() const {
 }
 
 void GConsoleWindow::loadConfiguration() {
-    if (_shutdown) {
-        return;
-    }
     std::string configFile = getTempDirectory() + "/" + CONFIG_FILE_NAME;
     if (fileExists(configFile)) {
         std::ifstream infile;
@@ -1178,9 +1141,6 @@ void GConsoleWindow::save() {
 }
 
 void GConsoleWindow::saveAs(const std::string& filename) {
-    if (_shutdown) {
-        return;
-    }
     std::string filenameToUse;
     if (filename.empty()) {
         filenameToUse = GFileChooser::showSaveDialog(
@@ -1200,9 +1160,6 @@ void GConsoleWindow::saveAs(const std::string& filename) {
 }
 
 void GConsoleWindow::saveConfiguration(bool prompt) {
-    if (_shutdown) {
-        return;
-    }
     if (prompt && !GOptionPane::showConfirmDialog(
             /* parent  */  getWidget(),
             /* message */  "Make this the default for future console windows?",
@@ -1218,24 +1175,15 @@ void GConsoleWindow::saveConfiguration(bool prompt) {
 }
 
 void GConsoleWindow::selectAll() {
-    if (_shutdown) {
-        return;
-    }
     _textArea->selectAll();
 }
 
 void GConsoleWindow::setBackground(int color) {
-    if (_shutdown) {
-        return;
-    }
     GWindow::setBackground(color);   // call super
     _textArea->setBackground(color);
 }
 
 void GConsoleWindow::setBackground(const std::string& color) {
-    if (_shutdown) {
-        return;
-    }
     GWindow::setBackground(color);   // call super
     _textArea->setBackground(color);
 }
@@ -1248,9 +1196,6 @@ void GConsoleWindow::setClearEnabled(bool clearEnabled) {
 }
 
 void GConsoleWindow::setConsoleSize(double width, double height) {
-    if (_shutdown) {
-        return;
-    }
     // TODO: base on text area's preferred size / packing window
     // _textArea->setPreferredSize(width, height);
     // pack();
@@ -1258,16 +1203,10 @@ void GConsoleWindow::setConsoleSize(double width, double height) {
 }
 
 void GConsoleWindow::setColor(int color) {
-    if (_shutdown) {
-        return;
-    }
     setOutputColor(color);
 }
 
 void GConsoleWindow::setColor(const std::string& color) {
-    if (_shutdown) {
-        return;
-    }
     setOutputColor(color);
 }
 
@@ -1279,25 +1218,16 @@ void GConsoleWindow::setEcho(bool echo) {
 }
 
 void GConsoleWindow::setFont(const QFont& font) {
-    if (_shutdown) {
-        return;
-    }
     GWindow::setFont(font);   // call super
     _textArea->setFont(font);
 }
 
 void GConsoleWindow::setFont(const std::string& font) {
-    if (_shutdown) {
-        return;
-    }
     GWindow::setFont(font);   // call super
     _textArea->setFont(font);
 }
 
 void GConsoleWindow::setForeground(int color) {
-    if (_shutdown) {
-        return;
-    }
     setOutputColor(color);
 }
 
@@ -1322,11 +1252,11 @@ void GConsoleWindow::setOutputColor(int rgb) {
 }
 
 void GConsoleWindow::setOutputColor(const std::string& outputColor) {
+    _outputColor = outputColor;
+    _textArea->setForeground(outputColor);
     if (_shutdown) {
         return;
     }
-    _outputColor = outputColor;
-    _textArea->setForeground(outputColor);
 
     // go through any past fragments and recolor them to this color
 
@@ -1373,9 +1303,6 @@ void GConsoleWindow::setUserInput(const std::string& userInput) {
 }
 
 void GConsoleWindow::showAboutDialog() {
-    if (_shutdown) {
-        return;
-    }
     // this text roughly matches that from old spl.jar message
     static const std::string ABOUT_MESSAGE =
             "<html><p>"
@@ -1395,9 +1322,6 @@ void GConsoleWindow::showAboutDialog() {
 }
 
 void GConsoleWindow::showColorDialog(bool background) {
-    if (_shutdown) {
-        return;
-    }
     std::string color = GColorChooser::showDialog(
                 /* parent */   getWidget(),
                 /* title */    "",
@@ -1413,9 +1337,6 @@ void GConsoleWindow::showColorDialog(bool background) {
 }
 
 void GConsoleWindow::showCompareOutputDialog() {
-    if (_shutdown) {
-        return;
-    }
     std::string filename = GFileChooser::showOpenDialog(
                 /* parent */ getWidget(),
                 /* title  */ "Select an expected output file");
@@ -1425,9 +1346,6 @@ void GConsoleWindow::showCompareOutputDialog() {
 }
 
 void GConsoleWindow::showFontDialog() {
-    if (_shutdown) {
-        return;
-    }
     std::string font = GFontChooser::showDialog(
                 /* parent */ getWidget(),
                 /* title  */ "",
@@ -1479,6 +1397,8 @@ void GConsoleWindow::shutdown() {
     if (title.find(PROGRAM_COMPLETED_TITLE_SUFFIX) == std::string::npos) {
         setTitle(title + PROGRAM_COMPLETED_TITLE_SUFFIX);
     }
+
+    // TODO: disable some menu items
 }
 
 // global functions used by ConsoleStreambufQt

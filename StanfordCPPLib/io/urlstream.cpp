@@ -5,6 +5,8 @@
  * Please see urlstream.h for information about how to use these classes.
  *
  * @author Marty Stepp
+ * @version 2018/10/02
+ * - added close() method for backward compatibility (does nothing)
  * @version 2018/09/18
  * - refactored to integrate with pure-C++ GDownloader implementation
  * - added getErrorMessage method
@@ -49,6 +51,10 @@ iurlstream::iurlstream(const std::string& url)
         : _url(url),
           _httpStatusCode(0) {
     open(url);
+}
+
+void iurlstream::close() {
+    // empty
 }
 
 int iurlstream::getErrorCode() const {

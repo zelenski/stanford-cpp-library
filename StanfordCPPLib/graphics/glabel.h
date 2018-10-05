@@ -3,6 +3,8 @@
  * --------------
  *
  * @author Marty Stepp
+ * @version 2018/10/04
+ * - added get/setWordWrap
  * @version 2018/09/07
  * - added doc comments for new documentation generation
  * @version 2018/09/04
@@ -84,6 +86,12 @@ public:
 
     /* @inherit */
     virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
+
+    /**
+     * Returns whether the label should wrap if its text is too long.
+     * Default false.
+     */
+    virtual bool isWordWrap() const;
 
     /**
      * Removes the action listener from this button so that it will no longer
@@ -187,6 +195,12 @@ public:
 
     /* @inherit */
     virtual void setWidth(double width) Q_DECL_OVERRIDE;
+
+    /**
+     * Sets whether the label should wrap if its text is too long.
+     * Default false.
+     */
+    virtual void setWordWrap(bool wrap);
 
     /* @inherit */
     virtual void setX(double x) Q_DECL_OVERRIDE;

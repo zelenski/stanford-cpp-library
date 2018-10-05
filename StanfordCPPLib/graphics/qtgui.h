@@ -104,13 +104,7 @@ public slots:
     /**
      * A slot used by the Qt event queue.
      */
-    void mySlot();
-
-signals:
-    /**
-     * A signal emitted by the GUI.
-     */
-    void mySignal();
+    void processEventFromQueue();
 
 private:
     Q_DISABLE_COPY(QtGui)

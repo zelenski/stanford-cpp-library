@@ -106,14 +106,14 @@ void GEventQueue::runOnQtGuiThreadAsync(GThunk thunk) {
     _functionQueueMutex.lockForWrite();
     _functionQueue.add(thunk);
     _functionQueueMutex.unlock();
-    emit mySignal();
+    emit eventReady();
 }
 
 void GEventQueue::runOnQtGuiThreadSync(GThunk thunk) {
     _functionQueueMutex.lockForWrite();
     _functionQueue.add(thunk);
     _functionQueueMutex.unlock();
-    emit mySignal();
+    emit eventReady();
 
     // TODO: "empty" is not quite right condition
     while (true) {

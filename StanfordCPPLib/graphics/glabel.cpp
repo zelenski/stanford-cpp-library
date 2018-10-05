@@ -3,6 +3,8 @@
  * ----------------
  *
  * @author Marty Stepp
+ * @version 2018/10/04
+ * - added get/setWordWrap
  * @version 2018/09/04
  * - added double-click event support
  * @version 2018/09/03
@@ -88,6 +90,10 @@ QWidget* GLabel::getWidget() const {
 
 bool GLabel::hasGText() const {
     return _gtext != nullptr;
+}
+
+bool GLabel::isWordWrap() const {
+    return _iqlabel->wordWrap();
 }
 
 void GLabel::removeActionListener() {
@@ -253,6 +259,12 @@ void GLabel::setWidth(double width) {
     ensureGText();   // setting size triggers GText mode
     _gtext->setWidth(width);
     GInteractor::setWidth(width);
+}
+
+void GLabel::setWordWrap(bool wrap) {
+    GThread::runOnQtGuiThread([this, wrap]() {
+        _iqlabel->setWordWrap(wrap);
+    });
 }
 
 void GLabel::setX(double x) {

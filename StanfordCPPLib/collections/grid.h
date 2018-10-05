@@ -653,7 +653,7 @@ Grid<ValueType>::Grid(std::initializer_list<std::initializer_list<ValueType> > l
     // copy the data from the initializer list into the Grid
     auto rowItr = list.begin();
     for (int row = 0; row < nRows; row++) {
-        if ((int) rowItr->size() != nCols) {
+        if (static_cast<int>(rowItr->size()) != nCols) {
             error("Grid::constructor: initializer list is not rectangular (must have same # cols in each row)");
         }
         auto colItr = rowItr->begin();

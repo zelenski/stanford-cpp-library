@@ -18,6 +18,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2018/10/04
+# - variables for GUI vs console-based autograders
 # @version 2018/09/29
 # - simplify/improve resource-file-copying logic (with Windows fixes)
 # @version 2018/09/25
@@ -357,7 +359,7 @@ equals(COMPILERNAME, clang++) {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20180929
+DEFINES += SPL_PROJECT_VERSION=20181004
 
 # wrapper name for 'main' function (needed so student can write 'int main'
 # but our library can grab the actual main function to initialize itself)
@@ -482,15 +484,92 @@ CONFIG(release, debug|release) {
 
 
 ###############################################################################
+# BEGIN SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                             #
+###############################################################################
+
+# settings specific to CS 106 B/X auto-grading programs; do not modify
+exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
+    # include the various autograder source code and libraries in the build process
+    SOURCES *= $$files($$PWD/lib/autograder/*.cpp)
+    exists($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp) {
+        SOURCES *= $$files($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp)
+    }
+
+    HEADERS *= $$PWD/lib/autograder/*.h
+    exists($$PWD/src/autograder/$$PROJECT_FILTER/*.h) {
+        HEADERS *= $$files($$PWD/src/autograder/$$PROJECT_FILTER/*.h)
+    }
+
+    INCLUDEPATH *= $$PWD/lib/autograder/
+    exists($$PWD/src/autograder/*.h) {
+        INCLUDEPATH *= $$PWD/src/autograder/
+    }
+    exists($$PWD/src/autograder/$$PROJECT_FILTER/*.h) {
+        INCLUDEPATH *= $$PWD/src/autograder/$$PROJECT_FILTER/
+    }
+
+    DEFINES += SPL_AUTOGRADER_MODE
+
+    # define the style of autograder you want to use (GUI vs console)
+    DEFINES += SPL_GRAPHICAL_AUTOGRADER
+    # DEFINES += SPL_CONSOLE_AUTOGRADER
+
+    # a check to ensure that required autograder resources are present in this project
+    !exists($$PWD/res/autograder/pass.gif) {
+        message("")
+        message(*******************************************************************)
+        message(*** ERROR: Stanford library cannot find image files pass.gif, fail.gif, etc.!)
+        message(*** This project cannot run without those images present.)
+        message(*** Place those files into your res/autograder/ folder and try again.)
+        message(*******************************************************************)
+        message("")
+        error(Exiting.)
+    }
+
+    # copy autograder resource files into build folder
+    #exists($$PWD/res/autograder/*) {
+    #    COPY_RESOURCE_FILES_INPUT += $$PWD/res/autograder
+    #    OTHER_FILES *= $$files(res/autograder)
+    #}
+
+    # copy source code into build folder so it can be analyzed by style checker
+    #exists($$PWD/src/$$PROJECT_FILTER*.cpp) {
+    #    copyResources.input *= $$files($$PWD/src/$$PROJECT_FILTER*.cpp)
+    #    copyToDestdir($$files($$PWD/src/$$PROJECT_FILTER*.cpp))
+    #}
+    #exists($$PWD/$$PROJECT_FILTER*.cpp) {
+    #    copyResources.input *= $$files($$PWD/$$PROJECT_FILTER*.cpp)
+    #    copyToDestdir($$files($$PWD/$$PROJECT_FILTER*.cpp))
+    #}
+    #exists($$PWD/src/$$PROJECT_FILTER*.h) {
+    #    copyResources.input *= $$files($$PWD/src/$$PROJECT_FILTER*.h)
+    #    copyToDestdir($$files($$PWD/src/$$PROJECT_FILTER*.h))
+    #}
+    #exists($$PWD/$$PROJECT_FILTER*.h) {
+    #    copyResources.input *= $$files($$PWD/$$PROJECT_FILTER*.h)
+    #    copyToDestdir($$files($$PWD/$$PROJECT_FILTER*.h))
+    #}
+}
+###############################################################################
+# END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
+###############################################################################
+
+
+###############################################################################
 # BEGIN SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING            #
 ###############################################################################
 
 # copy res/* to root of build directory (input files, etc.)
+# COPY_RESOURCE_FILES_INPUT = ""    # defined above so that autograder files can be included
 COPY_RESOURCE_FILES_INPUT = ""
+
 win32 {
     exists($$PWD/lib/addr2line.exe) {
         COPY_RESOURCE_FILES_INPUT += $$PWD/lib/addr2line.exe
     }
+}
+exists($$PWD/*.txt) {
+    COPY_RESOURCE_FILES_INPUT += $$PWD/*.txt
 }
 exists($$PWD/res/*) {
     COPY_RESOURCE_FILES_INPUT += $$PWD/res/*
@@ -522,99 +601,4 @@ QMAKE_EXTRA_COMPILERS += copy_resource_files
 # END SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING              #
 ###############################################################################
 
-
-###############################################################################
-# BEGIN SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                             #
-###############################################################################
-
-# settings specific to CS 106 B/X auto-grading programs; do not modify
-exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
-    # This function copies the given files to the destination directory.
-    # Used to place important resources from res/ into build/ folder.
-    defineTest(copyToDestdir) {
-        files = $$1
-        for(FILE, files) {
-            DDIR = $$OUT_PWD
-            win32 {
-                # Replace slashes in paths with backslashes for Windows
-                FILE ~= s,/,\\,g
-                DDIR ~= s,/,\\,g
-                copyResources.commands += xcopy /s /q /y /i '"'$$FILE'"' '"'$$DDIR'"' $$escape_expand(\\n\\t\\n\\t)
-            } else {
-                # Mac/Linux
-                copyResources.commands += cp -rf '"'$$FILE'"' '"'$$DDIR'"' $$escape_expand(\\n\\t\\n\\t)
-            }
-        }
-        export(copyResources.commands)
-    }
-
-    QMAKE_EXTRA_TARGETS += copyResources first copydata
-    POST_TARGETDEPS += copyResources
-
-    # include the various autograder source code and libraries in the build process
-    SOURCES *= $$files($$PWD/lib/autograder/*.cpp)
-    exists($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp) {
-        SOURCES *= $$files($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp)
-    }
-
-    HEADERS *= $$PWD/lib/autograder/*.h
-    exists($$PWD/src/autograder/$$PROJECT_FILTER/*.h) {
-        HEADERS *= $$files($$PWD/src/autograder/$$PROJECT_FILTER/*.h)
-    }
-
-    INCLUDEPATH *= $$PWD/lib/autograder/
-    exists($$PWD/src/autograder/*.h) {
-        INCLUDEPATH *= $$PWD/src/autograder/
-    }
-    exists($$PWD/src/autograder/$$PROJECT_FILTER/*.h) {
-        INCLUDEPATH *= $$PWD/src/autograder/$$PROJECT_FILTER/
-    }
-
-    DEFINES += SPL_AUTOGRADER_MODE
-
-    # a check to ensure that required autograder resources are present in this project
-    !exists($$PWD/res/autograder/pass.gif) {
-        message("")
-        message(*******************************************************************)
-        message(*** ERROR: Stanford library cannot find image files pass.gif, fail.gif, etc.!)
-        message(*** This project cannot run without those images present.)
-        message(*** Place those files into your res/autograder/ folder and try again.)
-        message(*******************************************************************)
-        message("")
-        error(Exiting.)
-    }
-
-    # copy autograder resource files into build folder
-    copyResources.input *= $$files($$PWD/res/autograder/*)
-    OTHER_FILES *= $$files(res/autograder/*)
-
-    win32 {
-        copyToDestdir($$PWD/res/autograder)
-    }
-    !win32 {
-        copyToDestdir($$files($$PWD/res/autograder/*))
-    }
-
-    # copy source code into build folder so it can be analyzed by style checker
-    exists($$PWD/src/$$PROJECT_FILTER*.cpp) {
-        copyResources.input *= $$files($$PWD/src/$$PROJECT_FILTER*.cpp)
-        copyToDestdir($$files($$PWD/src/$$PROJECT_FILTER*.cpp))
-    }
-    exists($$PWD/$$PROJECT_FILTER*.cpp) {
-        copyResources.input *= $$files($$PWD/$$PROJECT_FILTER*.cpp)
-        copyToDestdir($$files($$PWD/$$PROJECT_FILTER*.cpp))
-    }
-    exists($$PWD/src/$$PROJECT_FILTER*.h) {
-        copyResources.input *= $$files($$PWD/src/$$PROJECT_FILTER*.h)
-        copyToDestdir($$files($$PWD/src/$$PROJECT_FILTER*.h))
-    }
-    exists($$PWD/$$PROJECT_FILTER*.h) {
-        copyResources.input *= $$files($$PWD/$$PROJECT_FILTER*.h)
-        copyToDestdir($$files($$PWD/$$PROJECT_FILTER*.h))
-    }
-}
-###############################################################################
-# END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
-###############################################################################
-
-# END OF FILE (this should be line #620; if not, your .pro has been changed!)
+# END OF FILE (this should be line #604; if not, your .pro has been changed!)

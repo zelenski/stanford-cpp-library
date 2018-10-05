@@ -46,20 +46,59 @@ class GEventQueue : public QObject {
     Q_OBJECT
 
 public:
+    /**
+     * Returns the single instance of the event queue.
+     * If no instance yet exists, one is created.
+     * @return
+     */
     static GEventQueue* instance();
+
+    /**
+     * Returns the current event mask used by the semi-deprecated global
+     * event-handling functions like waitForEvent.
+     */
     int getEventMask() const;
+
+    /**
+     * Returns the next event that occurs that matches the given mask
+     * of event types.
+     */
     GEvent getNextEvent(int mask = ANY_EVENT);
+
+    /**
+     * Returns true if the given event would be accepted by the current
+     * event mask, as per setEventMask.
+     */
     bool isAcceptingEvent(const GEvent& event) const;
     bool isAcceptingEvent(int type) const;
+
+    /**
+     * Sets a bit-flagged mask of event types to listen for
+     * in the semi-deprecated global event-handling functions like waitForEvent.
+     * If setEventMask has not been called, all events are accepted.
+     */
     void setEventMask(int mask);
+
+    /**
+     * Pauses the current thread until an event occurs that matches the given
+     * bit-flagged mask.  The event is then returned.
+     * The current event mask is also set to the given mask, as if
+     * setEventMask had been called.
+     */
     GEvent waitForEvent(int mask = ANY_EVENT);
 
 signals:
-    void mySignal();
+    /**
+     * Fires when an event is present in the queue and ready to be processed.
+     */
+    void eventReady();
 
 private:
     Q_DISABLE_COPY(GEventQueue)
 
+    /*
+     * Prevents construction.  Use instance() instead.
+     */
     GEventQueue();
 
     GThunk dequeue();

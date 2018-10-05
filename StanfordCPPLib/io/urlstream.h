@@ -8,6 +8,8 @@
  * exposes that memory buffer for reading.
  * 
  * @author Marty Stepp
+ * @version 2018/10/02
+ * - added close() method for backward compatibility (does nothing)
  * @version 2018/09/18
  * - refactored to integrate with pure-C++ GDownloader implementation
  * - added getErrorMessage method
@@ -49,6 +51,13 @@ public:
      * The data from that URL is downloaded immediately.
      */
     iurlstream(const std::string& url);
+
+    /**
+     * Closes the stream.
+     * This function actually does nothing and is left in only for legacy
+     * compatibility purposes.  You do not need to call it.
+     */
+    void close();
 
     /**
      * Returns the most recent error code received, if any.

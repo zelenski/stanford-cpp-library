@@ -16,6 +16,7 @@
 #include "gthread.h"
 #include "consoletext.h"
 #include "gconsolewindow.h"
+#include "gevent.h"
 #include "geventqueue.h"
 #include "qtgui.h"
 #include "require.h"
@@ -31,45 +32,45 @@ void GFunctionThread::run() {
 }
 
 
-QThread* GThread::_qtMainThread = nullptr;
-QThread* GThread::_studentThread = nullptr;
+/*static*/ QThread* GThread::_qtMainThread = nullptr;
+/*static*/ QThread* GThread::_studentThread = nullptr;
 
 GThread::GThread() {
     // empty
 }
 
-void GThread::ensureThatThisIsTheQtGuiThread(const std::string& message) {
+/*static*/ void GThread::ensureThatThisIsTheQtGuiThread(const std::string& message) {
     if (!iAmRunningOnTheQtGuiThread()) {
         error((message.empty() ? "" : (message + ": "))
               + "Qt GUI system must be initialized from the application's main thread.");
     }
 }
 
-QThread* GThread::getCurrentThread() {
+/*static*/ QThread* GThread::getCurrentThread() {
     return QThread::currentThread();
 }
 
-QThread* GThread::getQtMainThread() {
+/*static*/ QThread* GThread::getQtMainThread() {
     return _qtMainThread;
 }
 
-QThread* GThread::getStudentThread() {
+/*static*/ QThread* GThread::getStudentThread() {
     return _studentThread;
 }
 
-bool GThread::iAmRunningOnTheQtGuiThread() {
+/*static*/ bool GThread::iAmRunningOnTheQtGuiThread() {
     return _qtMainThread && _qtMainThread == QThread::currentThread();
 }
 
-bool GThread::iAmRunningOnTheStudentThread() {
+/*static*/ bool GThread::iAmRunningOnTheStudentThread() {
     return _studentThread && _studentThread == QThread::currentThread();
 }
 
-bool GThread::qtGuiThreadExists() {
+/*static*/ bool GThread::qtGuiThreadExists() {
     return _qtMainThread != nullptr;
 }
 
-void GThread::runInNewThread(GThunk func) {
+/*static*/ void GThread::runInNewThread(GThunk func) {
     GFunctionThread* thread = new GFunctionThread(func);
     thread->start();
     while (!thread->isFinished()) {
@@ -78,12 +79,13 @@ void GThread::runInNewThread(GThunk func) {
     delete thread;
 }
 
-void GThread::runInNewThreadAsync(GThunk func) {
+/*static*/ QThread* GThread::runInNewThreadAsync(GThunk func) {
     GFunctionThread* thread = new GFunctionThread(func);
     thread->start();
+    return thread;
 }
 
-void GThread::runOnQtGuiThread(GThunk func) {
+/*static*/ void GThread::runOnQtGuiThread(GThunk func) {
     // send timer "event" telling GUI thread what to do
     // TODO: enable
 //    if (!_initialized) {
@@ -102,7 +104,7 @@ void GThread::runOnQtGuiThread(GThunk func) {
     }
 }
 
-void GThread::runOnQtGuiThreadAsync(GThunk func) {
+/*static*/ void GThread::runOnQtGuiThreadAsync(GThunk func) {
     if (iAmRunningOnTheQtGuiThread()) {
         // already on Qt GUI thread; just run the function!
         func();
@@ -115,19 +117,38 @@ void GThread::runOnQtGuiThreadAsync(GThunk func) {
     }
 }
 
-void GThread::setMainThread() {
+/*static*/ void GThread::setMainThread() {
     if (!_qtMainThread) {
         _qtMainThread = QThread::currentThread();
     }
 }
 
-void GThread::sleep(double ms) {
+/*static*/ void GThread::sleep(double ms) {
     require::nonNegative(ms, "GThread::sleep", "delay (ms)");
-    getCurrentThread()->msleep((long) ms);
+    getCurrentThread()->msleep(static_cast<unsigned long>(ms));
 }
 
-bool GThread::studentThreadExists() {
+/*static*/ bool GThread::studentThreadExists() {
     return _studentThread != nullptr;
+}
+
+/*static*/ bool GThread::wait(QThread* thread, long ms) {
+    QThread* currentThread = getCurrentThread();
+    if (currentThread == thread) {
+        error("GThread::wait: a thread cannot wait for itself");
+    }
+
+    long startTime = GEvent::getCurrentTimeMS();
+    unsigned long msToSleep = static_cast<unsigned long>(ms > 10 ? 10 : ms);
+    while (thread && thread->isRunning()) {
+        currentThread->msleep(msToSleep);
+
+        // stop if we have waited at least the given amount of time
+        if (ms > 0 && GEvent::getCurrentTimeMS() - startTime >= ms) {
+            break;
+        }
+    }
+    return thread->isRunning();
 }
 
 void GThread::yield() {
@@ -182,20 +203,20 @@ void GStudentThread::run() {
 //    }
 }
 
-void GStudentThread::startStudentThread(GThunkInt mainFunc) {
+/*static*/ void GStudentThread::startStudentThread(GThunkInt mainFunc) {
     if (!_studentThread) {
         _studentThread = new GStudentThread(mainFunc);
         _studentThread->start();
     }
 }
 
-void GStudentThread::startStudentThreadVoid(GThunk mainFunc) {
+/*static*/ void GStudentThread::startStudentThreadVoid(GThunk mainFunc) {
     if (!_studentThread) {
         _studentThread = new GStudentThread(mainFunc);
         _studentThread->start();
     }
 }
 
-bool GStudentThread::studentThreadExists() {
+/*static*/ bool GStudentThread::studentThreadExists() {
     return _studentThread != nullptr;
 }

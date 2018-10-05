@@ -55,7 +55,7 @@ QtGui* QtGui::_instance = nullptr;
 
 QtGui::QtGui()
         : _initialized(false) {
-    connect(GEventQueue::instance(), SIGNAL(mySignal()), this, SLOT(mySlot()));
+    connect(GEventQueue::instance(), SIGNAL(eventReady()), this, SLOT(processEventFromQueue()));
 }
 
 void QtGui::exitGraphics(int exitCode) {
@@ -114,7 +114,7 @@ QtGui* QtGui::instance() {
     return _instance;
 }
 
-void QtGui::mySlot() {
+void QtGui::processEventFromQueue() {
     if (!GEventQueue::instance()->isEmpty()) {
         GThunk thunk = GEventQueue::instance()->peek();
         thunk();

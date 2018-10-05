@@ -134,6 +134,8 @@ public:
     /**
      * Runs the given void function in its own new thread in the background;
      * the current thread does not block and keeps going.
+     * Returns a pointer to the given thread in case you want to wait a given
+     * amount of time for the thread to do its work.
      *
      * Any uncaught exceptions or errors in the new thread will crash the
      * program and cannot be caught by the calling thread.
@@ -141,7 +143,7 @@ public:
      * If you want the caller to wait for the new thread to finish running,
      * use the <code>runInNewThread</code> function instead.
      */
-    static void runInNewThreadAsync(GThunk func);
+    static QThread* runInNewThreadAsync(GThunk func);
 
     /**
      * Runs the given void function on the Qt GUI thread,
@@ -175,6 +177,12 @@ public:
      * @throw ErrorException if ms is negative
      */
     static void sleep(double ms);
+
+    /**
+     * Waits the given number of milliseconds for the given thread to finish.
+     * @return true if the entire amount of ms was elapsed without the thread finishing
+     */
+    static bool wait(QThread* thread, long ms);
 
     /**
      * Indicates that the current thread is willing to yield execution to any

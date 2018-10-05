@@ -26,6 +26,9 @@ static void _errorMessage(const std::string& caller, const std::string& valueNam
             overallMessage += ": ";
         }
         if (!valueName.empty()) {
+            if (!overallMessage.empty()) {
+                overallMessage += " ";
+            }
             overallMessage += valueName;
             if (!details.empty()) {
                 overallMessage + " ";

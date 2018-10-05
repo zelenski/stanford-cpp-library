@@ -41,6 +41,8 @@ int main(int argc, char** argv) {
 #endif // QT_NEEDS_QMAIN
 
 // initializes the Qt GUI library subsystems and Qt graphical console as needed
+// (autograders will insert their own main wrapper)
+#ifndef SPL_AUTOGRADER_MODE
 int qMain(int argc, char** argv) {
     extern int main();
     stanfordcpplib::initializeLibrary(argc, argv);
@@ -66,3 +68,4 @@ int qMain(int argc, char** argv) {
     stanfordcpplib::shutdownLibrary();
     return 0;
 }
+#endif // SPL_AUTOGRADER_MODE
