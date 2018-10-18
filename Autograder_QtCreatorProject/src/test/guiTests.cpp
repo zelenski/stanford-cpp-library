@@ -31,14 +31,14 @@ void fileDialogTest() {
 
 void goptionpaneTest() {
     GOptionPane::showMessageDialog("Hello, world");
-    GOptionPane::showMessageDialog("Here's one with title and type", "booyah", GOptionPane::ERROR);
+    GOptionPane::showMessageDialog("Here's one with title and type", "booyah", GOptionPane::MESSAGE_ERROR);
     GOptionPane::showMessageDialog("special chars [*+*&}{] && || !)@(*&#)(&^%!{ \" \" \" \"}) C:\\Program Files\\Test ;,;:\", ';\"\\//\\// ( ) test 1 2 3 $a $b %a %b %1 %2 http://foo.com/! end");
     
     bool result = GOptionPane::showConfirmDialog("Are you sure?");
     std::cout << "you chose: " << std::boolalpha << result << std::endl;
-    result = GOptionPane::showConfirmDialog("Here's one with title and type", "booyah", GOptionPane::OK_CANCEL);
+    result = GOptionPane::showConfirmDialog("Here's one with title and type", "booyah", GOptionPane::CONFIRM_OK_CANCEL);
     std::cout << "you chose: " << std::boolalpha << result << std::endl;
-    result = GOptionPane::showConfirmDialog("Here's a second one with title and type", "booyah", GOptionPane::YES_NO_CANCEL);
+    result = GOptionPane::showConfirmDialog("Here's a second one with title and type", "booyah", GOptionPane::CONFIRM_YES_NO_CANCEL);
     std::cout << "you chose: " << std::boolalpha << result << std::endl;
     
     std::string input = GOptionPane::showInputDialog("Type something:");

@@ -28,7 +28,7 @@ TIMED_TEST(BasicGraphTests, basicTest_BasicGraph, TEST_TIMEOUT_DEFAULT) {
     bgraph.addArc("b", "c");
     bgraph.addArc("b", "d");
     bgraph.addArc("c", "b");
-    bgraph.addArc("c", "e");
+    bgraph.addArc("c", "e");   // TODO: uncomment
 
     BasicGraph copy = bgraph;
 

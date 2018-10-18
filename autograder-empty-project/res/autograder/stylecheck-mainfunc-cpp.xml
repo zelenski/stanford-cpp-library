@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stylecheck type="text" filename="life.cpp" omitonpass="true">
+	<pattern regex="INSTRUCTOR'S SOLUTION" count="0" showcounts="false" description="Are you running the style checker on the instructor's solution?" />
+
+	<!-- decomposition -->
+	<category name="Procedural decomp and parameters">
+		<pattern regex="\n(?:int|double|bool|Grid|Vector)[^()]+;" count="0" description="global variables" />
+		<pattern regex="\n(:IDENT:)[^()\n]*(:IDENT:)(:SPACES:)\([^\)]*\)[ \t\n]{0,255}\{" mincount="3" description="functions (including main)" />
+		<pattern regex="\n(:IDENT:)[^()\n]*(:IDENT:)(:SPACES:)\([^\)]*\)[ \t\n]{0,255};" mincount="2" description="function prototypes" />
+		<pattern regex="const" mincount="2" description="using 'const' on parameters (rough count)" />
+		<pattern regex="const(:SPACES:)(?:bool|char|double|int)" count="0" description="using 'const' on primitive parameters (not needed!)" />
+	</category>
+	
+	<category name="Collections and algorithms">
+		<pattern regex="#(:SPACES:)include(:SPACES:)&lt;(:SPACES:)(?:map|set|algorithm|vector|stack|queue|deque|hash_map|hash_set)(:SPACES:)&gt;" count="0" description="including STL ... why?" />
+		<pattern regex="\([^\)]*string(:SPACES:)(:IDENT:).*\)" count="0" description="passing strings by value" />
+		<pattern regex="(?:[vV]ector|LinkedList|[sS]et|[mM]ap|HashSet|HashMap|Lexicon|Stack|Queue|Grid)(:SPACES:)&lt;(:SPACES:)(?:int|double|string)(:SPACES:)&gt;" count="0" description="using collections" />
+		<pattern regex="readEntireFile" count="0" description="using readEntireFile instead of ifstream" />
+	</category>
+	
+	<!-- redundancy -->
+	<category name="Redundancy">
+		<pattern regex=".*nimate,(:SPACES:).*ick,(:SPACES:).*uit" maxcount="1" description="redundancy check: 'animate/tick/quit' prompt message" />
+		<pattern regex="[pP]lease type a" maxcount="2" description="redundancy check: 'Please type a' prompt message" />
+		<pattern regex="[mM]ad [lL]ib input file[?]" maxcount="1" description="redundancy check: 'Mad Lib input file?' prompt message" />
+		<pattern regex="\.(:SPACES:)open(:SPACES:)\(" maxcount="1" description="redundancy check: calling open() on an ifstream" />
+		<pattern regex="\[[^\]]+\](:SPACES:)=(:SPACES:)(?:true|false|0|1|'X'|'-'|&quot;X&quot;|&quot;-&quot;)(:SPACES:);" maxcount="4" description="redundancy check: assigning literal values into grid cells (did they not use a for-loop around the 8 neighbors?)" />
+	</category>
+
+	<!-- goofy C++ stuff -->
+	<category name="C++ idioms">
+		<pattern regex="(?:int|double|char|string|bool|(?:DawgLexicon|Grid|Graph|HashMap|HashSet|Lexicon|LinkedList|Map|Queue|Set|Stack|Vector|map|set|algorithm|vector|stack|queue|deque|hash_map|hash_set)(:SPACES:)&lt;(:SPACES:)(:IDENT:)(:SPACES:)&gt;)(:SPACES:)\*(:SPACES:)(:IDENT:)" count="0" description="using pointers" />
+		<pattern regex="(?:printf|scanf|fopen|fclose|fread|fwrite|fprintf|fscanf|atoi|itoa)" count="0" description="calling C I/O functions like printf, scanf, fopen" />
+		<pattern regex="ifstream" mincount="1" description="using ifstream to read input file" />
+		<pattern regex="ostringstream" mincount="1" description="using ostringstream to buffer story output" />
+	</category>
+
+	<!-- aesthetics and formatting -->
+	<category name="Aesthetics and formatting">
+		<pattern regex=".{101,}\n" count="0" description="long lines" />
+		<pattern regex=".*;.*;.*;" count="0" description="multiple statements on same line" />
+		<pattern regex="\r?\n(:SPACES:)\r?\n" mincount="6" description="blank lines; why don't they have any spacing in their program?" />
+	</category>
+	
+	<!-- commenting -->
+	<category name="Commenting">
+		<pattern regex="(\/\/.*)|(\/\*([^*]|([*][^\/])\r?\n?)*\*\/)" mincount="8" description="comments" list="false" />
+		<pattern regex="(?:short stories that have blanks called placeholders)|(?:second person to fill in each of the placeholders)|(?:often with humorous results)|(?:nce the user has filled in all of the placeholders)|(?:input files are mostly just plain text)|(?:Placeholders are represented as ranges of characters that begin with)|(?:user's response to the prompt is inserted into the eventual output)" count="0" description="copying comments from spec (approximate)" />
+		<pattern regex="(?:TODO: [rR]emove this comment)|(?:TODO: [fF]inish the program)" count="0" description="TODO comments from starter code" />
+	</category>
+
+	<!-- otherwise good style -->
+	<category name="Otherwise good style">
+		<pattern regex="double " maxcount="1" description="type double should not be used on this assignment" />
+		<pattern regex="[!=]=(:SPACES:)(true|false)" count="0" description="bad boolean zen (== true/false)" />
+		<!--
+		<pattern regex="else(:SPACES:)if" mincount="2" description="'else if' statement (are they always using if/if/if?  that's bad structure)" />
+		-->
+		<pattern regex="else" mincount="2" description="'else' statement (are they always using if/if/if?  that's bad structure)" />
+	</category>
+</stylecheck>

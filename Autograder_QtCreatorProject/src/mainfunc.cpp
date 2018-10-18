@@ -192,11 +192,14 @@ int main() {
 }
 
 void autograderMain() {
-    autograder::setAssignmentName("Stanford C++ Library Test");
-    autograder::setAboutMessage("Stanford C++ library tester by Marty Stepp");
-    autograder::setGraphicalUI(true);
-    autograder::setTestNameWidth(std::string("test02_abc_oops_real_long_name_gonnaFail").length());
-    autograder::setStartMessage("my <b>COOL</b> start <i>message</i> yay!");
+    // autograder::setAssignmentName("Stanford C++ Library Test");
+    stanfordcpplib::autograder::Autograder* autograder = stanfordcpplib::autograder::Autograder::instance();
+    autograder->setAboutMessage("Stanford C++ library tester by Marty Stepp");
+    autograder->setGraphicalUI(true);
+    autograder->setTestNameWidth(static_cast<int>(std::string("test02_abc_oops_real_long_name_gonnaFail").length()));
+    autograder->setStartMessage("my <b>COOL</b> start <i>message</i> yay! "
+                                "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum "
+                                "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum ");
 
     //stylecheck::setStyleCheckMergedWithUnitTests(true);
     //autograder::styleCheckAddFile("mainfunc.cpp");

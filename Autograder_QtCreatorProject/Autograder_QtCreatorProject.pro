@@ -18,6 +18,20 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2018/10/06
+# - revised autograder folder structure
+# @version 2018/10/04
+# - variables for GUI vs console-based autograders
+# @version 2018/09/29
+# - simplify/improve resource-file-copying logic (with Windows fixes)
+# @version 2018/09/25
+# - flags to rename main function and other linker fixes
+# @version 2018/09/23
+# - fixed some compiler flags to fix build on Win/Mac
+# @version 2018/09/20
+# - fixed static linking for release builds
+# @version 2018/09/18
+# - added flags for precompilation of Qt MOC resources
 # @version 2018/09/16
 # - removed stack-size increase code on Windows that broke thread creation
 # @version 2018/09/06
@@ -109,7 +123,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 # checks to make sure we haven't accidentally opened the project
 # from within a ZIP archive (common mistake on Windows)
 
-# TODO: *= instead of +=
 win32 {
     contains(PWD, .*\.zip.*) | contains(PWD, .*\.ZIP.*) {
         message("")
@@ -168,8 +181,13 @@ win32 {
         message(*** Place that file into your lib/ folder and try again.)
         message(*******************************************************************)
         message("")
-        error(Exiting.)
+        warning(Exiting.)
     }
+}
+
+# precompiled header speeds up build times
+!win32 {
+PRECOMPILED_HEADER = $$files($$PWD/lib/StanfordCPPLib/private/precompiled.h)
 }
 
 # honeypot to trick Qt Creator so that adding files works from within IDE;
@@ -231,6 +249,9 @@ INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/graphics/
 INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/io/
 INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/system/
 INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/util/
+exists($$PWD/lib/StanfordCPPLib/autograder/*) {
+    INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/autograder/
+}
 INCLUDEPATH *= $$PWD/src/
 INCLUDEPATH *= $$PWD/
 exists($$PWD/src/autograder/$$PROJECT_FILTER/*.h) {
@@ -241,7 +262,9 @@ exists($$PWD/src/test/*.h) {
 }
 
 # directories listed as "Other files" in left Project pane of Qt Creator
-OTHER_FILES *= res/*
+exists($$PWD/res/*) {
+    OTHER_FILES *= $$files($$PWD/res/*)
+}
 exists($$PWD/*.txt) {
     OTHER_FILES *= $$files($$PWD/*.txt)
 }
@@ -264,37 +287,27 @@ exists($$PWD/output/*) {
 # set up flags for the C++ compiler
 # (In general, many warnings/errors are enabled to tighten compile-time checking.
 # A few overly pedantic/confusing errors are turned off for simplicity.)
-CONFIG += no_include_pwd   # make sure we do not accidentally #include files placed in 'resources'
-#CONFIG += warn_off         # turn off default -Wall (we will add it back ourselves)
-CONFIG -= c++11            # turn off default -std=gnu++11
+CONFIG += no_include_pwd         # make sure we do not accidentally #include files placed in 'resources'
+CONFIG += sdk_no_version_check   # removes spurious warnings on Mac OS X
+CONFIG -= c++11                  # turn off default -std=gnu++11
 CONFIG += c++11
-#CONFIG += nocache
 
-#QMAKE_CXXFLAGS += -std=c++11
 QMAKE_CXXFLAGS += -Wall
 QMAKE_CXXFLAGS += -Wextra
-# QMAKE_CXXFLAGS += -Weffc++
 QMAKE_CXXFLAGS += -Wcast-align
 #QMAKE_CXXFLAGS += -Wfloat-equal
 QMAKE_CXXFLAGS += -Wformat=2
 QMAKE_CXXFLAGS += -Wlogical-op
-#QMAKE_CXXFLAGS += -Wlong-long
-QMAKE_CXXFLAGS += -Wno-keyword-macro
 QMAKE_CXXFLAGS += -Wno-missing-field-initializers
 QMAKE_CXXFLAGS += -Wno-old-style-cast
-QMAKE_CXXFLAGS += -Wno-reserved-id-macro
 QMAKE_CXXFLAGS += -Wno-sign-compare
 QMAKE_CXXFLAGS += -Wno-sign-conversion
-QMAKE_CXXFLAGS += -Wno-unused-const-variable
 QMAKE_CXXFLAGS += -Wno-write-strings
 QMAKE_CXXFLAGS += -Wreturn-type
 QMAKE_CXXFLAGS += -Werror=return-type
-#QMAKE_CXXFLAGS += -Wshadow
-#QMAKE_CXXFLAGS += -Wswitch-default
-#QMAKE_CXXFLAGS += -Wundef
 QMAKE_CXXFLAGS += -Werror=uninitialized
 QMAKE_CXXFLAGS += -Wunreachable-code
-exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
+exists($$PWD/lib/autograder/*.h) | exists($$PWD/lib/StanfordCPPLib/autograder/$$PROJECT_FILTER/*.h) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
     # omit some warnings/errors in autograder projects
     # (largely because the Google Test framework violates them a ton of times)
     QMAKE_CXXFLAGS += -Wno-reorder
@@ -306,13 +319,17 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
     #QMAKE_CXXFLAGS += -Werror=zero-as-null-pointer-constant
 }
 
-# additional flags for Windows
 win32 {
+    # additional flags for Windows
     LIBS += -lDbghelp
     LIBS += -lbfd
     LIBS += -limagehlp
     cache()
 } else {
+    # flags that don't work on Windows MinGW compiler
+    # QMAKE_CXXFLAGS += -Wno-keyword-macro
+    # QMAKE_CXXFLAGS += -Wno-reserved-id-macro
+    QMAKE_CXXFLAGS += -Wno-unused-const-variable
     LIBS += -ldl
 }
 
@@ -325,13 +342,6 @@ macx {
 
 # additional flags for Linux
 unix:!macx {
-    unix-g++ {
-        QMAKE_CXXFLAGS += -rdynamic
-        QMAKE_CXXFLAGS += -Wl,--export-dynamic
-    }
-
-    QMAKE_LFLAGS += -rdynamic
-    QMAKE_LFLAGS += -Wl,--export-dynamic
     cache()
 }
 
@@ -354,7 +364,12 @@ equals(COMPILERNAME, clang++) {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20180916
+DEFINES += SPL_PROJECT_VERSION=20181004
+
+# wrapper name for 'main' function (needed so student can write 'int main'
+# but our library can grab the actual main function to initialize itself)
+DEFINES += REPLACE_MAIN_FUNCTION=1
+DEFINES += main=qMain
 
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1
@@ -396,6 +411,13 @@ DEFINES += SPL_THROW_ON_INVALID_ITERATOR
 # set the fail bit on the stream and exit, so that has been made the default.
 # DEFINES += SPL_ERROR_ON_STREAM_EXTRACT
 
+# is the .cpp portion of the library merged into a single .cpp file
+# to speed up compilation?
+DEFINES += SPL_MERGED_LIBRARY_SINGLE_FILE
+
+# should we attempt to precompile the Qt moc_*.cpp files for speed?
+DEFINES += SPL_PRECOMPILE_QT_MOC_FILES
+
 # build-specific options (debug vs release)
 
 # make 'debug' target (default) use no optimization, generate debugger symbols,
@@ -404,6 +426,22 @@ CONFIG(debug, debug|release) {
     QMAKE_CXXFLAGS += -g3
     QMAKE_CXXFLAGS += -fno-inline
     QMAKE_CXXFLAGS += -fno-omit-frame-pointer
+
+    unix:!macx {
+        equals(COMPILERNAME, g++) {
+            # on Linux g++, these flags help us gather line numbers for stack traces
+            QMAKE_CXXFLAGS += -rdynamic
+            QMAKE_CXXFLAGS += -export-dynamic
+            QMAKE_CXXFLAGS += -Wl,--export-dynamic
+            QMAKE_LFLAGS += -export-dynamic
+            QMAKE_LFLAGS += -rdynamic
+        }
+    }
+    unix:macx {
+        equals(COMPILERNAME, clang++) {
+            QMAKE_LFLAGS += -rdynamic
+        }
+    }
 
     # print details about uncaught exceptions with red error text / stack trace
     DEFINES += SPL_CONSOLE_PRINT_EXCEPTIONS
@@ -417,7 +455,8 @@ CONFIG(release, debug|release) {
         #QMAKE_POST_LINK += 'macdeployqt $${OUT_PWD}/$${TARGET}.app && rm $${OUT_PWD}/*.o && rm $${OUT_PWD}/Makefile'
     }
     unix:!macx {
-        QMAKE_LFLAGS += -static
+        # commenting out -static because it doesn't link to Qt libraries properly
+        #QMAKE_LFLAGS += -static
         QMAKE_LFLAGS += -static-libgcc
         QMAKE_LFLAGS += -static-libstdc++
     }
@@ -437,7 +476,7 @@ CONFIG(release, debug|release) {
         REMOVE_DIRS ~= s,/,\\,g
         REMOVE_FILES ~= s,/,\\,g
 
-        QMAKE_LFLAGS += -static
+        #QMAKE_LFLAGS += -static
         QMAKE_LFLAGS += -static-libgcc
         QMAKE_LFLAGS += -static-libstdc++
         QMAKE_POST_LINK += copy '"'$${TARGET_PATH}'"' '"'$${OUT_PATH}'"'
@@ -450,103 +489,38 @@ CONFIG(release, debug|release) {
 
 
 ###############################################################################
-# BEGIN SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING            #
-###############################################################################
-
-# This function copies the given files to the destination directory.
-# Used to place important resources from res/ into build/ folder.
-defineTest(copyToDestdir) {
-    files = $$1
-    for(FILE, files) {
-        DDIR = $$OUT_PWD
-        win32 {
-            # Replace slashes in paths with backslashes for Windows
-            FILE ~= s,/,\\,g
-            DDIR ~= s,/,\\,g
-            copyResources.commands += xcopy /s /q /y /i '"'$$FILE'"' '"'$$DDIR'"' $$escape_expand(\\n\\t\\n\\t)
-        } else {
-            # Mac/Linux
-            copyResources.commands += cp -rf '"'$$FILE'"' '"'$$DDIR'"' $$escape_expand(\\n\\t\\n\\t)
-        }
-    }
-    export(copyResources.commands)
-}
-
-# specify files to copy on non-Windows systems
-!win32 {
-    copyToDestdir($$files($$PWD/res/*))
-    exists($$PWD/*.txt) {
-        copyToDestdir($$files($$PWD/*.txt))
-    }
-}
-
-# specify files to copy on Windows systems
-win32 {
-    copyToDestdir($$PWD/res)
-    copyToDestdir($$PWD/lib/addr2line.exe)
-    exists($$PWD/*.txt) {
-        copyToDestdir($$PWD/*.txt)
-    }
-}
-
-# copy output/ dir to an output/ subdir of the build directory
-exists($$PWD/output/*) {
-    PROJECTOUTDIR = $$PWD/output
-    BUILDOUTDIR = $$OUT_PWD
-    win32 {
-        # on windows, must change / to \ in paths,
-        # and include \output at end of dest dir
-        PROJECTOUTDIR ~= s,/,\\,g
-        BUILDOUTDIR = $$OUT_PWD/output
-        BUILDOUTDIR ~= s,/,\\,g
-    }
-    copydata.commands = $(COPY_DIR) '"'$$PROJECTOUTDIR'"' '"'$$BUILDOUTDIR'"'
-    first.depends = $(first) copydata
-    export(first.depends)
-    export(copydata.commands)
-}
-
-# copy support files such as addr2line
-win32 {
-    copyResources.input *= $$files($$PWD/lib/addr2line.exe)
-}
-copyResources.input *= $$files($$PWD/res/*)
-exists($$PWD/*.txt) {
-    copyResources.input *= $$files($$PWD/*.txt)
-}
-exists($$PWD/input/*) {
-    copyResources.input *= $$files(input/*)
-}
-exists($$PWD/output/*) {
-    copyResources.input *= $$files(output/*)
-}
-
-QMAKE_EXTRA_TARGETS += copyResources first copydata
-POST_TARGETDEPS += copyResources
-
-###############################################################################
-# END SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING              #
-###############################################################################
-
-
-###############################################################################
 # BEGIN SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                             #
 ###############################################################################
 
 # settings specific to CS 106 B/X auto-grading programs; do not modify
-exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
+exists($$PWD/lib/autograder/*.h) | exists($$PWD/lib/StanfordCPPLib/autograder/$$PROJECT_FILTER/*.h) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
     # include the various autograder source code and libraries in the build process
-    SOURCES *= $$files($$PWD/lib/autograder/*.cpp)
+    exists($$PWD/lib/autograder/*.cpp) {
+        SOURCES *= $$files($$PWD/lib/autograder/*.cpp)
+    }
+    exists($$PWD/lib/StanfordCPPLib/autograder/*.cpp) {
+        SOURCES *= $$files($$PWD/lib/autograder/*.cpp)
+    }
     exists($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp) {
         SOURCES *= $$files($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp)
     }
 
-    HEADERS *= $$PWD/lib/autograder/*.h
+    exists($$PWD/lib/autograder/*.h) {
+        HEADERS *= $$PWD/lib/autograder/*.h
+    }
+    exists($$PWD/lib/StanfordCPPLib/autograder/*.h) {
+        HEADERS *= $$PWD/lib/StanfordCPPLib/autograder/*.h
+    }
     exists($$PWD/src/autograder/$$PROJECT_FILTER/*.h) {
         HEADERS *= $$files($$PWD/src/autograder/$$PROJECT_FILTER/*.h)
     }
 
-    INCLUDEPATH *= $$PWD/lib/autograder/
+    exists($$PWD/lib/autograder/*) {
+        INCLUDEPATH *= $$PWD/lib/autograder/
+    }
+    exists($$PWD/lib/StanfordCPPLib/autograder/*) {
+        INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/autograder/
+    }
     exists($$PWD/src/autograder/*.h) {
         INCLUDEPATH *= $$PWD/src/autograder/
     }
@@ -555,6 +529,10 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
     }
 
     DEFINES += SPL_AUTOGRADER_MODE
+
+    # define the style of autograder you want to use (GUI vs console)
+    DEFINES += SPL_GRAPHICAL_AUTOGRADER
+    # DEFINES += SPL_CONSOLE_AUTOGRADER
 
     # a check to ensure that required autograder resources are present in this project
     !exists($$PWD/res/autograder/pass.gif) {
@@ -569,36 +547,78 @@ exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTE
     }
 
     # copy autograder resource files into build folder
-    copyResources.input *= $$files($$PWD/res/autograder/*)
-    OTHER_FILES *= $$files(res/autograder/*)
-
-    win32 {
-        copyToDestdir($$PWD/res/autograder)
-    }
-    !win32 {
-        copyToDestdir($$files($$PWD/res/autograder/*))
-    }
+    #exists($$PWD/res/autograder/*) {
+    #    COPY_RESOURCE_FILES_INPUT += $$PWD/res/autograder
+    #    OTHER_FILES *= $$files(res/autograder)
+    #}
 
     # copy source code into build folder so it can be analyzed by style checker
-    exists($$PWD/src/$$PROJECT_FILTER*.cpp) {
-        copyResources.input *= $$files($$PWD/src/$$PROJECT_FILTER*.cpp)
-        copyToDestdir($$files($$PWD/src/$$PROJECT_FILTER*.cpp))
-    }
-    exists($$PWD/$$PROJECT_FILTER*.cpp) {
-        copyResources.input *= $$files($$PWD/$$PROJECT_FILTER*.cpp)
-        copyToDestdir($$files($$PWD/$$PROJECT_FILTER*.cpp))
-    }
-    exists($$PWD/src/$$PROJECT_FILTER*.h) {
-        copyResources.input *= $$files($$PWD/src/$$PROJECT_FILTER*.h)
-        copyToDestdir($$files($$PWD/src/$$PROJECT_FILTER*.h))
-    }
-    exists($$PWD/$$PROJECT_FILTER*.h) {
-        copyResources.input *= $$files($$PWD/$$PROJECT_FILTER*.h)
-        copyToDestdir($$files($$PWD/$$PROJECT_FILTER*.h))
-    }
+    #exists($$PWD/src/$$PROJECT_FILTER*.cpp) {
+    #    copyResources.input *= $$files($$PWD/src/$$PROJECT_FILTER*.cpp)
+    #    copyToDestdir($$files($$PWD/src/$$PROJECT_FILTER*.cpp))
+    #}
+    #exists($$PWD/$$PROJECT_FILTER*.cpp) {
+    #    copyResources.input *= $$files($$PWD/$$PROJECT_FILTER*.cpp)
+    #    copyToDestdir($$files($$PWD/$$PROJECT_FILTER*.cpp))
+    #}
+    #exists($$PWD/src/$$PROJECT_FILTER*.h) {
+    #    copyResources.input *= $$files($$PWD/src/$$PROJECT_FILTER*.h)
+    #    copyToDestdir($$files($$PWD/src/$$PROJECT_FILTER*.h))
+    #}
+    #exists($$PWD/$$PROJECT_FILTER*.h) {
+    #    copyResources.input *= $$files($$PWD/$$PROJECT_FILTER*.h)
+    #    copyToDestdir($$files($$PWD/$$PROJECT_FILTER*.h))
+    #}
 }
 ###############################################################################
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #604; if not, your .pro has been changed!)
+
+###############################################################################
+# BEGIN SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING            #
+###############################################################################
+
+# copy res/* to root of build directory (input files, etc.)
+# COPY_RESOURCE_FILES_INPUT = ""    # defined above so that autograder files can be included
+COPY_RESOURCE_FILES_INPUT = ""
+
+win32 {
+    exists($$PWD/lib/addr2line.exe) {
+        COPY_RESOURCE_FILES_INPUT += $$PWD/lib/addr2line.exe
+    }
+}
+exists($$PWD/*.txt) {
+    COPY_RESOURCE_FILES_INPUT += $$PWD/*.txt
+}
+exists($$PWD/res/*) {
+    COPY_RESOURCE_FILES_INPUT += $$PWD/res/*
+}
+exists($$PWD/input/*) {
+    COPY_RESOURCE_FILES_INPUT += $$PWD/input
+}
+exists($$PWD/output/*) {
+    COPY_RESOURCE_FILES_INPUT += $$PWD/output
+}
+
+copy_resource_files.name = Copy resource files to the build directory
+win32 {
+    # https://support.microsoft.com/en-us/help/289483/switches-that-you-can-use-with-xcopy-and-xcopy32-commands
+    # /s - copy subfolders
+    # /q - quiet (no verbose output)
+    # /y - overwrite without prompting
+    # /i - if destination does not exist and copying more than one file, assumes destination is a folder
+    copy_resource_files.commands = xcopy /s /q /y /i ${QMAKE_FILE_IN}
+} else {
+    copy_resource_files.commands = cp -rf ${QMAKE_FILE_IN} .
+}
+copy_resource_files.input = COPY_RESOURCE_FILES_INPUT
+copy_resource_files.output = $${OUT_PWD}/${QMAKE_FILE_BASE}${QMAKE_FILE_EXT}
+copy_resource_files.CONFIG = no_link no_clean target_predeps
+QMAKE_EXTRA_COMPILERS += copy_resource_files
+
+###############################################################################
+# END SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING              #
+###############################################################################
+
+# END OF FILE (this should be line #624; if not, your .pro has been changed!)
