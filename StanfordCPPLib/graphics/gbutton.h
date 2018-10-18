@@ -48,7 +48,7 @@ public:
     /**
      * Frees memory allocated internally by the button.
      */
-    virtual ~GButton();
+    virtual ~GButton() Q_DECL_OVERRIDE;
 
     /* @inherit */
     virtual std::string getAccelerator() const Q_DECL_OVERRIDE;

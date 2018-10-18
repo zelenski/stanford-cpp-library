@@ -56,7 +56,7 @@ public:
     /**
      * Frees memory allocated internally by the chooser.
      */
-    virtual ~GChooser();
+    virtual ~GChooser() Q_DECL_OVERRIDE;
 
     /**
      * Adds a new item consisting of the specified string to the end of the list.

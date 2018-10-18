@@ -1050,6 +1050,10 @@ int GImage::getPixel(int x, int y) const {
     return (int) _qimage->pixel(x, y);
 }
 
+QImage* GImage::getQImage() const {
+    return _qimage;
+}
+
 std::string GImage::getType() const {
     return "GImage";
 }

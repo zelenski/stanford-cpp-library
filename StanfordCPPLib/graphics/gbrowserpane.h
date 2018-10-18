@@ -47,7 +47,11 @@ public:
      * Otherwise, the pane is initially blank.
      */
     GBrowserPane(const std::string& url = "", QWidget* parent = nullptr);
-    virtual ~GBrowserPane();
+
+    /**
+     * Frees memory allocated internally by the browser pane.
+     */
+    virtual ~GBrowserPane() Q_DECL_OVERRIDE;
 
     /**
      * Returns the MIME content type for the current page.

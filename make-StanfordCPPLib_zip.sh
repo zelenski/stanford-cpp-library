@@ -32,4 +32,6 @@ rm $SAMPLEPROJECTZIPFILE 2>/dev/null
 zip -rq $SAMPLEPROJECTZIPFILE sample-project/
 cp -f sample-project/sample-project.pro $OUTDIR
 
+cp -f StanfordCPPLib_QtCreatorProject/stanfordcpplib.pro autograder-empty-project/autograder-empty-project.pro
+
 echo "Done."

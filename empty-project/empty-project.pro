@@ -18,6 +18,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2018/10/06
+# - revised autograder folder structure
 # @version 2018/10/04
 # - variables for GUI vs console-based autograders
 # @version 2018/09/29
@@ -247,6 +249,9 @@ INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/graphics/
 INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/io/
 INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/system/
 INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/util/
+exists($$PWD/lib/StanfordCPPLib/autograder/*) {
+    INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/autograder/
+}
 INCLUDEPATH *= $$PWD/src/
 INCLUDEPATH *= $$PWD/
 exists($$PWD/src/autograder/$$PROJECT_FILTER/*.h) {
@@ -287,6 +292,10 @@ CONFIG += sdk_no_version_check   # removes spurious warnings on Mac OS X
 CONFIG -= c++11                  # turn off default -std=gnu++11
 CONFIG += c++11
 
+# uncomment this if you want to dump the preprocessor output into the .o files
+# (useful when debugging advanced preprocessor hacking)
+# QMAKE_CXXFLAGS += -E
+
 QMAKE_CXXFLAGS += -Wall
 QMAKE_CXXFLAGS += -Wextra
 QMAKE_CXXFLAGS += -Wcast-align
@@ -302,7 +311,7 @@ QMAKE_CXXFLAGS += -Wreturn-type
 QMAKE_CXXFLAGS += -Werror=return-type
 QMAKE_CXXFLAGS += -Werror=uninitialized
 QMAKE_CXXFLAGS += -Wunreachable-code
-exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
+exists($$PWD/lib/autograder/*.h) | exists($$PWD/lib/StanfordCPPLib/autograder/$$PROJECT_FILTER/*.h) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
     # omit some warnings/errors in autograder projects
     # (largely because the Google Test framework violates them a ton of times)
     QMAKE_CXXFLAGS += -Wno-reorder
@@ -423,9 +432,9 @@ CONFIG(debug, debug|release) {
     QMAKE_CXXFLAGS += -fno-omit-frame-pointer
 
     unix:!macx {
-        QMAKE_CXXFLAGS += -rdynamic
         equals(COMPILERNAME, g++) {
             # on Linux g++, these flags help us gather line numbers for stack traces
+            QMAKE_CXXFLAGS += -rdynamic
             QMAKE_CXXFLAGS += -export-dynamic
             QMAKE_CXXFLAGS += -Wl,--export-dynamic
             QMAKE_LFLAGS += -export-dynamic
@@ -488,19 +497,34 @@ CONFIG(release, debug|release) {
 ###############################################################################
 
 # settings specific to CS 106 B/X auto-grading programs; do not modify
-exists($$PWD/lib/autograder/*.cpp) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
+exists($$PWD/lib/autograder/*.h) | exists($$PWD/lib/StanfordCPPLib/autograder/*.h) | exists($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp) {
     # include the various autograder source code and libraries in the build process
-    SOURCES *= $$files($$PWD/lib/autograder/*.cpp)
+    exists($$PWD/lib/autograder/*.cpp) {
+        SOURCES *= $$files($$PWD/lib/autograder/*.cpp)
+    }
+    exists($$PWD/lib/StanfordCPPLib/autograder/*.cpp) {
+        SOURCES *= $$files($$PWD/lib/autograder/*.cpp)
+    }
     exists($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp) {
         SOURCES *= $$files($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp)
     }
 
-    HEADERS *= $$PWD/lib/autograder/*.h
+    exists($$PWD/lib/autograder/*.h) {
+        HEADERS *= $$PWD/lib/autograder/*.h
+    }
+    exists($$PWD/lib/StanfordCPPLib/autograder/*.h) {
+        HEADERS *= $$PWD/lib/StanfordCPPLib/autograder/*.h
+    }
     exists($$PWD/src/autograder/$$PROJECT_FILTER/*.h) {
         HEADERS *= $$files($$PWD/src/autograder/$$PROJECT_FILTER/*.h)
     }
 
-    INCLUDEPATH *= $$PWD/lib/autograder/
+    exists($$PWD/lib/autograder/*) {
+        INCLUDEPATH *= $$PWD/lib/autograder/
+    }
+    exists($$PWD/lib/StanfordCPPLib/autograder/*) {
+        INCLUDEPATH *= $$PWD/lib/StanfordCPPLib/autograder/
+    }
     exists($$PWD/src/autograder/*.h) {
         INCLUDEPATH *= $$PWD/src/autograder/
     }
@@ -601,4 +625,4 @@ QMAKE_EXTRA_COMPILERS += copy_resource_files
 # END SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING              #
 ###############################################################################
 
-# END OF FILE (this should be line #604; if not, your .pro has been changed!)
+# END OF FILE (this should be line #628; if not, your .pro has been changed!)

@@ -32,6 +32,7 @@
 #include "gscrollbar.h"
 #include "gscrollpane.h"
 #include "gslider.h"
+#include "gspacer.h"
 #include "gtable.h"
 #include "gtextarea.h"
 #include "gtextfield.h"

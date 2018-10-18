@@ -50,7 +50,7 @@ public:
     /**
      * Frees memory allocated internally by the text area.
      */
-    virtual ~GTextArea();
+    virtual ~GTextArea() Q_DECL_OVERRIDE;
 
     /**
      * Adds formatted text to the end of the text area.

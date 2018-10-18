@@ -1,0 +1,10 @@
+Hello!!!!
+
+This is resfile1.txt
+
+How are you?
+Testing 1, 2, 3.
+
+Hooray!
+
+Goodbye.

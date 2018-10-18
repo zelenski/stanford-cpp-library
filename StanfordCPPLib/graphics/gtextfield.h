@@ -82,7 +82,7 @@ public:
     /**
      * Frees memory allocated internally by the text field.
      */
-    virtual ~GTextField();
+    virtual ~GTextField() Q_DECL_OVERRIDE;
 
     /**
      * Returns the number of characters that can fit in the visible area of

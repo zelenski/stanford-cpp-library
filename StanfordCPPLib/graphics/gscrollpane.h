@@ -51,7 +51,7 @@ public:
     /**
      * Frees memory allocated internally by the scroll pane.
      */
-    virtual ~GScrollPane();
+    virtual ~GScrollPane() Q_DECL_OVERRIDE;
 
     /**
      * Returns a constant indicating whether the horizontal scroll bar will be shown.

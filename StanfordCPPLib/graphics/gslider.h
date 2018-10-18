@@ -71,7 +71,7 @@ public:
     /**
      * Frees memory allocated internally by the slider.
      */
-    virtual ~GSlider();
+    virtual ~GSlider() Q_DECL_OVERRIDE;
 
     /* @inherit */
     virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;

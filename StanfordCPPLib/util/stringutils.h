@@ -42,7 +42,7 @@ std::string trimToHeight(const std::string& s, int height, const std::string& su
 std::string trimToSize(const std::string& s, int width, int height, const std::string& suffix = " ...");
 std::string trimToWidth(const std::string& s, int width, const std::string& suffix = " ...");
 std::string stripWhitespace(const std::string& s);
-std::string truncate(const std::string& s, int length);
+std::string truncate(const std::string& s, int length, const std::string& suffix = " ...");
 std::string toPrintable(int ch);
 int width(const std::string& s);
 } // namespace stringutils

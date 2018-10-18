@@ -3,6 +3,8 @@
  * ----------------------
  *
  * @author Marty Stepp
+ * @version 2018/10/06
+ * - added toggle()
  * @version 2018/09/04
  * - added double-click event support
  * @version 2018/08/23
@@ -106,6 +108,10 @@ void GRadioButton::setText(const std::string& text) {
     GThread::runOnQtGuiThread([this, text]() {
         _iqradioButton->setText(QString::fromStdString(text));
     });
+}
+
+void GRadioButton::toggle() {
+    setChecked(!isChecked());
 }
 
 /* static */ QButtonGroup* GRadioButton::getButtonGroup(const std::string& group) {

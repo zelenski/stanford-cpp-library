@@ -208,11 +208,10 @@ std::string trimToWidth(const std::string& s, int width, const std::string& suff
 }
 
 // truncate string with ... between
-std::string truncate(const std::string& s, int length) {
-    int slength = (int) s.length();
+std::string truncate(const std::string& s, int length, const std::string& suffix) {
+    int slength = s.length();
     if (slength > length) {
-        // s = s.substr(0, length/2) + " ... " + s.substr(slength - length/2);
-        return s.substr(0, length) + " ...";
+        return s.substr(0, length) + suffix;
     } else {
         return s;
     }

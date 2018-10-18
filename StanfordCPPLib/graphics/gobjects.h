@@ -37,6 +37,7 @@
 
 class GCanvas;
 class GCompound;
+class GDiffImage;
 
 /**
  * This class is the common superclass of all graphical objects that can
@@ -957,9 +958,17 @@ public:
     GImage(const std::string& filename = "", double x = 0, double y = 0);
 
     /**
+     * Creates a blank GImage of the given width and height.
+     * Called by GCanvas when converting to an image.
+     */
+    GImage(double width, double height);
+
+    /**
      * Frees memory allocated internally by the image.
      */
     virtual ~GImage();
+
+
 
     /**
      * Draws this image on screen using the given Qt painter.
@@ -982,22 +991,6 @@ public:
     /* @inherit */
     virtual std::string getType() const Q_DECL_OVERRIDE;
 
-    /* @inherit */
-    virtual std::string toStringExtra() const Q_DECL_OVERRIDE;
-
-protected:
-    /**
-     * Creates a blank GImage of the given width and height.
-     * Called by GCanvas when converting to an image.
-     */
-    GImage(double width, double height);
-
-    /**
-     * Creates a GImage wrapping the given Qt image.
-     * Called by GCanvas when converting canvas to an image.
-     */
-    GImage(QImage* qimage);
-
     /**
      * Sets the pixel at the given x/y location to the given color,
      * represented as an RGB integer.
@@ -1005,11 +998,27 @@ protected:
      */
     virtual void setPixel(int x, int y, int rgb);
 
+    /* @inherit */
+    virtual std::string toStringExtra() const Q_DECL_OVERRIDE;
+
+protected:
+    /**
+     * Creates a GImage wrapping the given Qt image.
+     * Called by GCanvas when converting canvas to an image.
+     */
+    GImage(QImage* qimage);
+
+    /**
+     * Returns the inner Qt QImage object being wrapped.
+     */
+    QImage* getQImage() const;
+
 private:
     std::string _filename;
     QImage* _qimage;
 
     friend class GCanvas;
+    friend class GDiffImage;
 };
 
 /**

@@ -76,6 +76,8 @@ public:
     GTable(int rows = 0, int columns = 0, double width = 0, double height = 0,
             QWidget* parent = nullptr);
 
+    virtual ~GTable() Q_DECL_OVERRIDE;
+
     /**
      * Changes widths of all columns to be perfectly large enough
      * to fit their contents.

@@ -149,7 +149,7 @@ public:
     /**
      * Frees memory allocated internally by the canvas.
      */
-    virtual ~GCanvas();
+    virtual ~GCanvas() Q_DECL_OVERRIDE;
 
     /**
      * Adds the given interactor to canvas.

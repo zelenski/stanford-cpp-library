@@ -30,7 +30,7 @@
 typedef std::function<void()> GThunk;
 
 /**
- * An alias for a function wrapper around a void function with no parameters
+ * An alias for a function wrapper around a function with no parameters
  * and an int return (such as main()).
  */
 typedef std::function<int()> GThunkInt;

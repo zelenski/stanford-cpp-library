@@ -57,7 +57,7 @@ public:
     /**
      * Frees memory allocated internally by the label.
      */
-    virtual ~GLabel();
+    virtual ~GLabel() Q_DECL_OVERRIDE;
 
     /* @inherit */
     virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;

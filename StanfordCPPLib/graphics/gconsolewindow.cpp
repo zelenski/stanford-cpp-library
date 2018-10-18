@@ -4,6 +4,8 @@
  * This file implements the gconsolewindow.h interface.
  *
  * @author Marty Stepp
+ * @version 2018/10/11
+ * - bug fixes for shutdown flag, input script hotkeys (e.g. Ctrl+1)
  * @version 2018/10/04
  * - changed default line wrap to true
  * @version 2018/09/27
@@ -319,9 +321,6 @@ void GConsoleWindow::clearConsole() {
 }
 
 void GConsoleWindow::clipboardCopy() {
-    if (_shutdown) {
-        return;
-    }
     std::string selectedText = _textArea->getSelectedText();
     if (!selectedText.empty()) {
         GClipboard::set(selectedText);
@@ -597,11 +596,11 @@ void GConsoleWindow::loadInputScript(int number) {
 
     if (!inputFile.empty()) {
         loadInputScript(inputFile);
-        pause(500);
+        pause(50);
     }
     if (!expectedOutputFile.empty()) {
         GThread::runInNewThreadAsync([this, expectedOutputFile]() {
-            pause(500);
+            pause(1000);
             compareOutput(expectedOutputFile);
         });
     }
@@ -627,9 +626,6 @@ void GConsoleWindow::loadInputScript(const std::string& filename) {
 }
 
 void GConsoleWindow::print(const std::string& str, bool isStdErr) {
-    if (_shutdown) {
-        return;
-    }
     if (_echo) {
         fflush(isStdErr ? stdout : stderr);
         fflush(isStdErr ? stderr : stdout);
@@ -646,14 +642,11 @@ void GConsoleWindow::print(const std::string& str, bool isStdErr) {
     stringReplaceInPlace(strToPrint, "\r", "\n");
 
     GThread::runOnQtGuiThread([this, strToPrint, isStdErr]() {
-        if (_shutdown) {
-            return;
-        }
         _coutMutex.lock();
-        if (_shutdown) {
+        _allOutputBuffer << strToPrint;
+        if (!this->_textArea) {
             return;
         }
-        _allOutputBuffer << strToPrint;
         this->_textArea->appendFormattedText(strToPrint, isStdErr ? getErrorColor() : getOutputColor());
         this->_textArea->moveCursorToEnd();
         this->_textArea->scrollToBottom();
@@ -670,10 +663,6 @@ void GConsoleWindow::println(const std::string& str, bool isStdErr) {
 }
 
 void GConsoleWindow::processKeyPress(GEvent event) {
-    if (_shutdown) {
-        return;
-    }
-    // TODO: should this be done in a different thread?
     char key = event.getKeyChar();
     int keyCode = event.getKeyCode();
 

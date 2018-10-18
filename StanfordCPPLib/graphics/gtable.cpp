@@ -51,6 +51,11 @@ GTable::GTable(int rows, int columns, double width, double height, QWidget* pare
     setVisible(false);   // all widgets are not shown until added to a window
 }
 
+GTable::~GTable() {
+    // TODO: delete
+    _iqtableview = nullptr;
+}
+
 void GTable::applyStyleToCell(int row, int column, const TableStyle& style) {
     setCellAlignmentInternal(row, column, style.alignment);
     setCellBackgroundInternal(row, column, style.background);

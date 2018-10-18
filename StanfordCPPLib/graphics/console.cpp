@@ -33,6 +33,10 @@ bool getConsoleClearEnabled() {
     return GConsoleWindow::instance()->isClearEnabled();
 }
 
+/* GWindow::CloseOperation */ int getConsoleCloseOperation() {
+    return GConsoleWindow::instance()->getCloseOperation();
+}
+
 bool getConsoleEcho() {
     return GConsoleWindow::instance()->isEcho();
 }
@@ -103,9 +107,10 @@ void setConsoleClearEnabled(bool value) {
     GConsoleWindow::instance()->setClearEnabled(value);
 }
 
-void setConsoleCloseOperation(GWindow::CloseOperation op) {
+void setConsoleCloseOperation(/*GWindow::CloseOperation*/ int op) {
+    GWindow::CloseOperation gwcop = static_cast<GWindow::CloseOperation>(op);
     if (getConsoleSettingsLocked()) { return; }
-    GConsoleWindow::instance()->setCloseOperation(op);
+    GConsoleWindow::instance()->setCloseOperation(gwcop);
 }
 
 void setConsoleEcho(bool echo) {

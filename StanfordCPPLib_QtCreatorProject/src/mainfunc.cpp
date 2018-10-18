@@ -2,11 +2,11 @@
  * Test file for verifying the Stanford C++ lib functionality.
  */
 
-//#include "gobjects.h"
+//#include "gwindow.h"
 #include <iostream>
-//#include "console.h"
+#include "console.h"
 
-int main() {
+int multimain(widgets) {
 //    extern int mainQt2dGraphics();
 //    return mainQt2dGraphics();
 //    extern int mainQtLayout();
@@ -16,5 +16,10 @@ int main() {
 
 //    extern int mainQtConsole();
 //    return mainQtConsole();
-//    return 0;
+    return 0;
+}
+
+int main() {
+    // empty?
+    return 0;
 }

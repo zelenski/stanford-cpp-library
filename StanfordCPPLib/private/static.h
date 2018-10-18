@@ -14,6 +14,13 @@
 #ifndef _static_h
 #define _static_h
 
+// macros for concatenating two macros
+#ifndef CONCAT_IMPL
+#define MACRO_CONCAT(a, ...) PRIMITIVE_CONCAT(a, __VA_ARGS__)
+#define PRIMITIVE_CONCAT(a, ...) a ## __VA_ARGS__
+#define MACRO_IDENT(x) x
+#endif // CONCAT_IMPL
+
 // declare static var/func and assign it the given value
 #define STATIC_VARIABLE_DECLARE(type, name, value) \
     static type & s_##name() { \

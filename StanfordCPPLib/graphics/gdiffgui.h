@@ -3,6 +3,8 @@
  * ----------------
  * 
  * @author Marty Stepp
+ * @version 2018/10/06
+ * - allow passing diff flags
  * @version 2018/09/07
  * - added doc comments for new documentation generation
  * @version 2018/08/23
@@ -22,6 +24,7 @@
 #include <string>
 #include <QWidget>
 #include <QSplitter>
+#include "diff.h"
 #include "ginteractor.h"
 #include "gtextarea.h"
 #include "gwindow.h"
@@ -36,22 +39,28 @@
  */
 class GDiffGui {
 public:
+    static const std::string COLOR_EXPECTED;
+    static const std::string COLOR_LINE_NUMBERS;
+    static const std::string COLOR_STUDENT;
+
+    /**
+     * Pops up a diff GUI window to display
+     */
     static void showDialog(const std::string& name1,
                            const std::string& text1,
                            const std::string& name2,
                            const std::string& text2,
+                           int diffFlags = diff::DIFF_DEFAULT_FLAGS,
                            bool showCheckBoxes = false);
 
 private:
     static const bool LINE_NUMBERS;
-    static const std::string COLOR_EXPECTED;
-    static const std::string COLOR_LINE_NUMBERS;
-    static const std::string COLOR_STUDENT;
 
     GDiffGui(const std::string& name1,
              const std::string& text1,
              const std::string& name2,
              const std::string& text2,
+             int diffFlags = diff::DIFF_DEFAULT_FLAGS,
              bool showCheckBoxes = false);   // forbid construction
     virtual ~GDiffGui();
 

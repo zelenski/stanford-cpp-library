@@ -157,7 +157,12 @@ double GInteractor::getPreferredHeight() const {
 }
 
 GDimension GInteractor::getPreferredSize() const {
-    QSize size = getInternalWidget()->getPreferredSize();
+    QSize size;
+    if (getInternalWidget()->hasPreferredSize()) {
+        size = getInternalWidget()->getPreferredSize();
+    } else {
+        size = getWidget()->sizeHint();
+    }
     return GDimension(size.width(), size.height());
 }
 

@@ -6,6 +6,8 @@
  * Qt's QMessageBox and QInputDialog classes.
  *
  * @author Marty Stepp
+ * @version 2018/10/18
+ * - bug fix for showOptionDialog to run on Qt GUI thread
  * @version 2018/08/23
  * - renamed to goptionpane.cpp to replace Java version
  * @version 2018/06/28
@@ -180,24 +182,24 @@ std::string GOptionPane::showOptionDialog(QWidget* parent,
                                           const std::string& title,
                                           const std::string& initiallySelected) {
     std::string titleToUse = title.empty() ? std::string("Select an option") : title;
-    QMessageBox box;
-    if (parent) {
-        box.setParent(parent);
-    }
-    box.setText(QString::fromStdString(message));
-    box.setWindowTitle(QString::fromStdString(titleToUse));
-    box.setAttribute(Qt::WA_QuitOnClose, false);
-
-    for (std::string option : options) {
-        box.addButton(QString::fromStdString(option), QMessageBox::ActionRole);
-    }
-    if (!initiallySelected.empty()) {
-        // TODO: dunno how to set initially selected button properly
-        // box.setDefaultButton(QString::fromStdString(initiallySelected));
-    }
-
     std::string result = "";
-    GThread::runOnQtGuiThread([&box, &options, &result]() {
+    GThread::runOnQtGuiThread([parent, message, &options, titleToUse, initiallySelected, &result]() {
+        QMessageBox box;
+        if (parent) {
+            box.setParent(parent);
+        }
+        box.setText(QString::fromStdString(message));
+        box.setWindowTitle(QString::fromStdString(titleToUse));
+        box.setAttribute(Qt::WA_QuitOnClose, false);
+
+        for (std::string option : options) {
+            box.addButton(QString::fromStdString(option), QMessageBox::ActionRole);
+        }
+        if (!initiallySelected.empty()) {
+            // TODO: dunno how to set initially selected button properly
+            // box.setDefaultButton(QString::fromStdString(initiallySelected));
+        }
+
         int index = box.exec();
         if (index == GOptionPane::InternalResult::INTERNAL_CLOSED_OPTION
                 || index < 0 || index >= options.size()) {

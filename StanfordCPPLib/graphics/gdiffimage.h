@@ -3,6 +3,8 @@
  * ------------------
  * 
  * @author Marty Stepp
+ * @version 2018/10/12
+ * - added "highlight diffs in color" checkbox and functionality
  * @version 2018/09/15
  * - initial version, converted from Java back-end DiffImage class
  */
@@ -36,7 +38,7 @@
  */
 class GDiffImage {
 public:
-    static const int HIGHLIGHT_COLOR_DEFAULT;
+    static const std::string HIGHLIGHT_COLOR_DEFAULT;
 
     static void showDialog(const std::string& name1,
                            GCanvas* image1,
@@ -57,6 +59,8 @@ private:
 
     Q_DISABLE_COPY(GDiffImage)
 
+    void chooseHighlightColor();
+    void drawImages();
     std::string getPixelString(GImage* image, int x, int y) const;
 
     GWindow* _window;
@@ -69,6 +73,10 @@ private:
     GLabel* _southPixelLabel;
     GImage* _image1;
     GImage* _image2;
+    GImage* _imageDiffs;
+    std::string _highlightColor;
+
+    friend class GImage;
 };
 
 #include "private/init.h"   // ensure that Stanford C++ lib is initialized

@@ -2,7 +2,7 @@
  * File: mainwrapper.cpp
  * ---------------------
  * This file contains a 'main' function definition that renames the student's
- * main function to 'studentMain' and wraps it with a real 'main' function that
+ * main function to 'qMain' and wraps it with a real 'main' function that
  * initializes the Stanford C++ library, then runs the student's main function
  * in its own thread.  This is necessary for the Qt version of the library to
  * function properly.
@@ -11,12 +11,17 @@
  * include a .h header from the Stanford C++ library in the file of your project
  * that contains the 'main' function.
  *
+ * @version 2018/10/18
+ * - multi-main initial implementation
+ * @version 2018/10/07
+ * - bug fixes for autograder mode
  * @version 2018/09/23
  * - bug fixes for windows Qt main wrapper
  * @version 2018/09/17
  * - initial version
  */
 
+#ifndef SPL_AUTOGRADER_MODE
 int qMain(int argc, char** argv);
 
 // function prototype declarations;
@@ -26,6 +31,7 @@ int qMain(int argc, char** argv);
 namespace stanfordcpplib {
 extern void initializeLibrary(int argc, char** argv);
 extern void runMainInThread(int (* mainFunc)(void));
+extern int selectMainFunction();
 extern void shutdownLibrary();
 }
 
@@ -42,30 +48,17 @@ int main(int argc, char** argv) {
 
 // initializes the Qt GUI library subsystems and Qt graphical console as needed
 // (autograders will insert their own main wrapper)
-#ifndef SPL_AUTOGRADER_MODE
 int qMain(int argc, char** argv) {
     extern int main();
     stanfordcpplib::initializeLibrary(argc, argv);
-
-    //////////////////////////////////////////////////////////////////////////
-    /// NOTE TO STUDENT!                                                   ///
-    /// If you are directed here by a compiler error,                      ///
-    /// it means that you have not written a main function or that it      ///
-    /// has the wrong parameters.                                          ///
-    /// The heading of your main function must be:                         ///
-    ///                                                                    ///
-    /// int main() { ... }                                                 ///
-    ///                                                                    ///
-    /// (Our library secretly renames your main function to "qMain"        ///
-    ///  so that we can actually control the main flow of execution.)      ///
-    ///                                                                    ///
-    /// You may also need to include a .h header from the Stanford         ///
-    /// C++ library in the file of your project that contains the          ///
-    /// 'main' function.                                                   ///
-    //////////////////////////////////////////////////////////////////////////
-    stanfordcpplib::runMainInThread(main);
-
+    int result = stanfordcpplib::selectMainFunction();
     stanfordcpplib::shutdownLibrary();
-    return 0;
+    return result;
 }
 #endif // SPL_AUTOGRADER_MODE
+
+#include "private/init.h"
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE

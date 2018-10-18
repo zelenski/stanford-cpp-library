@@ -2,6 +2,8 @@
  * File: gwindow.cpp
  * -----------------
  *
+ * @version 2018/10/11
+ * - bug fix for compareToImage function
  * @version 2018/09/23
  * - bug fixes for Windows/MinGW compatibility
  * @version 2018/09/19
@@ -24,7 +26,6 @@
 #define INTERNAL_INCLUDE 1
 #include "gwindow.h"
 #include <QDesktopWidget>
-#include "gdiffgui.h"
 #include <QMenu>
 #include <QMenuBar>
 #include <QSizePolicy>
@@ -33,6 +34,8 @@
 #include <QTimer>
 #include "filelib.h"
 #include "gcolor.h"
+#include "gdiffgui.h"
+#include "gdiffimage.h"
 #include "glabel.h"
 #include "glayout.h"
 #include "gthread.h"
@@ -379,7 +382,8 @@ void GWindow::close() {
 void GWindow::compareToImage(const std::string& filename, bool /*ignoreWindowSize*/) const {
     ensureForwardTargetConstHack();
     GCanvas* fileCanvas = new GCanvas(filename);
-    _canvas->diff(*fileCanvas);
+    GDiffImage::showDialog("expected output", fileCanvas,
+                           "your output", _canvas);
 
     // TODO
     // delete fileCanvas;

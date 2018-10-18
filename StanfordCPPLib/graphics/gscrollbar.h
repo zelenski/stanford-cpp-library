@@ -56,7 +56,7 @@ public:
     /**
      * Frees memory allocated internally by the scroll bar.
      */
-    virtual ~GScrollBar();
+    virtual ~GScrollBar() Q_DECL_OVERRIDE;
 
     /**
      * Returns the scroll bar's extent, meaning the amount of its range that is

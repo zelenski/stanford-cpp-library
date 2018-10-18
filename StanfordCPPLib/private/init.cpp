@@ -105,7 +105,15 @@ void runMainInThread(int (* mainFunc)(void)) {
     QtGui::instance()->startBackgroundEventLoop(mainFunc);
 }
 
+void runMainInThread(std::function<int()> mainFunc) {
+    QtGui::instance()->startBackgroundEventLoop(mainFunc);
+}
+
 void runMainInThreadVoid(void (* mainFuncVoid)(void)) {
+    QtGui::instance()->startBackgroundEventLoopVoid(mainFuncVoid);
+}
+
+void runMainInThreadVoid(std::function<void()> mainFuncVoid) {
     QtGui::instance()->startBackgroundEventLoopVoid(mainFuncVoid);
 }
 

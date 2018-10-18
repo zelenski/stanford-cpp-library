@@ -14,6 +14,7 @@
 #define INTERNAL_INCLUDE 1
 #include "gbutton.h"
 #include <QKeySequence>
+#include "filelib.h"
 #include "gthread.h"
 #include "gwindow.h"
 #include "require.h"
@@ -108,21 +109,23 @@ void GButton::setDoubleClickListener(GEventListenerVoid func) {
 
 void GButton::setIcon(const std::string& filename, bool retainIconSize) {
     GInteractor::setIcon(filename, retainIconSize);
-    GThread::runOnQtGuiThread([this, filename, retainIconSize]() {
-        if (filename.empty()) {
-            _iqpushbutton->setIcon(QIcon());
-        } else {
-            QPixmap pixmap(QString::fromStdString(filename));
-            QIcon icon(pixmap);
-            _iqpushbutton->setIcon(icon);
-            _iqpushbutton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-            if (retainIconSize) {
-                _iqpushbutton->setIconSize(pixmap.size());
-                _iqpushbutton->updateGeometry();
-                _iqpushbutton->update();
+    if (!filename.empty() && fileExists(filename)) {
+        GThread::runOnQtGuiThread([this, filename, retainIconSize]() {
+            if (filename.empty()) {
+                _iqpushbutton->setIcon(QIcon());
+            } else {
+                QPixmap pixmap(QString::fromStdString(filename));
+                QIcon icon(pixmap);
+                _iqpushbutton->setIcon(icon);
+                _iqpushbutton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+                if (retainIconSize) {
+                    _iqpushbutton->setIconSize(pixmap.size());
+                    _iqpushbutton->updateGeometry();
+                    _iqpushbutton->update();
+                }
             }
-        }
-    });
+        });
+    }
 }
 
 void GButton::setText(const std::string& text) {

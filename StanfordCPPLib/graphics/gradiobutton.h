@@ -3,6 +3,8 @@
  * --------------------
  *
  * @author Marty Stepp
+ * @version 2018/10/06
+ * - added toggle()
  * @version 2018/09/08
  * - added doc comments for new documentation generation
  * @version 2018/09/04
@@ -61,7 +63,7 @@ public:
     /**
      * Frees memory allocated internally by the radio button.
      */
-    virtual ~GRadioButton();
+    virtual ~GRadioButton() Q_DECL_OVERRIDE;
 
     /* @inherit */
     virtual std::string getActionCommand() const Q_DECL_OVERRIDE;
@@ -148,6 +150,12 @@ public:
      * Sets the text that will appear next to the radio button.
      */
     virtual void setText(const std::string& text);
+
+    /**
+     * Reverses the checked state of the button, setting it to be checked if it
+     * was unchecked or to be unchecked if it was checked.
+     */
+    virtual void toggle();
 
 private:
     Q_DISABLE_COPY(GRadioButton)

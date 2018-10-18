@@ -3,6 +3,8 @@
  * -------------------
  *
  * @author Marty Stepp
+ * @version 2018/10/06
+ * - added toggle()
  * @version 2018/09/04
  * - added double-click event support
  * @version 2018/08/23
@@ -102,6 +104,10 @@ void GCheckBox::setText(const std::string& text) {
     GThread::runOnQtGuiThread([this, text]() {
         _iqcheckBox->setText(QString::fromStdString(text));
     });
+}
+
+void GCheckBox::toggle() {
+    setChecked(!isChecked());
 }
 
 

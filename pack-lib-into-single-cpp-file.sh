@@ -14,6 +14,11 @@ echo '' > $OUTDIR/$OUTFILE
 for file in $FILES; do
 	# echo $file
 	cat $INDIR/$file >> $OUTDIR/$OUTFILE
+	
+	# append blank line
+	echo "" >> $OUTDIR/$OUTFILE
+	
+	# remove .cpp files from project folders (only need spl.cpp)
 	if [ -e $OUTDIR/$file ]; then
 		rm $OUTDIR/$file
 	fi

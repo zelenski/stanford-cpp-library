@@ -3,6 +3,8 @@
  * ------------------
  * 
  * @author Marty Stepp
+ * @version 2018/10/06
+ * - allow passing diff flags
  * @version 2018/09/27
  * - bug fix for allocating on heap rather than stack
  * @version 2018/08/23
@@ -17,7 +19,7 @@
 #include <QScrollBar>
 #include <string>
 #include "consoletext.h"
-#include "diff.h"
+#include "gthread.h"
 #undef INTERNAL_INCLUDE
 
 /*static*/ const std::string GDiffGui::COLOR_EXPECTED = "#009900";
@@ -29,8 +31,9 @@ void GDiffGui::showDialog(const std::string& name1,
                           const std::string& text1,
                           const std::string& name2,
                           const std::string& text2,
+                          int diffFlags,
                           bool showCheckBoxes) {
-    /* GDiffGui* diffGui = */ new GDiffGui(name1, text1, name2, text2, showCheckBoxes);
+    /* GDiffGui* diffGui = */ new GDiffGui(name1, text1, name2, text2, diffFlags, showCheckBoxes);
     // TODO: delete diffGui;
     // but don't do it too quickly or the lambda functions won't be able to
     // work on the window
@@ -40,10 +43,10 @@ GDiffGui::GDiffGui(const std::string& name1,
                    const std::string& text1,
                    const std::string& name2,
                    const std::string& text2,
+                   int diffFlags,
                    bool /*showCheckBoxes*/) {
-    GThread::runOnQtGuiThread([this, name1, text1, name2, text2]() {
-        int flags = diff::DIFF_DEFAULT_FLAGS;
-        std::string diffs = diff::diff(text1, text2, flags);
+    GThread::runOnQtGuiThread([this, name1, text1, name2, text2, diffFlags]() {
+        std::string diffs = diff::diff(text1, text2, diffFlags);
 
         _window = new GWindow(800, 600);
         _window->setTitle("Compare Output");

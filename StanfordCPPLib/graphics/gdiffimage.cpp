@@ -3,6 +3,8 @@
  * --------------------
  * 
  * @author Marty Stepp
+ * @version 2018/10/12
+ * - added "highlight diffs in color" checkbox and functionality
  * @version 2018/09/15
  * - initial version, converted from Java back-end DiffImage class
  */
@@ -15,18 +17,21 @@
 #include <iostream>
 #include <string>
 #include "gcolor.h"
+#include "gcolorchooser.h"
 #include "gfont.h"
+#include "gspacer.h"
+#include "gthread.h"
 #include "require.h"
 #undef INTERNAL_INCLUDE
 
-/*static*/ const int GDiffImage::HIGHLIGHT_COLOR_DEFAULT = 0x8c1414;   // 140, 20, 20
+/*static*/ const std::string GDiffImage::HIGHLIGHT_COLOR_DEFAULT = "#e000e0";   // 224, 0, 224
 
 /*static*/ void GDiffImage::showDialog(
         const std::string& name1,
         GCanvas* image1,
         const std::string& name2,
         GCanvas* image2) {
-    // TODO: free memory
+    // TODO: free memory on close
     new GDiffImage(name1, image1, name2, image2);
 }
 
@@ -50,36 +55,44 @@ GDiffImage::GDiffImage(
 
     _image1 = image1->toGImage();
     _image2 = image2->toGImage();
+    _imageDiffs = nullptr;
     int diffPixelsCount = image1->countDiffPixels(image2);
     _image2->setOpacity(0.5);
 
     // set up window and widgets
     _window = new GWindow(800, 600);
     _window->setTitle("Compare Graphical Output");
+    _window->setResizable(false);
+    _window->setAutoRepaint(false);
 
     _slider = new GSlider();
     _slider->setActionListener([this]() {
         _image2->setOpacity(_slider->getValue() / 100.0);
+        drawImages();
     });
 
-    _highlightDiffsBox = new GCheckBox("Highlight diffs in color: ");
+    _highlightDiffsBox = new GCheckBox("&Highlight diffs in color: ");
     _highlightDiffsBox->setActionListener([this]() {
         _slider->setEnabled(!_highlightDiffsBox->isChecked());
+        drawImages();
     });
 
-    _colorButton = new GButton("X");
-    _colorButton->setBackground(HIGHLIGHT_COLOR_DEFAULT);
-    _colorButton->setForeground(HIGHLIGHT_COLOR_DEFAULT);
+    _highlightColor = HIGHLIGHT_COLOR_DEFAULT;
+    _colorButton = new GButton("&X");
+    _colorButton->setBackground(_highlightColor);
+    _colorButton->setForeground(_highlightColor);
+    _colorButton->setActionListener([this]() {
+        chooseHighlightColor();
+    });
 
     _diffPixelsLabel = new GLabel("(" + integerToString(diffPixelsCount) + " pixels differ)");
     GFont::boldFont(_diffPixelsLabel);
-    // TODO
-    // setDiffPixelsText();
 
     _imageLabel1 = new GLabel(name1);
     _imageLabel2 = new GLabel(name2);
     _southPixelLabel = new GLabel("");
 
+    // TODO?
     // setupMenuBar();
 
     // do layout
@@ -93,6 +106,9 @@ GDiffImage::GDiffImage(
 
     GContainer* south2 = new GContainer();
     south2->add(_diffPixelsLabel);
+    south2->add(new GSpacer(20, 1));
+    south2->add(_highlightDiffsBox);
+    south2->add(_colorButton);
     south->add(south2);
 
     GContainer* south3 = new GContainer();
@@ -104,10 +120,10 @@ GDiffImage::GDiffImage(
     // poke the canvas
     double canvasWidth  = std::max(_image1->getWidth(),  _image2->getWidth());
     double canvasHeight = std::max(_image1->getHeight(), _image2->getHeight());
-    _window->add(_image1);
-    _window->add(_image2);
+    // _window->add(_image1);
+    // _window->add(_image2);
 
-    _window->setMouseListener([this](GEvent event) {
+    _window->getCanvas()->setMouseListener([this](GEvent event) {
         if (event.getType() != MOUSE_MOVED) {
             return;
         }
@@ -122,6 +138,9 @@ GDiffImage::GDiffImage(
 
     // set up events
     _window->setCanvasSize(canvasWidth, canvasHeight);
+    _window->drawPixel(0, 0, 0xffffff);
+    drawImages();
+
     _window->center();
     _window->show();
 }
@@ -132,6 +151,60 @@ GDiffImage::~GDiffImage() {
     _slider = nullptr;
     _highlightDiffsBox = nullptr;
     _colorButton = nullptr;
+}
+
+void GDiffImage::chooseHighlightColor() {
+    std::string color = GColorChooser::showDialog(
+            /* parent */ _window,
+            /* title */ "Choose a highlight color",
+            /* initial color */ _highlightColor);
+    if (color.empty()) {
+        return;
+    }
+    _highlightColor = color;
+    _colorButton->setBackground(color);
+    _colorButton->setForeground(color);
+    drawImages();
+}
+
+void GDiffImage::drawImages() {
+    _window->clearCanvas();
+    if (_highlightDiffsBox->isChecked()) {
+        GThread::runOnQtGuiThreadAsync([this]() {
+            // draw the highlighted diffs (if so desired)
+            int w1 = _image1->getWidth();
+            int h1 = _image1->getHeight();
+            int w2 = _image2->getWidth();
+            int h2 = _image2->getHeight();
+
+            int wmax = std::max(w1, w2);
+            int hmax = std::max(h1, h2);
+
+            if (!_imageDiffs) {
+                _imageDiffs = new GImage(wmax, hmax);
+            }
+            QImage* imgDiff = _imageDiffs->getQImage();
+
+            // check each pair of pixels
+            // (access raw QImages for speed)
+            int highlightColor = GColor::convertColorToRGB(_highlightColor) | 0xff000000;
+            QImage* img1 = _image1->getQImage();
+            QImage* img2 = _image2->getQImage();
+            for (int y = 0; y < hmax; y++) {
+                for (int x = 0; x < wmax; x++) {
+                    int pixel1 = (x < w1 && y < h1) ? (img1->pixel(x, y) & 0xffffffff) : 0;
+                    int pixel2 = (x < w2 && y < h2) ? (img2->pixel(x, y) & 0xffffffff) : 0;
+                    imgDiff->setPixel(x, y, (pixel1 == pixel2) ? pixel1 : highlightColor);
+                }
+            }
+            _window->draw(_imageDiffs);
+        });
+    } else {
+        _window->draw(_image1);
+        _window->draw(_image2);   // possibly at sub-1 opacity
+    }
+
+    _window->repaint();
 }
 
 std::string GDiffImage::getPixelString(GImage* image, int x, int y) const {

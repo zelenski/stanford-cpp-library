@@ -18,6 +18,7 @@
 #define INTERNAL_INCLUDE 1
 #include "glabel.h"
 #include <iostream>
+#include "filelib.h"
 #include "glayout.h"
 #include "gthread.h"
 #include "gwindow.h"
@@ -184,25 +185,27 @@ void GLabel::setHeight(double height) {
 
 void GLabel::setIcon(const std::string& filename, bool retainIconSize) {
     GInteractor::setIcon(filename, retainIconSize);
-    GThread::runOnQtGuiThread([this, filename, retainIconSize]() {
-        if (filename.empty()) {
-            _iqlabel->setPixmap(QPixmap());
-        } else {
-            QPixmap pixmap(QString::fromStdString(filename));
-            _iqlabel->setPixmap(pixmap);
-            if (retainIconSize) {
-                // TODO
-                // _iqlabel->setIconSize(pixmap.size());
-                _iqlabel->updateGeometry();
-                _iqlabel->update();
-            }
+    if (!filename.empty() && fileExists(filename)) {
+        GThread::runOnQtGuiThread([this, filename, retainIconSize]() {
+            if (filename.empty()) {
+                _iqlabel->setPixmap(QPixmap());
+            } else {
+                QPixmap pixmap(QString::fromStdString(filename));
+                _iqlabel->setPixmap(pixmap);
+                if (retainIconSize) {
+                    // TODO
+                    // _iqlabel->setIconSize(pixmap.size());
+                    _iqlabel->updateGeometry();
+                    _iqlabel->update();
+                }
 
-            // TODO: loses text; how to have both icon and text in same label?
-            if (!getText().empty()) {
-                std::cerr << "Warning: a GLabel cannot currently have both text and icon." << std::endl;
+                // TODO: loses text; how to have both icon and text in same label?
+                if (!getText().empty()) {
+                    std::cerr << "Warning: a GLabel cannot currently have both text and icon." << std::endl;
+                }
             }
-        }
-    });
+        });
+    }
 }
 
 void GLabel::setLabel(const std::string& text) {
