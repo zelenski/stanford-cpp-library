@@ -188,6 +188,8 @@ int f() {
 int main() {
     cout << "Hello, world!" << endl;
     cout << "f is: " << f() << endl;
+    int x = getInteger("Type x: ");
+    cout << "You typed " << x << endl;
     return 0;
 }
 

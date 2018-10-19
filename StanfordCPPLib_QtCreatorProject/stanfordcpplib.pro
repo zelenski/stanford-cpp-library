@@ -289,8 +289,7 @@ exists($$PWD/output/*) {
 # A few overly pedantic/confusing errors are turned off for simplicity.)
 CONFIG += no_include_pwd         # make sure we do not accidentally #include files placed in 'resources'
 CONFIG += sdk_no_version_check   # removes spurious warnings on Mac OS X
-CONFIG -= c++11                  # turn off default -std=gnu++11
-CONFIG += c++11
+CONFIG += c++14
 
 # uncomment this if you want to dump the preprocessor output into the .o files
 # (useful when debugging advanced preprocessor hacking)
@@ -314,6 +313,7 @@ QMAKE_CXXFLAGS += -Wunreachable-code
 exists($$PWD/lib/autograder/*.h) | exists($$PWD/lib/StanfordCPPLib/autograder/$$PROJECT_FILTER/*.h) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
     # omit some warnings/errors in autograder projects
     # (largely because the Google Test framework violates them a ton of times)
+    QMAKE_CXXFLAGS += -Wno-deprecation
     QMAKE_CXXFLAGS += -Wno-reorder
     QMAKE_CXXFLAGS += -Wno-unused-function
     QMAKE_CXXFLAGS += -Wno-useless-cast
