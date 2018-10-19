@@ -3,6 +3,8 @@
  * License: BSD licence (http://www.opensource.org/licenses/bsd-license.php)
  *
  * @author Marty Stepp (made changes to F.Orderud version)
+ * @version 2018/10/18
+ * - added addr2line_functionName to resolve some function names not in backtrace
  * @version 2016/12/01
  * - bug fixes for call stack line number retrieval
  * - slight refactor of entry class
@@ -23,6 +25,7 @@ int addr2line(void* addr, std::string& line);
 int addr2line_all(std::vector<void*> addrsVector, std::string& output);
 int addr2line_all(void** addrs, int length, std::string& output);
 std::string addr2line_clean(std::string line);
+std::string addr2line_functionName(std::string line);
 
 /*
  * Function to get/set a fake call stack pointer for use in printing a stack trace.
@@ -48,13 +51,13 @@ public:
     /** Serialize entry into a text string. */
     std::string toString() const {
         std::ostringstream os;
-        os << file;
+        os << "file=\"" << file << "\"";
         if (line > 0) {
-            os << " (" << line << ")";
+            os << " (line=" << line << ")";
         } else if (!lineStr.empty()) {
-            os << " (" << lineStr << ")";
+            os << " (lineStr=\"" << lineStr << "\")";
         }
-        os << ": " << function;
+        os << " function=\"" << function << "\"";
         return os.str();
     }
 };

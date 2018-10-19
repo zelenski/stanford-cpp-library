@@ -2,6 +2,10 @@
  * File: gthread.cpp
  * -----------------
  *
+ * This file implements the members declared in gthread.h.
+ *
+ * @version 2018/10/18
+ * - improved thread names
  * @version 2018/10/01
  * - bug fix where output wasn't showing up on the console if main ended too soon
  * @version 2018/09/23
@@ -22,9 +26,11 @@
 #include "require.h"
 #undef INTERNAL_INCLUDE
 
-GFunctionThread::GFunctionThread(GThunk func)
+GFunctionThread::GFunctionThread(GThunk func, const std::string& threadName)
         : _func(func) {
-    // empty
+    if (!threadName.empty()) {
+        setObjectName(QString::fromStdString(threadName));
+    }
 }
 
 void GFunctionThread::run() {
@@ -70,8 +76,8 @@ GThread::GThread() {
     return _qtMainThread != nullptr;
 }
 
-/*static*/ void GThread::runInNewThread(GThunk func) {
-    GFunctionThread* thread = new GFunctionThread(func);
+/*static*/ void GThread::runInNewThread(GThunk func, const std::string& threadName) {
+    GFunctionThread* thread = new GFunctionThread(func, threadName);
     thread->start();
     while (!thread->isFinished()) {
         sleep(10);
@@ -79,8 +85,8 @@ GThread::GThread() {
     delete thread;
 }
 
-/*static*/ QThread* GThread::runInNewThreadAsync(GThunk func) {
-    GFunctionThread* thread = new GFunctionThread(func);
+/*static*/ QThread* GThread::runInNewThreadAsync(GThunk func, const std::string& threadName) {
+    GFunctionThread* thread = new GFunctionThread(func, threadName);
     thread->start();
     return thread;
 }
@@ -120,6 +126,7 @@ GThread::GThread() {
 /*static*/ void GThread::setMainThread() {
     if (!_qtMainThread) {
         _qtMainThread = QThread::currentThread();
+        _qtMainThread->setObjectName("Qt GUI Thread");
     }
 }
 
@@ -160,13 +167,13 @@ GStudentThread::GStudentThread(GThunkInt mainFunc)
         : _mainFunc(mainFunc),
           _mainFuncVoid(nullptr),
           _result(0) {
-    this->setObjectName(QString::fromStdString("GStudentThread"));   // TODO: unique name
+    this->setObjectName(QString::fromStdString("Main (student)"));
 }
 
 GStudentThread::GStudentThread(GThunk mainFunc)
         : _mainFunc(nullptr),
           _mainFuncVoid(mainFunc) {
-    this->setObjectName(QString::fromStdString("GStudentThread"));
+    this->setObjectName(QString::fromStdString("Main (student)"));
 }
 
 int GStudentThread::getResult() const {

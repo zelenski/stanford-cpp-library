@@ -18,7 +18,8 @@
 
 /* Definitions for the ErrorException class */
 
-ErrorException::ErrorException(std::string msg) {
+ErrorException::ErrorException(std::string msg)
+        : _kind("error") {
     _msg = msg;
 
 #if defined(SPL_CONSOLE_PRINT_EXCEPTIONS)
@@ -48,6 +49,10 @@ void ErrorException::dump(std::ostream& out) const {
     out.flush();
 }
 
+std::string ErrorException::getKind() const {
+    return _kind;
+}
+
 std::string ErrorException::getMessage() const {
     return _msg;
 }
@@ -72,6 +77,10 @@ std::string ErrorException::insertStarsBeforeEachLine(const std::string& s) {
         result += line;
     }
     return result;
+}
+
+void ErrorException::setKind(const std::string& kind) {
+    _kind = kind;
 }
 
 void ErrorException::setStackTrace(const std::string& stackTrace) {

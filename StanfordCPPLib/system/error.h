@@ -4,6 +4,8 @@
  * This file defines the <code>ErrorException</code> class and the
  * <code>error</code> function.
  *
+ * @version 2018/10/18
+ * - added getKind for ErrorExceptions that wrap other types of errors
  * @version 2018/09/25
  * - added doc comments for new documentation generation
  * @version 2017/11/29
@@ -45,22 +47,84 @@
  */
 class ErrorException : public std::exception {
 public:
+    /**
+     * Creates a new ErrorException with the given error message.
+     */
     ErrorException(std::string msg);
+
+    /**
+     * Frees any memory allocated by the exception.
+     */
     virtual ~ErrorException() throw ();
+
+    /**
+     * Prints the exception to the standard error stream (cerr),
+     * including its message and stack trace if any.
+     */
     virtual void dump() const;
+
+    /**
+     * Prints the exception to the given output stream,
+     * including its message and stack trace if any.
+     */
     virtual void dump(std::ostream& out) const;
+
+    /**
+     * Returns what kind of exception this is.
+     * In general this returns "error", but in some cases we catch other kinds
+     * of exceptions (like thrown ints or strings) and wrap them up as
+     * ErrorExceptions. In such cases, the kind will be "int" or "string" etc.
+     */
+    virtual std::string getKind() const;
+
+    /**
+     * Returns the exception's error message as passed to its constructor.
+     */
     virtual std::string getMessage() const;
+
+    /**
+     * Returns a stack trace for this exception as a multi-line string.
+     * See exceptions.h/cpp for descriptions of the format.
+     * Not every exception has a proper stack trace, based on when/why it was
+     * thrown, platform incompatibilities, and other issues; use hasStackTrace to
+     * check if a given exception's stack trace is populated.
+     */
     virtual std::string getStackTrace() const;
+
+    /**
+     * Returns whether this exception has a non-empty stack trace.
+     * Not every exception has a proper stack trace, based on when/why it was
+     * thrown, platform incompatibilities, and other issues; use hasStackTrace to
+     * check if a given exception's stack trace is populated.
+     */
     virtual bool hasStackTrace() const;
+
+    /**
+     * Sets what kind of exception this is.
+     * Default is "error".
+     */
+    void setKind(const std::string& kind);
+
+    /**
+     * Returns the exception's error message as a C string.
+     */
     virtual const char* what() const throw ();
 
 protected:
+    /**
+     * Sets this exception's stack trace to the given multi-line string.
+     */
     void setStackTrace(const std::string& stackTrace);
 
 private:
+    std::string _kind;
     std::string _msg;
     std::string _stackTrace;
 
+    /**
+     * Prepends "*** " to each line of the given string.
+     * Used to format stack traces that print to the console.
+     */
     static std::string insertStarsBeforeEachLine(const std::string& s);
 };
 

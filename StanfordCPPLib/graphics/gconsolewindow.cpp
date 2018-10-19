@@ -301,7 +301,7 @@ void GConsoleWindow::checkForUpdates() {
         GOptionPane::showMessageDialog(
                     /* parent  */ getWidget(),
                     /* message */ message);
-    });
+    }, "Check for Updates");
 }
 
 void GConsoleWindow::clearConsole() {
@@ -602,7 +602,7 @@ void GConsoleWindow::loadInputScript(int number) {
         GThread::runInNewThreadAsync([this, expectedOutputFile]() {
             pause(1000);
             compareOutput(expectedOutputFile);
-        });
+        }, "Compare Output");
     }
 }
 

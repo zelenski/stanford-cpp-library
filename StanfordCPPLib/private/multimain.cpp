@@ -131,7 +131,6 @@ int selectMainFunction() {
     stanfordcpplib::shutdownLibrary();
     return 0;
 }
-} // namespace stanfordcpplib
 #endif // SPL_AUTOGRADER_MODE
 
-#include "private/init.h"
+} // namespace stanfordcpplib
