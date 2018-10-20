@@ -22,14 +22,22 @@
  * - added listDirectory overload that returns a Vector
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _filelib_h
 #define _filelib_h
 
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>
+
+#define INTERNAL_INCLUDE 1
 #include "vector.h"
+#undef INTERNAL_INCLUDE
 
 /**
  * Creates a new directory for the specified path.  The
@@ -176,7 +184,7 @@ void listDirectory(const std::string& path, Vector<std::string>& list);
  * to the STL string vector <code>list</code>.  This list excludes the
  * names <code>.</code> and <code>..</code> entries.
  */
-void listDirectory(const std::string& path, std::vector<std::string>& list);
+void listDirectory(const std::string& path, Vector<std::string>& list);
 
 /**
  * Adds an alphabetized list of the files in the specified directory
@@ -381,7 +389,7 @@ void readEntireFile(std::istream& is, Vector<std::string>& lines);
  * <code>vector</code> or a <code>Vector</code> as defined in the
  * Stanford C++ libraries.
  */
-void readEntireFile(std::istream& is, std::vector<std::string>& lines);
+void readEntireFile(std::istream& is, Vector<std::string>& lines);
 
 /**
  * An overload of readEntireFile that just returns the whole file as a very
@@ -460,10 +468,8 @@ namespace platform {
     bool filelib_isDirectory(const std::string& filename);
     bool filelib_isFile(const std::string& filename);
     bool filelib_isSymbolicLink(const std::string& filename);
-    void filelib_listDirectory(const std::string& path, std::vector<std::string>& list);
+    void filelib_listDirectory(const std::string& path, Vector<std::string>& list);
     void filelib_setCurrentDirectory(const std::string& path);
 }
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _filelib_h

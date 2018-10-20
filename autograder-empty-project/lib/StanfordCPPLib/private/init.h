@@ -27,6 +27,7 @@
 #define _init_h
 
 #include <cstdlib>
+#include <functional>
 #include <stdio.h>
 
 namespace stanfordcpplib {
@@ -62,7 +63,19 @@ void runMainInThread(int (* mainFunc)(void));
  * Runs the student's main function in its own thread, creating that thread
  * as an object of type GStudentThread.
  */
+void runMainInThread(std::function<int()> mainFunc);
+
+/**
+ * Runs the student's main function in its own thread, creating that thread
+ * as an object of type GStudentThread.
+ */
 void runMainInThreadVoid(void (* mainFuncVoid)(void));
+
+/**
+ * Runs the student's main function in its own thread, creating that thread
+ * as an object of type GStudentThread.
+ */
+void runMainInThreadVoid(std::function<void()> mainFuncVoid);
 
 /**
  * Sets whether the std::exit function will be enabled or not.

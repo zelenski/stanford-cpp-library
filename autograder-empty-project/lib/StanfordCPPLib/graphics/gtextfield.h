@@ -13,13 +13,16 @@
  * - initial version
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+// signal that GUI system is in use (so it will be initialized)
+#define SPL_QT_GUI_IN_USE 1
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _gtextfield_h
 #define _gtextfield_h
-
-// signal that GUI system is in use (so it will be initialized)
-#ifndef INTERNAL_INCLUDE
-#define SPL_QT_GUI_IN_USE 1
-#endif // INTERNAL_INCLUDE
 
 #include <initializer_list>
 #include <string>
@@ -29,8 +32,12 @@
 #include <QDoubleSpinBox>
 #include <QString>
 #include <QWidget>
+
+#define INTERNAL_INCLUDE 1
 #include "ginteractor.h"
+#define INTERNAL_INCLUDE 1
 #include "vector.h"
+#undef INTERNAL_INCLUDE
 
 class _Internal_QLineEdit;
 class _Internal_QSpinBox;
@@ -441,10 +448,4 @@ private:
     GTextField* _gtextfield;
 };
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
 #endif // _gtextfield_h
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE

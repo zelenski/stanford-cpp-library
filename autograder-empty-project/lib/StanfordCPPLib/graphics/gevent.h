@@ -13,19 +13,25 @@
  * - initial version
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+// signal that GUI system is in use (so it will be initialized)
+#define SPL_QT_GUI_IN_USE 1
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _gevent_h
 #define _gevent_h
-
-// signal that GUI system is in use (so it will be initialized)
-#ifndef INTERNAL_INCLUDE
-#define SPL_QT_GUI_IN_USE 1
-#endif // INTERNAL_INCLUDE
 
 #include <functional>
 #include <iostream>
 #include <string>
 #include <QEvent>
+
+#define INTERNAL_INCLUDE 1
 #include "gtypes.h"
+#undef INTERNAL_INCLUDE
 
 class GEvent;
 class GInteractor;
@@ -646,11 +652,4 @@ GMouseEvent waitForClick() /*Q_DECL_DEPRECATED*/;
  */
 GEvent waitForEvent(int mask = ANY_EVENT) /*Q_DECL_DEPRECATED*/;
 
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
 #endif // _gevent_h
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE

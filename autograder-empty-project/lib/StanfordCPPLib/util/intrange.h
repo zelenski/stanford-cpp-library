@@ -15,14 +15,24 @@
  * - initial version
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _intrange_h
 #define _intrange_h
 
 #include <iostream>
 #include <iterator>
 #include <limits>
+
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "point.h"
+#undef INTERNAL_INCLUDE
 
 /**
  * An IntRange is an iterable contiguous range of integers.
@@ -548,7 +558,5 @@ std::ostream& operator <<(std::ostream& out, const IntRange2D& r);
  * Reads the given 2D range to the given input stream in its toString format.
  */
 std::istream& operator >>(std::istream& input, IntRange2D& r);
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _intrange_h

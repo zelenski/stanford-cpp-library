@@ -41,6 +41,12 @@
  * - fixed bug in addAll method that was not returning reference properly.
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _vector_h
 #define _vector_h
 
@@ -50,12 +56,16 @@
 #include <iterator>
 #include <sstream>
 #include <string>
-#include <vector>
+
+#define INTERNAL_INCLUDE 1
 #include "collections.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
+#define INTERNAL_INCLUDE 1
 #include "random.h"
-#include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 /**
  * This class stores an ordered list of values similar to an array.
@@ -81,12 +91,6 @@ public:
      * @bigoh O(N)
      */
     explicit Vector(int n, ValueType value = ValueType());
-
-    /**
-     * Copies an STL vector.
-     * @bigoh O(N)
-     */
-    Vector(const std::vector<ValueType>& v);   // implicit
 
     /**
      * Uses an initializer list to set up the vector.
@@ -347,12 +351,6 @@ public:
      * @bigoh O(N)
      */
     Vector<ValueType> subList(int start, int length) const;
-
-    /**
-     * Returns an STL vector object with the same elements as this Vector.
-     * @bigoh O(N)
-     */
-    std::vector<ValueType> toStlVector() const;
 
     /**
      * Converts the vector to a printable string representation
@@ -747,22 +745,12 @@ Vector<ValueType>::Vector(int n, ValueType value)
           capacity(n),
           count(n) {
     if (n < 0) {
-        error("Vector::constructor: n cannot be negative: " + integerToString(n));
+        error("Vector::constructor: n cannot be negative");
     } else if (n > 0) {
         elements = new ValueType[n];
         for (int i = 0; i < n; i++) {
             elements[i] = value;
         }
-    }
-}
-
-template <typename ValueType>
-Vector<ValueType>::Vector(const std::vector<ValueType>& v) {
-    count = v.size();
-    capacity = v.size();
-    elements = new ValueType[count];
-    for (int i = 0; i < count; i++) {
-        elements[i] = v[i];
     }
 }
 
@@ -1097,15 +1085,6 @@ Vector<ValueType> Vector<ValueType>::subList(int start, int length) const {
 }
 
 template <typename ValueType>
-std::vector<ValueType> Vector<ValueType>::toStlVector() const {
-    std::vector<ValueType> v;
-    for (int i = 0; i < count; i++) {
-        v.push_back(elements[i]);
-    }
-    return v;
-}
-
-template <typename ValueType>
 std::string Vector<ValueType>::toString() const {
     std::ostringstream os;
     os << *this;
@@ -1297,7 +1276,5 @@ template <typename T>
 void shuffle(Vector<T>& v) {
     v.shuffle();
 }
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _vector_h

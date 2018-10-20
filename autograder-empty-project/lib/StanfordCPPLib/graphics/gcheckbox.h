@@ -17,6 +17,12 @@
  * - initial version
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _gcheckbox_h
 #define _gcheckbox_h
 
@@ -33,7 +39,10 @@
 #include <QMouseEvent>
 #include <QSize>
 #include <QWidget>
+
+#define INTERNAL_INCLUDE 1
 #include "ginteractor.h"
+#undef INTERNAL_INCLUDE
 
 class _Internal_QCheckBox;
 
@@ -180,10 +189,4 @@ private:
     GCheckBox* _gcheckBox;
 };
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
 #endif // _gcheckbox_h
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE

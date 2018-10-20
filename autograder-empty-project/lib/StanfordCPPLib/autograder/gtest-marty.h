@@ -26,6 +26,8 @@
 //#include "autogradertest.h"
 #include "gtest.h"
 
+class ErrorException;
+
 /*
  * A big nasty macro that defines a subclass of AutograderTest to
  * represent a single unit test.
@@ -41,7 +43,7 @@
         std::string getTestName() { return this->name; } \
         std::string getTestFullName() { return this->category.empty() ? this->name : (this->category + "_" + this->name); } \
     private: \
-        virtual void TestRealBody(); \
+        virtual void TestRealBody() throw (ErrorException); \
         virtual void TestBody(); \
         static ::testing::TestInfo* const test_info_ GTEST_ATTRIBUTE_UNUSED_; \
         GTEST_DISALLOW_COPY_AND_ASSIGN_(GTEST_TEST_CLASS_NAME_(test_case_name, test_name)); \
@@ -65,7 +67,7 @@
         autograder->setCurrentTestCaseName(this->getTestFullName()); \
         autograder->runTest(this); \
     } \
-    void GTEST_TEST_CLASS_NAME_(test_case_name, test_name)::TestRealBody()
+    void GTEST_TEST_CLASS_NAME_(test_case_name, test_name)::TestRealBody() throw (ErrorException)
 
 #define TIMED_TEST(test_fixture, test_name, timeoutMS)\
   GTEST_TEST_TIMED(test_fixture, test_name, test_fixture, timeoutMS, \

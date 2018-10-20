@@ -16,6 +16,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "error.h"
 #include "gtest.h"
 #include "timer.h"
 
@@ -72,7 +73,7 @@ public:
     virtual void SetUp();
     virtual void TearDown();
     virtual void TestBody();   // override me
-    virtual void TestRealBody();
+    virtual void TestRealBody() throw(ErrorException);
 
 protected:
     std::string name;       // test's name

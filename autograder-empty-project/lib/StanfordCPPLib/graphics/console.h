@@ -10,6 +10,8 @@
  * again for that program.
  * 
  * @author Marty Stepp
+ * @version 2018/10/18
+ * - fixed includes to avoid accidentally enabling GUI unintentionally
  * @version 2018/09/08
  * - added doc comments for new documentation generation
  * @version 2018/08/27
@@ -25,13 +27,22 @@
  * - initial version, based on io/console.h
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _console_h
 #define _console_h
 
 #include <iostream>
 #include <sstream>
 #include <string>
-#include "gconsolewindow.h"
+
+class GConsoleWindow;
+class GDimension;
+class GPoint;
 
 /**
  * Erases the contents of the console window.
@@ -50,7 +61,7 @@ bool getConsoleClearEnabled();
  * Returns what the console will do when the user hits its "close" button.
  * By default, this is CONSOLE_HIDE_ON_CLOSE unless set otherwise.
  */
-GWindow::CloseOperation getConsoleCloseOperation();
+/* GWindow::CloseOperation */ int getConsoleCloseOperation();
 
 /**
  * Returns whether or not the input/output from the Stanford graphical
@@ -72,7 +83,7 @@ bool getConsoleEnabled();
  * @private
  * @deprecated
  */
-bool getConsoleEventOnClose() Q_DECL_DEPRECATED;
+bool getConsoleEventOnClose();
 
 /**
  * Returns whether the overall C++ program will terminate if the console
@@ -167,7 +178,7 @@ void setConsoleClearEnabled(bool value);
 /**
  * Sets what the console should do when the user hits its "close" button.
  */
-void setConsoleCloseOperation(GWindow::CloseOperation op);
+void setConsoleCloseOperation(/*GWindow::CloseOperation*/ int op);
 
 /**
  * Enables or disables echoing the input/output from the Stanford graphical
@@ -190,7 +201,7 @@ void setConsoleErrorColor(const std::string& color);
  * @private
  * @deprecated
  */
-void setConsoleEventOnClose(bool eventOnClose) Q_DECL_DEPRECATED;
+void setConsoleEventOnClose(bool eventOnClose);
 
 /**
  * Sets whether the overall C++ program should terminate if the console
@@ -268,8 +279,6 @@ void shutdownConsole();
 
 // defined in gwindow.h/cpp
 extern void pause(double milliseconds);
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _console_h
 

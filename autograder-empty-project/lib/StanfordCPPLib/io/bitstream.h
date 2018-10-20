@@ -25,6 +25,12 @@
  * - made toPrintable non-static and visible
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _bitstream_h
 #define _bitstream_h
 
@@ -327,7 +333,5 @@ private:
  * @example toPrintable('\n') returns "\\n"
  */
 std::string toPrintable(int ch);
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _bitstream_h

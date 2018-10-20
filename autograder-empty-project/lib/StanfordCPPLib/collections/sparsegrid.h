@@ -40,18 +40,34 @@
  * @since 2014/07/09
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _sparsegrid_h
 #define _sparsegrid_h
 
 #include <initializer_list>
+
+#define INTERNAL_INCLUDE 1
 #include "collections.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "gridlocation.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
+#define INTERNAL_INCLUDE 1
 #include "map.h"
+#define INTERNAL_INCLUDE 1
 #include "random.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "vector.h"
+#undef INTERNAL_INCLUDE
 
 /*
  * Class: SparseGrid<ValueType>
@@ -1145,7 +1161,5 @@ const T& randomElement(const SparseGrid<T>& grid) {
     int col = randomKey(grid.elements[row]);
     return grid.get(row, col);
 }
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _sparsegrid_h

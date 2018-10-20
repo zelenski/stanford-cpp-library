@@ -1,5 +1,5 @@
 /*
- * File: LinkedHashSet.h
+ * File: linkedhashset.h
  * ---------------------
  * This file exports the <code>LinkedHashSet</code> class, which
  * implements an efficient abstraction for storing sets of values.
@@ -23,15 +23,27 @@
  * @since 2015/10/26
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _linkedhashset_h
 #define _linkedhashset_h
 
 #include <initializer_list>
 #include <iostream>
+
+#define INTERNAL_INCLUDE 1
 #include "collections.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
+#define INTERNAL_INCLUDE 1
 #include "linkedhashmap.h"
+#undef INTERNAL_INCLUDE
 
 /*
  * Class: LinkedHashSet<ValueType>
@@ -897,7 +909,5 @@ template <typename T>
 const T& randomElement(const LinkedHashSet<T>& set) {
     return stanfordcpplib::collections::randomElement(set);
 }
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _linkedhashset_h

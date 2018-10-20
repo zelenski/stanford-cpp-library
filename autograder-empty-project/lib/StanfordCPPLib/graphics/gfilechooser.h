@@ -14,17 +14,23 @@
  * - initial version
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+// signal that GUI system is in use (so it will be initialized)
+#define SPL_QT_GUI_IN_USE 1
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _gfilechooser_h
 #define _gfilechooser_h
 
-// signal that GUI system is in use (so it will be initialized)
-#ifndef INTERNAL_INCLUDE
-#define SPL_QT_GUI_IN_USE 1
-#endif // INTERNAL_INCLUDE
-
 #include <string>
 #include <QWidget>
+
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#undef INTERNAL_INCLUDE
 
 /**
  * The GFileChooser class contains static methods for popping up file-choosing
@@ -118,10 +124,4 @@ private:
     static std::string normalizeFileFilter(const std::string& fileFilter);
 };
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
 #endif // _gfilechooser_h
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE

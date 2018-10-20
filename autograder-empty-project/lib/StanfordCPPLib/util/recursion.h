@@ -12,6 +12,12 @@
  * - initial version (extracted from exceptions.h)
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _recursion_h
 #define _recursion_h
 

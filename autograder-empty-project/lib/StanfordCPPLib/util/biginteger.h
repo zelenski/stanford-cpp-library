@@ -33,12 +33,21 @@
  * - initial version
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _biginteger_h
 #define _biginteger_h
 
 #include <iostream>
 #include <string>
+
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
+#undef INTERNAL_INCLUDE
 
 class BigInteger {
 public:

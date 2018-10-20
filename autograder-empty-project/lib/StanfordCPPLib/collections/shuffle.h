@@ -8,11 +8,20 @@
  * @since 2014/02/01
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _shuffle_h
 #define _shuffle_h
 
 #include <string>
+
+#define INTERNAL_INCLUDE 1
 #include "random.h"
+#undef INTERNAL_INCLUDE
 
 /*
  * Randomly rearranges the elements of the given array up to the given length.
@@ -60,7 +69,5 @@ void shuffle(T** array2d, int rows, int cols) {
  * rearranged version.
  */
 std::string shuffle(std::string s);
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _shuffle_h

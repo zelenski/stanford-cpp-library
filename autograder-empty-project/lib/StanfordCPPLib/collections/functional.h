@@ -28,6 +28,12 @@
  * - initial version
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _functional_h
 #define _functional_h
 
@@ -246,7 +252,5 @@ ElementType reduce(CollectionType collection,
 }
 
 } // namespace functional
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _functional_h

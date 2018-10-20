@@ -16,6 +16,12 @@
  * - converted many funcs to take const string& rather than string for efficiency
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _simpio_h
 #define _simpio_h
 
@@ -187,7 +193,5 @@ double getRealBetween(const std::string& prompt, double min, double max);
 bool getYesOrNo(const std::string& prompt = "",
                 const std::string& reprompt = "",
                 const std::string& defaultValue = "");
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _simpio_h

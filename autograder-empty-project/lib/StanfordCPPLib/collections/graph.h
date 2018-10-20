@@ -44,16 +44,30 @@
  * - removed use of __foreach macro
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _graph_h
 #define _graph_h
 
 #include <string>
+
+#define INTERNAL_INCLUDE 1
 #include "collections.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
+#define INTERNAL_INCLUDE 1
 #include "map.h"
+#define INTERNAL_INCLUDE 1
 #include "set.h"
+#define INTERNAL_INCLUDE 1
 #include "tokenscanner.h"
+#undef INTERNAL_INCLUDE
 
 /**
  * This class represents a graph with the specified node and arc types.
@@ -1712,7 +1726,5 @@ int hashCode(const Graph<NodeType, ArcType>& graph) {
     }
     return (code & hashMask());
 }
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _graph_h

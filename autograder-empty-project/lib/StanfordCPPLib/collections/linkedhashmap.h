@@ -28,17 +28,30 @@
  * @since 2015/10/26
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _linkedhashmap_h
 #define _linkedhashmap_h
 
 #include <initializer_list>
 #include <iterator>
 #include <string>
+
+#define INTERNAL_INCLUDE 1
 #include "collections.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
+#define INTERNAL_INCLUDE 1
 #include "hashmap.h"
+#define INTERNAL_INCLUDE 1
 #include "vector.h"
+#undef INTERNAL_INCLUDE
 
 /*
  * Class: LinkedHashMap<KeyType,ValueType>
@@ -827,7 +840,5 @@ const K& randomKey(const LinkedHashMap<K, V>& map) {
     static Vector<K> v = map.keys();
     return v[0];
 }
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _linkedhashmap_h

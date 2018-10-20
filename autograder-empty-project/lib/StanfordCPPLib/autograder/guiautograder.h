@@ -84,7 +84,8 @@ private:
         bool completed;
         GCheckBox* checkbox;
         GLabel* descriptionLabel;
-        GLabel* resultLabel;
+        GLabel* runtimeLabel;
+        GLabel* resultIconLabel;
         GLabel* detailsLabel;
         UnitTestDetails details;
 

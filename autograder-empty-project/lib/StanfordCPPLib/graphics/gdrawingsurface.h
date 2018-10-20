@@ -11,20 +11,28 @@
  * - initial version
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+// signal that GUI system is in use (so it will be initialized)
+#define SPL_QT_GUI_IN_USE 1
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _gdrawingsurface_h
 #define _gdrawingsurface_h
-
-// signal that GUI system is in use (so it will be initialized)
-#ifndef INTERNAL_INCLUDE
-#define SPL_QT_GUI_IN_USE 1
-#endif // INTERNAL_INCLUDE
 
 #include <string>
 #include <QFont>
 #include <QWidget>
+
+#define INTERNAL_INCLUDE 1
 #include "grid.h"
+#define INTERNAL_INCLUDE 1
 #include "gobjects.h"
+#define INTERNAL_INCLUDE 1
 #include "gtypes.h"
+#undef INTERNAL_INCLUDE
 
 /**
  * GDrawingSurface is an abstract superclass for types that allow drawing shapes
@@ -810,10 +818,4 @@ protected:
     virtual void ensureForwardTargetConstHack() const;
 };
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
 #endif // _gcanvas_h
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE

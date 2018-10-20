@@ -66,7 +66,7 @@
 #include "map.h"
 #include "qtgui.h"
 #include "simpio.h"
-#include "version.h"
+#include "versionautograder.h"
 #include "private/static.h"
 #include "date.h"
 #include "gtest-marty.h"

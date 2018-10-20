@@ -2,6 +2,15 @@
  * File: gthread.h
  * ---------------
  *
+ * This file contains code related to multithreading.
+ * Qt requires at least two threads to run: a main Qt GUI thread,
+ * and a separate student code thread.
+ * The student's main() function runs in this latter student thread.
+ * You can also run code in a new thread using the static method
+ * GThread::runInNewThread or GThread::runInNewThreadAsync.
+ *
+ * @version 2018/10/18
+ * - improved thread names
  * @version 2018/09/08
  * - added doc comments for new documentation generation
  * @version 2018/08/23
@@ -10,16 +19,22 @@
  * - initial version
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+// signal that GUI system is in use (so it will be initialized)
+#define SPL_QT_GUI_IN_USE 1
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _gthread_h
 #define _gthread_h
 
-// signal that GUI system is in use (so it will be initialized)
-#ifndef INTERNAL_INCLUDE
-#define SPL_QT_GUI_IN_USE 1
-#endif // INTERNAL_INCLUDE
-
 #include <QThread>
+
+#define INTERNAL_INCLUDE 1
 #include "gtypes.h"
+#undef INTERNAL_INCLUDE
 
 class GStudentThread;
 class QtGui;
@@ -39,9 +54,9 @@ class QtGui;
 class GFunctionThread : public QThread {
 public:
     /**
-     * Constructs a new thread to execute
+     * Constructs a new thread to execute, with an optional thread name.
      */
-    GFunctionThread(GThunk func);
+    GFunctionThread(GThunk func, const std::string& threadName = "");
 
 protected:
     /**
@@ -122,6 +137,8 @@ public:
     /**
      * Runs the given void function in its own new thread,
      * blocking the current thread to wait until it is done.
+     * You can pass an optional name for the thread which can help when looking
+     * through the list of threads in a debugger.
      *
      * Any uncaught exceptions or errors in the new thread will crash the
      * program and cannot be caught by the calling thread.
@@ -129,11 +146,13 @@ public:
      * If you want the new thread to run in the background,
      * use the <code>runInNewThreadAsync</code> function instead.
      */
-    static void runInNewThread(GThunk func);
+    static void runInNewThread(GThunk func, const std::string& threadName = "");
 
     /**
      * Runs the given void function in its own new thread in the background;
      * the current thread does not block and keeps going.
+     * You can pass an optional name for the thread which can help when looking
+     * through the list of threads in a debugger.
      * Returns a pointer to the given thread in case you want to wait a given
      * amount of time for the thread to do its work.
      *
@@ -143,7 +162,7 @@ public:
      * If you want the caller to wait for the new thread to finish running,
      * use the <code>runInNewThread</code> function instead.
      */
-    static QThread* runInNewThreadAsync(GThunk func);
+    static QThread* runInNewThreadAsync(GThunk func, const std::string& threadName = "");
 
     /**
      * Runs the given void function on the Qt GUI thread,
@@ -277,10 +296,4 @@ private:
     friend class QtGui;
 };
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
 #endif // _gthread_h
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE

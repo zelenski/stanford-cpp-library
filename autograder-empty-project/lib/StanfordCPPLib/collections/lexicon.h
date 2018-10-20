@@ -24,6 +24,12 @@
  * - fixed inclusion of foreach macro to avoid errors
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _lexicon_h
 #define _lexicon_h
 
@@ -31,12 +37,14 @@
 #include <iterator>
 #include <set>
 #include <string>
-#include "hashcode.h"
-#include "set.h"
 
-/*
- * Class: Lexicon
- * --------------
+#define INTERNAL_INCLUDE 1
+#include "hashcode.h"
+#define INTERNAL_INCLUDE 1
+#include "set.h"
+#undef INTERNAL_INCLUDE
+
+/**
  * This class is used to represent a <b><i>lexicon,</i></b> or word list.
  * The main difference between a lexicon and a dictionary is that
  * a lexicon does not provide any mechanism for storing definitions;
@@ -99,10 +107,7 @@ public:
      */
     virtual ~Lexicon();
 
-    /*
-     * Method: add
-     * Usage: lex.add(word);
-     * ---------------------
+    /**
      * Adds the specified word to the lexicon, if not already present.
      * The word is converted to lowercase before adding it to the lexicon.
      * If the word contains any non-alphabetic characters (including whitespace),
@@ -111,57 +116,44 @@ public:
      */
     bool add(const std::string& word);
 
-    /*
-     * Method: addAll
-     * Usage: lex.addAll(lex2);
-     * ------------------------
+    /**
      * Adds all elements of the given other lexicon to this lexicon.
-     * You can also pass an initializer list such as {"a", "b", "c"}.
      * Returns a reference to this lexicon.
      * Identical in behavior to the += operator.
      */
     Lexicon& addAll(const Lexicon& lex);
+
+    /**
+     * Adds all elements of the given initializer list to this lexicon.
+     * Returns a reference to this lexicon.
+     * Identical in behavior to the += operator.
+     */
     Lexicon& addAll(std::initializer_list<std::string> list);
 
-    /*
-     * Method: addWordsFromFile
-     * Usage: lex.addWordsFromFile(input);
-     * --------------------------------------
+    /**
      * Reads the given input stream and adds all of its words to the lexicon.
      * Each word from the stream is converted to lowercase before adding it.
      */
     void addWordsFromFile(std::istream& input);
     
-    /*
-     * Method: addWordsFromFile
-     * Usage: lex.addWordsFromFile(filename);
-     * --------------------------------------
+    /**
      * Reads the file and adds all of its words to the lexicon.
      * Each word from the file is converted to lowercase before adding it.
      */
     void addWordsFromFile(const std::string& filename);
 
-    /*
-     * Method: back
-     * Usage: string word = lex.back();
-     * --------------------------------
+    /**
      * Returns the last value in the lexicon in alphabetical order.
      * If the set is empty, generates an error.
      */
     std::string back() const;
 
-    /*
-     * Method: clear
-     * Usage: lex.clear();
-     * -------------------
+    /**
      * Removes all words from the lexicon.
      */
     void clear();
 
-    /*
-     * Method: contains
-     * Usage: if (lex.contains(word)) ...
-     * ----------------------------------
+    /**
      * Returns <code>true</code> if <code>word</code> is contained in the
      * lexicon.  In the <code>Lexicon</code> class, the case of letters is
      * ignored, so "Zoo" is the same as "ZOO" or "zoo".
@@ -170,22 +162,21 @@ public:
      */
     bool contains(const std::string& word) const;
 
-    /*
-     * Method: containsAll
-     * Usage: if (lex.containsAll(lex2)) ...
-     * -------------------------------------
+    /**
      * Returns <code>true</code> if every value from the given other lexicon
      * is also found in this lexicon.
-     * You can also pass an initializer list such as {"a", "b", "c"}.
      * Equivalent in behavior to isSupersetOf.
      */
     bool containsAll(const Lexicon& set2) const;
+
+    /**
+     * Returns <code>true</code> if every value from the given initializer list
+     * is also found in this lexicon.
+     * Equivalent in behavior to isSupersetOf.
+     */
     bool containsAll(std::initializer_list<std::string> list) const;
 
-    /*
-     * Method: containsPrefix
-     * Usage: if (lex.containsPrefix(prefix)) ...
-     * ------------------------------------------
+    /**
      * Returns true if any words in the lexicon begin with <code>prefix</code>.
      * Like <code>containsWord</code>, this method ignores the case of letters
      * so that "MO" is a prefix of "monkey" or "Monday".
@@ -194,92 +185,76 @@ public:
      */
     bool containsPrefix(const std::string& prefix) const;
 
-    /*
-     * Method: equals
-     * Usage: if (lex1.equals(lex2)) ...
-     * ---------------------------------
+    /**
      * Compares two lexicons for equality.
      */
     bool equals(const Lexicon& lex2) const;
 
-    /*
-     * Method: first
-     * Usage: string word = lex.first();
-     * ---------------------------------
+    /**
      * Returns the first value in the lexicon in alphabetical order.
      * If the set is empty, <code>first</code> generates an error.
      * Equivalent to first.
      */
     std::string first() const;
 
-    /*
-     * Method: front
-     * Usage: string word = lex.front();
-     * ---------------------------------
+    /**
      * Returns the first value in the lexicon in alphabetical order.
      * If the set is empty, generates an error.
      * Equivalent to first.
      */
     std::string front() const;
 
-    /*
-     * Method: insert
-     * Usage: lex.insert(word);
-     * -------------------------
+    /**
      * Adds an element to this lexicon, if it was not already there.  This
      * method is exported for compatibility with the STL <code>set</code> class.
      */
     void insert(const std::string& word);
 
-    /*
-     * Method: isEmpty
-     * Usage: if (lex.isEmpty()) ...
-     * -----------------------------
+    /**
      * Returns <code>true</code> if the lexicon contains no words.
      */
     bool isEmpty() const;
 
-    /*
-     * Method: isSubsetOf
-     * Usage: if (lex.isSubsetOf(lex2)) ...
-     * ------------------------------------
-     * Implements the subset relation on lexicons.  It returns
-     * <code>true</code> if every word of this lexicon is
-     * contained in <code>lex2</code>.
-     * You can also pass an initializer list such as {"a", "b", "c"}.
+    /**
+     * Returns whether every word of this lexicon is contained in the given set.
      */
     bool isSubsetOf(const Lexicon& lex2) const;
+
+    /**
+     * Returns whether every word of this lexicon is contained in the given
+     * initializer list.
+     */
     bool isSubsetOf(std::initializer_list<std::string> list) const;
 
-    /*
-     * Method: isSupersetOf
-     * Usage: if (lex.isSupersetOf(lex2)) ...
-     * --------------------------------------
-     * Implements the superset relation on lexicons.  It returns
-     * <code>true</code> if every word of this lexicon is
-     * contained in <code>lex2</code>.
-     * You can also pass an initializer list such as {"a", "b", "c"}.
+    /**
+     * Returns whether every word of the given lexicon is contained in this lexicon.
      * Equivalent in behavior to containsAll.
      */
     bool isSupersetOf(const Lexicon& lex2) const;
+
+    /**
+     * Returns whether every word of the given list is contained in this lexicon.
+     * Equivalent in behavior to containsAll.
+     */
     bool isSupersetOf(std::initializer_list<std::string> list) const;
 
-    /*
-     * Method: mapAll
-     * Usage: lexicon.mapAll(fn);
-     * --------------------------
+    /**
      * Calls the specified function on each word in the lexicon.
      */
     void mapAll(void (*fn)(std::string)) const;
+
+    /**
+     * Calls the specified function on each word in the lexicon.
+     */
     void mapAll(void (*fn)(const std::string&)) const;
 
+    /**
+     * Calls the specified function on each word in the lexicon.
+     */
     template <typename FunctorType>
     void mapAll(FunctorType fn) const;
 
-    /*
-     * Method: remove
-     * Usage: lex.remove(word);
-     * ---------------------
+    /**
      * Removes the specified word from the lexicon, if it was present.
      * Returns true if the word was previously contained in the lexicon;
      * in other words, if a word was removed.
@@ -288,22 +263,21 @@ public:
      */
     bool remove(const std::string& word);
 
-    /*
-     * Method: removeAll
-     * Usage: lex.removeAll(lex2);
-     * ---------------------------
+    /**
      * Removes all elements of the given other lexicon from this lexicon.
-     * You can also pass an initializer list such as {"a", "b", "c"}.
      * Returns a reference to this lexicon.
      * Identical in behavior to the -= operator.
      */
     Lexicon& removeAll(const Lexicon& lex);
+
+    /**
+     * Removes all elements of the given other list from this lexicon.
+     * Returns a reference to this lexicon.
+     * Identical in behavior to the -= operator.
+     */
     Lexicon& removeAll(std::initializer_list<std::string> list);
 
-    /*
-     * Method: removePrefix
-     * Usage: lex.removePrefix(prefix);
-     * ---------------------
+    /**
      * Removes all words from the lexicon that begin with the given prefix.
      * Returns true if the prefix was previously contained in the lexicon;
      * in other words, if any words were removed.
@@ -313,97 +287,96 @@ public:
      */
     bool removePrefix(const std::string& prefix);
 
-    /*
-     * Method: retainAll
-     * Usage: lex.retainAll(lex2);
-     * ---------------------------
+    /**
      * Removes all elements from this lexicon that are not contained in the given
      * other lexicon.
-     * You can also pass an initializer list such as {"a", "b", "c"}.
      * Returns a reference to this lexicon.
      * Identical in behavior to the *= operator.
      */
     Lexicon& retainAll(const Lexicon& lex);
+
+    /**
+     * Removes all elements from this lexicon that are not contained in the given
+     * initializer list.
+     * Returns a reference to this lexicon.
+     * Identical in behavior to the *= operator.
+     */
     Lexicon& retainAll(std::initializer_list<std::string> list);
 
-    /*
-     * Method: size
-     * Usage: int n = lex.size();
-     * --------------------------
+    /**
      * Returns the number of words contained in the lexicon.
      */
     int size() const;
 
-    /*
-     * Returns an STL set object with the same elements as this lexicon.
-     */
-    std::set<std::string> toStlSet() const;
-
-    /*
-     * Method: toString
-     * Usage: string str = lexicon.toString();
-     * ---------------------------------------
-     * Converts the lexicon to a printable string representation.
+    /**
+     * Converts the lexicon to a printable string representation
+     * such as <code>{"a", "b", "c"}</code>.
      * Note that this can be an expensive operation if the lexicon contains
      * a large number of words.
      */
     std::string toString() const;
 
-    /*
-     * Operators: ==, !=
-     * Usage: if (lex1 == lex2) ...
-     * Usage: if (lex1 != lex2) ...
-     * ...
-     * ----------------------------
-     * Relational operators to compare two lexicons to see if they have the same elements.
+    /**
+     * Returns true if two lexicons have the same elements.
      */
     bool operator ==(const Lexicon& lex2) const;
+
+    /**
+     * Returns true if two lexicons do not have the same elements.
+     */
     bool operator !=(const Lexicon& lex2) const;
 
-    /*
-     * Operators: <, >, <=, >=
-     * Usage: if (lex1 <= lex2) ...
-     * ...
-     * ----------------------------
+    /**
      * Relational operators to compare two lexicons.
      */
     bool operator <(const Lexicon& lex2) const;
+
+    /**
+     * Relational operators to compare two lexicons.
+     */
     bool operator <=(const Lexicon& lex2) const;
+
+    /**
+     * Relational operators to compare two lexicons.
+     */
     bool operator >(const Lexicon& lex2) const;
+
+    /**
+     * Relational operators to compare two lexicons.
+     */
     bool operator >=(const Lexicon& lex2) const;
 
-    /*
-     * Operator: +
-     * Usage: lex1 + lex2
-     *        lex1 + element
-     * ---------------------
+    /**
      * Returns the union of lexicons <code>lex1</code> and <code>lex2</code>,
      * which is the set of words that appear in at least one of the two.
-     * You can also pass an initializer list such as {"a", "b", "c"}.
-     * The right hand set can be replaced by a single word, in
-     * which case the operator returns a new Lexicon formed by adding that word.
      */
     Lexicon operator +(const Lexicon& lex2) const;
+
+    /**
+     * Returns the union of this lexicon and the words in the given list,
+     * which is the set of words that appear in at least one of the two.
+     */
     Lexicon operator +(std::initializer_list<std::string> list) const;
+
+    /**
+     * Returns the union of this lexicon and the given word.
+     */
     Lexicon operator +(const std::string& word) const;
 
-    /*
-     * Operator: *
-     * Usage: lex1 * lex2
-     * ------------------
-     * Returns the intersection of lexicons <code>lex1</code> and <code>lex2</code>,
+    /**
+     * Returns the intersection of two lexicons,
      * which is the set of all words that appear in both.
-     * You can also pass an initializer list such as {"a", "b", "c"}.
      */
     Lexicon operator *(const Lexicon& lex2) const;
+
+    /**
+     * Returns the intersection of this lexicons and the given list,
+     * which is the set of all words that appear in both.
+     */
     Lexicon operator *(std::initializer_list<std::string> list) const;
 
-    /*
-     * Operator: -
-     * Usage: lex1 - lex2
-     *        lex1 - element
-     * ---------------------
-     * Returns the difference of lexicons <code>lex1</code> and <code>lex2</code>,
+    /**
+     * Returns the difference of two lexicons,
      * which is all of the words that appear in <code>lex1</code> but
      * not <code>lex2</code>.
      * You can also pass an initializer list such as {"a", "b", "c"}.
@@ -411,62 +384,66 @@ public:
      * which case the operator returns a new lexicon formed by removing that word.
      */
     Lexicon operator -(const Lexicon& lex2) const;
+
+    /**
+     * Returns the difference of two lexicons,
+     * which is all of the words that appear in this lexicon but not in
+     * the given initializer list.
+     */
     Lexicon operator -(std::initializer_list<std::string> list) const;
+
+    /**
+     * Returns a new lexicon formed by removing the given word from this lexicon.
+     */
     Lexicon operator -(const std::string& word) const;
 
-    /*
-     * Operator: +=
-     * Usage: lex1 += lex2;
-     *        lex1 += value;
-     * ---------------------
-     * Adds all of the words from <code>lex2</code> (or the single
-     * specified word) to <code>lex1</code>.
-     * You can also pass an initializer list such as {"a", "b", "c"}.
-     * As a convenience, the <code>Lexicon</code> package also overloads the
-     * comma operator so that it is possible to initialize a set like this:
-     *
-     *<pre>
-     *    Lexicon words;
-     *    words += "she", "sells", "sea", "shells";
-     *</pre>
+    /**
+     * Adds all of the words from the given lexicon to this lexicon.
      */
     Lexicon& operator +=(const Lexicon& lex2);
+
+    /**
+     * Adds all of the words from the given list to this lexicon.
+     */
     Lexicon& operator +=(std::initializer_list<std::string> list);
+
+    /**
+     * Adds the specified word to this lexicon.
+     */
     Lexicon& operator +=(const std::string& word);
 
-    /*
-     * Operator: *=
-     * Usage: lex1 *= lex2;
-     * --------------------
-     * Removes any elements from <code>lex1</code> that are not present in
+    /**
+     * Removes any elements from this lexicon that are not present in
      * <code>lex2</code>.
-     * You can also pass an initializer list such as {1, 2, 3}.
      */
     Lexicon& operator *=(const Lexicon& lex2);
+
+    /**
+     * Removes any elements from this lexicon that are not present in
+     * the given initializer list.
+     */
     Lexicon& operator *=(std::initializer_list<std::string> list);
 
-    /*
-     * Operator: -=
-     * Usage: lex1 -= lex2;
-     *        lex1 -= value;
-     * ---------------------
-     * Removes the elements from <code>lex2</code> (or the single
-     * specified value) from <code>lex1</code>.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     * As a convenience, the <code>Lexicon</code> package also overloads the comma
-     * operator so that it is possible to remove multiple elements from a lexicon
-     * like this:
-     *
-     *<pre>
-     *    words -= "she", "sells", "sea", "shells";
-     *</pre>
-     *
-     * which removes the words "she", "sells", "sea", and "shells" from the
-     * lexicon <code>digits</code>.
+    /**
+     * Removes all elements in the given lexicon from this lexicon.
      */
     Lexicon& operator -=(const Lexicon& lex2);
+
+    /**
+     * Removes all elements in the given list from this lexicon.
+     */
     Lexicon& operator -=(std::initializer_list<std::string> list);
+
+    /**
+     * Removes the given word from this lexicon.
+     */
     Lexicon& operator -=(const std::string& value);
+
+    /**
+     * Allows you to add multiple elements to a lexicon.
+     * @example lex += "she", "sells", "sea", "shells";
+     */
+    Lexicon& operator ,(const std::string& word);
 
     /*
      * Additional Lexicon operations
@@ -487,7 +464,6 @@ public:
     /* Note: Everything below this point in the file is logically part    */
     /* of the implementation and should not be of interest to clients.    */
     /**********************************************************************/
-    Lexicon& operator ,(const std::string& word);
 
 private:
     struct TrieNode {
@@ -586,14 +562,14 @@ public:
         iterator(const Set<std::string>::iterator& it) : Set<std::string>::iterator(it) {}
     };
 
-    /*
+    /**
      * Returns an iterator positioned at the first word in the lexicon.
      */
     iterator begin() const {
         return iterator(m_allWords.begin());
     }
 
-    /*
+    /**
      * Returns an iterator positioned at the last word in the lexicon.
      */
     iterator end() const {
@@ -608,16 +584,19 @@ void Lexicon::mapAll(FunctorType fn) const {
     }
 }
 
-/*
- * Hashing function for lexicons
+/**
+ * Hashing function for lexicons.
  */
 int hashCode(const Lexicon& l);
 
-/*
+/**
  * Prints the lexicon to the given output stream.
  */
 std::ostream& operator <<(std::ostream& os, const Lexicon& lex);
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+/**
+ * Reads the contents of a lexicon from the given input stream.
+ */
+std::istream& operator >>(std::istream& is, Lexicon& lex);
 
 #endif // _lexicon_h

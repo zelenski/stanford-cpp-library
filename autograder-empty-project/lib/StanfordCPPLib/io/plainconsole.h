@@ -12,6 +12,12 @@
  * @since 2015/10/21
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _plainconsole_h
 #define _plainconsole_h
 

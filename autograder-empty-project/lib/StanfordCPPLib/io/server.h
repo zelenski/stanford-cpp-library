@@ -8,12 +8,21 @@
  * - initial version
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _server_h
 #define _server_h
 
 #include <iostream>
 #include <string>
+
+#define INTERNAL_INCLUDE 1
 #include "gevents.h"
+#undef INTERNAL_INCLUDE
 
 namespace HttpServer {
 const int DEFAULT_PORT = 8080;
@@ -32,7 +41,5 @@ void sendResponseFile(const GEvent& event, const std::string& responseFilePath,
 void startServer(int port = DEFAULT_PORT);
 void stopServer();
 } // namespace HttpServer
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _server_h

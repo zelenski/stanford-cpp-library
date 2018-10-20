@@ -9,24 +9,36 @@
  * - initial version, converted from Java back-end DiffImage class
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+// signal that GUI system is in use (so it will be initialized)
+#define SPL_QT_GUI_IN_USE 1
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _gdiffimage_h
 #define _gdiffimage_h
-
-// signal that GUI system is in use (so it will be initialized)
-#ifndef INTERNAL_INCLUDE
-#define SPL_QT_GUI_IN_USE 1
-#endif // INTERNAL_INCLUDE
 
 #include <string>
 #include <QWidget>
 #include <QSplitter>
+
+#define INTERNAL_INCLUDE 1
 #include "gbutton.h"
+#define INTERNAL_INCLUDE 1
 #include "gcanvas.h"
+#define INTERNAL_INCLUDE 1
 #include "gcheckbox.h"
+#define INTERNAL_INCLUDE 1
 #include "ginteractor.h"
+#define INTERNAL_INCLUDE 1
 #include "glabel.h"
+#define INTERNAL_INCLUDE 1
 #include "gslider.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#undef INTERNAL_INCLUDE
 
 /**
  * A GDiffImage is a graphical window that displays differences between two
@@ -79,10 +91,4 @@ private:
     friend class GImage;
 };
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
 #endif // _gdiffimage_h
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE

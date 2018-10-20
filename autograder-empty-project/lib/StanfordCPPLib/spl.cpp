@@ -15,6 +15,7 @@
 #include "os.h"
 #include <QString>
 #include <QSysInfo>
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -93,14 +94,17 @@ OS::OS() {
 
 #define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #include <sstream>
 #undef INTERNAL_INCLUDE
 
 /* Definitions for the ErrorException class */
 
-ErrorException::ErrorException(std::string msg) {
+ErrorException::ErrorException(std::string msg)
+        : _kind("error") {
     _msg = msg;
 
 #if defined(SPL_CONSOLE_PRINT_EXCEPTIONS)
@@ -130,6 +134,10 @@ void ErrorException::dump(std::ostream& out) const {
     out.flush();
 }
 
+std::string ErrorException::getKind() const {
+    return _kind;
+}
+
 std::string ErrorException::getMessage() const {
     return _msg;
 }
@@ -154,6 +162,10 @@ std::string ErrorException::insertStarsBeforeEachLine(const std::string& s) {
         result += line;
     }
     return result;
+}
+
+void ErrorException::setKind(const std::string& kind) {
+    _kind = kind;
 }
 
 void ErrorException::setStackTrace(const std::string& stackTrace) {
@@ -193,288 +205,14 @@ std::ostream& operator <<(std::ostream& out, const ErrorException& ex) {
 }
 
 /*
- * File: process.cpp
- * -----------------
- * This file implements a Process class to help launch external processes in
- * a platform-neutral way.
- * See process.h for class declarations and documentation.
- *
- * NOTE: THIS IMPLEMENTATION IS INCOMPLETE AND CURRENTLY DISABLED.
- *
- * @author Marty Stepp
- * @version 2017/10/07
- * - initial version
- * @since 2017/10/07
- */
-
-#ifdef PROCESS_H_ENABLED   // won't be enabled
-#define INTERNAL_INCLUDE 1
-#include "process.h"
-#include <csignal>
-#include <cstdio>
-#include <vector>
-#include <sys/time.h>
-#include "strlib.h"
-#ifdef _WIN32
-#  include <windows.h>
-#  include <tchar.h>
-#else // _WIN32
-#  include <sys/types.h>
-#  include <sys/stat.h>
-#  include <sys/resource.h>
-#  include <dirent.h>
-#  include <errno.h>
-#  include <pwd.h>
-#  include <stdint.h>
-#  include <unistd.h>
-#endif // _WIN32
-#undef INTERNAL_INCLUDE
-
-const int Process::TIMEOUT_MS_DEFAULT = 5000;
-
-void Process::kill(int pid, int sig) {
-    Process proc;
-    proc.addCommandLineArgs({
-        "kill",
-        "-" + integerToString(sig),
-        integerToString(pid)
-    });
-    proc.startAndWait();
-}
-
-int Process::runAndCaptureOutput(const std::string& commandLine,
-                                 std::string& output,
-                                 int timeoutMS) {
-    output = "";
-    Process proc(commandLine);
-    proc.setTimeout(timeoutMS);
-    proc.startAndWait();
-    if (proc.timedOut()) {
-        proc.stop();
-    }
-    output = proc.output();
-    return proc.exitCode();
-}
-
-long Process::getCurrentTimeMillis() {
-    struct timeval tp;
-    if (gettimeofday(&tp, nullptr)) {
-        return -1;
-    }
-    long int ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
-    return ms;
-}
-
-Process::Process(const std::string& commandLine) :
-    m_exitCode(-1),
-    m_pid(-1),
-    m_timeoutMS(0),
-    m_running(false),
-    m_terminated(false),
-    m_timedOut(false)
-{
-#ifdef _WIN32
-
-#else // _WIN32
-    m_instream = nullptr;
-#endif
-
-    setCommandLine(commandLine);
-}
-
-void Process::addCommandLineArg(const std::string& arg) {
-    m_commandLineArgs.add(arg);
-}
-
-void Process::addCommandLineArgs(std::initializer_list<std::string> args) {
-    m_commandLineArgs.addAll(args);
-}
-
-std::string Process::commandLine() const {
-    std::ostringstream out;
-    bool first = true;
-    for (const std::string& arg : m_commandLineArgs) {
-        if (!first) {
-            out << " ";
-        }
-        out << arg;
-        first = false;
-    }
-    return out.str();
-}
-
-int Process::exitCode() const {
-    return m_exitCode;
-}
-
-std::string Process::output() const {
-    return m_outputStream.str();
-}
-
-int Process::pid() const {
-    // TODO: lookup if running
-    return m_pid;
-}
-
-bool Process::running() const {
-    // TODO
-    return m_running || (m_instream != nullptr && !m_instream->eof());
-}
-
-void Process::setCommandLine(const std::string& commandLine) {
-    m_commandLineArgs.clear();
-    m_commandLineArgs.addAll(stringSplit(commandLine, " "));
-}
-
-void Process::setCommandLineArgs(std::initializer_list<std::string> args) {
-    m_commandLineArgs.clear();
-    m_commandLineArgs.addAll(args);
-}
-
-void Process::setInput(const std::string& input) {
-    m_input = input;
-}
-
-void Process::setTimeout(int timeoutMS) {
-    m_timeoutMS = timeoutMS;
-}
-
-void Process::setWorkingDirectory(const std::string& workingDirectory) {
-    m_workingDirectory = workingDirectory;
-}
-
-void Process::start() {
-    if (running()) {
-        return;
-    }
-
-    m_running = true;
-    m_outputStream.str("");
-
-#ifdef _WIN32
-    // TODO
-#else // _WIN32
-    // *nix/Apple systems
-    // merge stdout and stderr
-    m_instream = new redi::ipstream(commandLine(),
-                                    redi::pstreams::pstdout | redi::pstreams::pstderr);
-    m_pid = m_instream->pid();
-#endif // _WIN32
-}
-
-void Process::startAndWait() {
-    start();
-    wait();
-}
-
-void Process::stop() {
-    if (!running()) {
-        return;
-    }
-
-#ifdef _WIN32
-    // TODO
-#else // _WIN32
-    if (!m_instream) {
-        return;
-    }
-    if (m_pid > 0) {
-        kill(m_pid);
-    }
-    m_instream->close();
-    m_exitCode = WEXITSTATUS(m_instream->rdbuf()->status());
-    delete m_instream;
-    m_instream = nullptr;
-#endif // _WIN32
-
-    m_running = false;
-}
-
-bool Process::terminated() const {
-    return m_terminated || (m_instream != nullptr && m_instream->eof());
-}
-
-int Process::timeout() const {
-    return m_timeoutMS;
-}
-
-bool Process::timedOut() const {
-    return m_timedOut;
-}
-
-std::string Process::toString() const {
-    std::ostringstream out;
-    out << *this;
-    return out.str();
-}
-
-void Process::wait(int ms) {
-    if (!running()) {
-        return;
-    }
-    if (ms <= 0) {
-        ms = m_timeoutMS;
-    }
-
-#ifdef _WIN32
-
-#else // _WIN32
-    long startTime = getCurrentTimeMillis();
-
-    while (true) {
-        if (m_instream->rdbuf()->in_avail()) {
-            int ch = m_instream->get();
-            if (ch < 0) {
-                if (m_instream->eof()) {
-                    m_terminated = true;
-                    m_instream->close();
-                    m_exitCode = WEXITSTATUS(m_instream->rdbuf()->status());
-                    delete m_instream;
-                    m_instream = nullptr;
-                    break;
-                } else {
-                }
-            } else {
-                m_outputStream.put(ch);
-            }
-        } else {
-            // no input available; wait for a short time
-            usleep(10000);
-            if (ms > 0) {
-                long elapsed = getCurrentTimeMillis() - startTime;
-                if (elapsed >= ms) {
-                    m_terminated = false;
-                    m_timedOut = true;
-                    break;
-                }
-            }
-        }
-    }
-#endif // _WIN32
-}
-
-const std::string& Process::workingDirectory() const {
-    return m_workingDirectory;
-}
-
-std::ostream& operator <<(std::ostream& out, const Process& process) {
-    out << "Process{"
-        << "pid=" << process.pid()
-        << ",commandLine=\"" << process.commandLine() << "\""
-        << ",running=" << std::boolalpha << process.running()
-        << ",terminated=" << std::boolalpha << process.terminated()
-        << ",timedOut=" << std::boolalpha << process.timedOut()
-        << "}";
-    return out;
-}
-#endif // PROCESS_H_ENABLED   // won't be enabled
-
-/*
  * File: call_stack_gcc.cpp
  * ------------------------
  * Linux/gcc implementation of the call_stack class.
  *
  * @author Marty Stepp, based on code from Fredrik Orderud
+ * @version 2018/10/18
+ * - added addr2line_functionName to resolve some function names not in backtrace
+ * - improved calculation of function offsets for better stack trace resolving
  * @version 2017/10/18
  * - small bug fix for pointer comparison
  * @version 2017/09/02
@@ -515,9 +253,15 @@ std::ostream& operator <<(std::ostream& out, const Process& process) {
 #include <iostream>
 #include <sstream>
 #include <stdlib.h>
+#define INTERNAL_INCLUDE 1
 #include "call_stack.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
+#include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #undef INTERNAL_INCLUDE
 
@@ -674,6 +418,32 @@ std::string addr2line_clean(std::string line) {
     return line;
 }
 
+std::string addr2line_functionName(std::string line) {
+#if defined(_WIN32)
+    // TODO: implement on Windows
+    // "ZN10stacktrace25print_stack_trace_windowsEv at C:\Users\stepp\Documents\StanfordCPPLib\build\stanfordcpplib-windows-Desktop_Qt_5_3_MinGW_32bit-Debug/../../StanfordCPPLib/stacktrace/call_stack_windows.cpp:126"
+#elif defined(__APPLE__)
+    // Mac OS X version (atos)
+    // "Vector<int>::checkIndex(int) const (in Autograder_QtCreatorProject) (vector.h:764)"
+    if (line.find(" (") != std::string::npos) {
+        line = line.substr(0, line.rfind(" (") - 1);
+    }
+    if (line.find("(in ") != std::string::npos) {
+        line = line.substr(0, line.rfind("(in "));
+    }
+    line = trim(line);
+#elif defined(__GNUC__)
+    // Linux version (addr2line)
+    // "_Z4Mainv at /home/stepp/.../FooProject/src/mainfunc.cpp:131"
+    // "std::_Function_handler<void (), stanfordcpplib::autograder::GuiAutograder::runTest(stanfordcpplib::autograder::AutograderTest*)::{lambda()#1}>::_M_invoke(std::_Any_data const&) at std_function.h:318"
+    if (line.find(" at ") != std::string::npos) {
+        line = line.substr(0, line.rfind(" at "));
+    }
+    line = trim(line);
+#endif
+    return line;
+}
+
 int addr2line_all(std::vector<void*> addrsVector, std::string& output) {
     int length = static_cast<int>(addrsVector.size());
     void* addrs[length];
@@ -744,6 +514,7 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
     for (int i = 0; i < STATIC_VARIABLE(STACK_FRAMES_MAX); i++) {
         trace[i] = nullptr;
     }
+
     int stack_depth = backtrace(trace, STATIC_VARIABLE(STACK_FRAMES_MAX));
 
     // First pass: read linker symbol info and get address offsets.
@@ -751,8 +522,8 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
         // DL* = programmer API to dynamic linking loader
 
         // https://linux.die.net/man/3/dladdr
-        // const char *dli_fname;   // pathname of shared object that contains address
-        // void       *dli_fbase;   // address at which shared object is loaded
+        // const char *dli_fname;   // pathname of shared object (file) that contains address
+        // void       *dli_fbase;   // address at which shared object is loaded in system memory
         // const char *dli_sname;   // name of nearest symbol with address lower than addr
         // void       *dli_saddr;   // exact address of symbol named in dli_sname
 
@@ -760,13 +531,6 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
         if (!dladdr(trace[i], &dlinfo)) {
             continue;
         }
-
-        // debug code left in because we occasionally need to debug stack traces
-        // std::cout << i << "  ptr=" << trace[i] << "  dlinfo: "
-        //           << " fname=" << (dlinfo.dli_fname ? dlinfo.dli_fname : "null")
-        //           << " fbase=" << dlinfo.dli_fbase
-        //           << " sname=" << (dlinfo.dli_sname ? dlinfo.dli_sname : "null")
-        //           << " saddr=" << dlinfo.dli_saddr << std::endl;
 
         const char* symname = dlinfo.dli_sname;
 
@@ -776,13 +540,29 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
         if (status == 0 && demangled) {
             symname = demangled;
         }
+
+        // debug code left in because we occasionally need to debug stack traces
+//        std::cout << "call_stack: I am thread " << GThread::getCurrentThread()->objectName().toStdString() << std::endl;
+//        std::cout << "info for " << trace[i] << ":" << std::endl;
+//        std::cout << "dlinfo " << i << ":"
+//                  << " fbase=" << dlinfo.dli_fbase
+//                  << " fname=" << (dlinfo.dli_fname ? dlinfo.dli_fname : "NULL")
+//                  << " sname=" << (dlinfo.dli_sname ? dlinfo.dli_sname : "NULL")
+//                  << " saddr=" << dlinfo.dli_saddr
+//                  << std::endl;
+//        if (demangled) {
+//            std::cout << "demangled name " << i << ": " << std::string(demangled) << " (status " << status << ")" << std::endl;
+//        } else {
+//            std::cout << "demangled name " << i << ": NULL" << " (status " << status << ")" << std::endl;
+//        }
+//        std::cout << std::endl;
         
         // store entry to stack
-        if (dlinfo.dli_fname && symname) {
+        if (dlinfo.dli_fname) {
             entry e;
             e.file     = dlinfo.dli_fname;
             e.line     = 0;   // unsupported; use lineStr instead (later)
-            e.function = symname;
+            e.function = symname ? symname : "(unknown)";
             e.address  = trace[i];
 
             // The dli_fbase gives an overall offset into the file itself;
@@ -790,8 +570,13 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
             // by subtracting them we get the offset of the function within the file
             // which addr2line can use to look up function line numbers.
 
-            if (dlinfo.dli_fbase && trace[i] >= dlinfo.dli_fbase) {
-                e.address2 = (void*) ((long) trace[i] - (long) dlinfo.dli_fbase);
+            if (dlinfo.dli_fbase) {
+                // subtract smaller address from larger one to get offset
+                if (trace[i] >= dlinfo.dli_fbase) {
+                    e.address2 = (void*) ((long) trace[i] - (long) dlinfo.dli_fbase);
+                } else {
+                    e.address2 = (void*) ((long) dlinfo.dli_fbase - (long) trace[i]);
+                }
             } else {
                 e.address2 = dlinfo.dli_saddr;
             }
@@ -828,13 +613,17 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
 
     std::string addr2lineOutput;
     addr2line_all(addrsToLookup, addr2lineOutput);
-    std::vector<std::string> addr2lineLines = stringSplit(addr2lineOutput, "\n");
+
+    Vector<std::string> addr2lineLines = stringSplit(addr2lineOutput, "\n");
     int numAddrLines = (int) addr2lineLines.size();
     for (int i = 0, size = (int) stack.size(); i < size; i++) {
         std::string opt1 = (2 * i < numAddrLines ? addr2lineLines[2 * i] : std::string());
         std::string opt2 = (2 * i + 1 < numAddrLines ? addr2lineLines[2 * i + 1] : std::string());
         std::string best = opt1.length() > opt2.length() ? opt1 : opt2;
         stack[i].lineStr = addr2line_clean(best);
+        if (stack[i].function.empty() || stack[i].function == "(unknown)") {
+            stack[i].function = addr2line_functionName(best);
+        }
     }
 }
 
@@ -853,6 +642,9 @@ call_stack::~call_stack() throw() {
  * by student code on the console.
  * 
  * @author Marty Stepp
+ * @version 2018/10/18
+ * - added set_unexpected handler (used by autograders when errors are thrown)
+ * - added some new function names to filter from stack traces
  * @version 2018/09/27
  * - bug fixes to print better stack traces when used with threads
  * @version 2018/09/25
@@ -894,10 +686,15 @@ call_stack::~call_stack() throw() {
 #include <iostream>
 #include <string>
 #include <vector>
+#define INTERNAL_INCLUDE 1
 #include "call_stack.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #ifdef _WIN32
 #include <windows.h>
@@ -911,13 +708,13 @@ call_stack::~call_stack() throw() {
 // uncomment the definition below to use an alternative 'signal stack'
 // which helps in handling stack overflow errors
 // (disabled because it currently breaks stack traces for other errors)
-//#define SHOULD_USE_SIGNAL_STACK
+// #define SHOULD_USE_SIGNAL_STACK
 
 namespace exceptions {
 // just some value that is not any existing signal
-#define SIGSTACK ((int) 0xdeadbeef)
-#define SIGUNKNOWN ((int) 0xcafebabe)
-#define SIGTIMEOUT ((int) 0xf00df00d)
+#define SIGSTACK (static_cast<int>(0xdeadbeef))
+#define SIGUNKNOWN (static_cast<int>(0xcafebabe))
+#define SIGTIMEOUT (static_cast<int>(0xf00df00d))
 
 // static 'variables' (as functions to avoid initialization ordering bugs)
 STATIC_CONST_VARIABLE_DECLARE(bool, STACK_TRACE_SHOULD_FILTER, true)
@@ -926,6 +723,8 @@ STATIC_CONST_VARIABLE_DECLARE(bool, STACK_TRACE_SHOW_TOP_BOTTOM_BARS, false)
 STATIC_VARIABLE_DECLARE(std::string, programNameForStackTrace, "")
 STATIC_VARIABLE_DECLARE(bool, topLevelExceptionHandlerEnabled, false)
 
+// handle SIGABRT in normal mode, but not autograder mode
+// (Google Test uses SIGABRT internally so we can't catch it)
 #ifdef SPL_AUTOGRADER_MODE
 STATIC_CONST_VARIABLE_DECLARE_COLLECTION(std::vector<int>, SIGNALS_HANDLED, SIGSEGV, SIGILL, SIGFPE, SIGINT)
 #else
@@ -936,6 +735,7 @@ static void signalHandlerDisable();
 static void signalHandlerEnable();
 static void stanfordCppLibSignalHandler(int sig);
 static void stanfordCppLibTerminateHandler();
+static void stanfordCppLibUnexpectedHandler();
 
 std::string cleanupFunctionNameForStackTrace(std::string function) {
     // remove references to std:: namespace
@@ -952,6 +752,13 @@ std::string cleanupFunctionNameForStackTrace(std::string function) {
     stringReplaceInPlace(function, "basic_ofstream", "ofstream");
     stringReplaceInPlace(function, "basic_ifstream", "ifstream");
     stringReplaceInPlace(function, "basic_string", "string");
+
+    // remove empty/unknown function names
+    stringReplaceInPlace(function, "?? ??:0", "");
+
+    // cleanup autograder test case names
+    stringReplaceInPlace(function, "_Test::TestRealBody", "");
+    stringReplaceInPlace(function, "_Test::TestBody", "");
 
     // remove template arguments
     // TODO: does not work well for nested templates
@@ -1039,12 +846,15 @@ LONG WINAPI UnhandledException(LPEXCEPTION_POINTERS exceptionInfo) {
 
 void setTopLevelExceptionHandlerEnabled(bool enabled, bool force) {
     static void (* old_terminate)() = nullptr;
+    static void (* old_unexpected)() = nullptr;
 
     if ((!STATIC_VARIABLE(topLevelExceptionHandlerEnabled) || force) && enabled) {
         if (!old_terminate) {
             old_terminate = std::set_terminate(stanfordCppLibTerminateHandler);
+            old_unexpected = std::set_unexpected(stanfordCppLibUnexpectedHandler);
         } else {
             std::set_terminate(stanfordCppLibTerminateHandler);
+            std::set_unexpected(stanfordCppLibUnexpectedHandler);
         }
 #ifdef _WIN32
         // disabling this code for now because it messes with the
@@ -1063,6 +873,7 @@ void setTopLevelExceptionHandlerEnabled(bool enabled, bool force) {
         signalHandlerEnable();
     } else if ((STATIC_VARIABLE(topLevelExceptionHandlerEnabled) || force) && !enabled) {
         std::set_terminate(old_terminate);
+        std::set_unexpected(old_unexpected);
     }
     STATIC_VARIABLE(topLevelExceptionHandlerEnabled) = enabled;
 }
@@ -1074,15 +885,19 @@ void setTopLevelExceptionHandlerEnabled(bool enabled, bool force) {
 bool shouldFilterOutFromStackTrace(const std::string& function) {
     // exact names that should be matched and filtered
     static const std::vector<std::string> FORBIDDEN_NAMES {
+        "",
         "??",
+        "call_stack",
         "_clone",
         "clone",
         "error",
         "error(const string&)",
         "error(string)",
+        "ErrorException",
         "__libc_start_main",
         "_start",
         "startupMain(int, char**)",
+        "(unknown)",
         "_Unwind_Resume"
     };
 
@@ -1090,22 +905,29 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
     static const std::vector<std::string> FORBIDDEN_SUBSTRINGS {
         " error(",
         "__cxa_rethrow",
+        "__cxa_call_terminate",
+        "__cxa_call_unexpected",
         "_endthreadex",
         "_Function_handler",
         "_Internal_",
         "_M_invoke",
         "_sigtramp",
-        "autograderMain"
+        "autograderMain",
         "BaseThreadInitThunk",
+        "call_stack_gcc.cpp",
+        "call_stack_windows.cpp",
         "crtexe.c",
         "ErrorException::ErrorException",
+        "exceptions.cpp",
         "function::operator",
         "GetModuleFileName",
         "GetProfileString",
+        // "GStudentThread::run",
         "InitializeExceptionChain",
         "KnownExceptionFilter",
         "M_invoke",
-        "operator",
+        "multimain.cpp",
+        // "operator",
         "printStackTrace",
         // "QAbstractItemModel::",
         // "QAbstractProxyModel::",
@@ -1123,6 +945,7 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "stanfordCppLibPosixSignalHandler",
         "stanfordCppLibSignalHandler",
         "stanfordCppLibTerminateHandler",
+        "stanfordCppLibUnexpectedHandler",
         "testing::",
         "UnhandledException"
     };
@@ -1170,8 +993,10 @@ void printStackTrace(std::ostream& out) {
     int lineStrLength = 0;
     for (size_t i = 0; i < entries.size(); ++i) {
         entries[i].function = cleanupFunctionNameForStackTrace(entries[i].function);
-        
-        if (!STATIC_VARIABLE(STACK_TRACE_SHOULD_FILTER) || !shouldFilterOutFromStackTrace(entries[i].function)) {
+        if (!STATIC_VARIABLE(STACK_TRACE_SHOULD_FILTER)
+                || (!shouldFilterOutFromStackTrace(entries[i].function)
+                    && !shouldFilterOutFromStackTrace(entries[i].file)
+                    && !shouldFilterOutFromStackTrace(entries[i].lineStr))) {
             lineStrLength = std::max(lineStrLength, (int) entries[i].lineStr.length());
             funcNameLength = std::max(funcNameLength, (int) entries[i].function.length());
             entriesToShowCount++;
@@ -1200,7 +1025,10 @@ void printStackTrace(std::ostream& out) {
         entry.file = getTail(entry.file);
         
         // skip certain entries for clarity
-        if (STATIC_VARIABLE(STACK_TRACE_SHOULD_FILTER) && shouldFilterOutFromStackTrace(entry.function)) {
+        if (STATIC_VARIABLE(STACK_TRACE_SHOULD_FILTER)
+                && (shouldFilterOutFromStackTrace(entry.function)
+                    || shouldFilterOutFromStackTrace(entry.file)
+                    || shouldFilterOutFromStackTrace(entry.lineStr))) {
             continue;
         }
         
@@ -1239,7 +1067,7 @@ void printStackTrace(std::ostream& out) {
             }
         }
         if (entry.lineStr.empty() && entry.line > 0) {
-            lineStr = "line " + integerToString(entry.line);
+            lineStr = "line " + std::to_string(entry.line);
         }
         
         out << "*** " << std::left << std::setw(lineStrLength) << lineStr
@@ -1248,7 +1076,9 @@ void printStackTrace(std::ostream& out) {
         // don't show entries beneath the student's main() function, for simplicity
         if (entry.function == "main"
                 || entry.function == "main()"
-                || entry.function == "main(int, char**)") {
+                || entry.function == "main(int, char**)"
+                || entry.function == "qMain"
+                || entry.function == "qMain()") {
             break;
         }
     }
@@ -1287,6 +1117,20 @@ void printStackTrace(std::ostream& out) {
     out << msg; \
     printStackTrace(out); \
     THROW_NOT_ON_WINDOWS(ex); \
+    }
+
+#define FILL_IN_EXCEPTION_TRACE_AND_THROW_ERROREXCEPTION(ex, kind, desc) \
+    {\
+    std::string __kind = (kind); \
+    std::string __desc = (desc); \
+    if ((!__kind.empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_KIND, __kind); } \
+    if ((!__desc.empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_DETAILS, __desc); } \
+    std::cout.flush(); \
+    out << msg; \
+    printStackTrace(out); \
+    ErrorException errorEx(out.str()); \
+    errorEx.setKind(kind); \
+    THROW_NOT_ON_WINDOWS(errorEx); \
     }
 
 static void signalHandlerDisable() {
@@ -1348,26 +1192,28 @@ static void signalHandlerEnable() {
  * Prints details about the signal and then tries to print a stack trace.
  */
 static void stanfordCppLibSignalHandler(int sig) {
+#ifndef SPL_AUTOGRADER_MODE
     // turn the signal handler off (should run only once; avoid infinite cycle)
     signalHandlerDisable();
+#endif // SPL_AUTOGRADER_MODE
 
     // tailor the error message to the kind of signal that occurred
     std::string SIGNAL_KIND = "A fatal error";
     std::string SIGNAL_DETAILS = "No details were provided about the error.";
     if (sig == SIGSEGV) {
-        SIGNAL_KIND = "A segmentation fault";
+        SIGNAL_KIND = "A segmentation fault (SIGSEGV)";
         SIGNAL_DETAILS = "This typically happens when you try to dereference a pointer\n*** that is NULL or invalid.";
     } else if (sig == SIGABRT) {
-        SIGNAL_KIND = "An abort error";
+        SIGNAL_KIND = "An abort error (SIGABRT)";
         SIGNAL_DETAILS = "This error is thrown by system functions that detect corrupt state.";
     } else if (sig == SIGILL) {
-        SIGNAL_KIND = "An illegal instruction error";
+        SIGNAL_KIND = "An illegal instruction error (SIGILL)";
         SIGNAL_DETAILS = "This typically happens when you have corrupted your program's memory.";
     } else if (sig == SIGFPE) {
-        SIGNAL_KIND = "An arithmetic error";
+        SIGNAL_KIND = "An arithmetic error (SIGFPE)";
         SIGNAL_DETAILS = "This typically happens when you divide by 0 or produce an overflow.";
     } else if (sig == SIGINT) {
-        SIGNAL_KIND = "An interrupt error";
+        SIGNAL_KIND = "An interrupt error (SIGINT)";
         SIGNAL_DETAILS = "This typically happens when your code timed out because it was stuck in an infinite loop.";
     } else if (sig == SIGSTACK) {
         SIGNAL_KIND = "A stack overflow";
@@ -1377,6 +1223,7 @@ static void stanfordCppLibSignalHandler(int sig) {
         SIGNAL_DETAILS = "This can happen when you produce infinite output in your code.";
     }
     
+#ifndef SPL_AUTOGRADER_MODE
     std::cerr << std::endl;
     std::cerr << "***" << std::endl;
     std::cerr << "*** STANFORD C++ LIBRARY" << std::endl;
@@ -1393,7 +1240,17 @@ static void stanfordCppLibSignalHandler(int sig) {
 //        std::cerr << "*** " << line << std::endl;
 //    }
     std::cerr.flush();
+
+    // if in autograder mode, swallow the signal;
+    // if in student code, let it bubble out to crash the app
     raise(sig == SIGSTACK ? SIGABRT : sig);
+#else // SPL_AUTOGRADER_MODE
+    // throw an exception
+    std::ostringstream out;
+    out << SIGNAL_KIND << "." << std::endl;
+    out << SIGNAL_DETAILS << std::endl;
+    error(out.str());
+#endif // SPL_AUTOGRADER_MODE
 }
 
 // puts "*** " before each line for multi-line error messages
@@ -1444,113 +1301,80 @@ static void stanfordCppLibTerminateHandler() {
     } catch (char const* str) {
         FILL_IN_EXCEPTION_TRACE(str, "A string exception", insertStarsBeforeEachLine(str));
     } catch (int n) {
-        FILL_IN_EXCEPTION_TRACE(n, "An int exception", integerToString(n));
+        FILL_IN_EXCEPTION_TRACE(n, "An int exception", std::to_string(n));
     } catch (long l) {
-        FILL_IN_EXCEPTION_TRACE(l, "A long exception", longToString(l));
+        FILL_IN_EXCEPTION_TRACE(l, "A long exception", std::to_string(l));
     } catch (char c) {
         FILL_IN_EXCEPTION_TRACE(c, "A char exception", charToString(c));
     } catch (bool b) {
         FILL_IN_EXCEPTION_TRACE(b, "A bool exception", boolToString(b));
     } catch (double d) {
-        FILL_IN_EXCEPTION_TRACE(d, "A double exception", realToString(d));
+        FILL_IN_EXCEPTION_TRACE(d, "A double exception", std::to_string(d));
     } catch (...) {
         std::string ex = "Unknown";
         FILL_IN_EXCEPTION_TRACE(ex, "An exception", std::string());
     }
 }
 
+/*
+ * A general handler for any exception thrown that is missing from the throw()
+ * clause of a function header.
+ * Prints details about the exception and then tries to print a stack trace.
+ */
+static void stanfordCppLibUnexpectedHandler() {
+    std::string DEFAULT_EXCEPTION_KIND = "An exception";
+    std::string DEFAULT_EXCEPTION_DETAILS = "(unknown exception details)";
+
+    std::string msg;
+    msg += "\n";
+    msg += "***\n";
+    msg += "*** STANFORD C++ LIBRARY \n";
+    msg += "*** " + DEFAULT_EXCEPTION_KIND + " occurred during program execution: \n";
+    msg += "*** " + DEFAULT_EXCEPTION_DETAILS + "\n";
+    msg += "***\n";
+
+    std::string kind = "error";
+    std::string message = "";
+    try {
+        throw;   // re-throws the exception that already occurred
+    } catch (bool b) {
+        kind = "bool";
+        message = boolToString(b);
+    } catch (char c) {
+        kind = "char";
+        message = charToString(c);
+    } catch (char const* str) {
+        kind = "string";
+        message = str;
+    } catch (double d) {
+        kind = "double";
+        message = std::to_string(d);
+    } catch (const ErrorException& ex) {
+        kind = "error";
+        message = ex.what();
+    } catch (const std::exception& ex) {
+        kind = "exception";
+        message = ex.what();
+    } catch (int n) {
+        kind = "int";
+        message = std::to_string(n);
+    } catch (long l) {
+        kind = "long";
+        message = std::to_string(l);
+    } catch (std::string str) {
+        kind = "string";
+        message = str;
+    } catch (...) {
+        kind = "unknown";
+    }
+
+    ErrorException errorEx(message);
+    errorEx.setKind(kind);
+    throw errorEx;
+}
+
 } // namespace exceptions
 
-
-/*
- * File: thread.cpp
- * ----------------
- * This file implements the platform-independent parts of the thread package.
- */
-
-/*************************************************************************/
-/* Stanford Portable Library                                             */
-/* Copyright (c) 2014 by Eric Roberts <eroberts@cs.stanford.edu>         */
-/*                                                                       */
-/* This program is free software: you can redistribute it and/or modify  */
-/* it under the terms of the GNU General Public License as published by  */
-/* the Free Software Foundation, either version 3 of the License, or     */
-/* (at your option) any later version.                                   */
-/*                                                                       */
-/* This program is distributed in the hope that it will be useful,       */
-/* but WITHOUT ANY WARRANTY; without even the implied warranty of        */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
-/* GNU General Public License for more details.                          */
-/*                                                                       */
-/* You should have received a copy of the GNU General Public License     */
-/* along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-/*************************************************************************/
-
-#define INTERNAL_INCLUDE 1
-#include <iostream>
-#include <sstream>
-#include <string>
-#include "thread.h"
-#include "private/tplatform.h"
-#undef INTERNAL_INCLUDE
-
-Thread::Thread() {
-    id = -1;
-}
-
-Thread::~Thread() {
-    /* Empty */
-}
-
-std::string Thread::toString() {
-    std::ostringstream stream;
-    stream << "Thread" << id;
-    return stream.str();
-}
-
-static void forkWithVoid(void *arg);
-
-Thread forkThread(void (*fn)()) {
-    Thread thread;
-    StartWithVoid startup = { fn };
-    thread.id = forkForPlatform(forkWithVoid, &startup);
-    return thread;
-}
-
-void joinThread(Thread& thread) {
-    joinForPlatform(thread.id);
-}
-
-void yieldThread() {
-    yieldForPlatform();
-}
-
-Thread getCurrentThread() {
-    Thread thread;
-    thread.id = getCurrentThreadForPlatform();
-    return thread;
-}
-
-Lock::Lock() {
-    id = initLockForPlatform();
-}
-
-Lock::~Lock() {
-    decLockRefCountForPlatform(id);
-}
-
-void Lock::wait() {
-    waitForPlatform(id);
-}
-
-void Lock::signal() {
-    signalForPlatform(id);
-}
-
-static void forkWithVoid(void *arg) {
-    StartWithVoid* startup = (StartWithVoid*) arg;
-    startup->fn();
-}
 
 /*
  * File: call_stack_windows.cpp
@@ -1571,8 +1395,8 @@ static void forkWithVoid(void *arg) {
  * @version 2015/05/28
  */
 
-#define INTERNAL_INCLUDE 1
 #ifdef _WIN32
+#define INTERNAL_INCLUDE 1
 #include "call_stack.h"
 #include <windows.h>
 #  undef MOUSE_EVENT
@@ -1596,10 +1420,14 @@ static void forkWithVoid(void *arg) {
 #define _NO_CVCONST_H
 #include <dbghelp.h>
 #include <imagehlp.h>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #include <cxxabi.h>
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #undef INTERNAL_INCLUDE
 
@@ -1785,6 +1613,7 @@ call_stack::~call_stack() throw() {
 #define INTERNAL_INCLUDE 1
 #include "timer.h"
 #include <sys/time.h>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
 #undef INTERNAL_INCLUDE
 
@@ -1844,8 +1673,11 @@ long Timer::currentTimeMS() {
 #define INTERNAL_INCLUDE 1
 #include "note.h"
 #include <sstream>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "gmath.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
 #undef INTERNAL_INCLUDE
 
@@ -2113,6 +1945,7 @@ void Sound::play() {
 #include <iomanip>
 #include <queue>
 #include <sstream>
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #undef INTERNAL_INCLUDE
 
@@ -2279,7 +2112,9 @@ static void initRandomSeed() {
 
 #define INTERNAL_INCLUDE 1
 #include "recursion.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
 #include "call_stack.h"
 #undef INTERNAL_INCLUDE
 
@@ -2331,8 +2166,11 @@ std::string recursionIndent(const std::string& indenter) {
 
 #define INTERNAL_INCLUDE 1
 #include "direction.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "tokenscanner.h"
 #undef INTERNAL_INCLUDE
 
@@ -2624,7 +2462,7 @@ std::string trimToHeight(const std::string& s, int height, const std::string& su
         lines.remove(lines.size() - 1);
     }
     if (wasTooTall && !suffix.empty()) {
-        lines.add(suffix + " (" + integerToString(lineCount - height) + " line(s) truncated)");
+        lines.add(suffix + " (" + std::to_string(lineCount - height) + " line(s) truncated)");
     }
     return implode(lines);
 }
@@ -2702,11 +2540,17 @@ int width(const std::string& s) {
 #define INTERNAL_INCLUDE 1
 #include "diff.h"
 #include <algorithm>
+#define INTERNAL_INCLUDE 1
 #include "map.h"
+#define INTERNAL_INCLUDE 1
 #include "regexpr.h"
+#define INTERNAL_INCLUDE 1
 #include "set.h"
+#define INTERNAL_INCLUDE 1
 #include "stringutils.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "vector.h"
 #undef INTERNAL_INCLUDE
 
@@ -2903,12 +2747,12 @@ std::string diff(std::string s1, std::string s2, int flags) {
 
         if (op > 0) {
             bool multipleLines = (x1 != x0 + 1);
-            std::string xstr = std::string("") + (multipleLines ? (integerToString(x0 + 1) + "-" + integerToString(x1)) : integerToString(x1));
-            std::string ystr = std::string("") + ((y1 != y0 + 1) ? (integerToString(y0 + 1) + "-" + integerToString(y1)) : integerToString(y1));
+            std::string xstr = std::string("") + (multipleLines ? (std::to_string(x0 + 1) + "-" + std::to_string(x1)) : std::to_string(x1));
+            std::string ystr = std::string("") + ((y1 != y0 + 1) ? (std::to_string(y0 + 1) + "-" + std::to_string(y1)) : std::to_string(y1));
             std::string linesStr = std::string("\nLine") + (multipleLines ? "s " : " ");
             std::string doStr = std::string("do") + (multipleLines ? "" : "es");
             if (op == 1) {
-                out += linesStr + xstr + " deleted near student line " + integerToString(y1);
+                out += linesStr + xstr + " deleted near student line " + std::to_string(y1);
             } else if (op == 3) {
                 if (xstr == ystr) {
                     out += linesStr + xstr + " " + doStr + " not match";
@@ -2924,7 +2768,7 @@ std::string diff(std::string s1, std::string s2, int flags) {
 
             if (op == 2) {
                 if (!(flags & IGNORE_LEADING) || x1 > 0) {
-                    out += linesStr + integerToString(x1) + " added at student line " + ystr;
+                    out += linesStr + std::to_string(x1) + " added at student line " + ystr;
                 }
             } else if (op == 3) {
                 // out += "---";
@@ -2984,7 +2828,9 @@ bool isDiffMatch(const std::string& diffs) {
 #include <iterator>
 #include <regex>
 #include <QtGlobal>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "stringutils.h"
 #undef INTERNAL_INCLUDE
 
@@ -3014,9 +2860,9 @@ int regexMatchCountWithLines(const std::string& s, const std::string& regexp, st
     // concatenate the vector into a string like "1, 4, 7, 7, 19"
     linesOut = "";
     if (!linesOutVec.isEmpty()) {
-        linesOut += integerToString(linesOutVec[0]);
+        linesOut += std::to_string(linesOutVec[0]);
         for (int i = 1; i < linesOutVec.size(); i++) {
-            linesOut += ", " + integerToString(linesOutVec[i]);
+            linesOut += ", " + std::to_string(linesOutVec[i]);
         }
     }
     return linesOutVec.size();
@@ -3080,8 +2926,8 @@ std::string regexReplace(const std::string& s, const std::string& /*regexp*/, co
 
 //#define INTERNAL_INCLUDE 1
 //#include "bigfloat.h"
-//#include <limits>
 //#undef INTERNAL_INCLUDE
+//#include <limits>
 
 //bool BigFloatCache::_isInitialized = false;
 //BigFloat BigFloatCache::_e;
@@ -5556,7 +5402,9 @@ std::string regexReplace(const std::string& s, const std::string& /*regexp*/, co
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -5881,7 +5729,7 @@ std::string BigInteger::multiply(const std::string& n1, const std::string& n2) {
 
 BigInteger BigInteger::pow(long exp) const {
     if (exp < 0) {
-        error("negative exponent: " + longToString(exp));
+        error("negative exponent: " + std::to_string(exp));
     } else if (exp == 0) {
         return ONE;
     } else if (exp == 1) {
@@ -5975,11 +5823,11 @@ void BigInteger::setNumber(const std::string& s, int radix) {
         // and adding it to a cumulative sum BigInteger variable
         BigInteger result(ZERO);
         BigInteger power(ONE);
-        BigInteger biRadix(integerToString(radix));
+        BigInteger biRadix(std::to_string(radix));
         for (int i = (int) scopy.length() - 1; i >= 0; i--) {
             std::string ch = scopy.substr(i, 1);
             int val = stringToInteger(ch, radix);
-            result += power * BigInteger(integerToString(val));
+            result += power * BigInteger(std::to_string(val));
             power *= biRadix;
         }
         *this = result;
@@ -6056,7 +5904,7 @@ std::string BigInteger::toString(int radix) const {
     if (radix == 10) {
         return std::string(*this);
     } else if (radix <= 0) {
-        error("Illegal radix value: " + integerToString(radix));
+        error("Illegal radix value: " + std::to_string(radix));
     } else if (number == "0") {
         return "0";
     } else if (radix == 1) {
@@ -6070,7 +5918,7 @@ std::string BigInteger::toString(int radix) const {
         std::ostringstream out;
         out << std::setbase(radix);
         BigInteger copy(this->abs());
-        BigInteger biRadix(integerToString(radix));
+        BigInteger biRadix(std::to_string(radix));
         while (copy.isPositive()) {
             int lastDigit = (copy % biRadix).toInt();
             out << lastDigit;
@@ -6459,8 +6307,8 @@ std::ostream& operator <<(std::ostream& out, const BigInteger& b) {
 #define INTERNAL_INCLUDE 1
 #include "require.h"
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 namespace require {
@@ -6496,11 +6344,11 @@ static void _errorMessage(const std::string& caller, const std::string& valueNam
 #define _default(value, defaultValue) ((value) == std::string("") ? (defaultValue) : (value))
 
 void inRange(double value, double min, double max, const std::string& caller, const std::string& valueName, const std::string& details) {
-    _spl_assert(min <= value && value <= max, caller, _default(valueName, "value"), _default(details, "must be between " + doubleToString(min) + " and " + doubleToString(max) + " inclusive but was " + doubleToString(value)));
+    _spl_assert(min <= value && value <= max, caller, _default(valueName, "value"), _default(details, "must be between " + std::to_string(min) + " and " + std::to_string(max) + " inclusive but was " + std::to_string(value)));
 }
 
 void inRange(int value, int min, int max, const std::string& caller, const std::string& valueName, const std::string& details) {
-    _spl_assert(min <= value && value <= max, caller, _default(valueName, "value"), _default(details, "must be between " + integerToString(min) + " and " + integerToString(max) + " inclusive but was " + integerToString(value)));
+    _spl_assert(min <= value && value <= max, caller, _default(valueName, "value"), _default(details, "must be between " + std::to_string(min) + " and " + std::to_string(max) + " inclusive but was " + std::to_string(value)));
 }
 
 void inRange2D(double x, double y, double maxX, double maxY, const std::string& caller, const std::string& xValueName, const std::string& yValueName, const std::string& details) {
@@ -6508,8 +6356,8 @@ void inRange2D(double x, double y, double maxX, double maxY, const std::string& 
 }
 
 void inRange2D(double x, double y, double minX, double minY, double maxX, double maxY, const std::string& caller, const std::string& xValueName, const std::string& yValueName, const std::string& details) {
-    inRange(x, minX, maxX, caller, xValueName, _default(details, "must be between (" + doubleToString(minX) + "," + doubleToString(minY) + ")-" + doubleToString(maxX) + "," + doubleToString(maxY) + ") inclusive but was (" + doubleToString(x) + "," + doubleToString(y) + ")"));
-    inRange(y, minY, maxY, caller, yValueName, _default(details, "must be between (" + doubleToString(minX) + "," + doubleToString(minY) + ")-" + doubleToString(maxX) + "," + doubleToString(maxY) + ") inclusive but was (" + doubleToString(x) + "," + doubleToString(y) + ")"));
+    inRange(x, minX, maxX, caller, xValueName, _default(details, "must be between (" + std::to_string(minX) + "," + std::to_string(minY) + ")-" + std::to_string(maxX) + "," + std::to_string(maxY) + ") inclusive but was (" + std::to_string(x) + "," + std::to_string(y) + ")"));
+    inRange(y, minY, maxY, caller, yValueName, _default(details, "must be between (" + std::to_string(minX) + "," + std::to_string(minY) + ")-" + std::to_string(maxX) + "," + std::to_string(maxY) + ") inclusive but was (" + std::to_string(x) + "," + std::to_string(y) + ")"));
 }
 
 void inRange2D(int x, int y, int maxX, int maxY, const std::string& caller, const std::string& xValueName, const std::string& yValueName, const std::string& details) {
@@ -6517,8 +6365,8 @@ void inRange2D(int x, int y, int maxX, int maxY, const std::string& caller, cons
 }
 
 void inRange2D(int x, int y, int minX, int minY, int maxX, int maxY, const std::string& caller, const std::string& xValueName, const std::string& yValueName, const std::string& details) {
-    inRange(x, minX, maxX, caller, xValueName, _default(details, "must be between (" + integerToString(minX) + "," + integerToString(minY) + ")-" + integerToString(maxX) + "," + integerToString(maxY) + ") inclusive but was (" + integerToString(x) + "," + integerToString(y) + ")"));
-    inRange(y, minY, maxY, caller, yValueName, _default(details, "must be between (" + integerToString(minX) + "," + integerToString(minY) + ")-" + integerToString(maxX) + "," + integerToString(maxY) + ") inclusive but was (" + integerToString(x) + "," + integerToString(y) + ")"));
+    inRange(x, minX, maxX, caller, xValueName, _default(details, "must be between (" + std::to_string(minX) + "," + std::to_string(minY) + ")-" + std::to_string(maxX) + "," + std::to_string(maxY) + ") inclusive but was (" + std::to_string(x) + "," + std::to_string(y) + ")"));
+    inRange(y, minY, maxY, caller, yValueName, _default(details, "must be between (" + std::to_string(minX) + "," + std::to_string(minY) + ")-" + std::to_string(maxX) + "," + std::to_string(maxY) + ") inclusive but was (" + std::to_string(x) + "," + std::to_string(y) + ")"));
 }
 
 void nonEmpty(const std::string& str, const std::string& caller, const std::string& valueName, const std::string& details) {
@@ -6526,11 +6374,11 @@ void nonEmpty(const std::string& str, const std::string& caller, const std::stri
 }
 
 void nonNegative(double value, const std::string& caller, const std::string& valueName, const std::string& details) {
-    _spl_assert(value >= 0.0, caller, _default(valueName, "value"), _default(details, "must be non-negative but was " + doubleToString(value)));
+    _spl_assert(value >= 0.0, caller, _default(valueName, "value"), _default(details, "must be non-negative but was " + std::to_string(value)));
 }
 
 void nonNegative(int value, const std::string& caller, const std::string& valueName, const std::string& details) {
-    _spl_assert(value >= 0, caller, _default(valueName, "value"), _default(details, "must be non-negative but was " + integerToString(value)));
+    _spl_assert(value >= 0, caller, _default(valueName, "value"), _default(details, "must be non-negative but was " + std::to_string(value)));
 }
 
 void nonNegative2D(double x, double y, const std::string& caller, const std::string& xValueName, const std::string& yValueName, const std::string& details) {
@@ -6548,11 +6396,11 @@ void nonNull(const void* ptr, const std::string& caller, const std::string& valu
 }
 
 void positive(double value, const std::string& caller, const std::string& valueName, const std::string& details) {
-    _spl_assert(value > 0.0, caller, _default(valueName, "value"), _default(details, "must be positive but was " + doubleToString(value)));
+    _spl_assert(value > 0.0, caller, _default(valueName, "value"), _default(details, "must be positive but was " + std::to_string(value)));
 }
 
 void positive(int value, const std::string& caller, const std::string& valueName, const std::string& details) {
-    _spl_assert(value > 0, caller, _default(valueName, "value"), _default(details, "must be positive but was " + integerToString(value)));
+    _spl_assert(value > 0, caller, _default(valueName, "value"), _default(details, "must be positive but was " + std::to_string(value)));
 }
 
 void require(bool test, const std::string& caller, const std::string& details) {
@@ -6575,7 +6423,9 @@ void require(bool test, const std::string& caller, const std::string& details) {
 #define INTERNAL_INCLUDE 1
 #include "gmath.h"
 #include <cmath>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "gtypes.h"
 #undef INTERNAL_INCLUDE
 
@@ -6651,7 +6501,9 @@ int countDigits(int n, int base) {
 #include <cctype>
 #include <cmath>
 #include <sstream>
+#define INTERNAL_INCLUDE 1
 #include "gmath.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
 #undef INTERNAL_INCLUDE
 
@@ -6870,7 +6722,11 @@ std::istream& operator >>(std::istream& input, Complex& c) {
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
+#include "vector.h"
 #undef INTERNAL_INCLUDE
 
 /* Function prototypes */
@@ -6967,7 +6823,7 @@ char integerToChar(int n) {
  */
 std::string integerToString(int n, int radix) {
     if (radix <= 0) {
-        error("integerToString: Illegal radix: " + integerToString(radix));
+        error("integerToString: Illegal radix: " + std::to_string(radix));
     }
     std::ostringstream stream;
     if (radix != 10) {
@@ -6979,7 +6835,7 @@ std::string integerToString(int n, int radix) {
 
 std::string longToString(long n, int radix) {
     if (radix <= 0) {
-        error("longToString: Illegal radix: " + integerToString(radix));
+        error("longToString: Illegal radix: " + std::to_string(radix));
     }
     std::ostringstream stream;
     if (radix != 10) {
@@ -7055,7 +6911,7 @@ bool stringIsDouble(const std::string& str) {
 
 bool stringIsInteger(const std::string& str, int radix) {
     if (radix <= 0) {
-        error("stringIsInteger: Illegal radix: " + integerToString(radix));
+        error("stringIsInteger: Illegal radix: " + std::to_string(radix));
     }
     std::istringstream stream(trim(str));
     stream >> std::setbase(radix);
@@ -7066,7 +6922,7 @@ bool stringIsInteger(const std::string& str, int radix) {
 
 bool stringIsLong(const std::string& str, int radix) {
     if (radix <= 0) {
-        error("stringIsLong: Illegal radix: " + integerToString(radix));
+        error("stringIsLong: Illegal radix: " + std::to_string(radix));
     }
     std::istringstream stream(trim(str));
     stream >> std::setbase(radix);
@@ -7108,13 +6964,13 @@ int stringIndexOf(const std::string& s, const std::string& substring, int startI
     }
 }
 
-std::string stringJoin(const std::vector<std::string>& v, char delimiter) {
+std::string stringJoin(const Vector<std::string>& v, char delimiter) {
     std::string delim = charToString(delimiter);
     return stringJoin(v, delim);
 }
 
-std::string stringJoin(const std::vector<std::string>& v, const std::string& delimiter) {
-    if (v.empty()) {
+std::string stringJoin(const Vector<std::string>& v, const std::string& delimiter) {
+    if (v.isEmpty()) {
         return "";
     } else {
         std::ostringstream out;
@@ -7187,14 +7043,14 @@ int stringReplaceInPlace(std::string& str, const std::string& old, const std::st
     return count;
 }
 
-std::vector<std::string> stringSplit(const std::string& str, char delimiter, int limit) {
+Vector<std::string> stringSplit(const std::string& str, char delimiter, int limit) {
     std::string delim = charToString(delimiter);
     return stringSplit(str, delim, limit);
 }
 
-std::vector<std::string> stringSplit(const std::string& str, const std::string& delimiter, int limit) {
+Vector<std::string> stringSplit(const std::string& str, const std::string& delimiter, int limit) {
     std::string str2 = str;
-    std::vector<std::string> result;
+    Vector<std::string> result;
     int count = 0;
     size_t index = 0;
     while (limit < 0 || count < limit) {
@@ -7202,12 +7058,12 @@ std::vector<std::string> stringSplit(const std::string& str, const std::string& 
         if (index == std::string::npos) {
             break;
         }
-        result.push_back(str2.substr(0, index));
+        result.add(str2.substr(0, index));
         str2.erase(str2.begin(), str2.begin() + index + delimiter.length());
         count++;
     }
     if ((int) str2.length() > 0) {
-        result.push_back(str2);
+        result.add(str2);
     }
 
     return result;
@@ -7242,7 +7098,7 @@ double stringToDouble(const std::string& str) {
 
 int stringToInteger(const std::string& str, int radix) {
     if (radix <= 0) {
-        error("stringToInteger: Illegal radix: " + integerToString(radix));
+        error("stringToInteger: Illegal radix: " + std::to_string(radix));
     }
     std::istringstream stream(trim(str));
     stream >> std::setbase(radix);
@@ -7256,7 +7112,7 @@ int stringToInteger(const std::string& str, int radix) {
 
 long stringToLong(const std::string& str, int radix) {
     if (radix <= 0) {
-        error("stringToLong: Illegal radix: " + integerToString(radix));
+        error("stringToLong: Illegal radix: " + std::to_string(radix));
     }
     std::istringstream stream(trim(str));
     stream >> std::setbase(radix);
@@ -7418,144 +7274,6 @@ void urlEncodeInPlace(std::string& str) {
     str = urlEncode(str);   // no real efficiency gain here
 }
 
-
-/*
- * Implementation notes: readQuotedString and writeQuotedString
- * ------------------------------------------------------------
- * Most of the work in these functions has to do with escape sequences.
- */
-
-static const std::string STRING_DELIMITERS = ",:)}]\n";
-
-bool stringNeedsQuoting(const std::string& str) {
-    int n = str.length();
-    for (int i = 0; i < n; i++) {
-        char ch = str[i];
-        if (isspace(ch)) return false;
-        if (STRING_DELIMITERS.find(ch) != std::string::npos) return true;
-    }
-    return false;
-}
-
-bool readQuotedString(std::istream& is, std::string& str, bool throwOnError) {
-    str = "";
-    char ch;
-    while (is.get(ch) && isspace(ch)) {
-        /* Empty */
-    }
-    if (is.fail()) {
-        return true;   // empty string?
-    }
-    if (ch == '\'' || ch == '"') {
-        char delim = ch;
-        while (is.get(ch) && ch != delim) {
-            if (is.fail()) {
-                if (throwOnError) {
-                    error("Unterminated string");
-                }
-                return false;
-            }
-            if (ch == '\\') {
-                if (!is.get(ch)) {
-                    if (throwOnError) {
-                        error("Unterminated string");
-                    }
-                    is.setstate(std::ios_base::failbit);
-                    return false;
-                }
-                if (isdigit(ch) || ch == 'x') {
-                    int maxDigits = 3;
-                    int base = 8;
-                    if (ch == 'x') {
-                        base = 16;
-                        maxDigits = 2;
-                    }
-                    int result = 0;
-                    int digit = 0;
-                    for (int i = 0; i < maxDigits && ch != delim; i++) {
-                        if (isdigit(ch)) {
-                            digit = ch - '0';
-                        } else if (base == 16 && isxdigit(ch)) {
-                            digit = toupper(ch) - 'A' + 10;
-                        } else {
-                            break;
-                        }
-                        result = base * result + digit;
-                        if (!is.get(ch)) {
-                            if (throwOnError) {
-                                error("Unterminated string");
-                            }
-                            is.setstate(std::ios_base::failbit);
-                            return false;
-                        }
-                    }
-                    ch = char(result);
-                    is.unget();
-                } else {
-                    switch (ch) {
-                    case 'a': ch = '\a'; break;
-                    case 'b': ch = '\b'; break;
-                    case 'f': ch = '\f'; break;
-                    case 'n': ch = '\n'; break;
-                    case 'r': ch = '\r'; break;
-                    case 't': ch = '\t'; break;
-                    case 'v': ch = '\v'; break;
-                    case '"': ch = '"'; break;
-                    case '\'': ch = '\''; break;
-                    case '\\': ch = '\\'; break;
-                    }
-                }
-            }
-            str += ch;
-        }
-    } else {
-        str += ch;
-        int endTrim = 0;
-        while (is.get(ch) && STRING_DELIMITERS.find(ch) == std::string::npos) {
-            str += ch;
-            if (!isspace(ch)) endTrim = str.length();
-        }
-        if (is) is.unget();
-        str = str.substr(0, endTrim);
-    }
-    return true;   // read successfully
-}
-
-std::ostream& writeQuotedString(std::ostream& os, const std::string& str, bool forceQuotes) {
-    if (!forceQuotes && stringNeedsQuoting(str)) {
-        forceQuotes = true;
-    }
-    if (forceQuotes) {
-        os << '"';
-    }
-    int len = str.length();
-    for (int i = 0; i < len; i++) {
-        char ch = str.at(i);
-        switch (ch) {
-        case '\a': os << "\\a"; break;
-        case '\b': os << "\\b"; break;
-        case '\f': os << "\\f"; break;
-        case '\n': os << "\\n"; break;
-        case '\r': os << "\\r"; break;
-        case '\t': os << "\\t"; break;
-        case '\v': os << "\\v"; break;
-        case '\\': os << "\\\\"; break;
-        default:
-            if (isprint(ch) && ch != '"') {
-                os << ch;
-            } else {
-                std::ostringstream oss;
-                oss << std::oct << std::setw(3) << std::setfill('0') << (int(ch) & 0xFF);
-                os << "\\" << oss.str();
-            }
-        }
-    }
-    if (forceQuotes) {
-        os << '"';
-    }
-    return os;
-}
-
 /*
  * File: point.cpp
  * ---------------
@@ -7570,9 +7288,10 @@ std::ostream& writeQuotedString(std::ostream& os, const std::string& str, bool f
 #define INTERNAL_INCLUDE 1
 #include "point.h"
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "gtypes.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 Point::Point() {
@@ -7599,7 +7318,7 @@ int Point::getY() const {
 }
 
 std::string Point::toString() const {
-    return "(" + integerToString(x) + "," + integerToString(y) + ")";
+    return "(" + std::to_string(x) + "," + std::to_string(y) + ")";
 }
 
 bool Point::operator ==(const Point& p2) const {
@@ -7633,6 +7352,7 @@ int hashCode(const Point& pt) {
 #define INTERNAL_INCLUDE 1
 #include "intrange.h"
 #include <sstream>
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
 #undef INTERNAL_INCLUDE
 
@@ -8034,11 +7754,14 @@ std::istream& operator >>(std::istream& input, IntRange2D& r) {
 
 #define INTERNAL_INCLUDE 1
 #include "gchooser.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 GChooser::GChooser(QWidget* parent) {
@@ -8205,7 +7928,7 @@ _Internal_QComboBox::_Internal_QComboBox(GChooser* gchooser, QWidget* parent)
         : QComboBox(parent),
           _gchooser(gchooser) {
     require::nonNull(gchooser, "_Internal_QComboBox::constructor");
-    setObjectName(QString::fromStdString("_Internal_QComboBox_" + integerToString(gchooser->getID())));
+    setObjectName(QString::fromStdString("_Internal_QComboBox_" + std::to_string(gchooser->getID())));
     connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(handleChange()));
 }
 
@@ -8228,7 +7951,9 @@ QSize _Internal_QComboBox::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gchooser.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES
 
 /*
@@ -8252,10 +7977,12 @@ QSize _Internal_QComboBox::sizeHint() const {
 #include <QString>
 #include <QStringList>
 #include <QStringListModel>
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 GTextField::GTextField(const std::string& text, int charsWide, QWidget* parent)
@@ -8290,7 +8017,7 @@ GTextField::GTextField(int charsWide, QWidget* parent)
 }
 
 GTextField::GTextField(int value, int min, int max, int step, QWidget* parent) {
-    require::require(min <= max, "GTextField::constructor", "min (" + integerToString(min) + ") cannot be greater than max (" + integerToString(max) + ")");
+    require::require(min <= max, "GTextField::constructor", "min (" + std::to_string(min) + ") cannot be greater than max (" + std::to_string(max) + ")");
     require::inRange(value, min, max, "GTextField::constructor", "value");
     GThread::runOnQtGuiThread([this, value, min, max, step, parent]() {
         _iqspinbox = new _Internal_QSpinBox(this, min, max, step, getInternalParent(parent));
@@ -8301,7 +8028,7 @@ GTextField::GTextField(int value, int min, int max, int step, QWidget* parent) {
 }
 
 GTextField::GTextField(double value, double min, double max, double step, QWidget* parent) {
-    require::require(min <= max, "GTextField::constructor", "min (" + doubleToString(min) + ") cannot be greater than max (" + doubleToString(max) + ")");
+    require::require(min <= max, "GTextField::constructor", "min (" + std::to_string(min) + ") cannot be greater than max (" + std::to_string(max) + ")");
     require::inRange(value, min, max, "GTextField::constructor", "value");
     GThread::runOnQtGuiThread([this, value, min, max, step, parent]() {
         _iqdoublespinbox = new _Internal_QDoubleSpinBox(this, min, max, step, getInternalParent(parent));
@@ -8347,10 +8074,10 @@ int GTextField::getMaxLength() const {
     if (_inputType == GTextField::INPUT_TYPE_TEXT) {
         // empty
     } else if (_inputType == GTextField::INPUT_TYPE_INTEGER) {
-        std::string maxStr = integerToString(_iqspinbox->maximum());
+        std::string maxStr = std::to_string(_iqspinbox->maximum());
         maxLength = std::max(maxLength, (int) maxStr.length());
     } else {
-        std::string maxStr = integerToString(_iqdoublespinbox->maximum());
+        std::string maxStr = std::to_string(_iqdoublespinbox->maximum());
         maxLength = std::max(maxLength, (int) maxStr.length());   // TODO: may be incorrect w/ decimal value
     }
 
@@ -8578,11 +8305,11 @@ void GTextField::setValue(char value) {
 }
 
 void GTextField::setValue(double value) {
-    setText(doubleToString(value));
+    setText(std::to_string(value));
 }
 
 void GTextField::setValue(int value) {
-    setText(integerToString(value));
+    setText(std::to_string(value));
 }
 
 void GTextField::setValue(const std::string& value) {
@@ -8618,7 +8345,7 @@ _Internal_QLineEdit::_Internal_QLineEdit(GTextField* gtextField, QWidget* parent
         : QLineEdit(parent),
           _gtextfield(gtextField) {
     require::nonNull(gtextField, "_Internal_QLineEdit::constructor");
-    setObjectName(QString::fromStdString("_Internal_QLineEdit_" + integerToString(gtextField->getID())));
+    setObjectName(QString::fromStdString("_Internal_QLineEdit_" + std::to_string(gtextField->getID())));
     connect(this, SIGNAL(textChanged(QString)), this, SLOT(handleTextChange(const QString&)));
 }
 
@@ -8659,7 +8386,7 @@ _Internal_QSpinBox::_Internal_QSpinBox(GTextField* gtextField, int min, int max,
         : QSpinBox(parent),
           _gtextfield(gtextField) {
     require::nonNull(gtextField, "_Internal_QSpinBox::constructor");
-    setObjectName(QString::fromStdString("_Internal_QSpinBox_" + integerToString(gtextField->getID())));
+    setObjectName(QString::fromStdString("_Internal_QSpinBox_" + std::to_string(gtextField->getID())));
     setRange(min, max);
     setSingleStep(step);
 }
@@ -8690,7 +8417,7 @@ _Internal_QDoubleSpinBox::_Internal_QDoubleSpinBox(GTextField* gtextField, doubl
         : QDoubleSpinBox(parent),
           _gtextfield(gtextField) {
     require::nonNull(gtextField, "_Internal_QDoubleSpinBox::constructor");
-    setObjectName(QString::fromStdString("_Internal_QDoubleSpinBox_" + integerToString(gtextField->getID())));
+    setObjectName(QString::fromStdString("_Internal_QDoubleSpinBox_" + std::to_string(gtextField->getID())));
     setRange(min, max);
     setSingleStep(step);
 }
@@ -8718,7 +8445,9 @@ QSize _Internal_QDoubleSpinBox::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gtextfield.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES
 
 /*
@@ -8736,9 +8465,13 @@ QSize _Internal_QDoubleSpinBox::sizeHint() const {
 #include "qtgui.h"
 #include <QEvent>
 #include <QThread>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -8893,7 +8626,9 @@ GEvent waitForEvent(int mask) {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_geventqueue.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES
 
 /*
@@ -8913,11 +8648,14 @@ GEvent waitForEvent(int mask) {
 #include "gbrowserpane.h"
 #include <fstream>
 #include <iostream>
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
+#define INTERNAL_INCLUDE 1
 #include "server.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 GBrowserPane::GBrowserPane(const std::string& url, QWidget* parent) {
@@ -9013,7 +8751,7 @@ _Internal_QTextBrowser::_Internal_QTextBrowser(GBrowserPane* gbrowserpane, QWidg
         : QTextBrowser(parent),
           _gbrowserpane(gbrowserpane) {
     require::nonNull(gbrowserpane, "_Internal_QTextBrowser::constructor");
-    setObjectName(QString::fromStdString("_Internal_QTextBrowser_" + integerToString(gbrowserpane->getID())));
+    setObjectName(QString::fromStdString("_Internal_QTextBrowser_" + std::to_string(gbrowserpane->getID())));
 }
 
 QVariant _Internal_QTextBrowser::loadResource(int type, const QUrl &url) {
@@ -9085,7 +8823,9 @@ QSize _Internal_QTextBrowser::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gbrowserpane.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES
 
 /*
@@ -9107,9 +8847,13 @@ QSize _Internal_QTextBrowser::sizeHint() const {
 
 #define INTERNAL_INCLUDE 1
 #include "ginputpanel.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "xmlutils.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #undef INTERNAL_INCLUDE
 
@@ -9205,9 +8949,13 @@ void GInputPanel::load(const std::string& xmlFilename) {
 #include <iomanip>
 #include <iostream>
 #include <QtGlobal>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "vector.h"
 #undef INTERNAL_INCLUDE
 
@@ -9427,11 +9175,17 @@ QFont GFont::toQFont(const QFont& basisFont, const std::string& fontString) {
 #include <cmath>
 #include <sstream>
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "collections.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "gmath.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
+#define INTERNAL_INCLUDE 1
 #include "point.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -9778,22 +9532,39 @@ int hashCode(const GRectangle& r) {
 #include <cstdio>
 #include <QAction>
 #include <QTextDocumentFragment>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "gclipboard.h"
+#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
+#define INTERNAL_INCLUDE 1
 #include "gcolorchooser.h"
+#define INTERNAL_INCLUDE 1
 #include "gdiffgui.h"
+#define INTERNAL_INCLUDE 1
 #include "gdownloader.h"
+#define INTERNAL_INCLUDE 1
 #include "gfilechooser.h"
+#define INTERNAL_INCLUDE 1
 #include "gfont.h"
+#define INTERNAL_INCLUDE 1
 #include "gfontchooser.h"
+#define INTERNAL_INCLUDE 1
 #include "goptionpane.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "os.h"
+#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
+#define INTERNAL_INCLUDE 1
 #include "private/version.h"
 #undef INTERNAL_INCLUDE
 
@@ -9826,11 +9597,11 @@ bool GConsoleWindow::_consoleEnabled = false;
     if (OS::isMac()) {
         // for some reason, using "Monospace" doesn't work for me on Mac testing
         return "Menlo-"
-                + integerToString(DEFAULT_FONT_SIZE + 1)
+                + std::to_string(DEFAULT_FONT_SIZE + 1)
                 + (DEFAULT_FONT_WEIGHT.empty() ? "" : ("-" + DEFAULT_FONT_WEIGHT));
     } else {
         return DEFAULT_FONT_FAMILY
-                + "-" + integerToString(DEFAULT_FONT_SIZE)
+                + "-" + std::to_string(DEFAULT_FONT_SIZE)
                 + (DEFAULT_FONT_WEIGHT.empty() ? "" : ("-" + DEFAULT_FONT_WEIGHT));
     }
 }
@@ -10052,7 +9823,7 @@ void GConsoleWindow::checkForUpdates() {
         GOptionPane::showMessageDialog(
                     /* parent  */ getWidget(),
                     /* message */ message);
-    });
+    }, "Check for Updates");
 }
 
 void GConsoleWindow::clearConsole() {
@@ -10334,11 +10105,11 @@ void GConsoleWindow::loadInputScript(int number) {
         for (std::string filename : listDirectory(dir)) {
             filename = dir + sep + filename;
             if (inputFile.empty()
-                    && stringContains(filename, "input-" + integerToString(number))
+                    && stringContains(filename, "input-" + std::to_string(number))
                     && endsWith(filename, ".txt")) {
                 inputFile = filename;
             } else if (expectedOutputFile.empty()
-                       && stringContains(filename, "expected-output-" + integerToString(number))
+                       && stringContains(filename, "expected-output-" + std::to_string(number))
                        && endsWith(filename, ".txt")) {
                 expectedOutputFile = filename;
             }
@@ -10353,7 +10124,7 @@ void GConsoleWindow::loadInputScript(int number) {
         GThread::runInNewThreadAsync([this, expectedOutputFile]() {
             pause(1000);
             compareOutput(expectedOutputFile);
-        });
+        }, "Compare Output");
     }
 }
 
@@ -10441,7 +10212,7 @@ void GConsoleWindow::processKeyPress(GEvent event) {
         } else if (keyCode == Qt::Key_0) {
             // normalize font size
             event.ignore();
-            setFont(DEFAULT_FONT_FAMILY + "-" + integerToString(DEFAULT_FONT_SIZE));
+            setFont(DEFAULT_FONT_FAMILY + "-" + std::to_string(DEFAULT_FONT_SIZE));
         } else if (keyCode >= Qt::Key_1 && keyCode <= Qt::Key_9) {
             // load input script 1-9
             loadInputScript(keyCode - Qt::Key_0);
@@ -11015,6 +10786,17 @@ void GConsoleWindow::setOutputColor(const std::string& outputColor) {
     _textArea->moveCursorToEnd();
 }
 
+void GConsoleWindow::setSize(double width, double height) {
+    if (isHighDpiScalingEnabled() && isHighDensityScreen()) {
+        double ratio = getScreenDpiScaleRatio();
+        width = std::min(getScreenWidth(), width * ratio);
+        height = std::min(getScreenHeight(), height * ratio);;
+    }
+
+    // call super
+    GWindow::setSize(width, height);
+}
+
 void GConsoleWindow::setUserInput(const std::string& userInput) {
     if (_shutdown) {
         return;
@@ -11176,7 +10958,9 @@ void putConsoleQt(const std::string& str, bool isStderr) {
 #include "gevent.h"
 #include <iostream>
 #include <sys/time.h>
+#define INTERNAL_INCLUDE 1
 #include "ginteractor.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -11689,7 +11473,9 @@ std::ostream& operator <<(std::ostream& out, const GEvent& event) {
 
 #define INTERNAL_INCLUDE 1
 #include "glayout.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -12007,7 +11793,6 @@ QSize GBorderLayout::calculateSize(SizeType sizeType) const {
     return totalSize;
 }
 
-
 /*
  * File: gcanvas.cpp
  * -----------------
@@ -12024,12 +11809,19 @@ QSize GBorderLayout::calculateSize(SizeType sizeType) const {
 
 #define INTERNAL_INCLUDE 1
 #include "gcanvas.h"
+#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -12931,7 +12723,7 @@ _Internal_QCanvas::_Internal_QCanvas(GCanvas* gcanvas, QWidget* parent)
         : QWidget(parent),
           _gcanvas(gcanvas) {
     require::nonNull(gcanvas, "_Internal_QCanvas::constructor");
-    setObjectName(QString::fromStdString("_Internal_QCanvas_" + integerToString(gcanvas->getID())));
+    setObjectName(QString::fromStdString("_Internal_QCanvas_" + std::to_string(gcanvas->getID())));
 
     // set default white background color
 //    QPalette pal = palette();
@@ -13059,7 +12851,9 @@ void _Internal_QCanvas::wheelEvent(QWheelEvent* event) {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gcanvas.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES
 
 /*
@@ -13081,13 +12875,18 @@ void _Internal_QCanvas::wheelEvent(QWheelEvent* event) {
 #include "ginteractor.h"
 #include <iostream>
 #include <sstream>
+#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
+#define INTERNAL_INCLUDE 1
 #include "gfont.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 int GInteractor::_interactorCount = 0;
@@ -13153,7 +12952,7 @@ GContainer* GInteractor::getContainer() const {
 }
 
 std::string GInteractor::getDefaultInteractorName() const {
-    return getType() + "_" + integerToString(getID());
+    return getType() + "_" + std::to_string(getID());
 }
 
 std::string GInteractor::getFont() const {
@@ -13584,6 +13383,8 @@ void _Internal_QWidget::setPreferredSize(const QSize& size) {
  * File: gwindow.cpp
  * -----------------
  *
+ * @version 2018/10/20
+ * - added high-density screen features
  * @version 2018/10/11
  * - bug fix for compareToImage function
  * @version 2018/09/23
@@ -13614,22 +13415,34 @@ void _Internal_QWidget::setPreferredSize(const QSize& size) {
 #include <QStatusBar>
 #include <QThread>
 #include <QTimer>
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
+#define INTERNAL_INCLUDE 1
 #include "gdiffgui.h"
+#define INTERNAL_INCLUDE 1
 #include "gdiffimage.h"
+#define INTERNAL_INCLUDE 1
 #include "glabel.h"
+#define INTERNAL_INCLUDE 1
 #include "glayout.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 _Internal_QMainWindow* GWindow::_lastWindow = nullptr;
-const int GWindow::DEFAULT_WIDTH = 500;
-const int GWindow::DEFAULT_HEIGHT = 300;
-const std::string GWindow::DEFAULT_ICON_FILENAME = "splicon-large.png";
+/*static*/ const int GWindow::DEFAULT_WIDTH = 500;
+/*static*/ const int GWindow::DEFAULT_HEIGHT = 300;
+/*static*/ const int GWindow::HIGH_DPI_SCREEN_THRESHOLD = 200;
+/*static*/ const int GWindow::STANDARD_SCREEN_DPI = 96;
+/*static*/ const std::string GWindow::DEFAULT_ICON_FILENAME = "splicon-large.png";
 
 GWindow::GWindow(bool visible)
         : _iqmainwindow(nullptr),
@@ -14087,11 +13900,20 @@ double GWindow::getRegionWidth(const std::string& region) const {
     return _contentPane->getRegionWidth(region);
 }
 
-double GWindow::getScreenHeight() {
+/*static*/ int GWindow::getScreenDpi() {
+    return QtGui::instance()->getApplication()->desktop()->logicalDpiX();
+}
+
+/*static*/ double GWindow::getScreenDpiScaleRatio() {
+    double ratio = (double) getScreenDpi() / STANDARD_SCREEN_DPI;
+    return (ratio >= 1.0) ? ratio : 1.0;
+}
+
+/*static*/ double GWindow::getScreenHeight() {
     return getScreenSize().getHeight();
 }
 
-GDimension GWindow::getScreenSize() {
+/*static*/ GDimension GWindow::getScreenSize() {
     QRect rec;
     GThread::runOnQtGuiThread([&rec]() {
         rec = QApplication::desktop()->availableGeometry();
@@ -14099,7 +13921,7 @@ GDimension GWindow::getScreenSize() {
     return GDimension(rec.width(), rec.height());
 }
 
-double GWindow::getScreenWidth() {
+/*static*/ double GWindow::getScreenWidth() {
     return getScreenSize().getWidth();
 }
 
@@ -14142,6 +13964,18 @@ bool GWindow::inBounds(double x, double y) const {
 
 bool GWindow::inCanvasBounds(double x, double y) const {
     return 0 <= x && x < getCanvasWidth() && 0 <= y && y < getCanvasHeight();
+}
+
+/*static*/ bool GWindow::isHighDensityScreen() {
+    return getScreenDpi() >= HIGH_DPI_SCREEN_THRESHOLD;
+}
+
+/*static*/ bool GWindow::isHighDpiScalingEnabled() {
+#ifdef SPL_SCALE_HIGH_DPI_SCREEN
+    return true;
+#else
+    return false;
+#endif // SPL_SCALE_HIGH_DPI_SCREEN
 }
 
 bool GWindow::isMaximized() const {
@@ -14759,7 +14593,9 @@ void _Internal_QMainWindow::timerStop(int id) {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gwindow.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES
 
 /*
@@ -14777,9 +14613,13 @@ void _Internal_QMainWindow::timerStop(int id) {
 #include "gobservable.h"
 #include <iostream>
 #include <sstream>
+#define INTERNAL_INCLUDE 1
 #include "geventqueue.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -15038,6 +14878,7 @@ std::string GObservable::toString() const {
 #include <QApplication>
 #include <QClipboard>
 #include <QString>
+#define INTERNAL_INCLUDE 1
 #include "require.h"
 #undef INTERNAL_INCLUDE
 
@@ -15096,9 +14937,13 @@ bool GClipboard::isPaste(QKeyEvent* event) {
 
 #define INTERNAL_INCLUDE 1
 #include "gtimer.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
 #undef INTERNAL_INCLUDE
 
@@ -15173,11 +15018,17 @@ void GTimer::stop() {
 
 #define INTERNAL_INCLUDE 1
 #include "gcontainer.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "glabel.h"
+#define INTERNAL_INCLUDE 1
 #include "glayout.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -15750,7 +15601,7 @@ _Internal_QContainer::_Internal_QContainer(GContainer* gcontainer, int /*rows*/,
           _eastLayout(nullptr),
           _centerLayout(nullptr),
           _middleLayout(nullptr) {
-    setObjectName(QString::fromStdString("_Internal_QContainer_" + integerToString(gcontainer->getID())));
+    setObjectName(QString::fromStdString("_Internal_QContainer_" + std::to_string(gcontainer->getID())));
     setLayoutType(GContainer::LAYOUT_GRID);
     if (layout()) {
         setMargin(GContainer::MARGIN_DEFAULT);
@@ -16184,19 +16035,19 @@ void _Internal_QContainer::setLayoutType(GContainer::Layout layoutType) {
         case GContainer::LAYOUT_BORDER: {
             // set up border regions
             _overallLayout = new QVBoxLayout;
-            _overallLayout->setObjectName(QString::fromStdString("_overallLayout_" + integerToString(_gcontainer->getID())));
+            _overallLayout->setObjectName(QString::fromStdString("_overallLayout_" + std::to_string(_gcontainer->getID())));
             _northLayout   = new QHBoxLayout;
-            _northLayout->setObjectName(QString::fromStdString("_northLayout_" + integerToString(_gcontainer->getID())));
+            _northLayout->setObjectName(QString::fromStdString("_northLayout_" + std::to_string(_gcontainer->getID())));
             _southLayout   = new QHBoxLayout;
-            _southLayout->setObjectName(QString::fromStdString("_southLayout_" + integerToString(_gcontainer->getID())));
+            _southLayout->setObjectName(QString::fromStdString("_southLayout_" + std::to_string(_gcontainer->getID())));
             _westLayout    = new QVBoxLayout;
-            _westLayout->setObjectName(QString::fromStdString("_westLayout_" + integerToString(_gcontainer->getID())));
+            _westLayout->setObjectName(QString::fromStdString("_westLayout_" + std::to_string(_gcontainer->getID())));
             _eastLayout    = new QVBoxLayout;
-            _eastLayout->setObjectName(QString::fromStdString("_eastLayout_" + integerToString(_gcontainer->getID())));
+            _eastLayout->setObjectName(QString::fromStdString("_eastLayout_" + std::to_string(_gcontainer->getID())));
             _centerLayout  = new QHBoxLayout;
-            _centerLayout->setObjectName(QString::fromStdString("_centerLayout_" + integerToString(_gcontainer->getID())));
+            _centerLayout->setObjectName(QString::fromStdString("_centerLayout_" + std::to_string(_gcontainer->getID())));
             _middleLayout  = new QHBoxLayout;
-            _middleLayout->setObjectName(QString::fromStdString("_middleLayout_" + integerToString(_gcontainer->getID())));
+            _middleLayout->setObjectName(QString::fromStdString("_middleLayout_" + std::to_string(_gcontainer->getID())));
 
             // squish margins/padding
             _overallLayout->setSpacing(0);
@@ -16514,7 +16365,9 @@ QSize _Internal_QContainer::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gcontainer.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES
 
 /*
@@ -16530,9 +16383,10 @@ QSize _Internal_QContainer::sizeHint() const {
 
 #define INTERNAL_INCLUDE 1
 #include "gscrollbar.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 GScrollBar::GScrollBar(GScrollBar::Orientation orientation,
@@ -16605,7 +16459,7 @@ void GScrollBar::setExtent(int extent) {
 
 void GScrollBar::setMax(int max) {
     int min = getMin();
-    require::require(min <= max, "GScrollBar::setMax", "max (" + integerToString(max) + ") cannot be less than min (" + integerToString(min) + ")");
+    require::require(min <= max, "GScrollBar::setMax", "max (" + std::to_string(max) + ") cannot be less than min (" + std::to_string(min) + ")");
     GThread::runOnQtGuiThread([this, max]() {
         _iqscrollbar->setMaximum(max);
     });
@@ -16614,7 +16468,7 @@ void GScrollBar::setMax(int max) {
 
 void GScrollBar::setMin(int min) {
     int max = getMax();
-    require::require(min <= max, "GScrollBar::setMin", "min (" + integerToString(min) + ") cannot be greater than max (" + integerToString(max) + ")");
+    require::require(min <= max, "GScrollBar::setMin", "min (" + std::to_string(min) + ") cannot be greater than max (" + std::to_string(max) + ")");
     GThread::runOnQtGuiThread([this, min]() {
         _iqscrollbar->setMinimum(min);
     });
@@ -16622,7 +16476,7 @@ void GScrollBar::setMin(int min) {
 }
 
 void GScrollBar::setState(int value, int extent, int min, int max) {
-    require::require(min <= max, "GScrollBar::setState", "min (" + integerToString(min) + ") cannot be greater than max (" + integerToString(max) + ")");
+    require::require(min <= max, "GScrollBar::setState", "min (" + std::to_string(min) + ") cannot be greater than max (" + std::to_string(max) + ")");
     require::inRange(value, min, max, "GScrollBar::setState", "value");
     GThread::runOnQtGuiThread([this, value, extent, min, max]() {
         _iqscrollbar->setRange(min, max);
@@ -16656,7 +16510,7 @@ _Internal_QScrollBar::_Internal_QScrollBar(GScrollBar* gscrollbar, Qt::Orientati
         : QScrollBar(orientation, parent),
           _gscrollbar(gscrollbar) {
     require::nonNull(gscrollbar, "_Internal_QScrollBar::constructor");
-    setObjectName(QString::fromStdString("_Internal_QScrollBar_" + integerToString(gscrollbar->getID())));
+    setObjectName(QString::fromStdString("_Internal_QScrollBar_" + std::to_string(gscrollbar->getID())));
     connect(this, SIGNAL(valueChanged(int)), this, SLOT(handleValueChange(int)));
 }
 
@@ -16679,7 +16533,9 @@ QSize _Internal_QScrollBar::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gscrollbar.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES
 
 /*
@@ -16702,12 +16558,16 @@ QSize _Internal_QScrollBar::sizeHint() const {
 #define INTERNAL_INCLUDE 1
 #include "glabel.h"
 #include <iostream>
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "glayout.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 GLabel::GLabel(const std::string& text, const std::string& iconFileName, QWidget* parent)
@@ -16971,7 +16831,7 @@ _Internal_QLabel::_Internal_QLabel(GLabel* glabel, QWidget* parent)
         : QLabel(parent),
           _glabel(glabel) {
     require::nonNull(glabel, "_Internal_QLabel::constructor");
-    setObjectName(QString::fromStdString("_Internal_QLabel_" + integerToString(glabel->getID())));
+    setObjectName(QString::fromStdString("_Internal_QLabel_" + std::to_string(glabel->getID())));
 }
 
 void _Internal_QLabel::mouseDoubleClickEvent(QMouseEvent* event) {
@@ -17025,7 +16885,9 @@ QSize _Internal_QLabel::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_glabel.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES
 
 /*
@@ -17056,12 +16918,21 @@ QSize _Internal_QLabel::sizeHint() const {
 #include <QVector>
 #include <sstream>
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "gmath.h"
+#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
+#define INTERNAL_INCLUDE 1
 #include "gfont.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
+#define INTERNAL_INCLUDE 1
+#include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #undef INTERNAL_INCLUDE
 
@@ -17523,11 +17394,11 @@ std::string GObject::toString() const {
     std::string extra = toStringExtra();
     return getType()
             + "("
-            + "x=" + doubleToString(_x)
-            + ",y=" + doubleToString(_y)
-            + ",w=" + doubleToString(_width)
-            + ",h=" + doubleToString(_height)
-            + (_lineWidth <= 1 ? "" : (",lineWidth=" + doubleToString(_lineWidth)))
+            + "x=" + std::to_string(_x)
+            + ",y=" + std::to_string(_y)
+            + ",w=" + std::to_string(_width)
+            + ",h=" + std::to_string(_height)
+            + (_lineWidth <= 1 ? "" : (",lineWidth=" + std::to_string(_lineWidth)))
             + (_color.empty() ? "" : (",color=" + _color))
             + (_fillColor.empty() ? "" : (",fillColor=" + _fillColor))
             + (_font.empty() ? "" : (",font=" + _font))
@@ -18522,7 +18393,7 @@ void GRoundRect::setCorner(double corner) {
 }
 
 std::string GRoundRect::toStringExtra() const {
-    return "corner=" + doubleToString(_corner);
+    return "corner=" + std::to_string(_corner);
 }
 
 
@@ -18629,9 +18500,13 @@ static double dsq(double x0, double y0, double x1, double y1) {
 #define INTERNAL_INCLUDE 1
 #include "gbutton.h"
 #include <QKeySequence>
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
 #undef INTERNAL_INCLUDE
 
@@ -18772,7 +18647,7 @@ _Internal_QPushButton::_Internal_QPushButton(GButton* button, QWidget* parent)
         : QToolButton(parent),
           _gbutton(button) {
     require::nonNull(button, "_Internal_QPushButton::constructor");
-    setObjectName(QString::fromStdString("_Internal_QPushButton_" + integerToString(button->getID())));
+    setObjectName(QString::fromStdString("_Internal_QPushButton_" + std::to_string(button->getID())));
     setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     connect(this, SIGNAL(clicked()), this, SLOT(handleClick()));
 }
@@ -18814,7 +18689,9 @@ QSize _Internal_QPushButton::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gbutton.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES
 
 /*
@@ -18835,7 +18712,9 @@ QSize _Internal_QPushButton::sizeHint() const {
 #define INTERNAL_INCLUDE 1
 #include "gfontchooser.h"
 #include <QFontDialog>
+#define INTERNAL_INCLUDE 1
 #include "gfont.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
 #undef INTERNAL_INCLUDE
 
@@ -18882,8 +18761,11 @@ std::string GFontChooser::showDialog(QWidget* parent, const std::string& title, 
 #define INTERNAL_INCLUDE 1
 #include "gfilechooser.h"
 #include <QFileDialog>
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "vector.h"
 #undef INTERNAL_INCLUDE
 
@@ -18941,7 +18823,7 @@ std::string GFileChooser::normalizeFileFilter(const std::string& fileFilter) {
         // TODO: more processing
         tokens[i] = token;
     }
-    return stringJoin(tokens.toStlVector(), ";;");
+    return stringJoin(tokens, ";;");
 }
 
 /*
@@ -18964,7 +18846,10 @@ std::string GFileChooser::normalizeFileFilter(const std::string& fileFilter) {
 #include <iostream>
 #include <QScrollBar>
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "consoletext.h"
+#define INTERNAL_INCLUDE 1
+#include "gthread.h"
 #undef INTERNAL_INCLUDE
 
 /*static*/ const std::string GDiffGui::COLOR_EXPECTED = "#009900";
@@ -19096,9 +18981,9 @@ void GDiffGui::setupLeftRightText(GTextArea* textArea, const std::string& text) 
         std::string line = lines[i];
 
         // insert a gray line number at start of each line
-        int digits = static_cast<int>(integerToString(lines.size()).length());
+        int digits = static_cast<int>(std::to_string(lines.size()).length());
         std::string lineNumberString =
-                padLeft(i == 0 ? std::string("") : integerToString(i), digits) + "  ";
+                padLeft(i == 0 ? std::string("") : std::to_string(i), digits) + "  ";
         textArea->appendFormattedText(lineNumberString, COLOR_LINE_NUMBERS);
         textArea->appendFormattedText(line + "\n", COLOR_NORMAL);
     }
@@ -19134,6 +19019,8 @@ void GDiffGui::syncScrollBars(bool left) {
  * Qt's QMessageBox and QInputDialog classes.
  *
  * @author Marty Stepp
+ * @version 2018/10/18
+ * - bug fix for showOptionDialog to run on Qt GUI thread
  * @version 2018/08/23
  * - renamed to goptionpane.cpp to replace Java version
  * @version 2018/06/28
@@ -19145,11 +19032,17 @@ void GDiffGui::syncScrollBars(bool left) {
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QWidget>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "gbutton.h"
+#define INTERNAL_INCLUDE 1
 #include "gtextarea.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -19308,24 +19201,24 @@ std::string GOptionPane::showOptionDialog(QWidget* parent,
                                           const std::string& title,
                                           const std::string& initiallySelected) {
     std::string titleToUse = title.empty() ? std::string("Select an option") : title;
-    QMessageBox box;
-    if (parent) {
-        box.setParent(parent);
-    }
-    box.setText(QString::fromStdString(message));
-    box.setWindowTitle(QString::fromStdString(titleToUse));
-    box.setAttribute(Qt::WA_QuitOnClose, false);
-
-    for (std::string option : options) {
-        box.addButton(QString::fromStdString(option), QMessageBox::ActionRole);
-    }
-    if (!initiallySelected.empty()) {
-        // TODO: dunno how to set initially selected button properly
-        // box.setDefaultButton(QString::fromStdString(initiallySelected));
-    }
-
     std::string result = "";
-    GThread::runOnQtGuiThread([&box, &options, &result]() {
+    GThread::runOnQtGuiThread([parent, message, &options, titleToUse, initiallySelected, &result]() {
+        QMessageBox box;
+        if (parent) {
+            box.setParent(parent);
+        }
+        box.setText(QString::fromStdString(message));
+        box.setWindowTitle(QString::fromStdString(titleToUse));
+        box.setAttribute(Qt::WA_QuitOnClose, false);
+
+        for (std::string option : options) {
+            box.addButton(QString::fromStdString(option), QMessageBox::ActionRole);
+        }
+        if (!initiallySelected.empty()) {
+            // TODO: dunno how to set initially selected button properly
+            // box.setDefaultButton(QString::fromStdString(initiallySelected));
+        }
+
         int index = box.exec();
         if (index == GOptionPane::InternalResult::INTERNAL_CLOSED_OPTION
                 || index < 0 || index >= options.size()) {
@@ -19403,20 +19296,25 @@ void GOptionPane::showTextFileDialog(QWidget* /*parent*/,
 #include <QEvent>
 #include <QtGlobal>
 #include <QThread>
+#define INTERNAL_INCLUDE 1
 #include "consoletext.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
+#undef INTERNAL_INCLUDE
 
 #ifdef _WIN32
 #  include <direct.h>   // for chdir
 #else // _WIN32
 #  include <unistd.h>   // for chdir
 #endif // _WIN32
-
-#undef INTERNAL_INCLUDE
 
 // QSPLApplication members
 QSPLApplication::QSPLApplication(int& argc, char *argv[])
@@ -19557,7 +19455,9 @@ void QtGui::startEventLoop(bool exitAfter) {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_qtgui.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES
 
 /*
@@ -19578,12 +19478,19 @@ void QtGui::startEventLoop(bool exitAfter) {
 #define INTERNAL_INCLUDE 1
 #include "consoletext.h"
 #include <cstdio>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "gconsolewindow.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
+#define INTERNAL_INCLUDE 1
 #include "private/version.h"
 #undef INTERNAL_INCLUDE
 
@@ -19593,6 +19500,10 @@ void clearConsole() {
 
 bool getConsoleClearEnabled() {
     return GConsoleWindow::instance()->isClearEnabled();
+}
+
+/* GWindow::CloseOperation */ int getConsoleCloseOperation() {
+    return GConsoleWindow::instance()->getCloseOperation();
 }
 
 bool getConsoleEcho() {
@@ -19665,9 +19576,10 @@ void setConsoleClearEnabled(bool value) {
     GConsoleWindow::instance()->setClearEnabled(value);
 }
 
-void setConsoleCloseOperation(GWindow::CloseOperation op) {
+void setConsoleCloseOperation(/*GWindow::CloseOperation*/ int op) {
+    GWindow::CloseOperation gwcop = static_cast<GWindow::CloseOperation>(op);
     if (getConsoleSettingsLocked()) { return; }
-    GConsoleWindow::instance()->setCloseOperation(op);
+    GConsoleWindow::instance()->setCloseOperation(gwcop);
 }
 
 void setConsoleEcho(bool echo) {
@@ -19742,7 +19654,7 @@ void shutdownConsole() {
  */
 void setConsolePropertiesQt() {
 #if defined(SPL_CONSOLE_FONTSIZE)
-    std::string fontStr = std::string("Monospaced-Bold-") + integerToString(SPL_CONSOLE_FONTSIZE);
+    std::string fontStr = std::string("Monospaced-Bold-") + to_string(SPL_CONSOLE_FONTSIZE);
     setConsoleFont(fontStr);
 #endif
 
@@ -19816,10 +19728,12 @@ void setConsoleEnabled(bool enabled) {
 #define INTERNAL_INCLUDE 1
 #include "gdrawingsurface.h"
 #include <QPainter>
+#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
+#define INTERNAL_INCLUDE 1
 #include "gfont.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 GDrawingSurface::GDrawingSurface()
@@ -19860,7 +19774,7 @@ void GDrawingSurface::checkSize(const std::string& /* member */, double /* width
 //    if (width > GCanvas::WIDTH_HEIGHT_MAX
 //            || height > GCanvas::WIDTH_HEIGHT_MAX) {
 //        error(getType() + "::" + member + ": width/height too large (cannot exceed "
-//              + integerToString(GCanvas::WIDTH_HEIGHT_MAX));
+//              + std::to_string(GCanvas::WIDTH_HEIGHT_MAX));
 //    }
 }
 
@@ -20455,6 +20369,10 @@ void GForwardDrawingSurface::setRepaintImmediately(bool repaintImmediately) {
  * File: gthread.cpp
  * -----------------
  *
+ * This file implements the members declared in gthread.h.
+ *
+ * @version 2018/10/18
+ * - improved thread names
  * @version 2018/10/01
  * - bug fix where output wasn't showing up on the console if main ended too soon
  * @version 2018/09/23
@@ -20467,17 +20385,25 @@ void GForwardDrawingSurface::setRepaintImmediately(bool repaintImmediately) {
 
 #define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "consoletext.h"
+#define INTERNAL_INCLUDE 1
 #include "gconsolewindow.h"
+#define INTERNAL_INCLUDE 1
 #include "gevent.h"
+#define INTERNAL_INCLUDE 1
 #include "geventqueue.h"
+#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
 #undef INTERNAL_INCLUDE
 
-GFunctionThread::GFunctionThread(GThunk func)
+GFunctionThread::GFunctionThread(GThunk func, const std::string& threadName)
         : _func(func) {
-    // empty
+    if (!threadName.empty()) {
+        setObjectName(QString::fromStdString(threadName));
+    }
 }
 
 void GFunctionThread::run() {
@@ -20523,8 +20449,8 @@ GThread::GThread() {
     return _qtMainThread != nullptr;
 }
 
-/*static*/ void GThread::runInNewThread(GThunk func) {
-    GFunctionThread* thread = new GFunctionThread(func);
+/*static*/ void GThread::runInNewThread(GThunk func, const std::string& threadName) {
+    GFunctionThread* thread = new GFunctionThread(func, threadName);
     thread->start();
     while (!thread->isFinished()) {
         sleep(10);
@@ -20532,8 +20458,8 @@ GThread::GThread() {
     delete thread;
 }
 
-/*static*/ QThread* GThread::runInNewThreadAsync(GThunk func) {
-    GFunctionThread* thread = new GFunctionThread(func);
+/*static*/ QThread* GThread::runInNewThreadAsync(GThunk func, const std::string& threadName) {
+    GFunctionThread* thread = new GFunctionThread(func, threadName);
     thread->start();
     return thread;
 }
@@ -20573,6 +20499,7 @@ GThread::GThread() {
 /*static*/ void GThread::setMainThread() {
     if (!_qtMainThread) {
         _qtMainThread = QThread::currentThread();
+        _qtMainThread->setObjectName("Qt GUI Thread");
     }
 }
 
@@ -20613,13 +20540,13 @@ GStudentThread::GStudentThread(GThunkInt mainFunc)
         : _mainFunc(mainFunc),
           _mainFuncVoid(nullptr),
           _result(0) {
-    this->setObjectName(QString::fromStdString("GStudentThread"));   // TODO: unique name
+    this->setObjectName(QString::fromStdString("Main (student)"));
 }
 
 GStudentThread::GStudentThread(GThunk mainFunc)
         : _mainFunc(nullptr),
           _mainFuncVoid(mainFunc) {
-    this->setObjectName(QString::fromStdString("GStudentThread"));
+    this->setObjectName(QString::fromStdString("Main (student)"));
 }
 
 int GStudentThread::getResult() const {
@@ -20692,11 +20619,17 @@ void GStudentThread::run() {
 #include "gdiffimage.h"
 #include <iostream>
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
+#define INTERNAL_INCLUDE 1
 #include "gcolorchooser.h"
+#define INTERNAL_INCLUDE 1
 #include "gfont.h"
+#define INTERNAL_INCLUDE 1
 #include "gspacer.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
 #undef INTERNAL_INCLUDE
 
@@ -20761,7 +20694,7 @@ GDiffImage::GDiffImage(
         chooseHighlightColor();
     });
 
-    _diffPixelsLabel = new GLabel("(" + integerToString(diffPixelsCount) + " pixels differ)");
+    _diffPixelsLabel = new GLabel("(" + std::to_string(diffPixelsCount) + " pixels differ)");
     GFont::boldFont(_diffPixelsLabel);
 
     _imageLabel1 = new GLabel(name1);
@@ -20806,8 +20739,8 @@ GDiffImage::GDiffImage(
         int x = static_cast<int>(event.getX());
         int y = static_cast<int>(event.getY());
         _southPixelLabel->setText(
-                "(x=" + integerToString(x)
-                + ", y=" + integerToString(y)
+                "(x=" + std::to_string(x)
+                + ", y=" + std::to_string(y)
                 + ") expected: " + getPixelString(_image1, x, y)
                 + " actual: " + getPixelString(_image2, x, y));
     });
@@ -20910,10 +20843,12 @@ std::string GDiffImage::getPixelString(GImage* image, int x, int y) const {
 
 #define INTERNAL_INCLUDE 1
 #include "gradiobutton.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 Map<std::string, QButtonGroup*> GRadioButton::_buttonGroups;
@@ -21023,7 +20958,7 @@ _Internal_QRadioButton::_Internal_QRadioButton(GRadioButton* gradioButton, bool 
         : QRadioButton(parent),
           _gradioButton(gradioButton) {
     require::nonNull(gradioButton, "_Internal_QRadioButton::constructor");
-    setObjectName(QString::fromStdString("_Internal_QRadioButton_" + integerToString(gradioButton->getID())));
+    setObjectName(QString::fromStdString("_Internal_QRadioButton_" + std::to_string(gradioButton->getID())));
     setChecked(checked);
     // We handle the clicked signal rather than toggled because, in a radio button group,
     // the toggled signal will fire twice: once for the radio button clicked, and once
@@ -21067,7 +21002,9 @@ QSize _Internal_QRadioButton::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gradiobutton.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES
 
 /*
@@ -21087,10 +21024,12 @@ QSize _Internal_QRadioButton::sizeHint() const {
 
 #define INTERNAL_INCLUDE 1
 #include "gcheckbox.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 GCheckBox::GCheckBox(const std::string& text, bool checked, QWidget* parent) {
@@ -21187,7 +21126,7 @@ _Internal_QCheckBox::_Internal_QCheckBox(GCheckBox* gcheckBox, bool checked, QWi
         : QCheckBox(parent),
           _gcheckBox(gcheckBox) {
     require::nonNull(gcheckBox, "_Internal_QCheckBox::constructor");
-    setObjectName(QString::fromStdString("_Internal_QCheckBox_" + integerToString(gcheckBox->getID())));
+    setObjectName(QString::fromStdString("_Internal_QCheckBox_" + std::to_string(gcheckBox->getID())));
     setChecked(checked);
     connect(this, SIGNAL(stateChanged(int)), this, SLOT(handleStateChange(int)));
 }
@@ -21228,7 +21167,9 @@ QSize _Internal_QCheckBox::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gcheckbox.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES
 
 /*
@@ -21260,13 +21201,18 @@ QSize _Internal_QCheckBox::sizeHint() const {
 #include <QHeaderView>
 #include <QLineEdit>
 #include <sstream>
+#define INTERNAL_INCLUDE 1
 #include "gclipboard.h"
+#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
+#define INTERNAL_INCLUDE 1
 #include "gevent.h"
+#define INTERNAL_INCLUDE 1
 #include "gfont.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 GTable::TableStyle GTable::_defaultCellStyle = GTable::TableStyle::unset();
@@ -22027,7 +21973,7 @@ void GTable::updateColumnHeaders() {
                 columnHeaders << QString::fromStdString(toExcelColumnName(col));
             } else {
                 // style == GTable::COLUMN_HEADER_NUMERIC
-                columnHeaders << QString::fromStdString(integerToString(col));
+                columnHeaders << QString::fromStdString(std::to_string(col));
             }
         }
         _iqtableview->setHorizontalHeaderLabels(columnHeaders);
@@ -22068,7 +22014,7 @@ _Internal_QTableWidget::_Internal_QTableWidget(GTable* gtable, int rows, int col
           _gtable(gtable),
           _delegate(nullptr) {
     require::nonNull(gtable, "_Internal_QTableWidget::constructor");
-    setObjectName(QString::fromStdString("_Internal_QTableWidget_" + integerToString(gtable->getID())));
+    setObjectName(QString::fromStdString("_Internal_QTableWidget_" + std::to_string(gtable->getID())));
     _delegate = new _Internal_QItemDelegate();
     setItemDelegate(_delegate);
     horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -22219,7 +22165,9 @@ QSize _Internal_QTableWidget::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gtable.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES
 
 /*
@@ -22240,7 +22188,9 @@ QSize _Internal_QTableWidget::sizeHint() const {
 #define INTERNAL_INCLUDE 1
 #include "gcolorchooser.h"
 #include <QColorDialog>
+#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
 #undef INTERNAL_INCLUDE
 
@@ -22295,12 +22245,16 @@ std::string GColorChooser::showDialog(QWidget* parent, const std::string& title,
 #include "gtextarea.h"
 #include <QScrollBar>
 #include <QTextCursor>
+#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
+#define INTERNAL_INCLUDE 1
 #include "gfont.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 GTextArea::GTextArea(int rows, int columns, QWidget* parent)
@@ -22646,7 +22600,7 @@ _Internal_QTextEdit::_Internal_QTextEdit(GTextArea* gtextArea, QWidget* parent)
         : QTextEdit(parent),
           _gtextarea(gtextArea) {
     require::nonNull(gtextArea, "_Internal_QTextEdit::constructor");
-    setObjectName(QString::fromStdString("_Internal_QTextEdit_" + integerToString(gtextArea->getID())));
+    setObjectName(QString::fromStdString("_Internal_QTextEdit_" + std::to_string(gtextArea->getID())));
     ensureCursorVisible();
     setTabChangesFocus(false);
     document()->setUndoRedoEnabled(false);
@@ -22748,7 +22702,9 @@ QSize _Internal_QTextEdit::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gtextarea.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES
 
 /*
@@ -22762,8 +22718,11 @@ QSize _Internal_QTextEdit::sizeHint() const {
 
 #define INTERNAL_INCLUDE 1
 #include "gscrollpane.h"
+#define INTERNAL_INCLUDE 1
 #include "glayout.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
 #undef INTERNAL_INCLUDE
 
@@ -22857,7 +22816,7 @@ _Internal_QScrollArea::_Internal_QScrollArea(GScrollPane* gscrollpane, QWidget* 
         : QScrollArea(parent)
           /*_gscrollpane(gscrollpane)*/ {
     require::nonNull(gscrollpane, "_Internal_QScrollArea::constructor");
-    setObjectName(QString::fromStdString("_Internal_QScrollArea_" + integerToString(gscrollpane->getID())));
+    setObjectName(QString::fromStdString("_Internal_QScrollArea_" + std::to_string(gscrollpane->getID())));
 }
 
 QSize _Internal_QScrollArea::sizeHint() const {
@@ -22869,7 +22828,9 @@ QSize _Internal_QScrollArea::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gscrollpane.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES
 
 /*
@@ -22897,9 +22858,10 @@ QSize _Internal_QScrollArea::sizeHint() const {
 #include <QFile>
 #include <QIODevice>
 #include <QTimer>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 GDownloader::GDownloader()
@@ -22990,7 +22952,7 @@ void GDownloader::downloadInternal() {
 }
 
 void GDownloader::fileDownloadError(QNetworkReply::NetworkError nerror) {
-    error("file download error: " + integerToString(nerror));
+    error("file download error: " + std::to_string(nerror));
 }
 
 std::string GDownloader::getErrorMessage() const {
@@ -23129,7 +23091,9 @@ void GDownloader::waitForDownload() {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gdownloader.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES
 
 /*
@@ -23145,8 +23109,11 @@ void GDownloader::waitForDownload() {
 
 #define INTERNAL_INCLUDE 1
 #include "gslider.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
 #undef INTERNAL_INCLUDE
 
@@ -23155,7 +23122,7 @@ const int GSlider::DEFAULT_MAX_VALUE = 100;
 const int GSlider::DEFAULT_INITIAL_VALUE = 50;
 
 GSlider::GSlider(int min, int max, int value, QWidget* parent) {
-    require::require(min <= max, "GSlider::constructor", "min (" + integerToString(min) + ") cannot be greater than max (" + integerToString(max) + ")");
+    require::require(min <= max, "GSlider::constructor", "min (" + std::to_string(min) + ") cannot be greater than max (" + std::to_string(max) + ")");
     require::inRange(value, min, max, "GSlider::constructor", "value");
     GThread::runOnQtGuiThread([this, min, max, value, parent]() {
         _iqslider = new _Internal_QSlider(this,
@@ -23168,7 +23135,7 @@ GSlider::GSlider(int min, int max, int value, QWidget* parent) {
 }
 
 GSlider::GSlider(Orientation orientation, int min, int max, int value, QWidget* parent) {
-    require::require(min <= max, "GSlider::constructor", "min (" + integerToString(min) + ") cannot be greater than max (" + integerToString(max) + ")");
+    require::require(min <= max, "GSlider::constructor", "min (" + std::to_string(min) + ") cannot be greater than max (" + std::to_string(max) + ")");
     require::inRange(value, min, max, "GSlider::constructor", "value");
     GThread::runOnQtGuiThread([this, orientation, min, max, value, parent]() {
         _iqslider = new _Internal_QSlider(this,
@@ -23256,7 +23223,7 @@ void GSlider::setMajorTickSpacing(int value) {
 
 void GSlider::setMax(int max) {
     int min = getMin();
-    require::require(min <= max, "GSlider::setMax", "max (" + integerToString(max) + ") cannot be less than min (" + integerToString(min) + ")");
+    require::require(min <= max, "GSlider::setMax", "max (" + std::to_string(max) + ") cannot be less than min (" + std::to_string(min) + ")");
     GThread::runOnQtGuiThread([this, max]() {
         _iqslider->setMaximum(max);
     });
@@ -23264,7 +23231,7 @@ void GSlider::setMax(int max) {
 
 void GSlider::setMin(int min) {
     int max = getMax();
-    require::require(min <= max, "GSlider::setMin", "min (" + integerToString(min) + ") cannot be greater than max (" + integerToString(max) + ")");
+    require::require(min <= max, "GSlider::setMin", "min (" + std::to_string(min) + ") cannot be greater than max (" + std::to_string(max) + ")");
     GThread::runOnQtGuiThread([this, min]() {
         _iqslider->setMinimum(min);
     });
@@ -23287,7 +23254,7 @@ void GSlider::setPaintTicks(bool value) {
 }
 
 void GSlider::setRange(int min, int max) {
-    require::require(min <= max, "GSlider::setRange", "min (" + integerToString(min) + ") cannot be greater than max (" + integerToString(max) + ")");
+    require::require(min <= max, "GSlider::setRange", "min (" + std::to_string(min) + ") cannot be greater than max (" + std::to_string(max) + ")");
     GThread::runOnQtGuiThread([this, min, max]() {
         _iqslider->setRange(min, max);
     });
@@ -23298,7 +23265,7 @@ void GSlider::setSnapToTicks(bool /* value */) {
 }
 
 void GSlider::setState(int min, int max, int value) {
-    require::require(min <= max, "GSlider::setState", "min (" + integerToString(min) + ") cannot be greater than max (" + integerToString(max) + ")");
+    require::require(min <= max, "GSlider::setState", "min (" + std::to_string(min) + ") cannot be greater than max (" + std::to_string(max) + ")");
     require::inRange(value, min, max, "GSlider::setState", "value");
     GThread::runOnQtGuiThread([this, min, max, value]() {
         _iqslider->setRange(min, max);
@@ -23318,7 +23285,7 @@ _Internal_QSlider::_Internal_QSlider(GSlider* gslider, Qt::Orientation orientati
         : QSlider(orientation, parent),
           _gslider(gslider) {
     require::nonNull(gslider, "_Internal_QSlider::constructor");
-    setObjectName(QString::fromStdString("_Internal_QSlider_" + integerToString(gslider->getID())));
+    setObjectName(QString::fromStdString("_Internal_QSlider_" + std::to_string(gslider->getID())));
     connect(this, SIGNAL(valueChanged(int)), this, SLOT(handleChange(int)));
 }
 
@@ -23341,7 +23308,9 @@ QSize _Internal_QSlider::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gslider.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES
 
 /*
@@ -23361,7 +23330,9 @@ QSize _Internal_QSlider::sizeHint() const {
 #include "gcolor.h"
 #include <iomanip>
 #include <iostream>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -23583,7 +23554,9 @@ int GColor::fixAlpha(int argb) {
 
 #define INTERNAL_INCLUDE 1
 #include "gspacer.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
 #undef INTERNAL_INCLUDE
 
@@ -23617,7 +23590,7 @@ QWidget* GSpacer::getWidget() const {
 _Internal_QSpacer::_Internal_QSpacer(GSpacer* gspacer, double width, double height, QWidget* parent)
         : QWidget(parent) {
     require::nonNull(gspacer, "_Internal_QSpacer::constructor");
-    setObjectName(QString::fromStdString("_Internal_QSpacer_" + integerToString(gspacer->getID())));
+    setObjectName(QString::fromStdString("_Internal_QSpacer_" + std::to_string(gspacer->getID())));
     setFixedSize(static_cast<int>(width), static_cast<int>(height));
 }
 
@@ -23630,7 +23603,9 @@ QSize _Internal_QSpacer::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gspacer.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES
 
 /*
@@ -23691,6 +23666,39 @@ std::string shuffle(std::string s) {
 }
 
 /*
+ * File: stl.cpp
+ * -------------
+ * Implements bodies of functions declared in stl.h.
+ *
+ * @author Marty Stepp
+ * @version 2018/10/19
+ * - initial version
+ */
+
+#define INTERNAL_INCLUDE 1
+#include "stl.h"
+#undef INTERNAL_INCLUDE
+
+std::set<std::string> toStlSet(const DawgLexicon& lex) {
+    std::set<std::string> result;
+    for (const std::string& s : lex) {
+        result.insert(s);
+    }
+    return result;
+}
+
+/**
+ * Returns an STL set object with the same elements as this Lexicon.
+ */
+std::set<std::string> toStlSet(const Lexicon& lex) {
+    std::set<std::string> result;
+    for (const std::string& s : lex) {
+        result.insert(s);
+    }
+    return result;
+}
+
+/*
  * File: gridlocation.cpp
  * ----------------------
  * This file implements the members of the <code>GridLocation</code> structure
@@ -23704,6 +23712,7 @@ std::string shuffle(std::string s) {
 #define INTERNAL_INCLUDE 1
 #include "gridlocation.h"
 #include <sstream>
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
 #undef INTERNAL_INCLUDE
 
@@ -23859,6 +23868,160 @@ std::ostream& operator <<(std::ostream& out, const GridLocationRange& range) {
 }
 
 /*
+ * File: collections.cpp
+ * ---------------------
+ * This file implements the collections.h interface.
+ * 
+ * @version 2018/10/20
+ * - initial version
+ */
+
+#define INTERNAL_INCLUDE 1
+#include "collections.h"
+#define INTERNAL_INCLUDE 1
+#include "private/static.h"
+#undef INTERNAL_INCLUDE
+#include <iomanip>
+#include <iostream>
+
+/*
+ * Implementation notes: readQuotedString and writeQuotedString
+ * ------------------------------------------------------------
+ * Most of the work in these functions has to do with escape sequences.
+ */
+
+STATIC_CONST_VARIABLE_DECLARE(std::string, STRING_DELIMITERS, ",:)}]\n")
+
+bool stringNeedsQuoting(const std::string& str) {
+    int n = str.length();
+    for (int i = 0; i < n; i++) {
+        char ch = str[i];
+        if (isspace(ch)) return false;
+        if (STATIC_VARIABLE(STRING_DELIMITERS).find(ch) != std::string::npos) return true;
+    }
+    return false;
+}
+
+bool readQuotedString(std::istream& is, std::string& str, bool throwOnError) {
+    str = "";
+    char ch;
+    while (is.get(ch) && isspace(ch)) {
+        /* Empty */
+    }
+    if (is.fail()) {
+        return true;   // empty string?
+    }
+    if (ch == '\'' || ch == '"') {
+        char delim = ch;
+        while (is.get(ch) && ch != delim) {
+            if (is.fail()) {
+                if (throwOnError) {
+                    error("Unterminated string");
+                }
+                return false;
+            }
+            if (ch == '\\') {
+                if (!is.get(ch)) {
+                    if (throwOnError) {
+                        error("Unterminated string");
+                    }
+                    is.setstate(std::ios_base::failbit);
+                    return false;
+                }
+                if (isdigit(ch) || ch == 'x') {
+                    int maxDigits = 3;
+                    int base = 8;
+                    if (ch == 'x') {
+                        base = 16;
+                        maxDigits = 2;
+                    }
+                    int result = 0;
+                    int digit = 0;
+                    for (int i = 0; i < maxDigits && ch != delim; i++) {
+                        if (isdigit(ch)) {
+                            digit = ch - '0';
+                        } else if (base == 16 && isxdigit(ch)) {
+                            digit = toupper(ch) - 'A' + 10;
+                        } else {
+                            break;
+                        }
+                        result = base * result + digit;
+                        if (!is.get(ch)) {
+                            if (throwOnError) {
+                                error("Unterminated string");
+                            }
+                            is.setstate(std::ios_base::failbit);
+                            return false;
+                        }
+                    }
+                    ch = char(result);
+                    is.unget();
+                } else {
+                    switch (ch) {
+                    case 'a': ch = '\a'; break;
+                    case 'b': ch = '\b'; break;
+                    case 'f': ch = '\f'; break;
+                    case 'n': ch = '\n'; break;
+                    case 'r': ch = '\r'; break;
+                    case 't': ch = '\t'; break;
+                    case 'v': ch = '\v'; break;
+                    case '"': ch = '"'; break;
+                    case '\'': ch = '\''; break;
+                    case '\\': ch = '\\'; break;
+                    }
+                }
+            }
+            str += ch;
+        }
+    } else {
+        str += ch;
+        int endTrim = 0;
+        while (is.get(ch) && STATIC_VARIABLE(STRING_DELIMITERS).find(ch) == std::string::npos) {
+            str += ch;
+            if (!isspace(ch)) endTrim = str.length();
+        }
+        if (is) is.unget();
+        str = str.substr(0, endTrim);
+    }
+    return true;   // read successfully
+}
+
+std::ostream& writeQuotedString(std::ostream& os, const std::string& str, bool forceQuotes) {
+    if (!forceQuotes && stringNeedsQuoting(str)) {
+        forceQuotes = true;
+    }
+    if (forceQuotes) {
+        os << '"';
+    }
+    int len = str.length();
+    for (int i = 0; i < len; i++) {
+        char ch = str.at(i);
+        switch (ch) {
+        case '\a': os << "\\a"; break;
+        case '\b': os << "\\b"; break;
+        case '\f': os << "\\f"; break;
+        case '\n': os << "\\n"; break;
+        case '\r': os << "\\r"; break;
+        case '\t': os << "\\t"; break;
+        case '\v': os << "\\v"; break;
+        case '\\': os << "\\\\"; break;
+        default:
+            if (isprint(ch) && ch != '"') {
+                os << ch;
+            } else {
+                std::ostringstream oss;
+                oss << std::oct << std::setw(3) << std::setfill('0') << (int(ch) & 0xFF);
+                os << "\\" << oss.str();
+            }
+        }
+    }
+    if (forceQuotes) {
+        os << '"';
+    }
+    return os;
+}
+
+/*
  * File: dawglexicon.cpp
  * ---------------------
  * A lexicon is a word list. This lexicon is backed by two separate data
@@ -23905,9 +24068,13 @@ std::ostream& operator <<(std::ostream& out, const GridLocationRange& range) {
 #include <sstream>
 #include <stdint.h>
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "collections.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -24154,14 +24321,6 @@ std::string DawgLexicon::toString() const {
     std::ostringstream out;
     out << *this;
     return out.str();
-}
-
-std::set<std::string> DawgLexicon::toStlSet() const {
-    std::set<std::string> result;
-    for (std::string word : *this) {
-        result.insert(word);
-    }
-    return result;
 }
 
 /*
@@ -24452,9 +24611,9 @@ static uint32_t my_ntohl(uint32_t arg) {
 
 #define INTERNAL_INCLUDE 1
 #include "hashcode.h"
+#undef INTERNAL_INCLUDE
 #include <cstddef>       // For size_t
 #include <cstring>       // For strlen
-#undef INTERNAL_INCLUDE
 
 static const int HASH_SEED = 5381;               // Starting point for first cycle
 static const int HASH_MULTIPLIER = 33;           // Multiplier for each cycle
@@ -24568,7 +24727,6 @@ int hashCode(long double key) {
     return hashCode(reinterpret_cast<const char *>(&key), sizeof(long double));
 }
 
-
 /*
  * File: lexicon.cpp
  * -----------------
@@ -24608,6 +24766,7 @@ int hashCode(long double key) {
 
 #define INTERNAL_INCLUDE 1
 #include "lexicon.h"
+#undef INTERNAL_INCLUDE
 #include <cctype>
 #include <cstdlib>
 #include <cstring>
@@ -24615,11 +24774,18 @@ int hashCode(long double key) {
 #include <iostream>
 #include <sstream>
 #include <string>
+
+#define INTERNAL_INCLUDE 1
 #include "collections.h"
+#define INTERNAL_INCLUDE 1
 #include "dawglexicon.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -24896,14 +25062,6 @@ Lexicon& Lexicon::retainAll(std::initializer_list<std::string> list) {
 
 int Lexicon::size() const {
     return m_size;
-}
-
-std::set<std::string> Lexicon::toStlSet() const {
-    std::set<std::string> result;
-    for (const std::string& word : m_allWords) {
-        result.insert(word);
-    }
-    return result;
 }
 
 std::string Lexicon::toString() const {
@@ -25254,9 +25412,13 @@ static bool scrub(std::string& str) {
 
 #define INTERNAL_INCLUDE 1
 #include "server.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "map.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #undef INTERNAL_INCLUDE
 
@@ -25407,7 +25569,7 @@ std::string getErrorMessage(int httpErrorCode) {
     if (ERROR_MESSAGE_MAP.containsKey(httpErrorCode)) {
         return ERROR_MESSAGE_MAP[httpErrorCode];
     } else {
-        return "HTTP ERROR " + integerToString(httpErrorCode) + ": Unknown error";
+        return "HTTP ERROR " + std::to_string(httpErrorCode) + ": Unknown error";
     }
 }
 
@@ -25509,6 +25671,7 @@ void stopServer() {
 #include <csignal>
 #include <iostream>
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
 #undef INTERNAL_INCLUDE
 
@@ -25707,9 +25870,13 @@ void setEcho(bool value) {
 #include "urlstream.h"
 #include <sstream>
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "gdownloader.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -25838,8 +26005,11 @@ void iurlstream::setUserAgent(const std::string& userAgent) {
 #include <iostream>
 #include <string>
 #include <vector>
+#define INTERNAL_INCLUDE 1
 #include "simpio.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "vector.h"
 #undef INTERNAL_INCLUDE
 
@@ -26009,23 +26179,14 @@ bool isSymbolicLink(const std::string& filename) {
 }
 
 void listDirectory(const std::string& path, Vector<std::string>& list) {
-    std::vector<std::string> vec;
-    listDirectory(path, vec);
     list.clear();
-    for (std::string file : vec) {
-        list.add(file);
-    }
-}
-
-void listDirectory(const std::string& path, std::vector<std::string>& list) {
     return platform::filelib_listDirectory(expandPathname(path), list);
 }
 
 Vector<std::string> listDirectory(const std::string& path) {
-    std::vector<std::string> vec;
+    Vector<std::string> vec;
     listDirectory(path, vec);
-    Vector<std::string> v(vec);
-    return v;
+    return vec;
 }
 
 bool matchFilenamePattern(const std::string& filename, const std::string& pattern) {
@@ -26192,16 +26353,6 @@ void readEntireFile(std::istream& is, Vector<std::string>& lines) {
     }
 }
 
-void readEntireFile(std::istream& is, std::vector<std::string>& lines) {
-    lines.clear();
-    while (true) {
-        std::string line;
-        getline(is, line);
-        if (is.fail()) break;
-        lines.push_back(line);
-    }
-}
-
 std::string readEntireFile(const std::string& filename) {
     std::string out;
     if (readEntireFile(filename, out)) {
@@ -26354,7 +26505,9 @@ static bool recursiveMatch(const std::string& str, int sx, const std::string& pa
 #define INTERNAL_INCLUDE 1
 #include "bitstream.h"
 #include <iostream>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -26514,7 +26667,7 @@ obitstream::obitstream() : std::ostream(nullptr), lastTell(0), curByte(0), pos(N
 void obitstream::writeBit(int bit) {
     if (bit != 0 && bit != 1) {
         error(std::string("obitstream::writeBit: must pass an integer argument of 0 or 1. You passed the integer ")
-              + toPrintable(bit) + " (" + integerToString(bit) + ").");
+              + toPrintable(bit) + " (" + std::to_string(bit) + ").");
     }
     if (!is_open()) {
         error("obitstream::writeBit: stream is not open");
@@ -26753,8 +26906,11 @@ std::string ostringbitstream::str() {
 #include "tokenscanner.h"
 #include <cctype>
 #include <iostream>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "stack.h"
 #undef INTERNAL_INCLUDE
 
@@ -27258,9 +27414,9 @@ std::ostream& operator <<(std::ostream& out, const TokenScanner& scanner) {
 
 #define INTERNAL_INCLUDE 1
 #include "base64.h"
+#undef INTERNAL_INCLUDE
 #include <cstring>
 #include <sstream>
-#undef INTERNAL_INCLUDE
 
 /* aaaack but it's fast and const should make it shared text page. */
 static const unsigned char pr2six[256] = {
@@ -27413,7 +27569,8 @@ std::string decode(const std::string& s) {
     free(buf);
     return result;
 }
-}
+
+} // namespace Base64
 
 /*
  * File: simpio.cpp
@@ -27439,8 +27596,11 @@ std::string decode(const std::string& s) {
 #include <iostream>
 #include <sstream>
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #undef INTERNAL_INCLUDE
 
@@ -27674,14 +27834,17 @@ void appendSpace(std::string& prompt) {
 #define INTERNAL_INCLUDE 1
 #include "xmlutils.h"
 #include <cstring>
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "rapidxml.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 namespace xmlutils {
 int getAttributeInt(rapidxml::xml_node<>* node, const std::string& attrName, int defaultValue) {
-    std::string value = getAttribute(node, attrName, integerToString(defaultValue));
+    std::string value = getAttribute(node, attrName, std::to_string(defaultValue));
     return stringToInteger(value);
 }
 
@@ -27749,12 +27912,12 @@ rapidxml::xml_node<>* openXmlDocument(const std::string& filename, const std::st
 
 #define INTERNAL_INCLUDE 1
 #include "private/version.h"
+#undef INTERNAL_INCLUDE
 #include <cstdio>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
-#undef INTERNAL_INCLUDE
 
 namespace version {
 #ifdef SPL_PROJECT_VERSION
@@ -27871,7 +28034,10 @@ std::string getProjectVersion() {
 #include <iostream>
 #include <ios>
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
+#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 namespace platform {
@@ -27957,7 +28123,7 @@ std::string filelib_expandPathname(const std::string& filename) {
     return filenameStr;
 }
 
-void filelib_listDirectory(const std::string& path, std::vector<std::string> & list) {
+void filelib_listDirectory(const std::string& path, Vector<std::string> & list) {
     std::string pathStr = path;
     if (pathStr == "") {
         pathStr = ".";
@@ -27994,6 +28160,148 @@ std::string file_openFileDialog(const std::string& /*title*/,
 #endif // _WIN32
 
 /*
+ * File: multimain.cpp
+ * -------------------
+ * ...
+ *
+ * @version 2018/10/18
+ * - initial version
+ */
+
+#define INTERNAL_INCLUDE 1
+#include "private/multimain.h"
+#include <iomanip>
+#include <iostream>
+#define INTERNAL_INCLUDE 1
+#include "private/static.h"
+#define INTERNAL_INCLUDE 1
+#include "filelib.h"
+#define INTERNAL_INCLUDE 1
+#include "goptionpane.h"
+#define INTERNAL_INCLUDE 1
+#include "map.h"
+#define INTERNAL_INCLUDE 1
+#include "simpio.h"
+#undef INTERNAL_INCLUDE
+
+// helper to store [name => main func pointer]
+STATIC_VARIABLE_DECLARE_MAP_EMPTY(Map, std::string, GThunkInt, funcMap);
+
+extern int main();
+
+namespace stanfordcpplib {
+
+// whether the popup list of mains should be graphical
+static bool& mainSelectorIsGraphical() {
+    static bool _isGraphical = false;
+    return _isGraphical;
+}
+
+int registerMainFunction(const std::string& name, int (*mainFunc)()) {
+    GThunkInt mainThunk = mainFunc;
+    STATIC_VARIABLE(funcMap)[name] = mainThunk;
+    return 0;
+}
+
+MultiMainRegisterStaticInitializer::MultiMainRegisterStaticInitializer(
+        const std::string& name, int (* mainFunc)(), bool graphical) {
+    STATIC_VARIABLE(funcMap)[name] = mainFunc;
+    mainSelectorIsGraphical() |= graphical;
+}
+
+#ifndef SPL_AUTOGRADER_MODE
+
+// function prototype declarations;
+// I declare these rather than including init.h to avoid
+// triggering library initialization if lib is not used
+// (keep in sync with init.h/cpp)
+extern void initializeLibrary(int argc, char** argv);
+extern void runMainInThread(int (* mainFunc)(void));
+extern void shutdownLibrary();
+
+int selectMainFunction() {
+    Map<std::string, GThunkInt>& funcMap = STATIC_VARIABLE(funcMap);
+    if (funcMap.isEmpty()) {
+
+        //////////////////////////////////////////////////////////////////////////
+        /// NOTE TO STUDENT!                                                   ///
+        /// If you are directed here by a compiler error,                      ///
+        /// it means that you have not written a main function or that it      ///
+        /// has the wrong parameters.                                          ///
+        /// The heading of your main function must be:                         ///
+        ///                                                                    ///
+        /// int main() { ... }                                                 ///
+        ///                                                                    ///
+        /// (Our library secretly renames your main function to "qMain"        ///
+        ///  so that we can actually control the main flow of execution.)      ///
+        ///                                                                    ///
+        /// You may also need to include a .h header from the Stanford         ///
+        /// C++ library in the file of your project that contains the          ///
+        /// 'main' function.                                                   ///
+        //////////////////////////////////////////////////////////////////////////
+        stanfordcpplib::runMainInThread(main);
+
+    } else if (funcMap.size() == 1) {
+        // just one main, so just run it
+        std::string mainFuncName = funcMap.front();
+        GThunkInt mainFunc = funcMap[mainFuncName];
+        stanfordcpplib::runMainInThread(mainFunc);
+    } else {
+        // multiple mains; ask user which one to run
+        if (stanfordcpplib::mainSelectorIsGraphical()) {
+            GThunkInt mainFuncWrapper = [&funcMap]() {
+                Vector<std::string> options;
+                for (std::string functionName : funcMap) {
+                    options.add(functionName);
+                }
+
+                std::string choice = "";
+                choice = GOptionPane::showOptionDialog(
+                        /* message */ "main functions available:",
+                        /* options */ options,
+                        /* title   */ "Choose main function to run");
+                if (choice.empty()) {
+                    return 0;
+                }
+                GThunkInt mainFunc = funcMap[choice];
+                if (mainFunc) {
+                    return mainFunc();
+                } else {
+                    return 0;
+                }
+            };
+            stanfordcpplib::runMainInThread(mainFuncWrapper);
+        } else {
+            // plain text console
+            GThunkInt mainFuncWrapper = [&funcMap]() {
+                // print list of mains
+                std::cout << "main functions available:" << std::endl;
+                int i = 1;
+                Map<int, std::string> numberToName;
+                for (std::string functionName : funcMap) {
+                    std::cout << std::setw(2) << i << ") " << functionName << std::endl;
+                    numberToName[i] = functionName;
+                    i++;
+                }
+                int choice = getIntegerBetween("Your choice? ", 0, funcMap.size());
+                if (choice == 0) {
+                    return 0;
+                }
+                GThunkInt mainFunc = funcMap[numberToName[choice]];
+                return mainFunc();
+            };
+            stanfordcpplib::runMainInThread(mainFuncWrapper);
+        }
+    }
+
+    stanfordcpplib::shutdownLibrary();
+    return 0;
+}
+#endif // SPL_AUTOGRADER_MODE
+
+} // namespace stanfordcpplib
+
+/*
  * File: init.cpp
  * --------------
  *
@@ -28008,9 +28316,15 @@ std::string file_openFileDialog(const std::string& /*title*/,
 
 #define INTERNAL_INCLUDE 1
 #include "private/init.h"
+#define INTERNAL_INCLUDE 1
 #include "consoletext.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
+#define INTERNAL_INCLUDE 1
+#include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #undef INTERNAL_INCLUDE
 
@@ -28100,7 +28414,15 @@ void runMainInThread(int (* mainFunc)(void)) {
     QtGui::instance()->startBackgroundEventLoop(mainFunc);
 }
 
+void runMainInThread(std::function<int()> mainFunc) {
+    QtGui::instance()->startBackgroundEventLoop(mainFunc);
+}
+
 void runMainInThreadVoid(void (* mainFuncVoid)(void)) {
+    QtGui::instance()->startBackgroundEventLoopVoid(mainFuncVoid);
+}
+
+void runMainInThreadVoid(std::function<void()> mainFuncVoid) {
     QtGui::instance()->startBackgroundEventLoopVoid(mainFuncVoid);
 }
 
@@ -28145,236 +28467,11 @@ void __stanfordcpplib__exitLibrary(int status) {
 } // namespace std
 
 /*
- * File: tplatform_posix.cpp
- * -------------------------
- * Implements the platform-specific code for threads using Posix threads.
- */
-
-/*************************************************************************/
-/* Stanford Portable Library                                             */
-/* Copyright (c) 2014 by Eric Roberts <eroberts@cs.stanford.edu>         */
-/*                                                                       */
-/* This program is free software: you can redistribute it and/or modify  */
-/* it under the terms of the GNU General Public License as published by  */
-/* the Free Software Foundation, either version 3 of the License, or     */
-/* (at your option) any later version.                                   */
-/*                                                                       */
-/* This program is distributed in the hope that it will be useful,       */
-/* but WITHOUT ANY WARRANTY; without even the implied warranty of        */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
-/* GNU General Public License for more details.                          */
-/*                                                                       */
-/* You should have received a copy of the GNU General Public License     */
-/* along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-/*************************************************************************/
-
-#define INTERNAL_INCLUDE 1
-#include <iostream>
-#include <string>
-#include <pthread.h>
-#include "error.h"
-#include "map.h"
-#include "private/tplatform.h"
-#undef INTERNAL_INCLUDE
-
-#define __macosx__ 1
-#ifdef __macosx__
-extern int sched_yield(void);
-#define pthread_yield sched_yield
-#endif
-
-struct ThreadData {
-    int id;
-    pthread_t pid;
-    bool terminated;
-    void (* fn)(void* arg);
-    void* arg;
-    int refCount;
-};
-
-struct LockData {
-    pthread_mutex_t mutex;
-    pthread_cond_t condition;
-    int depth;
-    int owner;
-    int refCount;
-};
-
-/* Constants */
-
-#define MAX_THREAD_ID int(unsigned(-1) >> 1)
-#define MAX_LOCK_ID    int(unsigned(-1) >> 1)
-
-/* Private function prototypes */
-
-static Map<int, ThreadData*>& getThreadDataMap();
-static Map<int, LockData*>& getLockDataMap();
-static int getNextFreeThread();
-static int getNextFreeLock();
-static pthread_key_t& getThreadDataKey();
-static pthread_key_t* createThreadDataKey();
-static void* startThread(void* arg);
-
-/* Functions */
-
-int forkForPlatform(void (* fn)(void*), void* arg) {
-    int id = getNextFreeThread();
-    ThreadData* tdp = new ThreadData;
-    tdp->terminated = false;
-    tdp->refCount = 1;
-    tdp->fn = fn;
-    tdp->arg = arg;
-    getThreadDataMap().put(id, tdp);
-    pthread_attr_t attr;
-    pthread_attr_init(&attr);
-    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-    int osErr = pthread_create(&tdp->pid, &attr, startThread, tdp);
-    pthread_attr_destroy(&attr);
-    if (osErr != 0) {
-        error("forkThread: Can't create new thread");
-    }
-    return id;
-}
-
-void incThreadRefCountForPlatform(int /*id*/) {
-    // Fill in
-}
-
-void decThreadRefCountForPlatform(int /*id*/) {
-    // Fill in
-}
-
-void joinForPlatform(int id) {
-    pthread_join(getThreadDataMap().get(id)->pid, nullptr);
-}
-
-int getCurrentThreadForPlatform() {
-    ThreadData* tdp = (ThreadData*) pthread_getspecific(getThreadDataKey());
-    if (!tdp) {
-        tdp = new ThreadData;
-        tdp->id = 0;
-        pthread_setspecific(getThreadDataKey(), tdp);
-    }
-    return tdp->id;
-}
-
-void yieldForPlatform() {
-    pthread_yield();
-}
-
-int initLockForPlatform() {
-    int id = getNextFreeLock();
-    LockData* ldp = new LockData;
-    pthread_mutexattr_t attr;
-    pthread_mutexattr_init(&attr);
-    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-    pthread_mutex_init(&ldp->mutex, &attr);
-    pthread_mutexattr_destroy(&attr);
-    pthread_cond_init(&ldp->condition, nullptr);
-    ldp->owner = -1;
-    ldp->depth = 0;
-    getLockDataMap().put(id, ldp);
-    return id;
-}
-
-void incLockRefCountForPlatform(int /*id*/) {
-    // Fill in
-}
-
-void decLockRefCountForPlatform(int /*id*/) {
-    // Fill in
-}
-
-void lockForPlatform(int id) {
-    LockData* ldp = getLockDataMap().get(id);
-    pthread_mutex_lock(&ldp->mutex);
-    if (ldp->depth++ == 0) {
-        ldp->owner = getCurrentThreadForPlatform();
-    }
-}
-
-void unlockForPlatform(int id) {
-    LockData* ldp = getLockDataMap().get(id);
-    if (--ldp->depth == 0) {
-        ldp->owner = -1;
-    }
-    pthread_mutex_unlock(&ldp->mutex);
-}
-
-void waitForPlatform(int id) {
-    LockData* ldp = getLockDataMap().get(id);
-    pthread_cond_wait(&ldp->condition, &ldp->mutex);
-}
-
-void signalForPlatform(int id) {
-    LockData* ldp = getLockDataMap().get(id);
-    pthread_cond_broadcast(&ldp->condition);
-}
-
-/* Static functions */
-
-static Map<int, ThreadData*>& getThreadDataMap() {
-    static Map<int, ThreadData*>* mp = new Map<int, ThreadData*>();
-    return *mp;
-}
-
-static Map<int, LockData*>& getLockDataMap() {
-    static Map<int,LockData*>* mp = new Map<int, LockData*>();
-    return *mp;
-}
-
-static int getNextFreeThread() {
-    static int nextThread = 1;
-    Map<int, ThreadData*>& map = getThreadDataMap();
-    while (map.containsKey(nextThread)) {
-        nextThread++;
-        if (nextThread == MAX_THREAD_ID) {
-            nextThread = 1;
-        }
-    }
-    return nextThread++;
-}
-
-static int getNextFreeLock() {
-    static int nextLock = 1;
-    Map<int, LockData*>& map = getLockDataMap();
-    while (map.containsKey(nextLock)) {
-        nextLock++;
-        if (nextLock == MAX_LOCK_ID) {
-            nextLock = 1;
-        }
-    }
-    return nextLock++;
-}
-
-static pthread_key_t& getThreadDataKey() {
-    static pthread_key_t* pkp = createThreadDataKey();
-    return *pkp;
-}
-
-static pthread_key_t* createThreadDataKey() {
-    pthread_key_t* pkp = new pthread_key_t;
-    pthread_key_create(pkp, nullptr);
-    return pkp;
-}
-
-static void* startThread(void* arg) {
-    ThreadData* tdp = (ThreadData*) arg;
-    pthread_setspecific(getThreadDataKey(), tdp);
-    try {
-        tdp->fn(tdp->arg);
-    } catch (ErrorException e) {
-        std::cerr << "Error: " << e.getMessage() << std::endl;
-        std::exit(1);
-    }
-    return nullptr;
-}
-
-/*
  */
 
 #define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#undef INTERNAL_INCLUDE
 
 // define all of the following only on non-Windows OS
 // (see filelibwindows.cpp for Windows versions)
@@ -28395,7 +28492,10 @@ static void* startThread(void* arg) {
 #include <iostream>
 #include <ios>
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
+#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 namespace platform {
@@ -28517,7 +28617,7 @@ bool filelib_isSymbolicLink(const std::string& filename) {
     return S_ISLNK(fileInfo.st_mode) != 0;
 }
 
-void filelib_listDirectory(const std::string& path, std::vector<std::string>& list) {
+void filelib_listDirectory(const std::string& path, Vector<std::string>& list) {
     DIR* dir = opendir(path.empty() ? "." : path.c_str());
     if (!dir) {
         error(std::string("listDirectory: Can't open \"") + path + "\"");
@@ -28569,6 +28669,8 @@ void filelib_setCurrentDirectory(const std::string& path) {
  * include a .h header from the Stanford C++ library in the file of your project
  * that contains the 'main' function.
  *
+ * @version 2018/10/18
+ * - multi-main initial implementation
  * @version 2018/10/07
  * - bug fixes for autograder mode
  * @version 2018/09/23
@@ -28576,6 +28678,12 @@ void filelib_setCurrentDirectory(const std::string& path) {
  * @version 2018/09/17
  * - initial version
  */
+
+#include "private/init.h"
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
 
 #ifndef SPL_AUTOGRADER_MODE
 int qMain(int argc, char** argv);
@@ -28587,6 +28695,7 @@ int qMain(int argc, char** argv);
 namespace stanfordcpplib {
 extern void initializeLibrary(int argc, char** argv);
 extern void runMainInThread(int (* mainFunc)(void));
+extern int selectMainFunction();
 extern void shutdownLibrary();
 }
 
@@ -28606,27 +28715,9 @@ int main(int argc, char** argv) {
 int qMain(int argc, char** argv) {
     extern int main();
     stanfordcpplib::initializeLibrary(argc, argv);
-
-    //////////////////////////////////////////////////////////////////////////
-    /// NOTE TO STUDENT!                                                   ///
-    /// If you are directed here by a compiler error,                      ///
-    /// it means that you have not written a main function or that it      ///
-    /// has the wrong parameters.                                          ///
-    /// The heading of your main function must be:                         ///
-    ///                                                                    ///
-    /// int main() { ... }                                                 ///
-    ///                                                                    ///
-    /// (Our library secretly renames your main function to "qMain"        ///
-    ///  so that we can actually control the main flow of execution.)      ///
-    ///                                                                    ///
-    /// You may also need to include a .h header from the Stanford         ///
-    /// C++ library in the file of your project that contains the          ///
-    /// 'main' function.                                                   ///
-    //////////////////////////////////////////////////////////////////////////
-    stanfordcpplib::runMainInThread(main);
-
+    int result = stanfordcpplib::selectMainFunction();
     stanfordcpplib::shutdownLibrary();
-    return 0;
+    return result;
 }
 #endif // SPL_AUTOGRADER_MODE
 

@@ -36,18 +36,30 @@
  * - removed usage of __foreach macro
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _map_h
 #define _map_h
 
 #include <cstdlib>
 #include <initializer_list>
-#include <map>
 #include <utility>
+
+#define INTERNAL_INCLUDE 1
 #include "collections.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
+#define INTERNAL_INCLUDE 1
 #include "stack.h"
+#define INTERNAL_INCLUDE 1
 #include "vector.h"
+#undef INTERNAL_INCLUDE
 
 /*
  * Class: Map<KeyType,ValueType>
@@ -286,11 +298,6 @@ public:
      * Returns the number of entries in this map.
      */
     int size() const;
-    
-    /*
-     * Returns an STL map object with the same elements as this map.
-     */
-    std::map<KeyType, ValueType> toStlMap() const;
     
     /*
      * Method: toString
@@ -1311,15 +1318,6 @@ int Map<KeyType, ValueType>::size() const {
 }
 
 template <typename KeyType, typename ValueType>
-std::map<KeyType, ValueType> Map<KeyType, ValueType>::toStlMap() const {
-    std::map<KeyType, ValueType> result;
-    for (const KeyType& key : *this) {
-        result[key] = this->get(key);
-    }
-    return result;
-}
-
-template <typename KeyType, typename ValueType>
 std::string Map<KeyType, ValueType>::toString() const {
     std::ostringstream os;
     os << *this;
@@ -1507,7 +1505,5 @@ const K& randomKey(const Map<K, V>& map) {
     static Vector<K> v = map.keys();
     return v[0];
 }
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _map_h

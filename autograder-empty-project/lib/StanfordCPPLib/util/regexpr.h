@@ -21,11 +21,20 @@
  * @since 2014/03/01
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _regexpr_h
 #define _regexpr_h
 
 #include <string>
+
+#define INTERNAL_INCLUDE 1
 #include "vector.h"
+#undef INTERNAL_INCLUDE
 
 /**
  * Returns true if the given string s matches the given regular expression
@@ -71,7 +80,5 @@ void regexMatchCountWithLines(const std::string& s, const std::string& regexp,
  */
 std::string regexReplace(const std::string& s, const std::string& regexp,
                          const std::string& replacement, int limit = -1);
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _regexpr_h

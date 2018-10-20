@@ -456,7 +456,7 @@ std::ostream& operator <<(std::ostream& out, const UnitTestDetails& deets) {
 #include "map.h"
 #include "qtgui.h"
 #include "simpio.h"
-#include "version.h"
+#include "versionautograder.h"
 #include "private/static.h"
 #include "date.h"
 #include "gtest-marty.h"
@@ -791,6 +791,7 @@ int qMain(int argc, char** argv) {
 #include "autogradertest.h"
 #include "consoletext.h"
 #include "filelib.h"
+#include "gconsolewindow.h"
 #include "gdiffgui.h"
 #include "gdiffimage.h"
 #include "gfont.h"
@@ -807,6 +808,7 @@ int qMain(int argc, char** argv) {
 #include "strlib.h"
 #include "stylecheck.h"
 #include "testresultprinter.h"
+#include <sstream>
 #undef INTERNAL_INCLUDE
 
 // student's main function
@@ -825,7 +827,7 @@ int GuiAutograder::MAX_WINDOW_HEIGHT = -1;
 const std::string GuiAutograder::COLOR_PASS = "#006600";
 const std::string GuiAutograder::COLOR_FAIL = "#660000";
 const std::string GuiAutograder::COLOR_WARN = "#999900";
-std::string GuiAutograder::COLOR_NORMAL = "#eeeeee";
+std::string GuiAutograder::COLOR_NORMAL = "#111111";
 const std::string GuiAutograder::COLOR_ZEBRA_STRIPE_1 = "#fafafa";
 const std::string GuiAutograder::COLOR_ZEBRA_STRIPE_2 = "#ebebeb";
 const std::string GuiAutograder::ICON_FOLDER = "autograder/";
@@ -886,6 +888,9 @@ GuiAutograder::GuiAutograder()
         }
 
         _catchErrorsBox = new GCheckBox("&Catch exceptions in tests", /* checked */ true);
+        _catchErrorsBox->setActionListener([this]() {
+            setCatchExceptions(_catchErrorsBox->isChecked());
+        });
 
         _startLabel = new GLabel(" ");
         // _startLabel->setWidth(DEFAULT_WINDOW_WIDTH - 20);
@@ -1117,13 +1122,22 @@ void GuiAutograder::addTest(const std::string& testName, const std::string& cate
     testInfo->descriptionLabel->setActionListener(showDetailsFunc);
     test->addToRegion(testInfo->descriptionLabel, GContainer::REGION_CENTER);
 
-    testInfo->resultLabel = new GLabel;
-    testInfo->resultLabel->setText("        ");
-    testInfo->resultLabel->setIcon(ICON_RUNNING_FILENAME);
-    GFont::changeFontSize(testInfo->resultLabel, -2);
-    testInfo->resultLabel->setTooltip("Click to see detailed results from this test.");
-    testInfo->resultLabel->setActionListener(showDetailsFunc);
-    test->addToRegion(testInfo->resultLabel, GContainer::REGION_EAST);
+    // have to separate runtime from result icon because the Qt GLabel doesn't
+    // support a label that has both an icon and text (oops)
+    testInfo->runtimeLabel = new GLabel;
+    testInfo->runtimeLabel->setText(" ");
+    GFont::changeFontSize(testInfo->runtimeLabel, -2);
+    testInfo->runtimeLabel->setTooltip("Click to see detailed results from this test.");
+    testInfo->runtimeLabel->setActionListener(showDetailsFunc);
+    testInfo->resultIconLabel = new GLabel;
+    testInfo->resultIconLabel->setIcon(ICON_RUNNING_FILENAME);
+    testInfo->resultIconLabel->setTooltip("Click to see detailed results from this test.");
+    testInfo->resultIconLabel->setActionListener(showDetailsFunc);
+
+    GContainer* east = new GContainer();
+    east->add(testInfo->runtimeLabel);
+    east->add(testInfo->resultIconLabel);
+    test->addToRegion(east, GContainer::REGION_EAST);
 
     testInfo->detailsLabel = new GLabel;
     testInfo->detailsLabel->setText("        ");
@@ -1164,8 +1178,8 @@ void GuiAutograder::clearTestResults() {
         UnitTestDetails deets;   // clear it out
         testInfo->details = deets;
         testInfo->descriptionLabel->setForeground(COLOR_NORMAL);
-        testInfo->resultLabel->setText("");
-        testInfo->resultLabel->setIcon(ICON_RUNNING_FILENAME);
+        testInfo->resultIconLabel->setText("");
+        testInfo->resultIconLabel->setIcon(ICON_RUNNING_FILENAME);
     }
     updateSouthText();
 }
@@ -1331,7 +1345,7 @@ void GuiAutograder::onClick_autograde() {
         if (_flags.callbackEnd) {
             _flags.callbackEnd();
         }
-    });
+    }, "RunAllTestCases");
 }
 
 void GuiAutograder::onClick_runManually() {
@@ -1357,7 +1371,7 @@ void GuiAutograder::onClick_runManually() {
 
     GThread::runInNewThreadAsync([]() {
         main();   // run student's main function
-    });
+    }, "Main (student)");
 }
 
 int GuiAutograder::runAllTestCases() {
@@ -1439,8 +1453,9 @@ void GuiAutograder::runStyleChecker() {
 
 void GuiAutograder::runTest(stanfordcpplib::autograder::AutograderTest* test) {
     int timeoutMS = test->getTestTimeout();
-    QThread* thread = GThread::runInNewThreadAsync([this, test]() {
-        std::string testFullName = test->getFullName();
+    std::string testName = test->getName();
+    std::string testFullName = test->getFullName();
+    QThread* thread = GThread::runInNewThreadAsync([this, test, testFullName]() {
         setCurrentTestCaseName(testFullName);
         if (catchExceptions()) {
             try {
@@ -1448,23 +1463,26 @@ void GuiAutograder::runTest(stanfordcpplib::autograder::AutograderTest* test) {
                 test->TestRealBody();
             } catch (const ErrorException& ex) {
                 failWithException(testFullName, "An ErrorException", ex.what(), ex.getStackTrace());
-            } catch (const std::exception& ex) {
-                failWithException(testFullName, "A C++ exception", ex.what());
-            } catch (std::string str) {
-                failWithException(testFullName, "A string exception", str);
-            } catch (char const* str) {
-                failWithException(testFullName, "A string exception", str);
-            } catch (int n) {
-                failWithException(testFullName, "An int exception", integerToString(n));
-            } catch (long l) {
-                failWithException(testFullName, "A long exception", longToString(l));
-            } catch (char c) {
-                failWithException(testFullName, "A char exception", charToString(c));
-            } catch (bool b) {
-                failWithException(testFullName, "A bool exception", boolToString(b));
-            } catch (double d) {
-                failWithException(testFullName, "A double exception", realToString(d));
             }
+
+//            catch (const std::exception& ex) {
+//                failWithException(testFullName, "A C++ exception", ex.what());
+//            } catch (std::string str) {
+//                failWithException(testFullName, "A string exception", str);
+//            } catch (char const* str) {
+//                failWithException(testFullName, "A string exception", str);
+//            } catch (int n) {
+//                failWithException(testFullName, "An int exception", integerToString(n));
+//            } catch (long l) {
+//                failWithException(testFullName, "A long exception", longToString(l));
+//            } catch (char c) {
+//                failWithException(testFullName, "A char exception", charToString(c));
+//            } catch (bool b) {
+//                failWithException(testFullName, "A bool exception", boolToString(b));
+//            } catch (double d) {
+//                failWithException(testFullName, "A double exception", realToString(d));
+//            }
+
             // BUGFIX: don't catch '...' because it blocks necessary error
             // propagation on thread timeout/shutdown
             // catch (...) {
@@ -1474,7 +1492,7 @@ void GuiAutograder::runTest(stanfordcpplib::autograder::AutograderTest* test) {
         } else {
             test->TestRealBody();
         }
-    });
+    }, /* threadName */ testName);
 
     if (GThread::wait(thread, timeoutMS)) {
         // thread is still running; timed out
@@ -1573,7 +1591,7 @@ bool GuiAutograder::setTestResult(const std::string& testFullName, TestResult re
         break;
     }
 
-    testInfo->resultLabel->setIcon(iconFile);
+    testInfo->resultIconLabel->setIcon(iconFile);
     testInfo->descriptionLabel->setForeground(labelForegroundColor);
     updateSouthText();
     return true;
@@ -1586,7 +1604,7 @@ bool GuiAutograder::setTestRuntime(const std::string& testFullName, long ms) {
 
     std::string text = " (" + longToString(ms) + " ms)";
     TestInfo* testInfo = _allTestInfo[testFullName];
-    testInfo->resultLabel->setText(text);
+    testInfo->runtimeLabel->setText(text);
     return true;
 }
 
@@ -1978,7 +1996,7 @@ void AutograderTest::TestBody() {
     // empty; override me
 }
 
-void AutograderTest::TestRealBody() {
+void AutograderTest::TestRealBody() throw (ErrorException) {
     // empty; override me
 }
 
@@ -12113,9 +12131,10 @@ Date operator--(const Date& d, int) {
 #include "error.h"
 #include "exceptions.h"
 #include "filelib.h"
+#include "gconsolewindow.h"
+#include "gwindow.h"
 #include "map.h"
 #include "simpio.h"
-#include "version.h"
 #include "private/static.h"
 #include "date.h"
 #include "gtest-marty.h"
