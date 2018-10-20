@@ -24,16 +24,108 @@
  * @since 2014/10/10
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _collections_h
 #define _collections_h
 
 #include <iostream>
-#include "error.h"
-#include "gmath.h"
-#include "hashcode.h"
-#include "random.h"
-#include "strlib.h"
+#include <sstream>
 
+#define INTERNAL_INCLUDE 1
+#include "error.h"
+#define INTERNAL_INCLUDE 1
+#include "gmath.h"
+#define INTERNAL_INCLUDE 1
+#include "hashcode.h"
+#define INTERNAL_INCLUDE 1
+#include "random.h"
+#undef INTERNAL_INCLUDE
+
+// begin global namespace string read/writing functions from strlib.h
+
+/**
+ * Reads the next string from infile into the reference parameter str.
+ * If the first character (other than whitespace) is either a single
+ * or a double quote, this function reads characters up to the
+ * matching quote, processing standard escape sequences as it goes.
+ * If not, readString reads characters up to any of the characters
+ * in the string STRING_DELIMITERS in the implementation file.
+ *
+ * @private
+ */
+bool readQuotedString(std::istream& is, std::string& str, bool throwOnError = true);
+
+/**
+ * Writes the string str to outfile surrounded by double quotes, converting
+ * special characters to escape sequences, as necessary.  If the optional
+ * parameter forceQuotes is explicitly set to false, quotes are included
+ * in the output only if necessary.
+ *
+ * @private
+ */
+std::ostream& writeQuotedString(std::ostream& os, const std::string& str,
+                                bool forceQuotes = true);
+
+/**
+ * Checks whether the string needs quoting in order to be read correctly.
+ * @private
+ */
+bool stringNeedsQuoting(const std::string& str);
+
+/**
+ * Writes a generic value to the output stream.  If that value is a string,
+ * this function uses writeQuotedString to write the value.
+ * @private
+ */
+template <typename ValueType>
+std::ostream& writeGenericValue(std::ostream& os, const ValueType& value, bool) {
+    os << std::boolalpha << value;
+    return os;
+}
+
+template <>
+inline std::ostream& writeGenericValue(std::ostream& os, const std::string& value,
+                              bool forceQuotes) {
+    return writeQuotedString(os, value, forceQuotes);
+}
+
+template <typename ValueType>
+inline std::string genericValueToString(const ValueType& value,
+                                        bool forceQuotes = false) {
+    std::ostringstream os;
+    writeGenericValue(os, value, forceQuotes);
+    return os.str();
+}
+
+template <>
+inline std::string genericValueToString(const std::string& value,
+                                        bool forceQuotes) {
+    std::ostringstream os;
+    writeQuotedString(os, value, forceQuotes);
+    return os.str();
+}
+
+/**
+ * Reads a generic value from the input stream.  If that value is a string,
+ * this function uses readQuotedString to read the value.
+ * @private
+ */
+template <typename ValueType>
+bool readGenericValue(std::istream& is, ValueType& value) {
+    return (bool) (is >> value);
+}
+
+template <>
+inline bool readGenericValue(std::istream& is, std::string& value) {
+    return readQuotedString(is, value, /* throwOnError */ false);
+}
+
+// end of global namespace string read/writing functions from strlib.h
 namespace stanfordcpplib {
 namespace collections {
 
@@ -658,6 +750,4 @@ std::ostream& writeMap(std::ostream& out, const MapType& map) {
 } // namespace collections
 } // namespace stanfordcpplib
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#endif
+#endif // _collections_h

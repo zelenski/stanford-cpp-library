@@ -6,6 +6,12 @@
  * code of the Stanford C++ library itself.
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _require_h
 #define _require_h
 
@@ -33,7 +39,5 @@ void positive(int value, const std::string& caller = "", const std::string& valu
 void require(bool test, const std::string& caller = "", const std::string& details = "");
 
 } // namespace require
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _require_h

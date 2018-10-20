@@ -19,6 +19,7 @@
 #include <csignal>
 #include <iostream>
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
 #undef INTERNAL_INCLUDE
 

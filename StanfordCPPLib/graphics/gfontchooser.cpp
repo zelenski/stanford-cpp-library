@@ -16,7 +16,9 @@
 #define INTERNAL_INCLUDE 1
 #include "gfontchooser.h"
 #include <QFontDialog>
+#define INTERNAL_INCLUDE 1
 #include "gfont.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
 #undef INTERNAL_INCLUDE
 

@@ -3,6 +3,7 @@
 
 #define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#undef INTERNAL_INCLUDE
 
 // define all of the following only on non-Windows OS
 // (see filelibwindows.cpp for Windows versions)
@@ -23,7 +24,10 @@
 #include <iostream>
 #include <ios>
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
+#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 namespace platform {
@@ -145,7 +149,7 @@ bool filelib_isSymbolicLink(const std::string& filename) {
     return S_ISLNK(fileInfo.st_mode) != 0;
 }
 
-void filelib_listDirectory(const std::string& path, std::vector<std::string>& list) {
+void filelib_listDirectory(const std::string& path, Vector<std::string>& list) {
     DIR* dir = opendir(path.empty() ? "." : path.c_str());
     if (!dir) {
         error(std::string("listDirectory: Can't open \"") + path + "\"");

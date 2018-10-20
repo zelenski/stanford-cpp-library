@@ -12,9 +12,13 @@
 
 #define INTERNAL_INCLUDE 1
 #include "server.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "map.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #undef INTERNAL_INCLUDE
 
@@ -165,7 +169,7 @@ std::string getErrorMessage(int httpErrorCode) {
     if (ERROR_MESSAGE_MAP.containsKey(httpErrorCode)) {
         return ERROR_MESSAGE_MAP[httpErrorCode];
     } else {
-        return "HTTP ERROR " + integerToString(httpErrorCode) + ": Unknown error";
+        return "HTTP ERROR " + std::to_string(httpErrorCode) + ": Unknown error";
     }
 }
 

@@ -13,9 +13,9 @@
 
 #define INTERNAL_INCLUDE 1
 #include "hashcode.h"
+#undef INTERNAL_INCLUDE
 #include <cstddef>       // For size_t
 #include <cstring>       // For strlen
-#undef INTERNAL_INCLUDE
 
 static const int HASH_SEED = 5381;               // Starting point for first cycle
 static const int HASH_MULTIPLIER = 33;           // Multiplier for each cycle
@@ -128,4 +128,3 @@ int hashCode(float key) {
 int hashCode(long double key) {
     return hashCode(reinterpret_cast<const char *>(&key), sizeof(long double));
 }
-

@@ -27,13 +27,18 @@
 #include <QHeaderView>
 #include <QLineEdit>
 #include <sstream>
+#define INTERNAL_INCLUDE 1
 #include "gclipboard.h"
+#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
+#define INTERNAL_INCLUDE 1
 #include "gevent.h"
+#define INTERNAL_INCLUDE 1
 #include "gfont.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 GTable::TableStyle GTable::_defaultCellStyle = GTable::TableStyle::unset();
@@ -794,7 +799,7 @@ void GTable::updateColumnHeaders() {
                 columnHeaders << QString::fromStdString(toExcelColumnName(col));
             } else {
                 // style == GTable::COLUMN_HEADER_NUMERIC
-                columnHeaders << QString::fromStdString(integerToString(col));
+                columnHeaders << QString::fromStdString(std::to_string(col));
             }
         }
         _iqtableview->setHorizontalHeaderLabels(columnHeaders);
@@ -835,7 +840,7 @@ _Internal_QTableWidget::_Internal_QTableWidget(GTable* gtable, int rows, int col
           _gtable(gtable),
           _delegate(nullptr) {
     require::nonNull(gtable, "_Internal_QTableWidget::constructor");
-    setObjectName(QString::fromStdString("_Internal_QTableWidget_" + integerToString(gtable->getID())));
+    setObjectName(QString::fromStdString("_Internal_QTableWidget_" + std::to_string(gtable->getID())));
     _delegate = new _Internal_QItemDelegate();
     setItemDelegate(_delegate);
     horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -986,5 +991,7 @@ QSize _Internal_QTableWidget::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gtable.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

@@ -31,17 +31,28 @@
  * - removed usage of __foreach macro
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _queue_h
 #define _queue_h
 
 #include <deque>
 #include <initializer_list>
 #include <iterator>
-#include <queue>
+
+#define INTERNAL_INCLUDE 1
 #include "collections.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
+#define INTERNAL_INCLUDE 1
 #include "vector.h"
+#undef INTERNAL_INCLUDE
 
 /*
  * Class: Queue<ValueType>
@@ -172,16 +183,6 @@ public:
      * Returns the number of values in the queue.
      */
     int size() const;
-    
-    /*
-     * Returns an STL deque object with the same elements as this Queue.
-     */
-    std::queue<ValueType> toStlDeque() const;
-    
-    /*
-     * Returns an STL queue object with the same elements as this Queue.
-     */
-    std::queue<ValueType> toStlQueue() const;
 
     /*
      * Method: toString
@@ -481,24 +482,6 @@ int Queue<ValueType>::size() const {
 }
 
 template <typename ValueType>
-std::queue<ValueType> Queue<ValueType>::toStlDeque() const {
-    std::deque<ValueType> result;
-    for (int i = 0; i < count; i++) {
-        result.push_back(ringBuffer[(head + i) % capacity]);
-    }
-    return result;
-}
-
-template <typename ValueType>
-std::queue<ValueType> Queue<ValueType>::toStlQueue() const {
-    std::queue<ValueType> result;
-    for (int i = 0; i < count; i++) {
-        result.push(ringBuffer[(head + i) % capacity]);
-    }
-    return result;
-}
-
-template <typename ValueType>
 std::string Queue<ValueType>::toString() const {
     std::ostringstream os;
     os << *this;
@@ -616,7 +599,5 @@ int hashCode(const Queue<T>& q) {
     }
     return int(code & hashMask());
 }
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _queue_h

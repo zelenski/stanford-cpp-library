@@ -183,7 +183,7 @@ std::string trimToHeight(const std::string& s, int height, const std::string& su
         lines.remove(lines.size() - 1);
     }
     if (wasTooTall && !suffix.empty()) {
-        lines.add(suffix + " (" + integerToString(lineCount - height) + " line(s) truncated)");
+        lines.add(suffix + " (" + std::to_string(lineCount - height) + " line(s) truncated)");
     }
     return implode(lines);
 }

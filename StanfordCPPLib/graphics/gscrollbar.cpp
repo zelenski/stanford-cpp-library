@@ -11,9 +11,10 @@
 
 #define INTERNAL_INCLUDE 1
 #include "gscrollbar.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 GScrollBar::GScrollBar(GScrollBar::Orientation orientation,
@@ -86,7 +87,7 @@ void GScrollBar::setExtent(int extent) {
 
 void GScrollBar::setMax(int max) {
     int min = getMin();
-    require::require(min <= max, "GScrollBar::setMax", "max (" + integerToString(max) + ") cannot be less than min (" + integerToString(min) + ")");
+    require::require(min <= max, "GScrollBar::setMax", "max (" + std::to_string(max) + ") cannot be less than min (" + std::to_string(min) + ")");
     GThread::runOnQtGuiThread([this, max]() {
         _iqscrollbar->setMaximum(max);
     });
@@ -95,7 +96,7 @@ void GScrollBar::setMax(int max) {
 
 void GScrollBar::setMin(int min) {
     int max = getMax();
-    require::require(min <= max, "GScrollBar::setMin", "min (" + integerToString(min) + ") cannot be greater than max (" + integerToString(max) + ")");
+    require::require(min <= max, "GScrollBar::setMin", "min (" + std::to_string(min) + ") cannot be greater than max (" + std::to_string(max) + ")");
     GThread::runOnQtGuiThread([this, min]() {
         _iqscrollbar->setMinimum(min);
     });
@@ -103,7 +104,7 @@ void GScrollBar::setMin(int min) {
 }
 
 void GScrollBar::setState(int value, int extent, int min, int max) {
-    require::require(min <= max, "GScrollBar::setState", "min (" + integerToString(min) + ") cannot be greater than max (" + integerToString(max) + ")");
+    require::require(min <= max, "GScrollBar::setState", "min (" + std::to_string(min) + ") cannot be greater than max (" + std::to_string(max) + ")");
     require::inRange(value, min, max, "GScrollBar::setState", "value");
     GThread::runOnQtGuiThread([this, value, extent, min, max]() {
         _iqscrollbar->setRange(min, max);
@@ -137,7 +138,7 @@ _Internal_QScrollBar::_Internal_QScrollBar(GScrollBar* gscrollbar, Qt::Orientati
         : QScrollBar(orientation, parent),
           _gscrollbar(gscrollbar) {
     require::nonNull(gscrollbar, "_Internal_QScrollBar::constructor");
-    setObjectName(QString::fromStdString("_Internal_QScrollBar_" + integerToString(gscrollbar->getID())));
+    setObjectName(QString::fromStdString("_Internal_QScrollBar_" + std::to_string(gscrollbar->getID())));
     connect(this, SIGNAL(valueChanged(int)), this, SLOT(handleValueChange(int)));
 }
 
@@ -160,5 +161,7 @@ QSize _Internal_QScrollBar::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gscrollbar.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

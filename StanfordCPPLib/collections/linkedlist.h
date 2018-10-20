@@ -34,6 +34,12 @@
  * @since 2014/07/10
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _linkedlist_h
 #define _linkedlist_h
 
@@ -41,15 +47,23 @@
 #include <initializer_list>
 #include <iostream>
 #include <iterator>
+#include <list>
 #include <sstream>
 #include <string>
-#include <list>
-#include <vector>
+
+#define INTERNAL_INCLUDE 1
 #include "collections.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
+#define INTERNAL_INCLUDE 1
 #include "random.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
+#include "vector.h"
+#undef INTERNAL_INCLUDE
 
 /*
  * Class: LinkedList<ValueType>
@@ -351,11 +365,6 @@ public:
      */
     LinkedList<ValueType> subList(int start, int length) const;
     
-    /*
-     * Returns an STL list object with the same elements as this LinkedList.
-     */
-    std::list<ValueType> toStlList() const;
-
     /*
      * Method: toString
      * Usage: string str = list.toString();
@@ -894,9 +903,9 @@ template <typename ValueType>
 void LinkedList<ValueType>::shuffle() {
     // actually shuffle a vector to avoid O(N^2) runtime
     // at the cost of O(N) extra memory usage
-    std::vector<ValueType> vec;
+    Vector<ValueType> vec;
     for (ValueType element : *this) {
-        vec.push_back(element);
+        vec.add(element);
     }
     for (int i = 0, length = vec.size(); i < length; i++) {
         int j = randomInteger(i, length - 1);
@@ -921,9 +930,9 @@ template <typename ValueType>
 void LinkedList<ValueType>::sort() {
     // actually sort a vector to avoid O(N^2) runtime
     // at the cost of O(N) extra memory usage
-    std::vector<ValueType> vec;
+    Vector<ValueType> vec;
     for (ValueType element : *this) {
-        vec.push_back(element);
+        vec.add(element);
     }
     std::sort(vec.begin(), vec.end());
 
@@ -950,11 +959,6 @@ LinkedList<ValueType> LinkedList<ValueType>::subList(int start, int length) cons
         ++itr;
     }
     return result;
-}
-
-template <typename ValueType>
-std::list<ValueType> LinkedList<ValueType>::toStlList() const {
-    return m_elements;
 }
 
 template <typename ValueType>
@@ -1160,7 +1164,5 @@ template <typename T>
 void shuffle(LinkedList<T>& list) {
     list.shuffle();
 }
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _linkedlist_h

@@ -16,12 +16,19 @@
 #define INTERNAL_INCLUDE 1
 #include "consoletext.h"
 #include <cstdio>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "gconsolewindow.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
+#define INTERNAL_INCLUDE 1
 #include "private/version.h"
 #undef INTERNAL_INCLUDE
 
@@ -185,7 +192,7 @@ void shutdownConsole() {
  */
 void setConsolePropertiesQt() {
 #if defined(SPL_CONSOLE_FONTSIZE)
-    std::string fontStr = std::string("Monospaced-Bold-") + integerToString(SPL_CONSOLE_FONTSIZE);
+    std::string fontStr = std::string("Monospaced-Bold-") + to_string(SPL_CONSOLE_FONTSIZE);
     setConsoleFont(fontStr);
 #endif
 

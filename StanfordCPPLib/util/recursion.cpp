@@ -6,7 +6,9 @@
 
 #define INTERNAL_INCLUDE 1
 #include "recursion.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
 #include "call_stack.h"
 #undef INTERNAL_INCLUDE
 

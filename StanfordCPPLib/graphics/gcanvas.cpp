@@ -14,12 +14,19 @@
 
 #define INTERNAL_INCLUDE 1
 #include "gcanvas.h"
+#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -921,7 +928,7 @@ _Internal_QCanvas::_Internal_QCanvas(GCanvas* gcanvas, QWidget* parent)
         : QWidget(parent),
           _gcanvas(gcanvas) {
     require::nonNull(gcanvas, "_Internal_QCanvas::constructor");
-    setObjectName(QString::fromStdString("_Internal_QCanvas_" + integerToString(gcanvas->getID())));
+    setObjectName(QString::fromStdString("_Internal_QCanvas_" + std::to_string(gcanvas->getID())));
 
     // set default white background color
 //    QPalette pal = palette();
@@ -1049,5 +1056,7 @@ void _Internal_QCanvas::wheelEvent(QWheelEvent* event) {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gcanvas.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

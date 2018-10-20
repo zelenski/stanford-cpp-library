@@ -13,12 +13,16 @@
 #include "gtextarea.h"
 #include <QScrollBar>
 #include <QTextCursor>
+#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
+#define INTERNAL_INCLUDE 1
 #include "gfont.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 GTextArea::GTextArea(int rows, int columns, QWidget* parent)
@@ -364,7 +368,7 @@ _Internal_QTextEdit::_Internal_QTextEdit(GTextArea* gtextArea, QWidget* parent)
         : QTextEdit(parent),
           _gtextarea(gtextArea) {
     require::nonNull(gtextArea, "_Internal_QTextEdit::constructor");
-    setObjectName(QString::fromStdString("_Internal_QTextEdit_" + integerToString(gtextArea->getID())));
+    setObjectName(QString::fromStdString("_Internal_QTextEdit_" + std::to_string(gtextArea->getID())));
     ensureCursorVisible();
     setTabChangesFocus(false);
     document()->setUndoRedoEnabled(false);
@@ -466,5 +470,7 @@ QSize _Internal_QTextEdit::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gtextarea.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

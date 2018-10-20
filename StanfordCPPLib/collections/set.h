@@ -31,17 +31,30 @@
  * - removed use of __foreach macro
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _set_h
 #define _set_h
 
 #include <initializer_list>
 #include <iostream>
 #include <set>
+
+#define INTERNAL_INCLUDE 1
 #include "collections.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
+#define INTERNAL_INCLUDE 1
 #include "map.h"
+#define INTERNAL_INCLUDE 1
 #include "vector.h"
+#undef INTERNAL_INCLUDE
 
 /*
  * Class: Set<ValueType>
@@ -972,7 +985,5 @@ template <typename T>
 const T& randomElement(const Set<T>& set) {
     return stanfordcpplib::collections::randomElement(set);
 }
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _set_h

@@ -67,6 +67,12 @@
  * - added Edge 'weight' alias for 'cost, and 'end' alias for 'finish'
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _basicgraph_h
 #define _basicgraph_h
 
@@ -74,14 +80,24 @@
 #include <sstream>
 #include <string>
 #include <utility>
+
+#define INTERNAL_INCLUDE 1
 #include "gmath.h"
+#define INTERNAL_INCLUDE 1
 #include "graph.h"
+#define INTERNAL_INCLUDE 1
 #include "grid.h"
+#define INTERNAL_INCLUDE 1
 #include "hashset.h"
+#define INTERNAL_INCLUDE 1
 #include "linkedlist.h"
+#define INTERNAL_INCLUDE 1
 #include "observable.h"
+#define INTERNAL_INCLUDE 1
 #include "set.h"
+#define INTERNAL_INCLUDE 1
 #include "vector.h"
+#undef INTERNAL_INCLUDE
 
 /**
  * Forward declarations of Vertex/Edge structures so that they can refer
@@ -1535,7 +1551,5 @@ std::ostream& operator <<(std::ostream& out, const Vector<VertexGen<V, E>*>& vec
     out << "}";
     return out;
 }
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _basicgraph_h

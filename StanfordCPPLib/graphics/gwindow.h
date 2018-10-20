@@ -3,6 +3,8 @@
  * ---------------
  *
  * @author Marty Stepp
+ * @version 2018/10/20
+ * - added high-density screen features
  * @version 2018/09/09
  * - added doc comments for new documentation generation
  * @version 2018/09/05
@@ -15,13 +17,16 @@
  * - initial version
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+// signal that GUI system is in use (so it will be initialized)
+#define SPL_QT_GUI_IN_USE 1
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _gwindow_h
 #define _gwindow_h
-
-// signal that GUI system is in use (so it will be initialized)
-#ifndef INTERNAL_INCLUDE
-#define SPL_QT_GUI_IN_USE 1
-#endif // INTERNAL_INCLUDE
 
 #include <string>
 #include <QWindow>
@@ -30,16 +35,28 @@
 #include <QLayout>
 #include <QMainWindow>
 #include <QRect>
+
+#define INTERNAL_INCLUDE 1
 #include "gcanvas.h"
+#define INTERNAL_INCLUDE 1
 #include "gcontainer.h"
+#define INTERNAL_INCLUDE 1
 #include "gdrawingsurface.h"
+#define INTERNAL_INCLUDE 1
 #include "geventqueue.h"
+#define INTERNAL_INCLUDE 1
 #include "ginteractor.h"
+#define INTERNAL_INCLUDE 1
 #include "grid.h"
+#define INTERNAL_INCLUDE 1
 #include "gtypes.h"
+#define INTERNAL_INCLUDE 1
 #include "map.h"
+#define INTERNAL_INCLUDE 1
 #include "point.h"
+#define INTERNAL_INCLUDE 1
 #include "set.h"
+#undef INTERNAL_INCLUDE
 
 class _Internal_QMainWindow;
 
@@ -126,6 +143,18 @@ public:
      * its height is not explicitly specified.
      */
     static const int DEFAULT_HEIGHT;
+
+    /**
+     * The minimum number of dots per inch before a screen is considered
+     * to be high-density or high-DPI.
+     */
+    static const int HIGH_DPI_SCREEN_THRESHOLD;
+
+    /**
+     * The minimum number of dots per inch on a "normal" low-DPI screen.
+     * Used to figure out how much to scale up on high-DPI screens.
+     */
+    static const int STANDARD_SCREEN_DPI;
 
     /**
      * The default file name used to load a GWindow's initial
@@ -418,6 +447,13 @@ public:
     virtual int getGObjectCount() const;
 
     /**
+     * Returns a pointer to the most recently created Qt window object.
+     * Not to be called by students.
+     * @private
+     */
+    static QMainWindow* getLastWindow();
+
+    /**
      * Returns the x/y location of the top-left corner of the window on screen.
      */
     virtual GPoint getLocation() const;
@@ -465,6 +501,18 @@ public:
      * Returns the width of the given region of the window in pixels.
      */
     virtual double getRegionWidth(const std::string& region) const;
+
+    /**
+     * Returns the dots-per-inch of the screen.
+     * This is used when accounting for high-density screens.
+     */
+    static int getScreenDpi();
+
+    /**
+     * Returns the ratio of this screen's DPI compared to a normal low-DPI screen.
+     * This can be used to scale up graphics on high-density screens.
+     */
+    static double getScreenDpiScaleRatio();
 
     /**
      * Returns the height of the entire screen in pixels.
@@ -539,6 +587,19 @@ public:
      * canvas area of the window.
      */
     virtual bool inCanvasBounds(double x, double y) const;
+
+    /**
+     * Returns whether the dots-per-inch of the screen are high enough to
+     * consider it a "high-density" screen for which scaling should be used.
+     * The threshold for this is given by the constant
+     */
+    static bool isHighDensityScreen();
+
+    /**
+     * Returns whether we should scale some windows when run on high-density
+     * screens.
+     */
+    static bool isHighDpiScalingEnabled();
 
     /**
      * Returns true if the window is in a maximized state, occupying the entire
@@ -788,8 +849,18 @@ public:
      */
     virtual void setHeight(double width);
 
+    /**
+     * Sets a key listener on this window so that it will be called
+     * when the user presses any key.
+     * Any existing key listener will be replaced.
+     */
     virtual void setKeyListener(GEventListener func);
 
+    /**
+     * Sets a key listener on this window so that it will be called
+     * when the user presses any key.
+     * Any existing key listener will be replaced.
+     */
     virtual void setKeyListener(GEventListenerVoid func);
 
     /**
@@ -1015,13 +1086,6 @@ public:
     virtual void toFront();
 
     /**
-     * Returns a pointer to the most recently created Qt window object.
-     * Not to be called by students.
-     * @private
-     */
-    static QMainWindow* getLastWindow();
-
-    /**
      * An internal function that disables the exitGraphics function so that
      * students cannot exit their programs during autograding.
      * This function is effectively private and should not be called by students.
@@ -1153,10 +1217,4 @@ private:
     friend class GWindow;
 };
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
 #endif // _gwindow_h
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE

@@ -29,16 +29,29 @@
  * - removed foreach patch
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _hashset_h
 #define _hashset_h
 
 #include <initializer_list>
 #include <iostream>
+
+#define INTERNAL_INCLUDE 1
 #include "collections.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
+#define INTERNAL_INCLUDE 1
 #include "hashmap.h"
+#define INTERNAL_INCLUDE 1
 #include "vector.h"
+#undef INTERNAL_INCLUDE
 
 /*
  * Class: HashSet<ValueType>
@@ -868,7 +881,5 @@ template <typename T>
 const T& randomElement(const HashSet<T>& set) {
     return stanfordcpplib::collections::randomElement(set);
 }
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _hashset_h

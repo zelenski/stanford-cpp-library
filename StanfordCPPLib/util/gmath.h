@@ -13,12 +13,21 @@
  * - added floatingPointEqual method for comparing floats and doubles
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _gmath_h
 #define _gmath_h
 
 #include <cmath>
 #include <limits>
+
+#define INTERNAL_INCLUDE 1
 #include "gtypes.h"
+#undef INTERNAL_INCLUDE
 
 /**
  * The mathematical constant pi, which is the ratio of the circumference
@@ -175,7 +184,5 @@ template<typename T>
 bool floatingPointEqual(long int f1, T f2) {
     return floatingPointEqual((T) f1, f2);
 }
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _gmath_h

@@ -47,10 +47,15 @@
 #include <iostream>
 #include <sstream>
 #include <stdlib.h>
+#define INTERNAL_INCLUDE 1
 #include "call_stack.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #undef INTERNAL_INCLUDE
 
@@ -403,7 +408,7 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
     std::string addr2lineOutput;
     addr2line_all(addrsToLookup, addr2lineOutput);
 
-    std::vector<std::string> addr2lineLines = stringSplit(addr2lineOutput, "\n");
+    Vector<std::string> addr2lineLines = stringSplit(addr2lineOutput, "\n");
     int numAddrLines = (int) addr2lineLines.size();
     for (int i = 0, size = (int) stack.size(); i < size; i++) {
         std::string opt1 = (2 * i < numAddrLines ? addr2lineLines[2 * i] : std::string());

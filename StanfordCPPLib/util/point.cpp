@@ -12,9 +12,10 @@
 #define INTERNAL_INCLUDE 1
 #include "point.h"
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "gtypes.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 Point::Point() {
@@ -41,7 +42,7 @@ int Point::getY() const {
 }
 
 std::string Point::toString() const {
-    return "(" + integerToString(x) + "," + integerToString(y) + ")";
+    return "(" + std::to_string(x) + "," + std::to_string(y) + ")";
 }
 
 bool Point::operator ==(const Point& p2) const {

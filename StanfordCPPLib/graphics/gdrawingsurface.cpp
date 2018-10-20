@@ -12,10 +12,12 @@
 #define INTERNAL_INCLUDE 1
 #include "gdrawingsurface.h"
 #include <QPainter>
+#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
+#define INTERNAL_INCLUDE 1
 #include "gfont.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 GDrawingSurface::GDrawingSurface()
@@ -56,7 +58,7 @@ void GDrawingSurface::checkSize(const std::string& /* member */, double /* width
 //    if (width > GCanvas::WIDTH_HEIGHT_MAX
 //            || height > GCanvas::WIDTH_HEIGHT_MAX) {
 //        error(getType() + "::" + member + ": width/height too large (cannot exceed "
-//              + integerToString(GCanvas::WIDTH_HEIGHT_MAX));
+//              + std::to_string(GCanvas::WIDTH_HEIGHT_MAX));
 //    }
 }
 

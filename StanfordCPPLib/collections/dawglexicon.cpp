@@ -45,9 +45,13 @@
 #include <sstream>
 #include <stdint.h>
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "collections.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -294,14 +298,6 @@ std::string DawgLexicon::toString() const {
     std::ostringstream out;
     out << *this;
     return out.str();
-}
-
-std::set<std::string> DawgLexicon::toStlSet() const {
-    std::set<std::string> result;
-    for (std::string word : *this) {
-        result.insert(word);
-    }
-    return result;
 }
 
 /*

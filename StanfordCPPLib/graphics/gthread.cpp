@@ -18,11 +18,17 @@
 
 #define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "consoletext.h"
+#define INTERNAL_INCLUDE 1
 #include "gconsolewindow.h"
+#define INTERNAL_INCLUDE 1
 #include "gevent.h"
+#define INTERNAL_INCLUDE 1
 #include "geventqueue.h"
+#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
 #undef INTERNAL_INCLUDE
 

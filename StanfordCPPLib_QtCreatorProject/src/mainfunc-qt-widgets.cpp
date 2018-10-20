@@ -11,12 +11,10 @@
 #include "timer.h"
 using namespace std;
 
-void testDiffImage();
 void testQwindow();
 
-int mainQtWidgets() {
-    // testQwindow();
-    testDiffImage();
+int multimain(widgets) {
+    testQwindow();
     return 0;
 }
 
@@ -265,12 +263,8 @@ void testQwindow() {
 //    }
 
     // will crash
-    // a();
+    a();
 
 //    int* x = nullptr;
 //    (*x)++;   // boom
-}
-
-void testDiffImage() {
-    GDiffImage::showDialog("bender1", "bender.png", "bender2", "bender2.png");
 }

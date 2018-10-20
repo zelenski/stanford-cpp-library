@@ -14,17 +14,23 @@
  * - initial version
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+// signal that GUI system is in use (so it will be initialized)
+#define SPL_QT_GUI_IN_USE 1
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _gfontchooser_h
 #define _gfontchooser_h
 
-// signal that GUI system is in use (so it will be initialized)
-#ifndef INTERNAL_INCLUDE
-#define SPL_QT_GUI_IN_USE 1
-#endif // INTERNAL_INCLUDE
-
 #include <string>
 #include <QWidget>
+
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#undef INTERNAL_INCLUDE
 
 /**
  * The GFontChooser class contains static methods for popping up font-choosing
@@ -64,10 +70,4 @@ private:
     GFontChooser();   // prevent construction
 };
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
 #endif // _gfontchooser_h
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE

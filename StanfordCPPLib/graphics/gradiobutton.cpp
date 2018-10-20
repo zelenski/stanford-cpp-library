@@ -15,10 +15,12 @@
 
 #define INTERNAL_INCLUDE 1
 #include "gradiobutton.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 Map<std::string, QButtonGroup*> GRadioButton::_buttonGroups;
@@ -128,7 +130,7 @@ _Internal_QRadioButton::_Internal_QRadioButton(GRadioButton* gradioButton, bool 
         : QRadioButton(parent),
           _gradioButton(gradioButton) {
     require::nonNull(gradioButton, "_Internal_QRadioButton::constructor");
-    setObjectName(QString::fromStdString("_Internal_QRadioButton_" + integerToString(gradioButton->getID())));
+    setObjectName(QString::fromStdString("_Internal_QRadioButton_" + std::to_string(gradioButton->getID())));
     setChecked(checked);
     // We handle the clicked signal rather than toggled because, in a radio button group,
     // the toggled signal will fire twice: once for the radio button clicked, and once
@@ -172,5 +174,7 @@ QSize _Internal_QRadioButton::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gradiobutton.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

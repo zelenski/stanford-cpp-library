@@ -9,16 +9,22 @@
  * - initial version
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+// signal that GUI system is in use (so it will be initialized)
+#define SPL_QT_GUI_IN_USE 1
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _gspacer_h
 #define _gspacer_h
 
-// signal that GUI system is in use (so it will be initialized)
-#ifndef INTERNAL_INCLUDE
-#define SPL_QT_GUI_IN_USE 1
-#endif // INTERNAL_INCLUDE
-
 #include <QWidget>
+
+#define INTERNAL_INCLUDE 1
 #include "ginteractor.h"
+#undef INTERNAL_INCLUDE
 
 class _Internal_QSpacer;
 
@@ -67,11 +73,4 @@ public:
     // GSpacer* _gspacer;
 };
 
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
 #endif // _gspacer_h
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE

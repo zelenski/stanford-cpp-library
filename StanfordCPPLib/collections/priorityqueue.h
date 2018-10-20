@@ -42,17 +42,30 @@
  * - added changePriority member to raise a given value's priority
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _priorityqueue_h
 #define _priorityqueue_h
 
 #include <cmath>
 #include <initializer_list>
 #include <utility>
+
+#define INTERNAL_INCLUDE 1
 #include "collections.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "gmath.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
+#define INTERNAL_INCLUDE 1
 #include "vector.h"
+#undef INTERNAL_INCLUDE
 
 /*
  * Class: PriorityQueue<ValueType>
@@ -828,7 +841,5 @@ std::istream& operator >>(std::istream& is, PriorityQueue<ValueType>& pq) {
     }
     return is;
 }
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _priorityqueue_h

@@ -11,11 +11,14 @@
 
 #define INTERNAL_INCLUDE 1
 #include "gchooser.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 GChooser::GChooser(QWidget* parent) {
@@ -182,7 +185,7 @@ _Internal_QComboBox::_Internal_QComboBox(GChooser* gchooser, QWidget* parent)
         : QComboBox(parent),
           _gchooser(gchooser) {
     require::nonNull(gchooser, "_Internal_QComboBox::constructor");
-    setObjectName(QString::fromStdString("_Internal_QComboBox_" + integerToString(gchooser->getID())));
+    setObjectName(QString::fromStdString("_Internal_QComboBox_" + std::to_string(gchooser->getID())));
     connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(handleChange()));
 }
 
@@ -205,5 +208,7 @@ QSize _Internal_QComboBox::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gchooser.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

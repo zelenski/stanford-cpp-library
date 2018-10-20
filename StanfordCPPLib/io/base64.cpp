@@ -17,9 +17,9 @@
 
 #define INTERNAL_INCLUDE 1
 #include "base64.h"
+#undef INTERNAL_INCLUDE
 #include <cstring>
 #include <sstream>
-#undef INTERNAL_INCLUDE
 
 /* aaaack but it's fast and const should make it shared text page. */
 static const unsigned char pr2six[256] = {
@@ -172,4 +172,5 @@ std::string decode(const std::string& s) {
     free(buf);
     return result;
 }
-}
+
+} // namespace Base64

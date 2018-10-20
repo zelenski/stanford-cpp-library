@@ -12,6 +12,12 @@
  * - replaced pragma once with ifndef/define for greater compatibility
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _call_stack_h
 #define _call_stack_h
 #include <string>

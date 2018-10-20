@@ -11,13 +11,16 @@
  * - initial version, separated out from console .cpp/h
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+// signal that GUI system is in use (so it will be initialized)
+#define SPL_QT_GUI_IN_USE 1
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _gconsolewindow_h
 #define _gconsolewindow_h
-
-// signal that GUI system is in use (so it will be initialized)
-#ifndef INTERNAL_INCLUDE
-#define SPL_QT_GUI_IN_USE 1
-#endif // INTERNAL_INCLUDE
 
 #include <iostream>
 #include <sstream>
@@ -29,15 +32,26 @@
 #include <QReadWriteLock>
 #include <QTextEdit>
 #include <QTextFrame>
+
+#define INTERNAL_INCLUDE 1
 #include "gevent.h"
+#define INTERNAL_INCLUDE 1
 #include "gtextarea.h"
+#define INTERNAL_INCLUDE 1
 #include "gtypes.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "queue.h"
+#define INTERNAL_INCLUDE 1
 #include "vector.h"
+#define INTERNAL_INCLUDE 1
 #include "private/consolestreambuf.h"
+#define INTERNAL_INCLUDE 1
 #include "private/forwardingstreambuf.h"
+#undef INTERNAL_INCLUDE
 
 /**
  * A GConsoleWindow represents the system console.
@@ -89,12 +103,6 @@ public:
     virtual void save();
     virtual void saveAs(const std::string& filename = "");
     virtual void saveConfiguration(bool prompt = true);
-    virtual void showAboutDialog();
-    virtual void showColorDialog(bool background = false);
-    virtual void showCompareOutputDialog();
-    virtual void showFontDialog();
-    virtual void showInputScriptDialog();
-    virtual void showPrintDialog();
     virtual void selectAll();
     virtual void setBackground(int color) Q_DECL_OVERRIDE;
     virtual void setBackground(const std::string& color) Q_DECL_OVERRIDE;
@@ -112,6 +120,13 @@ public:
     virtual void setLocked(bool locked);
     virtual void setOutputColor(int rgb);
     virtual void setOutputColor(const std::string& outputColor);
+    virtual void setSize(double width, double height) Q_DECL_OVERRIDE;
+    virtual void showAboutDialog();
+    virtual void showColorDialog(bool background = false);
+    virtual void showCompareOutputDialog();
+    virtual void showFontDialog();
+    virtual void showInputScriptDialog();
+    virtual void showPrintDialog();
     virtual void shutdown();
 
 private:
@@ -181,10 +196,4 @@ private:
     QMutex _coutMutex;
 };
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
 #endif // _gconsolewindow_h
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE

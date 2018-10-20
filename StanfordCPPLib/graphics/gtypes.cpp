@@ -12,11 +12,17 @@
 #include <cmath>
 #include <sstream>
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "collections.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "gmath.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
+#define INTERNAL_INCLUDE 1
 #include "point.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 

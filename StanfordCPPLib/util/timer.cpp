@@ -7,6 +7,7 @@
 #define INTERNAL_INCLUDE 1
 #include "timer.h"
 #include <sys/time.h>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
 #undef INTERNAL_INCLUDE
 

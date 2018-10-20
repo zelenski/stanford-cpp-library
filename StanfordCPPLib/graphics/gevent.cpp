@@ -13,7 +13,9 @@
 #include "gevent.h"
 #include <iostream>
 #include <sys/time.h>
+#define INTERNAL_INCLUDE 1
 #include "ginteractor.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 

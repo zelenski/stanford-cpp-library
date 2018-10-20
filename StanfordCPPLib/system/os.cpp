@@ -14,6 +14,7 @@
 #include "os.h"
 #include <QString>
 #include <QSysInfo>
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 

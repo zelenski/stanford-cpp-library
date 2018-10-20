@@ -27,6 +27,7 @@
 #include <iomanip>
 #include <queue>
 #include <sstream>
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #undef INTERNAL_INCLUDE
 

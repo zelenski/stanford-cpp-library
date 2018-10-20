@@ -18,6 +18,10 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2018/10/20
+# - flag for console scaling on high-DPI systems
+# @version 2018/10/18
+# - C++14 support added on some systems
 # @version 2018/10/06
 # - revised autograder folder structure
 # @version 2018/10/04
@@ -289,8 +293,14 @@ exists($$PWD/output/*) {
 # A few overly pedantic/confusing errors are turned off for simplicity.)
 CONFIG += no_include_pwd         # make sure we do not accidentally #include files placed in 'resources'
 CONFIG += sdk_no_version_check   # removes spurious warnings on Mac OS X
-CONFIG -= c++11                  # turn off default -std=gnu++11
-CONFIG += c++11
+
+win32 {
+    # some Windows systems have old MinGW compilers, so be safe and use C++11
+    CONFIG += c++11
+} else {
+    # Mac/Linux should support the latest C++ features
+    CONFIG += c++14
+}
 
 # uncomment this if you want to dump the preprocessor output into the .o files
 # (useful when debugging advanced preprocessor hacking)
@@ -314,6 +324,7 @@ QMAKE_CXXFLAGS += -Wunreachable-code
 exists($$PWD/lib/autograder/*.h) | exists($$PWD/lib/StanfordCPPLib/autograder/$$PROJECT_FILTER/*.h) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
     # omit some warnings/errors in autograder projects
     # (largely because the Google Test framework violates them a ton of times)
+    QMAKE_CXXFLAGS += -Wno-deprecation
     QMAKE_CXXFLAGS += -Wno-reorder
     QMAKE_CXXFLAGS += -Wno-unused-function
     QMAKE_CXXFLAGS += -Wno-useless-cast
@@ -368,7 +379,7 @@ equals(COMPILERNAME, clang++) {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20181004
+DEFINES += SPL_PROJECT_VERSION=20181018
 
 # wrapper name for 'main' function (needed so student can write 'int main'
 # but our library can grab the actual main function to initialize itself)
@@ -414,6 +425,9 @@ DEFINES += SPL_THROW_ON_INVALID_ITERATOR
 # for years this was true, but the C++ standard says you should just silently
 # set the fail bit on the stream and exit, so that has been made the default.
 # DEFINES += SPL_ERROR_ON_STREAM_EXTRACT
+
+# scale up the console window on high-DPI screens?
+DEFINES += SPL_SCALE_HIGH_DPI_SCREEN
 
 # is the .cpp portion of the library merged into a single .cpp file
 # to speed up compilation?
@@ -625,4 +639,4 @@ QMAKE_EXTRA_COMPILERS += copy_resource_files
 # END SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING              #
 ###############################################################################
 
-# END OF FILE (this should be line #628; if not, your .pro has been changed!)
+# END OF FILE (this should be line #635; if not, your .pro has been changed!)

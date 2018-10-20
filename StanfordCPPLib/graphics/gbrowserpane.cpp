@@ -15,11 +15,14 @@
 #include "gbrowserpane.h"
 #include <fstream>
 #include <iostream>
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
+#define INTERNAL_INCLUDE 1
 #include "server.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 GBrowserPane::GBrowserPane(const std::string& url, QWidget* parent) {
@@ -115,7 +118,7 @@ _Internal_QTextBrowser::_Internal_QTextBrowser(GBrowserPane* gbrowserpane, QWidg
         : QTextBrowser(parent),
           _gbrowserpane(gbrowserpane) {
     require::nonNull(gbrowserpane, "_Internal_QTextBrowser::constructor");
-    setObjectName(QString::fromStdString("_Internal_QTextBrowser_" + integerToString(gbrowserpane->getID())));
+    setObjectName(QString::fromStdString("_Internal_QTextBrowser_" + std::to_string(gbrowserpane->getID())));
 }
 
 QVariant _Internal_QTextBrowser::loadResource(int type, const QUrl &url) {
@@ -187,5 +190,7 @@ QSize _Internal_QTextBrowser::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gbrowserpane.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

@@ -12,7 +12,9 @@
 #define INTERNAL_INCLUDE 1
 #include "gmath.h"
 #include <cmath>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "gtypes.h"
 #undef INTERNAL_INCLUDE
 

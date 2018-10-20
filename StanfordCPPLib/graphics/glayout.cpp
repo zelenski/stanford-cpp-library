@@ -11,7 +11,9 @@
 
 #define INTERNAL_INCLUDE 1
 #include "glayout.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -328,4 +330,3 @@ QSize GBorderLayout::calculateSize(SizeType sizeType) const {
     }
     return totalSize;
 }
-

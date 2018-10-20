@@ -18,11 +18,17 @@
 #define INTERNAL_INCLUDE 1
 #include "diff.h"
 #include <algorithm>
+#define INTERNAL_INCLUDE 1
 #include "map.h"
+#define INTERNAL_INCLUDE 1
 #include "regexpr.h"
+#define INTERNAL_INCLUDE 1
 #include "set.h"
+#define INTERNAL_INCLUDE 1
 #include "stringutils.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "vector.h"
 #undef INTERNAL_INCLUDE
 
@@ -219,12 +225,12 @@ std::string diff(std::string s1, std::string s2, int flags) {
 
         if (op > 0) {
             bool multipleLines = (x1 != x0 + 1);
-            std::string xstr = std::string("") + (multipleLines ? (integerToString(x0 + 1) + "-" + integerToString(x1)) : integerToString(x1));
-            std::string ystr = std::string("") + ((y1 != y0 + 1) ? (integerToString(y0 + 1) + "-" + integerToString(y1)) : integerToString(y1));
+            std::string xstr = std::string("") + (multipleLines ? (std::to_string(x0 + 1) + "-" + std::to_string(x1)) : std::to_string(x1));
+            std::string ystr = std::string("") + ((y1 != y0 + 1) ? (std::to_string(y0 + 1) + "-" + std::to_string(y1)) : std::to_string(y1));
             std::string linesStr = std::string("\nLine") + (multipleLines ? "s " : " ");
             std::string doStr = std::string("do") + (multipleLines ? "" : "es");
             if (op == 1) {
-                out += linesStr + xstr + " deleted near student line " + integerToString(y1);
+                out += linesStr + xstr + " deleted near student line " + std::to_string(y1);
             } else if (op == 3) {
                 if (xstr == ystr) {
                     out += linesStr + xstr + " " + doStr + " not match";
@@ -240,7 +246,7 @@ std::string diff(std::string s1, std::string s2, int flags) {
 
             if (op == 2) {
                 if (!(flags & IGNORE_LEADING) || x1 > 0) {
-                    out += linesStr + integerToString(x1) + " added at student line " + ystr;
+                    out += linesStr + std::to_string(x1) + " added at student line " + ystr;
                 }
             } else if (op == 3) {
                 // out += "---";

@@ -19,11 +19,17 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QWidget>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "gbutton.h"
+#define INTERNAL_INCLUDE 1
 #include "gtextarea.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 

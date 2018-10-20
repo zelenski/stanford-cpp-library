@@ -33,13 +33,22 @@
  * - removed dependency on 'using namespace' statement
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _strlib_h
 #define _strlib_h
 
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <vector>
+
+#define INTERNAL_INCLUDE 1
+#include "vector.h"
+#undef INTERNAL_INCLUDE
 
 /**
  * Returns the string "true" if b is true, or "false" if b is false.
@@ -241,12 +250,12 @@ bool stringIsLong(const std::string& str, int radix = 10);
 bool stringIsReal(const std::string& str);
 
 /**
- * Combines the elements of the given STL vector into a single string,
+ * Combines the elements of the given vector into a single string,
  * with the given delimiter separating neighboring elements, and returns it.
  * For example, joining the elements of the vector
  * {"Hi", "there", "", "Jim"} with the delimiter '?' returns "Hi?there??Jim".
  */
-std::string stringJoin(const std::vector<std::string>& v, char delimiter = '\n');
+std::string stringJoin(const Vector<std::string>& v, char delimiter = '\n');
 
 /**
  * Combines the elements of the given STL vector into a single string,
@@ -254,7 +263,7 @@ std::string stringJoin(const std::vector<std::string>& v, char delimiter = '\n')
  * For example, joining the elements of the vector
  * {"Hi", "there", "", "Jim"} with the delimiter "??" returns "Hi??there????Jim".
  */
-std::string stringJoin(const std::vector<std::string>& v, const std::string& delimiter = "\n");
+std::string stringJoin(const Vector<std::string>& v, const std::string& delimiter = "\n");
 
 /**
  * Returns the index of the start of the last occurrence of the given character
@@ -305,20 +314,20 @@ int stringReplaceInPlace(std::string& str, char old, char replacement, int limit
 int stringReplaceInPlace(std::string& str, const std::string& old, const std::string& replacement, int limit = -1);
 
 /**
- * Returns an STL vector whose elements are strings formed by splitting the
+ * Returns a vector whose elements are strings formed by splitting the
  * given string 'str' by the given separator character.
  * For example, splitting "Hi there  Jim!" on " " returns
  * {"Hi", "there", "", "Jim!"}.
  */
-std::vector<std::string> stringSplit(const std::string& str, char delimiter, int limit = -1);
+Vector<std::string> stringSplit(const std::string& str, char delimiter, int limit = -1);
 
 /**
- * Returns an STL vector whose elements are strings formed by splitting the
+ * Returns a vector whose elements are strings formed by splitting the
  * given string 'str' by the given separator text.
  * For example, splitting "Hi there  Jim!" on " " returns
  * {"Hi", "there", "", "Jim!"}.
  */
-std::vector<std::string> stringSplit(const std::string& str, const std::string& delimiter, int limit = -1);
+Vector<std::string> stringSplit(const std::string& str, const std::string& delimiter, int limit = -1);
 
 /**
  * If str is "true", returns the bool value true.
@@ -474,84 +483,5 @@ void urlEncodeInPlace(std::string& str);
 /* Note: Everything below this point in the file is logically part    */
 /* of the implementation and should not be of interest to clients.    */
 /**********************************************************************/
-
-/**
- * Reads the next string from infile into the reference parameter str.
- * If the first character (other than whitespace) is either a single
- * or a double quote, this function reads characters up to the
- * matching quote, processing standard escape sequences as it goes.
- * If not, readString reads characters up to any of the characters
- * in the string STRING_DELIMITERS in the implementation file.
- *
- * @private
- */
-bool readQuotedString(std::istream& is, std::string& str, bool throwOnError = true);
-
-/**
- * Writes the string str to outfile surrounded by double quotes, converting
- * special characters to escape sequences, as necessary.  If the optional
- * parameter forceQuotes is explicitly set to false, quotes are included
- * in the output only if necessary.
- *
- * @private
- */
-std::ostream& writeQuotedString(std::ostream& os, const std::string& str,
-                                bool forceQuotes = true);
-
-/**
- * Checks whether the string needs quoting in order to be read correctly.
- * @private
- */
-bool stringNeedsQuoting(const std::string& str);
-
-/**
- * Writes a generic value to the output stream.  If that value is a string,
- * this function uses writeQuotedString to write the value.
- * @private
- */
-template <typename ValueType>
-std::ostream& writeGenericValue(std::ostream& os, const ValueType& value, bool) {
-    os << std::boolalpha << value;
-    return os;
-}
-
-template <>
-inline std::ostream& writeGenericValue(std::ostream& os, const std::string& value,
-                              bool forceQuotes) {
-    return writeQuotedString(os, value, forceQuotes);
-}
-
-template <typename ValueType>
-inline std::string genericValueToString(const ValueType& value,
-                                        bool forceQuotes = false) {
-    std::ostringstream os;
-    writeGenericValue(os, value, forceQuotes);
-    return os.str();
-}
-
-template <>
-inline std::string genericValueToString(const std::string& value,
-                                        bool forceQuotes) {
-    std::ostringstream os;
-    writeQuotedString(os, value, forceQuotes);
-    return os.str();
-}
-
-/**
- * Reads a generic value from the input stream.  If that value is a string,
- * this function uses readQuotedString to read the value.
- * @private
- */
-template <typename ValueType>
-bool readGenericValue(std::istream& is, ValueType& value) {
-    return (bool) (is >> value);
-}
-
-template <>
-inline bool readGenericValue(std::istream& is, std::string& value) {
-    return readQuotedString(is, value, /* throwOnError */ false);
-}
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _strlib_h

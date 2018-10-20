@@ -18,12 +18,16 @@
 #define INTERNAL_INCLUDE 1
 #include "glabel.h"
 #include <iostream>
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "glayout.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 GLabel::GLabel(const std::string& text, const std::string& iconFileName, QWidget* parent)
@@ -287,7 +291,7 @@ _Internal_QLabel::_Internal_QLabel(GLabel* glabel, QWidget* parent)
         : QLabel(parent),
           _glabel(glabel) {
     require::nonNull(glabel, "_Internal_QLabel::constructor");
-    setObjectName(QString::fromStdString("_Internal_QLabel_" + integerToString(glabel->getID())));
+    setObjectName(QString::fromStdString("_Internal_QLabel_" + std::to_string(glabel->getID())));
 }
 
 void _Internal_QLabel::mouseDoubleClickEvent(QMouseEvent* event) {
@@ -341,5 +345,7 @@ QSize _Internal_QLabel::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_glabel.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

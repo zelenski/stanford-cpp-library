@@ -12,9 +12,13 @@
 
 #define INTERNAL_INCLUDE 1
 #include "gtimer.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
 #undef INTERNAL_INCLUDE
 

@@ -10,9 +10,14 @@
  * @since 2014/08/03
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _base64_h
 #define _base64_h
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,8 +47,5 @@ std::string encode(const std::string& s);
 std::string decode(const std::string& s);
 }
 #endif // __cplusplus
-
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _base64_h

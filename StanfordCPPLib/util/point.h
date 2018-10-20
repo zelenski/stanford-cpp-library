@@ -8,6 +8,12 @@
  * - added doc comments for new documentation generation
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _point_h
 #define _point_h
 
@@ -90,7 +96,5 @@ std::ostream& operator <<(std::ostream& os, const Point& pt);
  * Hash code function for Point objects.
  */
 int hashCode(const Point& pt);
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _point_h

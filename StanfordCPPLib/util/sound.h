@@ -9,6 +9,12 @@
  * - added doc comments for new documentation generation
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _sound_h
 #define _sound_h
 
@@ -46,7 +52,5 @@ public:
      */
     void play();
 };
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _sound_h

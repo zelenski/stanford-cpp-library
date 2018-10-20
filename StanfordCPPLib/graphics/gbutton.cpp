@@ -14,9 +14,13 @@
 #define INTERNAL_INCLUDE 1
 #include "gbutton.h"
 #include <QKeySequence>
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
 #undef INTERNAL_INCLUDE
 
@@ -157,7 +161,7 @@ _Internal_QPushButton::_Internal_QPushButton(GButton* button, QWidget* parent)
         : QToolButton(parent),
           _gbutton(button) {
     require::nonNull(button, "_Internal_QPushButton::constructor");
-    setObjectName(QString::fromStdString("_Internal_QPushButton_" + integerToString(button->getID())));
+    setObjectName(QString::fromStdString("_Internal_QPushButton_" + std::to_string(button->getID())));
     setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     connect(this, SIGNAL(clicked()), this, SLOT(handleClick()));
 }
@@ -199,5 +203,7 @@ QSize _Internal_QPushButton::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gbutton.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

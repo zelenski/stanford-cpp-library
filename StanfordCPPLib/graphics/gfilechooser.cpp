@@ -16,8 +16,11 @@
 #define INTERNAL_INCLUDE 1
 #include "gfilechooser.h"
 #include <QFileDialog>
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "vector.h"
 #undef INTERNAL_INCLUDE
 
@@ -75,5 +78,5 @@ std::string GFileChooser::normalizeFileFilter(const std::string& fileFilter) {
         // TODO: more processing
         tokens[i] = token;
     }
-    return stringJoin(tokens.toStlVector(), ";;");
+    return stringJoin(tokens, ";;");
 }

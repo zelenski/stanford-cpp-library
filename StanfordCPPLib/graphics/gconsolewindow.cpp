@@ -27,22 +27,39 @@
 #include <cstdio>
 #include <QAction>
 #include <QTextDocumentFragment>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "gclipboard.h"
+#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
+#define INTERNAL_INCLUDE 1
 #include "gcolorchooser.h"
+#define INTERNAL_INCLUDE 1
 #include "gdiffgui.h"
+#define INTERNAL_INCLUDE 1
 #include "gdownloader.h"
+#define INTERNAL_INCLUDE 1
 #include "gfilechooser.h"
+#define INTERNAL_INCLUDE 1
 #include "gfont.h"
+#define INTERNAL_INCLUDE 1
 #include "gfontchooser.h"
+#define INTERNAL_INCLUDE 1
 #include "goptionpane.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "os.h"
+#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
+#define INTERNAL_INCLUDE 1
 #include "private/version.h"
 #undef INTERNAL_INCLUDE
 
@@ -75,11 +92,11 @@ bool GConsoleWindow::_consoleEnabled = false;
     if (OS::isMac()) {
         // for some reason, using "Monospace" doesn't work for me on Mac testing
         return "Menlo-"
-                + integerToString(DEFAULT_FONT_SIZE + 1)
+                + std::to_string(DEFAULT_FONT_SIZE + 1)
                 + (DEFAULT_FONT_WEIGHT.empty() ? "" : ("-" + DEFAULT_FONT_WEIGHT));
     } else {
         return DEFAULT_FONT_FAMILY
-                + "-" + integerToString(DEFAULT_FONT_SIZE)
+                + "-" + std::to_string(DEFAULT_FONT_SIZE)
                 + (DEFAULT_FONT_WEIGHT.empty() ? "" : ("-" + DEFAULT_FONT_WEIGHT));
     }
 }
@@ -583,11 +600,11 @@ void GConsoleWindow::loadInputScript(int number) {
         for (std::string filename : listDirectory(dir)) {
             filename = dir + sep + filename;
             if (inputFile.empty()
-                    && stringContains(filename, "input-" + integerToString(number))
+                    && stringContains(filename, "input-" + std::to_string(number))
                     && endsWith(filename, ".txt")) {
                 inputFile = filename;
             } else if (expectedOutputFile.empty()
-                       && stringContains(filename, "expected-output-" + integerToString(number))
+                       && stringContains(filename, "expected-output-" + std::to_string(number))
                        && endsWith(filename, ".txt")) {
                 expectedOutputFile = filename;
             }
@@ -690,7 +707,7 @@ void GConsoleWindow::processKeyPress(GEvent event) {
         } else if (keyCode == Qt::Key_0) {
             // normalize font size
             event.ignore();
-            setFont(DEFAULT_FONT_FAMILY + "-" + integerToString(DEFAULT_FONT_SIZE));
+            setFont(DEFAULT_FONT_FAMILY + "-" + std::to_string(DEFAULT_FONT_SIZE));
         } else if (keyCode >= Qt::Key_1 && keyCode <= Qt::Key_9) {
             // load input script 1-9
             loadInputScript(keyCode - Qt::Key_0);
@@ -1262,6 +1279,17 @@ void GConsoleWindow::setOutputColor(const std::string& outputColor) {
     cursor.setCharFormat(format);
     cursor.endEditBlock();
     _textArea->moveCursorToEnd();
+}
+
+void GConsoleWindow::setSize(double width, double height) {
+    if (isHighDpiScalingEnabled() && isHighDensityScreen()) {
+        double ratio = getScreenDpiScaleRatio();
+        width = std::min(getScreenWidth(), width * ratio);
+        height = std::min(getScreenHeight(), height * ratio);;
+    }
+
+    // call super
+    GWindow::setSize(width, height);
 }
 
 void GConsoleWindow::setUserInput(const std::string& userInput) {

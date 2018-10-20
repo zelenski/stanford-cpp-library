@@ -16,11 +16,17 @@
 #include "gdiffimage.h"
 #include <iostream>
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
+#define INTERNAL_INCLUDE 1
 #include "gcolorchooser.h"
+#define INTERNAL_INCLUDE 1
 #include "gfont.h"
+#define INTERNAL_INCLUDE 1
 #include "gspacer.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
 #undef INTERNAL_INCLUDE
 
@@ -85,7 +91,7 @@ GDiffImage::GDiffImage(
         chooseHighlightColor();
     });
 
-    _diffPixelsLabel = new GLabel("(" + integerToString(diffPixelsCount) + " pixels differ)");
+    _diffPixelsLabel = new GLabel("(" + std::to_string(diffPixelsCount) + " pixels differ)");
     GFont::boldFont(_diffPixelsLabel);
 
     _imageLabel1 = new GLabel(name1);
@@ -130,8 +136,8 @@ GDiffImage::GDiffImage(
         int x = static_cast<int>(event.getX());
         int y = static_cast<int>(event.getY());
         _southPixelLabel->setText(
-                "(x=" + integerToString(x)
-                + ", y=" + integerToString(y)
+                "(x=" + std::to_string(x)
+                + ", y=" + std::to_string(y)
                 + ") expected: " + getPixelString(_image1, x, y)
                 + " actual: " + getPixelString(_image2, x, y));
     });

@@ -49,10 +49,15 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#define INTERNAL_INCLUDE 1
 #include "call_stack.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #ifdef _WIN32
 #include <windows.h>
@@ -231,6 +236,7 @@ void setTopLevelExceptionHandlerEnabled(bool enabled, bool force) {
         signalHandlerEnable();
     } else if ((STATIC_VARIABLE(topLevelExceptionHandlerEnabled) || force) && !enabled) {
         std::set_terminate(old_terminate);
+        std::set_unexpected(old_unexpected);
     }
     STATIC_VARIABLE(topLevelExceptionHandlerEnabled) = enabled;
 }
@@ -244,11 +250,13 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
     static const std::vector<std::string> FORBIDDEN_NAMES {
         "",
         "??",
+        "call_stack",
         "_clone",
         "clone",
         "error",
         "error(const string&)",
         "error(string)",
+        "ErrorException",
         "__libc_start_main",
         "_start",
         "startupMain(int, char**)",
@@ -269,14 +277,19 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "_sigtramp",
         "autograderMain",
         "BaseThreadInitThunk",
+        "call_stack_gcc.cpp",
+        "call_stack_windows.cpp",
         "crtexe.c",
         "ErrorException::ErrorException",
+        "exceptions.cpp",
         "function::operator",
         "GetModuleFileName",
         "GetProfileString",
+        // "GStudentThread::run",
         "InitializeExceptionChain",
         "KnownExceptionFilter",
         "M_invoke",
+        "multimain.cpp",
         // "operator",
         "printStackTrace",
         // "QAbstractItemModel::",
@@ -343,7 +356,10 @@ void printStackTrace(std::ostream& out) {
     int lineStrLength = 0;
     for (size_t i = 0; i < entries.size(); ++i) {
         entries[i].function = cleanupFunctionNameForStackTrace(entries[i].function);
-        if (!STATIC_VARIABLE(STACK_TRACE_SHOULD_FILTER) || !shouldFilterOutFromStackTrace(entries[i].function)) {
+        if (!STATIC_VARIABLE(STACK_TRACE_SHOULD_FILTER)
+                || (!shouldFilterOutFromStackTrace(entries[i].function)
+                    && !shouldFilterOutFromStackTrace(entries[i].file)
+                    && !shouldFilterOutFromStackTrace(entries[i].lineStr))) {
             lineStrLength = std::max(lineStrLength, (int) entries[i].lineStr.length());
             funcNameLength = std::max(funcNameLength, (int) entries[i].function.length());
             entriesToShowCount++;
@@ -372,7 +388,10 @@ void printStackTrace(std::ostream& out) {
         entry.file = getTail(entry.file);
         
         // skip certain entries for clarity
-        if (STATIC_VARIABLE(STACK_TRACE_SHOULD_FILTER) && shouldFilterOutFromStackTrace(entry.function)) {
+        if (STATIC_VARIABLE(STACK_TRACE_SHOULD_FILTER)
+                && (shouldFilterOutFromStackTrace(entry.function)
+                    || shouldFilterOutFromStackTrace(entry.file)
+                    || shouldFilterOutFromStackTrace(entry.lineStr))) {
             continue;
         }
         
@@ -411,7 +430,7 @@ void printStackTrace(std::ostream& out) {
             }
         }
         if (entry.lineStr.empty() && entry.line > 0) {
-            lineStr = "line " + integerToString(entry.line);
+            lineStr = "line " + std::to_string(entry.line);
         }
         
         out << "*** " << std::left << std::setw(lineStrLength) << lineStr
@@ -420,7 +439,9 @@ void printStackTrace(std::ostream& out) {
         // don't show entries beneath the student's main() function, for simplicity
         if (entry.function == "main"
                 || entry.function == "main()"
-                || entry.function == "main(int, char**)") {
+                || entry.function == "main(int, char**)"
+                || entry.function == "qMain"
+                || entry.function == "qMain()") {
             break;
         }
     }
@@ -643,15 +664,15 @@ static void stanfordCppLibTerminateHandler() {
     } catch (char const* str) {
         FILL_IN_EXCEPTION_TRACE(str, "A string exception", insertStarsBeforeEachLine(str));
     } catch (int n) {
-        FILL_IN_EXCEPTION_TRACE(n, "An int exception", integerToString(n));
+        FILL_IN_EXCEPTION_TRACE(n, "An int exception", std::to_string(n));
     } catch (long l) {
-        FILL_IN_EXCEPTION_TRACE(l, "A long exception", longToString(l));
+        FILL_IN_EXCEPTION_TRACE(l, "A long exception", std::to_string(l));
     } catch (char c) {
         FILL_IN_EXCEPTION_TRACE(c, "A char exception", charToString(c));
     } catch (bool b) {
         FILL_IN_EXCEPTION_TRACE(b, "A bool exception", boolToString(b));
     } catch (double d) {
-        FILL_IN_EXCEPTION_TRACE(d, "A double exception", realToString(d));
+        FILL_IN_EXCEPTION_TRACE(d, "A double exception", std::to_string(d));
     } catch (...) {
         std::string ex = "Unknown";
         FILL_IN_EXCEPTION_TRACE(ex, "An exception", std::string());
@@ -690,7 +711,7 @@ static void stanfordCppLibUnexpectedHandler() {
         message = str;
     } catch (double d) {
         kind = "double";
-        message = doubleToString(d);
+        message = std::to_string(d);
     } catch (const ErrorException& ex) {
         kind = "error";
         message = ex.what();
@@ -699,10 +720,10 @@ static void stanfordCppLibUnexpectedHandler() {
         message = ex.what();
     } catch (int n) {
         kind = "int";
-        message = integerToString(n);
+        message = std::to_string(n);
     } catch (long l) {
         kind = "long";
-        message = longToString(l);
+        message = std::to_string(l);
     } catch (std::string str) {
         kind = "string";
         message = str;

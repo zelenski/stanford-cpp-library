@@ -15,10 +15,12 @@
 
 #define INTERNAL_INCLUDE 1
 #include "gcheckbox.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 GCheckBox::GCheckBox(const std::string& text, bool checked, QWidget* parent) {
@@ -115,7 +117,7 @@ _Internal_QCheckBox::_Internal_QCheckBox(GCheckBox* gcheckBox, bool checked, QWi
         : QCheckBox(parent),
           _gcheckBox(gcheckBox) {
     require::nonNull(gcheckBox, "_Internal_QCheckBox::constructor");
-    setObjectName(QString::fromStdString("_Internal_QCheckBox_" + integerToString(gcheckBox->getID())));
+    setObjectName(QString::fromStdString("_Internal_QCheckBox_" + std::to_string(gcheckBox->getID())));
     setChecked(checked);
     connect(this, SIGNAL(stateChanged(int)), this, SLOT(handleStateChange(int)));
 }
@@ -156,5 +158,7 @@ QSize _Internal_QCheckBox::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gcheckbox.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

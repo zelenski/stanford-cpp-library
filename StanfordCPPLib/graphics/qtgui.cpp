@@ -14,20 +14,25 @@
 #include <QEvent>
 #include <QtGlobal>
 #include <QThread>
+#define INTERNAL_INCLUDE 1
 #include "consoletext.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
+#undef INTERNAL_INCLUDE
 
 #ifdef _WIN32
 #  include <direct.h>   // for chdir
 #else // _WIN32
 #  include <unistd.h>   // for chdir
 #endif // _WIN32
-
-#undef INTERNAL_INCLUDE
 
 // QSPLApplication members
 QSPLApplication::QSPLApplication(int& argc, char *argv[])
@@ -168,5 +173,7 @@ void QtGui::startEventLoop(bool exitAfter) {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_qtgui.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

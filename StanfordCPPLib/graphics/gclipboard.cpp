@@ -14,6 +14,7 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QString>
+#define INTERNAL_INCLUDE 1
 #include "require.h"
 #undef INTERNAL_INCLUDE
 

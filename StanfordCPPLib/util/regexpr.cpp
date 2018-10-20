@@ -19,7 +19,9 @@
 #include <iterator>
 #include <regex>
 #include <QtGlobal>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "stringutils.h"
 #undef INTERNAL_INCLUDE
 
@@ -49,9 +51,9 @@ int regexMatchCountWithLines(const std::string& s, const std::string& regexp, st
     // concatenate the vector into a string like "1, 4, 7, 7, 19"
     linesOut = "";
     if (!linesOutVec.isEmpty()) {
-        linesOut += integerToString(linesOutVec[0]);
+        linesOut += std::to_string(linesOutVec[0]);
         for (int i = 1; i < linesOutVec.size(); i++) {
-            linesOut += ", " + integerToString(linesOutVec[i]);
+            linesOut += ", " + std::to_string(linesOutVec[i]);
         }
     }
     return linesOutVec.size();

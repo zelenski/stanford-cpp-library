@@ -19,13 +19,22 @@
  * - initial version
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _gridlocation_h
 #define _gridlocation_h
 
 #include <iostream>
 #include <iterator>
 #include <string>
+
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#undef INTERNAL_INCLUDE
 
 class GridLocationRange;   // forward declaration
 
@@ -301,7 +310,5 @@ public:
  * I/O stream operators for writing location ranges in their toString format.
  */
 std::ostream& operator <<(std::ostream& out, const GridLocationRange& range);
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _gridlocation_h

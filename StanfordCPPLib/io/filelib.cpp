@@ -32,8 +32,11 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#define INTERNAL_INCLUDE 1
 #include "simpio.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "vector.h"
 #undef INTERNAL_INCLUDE
 
@@ -203,23 +206,14 @@ bool isSymbolicLink(const std::string& filename) {
 }
 
 void listDirectory(const std::string& path, Vector<std::string>& list) {
-    std::vector<std::string> vec;
-    listDirectory(path, vec);
     list.clear();
-    for (std::string file : vec) {
-        list.add(file);
-    }
-}
-
-void listDirectory(const std::string& path, std::vector<std::string>& list) {
     return platform::filelib_listDirectory(expandPathname(path), list);
 }
 
 Vector<std::string> listDirectory(const std::string& path) {
-    std::vector<std::string> vec;
+    Vector<std::string> vec;
     listDirectory(path, vec);
-    Vector<std::string> v(vec);
-    return v;
+    return vec;
 }
 
 bool matchFilenamePattern(const std::string& filename, const std::string& pattern) {
@@ -383,16 +377,6 @@ void readEntireFile(std::istream& is, Vector<std::string>& lines) {
         getline(is, line);
         if (is.fail()) break;
         lines.add(line);
-    }
-}
-
-void readEntireFile(std::istream& is, std::vector<std::string>& lines) {
-    lines.clear();
-    while (true) {
-        std::string line;
-        getline(is, line);
-        if (is.fail()) break;
-        lines.push_back(line);
     }
 }
 

@@ -21,7 +21,9 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -346,7 +348,7 @@ std::string BigInteger::multiply(const std::string& n1, const std::string& n2) {
 
 BigInteger BigInteger::pow(long exp) const {
     if (exp < 0) {
-        error("negative exponent: " + longToString(exp));
+        error("negative exponent: " + std::to_string(exp));
     } else if (exp == 0) {
         return ONE;
     } else if (exp == 1) {
@@ -440,11 +442,11 @@ void BigInteger::setNumber(const std::string& s, int radix) {
         // and adding it to a cumulative sum BigInteger variable
         BigInteger result(ZERO);
         BigInteger power(ONE);
-        BigInteger biRadix(integerToString(radix));
+        BigInteger biRadix(std::to_string(radix));
         for (int i = (int) scopy.length() - 1; i >= 0; i--) {
             std::string ch = scopy.substr(i, 1);
             int val = stringToInteger(ch, radix);
-            result += power * BigInteger(integerToString(val));
+            result += power * BigInteger(std::to_string(val));
             power *= biRadix;
         }
         *this = result;
@@ -521,7 +523,7 @@ std::string BigInteger::toString(int radix) const {
     if (radix == 10) {
         return std::string(*this);
     } else if (radix <= 0) {
-        error("Illegal radix value: " + integerToString(radix));
+        error("Illegal radix value: " + std::to_string(radix));
     } else if (number == "0") {
         return "0";
     } else if (radix == 1) {
@@ -535,7 +537,7 @@ std::string BigInteger::toString(int radix) const {
         std::ostringstream out;
         out << std::setbase(radix);
         BigInteger copy(this->abs());
-        BigInteger biRadix(integerToString(radix));
+        BigInteger biRadix(std::to_string(radix));
         while (copy.isPositive()) {
             int lastDigit = (copy % biRadix).toInt();
             out << lastDigit;

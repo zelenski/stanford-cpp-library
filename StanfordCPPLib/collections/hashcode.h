@@ -14,6 +14,12 @@
  *   (hashSeed(), hashMultiplier(), and hashMask())
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _hashcode_h
 #define _hashcode_h
 
@@ -72,7 +78,4 @@ int hashCode(T1&& first, T2&& second, Others&&... remaining) {
     return hashCode(result);
 }
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
 #endif // _hashcode_h
-

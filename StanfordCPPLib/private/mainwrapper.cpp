@@ -21,6 +21,12 @@
  * - initial version
  */
 
+#include "private/init.h"
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef SPL_AUTOGRADER_MODE
 int qMain(int argc, char** argv);
 
@@ -56,9 +62,3 @@ int qMain(int argc, char** argv) {
     return result;
 }
 #endif // SPL_AUTOGRADER_MODE
-
-#include "private/init.h"
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE

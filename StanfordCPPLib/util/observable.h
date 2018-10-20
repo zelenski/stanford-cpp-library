@@ -20,11 +20,20 @@
  * - initial version
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _observable_h
 #define _observable_h
 
 #include <set>
+
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#undef INTERNAL_INCLUDE
 
 // forward declarations
 template <class T>
@@ -132,7 +141,5 @@ template <typename T>
 void Observable<T>::removeObserver(Observer<T>& obs) {
     removeObserver(&obs);
 }
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _observable_h

@@ -23,9 +23,10 @@
 #include <QFile>
 #include <QIODevice>
 #include <QTimer>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 GDownloader::GDownloader()
@@ -116,7 +117,7 @@ void GDownloader::downloadInternal() {
 }
 
 void GDownloader::fileDownloadError(QNetworkReply::NetworkError nerror) {
-    error("file download error: " + integerToString(nerror));
+    error("file download error: " + std::to_string(nerror));
 }
 
 std::string GDownloader::getErrorMessage() const {
@@ -255,5 +256,7 @@ void GDownloader::waitForDownload() {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gdownloader.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

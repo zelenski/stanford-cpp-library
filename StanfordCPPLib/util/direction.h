@@ -9,6 +9,12 @@
  * - added doc comments for new documentation generation
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _direction_h
 #define _direction_h
 
@@ -62,7 +68,5 @@ std::istream& operator >>(std::istream& os, Direction& dir);
  *</pre>
  */
 Direction operator ++(Direction& dir, int);
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _direction_h

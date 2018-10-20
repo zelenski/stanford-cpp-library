@@ -26,12 +26,21 @@
 #include <QVector>
 #include <sstream>
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "gmath.h"
+#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
+#define INTERNAL_INCLUDE 1
 #include "gfont.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
+#define INTERNAL_INCLUDE 1
+#include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #undef INTERNAL_INCLUDE
 
@@ -493,11 +502,11 @@ std::string GObject::toString() const {
     std::string extra = toStringExtra();
     return getType()
             + "("
-            + "x=" + doubleToString(_x)
-            + ",y=" + doubleToString(_y)
-            + ",w=" + doubleToString(_width)
-            + ",h=" + doubleToString(_height)
-            + (_lineWidth <= 1 ? "" : (",lineWidth=" + doubleToString(_lineWidth)))
+            + "x=" + std::to_string(_x)
+            + ",y=" + std::to_string(_y)
+            + ",w=" + std::to_string(_width)
+            + ",h=" + std::to_string(_height)
+            + (_lineWidth <= 1 ? "" : (",lineWidth=" + std::to_string(_lineWidth)))
             + (_color.empty() ? "" : (",color=" + _color))
             + (_fillColor.empty() ? "" : (",fillColor=" + _fillColor))
             + (_font.empty() ? "" : (",font=" + _font))
@@ -1492,7 +1501,7 @@ void GRoundRect::setCorner(double corner) {
 }
 
 std::string GRoundRect::toStringExtra() const {
-    return "corner=" + doubleToString(_corner);
+    return "corner=" + std::to_string(_corner);
 }
 
 

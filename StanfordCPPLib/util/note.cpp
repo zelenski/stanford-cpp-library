@@ -16,8 +16,11 @@
 #define INTERNAL_INCLUDE 1
 #include "note.h"
 #include <sstream>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "gmath.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
 #undef INTERNAL_INCLUDE
 

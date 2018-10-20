@@ -15,7 +15,9 @@
 #include "gcolor.h"
 #include <iomanip>
 #include <iostream>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 

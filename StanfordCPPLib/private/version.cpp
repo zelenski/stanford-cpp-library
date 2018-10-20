@@ -17,12 +17,12 @@
 
 #define INTERNAL_INCLUDE 1
 #include "private/version.h"
+#undef INTERNAL_INCLUDE
 #include <cstdio>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
-#undef INTERNAL_INCLUDE
 
 namespace version {
 #ifdef SPL_PROJECT_VERSION

@@ -20,7 +20,9 @@
 #define INTERNAL_INCLUDE 1
 #include "bitstream.h"
 #include <iostream>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -180,7 +182,7 @@ obitstream::obitstream() : std::ostream(nullptr), lastTell(0), curByte(0), pos(N
 void obitstream::writeBit(int bit) {
     if (bit != 0 && bit != 1) {
         error(std::string("obitstream::writeBit: must pass an integer argument of 0 or 1. You passed the integer ")
-              + toPrintable(bit) + " (" + integerToString(bit) + ").");
+              + toPrintable(bit) + " (" + std::to_string(bit) + ").");
     }
     if (!is_open()) {
         error("obitstream::writeBit: stream is not open");

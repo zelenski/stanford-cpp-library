@@ -16,6 +16,12 @@
  * - added operator << to print ErrorExceptions
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _error_h
 #define _error_h
 
@@ -142,10 +148,4 @@ std::ostream& operator <<(std::ostream& out, const ErrorException& ex);
  */
 /* [[noreturn]] */ void error(const std::string& msg);
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
 #endif // _error_h
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE

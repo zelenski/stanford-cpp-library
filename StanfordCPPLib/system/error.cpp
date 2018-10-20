@@ -11,7 +11,9 @@
 
 #define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #include <sstream>
 #undef INTERNAL_INCLUDE

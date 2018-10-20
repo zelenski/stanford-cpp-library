@@ -37,6 +37,7 @@
 
 #define INTERNAL_INCLUDE 1
 #include "lexicon.h"
+#undef INTERNAL_INCLUDE
 #include <cctype>
 #include <cstdlib>
 #include <cstring>
@@ -44,11 +45,18 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+
+#define INTERNAL_INCLUDE 1
 #include "collections.h"
+#define INTERNAL_INCLUDE 1
 #include "dawglexicon.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -325,14 +333,6 @@ Lexicon& Lexicon::retainAll(std::initializer_list<std::string> list) {
 
 int Lexicon::size() const {
     return m_size;
-}
-
-std::set<std::string> Lexicon::toStlSet() const {
-    std::set<std::string> result;
-    for (const std::string& word : m_allWords) {
-        result.insert(word);
-    }
-    return result;
 }
 
 std::string Lexicon::toString() const {

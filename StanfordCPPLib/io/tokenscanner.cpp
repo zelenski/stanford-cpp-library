@@ -16,8 +16,11 @@
 #include "tokenscanner.h"
 #include <cctype>
 #include <iostream>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "stack.h"
 #undef INTERNAL_INCLUDE
 

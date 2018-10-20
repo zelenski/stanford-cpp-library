@@ -23,7 +23,10 @@
 #include <iostream>
 #include <ios>
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
+#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 namespace platform {
@@ -109,7 +112,7 @@ std::string filelib_expandPathname(const std::string& filename) {
     return filenameStr;
 }
 
-void filelib_listDirectory(const std::string& path, std::vector<std::string> & list) {
+void filelib_listDirectory(const std::string& path, Vector<std::string> & list) {
     std::string pathStr = path;
     if (pathStr == "") {
         pathStr = ".";

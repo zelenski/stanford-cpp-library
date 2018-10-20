@@ -15,11 +15,17 @@
 
 #define INTERNAL_INCLUDE 1
 #include "gcontainer.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "glabel.h"
+#define INTERNAL_INCLUDE 1
 #include "glayout.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -592,7 +598,7 @@ _Internal_QContainer::_Internal_QContainer(GContainer* gcontainer, int /*rows*/,
           _eastLayout(nullptr),
           _centerLayout(nullptr),
           _middleLayout(nullptr) {
-    setObjectName(QString::fromStdString("_Internal_QContainer_" + integerToString(gcontainer->getID())));
+    setObjectName(QString::fromStdString("_Internal_QContainer_" + std::to_string(gcontainer->getID())));
     setLayoutType(GContainer::LAYOUT_GRID);
     if (layout()) {
         setMargin(GContainer::MARGIN_DEFAULT);
@@ -1026,19 +1032,19 @@ void _Internal_QContainer::setLayoutType(GContainer::Layout layoutType) {
         case GContainer::LAYOUT_BORDER: {
             // set up border regions
             _overallLayout = new QVBoxLayout;
-            _overallLayout->setObjectName(QString::fromStdString("_overallLayout_" + integerToString(_gcontainer->getID())));
+            _overallLayout->setObjectName(QString::fromStdString("_overallLayout_" + std::to_string(_gcontainer->getID())));
             _northLayout   = new QHBoxLayout;
-            _northLayout->setObjectName(QString::fromStdString("_northLayout_" + integerToString(_gcontainer->getID())));
+            _northLayout->setObjectName(QString::fromStdString("_northLayout_" + std::to_string(_gcontainer->getID())));
             _southLayout   = new QHBoxLayout;
-            _southLayout->setObjectName(QString::fromStdString("_southLayout_" + integerToString(_gcontainer->getID())));
+            _southLayout->setObjectName(QString::fromStdString("_southLayout_" + std::to_string(_gcontainer->getID())));
             _westLayout    = new QVBoxLayout;
-            _westLayout->setObjectName(QString::fromStdString("_westLayout_" + integerToString(_gcontainer->getID())));
+            _westLayout->setObjectName(QString::fromStdString("_westLayout_" + std::to_string(_gcontainer->getID())));
             _eastLayout    = new QVBoxLayout;
-            _eastLayout->setObjectName(QString::fromStdString("_eastLayout_" + integerToString(_gcontainer->getID())));
+            _eastLayout->setObjectName(QString::fromStdString("_eastLayout_" + std::to_string(_gcontainer->getID())));
             _centerLayout  = new QHBoxLayout;
-            _centerLayout->setObjectName(QString::fromStdString("_centerLayout_" + integerToString(_gcontainer->getID())));
+            _centerLayout->setObjectName(QString::fromStdString("_centerLayout_" + std::to_string(_gcontainer->getID())));
             _middleLayout  = new QHBoxLayout;
-            _middleLayout->setObjectName(QString::fromStdString("_middleLayout_" + integerToString(_gcontainer->getID())));
+            _middleLayout->setObjectName(QString::fromStdString("_middleLayout_" + std::to_string(_gcontainer->getID())));
 
             // squish margins/padding
             _overallLayout->setSpacing(0);
@@ -1356,5 +1362,7 @@ QSize _Internal_QContainer::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gcontainer.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

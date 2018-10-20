@@ -17,11 +17,4 @@
  * - initial version
  */
 
-#ifndef _initstudent_h
-#define _initstudent_h
-
-#include "private/init.h"
 #include "multimain.h"
-#include <string>
-
-#endif // _initstudent_h

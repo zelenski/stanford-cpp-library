@@ -13,7 +13,9 @@
 #include <cctype>
 #include <cmath>
 #include <sstream>
+#define INTERNAL_INCLUDE 1
 #include "gmath.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
 #undef INTERNAL_INCLUDE
 

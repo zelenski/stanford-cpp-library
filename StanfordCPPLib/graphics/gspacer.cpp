@@ -9,7 +9,9 @@
 
 #define INTERNAL_INCLUDE 1
 #include "gspacer.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
 #undef INTERNAL_INCLUDE
 
@@ -43,7 +45,7 @@ QWidget* GSpacer::getWidget() const {
 _Internal_QSpacer::_Internal_QSpacer(GSpacer* gspacer, double width, double height, QWidget* parent)
         : QWidget(parent) {
     require::nonNull(gspacer, "_Internal_QSpacer::constructor");
-    setObjectName(QString::fromStdString("_Internal_QSpacer_" + integerToString(gspacer->getID())));
+    setObjectName(QString::fromStdString("_Internal_QSpacer_" + std::to_string(gspacer->getID())));
     setFixedSize(static_cast<int>(width), static_cast<int>(height));
 }
 
@@ -56,5 +58,7 @@ QSize _Internal_QSpacer::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gspacer.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

@@ -11,13 +11,16 @@
  * @since 2018/07/17
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+// signal that GUI system is in use (so it will be initialized)
+#define SPL_QT_GUI_IN_USE 1
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _gtable_h
 #define _gtable_h
-
-// signal that GUI system is in use (so it will be initialized)
-#ifndef INTERNAL_INCLUDE
-#define SPL_QT_GUI_IN_USE 1
-#endif // INTERNAL_INCLUDE
 
 #include <string>
 #include <QAbstractItemModel>
@@ -27,11 +30,18 @@
 #include <QStyledItemDelegate>
 #include <QWidget>
 #include <QTableWidget>
+
+#define INTERNAL_INCLUDE 1
 #include "grid.h"
+#define INTERNAL_INCLUDE 1
 #include "map.h"
+#define INTERNAL_INCLUDE 1
 #include "ginteractor.h"
+#define INTERNAL_INCLUDE 1
 #include "gobjects.h"
+#define INTERNAL_INCLUDE 1
 #include "gtypes.h"
+#undef INTERNAL_INCLUDE
 
 class _Internal_QTableWidget;
 
@@ -665,10 +675,4 @@ private:
     void fireTableEvent(EventType eventType, const std::string& eventName, int row = -1, int col = -1);
 };
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
 #endif // _gtable_h
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE

@@ -17,13 +17,18 @@
 #include "ginteractor.h"
 #include <iostream>
 #include <sstream>
+#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
+#define INTERNAL_INCLUDE 1
 #include "gfont.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
-#include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 int GInteractor::_interactorCount = 0;
@@ -89,7 +94,7 @@ GContainer* GInteractor::getContainer() const {
 }
 
 std::string GInteractor::getDefaultInteractorName() const {
-    return getType() + "_" + integerToString(getID());
+    return getType() + "_" + std::to_string(getID());
 }
 
 std::string GInteractor::getFont() const {

@@ -16,7 +16,10 @@
 #include <iostream>
 #include <locale>
 #include <streambuf>
+
+#define INTERNAL_INCLUDE 1
 #include "private/consolestreambuf.h"
+#undef INTERNAL_INCLUDE
 
 namespace stanfordcpplib {
 /*

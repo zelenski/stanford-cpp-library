@@ -11,8 +11,11 @@
 
 #define INTERNAL_INCLUDE 1
 #include "gslider.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
 #undef INTERNAL_INCLUDE
 
@@ -21,7 +24,7 @@ const int GSlider::DEFAULT_MAX_VALUE = 100;
 const int GSlider::DEFAULT_INITIAL_VALUE = 50;
 
 GSlider::GSlider(int min, int max, int value, QWidget* parent) {
-    require::require(min <= max, "GSlider::constructor", "min (" + integerToString(min) + ") cannot be greater than max (" + integerToString(max) + ")");
+    require::require(min <= max, "GSlider::constructor", "min (" + std::to_string(min) + ") cannot be greater than max (" + std::to_string(max) + ")");
     require::inRange(value, min, max, "GSlider::constructor", "value");
     GThread::runOnQtGuiThread([this, min, max, value, parent]() {
         _iqslider = new _Internal_QSlider(this,
@@ -34,7 +37,7 @@ GSlider::GSlider(int min, int max, int value, QWidget* parent) {
 }
 
 GSlider::GSlider(Orientation orientation, int min, int max, int value, QWidget* parent) {
-    require::require(min <= max, "GSlider::constructor", "min (" + integerToString(min) + ") cannot be greater than max (" + integerToString(max) + ")");
+    require::require(min <= max, "GSlider::constructor", "min (" + std::to_string(min) + ") cannot be greater than max (" + std::to_string(max) + ")");
     require::inRange(value, min, max, "GSlider::constructor", "value");
     GThread::runOnQtGuiThread([this, orientation, min, max, value, parent]() {
         _iqslider = new _Internal_QSlider(this,
@@ -122,7 +125,7 @@ void GSlider::setMajorTickSpacing(int value) {
 
 void GSlider::setMax(int max) {
     int min = getMin();
-    require::require(min <= max, "GSlider::setMax", "max (" + integerToString(max) + ") cannot be less than min (" + integerToString(min) + ")");
+    require::require(min <= max, "GSlider::setMax", "max (" + std::to_string(max) + ") cannot be less than min (" + std::to_string(min) + ")");
     GThread::runOnQtGuiThread([this, max]() {
         _iqslider->setMaximum(max);
     });
@@ -130,7 +133,7 @@ void GSlider::setMax(int max) {
 
 void GSlider::setMin(int min) {
     int max = getMax();
-    require::require(min <= max, "GSlider::setMin", "min (" + integerToString(min) + ") cannot be greater than max (" + integerToString(max) + ")");
+    require::require(min <= max, "GSlider::setMin", "min (" + std::to_string(min) + ") cannot be greater than max (" + std::to_string(max) + ")");
     GThread::runOnQtGuiThread([this, min]() {
         _iqslider->setMinimum(min);
     });
@@ -153,7 +156,7 @@ void GSlider::setPaintTicks(bool value) {
 }
 
 void GSlider::setRange(int min, int max) {
-    require::require(min <= max, "GSlider::setRange", "min (" + integerToString(min) + ") cannot be greater than max (" + integerToString(max) + ")");
+    require::require(min <= max, "GSlider::setRange", "min (" + std::to_string(min) + ") cannot be greater than max (" + std::to_string(max) + ")");
     GThread::runOnQtGuiThread([this, min, max]() {
         _iqslider->setRange(min, max);
     });
@@ -164,7 +167,7 @@ void GSlider::setSnapToTicks(bool /* value */) {
 }
 
 void GSlider::setState(int min, int max, int value) {
-    require::require(min <= max, "GSlider::setState", "min (" + integerToString(min) + ") cannot be greater than max (" + integerToString(max) + ")");
+    require::require(min <= max, "GSlider::setState", "min (" + std::to_string(min) + ") cannot be greater than max (" + std::to_string(max) + ")");
     require::inRange(value, min, max, "GSlider::setState", "value");
     GThread::runOnQtGuiThread([this, min, max, value]() {
         _iqslider->setRange(min, max);
@@ -184,7 +187,7 @@ _Internal_QSlider::_Internal_QSlider(GSlider* gslider, Qt::Orientation orientati
         : QSlider(orientation, parent),
           _gslider(gslider) {
     require::nonNull(gslider, "_Internal_QSlider::constructor");
-    setObjectName(QString::fromStdString("_Internal_QSlider_" + integerToString(gslider->getID())));
+    setObjectName(QString::fromStdString("_Internal_QSlider_" + std::to_string(gslider->getID())));
     connect(this, SIGNAL(valueChanged(int)), this, SLOT(handleChange(int)));
 }
 
@@ -207,5 +210,7 @@ QSize _Internal_QSlider::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gslider.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

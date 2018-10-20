@@ -21,6 +21,12 @@
  * @since 2014/11/05
  */
 
+#include "private/init.h"   // ensure that Stanford C++ lib is initialized
+
+#ifndef INTERNAL_INCLUDE
+#include "private/initstudent.h"   // insert necessary included code by student
+#endif // INTERNAL_INCLUDE
+
 #ifndef _exceptions_h
 #define _exceptions_h
 
@@ -82,9 +88,5 @@ void setTopLevelExceptionHandlerEnabled(bool enabled, bool force = false);
  */
 bool shouldFilterOutFromStackTrace(const std::string& function);
 }
-
-// free functions
-
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _exceptions_h

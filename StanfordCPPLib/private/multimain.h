@@ -32,8 +32,11 @@ public:
 
 } // namespace stanfordcpplib
 
+#endif // _multimain_h
+
+
 // only define initstudent if needed by SPL QT GUI or graphical console
-#if defined(SPL_QT_GUI_IN_USE) || defined(SPL_GRAPHICAL_CONSOLE_IN_USE)
+//#if defined(SPL_QT_GUI_IN_USE) || defined(SPL_GRAPHICAL_CONSOLE_IN_USE)
 #ifndef QT_NEEDS_QMAIN
 #ifdef REPLACE_MAIN_FUNCTION
 
@@ -41,10 +44,14 @@ public:
 #define main qMain
 #endif // main
 
+#endif // REPLACE_MAIN_FUNCTION
+#endif // QT_NEEDS_QMAIN
+
 // replace "multimain(foo)" definition with:
 //   1) prototype of multimain_foo()
 //   2) call to MainRegisterStaticInitializer that maps "foo" to multimain_foo function
 //   3) definition of multimain_foo()
+#undef multimain
 #if defined(SPL_QT_GUI_IN_USE)
 #define multimain(name) \
     main_##name (); \
@@ -57,9 +64,4 @@ int main_##name ()
 int main_##name ()
 #endif // defined(SPL_QT_GUI_IN_USE)
 
-#endif // REPLACE_MAIN_FUNCTION
-#endif // QT_NEEDS_QMAIN
-
-#endif // defined(SPL_QT_GUI_IN_USE) || defined(SPL_GRAPHICAL_CONSOLE_IN_USE)
-
-#endif // _multimain_h
+//#endif // defined(SPL_QT_GUI_IN_USE) || defined(SPL_GRAPHICAL_CONSOLE_IN_USE)

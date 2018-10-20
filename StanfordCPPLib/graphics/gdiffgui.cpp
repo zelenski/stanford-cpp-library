@@ -18,7 +18,9 @@
 #include <iostream>
 #include <QScrollBar>
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "consoletext.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
 #undef INTERNAL_INCLUDE
 
@@ -151,9 +153,9 @@ void GDiffGui::setupLeftRightText(GTextArea* textArea, const std::string& text) 
         std::string line = lines[i];
 
         // insert a gray line number at start of each line
-        int digits = static_cast<int>(integerToString(lines.size()).length());
+        int digits = static_cast<int>(std::to_string(lines.size()).length());
         std::string lineNumberString =
-                padLeft(i == 0 ? std::string("") : integerToString(i), digits) + "  ";
+                padLeft(i == 0 ? std::string("") : std::to_string(i), digits) + "  ";
         textArea->appendFormattedText(lineNumberString, COLOR_LINE_NUMBERS);
         textArea->appendFormattedText(line + "\n", COLOR_NORMAL);
     }

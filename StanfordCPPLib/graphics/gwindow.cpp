@@ -2,6 +2,8 @@
  * File: gwindow.cpp
  * -----------------
  *
+ * @version 2018/10/20
+ * - added high-density screen features
  * @version 2018/10/11
  * - bug fix for compareToImage function
  * @version 2018/09/23
@@ -32,22 +34,34 @@
 #include <QStatusBar>
 #include <QThread>
 #include <QTimer>
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
+#define INTERNAL_INCLUDE 1
 #include "gdiffgui.h"
+#define INTERNAL_INCLUDE 1
 #include "gdiffimage.h"
+#define INTERNAL_INCLUDE 1
 #include "glabel.h"
+#define INTERNAL_INCLUDE 1
 #include "glayout.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
+#define INTERNAL_INCLUDE 1
 #include "require.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
 _Internal_QMainWindow* GWindow::_lastWindow = nullptr;
-const int GWindow::DEFAULT_WIDTH = 500;
-const int GWindow::DEFAULT_HEIGHT = 300;
-const std::string GWindow::DEFAULT_ICON_FILENAME = "splicon-large.png";
+/*static*/ const int GWindow::DEFAULT_WIDTH = 500;
+/*static*/ const int GWindow::DEFAULT_HEIGHT = 300;
+/*static*/ const int GWindow::HIGH_DPI_SCREEN_THRESHOLD = 200;
+/*static*/ const int GWindow::STANDARD_SCREEN_DPI = 96;
+/*static*/ const std::string GWindow::DEFAULT_ICON_FILENAME = "splicon-large.png";
 
 GWindow::GWindow(bool visible)
         : _iqmainwindow(nullptr),
@@ -505,11 +519,20 @@ double GWindow::getRegionWidth(const std::string& region) const {
     return _contentPane->getRegionWidth(region);
 }
 
-double GWindow::getScreenHeight() {
+/*static*/ int GWindow::getScreenDpi() {
+    return QtGui::instance()->getApplication()->desktop()->logicalDpiX();
+}
+
+/*static*/ double GWindow::getScreenDpiScaleRatio() {
+    double ratio = (double) getScreenDpi() / STANDARD_SCREEN_DPI;
+    return (ratio >= 1.0) ? ratio : 1.0;
+}
+
+/*static*/ double GWindow::getScreenHeight() {
     return getScreenSize().getHeight();
 }
 
-GDimension GWindow::getScreenSize() {
+/*static*/ GDimension GWindow::getScreenSize() {
     QRect rec;
     GThread::runOnQtGuiThread([&rec]() {
         rec = QApplication::desktop()->availableGeometry();
@@ -517,7 +540,7 @@ GDimension GWindow::getScreenSize() {
     return GDimension(rec.width(), rec.height());
 }
 
-double GWindow::getScreenWidth() {
+/*static*/ double GWindow::getScreenWidth() {
     return getScreenSize().getWidth();
 }
 
@@ -560,6 +583,18 @@ bool GWindow::inBounds(double x, double y) const {
 
 bool GWindow::inCanvasBounds(double x, double y) const {
     return 0 <= x && x < getCanvasWidth() && 0 <= y && y < getCanvasHeight();
+}
+
+/*static*/ bool GWindow::isHighDensityScreen() {
+    return getScreenDpi() >= HIGH_DPI_SCREEN_THRESHOLD;
+}
+
+/*static*/ bool GWindow::isHighDpiScalingEnabled() {
+#ifdef SPL_SCALE_HIGH_DPI_SCREEN
+    return true;
+#else
+    return false;
+#endif // SPL_SCALE_HIGH_DPI_SCREEN
 }
 
 bool GWindow::isMaximized() const {
@@ -1177,5 +1212,7 @@ void _Internal_QMainWindow::timerStop(int id) {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
+#define INTERNAL_INCLUDE 1
 #include "moc_gwindow.cpp"   // speeds up compilation of auto-generated Qt files
+#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

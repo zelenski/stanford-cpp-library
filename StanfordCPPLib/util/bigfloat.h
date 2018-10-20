@@ -1,6 +1,10 @@
 ///// BEGIN BASE.H
 //#pragma once
 
+//#ifndef INTERNAL_INCLUDE
+//#include "private/initstudent.h"   // insert necessary included code by student
+//#endif // INTERNAL_INCLUDE
+
 //#include <stddef.h>
 //#include <stdio.h>
 //#include <stdarg.h>
