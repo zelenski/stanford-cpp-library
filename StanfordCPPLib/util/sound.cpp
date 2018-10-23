@@ -12,20 +12,75 @@
 
 #define INTERNAL_INCLUDE 1
 #include "sound.h"
+#include <QUrl>
+#define INTERNAL_INCLUDE 1
+#include "filelib.h"
+#define INTERNAL_INCLUDE 1
+#include "gthread.h"
+#define INTERNAL_INCLUDE 1
+#include "require.h"
 #undef INTERNAL_INCLUDE
 
-Sound::Sound(std::string /*filename*/) {
-    // TODO
-    // stanfordcpplib::getPlatform()->sound_constructor(this, filename);
+/*static*/ QMediaPlayer* Sound::_qmediaPlayer = nullptr;
+
+/*static*/ long Sound::getDuration() {
+    initialize();
+    return _qmediaPlayer->duration();
+}
+
+/*static*/ int Sound::getVolume() {
+    initialize();
+    return _qmediaPlayer->volume();
+}
+
+/*static*/ void Sound::initialize() {
+    if (!_qmediaPlayer) {
+        GThread::runOnQtGuiThread([]() {
+            if (!_qmediaPlayer) {
+                _qmediaPlayer = new QMediaPlayer;
+            }
+        });
+    }
+}
+
+/*static*/ void Sound::pause() {
+    initialize();
+    _qmediaPlayer->pause();
+}
+
+/*static*/ void Sound::playSound(const std::string& filename) {
+    initialize();
+    std::string absPath = getAbsolutePath(filename);
+    if (!fileExists(absPath)) {
+        error("Sound::playSound: file not found: " + filename);
+    }
+
+    GThread::runOnQtGuiThreadAsync([absPath]() {
+        _qmediaPlayer->setMedia(QUrl::fromLocalFile(QString::fromStdString(absPath)));
+        _qmediaPlayer->play();
+    });
+}
+
+/*static*/ void Sound::stop() {
+    initialize();
+    _qmediaPlayer->stop();
+}
+
+/*static*/ void Sound::setVolume(int volume) {
+    initialize();
+    require::inRange(volume, 0, 100, "Sound::setVolume", "volume");
+    _qmediaPlayer->setVolume(volume);
+}
+
+Sound::Sound(std::string filename)
+        : _filename(filename) {
+    initialize();
 }
 
 Sound::~Sound() {
     // TODO
-    // stanfordcpplib::getPlatform()->sound_delete(this);
 }
 
 void Sound::play() {
-    // TODO
-    // stanfordcpplib::getPlatform()->sound_play(this);
+    playSound(_filename);
 }
-

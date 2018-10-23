@@ -1,9 +1,15 @@
 /*
+ * File: filelibunix.cpp
+ * ---------------------
+ * This file contains Unix implementations of filelib.h primitives.
+ * This code used to live in platform.cpp before the Java back-end was retired.
+ *
+ * @version 2018/10/23
+ * - added getAbsolutePath
  */
 
 #define INTERNAL_INCLUDE 1
 #include "filelib.h"
-#undef INTERNAL_INCLUDE
 
 // define all of the following only on non-Windows OS
 // (see filelibwindows.cpp for Windows versions)
@@ -31,8 +37,6 @@
 #undef INTERNAL_INCLUDE
 
 namespace platform {
-
-/* Unix implementations of filelib.h primitives */
 
 void filelib_createDirectory(const std::string& path) {
     std::string pathStr = path;
@@ -92,6 +96,13 @@ std::string filelib_expandPathname(const std::string& filename) {
 bool filelib_fileExists(const std::string& filename) {
     struct stat fileInfo;
     return stat(filename.c_str(), &fileInfo) == 0;
+}
+
+std::string filelib_getAbsolutePath(const std::string& path) {
+    char realpathOut[4096];
+    realpath(path.c_str(), realpathOut);
+    std::string absPath(realpathOut);
+    return absPath;
 }
 
 std::string filelib_getCurrentDirectory() {

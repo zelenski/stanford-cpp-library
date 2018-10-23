@@ -3,11 +3,13 @@
  */
 
 #include <iostream>
+#include "filelib.h"
 #include "gcolor.h"
 #include "gdiffimage.h"
 #include "gobjects.h"
 #include "ginteractors.h"
 #include "gtimer.h"
+#include "sound.h"
 #include "timer.h"
 using namespace std;
 
@@ -159,9 +161,15 @@ void testQwindow() {
     button->setActionListener([](GEvent event) {
         cout << "button click! event = " << event << endl;
         cout.flush();
+        Sound::playSound("moo.wav");
+        cout << "full paths:" << endl;
+        cout << ". = " << getAbsolutePath(".") << endl;
+        cout << ".. = " << getAbsolutePath("..") << endl;
+        cout << "../../website = " << getAbsolutePath("../../website") << endl;
         window->restore();
 
-        a();
+        // will crash
+        // a();
 
 //        window->setResizable(!window->isResizable());
 //        cout << "clickHandler: button was clicked!" << endl;
@@ -263,7 +271,7 @@ void testQwindow() {
 //    }
 
     // will crash
-    a();
+    // a();
 
 //    int* x = nullptr;
 //    (*x)++;   // boom

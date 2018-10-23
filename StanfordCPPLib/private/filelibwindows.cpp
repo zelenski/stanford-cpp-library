@@ -1,4 +1,11 @@
 /*
+ * File: filelibwindows.cpp
+ * ------------------------
+ * This file contains Windows implementations of filelib.h primitives.
+ * This code used to live in platform.cpp before the Java back-end was retired.
+ *
+ * @version 2018/10/23
+ * - added getAbsolutePath
  */
 
 #define INTERNAL_INCLUDE 1
@@ -31,45 +38,6 @@
 
 namespace platform {
 
-bool filelib_fileExists(const std::string& filename) {
-    return GetFileAttributesA(filename.c_str()) != INVALID_FILE_ATTRIBUTES;
-}
-
-bool filelib_isDirectory(const std::string& filename) {
-    DWORD attr = GetFileAttributesA(filename.c_str());
-    return attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_DIRECTORY);
-}
-
-// https://msdn.microsoft.com/en-us/library/windows/desktop/gg258117(v=vs.85).aspx
-bool filelib_isFile(const std::string& filename) {
-    DWORD attr = GetFileAttributesA(filename.c_str());
-    return attr != INVALID_FILE_ATTRIBUTES && !(attr & FILE_ATTRIBUTE_DIRECTORY);
-}
-
-bool filelib_isSymbolicLink(const std::string& filename) {
-    DWORD attr = GetFileAttributesA(filename.c_str());
-    return attr != INVALID_FILE_ATTRIBUTES
-            && (attr & FILE_ATTRIBUTE_REPARSE_POINT);
-}
-
-void filelib_setCurrentDirectory(const std::string& path) {
-    if (!filelib_isDirectory(path) || !SetCurrentDirectoryA(path.c_str())) {
-        error("setCurrentDirectory: Can't change to " + path);
-    }
-}
-
-std::string filelib_getCurrentDirectory() {
-    char path[MAX_PATH + 1];
-    int n = GetCurrentDirectoryA(MAX_PATH + 1, path);
-    return std::string(path, n);
-}
-
-std::string filelib_getTempDirectory() {
-    char path[MAX_PATH + 1];
-    int n = GetTempPathA(MAX_PATH + 1, path);
-    return std::string(path, n);
-}
-
 void filelib_createDirectory(const std::string& path) {
     std::string pathStr = path;
     if (endsWith(path, "\\")) {
@@ -91,14 +59,6 @@ void filelib_deleteFile(const std::string& path) {
     }
 }
 
-std::string filelib_getDirectoryPathSeparator() {
-    return "\\";
-}
-
-std::string filelib_getSearchPathSeparator() {
-    return ";";
-}
-
 std::string filelib_expandPathname(const std::string& filename) {
     if (filename.empty()) {
         return "";
@@ -110,6 +70,57 @@ std::string filelib_expandPathname(const std::string& filename) {
         }
     }
     return filenameStr;
+}
+
+bool filelib_fileExists(const std::string& filename) {
+    return GetFileAttributesA(filename.c_str()) != INVALID_FILE_ATTRIBUTES;
+}
+
+std::string filelib_getAbsolutePath(const std::string& path) {
+    char realpathOut[4096];
+    if (_fullpath(realpathOut, path.c_str(), 4095)) {
+        std::string absPath(realpathOut);
+        return absPath;
+    } else {
+        return path;
+    }
+}
+
+std::string filelib_getCurrentDirectory() {
+    char path[MAX_PATH + 1];
+    int n = GetCurrentDirectoryA(MAX_PATH + 1, path);
+    return std::string(path, n);
+}
+
+std::string filelib_getDirectoryPathSeparator() {
+    return "\\";
+}
+
+std::string filelib_getSearchPathSeparator() {
+    return ";";
+}
+
+std::string filelib_getTempDirectory() {
+    char path[MAX_PATH + 1];
+    int n = GetTempPathA(MAX_PATH + 1, path);
+    return std::string(path, n);
+}
+
+bool filelib_isDirectory(const std::string& filename) {
+    DWORD attr = GetFileAttributesA(filename.c_str());
+    return attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_DIRECTORY);
+}
+
+// https://msdn.microsoft.com/en-us/library/windows/desktop/gg258117(v=vs.85).aspx
+bool filelib_isFile(const std::string& filename) {
+    DWORD attr = GetFileAttributesA(filename.c_str());
+    return attr != INVALID_FILE_ATTRIBUTES && !(attr & FILE_ATTRIBUTE_DIRECTORY);
+}
+
+bool filelib_isSymbolicLink(const std::string& filename) {
+    DWORD attr = GetFileAttributesA(filename.c_str());
+    return attr != INVALID_FILE_ATTRIBUTES
+            && (attr & FILE_ATTRIBUTE_REPARSE_POINT);
 }
 
 void filelib_listDirectory(const std::string& path, Vector<std::string> & list) {
@@ -142,6 +153,12 @@ std::string file_openFileDialog(const std::string& /*title*/,
                                 const std::string& /*path*/) {
     // TODO
     return "";
+}
+
+void filelib_setCurrentDirectory(const std::string& path) {
+    if (!filelib_isDirectory(path) || !SetCurrentDirectoryA(path.c_str())) {
+        error("setCurrentDirectory: Can't change to " + path);
+    }
 }
 
 } // namespace platform

@@ -1,8 +1,9 @@
 /*
  * File: filelib.cpp
  * -----------------
- * This file implements the filelib.h interface.  All platform dependencies
- * are managed through the platform interface.
+ * This file implements the filelib.h interface.
+ * Platform-dependent functions are handled through filelib_* functions
+ * defined in filelibunix.cpp and filelibwindows.cpp.
  * 
  * @version 2016/11/20
  * - small bug fix in readEntireStream method (failed for non-text files)
@@ -109,6 +110,10 @@ std::string findOnPath(const std::string& path, const std::string& filename) {
     std::string result = openOnPath(stream, path, filename);
     if (result != "") stream.close();
     return result;
+}
+
+std::string getAbsolutePath(const std::string& path) {
+    return platform::filelib_getAbsolutePath(path);
 }
 
 std::string getCurrentDirectory() {
