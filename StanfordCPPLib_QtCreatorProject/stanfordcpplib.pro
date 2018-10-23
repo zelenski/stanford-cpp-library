@@ -427,7 +427,7 @@ DEFINES += SPL_THROW_ON_INVALID_ITERATOR
 # DEFINES += SPL_ERROR_ON_STREAM_EXTRACT
 
 # scale up the console window on high-DPI screens?
-DEFINES += SPL_SCALE_HIGH_DPI_SCREEN
+# DEFINES += SPL_SCALE_HIGH_DPI_SCREEN
 
 # is the .cpp portion of the library merged into a single .cpp file
 # to speed up compilation?

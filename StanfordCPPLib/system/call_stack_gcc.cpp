@@ -4,6 +4,8 @@
  * Linux/gcc implementation of the call_stack class.
  *
  * @author Marty Stepp, based on code from Fredrik Orderud
+ * @version 2018/10/22
+ * - bug fix for STL vector vs Stanford Vector
  * @version 2018/10/18
  * - added addr2line_functionName to resolve some function names not in backtrace
  * - improved calculation of function offsets for better stack trace resolving
@@ -55,6 +57,8 @@
 #include "gthread.h"
 #define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
+#include "vector.h"
 #define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #undef INTERNAL_INCLUDE
@@ -238,7 +242,7 @@ std::string addr2line_functionName(std::string line) {
     return line;
 }
 
-int addr2line_all(std::vector<void*> addrsVector, std::string& output) {
+int addr2line_all(Vector<void*> addrsVector, std::string& output) {
     int length = static_cast<int>(addrsVector.size());
     void* addrs[length];
     for (int i = 0; i < length; i++) {
@@ -382,7 +386,7 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
         }
     }
 
-    if (stack_depth == 0 || stack.empty()) {
+    if (stack_depth == 0 || stack.isEmpty()) {
         return;
     }
 
@@ -399,10 +403,10 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
     // both ways and then figure out which one is best by string length.
     // The failing one will emit a lot of short "??:?? 0" lines.
 
-    std::vector<void*> addrsToLookup;
+    Vector<void*> addrsToLookup;
     for (const entry& e : stack) {
-        addrsToLookup.push_back(e.address);
-        addrsToLookup.push_back(e.address2);
+        addrsToLookup.add(e.address);
+        addrsToLookup.add(e.address2);
     }
 
     std::string addr2lineOutput;

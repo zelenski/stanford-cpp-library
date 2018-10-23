@@ -21,10 +21,11 @@
 #define _xmlutils_h
 
 #include <string>
-#include <vector>
 
 #define INTERNAL_INCLUDE 1
 #include "rapidxml.h"
+#define INTERNAL_INCLUDE 1
+#include "vector.h"
 #undef INTERNAL_INCLUDE
 
 /**
@@ -34,7 +35,7 @@ namespace xmlutils {
     int getAttributeInt(rapidxml::xml_node<>* node, const std::string& attrName, int defaultValue = 0);
     bool getAttributeBool(rapidxml::xml_node<>* node, const std::string& attrName, bool defaultValue = false);
     std::string getAttribute(rapidxml::xml_node<>* node, const std::string& attrName, const std::string& defaultValue = "");
-    std::vector<rapidxml::xml_node<>*> getChildNodes(rapidxml::xml_node<>* node, const std::string& nodeName = "*");
+    Vector<rapidxml::xml_node<>*> getChildNodes(rapidxml::xml_node<>* node, const std::string& nodeName = "*");
     bool hasAttribute(rapidxml::xml_node<>* node, const std::string& attrName);
     rapidxml::xml_node<>* openXmlDocument(const std::string& filename, const std::string& documentNode = "*");
 } // namespace xmlutils

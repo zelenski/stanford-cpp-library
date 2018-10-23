@@ -4,6 +4,8 @@
  * Windows implementation of the call_stack class.
  *
  * @author Marty Stepp
+ * @version 2018/10/22
+ * - bug fix for STL vector vs Stanford Vector
  * @version 2018/09/12
  * - fixed compiler errors with os_getLastError and other misc warnings
  * @version 2017/10/24
@@ -48,6 +50,8 @@
 #include "exceptions.h"
 #define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
+#include "vector.h"
 #include <cxxabi.h>
 #define INTERNAL_INCLUDE 1
 #include "private/static.h"
@@ -102,7 +106,7 @@ std::ostream& operator <<(std::ostream& out, const entry& ent) {
 
 call_stack::call_stack(const size_t /*num_discard = 0*/) {
     // getting a stack trace on Windows / MinGW is loads of fun (not)
-    std::vector<void*> traceVector;
+    Vector<void*> traceVector;
     HANDLE process = GetCurrentProcess();
     HANDLE thread = GetCurrentThread();
 
@@ -187,8 +191,8 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
     // (ought to be able to get this information through C function 'backtrace', but for some
     // reason, Qt Creator's shipped version of MinGW does not include this functionality, argh)
     std::string addr2lineOutput;
-    std::vector<std::string> addr2lineLines;
-    if (!traceVector.empty()) {
+    Vector<std::string> addr2lineLines;
+    if (!traceVector.isEmpty()) {
         int result = addr2line_all(traceVector, addr2lineOutput);
         if (result == 0) {
             addr2lineLines = stringSplit(addr2lineOutput, "\n");

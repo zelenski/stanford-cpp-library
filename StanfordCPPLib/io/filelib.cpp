@@ -28,16 +28,10 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdio>
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <vector>
 #define INTERNAL_INCLUDE 1
 #include "simpio.h"
 #define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#define INTERNAL_INCLUDE 1
-#include "vector.h"
 #undef INTERNAL_INCLUDE
 
 /* Prototypes */

@@ -49,8 +49,8 @@ std::string getAttribute(rapidxml::xml_node<>* node, const std::string& attrName
     }
 }
 
-std::vector<rapidxml::xml_node<>*> getChildNodes(rapidxml::xml_node<>* node, const std::string& nodeName) {
-    std::vector<rapidxml::xml_node<>*> v;
+Vector<rapidxml::xml_node<>*> getChildNodes(rapidxml::xml_node<>* node, const std::string& nodeName) {
+    Vector<rapidxml::xml_node<>*> v;
     for (rapidxml::xml_node<>* childNode = node->first_node(nodeName.c_str());
          childNode != nullptr;
          childNode = childNode->next_sibling(nodeName.c_str())) {

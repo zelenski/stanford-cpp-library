@@ -48,7 +48,6 @@
 #include <iomanip>
 #include <iostream>
 #include <string>
-#include <vector>
 #define INTERNAL_INCLUDE 1
 #include "call_stack.h"
 #define INTERNAL_INCLUDE 1
@@ -57,6 +56,8 @@
 #include "filelib.h"
 #define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
+#include "vector.h"
 #define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #ifdef _WIN32
@@ -89,9 +90,9 @@ STATIC_VARIABLE_DECLARE(bool, topLevelExceptionHandlerEnabled, false)
 // handle SIGABRT in normal mode, but not autograder mode
 // (Google Test uses SIGABRT internally so we can't catch it)
 #ifdef SPL_AUTOGRADER_MODE
-STATIC_CONST_VARIABLE_DECLARE_COLLECTION(std::vector<int>, SIGNALS_HANDLED, SIGSEGV, SIGILL, SIGFPE, SIGINT)
+STATIC_CONST_VARIABLE_DECLARE_COLLECTION(Vector<int>, SIGNALS_HANDLED, SIGSEGV, SIGILL, SIGFPE, SIGINT)
 #else
-STATIC_CONST_VARIABLE_DECLARE_COLLECTION(std::vector<int>, SIGNALS_HANDLED, SIGSEGV, SIGILL, SIGFPE, SIGABRT)
+STATIC_CONST_VARIABLE_DECLARE_COLLECTION(Vector<int>, SIGNALS_HANDLED, SIGSEGV, SIGILL, SIGFPE, SIGABRT)
 #endif // SPL_AUTOGRADER_MODE
 
 static void signalHandlerDisable();
@@ -247,7 +248,7 @@ void setTopLevelExceptionHandlerEnabled(bool enabled, bool force) {
  */
 bool shouldFilterOutFromStackTrace(const std::string& function) {
     // exact names that should be matched and filtered
-    static const std::vector<std::string> FORBIDDEN_NAMES {
+    static const Vector<std::string> FORBIDDEN_NAMES {
         "",
         "??",
         "call_stack",
@@ -265,7 +266,7 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
     };
 
     // substrings to filter (don't show any func whose name contains these)
-    static const std::vector<std::string> FORBIDDEN_SUBSTRINGS {
+    static const Vector<std::string> FORBIDDEN_SUBSTRINGS {
         " error(",
         "__cxa_rethrow",
         "__cxa_call_terminate",
@@ -314,7 +315,7 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
     };
 
     // prefixes to filter (don't show any func whose name starts with these)
-    static const std::vector<std::string> FORBIDDEN_PREFIXES {
+    static const Vector<std::string> FORBIDDEN_PREFIXES {
         // "__"
     };
 
@@ -347,14 +348,14 @@ void printStackTrace(std::ostream& out) {
     // constructing the following object jumps into fancy code in call_stack_gcc/windows.cpp
     // to rebuild the stack trace; implementation differs for each operating system
     stacktrace::call_stack trace;
-    std::vector<stacktrace::entry> entries = trace.stack;
+    Vector<stacktrace::entry> entries = trace.stack;
     
     // get longest line string length to line up stack traces
     void* fakeStackPtr = stacktrace::fakeCallStackPointer();
     int entriesToShowCount = 0;
     int funcNameLength = 0;
     int lineStrLength = 0;
-    for (size_t i = 0; i < entries.size(); ++i) {
+    for (int i = 0; i < entries.size(); ++i) {
         entries[i].function = cleanupFunctionNameForStackTrace(entries[i].function);
         if (!STATIC_VARIABLE(STACK_TRACE_SHOULD_FILTER)
                 || (!shouldFilterOutFromStackTrace(entries[i].function)
@@ -366,7 +367,7 @@ void printStackTrace(std::ostream& out) {
         }
     }
     
-    if (entries.empty() || entriesToShowCount == 0) {
+    if (entries.isEmpty() || entriesToShowCount == 0) {
         return;   // couldn't get a stack trace, or had no useful data  :-(
     }
     
@@ -383,7 +384,7 @@ void printStackTrace(std::ostream& out) {
         out << "*** Stack trace:" << std::endl;
     }
     
-    for (size_t i = 0; i < entries.size(); ++i) {
+    for (int i = 0; i < entries.size(); ++i) {
         stacktrace::entry entry = entries[i];
         entry.file = getTail(entry.file);
         
