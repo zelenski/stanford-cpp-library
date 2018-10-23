@@ -210,6 +210,8 @@ std::ostream& operator <<(std::ostream& out, const ErrorException& ex) {
  * Linux/gcc implementation of the call_stack class.
  *
  * @author Marty Stepp, based on code from Fredrik Orderud
+ * @version 2018/10/22
+ * - bug fix for STL vector vs Stanford Vector
  * @version 2018/10/18
  * - added addr2line_functionName to resolve some function names not in backtrace
  * - improved calculation of function offsets for better stack trace resolving
@@ -261,6 +263,8 @@ std::ostream& operator <<(std::ostream& out, const ErrorException& ex) {
 #include "gthread.h"
 #define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
+#include "vector.h"
 #define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #undef INTERNAL_INCLUDE
@@ -444,7 +448,7 @@ std::string addr2line_functionName(std::string line) {
     return line;
 }
 
-int addr2line_all(std::vector<void*> addrsVector, std::string& output) {
+int addr2line_all(Vector<void*> addrsVector, std::string& output) {
     int length = static_cast<int>(addrsVector.size());
     void* addrs[length];
     for (int i = 0; i < length; i++) {
@@ -588,7 +592,7 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
         }
     }
 
-    if (stack_depth == 0 || stack.empty()) {
+    if (stack_depth == 0 || stack.isEmpty()) {
         return;
     }
 
@@ -605,10 +609,10 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
     // both ways and then figure out which one is best by string length.
     // The failing one will emit a lot of short "??:?? 0" lines.
 
-    std::vector<void*> addrsToLookup;
+    Vector<void*> addrsToLookup;
     for (const entry& e : stack) {
-        addrsToLookup.push_back(e.address);
-        addrsToLookup.push_back(e.address2);
+        addrsToLookup.add(e.address);
+        addrsToLookup.add(e.address2);
     }
 
     std::string addr2lineOutput;
@@ -685,7 +689,6 @@ call_stack::~call_stack() throw() {
 #include <iomanip>
 #include <iostream>
 #include <string>
-#include <vector>
 #define INTERNAL_INCLUDE 1
 #include "call_stack.h"
 #define INTERNAL_INCLUDE 1
@@ -694,6 +697,8 @@ call_stack::~call_stack() throw() {
 #include "filelib.h"
 #define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
+#include "vector.h"
 #define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #ifdef _WIN32
@@ -726,9 +731,9 @@ STATIC_VARIABLE_DECLARE(bool, topLevelExceptionHandlerEnabled, false)
 // handle SIGABRT in normal mode, but not autograder mode
 // (Google Test uses SIGABRT internally so we can't catch it)
 #ifdef SPL_AUTOGRADER_MODE
-STATIC_CONST_VARIABLE_DECLARE_COLLECTION(std::vector<int>, SIGNALS_HANDLED, SIGSEGV, SIGILL, SIGFPE, SIGINT)
+STATIC_CONST_VARIABLE_DECLARE_COLLECTION(Vector<int>, SIGNALS_HANDLED, SIGSEGV, SIGILL, SIGFPE, SIGINT)
 #else
-STATIC_CONST_VARIABLE_DECLARE_COLLECTION(std::vector<int>, SIGNALS_HANDLED, SIGSEGV, SIGILL, SIGFPE, SIGABRT)
+STATIC_CONST_VARIABLE_DECLARE_COLLECTION(Vector<int>, SIGNALS_HANDLED, SIGSEGV, SIGILL, SIGFPE, SIGABRT)
 #endif // SPL_AUTOGRADER_MODE
 
 static void signalHandlerDisable();
@@ -884,7 +889,7 @@ void setTopLevelExceptionHandlerEnabled(bool enabled, bool force) {
  */
 bool shouldFilterOutFromStackTrace(const std::string& function) {
     // exact names that should be matched and filtered
-    static const std::vector<std::string> FORBIDDEN_NAMES {
+    static const Vector<std::string> FORBIDDEN_NAMES {
         "",
         "??",
         "call_stack",
@@ -902,7 +907,7 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
     };
 
     // substrings to filter (don't show any func whose name contains these)
-    static const std::vector<std::string> FORBIDDEN_SUBSTRINGS {
+    static const Vector<std::string> FORBIDDEN_SUBSTRINGS {
         " error(",
         "__cxa_rethrow",
         "__cxa_call_terminate",
@@ -951,7 +956,7 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
     };
 
     // prefixes to filter (don't show any func whose name starts with these)
-    static const std::vector<std::string> FORBIDDEN_PREFIXES {
+    static const Vector<std::string> FORBIDDEN_PREFIXES {
         // "__"
     };
 
@@ -984,14 +989,14 @@ void printStackTrace(std::ostream& out) {
     // constructing the following object jumps into fancy code in call_stack_gcc/windows.cpp
     // to rebuild the stack trace; implementation differs for each operating system
     stacktrace::call_stack trace;
-    std::vector<stacktrace::entry> entries = trace.stack;
+    Vector<stacktrace::entry> entries = trace.stack;
     
     // get longest line string length to line up stack traces
     void* fakeStackPtr = stacktrace::fakeCallStackPointer();
     int entriesToShowCount = 0;
     int funcNameLength = 0;
     int lineStrLength = 0;
-    for (size_t i = 0; i < entries.size(); ++i) {
+    for (int i = 0; i < entries.size(); ++i) {
         entries[i].function = cleanupFunctionNameForStackTrace(entries[i].function);
         if (!STATIC_VARIABLE(STACK_TRACE_SHOULD_FILTER)
                 || (!shouldFilterOutFromStackTrace(entries[i].function)
@@ -1003,7 +1008,7 @@ void printStackTrace(std::ostream& out) {
         }
     }
     
-    if (entries.empty() || entriesToShowCount == 0) {
+    if (entries.isEmpty() || entriesToShowCount == 0) {
         return;   // couldn't get a stack trace, or had no useful data  :-(
     }
     
@@ -1020,7 +1025,7 @@ void printStackTrace(std::ostream& out) {
         out << "*** Stack trace:" << std::endl;
     }
     
-    for (size_t i = 0; i < entries.size(); ++i) {
+    for (int i = 0; i < entries.size(); ++i) {
         stacktrace::entry entry = entries[i];
         entry.file = getTail(entry.file);
         
@@ -1382,6 +1387,8 @@ static void stanfordCppLibUnexpectedHandler() {
  * Windows implementation of the call_stack class.
  *
  * @author Marty Stepp
+ * @version 2018/10/22
+ * - bug fix for STL vector vs Stanford Vector
  * @version 2018/09/12
  * - fixed compiler errors with os_getLastError and other misc warnings
  * @version 2017/10/24
@@ -1426,6 +1433,8 @@ static void stanfordCppLibUnexpectedHandler() {
 #include "exceptions.h"
 #define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
+#include "vector.h"
 #include <cxxabi.h>
 #define INTERNAL_INCLUDE 1
 #include "private/static.h"
@@ -1480,7 +1489,7 @@ std::ostream& operator <<(std::ostream& out, const entry& ent) {
 
 call_stack::call_stack(const size_t /*num_discard = 0*/) {
     // getting a stack trace on Windows / MinGW is loads of fun (not)
-    std::vector<void*> traceVector;
+    Vector<void*> traceVector;
     HANDLE process = GetCurrentProcess();
     HANDLE thread = GetCurrentThread();
 
@@ -1565,8 +1574,8 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
     // (ought to be able to get this information through C function 'backtrace', but for some
     // reason, Qt Creator's shipped version of MinGW does not include this functionality, argh)
     std::string addr2lineOutput;
-    std::vector<std::string> addr2lineLines;
-    if (!traceVector.empty()) {
+    Vector<std::string> addr2lineLines;
+    if (!traceVector.isEmpty()) {
         int result = addr2line_all(traceVector, addr2lineOutput);
         if (result == 0) {
             addr2lineLines = stringSplit(addr2lineOutput, "\n");
@@ -1898,23 +1907,78 @@ int hashCode(const Note& note) {
 
 #define INTERNAL_INCLUDE 1
 #include "sound.h"
+#include <QUrl>
+#define INTERNAL_INCLUDE 1
+#include "filelib.h"
+#define INTERNAL_INCLUDE 1
+#include "gthread.h"
+#define INTERNAL_INCLUDE 1
+#include "require.h"
 #undef INTERNAL_INCLUDE
 
-Sound::Sound(std::string /*filename*/) {
-    // TODO
-    // stanfordcpplib::getPlatform()->sound_constructor(this, filename);
+/*static*/ QMediaPlayer* Sound::_qmediaPlayer = nullptr;
+
+/*static*/ long Sound::getDuration() {
+    initialize();
+    return _qmediaPlayer->duration();
+}
+
+/*static*/ int Sound::getVolume() {
+    initialize();
+    return _qmediaPlayer->volume();
+}
+
+/*static*/ void Sound::initialize() {
+    if (!_qmediaPlayer) {
+        GThread::runOnQtGuiThread([]() {
+            if (!_qmediaPlayer) {
+                _qmediaPlayer = new QMediaPlayer;
+            }
+        });
+    }
+}
+
+/*static*/ void Sound::pause() {
+    initialize();
+    _qmediaPlayer->pause();
+}
+
+/*static*/ void Sound::playSound(const std::string& filename) {
+    initialize();
+    std::string absPath = getAbsolutePath(filename);
+    if (!fileExists(absPath)) {
+        error("Sound::playSound: file not found: " + filename);
+    }
+
+    GThread::runOnQtGuiThreadAsync([absPath]() {
+        _qmediaPlayer->setMedia(QUrl::fromLocalFile(QString::fromStdString(absPath)));
+        _qmediaPlayer->play();
+    });
+}
+
+/*static*/ void Sound::stop() {
+    initialize();
+    _qmediaPlayer->stop();
+}
+
+/*static*/ void Sound::setVolume(int volume) {
+    initialize();
+    require::inRange(volume, 0, 100, "Sound::setVolume", "volume");
+    _qmediaPlayer->setVolume(volume);
+}
+
+Sound::Sound(std::string filename)
+        : _filename(filename) {
+    initialize();
 }
 
 Sound::~Sound() {
     // TODO
-    // stanfordcpplib::getPlatform()->sound_delete(this);
 }
 
 void Sound::play() {
-    // TODO
-    // stanfordcpplib::getPlatform()->sound_play(this);
+    playSound(_filename);
 }
-
 
 /*
  * File: random.cpp
@@ -2122,11 +2186,11 @@ int getRecursionIndentLevel() {
     // constructing the following object jumps into fancy code in call_stack_gcc/windows.cpp
     // to rebuild the stack trace; implementation differs for each operating system
     stacktrace::call_stack trace;
-    std::vector<stacktrace::entry> entries = trace.stack;
+    Vector<stacktrace::entry> entries = trace.stack;
 
     std::string currentFunction = "";
     int currentFunctionCount = 0;
-    for (size_t i = 0; i < entries.size(); ++i) {
+    for (int i = 0; i < entries.size(); ++i) {
         // remove references to std:: namespace
         if (exceptions::shouldFilterOutFromStackTrace(entries[i].function)
                 || entries[i].function.find("recursionIndent(") != std::string::npos
@@ -25974,8 +26038,9 @@ void iurlstream::setUserAgent(const std::string& userAgent) {
 /*
  * File: filelib.cpp
  * -----------------
- * This file implements the filelib.h interface.  All platform dependencies
- * are managed through the platform interface.
+ * This file implements the filelib.h interface.
+ * Platform-dependent functions are handled through filelib_* functions
+ * defined in filelibunix.cpp and filelibwindows.cpp.
  * 
  * @version 2016/11/20
  * - small bug fix in readEntireStream method (failed for non-text files)
@@ -26001,16 +26066,10 @@ void iurlstream::setUserAgent(const std::string& userAgent) {
 #include <algorithm>
 #include <cctype>
 #include <cstdio>
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <vector>
 #define INTERNAL_INCLUDE 1
 #include "simpio.h"
 #define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#define INTERNAL_INCLUDE 1
-#include "vector.h"
 #undef INTERNAL_INCLUDE
 
 /* Prototypes */
@@ -26088,6 +26147,10 @@ std::string findOnPath(const std::string& path, const std::string& filename) {
     std::string result = openOnPath(stream, path, filename);
     if (result != "") stream.close();
     return result;
+}
+
+std::string getAbsolutePath(const std::string& path) {
+    return platform::filelib_getAbsolutePath(path);
 }
 
 std::string getCurrentDirectory() {
@@ -27866,8 +27929,8 @@ std::string getAttribute(rapidxml::xml_node<>* node, const std::string& attrName
     }
 }
 
-std::vector<rapidxml::xml_node<>*> getChildNodes(rapidxml::xml_node<>* node, const std::string& nodeName) {
-    std::vector<rapidxml::xml_node<>*> v;
+Vector<rapidxml::xml_node<>*> getChildNodes(rapidxml::xml_node<>* node, const std::string& nodeName) {
+    Vector<rapidxml::xml_node<>*> v;
     for (rapidxml::xml_node<>* childNode = node->first_node(nodeName.c_str());
          childNode != nullptr;
          childNode = childNode->next_sibling(nodeName.c_str())) {
@@ -28010,6 +28073,13 @@ std::string getProjectVersion() {
 } // namespace version
 
 /*
+ * File: filelibwindows.cpp
+ * ------------------------
+ * This file contains Windows implementations of filelib.h primitives.
+ * This code used to live in platform.cpp before the Java back-end was retired.
+ *
+ * @version 2018/10/23
+ * - added getAbsolutePath
  */
 
 #define INTERNAL_INCLUDE 1
@@ -28042,45 +28112,6 @@ std::string getProjectVersion() {
 
 namespace platform {
 
-bool filelib_fileExists(const std::string& filename) {
-    return GetFileAttributesA(filename.c_str()) != INVALID_FILE_ATTRIBUTES;
-}
-
-bool filelib_isDirectory(const std::string& filename) {
-    DWORD attr = GetFileAttributesA(filename.c_str());
-    return attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_DIRECTORY);
-}
-
-// https://msdn.microsoft.com/en-us/library/windows/desktop/gg258117(v=vs.85).aspx
-bool filelib_isFile(const std::string& filename) {
-    DWORD attr = GetFileAttributesA(filename.c_str());
-    return attr != INVALID_FILE_ATTRIBUTES && !(attr & FILE_ATTRIBUTE_DIRECTORY);
-}
-
-bool filelib_isSymbolicLink(const std::string& filename) {
-    DWORD attr = GetFileAttributesA(filename.c_str());
-    return attr != INVALID_FILE_ATTRIBUTES
-            && (attr & FILE_ATTRIBUTE_REPARSE_POINT);
-}
-
-void filelib_setCurrentDirectory(const std::string& path) {
-    if (!filelib_isDirectory(path) || !SetCurrentDirectoryA(path.c_str())) {
-        error("setCurrentDirectory: Can't change to " + path);
-    }
-}
-
-std::string filelib_getCurrentDirectory() {
-    char path[MAX_PATH + 1];
-    int n = GetCurrentDirectoryA(MAX_PATH + 1, path);
-    return std::string(path, n);
-}
-
-std::string filelib_getTempDirectory() {
-    char path[MAX_PATH + 1];
-    int n = GetTempPathA(MAX_PATH + 1, path);
-    return std::string(path, n);
-}
-
 void filelib_createDirectory(const std::string& path) {
     std::string pathStr = path;
     if (endsWith(path, "\\")) {
@@ -28102,14 +28133,6 @@ void filelib_deleteFile(const std::string& path) {
     }
 }
 
-std::string filelib_getDirectoryPathSeparator() {
-    return "\\";
-}
-
-std::string filelib_getSearchPathSeparator() {
-    return ";";
-}
-
 std::string filelib_expandPathname(const std::string& filename) {
     if (filename.empty()) {
         return "";
@@ -28121,6 +28144,57 @@ std::string filelib_expandPathname(const std::string& filename) {
         }
     }
     return filenameStr;
+}
+
+bool filelib_fileExists(const std::string& filename) {
+    return GetFileAttributesA(filename.c_str()) != INVALID_FILE_ATTRIBUTES;
+}
+
+std::string filelib_getAbsolutePath(const std::string& path) {
+    char realpathOut[4096];
+    if (_fullpath(realpathOut, path.c_str(), 4095)) {
+        std::string absPath(realpathOut);
+        return absPath;
+    } else {
+        return path;
+    }
+}
+
+std::string filelib_getCurrentDirectory() {
+    char path[MAX_PATH + 1];
+    int n = GetCurrentDirectoryA(MAX_PATH + 1, path);
+    return std::string(path, n);
+}
+
+std::string filelib_getDirectoryPathSeparator() {
+    return "\\";
+}
+
+std::string filelib_getSearchPathSeparator() {
+    return ";";
+}
+
+std::string filelib_getTempDirectory() {
+    char path[MAX_PATH + 1];
+    int n = GetTempPathA(MAX_PATH + 1, path);
+    return std::string(path, n);
+}
+
+bool filelib_isDirectory(const std::string& filename) {
+    DWORD attr = GetFileAttributesA(filename.c_str());
+    return attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_DIRECTORY);
+}
+
+// https://msdn.microsoft.com/en-us/library/windows/desktop/gg258117(v=vs.85).aspx
+bool filelib_isFile(const std::string& filename) {
+    DWORD attr = GetFileAttributesA(filename.c_str());
+    return attr != INVALID_FILE_ATTRIBUTES && !(attr & FILE_ATTRIBUTE_DIRECTORY);
+}
+
+bool filelib_isSymbolicLink(const std::string& filename) {
+    DWORD attr = GetFileAttributesA(filename.c_str());
+    return attr != INVALID_FILE_ATTRIBUTES
+            && (attr & FILE_ATTRIBUTE_REPARSE_POINT);
 }
 
 void filelib_listDirectory(const std::string& path, Vector<std::string> & list) {
@@ -28153,6 +28227,12 @@ std::string file_openFileDialog(const std::string& /*title*/,
                                 const std::string& /*path*/) {
     // TODO
     return "";
+}
+
+void filelib_setCurrentDirectory(const std::string& path) {
+    if (!filelib_isDirectory(path) || !SetCurrentDirectoryA(path.c_str())) {
+        error("setCurrentDirectory: Can't change to " + path);
+    }
 }
 
 } // namespace platform
@@ -28467,11 +28547,17 @@ void __stanfordcpplib__exitLibrary(int status) {
 } // namespace std
 
 /*
+ * File: filelibunix.cpp
+ * ---------------------
+ * This file contains Unix implementations of filelib.h primitives.
+ * This code used to live in platform.cpp before the Java back-end was retired.
+ *
+ * @version 2018/10/23
+ * - added getAbsolutePath
  */
 
 #define INTERNAL_INCLUDE 1
 #include "filelib.h"
-#undef INTERNAL_INCLUDE
 
 // define all of the following only on non-Windows OS
 // (see filelibwindows.cpp for Windows versions)
@@ -28499,8 +28585,6 @@ void __stanfordcpplib__exitLibrary(int status) {
 #undef INTERNAL_INCLUDE
 
 namespace platform {
-
-/* Unix implementations of filelib.h primitives */
 
 void filelib_createDirectory(const std::string& path) {
     std::string pathStr = path;
@@ -28560,6 +28644,13 @@ std::string filelib_expandPathname(const std::string& filename) {
 bool filelib_fileExists(const std::string& filename) {
     struct stat fileInfo;
     return stat(filename.c_str(), &fileInfo) == 0;
+}
+
+std::string filelib_getAbsolutePath(const std::string& path) {
+    char realpathOut[4096];
+    realpath(path.c_str(), realpathOut);
+    std::string absPath(realpathOut);
+    return absPath;
 }
 
 std::string filelib_getCurrentDirectory() {

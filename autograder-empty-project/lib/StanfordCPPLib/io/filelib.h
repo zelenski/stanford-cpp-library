@@ -8,6 +8,8 @@
  * contain separators in any of the supported styles, which usually
  * makes it possible to use the same code on different platforms.
  * 
+ * @version 2018/10/23
+ * - added getAbsolutePath
  * @version 2018/09/25
  * - added doc comments for new documentation generation
  * @version 2016/11/12
@@ -94,6 +96,12 @@ int fileSize(const std::string& filename);
  * <code>findOnPath</code> returns the empty string.
  */
 std::string findOnPath(const std::string& path, const std::string& filename);
+
+/**
+ * Returns an absolute filename for the given file or directory.
+ * This converts from, for example, "temp/foo.txt" to "/Users/jsmith12/Documents/temp/foo.txt".
+ */
+std::string getAbsolutePath(const std::string& path);
 
 /**
  * Returns an absolute filename for the current directory.
@@ -461,6 +469,7 @@ namespace platform {
     void filelib_deleteFile(const std::string& path);
     std::string filelib_expandPathname(const std::string& filename);
     bool filelib_fileExists(const std::string& filename);
+    std::string filelib_getAbsolutePath(const std::string& path);
     std::string filelib_getCurrentDirectory();
     std::string filelib_getDirectoryPathSeparator();
     std::string filelib_getSearchPathSeparator();

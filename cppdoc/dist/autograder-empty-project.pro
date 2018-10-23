@@ -18,6 +18,8 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2018/10/23
+# - added Qt multimedia flag for sound and video playback
 # @version 2018/10/20
 # - flag for console scaling on high-DPI systems
 # @version 2018/10/18
@@ -117,7 +119,7 @@
 
 TEMPLATE = app
 PROJECT_FILTER =
-QT       += core gui network
+QT       += core gui multimedia network
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 ###############################################################################
@@ -379,7 +381,7 @@ equals(COMPILERNAME, clang++) {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20181018
+DEFINES += SPL_PROJECT_VERSION=20181023
 
 # wrapper name for 'main' function (needed so student can write 'int main'
 # but our library can grab the actual main function to initialize itself)
@@ -427,7 +429,7 @@ DEFINES += SPL_THROW_ON_INVALID_ITERATOR
 # DEFINES += SPL_ERROR_ON_STREAM_EXTRACT
 
 # scale up the console window on high-DPI screens?
-DEFINES += SPL_SCALE_HIGH_DPI_SCREEN
+# DEFINES += SPL_SCALE_HIGH_DPI_SCREEN
 
 # is the .cpp portion of the library merged into a single .cpp file
 # to speed up compilation?
@@ -639,4 +641,4 @@ QMAKE_EXTRA_COMPILERS += copy_resource_files
 # END SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING              #
 ###############################################################################
 
-# END OF FILE (this should be line #635; if not, your .pro has been changed!)
+# END OF FILE (this should be line #644; if not, your .pro has been changed!)

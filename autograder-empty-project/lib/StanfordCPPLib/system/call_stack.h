@@ -3,6 +3,8 @@
  * License: BSD licence (http://www.opensource.org/licenses/bsd-license.php)
  *
  * @author Marty Stepp (made changes to F.Orderud version)
+ * @version 2018/10/22
+ * - bug fix for STL vector vs Stanford Vector
  * @version 2018/10/18
  * - added addr2line_functionName to resolve some function names not in backtrace
  * @version 2016/12/01
@@ -21,14 +23,16 @@
 #ifndef _call_stack_h
 #define _call_stack_h
 #include <string>
-#include <vector>
 #include <sstream>
+#define INTERNAL_INCLUDE 1
+#include "vector.h"
+#undef INTERNAL_INCLUDE
 
 namespace stacktrace {
 
 int execAndCapture(std::string cmd, std::string& output);
 int addr2line(void* addr, std::string& line);
-int addr2line_all(std::vector<void*> addrsVector, std::string& output);
+int addr2line_all(Vector<void*> addrsVector, std::string& output);
 int addr2line_all(void** addrs, int length, std::string& output);
 std::string addr2line_clean(std::string line);
 std::string addr2line_functionName(std::string line);
@@ -82,13 +86,13 @@ public:
     /** Serializes the entire call-stack into a text string. */
     std::string to_string() const {
         std::ostringstream os;
-        for (size_t i = 0; i < stack.size(); i++)
+        for (int i = 0; i < stack.size(); i++)
             os << stack[i].toString() << std::endl;
         return os.str();
     }
 
     /** Call stack. */
-    std::vector<entry> stack;
+    Vector<entry> stack;
 };
 
 } // namespace stacktrace
