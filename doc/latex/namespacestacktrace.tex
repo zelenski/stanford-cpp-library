@@ -1,0 +1,157 @@
+\hypertarget{namespacestacktrace}{}\section{stacktrace Namespace Reference}
+\label{namespacestacktrace}\index{stacktrace@{stacktrace}}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classstacktrace_1_1call__stack}{call\+\_\+stack}}
+\begin{DoxyCompactList}\small\item\em Stack-\/trace base class, for retrieving the current call-\/stack. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structstacktrace_1_1entry}{entry}}
+\begin{DoxyCompactList}\small\item\em Call-\/stack entry datastructure. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classstacktrace_1_1stack__exception}{stack\+\_\+exception}}
+\begin{DoxyCompactList}\small\item\em Template for stack-\/augmented exception classes. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classstacktrace_1_1stack__exception__base}{stack\+\_\+exception\+\_\+base}}
+\begin{DoxyCompactList}\small\item\em Abstract base-\/class for all stack-\/augmented exception classes. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef \mbox{\hyperlink{classstacktrace_1_1stack__exception}{stack\+\_\+exception}}$<$ std\+::domain\+\_\+error $>$ \mbox{\hyperlink{namespacestacktrace_a771214c95a49f1ddd0fb6c4db59dde48}{stack\+\_\+domain\+\_\+error}}
+\item 
+typedef \mbox{\hyperlink{classstacktrace_1_1stack__exception}{stack\+\_\+exception}}$<$ std\+::invalid\+\_\+argument $>$ \mbox{\hyperlink{namespacestacktrace_a74f896665132033291fe2947451b3c9e}{stack\+\_\+invalid\+\_\+argument}}
+\item 
+typedef \mbox{\hyperlink{classstacktrace_1_1stack__exception}{stack\+\_\+exception}}$<$ std\+::length\+\_\+error $>$ \mbox{\hyperlink{namespacestacktrace_ae0dda3906c2aadaa3ebbd8214edefd42}{stack\+\_\+length\+\_\+error}}
+\item 
+typedef \mbox{\hyperlink{classstacktrace_1_1stack__exception}{stack\+\_\+exception}}$<$ std\+::logic\+\_\+error $>$ \mbox{\hyperlink{namespacestacktrace_ad98db3c686d909b428d0e52b94bfd5f2}{stack\+\_\+logic\+\_\+error}}
+\item 
+typedef \mbox{\hyperlink{classstacktrace_1_1stack__exception}{stack\+\_\+exception}}$<$ std\+::out\+\_\+of\+\_\+range $>$ \mbox{\hyperlink{namespacestacktrace_a34ce6236709f71cf3c8464d9c1ba759e}{stack\+\_\+out\+\_\+of\+\_\+range}}
+\item 
+typedef \mbox{\hyperlink{classstacktrace_1_1stack__exception}{stack\+\_\+exception}}$<$ std\+::overflow\+\_\+error $>$ \mbox{\hyperlink{namespacestacktrace_aac4efddfe0896c669f9c51ea526b3826}{stack\+\_\+overflow\+\_\+error}}
+\item 
+typedef \mbox{\hyperlink{classstacktrace_1_1stack__exception}{stack\+\_\+exception}}$<$ std\+::range\+\_\+error $>$ \mbox{\hyperlink{namespacestacktrace_ae0f1c03cd8a7ed8fb41381a04825aaf7}{stack\+\_\+range\+\_\+error}}
+\item 
+typedef \mbox{\hyperlink{classstacktrace_1_1stack__exception}{stack\+\_\+exception}}$<$ std\+::runtime\+\_\+error $>$ \mbox{\hyperlink{namespacestacktrace_a79b82ab6e60429fbb295122c4e740d83}{stack\+\_\+runtime\+\_\+error}}
+\begin{DoxyCompactList}\small\item\em Stack-\/augmented exception classes for all std\+::exception classes. \end{DoxyCompactList}\item 
+typedef \mbox{\hyperlink{classstacktrace_1_1stack__exception}{stack\+\_\+exception}}$<$ std\+::underflow\+\_\+error $>$ \mbox{\hyperlink{namespacestacktrace_aaef0a4d9cce48504f61bacbb2d6293a0}{stack\+\_\+underflow\+\_\+error}}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{namespacestacktrace_a8ebfe19f3a27f6414cfce5805074fe42}{addr2line}} (void $\ast$addr, std\+::string \&line)
+\item 
+int \mbox{\hyperlink{namespacestacktrace_a7cf09f4c670f51bba6cb67997b6026ad}{addr2line\+\_\+all}} (std\+::vector$<$ void $\ast$$>$ addrs\+Vector, std\+::string \&output)
+\item 
+int \mbox{\hyperlink{namespacestacktrace_a179c9d83db84c7fa809a4ab21d580d4b}{addr2line\+\_\+all}} (void $\ast$$\ast$addrs, int length, std\+::string \&output)
+\item 
+std\+::string \mbox{\hyperlink{namespacestacktrace_a053d4a96859b0cc3ef59c8126a6d9853}{addr2line\+\_\+clean}} (std\+::string line)
+\item 
+int \mbox{\hyperlink{namespacestacktrace_a0ac07ad3feb21bf6bb2f3728b1ff569d}{exec\+And\+Capture}} (std\+::string cmd, std\+::string \&output)
+\item 
+void $\ast$\& \mbox{\hyperlink{namespacestacktrace_a30a6d3fa1d0572c74ba3ea308866bba8}{fake\+Call\+Stack\+Pointer}} ()
+\item 
+std\+::ostream \& \mbox{\hyperlink{namespacestacktrace_a9cdc7f5a1e1c1f53958a3804334ae6c7}{operator$<$$<$}} (std\+::ostream \&out, const \mbox{\hyperlink{structstacktrace_1_1entry}{entry}} \&ent)
+\end{DoxyCompactItemize}
+
+
+\subsection{Typedef Documentation}
+\mbox{\Hypertarget{namespacestacktrace_a771214c95a49f1ddd0fb6c4db59dde48}\label{namespacestacktrace_a771214c95a49f1ddd0fb6c4db59dde48}} 
+\index{stacktrace@{stacktrace}!stack\+\_\+domain\+\_\+error@{stack\+\_\+domain\+\_\+error}}
+\index{stack\+\_\+domain\+\_\+error@{stack\+\_\+domain\+\_\+error}!stacktrace@{stacktrace}}
+\subsubsection{\texorpdfstring{stack\+\_\+domain\+\_\+error}{stack\_domain\_error}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{classstacktrace_1_1stack__exception}{stack\+\_\+exception}}$<$std\+::domain\+\_\+error$>$ \mbox{\hyperlink{namespacestacktrace_a771214c95a49f1ddd0fb6c4db59dde48}{stack\+\_\+domain\+\_\+error}}}
+
+\mbox{\Hypertarget{namespacestacktrace_a74f896665132033291fe2947451b3c9e}\label{namespacestacktrace_a74f896665132033291fe2947451b3c9e}} 
+\index{stacktrace@{stacktrace}!stack\+\_\+invalid\+\_\+argument@{stack\+\_\+invalid\+\_\+argument}}
+\index{stack\+\_\+invalid\+\_\+argument@{stack\+\_\+invalid\+\_\+argument}!stacktrace@{stacktrace}}
+\subsubsection{\texorpdfstring{stack\+\_\+invalid\+\_\+argument}{stack\_invalid\_argument}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{classstacktrace_1_1stack__exception}{stack\+\_\+exception}}$<$std\+::invalid\+\_\+argument$>$ \mbox{\hyperlink{namespacestacktrace_a74f896665132033291fe2947451b3c9e}{stack\+\_\+invalid\+\_\+argument}}}
+
+\mbox{\Hypertarget{namespacestacktrace_ae0dda3906c2aadaa3ebbd8214edefd42}\label{namespacestacktrace_ae0dda3906c2aadaa3ebbd8214edefd42}} 
+\index{stacktrace@{stacktrace}!stack\+\_\+length\+\_\+error@{stack\+\_\+length\+\_\+error}}
+\index{stack\+\_\+length\+\_\+error@{stack\+\_\+length\+\_\+error}!stacktrace@{stacktrace}}
+\subsubsection{\texorpdfstring{stack\+\_\+length\+\_\+error}{stack\_length\_error}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{classstacktrace_1_1stack__exception}{stack\+\_\+exception}}$<$std\+::length\+\_\+error$>$ \mbox{\hyperlink{namespacestacktrace_ae0dda3906c2aadaa3ebbd8214edefd42}{stack\+\_\+length\+\_\+error}}}
+
+\mbox{\Hypertarget{namespacestacktrace_ad98db3c686d909b428d0e52b94bfd5f2}\label{namespacestacktrace_ad98db3c686d909b428d0e52b94bfd5f2}} 
+\index{stacktrace@{stacktrace}!stack\+\_\+logic\+\_\+error@{stack\+\_\+logic\+\_\+error}}
+\index{stack\+\_\+logic\+\_\+error@{stack\+\_\+logic\+\_\+error}!stacktrace@{stacktrace}}
+\subsubsection{\texorpdfstring{stack\+\_\+logic\+\_\+error}{stack\_logic\_error}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{classstacktrace_1_1stack__exception}{stack\+\_\+exception}}$<$std\+::logic\+\_\+error$>$ \mbox{\hyperlink{namespacestacktrace_ad98db3c686d909b428d0e52b94bfd5f2}{stack\+\_\+logic\+\_\+error}}}
+
+\mbox{\Hypertarget{namespacestacktrace_a34ce6236709f71cf3c8464d9c1ba759e}\label{namespacestacktrace_a34ce6236709f71cf3c8464d9c1ba759e}} 
+\index{stacktrace@{stacktrace}!stack\+\_\+out\+\_\+of\+\_\+range@{stack\+\_\+out\+\_\+of\+\_\+range}}
+\index{stack\+\_\+out\+\_\+of\+\_\+range@{stack\+\_\+out\+\_\+of\+\_\+range}!stacktrace@{stacktrace}}
+\subsubsection{\texorpdfstring{stack\+\_\+out\+\_\+of\+\_\+range}{stack\_out\_of\_range}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{classstacktrace_1_1stack__exception}{stack\+\_\+exception}}$<$std\+::out\+\_\+of\+\_\+range$>$ \mbox{\hyperlink{namespacestacktrace_a34ce6236709f71cf3c8464d9c1ba759e}{stack\+\_\+out\+\_\+of\+\_\+range}}}
+
+\mbox{\Hypertarget{namespacestacktrace_aac4efddfe0896c669f9c51ea526b3826}\label{namespacestacktrace_aac4efddfe0896c669f9c51ea526b3826}} 
+\index{stacktrace@{stacktrace}!stack\+\_\+overflow\+\_\+error@{stack\+\_\+overflow\+\_\+error}}
+\index{stack\+\_\+overflow\+\_\+error@{stack\+\_\+overflow\+\_\+error}!stacktrace@{stacktrace}}
+\subsubsection{\texorpdfstring{stack\+\_\+overflow\+\_\+error}{stack\_overflow\_error}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{classstacktrace_1_1stack__exception}{stack\+\_\+exception}}$<$std\+::overflow\+\_\+error$>$ \mbox{\hyperlink{namespacestacktrace_aac4efddfe0896c669f9c51ea526b3826}{stack\+\_\+overflow\+\_\+error}}}
+
+\mbox{\Hypertarget{namespacestacktrace_ae0f1c03cd8a7ed8fb41381a04825aaf7}\label{namespacestacktrace_ae0f1c03cd8a7ed8fb41381a04825aaf7}} 
+\index{stacktrace@{stacktrace}!stack\+\_\+range\+\_\+error@{stack\+\_\+range\+\_\+error}}
+\index{stack\+\_\+range\+\_\+error@{stack\+\_\+range\+\_\+error}!stacktrace@{stacktrace}}
+\subsubsection{\texorpdfstring{stack\+\_\+range\+\_\+error}{stack\_range\_error}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{classstacktrace_1_1stack__exception}{stack\+\_\+exception}}$<$std\+::range\+\_\+error$>$ \mbox{\hyperlink{namespacestacktrace_ae0f1c03cd8a7ed8fb41381a04825aaf7}{stack\+\_\+range\+\_\+error}}}
+
+\mbox{\Hypertarget{namespacestacktrace_a79b82ab6e60429fbb295122c4e740d83}\label{namespacestacktrace_a79b82ab6e60429fbb295122c4e740d83}} 
+\index{stacktrace@{stacktrace}!stack\+\_\+runtime\+\_\+error@{stack\+\_\+runtime\+\_\+error}}
+\index{stack\+\_\+runtime\+\_\+error@{stack\+\_\+runtime\+\_\+error}!stacktrace@{stacktrace}}
+\subsubsection{\texorpdfstring{stack\+\_\+runtime\+\_\+error}{stack\_runtime\_error}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{classstacktrace_1_1stack__exception}{stack\+\_\+exception}}$<$std\+::runtime\+\_\+error$>$ \mbox{\hyperlink{namespacestacktrace_a79b82ab6e60429fbb295122c4e740d83}{stack\+\_\+runtime\+\_\+error}}}
+
+
+
+Stack-\/augmented exception classes for all std\+::exception classes. 
+
+\mbox{\Hypertarget{namespacestacktrace_aaef0a4d9cce48504f61bacbb2d6293a0}\label{namespacestacktrace_aaef0a4d9cce48504f61bacbb2d6293a0}} 
+\index{stacktrace@{stacktrace}!stack\+\_\+underflow\+\_\+error@{stack\+\_\+underflow\+\_\+error}}
+\index{stack\+\_\+underflow\+\_\+error@{stack\+\_\+underflow\+\_\+error}!stacktrace@{stacktrace}}
+\subsubsection{\texorpdfstring{stack\+\_\+underflow\+\_\+error}{stack\_underflow\_error}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{classstacktrace_1_1stack__exception}{stack\+\_\+exception}}$<$std\+::underflow\+\_\+error$>$ \mbox{\hyperlink{namespacestacktrace_aaef0a4d9cce48504f61bacbb2d6293a0}{stack\+\_\+underflow\+\_\+error}}}
+
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{namespacestacktrace_a8ebfe19f3a27f6414cfce5805074fe42}\label{namespacestacktrace_a8ebfe19f3a27f6414cfce5805074fe42}} 
+\index{stacktrace@{stacktrace}!addr2line@{addr2line}}
+\index{addr2line@{addr2line}!stacktrace@{stacktrace}}
+\subsubsection{\texorpdfstring{addr2line()}{addr2line()}}
+{\footnotesize\ttfamily int addr2line (\begin{DoxyParamCaption}\item[{void $\ast$}]{addr,  }\item[{std\+::string \&}]{line }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestacktrace_a7cf09f4c670f51bba6cb67997b6026ad}\label{namespacestacktrace_a7cf09f4c670f51bba6cb67997b6026ad}} 
+\index{stacktrace@{stacktrace}!addr2line\+\_\+all@{addr2line\+\_\+all}}
+\index{addr2line\+\_\+all@{addr2line\+\_\+all}!stacktrace@{stacktrace}}
+\subsubsection{\texorpdfstring{addr2line\+\_\+all()}{addr2line\_all()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily int addr2line\+\_\+all (\begin{DoxyParamCaption}\item[{std\+::vector$<$ void $\ast$$>$}]{addrs\+Vector,  }\item[{std\+::string \&}]{output }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestacktrace_a179c9d83db84c7fa809a4ab21d580d4b}\label{namespacestacktrace_a179c9d83db84c7fa809a4ab21d580d4b}} 
+\index{stacktrace@{stacktrace}!addr2line\+\_\+all@{addr2line\+\_\+all}}
+\index{addr2line\+\_\+all@{addr2line\+\_\+all}!stacktrace@{stacktrace}}
+\subsubsection{\texorpdfstring{addr2line\+\_\+all()}{addr2line\_all()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily int addr2line\+\_\+all (\begin{DoxyParamCaption}\item[{void $\ast$$\ast$}]{addrs,  }\item[{int}]{length,  }\item[{std\+::string \&}]{output }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestacktrace_a053d4a96859b0cc3ef59c8126a6d9853}\label{namespacestacktrace_a053d4a96859b0cc3ef59c8126a6d9853}} 
+\index{stacktrace@{stacktrace}!addr2line\+\_\+clean@{addr2line\+\_\+clean}}
+\index{addr2line\+\_\+clean@{addr2line\+\_\+clean}!stacktrace@{stacktrace}}
+\subsubsection{\texorpdfstring{addr2line\+\_\+clean()}{addr2line\_clean()}}
+{\footnotesize\ttfamily std\+::string addr2line\+\_\+clean (\begin{DoxyParamCaption}\item[{std\+::string}]{line }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestacktrace_a0ac07ad3feb21bf6bb2f3728b1ff569d}\label{namespacestacktrace_a0ac07ad3feb21bf6bb2f3728b1ff569d}} 
+\index{stacktrace@{stacktrace}!exec\+And\+Capture@{exec\+And\+Capture}}
+\index{exec\+And\+Capture@{exec\+And\+Capture}!stacktrace@{stacktrace}}
+\subsubsection{\texorpdfstring{exec\+And\+Capture()}{execAndCapture()}}
+{\footnotesize\ttfamily int exec\+And\+Capture (\begin{DoxyParamCaption}\item[{std\+::string}]{cmd,  }\item[{std\+::string \&}]{output }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestacktrace_a30a6d3fa1d0572c74ba3ea308866bba8}\label{namespacestacktrace_a30a6d3fa1d0572c74ba3ea308866bba8}} 
+\index{stacktrace@{stacktrace}!fake\+Call\+Stack\+Pointer@{fake\+Call\+Stack\+Pointer}}
+\index{fake\+Call\+Stack\+Pointer@{fake\+Call\+Stack\+Pointer}!stacktrace@{stacktrace}}
+\subsubsection{\texorpdfstring{fake\+Call\+Stack\+Pointer()}{fakeCallStackPointer()}}
+{\footnotesize\ttfamily void $\ast$\& fake\+Call\+Stack\+Pointer (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacestacktrace_a9cdc7f5a1e1c1f53958a3804334ae6c7}\label{namespacestacktrace_a9cdc7f5a1e1c1f53958a3804334ae6c7}} 
+\index{stacktrace@{stacktrace}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!stacktrace@{stacktrace}}
+\subsubsection{\texorpdfstring{operator$<$$<$()}{operator<<()}}
+{\footnotesize\ttfamily std\+::ostream \& operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{out,  }\item[{const \mbox{\hyperlink{structstacktrace_1_1entry}{entry}} \&}]{ent }\end{DoxyParamCaption})}
+

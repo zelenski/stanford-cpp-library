@@ -1,0 +1,194 @@
+\hypertarget{classGDownloader}{}\section{G\+Downloader Class Reference}
+\label{classGDownloader}\index{G\+Downloader@{G\+Downloader}}
+
+
+A \mbox{\hyperlink{classGDownloader}{G\+Downloader}} can download files and data over an internet connection.  
+
+
+
+
+{\ttfamily \#include $<$gdownloader.\+h$>$}
+
+Inheritance diagram for G\+Downloader\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classGDownloader}
+\end{center}
+\end{figure}
+\subsection*{Signals}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classGDownloader_abb5cf1dbe464e3dc8943c261934b9a64}{downloaded}} ()
+\begin{DoxyCompactList}\small\item\em This Qt signal fires when the data is done downloading. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classGDownloader_a03a6336ad3aebf9d5904c50ce0cdc1dc}{G\+Downloader}} ()
+\begin{DoxyCompactList}\small\item\em Creates a new downloader. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{classGDownloader_a6a9f476cb937e98d417d8ab43b8cd8d5}{$\sim$\+G\+Downloader}} ()
+\begin{DoxyCompactList}\small\item\em Frees memory allocated internally by the downloader. \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classGDownloader_a27b002ce17000e199302c608363c97a2}{download\+As\+String}} (const std\+::string \&url)
+\begin{DoxyCompactList}\small\item\em Downloads the text contents of the given U\+RL, returning them as a string. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classGDownloader_a0bf57f044cc66c8aab40f3f2179caf21}{download\+To\+File}} (const std\+::string \&url, const std\+::string \&file)
+\begin{DoxyCompactList}\small\item\em Downloads the text contents of the given U\+RL, saving it to the given output file. \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classGDownloader_adf0cc934eff26878cdf2018259997a4a}{get\+Error\+Message}} () const
+\begin{DoxyCompactList}\small\item\em Returns the last H\+T\+TP error message that occurred. \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classGDownloader_a736d777b29179f52ba753317d84b1087}{get\+Header}} (const std\+::string \&name) const
+\begin{DoxyCompactList}\small\item\em Returns the value of the given H\+T\+TP header for this U\+RL request. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classGDownloader_ab6c069ef77f1319830dcfd90eed6a2ce}{get\+Http\+Status\+Code}} () const
+\begin{DoxyCompactList}\small\item\em Returns the most recent H\+T\+TP status code, which may be a successful code (e.\+g. \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classGDownloader_a479f109234aad1c792be804bf6320c62}{get\+User\+Agent}} () const
+\begin{DoxyCompactList}\small\item\em Returns the value of the H\+T\+TP \char`\"{}\+User-\/\+Agent\char`\"{} header for this U\+RL request, or an empty string if the user agent has not been set. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classGDownloader_a81dd125e253592aaef5fea33dfc50c42}{has\+Error}} () const
+\begin{DoxyCompactList}\small\item\em Returns true if the H\+T\+TP connection failed and had an error. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classGDownloader_a4bafb98a98bc6edc2403a3734c985618}{http\+Get}} (const std\+::string \&url)
+\begin{DoxyCompactList}\small\item\em Performs an H\+T\+TP G\+ET request to the given U\+RL. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classGDownloader_a68ec0a089bf1b625b86753545e952a57}{http\+Post}} (const std\+::string \&url)
+\begin{DoxyCompactList}\small\item\em Performs an H\+T\+TP P\+O\+ST request to the given U\+RL, submitting any headers and query parameters previously specified. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classGDownloader_af7065da3945b84ffb547b8bad9ddf8dc}{set\+Header}} (const std\+::string \&name, const std\+::string \&value)
+\item 
+void \mbox{\hyperlink{classGDownloader_a766286050e9b8fe08919f8353ecb4031}{set\+User\+Agent}} (const std\+::string \&user\+Agent)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A \mbox{\hyperlink{classGDownloader}{G\+Downloader}} can download files and data over an internet connection. 
+
+It can save the data to a file or return the data as a string. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classGDownloader_a03a6336ad3aebf9d5904c50ce0cdc1dc}\label{classGDownloader_a03a6336ad3aebf9d5904c50ce0cdc1dc}} 
+\index{G\+Downloader@{G\+Downloader}!G\+Downloader@{G\+Downloader}}
+\index{G\+Downloader@{G\+Downloader}!G\+Downloader@{G\+Downloader}}
+\subsubsection{\texorpdfstring{G\+Downloader()}{GDownloader()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classGDownloader}{G\+Downloader}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Creates a new downloader. 
+
+\mbox{\Hypertarget{classGDownloader_a6a9f476cb937e98d417d8ab43b8cd8d5}\label{classGDownloader_a6a9f476cb937e98d417d8ab43b8cd8d5}} 
+\index{G\+Downloader@{G\+Downloader}!````~G\+Downloader@{$\sim$\+G\+Downloader}}
+\index{````~G\+Downloader@{$\sim$\+G\+Downloader}!G\+Downloader@{G\+Downloader}}
+\subsubsection{\texorpdfstring{$\sim$\+G\+Downloader()}{~GDownloader()}}
+{\footnotesize\ttfamily $\sim$\mbox{\hyperlink{classGDownloader}{G\+Downloader}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Frees memory allocated internally by the downloader. 
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classGDownloader_a27b002ce17000e199302c608363c97a2}\label{classGDownloader_a27b002ce17000e199302c608363c97a2}} 
+\index{G\+Downloader@{G\+Downloader}!download\+As\+String@{download\+As\+String}}
+\index{download\+As\+String@{download\+As\+String}!G\+Downloader@{G\+Downloader}}
+\subsubsection{\texorpdfstring{download\+As\+String()}{downloadAsString()}}
+{\footnotesize\ttfamily std\+::string download\+As\+String (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{url }\end{DoxyParamCaption})}
+
+
+
+Downloads the text contents of the given U\+RL, returning them as a string. 
+
+This method blocks until the data is finished downloading. \mbox{\Hypertarget{classGDownloader_abb5cf1dbe464e3dc8943c261934b9a64}\label{classGDownloader_abb5cf1dbe464e3dc8943c261934b9a64}} 
+\index{G\+Downloader@{G\+Downloader}!downloaded@{downloaded}}
+\index{downloaded@{downloaded}!G\+Downloader@{G\+Downloader}}
+\subsubsection{\texorpdfstring{downloaded}{downloaded}}
+{\footnotesize\ttfamily void downloaded (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [signal]}}
+
+
+
+This Qt signal fires when the data is done downloading. 
+
+\mbox{\Hypertarget{classGDownloader_a0bf57f044cc66c8aab40f3f2179caf21}\label{classGDownloader_a0bf57f044cc66c8aab40f3f2179caf21}} 
+\index{G\+Downloader@{G\+Downloader}!download\+To\+File@{download\+To\+File}}
+\index{download\+To\+File@{download\+To\+File}!G\+Downloader@{G\+Downloader}}
+\subsubsection{\texorpdfstring{download\+To\+File()}{downloadToFile()}}
+{\footnotesize\ttfamily void download\+To\+File (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{url,  }\item[{const std\+::string \&}]{file }\end{DoxyParamCaption})}
+
+
+
+Downloads the text contents of the given U\+RL, saving it to the given output file. 
+
+This method blocks until the data is finished downloading. \mbox{\Hypertarget{classGDownloader_adf0cc934eff26878cdf2018259997a4a}\label{classGDownloader_adf0cc934eff26878cdf2018259997a4a}} 
+\index{G\+Downloader@{G\+Downloader}!get\+Error\+Message@{get\+Error\+Message}}
+\index{get\+Error\+Message@{get\+Error\+Message}!G\+Downloader@{G\+Downloader}}
+\subsubsection{\texorpdfstring{get\+Error\+Message()}{getErrorMessage()}}
+{\footnotesize\ttfamily std\+::string get\+Error\+Message (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Returns the last H\+T\+TP error message that occurred. 
+
+If no H\+T\+TP errors have occurred, returns \char`\"{}\char`\"{}. \mbox{\Hypertarget{classGDownloader_a736d777b29179f52ba753317d84b1087}\label{classGDownloader_a736d777b29179f52ba753317d84b1087}} 
+\index{G\+Downloader@{G\+Downloader}!get\+Header@{get\+Header}}
+\index{get\+Header@{get\+Header}!G\+Downloader@{G\+Downloader}}
+\subsubsection{\texorpdfstring{get\+Header()}{getHeader()}}
+{\footnotesize\ttfamily std\+::string get\+Header (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) const}
+
+
+
+Returns the value of the given H\+T\+TP header for this U\+RL request. 
+
+If the given header is not defined, returns an empty string. \mbox{\Hypertarget{classGDownloader_ab6c069ef77f1319830dcfd90eed6a2ce}\label{classGDownloader_ab6c069ef77f1319830dcfd90eed6a2ce}} 
+\index{G\+Downloader@{G\+Downloader}!get\+Http\+Status\+Code@{get\+Http\+Status\+Code}}
+\index{get\+Http\+Status\+Code@{get\+Http\+Status\+Code}!G\+Downloader@{G\+Downloader}}
+\subsubsection{\texorpdfstring{get\+Http\+Status\+Code()}{getHttpStatusCode()}}
+{\footnotesize\ttfamily int get\+Http\+Status\+Code (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Returns the most recent H\+T\+TP status code, which may be a successful code (e.\+g. 
+
+200) or an error (e.\+g 404). If there is no H\+T\+TP status code to return, returns 0. \mbox{\Hypertarget{classGDownloader_a479f109234aad1c792be804bf6320c62}\label{classGDownloader_a479f109234aad1c792be804bf6320c62}} 
+\index{G\+Downloader@{G\+Downloader}!get\+User\+Agent@{get\+User\+Agent}}
+\index{get\+User\+Agent@{get\+User\+Agent}!G\+Downloader@{G\+Downloader}}
+\subsubsection{\texorpdfstring{get\+User\+Agent()}{getUserAgent()}}
+{\footnotesize\ttfamily std\+::string get\+User\+Agent (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Returns the value of the H\+T\+TP \char`\"{}\+User-\/\+Agent\char`\"{} header for this U\+RL request, or an empty string if the user agent has not been set. 
+
+\mbox{\Hypertarget{classGDownloader_a81dd125e253592aaef5fea33dfc50c42}\label{classGDownloader_a81dd125e253592aaef5fea33dfc50c42}} 
+\index{G\+Downloader@{G\+Downloader}!has\+Error@{has\+Error}}
+\index{has\+Error@{has\+Error}!G\+Downloader@{G\+Downloader}}
+\subsubsection{\texorpdfstring{has\+Error()}{hasError()}}
+{\footnotesize\ttfamily bool has\+Error (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Returns true if the H\+T\+TP connection failed and had an error. 
+
+You can see what the error was by calling get\+Error\+Message. \mbox{\Hypertarget{classGDownloader_a4bafb98a98bc6edc2403a3734c985618}\label{classGDownloader_a4bafb98a98bc6edc2403a3734c985618}} 
+\index{G\+Downloader@{G\+Downloader}!http\+Get@{http\+Get}}
+\index{http\+Get@{http\+Get}!G\+Downloader@{G\+Downloader}}
+\subsubsection{\texorpdfstring{http\+Get()}{httpGet()}}
+{\footnotesize\ttfamily void http\+Get (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{url }\end{DoxyParamCaption})}
+
+
+
+Performs an H\+T\+TP G\+ET request to the given U\+RL. 
+
+along with any headers previously specified. \mbox{\Hypertarget{classGDownloader_a68ec0a089bf1b625b86753545e952a57}\label{classGDownloader_a68ec0a089bf1b625b86753545e952a57}} 
+\index{G\+Downloader@{G\+Downloader}!http\+Post@{http\+Post}}
+\index{http\+Post@{http\+Post}!G\+Downloader@{G\+Downloader}}
+\subsubsection{\texorpdfstring{http\+Post()}{httpPost()}}
+{\footnotesize\ttfamily void http\+Post (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{url }\end{DoxyParamCaption})}
+
+
+
+Performs an H\+T\+TP P\+O\+ST request to the given U\+RL, submitting any headers and query parameters previously specified. 
+
+\mbox{\Hypertarget{classGDownloader_af7065da3945b84ffb547b8bad9ddf8dc}\label{classGDownloader_af7065da3945b84ffb547b8bad9ddf8dc}} 
+\index{G\+Downloader@{G\+Downloader}!set\+Header@{set\+Header}}
+\index{set\+Header@{set\+Header}!G\+Downloader@{G\+Downloader}}
+\subsubsection{\texorpdfstring{set\+Header()}{setHeader()}}
+{\footnotesize\ttfamily void set\+Header (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name,  }\item[{const std\+::string \&}]{value }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classGDownloader_a766286050e9b8fe08919f8353ecb4031}\label{classGDownloader_a766286050e9b8fe08919f8353ecb4031}} 
+\index{G\+Downloader@{G\+Downloader}!set\+User\+Agent@{set\+User\+Agent}}
+\index{set\+User\+Agent@{set\+User\+Agent}!G\+Downloader@{G\+Downloader}}
+\subsubsection{\texorpdfstring{set\+User\+Agent()}{setUserAgent()}}
+{\footnotesize\ttfamily void set\+User\+Agent (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{user\+Agent }\end{DoxyParamCaption})}
+

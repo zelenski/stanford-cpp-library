@@ -15,7 +15,10 @@ import javax.swing.*;
 import stanford.cs106.gui.GuiUtils;
 import stanford.cs106.util.OperatingSystem;
 
-public class AutograderInput extends Observable implements ActionListener {
+@SuppressWarnings("deprecation")
+public class AutograderInput
+		extends Observable
+		implements ActionListener {
 	private static final int MIN_WIDTH = 75;
 	private static AutograderInput instance;   // singleton
 	

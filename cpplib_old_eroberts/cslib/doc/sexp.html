@@ -1,0 +1,802 @@
+<html>
+<head>
+<title>sexp.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1><a href="sexp-h.html"><code>sexp.h</code></a></h1>
+This file specifies the interface to a Lisp-like S-expression
+facility.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Types</td></tr>
+<tr><td class=indexKey><a href="#Type:sexp">sexp</a>&nbsp;</td><td class=indexSynopsis width=100%>The abstract data type representing an S-expression object.</td></tr>
+<tr><td class=indexKey><a href="#Type:expression type codes">expression type codes</a>&nbsp;</td><td class=indexSynopsis width=100%>This list may be expanded by the client, so the typecode must be represented as an integer and not as a closed enumeration type.</td></tr>
+<tr><td class=indexHead colspan=2>Constants</td></tr>
+<tr><td class=indexKey>NULL&nbsp;</td><td class=indexSynopsis width=100%>Represents an empty list.</td></tr>
+<tr><td class=indexKey>AExclamation&nbsp;</td><td class=indexSynopsis width=100%>Atom for the exclamation point symbol (<code>!</code>).</td></tr>
+<tr><td class=indexKey>ADoubleQuote&nbsp;</td><td class=indexSynopsis width=100%>Atom for the double quote symbol (<code>"</code>).</td></tr>
+<tr><td class=indexKey>ASharp&nbsp;</td><td class=indexSynopsis width=100%>Atom for the sharp symbol (<code>#</code>).</td></tr>
+<tr><td class=indexKey>ADollarSign&nbsp;</td><td class=indexSynopsis width=100%>Atom for the dollar-sign symbol (<code>$</code>).</td></tr>
+<tr><td class=indexKey>APercent&nbsp;</td><td class=indexSynopsis width=100%>Atom for the percent symbol (<code>%</code>).</td></tr>
+<tr><td class=indexKey>AAmpersand&nbsp;</td><td class=indexSynopsis width=100%>Atom for the ampersand symbol (<code>&amp;</code>).</td></tr>
+<tr><td class=indexKey>ASingleQuote&nbsp;</td><td class=indexSynopsis width=100%>Atom for the single quote symbol (<code>'</code>).</td></tr>
+<tr><td class=indexKey>ALeftParen&nbsp;</td><td class=indexSynopsis width=100%>Atom for the left parenthesis symbol (<code>(</code>).</td></tr>
+<tr><td class=indexKey>ARightParen&nbsp;</td><td class=indexSynopsis width=100%>Atom for the right parenthesis symbol (<code>)</code>).</td></tr>
+<tr><td class=indexKey>AStar&nbsp;</td><td class=indexSynopsis width=100%>Atom for the star symbol (<code>*</code>).</td></tr>
+<tr><td class=indexKey>APlus&nbsp;</td><td class=indexSynopsis width=100%>Atom for the plus symbol (<code>+</code>).</td></tr>
+<tr><td class=indexKey>AComma&nbsp;</td><td class=indexSynopsis width=100%>Atom for the comma symbol (<code>,</code>).</td></tr>
+<tr><td class=indexKey>AMinus&nbsp;</td><td class=indexSynopsis width=100%>Atom for the minus symbol (<code>-</code>).</td></tr>
+<tr><td class=indexKey>APeriod&nbsp;</td><td class=indexSynopsis width=100%>Atom for the period symbol (<code>.</code>).</td></tr>
+<tr><td class=indexKey>ASlash&nbsp;</td><td class=indexSynopsis width=100%>Atom for the slash symbol (<code>/</code>).</td></tr>
+<tr><td class=indexKey>AColon&nbsp;</td><td class=indexSynopsis width=100%>Atom for the colon symbol (<code>:</code>).</td></tr>
+<tr><td class=indexKey>ASemicolon&nbsp;</td><td class=indexSynopsis width=100%>Atom for the semicolon symbol (<code>;</code>).</td></tr>
+<tr><td class=indexKey>ALessThan&nbsp;</td><td class=indexSynopsis width=100%>Atom for the less-than symbol (<code>&lt;</code>).</td></tr>
+<tr><td class=indexKey>AEqualSign&nbsp;</td><td class=indexSynopsis width=100%>Atom for the equal-sign symbol (<code>=</code>).</td></tr>
+<tr><td class=indexKey>AGreaterThan&nbsp;</td><td class=indexSynopsis width=100%>Atom for the greater-than symbol (<code>&gt;</code>).</td></tr>
+<tr><td class=indexKey>AQuestionMark&nbsp;</td><td class=indexSynopsis width=100%>Atom for the questionmark symbol (<code>?</code>).</td></tr>
+<tr><td class=indexKey>AAtSign&nbsp;</td><td class=indexSynopsis width=100%>Atom for the at-sign symbol (<code>@</code>).</td></tr>
+<tr><td class=indexKey>ALeftBracket&nbsp;</td><td class=indexSynopsis width=100%>Atom for the left bracket symbol (<code>[</code>).</td></tr>
+<tr><td class=indexKey>ABackslash&nbsp;</td><td class=indexSynopsis width=100%>Atom for the backslash symbol (<code>\</code>).</td></tr>
+<tr><td class=indexKey>ARightBracket&nbsp;</td><td class=indexSynopsis width=100%>Atom for the right bracket symbol (<code>]</code>).</td></tr>
+<tr><td class=indexKey>ACarat&nbsp;</td><td class=indexSynopsis width=100%>Atom for the carat symbol (<code>^</code>).</td></tr>
+<tr><td class=indexKey>AUnderscore&nbsp;</td><td class=indexSynopsis width=100%>Atom for the underscore symbol (<code>_</code>).</td></tr>
+<tr><td class=indexKey>ABackquote&nbsp;</td><td class=indexSynopsis width=100%>Atom for the backquote symbol (<code>`</code>).</td></tr>
+<tr><td class=indexKey>ALeftBrace&nbsp;</td><td class=indexSynopsis width=100%>Atom for the left brace symbol (<code>{</code>).</td></tr>
+<tr><td class=indexKey>AVerticalBar&nbsp;</td><td class=indexSynopsis width=100%>Atom for the vertical bar symbol (<code>|</code>).</td></tr>
+<tr><td class=indexKey>ARightBrace&nbsp;</td><td class=indexSynopsis width=100%>Atom for the right brace symbol (<code>}</code>).</td></tr>
+<tr><td class=indexKey>ATilde&nbsp;</td><td class=indexSynopsis width=100%>Atom for the tilde symbol (<code>~</code>).</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><a href="#Function:car">car(sx)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the car of the S-expression <code>sx</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:cdr">cdr(sx)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the cdr of the S-expression <code>sx</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:caar">caar(sx)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the car of the car of the S-expression <code>sx</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:cadr">cadr(sx)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the car of the cdr of the S-expression <code>sx</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:cdar">cdar(sx)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the cdr of the car of the S-expression <code>sx</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:cddr">cddr(sx)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the cdr of the cdr of the S-expression <code>sx</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:first">first(list)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the first element in the list <code>list</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:second">second(list)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the second element in the list <code>list</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:third">third(list)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the third element in the list <code>list</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:fourth">fourth(list)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the fourth element in the list <code>list</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:fifth">fifth(list)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the fifth element in the list <code>list</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:cons">cons(car,&nbsp;cdr)</a>&nbsp;</td><td class=indexSynopsis width=100%>Constructs a new dotted pair with the specified car and cdr.</td></tr>
+<tr><td class=indexKey><a href="#Function:typeCode">typeCode(sx)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the type code of the S-expression <code>sx</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:sexpTypeName">sexpTypeName(sx)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the type code name of the S-expression <code>sx</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:readSexp">readSexp(infile)</a>&nbsp;</td><td class=indexSynopsis width=100%>Reads the next S-expression from the specified input file.</td></tr>
+<tr><td class=indexKey><a href="#Function:printSexp">printSexp(outfile,&nbsp;sx)</a>&nbsp;</td><td class=indexSynopsis width=100%>Writes the S-expression to the indicated output stream.</td></tr>
+<tr><td class=indexKey><a href="#Function:parseSexp">parseSexp(str)</a>&nbsp;</td><td class=indexSynopsis width=100%>Parses an S-expression from the string.</td></tr>
+<tr><td class=indexKey><a href="#Function:unparseSexp">unparseSexp(sx)</a>&nbsp;</td><td class=indexSynopsis width=100%>Unparses the S-expression and returns it as a string.</td></tr>
+<tr><td class=indexKey><a href="#Function:listLength">listLength(list)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the top-level length of the list.</td></tr>
+<tr><td class=indexKey><a href="#Function:nthElement">nthElement(n,&nbsp;list)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the <nobr><code>n</code>th</nobr> element in the list.</td></tr>
+<tr><td class=indexKey><a href="#Function:memberP">memberP(sx,&nbsp;list)</a>&nbsp;</td><td class=indexSynopsis width=100%>Checks to see whether <code>sx</code> occurs in the top level of the list and returns <code>TRUE</code> or <code>FALSE</code> accordingly.</td></tr>
+<tr><td class=indexKey><a href="#Function:equal">equal(x,&nbsp;y)</a>&nbsp;</td><td class=indexSynopsis width=100%>Checks to see if <code>x</code> and <code>y</code> are equal.</td></tr>
+<tr><td class=indexKey><a href="#Function:list0">list0()</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a list with no elements.</td></tr>
+<tr><td class=indexKey><a href="#Function:list1">list1(a)</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a list with a single element.</td></tr>
+<tr><td class=indexKey><a href="#Function:list2">list2(a,&nbsp;b)</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a list with two elements.</td></tr>
+<tr><td class=indexKey><a href="#Function:list3">list3(a,&nbsp;b,&nbsp;c)</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a list with three elements.</td></tr>
+<tr><td class=indexKey><a href="#Function:list4">list4(a,&nbsp;b,&nbsp;c,&nbsp;d)</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a list with four elements.</td></tr>
+<tr><td class=indexKey><a href="#Function:list5">list5(a,&nbsp;b,&nbsp;c,&nbsp;d,&nbsp;e)</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a list with five elements.</td></tr>
+<tr><td class=indexKey><a href="#Function:list6">list6(a,&nbsp;b,&nbsp;c,&nbsp;d,&nbsp;e,&nbsp;f)</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a list with six elements.</td></tr>
+<tr><td class=indexKey><a href="#Function:intToSexp">intToSexp(value)</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts an <code>int</code> into an S-expression.</td></tr>
+<tr><td class=indexKey><a href="#Function:sexpToInt">sexpToInt(sexp&nbsp;sx)</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts an S-expression to an <code>int</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:longToSexp">longToSexp(value)</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts a <code>long</code> into an S-expression.</td></tr>
+<tr><td class=indexKey><a href="#Function:sexpToLong">sexpToLong(sexp&nbsp;sx)</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts an S-expression to a <code>long</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:realToSexp">realToSexp(value)</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts a <code>double</code> into an S-expression.</td></tr>
+<tr><td class=indexKey><a href="#Function:sexpToReal">sexpToReal(sexp&nbsp;sx)</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts an S-expression to a <code>double</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:stringToSexp">stringToSexp(value)</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts a <code>string</code> into an S-expression.</td></tr>
+<tr><td class=indexKey><a href="#Function:sexpToString">sexpToString(sexp&nbsp;sx)</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts an S-expression to a string.</td></tr>
+<tr><td class=indexKey><a href="#Function:charToSexp">charToSexp(value)</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts a <code>char</code> into an S-expression.</td></tr>
+<tr><td class=indexKey><a href="#Function:sexpToChar">sexpToChar(sexp&nbsp;sx)</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts an S-expression to a <code>char</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:boolToSexp">boolToSexp(value)</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts a <code>bool</code> into an S-expression.</td></tr>
+<tr><td class=indexKey><a href="#Function:sexpToBool">sexpToBool(sexp&nbsp;sx)</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts an S-expression to a <code>bool</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:pointerToSexp">pointerToSexp(value)</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts a <code>void *</code> pointer into an S-expression.</td></tr>
+<tr><td class=indexKey><a href="#Function:sexpToPointer">sexpToPointer(sexp&nbsp;sx)</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts an S-expression to a <code>void *</code> pointer.</td></tr>
+<tr><td class=indexKey><a href="#Function:clientTypeToSexp">clientTypeToSexp(tc,&nbsp;value)</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a value of a client-defined type S-expression type, with the indicated type code and the pointer value, which may be recovered using <code>sexpToPointer</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:initAtoms">initAtoms()</a>&nbsp;</td><td class=indexSynopsis width=100%>Initializes the built-in atom constants.</td></tr>
+<tr><td class=indexKey><a href="#Function:createAtom">createAtom(name)</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates an atom with the indicated name string.</td></tr>
+<tr><td class=indexKey><a href="#Function:printName">printName(atom)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the print name of the atom.</td></tr>
+<tr><td class=indexKey><a href="#Function:getBinding">getBinding(atom)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the binding of the atom.</td></tr>
+<tr><td class=indexKey><a href="#Function:setBinding">setBinding(atom,&nbsp;value)</a>&nbsp;</td><td class=indexSynopsis width=100%>Sets the binding of the atom to the specified value.</td></tr>
+<tr><td class=indexKey><a href="#Function:getPList">getPList(atom)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the property list of the atom.</td></tr>
+<tr><td class=indexKey><a href="#Function:setPList">setPList(atom,&nbsp;plist)</a>&nbsp;</td><td class=indexSynopsis width=100%>Sets the property list of the atom.</td></tr>
+<tr><td class=indexKey><a href="#Function:getProp">getProp(atom,&nbsp;key)</a>&nbsp;</td><td class=indexSynopsis width=100%>Finds the property of the atom associated with <code>key</code> and returns the corresponding value.</td></tr>
+<tr><td class=indexKey><a href="#Function:putProp">putProp(atom,&nbsp;key,&nbsp;value)</a>&nbsp;</td><td class=indexSynopsis width=100%>Associates the specified key and value in the property list for this atom.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:sexp"></a>
+<pre class=detailCode>
+typedef struct sexpCDT *sexp;
+</pre>
+<div class=detailHTML>
+The abstract data type representing an S-expression object.
+</div>
+<hr>
+<a name="Type:expression type codes"></a>
+<pre class=detailCode>
+</pre>
+<div class=detailHTML>
+This list may be expanded by the client, so the typecode
+must be represented as an integer and not as a closed
+enumeration type.  Expanded type codes behave like the
+pointer type and may be converted to pointers.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:car"></a>
+<pre class=detailCode>
+sexp car(sexp sx);
+</pre>
+<div class=detailHTML>
+Returns the car of the S-expression <code>sx</code>.
+If the expression is not a dotted pair, this function
+throws a runtime error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+car = car(sx);
+</pre>
+<hr>
+<a name="Function:cdr"></a>
+<pre class=detailCode>
+sexp cdr(sexp sx);
+</pre>
+<div class=detailHTML>
+Returns the cdr of the S-expression <code>sx</code>.
+If the expression is not a dotted pair, this function
+throws a runtime error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+cdr = cdr(sx);
+</pre>
+<hr>
+<a name="Function:caar"></a>
+<pre class=detailCode>
+</pre>
+<div class=detailHTML>
+Returns the car of the car of the S-expression <code>sx</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+caar = caar(sx);
+</pre>
+<hr>
+<a name="Function:cadr"></a>
+<pre class=detailCode>
+</pre>
+<div class=detailHTML>
+Returns the car of the cdr of the S-expression <code>sx</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+cadr = cadr(sx);
+</pre>
+<hr>
+<a name="Function:cdar"></a>
+<pre class=detailCode>
+</pre>
+<div class=detailHTML>
+Returns the cdr of the car of the S-expression <code>sx</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+cdar = cdar(sx);
+</pre>
+<hr>
+<a name="Function:cddr"></a>
+<pre class=detailCode>
+</pre>
+<div class=detailHTML>
+Returns the cdr of the cdr of the S-expression <code>sx</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+cddr = cddr(sx);
+</pre>
+<hr>
+<a name="Function:first"></a>
+<pre class=detailCode>
+</pre>
+<div class=detailHTML>
+Returns the first element in the list <code>list</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sx = first(list);
+</pre>
+<hr>
+<a name="Function:second"></a>
+<pre class=detailCode>
+</pre>
+<div class=detailHTML>
+Returns the second element in the list <code>list</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sx = second(list);
+</pre>
+<hr>
+<a name="Function:third"></a>
+<pre class=detailCode>
+</pre>
+<div class=detailHTML>
+Returns the third element in the list <code>list</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sx = third(list);
+</pre>
+<hr>
+<a name="Function:fourth"></a>
+<pre class=detailCode>
+</pre>
+<div class=detailHTML>
+Returns the fourth element in the list <code>list</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sx = fourth(list);
+</pre>
+<hr>
+<a name="Function:fifth"></a>
+<pre class=detailCode>
+</pre>
+<div class=detailHTML>
+Returns the fifth element in the list <code>list</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sx = fifth(list);
+</pre>
+<hr>
+<a name="Function:cons"></a>
+<pre class=detailCode>
+sexp cons(sexp car, sexp cdr);
+</pre>
+<div class=detailHTML>
+Constructs a new dotted pair with the specified car and cdr.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sx = cons(car, cdr);
+</pre>
+<hr>
+<a name="Function:typeCode"></a>
+<pre class=detailCode>
+int typeCode(sexp sx);
+</pre>
+<div class=detailHTML>
+Returns the type code of the S-expression <code>sx</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+tc = typeCode(sx);
+</pre>
+<hr>
+<a name="Function:sexpTypeName"></a>
+<pre class=detailCode>
+string sexpTypeName(sexp sx);
+</pre>
+<div class=detailHTML>
+Returns the type code name of the S-expression <code>sx</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+str = sexpTypeName(sx);
+</pre>
+<hr>
+<a name="Function:readSexp"></a>
+<pre class=detailCode>
+sexp readSexp(FILE *infile);
+</pre>
+<div class=detailHTML>
+Reads the next S-expression from the specified input file.
+This function returns <code>NIL</code> at the end of the file.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sx = readSexp(infile);
+</pre>
+<hr>
+<a name="Function:printSexp"></a>
+<pre class=detailCode>
+void printSexp(FILE *outfile, sexp sx);
+</pre>
+<div class=detailHTML>
+Writes the S-expression to the indicated output stream.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+printSexp(outfile, sx);
+</pre>
+<hr>
+<a name="Function:parseSexp"></a>
+<pre class=detailCode>
+sexp parseSexp(string str);
+</pre>
+<div class=detailHTML>
+Parses an S-expression from the string.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sx = parseSexp(str);
+</pre>
+<hr>
+<a name="Function:unparseSexp"></a>
+<pre class=detailCode>
+string unparseSexp(sexp sx);
+</pre>
+<div class=detailHTML>
+Unparses the S-expression and returns it as a string.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string unparseSexp(sx);
+</pre>
+<hr>
+<a name="Function:listLength"></a>
+<pre class=detailCode>
+int listLength(sexp list);
+</pre>
+<div class=detailHTML>
+Returns the top-level length of the list.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+n = listLength(list);
+</pre>
+<hr>
+<a name="Function:nthElement"></a>
+<pre class=detailCode>
+sexp nthElement(int n, sexp list);
+</pre>
+<div class=detailHTML>
+Returns the <nobr><code>n</code>th</nobr> element in the list.
+If <code>n</code> is greater than the length of the list,
+<code>nthElement</code> returns <code>NIL</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sx = nthElement(n, list);
+</pre>
+<hr>
+<a name="Function:memberP"></a>
+<pre class=detailCode>
+bool memberP(sexp sx, sexp list);
+</pre>
+<div class=detailHTML>
+Checks to see whether <code>sx</code> occurs in the top level
+of the list and returns <code>TRUE</code> or <code>FALSE</code>
+accordingly.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (memberP(sx, list)) ...
+</pre>
+<hr>
+<a name="Function:equal"></a>
+<pre class=detailCode>
+bool equal(sexp x, sexp y);
+</pre>
+<div class=detailHTML>
+Checks to see if <code>x</code> and <code>y</code> are equal.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (equal(x, y)) ...
+</pre>
+<hr>
+<a name="Function:list0"></a>
+<pre class=detailCode>
+sexp list0(void);
+</pre>
+<div class=detailHTML>
+Creates a list with no elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+list = list0();
+</pre>
+<hr>
+<a name="Function:list1"></a>
+<pre class=detailCode>
+sexp list1(sexp a);
+</pre>
+<div class=detailHTML>
+Creates a list with a single element.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+list = list1(a);
+</pre>
+<hr>
+<a name="Function:list2"></a>
+<pre class=detailCode>
+sexp list2(sexp a, sexp b);
+</pre>
+<div class=detailHTML>
+Creates a list with two elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+list = list2(a, b);
+</pre>
+<hr>
+<a name="Function:list3"></a>
+<pre class=detailCode>
+sexp list3(sexp a, sexp b, sexp c);
+</pre>
+<div class=detailHTML>
+Creates a list with three elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+list = list3(a, b, c);
+</pre>
+<hr>
+<a name="Function:list4"></a>
+<pre class=detailCode>
+sexp list4(sexp a, sexp b, sexp c, sexp d);
+</pre>
+<div class=detailHTML>
+Creates a list with four elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+list = list4(a, b, c, d);
+</pre>
+<hr>
+<a name="Function:list5"></a>
+<pre class=detailCode>
+sexp list5(sexp a, sexp b, sexp c, sexp d, sexp e);
+</pre>
+<div class=detailHTML>
+Creates a list with five elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+list = list5(a, b, c, d, e);
+</pre>
+<hr>
+<a name="Function:list6"></a>
+<pre class=detailCode>
+sexp list6(sexp a, sexp b, sexp c, sexp d, sexp e, sexp f);
+</pre>
+<div class=detailHTML>
+Creates a list with six elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+list = list6(a, b, c, d, e, f);
+</pre>
+<hr>
+<a name="Function:intToSexp"></a>
+<pre class=detailCode>
+sexp intToSexp(int value);
+</pre>
+<div class=detailHTML>
+Converts an <code>int</code> into an S-expression.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sx = intToSexp(value);
+</pre>
+<hr>
+<a name="Function:sexpToInt"></a>
+<pre class=detailCode>
+int sexpToInt(sexp sx);
+</pre>
+<div class=detailHTML>
+Converts an S-expression to an <code>int</code>.  If the
+S-expression does not have the correct type, this function
+throws an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+value = sexpToInt(sexp sx);
+</pre>
+<hr>
+<a name="Function:longToSexp"></a>
+<pre class=detailCode>
+sexp longToSexp(long value);
+</pre>
+<div class=detailHTML>
+Converts a <code>long</code> into an S-expression.
+Note: All integers are stored internally in this package
+using the type <code>long</code>.  This function allows
+clients to return the complete internal value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sx = longToSexp(value);
+</pre>
+<hr>
+<a name="Function:sexpToLong"></a>
+<pre class=detailCode>
+long sexpToLong(sexp sx);
+</pre>
+<div class=detailHTML>
+Converts an S-expression to a <code>long</code>.  If the
+S-expression does not have the correct type, this function
+throws an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+value = sexpToLong(sexp sx);
+</pre>
+<hr>
+<a name="Function:realToSexp"></a>
+<pre class=detailCode>
+sexp realToSexp(double value);
+</pre>
+<div class=detailHTML>
+Converts a <code>double</code> into an S-expression.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sx = realToSexp(value);
+</pre>
+<hr>
+<a name="Function:sexpToReal"></a>
+<pre class=detailCode>
+double sexpToReal(sexp sx);
+</pre>
+<div class=detailHTML>
+Converts an S-expression to a <code>double</code>.  If the
+S-expression does not have the correct type, this function
+throws an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+value = sexpToReal(sexp sx);
+</pre>
+<hr>
+<a name="Function:stringToSexp"></a>
+<pre class=detailCode>
+sexp stringToSexp(string value);
+</pre>
+<div class=detailHTML>
+Converts a <code>string</code> into an S-expression.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sx = stringToSexp(value);
+</pre>
+<hr>
+<a name="Function:sexpToString"></a>
+<pre class=detailCode>
+string sexpToString(sexp sx);
+</pre>
+<div class=detailHTML>
+Converts an S-expression to a string.  If the S-expression does
+not have the correct type, this function throws an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+value = sexpToString(sexp sx);
+</pre>
+<hr>
+<a name="Function:charToSexp"></a>
+<pre class=detailCode>
+sexp charToSexp(int value);
+</pre>
+<div class=detailHTML>
+Converts a <code>char</code> into an S-expression.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sx = charToSexp(value);
+</pre>
+<hr>
+<a name="Function:sexpToChar"></a>
+<pre class=detailCode>
+char sexpToChar(sexp sx);
+</pre>
+<div class=detailHTML>
+Converts an S-expression to a <code>char</code>.  If the
+S-expression does not have the correct type, this function
+throws an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+value = sexpToChar(sexp sx);
+</pre>
+<hr>
+<a name="Function:boolToSexp"></a>
+<pre class=detailCode>
+sexp boolToSexp(bool value);
+</pre>
+<div class=detailHTML>
+Converts a <code>bool</code> into an S-expression.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sx = boolToSexp(value);
+</pre>
+<hr>
+<a name="Function:sexpToBool"></a>
+<pre class=detailCode>
+bool sexpToBool(sexp sx);
+</pre>
+<div class=detailHTML>
+Converts an S-expression to a <code>bool</code>.  If the
+S-expression does not have the correct type, this function
+throws an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+value = sexpToBool(sexp sx);
+</pre>
+<hr>
+<a name="Function:pointerToSexp"></a>
+<pre class=detailCode>
+sexp pointerToSexp(void *value);
+</pre>
+<div class=detailHTML>
+Converts a <code>void *</code> pointer into an S-expression.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sx = pointerToSexp(value);
+</pre>
+<hr>
+<a name="Function:sexpToPointer"></a>
+<pre class=detailCode>
+void *sexpToPointer(sexp sx);
+</pre>
+<div class=detailHTML>
+Converts an S-expression to a <code>void *</code> pointer.
+If the S-expression does not have the correct type, this
+function throws an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+value = sexpToPointer(sexp sx);
+</pre>
+<hr>
+<a name="Function:clientTypeToSexp"></a>
+<pre class=detailCode>
+sexp clientTypeToSexp(int tc, void *value);
+</pre>
+<div class=detailHTML>
+Creates a value of a client-defined type S-expression type,
+with the indicated type code and the pointer value, which
+may be recovered using <code>sexpToPointer</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sx = clientTypeToSexp(tc, value)
+</pre>
+<hr>
+<a name="Function:initAtoms"></a>
+<pre class=detailCode>
+void initAtoms();
+</pre>
+<div class=detailHTML>
+Initializes the built-in atom constants.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+initAtoms();
+</pre>
+<hr>
+<a name="Function:createAtom"></a>
+<pre class=detailCode>
+sexp createAtom(string name);
+</pre>
+<div class=detailHTML>
+Creates an atom with the indicated name string.  Atoms are
+unique, so that a second call to <code>createAtom</code> with
+the same string will return the same atom and will not create
+a new one.  The binding and property list fields of a newly
+created atom are both <code>NIL</code>.
+
+@result The unique atom with the specified name
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+atom = createAtom(name);
+</pre>
+<hr>
+<a name="Function:printName"></a>
+<pre class=detailCode>
+string printName(sexp atom);
+</pre>
+<div class=detailHTML>
+Returns the print name of the atom.
+
+@result The name of the atom
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+str = printName(atom)
+</pre>
+<hr>
+<a name="Function:getBinding"></a>
+<pre class=detailCode>
+sexp getBinding(sexp atom);
+</pre>
+<div class=detailHTML>
+Returns the binding of the atom.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+value = getBinding(atom);
+</pre>
+<hr>
+<a name="Function:setBinding"></a>
+<pre class=detailCode>
+void setBinding(sexp atom, sexp value);
+</pre>
+<div class=detailHTML>
+Sets the binding of the atom to the specified value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setBinding(atom, value);
+</pre>
+<hr>
+<a name="Function:getPList"></a>
+<pre class=detailCode>
+sexp getPList(sexp atom);
+</pre>
+<div class=detailHTML>
+Returns the property list of the atom.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+plist = getPList(atom);
+</pre>
+<hr>
+<a name="Function:setPList"></a>
+<pre class=detailCode>
+void setPList(sexp atom, sexp plist);
+</pre>
+<div class=detailHTML>
+Sets the property list of the atom.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setPList(atom, plist);
+</pre>
+<hr>
+<a name="Function:getProp"></a>
+<pre class=detailCode>
+sexp getProp(sexp atom, sexp key);
+</pre>
+<div class=detailHTML>
+Finds the property of the atom associated with <code>key</code>
+and returns the corresponding value.  If no value has been
+associated with this key for this atom, this function returns
+<code>NIL</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+value = getProp(atom, key);
+</pre>
+<hr>
+<a name="Function:putProp"></a>
+<pre class=detailCode>
+void putProp(sexp atom, sexp key, sexp value);
+</pre>
+<div class=detailHTML>
+Associates the specified key and value in the property list
+for this atom.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+putProp(atom, key, value);
+</pre>
+<hr>
+</table>
+</body>
+</html>

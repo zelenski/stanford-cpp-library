@@ -1,0 +1,269 @@
+<html>
+<head>
+<title>GArc</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="gobjects.html">#include "gobjects.h"</a></div>
+<h1 class=header><code>class GArc : public <a href="GObject-class.html">GObject</a></code></h1>
+This graphical object subclass represents an elliptical arc.  The
+arc is specified by the following parameters:
+
+<p><ul>
+  <li>The coordinates of the bounding rectangle (<code>x</code>,
+      <code>y</code>, <code>width</code>, <code>height</code>)
+  <li>The angle at which the arc starts (<code>start</code>)
+  <li>The number of degrees that the arc covers (<code>sweep</code>)
+</ul>
+
+<p>All angles in a <code>GArc</code> description are measured in
+degrees moving counterclockwise from the +<i>x</i> axis.  Negative
+values for either <code>start</code> or <code>sweep</code> indicate
+motion in a clockwise direction.
+<p>The following diagram illustrates the interpretation of these parameters
+for the arc shown in <font color=red>red</font>:
+
+<p><div class=inset>
+<img src="images/GArcGeometry.png" width=260 alt="GArcGeometry">
+</div>
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Constructor</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GArc">GArc(<var>width</var>,&nbsp;<var>height</var>,&nbsp;<var>start</var>,&nbsp;<var>sweep</var>)</a><br>
+<a href="#Constructor:GArc">GArc(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>width</var>,&nbsp;<var>height</var>,&nbsp;<var>start</var>,&nbsp;<var>sweep</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a new <code>GArc</code> object consisting of an elliptical arc.</td></tr>
+<tr><td class=indexHead colspan=2>Methods</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getEndPoint">getEndPoint()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the point at which the arc ends.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getFillColor">getFillColor()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the color used to display the filled region of this arc.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getFrameRectangle">getFrameRectangle()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the boundaries of the rectangle used to frame the arc.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getStartAngle">getStartAngle()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the starting angle for this <code>GArc</code> object.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getStartPoint">getStartPoint()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the point at which the arc starts.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getSweepAngle">getSweepAngle()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the sweep angle for this <code>GArc</code> object.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:isFilled">isFilled()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the arc is filled.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setFillColor">setFillColor(<var>color</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the color used to display the filled region of this arc.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setFilled">setFilled(<var>flag</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the fill status for the arc, where <code>false</code> is outlined and <code>true</code> is filled.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setFrameRectangle">setFrameRectangle(<var>rect</var>)</a><br>
+<a href="#Method:setFrameRectangle">setFrameRectangle(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>width</var>,&nbsp;<var>height</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Changes the boundaries of the rectangle used to frame the arc.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setStartAngle">setStartAngle(<var>start</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the starting angle for this <code>GArc</code> object.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setSweepAngle">setSweepAngle(<var>start</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the sweep angle for this <code>GArc</code> object.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GArc"></a>
+<pre class=detailCode>
+GArc(double width, double height, double start, double sweep);
+GArc(double x, double y, double width, double height, double start, double sweep);
+</pre>
+<div class=detailHTML>
+Creates a new <code>GArc</code> object consisting of an elliptical arc.
+The first form creates a <code>GArc</code> whose origin is the point
+(0,&nbsp;0); the second form positions the <code>GArc</code> at the
+point (<code>x</code>, <code>y</code>).
+<p>The following screenshots show several examples of how the
+<code>GArc</code> constructor interprets the <code>start</code>
+and <code>sweep</code> parameters:
+
+<p><div class=inset>
+<img src="images/GArcExamples.png" width=700 alt="GArcExamples">
+</div>
+
+<p>In the code fragments underneath each of these diagrams, <code>r</code>
+is the radius of the circular arc, and <code>cx</code> and <code>cy</code>
+are the coordinates of the center or the window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GArc* arc = new GArc(width, height, start, sweep);
+GArc* arc = new GArc(x, y, width, height, start, sweep);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:setStartAngle"></a>
+<pre class=detailCode>
+void setStartAngle(double start);
+</pre>
+<div class=detailHTML>
+Sets the starting angle for this <code>GArc</code> object.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+arc-&gt;setStartAngle(start);
+</pre>
+<hr>
+<a name="Method:getStartAngle"></a>
+<pre class=detailCode>
+double getStartAngle() const;
+</pre>
+<div class=detailHTML>
+Returns the starting angle for this <code>GArc</code> object.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double angle = arc-&gt;getStartAngle();
+</pre>
+<hr>
+<a name="Method:setSweepAngle"></a>
+<pre class=detailCode>
+void setSweepAngle(double start);
+</pre>
+<div class=detailHTML>
+Sets the sweep angle for this <code>GArc</code> object.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+arc-&gt;setSweepAngle(start);
+</pre>
+<hr>
+<a name="Method:getSweepAngle"></a>
+<pre class=detailCode>
+double getSweepAngle() const;
+</pre>
+<div class=detailHTML>
+Returns the sweep angle for this <code>GArc</code> object.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double angle = arc-&gt;getSweepAngle();
+</pre>
+<hr>
+<a name="Method:getStartPoint"></a>
+<pre class=detailCode>
+GPoint getStartPoint() const;
+</pre>
+<div class=detailHTML>
+Returns the point at which the arc starts.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GPoint pt = arc-&gt;getStartPoint();
+</pre>
+<hr>
+<a name="Method:getEndPoint"></a>
+<pre class=detailCode>
+GPoint getEndPoint() const;
+</pre>
+<div class=detailHTML>
+Returns the point at which the arc ends.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GPoint pt = arc-&gt;getEndPoint();
+</pre>
+<hr>
+<a name="Method:setFrameRectangle"></a>
+<pre class=detailCode>
+void setFrameRectangle(const GRectangle &amp; rect);
+void setFrameRectangle(double x, double y, double width, double height);
+</pre>
+<div class=detailHTML>
+Changes the boundaries of the rectangle used to frame the arc.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+arc-&gt;setFrameRectangle(rect);
+arc-&gt;setFrameRectangle(x, y, width, height);
+</pre>
+<hr>
+<a name="Method:getFrameRectangle"></a>
+<pre class=detailCode>
+GRectangle getFrameRectangle() const;
+</pre>
+<div class=detailHTML>
+Returns the boundaries of the rectangle used to frame the arc.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GRectangle rect = arc-&gt;getFrameRectangle();
+</pre>
+<hr>
+<a name="Method:setFilled"></a>
+<pre class=detailCode>
+void setFilled(bool flag);
+</pre>
+<div class=detailHTML>
+Sets the fill status for the arc, where <code>false</code> is
+outlined and <code>true</code> is filled.  If a <code>GArc</code> is
+unfilled, the figure consists only of the arc itself.  If a
+<code>GArc</code> is filled, the figure consists of the
+pie-shaped wedge formed by connecting the endpoints of the arc to
+the center.  As an example, the following program draws a 270-degree
+arc starting at 45 degrees, filled in yellow, much like the character
+in the PacMan video game:
+
+<pre>
+   int main() {
+      GWindow gw;
+      cout << "This program draws the PacMan character." << endl;
+      double cx = gw.getWidth() / 2;
+      double cy = gw.getHeight() / 2;
+      double r = 25;
+      GArc* pacman = new GArc(cx - r, cy - r, 2 * r, 2 * r, 45, 270);
+      pacman-&gt;setFilled(true);
+      pacman-&gt;setFillColor(&quot;YELLOW&quot;);
+      gw.add(pacman);
+      return 0;
+   }
+</pre>
+<p>The program results in the following picture:
+
+<p><div class=inset>
+<img src="images/PacMan.png" width=322 alt="PacMan">
+</div>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+arc-&gt;setFilled(flag);
+</pre>
+<hr>
+<a name="Method:isFilled"></a>
+<pre class=detailCode>
+bool isFilled() const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the arc is filled.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (arc-&gt;isFilled()) ...
+</pre>
+<hr>
+<a name="Method:setFillColor"></a>
+<pre class=detailCode>
+void setFillColor(string color);
+void setFillColor(int rgb);
+</pre>
+<div class=detailHTML>
+Sets the color used to display the filled region of this arc.
+Colors are specified as strings as described in the notes for the
+<a href="GObject-class.html#Method:setColor"><code>setColor</code></a>
+method.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+arc-&gt;setFillColor(color);
+</pre>
+<hr>
+<a name="Method:getFillColor"></a>
+<pre class=detailCode>
+string getFillColor() const;
+</pre>
+<div class=detailHTML>
+Returns the color used to display the filled region of this arc.  If
+none has been set, <code>getFillColor</code> returns the empty string.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string color = arc-&gt;getFillColor();
+</pre>
+<hr>
+</table>
+</body>
+</html>

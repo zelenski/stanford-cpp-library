@@ -48,6 +48,12 @@ TIMED_TEST(SparseGridTests, forEachTest_SparseGrid, TEST_TIMEOUT_DEFAULT) {
     }
 }
 
+TIMED_TEST(SparseGridTests, frontBackTest_SparseGrid, TEST_TIMEOUT_DEFAULT) {
+    SparseGrid<int> grid {{10, 20, 30}, {40, 50, 60}};
+    assertEqualsInt("SparseGrid front", 10, grid.front());
+    assertEqualsInt("SparseGrid back",  60, grid.back());
+}
+
 TIMED_TEST(SparseGridTests, hashCodeTest_SparseGrid, TEST_TIMEOUT_DEFAULT) {
     SparseGrid<int> grid(2, 3);
     grid.fill(42);

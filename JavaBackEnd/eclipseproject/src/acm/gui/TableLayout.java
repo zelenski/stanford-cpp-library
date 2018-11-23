@@ -571,16 +571,16 @@ public class TableLayout implements LayoutManager2, Serializable {
 		while (iterator.hasNext()) {
 			String key = iterator.next();
 			if (key.startsWith("width") && !key.equals("width")) {
-				propertyTable.put(key, new Integer(0));
+				propertyTable.put(key, Integer.valueOf(0));
 			}
 			if (key.startsWith("height") && !key.equals("height")) {
-				propertyTable.put(key, new Integer(0));
+				propertyTable.put(key, Integer.valueOf(0));
 			}
 			if (key.startsWith("weightx") && !key.equals("weightx")) {
-				propertyTable.put(key, new Double(0));
+				propertyTable.put(key, Double.valueOf(0));
 			}
 			if (key.startsWith("weighty") && !key.equals("weighty")) {
-				propertyTable.put(key, new Double(0));
+				propertyTable.put(key, Double.valueOf(0));
 			}
 		}
 	}
@@ -1052,7 +1052,7 @@ public class TableLayout implements LayoutManager2, Serializable {
  * Sets the property for the specified key to the integer value.
  */
 	private void setIntProperty(String key, int value) {
-		propertyTable.put(key, new Integer(value));
+		propertyTable.put(key, Integer.valueOf(value));
 	}
 
 /* Private method: getIntProperty(key) */
@@ -1071,7 +1071,7 @@ public class TableLayout implements LayoutManager2, Serializable {
  * Sets the property for the specified key to the double value.
  */
 	private void setDoubleProperty(String key, double value) {
-		propertyTable.put(key, new Double(value));
+		propertyTable.put(key, Double.valueOf(value));
 	}
 
 /* Private method: getDoubleProperty(key) */

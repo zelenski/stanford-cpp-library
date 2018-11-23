@@ -1,0 +1,73 @@
+\hypertarget{classSound}{}\section{Sound Class Reference}
+\label{classSound}\index{Sound@{Sound}}
+
+
+~\newline
+ This class encapsulates a sound file.  
+
+
+
+
+{\ttfamily \#include $<$sound.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classSound_abc4f1c2a277d6731194905a54294c7ba}{Sound}} (std\+::string filename)
+\begin{DoxyCompactList}\small\item\em Creates a {\ttfamily \mbox{\hyperlink{classSound}{Sound}}} object by reading in the contents of the specified file. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{classSound_ac34f0a5b7e2e11c053df62714aff04fa}{$\sim$\+Sound}} ()
+\begin{DoxyCompactList}\small\item\em Frees the memory associated with the sound. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classSound_a6d58098c6cf63c241ed03bc797256bb1}{play}} ()
+\begin{DoxyCompactList}\small\item\em Starts playing the sound. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+~\newline
+ This class encapsulates a sound file. 
+
+The sound file is specified in the constructor and must be a file in either the current directory or a subdirectory named {\ttfamily sounds}.
+
+The following code, for example, plays the sound file {\ttfamily ringtone.\+wav}\+:
+
+
+\begin{DoxyPre}
+     \mbox{\hyperlink{classSound}{Sound}} ringtone("ringtone.wav");
+     ringtone.play();
+*\end{DoxyPre}
+ 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classSound_abc4f1c2a277d6731194905a54294c7ba}\label{classSound_abc4f1c2a277d6731194905a54294c7ba}} 
+\index{Sound@{Sound}!Sound@{Sound}}
+\index{Sound@{Sound}!Sound@{Sound}}
+\subsubsection{\texorpdfstring{Sound()}{Sound()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classSound}{Sound}} (\begin{DoxyParamCaption}\item[{std\+::string}]{filename }\end{DoxyParamCaption})}
+
+
+
+Creates a {\ttfamily \mbox{\hyperlink{classSound}{Sound}}} object by reading in the contents of the specified file. 
+
+\mbox{\Hypertarget{classSound_ac34f0a5b7e2e11c053df62714aff04fa}\label{classSound_ac34f0a5b7e2e11c053df62714aff04fa}} 
+\index{Sound@{Sound}!````~Sound@{$\sim$\+Sound}}
+\index{````~Sound@{$\sim$\+Sound}!Sound@{Sound}}
+\subsubsection{\texorpdfstring{$\sim$\+Sound()}{~Sound()}}
+{\footnotesize\ttfamily $\sim$\mbox{\hyperlink{classSound}{Sound}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Frees the memory associated with the sound. 
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classSound_a6d58098c6cf63c241ed03bc797256bb1}\label{classSound_a6d58098c6cf63c241ed03bc797256bb1}} 
+\index{Sound@{Sound}!play@{play}}
+\index{play@{play}!Sound@{Sound}}
+\subsubsection{\texorpdfstring{play()}{play()}}
+{\footnotesize\ttfamily void play (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Starts playing the sound. 
+
+This call returns immediately without waiting for the sound to finish. 

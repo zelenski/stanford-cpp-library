@@ -1,0 +1,82 @@
+<html>
+<head>
+<title>G3DRect</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="gobjects.html">#include "gobjects.h"</a></div>
+<h1 class=header><code>class G3DRect : public <a href="GRect-class.html">GRect</a></code></h1>
+This graphical object subclass represents a rectangular box that can
+be raised or lowered.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Constructor</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:G3DRect">G3DRect(<var>width</var>,&nbsp;<var>height</var>)</a><br>
+<a href="#Constructor:G3DRect">G3DRect(<var>width</var>,&nbsp;<var>height</var>,&nbsp;<var>raised</var>)</a><br>
+<a href="#Constructor:G3DRect">G3DRect(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>width</var>,&nbsp;<var>height</var>)</a><br>
+<a href="#Constructor:G3DRect">G3DRect(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>width</var>,&nbsp;<var>height</var>,&nbsp;<var>raised</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Constructs a new 3D rectangle with the specified width and height.</td></tr>
+<tr><td class=indexHead colspan=2>Methods</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:isRaised">isRaised()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if this object appears raised.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setRaised">setRaised(<var>raised</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Indicates whether this object appears raised.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:G3DRect"></a>
+<pre class=detailCode>
+G3DRect(double width, double height);
+G3DRect(double width, double height, bool raised);
+G3DRect(double x, double y, double width, double height);
+G3DRect(double x, double y, double width, double height, bool raised);
+</pre>
+<div class=detailHTML>
+Constructs a new 3D rectangle with the specified width and height.  If
+the <code>x</code> and <code>y</code> parameters are specified, they
+are used to specify the origin.  The <code>raised</code> parameter
+determines whether the rectangle should be drawn with highlights that
+suggest that it is raised about the background.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+G3DRect* rect = new G3DRect(width, height);
+G3DRect* rect = new G3DRect(width, height, raised);
+G3DRect* rect = new G3DRect(x, y, width, height);
+G3DRect* rect = new G3DRect(x, y, width, height, raised);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:setRaised"></a>
+<pre class=detailCode>
+void setRaised(bool raised);
+</pre>
+<div class=detailHTML>
+Indicates whether this object appears raised.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+rect-&gt;setRaised(raised);
+</pre>
+<hr>
+<a name="Method:isRaised"></a>
+<pre class=detailCode>
+bool isRaised() const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if this object appears raised.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (rect-&gt;isRaised()) ...
+</pre>
+<hr>
+</table>
+</body>
+</html>

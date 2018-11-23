@@ -9,32 +9,84 @@
  * - removed 'using namespace' statement
  */
 
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
+#include "strlib.h"
 #include <sstream>
+#undef INTERNAL_INCLUDE
 
 /* Definitions for the ErrorException class */
 
-ErrorException::ErrorException(std::string msg) {
-    this->msg = msg;
+ErrorException::ErrorException(std::string msg)
+        : _kind("error") {
+    _msg = msg;
 
-#ifdef ERROREXCEPTION_CAPTURE_STACK_TRACE
+#if defined(SPL_CONSOLE_PRINT_EXCEPTIONS)
     std::ostringstream out;
     exceptions::printStackTrace(out);
-    this->stackTrace = out.str();
-#endif // ERROREXCEPTION_CAPTURE_STACK_TRACE
+    _stackTrace = out.str();
+#endif // SPL_CONSOLE_PRINT_EXCEPTIONS
 }
 
 ErrorException::~ErrorException() throw () {
     /* Empty */
 }
 
+void ErrorException::dump() const {
+    dump(std::cerr);
+}
+
+void ErrorException::dump(std::ostream& out) const {
+    out << std::endl;
+    out << "***" << std::endl;
+    out << "*** STANFORD C++ LIBRARY" << std::endl;
+    out << "*** An ErrorException occurred during program execution:" << std::endl;
+    if (!_msg.empty()) {
+        out << "*** " << _msg << std::endl;
+    }
+    out << insertStarsBeforeEachLine(getStackTrace()) << std::endl;
+    out.flush();
+}
+
+std::string ErrorException::getKind() const {
+    return _kind;
+}
+
 std::string ErrorException::getMessage() const {
-    return msg;
+    return _msg;
+}
+
+bool ErrorException::hasStackTrace() const {
+    return !_stackTrace.empty();
 }
 
 std::string ErrorException::getStackTrace() const {
-    return stackTrace;
+    return _stackTrace;
+}
+
+std::string ErrorException::insertStarsBeforeEachLine(const std::string& s) {
+    std::string result;
+    for (std::string line : stringSplit(s, "\n")) {
+        if (!result.empty()) {
+            if (!startsWith(line, "***")) {
+                line = "*** " + line;
+            }
+            result += "\n";
+        }
+        result += line;
+    }
+    return result;
+}
+
+void ErrorException::setKind(const std::string& kind) {
+    _kind = kind;
+}
+
+void ErrorException::setStackTrace(const std::string& stackTrace) {
+    _stackTrace = stackTrace;
 }
 
 const char* ErrorException::what() const throw () {
@@ -42,11 +94,17 @@ const char* ErrorException::what() const throw () {
     // because in many error cases, the attempt to do the string concatenation
     // ends up garbling the string and leading to garbage exception text
     // return ("Error: " + msg).c_str();
-    return msg.c_str();
+    return _msg.c_str();
 }
 
 std::ostream& operator <<(std::ostream& out, const ErrorException& ex) {
     out << "ErrorException: " << ex.what();
+    std::string stack = ex.getStackTrace();
+    if (!stack.empty()) {
+        out << "Stack trace:" << std::endl;
+        out << stack;
+        out.flush();
+    }
     return out;
 }
 

@@ -12,12 +12,17 @@
  * - removed 'using namespace' statement
  */
 
+#define INTERNAL_INCLUDE 1
 #include "tokenscanner.h"
 #include <cctype>
 #include <iostream>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "stack.h"
+#undef INTERNAL_INCLUDE
 
 TokenScanner::TokenScanner() {
     initScanner();
@@ -124,7 +129,7 @@ std::string TokenScanner::getStringValue(const std::string& token) const {
     return str;
 }
 
-TokenType TokenScanner::getTokenType(const std::string& token) const {
+TokenScanner::TokenType TokenScanner::getTokenType(const std::string& token) const {
     if (token.empty()) {
         return TokenType(EOF);
     }
@@ -494,7 +499,7 @@ std::ostream& operator <<(std::ostream& out, const TokenScanner& scanner) {
     }
     if (scanner.ignoreCommentsFlag) {
         out << (first ? "" : ",") << "ignoreComments";
-        first = false;
+        // first = false;
     }
     out << "}";
     return out;

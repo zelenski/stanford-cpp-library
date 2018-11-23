@@ -1,10 +1,11 @@
 package acm.gui;
 
-import java.util.Observable;
+import java.util.*;
 
 /**
  * A helper class to represent observable events.
  */
+@SuppressWarnings("deprecation")
 public class Event<T> extends Observable {
 	/** Convenience method to replace notifyObservers. */
 	public void fire() {

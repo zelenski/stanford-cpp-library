@@ -5,6 +5,15 @@
  * by student code on the console.
  * 
  * @author Marty Stepp
+ * @version 2018/10/18
+ * - added set_unexpected handler (used by autograders when errors are thrown)
+ * - added some new function names to filter from stack traces
+ * @version 2018/09/27
+ * - bug fixes to print better stack traces when used with threads
+ * @version 2018/09/25
+ * - modify setTopLevelExceptionHandlerEnabled to work better with threads
+ * @version 2016/12/23
+ * - added more function names for stack trace filtering (mainly thread stuff)
  * @version 2016/12/09
  * - added insertStarsBeforeEachLine
  * @version 2016/11/07
@@ -33,16 +42,23 @@
  * @since 2014/11/05
  */
 
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
 #include <csignal>
 #include <iomanip>
 #include <iostream>
 #include <string>
-#include <vector>
+#define INTERNAL_INCLUDE 1
 #include "call_stack.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
+#include "vector.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #ifdef _WIN32
 #include <windows.h>
@@ -51,18 +67,18 @@
 #  undef MOUSE_MOVED
 #  undef HELP_KEY
 #endif
-#include "private/platform.h"
+#undef INTERNAL_INCLUDE
 
 // uncomment the definition below to use an alternative 'signal stack'
 // which helps in handling stack overflow errors
 // (disabled because it currently breaks stack traces for other errors)
-//#define SHOULD_USE_SIGNAL_STACK
+// #define SHOULD_USE_SIGNAL_STACK
 
 namespace exceptions {
 // just some value that is not any existing signal
-#define SIGSTACK ((int) 0xdeadbeef)
-#define SIGUNKNOWN ((int) 0xcafebabe)
-#define SIGTIMEOUT ((int) 0xf00df00d)
+#define SIGSTACK (static_cast<int>(0xdeadbeef))
+#define SIGUNKNOWN (static_cast<int>(0xcafebabe))
+#define SIGTIMEOUT (static_cast<int>(0xf00df00d))
 
 // static 'variables' (as functions to avoid initialization ordering bugs)
 STATIC_CONST_VARIABLE_DECLARE(bool, STACK_TRACE_SHOULD_FILTER, true)
@@ -71,21 +87,26 @@ STATIC_CONST_VARIABLE_DECLARE(bool, STACK_TRACE_SHOW_TOP_BOTTOM_BARS, false)
 STATIC_VARIABLE_DECLARE(std::string, programNameForStackTrace, "")
 STATIC_VARIABLE_DECLARE(bool, topLevelExceptionHandlerEnabled, false)
 
+// handle SIGABRT in normal mode, but not autograder mode
+// (Google Test uses SIGABRT internally so we can't catch it)
 #ifdef SPL_AUTOGRADER_MODE
-STATIC_CONST_VARIABLE_DECLARE_COLLECTION(std::vector<int>, SIGNALS_HANDLED, SIGSEGV, SIGILL, SIGFPE, SIGINT)
+STATIC_CONST_VARIABLE_DECLARE_COLLECTION(Vector<int>, SIGNALS_HANDLED, SIGSEGV, SIGILL, SIGFPE, SIGINT)
 #else
-STATIC_CONST_VARIABLE_DECLARE_COLLECTION(std::vector<int>, SIGNALS_HANDLED, SIGSEGV, SIGILL, SIGFPE, SIGABRT)
+STATIC_CONST_VARIABLE_DECLARE_COLLECTION(Vector<int>, SIGNALS_HANDLED, SIGSEGV, SIGILL, SIGFPE, SIGABRT)
 #endif // SPL_AUTOGRADER_MODE
 
 static void signalHandlerDisable();
 static void signalHandlerEnable();
 static void stanfordCppLibSignalHandler(int sig);
 static void stanfordCppLibTerminateHandler();
+static void stanfordCppLibUnexpectedHandler();
 
 std::string cleanupFunctionNameForStackTrace(std::string function) {
     // remove references to std:: namespace
     stringReplaceInPlace(function, "std::", "");
     stringReplaceInPlace(function, "__cxx11::", "");
+    stringReplaceInPlace(function, "__cxxabi::", "");
+    stringReplaceInPlace(function, "__cxxabiv1::", "");
     stringReplaceInPlace(function, "[abi:cxx11]", "");
     stringReplaceInPlace(function, "__1::", "");   // on Mac
 
@@ -95,6 +116,13 @@ std::string cleanupFunctionNameForStackTrace(std::string function) {
     stringReplaceInPlace(function, "basic_ofstream", "ofstream");
     stringReplaceInPlace(function, "basic_ifstream", "ifstream");
     stringReplaceInPlace(function, "basic_string", "string");
+
+    // remove empty/unknown function names
+    stringReplaceInPlace(function, "?? ??:0", "");
+
+    // cleanup autograder test case names
+    stringReplaceInPlace(function, "_Test::TestRealBody", "");
+    stringReplaceInPlace(function, "_Test::TestBody", "");
 
     // remove template arguments
     // TODO: does not work well for nested templates
@@ -124,6 +152,11 @@ std::string cleanupFunctionNameForStackTrace(std::string function) {
 
     // addr2line oddly writes "const Foo&" as "Foo const&"
     stringReplaceInPlace(function, "string const&", "const string&");
+
+    // small patch for renamed main function
+    if (function == "_main_") {
+        function = "main";
+    }
 
     return function;
 }
@@ -175,11 +208,18 @@ LONG WINAPI UnhandledException(LPEXCEPTION_POINTERS exceptionInfo) {
 }
 #endif // _WIN32
 
-void setTopLevelExceptionHandlerEnabled(bool enabled) {
+void setTopLevelExceptionHandlerEnabled(bool enabled, bool force) {
     static void (* old_terminate)() = nullptr;
+    static void (* old_unexpected)() = nullptr;
 
-    if (!STATIC_VARIABLE(topLevelExceptionHandlerEnabled) && enabled) {
-        old_terminate = std::set_terminate(stanfordCppLibTerminateHandler);
+    if ((!STATIC_VARIABLE(topLevelExceptionHandlerEnabled) || force) && enabled) {
+        if (!old_terminate) {
+            old_terminate = std::set_terminate(stanfordCppLibTerminateHandler);
+            old_unexpected = std::set_unexpected(stanfordCppLibUnexpectedHandler);
+        } else {
+            std::set_terminate(stanfordCppLibTerminateHandler);
+            std::set_unexpected(stanfordCppLibUnexpectedHandler);
+        }
 #ifdef _WIN32
         // disabling this code for now because it messes with the
         // newly added uncaught signal handler
@@ -195,8 +235,9 @@ void setTopLevelExceptionHandlerEnabled(bool enabled) {
         
         // also set up a signal handler for things like segfaults / null-pointer-dereferences
         signalHandlerEnable();
-    } else if (STATIC_VARIABLE(topLevelExceptionHandlerEnabled) && !enabled) {
+    } else if ((STATIC_VARIABLE(topLevelExceptionHandlerEnabled) || force) && !enabled) {
         std::set_terminate(old_terminate);
+        std::set_unexpected(old_unexpected);
     }
     STATIC_VARIABLE(topLevelExceptionHandlerEnabled) = enabled;
 }
@@ -207,40 +248,75 @@ void setTopLevelExceptionHandlerEnabled(bool enabled) {
  */
 bool shouldFilterOutFromStackTrace(const std::string& function) {
     // exact names that should be matched and filtered
-    static const std::vector<std::string> FORBIDDEN_NAMES {
+    static const Vector<std::string> FORBIDDEN_NAMES {
+        "",
         "??",
+        "call_stack",
         "_clone",
-        "_start",
-        "_Unwind_Resume",
+        "clone",
         "error",
+        "error(const string&)",
         "error(string)",
-        "startupMain(int, char**)"
+        "ErrorException",
+        "__libc_start_main",
+        "_start",
+        "startupMain(int, char**)",
+        "(unknown)",
+        "_Unwind_Resume"
     };
 
     // substrings to filter (don't show any func whose name contains these)
-    static const std::vector<std::string> FORBIDDEN_SUBSTRINGS {
+    static const Vector<std::string> FORBIDDEN_SUBSTRINGS {
         " error(",
+        "__cxa_rethrow",
+        "__cxa_call_terminate",
+        "__cxa_call_unexpected",
+        "_endthreadex",
+        "_Function_handler",
+        "_Internal_",
+        "_M_invoke",
         "_sigtramp",
-        "autograderMain"
+        "autograderMain",
         "BaseThreadInitThunk",
+        "call_stack_gcc.cpp",
+        "call_stack_windows.cpp",
         "crtexe.c",
         "ErrorException::ErrorException",
+        "exceptions.cpp",
+        "function::operator",
+        "GetModuleFileName",
         "GetProfileString",
+        // "GStudentThread::run",
         "InitializeExceptionChain",
         "KnownExceptionFilter",
+        "M_invoke",
+        "multimain.cpp",
+        // "operator",
         "printStackTrace",
+        // "QAbstractItemModel::",
+        // "QAbstractProxyModel::",
+        "QApplicationPrivate::",
+        "QCoreApplication::",
+        "QGuiApplicationPrivate::",
+        "QMetaMethod::",
+        "QMetaObject::",
+        "QObjectPrivate::",
+        // "QWidget::",
+        "QWidgetBackingStore::",
+        "QWindowSystemInterface::",
         "shouldFilterOutFromStackTrace",
         "stacktrace::",
         "stanfordCppLibPosixSignalHandler",
         "stanfordCppLibSignalHandler",
         "stanfordCppLibTerminateHandler",
+        "stanfordCppLibUnexpectedHandler",
         "testing::",
         "UnhandledException"
     };
 
     // prefixes to filter (don't show any func whose name starts with these)
-    static const std::vector<std::string> FORBIDDEN_PREFIXES {
-        "__"
+    static const Vector<std::string> FORBIDDEN_PREFIXES {
+        // "__"
     };
 
     for (const std::string& name : FORBIDDEN_NAMES) {
@@ -272,24 +348,26 @@ void printStackTrace(std::ostream& out) {
     // constructing the following object jumps into fancy code in call_stack_gcc/windows.cpp
     // to rebuild the stack trace; implementation differs for each operating system
     stacktrace::call_stack trace;
-    std::vector<stacktrace::entry> entries = trace.stack;
+    Vector<stacktrace::entry> entries = trace.stack;
     
     // get longest line string length to line up stack traces
     void* fakeStackPtr = stacktrace::fakeCallStackPointer();
     int entriesToShowCount = 0;
     int funcNameLength = 0;
     int lineStrLength = 0;
-    for (size_t i = 0; i < entries.size(); ++i) {
+    for (int i = 0; i < entries.size(); ++i) {
         entries[i].function = cleanupFunctionNameForStackTrace(entries[i].function);
-        
-        if (!STATIC_VARIABLE(STACK_TRACE_SHOULD_FILTER) || !shouldFilterOutFromStackTrace(entries[i].function)) {
+        if (!STATIC_VARIABLE(STACK_TRACE_SHOULD_FILTER)
+                || (!shouldFilterOutFromStackTrace(entries[i].function)
+                    && !shouldFilterOutFromStackTrace(entries[i].file)
+                    && !shouldFilterOutFromStackTrace(entries[i].lineStr))) {
             lineStrLength = std::max(lineStrLength, (int) entries[i].lineStr.length());
             funcNameLength = std::max(funcNameLength, (int) entries[i].function.length());
             entriesToShowCount++;
         }
     }
     
-    if (entries.empty() || entriesToShowCount == 0) {
+    if (entries.isEmpty() || entriesToShowCount == 0) {
         return;   // couldn't get a stack trace, or had no useful data  :-(
     }
     
@@ -306,12 +384,15 @@ void printStackTrace(std::ostream& out) {
         out << "*** Stack trace:" << std::endl;
     }
     
-    for (size_t i = 0; i < entries.size(); ++i) {
+    for (int i = 0; i < entries.size(); ++i) {
         stacktrace::entry entry = entries[i];
         entry.file = getTail(entry.file);
         
         // skip certain entries for clarity
-        if (STATIC_VARIABLE(STACK_TRACE_SHOULD_FILTER) && shouldFilterOutFromStackTrace(entry.function)) {
+        if (STATIC_VARIABLE(STACK_TRACE_SHOULD_FILTER)
+                && (shouldFilterOutFromStackTrace(entry.function)
+                    || shouldFilterOutFromStackTrace(entry.file)
+                    || shouldFilterOutFromStackTrace(entry.lineStr))) {
             continue;
         }
         
@@ -330,14 +411,27 @@ void printStackTrace(std::ostream& out) {
             entry.function = "main()";
         }
 
+        // fix qMain => main to hide Qt main renaming
+        if (entry.function == "qMain()") {
+            entry.function = "main()";
+        }
+
         std::string lineStr = "";
         if (!entry.lineStr.empty()) {
             lineStr = trimEnd(entry.lineStr);
             if (lineStr == "?? ??:0") {
                 lineStr = "(unknown)";
             }
-        } else if (entry.line > 0) {
-            lineStr = "line " + integerToString(entry.line);
+
+            if (entry.line == 0 && stringContains(lineStr, ":")) {
+                Vector<std::string> tokens = stringSplit(lineStr, ":");
+                if (stringIsInteger(tokens[tokens.size() - 1])) {
+                    entry.line = stringToInteger(tokens[tokens.size() - 1]);
+                }
+            }
+        }
+        if (entry.lineStr.empty() && entry.line > 0) {
+            lineStr = "line " + std::to_string(entry.line);
         }
         
         out << "*** " << std::left << std::setw(lineStrLength) << lineStr
@@ -346,7 +440,9 @@ void printStackTrace(std::ostream& out) {
         // don't show entries beneath the student's main() function, for simplicity
         if (entry.function == "main"
                 || entry.function == "main()"
-                || entry.function == "main(int, char**)") {
+                || entry.function == "main(int, char**)"
+                || entry.function == "qMain"
+                || entry.function == "qMain()") {
             break;
         }
     }
@@ -385,6 +481,20 @@ void printStackTrace(std::ostream& out) {
     out << msg; \
     printStackTrace(out); \
     THROW_NOT_ON_WINDOWS(ex); \
+    }
+
+#define FILL_IN_EXCEPTION_TRACE_AND_THROW_ERROREXCEPTION(ex, kind, desc) \
+    {\
+    std::string __kind = (kind); \
+    std::string __desc = (desc); \
+    if ((!__kind.empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_KIND, __kind); } \
+    if ((!__desc.empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_DETAILS, __desc); } \
+    std::cout.flush(); \
+    out << msg; \
+    printStackTrace(out); \
+    ErrorException errorEx(out.str()); \
+    errorEx.setKind(kind); \
+    THROW_NOT_ON_WINDOWS(errorEx); \
     }
 
 static void signalHandlerDisable() {
@@ -446,26 +556,28 @@ static void signalHandlerEnable() {
  * Prints details about the signal and then tries to print a stack trace.
  */
 static void stanfordCppLibSignalHandler(int sig) {
+#ifndef SPL_AUTOGRADER_MODE
     // turn the signal handler off (should run only once; avoid infinite cycle)
     signalHandlerDisable();
+#endif // SPL_AUTOGRADER_MODE
 
     // tailor the error message to the kind of signal that occurred
     std::string SIGNAL_KIND = "A fatal error";
     std::string SIGNAL_DETAILS = "No details were provided about the error.";
     if (sig == SIGSEGV) {
-        SIGNAL_KIND = "A segmentation fault";
+        SIGNAL_KIND = "A segmentation fault (SIGSEGV)";
         SIGNAL_DETAILS = "This typically happens when you try to dereference a pointer\n*** that is NULL or invalid.";
     } else if (sig == SIGABRT) {
-        SIGNAL_KIND = "An abort error";
+        SIGNAL_KIND = "An abort error (SIGABRT)";
         SIGNAL_DETAILS = "This error is thrown by system functions that detect corrupt state.";
     } else if (sig == SIGILL) {
-        SIGNAL_KIND = "An illegal instruction error";
+        SIGNAL_KIND = "An illegal instruction error (SIGILL)";
         SIGNAL_DETAILS = "This typically happens when you have corrupted your program's memory.";
     } else if (sig == SIGFPE) {
-        SIGNAL_KIND = "An arithmetic error";
+        SIGNAL_KIND = "An arithmetic error (SIGFPE)";
         SIGNAL_DETAILS = "This typically happens when you divide by 0 or produce an overflow.";
     } else if (sig == SIGINT) {
-        SIGNAL_KIND = "An interrupt error";
+        SIGNAL_KIND = "An interrupt error (SIGINT)";
         SIGNAL_DETAILS = "This typically happens when your code timed out because it was stuck in an infinite loop.";
     } else if (sig == SIGSTACK) {
         SIGNAL_KIND = "A stack overflow";
@@ -475,6 +587,7 @@ static void stanfordCppLibSignalHandler(int sig) {
         SIGNAL_DETAILS = "This can happen when you produce infinite output in your code.";
     }
     
+#ifndef SPL_AUTOGRADER_MODE
     std::cerr << std::endl;
     std::cerr << "***" << std::endl;
     std::cerr << "*** STANFORD C++ LIBRARY" << std::endl;
@@ -491,7 +604,17 @@ static void stanfordCppLibSignalHandler(int sig) {
 //        std::cerr << "*** " << line << std::endl;
 //    }
     std::cerr.flush();
+
+    // if in autograder mode, swallow the signal;
+    // if in student code, let it bubble out to crash the app
     raise(sig == SIGSTACK ? SIGABRT : sig);
+#else // SPL_AUTOGRADER_MODE
+    // throw an exception
+    std::ostringstream out;
+    out << SIGNAL_KIND << "." << std::endl;
+    out << SIGNAL_DETAILS << std::endl;
+    error(out.str());
+#endif // SPL_AUTOGRADER_MODE
 }
 
 // puts "*** " before each line for multi-line error messages
@@ -530,12 +653,11 @@ static void stanfordCppLibTerminateHandler() {
         signalHandlerDisable();   // don't want both a signal AND a terminate() call
         throw;   // re-throws the exception that already occurred
     } catch (const ErrorException& ex) {
-        FILL_IN_EXCEPTION_TRACE(ex, "An ErrorException", insertStarsBeforeEachLine(ex.what()));
-    } catch (const InterruptedIOException& /* iex */) {
-        // blocked console I/O was interrupted; just exit program immediately
-        // (doesn't close any other JBE-generated GUI windows, but oh well)
-        std::cout.flush();
-        std::exit(0);
+        if (ex.hasStackTrace()) {
+            ex.dump();
+        } else {
+            FILL_IN_EXCEPTION_TRACE(ex, "An ErrorException", insertStarsBeforeEachLine(ex.what()));
+        }
     } catch (const std::exception& ex) {
         FILL_IN_EXCEPTION_TRACE(ex, "A C++ exception", insertStarsBeforeEachLine(ex.what()));
     } catch (std::string str) {
@@ -543,19 +665,76 @@ static void stanfordCppLibTerminateHandler() {
     } catch (char const* str) {
         FILL_IN_EXCEPTION_TRACE(str, "A string exception", insertStarsBeforeEachLine(str));
     } catch (int n) {
-        FILL_IN_EXCEPTION_TRACE(n, "An int exception", integerToString(n));
+        FILL_IN_EXCEPTION_TRACE(n, "An int exception", std::to_string(n));
     } catch (long l) {
-        FILL_IN_EXCEPTION_TRACE(l, "A long exception", longToString(l));
+        FILL_IN_EXCEPTION_TRACE(l, "A long exception", std::to_string(l));
     } catch (char c) {
         FILL_IN_EXCEPTION_TRACE(c, "A char exception", charToString(c));
     } catch (bool b) {
         FILL_IN_EXCEPTION_TRACE(b, "A bool exception", boolToString(b));
     } catch (double d) {
-        FILL_IN_EXCEPTION_TRACE(d, "A double exception", realToString(d));
+        FILL_IN_EXCEPTION_TRACE(d, "A double exception", std::to_string(d));
     } catch (...) {
         std::string ex = "Unknown";
         FILL_IN_EXCEPTION_TRACE(ex, "An exception", std::string());
     }
+}
+
+/*
+ * A general handler for any exception thrown that is missing from the throw()
+ * clause of a function header.
+ * Prints details about the exception and then tries to print a stack trace.
+ */
+static void stanfordCppLibUnexpectedHandler() {
+    std::string DEFAULT_EXCEPTION_KIND = "An exception";
+    std::string DEFAULT_EXCEPTION_DETAILS = "(unknown exception details)";
+
+    std::string msg;
+    msg += "\n";
+    msg += "***\n";
+    msg += "*** STANFORD C++ LIBRARY \n";
+    msg += "*** " + DEFAULT_EXCEPTION_KIND + " occurred during program execution: \n";
+    msg += "*** " + DEFAULT_EXCEPTION_DETAILS + "\n";
+    msg += "***\n";
+
+    std::string kind = "error";
+    std::string message = "";
+    try {
+        throw;   // re-throws the exception that already occurred
+    } catch (bool b) {
+        kind = "bool";
+        message = boolToString(b);
+    } catch (char c) {
+        kind = "char";
+        message = charToString(c);
+    } catch (char const* str) {
+        kind = "string";
+        message = str;
+    } catch (double d) {
+        kind = "double";
+        message = std::to_string(d);
+    } catch (const ErrorException& ex) {
+        kind = "error";
+        message = ex.what();
+    } catch (const std::exception& ex) {
+        kind = "exception";
+        message = ex.what();
+    } catch (int n) {
+        kind = "int";
+        message = std::to_string(n);
+    } catch (long l) {
+        kind = "long";
+        message = std::to_string(l);
+    } catch (std::string str) {
+        kind = "string";
+        message = str;
+    } catch (...) {
+        kind = "unknown";
+    }
+
+    ErrorException errorEx(message);
+    errorEx.setKind(kind);
+    throw errorEx;
 }
 
 } // namespace exceptions

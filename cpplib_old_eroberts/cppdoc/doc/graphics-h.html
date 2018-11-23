@@ -1,0 +1,280 @@
+<html>
+<head>
+<title>include/graphics.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: graphics.h
+ * ----------------
+ * This interface provides access to an extremely simple graphics library
+ * that makes it possible to draw lines, rectangles, and ovals.  More
+ * sophisticated operations and a wider range of graphical objects are
+ * available in other libraries that extend these basic facilities, most
+ * notably the graphical objects defined by the gobjects.h interface.
+ */
+</scan>
+#ifndef _graphics_h
+#define _graphics_h
+
+#include &lt;string&gt;
+
+<a name="Function:initGraphics"><scan class=comment>/*
+ * Function: initGraphics
+ * Usage: initGraphics();
+ *        initGraphics(width, height);
+ * -----------------------------------
+ * Creates the graphics window on the screen.  The first form creates a
+ * window with a default size of 500x300; the second allows the client to
+ * specify the size of the window.  The call to initGraphics must precede
+ * any console output or calls to other functions in this interface.
+ */
+</scan>
+void initGraphics();
+void initGraphics(int width, int height);
+
+<a name="Function:drawArc"><scan class=comment>/*
+ * Function: drawArc
+ * Usage: drawArc(x, y, width, height, start, sweep);
+ * --------------------------------------------------
+ * Draws an elliptical arc inscribed in a rectangle.   The parameters x, y,
+ * width, and height specify the coordinates and dimensions of the bounding
+ * rectangle.  The start parameter indicates the angle at which the arc
+ * begins and is measured in degrees counterclockwise from the +x axis. 
+ * Thus, a start angle of 0 indicates an arc that begins along the line
+ * running eastward from the center, a start angle of 135 begins along the
+ * line running northwest, and a start angle of -90 begins along the line
+ * running south.  The sweep parameter indicates the extent of the arc and
+ * is also measured in degrees counterclockwise.  A sweep angle of 90
+ * defines a quarter circle extending counterclockwise from the start
+ * angle, and a sweep angle of -180 defines a semicircle extending
+ * clockwise.
+ */
+</scan>
+void drawArc(double x, double y, double width, double height,
+                                 double start, double sweep);
+
+<a name="Function:fillArc"><scan class=comment>/*
+ * Function: fillArc
+ * Usage: fillArc(x, y, width, height, start, sweep);
+ * --------------------------------------------------
+ * Fills a wedge-shaped area of an elliptical arc.  The parameters are
+ * interpreted in the same way as those for drawArc.
+ */
+</scan>
+void fillArc(double x, double y, double width, double height,
+                                 double start, double sweep);
+
+<a name="Function:drawImage"><scan class=comment>/*
+ * Function: drawImage
+ * Usage: drawImage(filename, x, y);
+ * ---------------------------------
+ * Draws the image from the specified file with its upper left corner at
+ * the point (x, y).
+ */
+</scan>
+void drawImage(string str, double x, double y);
+
+<a name="Function:drawLine"><scan class=comment>/*
+ * Function: drawLine
+ * Usage: drawLine(x0, y0, x1, y1);
+ * --------------------------------
+ * Draws a line from the point (x0, y0) to the point (x1, y1).
+ */
+</scan>
+void drawLine(double x0, double y0, double x1, double y1);
+
+<a name="Function:drawOval"><scan class=comment>/*
+ * Function: drawOval
+ * Usage: drawOval(x, y, width, height);
+ * -------------------------------------
+ * Draws the frame of a oval with the specified bounds.
+ */
+</scan>
+void drawOval(double x, double y, double width, double height);
+
+<a name="Function:fillOval"><scan class=comment>/*
+ * Function: fillOval
+ * Usage: fillOval(x, y, width, height);
+ * -------------------------------------
+ * Fills the frame of a oval with the specified bounds.
+ */
+</scan>
+void fillOval(double x, double y, double width, double height);
+
+<a name="Function:drawRect"><scan class=comment>/*
+ * Function: drawRect
+ * Usage: drawRect(x, y, width, height);
+ * -------------------------------------
+ * Draws the frame of a rectangle with the specified bounds.
+ */
+</scan>
+void drawRect(double x, double y, double width, double height);
+
+<a name="Function:fillRect"><scan class=comment>/*
+ * Function: fillRect
+ * Usage: fillRect(x, y, width, height);
+ * -------------------------------------
+ * Fills the frame of a rectangle with the specified bounds.
+ */
+</scan>
+void fillRect(double x, double y, double width, double height);
+
+<a name="Function:drawString"><scan class=comment>/*
+ * Function: drawString
+ * Usage: drawString(str, x, y);
+ * -----------------------------
+ * Draws the string str so that its origin appears at the point (x, y)
+ * using the current font and color.
+ */
+</scan>
+void drawString(string str, double x, double y);
+
+<a name="Function:getStringWidth"><scan class=comment>/*
+ * Function: getStringWidth
+ * Usage: double width = getStringWidth(str);
+ * ------------------------------------------
+ * Returns the width of the string str when displayed in the current font.
+ */
+</scan>
+   double getStringWidth(string str);
+
+<a name="Function:setFont"><scan class=comment>/*
+ * Function: setFont
+ * Usage: setFont(font);
+ * ---------------------
+ * Sets a new font.  The font parameter is a string in the form
+ * family-style-size.  In this string, family is the name of the font
+ * family; style is either missing (indicating a plain font) or one of the
+ * strings Bold, Italic, or BoldItalic; and size is an integer indicating
+ * the point size.  If any of these components is specified as an asterisk,
+ * the existing value is retained.  The font parameter can also be a
+ * sequence of such specifications separated by semicolons, in which the
+ * first available font on the system is used.
+ */
+</scan>
+   void setFont(string font);
+
+<a name="Function:getFont"><scan class=comment>/*
+ * Function: getFont
+ * Usage: string font = getFont();
+ * -------------------------------
+ * Returns the current font.
+ */
+</scan>
+   string getFont();
+
+<a name="Function:setColor"><scan class=comment>/*
+ * Function: setColor
+ * Usage: setColor(color);
+ * -----------------------
+ * Sets the color used for drawing.  The color parameter is usually one of
+ * the predefined color names from Java:
+ *
+ *    BLACK,
+ *    BLUE,
+ *    CYAN,
+ *    DARK_GRAY,
+ *    GRAY,
+ *    GREEN,
+ *    LIGHT_GRAY,
+ *    MAGENTA,
+ *    ORANGE,
+ *    PINK,
+ *    RED,
+ *    WHITE, or
+ *    YELLOW.
+ *
+ * The case of the individual letters in the color name is ignored, as are
+ * spaces and underscores, so that the Java color DARK_GRAY could be
+ * written as "Dark Gray".
+ *
+ * The color can also be specified as a string in the form "#rrggbb" where
+ * rr, gg, and bb are pairs of hexadecimal digits indicating the red,
+ * green, and blue components of the color.
+ */
+</scan>
+void setColor(string color);
+
+<a name="Function:getColor"><scan class=comment>/*
+ * Function: getColor
+ * Usage: string color = getColor();
+ * ---------------------------------
+ * Returns the current color as a string in the form "#rrggbb".  In this
+ * string, the values rr, gg, and bb are two-digit hexadecimal values
+ * representing the red, green, and blue components of the color,
+ * respectively.
+ */
+</scan>
+string getColor();
+
+<a name="Function:saveGraphicsState"><scan class=comment>/*
+ * Function: saveGraphicsState
+ * Usage: saveGraphicsState();
+ * ---------------------------
+ * Saves the state of the graphics context.  This function is used in
+ * conjunction with restoreGraphicsState() to avoid changing the state set
+ * up by the client.
+ */
+</scan>
+   void saveGraphicsState();
+
+<a name="Function:restoreGraphicsState"><scan class=comment>/*
+ * Function: restoreGraphicsState
+ * Usage: restoreGraphicsState();
+ * ------------------------------
+ * Restores the graphics state from the most recent call to
+ * saveGraphicsState().
+ */
+</scan>
+   void restoreGraphicsState();
+
+<a name="Function:getWindowWidth"><scan class=comment>/*
+ * Function: getWindowWidth
+ * Usage: double width = getWindowWidth();
+ * ---------------------------------------
+ * Returns the width of the graphics window, in pixels.
+ */
+</scan>
+double getWindowWidth();
+
+<a name="Function:getWindowHeight"><scan class=comment>/*
+ * Function: getWindowHeight
+ * Usage: double height = getWindowHeight();
+ * -----------------------------------------
+ * Returns the width of the graphics window, in pixels.
+ */
+</scan>
+double getWindowHeight();
+
+<a name="Function:updateDisplay"><scan class=comment>/*
+ * Function: updateDisplay
+ * Usage: updateDisplay();
+ * -----------------------
+ * Initiates an immediate update of the graphics window.  This call is
+ * necessary when the graphics library is used for animation.  Ordinarily,
+ * the graphics window is updated only when the program waits for user
+ * input.
+ */
+</scan>
+void updateDisplay();
+
+<a name="Function:pause"><scan class=comment>/*
+ * Function: pause
+ * Usage: pause(milliseconds);
+ * ---------------------------
+ * Updates the graphics window and then pauses for the indicated number of
+ * milliseconds.  This function is useful for animation where the motion
+ * would otherwise be too fast.
+ */
+</scan>
+void pause(double milliseconds);
+
+#include "console.h"
+#include "private/main.h"
+
+#endif
+</pre>
+</body>
+</html>

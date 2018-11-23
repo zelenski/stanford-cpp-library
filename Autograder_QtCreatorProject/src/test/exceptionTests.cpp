@@ -58,12 +58,15 @@ void recursionIndentTest() {
     rihelper(3);
 }
 
+// commenting out because of compiler warning about infinite recursion
 void stackOverflowTest(int n) {
     int a[100] = {0};
     if (a[0] || n % 1000 == 0) {
         cout << "stack overflow n=" << n << endl;
     }
-    stackOverflowTest(n+1);
+    if (!a[0]) {
+        stackOverflowTest(n+1);
+    }
 }
 
 void segC_theOneThatActuallyThrows(int sig) {
@@ -76,6 +79,9 @@ void segC_theOneThatActuallyThrows(int sig) {
         // dereference a NULL pointer (generate SIGSEGV)
         int* foo = nullptr;
         cout << *foo << endl;
+    } else if (sig == SIGABRT) {
+        // cause program to "abort" (generate SIGABRT)
+        abort();
     }
     cout << "will never get here lol" << endl;
 }
@@ -95,3 +101,65 @@ void segfaultTest(int sig) {
     cout << "Hello, world!" << endl;
     segA(sig);
 }
+
+
+TEST_CATEGORY(ExceptionTests, "Exception tests");
+
+// test raising various kinds of exceptions
+TIMED_TEST(ExceptionTests, ErrorExceptionTest, TEST_TIMEOUT_DEFAULT) {
+    exceptionTest();
+}
+
+void excepB() {
+    int x = 42;
+    string s = "hi";
+    s += x;
+    throw 42;
+}
+
+void excepA() {
+    int x = 42;
+    string s = "hi";
+    s += x;
+    excepB();
+}
+
+TIMED_TEST(ExceptionTests, IntExceptionTest, TEST_TIMEOUT_DEFAULT * 1000) {
+    excepA();
+}
+
+TIMED_TEST(ExceptionTests, DoubleExceptionTest, TEST_TIMEOUT_DEFAULT) {
+    throw 3.14;
+}
+
+TIMED_TEST(ExceptionTests, StringExceptionTest, TEST_TIMEOUT_DEFAULT) {
+    throw string("oh crap");
+}
+
+TIMED_TEST(ExceptionTests, CharStarExceptionTest, TEST_TIMEOUT_DEFAULT) {
+    throw "oh crap!!";
+}
+
+TIMED_TEST(ExceptionTests, StdExceptionTest, TEST_TIMEOUT_DEFAULT) {
+    throw std::exception();
+}
+
+// test raising various kinds of signals
+TIMED_TEST(ExceptionTests, SegfaultTest, TEST_TIMEOUT_DEFAULT) {
+    segfaultTest(SIGSEGV);
+}
+
+TIMED_TEST(ExceptionTests, SIGFPETest, TEST_TIMEOUT_DEFAULT) {
+    segfaultTest(SIGFPE);
+}
+
+// can't test SIGABRT because Google Test framework needs to capture it
+//TIMED_TEST(ExceptionTests, AbortTest, TEST_TIMEOUT_DEFAULT) {
+//    segfaultTest(SIGABRT);
+//}
+
+// test stack overflow
+// (commenting out because we currently can't gracefully catch stack overflows)
+//TIMED_TEST(ExceptionTests, StackOverflowTest, TEST_TIMEOUT_DEFAULT) {
+//    stackOverflowTest(42);
+//}

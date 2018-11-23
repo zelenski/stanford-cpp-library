@@ -8,7 +8,7 @@
 package stanford.cs106.collections;
 
 import java.awt.Color;
-import java.util.Observable;
+import java.util.*;
 
 /**
  * A Vertex object represents extra information associated with each vertex.
@@ -21,6 +21,7 @@ import java.util.Observable;
  * }
  * </pre>
  */
+@SuppressWarnings("deprecation")
 public class Vertex<V> extends Observable implements Comparable<Vertex<V>>, Cloneable {
 	/** Maximum possible cost to reach a vertex from another; treat this as "infinity". */
 	public static final double MAX_COST = Double.POSITIVE_INFINITY;

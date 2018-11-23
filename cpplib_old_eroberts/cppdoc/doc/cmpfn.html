@@ -1,0 +1,38 @@
+<html>
+<head>
+<title>cmpfn.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="cmpfn-h.html">cmpfn.h</a></h1>
+This interface exports a template function for comparing values of
+an unspecified type.  Most clients will have no need to use this
+interface explicitly.  Its primary purpose is to provide a default
+comparison function that allows maps and sets to use the standard
+operators defined for their base type.
+<h2>Function</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Function:operatorCmp">operatorCmp(v1,&nbsp;v2)</a>&nbsp;</td><td class=indexSynopsis width=100%>This template function is a generic function that compares two values using the built-in <code>==</code> and <code>&lt;</code> operators.</td></tr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:operatorCmp"></a>
+<pre class=detailCode>
+template &lt;typename Type&gt;
+int operatorCmp(Type v1, Type v2);
+</pre>
+<div class=detailHTML>
+This template function is a generic function that compares two
+values using the built-in <code>==</code> and <code>&lt;</code>
+operators.  It is supplied as a convenience for those situations
+where a comparison function is required, and the type has a
+built-in ordering that you would like to use.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int sign = operatorCmp(v1, v2);
+</pre>
+<hr>
+</table>
+</body>
+</html>

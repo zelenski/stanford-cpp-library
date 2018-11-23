@@ -23,8 +23,8 @@
 
 		<p>
 			Each object of this class represents a single vertex (or node) in a graph.
-			The vertex object itself stores some useful data fields that can be used in various graph algorithms,
-			like path-searching algorithms such as Dijkstra's algorithm.
+			Previous versions of this class in the library included member variables such as <code>visited</code> and <code>previous</code> to help facilitate the implementation of various graph algorithms.
+			These were removed by the library's maintainer because we want our students to learn to manage such data themselves using collections.
 		</p>
 
 		<p>
@@ -42,17 +42,17 @@
 			<tr><td class=indexKey><nobr><a href="#Constructor:Vertex">Vertex(<var>name</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a vertex with the given name.</td></tr>
 			<tr><td class=indexHead colspan=2>Methods</td></tr>
 			<tr><td class=indexKey><nobr><a href="#Method:getColor">getColor()</a></td><td class=indexSynopsis width=100%>Returns the color of this vertex.</td></tr>
-			<tr><td class=indexKey><nobr><a href="#Method:resetData">resetData()</a></td><td class=indexSynopsis width=100%>Sets the <code>cost</code>, <code>previous</code>, and <code>visited</code> fields and color back to their initial values.</td></tr>
+			<tr><td class=indexKey><nobr><a href="#Method:resetData">resetData()</a></td><td class=indexSynopsis width=100%>Sets the vertex's color back to its initial value.</td></tr>
 			<tr><td class=indexKey><nobr><a href="#Method:setColor">setColor(<var>color</var>)</a></td><td class=indexSynopsis width=100%>Sets this vertex's color to the given color.</td></tr>
 			<tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a></td><td class=indexSynopsis width=100%>Returns a string representation of this vertex.</td></tr>
 			<tr><td class=indexHead colspan=2>Fields</td></tr>
 			<tr class="deprecated"><td class=indexKey><nobr>Set&lt;Edge*&gt;&nbsp;arcs</nobr></td><td class=indexSynopsis width=100%><em>Deprecated.</em>  A set of pointers to all outbound arcs (edges) from this vertex.  We suggest you refer to this field as <code>edges</code> rather than <code>arcs</code>, though either will work.</td></tr>
-			<tr><td class=indexKey><nobr>double&nbsp;cost</nobr></td><td class=indexSynopsis width=100%>The cost to reach this vertex; initially 0.</td></tr>
+			<tr class="deprecated"><td class=indexKey><nobr>double&nbsp;cost</nobr></td><td class=indexSynopsis width=100%><em>Deprecated.</em>  The cost to reach this vertex; initially 0.  This will be removed from the library; students should not use it.</td></tr>
 			<tr><td class=indexKey><nobr>Set&lt;Edge*&gt;&amp;&nbsp;edges</nobr></td><td class=indexSynopsis width=100%>A set of pointers to all outbound edges from this vertex. (An alias for <code>arcs</code>.)</td></tr>
 			<tr><td class=indexKey><nobr>string&nbsp;name</nobr></td><td class=indexSynopsis width=100%>The name of this vertex in the graph.</td></tr>
-			<tr><td class=indexKey><nobr>Vertex*&nbsp;previous</nobr></td><td class=indexSynopsis width=100%>A pointer to a previous vertex; initially <code>NULL</code>.</td></tr>
-			<tr><td class=indexKey><nobr>bool&nbsp;visited</nobr></td><td class=indexSynopsis width=100%>Whether or not this vertex has currently been visited; initially <code>false</code>.</td></tr>
-			<tr><td class=indexKey><nobr>double&amp;&nbsp;weight</nobr></td><td class=indexSynopsis width=100%>The cost to reach this vertex (an alias for <code>cost</code>).</td></tr>
+			<tr class="deprecated"><td class=indexKey><nobr>Vertex*&nbsp;previous</nobr></td><td class=indexSynopsis width=100%><em>Deprecated.</em>  A pointer to a previous vertex; initially <code>nullptr</code>. This will be removed from the library; students should not use it.</td></tr>
+			<tr class="deprecated"><td class=indexKey><nobr>bool&nbsp;visited</nobr></td><td class=indexSynopsis width=100%><em>Deprecated.</em>  Whether or not this vertex has currently been visited; initially <code>false</code>. This will be removed from the library; students should not use it.</td></tr>
+			<tr class="deprecated"><td class=indexKey><nobr>double&amp;&nbsp;weight</nobr></td><td class=indexSynopsis width=100%><em>Deprecated.</em>  The cost to reach this vertex (an alias for <code>cost</code>). This will be removed from the library; students should not use it.</td></tr>
 		</table>
 
 		<h2>Constructor detail</h2>
@@ -63,10 +63,11 @@ Vertex(string name);
 </pre>
 		<div class=detailHTML>
 		Creates a vertex with the given name.
+		Generally clients should not directly construct <code>Vertex</code> objects but should instead add vertexes by name to a <code>BasicGraph</code> which will then internally create the <code>Vertex</code> structure for you.
 		<p>Usage:<br>
 		</div>
 		<pre class=usageCode>
-Vertex v(name);
+Vertex* vp = new Vertex(name);
 </pre>
 		<hr>
 
@@ -82,7 +83,7 @@ int getColor();
 		<p>Usage:<br>
 		</div>
 		<pre class=usageCode>
-int color = v.getColor();
+int color = vp->getColor();
 </pre>
 		<hr>
 		<a name="Method:resetData"></a>
@@ -90,11 +91,11 @@ int color = v.getColor();
 void resetData();
 </pre>
 		<div class=detailHTML>
-		Sets the <code>cost</code>, <code>previous</code>, and <code>visited</code> fields and color back to their initial values of <code>0</code>, <code>NULL</code>, and <code>false</code> respectively.
+		Sets the vertex's color back to its initial value.
 		<p>Usage:<br>
 		</div>
 		<pre class=usageCode>
-v.resetData();
+vp->resetData();
 </pre>
 		<hr>
 		<a name="Method:setColor"></a>
@@ -107,7 +108,7 @@ void setColor(int color);
 		<p>Usage:<br>
 		</div>
 		<pre class=usageCode>
-v.setColor(color);
+vp->setColor(color);
 </pre>
 		<hr>
 		<a name="Method:toString"></a>
@@ -116,11 +117,11 @@ string toString() const;
 </pre>
 		<div class=detailHTML>
 		Returns a string representation of this vertex, such as
-		<code>"Vertex{name=r13c42, cost=11, visited=true, previous=r12c41, neighbors={r12c41, r12c43}}"</code>.
+		<code>"Vertex{name=r13c42, neighbors={r12c41, r12c43}}"</code>.
 		<p>Usage:<br>
 		</div>
 		<pre class=usageCode>
-string str = v.toString();
+string str = vp->toString();
 </pre>
 		<hr>
 	</body>

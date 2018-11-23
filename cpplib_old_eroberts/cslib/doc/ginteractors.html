@@ -1,0 +1,417 @@
+<html>
+<head>
+<title>ginteractors.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="ginteractors-h.html"><code>ginteractors.h</code></a></h1>
+This interface exports a hierarchy of graphical interactors similar to
+those provided in the Java Swing libraries.
+The structure of the <code>GInteractor</code> hierarchy looks like this:
+
+<p><div class=inset>
+<img src="images/GInteractorHierarchy.png"
+<img src="images/GInteractorHierarchy.png"
+     width=513 usemap="#GInteractorMap" alt="GInteractorHierarchy">
+</div>
+<map name="GInteractorMap">
+  <area shape=rect coords="210,0,303,27" href="gobjects.html#Type:GObject"
+        alt="GObject">
+  <area shape=rect coords="0,219,93,246" href="#Type:GButton"
+        alt="GButton">
+  <area shape=rect coords="105,219,198,246" href="#Type:GCheckBox"
+        alt="GCheckBox">
+  <area shape=rect coords="210,219,303,246" href="#Type:GChooser"
+        alt="GChooser">
+  <area shape=rect coords="315,219,408,246" href="#Type:GSlider"
+        alt="GSlider">
+  <area shape=rect coords="420,219,513,246" href="#Type:GTextField"
+        alt="GTextField">
+</map>
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Types</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:GInteractor">GInteractor</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This abstract type is the superclass for all graphical interactors.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:GButton">GButton</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subtype represents an onscreen button.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:GCheckBox">GCheckBox</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subtype represents an onscreen check box.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:GSlider">GSlider</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subtype represents an onscreen slider.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:GTextField">GTextField</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subtype represents a text field for entering short text strings.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:GChooser">GChooser</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This interactor subtype represents a selectable list.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setActionCommand">setActionCommand(interactor,&nbsp;cmd)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the action command to the indicated string.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getActionCommand">getActionCommand(interactor)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the action command associated with the interactor.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newGButton">newGButton(label)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GButton</code> with the specified label.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:GCheckBox">GCheckBox(label)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GCheckBox</code> with the specified label.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setSelected">setSelected(chkbox,&nbsp;state)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the state of the check box.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isSelected">isSelected(chkbox)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the check box is selected.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:GSlider">GSlider(min,&nbsp;max,&nbsp;value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a horizontal <code>GSlider</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setValue">setValue(slider,&nbsp;value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the current value of the slider.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getValue">getValue(slider)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the current value of the slider.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:GTextField">GTextField(nChars)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a text field capable of holding <code>nChars</code> characters.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setText">setText(field,&nbsp;str)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the text of the field to the specified string.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getText">getText(field)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the contents of the text field.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newGChooser">newGChooser()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a chooser that initially contains no items, which are added using the <code>addItem</code> function.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:addItem">addItem(chooser,&nbsp;item)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds a new item consisting of the specified string.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setSelectedItem">setSelectedItem(chooser,&nbsp;item)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the chooser so that it shows the specified item.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getSelectedItem">getSelectedItem(chooser)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the current item selected in the chooser.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:GInteractor"></a>
+<pre class=detailCode>
+typedef GObject GInteractor;
+</pre>
+<div class=detailHTML>
+This abstract type is the superclass for all graphical interactors.
+In most applications, interactors will be added to a control strip
+along one of the sides of the <code>GWindow</code>, but they can
+also be placed in specific positions just like any other
+<code>GObject</code>.
+</div>
+<hr>
+<a name="Type:GButton"></a>
+<pre class=detailCode>
+typedef GInteractor GButton;
+</pre>
+<div class=detailHTML>
+This interactor subtype represents an onscreen button.  The following
+program displays a button that, when pressed, generates the message
+&ldquo;Please do not press this button again&rdquo;
+(with thanks to Douglas Adams&rsquo;s <i>Hitchhiker&rsquo;s
+Guide to the Galaxy</i>):
+
+<pre>
+   main() {
+      GWindow gw = newGWindow(600, 400);
+      GButton button = newGButton("RED");
+      addToRegion(gw, button, "SOUTH");
+      while (true) {
+         GEvent e = waitForEvent(ACTION_EVENT | CLICK_EVENT);
+         if (getEventType(e) == MOUSE_CLICKED) break;
+         printf("Please do not press this button again.\n");
+      }
+   }
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+cmd = getActionCommand(interactor);
+</pre>
+<hr>
+<a name="Type:GCheckBox"></a>
+<pre class=detailCode>
+typedef GInteractor GCheckBox;
+</pre>
+<div class=detailHTML>
+This interactor subtype represents an onscreen check box.  Clicking
+once on the check box selects it; clicking again removes the selection.
+If a <code>GCheckBox</code> has an action command, clicking on the box
+generates a <code>GActionEvent</code>.
+<p>The display image of a check box is machine-dependent, but the declaration
+
+<pre>
+    GCheckBox *traceBox = new GCheckBox("Trace");
+</pre>
+
+typically produces a check box that looks something like this:
+
+<p><div class=inset>
+<img src="images/GCheckBox.png" alt="GCheckBox">
+</div>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+button = newGButton(label);
+</pre>
+<hr>
+<a name="Type:GSlider"></a>
+<pre class=detailCode>
+typedef GInteractor GSlider;
+</pre>
+<div class=detailHTML>
+This interactor subtype represents an onscreen slider.  Dragging
+the slider control generates an <code>ActionEvent</code> if the
+slider has a nonempty action command.
+<p>The display image of a slider is machine-dependent, but the declaration
+
+<pre>
+    GSlider *slider = new GSlider();
+</pre>
+
+typically produces a slider that looks something like this:
+
+<p><div class=inset>
+<img src="images/GSlider.png" alt="GSlider">
+</div>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isSelected(chkbox)) ...
+</pre>
+<hr>
+<a name="Type:GTextField"></a>
+<pre class=detailCode>
+typedef GInteractor GTextField;
+</pre>
+<div class=detailHTML>
+This interactor subtype represents a text field for entering
+short text strings.  Hitting enter in a text field generates a
+<code>GActionEvent</code> if the text field has a nonempty
+action command.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+value = getValue(slider);
+</pre>
+<hr>
+<a name="Type:GChooser"></a>
+<pre class=detailCode>
+typedef GInteractor GChooser;
+</pre>
+<div class=detailHTML>
+This interactor subtype represents a selectable list.  The
+<code>newGChooser</code> function creates an empty chooser.
+Once the chooser has been created, clients can use <code>addItem</code>
+to add the options.  For example, the following code creates a
+<code>GChooser</code> containing the four strings
+<code>"Small"</code>, <code>"Medium"</code>, <code>"Large"</code>,
+and <code>"X-Large"</code>:
+
+<pre>
+   GChooser sizeChooser = newGChooser();
+   addItem(sizeChooser, "Small");
+   addItem(sizeChooser, "Medium");
+   addItem(sizeChooser, "Large");
+   addItem(sizeChooser, "X-Large");
+</pre>
+<p>The display image of a <code>GChooser</code> is machine-dependent,
+but the chooser generated by this code typically looks something like this:
+
+<p><div class=inset>
+<img src="images/GChooser.png" alt="GChooser">
+</div>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+str = getText(field);
+</pre>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:setActionCommand"></a>
+<pre class=detailCode>
+void setActionCommand(GInteractor interactor, string cmd);
+</pre>
+<div class=detailHTML>
+Sets the action command to the indicated string.  If the string is not
+empty, activating the interactor generates a <code>GActionEvent</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setActionCommand(interactor, cmd);
+</pre>
+<hr>
+<a name="Function:getActionCommand"></a>
+<pre class=detailCode>
+string getActionCommand(GInteractor interactor);
+</pre>
+<div class=detailHTML>
+Returns the action command associated with the interactor.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+cmd = getActionCommand(interactor);
+</pre>
+<hr>
+<a name="Function:newGButton"></a>
+<pre class=detailCode>
+GButton newGButton(string label);
+</pre>
+<div class=detailHTML>
+Creates a <code>GButton</code> with the specified label.  This
+function also sets the action command for the button to the
+label string.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+button = newGButton(label);
+</pre>
+<hr>
+<a name="Function:GCheckBox"></a>
+<pre class=detailCode>
+GCheckBox GCheckBox(string label);
+</pre>
+<div class=detailHTML>
+Creates a <code>GCheckBox</code> with the specified label.  In contrast
+to the <code>GButton</code>ructor, this function does not automatically
+set an action command.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+chkbox = new GCheckBox(label);
+</pre>
+<hr>
+<a name="Function:setSelected"></a>
+<pre class=detailCode>
+void setSelected(GCheckBox chkbox, bool state);
+</pre>
+<div class=detailHTML>
+Sets the state of the check box.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setSelected(chkbox, state);
+</pre>
+<hr>
+<a name="Function:isSelected"></a>
+<pre class=detailCode>
+bool isSelected(GCheckBox chkbox);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the check box is selected.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isSelected(chkbox)) ...
+</pre>
+<hr>
+<a name="Function:GSlider"></a>
+<pre class=detailCode>
+GSlider GSlider(int min, int max, int value);
+</pre>
+<div class=detailHTML>
+Creates a horizontal <code>GSlider</code>.  The parameters are
+the minimum value, maximum value, and current value of the slider.
+Assigning an action command to the slider causes the slider to
+generate an action event whenever the slider value changes.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+slider = new GSlider(min, max, value);
+</pre>
+<hr>
+<a name="Function:setValue"></a>
+<pre class=detailCode>
+void setValue(GSlider slider, int value);
+</pre>
+<div class=detailHTML>
+Sets the current value of the slider.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setValue(slider, value);
+</pre>
+<hr>
+<a name="Function:getValue"></a>
+<pre class=detailCode>
+int getValue(GSlider slider);
+</pre>
+<div class=detailHTML>
+Returns the current value of the slider.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+value = getValue(slider);
+</pre>
+<hr>
+<a name="Function:GTextField"></a>
+<pre class=detailCode>
+GTextField GTextField(int nChars);
+</pre>
+<div class=detailHTML>
+Creates a text field capable of holding <code>nChars</code> characters.
+Assigning an action command to the text field causes it to generate an
+action event whenever the user types the ENTER key.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+field = newGTextField(nChars);
+</pre>
+<hr>
+<a name="Function:setText"></a>
+<pre class=detailCode>
+void setText(GTextField field, string str);
+</pre>
+<div class=detailHTML>
+Sets the text of the field to the specified string.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setText(field, str);
+</pre>
+<hr>
+<a name="Function:getText"></a>
+<pre class=detailCode>
+string getText(GTextField field);
+</pre>
+<div class=detailHTML>
+Returns the contents of the text field.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+str = getText(field);
+</pre>
+<hr>
+<a name="Function:newGChooser"></a>
+<pre class=detailCode>
+GChooser newGChooser(void);
+</pre>
+<div class=detailHTML>
+Creates a chooser that initially contains no items, which are added
+using the <code>addItem</code> function.  Assigning an action command
+to the chooser causes it to generate an action event whenever the
+user selects an item.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+chooser = newGChooser();
+</pre>
+<hr>
+<a name="Function:addItem"></a>
+<pre class=detailCode>
+void addItem(GChooser chooser, string item);
+</pre>
+<div class=detailHTML>
+Adds a new item consisting of the specified string.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+addItem(chooser, item);
+</pre>
+<hr>
+<a name="Function:setSelectedItem"></a>
+<pre class=detailCode>
+void setSelectedItem(GChooser chooser, string item);
+</pre>
+<div class=detailHTML>
+Sets the chooser so that it shows the specified item.  If the item
+does not exist in the chooser, no change occurs.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setSelectedItem(chooser, item);
+</pre>
+<hr>
+<a name="Function:getSelectedItem"></a>
+<pre class=detailCode>
+string getSelectedItem(GChooser chooser);
+</pre>
+<div class=detailHTML>
+Returns the current item selected in the chooser.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+item = getSelectedItem(chooser);
+</pre>
+<hr>
+</table>
+</body>
+</html>

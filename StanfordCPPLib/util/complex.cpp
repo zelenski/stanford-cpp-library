@@ -8,12 +8,16 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "complex.h"
 #include <cctype>
 #include <cmath>
 #include <sstream>
+#define INTERNAL_INCLUDE 1
 #include "gmath.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
+#undef INTERNAL_INCLUDE
 
 Complex::Complex(double a, double b) {
     this->a = a;
@@ -39,7 +43,7 @@ std::string Complex::toString() const {
 }
 
 int hashCode(const Complex& c) {
-    return hashCode2(c.real(), c.imag());
+    return hashCode(c.real(), c.imag());
 }
 
 Complex operator *(const Complex& m, const Complex& n) {

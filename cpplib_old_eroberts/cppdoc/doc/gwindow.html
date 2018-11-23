@@ -1,0 +1,153 @@
+<html>
+<head>
+<title>gwindow.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="gwindow-h.html">gwindow.h</a></h1>
+This class defines a graphics window.
+<h2>Class</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="GWindow-class.html">GWindow</a>&nbsp;</td><td class=indexSynopsis width=100%>This class represents a graphics window that can be displayed on the screen.</td></tr>
+</table>
+<h2>Functions</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Function:getGObjectAt">getGObjectAt(pt)</a><br><a href="#Function:getGObjectAt">getGObjectAt(x,&nbsp;y)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the topmost object in the primary window containing the specified point.</td></tr>
+<tr><td class=indexKey><a href="#Function:setWindowTitle">setWindowTitle(title)</a>&nbsp;</td><td class=indexSynopsis width=100%>Sets the title of the primary graphics window.</td></tr>
+<tr><td class=indexKey><a href="#Function:getWindowTitle">getWindowTitle()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the title of the primary graphics window.</td></tr>
+<tr><td class=indexKey><a href="#Function:getFullScreenWidth">getFullScreenWidth()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the width of the entire display screen.</td></tr>
+<tr><td class=indexKey><a href="#Function:getFullScreenHeight">getFullScreenHeight()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the height of the entire display screen.</td></tr>
+<tr><td class=indexKey><a href="#Function:exitGraphics">exitGraphics()</a>&nbsp;</td><td class=indexSynopsis width=100%>Closes the graphics window and exits from the application without waiting for any additional user interaction.</td></tr>
+<tr><td class=indexKey><a href="#Function:getGraphicsWindow">getGraphicsWindow()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns a reference to the graphics window created by <code>initGraphics</code>.</td></tr>
+<tr><td class=indexKey><a href="#Function:convertColorToRGB">convertColorToRGB(colorName)</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts a color name into an integer that encodes the red, green, and blue components of the color.</td></tr>
+<tr><td class=indexKey><a href="#Function:convertRGBToColor">convertRGBToColor(rgb)</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts an <code>rgb</code> value into a color name in the form <code>"#rrggbb"</code>.</td></tr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:getGObjectAt"></a>
+<pre class=detailCode>
+GObject getGObjectAt(GPoint pt);
+GObject getGObjectAt(double x, double y);
+</pre>
+<div class=detailHTML>
+Returns the topmost object in the primary window containing the
+specified point.  If no such object exists, this function returns
+an uninitialized <code>GObject</code>.  The pattern for using
+<code>getGObjectAt</code> is:
+
+<pre>
+   GObject obj = getGObjectAt(x, y);
+   if (obj.exists()) . . .
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GObject obj = getGObjectAt(pt);
+GObject obj = getGObjectAt(x, y);
+</pre>
+<hr>
+<a name="Function:setWindowTitle"></a>
+<pre class=detailCode>
+void setWindowTitle(string title);
+</pre>
+<div class=detailHTML>
+Sets the title of the primary graphics window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setWindowTitle(title);
+</pre>
+<hr>
+<a name="Function:getWindowTitle"></a>
+<pre class=detailCode>
+string getWindowTitle();
+</pre>
+<div class=detailHTML>
+Returns the title of the primary graphics window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string title = getWindowTitle();
+</pre>
+<hr>
+<a name="Function:getFullScreenWidth"></a>
+<pre class=detailCode>
+double getFullScreenWidth();
+</pre>
+<div class=detailHTML>
+Returns the width of the entire display screen.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+width = getFullScreenWidth();
+</pre>
+<hr>
+<a name="Function:getFullScreenHeight"></a>
+<pre class=detailCode>
+double getFullScreenHeight();
+</pre>
+<div class=detailHTML>
+Returns the height of the entire display screen.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+height = getFullScreenHeight();
+</pre>
+<hr>
+<a name="Function:exitGraphics"></a>
+<pre class=detailCode>
+void exitGraphics();
+</pre>
+<div class=detailHTML>
+Closes the graphics window and exits from the application without
+waiting for any additional user interaction.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+exitGraphics();
+</pre>
+<hr>
+<a name="Function:getGraphicsWindow"></a>
+<pre class=detailCode>
+GWindow &amp; getGraphicsWindow();
+</pre>
+<div class=detailHTML>
+Returns a reference to the graphics window created by
+<code>initGraphics</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GWindow gw = getGraphicsWindow();
+</pre>
+<hr>
+<a name="Function:convertColorToRGB"></a>
+<pre class=detailCode>
+int convertColorToRGB(string colorName);
+</pre>
+<div class=detailHTML>
+Converts a color name into an integer that encodes the
+red, green, and blue components of the color.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int rgb = convertColorToRGB(colorName);
+</pre>
+<hr>
+<a name="Function:convertRGBToColor"></a>
+<pre class=detailCode>
+string convertRGBToColor(int rgb);
+</pre>
+<div class=detailHTML>
+Converts an <code>rgb</code> value into a color name in the
+form <code>"#rrggbb"</code>.  Each of the <code>rr</code>,
+<code>gg</code>, and <code>bb</code> values are two-digit
+hexadecimal numbers indicating the intensity of that component.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int colorName = convertRGBToColor(rgb);
+</pre>
+<hr>
+</table>
+</body>
+</html>

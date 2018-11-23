@@ -1,0 +1,343 @@
+<html>
+<head>
+<title>lex.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1><a href="lex-h.html"><code>lex.h</code></a></h1>
+This package implements a simple lexical analyzer.  The lexical
+analyzer package is intimately tied to the S-expression package
+(see <code>sexp.h</code>), and it is necessary to understand
+the types in that interface before using this one.  For most
+applications, the tokenscanner.h interface is easier to use.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Types</td></tr>
+<tr><td class=indexKey><a href="#Type:Lexer">Lexer</a>&nbsp;</td><td class=indexSynopsis width=100%>Defines the abstract data type for a lexical analyzer.</td></tr>
+<tr><td class=indexKey><a href="#Type:lexhook">lexhook</a>&nbsp;</td><td class=indexSynopsis width=100%>Defines a type for the lexical hook functions.</td></tr>
+<tr><td class=indexHead colspan=2>Constants</td></tr>
+<tr><td class=indexKey>newlineIsTerminator&nbsp;</td><td class=indexSynopsis width=100%>If used as a newline hook, this function causes newlines in the input to appear as end-of-file markers.</td></tr>
+<tr><td class=indexKey>newlineIsOperator&nbsp;</td><td class=indexSynopsis width=100%>If used as a newline hook, this function causes newlines to be scanned as tokens.</td></tr>
+<tr><td class=indexKey>lexOperatorsAsAtoms&nbsp;</td><td class=indexSynopsis width=100%>If used as an operator hook, this function causes operators to be returned as atoms.</td></tr>
+<tr><td class=indexKey>semicolonComments&nbsp;</td><td class=indexSynopsis width=100%>If used as an operator hook, this function supports comments that begin with a semicolon and continue up to the end of the line.</td></tr>
+<tr><td class=indexKey>cStyleComments&nbsp;</td><td class=indexSynopsis width=100%>If used as an operator hook, this function supports comments in the style of C, C++, and Java.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><a href="#Function:newLexicalAnalyzer">newLexicalAnalyzer()</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a new lexical analyzer and returns its lexical lexer block, which is then passed to the other functions in this package.</td></tr>
+<tr><td class=indexKey><a href="#Function:lexFromStream">lexFromStream(lexer,&nbsp;infile)</a>&nbsp;</td><td class=indexSynopsis width=100%>Initializes the lexer specified by the lexer block to read from the input stream given by infile.</td></tr>
+<tr><td class=indexKey><a href="#Function:lexFromString">lexFromString(lexer,&nbsp;input)</a>&nbsp;</td><td class=indexSynopsis width=100%>Initializes the lexer specified by the lexer block to read from the character string input.</td></tr>
+<tr><td class=indexKey><a href="#Function:readLex">readLex(lexer)</a>&nbsp;</td><td class=indexSynopsis width=100%>Reads the next lexical token from the input stream.</td></tr>
+<tr><td class=indexKey><a href="#Function:peekLex">peekLex(lexer)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the same token that <code>readLex</code> would, but does not remove the token from the lexical stream.</td></tr>
+<tr><td class=indexKey><a href="#Function:pushLex">pushLex(lexer,&nbsp;token)</a>&nbsp;</td><td class=indexSynopsis width=100%>Pushes the specified token back into the lexical stream so that it will be read as the next lexeme.</td></tr>
+<tr><td class=indexKey><a href="#Function:setLexClientData">setLexClientData(lexer,&nbsp;data)</a>&nbsp;</td><td class=indexSynopsis width=100%>Sets the client-data field in the lexical lexer.</td></tr>
+<tr><td class=indexKey><a href="#Function:getLexClientData">getLexClientData(lexer)</a>&nbsp;</td><td class=indexSynopsis width=100%>Gets the client-data field from the lexical lexer.</td></tr>
+<tr><td class=indexKey><a href="#Function:setLexIgnoreCase">setLexIgnoreCase(lexer,&nbsp;ignore)</a>&nbsp;</td><td class=indexSynopsis width=100%>Specifies whether lexical tokens are treated as case-independent.</td></tr>
+<tr><td class=indexKey><a href="#Function:setLexNumericBase">setLexNumericBase(lexer,&nbsp;base)</a>&nbsp;</td><td class=indexSynopsis width=100%>Sets the default base for numbers, which must be either 8, 10, 16, or 0 (initial default).</td></tr>
+<tr><td class=indexKey><a href="#Function:setLexNewlineHook">setLexNewlineHook(lexer,&nbsp;hook)</a>&nbsp;</td><td class=indexSynopsis width=100%>Specifies a hook function is called whenever a newline is read.</td></tr>
+<tr><td class=indexKey><a href="#Function:setLexOperatorHook">setLexOperatorHook(lexer,&nbsp;hook)</a>&nbsp;</td><td class=indexSynopsis width=100%>Specifies a hook function is that is called whenever an operator character is read.</td></tr>
+<tr><td class=indexKey><a href="#Function:setLexCommentHook">setLexCommentHook(lexer,&nbsp;hook)</a>&nbsp;</td><td class=indexSynopsis width=100%>Specifies a hook function is that is called whenever the computer has finished reading whitespace, which is typically used to scan and ignore comments.</td></tr>
+<tr><td class=indexKey><a href="#Function:lexGetC">lexGetC(lexer)</a>&nbsp;</td><td class=indexSynopsis width=100%>Reads the next character from the token stream.</td></tr>
+<tr><td class=indexKey><a href="#Function:lexPushC">lexPushC(lexer,&nbsp;ch)</a>&nbsp;</td><td class=indexSynopsis width=100%>Pushes the character <code>ch</code> back on the input stream.</td></tr>
+<tr><td class=indexKey><a href="#Function:lexTell">lexTell(lexer)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the position in the lexical stream of the current lexical point, taking account of any characters that have been pushed back.</td></tr>
+<tr><td class=indexKey><a href="#Function:addTokenChar">addTokenChar(lexer,&nbsp;ch)</a>&nbsp;</td><td class=indexSynopsis width=100%>add a character to the internal token buffer, which expands as needed when characters are added.</td></tr>
+<tr><td class=indexKey><a href="#Function:getTokenBuffer">getTokenBuffer(lexer)</a>&nbsp;</td><td class=indexSynopsis width=100%>Retrieves the contents of internal token buffer.</td></tr>
+<tr><td class=indexKey><a href="#Function:defineYaccKeyword">defineYaccKeyword(s,&nbsp;code)</a>&nbsp;</td><td class=indexSynopsis width=100%>Defines the keyword with the print name s to return the specified code.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:Lexer"></a>
+<pre class=detailCode>
+typedef struct LexerCDT *Lexer;
+</pre>
+<div class=detailHTML>
+Defines the abstract data type for a lexical analyzer.
+</div>
+<hr>
+<a name="Type:lexhook"></a>
+<pre class=detailCode>
+typedef sexp (*lexhook)(Lexer lexer);
+</pre>
+<div class=detailHTML>
+Defines a type for the lexical hook functions.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:newLexicalAnalyzer"></a>
+<pre class=detailCode>
+Lexer newLexicalAnalyzer(void);
+</pre>
+<div class=detailHTML>
+Creates a new lexical analyzer and returns its lexical
+lexer block, which is then passed to the other functions
+in this package.  Before using the lexical analyzer, the
+input stream later initialized by using the functions
+<code>lexFromStream</code> or <code>lexFromString</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+lexer = newLexicalAnalyzer();
+</pre>
+<hr>
+<a name="Function:lexFromStream"></a>
+<pre class=detailCode>
+void lexFromStream(Lexer lexer, FILE *infile);
+</pre>
+<div class=detailHTML>
+Initializes the lexer specified by the lexer block to read
+from the input stream given by infile.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+lexFromStream(lexer, infile);
+</pre>
+<hr>
+<a name="Function:lexFromString"></a>
+<pre class=detailCode>
+void lexFromString(Lexer lexer, string input);
+</pre>
+<div class=detailHTML>
+Initializes the lexer specified by the lexer block to read
+from the character string input.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+lexFromString(lexer, input);
+</pre>
+<hr>
+<a name="Function:readLex"></a>
+<pre class=detailCode>
+sexp readLex(Lexer lexer);
+</pre>
+<div class=detailHTML>
+Reads the next lexical token from the input stream.
+For tokens that are part of the basic S-expression set,
+the returned token is of that type.  For single-character
+operator tokens and the end-of-file token, the lexer returns
+an S-expression whose type is the character code.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sx = readLex(lexer);
+</pre>
+<hr>
+<a name="Function:peekLex"></a>
+<pre class=detailCode>
+sexp peekLex(Lexer lexer);
+</pre>
+<div class=detailHTML>
+Returns the same token that <code>readLex</code> would, but does
+not remove the token from the lexical stream.  Thus, after calling
+<code>peekLex</code>, the next call to <code>readLex</code> will
+return the same token.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+sx = peekLex(lexer);
+</pre>
+<hr>
+<a name="Function:pushLex"></a>
+<pre class=detailCode>
+void pushLex(Lexer lexer, sexp token);
+</pre>
+<div class=detailHTML>
+Pushes the specified token back into the lexical stream so that it will
+be read as the next lexeme.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+pushLex(lexer, token);
+</pre>
+<hr>
+<a name="Function:setLexClientData"></a>
+<pre class=detailCode>
+void setLexClientData(Lexer lexer, void *data);
+</pre>
+<div class=detailHTML>
+Sets the client-data field in the lexical lexer.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setLexClientData(lexer, data);
+</pre>
+<hr>
+<a name="Function:getLexClientData"></a>
+<pre class=detailCode>
+void *getLexClientData(Lexer lexer);
+</pre>
+<div class=detailHTML>
+Gets the client-data field from the lexical lexer.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+data = getLexClientData(lexer);
+</pre>
+<hr>
+<a name="Function:setLexIgnoreCase"></a>
+<pre class=detailCode>
+void setLexIgnoreCase(Lexer lexer, bool ignore);
+</pre>
+<div class=detailHTML>
+Specifies whether lexical tokens are treated as case-independent.
+If the <code>ignore</code> argument is <code>TRUE</code>, the lexer
+will ignore case distinctions in atoms.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setLexIgnoreCase(lexer, ignore);
+</pre>
+<hr>
+<a name="Function:setLexNumericBase"></a>
+<pre class=detailCode>
+void setLexNumericBase(Lexer lexer, int base);
+</pre>
+<div class=detailHTML>
+Sets the default base for numbers, which must be either 8,
+10, 16, or 0 (initial default).  If 0 is set, then decimal
+is assumed for numbers except those beginning with 0,
+which are assumed to be octal, as in C.  If 10 is set
+explicitly, leading zeros do not affect the base.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setLexNumericBase(lexer, base);
+</pre>
+<hr>
+<a name="Function:setLexNewlineHook"></a>
+<pre class=detailCode>
+void setLexNewlineHook(Lexer lexer, lexhook hook);
+</pre>
+<div class=detailHTML>
+Specifies a hook function is called whenever a newline is read.
+If the procedure returns <code>NIL</code>, the newline is ignored.
+If it returns a non-<code>NIL</code> token, that  token is returned
+ as the value of <code>readLex</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setLexNewlineHook(lexer, hook);
+</pre>
+<hr>
+<a name="Function:setLexOperatorHook"></a>
+<pre class=detailCode>
+void setLexOperatorHook(Lexer lexer, lexhook hook);
+</pre>
+<div class=detailHTML>
+Specifies a hook function is that is called whenever an operator
+character is read.  If the procedure returns a  non-<code>NIL</code>
+token, that token is returned.  The character read to trigger this
+call has been pushed back, and the hook is required to read at
+least this character.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setLexOperatorHook(lexer, hook);
+</pre>
+<hr>
+<a name="Function:setLexCommentHook"></a>
+<pre class=detailCode>
+void setLexCommentHook(Lexer lexer, lexhook hook);
+</pre>
+<div class=detailHTML>
+Specifies a hook function is that is called whenever the computer
+has finished reading whitespace, which is typically used to scan
+and ignore comments.  This hook function typically returns
+<code>NIL</code> after reading the comment, but it may return
+a token just like the other hooks.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setLexCommentHook(lexer, hook);
+</pre>
+<hr>
+<a name="Function:lexGetC"></a>
+<pre class=detailCode>
+int lexGetC(Lexer lexer);
+</pre>
+<div class=detailHTML>
+Reads the next character from the token stream.  This function
+is typically called only by hook functions.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ch = lexGetC(lexer);
+</pre>
+<hr>
+<a name="Function:lexPushC"></a>
+<pre class=detailCode>
+void lexPushC(Lexer lexer, int ch);
+</pre>
+<div class=detailHTML>
+Pushes the character <code>ch</code> back on the input stream.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+lexPushC(lexer, ch);
+</pre>
+<hr>
+<a name="Function:lexTell"></a>
+<pre class=detailCode>
+long lexTell(Lexer lexer);
+</pre>
+<div class=detailHTML>
+Returns the position in the lexical stream of the current
+lexical point, taking account of any characters that have
+been pushed back.  This function does not update the count
+after calls to <code>pushLex</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+n = lexTell(lexer)
+</pre>
+<hr>
+<a name="Function:addTokenChar"></a>
+<pre class=detailCode>
+void addTokenChar(Lexer lexer, int ch);
+</pre>
+<div class=detailHTML>
+add a character to the internal token buffer, which expands
+as needed when characters are added.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+addTokenChar(lexer, ch);
+</pre>
+<hr>
+<a name="Function:getTokenBuffer"></a>
+<pre class=detailCode>
+string getTokenBuffer(Lexer lexer);
+</pre>
+<div class=detailHTML>
+Retrieves the contents of internal token buffer.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+str = getTokenBuffer(lexer);
+</pre>
+<hr>
+<a name="Function:defineYaccKeyword"></a>
+<pre class=detailCode>
+sexp defineYaccKeyword(string s, int code);
+</pre>
+<div class=detailHTML>
+Defines the keyword with the print name s to return
+the specified code.  If case is being ignored in the
+lexer, the string should be in upper case.  This
+function returns the atom for the keyword, but this
+value is often ignored.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+defineYaccKeyword(s, code);
+</pre>
+<hr>
+</table>
+</body>
+</html>

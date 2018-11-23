@@ -1,0 +1,82 @@
+#include <booktools.ps>
+
+/DOT_RADIUS 2 def
+/X0 0.6 inch def
+/Y0 0.8 inch def
+/ARROWHEAD_BREADTH 6 def
+/ARROWHEAD_LENGTH 4 def
+/ARROW_LENGTH 0.2 inch def
+/ARC_RADIUS 1.20 inch def
+/GRAY_LEVEL 0 def
+/CAPTION_DELTA 0.3 inch def
+/SWEEP_LABEL_ANGLE 150 def
+/SWEEP_R 0.5 def
+/START_R 0.4 def
+/DASHES [1.5 2] def
+
+200 200 translate
+gsave
+  0.4 setlinewidth
+  /r ARC_RADIUS def
+  GRAY_LEVEL setgray
+  r neg 0 r 0 connect
+  0 r neg 0 r connect
+  DASHES 0 setdash
+  r neg r r 2 mul CAPTION_DELTA add 0 drawline
+  r neg r neg r 2 mul CAPTION_DELTA add 0 drawline
+  r neg r 0 r 2 mul CAPTION_DELTA add neg drawline
+  r r 0 r 2 mul CAPTION_DELTA add neg drawline
+  gsave
+    45 rotate
+    0 0 r 0 connect
+    -90 rotate
+    0 0 r 0 connect
+  grestore
+  [ ] 0 setdash
+  r neg r DOT_RADIUS fillcircle
+  newpath
+    0 0 r START_R mul 0 45 arc
+    currentpoint
+  stroke ARROWHEAD_LENGTH ARROWHEAD_BREADTH 135 arrowhead
+  newpath
+    0 0 r SWEEP_R mul 45 315 arc
+    currentpoint ARROWHEAD_LENGTH ARROWHEAD_BREADTH 45 arrowhead
+  stroke
+  12 textfont
+  r neg ((x, y)) stringwidth pop 2 div sub 0.75 add r 5 add moveto
+  (\() show
+  12 italicfont
+  (x) show
+  12 textfont
+  (,) show
+  1.5 0 rmoveto
+  12 italicfont
+  (y) show
+  12 textfont
+  (\)) show
+  12 italicfont
+  r START_R mul 12 moveto (start) show
+  r SWEEP_R mul dup SWEEP_LABEL_ANGLE cos mul (sweep) stringwidth pop sub 3 sub
+    exch SWEEP_LABEL_ANGLE sin mul moveto (sweep) show
+  /y r neg CAPTION_DELTA 0.7 mul sub def
+  gsave
+    /w (width) stringwidth pop def
+    w 2 div neg y 2.5 sub moveto (width) show
+    w 2 div neg 2.5 sub y r neg 1 add y connect
+    r neg 1 add y ARROWHEAD_LENGTH ARROWHEAD_BREADTH 180 arrowhead
+    w 2 div 2 add y r 1 sub y connect
+    r 1 sub y ARROWHEAD_LENGTH ARROWHEAD_BREADTH 0 arrowhead
+    90 rotate
+    /w (height) stringwidth pop def
+    w 2 div neg y 2.5 sub moveto (height) show
+    w 2 div neg 2.5 sub y r neg 1 add y connect
+    r neg 1 add y ARROWHEAD_LENGTH ARROWHEAD_BREADTH 180 arrowhead
+    w 2 div 2 add y r 1 sub y connect
+    r 1 sub y ARROWHEAD_LENGTH ARROWHEAD_BREADTH 0 arrowhead
+  grestore
+  red
+  1 setlinewidth
+  newpath
+    0 0 ARC_RADIUS 0.5 sub 45 315 arc
+  stroke
+grestore

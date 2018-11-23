@@ -393,7 +393,7 @@ public class BasicGraph<V, E> implements Graph<V, E> {
 		if (containsVertex(v)) {
 			// remove any incoming/outgoing edges from this vertex
 			removeVertexHelper(v);
-			vertexes.remove(v);
+			vertexes.remove(v.name());
 		}
 	}
 
@@ -437,7 +437,7 @@ public class BasicGraph<V, E> implements Graph<V, E> {
 		StringBuilder sb = new StringBuilder(65536);
 		sb.append("Graph{\n").append("\tvertices:\n");
 		for (Vertex<V> v : vertexes()) {
-			sb.append("\t\t").append(vertexes.get(v)).append(" -> neighbors: ")
+			sb.append("\t\t").append(vertexes.get(v.name())).append(" -> neighbors: ")
 					.append(neighbors(v.name())).append('\n');
 		}
 		sb.append("\tedges:\n");

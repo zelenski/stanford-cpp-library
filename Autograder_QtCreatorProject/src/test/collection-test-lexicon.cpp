@@ -49,7 +49,7 @@ TIMED_TEST(LexiconTests, basicTest_Lexicon, TEST_TIMEOUT_DEFAULT) {
     for (std::string word : words) {
         lex.add(word);
     }
-    assertEquals("Lexicon size", words.size(), lex.size());
+    assertEquals("Lexicon size", (int) words.size(), lex.size());
 
     for (std::string word : words) {
         assertTrue("Lexicon contains " + word, lex.contains(word));
@@ -101,6 +101,12 @@ TIMED_TEST(LexiconTests, forEachTest_Lexicon, TEST_TIMEOUT_DEFAULT) {
     assertCollection("foreach Lexicon", list, lex);
 }
 
+TIMED_TEST(LexiconTests, frontBackTest_Lexicon, TEST_TIMEOUT_DEFAULT) {
+    Lexicon lex {"apple", "apricot", "banana", "zebra"};
+    assertEqualsString("Lexicon front", "apple", lex.front());
+    assertEqualsString("Lexicon back",  "zebra", lex.back());
+}
+
 TIMED_TEST(LexiconTests, hashCodeTest_Lexicon, TEST_TIMEOUT_DEFAULT) {
     Lexicon lex;
     lex.add("a");
@@ -119,9 +125,6 @@ TIMED_TEST(LexiconTests, hashCodeTest_Lexicon, TEST_TIMEOUT_DEFAULT) {
 
 TIMED_TEST(LexiconTests, initializerListTest_Lexicon, TEST_TIMEOUT_DEFAULT) {
     std::initializer_list<std::string> lexlist = {"sixty", "seventy"};
-    std::initializer_list<std::string> lexallwords = {
-        "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy"
-    };
 
     Lexicon lex {"ten", "twenty", "thirty"};
     assertEqualsString("init list Lexicon", "{\"ten\", \"thirty\", \"twenty\"}", lex.toString());

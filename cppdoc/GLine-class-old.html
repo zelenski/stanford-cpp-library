@@ -1,0 +1,113 @@
+<html>
+<head>
+<title>GLine</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="gobjects.html">#include "gobjects.h"</a></div>
+<h1 class=header><code>class GLine : public <a href="GObject-class.html">GObject</a></code></h1>
+This graphical object subclass represents a line segment.  For
+example, the following code adds lines that mark the diagonals
+of the graphics window:
+
+<pre>
+   int main() {
+      GWindow gw;
+      cout &lt;&lt; &quot;This program draws the diagonals on the window.&quot; &lt;&lt; endl;
+      gw.add(new GLine(0, 0, gw.getWidth(), gw.getHeight()));
+      gw.add(new GLine(0, gw.getHeight(), gw.getWidth(), 0));
+      return 0;
+   }
+</pre>
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Constructor</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GLine">GLine(<var>x0</var>,&nbsp;<var>y0</var>,&nbsp;<var>x1</var>,&nbsp;<var>y1</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Constructs a line segment from its endpoints.</td></tr>
+<tr><td class=indexHead colspan=2>Methods</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getEndPoint">getEndPoint()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the point at which the line ends.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getStartPoint">getStartPoint()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the point at which the line starts.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setEndPoint">setEndPoint(<var>x</var>,&nbsp;<var>y</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the end point in the line to (<code>x</code>,&nbsp;<code>y</code>), leaving the start point unchanged.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:setStartPoint">setStartPoint(<var>x</var>,&nbsp;<var>y</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the initial point in the line to (<code>x</code>,&nbsp;<code>y</code>), leaving the end point unchanged.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GLine"></a>
+<pre class=detailCode>
+GLine(double x0, double y0, double x1, double y1);
+</pre>
+<div class=detailHTML>
+Constructs a line segment from its endpoints.  The point
+(<code>x0</code>,&nbsp;<code>y0</code>) defines the start of the
+line and the point (<code>x1</code>,&nbsp;<code>y1</code>) defines
+the end.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GLine* gline = new GLine(x0, y0, x1, y1);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:setStartPoint"></a>
+<pre class=detailCode>
+void setStartPoint(double x, double y);
+</pre>
+<div class=detailHTML>
+Sets the initial point in the line to (<code>x</code>,&nbsp;<code>y</code>),
+leaving the end point unchanged.  This method is therefore different from
+<code>setLocation</code>, which moves both components of the line segment.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+line-&gt;setStartPoint(x, y);
+</pre>
+<hr>
+<a name="Method:getStartPoint"></a>
+<pre class=detailCode>
+GPoint getStartPoint() const;
+</pre>
+<div class=detailHTML>
+Returns the point at which the line starts.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GPoint pt = line-&gt;getStartPoint();
+</pre>
+<hr>
+<a name="Method:setEndPoint"></a>
+<pre class=detailCode>
+void setEndPoint(double x, double y);
+</pre>
+<div class=detailHTML>
+Sets the end point in the line to (<code>x</code>,&nbsp;<code>y</code>),
+leaving the start point unchanged.  This method is therefore different from
+<code>setLocation</code>, which moves both components of the line segment.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+line-&gt;setEndPoint(x, y);
+</pre>
+<hr>
+<a name="Method:getEndPoint"></a>
+<pre class=detailCode>
+GPoint getEndPoint() const;
+</pre>
+<div class=detailHTML>
+Returns the point at which the line ends.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GPoint pt = line-&gt;getEndPoint();
+</pre>
+<hr>
+</table>
+</body>
+</html>

@@ -48,6 +48,12 @@ TIMED_TEST(GridTests, forEachTest_Grid, TEST_TIMEOUT_DEFAULT) {
     }
 }
 
+TIMED_TEST(GridTests, frontBackTest_Grid, TEST_TIMEOUT_DEFAULT) {
+    Grid<int> grid {{10, 20, 30}, {40, 50, 60}};
+    assertEqualsInt("Grid front", 10, grid.front());
+    assertEqualsInt("Grid back",  60, grid.back());
+}
+
 TIMED_TEST(GridTests, hashCodeTest_Grid, TEST_TIMEOUT_DEFAULT) {
     Grid<int> grid(2, 3);
     grid.fill(42);

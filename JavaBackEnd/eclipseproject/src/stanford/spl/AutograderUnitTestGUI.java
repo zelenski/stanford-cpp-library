@@ -1,5 +1,8 @@
 /*
  * @author Marty Stepp
+ * @version 2018/01/23
+ * - added Run tests in separate threads checkbox
+ * - bug fix for bad unit test details on Windows ("expected true, found false" etc. on diffs)
  * @version 2017/10/21
  * - made it expand/collapse test categories on double-click of All/None buttons
  * @version 2017/06/06
@@ -47,6 +50,7 @@ import stanford.cs106.io.*;
 import stanford.cs106.junit.*;
 import stanford.cs106.util.*;
 
+@SuppressWarnings("deprecation")
 public class AutograderUnitTestGUI extends Observable
 		implements ActionListener, JUnitListener, MouseListener {
 	private static final int DIALOG_WIDTH = 500;   // px
@@ -111,6 +115,7 @@ public class AutograderUnitTestGUI extends Observable
 	private JFrame frame = null;
 	private JScrollPane scroll = null;
 	private JCheckBox catchErrorsBox = null;
+	private JCheckBox runTestsInThreadsBox = null;
 	private Box contentPaneBox = null;
 	private JLabel descriptionLabel = null;
 	private JLabel southLabel = null;
@@ -138,7 +143,7 @@ public class AutograderUnitTestGUI extends Observable
 		
 		descriptionLabel = new JLabel(TESTS_TITLE);
 		if (NORMAL_COLOR == null) {
-			NORMAL_COLOR= descriptionLabel.getForeground();
+			NORMAL_COLOR = descriptionLabel.getForeground();
 		}
 		descriptionLabel.setHorizontalAlignment(JLabel.CENTER);
 		descriptionLabel.setAlignmentX(0.5f);
@@ -151,6 +156,9 @@ public class AutograderUnitTestGUI extends Observable
 		catchErrorsBox = new JCheckBox("Catch exceptions in tests", /* selected */ true);
 		catchErrorsBox.setMnemonic('C');
 		north.add(catchErrorsBox);
+		runTestsInThreadsBox = new JCheckBox("Run tests in separate threads", /* selected */ true);
+		runTestsInThreadsBox.setMnemonic('t');
+		north.add(runTestsInThreadsBox);
 		frame.add(north, BorderLayout.NORTH);
 		
 		contentPaneBox = Box.createVerticalBox();
@@ -418,10 +426,15 @@ public class AutograderUnitTestGUI extends Observable
 	public void mouseClicked(MouseEvent event) {
 		JLabel label = (JLabel) event.getSource();
 		TestInfo testInfo = allTests.get(label);
-		String testName = testInfo.fullName();
-		if (testName != null) {
-			showTestDetails(testName);
+		if (testInfo == null) {
+			return;
 		}
+		String testName = testInfo.fullName();
+		if (testName == null) {
+			return;
+		}
+		
+		showTestDetails(testName);
 	}
 	
 	public void mouseEntered(MouseEvent event) {
@@ -440,6 +453,10 @@ public class AutograderUnitTestGUI extends Observable
 		// empty
 	}
 	
+	public boolean runTestsInSeparateThreads() {
+		return runTestsInThreadsBox.isSelected();
+	}
+	
 	public void setChecked(String testFullName, boolean checked) {
 		TestInfo testInfo = allTests.get(testFullName);
 		if (testInfo != null) {
@@ -452,7 +469,11 @@ public class AutograderUnitTestGUI extends Observable
 		text = text.replaceAll("Note:", "<b>Note:</b>");
 		text = text.replaceAll("Warning:", "<b>Warning:</b>");
 		text = text.replaceAll("Error:", "<b>Error:</b>");
-		descriptionLabel.setText("<html><body style='width: " + DIALOG_WIDTH + "; max-width: " + DIALOG_WIDTH + "'><center>" + text + "</center></body></html>");
+		String htmlLabel = GuiUtils.htmlLabelText(text, CollectionUtils.asMap(
+				"width", DIALOG_WIDTH,
+				"center", true
+		));
+		descriptionLabel.setText(htmlLabel);
 		descriptionLabel.validate();
 		checkVisibility();
 	}
@@ -470,11 +491,11 @@ public class AutograderUnitTestGUI extends Observable
 		if (testInfo == null) {
 			return;
 		}
-
+		
 		// BUGFIX: don't replace test details if a test already failed here
 		String existingResult = getTestResult(testFullName).intern();
 		if (existingResult == "fail" || existingResult == "warn") {
-			if (!testInfo.details.isEmpty()) {
+			if (!testInfo.details.isEmpty() && StringUtils.isTruthy(testInfo.details.get("overwrite"))) {
 				return;
 			}
 		}
@@ -713,7 +734,6 @@ public class AutograderUnitTestGUI extends Observable
 			String htmlMessage = "";
 			String expectedTruncated = StringUtils.truncate(expected, MAX_VALUE_DISPLAY_LENGTH, " ...");
 			String studentTruncated  = StringUtils.truncate(student, MAX_VALUE_DISPLAY_LENGTH, " ...");
-			htmlMessage += "<html><body style='max-width: " + DIALOG_WIDTH + "px;'>";
 			htmlMessage += "<p>" + message + "</p>";
 			htmlMessage += "<ul>";
 			htmlMessage += "<li><font style='font-family: monospaced' color='" + DiffGui.EXPECTED_COLOR + "'>expected:</font> <font style='font-family: monospaced'>" + expectedTruncated + "</font></li>";
@@ -729,7 +749,11 @@ public class AutograderUnitTestGUI extends Observable
 				htmlMessage += "<div style='margin-top: 5px;'><b>Stack trace:</b></div><pre>" + stack + "</pre>";
 			}
 			
-			htmlMessage += "</body></html>";
+			// wrap in <html><body> ... </body></html> tags
+			htmlMessage = GuiUtils.htmlLabelText(htmlMessage, CollectionUtils.asMap(
+					"max-width", DIALOG_WIDTH
+			));
+			
 			htmlMessage = htmlMessage.replace("\n", "\\n");
 			htmlMessage = htmlMessage.replace("\r", "\\r");
 			htmlMessage = htmlMessage.replace("\t", "\\t");
@@ -748,9 +772,13 @@ public class AutograderUnitTestGUI extends Observable
 		} else if (type == "MANUAL") {
 			shouldShowJOptionPane = true;
 			String htmlMessage = "";
-			htmlMessage += "<html><body style='max-width: " + DIALOG_WIDTH + "px;'>";
 			htmlMessage += "<pre>" + message + "</pre>";
-			htmlMessage += "</body></html>";
+
+			// wrap in <html><body> ... </body></html> tags
+			htmlMessage = GuiUtils.htmlLabelText(htmlMessage, CollectionUtils.asMap(
+					"max-width", DIALOG_WIDTH
+			));
+
 			htmlMessage = htmlMessage.replace("\n", "<br>");
 			htmlMessage = htmlMessage.replace("\r", "");
 			htmlMessage = htmlMessage.replace("\t", "    ");

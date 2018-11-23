@@ -1,0 +1,214 @@
+<html>
+<head>
+<title>vector.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="vector-h.html"><code>vector.h</code></a></h1>
+This interface exports an array-like indexed collection type.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Type</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:Vector">Vector</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type defines the abstract vector type.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newVector">newVector()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns an empty <code>Vector</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:freeVector">freeVector(vector)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Frees the storage associated with vector.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:arrayToVector">arrayToVector(array,&nbsp;n)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a vector from an array of <code>void&nbsp;*</code> pointers.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:vectorToArray">vectorToArray(vector)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a <code>NULL</code>-terminated array with the same elements as vector.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isEmpty">isEmpty(vector)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the vector is empty.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:size">size(vector)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of elements in the vector.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:clear">clear(vector)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes all elements from the vector.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:clone">clone(vector)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a copy of the vector.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:get">get(vector,&nbsp;index)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Gets the element at the specified index position, raising an error if the index is out of range.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:set">set(vector,&nbsp;index,&nbsp;value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the element at the specified index position, raising an error if the index is out of range.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:add">add(vector,&nbsp;value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds a new value to the end of the vector.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:insert">insert(vector,&nbsp;index,&nbsp;value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Inserts a new value before the specified index position.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:remove">remove(vector,&nbsp;index)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Deletes the element at the specified index position.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:Vector"></a>
+<pre class=detailCode>
+typedef struct VectorCDT *Vector;
+</pre>
+<div class=detailHTML>
+This type defines the abstract vector type.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:newVector"></a>
+<pre class=detailCode>
+Vector newVector(void);
+</pre>
+<div class=detailHTML>
+Returns an empty <code>Vector</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+vector = newVector();
+</pre>
+<hr>
+<a name="Function:freeVector"></a>
+<pre class=detailCode>
+void freeVector(Vector vector);
+</pre>
+<div class=detailHTML>
+Frees the storage associated with vector.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+freeVector(vector);
+</pre>
+<hr>
+<a name="Function:arrayToVector"></a>
+<pre class=detailCode>
+Vector arrayToVector(void *array[], int n);
+</pre>
+<div class=detailHTML>
+Creates a vector from an array of <code>void&nbsp;*</code> pointers.
+If the <code>array</code> argument is <code>NULL</code>, this
+function returns <code>NULL</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+vector = arrayToVector(array, n);
+</pre>
+<hr>
+<a name="Function:vectorToArray"></a>
+<pre class=detailCode>
+void **vectorToArray(Vector vector);
+</pre>
+<div class=detailHTML>
+Returns a <code>NULL</code>-terminated array with the same
+elements as vector.  If vector is <code>NULL</code>, this
+function returns <code>NULL</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+array = vectorToArray(vector);
+</pre>
+<hr>
+<a name="Function:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty(Vector vector);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the vector is empty.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isEmpty(vector)) . . .
+</pre>
+<hr>
+<a name="Function:size"></a>
+<pre class=detailCode>
+int size(Vector vector);
+</pre>
+<div class=detailHTML>
+Returns the number of elements in the vector.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+n = size(vector);
+</pre>
+<hr>
+<a name="Function:clear"></a>
+<pre class=detailCode>
+void clear(Vector vector);
+</pre>
+<div class=detailHTML>
+Removes all elements from the vector.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+clear(vector);
+</pre>
+<hr>
+<a name="Function:clone"></a>
+<pre class=detailCode>
+Vector clone(Vector vector);
+</pre>
+<div class=detailHTML>
+Creates a copy of the vector.  The <code>clone</code> function copies
+only the first level of the structure and does not copy the individual
+elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+newvec = clone(vector);
+</pre>
+<hr>
+<a name="Function:get"></a>
+<pre class=detailCode>
+void *get(Vector vector, int index);
+</pre>
+<div class=detailHTML>
+Gets the element at the specified index position, raising an
+error if the index is out of range.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+value = get(vector, index);
+</pre>
+<hr>
+<a name="Function:set"></a>
+<pre class=detailCode>
+void set(Vector vector, int index, void *value);
+</pre>
+<div class=detailHTML>
+Sets the element at the specified index position, raising an
+error if the index is out of range.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set(vector, index, value);
+</pre>
+<hr>
+<a name="Function:add"></a>
+<pre class=detailCode>
+void add(Vector vector, void *value);
+</pre>
+<div class=detailHTML>
+Adds a new value to the end of the vector.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+add(vector, value);
+</pre>
+<hr>
+<a name="Function:insert"></a>
+<pre class=detailCode>
+void insert(Vector vector, int index, void *value);
+</pre>
+<div class=detailHTML>
+Inserts a new value before the specified index position.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+insert(vector, index, value);
+</pre>
+<hr>
+<a name="Function:remove"></a>
+<pre class=detailCode>
+void remove(Vector vector, int index);
+</pre>
+<div class=detailHTML>
+Deletes the element at the specified index position.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+remove(vector, index);
+</pre>
+<hr>
+</table>
+</body>
+</html>

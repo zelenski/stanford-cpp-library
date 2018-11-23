@@ -26,6 +26,18 @@ TIMED_TEST(HashSetTests, forEachTest_HashSet, TEST_TIMEOUT_DEFAULT) {
     }
 }
 
+TIMED_TEST(HashSetTests, frontBackTest_HashSet, TEST_TIMEOUT_DEFAULT) {
+    HashSet<int> hset {10, 20, 30, 40};
+    int front = hset.front();
+    int back = hset.back();
+    if (front != 10 && front != 20 && front != 30 && front != 40) {
+        assertFail("HashSet front fail!");
+    }
+    if ((back != 10 && back != 20 && back != 30 && back != 40) || (front == back)) {
+        assertFail("HashSet back fail!");
+    }
+}
+
 TIMED_TEST(HashSetTests, hashCodeTest_HashSet, TEST_TIMEOUT_DEFAULT) {
     HashSet<int> hset;
     hset.add(69);

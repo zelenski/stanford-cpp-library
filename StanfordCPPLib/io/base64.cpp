@@ -15,7 +15,9 @@
  * @since 2014/08/03
  */
 
+#define INTERNAL_INCLUDE 1
 #include "base64.h"
+#undef INTERNAL_INCLUDE
 #include <cstring>
 #include <sstream>
 
@@ -170,4 +172,5 @@ std::string decode(const std::string& s) {
     free(buf);
     return result;
 }
-}
+
+} // namespace Base64

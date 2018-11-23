@@ -43,6 +43,12 @@ TIMED_TEST(LinkedHashSetTests, forEachTest_LinkedHashSet, TEST_TIMEOUT_DEFAULT) 
     }
 }
 
+TIMED_TEST(LinkedHashSetTests, frontBackTest_LinkedHashSet, TEST_TIMEOUT_DEFAULT) {
+    LinkedHashSet<int> lhset {20, 10, 40, 30};
+    assertEqualsInt("LinkedHashSet front", 20, lhset.front());
+    assertEqualsInt("LinkedHashSet back",  30, lhset.back());
+}
+
 TIMED_TEST(LinkedHashSetTests, hashcodeTest_LinkedHashSet, TEST_TIMEOUT_DEFAULT) {
     LinkedHashSet<int> hset;
     hset.add(69);

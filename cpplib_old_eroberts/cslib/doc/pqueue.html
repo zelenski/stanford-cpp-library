@@ -1,0 +1,180 @@
+<html>
+<head>
+<title>pqueue.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="pqueue-h.html"><code>pqueue.h</code></a></h1>
+This interface defines a queue abstraction that dequeues elements
+in priority order.  In keeping with traditional English usage,
+lower priority numbers have higher priority, so that priority 1
+items appear before priority 2 items.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Type</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:PriorityQueue">PriorityQueue</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type defines the abstract type for a queue.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newPriorityQueue">newPriorityQueue()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Allocates and returns an empty priority queue.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:freePriorityQueue">freePriorityQueue(pq)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Frees the storage associated with the specified priority queue.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:enqueue">enqueue(pq,&nbsp;value,&nbsp;priority)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds a value to the queue in the order specified by <code>priority</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:dequeue">dequeue(pq)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes the data value at the head of the queue and returns it to the client.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:peek">peek(pq)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the data value at the head of the queue without removing it.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:peekPriority">peekPriority(pq)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the priority of the first entry in the queue, without removing it.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isEmpty">isEmpty(pq)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Tests whether the queue is empty.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:size">size(pq)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of values in the queue.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:clear">clear(pq)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes all values from the queue.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:clone">clone(pq)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a copy of the priority queue.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:PriorityQueue"></a>
+<pre class=detailCode>
+typedef struct PriorityQueueCDT *PriorityQueue;
+</pre>
+<div class=detailHTML>
+This type defines the abstract type for a queue.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:newPriorityQueue"></a>
+<pre class=detailCode>
+PriorityQueue newPriorityQueue(void);
+</pre>
+<div class=detailHTML>
+Allocates and returns an empty priority queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+pq = newPriorityQueue();
+</pre>
+<hr>
+<a name="Function:freePriorityQueue"></a>
+<pre class=detailCode>
+void freePriorityQueue(PriorityQueue pq);
+</pre>
+<div class=detailHTML>
+Frees the storage associated with the specified priority queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+freePriorityQueue(pq);
+</pre>
+<hr>
+<a name="Function:enqueue"></a>
+<pre class=detailCode>
+void enqueue(PriorityQueue pq, void *value, double priority);
+</pre>
+<div class=detailHTML>
+Adds a value to the queue in the order specified by <code>priority</code>.
+In C, the <code>priority</code> argument must have type <code>double</code>,
+which means that constants used to express priorities in the call to the
+generic <code>enqueue</code> function must include a decimal point.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+enqueue(pq, value, priority);
+</pre>
+<hr>
+<a name="Function:dequeue"></a>
+<pre class=detailCode>
+void *dequeue(PriorityQueue pq);
+</pre>
+<div class=detailHTML>
+Removes the data value at the head of the queue and returns it
+to the client.  If the queue is empty, <code>dequeue</code> calls
+<code>error</code> with an appropriate message.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+value = dequeue(pq);
+</pre>
+<hr>
+<a name="Function:peek"></a>
+<pre class=detailCode>
+void *peek(PriorityQueue pq);
+</pre>
+<div class=detailHTML>
+Returns the data value at the head of the queue without removing it.
+If the queue is empty, <code>peek</code> calls <code>error</code> with
+an appropriate message.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+value = peek(pq);
+</pre>
+<hr>
+<a name="Function:peekPriority"></a>
+<pre class=detailCode>
+double peekPriority(PriorityQueue pq);
+</pre>
+<div class=detailHTML>
+Returns the priority of the first entry in the queue, without
+removing it.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+priority = peekPriority(pq);
+</pre>
+<hr>
+<a name="Function:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty(PriorityQueue pq);
+</pre>
+<div class=detailHTML>
+Tests whether the queue is empty.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isEmpty(pq)) . . .
+</pre>
+<hr>
+<a name="Function:size"></a>
+<pre class=detailCode>
+int size(PriorityQueue pq);
+</pre>
+<div class=detailHTML>
+Returns the number of values in the queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+n = size(pq);
+</pre>
+<hr>
+<a name="Function:clear"></a>
+<pre class=detailCode>
+void clear(PriorityQueue pq);
+</pre>
+<div class=detailHTML>
+Removes all values from the queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+clear(pq);
+</pre>
+<hr>
+<a name="Function:clone"></a>
+<pre class=detailCode>
+PriorityQueue clone(PriorityQueue pq);
+</pre>
+<div class=detailHTML>
+Creates a copy of the priority queue.  The <code>clone</code> function
+copies only the first level of the structure and does not copy the
+individual elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+newpq = clone(pq);
+</pre>
+<hr>
+</table>
+</body>
+</html>

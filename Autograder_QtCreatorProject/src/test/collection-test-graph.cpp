@@ -133,6 +133,23 @@ TIMED_TEST(GraphTests, forEachTest_Graph, TEST_TIMEOUT_DEFAULT) {
     }
 }
 
+TIMED_TEST(GraphTests, frontBackTest_Graph, TEST_TIMEOUT_DEFAULT) {
+    Graph<DumbNode, DumbEdge> graph;
+    graph.addNode("a");
+    graph.addNode("b");
+    graph.addNode("c");
+    graph.addNode("d");
+    graph.addNode("e");
+    graph.addArc("a", "b");
+    graph.addArc("a", "d");
+    graph.addArc("b", "c");
+    graph.addArc("b", "d");
+    graph.addArc("c", "b");
+    graph.addArc("c", "e");
+    assertEqualsString("Graph front", "a", graph.front()->name);
+    assertEqualsString("Graph back",  "e", graph.back()->name);
+}
+
 TIMED_TEST(GraphTests, hashCodeTest_Graph, TEST_TIMEOUT_DEFAULT) {
     Graph<DumbNode, DumbEdge> graph;
     graph.addNode("a");

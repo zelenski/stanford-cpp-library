@@ -5,10 +5,12 @@ public class ConstantUtils {
 		return new String(text);
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static Integer makeConstantInteger(Integer value) {
 		return new Integer(value);
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static Double makeConstantDouble(Double value) {
 		return new Double(value);
 	}

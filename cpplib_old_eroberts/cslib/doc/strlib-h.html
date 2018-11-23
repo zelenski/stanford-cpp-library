@@ -1,0 +1,468 @@
+<html>
+<head>
+<title>../strlib.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: strlib.h
+ * --------------
+ * This interface defines a general library for dynamically allocated
+ * strings.  The major differences between traditional C strings and those
+ * defined using this interface are:
+ *
+ *
+ *  The strlib.h interface takes care of memory
+ *      allocation, ensuring that there is sufficient space to hold
+ *      the result of each string operation.
+ *  Clients of the strlib.h interface are expected
+ *      to treat all strings as immutable and refrain from writing
+ *      into the character array.
+ *
+ */
+</scan>
+<scan class=comment>/*
+ * Cautionary note:
+ * ----------------
+ * Although this interface provides an extremely convenient abstraction for
+ * working with strings, it is not appropriate for all applications.  In
+ * this interface, the functions that return string values (such as concat
+ * and substring) do so by allocating new memory.  Over time, a program
+ * that uses this package will consume increasing amounts of memory and
+ * eventually exhaust the available supply.  If you are writing a program
+ * that runs for a short time and stops, the fact that the package consumes
+ * memory is not a problem.  If, however, you are writing an application
+ * that must run for an extended period of time, using this package
+ * requires that you make some provision for freeing any allocated storage.
+ */
+</scan>
+#ifndef _strlib_h
+#define _strlib_h
+
+#include &lt;stdarg.h&gt;
+#include "cslib.h"
+#include "generic.h"
+
+<scan class=comment>/* Section 1 -- Basic string operations */</scan>
+
+<a name="Function:concat"><scan class=comment>/*
+ * Function: concat
+ * Usage: s = concat(s1, s2);
+ * --------------------------
+ * Concatenates two strings by joining them end to end.  For example,
+ * concat("ABC", "DE") returns the string "ABCDE".
+ */
+</scan>
+string concat(string s1, string s2);
+
+<a name="Function:charAt"><scan class=comment>/*
+ * Function: charAt
+ * Usage: ch = charAt(s, i);
+ * -------------------------
+ * Returns the character at position i in the string s.  This function is
+ * included in the library to make the type string a true abstract type in
+ * the sense that all of the necessary operations can be invoked using
+ * functions.  Calling charAt(s, i) is like selecting s[i], except that
+ * charAt checks to see if i is within the range of legal index positions,
+ * which extend from 0 to stringLength(s).  Calling charAt(s,
+ * stringLength(s)) character at the end of the string.
+ */
+</scan>
+char charAt(string s, int i);
+
+<a name="Function:substring"><scan class=comment>/*
+ * Function: substring
+ * Usage: t = substring(s, p1, p2);
+ * --------------------------------
+ * Returns a copy of the substring of s consisting of the characters
+ * between index positions p1 and p2, inclusive.  The following special
+ * cases apply:
+ *
+ *
+ *   If p1 is less than 0, it is assumed to be 0.
+ *   If p2 is greater than or equal to the length of the
+ *       string, p2 is set to stringLength(s) - 1.
+ *   If p2 &lt; p1, substring returns the
+ *       empty string.
+ *
+ */
+</scan>
+string substring(string s, int p1, int p2);
+
+<a name="Function:charToString"><scan class=comment>/*
+ * Function: charToString
+ * Usage: s = charToString(ch);
+ * ----------------------------
+ * Takes a single character and returns a one-character string consisting
+ * of that character.  The charToString function is useful, for example, if
+ * you need to concatenate a string and a character.  Since concat requires
+ * two strings, you must first convert the character into a string.
+ */
+</scan>
+string charToString(char ch);
+
+<a name="Function:stringLength"><scan class=comment>/*
+ * Function: stringLength
+ * Usage: len = stringLength(s);
+ * -----------------------------
+ * Returns the length of the string s.
+ */
+</scan>
+int stringLength(string s);
+
+<a name="Function:copyString"><scan class=comment>/*
+ * Function: copyString
+ * Usage: newstr = copyString(s);
+ * ------------------------------
+ * Copies the string s into dynamically allocated storage and returns the
+ * new string.  This function is not ordinarily required when this package
+ * is used on its own but is often necessary when you are working with more
+ * than one string package.
+ */
+</scan>
+string copyString(string s);
+
+<scan class=comment>/* Section 2 -- String comparison functions */</scan>
+
+<a name="Function:stringEqual"><scan class=comment>/*
+ * Function: stringEqual
+ * Usage: if (stringEqual(s1, s2)) ...
+ * -----------------------------------
+ * Returns true if the strings s1 and s2 are equal.  For the strings to be
+ * considered equal, every character in one string must precisely match the
+ * corresponding character in the other.  Uppercase and lowercase
+ * characters are considered to be different.
+ */
+</scan>
+bool stringEqual(string s1, string s2);
+
+<a name="Function:stringEqualIgnoreCase"><scan class=comment>/*
+ * Function: stringEqualIgnoreCase
+ * Usage: if (stringEqualIgnoreCase(s1, s2)) ...
+ * ---------------------------------------------
+ * Returns true if the strings s1 and s2 are equal, ignoring differences in
+ * case.
+ */
+</scan>
+bool stringEqualIgnoreCase(string s1, string s2);
+
+<a name="Function:stringCompare"><scan class=comment>/*
+ * Function: stringCompare
+ * Usage: if (stringCompare(s1, s2) &lt; 0) ...
+ * -----------------------------------------
+ * Returns -1 if string s1 comes before s2 in lexicographic order, 0 if
+ * they are equal, and +1 if s1 comes after s2.
+ */
+</scan>
+int stringCompare(string s1, string s2);
+
+<a name="Function:startsWith"><scan class=comment>/*
+ * Function: startsWith
+ * Usage: if (startsWith(s1, s2)) ...
+ * ----------------------------------
+ * Returns true if s1 starts with s2.
+ */
+</scan>
+bool startsWith(string s1, string s2);
+
+<a name="Function:endsWith"><scan class=comment>/*
+ * Function: endsWith
+ * Usage: if (endsWith(s1, s2)) ...
+ * --------------------------------
+ * Returns true if s1 ends with s2.
+ */
+</scan>
+bool endsWith(string s1, string s2);
+
+<scan class=comment>/* Section 3 -- Search functions */</scan>
+
+<a name="Function:findChar"><scan class=comment>/*
+ * Function: findChar
+ * Usage: p = findChar(ch, text, start);
+ * -------------------------------------
+ * Searches for the character ch beginning at position start in the string
+ * text and returns the first index at which it appears or -1 if no match
+ * is found.
+ */
+</scan>
+int findChar(char ch, string text, int start);
+
+<a name="Function:findString"><scan class=comment>/*
+ * Function: findString
+ * Usage: p = findString(str, text, start);
+ * ----------------------------------------
+ * Searches for the string str beginning at position start in the string
+ * text and returns the first index at which it appears or -1 if no match
+ * is found.
+ */
+</scan>
+int findString(string str, string text, int start);
+
+<a name="Function:findLastChar"><scan class=comment>/*
+ * Function: findLastChar
+ * Usage: p = findLastChar(ch, text);
+ * ----------------------------------
+ * Returns the last index of ch in text, or -1 if the search value does not
+ * appear.
+ */
+</scan>
+int findLastChar(char ch, string text);
+
+<a name="Function:findLastString"><scan class=comment>/*
+ * Function: findLastString
+ * Usage: p = findLastString(str, text);
+ * -------------------------------------
+ * Returns the last index of str in text, or -1 if the search value does
+ * not appear.
+ */
+</scan>
+int findLastString(string str, string text);
+
+<scan class=comment>/* Section 4 -- Conversion functions */</scan>
+
+<a name="Function:toLowerCase"><scan class=comment>/*
+ * Function: toLowerCase
+ * Usage: s = toLowerCase(s);
+ * --------------------------
+ * Returns a new string with all alphabetic characters converted to
+ * lowercase.
+ */
+</scan>
+string toLowerCase(string s);
+
+<a name="Function:toUpperCase"><scan class=comment>/*
+ * Function: toUpperCase
+ * Usage: s = toUpperCase(s);
+ * --------------------------
+ * Returns a new string with all alphabetic characters converted to
+ * uppercase.
+ */
+</scan>
+string toUpperCase(string s);
+
+<a name="Function:integerToString"><scan class=comment>/*
+ * Function: integerToString
+ * Usage: s = integerToString(n);
+ * ------------------------------
+ * Converts an integer into the corresponding string of digits.  For
+ * example, integerToString(123) returns "123" as a string.
+ */
+</scan>
+string integerToString(int n);
+
+<a name="Function:stringToInteger"><scan class=comment>/*
+ * Function: stringToInteger
+ * Usage: n = stringToInteger(s);
+ * ------------------------------
+ * Converts a string of digits into an integer.  If the string is not a
+ * legal integer or contains extraneous characters, stringToInteger signals
+ * an error condition.
+ */
+</scan>
+int stringToInteger(string s);
+
+<a name="Function:realToString"><scan class=comment>/*
+ * Function: realToString
+ * Usage: string  s = realToString(d);
+ * -----------------------------------
+ * Converts a floating-point number into the corresponding string form. 
+ * For example, calling realToString(23.45) returns "23.45".  The
+ * conversion is the same as that used for "%G" format in printf.
+ */
+</scan>
+string realToString(double d);
+
+<a name="Function:stringToReal"><scan class=comment>/*
+ * Function: stringToReal
+ * Usage: d = stringToReal(s);
+ * ---------------------------
+ * Converts a string representing a real number into its corresponding
+ * value.  If the string is not a legal floating-point number or if it
+ * contains extraneous characters, stringToReal signals an error condition.
+ */
+</scan>
+double stringToReal(string s);
+
+<scan class=comment>/* Section 5 - Miscellaneous functions */</scan>
+
+<a name="Function:trim"><scan class=comment>/*
+ * Function: trim
+ * Usage: trimmed = trim(str);
+ * ---------------------------
+ * Returns a new string after removing any whitespace characters from the
+ * beginning and end of the argument.
+ */
+</scan>
+string trim(string str);
+
+<a name="Function:quoteString"><scan class=comment>/*
+ * Function: quoteString
+ * Usage: quoted = quoteString(str);
+ * ---------------------------------
+ * Returns a quoted string that can be read by the C parser.  This string
+ * includes double quotes around the entire value, and uses standard escape
+ * sequences to indicate special characters.
+ */
+</scan>
+string quoteString(string str);
+
+<a name="Function:quoteHTML"><scan class=comment>/*
+ * Function: quoteHTML
+ * Usage: quoted = quoteHTML(str);
+ * -------------------------------
+ * Returns a string that appears correctly in HTML by changing HTML special
+ * characters to character entities.
+ */
+</scan>
+string quoteHTML(string str);
+
+<a name="Function:stringArrayLength"><scan class=comment>/*
+ * Function: stringArrayLength
+ * Usage: len = stringArrayLength(array);
+ * --------------------------------------
+ * Returns the length of a NULL-terminated string array.
+ */
+</scan>
+int stringArrayLength(string array[]);
+
+<a name="Function:searchStringArray"><scan class=comment>/*
+ * Function: searchStringArray
+ * Usage: index = searchStringArray(str, array);
+ * ---------------------------------------------
+ * Finds a string in a NULL-terminated string array and returns the first
+ * index at which the string appears, or -1 if it is not found.
+ */
+</scan>
+int searchStringArray(string str, string array[]);
+
+<scan class=comment>/* Section 6 - The StringBuffer ADT */</scan>
+
+<a name="Type:StringBuffer"><scan class=comment>/*
+ * Type: StringBuffer
+ * ------------------
+ * This type provides an efficient, memory-safe mechanism for strings that
+ * grow by the addition of characters.
+ */
+</scan>
+typedef struct StringBufferCDT *StringBuffer;
+
+<a name="Function:newStringBuffer"><scan class=comment>/*
+ * Function: newStringBuffer
+ * Usage: sb = newStringBuffer();
+ * ------------------------------
+ * Creates a new string buffer that expands dynamically if needed.  The
+ * buffer is initially empty.
+ */
+</scan>
+StringBuffer newStringBuffer();
+
+<a name="Function:freeStringBuffer"><scan class=comment>/*
+ * Function: freeStringBuffer
+ * Usage: freeStringBuffer(sb);
+ * ----------------------------
+ * Frees the storage associated with the string buffer.
+ */
+</scan>
+void freeStringBuffer(StringBuffer sb);
+
+<a name="Function:pushChar"><scan class=comment>/*
+ * Function: pushChar
+ * Usage: pushChar(sb, ch);
+ * ------------------------
+ * Appends (pushes) the character ch onto the end of the string buffer.
+ */
+</scan>
+void pushChar(StringBuffer sb, char ch);
+
+<a name="Function:popChar"><scan class=comment>/*
+ * Function: popChar
+ * Usage: ch = popChar(sb);
+ * ------------------------
+ * Pops and removes the last character from the string buffer.
+ */
+</scan>
+char popChar(StringBuffer sb);
+
+<a name="Function:appendString"><scan class=comment>/*
+ * Function: appendString
+ * Usage: appendString(sb, str);
+ * -----------------------------
+ * Appends the string str to the end of the string buffer.
+ */
+</scan>
+void appendString(StringBuffer sb, string str);
+
+<a name="Function:sbprintf"><scan class=comment>/*
+ * Function: sbprintf
+ * Usage: sbprintf(sb, format, ...);
+ * ---------------------------------
+ * Expands a printf-style format string and arguments onto the end of the
+ * string buffer.
+ */
+</scan>
+void sbprintf(StringBuffer sb, string format, ...);
+
+<a name="Function:isEmpty"><scan class=comment>/*
+ * Function: isEmpty
+ * Usage: if (isEmpty(sb)) . . .
+ * -----------------------------
+ * Returns true if the string buffer is empty.
+ */
+</scan>
+bool isEmptyStringBuffer(StringBuffer vec);
+
+<a name="Function:size"><scan class=comment>/*
+ * Function: size
+ * Usage: n = size(sb);
+ * --------------------
+ * Returns the number of characters in the string buffer.
+ */
+</scan>
+int sizeStringBuffer(StringBuffer vector);
+
+<a name="Function:clear"><scan class=comment>/*
+ * Function: clear
+ * Usage: clear(sb);
+ * -----------------
+ * Removes all characters from the string buffer.
+ */
+</scan>
+void clearStringBuffer(StringBuffer sb);
+
+<a name="Function:toString"><scan class=comment>/*
+ * Function: toString
+ * Usage: str = toString(sb);
+ * --------------------------
+ * Returns the string stored inside the buffer.  Clients must copy this
+ * string if they need to retain it.
+ */
+</scan>
+string toString(StringBuffer sb);
+
+<a name="Friend function:printfCapacity"><scan class=comment>/*
+ * Friend function: printfCapacity
+ * Usage: capacity = printfCapacity(format, args);
+ * -----------------------------------------------
+ * Returns a character count that will be sufficient to hold the result of
+ * printing format with arguments substituted from the args list.  This
+ * bound is guaranteed to be adequate but is not necessarily tight.
+ */
+</scan>
+int printCapacity(string format, va_list args);
+
+<a name="Friend function:sbFormat"><scan class=comment>/*
+ * Friend function: sbFormat
+ * Usage: sbFormat(sb, capacity, format, list);
+ * --------------------------------------------
+ * Works like sbprintf except that the list is an argument list as in
+ * stdarg.h.  The capacity argument is the required capacity, as returned
+ * by printfCapacity.
+ */
+</scan>
+void sbFormat(StringBuffer sb, int capacity, string format, va_list args);
+
+#endif
+</pre>
+</body>
+</html>

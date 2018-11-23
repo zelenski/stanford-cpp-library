@@ -1,8 +1,9 @@
 /*
  * File: filelib.cpp
  * -----------------
- * This file implements the filelib.h interface.  All platform dependencies
- * are managed through the platform interface.
+ * This file implements the filelib.h interface.
+ * Platform-dependent functions are handled through filelib_* functions
+ * defined in filelibunix.cpp and filelibwindows.cpp.
  * 
  * @version 2016/11/20
  * - small bug fix in readEntireStream method (failed for non-text files)
@@ -23,18 +24,16 @@
  * - removed 'using namespace' statement
  */
 
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
 #include <algorithm>
 #include <cctype>
 #include <cstdio>
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <vector>
-#include "private/platform.h"
+#define INTERNAL_INCLUDE 1
 #include "simpio.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#include "vector.h"
+#undef INTERNAL_INCLUDE
 
 /* Prototypes */
 
@@ -44,7 +43,7 @@ static bool recursiveMatch(const std::string& str, int sx, const std::string& pa
 /* Implementations */
 
 void createDirectory(const std::string& path) {
-    return stanfordcpplib::getPlatform()->filelib_createDirectory(expandPathname(path));
+    return platform::filelib_createDirectory(expandPathname(path));
 }
 
 void createDirectoryPath(const std::string& path) {
@@ -84,15 +83,15 @@ std::string defaultExtension(const std::string& filename, const std::string& ext
 }
 
 void deleteFile(const std::string& filename) {
-    stanfordcpplib::getPlatform()->filelib_deleteFile(expandPathname(filename));
+    platform::filelib_deleteFile(expandPathname(filename));
 }
 
 std::string expandPathname(const std::string& filename) {
-    return stanfordcpplib::getPlatform()->filelib_expandPathname(filename);
+    return platform::filelib_expandPathname(filename);
 }
 
 bool fileExists(const std::string& filename) {
-    return stanfordcpplib::getPlatform()->filelib_fileExists(filename);
+    return platform::filelib_fileExists(filename);
 }
 
 int fileSize(const std::string& filename) {
@@ -113,12 +112,16 @@ std::string findOnPath(const std::string& path, const std::string& filename) {
     return result;
 }
 
+std::string getAbsolutePath(const std::string& path) {
+    return platform::filelib_getAbsolutePath(path);
+}
+
 std::string getCurrentDirectory() {
-    return stanfordcpplib::getPlatform()->filelib_getCurrentDirectory();
+    return platform::filelib_getCurrentDirectory();
 }
 
 std::string getDirectoryPathSeparator() {
-    return stanfordcpplib::getPlatform()->filelib_getDirectoryPathSeparator();
+    return platform::filelib_getDirectoryPathSeparator();
 }
 
 std::string getExtension(const std::string& filename) {
@@ -168,7 +171,7 @@ std::string getRoot(const std::string& filename) {
 }
 
 std::string getSearchPathSeparator() {
-    return stanfordcpplib::getPlatform()->filelib_getSearchPathSeparator();
+    return platform::filelib_getSearchPathSeparator();
 }
 
 std::string getTail(const std::string& filename) {
@@ -186,39 +189,30 @@ std::string getTail(const std::string& filename) {
 }
 
 std::string getTempDirectory() {
-    return stanfordcpplib::getPlatform()->filelib_getTempDirectory();
+    return platform::filelib_getTempDirectory();
 }
 
 bool isDirectory(const std::string& filename) {
-    return stanfordcpplib::getPlatform()->filelib_isDirectory(expandPathname(filename));
+    return platform::filelib_isDirectory(expandPathname(filename));
 }
 
 bool isFile(const std::string& filename) {
-    return stanfordcpplib::getPlatform()->filelib_isFile(expandPathname(filename));
+    return platform::filelib_isFile(expandPathname(filename));
 }
 
 bool isSymbolicLink(const std::string& filename) {
-    return stanfordcpplib::getPlatform()->filelib_isSymbolicLink(filename);
+    return platform::filelib_isSymbolicLink(filename);
 }
 
 void listDirectory(const std::string& path, Vector<std::string>& list) {
-    std::vector<std::string> vec;
-    listDirectory(path, vec);
     list.clear();
-    for (std::string file : vec) {
-        list.add(file);
-    }
-}
-
-void listDirectory(const std::string& path, std::vector<std::string>& list) {
-    return stanfordcpplib::getPlatform()->filelib_listDirectory(expandPathname(path), list);
+    return platform::filelib_listDirectory(expandPathname(path), list);
 }
 
 Vector<std::string> listDirectory(const std::string& path) {
-    std::vector<std::string> vec;
+    Vector<std::string> vec;
     listDirectory(path, vec);
-    Vector<std::string> v(vec);
-    return v;
+    return vec;
 }
 
 bool matchFilenamePattern(const std::string& filename, const std::string& pattern) {
@@ -249,7 +243,7 @@ std::string openFileDialog(std::ifstream& stream,
 std::string openFileDialog(std::ifstream& stream,
                            const std::string& title,
                            const std::string& path) {
-    std::string filename = stanfordcpplib::getPlatform()->file_openFileDialog(title, "load", path);
+    std::string filename = platform::file_openFileDialog(title, "load", path);
     if (filename == "") return "";
     stream.open(filename.c_str());
     return (stream.fail()) ? "" : filename;
@@ -257,7 +251,7 @@ std::string openFileDialog(std::ifstream& stream,
 
 std::string openFileDialog(const std::string& title,
                            const std::string& path) {
-    std::string filename = stanfordcpplib::getPlatform()->file_openFileDialog(title, "load", path);
+    std::string filename = platform::file_openFileDialog(title, "load", path);
     if (filename == "") return "";
     return (fileExists(filename)) ? filename : "";
 }
@@ -274,7 +268,7 @@ std::string openFileDialog(std::ofstream& stream,
 std::string openFileDialog(std::ofstream& stream,
                            const std::string& title,
                            const std::string& path) {
-    std::string filename = stanfordcpplib::getPlatform()->file_openFileDialog(title, "save", path);
+    std::string filename = platform::file_openFileDialog(title, "save", path);
     if (filename == "") return "";
     stream.open(filename.c_str());
     return (stream.fail()) ? "" : filename;
@@ -385,16 +379,6 @@ void readEntireFile(std::istream& is, Vector<std::string>& lines) {
     }
 }
 
-void readEntireFile(std::istream& is, std::vector<std::string>& lines) {
-    lines.clear();
-    while (true) {
-        std::string line;
-        getline(is, line);
-        if (is.fail()) break;
-        lines.push_back(line);
-    }
-}
-
 std::string readEntireFile(const std::string& filename) {
     std::string out;
     if (readEntireFile(filename, out)) {
@@ -446,7 +430,7 @@ void rewindStream(std::istream& input) {
 }
 
 void setCurrentDirectory(const std::string& path) {
-    return stanfordcpplib::getPlatform()->filelib_setCurrentDirectory(path);
+    return platform::filelib_setCurrentDirectory(path);
 }
 
 bool writeEntireFile(const std::string& filename,

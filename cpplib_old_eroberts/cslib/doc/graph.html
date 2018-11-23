@@ -1,0 +1,336 @@
+<html>
+<head>
+<title>graph.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="graph-h.html"><code>graph.h</code></a></h1>
+This interface exports a simple graph abstraction.  In this abstraction,
+graphs closely model their mathematical formulation as a set of nodes
+connected by a set of arcs.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Types</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:Graph">Graph</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type represents the abstract type for a graph.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:Node">Node</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type is the abstract type for a node in a graph.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:Arc">Arc</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type is the abstract type for an arc in a graph.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newGraph">newGraph()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a new graph with no nodes or arcs.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:freeGraph">freeGraph(g)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Frees the storage for the graph, along with its nodes and arcs.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:addNode">addNode(g,&nbsp;name)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds a node to the graph with the specified name.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:removeNode">removeNode(g,&nbsp;node)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes and frees the specified node from the graph, along with any arcs that enter or leave that node.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getNode">getNode(g,&nbsp;name)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the node in the graph that has the specified name.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:addArc">addArc(g,&nbsp;n1,&nbsp;n2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds a new arc to the graph connecting nodes <code>n1</code> and <code>n2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:removeArc">removeArc(g,&nbsp;arc)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes and frees the specified arc.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isConnected">isConnected(n1,&nbsp;n2)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if there is an arc from <code>n1</code> to <code>n2</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getNodeSet">getNodeSet(g)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a set consisting of all nodes in the graph.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getArcSet">getArcSet(g)</a><br><a href="#Function:getArcSet">getArcSet(node)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a set consisting of all arcs, either in the graph or starting at the specified node.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getNeighbors">getNeighbors(node)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a set consisting of the nodes to which a given node is connected.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getName">getName(node)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the name of the node.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:startOfArc">startOfArc(arc)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the node at the beginning of the specified arc.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:endOfArc">endOfArc(arc)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the node at the end of the specified arc.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getCost">getCost(arc)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the "cost" associated with traversing an arc.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setCost">setCost(arc,&nbsp;cost)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the cost of traversing the arc.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setNodeOrdering">setNodeOrdering(graph,&nbsp;cmpFn)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the comparison function used to order the nodes in a graph when they are enumerated.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setArcOrdering">setArcOrdering(graph,&nbsp;cmpFn)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the comparison function used to order the arcs in a graph when they are enumerated.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:Graph"></a>
+<pre class=detailCode>
+typedef struct GraphCDT *Graph;
+</pre>
+<div class=detailHTML>
+This type represents the abstract type for a graph.  Conceptually, a
+<code>Graph</code> consists of a set of <i>nodes</i> together with a
+set of <i>arcs</i>.  Each arc connects two nodes in one direction.
+Undirected graphs must include two arcs for each bidirectional
+connection.
+</div>
+<hr>
+<a name="Type:Node"></a>
+<pre class=detailCode>
+typedef struct NodeCDT *Node;
+</pre>
+<div class=detailHTML>
+This type is the abstract type for a node in a graph.  Clients
+can store their own data in a node by using the functions
+<code>getBlockData</code> and <code>setBlockData</code> described
+in <a href="cslib.html"><code>cslib.h</code></a>.
+</div>
+<hr>
+<a name="Type:Arc"></a>
+<pre class=detailCode>
+typedef struct ArcCDT *Arc;
+</pre>
+<div class=detailHTML>
+This type is the abstract type for an arc in a graph.  Clients
+can store their own data in an arc by using the functions
+<code>getBlockData</code> and <code>setBlockData</code> described
+in <a href="cslib.html"><code>cslib.h</code></a>.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:newGraph"></a>
+<pre class=detailCode>
+Graph newGraph(void);
+</pre>
+<div class=detailHTML>
+Returns a new graph with no nodes or arcs.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+g = newGraph();
+</pre>
+<hr>
+<a name="Function:freeGraph"></a>
+<pre class=detailCode>
+void freeGraph(Graph g);
+</pre>
+<div class=detailHTML>
+Frees the storage for the graph, along with its nodes and arcs.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+freeGraph(g);
+</pre>
+<hr>
+<a name="Function:addNode"></a>
+<pre class=detailCode>
+Node addNode(Graph g, string name);
+</pre>
+<div class=detailHTML>
+Adds a node to the graph with the specified name.  If there is already
+a node with that name, <code>addNode</code> generates an error.  The
+function returns the <code>Node</code> value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+node = addNode(g, name);
+</pre>
+<hr>
+<a name="Function:removeNode"></a>
+<pre class=detailCode>
+void removeNode(Graph g, Node node);
+</pre>
+<div class=detailHTML>
+Removes and frees the specified node from the graph, along with any
+arcs that enter or leave that node.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+removeNode(g, node);
+</pre>
+<hr>
+<a name="Function:getNode"></a>
+<pre class=detailCode>
+Node getNode(Graph g, string name);
+</pre>
+<div class=detailHTML>
+Returns the node in the graph that has the specified name.  If there is
+no such node, <code>getNode</code> returns <code>NULL</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+node = getNode(g, name);
+</pre>
+<hr>
+<a name="Function:addArc"></a>
+<pre class=detailCode>
+Arc addArc(Graph g, Node n1, Node n2);
+</pre>
+<div class=detailHTML>
+Adds a new arc to the graph connecting nodes <code>n1</code> and
+<code>n2</code>.  The function returns the <code>Arc</code> value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+arc = addArc(g, n1, n2);
+</pre>
+<hr>
+<a name="Function:removeArc"></a>
+<pre class=detailCode>
+void removeArc(Graph g, Arc arc);
+</pre>
+<div class=detailHTML>
+Removes and frees the specified arc.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+removeArc(g, arc);
+</pre>
+<hr>
+<a name="Function:isConnected"></a>
+<pre class=detailCode>
+bool isConnected(Node n1, Node n2);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if there is an arc from <code>n1</code>
+to <code>n2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isConnected(n1, n2)) . . .
+</pre>
+<hr>
+<a name="Function:getNodeSet"></a>
+<pre class=detailCode>
+Set getNodeSet(Graph g);
+</pre>
+<div class=detailHTML>
+Returns a set consisting of all nodes in the graph.  This function
+is typically used in conjunction with the <code>foreach</code>
+macro to initialize an iterator.  For example, the following
+idiom iterates over the nodes in the specified graph:
+
+<pre>
+   foreach (node in getNodeSet(g)) . . .
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+nodeSet = getNodeSet(g);
+</pre>
+<hr>
+<a name="Function:getArcSet"></a>
+<pre class=detailCode>
+Set getArcSet(void *arg);
+</pre>
+<div class=detailHTML>
+Returns a set consisting of all arcs, either in the graph or starting
+at the specified node.  This function is typically used in conjunction
+with the <code>foreach</code> macro to initialize an iterator.  For
+example, the following idiom iterates over the arcs in the specified
+graph:
+
+<pre>
+   foreach (arc in getArcSet(g)) . . .
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+arcSet = getArcSet(g);
+arcSet = getArcSet(node);
+</pre>
+<hr>
+<a name="Function:getNeighbors"></a>
+<pre class=detailCode>
+Set getNeighbors(Node node);
+</pre>
+<div class=detailHTML>
+Returns a set consisting of the nodes to which a given node is
+connected.  This function is typically used in conjunction with
+the <code>foreach</code> macro to initialize an iterator.  For
+example, the following idiom iterates over the nodes to which
+the node <code>start</code> is connected:
+
+<pre>
+   foreach (node in getNeighbors(start)) . . .
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+nodeSet = getNeighbors(node);
+</pre>
+<hr>
+<a name="Function:getName"></a>
+<pre class=detailCode>
+string getName(Node node);
+</pre>
+<div class=detailHTML>
+Returns the name of the node.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+str = getName(node);
+</pre>
+<hr>
+<a name="Function:startOfArc"></a>
+<pre class=detailCode>
+Node startOfArc(Arc arc);
+</pre>
+<div class=detailHTML>
+Returns the node at the beginning of the specified arc.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+node = startOfArc(arc);
+</pre>
+<hr>
+<a name="Function:endOfArc"></a>
+<pre class=detailCode>
+Node endOfArc(Arc arc);
+</pre>
+<div class=detailHTML>
+Returns the node at the end of the specified arc.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+node = endOfArc(arc);
+</pre>
+<hr>
+<a name="Function:getCost"></a>
+<pre class=detailCode>
+double getCost(Arc arc);
+</pre>
+<div class=detailHTML>
+Returns the "cost" associated with traversing an arc.  This cost need not
+be economic and will often refer to some other metric, such as distance.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+cost = getCost(arc);
+</pre>
+<hr>
+<a name="Function:setCost"></a>
+<pre class=detailCode>
+void setCost(Arc arc, double cost);
+</pre>
+<div class=detailHTML>
+Sets the cost of traversing the arc.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setCost(arc, cost);
+</pre>
+<hr>
+<a name="Function:setNodeOrdering"></a>
+<pre class=detailCode>
+void setNodeOrdering(Graph graph, CompareFn cmpFn);
+</pre>
+<div class=detailHTML>
+Sets the comparison function used to order the nodes in a graph when
+they are enumerated.  By default, nodes are sorted in alphabetical
+order by name.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setNodeOrdering(graph, cmpFn);
+</pre>
+<hr>
+<a name="Function:setArcOrdering"></a>
+<pre class=detailCode>
+void setArcOrdering(Graph graph, CompareFn cmpFn);
+</pre>
+<div class=detailHTML>
+Sets the comparison function used to order the arcs in a graph when
+they are enumerated.  By default, arcs are sorted in alphabetical
+order by the name of the start node followed by the name of the end node.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setArcOrdering(graph, cmpFn);
+</pre>
+<hr>
+</table>
+</body>
+</html>

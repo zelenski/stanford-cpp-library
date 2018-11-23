@@ -1,0 +1,134 @@
+<html>
+<head>
+<title>GMouseEvent</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="gevents.html">#include "gevents.h"</a></div>
+<h1 class=header><code>class GMouseEvent : public <a href="GEvent-class.html">GEvent</a></code></h1>
+This event subclass represents a mouse event.  Each mouse event
+records the event type (<code>MOUSE_PRESSED</code>,
+<code>MOUSE_RELEASED</code>, <code>MOUSE_CLICKED</code>,
+<code>MOUSE_MOVED</code>, <code>MOUSE_DRAGGED</code>) along
+with the coordinates of the event.  Clicking the mouse generates
+three events in the following order: <code>MOUSE_PRESSED</code>,
+<code>MOUSE_RELEASED</code>, <code>MOUSE_CLICKED</code>.
+
+<p>As an example, the following program uses mouse events to let
+the user draw rectangles on the graphics window.  The only
+complexity in this code is the use of the library functions
+<code>min</code> and <code>abs</code> to ensure that the
+dimensions of the rectangle are positive.
+
+<pre>
+   int main() {
+      GWindow gw;
+      cout &lt;&lt; &quot;This program lets the user draw rectangles.&quot; &lt;&lt; endl;
+      GRect* rect;
+      double startX;
+      double startY;
+      while (true) {
+         GMouseEvent e = waitForEvent();
+         if (e.getEventType() == MOUSE_PRESSED) {
+            startX = e.getX();
+            startY = e.getY();
+            rect = new GRect(startX, startY, 0, 0);
+            rect-&gt;setFilled(true);
+            gw.add(rect);
+         } else if (e.getEventType() == MOUSE_DRAGGED) {
+            double x = min(e.getX(), startX);
+            double y = min(e.getY(), startY);
+            double width = abs(e.getX() - startX);
+            double height = abs(e.getY() - startY);
+            rect-&gt;setBounds(x, y, width, height);
+         }
+      }
+   }
+</pre>
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Constructor</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GMouseEvent">GMouseEvent(<var>type</var>,&nbsp;<var>gw</var>,&nbsp;<var>x</var>,&nbsp;<var>y</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GMouseEvent</code> using the specified parameters.</td></tr>
+<tr><td class=indexHead colspan=2>Methods</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getGWindow">getGWindow()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the graphics window in which this event occurred.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getX">getX()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <i>x</i> coordinate at which the event occurred relative to the window origin at the upper left corner of the window.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getY">getY()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <i>y</i> coordinate at which the event occurred relative to the window origin at the upper left corner of the window.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts the event to a human-readable representation of the event.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GMouseEvent"></a>
+<pre class=detailCode>
+GMouseEvent(EventType type, const GWindow&amp; gw, double x, double y);
+</pre>
+<div class=detailHTML>
+Creates a <code>GMouseEvent</code> using the specified parameters.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GMouseEvent mouseEvent(type, gw, x, y);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:getGWindow"></a>
+<pre class=detailCode>
+GWindow getGWindow() const;
+</pre>
+<div class=detailHTML>
+Returns the graphics window in which this event occurred.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GWindow gw = e.getGWindow();
+</pre>
+<hr>
+<a name="Method:getX"></a>
+<pre class=detailCode>
+double getX() const;
+</pre>
+<div class=detailHTML>
+Returns the <i>x</i> coordinate at which the event occurred relative
+to the window origin at the upper left corner of the window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double x = getX();
+</pre>
+<hr>
+<a name="Method:getY"></a>
+<pre class=detailCode>
+double getY() const;
+</pre>
+<div class=detailHTML>
+Returns the <i>y</i> coordinate at which the event occurred relative
+to the window origin at the upper left corner of the window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double y = getY();
+</pre>
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Converts the event to a human-readable representation of the event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = e.toString();
+</pre>
+<hr>
+</table>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<html>
+<head>
+<title>../unittest.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: unittest.h
+ * ----------------
+ * This interface exports several functions that facilitate writing unit
+ * tests for packages.
+ */
+</scan>
+#ifndef _unittest_h
+#define _unittest_h
+
+#include &lt;stdarg.h&gt;
+#include "cslib.h"
+#include "exception.h"
+
+extern void uTTest(string exp, string value, ...);
+
+<a name="Function:trace"><scan class=comment>/*
+ * Function: trace
+ * Usage: trace(exp);
+ * ------------------
+ * Tests to make sure that a procedure does not generate any calls to
+ * error.
+ */
+</scan>
+#define trace(exp) { \
+   try { \
+      reportMessage("%s;", #exp); \
+      exp; \
+   } catch (ErrorException) { \
+      reportError("%s throws \"%s\"", #exp, getExceptionValue()); \
+   } endtry \
+}
+
+<a name="Function:test"><scan class=comment>/*
+ * Function: test
+ * Usage: test(exp, value);
+ * ------------------------
+ * Tests to make sure that a function computes a specified value.  The
+ * first argument is an expression (typically a function call in the module
+ * under test), and the second argument is the expected value, which must
+ * be of one of the following types:
+ *
+ *  bool char double int string
+ */
+</scan>
+#define test(exp, value) { \
+   try { \
+      uTTest(#exp, #value, exp, value); \
+   } catch (ErrorException) { \
+      reportError("%s throws \"%s\"", #exp, getExceptionValue()); \
+   } endtry \
+}
+
+<a name="Function:testError"><scan class=comment>/*
+ * Function: testError
+ * Usage: testError(exp);
+ * ----------------------
+ * Tests to make sure that a method call generates an error.
+ */
+</scan>
+#define testError(exp) { \
+   int indent = getReportIndentation(); \
+   try { \
+      exp; \
+      setReportIndentation(indent); \
+      reportError("%s should generate an error", #exp); \
+   } catch (ErrorException) { \
+      setReportIndentation(indent); \
+      reportMessage("%s throws \"%s\"", #exp, getExceptionValue()); \
+   } catch (ANY) { \
+      setReportIndentation(indent); \
+      reportMessage("%s throws \"%s\"", #exp, getExceptionName()); \
+   } endtry \
+}
+
+<a name="Function:testModule"><scan class=comment>/*
+ * Function: testModule
+ * Usage: errorCount = testModule(name, fn);
+ * -----------------------------------------
+ * Runs the specified test method and generates a report.  The second
+ * parameter must be the name of a test function inside the named package.
+ */
+</scan>
+int testModule(string name, proc fn);
+
+<a name="Function:setVerboseTestingFlag"><scan class=comment>/*
+ * Function: setVerboseTestingFlag
+ * Usage: setVerboseTestingFlag(flag);
+ * -----------------------------------
+ * Sets a global flag that determines whether the test process traces all
+ * the test operations.
+ */
+</scan>
+void setVerboseTestingFlag(bool flag);
+
+<a name="Function:getVerboseTestingFlag"><scan class=comment>/*
+ * Function: getVerboseTestingFlag
+ * Usage: flag = getVerboseTestingFlag();
+ * --------------------------------------
+ * Returns the setting of the verbose testing flag.
+ */
+</scan>
+bool getVerboseTestingFlag(void);
+
+<a name="Function:reportError"><scan class=comment>/*
+ * Function: reportError
+ * Usage: reportError(msg, ...);
+ * -----------------------------
+ * Reports an error in the current package.  If msg is NULL, the error
+ * counter is incremented, but no message is generated.
+ */
+</scan>
+void reportError(string msg, ...);
+
+<a name="Function:reportMessage"><scan class=comment>/*
+ * Function: reportMessage
+ * Usage: reportMessage(msg, ...);
+ * -------------------------------
+ * Generates a line of output if verbose tracing in enabled.
+ */
+</scan>
+void reportMessage(string msg, ...);
+
+<a name="Function:setReportIndentation"><scan class=comment>/*
+ * Function: setReportIndentation
+ * Usage: setReportIndentation(indent);
+ * ------------------------------------
+ * Sets the indentation in the reportError and reportMessage, which allows
+ * test script designers to improve readability of the verbose output.  In
+ * most cases, clients will not use setReportIndentation directly but will
+ * instead rely on adjustReportIndentation.  This call, however, is
+ * necessary for tests that throw errors or other exceptions.
+ */
+</scan>
+void setReportIndentation(int indent);
+
+<a name="Function:getReportIndentation"><scan class=comment>/*
+ * Function: getReportIndentation
+ * Usage: indent = getReportIndentation();
+ * ---------------------------------------
+ * Gets the current indentation used in the reportError and reportMessage
+ * calls.  In most cases, clients will not use getReportIndentation
+ * directly but will instead rely on adjustReportIndentation.
+ */
+</scan>
+int getReportIndentation(void);
+
+<a name="Function:adjustReportIndentation"><scan class=comment>/*
+ * Function: adjustReportIndentation
+ * Usage: adjustReportIndentation(delta);
+ * --------------------------------------
+ * Adjusts the indentation in the reportError and reportMessage calls to
+ * improve readability of the verbose output.
+ */
+</scan>
+void adjustReportIndentation(int delta);
+
+#endif
+</pre>
+</body>
+</html>

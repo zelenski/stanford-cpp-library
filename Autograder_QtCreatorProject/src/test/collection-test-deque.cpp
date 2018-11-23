@@ -44,6 +44,12 @@ TIMED_TEST(DequeTests, forEachTest_Deque, TEST_TIMEOUT_DEFAULT) {
     assertCollection("Deque foreach", {4, 2, 1, 3}, deq);
 }
 
+TIMED_TEST(DequeTests, frontBackTest_Deque, TEST_TIMEOUT_DEFAULT) {
+    Deque<int> deq {10, 20, 30, 40};
+    assertEqualsInt("Deque front", 10, deq.front());
+    assertEqualsInt("Deque back", 40, deq.back());
+}
+
 TIMED_TEST(DequeTests, hashCodeTest_Deque, TEST_TIMEOUT_DEFAULT) {
     Deque<int> deq;
     deq.addBack(1);

@@ -20,7 +20,6 @@ import javax.swing.text.Document;
 import acm.graphics.GraphicsUtils;
 import stanford.cs106.util.StringUtils;
 
-@SuppressWarnings("serial")
 public class JPlaceholderTextField extends JTextField {
 	private String placeholder;
 	private Color placeholderColor;

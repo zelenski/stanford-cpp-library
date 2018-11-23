@@ -1,0 +1,62 @@
+<html>
+<head>
+<title>gcalloc.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1><a href="gcalloc-h.html"><code>gcalloc.h</code></a></h1>
+This file defines the interface for a garbage-collecting allocator.
+This interface defines only an initialization function
+(<code>initGCAllocator</code>) and facilities for protecting
+global variables.  The actual allocation is handled by the standard
+<code>getBlock</code> and <code>freeBlock</code> functions defined in
+<code>cslib.h</code>.  These functions use the garbage-collecting
+allocator if <code>initGCAllocator</code> has been called.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><a href="#Function:initGCAllocator">initGCAllocator(&argc)</a>&nbsp;</td><td class=indexSynopsis width=100%>Enables the garbage-collecting allocator.</td></tr>
+<tr><td class=indexKey><a href="#Function:protectBlock">protectBlock(ptr,&nbsp;nbytes)</a>&nbsp;</td><td class=indexSynopsis width=100%>Mark a memory block as protected from the garbage collector.</td></tr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:initGCAllocator"></a>
+<pre class=detailCode>
+void initGCAllocator(void *stackbase);
+</pre>
+<div class=detailHTML>
+Enables the garbage-collecting allocator.  This call should be
+made from the <code>main</code>, and the address passed to set
+the stack limit should be the address of the argc parameter.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+initGCAllocator(&amp;argc);
+</pre>
+<hr>
+<a name="Function:protectBlock"></a>
+<pre class=detailCode>
+void protectBlock(void *ptr, size_t nbytes);
+</pre>
+<div class=detailHTML>
+Mark a memory block as protected from the garbage collector.
+This function is not usually called by clients (who will
+ordinarily use <code>protectVariable</code> instead), but has the
+effect of protecting the block of memory beginning at
+ptr and extending for nbytes from the garbage collector.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+protectBlock(ptr, nbytes);
+</pre>
+<hr>
+</table>
+</body>
+</html>

@@ -1,0 +1,127 @@
+\hypertarget{classGridLocationRange}{}\section{Grid\+Location\+Range Class Reference}
+\label{classGridLocationRange}\index{Grid\+Location\+Range@{Grid\+Location\+Range}}
+
+
+{\ttfamily \#include $<$gridlocation.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classGridLocationRange_ad35db7c23ea349daa74db15cb49e35ab}{Grid\+Location\+Range}} (int \mbox{\hyperlink{classGridLocationRange_a83342cfc6cc0c1e7d335908d2bd9fb0b}{start\+Row}}=0, int \mbox{\hyperlink{classGridLocationRange_a64ef3d56a680766cc1921bc92b4d5e3e}{start\+Col}}=0, int \mbox{\hyperlink{classGridLocationRange_a4090535ae1ccb444498c816bad6c2c64}{end\+Row}}=0, int \mbox{\hyperlink{classGridLocationRange_ad8aed017dac65cea808dc3c668e39752}{end\+Col}}=0, bool \mbox{\hyperlink{classGridLocationRange_a78a78e39d2a36dd8eed1e83499d5a9d9}{is\+Row\+Major}}=true)
+\item 
+\mbox{\hyperlink{classGridLocationRange_ad6f1526ab7c2ba9728acc147e3371a38}{Grid\+Location\+Range}} (const \mbox{\hyperlink{structGridLocation}{Grid\+Location}} \&start\+Loc, const \mbox{\hyperlink{structGridLocation}{Grid\+Location}} \&end\+Loc, bool \mbox{\hyperlink{classGridLocationRange_a78a78e39d2a36dd8eed1e83499d5a9d9}{is\+Row\+Major}}=true)
+\item 
+Grid\+Location\+Range\+Iterator \mbox{\hyperlink{classGridLocationRange_abd833755fc74d34b27fcb7dafdf91ce2}{begin}} () const
+\item 
+bool \mbox{\hyperlink{classGridLocationRange_abda665ef6af1d9cc75c51829724d8bee}{contains}} (const \mbox{\hyperlink{structGridLocation}{Grid\+Location}} \&loc) const
+\item 
+Grid\+Location\+Range\+Iterator \mbox{\hyperlink{classGridLocationRange_abf85395b0f84fdb2ee2c8f35de44f4e0}{end}} () const
+\item 
+int \mbox{\hyperlink{classGridLocationRange_ad8aed017dac65cea808dc3c668e39752}{end\+Col}} () const
+\item 
+const \mbox{\hyperlink{structGridLocation}{Grid\+Location}} \& \mbox{\hyperlink{classGridLocationRange_a709b054ac01bb584ed7f5b0784932f8d}{end\+Location}} () const
+\item 
+int \mbox{\hyperlink{classGridLocationRange_a4090535ae1ccb444498c816bad6c2c64}{end\+Row}} () const
+\item 
+bool \mbox{\hyperlink{classGridLocationRange_acf82f9b2937375c7b1cf3dccb3df3312}{is\+Empty}} () const
+\item 
+bool \mbox{\hyperlink{classGridLocationRange_a78a78e39d2a36dd8eed1e83499d5a9d9}{is\+Row\+Major}} () const
+\item 
+int \mbox{\hyperlink{classGridLocationRange_a64ef3d56a680766cc1921bc92b4d5e3e}{start\+Col}} () const
+\item 
+const \mbox{\hyperlink{structGridLocation}{Grid\+Location}} \& \mbox{\hyperlink{classGridLocationRange_a91f18341eefcf80167580445c23449d0}{start\+Location}} () const
+\item 
+int \mbox{\hyperlink{classGridLocationRange_a83342cfc6cc0c1e7d335908d2bd9fb0b}{start\+Row}} () const
+\item 
+std\+::string \mbox{\hyperlink{classGridLocationRange_a1fe5121d6528fdea3f243321b3fa3a49}{to\+String}} () const
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classGridLocationRange_ad35db7c23ea349daa74db15cb49e35ab}\label{classGridLocationRange_ad35db7c23ea349daa74db15cb49e35ab}} 
+\index{Grid\+Location\+Range@{Grid\+Location\+Range}!Grid\+Location\+Range@{Grid\+Location\+Range}}
+\index{Grid\+Location\+Range@{Grid\+Location\+Range}!Grid\+Location\+Range@{Grid\+Location\+Range}}
+\subsubsection{\texorpdfstring{Grid\+Location\+Range()}{GridLocationRange()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classGridLocationRange}{Grid\+Location\+Range}} (\begin{DoxyParamCaption}\item[{int}]{start\+Row = {\ttfamily 0},  }\item[{int}]{start\+Col = {\ttfamily 0},  }\item[{int}]{end\+Row = {\ttfamily 0},  }\item[{int}]{end\+Col = {\ttfamily 0},  }\item[{bool}]{is\+Row\+Major = {\ttfamily true} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classGridLocationRange_ad6f1526ab7c2ba9728acc147e3371a38}\label{classGridLocationRange_ad6f1526ab7c2ba9728acc147e3371a38}} 
+\index{Grid\+Location\+Range@{Grid\+Location\+Range}!Grid\+Location\+Range@{Grid\+Location\+Range}}
+\index{Grid\+Location\+Range@{Grid\+Location\+Range}!Grid\+Location\+Range@{Grid\+Location\+Range}}
+\subsubsection{\texorpdfstring{Grid\+Location\+Range()}{GridLocationRange()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classGridLocationRange}{Grid\+Location\+Range}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structGridLocation}{Grid\+Location}} \&}]{start\+Loc,  }\item[{const \mbox{\hyperlink{structGridLocation}{Grid\+Location}} \&}]{end\+Loc,  }\item[{bool}]{is\+Row\+Major = {\ttfamily true} }\end{DoxyParamCaption})}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classGridLocationRange_abd833755fc74d34b27fcb7dafdf91ce2}\label{classGridLocationRange_abd833755fc74d34b27fcb7dafdf91ce2}} 
+\index{Grid\+Location\+Range@{Grid\+Location\+Range}!begin@{begin}}
+\index{begin@{begin}!Grid\+Location\+Range@{Grid\+Location\+Range}}
+\subsubsection{\texorpdfstring{begin()}{begin()}}
+{\footnotesize\ttfamily Grid\+Location\+Range\+::\+Grid\+Location\+Range\+Iterator begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classGridLocationRange_abda665ef6af1d9cc75c51829724d8bee}\label{classGridLocationRange_abda665ef6af1d9cc75c51829724d8bee}} 
+\index{Grid\+Location\+Range@{Grid\+Location\+Range}!contains@{contains}}
+\index{contains@{contains}!Grid\+Location\+Range@{Grid\+Location\+Range}}
+\subsubsection{\texorpdfstring{contains()}{contains()}}
+{\footnotesize\ttfamily bool contains (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structGridLocation}{Grid\+Location}} \&}]{loc }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classGridLocationRange_abf85395b0f84fdb2ee2c8f35de44f4e0}\label{classGridLocationRange_abf85395b0f84fdb2ee2c8f35de44f4e0}} 
+\index{Grid\+Location\+Range@{Grid\+Location\+Range}!end@{end}}
+\index{end@{end}!Grid\+Location\+Range@{Grid\+Location\+Range}}
+\subsubsection{\texorpdfstring{end()}{end()}}
+{\footnotesize\ttfamily Grid\+Location\+Range\+::\+Grid\+Location\+Range\+Iterator end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classGridLocationRange_ad8aed017dac65cea808dc3c668e39752}\label{classGridLocationRange_ad8aed017dac65cea808dc3c668e39752}} 
+\index{Grid\+Location\+Range@{Grid\+Location\+Range}!end\+Col@{end\+Col}}
+\index{end\+Col@{end\+Col}!Grid\+Location\+Range@{Grid\+Location\+Range}}
+\subsubsection{\texorpdfstring{end\+Col()}{endCol()}}
+{\footnotesize\ttfamily int end\+Col (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classGridLocationRange_a709b054ac01bb584ed7f5b0784932f8d}\label{classGridLocationRange_a709b054ac01bb584ed7f5b0784932f8d}} 
+\index{Grid\+Location\+Range@{Grid\+Location\+Range}!end\+Location@{end\+Location}}
+\index{end\+Location@{end\+Location}!Grid\+Location\+Range@{Grid\+Location\+Range}}
+\subsubsection{\texorpdfstring{end\+Location()}{endLocation()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{structGridLocation}{Grid\+Location}} \& end\+Location (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classGridLocationRange_a4090535ae1ccb444498c816bad6c2c64}\label{classGridLocationRange_a4090535ae1ccb444498c816bad6c2c64}} 
+\index{Grid\+Location\+Range@{Grid\+Location\+Range}!end\+Row@{end\+Row}}
+\index{end\+Row@{end\+Row}!Grid\+Location\+Range@{Grid\+Location\+Range}}
+\subsubsection{\texorpdfstring{end\+Row()}{endRow()}}
+{\footnotesize\ttfamily int end\+Row (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classGridLocationRange_acf82f9b2937375c7b1cf3dccb3df3312}\label{classGridLocationRange_acf82f9b2937375c7b1cf3dccb3df3312}} 
+\index{Grid\+Location\+Range@{Grid\+Location\+Range}!is\+Empty@{is\+Empty}}
+\index{is\+Empty@{is\+Empty}!Grid\+Location\+Range@{Grid\+Location\+Range}}
+\subsubsection{\texorpdfstring{is\+Empty()}{isEmpty()}}
+{\footnotesize\ttfamily bool is\+Empty (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classGridLocationRange_a78a78e39d2a36dd8eed1e83499d5a9d9}\label{classGridLocationRange_a78a78e39d2a36dd8eed1e83499d5a9d9}} 
+\index{Grid\+Location\+Range@{Grid\+Location\+Range}!is\+Row\+Major@{is\+Row\+Major}}
+\index{is\+Row\+Major@{is\+Row\+Major}!Grid\+Location\+Range@{Grid\+Location\+Range}}
+\subsubsection{\texorpdfstring{is\+Row\+Major()}{isRowMajor()}}
+{\footnotesize\ttfamily bool is\+Row\+Major (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classGridLocationRange_a64ef3d56a680766cc1921bc92b4d5e3e}\label{classGridLocationRange_a64ef3d56a680766cc1921bc92b4d5e3e}} 
+\index{Grid\+Location\+Range@{Grid\+Location\+Range}!start\+Col@{start\+Col}}
+\index{start\+Col@{start\+Col}!Grid\+Location\+Range@{Grid\+Location\+Range}}
+\subsubsection{\texorpdfstring{start\+Col()}{startCol()}}
+{\footnotesize\ttfamily int start\+Col (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classGridLocationRange_a91f18341eefcf80167580445c23449d0}\label{classGridLocationRange_a91f18341eefcf80167580445c23449d0}} 
+\index{Grid\+Location\+Range@{Grid\+Location\+Range}!start\+Location@{start\+Location}}
+\index{start\+Location@{start\+Location}!Grid\+Location\+Range@{Grid\+Location\+Range}}
+\subsubsection{\texorpdfstring{start\+Location()}{startLocation()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{structGridLocation}{Grid\+Location}} \& start\+Location (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classGridLocationRange_a83342cfc6cc0c1e7d335908d2bd9fb0b}\label{classGridLocationRange_a83342cfc6cc0c1e7d335908d2bd9fb0b}} 
+\index{Grid\+Location\+Range@{Grid\+Location\+Range}!start\+Row@{start\+Row}}
+\index{start\+Row@{start\+Row}!Grid\+Location\+Range@{Grid\+Location\+Range}}
+\subsubsection{\texorpdfstring{start\+Row()}{startRow()}}
+{\footnotesize\ttfamily int start\+Row (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classGridLocationRange_a1fe5121d6528fdea3f243321b3fa3a49}\label{classGridLocationRange_a1fe5121d6528fdea3f243321b3fa3a49}} 
+\index{Grid\+Location\+Range@{Grid\+Location\+Range}!to\+String@{to\+String}}
+\index{to\+String@{to\+String}!Grid\+Location\+Range@{Grid\+Location\+Range}}
+\subsubsection{\texorpdfstring{to\+String()}{toString()}}
+{\footnotesize\ttfamily std\+::string to\+String (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+

@@ -53,6 +53,12 @@ TIMED_TEST(VectorTests, forEachTest_Vector, TEST_TIMEOUT_DEFAULT) {
     assertCollection("foreach Vector", list, v2);
 }
 
+TIMED_TEST(VectorTests, frontBackTest_Vector, TEST_TIMEOUT_DEFAULT) {
+    Vector<int> v {10, 20, 30, 40};
+    assertEqualsInt("Vector front", 10, v.front());
+    assertEqualsInt("Vector back",  40, v.back());
+}
+
 TIMED_TEST(VectorTests, hashCodeTest_Vector, TEST_TIMEOUT_DEFAULT) {
     Vector<int> v;
     v.add(69);

@@ -22,6 +22,7 @@ import acm.util.ErrorException;
  * This class implements both the AppletStub and AppletContext interfaces and allows
  * standard applications to run with the same capabilities as an applet.
  */
+@SuppressWarnings("deprecation")
 class ProgramAppletStub implements AppletContext, AppletStub {
 	/* Private instance variables */
 	private Applet applet;

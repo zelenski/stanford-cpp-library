@@ -1,0 +1,380 @@
+<html>
+<head>
+<title>include/gwindow.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: gwindow.h
+ * ---------------
+ * This class defines a graphics window.
+ */
+</scan>
+#ifndef _gwindow_h
+#define _gwindow_h
+
+#include &lt;string&gt;
+#include "gobjects.h"
+
+<a name="Class:GWindow"><scan class=comment>/*
+ * Class: GWindow
+ * --------------
+ * This class represents a graphics window that can be displayed on the
+ * screen.  The public GWindow class stores only a reference to the
+ * internal data stored inside the machine-specific implementation, so that
+ * GWindow objects can be freely copied and continue to refer to the same
+ * window on the screen.
+ */
+</scan>
+class GWindow {
+
+public:
+
+<a name="Constructor:GWindow"><scan class=comment>/*
+ * Constructor: GWindow
+ * Usage: GWindow gw;
+ *        GWindow gw(width, height);
+ * ---------------------------------
+ * Creates a window of the specified size but does not display it on the
+ * screen until the client calls setVisible(true).  The default constructor
+ * creates a closed window that cannot be used until a valid window is
+ * assigned to it.
+ */
+</scan>
+   GWindow();
+   GWindow(double width, double height);
+
+<a name="Method:close"><scan class=comment>/*
+ * Method: close
+ * Usage: gw.close();
+ * ------------------
+ * Deletes the window from the screen.  Calling any method on a window that
+ * has been closed generates an error.
+ */
+</scan>
+   void close();
+
+<a name="Method:draw"><scan class=comment>/*
+ * Method: draw
+ * Usage: gw.draw(obj)
+ *        gw.draw(obj, x, y);
+ * --------------------------
+ * Draws the specified object into the window.  The second form moves the
+ * object to the point (x, y) before drawing it.
+ */
+</scan>
+   void draw(GObject obj);
+   void draw(GObject obj, double x, double y);
+
+<a name="Method:add"><scan class=comment>/*
+ * Method: add
+ * Usage: gw.add(obj);
+ *        gw.add(obj, x, y);
+ * -------------------------
+ * Adds the specified GObject to the end of the display list for this
+ * window.  The second form moves the object to the point (x, y) before
+ * adding it to the window.
+ */
+</scan>
+   void add(GObject obj);
+   void add(GObject obj, double x, double y);
+
+<a name="Method:remove"><scan class=comment>/*
+ * Method: remove
+ * Usage: gw.remove(obj);
+ * ----------------------
+ * Removes the specified GObject from the graphics window.
+ */
+</scan>
+   void remove(GObject obj);
+
+<a name="Method:setVisible"><scan class=comment>/*
+ * Method: setVisible
+ * Usage: gw.setVisible(flag);
+ * ---------------------------
+ * Determines whether the window is visible on the screen.  Windows are
+ * created in an invisible state and must be made visible before they
+ * appear.
+ */
+</scan>
+   void setVisible(bool flag);
+
+<a name="Method:isVisible"><scan class=comment>/*
+ * Method: isVisible
+ * Usage: if (gw.isVisible()) . . .
+ * --------------------------------
+ * Tests whether the window is visible.
+ */
+</scan>
+   bool isVisible();
+
+<a name="Method:setColor"><scan class=comment>/*
+ * Method: setColor
+ * Usage: gw.setColor(color);
+ * --------------------------
+ * Sets the color used for drawing.  The color parameter is usually one of
+ * the predefined color names from Java:
+ *
+ *    BLACK,
+ *    BLUE,
+ *    CYAN,
+ *    DARK_GRAY,
+ *    GRAY,
+ *    GREEN,
+ *    LIGHT_GRAY,
+ *    MAGENTA,
+ *    ORANGE,
+ *    PINK,
+ *    RED,
+ *    WHITE, or
+ *    YELLOW.
+ *
+ * The case of the individual letters in the color name is ignored, as are
+ * spaces and underscores, so that the Java color DARK_GRAY could be
+ * written as "Dark Gray".
+ *
+ * The color can also be specified as a string in the form "#rrggbb" where
+ * rr, gg, and bb are pairs of hexadecimal digits indicating the red,
+ * green, and blue components of the color.
+ */
+</scan>
+   void setColor(string color);
+
+<a name="Method:getColor"><scan class=comment>/*
+ * Method: getColor
+ * Usage: string color = gw.getColor();
+ * ------------------------------------
+ * Returns the current color as a string in the form "#rrggbb" where rr,
+ * gg, and bb are 2-digit hexadecimal numbers.
+ */
+</scan>
+   string getColor();
+
+<a name="Method:setFont"><scan class=comment>/*
+ * Method: setFont
+ * Usage: gw.setFont(font);
+ * ------------------------
+ * Sets a new font according to the font parameter, which is typically a
+ * string in the form family-style-size.  In this string, family is the
+ * name of the font family; style is either missing (indicating a plain
+ * font) or one of the strings Bold, Italic, or BoldItalic; and size is an
+ * integer indicating the point size.  If any of these components is
+ * specified as an asterisk, the existing value is retained.  The font
+ * parameter can also be a sequence of such specifications separated by
+ * semicolons, in which the first available font on the system is used.
+ */
+</scan>
+   void setFont(string font);
+
+<a name="Method:getFont"><scan class=comment>/*
+ * Method: getFont
+ * Usage: string font = gw.getFont();
+ * ----------------------------------
+ * Returns the current font, as set by the most recent call to setFont.
+ */
+</scan>
+   string getFont();
+
+<a name="Method:saveGraphicsState"><scan class=comment>/*
+ * Method: saveGraphicsState
+ * Usage: gw.saveGraphicsState();
+ * ------------------------------
+ * Saves the state of the graphics context.  This method is used in
+ * conjunction with restoreGraphicsState() to avoid changing the state set
+ * up by the client.
+ */
+</scan>
+   void saveGraphicsState();
+
+<a name="Method:restoreGraphicsState"><scan class=comment>/*
+ * Method: restoreGraphicsState
+ * Usage: gw.restoreGraphicsState();
+ * ---------------------------------
+ * Restores the graphics state from the most recent call to
+ * saveGraphicsState().
+ */
+</scan>
+   void restoreGraphicsState();
+
+<a name="Method:getGObjectAt"><scan class=comment>/*
+ * Method: getGObjectAt
+ * Usage: GObject obj = gw.getGObjectAt(pt);
+ *        GObject obj = gw.getGObjectAt(x, y);
+ * -------------------------------------------
+ * Returns the topmost object in the window that contains the specified
+ * point.  If no such object exists, this function returns an uninitialized
+ * GObject.  The pattern for using getGObjectAt looks like this:
+ *
+ *    GObject obj = gw.getGObjectAt(x, y);
+ *    if (obj.exists()) . . .
+ */
+</scan>
+   GObject getGObjectAt(GPoint pt);
+   GObject getGObjectAt(double x, double y);
+
+<a name="Method:getWindowWidth"><scan class=comment>/*
+ * Method: getWindowWidth
+ * Usage: double width = gw.getWindowWidth();
+ * ------------------------------------------
+ * Returns the width of the graphics window, in pixels.
+ */
+</scan>
+   double getWindowWidth();
+
+<a name="Method:getWindowHeight"><scan class=comment>/*
+ * Method: getWindowHeight
+ * Usage: double height = gw.getWindowHeight();
+ * --------------------------------------------
+ * Returns the width of the graphics window, in pixels.
+ */
+</scan>
+   double getWindowHeight();
+
+<a name="Method:repaint"><scan class=comment>/*
+ * Method: repaint
+ * Usage: gw.repaint();
+ * --------------------
+ * Schedule a repaint on this window.
+ */
+</scan>
+   void repaint();
+
+<a name="Method:updateDisplay"><scan class=comment>/*
+ * Method: updateDisplay
+ * Usage: gw.updateDisplay();
+ * --------------------------
+ * Initiates an immediate update of the graphics window.
+ */
+</scan>
+   void updateDisplay();
+
+<a name="Method:setWindowTitle"><scan class=comment>/*
+ * Method: setWindowTitle
+ * Usage: gw.setWindowTitle(title);
+ * --------------------------------
+ * Sets the title of the graphics window.
+ */
+</scan>
+   void setWindowTitle(string title);
+
+<a name="Method:getWindowTitle"><scan class=comment>/*
+ * Method: getWindowTitle
+ * Usage: string title = gw.getWindowTitle();
+ * ------------------------------------------
+ * Returns the title of the graphics window.
+ */
+</scan>
+   string getWindowTitle();
+
+<a name="Method:getTopLevelCompound"><scan class=comment>/*
+ * Method: getTopLevelCompound
+ * Usage: GCompound compound = getTopLevelCompound();
+ * --------------------------------------------------
+ * Returns the top-level GCompound for this window.
+ */
+</scan>
+   GCompound getTopLevelCompound();
+
+#include "private/gwindowpriv.h"
+
+};
+
+<scan class=comment>/* Global functions that operate on the primary graphics window */</scan>
+
+<a name="Function:getGObjectAt"><scan class=comment>/*
+ * Function: getGObjectAt
+ * Usage: GObject obj = getGObjectAt(pt);
+ *        GObject obj = getGObjectAt(x, y);
+ * ----------------------------------------
+ * Returns the topmost object in the primary window containing the
+ * specified point.  If no such object exists, this function returns an
+ * uninitialized GObject.  The pattern for using getGObjectAt is:
+ *
+ *    GObject obj = getGObjectAt(x, y);
+ *    if (obj.exists()) . . .
+ */
+</scan>
+GObject getGObjectAt(GPoint pt);
+GObject getGObjectAt(double x, double y);
+
+<a name="Function:setWindowTitle"><scan class=comment>/*
+ * Function: setWindowTitle
+ * Usage: setWindowTitle(title);
+ * -----------------------------
+ * Sets the title of the primary graphics window.
+ */
+</scan>
+void setWindowTitle(string title);
+
+<a name="Function:getWindowTitle"><scan class=comment>/*
+ * Function: getWindowTitle
+ * Usage: string title = getWindowTitle();
+ * ---------------------------------------
+ * Returns the title of the primary graphics window.
+ */
+</scan>
+string getWindowTitle();
+
+<a name="Function:getFullScreenWidth"><scan class=comment>/*
+ * Function: getFullScreenWidth
+ * Usage: width = getFullScreenWidth();
+ * ------------------------------------
+ * Returns the width of the entire display screen.
+ */
+</scan>
+double getFullScreenWidth();
+
+<a name="Function:getFullScreenHeight"><scan class=comment>/*
+ * Function: getFullScreenHeight
+ * Usage: height = getFullScreenHeight();
+ * --------------------------------------
+ * Returns the height of the entire display screen.
+ */
+</scan>
+double getFullScreenHeight();
+
+<a name="Function:exitGraphics"><scan class=comment>/*
+ * Function: exitGraphics
+ * Usage: exitGraphics();
+ * ----------------------
+ * Closes the graphics window and exits from the application without
+ * waiting for any additional user interaction.
+ */
+</scan>
+void exitGraphics();
+
+<a name="Function:getGraphicsWindow"><scan class=comment>/*
+ * Function: getGraphicsWindow
+ * Usage: GWindow gw = getGraphicsWindow();
+ * ----------------------------------------
+ * Returns a reference to the graphics window created by initGraphics.
+ */
+</scan>
+GWindow &amp; getGraphicsWindow();
+
+<a name="Function:convertColorToRGB"><scan class=comment>/*
+ * Function: convertColorToRGB
+ * Usage: int rgb = convertColorToRGB(colorName);
+ * ----------------------------------------------
+ * Converts a color name into an integer that encodes the red, green, and
+ * blue components of the color.
+ */
+</scan>
+int convertColorToRGB(string colorName);
+
+<a name="Function:convertRGBToColor"><scan class=comment>/*
+ * Function: convertRGBToColor
+ * Usage: int colorName = convertRGBToColor(rgb);
+ * ----------------------------------------------
+ * Converts an rgb value into a color name in the form "#rrggbb".  Each of
+ * the rr, gg, and bb values are two-digit hexadecimal numbers indicating
+ * the intensity of that component.
+ */
+</scan>
+string convertRGBToColor(int rgb);
+
+#endif
+</pre>
+</body>
+</html>

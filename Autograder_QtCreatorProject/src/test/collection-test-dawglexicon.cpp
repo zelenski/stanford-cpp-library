@@ -48,7 +48,7 @@ TIMED_TEST(DawgLexiconTests, basicTest_DawgLexicon, TEST_TIMEOUT_DEFAULT) {
     for (std::string word : words) {
         dawg.add(word);
     }
-    assertEquals("DawgLexicon size", words.size(), dawg.size());
+    assertEquals("DawgLexicon size", (int) words.size(), dawg.size());
 
     for (std::string word : words) {
         assertTrue("DawgLexicon contains " + word, dawg.contains(word));
@@ -100,6 +100,12 @@ TIMED_TEST(DawgLexiconTests, forEachTest_DawgLexicon, TEST_TIMEOUT_DEFAULT) {
     }
 }
 
+TIMED_TEST(DawgLexiconTests, frontBackTest_DawgLexicon, TEST_TIMEOUT_DEFAULT) {
+    DawgLexicon dlex {"apple", "apricot", "banana", "zebra"};
+    assertEqualsString("DawgLexicon front", "apple", dlex.front());
+    // assertEqualsString("DawgLexicon back",  "zebra", dlex.back());
+}
+
 TIMED_TEST(DawgLexiconTests, hashCodeTest_DawgLexicon, TEST_TIMEOUT_DEFAULT) {
     DawgLexicon dlex;
     dlex.add("a");
@@ -118,9 +124,6 @@ TIMED_TEST(DawgLexiconTests, hashCodeTest_DawgLexicon, TEST_TIMEOUT_DEFAULT) {
 
 TIMED_TEST(DawgLexiconTests, initializerListTest_DawgLexicon, TEST_TIMEOUT_DEFAULT) {
     std::initializer_list<std::string> lexlist = {"sixty", "seventy"};
-    std::initializer_list<std::string> lexallwords = {
-        "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy"
-    };
 
     DawgLexicon dlex {"ten", "twenty", "thirty"};
     assertEqualsString("init list DawgLexicon", "{\"ten\", \"thirty\", \"twenty\"}", dlex.toString());

@@ -1,0 +1,66 @@
+<html>
+<head>
+<title>class GTimerEvent</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="gevents-h.html">class GTimerEvent</a></h1>
+This event subclass represents a timer event.
+<h2>Constructor</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Constructor:GTimerEvent">GTimerEvent()</a><br><a href="#Constructor:GTimerEvent">GTimerEvent(e)</a><br><a href="#Constructor:GTimerEvent">GTimerEvent(type)</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a <code>GTimerEvent</code>.</td></tr>
+</table>
+<h2>Methods</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Method:getEventType">getEventType()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the enumerated type constant corresponding to the specific type of timer event.</td></tr>
+<tr><td class=indexKey><a href="#Method:toString">toString()</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts the event to a human-readable representation of the event.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GTimerEvent"></a>
+<pre class=detailCode>
+GTimerEvent();
+GTimerEvent(GEvent e);
+GTimerEvent(TimerEventType type);
+</pre>
+<div class=detailHTML>
+Creates a <code>GTimerEvent</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GTimerEvent timerEvent;
+GTimerEvent timerEvent(e);
+GTimerEvent timerEvent(type);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:getEventType"></a>
+<pre class=detailCode>
+TimerEventType getEventType();
+</pre>
+<div class=detailHTML>
+Returns the enumerated type constant corresponding to the specific
+type of timer event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+TimerEventType type = e.getEventType();
+</pre>
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString();
+</pre>
+<div class=detailHTML>
+Converts the event to a human-readable representation of the event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = e.toString();
+</pre>
+<hr>
+</table>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<html>
+<head>
+<title>../set.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: set.h
+ * -----------
+ * This interface exports an abstract type that represents sets of values.
+ */
+</scan>
+#ifndef _set_h
+#define _set_h
+
+#include &lt;stdarg.h&gt;
+#include "cslib.h"
+#include "cmpfn.h"
+
+<a name="Type:Set"><scan class=comment>/*
+ * Type: Set
+ * ---------
+ * Defines the abstract type used to represent sets.
+ */
+</scan>
+typedef struct SetCDT *Set;
+
+<scan class=comment>/* Exported entries */</scan>
+
+<a name="Function:newSet"><scan class=comment>/*
+ * Function: newSet
+ * Usage: set = newSet(type);
+ * --------------------------
+ * Creates an empty set of values of the specified base type.  The type
+ * parameter must be an explicit type name like int or string.
+ */
+</scan>
+#define newSet(type) newSetFromType(#type)
+
+<a name="Function:newSetFromType"><scan class=comment>/*
+ * Function: newSetFromType
+ * Usage: set = newSetFromType(baseType);
+ * --------------------------------------
+ * Creates a new set of values with the specified base type expressed as a
+ * string.
+ */
+</scan>
+Set newSetFromType(string baseType);
+
+<a name="Function:freeSet"><scan class=comment>/*
+ * Function: freeSet
+ * Usage: freeSet(set);
+ * --------------------
+ * Frees the storage associated with a set.
+ */
+</scan>
+void freeSet(Set set);
+
+<a name="Function:size"><scan class=comment>/*
+ * Function: size
+ * Usage: n = size(set);
+ * ---------------------
+ * Returns the number of elements in the set.
+ */
+</scan>
+int sizeSet(Set set);
+
+<a name="Function:isEmpty"><scan class=comment>/*
+ * Function: isEmpty
+ * Usage: if (isEmpty(set)) . . .
+ * ------------------------------
+ * Returns true if the set has no elements.
+ */
+</scan>
+bool isEmptySet(Set set);
+
+<a name="Function:clear"><scan class=comment>/*
+ * Function: clear
+ * Usage: clear(set);
+ * ------------------
+ * Removes all elements from the set.
+ */
+</scan>
+void clearSet(Set set);
+
+<a name="Function:clone"><scan class=comment>/*
+ * Function: clone
+ * Usage: newset = clone(set);
+ * ---------------------------
+ * Creates a copy of the set.  The clone function copies only the first
+ * level of the structure and does not copy the individual elements.
+ */
+</scan>
+Set cloneSet(Set set);
+
+<a name="Function:contains"><scan class=comment>/*
+ * Function: contains
+ * Usage: if (contains(set, value)) . . .
+ * --------------------------------------
+ * Returns true if the specified value is a member of the set.
+ */
+</scan>
+bool containsSet(Set set, ...);
+
+<a name="Friend function:containsSetFromArgs"><scan class=comment>/*
+ * Friend function: containsSetFromArgs
+ * Usage: if (containsSetFromArgs(set, args)) . . .
+ * ------------------------------------------------
+ * Identical to containsSet except that the argument comes from the args
+ * list.
+ */
+</scan>
+bool containsSetFromArgs(Set set, va_list args);
+
+<a name="Function:add"><scan class=comment>/*
+ * Function: add
+ * Usage: add(set, value);
+ * -----------------------
+ * Adds the specified value to the set.
+ */
+</scan>
+void addSet(Set set, ...);
+
+<a name="Friend function:addSetFromArgs"><scan class=comment>/*
+ * Friend function: addSetFromArgs
+ * Usage: addSetFromArgs(set, args);
+ * ---------------------------------
+ * Identical to addSet except that the argument comes from the args list.
+ */
+</scan>
+void addSetFromArgs(Set set, va_list args);
+
+<a name="Function:remove"><scan class=comment>/*
+ * Function: remove
+ * Usage: remove(set, value);
+ * --------------------------
+ * Removes the specified value from the set.
+ */
+</scan>
+void removeSet(Set set, ...);
+
+<a name="Friend function:removeSetFromArgs"><scan class=comment>/*
+ * Friend function: removeSetFromArgs
+ * Usage: removeSetFromArgs(set, args);
+ * ------------------------------------
+ * Identical to removeSet except that the argument comes from the args
+ * list.
+ */
+</scan>
+void removeSetFromArgs(Set set, va_list args);
+
+<a name="Function:equals"><scan class=comment>/*
+ * Function: equals
+ * Usage: if (equals(s1, s2)) . . .
+ * --------------------------------
+ * Returns true if s1 and s2 are equal, which means that they contain the
+ * same elements.
+ */
+</scan>
+bool equalsSet(Set s1, Set s2);
+
+<a name="Function:isSubset"><scan class=comment>/*
+ * Function: isSubset
+ * Usage: if (isSubset(s1, s2)) . . .
+ * ----------------------------------
+ * Returns true if s1 is a subset of s2.
+ */
+</scan>
+bool isSubsetSet(Set s1, Set s2);
+
+<a name="Function:union"><scan class=comment>/*
+ * Function: union
+ * Usage: set = union(s1, s2);
+ * ---------------------------
+ * Returns a new set consisting of all elements in either s1 or s2.
+ */
+</scan>
+Set unionSet(Set s1, Set s2);
+
+<a name="Function:intersection"><scan class=comment>/*
+ * Function: intersection
+ * Usage: set = intersection(s1, s2);
+ * ----------------------------------
+ * Returns a new set consisting of all elements in both s1 and s2.
+ */
+</scan>
+Set intersectionSet(Set s1, Set s2);
+
+<a name="Function:setDifference"><scan class=comment>/*
+ * Function: setDifference
+ * Usage: set = setDifference(s1, s2);
+ * -----------------------------------
+ * Returns a new set consisting of all elements in s1 that are not elements
+ * of s2.
+ */
+</scan>
+Set setDifferenceSet(Set s1, Set s2);
+
+<a name="Function:setCompareFn"><scan class=comment>/*
+ * Function: setCompareFn
+ * Usage: setCompareFn(set, cmpFn);
+ * --------------------------------
+ * Sets the comparison function for elements in the set.  Clients who are
+ * using primitive types as base types will not need to call this function.
+ */
+</scan>
+void setCompareFn(Set set, CompareFn cmpFn);
+
+<a name="Function:getCompareFn"><scan class=comment>/*
+ * Function: getCompareFn
+ * Usage: cmpFn = getCompareFn(set);
+ * ---------------------------------
+ * Returns the comparison function for elements in the set.
+ */
+</scan>
+CompareFn getCompareFn(Set set);
+
+#endif
+</pre>
+</body>
+</html>

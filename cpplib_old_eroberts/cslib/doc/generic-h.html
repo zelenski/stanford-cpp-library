@@ -1,0 +1,392 @@
+<html>
+<head>
+<title>../generic.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: generic.h
+ * ---------------
+ * This interface defines those functions that apply to more than one type.
+ */
+</scan>
+#ifndef _generic_h
+#define _generic_h
+
+#include "cmpfn.h"
+#include "cslib.h"
+
+<scan class=comment>/* Avoid various name conflicts */</scan>
+
+#define remove xremove
+
+#ifdef __macosx__
+#  define dequeue _dequeue
+#  define enqueue _enqueue
+#endif
+
+#define union(s1, s2) xunion(s1, s2)
+#define getX(arg) getXGeneric(sizeof arg, arg)
+#define getY(arg) getYGeneric(sizeof arg, arg)
+#define getWidth(arg) getWidthGeneric(sizeof arg, arg)
+#define getHeight(arg) getHeightGeneric(sizeof arg, arg)
+#define isEmpty(arg) isEmptyGeneric(sizeof arg, arg)
+#define contains(arg, value) containsGeneric(sizeof arg, arg, value)
+
+<a name="Type:GenericType"><scan class=comment>/*
+ * Type: GenericType
+ * -----------------
+ * Union capable of holding any of the primitive types.
+ */
+</scan>
+typedef union {
+    int intRep;
+    short shortRep;
+    long longRep;
+    float floatRep;
+    double doubleRep;
+    char charRep;
+    bool boolRep;
+    unsigned unsignedRep;
+    unsigned short unsignedShortRep;
+    unsigned long unsignedLongRep;
+    unsigned char unsignedCharRep;
+    void *pointerRep;
+} GenericType;
+
+<a name="Friend type:FetchFn"><scan class=comment>/*
+ * Friend type: FetchFn
+ * --------------------
+ * This function type fetches an argument from an argument list into the
+ * address indicated by dst.
+ */
+</scan>
+typedef void (*FetchFn)(va_list args, GenericType *dst);
+
+<a name="Friend type:StoreFn"><scan class=comment>/*
+ * Friend type: StoreFn
+ * --------------------
+ * This function type stores a value from the generic object into the
+ * address indicated by dst.
+ */
+</scan>
+typedef void (*StoreFn)(GenericType src, void *dst);
+
+<a name="Friend type:ToStringFn"><scan class=comment>/*
+ * Friend type: ToStringFn
+ * -----------------------
+ * This function type converts a generic argument to a string.
+ */
+</scan>
+typedef string (*ToStringFn)(GenericType dst);
+
+<a name="Function:size"><scan class=comment>/*
+ * Function: size
+ * Usage: n = size(arg);
+ * ---------------------
+ * Returns the number of elements in the collection.
+ */
+</scan>
+int size(void *arg);
+
+<a name="Function:isEmpty"><scan class=comment>/*
+ * Function: isEmpty
+ * Usage: if (isEmpty(arg)) . . .
+ * ------------------------------
+ * Returns true if the collection is empty.
+ */
+</scan>
+bool isEmptyGeneric(int size, ...);
+
+<a name="Function:clear"><scan class=comment>/*
+ * Function: clear
+ * Usage: clear(arg);
+ * ------------------
+ * Removes all elements from the collection.
+ */
+</scan>
+void clear(void *arg);
+
+<a name="Function:clone"><scan class=comment>/*
+ * Function: clone
+ * Usage: clone(arg);
+ * ------------------
+ * Creates a copy of the collection.
+ */
+</scan>
+void *clone(void *arg);
+
+<a name="Function:get"><scan class=comment>/*
+ * Function: get
+ * Usage: value = get(arg, ...);
+ * -----------------------------
+ * Gets a value from the collection.  The format of the argument list
+ * depends on the collection type.  See the documentation of the individual
+ * type for details.
+ */
+</scan>
+void *get(void *arg, ...);
+
+<a name="Function:set"><scan class=comment>/*
+ * Function: set
+ * Usage: set(arg, ...);
+ * ---------------------
+ * Sets a specific element in the collection.  The format of the argument
+ * list depends on the collection type.  See the documentation of the
+ * individual type for details.
+ */
+</scan>
+void set(void *arg, ...);
+
+<a name="Function:put"><scan class=comment>/*
+ * Function: put
+ * Usage: put(arg, ...);
+ * ---------------------
+ * Puts a value into the collection.  By convention, this verb is used in
+ * preference to set or add for maps.  The format of the argument list
+ * depends on the collection type.  See the documentation of the individual
+ * type for details.
+ */
+</scan>
+void put(void *arg, ...);
+
+<a name="Function:containsKey"><scan class=comment>/*
+ * Function: containsKey
+ * Usage: if (containsKey(arg, key)) . . .
+ * ---------------------------------------
+ * Checks whether the specified key is in the map.
+ */
+</scan>
+bool containsKey(void *arg, void *key);
+
+<a name="Function:contains"><scan class=comment>/*
+ * Function: contains
+ * Usage: if (contains(arg, ...)) . . .
+ * ------------------------------------
+ * Checks whether a set contains the value specified by the argument list,
+ * which may vary according to the base type.
+ */
+</scan>
+bool containsGeneric(int size, ...);
+
+<a name="Function:add"><scan class=comment>/*
+ * Function: add
+ * Usage: add(arg, ...);
+ * ---------------------
+ * Adds a value to the collection.  The format of the argument list depends
+ * on the collection type.  See the documentation of the individual type
+ * for details.
+ */
+</scan>
+void add(void *arg, ...);
+
+<a name="Function:remove"><scan class=comment>/*
+ * Function: remove
+ * Usage: remove(arg, ...);
+ * ------------------------
+ * Removes a value from the collection.  The format of the argument list
+ * depends on the collection type.  See the documentation of the individual
+ * type for details.
+ */
+</scan>
+void remove(void *arg, ...);
+
+<a name="Function:enqueue"><scan class=comment>/*
+ * Function: enqueue
+ * Usage: enqueue(arg, ...);
+ * -------------------------
+ * Adds a new value to the queue.  The format of the argument list differs
+ * slightly for the Queue and PriorityQueue types.  See the documentation
+ * of the individual type for details.
+ */
+</scan>
+void enqueue(void *arg, ...);
+
+<a name="Function:dequeue"><scan class=comment>/*
+ * Function: dequeue
+ * Usage: value = dequeue(arg);
+ * ----------------------------
+ * Removes and returns the first item in the queue.
+ */
+</scan>
+void *dequeue(void *arg);
+
+<a name="Function:peek"><scan class=comment>/*
+ * Function: peek
+ * Usage: peek(arg);
+ * -----------------
+ * Returns the first item in the collection without removing it.
+ */
+</scan>
+void *peek(void *arg);
+
+<a name="Function:equals"><scan class=comment>/*
+ * Function: equals
+ * Usage: if (equals(s1, s2)) . . .
+ * --------------------------------
+ * Returns true if the sets are equal.
+ */
+</scan>
+bool equals(void *s1, void *s2);
+
+<a name="Function:isSubset"><scan class=comment>/*
+ * Function: isSubset
+ * Usage: if (isSubset(s1, s2)) . . .
+ * ----------------------------------
+ * Returns true if s1 is a subset of s2.
+ */
+</scan>
+bool isSubset(void *s1, void *s2);
+
+<a name="Function:union"><scan class=comment>/*
+ * Function: union
+ * Usage: set = union(s1, s2);
+ * ---------------------------
+ * Returns the union of s1 and s2.
+ */
+</scan>
+void *union(void *s1, void *s2);
+
+<a name="Function:intersection"><scan class=comment>/*
+ * Function: intersection
+ * Usage: set = intersection(s1, s2);
+ * ----------------------------------
+ * Returns the intersection of the s1 and s2.
+ */
+</scan>
+void *intersection(void *s1, void *s2);
+
+<a name="Function:setDifference"><scan class=comment>/*
+ * Function: setDifference
+ * Usage: set = setDifference(s1, s2);
+ * -----------------------------------
+ * Returns the set difference of s1 and s2.
+ */
+</scan>
+void *setDifference(void *s1, void *s2);
+
+<a name="Function:getX"><scan class=comment>/*
+ * Function: getX
+ * Usage: x = getX(any);
+ * ---------------------
+ * Returns the x component of the value.
+ */
+</scan>
+double getXGeneric(int size, ...);
+
+<a name="Function:getY"><scan class=comment>/*
+ * Function: getY
+ * Usage: y = getY(any);
+ * ---------------------
+ * Returns the y component of the value.
+ */
+</scan>
+double getYGeneric(int size, ...);
+
+<a name="Function:getWidth"><scan class=comment>/*
+ * Function: getWidth
+ * Usage: width = getWidth(any);
+ * -----------------------------
+ * Returns the width component of the value.
+ */
+</scan>
+double getWidthGeneric(int size, ...);
+
+<a name="Function:getHeight"><scan class=comment>/*
+ * Function: getHeight
+ * Usage: height = getHeight(any);
+ * -------------------------------
+ * Returns the height component of the value.
+ */
+</scan>
+double getHeightGeneric(int size, ...);
+
+<a name="Function:setVisible"><scan class=comment>/*
+ * Function: setVisible
+ * Usage: setVisible(arg, flag);
+ * -----------------------------
+ * Sets whether the argument is visible.
+ */
+</scan>
+void setVisible(void *arg, bool flag);
+
+<a name="Function:isVisible"><scan class=comment>/*
+ * Function: isVisible
+ * Usage: if (isVisible(arg)) . . .
+ * --------------------------------
+ * Returns true if the argument is visible.
+ */
+</scan>
+bool isVisible(void *arg);
+
+<a name="Function:setColor"><scan class=comment>/*
+ * Function: setColor
+ * Usage: setColor(arg, color);
+ * ----------------------------
+ * Sets the color of the argument.
+ */
+</scan>
+void setColor(void *arg, string color);
+
+<a name="Friend function:getTypeSizeForType"><scan class=comment>/*
+ * Friend function: getTypeSizeForType
+ * Usage: size = getTypeSizeForType(type);
+ * ---------------------------------------
+ * Returns the size in bytes for the specified type.
+ */
+</scan>
+int getTypeSizeForType(string type);
+
+<a name="Friend function:getCompareFnForType"><scan class=comment>/*
+ * Friend function: getCompareFnForType
+ * Usage: fn = getCompareFnForType(type);
+ * --------------------------------------
+ * Returns the comparison function appropriate to the type.
+ */
+</scan>
+CompareFn getCompareFnForType(string type);
+
+<a name="Friend function:getFetchFnForType"><scan class=comment>/*
+ * Friend function: getFetchFnForType
+ * Usage: fn = getFetchFnForType(type);
+ * ------------------------------------
+ * Returns a function that can fetch an argument of the specified type from
+ * a va_list parameter.  The pattern for calling that function is
+ *
+ *    fn(args, 
+ *
+ * where arg is a GenericType variable.
+ */
+</scan>
+FetchFn getFetchFnForType(string type);
+
+<a name="Friend function:getStoreFnForType"><scan class=comment>/*
+ * Friend function: getStoreFnForType
+ * Usage: fn = getStoreFnForType(type);
+ * ------------------------------------
+ * Returns a function that can store a generic argument through a
+ * destination pointer.  The pattern for calling that function is
+ *
+ *    fn(src, dst);
+ *
+ * where src is a GenericType variable and dst is a pointer to the
+ * destination.
+ */
+</scan>
+StoreFn getStoreFnForType(string type);
+
+<a name="Friend function:getToStringFn"><scan class=comment>/*
+ * Friend function: getToStringFn
+ * Usage: fn = getToStringFn(type);
+ * --------------------------------
+ * Returns a function that can convert a generic value of the specified
+ * type to a string.  This function is used primarily for debugging.
+ */
+</scan>
+ToStringFn getToStringFn(string type);
+
+#endif
+</pre>
+</body>
+</html>

@@ -28,7 +28,7 @@ TIMED_TEST(BasicGraphTests, basicTest_BasicGraph, TEST_TIMEOUT_DEFAULT) {
     bgraph.addArc("b", "c");
     bgraph.addArc("b", "d");
     bgraph.addArc("c", "b");
-    bgraph.addArc("c", "e");
+    bgraph.addArc("c", "e");   // TODO: uncomment
 
     BasicGraph copy = bgraph;
 
@@ -137,6 +137,23 @@ TIMED_TEST(BasicGraphTests, forEachTest_BasicGraph, TEST_TIMEOUT_DEFAULT) {
     }
 }
 
+TIMED_TEST(BasicGraphTests, frontBackTest_BasicGraph, TEST_TIMEOUT_DEFAULT) {
+    BasicGraph bgraph;
+    bgraph.addNode("a");
+    bgraph.addNode("b");
+    bgraph.addNode("c");
+    bgraph.addNode("d");
+    bgraph.addNode("e");
+    bgraph.addArc("a", "b");
+    bgraph.addArc("a", "d");
+    bgraph.addArc("b", "c");
+    bgraph.addArc("b", "d");
+    bgraph.addArc("c", "b");
+    bgraph.addArc("c", "e");
+    assertEqualsString("BasicGraph front", "a", bgraph.front()->name);
+    assertEqualsString("BasicGraph back",  "e", bgraph.back()->name);
+}
+
 TIMED_TEST(BasicGraphTests, hashCodeTest_BasicGraph, TEST_TIMEOUT_DEFAULT) {
     BasicGraph bgraph;
     bgraph.addNode("a");
@@ -234,51 +251,51 @@ TIMED_TEST(BasicGraphTests, iteratorVersionTest_BasicGraph, TEST_TIMEOUT_DEFAULT
 }
 #endif // SPL_THROW_ON_INVALID_ITERATOR
 
-static void temp(BasicGraph /*bg*/) {
-    // empty
-}
+//static void temp(BasicGraph /*bg*/) {
+//    // empty
+//}
 
-static Set<Edge*> temp2() {
-    BasicGraph bgraph;
-    bgraph.addNode("a");
-    bgraph.addNode("b");
-    bgraph.addNode("c");
-    bgraph.addNode("d");
-    bgraph.addNode("e");
-    bgraph.addArc("a", "b");
-    bgraph.addArc("a", "d");
-    bgraph.addArc("b", "c");
-    bgraph.addArc("b", "d");
-    bgraph.addArc("c", "b");
-    bgraph.addArc("c", "e");
+//static Set<Edge*> temp2() {
+//    BasicGraph bgraph;
+//    bgraph.addNode("a");
+//    bgraph.addNode("b");
+//    bgraph.addNode("c");
+//    bgraph.addNode("d");
+//    bgraph.addNode("e");
+//    bgraph.addArc("a", "b");
+//    bgraph.addArc("a", "d");
+//    bgraph.addArc("b", "c");
+//    bgraph.addArc("b", "d");
+//    bgraph.addArc("c", "b");
+//    bgraph.addArc("c", "e");
 
-    Set<Edge*> edges;
-    for (Vertex* v : bgraph.getVertexSet()) {
-        edges += v->arcs;
-    }
+//    Set<Edge*> edges;
+//    for (Vertex* v : bgraph.getVertexSet()) {
+//        edges += v->arcs;
+//    }
 
-    {
-        BasicGraph bgraph2 = bgraph;
-        temp(bgraph2);
+////    {
+////        BasicGraph bgraph2 = bgraph;
+////        temp(bgraph2);
 
-        // let it fall out of scope; should free memory (oops!)
-    }
+////        // let it fall out of scope; should free memory (oops!)
+////    }
 
-    return edges;
-}
+//    return edges;
+//}
 
-TIMED_TEST(BasicGraphTests, operatorEqualsTest_BasicGraph, TEST_TIMEOUT_DEFAULT) {
-    Set<Edge*> edges = temp2();
+//TIMED_TEST(BasicGraphTests, operatorEqualsTest_BasicGraph, TEST_TIMEOUT_DEFAULT) {
+//    Set<Edge*> edges = temp2();
 
-    // this code should crash
-    int count = 0;
-    for (Edge* e : edges) {
-        if (e->start || e->finish) {
-            std::cout << "e is " << e->start->name
-                      << " -> " << e->finish->name << std::endl;
-            count++;
-        }
-    }
+//    // this code should crash
+//    int count = 0;
+//    for (Edge* e : edges) {
+//        if (e->start || e->finish) {
+//            std::cout << "e is " << e->start->name
+//                      << " -> " << e->finish->name << std::endl;
+//            count++;
+//        }
+//    }
 
-    assertPass("Graph didn't crash after operator =");
-}
+//    assertPass("Graph didn't crash after operator =");
+//}

@@ -1,0 +1,355 @@
+<html>
+<head>
+<title>../filelib.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: filelib.h
+ * ---------------
+ * This interface exports a standardized set of tools for working with
+ * files across various platforms.  It is implemented for each of the
+ * following platforms: Mac OSX, Windows, and Linux.  Directory and search
+ * paths are allowed to contain separators in any of the supported styles,
+ * which often makes it possible to use the same code on different
+ * platforms.
+ */
+</scan>
+#ifndef _filelib_h
+#define _filelib_h
+
+#include "cslib.h"
+#include "iterator.h"
+
+<scan class=comment>/* Exported entries */</scan>
+
+<a name="Function:getDirectoryPathSeparator"><scan class=comment>/*
+ * Function: getDirectoryPathSeparator
+ * Usage: sep = getDirectoryPathSeparator();
+ * -----------------------------------------
+ * Returns the standard directory path separator used on this platform.
+ */
+</scan>
+string getDirectoryPathSeparator(void);
+
+<a name="Function:getSearchPathSeparator"><scan class=comment>/*
+ * Function: getSearchPathSeparator
+ * Usage: sep = getSearchPathSeparator();
+ * --------------------------------------
+ * Returns the standard search path separator used on this platform.
+ */
+</scan>
+string getSearchPathSeparator(void);
+
+<a name="Function:getRoot"><scan class=comment>/*
+ * Function: getRoot
+ * Usage: root = getRoot(filename);
+ * --------------------------------
+ * Returns the root of a filename.ext pair, which consists of everything in
+ * filename up to the last dot and the subsequent extension.  If no dot
+ * appears, getRoot returns the entire name.
+ *
+ *         the extension
+ */
+</scan>
+string getRoot(string filename);
+
+<a name="Function:getExtension"><scan class=comment>/*
+ * Function: getExtension
+ * Usage: ext = getExtension(filename);
+ * ------------------------------------
+ * Returns the extension component of filename, which consists of the
+ * separating dot and all subsequent characters.  If no dot exists in the
+ * final component, extension returns the empty string.  Note that this
+ * interpretation is different than one used by the :e substitution in the
+ * shell.  The semantics were chosen so that the expression
+ *
+ *    concat(getRoot(filename), getExtension(filename))
+ *
+ * is equal to the original filename.
+ */
+</scan>
+string getExtension(string filename);
+
+<a name="Function:getHead"><scan class=comment>/*
+ * Function: getHead
+ * Usage: head = getHead(pathname);
+ * --------------------------------
+ * Returns all but the last component of a path name, where the components
+ * are names separated by any of the directory path separators (forward or
+ * reverse slashes).  The special cases are illustrated by the following
+ * examples:
+ *
+ *    getHead("a/b")  = "a"
+ *    getHead("a")    = ""
+ *    getHead("/a")   = "/"
+ *    getHead("/")    = "/"
+ */
+</scan>
+string getHead(string pathname);
+
+<a name="Function:getTail"><scan class=comment>/*
+ * Function: getTail
+ * Usage: tail = getTail(pathname);
+ * --------------------------------
+ * Returns the last component of a path name, where the components are
+ * names separated by any of the directory path separators (forward or
+ * reverse slashes).  The special cases are illustrated by the following
+ * examples:
+ *
+ *    getTail("a/b")   = "b"
+ *    getTail("a")     = "a"
+ *    getTail("/a")    = "a"
+ *    getTail("/")     = ""
+ */
+</scan>
+string getTail(string pathname);
+
+<a name="Function:defaultExtension"><scan class=comment>/*
+ * Function: defaultExtension
+ * Usage: newname = defaultExtension(filename, ext);
+ * -------------------------------------------------
+ * Adds an extension to a file name if none already exists.  If the
+ * extension argument begins with a leading *, any existing extension in
+ * filename is replaced by ext.
+ */
+</scan>
+string defaultExtension(string filename, string ext);
+
+<a name="Function:openOnPath"><scan class=comment>/*
+ * Function: openOnPath
+ * Usage: FILE *file = openOnPath(path, filename, mode);
+ * -----------------------------------------------------
+ * Opens a files by searching directories in a search path for the first
+ * matching file.  The openOnPath routine has the same structure as fopen
+ * in the standard library and the filename and mode arguments are the same
+ * as in that call.  The path argument consists of a list of directories
+ * which are prepended to the filename, unless the filename begins with an
+ * absolute directory marker, such as / or ~.  The directories in the
+ * search path may be separated either by colons (Unix style) or semicolons
+ * (Windows style).  The openOnPath function returns an open stream to the
+ * indicated file, or NULL, if no existing file is found.
+ */
+</scan>
+FILE *openOnPath(string path, string filename, string mode);
+
+<a name="Function:findOnPath"><scan class=comment>/*
+ * Function: findOnPath
+ * Usage: pathname = findOnPath(path, filename);
+ * ---------------------------------------------
+ * Returns a canonical name of a file found using a search path.  The
+ * findOnPath function is similar to openOnPath, except that it returns the
+ * name of the file instead of trying to open in.  If no matching file is
+ * found, findOnPath returns NULL.
+ */
+</scan>
+string findOnPath(string path, string filename);
+
+<a name="Function:deleteFile"><scan class=comment>/*
+ * Function: deleteFile
+ * Usage: deleteFile(filename);
+ * ----------------------------
+ * Deletes the specified file.  Errors are reported by calling error in the
+ * implementation.
+ */
+</scan>
+void deleteFile(string filename);
+
+<a name="Function:renameFile"><scan class=comment>/*
+ * Function: renameFile
+ * Usage: renameFile(oldname, newname);
+ * ------------------------------------
+ * Renames a file.  Errors are reported by calling error in the
+ * implementation.
+ */
+</scan>
+void renameFile(string oldname, string newname);
+
+<a name="Function:fileExists"><scan class=comment>/*
+ * Function: fileExists
+ * Usage: if (fileExists(pathname)) . . .
+ * --------------------------------------
+ * Returns true if the specified file exists.
+ */
+</scan>
+bool fileExists(string pathname);
+
+<a name="Function:isFile"><scan class=comment>/*
+ * Function: isFile
+ * Usage: if (isFile(pathname)) . . .
+ * ----------------------------------
+ * Returns true if the specified file is a regular file.
+ */
+</scan>
+bool isFile(string pathname);
+
+<a name="Function:isSymbolicLink"><scan class=comment>/*
+ * Function: isSymbolicLink
+ * Usage: if (isSymbolicLink(pathname)) . . .
+ * ------------------------------------------
+ * Returns true if the specified file is a symbolic link.
+ */
+</scan>
+bool isSymbolicLink(string pathname);
+
+<a name="Function:isDirectory"><scan class=comment>/*
+ * Function: isDirectory
+ * Usage: if (isDirectory(pathname)) . . .
+ * ---------------------------------------
+ * Returns true if the specified file is a directory.
+ */
+</scan>
+bool isDirectory(string pathname);
+
+<a name="Function:createDirectory"><scan class=comment>/*
+ * Function: createDirectory
+ * Usage: createDirectory(pathname);
+ * ---------------------------------
+ * Creates a new directory for the specified pathname.  The createDirectory
+ * function does not report an error if the directory already exists. 
+ * Unlike createDirectoryPath, createDirectory does not create missing
+ * directories along the path.  If some component of pathname does not
+ * exist, this function signals an error.
+ */
+</scan>
+void createDirectory(string pathname);
+
+<a name="Function:createDirectoryPath"><scan class=comment>/*
+ * Function: createDirectoryPath
+ * Usage: createDirectoryPath(pathname);
+ * -------------------------------------
+ * Creates a new directory for the specified pathname.   If intermediate
+ * components of the pathname do not exist, this function creates them as
+ * needed.
+ */
+</scan>
+void createDirectoryPath(string pathname);
+
+<a name="Function:setCurrentDirectory"><scan class=comment>/*
+ * Function: setCurrentDirectory
+ * Usage: setCurrentDirectory(pathname);
+ * -------------------------------------
+ * Changes the current directory to the specified path.
+ */
+</scan>
+void setCurrentDirectory(string path);
+
+<a name="Function:getCurrentDirectory"><scan class=comment>/*
+ * Function: getCurrentDirectory
+ * Usage: pathname = getCurrentDirectory();
+ * ----------------------------------------
+ * Returns an absolute pathname for the current directory.
+ */
+</scan>
+string getCurrentDirectory(void);
+
+<a name="Function:expandPathname"><scan class=comment>/*
+ * Function: expandPathname
+ * Usage: fullname = expandPathname(pathname);
+ * -------------------------------------------
+ * Expands a pathname into a canonical name for the platform.
+ */
+</scan>
+string expandPathname(string filename);
+
+<a name="Function:listDirectory"><scan class=comment>/*
+ * Function: listDirectory
+ * Usage: string array[] = listDirectory(dir);
+ * -------------------------------------------
+ * Returns an alphabetical list of all the files in the specified
+ * directory, excluding the unix . and .. entries.  The array is terminated
+ * with a NULL entry.
+ */
+</scan>
+string *listDirectory(string dir);
+
+<a name="Function:newDirectoryIterator"><scan class=comment>/*
+ * Function: newDirectoryIterator
+ * Usage: foreach (name in newDirectoryIterator(dir)) . . .
+ * --------------------------------------------------------
+ * Creates a new directory iterator that will step through the files in the
+ * specified directory.
+ */
+</scan>
+Iterator newDirectoryIterator(string dir);
+
+<a name="Function:newDirectoryTreeIterator"><scan class=comment>/*
+ * Function: newDirectoryTreeIterator
+ * Usage: foreach (name in newDirectoryTreeIterator(dir)) . . .
+ * ------------------------------------------------------------
+ * Creates a new directory iterator that will walk recursively through the
+ * files in the specified directory and its subdirectories.
+ */
+</scan>
+Iterator newDirectoryTreeIterator(string dir);
+
+<a name="Function:matchFilenamePattern"><scan class=comment>/*
+ * Function: matchFilenamePattern
+ * Usage: if (matchFilenamePattern(filename, pattern)) . . .
+ * ---------------------------------------------------------
+ * Determines whether the filename matches the specified pattern.  The
+ * pattern string is interpreted in much the same way that a Unix shell
+ * expands filenames and supports the following wildcard options:
+ *
+ *
+ * ?
+ *     Matches any single character
+ * *
+ *     Matches any sequence of characters
+ * [...]
+ *     Matches any of the specified characters
+ * [^...]
+ *     Matches any character except the specified ones
+ *
+ *
+ * The last two options allow a range of characters to be specified in the
+ * form a-z.
+ */
+</scan>
+bool matchFilenamePattern(string filename, string pattern);
+
+<a name="Function:getFileType"><scan class=comment>/*
+ * Function: getFileType
+ * Usage: type = getFileType(filename);
+ * ------------------------------------
+ * Gets the file type of a Macintosh file, which is a four-character
+ * string.  This function returns the string "????" on other platforms.
+ */
+</scan>
+string getFileType(string filename);
+
+<a name="Function:getFileCreator"><scan class=comment>/*
+ * Function: getFileCreator
+ * Usage: type = getFileCreator(filename);
+ * ---------------------------------------
+ * Gets the creator code of a Macintosh file, which is a four-character
+ * string.  This function returns the string "????" on other platforms.
+ */
+</scan>
+string getFileCreator(string filename);
+
+<a name="Friend function:setFileTypeAndCreator"><scan class=comment>/*
+ * Friend function: setFileTypeAndCreator
+ * Usage: setFileTypeAndCreator(pathname, type, creator);
+ * ------------------------------------------------------
+ * Sets the Macintosh type and creator information for the specified path. 
+ * It has no effect on other platforms.
+ */
+</scan>
+void setFileTypeAndCreator(string pathname, string type, string creator);
+
+<a name="Friend function:copyFileTypeAndCreator"><scan class=comment>/*
+ * Friend function: copyFileTypeAndCreator
+ * Usage: copyFileTypeAndCreator(src, dst);
+ * ----------------------------------------
+ * Copies the Macintosh type and creator information from the source file
+ * to the destination file.  It has no effect on other platforms.
+ */
+</scan>
+void copyFileTypeAndCreator(string src, string dst);
+
+#endif
+</pre>
+</body>
+</html>

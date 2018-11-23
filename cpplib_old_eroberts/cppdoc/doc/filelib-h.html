@@ -1,0 +1,307 @@
+<html>
+<head>
+<title>include/filelib.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: filelib.h
+ * ---------------
+ * This file exports a standardized set of tools for working with files. 
+ * The library offers at least some portability across the file systems
+ * used in the three supported platforms: Mac OSX, Windows, and Linux. 
+ * Directory and search paths are allowed to contain separators in any of
+ * the supported styles, which usually makes it possible to use the same
+ * code on different platforms.
+ */
+</scan>
+#ifndef _filelib_h
+#define _filelib_h
+
+using namespace std;
+#include &lt;fstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+#include "vector.h"
+
+<a name="Function:openFile"><scan class=comment>/*
+ * Function: openFile
+ * Usage: if (openFile(stream, filename)) . . .
+ * --------------------------------------------
+ * Opens the filestream stream using the specified filename.  This function
+ * is similar to the open method of the stream classes, but uses a C++
+ * string object instead of the older C-style string.  If the operation
+ * succeeds, openFile returns true; if it fails, openFile sets the failure
+ * flag in the stream and returns false.
+ */
+</scan>
+bool openFile(ifstream &amp; stream, string filename);
+bool openFile(ofstream &amp; stream, string filename);
+
+<a name="Function:getFile"><scan class=comment>/*
+ * Function: getFile
+ * Usage: string filename = getFile(stream, prompt);
+ * -------------------------------------------------
+ * Asks the user for the name of an input file.  The file is opened using
+ * the reference parameter stream, and the function returns the name of the
+ * file.  If the requested file cannot be, opened the user is given
+ * additional chances to enter a valid file.  The optional prompt argument
+ * provides an input prompt for the user.
+ */
+</scan>
+string getFile(ifstream &amp; stream, string prompt = "");
+string getFile(ofstream &amp; stream, string prompt = "");
+
+<a name="Function:getRoot"><scan class=comment>/*
+ * Function: getRoot
+ * Usage: string root = getRoot(filename);
+ * ---------------------------------------
+ * Returns the root of filename.  The root consists of everything in
+ * filename up to the last dot and the subsequent extension.  If no dot
+ * appears, getRoot returns the entire name.
+ */
+</scan>
+string getRoot(string filename);
+
+<a name="Function:getExtension"><scan class=comment>/*
+ * Function: getExtension
+ * Usage: ext = getExtension(filename);
+ * ------------------------------------
+ * Returns the extension of filename.  The extension consists of the
+ * separating dot and all subsequent characters.  If no dot exists in the
+ * final component, extension returns the empty string.  These semantics
+ * ensure that concatenating the root and the extension always returns the
+ * original filename.
+ */
+</scan>
+string getExtension(string filename);
+
+<a name="Function:getHead"><scan class=comment>/*
+ * Function: getHead
+ * Usage: head = getHead(filename);
+ * --------------------------------
+ * Returns all but the last component of a path name.  The components of
+ * the path name can be separated by any of the directory path separators
+ * (forward or reverse slashes).  The special cases are illustrated by the
+ * following examples:
+ *
+ *    getHead("a/b")  = "a"     getTail("a/b")   = "b"
+ *    getHead("a")    = ""      getTail("a")     = "a"
+ *    getHead("/a")   = "/"     getTail("/a")    = "a"
+ *    getHead("/")    = "/"     getTail("/")     = ""
+ */
+</scan>
+string getHead(string filename);
+
+<a name="Function:getTail"><scan class=comment>/*
+ * Function: getTail
+ * Usage: tail = getTail(filename);
+ * --------------------------------
+ * Returns the last component of a path name.  The components of the path
+ * name can be separated by any of the directory path separators (forward
+ * or reverse slashes).  For details on the interpretation of special
+ * cases, see the comments for the getHead function.
+ */
+</scan>
+string getTail(string filename);
+
+<a name="Function:defaultExtension"><scan class=comment>/*
+ * Function: defaultExtension
+ * Usage: string newname = defaultExtension(filename, ext);
+ * --------------------------------------------------------
+ * Adds an extension to a file name if none already exists.  If the
+ * extension argument begins with a leading *, any existing extension in
+ * filename is replaced by ext.
+ */
+</scan>
+string defaultExtension(string filename, string ext);
+
+<a name="Function:openOnPath"><scan class=comment>/*
+ * Function: openOnPath
+ * Usage: string pathname = openOnPath(stream, path, filename);
+ * ------------------------------------------------------------
+ * Opens a file using a search path.  If openOnPath is successful, it
+ * returns the first path name on the search path for which stream.open
+ * succeeds.  The path argument consists of a list of directories that are
+ * prepended to the filename, unless filename begins with an absolute
+ * directory marker, such as / or ~.  The directories in the search path
+ * may be separated either by colons (Unix or Mac OS) or semicolons
+ * (Windows).  If the file cannot be opened, the failure bit is set in the
+ * stream parameter, and the openOnPath function returns the empty string.
+ */
+</scan>
+string openOnPath(ifstream &amp; stream, string path, string filename);
+string openOnPath(ofstream &amp; stream, string path, string filename);
+
+<a name="Function:findOnPath"><scan class=comment>/*
+ * Function: findOnPath
+ * Usage: string pathname = findOnPath(path, filename);
+ * ----------------------------------------------------
+ * Returns the canonical name of a file found using a search path.  The
+ * findOnPath function is similar to openOnPath, except that it doesn't
+ * actually return an open stream.  If no matching file is found,
+ * findOnPath returns the empty string.
+ */
+</scan>
+string findOnPath(string path, string filename);
+
+<a name="Function:deleteFile"><scan class=comment>/*
+ * Function: deleteFile
+ * Usage: deleteFile(filename);
+ * ----------------------------
+ * Deletes the specified file.  Errors are reported by calling error in the
+ * implementation.
+ */
+</scan>
+void deleteFile(string filename);
+
+<a name="Function:renameFile"><scan class=comment>/*
+ * Function: renameFile
+ * Usage: renameFile(oldname, newname);
+ * ------------------------------------
+ * Renames a file.  Errors are reported by calling error in the
+ * implementation.
+ */
+</scan>
+void deleteFile(string filename);
+
+<a name="Function:fileExists"><scan class=comment>/*
+ * Function: fileExists
+ * Usage: if (fileExists(filename)) . . .
+ * --------------------------------------
+ * Returns true if the specified file exists.
+ */
+</scan>
+bool fileExists(string filename);
+
+<a name="Function:isFile"><scan class=comment>/*
+ * Function: isFile
+ * Usage: if (isFile(filename)) . . .
+ * ----------------------------------
+ * Returns true if the specified file is a regular file.
+ */
+</scan>
+bool isFile(string filename);
+
+<a name="Function:isSymbolicLink"><scan class=comment>/*
+ * Function: isSymbolicLink
+ * Usage: if (isSymbolicLink(filename)) . . .
+ * ------------------------------------------
+ * Returns true if the specified file is a symbolic link.
+ */
+</scan>
+bool isSymbolicLink(string filename);
+
+<a name="Function:isDirectory"><scan class=comment>/*
+ * Function: isDirectory
+ * Usage: if (isDirectory(filename)) . . .
+ * ---------------------------------------
+ * Returns true if the specified file is a directory.
+ */
+</scan>
+bool isDirectory(string filename);
+
+<a name="Function:setCurrentDirectory"><scan class=comment>/*
+ * Function: setCurrentDirectory
+ * Usage: setCurrentDirectory(filename);
+ * -------------------------------------
+ * Changes the current directory to the specified path.
+ */
+</scan>
+void setCurrentDirectory(string path);
+
+<a name="Function:getCurrentDirectory"><scan class=comment>/*
+ * Function: getCurrentDirectory
+ * Usage: string filename = getCurrentDirectory();
+ * -----------------------------------------------
+ * Returns an absolute filename for the current directory.
+ */
+</scan>
+string getCurrentDirectory();
+
+<a name="Function:createDirectory"><scan class=comment>/*
+ * Function: createDirectory
+ * Usage: createDirectory(filename);
+ * ---------------------------------
+ * Creates a new directory for the specified filename.  The createDirectory
+ * function does not report an error if the directory already exists. 
+ * Unlike createDirectoryPath, createDirectory does not create missing
+ * directories along the path.  If some component of filename does not
+ * exist, this function signals an error.
+ */
+</scan>
+void createDirectory(string filename);
+
+<a name="Function:createDirectoryPath"><scan class=comment>/*
+ * Function: createDirectoryPath
+ * Usage: createDirectoryPath(filename);
+ * -------------------------------------
+ * Creates a new directory for the specified filename.   If intermediate
+ * components of the filename do not exist, this function creates them as
+ * needed.
+ */
+</scan>
+void createDirectoryPath(string filename);
+
+<a name="Function:expandPathname"><scan class=comment>/*
+ * Function: expandPathname
+ * Usage: string pathname = expandPathname(filename);
+ * --------------------------------------------------
+ * Expands a filename into a canonical name for the platform.
+ */
+</scan>
+string expandPathname(string filename);
+
+<a name="Function:listDirectory"><scan class=comment>/*
+ * Function: listDirectory
+ * Usage: listDirectory(dir, list);
+ * --------------------------------
+ * Adds an alphabetized list of the files in the specified directory to the
+ * string vector list.  This list excludes the names . and .. entries.
+ */
+</scan>
+void listDirectory(string dir, Vector&lt;string&gt; &amp; list);
+void listDirectory(string dir, vector&lt;string&gt; &amp; list);
+
+<a name="Function:matchFilenamePattern"><scan class=comment>/*
+ * Function: matchFilenamePattern
+ * Usage: if (matchFilenamePattern(filename, pattern)) . . .
+ * ---------------------------------------------------------
+ * Determines whether the filename matches the specified pattern.  The
+ * pattern string is interpreted in much the same way that a Unix shell
+ * expands filenames and supports the following wildcard options:
+ *
+ *    ?      Matches any single character
+ *    *      Matches any sequence of characters
+ *    [...]  Matches any of the specified characters
+ *    [^...] Matches any character &lt;i&gt;except&lt;/i&gt; the specified ones
+ *
+ * The last two options allow a range of characters to be specified in the
+ * form a-z.
+ */
+</scan>
+bool matchFilenamePattern(string filename, string pattern);
+
+<a name="Function:getDirectoryPathSeparator"><scan class=comment>/*
+ * Function: getDirectoryPathSeparator
+ * Usage: string sep = getDirectoryPathSeparator();
+ * ------------------------------------------------
+ * Returns the standard directory path separator used on this platform.
+ */
+</scan>
+string getDirectoryPathSeparator();
+
+<a name="Function:getSearchPathSeparator"><scan class=comment>/*
+ * Function: getSearchPathSeparator
+ * Usage: string sep = getSearchPathSeparator();
+ * ---------------------------------------------
+ * Returns the standard search path separator used on this platform.
+ */
+</scan>
+string getSearchPathSeparator();
+
+#endif
+</pre>
+</body>
+</html>

@@ -15,6 +15,8 @@
  *
  * The original DAWG implementation is retained as dawglexicon.h/cpp.
  * 
+ * @version 2018/03/10
+ * - added method front
  * @version 2016/09/24
  * - refactored to use collections.h utility functions
  * @version 2016/08/11
@@ -33,7 +35,9 @@
  * - removed 'using namespace' statement
  */
 
+#define INTERNAL_INCLUDE 1
 #include "lexicon.h"
+#undef INTERNAL_INCLUDE
 #include <cctype>
 #include <cstdlib>
 #include <cstring>
@@ -41,12 +45,20 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+
+#define INTERNAL_INCLUDE 1
 #include "collections.h"
+#define INTERNAL_INCLUDE 1
 #include "dawglexicon.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 static bool scrub(std::string& str);
 
@@ -139,6 +151,13 @@ void Lexicon::addWordsFromFile(const std::string& filename) {
     input.close();
 }
 
+std::string Lexicon::back() const {
+    if (isEmpty()) {
+        error("Lexicon::back: lexicon is empty");
+    }
+    return m_allWords.back();
+}
+
 void Lexicon::clear() {
     m_size = 0;
     m_allWords.clear();
@@ -194,7 +213,14 @@ std::string Lexicon::first() const {
     if (isEmpty()) {
         error("Lexicon::first: lexicon is empty");
     }
-    return m_allWords.first();
+    return m_allWords.front();
+}
+
+std::string Lexicon::front() const {
+    if (isEmpty()) {
+        error("Lexicon::front: lexicon is empty");
+    }
+    return m_allWords.front();
 }
 
 void Lexicon::insert(const std::string& word) {
@@ -307,14 +333,6 @@ Lexicon& Lexicon::retainAll(std::initializer_list<std::string> list) {
 
 int Lexicon::size() const {
     return m_size;
-}
-
-std::set<std::string> Lexicon::toStlSet() const {
-    std::set<std::string> result;
-    for (const std::string& word : m_allWords) {
-        result.insert(word);
-    }
-    return result;
 }
 
 std::string Lexicon::toString() const {

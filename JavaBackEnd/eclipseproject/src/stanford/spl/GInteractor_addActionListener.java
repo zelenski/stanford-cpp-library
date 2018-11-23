@@ -1,3 +1,8 @@
+/*
+ * @version 2018/06/23
+ * - initial version
+ */
+
 package stanford.spl;
 
 import acm.graphics.GObject;

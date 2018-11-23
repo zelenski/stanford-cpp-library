@@ -2,6 +2,8 @@
  * This class contains utility functions related to GUIs.
  *
  * @author Marty Stepp
+ * @version 2018/07/08
+ * - added ensureMinimumPreferred*
  * @version 2017/10/12
  * - added createLabel overloads with icon
  * @version 2016/11/26
@@ -353,6 +355,25 @@ public class GuiUtils {
 		return slider;
 	}
 	
+	public static void ensureMinimumPreferredHeight(JComponent comp, int height) {
+		Dimension size = comp.getPreferredSize();
+		size.height = Math.max(size.height, height);
+		comp.setPreferredSize(size);
+	}
+	
+	public static void ensureMinimumPreferredSize(JComponent comp, int width, int height) {
+		Dimension size = comp.getPreferredSize();
+		size.width  = Math.max(size.width,  width);
+		size.height = Math.max(size.height, height);
+		comp.setPreferredSize(size);
+	}
+	
+	public static void ensureMinimumPreferredWidth(JComponent comp, int width) {
+		Dimension size = comp.getPreferredSize();
+		size.width = Math.max(size.width, width);
+		comp.setPreferredSize(size);
+	}
+	
 	public static FileFilter getExtensionFileFilter(String description, String... extensions) {
 		ExtensionFileFilter filter = new ExtensionFileFilter(extensions);
 		filter.setDescription(description);
@@ -510,6 +531,71 @@ public class GuiUtils {
 		Font font = button.getFont();
 		font = font.deriveFont((float) (font.getSize() + amount));
 		button.setFont(font);
+	}
+	
+	public static String htmlLabelText(String text) {
+		return htmlLabelText(text, /* props */ Collections.emptyMap());
+	}
+	
+	private static String toPxUnit(Object ostr) {
+		String str = String.valueOf(ostr);
+		if (!str.endsWith("px") && !str.endsWith("pt") && !str.endsWith("em")) {
+			str += "px";
+		}
+		return str;
+	}
+	
+	public static String htmlLabelText(String text, Map<?, ?> props) {
+		String bodyStyle = "";
+		if (props.containsKey("width")) {
+			Object width = toPxUnit(props.get("width"));
+			bodyStyle += " width: " + width + ";";
+		}
+		if (props.containsKey("max-width")) {
+			Object maxWidth = toPxUnit(props.get("max-width"));
+			bodyStyle += " max-width: " + maxWidth + ";";
+		}
+		if (props.containsKey("height")) {
+			Object height = toPxUnit(props.get("height"));
+			bodyStyle += " height: " + height + ";";
+		}
+		if (props.containsKey("max-height")) {
+			Object maxHeight = toPxUnit(props.get("max-height"));
+			bodyStyle += " max-height: " + maxHeight + ";";
+		}
+		if (props.containsKey("monospace") || props.containsKey("monospaced")) {
+			bodyStyle += " font-family: monospaced;";
+		} else if (props.containsKey("font-family")) {
+			Object fontFamily = props.get("font-family");
+			bodyStyle += " font-family: \"" + fontFamily + "\";";
+		} else if (props.containsKey("font")) {
+			Font font = (Font) props.get("font");
+			bodyStyle += " font-family: \"" + font.getName() + "\";";
+			bodyStyle += " font-size: " + font.getSize() + "pt;";
+			if (font.isBold()) {
+				bodyStyle += " font-weight: bold;";
+			}
+			if (font.isItalic()) {
+				bodyStyle += " font-style: italic;";
+			}
+		}
+		String htmlText = "<html><body style='" + bodyStyle.trim() + "'>";   // close body tag
+		
+		String before = "";
+		String after = "";
+		if (props.containsKey("font-color")) {
+			Object color = props.get("font-color");
+			before += "<font color=\"" + color + "\">";
+			after = "</font>" + after;
+		}
+		if (props.containsKey("center")) {
+			before += "<center>";
+			after = "</center>" + after;
+		}
+		htmlText += before + text + after;
+		
+		htmlText += "</body></html>";
+		return htmlText;
 	}
 	
 	public static void loadWindowLocation(Frame window) {

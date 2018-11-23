@@ -1,0 +1,51 @@
+<html>
+<head>
+<title>GRoundRect</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="gobjects.html">#include "gobjects.h"</a></div>
+<h1 class=header><code>class GRoundRect : public <a href="GRect-class.html">GRect</a></code></h1>
+This class represents a graphical object whose appearance consists
+of a rectangular box with rounded corners.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Constructor</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GRoundRect">GRoundRect(<var>width</var>,&nbsp;<var>height</var>)</a><br>
+<a href="#Constructor:GRoundRect">GRoundRect(<var>width</var>,&nbsp;<var>height</var>,&nbsp;<var>corner</var>)</a><br>
+<a href="#Constructor:GRoundRect">GRoundRect(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>width</var>,&nbsp;<var>height</var>)</a><br>
+<a href="#Constructor:GRoundRect">GRoundRect(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>width</var>,&nbsp;<var>height</var>,&nbsp;<var>corner</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Constructs a new rectangle with the specified width and height.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GRoundRect"></a>
+<pre class=detailCode>
+GRoundRect(double width, double height);
+GRoundRect(double width, double height, double corner);
+GRoundRect(double x, double y, double width, double height);
+GRoundRect(double x, double y, double width, double height, double corner);
+</pre>
+<div class=detailHTML>
+Constructs a new rectangle with the specified width and height.  If
+the <code>x</code> and <code>y</code> parameters are specified, they
+are used to specify the origin.  The <code>corner</code> parameter
+specifies the diameter of the arc forming the corner.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GRoundRect* rect = new GRoundRect(width, height);
+GRoundRect* rect = new GRoundRect(width, height, corner);
+GRoundRect* rect = new GRoundRect(x, y, width, height);
+GRoundRect* rect = new GRoundRect(x, y, width, height, corner);
+</pre>
+<hr>
+</table>
+</body>
+</html>

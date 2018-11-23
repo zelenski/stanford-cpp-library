@@ -1,0 +1,67 @@
+<html>
+<head>
+<title>../random.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: random.h
+ * --------------
+ * This interface exports functions for generating pseudorandom numbers.
+ */
+</scan>
+#ifndef _random_h
+#define _random_h
+
+#include "cslib.h"
+#include &lt;stdlib.h&gt;
+
+<a name="Function:randomInteger"><scan class=comment>/*
+ * Function: randomInteger
+ * Usage: n = randomInteger(low, high);
+ * ------------------------------------
+ * Returns a random integer in the range low to high, inclusive.
+ */
+</scan>
+int randomInteger(int low, int high);
+
+<a name="Function:randomReal"><scan class=comment>/*
+ * Function: randomReal
+ * Usage: d = randomReal(low, high);
+ * ---------------------------------
+ * Returns a random real number in the half-open interval [low .. high).  A
+ * half-open interval includes the first endpoint but not the second, which
+ * means that the result is always greater than or equal to low but
+ * strictly less than high.
+ */
+</scan>
+double randomReal(double low, double high);
+
+<a name="Function:randomChance"><scan class=comment>/*
+ * Function: randomChance
+ * Usage: if (randomChance(p)) . . .
+ * ---------------------------------
+ * Returns true with the probability indicated by p.  The argument p must
+ * be a floating-point number between 0 (never) and 1 (always).  For
+ * example, calling randomChance(.30) returns true 30 percent of the time.
+ */
+</scan>
+bool randomChance(double p);
+
+<a name="Function:setRandomSeed"><scan class=comment>/*
+ * Function: setRandomSeed
+ * Usage: setRandomSeed(seed);
+ * ---------------------------
+ * Sets the internal random number seed to the specified value.  You can
+ * use this function to set a specific starting point for the pseudorandom
+ * sequence or to ensure that program behavior is repeatable during the
+ * debugging phase.
+ */
+</scan>
+void setRandomSeed(int seed);
+
+#endif
+</pre>
+</body>
+</html>

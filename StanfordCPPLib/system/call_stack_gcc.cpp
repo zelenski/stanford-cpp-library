@@ -4,6 +4,11 @@
  * Linux/gcc implementation of the call_stack class.
  *
  * @author Marty Stepp, based on code from Fredrik Orderud
+ * @version 2018/10/22
+ * - bug fix for STL vector vs Stanford Vector
+ * @version 2018/10/18
+ * - added addr2line_functionName to resolve some function names not in backtrace
+ * - improved calculation of function offsets for better stack trace resolving
  * @version 2017/10/18
  * - small bug fix for pointer comparison
  * @version 2017/09/02
@@ -21,6 +26,7 @@
    License: BSD licence (http://www.opensource.org/licenses/bsd-license.php)
    Based on: http://stupefydeveloper.blogspot.com/2008/10/cc-call-stack.html */
 
+#define INTERNAL_INCLUDE 1
 #ifdef __GNUC__
 #include <stdio.h>
 #include <cxxabi.h>
@@ -29,24 +35,60 @@
 #include <tchar.h>
 #include <stdio.h>
 #include <strsafe.h>
-#  undef MOUSE_EVENT
-#  undef KEY_EVENT
-#  undef MOUSE_MOVED
-#  undef HELP_KEY
-#else
+#undef MOUSE_EVENT
+#undef KEY_EVENT
+#undef MOUSE_MOVED
+#undef HELP_KEY
+#else // _WIN32
 #include <execinfo.h>
 #include <dlfcn.h>
+#include <cstring>
 #endif // _WIN32
 #endif // __GNUC__
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <stdlib.h>
+#define INTERNAL_INCLUDE 1
 #include "call_stack.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
+#include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#include "private/platform.h"
+#define INTERNAL_INCLUDE 1
+#include "vector.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
+#undef INTERNAL_INCLUDE
+
+namespace platform {
+std::string os_getLastError() {
+#ifdef _WIN32
+    // Windows error-reporting code
+    DWORD lastErrorCode = ::GetLastError();
+    char* errorMsg = nullptr;
+    // Ask Windows to prepare a standard message for a GetLastError() code:
+    ::FormatMessageA(
+                   /* dwFlags */ FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                   /* lpSource */ nullptr,
+                   /* dwMessageId */ lastErrorCode,
+                   /* dwLanguageId */ LANG_NEUTRAL,
+                   /* lpBuffer */ reinterpret_cast<LPSTR>(&errorMsg),
+                   /* dwSize */ 0,
+                   /* arguments */ nullptr);
+    if (errorMsg) {
+        return std::string(errorMsg);
+    } else {
+        return "";
+    }
+#else
+    // Linux/Mac error-reporting code
+    return std::string(strerror(errno));
+#endif // _WIN32
+}
+} // namespace platform
 
 namespace stacktrace {
 
@@ -90,16 +132,16 @@ int execAndCapture(std::string cmd, std::string& output) {
 
     if (!CreateProcessA(
             nullptr,
-            (char*) cmd.c_str(),   // command line
-            nullptr,               // process security attributes
-            nullptr,               // primary thread security attributes
-            TRUE,                  // handles are inherited
-            CREATE_NO_WINDOW,      // creation flags
-            nullptr,               // use parent's environment
-            nullptr,               // use parent's current directory
-            &siStartInfo,          // STARTUPINFO pointer
-            &piProcInfo)) {        // receives PROCESS_INFORMATION
-        std::cerr << "CREATE PROCESS FAIL: " << stanfordcpplib::getPlatform()->os_getLastError() << std::endl;
+            const_cast<char*>(cmd.c_str()),    // command line
+            nullptr,                           // process security attributes
+            nullptr,                           // primary thread security attributes
+            TRUE,                              // handles are inherited
+            CREATE_NO_WINDOW,                  // creation flags
+            nullptr,                           // use parent's environment
+            nullptr,                           // use parent's current directory
+            &siStartInfo,                      // STARTUPINFO pointer
+            &piProcInfo)) {                    // receives PROCESS_INFORMATION
+        std::cerr << "CREATE PROCESS FAIL: " << platform::os_getLastError() << std::endl;
         std::cerr << cmd << std::endl;
         return 1;   // fail
     }
@@ -117,7 +159,7 @@ int execAndCapture(std::string cmd, std::string& output) {
         return 1;
     }
     std::ostringstream out;
-    for (int i = 0; i < (int) dwRead; i++) {
+    for (int i = 0; i < static_cast<int>(dwRead); i++) {
         out.put(chBuf[i]);
     }
 
@@ -174,8 +216,34 @@ std::string addr2line_clean(std::string line) {
     return line;
 }
 
-int addr2line_all(std::vector<void*> addrsVector, std::string& output) {
-    int length = (int) addrsVector.size();
+std::string addr2line_functionName(std::string line) {
+#if defined(_WIN32)
+    // TODO: implement on Windows
+    // "ZN10stacktrace25print_stack_trace_windowsEv at C:\Users\stepp\Documents\StanfordCPPLib\build\stanfordcpplib-windows-Desktop_Qt_5_3_MinGW_32bit-Debug/../../StanfordCPPLib/stacktrace/call_stack_windows.cpp:126"
+#elif defined(__APPLE__)
+    // Mac OS X version (atos)
+    // "Vector<int>::checkIndex(int) const (in Autograder_QtCreatorProject) (vector.h:764)"
+    if (line.find(" (") != std::string::npos) {
+        line = line.substr(0, line.rfind(" (") - 1);
+    }
+    if (line.find("(in ") != std::string::npos) {
+        line = line.substr(0, line.rfind("(in "));
+    }
+    line = trim(line);
+#elif defined(__GNUC__)
+    // Linux version (addr2line)
+    // "_Z4Mainv at /home/stepp/.../FooProject/src/mainfunc.cpp:131"
+    // "std::_Function_handler<void (), stanfordcpplib::autograder::GuiAutograder::runTest(stanfordcpplib::autograder::AutograderTest*)::{lambda()#1}>::_M_invoke(std::_Any_data const&) at std_function.h:318"
+    if (line.find(" at ") != std::string::npos) {
+        line = line.substr(0, line.rfind(" at "));
+    }
+    line = trim(line);
+#endif
+    return line;
+}
+
+int addr2line_all(Vector<void*> addrsVector, std::string& output) {
+    int length = static_cast<int>(addrsVector.size());
     void* addrs[length];
     for (int i = 0; i < length; i++) {
         addrs[i] = addrsVector[i];
@@ -192,7 +260,7 @@ int addr2line_all(void** addrs, int length, std::string& output) {
     std::string addrsStr = out.str();
     out.str("");
 
-    // have addr2line map the address to the relent line in the code
+    // have addr2line map the address to the relevant line in the code
 #if defined(__APPLE__)
     // Mac OS X
     // JL : change "atos" to "xcrun atos"?
@@ -232,7 +300,7 @@ void*& fakeCallStackPointer() {
 
 namespace stacktrace {
 STATIC_CONST_VARIABLE_DECLARE(int, STACK_FRAMES_TO_SKIP, 0)
-STATIC_CONST_VARIABLE_DECLARE(int, STACK_FRAMES_MAX, 20)
+STATIC_CONST_VARIABLE_DECLARE(int, STACK_FRAMES_MAX, 50)
 
 std::ostream& operator <<(std::ostream& out, const entry& ent) {
     return out << ent.toString();
@@ -244,6 +312,7 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
     for (int i = 0; i < STATIC_VARIABLE(STACK_FRAMES_MAX); i++) {
         trace[i] = nullptr;
     }
+
     int stack_depth = backtrace(trace, STATIC_VARIABLE(STACK_FRAMES_MAX));
 
     // First pass: read linker symbol info and get address offsets.
@@ -251,8 +320,8 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
         // DL* = programmer API to dynamic linking loader
 
         // https://linux.die.net/man/3/dladdr
-        // const char *dli_fname;   // pathname of shared object that contains address
-        // void       *dli_fbase;   // address at which shared object is loaded
+        // const char *dli_fname;   // pathname of shared object (file) that contains address
+        // void       *dli_fbase;   // address at which shared object is loaded in system memory
         // const char *dli_sname;   // name of nearest symbol with address lower than addr
         // void       *dli_saddr;   // exact address of symbol named in dli_sname
 
@@ -260,13 +329,6 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
         if (!dladdr(trace[i], &dlinfo)) {
             continue;
         }
-
-        // debug code left in because we occasionally need to debug stack traces
-        // std::cout << i << "  ptr=" << trace[i] << "  dlinfo: "
-        //           << " fname=" << (dlinfo.dli_fname ? dlinfo.dli_fname : "null")
-        //           << " fbase=" << dlinfo.dli_fbase
-        //           << " sname=" << (dlinfo.dli_sname ? dlinfo.dli_sname : "null")
-        //           << " saddr=" << dlinfo.dli_saddr << std::endl;
 
         const char* symname = dlinfo.dli_sname;
 
@@ -276,13 +338,29 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
         if (status == 0 && demangled) {
             symname = demangled;
         }
+
+        // debug code left in because we occasionally need to debug stack traces
+//        std::cout << "call_stack: I am thread " << GThread::getCurrentThread()->objectName().toStdString() << std::endl;
+//        std::cout << "info for " << trace[i] << ":" << std::endl;
+//        std::cout << "dlinfo " << i << ":"
+//                  << " fbase=" << dlinfo.dli_fbase
+//                  << " fname=" << (dlinfo.dli_fname ? dlinfo.dli_fname : "NULL")
+//                  << " sname=" << (dlinfo.dli_sname ? dlinfo.dli_sname : "NULL")
+//                  << " saddr=" << dlinfo.dli_saddr
+//                  << std::endl;
+//        if (demangled) {
+//            std::cout << "demangled name " << i << ": " << std::string(demangled) << " (status " << status << ")" << std::endl;
+//        } else {
+//            std::cout << "demangled name " << i << ": NULL" << " (status " << status << ")" << std::endl;
+//        }
+//        std::cout << std::endl;
         
         // store entry to stack
-        if (dlinfo.dli_fname && symname) {
+        if (dlinfo.dli_fname) {
             entry e;
             e.file     = dlinfo.dli_fname;
             e.line     = 0;   // unsupported; use lineStr instead (later)
-            e.function = symname;
+            e.function = symname ? symname : "(unknown)";
             e.address  = trace[i];
 
             // The dli_fbase gives an overall offset into the file itself;
@@ -290,8 +368,13 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
             // by subtracting them we get the offset of the function within the file
             // which addr2line can use to look up function line numbers.
 
-            if (dlinfo.dli_fbase && trace[i] >= dlinfo.dli_fbase) {
-                e.address2 = (void*) ((long) trace[i] - (long) dlinfo.dli_fbase);
+            if (dlinfo.dli_fbase) {
+                // subtract smaller address from larger one to get offset
+                if (trace[i] >= dlinfo.dli_fbase) {
+                    e.address2 = (void*) ((long) trace[i] - (long) dlinfo.dli_fbase);
+                } else {
+                    e.address2 = (void*) ((long) dlinfo.dli_fbase - (long) trace[i]);
+                }
             } else {
                 e.address2 = dlinfo.dli_saddr;
             }
@@ -303,7 +386,7 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
         }
     }
 
-    if (stack_depth == 0 || stack.empty()) {
+    if (stack_depth == 0 || stack.isEmpty()) {
         return;
     }
 
@@ -320,21 +403,25 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
     // both ways and then figure out which one is best by string length.
     // The failing one will emit a lot of short "??:?? 0" lines.
 
-    std::vector<void*> addrsToLookup;
+    Vector<void*> addrsToLookup;
     for (const entry& e : stack) {
-        addrsToLookup.push_back(e.address);
-        addrsToLookup.push_back(e.address2);
+        addrsToLookup.add(e.address);
+        addrsToLookup.add(e.address2);
     }
 
     std::string addr2lineOutput;
     addr2line_all(addrsToLookup, addr2lineOutput);
-    std::vector<std::string> addr2lineLines = stringSplit(addr2lineOutput, "\n");
+
+    Vector<std::string> addr2lineLines = stringSplit(addr2lineOutput, "\n");
     int numAddrLines = (int) addr2lineLines.size();
     for (int i = 0, size = (int) stack.size(); i < size; i++) {
         std::string opt1 = (2 * i < numAddrLines ? addr2lineLines[2 * i] : std::string());
         std::string opt2 = (2 * i + 1 < numAddrLines ? addr2lineLines[2 * i + 1] : std::string());
         std::string best = opt1.length() > opt2.length() ? opt1 : opt2;
         stack[i].lineStr = addr2line_clean(best);
+        if (stack[i].function.empty() || stack[i].function == "(unknown)") {
+            stack[i].function = addr2line_functionName(best);
+        }
     }
 }
 

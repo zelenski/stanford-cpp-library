@@ -285,9 +285,9 @@ public class StandardConsoleModel implements KeyListener, FocusListener, Console
 			throw new ErrorException(
 					"Console styles and colors cannot be changed after I/O has started.");
 		}
-		this.inputAttributes.addAttribute(StyleConstants.Bold, new Boolean(
+		this.inputAttributes.addAttribute(StyleConstants.Bold, Boolean.valueOf(
 				(paramInt & 0x1) != 0));
-		this.inputAttributes.addAttribute(StyleConstants.Italic, new Boolean(
+		this.inputAttributes.addAttribute(StyleConstants.Italic, Boolean.valueOf(
 				(paramInt & 0x2) != 0));
 	}
 
@@ -305,9 +305,9 @@ public class StandardConsoleModel implements KeyListener, FocusListener, Console
 			throw new ErrorException(
 					"Console styles and colors cannot be changed after I/O has started.");
 		}
-		this.errorAttributes.addAttribute(StyleConstants.Bold, new Boolean(
+		this.errorAttributes.addAttribute(StyleConstants.Bold, Boolean.valueOf(
 				(paramInt & 0x1) != 0));
-		this.errorAttributes.addAttribute(StyleConstants.Italic, new Boolean(
+		this.errorAttributes.addAttribute(StyleConstants.Italic, Boolean.valueOf(
 				(paramInt & 0x2) != 0));
 	}
 
@@ -321,9 +321,9 @@ public class StandardConsoleModel implements KeyListener, FocusListener, Console
 	}
 
 	public void setOutputStyle(int paramInt) {
-		this.outputAttributes.addAttribute(StyleConstants.Bold, new Boolean(
+		this.outputAttributes.addAttribute(StyleConstants.Bold, Boolean.valueOf(
 				(paramInt & 0x1) != 0));
-		this.outputAttributes.addAttribute(StyleConstants.Italic, new Boolean(
+		this.outputAttributes.addAttribute(StyleConstants.Italic, Boolean.valueOf(
 				(paramInt & 0x2) != 0));
 	}
 

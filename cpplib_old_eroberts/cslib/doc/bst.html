@@ -1,0 +1,383 @@
+<html>
+<head>
+<title>bst.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="bst-h.html"><code>bst.h</code></a></h1>
+This interface supports a general abstraction for binary search trees.
+A <b><i>binary search tree</i></b> (or <b><i>BST</i></b> for short) is
+a binary tree in which the key in each node is greater than the keys
+descending to the left and less than the keys descending to the right.
+
+<p>Although the <code>BST</code> and <code>BSTNode</code> types are
+available to clients, most applications will find the <code>Set</code>
+and <code>HashMap</code> types instead, which use the <code>BST</code>
+type in their implementation.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Types</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:BST">BST</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>The abstract type for a binary search tree.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:BSTNode">BSTNode</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>The abstract type for a tree node.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:TraversalOrder">TraversalOrder</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type allows clients to control the order of iteration.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:clearBST">clearBST(bst)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes all nodes from the BST.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:clone">clone(bst)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a copy of the BST.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:findBSTNode">findBSTNode(bst,&nbsp;key)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Applies the binary search algorithm to find a particular key in the tree represented by <code>bst</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:freeBST">freeBST(bst)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Frees the storage for a binary search tree.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getBaseTypeBST">getBaseTypeBST(bst)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the name of the key type.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getBaseTypeSizeBST">getBaseTypeSizeBST(bst)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the size of the base type in bytes.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getCompareFnBST">getCompareFnBST(bst)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the comparison function for keys.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getKey">getKey(node)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the key as a generic object </td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getKeyString">getKeyString(node)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a string representation of the key.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getLeftChild">getLeftChild(node)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the left child of the specified node in a binary search tree.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getNodeValue">getNodeValue(node)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the value pointer associated with a <code>BSTNode</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getRightChild">getRightChild(node)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the right child of the specified node in a binary search tree.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getRootBST">getRootBST(bst)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the root node of the binary search tree.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:insertBSTNode">insertBSTNode(bst,&nbsp;key)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Inserts a new node into a binary search tree, if it does not already exist.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:isEmpty">isEmpty(bst)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the binary search tree has no entries.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:mapBST">mapBST(bst,&nbsp;fn,&nbsp;order,&nbsp;data)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Calls a function on every node in the binary search tree using the specified iteration order.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newBST">newBST(type)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a new empty binary search tree for keys with the specified base type.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newBSTFromType">newBSTFromType(baseType)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a new empty binary search tree for keys with the specified base type expressed as a string.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newNodeIterator">newNodeIterator(bst,&nbsp;order)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns an iterator for traversing the nodes in a binary search tree in the specified order.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:removeBSTNode">removeBSTNode(bst,&nbsp;key)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Removes a node in the tree that matches the specified key.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setCompareFnBST">setCompareFnBST(bst,&nbsp;cmpFn)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the comparison function for keys.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setNodeValue">setNodeValue(node,&nbsp;value)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the value pointer associated with a <code>BSTNode</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:size">size(bst)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the number of elements in the binary search tree.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:BST"></a>
+<pre class=detailCode>
+typedef struct BSTCDT *BST;
+</pre>
+<div class=detailHTML>
+The abstract type for a binary search tree.
+</div>
+<hr>
+<a name="Type:TraversalOrder"></a>
+<pre class=detailCode>
+typedef enum {PREORDER, INORDER, POSTORDER} TraversalOrder;
+</pre>
+<div class=detailHTML>
+This type allows clients to control the order of iteration.  Specifying
+<code>PREORDER</code> means that the root node is processed before its
+children, <code>INORDER</code> means that the root is processed between
+the processing of the left and right children, and <code>POSTORDER</code>
+means that the root is processed after its children.
+</div>
+<hr>
+<a name="Type:BSTNode"></a>
+<pre class=detailCode>
+typedef struct BSTNodeCDT *BSTNode;
+</pre>
+<div class=detailHTML>
+The abstract type for a tree node.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:newBST"></a>
+<pre class=detailCode>
+</pre>
+<div class=detailHTML>
+Creates a new empty binary search tree for keys with the specified base
+type.  The <code>type</code> parameter must be an explicit type name
+like <code>int</code> or <code>string</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+bst = newBST(type);
+</pre>
+<hr>
+<a name="Function:newBSTFromType"></a>
+<pre class=detailCode>
+BST newBSTFromType(string baseType);
+</pre>
+<div class=detailHTML>
+Creates a new empty binary search tree for keys with the specified base
+type expressed as a string.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+bst = newBSTFromType(baseType);
+</pre>
+<hr>
+<a name="Function:freeBST"></a>
+<pre class=detailCode>
+void freeBST(BST bst);
+</pre>
+<div class=detailHTML>
+Frees the storage for a binary search tree.  If nodes contain
+data fields with allocated storage, the client must free this storage
+by traversing the tree prior to calling <code>freeBST</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+freeBST(bst);
+</pre>
+<hr>
+<a name="Function:size"></a>
+<pre class=detailCode>
+int size(BST bst);
+</pre>
+<div class=detailHTML>
+Returns the number of elements in the binary search tree.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+n = size(bst);
+</pre>
+<hr>
+<a name="Function:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty(BST bst);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the binary search tree has no entries.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (isEmpty(bst)) . . .
+</pre>
+<hr>
+<a name="Function:clearBST"></a>
+<pre class=detailCode>
+void clearBST(BST bst);
+</pre>
+<div class=detailHTML>
+Removes all nodes from the BST.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+clearBST(bst);
+</pre>
+<hr>
+<a name="Function:clone"></a>
+<pre class=detailCode>
+BST clone(BST bst);
+</pre>
+<div class=detailHTML>
+Creates a copy of the BST.  The <code>clone</code> function copies
+only the first level of the structure and does not copy the individual
+elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+newbst = clone(bst);
+</pre>
+<hr>
+<a name="Function:findBSTNode"></a>
+<pre class=detailCode>
+BSTNode findBSTNode(BST bst, ...);
+</pre>
+<div class=detailHTML>
+Applies the binary search algorithm to find a particular key
+in the tree represented by <code>bst</code>.  If the key appears
+in the tree, <code>findBSTNode</code> returns that node; if not,
+<code>findBSTNode</code> returns <code>NULL</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+node = findBSTNode(bst, key);
+</pre>
+<hr>
+<a name="Function:insertBSTNode"></a>
+<pre class=detailCode>
+BSTNode insertBSTNode(BST bst, ...);
+</pre>
+<div class=detailHTML>
+Inserts a new node into a binary search tree, if it does not already
+exist.  If a node already exists in the tree, <code>insertBSTNode</code>
+returns that node; if not, <code>insertBSTNode</code> creates a new
+node, copies the key value, and returns the newly created node.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+node = insertBSTNode(bst, key);
+</pre>
+<hr>
+<a name="Function:removeBSTNode"></a>
+<pre class=detailCode>
+void removeBSTNode(BST bst, ...);
+</pre>
+<div class=detailHTML>
+Removes a node in the tree that matches the specified key.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+removeBSTNode(bst, key);
+</pre>
+<hr>
+<a name="Function:mapBST"></a>
+<pre class=detailCode>
+void mapBST(BST bst, proc fn, TraversalOrder order, void *data);
+</pre>
+<div class=detailHTML>
+Calls a function on every node in the binary search tree using the
+specified iteration order.  The arguments to the callback function
+are a pointer to the node and the <code>data</code> pointer.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+mapBST(bst, fn, order, data);
+</pre>
+<hr>
+<a name="Function:newNodeIterator"></a>
+<pre class=detailCode>
+Iterator newNodeIterator(BST bst, TraversalOrder order);
+</pre>
+<div class=detailHTML>
+Returns an iterator for traversing the nodes in a binary search tree
+in the specified order.  The <code>foreach</code> statement
+automatically uses an <code>INORDER</code> traversal.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+iterator = newNodeIterator(bst, order);
+</pre>
+<hr>
+<a name="Function:getRootBST"></a>
+<pre class=detailCode>
+BSTNode getRootBST(BST bst);
+</pre>
+<div class=detailHTML>
+Returns the root node of the binary search tree.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+root = getRootBST(bst);
+</pre>
+<hr>
+<a name="Function:getLeftChild"></a>
+<pre class=detailCode>
+BSTNode getLeftChild(BSTNode node);
+</pre>
+<div class=detailHTML>
+Returns the left child of the specified node in a binary search tree.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+child = getLeftChild(node);
+</pre>
+<hr>
+<a name="Function:getRightChild"></a>
+<pre class=detailCode>
+BSTNode getRightChild(BSTNode node);
+</pre>
+<div class=detailHTML>
+Returns the right child of the specified node in a binary search tree.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+child = getRightChild(node);
+</pre>
+<hr>
+<a name="Function:getKey"></a>
+<pre class=detailCode>
+GenericType getKey(BSTNode node);
+</pre>
+<div class=detailHTML>
+Returns the key as a generic object
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+any = getKey(node);
+</pre>
+<hr>
+<a name="Function:getKeyString"></a>
+<pre class=detailCode>
+string getKeyString(BSTNode node);
+</pre>
+<div class=detailHTML>
+Returns a string representation of the key.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+str = getKeyString(node);
+</pre>
+<hr>
+<a name="Function:setNodeValue"></a>
+<pre class=detailCode>
+void setNodeValue(BSTNode node, void *value);
+</pre>
+<div class=detailHTML>
+Sets the value pointer associated with a <code>BSTNode</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setNodeValue(node, value);
+</pre>
+<hr>
+<a name="Function:getNodeValue"></a>
+<pre class=detailCode>
+void *getNodeValue(BSTNode node);
+</pre>
+<div class=detailHTML>
+Returns the value pointer associated with a <code>BSTNode</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+value = getNodeValue(node);
+</pre>
+<hr>
+<a name="Function:getBaseTypeBST"></a>
+<pre class=detailCode>
+string getBaseTypeBST(BST bst);
+</pre>
+<div class=detailHTML>
+Returns the name of the key type.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+baseType = getBaseTypeBST(bst);
+</pre>
+<hr>
+<a name="Function:getBaseTypeSizeBST"></a>
+<pre class=detailCode>
+int getBaseTypeSizeBST(BST bst);
+</pre>
+<div class=detailHTML>
+Returns the size of the base type in bytes.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+size = getBaseTypeSizeBST(bst);
+</pre>
+<hr>
+<a name="Function:setCompareFnBST"></a>
+<pre class=detailCode>
+void setCompareFnBST(BST bst, CompareFn cmpFn);
+</pre>
+<div class=detailHTML>
+Sets the comparison function for keys.  This method need not be
+called for any of the standard types.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setCompareFnBST(bst, cmpFn);
+</pre>
+<hr>
+<a name="Function:getCompareFnBST"></a>
+<pre class=detailCode>
+CompareFn getCompareFnBST(BST bst);
+</pre>
+<div class=detailHTML>
+Returns the comparison function for keys.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+cmpFn = getCompareFnBST(bst);
+</pre>
+<hr>
+</table>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<html>
+<head>
+<title>class GArc</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="gobjects-h.html">class GArc</a></h1>
+This class represents an elliptical arc.  In addition to the ones
+it inherits from <code>GObject</code>, the <code>GArc</code> class
+defines the following methods:
+
+<pre>
+  GArc(double x, double y, double start, double sweep);
+  GArc(double x, double y, double width, double height,
+                           double start, double sweep);
+  void setStartAngle(double start);
+  double getStartAngle();
+  void setSweepAngle(double sweep);
+  double getSweepAngle();
+  void setFrameRectangle(GRectangle bounds);
+  void setFrameRectangle(double x, double y, double width, double height);
+  void setFilled(bool flag);
+  bool isFilled();
+  void setFillColor(string color);
+  string getFillColor();
+</pre>
+</body>
+</html>

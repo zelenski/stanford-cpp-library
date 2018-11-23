@@ -1,0 +1,176 @@
+<html>
+<head>
+<title>itertype.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="itertype-h.html"><code>itertype.h</code></a></h1>
+This interface allows package designers to export new collection
+types that support iteration.  Clients of those collection types
+who merely want to use iterators do not need to import this interface.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Types</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:IteratorHeader">IteratorHeader</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This structure must appear at the beginning of any concrete structure that supports iteration.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:NewIteratorFn">NewIteratorFn</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Represents the class of functions that create new iterators.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:StepIteratorFn">StepIteratorFn</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Represents the class of functions that step from one element to the next.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:addToIteratorList">addToIteratorList(iterator,&nbsp;dst)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds a new element to a list-style iterator.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:enableIteration">enableIteration(collection,&nbsp;newFn)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Enables iteration for the collection.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getCollection">getCollection(iterator)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the collection to which an iterator belongs.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getIteratorData">getIteratorData(iterator)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the client data pointer from the iterator.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newListIterator">newListIterator(size,&nbsp;cmpFn)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a new iterator with an empty iterator list.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newStepIterator">newStepIterator(size,&nbsp;stepFn)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a new iterator that uses an implementation-specific step function.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setCollection">setCollection(iterator,&nbsp;collection)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the collection to which an iterator belongs.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setIteratorData">setIteratorData(iterator,&nbsp;data)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets a data pointer in the iterator for use by clients.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:NewIteratorFn"></a>
+<pre class=detailCode>
+typedef Iterator NewIteratorFn(*NewIteratorFn)(void *collection);
+</pre>
+<div class=detailHTML>
+Represents the class of functions that create new iterators.
+</div>
+<hr>
+<a name="Type:StepIteratorFn"></a>
+<pre class=detailCode>
+typedef bool StepIteratorFn(*StepIteratorFn)(Iterator iterator, void *dst);
+</pre>
+<div class=detailHTML>
+Represents the class of functions that step from one element to the next.
+</div>
+<hr>
+<a name="Type:IteratorHeader"></a>
+<pre class=detailCode>
+typedef struct {
+    unsigned long password;
+    NewIteratorFn newFn;
+} IteratorHeader;
+</pre>
+<div class=detailHTML>
+This structure must appear at the beginning of any concrete
+structure that supports iteration.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:enableIteration"></a>
+<pre class=detailCode>
+void enableIteration(void *collection, NewIteratorFn newFn);
+</pre>
+<div class=detailHTML>
+Enables iteration for the collection.  The type-specific function
+pointer <code>newFn</code> is used to initialize an iterator
+for this type.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+enableIteration(collection, newFn);
+</pre>
+<hr>
+<a name="Function:newStepIterator"></a>
+<pre class=detailCode>
+Iterator newStepIterator(int size, StepIteratorFn stepFn);
+</pre>
+<div class=detailHTML>
+Creates a new iterator that uses an implementation-specific
+step function.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+iterator = newStepIterator(size, stepFn);
+</pre>
+<hr>
+<a name="Function:newListIterator"></a>
+<pre class=detailCode>
+Iterator newListIterator(int size, CompareFn cmpFn);
+</pre>
+<div class=detailHTML>
+Creates a new iterator with an empty iterator list.  The first
+argument is the size of the element type,  which makes it possible
+for the package to allocate storage for values of that type.
+The <code>cmpFn</code> is the comparison function used to sort
+the iterator elements.  If <code>cmpFn</code> is the constant
+<code>NULL</code>, the elements are entered in the order in
+which <code>addToIteratorList</code> is called.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+iterator = newListIterator(size, cmpFn);
+</pre>
+<hr>
+<a name="Function:addToIteratorList"></a>
+<pre class=detailCode>
+void addToIteratorList(Iterator iterator, void *dst);
+</pre>
+<div class=detailHTML>
+Adds a new element to a list-style iterator.  The order of the
+elements is determined by the comparison function specified
+when the iterator was created.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+addToIteratorList(iterator, dst);
+</pre>
+<hr>
+<a name="Function:setCollection"></a>
+<pre class=detailCode>
+void setCollection(Iterator iterator, void *collection);
+</pre>
+<div class=detailHTML>
+Sets the collection to which an iterator belongs.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setCollection(iterator, collection);
+</pre>
+<hr>
+<a name="Function:getCollection"></a>
+<pre class=detailCode>
+void *getCollection(Iterator iterator);
+</pre>
+<div class=detailHTML>
+Returns the collection to which an iterator belongs.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+collection = getCollection(iterator);
+</pre>
+<hr>
+<a name="Function:setIteratorData"></a>
+<pre class=detailCode>
+void setIteratorData(Iterator iterator, void *data);
+</pre>
+<div class=detailHTML>
+Sets a data pointer in the iterator for use by clients.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setIteratorData(iterator, data);
+</pre>
+<hr>
+<a name="Function:getIteratorData"></a>
+<pre class=detailCode>
+void *getIteratorData(Iterator iterator);
+</pre>
+<div class=detailHTML>
+Returns the client data pointer from the iterator.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+data = getIteratorData(iterator);
+</pre>
+<hr>
+</table>
+</body>
+</html>

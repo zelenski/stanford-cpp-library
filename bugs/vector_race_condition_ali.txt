@@ -1,0 +1,93 @@
+Thanks for sharing; that really is an interesting bug. I've played with it a bit and I think I know why this isn't working.
+
+I believe the bug has to do with expanding the underlying array when the vector is full, and thus invalidating any previous references to element in the old memory. 
+
+We can break down the following line: v.insert(i+1, v[i]); Here is a rough pseudocode of the insert method, with comments indicating the issue (better viewed on a laptop):
+
+	template <typename T>
+	void Vector<T>::insert(size_t pos, const T& toIns) {
+		
+	    if capacity full:
+	        reallocate array and copy over elements
+	       /* if toIns was a reference to an element in this vector, 
+	         * that reference is now invalidated due to reallocation,  
+	         * as per the standard:
+	         *
+	         * Source: 
+	         * http://en.cppreference.com/w/cpp/container/vector/insert
+	         *
+	         * 		"Insert causes reallocation if the new size() is 
+	         * 		greater than the old capacity(). If the new size()
+	         *		is greater than capacity(), all iterators and 
+	         *		references are invalidated." 
+         	 */
+	    insert element
+	    ++size
+	}
+
+
+So really, what the student is doing could be considered buggy in some sense. Their other version, which copies the value over into a variable first, isn't relying on the invalidated reference and so the issue goes away.
+
+After doing some digging, it turns out this is a subtle, but known issue. From what I gather, the standard library implementers had to jump through hoops to deal with this case. The idea is to allocate new memory, put the new element in it's final place in the new memory, then move the old elements, then destroy the old memory as opposed to the obvious (and Stanford library) way of: allocate new memory, move over old elements, destroy old memory, then insert new element. Some links that talk about this:
+
+http://www.drdobbs.com/cpp/copying-container-elements-from-the-c-li/240155771
+https://www.reddit.com/r/cpp/comments/vog1p/a_commonly_unknown_stdvector_pitfall/
+http://www.open-std.org/jtc1/sc22/wg21/docs/lwg-closed.html#526
+http://stackoverflow.com/questions/18788780/is-it-safe-to-push-back-an-element-from-the-same-vector?noredirect=1&lq=1
+
+So the standard library deals with this issue but the Stanford library doesn't. 
+
+@Chris, I think the fact that it worked on our computers is just good fortune. The concurrency on codestepbystep might have contributed to the fact that the invalidated memory was more likely to have changed than on a non-concurrent system such as our computers. You can bring the issue to light on your computer too by having a Vector of a user defined class as opposed to a builtin type like int which  has no destructor. This is because the reallocation leaves the old ints untouched and thus, using a dangling reference to that old memory still might work. If you use a user defined class with a destructor, you will see that the issue is very much there. I wrote a quick Java-esque wrapper Integer class that works exactly like an int except it has a destructor that sets it's internal int value to -5 (I thought -5 would be clearer to see than 0). It outputs the following (note the -5 where the reference got destructed upon reallocation):
+
+Before: {18, 7, 4, 24, 11}
+After: {9, -5, 4, 3, 2, 2, 12, 12, 6, 5}
+
+Here is the code if you want to play with it: https://ideone.com/8q2YEp
+
+
+Further evidence: in the case of the student, the following code works just fine:
+
+void stretch(Vector<int>& v){
+   int n=v.size();
+   /*
+    * Initally, v's capacity is probably full since it was
+    * most likely intialized using an initializer list:
+    *   
+    *       template <typename ValueType>
+    *       Vector<ValueType>::Vector(std::initializer_list<ValueType> list) {
+    *           capacity = list.size();
+    *           count = 0;
+    *           elements = new ValueType[capacity];   
+    *           addAll(list);     // count == capacity
+    *      } 
+    */
+    
+    /*
+     * Adding and removing dummy element should force array size to double
+     * so that it doesn't have to during the actual for loop in the program.
+     */
+    v.add(13);    
+    v.remove(n);
+    
+    for(int i = 0;i < 2*n; i = i+2){
+        if(v[i] % 2 == 0){
+            v[i] = v[i]/2;
+            v.insert(i+1, v[i]);  // Code will work if change this line into
+            //    int n=v[i];v.insert(i+1,n);   
+            //   SIDE NOTE: Student should avoid shadowing outside variable n 
+            //            with internal n, even if it works
+        }
+        else{
+            v[i]=v[i]/2 + 1;
+            v.insert(i+1,v[i]-1);
+        } 
+    }
+}
+
+
+
+Hope that helps! 
+
+Sincerely,
+--
+Ali Malik

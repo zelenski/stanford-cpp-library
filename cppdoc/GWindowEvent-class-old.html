@@ -1,0 +1,71 @@
+<html>
+<head>
+<title>GWindowEvent</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="gevents.html">#include "gevents.h"</a></div>
+<h1 class=header><code>class GWindowEvent : public <a href="GEvent-class.html">GEvent</a></code></h1>
+This event subclass represents a window event.
+Each <code>GWindowEvent</code> keeps track of the event type
+(<code>WINDOW_CLOSED</code>, <code>WINDOW_RESIZED</code>) along
+with the identity of the window.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Constructor</td></tr>
+<tr><td class=indexKey><nobr><a href="#Constructor:GWindowEvent">GWindowEvent(<var>type</var>,&nbsp;<var>gw</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GWindowEvent</code> using the specified parameters.</td></tr>
+<tr><td class=indexHead colspan=2>Methods</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:getGWindow">getGWindow()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the graphics window in which this event occurred.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Converts the event to a human-readable representation of the event.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GWindowEvent"></a>
+<pre class=detailCode>
+GWindowEvent(EventType type, const GWindow&amp; gw);
+</pre>
+<div class=detailHTML>
+Creates a <code>GWindowEvent</code> using the specified parameters.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GWindowEvent windowEvent(type, gw);
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:getGWindow"></a>
+<pre class=detailCode>
+GWindow getGWindow() const;
+</pre>
+<div class=detailHTML>
+Returns the graphics window in which this event occurred.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GWindow gw = e.getGWindow();
+</pre>
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Converts the event to a human-readable representation of the event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = e.toString();
+</pre>
+<hr>
+</table>
+</body>
+</html>

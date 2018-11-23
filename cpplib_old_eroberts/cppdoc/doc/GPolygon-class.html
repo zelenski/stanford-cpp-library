@@ -1,0 +1,25 @@
+<html>
+<head>
+<title>class GPolygon</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="gobjects-h.html">class GPolygon</a></h1>
+This class represents a polygon.  The constructor creates an
+empty polygon to which edges can be added.  In addition to the ones
+it inherits from <code>GObject</code>, the <code>GPolygon</code>
+class defines the following methods:
+
+<pre>
+  GPolygon();
+  void addVertex(double x, double y);
+  void addVertex(double x, double y);
+  void addEdge(double dx, double dy);
+  void addPolarEdge(double r, double theta);
+  void setFilled(bool flag);
+  bool isFilled();
+  void setFillColor(string color);
+  string getFillColor();
+</pre>
+</body>
+</html>

@@ -14,8 +14,8 @@ public class GWindow_drawInBackground extends JBESwingCommand {
 		String windowId = nextString(scanner);
 		JBEWindowInterface window = jbe.getWindowInterface(windowId);
 		scanner.verifyToken(",");
-		windowId = nextString(scanner);
-		GObject obj = jbe.getGObject(windowId);
+		String objectId = nextString(scanner);
+		GObject obj = jbe.getGObject(objectId);
 		scanner.verifyToken(")");
 		if ((window != null) && (obj != null) && (obj.isVisible())) {
 			JBECanvas canvas = window.getCanvas();
@@ -23,7 +23,6 @@ public class GWindow_drawInBackground extends JBESwingCommand {
 			Graphics2D g = canvas.getOSG();
 			g.setColor(obj.getColor());
 			obj.paint(g);
-			// localJBECanvas.repaint();
 		}
 	}
 }

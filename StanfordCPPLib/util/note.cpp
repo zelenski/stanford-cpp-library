@@ -13,12 +13,16 @@
  * @since 2016/09/26
  */
 
+#define INTERNAL_INCLUDE 1
 #include "note.h"
 #include <sstream>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "gmath.h"
+#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
-#include "private/platform.h"
+#undef INTERNAL_INCLUDE
 
 // line e.g. "1.5 G 5 NATURAL false"
 Note::Note(std::string line) {
@@ -144,7 +148,8 @@ void Note::play() const {
         printf("%s\n", toString().c_str());
     }
 #endif // NOTE_DEBUG
-    stanfordcpplib::getPlatform()->note_play(toString());
+    // TODO
+    // stanfordcpplib::getPlatform()->note_play(toString());
 }
 
 void Note::setAccidental(Note::Accidental accidental) {
@@ -214,7 +219,7 @@ std::ostream& operator <<(std::ostream& out, const Note& note) {
 }
 
 int hashCode(const Note& note) {
-    return hashCode5(
+    return hashCode(
             note.getDuration(),
             note.getPitch(),
             note.getOctave(),

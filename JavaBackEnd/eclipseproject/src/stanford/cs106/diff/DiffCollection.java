@@ -225,11 +225,11 @@ public class DiffCollection {
 		TreeMap<Integer, Integer> matches = new TreeMap<Integer, Integer>();
 
 		while (aStart <= aEnd && bStart <= bEnd && equals(a[aStart], b[bStart])) {
-			matches.put(new Integer(aStart++), new Integer(bStart++));
+			matches.put(Integer.valueOf(aStart++), Integer.valueOf(bStart++));
 		}
 
 		while (aStart <= aEnd && bStart <= bEnd && equals(a[aEnd], b[bEnd])) {
-			matches.put(new Integer(aEnd--), new Integer(bEnd--));
+			matches.put(Integer.valueOf(aEnd--), Integer.valueOf(bEnd--));
 		}
 
 		Map<Object, List<Integer>> bMatches = null;
@@ -249,7 +249,7 @@ public class DiffCollection {
 				positions = new ArrayList<Integer>();
 				bMatches.put(key, positions);
 			}
-			positions.add(new Integer(bi));
+			positions.add(Integer.valueOf(bi));
 		}
 
 		thresh = new TreeMap<Integer, Integer>();
@@ -260,7 +260,7 @@ public class DiffCollection {
 			List<Integer> positions = bMatches.get(aElement);
 
 			if (positions != null) {
-				Integer k = new Integer(0);
+				Integer k = Integer.valueOf(0);
 				ListIterator<Integer> pit = positions.listIterator(positions.size());
 				while (pit.hasPrevious()) {
 					Integer j = pit.previous();
@@ -271,7 +271,7 @@ public class DiffCollection {
 						// nothing
 					} else {
 						Integer value = k.intValue() - 1;
-						links.put(k, new Integer[] { value, new Integer(i), j });
+						links.put(k, new Integer[] { value, Integer.valueOf(i), j });
 					}
 				}
 			}
@@ -346,10 +346,10 @@ public class DiffCollection {
 	protected void append(Integer value) {
 		Integer addIdx = null;
 		if (thresh.size() == 0) {
-			addIdx = new Integer(0);
+			addIdx = Integer.valueOf(0);
 		} else {
 			Integer lastKey = thresh.lastKey();
-			addIdx = new Integer(lastKey.intValue() + 1);
+			addIdx = Integer.valueOf(lastKey.intValue() + 1);
 		}
 		thresh.put(addIdx, value);
 	}
@@ -358,7 +358,7 @@ public class DiffCollection {
 	 * Inserts the given values into the threshold map.
 	 */
 	protected Integer insert(Integer j, Integer k) {
-		if (isNonzero(k) && isGreaterThan(k, j) && isLessThan(new Integer(k.intValue() - 1), j)) {
+		if (isNonzero(k) && isGreaterThan(k, j) && isLessThan(Integer.valueOf(k.intValue() - 1), j)) {
 			thresh.put(k, j);
 		} else {
 			int hi = -1;
@@ -372,14 +372,14 @@ public class DiffCollection {
 			// off the end?
 			if (hi == -1 || j.compareTo(getLastValue()) > 0) {
 				append(j);
-				k = new Integer(hi + 1);
+				k = Integer.valueOf(hi + 1);
 			} else {
 				// binary search for insertion point:
 				int lo = 0;
 
 				while (lo <= hi) {
 					int index = (hi + lo) / 2;
-					Integer val = thresh.get(new Integer(index));
+					Integer val = thresh.get(Integer.valueOf(index));
 					int cmp = j.compareTo(val);
 
 					if (cmp == 0) {
@@ -391,8 +391,8 @@ public class DiffCollection {
 					}
 				}
 
-				thresh.put(new Integer(lo), j);
-				k = new Integer(lo);
+				thresh.put(Integer.valueOf(lo), j);
+				k = Integer.valueOf(lo);
 			}
 		}
 

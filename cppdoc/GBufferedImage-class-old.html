@@ -1,0 +1,483 @@
+<html>
+<head>
+<title>GBufferedImage</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="gbufferedimage.html">#include "gbufferedimage.h"</a></div>
+<h1 class=header><code>class GBufferedImage : public <a href="GInteractor-class.html">GInteractor</a></code></h1>
+This class implements a 2D region of colored pixels that can be read/set individually, not unlike the <code>BufferedImage</code> class in Java.
+
+<pre>
+   int main() {
+      GWindow gw;
+
+      GBufferedImage* img = new GBufferedImage(80, 60);
+      gw.add(img, 50, 50);
+      img-&gt;fill(0xff00ff);  // color all pixels in purple
+
+      // color some pixels in orange
+      for (int y = img-&gt;getHeight() / 4; y &lt; img-&gt;getHeight() * 3 / 4; y++) {
+         for (int x = img-&gt;getWidth() / 4; x &lt; img-&gt;getWidth() * 3 / 4; x++) {
+            img-&gt;setRGB(x, y, 0xffcc33);
+         }
+      }
+
+      return 0;
+   }
+</pre>
+
+<p>
+	The color of each pixel in a <code>GBufferedImage</code> is represented as a 32-bit integer as described by the <code>GWindow</code> function
+	<a href="gwindow.html#Function:convertColorToRGB"><code>convertRGBToColor</code></a>, where:
+</p>
+
+<ul>
+	<li>
+		bits 0-7 (most significant; <code>value &amp; 0xff000000</code>) are unused;
+	</li>
+	<li>
+		bits 8-15 (<code>value &amp; 0x00ff0000</code>) represent the redness of the color, from 0 (none) through 255 (full);
+	</li>
+	<li>
+		bits 16-23 (<code>value &amp; 0x0000ff00</code>) represent the greenness of the color, from 0 (none) through 255 (full);
+	</li>
+	<li>
+		and bits 24-31 (<code>value &amp; 0x000000ff</code>) represent the blueness of the color, from 0 (none) through 255 (full).
+	</li>
+</ul>
+
+<p>
+	For example, the integer <code>0xff00cc</code> is a purple color, while <code>0x770000</code> is a dark red.
+	Several <code>GBufferedImage</code> methods will also let you represent colors as hex strings such as <code>"#ff00cc"</code> instead of as integers.
+	String colors are always converted to integer colors internally by calling the <code>GWindow</code> function <a href="gwindow.html#Function:convertColorToRGB"><code>convertColorToRGB</code></a>.
+	Therefore some common color names like <code>&quot;black&quot;</code> can be passed successfully in lieu of the usual hex format; see that function for more details.
+</p>
+
+<p>
+	Though the x, y, width, and height parameters to the constructor and several methods are received as type <code>double</code> for maximum compatibility with other classes in this library, they should be thought of as integer coordinates.
+	Any real numbers passed will be internally truncated into integers by discarding any fractional component (by type-casting from <code>double</code> to <code>int</code>).
+</p>
+
+<p>
+	Note that per-pixel graphics operations using the Stanford C++ library are relatively slow.
+	A call to the <code>fill</code> method is relatively efficient, and a call to <code>getRGB</code> is also efficient since pixels' colors are cached locally.
+	But calling <code>setRGB</code> repeatedly over a large range of pixels is likely to yield poor performance.
+	This is due to the fact that the graphics are implemented using a background Java process to which all graphical commands are forwarded.
+	The <code>GBufferedImage</code> class is not performant enough to be used for rapidly advancing animations or extremely complex graphical effects.
+	It also does not provide any drawing primitives other than filling individual pixels.
+</p>
+
+<p class="since">
+	Available since: 2014/08/04 version of C++ library
+</p>
+
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Constructors</td></tr>
+<tr><td class=indexKey><a href="#Constructor:GBufferedImage">GBufferedImage()</a><br>
+<a href="#Constructor:GBufferedImage">GBufferedImage(<var>width</var>,&nbsp;<var>height</var>)</a><br>
+<a href="#Constructor:GBufferedImage">GBufferedImage(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>width</var>,&nbsp;<var>height</var>)</a><br>
+<a href="#Constructor:GBufferedImage">GBufferedImage(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>width</var>,&nbsp;<var>height</var>,&nbsp;<var>rgb</var>)</a>&nbsp;</td><td class=indexSynopsis width=100%>Constructs an image with the specified location, size, and optional background color (default black).</td></tr>
+<tr><td class=indexHead colspan=2>Methods</td></tr>
+<tr><td class=indexKey><a href="#Method:clear">clear()</a></td><td class=indexSynopsis width=100%>Sets the color of every pixel in the image to its default color.</td></tr>
+<tr><td class=indexKey><a href="#Method:createRgbPixel">createRgbPixel(<var>r</var>,&nbsp;<var>g</var>,&nbsp;<var>b</var>)</a></td><td class=indexSynopsis width=100%>Creates and returns a single RGB integer from the given R-G-B components from 0-255.</td></tr>
+<tr><td class=indexKey><a href="#Method:fill">fill(<var>rgb</var>)</a></td><td class=indexSynopsis width=100%>Sets the color of every pixel in the image.</td></tr>
+<tr><td class=indexKey><a href="#Method:fillRegion">fillRegion(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>width</var>,&nbsp;<var>height</var>,&nbsp;<var>rgb</var>)</a></td><td class=indexSynopsis width=100%>Sets the color of every pixel in the given rectangular range of the image.</td></tr>
+<tr><td class=indexKey><a href="#Method:fromGrid">fromGrid(<var>grid</var>)</a></td><td class=indexSynopsis width=100%>Replaces the entire contents of this image with the contents of the given grid of RGB pixel values.</td></tr>
+<tr><td class=indexKey><a href="#Method:getBlue">getBlue(<var>rgb</var>)</a></td><td class=indexSynopsis width=100%>Returns the blue component of the given R-G-B integer from 0-255.</td></tr>
+<tr><td class=indexKey><a href="#Method:getGreen">getGreen(<var>rgb</var>)</a></td><td class=indexSynopsis width=100%>Returns the green component of the given R-G-B integer from 0-255.</td></tr>
+<tr><td class=indexKey><a href="#Method:getHeight">getHeight()</a></td><td class=indexSynopsis width=100%>Returns the height of the image in pixels.</td></tr>
+<tr><td class=indexKey><a href="#Method:getRed">getRed(<var>rgb</var>)</a></td><td class=indexSynopsis width=100%>Returns the red component of the given R-G-B integer from 0-255.</td></tr>
+<tr><td class=indexKey><a href="#Method:getRedGreenBlue">getRedGreenBlue(<var>rgb</var>,&nbsp;<var>r</var>,&nbsp;<var>g</var>,&nbsp;<var>b</var>)</a></td><td class=indexSynopsis width=100%>Extracts the red, green, and blue components from 0-255 of the given RGB integer, filling by reference.</td></tr>
+<tr><td class=indexKey><a href="#Method:getRGB">getRGB(<var>x</var>,&nbsp;<var>y</var>)</a></td><td class=indexSynopsis width=100%>Returns the color of the pixel at the given x/y coordinates of the image as an integer.</td></tr>
+<tr><td class=indexKey><a href="#Method:getRGBString">getRGBString(<var>x</var>,&nbsp;<var>y</var>)</a></td><td class=indexSynopsis width=100%>Returns the color of the pixel at the given x/y coordinates of the image as a string.</td></tr>
+<tr><td class=indexKey><a href="#Method:getWidth">getWidth()</a></td><td class=indexSynopsis width=100%>Returns the width of the image in pixels.</td></tr>
+<tr><td class=indexKey><a href="#Method:inBounds">inBounds(<var>x</var>, <var>y</var>)</a></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the given x/y pixel is within the range of this image.</td></tr>
+<tr><td class=indexKey><a href="#Method:load">load(<var>filename</var>)</a></td><td class=indexSynopsis width=100%>Reads the image data from the given file.</td></tr>
+<tr><td class=indexKey><a href="#Method:resize">resize(<var>width</var>,&nbsp;<var>height</var>)<br>resize(<var>width</var>,&nbsp;<var>height</var>,&nbsp;<var>retain</var>)</a></td><td class=indexSynopsis width=100%>Changes the image's size.</td></tr>
+<tr><td class=indexKey><a href="#Method:save">save(<var>filename</var>)</a></td><td class=indexSynopsis width=100%>Writes the image data to the given file.</td></tr>
+<tr><td class=indexKey><a href="#Method:setRGB">setRGB(<var>x</var>,&nbsp;<var>y</var>,&nbsp;<var>rgb</var>)</a></td><td class=indexSynopsis width=100%>Sets the color of the pixel at the given x/y coordinates of the image to the given value.</td></tr>
+<tr><td class=indexKey><a href="#Method:toGrid">toGrid()<br>toGrid(<var>grid</var>)</a></td><td class=indexSynopsis width=100%>Converts this image into a grid of RGB pixels.</td></tr>
+</table>
+
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GBufferedImage"></a>
+<pre class=detailCode>
+GBufferedImage();
+GBufferedImage(double width, double height);
+GBufferedImage(double x, double y, double width, double height);
+GBufferedImage(double x, double y, double width, double height, int rgb);
+GBufferedImage(double x, double y, double width, double height, string rgb);
+</pre>
+<div class=detailHTML>
+Constructs an image with the specified location, size, and optional RGB background color.
+If no size is passed, the default size of 0x0 pixels is used
+If no location is passed, the default of (x=0, y=0) is used.
+If no background color is passed, the default of black is used (integer RGB representation: 0x000000).
+
+<p>Throws an error if the given width/height ranges are negative. <br />
+Throws an error if the given rgb value is invalid or out of range.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GBufferedImage* img = new GBufferedImage(width, height);
+GBufferedImage* img = new GBufferedImage(x, y, width, height);
+GBufferedImage* img = new GBufferedImage(x, y, width, height, rgb);
+</pre>
+<hr>
+</table>
+
+<h2>Method detail</h2>
+
+<hr>
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Sets the color of every pixel in the image to its default background color value (the one that was passed to the constructor).
+If no fill color value was passed to the constructor, this sets every pixel to black (0x0).
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+img-&gt;clear();
+</pre>
+
+<hr>
+<a name="Method:createRgbPixel"></a>
+<pre class=detailCode>
+static int createRgbPixel(int red, int green, int blue);
+</pre>
+<div class=detailHTML>
+Creates a single RGB integer from the given R-G-B components from 0-255.
+If any of red, green, or blue is not between 0-255 inclusive, throws an error.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int px = GBufferedImage::createRgbPixel(r, g, b);
+</pre>
+
+<hr>
+<a name="Method:fill"></a>
+<pre class=detailCode>
+void fill(int rgb);
+void fill(string rgb);
+</pre>
+<div class=detailHTML>
+Sets the color of every pixel in the image to the given color value.
+
+<p>Throws an error if the given rgb value is not a valid color.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int rgb = 0xff00cc;
+img-&gt;fill(rgb);
+</pre>
+
+<hr>
+<a name="Method:fillRegion"></a>
+<pre class=detailCode>
+void fillRegion(double x, double y, double width, double height, int rgb);
+void fillRegion(double x, double y, double width, double height, string rgb);
+</pre>
+<div class=detailHTML>
+Sets the color of every pixel in the given rectangular range of the image to the given color value.
+Specifically, the pixels in the rectangular range (x, y) through (x + width - 1, y + height - 1)
+become filled with the given color.
+
+<p>Throws an error if the given x/y/width/height range goes outside the bounds of the image. <br />
+Throws an error if the given rgb value is not a valid color.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int rgb = 0xff00cc;
+img-&gt;fillRegion(x, y, width, height, rgb);
+</pre>
+
+<hr>
+<a name="Method:fromGrid"></a>
+<pre class=detailCode>
+void fromGrid(const Grid&lt;int&gt;&amp; grid);
+</pre>
+<div class=detailHTML>
+Replaces the entire contents of this image with the contents of the
+given grid of RGB pixel values.
+If this image is not the same size as the grid, the image is resized.
+Any existing contents of the image are lost.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+img-&gt;fromGrid(grid);
+</pre>
+<p class="since">
+	Available since: 2015/08/12 version of C++ library
+</p>
+
+<hr>
+<a name="Method:getBlue"></a>
+<pre class=detailCode>
+static int getBlue(int rgb);
+</pre>
+<div class=detailHTML>
+Returns the blue component of the given R-G-B integer from 0-255.
+The blue component comes from bits 0-7 (least significant) of the integer.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int blue = GBufferedImage::getBlue(rgb);
+</pre>
+
+<hr>
+<a name="Method:getGreen"></a>
+<pre class=detailCode>
+static int getGreen(int rgb);
+</pre>
+<div class=detailHTML>
+Returns the green component of the given R-G-B integer from 0-255.
+The green component comes from bits 8-15 of the integer.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int green = GBufferedImage::getGreen(rgb);
+</pre>
+
+<hr>
+<a name="Method:getHeight"></a>
+<pre class=detailCode>
+double getHeight() const;
+</pre>
+<div class=detailHTML>
+Returns the height of the image in pixels.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double height = img-&gt;getHeight();
+</pre>
+
+<hr>
+<a name="Method:getRed"></a>
+<pre class=detailCode>
+static int getRed(int rgb);
+</pre>
+<div class=detailHTML>
+Returns the red component of the given R-G-B integer from 0-255.
+The red component comes from bits 16-23 of the integer.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int red = GBufferedImage::getRed(rgb);
+</pre>
+
+<hr>
+<a name="Method:getRedGreenBlue"></a>
+<pre class=detailCode>
+static void getRedGreenBlue(int rgb, int&amp; red, int&amp; green, int&amp; blue);
+</pre>
+<div class=detailHTML>
+Extracts the red, green, and blue components from 0-255
+of the given RGB integer, filling by reference.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int red, green, blue;
+GBufferedImage::getRedGreenBlue(rgb, red, green, blue);
+</pre>
+
+<hr>
+<a name="Method:getRGB"></a>
+<pre class=detailCode>
+int getRGB(double x, double y) const;
+</pre>
+<div class=detailHTML>
+Returns the color of the pixel at the given x/y coordinates of the image as an integer such as 0xff00cc.
+
+<p>Throws an error if the given x/y values are out of bounds.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int rgb = img-&gt;getRGB(x, y);
+</pre>
+
+<hr>
+<a name="Method:getRGBString"></a>
+<pre class=detailCode>
+string getRGBString(double x, double y) const;
+</pre>
+<div class=detailHTML>
+Returns the color of the pixel at the given x/y coordinates of the image as a string such as "#ff00cc".
+The string that is returned comes from the <code>GWindow</code> function <code>convertRGBToColor</code>; see documentation of that function.
+
+<p>Throws an error if the given x/y values are out of bounds.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string rgb = img-&gt;getRGBString(x, y);
+</pre>
+
+<hr>
+<a name="Method:getWidth"></a>
+<pre class=detailCode>
+double getWidth() const;
+</pre>
+<div class=detailHTML>
+Returns the width of the image in pixels.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double width = img-&gt;getWidth();
+</pre>
+
+<hr>
+<a name="Method:inBounds"></a>
+<pre class=detailCode>
+bool inBounds(double x, double y) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the given x/y pixel is within the range of this image.
+This will be the case if the coordinates are between (0, 0) and (width-1, height-1) inclusive when cast to integers.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (img-&gt;inBounds(x, y)) {
+    ...
+}
+</pre>
+
+<hr>
+<a name="Method:load"></a>
+<pre class=detailCode>
+void load(string filename);
+</pre>
+<div class=detailHTML>
+Reads the image data from the given file.
+The exact type of image is based on the file's name and extension.
+This implementation delegates to Java's <code>ImageIO.read</code> method; see documentation of that method for more details about supported image formats.
+Note that loading an image could change its width/height if the size of the image in the file doesn't match the prior size of the image object.
+This function throws an error if the image file does not exist or is unable to be read as a valid image.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+img-&gt;load(filename);
+</pre>
+
+<p class="since">
+	Available since: 2014/10/22 version of C++ library
+</p>
+
+<hr>
+<a name="Method:resize"></a>
+<pre class=detailCode>
+void resize(int width, int height, bool retain = false);
+</pre>
+<div class=detailHTML>
+Changes the image's size to be the given width and height in pixels.
+If the <code>retain</code> parameter is omitted or <code>true</code>, this retains any existing pixel data and crops to the given width/height if necessary.
+If the <code>retain</code> parameter is passed as <code>false</code>, this discards any existing pixel colors and resets them to the original value that was passed as the background color of the image upon construction, or black (0x0) if no color was passed to the constructor.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+img-&gt;resize(width, height);
+</pre>
+
+<hr>
+<a name="Method:save"></a>
+<pre class=detailCode>
+void save(string filename) const;
+</pre>
+<div class=detailHTML>
+Writes the image data to the given file.
+The exact type of image saved is based on the file name and extension you provide.
+This implementation delegates to Java's <code>ImageIO.write</code> method; see documentation of that method for more details about supported image formats.
+This function throws an error if the image file is unable to be written.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+img-&gt;save(filename);
+</pre>
+
+<p class="since">
+	Available since: 2014/10/22 version of C++ library
+</p>
+
+<hr>
+<a name="Method:setRGB"></a>
+<pre class=detailCode>
+void setRGB(double x, double y, int rgb);
+void setRGB(double x, double y, std::string rgb);
+</pre>
+<div class=detailHTML>
+Sets the color of the pixel at the given x/y coordinates of the image to the given value.
+
+<p>
+Implementation/performance note: Each call to this method produces a call to the Java graphical back-end.
+Calling this method many times in a tight loop can lead to poor performance.
+If you need to fill a large rectangular region, consider calling fill or fillRegion instead.
+</p>
+
+<p>Throws an error if the given x/y values are out of bounds. <br />
+Throws an error if the given rgb value is not a valid color.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+img-&gt;setRGB(x, y, rgb);
+</pre>
+
+<hr>
+<a name="Method:toGrid"></a>
+<pre class=detailCode>
+Grid&lt;int&gt; toGrid() const;
+void toGrid(Grid&lt;int&gt;&amp; grid) const;
+</pre>
+<div class=detailHTML>
+Converts this image into a grid of RGB pixels.
+The grid's first index is a row or y-index, and its second index
+is the column or x-index.
+So for example, <code>grid[y][x]</code> returns the RGB int value at pixel (x, y).
+The grid can either be returned or filled by reference.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Grid&lt;int&gt; grid = img-&gt;toGrid();   // first version
+
+Grid&lt;int&gt; grid;
+img-&gt;toGrid(grid);                // second version
+</pre>
+
+<p class="since">
+	Available since: 2015/08/12 version of C++ library
+</p>
+
+<hr>
+
+</table>
+</body>
+</html>

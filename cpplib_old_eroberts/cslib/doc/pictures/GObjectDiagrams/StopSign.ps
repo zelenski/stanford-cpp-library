@@ -1,0 +1,25 @@
+#include <jtftools.ps>
+
+/WIDTH 3.2 inch def
+/HEIGHT 1.7 inch def
+/SF 0.8 def
+/TITLE-SIZE 12 def
+/TEXT-SIZE 11 def
+/SYSTEM MAC-OSX def
+/EDGE 50 def
+
+gsave
+  SF dup scale
+  0 0 WIDTH SF div HEIGHT SF div (StopSign) drawGraphicsWindow
+  0.5 setlinewidth
+  clipToGCanvas
+  windowWidth 2 div windowHeight 2 div translate
+  red
+  newpath
+    EDGE -2 div EDGE 2 div EDGE 2 sqrt div add moveto
+    0 1 7 {
+      /theta exch 45 mul def
+      EDGE theta cos mul EDGE theta sin mul neg rlineto
+    } for
+  closepath gsave fill grestore stroke
+grestore

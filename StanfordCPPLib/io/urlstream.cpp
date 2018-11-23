@@ -5,6 +5,15 @@
  * Please see urlstream.h for information about how to use these classes.
  *
  * @author Marty Stepp
+ * @version 2018/10/02
+ * - added close() method for backward compatibility (does nothing)
+ * @version 2018/09/18
+ * - refactored to integrate with pure-C++ GDownloader implementation
+ * - added getErrorMessage method
+ * @version 2018/06/20
+ * - support for setting headers such as user agent
+ * - https URL support
+ * - changed string to const string&
  * @version 2015/07/05
  * - removed static global Platform variable, replaced by getPlatform as needed
  * @version 2014/10/14
@@ -12,76 +21,107 @@
  * @since 2014/10/08
  */
 
+#define INTERNAL_INCLUDE 1
 #include "urlstream.h"
 #include <sstream>
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
+#include "gdownloader.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#include "private/platform.h"
+#undef INTERNAL_INCLUDE
 
-iurlstream::iurlstream() : m_url(""), m_tempFilePath(""), m_lastError(0) {
+namespace {
+    /*
+     * Given a status code, determines whether it's successful.
+     * All successful HTTP status codes are of the form 2xx.
+     */
+    bool isHttpSuccess(int code) {
+        return code >= 200 && code <= 299;
+    }
+}
+
+iurlstream::iurlstream()
+        : _url(""),
+          _httpStatusCode(0) {
     // empty
 }
 
-iurlstream::iurlstream(std::string url) : m_url(url), m_tempFilePath(""), m_lastError(0) {
+iurlstream::iurlstream(const std::string& url)
+        : _url(url),
+          _httpStatusCode(0) {
     open(url);
 }
 
 void iurlstream::close() {
-    std::ifstream::close();
-    if (!m_tempFilePath.empty() && fileExists(m_tempFilePath)) {
-        deleteFile(m_tempFilePath);
-    }
-    m_tempFilePath = "";
-    m_lastError = 0;
+    // empty
 }
 
 int iurlstream::getErrorCode() const {
-    return m_lastError;
+    return isHttpSuccess(_httpStatusCode)? 0 : _httpStatusCode;
 }
 
-void iurlstream::open(std::string url) {
-    if (url.empty()) {
-        url = m_url;
-    }
-    
-    // download the entire URL to a temp file, put into stringbuf for reading
-    std::string tempDir = getTempDirectory();
-    std::string filename = getUrlFilename(url);
-    m_tempFilePath = tempDir + getDirectoryPathSeparator() + filename;
-    
-    m_lastError = stanfordcpplib::getPlatform()->url_download(url, filename);
-    
-    if (m_lastError == ERR_MALFORMED_URL) {
-        error("iurlstream::open: malformed URL when downloading " + url + " to " + m_tempFilePath);
-    } else if (m_lastError == ERR_IO_EXCEPTION) {
-        error("iurlstream::open: network I/O error when downloading " + url + " to " + m_tempFilePath);
-    }
-    if (m_lastError == 200) {
-        std::ifstream::open(m_tempFilePath.c_str());
+std::string iurlstream::getErrorMessage() const {
+    return _errorMessage;
+}
+
+int iurlstream::getHttpStatusCode() const {
+    /* All HTTP status codes are between 1xx and 5xx, inclusive. */
+    return _httpStatusCode >= 100 && _httpStatusCode <= 599? _httpStatusCode : 0;
+}
+
+std::string iurlstream::getHeader(const std::string& name) const {
+    return _headers[name];
+}
+
+std::string iurlstream::getUrl() const {
+    return _url;
+}
+
+std::string iurlstream::getUserAgent() const {
+    if (_headers.containsKey("User-Agent")) {
+        return _headers["User-Agent"];
     } else {
-        setstate(std::ios::failbit);
+        return "";
     }
 }
 
-std::string iurlstream::getUrlFilename(std::string url) const {
-    std::string filename = url;
-    
-    // strip query string, anchor from URL
-    int questionmark = stringIndexOf(url, "?");
-    if (questionmark >= 0) {
-        filename = filename.substr(0, questionmark);
+void iurlstream::open(const std::string& url) {
+    if (!url.empty()) {
+        _url = url;
     }
-    int hash = stringIndexOf(url, "#");
-    if (hash >= 0) {
-        filename = filename.substr(0, hash);
-    }
+    _errorMessage = "";
     
-    filename = getTail(filename);
-    if (filename.empty()) {
-        filename = "index.tmp";   // for / urls like http://google.com/
+    // GDownloader does the heavy lifting of downloading the file for us
+    GDownloader downloader;
+
+    // insert/send headers if needed
+    if (!_headers.isEmpty()) {
+        for (std::string headerName : _headers) {
+            downloader.setHeader(headerName, _headers[headerName]);
+        }
     }
-    
-    return filename;
+    std::string urlData = downloader.downloadAsString(_url);
+    _httpStatusCode = downloader.getHttpStatusCode();
+
+    if (downloader.hasError()) {
+        setstate(std::ios::failbit);
+        _errorMessage = downloader.getErrorMessage();
+    } else {
+        clear();
+        this->write(urlData.c_str(), static_cast<std::streamsize>(urlData.length()));
+        this->seekg(0);
+    }
+}
+
+void iurlstream::setHeader(const std::string& name, const std::string& value) {
+    _headers[name] = value;
+}
+
+void iurlstream::setUserAgent(const std::string& userAgent) {
+    setHeader("User-Agent", userAgent);
 }

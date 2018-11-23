@@ -32,6 +32,10 @@ public class LibraryUpdater {
 		String latestVersion = "";
 		try {
 			latestVersion = downloader.download(latestVersionUrl);
+		} catch (HTTPDownloadException he) {
+			JOptionPane.showMessageDialog(parent,
+					"Unable to look up latest version from web: " + he.toString());
+			return false;
 		} catch (IOException ioe) {
 			JOptionPane.showMessageDialog(parent,
 					"Unable to look up latest version from web: " + ioe.toString());

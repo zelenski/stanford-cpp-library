@@ -1,4 +1,15 @@
 /*
+ * @version 2018/07/16
+ * - added GScrollBar_*
+ * @version 2018/06/24
+ * - added GFormattedPane_get/setContentType
+ * @version 2018/06/23
+ * - added GFormattedPane_*
+ * @version 2018/06/20
+ * - added URL_downloadWithHeaders
+ * - added GInteractor_add/removeDocumentListener
+ * @version 2018/01/26
+ * - added GWindow_setCanvasDrawingMode
  * @version 2017/10/12
  * - added GTextLabel_create
  * - added GWindow_setRepaintImmediately
@@ -34,10 +45,12 @@ package stanford.spl;
 
 import acm.util.TokenScanner;
 import stanford.cs106.reflect.ReflectionRuntimeException;
-
+import stanford.cs106.util.ExceptionUtils;
 import java.io.BufferedReader;
 import java.io.Reader;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.Charset;
 import java.util.*;
 
 public abstract class JBECommand {
@@ -54,6 +67,7 @@ public abstract class JBECommand {
 			AutograderUnitTest_clearTests.class,
 			AutograderUnitTest_clearTestResults.class,
 			AutograderUnitTest_isChecked.class,
+			AutograderUnitTest_runTestsInSeparateThreads.class,
 			AutograderUnitTest_setChecked.class,
 			AutograderUnitTest_setTestCounts.class,
 			AutograderUnitTest_setTestDetails.class,
@@ -97,14 +111,23 @@ public abstract class JBECommand {
 			GEvent_waitForEvent.class,
 			GFileChooser_showOpenDialog.class,
 			GFileChooser_showSaveDialog.class,
+			GFormattedPane_create.class,
+			GFormattedPane_getContentType.class,
+			GFormattedPane_getPage.class,
+			GFormattedPane_getText.class,
+			GFormattedPane_setContentType.class,
+			GFormattedPane_setPage.class,
+			GFormattedPane_setText.class,
 			GImage_create.class,
 			GInteractor_addActionListener.class,
+			GInteractor_addChangeListener.class,
 			GInteractor_getAccelerator.class,
 			GInteractor_getFont.class,
 			GInteractor_getMnemonic.class,
 			GInteractor_getSize.class,
 			GInteractor_isEnabled.class,
 			GInteractor_removeActionListener.class,
+			GInteractor_removeChangeListener.class,
 			GInteractor_requestFocus.class,
 			GInteractor_setAccelerator.class,
 			GInteractor_setActionCommand.class,
@@ -156,6 +179,9 @@ public abstract class JBECommand {
 			GRadioButton_setSelected.class,
 			GRect_create.class,
 			GRoundRect_create.class,
+			GScrollBar_create.class,
+			GScrollBar_getValue.class,
+			GScrollBar_setValues.class,
 			GSlider_create.class,
 			GSlider_getMajorTickSpacing.class,
 			GSlider_getMinorTickSpacing.class,
@@ -242,6 +268,7 @@ public abstract class JBECommand {
 			GWindow_repaint.class,
 			GWindow_requestFocus.class,
 			GWindow_saveCanvasPixels.class,
+			GWindow_setCanvasDrawingMode.class,
 			GWindow_setCanvasSize.class,
 			GWindow_setCloseOperation.class,
 			GWindow_setExitOnClose.class,
@@ -290,7 +317,8 @@ public abstract class JBECommand {
 			StanfordCppLib_getJbeVersion.class,
 			StanfordCppLib_setCppVersion.class,
 			TopCompound_create.class,
-			URL_download.class
+			URL_download.class,
+			URL_downloadWithHeaders.class
 	));
 	
 	public abstract void execute(TokenScanner paramTokenScanner, JavaBackEnd paramJavaBackEnd);
@@ -307,41 +335,79 @@ public abstract class JBECommand {
 		String className = commandClass.getSimpleName();
 		className = className.replace("_", ".");
 		try {
-			JBECommand command = commandClass.newInstance();
+			JBECommand command = commandClass.getDeclaredConstructor().newInstance();
 			commandMap.put(className, command);
 		} catch (IllegalAccessException iae) {
 			throw new ReflectionRuntimeException(iae);
 		} catch (InstantiationException ie) {
 			throw new ReflectionRuntimeException(ie);
+		} catch (InvocationTargetException ite) {
+			throw new ReflectionRuntimeException(ExceptionUtils.getUnderlyingCause(ite));
+		} catch (NoSuchMethodException nsme) {
+			throw new ReflectionRuntimeException(nsme);
 		}
 	}
 
-	public int nextInt(TokenScanner paramTokenScanner) {
-		String token = paramTokenScanner.nextToken();
+	public int nextInt(TokenScanner scanner) {
+		String token = scanner.nextToken();
 		if (token.equals("-")) {
 			// BUGBUG: argh geez, doesn't handle negative numbers? really? cmon
-			token += paramTokenScanner.nextToken();
+			token += scanner.nextToken();
 		}
 		return Integer.parseInt(token);
 	}
 
-	public double nextDouble(TokenScanner paramTokenScanner) {
-		String str = paramTokenScanner.nextToken();
+	public double nextDouble(TokenScanner scanner) {
+		String str = scanner.nextToken();
 		if (str.equals("-")) {
 			// BUGBUG: argh geez, doesn't handle negative numbers? really? cmon
-			str += paramTokenScanner.nextToken();
+			str += scanner.nextToken();
 		}
 		return Double.parseDouble(str);
 	}
+	
+	/* Cache the UTF-8 charset decoder for efficiency. */
+	private static final Charset UTF_8;
+	static {
+		try {
+			UTF_8 = Charset.forName("UTF-8");
+		} catch (Exception e) {
+			throw new RuntimeException("Can't get the UTF_8 charset; this should not be possible as the spec guarantees it will be available.");			
+		}
+	}
 
-	public String nextString(TokenScanner paramTokenScanner) {
-		return paramTokenScanner.getStringValue(paramTokenScanner.nextToken());
+	public String nextString(TokenScanner scanner) {
+		/* The string that we're getting over the pipe is essentially ASCII-encoded UTF-8. Specifically, the
+		 * string is formatted as a Java String where each value is an ASCII character, with special characters
+		 * formatted using escape sequences so that the decoder functions properly (e.g. tabs are \t, newlines
+		 * are \n, quotes are \", etc.)
+		 * 
+		 * The first step in decoding this is to process all the escape sequences using the TokenScanner.
+		 */
+		String initial = scanner.getStringValue(scanner.nextToken());
+		
+		/* We now have a string consisting of a bunch of characters that comprise a UTF-8 encoding of the
+		 * actual string we want. Each character is in the range [0, 256), so to finish processing the
+		 * string we need to map it back to an array of bytes and decode those bytes as intended.
+		 * 
+		 * TODO: We would probably be much better off bypassing the .getStringValue() method referenced above
+		 * to more directly do the string conversion. This current system isn't efficient.
+		 */
+		byte[] bytes = new byte[initial.length()];
+		for (int i = 0; i < initial.length(); i++) {
+			char ch = initial.charAt(i);
+			if (ch >= 256) throw new RuntimeException("Assumption violated: each character should be one byte long.");
+			
+			bytes[i] = (byte)ch;
+		}
+		
+		return new String(bytes, UTF_8);		
 	}
 	
-	public String nextBase64(TokenScanner paramTokenScanner) {
+	public String nextBase64(TokenScanner scanner) {
 		String base64 = "";
 		try {
-			BufferedReader reader = new BufferedReader(getTokenScannerReader(paramTokenScanner));
+			BufferedReader reader = new BufferedReader(getTokenScannerReader(scanner));
 			// throw away ", \"" char
 			while (reader.read() != '"') {
 				// empty
@@ -353,7 +419,7 @@ public abstract class JBECommand {
 				base64 = base64.substring(0, base64.length() - 2);
 				
 				// put ) char back into token scanner to read 
-				paramTokenScanner.ungetChar(')');
+				scanner.ungetChar(')');
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -361,8 +427,8 @@ public abstract class JBECommand {
 		return base64;
 	}
 
-	public boolean nextBoolean(TokenScanner paramTokenScanner) {
-		return paramTokenScanner.nextToken().startsWith("t");
+	public boolean nextBoolean(TokenScanner scanner) {
+		return scanner.nextToken().startsWith("t");
 	}
 
 	/**

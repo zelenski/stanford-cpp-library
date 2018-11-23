@@ -1,0 +1,108 @@
+<html>
+<head>
+<title>../symtab.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: symtab.h
+ * --------------
+ * This package implements a symbol table abstraction.  Clients create new
+ * key/value by calling enter and look up existing bindings by calling
+ * lookup.
+ */
+</scan>
+#ifndef _symtab_h
+#define _symtab_h
+
+#include "cslib.h"
+#include "iterator.h"
+
+<a name="Function:HashMap"><scan class=comment>/*
+ * Function: HashMap
+ * -----------------
+ * This type is the ADT used to represent a symbol table.
+ */
+</scan>
+typedef struct HashMapCDT *HashMap;
+
+<a name="Function:void"><scan class=comment>/*
+ * Function: void
+ * --------------
+ * This type defines the class of functions that can be used to map over
+ * the entries in a symbol table.
+ */
+</scan>
+typedef void (*symtabFnT)(string key, void *value, void *data);
+
+<scan class=comment>/* Exported entries */</scan>
+
+<a name="Function:newSymbolTable"><scan class=comment>/*
+ * Function: newSymbolTable
+ * Usage: HashMap table = newSymbolTable();
+ * ----------------------------------------
+ * Allocates a new symbol table with no entries.
+ */
+</scan>
+HashMap newSymbolTable(void);
+
+<a name="Function:freeSymbolTable"><scan class=comment>/*
+ * Function: freeSymbolTable
+ * Usage: freeSymbolTable(table);
+ * ------------------------------
+ * Frees the storage associated with the symbol table.
+ */
+</scan>
+void freeSymbolTable(HashMap table);
+
+<a name="Function:enter"><scan class=comment>/*
+ * Function: enter
+ * Usage: enter(table, key, value);
+ * --------------------------------
+ * Associates key with value in the symbol table.  Each call to enter
+ * supersedes any previous definition for key.
+ */
+</scan>
+void enter(HashMap table, string key, void *value);
+
+<a name="Function:lookup"><scan class=comment>/*
+ * Function: lookup
+ * Usage: void *value = lookup(table, key);
+ * ----------------------------------------
+ * Returns the value associated with key in the symbol table, or UNDEFINED,
+ * if no such value exists.
+ */
+</scan>
+void *lookup(HashMap table, string key);
+
+<a name="Function:containsKey"><scan class=comment>/*
+ * Function: containsKey
+ * Usage: if (containsKey(table, key)) . . .
+ * -----------------------------------------
+ * Checks to see if the table contains the specified key.
+ */
+</scan>
+bool containsKey(HashMap table, string key);
+
+<a name="Function:mapSymbolTable"><scan class=comment>/*
+ * Function: mapSymbolTable
+ * Usage: mapSymbolTable(fn, table, data);
+ * ---------------------------------------
+ * Iterates through every entry in the symbol table and calls the function
+ * fn, passing it the following arguments:
+ *
+ *   The current key
+ *   The associated value
+ *   The data passed to mapSymbolTable
+ *
+ * The data pointer allows the client to pass state information to the
+ * function fn, if necessary.  If no such information is required, this
+ * argument should be NULL.
+ */
+</scan>void mapSymbolTable(symtabFnT fn, HashMap table, void *data);
+
+#endif
+</pre>
+</body>
+</html>

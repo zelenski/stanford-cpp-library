@@ -1,0 +1,247 @@
+<html>
+<head>
+<title>../scanner.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: scanner.h
+ * ---------------
+ * The TokenScanner type is an abstract type used to dividing a string into
+ * logical units called tokens.  Each token is either
+ *
+ * A string of consecutive letters and digits representing a word A
+ * one-character string representing punctuation or a separator
+ *
+ * To use this package, you must first create an instance of a TokenScanner
+ * by calling
+ *
+ *     scanner = newScanner();
+ *
+ * All other calls to the scanner package take this variable as their first
+ * argument to identify a particular instance of the abstract scanner type.
+ *
+ * You initialize the scanner to hold a particular string by calling
+ *
+ *     setScannerString(scanner, str);
+ *
+ * where str is the string from which tokens should be read.  To retrieve
+ * each individual token, you make the following call:
+ *
+ *     token = readToken(scanner);
+ *
+ * To determine whether any tokens remain to be read, you can call the
+ * predicate function moreTokensExist(scanner).  The readToken function
+ * returns the empty string after the last token is read.
+ *
+ * The following code fragment serves as an idiom for processing each token
+ * in the string inputString:
+ *
+ *     scanner = newScanner();
+ *     setScannerString(scanner, inputString);
+ *     while (moreTokensExist(scanner)) {
+ *         token = readToken(scanner);
+ *         . . . process the token . . .
+ *     }
+ */
+</scan>
+#ifndef _scanner_h
+#define _scanner_h
+
+#include "cslib.h"
+
+<a name="Type:TokenScanner"><scan class=comment>/*
+ * Type: TokenScanner
+ * ------------------
+ * This type is the ADT used to represent a scanner.
+ */
+</scan>
+typedef struct TokenScannerCDT *TokenScanner;
+
+typedef enum {
+    PreserveSpaces,
+    IgnoreSpaces
+} spaceOptionT;
+
+typedef enum {
+    ScanNumbersAsWords,
+    ScanNumbersAsIntegers,
+    ScanNumbersAsReals
+} numberOptionT;
+
+typedef enum {
+    ScanQuotesAsPunctuation,
+    ScanQuotesAsStrings
+} stringOptionT;
+
+<a name="Function:newScanner"><scan class=comment>/*
+ * Function: newScanner
+ * Usage: scanner = newScanner();
+ * ------------------------------
+ * Creates a new scanner instance.
+ */
+</scan>
+TokenScanner newScanner(void);
+
+<a name="Function:freeScanner"><scan class=comment>/*
+ * Function: freeScanner
+ * Usage: freeScanner(scanner);
+ * ----------------------------
+ * Frees the storage associated with scanner.
+ */
+</scan>
+void freeScanner(TokenScanner scanner);
+
+<a name="Function:setScannerString"><scan class=comment>/*
+ * Function: setScannerString
+ * Usage: setScannerString(scanner, str);
+ * --------------------------------------
+ * Initializes the scanner so that it will start extracting tokens from the
+ * string str.
+ */
+</scan>
+void setScannerString(TokenScanner scanner, string str);
+
+<a name="Function:readToken"><scan class=comment>/*
+ * Function: readToken
+ * Usage: token = readToken(scanner);
+ * ----------------------------------
+ * Returns the next token from scanner.  If readToken is called when no
+ * tokens are available, it returns the empty string.  The token returned
+ * by readToken is always allocated in the heap, which means that clients
+ * can call freeBlock when the token is no longer needed.
+ */
+</scan>
+string readToken(TokenScanner scanner);
+
+<a name="Function:moreTokensExist"><scan class=comment>/*
+ * Function: moreTokensExist
+ * Usage: if (moreTokensExist(scanner)) . . .
+ * ------------------------------------------
+ * Returns true as long as there are additional tokens for the scanner to
+ * read.
+ */
+</scan>
+bool moreTokensExist(TokenScanner scanner);
+
+<a name="Function:saveToken"><scan class=comment>/*
+ * Function: saveToken
+ * Usage: saveToken(scanner, token);
+ * ---------------------------------
+ * Stores the token in the scanner data structure in such a way that the
+ * next time readToken is called, it will return that token without reading
+ * any additional characters from the input.
+ */
+</scan>
+void saveToken(TokenScanner scanner, string token);
+
+<a name="Function:setScannerSpaceOption"><scan class=comment>/*
+ * Function: setScannerSpaceOption
+ * Usage: setScannerSpaceOption(scanner, option);
+ * ----------------------------------------------
+ * Controls whether the scanner ignores whitespace characters or treats
+ * them as valid tokens.  By default, the readToken function treats
+ * whitespace characters, such as spaces and tabs, just like any other
+ * punctuation mark.  If, however, you call
+ *
+ *   setScannerSpaceOption(scanner, IgnoreSpaces);
+ *
+ * the scanner will skip over any white space before reading a token.  You
+ * can restore the original behavior by calling
+ *
+ *   setScannerSpaceOption(scanner, PreserveSpaces);
+ */
+</scan>
+void setScannerSpaceOption(TokenScanner scanner, spaceOptionT option);
+
+<a name="Function:getScannerSpaceOption"><scan class=comment>/*
+ * Function: getScannerSpaceOption
+ * Usage: option = getScannerSpaceOption(scanner);
+ * -----------------------------------------------
+ * Returns the setting of the space option set by the most recent call to
+ * setScannerSpaceOption.
+ */
+</scan>
+spaceOptionT getScannerSpaceOption(TokenScanner scanner);
+
+<a name="Function:setScannerNumberOption"><scan class=comment>/*
+ * Function: setScannerNumberOption
+ * Usage: setScannerNumberOption(scanner, option);
+ * -----------------------------------------------
+ * Controls whether the scanner treats numeric values specially.  The
+ * default behavior for the scanner is to treat digits exactly like
+ * letters, which means that they are scanned as words.  If you call
+ *
+ *   setScannerNumberOption(scanner, ScanNumbersAsIntegers);
+ *
+ * a token beginning with a digit will end at the first nondigit.  (Note
+ * that digits can still be scanned as part of a token as in the token x1.)
+ * If you call
+ *
+ *   setScannerNumberOption(scanner, ScanNumbersAsReals);
+ *
+ * the scanner will return the longest token string that represents a real
+ * number, if the next character to be scanned is a digit.  The format for
+ * a real number is a sequence of digit characters that may include at most
+ * one decimal point, optionally followed by the letter E or e, an optional
+ * sign, and an exponent.  You can restore the default behavior by calling
+ *
+ *   setScannerNumberOption(scanner, ScanNumbersAsWords);
+ *
+ * Even if the number options are enabled, readToken always returns its
+ * result as a string, which means that you need to call stringToInteger or
+ * stringToReal to convert the token to a number.
+ */
+</scan>
+void setScannerNumberOption(TokenScanner scanner,
+                                      numberOptionT option);
+
+<a name="Function:getScannerNumberOption"><scan class=comment>/*
+ * Function: getScannerNumberOption
+ * Usage: option = getScannerNumberOption(scanner);
+ * ------------------------------------------------
+ * Returns the setting of the number option set by the most recent call to
+ * setScannerNumberOption.
+ */
+</scan>
+numberOptionT getScannerNumberOption(TokenScanner scanner);
+
+<a name="Function:setScannerStringOption"><scan class=comment>/*
+ * Function: setScannerStringOption
+ * Usage: setScannerStringOption(scanner, option);
+ * -----------------------------------------------
+ * Controls how the scanner treats double quotation marks in the input. 
+ * The default behavior for the scanner is to treat quotes just like any
+ * other punctuation character.  If, however, you call
+ *
+ *   setScannerStringOption(scanner, ScanQuotesAsStrings);
+ *
+ * a token beginning with a quotation mark will be scanned up to the
+ * closing quotation mark.  The quotation marks are returned as part of the
+ * scanned token so that clients can differentiate strings from other token
+ * types.  The original behavior can be restored by calling
+ *
+ *   setScannerStringOption(scanner, ScanQuotesAsPunctuation);
+ *
+ * When scanning a string, the scanner recognizes the standard escape
+ * sequences from ANSI C, such as \n and \t.
+ */
+</scan>
+void setScannerStringOption(TokenScanner scanner,
+                                      stringOptionT option);
+
+<a name="Function:getScannerStringOption"><scan class=comment>/*
+ * Function: getScannerStringOption
+ * Usage: option = getScannerStringOption(scanner);
+ * ------------------------------------------------
+ * Returns the setting of the string option set by the most recent call to
+ * setScannerStringOption.
+ */
+</scan>
+stringOptionT getScannerStringOption(TokenScanner scanner);
+
+#endif
+</pre>
+</body>
+</html>

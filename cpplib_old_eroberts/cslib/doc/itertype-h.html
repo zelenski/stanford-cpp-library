@@ -1,0 +1,160 @@
+<html>
+<head>
+<title>../itertype.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: itertype.h
+ * ----------------
+ * This interface allows package designers to export new collection types
+ * that support iteration.  Clients of those collection types who merely
+ * want to use iterators do not need to import this interface.
+ */
+</scan>
+#ifndef _itertype_h
+#define _itertype_h
+
+#include "cslib.h"
+#include "iterator.h"
+#include "cmpfn.h"
+
+<scan class=comment>/*
+ * General overview
+ * ----------------
+ * In order to create a collection type that supports iteration, the
+ * implementor of the type must first allocate space at the beginning of
+ * the concrete record for an IteratorHeader containing a function pointer
+ * that allows newIterator to make a new iterator for that collection type.
+ * The implementor must initialize this header in the constructor function
+ * by calling enableIteration, which takes the collection pointer and a
+ * type-specific callback to create the iterator.
+ *
+ * There are two different strategies for creating the iterator in each
+ * type.  The general strategy (which is useful for iterators that are not
+ * really collections, such as scanners that return a series of tokens) is
+ * to call newStepIterator, which takes a pointer to a stepIterator
+ * function specific for that type.  The second strategy creates the entire
+ * list of values at the beginning.  Such iterators are created by calling
+ * newListIterator to create an empty iterator and the calling
+ * addToIteratorList for each element.
+ *
+ * Elements in the iterator may be sorted or unsorted depending on the
+ * comparison function passed to newListIterator.
+ */
+</scan>
+<a name="Type:NewIteratorFn"><scan class=comment>/*
+ * Type: NewIteratorFn
+ * -------------------
+ * Represents the class of functions that create new iterators.
+ */
+</scan>
+typedef Iterator (*NewIteratorFn)(void *collection);
+
+<a name="Type:StepIteratorFn"><scan class=comment>/*
+ * Type: StepIteratorFn
+ * --------------------
+ * Represents the class of functions that step from one element to the
+ * next.
+ */
+</scan>
+typedef bool (*StepIteratorFn)(Iterator iterator, void *dst);
+
+<a name="Type:IteratorHeader"><scan class=comment>/*
+ * Type: IteratorHeader
+ * --------------------
+ * This structure must appear at the beginning of any concrete structure
+ * that supports iteration.
+ */
+</scan>
+typedef struct {
+    unsigned long password;
+    NewIteratorFn newFn;
+} IteratorHeader;
+
+<a name="Function:enableIteration"><scan class=comment>/*
+ * Function: enableIteration
+ * Usage: enableIteration(collection, newFn);
+ * ------------------------------------------
+ * Enables iteration for the collection.  The type-specific function
+ * pointer newFn is used to initialize an iterator for this type.
+ */
+</scan>
+void enableIteration(void *collection, NewIteratorFn newFn);
+
+<a name="Function:newStepIterator"><scan class=comment>/*
+ * Function: newStepIterator
+ * Usage: iterator = newStepIterator(size, stepFn);
+ * ------------------------------------------------
+ * Creates a new iterator that uses an implementation-specific step
+ * function.
+ */
+</scan>
+Iterator newStepIterator(int size, StepIteratorFn stepFn);
+
+<a name="Function:newListIterator"><scan class=comment>/*
+ * Function: newListIterator
+ * Usage: iterator = newListIterator(size, cmpFn);
+ * -----------------------------------------------
+ * Creates a new iterator with an empty iterator list.  The first argument
+ * is the size of the element type,  which makes it possible for the
+ * package to allocate storage for values of that type.  The cmpFn is the
+ * comparison function used to sort the iterator elements.  If cmpFn is the
+ * constant NULL, the elements are entered in the order in which
+ * addToIteratorList is called.
+ */
+</scan>
+Iterator newListIterator(int size, CompareFn cmpFn);
+
+<a name="Function:addToIteratorList"><scan class=comment>/*
+ * Function: addToIteratorList
+ * Usage: addToIteratorList(iterator, dst);
+ * ----------------------------------------
+ * Adds a new element to a list-style iterator.  The order of the elements
+ * is determined by the comparison function specified when the iterator was
+ * created.
+ */
+</scan>
+void addToIteratorList(Iterator iterator, void *dst);
+
+<a name="Function:setCollection"><scan class=comment>/*
+ * Function: setCollection
+ * Usage: setCollection(iterator, collection);
+ * -------------------------------------------
+ * Sets the collection to which an iterator belongs.
+ */
+</scan>
+void setCollection(Iterator iterator, void *collection);
+
+<a name="Function:getCollection"><scan class=comment>/*
+ * Function: getCollection
+ * Usage: collection = getCollection(iterator);
+ * --------------------------------------------
+ * Returns the collection to which an iterator belongs.
+ */
+</scan>
+void *getCollection(Iterator iterator);
+
+<a name="Function:setIteratorData"><scan class=comment>/*
+ * Function: setIteratorData
+ * Usage: setIteratorData(iterator, data);
+ * ---------------------------------------
+ * Sets a data pointer in the iterator for use by clients.
+ */
+</scan>
+void setIteratorData(Iterator iterator, void *data);
+
+<a name="Function:getIteratorData"><scan class=comment>/*
+ * Function: getIteratorData
+ * Usage: data = getIteratorData(iterator);
+ * ----------------------------------------
+ * Returns the client data pointer from the iterator.
+ */
+</scan>
+void *getIteratorData(Iterator iterator);
+
+#endif
+</pre>
+</body>
+</html>

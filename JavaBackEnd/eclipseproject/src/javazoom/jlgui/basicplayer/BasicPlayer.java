@@ -261,10 +261,10 @@ public class BasicPlayer implements BasicController, Runnable {
 			properties = new HashMap();
 			// Add JavaSound properties.
 			if (m_audioFileFormat.getByteLength() > 0)
-				properties.put("audio.length.bytes", new Integer(
+				properties.put("audio.length.bytes", Integer.valueOf(
 						m_audioFileFormat.getByteLength()));
 			if (m_audioFileFormat.getFrameLength() > 0)
-				properties.put("audio.length.frames", new Integer(
+				properties.put("audio.length.frames", Integer.valueOf(
 						m_audioFileFormat.getFrameLength()));
 			if (m_audioFileFormat.getType() != null)
 				properties.put("audio.type",
@@ -273,19 +273,19 @@ public class BasicPlayer implements BasicController, Runnable {
 			AudioFormat audioFormat = m_audioFileFormat.getFormat();
 			if (audioFormat.getFrameRate() > 0)
 				properties.put("audio.framerate.fps",
-						new Float(audioFormat.getFrameRate()));
+						Float.valueOf(audioFormat.getFrameRate()));
 			if (audioFormat.getFrameSize() > 0)
 				properties.put("audio.framesize.bytes",
-						new Integer(audioFormat.getFrameSize()));
+						Integer.valueOf(audioFormat.getFrameSize()));
 			if (audioFormat.getSampleRate() > 0)
 				properties.put("audio.samplerate.hz",
-						new Float(audioFormat.getSampleRate()));
+						Float.valueOf(audioFormat.getSampleRate()));
 			if (audioFormat.getSampleSizeInBits() > 0)
 				properties.put("audio.samplesize.bits",
-						new Integer(audioFormat.getSampleSizeInBits()));
+						Integer.valueOf(audioFormat.getSampleSizeInBits()));
 			if (audioFormat.getChannels() > 0)
 				properties.put("audio.channels",
-						new Integer(audioFormat.getChannels()));
+						Integer.valueOf(audioFormat.getChannels()));
 			// if (audioFormat instanceof TAudioFormat)
 			// {
 			// // Tritonus SPI compliant audio format.

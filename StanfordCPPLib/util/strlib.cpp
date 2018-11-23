@@ -3,6 +3,8 @@
  * ----------------
  * This file implements the strlib.h interface.
  * 
+ * @version 2018/09/02
+ * - added padLeft, padRight
  * @version 2017/10/24
  * - print nullptr instead of null in uppercase
  * @version 2016/11/07
@@ -34,12 +36,18 @@
  * - removed 'using namespace' statement
  */
 
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #include <cctype>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
+#include "vector.h"
+#undef INTERNAL_INCLUDE
 
 /* Function prototypes */
 
@@ -135,7 +143,7 @@ char integerToChar(int n) {
  */
 std::string integerToString(int n, int radix) {
     if (radix <= 0) {
-        error("integerToString: Illegal radix: " + integerToString(radix));
+        error("integerToString: Illegal radix: " + std::to_string(radix));
     }
     std::ostringstream stream;
     if (radix != 10) {
@@ -147,7 +155,7 @@ std::string integerToString(int n, int radix) {
 
 std::string longToString(long n, int radix) {
     if (radix <= 0) {
-        error("longToString: Illegal radix: " + integerToString(radix));
+        error("longToString: Illegal radix: " + std::to_string(radix));
     }
     std::ostringstream stream;
     if (radix != 10) {
@@ -155,6 +163,32 @@ std::string longToString(long n, int radix) {
     }
     stream << n;
     return stream.str();
+}
+
+std::string padLeft(const std::string& s, int length, char fill) {
+    if ((int) s.length() >= length) {
+        return s;
+    } else {
+        std::ostringstream out;
+        for (int i = 0, count = length - (int) s.length(); i < count; i++) {
+            out << fill;
+        }
+        out << s;
+        return out.str();
+    }
+}
+
+std::string padRight(const std::string& s, int length, char fill) {
+    if ((int) s.length() >= length) {
+        return s;
+    } else {
+        std::ostringstream out;
+        out << s;
+        for (int i = 0, count = length - (int) s.length(); i < count; i++) {
+            out << fill;
+        }
+        return out.str();
+    }
 }
 
 std::string pointerToString(void* p) {
@@ -197,7 +231,7 @@ bool stringIsDouble(const std::string& str) {
 
 bool stringIsInteger(const std::string& str, int radix) {
     if (radix <= 0) {
-        error("stringIsInteger: Illegal radix: " + integerToString(radix));
+        error("stringIsInteger: Illegal radix: " + std::to_string(radix));
     }
     std::istringstream stream(trim(str));
     stream >> std::setbase(radix);
@@ -208,7 +242,7 @@ bool stringIsInteger(const std::string& str, int radix) {
 
 bool stringIsLong(const std::string& str, int radix) {
     if (radix <= 0) {
-        error("stringIsLong: Illegal radix: " + integerToString(radix));
+        error("stringIsLong: Illegal radix: " + std::to_string(radix));
     }
     std::istringstream stream(trim(str));
     stream >> std::setbase(radix);
@@ -250,13 +284,13 @@ int stringIndexOf(const std::string& s, const std::string& substring, int startI
     }
 }
 
-std::string stringJoin(const std::vector<std::string>& v, char delimiter) {
+std::string stringJoin(const Vector<std::string>& v, char delimiter) {
     std::string delim = charToString(delimiter);
     return stringJoin(v, delim);
 }
 
-std::string stringJoin(const std::vector<std::string>& v, const std::string& delimiter) {
-    if (v.empty()) {
+std::string stringJoin(const Vector<std::string>& v, const std::string& delimiter) {
+    if (v.isEmpty()) {
         return "";
     } else {
         std::ostringstream out;
@@ -329,14 +363,14 @@ int stringReplaceInPlace(std::string& str, const std::string& old, const std::st
     return count;
 }
 
-std::vector<std::string> stringSplit(const std::string& str, char delimiter, int limit) {
+Vector<std::string> stringSplit(const std::string& str, char delimiter, int limit) {
     std::string delim = charToString(delimiter);
     return stringSplit(str, delim, limit);
 }
 
-std::vector<std::string> stringSplit(const std::string& str, const std::string& delimiter, int limit) {
+Vector<std::string> stringSplit(const std::string& str, const std::string& delimiter, int limit) {
     std::string str2 = str;
-    std::vector<std::string> result;
+    Vector<std::string> result;
     int count = 0;
     size_t index = 0;
     while (limit < 0 || count < limit) {
@@ -344,12 +378,12 @@ std::vector<std::string> stringSplit(const std::string& str, const std::string& 
         if (index == std::string::npos) {
             break;
         }
-        result.push_back(str2.substr(0, index));
+        result.add(str2.substr(0, index));
         str2.erase(str2.begin(), str2.begin() + index + delimiter.length());
         count++;
     }
     if ((int) str2.length() > 0) {
-        result.push_back(str2);
+        result.add(str2);
     }
 
     return result;
@@ -384,7 +418,7 @@ double stringToDouble(const std::string& str) {
 
 int stringToInteger(const std::string& str, int radix) {
     if (radix <= 0) {
-        error("stringToInteger: Illegal radix: " + integerToString(radix));
+        error("stringToInteger: Illegal radix: " + std::to_string(radix));
     }
     std::istringstream stream(trim(str));
     stream >> std::setbase(radix);
@@ -398,7 +432,7 @@ int stringToInteger(const std::string& str, int radix) {
 
 long stringToLong(const std::string& str, int radix) {
     if (radix <= 0) {
-        error("stringToLong: Illegal radix: " + integerToString(radix));
+        error("stringToLong: Illegal radix: " + std::to_string(radix));
     }
     std::istringstream stream(trim(str));
     stream >> std::setbase(radix);
@@ -558,142 +592,4 @@ std::string urlEncode(const std::string& str) {
 
 void urlEncodeInPlace(std::string& str) {
     str = urlEncode(str);   // no real efficiency gain here
-}
-
-
-/*
- * Implementation notes: readQuotedString and writeQuotedString
- * ------------------------------------------------------------
- * Most of the work in these functions has to do with escape sequences.
- */
-
-static const std::string STRING_DELIMITERS = ",:)}]\n";
-
-bool stringNeedsQuoting(const std::string& str) {
-    int n = str.length();
-    for (int i = 0; i < n; i++) {
-        char ch = str[i];
-        if (isspace(ch)) return false;
-        if (STRING_DELIMITERS.find(ch) != std::string::npos) return true;
-    }
-    return false;
-}
-
-bool readQuotedString(std::istream& is, std::string& str, bool throwOnError) {
-    str = "";
-    char ch;
-    while (is.get(ch) && isspace(ch)) {
-        /* Empty */
-    }
-    if (is.fail()) {
-        return true;   // empty string?
-    }
-    if (ch == '\'' || ch == '"') {
-        char delim = ch;
-        while (is.get(ch) && ch != delim) {
-            if (is.fail()) {
-                if (throwOnError) {
-                    error("Unterminated string");
-                }
-                return false;
-            }
-            if (ch == '\\') {
-                if (!is.get(ch)) {
-                    if (throwOnError) {
-                        error("Unterminated string");
-                    }
-                    is.setstate(std::ios_base::failbit);
-                    return false;
-                }
-                if (isdigit(ch) || ch == 'x') {
-                    int maxDigits = 3;
-                    int base = 8;
-                    if (ch == 'x') {
-                        base = 16;
-                        maxDigits = 2;
-                    }
-                    int result = 0;
-                    int digit = 0;
-                    for (int i = 0; i < maxDigits && ch != delim; i++) {
-                        if (isdigit(ch)) {
-                            digit = ch - '0';
-                        } else if (base == 16 && isxdigit(ch)) {
-                            digit = toupper(ch) - 'A' + 10;
-                        } else {
-                            break;
-                        }
-                        result = base * result + digit;
-                        if (!is.get(ch)) {
-                            if (throwOnError) {
-                                error("Unterminated string");
-                            }
-                            is.setstate(std::ios_base::failbit);
-                            return false;
-                        }
-                    }
-                    ch = char(result);
-                    is.unget();
-                } else {
-                    switch (ch) {
-                    case 'a': ch = '\a'; break;
-                    case 'b': ch = '\b'; break;
-                    case 'f': ch = '\f'; break;
-                    case 'n': ch = '\n'; break;
-                    case 'r': ch = '\r'; break;
-                    case 't': ch = '\t'; break;
-                    case 'v': ch = '\v'; break;
-                    case '"': ch = '"'; break;
-                    case '\'': ch = '\''; break;
-                    case '\\': ch = '\\'; break;
-                    }
-                }
-            }
-            str += ch;
-        }
-    } else {
-        str += ch;
-        int endTrim = 0;
-        while (is.get(ch) && STRING_DELIMITERS.find(ch) == std::string::npos) {
-            str += ch;
-            if (!isspace(ch)) endTrim = str.length();
-        }
-        if (is) is.unget();
-        str = str.substr(0, endTrim);
-    }
-    return true;   // read successfully
-}
-
-std::ostream& writeQuotedString(std::ostream& os, const std::string& str, bool forceQuotes) {
-    if (!forceQuotes && stringNeedsQuoting(str)) {
-        forceQuotes = true;
-    }
-    if (forceQuotes) {
-        os << '"';
-    }
-    int len = str.length();
-    for (int i = 0; i < len; i++) {
-        char ch = str.at(i);
-        switch (ch) {
-        case '\a': os << "\\a"; break;
-        case '\b': os << "\\b"; break;
-        case '\f': os << "\\f"; break;
-        case '\n': os << "\\n"; break;
-        case '\r': os << "\\r"; break;
-        case '\t': os << "\\t"; break;
-        case '\v': os << "\\v"; break;
-        case '\\': os << "\\\\"; break;
-        default:
-            if (isprint(ch) && ch != '"') {
-                os << ch;
-            } else {
-                std::ostringstream oss;
-                oss << std::oct << std::setw(3) << std::setfill('0') << (int(ch) & 0xFF);
-                os << "\\" << oss.str();
-            }
-        }
-    }
-    if (forceQuotes) {
-        os << '"';
-    }
-    return os;
 }

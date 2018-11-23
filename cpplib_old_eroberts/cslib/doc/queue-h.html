@@ -1,0 +1,117 @@
+<html>
+<head>
+<title>../queue.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: queue.h
+ * -------------
+ * This interface defines a queue abstraction with first-in/first-out
+ * semantics.
+ */
+</scan>
+#ifndef _queue_h
+#define _queue_h
+
+#include "cslib.h"
+#include "generic.h"
+
+<a name="Type:Queue"><scan class=comment>/*
+ * Type: Queue
+ * -----------
+ * This type defines the abstract type for a queue.
+ */
+</scan>
+typedef struct QueueCDT *Queue;
+
+<a name="Function:newQueue"><scan class=comment>/*
+ * Function: newQueue
+ * Usage: queue = newQueue();
+ * --------------------------
+ * Allocates and returns an empty queue.
+ */
+</scan>
+Queue newQueue(void);
+
+<a name="Function:freeQueue"><scan class=comment>/*
+ * Function: freeQueue
+ * Usage: freeQueue(queue);
+ * ------------------------
+ * Frees the storage associated with the specified queue.
+ */
+</scan>
+void freeQueue(Queue queue);
+
+<a name="Function:enqueue"><scan class=comment>/*
+ * Function: enqueue
+ * Usage: enqueue(queue, element);
+ * -------------------------------
+ * Adds an element to the end of the queue.
+ */
+</scan>
+void enqueueQueue(Queue queue, void *element);
+
+<a name="Function:dequeue"><scan class=comment>/*
+ * Function: dequeue
+ * Usage: element = dequeue(queue);
+ * --------------------------------
+ * Removes the data value at the head of the queue and returns it to the
+ * client.  If the queue is empty, dequeue calls error with an appropriate
+ * message.
+ */
+</scan>
+void *dequeueQueue(Queue queue);
+
+<a name="Function:peek"><scan class=comment>/*
+ * Function: peek
+ * Usage: element = peek(queue);
+ * -----------------------------
+ * Returns the data value at the head of the queue without removing it.  If
+ * the queue is empty, peek calls error with an appropriate message.
+ */
+</scan>
+void *peekQueue(Queue queue);
+
+<a name="Function:isEmpty"><scan class=comment>/*
+ * Function: isEmpty
+ * Usage: if (isEmpty(queue)) . . .
+ * --------------------------------
+ * Tests whether the queue is empty.
+ */
+</scan>
+bool isEmptyQueue(Queue queue);
+
+<a name="Function:size"><scan class=comment>/*
+ * Function: size
+ * Usage: n = size(queue);
+ * -----------------------
+ * Returns the number of elements in the queue.
+ */
+</scan>
+int sizeQueue(Queue queue);
+
+<a name="Function:clear"><scan class=comment>/*
+ * Function: clear
+ * Usage: clear(queue);
+ * --------------------
+ * Removes all elements from the queue.
+ */
+</scan>
+void clearQueue(Queue queue);
+
+<a name="Function:clone"><scan class=comment>/*
+ * Function: clone
+ * Usage: newqueue = clone(queue);
+ * -------------------------------
+ * Creates a copy of the queue.  The clone function copies only the first
+ * level of the structure and does not copy the individual elements.
+ */
+</scan>
+Queue cloneQueue(Queue queue);
+
+#endif
+</pre>
+</body>
+</html>

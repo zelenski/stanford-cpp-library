@@ -1,0 +1,159 @@
+<html>
+<head>
+<title>include/grid.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: grid.h
+ * ------------
+ * This interface exports the Grid template class, which provides a
+ * convenient abstraction for representing two-dimensional arrays.
+ */
+</scan>
+#ifndef _grid_h
+#define _grid_h
+
+#include "error.h"
+#include "foreach.h"
+#include "strlib.h"
+
+<a name="Class:Grid<ValueType>"><scan class=comment>/*
+ * Class: Grid&lt;ValueType&gt;
+ * ----------------------
+ * The Grid class stores an indexed, two-dimensional array.  The following
+ * function, for example, creates an identity matrix of size n, in which
+ * the elements are 1.0 along the main diagonal and 0.0 everywhere else:
+ *
+ *    Grid&lt;double&gt; createIdentityMatrix(int n) {
+ *       Grid&lt;double&gt; matrix(n, n);
+ *       for (int i = 0; i &lt; n; i++) {
+ *          matrix[i][i] = 1.0;
+ *       }
+ *       return matrix;
+ *    }
+ */
+</scan>
+template &lt;typename ValueType&gt;
+class Grid {
+
+public:
+
+<scan class=comment>/* Forward reference */</scan>
+   class GridRow;
+
+<a name="Constructor:Grid"><scan class=comment>/*
+ * Constructor: Grid
+ * Usage: Grid&lt;ValueType&gt; grid;
+ *        Grid&lt;ValueType&gt; grid(nRows, nCols);
+ * ------------------------------------------
+ * Initializes a new grid.  The second form of the constructor is more
+ * common and creates a grid with the specified number of rows and columns.
+ * Each element of the grid is initialized to the default value for the
+ * type.  The default constructor creates an empty grid for which the
+ * client must call resize to set the dimensions.
+ */
+</scan>
+   Grid();
+   Grid(int nRows, int nCols);
+
+<a name="Destructor:~Grid"><scan class=comment>/*
+ * Destructor: ~Grid
+ * Usage: (usually implicit)
+ * -------------------------
+ * Frees any heap storage associated with this grid.
+ */
+</scan>
+   ~Grid();
+
+<a name="Method:numRows"><scan class=comment>/*
+ * Method: numRows
+ * Usage: int nRows = grid.numRows();
+ * ----------------------------------
+ * Returns the number of rows in the grid.
+ */
+</scan>
+   int numRows();
+
+<a name="Method:numCols"><scan class=comment>/*
+ * Method: numCols
+ * Usage: int nCols = grid.numCols();
+ * ----------------------------------
+ * Returns the number of columns in the grid.
+ */
+</scan>
+   int numCols();
+
+<a name="Method:resize"><scan class=comment>/*
+ * Method: resize
+ * Usage: grid.resize(nRows, nCols);
+ * ---------------------------------
+ * Reinitializes the grid to have the specified number of rows and columns.
+ * Any previous grid contents are discarded.
+ */
+</scan>
+   void resize(int nRows, int nCols);
+
+<a name="Method:inBounds"><scan class=comment>/*
+ * Method: inBounds
+ * Usage: if (grid.inBounds(row, col)) . . .
+ * -----------------------------------------
+ * Returns true if the specified row and column position is inside the
+ * bounds of the grid.
+ */
+</scan>
+   bool inBounds(int row, int col);
+
+<a name="Operator:[]"><scan class=comment>/*
+ * Operator: []
+ * Usage: value = grid[row][col];
+ *        grid[row][col] = value;
+ * ------------------------------
+ * Overloads [] to select elements from this vector.  This extension
+ * enables the use of traditional array notation to get or set individual
+ * elements.  This method signals an error if the row and col arguments are
+ * outside the grid boundaries.
+ */
+</scan>
+   GridRow operator[](int row);
+
+<a name="Macro:foreach"><scan class=comment>/*
+ * Macro: foreach
+ * Usage: foreach (ValueType value in grid) . . .
+ * ----------------------------------------------
+ * Iterates over the elements of the grid in row-major order, in which all
+ * the elements of row 0 are processed, followed by the elements in row 1,
+ * and so on.
+ */
+</scan>
+   <scan class=comment>/* The foreach macro is defined in foreach.h */</scan>
+
+<a name="Method:mapAll"><scan class=comment>/*
+ * Method: mapAll
+ * Usage: grid.mapAll(fn);
+ *        grid.mapAll(fn, data);
+ * -----------------------------
+ * Calls the specified function on each element of the grid.  The elements
+ * are processed in row-major order, in which all the elements of row 0 are
+ * processed, followed by the elements in row 1, and so on.  The second
+ * form of the call allows the client to pass a data value of any type to
+ * the callback function.
+ */
+</scan>
+   void mapAll(void (*fn)(ValueType value));
+
+   template &lt;typename ClientDataType&gt;
+   void mapAll(void (*fn)(ValueType value, ClientDataType &amp; data),
+               ClientDataType &amp; data);
+
+#include "private/gridpriv.h"
+
+};
+
+#include "private/gridimpl.cpp"
+
+#endif
+</pre>
+</body>
+</html>

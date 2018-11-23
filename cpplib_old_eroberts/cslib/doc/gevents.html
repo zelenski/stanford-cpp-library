@@ -1,0 +1,608 @@
+<html>
+<head>
+<title>gevents.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="gevents-h.html"><code>gevents.h</code></a></h1>
+This interface defines the event structure used in the graphics libraries.
+The structure of this package is adapted from the Java event model and
+is compatible with the C++ <code>StanfordCPPLib</code> package.
+The structure of the <code>GEvent</code> hierarchy looks like this:
+
+<p><div class=inset>
+<img src="images/GEventHierarchy.png"
+     width=558 usemap="#GEventMap" alt="GEventHierarchy">
+</div>
+<map name="GEventMap">
+  <area shape=rect coords="228,0,330,27" href="#Type:GEvent"
+        alt="GEvent">
+  <area shape=rect coords="0,132,102,159" href="#Type:GWindowEvent"
+        alt="GWindowEvent">
+  <area shape=rect coords="114,132,216,159" href="#Type:GActionEvent"
+        alt="GActionEvent">
+  <area shape=rect coords="228,132,330,159" href="#Type:GMouseEvent"
+        alt="GMouseEvent">
+  <area shape=rect coords="342,132,444,159" href="#Type:GKeyEvent"
+        alt="GKeyEvent">
+  <area shape=rect coords="456,132,558,159" href="#Type:GTimerEvent"
+        alt="GTimerEvent">
+</map>
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Types</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:EventClassType">EventClassType</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This enumeration type defines the event classes.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:EventType">EventType</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This enumeration type defines the event types for all events.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:ModifierCodes">ModifierCodes</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This enumeration type defines a set of constants used to check whether modifiers are in effect.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:KeyCodes">KeyCodes</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type defines the names of the key codes returned in a key event.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:GEvent">GEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This abstract type is used to represent an event of any type.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:GWindowEvent">GWindowEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This event subtype represents a change in a window.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:GActionEvent">GActionEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This event subtype represents activation of an interactor.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:GMouseEvent">GMouseEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This event subtype represents a mouse action in a window.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:GKeyEvent">GKeyEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This event subtype represents a key action in a window.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:GTimerEvent">GTimerEvent</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This event subtype represents a tick from a <code>GTimer</code>.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:freeEvent">freeEvent(e)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Releases the storage associated with the event.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getEventClass">getEventClass(e)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the enumerated type constant indicating the class of the event.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getEventType">getEventType(e)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the enumerated constant indicating the specific class of the event.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getGWindow">getGWindow(e)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the graphics window in which this event occurred.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getEventTime">getEventTime(e)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the system time in milliseconds at which the event occurred.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setEventTime">setEventTime(e,&nbsp;time)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the event time field for the event.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getModifiers">getModifiers(e)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns an integer whose bits indicate what modifiers are in effect.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setModifiers">setModifiers(e,&nbsp;modifiers)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the modifiers field for the event.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:waitForClick">waitForClick()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Waits for a mouse click to occur in any window, discarding any other events.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:waitForEvent">waitForEvent(mask)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Dismisses the process until an event occurs whose type is covered by the event mask.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getNextEvent">getNextEvent(mask)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Checks to see if there are any events of the desired type waiting on the event queue.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newGWindowEvent">newGWindowEvent(type,&nbsp;gw)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a new <code>GWindowEvent</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newGActionEvent">newGActionEvent(type,&nbsp;source,&nbsp;actionCommand)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a new <code>GActionEvent</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getSource">getSource(e)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <code>GObject</code> that generated this event.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getActionCommand">getActionCommand(arg)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the action command associated with this event or interactor.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newGMouseEvent">newGMouseEvent(type,&nbsp;gw,&nbsp;x,&nbsp;y)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a new <code>GMouseEvent</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getX">getX(e)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <i>x</i> coordinate at which the event occurred.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getY">getY(e)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <i>y</i> coordinate at which the event occurred.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newGKeyEvent">newGKeyEvent(type,&nbsp;gw,&nbsp;ch,&nbsp;code)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a new <code>GKeyEvent</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getKeyChar">getKeyChar(e)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the character represented by the keystroke, taking the modifier keys into account.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getKeyCode">getKeyCode(e)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the integer code associated with the key in the event.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newGTimerEvent">newGTimerEvent(type,&nbsp;timer)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a new <code>GTimerEvent</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:getGTimer">getGTimer(e)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the <code>GTimer</code> that generated this event.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:EventClassType"></a>
+<pre class=detailCode>
+typedef enum {
+   ACTION_EVENT = 0x010,
+   KEY_EVENT    = 0x020,
+   TIMER_EVENT  = 0x040,
+   WINDOW_EVENT = 0x080,
+   MOUSE_EVENT  = 0x100,
+   CLICK_EVENT  = 0x200,
+   ANY_EVENT    = 0x3F0
+} EventClassType;
+</pre>
+<div class=detailHTML>
+This enumeration type defines the event classes.  The element values
+are each a single bit and can be added or ORed together to generate
+an event mask.  The <code>CLICK_EVENT</code> class responds only to
+the MOUSE_CLICKED event type.  The <code>ANY_EVENT</code> class
+selects any event.
+</div>
+<hr>
+<a name="Type:EventType"></a>
+<pre class=detailCode>
+typedef enum {
+   WINDOW_CLOSED    = WINDOW_EVENT + 1,
+   WINDOW_RESIZED   = WINDOW_EVENT + 2,
+   ACTION_PERFORMED = ACTION_EVENT + 1,
+   MOUSE_CLICKED    = MOUSE_EVENT + 1,
+   MOUSE_PRESSED    = MOUSE_EVENT + 2,
+   MOUSE_RELEASED   = MOUSE_EVENT + 3,
+   MOUSE_MOVED      = MOUSE_EVENT + 4,
+   MOUSE_DRAGGED    = MOUSE_EVENT + 5,
+   KEY_PRESSED      = KEY_EVENT + 1,
+   KEY_RELEASED     = KEY_EVENT + 2,
+   KEY_TYPED        = KEY_EVENT + 3,
+   TIMER_TICKED     = TIMER_EVENT + 1
+} EventType;
+</pre>
+<div class=detailHTML>
+This enumeration type defines the event types for all events.
+</div>
+<hr>
+<a name="Type:ModifierCodes"></a>
+<pre class=detailCode>
+typedef enum {
+   SHIFT_DOWN     = 1 &lt;&lt; 0,
+   CTRL_DOWN      = 1 &lt;&lt; 1,
+   META_DOWN      = 1 &lt;&lt; 2,
+   ALT_DOWN       = 1 &lt;&lt; 3,
+   ALT_GRAPH_DOWN = 1 &lt;&lt; 4,
+   BUTTON1_DOWN   = 1 &lt;&lt; 5,
+   BUTTON2_DOWN   = 1 &lt;&lt; 6,
+   BUTTON3_DOWN   = 1 &lt;&lt; 7
+} ModifierCodes;
+</pre>
+<div class=detailHTML>
+This enumeration type defines a set of constants used to check whether
+modifiers are in effect.
+</div>
+<hr>
+<a name="Type:KeyCodes"></a>
+<pre class=detailCode>
+typedef enum {
+   BACKSPACE_KEY = 8,
+   TAB_KEY = 9,
+   ENTER_KEY = 10,
+   CLEAR_KEY = 12,
+   ESCAPE_KEY = 27,
+   PAGE_UP_KEY = 33,
+   PAGE_DOWN_KEY = 34,
+   END_KEY = 35,
+   HOME_KEY = 36,
+   LEFT_ARROW_KEY = 37,
+   UP_ARROW_KEY = 38,
+   RIGHT_ARROW_KEY = 39,
+   DOWN_ARROW_KEY = 40,
+   F1_KEY = 112,
+   F2_KEY = 113,
+   F3_KEY = 114,
+   F4_KEY = 115,
+   F5_KEY = 116,
+   F6_KEY = 117,
+   F7_KEY = 118,
+   F8_KEY = 119,
+   F9_KEY = 120,
+   F10_KEY = 121,
+   F11_KEY = 122,
+   F12_KEY = 123,
+   DELETE_KEY = 127,
+   HELP_KEY = 156
+} KeyCodes;
+</pre>
+<div class=detailHTML>
+This type defines the names of the key codes returned in a key event.
+</div>
+<hr>
+<a name="Type:GEvent"></a>
+<pre class=detailCode>
+typedef struct GEventCDT *GEvent;
+</pre>
+<div class=detailHTML>
+This abstract type is used to represent an event of any type.  This
+file defines names for the subtypes, even though these types are
+identical in C.  The functions that apply only to a specific event
+subtype generate runtime errors if called on an event of the wrong type.
+
+<p>The standard paradigm for using <code>GEvent</code> is illustrated
+by the following program, which allows the user to draw lines on the
+graphics window:
+
+<pre>
+   main() {
+      GWindow gw = newGWindow(600, 400);
+      while (true) {
+         GMouseEvent e = waitForEvent(MOUSE_EVENT);
+         if (getEventType(e) == MOUSE_PRESSED) {
+            GLine line = newGLine(getX(e), getY(e), getX(e), getY(e));
+            add(gw, line);
+         } else if (getEventType(e) == MOUSE_DRAGGED) {
+            setEndPoint(line, getX(e), getY(e));
+         }
+      }
+   }
+</pre>
+</div>
+<hr>
+<a name="Type:GWindowEvent"></a>
+<pre class=detailCode>
+typedef GEvent GWindowEvent;
+</pre>
+<div class=detailHTML>
+This event subtype represents a change in a window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+e = getNextEvent(mask);
+</pre>
+<hr>
+<a name="Type:GActionEvent"></a>
+<pre class=detailCode>
+typedef GEvent GActionEvent;
+</pre>
+<div class=detailHTML>
+This event subtype represents activation of an interactor.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+e = newGWindowEvent(type, gw);
+</pre>
+<hr>
+<a name="Type:GMouseEvent"></a>
+<pre class=detailCode>
+typedef GEvent GMouseEvent;
+</pre>
+<div class=detailHTML>
+This event subtype represents a mouse action in a window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+cmd = getActionCommand(arg);
+</pre>
+<hr>
+<a name="Type:GKeyEvent"></a>
+<pre class=detailCode>
+typedef GEvent GKeyEvent;
+</pre>
+<div class=detailHTML>
+This event subtype represents a key action in a window.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+y = getY(e);
+</pre>
+<hr>
+<a name="Type:GTimerEvent"></a>
+<pre class=detailCode>
+typedef GEvent GTimerEvent;
+</pre>
+<div class=detailHTML>
+This event subtype represents a tick from a <code>GTimer</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+key = getKeyCode(e);
+</pre>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:freeEvent"></a>
+<pre class=detailCode>
+void freeEvent(GEvent e);
+</pre>
+<div class=detailHTML>
+Releases the storage associated with the event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+freeEvent(e);
+</pre>
+<hr>
+<a name="Function:getEventClass"></a>
+<pre class=detailCode>
+EventClassType getEventClass(GEvent e);
+</pre>
+<div class=detailHTML>
+Returns the enumerated type constant indicating the class of the event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+eventClass = getEventClass(e);
+</pre>
+<hr>
+<a name="Function:getEventType"></a>
+<pre class=detailCode>
+EventType getEventType(GEvent e);
+</pre>
+<div class=detailHTML>
+Returns the enumerated constant indicating the specific class of the event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+eventType = getEventType(e);
+</pre>
+<hr>
+<a name="Function:getGWindow"></a>
+<pre class=detailCode>
+GWindow getGWindow(GEvent e);
+</pre>
+<div class=detailHTML>
+Returns the graphics window in which this event occurred.  This function
+applies to the subtypes <code>GMouseEvent</code>, <code>GKeyEvent</code>,
+and <code>GWindowEvent</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gw = getGWindow(e);
+</pre>
+<hr>
+<a name="Function:getEventTime"></a>
+<pre class=detailCode>
+double getEventTime(GEvent e);
+</pre>
+<div class=detailHTML>
+Returns the system time in milliseconds at which the event occurred.
+To ensure portability among systems that represent time in different
+ways, the <code>cslib</code> package uses type <code>double</code> to
+represent time, which is always encoded as the number of milliseconds
+that have elapsed since 00:00:00 UTC on January 1, 1970, which is
+the conventional zero point for computer-based time systems.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+time = getEventTime(e);
+</pre>
+<hr>
+<a name="Function:setEventTime"></a>
+<pre class=detailCode>
+void setEventTime(GEvent e, double time);
+</pre>
+<div class=detailHTML>
+Sets the event time field for the event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setEventTime(e, time);
+</pre>
+<hr>
+<a name="Function:getModifiers"></a>
+<pre class=detailCode>
+int getModifiers(GEvent e);
+</pre>
+<div class=detailHTML>
+Returns an integer whose bits indicate what modifiers are in effect.
+To check whether the shift key is down, for example, clients can use
+the following code:
+
+<pre>
+   if (getModifiers(e) & SHIFT_DOWN) . . .
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+modifiers = getModifiers(e);
+</pre>
+<hr>
+<a name="Function:setModifiers"></a>
+<pre class=detailCode>
+void setModifiers(GEvent e, int modifiers);
+</pre>
+<div class=detailHTML>
+Sets the modifiers field for the event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setModifiers(e, modifiers);
+</pre>
+<hr>
+<a name="Function:waitForClick"></a>
+<pre class=detailCode>
+void waitForClick();
+</pre>
+<div class=detailHTML>
+Waits for a mouse click to occur in any window, discarding any other
+events.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+waitForClick();
+</pre>
+<hr>
+<a name="Function:waitForEvent"></a>
+<pre class=detailCode>
+GEvent waitForEvent(int mask);
+</pre>
+<div class=detailHTML>
+Dismisses the process until an event occurs whose type is covered by
+the event mask.  The mask parameter is a combination of the events of
+interest.  For example, to wait for a mouse event or an action event,
+clients can use the following call:
+
+<pre>
+   e = waitForEvent(MOUSE_EVENT + ACTION_EVENT);
+</pre>
+
+As a more sophisticated example, the following code is the canonical
+event loop for an animated application that needs to respond to mouse,
+key, and timer events:
+
+<pre>
+   GTimer timer;
+   GEvent e;
+
+   timer = newGTimer(ANIMATION_DELAY_IN_MILLISECONDS);
+   start(timer);
+   while (true) {
+      e = waitForEvent(TIMER_EVENT + MOUSE_EVENT + KEY_EVENT);
+      switch (getEventClass(e)) {
+       case TIMER_EVENT:
+         takeAnimationStep();
+         break;
+       case MOUSE_EVENT:
+         handleMouseEvent(e);
+         break;
+       case KEY_EVENT:
+         handleKeyEvent(e);
+         break;
+      }
+      freeEvent(e);
+   }
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+e = waitForEvent(mask);
+</pre>
+<hr>
+<a name="Function:getNextEvent"></a>
+<pre class=detailCode>
+GEvent getNextEvent(int mask);
+</pre>
+<div class=detailHTML>
+Checks to see if there are any events of the desired type waiting on the
+event queue.  If so, this function returns the event in exactly the same
+fashion as <code>waitNextEvent</code>; if not, <code>getNextEvent</code>
+returns <code>NULL</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+e = getNextEvent(mask);
+</pre>
+<hr>
+<a name="Function:newGWindowEvent"></a>
+<pre class=detailCode>
+GWindowEvent newGWindowEvent(EventType type, GWindow gw);
+</pre>
+<div class=detailHTML>
+Creates a new <code>GWindowEvent</code>.  The parameters are the
+specific type of window event and the <code>GWindow</code> in which
+the event occurred.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+e = newGWindowEvent(type, gw);
+</pre>
+<hr>
+<a name="Function:newGActionEvent"></a>
+<pre class=detailCode>
+GActionEvent newGActionEvent(EventType type, GObject source, string actionCommand);
+</pre>
+<div class=detailHTML>
+Creates a new <code>GActionEvent</code>.  The parameters are the
+interactor that generated the event and the associated action command.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+e = newGActionEvent(type, source, actionCommand);
+</pre>
+<hr>
+<a name="Function:getSource"></a>
+<pre class=detailCode>
+GObject getSource(GActionEvent e);
+</pre>
+<div class=detailHTML>
+Returns the <code>GObject</code> that generated this event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+gobj = getSource(e);
+</pre>
+<hr>
+<a name="Function:getActionCommand"></a>
+<pre class=detailCode>
+string getActionCommand(void *arg);
+</pre>
+<div class=detailHTML>
+Returns the action command associated with this event or interactor.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+cmd = getActionCommand(arg);
+</pre>
+<hr>
+<a name="Function:newGMouseEvent"></a>
+<pre class=detailCode>
+GMouseEvent newGMouseEvent(EventType type, GWindow gw, double x, double y);
+</pre>
+<div class=detailHTML>
+Creates a new <code>GMouseEvent</code>.  The parameters are the
+specific event type, the <code>GWindow</code> in which the event
+occurred, and the coordinates of the mouse.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+e = newGMouseEvent(type, gw, x, y);
+</pre>
+<hr>
+<a name="Function:getX"></a>
+<pre class=detailCode>
+double getX(GMouseEvent e);
+</pre>
+<div class=detailHTML>
+Returns the <i>x</i> coordinate at which the event occurred.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+x = getX(e);
+</pre>
+<hr>
+<a name="Function:getY"></a>
+<pre class=detailCode>
+double getY(GMouseEvent e);
+</pre>
+<div class=detailHTML>
+Returns the <i>y</i> coordinate at which the event occurred.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+y = getY(e);
+</pre>
+<hr>
+<a name="Function:newGKeyEvent"></a>
+<pre class=detailCode>
+GKeyEvent newGKeyEvent(EventType type, GWindow gw, int keyChar, int keyCode);
+</pre>
+<div class=detailHTML>
+Creates a new <code>GKeyEvent</code>.  The parameters are the specific
+event type, the <code>GWindow</code> in which the event occurred, the
+character after taking into account modifier keys, and the code for the
+specific key.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+e = newGKeyEvent(type, gw, ch, code);
+</pre>
+<hr>
+<a name="Function:getKeyChar"></a>
+<pre class=detailCode>
+char getKeyChar(GKeyEvent e);
+</pre>
+<div class=detailHTML>
+Returns the character represented by the keystroke, taking the modifier
+keys into account.  For example, if the user types the <code>'a'</code>
+key with the shift key down, <code>getKeyChar</code> will return
+<code>'A'</code>.  If the key code in the event does not correspond
+to a character, <code>getKeyChar</code> returns the null character.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ch = getKeyChar(e);
+</pre>
+<hr>
+<a name="Function:getKeyCode"></a>
+<pre class=detailCode>
+int getKeyCode(GKeyEvent e);
+</pre>
+<div class=detailHTML>
+Returns the integer code associated with the key in the event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+key = getKeyCode(e);
+</pre>
+<hr>
+<a name="Function:newGTimerEvent"></a>
+<pre class=detailCode>
+GEvent newGTimerEvent(EventType type, GTimer timer);
+</pre>
+<div class=detailHTML>
+Creates a new <code>GTimerEvent</code>.  The parameters are the specific
+event type and the <code>GTimer</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+e = newGTimerEvent(type, timer);
+</pre>
+<hr>
+<a name="Function:getGTimer"></a>
+<pre class=detailCode>
+GTimer getGTimer(GTimerEvent e);
+</pre>
+<div class=detailHTML>
+Returns the <code>GTimer</code> that generated this event.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+timer = getGTimer(e);
+</pre>
+<hr>
+</table>
+</body>
+</html>

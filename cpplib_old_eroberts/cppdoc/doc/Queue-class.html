@@ -1,0 +1,130 @@
+<html>
+<head>
+<title>class Queue&lt;ValueType&gt;</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="queue-h.html">class Queue&lt;ValueType&gt;</a></h1>
+This class models a linear structure called a <i>queue</i>
+in which values are added at one end and removed from the other.
+This discipline gives rise to a first-in/first-out behavior (FIFO)
+that is the defining feature of queues.  To provide additional
+flexibility, the <code>Queue</code> class also supports the concept
+of a <i>priority queue</i> in which elements are returned in
+priority order.  As in conventional English usage, lower priority
+numbers correspond to higher effective priorities, so that a
+priority 1 item takes precedence over a priority 2 item.
+<h2>Constructor</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Constructor:Queue">Queue()</a>&nbsp;</td><td class=indexSynopsis width=100%>Initializes a new empty queue.</td></tr>
+</table>
+<h2>Methods</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Method:size">size()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the number of values in the queue.</td></tr>
+<tr><td class=indexKey><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> if the queue contains no elements.</td></tr>
+<tr><td class=indexKey><a href="#Method:clear">clear()</a>&nbsp;</td><td class=indexSynopsis width=100%>Removes all elements from the queue.</td></tr>
+<tr><td class=indexKey><a href="#Method:enqueue">enqueue(value,&nbsp;priority)</a>&nbsp;</td><td class=indexSynopsis width=100%>Adds <code>value</code> to the queue with the specified priority.</td></tr>
+<tr><td class=indexKey><a href="#Method:dequeue">dequeue()</a>&nbsp;</td><td class=indexSynopsis width=100%>Removes and return the highest priority value.</td></tr>
+<tr><td class=indexKey><a href="#Method:peek">peek()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the value of highest priority in the queue, without removing it.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:Queue"></a>
+<pre class=detailCode>
+Queue();
+</pre>
+<div class=detailHTML>
+Initializes a new empty queue.  The queue operates as a standard
+first-in/first-out queue unless values are enqueued with a nonzero
+priority.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Queue&lt;ValueType&gt; queue;
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size();
+</pre>
+<div class=detailHTML>
+Returns the number of values in the queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int n = queue.size();
+</pre>
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty();
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the queue contains no elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (queue.isEmpty()) . . .
+</pre>
+<hr>
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Removes all elements from the queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+queue.clear();
+</pre>
+<hr>
+<a name="Method:enqueue"></a>
+<pre class=detailCode>
+void enqueue(ValueType value, double priority = 0);
+</pre>
+<div class=detailHTML>
+Adds <code>value</code> to the queue with the specified priority.
+Lower priority numbers correspond to higher priorities, which
+means that all priority 1 elements are dequeued before any
+priority 2 elements.  If the priority argument is omitted,
+elements are added at priority 0.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+queue.enqueue(value, priority);
+</pre>
+<hr>
+<a name="Method:dequeue"></a>
+<pre class=detailCode>
+ValueType dequeue();
+</pre>
+<div class=detailHTML>
+Removes and return the highest priority value.  If multiple
+entries in the queue have the same priority, those values are
+dequeued in the same order in which they were enqueued.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType first = queue.dequeue();
+</pre>
+<hr>
+<a name="Method:peek"></a>
+<pre class=detailCode>
+ValueType peek();
+</pre>
+<div class=detailHTML>
+Returns the value of highest priority in the queue, without
+removing it.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType first = queue.peek();
+</pre>
+<hr>
+</table>
+</body>
+</html>

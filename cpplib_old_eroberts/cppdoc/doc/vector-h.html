@@ -1,0 +1,194 @@
+<html>
+<head>
+<title>include/vector.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: vector.h
+ * --------------
+ * This interface exports the Vector template class, which provides an
+ * efficient, safe, convenient replacement for the array type in C++.
+ */
+</scan>
+#ifndef _vector_h
+#define _vector_h
+
+#include &lt;iterator&gt;
+#include "error.h"
+#include "foreach.h"
+
+<a name="Class:Vector<ValueType>"><scan class=comment>/*
+ * Class: Vector&lt;ValueType&gt;
+ * ------------------------
+ * This class stores an ordered list of values similar to an array.  It
+ * supports traditional array selection using square brackets, but also
+ * supports inserting and deleting elements.
+ */
+</scan>
+template &lt;typename ValueType&gt;
+class Vector {
+
+public:
+
+<a name="Constructor:Vector"><scan class=comment>/*
+ * Constructor: Vector
+ * Usage: Vector&lt;ValueType&gt; vec;
+ *        Vector&lt;ValueType&gt; vec(n, value);
+ *        Vector&lt;ValueType&gt; vec(initializers);
+ * -------------------------------------------
+ * Initializes a new vector.  The default constructor creates an empty
+ * vector.  The second form creates an array with n elements, each of which
+ * is initialized to value; if value is missing, the elements are
+ * initialized to the default value for the type.  The third form sets the
+ * elements of the vector from an initialized C++ array, as illustrated by
+ * the following example:
+ *
+ *    int initializers[] = { 'a', 'e', 'i', 'o', 'u' };
+ *    Vector&lt;char&gt; vowels(initializers);
+ */
+</scan>
+Vector();
+explicit Vector(int n, ValueType value = ValueType());
+
+<a name="Destructor:~Vector"><scan class=comment>/*
+ * Destructor: ~Vector
+ * Usage: (usually implicit)
+ * -------------------------
+ * Frees any heap storage allocated by this vector.
+ */
+</scan>
+   ~Vector();
+
+<a name="Method:size"><scan class=comment>/*
+ * Method: size
+ * Usage: int nElems = vec.size();
+ * -------------------------------
+ * Returns the number of elements in this vector.
+ */
+</scan>
+   int size();
+
+<a name="Method:isEmpty"><scan class=comment>/*
+ * Method: isEmpty
+ * Usage: if (vec.isEmpty()) . . .
+ * -------------------------------
+ * Returns true if this vector contains no elements.
+ */
+</scan>
+   bool isEmpty();
+
+<a name="Method:clear"><scan class=comment>/*
+ * Method: clear
+ * Usage: vec.clear();
+ * -------------------
+ * Removes all elements from this vector.
+ */
+</scan>
+   void clear();
+
+<a name="Method:getAt"><scan class=comment>/*
+ * Method: getAt
+ * Usage: ValueType val = vec.getAt(index);
+ * ----------------------------------------
+ * Returns the element at the specified index in this vector.  This method
+ * signals an error if the index is not in the array range.
+ */
+</scan>
+   ValueType getAt(int index);
+
+<a name="Method:setAt"><scan class=comment>/*
+ * Method: setAt
+ * Usage: vec.setAt(index, value);
+ * -------------------------------
+ * Replaces the element at the specified index in this vector with a new
+ * value.  The previous value at that index is overwritten.  This method
+ * signals an error if the index is not in the array range.
+ */
+</scan>
+   void setAt(int index, ValueType value);
+
+<a name="Method:insertAt"><scan class=comment>/*
+ * Method: insertAt
+ * Usage: vec.insertAt(0, value);
+ * ------------------------------
+ * Inserts the element into this vector before the specified index.  All
+ * subsequent elements are shifted one position to the right.  This method
+ * signals an error if the index is outside the range from 0 up to and
+ * including the length of the vector.
+ */
+</scan>
+   void insertAt(int index, ValueType value);
+
+<a name="Method:removeAt"><scan class=comment>/*
+ * Method: removeAt
+ * Usage: vec.removeAt(index);
+ * ---------------------------
+ * Removes the element at the specified index from this vector.  All
+ * subsequent elements are shifted one position to the left.  This method
+ * signals an error if the index is outside the array range.
+ */
+</scan>
+   void removeAt(int index);
+
+<a name="Method:add"><scan class=comment>/*
+ * Method: add
+ * Usage: vec.add(value);
+ * ----------------------
+ * Adds a new value to the end of this vector.  To ensure compatibility
+ * with the vector class in the Standard Template Library, this method is
+ * also called push_back.
+ */
+</scan>
+   void add(ValueType value);
+   void push_back(ValueType value);
+
+<a name="Operator:[]"><scan class=comment>/*
+ * Operator: []
+ * Usage: value = vec[index];
+ *        vec[index] = value;
+ * --------------------------
+ * Overloads [] to select elements from this vector.  This extension
+ * enables the use of traditional array notation to get or set individual
+ * elements.  This method signals an error if the index is outside the
+ * array range.
+ */
+</scan>
+   ValueType &amp; operator[](int index);
+
+<a name="Macro:foreach"><scan class=comment>/*
+ * Macro: foreach
+ * Usage: foreach (ValueType value in vec) . . .
+ * ---------------------------------------------
+ * Iterates over the elements of the vector in ascending index order.
+ */
+</scan>
+   <scan class=comment>/* The foreach macro is defined in foreach.h */</scan>
+
+<a name="Method:mapAll"><scan class=comment>/*
+ * Method: mapAll
+ * Usage: vec.mapAll(fn);
+ *        vec.mapAll(fn, data);
+ * ----------------------------
+ * Calls the specified function on each element of the vector in ascending
+ * index order.  The second form of the call allows the client to pass a
+ * data value of any type to the callback function.
+ */
+</scan>
+   void mapAll(void (*fn)(ValueType value));
+
+   template &lt;typename ClientDataType&gt;
+   void mapAll(void (*fn)(ValueType value, ClientDataType &amp; data),
+               ClientDataType &amp; data);
+
+#include "private/vectorpriv.h"
+
+};
+
+#include "private/vectorimpl.cpp"
+
+#endif
+</pre>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<html>
+<head>
+<title>../ginteractors.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: ginteractors.h
+ * --------------------
+ * This interface exports a hierarchy of graphical interactors similar to
+ * those provided in the Java Swing libraries.
+ */
+</scan>
+#ifndef _ginteractors_h
+#define _ginteractors_h
+
+#include "cslib.h"
+#include "gobjects.h"
+#include "gtypes.h"
+#include "gwindow.h"
+#include "vector.h"
+
+<a name="Type:GInteractor"><scan class=comment>/*
+ * Type: GInteractor
+ * -----------------
+ * This abstract type is the superclass for all graphical interactors.  In
+ * most applications, interactors will be added to a control strip along
+ * one of the sides of the GWindow, but they can also be placed in specific
+ * positions just like any other GObject.
+ */
+</scan>
+typedef GObject GInteractor;
+
+<a name="Function:setActionCommand"><scan class=comment>/*
+ * Function: setActionCommand
+ * Usage: setActionCommand(interactor, cmd);
+ * -----------------------------------------
+ * Sets the action command to the indicated string.  If the string is not
+ * empty, activating the interactor generates a GActionEvent.
+ */
+</scan>
+void setActionCommand(GInteractor interactor, string cmd);
+
+<a name="Function:getActionCommand"><scan class=comment>/*
+ * Function: getActionCommand
+ * Usage: cmd = getActionCommand(interactor);
+ * ------------------------------------------
+ * Returns the action command associated with the interactor.
+ */
+</scan>
+string getActionCommandGInteractor(GInteractor interactor);
+
+<a name="Type:GButton"><scan class=comment>/*
+ * Type: GButton
+ * -------------
+ * This interactor subtype represents an onscreen button.  The following
+ * program displays a button that, when pressed, generates the message
+ * Please do not press this button again (with thanks to Douglas Adamss
+ * Hitchhikers Guide to the Galaxy):
+ *
+ *    main() {
+ *       GWindow gw = newGWindow(600, 400);
+ *       GButton button = newGButton("RED");
+ *       addToRegion(gw, button, "SOUTH");
+ *       while (true) {
+ *          GEvent e = waitForEvent(ACTION_EVENT | CLICK_EVENT);
+ *          if (getEventType(e) == MOUSE_CLICKED) break;
+ *          printf("Please do not press this button again.\n");
+ *       }
+ *    }
+ */
+</scan>
+typedef GInteractor GButton;
+
+<a name="Function:newGButton"><scan class=comment>/*
+ * Function: newGButton
+ * Usage: button = newGButton(label);
+ * ----------------------------------
+ * Creates a GButton with the specified label.  This function also sets the
+ * action command for the button to the label string.
+ */
+</scan>
+GButton newGButton(string label);
+
+<a name="Type:GCheckBox"><scan class=comment>/*
+ * Type: GCheckBox
+ * ---------------
+ * This interactor subtype represents an onscreen check box.  Clicking once
+ * on the check box selects it; clicking again removes the selection.  If a
+ * GCheckBox has an action command, clicking on the box generates a
+ * GActionEvent.
+ */
+</scan>
+typedef GInteractor GCheckBox;
+
+<a name="Function:GCheckBox"><scan class=comment>/*
+ * Function: GCheckBox
+ * Usage: chkbox = new GCheckBox(label);
+ * -------------------------------------
+ * Creates a GCheckBox with the specified label.  In contrast to the
+ * GButtonructor, this function does not automatically set an action
+ * command.
+ */
+</scan>
+GCheckBox newGCheckBox(string label);
+
+<a name="Function:setSelected"><scan class=comment>/*
+ * Function: setSelected
+ * Usage: setSelected(chkbox, state);
+ * ----------------------------------
+ * Sets the state of the check box.
+ */
+</scan>
+void setSelected(GCheckBox chkbox, bool state);
+
+<a name="Function:isSelected"><scan class=comment>/*
+ * Function: isSelected
+ * Usage: if (isSelected(chkbox)) ...
+ * ----------------------------------
+ * Returns true if the check box is selected.
+ */
+</scan>
+bool isSelected(GCheckBox chkbox);
+
+<a name="Type:GSlider"><scan class=comment>/*
+ * Type: GSlider
+ * -------------
+ * This interactor subtype represents an onscreen slider.  Dragging the
+ * slider control generates an ActionEvent if the slider has a nonempty
+ * action command.
+ */
+</scan>
+typedef GInteractor GSlider;
+
+<a name="Function:GSlider"><scan class=comment>/*
+ * Function: GSlider
+ * Usage: slider = new GSlider(min, max, value);
+ * ---------------------------------------------
+ * Creates a horizontal GSlider.  The parameters are the minimum value,
+ * maximum value, and current value of the slider.  Assigning an action
+ * command to the slider causes the slider to generate an action event
+ * whenever the slider value changes.
+ */
+</scan>
+GSlider newGSlider(int min, int max, int value);
+
+<a name="Function:setValue"><scan class=comment>/*
+ * Function: setValue
+ * Usage: setValue(slider, value);
+ * -------------------------------
+ * Sets the current value of the slider.
+ */
+</scan>
+void setValue(GSlider slider, int value);
+
+<a name="Function:getValue"><scan class=comment>/*
+ * Function: getValue
+ * Usage: value = getValue(slider);
+ * --------------------------------
+ * Returns the current value of the slider.
+ */
+</scan>
+int getValue(GSlider slider);
+
+<a name="Type:GTextField"><scan class=comment>/*
+ * Type: GTextField
+ * ----------------
+ * This interactor subtype represents a text field for entering short text
+ * strings.  Hitting enter in a text field generates a GActionEvent if the
+ * text field has a nonempty action command.
+ */
+</scan>
+typedef GInteractor GTextField;
+
+<a name="Function:GTextField"><scan class=comment>/*
+ * Function: GTextField
+ * Usage: field = newGTextField(nChars);
+ * -------------------------------------
+ * Creates a text field capable of holding nChars characters.  Assigning an
+ * action command to the text field causes it to generate an action event
+ * whenever the user types the ENTER key.
+ */
+</scan>
+GTextField newGTextField(int nChars);
+
+<a name="Function:setText"><scan class=comment>/*
+ * Function: setText
+ * Usage: setText(field, str);
+ * ---------------------------
+ * Sets the text of the field to the specified string.
+ */
+</scan>
+void setText(GTextField field, string str);
+
+<a name="Function:getText"><scan class=comment>/*
+ * Function: getText
+ * Usage: str = getText(field);
+ * ----------------------------
+ * Returns the contents of the text field.
+ */
+</scan>
+string getText(GTextField field);
+
+<a name="Type:GChooser"><scan class=comment>/*
+ * Type: GChooser
+ * --------------
+ * This interactor subtype represents a selectable list.  The newGChooser
+ * function creates an empty chooser.  Once the chooser has been created,
+ * clients can use addItem to add the options.  For example, the following
+ * code creates a GChooser containing the four strings "Small", "Medium",
+ * "Large", and "X-Large":
+ *
+ *    GChooser sizeChooser = newGChooser();
+ *    addItem(sizeChooser, "Small");
+ *    addItem(sizeChooser, "Medium");
+ *    addItem(sizeChooser, "Large");
+ *    addItem(sizeChooser, "X-Large");
+ */
+</scan>
+typedef GInteractor GChooser;
+
+<a name="Function:newGChooser"><scan class=comment>/*
+ * Function: newGChooser
+ * Usage: chooser = newGChooser();
+ * -------------------------------
+ * Creates a chooser that initially contains no items, which are added
+ * using the addItem function.  Assigning an action command to the chooser
+ * causes it to generate an action event whenever the user selects an item.
+ */
+</scan>
+GChooser newGChooser(void);
+
+<a name="Function:addItem"><scan class=comment>/*
+ * Function: addItem
+ * Usage: addItem(chooser, item);
+ * ------------------------------
+ * Adds a new item consisting of the specified string.
+ */
+</scan>
+void addItem(GChooser chooser, string item);
+
+<a name="Function:setSelectedItem"><scan class=comment>/*
+ * Function: setSelectedItem
+ * Usage: setSelectedItem(chooser, item);
+ * --------------------------------------
+ * Sets the chooser so that it shows the specified item.  If the item does
+ * not exist in the chooser, no change occurs.
+ */
+</scan>
+void setSelectedItem(GChooser chooser, string item);
+
+<a name="Function:getSelectedItem"><scan class=comment>/*
+ * Function: getSelectedItem
+ * Usage: item = getSelectedItem(chooser);
+ * ---------------------------------------
+ * Returns the current item selected in the chooser.
+ */
+</scan>
+string getSelectedItem(GChooser chooser);
+
+#endif
+</pre>
+</body>
+</html>

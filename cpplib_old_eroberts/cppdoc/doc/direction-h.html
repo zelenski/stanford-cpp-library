@@ -1,0 +1,80 @@
+<html>
+<head>
+<title>include/direction.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: direction.h
+ * -----------------
+ * This interface exports an enumerated type called Direction whose
+ * elements are the four compass points: NORTH, EAST, SOUTH, and WEST.
+ */
+</scan>
+#ifndef _direction_h
+#define _direction_h
+
+using namespace std;
+#include &lt;string&gt;
+#include "foreach.h"
+
+<a name="Type:Direction"><scan class=comment>/*
+ * Type: Direction
+ * ---------------
+ * This enumerated type is used to represent the four compass directions.
+ */
+</scan>
+enum Direction { NORTH, EAST, SOUTH, WEST };
+
+<a name="Function:leftFrom"><scan class=comment>/*
+ * Function: leftFrom
+ * Usage: Direction newdir = leftFrom(dir);
+ * ----------------------------------------
+ * Returns the direction that is to the left of the argument.
+ */
+</scan>
+Direction leftFrom(Direction dir);
+
+<a name="Function:rightFrom"><scan class=comment>/*
+ * Function: rightFrom
+ * Usage: Direction newdir = rightFrom(dir);
+ * -----------------------------------------
+ * Returns the direction that is to the right of the argument.
+ */
+</scan>
+Direction rightFrom(Direction dir);
+
+<a name="Function:opposite"><scan class=comment>/*
+ * Function: opposite
+ * Usage: Direction newdir = opposite(dir);
+ * ----------------------------------------
+ * Returns the direction that is opposite to the argument.
+ */
+</scan>
+Direction opposite(Direction dir);
+
+<a name="Function:toString"><scan class=comment>/*
+ * Function: toString
+ * Usage: string str = toString(dir);
+ * ----------------------------------
+ * Returns the name of the direction as a string.
+ */
+</scan>
+string toString(Direction dir);
+
+<a name="Constant:Directions"><scan class=comment>/*
+ * Constant: Directions
+ * Usage: foreach (Direction dir in Directions) . . .
+ * --------------------------------------------------
+ * This constant makes it easy for clients to iterate over the four
+ * direction constants.
+ */
+</scan>
+static const EnumRange&lt;Direction&gt; Directions =
+   EnumRange&lt;Direction&gt;(NORTH, WEST);
+
+#endif
+</pre>
+</body>
+</html>

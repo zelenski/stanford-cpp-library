@@ -479,10 +479,10 @@ public class GRectangle implements Serializable {
  * @noshow
  */
 	public int hashCode() {
-		int hash = new Float((float) xc).hashCode();
-		hash = (37 * hash) ^ new Float((float) yc).hashCode();
-		hash = (37 * hash) ^ new Float((float) myWidth).hashCode();
-		hash = (37 * hash) ^ new Float((float) myHeight).hashCode();
+		int hash = Float.valueOf((float) xc).hashCode();
+		hash = (37 * hash) ^ Float.valueOf((float) yc).hashCode();
+		hash = (37 * hash) ^ Float.valueOf((float) myWidth).hashCode();
+		hash = (37 * hash) ^ Float.valueOf((float) myHeight).hashCode();
 		return hash;
 	}
 

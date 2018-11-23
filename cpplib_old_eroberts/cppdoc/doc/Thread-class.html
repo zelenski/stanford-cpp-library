@@ -1,0 +1,125 @@
+<html>
+<head>
+<title>class Thread</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="thread-h.html">class Thread</a></h1>
+The <code>Thread</code> class encapsulates a lightweight process
+running in the same address space as the creator.  The class
+itself is opaque and is manipulated by top-level functions as
+illustrated in the following paradigm:
+
+<pre>
+   Thread child = fork(fn);
+   . . . code for the parent thread . . .
+   join(child);
+</pre>
+
+This code calls <code>fn</code> so that it runs in parallel with the
+parent code.
+<h2>Constructor</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Constructor:Thread">Thread()</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates an inactive thread variable that will typically be overwritten by the result of a <code>fork</code> call.</td></tr>
+</table>
+<h2>Method</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Method:toString">toString()</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts the thread to a string.</td></tr>
+</table>
+<h2>Functions</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Function:fork">fork(fn)</a><br><a href="#Function:fork">fork(fn,&nbsp;data)</a>&nbsp;</td><td class=indexSynopsis width=100%>Creates a child thread that calls <code>fn</code> in an address space shared with the current thread.</td></tr>
+<tr><td class=indexKey><a href="#Function:join">join(thread)</a>&nbsp;</td><td class=indexSynopsis width=100%>Waits for the specified thread to finish before proceeding.</td></tr>
+<tr><td class=indexKey><a href="#Function:yield">yield()</a>&nbsp;</td><td class=indexSynopsis width=100%>Yields the processor to allow another thread to run.</td></tr>
+<tr><td class=indexKey><a href="#Function:getCurrentThread">getCurrentThread()</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns the currently executing thread.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:Thread"></a>
+<pre class=detailCode>
+Thread();
+</pre>
+<div class=detailHTML>
+Creates an inactive thread variable that will typically be overwritten
+by the result of a <code>fork</code> call.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Thread thread;
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString();
+</pre>
+<div class=detailHTML>
+Converts the thread to a string.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = thread.toString();
+</pre>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:fork"></a>
+<pre class=detailCode>
+Thread fork(void (*fn)());
+
+template &lt;typename ClientType&gt;
+Thread fork(void (*fn)(ClientType &amp; data), ClientType &amp; data);
+</pre>
+<div class=detailHTML>
+Creates a child thread that calls <code>fn</code> in an address space
+shared with the current thread.  The second form makes it possible to
+pass an argument to <code>fn</code>, which may be of any type.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Thread child = fork(fn);
+Thread child = fork(fn, data);
+</pre>
+<hr>
+<a name="Function:join"></a>
+<pre class=detailCode>
+void join(Thread &amp; thread);
+</pre>
+<div class=detailHTML>
+Waits for the specified thread to finish before proceeding.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+join(thread);
+</pre>
+<hr>
+<a name="Function:yield"></a>
+<pre class=detailCode>
+void yield();
+</pre>
+<div class=detailHTML>
+Yields the processor to allow another thread to run.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+yield();
+</pre>
+<hr>
+<a name="Function:getCurrentThread"></a>
+<pre class=detailCode>
+Thread getCurrentThread();
+</pre>
+<div class=detailHTML>
+Returns the currently executing thread.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Thread self = getCurrentThread();
+</pre>
+<hr>
+</table>
+</body>
+</html>

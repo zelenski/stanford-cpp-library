@@ -12,6 +12,7 @@
  * - initial version
  */
 
+#define INTERNAL_INCLUDE 1
 #include "biginteger.h"
 #include <algorithm>
 #include <cctype>
@@ -20,8 +21,11 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 static int STRING_SIZE_MAX = 10000;   // for strings
 
@@ -133,6 +137,10 @@ void BigInteger::checkStringIsNumeric(const std::string& s, int radix) {
 }
 
 std::pair<std::string, long> BigInteger::divide(const std::string& n, long den) {
+    if (den == 0) {
+        error("Cannot divide by zero");
+    }
+
     long rem = 0;
     std::string result;
     result.resize(STRING_SIZE_MAX);
@@ -156,7 +164,9 @@ std::pair<std::string, long> BigInteger::divide(const std::string& n, long den) 
 // https://en.wikipedia.org/wiki/Division_algorithm#Division_by_repeated_subtraction
 // pre: b2 != 0
 std::pair<BigInteger, BigInteger> BigInteger::divideBig(const BigInteger& numerator, const BigInteger& denominator) {
-    if (denominator.isNegative()) {
+    if (denominator == ZERO) {
+        error("Cannot divide by zero");
+    } else if (denominator.isNegative()) {
         std::pair<BigInteger, BigInteger> result = divideBig(numerator, -denominator);
         result.second = -result.second;
         return result;
@@ -336,21 +346,9 @@ std::string BigInteger::multiply(const std::string& n1, const std::string& n2) {
     return product;
 }
 
-std::string BigInteger::padLeft(const std::string& s, int length) {
-    size_t lenS = s.length();
-    if (lenS < length) {
-        // left-pad numbers with 0s to be the same length as needed
-        std::string scopy = s;
-        scopy.insert(0, (length - lenS), '0');
-        return scopy;
-    } else {
-        return s;
-    }
-}
-
 BigInteger BigInteger::pow(long exp) const {
     if (exp < 0) {
-        error("negative exponent: " + longToString(exp));
+        error("negative exponent: " + std::to_string(exp));
     } else if (exp == 0) {
         return ONE;
     } else if (exp == 1) {
@@ -444,11 +442,11 @@ void BigInteger::setNumber(const std::string& s, int radix) {
         // and adding it to a cumulative sum BigInteger variable
         BigInteger result(ZERO);
         BigInteger power(ONE);
-        BigInteger biRadix(integerToString(radix));
+        BigInteger biRadix(std::to_string(radix));
         for (int i = (int) scopy.length() - 1; i >= 0; i--) {
             std::string ch = scopy.substr(i, 1);
             int val = stringToInteger(ch, radix);
-            result += power * BigInteger(integerToString(val));
+            result += power * BigInteger(std::to_string(val));
             power *= biRadix;
         }
         *this = result;
@@ -525,7 +523,7 @@ std::string BigInteger::toString(int radix) const {
     if (radix == 10) {
         return std::string(*this);
     } else if (radix <= 0) {
-        error("Illegal radix value: " + integerToString(radix));
+        error("Illegal radix value: " + std::to_string(radix));
     } else if (number == "0") {
         return "0";
     } else if (radix == 1) {
@@ -539,7 +537,7 @@ std::string BigInteger::toString(int radix) const {
         std::ostringstream out;
         out << std::setbase(radix);
         BigInteger copy(this->abs());
-        BigInteger biRadix(integerToString(radix));
+        BigInteger biRadix(std::to_string(radix));
         while (copy.isPositive()) {
             int lastDigit = (copy % biRadix).toInt();
             out << lastDigit;
@@ -725,7 +723,7 @@ std::string bigIntegerToString(const BigInteger& bi, int radix) {
 }
 
 int hashCode(const BigInteger& b) {
-    return hashCode2(b.getNumber(), b.getSign());
+    return hashCode(b.getNumber(), b.getSign());
 }
 
 BigInteger operator +(const BigInteger& b1, const BigInteger& b2) {
@@ -806,8 +804,8 @@ BigInteger operator &(const BigInteger& b1, const BigInteger& b2) {
     std::string s1 = b1.toString(2);
     std::string s2 = b2.toString(2);
     int len = (int) (s1.length() > s2.length() ? s1.length() : s2.length());
-    s1 = BigInteger::padLeft(s1, len);
-    s2 = BigInteger::padLeft(s2, len);
+    s1 = padLeft(s1, len);
+    s2 = padLeft(s2, len);
 
     // loop over each bit, performing & operation; store into s1
     for (int i = 0; i < len; i++) {
@@ -825,8 +823,8 @@ BigInteger operator |(const BigInteger& b1, const BigInteger& b2) {
     std::string s1 = b1.toString(2);
     std::string s2 = b2.toString(2);
     int len = (int) (s1.length() > s2.length() ? s1.length() : s2.length());
-    s1 = BigInteger::padLeft(s1, len);
-    s2 = BigInteger::padLeft(s2, len);
+    s1 = padLeft(s1, len);
+    s2 = padLeft(s2, len);
 
     // loop over each bit, performing | operation; store into s1
     for (int i = 0; i < len; i++) {
@@ -845,8 +843,8 @@ BigInteger operator ^(const BigInteger& b1, const BigInteger& b2) {
     std::string s1 = b1.toString(2);
     std::string s2 = b2.toString(2);
     int len = (int) (s1.length() > s2.length() ? s1.length() : s2.length());
-    s1 = BigInteger::padLeft(s1, len);
-    s2 = BigInteger::padLeft(s2, len);
+    s1 = padLeft(s1, len);
+    s2 = padLeft(s2, len);
 
     // loop over each bit, performing ^ operation; store into s1
     for (int i = 0; i < len; i++) {

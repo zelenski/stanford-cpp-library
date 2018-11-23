@@ -41,6 +41,7 @@ import javax.sound.sampled.*;
  * resource stream, or digital samples.
  */
 
+@SuppressWarnings("deprecation")
 public class SoundClip implements AudioClip {
 
 /* Constant: MONO */

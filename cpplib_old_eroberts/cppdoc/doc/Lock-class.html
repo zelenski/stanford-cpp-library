@@ -1,0 +1,104 @@
+<html>
+<head>
+<title>class Lock</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="thread-h.html">class Lock</a></h1>
+This class represents a simple lock used to control concurrency.  The
+usual strategy for using locks is to use the <code>synchronized</code>
+macro described later in this interface.
+<h2>Constructor</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Constructor:Lock">Lock()</a>&nbsp;</td><td class=indexSynopsis width=100%>Initializes a lock, which is initially in the unlocked state.</td></tr>
+</table>
+<h2>Methods</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Method:wait">wait()</a>&nbsp;</td><td class=indexSynopsis width=100%>Waits for some other thread to call <code>signal</code> on this lock.</td></tr>
+<tr><td class=indexKey><a href="#Method:signal">signal()</a>&nbsp;</td><td class=indexSynopsis width=100%>Signals all threads waiting on the lock so that they wake up and recheck the corresponding condition.</td></tr>
+</table>
+<h2>Statement</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Statement:synchronized">synchronized(lock)</a>&nbsp;</td><td class=indexSynopsis width=100%>Defines a critical section protected by the specified lock.</td></tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:Lock"></a>
+<pre class=detailCode>
+Lock();
+</pre>
+<div class=detailHTML>
+Initializes a lock, which is initially in the unlocked state.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Lock lock;
+</pre>
+<hr>
+</table>
+<h2>Method detail</h2>
+<hr>
+<a name="Method:wait"></a>
+<pre class=detailCode>
+void wait();
+</pre>
+<div class=detailHTML>
+Waits for some other thread to call <code>signal</code> on this lock.
+This call requires that the lock be held by the calling thread.
+The effect of the <code>wait</code> method is to release the lock
+and then wait until the desired <code>signal</code> operation occurs,
+at which point the lock is reacquired and control returns from the
+<code>wait</code> call.  The <code>wait</code> method is typically
+used inside a critical section containing a <code>while</code> loop
+to check for a specific condition.  The standard paradigm for using
+the <code>waitThread</code> function looks like this:<p>
+
+<pre>
+   synchronized (lock) {
+      while (conditional test) {
+         lock.wait();
+      }
+      . . . code to manipulate the locked resource . . .
+   }
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+lock.wait();
+</pre>
+<hr>
+<a name="Method:signal"></a>
+<pre class=detailCode>
+void signal();
+</pre>
+<div class=detailHTML>
+Signals all threads waiting on the lock so that they wake up and
+recheck the corresponding condition.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+lock.signal();
+</pre>
+<hr>
+</table>
+<h2>Statement detail</h2>
+<hr>
+<a name="Statement:synchronized"></a>
+<pre class=detailCode>
+synchronized (lock) . . .
+</pre>
+<div class=detailHTML>
+Defines a critical section protected by the specified lock.  The
+general strategy for using this facility is shown in the following
+paradigmatic pattern:<p>
+
+<pre>
+   synchronized (lock) {
+      . . . statements in the critical section . . .
+   }
+</pre>
+</div>
+<hr>
+</table>
+</body>
+</html>

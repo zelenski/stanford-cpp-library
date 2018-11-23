@@ -4,6 +4,10 @@
  * Windows implementation of the call_stack class.
  *
  * @author Marty Stepp
+ * @version 2018/10/22
+ * - bug fix for STL vector vs Stanford Vector
+ * @version 2018/09/12
+ * - fixed compiler errors with os_getLastError and other misc warnings
  * @version 2017/10/24
  * - removed SYMOPT_DEBUG from SymSetOptions to avoid spurious console output
  * @version 2017/10/20
@@ -16,6 +20,7 @@
  */
 
 #ifdef _WIN32
+#define INTERNAL_INCLUDE 1
 #include "call_stack.h"
 #include <windows.h>
 #  undef MOUSE_EVENT
@@ -39,12 +44,18 @@
 #define _NO_CVCONST_H
 #include <dbghelp.h>
 #include <imagehlp.h>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
+#include "vector.h"
 #include <cxxabi.h>
-#include "private/platform.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
+#undef INTERNAL_INCLUDE
 
 namespace stacktrace {
 STATIC_CONST_VARIABLE_DECLARE(int, STACK_FRAMES_TO_SKIP, 0)
@@ -95,7 +106,7 @@ std::ostream& operator <<(std::ostream& out, const entry& ent) {
 
 call_stack::call_stack(const size_t /*num_discard = 0*/) {
     // getting a stack trace on Windows / MinGW is loads of fun (not)
-    std::vector<void*> traceVector;
+    Vector<void*> traceVector;
     HANDLE process = GetCurrentProcess();
     HANDLE thread = GetCurrentThread();
 
@@ -160,10 +171,10 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
         }
 
         // try to load module symbol information; this always fails for me  :-/
-        DWORD64 BaseAddr = 0;
-        DWORD   FileSize = 0;
+        DWORD BaseAddr = 0;
+        DWORD FileSize = 0;
         const char* progFileC = exceptions::getProgramNameForStackTrace().c_str();
-        char* progFile = (char*) progFileC;
+        char* progFile = const_cast<char*>(progFileC);
         if (!::SymLoadModule(
                 process,      // Process handle of the current process
                 nullptr,      // Handle to the module's image file (not needed)
@@ -171,7 +182,7 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
                 nullptr,      // User-defined short name of the module (it can be null)
                 BaseAddr,     // Base address of the module (cannot be null if .PDB file is used, otherwise it can be null)
                 FileSize)) {      // Size of the file (cannot be null if .PDB file is used, otherwise it can be null)
-            // std::cout << "Error: SymLoadModule() failed: " << getPlatform()->os_getLastError() << std::endl;
+            // std::cerr << "Error: SymLoadModule() failed: " << platform::os_getLastError() << std::endl;
             // return;
         }
     }
@@ -180,8 +191,8 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
     // (ought to be able to get this information through C function 'backtrace', but for some
     // reason, Qt Creator's shipped version of MinGW does not include this functionality, argh)
     std::string addr2lineOutput;
-    std::vector<std::string> addr2lineLines;
-    if (!traceVector.empty()) {
+    Vector<std::string> addr2lineLines;
+    if (!traceVector.isEmpty()) {
         int result = addr2line_all(traceVector, addr2lineOutput);
         if (result == 0) {
             addr2lineLines = stringSplit(addr2lineOutput, "\n");

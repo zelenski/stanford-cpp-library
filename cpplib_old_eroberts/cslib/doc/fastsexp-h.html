@@ -1,0 +1,30 @@
+<html>
+<head>
+<title>../fastsexp.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<pre class=code>
+<scan class=comment>/*
+ * File: fastsexp.h
+ * ----------------
+ * This interface provides the same facilities as "sexp.h" but implements
+ * car and cdr as macros for efficiency.  The disadvantage of this approach
+ * is that error-checking is reduced, since there is now no checking to see
+ * if the arguments are in fact dotted pairs.
+ */
+</scan>
+#ifndef _fastsexp_h
+#define _fastsexp_h
+
+#include "cslib.h"
+#include "sexp.h"
+#include "sexpcdt.h"
+
+#define car(x) ((x)-&gt;SxValue.DtprRep._Car)
+#define cdr(x) ((x)-&gt;SxValue.DtprRep._Cdr)
+
+#endif
+</pre>
+</body>
+</html>

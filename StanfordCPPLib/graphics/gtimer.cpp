@@ -10,56 +10,68 @@
  * - removed unneeded include statements
  */
 
+#define INTERNAL_INCLUDE 1
 #include "gtimer.h"
-#include "private/platform.h"
+#define INTERNAL_INCLUDE 1
+#include "error.h"
+#define INTERNAL_INCLUDE 1
+#include "gthread.h"
+#define INTERNAL_INCLUDE 1
+#include "gwindow.h"
+#define INTERNAL_INCLUDE 1
+#include "require.h"
+#undef INTERNAL_INCLUDE
 
 /* Implementation of the GTimer class */
 
-GTimer::GTimer(double milliseconds) {
-    gtd = new GTimerData();
-    gtd->refCount = 1;
-    stanfordcpplib::getPlatform()->gtimer_constructor(*this, milliseconds);
+GTimer::GTimer(double milliseconds)
+        : _ms(0),
+          _id(-1) {
+    setDelay(milliseconds);
 }
 
-GTimer::~GTimer() {
-    if (--gtd->refCount == 0) {
-        delete gtd;
+double GTimer::getDelay() const {
+    return _ms;
+}
+
+bool GTimer::isStarted() const {
+    return _id >= 0;
+}
+
+void GTimer::restart() {
+    stop();
+    start();
+}
+
+void GTimer::setDelay(double ms) {
+    require::positive(ms, "GTimer::setDelay", "delay (ms)");
+    _ms = ms;
+    if (isStarted()) {
+        restart();
     }
 }
 
 void GTimer::start() {
-    stanfordcpplib::getPlatform()->gtimer_start(*this);
+    _Internal_QMainWindow* lastWindow = static_cast<_Internal_QMainWindow*>(GWindow::getLastWindow());
+    if (!lastWindow) {
+        error("GTimer::start: You must create at least one GWindow before starting a GTimer.");
+        return;
+    }
+    GThread::runOnQtGuiThreadAsync([this, lastWindow]() {
+        _id = lastWindow->timerStart(_ms);
+    });
 }
 
 void GTimer::stop() {
-    stanfordcpplib::getPlatform()->gtimer_stop(*this);
-}
-
-bool GTimer::operator==(GTimer t2) {
-    return gtd == t2.gtd;
-}
-
-bool GTimer::operator!=(GTimer t2) {
-    return gtd != t2.gtd;
-}
-
-GTimer::GTimer(GTimerData *gtd) {
-    this->gtd = gtd;
-    gtd->refCount++;
-}
-
-GTimer::GTimer(const GTimer & src) {
-    this->gtd = src.gtd;
-    this->gtd->refCount++;
-}
-
-GTimer & GTimer::operator=(const GTimer & src) {
-    if (this != &src) {
-        if (--gtd->refCount == 0) {
-            delete gtd;
+    if (isStarted()) {
+        _Internal_QMainWindow* lastWindow = static_cast<_Internal_QMainWindow*>(GWindow::getLastWindow());
+        if (!lastWindow) {
+            error("GTimer::constructor: You must create at least one GWindow before stopping a GTimer.");
+            return;
         }
-        this->gtd = src.gtd;
-        this->gtd->refCount++;
+        GThread::runOnQtGuiThreadAsync([this, lastWindow]() {
+            lastWindow->timerStop(_id);
+            _id = -1;
+        });
     }
-    return *this;
 }

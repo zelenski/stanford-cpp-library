@@ -1,0 +1,35 @@
+<html>
+<head>
+<title>class GObject</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="gobjects-h.html">class GObject</a></h1>
+This abstract class is the root of the graphics hierarchy.  All
+object of this class and its subclasses implement the following
+methods:
+
+<pre>
+  double getX();
+  double getY();
+  void setLocation(GPoint pt);
+  void setLocation(double x, double y);
+  void move(double dx, double dy);
+  double getWidth();
+  double getHeight();
+  string getColor();
+  void setColor(string color);
+  void setVisible(bool flag);
+  bool isVisible();
+  void sendForward();
+  void sendToFront();
+  void sendBackward();
+  void sendToBack();
+  bool contains(GPoint pt);
+  bool contains(double x, double y);
+  bool exists();
+  string getType();
+  string toString();
+</pre>
+</body>
+</html>

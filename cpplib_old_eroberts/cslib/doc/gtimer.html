@@ -1,0 +1,95 @@
+<html>
+<head>
+<title>gtimer.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><a href="gtimer-h.html"><code>gtimer.h</code></a></h1>
+This interface exports a general interval timer.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Type</td></tr>
+<tr><td class=indexKey><nobr><a href="#Type:GTimer">GTimer</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This type implements a simple interval timer that generates a timer event with a specified frequency.</td></tr>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:newGTimer">newGTimer(milliseconds)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a timer that generates a timer event each time the specified number of milliseconds has elapsed.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:freeGTimer">freeGTimer(timer)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Frees the resources associated with the timer.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:startTimer">startTimer(timer)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Starts the timer.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:stopTimer">stopTimer(timer)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Stops the timer so that it stops generating events.</td></tr>
+</table>
+<h2>Type detail</h2>
+<hr>
+<a name="Type:GTimer"></a>
+<pre class=detailCode>
+typedef struct GTimerCDT *GTimer;
+</pre>
+<div class=detailHTML>
+This type implements a simple interval timer that generates a timer
+event with a specified frequency.
+</div>
+<hr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:newGTimer"></a>
+<pre class=detailCode>
+GTimer newGTimer(double milliseconds);
+</pre>
+<div class=detailHTML>
+Creates a timer that generates a timer event each time the specified
+number of milliseconds has elapsed.  No events are generated until
+the client calls <code>startTimer</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+timer = newGTimer(milliseconds);
+</pre>
+<hr>
+<a name="Function:freeGTimer"></a>
+<pre class=detailCode>
+void freeGTimer(GTimer timer);
+</pre>
+<div class=detailHTML>
+Frees the resources associated with the timer.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+freeGTimer(timer);
+</pre>
+<hr>
+<a name="Function:startTimer"></a>
+<pre class=detailCode>
+void startTimer(GTimer timer);
+</pre>
+<div class=detailHTML>
+Starts the timer.  A timer continues to generate timer events until it
+is stopped; to achieve the effect of a one-shot timer, the simplest
+approach is to call the <code>stop</code> function inside the event
+handler.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+startTimer(timer);
+</pre>
+<hr>
+<a name="Function:stopTimer"></a>
+<pre class=detailCode>
+void stopTimer(GTimer timer);
+</pre>
+<div class=detailHTML>
+Stops the timer so that it stops generating events.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+stopTimer(timer);
+</pre>
+<hr>
+</table>
+</body>
+</html>

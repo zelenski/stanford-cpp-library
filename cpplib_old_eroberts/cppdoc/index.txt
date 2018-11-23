@@ -1,0 +1,14 @@
+graphics.h: 
+  File: graphics.h
+  Function: initGraphics
+  Function: fillArc
+  Function: drawLine
+  Function: fillOval
+  Function: fillRect
+  Function: getStringWidth
+  Function: getFont
+  Function: getColor
+  Function: restoreGraphicsState
+  Function: getWindowHeight
+  Function: pause
+

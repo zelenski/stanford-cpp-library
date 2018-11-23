@@ -44,6 +44,12 @@ TIMED_TEST(SetTests, forEachTest_Set, TEST_TIMEOUT_DEFAULT) {
     }
 }
 
+TIMED_TEST(SetTests, frontBackTest_Set, TEST_TIMEOUT_DEFAULT) {
+    Set<int> set {20, 10, 40, 30};
+    assertEqualsInt("Set front", 10, set.front());
+    assertEqualsInt("Set back",  40, set.back());
+}
+
 TIMED_TEST(SetTests, hashCodeTest_Set, TEST_TIMEOUT_DEFAULT) {
     Set<int> set;
     set.add(69);

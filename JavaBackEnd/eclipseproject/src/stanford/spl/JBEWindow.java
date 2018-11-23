@@ -1,6 +1,8 @@
 /*
  * This is the class that represents the C++ lib GWindow class.
  * 
+ * @version 2018/06/20
+ * - added mouse wheel event support
  * @version 2017/12/18
  * - modified to implement JBEWindowInterface interface to allow for headless windows
  * @version 2017/10/12
@@ -49,6 +51,7 @@ public class JBEWindow extends JFrame implements JBEWindowInterface {
 		this.canvas.addComponentListener(this.jbe);
 		this.canvas.addMouseListener(this.jbe);
 		this.canvas.addMouseMotionListener(this.jbe);
+		this.canvas.addMouseWheelListener(this.jbe);
 		this.canvas.addKeyListener(this.jbe);
 		add(this.canvas, "Center");
 		
@@ -202,12 +205,14 @@ public class JBEWindow extends JFrame implements JBEWindowInterface {
 			remove(paramJComponent);
 			add(this.canvas);
 			validate();
+			repaint();
 			return;
 		}
 		if (localJPanel != null) {
 			localJPanel.remove(paramJComponent);
 			localJPanel.validate();
 			validate();
+			repaint();
 		}
 	}
 	

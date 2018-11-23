@@ -29,6 +29,7 @@ package acm.program;
 
 import acm.io.*;
 import acm.util.*;
+import stanford.cs106.util.ExceptionUtils;
 import stanford.karel.*;
 import java.applet.*;
 import java.awt.*;
@@ -54,6 +55,7 @@ public class CommandLineProgram
 	/* Private instance variables */
 	private HashMap<String,String> parameterTable;
 	private ArrayList<Object> finalizers;
+	@SuppressWarnings("deprecation")
 	private AppletStub appletStub;
 	private String myTitle;
 	private IOConsole myConsole;
@@ -149,12 +151,12 @@ public class CommandLineProgram
 			}
 
 			Class<?> mainClass = loader.loadClass(className);
-			program = (ProgramInterface) mainClass.newInstance();
+			program = (ProgramInterface) mainClass.getDeclaredConstructor().newInstance();
 			program.init();
 			program.run();
 			program.exit();
 		} catch (Exception ex) {
-			throw new ErrorException(ex);
+			throw new ErrorException(ExceptionUtils.getUnderlyingCause(ex));
 		}
 	}
 
@@ -1095,7 +1097,7 @@ public class CommandLineProgram
 		}
 		if (mainClass != null) {
 			try {
-				Object obj = mainClass.newInstance();
+				Object obj = mainClass.getDeclaredConstructor().newInstance();
 				if (obj instanceof CommandLineProgram) {
 					program = (CommandLineProgram) obj;
 				} else {
@@ -1104,6 +1106,10 @@ public class CommandLineProgram
 			} catch (IllegalAccessException ex) {
 				/* Empty */
 			} catch (InstantiationException ex) {
+				/* Empty */
+			} catch (InvocationTargetException ex) {
+				/* Empty */
+			} catch (NoSuchMethodException ex) {
 				/* Empty */
 			}
 		}
@@ -1202,6 +1208,7 @@ public class CommandLineProgram
 	 * @usage setAppletStub(stub);
 	 * @param stub The applet stub
 	 */
+	@SuppressWarnings("deprecation")
 	protected void setAppletStub(AppletStub stub) {
 		appletStub = stub;
 	}
@@ -1213,6 +1220,7 @@ public class CommandLineProgram
 	 * @usage AppletStub stub = getAppletStub();
 	 * @return The applet stub
 	 */
+	@SuppressWarnings("deprecation")
 	protected AppletStub getAppletStub() {
 		return appletStub;
 	}

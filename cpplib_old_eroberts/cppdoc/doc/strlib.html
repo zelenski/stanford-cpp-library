@@ -1,0 +1,193 @@
+<html>
+<head>
+<title>strlib.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<h1><a href="strlib-h.html">strlib.h</a></h1>
+This interface exports several useful string functions that are
+not included in the C++ string library.
+<h2>Functions</h2>
+<table class=index width=100%>
+<tr><td class=indexKey><a href="#Function:integerToString">integerToString(n)</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts an integer into the corresponding string of digits.</td></tr>
+<tr><td class=indexKey><a href="#Function:stringToInteger">stringToInteger(str)</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts a string of digits into an integer.</td></tr>
+<tr><td class=indexKey><a href="#Function:realToString">realToString(d)</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts a floating-point number into the corresponding string form.</td></tr>
+<tr><td class=indexKey><a href="#Function:stringToReal">stringToReal(str)</a>&nbsp;</td><td class=indexSynopsis width=100%>Converts a string representing a real number into its corresponding value.</td></tr>
+<tr><td class=indexKey><a href="#Function:toUpperCase">toUpperCase(str)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns a new string in which all lowercase characters have been converted into their uppercase equivalents.</td></tr>
+<tr><td class=indexKey><a href="#Function:toLowerCase">toLowerCase(str)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns a new string in which all uppercase characters have been converted into their lowercase equivalents.</td></tr>
+<tr><td class=indexKey><a href="#Function:toUpperCaseInPlace">toUpperCaseInPlace(str)</a>&nbsp;</td><td class=indexSynopsis width=100%>Changes any lowercase characters in <code>str</code> to their uppercase equivalents.</td></tr>
+<tr><td class=indexKey><a href="#Function:toLowerCaseInPlace">toLowerCaseInPlace(str)</a>&nbsp;</td><td class=indexSynopsis width=100%>Changes any uppercase characters in <code>str</code> to their lowercase equivalents.</td></tr>
+<tr><td class=indexKey><a href="#Function:equalsIgnoreCase">equalsIgnoreCase(s1,&nbsp;s2)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> if <code>s1</code> and <code>s2</code> are equal discounting differences in case.</td></tr>
+<tr><td class=indexKey><a href="#Function:startsWith">startsWith(str,&nbsp;prefix)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> if the string <code>str</code> starts with the specified prefix, which may be either a string or a character.</td></tr>
+<tr><td class=indexKey><a href="#Function:endsWith">endsWith(str,&nbsp;suffix)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns <code>true</code> if the string <code>str</code> ends with the specified suffix, which may be either a string or a character.</td></tr>
+<tr><td class=indexKey><a href="#Function:trim">trim(str)</a>&nbsp;</td><td class=indexSynopsis width=100%>Returns a new string after removing any whitespace characters from the beginning and end of the argument.</td></tr>
+</table>
+<h2>Function detail</h2>
+<hr>
+<a name="Function:integerToString"></a>
+<pre class=detailCode>
+string integerToString(int n);
+</pre>
+<div class=detailHTML>
+Converts an integer into the corresponding string of digits.
+For example, calling <code>integerToString(123)</code> returns
+the string <code>"123"</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string s = integerToString(n);
+</pre>
+<hr>
+<a name="Function:stringToInteger"></a>
+<pre class=detailCode>
+int stringToInteger(string str);
+</pre>
+<div class=detailHTML>
+Converts a string of digits into an integer.  If the string is not a
+legal integer or contains extraneous characters other than whitespace,
+<code>stringToInteger</code> calls <code>error</code> with an
+appropriate message.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int n = stringToInteger(str);
+</pre>
+<hr>
+<a name="Function:realToString"></a>
+<pre class=detailCode>
+string realToString(double d);
+</pre>
+<div class=detailHTML>
+Converts a floating-point number into the corresponding string form.
+For example, calling <code>realToString(23.45)</code> returns
+the string <code>"23.45"</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string s = realToString(d);
+</pre>
+<hr>
+<a name="Function:stringToReal"></a>
+<pre class=detailCode>
+double stringToReal(string str);
+</pre>
+<div class=detailHTML>
+Converts a string representing a real number into its corresponding
+value.  If the string is not a legal floating-point number or contains
+extraneous characters other than whitespace, <code>stringToReal</code>
+calls <code>error</code> with an appropriate message.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double d = stringToReal(str);
+</pre>
+<hr>
+<a name="Function:toUpperCase"></a>
+<pre class=detailCode>
+string toUpperCase(string str);
+</pre>
+<div class=detailHTML>
+Returns a new string in which all lowercase characters have been converted
+into their uppercase equivalents.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string s = toUpperCase(str);
+</pre>
+<hr>
+<a name="Function:toLowerCase"></a>
+<pre class=detailCode>
+string toLowerCase(string str);
+</pre>
+<div class=detailHTML>
+Returns a new string in which all uppercase characters have been converted
+into their lowercase equivalents.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string s = toLowerCase(str);
+</pre>
+<hr>
+<a name="Function:toUpperCaseInPlace"></a>
+<pre class=detailCode>
+void toUpperCaseInPlace(string &amp; str);
+</pre>
+<div class=detailHTML>
+Changes any lowercase characters in <code>str</code> to their
+uppercase equivalents.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+toUpperCaseInPlace(str);
+</pre>
+<hr>
+<a name="Function:toLowerCaseInPlace"></a>
+<pre class=detailCode>
+void toLowerCaseInPlace(string &amp; str);
+</pre>
+<div class=detailHTML>
+Changes any uppercase characters in <code>str</code> to their
+lowercase equivalents.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+toLowerCaseInPlace(str);
+</pre>
+<hr>
+<a name="Function:equalsIgnoreCase"></a>
+<pre class=detailCode>
+bool equalsIgnoreCase(string s1, string s2);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if <code>s1</code> and <code>s2</code> are
+equal discounting differences in case.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (equalsIgnoreCase(s1, s2)) . . .
+</pre>
+<hr>
+<a name="Function:startsWith"></a>
+<pre class=detailCode>
+bool startsWith(string str, string prefix);
+bool startsWith(string str, char prefix);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the string <code>str</code> starts with
+the specified prefix, which may be either a string or a character.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (startsWith(str, prefix)) . . .
+</pre>
+<hr>
+<a name="Function:endsWith"></a>
+<pre class=detailCode>
+bool endsWith(string str, string suffix);
+bool endsWith(string str, char suffix);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the string <code>str</code> ends with
+the specified suffix, which may be either a string or a character.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (endsWith(str, suffix)) . . .
+</pre>
+<hr>
+<a name="Function:trim"></a>
+<pre class=detailCode>
+string trim(string str);
+</pre>
+<div class=detailHTML>
+Returns a new string after removing any whitespace characters
+from the beginning and end of the argument.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string trimmed = trim(str);
+</pre>
+<hr>
+</table>
+</body>
+</html>

@@ -1,0 +1,344 @@
+<html>
+<head>
+<title>GTable</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="images/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>cslib</code> package
+</div></td>
+</tr></table>
+<hr>
+<div class=include><a href="gtable.html">#include "gtable.h"</a></div>
+<h1 class=header><code>class GTable : public <a href="GObject-class.html">GInteractor</a></code></h1>
+<p>
+	A GTable is a thin wrapper around the Java Swing component <code>JTable</code>.
+	It represents a graphical editable 2D table, like a mediocre facsimile
+	of an Excel spreadsheet.
+	After creating a <code>GTable</code>, you can listen for table events to be notified
+	when the user types a new value into a table cell:
+</p>
+
+<pre>
+while (true) {
+    GEvent event = waitForEvent(TABLE_EVENT);
+    GTableEvent tableEvent(event);
+    cout &lt;&lt; &quot;cell updated: &quot; &lt;&lt; tableEvent.toString() &lt;&lt; endl;
+    ...
+}
+</pre>
+
+<p>
+	All row/column indexes in this class are 0-based.
+</p>
+
+<p>
+	A <code>GTable</code> allows you to perform a bit of overall formatting on the table, such as changing fonts, colors and alignment.
+	But this is done on a per-table level and there is currently no way to individually format a particular cell, row, or column.
+	Such functionality exists in the underlying <code>JTable</code> but has not been exposed into this class presently.
+</p>
+
+<p class="since">
+	Available since: 2015/11/07 version of C++ library
+</p>
+
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Constructors</td></tr>
+<tr><td class=indexKey><a href="#Constructor:GTable">GTable(<var>rows</var>, <var>columns</var>, <var>x</var>, <var>y</var>, <var>width</var>, <var>height</var>)</a></td><td class=indexSynopsis width=100%>Constructs a new table with the given dimensions and (optional) size.</td></tr>
+<tr><td class=indexHead colspan=2>Methods</td></tr>
+<tr><td class=indexKey><a href="#Method:clear">clear()</a></td><td class=indexSynopsis width=100%>Sets all cells in the table to store an empty string value.</td></tr>
+<tr><td class=indexKey><a href="#Method:get">get(<var>row</var>,&nbsp;<var>col</var>)</a></td><td class=indexSynopsis width=100%>Returns the text stored in the given cell.</td></tr>
+<tr><td class=indexKey><a href="#Method:getColumnWidth">getColumnWidth(<var>col</var>)</a></td><td class=indexSynopsis width=100%>Returns the width of the given column index in pixels.</td></tr>
+<tr><td class=indexKey><a href="#Method:getFont">getFont()</a></td><td class=indexSynopsis width=100%>Returns the font used in the cells of this table.</td></tr>
+<tr><td class=indexKey><a href="#Method:getHorizontalAlignment">getHorizontalAlignment()</a></td><td class=indexSynopsis width=100%>Returns the horizontal alignment of the text in all cells in the table.</td></tr>
+<tr><td class=indexKey><a href="#Method:height">height()</a></td><td class=indexSynopsis width=100%>Returns the number of rows in the table.</td></tr>
+<tr><td class=indexKey><a href="#Method:inBounds">inBounds()</a></td><td class=indexSynopsis width=100%>Returns true if the given 0-based row/column index is within the bounds of the table.</td></tr>
+<tr><td class=indexKey><a href="#Method:numCols">numCols()</a></td><td class=indexSynopsis width=100%>Returns the number of columns in the table.</td></tr>
+<tr><td class=indexKey><a href="#Method:numRows">numRows()</a></td><td class=indexSynopsis width=100%>Returns the number of rows in the table.</td></tr>
+<tr><td class=indexKey><a href="#Method:resize">resize(<var>numRows</var>,&nbsp;<var>numCols</var>)</a></td><td class=indexSynopsis width=100%>Modifies the table to have the given number of rows and columns, retaining any existing data.</td></tr>
+<tr><td class=indexKey><a href="#Method:set">set(<var>row</var>,&nbsp;<var>col</var>,&nbsp;<var>value</var>)</a></td><td class=indexSynopsis width=100%>Modifies the value in the given cell to store the given text.</td></tr>
+<tr><td class=indexKey><a href="#Method:setColumnWidth">setColumnWidth(<var>col</var>,&nbsp;<var>width</var>)</a></td><td class=indexSynopsis width=100%>Sets the given column index to have the given width in pixels.</td></tr>
+<tr><td class=indexKey><a href="#Method:setFont">setFont(<var>font</var>)</a></td><td class=indexSynopsis width=100%>Modifies the value in the given cell to store the given text.</td></tr>
+<tr><td class=indexKey><a href="#Method:setHorizontalAlignment">setHorizontalAlignment(<var>alignment</var>)</a></td><td class=indexSynopsis width=100%>Sets the horizontal alignment of the text in all cells in the table.</td></tr>
+<tr><td class=indexKey><a href="#Method:width">width()</a></td><td class=indexSynopsis width=100%>Returns the number of columns in the table.</td></tr>
+</table>
+
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GTable"></a>
+<pre class=detailCode>
+GTable(int rows = 0, int columns = 0,
+       double x = 0, double y = 0,
+       double width = 0, double height = 0);
+</pre>
+<div class=detailHTML>
+
+<p>
+Constructs a new table with the given dimensions and (optional) size.
+If <code>x</code>, <code>y</code>, <code>width</code>, or <code>height</code> are omitted, they are set automatically by
+the layout manager of the GWindow into which the table is placed.
+This is often what you want.
+Throws an error if the number of rows, columns, width, or height is negative.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GTable* table = new GTable(rows, cols);
+GTable* table = new GTable(rows, cols, x, y, width, height);
+</pre>
+<hr>
+</table>
+
+<h2>Method detail</h2>
+
+
+<hr>
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Sets all cells in the table to store an empty string value.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+table-&gt;clear();
+</pre>
+
+
+<hr>
+<a name="Method:get"></a>
+<pre class=detailCode>
+string get(int row, int column) const;
+</pre>
+<div class=detailHTML>
+Returns the text stored in the given cell.
+Throws an error if the given row or column are out of bounds.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string text = table-&gt;get(row, col);
+</pre>
+
+
+<hr>
+<a name="Method:getColumnWidth"></a>
+<pre class=detailCode>
+double getColumnWidth(int column) const;
+</pre>
+<div class=detailHTML>
+Returns the width of the given column index in pixels.
+When a table is constructed, all columns initially have equal width.
+Throws an error if the given column index is out of bounds.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double colWidth = table-&gt;getColumnWidth(col);
+</pre>
+
+
+<hr>
+<a name="Method:getFont"></a>
+<pre class=detailCode>
+string getFont() const;
+</pre>
+<div class=detailHTML>
+Returns the font used in the cells of this table.
+If the font has never been explicitly set, returns <code>"*-*-*"</code>.
+See also: <a href="GWindow-class.html"><code>GWindow</code></a> documentation on font strings.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string font = table-&gt;getFont();
+</pre>
+
+
+<hr>
+<a name="Method:getHorizontalAlignment"></a>
+<pre class=detailCode>
+GTable::Alignment getHorizontalAlignment() const;
+</pre>
+<div class=detailHTML>
+Returns the horizontal alignment of the text in all cells in the table.
+The alignment can be <code>GTable::Alignment::LEFT</code>, <code>GTable::Alignment::CENTER</code>, or <code>GTable::Alignment::RIGHT</code> and is initially <code>LEFT</code>.
+Currently a table's alignment is global and applies to all cells.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GTable::Alignment alignment = table-&gt;getHorizontalAlignment();
+</pre>
+
+
+<hr>
+<a name="Method:height"></a>
+<pre class=detailCode>
+int height() const;
+</pre>
+<div class=detailHTML>
+Returns the number of rows in the table.
+Equivalent to <code>numRows()</code>.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int height = table-&gt;height();
+</pre>
+
+
+<hr>
+<a name="Method:inBounds"></a>
+<pre class=detailCode>
+bool inBounds(int row, int column) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the given 0-based row/column index is within the bounds of the table.
+In other words, whether the index is between (0, 0) and (numRows-1, numCols-1) inclusive.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (table-&gt;inBounds(row, col)) { ...
+</pre>
+
+
+<hr>
+<a name="Method:numCols"></a>
+<pre class=detailCode>
+int numCols() const;
+</pre>
+<div class=detailHTML>
+Returns the number of columns in the table.
+Equivalent to <code>width()</code>.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int cols = table-&gt;numCols();
+</pre>
+
+
+<hr>
+<a name="Method:numRows"></a>
+<pre class=detailCode>
+int numRows() const;
+</pre>
+<div class=detailHTML>
+Returns the number of rows in the table.
+Equivalent to <code>height()</code>.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int rows = table-&gt;numRows();
+</pre>
+
+
+<hr>
+<a name="Method:resize"></a>
+<pre class=detailCode>
+void resize(int numRows, int numCols);
+</pre>
+<div class=detailHTML>
+Modifies the table to have the given number of rows and columns.
+Any existing data is retained, and any new cells are empty.
+Throws an error if <code>numRows</code> or <code>numCols</code> is negative.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+table-&gt;resize(rows, cols);
+</pre>
+
+
+<hr>
+<a name="Method:set"></a>
+<pre class=detailCode>
+void set(int row, int column, string text);
+</pre>
+<div class=detailHTML>
+Modifies the value in the given cell to store the given text.
+Throws an error if the given row or column are out of bounds.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+table-&gt;set(row, col, text);
+</pre>
+
+
+<hr>
+<a name="Method:setColumnWidth"></a>
+<pre class=detailCode>
+void setColumnWidth(int column, double width);
+</pre>
+<div class=detailHTML>
+Sets the given column index to have the given width in pixels.
+Throws an error if the given column index is out of bounds
+or if the width is negative.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+table-&gt;setColumnWidth(col, width);
+</pre>
+
+
+<hr>
+<a name="Method:setFont"></a>
+<pre class=detailCode>
+void setFont(string font);
+</pre>
+<div class=detailHTML>
+Sets the cells of this table to display their text in the given font.
+See also: <a href="GWindow-class.html"><code>GWindow</code></a> documentation on font strings.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+table-&gt;setFont(font);
+</pre>
+
+
+<hr>
+<a name="Method:setHorizontalAlignment"></a>
+<pre class=detailCode>
+void setHorizontalAlignment(GTable::Alignment alignment);
+</pre>
+<div class=detailHTML>
+Sets the horizontal alignment of the text in all cells in the table.
+The alignment can be <code>GTable::Alignment::LEFT</code>, <code>GTable::Alignment::CENTER</code>, or <code>GTable::Alignment::RIGHT</code> and is initially <code>LEFT</code>.
+Currently a table's alignment is global and applies to all cells.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+table-&gt;setHorizontalAlignment(alignment);
+</pre>
+
+
+<hr>
+<a name="Method:width"></a>
+<pre class=detailCode>
+int width() const;
+</pre>
+<div class=detailHTML>
+Returns the number of columns in the table.
+Equivalent to <code>numCols()</code>.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int width = table-&gt;width();
+</pre>
+
+</table>
+</body>
+</html>
