@@ -18,6 +18,7 @@
 #define _shuffle_h
 
 #include <string>
+#include <algorithm>
 
 #define INTERNAL_INCLUDE 1
 #include "random.h"
@@ -32,11 +33,7 @@ template <typename T>
 void shuffle(T* array, int length) {
     for (int i = 0; i < length; i++) {
         int j = randomInteger(i, length - 1);
-        if (i != j) {
-            T temp = array[i];
-            array[i] = array[j];
-            array[j] = temp;
-        }
+        if (i != j) std::swap(array[i], array[j]);
     }
 }
 
@@ -57,9 +54,7 @@ void shuffle(T** array2d, int rows, int cols) {
             int r2 = j / cols;
             int c2 = j % cols;
 
-            T temp = array2d[r1][c1];
-            array2d[r1][c1] = array2d[r2][c2];
-            array2d[r2][c2] = temp;
+            std::swap(array2d[r1][c1], array2d[r2][c2]);
         }
     }
 }

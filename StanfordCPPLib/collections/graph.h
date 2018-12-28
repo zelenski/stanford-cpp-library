@@ -66,8 +66,6 @@
 #define INTERNAL_INCLUDE 1
 #include "set.h"
 #define INTERNAL_INCLUDE 1
-#include "strlib.h"
-#define INTERNAL_INCLUDE 1
 #include "tokenscanner.h"
 #undef INTERNAL_INCLUDE
 
@@ -98,7 +96,7 @@ public:
      * Creates an empty graph.
      * @bigoh O(1)
      */
-    Graph();
+    Graph() = default;
     
     /**
      * Frees the internal storage allocated to represent the graph.
@@ -619,73 +617,14 @@ public:
         // empty
     }
 
-    /**
-     * The classes in the StanfordCPPLib collection implement input
-     * iterators so that they work symmetrically with respect to the
-     * corresponding STL classes.
-     *
-     * @private
-     */
-    class graph_iterator : public std::iterator<std::input_iterator_tag, NodeType*> {
-    public:
-        graph_iterator() : m_graph(nullptr) {
-            // empty
-        }
-
-        graph_iterator(const Graph& graph, bool end) {
-            m_graph = &graph;
-            if (end) {
-                m_itr = m_graph->getNodeSet().end();
-            } else {
-                m_itr = m_graph->getNodeSet().begin();
-            }
-        }
-
-        graph_iterator(const graph_iterator& it)
-                : m_graph(it.m_graph), m_itr(it.m_itr) {
-            // empty
-        }
-
-        graph_iterator& operator ++() {
-            m_itr++;
-            return *this;
-        }
-
-        graph_iterator operator ++(int) {
-            graph_iterator copy(*this);
-            operator++();
-            return copy;
-        }
-
-        bool operator ==(const graph_iterator& rhs) {
-            return m_graph == rhs.m_graph && m_itr == rhs.m_itr;
-        }
-
-        bool operator !=(const graph_iterator& rhs) {
-            return !(*this == rhs);
-        }
-
-        NodeType* operator *() {
-            return *m_itr;
-        }
-
-        NodeType** operator ->() {
-            return &(*m_itr);
-        }
-
-        friend class Graph;
-        
-    private:
-        const Graph* m_graph;
-        typename Set<NodeType*>::iterator m_itr;
-    };
+    using graph_iterator = typename Set<NodeType *>::const_iterator;
     
     /**
      * Returns an STL iterator positioned at the first vertex in the graph.
      * @bigoh O(1)
      */
     graph_iterator begin() const {
-        return graph_iterator(*this, /* end */ false);
+        return nodes.begin();
     }
 
     /**
@@ -693,7 +632,7 @@ public:
      * @bigoh O(1)
      */
     graph_iterator end() const {
-        return graph_iterator(*this, /* end */ true);
+        return nodes.end();
     }
     
     /**
@@ -744,7 +683,7 @@ public:
      */
     bool operator >=(const Graph& graph2) const;
 
-    
+private:
     /* Private section */
 
     /**********************************************************************/
@@ -777,11 +716,9 @@ public:
         }
     };
 
-private:
-    Set<NodeType*> nodes;                  /* The set of nodes in the graph */
-    Set<ArcType*> arcs;                    /* The set of arcs in the graph  */
-    Map<std::string, NodeType*> nodeMap;   /* A map from names to nodes     */
-    GraphComparator comparator;            /* The comparator for this graph */
+    Set<NodeType*> nodes{GraphComparator()}; /* The set of nodes in the graph */
+    Set<ArcType*> arcs{GraphComparator()};   /* The set of arcs in the graph  */
+    Map<std::string, NodeType*> nodeMap;     /* A map from names to nodes     */
 
 public:
     /**
@@ -858,17 +795,9 @@ private:
  * work is done by the initializers, which ensure that the nodes and
  * arcs set are given the correct comparison functions.
  */
-template <typename NodeType, typename ArcType>
-Graph<NodeType, ArcType>::Graph() {
-    comparator = GraphComparator();
-    nodes = Set<NodeType*>(comparator);
-    arcs = Set<ArcType*>(comparator);
-}
 
 template <typename NodeType, typename ArcType>
 Graph<NodeType, ArcType>::Graph(const Graph& src) {
-    nodes = Set<NodeType*>(comparator);
-    arcs = Set<ArcType*>(comparator);
     deepCopy(src);
 }
 
@@ -942,7 +871,7 @@ NodeType* Graph<NodeType, ArcType>::addNode(const std::string& name) {
         return node;   // vertex already exists
     }
     node = new NodeType();
-    node->arcs = Set<ArcType*>(comparator);
+    node->arcs = Set<ArcType*>(GraphComparator());
     node->name = name;
     return addNode(node);
 }
@@ -1217,7 +1146,7 @@ Set<std::string> Graph<NodeType, ArcType>::getNeighborNames(const std::string& n
  */
 template <typename NodeType, typename ArcType>
 Set<NodeType*> Graph<NodeType, ArcType>::getNeighbors(NodeType* node) const {
-    Set<NodeType*> nodesResult = Set<NodeType*>(comparator);
+    Set<NodeType*> nodesResult{GraphComparator{}};
     if (isExistingNode(node)) {
         for (ArcType* arc : node->arcs) {
             nodesResult.add(arc->finish);

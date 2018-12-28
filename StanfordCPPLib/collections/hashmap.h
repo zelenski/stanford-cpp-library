@@ -50,6 +50,8 @@
 #include <initializer_list>
 #include <string>
 #include <utility>
+#include <unordered_map>
+#include <functional>
 
 #define INTERNAL_INCLUDE 1
 #include "collections.h"
@@ -92,7 +94,7 @@ public:
      * exports <code>hashCode</code> functions for <code>string</code> and
      * the C++ primitive types.
      */
-    HashMap();
+    HashMap() = default;
 
     /*
      * Constructor: HashMap
@@ -102,14 +104,14 @@ public:
      * Note that the pairs are stored in unpredictable order internally and not
      * necessarily the order in which they are written in the initializer list.
      */
-    HashMap(std::initializer_list<std::pair<KeyType, ValueType> > list);
+    HashMap(std::initializer_list<std::pair<const KeyType, ValueType>> list);
 
     /*
      * Destructor: ~HashMap
      * --------------------
      * Frees any heap storage associated with this map.
      */
-    virtual ~HashMap();
+    virtual ~HashMap() = default;
 
     /*
      * Method: add
@@ -132,7 +134,6 @@ public:
      * Identical in behavior to putAll.
      */
     HashMap& addAll(const HashMap& map2);
-    HashMap& addAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: back
@@ -223,11 +224,7 @@ public:
      * Iterates through the map entries and calls <code>fn(key, value)</code>
      * for each one.  The keys are processed in an undetermined order.
      */
-    void mapAll(void (*fn)(KeyType, ValueType)) const;
-    void mapAll(void (*fn)(const KeyType&, const ValueType&)) const;
-    
-    template <typename FunctorType>
-    void mapAll(FunctorType fn) const;
+    void mapAll(std::function<void(const KeyType&, const ValueType&)> fn) const;
 
     /*
      * Method: put
@@ -250,7 +247,6 @@ public:
      * Returns a reference to this map.
      */
     HashMap& putAll(const HashMap& map2);
-    HashMap& putAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: remove
@@ -272,7 +268,6 @@ public:
      * Returns a reference to this map.
      */
     HashMap& removeAll(const HashMap& map2);
-    HashMap& removeAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: retainAll
@@ -285,7 +280,6 @@ public:
      * Returns a reference to this map.
      */
     HashMap& retainAll(const HashMap& map2);
-    HashMap& retainAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: size
@@ -328,22 +322,6 @@ public:
     ValueType operator [](const KeyType& key) const;
 
     /*
-     * Operator: ==
-     * Usage: if (map1 == map2) ...
-     * ----------------------------
-     * Compares two maps for equality.
-     */
-    bool operator ==(const HashMap& map2) const;
-
-    /*
-     * Operator: !=
-     * Usage: if (map1 != map2) ...
-     * ----------------------------
-     * Compares two maps for inequality.
-     */
-    bool operator !=(const HashMap& map2) const;
-
-    /*
      * Operator: +
      * Usage: map1 + map2
      * ------------------
@@ -354,7 +332,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     HashMap operator +(const HashMap& map2) const;
-    HashMap operator +(std::initializer_list<std::pair<KeyType, ValueType> > list) const;
 
     /*
      * Operator: +=
@@ -365,7 +342,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     HashMap& operator +=(const HashMap& map2);
-    HashMap& operator +=(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Operator: -
@@ -376,7 +352,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     HashMap operator -(const HashMap& map2) const;
-    HashMap operator -(std::initializer_list<std::pair<KeyType, ValueType> > list) const;
 
     /*
      * Operator: -=
@@ -387,7 +362,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     HashMap& operator -=(const HashMap& map2);
-    HashMap& operator -=(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Operator: *
@@ -398,7 +372,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     HashMap operator *(const HashMap& map2) const;
-    HashMap operator *(std::initializer_list<std::pair<KeyType, ValueType> > list) const;
 
     /*
      * Operator: *=
@@ -409,7 +382,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     HashMap& operator *=(const HashMap& map2);
-    HashMap& operator *=(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Additional HashMap operations
@@ -431,144 +403,17 @@ public:
     /* of the implementation and should not be of interest to clients.    */
     /**********************************************************************/
 
-    /*
-     * Implementation notes:
-     * ---------------------
-     * The HashMap class is represented using a hash table that uses
-     * bucket chaining to resolve collisions.
-    */
 private:
-    /* Constant definitions */
-    static const int INITIAL_BUCKET_COUNT = 101;
-    static const int MAX_LOAD_PERCENTAGE = 70;
-
-    /* Type definition for cells in the bucket chain */
-    struct Cell {
-        KeyType key;
-        ValueType value;
-        Cell* next;
+    struct Hasher {
+        std::size_t operator()(const KeyType& key) const {
+            return hashCode(key);
+        }
     };
 
-    /* Instance variables */
-    Vector<Cell*> buckets;
-    int nBuckets;
-    int numEntries;
-    unsigned int m_version = 0; // structure version for detecting invalid iterators
+    std::unordered_map<KeyType, ValueType, Hasher> mElems;
+    stanfordcpplib::collections::VersionTracker mVersion;
 
     /* Private methods */
-
-    /*
-     * Private method: createBuckets
-     * Usage: createBuckets(nBuckets);
-     * -------------------------------
-     * Sets up the vector of buckets to have nBuckets entries, each null.
-     * If asked to make empty vector, makes one bucket just to simplify
-     * handling elsewhere.
-     */
-    void createBuckets(int nBuckets) {
-        if (nBuckets == 0) {
-            nBuckets = 1;
-        }
-        buckets = Vector<Cell*>(nBuckets, nullptr);
-        this->nBuckets = nBuckets;
-        numEntries = 0;
-    }
-
-    /*
-     * Private method: deleteBuckets
-     * Usage: deleteBuckets(buckets);
-     * ------------------------------
-     * Deletes all the cells in the linked lists contained in vector.
-     */
-    void deleteBuckets(Vector<Cell*>& buckets) {
-        for (int i = 0; i < buckets.size(); i++) {
-            Cell* cp = buckets[i];
-            while (cp) {
-                Cell* np = cp->next;
-                delete cp;
-                cp = np;
-            }
-            buckets[i] = nullptr;
-        }
-    }
-
-    /*
-     * Private method: expandAndRehash
-     * Usage: expandAndRehash();
-     * -------------------------
-     * This method is used to increase the number of buckets in the map
-     * and then rehashes all existing entries and adds them into new buckets.
-     * This operation is used when the load factor (i.e. the number of cells
-     * per bucket) has increased enough to warrant this O(N) operation to
-     * enlarge and redistribute the entries.
-     */
-    void expandAndRehash() {
-        Vector<Cell*> oldBuckets = buckets;
-        createBuckets(oldBuckets.size() * 2 + 1);
-        for (int i = 0; i < oldBuckets.size(); i++) {
-            for (Cell* cp = oldBuckets[i]; cp != nullptr; cp = cp->next) {
-                put(cp->key, cp->value);
-            }
-        }
-        deleteBuckets(oldBuckets);
-    }
-
-    /*
-     * Private method: findCell
-     * Usage: Cell* cp = findCell(bucket, key);
-     *        Cell* cp = findCell(bucket, key, parent);
-     * ------------------------------------------------
-     * Finds a cell in the chain for the specified bucket that matches key.
-     * If a match is found, the return value is a pointer to the cell containing
-     * the matching key.  If no match is found, the function returns nullptr.
-     * If the optional third argument is supplied, it is filled in with the
-     * cell preceding the matching cell to allow the client to splice out
-     * the target cell in the delete call.  If parent is null, it indicates
-     * that the cell is the first cell in the bucket chain.
-     */
-    Cell* findCell(int bucket, const KeyType& key) const {
-        Cell *dummy;
-        return findCell(bucket, key, dummy);
-    }
-
-    Cell* findCell(int bucket, const KeyType& key, Cell*& parent) const {
-        parent = nullptr;
-        Cell* cp = buckets.get(bucket);
-        while (cp && !(key == cp->key)) {
-            parent = cp;
-            cp = cp->next;
-        }
-        return cp;
-    }
-
-    void deepCopy(const HashMap& src) {
-        createBuckets(src.nBuckets);
-        for (int i = 0; i < src.nBuckets; i++) {
-            // BUGFIX: was just calling put(), which reversed the chains;
-            // now deep-copy the chains exactly as they were to preserve hashcode
-            Cell* endOfChain = nullptr;
-            for (Cell* cp = src.buckets.get(i); cp != nullptr; cp = cp->next) {
-                // put(cp->key, cp->value);
-                
-                // copy the cell and put at end of bucket list
-                Cell* copy = new Cell();
-                copy->key = cp->key;
-                copy->value = cp->value;
-                copy->next = nullptr;
-                if (!endOfChain) {
-                    // first node in bucket
-                    buckets.set(i, copy);
-                } else {
-                    // not first node; put after existing node
-                    endOfChain->next = copy;
-                    endOfChain = copy;
-                }
-                endOfChain = copy;
-                numEntries++;
-            }
-        }
-        m_version++;
-    }
 
 public:
     /*
@@ -581,164 +426,28 @@ public:
      */
 
     /*
-     * Deep copying support
-     * --------------------
-     * This copy constructor and operator= are defined to make a
-     * deep copy, making it possible to pass/return maps by value
-     * and assign from one map to another.
-     */
-    HashMap& operator =(const HashMap& src) {
-        if (this != &src) {
-            clear();
-            deepCopy(src);
-        }
-        return *this;
-    }
-
-    HashMap(const HashMap& src) {
-        deepCopy(src);
-    }
-
-    /*
      * Iterator support
-     * ----------------
-     * The classes in the StanfordCPPLib collection implement input
-     * iterators so that they work symmetrically with respect to the
-     * corresponding STL classes.
      */
-    class iterator : public std::iterator<std::input_iterator_tag, KeyType> {
-    private:
-        const HashMap* mp;           /* Pointer to the map           */
-        int bucket;                  /* Index of current bucket      */
-        unsigned int itr_version;    /* Version for checking for modification */
-        Cell* cp;                    /* Current cell in bucket chain */
 
-    public:
-        iterator()
-                : mp(nullptr),
-                  bucket(0),
-                  itr_version(0),
-                  cp(nullptr) {
-            // empty
-        }
+    using const_iterator = stanfordcpplib::collections::ProjectingIterator<stanfordcpplib::collections::CheckedIterator<typename std::unordered_map<KeyType, ValueType, Hasher>::const_iterator>>;
+    using iterator = const_iterator;
 
-        iterator(const HashMap* mp, bool end)
-                : mp(mp),
-                  bucket(0),
-                  itr_version(0),
-                  cp(nullptr) {
-            if (mp) {
-                itr_version = mp->version();
-            }
-            if (end) {
-                bucket = mp->nBuckets;
-            } else {
-                bucket = 0;
-                cp = mp->buckets.get(bucket);
-                while (!cp && ++bucket < mp->nBuckets) {
-                    cp = mp->buckets.get(bucket);
-                }
-            }
-        }
-
-        iterator(const iterator& it)
-                : mp(it.mp),
-                  bucket(it.bucket),
-                  itr_version(it.itr_version),
-                  cp(it.cp) {
-            // empty
-        }
-
-        iterator& operator ++() {
-            stanfordcpplib::collections::checkVersion(*mp, *this);
-            cp = cp->next;
-            while (!cp && ++bucket < mp->nBuckets) {
-                cp = mp->buckets.get(bucket);
-            }
-            return *this;
-        }
-
-        iterator operator ++(int) {
-            stanfordcpplib::collections::checkVersion(*mp, *this);
-            iterator copy(*this);
-            operator++();
-            return copy;
-        }
-
-        bool operator ==(const iterator& rhs) {
-            return mp == rhs.mp && bucket == rhs.bucket && cp == rhs.cp;
-        }
-
-        bool operator !=(const iterator& rhs) {
-            return !(*this == rhs);
-        }
-
-        KeyType& operator *() {
-            stanfordcpplib::collections::checkVersion(*mp, *this);
-            return cp->key;
-        }
-
-        KeyType* operator ->() {
-            stanfordcpplib::collections::checkVersion(*mp, *this);
-            return &cp->key;
-        }
-
-        unsigned int version() const {
-            return itr_version;
-        }
-
-        friend class HashMap;
-    };
+    iterator begin() const;
+    iterator end() const;
 
     /*
-     * Returns an iterator positioned at the first key of the map.
+     * Hashing support.
      */
-    iterator begin() const {
-        return iterator(this, /* end */ false);
-    }
+    bool operator== (const HashMap& rhs) const;
+    bool operator!= (const HashMap& rhs) const;
 
-    /*
-     * Returns an iterator positioned at the last key of the map.
-     */
-    iterator end() const {
-        return iterator(this, /* end */ true);
-    }
-
-    /*
-     * Returns the internal version of this collection.
-     * This is used to check for invalid iterators and issue error messages.
-     */
-    unsigned int version() const {
-        return m_version;
-    }
+    template <typename K, typename V>
+    friend int hashCode(const HashMap<K, V>& map);
 };
 
-/*
- * Implementation notes: HashMap class
- * -----------------------------------
- * In this map implementation, the entries are stored in a hashtable.
- * The hashtable keeps a vector of "buckets", where each bucket is a
- * linked list of elements that share the same hash code (i.e. hash
- * collisions are resolved by chaining). The buckets are dynamically
- * allocated so that we can change the the number of buckets (rehash)
- * when the load factor becomes too high. The map should provide O(1)
- * performance on the put/remove/get operations.
- */
 template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>::HashMap() {
-    createBuckets(INITIAL_BUCKET_COUNT);
-}
-
-template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>::HashMap(std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    createBuckets(INITIAL_BUCKET_COUNT);
-    putAll(list);
-}
-
-template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>::~HashMap() {
-    deleteBuckets(buckets);
-    numEntries = 0;
+HashMap<KeyType, ValueType>::HashMap(std::initializer_list<std::pair<const KeyType, ValueType>> list)
+        : mElems(list) {
 }
 
 template <typename KeyType, typename ValueType>
@@ -752,45 +461,23 @@ HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::addAll(const HashMap& 
 }
 
 template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::addAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return putAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 KeyType HashMap<KeyType, ValueType>::back() const {
     if (isEmpty()) {
         error("HashMap::back: map is empty");
     }
 
-    // find last non-null bucket
-    Cell* cell = nullptr;
-    for (int i = buckets.size() - 1; i >= 0; i--) {
-        cell = buckets[i];
-        if (cell) {
-            // find last non-null cell within bucket
-            while (cell->next) {
-                cell = cell->next;
-            }
-            return cell->key;
-        }
-    }
-
-    // we should never get here
-    error("HashMap::back: never found a non-empty cell bucket");
-    return cell->key;
+    return std::next(mElems.begin(), mElems.size() - 1)->first;
 }
 
 template <typename KeyType, typename ValueType>
 void HashMap<KeyType, ValueType>::clear() {
-    deleteBuckets(buckets);
-    numEntries = 0;
-    m_version++;
+    mElems.clear();
+    mVersion.update();
 }
 
 template <typename KeyType, typename ValueType>
 bool HashMap<KeyType, ValueType>::containsKey(const KeyType& key) const {
-    return findCell(hashCode(key) % nBuckets, key) != nullptr;
+    return !!mElems.count(key);
 }
 
 template <typename KeyType, typename ValueType>
@@ -808,60 +495,37 @@ KeyType HashMap<KeyType, ValueType>::front() const {
 
 template <typename KeyType, typename ValueType>
 ValueType HashMap<KeyType, ValueType>::get(const KeyType& key) const {
-    Cell* cp = findCell(hashCode(key) % nBuckets, key);
-    if (!cp) {
-        return ValueType();
-    }
-    return cp->value;
+    auto itr = mElems.find(key);
+    return itr == mElems.end()? ValueType() : itr->second;
 }
 
 template <typename KeyType, typename ValueType>
 bool HashMap<KeyType, ValueType>::isEmpty() const {
-    return size() == 0;
+    return mElems.empty();
 }
 
 template <typename KeyType, typename ValueType>
 Vector<KeyType> HashMap<KeyType, ValueType>::keys() const {
     Vector<KeyType> keyset;
-    for (const KeyType& key : *this) {
-        keyset.add(key);
+    for (const auto& entry: mElems) {
+        keyset.add(entry.first);
     }
     return keyset;
 }
 
 template <typename KeyType, typename ValueType>
-void HashMap<KeyType, ValueType>::mapAll(void (*fn)(KeyType, ValueType)) const {
-    for (int i = 0; i < buckets.size(); i++) {
-        for (Cell* cp = buckets.get(i); cp != nullptr; cp = cp->next) {
-            fn(cp->key, cp->value);
-        }
-    }
-}
-
-template <typename KeyType, typename ValueType>
-void HashMap<KeyType, ValueType>::mapAll(void (*fn)(const KeyType&,
-                                                   const ValueType&)) const {
-    for (int i = 0; i < buckets.size(); i++) {
-        for (Cell* cp = buckets.get(i); cp != nullptr; cp = cp->next) {
-            fn(cp->key, cp->value);
-        }
-    }
-}
-
-template <typename KeyType, typename ValueType>
-template <typename FunctorType>
-void HashMap<KeyType, ValueType>::mapAll(FunctorType fn) const {
-    for (int i = 0; i < buckets.size(); i++) {
-        for (Cell* cp = buckets.get(i); cp != nullptr; cp = cp->next) {
-            fn(cp->key, cp->value);
-        }
+void HashMap<KeyType, ValueType>::mapAll(std::function<void (const KeyType&, const ValueType&)> fn) const {
+    for (const auto& entry: mElems) {
+        fn(entry.first, entry.second);
     }
 }
 
 template <typename KeyType, typename ValueType>
 void HashMap<KeyType, ValueType>::put(const KeyType& key, const ValueType& value) {
-    (*this)[key] = value;
-    m_version++;
+    int presize = size();
+    mElems[key] = value;
+
+    if (presize != size()) mVersion.update();
 }
 
 template <typename KeyType, typename ValueType>
@@ -873,28 +537,11 @@ HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::putAll(const HashMap& 
 }
 
 template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::putAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    for (const std::pair<KeyType, ValueType>& pair : list) {
-        put(pair.first, pair.second);
-    }
-    return *this;
-}
-
-template <typename KeyType, typename ValueType>
 void HashMap<KeyType, ValueType>::remove(const KeyType& key) {
-    int bucket = hashCode(key) % nBuckets;
-    Cell *parent;
-    Cell* cp = findCell(bucket, key, parent);
-    if (cp) {
-        if (!parent) {
-            buckets[bucket] = cp->next;
-        } else {
-            parent->next = cp->next;
-        }
-        delete cp;
-        numEntries--;
-        m_version++;
+    auto itr = mElems.find(key);
+    if (itr != mElems.end()) {
+        mElems.erase(itr);
+        mVersion.update();
     }
 }
 
@@ -903,17 +550,6 @@ HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::removeAll(const HashMa
     for (const KeyType& key : map2) {
         if (containsKey(key) && get(key) == map2.get(key)) {
             remove(key);
-        }
-    }
-    return *this;
-}
-
-template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::removeAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    for (const std::pair<KeyType, ValueType>& pair : list) {
-        if (containsKey(pair.first) && get(pair.first) == pair.second) {
-            remove(pair.first);
         }
     }
     return *this;
@@ -934,16 +570,8 @@ HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::retainAll(const HashMa
 }
 
 template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::retainAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    HashMap<KeyType, ValueType> map2(list);
-    retainAll(map2);
-    return *this;
-}
-
-template <typename KeyType, typename ValueType>
 int HashMap<KeyType, ValueType>::size() const {
-    return numEntries;
+    return mElems.size();
 }
 
 template <typename KeyType, typename ValueType>
@@ -956,30 +584,19 @@ std::string HashMap<KeyType, ValueType>::toString() const {
 template <typename KeyType, typename ValueType>
 Vector<ValueType> HashMap<KeyType, ValueType>::values() const {
     Vector<ValueType> values;
-    for (const KeyType& key : *this) {
-        values.add(this->get(key));
+    for (const auto& entry: mElems) {
+        values.add(entry.second);
     }
     return values;
 }
 
 template <typename KeyType, typename ValueType>
 ValueType& HashMap<KeyType, ValueType>::operator [](const KeyType& key) {
-    int bucket = hashCode(key) % nBuckets;
-    Cell* cp = findCell(bucket, key);
-    if (!cp) {
-        if (numEntries > MAX_LOAD_PERCENTAGE * nBuckets / 100.0) {
-            expandAndRehash();
-            bucket = hashCode(key) % nBuckets;
-        }
-        cp = new Cell;
-        cp->key = key;
-        cp->value = ValueType();
-        cp->next = buckets[bucket];
-        buckets[bucket] = cp;
-        numEntries++;
-        m_version++;
-    }
-    return cp->value;
+    int presize = size();
+    ValueType& result = mElems[key];
+
+    if (presize != size()) mVersion.update();
+    return result;
 }
 
 template <typename KeyType, typename ValueType>
@@ -994,21 +611,8 @@ HashMap<KeyType, ValueType> HashMap<KeyType, ValueType>::operator +(const HashMa
 }
 
 template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType> HashMap<KeyType, ValueType>::operator +(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) const {
-    HashMap<KeyType, ValueType> result = *this;
-    return result.putAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::operator +=(const HashMap& map2) {
     return putAll(map2);
-}
-
-template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::operator +=(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return putAll(list);
 }
 
 template <typename KeyType, typename ValueType>
@@ -1018,21 +622,8 @@ HashMap<KeyType, ValueType> HashMap<KeyType, ValueType>::operator -(const HashMa
 }
 
 template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType> HashMap<KeyType, ValueType>::operator -(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) const {
-    HashMap<KeyType, ValueType> result = *this;
-    return result.removeAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::operator -=(const HashMap& map2) {
     return removeAll(map2);
-}
-
-template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::operator -=(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return removeAll(list);
 }
 
 template <typename KeyType, typename ValueType>
@@ -1042,31 +633,33 @@ HashMap<KeyType, ValueType> HashMap<KeyType, ValueType>::operator *(const HashMa
 }
 
 template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType> HashMap<KeyType, ValueType>::operator *(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) const {
-    HashMap<KeyType, ValueType> result = *this;
-    return result.retainAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::operator *=(const HashMap& map2) {
     return retainAll(map2);
 }
 
 template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::operator *=(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return retainAll(list);
+typename HashMap<KeyType, ValueType>::iterator HashMap<KeyType, ValueType>::begin() const {
+    return iterator({ &mVersion, mElems.begin(), mElems });
 }
 
 template <typename KeyType, typename ValueType>
-bool HashMap<KeyType, ValueType>::operator ==(const HashMap& map2) const {
-    return equals(map2);
+typename HashMap<KeyType, ValueType>::iterator HashMap<KeyType, ValueType>::end() const {
+    return iterator({ &mVersion, mElems.end(), mElems });
 }
 
 template <typename KeyType, typename ValueType>
-bool HashMap<KeyType, ValueType>::operator !=(const HashMap& map2) const {
-    return !equals(map2);   // BUGFIX 2016/09/24
+bool HashMap<KeyType, ValueType>::operator == (const HashMap<KeyType, ValueType>& rhs) const {
+    return stanfordcpplib::collections::equalsMap(*this, rhs);
+}
+
+template <typename KeyType, typename ValueType>
+bool HashMap<KeyType, ValueType>::operator != (const HashMap<KeyType, ValueType>& rhs) const {
+    return !(*this == rhs);
+}
+
+template <typename KeyType, typename ValueType>
+int hashCode(const HashMap<KeyType, ValueType>& map) {
+    return stanfordcpplib::collections::hashCodeMap(map, false);
 }
 
 /*
@@ -1091,15 +684,6 @@ std::istream& operator >>(std::istream& is,
 }
 
 /*
- * Template hash function for hash maps.
- * Requires the key and value types in the HashMap to have a hashCode function.
- */
-template <typename K, typename V>
-int hashCode(const HashMap<K, V>& map) {
-    return stanfordcpplib::collections::hashCodeMap(map, /* orderMatters */ false);
-}
-
-/*
  * Function: randomKey
  * Usage: element = randomKey(map);
  * --------------------------------
@@ -1108,21 +692,7 @@ int hashCode(const HashMap<K, V>& map) {
  */
 template <typename K, typename V>
 const K& randomKey(const HashMap<K, V>& map) {
-    if (map.isEmpty()) {
-        error("randomKey: empty hash map was passed");
-    }
-    int index = randomInteger(0, map.size() - 1);
-    int i = 0;
-    for (const K& key : map) {
-        if (i == index) {
-            return key;
-        }
-        i++;
-    }
-    
-    // this code will never be reached
-    static Vector<K> v = map.keys();
-    return v[0];
+    return stanfordcpplib::collections::randomElement(map);
 }
 
 #endif // _hashmap_h

@@ -56,18 +56,3 @@ TIMED_TEST(StackTests, initializerListTest_Stack, TEST_TIMEOUT_DEFAULT) {
     assertEqualsString("init list Stack", "{10, 20, 30}", stack.toString());
 }
 
-#ifdef SPL_THROW_ON_INVALID_ITERATOR
-TIMED_TEST(StackTests, iteratorVersionTest_Stack, TEST_TIMEOUT_DEFAULT) {
-    Stack<int> stack {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    try {
-        for (int n : stack) {
-            if (n % 2 == 0) {
-                stack.pop();
-            }
-        }
-        assertFail("should not get to end of test; should throw exception before now");
-    } catch (ErrorException ex) {
-        assertPass("threw exception successfully");
-    }
-}
-#endif // SPL_THROW_ON_INVALID_ITERATOR

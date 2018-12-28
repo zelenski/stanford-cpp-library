@@ -58,7 +58,7 @@ public:
      * ------------------------------
      * Initializes a new empty deque.
      */
-    Deque();
+    Deque() = default;
 
     /*
      * Constructor: Deque
@@ -73,7 +73,7 @@ public:
      * ------------------
      * Frees any heap storage associated with this deque.
      */
-    virtual ~Deque();
+    virtual ~Deque() = default;
     
     /*
      * Method: add
@@ -223,9 +223,6 @@ public:
     /* of the implementation and should not be of interest to clients.    */
     /**********************************************************************/
 
-    template <typename Collection>
-    friend int stanfordcpplib::collections::compare(const Collection& pq1, const Collection& pq2);
-    
     template <typename T>
     friend int hashCode(const Deque<T>& s);
     
@@ -234,182 +231,23 @@ public:
 
 private:
     /* Instance variables */
-    std::deque<ValueType> elements;
-    unsigned int m_version = 0; // structure version for detecting invalid iterators
+    std::deque<ValueType> mElements;
+    stanfordcpplib::collections::VersionTracker mVersion;
 
 public:
-    /*
-     * Iterator support
-     * ----------------
-     * The classes in the StanfordCPPLib collection implement input
-     * iterators so that they work symmetrically with respect to the
-     * corresponding STL classes.
-     */
-    class deque_iterator : public std::deque<ValueType>::iterator {
-    public:
-        deque_iterator()
-                : std::deque<ValueType>::iterator(),
-                  dp(nullptr),
-                  itr_version(0) {
-            // empty
-        }
 
-        deque_iterator(const deque_iterator& it)
-                : std::deque<ValueType>::iterator(it),
-                  dp(it.dp),
-                  itr_version(it.itr_version) {
-            // empty
-        }
+    using iterator = stanfordcpplib::collections::CheckedIterator<typename std::deque<ValueType>::iterator>;
+    using const_iterator = stanfordcpplib::collections::CheckedIterator<typename std::deque<ValueType>::const_iterator>;
 
-        deque_iterator(Deque<ValueType>* dp, const typename std::deque<ValueType>::iterator& it)
-                : std::deque<ValueType>::iterator(it),
-                  dp(dp),
-                  itr_version(dp->version()) {
-            // empty
-        }
-
-        ValueType& operator *() {
-            if (dp) {
-                stanfordcpplib::collections::checkVersion(*dp, *this);
-            }
-            return std::deque<ValueType>::iterator::operator *();   // call super
-        }
-
-        ValueType* operator ->() {
-            if (dp) {
-                stanfordcpplib::collections::checkVersion(*dp, *this);
-            }
-            return std::deque<ValueType>::iterator::operator ->();   // call super
-        }
-
-        unsigned int version() const {
-            return itr_version;
-        }
-
-    private:
-        const Deque* dp;
-        unsigned int itr_version;
-    };
-
-    class const_deque_iterator : public std::deque<ValueType>::const_iterator {
-    public:
-        const_deque_iterator()
-                : std::deque<ValueType>::const_iterator(),
-                  dp(nullptr),
-                  itr_version(0) {
-            // empty
-        }
-
-        const_deque_iterator(const const_deque_iterator& it)
-                : std::deque<ValueType>::const_iterator(it),
-                  dp(it.dp),
-                  itr_version(it.itr_version) {
-            // empty
-        }
-
-        const_deque_iterator(const Deque<ValueType>* const dp, const typename std::deque<ValueType>::const_iterator& it)
-                : std::deque<ValueType>::const_iterator(it),
-                  dp(dp),
-                  itr_version(dp->version()) {
-            // empty
-        }
-
-        const ValueType& operator *() {
-            if (dp) {
-                stanfordcpplib::collections::checkVersion(*dp, *this);
-            }
-            return std::deque<ValueType>::const_iterator::operator *();   // call super
-        }
-
-        const ValueType* operator ->() {
-            if (dp) {
-                stanfordcpplib::collections::checkVersion(*dp, *this);
-            }
-            return std::deque<ValueType>::const_iterator::operator ->();   // call super
-        }
-
-        unsigned int version() const {
-            return itr_version;
-        }
-
-    private:
-        const Deque* dp;
-        unsigned int itr_version;
-    };
-
-    /*
-     * Returns an iterator positioned at the first element of the deque.
-     */
-    deque_iterator begin() {
-        return deque_iterator(this, elements.begin());
-    }
-
-    /*
-     * Returns an iterator positioned at the first element of the deque.
-     */
-    const_deque_iterator begin() const {
-        auto itr = elements.begin();
-        return const_deque_iterator(this, itr);
-    }
-    
-    /*
-     * Returns an iterator positioned at the last element of the deque.
-     */
-    deque_iterator end() {
-        auto itr = elements.end();
-        return deque_iterator(this, itr);
-    }
-    
-    /*
-     * Returns an iterator positioned at the last element of the deque.
-     */
-    const_deque_iterator end() const {
-        auto itr = elements.end();
-        return const_deque_iterator(this, itr);
-    }
-
-    /*
-     * Returns the internal version of this collection.
-     * This is used to check for invalid iterators and issue error messages.
-     */
-    unsigned int version() const;
-    
-    /* Assignment behavior. */
-    Deque& operator =(const Deque& other) {
-      if (this != &other) {
-          elements = other.elements;
-          m_version++;
-      }
-      return *this;
-    }    
+    iterator begin();
+    iterator end();
+    const_iterator begin() const;
+    const_iterator end() const;
 };
 
-/*
- * Implementation notes: Deque constructor
- * ---------------------------------------
- * None.
- */
 template <typename ValueType>
-Deque<ValueType>::Deque() {
-    // empty
-}
+Deque<ValueType>::Deque(std::initializer_list<ValueType> list) : mElements(list) {
 
-template <typename ValueType>
-Deque<ValueType>::Deque(std::initializer_list<ValueType> list) {
-    clear();
-    for (const ValueType& value : list) {
-        add(value);
-    }
-}
-
-/*
- * Implementation notes: ~Deque destructor
- * ---------------------------------------
- * None.
- */
-template <typename ValueType>
-Deque<ValueType>::~Deque() {
-    // empty
 }
 
 template <typename ValueType>
@@ -432,13 +270,13 @@ const ValueType& Deque<ValueType>::back() const {
     if (isEmpty()) {
         error("Deque::back: Attempting to read back of an empty deque");
     }
-    return elements.back();
+    return mElements.back();
 }
 
 template <typename ValueType>
 void Deque<ValueType>::clear() {
-    elements.clear();
-    m_version++;
+    mElements.clear();
+    mVersion.update();
 }
 
 /*
@@ -457,9 +295,9 @@ ValueType Deque<ValueType>::dequeueBack() {
     if (isEmpty()) {
         error("Deque::dequeueBack: Attempting to dequeue from an empty deque");
     }
-    ValueType result = elements.back();
-    elements.pop_back();
-    m_version++;
+    auto result = mElements.back();
+    mElements.pop_back();
+    mVersion.update();
     return result;
 }
 
@@ -468,9 +306,9 @@ ValueType Deque<ValueType>::dequeueFront() {
     if (isEmpty()) {
         error("Deque::dequeueFront: Attempting to dequeue from an empty deque");
     }
-    ValueType result = elements.front();
-    elements.pop_front();
-    m_version++;
+    auto result = mElements.front();
+    mElements.pop_front();
+    mVersion.update();
     return result;
 }
 
@@ -481,19 +319,19 @@ void Deque<ValueType>::enqueue(const ValueType& value) {
 
 template <typename ValueType>
 void Deque<ValueType>::enqueueBack(const ValueType& value) {
-    elements.push_back(value);
-    m_version++;
+    mElements.push_back(value);
+    mVersion.update();
 }
 
 template <typename ValueType>
 void Deque<ValueType>::enqueueFront(const ValueType& value) {
-    elements.push_front(value);
-    m_version++;
+    mElements.push_front(value);
+    mVersion.update();
 }
 
 template <typename ValueType>
 bool Deque<ValueType>::equals(const Deque<ValueType>& deque2) const {
-    return elements == deque2.elements;
+    return mElements == deque2.mElements;
 }
 
 template <typename ValueType>
@@ -501,12 +339,12 @@ const ValueType& Deque<ValueType>::front() const {
     if (isEmpty()) {
         error("Deque::front: Attempting to read front of an empty deque");
     }
-    return elements.front();
+    return mElements.front();
 }
 
 template <typename ValueType>
 bool Deque<ValueType>::isEmpty() const {
-    return elements.empty();
+    return mElements.empty();
 }
 
 template <typename ValueType>
@@ -553,12 +391,12 @@ ValueType Deque<ValueType>::removeFront() {
 
 template <typename ValueType>
 int Deque<ValueType>::size() const {
-    return elements.size();
+    return mElements.size();
 }
 
 template <typename ValueType>
 std::deque<ValueType> Deque<ValueType>::toStlDeque() const {
-    return elements;
+    return mElements;
 }
 
 template <typename ValueType>
@@ -566,11 +404,6 @@ std::string Deque<ValueType>::toString() const {
     std::ostringstream os;
     os << *this;
     return os.str();
-}
-
-template <typename ValueType>
-unsigned int Deque<ValueType>::version() const {
-    return m_version;
 }
 
 template <typename ValueType>
@@ -585,22 +418,22 @@ bool Deque<ValueType>::operator !=(const Deque& deque2) const {
 
 template <typename ValueType>
 bool Deque<ValueType>::operator <(const Deque& deque2) const {
-    return stanfordcpplib::collections::compare(*this, deque2) < 0;
+    return stanfordcpplib::collections::compare(mElements, deque2.mElements) < 0;
 }
 
 template <typename ValueType>
 bool Deque<ValueType>::operator <=(const Deque& deque2) const {
-    return stanfordcpplib::collections::compare(*this, deque2) <= 0;
+    return stanfordcpplib::collections::compare(mElements, deque2.mElements) <= 0;
 }
 
 template <typename ValueType>
 bool Deque<ValueType>::operator >(const Deque& deque2) const {
-    return stanfordcpplib::collections::compare(*this, deque2) > 0;
+    return stanfordcpplib::collections::compare(mElements, deque2.mElements) > 0;
 }
 
 template <typename ValueType>
 bool Deque<ValueType>::operator >=(const Deque& deque2) const {
-    return stanfordcpplib::collections::compare(*this, deque2) >= 0;
+    return stanfordcpplib::collections::compare(mElements, deque2.mElements) >= 0;
 }
 
 template <typename ValueType>
@@ -612,6 +445,24 @@ template <typename ValueType>
 std::istream& operator >>(std::istream& is, Deque<ValueType>& deque) {
     ValueType element;
     return stanfordcpplib::collections::readCollection(is, deque, element, /* descriptor */ "Deque::operator >>");
+}
+
+template <typename ValueType>
+typename Deque<ValueType>::iterator Deque<ValueType>::begin() {
+    return { &mVersion, mElements.begin(), mElements };
+}
+template <typename ValueType>
+typename Deque<ValueType>::const_iterator Deque<ValueType>::begin() const {
+    return { &mVersion, mElements.begin(), mElements };
+}
+
+template <typename ValueType>
+typename Deque<ValueType>::iterator Deque<ValueType>::end() {
+    return { &mVersion, mElements.end(), mElements };
+}
+template <typename ValueType>
+typename Deque<ValueType>::const_iterator Deque<ValueType>::end() const {
+    return { &mVersion, mElements.end(), mElements };
 }
 
 /*

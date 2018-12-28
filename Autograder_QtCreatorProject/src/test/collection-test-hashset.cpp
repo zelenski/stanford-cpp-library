@@ -15,8 +15,15 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <numeric>
 
 TEST_CATEGORY(HashSetTests, "HashSet tests");
+
+/* Force instantiation of HashSet on a few types to make sure we didn't miss anything.
+ * The types must be hashable.
+ */
+template class HashSet<int>;
+template class HashSet<std::string>;
 
 TIMED_TEST(HashSetTests, forEachTest_HashSet, TEST_TIMEOUT_DEFAULT) {
     HashSet<int> hset {40, 20, 10, 30};
@@ -95,6 +102,17 @@ TIMED_TEST(HashSetTests, iteratorVersionTest_HashSet, TEST_TIMEOUT_DEFAULT) {
     }
 }
 #endif // SPL_THROW_ON_INVALID_ITERATOR
+
+TIMED_TEST(HashSetTests, mapAllTest_HashSet, TEST_TIMEOUT_DEFAULT) {
+    HashSet<int> set {7, 5, 1, 2, 8};
+
+    int total = 0;
+    set.mapAll([&] (int value) {
+        total += value;
+    });
+
+    assertEqualsInt("mapAll produces correct sum.", std::accumulate(set.begin(), set.end(), 0), total);
+}
 
 TIMED_TEST(HashSetTests, randomElementTest_HashSet, TEST_TIMEOUT_DEFAULT) {
     Map<std::string, int> counts;

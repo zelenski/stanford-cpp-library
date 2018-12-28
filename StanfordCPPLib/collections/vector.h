@@ -56,6 +56,10 @@
 #include <iterator>
 #include <sstream>
 #include <string>
+#include <vector>
+#include <deque>
+#include <type_traits>
+#include <functional>
 
 #define INTERNAL_INCLUDE 1
 #include "collections.h"
@@ -81,7 +85,7 @@ public:
      * Initializes a new empty vector.
      * @bigoh O(1)
      */
-    Vector();
+    Vector() = default;
 
     /**
      * Initializes a new vector, creating an array with <code>n</code>
@@ -102,7 +106,7 @@ public:
      * Frees any heap storage allocated by this vector.
      * @bigoh O(1)
      */
-    virtual ~Vector();
+    virtual ~Vector() = default;
 
     /**
      * Adds a new value to the end of this vector.
@@ -117,14 +121,6 @@ public:
      * @bigoh O(N)
      */
     Vector<ValueType>& addAll(const Vector<ValueType>& v);
-
-    /**
-     * Adds all elements of the given initializer list to this vector.
-     * Returns a reference to this vector.
-     * Identical in behavior to the += operator.
-     * @bigoh O(N)
-     */
-    Vector<ValueType>& addAll(std::initializer_list<ValueType> list);
 
     /**
      * Returns the element at index (size - 1) in this vector (without removing it).
@@ -227,22 +223,7 @@ public:
      * ascending index order.
      * @bigoh O(N)
      */
-    void mapAll(void (*fn)(ValueType)) const;
-
-    /**
-     * Calls the specified function on each element of the vector in
-     * ascending index order.
-     * @bigoh O(N)
-     */
-    void mapAll(void (*fn)(const ValueType&)) const;
-
-    /**
-     * Calls the specified function on each element of the vector in
-     * ascending index order.
-     * @bigoh O(N)
-     */
-    template <typename FunctorType>
-    void mapAll(FunctorType fn) const;
+    void mapAll(std::function<void (const ValueType&)> fn) const;
 
     /**
      * Removes and returns the first value of this vector.
@@ -384,24 +365,10 @@ public:
     Vector operator +(const Vector& v2) const;
 
     /**
-     * Concatenates this vector with an initializer list such as {1, 2, 3},
-     * returning the result.
-     * @bigoh O(N)
-     */
-    Vector operator +(std::initializer_list<ValueType> list) const;
-
-    /**
      * Adds all of the elements from <code>v2</code> to the end of this vector.
      * @bigoh O(N)
      */
     Vector& operator +=(const Vector& v2);
-
-    /**
-     * Adds all of the elements from the given initializer list to the end of
-     * the vector.
-     * @bigoh O(N)
-     */
-    Vector& operator +=(std::initializer_list<ValueType> list);
 
     /**
      * Adds the single specified value) to the end of the vector.
@@ -492,16 +459,25 @@ private:
     /*
      * Implementation notes: Vector data structure
      * -------------------------------------------
-     * The elements of the Vector are stored in a dynamic array of
-     * the specified element type.  If the space in the array is ever
-     * exhausted, the implementation doubles the array capacity.
+     * The elements are stored in a std::vector, the regular C++ library
+     * type representing a sequence of elements. We wrap std::vector because
+     * it has no runtime safety checks, something that's tricky to get used
+     * to when you're first learning to use these types.
+     *
+     * There's an edge case in the C++ libraries where std::vector<bool> doesn't
+     * work as you might think it does. This is widely regarded as a mistake
+     * in the language design and there's been a proposal to fix it for many
+     * years now. In the interim, we get around this by falling back on the
+     * std::deque type in the event that the client wants to make a
+     * Vector<bool>
      */
+    using ContainerType = typename std::conditional<std::is_same<ValueType, bool>::value,
+                                                    std::deque<bool>,
+                                                    std::vector<ValueType>>::type;
 
     /* Instance variables */
-    ValueType* elements;        // a dynamic array of the elements
-    int capacity;               // the allocated size of the array
-    int count;                  // the number of elements in use
-    unsigned int m_version = 0; // structure version for detecting invalid iterators
+    ContainerType mElems;
+    stanfordcpplib::collections::VersionTracker mVersion;
 
     /* Private methods */
 
@@ -515,9 +491,6 @@ private:
      */
     void checkIndex(int index, int min, int max, std::string prefix) const;
 
-    void expandCapacity();
-    void deepCopy(const Vector& src);
-
     /*
      * Hidden features
      * ---------------
@@ -529,256 +502,38 @@ private:
 
 public:
     /**
-     * Makes a deep copy, making it possible to pass or return vectors by value
-     * and assign from one vector to another.
-     * @bigoh O(N)
-     * @private
-     */
-    Vector(const Vector& src);
-
-    /**
-     * Makes a deep copy, making it possible to pass or return vectors by value
-     * and assign from one vector to another.
-     * @bigoh O(N)
-     * @private
-     */
-    Vector& operator =(const Vector& src);
-
-    /**
      * Adds an element to the vector passed as the left-hand operatand.
      * This form makes it easier to initialize vectors in old versions of C++.
      * @bigoh O(1)
      */
     Vector& operator ,(const ValueType& value);
 
-    /**
-     * The classes in the StanfordCPPLib collection implement input
-     * iterators so that they work symmetrically with respect to the
-     * corresponding STL classes.
-     * @private
+    using iterator = stanfordcpplib::collections::CheckedIterator<typename ContainerType::iterator>;
+    using const_iterator = stanfordcpplib::collections::CheckedIterator<typename ContainerType::const_iterator>;
+
+    iterator begin();
+    iterator end();
+    const_iterator begin() const;
+    const_iterator end() const;
+
+    /* Updates the internal version count. Only our libraries need this, and they only
+     * need it in rare cases where an operation that's semantically mutating but bitwise
+     * non-mutating occurs.
      */
-    class iterator :
-            public std::iterator<std::random_access_iterator_tag, ValueType> {
-    private:
-        const Vector* vp;
-        int index;
-        unsigned int itr_version;
-
-    public:
-        iterator()
-                : vp(nullptr),
-                  index(0),
-                  itr_version(0) {
-            // empty
-        }
-
-        iterator(const iterator& it)
-                : vp(it.vp),
-                  index(it.index),
-                  itr_version(it.itr_version) {
-            // empty
-        }
-
-        iterator(const Vector* theVec, int theIndex)
-                : vp(theVec),
-                  index(theIndex) {
-            itr_version = vp->version();
-        }
-
-        iterator& operator ++() {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            index++;
-            return *this;
-        }
-
-        iterator operator ++(int) {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            iterator copy(*this);
-            operator++();
-            return copy;
-        }
-
-        iterator& operator --() {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            index--;
-            return *this;
-        }
-
-        iterator operator --(int) {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            iterator copy(*this);
-            operator--();
-            return copy;
-        }
-
-        bool operator ==(const iterator& rhs) {
-            return vp == rhs.vp && index == rhs.index;
-        }
-
-        bool operator !=(const iterator& rhs) {
-            return !(*this == rhs);
-        }
-
-        bool operator <(const iterator& rhs) {
-            if (vp != rhs.vp) {
-                error("Vector Iterator::operator <: Iterators are in different vectors");
-            }
-            return index < rhs.index;
-        }
-
-        bool operator <=(const iterator& rhs) {
-            if (vp != rhs.vp) {
-                error("Vector Iterator::operator <=: Iterators are in different vectors");
-            }
-            return index <= rhs.index;
-        }
-
-        bool operator >(const iterator& rhs) {
-            if (vp != rhs.vp) {
-                error("Vector Iterator::operator >: Iterators are in different vectors");
-            }
-            return index > rhs.index;
-        }
-
-        bool operator >=(const iterator& rhs) {
-            if (vp != rhs.vp) {
-                error("Vector Iterator::operator >=: Iterators are in different vectors");
-            }
-            return index >= rhs.index;
-        }
-
-        iterator operator +(const int& rhs) {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            return iterator(vp, index + rhs);
-        }
-
-        iterator operator +=(const int& rhs) {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            index += rhs;
-            return *this;
-        }
-
-        iterator operator -(const int& rhs) {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            return iterator(vp, index - rhs);
-        }
-
-        iterator operator -=(const int& rhs) {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            index -= rhs;
-            return *this;
-        }
-
-        int operator -(const iterator& rhs) {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            extern void error(const std::string& msg);
-            if (vp != rhs.vp) {
-                error("Vector Iterator::operator -: Iterators are in different vectors");
-            }
-            return index - rhs.index;
-        }
-
-        ValueType& operator *() {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            return vp->elements[index];
-        }
-
-        ValueType* operator ->() {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            return &vp->elements[index];
-        }
-
-        ValueType& operator [](int k) {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            return vp->elements[index + k];
-        }
-
-        unsigned int version() const {
-            return itr_version;
-        }
-    };
-
-    /**
-     * Returns an iterator pointed at the beginning of this vector.
-     * @bigoh O(1)
-     */
-    iterator begin() const {
-        return iterator(this, 0);
-    }
-
-    /**
-     * Returns an iterator pointed just past the end of this vector.
-     * @bigoh O(1)
-     */
-    iterator end() const {
-        return iterator(this, count);
-    }
-
-    /**
-     * Returns the internal version of this collection.
-     * This is used to check for invalid iterators and issue error messages.
-     * @bigoh O(1)
-     */
-    unsigned int version() const;
+    void updateVersion();
 };
 
 /* Implementation section */
 
-/*
- * Implementation notes: Vector constructor and destructor
- * -------------------------------------------------------
- * The constructor allocates storage for the dynamic array
- * and initializes the other fields of the object.  The
- * destructor frees the memory used for the array.
- */
 template <typename ValueType>
-Vector<ValueType>::Vector()
-        : elements(nullptr),
-          capacity(0),
-          count(0) {
-    // empty
-}
-
-template <typename ValueType>
-Vector<ValueType>::Vector(int n, ValueType value)
-        : elements(nullptr),
-          capacity(n),
-          count(n) {
-    if (n < 0) {
-        error("Vector::constructor: n cannot be negative");
-    } else if (n > 0) {
-        elements = new ValueType[n];
-        for (int i = 0; i < n; i++) {
-            elements[i] = value;
-        }
-    }
+Vector<ValueType>::Vector(int n, ValueType value) {
+    if (n < 0) error("Cannot create a Vector with a negative number of elements.");
+    mElems.assign(n, value);
 }
 
 template <typename ValueType>
 Vector<ValueType>::Vector(std::initializer_list<ValueType> list)
-        : count(0) {
-    capacity = list.size();
-    elements = new ValueType[capacity];
-    addAll(list);
-}
-
-/*
- * Implementation notes: copy constructor and assignment operator
- * --------------------------------------------------------------
- * The constructor and assignment operators follow a standard paradigm,
- * as described in the associated textbook.
- */
-template <typename ValueType>
-Vector<ValueType>::Vector(const Vector& src) {
-    deepCopy(src);
-}
-
-template <typename ValueType>
-Vector<ValueType>::~Vector() {
-    if (elements) {
-        delete[] elements;
-        elements = nullptr;
-    }
+        : mElems(list) {
 }
 
 /*
@@ -789,7 +544,7 @@ Vector<ValueType>::~Vector() {
  */
 template <typename ValueType>
 void Vector<ValueType>::add(const ValueType& value) {
-    insert(count, value);
+    insert(size(), value);
 }
 
 template <typename ValueType>
@@ -801,19 +556,8 @@ Vector<ValueType>& Vector<ValueType>::addAll(const Vector<ValueType>& v) {
 }
 
 template <typename ValueType>
-Vector<ValueType>& Vector<ValueType>::addAll(std::initializer_list<ValueType> list) {
-    for (const ValueType& value : list) {
-        add(value);
-    }
-    return *this;
-}
-
-template <typename ValueType>
 ValueType& Vector<ValueType>::back() {
-    if (isEmpty()) {
-        error("Vector::back: vector is empty");
-    }
-    return elements[count - 1];
+    return const_cast<ValueType&>(static_cast<const Vector &>(*this).back());
 }
 
 template <typename ValueType>
@@ -821,18 +565,13 @@ const ValueType& Vector<ValueType>::back() const {
     if (isEmpty()) {
         error("Vector::back: vector is empty");
     }
-    return elements[count - 1];
+    return mElems.back();
 }
 
 template <typename ValueType>
 void Vector<ValueType>::clear() {
-    if (elements) {
-        delete[] elements;
-    }
-    count = 0;
-    capacity = 0;
-    elements = nullptr;
-    m_version++;
+    mElems.clear();
+    mVersion.update();
 }
 
 template <typename ValueType>
@@ -840,55 +579,14 @@ bool Vector<ValueType>::contains(const ValueType& value) const {
     return indexOf(value) >= 0;
 }
 
-// implementation note: This method is public so clients can guarantee a given
-// capacity.  Internal resizing is automatically done by expandCapacity.
-// See also: expandCapacity
-template <typename ValueType>
-void Vector<ValueType>::ensureCapacity(int cap) {
-    if (cap >= 1 && capacity < cap) {
-        capacity = std::max(cap, capacity * 2);
-        ValueType* array = new ValueType[capacity];
-        if (elements) {
-            for (int i = 0; i < count; i++) {
-                array[i] = elements[i];
-            }
-            delete[] elements;
-        }
-        elements = array;
-    }
-}
-
 template <typename ValueType>
 bool Vector<ValueType>::equals(const Vector<ValueType>& v) const {
     return stanfordcpplib::collections::equals(*this, v);
 }
 
-/*
- * Implementation notes: expandCapacity
- * ------------------------------------
- * This function doubles the array capacity, copies the old elements
- * into the new array, and then frees the old one.
- * See also: ensureCapacity
- */
-template <typename ValueType>
-void Vector<ValueType>::expandCapacity() {
-    capacity = std::max(1, capacity * 2);
-    ValueType* array = new ValueType[capacity];
-    if (elements) {
-        for (int i = 0; i < count; i++) {
-            array[i] = elements[i];
-        }
-        delete[] elements;
-    }
-    elements = array;
-}
-
 template <typename ValueType>
 ValueType& Vector<ValueType>::front() {
-    if (isEmpty()) {
-        error("Vector::front: vector is empty");
-    }
-    return elements[0];
+    return const_cast<ValueType&>(static_cast<const Vector &>(*this).front());
 }
 
 template <typename ValueType>
@@ -896,59 +594,44 @@ const ValueType& Vector<ValueType>::front() const {
     if (isEmpty()) {
         error("Vector::front: vector is empty");
     }
-    return elements[0];
+    return mElems.front();
 }
 
 template <typename ValueType>
 const ValueType& Vector<ValueType>::get(int index) const {
-    checkIndex(index, 0, count-1, "get");
-    return elements[index];
+    checkIndex(index, 0, size()-1, "get");
+    return mElems[index];
 }
 
 template <typename ValueType>
 int Vector<ValueType>::indexOf(const ValueType& value) const {
-    for (int i = 0; i < count; i++) {
-        if (elements[i] == value) {
-            return i;
-        }
-    }
-    return -1;
+    auto result = std::find(mElems.begin(), mElems.end(), value);
+    if (result == mElems.end()) return -1;
+    return result - mElems.begin();
 }
 
-/*
- * Implementation notes: insert, remove, add
- * -----------------------------------------
- * These methods must shift the existing elements in the array to
- * make room for a new element or to close up the space left by a
- * deleted one.
- */
 template <typename ValueType>
 void Vector<ValueType>::insert(int index, const ValueType& value) {
-    checkIndex(index, 0, count, "insert");
-    if (count == capacity) {
-        expandCapacity();
-    }
-    for (int i = count; i > index; i--) {
-        elements[i] = elements[i - 1];
-    }
-    elements[index] = value;
-    count++;
-    m_version++;
+    checkIndex(index, 0, size(), "insert");
+    mElems.push_back(value);
+    mVersion.update();
 }
 
 template <typename ValueType>
 bool Vector<ValueType>::isEmpty() const {
-    return count == 0;
+    return mElems.empty();
 }
 
 template <typename ValueType>
 int Vector<ValueType>::lastIndexOf(const ValueType& value) const {
-    for (int i = count - 1; i >= 0; i--) {
-        if (elements[i] == value) {
-            return i;
-        }
-    }
-    return -1;
+    auto result = std::find(mElems.rbegin(), mElems.rend(), value);
+    if (result == mElems.rend()) return -1;
+
+    /* These iterators are going in the reverse direction, and so the index they give is the number of
+     * steps from the end of the range, not from the beginning. Reverse this before returning the
+     * value.
+     */
+    return (size() - 1) - (result - mElems.rbegin());
 }
 
 /*
@@ -958,24 +641,9 @@ int Vector<ValueType>::lastIndexOf(const ValueType& value) const {
  * function object to each element in ascending index order.
  */
 template <typename ValueType>
-void Vector<ValueType>::mapAll(void (*fn)(ValueType)) const {
-    for (int i = 0; i < count; i++) {
-        fn(elements[i]);
-    }
-}
-
-template <typename ValueType>
-void Vector<ValueType>::mapAll(void (*fn)(const ValueType&)) const {
-    for (int i = 0; i < count; i++) {
-        fn(elements[i]);
-    }
-}
-
-template <typename ValueType>
-template <typename FunctorType>
-void Vector<ValueType>::mapAll(FunctorType fn) const {
-    for (int i = 0; i < count; i++) {
-        fn(elements[i]);
+void Vector<ValueType>::mapAll(std::function<void (const ValueType&)> fn) const {
+    for (const auto& elem: mElems) {
+        fn(elem);
     }
 }
 
@@ -984,9 +652,10 @@ ValueType Vector<ValueType>::pop_back() {
     if (isEmpty()) {
         error("Vector::pop_back: vector is empty");
     }
-    ValueType last = elements[count - 1];
-    remove(count - 1);
-    return last;
+    auto result = mElems.back();
+    mElems.pop_back();
+    mVersion.update();
+    return result;
 }
 
 template <typename ValueType>
@@ -994,14 +663,15 @@ ValueType Vector<ValueType>::pop_front() {
     if (isEmpty()) {
         error("Vector::pop_front: vector is empty");
     }
-    ValueType first = elements[0];
-    remove(0);
-    return first;
+    auto result = mElems.front();
+    mElems.erase(mElems.begin());
+    mVersion.update();
+    return result;
 }
 
 template <typename ValueType>
 void Vector<ValueType>::push_back(const ValueType& value) {
-    insert(count, value);
+    insert(size(), value);
 }
 
 template <typename ValueType>
@@ -1011,12 +681,9 @@ void Vector<ValueType>::push_front(const ValueType& value) {
 
 template <typename ValueType>
 void Vector<ValueType>::remove(int index) {
-    checkIndex(index, 0, count-1, "remove");
-    for (int i = index; i < count - 1; i++) {
-        elements[i] = elements[i + 1];
-    }
-    count--;
-    m_version++;
+    checkIndex(index, 0, size() - 1, "remove");
+    mElems.erase(mElems.begin() + index);
+    mVersion.update();
 }
 
 template <typename ValueType>
@@ -1039,29 +706,24 @@ void Vector<ValueType>::removeValue(const ValueType& value) {
 
 template <typename ValueType>
 void Vector<ValueType>::reverse() {
-    for (int i = 0; i < count / 2; i++) {
-        std::swap(elements[i], elements[count - 1 - i]);
-    }
+    std::reverse(begin(), end());
 }
 
 template <typename ValueType>
 void Vector<ValueType>::set(int index, const ValueType& value) {
-    checkIndex(index, 0, count-1, "set");
-    elements[index] = value;
+    checkIndex(index, 0, size()-1, "set");
+    mElems[index] = value;
 }
 
 template <typename ValueType>
 int Vector<ValueType>::size() const {
-    return count;
+    return mElems.size();
 }
 
 template <typename ValueType>
 void Vector<ValueType>::shuffle() {
-    for (int i = 0; i < count; i++) {
-        int j = randomInteger(i, count - 1);
-        if (i != j) {
-            std::swap(elements[i], elements[j]);
-        }
+    for (int i = 0; i < size() - 1; i++) {
+        std::swap(mElems[i], mElems[randomInteger(i, size() - 1)]);
     }
 }
 
@@ -1072,8 +734,8 @@ void Vector<ValueType>::sort() {
 
 template <typename ValueType>
 Vector<ValueType> Vector<ValueType>::subList(int start, int length) const {
-    checkIndex(start, 0, count, "subList");
-    checkIndex(start + length, 0, count, "subList");
+    checkIndex(start, 0, size(), "subList");
+    checkIndex(start + length, 0, size(), "subList");
     if (length < 0) {
         error("Vector::subList: length cannot be negative");
     }
@@ -1091,11 +753,6 @@ std::string Vector<ValueType>::toString() const {
     return os.str();
 }
 
-template <typename ValueType>
-unsigned int Vector<ValueType>::version() const {
-    return m_version;
-}
-
 /*
  * Implementation notes: Vector selection
  * --------------------------------------
@@ -1104,13 +761,12 @@ unsigned int Vector<ValueType>::version() const {
  */
 template <typename ValueType>
 ValueType& Vector<ValueType>::operator [](int index) {
-    checkIndex(index, 0, count-1, "operator []");
-    return elements[index];
+    return const_cast<ValueType&>(static_cast<const Vector &>(*this)[index]);
 }
 template <typename ValueType>
 const ValueType& Vector<ValueType>::operator [](int index) const {
-    checkIndex(index, 0, count-1, "operator []");
-    return elements[index];
+    checkIndex(index, 0, size()-1, "operator []");
+    return mElems[index];
 }
 
 template <typename ValueType>
@@ -1120,19 +776,8 @@ Vector<ValueType> Vector<ValueType>::operator +(const Vector& v2) const {
 }
 
 template <typename ValueType>
-Vector<ValueType> Vector<ValueType>::operator +(std::initializer_list<ValueType> list) const {
-    Vector<ValueType> result = *this;
-    return result.addAll(list);
-}
-
-template <typename ValueType>
 Vector<ValueType>& Vector<ValueType>::operator +=(const Vector& v2) {
     return addAll(v2);
-}
-
-template <typename ValueType>
-Vector<ValueType>& Vector<ValueType>::operator +=(std::initializer_list<ValueType> list) {
-    return addAll(list);
 }
 
 template <typename ValueType>
@@ -1172,17 +817,6 @@ bool Vector<ValueType>::operator >=(const Vector& v2) const {
 }
 
 template <typename ValueType>
-Vector<ValueType> & Vector<ValueType>::operator =(const Vector& src) {
-    if (this != &src) {
-        if (elements) {
-            delete[] elements;
-        }
-        deepCopy(src);
-    }
-    return *this;
-}
-
-template <typename ValueType>
 void Vector<ValueType>::checkIndex(int index, int min, int max, std::string prefix) const {
     if (index < min || index > max) {
         std::ostringstream out;
@@ -1201,20 +835,6 @@ void Vector<ValueType>::checkIndex(int index, int min, int max, std::string pref
         }
         error(out.str());
     }
-}
-
-// implementation notes:
-// doesn't free this->elements because deepCopy is only called in cases where
-// elements is either null (at construction) or has just been freed (operator =)
-template <typename ValueType>
-void Vector<ValueType>::deepCopy(const Vector& src) {
-    count = src.count;
-    capacity = src.count;
-    elements = (capacity == 0) ? nullptr : new ValueType[capacity];
-    for (int i = 0; i < count; i++) {
-        elements[i] = src.elements[i];
-    }
-    m_version++;
 }
 
 /*
@@ -1246,6 +866,35 @@ template <typename ValueType>
 std::istream& operator >>(std::istream& is, Vector<ValueType>& vec) {
     ValueType element;
     return stanfordcpplib::collections::readCollection(is, vec, element, /* descriptor */ "Vector::operator >>");
+}
+
+
+/*
+ * Implementation notes: Iterator support
+ * --------------------------------------
+ * We used the checked iterator type, which requires us to provide information
+ * about the full range of values available.
+ */
+template <typename ValueType>
+typename Vector<ValueType>::iterator Vector<ValueType>::begin() {
+    return { &mVersion, mElems.begin(), mElems };
+}
+template <typename ValueType>
+typename Vector<ValueType>::const_iterator Vector<ValueType>::begin() const {
+    return { &mVersion, mElems.begin(), mElems };
+}
+template <typename ValueType>
+typename Vector<ValueType>::iterator Vector<ValueType>::end() {
+    return { &mVersion, mElems.end(), mElems };
+}
+template <typename ValueType>
+typename Vector<ValueType>::const_iterator Vector<ValueType>::end() const {
+    return { &mVersion, mElems.end(), mElems };
+}
+
+template <typename ValueType>
+void Vector<ValueType>::updateVersion() {
+    mVersion.update();
 }
 
 /*
