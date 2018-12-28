@@ -34,6 +34,7 @@
 
 #include <initializer_list>
 #include <iostream>
+#include <functional>
 
 #define INTERNAL_INCLUDE 1
 #include "collections.h"
@@ -62,7 +63,7 @@ public:
      * ------------------------------------
      * Initializes an empty set of the specified element type.
      */
-    LinkedHashSet();
+    LinkedHashSet() = default;
 
     /*
      * Constructor: LinkedHashSet
@@ -79,7 +80,7 @@ public:
      * --------------------------
      * Frees any heap storage associated with this set.
      */
-    virtual ~LinkedHashSet();
+    virtual ~LinkedHashSet() = default;
 
     /*
      * Method: add
@@ -219,11 +220,7 @@ public:
      * for each one.  The values are processed in ascending order, as defined
      * by the comparison function.
      */
-    void mapAll(void (*fn)(ValueType)) const;
-    void mapAll(void (*fn)(const ValueType&)) const;
-
-    template <typename FunctorType>
-    void mapAll(FunctorType fn) const;
+    void mapAll(std::function<void (const ValueType &)> fn) const;
     
     /*
      * Method: remove
@@ -417,7 +414,7 @@ public:
 
 private:
     LinkedHashMap<ValueType, bool> map;  /* Map used to store the element     */
-    bool removeFlag;                     /* Flag to differentiate += and -=   */
+    bool removeFlag = false;             /* Flag to differentiate += and -=   */
 
 public:
     /*
@@ -480,11 +477,11 @@ public:
             return !(*this == rhs);
         }
 
-        ValueType& operator *() {
+        const ValueType& operator *() const {
             return *mapit;
         }
 
-        ValueType* operator ->() {
+        const ValueType* operator ->() const {
             return mapit;
         }
     };
@@ -499,19 +496,8 @@ public:
 };
 
 template <typename ValueType>
-LinkedHashSet<ValueType>::LinkedHashSet() : removeFlag(false) {
-    /* Empty */
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType>::LinkedHashSet(std::initializer_list<ValueType> list)
-        : removeFlag(false) {
+LinkedHashSet<ValueType>::LinkedHashSet(std::initializer_list<ValueType> list) {
     addAll(list);
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType>::~LinkedHashSet() {
-    /* Empty */
 }
 
 template <typename ValueType>
@@ -643,18 +629,7 @@ bool LinkedHashSet<ValueType>::isSupersetOf(std::initializer_list<ValueType> lis
 }
 
 template <typename ValueType>
-void LinkedHashSet<ValueType>::mapAll(void (*fn)(ValueType)) const {
-    map.mapAll(fn);
-}
-
-template <typename ValueType>
-void LinkedHashSet<ValueType>::mapAll(void (*fn)(const ValueType&)) const {
-    map.mapAll(fn);
-}
-
-template <typename ValueType>
-template <typename FunctorType>
-void LinkedHashSet<ValueType>::mapAll(FunctorType fn) const {
+void LinkedHashSet<ValueType>::mapAll(std::function<void (const ValueType &)> fn) const {
     map.mapAll(fn);
 }
 

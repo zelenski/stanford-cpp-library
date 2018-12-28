@@ -320,7 +320,7 @@ bool operator !=(const GRectangle& r1, const GRectangle& r2) {
 }
 
 bool operator <(const GRectangle& r1, const GRectangle& r2) {
-    return stanfordcpplib::collections::compareTo4(
+    return stanfordcpplib::collections::compareTo(
             r1._x, r2._x, r1._y, r2._y, r1._width, r2._width, r1._height, r2._height) < 0;
 }
 

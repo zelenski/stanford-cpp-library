@@ -14,8 +14,45 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <numeric>
 
 TEST_CATEGORY(VectorTests, "Vector tests");
+
+/* Force instantiation of Vector on a few types to make sure we didn't miss anything.
+ * These types must be comparable and hashable to avoid instaniating functions we
+ * can't support.
+ */
+template class Vector<int>;
+template class Vector<bool>;
+template class Vector<std::string>;
+
+TIMED_TEST(VectorTests, basicsTest_Vector, TEST_TIMEOUT_DEFAULT) {
+    Vector<int> values;
+    for (int i = 0; i < 1000; i++) {
+        values += i;
+    }
+
+    assertEqualsInt("Size is 1000", values.size(), 1000);
+    assertFalse("Vector isn't empty.", values.isEmpty());
+
+    for (int i = 0; i < 1000; i++) {
+        assertEquals("Vector entry at position " + std::to_string(i) + " is correct.",
+                     values[i], i);
+    }
+
+    /* Mutate things. */
+    for (int& elem: values) {
+        elem *= 2;
+    }
+
+    assertEqualsInt("Size is 1000", values.size(), 1000);
+    assertFalse("Vector isn't empty.", values.isEmpty());
+
+    for (int i = 0; i < 1000; i++) {
+        assertEquals("Vector entry at position " + std::to_string(i) + " is correct.",
+                     values[i], 2 * i);
+    }
+}
 
 TIMED_TEST(VectorTests, compareTest_Vector, TEST_TIMEOUT_DEFAULT) {
     Vector<int> v1 {1, 2, 4, 5};
@@ -79,10 +116,12 @@ TIMED_TEST(VectorTests, indexOfTest_Vector, TEST_TIMEOUT_DEFAULT) {
     assertEqualsInt("indexOf 10", 0, vec.indexOf(10));
     assertEqualsInt("indexOf 20", 1, vec.indexOf(20));
     assertEqualsInt("indexOf 50", 6, vec.indexOf(50));
+    assertEqualsInt("indexOf 99", -1, vec.indexOf(99));
 
     assertEqualsInt("lastIndexOf 10", 5, vec.lastIndexOf(10));
     assertEqualsInt("lastIndexOf 20", 1, vec.lastIndexOf(20));
     assertEqualsInt("lastIndexOf 0",  8, vec.lastIndexOf(0));
+    assertEqualsInt("lastIndexOf 99", -1, vec.lastIndexOf(99));
 
     assertEqualsBool("contains 10", true, vec.contains(10));
     assertEqualsBool("contains 20", true, vec.contains(20));
@@ -106,6 +145,284 @@ TIMED_TEST(VectorTests, initializerListTest_Vector, TEST_TIMEOUT_DEFAULT) {
     assertCollection("after + copy", {10, 20, 30, 40, 50, 60, 70}, copy);
 }
 
+TIMED_TEST(VectorTests, iteratorConversionTest_Vector, TEST_TIMEOUT_DEFAULT) {
+    Vector<int> v {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    const auto& cv = v;
+
+    assertTrue("Const and non-const iterators to same element compare equal.", v.begin() == cv.begin());
+    assertTrue("Const and non-const iterators to past-end compare equal.", v.end() == cv.end());
+}
+
+TIMED_TEST(VectorTests, iteratorRangeCheckingTest_Vector, TEST_TIMEOUT_DEFAULT) {
+    Vector<int> v {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+    /* Should fail if we try to back up past beginning. */
+    try {
+        auto itr = v.begin();
+        --itr;
+        assertFail("Should have triggered an error decrementing start-of-range");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        auto itr = v.begin();
+        itr--;
+        assertFail("Should have triggered an error decrementing start-of-range");
+    } catch (const ErrorException &) {
+
+    }
+
+    /* Should fail if we try to advance past end. */
+    try {
+        auto itr = v.end();
+        ++itr;
+        assertFail("Should have triggered an error incrementing end-of-range.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        auto itr = v.end();
+        ++itr;
+        assertFail("Should have triggered an error incrementing end-of-range.");
+    } catch (const ErrorException &) {
+
+    }
+
+    /* Should fail if we try to use random access to jump out of range. */
+    try {
+        auto itr = v.begin();
+        itr[137] = 42;
+        assertFail("Should have triggered an error incrementing end-of-range.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        auto itr = v.begin();
+        itr[137] = 42;
+        assertFail("Should have triggered an error incrementing end-of-range.");
+    } catch (const ErrorException &) {
+
+    }
+
+    /* Should NOT fail if we try to use random access to jump into range. */
+    try {
+        auto itr = v.begin();
+        itr[9] = 137;
+    } catch (const ErrorException &) {
+        assertFail("Triggered an exception trying to go in range.");
+    }
+    try {
+        auto itr = v.end();
+        itr[-10] = 42;
+    } catch (const ErrorException &) {
+        assertFail("Triggered an exception trying to go in range.");
+    }
+
+    /* Should fail doing ANYTHING except comparisons with a singular iterator. */
+    try {
+        Vector<int>::iterator itr;
+        itr++;
+        assertFail("No exception triggered incrementing singular iterator.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<int>::iterator itr;
+        ++itr;
+        assertFail("No exception triggered incrementing singular iterator.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<int>::iterator itr;
+        itr--;
+        assertFail("No exception triggered decrementing singular iterator.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<int>::iterator itr;
+        --itr;
+        assertFail("No exception triggered incrementing singular iterator.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<std::string>::iterator itr;
+        *itr;
+        assertFail("No exception triggered dereferencing singular iterator.");
+    } catch (const ErrorException &) {
+
+    }
+
+    try {
+        Vector<std::string>::iterator itr;
+        itr->size();
+        assertFail("No exception triggered dereferencing singular iterator.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<std::string>::iterator itr;
+        itr[137];
+        assertFail("No exception triggered dereferencing singular iterator.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<int>::iterator itr;
+        itr - v.begin();
+        assertFail("No exception triggered subtracting singular iterator.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<int>::iterator itr;
+        v.begin() - itr;
+        assertFail("No exception triggered subtracting singular iterator.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<int>::iterator itr;
+        itr == v.begin();
+        assertFail("No exception comparing singular iterators.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<int>::iterator itr;
+        itr != v.begin();
+        assertFail("No exception comparing singular iterators.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<int>::iterator itr;
+        itr < v.begin();
+        assertFail("No exception comparing singular iterators.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<int>::iterator itr;
+        itr <= v.begin();
+        assertFail("No exception comparing singular iterators.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<int>::iterator itr;
+        itr >= v.begin();
+        assertFail("No exception comparing singular iterators.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<int>::iterator itr;
+        itr >  v.begin();
+        assertFail("No exception comparing singular iterators.");
+    } catch (const ErrorException &) {
+
+    }
+
+    try {
+        Vector<int>::iterator itr;
+        v.begin() == itr;
+        assertFail("No exception comparing singular iterators.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<int>::iterator itr;
+        v.begin() != itr;
+        assertFail("No exception comparing singular iterators.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<int>::iterator itr;
+        v.begin() < itr;
+        assertFail("No exception comparing singular iterators.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<int>::iterator itr;
+        v.begin() <= itr;
+        assertFail("No exception comparing singular iterators.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<int>::iterator itr;
+        v.begin() >= itr;
+        assertFail("No exception comparing singular iterators.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<int>::iterator itr;
+        v.begin() > itr;
+        assertFail("No exception comparing singular iterators.");
+    } catch (const ErrorException &) {
+
+    }
+
+    /* Shouldn't be able to do anything with iterators from two different
+     * containers.
+     */
+    try {
+        Vector<int> v2;
+        v.begin() == v2.begin();
+        assertFail("No exception comparing iterators from different containers.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<int> v2;
+        v.begin() != v2.begin();
+        assertFail("No exception comparing iterators from different containers.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<int> v2;
+        v.begin() < v2.begin();
+        assertFail("No exception comparing iterators from different containers.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<int> v2;
+        v.begin() <= v2.begin();
+        assertFail("No exception comparing iterators from different containers.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<int> v2;
+        v.begin() >= v2.begin();
+        assertFail("No exception comparing iterators from different containers.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<int> v2;
+        v.begin() > v2.begin();
+        assertFail("No exception comparing iterators from different containers.");
+    } catch (const ErrorException &) {
+
+    }
+    try {
+        Vector<int> v2;
+        v.begin() - v2.begin();
+        assertFail("No exception subtracting iterators from different containers.");
+    } catch (const ErrorException &) {
+
+    }
+}
+
 #ifdef SPL_THROW_ON_INVALID_ITERATOR
 TIMED_TEST(VectorTests, iteratorVersionTest_Vector, TEST_TIMEOUT_DEFAULT) {
     Vector<int> v1 {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -121,6 +438,17 @@ TIMED_TEST(VectorTests, iteratorVersionTest_Vector, TEST_TIMEOUT_DEFAULT) {
     }
 }
 #endif // SPL_THROW_ON_INVALID_ITERATOR
+
+TIMED_TEST(VectorTests, mapAllTest_Vector, TEST_TIMEOUT_DEFAULT) {
+    Vector<int> set {7, 5, 1, 2, 8};
+
+    int total = 0;
+    set.mapAll([&] (int value) {
+        total += value;
+    });
+
+    assertEqualsInt("mapAll produces correct sum.", std::accumulate(set.begin(), set.end(), 0), total);
+}
 
 TIMED_TEST(VectorTests, randomElementTest_Vector, TEST_TIMEOUT_DEFAULT) {
     Map<std::string, int> counts;

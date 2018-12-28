@@ -14,8 +14,15 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <numeric>
 
 TEST_CATEGORY(SetTests, "Set tests");
+
+/* Force instantiation of Set on a few types to make sure we didn't miss anything.
+ * The types must be comparable.
+ */
+template class Set<int>;
+template class Set<std::string>;
 
 TIMED_TEST(SetTests, compareTest_Set, TEST_TIMEOUT_DEFAULT) {
     Set<int> set1 {7, 5, 1, 2, 8};
@@ -107,6 +114,17 @@ TIMED_TEST(SetTests, iteratorVersionTest_Set, TEST_TIMEOUT_DEFAULT) {
     }
 }
 #endif // SPL_THROW_ON_INVALID_ITERATOR
+
+TIMED_TEST(SetTests, mapAllTest_Set, TEST_TIMEOUT_DEFAULT) {
+    Set<int> set {7, 5, 1, 2, 8};
+
+    int total = 0;
+    set.mapAll([&] (int value) {
+        total += value;
+    });
+
+    assertEqualsInt("mapAll produces correct sum.", std::accumulate(set.begin(), set.end(), 0), total);
+}
 
 TIMED_TEST(SetTests, randomElementTest_Set, TEST_TIMEOUT_DEFAULT) {
     Map<std::string, int> counts;

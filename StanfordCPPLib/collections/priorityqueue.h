@@ -54,6 +54,7 @@
 #include <cmath>
 #include <initializer_list>
 #include <utility>
+#include <queue>
 
 #define INTERNAL_INCLUDE 1
 #include "collections.h"

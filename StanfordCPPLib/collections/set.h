@@ -43,6 +43,7 @@
 #include <initializer_list>
 #include <iostream>
 #include <set>
+#include <functional>
 
 #define INTERNAL_INCLUDE 1
 #include "collections.h"
@@ -73,7 +74,7 @@ public:
      * as dictated by the operator <.
      * The ValueType must have an operator < in order to be used in this set.
      */
-    Set();
+    Set() = default;
 
     /*
      * Constructor: Set
@@ -89,8 +90,7 @@ public:
      * internally and not necessarily the order in which they are written
      * in the initializer list.
      */
-    Set(bool lessFunc(ValueType, ValueType));
-    Set(bool lessFunc(const ValueType&, const ValueType&));
+    Set(std::function<bool (const ValueType&, const ValueType&)> lessFunc);
 
     /*
      * Constructor: Set
@@ -116,15 +116,15 @@ public:
      * internally and not necessarily the order in which they are written
      * in the initializer list.
      */
-    Set(std::initializer_list<ValueType> list, bool lessFunc(ValueType, ValueType));
-    Set(std::initializer_list<ValueType> list, bool lessFunc(const ValueType&, const ValueType&));
+    Set(std::initializer_list<ValueType> list,
+        std::function<bool (const ValueType&, const ValueType&)>);
 
     /*
      * Destructor: ~Set
      * ----------------
      * Frees any heap storage associated with this set.
      */
-    virtual ~Set();
+    virtual ~Set() = default;
     
     /*
      * Method: add
@@ -146,7 +146,6 @@ public:
      * Identical in behavior to the += operator.
      */
     Set<ValueType>& addAll(const Set<ValueType>& set);
-    Set<ValueType>& addAll(std::initializer_list<ValueType> list);
 
     /*
      * Method: back
@@ -183,7 +182,6 @@ public:
      * Equivalent in behavior to isSupersetOf.
      */
     bool containsAll(const Set<ValueType>& set2) const;
-    bool containsAll(std::initializer_list<ValueType> list) const;
 
     /*
      * Method: equals
@@ -243,7 +241,6 @@ public:
      * You can also pass an initializer list such as {1, 2, 3}.
      */
     bool isSubsetOf(const Set& set2) const;
-    bool isSubsetOf(std::initializer_list<ValueType> list) const;
 
     /*
      * Method: isSupersetOf
@@ -256,7 +253,6 @@ public:
      * Equivalent in behavior to containsAll.
      */
     bool isSupersetOf(const Set& set2) const;
-    bool isSupersetOf(std::initializer_list<ValueType> list) const;
 
     /*
      * Method: mapAll
@@ -266,11 +262,7 @@ public:
      * for each one.  The values are processed in ascending order, as defined
      * by the comparison function.
      */
-    void mapAll(void (*fn)(ValueType)) const;
-    void mapAll(void (*fn)(const ValueType&)) const;
-
-    template <typename FunctorType>
-    void mapAll(FunctorType fn) const;
+    void mapAll(std::function<void (const ValueType&)> fn) const;
 
     /*
      * Method: remove
@@ -292,7 +284,6 @@ public:
      * Identical in behavior to the -= operator.
      */
     Set<ValueType>& removeAll(const Set<ValueType>& set);
-    Set<ValueType>& removeAll(std::initializer_list<ValueType> list);
 
     /*
      * Method: retainAll
@@ -305,7 +296,6 @@ public:
      * Identical in behavior to the *= operator.
      */
     Set<ValueType>& retainAll(const Set<ValueType>& set);
-    Set<ValueType>& retainAll(std::initializer_list<ValueType> list);
 
     /*
      * Method: size
@@ -375,7 +365,6 @@ public:
      * which case the operator returns a new set formed by adding that element.
      */
     Set operator +(const Set& set2) const;
-    Set operator +(std::initializer_list<ValueType> list) const;
     Set operator +(const ValueType& element) const;
 
     /*
@@ -387,7 +376,6 @@ public:
      * You can also pass an initializer list such as {1, 2, 3}.
      */
     Set operator *(const Set& set2) const;
-    Set operator *(std::initializer_list<ValueType> list) const;
 
     /*
      * Operator: -
@@ -402,7 +390,6 @@ public:
      * which case the operator returns a new set formed by removing that element.
      */
     Set operator -(const Set& set2) const;
-    Set operator -(std::initializer_list<ValueType> list) const;
     Set operator -(const ValueType& element) const;
 
     /*
@@ -422,7 +409,6 @@ public:
      *</pre>
      */
     Set& operator +=(const Set& set2);
-    Set& operator +=(std::initializer_list<ValueType> list);
     Set& operator +=(const ValueType& value);
 
     /*
@@ -434,7 +420,6 @@ public:
      * You can also pass an initializer list such as {1, 2, 3}.
      */
     Set& operator *=(const Set& set2);
-    Set& operator *=(std::initializer_list<ValueType> list);
 
     /*
      * Operator: -=
@@ -456,7 +441,6 @@ public:
      * <code>digits</code>.
      */
     Set& operator -=(const Set& set2);
-    Set& operator -=(std::initializer_list<ValueType> list);
     Set& operator -=(const ValueType& value);
 
     /*
@@ -481,7 +465,7 @@ public:
 
 private:
     Map<ValueType, bool> map;            /* Map used to store the element     */
-    bool removeFlag;                     /* Flag to differentiate += and -=   */
+    bool removeFlag = false;             /* Flag to differentiate += and -=   */
 
 public:
     /*
@@ -508,104 +492,46 @@ public:
         return *this;
     }
 
-    /*
-     * Iterator support
-     * ----------------
-     * The classes in the StanfordCPPLib collection implement input
-     * iterators so that they work symmetrically with respect to the
-     * corresponding STL classes.
-     */
-    class iterator : public std::iterator<std::input_iterator_tag,ValueType> {
-    private:
-        typename Map<ValueType,bool>::iterator mapit;  /* Iterator for the map */
-
-    public:
-        iterator() {
-            /* Empty */
-        }
-
-        iterator(typename Map<ValueType,bool>::iterator it) : mapit(it) {
-            /* Empty */
-        }
-
-        iterator(const iterator& it) {
-            mapit = it.mapit;
-        }
-
-        iterator& operator ++() {
-            ++mapit;
-            return *this;
-        }
-
-        iterator operator ++(int) {
-            iterator copy(*this);
-            operator++();
-            return copy;
-        }
-
-        bool operator ==(const iterator& rhs) {
-            return mapit == rhs.mapit;
-        }
-
-        bool operator !=(const iterator& rhs) {
-            return !(*this == rhs);
-        }
-
-        ValueType& operator *() {
-            return *mapit;
-        }
-
-        ValueType* operator ->() {
-            return &**this;
-        }
-    };
+    using const_iterator = typename Map<ValueType, bool>::const_iterator;
+    using iterator = const_iterator;
 
     iterator begin() const {
-        return iterator(map.begin());
+        return map.begin();
     }
 
     iterator end() const {
-        return iterator(map.end());
+        return map.end();
     }
 };
 
 template <typename ValueType>
-Set<ValueType>::Set() : removeFlag(false) {
-    // empty
-}
-
-template <typename ValueType>
-Set<ValueType>::Set(bool lessFunc(ValueType, ValueType))
-        : map(lessFunc) {
-    // empty
-}
-
-template <typename ValueType>
-Set<ValueType>::Set(bool lessFunc(const ValueType&, const ValueType&))
+Set<ValueType>::Set(std::function<bool (const ValueType&, const ValueType&)> lessFunc)
         : map(lessFunc) {
     // empty
 }
 
 template <typename ValueType>
 Set<ValueType>::Set(std::initializer_list<ValueType> list) {
-    addAll(list);
+    /* Can't do addAll because that would recursively try constructing a HashSet.
+     * Instead, directly add everything here. This becomes the focal point for
+     * all initializer_list conversions.
+     */
+    for (const auto& elem: list) {
+        add(elem);
+    }
 }
 
 template <typename ValueType>
-Set<ValueType>::Set(std::initializer_list<ValueType> list, bool lessFunc(ValueType, ValueType))
+Set<ValueType>::Set(std::initializer_list<ValueType> list,
+                    std::function<bool (const ValueType&, const ValueType&)> lessFunc)
         : map(lessFunc) {
-    addAll(list);
-}
-
-template <typename ValueType>
-Set<ValueType>::Set(std::initializer_list<ValueType> list, bool lessFunc(const ValueType&, const ValueType&))
-        : map(lessFunc) {
-    addAll(list);
-}
-
-template <typename ValueType>
-Set<ValueType>::~Set() {
-    /* Empty */
+    /* Can't do addAll because that would recursively try constructing a HashSet.
+     * Instead, directly add everything here. This becomes the focal point for
+     * all initializer_list conversions.
+     */
+    for (const auto& elem: list) {
+        add(elem);
+    }
 }
 
 template <typename ValueType>
@@ -616,15 +542,7 @@ void Set<ValueType>::add(const ValueType& value) {
 template <typename ValueType>
 Set<ValueType>& Set<ValueType>::addAll(const Set& set2) {
     for (const ValueType& value : set2) {
-        this->add(value);
-    }
-    return *this;
-}
-
-template <typename ValueType>
-Set<ValueType>& Set<ValueType>::addAll(std::initializer_list<ValueType> list) {
-    for (const ValueType& value : list) {
-        this->add(value);
+        add(value);
     }
     return *this;
 }
@@ -650,16 +568,6 @@ bool Set<ValueType>::contains(const ValueType& value) const {
 template <typename ValueType>
 bool Set<ValueType>::containsAll(const Set<ValueType>& set2) const {
     for (const ValueType& value : set2) {
-        if (!contains(value)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-template <typename ValueType>
-bool Set<ValueType>::containsAll(std::initializer_list<ValueType> list) const {
-    for (const ValueType& value : list) {
         if (!contains(value)) {
             return false;
         }
@@ -723,35 +631,15 @@ bool Set<ValueType>::isSubsetOf(const Set& set2) const {
 }
 
 template <typename ValueType>
-bool Set<ValueType>::isSubsetOf(std::initializer_list<ValueType> list) const {
-    Set<ValueType> set2(list);
-    return isSubsetOf(set2);
-}
-
-template <typename ValueType>
 bool Set<ValueType>::isSupersetOf(const Set& set2) const {
     return containsAll(set2);
 }
 
 template <typename ValueType>
-bool Set<ValueType>::isSupersetOf(std::initializer_list<ValueType> list) const {
-    return containsAll(list);
-}
-
-template <typename ValueType>
-void Set<ValueType>::mapAll(void (*fn)(ValueType)) const {
-    map.mapAll(fn);
-}
-
-template <typename ValueType>
-void Set<ValueType>::mapAll(void (*fn)(const ValueType&)) const {
-    map.mapAll(fn);
-}
-
-template <typename ValueType>
-template <typename FunctorType>
-void Set<ValueType>::mapAll(FunctorType fn) const {
-    map.mapAll(fn);
+void Set<ValueType>::mapAll(std::function<void (const ValueType &)> fn) const {
+    map.mapAll([&](const auto& elem, const auto &) {
+        fn(elem);
+    });
 }
 
 template <typename ValueType>
@@ -774,14 +662,6 @@ Set<ValueType>& Set<ValueType>::removeAll(const Set& set2) {
 }
 
 template <typename ValueType>
-Set<ValueType>& Set<ValueType>::removeAll(std::initializer_list<ValueType> list) {
-    for (const ValueType& value : list) {
-        remove(value);
-    }
-    return *this;
-}
-
-template <typename ValueType>
 Set<ValueType>& Set<ValueType>::retainAll(const Set& set2) {
     Vector<ValueType> toRemove;
     for (ValueType value : *this) {
@@ -793,12 +673,6 @@ Set<ValueType>& Set<ValueType>::retainAll(const Set& set2) {
         this->remove(value);
     }
     return *this;
-}
-
-template <typename ValueType>
-Set<ValueType>& Set<ValueType>::retainAll(std::initializer_list<ValueType> list) {
-    Set<ValueType> set2(list);
-    return retainAll(set2);
 }
 
 template <typename ValueType>
@@ -866,13 +740,6 @@ Set<ValueType> Set<ValueType>::operator +(const Set& set2) const {
 }
 
 template <typename ValueType>
-Set<ValueType> Set<ValueType>::operator +(std::initializer_list<ValueType> list) const {
-    Set<ValueType> set = *this;
-    set.addAll(list);
-    return set;
-}
-
-template <typename ValueType>
 Set<ValueType> Set<ValueType>::operator +(const ValueType& element) const {
     Set<ValueType> set = *this;
     set.add(element);
@@ -886,21 +753,9 @@ Set<ValueType> Set<ValueType>::operator *(const Set& set2) const {
 }
 
 template <typename ValueType>
-Set<ValueType> Set<ValueType>::operator *(std::initializer_list<ValueType> list) const {
-    Set<ValueType> set = *this;
-    return set.retainAll(list);
-}
-
-template <typename ValueType>
 Set<ValueType> Set<ValueType>::operator -(const Set& set2) const {
     Set<ValueType> set = *this;
     return set.removeAll(set2);
-}
-
-template <typename ValueType>
-Set<ValueType> Set<ValueType>::operator -(std::initializer_list<ValueType> list) const {
-    Set<ValueType> set = *this;
-    return set.removeAll(list);
 }
 
 template <typename ValueType>
@@ -916,11 +771,6 @@ Set<ValueType>& Set<ValueType>::operator +=(const Set& set2) {
 }
 
 template <typename ValueType>
-Set<ValueType>& Set<ValueType>::operator +=(std::initializer_list<ValueType> list) {
-    return addAll(list);
-}
-
-template <typename ValueType>
 Set<ValueType>& Set<ValueType>::operator +=(const ValueType& value) {
     add(value);
     removeFlag = false;
@@ -933,18 +783,8 @@ Set<ValueType>& Set<ValueType>::operator *=(const Set& set2) {
 }
 
 template <typename ValueType>
-Set<ValueType>& Set<ValueType>::operator *=(std::initializer_list<ValueType> list) {
-    return retainAll(list);
-}
-
-template <typename ValueType>
 Set<ValueType>& Set<ValueType>::operator -=(const Set& set2) {
     return removeAll(set2);
-}
-
-template <typename ValueType>
-Set<ValueType>& Set<ValueType>::operator -=(std::initializer_list<ValueType> list) {
-    return removeAll(list);
 }
 
 template <typename ValueType>

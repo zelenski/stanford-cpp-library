@@ -48,6 +48,9 @@
 #include <cstdlib>
 #include <initializer_list>
 #include <utility>
+#include <type_traits>
+#include <map>
+#include <functional>
 
 #define INTERNAL_INCLUDE 1
 #include "collections.h"
@@ -91,8 +94,7 @@ public:
      * The function can accept the two keys to compare either by value
      * or by const reference.
      */
-    Map(bool lessFunc(KeyType, KeyType));
-    Map(bool lessFunc(const KeyType&, const KeyType&));
+    Map(std::function<bool (const KeyType&, const KeyType&)> lessFunc);
 
     /*
      * Constructor: Map
@@ -102,7 +104,7 @@ public:
      * Note that the pairs are stored in key-sorted order internally and not
      * necessarily the order in which they are written in the initializer list.
      */
-    Map(std::initializer_list<std::pair<KeyType, ValueType> > list);
+    Map(std::initializer_list<std::pair<const KeyType, ValueType>> list);
 
     /*
      * Constructor: Map
@@ -114,15 +116,15 @@ public:
      * The function can accept the two keys to compare either by value
      * or by const reference.
      */
-    Map(std::initializer_list<std::pair<KeyType, ValueType> > list, bool lessFunc(KeyType, KeyType));
-    Map(std::initializer_list<std::pair<KeyType, ValueType> > list, bool lessFunc(const KeyType&, const KeyType&));
+    Map(std::initializer_list<std::pair<const KeyType, ValueType>> list,
+        std::function<bool (const KeyType&, const KeyType&)> lessFunc);
 
     /*
      * Destructor: ~Map
      * ----------------
      * Frees any heap storage associated with this map.
      */
-    virtual ~Map();
+    virtual ~Map() = default;
     
     /*
      * Method: add
@@ -145,7 +147,6 @@ public:
      * Identical in behavior to putAll.
      */
     Map& addAll(const Map& map2);
-    Map& addAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: back
@@ -227,11 +228,7 @@ public:
      * for each one.  The keys are processed in ascending order, as defined
      * by the comparison function.
      */
-    void mapAll(void (*fn)(KeyType, ValueType)) const;
-    void mapAll(void (*fn)(const KeyType&, const ValueType&)) const;
-    
-    template <typename FunctorType>
-    void mapAll(FunctorType fn) const;
+    void mapAll(std::function<void (const KeyType&, const ValueType&)> fn) const;
 
     /*
      * Method: put
@@ -255,7 +252,6 @@ public:
      * Identical in behavior to addAll.
      */
     Map& putAll(const Map& map2);
-    Map& putAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: remove
@@ -276,7 +272,6 @@ public:
      * Returns a reference to this map.
      */
     Map& removeAll(const Map& map2);
-    Map& removeAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: retainAll
@@ -289,7 +284,6 @@ public:
      * Returns a reference to this map.
      */
     Map& retainAll(const Map& map2);
-    Map& retainAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: size
@@ -371,7 +365,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map operator +(const Map& map2) const;
-    Map operator +(std::initializer_list<std::pair<KeyType, ValueType> > list) const;
 
     /*
      * Operator: +=
@@ -382,7 +375,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map& operator +=(const Map& map2);
-    Map& operator +=(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Operator: -
@@ -393,7 +385,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map operator -(const Map& map2) const;
-    Map operator -(std::initializer_list<std::pair<KeyType, ValueType> > list) const;
 
     /*
      * Operator: -=
@@ -404,7 +395,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map& operator -=(const Map& map2);
-    Map& operator -=(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Operator: *
@@ -415,7 +405,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map operator *(const Map& map2) const;
-    Map operator *(std::initializer_list<std::pair<KeyType, ValueType> > list) const;
 
     /*
      * Operator: *=
@@ -426,7 +415,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map& operator *=(const Map& map2);
-    Map& operator *=(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Additional Map operations
@@ -450,458 +438,9 @@ public:
     /* of the implementation and should not be of interest to clients.    */
     /**********************************************************************/
 
-    /*
-     * Implementation notes:
-     * ---------------------
-     * The map class is represented using a binary search tree.  The
-     * specific implementation used here is the classic AVL algorithm
-     * developed by Georgii Adel'son-Vel'skii and Evgenii Landis in 1962.
-     */
-
 private:
-    /* Constant definitions */
-    static const int BST_LEFT_HEAVY = -1;
-    static const int BST_IN_BALANCE = 0;
-    static const int BST_RIGHT_HEAVY = +1;
-
-    /* Type definition for nodes in the binary search tree */
-    struct BSTNode {
-        KeyType key;             /* The key stored in this node         */
-        ValueType value;         /* The corresponding value             */
-        BSTNode* left;           /* Subtree containing all smaller keys */
-        BSTNode* right;          /* Subtree containing all larger keys  */
-        int bf;                  /* AVL balance factor                  */
-    };
-
-    /*
-     * Implementation notes: Comparator
-     * --------------------------------
-     * The Comparator class encapsulates a functor that compares two values
-     * of KeyType.  In contrast to the classes in the STL, all of which embed
-     * the comparator in the type, the Map class and its derivatives pass an
-     * optional Comparator value.  While this strategy results in a more
-     * complex implementation, it has the advantage of allowing maps and sets
-     * to carry their own comparators without forcing the client to include
-     * the comparator in the template declaration.  This simplification is
-     * particularly important for the Graph class.
-     *
-     * The allocation is required in the TemplateComparator class because
-     * the type std::binary_function has subclasses but does not define a
-     * virtual destructor.
-     */
-    class Comparator {
-    public:
-        virtual ~Comparator() { /* empty */ }
-        virtual bool lessThan(const KeyType& k1, const KeyType& k2) = 0;
-        virtual Comparator* clone() = 0;
-    };
-
-    /*
-     * Compares based on an external less-than function that is passed in
-     * by the client at construction.
-     */
-    class FunctionComparator : public Comparator {
-    public:
-        FunctionComparator(void* lessFunc) {
-            this->lessFunc = lessFunc;
-        }
-
-        virtual bool lessThan(const KeyType& k1, const KeyType& k2) {
-            bool (*less)(KeyType, KeyType) =
-                    (bool (*)(KeyType, KeyType)) this->lessFunc;
-            return less(k1, k2);
-        }
-
-        virtual Comparator* clone() {
-            return new FunctionComparator(lessFunc);
-        }
-
-    private:
-        void* lessFunc;
-    };
-
-    /*
-     * Compares based on an external less-than function that is passed in
-     * by the client at construction.
-     * This is the same as FunctionComparator except that it uses a comparison
-     * function that accepts its arguments by const reference.
-     */
-    class FunctionConstRefComparator : public Comparator {
-    public:
-        FunctionConstRefComparator(void* lessFunc) {
-            this->lessFunc = lessFunc;
-        }
-
-        virtual bool lessThan(const KeyType& k1, const KeyType& k2) {
-            bool (*less)(const KeyType&, const KeyType&) =
-                    (bool (*)(const KeyType&, const KeyType&)) this->lessFunc;
-            return less(k1, k2);
-        }
-
-        virtual Comparator* clone() {
-            return new FunctionConstRefComparator(lessFunc);
-        }
-
-    private:
-        void* lessFunc;
-    };
-
-    /*
-     * Compares based on an internal template less-than function derived from
-     * the language standard std::less comparison function mechanism.
-     */
-    template <typename CompareType>
-    class TemplateComparator : public Comparator {
-    public:
-        TemplateComparator(const CompareType& compareType) {
-            this->cmp = compareType;
-        }
-
-        virtual bool lessThan(const KeyType& k1, const KeyType& k2) {
-            return (cmp)(k1, k2);
-        }
-
-        virtual Comparator* clone() {
-            return new TemplateComparator<CompareType>(cmp);
-        }
-
-    private:
-        CompareType cmp;
-    };
-
-    Comparator& getComparator() const {
-        return *cmpp;
-    }
-
-    // instance variables
-    BSTNode* root;      // pointer to the root of the tree
-    int nodeCount;      // number of entries in the map
-    Comparator* cmpp;   // pointer to the comparator
-    unsigned int m_version = 0; // structure version for detecting invalid iterators
-
-    // private methods
-
-    /*
-     * Implementation notes: findNode(t, key)
-     * --------------------------------------
-     * Searches the tree rooted at t to find the specified key, searching
-     * in the left or right subtree, as approriate.  If a matching node
-     * is found, findNode returns a pointer to the value cell in that node.
-     * If no matching node exists in the tree, findNode returns nullptr.
-     */
-    ValueType* findNode(BSTNode* t, const KeyType& key) const {
-        if (!t) {
-            return nullptr;
-        }
-        int sign = compareKeys(key, t->key);
-        if (sign == 0) {
-            return &t->value;
-        }
-        if (sign < 0) {
-            return findNode(t->left, key);
-        } else {
-            return findNode(t->right, key);
-        }
-    }
-
-    /*
-     * Implementation notes: addNode(t, key, heightFlag)
-     * -------------------------------------------------
-     * Searches the tree rooted at t to find the specified key, searching
-     * in the left or right subtree, as approriate.  If a matching node
-     * is found, addNode returns a pointer to the value cell in that node,
-     * just like findNode.  If no matching node exists in the tree, addNode
-     * creates a new node with a default value.  The heightFlag reference
-     * parameter returns a bool indicating whether the height of the tree
-     * was changed by this operation.
-     */
-    ValueType* addNode(BSTNode*& t, const KeyType& key, bool& heightFlag) {
-        heightFlag = false;
-        if (!t)  {
-            t = new BSTNode();
-            t->key = key;
-            t->value = ValueType();
-            t->bf = BST_IN_BALANCE;
-            t->left = t->right = nullptr;
-            heightFlag = true;
-            nodeCount++;
-            return &t->value;
-        }
-        
-        int sign = compareKeys(key, t->key);
-        if (sign == 0) {
-            return &t->value;
-        }
-        ValueType* vp = nullptr;
-        int bfDelta = BST_IN_BALANCE;
-        if (sign < 0) {
-            vp = addNode(t->left, key, heightFlag);
-            if (heightFlag) {
-                bfDelta = BST_LEFT_HEAVY;
-            }
-        } else {
-            vp = addNode(t->right, key, heightFlag);
-            if (heightFlag) {
-                bfDelta = BST_RIGHT_HEAVY;
-            }
-        }
-        updateBF(t, bfDelta);
-        heightFlag = (bfDelta != 0 && t->bf != BST_IN_BALANCE);
-        return vp;
-    }
-
-    /*
-     * Implementation notes: removeNode(t, key)
-     * ----------------------------------------
-     * Removes the node containing the specified key from the tree rooted
-     * at t.  The return value is true if the height of this subtree
-     * changes.  The removeTargetNode method does the actual deletion.
-     */
-    bool removeNode(BSTNode*& t, const KeyType& key) {
-        if (!t) {
-            return false;
-        }
-        int sign = compareKeys(key, t->key);
-        if (sign == 0) {
-            return removeTargetNode(t);
-        }
-        int bfDelta = BST_IN_BALANCE;
-        if (sign < 0) {
-            if (removeNode(t->left, key)) {
-                bfDelta = BST_RIGHT_HEAVY;
-            }
-        } else {
-            if (removeNode(t->right, key)) {
-                bfDelta = BST_LEFT_HEAVY;
-            }
-        }
-        updateBF(t, bfDelta);
-        return bfDelta != 0 && t->bf == BST_IN_BALANCE;
-    }
-
-    /*
-     * Implementation notes: removeTargetNode(t)
-     * -----------------------------------------
-     * Removes the node which is passed by reference as t.  The easy case
-     * occurs when either (or both) of the children is null; all you need
-     * to do is replace the node with its non-null child, if any.  If both
-     * children are non-null, this code finds the rightmost descendent of
-     * the left child; this node may not be a leaf, but will have no right
-     * child.  Its left child replaces it in the tree, after which the
-     * replacement data is moved to the position occupied by the target node.
-     */
-    bool removeTargetNode(BSTNode*& t) {
-        BSTNode* toDelete = t;
-        if (!t->left) {
-            t = t->right;
-            delete toDelete;
-            nodeCount--;
-            return true;
-        } else if (!t->right) {
-            t = t->left;
-            delete toDelete;
-            nodeCount--;
-            return true;
-        } else {
-            BSTNode* successor = t->left;
-            while (successor->right) {
-                successor = successor->right;
-            }
-            t->key = successor->key;
-            t->value = successor->value;
-            if (removeNode(t->left, successor->key)) {
-                updateBF(t, BST_RIGHT_HEAVY);
-                return (t->bf == BST_IN_BALANCE);
-            }
-            return false;
-        }
-    }
-
-    /*
-     * Implementation notes: updateBF(t, bfDelta)
-     * ------------------------------------------
-     * Updates the balance factor in the node and rebalances the tree
-     * if necessary.
-     */
-    void updateBF(BSTNode*& t, int bfDelta) {
-        t->bf += bfDelta;
-        if (t->bf < BST_LEFT_HEAVY) {
-            fixLeftImbalance(t);
-        } else if (t->bf > BST_RIGHT_HEAVY) {
-            fixRightImbalance(t);
-        }
-    }
-
-    /*
-     * Implementation notes: fixLeftImbalance(t)
-     * -----------------------------------------
-     * This function is called when a node has been found that is out
-     * of balance with the longer subtree on the left.  Depending on
-     * the balance factor of the left child, the code performs a
-     * single or double rotation.
-     */
-    void fixLeftImbalance(BSTNode*& t) {
-        BSTNode *child = t->left;
-        if (child->bf == BST_RIGHT_HEAVY) {
-            int oldBF = child->right->bf;
-            rotateLeft(t->left);
-            rotateRight(t);
-            t->bf = BST_IN_BALANCE;
-            switch (oldBF) {
-            case BST_LEFT_HEAVY:
-                t->left->bf = BST_IN_BALANCE;
-                t->right->bf = BST_RIGHT_HEAVY;
-                break;
-            case BST_IN_BALANCE:
-                t->left->bf = t->right->bf = BST_IN_BALANCE;
-                break;
-            case BST_RIGHT_HEAVY:
-                t->left->bf = BST_LEFT_HEAVY;
-                t->right->bf = BST_IN_BALANCE;
-                break;
-            }
-        } else if (child->bf == BST_IN_BALANCE) {
-            rotateRight(t);
-            t->bf = BST_RIGHT_HEAVY;
-            t->right->bf = BST_LEFT_HEAVY;
-        } else {
-            rotateRight(t);
-            t->right->bf = t->bf = BST_IN_BALANCE;
-        }
-    }
-
-    /*
-     * Implementation notes: rotateLeft(t)
-     * -----------------------------------
-     * This function performs a single left rotation of the tree
-     * that is passed by reference.  The balance factors
-     * are unchanged by this function and must be corrected at a
-     * higher level of the algorithm.
-     */
-    void rotateLeft(BSTNode*& t) {
-        BSTNode* child = t->right;
-        t->right = child->left;
-        child->left = t;
-        t = child;
-    }
-
-    /*
-     * Implementation notes: fixRightImbalance(t)
-     * ------------------------------------------
-     * This function is called when a node has been found that
-     * is out of balance with the longer subtree on the right.
-     * Depending on the balance factor of the right child, the
-     * code performs a single or double rotation.
-     */
-    void fixRightImbalance(BSTNode*& t) {
-        BSTNode* child = t->right;
-        if (child->bf == BST_LEFT_HEAVY) {
-            int oldBF = child->left->bf;
-            rotateRight(t->right);
-            rotateLeft(t);
-            t->bf = BST_IN_BALANCE;
-            switch (oldBF) {
-            case BST_LEFT_HEAVY:
-                t->left->bf = BST_IN_BALANCE;
-                t->right->bf = BST_RIGHT_HEAVY;
-                break;
-            case BST_IN_BALANCE:
-                t->left->bf = t->right->bf = BST_IN_BALANCE;
-                break;
-            case BST_RIGHT_HEAVY:
-                t->left->bf = BST_LEFT_HEAVY;
-                t->right->bf = BST_IN_BALANCE;
-                break;
-            }
-        } else if (child->bf == BST_IN_BALANCE) {
-            rotateLeft(t);
-            t->bf = BST_LEFT_HEAVY;
-            t->left->bf = BST_RIGHT_HEAVY;
-        } else {
-            rotateLeft(t);
-            t->left->bf = t->bf = BST_IN_BALANCE;
-        }
-    }
-
-    /*
-     * Implementation notes: rotateRight(t)
-     * ------------------------------------
-     * This function performs a single right rotation of the tree
-     * that is passed by reference.  The balance factors
-     * are unchanged by this function and must be corrected at a
-     * higher level of the algorithm.
-     */
-    void rotateRight(BSTNode*& t) {
-        BSTNode* child = t->left;
-        t->left = child->right;
-        child->right = t;
-        t = child;
-    }
-
-    /*
-     * Implementation notes: deleteTree(t)
-     * -----------------------------------
-     * Deletes all the nodes in the tree.
-     */
-    void deleteTree(BSTNode* t) {
-        if (t) {
-            deleteTree(t->left);
-            deleteTree(t->right);
-            delete t;
-        }
-    }
-
-    /*
-     * Implementation notes: mapAll
-     * ----------------------------
-     * Calls fn(key, value) for every key-value pair in the tree.
-     */
-    void mapAll(BSTNode* t, void (*fn)(KeyType, ValueType)) const {
-        if (t) {
-            mapAll(t->left, fn);
-            fn(t->key, t->value);
-            mapAll(t->right, fn);
-        }
-    }
-
-    void mapAll(BSTNode* t,
-                void (*fn)(const KeyType&, const ValueType&)) const {
-        if (t) {
-            mapAll(t->left, fn);
-            fn(t->key, t->value);
-            mapAll(t->right, fn);
-        }
-    }
-
-    template <typename FunctorType>
-    void mapAll(BSTNode* t, FunctorType fn) const {
-        if (t) {
-            mapAll(t->left, fn);
-            fn(t->key, t->value);
-            mapAll(t->right, fn);
-        }
-    }
-
-    void deepCopy(const Map& other) {
-        root = copyTree(other.root);
-        nodeCount = other.nodeCount;
-        cmpp = (!other.cmpp) ? nullptr : other.cmpp->clone();
-        m_version++;
-    }
-
-    BSTNode* copyTree(BSTNode* const t) {
-        if (!t) {
-            return nullptr;
-        } else {
-            BSTNode* np = new BSTNode;
-            np->key = t->key;
-            np->value = t->value;
-            np->bf = t->bf;
-            np->left = copyTree(t->left);
-            np->right = copyTree(t->right);
-            return np;
-        }
-    }
+    std::map<KeyType, ValueType, std::function<bool(const KeyType&, const KeyType&)>> mElements;
+    stanfordcpplib::collections::VersionTracker mVersion;
 
 public:
     /*
@@ -913,234 +452,33 @@ public:
      * difficult to understand for the average client.
      */
 
-    /* Extended constructors */
-    template <typename CompareType>
-    explicit Map(CompareType cmp) {
-        root = nullptr;
-        nodeCount = 0;
-        cmpp = new TemplateComparator<CompareType>(cmp);
-    }
+    using const_iterator = stanfordcpplib::collections::ProjectingIterator<stanfordcpplib::collections::CheckedIterator<typename std::map<KeyType, ValueType>::const_iterator>>;
+    using iterator = const_iterator;
 
-    /*
-     * Implementation notes: compareKeys(k1, k2)
-     * -----------------------------------------
-     * Compares the keys k1 and k2 and returns an integer (-1, 0, or +1)
-     * depending on whether k1 < k2, k1 == k2, or k1 > k2, respectively.
-     */
-    int compareKeys(const KeyType& k1, const KeyType& k2) const {
-        if (cmpp->lessThan(k1, k2)) {
-            return -1;
-        } else if (cmpp->lessThan(k2, k1)) {
-            return +1;
-        } else {
-            return 0;
-        }
-    }
-
-    /*
-     * Deep copying support
-     * --------------------
-     * This copy constructor and operator= are defined to make a
-     * deep copy, making it possible to pass/return maps by value
-     * and assign from one map to another.
-     */
-    Map& operator =(const Map& src) {
-        if (this != &src) {
-            clear();
-            if (cmpp) {
-                // because we are about to clone() the other map's comparator
-                delete cmpp;
-                cmpp = nullptr;
-            }
-            deepCopy(src);
-        }
-        return *this;
-    }
-
-    Map(const Map& src) : root(nullptr), nodeCount(0), cmpp(nullptr) {
-        deepCopy(src);
-    }
-
-    /*
-     * Iterator support
-     * ----------------
-     * The classes in the StanfordCPPLib collection implement input
-     * iterators so that they work symmetrically with respect to the
-     * corresponding STL classes.
-     */
-    class iterator : public std::iterator<std::input_iterator_tag, KeyType> {
-    private:
-        struct NodeMarker {
-            BSTNode* np;
-            bool processed;
-        };
-
-        const Map* mp;               // pointer to the map
-        int index;                   // index of current element
-        Stack<NodeMarker> stack;     // stack of unprocessed nodes
-        unsigned int itr_version;
-
-        void findLeftmostChild() {
-            BSTNode *np = stack.peek().np;
-            if (!np) {
-                return;
-            }
-            while (np->left) {
-                NodeMarker marker = { np->left,  false };
-                stack.push(marker);
-                np = np->left;
-            }
-        }
-
-    public:
-        iterator()
-                : mp(nullptr),
-                  index(0),
-                  itr_version(0) {
-            /* Empty */
-        }
-
-        iterator(const Map* theMap, bool end)
-                : mp(theMap) {
-            if (end || mp->nodeCount == 0) {
-                index = mp->nodeCount;
-            } else {
-                index = 0;
-                NodeMarker marker = { mp->root, false };
-                stack.push(marker);
-                findLeftmostChild();
-            }
-            itr_version = mp->version();
-        }
-
-        iterator(const iterator& it)
-                : mp(it.mp),
-                  index(it.index),
-                  stack(it.stack),
-                  itr_version(it.itr_version) {
-            // empty
-        }
-
-        iterator& operator ++() {
-            stanfordcpplib::collections::checkVersion(*mp, *this);
-            NodeMarker marker = stack.pop();
-            BSTNode* np = marker.np;
-            if (!np->right) {
-                while (!stack.isEmpty() && stack.peek().processed) {
-                    stack.pop();
-                }
-            } else {
-                marker.processed = true;
-                stack.push(marker);
-                marker.np = np->right;
-                marker.processed = false;
-                stack.push(marker);
-                findLeftmostChild();
-            }
-            index++;
-            return *this;
-        }
-
-        iterator operator ++(int) {
-            stanfordcpplib::collections::checkVersion(*mp, *this);
-            iterator copy(*this);
-            operator++();
-            return copy;
-        }
-
-        bool operator ==(const iterator& rhs) {
-            return mp == rhs.mp && index == rhs.index;
-        }
-
-        bool operator !=(const iterator& rhs) {
-            return !(*this == rhs);
-        }
-
-        KeyType& operator *() {
-            stanfordcpplib::collections::checkVersion(*mp, *this);
-            return stack.peek().np->key;
-        }
-
-        KeyType* operator ->() {
-            stanfordcpplib::collections::checkVersion(*mp, *this);
-            return &stack.peek().np->key;
-        }
-
-        unsigned int version() const {
-            return itr_version;
-        }
-
-        friend class Map;
-    };
-
-    /*
-     * Returns an iterator positioned at the first key of the map.
-     */
-    iterator begin() const {
-        return iterator(this, /* end */ false);
-    }
-
-    /*
-     * Returns an iterator positioned at the last key of the map.
-     */
-    iterator end() const {
-        return iterator(this, /* end */ true);
-    }
-
-    /*
-     * Returns the internal version of this collection.
-     * This is used to check for invalid iterators and issue error messages.
-     */
-    unsigned int version() const;
+    const_iterator begin() const;
+    const_iterator end() const;
 };
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>::Map() : root(nullptr), nodeCount(0) {
-    cmpp = new TemplateComparator<std::less<KeyType> >(std::less<KeyType>());
+Map<KeyType, ValueType>::Map() : mElements(std::less<KeyType>()) {
+
 }
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>::Map(bool lessFunc(KeyType, KeyType))
-        : root(nullptr), nodeCount(0) {
-    cmpp = new FunctionComparator((void*) lessFunc);
+Map<KeyType, ValueType>::Map(std::function<bool(const KeyType&, const KeyType&)> lessFunc)
+        : mElements(lessFunc) {
 }
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>::Map(bool lessFunc(const KeyType&, const KeyType&))
-        : root(nullptr), nodeCount(0) {
-    cmpp = new FunctionConstRefComparator((void*) lessFunc);
+Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<const KeyType, ValueType>> list)
+        : mElements(list, std::less<KeyType>()) {
+
 }
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<KeyType, ValueType> > list)
-        : root(nullptr), nodeCount(0) {
-    cmpp = new TemplateComparator<std::less<KeyType> >(std::less<KeyType>());
-    putAll(list);
-}
-
-template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<KeyType, ValueType> > list,
-                             bool lessFunc(KeyType, KeyType))
-        : root(nullptr), nodeCount(0) {
-    cmpp = new FunctionComparator((void*) lessFunc);
-    putAll(list);
-}
-
-template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<KeyType, ValueType> > list,
-                             bool lessFunc(const KeyType&, const KeyType&))
-        : root(nullptr), nodeCount(0) {
-    cmpp = new FunctionConstRefComparator((void*) lessFunc);
-    putAll(list);
-}
-
-template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>::~Map() {
-    clear();
-    if (cmpp) {
-        delete cmpp;
-        cmpp = nullptr;
-    }
+Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<const KeyType, ValueType>> list,
+                             std::function<bool(const KeyType&, const KeyType&)> lessFunc)
+        : mElements(list, lessFunc) {
 }
 
 template <typename KeyType, typename ValueType>
@@ -1155,34 +493,22 @@ Map<KeyType, ValueType>& Map<KeyType, ValueType>::addAll(const Map& map2) {
 }
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>& Map<KeyType, ValueType>::addAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return putAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 KeyType Map<KeyType, ValueType>::back() const {
     if (isEmpty()) {
         error("Map::back: map is empty");
     }
-    BSTNode* node = root;
-    while (node && node->right) {
-        node = node->right;
-    }
-    return node->key;
+    return mElements.rbegin()->first;
 }
 
 template <typename KeyType, typename ValueType>
 void Map<KeyType, ValueType>::clear() {
-    deleteTree(root);
-    root = nullptr;
-    nodeCount = 0;
-    m_version++;
+    mElements.clear();
+    mVersion.update();
 }
 
 template <typename KeyType, typename ValueType>
 bool Map<KeyType, ValueType>::containsKey(const KeyType& key) const {
-    return findNode(root, key) != nullptr;
+    return !!mElements.count(key);
 }
 
 template <typename KeyType, typename ValueType>
@@ -1195,55 +521,41 @@ KeyType Map<KeyType, ValueType>::front() const {
     if (isEmpty()) {
         error("Map::front: map is empty");
     }
-    return *begin();
+    return mElements.begin()->first;
 }
 
 template <typename KeyType, typename ValueType>
 ValueType Map<KeyType, ValueType>::get(const KeyType& key) const {
-    ValueType* vp = findNode(root, key);
-    if (!vp) {
-        return ValueType();
-    }
-    return *vp;
+    auto itr = mElements.find(key);
+    return itr == mElements.end()? ValueType() : itr->second;
 }
 
 template <typename KeyType, typename ValueType>
 bool Map<KeyType, ValueType>::isEmpty() const {
-    return nodeCount == 0;
+    return mElements.empty();
 }
 
 template <typename KeyType,typename ValueType>
 Vector<KeyType> Map<KeyType, ValueType>::keys() const {
     Vector<KeyType> keyset;
-    for (const KeyType& key : *this) {
-        keyset.add(key);
+    for (const auto& entry: mElements) {
+        keyset.add(entry.first);
     }
     return keyset;
 }
 
 template <typename KeyType, typename ValueType>
-void Map<KeyType, ValueType>::mapAll(void (*fn)(KeyType, ValueType)) const {
-    mapAll(root, fn);
-}
-
-template <typename KeyType, typename ValueType>
-void Map<KeyType, ValueType>::mapAll(void (*fn)(const KeyType &,
-                                                const ValueType &)) const {
-    mapAll(root, fn);
-}
-
-template <typename KeyType, typename ValueType>
-template <typename FunctorType>
-void Map<KeyType, ValueType>::mapAll(FunctorType fn) const {
-    mapAll(root, fn);
+void Map<KeyType, ValueType>::mapAll(std::function<void (const KeyType&, const ValueType&)> fn) const {
+    for (const auto& entry: mElements) {
+        fn(entry.first, entry.second);
+    }
 }
 
 template <typename KeyType, typename ValueType>
 void Map<KeyType, ValueType>::put(const KeyType& key,
                                   const ValueType& value) {
-    bool dummy;
-    *addNode(root, key, dummy) = value;
-    m_version++;
+    mElements[key] = value;
+    mVersion.update();
 }
 
 template <typename KeyType, typename ValueType>
@@ -1255,18 +567,9 @@ Map<KeyType, ValueType>& Map<KeyType, ValueType>::putAll(const Map& map2) {
 }
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>& Map<KeyType, ValueType>::putAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    for (const std::pair<KeyType, ValueType>& pair : list) {
-        put(pair.first, pair.second);
-    }
-    return *this;
-}
-
-template <typename KeyType, typename ValueType>
 void Map<KeyType, ValueType>::remove(const KeyType& key) {
-    removeNode(root, key);
-    m_version++;
+    mElements.erase(key);
+    mVersion.update();
 }
 
 template <typename KeyType, typename ValueType>
@@ -1274,17 +577,6 @@ Map<KeyType, ValueType>& Map<KeyType, ValueType>::removeAll(const Map& map2) {
     for (const KeyType& key : map2) {
         if (containsKey(key) && get(key) == map2.get(key)) {
             remove(key);
-        }
-    }
-    return *this;
-}
-
-template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>& Map<KeyType, ValueType>::removeAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    for (const std::pair<KeyType, ValueType>& pair : list) {
-        if (containsKey(pair.first) && get(pair.first) == pair.second) {
-            remove(pair.first);
         }
     }
     return *this;
@@ -1305,16 +597,8 @@ Map<KeyType, ValueType>& Map<KeyType, ValueType>::retainAll(const Map& map2) {
 }
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>& Map<KeyType, ValueType>::retainAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    Map<KeyType, ValueType> map2(list);
-    retainAll(map2);
-    return *this;
-}
-
-template <typename KeyType, typename ValueType>
 int Map<KeyType, ValueType>::size() const {
-    return nodeCount;
+    return mElements.size();
 }
 
 template <typename KeyType, typename ValueType>
@@ -1327,21 +611,20 @@ std::string Map<KeyType, ValueType>::toString() const {
 template <typename KeyType,typename ValueType>
 Vector<ValueType> Map<KeyType, ValueType>::values() const {
     Vector<ValueType> values;
-    for (const KeyType& key : *this) {
-        values.add(this->get(key));
+    for (const auto& entry: mElements) {
+        values.add(entry.second);
     }
     return values;
 }
 
-template <typename KeyType,typename ValueType>
-unsigned int  Map<KeyType, ValueType>::version() const {
-    return m_version;
-}
-
 template <typename KeyType, typename ValueType>
-ValueType & Map<KeyType, ValueType>::operator [](const KeyType& key) {
-    bool dummy;
-    return *addNode(root, key, dummy);
+ValueType& Map<KeyType, ValueType>::operator [](const KeyType& key) {
+    auto presize = size();
+    auto& result = mElements[key];
+
+    /* If the size was updated, we must have inserted something. */
+    if (presize != size()) mVersion.update();
+    return result;
 }
 
 template <typename KeyType, typename ValueType>
@@ -1356,21 +639,8 @@ Map<KeyType, ValueType> Map<KeyType, ValueType>::operator +(const Map& map2) con
 }
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType> Map<KeyType, ValueType>::operator +(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) const {
-    Map<KeyType, ValueType> result = *this;
-    return result.putAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>& Map<KeyType, ValueType>::operator +=(const Map& map2) {
     return putAll(map2);
-}
-
-template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>& Map<KeyType, ValueType>::operator +=(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return putAll(list);
 }
 
 template <typename KeyType, typename ValueType>
@@ -1380,21 +650,8 @@ Map<KeyType, ValueType> Map<KeyType, ValueType>::operator -(const Map& map2) con
 }
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType> Map<KeyType, ValueType>::operator -(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) const {
-    Map<KeyType, ValueType> result = *this;
-    return result.removeAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>& Map<KeyType, ValueType>::operator -=(const Map& map2) {
     return removeAll(map2);
-}
-
-template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>& Map<KeyType, ValueType>::operator -=(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return removeAll(list);
 }
 
 template <typename KeyType, typename ValueType>
@@ -1404,21 +661,8 @@ Map<KeyType, ValueType> Map<KeyType, ValueType>::operator *(const Map& map2) con
 }
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType> Map<KeyType, ValueType>::operator *(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) const {
-    Map<KeyType, ValueType> result = *this;
-    return result.retainAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>& Map<KeyType, ValueType>::operator *=(const Map& map2) {
     return retainAll(map2);
-}
-
-template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>& Map<KeyType, ValueType>::operator *=(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return retainAll(list);
 }
 
 template <typename KeyType, typename ValueType>
@@ -1449,6 +693,16 @@ bool Map<KeyType, ValueType>::operator >(const Map& map2) const {
 template <typename KeyType, typename ValueType>
 bool Map<KeyType, ValueType>::operator >=(const Map& map2) const {
     return stanfordcpplib::collections::compareMaps(*this, map2) >= 0;
+}
+
+template <typename KeyType, typename ValueType>
+typename Map<KeyType, ValueType>::iterator Map<KeyType, ValueType>::begin() const {
+    return iterator({ &mVersion, mElements.begin(), mElements });
+}
+
+template <typename KeyType, typename ValueType>
+typename Map<KeyType, ValueType>::iterator Map<KeyType, ValueType>::end() const {
+    return iterator({ &mVersion, mElements.end(), mElements });
 }
 
 /*
@@ -1489,21 +743,7 @@ int hashCode(const Map<K, V>& map) {
  */
 template <typename K, typename V>
 const K& randomKey(const Map<K, V>& map) {
-    if (map.isEmpty()) {
-        error("randomKey: empty map was passed");
-    }
-    int index = randomInteger(0, map.size() - 1);
-    int i = 0;
-    for (const K& key : map) {
-        if (i == index) {
-            return key;
-        }
-        i++;
-    }
-    
-    // this code will never be reached
-    static Vector<K> v = map.keys();
-    return v[0];
+    return stanfordcpplib::collections::randomElement(map);
 }
 
 #endif // _map_h

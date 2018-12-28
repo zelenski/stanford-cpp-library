@@ -17,6 +17,14 @@
 
 TEST_CATEGORY(DequeTests, "Deque tests");
 
+/* Force instantiation of Deque on a few types to make sure we didn't miss anything.
+ * These types must be comparable and hashable to avoid instaniating functions we
+ * can't support.
+ */
+template class Deque<int>;
+template class Deque<bool>;
+template class Deque<std::string>;
+
 TIMED_TEST(DequeTests, compareTest_Deque, TEST_TIMEOUT_DEFAULT) {
     Deque<std::string> deq;
     deq.add("a");

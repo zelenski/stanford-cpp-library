@@ -24,16 +24,20 @@ TIMED_TEST(GridTests, compareTest_Grid, TEST_TIMEOUT_DEFAULT) {
     Grid<int> grid3;
     grid3.resize(3, 2);
     Grid<int> grid4;
+
+    /* Comparison is lexicographic by rows, then cols, then
+     * elements.
+     */
     compareTestHelper(grid1, grid2, "Grid", /* compareTo */ -1);
     compareTestHelper(grid2, grid1, "Grid", /* compareTo */  1);
     compareTestHelper(grid1, grid3, "Grid", /* compareTo */ -1);
     compareTestHelper(grid3, grid1, "Grid", /* compareTo */  1);
-    compareTestHelper(grid2, grid3, "Grid", /* compareTo */  1);
-    compareTestHelper(grid3, grid2, "Grid", /* compareTo */ -1);
+    compareTestHelper(grid2, grid3, "Grid", /* compareTo */ -1);
+    compareTestHelper(grid3, grid2, "Grid", /* compareTo */  1);
     compareTestHelper(grid1, grid1, "Grid", /* compareTo */  0);
 
-    Set<Grid<int> > sgrid {grid1, grid2, grid3, grid4};
-    assertEqualsString("sgrid", "{{}, {{0, 0}, {0, 0}}, {{0, 0}, {0, 0}, {0, 0}}, {{0, 0, 0}, {0, 0, 0}}}", sgrid.toString());
+    Set<Grid<int>> sgrid {grid1, grid2, grid3, grid4};
+    assertEqualsString("sgrid", "{{}, {{0, 0}, {0, 0}}, {{0, 0, 0}, {0, 0, 0}}, {{0, 0}, {0, 0}, {0, 0}}}", sgrid.toString());
 }
 
 TIMED_TEST(GridTests, forEachTest_Grid, TEST_TIMEOUT_DEFAULT) {
@@ -96,6 +100,32 @@ TIMED_TEST(GridTests, iteratorVersionTest_Grid, TEST_TIMEOUT_DEFAULT) {
     }
 }
 #endif // SPL_THROW_ON_INVALID_ITERATOR
+
+TIMED_TEST(GridTests, mapAllTest_Grid, TEST_TIMEOUT_DEFAULT) {
+    Grid<int> rowSort = {
+        { 0, 1, 2 },
+        { 3, 4, 5 },
+        { 6, 7, 8 }
+    };
+
+    int lastRowVal = -1;
+    rowSort.mapAll([&](auto val) {
+        assertTrue("Visits values in row-major order", lastRowVal < val);
+        lastRowVal = val;
+    });
+
+    Grid<int> colSort = {
+        { 0, 3, 6 },
+        { 1, 4, 7 },
+        { 2, 5, 8 }
+    };
+
+    int lastColVal = -1;
+    colSort.mapAllColumnMajor([&](auto val) {
+        assertTrue("Visits values in col-major order", lastColVal < val);
+        lastColVal = val;
+    });
+}
 
 TIMED_TEST(GridTests, randomElementTest_Grid, TEST_TIMEOUT_DEFAULT) {
     Map<std::string, int> counts;

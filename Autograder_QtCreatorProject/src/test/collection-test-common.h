@@ -36,7 +36,7 @@ void assertCollection(std::string message,
 }
 
 template <typename MapType, typename K, typename V>
-void assertMap(std::string message, std::initializer_list<std::pair<K, V> > expected,
+void assertMap(std::string message, std::initializer_list<std::pair<const K, V>> expected,
                const MapType& map,
                bool checkOrder = true) {
     if (checkOrder) {

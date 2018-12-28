@@ -119,7 +119,7 @@
 
 TEMPLATE = app
 PROJECT_FILTER =
-QT       += core gui multimedia network
+QT       += core gui network multimedia
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 ###############################################################################
