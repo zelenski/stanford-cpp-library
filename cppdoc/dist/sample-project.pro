@@ -326,7 +326,7 @@ QMAKE_CXXFLAGS += -Wunreachable-code
 exists($$PWD/lib/autograder/*.h) | exists($$PWD/lib/StanfordCPPLib/autograder/$$PROJECT_FILTER/*.h) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
     # omit some warnings/errors in autograder projects
     # (largely because the Google Test framework violates them a ton of times)
-    QMAKE_CXXFLAGS += -Wno-deprecation
+    QMAKE_CXXFLAGS += -Wno-deprecated
     QMAKE_CXXFLAGS += -Wno-reorder
     QMAKE_CXXFLAGS += -Wno-unused-function
     QMAKE_CXXFLAGS += -Wno-useless-cast
@@ -391,7 +391,7 @@ DEFINES += main=qMain
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1
 DEFINES += SPL_CONSOLE_Y=-1
-DEFINES += SPL_CONSOLE_WIDTH=800
+DEFINES += SPL_CONSOLE_WIDTH=850
 DEFINES += SPL_CONSOLE_HEIGHT=500
 
 # font size of the font in the graphical console window; can also be set via window menu
@@ -640,5 +640,52 @@ QMAKE_EXTRA_COMPILERS += copy_resource_files
 ###############################################################################
 # END SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING              #
 ###############################################################################
+
+
+###############################################################################
+# BEGIN SECTION FOR COPYING .o FILES TO TEMP DIRECTORY CACHE FOR FASTER BUILD #
+###############################################################################
+
+# first check the three environment variables: TMPDIR, TMP, and TEMP
+# (commonly used on all of Linux, Windows, and Mac)
+TEMP_DIRECTORY = $$(TMPDIR)
+equals(TEMP_DIRECTORY, "") {
+    TEMP_DIRECTORY = $$(TMP)
+}
+equals(TEMP_DIRECTORY, "") {
+    TEMP_DIRECTORY = $$(TEMP)
+}
+equals(TEMP_DIRECTORY, "") {
+    win32 {
+        # Windows temp dir fallback
+        TEMP_DIRECTORY = $$(USERPROFILE)\AppData\local\Temp
+    } else {
+        # Linux/Mac temp dir fallback
+        exists(/tmp) {
+            TEMP_DIRECTORY = /tmp
+        } else {
+            exists(/var/tmp) {
+                TEMP_DIRECTORY = /var/tmp
+            } else {
+                exists($$(HOME)/tmp) {
+                    TEMP_DIRECTORY = $$(HOME)/tmp
+                }
+            }
+        }
+    }
+}
+# message("TEMP DIR IS " $${TEMP_DIRECTORY} ".")
+
+# exists($$PWD/lib/StanfordCPPLib/strlib.cpp) {
+exists($$PWD/lib/StanfordCPPLib/util/strlib.cpp) {
+    # OUT_SPL_FILE = $$files($${OUT_PWD}/strlib.o)
+    # QMAKE_POST_LINK += $$QMAKE_COPY $${OUT_SPL_FILE} $${TEMP_DIRECTORY}
+}
+
+###############################################################################
+# END SECTION FOR COPYING .o FILES TO TEMP DIRECTORY CACHE FOR FASTER BUILD   #
+###############################################################################
+
+
 
 # END OF FILE (this should be line #644; if not, your .pro has been changed!)
