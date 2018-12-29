@@ -67,6 +67,6 @@ void testQtConsole() {
 
     cout << "Partial line; what about me? :-(";   // no endl
 
-//    cout << "How about a nasty error?!" << endl;
-//    error("oooooooooops");
+    cout << "How about a nasty error?!" << endl;
+    error("oooooooooops");
 }

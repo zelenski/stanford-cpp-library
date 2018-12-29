@@ -34,7 +34,7 @@ void a() {
 }
 
 void testQwindow() {
-    static GWindow* window = new GWindow(900, 300);
+    GWindow* window = new GWindow(900, 300);
     window->setTitle("QtGui Window");
     window->setResizable(true);
     window->setExitOnClose(true);
@@ -58,24 +58,24 @@ void testQwindow() {
     cout << "label:     " << label->toString() << endl;
 
     //        static GTextField* textField = new GTextField(42.0);
-    static GTextField* textField = new GTextField("Marty");
+    GTextField* textField = new GTextField("Marty");
     textField->setPlaceholder("type your name");
     // textField->setEditable(false);
     textField->setAutocompleteList({"matt", "Marty", "Stuart", "steve", "yana", "yes", "no"});
-    textField->setTextChangeListener([]() {
+    textField->setTextChangeListener([textField]() {
         cout << "textfield text changed! text is:" << endl << textField->getText() << endl;
     });
-    textField->setActionListener([]() {
+    textField->setActionListener([textField]() {
         cout << "textfield action performed! text is:" << endl << textField->getText() << endl;
     });
     window->addToRegion(textField, GWindow::REGION_NORTH);
     cout << "textfield: " << textField->toString() << endl;
 
-    static GSlider* slider = new GSlider();
+    GSlider* slider = new GSlider();
     slider->setMinorTickSpacing(20);
     slider->setPaintLabels(true);
     slider->setPaintTicks(true);
-    slider->setActionListener([](GEvent event) {
+    slider->setActionListener([window, slider](GEvent event) {
         cout << "sliderChangeHandler: slider was slid!" << endl;
         cout << "value: " << slider->getValue() << endl;
         cout << "event: " << event << endl;
@@ -88,8 +88,8 @@ void testQwindow() {
 
     // WEST AREA
 
-    static GCheckBox* checkBox = new GCheckBox("Question?", true);
-    checkBox->setActionListener([](const GEvent&) {
+    GCheckBox* checkBox = new GCheckBox("Question?", true);
+    checkBox->setActionListener([checkBox](const GEvent&) {
         cout << "checkbox clicked! " << boolalpha << checkBox->isChecked() << endl;
     });
     window->addToRegion(checkBox, GWindow::REGION_WEST);
@@ -101,13 +101,14 @@ void testQwindow() {
 
     // EAST AREA
 
-    static GRadioButton* radio1group1 = new GRadioButton("A", "group1");
-    static GRadioButton* radio2group1 = new GRadioButton("B", "group1", true);
-    static GRadioButton* radio3group1 = new GRadioButton("C", "group1");
-    static GRadioButton* radio1group2 = new GRadioButton("XX", "group2", true);
-    static GRadioButton* radio2group2 = new GRadioButton("YY", "group2");
+    GRadioButton* radio1group1 = new GRadioButton("A", "group1");
+    GRadioButton* radio2group1 = new GRadioButton("B", "group1", true);
+    GRadioButton* radio3group1 = new GRadioButton("C", "group1");
+    GRadioButton* radio1group2 = new GRadioButton("XX", "group2", true);
+    GRadioButton* radio2group2 = new GRadioButton("YY", "group2");
 
-    GEventListenerVoid radioChangeHandler = []() {
+    GEventListenerVoid radioChangeHandler = [radio1group1, radio2group1,
+            radio3group1, radio1group2, radio2group2]() {
         cout << "checkbox clicked! " << boolalpha
              << radio1group1->isChecked() << " "
              << radio2group1->isChecked() << " "
@@ -141,10 +142,10 @@ void testQwindow() {
 
     // SOUTH AREA
 
-    static GChooser* chooser = new GChooser({"one", "two", "three four"});
+    GChooser* chooser = new GChooser({"one", "two", "three four"});
     chooser->setColor(GColor::RED);
     chooser->setBackground(GColor::CYAN);
-    chooser->setActionListener([]() {
+    chooser->setActionListener([chooser]() {
         cout << "changeHandler: chooser was clicked!" << endl;
         cout << "selected: " << chooser->getSelectedIndex() << " : "
              << chooser->getSelectedItem() << endl;
@@ -158,7 +159,7 @@ void testQwindow() {
     button->setBackground(GColor::YELLOW);
     button->setIcon("triangle-icon.png");
     button->setTextPosition(GInteractor::TEXT_BESIDE_ICON);
-    button->setActionListener([](GEvent event) {
+    button->setActionListener([window](GEvent event) {
         cout << "button click! event = " << event << endl;
         cout.flush();
         Sound::playSound("moo.wav");
@@ -208,11 +209,11 @@ void testQwindow() {
     cout << "button font: " << button->getFont() << endl;
     button->setFont("Monospaced-Bold-14");
 
-    static GButton* button4 = new GButton("HI!");
+    GButton* button4 = new GButton("HI!");
     window->addToRegion(button4, GWindow::REGION_SOUTH);
 
     static GCheckBox* checkboxs = new GCheckBox("&Visible?", /* checked */ true);
-    checkboxs->setActionListener([]() {
+    checkboxs->setActionListener([window, button4]() {
         std::cout << "checkbox clicked!" << std::endl;
         // button4->setVisible(checkboxs->isChecked());
         if (checkboxs->isChecked()) {
@@ -262,6 +263,12 @@ void testQwindow() {
     });
     window->addToRegion(pane, GWindow::REGION_CENTER);
     cout << "browser:  " << pane->toString() << endl;
+
+    button4->setActionListener([pane]() {
+        pane->scrollToBottom();
+        pane->setEditable(!pane->isEditable());
+    });
+    window->show();
 
     // window->pack();
 

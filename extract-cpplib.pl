@@ -3,14 +3,17 @@
 # a single C++ source file so that it can easily be embedded inside a student
 # program without needing to create complicated build/header files.
 
-my $outfile = "stanfordcpplib.cpp";
+my $WRITE_CPP_FILE = 1;   # extract/write the spl.cpp file?
+my $WRITE_H_FILE = 1;     # extract/write the spl.h   file?
+
+my $outfile = "spl.cpp";
 if ($#ARGV >= 0) {
 	$outfile = shift @ARGV;
 }
 my $out_h_file = $outfile;
 $out_h_file =~ s/\.cpp/.h/;   # "stanfordcpplib.h"
 my $basedir = "StanfordCPPLib";
-my $projdir = "StanfordCPPLib_QtCreatorProject/src";
+my $projdir = "StanfordCPPLib_CodeStepByStep_Project/src";
 my $autograder_basedir = "autograder";
 
 my @ALL_FILES = (
@@ -18,15 +21,17 @@ my @ALL_FILES = (
 # basic library functionality
 "$basedir/private/init.h",                   # deps: none
 "$basedir/private/static.h",                 # deps: none
+"$basedir/system/error.h",                   # deps: none
+"$basedir/util/require.h",
+"$basedir/private/headless.h",
+# "$basedir/util/memory.h",
 "$basedir/io/base64.h",                      # deps: none
 "$basedir/util/direction.h",                 # deps: none
-"$basedir/system/error.h",                   # deps: none
 "$basedir/collections/hashcode.h",           # deps: none
 "$basedir/util/random.h",                    # deps: none
 "$basedir/util/point.h",                     # deps: none
 "$basedir/io/simpio.h",                      # deps: none
-"$basedir/util/strlib.h",                    # deps: none
-"$basedir/graphics/gtypes.h",                # deps: none
+# "$basedir/graphics/gtypes.h",              # deps: none
 "$basedir/collections/functional.h",         # deps: none
 "$basedir/util/gmath.h",                     # deps: gtypes.h
 "$basedir/collections/shuffle.h",            # deps: random.h
@@ -35,11 +40,14 @@ my @ALL_FILES = (
 "$basedir/util/recursion.h",
 "$basedir/system/exceptions.h",
 "$basedir/collections/vector.h",
+"$basedir/util/strlib.h",                    # deps: none
+"$basedir/util/stringutils.h",               # deps: none
+"$basedir/util/intrange.h",                  # deps: error, Point
 "$basedir/io/filelib.h",                     # deps: vector.h
 "$basedir/collections/queue.h",
 "$basedir/collections/stack.h",
 "$basedir/collections/deque.h",
-"$basedir/private/tokenpatch.h",
+# "$basedir/private/tokenpatch.h",
 "$basedir/io/tokenscanner.h",
 "$basedir/collections/map.h",
 "$basedir/collections/set.h",
@@ -52,94 +60,105 @@ my @ALL_FILES = (
 "$basedir/collections/linkedlist.h",
 "$basedir/collections/priorityqueue.h",
 "$basedir/collections/pqueue.h",
-"$basedir/util/range.h",
+
 "$basedir/collections/sparsegrid.h",
 "$basedir/collections/dawglexicon.h",        # deps: set.h
 "$basedir/collections/linkedhashmap.h",      
 "$basedir/collections/linkedhashset.h",      # deps: linkedhashmap.h
 "$basedir/collections/basicgraph.h",         # deps: map, set, graph, many other collections
 "$basedir/collections/stl.h",
-"$basedir/graphics/gwindow.h",
-"$basedir/graphics/gobjects.h",              # deps: gtypes, gwindow
-"$basedir/graphics/gtimer.h",
-"$basedir/graphics/gevents.h",
-"$basedir/graphics/ginteractors.h",
-"$basedir/graphics/gbufferedimage.h",
-"$basedir/graphics/gfilechooser.h",
-"$basedir/graphics/goptionpane.h",
-"$basedir/graphics/gtable.h",
-"$basedir/graphics/gtextarea.h",
+
+"$basedir/graphics/consoletext.h",
+"$basedir/graphics/console.h",
+
+# "$basedir/graphics/gwindow.h",
+# "$basedir/graphics/gobjects.h",            # deps: gtypes, gwindow
+# "$basedir/graphics/gtimer.h",
+# "$basedir/graphics/gevents.h",
+# "$basedir/graphics/ginteractors.h",
+# "$basedir/graphics/gbufferedimage.h",
+# "$basedir/graphics/gfilechooser.h",
+# "$basedir/graphics/goptionpane.h",
+# "$basedir/graphics/gtable.h",
+# "$basedir/graphics/gtextarea.h",
+ 
 "$basedir/io/bitstream.h",
-#"$basedir/util/foreach.h",
-"$basedir/io/console.h",
 "$basedir/io/plainconsole.h",
-"$basedir/util/sound.h",
-"$basedir/private/consolestreambuf.h",
-"$basedir/private/echoinputstreambuf.h",
-"$basedir/private/forwardingstreambuf.h",
-"$basedir/private/limitoutputstreambuf.h",
-"$basedir/private/platform.h",
-#"$basedir/private/foreachpatch.h",
-#"$basedir/private/main.h",
-#"$basedir/private/randompatch.h",
-"$basedir/private/tplatform.h",
+# "$basedir/util/sound.h",
+"$basedir/util/complex.h",
+"$basedir/util/biginteger.h",
+"$basedir/util/bigfloat.h",
+# "$basedir/private/consolestreambuf.h",
+# "$basedir/private/echoinputstreambuf.h",
+# "$basedir/private/forwardingstreambuf.h",
+# "$basedir/private/limitoutputstreambuf.h",
+# "$basedir/private/platform.h",
+# "$basedir/private/tplatform.h",
 "$basedir/private/version.h",
 "$basedir/util/regexpr.h",
 "$basedir/system/call_stack.h",
-"$basedir/system/stack_exception.h",
-"$basedir/system/thread.h",
-"$basedir/system/pstream.h",
-"$basedir/system/process.h",
+# "$basedir/system/stack_exception.h",
+# "$basedir/system/thread.h",
+# "$basedir/system/pstream.h",
+# "$basedir/system/process.h",
 "$basedir/util/timer.h",
 "$basedir/util/note.h",
-"$basedir/io/urlstream.h",
+# "$basedir/util/managed.h",
+# "$basedir/io/urlstream.h",
 
 # .cpp implementations (order should be unimportant)
-"$basedir/util/range.cpp",
+# "$basedir/util/range.cpp",
+"$basedir/private/init.cpp",
+
+"$basedir/collections/collections.cpp",
 "$basedir/collections/basicgraph.cpp",
 "$basedir/collections/dawglexicon.cpp",
 "$basedir/collections/hashcode.cpp",
 "$basedir/collections/lexicon.cpp",
 "$basedir/collections/shuffle.cpp",
 "$basedir/collections/gridlocation.cpp",
-"$basedir/graphics/gbufferedimage.cpp",
-"$basedir/graphics/gevents.cpp",
-"$basedir/graphics/gfilechooser.cpp",
-"$basedir/graphics/ginteractors.cpp",
-"$basedir/graphics/gobjects.cpp",
-"$basedir/graphics/goptionpane.cpp",
-"$basedir/graphics/gtable.cpp",
-"$basedir/graphics/gtextarea.cpp",
-"$basedir/graphics/gtimer.cpp",
-"$basedir/graphics/gtypes.cpp",
-"$basedir/graphics/gwindow.cpp",
+
+# "$basedir/graphics/gbufferedimage.cpp",
+# "$basedir/graphics/gevents.cpp",
+# "$basedir/graphics/gfilechooser.cpp",
+# "$basedir/graphics/ginteractors.cpp",
+# "$basedir/graphics/gobjects.cpp",
+# "$basedir/graphics/goptionpane.cpp",
+# "$basedir/graphics/gtable.cpp",
+# "$basedir/graphics/gtextarea.cpp",
+# "$basedir/graphics/gtimer.cpp",
+# "$basedir/graphics/gtypes.cpp",
+# "$basedir/graphics/gwindow.cpp",
+ 
 "$basedir/io/base64.cpp",
 "$basedir/io/bitstream.cpp",
 "$basedir/io/filelib.cpp",
+"$basedir/private/filelibunix.cpp",
 "$basedir/io/simpio.cpp",
 "$basedir/io/tokenscanner.cpp",
-"$basedir/io/urlstream.cpp",
-"$basedir/private/platform.cpp",
+# "$basedir/io/urlstream.cpp",
+# "$basedir/private/platform.cpp",
 "$basedir/private/version.cpp",
-"$basedir/private/tplatform_posix.cpp",
+# "$basedir/private/tplatform_posix.cpp",
 "$basedir/system/call_stack_gcc.cpp",
-"$basedir/system/thread.cpp",
+# "$basedir/system/thread.cpp",
 #"$basedir/system/call_stack_windows.cpp",   # not needed because the server runs *nix
 "$basedir/system/error.cpp",
 "$basedir/io/plainconsole.cpp",
 "$basedir/system/exceptions.cpp",
-"$basedir/system/process.cpp",
+# "$basedir/system/process.cpp",
 "$basedir/util/recursion.cpp",
 "$basedir/util/direction.cpp",
 "$basedir/util/gmath.cpp",
-"$basedir/util/observable.cpp",
+# "$basedir/util/observable.cpp",
 "$basedir/util/point.cpp",
 "$basedir/util/random.cpp",
 "$basedir/util/regexpr.cpp",
-"$basedir/util/sound.cpp",
+# "$basedir/util/sound.cpp",
 "$basedir/util/strlib.cpp",
 "$basedir/util/timer.cpp",
-"$basedir/io/console.cpp",
+# "$basedir/util/memory.cpp",
+"$basedir/graphics/console.cpp",
 
 # some classes that come from practice exams but are needed for 106B/X section/exam problems
 "$projdir/ArrayIntList.h",
@@ -237,15 +256,19 @@ foreach my $cppfile (@ALL_FILES) {
 	}
 }
 
-print("Writing output file $outfile ...\n");
-open(OUTFILE, ">", $outfile) or die "Cannot open $outfile for writing: $!";
-print OUTFILE $overall_cpp_text;
-close OUTFILE;
+if ($WRITE_CPP_FILE) {
+	print("Writing output file $outfile ...\n");
+	open(OUTFILE, ">", $outfile) or die "Cannot open $outfile for writing: $!";
+	print OUTFILE $overall_cpp_text;
+	close OUTFILE;
+}
 
-print("Writing header file $out_h_file ...\n");
-open(OUTFILE, ">", $out_h_file) or die "Cannot open $out_h_file for writing: $!";
-print OUTFILE $overall_h_text;
-close OUTFILE;
+if ($WRITE_H_FILE) {
+	print("Writing header file $out_h_file ...\n");
+	open(OUTFILE, ">", $out_h_file) or die "Cannot open $out_h_file for writing: $!";
+	print OUTFILE $overall_h_text;
+	close OUTFILE;
+}
 
 print("Complete.\n\n");
 

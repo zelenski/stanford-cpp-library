@@ -60,6 +60,7 @@ void testQwindowDrawing() {
     static GLabel* label2 = nullptr;
     static double dx = 5;
     static double dy = 3;
+    static GImage* image = nullptr;
 
     window = new GWindow(900, 500);
     // window->setCanvasSize(900, 500);
@@ -166,6 +167,13 @@ void testQwindowDrawing() {
         GText* gtext3 = new GText("Third string", 240, 120);
         gtext3->setColor("blue");
         window->add(gtext3);
+
+        GCanvas* canvas = new GCanvas(200, 100);   // , 0x99ff2299);
+        canvas->setColor("red");
+        canvas->setFillColor("green");
+        canvas->fillRect(20, 20, 50, 30);
+        image = canvas->toGImage();
+        window->add(image, 300, 100);
     }
 
     if (TEST_LAYOUT_WIDGETS) {
