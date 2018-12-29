@@ -6,7 +6,7 @@
 #include <iostream>
 #include "console.h"
 
-int multimain() {
+int multimain(1) {
 //    extern int mainQt2dGraphics();
 //    return mainQt2dGraphics();
 //    extern int mainQtLayout();

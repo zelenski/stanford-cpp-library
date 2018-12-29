@@ -65,6 +65,14 @@ void printXml(bool b);
 
 void printlnXml(bool b);
 
+void printXml(double d);
+
+void printlnXml(double d);
+
+void printXml(float f);
+
+void printlnXml(float f);
+
 template <typename T>
 void printXml(const T& value) {
     __getXmlOut() << value;
@@ -93,9 +101,9 @@ void __printlnXml(const char* s);
 void __printlnXml(const std::string& s);
 
 // CODE FOR HANDLING SIGNALS (VARIOUS PROGRAM CRASHES)
-#define SIGSTACK ((int) 0xdeadbeef)
-#define SIGUNKNOWN ((int) 0xcafebabe)
-#define SIGTIMEOUT ((int) 0xf00df00d)
+// #define SIGSTACK ((int) 0xdeadbeef)
+// #define SIGUNKNOWN ((int) 0xcafebabe)
+// #define SIGTIMEOUT ((int) 0xf00df00d)
 
 void __codeStepByStepSignalHandler(int sig);
 #if !defined(_WIN32)

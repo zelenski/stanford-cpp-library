@@ -5,7 +5,7 @@
 #include <iostream>
 #include "console.h"
 
-int multimain() {
+int multimain(3) {
     std::cout << "Yay this is multimain #3!!!" << std::endl;
     return 0;
 }

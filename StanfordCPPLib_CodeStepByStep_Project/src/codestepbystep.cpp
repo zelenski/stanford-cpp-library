@@ -1,4 +1,6 @@
 /*
+ * @version 2018/12/16
+ * - improved printing of real numbers to XML output
  * @version 2017/11/12
  * - added output limit of 100k chars to avoid infinite student solution output
  * @version 2017/10/06
@@ -7,11 +9,16 @@
  * - added assert* methods
  */
 
+#include <climits>
 #define INTERNAL_INCLUDE 1
 #include "codestepbystep.h"
 #include "exceptions.h"
 #include "plainconsole.h"
 #undef INTERNAL_INCLUDE
+
+#ifndef SIGSTACK
+#define SIGSTACK (static_cast<int>(0xdeadbeef))
+#endif // SIGSTACK
 
 extern void startupMainDontRunMain(int argc, char** argv);
 
@@ -62,6 +69,55 @@ void printXml(bool b) {
 
 void printlnXml(bool b) {
     __getXmlOut() << std::boolalpha << b << std::endl;
+}
+
+void printXml(double d) {
+    // stop C++ from printing large values in scientific notation
+    // (the values below seem to be the thresholds at which auto scientific
+    // notation starts to be used in printing output of real numbers)
+    const double SCI_NOTATION_POS = 1.0e6;
+    const double SCI_NOTATION_NEG = -1.0e6;
+
+    std::string result;
+    std::stringstream out;
+    if (d >= SCI_NOTATION_POS || d <= SCI_NOTATION_NEG) {
+        // in sci. notation range; print in 'fixed' precision mode
+        // (need to manually set max precision to avoid truncation at ~6 digits)
+        out << std::fixed << std::showpoint << std::setprecision(std::numeric_limits<double>::max_digits10) << d;
+    } else {
+        // not in sci. notation range; print in normal format, but
+        // mandate decimal point, e.g. 4 => "4.0"
+        out << std::showpoint << d;
+    }
+    result = out.str();
+
+    // stop unnecessary 0 digits after decimal
+    // e.g. "123.4560000" => "123.456"
+    // e.g. "123.0000000" => "123.0"
+    while (endsWith(result, "0")) {
+        result.erase(result.length() - 1, 1);
+    }
+    if (result.empty() || endsWith(result, ".")) {
+        result += "0";
+    }
+
+    // actually write the real number to the output stream
+    __getXmlOut() << result;
+}
+
+void printlnXml(double d) {
+    printXml(d);
+    __getXmlOut() << std::endl;
+}
+
+// print in fixed mode, not scientific notation
+void printXml(float f) {
+    __getXmlOut() << std::fixed << std::showpoint << f;
+}
+
+void printlnXml(float f) {
+    printXml(static_cast<double>(f));
+    __getXmlOut() << std::endl;
 }
 
 std::string __stackTraceToString() {
