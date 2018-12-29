@@ -5,6 +5,8 @@
  * TODO
  *
  * @author Marty Stepp
+ * @version 2018/11/22
+ * - added headless mode support
  * @version 2018/08/28
  * - refactor to use stanfordcpplib namespace
  * @version 2018/08/27
@@ -58,15 +60,20 @@ void initializeLibrary(int argc, char** argv) {
     }
     _initialized = true;
 
+#ifndef SPL_HEADLESS_MODE
     GThread::setMainThread();
+#endif // SPL_HEADLESS_MODE
+
     parseArgsQt(argc, argv);
 
+#ifndef SPL_HEADLESS_MODE
     // initialize the main Qt graphics subsystem
     QtGui::instance()->setArgs(argc, argv);
     QtGui::instance()->initializeQt();
 
     // initialize Qt graphical console (if student #included it)
     initializeQtGraphicalConsole();
+#endif // SPL_HEADLESS_MODE
 }
 
 void initializeLibraryStudentThread() {
@@ -107,6 +114,23 @@ static void parseArgsQt(int argc, char** argv) {
 // called automatically by real main() function;
 // call to this is inserted by library init.h
 // to be run in Qt main thread
+#ifdef SPL_HEADLESS_MODE
+void runMainInThread(int (* mainFunc)(void)) {
+    mainFunc();
+}
+
+void runMainInThread(std::function<int()> mainFunc) {
+    mainFunc();
+}
+
+void runMainInThreadVoid(void (* mainFuncVoid)(void)) {
+    mainFuncVoid();
+}
+
+void runMainInThreadVoid(std::function<void()> mainFuncVoid) {
+    mainFuncVoid();
+}
+#else // SPL_HEADLESS_MODE
 void runMainInThread(int (* mainFunc)(void)) {
     QtGui::instance()->startBackgroundEventLoop(mainFunc);
 }
@@ -122,6 +146,7 @@ void runMainInThreadVoid(void (* mainFuncVoid)(void)) {
 void runMainInThreadVoid(std::function<void()> mainFuncVoid) {
     QtGui::instance()->startBackgroundEventLoopVoid(mainFuncVoid);
 }
+#endif // SPL_HEADLESS_MODE
 
 void setExitEnabled(bool enabled) {
     STATIC_VARIABLE(isExitEnabled) = enabled;
@@ -131,7 +156,11 @@ void setExitEnabled(bool enabled) {
 // shut down the Qt graphical console window;
 // to be run in Qt main thread
 void shutdownLibrary() {
+#ifdef SPL_HEADLESS_MODE
+    // empty
+#else
     shutdownConsole();
+#endif // SPL_HEADLESS_MODE
 }
 
 void staticInitializeLibrary() {

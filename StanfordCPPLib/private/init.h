@@ -126,6 +126,10 @@ void __stanfordcpplib__exitLibrary(int status);
 #define STD_EXIT __std_exit_function_
 #define exit __stanfordcpplib__exitLibrary
 
+#ifdef SPL_HEADLESS_MODE
+#include "headless.h"
+#endif // SPL_HEADLESS_MODE
+
 #ifdef SPL_OVERLOAD_PROBLEMATIC_POINTER_ARITHMETIC
 #include "pointers.h"
 #endif // SPL_OVERLOAD_PROBLEMATIC_POINTER_ARITHMETIC
