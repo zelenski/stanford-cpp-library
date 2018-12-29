@@ -3,6 +3,8 @@
  * ---------------
  * This file implements the point.h interface.
  * 
+ * @version 2018/11/22
+ * - added headless mode support
  * @version 2017/09/29
  * - updated to use composite hashCode function
  * @version 2014/10/08
@@ -28,10 +30,12 @@ Point::Point(int x, int y) {
     this->y = y;
 }
 
+#ifndef SPL_HEADLESS_MODE
 Point::Point(const GPoint& point) {
     this->x = (int) point.getX();
     this->y = (int) point.getY();
 }
+#endif // SPL_HEADLESS_MODE
 
 int Point::getX() const {
     return x;

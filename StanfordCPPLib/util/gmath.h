@@ -5,6 +5,9 @@
  * geometry along with the mathematical constants <code>PI</code>
  * and <code>E</code>.
  *
+ * @version 2018/11/22
+ * - added headless mode support
+ * - alphabetized methods
  * @version 2018/09/25
  * - added doc comments for new documentation generation
  * @version 2017/12/12
@@ -25,8 +28,13 @@
 #include <cmath>
 #include <limits>
 
+#ifndef SPL_HEADLESS_MODE
 #define INTERNAL_INCLUDE 1
 #include "gtypes.h"
+#endif // SPL_HEADLESS_MODE
+
+#define INTERNAL_INCLUDE 1
+#include "point.h"
 #undef INTERNAL_INCLUDE
 
 /**
@@ -43,58 +51,11 @@ extern const double PI;
 extern const double E;
 
 /**
- * Returns the trigonometric sine of <code>angle</code>, which is
- * expressed in degrees.
- */
-double sinDegrees(double angle);
-
-/**
  * Returns the trigonometric cosine of <code>angle</code>, which is
  * expressed in degrees.
  */
 double cosDegrees(double angle);
 
-/**
- * Returns the trigonometric tangent of <code>angle</code>, which is
- * expressed in degrees.
- */
-double tanDegrees(double angle);
-
-/**
- * Converts an angle from radians to degrees.
- */
-double toDegrees(double radians);
-
-/**
- * Converts an angle from degrees to radians.
- */
-double toRadians(double degrees);
-
-/**
- * Computes the distance between the origin and the specified point.
- */
-double vectorDistance(const GPoint& pt);
-
-/**
- * Computes the distance between the origin and the specified point.
- */
-double vectorDistance(double x, double y);
-
-/**
- * Returns the angle in degrees from the origin to the specified point.
- * This function takes account of the fact that the graphics coordinate
- * system is flipped in the <i>y</i> direction from the traditional
- * Cartesian plane.
- */
-double vectorAngle(const GPoint& pt);
-
-/**
- * Returns the angle in degrees from the origin to the specified point.
- * This function takes account of the fact that the graphics coordinate
- * system is flipped in the <i>y</i> direction from the traditional
- * Cartesian plane.
- */
-double vectorAngle(double x, double y);
 
 /**
  * Returns the number of digits in the given integer in the given base.
@@ -184,5 +145,59 @@ template<typename T>
 bool floatingPointEqual(long int f1, T f2) {
     return floatingPointEqual((T) f1, f2);
 }
+
+/**
+ * Returns the trigonometric sine of <code>angle</code>, which is
+ * expressed in degrees.
+ */
+double sinDegrees(double angle);
+
+/**
+ * Returns the trigonometric tangent of <code>angle</code>, which is
+ * expressed in degrees.
+ */
+double tanDegrees(double angle);
+
+/**
+ * Converts an angle from radians to degrees.
+ */
+double toDegrees(double radians);
+
+/**
+ * Converts an angle from degrees to radians.
+ */
+double toRadians(double degrees);
+
+/**
+ * Returns the angle in degrees from the origin to the specified point.
+ * This function takes account of the fact that the graphics coordinate
+ * system is flipped in the <i>y</i> direction from the traditional
+ * Cartesian plane.
+ */
+double vectorAngle(double x, double y);
+
+/**
+ * Returns the angle in degrees from the origin to the specified point.
+ * This function takes account of the fact that the graphics coordinate
+ * system is flipped in the <i>y</i> direction from the traditional
+ * Cartesian plane.
+ */
+#ifndef SPL_HEADLESS_MODE
+double vectorAngle(const GPoint& pt);
+#endif // SPL_HEADLESS_MODE
+double vectorAngle(const Point& pt);
+
+/**
+ * Computes the distance between the origin and the specified point.
+ */
+double vectorDistance(double x, double y);
+
+/**
+ * Computes the distance between the origin and the specified point.
+ */
+#ifndef SPL_HEADLESS_MODE
+double vectorDistance(const GPoint& pt);
+#endif // SPL_HEADLESS_MODE
+double vectorDistance(const Point& pt);
 
 #endif // _gmath_h
