@@ -3,6 +3,8 @@
  * -------------------
  * ...
  *
+ * @version 2018/11/14
+ * - added Cancel option to multimain popup dialog
  * @version 2018/10/18
  * - initial version
  */
@@ -93,6 +95,9 @@ int selectMainFunction() {
                 for (std::string functionName : funcMap) {
                     options.add(functionName);
                 }
+
+                // add a "Cancel" option so we can press Escape to abort
+                options.add("Cancel");
 
                 std::string choice = "";
                 choice = GOptionPane::showOptionDialog(
