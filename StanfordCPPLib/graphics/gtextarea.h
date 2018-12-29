@@ -189,19 +189,19 @@ public:
     virtual void moveCursorToStart();
 
     /**
-     * Removes the key listener from this text field so that it will no longer
+     * Removes the key listener from this text area so that it will no longer
      * call it when the user types keys.
      */
     virtual void removeKeyListener();
 
     /**
-     * Removes the mouse listener from this text field so that it will no longer
+     * Removes the mouse listener from this text area so that it will no longer
      * call it when the user moves/clicks the mouse.
      */
     virtual void removeMouseListener();
 
     /**
-     * Removes the text change listener from this text field so that it will no longer
+     * Removes the text change listener from this text area so that it will no longer
      * call it when the user modifies the text.
      */
     virtual void removeTextChangeListener();
@@ -266,28 +266,34 @@ public:
     virtual void setHtml(const std::string& html);
 
     /**
-     * Sets a key listener on this text field so that it will be called
+     * Sets a key listener on this text area so that it will be called
      * when the user presses any key.
      * Any existing key listener will be replaced.
      */
     virtual void setKeyListener(GEventListener func);
 
     /**
-     * Sets a key listener on this text field so that it will be called
+     * Sets a key listener on this text area so that it will be called
      * when the user presses any key.
      * Any existing key listener will be replaced.
      */
     virtual void setKeyListener(GEventListenerVoid func);
 
     /**
-     * Sets a mouse listener on this text field so that it will be called
+     * Sets whether the text area wraps its text when a line becomes too long.
+     * Default true.
+     */
+    virtual void setLineWrap(bool wrap);
+
+    /**
+     * Sets a mouse listener on this text area so that it will be called
      * when the user moves or clicks the mouse.
      * Any existing mouse listener will be replaced.
      */
     virtual void setMouseListener(GEventListener func);
 
     /**
-     * Sets a mouse listener on this text field so that it will be called
+     * Sets a mouse listener on this text area so that it will be called
      * when the user moves or clicks the mouse.
      * Any existing mouse listener will be replaced.
      */
@@ -322,13 +328,7 @@ public:
     virtual void setText(const std::string& text);
 
     /**
-     * Sets whether the text area wraps its text when a line becomes too long.
-     * Default true.
-     */
-    virtual void setLineWrap(bool wrap);
-
-    /**
-     * Sets a text change listener on this text field so that it will be called
+     * Sets a text change listener on this text area so that it will be called
      * when the user modifies the current text.
      * Any existing text change listener will be replaced.
      *
@@ -344,7 +344,7 @@ public:
     virtual void setTextChangeListener(GEventListener func);
 
     /**
-     * Sets a text change listener on this text field so that it will be called
+     * Sets a text change listener on this text area so that it will be called
      * when the user modifies the current text.
      * Any existing text change listener will be replaced.
      *
