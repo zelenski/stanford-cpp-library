@@ -4,6 +4,9 @@
  * This file implements the gconsolewindow.h interface.
  *
  * @author Marty Stepp
+ * @version 2018/12/27
+ * - bug fix for endless waitForEvent queued events caused by printing text
+ *   to console (bug reported by Keith Schwarz)
  * @version 2018/10/11
  * - bug fixes for shutdown flag, input script hotkeys (e.g. Ctrl+1)
  * @version 2018/10/04
@@ -581,9 +584,6 @@ void GConsoleWindow::loadConfiguration() {
 }
 
 void GConsoleWindow::loadInputScript(int number) {
-    if (_shutdown) {
-        return;
-    }
     std::string sep = getDirectoryPathSeparator();
     static std::initializer_list<std::string> directoriesToCheck {
             ".",
@@ -611,7 +611,7 @@ void GConsoleWindow::loadInputScript(int number) {
         }
     }
 
-    if (!inputFile.empty()) {
+    if (!_shutdown && !inputFile.empty()) {
         loadInputScript(inputFile);
         pause(50);
     }
@@ -664,9 +664,11 @@ void GConsoleWindow::print(const std::string& str, bool isStdErr) {
         if (!this->_textArea) {
             return;
         }
+        this->_textArea->setEventsEnabled(false);
         this->_textArea->appendFormattedText(strToPrint, isStdErr ? getErrorColor() : getOutputColor());
         this->_textArea->moveCursorToEnd();
         this->_textArea->scrollToBottom();
+        this->_textArea->setEventsEnabled(true);
         _coutMutex.unlock();
     });
 }

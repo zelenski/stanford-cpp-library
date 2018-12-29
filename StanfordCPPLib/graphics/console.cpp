@@ -4,6 +4,8 @@
  * This file implements the console .h interface.
  *
  * @author Marty Stepp
+ * @version 2018/11/22
+ * - added headless mode support
  * @version 2018/10/01
  * - bug fix for graphical console popping up even if not included
  * @version 2018/08/23
@@ -31,6 +33,135 @@
 #define INTERNAL_INCLUDE 1
 #include "private/version.h"
 #undef INTERNAL_INCLUDE
+
+#ifdef SPL_HEADLESS_MODE
+
+void clearConsole() {
+    // empty
+}
+
+bool getConsoleClearEnabled() {
+    return true;
+}
+
+/* GWindow::CloseOperation */ int getConsoleCloseOperation() {
+    return 0;
+}
+
+bool getConsoleEcho() {
+    return true;
+}
+
+bool getConsoleEnabled() {
+    return true;
+}
+
+bool getConsoleEventOnClose() {
+    return true;
+}
+
+bool getConsoleExitProgramOnClose() {
+    return true;
+}
+
+std::string getConsoleFont() {
+    return "";
+}
+
+double getConsoleHeight() {
+    return 0;
+}
+
+bool getConsoleLocationSaved() {
+    return false;
+}
+
+bool getConsolePrintExceptions() {
+    return exceptions::getTopLevelExceptionHandlerEnabled();
+}
+
+bool getConsoleSettingsLocked() {
+    return false;
+}
+
+double getConsoleWidth() {
+    return 0;
+}
+
+std::string getConsoleWindowTitle() {
+    return "";
+}
+
+void pause(double /*milliseconds*/) {
+    // empty
+}
+
+void setConsoleClearEnabled(bool /*value*/) {
+    // empty
+}
+
+void setConsoleCloseOperation(int /*op*/) {
+    // empty
+}
+
+void setConsoleEcho(bool /*echo*/) {
+    // empty
+}
+
+void setConsoleEnabled(bool /*enabled*/) {
+    // empty
+}
+
+void setConsoleErrorColor(const std::string& /*color*/) {
+    // empty
+}
+
+void setConsoleEventOnClose(bool /*eventOnClose*/) {
+    // empty
+}
+
+void setConsoleExitProgramOnClose(bool /*exitOnClose*/) {
+    // empty
+}
+
+void setConsoleFont(const std::string& /*font*/) {
+    // empty
+}
+
+void setConsoleLocation(double /*x*/, double /*y*/) {
+    // empty
+}
+
+void setConsoleLocationSaved(bool /*value*/) {
+    // empty
+}
+
+void setConsoleOutputColor(const std::string& /*color*/) {
+    // empty
+}
+
+void setConsolePrintExceptions(bool printExceptions, bool force) {
+    if (getConsoleSettingsLocked()) { return; }
+    exceptions::setTopLevelExceptionHandlerEnabled(printExceptions, force);
+}
+
+void setConsoleSettingsLocked(bool /*value*/) {
+    // empty
+}
+
+void setConsoleSize(double /*width*/, double /*height*/) {
+    // empty
+}
+
+void setConsoleWindowTitle(const std::string& /*title*/) {
+    // empty
+}
+
+void shutdownConsole() {
+    // empty
+}
+
+#else // SPL_HEADLESS_MODE
 
 void clearConsole() {
     GConsoleWindow::instance()->clearConsole();
@@ -125,6 +256,10 @@ void setConsoleEcho(bool echo) {
     GConsoleWindow::instance()->setEcho(echo);
 }
 
+void setConsoleEnabled(bool enabled) {
+    GConsoleWindow::setConsoleEnabled(enabled);
+}
+
 void setConsoleErrorColor(const std::string& color) {
     if (getConsoleSettingsLocked()) { return; }
     GConsoleWindow::instance()->setErrorColor(color);
@@ -186,6 +321,8 @@ void shutdownConsole() {
     }
 }
 
+#endif // SPL_HEADLESS_MODE
+
 /*
  * Sets up console settings like window size, location, exit-on-close, etc.
  * based on compiler options set in the .pro file.
@@ -238,16 +375,12 @@ void initializeQtGraphicalConsole() {
     // properly before our lib tries to mess with them / redirect them
     static std::ios_base::Init ios_base_init;
 
+#ifndef SPL_HEADLESS_MODE
     if (GConsoleWindow::consoleEnabled()) {
         GConsoleWindow::instance();   // ensure that console window is ready
         setConsolePropertiesQt();
     }
-
+#endif // SPL_HEADLESS_MODE
 
 #endif // __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
-}
-
-// This one is at the bottom because it's not meant to be called by students.
-void setConsoleEnabled(bool enabled) {
-    GConsoleWindow::setConsoleEnabled(enabled);
 }
