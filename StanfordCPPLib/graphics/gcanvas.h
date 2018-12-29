@@ -142,18 +142,19 @@ public:
 
     /**
      * Creates an empty canvas of the specified size and optional background color.
-     * If no background color is passed, the default of white is used.
+     * If no background color is passed, a default transparent background is used.
      * @throw ErrorException if the given width/height ranges are negative
      * @throw ErrorException if the given rgb value is invalid or out of range
      */
-    GCanvas(double width, double height, int rgbBackground = 0xffffff, QWidget* parent = nullptr);
+    GCanvas(double width, double height, int rgbBackground, QWidget* parent = nullptr);
 
     /**
      * Creates an empty canvas of the specified size and background color.
+     * If no background color is passed, a default transparent background is used.
      * @throw ErrorException if the given width/height ranges are negative
      * @throw ErrorException if the given rgb value is invalid or out of range
      */
-    GCanvas(double width, double height, const std::string& rgbBackground, QWidget* parent = nullptr);
+    GCanvas(double width, double height, const std::string& rgbBackground = "#00000000", QWidget* parent = nullptr);
 
     /**
      * Frees memory allocated internally by the canvas.

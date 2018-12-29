@@ -68,7 +68,7 @@ GDiffImage::GDiffImage(
     // set up window and widgets
     _window = new GWindow(800, 600);
     _window->setTitle("Compare Graphical Output");
-    _window->setResizable(false);
+    // _window->setResizable(false);
     _window->setAutoRepaint(false);
 
     _slider = new GSlider();

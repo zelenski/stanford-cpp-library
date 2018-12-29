@@ -87,7 +87,12 @@ GCanvas::GCanvas(double width, double height, int rgbBackground, QWidget* parent
 GCanvas::GCanvas(double width, double height, const std::string& rgbBackground, QWidget* parent)
         : _backgroundImage(nullptr),
           _filename("") {
-    init(width, height, GColor::convertColorToRGB(rgbBackground), parent);
+    _backgroundColor = rgbBackground;
+    init(width, height,
+         GColor::hasAlpha(rgbBackground)
+                ? GColor::convertColorToARGB(rgbBackground)
+                : GColor::convertColorToRGB(rgbBackground),
+         parent);
 }
 
 void GCanvas::init(double width, double height, int rgbBackground, QWidget* parent) {
@@ -97,7 +102,14 @@ void GCanvas::init(double width, double height, int rgbBackground, QWidget* pare
     GThread::runOnQtGuiThread([this, rgbBackground, parent]() {
         _iqcanvas = new _Internal_QCanvas(this, getInternalParent(parent));
         _gcompound.setWidget(_iqcanvas);
-        _backgroundColor = GColor::convertRGBToColor(rgbBackground);
+        int alpha = getAlpha(rgbBackground);
+        if (GColor::hasAlpha(_backgroundColor)) {
+            // empty
+        } else if (alpha > 0 && alpha < 255) {
+            _backgroundColor = GColor::convertARGBToColor(rgbBackground);
+        } else {
+            _backgroundColor = GColor::convertRGBToColor(rgbBackground);
+        }
         _backgroundColorInt = rgbBackground;
     });
 
@@ -373,11 +385,23 @@ void GCanvas::fillRegion(double x, double y, double width, double height, int rg
     checkColor("GCanvas::fillRegion", rgb);
     bool wasAutoRepaint = isAutoRepaint();
     setAutoRepaint(false);
-    for (int r = static_cast<int>(y); r < y + height; r++) {
-        for (int c = static_cast<int>(x); c < x + width; c++) {
-            setRGB(/* x */ c, /* y */ r, rgb);
+    GThread::runOnQtGuiThread([this, x, y, width, height, rgb]() {
+        ensureBackgroundImage();
+        lockForWrite();
+
+        // fix alpha for 0-alpha non-0-rgb ints
+        int argb = rgb;
+        if (rgb != 0 && getAlpha(rgb) == 0) {
+            argb = rgb | 0xff000000;
         }
-    }
+
+        for (int yy = static_cast<int>(y); yy < y + height; yy++) {
+            for (int xx = static_cast<int>(x); xx < x + width; xx++) {
+                _backgroundImage->setPixel(xx, yy, static_cast<unsigned int>(argb));
+            }
+        }
+        unlock();
+    });
     setAutoRepaint(wasAutoRepaint);
     conditionalRepaint();
 }
