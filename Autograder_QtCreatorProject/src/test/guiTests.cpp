@@ -200,7 +200,7 @@ void gtableTest() {
     buttset->setActionListener([=]() {
         for (int row = 0; row < table->numRows(); row++) {
             for (int col = 0; col < table->numCols(); col++) {
-                std::string value = "R" + integerToString(row) + "C" + integerToString(col);
+                std::string value = "R" + std::to_string(row) + "C" + std::to_string(col);
                 table->set(row, col, value);
             }
         }

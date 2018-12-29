@@ -22,7 +22,7 @@ TIMED_TEST(HashSetTests, forEachTest_HashSet, TEST_TIMEOUT_DEFAULT) {
     HashSet<int> hset {40, 20, 10, 30};
     Set<int> expected {10, 20, 30, 40};
     for (int n : hset) {
-        assertTrue("HashSet must contain " + integerToString(n), expected.contains(n));
+        assertTrue("HashSet must contain " + std::to_string(n), expected.contains(n));
     }
 }
 

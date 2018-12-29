@@ -29,7 +29,7 @@ TIMED_TEST(HashMapTests, forEachTest_HashMap, TEST_TIMEOUT_DEFAULT) {
         std::string key = expectedKeys.dequeue();
         assertTrue("HashMap must contain key " + key, hmap.containsKey(key));
         int value = expectedValues.dequeue();
-        assertEqualsInt("HashMap[" + key + "] must equal " + integerToString(value), value, hmap[key]);
+        assertEqualsInt("HashMap[" + key + "] must equal " + std::to_string(value), value, hmap[key]);
     }
 }
 
