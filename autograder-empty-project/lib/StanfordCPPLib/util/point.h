@@ -4,6 +4,8 @@
  * This file exports a class representing an integer-valued <i>x</i>-<i>y</i>
  * pair.
  *
+ * @version 2018/11/22
+ * - added headless mode support
  * @version 2018/09/25
  * - added doc comments for new documentation generation
  */
@@ -19,7 +21,9 @@
 
 #include <string>
 
+#ifndef SPL_HEADLESS_MODE
 class GPoint;   // forward declaration
+#endif // SPL_HEADLESS_MODE
 
 /**
  * This class represents an <i>x</i>-<i>y</i> coordinate point on a
@@ -39,11 +43,13 @@ public:
      */
     Point(int x, int y);
 
+#ifndef SPL_HEADLESS_MODE
     /**
      * Creates a <code>Point</code> object with the same x and y coordinates
      * as the given other point.
      */
     Point(const GPoint& point);
+#endif // SPL_HEADLESS_MODE
 
     /**
      * Returns the <i>x</i>-coordinate of the point.

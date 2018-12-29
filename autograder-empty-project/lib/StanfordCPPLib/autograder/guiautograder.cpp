@@ -1,10 +1,12 @@
 /*
- * File: autogradergui.cpp
+ * File: guiautograder.cpp
  * -----------------------
  * This file contains the implementation of the AutograderUnitTestGui class.
  * See autograderunittestgui.h for declarations and documentation.
  *
  * @author Marty Stepp
+ * @version 2018/12/01
+ * - added printf messages to indicate each test as it runs/finishes
  * @version 2018/10/07
  * - icon constants and path fixes; start message word wrap
  * @version 2018/10/06
@@ -334,7 +336,7 @@ void GuiAutograder::addTest(const std::string& testName, const std::string& cate
     std::string testFullName = testInfo->getFullName();
     _allTestInfo[testFullName] = testInfo;
 
-    GLabel* testNumberLabel = new GLabel(padLeft(integerToString(_testCount), /* digits */ 3, /* fill */ '0') + ". ");
+    GLabel* testNumberLabel = new GLabel(padLeft(std::to_string(_testCount), /* digits */ 3, /* fill */ '0') + ". ");
     // TODO: align test number right?
     testNumberLabel->setFont(GFont::deriveQFont(testNumberLabel->getFont(), QFont::Bold));
     testNumberLabel->setActionListener([testInfo]() {
@@ -691,9 +693,15 @@ void GuiAutograder::runTest(stanfordcpplib::autograder::AutograderTest* test) {
         setCurrentTestCaseName(testFullName);
         if (catchExceptions()) {
             try {
+                // echo test's name to plain-text console for logging purposes
+                printf("running test \"%s\"\n", testFullName.c_str()); fflush(stdout);
+
                 // run and catch exceptions/errors thrown during test execution
                 test->TestRealBody();
+
+                printf("  complete.\n"); fflush(stdout);
             } catch (const ErrorException& ex) {
+                printf("  threw ErrorException: \"%s\"\n", ex.what()); fflush(stdout);
                 failWithException(testFullName, "An ErrorException", ex.what(), ex.getStackTrace());
             }
 
@@ -704,7 +712,7 @@ void GuiAutograder::runTest(stanfordcpplib::autograder::AutograderTest* test) {
 //            } catch (char const* str) {
 //                failWithException(testFullName, "A string exception", str);
 //            } catch (int n) {
-//                failWithException(testFullName, "An int exception", integerToString(n));
+//                failWithException(testFullName, "An int exception", std::to_string(n));
 //            } catch (long l) {
 //                failWithException(testFullName, "A long exception", longToString(l));
 //            } catch (char c) {
@@ -723,11 +731,13 @@ void GuiAutograder::runTest(stanfordcpplib::autograder::AutograderTest* test) {
 
         } else {
             test->TestRealBody();
+            printf("  complete.\n"); fflush(stdout);
         }
     }, /* threadName */ testName);
 
     if (GThread::wait(thread, timeoutMS)) {
         // thread is still running; timed out
+        printf("  timed out after %d ms.\n", timeoutMS); fflush(stdout);
         thread->terminate();
         setFailDetails(*test, autograder::UnitTestDetails(
             autograder::UnitTestType::TEST_FAIL,
@@ -1070,8 +1080,8 @@ bool GuiAutograder::showTestDetailsInSameWindow(const std::string& testFullName)
 }
 
 void GuiAutograder::updateSouthText() {
-    std::string text = "passed " + integerToString(_passCount)
-            + " / " + integerToString(getCheckedTestCount()) + " tests";
+    std::string text = "passed " + std::to_string(_passCount)
+            + " / " + std::to_string(getCheckedTestCount()) + " tests";
     if (_testingIsInProgress) {
         text += " (running ...)";
         if (_southLabel->getIcon() == "") {

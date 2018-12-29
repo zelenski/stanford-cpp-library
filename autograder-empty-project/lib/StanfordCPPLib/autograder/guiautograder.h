@@ -1,5 +1,5 @@
 /*
- * File: autogradergui.h
+ * File: guiautograder.h
  * ---------------------
  * 
  * @author Marty Stepp

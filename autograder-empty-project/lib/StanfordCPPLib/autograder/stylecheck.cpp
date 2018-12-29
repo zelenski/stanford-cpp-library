@@ -88,13 +88,13 @@ static bool processPatternNode(const std::string& codeFileName,
     
     std::string rangeStr = "";
     if (patternMinCount == patternMaxCount) {
-        rangeStr = "should occur exactly " + integerToString(patternMinCount) + " times";
+        rangeStr = "should occur exactly " + std::to_string(patternMinCount) + " times";
     } else if (patternMinCount == 0 && patternMaxCount > 0 && patternMaxCount != STATIC_VARIABLE(DEFAULT_MAX_COUNT)) {
-        rangeStr = "should occur <= " + integerToString(patternMaxCount) + " times";
+        rangeStr = "should occur <= " + std::to_string(patternMaxCount) + " times";
     } else if (patternMaxCount == STATIC_VARIABLE(DEFAULT_MAX_COUNT) && patternMinCount > 0) {
-        rangeStr = "should occur >= " + integerToString(patternMinCount) + " times";
+        rangeStr = "should occur >= " + std::to_string(patternMinCount) + " times";
     } else {
-        rangeStr = "should be between " + integerToString(patternMinCount) + "-" + integerToString(patternMaxCount) + " times";
+        rangeStr = "should be between " + std::to_string(patternMinCount) + "-" + std::to_string(patternMaxCount) + " times";
     }
     bool pass = true;
     if (patternMinCount > 0 && matchCount <= 0) {
@@ -131,7 +131,7 @@ static bool processPatternNode(const std::string& codeFileName,
         deets.message = patternDescription;
         deets.passed = pass;
         deets.expected = rangeStr;
-        deets.student = "actually occurs " + integerToString(matchCount) + " time(s)";
+        deets.student = "actually occurs " + std::to_string(matchCount) + " time(s)";
         if (static_cast<int>(linesStr.length()) > 0) {
             deets.student += " on line " + linesStr;
         }

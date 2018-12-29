@@ -10,6 +10,8 @@
  * again for that program.
  * 
  * @author Marty Stepp
+ * @version 2018/11/22
+ * - added headless mode support
  * @version 2018/10/18
  * - fixed includes to avoid accidentally enabling GUI unintentionally
  * @version 2018/09/08
@@ -40,9 +42,11 @@
 #include <sstream>
 #include <string>
 
+#ifndef SPL_HEADLESS_MODE
 class GConsoleWindow;
 class GDimension;
 class GPoint;
+#endif // SPL_HEADLESS_MODE
 
 /**
  * Erases the contents of the console window.
@@ -111,7 +115,9 @@ double getConsoleHeight();
 /**
  * Returns the x/y position of the top-left corner of the console window.
  */
+#ifndef SPL_HEADLESS_MODE
 GPoint getConsoleLocation();
+#endif // SPL_HEADLESS_MODE
 
 /**
  * Returns whether the location of the console window should be remembered and
@@ -137,7 +143,9 @@ bool getConsoleSettingsLocked();
 /**
  * Returns the size of the console window in pixels.
  */
+#ifndef SPL_HEADLESS_MODE
 GDimension getConsoleSize();
+#endif // SPL_HEADLESS_MODE
 
 /**
  * Returns the width of the console window in pixels.
@@ -151,7 +159,9 @@ double getConsoleWidth();
  *
  * @private
  */
+#ifndef SPL_HEADLESS_MODE
 GConsoleWindow* getConsoleWindow();
+#endif // SPL_HEADLESS_MODE
 
 /**
  * Returns the title bar text of the console window.
@@ -165,6 +175,9 @@ std::string getConsoleWindowTitle();
  * @private
  */
 void initializeQtGraphicalConsole();
+
+// defined in gwindow.h/cpp
+extern void pause(double milliseconds);
 
 /**
  * Returns whether the console's "clear" function should be enabled.
@@ -276,9 +289,6 @@ void setConsoleWindowTitle(const std::string& title);
  * Closes the graphical console window and turns it off.
  */
 void shutdownConsole();
-
-// defined in gwindow.h/cpp
-extern void pause(double milliseconds);
 
 #endif // _console_h
 

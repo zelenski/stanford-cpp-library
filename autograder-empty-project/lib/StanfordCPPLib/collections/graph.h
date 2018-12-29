@@ -66,6 +66,8 @@
 #define INTERNAL_INCLUDE 1
 #include "set.h"
 #define INTERNAL_INCLUDE 1
+#include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "tokenscanner.h"
 #undef INTERNAL_INCLUDE
 

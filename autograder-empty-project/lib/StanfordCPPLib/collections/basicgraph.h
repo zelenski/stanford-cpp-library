@@ -10,6 +10,8 @@
  * See BasicGraph.cpp for implementation of some non-template members.
  *
  * @author Marty Stepp
+ * @version 2018/11/18
+ * - bug fix for getInverseEdge/Arc with null parameter
  * @version 2018/09/07
  * - reformatted doc-style comments
  * @version 2018/03/10
@@ -1085,7 +1087,7 @@ EdgeGen<V, E>* BasicGraphGen<V, E>::getEdge(const std::string& v1, const std::st
 
 template <typename V, typename E>
 EdgeGen<V, E>* BasicGraphGen<V, E>::getInverseArc(EdgeGen<V, E>* edge) const {
-    return this->getArc(edge->finish, edge->start);
+    return (edge) ? this->getArc(edge->finish, edge->start) : nullptr;
 }
 
 template <typename V, typename E>

@@ -8,6 +8,8 @@
  * can show the results in the GUI for the user.
  * 
  * @author Marty Stepp
+ * @version 2018/11/14
+ * - added assertEqualsPointer
  * @version 2018/01/23
  * - fixed bugs with assertThrows* macros
  * @version 2017/12/12
@@ -85,6 +87,12 @@
             (msg), (a), (b), "T", ((a) == (b)))); \
     } \
     ASSERT_EQ((a), (b))
+
+#define assertEqualsPointer(msg, a, b) \
+    stanfordcpplib::autograder::Autograder::instance()->setFailDetails(stanfordcpplib::autograder::UnitTestDetails( \
+        stanfordcpplib::autograder::UnitTestType::TEST_ASSERT_EQUALS, \
+        (msg), static_cast<void*>(a), static_cast<void*>(b), "pointer", ((a) == (b)))); \
+    EXPECT_EQ((a), (b))
 
 #define assertEqualsString(msg, a, b) \
     stanfordcpplib::autograder::Autograder::instance()->setFailDetails(stanfordcpplib::autograder::UnitTestDetails( \

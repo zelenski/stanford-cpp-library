@@ -5,6 +5,8 @@
  * This file implements the OS class declared in os.h.
  * 
  * @author Marty Stepp
+ * @version 2018/11/22
+ * - added headless (non-Qt) mode support
  * @version 2018/09/23
  * - bug fix for isMac
  * @version 2018/09/17
@@ -13,8 +15,10 @@
 
 #define INTERNAL_INCLUDE 1
 #include "os.h"
+#ifndef SPL_HEADLESS_MODE
 #include <QString>
 #include <QSysInfo>
+#endif // SPL_HEADLESS_MODE
 #define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
@@ -826,6 +830,10 @@ void myInvalidParameterHandler(const wchar_t* expression,
 }
 
 LONG WINAPI UnhandledException(LPEXCEPTION_POINTERS exceptionInfo) {
+    // dear student: if you get a compiler error about 'Eip' not being found here,
+    // it means you're using a 64-bit compiler like the MS Visual C++ compiler,
+    // and not the 32-bit MinGW compiler we instructed you to install.
+    // Please re-install Qt Creator with the proper compiler (MinGW 32-bit) enabled.
     if (exceptionInfo && exceptionInfo->ContextRecord && exceptionInfo->ContextRecord->Eip) {
         // stacktrace::fakeCallStackPointer() = (void*) exceptionInfo->ContextRecord->Eip;
         stacktrace::fakeCallStackPointer() = (void*) exceptionInfo;
@@ -1981,6 +1989,68 @@ void Sound::play() {
 }
 
 /*
+ * memory.cpp
+ * ----------
+ * This file defines utility functions dealing with memory regions and
+ * allocation.
+ *
+ * @author Marty Stepp
+ * @version 2018/12/04
+ * - initial version
+ */
+
+#define INTERNAL_INCLUDE 1
+#include "memory.h"
+#include <cstddef>
+#undef INTERNAL_INCLUDE
+
+namespace stanfordcpplib {
+namespace memory {
+
+void computeMemoryDistances(
+        void* const p,
+        unsigned long int& stackDist,
+        unsigned long int& heapDist,
+        unsigned long int& staticDist) {
+    static int si = 0;
+    int i = 0;
+    int* pi = new int(0);
+
+    // don't use abs/subtraction here because it can over/underflow with very large integers
+    stackDist = p > &i ?
+            reinterpret_cast<unsigned long int>(p) - reinterpret_cast<unsigned long int>(&i) :
+            reinterpret_cast<unsigned long int>(&i) - reinterpret_cast<unsigned long int>(p);
+    heapDist = p > pi ?
+            reinterpret_cast<unsigned long int>(p) - reinterpret_cast<unsigned long int>(pi) :
+            reinterpret_cast<unsigned long int>(pi) - reinterpret_cast<unsigned long int>(p);
+    staticDist = p > &si ?
+            reinterpret_cast<unsigned long int>(p) - reinterpret_cast<unsigned long int>(&si) :
+            reinterpret_cast<unsigned long int>(&si) - reinterpret_cast<unsigned long int>(p);
+    delete pi;
+}
+
+bool isOnHeap(void* const p) {
+    unsigned long int stackDist, heapDist, staticDist;
+    computeMemoryDistances(p, stackDist, heapDist, staticDist);
+    return heapDist < stackDist && heapDist < staticDist;
+}
+
+bool isOnStack(void* const p) {
+    unsigned long int stackDist, heapDist, staticDist;
+    computeMemoryDistances(p, stackDist, heapDist, staticDist);
+    return stackDist < heapDist && stackDist < staticDist;
+}
+
+bool isOnStatic(void* const p) {
+    unsigned long int stackDist, heapDist, staticDist;
+    computeMemoryDistances(p, stackDist, heapDist, staticDist);
+    return staticDist < stackDist && staticDist < heapDist;
+}
+
+} // namespace memory
+} // namespace stanfordcpplib
+
+/*
  * File: random.cpp
  * ----------------
  * This file implements the random.h interface.
@@ -2878,6 +2948,10 @@ bool isDiffMatch(const std::string& diffs) {
  * See regexpr.h for documentation of each function.
  *
  * @author Marty Stepp
+ * @version 2018/12/16
+ * - added CodeStepByStep disabling of regexes
+ * @version 2018/11/22
+ * - added headless (non-Qt) mode support
  * @version 2015/07/05
  * - removed static global Platform variable, replaced by getPlatform as needed
  * @version 2014/10/14
@@ -2889,14 +2963,38 @@ bool isDiffMatch(const std::string& diffs) {
 
 #define INTERNAL_INCLUDE 1
 #include "regexpr.h"
-#include <iterator>
-#include <regex>
+#ifndef SPL_HEADLESS_MODE
 #include <QtGlobal>
+#endif // SPL_HEADLESS_MODE
 #define INTERNAL_INCLUDE 1
 #include "error.h"
 #define INTERNAL_INCLUDE 1
 #include "stringutils.h"
 #undef INTERNAL_INCLUDE
+
+#if defined(SPL_CODESTEPBYSTEP) || QT_VERSION < QT_VERSION_CHECK(5, 9, 0)
+bool regexMatch(const std::string& /*s*/, const std::string& /*regexp*/) {
+    return false;   // not supported
+}
+
+int regexMatchCount(const std::string& /*s*/, const std::string& /*regexp*/) {
+    return 0;   // not supported
+}
+
+void regexMatchCountWithLines(const std::string& /*s*/, const std::string& /*regexp*/,
+                             Vector<int>& /*linesOut*/) {
+    // empty; not supported
+}
+
+std::string regexReplace(const std::string& s, const std::string& /*regexp*/, const std::string& /*replacement*/, int /*limit*/) {
+    return s;   // not supported
+}
+
+#else // QT_VERSION
+
+// C++ regex support
+#include <iterator>
+#include <regex>
 
 bool regexMatch(const std::string& s, const std::string& regexp) {
     std::regex reg(regexp);
@@ -2904,35 +3002,13 @@ bool regexMatch(const std::string& s, const std::string& regexp) {
     return std::regex_search(s, match, reg);
 }
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
 int regexMatchCount(const std::string& s, const std::string& regexp) {
     std::regex reg(regexp);
     auto it1 = std::sregex_iterator(s.begin(), s.end(), reg);
     auto it2 = std::sregex_iterator();
     return std::distance(it1, it2);
 }
-#else
-int regexMatchCount(const std::string& /*s*/, const std::string& /*regexp*/) {
-    return 0;   // not supported
-}
-#endif // QT_VERSION
 
-int regexMatchCountWithLines(const std::string& s, const std::string& regexp, std::string& linesOut) {
-    Vector<int> linesOutVec;
-    regexMatchCountWithLines(s, regexp, linesOutVec);
-
-    // concatenate the vector into a string like "1, 4, 7, 7, 19"
-    linesOut = "";
-    if (!linesOutVec.isEmpty()) {
-        linesOut += std::to_string(linesOutVec[0]);
-        for (int i = 1; i < linesOutVec.size(); i++) {
-            linesOut += ", " + std::to_string(linesOutVec[i]);
-        }
-    }
-    return linesOutVec.size();
-}
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
 void regexMatchCountWithLines(const std::string& s, const std::string& regexp,
                              Vector<int>& linesOut) {
     linesOut.clear();
@@ -2959,14 +3035,7 @@ void regexMatchCountWithLines(const std::string& s, const std::string& regexp,
         linesOut.add(currentLine);
     }
 }
-#else
-void regexMatchCountWithLines(const std::string& /*s*/, const std::string& /*regexp*/,
-                             Vector<int>& /*linesOut*/) {
-    // empty
-}
-#endif // QT_VERSION
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
 std::string regexReplace(const std::string& s, const std::string& regexp, const std::string& replacement, int limit) {
     std::regex reg(regexp);
     std::string result;
@@ -2982,11 +3051,23 @@ std::string regexReplace(const std::string& s, const std::string& regexp, const 
     }
     return result;
 }
-#else
-std::string regexReplace(const std::string& s, const std::string& /*regexp*/, const std::string& /*replacement*/, int /*limit*/) {
-    return s;   // not supported
-}
 #endif // QT_VERSION
+
+// this function can be implemented the same way whether regexes are available or not
+int regexMatchCountWithLines(const std::string& s, const std::string& regexp, std::string& linesOut) {
+    Vector<int> linesOutVec;
+    regexMatchCountWithLines(s, regexp, linesOutVec);
+
+    // concatenate the vector into a string like "1, 4, 7, 7, 19"
+    linesOut = "";
+    if (!linesOutVec.isEmpty()) {
+        linesOut += std::to_string(linesOutVec[0]);
+        for (int i = 1; i < linesOutVec.size(); i++) {
+            linesOut += ", " + std::to_string(linesOutVec[i]);
+        }
+    }
+    return linesOutVec.size();
+}
 
 //#define INTERNAL_INCLUDE 1
 //#include "bigfloat.h"
@@ -6480,6 +6561,9 @@ void require(bool test, const std::string& caller, const std::string& details) {
  * implementation for each function requires only one line of code,
  * which makes detailed documentation unnecessary.
  *
+ * @version 2018/11/22
+ * - added headless mode support
+ * - alphabetized methods
  * @version 2016/10/14
  * - modified floating-point equality tests to use floatingPointEqual function
  */
@@ -6496,12 +6580,29 @@ void require(bool test, const std::string& caller, const std::string& details) {
 extern const double PI = 3.14159265358979323846;
 extern const double E  = 2.71828182845904523536;
 
-double sinDegrees(double angle) {
-    return sin(toRadians(angle));
-}
-
 double cosDegrees(double angle) {
     return cos(toRadians(angle));
+}
+
+int countDigits(int n, int base) {
+    if (base <= 0) {
+        error("countDigits: base must be 1 or greater");
+    }
+    if (n == 0) {
+        return 0;
+    } else if (n < 0) {
+        n = -n;
+    }
+
+    int digits = 0;
+    for (int temp = n; temp > 0 && digits < 65; temp /= base) {
+        digits++;
+    }
+    return digits;
+}
+
+double sinDegrees(double angle) {
+    return sin(toRadians(angle));
 }
 
 double tanDegrees(double angle) {
@@ -6516,38 +6617,33 @@ double toRadians(double degrees) {
     return degrees * PI / 180;
 }
 
-double vectorDistance(const GPoint & pt) {
-    return vectorDistance(pt.getX(), pt.getY());
+double vectorAngle(double x, double y) {
+    return floatingPointEqual(x, 0) && floatingPointEqual(y, 0)
+            ? 0 : toDegrees(atan2(-y, x));
+}
+
+#ifndef SPL_HEADLESS_MODE
+double vectorAngle(const GPoint& pt) {
+    return vectorAngle(pt.getX(), pt.getY());
+}
+#endif // SPL_HEADLESS_MODE
+
+double vectorAngle(const Point& pt) {
+    return vectorAngle(pt.getX(), pt.getY());
 }
 
 double vectorDistance(double x, double y) {
     return sqrt(x * x + y * y);
 }
 
-double vectorAngle(const GPoint & pt) {
-    return vectorAngle(pt.getX(), pt.getY());
+#ifndef SPL_HEADLESS_MODE
+double vectorDistance(const GPoint& pt) {
+    return vectorDistance(pt.getX(), pt.getY());
 }
+#endif // SPL_HEADLESS_MODE
 
-double vectorAngle(double x, double y) {
-    return floatingPointEqual(x, 0) && floatingPointEqual(y, 0)
-            ? 0 : toDegrees(atan2(-y, x));
-}
-
-int countDigits(int n, int base) {
-    if (base <= 0) {
-        error("countDigits: base must be 1 or greater");
-    }
-    if (n == 0) {
-        return 0;
-    } else if (n < 0) {
-        n = -n;
-    }
-    
-    int digits = 0;
-    for (int temp = n; temp > 0 && digits < 65; temp /= base) {
-        digits++;
-    }
-    return digits;
+double vectorDistance(const Point& pt) {
+    return vectorDistance(pt.getX(), pt.getY());
 }
 
 /*
@@ -6747,6 +6843,9 @@ std::istream& operator >>(std::istream& input, Complex& c) {
  * ----------------
  * This file implements the strlib.h interface.
  * 
+ * @version 2018/11/14
+ * - added std::to_string for bool, char, pointer, and generic template type T
+ * - bug fix for pointerToString (was putting two "0x" prefixes)
  * @version 2018/09/02
  * - added padLeft, padRight
  * @version 2017/10/24
@@ -6939,7 +7038,7 @@ std::string pointerToString(void* p) {
     if (p) {
         std::ostringstream stream;
         stream << std::hex;
-        stream << "0x" << p;
+        stream << p;
         return stream.str();
     } else {
         return "nullptr";
@@ -7134,12 +7233,12 @@ Vector<std::string> stringSplit(const std::string& str, const std::string& delim
 }
 
 bool stringToBool(const std::string& str) {
-    std::istringstream stream(trim(str));
     if (str == "true" || str == "1") {
         return true;
     } else if (str == "false" || str == "0") {
         return false;
     }
+    std::istringstream stream(trim(str));
     bool value;
     stream >> std::boolalpha >> value;
     if (stream.fail() || !stream.eof()) {
@@ -7338,11 +7437,35 @@ void urlEncodeInPlace(std::string& str) {
     str = urlEncode(str);   // no real efficiency gain here
 }
 
+namespace std {
+bool stob(const std::string& str) {
+    return ::stringToBool(str);
+}
+
+char stoc(const std::string& str) {
+    return ::stringToChar(str);
+}
+
+std::string to_string(bool b) {
+    return ::boolToString(b);
+}
+
+std::string to_string(char c) {
+    return ::charToString(c);
+}
+
+std::string to_string(void* p) {
+    return ::pointerToString(p);
+}
+} // namespace std
+
 /*
  * File: point.cpp
  * ---------------
  * This file implements the point.h interface.
  * 
+ * @version 2018/11/22
+ * - added headless mode support
  * @version 2017/09/29
  * - updated to use composite hashCode function
  * @version 2014/10/08
@@ -7368,10 +7491,12 @@ Point::Point(int x, int y) {
     this->y = y;
 }
 
+#ifndef SPL_HEADLESS_MODE
 Point::Point(const GPoint& point) {
     this->x = (int) point.getX();
     this->y = (int) point.getY();
 }
+#endif // SPL_HEADLESS_MODE
 
 int Point::getX() const {
     return x;
@@ -8698,7 +8823,11 @@ GEvent waitForEvent(int mask) {
 /*
  * File: gbrowserpane.cpp
  * ----------------------
+ * This file contains the implementation of the <code>GBrowserPane</code> class
+ * as declared in gbrowserpane.h.
  *
+ * @version 2018/12/28
+ * - added methods for text selection, scrolling, cursor position, key/mouse listeners
  * @version 2018/09/17
  * - fixed thread safety bugs
  * - added link listener events
@@ -8710,6 +8839,8 @@ GEvent waitForEvent(int mask) {
 
 #define INTERNAL_INCLUDE 1
 #include "gbrowserpane.h"
+#include <QScrollBar>
+#include <QTextCursor>
 #include <fstream>
 #include <iostream>
 #define INTERNAL_INCLUDE 1
@@ -8737,16 +8868,75 @@ GBrowserPane::~GBrowserPane() {
     _iqtextbrowser = nullptr;
 }
 
+void GBrowserPane::clearSelection() {
+    GThread::runOnQtGuiThread([this]() {
+        QTextCursor cursor = _iqtextbrowser->textCursor();
+        cursor.clearSelection();
+        _iqtextbrowser->setTextCursor(cursor);
+    });
+}
+
+void GBrowserPane::clearText() {
+    GThread::runOnQtGuiThread([this]() {
+        _iqtextbrowser->clear();
+    });
+}
+
 std::string GBrowserPane::getContentType() const {
     return _contentType;
+}
+
+int GBrowserPane::getCursorPosition() const {
+    return _iqtextbrowser->textCursor().position();
+}
+
+_Internal_QWidget* GBrowserPane::getInternalWidget() const {
+    return _iqtextbrowser;
 }
 
 std::string GBrowserPane::getPageUrl() const {
     return _pageUrl;
 }
 
-_Internal_QWidget* GBrowserPane::getInternalWidget() const {
-    return _iqtextbrowser;
+std::string GBrowserPane::getSelectedText() const {
+    QTextCursor cursor = _iqtextbrowser->textCursor();
+    int start = cursor.selectionStart();
+    int end = cursor.selectionEnd();
+    if (end > start) {
+        return getText().substr(start, end - start);
+    } else {
+        return "";
+    }
+}
+
+int GBrowserPane::getSelectionEnd() const {
+    QTextCursor cursor = _iqtextbrowser->textCursor();
+    int start = cursor.selectionStart();
+    int end = cursor.selectionEnd();
+    if (end > start) {
+        return end;
+    } else {
+        // no selection; cursor sets selection start/end to be equal
+        return -1;
+    }
+}
+
+int GBrowserPane::getSelectionLength() const {
+    QTextCursor cursor = _iqtextbrowser->textCursor();
+    int start = cursor.selectionStart();
+    int end = cursor.selectionEnd();
+    return end - start;
+}
+
+int GBrowserPane::getSelectionStart() const {
+    QTextCursor cursor = _iqtextbrowser->textCursor();
+    int start = cursor.selectionStart();
+    int end = cursor.selectionEnd();
+    if (end > start) {
+        return start;
+    } else {
+        return -1;
+    }
 }
 
 std::string GBrowserPane::getText() const {
@@ -8759,6 +8949,32 @@ std::string GBrowserPane::getType() const {
 
 QWidget* GBrowserPane::getWidget() const {
     return static_cast<QWidget*>(_iqtextbrowser);
+}
+
+bool GBrowserPane::isEditable() const {
+    return !_iqtextbrowser->isReadOnly();
+}
+
+bool GBrowserPane::isLineWrap() const {
+    return _iqtextbrowser->lineWrapMode() != QTextEdit::NoWrap;
+}
+
+void GBrowserPane::moveCursorToEnd() {
+    GThread::runOnQtGuiThread([this]() {
+        QTextCursor cursor = _iqtextbrowser->textCursor();
+        cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor, 1);
+        _iqtextbrowser->setTextCursor(cursor);
+        _iqtextbrowser->ensureCursorVisible();
+    });
+}
+
+void GBrowserPane::moveCursorToStart() {
+    GThread::runOnQtGuiThread([this]() {
+        QTextCursor cursor = _iqtextbrowser->textCursor();
+        cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor, 1);
+        _iqtextbrowser->setTextCursor(cursor);
+        _iqtextbrowser->ensureCursorVisible();
+    });
 }
 
 void GBrowserPane::readTextFromFile(std::istream& file) {
@@ -8788,12 +9004,110 @@ void GBrowserPane::readTextFromUrl(const std::string& url) {
     });
 }
 
+void GBrowserPane::removeKeyListener() {
+    removeEventListeners({"keypress",
+                          "keyrelease",
+                          "keytype"});
+}
+
 void GBrowserPane::removeLinkListener() {
     removeEventListener("linkclick");
 }
 
+void GBrowserPane::removeMouseListener() {
+    removeEventListeners({"mousepress",
+                          "mouserelease"});
+}
+
+void GBrowserPane::removeTextChangeListener() {
+    removeEventListener("textchange");
+}
+
+void GBrowserPane::scrollToBottom() {
+    GThread::runOnQtGuiThread([this]() {
+        QScrollBar* scrollbar = _iqtextbrowser->verticalScrollBar();
+        scrollbar->setValue(scrollbar->maximum());
+        scrollbar->setSliderPosition(scrollbar->maximum());
+    });
+}
+
+void GBrowserPane::scrollToTop() {
+    GThread::runOnQtGuiThread([this]() {
+        QScrollBar* scrollbar = _iqtextbrowser->verticalScrollBar();
+        scrollbar->setValue(0);
+        scrollbar->setSliderPosition(0);
+    });
+}
+
+void GBrowserPane::select(int startIndex, int length) {
+    require::nonNegative(startIndex, 0, "GBrowserPane::select", "startIndex");
+    require::nonNegative(length, 0, "GBrowserPane::select", "length");
+    GThread::runOnQtGuiThread([this, startIndex, length]() {
+        QTextCursor cursor = _iqtextbrowser->textCursor();
+        cursor.setPosition(startIndex);
+        cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, length);
+        _iqtextbrowser->setTextCursor(cursor);
+    });
+}
+
+void GBrowserPane::selectAll() {
+    GThread::runOnQtGuiThread([this]() {
+        _iqtextbrowser->selectAll();
+    });
+}
+
 void GBrowserPane::setContentType(const std::string& contentType) {
     _contentType = contentType;
+}
+
+void GBrowserPane::setCursorPosition(int index, bool keepAnchor) {
+    require::nonNegative(index, "TextArea::setCursorPosition", "index");
+    GThread::runOnQtGuiThread([this, index, keepAnchor]() {
+        QTextCursor cursor(_iqtextbrowser->textCursor());
+        cursor.setPosition(index, keepAnchor ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor);
+        _iqtextbrowser->setTextCursor(cursor);
+        _iqtextbrowser->ensureCursorVisible();
+    });
+}
+
+void GBrowserPane::setEditable(bool value) {
+    GThread::runOnQtGuiThread([this, value]() {
+        _iqtextbrowser->setReadOnly(!value);
+    });
+}
+
+void GBrowserPane::setKeyListener(GEventListener func) {
+    GThread::runOnQtGuiThread([this]() {
+        _iqtextbrowser->setFocusPolicy(Qt::StrongFocus);
+    });
+    setEventListeners({"keypress",
+                       "keyrelease",
+                       "keytype"}, func);
+}
+
+void GBrowserPane::setKeyListener(GEventListenerVoid func) {
+    GThread::runOnQtGuiThread([this]() {
+        _iqtextbrowser->setFocusPolicy(Qt::StrongFocus);
+    });
+    setEventListeners({"keypress",
+                       "keyrelease",
+                       "keytype"}, func);
+}
+
+void GBrowserPane::setMouseListener(GEventListener func) {
+    setEventListeners({"mousepress",
+                       "mouserelease"}, func);
+}
+
+void GBrowserPane::setMouseListener(GEventListenerVoid func) {
+    setEventListeners({"mousepress",
+                       "mouserelease"}, func);
+}
+
+void GBrowserPane::setLineWrap(bool wrap) {
+    GThread::runOnQtGuiThread([this, wrap]() {
+        _iqtextbrowser->setLineWrapMode(wrap ? QTextEdit::WidgetWidth : QTextEdit::NoWrap);
+    });
 }
 
 void GBrowserPane::setLinkListener(GEventListener func) {
@@ -8808,6 +9122,14 @@ void GBrowserPane::setText(const std::string& text) {
     GThread::runOnQtGuiThread([this, text]() {
         _iqtextbrowser->setText(QString::fromStdString(text));
     });
+}
+
+void GBrowserPane::setTextChangeListener(GEventListener func) {
+    setEventListener("textchange", func);
+}
+
+void GBrowserPane::setTextChangeListener(GEventListenerVoid func) {
+    setEventListener("textchange", func);
 }
 
 
@@ -9573,6 +9895,9 @@ int hashCode(const GRectangle& r) {
  * This file implements the gconsolewindow.h interface.
  *
  * @author Marty Stepp
+ * @version 2018/12/27
+ * - bug fix for endless waitForEvent queued events caused by printing text
+ *   to console (bug reported by Keith Schwarz)
  * @version 2018/10/11
  * - bug fixes for shutdown flag, input script hotkeys (e.g. Ctrl+1)
  * @version 2018/10/04
@@ -10150,9 +10475,6 @@ void GConsoleWindow::loadConfiguration() {
 }
 
 void GConsoleWindow::loadInputScript(int number) {
-    if (_shutdown) {
-        return;
-    }
     std::string sep = getDirectoryPathSeparator();
     static std::initializer_list<std::string> directoriesToCheck {
             ".",
@@ -10180,7 +10502,7 @@ void GConsoleWindow::loadInputScript(int number) {
         }
     }
 
-    if (!inputFile.empty()) {
+    if (!_shutdown && !inputFile.empty()) {
         loadInputScript(inputFile);
         pause(50);
     }
@@ -10233,9 +10555,11 @@ void GConsoleWindow::print(const std::string& str, bool isStdErr) {
         if (!this->_textArea) {
             return;
         }
+        this->_textArea->setEventsEnabled(false);
         this->_textArea->appendFormattedText(strToPrint, isStdErr ? getErrorColor() : getOutputColor());
         this->_textArea->moveCursorToEnd();
         this->_textArea->scrollToBottom();
+        this->_textArea->setEventsEnabled(true);
         _coutMutex.unlock();
     });
 }
@@ -11946,7 +12270,12 @@ GCanvas::GCanvas(double width, double height, int rgbBackground, QWidget* parent
 GCanvas::GCanvas(double width, double height, const std::string& rgbBackground, QWidget* parent)
         : _backgroundImage(nullptr),
           _filename("") {
-    init(width, height, GColor::convertColorToRGB(rgbBackground), parent);
+    _backgroundColor = rgbBackground;
+    init(width, height,
+         GColor::hasAlpha(rgbBackground)
+                ? GColor::convertColorToARGB(rgbBackground)
+                : GColor::convertColorToRGB(rgbBackground),
+         parent);
 }
 
 void GCanvas::init(double width, double height, int rgbBackground, QWidget* parent) {
@@ -11956,7 +12285,14 @@ void GCanvas::init(double width, double height, int rgbBackground, QWidget* pare
     GThread::runOnQtGuiThread([this, rgbBackground, parent]() {
         _iqcanvas = new _Internal_QCanvas(this, getInternalParent(parent));
         _gcompound.setWidget(_iqcanvas);
-        _backgroundColor = GColor::convertRGBToColor(rgbBackground);
+        int alpha = getAlpha(rgbBackground);
+        if (GColor::hasAlpha(_backgroundColor)) {
+            // empty
+        } else if (alpha > 0 && alpha < 255) {
+            _backgroundColor = GColor::convertARGBToColor(rgbBackground);
+        } else {
+            _backgroundColor = GColor::convertRGBToColor(rgbBackground);
+        }
         _backgroundColorInt = rgbBackground;
     });
 
@@ -12232,11 +12568,23 @@ void GCanvas::fillRegion(double x, double y, double width, double height, int rg
     checkColor("GCanvas::fillRegion", rgb);
     bool wasAutoRepaint = isAutoRepaint();
     setAutoRepaint(false);
-    for (int r = static_cast<int>(y); r < y + height; r++) {
-        for (int c = static_cast<int>(x); c < x + width; c++) {
-            setRGB(/* x */ c, /* y */ r, rgb);
+    GThread::runOnQtGuiThread([this, x, y, width, height, rgb]() {
+        ensureBackgroundImage();
+        lockForWrite();
+
+        // fix alpha for 0-alpha non-0-rgb ints
+        int argb = rgb;
+        if (rgb != 0 && getAlpha(rgb) == 0) {
+            argb = rgb | 0xff000000;
         }
-    }
+
+        for (int yy = static_cast<int>(y); yy < y + height; yy++) {
+            for (int xx = static_cast<int>(x); xx < x + width; xx++) {
+                _backgroundImage->setPixel(xx, yy, static_cast<unsigned int>(argb));
+            }
+        }
+        unlock();
+    });
     setAutoRepaint(wasAutoRepaint);
     conditionalRepaint();
 }
@@ -15070,6 +15418,9 @@ void GTimer::stop() {
  * --------------------
  *
  * @author Marty Stepp
+ * @version 2018/11/27
+ * - added code to set a widget visible after adding/inserting it to flow container
+ *   (needed to see widgets added to container after window is showing on screen)
  * @version 2018/09/19
  * - added contains, regionContains methods
  * - added argument checking with require.h
@@ -15685,6 +16036,8 @@ void _Internal_QContainer::add(QWidget* widget) {
             int col = _cols <= 0 ? 0 : _currentIndex % _cols;
             QGridLayout* gridLayout = (QGridLayout*) getQLayout();
             gridLayout->addWidget(widget, row, col);
+            widget->setVisible(true);
+            GLayout::forceUpdate(this);
             break;
         }
         case GContainer::LAYOUT_FLOW_HORIZONTAL:
@@ -15692,6 +16045,8 @@ void _Internal_QContainer::add(QWidget* widget) {
             // add to end of the list of widgets in this region
             QBoxLayout* boxLayout = (QBoxLayout*) getQLayout();
             boxLayout->insertWidget(/* index */ boxLayout->count() - 1, widget);
+            widget->setVisible(true);
+            GLayout::forceUpdate(this);
             break;
         }
         default: {
@@ -15871,6 +16226,8 @@ void _Internal_QContainer::insert(int i, QWidget* widget) {
             int col = _cols <= 0 ? 0 : i % _cols;
             QGridLayout* gridLayout = (QGridLayout*) getQLayout();
             gridLayout->addWidget(widget, row, col);
+            widget->setVisible(true);
+            GLayout::forceUpdate(this);
             break;
         }
         case GContainer::LAYOUT_FLOW_HORIZONTAL:
@@ -15879,6 +16236,8 @@ void _Internal_QContainer::insert(int i, QWidget* widget) {
             // index is off by 1 because of 'stretch' widgets at start/end
             QBoxLayout* boxLayout = (QBoxLayout*) getQLayout();
             boxLayout->insertWidget(/* index */ i - 1, widget);
+            widget->setVisible(true);
+            GLayout::forceUpdate(this);
             break;
         }
     }
@@ -19083,6 +19442,11 @@ void GDiffGui::syncScrollBars(bool left) {
  * Qt's QMessageBox and QInputDialog classes.
  *
  * @author Marty Stepp
+ * @version 2018/12/28
+ * - bug fix for auto mnemonics/hotkeys in showOptionDialog
+ * @version 2018/11/14
+ * - added mnemonics/hotkey to showOptionDialog window option buttons
+ * - added Cancel logic to Escape out of showOptionDialog window
  * @version 2018/10/18
  * - bug fix for showOptionDialog to run on Qt GUI thread
  * @version 2018/08/23
@@ -19106,6 +19470,8 @@ void GDiffGui::syncScrollBars(bool left) {
 #include "gthread.h"
 #define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
+#include "set.h"
 #define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
@@ -19278,14 +19644,59 @@ std::string GOptionPane::showOptionDialog(QWidget* parent,
         for (std::string option : options) {
             box.addButton(QString::fromStdString(option), QMessageBox::ActionRole);
         }
+
         if (!initiallySelected.empty()) {
             // TODO: dunno how to set initially selected button properly
             // box.setDefaultButton(QString::fromStdString(initiallySelected));
         }
 
+        // give each button a unique hotkey; listen to key presses on buttons
+        // (try to set char at index 0, 1, 2 as the mnemonic)
+        Set<QAbstractButton*> buttonsUsed;
+        Set<std::string> charsUsed;
+        QAbstractButton* escapeButton = nullptr;
+        int escapeButtonIndex = -1;
+
+        for (int i = 0; i <= 2; i++) {
+            int buttonIndex = 0;
+            for (QAbstractButton* button : box.buttons()) {
+                if (buttonsUsed.contains(button)) {
+                    buttonIndex++;
+                    continue;
+                }
+
+                std::string text = button->text().toStdString();
+                if (!escapeButton && text == "Cancel") {
+                    escapeButton = button;
+                    escapeButtonIndex = buttonIndex;
+                }
+                if (static_cast<int>(text.length()) <= i) {
+                    buttonIndex++;
+                    continue;
+                }
+                std::string letter = text.substr(i, 1);
+                if (charsUsed.contains(letter)) {
+                    buttonIndex++;
+                    continue;
+                }
+
+                buttonsUsed.add(button);
+                charsUsed.add(letter);
+                button->setText(QString::fromStdString(text.substr(0, i) + "&" + text.substr(i)));
+                button->setShortcut(QKeySequence::fromString(QString::fromStdString(letter)));
+                buttonIndex++;
+            }
+        }
+
+        // set listener to close window when Esc is pressed
+        if (escapeButton) {
+            box.setEscapeButton(escapeButton);
+        }
+
         int index = box.exec();
         if (index == GOptionPane::InternalResult::INTERNAL_CLOSED_OPTION
-                || index < 0 || index >= options.size()) {
+                || index < 0 || index >= options.size()
+                || (escapeButtonIndex >= 0 && index == escapeButtonIndex)) {
             result = "";
         } else {
             result = options[index];
@@ -19530,6 +19941,8 @@ void QtGui::startEventLoop(bool exitAfter) {
  * This file implements the console .h interface.
  *
  * @author Marty Stepp
+ * @version 2018/11/22
+ * - added headless mode support
  * @version 2018/10/01
  * - bug fix for graphical console popping up even if not included
  * @version 2018/08/23
@@ -19557,6 +19970,135 @@ void QtGui::startEventLoop(bool exitAfter) {
 #define INTERNAL_INCLUDE 1
 #include "private/version.h"
 #undef INTERNAL_INCLUDE
+
+#ifdef SPL_HEADLESS_MODE
+
+void clearConsole() {
+    // empty
+}
+
+bool getConsoleClearEnabled() {
+    return true;
+}
+
+/* GWindow::CloseOperation */ int getConsoleCloseOperation() {
+    return 0;
+}
+
+bool getConsoleEcho() {
+    return true;
+}
+
+bool getConsoleEnabled() {
+    return true;
+}
+
+bool getConsoleEventOnClose() {
+    return true;
+}
+
+bool getConsoleExitProgramOnClose() {
+    return true;
+}
+
+std::string getConsoleFont() {
+    return "";
+}
+
+double getConsoleHeight() {
+    return 0;
+}
+
+bool getConsoleLocationSaved() {
+    return false;
+}
+
+bool getConsolePrintExceptions() {
+    return exceptions::getTopLevelExceptionHandlerEnabled();
+}
+
+bool getConsoleSettingsLocked() {
+    return false;
+}
+
+double getConsoleWidth() {
+    return 0;
+}
+
+std::string getConsoleWindowTitle() {
+    return "";
+}
+
+void pause(double /*milliseconds*/) {
+    // empty
+}
+
+void setConsoleClearEnabled(bool /*value*/) {
+    // empty
+}
+
+void setConsoleCloseOperation(int /*op*/) {
+    // empty
+}
+
+void setConsoleEcho(bool /*echo*/) {
+    // empty
+}
+
+void setConsoleEnabled(bool /*enabled*/) {
+    // empty
+}
+
+void setConsoleErrorColor(const std::string& /*color*/) {
+    // empty
+}
+
+void setConsoleEventOnClose(bool /*eventOnClose*/) {
+    // empty
+}
+
+void setConsoleExitProgramOnClose(bool /*exitOnClose*/) {
+    // empty
+}
+
+void setConsoleFont(const std::string& /*font*/) {
+    // empty
+}
+
+void setConsoleLocation(double /*x*/, double /*y*/) {
+    // empty
+}
+
+void setConsoleLocationSaved(bool /*value*/) {
+    // empty
+}
+
+void setConsoleOutputColor(const std::string& /*color*/) {
+    // empty
+}
+
+void setConsolePrintExceptions(bool printExceptions, bool force) {
+    if (getConsoleSettingsLocked()) { return; }
+    exceptions::setTopLevelExceptionHandlerEnabled(printExceptions, force);
+}
+
+void setConsoleSettingsLocked(bool /*value*/) {
+    // empty
+}
+
+void setConsoleSize(double /*width*/, double /*height*/) {
+    // empty
+}
+
+void setConsoleWindowTitle(const std::string& /*title*/) {
+    // empty
+}
+
+void shutdownConsole() {
+    // empty
+}
+
+#else // SPL_HEADLESS_MODE
 
 void clearConsole() {
     GConsoleWindow::instance()->clearConsole();
@@ -19651,6 +20193,10 @@ void setConsoleEcho(bool echo) {
     GConsoleWindow::instance()->setEcho(echo);
 }
 
+void setConsoleEnabled(bool enabled) {
+    GConsoleWindow::setConsoleEnabled(enabled);
+}
+
 void setConsoleErrorColor(const std::string& color) {
     if (getConsoleSettingsLocked()) { return; }
     GConsoleWindow::instance()->setErrorColor(color);
@@ -19712,6 +20258,8 @@ void shutdownConsole() {
     }
 }
 
+#endif // SPL_HEADLESS_MODE
+
 /*
  * Sets up console settings like window size, location, exit-on-close, etc.
  * based on compiler options set in the .pro file.
@@ -19764,18 +20312,14 @@ void initializeQtGraphicalConsole() {
     // properly before our lib tries to mess with them / redirect them
     static std::ios_base::Init ios_base_init;
 
+#ifndef SPL_HEADLESS_MODE
     if (GConsoleWindow::consoleEnabled()) {
         GConsoleWindow::instance();   // ensure that console window is ready
         setConsolePropertiesQt();
     }
-
+#endif // SPL_HEADLESS_MODE
 
 #endif // __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
-}
-
-// This one is at the bottom because it's not meant to be called by students.
-void setConsoleEnabled(bool enabled) {
-    GConsoleWindow::setConsoleEnabled(enabled);
 }
 
 /*
@@ -20735,7 +21279,7 @@ GDiffImage::GDiffImage(
     // set up window and widgets
     _window = new GWindow(800, 600);
     _window->setTitle("Compare Graphical Output");
-    _window->setResizable(false);
+    // _window->setResizable(false);
     _window->setAutoRepaint(false);
 
     _slider = new GSlider();
@@ -28244,6 +28788,8 @@ void filelib_setCurrentDirectory(const std::string& path) {
  * -------------------
  * ...
  *
+ * @version 2018/11/14
+ * - added Cancel option to multimain popup dialog
  * @version 2018/10/18
  * - initial version
  */
@@ -28335,6 +28881,9 @@ int selectMainFunction() {
                     options.add(functionName);
                 }
 
+                // add a "Cancel" option so we can press Escape to abort
+                options.add("Cancel");
+
                 std::string choice = "";
                 choice = GOptionPane::showOptionDialog(
                         /* message */ "main functions available:",
@@ -28388,6 +28937,8 @@ int selectMainFunction() {
  * TODO
  *
  * @author Marty Stepp
+ * @version 2018/11/22
+ * - added headless mode support
  * @version 2018/08/28
  * - refactor to use stanfordcpplib namespace
  * @version 2018/08/27
@@ -28441,15 +28992,20 @@ void initializeLibrary(int argc, char** argv) {
     }
     _initialized = true;
 
+#ifndef SPL_HEADLESS_MODE
     GThread::setMainThread();
+#endif // SPL_HEADLESS_MODE
+
     parseArgsQt(argc, argv);
 
+#ifndef SPL_HEADLESS_MODE
     // initialize the main Qt graphics subsystem
     QtGui::instance()->setArgs(argc, argv);
     QtGui::instance()->initializeQt();
 
     // initialize Qt graphical console (if student #included it)
     initializeQtGraphicalConsole();
+#endif // SPL_HEADLESS_MODE
 }
 
 void initializeLibraryStudentThread() {
@@ -28490,6 +29046,23 @@ static void parseArgsQt(int argc, char** argv) {
 // called automatically by real main() function;
 // call to this is inserted by library init.h
 // to be run in Qt main thread
+#ifdef SPL_HEADLESS_MODE
+void runMainInThread(int (* mainFunc)(void)) {
+    mainFunc();
+}
+
+void runMainInThread(std::function<int()> mainFunc) {
+    mainFunc();
+}
+
+void runMainInThreadVoid(void (* mainFuncVoid)(void)) {
+    mainFuncVoid();
+}
+
+void runMainInThreadVoid(std::function<void()> mainFuncVoid) {
+    mainFuncVoid();
+}
+#else // SPL_HEADLESS_MODE
 void runMainInThread(int (* mainFunc)(void)) {
     QtGui::instance()->startBackgroundEventLoop(mainFunc);
 }
@@ -28505,6 +29078,7 @@ void runMainInThreadVoid(void (* mainFuncVoid)(void)) {
 void runMainInThreadVoid(std::function<void()> mainFuncVoid) {
     QtGui::instance()->startBackgroundEventLoopVoid(mainFuncVoid);
 }
+#endif // SPL_HEADLESS_MODE
 
 void setExitEnabled(bool enabled) {
     STATIC_VARIABLE(isExitEnabled) = enabled;
@@ -28514,7 +29088,11 @@ void setExitEnabled(bool enabled) {
 // shut down the Qt graphical console window;
 // to be run in Qt main thread
 void shutdownLibrary() {
+#ifdef SPL_HEADLESS_MODE
+    // empty
+#else
     shutdownConsole();
+#endif // SPL_HEADLESS_MODE
 }
 
 void staticInitializeLibrary() {
