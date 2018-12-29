@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['managed',['Managed',['../classManaged.html',1,'']]],
   ['map',['Map',['../classMap.html',1,'']]],
   ['map_3c_20arctype_20_2a_2c_20bool_20_3e',['Map&lt; ArcType *, bool &gt;',['../classMap.html',1,'']]],
   ['map_3c_20edgegen_3c_20v_2c_20e_20_3e_20_2a_2c_20bool_20_3e',['Map&lt; EdgeGen&lt; V, E &gt; *, bool &gt;',['../classMap.html',1,'']]],
@@ -19,5 +20,6 @@ var searchData=
   ['map_3c_20valuetype_2c_20bool_20_3e',['Map&lt; ValueType, bool &gt;',['../classMap.html',1,'']]],
   ['map_3c_20vertexgen_3c_20v_2c_20e_20_3e_20_2a_2c_20bool_20_3e',['Map&lt; VertexGen&lt; V, E &gt; *, bool &gt;',['../classMap.html',1,'']]],
   ['maprange',['MapRange',['../struct__fe_1_1MapRange.html',1,'_fe']]],
-  ['memory_5fpool',['memory_pool',['../classrapidxml_1_1memory__pool.html',1,'rapidxml']]]
+  ['memory_5fpool',['memory_pool',['../classrapidxml_1_1memory__pool.html',1,'rapidxml']]],
+  ['multimainregisterstaticinitializer',['MultiMainRegisterStaticInitializer',['../classstanfordcpplib_1_1MultiMainRegisterStaticInitializer.html',1,'stanfordcpplib']]]
 ];

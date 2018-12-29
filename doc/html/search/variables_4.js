@@ -10,7 +10,6 @@ var searchData=
   ['default_5fmin_5fvalue',['DEFAULT_MIN_VALUE',['../classGSlider.html#ada756074cb913647156250a2172a26f4',1,'GSlider']]],
   ['default_5fport',['DEFAULT_PORT',['../namespaceHttpServer.html#a610f3f15565288af94817eb21fea9d13',1,'HttpServer']]],
   ['default_5fwidth',['DEFAULT_WIDTH',['../classGWindow.html#af7b8fc8ce7f700c853cfbc36ee8cc474',1,'GWindow']]],
-  ['depth',['depth',['../structLockData.html#acb5ba97551079e0b072c62c21d784ac5',1,'LockData']]],
   ['diff_5fdefault_5fflags',['DIFF_DEFAULT_FLAGS',['../namespacediff.html#a5044abd56bc89e814e2d953b8e8c0a65',1,'diff']]],
   ['diff_5fstrict_5fflags',['DIFF_STRICT_FLAGS',['../namespacediff.html#aada938db21bf68a19d23eca0fddc551b',1,'diff']]]
 ];

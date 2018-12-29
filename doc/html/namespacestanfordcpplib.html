@@ -85,6 +85,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacestanfordcpplib_1_1collections"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestanfordcpplib_1_1collections.html">collections</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacestanfordcpplib_1_1memory"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestanfordcpplib_1_1memory.html">memory</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacestanfordcpplib_1_1qtgui"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestanfordcpplib_1_1qtgui.html">qtgui</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -97,6 +99,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstanfordcpplib_1_1ForwardingStreambuf.html">ForwardingStreambuf</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstanfordcpplib_1_1LimitOutputStreambuf.html">LimitOutputStreambuf</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstanfordcpplib_1_1MultiMainRegisterStaticInitializer.html">MultiMainRegisterStaticInitializer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class for registering a main function at static initialization time, before the real main() runs.  <a href="classstanfordcpplib_1_1MultiMainRegisterStaticInitializer.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstanfordcpplib_1_1StanfordCppLibraryInitializer.html">StanfordCppLibraryInitializer</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -112,12 +117,23 @@ Functions</h2></td></tr>
 <tr class="memitem:a7f8902f8cc454ef116685dbc6008704a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestanfordcpplib.html#a7f8902f8cc454ef116685dbc6008704a">initializeLibraryStudentThread</a>()</td></tr>
 <tr class="memdesc:a7f8902f8cc454ef116685dbc6008704a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is for any initialization that needs to be done in the student's thread rather than on the Qt GUI main thread.  <a href="#a7f8902f8cc454ef116685dbc6008704a">More...</a><br /></td></tr>
 <tr class="separator:a7f8902f8cc454ef116685dbc6008704a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7f9e21c9018a3022a368fd03c7ac337"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestanfordcpplib.html#ac7f9e21c9018a3022a368fd03c7ac337">registerMainFunction</a>(string name, int(*mainFunc)())</td></tr>
+<tr class="memdesc:ac7f9e21c9018a3022a368fd03c7ac337"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a new main() function with the given name to the list of multi-mains that will be presented when the program runs.  <a href="#ac7f9e21c9018a3022a368fd03c7ac337">More...</a><br /></td></tr>
+<tr class="separator:ac7f9e21c9018a3022a368fd03c7ac337"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6f7bb8a7230f2d95cf1ff0d6f2fbf0e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestanfordcpplib.html#ab6f7bb8a7230f2d95cf1ff0d6f2fbf0e">runMainInThread</a>(int(*mainFunc)(void))</td></tr>
 <tr class="memdesc:ab6f7bb8a7230f2d95cf1ff0d6f2fbf0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs the student's main function in its own thread, creating that thread as an object of type GStudentThread.  <a href="#ab6f7bb8a7230f2d95cf1ff0d6f2fbf0e">More...</a><br /></td></tr>
 <tr class="separator:ab6f7bb8a7230f2d95cf1ff0d6f2fbf0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a371bf0cfbf0eedf6a653e89a563d6a40"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestanfordcpplib.html#a371bf0cfbf0eedf6a653e89a563d6a40">runMainInThread</a>(std::function&lt; int()&gt; mainFunc)</td></tr>
+<tr class="memdesc:a371bf0cfbf0eedf6a653e89a563d6a40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs the student's main function in its own thread, creating that thread as an object of type GStudentThread.  <a href="#a371bf0cfbf0eedf6a653e89a563d6a40">More...</a><br /></td></tr>
+<tr class="separator:a371bf0cfbf0eedf6a653e89a563d6a40"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a647c2bc343e4e0d30483590a58ad3884"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestanfordcpplib.html#a647c2bc343e4e0d30483590a58ad3884">runMainInThreadVoid</a>(void(*mainFuncVoid)(void))</td></tr>
 <tr class="memdesc:a647c2bc343e4e0d30483590a58ad3884"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs the student's main function in its own thread, creating that thread as an object of type GStudentThread.  <a href="#a647c2bc343e4e0d30483590a58ad3884">More...</a><br /></td></tr>
 <tr class="separator:a647c2bc343e4e0d30483590a58ad3884"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a050c409518de97f2a63cac9728456072"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestanfordcpplib.html#a050c409518de97f2a63cac9728456072">runMainInThreadVoid</a>(std::function&lt; void()&gt; mainFuncVoid)</td></tr>
+<tr class="memdesc:a050c409518de97f2a63cac9728456072"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs the student's main function in its own thread, creating that thread as an object of type GStudentThread.  <a href="#a050c409518de97f2a63cac9728456072">More...</a><br /></td></tr>
+<tr class="separator:a050c409518de97f2a63cac9728456072"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a149b27362bd934bdcc66e9a927e8515d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestanfordcpplib.html#a149b27362bd934bdcc66e9a927e8515d">selectMainFunction</a>()</td></tr>
+<tr class="separator:a149b27362bd934bdcc66e9a927e8515d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa57f85846177bb4ed2b4b12fa8a758d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestanfordcpplib.html#afa57f85846177bb4ed2b4b12fa8a758d">setExitEnabled</a>(bool enabled)</td></tr>
 <tr class="memdesc:afa57f85846177bb4ed2b4b12fa8a758d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets whether the std::exit function will be enabled or not.  <a href="#afa57f85846177bb4ed2b4b12fa8a758d">More...</a><br /></td></tr>
 <tr class="separator:afa57f85846177bb4ed2b4b12fa8a758d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -200,8 +216,38 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="ac7f9e21c9018a3022a368fd03c7ac337"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7f9e21c9018a3022a368fd03c7ac337">&#9670;&nbsp;</a></span>registerMainFunction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int registerMainFunction </td>
+          <td>(</td>
+          <td class="paramtype">string &#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int(*)()&#160;</td>
+          <td class="paramname"><em>mainFunc</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a new main() function with the given name to the list of multi-mains that will be presented when the program runs. </p>
+
+</div>
+</div>
 <a id="ab6f7bb8a7230f2d95cf1ff0d6f2fbf0e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab6f7bb8a7230f2d95cf1ff0d6f2fbf0e">&#9670;&nbsp;</a></span>runMainInThread()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6f7bb8a7230f2d95cf1ff0d6f2fbf0e">&#9670;&nbsp;</a></span>runMainInThread() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -220,8 +266,28 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a371bf0cfbf0eedf6a653e89a563d6a40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a371bf0cfbf0eedf6a653e89a563d6a40">&#9670;&nbsp;</a></span>runMainInThread() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void runMainInThread </td>
+          <td>(</td>
+          <td class="paramtype">std::function&lt; int()&gt;&#160;</td>
+          <td class="paramname"><em>mainFunc</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Runs the student's main function in its own thread, creating that thread as an object of type GStudentThread. </p>
+
+</div>
+</div>
 <a id="a647c2bc343e4e0d30483590a58ad3884"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a647c2bc343e4e0d30483590a58ad3884">&#9670;&nbsp;</a></span>runMainInThreadVoid()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a647c2bc343e4e0d30483590a58ad3884">&#9670;&nbsp;</a></span>runMainInThreadVoid() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -237,6 +303,45 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Runs the student's main function in its own thread, creating that thread as an object of type GStudentThread. </p>
+
+</div>
+</div>
+<a id="a050c409518de97f2a63cac9728456072"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a050c409518de97f2a63cac9728456072">&#9670;&nbsp;</a></span>runMainInThreadVoid() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void runMainInThreadVoid </td>
+          <td>(</td>
+          <td class="paramtype">std::function&lt; void()&gt;&#160;</td>
+          <td class="paramname"><em>mainFuncVoid</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Runs the student's main function in its own thread, creating that thread as an object of type GStudentThread. </p>
+
+</div>
+</div>
+<a id="a149b27362bd934bdcc66e9a927e8515d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a149b27362bd934bdcc66e9a927e8515d">&#9670;&nbsp;</a></span>selectMainFunction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int selectMainFunction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>NOTE TO STUDENT! /// If you are directed here by a compiler error, /// it means that you have not written a main function or that it /// has the wrong parameters. /// The heading of your main function must be: /// /// int main() { ... } /// /// (Our library secretly renames your main function to "qMain" /// so that we can actually control the main flow of execution.) /// /// You may also need to include a .h header from the Stanford /// C++ library in the file of your project that contains the /// 'main' function. ///</p>
+<p>NOTE TO STUDENT! /// If you are directed here by a compiler error, /// it means that you have not written a main function or that it /// has the wrong parameters. /// The heading of your main function must be: /// /// int main() { ... } /// /// (Our library secretly renames your main function to "qMain" /// so that we can actually control the main flow of execution.) /// /// You may also need to include a .h header from the Stanford /// C++ library in the file of your project that contains the /// 'main' function. ///</p>
 
 </div>
 </div>

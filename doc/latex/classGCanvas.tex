@@ -30,11 +30,11 @@ enum \mbox{\hyperlink{classGInteractor_a8e0d441725a81d2bbdebbea09078260e}{Text\+
 \begin{DoxyCompactList}\small\item\em Creates an empty canvas with a default size of 0x0 pixels and a default background and foreground color of black. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classGCanvas_a0a9de139286d0fc9146928aff8f0538c}{G\+Canvas}} (const std\+::string \&filename, Q\+Widget $\ast$parent=nullptr)
 \begin{DoxyCompactList}\small\item\em Creates a canvas that loads its background layer pixel data from the given image file name. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classGCanvas_a2c096b9b7c402dd90a507523c8012794}{G\+Canvas}} (double width, double height, int rgb\+Background=0xffffff, Q\+Widget $\ast$parent=nullptr)
+\mbox{\hyperlink{classGCanvas_a235f6b1b700354d6737607562df06581}{G\+Canvas}} (double width, double height, int rgb\+Background, Q\+Widget $\ast$parent=nullptr)
 \begin{DoxyCompactList}\small\item\em Creates an empty canvas of the specified size and optional background color. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classGCanvas_acc055a20116c6767125897b0a851e5cb}{G\+Canvas}} (double width, double height, const std\+::string \&rgb\+Background, Q\+Widget $\ast$parent=nullptr)
+\mbox{\hyperlink{classGCanvas_af8bb8bd29201bbb5d0f90016a1d8df2c}{G\+Canvas}} (double width, double height, const std\+::string \&rgb\+Background=\char`\"{}\#00000000\char`\"{}, Q\+Widget $\ast$parent=nullptr)
 \begin{DoxyCompactList}\small\item\em Creates an empty canvas of the specified size and background color. \end{DoxyCompactList}\item 
-virtual \mbox{\hyperlink{classGCanvas_a6b9dcf515cbbdf3432aea0946f5cc15f}{$\sim$\+G\+Canvas}} ()
+virtual \mbox{\hyperlink{classGCanvas_a601cc120704b2d2e9898a61f6ce94bc0}{$\sim$\+G\+Canvas}} () Q\+\_\+\+D\+E\+C\+L\+\_\+\+O\+V\+E\+R\+R\+I\+DE
 \begin{DoxyCompactList}\small\item\em Frees memory allocated internally by the canvas. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGCanvas_afe8277e7b2627513c6f7452fb0b2847d}{add}} (\mbox{\hyperlink{classGObject}{G\+Object}} $\ast$gobj)
 \begin{DoxyCompactList}\small\item\em Adds the given interactor to canvas. \end{DoxyCompactList}\item 
@@ -566,41 +566,41 @@ Creates a canvas that loads its background layer pixel data from the given image
 {\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the given file does not exist or cannot be read as a valid image file \\
 \hline
 \end{DoxyExceptions}
-\mbox{\Hypertarget{classGCanvas_a2c096b9b7c402dd90a507523c8012794}\label{classGCanvas_a2c096b9b7c402dd90a507523c8012794}} 
+\mbox{\Hypertarget{classGCanvas_a235f6b1b700354d6737607562df06581}\label{classGCanvas_a235f6b1b700354d6737607562df06581}} 
 \index{G\+Canvas@{G\+Canvas}!G\+Canvas@{G\+Canvas}}
 \index{G\+Canvas@{G\+Canvas}!G\+Canvas@{G\+Canvas}}
 \subsubsection{\texorpdfstring{G\+Canvas()}{GCanvas()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classGCanvas}{G\+Canvas}} (\begin{DoxyParamCaption}\item[{double}]{width,  }\item[{double}]{height,  }\item[{int}]{rgb\+Background = {\ttfamily 0xffffff},  }\item[{Q\+Widget $\ast$}]{parent = {\ttfamily nullptr} }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \mbox{\hyperlink{classGCanvas}{G\+Canvas}} (\begin{DoxyParamCaption}\item[{double}]{width,  }\item[{double}]{height,  }\item[{int}]{rgb\+Background,  }\item[{Q\+Widget $\ast$}]{parent = {\ttfamily nullptr} }\end{DoxyParamCaption})}
 
 
 
 Creates an empty canvas of the specified size and optional background color. 
 
-If no background color is passed, the default of white is used. 
+If no background color is passed, a default transparent background is used. 
 \begin{DoxyExceptions}{Exceptions}
 {\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the given width/height ranges are negative \\
 \hline
 {\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the given rgb value is invalid or out of range \\
 \hline
 \end{DoxyExceptions}
-\mbox{\Hypertarget{classGCanvas_acc055a20116c6767125897b0a851e5cb}\label{classGCanvas_acc055a20116c6767125897b0a851e5cb}} 
+\mbox{\Hypertarget{classGCanvas_af8bb8bd29201bbb5d0f90016a1d8df2c}\label{classGCanvas_af8bb8bd29201bbb5d0f90016a1d8df2c}} 
 \index{G\+Canvas@{G\+Canvas}!G\+Canvas@{G\+Canvas}}
 \index{G\+Canvas@{G\+Canvas}!G\+Canvas@{G\+Canvas}}
 \subsubsection{\texorpdfstring{G\+Canvas()}{GCanvas()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classGCanvas}{G\+Canvas}} (\begin{DoxyParamCaption}\item[{double}]{width,  }\item[{double}]{height,  }\item[{const std\+::string \&}]{rgb\+Background,  }\item[{Q\+Widget $\ast$}]{parent = {\ttfamily nullptr} }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \mbox{\hyperlink{classGCanvas}{G\+Canvas}} (\begin{DoxyParamCaption}\item[{double}]{width,  }\item[{double}]{height,  }\item[{const std\+::string \&}]{rgb\+Background = {\ttfamily \char`\"{}\#00000000\char`\"{}},  }\item[{Q\+Widget $\ast$}]{parent = {\ttfamily nullptr} }\end{DoxyParamCaption})}
 
 
 
 Creates an empty canvas of the specified size and background color. 
 
-
+If no background color is passed, a default transparent background is used. 
 \begin{DoxyExceptions}{Exceptions}
 {\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the given width/height ranges are negative \\
 \hline
 {\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the given rgb value is invalid or out of range \\
 \hline
 \end{DoxyExceptions}
-\mbox{\Hypertarget{classGCanvas_a6b9dcf515cbbdf3432aea0946f5cc15f}\label{classGCanvas_a6b9dcf515cbbdf3432aea0946f5cc15f}} 
+\mbox{\Hypertarget{classGCanvas_a601cc120704b2d2e9898a61f6ce94bc0}\label{classGCanvas_a601cc120704b2d2e9898a61f6ce94bc0}} 
 \index{G\+Canvas@{G\+Canvas}!````~G\+Canvas@{$\sim$\+G\+Canvas}}
 \index{````~G\+Canvas@{$\sim$\+G\+Canvas}!G\+Canvas@{G\+Canvas}}
 \subsubsection{\texorpdfstring{$\sim$\+G\+Canvas()}{~GCanvas()}}

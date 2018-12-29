@@ -13,8 +13,6 @@ var searchData=
   ['stack',['Stack',['../classStack.html',1,'']]],
   ['stack_3c_20edge_20_2a_3e',['Stack&lt; Edge *&gt;',['../classStack.html',1,'']]],
   ['stack_3c_20nodemarker_20_3e',['Stack&lt; NodeMarker &gt;',['../classStack.html',1,'']]],
-  ['stack_5fexception',['stack_exception',['../classstacktrace_1_1stack__exception.html',1,'stacktrace']]],
-  ['stack_5fexception_5fbase',['stack_exception_base',['../classstacktrace_1_1stack__exception__base.html',1,'stacktrace']]],
   ['stanfordcpplibraryinitializer',['StanfordCppLibraryInitializer',['../classstanfordcpplib_1_1StanfordCppLibraryInitializer.html',1,'stanfordcpplib']]],
   ['state',['State',['../struct__fe_1_1State.html',1,'_fe']]]
 ];

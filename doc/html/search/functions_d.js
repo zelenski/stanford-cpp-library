@@ -12,7 +12,10 @@ var searchData=
   ['nonnegative2d',['nonNegative2D',['../namespacerequire.html#a2214293651f178b5b1f1a286537328bf',1,'require::nonNegative2D(double x, double y, const std::string &amp;caller, const std::string &amp;xValueName, const std::string &amp;yValueName, const std::string &amp;details)'],['../namespacerequire.html#ad0791f9f281c785969854c26f3506ac4',1,'require::nonNegative2D(int x, int y, const std::string &amp;caller, const std::string &amp;xValueName, const std::string &amp;yValueName, const std::string &amp;details)']]],
   ['nonnull',['nonNull',['../namespacerequire.html#a3be177878a4f956f7130efa7fe161309',1,'require']]],
   ['note',['Note',['../classNote.html#aa0709c7a84846e6ebcc352fad79d42ec',1,'Note::Note(std::string line)'],['../classNote.html#af366baa02ddd569bde363d084da394c6',1,'Note::Note(double duration=0.0, Pitch pitch=R, int octave=OCTAVE_MIN, Accidental accidental=NATURAL, bool repeat=false)']]],
+  ['notify',['notify',['../classQSPLApplication.html#a5552998f9e365b2cfd7b3eaf9d9a3de6',1,'QSPLApplication']]],
   ['notifyobservers',['notifyObservers',['../classObservable.html#a337380718b992689248fac2927145c62',1,'Observable']]],
+  ['notifyofconstruction',['notifyOfConstruction',['../classManaged.html#a8c9fc6e457eee241a98aa675a241642a',1,'Managed']]],
+  ['notifyofdelete',['notifyOfDelete',['../classManaged.html#a5077633649d2c853d0b800e0722da369',1,'Managed']]],
   ['nullstr',['nullstr',['../classrapidxml_1_1xml__base.html#a641d0b8df8e0c3c7e0db06ced0e0749f',1,'rapidxml::xml_base']]],
   ['numcols',['numCols',['../classGrid.html#a5997e103e56aae1db12e1f7f02e136c5',1,'Grid::numCols()'],['../classSparseGrid.html#a5997e103e56aae1db12e1f7f02e136c5',1,'SparseGrid::numCols()'],['../classGTable.html#a5997e103e56aae1db12e1f7f02e136c5',1,'GTable::numCols()']]],
   ['numrows',['numRows',['../classGrid.html#a00b7e69dd5c43e42cc91db26c459ad8b',1,'Grid::numRows()'],['../classSparseGrid.html#a00b7e69dd5c43e42cc91db26c459ad8b',1,'SparseGrid::numRows()'],['../classGTable.html#a00b7e69dd5c43e42cc91db26c459ad8b',1,'GTable::numRows()']]]

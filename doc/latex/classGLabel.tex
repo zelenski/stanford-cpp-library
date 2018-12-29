@@ -28,7 +28,7 @@ enum \mbox{\hyperlink{classGInteractor_a8e0d441725a81d2bbdebbea09078260e}{Text\+
 \item 
 \mbox{\hyperlink{classGLabel_adf89e6364d00b440441edce14145b387}{G\+Label}} (const std\+::string \&text=\char`\"{}\char`\"{}, const std\+::string \&icon\+File\+Name=\char`\"{}\char`\"{}, Q\+Widget $\ast$parent=nullptr)
 \begin{DoxyCompactList}\small\item\em Creates a label with the specified text label and optional icon. \end{DoxyCompactList}\item 
-virtual \mbox{\hyperlink{classGLabel_a766970bda7ce0b8df165ebc2811e0974}{$\sim$\+G\+Label}} ()
+virtual \mbox{\hyperlink{classGLabel_a52fae4af5a526fe7f36aa1852cb9dae2}{$\sim$\+G\+Label}} () Q\+\_\+\+D\+E\+C\+L\+\_\+\+O\+V\+E\+R\+R\+I\+DE
 \begin{DoxyCompactList}\small\item\em Frees memory allocated internally by the label. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGInteractor_a02f20ea6edfa0671f31c4c648a253833}{add\+Action\+Listener}} () Q\+\_\+\+D\+E\+C\+L\+\_\+\+D\+E\+P\+R\+E\+C\+A\+T\+ED
 \begin{DoxyCompactList}\small\item\em Adds an event listener to be notified when this interactor is clicked or generally interacted with. \end{DoxyCompactList}\item 
@@ -106,6 +106,8 @@ virtual bool \mbox{\hyperlink{classGInteractor_aacb819fb241851fd9fc045271baa4034
 \begin{DoxyCompactList}\small\item\em Returns true if this interactor is currently enabled. \end{DoxyCompactList}\item 
 virtual bool \mbox{\hyperlink{classGInteractor_a9d8a6cfb13917785c143e74d40e4e2be}{is\+Visible}} () const
 \begin{DoxyCompactList}\small\item\em Returns true if the interactor is visible on the screen. \end{DoxyCompactList}\item 
+virtual bool \mbox{\hyperlink{classGLabel_a52b12a2d7b5e2fec7478e3715c98c315}{is\+Word\+Wrap}} () const
+\begin{DoxyCompactList}\small\item\em Returns whether the label should wrap if its text is too long. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGLabel_ab7fe7a876367b87cf7202f947f1d05e4}{remove\+Action\+Listener}} ()
 \begin{DoxyCompactList}\small\item\em Removes the action listener from this button so that it will no longer call it when events occur. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGLabel_aa4250907e4cdd77349c04f0cf5cdd3d3}{remove\+Double\+Click\+Listener}} ()
@@ -184,6 +186,8 @@ virtual void \mbox{\hyperlink{classGLabel_a95c2a1221e6c59e9de544054963b4b18}{set
 \begin{DoxyCompactList}\small\item\em Returns true if the interactor is visible on the screen. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGLabel_aca9b9c666c4162ab0a27a10530bc0762}{set\+Width}} (double width) Q\+\_\+\+D\+E\+C\+L\+\_\+\+O\+V\+E\+R\+R\+I\+DE
 \begin{DoxyCompactList}\small\item\em Sets the onscreen width of the interactor in pixels. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{classGLabel_a8e935ba463ac070ea906118661b15a5f}{set\+Word\+Wrap}} (bool wrap)
+\begin{DoxyCompactList}\small\item\em Sets whether the label should wrap if its text is too long. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGLabel_af7260dc32f150e3a5072e7e8eb2628b1}{setX}} (double x) Q\+\_\+\+D\+E\+C\+L\+\_\+\+O\+V\+E\+R\+R\+I\+DE
 \begin{DoxyCompactList}\small\item\em Sets the onscreen x-\/coordinate of the top-\/left corner of the interactor relative to its window. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGLabel_a59633abb35b676c54d88ea6cd384fc55}{setY}} (double y) Q\+\_\+\+D\+E\+C\+L\+\_\+\+O\+V\+E\+R\+R\+I\+DE
@@ -282,7 +286,7 @@ T\+E\+X\+T\+\_\+\+O\+N\+LY&\\
 
 Creates a label with the specified text label and optional icon. 
 
-\mbox{\Hypertarget{classGLabel_a766970bda7ce0b8df165ebc2811e0974}\label{classGLabel_a766970bda7ce0b8df165ebc2811e0974}} 
+\mbox{\Hypertarget{classGLabel_a52fae4af5a526fe7f36aa1852cb9dae2}\label{classGLabel_a52fae4af5a526fe7f36aa1852cb9dae2}} 
 \index{G\+Label@{G\+Label}!````~G\+Label@{$\sim$\+G\+Label}}
 \index{````~G\+Label@{$\sim$\+G\+Label}!G\+Label@{G\+Label}}
 \subsubsection{\texorpdfstring{$\sim$\+G\+Label()}{~GLabel()}}
@@ -904,7 +908,17 @@ Most interactors begin as enabled but can be disabled to stop them from being ab
 
 Returns true if the interactor is visible on the screen. 
 
-Interactors will not be visible until they are added to an onscreen window or container. \mbox{\Hypertarget{classGLabel_ab7fe7a876367b87cf7202f947f1d05e4}\label{classGLabel_ab7fe7a876367b87cf7202f947f1d05e4}} 
+Interactors will not be visible until they are added to an onscreen window or container. \mbox{\Hypertarget{classGLabel_a52b12a2d7b5e2fec7478e3715c98c315}\label{classGLabel_a52b12a2d7b5e2fec7478e3715c98c315}} 
+\index{G\+Label@{G\+Label}!is\+Word\+Wrap@{is\+Word\+Wrap}}
+\index{is\+Word\+Wrap@{is\+Word\+Wrap}!G\+Label@{G\+Label}}
+\subsubsection{\texorpdfstring{is\+Word\+Wrap()}{isWordWrap()}}
+{\footnotesize\ttfamily bool is\+Word\+Wrap (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Returns whether the label should wrap if its text is too long. 
+
+Default false. \mbox{\Hypertarget{classGLabel_ab7fe7a876367b87cf7202f947f1d05e4}\label{classGLabel_ab7fe7a876367b87cf7202f947f1d05e4}} 
 \index{G\+Label@{G\+Label}!remove\+Action\+Listener@{remove\+Action\+Listener}}
 \index{remove\+Action\+Listener@{remove\+Action\+Listener}!G\+Label@{G\+Label}}
 \subsubsection{\texorpdfstring{remove\+Action\+Listener()}{removeActionListener()}}
@@ -1512,7 +1526,17 @@ Sets the onscreen width of the interactor in pixels.
 
 Reimplemented from \mbox{\hyperlink{classGInteractor_aa3f3fba4cb131baa8696ba01e3bceca1}{G\+Interactor}}.
 
-\mbox{\Hypertarget{classGLabel_af7260dc32f150e3a5072e7e8eb2628b1}\label{classGLabel_af7260dc32f150e3a5072e7e8eb2628b1}} 
+\mbox{\Hypertarget{classGLabel_a8e935ba463ac070ea906118661b15a5f}\label{classGLabel_a8e935ba463ac070ea906118661b15a5f}} 
+\index{G\+Label@{G\+Label}!set\+Word\+Wrap@{set\+Word\+Wrap}}
+\index{set\+Word\+Wrap@{set\+Word\+Wrap}!G\+Label@{G\+Label}}
+\subsubsection{\texorpdfstring{set\+Word\+Wrap()}{setWordWrap()}}
+{\footnotesize\ttfamily void set\+Word\+Wrap (\begin{DoxyParamCaption}\item[{bool}]{wrap }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Sets whether the label should wrap if its text is too long. 
+
+Default false. \mbox{\Hypertarget{classGLabel_af7260dc32f150e3a5072e7e8eb2628b1}\label{classGLabel_af7260dc32f150e3a5072e7e8eb2628b1}} 
 \index{G\+Label@{G\+Label}!setX@{setX}}
 \index{setX@{setX}!G\+Label@{G\+Label}}
 \subsubsection{\texorpdfstring{set\+X()}{setX()}}

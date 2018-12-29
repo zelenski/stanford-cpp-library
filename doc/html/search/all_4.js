@@ -16,7 +16,6 @@ var searchData=
   ['default_5fwidth',['DEFAULT_WIDTH',['../classGWindow.html#af7b8fc8ce7f700c853cfbc36ee8cc474',1,'GWindow']]],
   ['delete_5fkey',['DELETE_KEY',['../classGEvent.html#a7885f47644a0388f981f416fa20389b2afec8d24952ca84d889306a4915bbfe1d',1,'GEvent']]],
   ['deprecated_20list',['Deprecated List',['../deprecated.html',1,'']]],
-  ['depth',['depth',['../structLockData.html#acb5ba97551079e0b072c62c21d784ac5',1,'LockData']]],
   ['deque',['Deque',['../classDeque.html',1,'Deque&lt; ValueType &gt;'],['../classDeque.html#a41ebad440badfe713f3ffbbec2eac93f',1,'Deque::Deque()'],['../classDeque.html#a68fd6ae6ef9283c882d90c6924e932cd',1,'Deque::Deque(std::initializer_list&lt; ValueType &gt; list)']]],
   ['deque_5fiterator',['deque_iterator',['../classDeque_1_1deque__iterator.html',1,'Deque&lt; ValueType &gt;::deque_iterator'],['../classDeque_1_1deque__iterator.html#a3f358d267310712916ec18dc2cccd828',1,'Deque::deque_iterator::deque_iterator()'],['../classDeque_1_1deque__iterator.html#a89cd596f74f9635b2569c59d20fec624',1,'Deque::deque_iterator::deque_iterator(const deque_iterator &amp;it)'],['../classDeque_1_1deque__iterator.html#ad01c27b2cbcd73063836767611c03a3e',1,'Deque::deque_iterator::deque_iterator(Deque&lt; ValueType &gt; *dp, const typename std::deque&lt; ValueType &gt;::iterator &amp;it)']]],
   ['dequeue',['dequeue',['../classDeque.html#aaee07e371e2370e76e6c42bada727ba2',1,'Deque::dequeue()'],['../classPriorityQueue.html#aaee07e371e2370e76e6c42bada727ba2',1,'PriorityQueue::dequeue()'],['../classQueue.html#aaee07e371e2370e76e6c42bada727ba2',1,'Queue::dequeue()']]],
@@ -42,5 +41,6 @@ var searchData=
   ['drawpolarline',['drawPolarLine',['../classGDrawingSurface.html#af70cce1e4f708f1ed5b6f29cecb660e7',1,'GDrawingSurface::drawPolarLine(const GPoint &amp;p0, double r, double theta)'],['../classGDrawingSurface.html#ad3e646f90005295f2bbdf37d2bcb39d2',1,'GDrawingSurface::drawPolarLine(double x0, double y0, double r, double theta)']]],
   ['drawpolygon',['drawPolygon',['../classGDrawingSurface.html#afddec0a905108d8a8d6809a157f26776',1,'GDrawingSurface::drawPolygon(std::initializer_list&lt; double &gt; coords)'],['../classGDrawingSurface.html#a021ee881e0d154dc4dd059698742889c',1,'GDrawingSurface::drawPolygon(std::initializer_list&lt; GPoint &gt; points)']]],
   ['drawrect',['drawRect',['../classGDrawingSurface.html#a3dd4cc5891149dfc36746264f7289877',1,'GDrawingSurface::drawRect(const GRectangle &amp;bounds)'],['../classGDrawingSurface.html#a4148e770ffc5474153aadd4814dbd708',1,'GDrawingSurface::drawRect(double x, double y, double width, double height)']]],
-  ['drawstring',['drawString',['../classGDrawingSurface.html#ad4e8551a753a77135792bbee97013675',1,'GDrawingSurface']]]
+  ['drawstring',['drawString',['../classGDrawingSurface.html#ad4e8551a753a77135792bbee97013675',1,'GDrawingSurface']]],
+  ['dump',['dump',['../classErrorException.html#af1e6a5fb477a95a876e86ceadf065ffd',1,'ErrorException::dump() const'],['../classErrorException.html#a277bc85222ba9a7d0fd47fd10d44d115',1,'ErrorException::dump(std::ostream &amp;out) const']]]
 ];

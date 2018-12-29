@@ -32,9 +32,9 @@ static bool \mbox{\hyperlink{classGThread_a3e60d512067e765b4e2d7c0c5bec39fa}{i\+
 \begin{DoxyCompactList}\small\item\em Returns true if the caller is running on the student thread. \end{DoxyCompactList}\item 
 static bool \mbox{\hyperlink{classGThread_afee663b5d7998135c2aab0585b2ad37f}{qt\+Gui\+Thread\+Exists}} ()
 \begin{DoxyCompactList}\small\item\em Returns true if the Qt G\+UI thread has been created. \end{DoxyCompactList}\item 
-static void \mbox{\hyperlink{classGThread_ac9475674a195d39d457307b3e7365ddd}{run\+In\+New\+Thread}} (G\+Thunk func)
+static void \mbox{\hyperlink{classGThread_ad70a32318f3f0a9cf25582379c6d7ffb}{run\+In\+New\+Thread}} (G\+Thunk func, const std\+::string \&thread\+Name=\char`\"{}\char`\"{})
 \begin{DoxyCompactList}\small\item\em Runs the given void function in its own new thread, blocking the current thread to wait until it is done. \end{DoxyCompactList}\item 
-static void \mbox{\hyperlink{classGThread_ad40c76521d01473a3eea90c01000d9e2}{run\+In\+New\+Thread\+Async}} (G\+Thunk func)
+static Q\+Thread $\ast$ \mbox{\hyperlink{classGThread_ad677139bc51c13b4dd55f0c15c7d9624}{run\+In\+New\+Thread\+Async}} (G\+Thunk func, const std\+::string \&thread\+Name=\char`\"{}\char`\"{})
 \begin{DoxyCompactList}\small\item\em Runs the given void function in its own new thread in the background; the current thread does not block and keeps going. \end{DoxyCompactList}\item 
 static void \mbox{\hyperlink{classGThread_a33da0c87717269710ac7a564a1ebbe64}{run\+On\+Qt\+Gui\+Thread}} (G\+Thunk func)
 \begin{DoxyCompactList}\small\item\em Runs the given void function on the Qt G\+UI thread, blocking the current thread to wait until it is done. \end{DoxyCompactList}\item 
@@ -42,6 +42,8 @@ static void \mbox{\hyperlink{classGThread_a4445680030c65d610b9e348d8d0cffc8}{run
 \begin{DoxyCompactList}\small\item\em Runs the given void function on the Qt G\+UI thread in the background; the current thread does not block and keeps going. \end{DoxyCompactList}\item 
 static void \mbox{\hyperlink{classGThread_aa3381590c1ef33c08000c2fbb2bf0dd0}{sleep}} (double ms)
 \begin{DoxyCompactList}\small\item\em Causes the current thread to pause itself for the given number of milliseconds. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classGThread_afea6c84cef875ea16de7a6a0373ecb3e}{wait}} (Q\+Thread $\ast$thread, long ms)
+\begin{DoxyCompactList}\small\item\em Waits the given number of milliseconds for the given thread to finish. \end{DoxyCompactList}\item 
 static void \mbox{\hyperlink{classGThread_a58c8b2ad0ea491a6642e5e1cbd358c89}{yield}} ()
 \begin{DoxyCompactList}\small\item\em Indicates that the current thread is willing to yield execution to any other threads that want to run. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Protected Member Functions}
@@ -72,7 +74,7 @@ The library has the following two standard threads running at all times\+:
 
 Students and clients normally do not need to worry about threading issues. These methods are called internally by many of the graphical interactors to make sure that all internal Qt G\+UI widgets are initialized on the Qt G\+UI thread. This is required for them to function properly.
 
-If you want to run a piece of code in its own thread, use static methods {\ttfamily \mbox{\hyperlink{classGThread_ac9475674a195d39d457307b3e7365ddd}{G\+Thread\+::run\+In\+New\+Thread}}} and {\ttfamily \mbox{\hyperlink{classGThread_ad40c76521d01473a3eea90c01000d9e2}{G\+Thread\+::run\+In\+New\+Thread\+Async}}}. 
+If you want to run a piece of code in its own thread, use static methods {\ttfamily \mbox{\hyperlink{classGThread_ad70a32318f3f0a9cf25582379c6d7ffb}{G\+Thread\+::run\+In\+New\+Thread}}} and {\ttfamily \mbox{\hyperlink{classGThread_ad677139bc51c13b4dd55f0c15c7d9624}{G\+Thread\+::run\+In\+New\+Thread\+Async}}}. 
 \end{DoxyEnumerate}
 
 \subsection{Constructor \& Destructor Documentation}
@@ -155,27 +157,31 @@ Returns true if the caller is running on the student thread.
 
 Returns true if the Qt G\+UI thread has been created. 
 
-This will happen right before the student\textquotesingle{}s main() function runs. \mbox{\Hypertarget{classGThread_ac9475674a195d39d457307b3e7365ddd}\label{classGThread_ac9475674a195d39d457307b3e7365ddd}} 
+This will happen right before the student\textquotesingle{}s main() function runs. \mbox{\Hypertarget{classGThread_ad70a32318f3f0a9cf25582379c6d7ffb}\label{classGThread_ad70a32318f3f0a9cf25582379c6d7ffb}} 
 \index{G\+Thread@{G\+Thread}!run\+In\+New\+Thread@{run\+In\+New\+Thread}}
 \index{run\+In\+New\+Thread@{run\+In\+New\+Thread}!G\+Thread@{G\+Thread}}
 \subsubsection{\texorpdfstring{run\+In\+New\+Thread()}{runInNewThread()}}
-{\footnotesize\ttfamily void run\+In\+New\+Thread (\begin{DoxyParamCaption}\item[{G\+Thunk}]{func }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily void run\+In\+New\+Thread (\begin{DoxyParamCaption}\item[{G\+Thunk}]{func,  }\item[{const std\+::string \&}]{thread\+Name = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
 
 
 Runs the given void function in its own new thread, blocking the current thread to wait until it is done. 
 
+You can pass an optional name for the thread which can help when looking through the list of threads in a debugger.
+
 Any uncaught exceptions or errors in the new thread will crash the program and cannot be caught by the calling thread.
 
-If you want the new thread to run in the background, use the {\ttfamily run\+In\+New\+Thread\+Async} function instead. \mbox{\Hypertarget{classGThread_ad40c76521d01473a3eea90c01000d9e2}\label{classGThread_ad40c76521d01473a3eea90c01000d9e2}} 
+If you want the new thread to run in the background, use the {\ttfamily run\+In\+New\+Thread\+Async} function instead. \mbox{\Hypertarget{classGThread_ad677139bc51c13b4dd55f0c15c7d9624}\label{classGThread_ad677139bc51c13b4dd55f0c15c7d9624}} 
 \index{G\+Thread@{G\+Thread}!run\+In\+New\+Thread\+Async@{run\+In\+New\+Thread\+Async}}
 \index{run\+In\+New\+Thread\+Async@{run\+In\+New\+Thread\+Async}!G\+Thread@{G\+Thread}}
 \subsubsection{\texorpdfstring{run\+In\+New\+Thread\+Async()}{runInNewThreadAsync()}}
-{\footnotesize\ttfamily void run\+In\+New\+Thread\+Async (\begin{DoxyParamCaption}\item[{G\+Thunk}]{func }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily Q\+Thread $\ast$ run\+In\+New\+Thread\+Async (\begin{DoxyParamCaption}\item[{G\+Thunk}]{func,  }\item[{const std\+::string \&}]{thread\+Name = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
 
 
 Runs the given void function in its own new thread in the background; the current thread does not block and keeps going. 
+
+You can pass an optional name for the thread which can help when looking through the list of threads in a debugger. Returns a pointer to the given thread in case you want to wait a given amount of time for the thread to do its work.
 
 Any uncaught exceptions or errors in the new thread will crash the program and cannot be caught by the calling thread.
 
@@ -220,6 +226,19 @@ Causes the current thread to pause itself for the given number of milliseconds.
 {\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if ms is negative \\
 \hline
 \end{DoxyExceptions}
+\mbox{\Hypertarget{classGThread_afea6c84cef875ea16de7a6a0373ecb3e}\label{classGThread_afea6c84cef875ea16de7a6a0373ecb3e}} 
+\index{G\+Thread@{G\+Thread}!wait@{wait}}
+\index{wait@{wait}!G\+Thread@{G\+Thread}}
+\subsubsection{\texorpdfstring{wait()}{wait()}}
+{\footnotesize\ttfamily bool wait (\begin{DoxyParamCaption}\item[{Q\+Thread $\ast$}]{thread,  }\item[{long}]{ms }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Waits the given number of milliseconds for the given thread to finish. 
+
+\begin{DoxyReturn}{Returns}
+true if the entire amount of ms was elapsed without the thread finishing 
+\end{DoxyReturn}
 \mbox{\Hypertarget{classGThread_a58c8b2ad0ea491a6642e5e1cbd358c89}\label{classGThread_a58c8b2ad0ea491a6642e5e1cbd358c89}} 
 \index{G\+Thread@{G\+Thread}!yield@{yield}}
 \index{yield@{yield}!G\+Thread@{G\+Thread}}

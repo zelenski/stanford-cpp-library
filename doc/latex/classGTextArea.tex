@@ -30,7 +30,7 @@ enum \mbox{\hyperlink{classGInteractor_a8e0d441725a81d2bbdebbea09078260e}{Text\+
 \begin{DoxyCompactList}\small\item\em Creates a new text area large enough to display the given number of rows and columns of text. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classGTextArea_a0902cdcc62cad5c1c81fc74ce38d8b13}{G\+Text\+Area}} (const std\+::string \&text=\char`\"{}\char`\"{}, Q\+Widget $\ast$parent=nullptr)
 \begin{DoxyCompactList}\small\item\em Creates a new text area with the given initial text. \end{DoxyCompactList}\item 
-virtual \mbox{\hyperlink{classGTextArea_a1471635f1a13eed7fe8d08981927b83c}{$\sim$\+G\+Text\+Area}} ()
+virtual \mbox{\hyperlink{classGTextArea_a260e7e5c7191b6200b0a2d2cfc0caf17}{$\sim$\+G\+Text\+Area}} () Q\+\_\+\+D\+E\+C\+L\+\_\+\+O\+V\+E\+R\+R\+I\+DE
 \begin{DoxyCompactList}\small\item\em Frees memory allocated internally by the text area. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGInteractor_a02f20ea6edfa0671f31c4c648a253833}{add\+Action\+Listener}} () Q\+\_\+\+D\+E\+C\+L\+\_\+\+D\+E\+P\+R\+E\+C\+A\+T\+ED
 \begin{DoxyCompactList}\small\item\em Adds an event listener to be notified when this interactor is clicked or generally interacted with. \end{DoxyCompactList}\item 
@@ -143,11 +143,11 @@ virtual void \mbox{\hyperlink{classGTextArea_ab5ef729cac166db0ef51ff7ea30d1bb8}{
 virtual void \mbox{\hyperlink{classGTextArea_a24abdceab57bcff96185afbadf193a22}{move\+Cursor\+To\+Start}} ()
 \begin{DoxyCompactList}\small\item\em Sets the text area\textquotesingle{}s keyboard cursor position to the start of the current text. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGTextArea_a43095f41cab3be732b49f29970484b05}{remove\+Key\+Listener}} ()
-\begin{DoxyCompactList}\small\item\em Removes the key listener from this text field so that it will no longer call it when the user types keys. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Removes the key listener from this text area so that it will no longer call it when the user types keys. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGTextArea_aff47f71ce47e688a07c9d38dc92fcc11}{remove\+Mouse\+Listener}} ()
-\begin{DoxyCompactList}\small\item\em Removes the mouse listener from this text field so that it will no longer call it when the user moves/clicks the mouse. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Removes the mouse listener from this text area so that it will no longer call it when the user moves/clicks the mouse. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGTextArea_a69c940b99d01eb7c353763ce4b0942a4}{remove\+Text\+Change\+Listener}} ()
-\begin{DoxyCompactList}\small\item\em Removes the text change listener from this text field so that it will no longer call it when the user modifies the text. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Removes the text change listener from this text area so that it will no longer call it when the user modifies the text. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGInteractor_a519fb2ac767f8b2febbb50b898b8c8cb}{request\+Focus}} ()
 \begin{DoxyCompactList}\small\item\em Transfers keyboard focus to this interactor. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGTextArea_ad4c9b6140b529865a6cdeed37a339237}{scroll\+To\+Bottom}} ()
@@ -201,9 +201,9 @@ virtual void \mbox{\hyperlink{classGTextArea_a71ca94fd0ab4223097c4d524ddafe94f}{
 virtual void \mbox{\hyperlink{classGInteractor_a762e139aa311461c3984d3ad28293f64}{set\+Icon}} (const std\+::string \&filename, bool retain\+Icon\+Size=true)
 \begin{DoxyCompactList}\small\item\em Sets the file name of the icon associated with this interactor, or an empty string if no icon has been set. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGTextArea_aeb8324d3287fa1fbe093f4d6230cf0a6}{set\+Key\+Listener}} (G\+Event\+Listener func)
-\begin{DoxyCompactList}\small\item\em Sets a key listener on this text field so that it will be called when the user presses any key. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Sets a key listener on this text area so that it will be called when the user presses any key. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGTextArea_ae48ecea73606c7bd9423e1c7cc589cc9}{set\+Key\+Listener}} (G\+Event\+Listener\+Void func)
-\begin{DoxyCompactList}\small\item\em Sets a key listener on this text field so that it will be called when the user presses any key. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Sets a key listener on this text area so that it will be called when the user presses any key. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGTextArea_aaaafb06fec060b28b70ec3b7379657b4}{set\+Line\+Wrap}} (bool wrap)
 \begin{DoxyCompactList}\small\item\em Sets whether the text area wraps its text when a line becomes too long. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGInteractor_a04594e8ba9b98513a64f1da00dcae18c}{set\+Location}} (double x, double y)
@@ -213,9 +213,9 @@ virtual void \mbox{\hyperlink{classGInteractor_a0cf428e207b7f22cc08138a90b1b87b2
 virtual void \mbox{\hyperlink{classGInteractor_a3b1046117ac6cb7abe467e00ba8a81f4}{set\+Minimum\+Size}} (const \mbox{\hyperlink{classGDimension}{G\+Dimension}} \&size)
 \begin{DoxyCompactList}\small\item\em Sets the minimum size in pixels that this interactor will permit itself to be resized to. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGTextArea_a37d8dbc943f59920f705b0104f60bde2}{set\+Mouse\+Listener}} (G\+Event\+Listener func)
-\begin{DoxyCompactList}\small\item\em Sets a mouse listener on this text field so that it will be called when the user moves or clicks the mouse. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Sets a mouse listener on this text area so that it will be called when the user moves or clicks the mouse. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGTextArea_aea7f647ea62d59f71b5fad6aa65eeaf9}{set\+Mouse\+Listener}} (G\+Event\+Listener\+Void func)
-\begin{DoxyCompactList}\small\item\em Sets a mouse listener on this text field so that it will be called when the user moves or clicks the mouse. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Sets a mouse listener on this text area so that it will be called when the user moves or clicks the mouse. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGInteractor_a9d3a2685df23b5e7cbf59c19c4a1f9b5}{set\+Name}} (const std\+::string \&name)
 \begin{DoxyCompactList}\small\item\em Sets a string representing a unique name for this interactor. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGTextArea_aa21a9bebb4652ab6780d0c11eff47aee}{set\+Placeholder}} (const std\+::string \&text)
@@ -239,9 +239,9 @@ virtual void \mbox{\hyperlink{classGInteractor_ae2b628228f192c2702c4ce941b2af68f
 virtual void \mbox{\hyperlink{classGTextArea_ac1ae51949d41ee9054634be5967d91b8}{set\+Text}} (const std\+::string \&text)
 \begin{DoxyCompactList}\small\item\em Sets the text area\textquotesingle{}s current text to the given string, replacing any existing text. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGTextArea_ae41284f9c540110180ac0ad6beca5cb0}{set\+Text\+Change\+Listener}} (G\+Event\+Listener func)
-\begin{DoxyCompactList}\small\item\em Sets a text change listener on this text field so that it will be called when the user modifies the current text. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Sets a text change listener on this text area so that it will be called when the user modifies the current text. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGTextArea_ae8df75b0746951146d29220f386fcd33}{set\+Text\+Change\+Listener}} (G\+Event\+Listener\+Void func)
-\begin{DoxyCompactList}\small\item\em Sets a text change listener on this text field so that it will be called when the user modifies the current text. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Sets a text change listener on this text area so that it will be called when the user modifies the current text. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGInteractor_a039e0e49beaecc275efce02d416acea8}{set\+Tooltip}} (const std\+::string \&tooltip\+Text)
 \begin{DoxyCompactList}\small\item\em Sets a \char`\"{}tooltip\char`\"{} that will appear if the user hovers their mouse over the interactor. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGInteractor_a18e44e30b31525a243960ca3928125aa}{set\+Visible}} (bool visible)
@@ -359,7 +359,7 @@ Creates a new text area large enough to display the given number of rows and col
 
 Creates a new text area with the given initial text. 
 
-\mbox{\Hypertarget{classGTextArea_a1471635f1a13eed7fe8d08981927b83c}\label{classGTextArea_a1471635f1a13eed7fe8d08981927b83c}} 
+\mbox{\Hypertarget{classGTextArea_a260e7e5c7191b6200b0a2d2cfc0caf17}\label{classGTextArea_a260e7e5c7191b6200b0a2d2cfc0caf17}} 
 \index{G\+Text\+Area@{G\+Text\+Area}!````~G\+Text\+Area@{$\sim$\+G\+Text\+Area}}
 \index{````~G\+Text\+Area@{$\sim$\+G\+Text\+Area}!G\+Text\+Area@{G\+Text\+Area}}
 \subsubsection{\texorpdfstring{$\sim$\+G\+Text\+Area()}{~GTextArea()}}
@@ -1179,7 +1179,7 @@ Removes any event listener from this observable object that would respond to the
 
 
 
-Removes the key listener from this text field so that it will no longer call it when the user types keys. 
+Removes the key listener from this text area so that it will no longer call it when the user types keys. 
 
 \mbox{\Hypertarget{classGTextArea_aff47f71ce47e688a07c9d38dc92fcc11}\label{classGTextArea_aff47f71ce47e688a07c9d38dc92fcc11}} 
 \index{G\+Text\+Area@{G\+Text\+Area}!remove\+Mouse\+Listener@{remove\+Mouse\+Listener}}
@@ -1189,7 +1189,7 @@ Removes the key listener from this text field so that it will no longer call it 
 
 
 
-Removes the mouse listener from this text field so that it will no longer call it when the user moves/clicks the mouse. 
+Removes the mouse listener from this text area so that it will no longer call it when the user moves/clicks the mouse. 
 
 \mbox{\Hypertarget{classGTextArea_a69c940b99d01eb7c353763ce4b0942a4}\label{classGTextArea_a69c940b99d01eb7c353763ce4b0942a4}} 
 \index{G\+Text\+Area@{G\+Text\+Area}!remove\+Text\+Change\+Listener@{remove\+Text\+Change\+Listener}}
@@ -1199,7 +1199,7 @@ Removes the mouse listener from this text field so that it will no longer call i
 
 
 
-Removes the text change listener from this text field so that it will no longer call it when the user modifies the text. 
+Removes the text change listener from this text area so that it will no longer call it when the user modifies the text. 
 
 \mbox{\Hypertarget{classGInteractor_a519fb2ac767f8b2febbb50b898b8c8cb}\label{classGInteractor_a519fb2ac767f8b2febbb50b898b8c8cb}} 
 \index{G\+Text\+Area@{G\+Text\+Area}!request\+Focus@{request\+Focus}}
@@ -1632,7 +1632,7 @@ Reimplemented in \mbox{\hyperlink{classGLabel_a75753a3d7d3364185f8088d63b664cb1}
 
 
 
-Sets a key listener on this text field so that it will be called when the user presses any key. 
+Sets a key listener on this text area so that it will be called when the user presses any key. 
 
 Any existing key listener will be replaced. \mbox{\Hypertarget{classGTextArea_ae48ecea73606c7bd9423e1c7cc589cc9}\label{classGTextArea_ae48ecea73606c7bd9423e1c7cc589cc9}} 
 \index{G\+Text\+Area@{G\+Text\+Area}!set\+Key\+Listener@{set\+Key\+Listener}}
@@ -1642,7 +1642,7 @@ Any existing key listener will be replaced. \mbox{\Hypertarget{classGTextArea_ae
 
 
 
-Sets a key listener on this text field so that it will be called when the user presses any key. 
+Sets a key listener on this text area so that it will be called when the user presses any key. 
 
 Any existing key listener will be replaced. \mbox{\Hypertarget{classGTextArea_aaaafb06fec060b28b70ec3b7379657b4}\label{classGTextArea_aaaafb06fec060b28b70ec3b7379657b4}} 
 \index{G\+Text\+Area@{G\+Text\+Area}!set\+Line\+Wrap@{set\+Line\+Wrap}}
@@ -1706,7 +1706,7 @@ Sets the minimum size in pixels that this interactor will permit itself to be re
 
 
 
-Sets a mouse listener on this text field so that it will be called when the user moves or clicks the mouse. 
+Sets a mouse listener on this text area so that it will be called when the user moves or clicks the mouse. 
 
 Any existing mouse listener will be replaced. \mbox{\Hypertarget{classGTextArea_aea7f647ea62d59f71b5fad6aa65eeaf9}\label{classGTextArea_aea7f647ea62d59f71b5fad6aa65eeaf9}} 
 \index{G\+Text\+Area@{G\+Text\+Area}!set\+Mouse\+Listener@{set\+Mouse\+Listener}}
@@ -1716,7 +1716,7 @@ Any existing mouse listener will be replaced. \mbox{\Hypertarget{classGTextArea_
 
 
 
-Sets a mouse listener on this text field so that it will be called when the user moves or clicks the mouse. 
+Sets a mouse listener on this text area so that it will be called when the user moves or clicks the mouse. 
 
 Any existing mouse listener will be replaced. \mbox{\Hypertarget{classGInteractor_a9d3a2685df23b5e7cbf59c19c4a1f9b5}\label{classGInteractor_a9d3a2685df23b5e7cbf59c19c4a1f9b5}} 
 \index{G\+Text\+Area@{G\+Text\+Area}!set\+Name@{set\+Name}}
@@ -1869,7 +1869,7 @@ Sets the text area\textquotesingle{}s current text to the given string, replacin
 
 
 
-Sets a text change listener on this text field so that it will be called when the user modifies the current text. 
+Sets a text change listener on this text area so that it will be called when the user modifies the current text. 
 
 Any existing text change listener will be replaced.
 
@@ -1883,7 +1883,7 @@ A text change listener will fire only when the actual text changes, such as when
 
 
 
-Sets a text change listener on this text field so that it will be called when the user modifies the current text. 
+Sets a text change listener on this text area so that it will be called when the user modifies the current text. 
 
 Any existing text change listener will be replaced.
 

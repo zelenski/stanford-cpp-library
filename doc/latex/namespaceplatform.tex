@@ -18,6 +18,8 @@ std\+::string \mbox{\hyperlink{namespaceplatform_a7aec69b6d9120eefca74eeba8f7eb0
 \item 
 bool \mbox{\hyperlink{namespaceplatform_a7ac56ce70edb176e3d75d83732517d85}{filelib\+\_\+file\+Exists}} (const std\+::string \&filename)
 \item 
+std\+::string \mbox{\hyperlink{namespaceplatform_acbd0e6215f4690ad235ec00ee8fc82e2}{filelib\+\_\+get\+Absolute\+Path}} (const std\+::string \&path)
+\item 
 std\+::string \mbox{\hyperlink{namespaceplatform_a52fd33354355f61a96ea88ac33aaa11a}{filelib\+\_\+get\+Current\+Directory}} ()
 \item 
 std\+::string \mbox{\hyperlink{namespaceplatform_abf9418d14665b0404fd9a942cd890151}{filelib\+\_\+get\+Directory\+Path\+Separator}} ()
@@ -32,7 +34,7 @@ bool \mbox{\hyperlink{namespaceplatform_aca0d9e2b4896bfd0f7a5cd64049188fc}{filel
 \item 
 bool \mbox{\hyperlink{namespaceplatform_a69dc63b6fb991650c05dde15b04ca465}{filelib\+\_\+is\+Symbolic\+Link}} (const std\+::string \&filename)
 \item 
-void \mbox{\hyperlink{namespaceplatform_acad9142fb05b5756d75b8f8a68b5558b}{filelib\+\_\+list\+Directory}} (const std\+::string \&path, std\+::vector$<$ std\+::string $>$ \&list)
+void \mbox{\hyperlink{namespaceplatform_a8562b0c0644e6c38bef3fc07457bc93e}{filelib\+\_\+list\+Directory}} (const std\+::string \&path, \mbox{\hyperlink{classVector}{Vector}}$<$ std\+::string $>$ \&list)
 \item 
 void \mbox{\hyperlink{namespaceplatform_afe79a966d14e3b8d08939712884fa9d3}{filelib\+\_\+set\+Current\+Directory}} (const std\+::string \&path)
 \item 
@@ -73,6 +75,12 @@ Platform-\/dependent functions that differ by operating system.
 \index{filelib\+\_\+file\+Exists@{filelib\+\_\+file\+Exists}!platform@{platform}}
 \subsubsection{\texorpdfstring{filelib\+\_\+file\+Exists()}{filelib\_fileExists()}}
 {\footnotesize\ttfamily bool filelib\+\_\+file\+Exists (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceplatform_acbd0e6215f4690ad235ec00ee8fc82e2}\label{namespaceplatform_acbd0e6215f4690ad235ec00ee8fc82e2}} 
+\index{platform@{platform}!filelib\+\_\+get\+Absolute\+Path@{filelib\+\_\+get\+Absolute\+Path}}
+\index{filelib\+\_\+get\+Absolute\+Path@{filelib\+\_\+get\+Absolute\+Path}!platform@{platform}}
+\subsubsection{\texorpdfstring{filelib\+\_\+get\+Absolute\+Path()}{filelib\_getAbsolutePath()}}
+{\footnotesize\ttfamily std\+::string filelib\+\_\+get\+Absolute\+Path (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{path }\end{DoxyParamCaption})}
 
 \mbox{\Hypertarget{namespaceplatform_a52fd33354355f61a96ea88ac33aaa11a}\label{namespaceplatform_a52fd33354355f61a96ea88ac33aaa11a}} 
 \index{platform@{platform}!filelib\+\_\+get\+Current\+Directory@{filelib\+\_\+get\+Current\+Directory}}
@@ -116,11 +124,11 @@ Platform-\/dependent functions that differ by operating system.
 \subsubsection{\texorpdfstring{filelib\+\_\+is\+Symbolic\+Link()}{filelib\_isSymbolicLink()}}
 {\footnotesize\ttfamily bool filelib\+\_\+is\+Symbolic\+Link (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{namespaceplatform_acad9142fb05b5756d75b8f8a68b5558b}\label{namespaceplatform_acad9142fb05b5756d75b8f8a68b5558b}} 
+\mbox{\Hypertarget{namespaceplatform_a8562b0c0644e6c38bef3fc07457bc93e}\label{namespaceplatform_a8562b0c0644e6c38bef3fc07457bc93e}} 
 \index{platform@{platform}!filelib\+\_\+list\+Directory@{filelib\+\_\+list\+Directory}}
 \index{filelib\+\_\+list\+Directory@{filelib\+\_\+list\+Directory}!platform@{platform}}
 \subsubsection{\texorpdfstring{filelib\+\_\+list\+Directory()}{filelib\_listDirectory()}}
-{\footnotesize\ttfamily void filelib\+\_\+list\+Directory (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{path,  }\item[{std\+::vector$<$ std\+::string $>$ \&}]{list }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily void filelib\+\_\+list\+Directory (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{path,  }\item[{\mbox{\hyperlink{classVector}{Vector}}$<$ std\+::string $>$ \&}]{list }\end{DoxyParamCaption})}
 
 \mbox{\Hypertarget{namespaceplatform_afe79a966d14e3b8d08939712884fa9d3}\label{namespaceplatform_afe79a966d14e3b8d08939712884fa9d3}} 
 \index{platform@{platform}!filelib\+\_\+set\+Current\+Directory@{filelib\+\_\+set\+Current\+Directory}}

@@ -5,7 +5,7 @@
 %%For: 
 %Magnification: 1.00
 %%Orientation: Portrait
-%%BoundingBox: 0 0 500 1523.809524
+%%BoundingBox: 0 0 500 1619.047619
 %%Pages: 0
 %%BeginSetup
 %%EndSetup
@@ -19,12 +19,12 @@
 /marginwidth 10 def
 /distx 20 def
 /disty 40 def
-/boundaspect 0.328125 def  % aspect ratio of the BoundingBox (width/height)
+/boundaspect 0.308824 def  % aspect ratio of the BoundingBox (width/height)
 /boundx 500 def
 /boundy boundx boundaspect div def
 /xspacing 0 def
 /yspacing 0 def
-/rows 16 def
+/rows 17 def
 /cols 2 def
 /scalefactor 0 def
 /boxfont /Times-Roman findfont fontheight scalefont def
@@ -186,6 +186,7 @@ boxfont setfont
 (GScrollBar) cw
 (GScrollPane) cw
 (GSlider) cw
+(GSpacer) cw
 (GTable) cw
 (GTextArea) cw
 (GTextField) cw
@@ -200,19 +201,20 @@ boundx scalefactor div boundy scalefactor div scale
 
 % ----- classes -----
 
- (GInteractor) 0.000000 14.000000 box
- (GObservable) 0.000000 15.000000 box
- (GBrowserPane) 1.000000 13.000000 box
- (GButton) 1.000000 12.000000 box
- (GCanvas) 1.000000 11.000000 box
- (GCheckBox) 1.000000 10.000000 box
- (GChooser) 1.000000 9.000000 box
- (GContainer) 1.000000 8.000000 box
- (GLabel) 1.000000 7.000000 box
- (GRadioButton) 1.000000 6.000000 box
- (GScrollBar) 1.000000 5.000000 box
- (GScrollPane) 1.000000 4.000000 box
- (GSlider) 1.000000 3.000000 box
+ (GInteractor) 0.000000 15.000000 box
+ (GObservable) 0.000000 16.000000 box
+ (GBrowserPane) 1.000000 14.000000 box
+ (GButton) 1.000000 13.000000 box
+ (GCanvas) 1.000000 12.000000 box
+ (GCheckBox) 1.000000 11.000000 box
+ (GChooser) 1.000000 10.000000 box
+ (GContainer) 1.000000 9.000000 box
+ (GLabel) 1.000000 8.000000 box
+ (GRadioButton) 1.000000 7.000000 box
+ (GScrollBar) 1.000000 6.000000 box
+ (GScrollPane) 1.000000 5.000000 box
+ (GSlider) 1.000000 4.000000 box
+ (GSpacer) 1.000000 3.000000 box
  (GTable) 1.000000 2.000000 box
  (GTextArea) 1.000000 1.000000 box
  (GTextField) 1.000000 0.000000 box
@@ -220,11 +222,13 @@ boundx scalefactor div boundy scalefactor div scale
 % ----- relations -----
 
 solid
-0 0.000000 14.000000 out
+0 0.000000 15.000000 out
 solid
-1 0.000000 15.000000 in
+1 0.000000 16.000000 in
 solid
-1 0.000000 13.250000 out
+1 0.000000 14.250000 out
+solid
+0 0.000000 14.500000 hedge
 solid
 0 0.000000 13.500000 hedge
 solid
@@ -254,4 +258,4 @@ solid
 solid
 0 0.000000 0.500000 hedge
 solid
-0.000000 14.000000 0.500000 vedge
+0.000000 15.000000 0.500000 vedge

@@ -28,7 +28,7 @@ enum \mbox{\hyperlink{classGInteractor_a8e0d441725a81d2bbdebbea09078260e}{Text\+
 \item 
 \mbox{\hyperlink{classGRadioButton_ad9086510e97651d4dc528f115fd8aa6c}{G\+Radio\+Button}} (const std\+::string \&text=\char`\"{}\char`\"{}, const std\+::string \&group=\char`\"{}default\char`\"{}, bool checked=false, Q\+Widget $\ast$parent=nullptr)
 \begin{DoxyCompactList}\small\item\em Creates a new radio button with the given text. \end{DoxyCompactList}\item 
-virtual \mbox{\hyperlink{classGRadioButton_abbbc041ce9346d08ff08e8289d885cb5}{$\sim$\+G\+Radio\+Button}} ()
+virtual \mbox{\hyperlink{classGRadioButton_ad91fff00db319dfa29f1243d4fffaa0c}{$\sim$\+G\+Radio\+Button}} () Q\+\_\+\+D\+E\+C\+L\+\_\+\+O\+V\+E\+R\+R\+I\+DE
 \begin{DoxyCompactList}\small\item\em Frees memory allocated internally by the radio button. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGInteractor_a02f20ea6edfa0671f31c4c648a253833}{add\+Action\+Listener}} () Q\+\_\+\+D\+E\+C\+L\+\_\+\+D\+E\+P\+R\+E\+C\+A\+T\+ED
 \begin{DoxyCompactList}\small\item\em Adds an event listener to be notified when this interactor is clicked or generally interacted with. \end{DoxyCompactList}\item 
@@ -188,6 +188,8 @@ virtual void \mbox{\hyperlink{classGInteractor_a9c18fcc579333bf9653d13ad2b372e39
 \begin{DoxyCompactList}\small\item\em Sets the onscreen x-\/coordinate of the top-\/left corner of the interactor relative to its window. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGInteractor_a7d57e2a5c35d27feb58fd498a3cf82b9}{setY}} (double y)
 \begin{DoxyCompactList}\small\item\em Sets the onscreen y-\/coordinate of the top-\/left corner of the interactor relative to its window. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{classGRadioButton_ad277193b2dca0bab1e0ad24d45407dc3}{toggle}} ()
+\begin{DoxyCompactList}\small\item\em Reverses the checked state of the button, setting it to be checked if it was unchecked or to be unchecked if it was checked. \end{DoxyCompactList}\item 
 virtual std\+::string \mbox{\hyperlink{classGObservable_a1fe5121d6528fdea3f243321b3fa3a49}{to\+String}} () const
 \begin{DoxyCompactList}\small\item\em Returns a string representation of this observable object\textquotesingle{}s state. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Protected Member Functions}
@@ -282,7 +284,7 @@ T\+E\+X\+T\+\_\+\+O\+N\+LY&\\
 
 Creates a new radio button with the given text. 
 
-You can pass a string representing a logical group of radio buttons; if you do, this radio button will be internally managed so that at most one radio button from that group will be checked at any given time. If no group is supplied, the radio button is put into a default group. \mbox{\Hypertarget{classGRadioButton_abbbc041ce9346d08ff08e8289d885cb5}\label{classGRadioButton_abbbc041ce9346d08ff08e8289d885cb5}} 
+You can pass a string representing a logical group of radio buttons; if you do, this radio button will be internally managed so that at most one radio button from that group will be checked at any given time. If no group is supplied, the radio button is put into a default group. \mbox{\Hypertarget{classGRadioButton_ad91fff00db319dfa29f1243d4fffaa0c}\label{classGRadioButton_ad91fff00db319dfa29f1243d4fffaa0c}} 
 \index{G\+Radio\+Button@{G\+Radio\+Button}!````~G\+Radio\+Button@{$\sim$\+G\+Radio\+Button}}
 \index{````~G\+Radio\+Button@{$\sim$\+G\+Radio\+Button}!G\+Radio\+Button@{G\+Radio\+Button}}
 \subsubsection{\texorpdfstring{$\sim$\+G\+Radio\+Button()}{~GRadioButton()}}
@@ -1539,6 +1541,16 @@ Sets the onscreen y-\/coordinate of the top-\/left corner of the interactor rela
 Generally clients should not call this and should instead use containers and layout regions to position interactors. 
 
 Reimplemented in \mbox{\hyperlink{classGLabel_a59633abb35b676c54d88ea6cd384fc55}{G\+Label}}.
+
+\mbox{\Hypertarget{classGRadioButton_ad277193b2dca0bab1e0ad24d45407dc3}\label{classGRadioButton_ad277193b2dca0bab1e0ad24d45407dc3}} 
+\index{G\+Radio\+Button@{G\+Radio\+Button}!toggle@{toggle}}
+\index{toggle@{toggle}!G\+Radio\+Button@{G\+Radio\+Button}}
+\subsubsection{\texorpdfstring{toggle()}{toggle()}}
+{\footnotesize\ttfamily void toggle (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reverses the checked state of the button, setting it to be checked if it was unchecked or to be unchecked if it was checked. 
 
 \mbox{\Hypertarget{classGObservable_a1fe5121d6528fdea3f243321b3fa3a49}\label{classGObservable_a1fe5121d6528fdea3f243321b3fa3a49}} 
 \index{G\+Radio\+Button@{G\+Radio\+Button}!to\+String@{to\+String}}

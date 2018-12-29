@@ -355,9 +355,9 @@ virtual void \mbox{\hyperlink{classGDrawingSurface_af59209aeadea6dfc6d97a2d8531f
 virtual void \mbox{\hyperlink{classGWindow_a4b812426e19cdd9f6d62e7b5d90e6bec}{set\+Height}} (double width)
 \begin{DoxyCompactList}\small\item\em Sets the window\textquotesingle{}s total height in pixels. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGWindow_aeb8324d3287fa1fbe093f4d6230cf0a6}{set\+Key\+Listener}} (G\+Event\+Listener func)
-\item 
+\begin{DoxyCompactList}\small\item\em Sets a key listener on this window so that it will be called when the user presses any key. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGWindow_ae48ecea73606c7bd9423e1c7cc589cc9}{set\+Key\+Listener}} (G\+Event\+Listener\+Void func)
-\item 
+\begin{DoxyCompactList}\small\item\em Sets a key listener on this window so that it will be called when the user presses any key. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGDrawingSurface_a6bfe14a77101db0fb97b5a7e07a5526b}{set\+Line\+Style}} (\mbox{\hyperlink{classGObject_a86e0f5648542856159bb40775c854aa7}{G\+Object\+::\+Line\+Style}} line\+Style)
 \begin{DoxyCompactList}\small\item\em Sets the current line style which will be used to draw outlines of shapes and lines. \end{DoxyCompactList}\item 
 virtual void {\bfseries set\+Line\+Width} (double line\+Width) Q\+\_\+\+D\+E\+C\+L\+\_\+\+O\+V\+E\+R\+R\+I\+DE
@@ -463,12 +463,20 @@ static void \mbox{\hyperlink{classGWindow_a2e528e6ab0611fb2bd33810b4a610403}{\+\
 \begin{DoxyCompactList}\small\item\em An internal function that disables the exit\+Graphics function so that students cannot exit their programs during autograding. \end{DoxyCompactList}\item 
 static void \mbox{\hyperlink{classGWindow_ae51372f06b62dd7ffef8678b147cc70a}{\+\_\+autograder\+\_\+set\+Pause\+Enabled}} (bool enabled)
 \begin{DoxyCompactList}\small\item\em An internal function that disables the pause function so that students cannot pausetheir programs during autograding. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classGWindow_aea783b75281f864f14e958d2fee28f9d}{get\+Screen\+Dpi}} ()
+\begin{DoxyCompactList}\small\item\em Returns the dots-\/per-\/inch of the screen. \end{DoxyCompactList}\item 
+static double \mbox{\hyperlink{classGWindow_ab15179b683630109f0ac256590a3b323}{get\+Screen\+Dpi\+Scale\+Ratio}} ()
+\begin{DoxyCompactList}\small\item\em Returns the ratio of this screen\textquotesingle{}s D\+PI compared to a normal low-\/\+D\+PI screen. \end{DoxyCompactList}\item 
 static double \mbox{\hyperlink{classGWindow_a9942379fdf4fb4445c35eaf3390b7ccb}{get\+Screen\+Height}} ()
 \begin{DoxyCompactList}\small\item\em Returns the height of the entire screen in pixels. \end{DoxyCompactList}\item 
 static \mbox{\hyperlink{classGDimension}{G\+Dimension}} \mbox{\hyperlink{classGWindow_ae3d08d5cde8163274459797770596809}{get\+Screen\+Size}} ()
 \begin{DoxyCompactList}\small\item\em Returns the width and height of the entire screen in pixels. \end{DoxyCompactList}\item 
 static double \mbox{\hyperlink{classGWindow_adc82933bd579ab83d7cd4e3bc5f79a12}{get\+Screen\+Width}} ()
-\begin{DoxyCompactList}\small\item\em Returns the width of the entire screen in pixels. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Returns the width of the entire screen in pixels. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classGWindow_a674ef3ad6e66d778e410e130cad47274}{is\+High\+Density\+Screen}} ()
+\begin{DoxyCompactList}\small\item\em Returns whether the dots-\/per-\/inch of the screen are high enough to consider it a \char`\"{}high-\/density\char`\"{} screen for which scaling should be used. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classGWindow_a040690336154a3f414001a16ffdb947e}{is\+High\+Dpi\+Scaling\+Enabled}} ()
+\begin{DoxyCompactList}\small\item\em Returns whether we should scale some windows when run on high-\/density screens. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Static Public Attributes}
 \begin{DoxyCompactItemize}
 \item 
@@ -477,7 +485,11 @@ static const int \mbox{\hyperlink{classGWindow_a2fab6d7a2bcb15d1595cacc38230f21b
 static const std\+::string \mbox{\hyperlink{classGWindow_a666fcf3a55503322fbfd6314c4846542}{D\+E\+F\+A\+U\+L\+T\+\_\+\+I\+C\+O\+N\+\_\+\+F\+I\+L\+E\+N\+A\+ME}} = \char`\"{}splicon-\/large.\+png\char`\"{}
 \begin{DoxyCompactList}\small\item\em The default file name used to load a \mbox{\hyperlink{classGWindow}{G\+Window}}\textquotesingle{}s initial title bar icon. \end{DoxyCompactList}\item 
 static const int \mbox{\hyperlink{classGWindow_af7b8fc8ce7f700c853cfbc36ee8cc474}{D\+E\+F\+A\+U\+L\+T\+\_\+\+W\+I\+D\+TH}} = 500
-\begin{DoxyCompactList}\small\item\em The default width of a newly created window in pixels if its width is not explicitly specified. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em The default width of a newly created window in pixels if its width is not explicitly specified. \end{DoxyCompactList}\item 
+static const int \mbox{\hyperlink{classGWindow_a212e92d31b813ef25adbb902ffae3c6b}{H\+I\+G\+H\+\_\+\+D\+P\+I\+\_\+\+S\+C\+R\+E\+E\+N\+\_\+\+T\+H\+R\+E\+S\+H\+O\+LD}} = 200
+\begin{DoxyCompactList}\small\item\em The minimum number of dots per inch before a screen is considered to be high-\/density or high-\/\+D\+PI. \end{DoxyCompactList}\item 
+static const int \mbox{\hyperlink{classGWindow_a28d634f1a144a0f1aabf338f0be6afe2}{S\+T\+A\+N\+D\+A\+R\+D\+\_\+\+S\+C\+R\+E\+E\+N\+\_\+\+D\+PI}} = 96
+\begin{DoxyCompactList}\small\item\em The minimum number of dots per inch on a \char`\"{}normal\char`\"{} low-\/\+D\+PI screen. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Protected Member Functions}
 \begin{DoxyCompactItemize}
 \item 
@@ -1864,7 +1876,27 @@ Returns the color of the pixel at the given x/y coordinates of the background la
 {\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the given x/y values are out of bounds. \\
 \hline
 \end{DoxyExceptions}
-\mbox{\Hypertarget{classGWindow_a9942379fdf4fb4445c35eaf3390b7ccb}\label{classGWindow_a9942379fdf4fb4445c35eaf3390b7ccb}} 
+\mbox{\Hypertarget{classGWindow_aea783b75281f864f14e958d2fee28f9d}\label{classGWindow_aea783b75281f864f14e958d2fee28f9d}} 
+\index{G\+Window@{G\+Window}!get\+Screen\+Dpi@{get\+Screen\+Dpi}}
+\index{get\+Screen\+Dpi@{get\+Screen\+Dpi}!G\+Window@{G\+Window}}
+\subsubsection{\texorpdfstring{get\+Screen\+Dpi()}{getScreenDpi()}}
+{\footnotesize\ttfamily int get\+Screen\+Dpi (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the dots-\/per-\/inch of the screen. 
+
+This is used when accounting for high-\/density screens. \mbox{\Hypertarget{classGWindow_ab15179b683630109f0ac256590a3b323}\label{classGWindow_ab15179b683630109f0ac256590a3b323}} 
+\index{G\+Window@{G\+Window}!get\+Screen\+Dpi\+Scale\+Ratio@{get\+Screen\+Dpi\+Scale\+Ratio}}
+\index{get\+Screen\+Dpi\+Scale\+Ratio@{get\+Screen\+Dpi\+Scale\+Ratio}!G\+Window@{G\+Window}}
+\subsubsection{\texorpdfstring{get\+Screen\+Dpi\+Scale\+Ratio()}{getScreenDpiScaleRatio()}}
+{\footnotesize\ttfamily double get\+Screen\+Dpi\+Scale\+Ratio (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the ratio of this screen\textquotesingle{}s D\+PI compared to a normal low-\/\+D\+PI screen. 
+
+This can be used to scale up graphics on high-\/density screens. \mbox{\Hypertarget{classGWindow_a9942379fdf4fb4445c35eaf3390b7ccb}\label{classGWindow_a9942379fdf4fb4445c35eaf3390b7ccb}} 
 \index{G\+Window@{G\+Window}!get\+Screen\+Height@{get\+Screen\+Height}}
 \index{get\+Screen\+Height@{get\+Screen\+Height}!G\+Window@{G\+Window}}
 \subsubsection{\texorpdfstring{get\+Screen\+Height()}{getScreenHeight()}}
@@ -2053,6 +2085,26 @@ Returns true if the observable object has a listener for the given type of event
 \index{is\+Auto\+Repaint@{is\+Auto\+Repaint}!G\+Window@{G\+Window}}
 \subsubsection{\texorpdfstring{is\+Auto\+Repaint()}{isAutoRepaint()}}
 {\footnotesize\ttfamily bool is\+Auto\+Repaint (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [inherited]}}
+
+\mbox{\Hypertarget{classGWindow_a674ef3ad6e66d778e410e130cad47274}\label{classGWindow_a674ef3ad6e66d778e410e130cad47274}} 
+\index{G\+Window@{G\+Window}!is\+High\+Density\+Screen@{is\+High\+Density\+Screen}}
+\index{is\+High\+Density\+Screen@{is\+High\+Density\+Screen}!G\+Window@{G\+Window}}
+\subsubsection{\texorpdfstring{is\+High\+Density\+Screen()}{isHighDensityScreen()}}
+{\footnotesize\ttfamily bool is\+High\+Density\+Screen (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns whether the dots-\/per-\/inch of the screen are high enough to consider it a \char`\"{}high-\/density\char`\"{} screen for which scaling should be used. 
+
+The threshold for this is given by the constant \mbox{\Hypertarget{classGWindow_a040690336154a3f414001a16ffdb947e}\label{classGWindow_a040690336154a3f414001a16ffdb947e}} 
+\index{G\+Window@{G\+Window}!is\+High\+Dpi\+Scaling\+Enabled@{is\+High\+Dpi\+Scaling\+Enabled}}
+\index{is\+High\+Dpi\+Scaling\+Enabled@{is\+High\+Dpi\+Scaling\+Enabled}!G\+Window@{G\+Window}}
+\subsubsection{\texorpdfstring{is\+High\+Dpi\+Scaling\+Enabled()}{isHighDpiScalingEnabled()}}
+{\footnotesize\ttfamily bool is\+High\+Dpi\+Scaling\+Enabled (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns whether we should scale some windows when run on high-\/density screens. 
 
 \mbox{\Hypertarget{classGWindow_a28e910de88f3ff5419710b0b0a03c2bb}\label{classGWindow_a28e910de88f3ff5419710b0b0a03c2bb}} 
 \index{G\+Window@{G\+Window}!is\+Maximized@{is\+Maximized}}
@@ -2659,13 +2711,21 @@ Sets the window\textquotesingle{}s total height in pixels.
 \subsubsection{\texorpdfstring{set\+Key\+Listener()}{setKeyListener()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily void set\+Key\+Listener (\begin{DoxyParamCaption}\item[{G\+Event\+Listener}]{func }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
 
-\mbox{\Hypertarget{classGWindow_ae48ecea73606c7bd9423e1c7cc589cc9}\label{classGWindow_ae48ecea73606c7bd9423e1c7cc589cc9}} 
+
+
+Sets a key listener on this window so that it will be called when the user presses any key. 
+
+Any existing key listener will be replaced. \mbox{\Hypertarget{classGWindow_ae48ecea73606c7bd9423e1c7cc589cc9}\label{classGWindow_ae48ecea73606c7bd9423e1c7cc589cc9}} 
 \index{G\+Window@{G\+Window}!set\+Key\+Listener@{set\+Key\+Listener}}
 \index{set\+Key\+Listener@{set\+Key\+Listener}!G\+Window@{G\+Window}}
 \subsubsection{\texorpdfstring{set\+Key\+Listener()}{setKeyListener()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily void set\+Key\+Listener (\begin{DoxyParamCaption}\item[{G\+Event\+Listener\+Void}]{func }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
 
-\mbox{\Hypertarget{classGDrawingSurface_a6bfe14a77101db0fb97b5a7e07a5526b}\label{classGDrawingSurface_a6bfe14a77101db0fb97b5a7e07a5526b}} 
+
+
+Sets a key listener on this window so that it will be called when the user presses any key. 
+
+Any existing key listener will be replaced. \mbox{\Hypertarget{classGDrawingSurface_a6bfe14a77101db0fb97b5a7e07a5526b}\label{classGDrawingSurface_a6bfe14a77101db0fb97b5a7e07a5526b}} 
 \index{G\+Window@{G\+Window}!set\+Line\+Style@{set\+Line\+Style}}
 \index{set\+Line\+Style@{set\+Line\+Style}!G\+Window@{G\+Window}}
 \subsubsection{\texorpdfstring{set\+Line\+Style()}{setLineStyle()}}
@@ -3269,3 +3329,24 @@ The default file name used to load a \mbox{\hyperlink{classGWindow}{G\+Window}}\
 
 The default width of a newly created window in pixels if its width is not explicitly specified. 
 
+\mbox{\Hypertarget{classGWindow_a212e92d31b813ef25adbb902ffae3c6b}\label{classGWindow_a212e92d31b813ef25adbb902ffae3c6b}} 
+\index{G\+Window@{G\+Window}!H\+I\+G\+H\+\_\+\+D\+P\+I\+\_\+\+S\+C\+R\+E\+E\+N\+\_\+\+T\+H\+R\+E\+S\+H\+O\+LD@{H\+I\+G\+H\+\_\+\+D\+P\+I\+\_\+\+S\+C\+R\+E\+E\+N\+\_\+\+T\+H\+R\+E\+S\+H\+O\+LD}}
+\index{H\+I\+G\+H\+\_\+\+D\+P\+I\+\_\+\+S\+C\+R\+E\+E\+N\+\_\+\+T\+H\+R\+E\+S\+H\+O\+LD@{H\+I\+G\+H\+\_\+\+D\+P\+I\+\_\+\+S\+C\+R\+E\+E\+N\+\_\+\+T\+H\+R\+E\+S\+H\+O\+LD}!G\+Window@{G\+Window}}
+\subsubsection{\texorpdfstring{H\+I\+G\+H\+\_\+\+D\+P\+I\+\_\+\+S\+C\+R\+E\+E\+N\+\_\+\+T\+H\+R\+E\+S\+H\+O\+LD}{HIGH\_DPI\_SCREEN\_THRESHOLD}}
+{\footnotesize\ttfamily const int H\+I\+G\+H\+\_\+\+D\+P\+I\+\_\+\+S\+C\+R\+E\+E\+N\+\_\+\+T\+H\+R\+E\+S\+H\+O\+LD = 200\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+The minimum number of dots per inch before a screen is considered to be high-\/density or high-\/\+D\+PI. 
+
+\mbox{\Hypertarget{classGWindow_a28d634f1a144a0f1aabf338f0be6afe2}\label{classGWindow_a28d634f1a144a0f1aabf338f0be6afe2}} 
+\index{G\+Window@{G\+Window}!S\+T\+A\+N\+D\+A\+R\+D\+\_\+\+S\+C\+R\+E\+E\+N\+\_\+\+D\+PI@{S\+T\+A\+N\+D\+A\+R\+D\+\_\+\+S\+C\+R\+E\+E\+N\+\_\+\+D\+PI}}
+\index{S\+T\+A\+N\+D\+A\+R\+D\+\_\+\+S\+C\+R\+E\+E\+N\+\_\+\+D\+PI@{S\+T\+A\+N\+D\+A\+R\+D\+\_\+\+S\+C\+R\+E\+E\+N\+\_\+\+D\+PI}!G\+Window@{G\+Window}}
+\subsubsection{\texorpdfstring{S\+T\+A\+N\+D\+A\+R\+D\+\_\+\+S\+C\+R\+E\+E\+N\+\_\+\+D\+PI}{STANDARD\_SCREEN\_DPI}}
+{\footnotesize\ttfamily const int S\+T\+A\+N\+D\+A\+R\+D\+\_\+\+S\+C\+R\+E\+E\+N\+\_\+\+D\+PI = 96\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+The minimum number of dots per inch on a \char`\"{}normal\char`\"{} low-\/\+D\+PI screen. 
+
+Used to figure out how much to scale up on high-\/\+D\+PI screens. 

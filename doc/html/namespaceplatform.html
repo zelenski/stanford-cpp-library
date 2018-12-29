@@ -94,6 +94,8 @@ Functions</h2></td></tr>
 <tr class="separator:a7aec69b6d9120eefca74eeba8f7eb02d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ac56ce70edb176e3d75d83732517d85"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceplatform.html#a7ac56ce70edb176e3d75d83732517d85">filelib_fileExists</a>(string filename)</td></tr>
 <tr class="separator:a7ac56ce70edb176e3d75d83732517d85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbd0e6215f4690ad235ec00ee8fc82e2"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceplatform.html#acbd0e6215f4690ad235ec00ee8fc82e2">filelib_getAbsolutePath</a>(string path)</td></tr>
+<tr class="separator:acbd0e6215f4690ad235ec00ee8fc82e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a52fd33354355f61a96ea88ac33aaa11a"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceplatform.html#a52fd33354355f61a96ea88ac33aaa11a">filelib_getCurrentDirectory</a>()</td></tr>
 <tr class="separator:a52fd33354355f61a96ea88ac33aaa11a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf9418d14665b0404fd9a942cd890151"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceplatform.html#abf9418d14665b0404fd9a942cd890151">filelib_getDirectoryPathSeparator</a>()</td></tr>
@@ -108,8 +110,8 @@ Functions</h2></td></tr>
 <tr class="separator:aca0d9e2b4896bfd0f7a5cd64049188fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a69dc63b6fb991650c05dde15b04ca465"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceplatform.html#a69dc63b6fb991650c05dde15b04ca465">filelib_isSymbolicLink</a>(string filename)</td></tr>
 <tr class="separator:a69dc63b6fb991650c05dde15b04ca465"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acad9142fb05b5756d75b8f8a68b5558b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceplatform.html#acad9142fb05b5756d75b8f8a68b5558b">filelib_listDirectory</a>(string path, std::vector&lt; string &gt; &amp;list)</td></tr>
-<tr class="separator:acad9142fb05b5756d75b8f8a68b5558b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8562b0c0644e6c38bef3fc07457bc93e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceplatform.html#a8562b0c0644e6c38bef3fc07457bc93e">filelib_listDirectory</a>(string path, <a class="el" href="classVector.html">Vector</a>&lt; string &gt; &amp;list)</td></tr>
+<tr class="separator:a8562b0c0644e6c38bef3fc07457bc93e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe79a966d14e3b8d08939712884fa9d3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceplatform.html#afe79a966d14e3b8d08939712884fa9d3">filelib_setCurrentDirectory</a>(string path)</td></tr>
 <tr class="separator:afe79a966d14e3b8d08939712884fa9d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33caced893c9dd544cd80f354c5ec359"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceplatform.html#a33caced893c9dd544cd80f354c5ec359">os_getLastError</a>()</td></tr>
@@ -217,6 +219,24 @@ Functions</h2></td></tr>
           <td>(</td>
           <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>filename</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acbd0e6215f4690ad235ec00ee8fc82e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbd0e6215f4690ad235ec00ee8fc82e2">&#9670;&nbsp;</a></span>filelib_getAbsolutePath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">string filelib_getAbsolutePath </td>
+          <td>(</td>
+          <td class="paramtype">string &#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -346,8 +366,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="acad9142fb05b5756d75b8f8a68b5558b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acad9142fb05b5756d75b8f8a68b5558b">&#9670;&nbsp;</a></span>filelib_listDirectory()</h2>
+<a id="a8562b0c0644e6c38bef3fc07457bc93e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8562b0c0644e6c38bef3fc07457bc93e">&#9670;&nbsp;</a></span>filelib_listDirectory()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -361,7 +381,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; string &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classVector.html">Vector</a>&lt; string &gt; &amp;&#160;</td>
           <td class="paramname"><em>list</em>&#160;</td>
         </tr>
         <tr>

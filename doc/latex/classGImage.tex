@@ -31,6 +31,8 @@ enum \mbox{\hyperlink{classGObject_a86e0f5648542856159bb40775c854aa7}{Line\+Styl
 \item 
 \mbox{\hyperlink{classGImage_ae37cc9f566bd18108a4efed39c16e505}{G\+Image}} (const std\+::string \&filename=\char`\"{}\char`\"{}, double x=0, double y=0)
 \begin{DoxyCompactList}\small\item\em Constructs a new image by loading the image from the specified file. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classGImage_ac106706c2a94c64f002934a273f8f4e7}{G\+Image}} (double width, double height)
+\begin{DoxyCompactList}\small\item\em Creates a blank \mbox{\hyperlink{classGImage}{G\+Image}} of the given width and height. \end{DoxyCompactList}\item 
 virtual \mbox{\hyperlink{classGImage_aff2de2de9e75e1d6bf56248c2fdcc615}{$\sim$\+G\+Image}} ()
 \begin{DoxyCompactList}\small\item\em Frees memory allocated internally by the image. \end{DoxyCompactList}\item 
 virtual bool \mbox{\hyperlink{classGObject_abb6a5d7c03e6eaaae97264c4799ce7c3}{contains}} (double x, double y) const
@@ -161,6 +163,8 @@ virtual void \mbox{\hyperlink{classGObject_aa8480c0b7166cdf8f784cece06ab353f}{se
 \begin{DoxyCompactList}\small\item\em Sets the location of the top-\/left corner of this object to the specified point. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGObject_a04af1866cc1bae4a1226695794a50539}{set\+Opacity}} (double opacity)
 \begin{DoxyCompactList}\small\item\em Sets how opaque (non-\/transparent) this object will appear from 0.\+0 (completely transparent) to 1.\+0 (completely opaque, default). \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{classGImage_a555e64433357e4e01b523498814b8e74}{set\+Pixel}} (int x, int y, int rgb)
+\begin{DoxyCompactList}\small\item\em Sets the pixel at the given x/y location to the given color, represented as an R\+GB integer. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGObject_a3c90b758cdc2c911c9ef76c4360eb912}{set\+RightX}} (double x)
 \begin{DoxyCompactList}\small\item\em Sets the location of the rightmost x-\/coordinate of this object. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGObject_aca25d49481f9bf5fc8f7df4c086c4ce7}{set\+Size}} (double width, double height)
@@ -189,12 +193,10 @@ static void \mbox{\hyperlink{classGObject_a1e43371668ae850193cebedb44e1bbe3}{set
 \subsection*{Protected Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{classGImage_ac106706c2a94c64f002934a273f8f4e7}{G\+Image}} (double width, double height)
-\begin{DoxyCompactList}\small\item\em Creates a blank \mbox{\hyperlink{classGImage}{G\+Image}} of the given width and height. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classGImage_a3444f37769d2b073dacd164dc2a1f45a}{G\+Image}} (Q\+Image $\ast$qimage)
 \begin{DoxyCompactList}\small\item\em Creates a \mbox{\hyperlink{classGImage}{G\+Image}} wrapping the given Qt image. \end{DoxyCompactList}\item 
-virtual void \mbox{\hyperlink{classGImage_a555e64433357e4e01b523498814b8e74}{set\+Pixel}} (int x, int y, int rgb)
-\begin{DoxyCompactList}\small\item\em Sets the pixel at the given x/y location to the given color, represented as an R\+GB integer. \end{DoxyCompactList}\end{DoxyCompactItemize}
+Q\+Image $\ast$ \mbox{\hyperlink{classGImage_a76db6f6e4009671e2809ad8b26567aec}{get\+Q\+Image}} () const
+\begin{DoxyCompactList}\small\item\em Returns the inner Qt Q\+Image object being wrapped. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Protected Attributes}
 \begin{DoxyCompactItemize}
 \item 
@@ -296,7 +298,17 @@ By default, the upper left corner of the image appears at the origin, but you ca
 {\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the given file is not found or cannot be loaded as a valid image file \\
 \hline
 \end{DoxyExceptions}
-\mbox{\Hypertarget{classGImage_aff2de2de9e75e1d6bf56248c2fdcc615}\label{classGImage_aff2de2de9e75e1d6bf56248c2fdcc615}} 
+\mbox{\Hypertarget{classGImage_ac106706c2a94c64f002934a273f8f4e7}\label{classGImage_ac106706c2a94c64f002934a273f8f4e7}} 
+\index{G\+Image@{G\+Image}!G\+Image@{G\+Image}}
+\index{G\+Image@{G\+Image}!G\+Image@{G\+Image}}
+\subsubsection{\texorpdfstring{G\+Image()}{GImage()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classGImage}{G\+Image}} (\begin{DoxyParamCaption}\item[{double}]{width,  }\item[{double}]{height }\end{DoxyParamCaption})}
+
+
+
+Creates a blank \mbox{\hyperlink{classGImage}{G\+Image}} of the given width and height. 
+
+Called by \mbox{\hyperlink{classGCanvas}{G\+Canvas}} when converting to an image. \mbox{\Hypertarget{classGImage_aff2de2de9e75e1d6bf56248c2fdcc615}\label{classGImage_aff2de2de9e75e1d6bf56248c2fdcc615}} 
 \index{G\+Image@{G\+Image}!````~G\+Image@{$\sim$\+G\+Image}}
 \index{````~G\+Image@{$\sim$\+G\+Image}!G\+Image@{G\+Image}}
 \subsubsection{\texorpdfstring{$\sim$\+G\+Image()}{~GImage()}}
@@ -306,17 +318,7 @@ By default, the upper left corner of the image appears at the origin, but you ca
 
 Frees memory allocated internally by the image. 
 
-\mbox{\Hypertarget{classGImage_ac106706c2a94c64f002934a273f8f4e7}\label{classGImage_ac106706c2a94c64f002934a273f8f4e7}} 
-\index{G\+Image@{G\+Image}!G\+Image@{G\+Image}}
-\index{G\+Image@{G\+Image}!G\+Image@{G\+Image}}
-\subsubsection{\texorpdfstring{G\+Image()}{GImage()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classGImage}{G\+Image}} (\begin{DoxyParamCaption}\item[{double}]{width,  }\item[{double}]{height }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
-
-
-
-Creates a blank \mbox{\hyperlink{classGImage}{G\+Image}} of the given width and height. 
-
-Called by \mbox{\hyperlink{classGCanvas}{G\+Canvas}} when converting to an image. \mbox{\Hypertarget{classGImage_a3444f37769d2b073dacd164dc2a1f45a}\label{classGImage_a3444f37769d2b073dacd164dc2a1f45a}} 
+\mbox{\Hypertarget{classGImage_a3444f37769d2b073dacd164dc2a1f45a}\label{classGImage_a3444f37769d2b073dacd164dc2a1f45a}} 
 \index{G\+Image@{G\+Image}!G\+Image@{G\+Image}}
 \index{G\+Image@{G\+Image}!G\+Image@{G\+Image}}
 \subsubsection{\texorpdfstring{G\+Image()}{GImage()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
@@ -529,6 +531,16 @@ Returns the color of the pixel at the given x/y location as an R\+GB integer.
 {\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if x/y is out of range \\
 \hline
 \end{DoxyExceptions}
+\mbox{\Hypertarget{classGImage_a76db6f6e4009671e2809ad8b26567aec}\label{classGImage_a76db6f6e4009671e2809ad8b26567aec}} 
+\index{G\+Image@{G\+Image}!get\+Q\+Image@{get\+Q\+Image}}
+\index{get\+Q\+Image@{get\+Q\+Image}!G\+Image@{G\+Image}}
+\subsubsection{\texorpdfstring{get\+Q\+Image()}{getQImage()}}
+{\footnotesize\ttfamily Q\+Image $\ast$ get\+Q\+Image (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Returns the inner Qt Q\+Image object being wrapped. 
+
 \mbox{\Hypertarget{classGObject_a798cc79daaa10145b28f60bcdfdb0ee9}\label{classGObject_a798cc79daaa10145b28f60bcdfdb0ee9}} 
 \index{G\+Image@{G\+Image}!get\+RightX@{get\+RightX}}
 \index{get\+RightX@{get\+RightX}!G\+Image@{G\+Image}}
@@ -1116,7 +1128,7 @@ Sets how opaque (non-\/transparent) this object will appear from 0.\+0 (complete
 \index{G\+Image@{G\+Image}!set\+Pixel@{set\+Pixel}}
 \index{set\+Pixel@{set\+Pixel}!G\+Image@{G\+Image}}
 \subsubsection{\texorpdfstring{set\+Pixel()}{setPixel()}}
-{\footnotesize\ttfamily void set\+Pixel (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y,  }\item[{int}]{rgb }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [virtual]}}
+{\footnotesize\ttfamily void set\+Pixel (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y,  }\item[{int}]{rgb }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
 
 
 
@@ -1233,6 +1245,12 @@ Reimplemented from \mbox{\hyperlink{classGObject_a4fcdf8de5c6de92242a975d83d8f23
 \index{G\+Canvas@{G\+Canvas}!G\+Image@{G\+Image}}
 \subsubsection{\texorpdfstring{G\+Canvas}{GCanvas}}
 {\footnotesize\ttfamily friend class \mbox{\hyperlink{classGCanvas}{G\+Canvas}}\hspace{0.3cm}{\ttfamily [friend]}}
+
+\mbox{\Hypertarget{classGImage_ac121b9bdce780b03ca964948b20dea6d}\label{classGImage_ac121b9bdce780b03ca964948b20dea6d}} 
+\index{G\+Image@{G\+Image}!G\+Diff\+Image@{G\+Diff\+Image}}
+\index{G\+Diff\+Image@{G\+Diff\+Image}!G\+Image@{G\+Image}}
+\subsubsection{\texorpdfstring{G\+Diff\+Image}{GDiffImage}}
+{\footnotesize\ttfamily friend class G\+Diff\+Image\hspace{0.3cm}{\ttfamily [friend]}}
 
 
 

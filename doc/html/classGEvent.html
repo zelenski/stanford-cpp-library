@@ -152,16 +152,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a206a3a5ac61ccb2de0208401739c5425"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns which mouse button was clicked, if this is a mouse event.  <a href="#a206a3a5ac61ccb2de0208401739c5425">More...</a><br /></td></tr>
 <tr class="separator:a206a3a5ac61ccb2de0208401739c5425"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a389eadf538a5311effff6a08d0426b34"><td class="memItemLeft" align="right" valign="top">EventClass&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGEvent.html#a389eadf538a5311effff6a08d0426b34">getClass</a>() const</td></tr>
-<tr class="memdesc:a389eadf538a5311effff6a08d0426b34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns this event's class (minor type such as MOUSE_PRESSED).  <a href="#a389eadf538a5311effff6a08d0426b34">More...</a><br /></td></tr>
+<tr class="memdesc:a389eadf538a5311effff6a08d0426b34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns this event's class (major type such as MOUSE_EVENT).  <a href="#a389eadf538a5311effff6a08d0426b34">More...</a><br /></td></tr>
 <tr class="separator:a389eadf538a5311effff6a08d0426b34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a36cb86612277798a9adb168403386280"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGEvent.html#a36cb86612277798a9adb168403386280">getColumn</a>() const</td></tr>
 <tr class="memdesc:a36cb86612277798a9adb168403386280"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the column that was interacted with, if this is a table event.  <a href="#a36cb86612277798a9adb168403386280">More...</a><br /></td></tr>
 <tr class="separator:a36cb86612277798a9adb168403386280"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84e9319971c682404ea8f030cfee38f9"><td class="memItemLeft" align="right" valign="top">EventClass&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGEvent.html#a84e9319971c682404ea8f030cfee38f9">getEventClass</a>() const</td></tr>
-<tr class="memdesc:a84e9319971c682404ea8f030cfee38f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns this event's class (minor type such as MOUSE_PRESSED).  <a href="#a84e9319971c682404ea8f030cfee38f9">More...</a><br /></td></tr>
+<tr class="memdesc:a84e9319971c682404ea8f030cfee38f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns this event's class (major type such as MOUSE_EVENT).  <a href="#a84e9319971c682404ea8f030cfee38f9">More...</a><br /></td></tr>
 <tr class="separator:a84e9319971c682404ea8f030cfee38f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a404fe4b126a8443600109a62ef7ce6a2"><td class="memItemLeft" align="right" valign="top">EventType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGEvent.html#a404fe4b126a8443600109a62ef7ce6a2">getEventType</a>() const</td></tr>
-<tr class="memdesc:a404fe4b126a8443600109a62ef7ce6a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the event's type (major type such as MOUSE_EVENT).  <a href="#a404fe4b126a8443600109a62ef7ce6a2">More...</a><br /></td></tr>
+<tr class="memdesc:a404fe4b126a8443600109a62ef7ce6a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the event's type (minor type such as MOUSE_PRESSED).  <a href="#a404fe4b126a8443600109a62ef7ce6a2">More...</a><br /></td></tr>
 <tr class="separator:a404fe4b126a8443600109a62ef7ce6a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac8998a7ac699a98fbdc125ef0f3d64f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGInteractor.html">GInteractor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGEvent.html#ac8998a7ac699a98fbdc125ef0f3d64f1">getInteractor</a>() const</td></tr>
 <tr class="memdesc:ac8998a7ac699a98fbdc125ef0f3d64f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the source interactor that generated this event.  <a href="#ac8998a7ac699a98fbdc125ef0f3d64f1">More...</a><br /></td></tr>
@@ -468,7 +468,7 @@ Static Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns this event's class (minor type such as MOUSE_PRESSED). </p>
+<p>Returns this event's class (major type such as MOUSE_EVENT). </p>
 <p>Equivalent to getEventClass. </p>
 
 </div>
@@ -524,7 +524,7 @@ Static Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns this event's class (minor type such as MOUSE_PRESSED). </p>
+<p>Returns this event's class (major type such as MOUSE_EVENT). </p>
 <p>Equivalent to getClass. </p>
 
 </div>
@@ -552,7 +552,7 @@ Static Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns the event's type (major type such as MOUSE_EVENT). </p>
+<p>Returns the event's type (minor type such as MOUSE_PRESSED). </p>
 <p>Equivalent to getType. </p>
 
 </div>

@@ -14,6 +14,5 @@ var searchData=
   ['max_5fushort',['MAX_USHORT',['../classBigInteger.html#af8946806da52f6cb9107598aa1466a62',1,'BigInteger']]],
   ['min_5fint',['MIN_INT',['../classBigInteger.html#a942edd5df7cc33ed3e0531d116c53280',1,'BigInteger']]],
   ['min_5flong',['MIN_LONG',['../classBigInteger.html#a96aca2cbd95bd16afa004de0cb186845',1,'BigInteger']]],
-  ['min_5fshort',['MIN_SHORT',['../classBigInteger.html#a1be27840d68d9b74755750de3354609b',1,'BigInteger']]],
-  ['mutex',['mutex',['../structLockData.html#a4acff8232e4aec9cd5c6dc200ac55ef3',1,'LockData']]]
+  ['min_5fshort',['MIN_SHORT',['../classBigInteger.html#a1be27840d68d9b74755750de3354609b',1,'BigInteger']]]
 ];

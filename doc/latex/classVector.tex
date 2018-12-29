@@ -16,8 +16,6 @@ This class stores an ordered list of values similar to an array.
 \begin{DoxyCompactList}\small\item\em Initializes a new empty vector. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classVector_abf5f4a6c2e8f722dfaed5c07027a84ac}{Vector}} (int n, Value\+Type value=Value\+Type())
 \begin{DoxyCompactList}\small\item\em Initializes a new vector, creating an array with {\ttfamily n} elements, each of which is initialized to {\ttfamily value}. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classVector_ad8177d3d1655065dba30a05eb3412843}{Vector}} (const std\+::vector$<$ Value\+Type $>$ \&v)
-\begin{DoxyCompactList}\small\item\em Copies an S\+TL vector. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classVector_a81ccc7dac38b6bdeca04281b1acb39c0}{Vector}} (std\+::initializer\+\_\+list$<$ Value\+Type $>$ list)
 \begin{DoxyCompactList}\small\item\em Uses an initializer list to set up the vector. \end{DoxyCompactList}\item 
 virtual \mbox{\hyperlink{classVector_aaa9fccd0cb7734271f7a15e5d9dc0d27}{$\sim$\+Vector}} ()
@@ -120,8 +118,6 @@ void \mbox{\hyperlink{classVector_a47fdc9eea42b6975cdc835bb2e08810e}{sort}} ()
 \begin{DoxyCompactList}\small\item\em Rearranges the order of the elements in this vector into sorted order. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classVector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{classVector_a68d5113d5e35ad7906cb7d1707621e08}{sub\+List}} (int start, int length) const
 \begin{DoxyCompactList}\small\item\em Returns a new vector containing the given subset range of elements from this vector. \end{DoxyCompactList}\item 
-std\+::vector$<$ Value\+Type $>$ \mbox{\hyperlink{classVector_a091fed2dc0e91c838fe6e82088629897}{to\+Stl\+Vector}} () const
-\begin{DoxyCompactList}\small\item\em Returns an S\+TL vector object with the same elements as this \mbox{\hyperlink{classVector}{Vector}}. \end{DoxyCompactList}\item 
 std\+::string \mbox{\hyperlink{classVector_a1fe5121d6528fdea3f243321b3fa3a49}{to\+String}} () const
 \begin{DoxyCompactList}\small\item\em Converts the vector to a printable string representation such as \char`\"{}\{10, 20, 30, 40\}\char`\"{}. \end{DoxyCompactList}\item 
 unsigned int \mbox{\hyperlink{classVector_a0aa696ccb72cbf928535d6b646bac1aa}{version}} () const
@@ -140,7 +136,7 @@ It supports traditional array selection using square brackets, but also supports
 \mbox{\Hypertarget{classVector_a4df026156780bc0ca651c342b7d6daa4}\label{classVector_a4df026156780bc0ca651c342b7d6daa4}} 
 \index{Vector@{Vector}!Vector@{Vector}}
 \index{Vector@{Vector}!Vector@{Vector}}
-\subsubsection{\texorpdfstring{Vector()}{Vector()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+\subsubsection{\texorpdfstring{Vector()}{Vector()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classVector}{Vector}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
 
@@ -152,7 +148,7 @@ Initializes a new empty vector.
 \mbox{\Hypertarget{classVector_abf5f4a6c2e8f722dfaed5c07027a84ac}\label{classVector_abf5f4a6c2e8f722dfaed5c07027a84ac}} 
 \index{Vector@{Vector}!Vector@{Vector}}
 \index{Vector@{Vector}!Vector@{Vector}}
-\subsubsection{\texorpdfstring{Vector()}{Vector()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+\subsubsection{\texorpdfstring{Vector()}{Vector()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classVector}{Vector}} (\begin{DoxyParamCaption}\item[{int}]{n,  }\item[{Value\+Type}]{value = {\ttfamily ValueType()} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
 
 
@@ -161,22 +157,10 @@ Initializes a new vector, creating an array with {\ttfamily n} elements, each of
 
 If {\ttfamily value} is missing, the elements are initialized to the default value for the type. \begin{DoxyRefDesc}{Big-\/\+Oh}
 \item[\mbox{\hyperlink{BigOh__BigOh000100}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
-\mbox{\Hypertarget{classVector_ad8177d3d1655065dba30a05eb3412843}\label{classVector_ad8177d3d1655065dba30a05eb3412843}} 
-\index{Vector@{Vector}!Vector@{Vector}}
-\index{Vector@{Vector}!Vector@{Vector}}
-\subsubsection{\texorpdfstring{Vector()}{Vector()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classVector}{Vector}} (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ Value\+Type $>$ \&}]{v }\end{DoxyParamCaption})}
-
-
-
-Copies an S\+TL vector. 
-
-\begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000101}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a81ccc7dac38b6bdeca04281b1acb39c0}\label{classVector_a81ccc7dac38b6bdeca04281b1acb39c0}} 
 \index{Vector@{Vector}!Vector@{Vector}}
 \index{Vector@{Vector}!Vector@{Vector}}
-\subsubsection{\texorpdfstring{Vector()}{Vector()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+\subsubsection{\texorpdfstring{Vector()}{Vector()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classVector}{Vector}} (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ Value\+Type $>$}]{list }\end{DoxyParamCaption})}
 
 
@@ -184,7 +168,7 @@ Copies an S\+TL vector.
 Uses an initializer list to set up the vector. 
 
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000102}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000101}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_aaa9fccd0cb7734271f7a15e5d9dc0d27}\label{classVector_aaa9fccd0cb7734271f7a15e5d9dc0d27}} 
 \index{Vector@{Vector}!````~Vector@{$\sim$\+Vector}}
 \index{````~Vector@{$\sim$\+Vector}!Vector@{Vector}}
@@ -196,7 +180,7 @@ Uses an initializer list to set up the vector.
 Frees any heap storage allocated by this vector. 
 
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000103}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000102}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
 
 
 \subsection{Member Function Documentation}
@@ -211,7 +195,7 @@ Frees any heap storage allocated by this vector.
 Adds a new value to the end of this vector. 
 
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000104}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000103}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a7e05c14d67a60defeb6723b5704967a6}\label{classVector_a7e05c14d67a60defeb6723b5704967a6}} 
 \index{Vector@{Vector}!add\+All@{add\+All}}
 \index{add\+All@{add\+All}!Vector@{Vector}}
@@ -223,7 +207,7 @@ Adds a new value to the end of this vector.
 Adds all elements of the given other vector to this vector. 
 
 Returns a reference to this vector. Identical in behavior to the += operator. \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000105}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000104}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a36067964c5c7f8b7934682f5c3be49c6}\label{classVector_a36067964c5c7f8b7934682f5c3be49c6}} 
 \index{Vector@{Vector}!add\+All@{add\+All}}
 \index{add\+All@{add\+All}!Vector@{Vector}}
@@ -235,7 +219,7 @@ Returns a reference to this vector. Identical in behavior to the += operator. \b
 Adds all elements of the given initializer list to this vector. 
 
 Returns a reference to this vector. Identical in behavior to the += operator. \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000106}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000105}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a2bad145b40a82c36986f67610313658d}\label{classVector_a2bad145b40a82c36986f67610313658d}} 
 \index{Vector@{Vector}!back@{back}}
 \index{back@{back}!Vector@{Vector}}
@@ -252,7 +236,7 @@ Returns the element at index (size -\/ 1) in this vector (without removing it).
 \hline
 \end{DoxyExceptions}
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000107}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000106}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_adc761c91bdacd01bed5c96e25fd9486a}\label{classVector_adc761c91bdacd01bed5c96e25fd9486a}} 
 \index{Vector@{Vector}!back@{back}}
 \index{back@{back}!Vector@{Vector}}
@@ -269,7 +253,7 @@ Returns the element at index (size -\/ 1) in this vector (without removing it).
 \hline
 \end{DoxyExceptions}
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000108}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000107}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a0c62c15c8ed609e7e5e9518cf5f5c712}\label{classVector_a0c62c15c8ed609e7e5e9518cf5f5c712}} 
 \index{Vector@{Vector}!begin@{begin}}
 \index{begin@{begin}!Vector@{Vector}}
@@ -281,7 +265,7 @@ Returns the element at index (size -\/ 1) in this vector (without removing it).
 Returns an iterator pointed at the beginning of this vector. 
 
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000155}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000153}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_ac8bb3912a3ce86b15842e79d0b421204}\label{classVector_ac8bb3912a3ce86b15842e79d0b421204}} 
 \index{Vector@{Vector}!clear@{clear}}
 \index{clear@{clear}!Vector@{Vector}}
@@ -293,7 +277,7 @@ Returns an iterator pointed at the beginning of this vector.
 Removes all elements from this vector. 
 
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000109}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000108}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a6fbc1a150987e7e5320d244a3baeb560}\label{classVector_a6fbc1a150987e7e5320d244a3baeb560}} 
 \index{Vector@{Vector}!contains@{contains}}
 \index{contains@{contains}!Vector@{Vector}}
@@ -305,7 +289,7 @@ Removes all elements from this vector.
 Returns true if the vector contains the given value. 
 
 The Value\+Type must have an == operator to use this method. \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000110}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000109}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a68b688a51bd0cf6fb5bc2cba292209a8}\label{classVector_a68b688a51bd0cf6fb5bc2cba292209a8}} 
 \index{Vector@{Vector}!end@{end}}
 \index{end@{end}!Vector@{Vector}}
@@ -317,7 +301,7 @@ The Value\+Type must have an == operator to use this method. \begin{DoxyRefDesc}
 Returns an iterator pointed just past the end of this vector. 
 
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000156}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000154}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a9552fd9e921fc047fdd59e59d82e88ef}\label{classVector_a9552fd9e921fc047fdd59e59d82e88ef}} 
 \index{Vector@{Vector}!ensure\+Capacity@{ensure\+Capacity}}
 \index{ensure\+Capacity@{ensure\+Capacity}!Vector@{Vector}}
@@ -329,7 +313,7 @@ Returns an iterator pointed just past the end of this vector.
 Guarantees that the vector\textquotesingle{}s internal array is at least the given length. 
 
 If necessary, resizes the array to be the given length or larger. \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000111}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000110}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_ad25fe1a007a2f00611d831198a1a86ea}\label{classVector_ad25fe1a007a2f00611d831198a1a86ea}} 
 \index{Vector@{Vector}!equals@{equals}}
 \index{equals@{equals}!Vector@{Vector}}
@@ -341,7 +325,7 @@ If necessary, resizes the array to be the given length or larger. \begin{DoxyRef
 Compares two vectors for equality. 
 
 Returns {\ttfamily true} if this vector contains exactly the same values as the given other vector. Identical in behavior to the == operator. \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000112}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000111}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a736a6bda35a26620407e175bee46ae4a}\label{classVector_a736a6bda35a26620407e175bee46ae4a}} 
 \index{Vector@{Vector}!front@{front}}
 \index{front@{front}!Vector@{Vector}}
@@ -358,7 +342,7 @@ Returns the element at index 0 in this vector (without removing it).
 \hline
 \end{DoxyExceptions}
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000113}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000112}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a02aaa52ad7a120201f6dd3e90eff737f}\label{classVector_a02aaa52ad7a120201f6dd3e90eff737f}} 
 \index{Vector@{Vector}!front@{front}}
 \index{front@{front}!Vector@{Vector}}
@@ -375,7 +359,7 @@ Returns the element at index 0 in this vector (without removing it).
 \hline
 \end{DoxyExceptions}
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000114}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000113}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_adcb38df411d14f0bd9c14e23947d2e1c}\label{classVector_adcb38df411d14f0bd9c14e23947d2e1c}} 
 \index{Vector@{Vector}!get@{get}}
 \index{get@{get}!Vector@{Vector}}
@@ -392,7 +376,7 @@ Similar in behavior to the \mbox{[}\mbox{]} operator.
 \hline
 \end{DoxyExceptions}
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000115}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000114}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a619aacfb96804495d3182a7131cf3539}\label{classVector_a619aacfb96804495d3182a7131cf3539}} 
 \index{Vector@{Vector}!index\+Of@{index\+Of}}
 \index{index\+Of@{index\+Of}!Vector@{Vector}}
@@ -404,7 +388,7 @@ Similar in behavior to the \mbox{[}\mbox{]} operator.
 Returns the index of the first occurrence of the given value. 
 
 If the value is not found in the vector, returns -\/1. The Value\+Type must have an == operator to use this method. \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000116}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000115}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a0b5f5f8e87079d043caa9e5ed00d2941}\label{classVector_a0b5f5f8e87079d043caa9e5ed00d2941}} 
 \index{Vector@{Vector}!insert@{insert}}
 \index{insert@{insert}!Vector@{Vector}}
@@ -421,7 +405,7 @@ All subsequent elements are shifted one position to the right.
 \hline
 \end{DoxyExceptions}
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000117}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000116}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_acf82f9b2937375c7b1cf3dccb3df3312}\label{classVector_acf82f9b2937375c7b1cf3dccb3df3312}} 
 \index{Vector@{Vector}!is\+Empty@{is\+Empty}}
 \index{is\+Empty@{is\+Empty}!Vector@{Vector}}
@@ -433,7 +417,7 @@ All subsequent elements are shifted one position to the right.
 Returns {\ttfamily true} if this vector contains no elements. 
 
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000118}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000117}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a48d608a1714954f0a7bcac6459483cb6}\label{classVector_a48d608a1714954f0a7bcac6459483cb6}} 
 \index{Vector@{Vector}!last\+Index\+Of@{last\+Index\+Of}}
 \index{last\+Index\+Of@{last\+Index\+Of}!Vector@{Vector}}
@@ -445,7 +429,7 @@ Returns {\ttfamily true} if this vector contains no elements.
 Returns the index of the last occurrence of the given value. 
 
 If the value is not found in the vector, returns -\/1. The Value\+Type must have an == operator to use this method. \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000119}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000118}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a2931bda025b4800f128f37790d21f49f}\label{classVector_a2931bda025b4800f128f37790d21f49f}} 
 \index{Vector@{Vector}!map\+All@{map\+All}}
 \index{map\+All@{map\+All}!Vector@{Vector}}
@@ -457,7 +441,7 @@ If the value is not found in the vector, returns -\/1. The Value\+Type must have
 Calls the specified function on each element of the vector in ascending index order. 
 
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000120}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000119}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a395b81e6a77aa9702362198771785dfd}\label{classVector_a395b81e6a77aa9702362198771785dfd}} 
 \index{Vector@{Vector}!map\+All@{map\+All}}
 \index{map\+All@{map\+All}!Vector@{Vector}}
@@ -469,7 +453,7 @@ Calls the specified function on each element of the vector in ascending index or
 Calls the specified function on each element of the vector in ascending index order. 
 
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000121}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000120}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a8dc32c1e45704cfae41daf8adb4e66dc}\label{classVector_a8dc32c1e45704cfae41daf8adb4e66dc}} 
 \index{Vector@{Vector}!map\+All@{map\+All}}
 \index{map\+All@{map\+All}!Vector@{Vector}}
@@ -481,7 +465,7 @@ Calls the specified function on each element of the vector in ascending index or
 Calls the specified function on each element of the vector in ascending index order. 
 
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000122}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000121}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a3e96c4b5c89d1b00f587b521874cd0d8}\label{classVector_a3e96c4b5c89d1b00f587b521874cd0d8}} 
 \index{Vector@{Vector}!operator"!=@{operator"!=}}
 \index{operator"!=@{operator"!=}!Vector@{Vector}}
@@ -493,7 +477,7 @@ Calls the specified function on each element of the vector in ascending index or
 Compares two vectors for inequality. 
 
 The Value\+Type must have a != operator. \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000147}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000145}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_acb70fcd67f846bf16b96223bcf43e476}\label{classVector_acb70fcd67f846bf16b96223bcf43e476}} 
 \index{Vector@{Vector}!operator+@{operator+}}
 \index{operator+@{operator+}!Vector@{Vector}}
@@ -505,7 +489,7 @@ The Value\+Type must have a != operator. \begin{DoxyRefDesc}{Big-\/\+Oh}
 Concatenates two vectors and returns the result. 
 
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000141}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000139}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a2dce2988ba5880d744280b4bbf85b135}\label{classVector_a2dce2988ba5880d744280b4bbf85b135}} 
 \index{Vector@{Vector}!operator+@{operator+}}
 \index{operator+@{operator+}!Vector@{Vector}}
@@ -517,7 +501,7 @@ Concatenates two vectors and returns the result.
 Concatenates this vector with an initializer list such as \{1, 2, 3\}, returning the result. 
 
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000142}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000140}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a6b35f98e0e64a2fff6891a8806f640fd}\label{classVector_a6b35f98e0e64a2fff6891a8806f640fd}} 
 \index{Vector@{Vector}!operator+=@{operator+=}}
 \index{operator+=@{operator+=}!Vector@{Vector}}
@@ -529,7 +513,7 @@ Concatenates this vector with an initializer list such as \{1, 2, 3\}, returning
 Adds all of the elements from {\ttfamily v2} to the end of this vector. 
 
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000143}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000141}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a22e55ed53bfa2da64ecd22b36757fcea}\label{classVector_a22e55ed53bfa2da64ecd22b36757fcea}} 
 \index{Vector@{Vector}!operator+=@{operator+=}}
 \index{operator+=@{operator+=}!Vector@{Vector}}
@@ -541,7 +525,7 @@ Adds all of the elements from {\ttfamily v2} to the end of this vector.
 Adds all of the elements from the given initializer list to the end of the vector. 
 
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000144}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000142}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_afded71b2a6d6df8b0257cbfd8f7e8d5f}\label{classVector_afded71b2a6d6df8b0257cbfd8f7e8d5f}} 
 \index{Vector@{Vector}!operator+=@{operator+=}}
 \index{operator+=@{operator+=}!Vector@{Vector}}
@@ -553,7 +537,7 @@ Adds all of the elements from the given initializer list to the end of the vecto
 Adds the single specified value) to the end of the vector. 
 
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000145}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000143}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_ad2a2f86bb5857209608bbbfe1066c650}\label{classVector_ad2a2f86bb5857209608bbbfe1066c650}} 
 \index{Vector@{Vector}!operator,@{operator,}}
 \index{operator,@{operator,}!Vector@{Vector}}
@@ -565,7 +549,7 @@ Adds the single specified value) to the end of the vector.
 Adds an element to the vector passed as the left-\/hand operatand. 
 
 This form makes it easier to initialize vectors in old versions of C++. \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000154}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000152}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a77901fd042b59d646be1da79b8339c5c}\label{classVector_a77901fd042b59d646be1da79b8339c5c}} 
 \index{Vector@{Vector}!operator$<$@{operator$<$}}
 \index{operator$<$@{operator$<$}!Vector@{Vector}}
@@ -577,7 +561,7 @@ This form makes it easier to initialize vectors in old versions of C++. \begin{D
 Relational operators to compare two vectors. 
 
 Each element is compared pairwise to the corresponding element at the same index in the other vector; for example, we first check the values at index 0, then 1, and so on. The $<$, $>$, $<$=, $>$= operators require that the Value\+Type has a $<$ operator so that the elements can be compared pairwise. \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000148}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000146}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_ae70337b6c4c49dde850031de8b68c05d}\label{classVector_ae70337b6c4c49dde850031de8b68c05d}} 
 \index{Vector@{Vector}!operator$<$=@{operator$<$=}}
 \index{operator$<$=@{operator$<$=}!Vector@{Vector}}
@@ -589,7 +573,7 @@ Each element is compared pairwise to the corresponding element at the same index
 Relational operators to compare two vectors. 
 
 Each element is compared pairwise to the corresponding element at the same index in the other vector; for example, we first check the values at index 0, then 1, and so on. The $<$, $>$, $<$=, $>$= operators require that the Value\+Type has a $<$ operator so that the elements can be compared pairwise. \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000149}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000147}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a31eebc4de791cf62b8fa12a0eeca90dc}\label{classVector_a31eebc4de791cf62b8fa12a0eeca90dc}} 
 \index{Vector@{Vector}!operator==@{operator==}}
 \index{operator==@{operator==}!Vector@{Vector}}
@@ -601,7 +585,7 @@ Each element is compared pairwise to the corresponding element at the same index
 Compares two vectors for equality. 
 
 The Value\+Type must have an == operator. \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000146}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000144}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a0b8b14442cb420ffaecc0606345e73a1}\label{classVector_a0b8b14442cb420ffaecc0606345e73a1}} 
 \index{Vector@{Vector}!operator$>$@{operator$>$}}
 \index{operator$>$@{operator$>$}!Vector@{Vector}}
@@ -613,7 +597,7 @@ The Value\+Type must have an == operator. \begin{DoxyRefDesc}{Big-\/\+Oh}
 Relational operators to compare two vectors. 
 
 Each element is compared pairwise to the corresponding element at the same index in the other vector; for example, we first check the values at index 0, then 1, and so on. The $<$, $>$, $<$=, $>$= operators require that the Value\+Type has a $<$ operator so that the elements can be compared pairwise. \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000150}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000148}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_adaa095641c5fc43f90754d7694784006}\label{classVector_adaa095641c5fc43f90754d7694784006}} 
 \index{Vector@{Vector}!operator$>$=@{operator$>$=}}
 \index{operator$>$=@{operator$>$=}!Vector@{Vector}}
@@ -625,7 +609,7 @@ Each element is compared pairwise to the corresponding element at the same index
 Relational operators to compare two vectors. 
 
 Each element is compared pairwise to the corresponding element at the same index in the other vector; for example, we first check the values at index 0, then 1, and so on. The $<$, $>$, $<$=, $>$= operators require that the Value\+Type has a $<$ operator so that the elements can be compared pairwise. \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000151}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000149}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a7dbb3a92c8b6a08a04b564aed136b870}\label{classVector_a7dbb3a92c8b6a08a04b564aed136b870}} 
 \index{Vector@{Vector}!operator\mbox{[}\mbox{]}@{operator[]}}
 \index{operator\mbox{[}\mbox{]}@{operator[]}!Vector@{Vector}}
@@ -642,7 +626,7 @@ This extension enables the use of traditional array notation to get or set indiv
 \hline
 \end{DoxyExceptions}
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000139}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000137}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a1b5a4ea461655cbe512ab976aad8d809}\label{classVector_a1b5a4ea461655cbe512ab976aad8d809}} 
 \index{Vector@{Vector}!operator\mbox{[}\mbox{]}@{operator[]}}
 \index{operator\mbox{[}\mbox{]}@{operator[]}!Vector@{Vector}}
@@ -659,7 +643,7 @@ This extension enables the use of traditional array notation to get or set indiv
 \hline
 \end{DoxyExceptions}
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000140}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000138}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_ab48f65e37130b674bc0f6220cbb59491}\label{classVector_ab48f65e37130b674bc0f6220cbb59491}} 
 \index{Vector@{Vector}!pop\+\_\+back@{pop\+\_\+back}}
 \index{pop\+\_\+back@{pop\+\_\+back}!Vector@{Vector}}
@@ -676,7 +660,7 @@ Equivalent to remove\+Back.
 \hline
 \end{DoxyExceptions}
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000124}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000123}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_aacdba74afa1be07d1046ece9e0512c77}\label{classVector_aacdba74afa1be07d1046ece9e0512c77}} 
 \index{Vector@{Vector}!pop\+\_\+front@{pop\+\_\+front}}
 \index{pop\+\_\+front@{pop\+\_\+front}!Vector@{Vector}}
@@ -693,7 +677,7 @@ Equivalent to remove\+Front.
 \hline
 \end{DoxyExceptions}
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000123}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000122}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a8ff6f18ca45e769f2f8c7a0bcf79fad9}\label{classVector_a8ff6f18ca45e769f2f8c7a0bcf79fad9}} 
 \index{Vector@{Vector}!push\+\_\+back@{push\+\_\+back}}
 \index{push\+\_\+back@{push\+\_\+back}!Vector@{Vector}}
@@ -705,7 +689,7 @@ Equivalent to remove\+Front.
 Adds a new value to the end of this vector. 
 
 This method is a synonym of the add method that is provided to ensure compatibility with the S\+TL {\ttfamily vector} class. \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000125}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000124}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a9737dc314198d1cf306325134f000c5a}\label{classVector_a9737dc314198d1cf306325134f000c5a}} 
 \index{Vector@{Vector}!push\+\_\+front@{push\+\_\+front}}
 \index{push\+\_\+front@{push\+\_\+front}!Vector@{Vector}}
@@ -717,7 +701,7 @@ This method is a synonym of the add method that is provided to ensure compatibil
 Adds a new value to the start of this vector. 
 
 This method is equivalent to calling insert(0, value) and is provided to improve compatibility with the S\+TL {\ttfamily vector} class. \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000126}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000125}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a2ad1aa316f278b2e9fa8121504749652}\label{classVector_a2ad1aa316f278b2e9fa8121504749652}} 
 \index{Vector@{Vector}!remove@{remove}}
 \index{remove@{remove}!Vector@{Vector}}
@@ -734,7 +718,7 @@ All subsequent elements are shifted one position to the left.
 \hline
 \end{DoxyExceptions}
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000127}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000126}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_af7878e9c2f67e06cbae525e9fa77e38e}\label{classVector_af7878e9c2f67e06cbae525e9fa77e38e}} 
 \index{Vector@{Vector}!remove\+Back@{remove\+Back}}
 \index{remove\+Back@{remove\+Back}!Vector@{Vector}}
@@ -751,7 +735,7 @@ Removes and returns the element at index (size -\/ 1) in this vector.
 \hline
 \end{DoxyExceptions}
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000129}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000128}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a02453aa96e93c38ca4c1d176307c8a63}\label{classVector_a02453aa96e93c38ca4c1d176307c8a63}} 
 \index{Vector@{Vector}!remove\+Front@{remove\+Front}}
 \index{remove\+Front@{remove\+Front}!Vector@{Vector}}
@@ -768,7 +752,7 @@ Removes and returns the element at index 0 in this vector.
 \hline
 \end{DoxyExceptions}
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000128}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000127}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a10e8154a489093d2b1f20596342bcd78}\label{classVector_a10e8154a489093d2b1f20596342bcd78}} 
 \index{Vector@{Vector}!remove\+Value@{remove\+Value}}
 \index{remove\+Value@{remove\+Value}!Vector@{Vector}}
@@ -780,7 +764,7 @@ Removes and returns the element at index 0 in this vector.
 Removes the first occurrence of the element value from this vector. 
 
 All subsequent elements are shifted one position to the left. If the vector does not contain the given value, has no effect. The Value\+Type must have an == operator to use this method. \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000130}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000129}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a310c0bebc002158f5646a91d60e4dc89}\label{classVector_a310c0bebc002158f5646a91d60e4dc89}} 
 \index{Vector@{Vector}!reverse@{reverse}}
 \index{reverse@{reverse}!Vector@{Vector}}
@@ -792,7 +776,7 @@ All subsequent elements are shifted one position to the left. If the vector does
 Reverses the order of the elements in this vector. 
 
 For example, if vector stores \{1, 3, 4, 9\}, changes it to store \{9, 4, 3, 1\}. \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000131}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000130}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a004ea6d6bc4a512ce4d52962727d5db2}\label{classVector_a004ea6d6bc4a512ce4d52962727d5db2}} 
 \index{Vector@{Vector}!set@{set}}
 \index{set@{set}!Vector@{Vector}}
@@ -809,7 +793,7 @@ The previous value at that index is overwritten. Similar in behavior to the \mbo
 \hline
 \end{DoxyExceptions}
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000132}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000131}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a1905fe84eb39f020b32c58baf7a76758}\label{classVector_a1905fe84eb39f020b32c58baf7a76758}} 
 \index{Vector@{Vector}!shuffle@{shuffle}}
 \index{shuffle@{shuffle}!Vector@{Vector}}
@@ -821,7 +805,7 @@ The previous value at that index is overwritten. Similar in behavior to the \mbo
 Rearranges the order of the elements in this vector into a random order. 
 
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000134}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000133}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_af9593d4a5ff4274efaf429cb4f9e57cc}\label{classVector_af9593d4a5ff4274efaf429cb4f9e57cc}} 
 \index{Vector@{Vector}!size@{size}}
 \index{size@{size}!Vector@{Vector}}
@@ -833,7 +817,7 @@ Rearranges the order of the elements in this vector into a random order.
 Returns the number of elements in this vector. 
 
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000133}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000132}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a47fdc9eea42b6975cdc835bb2e08810e}\label{classVector_a47fdc9eea42b6975cdc835bb2e08810e}} 
 \index{Vector@{Vector}!sort@{sort}}
 \index{sort@{sort}!Vector@{Vector}}
@@ -845,7 +829,7 @@ Returns the number of elements in this vector.
 Rearranges the order of the elements in this vector into sorted order. 
 
 For example, if vector stores \{9, 1, 4, 3\}, changes it to store \{1, 3, 4, 9\}. The Value\+Type must have an operator $<$ to call this method. \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000135}{Big-\/\+Oh}}]O(\+N log N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000134}{Big-\/\+Oh}}]O(\+N log N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a68d5113d5e35ad7906cb7d1707621e08}\label{classVector_a68d5113d5e35ad7906cb7d1707621e08}} 
 \index{Vector@{Vector}!sub\+List@{sub\+List}}
 \index{sub\+List@{sub\+List}!Vector@{Vector}}
@@ -862,19 +846,7 @@ The new vector is a deep copy, not linked to this one.
 \hline
 \end{DoxyExceptions}
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000136}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
-\mbox{\Hypertarget{classVector_a091fed2dc0e91c838fe6e82088629897}\label{classVector_a091fed2dc0e91c838fe6e82088629897}} 
-\index{Vector@{Vector}!to\+Stl\+Vector@{to\+Stl\+Vector}}
-\index{to\+Stl\+Vector@{to\+Stl\+Vector}!Vector@{Vector}}
-\subsubsection{\texorpdfstring{to\+Stl\+Vector()}{toStlVector()}}
-{\footnotesize\ttfamily std\+::vector$<$ Value\+Type $>$ to\+Stl\+Vector (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
-
-
-
-Returns an S\+TL vector object with the same elements as this \mbox{\hyperlink{classVector}{Vector}}. 
-
-\begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000137}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000135}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a1fe5121d6528fdea3f243321b3fa3a49}\label{classVector_a1fe5121d6528fdea3f243321b3fa3a49}} 
 \index{Vector@{Vector}!to\+String@{to\+String}}
 \index{to\+String@{to\+String}!Vector@{Vector}}
@@ -886,7 +858,7 @@ Returns an S\+TL vector object with the same elements as this \mbox{\hyperlink{c
 Converts the vector to a printable string representation such as \char`\"{}\{10, 20, 30, 40\}\char`\"{}. 
 
 \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000138}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000136}{Big-\/\+Oh}}]O(\+N) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classVector_a0aa696ccb72cbf928535d6b646bac1aa}\label{classVector_a0aa696ccb72cbf928535d6b646bac1aa}} 
 \index{Vector@{Vector}!version@{version}}
 \index{version@{version}!Vector@{Vector}}
@@ -898,4 +870,4 @@ Converts the vector to a printable string representation such as \char`\"{}\{10,
 Returns the internal version of this collection. 
 
 This is used to check for invalid iterators and issue error messages. \begin{DoxyRefDesc}{Big-\/\+Oh}
-\item[\mbox{\hyperlink{BigOh__BigOh000157}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}
+\item[\mbox{\hyperlink{BigOh__BigOh000155}{Big-\/\+Oh}}]O(1) \end{DoxyRefDesc}

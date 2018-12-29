@@ -10,6 +10,7 @@ var searchData=
   ['vector_3c_20heapentry_20_3e',['Vector&lt; HeapEntry &gt;',['../classVector.html',1,'']]],
   ['vector_3c_20keytype_20_3e',['Vector&lt; KeyType &gt;',['../classVector.html',1,'']]],
   ['vector_3c_20nodemarker_20_3e',['Vector&lt; NodeMarker &gt;',['../classVector.html',1,'']]],
+  ['vector_3c_20stacktrace_3a_3aentry_20_3e',['Vector&lt; stacktrace::entry &gt;',['../classVector.html',1,'']]],
   ['vector_3c_20std_3a_3astring_20_3e',['Vector&lt; std::string &gt;',['../classVector.html',1,'']]],
   ['vertexgen',['VertexGen',['../classVertexGen.html',1,'']]]
 ];

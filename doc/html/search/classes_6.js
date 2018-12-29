@@ -42,6 +42,7 @@ var searchData=
   ['gscrollbar',['GScrollBar',['../classGScrollBar.html',1,'']]],
   ['gscrollpane',['GScrollPane',['../classGScrollPane.html',1,'']]],
   ['gslider',['GSlider',['../classGSlider.html',1,'']]],
+  ['gspacer',['GSpacer',['../classGSpacer.html',1,'']]],
   ['gtable',['GTable',['../classGTable.html',1,'']]],
   ['gtext',['GText',['../classGText.html',1,'']]],
   ['gtextarea',['GTextArea',['../classGTextArea.html',1,'']]],

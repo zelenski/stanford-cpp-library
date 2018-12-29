@@ -4,6 +4,8 @@ var searchData=
   ['gcanvas',['GCanvas',['../classGImage.html#a6574c8670867d0419505dbf9a106d1c7',1,'GImage']]],
   ['gcompound',['GCompound',['../classGObject.html#a9ccfe89a3db690195253139d336fe193',1,'GObject']]],
   ['gcontainer',['GContainer',['../classGInteractor.html#a7e79036e488380b40d7785365a9c2c4d',1,'GInteractor']]],
+  ['gdiffgui',['GDiffGui',['../classGInteractor.html#ac1fdf21b27678eb8943fc005ea464614',1,'GInteractor']]],
+  ['gdiffimage',['GDiffImage',['../classGImage.html#ac121b9bdce780b03ca964948b20dea6d',1,'GImage']]],
   ['gimage',['GImage',['../classGObject.html#a119b85bc8c403de4d6b5ba92bc9470d9',1,'GObject']]],
   ['ginteractor',['GInteractor',['../classGEvent.html#a054e99eaa992da5c1a77c8d7b3817788',1,'GEvent::GInteractor()'],['../classGObject.html#a054e99eaa992da5c1a77c8d7b3817788',1,'GObject::GInteractor()'],['../classGObservable.html#a054e99eaa992da5c1a77c8d7b3817788',1,'GObservable::GInteractor()'],['../classGWindow.html#a054e99eaa992da5c1a77c8d7b3817788',1,'GWindow::GInteractor()']]],
   ['gline',['GLine',['../classGObject.html#a4cfc0f25b23c479ec24b2ff87fe17926',1,'GObject']]],

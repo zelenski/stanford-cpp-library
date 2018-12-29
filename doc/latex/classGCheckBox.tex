@@ -28,7 +28,7 @@ enum \mbox{\hyperlink{classGInteractor_a8e0d441725a81d2bbdebbea09078260e}{Text\+
 \item 
 \mbox{\hyperlink{classGCheckBox_ab79c27853bb6f5b8ec3ea139ef556f25}{G\+Check\+Box}} (const std\+::string \&text=\char`\"{}\char`\"{}, bool checked=false, Q\+Widget $\ast$parent=nullptr)
 \begin{DoxyCompactList}\small\item\em Creates a checkbox with the given text. \end{DoxyCompactList}\item 
-virtual \mbox{\hyperlink{classGCheckBox_a8936cb1574bd60aa213de82f664a7503}{$\sim$\+G\+Check\+Box}} ()
+virtual \mbox{\hyperlink{classGCheckBox_ada6681887f64e3d1b9acb9af4db2cc19}{$\sim$\+G\+Check\+Box}} () Q\+\_\+\+D\+E\+C\+L\+\_\+\+O\+V\+E\+R\+R\+I\+DE
 \begin{DoxyCompactList}\small\item\em Frees memory allocated internally by the checkbox. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGInteractor_a02f20ea6edfa0671f31c4c648a253833}{add\+Action\+Listener}} () Q\+\_\+\+D\+E\+C\+L\+\_\+\+D\+E\+P\+R\+E\+C\+A\+T\+ED
 \begin{DoxyCompactList}\small\item\em Adds an event listener to be notified when this interactor is clicked or generally interacted with. \end{DoxyCompactList}\item 
@@ -188,6 +188,8 @@ virtual void \mbox{\hyperlink{classGInteractor_a9c18fcc579333bf9653d13ad2b372e39
 \begin{DoxyCompactList}\small\item\em Sets the onscreen x-\/coordinate of the top-\/left corner of the interactor relative to its window. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGInteractor_a7d57e2a5c35d27feb58fd498a3cf82b9}{setY}} (double y)
 \begin{DoxyCompactList}\small\item\em Sets the onscreen y-\/coordinate of the top-\/left corner of the interactor relative to its window. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{classGCheckBox_ad277193b2dca0bab1e0ad24d45407dc3}{toggle}} ()
+\begin{DoxyCompactList}\small\item\em Reverses the checked state of the box, setting it to be checked if it was unchecked or to be unchecked if it was checked. \end{DoxyCompactList}\item 
 virtual std\+::string \mbox{\hyperlink{classGObservable_a1fe5121d6528fdea3f243321b3fa3a49}{to\+String}} () const
 \begin{DoxyCompactList}\small\item\em Returns a string representation of this observable object\textquotesingle{}s state. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Protected Member Functions}
@@ -280,7 +282,7 @@ T\+E\+X\+T\+\_\+\+O\+N\+LY&\\
 
 Creates a checkbox with the given text. 
 
-You can pass an optional second parameter to initially check the box. \mbox{\Hypertarget{classGCheckBox_a8936cb1574bd60aa213de82f664a7503}\label{classGCheckBox_a8936cb1574bd60aa213de82f664a7503}} 
+You can pass an optional second parameter to initially check the box. \mbox{\Hypertarget{classGCheckBox_ada6681887f64e3d1b9acb9af4db2cc19}\label{classGCheckBox_ada6681887f64e3d1b9acb9af4db2cc19}} 
 \index{G\+Check\+Box@{G\+Check\+Box}!````~G\+Check\+Box@{$\sim$\+G\+Check\+Box}}
 \index{````~G\+Check\+Box@{$\sim$\+G\+Check\+Box}!G\+Check\+Box@{G\+Check\+Box}}
 \subsubsection{\texorpdfstring{$\sim$\+G\+Check\+Box()}{~GCheckBox()}}
@@ -1537,6 +1539,16 @@ Sets the onscreen y-\/coordinate of the top-\/left corner of the interactor rela
 Generally clients should not call this and should instead use containers and layout regions to position interactors. 
 
 Reimplemented in \mbox{\hyperlink{classGLabel_a59633abb35b676c54d88ea6cd384fc55}{G\+Label}}.
+
+\mbox{\Hypertarget{classGCheckBox_ad277193b2dca0bab1e0ad24d45407dc3}\label{classGCheckBox_ad277193b2dca0bab1e0ad24d45407dc3}} 
+\index{G\+Check\+Box@{G\+Check\+Box}!toggle@{toggle}}
+\index{toggle@{toggle}!G\+Check\+Box@{G\+Check\+Box}}
+\subsubsection{\texorpdfstring{toggle()}{toggle()}}
+{\footnotesize\ttfamily void toggle (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reverses the checked state of the box, setting it to be checked if it was unchecked or to be unchecked if it was checked. 
 
 \mbox{\Hypertarget{classGObservable_a1fe5121d6528fdea3f243321b3fa3a49}\label{classGObservable_a1fe5121d6528fdea3f243321b3fa3a49}} 
 \index{G\+Check\+Box@{G\+Check\+Box}!to\+String@{to\+String}}

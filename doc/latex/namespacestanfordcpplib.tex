@@ -5,6 +5,8 @@
 \item 
  \mbox{\hyperlink{namespacestanfordcpplib_1_1collections}{collections}}
 \item 
+ \mbox{\hyperlink{namespacestanfordcpplib_1_1memory}{memory}}
+\item 
  \mbox{\hyperlink{namespacestanfordcpplib_1_1qtgui}{qtgui}}
 \end{DoxyCompactItemize}
 \subsection*{Classes}
@@ -18,6 +20,8 @@ class \mbox{\hyperlink{classstanfordcpplib_1_1ForwardingStreambuf}{Forwarding\+S
 \item 
 class \mbox{\hyperlink{classstanfordcpplib_1_1LimitOutputStreambuf}{Limit\+Output\+Streambuf}}
 \item 
+class \mbox{\hyperlink{classstanfordcpplib_1_1MultiMainRegisterStaticInitializer}{Multi\+Main\+Register\+Static\+Initializer}}
+\begin{DoxyCompactList}\small\item\em A class for registering a main function at static initialization time, before the real main() runs. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classstanfordcpplib_1_1StanfordCppLibraryInitializer}{Stanford\+Cpp\+Library\+Initializer}}
 \end{DoxyCompactItemize}
 \subsection*{Functions}
@@ -29,10 +33,18 @@ void \mbox{\hyperlink{namespacestanfordcpplib_ab36f2e19ed11765f2b025cc8e4636010}
 \begin{DoxyCompactList}\small\item\em Initializes the Stanford C++ library. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{namespacestanfordcpplib_a7f8902f8cc454ef116685dbc6008704a}{initialize\+Library\+Student\+Thread}} ()
 \begin{DoxyCompactList}\small\item\em This is for any initialization that needs to be done in the student\textquotesingle{}s thread rather than on the Qt G\+UI main thread. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespacestanfordcpplib_ac7f9e21c9018a3022a368fd03c7ac337}{register\+Main\+Function}} (const std\+::string \&name, int($\ast$main\+Func)())
+\begin{DoxyCompactList}\small\item\em Adds a new main() function with the given name to the list of multi-\/mains that will be presented when the program runs. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{namespacestanfordcpplib_ab6f7bb8a7230f2d95cf1ff0d6f2fbf0e}{run\+Main\+In\+Thread}} (int($\ast$main\+Func)(void))
+\begin{DoxyCompactList}\small\item\em Runs the student\textquotesingle{}s main function in its own thread, creating that thread as an object of type G\+Student\+Thread. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{namespacestanfordcpplib_a371bf0cfbf0eedf6a653e89a563d6a40}{run\+Main\+In\+Thread}} (std\+::function$<$ int()$>$ main\+Func)
 \begin{DoxyCompactList}\small\item\em Runs the student\textquotesingle{}s main function in its own thread, creating that thread as an object of type G\+Student\+Thread. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{namespacestanfordcpplib_a647c2bc343e4e0d30483590a58ad3884}{run\+Main\+In\+Thread\+Void}} (void($\ast$main\+Func\+Void)(void))
 \begin{DoxyCompactList}\small\item\em Runs the student\textquotesingle{}s main function in its own thread, creating that thread as an object of type G\+Student\+Thread. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{namespacestanfordcpplib_a050c409518de97f2a63cac9728456072}{run\+Main\+In\+Thread\+Void}} (std\+::function$<$ void()$>$ main\+Func\+Void)
+\begin{DoxyCompactList}\small\item\em Runs the student\textquotesingle{}s main function in its own thread, creating that thread as an object of type G\+Student\+Thread. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespacestanfordcpplib_a149b27362bd934bdcc66e9a927e8515d}{select\+Main\+Function}} ()
+\item 
 void \mbox{\hyperlink{namespacestanfordcpplib_afa57f85846177bb4ed2b4b12fa8a758d}{set\+Exit\+Enabled}} (bool enabled)
 \begin{DoxyCompactList}\small\item\em Sets whether the std\+::exit function will be enabled or not. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{namespacestanfordcpplib_a2937cb1c4385064875d0cb29fcdfeae6}{shutdown\+Library}} ()
@@ -72,11 +84,31 @@ A call to this function is inserted before the student\textquotesingle{}s main()
 
 This is for any initialization that needs to be done in the student\textquotesingle{}s thread rather than on the Qt G\+UI main thread. 
 
-Currently this is used primarily to set up exception handlers for the student\textquotesingle{}s thread so we can print usable stack traces. \mbox{\Hypertarget{namespacestanfordcpplib_ab6f7bb8a7230f2d95cf1ff0d6f2fbf0e}\label{namespacestanfordcpplib_ab6f7bb8a7230f2d95cf1ff0d6f2fbf0e}} 
+Currently this is used primarily to set up exception handlers for the student\textquotesingle{}s thread so we can print usable stack traces. \mbox{\Hypertarget{namespacestanfordcpplib_ac7f9e21c9018a3022a368fd03c7ac337}\label{namespacestanfordcpplib_ac7f9e21c9018a3022a368fd03c7ac337}} 
+\index{stanfordcpplib@{stanfordcpplib}!register\+Main\+Function@{register\+Main\+Function}}
+\index{register\+Main\+Function@{register\+Main\+Function}!stanfordcpplib@{stanfordcpplib}}
+\subsubsection{\texorpdfstring{register\+Main\+Function()}{registerMainFunction()}}
+{\footnotesize\ttfamily int register\+Main\+Function (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name,  }\item[{int($\ast$)()}]{main\+Func }\end{DoxyParamCaption})}
+
+
+
+Adds a new main() function with the given name to the list of multi-\/mains that will be presented when the program runs. 
+
+\mbox{\Hypertarget{namespacestanfordcpplib_ab6f7bb8a7230f2d95cf1ff0d6f2fbf0e}\label{namespacestanfordcpplib_ab6f7bb8a7230f2d95cf1ff0d6f2fbf0e}} 
 \index{stanfordcpplib@{stanfordcpplib}!run\+Main\+In\+Thread@{run\+Main\+In\+Thread}}
 \index{run\+Main\+In\+Thread@{run\+Main\+In\+Thread}!stanfordcpplib@{stanfordcpplib}}
-\subsubsection{\texorpdfstring{run\+Main\+In\+Thread()}{runMainInThread()}}
+\subsubsection{\texorpdfstring{run\+Main\+In\+Thread()}{runMainInThread()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily void run\+Main\+In\+Thread (\begin{DoxyParamCaption}\item[{int($\ast$)(void)}]{main\+Func }\end{DoxyParamCaption})}
+
+
+
+Runs the student\textquotesingle{}s main function in its own thread, creating that thread as an object of type G\+Student\+Thread. 
+
+\mbox{\Hypertarget{namespacestanfordcpplib_a371bf0cfbf0eedf6a653e89a563d6a40}\label{namespacestanfordcpplib_a371bf0cfbf0eedf6a653e89a563d6a40}} 
+\index{stanfordcpplib@{stanfordcpplib}!run\+Main\+In\+Thread@{run\+Main\+In\+Thread}}
+\index{run\+Main\+In\+Thread@{run\+Main\+In\+Thread}!stanfordcpplib@{stanfordcpplib}}
+\subsubsection{\texorpdfstring{run\+Main\+In\+Thread()}{runMainInThread()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void run\+Main\+In\+Thread (\begin{DoxyParamCaption}\item[{std\+::function$<$ int()$>$}]{main\+Func }\end{DoxyParamCaption})}
 
 
 
@@ -85,14 +117,32 @@ Runs the student\textquotesingle{}s main function in its own thread, creating th
 \mbox{\Hypertarget{namespacestanfordcpplib_a647c2bc343e4e0d30483590a58ad3884}\label{namespacestanfordcpplib_a647c2bc343e4e0d30483590a58ad3884}} 
 \index{stanfordcpplib@{stanfordcpplib}!run\+Main\+In\+Thread\+Void@{run\+Main\+In\+Thread\+Void}}
 \index{run\+Main\+In\+Thread\+Void@{run\+Main\+In\+Thread\+Void}!stanfordcpplib@{stanfordcpplib}}
-\subsubsection{\texorpdfstring{run\+Main\+In\+Thread\+Void()}{runMainInThreadVoid()}}
+\subsubsection{\texorpdfstring{run\+Main\+In\+Thread\+Void()}{runMainInThreadVoid()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily void run\+Main\+In\+Thread\+Void (\begin{DoxyParamCaption}\item[{void($\ast$)(void)}]{main\+Func\+Void }\end{DoxyParamCaption})}
 
 
 
 Runs the student\textquotesingle{}s main function in its own thread, creating that thread as an object of type G\+Student\+Thread. 
 
-\mbox{\Hypertarget{namespacestanfordcpplib_afa57f85846177bb4ed2b4b12fa8a758d}\label{namespacestanfordcpplib_afa57f85846177bb4ed2b4b12fa8a758d}} 
+\mbox{\Hypertarget{namespacestanfordcpplib_a050c409518de97f2a63cac9728456072}\label{namespacestanfordcpplib_a050c409518de97f2a63cac9728456072}} 
+\index{stanfordcpplib@{stanfordcpplib}!run\+Main\+In\+Thread\+Void@{run\+Main\+In\+Thread\+Void}}
+\index{run\+Main\+In\+Thread\+Void@{run\+Main\+In\+Thread\+Void}!stanfordcpplib@{stanfordcpplib}}
+\subsubsection{\texorpdfstring{run\+Main\+In\+Thread\+Void()}{runMainInThreadVoid()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void run\+Main\+In\+Thread\+Void (\begin{DoxyParamCaption}\item[{std\+::function$<$ void()$>$}]{main\+Func\+Void }\end{DoxyParamCaption})}
+
+
+
+Runs the student\textquotesingle{}s main function in its own thread, creating that thread as an object of type G\+Student\+Thread. 
+
+\mbox{\Hypertarget{namespacestanfordcpplib_a149b27362bd934bdcc66e9a927e8515d}\label{namespacestanfordcpplib_a149b27362bd934bdcc66e9a927e8515d}} 
+\index{stanfordcpplib@{stanfordcpplib}!select\+Main\+Function@{select\+Main\+Function}}
+\index{select\+Main\+Function@{select\+Main\+Function}!stanfordcpplib@{stanfordcpplib}}
+\subsubsection{\texorpdfstring{select\+Main\+Function()}{selectMainFunction()}}
+{\footnotesize\ttfamily int select\+Main\+Function (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+N\+O\+TE TO S\+T\+U\+D\+E\+N\+T! /// If you are directed here by a compiler error, /// it means that you have not written a main function or that it /// has the wrong parameters. /// The heading of your main function must be\+: /// /// int main() \{ ... \} /// /// (Our library secretly renames your main function to \char`\"{}q\+Main\char`\"{} /// so that we can actually control the main flow of execution.) /// /// You may also need to include a .h header from the Stanford /// C++ library in the file of your project that contains the /// \textquotesingle{}main\textquotesingle{} function. ///
+
+N\+O\+TE TO S\+T\+U\+D\+E\+N\+T! /// If you are directed here by a compiler error, /// it means that you have not written a main function or that it /// has the wrong parameters. /// The heading of your main function must be\+: /// /// int main() \{ ... \} /// /// (Our library secretly renames your main function to \char`\"{}q\+Main\char`\"{} /// so that we can actually control the main flow of execution.) /// /// You may also need to include a .h header from the Stanford /// C++ library in the file of your project that contains the /// \textquotesingle{}main\textquotesingle{} function. ///\mbox{\Hypertarget{namespacestanfordcpplib_afa57f85846177bb4ed2b4b12fa8a758d}\label{namespacestanfordcpplib_afa57f85846177bb4ed2b4b12fa8a758d}} 
 \index{stanfordcpplib@{stanfordcpplib}!set\+Exit\+Enabled@{set\+Exit\+Enabled}}
 \index{set\+Exit\+Enabled@{set\+Exit\+Enabled}!stanfordcpplib@{stanfordcpplib}}
 \subsubsection{\texorpdfstring{set\+Exit\+Enabled()}{setExitEnabled()}}

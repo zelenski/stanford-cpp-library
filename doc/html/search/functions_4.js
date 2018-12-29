@@ -23,5 +23,6 @@ var searchData=
   ['drawpolarline',['drawPolarLine',['../classGDrawingSurface.html#af70cce1e4f708f1ed5b6f29cecb660e7',1,'GDrawingSurface::drawPolarLine(const GPoint &amp;p0, double r, double theta)'],['../classGDrawingSurface.html#ad3e646f90005295f2bbdf37d2bcb39d2',1,'GDrawingSurface::drawPolarLine(double x0, double y0, double r, double theta)']]],
   ['drawpolygon',['drawPolygon',['../classGDrawingSurface.html#afddec0a905108d8a8d6809a157f26776',1,'GDrawingSurface::drawPolygon(std::initializer_list&lt; double &gt; coords)'],['../classGDrawingSurface.html#a021ee881e0d154dc4dd059698742889c',1,'GDrawingSurface::drawPolygon(std::initializer_list&lt; GPoint &gt; points)']]],
   ['drawrect',['drawRect',['../classGDrawingSurface.html#a3dd4cc5891149dfc36746264f7289877',1,'GDrawingSurface::drawRect(const GRectangle &amp;bounds)'],['../classGDrawingSurface.html#a4148e770ffc5474153aadd4814dbd708',1,'GDrawingSurface::drawRect(double x, double y, double width, double height)']]],
-  ['drawstring',['drawString',['../classGDrawingSurface.html#ad4e8551a753a77135792bbee97013675',1,'GDrawingSurface']]]
+  ['drawstring',['drawString',['../classGDrawingSurface.html#ad4e8551a753a77135792bbee97013675',1,'GDrawingSurface']]],
+  ['dump',['dump',['../classErrorException.html#af1e6a5fb477a95a876e86ceadf065ffd',1,'ErrorException::dump() const'],['../classErrorException.html#a277bc85222ba9a7d0fd47fd10d44d115',1,'ErrorException::dump(std::ostream &amp;out) const']]]
 ];

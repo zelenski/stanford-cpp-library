@@ -22,6 +22,8 @@ Inheritance diagram for iurlstream\+:\begin{figure}[H]
 \begin{DoxyCompactList}\small\item\em Initializes a new iurlstream that is not attached to any source. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classiurlstream_a5fa5ba70cbe8c2ad3f93876c381464cb}{iurlstream}} (const std\+::string \&url)
 \begin{DoxyCompactList}\small\item\em Initializes a new iurlstream that is attached to the given source U\+RL. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classiurlstream_a5ae591df94fc66ccb85cbb6565368bca}{close}} ()
+\begin{DoxyCompactList}\small\item\em Closes the stream. \end{DoxyCompactList}\item 
 int \mbox{\hyperlink{classiurlstream_a9e79924a3e50273b08ab5b3a8c12a221}{get\+Error\+Code}} () const
 \begin{DoxyCompactList}\small\item\em Returns the most recent error code received, if any. \end{DoxyCompactList}\item 
 std\+::string \mbox{\hyperlink{classiurlstream_adf0cc934eff26878cdf2018259997a4a}{get\+Error\+Message}} () const
@@ -71,7 +73,17 @@ Initializes a new iurlstream that is attached to the given source U\+RL.
 The data from that U\+RL is downloaded immediately. 
 
 \subsection{Member Function Documentation}
-\mbox{\Hypertarget{classiurlstream_a9e79924a3e50273b08ab5b3a8c12a221}\label{classiurlstream_a9e79924a3e50273b08ab5b3a8c12a221}} 
+\mbox{\Hypertarget{classiurlstream_a5ae591df94fc66ccb85cbb6565368bca}\label{classiurlstream_a5ae591df94fc66ccb85cbb6565368bca}} 
+\index{iurlstream@{iurlstream}!close@{close}}
+\index{close@{close}!iurlstream@{iurlstream}}
+\subsubsection{\texorpdfstring{close()}{close()}}
+{\footnotesize\ttfamily void close (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Closes the stream. 
+
+This function actually does nothing and is left in only for legacy compatibility purposes. You do not need to call it. \mbox{\Hypertarget{classiurlstream_a9e79924a3e50273b08ab5b3a8c12a221}\label{classiurlstream_a9e79924a3e50273b08ab5b3a8c12a221}} 
 \index{iurlstream@{iurlstream}!get\+Error\+Code@{get\+Error\+Code}}
 \index{get\+Error\+Code@{get\+Error\+Code}!iurlstream@{iurlstream}}
 \subsubsection{\texorpdfstring{get\+Error\+Code()}{getErrorCode()}}

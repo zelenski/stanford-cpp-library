@@ -68,13 +68,13 @@ virtual std\+::string \mbox{\hyperlink{classGEvent_a94eb4276000c4fdfb508ce9e6317
 virtual int \mbox{\hyperlink{classGEvent_a206a3a5ac61ccb2de0208401739c5425}{get\+Button}} () const
 \begin{DoxyCompactList}\small\item\em Returns which mouse button was clicked, if this is a mouse event. \end{DoxyCompactList}\item 
 virtual Event\+Class \mbox{\hyperlink{classGEvent_a389eadf538a5311effff6a08d0426b34}{get\+Class}} () const
-\begin{DoxyCompactList}\small\item\em Returns this event\textquotesingle{}s class (minor type such as M\+O\+U\+S\+E\+\_\+\+P\+R\+E\+S\+S\+ED). \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Returns this event\textquotesingle{}s class (major type such as M\+O\+U\+S\+E\+\_\+\+E\+V\+E\+NT). \end{DoxyCompactList}\item 
 virtual int \mbox{\hyperlink{classGEvent_a36cb86612277798a9adb168403386280}{get\+Column}} () const
 \begin{DoxyCompactList}\small\item\em Returns the column that was interacted with, if this is a table event. \end{DoxyCompactList}\item 
 virtual Event\+Class \mbox{\hyperlink{classGEvent_a84e9319971c682404ea8f030cfee38f9}{get\+Event\+Class}} () const
-\begin{DoxyCompactList}\small\item\em Returns this event\textquotesingle{}s class (minor type such as M\+O\+U\+S\+E\+\_\+\+P\+R\+E\+S\+S\+ED). \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Returns this event\textquotesingle{}s class (major type such as M\+O\+U\+S\+E\+\_\+\+E\+V\+E\+NT). \end{DoxyCompactList}\item 
 virtual Event\+Type \mbox{\hyperlink{classGEvent_a404fe4b126a8443600109a62ef7ce6a2}{get\+Event\+Type}} () const
-\begin{DoxyCompactList}\small\item\em Returns the event\textquotesingle{}s type (major type such as M\+O\+U\+S\+E\+\_\+\+E\+V\+E\+NT). \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Returns the event\textquotesingle{}s type (minor type such as M\+O\+U\+S\+E\+\_\+\+P\+R\+E\+S\+S\+ED). \end{DoxyCompactList}\item 
 virtual \mbox{\hyperlink{classGInteractor}{G\+Interactor}} $\ast$ \mbox{\hyperlink{classGEvent_ac8998a7ac699a98fbdc125ef0f3d64f1}{get\+Interactor}} () const
 \begin{DoxyCompactList}\small\item\em Returns the source interactor that generated this event. \end{DoxyCompactList}\item 
 virtual Q\+Event $\ast$ \mbox{\hyperlink{classGEvent_ab3589ee7d7005f6a323ff2c968f82038}{get\+Internal\+Event}} () const
@@ -371,7 +371,7 @@ If this is not a mouse event, returns 0. \mbox{\Hypertarget{classGEvent_a389eadf
 
 
 
-Returns this event\textquotesingle{}s class (minor type such as M\+O\+U\+S\+E\+\_\+\+P\+R\+E\+S\+S\+ED). 
+Returns this event\textquotesingle{}s class (major type such as M\+O\+U\+S\+E\+\_\+\+E\+V\+E\+NT). 
 
 Equivalent to get\+Event\+Class. \mbox{\Hypertarget{classGEvent_a36cb86612277798a9adb168403386280}\label{classGEvent_a36cb86612277798a9adb168403386280}} 
 \index{G\+Event@{G\+Event}!get\+Column@{get\+Column}}
@@ -391,7 +391,7 @@ If this is not a table event, returns 0. \mbox{\Hypertarget{classGEvent_a84e9319
 
 
 
-Returns this event\textquotesingle{}s class (minor type such as M\+O\+U\+S\+E\+\_\+\+P\+R\+E\+S\+S\+ED). 
+Returns this event\textquotesingle{}s class (major type such as M\+O\+U\+S\+E\+\_\+\+E\+V\+E\+NT). 
 
 Equivalent to get\+Class. \mbox{\Hypertarget{classGEvent_a404fe4b126a8443600109a62ef7ce6a2}\label{classGEvent_a404fe4b126a8443600109a62ef7ce6a2}} 
 \index{G\+Event@{G\+Event}!get\+Event\+Type@{get\+Event\+Type}}
@@ -401,7 +401,7 @@ Equivalent to get\+Class. \mbox{\Hypertarget{classGEvent_a404fe4b126a8443600109a
 
 
 
-Returns the event\textquotesingle{}s type (major type such as M\+O\+U\+S\+E\+\_\+\+E\+V\+E\+NT). 
+Returns the event\textquotesingle{}s type (minor type such as M\+O\+U\+S\+E\+\_\+\+P\+R\+E\+S\+S\+ED). 
 
 Equivalent to get\+Type. \mbox{\Hypertarget{classGEvent_ac8998a7ac699a98fbdc125ef0f3d64f1}\label{classGEvent_ac8998a7ac699a98fbdc125ef0f3d64f1}} 
 \index{G\+Event@{G\+Event}!get\+Interactor@{get\+Interactor}}

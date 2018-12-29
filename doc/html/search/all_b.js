@@ -32,8 +32,5 @@ var searchData=
   ['load',['load',['../classGCanvas.html#a6c21edd9d285c925527e3209fca54b01',1,'GCanvas']]],
   ['loadcanvaspixels',['loadCanvasPixels',['../classGWindow.html#ae2462f15e288c06c5136e31a8ac8151c',1,'GWindow']]],
   ['locations',['locations',['../classGrid.html#af170fd7f5c78f47c0a8c8c5ac937b39b',1,'Grid::locations()'],['../classSparseGrid.html#af170fd7f5c78f47c0a8c8c5ac937b39b',1,'SparseGrid::locations()']]],
-  ['lock',['Lock',['../classLock.html',1,'Lock'],['../classLock.html#a8be1cf6d896d6567f9f287613d6cf934',1,'Lock::Lock()']]],
-  ['lock_5fstate',['Lock_State',['../classLock__State.html',1,'Lock_State'],['../classLock.html#aa4cd56dd42d22d72b90cadc832e52591',1,'Lock::Lock_State()'],['../classLock__State.html#a11c7332a9c3409903a8f9d8d44b613b6',1,'Lock_State::Lock_State()']]],
-  ['lockdata',['LockData',['../structLockData.html',1,'']]],
   ['log_5fevent',['LOG_EVENT',['../classGEvent.html#ad9cb77a13a97c2de6a7f1bcb09f961ed',1,'GEvent']]]
 ];
