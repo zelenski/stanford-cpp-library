@@ -4,6 +4,8 @@
  * This file exports several useful string functions that are not
  * included in the C++ string library.
  * 
+ * @version 2018/11/14
+ * - added std::to_string for bool, char, pointer, and generic template type T
  * @version 2018/09/25
  * - added doc comments for new documentation generation
  * @version 2018/09/02
@@ -477,11 +479,50 @@ std::string urlEncode(const std::string& str);
  */
 void urlEncodeInPlace(std::string& str);
 
-/* Private section */
+// add to_string overloads for some common types missing from C++ standard
+namespace std {
+/**
+ * String-to-bool conversion function.
+ * If str is "true", returns the bool value true.
+ * If str is "false", returns the bool value false.
+ * @throw ErrorException if str is any other value than "true" or "false"
+ */
+bool stob(const std::string& str);
 
-/**********************************************************************/
-/* Note: Everything below this point in the file is logically part    */
-/* of the implementation and should not be of interest to clients.    */
-/**********************************************************************/
+/**
+ * String-to-char conversion function.
+ * Converts a single-character string into its corresponding char value.
+ * For example, stringToChar("hello") returns the char 'h'.
+ * @throw ErrorException if the given string does not contain exactly 1 character
+ */
+char stoc(const std::string& str);
+
+/**
+ * Returns the string "true" if b is true, or "false" if b is false.
+ */
+std::string to_string(bool b);
+
+/**
+ * Returns a single-character string containing the given character.
+ * For example, charToString('Q') returns the string "Q".
+ */
+std::string to_string(char c);
+
+/**
+ * Returns a hexadecimal string for the given pointer, such as "0x3f0427b".
+ * Returns "nullptr" if p is a null pointer.
+ */
+std::string to_string(void* p);
+
+/**
+ * Generic to_string function for any type that has an operator <<.
+ */
+template <typename T>
+std::string to_string(const T& value) {
+    std::ostringstream out;
+    out << value;   // if you get an error here, your type might not have a << operator
+    return out.str();
+}
+} // namespace std
 
 #endif // _strlib_h

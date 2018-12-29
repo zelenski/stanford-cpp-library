@@ -3,6 +3,9 @@
  * ----------------
  * This file implements the strlib.h interface.
  * 
+ * @version 2018/11/14
+ * - added std::to_string for bool, char, pointer, and generic template type T
+ * - bug fix for pointerToString (was putting two "0x" prefixes)
  * @version 2018/09/02
  * - added padLeft, padRight
  * @version 2017/10/24
@@ -195,7 +198,7 @@ std::string pointerToString(void* p) {
     if (p) {
         std::ostringstream stream;
         stream << std::hex;
-        stream << "0x" << p;
+        stream << p;
         return stream.str();
     } else {
         return "nullptr";
@@ -390,12 +393,12 @@ Vector<std::string> stringSplit(const std::string& str, const std::string& delim
 }
 
 bool stringToBool(const std::string& str) {
-    std::istringstream stream(trim(str));
     if (str == "true" || str == "1") {
         return true;
     } else if (str == "false" || str == "0") {
         return false;
     }
+    std::istringstream stream(trim(str));
     bool value;
     stream >> std::boolalpha >> value;
     if (stream.fail() || !stream.eof()) {
@@ -593,3 +596,25 @@ std::string urlEncode(const std::string& str) {
 void urlEncodeInPlace(std::string& str) {
     str = urlEncode(str);   // no real efficiency gain here
 }
+
+namespace std {
+bool stob(const std::string& str) {
+    return ::stringToBool(str);
+}
+
+char stoc(const std::string& str) {
+    return ::stringToChar(str);
+}
+
+std::string to_string(bool b) {
+    return ::boolToString(b);
+}
+
+std::string to_string(char c) {
+    return ::charToString(c);
+}
+
+std::string to_string(void* p) {
+    return ::pointerToString(p);
+}
+} // namespace std
