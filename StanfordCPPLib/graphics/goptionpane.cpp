@@ -6,6 +6,11 @@
  * Qt's QMessageBox and QInputDialog classes.
  *
  * @author Marty Stepp
+ * @version 2018/12/28
+ * - bug fix for auto mnemonics/hotkeys in showOptionDialog
+ * @version 2018/11/14
+ * - added mnemonics/hotkey to showOptionDialog window option buttons
+ * - added Cancel logic to Escape out of showOptionDialog window
  * @version 2018/10/18
  * - bug fix for showOptionDialog to run on Qt GUI thread
  * @version 2018/08/23
@@ -29,6 +34,8 @@
 #include "gthread.h"
 #define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
+#include "set.h"
 #define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
@@ -201,14 +208,59 @@ std::string GOptionPane::showOptionDialog(QWidget* parent,
         for (std::string option : options) {
             box.addButton(QString::fromStdString(option), QMessageBox::ActionRole);
         }
+
         if (!initiallySelected.empty()) {
             // TODO: dunno how to set initially selected button properly
             // box.setDefaultButton(QString::fromStdString(initiallySelected));
         }
 
+        // give each button a unique hotkey; listen to key presses on buttons
+        // (try to set char at index 0, 1, 2 as the mnemonic)
+        Set<QAbstractButton*> buttonsUsed;
+        Set<std::string> charsUsed;
+        QAbstractButton* escapeButton = nullptr;
+        int escapeButtonIndex = -1;
+
+        for (int i = 0; i <= 2; i++) {
+            int buttonIndex = 0;
+            for (QAbstractButton* button : box.buttons()) {
+                if (buttonsUsed.contains(button)) {
+                    buttonIndex++;
+                    continue;
+                }
+
+                std::string text = button->text().toStdString();
+                if (!escapeButton && text == "Cancel") {
+                    escapeButton = button;
+                    escapeButtonIndex = buttonIndex;
+                }
+                if (static_cast<int>(text.length()) <= i) {
+                    buttonIndex++;
+                    continue;
+                }
+                std::string letter = text.substr(i, 1);
+                if (charsUsed.contains(letter)) {
+                    buttonIndex++;
+                    continue;
+                }
+
+                buttonsUsed.add(button);
+                charsUsed.add(letter);
+                button->setText(QString::fromStdString(text.substr(0, i) + "&" + text.substr(i)));
+                button->setShortcut(QKeySequence::fromString(QString::fromStdString(letter)));
+                buttonIndex++;
+            }
+        }
+
+        // set listener to close window when Esc is pressed
+        if (escapeButton) {
+            box.setEscapeButton(escapeButton);
+        }
+
         int index = box.exec();
         if (index == GOptionPane::InternalResult::INTERNAL_CLOSED_OPTION
-                || index < 0 || index >= options.size()) {
+                || index < 0 || index >= options.size()
+                || (escapeButtonIndex >= 0 && index == escapeButtonIndex)) {
             result = "";
         } else {
             result = options[index];
