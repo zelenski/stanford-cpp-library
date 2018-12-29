@@ -106,7 +106,14 @@ public:
                     const char* const stu,
                     const std::string& vtype,
                     bool pass = false);
-    
+
+    UnitTestDetails(autograder::UnitTestType tp,
+                    const std::string& msg,
+                    void* exp,
+                    void* stu,
+                    const std::string& vtype,
+                    bool pass = false);
+
     std::string toString() const;
 };
 std::ostream& operator <<(std::ostream& out, const UnitTestDetails& deets);
