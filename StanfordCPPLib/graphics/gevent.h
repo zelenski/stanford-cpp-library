@@ -254,7 +254,7 @@ public:
     virtual int getButton() const;
 
     /**
-     * Returns this event's class (minor type such as MOUSE_PRESSED).
+     * Returns this event's class (major type such as MOUSE_EVENT).
      * Equivalent to getEventClass.
      */
     virtual EventClass getClass() const;
@@ -274,13 +274,13 @@ public:
     static long getCurrentTimeMS();
 
     /**
-     * Returns this event's class (minor type such as MOUSE_PRESSED).
+     * Returns this event's class (major type such as MOUSE_EVENT).
      * Equivalent to getClass.
      */
     virtual EventClass getEventClass() const;
 
     /**
-     * Returns the event's type (major type such as MOUSE_EVENT).
+     * Returns the event's type (minor type such as MOUSE_PRESSED).
      * Equivalent to getType.
      */
     virtual EventType getEventType() const;

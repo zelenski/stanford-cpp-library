@@ -185,6 +185,10 @@ void myInvalidParameterHandler(const wchar_t* expression,
 }
 
 LONG WINAPI UnhandledException(LPEXCEPTION_POINTERS exceptionInfo) {
+    // dear student: if you get a compiler error about 'Eip' not being found here,
+    // it means you're using a 64-bit compiler like the MS Visual C++ compiler,
+    // and not the 32-bit MinGW compiler we instructed you to install.
+    // Please re-install Qt Creator with the proper compiler (MinGW 32-bit) enabled.
     if (exceptionInfo && exceptionInfo->ContextRecord && exceptionInfo->ContextRecord->Eip) {
         // stacktrace::fakeCallStackPointer() = (void*) exceptionInfo->ContextRecord->Eip;
         stacktrace::fakeCallStackPointer() = (void*) exceptionInfo;
