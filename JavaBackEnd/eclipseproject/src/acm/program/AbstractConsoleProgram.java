@@ -1,5 +1,7 @@
 /*
  * @author Marty Stepp (current maintainer)
+ * @version 2018/11/12
+ * - disabled Ctrl/Command mouse wheel font scaling 
  * @version 2017/10/31
  * - added Ctrl-number hotkeys to automatically load input script and compare output
  * @version 2017/06/01
@@ -388,10 +390,10 @@ public abstract class AbstractConsoleProgram extends Program {
 			int notches = e.getWheelRotation();
 			if (notches < 0) {
 				// mouse wheel moved up
-				fontEnlarge();
+				// fontEnlarge();
 			} else {
 				// mouse wheel moved down
-				fontShrink();
+				// fontShrink();
 			}
 		} else {
 			// re-dispatch the event so we do not block regular scrolling
