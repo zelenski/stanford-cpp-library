@@ -3,6 +3,8 @@
  * ---------------------
  *
  * @author Marty Stepp
+ * @version 2019/01/08
+ * - bug fix in waitForClick function (was never returning!)
  * @version 2018/08/23
  * - renamed to geventqueue.cpp
  * @version 2018/07/03
@@ -166,7 +168,12 @@ GEvent getNextEvent(int mask) {
 }
 
 GMouseEvent waitForClick() {
-    return GEventQueue::instance()->waitForEvent(CLICK_EVENT);
+    while (true) {
+        GMouseEvent event = GEventQueue::instance()->waitForEvent(MOUSE_EVENT);
+        if (event.getEventType() == MOUSE_CLICKED) {
+            return event;
+        }
+    }
 }
 
 GEvent waitForEvent(int mask) {
