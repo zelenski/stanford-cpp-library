@@ -92,10 +92,6 @@ std::string getConsoleWindowTitle() {
     return "";
 }
 
-void pause(double /*milliseconds*/) {
-    // empty
-}
-
 void setConsoleClearEnabled(bool /*value*/) {
     // empty
 }

@@ -1091,9 +1091,15 @@ double getScreenWidth() {
     return GWindow::getScreenWidth();
 }
 
+#ifndef SPL_HEADLESS_MODE
 void pause(double milliseconds) {
     GThread::sleep(milliseconds);
 }
+#else
+void pause(double /*milliseconds*/) {
+    // empty
+}
+#endif // SPL_HEADLESS_MODE
 
 void repaint() {
     QMainWindow* lastWindow = GWindow::getLastWindow();

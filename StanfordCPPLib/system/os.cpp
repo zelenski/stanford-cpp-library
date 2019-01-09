@@ -22,7 +22,7 @@
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
+#if !defined(SPL_HEADLESS_MODE) && QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
 /*static*/ std::string OS::getName() {
     std::string productName = QSysInfo::prettyProductName().toStdString();
     return productName;

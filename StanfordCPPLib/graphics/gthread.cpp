@@ -205,15 +205,16 @@ void GStudentThread::run() {
     // if I get here, student's main() has finished running;
     // indicate this by showing a completed title on the graphical console
     if (getConsoleEnabled()) {
+#ifndef SPL_HEADLESS_MODE
         GConsoleWindow* console = getConsoleWindow();
         if (console) {
             console->shutdown();
         }
+#endif // SPL_HEADLESS_MODE
+    } else {
+        // need to exit here else program will not terminate
+        QtGui::instance()->exitGraphics(_result);
     }
-//    else {
-//        // need to exit here else program will not terminate
-//        QtGui::instance()->exitGraphics(_result);
-//    }
 }
 
 /*static*/ void GStudentThread::startStudentThread(GThunkInt mainFunc) {
