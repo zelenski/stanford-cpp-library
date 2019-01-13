@@ -17,7 +17,13 @@
 
 TEST_CATEGORY(PriorityQueueTests, "PriorityQueue tests");
 
-TIMED_TEST(PriorityQueueTests, forEachTest_PriorityQueue, TEST_TIMEOUT_DEFAULT) {
+/* Force instantiation of the template on a type to ensure that we don't have anything
+ * invidious lurking that just didn't get compiled.
+ */
+template class PriorityQueue<int>;
+template class PriorityQueue<std::string>;
+
+TIMED_TEST(PriorityQueueTests, basicSortingTest_PriorityQueue, TEST_TIMEOUT_DEFAULT) {
     PriorityQueue<std::string> pq;
     pq.add("a", 4);
     pq.add("bb", 3);
@@ -32,8 +38,70 @@ TIMED_TEST(PriorityQueueTests, forEachTest_PriorityQueue, TEST_TIMEOUT_DEFAULT) 
         std::string exp = expected.dequeue();
         double actPri = pq.peekPriority();
         std::string act = pq.dequeue();
-        assertEqualsDouble("foreach PriorityQueue", expPri, actPri);
-        assertEqualsString("foreach PriorityQueue", exp, act);
+        assertEqualsDouble("basic sorting PriorityQueue", expPri, actPri);
+        assertEqualsString("basic sorting PriorityQueue", exp, act);
+    }
+}
+
+TIMED_TEST(PriorityQueueTests, changePriority_PriorityQueue, TEST_TIMEOUT_DEFAULT) {
+    static const int kNumEntries = 137;
+
+    /* Test changing each index individually. */
+    for (int value = 0; value < kNumEntries; value++) {
+        PriorityQueue<int> pq;
+
+        /* Add in a bunch of integers, each of which has their own priority. */
+        for (int i = 0; i < kNumEntries; i++) {
+            pq.enqueue(i, i);
+        }
+
+        /* Change the priority of the indicated value to -1 to make it dequeue first. */
+        pq.changePriority(value, -1);
+
+        /* Confirm we get back what we expected - that value first, then everything else. */
+        int found = pq.dequeue();
+        assertEqualsInt("change priority PriorityQueue", found, value);
+
+        for (int i = 0; i < value; i++) {
+            int found = pq.dequeue();
+            assertEqualsInt("change priority PriorityQueue", found, i);
+        }
+
+        for (int i = value + 1; i < kNumEntries; i++) {
+            int found = pq.dequeue();
+            assertEqualsInt("change priority PriorityQueue", found, i);
+        }
+    }
+
+    /* Edge cases! */
+    {
+        PriorityQueue<int> pq;
+        for (int i = 0; i < kNumEntries; i++) {
+            pq.enqueue(i, i);
+        }
+
+        try {
+            /* Change a nonexistent element. */
+            pq.changePriority(kNumEntries, kNumEntries);
+            assertFail("Changed priority of a nonexistent element?");
+        } catch (const ErrorException& ) {
+            // All is well, this is expected.
+        }
+    }
+
+    {
+        PriorityQueue<int> pq;
+        for (int i = 0; i < kNumEntries; i++) {
+            pq.enqueue(i, i);
+        }
+
+        try {
+            /* Increase, rather than decrease, priority. */
+            pq.changePriority(0, kNumEntries);
+            assertFail("Should have caused error increasing priority.");
+        } catch (const ErrorException& ) {
+            // All is well, this is expected.
+        }
     }
 }
 
@@ -69,19 +137,3 @@ TIMED_TEST(PriorityQueueTests, initializerListTest_PriorityQueue, TEST_TIMEOUT_D
         assertEqualsString("initializer list PriorityQueue", exp, act);
     }
 }
-
-#ifdef SPL_THROW_ON_INVALID_ITERATOR
-TIMED_TEST(PriorityQueueTests, iteratorVersionTest_PriorityQueue, TEST_TIMEOUT_DEFAULT) {
-    PriorityQueue<std::string> pq {{40.0, "Marty"}, {20.0, "Eric"}, {30.0, "Mehran"}, {50.0, "Bill"}, {10.0, "John"}};
-    try {
-        for (std::string s : pq) {
-            if (s.length() % 2 == 0) {
-                pq.dequeue();
-            }
-        }
-        assertFail("should not get to end of test; should throw exception before now");
-    } catch (ErrorException ex) {
-        assertPass("threw exception successfully");
-    }
-}
-#endif // SPL_THROW_ON_INVALID_ITERATOR

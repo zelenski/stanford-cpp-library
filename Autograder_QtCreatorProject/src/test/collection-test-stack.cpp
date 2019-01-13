@@ -17,6 +17,12 @@
 
 TEST_CATEGORY(StackTests, "Stack tests");
 
+/* Force instantiation of the template on a type to ensure that we don't have anything
+ * invidious lurking that just didn't get compiled.
+ */
+template class Stack<int>;
+template class Stack<std::string>;
+
 TIMED_TEST(StackTests, compareTest_Stack, TEST_TIMEOUT_DEFAULT) {
     Stack<int> s1;
     s1.add(1);

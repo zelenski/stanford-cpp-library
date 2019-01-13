@@ -16,6 +16,12 @@
 
 TEST_CATEGORY(GridTests, "Grid tests");
 
+/* Force instantiation of the template on a type to ensure that we don't have anything
+ * invidious lurking that just didn't get compiled.
+ */
+template class Grid<int>;
+template class Grid<std::string>;
+
 TIMED_TEST(GridTests, compareTest_Grid, TEST_TIMEOUT_DEFAULT) {
     Grid<int> grid1;
     grid1.resize(2, 2);

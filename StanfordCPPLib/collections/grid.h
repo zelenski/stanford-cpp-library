@@ -119,7 +119,7 @@ public:
      * This constructor uses an initializer list to set up the grid.
      * Usage: Grid<int> grid {{1, 2, 3}, {4, 5, 6}};
      */
-    Grid(std::initializer_list<std::initializer_list<ValueType> > list);
+    Grid(std::initializer_list<std::initializer_list<ValueType>> list);
 
     /*
      * Destructor: ~Grid
@@ -537,7 +537,7 @@ Grid<ValueType>::Grid(int numRows, int numCols, const ValueType& value) {
 }
 
 template <typename ValueType>
-Grid<ValueType>::Grid(std::initializer_list<std::initializer_list<ValueType> > list) {
+Grid<ValueType>::Grid(std::initializer_list<std::initializer_list<ValueType>> list) {
     // create the grid at the proper size
     nRows = list.size();
     if (list.begin() != list.end()) {
@@ -902,7 +902,7 @@ std::ostream& operator <<(std::ostream& os, const Grid<ValueType>& grid) {
 
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, Grid<ValueType>& grid) {
-    Vector<Vector<ValueType> > vec2d;
+    Vector<Vector<ValueType>> vec2d;
     if (!(is >> vec2d)) {
         is.setstate(std::ios_base::failbit);
         return is;

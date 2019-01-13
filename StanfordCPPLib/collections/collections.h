@@ -641,9 +641,10 @@ std::ostream& writeMap(std::ostream& out, const MapType& map) {
     return out;
 }
 
-/* Type responsible for tracking the version of some object. This is factored out into
+/*
+ * Type responsible for tracking the version of some object. This is factored out into
  * its own object with unusual copy functions so that any time the underlying object
- * is moved or
+ * is moved or assigned the underlying version number is updated.
  */
 class VersionTracker {
 public:
@@ -678,7 +679,8 @@ private:
     unsigned int mVersion = 0;
 };
 
-/* Checked iterator type that wraps an underlying iterator type, adding in bounds-checking
+/*
+ * Checked iterator type that wraps an underlying iterator type, adding in bounds-checking
  * and version-checking.
  */
 template <typename Iterator> class CheckedIterator {
@@ -690,7 +692,8 @@ public:
     using reference         = typename std::iterator_traits<Iterator>::reference;
     using value_type        = typename std::iterator_traits<Iterator>::value_type;
 
-    /* Default constructor must be explicitly declared so that the private constructor
+    /*
+     * Default constructor must be explicitly declared so that the private constructor
      * doesn't shadow us.
      */
     CheckedIterator() = default;
@@ -702,7 +705,8 @@ public:
 
     }
 
-    /* We're friends with all other CheckedIterator types, allowing for cross-construction
+    /*
+     * We're friends with all other CheckedIterator types, allowing for cross-construction
      * and the like.
      */
     template <typename OtherItr> friend class CheckedIterator;
@@ -724,114 +728,145 @@ public:
     /* All possible iterator functions. */
 
     /* Comparison operators. */
-    template <typename OtherItr> bool operator == (const CheckedIterator<OtherItr>& rhs) const {
+    template <typename OtherItr> bool operator ==(const CheckedIterator<OtherItr>& rhs) const {
         if (!mOwner || !rhs.mOwner) error("Cannot compare an uninitialized iterator.");
         if ( mOwner !=  rhs.mOwner) error("Cannot compare iterators from two different containers.");
         return mIter == rhs.mIter;
     }
-    template <typename OtherItr> bool operator != (const CheckedIterator<OtherItr>& rhs) const {
+    template <typename OtherItr> bool operator !=(const CheckedIterator<OtherItr>& rhs) const {
         return !(*this == rhs);
     }
 
-    /* We report errors if the underlying owners are different, since otherwise
+    /*
+     * We report errors if the underlying owners are different, since otherwise
      * the behavior is undefined.
      */
-    template <typename OtherItr> bool operator < (const CheckedIterator<OtherItr>& rhs) const {
-        if (!mOwner || !rhs.mOwner) error("Cannot compare an uninitialized iterator.");
+    template <typename OtherItr> bool operator <(const CheckedIterator<OtherItr>& rhs) const {
+        if (!mOwner || !rhs.mOwner) {
+            error("Cannot compare an uninitialized iterator.");
+        }
         if (mOwner != rhs.mOwner) {
             error("Cannot compare iterators from different containers.");
         }
         return mIter < rhs.mIter;
     }
-    template <typename OtherItr> bool operator > (const CheckedIterator<OtherItr>& rhs) const {
+    template <typename OtherItr> bool operator >(const CheckedIterator<OtherItr>& rhs) const {
         return rhs < *this;
     }
-    template <typename OtherItr> bool operator <= (const CheckedIterator<OtherItr>& rhs) const {
+    template <typename OtherItr> bool operator <=(const CheckedIterator<OtherItr>& rhs) const {
         return !(*this > rhs);
     }
-    template <typename OtherItr> bool operator >= (const CheckedIterator<OtherItr>& rhs) const {
+    template <typename OtherItr> bool operator >=(const CheckedIterator<OtherItr>& rhs) const {
         return !(*this < rhs);
     }
 
     /* Random access. */
-    reference operator[] (difference_type index) const {
-        if (!mOwner) error("Cannot access elements through an uninitialized iterator.");
+    reference operator [](difference_type index) const {
+        if (!mOwner) {
+            error("Cannot access elements through an uninitialized iterator.");
+        }
         ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
-        if (index >= 0 &&  index >= mEnd - mIter)   error("Out of bounds.");
-        if (index <  0 && -index >  mIter - mBegin) error("Out of bounds.");
+        if (index >= 0 &&  index >= mEnd - mIter) {
+            error("Out of bounds.");
+        }
+        if (index <  0 && -index >  mIter - mBegin) {
+            error("Out of bounds.");
+        }
+
         return mIter[index];
     }
 
-    CheckedIterator& operator+= (difference_type index) {
+    CheckedIterator& operator +=(difference_type index) {
         if (!mOwner) error("Cannot advance uninitialized iterators.");
         ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
         mIter += index;
         return *this;
     }
-    CheckedIterator& operator-= (difference_type index) {
+    CheckedIterator& operator -=(difference_type index) {
         return *this += (-index);
     }
 
-    CheckedIterator operator+ (difference_type index) const {
+    CheckedIterator operator +(difference_type index) const {
         auto result = *this;
         return result += index;
     }
-    CheckedIterator operator- (difference_type index) const {
+    CheckedIterator operator -(difference_type index) const {
         return *this + (-index);
     }
 
     template <typename OtherItr>
-    difference_type operator- (const CheckedIterator<OtherItr>& rhs) const {
-        if (!mOwner || !rhs.mOwner) error("Cannot subtract uninitialized iterators.");
+    difference_type operator -(const CheckedIterator<OtherItr>& rhs) const {
+        if (!mOwner || !rhs.mOwner) {
+            error("Cannot subtract uninitialized iterators.");
+        }
+
         ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
-        if (mOwner != rhs.mOwner) error("Cannot subtract iterators from two different containers.");
+        if (mOwner != rhs.mOwner) {
+            error("Cannot subtract iterators from two different containers.");
+        }
+
         return mIter - rhs.mIter;
     }
 
     /* Forwards and backwards. */
-    CheckedIterator& operator++() {
-        if (!mOwner) error("Cannot advance an uninitialized iterator.");
+    CheckedIterator& operator ++() {
+        if (!mOwner) {
+            error("Cannot advance an uninitialized iterator.");
+        }
 
         ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
-        if (mIter == mEnd) error("Cannot advance an iterator past end of range.");
+        if (mIter == mEnd) {
+            error("Cannot advance an iterator past end of range.");
+        }
         ++mIter;
         return *this;
     }
-    CheckedIterator operator++(int) {
+    CheckedIterator operator ++(int) {
         auto result = *this;
         ++*this;
         return result;
     }
 
-    CheckedIterator& operator--() {
-        if (!mOwner) error("Cannot back up an uninitialized iterator.");
+    CheckedIterator& operator --() {
+        if (!mOwner) {
+            error("Cannot back up an uninitialized iterator.");
+        }
 
         ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
-        if (mIter == mBegin) error("Cannot back up an iteartor before start of range.");
+        if (mIter == mBegin) {
+            error("Cannot back up an iteartor before start of range.");
+        }
+
         --mIter;
         return *this;
     }
-    CheckedIterator operator--(int) {
+    CheckedIterator operator --(int) {
         auto result = *this;
         --*this;
         return result;
     }
 
     /* Dereferencing. */
-    reference operator* () const {
-        if (!mOwner) error("Cannot dereference an uninitialized iterator.");
+    reference operator *() const {
+        if (!mOwner) {
+            error("Cannot dereference an uninitialized iterator.");
+        }
         ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
 
-        if (mIter == mEnd) error("Iterator out of range.");
+        if (mIter == mEnd) {
+            error("Iterator out of range.");
+        }
         return *mIter;
     }
-    pointer operator-> () const {
+    pointer operator ->() const {
         return &**this;
     }
 
     /* Direct version access. */
     unsigned int version() const {
-        if (!mOwner) error("Cannot get version from an uninitialized iterator.");
+        if (!mOwner) {
+            error("Cannot get version from an uninitialized iterator.");
+        }
         return mVersion;
     }
 
@@ -842,7 +877,8 @@ private:
     Iterator mBegin, mEnd;
 };
 
-/* Iterator over a pairs that projects out the first component. Essentially, this turns an
+/*
+ * Iterator over a pairs that projects out the first component. Essentially, this turns an
  * iterator over pair<const Key, Value> into an iterator over const Key.
  *
  * All bounds-checking, error-handling, etc. are presumed to come from the underlying
@@ -859,17 +895,19 @@ public:
     using pointer           = const value_type *;
     using reference         = const value_type &;
 
-    /* Default constructor must be explicitly declared so that the private constructor
+    /*
+     * Default constructor must be explicitly declared so that the private constructor
      * doesn't shadow us.
      */
     ProjectingIterator() = default;
 
     /* Wraps an existing iterator. */
     explicit ProjectingIterator(Iterator iter) : mIter(iter) {
-
+        // Empty
     }
 
-    /* We're friends with all other related types, allowing for cross-construction
+    /*
+     * We're friends with all other related types, allowing for cross-construction
      * and the like.
      */
     template <typename OtherItr> friend class ProjectingIterator;
@@ -877,7 +915,7 @@ public:
     /* Conversion constructor, when permitted. */
     template <typename OtherItr> ProjectingIterator(const ProjectingIterator<OtherItr>& rhs)
         : mIter(rhs.mIter) {
-
+        // Empty
     }
 
     template <typename OtherItr> operator ProjectingIterator<OtherItr>() const {
@@ -887,75 +925,75 @@ public:
     /* All possible iterator functions. */
 
     /* Comparison operators. */
-    template <typename OtherItr> bool operator == (const ProjectingIterator<OtherItr>& rhs) {
+    template <typename OtherItr> bool operator ==(const ProjectingIterator<OtherItr>& rhs) {
         return mIter == rhs.mIter;
     }
-    template <typename OtherItr> bool operator != (const ProjectingIterator<OtherItr>& rhs) {
+    template <typename OtherItr> bool operator !=(const ProjectingIterator<OtherItr>& rhs) {
         return !(*this == rhs);
     }
 
-    template <typename OtherItr> bool operator < (const ProjectingIterator<OtherItr>& rhs) {
+    template <typename OtherItr> bool operator <(const ProjectingIterator<OtherItr>& rhs) {
         return mIter < rhs.mIter;
     }
-    template <typename OtherItr> bool operator > (const ProjectingIterator<OtherItr>& rhs) {
+    template <typename OtherItr> bool operator >(const ProjectingIterator<OtherItr>& rhs) {
         return rhs < *this;
     }
-    template <typename OtherItr> bool operator <= (const ProjectingIterator<OtherItr>& rhs) {
+    template <typename OtherItr> bool operator <=(const ProjectingIterator<OtherItr>& rhs) {
         return !(*this > rhs);
     }
-    template <typename OtherItr> bool operator >= (const ProjectingIterator<OtherItr>& rhs) {
+    template <typename OtherItr> bool operator >=(const ProjectingIterator<OtherItr>& rhs) {
         return !(*this < rhs);
     }
 
     /* Random access. */
-    auto operator[] (difference_type index) const {
+    reference operator [](difference_type index) const {
         return mIter[index];
     }
-    ProjectingIterator& operator+= (difference_type index) {
+    ProjectingIterator& operator +=(difference_type index) {
         mIter += index;
         return *this;
     }
-    ProjectingIterator& operator-= (difference_type index) {
+    ProjectingIterator& operator -=(difference_type index) {
         return *this += (-index);
     }
-    ProjectingIterator operator+ (difference_type index) const {
+    ProjectingIterator operator +(difference_type index) const {
         auto result = *this;
         return result += index;
     }
-    ProjectingIterator operator- (difference_type index) const {
+    ProjectingIterator operator -(difference_type index) const {
         return *this + (-index);
     }
     template <typename OtherItr>
-    difference_type operator- (const ProjectingIterator<OtherItr>& rhs) const {
+    difference_type operator -(const ProjectingIterator<OtherItr>& rhs) const {
         return mIter - rhs.mIter;
     }
 
     /* Forwards and backwards. */
-    ProjectingIterator& operator++() {
+    ProjectingIterator& operator ++() {
         ++mIter;
         return *this;
     }
-    ProjectingIterator operator++(int) {
+    ProjectingIterator operator ++(int) {
         auto result = *this;
         ++*this;
         return result;
     }
 
-    ProjectingIterator& operator--() {
+    ProjectingIterator& operator --() {
         --mIter;
         return *this;
     }
-    ProjectingIterator operator--(int) {
+    ProjectingIterator operator --(int) {
         auto result = *this;
         --*this;
         return result;
     }
 
     /* Dereferencing. */
-    reference operator* () const {
+    reference operator *() const {
         return mIter->first;
     }
-    pointer operator-> () const {
+    pointer operator ->() const {
         return &**this;
     }
 

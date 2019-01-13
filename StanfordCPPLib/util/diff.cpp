@@ -109,8 +109,8 @@ std::string diff(std::string s1, std::string s2, int flags) {
     // build a reverse-index array using the line as key and line number as value
     // don't store blank lines, so they won't be targets of the shortest distance
     // search
-    Map<std::string, Set<int> > reverse1;
-    Map<std::string, Set<int> > reverse2;
+    Map<std::string, Set<int>> reverse1;
+    Map<std::string, Set<int>> reverse2;
     for (int i = 0; i < lines1.size(); i++) {
         std::string line = lines1[i];
         if ((int) line.length() > 0) {

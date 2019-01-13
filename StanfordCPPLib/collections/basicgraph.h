@@ -333,7 +333,7 @@ std::ostream& operator <<(std::ostream& out, const EdgeGen<V, E>& edge);
  * and getInverseEdge(edge) to get the edge v2 -> v1 for a given edge v1 -> v2.
  */
 template <typename V = void*, typename E = void*>
-class BasicGraphGen : public Graph<VertexGen<V, E>, EdgeGen<V, E> > {
+class BasicGraphGen : public Graph<VertexGen<V, E>, EdgeGen<V, E>> {
 public:
     /**
      * Constructs a new empty graph.
@@ -1015,13 +1015,13 @@ std::ostream& operator <<(std::ostream& out, const EdgeGen<V, E>& edge) {
  * BasicGraph member implementations
  */
 template <typename V, typename E>
-BasicGraphGen<V, E>::BasicGraphGen() : Graph<VertexGen<V, E>, EdgeGen<V, E> >() {
+BasicGraphGen<V, E>::BasicGraphGen() : Graph<VertexGen<V, E>, EdgeGen<V, E>>() {
     m_resetEnabled = true;
 }
 
 template <typename V, typename E>
 BasicGraphGen<V, E>::BasicGraphGen(std::initializer_list<std::string> vertexList)
-        : Graph<VertexGen<V, E>, EdgeGen<V, E> >() {
+        : Graph<VertexGen<V, E>, EdgeGen<V, E>>() {
     m_resetEnabled = true;
     for (const std::string& vertexName : vertexList) {
         this->addVertex(vertexName);
