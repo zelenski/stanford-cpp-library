@@ -17,6 +17,12 @@
 
 TEST_CATEGORY(SparseGridTests, "SparseGrid tests");
 
+/* Force instantiation of the template on a type to ensure that we don't have anything
+ * invidious lurking that just didn't get compiled.
+ */
+template class SparseGrid<int>;
+template class SparseGrid<std::string>;
+
 TIMED_TEST(SparseGridTests, compareTest_SparseGrid, TEST_TIMEOUT_DEFAULT) {
     SparseGrid<int> sgrid1;
     sgrid1.resize(2, 2);

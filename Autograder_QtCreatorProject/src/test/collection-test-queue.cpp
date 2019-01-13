@@ -16,6 +16,12 @@
 
 TEST_CATEGORY(QueueTests, "Queue tests");
 
+/* Force instantiation of the template on a type to ensure that we don't have anything
+ * invidious lurking that just didn't get compiled.
+ */
+template class Queue<int>;
+template class Queue<std::string>;
+
 TIMED_TEST(QueueTests, compareTest_Queue, TEST_TIMEOUT_DEFAULT) {
     Queue<int> q1;
     q1.add(1);

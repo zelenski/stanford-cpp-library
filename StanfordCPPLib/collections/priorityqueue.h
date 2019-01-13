@@ -55,6 +55,7 @@
 #include <initializer_list>
 #include <utility>
 #include <queue>
+#include <algorithm>
 
 #define INTERNAL_INCLUDE 1
 #include "collections.h"
@@ -87,7 +88,7 @@ public:
      * -----------------------------------
      * Initializes a new priority queue, which is initially empty.
      */
-    PriorityQueue();
+    PriorityQueue() = default;
 
     /*
      * Constructor: PriorityQueue
@@ -97,14 +98,14 @@ public:
      * Note that the pairs are stored in priority order and not
      * necessarily the order in which they are written in the initializer list.
      */
-    PriorityQueue(std::initializer_list<std::pair<double, ValueType> > list);
+    PriorityQueue(std::initializer_list<std::pair<double, ValueType>> list);
 
     /*
      * Destructor: ~PriorityQueue
      * --------------------------
      * Frees any heap storage associated with this priority queue.
      */
-    virtual ~PriorityQueue();
+    virtual ~PriorityQueue() = default;
     
     /*
      * Method: add
@@ -284,128 +285,20 @@ private:
         ValueType value;
         double priority;
         long sequence;
+
+        bool operator < (const HeapEntry& rhs);
     };
 
     /* Instance variables */
     Vector<HeapEntry> heap;
-    long enqueueCount;
-    int backIndex;
-    int count;
-    int capacity;
+    long enqueueCount = 0;
 
-    /* Private function prototypes */
-    const HeapEntry& heapGet(int index) const;
 #ifdef PQUEUE_COMPARISON_OPERATORS_ENABLED
     int pqCompare(const PriorityQueue& other) const;
 #endif // PQUEUE_COMPARISON_OPERATORS_ENABLED
-    bool takesPriority(int i1, int i2);
-    void swapHeapEntries(int i1, int i2);
 
-    /*
-     * Iterator support
-     * ----------------
-     * The classes in the StanfordCPPLib collection implement input
-     * iterators so that they work symmetrically with respect to the
-     * corresponding STL classes.
-     */
-    class pq_iterator : public std::iterator<std::input_iterator_tag, ValueType> {
-    public:
-        pq_iterator() {
-            // empty
-        }
-
-        pq_iterator(const PriorityQueue& pq, bool end) {
-            m_pq = &pq;
-            m_index = end ? m_pq->count : 0;
-        }
-
-        pq_iterator(const pq_iterator& it)
-                : m_pq(it.m_pq), m_index(it.m_index) {
-            // empty
-        }
-
-        pq_iterator& operator ++() {
-            // find 'next' element: one that is minimally higher pri/seq from last one
-            // (this is O(N) and inefficient, but we want to avoid making a deep copy)
-            if (m_index == m_pq->count) {
-                error("PriorityQueue::iterator::operator ++: Cannot call on an end() iterator");
-            }
-            double pri = m_pq->heapGet(m_index).priority;
-            int seq = m_pq->heapGet(m_index).sequence;
-            
-            // best new element/index we have seen so far (initially none)
-            int newIndex = m_pq->count;
-            double newPri;
-            int newSeq;
-            
-            for (int i = 0; i < m_pq->count; i++) {
-                if (i == m_index) {
-                    continue;
-                }
-                double ipri = m_pq->heapGet(i).priority;
-                int iseq = m_pq->heapGet(i).sequence;
-                if (ipri < pri || (floatingPointEqual(ipri, pri) && iseq < seq)) {
-                    continue;
-                } else if (newIndex == m_pq->count
-                           || ipri < newPri
-                           || (floatingPointEqual(ipri, newPri) && iseq < newSeq)) {
-                    newPri = ipri;
-                    newSeq = iseq;
-                    newIndex = i;
-                }
-            }
-            
-            // if no next element is found, newIndex will be count (end)
-            m_index = newIndex;
-            return *this;
-        }
-
-        pq_iterator operator ++(int) {
-            pq_iterator copy(*this);
-            operator++();
-            return copy;
-        }
-
-        bool operator ==(const pq_iterator& rhs) {
-            return m_pq == rhs.m_pq && m_index == rhs.m_index;
-        }
-
-        bool operator !=(const pq_iterator& rhs) {
-            return !(*this == rhs);
-        }
-
-        ValueType operator *() {
-            if (m_index == m_pq->count) {
-                error("PriorityQueue::iterator::operator *: Cannot call on an end() iterator");
-            }
-            return m_pq->heapGet(m_index).value;
-        }
-
-        ValueType* operator ->() {
-            if (m_index == m_pq->count) {
-                error("PriorityQueue::iterator::operator ->: Cannot call on an end() iterator");
-            }
-            return &m_pq->heapGet(m_index).value;
-        }
-
-        friend class PriorityQueue;
-        // friend struct HeapEntry;
-        
-    private:
-        const PriorityQueue* m_pq;
-        int m_index;
-    };
-    
 public:
     /* private implentation section */
-
-    pq_iterator begin() const {
-        return pq_iterator(*this, /* end */ false);
-    }
-
-    pq_iterator end() const {
-        return pq_iterator(*this, /* end */ true);
-    }
 
     template <typename Collection>
     friend int stanfordcpplib::collections::compare(const Collection& pq1, const Collection& pq2);
@@ -417,28 +310,11 @@ public:
 };
 
 template <typename ValueType>
-PriorityQueue<ValueType>::PriorityQueue() {
-    clear();
-}
-
-template <typename ValueType>
 PriorityQueue<ValueType>::PriorityQueue(
-        std::initializer_list<std::pair<double, ValueType> > list) {
-    clear();
+        std::initializer_list<std::pair<double, ValueType>> list) {
     for (std::pair<double, ValueType> pair : list) {
         enqueue(pair.second, pair.first);
     }
-}
-
-/*
- * Implementation notes: ~PriorityQueue destructor
- * -----------------------------------------------
- * All of the dynamic memory is allocated in the Vector class,
- * so no work is required at this level.
- */
-template <typename ValueType>
-PriorityQueue<ValueType>::~PriorityQueue() {
-    /* Empty */
 }
 
 template <typename ValueType>
@@ -448,10 +324,10 @@ void PriorityQueue<ValueType>::add(const ValueType& value, double priority) {
 
 template <typename ValueType>
 ValueType & PriorityQueue<ValueType>::back() {
-    if (count == 0) {
+    if (isEmpty()) {
         error("PriorityQueue::back: Attempting to read back of an empty queue");
     }
-    return heap[backIndex].value;
+    return heap.back().value;
 }
 
 /*
@@ -468,37 +344,24 @@ void PriorityQueue<ValueType>::changePriority(ValueType value, double newPriorit
         newPriority = 0.0;
     }
 
-    // find the element in the pqueue; must use a simple iteration over elements
-    for (int i = 0; i < count; i++) {
-        if (heap[i].value == value) {
-            if (heap[i].priority < newPriority) {
-                error("PriorityQueue::changePriority: new priority cannot be less urgent than current priority.");
-            }
-            heap[i].priority = newPriority;
-
-            // after changing the priority, must percolate up to proper level
-            // to maintain heap ordering
-            while (i > 0) {
-                int parent = (i - 1) / 2;
-                if (takesPriority(parent, i)) {
-                    break;
-                }
-                swapHeapEntries(parent, i);
-                i = parent;
-            }
-
-            return;
-        }
+    /* Find the element to change. */
+    auto itr = std::find_if(heap.begin(), heap.end(), [&](const HeapEntry& entry) {
+        return entry.value == value;
+    });
+    if (itr == heap.end()) {
+        error("PriorityQueue::changePriority: Element not found in priority queue.");
     }
 
-    // if we get here, the element was not ever found
-    error("PriorityQueue::changePriority: Element value not found.");
+    if (itr->priority < newPriority) {
+        error("PriorityQueue::changePriority: new priority cannot be less urgent than current priority.");
+    }
+    itr->priority = newPriority;
+    std::push_heap(heap.begin(), itr + 1);
 }
 
 template <typename ValueType>
 void PriorityQueue<ValueType>::clear() {
     heap.clear();
-    count = 0;
     enqueueCount = 0;   // BUGFIX 2014/10/10: was previously using garbage unassigned value
 }
 
@@ -510,34 +373,14 @@ void PriorityQueue<ValueType>::clear() {
  */
 template <typename ValueType>
 ValueType PriorityQueue<ValueType>::dequeue() {
-    if (count == 0) {
+    if (isEmpty()) {
         error("PriorityQueue::dequeue: Attempting to dequeue an empty queue");
     }
-    count--;
-    bool wasBack = (backIndex == count);
-    ValueType value = heap[0].value;
-    swapHeapEntries(0, count);
-    int index = 0;
-    while (true) {
-        int left = 2 * index + 1;
-        int right = 2 * index + 2;
-        if (left >= count) {
-            break;
-        }
-        int child = left;
-        if (right < count && takesPriority(right, left)) {
-            child = right;
-        }
-        if (takesPriority(index, child)) {
-            break;
-        }
-        swapHeapEntries(index, child);
-        index = child;
-    }
-    if (wasBack) {
-        backIndex = index;
-    }
-    return value;
+
+    ValueType result = heap[0].value;
+    std::pop_heap(heap.begin(), heap.end());
+    heap.pop_back();
+    return result;
 }
 
 template <typename ValueType>
@@ -549,24 +392,8 @@ void PriorityQueue<ValueType>::enqueue(const ValueType& value, double priority) 
         priority = 0.0;
     }
 
-    if (count == heap.size()) {
-        heap.add(HeapEntry());
-    }
-    int index = count++;
-    heap[index].value = value;
-    heap[index].priority = priority;
-    heap[index].sequence = enqueueCount++;
-    if (index == 0 || takesPriority(backIndex, index)) {
-        backIndex = index;
-    }
-    while (index > 0) {
-        int parent = (index - 1) / 2;
-        if (takesPriority(parent, index)) {
-            break;
-        }
-        swapHeapEntries(parent, index);
-        index = parent;
-    }
+    heap.add({ value, priority, enqueueCount++ });
+    std::push_heap(heap.begin(), heap.end());
 }
 
 template <typename ValueType>
@@ -592,8 +419,8 @@ bool PriorityQueue<ValueType>::equals(const PriorityQueue<ValueType>& pq2) const
 }
 
 template <typename ValueType>
-ValueType & PriorityQueue<ValueType>::front() {
-    if (count == 0) {
+ValueType& PriorityQueue<ValueType>::front() {
+    if (isEmpty()) {
         error("PriorityQueue::front: Attempting to read front of an empty queue");
     }
     return heap[0].value;
@@ -601,20 +428,20 @@ ValueType & PriorityQueue<ValueType>::front() {
 
 template <typename ValueType>
 bool PriorityQueue<ValueType>::isEmpty() const {
-    return count == 0;
+    return heap.size() == 0;
 }
 
 template <typename ValueType>
 ValueType PriorityQueue<ValueType>::peek() const {
-    if (count == 0) {
+    if (isEmpty()) {
         error("PriorityQueue::peek: Attempting to peek at an empty queue");
     }
-    return heap.get(0).value;
+    return heap.front().value;
 }
 
 template <typename ValueType>
 double PriorityQueue<ValueType>::peekPriority() const {
-    if (count == 0) {
+    if (isEmpty()) {
         error("PriorityQueue::peekPriority: Attempting to peek at an empty queue");
     }
     return heap.get(0).priority;
@@ -627,7 +454,7 @@ ValueType PriorityQueue<ValueType>::remove() {
 
 template <typename ValueType>
 int PriorityQueue<ValueType>::size() const {
-    return count;
+    return heap.size();
 }
 
 template <typename ValueType>
@@ -635,12 +462,6 @@ std::string PriorityQueue<ValueType>::toString() const {
     std::ostringstream os;
     os << *this;
     return os.str();
-}
-
-template <typename ValueType>
-const typename PriorityQueue<ValueType>::HeapEntry&
-PriorityQueue<ValueType>::heapGet(int index) const {
-    return heap[index];
 }
 
 #ifdef PQUEUE_COMPARISON_OPERATORS_ENABLED
@@ -653,7 +474,7 @@ PriorityQueue<ValueType>::heapGet(int index) const {
 template <typename ValueType>
 int PriorityQueue<ValueType>::pqCompare(const PriorityQueue& pq2) const {
     if (this == &pq2) {
-        return true;
+        return 0;
     }
     PriorityQueue<ValueType> backup1 = *this;
     PriorityQueue<ValueType> backup2 = pq2;
@@ -685,22 +506,19 @@ int PriorityQueue<ValueType>::pqCompare(const PriorityQueue& pq2) const {
 }
 #endif // PQUEUE_COMPARISON_OPERATORS_ENABLED
 
+/*
+ * Comparison function for heap entries. The comparison is lexicographic, first by
+ * priority, then by sequence number.
+ *
+ * Because std::push_heap and std::pop_heap try creating a max-heap whereas we want
+ * a min-heap, the priority comparisons are reversed.
+ */
 template <typename ValueType>
-void PriorityQueue<ValueType>::swapHeapEntries(int i1, int i2) {
-    HeapEntry entry = heap[i1];
-    heap[i1] = heap[i2];
-    heap[i2] = entry;
-}
+bool PriorityQueue<ValueType>::HeapEntry::operator < (const HeapEntry& rhs) {
+    if (priority > rhs.priority) return true;
+    if (rhs.priority > priority) return false;
 
-template <typename ValueType>
-bool PriorityQueue<ValueType>::takesPriority(int i1, int i2) {
-    if (heap[i1].priority < heap[i2].priority) {
-        return true;
-    }
-    if (heap[i1].priority > heap[i2].priority) {
-        return false;
-    }
-    return (heap[i1].sequence < heap[i2].sequence);
+    return sequence < rhs.sequence;
 }
 
 template <typename ValueType>

@@ -15,6 +15,12 @@
 #include <sstream>
 #include <string>
 
+/* Force instantiation of the template on a type to ensure that we don't have anything
+ * invidious lurking that just didn't get compiled.
+ */
+template class LinkedHashSet<int>;
+template class LinkedHashSet<std::string>;
+
 TEST_CATEGORY(LinkedHashSetTests, "LinkedHashSet tests");
 
 TIMED_TEST(LinkedHashSetTests, compareTest_LinkedHashSet, TEST_TIMEOUT_DEFAULT) {

@@ -550,6 +550,7 @@ LinkedList<ValueType>::addAll(const LinkedList<ValueType>& list) {
         add(value);
     }
     mVersion.update();
+    return *this;
 }
 
 template <typename ValueType>
@@ -736,7 +737,7 @@ void LinkedList<ValueType>::reverse() {
 template <typename ValueType>
 void LinkedList<ValueType>::set(int index, const ValueType & value) {
     checkIndex(index, 0, size()-1, "set");
-    m_elements[index] = value;
+    (*this)[index] = value;
 }
 
 template <typename ValueType>

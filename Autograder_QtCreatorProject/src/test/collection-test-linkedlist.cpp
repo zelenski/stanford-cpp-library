@@ -17,6 +17,12 @@
 
 TEST_CATEGORY(LinkedListTests, "LinkedList tests");
 
+/* Force instantiation of the template on a type to ensure that we don't have anything
+ * invidious lurking that just didn't get compiled.
+ */
+template class LinkedList<int>;
+template class LinkedList<std::string>;
+
 TIMED_TEST(LinkedListTests, compareTest_LinkedList, TEST_TIMEOUT_DEFAULT) {
     LinkedList<int> ll1;
     ll1 += 1, 2, 4, 5;
