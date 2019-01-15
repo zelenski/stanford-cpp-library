@@ -423,7 +423,7 @@ int hashCodeMap(const MapType& map, bool orderMatters = true) {
  * Throws an error if the set is empty.
  */
 template <typename Collection>
-const auto& randomElement(const Collection& collection) {
+auto randomElement(const Collection& collection) -> const decltype(*collection.begin())& {
     if (collection.isEmpty()) {
         error("randomElement: empty collection was passed");
     }

@@ -637,7 +637,7 @@ bool Set<ValueType>::isSupersetOf(const Set& set2) const {
 
 template <typename ValueType>
 void Set<ValueType>::mapAll(std::function<void (const ValueType &)> fn) const {
-    map.mapAll([&](const auto& elem, const auto &) {
+    map.mapAll([&](const ValueType& elem, bool) {
         fn(elem);
     });
 }

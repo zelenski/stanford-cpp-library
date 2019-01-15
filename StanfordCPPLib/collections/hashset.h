@@ -566,7 +566,7 @@ bool HashSet<ValueType>::isSupersetOf(const HashSet& set2) const {
 
 template <typename ValueType>
 void HashSet<ValueType>::mapAll(std::function<void (const ValueType&)> fn) const {
-    map.mapAll([&](const auto& elem, const auto &) {
+    map.mapAll([&](const ValueType& elem, bool) {
         fn(elem);
     });
 }
