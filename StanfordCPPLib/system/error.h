@@ -61,7 +61,7 @@ public:
     /**
      * Frees any memory allocated by the exception.
      */
-    virtual ~ErrorException() throw ();
+    virtual ~ErrorException() noexcept = default;
 
     /**
      * Prints the exception to the standard error stream (cerr),
@@ -114,7 +114,7 @@ public:
     /**
      * Returns the exception's error message as a C string.
      */
-    virtual const char* what() const throw ();
+    virtual const char* what() const noexcept;
 
 protected:
     /**
@@ -139,13 +139,10 @@ private:
  */
 std::ostream& operator <<(std::ostream& out, const ErrorException& ex);
 
-// TODO: use [[noreturn]] or Q_NO_RETURN to indicate that function does not ever return
-// (added in c++11; still incompatible with some compilers?)
-
 /**
  * Signals an error condition in a program by throwing an
  * <code>ErrorException</code> with the specified message.
  */
-/* [[noreturn]] */ void error(const std::string& msg);
+[[noreturn]] void error(const std::string& msg);
 
 #endif // _error_h
