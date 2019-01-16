@@ -31,10 +31,6 @@ ErrorException::ErrorException(std::string msg)
 #endif // SPL_CONSOLE_PRINT_EXCEPTIONS
 }
 
-ErrorException::~ErrorException() throw () {
-    /* Empty */
-}
-
 void ErrorException::dump() const {
     dump(std::cerr);
 }
@@ -89,7 +85,7 @@ void ErrorException::setStackTrace(const std::string& stackTrace) {
     _stackTrace = stackTrace;
 }
 
-const char* ErrorException::what() const throw () {
+const char* ErrorException::what() const noexcept {
     // stepp : The original "Error: " prefix is commented out here,
     // because in many error cases, the attempt to do the string concatenation
     // ends up garbling the string and leading to garbage exception text

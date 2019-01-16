@@ -335,11 +335,11 @@ void ofbitstream::open(const char* filename) {
     // Very Bad Idea.
     if (endsWith(filename, ".cpp") || endsWith(filename, ".h") ||
             endsWith(filename, ".hh") || endsWith(filename, ".cc")) {
+        setstate(std::ios::failbit);
         error(std::string("ofbitstream::open: It is potentially dangerous to write to file ")
               + filename + ", because that might be your own source code.  "
               + "We are explicitly disallowing this operation.  Please choose a "
               + "different filename.");
-        setstate(std::ios::failbit);
     } else {
         if (!fb.open(filename, std::ios::out | std::ios::binary)) {
             setstate(std::ios::failbit);
