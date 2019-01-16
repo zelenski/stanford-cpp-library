@@ -613,7 +613,7 @@ int Vector<ValueType>::indexOf(const ValueType& value) const {
 template <typename ValueType>
 void Vector<ValueType>::insert(int index, const ValueType& value) {
     checkIndex(index, 0, size(), "insert");
-    mElems.push_back(value);
+    mElems.insert(mElems.begin() + index, value);
     mVersion.update();
 }
 

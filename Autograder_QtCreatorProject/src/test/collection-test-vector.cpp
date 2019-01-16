@@ -145,6 +145,31 @@ TIMED_TEST(VectorTests, initializerListTest_Vector, TEST_TIMEOUT_DEFAULT) {
     assertCollection("after + copy", {10, 20, 30, 40, 50, 60, 70}, copy);
 }
 
+TIMED_TEST(VectorTests, insertTest_Vector, TEST_TIMEOUT_DEFAULT) {
+    /* Confirm that insert works at all the right positions, and no other positions. */
+    static const int kNumElems = 137;
+
+    for (int i = 0; i <= kNumElems; i++) {
+        Vector<int> values;
+        for (int j = 0; j < kNumElems; j++) {
+            values += j;
+        }
+        assertEqualsInt("Vector has proper size", kNumElems, values.size());
+
+        values.insert(i, kNumElems + 1);
+        assertEqualsInt("Vector was resized.", kNumElems + 1, values.size());
+
+        /* Confirm all the values are correct. */
+        for (int j = 0; j < i; j++) {
+            assertEqualsInt("prior elements unchanged", values[j], j);
+        }
+        assertEqualsInt("new element inserted", values[i], kNumElems + 1);
+        for (int j = i + 1; j < values.size(); j++) {
+            assertEqualsInt("post elements unchanged", values[j], j - 1);
+        }
+    }
+}
+
 TIMED_TEST(VectorTests, iteratorConversionTest_Vector, TEST_TIMEOUT_DEFAULT) {
     Vector<int> v {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     const auto& cv = v;
