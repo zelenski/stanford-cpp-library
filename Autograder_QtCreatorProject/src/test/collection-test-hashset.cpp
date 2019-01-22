@@ -19,11 +19,34 @@
 
 TEST_CATEGORY(HashSetTests, "HashSet tests");
 
-/* Force instantiation of HashSet on a few types to make sure we didn't miss anything.
+/*
+ * Force instantiation of HashSet on a few types to make sure we didn't miss anything.
  * The types must be hashable.
  */
 template class HashSet<int>;
 template class HashSet<std::string>;
+
+TIMED_TEST(HashSetTests, commaOperatorTest_HashSet, TEST_TIMEOUT_DEFAULT) {
+    /* Confirm that commas work properly. */
+    HashSet<int> one = {1, 2, 3};
+
+    /* Begin by adding some elements in. */
+    one += 3, 4, 5; // {1, 2, 3, 4, 5}
+    assertEqualsInt("elements were added", one.size(), 5);
+
+    /* Now remove some elements. */
+    one -= 3, 4, 5; // {1, 2}
+    assertEqualsInt("elements were removed", one.size(), 2);
+
+    /* Now add a collection of elements. */
+    HashSet<int> two = {3, 4, 5};
+    one += two, 6; // {1, 2, 3, 4, 5, 6}
+    assertEqualsInt("elements were added", one.size(), 6);
+
+    /* Now remove a collection of elements. */
+    one -= two, 6; // {1, 2}
+    assertEqualsInt("elements were removed", one.size(), 2);
+}
 
 TIMED_TEST(HashSetTests, forEachTest_HashSet, TEST_TIMEOUT_DEFAULT) {
     HashSet<int> hset {40, 20, 10, 30};
@@ -129,4 +152,19 @@ TIMED_TEST(HashSetTests, randomElementTest_HashSet, TEST_TIMEOUT_DEFAULT) {
     for (const std::string& s : list) {
         assertTrue("must choose " + s + " sometimes", counts[s] > 0);
     }
+}
+
+TIMED_TEST(HashSetTests, removeAndRetainTest_HashSet, TEST_TIMEOUT_DEFAULT) {
+    HashSet<int> all   = { 1, 2, 3, 4, 5, 6, 7, 8 };
+    HashSet<int> evens = {    2,    4,    6,    8,   10 };
+    HashSet<int> odds  = { 1,    3,    5,    7    };
+
+    all.removeAll(evens);
+    assertEqualsCollection("should just have odds left", all, odds);
+
+    HashSet<int> primes   = { 2, 3, 5, 7, 11 };
+    HashSet<int> expected = { 3, 5, 7 };
+
+    all.retainAll(primes);
+    assertEqualsCollection("should have lost 1", all, expected);
 }
