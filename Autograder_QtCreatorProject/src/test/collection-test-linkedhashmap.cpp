@@ -17,8 +17,9 @@
 
 TEST_CATEGORY(LinkedHashMapTests, "LinkedHashMap tests");
 
-/* Force instantiation of the template on a type to ensure that we don't have anything
- * invidious lurking that just didn't get compiled.
+/*
+ * Force instantiation of the template on a type to ensure that we don't have anything
+ * insidious lurking that just didn't get compiled.
  */
 template class LinkedHashMap<int, int>;
 template class LinkedHashMap<int, std::string>;

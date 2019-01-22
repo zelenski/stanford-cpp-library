@@ -18,7 +18,8 @@
 
 TEST_CATEGORY(HashMapTests, "HashMap tests");
 
-/* Force instantiation of HashMap on a few types to make sure we didn't miss anything.
+/*
+ * Force instantiation of HashMap on a few types to make sure we didn't miss anything.
  * The key types must be hashable.
  */
 template class HashMap<int, int>;

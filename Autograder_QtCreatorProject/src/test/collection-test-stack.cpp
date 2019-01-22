@@ -18,7 +18,7 @@
 TEST_CATEGORY(StackTests, "Stack tests");
 
 /* Force instantiation of the template on a type to ensure that we don't have anything
- * invidious lurking that just didn't get compiled.
+ * insidious lurking that just didn't get compiled.
  */
 template class Stack<int>;
 template class Stack<std::string>;

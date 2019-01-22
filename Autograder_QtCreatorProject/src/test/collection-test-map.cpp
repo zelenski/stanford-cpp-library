@@ -18,7 +18,8 @@
 
 TEST_CATEGORY(MapTests, "Map tests");
 
-/* Force instantiation of Map on a few types to make sure we didn't miss anything.
+/*
+ * Force instantiation of Map on a few types to make sure we didn't miss anything.
  * The key types must be comparable.
  */
 template class Map<int, int>;
