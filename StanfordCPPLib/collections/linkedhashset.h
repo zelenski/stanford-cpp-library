@@ -687,6 +687,7 @@ LinkedHashSet<ValueType> LinkedHashSet<ValueType>::operator -(const ValueType& e
 
 template <typename ValueType>
 LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator +=(const LinkedHashSet& set2) {
+    removeFlag = false;
     return addAll(set2);
 }
 
@@ -704,6 +705,7 @@ LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator *=(const LinkedHash
 
 template <typename ValueType>
 LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator -=(const LinkedHashSet& set2) {
+    removeFlag = true;
     return removeAll(set2);
 }
 

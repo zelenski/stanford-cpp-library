@@ -649,29 +649,13 @@ void Set<ValueType>::remove(const ValueType& value) {
 
 template <typename ValueType>
 Set<ValueType>& Set<ValueType>::removeAll(const Set& set2) {
-    Vector<ValueType> toRemove;
-    for (const ValueType& value : *this) {
-        if (set2.map.containsKey(value)) {
-            toRemove.add(value);
-        }
-    }
-    for (const ValueType& value : toRemove) {
-        remove(value);
-    }
+    map.removeAll(set2.map);
     return *this;
 }
 
 template <typename ValueType>
 Set<ValueType>& Set<ValueType>::retainAll(const Set& set2) {
-    Vector<ValueType> toRemove;
-    for (ValueType value : *this) {
-        if (!set2.map.containsKey(value)) {
-            toRemove.add(value);
-        }
-    }
-    for (ValueType value : toRemove) {
-        this->remove(value);
-    }
+    map.retainAll(set2.map);
     return *this;
 }
 
@@ -767,6 +751,7 @@ Set<ValueType> Set<ValueType>::operator -(const ValueType& element) const {
 
 template <typename ValueType>
 Set<ValueType>& Set<ValueType>::operator +=(const Set& set2) {
+    removeFlag = false;
     return addAll(set2);
 }
 
@@ -784,6 +769,7 @@ Set<ValueType>& Set<ValueType>::operator *=(const Set& set2) {
 
 template <typename ValueType>
 Set<ValueType>& Set<ValueType>::operator -=(const Set& set2) {
+    removeFlag = true;
     return removeAll(set2);
 }
 

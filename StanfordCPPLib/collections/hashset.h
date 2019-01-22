@@ -548,13 +548,10 @@ bool HashSet<ValueType>::isEmpty() const {
 
 template <typename ValueType>
 bool HashSet<ValueType>::isSubsetOf(const HashSet& set2) const {
-    iterator it = begin();
-    iterator end = this->end();
-    while (it != end) {
-        if (!set2.map.containsKey(*it)) {
+    for (const auto& elem: *this) {
+        if (!set2.contains(elem)) {
             return false;
         }
-        ++it;
     }
     return true;
 }
@@ -578,29 +575,13 @@ void HashSet<ValueType>::remove(const ValueType& value) {
 
 template <typename ValueType>
 HashSet<ValueType>& HashSet<ValueType>::removeAll(const HashSet& set2) {
-    Vector<ValueType> toRemove;
-    for (const ValueType& value : *this) {
-        if (set2.map.containsKey(value)) {
-            toRemove.add(value);
-        }
-    }
-    for (const ValueType& value : toRemove) {
-        remove(value);
-    }
+    map.removeAll(set2.map);
     return *this;
 }
 
 template <typename ValueType>
 HashSet<ValueType>& HashSet<ValueType>::retainAll(const HashSet& set2) {
-    Vector<ValueType> toRemove;
-    for (const ValueType& value : *this) {
-        if (!set2.map.containsKey(value)) {
-            toRemove.add(value);
-        }
-    }
-    for (const ValueType& value : toRemove) {
-        remove(value);
-    }
+    map.retainAll(set2.map);
     return *this;
 }
 
@@ -667,6 +648,7 @@ HashSet<ValueType> HashSet<ValueType>::operator -(const ValueType& element) cons
 
 template <typename ValueType>
 HashSet<ValueType>& HashSet<ValueType>::operator +=(const HashSet& set2) {
+    removeFlag = false;
     return addAll(set2);
 }
 
@@ -684,6 +666,7 @@ HashSet<ValueType>& HashSet<ValueType>::operator *=(const HashSet& set2) {
 
 template <typename ValueType>
 HashSet<ValueType>& HashSet<ValueType>::operator -=(const HashSet& set2) {
+    removeFlag = true;
     return removeAll(set2);
 }
 
