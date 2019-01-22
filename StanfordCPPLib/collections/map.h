@@ -439,7 +439,8 @@ public:
     /**********************************************************************/
 
 private:
-    std::map<KeyType, ValueType, std::function<bool(const KeyType&, const KeyType&)>> mElements;
+    using MapType = std::map<KeyType, ValueType, std::function<bool(const KeyType&, const KeyType&)>>;
+    MapType mElements;
     stanfordcpplib::collections::VersionTracker mVersion;
 
 public:
@@ -452,7 +453,7 @@ public:
      * difficult to understand for the average client.
      */
 
-    using const_iterator = stanfordcpplib::collections::ProjectingIterator<stanfordcpplib::collections::CheckedIterator<typename std::map<KeyType, ValueType>::const_iterator>>;
+    using const_iterator = stanfordcpplib::collections::ProjectingIterator<stanfordcpplib::collections::CheckedIterator<typename MapType::const_iterator>>;
     using iterator = const_iterator;
 
     const_iterator begin() const;
@@ -554,8 +555,9 @@ void Map<KeyType, ValueType>::mapAll(std::function<void (const KeyType&, const V
 template <typename KeyType, typename ValueType>
 void Map<KeyType, ValueType>::put(const KeyType& key,
                                   const ValueType& value) {
+    int presize = size();
     mElements[key] = value;
-    mVersion.update();
+    if (presize != size()) mVersion.update();
 }
 
 template <typename KeyType, typename ValueType>
