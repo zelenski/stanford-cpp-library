@@ -310,42 +310,42 @@ TIMED_TEST(VectorTests, iteratorRangeCheckingTest_Vector, TEST_TIMEOUT_DEFAULT) 
     }
     try {
         Vector<int>::iterator itr;
-        itr == v.begin();
+        (void)(itr == v.begin());
         assertFail("No exception comparing singular iterators.");
     } catch (const ErrorException &) {
 
     }
     try {
         Vector<int>::iterator itr;
-        itr != v.begin();
+        (void)(itr != v.begin());
         assertFail("No exception comparing singular iterators.");
     } catch (const ErrorException &) {
 
     }
     try {
         Vector<int>::iterator itr;
-        itr < v.begin();
+        (void)(itr < v.begin());
         assertFail("No exception comparing singular iterators.");
     } catch (const ErrorException &) {
 
     }
     try {
         Vector<int>::iterator itr;
-        itr <= v.begin();
+        (void)(itr <= v.begin());
         assertFail("No exception comparing singular iterators.");
     } catch (const ErrorException &) {
 
     }
     try {
         Vector<int>::iterator itr;
-        itr >= v.begin();
+        (void)(itr >= v.begin());
         assertFail("No exception comparing singular iterators.");
     } catch (const ErrorException &) {
 
     }
     try {
         Vector<int>::iterator itr;
-        itr >  v.begin();
+        (void)(itr >  v.begin());
         assertFail("No exception comparing singular iterators.");
     } catch (const ErrorException &) {
 
@@ -353,42 +353,42 @@ TIMED_TEST(VectorTests, iteratorRangeCheckingTest_Vector, TEST_TIMEOUT_DEFAULT) 
 
     try {
         Vector<int>::iterator itr;
-        v.begin() == itr;
+        (void)(v.begin() == itr);
         assertFail("No exception comparing singular iterators.");
     } catch (const ErrorException &) {
 
     }
     try {
         Vector<int>::iterator itr;
-        v.begin() != itr;
+        (void)(v.begin() != itr);
         assertFail("No exception comparing singular iterators.");
     } catch (const ErrorException &) {
 
     }
     try {
         Vector<int>::iterator itr;
-        v.begin() < itr;
+        (void)(v.begin() < itr);
         assertFail("No exception comparing singular iterators.");
     } catch (const ErrorException &) {
 
     }
     try {
         Vector<int>::iterator itr;
-        v.begin() <= itr;
+        (void)(v.begin() <= itr);
         assertFail("No exception comparing singular iterators.");
     } catch (const ErrorException &) {
 
     }
     try {
         Vector<int>::iterator itr;
-        v.begin() >= itr;
+        (void)(v.begin() >= itr);
         assertFail("No exception comparing singular iterators.");
     } catch (const ErrorException &) {
 
     }
     try {
         Vector<int>::iterator itr;
-        v.begin() > itr;
+        (void)(v.begin() > itr);
         assertFail("No exception comparing singular iterators.");
     } catch (const ErrorException &) {
 
@@ -399,42 +399,42 @@ TIMED_TEST(VectorTests, iteratorRangeCheckingTest_Vector, TEST_TIMEOUT_DEFAULT) 
      */
     try {
         Vector<int> v2;
-        v.begin() == v2.begin();
+        (void)(v.begin() == v2.begin());
         assertFail("No exception comparing iterators from different containers.");
     } catch (const ErrorException &) {
 
     }
     try {
         Vector<int> v2;
-        v.begin() != v2.begin();
+        (void)(v.begin() != v2.begin());
         assertFail("No exception comparing iterators from different containers.");
     } catch (const ErrorException &) {
 
     }
     try {
         Vector<int> v2;
-        v.begin() < v2.begin();
+        (void)(v.begin() < v2.begin());
         assertFail("No exception comparing iterators from different containers.");
     } catch (const ErrorException &) {
 
     }
     try {
         Vector<int> v2;
-        v.begin() <= v2.begin();
+        (void)(v.begin() <= v2.begin());
         assertFail("No exception comparing iterators from different containers.");
     } catch (const ErrorException &) {
 
     }
     try {
         Vector<int> v2;
-        v.begin() >= v2.begin();
+        (void)(v.begin() >= v2.begin());
         assertFail("No exception comparing iterators from different containers.");
     } catch (const ErrorException &) {
 
     }
     try {
         Vector<int> v2;
-        v.begin() > v2.begin();
+        (void)(v.begin() > v2.begin());
         assertFail("No exception comparing iterators from different containers.");
     } catch (const ErrorException &) {
 
