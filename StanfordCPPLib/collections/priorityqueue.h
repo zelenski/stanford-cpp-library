@@ -286,7 +286,7 @@ private:
         double priority;
         long sequence;
 
-        bool operator < (const HeapEntry& rhs);
+        bool operator < (const HeapEntry& rhs) const;
     };
 
     /* Instance variables */
@@ -514,7 +514,7 @@ int PriorityQueue<ValueType>::pqCompare(const PriorityQueue& pq2) const {
  * a min-heap, the priority comparisons are reversed.
  */
 template <typename ValueType>
-bool PriorityQueue<ValueType>::HeapEntry::operator < (const HeapEntry& rhs) {
+bool PriorityQueue<ValueType>::HeapEntry::operator < (const HeapEntry& rhs) const {
     if (priority > rhs.priority) return true;
     if (rhs.priority > priority) return false;
 
