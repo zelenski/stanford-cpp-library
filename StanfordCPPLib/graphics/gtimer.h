@@ -42,6 +42,11 @@ public:
     GTimer(double milliseconds);
 
     /**
+     * Destroys the timer, stopping it if it's currently running.
+     */
+    ~GTimer();
+
+    /**
      * Returns the delay in milliseconds between each tick of this timer.
      */
     double getDelay() const;

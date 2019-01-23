@@ -30,6 +30,10 @@ GTimer::GTimer(double milliseconds)
     setDelay(milliseconds);
 }
 
+GTimer::~GTimer() {
+    stop();
+}
+
 double GTimer::getDelay() const {
     return _ms;
 }
