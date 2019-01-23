@@ -23,8 +23,8 @@ TEST_CATEGORY(HashSetTests, "HashSet tests");
  * Force instantiation of HashSet on a few types to make sure we didn't miss anything.
  * The types must be hashable.
  */
-template class HashSet<int>;
-template class HashSet<std::string>;
+template class stanfordcpplib::collections::GenericSet<stanfordcpplib::collections::HashSetTraits<int>>;
+template class stanfordcpplib::collections::GenericSet<stanfordcpplib::collections::HashSetTraits<std::string>>;
 
 TIMED_TEST(HashSetTests, commaOperatorTest_HashSet, TEST_TIMEOUT_DEFAULT) {
     /* Confirm that commas work properly. */
