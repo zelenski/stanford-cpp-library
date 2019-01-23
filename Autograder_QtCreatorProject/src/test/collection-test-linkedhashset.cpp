@@ -19,8 +19,8 @@
  * Force instantiation of the template on a type to ensure that we don't have anything
  * insidious lurking that just didn't get compiled.
  */
-template class LinkedHashSet<int>;
-template class LinkedHashSet<std::string>;
+template class stanfordcpplib::collections::GenericSet<stanfordcpplib::collections::LinkedHashSetTraits<int>>;
+template class stanfordcpplib::collections::GenericSet<stanfordcpplib::collections::LinkedHashSetTraits<std::string>>;
 
 TEST_CATEGORY(LinkedHashSetTests, "LinkedHashSet tests");
 

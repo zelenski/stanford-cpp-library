@@ -22,8 +22,8 @@ TEST_CATEGORY(SetTests, "Set tests");
  * Force instantiation of Set on a few types to make sure we didn't miss anything.
  * The types must be comparable.
  */
-template class Set<int>;
-template class Set<std::string>;
+template class stanfordcpplib::collections::GenericSet<stanfordcpplib::collections::SetTraits<int>>;
+template class stanfordcpplib::collections::GenericSet<stanfordcpplib::collections::SetTraits<std::string>>;
 
 TIMED_TEST(SetTests, commaOperatorTest_Set, TEST_TIMEOUT_DEFAULT) {
     /* Confirm that commas work properly. */
@@ -62,6 +62,28 @@ TIMED_TEST(SetTests, compareTest_Set, TEST_TIMEOUT_DEFAULT) {
     // note: shouldn't add set3 because it is 'equal' to set2 (duplicate)
     Set<Set<int> > sset {set1, set2, set3, set4};
     assertEqualsString("sset", "{{}, {1, 2, 3, 4}, {1, 2, 5, 7, 8}}", sset.toString());
+}
+
+TIMED_TEST(SetTests, customComparatorTest_Set, TEST_TIMEOUT_DEFAULT) {
+    /* Confirm that we can override the comparator if need be. */
+    Set<int> descending({1, 2, 3, 4, 5}, std::greater<int>());
+    assertEqualsInt("has all elements", descending.size(), 5);
+
+    auto itr = descending.begin();
+    for (int i = 5; i > 0; i--, ++itr) {
+        assertEqualsInt("has right values", *itr, i);
+    }
+
+    /* Now leave the set empty and try overriding the comparator. */
+    Set<int> descending2{std::greater<int>()};
+    descending2 += 1, 2, 3, 4, 5;
+
+    assertEqualsInt("has all elements", descending2.size(), 5);
+
+    itr = descending2.begin();
+    for (int i = 5; i > 0; i--, ++itr) {
+        assertEqualsInt("has right values", *itr, i);
+    }
 }
 
 TIMED_TEST(SetTests, forEachTest_Set, TEST_TIMEOUT_DEFAULT) {
