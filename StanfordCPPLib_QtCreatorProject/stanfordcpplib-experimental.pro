@@ -1,3 +1,5 @@
+
+
 #####################################################################
 ## Stanford CS 106 B/X Qt Creator project file                     ##
 ## (now compatible with Qt-based GUI system!)                      ##
@@ -18,8 +20,6 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
-# @version 2019/02/01
-# - fixed compiler warning flags for greater granularity
 # @version 2018/10/23
 # - added Qt multimedia flag for sound and video playback
 # @version 2018/10/20
@@ -297,15 +297,6 @@ exists($$PWD/output/*) {
 # A few overly pedantic/confusing errors are turned off for simplicity.)
 CONFIG += no_include_pwd         # make sure we do not accidentally #include files placed in 'resources'
 CONFIG += sdk_no_version_check   # removes spurious warnings on Mac OS X
-# CONFIG += warn_off
-
-# gives us a bit more precision about which errors are printed
-QMAKE_CFLAGS_WARN_ON -= -Wall
-QMAKE_CFLAGS_WARN_ON -= -Wextra
-QMAKE_CFLAGS_WARN_ON -= -W
-QMAKE_CXXFLAGS_WARN_ON -= -Wall
-QMAKE_CXXFLAGS_WARN_ON -= -Wextra
-QMAKE_CXXFLAGS_WARN_ON -= -W
 
 win32 {
     # some Windows systems have old MinGW compilers, so be safe and use C++11
@@ -320,8 +311,7 @@ win32 {
 # QMAKE_CXXFLAGS += -E
 
 QMAKE_CXXFLAGS += -Wall
-#QMAKE_CXXFLAGS += -Wextra
-QMAKE_CXXFLAGS += -Wunused-parameter
+QMAKE_CXXFLAGS += -Wextra
 QMAKE_CXXFLAGS += -Wcast-align
 #QMAKE_CXXFLAGS += -Wfloat-equal
 QMAKE_CXXFLAGS += -Wformat=2
@@ -338,7 +328,7 @@ QMAKE_CXXFLAGS += -Wunreachable-code
 exists($$PWD/lib/autograder/*.h) | exists($$PWD/lib/StanfordCPPLib/autograder/$$PROJECT_FILTER/*.h) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
     # omit some warnings/errors in autograder projects
     # (largely because the Google Test framework violates them a ton of times)
-    QMAKE_CXXFLAGS += -Wno-deprecation
+    QMAKE_CXXFLAGS += -Wno-deprecated
     QMAKE_CXXFLAGS += -Wno-reorder
     QMAKE_CXXFLAGS += -Wno-unused-function
     QMAKE_CXXFLAGS += -Wno-useless-cast
@@ -381,13 +371,6 @@ LIBS += -lpthread
 COMPILERNAME = $$QMAKE_CXX
 COMPILERNAME ~= s|.*/|
 equals(COMPILERNAME, clang++) {
-    QMAKE_CXXFLAGS += -Wempty-init-stmt
-    QMAKE_CXXFLAGS += -Wignored-qualifiers
-    QMAKE_CXXFLAGS += -Winitializer-overrides
-    QMAKE_CXXFLAGS += -Wmissing-field-initializers
-    QMAKE_CXXFLAGS += -Wmissing-method-return-type
-    QMAKE_CXXFLAGS += -Wnull-pointer-arithmetic
-    QMAKE_CXXFLAGS += -Wsemicolon-before-method-body
     QMAKE_CXXFLAGS += -Wno-format-nonliteral
     QMAKE_CXXFLAGS += -Wno-inconsistent-missing-override
     QMAKE_CXXFLAGS += -Wno-overloaded-virtual
@@ -400,7 +383,7 @@ equals(COMPILERNAME, clang++) {
 # (see platform.cpp/h for descriptions of some of these flags)
 
 # what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20190201
+DEFINES += SPL_PROJECT_VERSION=20181023
 
 # wrapper name for 'main' function (needed so student can write 'int main'
 # but our library can grab the actual main function to initialize itself)
@@ -410,7 +393,7 @@ DEFINES += main=qMain
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1
 DEFINES += SPL_CONSOLE_Y=-1
-DEFINES += SPL_CONSOLE_WIDTH=800
+DEFINES += SPL_CONSOLE_WIDTH=850
 DEFINES += SPL_CONSOLE_HEIGHT=500
 
 # font size of the font in the graphical console window; can also be set via window menu
@@ -660,4 +643,51 @@ QMAKE_EXTRA_COMPILERS += copy_resource_files
 # END SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING              #
 ###############################################################################
 
-# END OF FILE (this should be line #663; if not, your .pro has been changed!)
+
+###############################################################################
+# BEGIN SECTION FOR COPYING .o FILES TO TEMP DIRECTORY CACHE FOR FASTER BUILD #
+###############################################################################
+
+# first check the three environment variables: TMPDIR, TMP, and TEMP
+# (commonly used on all of Linux, Windows, and Mac)
+TEMP_DIRECTORY = $$(TMPDIR)
+equals(TEMP_DIRECTORY, "") {
+    TEMP_DIRECTORY = $$(TMP)
+}
+equals(TEMP_DIRECTORY, "") {
+    TEMP_DIRECTORY = $$(TEMP)
+}
+equals(TEMP_DIRECTORY, "") {
+    win32 {
+        # Windows temp dir fallback
+        TEMP_DIRECTORY = $$(USERPROFILE)\AppData\local\Temp
+    } else {
+        # Linux/Mac temp dir fallback
+        exists(/tmp) {
+            TEMP_DIRECTORY = /tmp
+        } else {
+            exists(/var/tmp) {
+                TEMP_DIRECTORY = /var/tmp
+            } else {
+                exists($$(HOME)/tmp) {
+                    TEMP_DIRECTORY = $$(HOME)/tmp
+                }
+            }
+        }
+    }
+}
+# message("TEMP DIR IS " $${TEMP_DIRECTORY} ".")
+
+# exists($$PWD/lib/StanfordCPPLib/strlib.cpp) {
+exists($$PWD/lib/StanfordCPPLib/util/strlib.cpp) {
+    # OUT_SPL_FILE = $$files($${OUT_PWD}/strlib.o)
+    # QMAKE_POST_LINK += $$QMAKE_COPY $${OUT_SPL_FILE} $${TEMP_DIRECTORY}
+}
+
+###############################################################################
+# END SECTION FOR COPYING .o FILES TO TEMP DIRECTORY CACHE FOR FASTER BUILD   #
+###############################################################################
+
+
+
+# END OF FILE (this should be line #644; if not, your .pro has been changed!)
