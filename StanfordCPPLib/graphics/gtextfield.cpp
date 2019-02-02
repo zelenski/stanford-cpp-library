@@ -3,6 +3,8 @@
  * --------------------
  *
  * @author Marty Stepp
+ * @version 2019/02/01
+ * - emit CHANGE_EVENT on key presses when text changes
  * @version 2018/08/23
  * - renamed to gtextfield.cpp to replace Java version
  * @version 2018/06/29
@@ -399,6 +401,16 @@ void _Internal_QLineEdit::handleTextChange(const QString&) {
                 /* source */ _gtextfield);
     textChangeEvent.setActionCommand(_gtextfield->getActionCommand());
     _gtextfield->fireEvent(textChangeEvent);
+
+    // BUGFIX: for backward compatibility, also fire a CHANGE_EVENT
+    // (emits only to the old-style waitForEvent function)
+    GEvent changeEvent(
+                /* class  */ CHANGE_EVENT,
+                /* type   */ STATE_CHANGED,
+                /* name   */ "statechange",
+                /* source */ _gtextfield);
+    changeEvent.setActionCommand(_gtextfield->getActionCommand());
+    _gtextfield->fireEvent(changeEvent);
 }
 
 void _Internal_QLineEdit::keyPressEvent(QKeyEvent* event) {
