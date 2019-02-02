@@ -480,10 +480,11 @@ private:
      * accept index parameters.
      * The prefix parameter represents a text string to place at the start of
      * the error message, generally to help indicate which member threw the error.
+     *
+     * We make prefix a const char* rather than a std::string to avoid having to
+     * construct and then destroy the prefix with each call.
      */
-    void checkIndex(int index, int min, int max, std::string prefix) const;
-
-    void deepCopy(const LinkedList& src);
+    void checkIndex(int index, int min, int max, const char* prefix) const;
 
     /*
      * Hidden features
@@ -896,7 +897,7 @@ bool LinkedList<ValueType>::operator >=(const LinkedList& list2) const {
 }
 
 template <typename ValueType>
-void LinkedList<ValueType>::checkIndex(int index, int min, int max, std::string prefix) const {
+void LinkedList<ValueType>::checkIndex(int index, int min, int max, const char* prefix) const {
     if (index < min || index > max) {
         std::ostringstream out;
         out << "LinkedList::" << prefix << ": index of " << index
