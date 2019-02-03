@@ -198,6 +198,8 @@ protected:
 
 private:
     GRadioButton* _gradioButton;
+
+    friend class GRadioButton;
 };
 
 #endif // _gradiobutton_h

@@ -3,6 +3,8 @@
  * -------------------
  *
  * @author Marty Stepp
+ * @version 2019/02/02
+ * - destructor now stops event processing
  * @version 2018/08/23
  * - renamed to gtextarea.cpp to replace Java version
  * @version 2018/06/25
@@ -45,6 +47,7 @@ GTextArea::GTextArea(const std::string& text, QWidget* parent)
 
 GTextArea::~GTextArea() {
     // TODO: delete _iqtextedit;
+    _iqtextedit->_gtextarea = nullptr;
     _iqtextedit = nullptr;
 }
 
@@ -377,6 +380,10 @@ _Internal_QTextEdit::_Internal_QTextEdit(GTextArea* gtextArea, QWidget* parent)
 }
 
 void _Internal_QTextEdit::contextMenuEvent(QContextMenuEvent* event) {
+    if (!_gtextarea) {
+        QTextEdit::contextMenuEvent(event);   // call super
+        return;
+    }
     if (_gtextarea->isContextMenuEnabled()) {
         event->accept();
     } else {
@@ -437,7 +444,7 @@ void _Internal_QTextEdit::keyReleaseEvent(QKeyEvent* event) {
 
 void _Internal_QTextEdit::mousePressEvent(QMouseEvent* event) {
     require::nonNull(event, "_Internal_QTextEdit::mousePressEvent", "event");
-    if (_gtextarea->isAcceptingEvent("mousepress")) {
+    if (_gtextarea && _gtextarea->isAcceptingEvent("mousepress")) {
         event->accept();
         _gtextarea->fireGEvent(event, MOUSE_PRESSED, "mousepress");
         if (event->isAccepted()) {

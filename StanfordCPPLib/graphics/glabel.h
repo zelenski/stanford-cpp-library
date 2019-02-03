@@ -253,6 +253,8 @@ protected:
 
 private:
     GLabel* _glabel;
+
+    friend class GLabel;
 };
 
 #endif // _glabel_h

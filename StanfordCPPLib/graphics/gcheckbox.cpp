@@ -3,6 +3,8 @@
  * -------------------
  *
  * @author Marty Stepp
+ * @version 2019/02/02
+ * - destructor now stops event processing
  * @version 2018/10/06
  * - added toggle()
  * @version 2018/09/04
@@ -33,6 +35,7 @@ GCheckBox::GCheckBox(const std::string& text, bool checked, QWidget* parent) {
 
 GCheckBox::~GCheckBox() {
     // TODO: delete _iqcheckBox;
+    _iqcheckBox->_gcheckBox = nullptr;
     _iqcheckBox = nullptr;
 }
 
@@ -123,6 +126,9 @@ _Internal_QCheckBox::_Internal_QCheckBox(GCheckBox* gcheckBox, bool checked, QWi
 }
 
 void _Internal_QCheckBox::handleStateChange(int /* state */) {
+    if (!_gcheckBox) {
+        return;
+    }
     GEvent changeEvent(
                 /* class  */ CHANGE_EVENT,
                 /* type   */ STATE_CHANGED,
@@ -136,7 +142,10 @@ void _Internal_QCheckBox::mouseDoubleClickEvent(QMouseEvent* event) {
     require::nonNull(event, "_Internal_QCheckBox::mouseDoubleClickEvent");
     QWidget::mouseDoubleClickEvent(event);   // call super
     emit doubleClicked();
-    if (!_gcheckBox->isAcceptingEvent("doubleclick")) return;
+
+    if (!_gcheckBox || !_gcheckBox->isAcceptingEvent("doubleclick")) {
+        return;
+    }
     GEvent mouseEvent(
                 /* class  */ MOUSE_EVENT,
                 /* type   */ MOUSE_DOUBLE_CLICKED,

@@ -3,6 +3,8 @@
  * --------------------
  *
  * @author Marty Stepp
+ * @version 2019/02/02
+ * - destructor now stops event processing
  * @version 2018/08/23
  * - renamed to gscrollbar.cpp to replace Java version
  * @version 2018/07/16
@@ -32,6 +34,7 @@ GScrollBar::GScrollBar(GScrollBar::Orientation orientation,
 
 GScrollBar::~GScrollBar() {
     // TODO: delete _iqscrollbar;
+    _iqscrollbar->_gscrollbar = nullptr;
     _iqscrollbar = nullptr;
 }
 
@@ -143,6 +146,9 @@ _Internal_QScrollBar::_Internal_QScrollBar(GScrollBar* gscrollbar, Qt::Orientati
 }
 
 void _Internal_QScrollBar::handleValueChange(int /* value */) {
+    if (!_gscrollbar) {
+        return;
+    }
     GEvent changeEvent(
                 /* class  */ CHANGE_EVENT,
                 /* type   */ STATE_CHANGED,

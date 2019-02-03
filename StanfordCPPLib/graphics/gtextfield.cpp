@@ -3,6 +3,8 @@
  * --------------------
  *
  * @author Marty Stepp
+ * @version 2019/02/02
+ * - destructor now stops event processing
  * @version 2019/02/01
  * - emit CHANGE_EVENT on key presses when text changes
  * @version 2018/08/23
@@ -84,9 +86,18 @@ GTextField::GTextField(double value, double min, double max, double step, QWidge
 
 GTextField::~GTextField() {
     // TODO: delete _iqlineedit;
-    _iqlineedit = nullptr;
-    _iqspinbox = nullptr;
-    _iqdoublespinbox = nullptr;
+    if (_iqlineedit) {
+        _iqlineedit->_gtextfield = nullptr;
+        _iqlineedit = nullptr;
+    }
+    if (_iqspinbox) {
+        _iqspinbox->_gtextfield = nullptr;
+        _iqspinbox = nullptr;
+    }
+    if (_iqdoublespinbox) {
+        _iqdoublespinbox->_gtextfield = nullptr;
+        _iqdoublespinbox = nullptr;
+    }
 }
 
 int GTextField::getCharsWide() const {
@@ -394,6 +405,9 @@ _Internal_QLineEdit::_Internal_QLineEdit(GTextField* gtextField, QWidget* parent
 }
 
 void _Internal_QLineEdit::handleTextChange(const QString&) {
+    if (!_gtextfield) {
+        return;
+    }
     GEvent textChangeEvent(
                 /* class  */ KEY_EVENT,
                 /* type   */ KEY_TYPED,
@@ -416,7 +430,9 @@ void _Internal_QLineEdit::handleTextChange(const QString&) {
 void _Internal_QLineEdit::keyPressEvent(QKeyEvent* event) {
     require::nonNull(event, "_Internal_QLineEdit::keyPressEvent", "event");
     QLineEdit::keyPressEvent(event);   // call super
-    if (!_gtextfield->isAcceptingEvent("action")) return;
+    if (!_gtextfield || !_gtextfield->isAcceptingEvent("action")) {
+        return;
+    }
     if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
         GEvent actionEvent(
                     /* class  */ ACTION_EVENT,
@@ -446,6 +462,9 @@ _Internal_QSpinBox::_Internal_QSpinBox(GTextField* gtextField, int min, int max,
 }
 
 void _Internal_QSpinBox::handleTextChange(const QString&) {
+    if (!_gtextfield) {
+        return;
+    }
     GEvent textChangeEvent(
                 /* class  */ KEY_EVENT,
                 /* type   */ KEY_TYPED,
@@ -477,6 +496,9 @@ _Internal_QDoubleSpinBox::_Internal_QDoubleSpinBox(GTextField* gtextField, doubl
 }
 
 void _Internal_QDoubleSpinBox::handleTextChange(const QString&) {
+    if (!_gtextfield) {
+        return;
+    }
     GEvent textChangeEvent(
                 /* class  */ KEY_EVENT,
                 /* type   */ KEY_TYPED,

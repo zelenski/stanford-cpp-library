@@ -19,7 +19,7 @@
  *       *MUST* be zero-padded to YYYY/MM/DD format;
  *       if month or day is < 10, insert a preceding 0
  */
-#define STANFORD_CPP_LIB_VERSION "2019/02/01"
+#define STANFORD_CPP_LIB_VERSION "2019/02/02"
 
 /*
  * Minimum version of your IDE's project that is supported.

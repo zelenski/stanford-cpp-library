@@ -178,6 +178,8 @@ protected:
 
 private:
     GButton* _gbutton;
+
+    friend class GButton;
 };
 
 #endif // _gbutton_h

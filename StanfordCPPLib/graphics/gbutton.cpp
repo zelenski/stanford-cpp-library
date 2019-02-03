@@ -3,6 +3,8 @@
  * ------------------
  *
  * @author Marty Stepp
+ * @version 2019/02/02
+ * - destructor now stops event processing
  * @version 2018/09/04
  * - added double-click event support
  * @version 2018/08/23
@@ -37,6 +39,7 @@ GButton::GButton(const std::string& text, const std::string& iconFileName, QWidg
 
 GButton::~GButton() {
     // TODO: delete _button;
+    _iqpushbutton->_gbutton = nullptr;
     _iqpushbutton = nullptr;
 }
 
@@ -167,7 +170,9 @@ _Internal_QPushButton::_Internal_QPushButton(GButton* button, QWidget* parent)
 }
 
 void _Internal_QPushButton::handleClick() {
-    if (!_gbutton->isAcceptingEvent("click")) return;
+    if (!_gbutton || !_gbutton->isAcceptingEvent("click")) {
+        return;
+    }
     GEvent actionEvent(
                 /* class  */ ACTION_EVENT,
                 /* type   */ ACTION_PERFORMED,
@@ -180,8 +185,10 @@ void _Internal_QPushButton::handleClick() {
 void _Internal_QPushButton::mouseDoubleClickEvent(QMouseEvent* event) {
     require::nonNull(event, "_Internal_QPushButton::mouseDoubleClickEvent", "event");
     QWidget::mouseDoubleClickEvent(event);   // call super
+    if (!_gbutton || !_gbutton->isAcceptingEvent("doubleclick")) {
+        return;
+    }
     emit doubleClicked();
-    if (!_gbutton->isAcceptingEvent("doubleclick")) return;
     GEvent mouseEvent(
                 /* class  */ MOUSE_EVENT,
                 /* type   */ MOUSE_DOUBLE_CLICKED,

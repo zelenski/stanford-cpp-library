@@ -2,6 +2,8 @@
  * File: gcanvas.cpp
  * -----------------
  *
+ * @version 2019/02/02
+ * - destructor now stops event processing
  * @version 2018/09/20
  * - added read/write lock for canvas contents to avoid race conditions
  * @version 2018/09/04
@@ -125,6 +127,7 @@ void GCanvas::init(double width, double height, int rgbBackground, QWidget* pare
 
 GCanvas::~GCanvas() {
     // TODO: delete _GCanvas;
+    _iqcanvas->_gcanvas = nullptr;
     _iqcanvas = nullptr;
 }
 
@@ -964,18 +967,26 @@ _Internal_QCanvas::_Internal_QCanvas(GCanvas* gcanvas, QWidget* parent)
 
 void _Internal_QCanvas::enterEvent(QEvent* event) {
     QWidget::enterEvent(event);   // call super
-    if (!_gcanvas->isAcceptingEvent("mouseenter")) return;
+    if (!_gcanvas || !_gcanvas->isAcceptingEvent("mouseenter")) {
+        return;
+    }
     _gcanvas->fireGEvent(event, MOUSE_ENTERED, "mouseenter");
 }
 
 void _Internal_QCanvas::keyPressEvent(QKeyEvent* event) {
     QWidget::keyPressEvent(event);   // call super
-    if (!_gcanvas->isAcceptingEvent("keypress")) return;
+    if (!_gcanvas || !_gcanvas->isAcceptingEvent("keypress")) {
+        return;
+    }
     _gcanvas->fireGEvent(event, KEY_PRESSED, "keypress");
 }
 
 void _Internal_QCanvas::keyReleaseEvent(QKeyEvent* event) {
     QWidget::keyReleaseEvent(event);   // call super
+    if (!_gcanvas) {
+        return;
+    }
+
     if (_gcanvas->isAcceptingEvent("keyrelease")) {
         _gcanvas->fireGEvent(event, KEY_RELEASED, "keyrelease");
     }
@@ -986,14 +997,18 @@ void _Internal_QCanvas::keyReleaseEvent(QKeyEvent* event) {
 
 void _Internal_QCanvas::leaveEvent(QEvent* event) {
     QWidget::leaveEvent(event);   // call super
-    if (!_gcanvas->isAcceptingEvent("mouseexit")) return;
+    if (!_gcanvas || !_gcanvas->isAcceptingEvent("mouseexit")) {
+        return;
+    }
     _gcanvas->fireGEvent(event, MOUSE_EXITED, "mouseexit");
 }
 
 void _Internal_QCanvas::mouseDoubleClickEvent(QMouseEvent* event) {
     QWidget::mouseDoubleClickEvent(event);   // call super
     emit doubleClicked();
-    if (!_gcanvas->isAcceptingEvent("doubleclick")) return;
+    if (!_gcanvas || !_gcanvas->isAcceptingEvent("doubleclick")) {
+        return;
+    }
     GEvent mouseEvent(
                 /* class  */ MOUSE_EVENT,
                 /* type   */ MOUSE_DOUBLE_CLICKED,
@@ -1008,8 +1023,13 @@ void _Internal_QCanvas::mouseDoubleClickEvent(QMouseEvent* event) {
 
 void _Internal_QCanvas::mouseMoveEvent(QMouseEvent* event) {
     QWidget::mouseMoveEvent(event);   // call super
+    if (!_gcanvas) {
+        return;
+    }
     if (!_gcanvas->isAcceptingEvent("mousemove")
-            && !_gcanvas->isAcceptingEvent("mousedrag")) return;
+            && !_gcanvas->isAcceptingEvent("mousedrag")) {
+        return;
+    }
     _gcanvas->fireGEvent(event, MOUSE_MOVED, "mousemove");
     if (event->buttons() != 0) {
         // mouse drag
@@ -1019,12 +1039,17 @@ void _Internal_QCanvas::mouseMoveEvent(QMouseEvent* event) {
 
 void _Internal_QCanvas::mousePressEvent(QMouseEvent* event) {
     QWidget::mousePressEvent(event);   // call super
-    if (!_gcanvas->isAcceptingEvent("mousepress")) return;
+    if (!_gcanvas || !_gcanvas->isAcceptingEvent("mousepress")) {
+        return;
+    }
     _gcanvas->fireGEvent(event, MOUSE_PRESSED, "mousepress");
 }
 
 void _Internal_QCanvas::mouseReleaseEvent(QMouseEvent* event) {
     QWidget::mouseReleaseEvent(event);   // call super
+    if (!_gcanvas) {
+        return;
+    }
     if (_gcanvas->isAcceptingEvent("mouserelease")) {
         _gcanvas->fireGEvent(event, MOUSE_RELEASED, "mouserelease");
     }
@@ -1036,6 +1061,9 @@ void _Internal_QCanvas::mouseReleaseEvent(QMouseEvent* event) {
 
 void _Internal_QCanvas::paintEvent(QPaintEvent* event) {
     QWidget::paintEvent(event);   // call super
+    if (!_gcanvas) {
+        return;
+    }
 
     QPainter painter(this);
     // g.setCompositionMode(QPainter::CompositionMode_DestinationOver);
@@ -1048,6 +1076,9 @@ void _Internal_QCanvas::paintEvent(QPaintEvent* event) {
 
 void _Internal_QCanvas::resizeEvent(QResizeEvent* event) {
     QWidget::resizeEvent(event);   // call super
+    if (!_gcanvas) {
+        return;
+    }
     QSize size = event->size();
     _gcanvas->notifyOfResize(size.width(), size.height());
 }
@@ -1066,6 +1097,9 @@ QSize _Internal_QCanvas::sizeHint() const {
 
 void _Internal_QCanvas::wheelEvent(QWheelEvent* event) {
     QWidget::wheelEvent(event);   // call super
+    if (!_gcanvas) {
+        return;
+    }
     if (event->pixelDelta().y() < 0) {
         // scroll down
         if (_gcanvas->isAcceptingEvent("mousewheeldown")) {

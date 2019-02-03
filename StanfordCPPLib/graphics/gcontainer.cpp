@@ -3,6 +3,8 @@
  * --------------------
  *
  * @author Marty Stepp
+ * @version 2019/02/02
+ * - destructor now stops event processing
  * @version 2018/11/27
  * - added code to set a widget visible after adding/inserting it to flow container
  *   (needed to see widgets added to container after window is showing on screen)
@@ -60,6 +62,7 @@ GContainer::GContainer(Layout /*layout*/, int rows, int cols, QWidget* parent)
 
 GContainer::~GContainer() {
     // TODO: delete _iqcontainer;
+    _iqcontainer->_gcontainer = nullptr;
     _iqcontainer = nullptr;
 }
 

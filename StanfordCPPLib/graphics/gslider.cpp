@@ -3,6 +3,8 @@
  * ------------------
  *
  * @author Marty Stepp
+ * @version 2019/02/02
+ * - destructor now stops event processing
  * @version 2018/08/23
  * - renamed to gslider.cpp to replace Java version
  * @version 2018/06/25
@@ -51,6 +53,7 @@ GSlider::GSlider(Orientation orientation, int min, int max, int value, QWidget* 
 
 GSlider::~GSlider() {
     // TODO: delete _iqslider;
+    _iqslider->_gslider = nullptr;
     _iqslider = nullptr;
 }
 
@@ -192,6 +195,9 @@ _Internal_QSlider::_Internal_QSlider(GSlider* gslider, Qt::Orientation orientati
 }
 
 void _Internal_QSlider::handleChange(int /* value */) {
+    if (!_gslider) {
+        return;
+    }
     GEvent changeEvent(
                 /* class  */ CHANGE_EVENT,
                 /* type   */ STATE_CHANGED,

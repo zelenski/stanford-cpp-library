@@ -187,6 +187,8 @@ protected:
 
 private:
     GCheckBox* _gcheckBox;
+
+    friend class GCheckBox;
 };
 
 #endif // _gcheckbox_h

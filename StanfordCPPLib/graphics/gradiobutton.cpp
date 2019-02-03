@@ -3,6 +3,8 @@
  * ----------------------
  *
  * @author Marty Stepp
+ * @version 2019/02/02
+ * - destructor now stops event processing
  * @version 2018/10/06
  * - added toggle()
  * @version 2018/09/04
@@ -37,6 +39,7 @@ GRadioButton::GRadioButton(const std::string& text, const std::string& group, bo
 
 GRadioButton::~GRadioButton() {
     // TODO: delete _iqradioButton;
+    _iqradioButton->_gradioButton = nullptr;
     _iqradioButton = nullptr;
 }
 
@@ -151,8 +154,14 @@ void _Internal_QRadioButton::handleClick() {
 void _Internal_QRadioButton::mouseDoubleClickEvent(QMouseEvent* event) {
     require::nonNull(event, "_Internal_QRadioButton::mouseDoubleClickEvent");
     QWidget::mouseDoubleClickEvent(event);   // call super
+    if (!_gradioButton) {
+        return;
+    }
+
     emit doubleClicked();
-    if (!_gradioButton->isAcceptingEvent("doubleclick")) return;
+    if (!_gradioButton->isAcceptingEvent("doubleclick")) {
+        return;
+    }
     GEvent mouseEvent(
                 /* class  */ MOUSE_EVENT,
                 /* type   */ MOUSE_DOUBLE_CLICKED,

@@ -175,6 +175,8 @@ public slots:
 
 private:
     GScrollBar* _gscrollbar;
+
+    friend class GScrollBar;
 };
 
 #endif // _gscrollbar_h

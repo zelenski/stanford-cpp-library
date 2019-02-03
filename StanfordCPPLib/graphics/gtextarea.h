@@ -393,6 +393,8 @@ public slots:
 
 private:
     GTextArea* _gtextarea;
+
+    friend class GTextArea;
 };
 
 #endif // _gtextarea_h

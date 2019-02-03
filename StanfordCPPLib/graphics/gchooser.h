@@ -207,6 +207,8 @@ public slots:
 
 private:
     GChooser* _gchooser;
+
+    friend class GChooser;
 };
 
 // alias GComboBox for GChooser for name compatibility with Java and Qt

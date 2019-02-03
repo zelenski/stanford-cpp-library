@@ -334,7 +334,9 @@ QVariant _Internal_QTextBrowser::loadResource(int type, const QUrl &url) {
 
 void _Internal_QTextBrowser::mousePressEvent(QMouseEvent* event) {
     QTextBrowser::mousePressEvent(event);
-    if (!_gbrowserpane->isAcceptingEvent("linkclick")) return;
+    if (!_gbrowserpane->isAcceptingEvent("linkclick")) {
+        return;
+    }
     if (!(event->button() & Qt::LeftButton)) {
         return;
     }

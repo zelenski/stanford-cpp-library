@@ -246,6 +246,8 @@ public slots:
 
 private:
     GSlider* _gslider;
+
+    friend class GSlider;
 };
 
 #endif // _gslider_h

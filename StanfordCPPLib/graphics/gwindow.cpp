@@ -2,6 +2,8 @@
  * File: gwindow.cpp
  * -----------------
  *
+ * @version 2019/02/02
+ * - destructor now stops event processing
  * @version 2018/10/20
  * - added high-density screen features
  * @version 2018/10/11
@@ -120,7 +122,10 @@ GWindow::~GWindow() {
         _lastWindow = nullptr;
     }
     // TODO: delete _iqmainwindow;
-    _iqmainwindow = nullptr;
+    if (_iqmainwindow) {
+        _iqmainwindow->_gwindow = nullptr;
+        _iqmainwindow = nullptr;
+    }
 }
 
 void GWindow::_autograder_setIsAutograderWindow(bool /*isAutograderWindow*/) {
@@ -1121,7 +1126,7 @@ _Internal_QMainWindow::_Internal_QMainWindow(GWindow* gwindow, QWidget* parent)
 void _Internal_QMainWindow::changeEvent(QEvent* event) {
     require::nonNull(event, "_Internal_QMainWindow::changeEvent", "event");
     QMainWindow::changeEvent(event);   // call super
-    if (event->type() != QEvent::WindowStateChange) {
+    if (!_gwindow || event->type() != QEvent::WindowStateChange) {
         return;
     }
 
@@ -1143,6 +1148,11 @@ void _Internal_QMainWindow::changeEvent(QEvent* event) {
 
 void _Internal_QMainWindow::closeEvent(QCloseEvent* event) {
     require::nonNull(event, "_Internal_QMainWindow::closeEvent", "event");
+    if (!_gwindow) {
+        QMainWindow::closeEvent(event);   // call super
+        return;
+    }
+
     // send "closing" event before window closes
     _gwindow->fireGEvent(event, WINDOW_CLOSING, "closing");
 
@@ -1176,18 +1186,27 @@ void _Internal_QMainWindow::handleMenuAction(const std::string& menu, const std:
 void _Internal_QMainWindow::keyPressEvent(QKeyEvent* event) {
     require::nonNull(event, "_Internal_QMainWindow::keyPressEvent", "event");
     QMainWindow::keyPressEvent(event);   // call super
+    if (!_gwindow) {
+        return;
+    }
     _gwindow->processKeyPressEventInternal(event);
 }
 
 void _Internal_QMainWindow::resizeEvent(QResizeEvent* event) {
     require::nonNull(event, "_Internal_QMainWindow::resizeEvent", "event");
     QMainWindow::resizeEvent(event);   // call super
+    if (!_gwindow) {
+        return;
+    }
     _gwindow->fireGEvent(event, WINDOW_RESIZED, "resize");
 }
 
 void _Internal_QMainWindow::timerEvent(QTimerEvent* event) {
     require::nonNull(event, "_Internal_QMainWindow::timerEvent", "event");
     QMainWindow::timerEvent(event);   // call super
+    if (!_gwindow) {
+        return;
+    }
     _gwindow->fireGEvent(event, TIMER_TICKED, "timer");
 }
 

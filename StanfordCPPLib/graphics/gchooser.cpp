@@ -3,6 +3,8 @@
  * ------------------
  *
  * @author Marty Stepp
+ * @version 2019/02/02
+ * - destructor now stops event processing
  * @version 2018/08/23
  * - renamed to gchooser.cpp to replace Java version
  * @version 2018/06/28
@@ -46,6 +48,7 @@ GChooser::GChooser(const Vector<std::string>& items, QWidget* parent) {
 
 GChooser::~GChooser() {
     // TODO: delete _iqcomboBox;
+    _iqcomboBox->_gchooser = nullptr;
     _iqcomboBox = nullptr;
 }
 
@@ -190,6 +193,9 @@ _Internal_QComboBox::_Internal_QComboBox(GChooser* gchooser, QWidget* parent)
 }
 
 void _Internal_QComboBox::handleChange() {
+    if (!_gchooser) {
+        return;
+    }
     GEvent changeEvent(
                 /* class  */ CHANGE_EVENT,
                 /* type   */ STATE_CHANGED,

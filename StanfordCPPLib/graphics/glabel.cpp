@@ -3,6 +3,8 @@
  * ----------------
  *
  * @author Marty Stepp
+ * @version 2019/02/02
+ * - destructor now stops event processing
  * @version 2018/10/04
  * - added get/setWordWrap
  * @version 2018/09/04
@@ -45,6 +47,7 @@ GLabel::GLabel(const std::string& text, const std::string& iconFileName, QWidget
 GLabel::~GLabel() {
     // TODO: if (_gtext) { delete _gtext; }
     // TODO: delete _iqlabel;
+    _iqlabel->_glabel = nullptr;
     _iqlabel = nullptr;
 }
 
@@ -297,8 +300,13 @@ _Internal_QLabel::_Internal_QLabel(GLabel* glabel, QWidget* parent)
 void _Internal_QLabel::mouseDoubleClickEvent(QMouseEvent* event) {
     require::nonNull(event, "_Internal_QLabel::mouseDoubleClickEvent", "event");
     QWidget::mouseDoubleClickEvent(event);   // call super
+    if (!_glabel) {
+        return;
+    }
     emit doubleClicked();
-    if (!_glabel->isAcceptingEvent("doubleclick")) return;
+    if (!_glabel->isAcceptingEvent("doubleclick")) {
+        return;
+    }
     GEvent mouseEvent(
                 /* class  */ MOUSE_EVENT,
                 /* type   */ MOUSE_DOUBLE_CLICKED,
@@ -314,6 +322,9 @@ void _Internal_QLabel::mouseDoubleClickEvent(QMouseEvent* event) {
 void _Internal_QLabel::mousePressEvent(QMouseEvent* event) {
     require::nonNull(event, "_Internal_QLabel::mousePressEvent", "event");
     QWidget::mousePressEvent(event);   // call super
+    if (!_glabel) {
+        return;
+    }
 
     // fire the signal/event only for left-clicks
     if (!(event->button() & Qt::LeftButton)) {
@@ -322,7 +333,9 @@ void _Internal_QLabel::mousePressEvent(QMouseEvent* event) {
 
     emit clicked();
 
-    if (!_glabel->isAcceptingEvent("click")) return;
+    if (!_glabel->isAcceptingEvent("click")) {
+        return;
+    }
 
     GEvent actionEvent(
                 /* class  */ ACTION_EVENT,
