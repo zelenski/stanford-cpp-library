@@ -404,6 +404,61 @@ public:
     /**********************************************************************/
 
 private:
+    static_assert(stanfordcpplib::collections::IsHashable<KeyType>::value,
+                  "Oops! You tried using a type as a key in our HashMap without making it hashable. Click this error for more details.");
+    /*
+     * Hello CS106 students! If you got directed to this line of code in a compiler error,
+     * it probably means that you tried making a HashMap with a custom struct or class type
+     * as the key type or a HashSet with a custom struct as a value type. (The same also
+     * applies for LinkedHashMap and LinkedHashSet.)
+     *
+     * In order to have a type be a key type in a HashMap - or to have a type be a value type
+     * in a HashSet - it needs to have a hashCode function defined and be capable of being
+     * compared using the == operator. If you were directed here, one of those two conditions
+     * wasn't met.
+     *
+     * There are two ways to fix this. The first option would simply be to not use your custom
+     * type as a key in the HashMap or value in a HashSet. This is probably the easiest option.
+     *
+     * The second way to fix this is to explicitly define a hashCode() and operator== function
+     * for your type. To do so, first define hashCode as follows:
+     *
+     *     int hashCode(const YourCustomType& obj) {
+     *         return hashCode(obj.data1, obj.data2, ..., obj.dataN);
+     *     }
+     *
+     * where data1, data2, ... dataN are the data members of your type. For example, if you had
+     * a custom type
+     *
+     *     struct MyType {
+     *         int myInt;
+     *         string myString;
+     *     };
+     *
+     * you would define the function
+     *
+     *     int hashCode(const MyType& obj) {
+     *         return hashCode(obj.myInt, obj.myString);
+     *     }
+     *
+     * Second, define operator== as follows:
+     *
+     *     bool operator== (const YourCustomType& lhs, const YourCustomType& rhs) {
+     *         return lhs.data1 == rhs.data1 &&
+     *                lhs.data2 == rhs.data2 &&
+     *                         ...
+     *                lhs.dataN == rhs.dataN;
+     *     }
+     *
+     * Using the MyType example from above, we'd write
+     *
+     *     bool operator== (const MyType& lhs, const MyType& rhs) {
+     *         return lhs.myInt == rhs.myInt && lhs.myString == rhs.myString;
+     *     }
+     *
+     * Hope this helps!
+     */
+
     struct Hasher {
         std::size_t operator()(const KeyType& key) const {
             return hashCode(key);

@@ -439,6 +439,49 @@ public:
     /**********************************************************************/
 
 private:
+    static_assert(stanfordcpplib::collections::IsLessThanComparable<KeyType>::value,
+                  "Oops! You tried using a type as a key in our Map without making it comparable. Click this error for more details.");
+    /*
+     * Hello CS106 students! If you got directed to this line of code in a compiler error,
+     * it probably means that you tried making a Map with a custom struct or class type
+     * as the key type or a Set with a custom struct as a value type.
+     *
+     * In order to have a type be a key type in a Map - or to have a type be a value type
+     * in a Set - it needs to have be comparable using the < operator. By default, types in C++
+     * can't be compared using the < operator, hence the error.
+     *
+     * There are two ways to fix this. The first option would simply be to not use your custom
+     * type as a key in the Map or value in a Set. This is probably the easiest option.
+     *
+     * The second way to fix this is to explicitly define an operator< function for your custom
+     * type. Here's the syntax for doing that:
+     *
+     *     bool operator< (const YourCustomType& lhs, const YourCustomType& rhs) {
+     *         return compareTo(lhs.data1, rhs.data1,
+     *                          lhs.data2, rhs.data2,
+     *                          ...
+     *                          lhs.dataN, rhs.dataN);
+     *     }
+     *
+     * where data1, data2, ... dataN are the data members of your type. For example, if you had
+     * a custom type
+     *
+     *     struct MyType {
+     *         int myInt;
+     *         string myString;
+     *     };
+     *
+     * you would define the function
+     *
+     *     bool operator< (const MyType& lhs, const MyType& rhs) {
+     *         return compareTo(lhs.myInt,    rhs.myInt,
+     *                          lhs.myString, rhs.myString);
+     *     }
+     *
+     * Hope this helps!
+     */
+
+
     using MapType = std::map<KeyType, ValueType, std::function<bool(const KeyType&, const KeyType&)>>;
     MapType mElements;
     stanfordcpplib::collections::VersionTracker mVersion;

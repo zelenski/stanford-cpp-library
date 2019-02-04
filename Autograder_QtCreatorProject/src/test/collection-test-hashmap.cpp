@@ -25,6 +25,18 @@ TEST_CATEGORY(HashMapTests, "HashMap tests");
 template class HashMap<int, int>;
 template class HashMap<std::string, int>;
 
+/*
+ * Uncomment this code to include tests that the nice error messages for types missing
+ * hashing show up properly.
+ */
+#if 0
+void causeCompilerError() {
+    struct Bad {};
+
+    HashMap<Bad, int> bad; // Should trigger a static assertion rather than a long chain of sorrows
+}
+#endif
+
 TIMED_TEST(HashMapTests, forEachTest_HashMap, TEST_TIMEOUT_DEFAULT) {
     HashMap<std::string, int> hmap;
     hmap["a"] = 1;
