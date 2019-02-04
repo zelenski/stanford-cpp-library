@@ -26,6 +26,18 @@ TEST_CATEGORY(HashSetTests, "HashSet tests");
 template class stanfordcpplib::collections::GenericSet<stanfordcpplib::collections::HashSetTraits<int>>;
 template class stanfordcpplib::collections::GenericSet<stanfordcpplib::collections::HashSetTraits<std::string>>;
 
+/*
+ * Uncomment this code to include tests that the nice error messages for types missing
+ * hashing show up properly.
+ */
+#if 0
+void causeCompilerError() {
+    struct Bad {};
+
+    HashSet<Bad> bad; // Should trigger a static assertion rather than a long chain of sorrows
+}
+#endif
+
 TIMED_TEST(HashSetTests, commaOperatorTest_HashSet, TEST_TIMEOUT_DEFAULT) {
     /* Confirm that commas work properly. */
     HashSet<int> one = {1, 2, 3};

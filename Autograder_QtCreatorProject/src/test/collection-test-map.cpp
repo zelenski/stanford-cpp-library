@@ -25,6 +25,18 @@ TEST_CATEGORY(MapTests, "Map tests");
 template class Map<int, int>;
 template class Map<std::string, int>;
 
+/*
+ * Uncomment this code to include tests that the nice error messages for types missing
+ * hashing show up properly.
+ */
+#if 0
+void causeCompilerError() {
+    struct Bad {};
+
+    Map<Bad, int> bad; // Should trigger a static assertion rather than a long chain of sorrows
+}
+#endif
+
 TIMED_TEST(MapTests, compareTest_Map, TEST_TIMEOUT_DEFAULT) {
     // TODO
 }

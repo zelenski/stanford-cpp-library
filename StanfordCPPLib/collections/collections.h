@@ -35,6 +35,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <type_traits>
 
 #define INTERNAL_INCLUDE 1
 #include "error.h"
@@ -1712,6 +1713,56 @@ std::istream& operator >>(std::istream& is, GenericSet<SetTraits>& set) {
     typename SetTraits::ValueType element;
     return stanfordcpplib::collections::readCollection(is, set, element, /* descriptor */ SetTraits::name() + "::operator >>");
 }
+
+
+/*
+ * Types used to automatically check whether a type is comparable using
+ * the < operator and whether a type supports operator== and hashCode.
+ *
+ * This is used to provide better compiler diagnostics to students when
+ * they try to instantiate our times incorrectly.
+ *
+ * Later on, when C++20 concepts are rolled out, we should consider
+ * replacing this code with concepts.
+ */
+template <typename T>
+struct IsLessThanComparable {
+private:
+    /* Use SFNIAE overloading to detect which of these two options to pick. */
+    struct Yes{};
+    struct No {};
+
+    template <typename U>
+    static Yes check(int,
+                     decltype(std::declval<U>() < std::declval<U>()) = 0);
+    template <typename U> static No  check(...);
+
+public:
+    static constexpr bool value =
+            std::conditional<std::is_same<decltype(check<T>(0)), Yes>::value,
+                             std::true_type,
+                             std::false_type>::type::value;
+};
+
+template <typename T>
+struct IsHashable {
+private:
+    /* Use SFNIAE overloading to detect which of these two options to pick. */
+    struct Yes{};
+    struct No {};
+
+    template <typename U>
+    static Yes check(int,
+                     decltype(hashCode(std::declval<U>())) = 0,
+                     decltype(std::declval<U>() == std::declval<U>()) = 0);
+    template <typename U> static No  check(...);
+
+public:
+    static constexpr bool value =
+            std::conditional<std::is_same<decltype(check<T>(0)), Yes>::value,
+                             std::true_type,
+                             std::false_type>::type::value;
+};
 
 
 } // namespace collections
