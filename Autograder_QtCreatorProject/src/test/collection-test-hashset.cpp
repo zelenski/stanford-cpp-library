@@ -38,6 +38,16 @@ void causeCompilerError() {
 }
 #endif
 
+/*
+ * Uncomment this code to check whether nice error messages show up when you try to initialize
+ * a HashSet improperly.
+ */
+#if 0
+void badInitializationError() {
+    HashSet<std::string> mySet = "137";
+}
+#endif
+
 TIMED_TEST(HashSetTests, commaOperatorTest_HashSet, TEST_TIMEOUT_DEFAULT) {
     /* Confirm that commas work properly. */
     HashSet<int> one = {1, 2, 3};

@@ -24,6 +24,20 @@ template class stanfordcpplib::collections::GenericSet<stanfordcpplib::collectio
 
 TEST_CATEGORY(LinkedHashSetTests, "LinkedHashSet tests");
 
+#if 0
+void causeCompilerError() {
+    struct Bad {};
+
+    LinkedHashSet<Bad> bad; // Should trigger a static assertion rather than a long chain of sorrows
+}
+#endif
+
+#if 0
+void badInitializationError() {
+    LinkedHashSet<std::string> mySet = "137";
+}
+#endif
+
 TIMED_TEST(LinkedHashSetTests, commaOperatorLinkedHashTest_Set, TEST_TIMEOUT_DEFAULT) {
     /* Confirm that commas work properly. */
     LinkedHashSet<int> one = {1, 2, 3};

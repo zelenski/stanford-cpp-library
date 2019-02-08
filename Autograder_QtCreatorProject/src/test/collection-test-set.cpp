@@ -25,6 +25,38 @@ TEST_CATEGORY(SetTests, "Set tests");
 template class stanfordcpplib::collections::GenericSet<stanfordcpplib::collections::SetTraits<int>>;
 template class stanfordcpplib::collections::GenericSet<stanfordcpplib::collections::SetTraits<std::string>>;
 
+/*
+ * Uncomment this code to include tests that the nice error messages for types missing
+ * hashing show up properly.
+ */
+#if 0
+void causeCompilerError() {
+    struct Bad {};
+
+    Set<Bad> bad; // Should trigger a static assertion rather than a long chain of sorrows
+}
+#endif
+
+/*
+ * We should NOT get a compiler error trying to stash things in a Set that are not
+ * comparable as long as we provide a custom comparator.
+ */
+static void customComparatorNoError() {
+    struct Meh {};
+
+    Set<Meh> okay([](const Meh&, const Meh&) {
+        return true;
+    });
+
+    (void) okay;
+}
+
+#if 0
+void badInitializationError() {
+    Set<std::string> mySet = "137";
+}
+#endif
+
 TIMED_TEST(SetTests, commaOperatorTest_Set, TEST_TIMEOUT_DEFAULT) {
     /* Confirm that commas work properly. */
     Set<int> one = {1, 2, 3};

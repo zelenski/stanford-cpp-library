@@ -1008,9 +1008,20 @@ private:
  * This class stores a collection of distinct elements. SetTraits should be
  * a type containing the following:
  *
- *     typename ValueType:        whatever is stored in the map
- *     typename MapType:          should be a Map<ValueType, bool>
- *     static std::string name(): should return the name of the type.
+ *     typename ValueType:          whatever is stored in the map
+ *     typename MapType:            should be a Map<ValueType, bool>
+ *     static std::string name():   should return the name of the type.
+ *
+ * There's one more requirement: you need to define a function
+ *
+ *     template <typename... Args>
+ *        static MapType construct(Args&&... args)
+ *
+ * that constructs an internal MapType object with the specified arguments.
+ * This function should do something creative or clever to ensure that there
+ * is a nice compiler error generated in the event that the arguments are
+ * invalid, since otherwise the error is going to be deeply nested inside the
+ * GenericSet template.
  *
  * This is not meant to be used directly by students.
  */
@@ -1045,7 +1056,7 @@ public:
      * Forwards the specified arguments down to the underlying Map type.
      */
     template <typename... Args>
-    GenericSet(Args... args);
+    explicit GenericSet(Args... args);
 
     /*
      * Constructor: GenericSet
@@ -1402,8 +1413,8 @@ public:
     /**********************************************************************/
 
 private:
-    typename SetTraits::MapType map;  /* Map used to store the elements    */
-    bool removeFlag = false;          /* Flag to differentiate += and -=   */
+    typename SetTraits::MapType map = SetTraits::construct();  /* Map used to store the elements    */
+    bool removeFlag = false;                                   /* Flag to differentiate += and -=   */
 
 public:
     /*
@@ -1441,7 +1452,8 @@ public:
 };
 
 template <typename SetTraits>
-GenericSet<SetTraits>::GenericSet(std::initializer_list<value_type> list) {
+GenericSet<SetTraits>::GenericSet(std::initializer_list<value_type> list)
+    : map(SetTraits::construct()) {
     /* Can't do addAll because that would recursively try constructing a GenericSet.
      * Instead, directly add everything here. This becomes the focal point for
      * all initializer_list conversions.
@@ -1453,14 +1465,15 @@ GenericSet<SetTraits>::GenericSet(std::initializer_list<value_type> list) {
 
 template <typename SetTraits>
 template <typename... Args>
-GenericSet<SetTraits>::GenericSet(Args... args) : map(args...) {
-
+GenericSet<SetTraits>::GenericSet(Args... args) : GenericSet({}, std::move(args)...) {
+    // Handled by other constructor
 }
 
 template <typename SetTraits>
 template <typename... Args>
 GenericSet<SetTraits>::GenericSet(std::initializer_list<value_type> list, Args... args)
-    : map(args...) {
+    : map(SetTraits::construct(std::move(args)...)) {
+
     /* Can't do addAll because that would recursively try constructing a GenericSet.
      * Instead, directly add everything here. This becomes the focal point for
      * all initializer_list conversions.
@@ -1764,6 +1777,63 @@ public:
                              std::false_type>::type::value;
 };
 
+/*
+ * Returns std::less<T>, except with a nice static assertion wrapped around it to
+ * make sure that in the event that T isn't comparable via <, the error message is
+ * more readable.
+ */
+template <typename T>
+std::function<bool (const T&, const T&)> checkedLess() {
+    static_assert(IsLessThanComparable<T>::value,
+                  "Oops! You tried using a type as a key in our Map without making it comparable. Click this error for more details.");
+    /*
+     * Hello CS106 students! If you got directed to this line of code in a compiler error,
+     * it probably means that you tried making a Map with a custom struct or class type
+     * as the key type or a Set with a custom struct as a value type.
+     *
+     * In order to have a type be a key type in a Map - or to have a type be a value type
+     * in a Set - it needs to have be comparable using the < operator. By default, types in C++
+     * can't be compared using the < operator, hence the error.
+     *
+     * There are two ways to fix this. The first option would simply be to not use your custom
+     * type as a key in the Map or value in a Set. This is probably the easiest option.
+     *
+     * The second way to fix this is to explicitly define an operator< function for your custom
+     * type. Here's the syntax for doing that:
+     *
+     *     bool operator< (const YourCustomType& lhs, const YourCustomType& rhs) {
+     *         return compareTo(lhs.data1, rhs.data1,
+     *                          lhs.data2, rhs.data2,
+     *                          ...
+     *                          lhs.dataN, rhs.dataN);
+     *     }
+     *
+     * where data1, data2, ... dataN are the data members of your type. For example, if you had
+     * a custom type
+     *
+     *     struct MyType {
+     *         int myInt;
+     *         string myString;
+     *     };
+     *
+     * you would define the function
+     *
+     *     bool operator< (const MyType& lhs, const MyType& rhs) {
+     *         return compareTo(lhs.myInt,    rhs.myInt,
+     *                          lhs.myString, rhs.myString);
+     *     }
+     *
+     * Hope this helps!
+     */
+    return std::less<T>();
+}
+
+/*
+ * Utility traits type that always contains a value that's false.
+ */
+template <typename... Args> struct Fail {
+    static constexpr bool value = false;
+};
 
 } // namespace collections
 } // namespace stanfordcpplib

@@ -37,6 +37,19 @@ void causeCompilerError() {
 }
 #endif
 
+/* This code, on the other hand, should NOT cause a compiler error, since we gave an
+ * explicit comparison function.
+ */
+static void customComparatorNoError() {
+    struct Meh {};
+
+    Map<Meh, int> okay([](const Meh&, const Meh&) {
+        return true;
+    });
+
+    (void) okay;
+}
+
 TIMED_TEST(MapTests, compareTest_Map, TEST_TIMEOUT_DEFAULT) {
     // TODO
 }
