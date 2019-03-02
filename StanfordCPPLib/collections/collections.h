@@ -1209,8 +1209,10 @@ public:
      * Usage: set.mapAll(fn);
      * ----------------------
      * Iterates through the elements of the set and calls <code>fn(value)</code>
-     * for each one.  The values are processed in ascending order, as defined
-     * by the comparison function.
+     * for each one.  The iteration order matches the underlying order in which
+     * the elements are stored.  For Set, this is sorted order according to the
+     * comparison function; for LinkedHashSet, this is the insertion order; and
+     * for HashSet, this is whatever order the elements happen to be in.
      */
     void mapAll(std::function<void (const value_type&)> fn) const;
 
