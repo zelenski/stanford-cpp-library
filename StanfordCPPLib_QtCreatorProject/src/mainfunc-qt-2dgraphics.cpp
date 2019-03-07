@@ -3,6 +3,7 @@
  */
 
 #include <iostream>
+#include <fstream>
 #include "gcolor.h"
 #include "gobjects.h"
 #include "ginteractors.h"
@@ -61,6 +62,8 @@ void testQwindowDrawing() {
     static double dx = 5;
     static double dy = 3;
     static GImage* image = nullptr;
+    static GImage* image2 = nullptr;
+    static GImage* image3 = nullptr;
 
     window = new GWindow(900, 500);
     // window->setCanvasSize(900, 500);
@@ -138,6 +141,7 @@ void testQwindowDrawing() {
 
     // foreground layer
     static GImage* gimage = nullptr;
+    static GImage* gimage2 = nullptr;
     if (TEST_FOREGROUND) {
         ball = new GOval(20, 20, 50, 50);
         ball->setFillColor("#aaff0033");
@@ -163,6 +167,12 @@ void testQwindowDrawing() {
         gimage->setOpacity(0.6);
         window->add(gimage);
 
+        std::ifstream input("triangle-icon.png", ios::binary);
+        if (!input) error("Oops - file is missing?");
+        gimage2 = new GImage(input, 300, 40);
+        gimage2->setOpacity(0.6);
+        window->add(gimage2);
+
         window->setColor("blue");
         GText* gtext3 = new GText("Third string", 240, 120);
         gtext3->setColor("blue");
@@ -174,6 +184,18 @@ void testQwindowDrawing() {
         canvas->fillRect(20, 20, 50, 30);
         image = canvas->toGImage();
         window->add(image, 300, 100);
+
+        GCanvas* canvas2 = new GCanvas("triangle-icon.png");
+        image2 = canvas2->toGImage();
+        window->add(image2, 500, 100);
+
+        std::ifstream input2("triangle-icon.png", ios::binary);
+        if (!input2) error("Oops: file is missing?");
+
+        GCanvas* canvas3 = new GCanvas(input2);
+        image3 = canvas3->toGImage();
+        image3->setLocation(600, 100);
+        window->add(image3);
     }
 
     if (TEST_LAYOUT_WIDGETS) {

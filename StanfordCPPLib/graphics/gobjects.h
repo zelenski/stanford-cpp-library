@@ -965,6 +965,16 @@ public:
     GImage(const std::string& filename = "", double x = 0, double y = 0);
 
     /**
+     * Constructs a new image by loading the image from the specified input stream.
+     * By default, the upper left corner of the image appears at the origin,
+     * but you can pass coordinates to move it to the point
+     * (<code>x</code>, <code>y</code>).
+     * @throw ErrorException if the given file is not found or cannot be loaded
+     *        as a valid image file
+     */
+    GImage(std::istream& source, double x = 0, double y = 0);
+
+    /**
      * Creates a blank GImage of the given width and height.
      * Called by GCanvas when converting to an image.
      */
@@ -1021,6 +1031,8 @@ protected:
     QImage* getQImage() const;
 
 private:
+    bool loadFromStream(std::istream& input);
+
     std::string _filename;
     QImage* _qimage;
 

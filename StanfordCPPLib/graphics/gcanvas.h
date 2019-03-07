@@ -141,6 +141,13 @@ public:
     GCanvas(const std::string& filename, QWidget* parent = nullptr);
 
     /**
+     * Creates a canvas that loads its background layer pixel data from
+     * the given input stream
+     * @throw if the given stream cannot be read as a valid image file
+     */
+    GCanvas(std::istream& filename, QWidget* parent = nullptr);
+
+    /**
      * Creates an empty canvas of the specified size and optional background color.
      * If no background color is passed, a default transparent background is used.
      * @throw ErrorException if the given width/height ranges are negative
@@ -718,6 +725,7 @@ private:
 
     friend class _Internal_QCanvas;
 
+    bool loadFromStream(std::istream& input);
     void ensureBackgroundImage();
     void ensureBackgroundImageConstHack() const;
     void init(double width, double height, int rgbBackground, QWidget* parent);
