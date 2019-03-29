@@ -334,6 +334,15 @@ public:
     Vector<ValueType> subList(int start, int length) const;
 
     /**
+     * Returns a new vector containing the elements from the start position
+     * to the end of the vector.
+     *
+     * @throw ErrorException if start > size()
+     * @bigoh O(N)
+     */
+    Vector<ValueType> subList(int start) const;
+
+    /**
      * Converts the vector to a printable string representation
      * such as "{10, 20, 30, 40}".
      * @bigoh O(N)
@@ -363,6 +372,12 @@ public:
      * @bigoh O(N)
      */
     Vector operator +(const Vector& v2) const;
+
+    /**
+     * Produces a vector formed by appending the given element to this vector.
+     * @bigoh O(N)
+     */
+    Vector operator +(const ValueType& elem) const;
 
     /**
      * Adds all of the elements from <code>v2</code> to the end of this vector.
@@ -750,6 +765,11 @@ Vector<ValueType> Vector<ValueType>::subList(int start, int length) const {
 }
 
 template <typename ValueType>
+Vector<ValueType> Vector<ValueType>::subList(int start) const {
+    return subList(start, size() - start);
+}
+
+template <typename ValueType>
 std::string Vector<ValueType>::toString() const {
     std::ostringstream os;
     os << *this;
@@ -776,6 +796,12 @@ template <typename ValueType>
 Vector<ValueType> Vector<ValueType>::operator +(const Vector& v2) const {
     Vector<ValueType> result = *this;
     return result.addAll(v2);
+}
+
+template <typename ValueType>
+Vector<ValueType> Vector<ValueType>::operator +(const ValueType& elem) const {
+    Vector<ValueType> result = *this;
+    return result += elem;
 }
 
 template <typename ValueType>

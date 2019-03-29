@@ -81,6 +81,29 @@ TIMED_TEST(VectorTests, compareTest_Vector, TEST_TIMEOUT_DEFAULT) {
     assertEqualsString("sv", "{{}, {1, 1, 7}, {1, 2, 4, 5}, {1, 2, 4, 5, 6, 7}, {1, 3, 1, 4, 8}, {2, 0}}", sv.toString());
 }
 
+TIMED_TEST(VectorTests, concatTest_Vector, TEST_TIMEOUT_DEFAULT) {
+    Vector<int> lhs =      {  1,  3,  5,  7,  9 };
+    Vector<int> rhs =      { 11, 13, 15, 17, 19 };
+    auto expected   =      {  1,  3,  5,  7,  9,
+                             11, 13, 15, 17, 19 };
+
+    auto lhsBackup  =      {  1,  3,  5,  7,  9 };
+    auto rhsBackup  =      { 11, 13, 15, 17, 19 };
+
+    /* Confirm that Vector + Vector works. */
+    assertCollection("basic concat", expected, lhs + rhs);
+    assertCollection("don't change operands", lhsBackup, lhs);
+    assertCollection("don't change operands", rhsBackup, rhs);
+
+    /* Try appending individual values. */
+    Vector<int> before = { 1, 3, 5, 7 };
+    auto beforeBackup  = { 1, 3, 5, 7 };
+    auto after         = { 1, 3, 5, 7, 9 };
+
+    assertCollection("single elem concat", after, before + 9);
+    assertCollection("don't change operands", beforeBackup, before);
+}
+
 TIMED_TEST(VectorTests, forEachTest_Vector, TEST_TIMEOUT_DEFAULT) {
     Vector<int> v1 {1, 2, 3};
     assertCollection("foreach Vector", {1, 2, 3}, v1);
@@ -551,4 +574,30 @@ TIMED_TEST(VectorTests, streamExtractTest_Vector2bad, TEST_TIMEOUT_DEFAULT) {
     std::istringstream vstreambad("1, 2, 3}");
     bool result = bool(vstreambad >> v);
     assertFalse("operator >> on bad vector", result);
+}
+
+TIMED_TEST(VectorTests, sublistTest_Vector, TEST_TIMEOUT_DEFAULT) {
+    Vector<int> values = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+    /* Brute-force check all two-arg sublists. */
+    for (int start = 0; start <= values.size(); start++) {
+        for (int length = 0; length + start <= values.size(); length++) {
+            Vector<int> sub = values.subList(start, length);
+            assertEqualsInt("has right length", length, sub.size());
+
+            for (int i = 0; i < length; i++) {
+                assertEqualsInt("has right values", i + start, sub[i]);
+            }
+        }
+    }
+
+    /* Brute-force check all one-arg sublists. */
+    for (int start = 0; start <= values.size(); start++) {
+        Vector<int> sub = values.subList(start);
+        assertEqualsInt("has right length", values.size() - start, sub.size());
+
+        for (int i = 0; i < sub.size(); i++) {
+            assertEqualsInt("has right values", i + start, sub[i]);
+        }
+    }
 }
