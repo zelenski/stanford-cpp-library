@@ -5,6 +5,8 @@
  * by student code on the console.
  * 
  * @author Marty Stepp
+ * @version 2019/04/02
+ * - small fix for warning about -Wreturn-std-move on string exception
  * @version 2018/10/18
  * - added set_unexpected handler (used by autograders when errors are thrown)
  * - added some new function names to filter from stack traces
@@ -669,7 +671,7 @@ static void stanfordCppLibTerminateHandler() {
         }
     } catch (const std::exception& ex) {
         FILL_IN_EXCEPTION_TRACE(ex, "A C++ exception", insertStarsBeforeEachLine(ex.what()));
-    } catch (std::string str) {
+    } catch (const std::string& str) {
         FILL_IN_EXCEPTION_TRACE(str, "A string exception", insertStarsBeforeEachLine(str));
     } catch (char const* str) {
         FILL_IN_EXCEPTION_TRACE(str, "A string exception", insertStarsBeforeEachLine(str));
