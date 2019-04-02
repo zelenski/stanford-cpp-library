@@ -18,6 +18,10 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2019/02/14
+# - faster Windows compilation
+# - support for nested directories in src/
+# - fix Windows resource copying; directories are now preserved
 # @version 2019/02/01
 # - fixed compiler warning flags for greater granularity
 # @version 2018/10/23
@@ -124,6 +128,10 @@ PROJECT_FILTER =
 QT       += core gui multimedia network
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+# The Windows version of make does not handle spaces well. As a result, we need to ensure that the target name
+# does not have any spaces.
+TARGET = $$replace(TARGET, " ", _)
+
 ###############################################################################
 # BEGIN SECTION FOR SPECIFYING SOURCE/LIBRARY/RESOURCE FILES OF PROJECT       #
 ###############################################################################
@@ -212,15 +220,8 @@ SOURCES = ""
 
 # include various source .cpp files and header .h files in the build process
 # (student's source code can be put into project root, or src/ subfolder)
-exists($$PWD/lib/StanfordCPPLib/*.cpp) {
-    SOURCES *= $$files($$PWD/lib/StanfordCPPLib/*.cpp)
-}
-SOURCES *= $$files($$PWD/lib/StanfordCPPLib/collections/*.cpp)
-SOURCES *= $$files($$PWD/lib/StanfordCPPLib/graphics/*.cpp)
-SOURCES *= $$files($$PWD/lib/StanfordCPPLib/io/*.cpp)
-SOURCES *= $$files($$PWD/lib/StanfordCPPLib/private/*.cpp)
-SOURCES *= $$files($$PWD/lib/StanfordCPPLib/system/*.cpp)
-SOURCES *= $$files($$PWD/lib/StanfordCPPLib/util/*.cpp)
+SOURCES *= $$files($$PWD/lib/StanfordCPPLib/*.cpp, true)
+SOURCES *= $$files($$PWD/src/*.cpp, true)
 exists($$PWD/src/$$PROJECT_FILTER*.cpp) {
     SOURCES *= $$files($$PWD/src/$$PROJECT_FILTER*.cpp)
 }
@@ -234,12 +235,8 @@ exists($$PWD/$$PROJECT_FILTER*.cpp) {
 exists($$PWD/lib/StanfordCPPLib/*.h) {
     HEADERS *= $$files($$PWD/lib/StanfordCPPLib/*.h)
 }
-HEADERS *= $$files($$PWD/lib/StanfordCPPLib/collections/*.h)
-HEADERS *= $$files($$PWD/lib/StanfordCPPLib/graphics/*.h)
-HEADERS *= $$files($$PWD/lib/StanfordCPPLib/io/*.h)
-HEADERS *= $$files($$PWD/lib/StanfordCPPLib/private/*.h)
-HEADERS *= $$files($$PWD/lib/StanfordCPPLib/system/*.h)
-HEADERS *= $$files($$PWD/lib/StanfordCPPLib/util/*.h)
+HEADERS *= $$files($$PWD/lib/StanfordCPPLib/*.h, true)
+HEADERS *= $$files($$PWD/src/*.h, true)
 exists($$PWD/src/test/*.h) {
     HEADERS *= $$files($$PWD/src/test/*.h)
 }
@@ -622,42 +619,94 @@ exists($$PWD/lib/autograder/*.h) | exists($$PWD/lib/StanfordCPPLib/autograder/*.
 # COPY_RESOURCE_FILES_INPUT = ""    # defined above so that autograder files can be included
 COPY_RESOURCE_FILES_INPUT = ""
 
+# Windows and Mac/Linux differ in how the semantics of their shell copy function works. On Linux/Mac,
+# the syntax is
+#
+#    cp -rf src dstDir
+#
+# and the command replicates src at dst. If src is a file, it's copied into the destination folder.
+# If src is a directory, the directory src is copied into the destination folder.
+#
+# On Windows, the syntax is
+#
+#    xcopy /s /q /y /i src dstDir
+#
+# and the sematics are "if src is a file, copy it into dstDir; if src is a directory, copy its contents,
+# but not the folder itself, into dstDir." This means that we fundamentally need to have two different
+# copy operations set up, one to handle the case where we're on Linux/Mac and one for when we're on
+# Windows. On Mac/Linux, we'll assemble a list of all the files in the relevant directories and ask to
+# copy them over. On Windows, we need to assemble two conditional statements to execute, one of which
+# handles directories and the other regular files. On Linux/Mac, we just need the single statement.
+
+# List of all files to copy. The format here is baseDirectory/pattern.
+COPY_RESOURCE_FILES_INPUT += $$files($$PWD/lib/addr2line.exe)
+COPY_RESOURCE_FILES_INPUT += $$files($$PWD/*.txt)
+COPY_RESOURCE_FILES_INPUT += $$files($$PWD/res/*)
+COPY_RESOURCE_FILES_INPUT += $$files($$PWD/input/*)
+COPY_RESOURCE_FILES_INPUT += $$files($$PWD/output/*)
+
+# On Windows, we need to explicitly set up directory endpoints for each file that needs to be copied.
 win32 {
-    exists($$PWD/lib/addr2line.exe) {
-        COPY_RESOURCE_FILES_INPUT += $$PWD/lib/addr2line.exe
+    for (file, COPY_RESOURCE_FILES_INPUT) {
+        base = $$basename(file)
+
+        # Test if it's a directory by seeing whether file/* exists. Yes, that's the best test I could find.
+        COPYDATA_COMMAND += (IF EXIST \"$$shell_path($$file)\"/* (
+        COPYDATA_COMMAND +=     (IF NOT EXIST \"$$shell_path($$base)\"/* MKDIR $$shell_path($$basename(file))) &&
+        COPYDATA_COMMAND +=     ($$QMAKE_COPY_DIR \"$$shell_path($$file)\" \"$$shell_path($$OUT_PWD/$$basename(file))\" > NUL)
+        COPYDATA_COMMAND += ) ELSE
+        COPYDATA_COMMAND +=     ($$QMAKE_COPY_DIR \"$$shell_path($$file)\" \"$$shell_path($$OUT_PWD)\") > NUL) &&
     }
-}
-exists($$PWD/*.txt) {
-    COPY_RESOURCE_FILES_INPUT += $$PWD/*.txt
-}
-exists($$PWD/res/*) {
-    COPY_RESOURCE_FILES_INPUT += $$PWD/res/*
-}
-exists($$PWD/input/*) {
-    COPY_RESOURCE_FILES_INPUT += $$PWD/input
-}
-exists($$PWD/output/*) {
-    COPY_RESOURCE_FILES_INPUT += $$PWD/output
+
+    # Handle the trailing && operator
+    COPYDATA_COMMAND += rem
+} else {
+    for (file, COPY_RESOURCE_FILES_INPUT) {
+        COPYDATA_COMMAND += $$QMAKE_COPY_DIR \"$$shell_path($$file)\" \"$$shell_path($$OUT_PWD)\" &&
+    }
+
+    # Handle the trailing && operator
+    COPYDATA_COMMAND += true
 }
 
-copy_resource_files.name = Copy resource files to the build directory
+# Install the copy command at the top-level, but NOT as a dependency of the executable.
+# This ensures we always copy things over, but that we don't rebuild the executable on each
+# run of the program.
+copydata.commands = $$COPYDATA_COMMAND
+all.depends += copydata
+QMAKE_EXTRA_TARGETS += all copydata
+
+
+# Windows networking doesn't work correctly unless we explicitly copy over some networking
+# .dll files into the debug/ or release/ directory (based on whatever it is that we're trying
+# to build).
 win32 {
-    # https://support.microsoft.com/en-us/help/289483/switches-that-you-can-use-with-xcopy-and-xcopy32-commands
-    # /s - copy subfolders
-    # /q - quiet (no verbose output)
-    # /y - overwrite without prompting
-    # /i - if destination does not exist and copying more than one file, assumes destination is a folder
-    copy_resource_files.commands = xcopy /s /q /y /i ${QMAKE_FILE_IN}
-} else {
-    copy_resource_files.commands = cp -rf ${QMAKE_FILE_IN} .
+    WINDOWS_LIB_FILES = $$PWD/lib/libeay32.dll $$PWD/lib/ssleay32.dll
+
+    # See which files to copy.
+    for (file, WINDOWS_LIB_FILES) {
+        exists($$file) {
+            COPY_LIB_FILES_INPUT += $$file
+        }
+    }
+
+    # Assemble the command string.
+    CONFIG(debug, debug|release) {
+        for (file, COPY_LIB_FILES_INPUT) COPYLIB_COMMAND += $(COPY_DIR) \"$$shell_path($$file)\" \"$$shell_path($$OUT_PWD)\debug\" > NUL &&
+    }
+    CONFIG(release, debug|release) {
+        for (file, COPY_LIB_FILES_INPUT) COPYLIB_COMMAND += $(COPY_DIR) \"$$shell_path($$file)\" \"$$shell_path($$OUT_PWD)\release\" > NUL &&
+    }
+    COPYLIB_COMMAND += rem
+
+    # Install this as a top-level build dependency
+    copylib.commands = $$COPYLIB_COMMAND
+    all.depends += copylib
+    QMAKE_EXTRA_TARGETS += all copylib
 }
-copy_resource_files.input = COPY_RESOURCE_FILES_INPUT
-copy_resource_files.output = $${OUT_PWD}/${QMAKE_FILE_BASE}${QMAKE_FILE_EXT}
-copy_resource_files.CONFIG = no_link no_clean target_predeps
-QMAKE_EXTRA_COMPILERS += copy_resource_files
 
 ###############################################################################
 # END SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING              #
 ###############################################################################
 
-# END OF FILE (this should be line #663; if not, your .pro has been changed!)
+# END OF FILE (this should be line #712; if not, your .pro has been changed!)

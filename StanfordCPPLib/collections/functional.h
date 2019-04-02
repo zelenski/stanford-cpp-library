@@ -41,7 +41,7 @@
 
 namespace functional {
 
-/*
+/**
  * Performs a filter operation on the given collection,
  * returning a new collection that retains only the elements
  * for which the given predicate function returns true.
@@ -58,7 +58,7 @@ CollectionType filter(CollectionType collection,
     return result;
 }
 
-/*
+/**
  * Performs a filter operation on the given collection,
  * building a new collection that retains only the elements
  * for which the given predicate function returns true.
@@ -77,7 +77,7 @@ CollectionType& filter(CollectionType collection,
     return result;
 }
 
-/*
+/**
  * Applies the given function to each element of the given collection,
  * producing and returning a new collection containing the results.
  */
@@ -91,7 +91,7 @@ CollectionType map(CollectionType collection,
     return result;
 }
 
-/*
+/**
  * Applies the given function to each element of the given collection,
  * producing a new collection containing the results.
  * The new collection is stored in the 'result' variable.
@@ -108,23 +108,23 @@ CollectionType2& map(CollectionType collection,
     return result;
 }
 
-/*
+/**
  * Performs a reduction operation, applying a function to each neighboring pair
  * of elements of the collection until they are all combined (reduced) into a
  * single value, which is then returned.
+ * Begins with a "default" value of the starting type.
  */
 template <typename CollectionType, typename ElementType>
 ElementType reduce(CollectionType collection,
-                   std::function<ElementType (const ElemType&, const ElementType &)> fn,
-                   ElementType startValue) {
-    ElementType prev = startValue;
+                   std::function<ElementType (const ElementType&, const ElementType &)> fn) {
+    ElementType prev;
     for (const ElementType& element : collection) {
         prev = fn(prev, element);
     }
     return prev;
 }
 
-/*
+/**
  * Performs a reduction operation, applying a function to each neighboring pair
  * of elements of the collection until they are all combined (reduced) into a
  * single value, which is then returned.
@@ -133,7 +133,7 @@ ElementType reduce(CollectionType collection,
  */
 template <typename CollectionType, typename ElementType>
 ElementType reduce(CollectionType collection,
-                   std::function<ElementType (const ElemType&, const ElementType &)> fn,
+                   std::function<ElementType (const ElementType&, const ElementType &)> fn,
                    ElementType startValue) {
     ElementType prev = startValue;
     for (const ElementType& element : collection) {
