@@ -3,6 +3,8 @@
  * ------------------
  * This file implements the interface declared in hashcode.h.
  *
+ * @version 2019/04/02
+ * - bugfix for win64 involving hashCode for void* pointers
  * @version 2018/08/10
  * - bugfixes involving negative hash codes, unified string hashing
  * @version 2017/10/21
@@ -87,7 +89,12 @@ int hashCode(unsigned short key) {
  * overloads just treats the pointer value numerically.
  */
 int hashCode(void* key) {
+#if _WIN64
+    long temp = (long) static_cast<uint32_t>(reinterpret_cast<uintptr_t>(key));
+    return hashCode(temp);
+#else
     return hashCode(reinterpret_cast<long>(key));
+#endif // _WIN64
 }
 
 /*

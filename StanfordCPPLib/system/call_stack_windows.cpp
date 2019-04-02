@@ -110,21 +110,36 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
     HANDLE process = GetCurrentProcess();
     HANDLE thread = GetCurrentThread();
 
+    // dear student: if you get a compiler error about 'Eip' not being found here,
+    // it means you're using a 64-bit compiler like the MS Visual C++ compiler,
+    // and not the 32-bit MinGW compiler we instructed you to install.
+    // Please re-install Qt Creator with the proper compiler (MinGW 32-bit) enabled.
+
     void* fakeStackPtr = stacktrace::fakeCallStackPointer();
     if (fakeStackPtr) {
         // set up fake stack for partial trace
         LPEXCEPTION_POINTERS exceptionInfo = (LPEXCEPTION_POINTERS) fakeStackPtr;
         if (exceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_STACK_OVERFLOW) {
             // can't do stack walking in Windows when a stack overflow happens :-/
+#if _WIN64
             traceVector.push_back((void*) exceptionInfo->ContextRecord->Eip);
+#else
+            traceVector.push_back((void*) exceptionInfo->ContextRecord->Rip);
+#endif // _WIN64
         } else {
             SymInitialize(GetCurrentProcess(), nullptr, TRUE);
             STACKFRAME frame = {0};
+#if _WIN64
+            frame.AddrPC.Offset    = exceptionInfo->ContextRecord->Rip;
+            frame.AddrStack.Offset = exceptionInfo->ContextRecord->Rsp;
+            frame.AddrFrame.Offset = exceptionInfo->ContextRecord->Rbp;
+#else
             frame.AddrPC.Offset    = exceptionInfo->ContextRecord->Eip;
-            frame.AddrPC.Mode      = AddrModeFlat;
             frame.AddrStack.Offset = exceptionInfo->ContextRecord->Esp;
-            frame.AddrStack.Mode   = AddrModeFlat;
             frame.AddrFrame.Offset = exceptionInfo->ContextRecord->Ebp;
+#endif // _WIN64
+            frame.AddrPC.Mode      = AddrModeFlat;
+            frame.AddrStack.Mode   = AddrModeFlat;
             frame.AddrFrame.Mode   = AddrModeFlat;
             while ((int) traceVector.size() < STATIC_VARIABLE(STACK_FRAMES_MAX) &&
                    StackWalk(IMAGE_FILE_MACHINE_I386,

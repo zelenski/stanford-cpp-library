@@ -189,10 +189,15 @@ LONG WINAPI UnhandledException(LPEXCEPTION_POINTERS exceptionInfo) {
     // it means you're using a 64-bit compiler like the MS Visual C++ compiler,
     // and not the 32-bit MinGW compiler we instructed you to install.
     // Please re-install Qt Creator with the proper compiler (MinGW 32-bit) enabled.
-    if (exceptionInfo && exceptionInfo->ContextRecord && exceptionInfo->ContextRecord->Eip) {
-        // stacktrace::fakeCallStackPointer() = (void*) exceptionInfo->ContextRecord->Eip;
+#if _WIN64
+    if (exceptionInfo && exceptionInfo->ContextRecord && exceptionInfo->ContextRecord->Rip) {
         stacktrace::fakeCallStackPointer() = (void*) exceptionInfo;
     }
+#else
+    if (exceptionInfo && exceptionInfo->ContextRecord && exceptionInfo->ContextRecord->Eip) {
+        stacktrace::fakeCallStackPointer() = (void*) exceptionInfo;
+    }
+#endif // _WIN64
     DWORD code = exceptionInfo->ExceptionRecord->ExceptionCode;
     if (code == EXCEPTION_STACK_OVERFLOW || code == EXCEPTION_FLT_STACK_CHECK) {
         stanfordCppLibSignalHandler(SIGSTACK);
