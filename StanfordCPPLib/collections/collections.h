@@ -35,6 +35,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <type_traits>
 
 #define INTERNAL_INCLUDE 1
 #include "error.h"
@@ -84,13 +85,11 @@ bool stringNeedsQuoting(const std::string& str);
  */
 template <typename ValueType>
 std::ostream& writeGenericValue(std::ostream& os, const ValueType& value, bool) {
-    os << std::boolalpha << value;
-    return os;
+    return os << std::boolalpha << value;
 }
 
-template <>
 inline std::ostream& writeGenericValue(std::ostream& os, const std::string& value,
-                              bool forceQuotes) {
+                                       bool forceQuotes) {
     return writeQuotedString(os, value, forceQuotes);
 }
 
@@ -102,7 +101,6 @@ inline std::string genericValueToString(const ValueType& value,
     return os.str();
 }
 
-template <>
 inline std::string genericValueToString(const std::string& value,
                                         bool forceQuotes) {
     std::ostringstream os;
@@ -120,7 +118,6 @@ bool readGenericValue(std::istream& is, ValueType& value) {
     return (bool) (is >> value);
 }
 
-template <>
 inline bool readGenericValue(std::istream& is, std::string& value) {
     return readQuotedString(is, value, /* throwOnError */ false);
 }
@@ -169,9 +166,9 @@ int compare(const CollectionType& coll1, const CollectionType& coll2) {
     }
     
     auto itr1 = coll1.begin(),
-            itr2 = coll2.begin(),
-            end1 = coll1.end(),
-            end2 = coll2.end();
+         itr2 = coll2.begin(),
+         end1 = coll1.end(),
+         end2 = coll2.end();
     for (;
          itr1 != end1 && itr2 != end2;
          ++itr1, ++itr2) {
@@ -222,9 +219,9 @@ int compareMaps(const MapType& map1, const MapType& map2) {
     }
     
     auto itr1 = map1.begin(),
-            itr2 = map2.begin(),
-            end1 = map1.end(),
-            end2 = map2.end();
+         itr2 = map2.begin(),
+         end1 = map1.end(),
+         end2 = map2.end();
     for (;
          itr1 != end1 && itr2 != end2;
          ++itr1, ++itr2) {
@@ -267,112 +264,20 @@ int compareMaps(const MapType& map1, const MapType& map2) {
 }
 
 /*
- * Compares two values and returns an integer indicating their relative order,
- * in the general style of Java's compareTo method:
+ * Template functions to compare two interleaved sequences of values, returning
  * -1 if the first value is less than the second,
  *  0 if the values are equal,
  *  1 if the first value is greater than the second.
  * The type passed must support a < less-than operator.
  */
-template <typename T>
-int compareTo(T t1, T t2) {
-    if (t1 < t2) {
-        return -1;
-    } else if (t2 < t1) {
-        return 1;
-    } else {
-        return 0;
-    }
+inline int compareTo() {
+    return 0;
 }
-
-/*
- * Compares two pairs of values and returns an integer indicating their relative order,
- * in the general style of Java's compareTo method.
- * First the values t1 and t2 are compared.
- * If they are equal, ties are broken by comparing t3 and t4.
- * -1 if the first value is less than the second,
- *  0 if the values are equal,
- *  1 if the first value is greater than the second.
- * The types passed must support a < less-than operator.
- */
-template <typename T1, typename T2>
-int compareTo2(T1 t1, T1 t2, T2 t3, T2 t4) {
-    if (t3 < t4) {
-        return -1;
-    } else if (t4 < t3) {
-        return 1;
-    } else {
-        return compareTo(t1, t2);
-    }
-}
-
-/*
- * Compares three pairs of values and returns an integer indicating their relative order,
- * in the general style of Java's compareTo method.
- * First the values t1 and t2 are compared.
- * If t1 and t2 are equal, ties are broken by comparing t3 and t4.
- * If t3 and t4 are equal, ties are broken by comparing t5 and t6.
- * -1 if the first value is less than the second,
- *  0 if the values are equal,
- *  1 if the first value is greater than the second.
- * The types passed must support a < less-than operator.
- */
-template <typename T1, typename T2, typename T3>
-int compareTo3(T1 t1, T1 t2, T2 t3, T2 t4, T3 t5, T3 t6) {
-    if (t5 < t6) {
-        return -1;
-    } else if (t6 < t5) {
-        return 1;
-    } else {
-        return compareTo2(t1, t2, t3, t4);
-    }
-}
-
-/*
- * Compares four pairs of values and returns an integer indicating their relative order,
- * in the general style of Java's compareTo method.
- * First the values t1 and t2 are compared.
- * If t1 and t2 are equal, ties are broken by comparing t3 and t4.
- * If t3 and t4 are equal, ties are broken by comparing t5 and t6.
- * If t5 and t6 are equal, ties are broken by comparing t7 and t8.
- * -1 if the first value is less than the second,
- *  0 if the values are equal,
- *  1 if the first value is greater than the second.
- * The types passed must support a < less-than operator.
- */
-template <typename T1, typename T2, typename T3, typename T4>
-int compareTo4(T1 t1, T1 t2, T2 t3, T2 t4, T3 t5, T3 t6, T4 t7, T4 t8) {
-    if (t7 < t8) {
-        return -1;
-    } else if (t8 < t7) {
-        return 1;
-    } else {
-        return compareTo3(t1, t2, t3, t4, t5, t6);
-    }
-}
-
-/*
- * Compares five pairs of values and returns an integer indicating their relative order,
- * in the general style of Java's compareTo method.
- * First the values t1 and t2 are compared.
- * If t1 and t2 are equal, ties are broken by comparing t3 and t4.
- * If t3 and t4 are equal, ties are broken by comparing t5 and t6.
- * If t5 and t6 are equal, ties are broken by comparing t7 and t8.
- * If t7 and t8 are equal, ties are broken by comparing t9 and t10.
- * -1 if the first value is less than the second,
- *  0 if the values are equal,
- *  1 if the first value is greater than the second.
- * The types passed must support a < less-than operator.
- */
-template <typename T1, typename T2, typename T3, typename T4, typename T5>
-int compareTo5(T1 t1, T1 t2, T2 t3, T2 t4, T3 t5, T3 t6, T4 t7, T4 t8, T5 t9, T5 t10) {
-    if (t9 < t10) {
-        return -1;
-    } else if (t10 < t9) {
-        return 1;
-    } else {
-        return compareTo4(t1, t2, t3, t4, t5, t6, t7, t8);
-    }
+template <typename T, typename... Rest>
+int compareTo(const T& first, const T& second, const Rest&... rest) {
+    if (first < second) return -1;
+    if (second < first) return +1;
+    return compareTo(rest...);
 }
 
 /*
@@ -394,7 +299,7 @@ bool equals(const CollectionType& coll1, const CollectionType& coll2) {
     auto itr1 = coll1.begin();
     auto end1 = coll1.end();
     auto itr2 = coll2.begin();
-    auto end2 = coll1.end();
+    auto end2 = coll2.end();
     while (itr1 != end1 && itr2 != end2) {
         if (!(*itr1 == *itr2)) {
             return false;
@@ -424,7 +329,7 @@ bool equalsDouble(const CollectionType& coll1, const CollectionType& coll2) {
     auto itr1 = coll1.begin();
     auto end1 = coll1.end();
     auto itr2 = coll2.begin();
-    auto end2 = coll1.end();
+    auto end2 = coll2.end();
     while (itr1 != end1 && itr2 != end2) {
         if (!floatingPointEqual(*itr1, *itr2)) {
             return false;
@@ -452,15 +357,10 @@ bool equalsMap(const MapType& map1, const MapType& map2) {
         return false;
     }
 
-    // check each pair of key/value pairs for equality;
-    // compare both ways; each must be subset of the other
+    // check whether each element in the first map is also in the second.
+    // since the sizes are the same, if this is true, the maps are equal.
     for (auto itr1 = map1.begin(), end1 = map1.end(); itr1 != end1; ++itr1) {
         if (!map2.containsKey(*itr1) || !(map1.get(*itr1) == map2.get(*itr1))) {
-            return false;
-        }
-    }
-    for (auto itr2 = map2.begin(), end2 = map2.end(); itr2 != end2; ++itr2) {
-        if (!map1.containsKey(*itr2) || !(map1.get(*itr2) == map2.get(*itr2))) {
             return false;
         }
     }
@@ -523,17 +423,12 @@ int hashCodeMap(const MapType& map, bool orderMatters = true) {
  * Returns a randomly chosen element of the given collection.
  * Throws an error if the set is empty.
  */
-template <template <typename> class CollectionType, class ElementType>
-const ElementType& randomElement(const CollectionType<ElementType>& collection) {
+template <typename Collection>
+auto randomElement(const Collection& collection) -> const decltype(*collection.begin())& {
     if (collection.isEmpty()) {
         error("randomElement: empty collection was passed");
     }
-    int index = randomInteger(0, collection.size() - 1);
-    auto itr = collection.begin();
-    for (int i = 0; i < index; i++) {
-        ++itr;
-    }
-    return *itr;
+    return *std::next(collection.begin(), randomInteger(0, collection.size() - 1));
 }
 
 /*
@@ -746,6 +641,1201 @@ std::ostream& writeMap(std::ostream& out, const MapType& map) {
     out << "}";
     return out;
 }
+
+/*
+ * Type responsible for tracking the version of some object. This is factored out into
+ * its own object with unusual copy functions so that any time the underlying object
+ * is moved or assigned the underlying version number is updated.
+ */
+class VersionTracker {
+public:
+    /* Assigning a VersionTracker increments the underlying version number. */
+    VersionTracker& operator= (VersionTracker) {
+        ++mVersion;
+        return *this;
+    }
+
+    /* Move-constructing a VersionTracker implements the version number of the
+     * object being moved.
+     */
+    VersionTracker(VersionTracker&& rhs) {
+        rhs.mVersion++;
+    }
+
+    /* Use default constructor and default copy constructor. */
+    VersionTracker() = default;
+    VersionTracker(const VersionTracker &) = default;
+
+    /* Marks that the version must be updated. */
+    void update() {
+        ++mVersion;
+    }
+
+    /* Returns the version number. */
+    unsigned int version() const {
+        return mVersion;
+    }
+
+private:
+    unsigned int mVersion = 0;
+};
+
+/*
+ * Checked iterator type that wraps an underlying iterator type, adding in bounds-checking
+ * and version-checking.
+ */
+template <typename Iterator> class CheckedIterator {
+public:
+    /* We're whatever sort of iterator we're wrapping. */
+    using difference_type   = typename std::iterator_traits<Iterator>::difference_type;
+    using iterator_category = typename std::iterator_traits<Iterator>::iterator_category;
+    using pointer           = typename std::iterator_traits<Iterator>::pointer;
+    using reference         = typename std::iterator_traits<Iterator>::reference;
+    using value_type        = typename std::iterator_traits<Iterator>::value_type;
+
+    /*
+     * Default constructor must be explicitly declared so that the private constructor
+     * doesn't shadow us.
+     */
+    CheckedIterator() = default;
+
+    /* Constructs an iterator given information about the underlying container. */
+    template <typename Container>
+    CheckedIterator(const VersionTracker* owner, Iterator iter, Container& c)
+        : mVersion(owner->version()), mOwner(owner), mIter(iter), mBegin(c.begin()), mEnd(c.end()) {
+
+    }
+
+    /*
+     * We're friends with all other CheckedIterator types, allowing for cross-construction
+     * and the like.
+     */
+    template <typename OtherItr> friend class CheckedIterator;
+
+    /* Conversion constructor, when permitted. */
+    template <typename OtherItr> CheckedIterator(const CheckedIterator<OtherItr>& rhs)
+        : mVersion(rhs.mVersion),
+          mOwner(rhs.mOwner),
+          mIter(rhs.mIter),
+          mBegin(rhs.mBegin),
+          mEnd(rhs.mEnd) {
+
+    }
+
+    template <typename OtherItr> operator CheckedIterator<OtherItr>() const {
+        return CheckedIterator<OtherItr>{mVersion, mOwner, mIter, mBegin, mEnd};
+    }
+
+    /* All possible iterator functions. */
+
+    /* Comparison operators. */
+    template <typename OtherItr> bool operator ==(const CheckedIterator<OtherItr>& rhs) const {
+        if (!mOwner || !rhs.mOwner) error("Cannot compare an uninitialized iterator.");
+        if ( mOwner !=  rhs.mOwner) error("Cannot compare iterators from two different containers.");
+        return mIter == rhs.mIter;
+    }
+    template <typename OtherItr> bool operator !=(const CheckedIterator<OtherItr>& rhs) const {
+        return !(*this == rhs);
+    }
+
+    /*
+     * We report errors if the underlying owners are different, since otherwise
+     * the behavior is undefined.
+     */
+    template <typename OtherItr> bool operator <(const CheckedIterator<OtherItr>& rhs) const {
+        if (!mOwner || !rhs.mOwner) {
+            error("Cannot compare an uninitialized iterator.");
+        }
+        if (mOwner != rhs.mOwner) {
+            error("Cannot compare iterators from different containers.");
+        }
+        return mIter < rhs.mIter;
+    }
+    template <typename OtherItr> bool operator >(const CheckedIterator<OtherItr>& rhs) const {
+        return rhs < *this;
+    }
+    template <typename OtherItr> bool operator <=(const CheckedIterator<OtherItr>& rhs) const {
+        return !(*this > rhs);
+    }
+    template <typename OtherItr> bool operator >=(const CheckedIterator<OtherItr>& rhs) const {
+        return !(*this < rhs);
+    }
+
+    /* Random access. */
+    reference operator [](difference_type index) const {
+        if (!mOwner) {
+            error("Cannot access elements through an uninitialized iterator.");
+        }
+        ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
+        if (index >= 0 &&  index >= mEnd - mIter) {
+            error("Out of bounds.");
+        }
+        if (index <  0 && -index >  mIter - mBegin) {
+            error("Out of bounds.");
+        }
+
+        return mIter[index];
+    }
+
+    CheckedIterator& operator +=(difference_type index) {
+        if (!mOwner) error("Cannot advance uninitialized iterators.");
+        ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
+        mIter += index;
+        return *this;
+    }
+    CheckedIterator& operator -=(difference_type index) {
+        return *this += (-index);
+    }
+
+    CheckedIterator operator +(difference_type index) const {
+        auto result = *this;
+        return result += index;
+    }
+    CheckedIterator operator -(difference_type index) const {
+        return *this + (-index);
+    }
+
+    template <typename OtherItr>
+    difference_type operator -(const CheckedIterator<OtherItr>& rhs) const {
+        if (!mOwner || !rhs.mOwner) {
+            error("Cannot subtract uninitialized iterators.");
+        }
+
+        ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
+        if (mOwner != rhs.mOwner) {
+            error("Cannot subtract iterators from two different containers.");
+        }
+
+        return mIter - rhs.mIter;
+    }
+
+    /* Forwards and backwards. */
+    CheckedIterator& operator ++() {
+        if (!mOwner) {
+            error("Cannot advance an uninitialized iterator.");
+        }
+
+        ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
+        if (mIter == mEnd) {
+            error("Cannot advance an iterator past end of range.");
+        }
+        ++mIter;
+        return *this;
+    }
+    CheckedIterator operator ++(int) {
+        auto result = *this;
+        ++*this;
+        return result;
+    }
+
+    CheckedIterator& operator --() {
+        if (!mOwner) {
+            error("Cannot back up an uninitialized iterator.");
+        }
+
+        ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
+        if (mIter == mBegin) {
+            error("Cannot back up an iteartor before start of range.");
+        }
+
+        --mIter;
+        return *this;
+    }
+    CheckedIterator operator --(int) {
+        auto result = *this;
+        --*this;
+        return result;
+    }
+
+    /* Dereferencing. */
+    reference operator *() const {
+        if (!mOwner) {
+            error("Cannot dereference an uninitialized iterator.");
+        }
+        ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
+
+        if (mIter == mEnd) {
+            error("Iterator out of range.");
+        }
+        return *mIter;
+    }
+    pointer operator ->() const {
+        return &**this;
+    }
+
+    /* Direct version access. */
+    unsigned int version() const {
+        if (!mOwner) {
+            error("Cannot get version from an uninitialized iterator.");
+        }
+        return mVersion;
+    }
+
+private:
+    unsigned int mVersion = 0;
+    const VersionTracker* mOwner = nullptr;
+    Iterator mIter;
+    Iterator mBegin, mEnd;
+};
+
+/*
+ * Iterator over a pairs that projects out the first component. Essentially, this turns an
+ * iterator over pair<const Key, Value> into an iterator over const Key.
+ *
+ * All bounds-checking, error-handling, etc. are presumed to come from the underlying
+ * iterator type.
+ */
+template <typename Iterator> class ProjectingIterator {
+public:
+    /* The sort of thing that we're wrapping. */
+    using value_type       = typename std::remove_reference<decltype(std::declval<Iterator>()->first)>::type;
+
+    /* We're whatever sort of iterator we're wrapping. */
+    using difference_type   = typename std::iterator_traits<Iterator>::difference_type;
+    using iterator_category = typename std::iterator_traits<Iterator>::iterator_category;
+    using pointer           = const value_type *;
+    using reference         = const value_type &;
+
+    /*
+     * Default constructor must be explicitly declared so that the private constructor
+     * doesn't shadow us.
+     */
+    ProjectingIterator() = default;
+
+    /* Wraps an existing iterator. */
+    explicit ProjectingIterator(Iterator iter) : mIter(iter) {
+        // Empty
+    }
+
+    /*
+     * We're friends with all other related types, allowing for cross-construction
+     * and the like.
+     */
+    template <typename OtherItr> friend class ProjectingIterator;
+
+    /* Conversion constructor, when permitted. */
+    template <typename OtherItr> ProjectingIterator(const ProjectingIterator<OtherItr>& rhs)
+        : mIter(rhs.mIter) {
+        // Empty
+    }
+
+    template <typename OtherItr> operator ProjectingIterator<OtherItr>() const {
+        return ProjectingIterator<OtherItr>(mIter);
+    }
+
+    /* All possible iterator functions. */
+
+    /* Comparison operators. */
+    template <typename OtherItr> bool operator ==(const ProjectingIterator<OtherItr>& rhs) {
+        return mIter == rhs.mIter;
+    }
+    template <typename OtherItr> bool operator !=(const ProjectingIterator<OtherItr>& rhs) {
+        return !(*this == rhs);
+    }
+
+    template <typename OtherItr> bool operator <(const ProjectingIterator<OtherItr>& rhs) {
+        return mIter < rhs.mIter;
+    }
+    template <typename OtherItr> bool operator >(const ProjectingIterator<OtherItr>& rhs) {
+        return rhs < *this;
+    }
+    template <typename OtherItr> bool operator <=(const ProjectingIterator<OtherItr>& rhs) {
+        return !(*this > rhs);
+    }
+    template <typename OtherItr> bool operator >=(const ProjectingIterator<OtherItr>& rhs) {
+        return !(*this < rhs);
+    }
+
+    /* Random access. */
+    reference operator [](difference_type index) const {
+        return mIter[index];
+    }
+    ProjectingIterator& operator +=(difference_type index) {
+        mIter += index;
+        return *this;
+    }
+    ProjectingIterator& operator -=(difference_type index) {
+        return *this += (-index);
+    }
+    ProjectingIterator operator +(difference_type index) const {
+        auto result = *this;
+        return result += index;
+    }
+    ProjectingIterator operator -(difference_type index) const {
+        return *this + (-index);
+    }
+    template <typename OtherItr>
+    difference_type operator -(const ProjectingIterator<OtherItr>& rhs) const {
+        return mIter - rhs.mIter;
+    }
+
+    /* Forwards and backwards. */
+    ProjectingIterator& operator ++() {
+        ++mIter;
+        return *this;
+    }
+    ProjectingIterator operator ++(int) {
+        auto result = *this;
+        ++*this;
+        return result;
+    }
+
+    ProjectingIterator& operator --() {
+        --mIter;
+        return *this;
+    }
+    ProjectingIterator operator --(int) {
+        auto result = *this;
+        --*this;
+        return result;
+    }
+
+    /* Dereferencing. */
+    reference operator *() const {
+        return mIter->first;
+    }
+    pointer operator ->() const {
+        return &**this;
+    }
+
+private:
+    Iterator mIter;
+};
+
+/*
+ * Class: GenericSet<SetTraits>
+ * ---------------------
+ * This class stores a collection of distinct elements. SetTraits should be
+ * a type containing the following:
+ *
+ *     typename ValueType:          whatever is stored in the map
+ *     typename MapType:            should be a Map<ValueType, bool>
+ *     static std::string name():   should return the name of the type.
+ *
+ * There's one more requirement: you need to define a function
+ *
+ *     template <typename... Args>
+ *        static MapType construct(Args&&... args)
+ *
+ * that constructs an internal MapType object with the specified arguments.
+ * This function should do something creative or clever to ensure that there
+ * is a nice compiler error generated in the event that the arguments are
+ * invalid, since otherwise the error is going to be deeply nested inside the
+ * GenericSet template.
+ *
+ * This is not meant to be used directly by students.
+ */
+template <typename SetTraits>
+class GenericSet {
+public:
+    /*
+     * Utility alias to make things easier to work with.
+     */
+    using value_type = typename SetTraits::ValueType;
+
+    /*
+     * Constructor: GenericSet
+     * Usage: GenericSet<ValueType, SetTraits> set;
+     * ------------------------------------------------
+     * Initializes an empty set of the specified element type.
+     */
+    GenericSet() = default;
+
+    /*
+     * Constructor: GenericSet
+     * Usage: GenericSet<ValueType, SetTraits> set {1, 2, 3};
+     * ----------------------------------------------------------
+     * Initializes a new set that stores the given elements.
+     */
+    GenericSet(std::initializer_list<value_type> list);
+
+    /*
+     * Constructor: GenericSet
+     * Usage: GenericSet<ValueType, SetTraits> set(... things for the map ...);
+     * ----------------------------------------------------------------------------
+     * Forwards the specified arguments down to the underlying Map type.
+     */
+    template <typename... Args>
+    explicit GenericSet(Args... args);
+
+    /*
+     * Constructor: GenericSet
+     * Usage: GenericSet<ValueType, SetTraits> set({1, 2, 3}, ... things for the map ...);
+     * ---------------------------------------------------------------------------------------
+     * Constructs a set using the specified elements, forwarding the arguments to the
+     * underlying map.
+     */
+    template <typename... Args>
+    GenericSet(std::initializer_list<value_type> list,
+               Args... args);
+
+    /*
+     * Destructor: ~Set
+     * ----------------
+     * Frees any heap storage associated with this set.
+     */
+    virtual ~GenericSet() = default;
+
+    /*
+     * Method: add
+     * Usage: set.add(value);
+     * ----------------------
+     * Adds an element to this set, if it was not already there.  For
+     * compatibility with the STL <code>set</code> class, this method
+     * is also exported as <code>insert</code>.
+     */
+    void add(const value_type& value);
+
+    /*
+     * Method: addAll
+     * Usage: set.addAll(set2);
+     * ------------------------
+     * Adds all elements of the given other set to this set.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * Returns a reference to this set.
+     * Identical in behavior to the += operator.
+     */
+    GenericSet& addAll(const GenericSet& set);
+
+    /*
+     * Method: back
+     * Usage: ValueType value = set.back();
+     * ------------------------------------
+     * Returns the last value in the set in the order established by the
+     * <code>foreach</code> macro.  If the set is empty, generates an error.
+     */
+    value_type back() const;
+
+    /*
+     * Method: clear
+     * Usage: set.clear();
+     * -------------------
+     * Removes all elements from this set.
+     */
+    void clear();
+
+    /*
+     * Method: contains
+     * Usage: if (set.contains(value)) ...
+     * -----------------------------------
+     * Returns <code>true</code> if the specified value is in this set.
+     */
+    bool contains(const value_type& value) const;
+
+    /*
+     * Method: containsAll
+     * Usage: if (set.containsAll(set2)) ...
+     * -------------------------------------
+     * Returns <code>true</code> if every value from the given other set
+     * is also found in this set.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * Equivalent in behavior to isSupersetOf.
+     */
+    bool containsAll(const GenericSet& set2) const;
+
+    /*
+     * Method: equals
+     * Usage: if (set.equals(set2)) ...
+     * --------------------------------
+     * Returns <code>true</code> if this set contains exactly the same values
+     * as the given other set.
+     * Identical in behavior to the == operator.
+     */
+    bool equals(const GenericSet& set2) const;
+
+    /*
+     * Method: first
+     * Usage: ValueType value = set.first();
+     * -------------------------------------
+     * Returns the first value in the set in the order established by the
+     * <code>foreach</code> macro.  If the set is empty, <code>first</code>
+     * generates an error.
+     * Equivalent to front.
+     */
+    value_type first() const;
+
+    /*
+     * Method: front
+     * Usage: ValueType value = set.front();
+     * -------------------------------------
+     * Returns the first value in the set in the order established by the
+     * <code>foreach</code> macro.  If the set is empty, generates an error.
+     * Equivalent to first.
+     */
+    value_type front() const;
+
+    /*
+     * Method: insert
+     * Usage: set.insert(value);
+     * -------------------------
+     * Adds an element to this set, if it was not already there.  This
+     * method is exported for compatibility with the STL <code>set</code> class.
+     */
+    void insert(const value_type& value);
+
+    /*
+     * Method: isEmpty
+     * Usage: if (set.isEmpty()) ...
+     * -----------------------------
+     * Returns <code>true</code> if this set contains no elements.
+     */
+    bool isEmpty() const;
+
+    /*
+     * Method: isSubsetOf
+     * Usage: if (set.isSubsetOf(set2)) ...
+     * ------------------------------------
+     * Implements the subset relation on sets.  It returns
+     * <code>true</code> if every element of this set is
+     * contained in <code>set2</code>.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     */
+    bool isSubsetOf(const GenericSet& set2) const;
+
+    /*
+     * Method: isSupersetOf
+     * Usage: if (set.isSupersetOf(set2)) ...
+     * --------------------------------------
+     * Implements the superset relation on sets.  It returns
+     * <code>true</code> if every element of this set is
+     * contained in <code>set2</code>.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * Equivalent in behavior to containsAll.
+     */
+    bool isSupersetOf(const GenericSet& set2) const;
+
+    /*
+     * Method: mapAll
+     * Usage: set.mapAll(fn);
+     * ----------------------
+     * Iterates through the elements of the set and calls <code>fn(value)</code>
+     * for each one.  The iteration order matches the underlying order in which
+     * the elements are stored.  For Set, this is sorted order according to the
+     * comparison function; for LinkedHashSet, this is the insertion order; and
+     * for HashSet, this is whatever order the elements happen to be in.
+     */
+    void mapAll(std::function<void (const value_type&)> fn) const;
+
+    /*
+     * Method: remove
+     * Usage: set.remove(value);
+     * -------------------------
+     * Removes an element from this set.  If the value was not
+     * contained in the set, no error is generated and the set
+     * remains unchanged.
+     */
+    void remove(const value_type& value);
+
+    /*
+     * Method: removeAll
+     * Usage: set.removeAll(set2);
+     * ---------------------------
+     * Removes all elements of the given other set from this set.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * Returns a reference to this set.
+     * Identical in behavior to the -= operator.
+     */
+    GenericSet& removeAll(const GenericSet& set);
+
+    /*
+     * Method: retainAll
+     * Usage: set.retainAll(set2);
+     * ---------------------------
+     * Removes all elements from this set that are not contained in the given
+     * other set.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * Returns a reference to this set.
+     * Identical in behavior to the *= operator.
+     */
+    GenericSet& retainAll(const GenericSet& set);
+
+    /*
+     * Method: size
+     * Usage: count = set.size();
+     * --------------------------
+     * Returns the number of elements in this set.
+     */
+    int size() const;
+
+    /*
+     * Method: toString
+     * Usage: string str = set.toString();
+     * -----------------------------------
+     * Converts the set to a printable string representation.
+     */
+    std::string toString() const;
+
+    /*
+     * Operator: ==
+     * Usage: set1 == set2
+     * -------------------
+     * Returns <code>true</code> if <code>set1</code> and <code>set2</code>
+     * contain the same elements.
+     */
+    bool operator ==(const GenericSet& set2) const;
+
+    /*
+     * Operator: !=
+     * Usage: set1 != set2
+     * -------------------
+     * Returns <code>true</code> if <code>set1</code> and <code>set2</code>
+     * are different.
+     */
+    bool operator !=(const GenericSet& set2) const;
+
+    /*
+     * Operators: <, >, <=, >=
+     * Usage: if (set1 <= set2) ...
+     * ...
+     * ----------------------------
+     * Relational operators to compare two sets.
+     * The <, >, <=, >= operators require that the value type has a < operator
+     * so that the elements can be compared pairwise.
+     *
+     * These are implemented as friend functions so that if we fully instantiate
+     * this type, we don't get errors when using relational operators.
+     */
+    template <typename Traits>
+    friend bool operator <(const GenericSet<Traits>& set1, const GenericSet<Traits>& set2);
+    template <typename Traits>
+    friend bool operator <=(const GenericSet<Traits>& set1, const GenericSet<Traits>& set2);
+    template <typename Traits>
+    friend bool operator >(const GenericSet<Traits>& set1, const GenericSet<Traits>& set2);
+    template <typename Traits>
+    friend bool operator >=(const GenericSet<Traits>& set1, const GenericSet<Traits>& set2);
+
+    /*
+     * Operator: +
+     * Usage: set1 + set2
+     *        set1 + element
+     * ---------------------
+     * Returns the union of sets <code>set1</code> and <code>set2</code>, which
+     * is the set of elements that appear in at least one of the two sets.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * The right hand set can be replaced by an element of the value type, in
+     * which case the operator returns a new set formed by adding that element.
+     */
+    GenericSet operator +(const GenericSet& set2) const;
+    GenericSet operator +(const value_type& element) const;
+
+    /*
+     * Operator: *
+     * Usage: set1 * set2
+     * ------------------
+     * Returns the intersection of sets <code>set1</code> and <code>set2</code>,
+     * which is the set of all elements that appear in both.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     */
+    GenericSet operator *(const GenericSet& set2) const;
+
+    /*
+     * Operator: -
+     * Usage: set1 - set2
+     *        set1 - element
+     * ---------------------
+     * Returns the difference of sets <code>set1</code> and <code>set2</code>,
+     * which is all of the elements that appear in <code>set1</code> but
+     * not <code>set2</code>.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * The right hand set can be replaced by an element of the value type, in
+     * which case the operator returns a new set formed by removing that element.
+     */
+    GenericSet operator -(const GenericSet& set2) const;
+    GenericSet operator -(const value_type& element) const;
+
+    /*
+     * Operator: +=
+     * Usage: set1 += set2;
+     *        set1 += value;
+     * ---------------------
+     * Adds all of the elements from <code>set2</code> (or the single
+     * specified value) to <code>set1</code>.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * As a convenience, the <code>Set</code> package also overloads the comma
+     * operator so that it is possible to initialize a set like this:
+     *
+     *<pre>
+     *    Set&lt;int&gt; digits;
+     *    digits += 0, 1, 2, 3, 4, 5, 6, 7, 8, 9;
+     *</pre>
+     */
+    GenericSet& operator +=(const GenericSet& set2);
+    GenericSet& operator +=(const value_type& value);
+
+    /*
+     * Operator: *=
+     * Usage: set1 *= set2;
+     * --------------------
+     * Removes any elements from <code>set1</code> that are not present in
+     * <code>set2</code>.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     */
+    GenericSet& operator *=(const GenericSet& set2);
+
+    /*
+     * Operator: -=
+     * Usage: set1 -= set2;
+     *        set1 -= value;
+     * ---------------------
+     * Removes the elements from <code>set2</code> (or the single
+     * specified value) from <code>set1</code>.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * As a convenience, the <code>Set</code> package also overloads the comma
+     * operator so that it is possible to remove multiple elements from a set
+     * like this:
+     *
+     *<pre>
+     *    digits -= 0, 2, 4, 6, 8;
+     *</pre>
+     *
+     * which removes the values 0, 2, 4, 6, and 8 from the set
+     * <code>digits</code>.
+     */
+    GenericSet& operator -=(const GenericSet& set2);
+    GenericSet& operator -=(const value_type& value);
+
+    /*
+     * Additional Set operations
+     * -------------------------
+     * In addition to the methods listed in this interface, the Set
+     * class supports the following operations:
+     *
+     *   - Stream I/O using the << and >> operators
+     *   - Deep copying for the copy constructor and assignment operator
+     *   - Iteration using the range-based for statement and STL iterators
+     *
+     * The iteration forms process the Set in ascending order.
+     */
+
+    /* Private section */
+
+    /**********************************************************************/
+    /* Note: Everything below this point in the file is logically part    */
+    /* of the implementation and should not be of interest to clients.    */
+    /**********************************************************************/
+
+private:
+    typename SetTraits::MapType map = SetTraits::construct();  /* Map used to store the elements    */
+    bool removeFlag = false;                                   /* Flag to differentiate += and -=   */
+
+public:
+    /*
+     * Hidden features
+     * ---------------
+     * The remainder of this file consists of the code required to
+     * support the comma operator, copying, and iteration.
+     *
+     * Including these methods in the public interface would make
+     * that interface more difficult to understand for the average client.
+     */
+    GenericSet& operator ,(const value_type& value) {
+        if (this->removeFlag) {
+            this->remove(value);
+        } else {
+            this->add(value);
+        }
+        return *this;
+    }
+
+    using const_iterator = typename SetTraits::MapType::const_iterator;
+    using iterator = const_iterator;
+
+    iterator begin() const {
+        return map.begin();
+    }
+
+    iterator end() const {
+        return map.end();
+    }
+
+    friend int hashCode(const GenericSet& set) {
+        return hashCode(set.map);
+    }
+};
+
+template <typename SetTraits>
+GenericSet<SetTraits>::GenericSet(std::initializer_list<value_type> list)
+    : map(SetTraits::construct()) {
+    /* Can't do addAll because that would recursively try constructing a GenericSet.
+     * Instead, directly add everything here. This becomes the focal point for
+     * all initializer_list conversions.
+     */
+    for (const auto& elem: list) {
+        add(elem);
+    }
+}
+
+template <typename SetTraits>
+template <typename... Args>
+GenericSet<SetTraits>::GenericSet(Args... args) : GenericSet({}, std::move(args)...) {
+    // Handled by other constructor
+}
+
+template <typename SetTraits>
+template <typename... Args>
+GenericSet<SetTraits>::GenericSet(std::initializer_list<value_type> list, Args... args)
+    : map(SetTraits::construct(std::move(args)...)) {
+
+    /* Can't do addAll because that would recursively try constructing a GenericSet.
+     * Instead, directly add everything here. This becomes the focal point for
+     * all initializer_list conversions.
+     */
+    for (const auto& elem: list) {
+        add(elem);
+    }
+}
+
+template <typename SetTraits>
+void GenericSet<SetTraits>::add(const value_type& value) {
+    map.put(value, true);
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits>& GenericSet<SetTraits>::addAll(const GenericSet& set2) {
+    for (const auto& value : set2) {
+        add(value);
+    }
+    return *this;
+}
+
+template <typename SetTraits>
+typename GenericSet<SetTraits>::value_type
+GenericSet<SetTraits>::back() const {
+    if (isEmpty()) {
+        error(SetTraits::name() + "::back: set is empty");
+    }
+    return map.back();
+}
+
+template <typename SetTraits>
+void GenericSet<SetTraits>::clear() {
+    map.clear();
+}
+
+template <typename SetTraits>
+bool GenericSet<SetTraits>::contains(const value_type& value) const {
+    return map.containsKey(value);
+}
+
+template <typename SetTraits>
+bool GenericSet<SetTraits>::containsAll(const GenericSet& set2) const {
+    for (const auto& value: set2) {
+        if (!contains(value)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+template <typename SetTraits>
+bool GenericSet<SetTraits>::equals(const GenericSet& set2) const {
+    // optimization: if literally same set, stop
+    if (this == &set2) {
+        return true;
+    }
+
+    /* We are equal if we have the same size and we're a subset of the other
+     * set.
+     */
+    if (size() != set2.size()) {
+        return false;
+    }
+    return isSubsetOf(set2);
+}
+
+template <typename SetTraits>
+typename GenericSet<SetTraits>::value_type
+GenericSet<SetTraits>::first() const {
+    if (isEmpty()) {
+        error(SetTraits::name() + "::first: set is empty");
+    }
+    return *begin();
+}
+
+template <typename SetTraits>
+typename GenericSet<SetTraits>::value_type
+GenericSet<SetTraits>::front() const {
+    if (isEmpty()) {
+        error(SetTraits::name() + "::front: set is empty");
+    }
+    return map.front();
+}
+
+template <typename SetTraits>
+void GenericSet<SetTraits>::insert(const value_type& value) {
+    map.put(value, true);
+}
+
+template <typename SetTraits>
+bool GenericSet<SetTraits>::isEmpty() const {
+    return map.isEmpty();
+}
+
+template <typename SetTraits>
+bool GenericSet<SetTraits>::isSubsetOf(const GenericSet& set2) const {
+    for (const auto& elem: *this) {
+        if (!set2.contains(elem)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+template <typename SetTraits>
+bool GenericSet<SetTraits>::isSupersetOf(const GenericSet& set2) const {
+    return containsAll(set2);
+}
+
+template <typename SetTraits>
+void GenericSet<SetTraits>::mapAll(std::function<void (const value_type &)> fn) const {
+    map.mapAll([&](const value_type& elem, bool) {
+        fn(elem);
+    });
+}
+
+template <typename SetTraits>
+void GenericSet<SetTraits>::remove(const value_type& value) {
+    map.remove(value);
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits>& GenericSet<SetTraits>::removeAll(const GenericSet& set2) {
+    map.removeAll(set2.map);
+    return *this;
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits>& GenericSet<SetTraits>::retainAll(const GenericSet& set2) {
+    map.retainAll(set2.map);
+    return *this;
+}
+
+template <typename SetTraits>
+int GenericSet<SetTraits>::size() const {
+    return map.size();
+}
+
+template <typename SetTraits>
+std::string GenericSet<SetTraits>::toString() const {
+    std::ostringstream os;
+    os << *this;
+    return os.str();
+}
+
+/*
+ * Implementation notes: set operators
+ * -----------------------------------
+ * The implementations for the set operators use iteration to walk
+ * over the elements in one or both sets.
+ */
+template <typename SetTraits>
+bool GenericSet<SetTraits>::operator ==(const GenericSet& set2) const {
+    return equals(set2);
+}
+
+template <typename SetTraits>
+bool GenericSet<SetTraits>::operator !=(const GenericSet& set2) const {
+    return !equals(set2);
+}
+
+template <typename SetTraits>
+bool operator <(const GenericSet<SetTraits>& set1, const GenericSet<SetTraits>& set2) {
+    return set1.map < set2.map;
+}
+
+template <typename SetTraits>
+bool operator <=(const GenericSet<SetTraits>& set1, const GenericSet<SetTraits>& set2) {
+    return set1.map <= set2.map;
+}
+
+template <typename SetTraits>
+bool operator >(const GenericSet<SetTraits>& set1, const GenericSet<SetTraits>& set2) {
+    return set1.map > set2.map;
+}
+
+template <typename SetTraits>
+bool operator >=(const GenericSet<SetTraits>& set1, const GenericSet<SetTraits>& set2) {
+    return set1.map >= set2.map;
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits> GenericSet<SetTraits>::operator +(const GenericSet& set2) const {
+    return GenericSet(*this).addAll(set2);
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits> GenericSet<SetTraits>::operator +(const value_type& element) const {
+    GenericSet result = *this;
+    result.add(element);
+    return result;
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits> GenericSet<SetTraits>::operator *(const GenericSet& set2) const {
+    return GenericSet(*this).retainAll(set2);
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits> GenericSet<SetTraits>::operator -(const GenericSet& set2) const {
+    return GenericSet(*this).removeAll(set2);
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits> GenericSet<SetTraits>::operator -(const value_type& element) const {
+    GenericSet result = *this;
+    result.remove(element);
+    return result;
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits>& GenericSet<SetTraits>::operator +=(const GenericSet& set2) {
+    removeFlag = false;
+    return addAll(set2);
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits>& GenericSet<SetTraits>::operator +=(const value_type& value) {
+    add(value);
+    removeFlag = false;
+    return *this;
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits>& GenericSet<SetTraits>::operator *=(const GenericSet& set2) {
+    return retainAll(set2);
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits>& GenericSet<SetTraits>::operator -=(const GenericSet& set2) {
+    removeFlag = true;
+    return removeAll(set2);
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits>& GenericSet<SetTraits>::operator -=(const value_type& value) {
+    remove(value);
+    removeFlag = true;
+    return *this;
+}
+
+template <typename SetTraits>
+std::ostream& operator <<(std::ostream& os, const GenericSet<SetTraits>& set) {
+    return stanfordcpplib::collections::writeCollection(os, set);
+}
+
+template <typename SetTraits>
+std::istream& operator >>(std::istream& is, GenericSet<SetTraits>& set) {
+    typename SetTraits::ValueType element;
+    return stanfordcpplib::collections::readCollection(is, set, element, /* descriptor */ SetTraits::name() + "::operator >>");
+}
+
+
+/*
+ * Types used to automatically check whether a type is comparable using
+ * the < operator and whether a type supports operator== and hashCode.
+ *
+ * This is used to provide better compiler diagnostics to students when
+ * they try to instantiate our times incorrectly.
+ *
+ * Later on, when C++20 concepts are rolled out, we should consider
+ * replacing this code with concepts.
+ */
+template <typename T>
+struct IsLessThanComparable {
+private:
+    /* Use SFNIAE overloading to detect which of these two options to pick. */
+    struct Yes{};
+    struct No {};
+
+    template <typename U>
+    static Yes check(int,
+                     decltype(std::declval<U>() < std::declval<U>()) = 0);
+    template <typename U> static No  check(...);
+
+public:
+    static constexpr bool value =
+            std::conditional<std::is_same<decltype(check<T>(0)), Yes>::value,
+                             std::true_type,
+                             std::false_type>::type::value;
+};
+
+template <typename T>
+struct IsHashable {
+private:
+    /* Use SFNIAE overloading to detect which of these two options to pick. */
+    struct Yes{};
+    struct No {};
+
+    template <typename U>
+    static Yes check(int,
+                     decltype(hashCode(std::declval<U>())) = 0,
+                     decltype(std::declval<U>() == std::declval<U>()) = 0);
+    template <typename U> static No  check(...);
+
+public:
+    static constexpr bool value =
+            std::conditional<std::is_same<decltype(check<T>(0)), Yes>::value,
+                             std::true_type,
+                             std::false_type>::type::value;
+};
+
+/*
+ * Returns std::less<T>, except with a nice static assertion wrapped around it to
+ * make sure that in the event that T isn't comparable via <, the error message is
+ * more readable.
+ */
+template <typename T>
+std::function<bool (const T&, const T&)> checkedLess() {
+    static_assert(IsLessThanComparable<T>::value,
+                  "Oops! You tried using a type as a key in our Map without making it comparable. Click this error for more details.");
+    /*
+     * Hello CS106 students! If you got directed to this line of code in a compiler error,
+     * it probably means that you tried making a Map with a custom struct or class type
+     * as the key type or a Set with a custom struct as a value type.
+     *
+     * In order to have a type be a key type in a Map - or to have a type be a value type
+     * in a Set - it needs to have be comparable using the < operator. By default, types in C++
+     * can't be compared using the < operator, hence the error.
+     *
+     * There are two ways to fix this. The first option would simply be to not use your custom
+     * type as a key in the Map or value in a Set. This is probably the easiest option.
+     *
+     * The second way to fix this is to explicitly define an operator< function for your custom
+     * type. Here's the syntax for doing that:
+     *
+     *     bool operator< (const YourCustomType& lhs, const YourCustomType& rhs) {
+     *         return compareTo(lhs.data1, rhs.data1,
+     *                          lhs.data2, rhs.data2,
+     *                          ...
+     *                          lhs.dataN, rhs.dataN);
+     *     }
+     *
+     * where data1, data2, ... dataN are the data members of your type. For example, if you had
+     * a custom type
+     *
+     *     struct MyType {
+     *         int myInt;
+     *         string myString;
+     *     };
+     *
+     * you would define the function
+     *
+     *     bool operator< (const MyType& lhs, const MyType& rhs) {
+     *         return compareTo(lhs.myInt,    rhs.myInt,
+     *                          lhs.myString, rhs.myString);
+     *     }
+     *
+     * Hope this helps!
+     */
+    return std::less<T>();
+}
+
+/*
+ * Utility traits type that always contains a value that's false.
+ */
+template <typename... Args> struct Fail {
+    static constexpr bool value = false;
+};
 
 } // namespace collections
 } // namespace stanfordcpplib

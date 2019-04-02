@@ -10,8 +10,6 @@
  * See BasicGraph.cpp for implementation of some non-template members.
  *
  * @author Marty Stepp
- * @version 2018/11/18
- * - bug fix for getInverseEdge/Arc with null parameter
  * @version 2018/09/07
  * - reformatted doc-style comments
  * @version 2018/03/10
@@ -335,7 +333,7 @@ std::ostream& operator <<(std::ostream& out, const EdgeGen<V, E>& edge);
  * and getInverseEdge(edge) to get the edge v2 -> v1 for a given edge v1 -> v2.
  */
 template <typename V = void*, typename E = void*>
-class BasicGraphGen : public Graph<VertexGen<V, E>, EdgeGen<V, E> > {
+class BasicGraphGen : public Graph<VertexGen<V, E>, EdgeGen<V, E>> {
 public:
     /**
      * Constructs a new empty graph.
@@ -1017,13 +1015,13 @@ std::ostream& operator <<(std::ostream& out, const EdgeGen<V, E>& edge) {
  * BasicGraph member implementations
  */
 template <typename V, typename E>
-BasicGraphGen<V, E>::BasicGraphGen() : Graph<VertexGen<V, E>, EdgeGen<V, E> >() {
+BasicGraphGen<V, E>::BasicGraphGen() : Graph<VertexGen<V, E>, EdgeGen<V, E>>() {
     m_resetEnabled = true;
 }
 
 template <typename V, typename E>
 BasicGraphGen<V, E>::BasicGraphGen(std::initializer_list<std::string> vertexList)
-        : Graph<VertexGen<V, E>, EdgeGen<V, E> >() {
+        : Graph<VertexGen<V, E>, EdgeGen<V, E>>() {
     m_resetEnabled = true;
     for (const std::string& vertexName : vertexList) {
         this->addVertex(vertexName);
@@ -1087,7 +1085,7 @@ EdgeGen<V, E>* BasicGraphGen<V, E>::getEdge(const std::string& v1, const std::st
 
 template <typename V, typename E>
 EdgeGen<V, E>* BasicGraphGen<V, E>::getInverseArc(EdgeGen<V, E>* edge) const {
-    return (edge) ? this->getArc(edge->finish, edge->start) : nullptr;
+    return this->getArc(edge->finish, edge->start);
 }
 
 template <typename V, typename E>

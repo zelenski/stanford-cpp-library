@@ -104,7 +104,7 @@ public:
      * This constructor uses an initializer list to set up the grid.
      * Usage: SparseGrid<int> grid {{1, 2, 3}, {4, 5, 6}};
      */
-    SparseGrid(std::initializer_list<std::initializer_list<ValueType> > list);
+    SparseGrid(std::initializer_list<std::initializer_list<ValueType>> list);
 
     /*
      * Destructor: ~SparseGrid
@@ -423,7 +423,7 @@ public:
 
 private:
     /* Instance variables */
-    Map<int, Map<int, ValueType> > elements;  // 2D map of the elements
+    Map<int, Map<int, ValueType>> elements;  // 2D map of the elements
     int nRows;            // The number of rows in the grid
     int nCols;            // The number of columns in the grid
     unsigned int m_version = 0;  // structure version for detecting invalid iterators
@@ -610,10 +610,6 @@ public:
 
     class SparseGridRowConst {
     public:
-        SparseGridRowConst() {
-            /* Empty */
-        }
-
         const ValueType operator [](int col) const {
             gp->checkIndexes(row, col, gp->nRows-1, gp->nCols-1, "operator [][]");
             return gp->elements[row][col];
@@ -650,7 +646,7 @@ SparseGrid<ValueType>::SparseGrid(int nRows, int nCols, const ValueType& value) 
 }
 
 template <typename ValueType>
-SparseGrid<ValueType>::SparseGrid(std::initializer_list<std::initializer_list<ValueType> > list)
+SparseGrid<ValueType>::SparseGrid(std::initializer_list<std::initializer_list<ValueType>> list)
         : nRows(0),
           nCols(0) {
     // create the grid at the proper size
@@ -859,7 +855,7 @@ void SparseGrid<ValueType>::resize(int nRows, int nCols, bool retain) {
         // if resizing to a smaller size, must evict any row/col entries
         // that exceed the new grid's bounds
         if (nRows < oldnRows || nCols < oldnCols) {
-            Map<int, Map<int, ValueType> > newElements;
+            Map<int, Map<int, ValueType>> newElements;
             for (int row : elements) {
                 if (row >= nRows) {
                     break;   // don't add any entries beyond this row

@@ -16,6 +16,13 @@
 
 TEST_CATEGORY(QueueTests, "Queue tests");
 
+/*
+ * Force instantiation of the template on a type to ensure that we don't have anything
+ * insidious lurking that just didn't get compiled.
+ */
+template class Queue<int>;
+template class Queue<std::string>;
+
 TIMED_TEST(QueueTests, compareTest_Queue, TEST_TIMEOUT_DEFAULT) {
     Queue<int> q1;
     q1.add(1);
@@ -74,22 +81,6 @@ TIMED_TEST(QueueTests, initializerListTest_Queue, TEST_TIMEOUT_DEFAULT) {
     Queue<int> queue {10, 20, 30};
     assertEqualsString("initializer list Queue", "{10, 20, 30}", queue.toString());
 }
-
-#ifdef SPL_THROW_ON_INVALID_ITERATOR
-TIMED_TEST(QueueTests, iteratorVersionTest_Queue, TEST_TIMEOUT_DEFAULT) {
-    Queue<int> queue {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    try {
-        for (int n : queue) {
-            if (n % 2 == 0) {
-                queue.dequeue();
-            }
-        }
-        assertFail("should not get to end of test; should throw exception before now");
-    } catch (ErrorException ex) {
-        assertPass("threw exception successfully");
-    }
-}
-#endif // SPL_THROW_ON_INVALID_ITERATOR
 
 TIMED_TEST(QueueTests, peekEnqueueBugTest_Queue, TEST_TIMEOUT_DEFAULT) {
     {

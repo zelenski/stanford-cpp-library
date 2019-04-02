@@ -184,6 +184,7 @@ std::pair<BigInteger, BigInteger> BigInteger::divideBig(const BigInteger& numera
         error("Denominator too large to divide: " + denominator.toString());
     }
 
+    /* TODO: Uncomment this section and properly implement it.
     // now b1 >= 0 && b2 > 0
     BigInteger quotient(ZERO);
     BigInteger remainder(numerator);
@@ -193,6 +194,7 @@ std::pair<BigInteger, BigInteger> BigInteger::divideBig(const BigInteger& numera
     }
     std::pair<BigInteger, BigInteger> result {quotient, remainder};
     return result;
+    */
 }
 
 bool BigInteger::equals(const BigInteger& n1, const BigInteger& n2) {

@@ -15,7 +15,50 @@
 #include <sstream>
 #include <string>
 
+/*
+ * Force instantiation of the template on a type to ensure that we don't have anything
+ * insidious lurking that just didn't get compiled.
+ */
+template class stanfordcpplib::collections::GenericSet<stanfordcpplib::collections::LinkedHashSetTraits<int>>;
+template class stanfordcpplib::collections::GenericSet<stanfordcpplib::collections::LinkedHashSetTraits<std::string>>;
+
 TEST_CATEGORY(LinkedHashSetTests, "LinkedHashSet tests");
+
+#if 0
+void causeCompilerError() {
+    struct Bad {};
+
+    LinkedHashSet<Bad> bad; // Should trigger a static assertion rather than a long chain of sorrows
+}
+#endif
+
+#if 0
+void badInitializationError() {
+    LinkedHashSet<std::string> mySet = "137";
+}
+#endif
+
+TIMED_TEST(LinkedHashSetTests, commaOperatorLinkedHashTest_Set, TEST_TIMEOUT_DEFAULT) {
+    /* Confirm that commas work properly. */
+    LinkedHashSet<int> one = {1, 2, 3};
+
+    /* Begin by adding some elements in. */
+    one += 3, 4, 5; // {1, 2, 3, 4, 5}
+    assertEqualsInt("elements were added", one.size(), 5);
+
+    /* Now remove some elements. */
+    one -= 3, 4, 5; // {1, 2}
+    assertEqualsInt("elements were removed", one.size(), 2);
+
+    /* Now add a collection of elements. */
+    LinkedHashSet<int> two = {3, 4, 5};
+    one += two, 6; // {1, 2, 3, 4, 5, 6}
+    assertEqualsInt("elements were added", one.size(), 6);
+
+    /* Now remove a collection of elements. */
+    one -= two, 6; // {1, 2}
+    assertEqualsInt("elements were removed", one.size(), 2);
+}
 
 TIMED_TEST(LinkedHashSetTests, compareTest_LinkedHashSet, TEST_TIMEOUT_DEFAULT) {
     LinkedHashSet<int> set1 {7, 5, 1, 2, 8};

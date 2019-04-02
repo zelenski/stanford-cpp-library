@@ -17,6 +17,15 @@
 
 TEST_CATEGORY(LinkedHashMapTests, "LinkedHashMap tests");
 
+/*
+ * Force instantiation of the template on a type to ensure that we don't have anything
+ * insidious lurking that just didn't get compiled.
+ */
+template class LinkedHashMap<int, int>;
+template class LinkedHashMap<int, std::string>;
+template class LinkedHashMap<std::string, int>;
+template class LinkedHashMap<std::string, std::string>;
+
 TIMED_TEST(LinkedHashMapTests, compareTest_LinkedHashMap, TEST_TIMEOUT_DEFAULT) {
     // TODO
 }
@@ -67,9 +76,9 @@ TIMED_TEST(LinkedHashMapTests, hashCodeTest_LinkedHashMap, TEST_TIMEOUT_DEFAULT)
 }
 
 TIMED_TEST(LinkedHashMapTests, initializerListTest_LinkedHashMap, TEST_TIMEOUT_DEFAULT) {
-    std::initializer_list<std::pair<std::string, int> > pairlist = {{"k", 60}, {"t", 70}};
-    std::initializer_list<std::pair<std::string, int> > pairlist2 = {{"b", 20}, {"e", 50}};
-    std::initializer_list<std::pair<std::string, int> > expected;
+    std::initializer_list<std::pair<const std::string, int> > pairlist = {{"k", 60}, {"t", 70}};
+    std::initializer_list<std::pair<const std::string, int> > pairlist2 = {{"b", 20}, {"e", 50}};
+    std::initializer_list<std::pair<const std::string, int> > expected;
 
     LinkedHashMap<std::string, int> hmap {{"a", 10}, {"b", 20}, {"c", 30}};
     assertEqualsInt("init list LinkedHashMap get a", 10, hmap.get("a"));

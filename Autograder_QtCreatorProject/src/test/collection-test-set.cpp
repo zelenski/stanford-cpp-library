@@ -14,8 +14,70 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <numeric>
 
 TEST_CATEGORY(SetTests, "Set tests");
+
+/*
+ * Force instantiation of Set on a few types to make sure we didn't miss anything.
+ * The types must be comparable.
+ */
+template class stanfordcpplib::collections::GenericSet<stanfordcpplib::collections::SetTraits<int>>;
+template class stanfordcpplib::collections::GenericSet<stanfordcpplib::collections::SetTraits<std::string>>;
+
+/*
+ * Uncomment this code to include tests that the nice error messages for types missing
+ * hashing show up properly.
+ */
+#if 0
+void causeCompilerError() {
+    struct Bad {};
+
+    Set<Bad> bad; // Should trigger a static assertion rather than a long chain of sorrows
+}
+#endif
+
+/*
+ * We should NOT get a compiler error trying to stash things in a Set that are not
+ * comparable as long as we provide a custom comparator.
+ */
+static void customComparatorNoError() {
+    struct Meh {};
+
+    Set<Meh> okay([](const Meh&, const Meh&) {
+        return true;
+    });
+
+    (void) okay;
+}
+
+#if 0
+void badInitializationError() {
+    Set<std::string> mySet = "137";
+}
+#endif
+
+TIMED_TEST(SetTests, commaOperatorTest_Set, TEST_TIMEOUT_DEFAULT) {
+    /* Confirm that commas work properly. */
+    Set<int> one = {1, 2, 3};
+
+    /* Begin by adding some elements in. */
+    one += 3, 4, 5; // {1, 2, 3, 4, 5}
+    assertEqualsInt("elements were added", one.size(), 5);
+
+    /* Now remove some elements. */
+    one -= 3, 4, 5; // {1, 2}
+    assertEqualsInt("elements were removed", one.size(), 2);
+
+    /* Now add a collection of elements. */
+    Set<int> two = {3, 4, 5};
+    one += two, 6; // {1, 2, 3, 4, 5, 6}
+    assertEqualsInt("elements were added", one.size(), 6);
+
+    /* Now remove a collection of elements. */
+    one -= two, 6; // {1, 2}
+    assertEqualsInt("elements were removed", one.size(), 2);
+}
 
 TIMED_TEST(SetTests, compareTest_Set, TEST_TIMEOUT_DEFAULT) {
     Set<int> set1 {7, 5, 1, 2, 8};
@@ -32,6 +94,28 @@ TIMED_TEST(SetTests, compareTest_Set, TEST_TIMEOUT_DEFAULT) {
     // note: shouldn't add set3 because it is 'equal' to set2 (duplicate)
     Set<Set<int> > sset {set1, set2, set3, set4};
     assertEqualsString("sset", "{{}, {1, 2, 3, 4}, {1, 2, 5, 7, 8}}", sset.toString());
+}
+
+TIMED_TEST(SetTests, customComparatorTest_Set, TEST_TIMEOUT_DEFAULT) {
+    /* Confirm that we can override the comparator if need be. */
+    Set<int> descending({1, 2, 3, 4, 5}, std::greater<int>());
+    assertEqualsInt("has all elements", descending.size(), 5);
+
+    auto itr = descending.begin();
+    for (int i = 5; i > 0; i--, ++itr) {
+        assertEqualsInt("has right values", *itr, i);
+    }
+
+    /* Now leave the set empty and try overriding the comparator. */
+    Set<int> descending2{std::greater<int>()};
+    descending2 += 1, 2, 3, 4, 5;
+
+    assertEqualsInt("has all elements", descending2.size(), 5);
+
+    itr = descending2.begin();
+    for (int i = 5; i > 0; i--, ++itr) {
+        assertEqualsInt("has right values", *itr, i);
+    }
 }
 
 TIMED_TEST(SetTests, forEachTest_Set, TEST_TIMEOUT_DEFAULT) {
@@ -108,6 +192,17 @@ TIMED_TEST(SetTests, iteratorVersionTest_Set, TEST_TIMEOUT_DEFAULT) {
 }
 #endif // SPL_THROW_ON_INVALID_ITERATOR
 
+TIMED_TEST(SetTests, mapAllTest_Set, TEST_TIMEOUT_DEFAULT) {
+    Set<int> set {7, 5, 1, 2, 8};
+
+    int total = 0;
+    set.mapAll([&] (int value) {
+        total += value;
+    });
+
+    assertEqualsInt("mapAll produces correct sum.", std::accumulate(set.begin(), set.end(), 0), total);
+}
+
 TIMED_TEST(SetTests, randomElementTest_Set, TEST_TIMEOUT_DEFAULT) {
     Map<std::string, int> counts;
     int RUNS = 200;
@@ -123,4 +218,19 @@ TIMED_TEST(SetTests, randomElementTest_Set, TEST_TIMEOUT_DEFAULT) {
     for (const std::string& s : list) {
         assertTrue("must choose " + s + " sometimes", counts[s] > 0);
     }
+}
+
+TIMED_TEST(SetTests, removeAndRetainTest_Set, TEST_TIMEOUT_DEFAULT) {
+    Set<int> all   = { 1, 2, 3, 4, 5, 6, 7, 8 };
+    Set<int> evens = {    2,    4,    6,    8,   10 };
+    Set<int> odds  = { 1,    3,    5,    7    };
+
+    all.removeAll(evens);
+    assertEqualsCollection("should just have odds left", all, odds);
+
+    Set<int> primes   = { 2, 3, 5, 7, 11 };
+    Set<int> expected = { 3, 5, 7 };
+
+    all.retainAll(primes);
+    assertEqualsCollection("should have lost 1", all, expected);
 }

@@ -18,6 +18,38 @@
 
 TEST_CATEGORY(MapTests, "Map tests");
 
+/*
+ * Force instantiation of Map on a few types to make sure we didn't miss anything.
+ * The key types must be comparable.
+ */
+template class Map<int, int>;
+template class Map<std::string, int>;
+
+/*
+ * Uncomment this code to include tests that the nice error messages for types missing
+ * hashing show up properly.
+ */
+#if 0
+void causeCompilerError() {
+    struct Bad {};
+
+    Map<Bad, int> bad; // Should trigger a static assertion rather than a long chain of sorrows
+}
+#endif
+
+/* This code, on the other hand, should NOT cause a compiler error, since we gave an
+ * explicit comparison function.
+ */
+static void customComparatorNoError() {
+    struct Meh {};
+
+    Map<Meh, int> okay([](const Meh&, const Meh&) {
+        return true;
+    });
+
+    (void) okay;
+}
+
 TIMED_TEST(MapTests, compareTest_Map, TEST_TIMEOUT_DEFAULT) {
     // TODO
 }
@@ -66,9 +98,9 @@ TIMED_TEST(MapTests, hashCodeTest_Map, TEST_TIMEOUT_DEFAULT) {
 }
 
 TIMED_TEST(MapTests, initializerListTest_Map, TEST_TIMEOUT_DEFAULT) {
-    std::initializer_list<std::pair<std::string, int> > pairlist = {{"k", 60}, {"t", 70}};
-    std::initializer_list<std::pair<std::string, int> > pairlist2 = {{"b", 20}, {"e", 50}};
-    std::initializer_list<std::pair<std::string, int> > expected;
+    std::initializer_list<std::pair<const std::string, int>> pairlist = {{"k", 60}, {"t", 70}};
+    std::initializer_list<std::pair<const std::string, int>> pairlist2 = {{"b", 20}, {"e", 50}};
+    std::initializer_list<std::pair<const std::string, int>> expected;
 
     Map<std::string, int> map {{"a", 10}, {"b", 20}, {"c", 30}};
     assertEqualsInt("init list Map get a", 10, map.get("a"));
