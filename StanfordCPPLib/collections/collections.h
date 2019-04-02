@@ -730,8 +730,12 @@ public:
 
     /* Comparison operators. */
     template <typename OtherItr> bool operator ==(const CheckedIterator<OtherItr>& rhs) const {
-        if (!mOwner || !rhs.mOwner) error("Cannot compare an uninitialized iterator.");
-        if ( mOwner !=  rhs.mOwner) error("Cannot compare iterators from two different containers.");
+        if (!mOwner || !rhs.mOwner) {
+            error("Cannot compare an uninitialized iterator.");
+        }
+        if ( mOwner !=  rhs.mOwner) {
+            error("Cannot compare iterators from two different containers.");
+        }
         return mIter == rhs.mIter;
     }
     template <typename OtherItr> bool operator !=(const CheckedIterator<OtherItr>& rhs) const {
