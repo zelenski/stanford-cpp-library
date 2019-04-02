@@ -2,6 +2,8 @@
  * File: gcanvas.cpp
  * -----------------
  *
+ * @version 2019/02/06
+ * - fixed mouse wheel listeners to work even if no actual scroll area exists
  * @version 2019/02/02
  * - destructor now stops event processing
  * @version 2018/09/20
@@ -1100,12 +1102,13 @@ void _Internal_QCanvas::wheelEvent(QWheelEvent* event) {
     if (!_gcanvas) {
         return;
     }
-    if (event->pixelDelta().y() < 0) {
+    QPoint delta = event->angleDelta();
+    if (delta.y() < 0) {
         // scroll down
         if (_gcanvas->isAcceptingEvent("mousewheeldown")) {
             _gcanvas->fireGEvent(event, MOUSE_WHEEL_DOWN, "mousewheeldown");
         }
-    } else if (event->pixelDelta().y() > 0) {
+    } else if (delta.y() > 0) {
         // scroll up
         if (_gcanvas->isAcceptingEvent("mousewheelup")) {
             _gcanvas->fireGEvent(event, MOUSE_WHEEL_UP, "mousewheelup");
