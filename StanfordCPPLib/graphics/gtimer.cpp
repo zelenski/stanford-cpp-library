@@ -3,6 +3,8 @@
  * ----------------
  * This file implements the gtimer.h interface.
  * 
+ * @version 2019/01/23
+ * - added destructor
  * @version 2015/07/05
  * - removed static global Platform variable, replaced by getPlatform as needed
  * @version 2014/10/08
@@ -28,6 +30,10 @@ GTimer::GTimer(double milliseconds)
         : _ms(0),
           _id(-1) {
     setDelay(milliseconds);
+}
+
+GTimer::~GTimer() {
+    stop();
 }
 
 double GTimer::getDelay() const {
