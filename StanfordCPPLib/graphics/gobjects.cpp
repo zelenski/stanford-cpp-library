@@ -4,6 +4,8 @@
  * This file implements the gobjects.h interface.
  *
  * @author Marty Stepp
+ * @version 2019/03/07
+ * - added support for loading a GImage directly from istream (htiek)
  * @version 2018/09/14
  * - added opacity support
  * - added GCanvas-to-GImage conversion support
@@ -988,11 +990,13 @@ GImage::GImage(const std::string& filename, double x, double y)
     if (!_filename.empty()) {
         // pull the bytes from the file and forward to the internal construction routine
         std::ifstream input(filename, std::ios::binary);
-        if (!input) error("GImage: file not found: \"" + filename + "\"");
+        if (!input) {
+            error("GImage::constructor: file not found: \"" + filename + "\"");
+        }
 
         // load from that source
         if (!loadFromStream(input)) {
-            error("GImage: unable to load image from: \"" + filename + "\"");
+            error("GImage::constructor: unable to load image from: \"" + filename + "\"");
         }
     }
 }
@@ -1002,7 +1006,7 @@ GImage::GImage(std::istream& source, double x, double y)
           _filename("std::istream source"),
           _qimage(nullptr) {
     if (!loadFromStream(source)) {
-        error("GImage: unable to load image from stream input");
+        error("GImage::constructor: unable to load image from stream input");
     }
 }
 

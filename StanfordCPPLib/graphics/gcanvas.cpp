@@ -2,6 +2,9 @@
  * File: gcanvas.cpp
  * -----------------
  *
+ * @author Marty Stepp
+ * @version 2019/03/07
+ * - added support for loading canvas directly from istream (htiek)
  * @version 2019/02/06
  * - fixed mouse wheel listeners to work even if no actual scroll area exists
  * @version 2019/02/02
@@ -87,7 +90,7 @@ GCanvas::GCanvas(std::istream& source, QWidget* parent)
           _filename("std::istream data") {
     init(/* width */ -1, /* height */ -1, /* background */ 0xffffff, parent);
     if (!loadFromStream(source)) {
-        error("GCanvas::GCanvas: could not load image from input stream");
+        error("GCanvas::constructor: could not load image from input stream");
     }
 }
 
@@ -562,8 +565,9 @@ bool GCanvas::isAutoRepaint() const {
 
 void GCanvas::load(const std::string& filename) {
     std::ifstream input(filename);
-    if (!input) error("GCanvas::load: file \"" + filename + "\" not found.");
-
+    if (!input) {
+        error("GCanvas::load: file \"" + filename + "\" not found.");
+    }
     if (!loadFromStream(input)) {
         error("GCanvas::load: failed to load from " + filename);
     }

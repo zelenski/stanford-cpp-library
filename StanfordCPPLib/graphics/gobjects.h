@@ -6,6 +6,8 @@
  * <include src="pictures/ClassHierarchies/GObjectHierarchy-h.html">
  *
  * @author Marty Stepp
+ * @version 2019/03/07
+ * - added support for loading a GImage directly from istream (htiek)
  * @version 2018/09/14
  * - added opacity support
  * - added GCanvas-to-GImage conversion support
@@ -1031,6 +1033,10 @@ protected:
     QImage* getQImage() const;
 
 private:
+    /**
+     * Reads the image's pixel contents from the given stream.
+     * @return true if loaded successfully and false if the load failed
+     */
     bool loadFromStream(std::istream& input);
 
     std::string _filename;
