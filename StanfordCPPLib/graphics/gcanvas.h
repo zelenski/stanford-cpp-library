@@ -3,6 +3,8 @@
  * ---------------
  *
  * @author Marty Stepp
+ * @version 2019/03/07
+ * - added support for loading canvas directly from istream (htiek)
  * @version 2018/09/10
  * - added doc comments for new documentation generation
  * @version 2018/09/04
@@ -139,6 +141,13 @@ public:
      *        as a valid image file
      */
     GCanvas(const std::string& filename, QWidget* parent = nullptr);
+
+    /**
+     * Creates a canvas that loads its background layer pixel data from
+     * the given input stream
+     * @throw ErrorException if the given stream cannot be read as a valid image file
+     */
+    GCanvas(std::istream& filename, QWidget* parent = nullptr);
 
     /**
      * Creates an empty canvas of the specified size and optional background color.
@@ -447,6 +456,12 @@ public:
     virtual void load(const std::string& filename);
 
     /**
+     * Reads the canvas's pixel contents from the given input stream.
+     * @throw ErrorException if the given file does not exist or cannot be read
+     *        as a valid image file
+     */
+
+    /**
      * Removes the given graphical object from the foreground layer of the canvas,
      * if it was present.
      * @throw ErrorException if the graphical object is null
@@ -719,8 +734,17 @@ private:
     friend class _Internal_QCanvas;
 
     void ensureBackgroundImage();
+
     void ensureBackgroundImageConstHack() const;
+
     void init(double width, double height, int rgbBackground, QWidget* parent);
+
+    /**
+     * Reads the canvas's pixel contents from the given stream.
+     * @return true if loaded successfully and false if the load failed
+     */
+    virtual bool loadFromStream(std::istream& input);
+
     void notifyOfResize(double width, double height);
 };
 

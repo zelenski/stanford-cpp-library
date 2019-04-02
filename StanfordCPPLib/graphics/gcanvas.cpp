@@ -2,6 +2,9 @@
  * File: gcanvas.cpp
  * -----------------
  *
+ * @author Marty Stepp
+ * @version 2019/03/07
+ * - added support for loading canvas directly from istream (htiek)
  * @version 2019/02/06
  * - fixed mouse wheel listeners to work even if no actual scroll area exists
  * @version 2019/02/02
@@ -80,6 +83,15 @@ GCanvas::GCanvas(const std::string& filename, QWidget* parent)
           _filename(filename) {
     init(/* width */ -1, /* height */ -1, /* background */ 0xffffff, parent);
     load(filename);
+}
+
+GCanvas::GCanvas(std::istream& source, QWidget* parent)
+        : _backgroundImage(nullptr),
+          _filename("std::istream data") {
+    init(/* width */ -1, /* height */ -1, /* background */ 0xffffff, parent);
+    if (!loadFromStream(source)) {
+        error("GCanvas::constructor: could not load image from input stream");
+    }
 }
 
 GCanvas::GCanvas(double width, double height, int rgbBackground, QWidget* parent)
@@ -552,31 +564,39 @@ bool GCanvas::isAutoRepaint() const {
 }
 
 void GCanvas::load(const std::string& filename) {
-    // for efficiency, let's at least check whether the file exists
-    // and throw error immediately rather than contacting the back-end
-    if (!fileExists(filename)) {
-        error("GCanvas::load: file not found: " + filename);
+    std::ifstream input(filename);
+    if (!input) {
+        error("GCanvas::load: file \"" + filename + "\" not found.");
+    }
+    if (!loadFromStream(input)) {
+        error("GCanvas::load: failed to load from " + filename);
     }
 
+    _filename = filename;
+}
+
+bool GCanvas::loadFromStream(std::istream& input) {
+    // buffer bytes into a std::string
+    std::ostringstream byteStream;
+    byteStream << input.rdbuf();
+    std::string bytes = byteStream.str();
+
     bool hasError = false;
-    GThread::runOnQtGuiThread([this, filename, &hasError]() {
+    GThread::runOnQtGuiThread([&, this]() {
         ensureBackgroundImage();
         lockForWrite();
-        if (!_backgroundImage->load(QString::fromStdString(filename))) {
+        if (!_backgroundImage->loadFromData(reinterpret_cast<const uchar *>(bytes.data()), bytes.length())) {
             hasError = true;
             return;
         }
 
-        _filename = filename;
         GInteractor::setSize(_backgroundImage->width(), _backgroundImage->height());
         // setSize(_qimage->width(), _qimage->height());
         unlock();
         conditionalRepaint();
     });
 
-    if (hasError) {
-        error("GCanvas::load: failed to load from " + filename);
-    }
+    return !hasError;
 }
 
 void GCanvas::notifyOfResize(double width, double height) {

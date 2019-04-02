@@ -4,6 +4,8 @@
  * This file implements the gobjects.h interface.
  *
  * @author Marty Stepp
+ * @version 2019/03/07
+ * - added support for loading a GImage directly from istream (htiek)
  * @version 2018/09/14
  * - added opacity support
  * - added GCanvas-to-GImage conversion support
@@ -986,24 +988,25 @@ GImage::GImage(const std::string& filename, double x, double y)
           _filename(filename),
           _qimage(nullptr) {
     if (!_filename.empty()) {
-        if (!fileExists(_filename)) {
-            error("GImage: file not found: \"" + filename + "\"");
+        // pull the bytes from the file and forward to the internal construction routine
+        std::ifstream input(filename, std::ios::binary);
+        if (!input) {
+            error("GImage::constructor: file not found: \"" + filename + "\"");
         }
-        // load image
-        bool hasError = false;
-        GThread::runOnQtGuiThread([this, filename, &hasError]() {
-            _qimage = new QImage;
-            if (_qimage->load(QString::fromStdString(_filename))) {
-                _width = _qimage->width();
-                _height = _qimage->height();
-            } else {
-                hasError = true;
-            }
-        });
 
-        if (hasError) {
-            error("GImage: unable to load image from: \"" + filename + "\"");
+        // load from that source
+        if (!loadFromStream(input)) {
+            error("GImage::constructor: unable to load image from: \"" + filename + "\"");
         }
+    }
+}
+
+GImage::GImage(std::istream& source, double x, double y)
+        : GObject(x, y),
+          _filename("std::istream source"),
+          _qimage(nullptr) {
+    if (!loadFromStream(source)) {
+        error("GImage::constructor: unable to load image from stream input");
     }
 }
 
@@ -1026,6 +1029,27 @@ GImage::GImage(QImage* qimage) {
 GImage::~GImage() {
     // TODO: delete _image;
     _qimage = nullptr;
+}
+
+bool GImage::loadFromStream(std::istream& input) {
+    // transfer bytes to a string through std::stringstream
+    std::ostringstream byteStream;
+    byteStream << input.rdbuf();
+    std::string bytes = byteStream.str();
+
+    // load image
+    bool hasError = false;
+    GThread::runOnQtGuiThread([&, this]() {
+        _qimage = new QImage;
+        if (_qimage->loadFromData(reinterpret_cast<const uchar *>(bytes.data()), bytes.size())) {
+            _width = _qimage->width();
+            _height = _qimage->height();
+        } else {
+            hasError = true;
+        }
+    });
+
+    return !hasError;
 }
 
 void GImage::draw(QPainter* painter) {
