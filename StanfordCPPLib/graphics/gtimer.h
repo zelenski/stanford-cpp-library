@@ -4,6 +4,8 @@
  * This file defines the <code>GTimer</code> class, which implements a
  * general interval timer.
  *
+ * @version 2019/01/23
+ * - added destructor
  * @version 2018/09/09
  * - updated to use new Qt GUI timer interface
  * - added doc comments for new documentation generation
