@@ -4,6 +4,8 @@
  * Windows implementation of the call_stack class.
  *
  * @author Marty Stepp
+ * @version 2019/04/03
+ * - fixed compiler errors for 64-bit Windows MinGW compiler (context struct)
  * @version 2018/10/22
  * - bug fix for STL vector vs Stanford Vector
  * @version 2018/09/12
@@ -122,9 +124,9 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
         if (exceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_STACK_OVERFLOW) {
             // can't do stack walking in Windows when a stack overflow happens :-/
 #if _WIN64
-            traceVector.push_back((void*) exceptionInfo->ContextRecord->Eip);
-#else
             traceVector.push_back((void*) exceptionInfo->ContextRecord->Rip);
+#else
+            traceVector.push_back((void*) exceptionInfo->ContextRecord->Eip);
 #endif // _WIN64
         } else {
             SymInitialize(GetCurrentProcess(), nullptr, TRUE);
