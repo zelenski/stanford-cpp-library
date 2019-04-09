@@ -4,6 +4,8 @@
  * This file exports the <code>PriorityQueue</code> class, a
  * collection in which values are processed in priority order.
  * 
+ * @version 2019/04/09
+ * - renamed private members with underscore naming scheme for consistency
  * @version 2016/11/07
  * - small const-correctness bug fix in front() / back() (courtesy Truman Cranor)
  * @version 2016/10/14
@@ -290,8 +292,8 @@ private:
     };
 
     /* Instance variables */
-    Vector<HeapEntry> heap;
-    long enqueueCount = 0;
+    Vector<HeapEntry> _heap;
+    long _enqueueCount = 0;
 
 #ifdef PQUEUE_COMPARISON_OPERATORS_ENABLED
     int pqCompare(const PriorityQueue& other) const;
@@ -327,7 +329,7 @@ ValueType & PriorityQueue<ValueType>::back() {
     if (isEmpty()) {
         error("PriorityQueue::back: Attempting to read back of an empty queue");
     }
-    return heap.back().value;
+    return _heap.back().value;
 }
 
 /*
@@ -345,10 +347,10 @@ void PriorityQueue<ValueType>::changePriority(ValueType value, double newPriorit
     }
 
     /* Find the element to change. */
-    auto itr = std::find_if(heap.begin(), heap.end(), [&](const HeapEntry& entry) {
+    auto itr = std::find_if(_heap.begin(), _heap.end(), [&](const HeapEntry& entry) {
         return entry.value == value;
     });
-    if (itr == heap.end()) {
+    if (itr == _heap.end()) {
         error("PriorityQueue::changePriority: Element not found in priority queue.");
     }
 
@@ -356,13 +358,13 @@ void PriorityQueue<ValueType>::changePriority(ValueType value, double newPriorit
         error("PriorityQueue::changePriority: new priority cannot be less urgent than current priority.");
     }
     itr->priority = newPriority;
-    std::push_heap(heap.begin(), itr + 1);
+    std::push_heap(_heap.begin(), itr + 1);
 }
 
 template <typename ValueType>
 void PriorityQueue<ValueType>::clear() {
-    heap.clear();
-    enqueueCount = 0;   // BUGFIX 2014/10/10: was previously using garbage unassigned value
+    _heap.clear();
+    _enqueueCount = 0;   // BUGFIX 2014/10/10: was previously using garbage unassigned value
 }
 
 /*
@@ -377,9 +379,9 @@ ValueType PriorityQueue<ValueType>::dequeue() {
         error("PriorityQueue::dequeue: Attempting to dequeue an empty queue");
     }
 
-    ValueType result = heap[0].value;
-    std::pop_heap(heap.begin(), heap.end());
-    heap.pop_back();
+    ValueType result = _heap[0].value;
+    std::pop_heap(_heap.begin(), _heap.end());
+    _heap.pop_back();
     return result;
 }
 
@@ -392,8 +394,8 @@ void PriorityQueue<ValueType>::enqueue(const ValueType& value, double priority) 
         priority = 0.0;
     }
 
-    heap.add({ value, priority, enqueueCount++ });
-    std::push_heap(heap.begin(), heap.end());
+    _heap.add({ value, priority, _enqueueCount++ });
+    std::push_heap(_heap.begin(), _heap.end());
 }
 
 template <typename ValueType>
@@ -423,12 +425,12 @@ ValueType& PriorityQueue<ValueType>::front() {
     if (isEmpty()) {
         error("PriorityQueue::front: Attempting to read front of an empty queue");
     }
-    return heap[0].value;
+    return _heap[0].value;
 }
 
 template <typename ValueType>
 bool PriorityQueue<ValueType>::isEmpty() const {
-    return heap.size() == 0;
+    return _heap.size() == 0;
 }
 
 template <typename ValueType>
@@ -436,7 +438,7 @@ ValueType PriorityQueue<ValueType>::peek() const {
     if (isEmpty()) {
         error("PriorityQueue::peek: Attempting to peek at an empty queue");
     }
-    return heap.front().value;
+    return _heap.front().value;
 }
 
 template <typename ValueType>
@@ -444,7 +446,7 @@ double PriorityQueue<ValueType>::peekPriority() const {
     if (isEmpty()) {
         error("PriorityQueue::peekPriority: Attempting to peek at an empty queue");
     }
-    return heap.get(0).priority;
+    return _heap.get(0).priority;
 }
 
 template <typename ValueType>
@@ -454,7 +456,7 @@ ValueType PriorityQueue<ValueType>::remove() {
 
 template <typename ValueType>
 int PriorityQueue<ValueType>::size() const {
-    return heap.size();
+    return _heap.size();
 }
 
 template <typename ValueType>
@@ -573,12 +575,12 @@ int hashCode(const PriorityQueue<T>& pq) {
 #ifdef PQUEUE_ALLOW_HEAP_ACCESS
 template <typename ValueType>
 const ValueType& PriorityQueue<ValueType>::__getValueFromHeap(int index) const {
-    return heap[index].value;
+    return _heap[index].value;
 }
 
 template <typename ValueType>
 double PriorityQueue<ValueType>::__getPriorityFromHeap(int index) const {
-    return heap[index].priority;
+    return _heap[index].priority;
 }
 #endif // PQUEUE_ALLOW_HEAP_ACCESS
 
@@ -595,8 +597,8 @@ std::ostream& operator <<(std::ostream& os,
         if (i > 0) {
             os << ", ";
         }
-        os << pq.heap[i].priority << ":";
-        writeGenericValue(os, pq.heap[i].value, /* forceQuotes */ true);
+        os << pq._heap[i].priority << ":";
+        writeGenericValue(os, pq._heap[i].value, /* forceQuotes */ true);
     }
 #else
     // (default) slow, memory-inefficient implementation: copy pq and print

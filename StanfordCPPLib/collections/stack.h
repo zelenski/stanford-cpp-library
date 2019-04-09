@@ -4,6 +4,10 @@
  * This file exports the <code>Stack</code> class, which implements
  * a collection that processes values in a last-in/first-out (LIFO) order.
  * 
+ * @version 2019/04/09
+ * - renamed private members with underscore naming scheme for consistency
+ * @version 2019/02/04
+ * - changed internal implementation to wrap std collections
  * @version 2016/12/09
  * - added iterator version checking support (implicitly via Vector)
  * @version 2016/09/24
@@ -227,7 +231,7 @@ public:
     friend std::ostream& operator <<(std::ostream& os, const Stack<T>& stack);
     
 private:
-    Vector<ValueType> elements;
+    Vector<ValueType> _elements;
 };
 
 /*
@@ -239,7 +243,7 @@ private:
  */
 
 template <typename ValueType>
-Stack<ValueType>::Stack(std::initializer_list<ValueType> list) : elements(list) {
+Stack<ValueType>::Stack(std::initializer_list<ValueType> list) : _elements(list) {
 
 }
 
@@ -250,12 +254,12 @@ void Stack<ValueType>::add(const ValueType& value) {
 
 template <typename ValueType>
 void Stack<ValueType>::clear() {
-    elements.clear();
+    _elements.clear();
 }
 
 template <typename ValueType>
 bool Stack<ValueType>::equals(const Stack<ValueType>& stack2) const {
-    return stanfordcpplib::collections::equals(elements, stack2.elements);
+    return stanfordcpplib::collections::equals(_elements, stack2._elements);
 }
 
 template <typename ValueType>
@@ -268,7 +272,7 @@ ValueType Stack<ValueType>::peek() const {
     if (isEmpty()) {
         error("Stack::peek: Attempting to peek at an empty stack");
     }
-    return elements.back();
+    return _elements.back();
 }
 
 template <typename ValueType>
@@ -276,12 +280,12 @@ ValueType Stack<ValueType>::pop() {
     if (isEmpty()) {
         error("Stack::pop: Attempting to pop an empty stack");
     }
-    return elements.pop_back();
+    return _elements.pop_back();
 }
 
 template <typename ValueType>
 void Stack<ValueType>::push(const ValueType& value) {
-    elements.push_back(value);
+    _elements.push_back(value);
 }
 
 template <typename ValueType>
@@ -291,7 +295,7 @@ ValueType Stack<ValueType>::remove() {
 
 template <typename ValueType>
 int Stack<ValueType>::size() const {
-    return elements.size();
+    return _elements.size();
 }
 
 template <typename ValueType>
@@ -299,7 +303,7 @@ ValueType & Stack<ValueType>::top() {
     if (isEmpty()) {
         error("Stack::top: Attempting to read top of an empty stack");
     }
-    return elements.back();
+    return _elements.back();
 }
 
 template <typename ValueType>
@@ -311,37 +315,37 @@ std::string Stack<ValueType>::toString() const {
 
 template <typename ValueType>
 bool Stack<ValueType>::operator ==(const Stack& stack2) const {
-    return elements == stack2.elements;
+    return _elements == stack2._elements;
 }
 
 template <typename ValueType>
 bool Stack<ValueType>::operator !=(const Stack & stack2) const {
-    return elements != stack2.elements;
+    return _elements != stack2._elements;
 }
 
 template <typename ValueType>
 bool Stack<ValueType>::operator <(const Stack & stack2) const {
-    return elements < stack2.elements;
+    return _elements < stack2._elements;
 }
 
 template <typename ValueType>
 bool Stack<ValueType>::operator <=(const Stack & stack2) const {
-    return elements <= stack2.elements;
+    return _elements <= stack2._elements;
 }
 
 template <typename ValueType>
 bool Stack<ValueType>::operator >(const Stack & stack2) const {
-    return elements > stack2.elements;
+    return _elements > stack2._elements;
 }
 
 template <typename ValueType>
 bool Stack<ValueType>::operator >=(const Stack & stack2) const {
-    return elements >= stack2.elements;
+    return _elements >= stack2._elements;
 }
 
 template <typename ValueType>
 std::ostream& operator <<(std::ostream& os, const Stack<ValueType>& stack) {
-    return os << stack.elements;
+    return os << stack._elements;
 }
 
 template <typename ValueType>
@@ -356,7 +360,7 @@ std::istream& operator >>(std::istream& is, Stack<ValueType>& stack) {
  */
 template <typename T>
 int hashCode(const Stack<T>& s) {
-    return hashCode(s.elements);
+    return hashCode(s._elements);
 }
 
 #endif // _stack_h

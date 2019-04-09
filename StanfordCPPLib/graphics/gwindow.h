@@ -3,6 +3,8 @@
  * ---------------
  *
  * @author Marty Stepp
+ * @version 2019/04/09
+ * - added toolbar support
  * @version 2018/10/20
  * - added high-density screen features
  * @version 2018/09/09
@@ -328,6 +330,36 @@ public:
     virtual void addToRegion(GInteractor& interactor, const std::string& region = "Center");
 
     /**
+     * Adds a toolbar to this window where action buttons can be placed.
+     */
+    virtual void addToolbar(const std::string& title = "");
+
+    /**
+     * Adds a new item to the window's toolbar.
+     * If the window does not have a toolbar, one is added.
+     * You can supply an optional icon to show next to the menu item.
+     * When the menu item is clicked, an ACTION_MENU action event will occur.
+     */
+    virtual QAction* addToolbarItem(const std::string& item,
+                                    const std::string& icon = "");
+
+    /**
+     * Adds a new item to the window's toolbar.
+     * If the window does not have a toolbar, one is added.
+     * You can supply an optional icon to show next to the menu item.
+     * When the menu item is clicked, the given listener function will be called.
+     */
+    virtual QAction* addToolbarItem(const std::string& item,
+                                    const std::string& icon,
+                                    GEventListenerVoid func);
+
+    /**
+     * Adds a separator to the window's toolbar.
+     * If the window does not have a toolbar, one is added.
+     */
+    virtual QAction* addToolbarSeparator();
+
+    /**
      * Removes all interactors from all regionss of the window.
      */
     virtual void clear() Q_DECL_OVERRIDE;
@@ -368,6 +400,11 @@ public:
      * Removes all interactors from the given region of this window.
      */
     virtual void clearRegion(const std::string& region);
+
+    /**
+     * Removes all items from the window's toolbar, if present.
+     */
+    virtual void clearToolbarItems();
 
     /**
      * Relocates the window to the exact center of the current screen.
@@ -567,6 +604,11 @@ public:
     virtual double getY() const;
 
     /**
+     * Returns true if this window has a toolbar.
+     */
+    virtual bool hasToolbar() const;
+
+    /**
      * Makes the window be not visible on the screen.
      * Equivalent to setVisible(false).
      */
@@ -756,6 +798,11 @@ public:
      * call it when events occur.
      */
     virtual void removeTimerListener();
+
+    /**
+     * Removes the toolbar from this window, if one was present.
+     */
+    virtual void removeToolbar();
 
     /**
      * Removes the window listener from this window so that it will no longer
@@ -1128,6 +1175,7 @@ private:
     CloseOperation _closeOperation;
     Map<std::string, QMenu*> _menuMap;
     Map<std::string, QAction*> _menuActionMap;
+    QToolBar* _toolbar;
 
     friend class GInteractor;
     friend class _Internal_QMainWindow;

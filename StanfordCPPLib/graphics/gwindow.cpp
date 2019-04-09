@@ -2,6 +2,8 @@
  * File: gwindow.cpp
  * -----------------
  *
+ * @version 2019/04/09
+ * - added toolbar support
  * @version 2019/02/02
  * - destructor now stops event processing
  * @version 2018/10/20
@@ -36,6 +38,7 @@
 #include <QStatusBar>
 #include <QThread>
 #include <QTimer>
+#include <QToolBar>
 #define INTERNAL_INCLUDE 1
 #include "filelib.h"
 #define INTERNAL_INCLUDE 1
@@ -70,7 +73,8 @@ GWindow::GWindow(bool visible)
           _contentPane(nullptr),
           _canvas(nullptr),
           _resizable(true),
-          _closeOperation(GWindow::CLOSE_DISPOSE) {
+          _closeOperation(GWindow::CLOSE_DISPOSE),
+          _toolbar(nullptr) {
     _init(DEFAULT_WIDTH, DEFAULT_HEIGHT, visible);
 }
 
@@ -79,7 +83,8 @@ GWindow::GWindow(double width, double height, bool visible)
           _contentPane(nullptr),
           _canvas(nullptr),
           _resizable(true),
-          _closeOperation(GWindow::CLOSE_DISPOSE) {
+          _closeOperation(GWindow::CLOSE_DISPOSE),
+          _toolbar(nullptr) {
     _init(width, height, visible);
 }
 
@@ -88,7 +93,8 @@ GWindow::GWindow(double x, double y, double width, double height, bool visible)
           _contentPane(nullptr),
           _canvas(nullptr),
           _resizable(true),
-          _closeOperation(GWindow::CLOSE_DISPOSE) {
+          _closeOperation(GWindow::CLOSE_DISPOSE),
+          _toolbar(nullptr) {
     _init(width, height, visible);
     setLocation(x, y);
 }
@@ -206,7 +212,6 @@ QAction* GWindow::addMenuItem(const std::string& menu, const std::string& item, 
 }
 
 QAction* GWindow::addMenuItem(const std::string& menu, const std::string& item, const std::string& icon, GEventListenerVoid func) {
-    QAction* action = nullptr;
     std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
     if (!_menuMap.containsKey(menuKey)) {
         error("GWindow::addMenuItem: menu \"" + menu + "\" does not exist");
@@ -220,6 +225,7 @@ QAction* GWindow::addMenuItem(const std::string& menu, const std::string& item, 
         return _menuActionMap[menuItemKey];
     }
 
+    QAction* action = nullptr;
     GThread::runOnQtGuiThread([this, menu, item, icon, func, menuKey, menuItemKey, &action]() {
         QMenu* qmenu = _menuMap[menuKey];
         action = qmenu->addAction(QString::fromStdString(item));
@@ -341,6 +347,73 @@ void GWindow::addToRegion(GInteractor& interactor, const std::string& region) {
     addToRegion(&interactor, region);
 }
 
+void GWindow::addToolbar(const std::string& title) {
+    if (_toolbar) {
+        return;
+    }
+    GThread::runOnQtGuiThread([this, title]() {
+        _toolbar = _iqmainwindow->addToolBar(QString::fromStdString(title));
+        _toolbar->setFloatable(false);
+        _toolbar->setMovable(false);
+        _toolbar->setBaseSize(0, 0);
+    });
+}
+
+QAction* GWindow::addToolbarItem(const std::string& item,
+                                 const std::string& icon) {
+    GEventListenerVoid func = [this, item]() {
+        this->_iqmainwindow->handleMenuAction(/* menu */ "toolbar", item);
+    };
+    return addToolbarItem(item, icon, func);
+}
+
+QAction* GWindow::addToolbarItem(const std::string& item,
+                                 const std::string& icon,
+                                 GEventListenerVoid func) {
+    if (!_toolbar) {
+        addToolbar();
+    }
+
+    std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
+    std::string menuItemKey = "toolbar/" + itemKey;
+    if (_menuActionMap.containsKey(menuItemKey)) {
+        // duplicate; do not create again
+        return _menuActionMap[menuItemKey];
+    }
+
+    QAction* action = nullptr;
+    GThread::runOnQtGuiThread([this, item, icon, func, menuItemKey, &action]() {
+        if (icon.empty()) {
+            action = _toolbar->addAction(QString::fromStdString(item));
+        } else {
+            // toolbar item with icon doesn't show text
+            QIcon qicon(QString::fromStdString(icon));
+            action = _toolbar->addAction(qicon, QString::fromStdString(""));
+            action->setToolTip(QString::fromStdString(item));
+        }
+
+        // when menu item is clicked, call the function the user gave us
+        _iqmainwindow->connect(action, &QAction::triggered, _iqmainwindow, [func]() {
+            func();
+        });
+        _menuActionMap[menuItemKey] = action;
+
+    });
+    return action;
+}
+
+QAction* GWindow::addToolbarSeparator() {
+    if (!_toolbar) {
+        addToolbar();
+    }
+
+    QAction* action = nullptr;
+    GThread::runOnQtGuiThread([this, &action]() {
+        action = _toolbar->addSeparator();
+    });
+    return action;
+}
+
 void GWindow::clear() {
     // TODO: reimplement to clear out widgets rather than just canvas
     clearCanvas();
@@ -383,6 +456,15 @@ void GWindow::clearRegion(Region region) {
 
 void GWindow::clearRegion(const std::string& region) {
     clearRegion(stringToRegion(region));
+}
+
+void GWindow::clearToolbarItems() {
+    if (!_toolbar) {
+        return;
+    }
+    GThread::runOnQtGuiThread([this]() {
+        _toolbar->clear();
+    });
 }
 
 void GWindow::center() {
@@ -578,6 +660,10 @@ double GWindow::getY() const {
     return _iqmainwindow->geometry().y();
 }
 
+bool GWindow::hasToolbar() const {
+    return _toolbar != nullptr;
+}
+
 void GWindow::hide() {
     setVisible(false);
 }
@@ -734,6 +820,16 @@ void GWindow::removeMouseListener() {
 
 void GWindow::removeTimerListener() {
     removeEventListener("timer");
+}
+
+void GWindow::removeToolbar() {
+    if (!_toolbar) {
+        return;
+    }
+    GThread::runOnQtGuiThread([this]() {
+        _iqmainwindow->removeToolBar(_toolbar);
+        _toolbar = nullptr;
+    });
 }
 
 void GWindow::removeWindowListener() {

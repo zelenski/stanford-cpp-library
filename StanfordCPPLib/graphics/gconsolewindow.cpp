@@ -4,6 +4,9 @@
  * This file implements the gconsolewindow.h interface.
  *
  * @author Marty Stepp
+ * @version 2019/04/09
+ * - bug fix for premature input script / compare output popup
+ * - changed default Mac font to Courier New from Menlo
  * @version 2018/12/27
  * - bug fix for endless waitForEvent queued events caused by printing text
  *   to console (bug reported by Keith Schwarz)
@@ -69,8 +72,8 @@
 void setConsolePropertiesQt();
 
 const bool GConsoleWindow::GConsoleWindow::ALLOW_RICH_INPUT_EDITING = true;
-const double GConsoleWindow::DEFAULT_WIDTH = 800;
-const double GConsoleWindow::DEFAULT_HEIGHT = 500;
+const double GConsoleWindow::DEFAULT_WIDTH = 900;
+const double GConsoleWindow::DEFAULT_HEIGHT = 550;
 const double GConsoleWindow::DEFAULT_X = 10;
 const double GConsoleWindow::DEFAULT_Y = 40;
 const std::string GConsoleWindow::CONFIG_FILE_NAME = "spl-jar-settings.txt";
@@ -94,7 +97,7 @@ bool GConsoleWindow::_consoleEnabled = false;
 /* static */ std::string GConsoleWindow::getDefaultFont() {
     if (OS::isMac()) {
         // for some reason, using "Monospace" doesn't work for me on Mac testing
-        return "Menlo-"
+        return "Courier New-"
                 + std::to_string(DEFAULT_FONT_SIZE + 1)
                 + (DEFAULT_FONT_WEIGHT.empty() ? "" : ("-" + DEFAULT_FONT_WEIGHT));
     } else {
@@ -154,6 +157,8 @@ GConsoleWindow::GConsoleWindow()
 void GConsoleWindow::_initMenuBar() {
     const std::string ICON_FOLDER = "icons/";
 
+    addToolbar();
+
     // File menu
     addMenu("&File");
     addMenuItem("File", "&Save", ICON_FOLDER + "save.gif",
@@ -173,27 +178,38 @@ void GConsoleWindow::_initMenuBar() {
 
     addMenuItem("File", "&Load Input Script...", ICON_FOLDER + "script.gif",
                 [this]() { this->showInputScriptDialog(); });
+    addToolbarItem("Load Input Script...", ICON_FOLDER + "script.gif",
+                   [this]() { this->showInputScriptDialog(); });
 
     addMenuItem("File", "&Compare Output...", ICON_FOLDER + "compare_output.gif",
                 [this]() { this->showCompareOutputDialog(); });
+    addToolbarItem("Compare Output...", ICON_FOLDER + "compare_output.gif",
+                   [this]() { this->showCompareOutputDialog(); });
 
     addMenuItem("File", "&Quit", ICON_FOLDER + "quit.gif",
                 [this]() { this->close(); /* TODO: exit app */ })
                 ->setShortcut(QKeySequence::Quit);
+    addToolbarSeparator();
 
     // Edit menu
     addMenu("&Edit");
     addMenuItem("Edit", "Cu&t", ICON_FOLDER + "cut.gif",
                 [this]() { this->clipboardCut(); })
                 ->setShortcut(QKeySequence::Cut);
+    addToolbarItem("Cut", ICON_FOLDER + "cut.gif",
+                   [this]() { this->clipboardCut(); });
 
     addMenuItem("Edit", "&Copy", ICON_FOLDER + "copy.gif",
                 [this]() { this->clipboardCopy(); })
                 ->setShortcut(QKeySequence::Copy);
+    addToolbarItem("Copy", ICON_FOLDER + "copy.gif",
+                   [this]() { this->clipboardCopy(); });
 
     addMenuItem("Edit", "&Paste", ICON_FOLDER + "paste.gif",
                 [this]() { this->clipboardPaste(); })
                 ->setShortcut(QKeySequence::Paste);
+    addToolbarItem("Paste", ICON_FOLDER + "paste.gif",
+                   [this]() { this->clipboardPaste(); });
 
     addMenuItem("Edit", "Select &All", ICON_FOLDER + "select_all.gif",
                 [this]() { this->selectAll(); })
@@ -202,26 +218,40 @@ void GConsoleWindow::_initMenuBar() {
     addMenuItem("Edit", "C&lear Console", ICON_FOLDER + "clear_console.gif",
                 [this]() { this->clearConsole(); })
                 ->setShortcut(QKeySequence(QString::fromStdString("Ctrl+L")));
+    addToolbarItem("Clear Console", ICON_FOLDER + "clear_console.gif",
+                   [this]() { this->clearConsole(); });
+    addToolbarSeparator();
 
     // Options menu
     addMenu("&Options");
     addMenuItem("Options", "&Font...", ICON_FOLDER + "font.gif",
                 [this]() { this->showFontDialog(); });
+    addToolbarItem("Font...", ICON_FOLDER + "font.gif",
+                   [this]() { this->showFontDialog(); });
 
     addMenuItem("Options", "&Background Color...", ICON_FOLDER + "background_color.gif",
                 [this]() { this->showColorDialog(/* background */ true); });
+    addToolbarItem("Background Color...", ICON_FOLDER + "background_color.gif",
+                   [this]() { this->showColorDialog(/* background */ true); });
 
     addMenuItem("Options", "&Text Color...", ICON_FOLDER + "text_color.gif",
                 [this]() { this->showColorDialog(/* background */ false); });
+    addToolbarItem("Text Color...", ICON_FOLDER + "text_color.gif",
+                   [this]() { this->showColorDialog(/* background */ false); });
+    addToolbarSeparator();
 
     // Help menu
     addMenu("&Help");
     addMenuItem("Help", "&About...", ICON_FOLDER + "about.gif",
                 [this]() { this->showAboutDialog(); })
                 ->setShortcut(QKeySequence::HelpContents);
+    addToolbarItem("About...", ICON_FOLDER + "about.gif",
+                   [this]() { this->showAboutDialog(); });
 
     addMenuItem("Help", "&Check for Updates", ICON_FOLDER + "check_for_updates.gif",
                 [this]() { this->checkForUpdates(); });
+    addToolbarItem("Check for Updates", ICON_FOLDER + "check_for_updates.gif",
+                   [this]() { this->checkForUpdates(); });
 }
 
 void GConsoleWindow::_initStreams() {
@@ -617,8 +647,16 @@ void GConsoleWindow::loadInputScript(int number) {
     }
     if (!expectedOutputFile.empty()) {
         GThread::runInNewThreadAsync([this, expectedOutputFile]() {
-            pause(1000);
-            compareOutput(expectedOutputFile);
+            QThread* studentThread = GThread::getStudentThread();
+            const long MAX_TIME_TO_WAIT = 20000;
+            long timeWaited = 0;
+            while (timeWaited < MAX_TIME_TO_WAIT && studentThread->isRunning()) {
+                pause(50);
+                timeWaited += 50;
+            }
+            if (!studentThread->isRunning()) {
+                compareOutput(expectedOutputFile);
+            }
         }, "Compare Output");
     }
 }

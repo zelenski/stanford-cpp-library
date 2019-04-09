@@ -192,6 +192,7 @@ void GStudentThread::run() {
     // perform any thread-specific initialization
     stanfordcpplib::initializeLibraryStudentThread();
 
+    // run student's code in a top-level exception handler
     if (_mainFunc) {
         _result = _mainFunc();
     } else {

@@ -4,6 +4,8 @@
  * This file exports the <code>Set</code> class, which implements a
  * collection for storing a set of distinct elements.
  * 
+ * @version 2019/02/04
+ * - changed internal implementation to wrap std collections
  * @version 2018/03/19
  * - added constructors that accept a comparison function
  * @version 2018/03/10

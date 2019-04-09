@@ -624,7 +624,7 @@ public:
      * @bigoh O(1)
      */
     graph_iterator begin() const {
-        return nodes.begin();
+        return _nodes.begin();
     }
 
     /**
@@ -632,7 +632,7 @@ public:
      * @bigoh O(1)
      */
     graph_iterator end() const {
-        return nodes.end();
+        return _nodes.end();
     }
     
     /**
@@ -716,9 +716,9 @@ private:
         }
     };
 
-    Set<NodeType*> nodes{GraphComparator()}; /* The set of nodes in the graph */
-    Set<ArcType*> arcs{GraphComparator()};   /* The set of arcs in the graph  */
-    Map<std::string, NodeType*> nodeMap;     /* A map from names to nodes     */
+    Set<NodeType*> _nodes{GraphComparator()}; /* The set of nodes in the graph */
+    Set<ArcType*> _arcs{GraphComparator()};   /* The set of arcs in the graph  */
+    Map<std::string, NodeType*> _nodeMap;     /* A map from names to nodes     */
 
 public:
     /**
@@ -851,7 +851,7 @@ ArcType* Graph<NodeType, ArcType>::addArc(ArcType* arc) {
         addNode(arc->finish);
     }
     arc->start->arcs.add(arc);
-    arcs.add(arc);
+    _arcs.add(arc);
     return arc;
 }
 
@@ -884,8 +884,8 @@ NodeType* Graph<NodeType, ArcType>::addNode(NodeType* node) {
         *existingNode = *node;   // copy state from parameter
         return existingNode;
     } else {
-        nodes.add(node);
-        nodeMap[node->name] = node;
+        _nodes.add(node);
+        _nodeMap[node->name] = node;
         return node;
     }
 }
@@ -900,7 +900,7 @@ NodeType* Graph<NodeType, ArcType>::back() const {
     if (this->isEmpty()) {
         error("Graph::back: graph is empty");
     }
-    return this->nodes.back();
+    return this->_nodes.back();
 }
 
 /*
@@ -912,15 +912,15 @@ NodeType* Graph<NodeType, ArcType>::back() const {
  */
 template <typename NodeType, typename ArcType>
 void Graph<NodeType, ArcType>::clear() {
-    for (NodeType* node : nodes) {
+    for (NodeType* node : _nodes) {
         delete node;
     }
-    for (ArcType* arc : arcs) {
+    for (ArcType* arc : _arcs) {
         delete arc;
     }
-    arcs.clear();
-    nodes.clear();
-    nodeMap.clear();
+    _arcs.clear();
+    _nodes.clear();
+    _nodeMap.clear();
 }
 
 template <typename NodeType, typename ArcType>
@@ -970,13 +970,13 @@ bool Graph<NodeType, ArcType>::containsArc(ArcType* arc) const {
 
 template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::containsNode(const std::string& name) const {
-    return nodeMap.containsKey(name);
+    return _nodeMap.containsKey(name);
 }
 
 template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::containsNode(NodeType* node) const {
     if (node) {
-        return nodes.contains(node);
+        return _nodes.contains(node);
     } else {
         return false;
     }
@@ -993,7 +993,7 @@ NodeType* Graph<NodeType, ArcType>::front() const {
     if (this->isEmpty()) {
         error("Graph::front: graph is empty");
     }
-    return this->nodes.front();
+    return this->_nodes.front();
 }
 
 template <typename NodeType, typename ArcType>
@@ -1016,7 +1016,7 @@ ArcType* Graph<NodeType, ArcType>::getArc(const std::string& node1, const std::s
 
 template <typename NodeType, typename ArcType>
 const Set<ArcType*>& Graph<NodeType, ArcType>::getArcSet() const {
-    return arcs;
+    return _arcs;
 }
 
 template <typename NodeType, typename ArcType>
@@ -1036,7 +1036,7 @@ const Set<ArcType*>& Graph<NodeType, ArcType>::getArcSet(const std::string& name
 
 template <typename NodeType, typename ArcType>
 NodeType* Graph<NodeType, ArcType>::getExistingNode(const std::string& name, const std::string& member) const {
-    NodeType* node = nodeMap.get(name);
+    NodeType* node = _nodeMap.get(name);
     if (!node) {
         error("Graph::" + member + ": no node named " + name);
     }
@@ -1045,12 +1045,12 @@ NodeType* Graph<NodeType, ArcType>::getExistingNode(const std::string& name, con
 
 template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::isExistingArc(ArcType* arc) const {
-    return arc && arcs.contains(arc);
+    return arc && _arcs.contains(arc);
 }
 
 template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::isExistingNode(NodeType* node) const {
-    return node && nodeMap.containsKey(node->name) && nodeMap.get(node->name) == node;
+    return node && _nodeMap.containsKey(node->name) && _nodeMap.get(node->name) == node;
 }
 
 template <typename NodeType, typename ArcType>
@@ -1170,13 +1170,13 @@ Set<NodeType*> Graph<NodeType, ArcType>::getNeighbors(const std::string& name) c
  */
 template <typename NodeType, typename ArcType>
 NodeType* Graph<NodeType, ArcType>::getNode(const std::string& name) const {
-    return nodeMap.get(name);
+    return _nodeMap.get(name);
 }
 
 template <typename NodeType, typename ArcType>
 Set<std::string> Graph<NodeType, ArcType>::getNodeNames() const {
     Set<std::string> nodeNames;
-    for (NodeType* node : nodes) {
+    for (NodeType* node : _nodes) {
         nodeNames.add(node->name);
     }
     return nodeNames;
@@ -1191,7 +1191,7 @@ Set<std::string> Graph<NodeType, ArcType>::getNodeNames() const {
  */
 template <typename NodeType, typename ArcType>
 const Set<NodeType*>& Graph<NodeType, ArcType>::getNodeSet() const {
-    return nodes;
+    return _nodes;
 }
 
 /*
@@ -1220,7 +1220,7 @@ template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::isConnected(const std::string& s1, const std::string& s2) const {
     // don't call getExistingNode here because it will throw an error
     // if s1 or s2 is not found; should just make the call return false
-    return isConnected(nodeMap.get(s1), nodeMap.get(s2));
+    return isConnected(_nodeMap.get(s1), _nodeMap.get(s2));
 }
 
 template <typename NodeType, typename ArcType>
@@ -1235,7 +1235,7 @@ bool Graph<NodeType, ArcType>::isNeighbor(NodeType* node1, NodeType* node2) cons
 
 template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::isEmpty() const {
-    return nodes.isEmpty();
+    return _nodes.isEmpty();
 }
 
 template <typename NodeType, typename ArcType>
@@ -1257,7 +1257,7 @@ template <typename NodeType, typename ArcType>
 void Graph<NodeType, ArcType>::removeArc(const std::string& s1, const std::string& s2) {
     // don't call getExistingNode here because it will throw an error
     // if s1 or s2 is not found; should just make the call have no effect
-    removeArc(nodeMap.get(s1), nodeMap.get(s2));
+    removeArc(_nodeMap.get(s1), _nodeMap.get(s2));
 }
 
 template <typename NodeType, typename ArcType>
@@ -1268,7 +1268,7 @@ void Graph<NodeType, ArcType>::removeArc(NodeType* n1, NodeType* n2) {
         return;
     }
     Vector<ArcType*> toRemove;
-    for (ArcType* arc : arcs) {
+    for (ArcType* arc : _arcs) {
         if (arc->start == n1 && arc->finish == n2) {
             toRemove.add(arc);
         }
@@ -1284,7 +1284,7 @@ void Graph<NodeType, ArcType>::removeArc(ArcType* arc) {
         return;
     }
     arc->start->arcs.remove(arc);
-    arcs.remove(arc);
+    _arcs.remove(arc);
     delete arc;
 }
 
@@ -1300,7 +1300,7 @@ template <typename NodeType, typename ArcType>
 void Graph<NodeType, ArcType>::removeNode(const std::string& name) {
     // don't call getExistingNode here because it will throw an error
     // if name is not found; should just make the call have no effect
-    removeNode(nodeMap.get(name));
+    removeNode(_nodeMap.get(name));
 }
 
 template <typename NodeType, typename ArcType>
@@ -1311,7 +1311,7 @@ void Graph<NodeType, ArcType>::removeNode(NodeType* node) {
         return;
     }
     Vector<ArcType*> toRemove;
-    for (ArcType* arc : arcs) {
+    for (ArcType* arc : _arcs) {
         if (arc->start == node || arc->finish == node) {
             toRemove.add(arc);
         }
@@ -1319,8 +1319,8 @@ void Graph<NodeType, ArcType>::removeNode(NodeType* node) {
     for (ArcType* arc : toRemove) {
         removeArc(arc);
     }
-    nodes.remove(node);
-    nodeMap.remove(node->name);
+    _nodes.remove(node);
+    _nodeMap.remove(node->name);
     delete node;
 }
 
@@ -1396,7 +1396,7 @@ NodeType* Graph<NodeType, ArcType>::scanNode(TokenScanner& scanner) {
  */
 template <typename NodeType, typename ArcType>
 int Graph<NodeType, ArcType>::size() const {
-    return nodes.size();
+    return _nodes.size();
 }
 
 template <typename NodeType, typename ArcType>
@@ -1430,13 +1430,13 @@ Graph<NodeType, ArcType>::operator =(const Graph& src) {
  */
 template <typename NodeType, typename ArcType>
 void Graph<NodeType, ArcType>::deepCopy(const Graph& src) {
-    for (NodeType* oldNode : src.nodes) {
+    for (NodeType* oldNode : src._nodes) {
         NodeType* newNode = new NodeType();
         *newNode = *oldNode;
         newNode->arcs.clear();
         addNode(newNode);
     }
-    for (ArcType* oldArc : src.arcs) {
+    for (ArcType* oldArc : src._arcs) {
         ArcType* newArc = new ArcType();
         *newArc = *oldArc;
         newArc->start = getExistingNode(oldArc->start->name, "deepCopy");
@@ -1532,9 +1532,9 @@ int Graph<NodeType, ArcType>::graphCompare(const Graph<NodeType, ArcType>& graph
 template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::operator ==(const Graph& graph2) const {
     // optimization: if sizes not same, graphs not equal
-    if (nodes.size() != graph2.nodes.size()
-            || arcs.size() != graph2.arcs.size()
-            || nodeMap.size() != graph2.nodeMap.size()) {
+    if (_nodes.size() != graph2._nodes.size()
+            || _arcs.size() != graph2._arcs.size()
+            || _nodeMap.size() != graph2._nodeMap.size()) {
         return false;
     }
     return graphCompare(graph2) == 0;

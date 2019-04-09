@@ -71,48 +71,48 @@ static uint32_t my_ntohl(uint32_t arg);
  */
 
 DawgLexicon::DawgLexicon() :
-        edges(nullptr),
-        start(nullptr),
-        numEdges(0),
-        numDawgWords(0) {
+        _edges(nullptr),
+        _start(nullptr),
+        _edgeCount(0),
+        _dawgWordsCount(0) {
     // empty
 }
 
 DawgLexicon::DawgLexicon(std::istream& input) :
-        edges(nullptr),
-        start(nullptr),
-        numEdges(0),
-        numDawgWords(0) {
+        _edges(nullptr),
+        _start(nullptr),
+        _edgeCount(0),
+        _dawgWordsCount(0) {
     addWordsFromFile(input);
 }
 
 DawgLexicon::DawgLexicon(const std::string& filename) :
-        edges(nullptr),
-        start(nullptr),
-        numEdges(0),
-        numDawgWords(0) {
+        _edges(nullptr),
+        _start(nullptr),
+        _edgeCount(0),
+        _dawgWordsCount(0) {
     addWordsFromFile(filename);
 }
 
 DawgLexicon::DawgLexicon(const DawgLexicon& src) :
-        edges(nullptr),
-        start(nullptr),
-        numEdges(0),
-        numDawgWords(0) {
+        _edges(nullptr),
+        _start(nullptr),
+        _edgeCount(0),
+        _dawgWordsCount(0) {
     deepCopy(src);
 }
 
 DawgLexicon::DawgLexicon(std::initializer_list<std::string> list) :
-        edges(nullptr),
-        start(nullptr),
-        numEdges(0),
-        numDawgWords(0) {
+        _edges(nullptr),
+        _start(nullptr),
+        _edgeCount(0),
+        _dawgWordsCount(0) {
     addAll(list);
 }
 
 DawgLexicon::~DawgLexicon() {
-    if (edges) {
-        delete[] edges;
+    if (_edges) {
+        delete[] _edges;
     }
 }
 
@@ -120,7 +120,7 @@ void DawgLexicon::add(const std::string& word) {
     std::string copy = word;
     toLowerCaseInPlace(copy);
     if (!contains(copy)) {
-        otherWords.add(copy);
+        _otherWords.add(copy);
     }
 }
 
@@ -149,7 +149,7 @@ void DawgLexicon::addWordsFromFile(std::istream& input) {
     }
     input.read(firstFour, 4);
     if (strncmp(firstFour, expected, 4) == 0) {
-        if (otherWords.size() != 0) {
+        if (_otherWords.size() != 0) {
             error("DawgLexicon::addWordsFromFile: Binary files require an empty lexicon");
         }
         readBinaryFile(input);
@@ -177,12 +177,12 @@ void DawgLexicon::addWordsFromFile(const std::string& filename) {
 }
 
 void DawgLexicon::clear() {
-    if (edges) {
-        delete[] edges;
+    if (_edges) {
+        delete[] _edges;
     }
-    edges = start = nullptr;
-    numEdges = numDawgWords = 0;
-    otherWords.clear();
+    _edges = _start = nullptr;
+    _edgeCount = _dawgWordsCount = 0;
+    _otherWords.clear();
 }
 
 bool DawgLexicon::contains(const std::string& word) const {
@@ -192,7 +192,7 @@ bool DawgLexicon::contains(const std::string& word) const {
     if (lastEdge && lastEdge->accept) {
         return true;
     }
-    return otherWords.contains(copy);
+    return _otherWords.contains(copy);
 }
 
 bool DawgLexicon::containsAll(const DawgLexicon& lex2) const {
@@ -222,7 +222,7 @@ bool DawgLexicon::containsPrefix(const std::string& prefix) const {
     if (traceToLastEdge(copy)) {
         return true;
     }
-    for (std::string word : otherWords) {
+    for (std::string word : _otherWords) {
         if (startsWith(word, copy)) {
             return true;
         }
@@ -291,7 +291,7 @@ void DawgLexicon::mapAll(void (*fn)(const std::string &)) const {
 }
 
 int DawgLexicon::size() const {
-    return numDawgWords + otherWords.size();
+    return _dawgWordsCount + _otherWords.size();
 }
 
 std::string DawgLexicon::toString() const {
@@ -372,7 +372,7 @@ int DawgLexicon::countDawgWords(Edge* ep) const {
     while (true) {
         if (ep->accept) count++;
         if (ep->children != 0) {
-            count += countDawgWords(&edges[ep->children]);
+            count += countDawgWords(&_edges[ep->children]);
         }
         if (ep->lastEdge) break;
         ep++;
@@ -381,17 +381,17 @@ int DawgLexicon::countDawgWords(Edge* ep) const {
 }
 
 void DawgLexicon::deepCopy(const DawgLexicon& src) {
-    if (!src.edges) {
-        edges = nullptr;
-        start = nullptr;
+    if (!src._edges) {
+        _edges = nullptr;
+        _start = nullptr;
     } else {
-        numEdges = src.numEdges;
-        edges = new Edge[src.numEdges];
-        memcpy(edges, src.edges, sizeof(Edge)*src.numEdges);
-        start = edges + (src.start - src.edges);
+        _edgeCount = src._edgeCount;
+        _edges = new Edge[src._edgeCount];
+        memcpy(_edges, src._edges, sizeof(Edge)*src._edgeCount);
+        _start = _edges + (src._start - src._edges);
     }
-    numDawgWords = src.numDawgWords;
-    otherWords = src.otherWords;
+    _dawgWordsCount = src._dawgWordsCount;
+    _otherWords = src._otherWords;
 }
 
 /*
@@ -439,23 +439,23 @@ void DawgLexicon::readBinaryFile(std::istream& input) {
             || startIndex < 0 || numBytes < 0) {
         error("DawgLexicon::addWordsFromFile: Improperly formed lexicon file");
     }
-    numEdges = numBytes / sizeof(Edge);
-    edges = new Edge[numEdges];
-    start = &edges[startIndex];
-    input.read((char*) edges, numBytes);
+    _edgeCount = numBytes / sizeof(Edge);
+    _edges = new Edge[_edgeCount];
+    _start = &_edges[startIndex];
+    input.read((char*) _edges, numBytes);
     if (input.fail() && !input.eof()) {
         error("DawgLexicon::addWordsFromFile: Improperly formed lexicon file");
     }
 
 #if defined(BYTE_ORDER) && BYTE_ORDER == LITTLE_ENDIAN
     // uint32_t* cur = (uint32_t*) edges;
-    uint32_t* cur = reinterpret_cast<uint32_t*>(edges);
-    for (int i = 0; i < numEdges; i++, cur++) {
+    uint32_t* cur = reinterpret_cast<uint32_t*>(_edges);
+    for (int i = 0; i < _edgeCount; i++, cur++) {
         *cur = my_ntohl(*cur);
     }
 #endif
 
-    numDawgWords = countDawgWords(start);
+    _dawgWordsCount = countDawgWords(_start);
 }
 
 /*
@@ -485,24 +485,24 @@ void DawgLexicon::readBinaryFile(const std::string& filename) {
  */
 
 DawgLexicon::Edge* DawgLexicon::traceToLastEdge(const std::string& s) const {
-    if (!start) {
+    if (!_start) {
         return nullptr;
     }
-    Edge* curEdge = findEdgeForChar(start, s[0]);
+    Edge* curEdge = findEdgeForChar(_start, s[0]);
     int len = (int) s.length();
     for (int i = 1; i < len; i++) {
         if (!curEdge || !curEdge->children) {
             return nullptr;
         }
-        curEdge = findEdgeForChar(&edges[curEdge->children], s[i]);
+        curEdge = findEdgeForChar(&_edges[curEdge->children], s[i]);
     }
     return curEdge;
 }
 
 DawgLexicon& DawgLexicon::operator =(const DawgLexicon& src) {
     if (this != &src) {
-        if (edges) {
-            delete[] edges;
+        if (_edges) {
+            delete[] _edges;
         }
         deepCopy(src);
     }
@@ -534,13 +534,13 @@ void DawgLexicon::iterator::advanceToNextEdge() {
     } else {
         stack.push(ep);
         currentDawgPrefix.push_back(lp->ordToChar(ep->letter));
-        edgePtr = &lp->edges[ep->children];
+        edgePtr = &lp->_edges[ep->children];
     }
 }
 
 void DawgLexicon::iterator::advanceToNextWordInDawg() {
     if (!edgePtr) {
-        edgePtr = lp->start;
+        edgePtr = lp->_start;
     } else {
         advanceToNextEdge();
     }

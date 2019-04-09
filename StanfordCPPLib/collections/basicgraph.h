@@ -213,7 +213,7 @@ public:
     VertexGen& operator =(VertexGen&& other);
 
 private:
-    /* Color */ int m_color;   // vertex's color as passed to setColor
+    /* Color */ int _color;   // vertex's color as passed to setColor
 };
 
 /**
@@ -813,7 +813,7 @@ VertexGen<V, E>::VertexGen(const VertexGen& other)
 #endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
       data(other.data),
       extraData(data),
-      m_color(other.m_color) {
+      _color(other._color) {
     // empty
 }
 
@@ -824,7 +824,7 @@ VertexGen<V, E>::~VertexGen() {
 
 template <typename V, typename E>
 int VertexGen<V, E>::getColor() const {
-    return m_color;
+    return _color;
 }
 
 template <typename V, typename E>
@@ -834,12 +834,12 @@ void VertexGen<V, E>::resetData() {
     previous = nullptr;
     visited = false;
 #endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
-    m_color = /* UNCOLORED */ 0;
+    _color = /* UNCOLORED */ 0;
 }
 
 template <typename V, typename E>
 void VertexGen<V, E>::setColor(int c) {
-    m_color = c;
+    _color = c;
     notifyObservers();
 }
 
@@ -861,7 +861,7 @@ VertexGen<V, E>& VertexGen<V, E>::operator =(const VertexGen& other) {
         previous = other.previous;
 #endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
         data = other.data;
-        m_color = other.m_color;
+        _color = other._color;
     }
     return *this;
 }
@@ -877,7 +877,7 @@ VertexGen<V, E>& VertexGen<V, E>::operator =(VertexGen&& other) {
         previous = other.previous;
 #endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
         data = other.data;
-        m_color = other.m_color;
+        _color = other._color;
     }
     return *this;
 }

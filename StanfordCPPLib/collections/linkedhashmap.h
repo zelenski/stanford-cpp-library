@@ -9,6 +9,8 @@
  * cost due to needing to store an extra copy of the keys.
  * 
  * @author Marty Stepp
+ * @version 2019/04/09
+ * - renamed private members with underscore naming scheme for consistency
  * @version 2018/03/10
  * - added methods front, back
  * @version 2016/09/24
@@ -413,8 +415,8 @@ public:
      * Vector to remember the order of insertion.
     */
 private:
-    HashMap<KeyType, ValueType> innerMap;
-    Vector<KeyType> keyVector;
+    HashMap<KeyType, ValueType> _map;
+    Vector<KeyType> _keys;
 
 public:
     /*
@@ -440,14 +442,14 @@ public:
      * Returns an iterator positioned at the first key of the map.
      */
     const_iterator begin() const {
-        return keyVector.begin();
+        return _keys.begin();
     }
 
     /*
      * Returns an iterator positioned at the last key of the map.
      */
     const_iterator end() const {
-        return keyVector.end();
+        return _keys.end();
     }
 };
 
@@ -478,18 +480,18 @@ KeyType LinkedHashMap<KeyType, ValueType>::back() const {
     if (isEmpty()) {
         error("LinkedHashMap::back: map is empty");
     }
-    return keyVector.back();
+    return _keys.back();
 }
 
 template <typename KeyType, typename ValueType>
 void LinkedHashMap<KeyType, ValueType>::clear() {
-    innerMap.clear();
-    keyVector.clear();
+    _map.clear();
+    _keys.clear();
 }
 
 template <typename KeyType, typename ValueType>
 bool LinkedHashMap<KeyType, ValueType>::containsKey(const KeyType& key) const {
-    return innerMap.containsKey(key);
+    return _map.containsKey(key);
 }
 
 template <typename KeyType, typename ValueType>
@@ -502,33 +504,33 @@ KeyType LinkedHashMap<KeyType, ValueType>::front() const {
     if (isEmpty()) {
         error("LinkedHashMap::front: map is empty");
     }
-    return keyVector.front();
+    return _keys.front();
 }
 
 template <typename KeyType, typename ValueType>
 ValueType LinkedHashMap<KeyType, ValueType>::get(const KeyType& key) const {
-    return innerMap.get(key);
+    return _map.get(key);
 }
 
 template <typename KeyType, typename ValueType>
 bool LinkedHashMap<KeyType, ValueType>::isEmpty() const {
-    return innerMap.isEmpty();
+    return _map.isEmpty();
 }
 
 template <typename KeyType, typename ValueType>
 const Vector<KeyType>& LinkedHashMap<KeyType, ValueType>::keys() const {
-    return keyVector;
+    return _keys;
 }
 
 template <typename KeyType, typename ValueType>
 void LinkedHashMap<KeyType, ValueType>::mapAll(std::function<void (const KeyType&, const ValueType &)> fn) const {
-    innerMap.mapAll(fn);
+    _map.mapAll(fn);
 }
 
 template <typename KeyType, typename ValueType>
 void LinkedHashMap<KeyType, ValueType>::put(const KeyType& key, const ValueType& value) {
-    innerMap.put(key, value);
-    keyVector.add(key);
+    _map.put(key, value);
+    _keys.add(key);
 }
 
 template <typename KeyType, typename ValueType>
@@ -541,10 +543,10 @@ LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::putAll(con
 
 template <typename KeyType, typename ValueType>
 void LinkedHashMap<KeyType, ValueType>::remove(const KeyType& key) {
-    innerMap.remove(key);
-    for (int i = 0, sz = keyVector.size(); i < sz; i++) {
-        if (keyVector[i] == key) {
-            keyVector.remove(i);
+    _map.remove(key);
+    for (int i = 0, sz = _keys.size(); i < sz; i++) {
+        if (_keys[i] == key) {
+            _keys.remove(i);
             break;
         }
     }
@@ -576,7 +578,7 @@ LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::retainAll(
 
 template <typename KeyType, typename ValueType>
 int LinkedHashMap<KeyType, ValueType>::size() const {
-    return innerMap.size();
+    return _map.size();
 }
 
 template <typename KeyType, typename ValueType>
@@ -597,7 +599,7 @@ Vector<ValueType> LinkedHashMap<KeyType, ValueType>::values() const {
 
 template <typename KeyType, typename ValueType>
 ValueType LinkedHashMap<KeyType, ValueType>::operator [](const KeyType& key) const {
-    return innerMap[key];
+    return _map[key];
 }
 
 template <typename KeyType, typename ValueType>

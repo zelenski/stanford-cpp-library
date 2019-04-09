@@ -63,37 +63,37 @@
 static bool scrub(std::string& str);
 
 Lexicon::Lexicon() :
-        m_root(nullptr),
-        m_size(0),
-        m_removeFlag(false) {
+        _root(nullptr),
+        _size(0),
+        _removeFlag(false) {
     // empty
 }
 
 Lexicon::Lexicon(std::istream& input) :
-        m_root(nullptr),
-        m_size(0),
-        m_removeFlag(false) {
+        _root(nullptr),
+        _size(0),
+        _removeFlag(false) {
     addWordsFromFile(input);
 }
 
 Lexicon::Lexicon(const std::string& filename) :
-        m_root(nullptr),
-        m_size(0),
-        m_removeFlag(false) {
+        _root(nullptr),
+        _size(0),
+        _removeFlag(false) {
     addWordsFromFile(filename);
 }
 
 Lexicon::Lexicon(std::initializer_list<std::string> list) :
-        m_root(nullptr),
-        m_size(0),
-        m_removeFlag(false) {
+        _root(nullptr),
+        _size(0),
+        _removeFlag(false) {
     addAll(list);
 }
 
 Lexicon::Lexicon(const Lexicon& src) :
-        m_root(nullptr),
-        m_size(0),
-        m_removeFlag(false) {
+        _root(nullptr),
+        _size(0),
+        _removeFlag(false) {
     deepCopy(src);
 }
 
@@ -109,7 +109,7 @@ bool Lexicon::add(const std::string& word) {
     if (!scrub(scrubbed)) {
         return false;
     }
-    return addHelper(m_root, scrubbed, /* originalWord */ scrubbed);
+    return addHelper(_root, scrubbed, /* originalWord */ scrubbed);
 }
 
 Lexicon& Lexicon::addAll(const Lexicon& lex) {
@@ -155,14 +155,14 @@ std::string Lexicon::back() const {
     if (isEmpty()) {
         error("Lexicon::back: lexicon is empty");
     }
-    return m_allWords.back();
+    return _allWords.back();
 }
 
 void Lexicon::clear() {
-    m_size = 0;
-    m_allWords.clear();
-    deleteTree(m_root);
-    m_root = nullptr;
+    _size = 0;
+    _allWords.clear();
+    deleteTree(_root);
+    _root = nullptr;
 }
 
 bool Lexicon::contains(const std::string& word) const {
@@ -173,7 +173,7 @@ bool Lexicon::contains(const std::string& word) const {
     if (!scrub(scrubbed)) {
         return false;
     }
-    return containsHelper(m_root, scrubbed, /* isPrefix */ false);
+    return containsHelper(_root, scrubbed, /* isPrefix */ false);
 }
 
 bool Lexicon::containsAll(const Lexicon& lex2) const {
@@ -202,7 +202,7 @@ bool Lexicon::containsPrefix(const std::string& prefix) const {
     if (!scrub(scrubbed)) {
         return false;
     }
-    return containsHelper(m_root, scrubbed, /* isPrefix */ true);
+    return containsHelper(_root, scrubbed, /* isPrefix */ true);
 }
 
 bool Lexicon::equals(const Lexicon& lex2) const {
@@ -213,14 +213,14 @@ std::string Lexicon::first() const {
     if (isEmpty()) {
         error("Lexicon::first: lexicon is empty");
     }
-    return m_allWords.front();
+    return _allWords.front();
 }
 
 std::string Lexicon::front() const {
     if (isEmpty()) {
         error("Lexicon::front: lexicon is empty");
     }
-    return m_allWords.front();
+    return _allWords.front();
 }
 
 void Lexicon::insert(const std::string& word) {
@@ -257,13 +257,13 @@ bool Lexicon::isSupersetOf(std::initializer_list<std::string> list) const {
 }
 
 void Lexicon::mapAll(void (*fn)(std::string)) const {
-    for (std::string word : m_allWords) {
+    for (std::string word : _allWords) {
         fn(word);
     }
 }
 
 void Lexicon::mapAll(void (*fn)(const std::string&)) const {
-    for (std::string word : m_allWords) {
+    for (std::string word : _allWords) {
         fn(word);
     }
 }
@@ -276,7 +276,7 @@ bool Lexicon::remove(const std::string& word) {
     if (!scrub(scrubbed)) {
         return false;
     }
-    return removeHelper(m_root, scrubbed, /* originalWord */ scrubbed, /* isPrefix */ false);
+    return removeHelper(_root, scrubbed, /* originalWord */ scrubbed, /* isPrefix */ false);
 }
 
 Lexicon& Lexicon::removeAll(const Lexicon& lex2) {
@@ -310,7 +310,7 @@ bool Lexicon::removePrefix(const std::string& prefix) {
         return false;
     }
     
-    return removeHelper(m_root, scrubbed, /* originalWord */ scrubbed, /* isPrefix */ true);
+    return removeHelper(_root, scrubbed, /* originalWord */ scrubbed, /* isPrefix */ true);
 }
 
 Lexicon& Lexicon::retainAll(const Lexicon& lex2) {
@@ -332,7 +332,7 @@ Lexicon& Lexicon::retainAll(std::initializer_list<std::string> list) {
 }
 
 int Lexicon::size() const {
-    return m_size;
+    return _size;
 }
 
 std::string Lexicon::toString() const {
@@ -422,7 +422,7 @@ Lexicon& Lexicon::operator +=(std::initializer_list<std::string> list) {
 
 Lexicon& Lexicon::operator +=(const std::string& word) {
     add(word);
-    m_removeFlag = false;
+    _removeFlag = false;
     return *this;
 }
 
@@ -444,14 +444,14 @@ Lexicon& Lexicon::operator -=(std::initializer_list<std::string> list) {
 
 Lexicon& Lexicon::operator -=(const std::string& word) {
     remove(word);
-    m_removeFlag = true;
+    _removeFlag = true;
     return *this;
 }
 
 /* private helpers implementation */
 
 Lexicon& Lexicon::operator ,(const std::string& word) {
-    if (m_removeFlag) {
+    if (_removeFlag) {
         remove(word);
     } else {
         add(word);
@@ -473,8 +473,8 @@ bool Lexicon::addHelper(TrieNode*& node, const std::string& word, const std::str
         } else {
             // new word; add it
             node->setWord(true);
-            m_size++;
-            m_allWords.add(originalWord);
+            _size++;
+            _allWords.add(originalWord);
             return true;
         }
     } else {
@@ -526,8 +526,8 @@ bool Lexicon::removeHelper(TrieNode*& node, const std::string& word, const std::
                     node->setWord(false);
                 }
             }
-            m_allWords.remove(originalWord);
-            m_size--;
+            _allWords.remove(originalWord);
+            _size--;
         }
         return true;
     } else {
@@ -553,8 +553,8 @@ void Lexicon::removeSubtreeHelper(TrieNode*& node, const std::string& originalWo
             removeSubtreeHelper(node->child(letter), originalWord + letter);
         }
         if (node->isWord()) {
-            m_allWords.remove(originalWord);
-            m_size--;
+            _allWords.remove(originalWord);
+            _size--;
         }
         delete node;
         node = nullptr;
@@ -562,7 +562,7 @@ void Lexicon::removeSubtreeHelper(TrieNode*& node, const std::string& originalWo
 }
 
 void Lexicon::deepCopy(const Lexicon& src) {
-    for (std::string word : src.m_allWords) {
+    for (std::string word : src._allWords) {
         add(word);
     }
 }
@@ -635,7 +635,7 @@ Lexicon& Lexicon::operator =(const Lexicon& src) {
 }
 
 std::ostream& operator <<(std::ostream& out, const Lexicon& lex) {
-    out << lex.m_allWords;
+    out << lex._allWords;
     return out;
 }
 

@@ -5,6 +5,10 @@
  * implementation of a doubly-linked list of objects and provides a
  * public interface similar to that of the <code>Vector</code> class.
  *
+ * @version 2019/04/09
+ * - renamed private members with underscore naming scheme for consistency
+ * @version 2019/02/04
+ * - changed internal implementation to wrap std collections
  * @version 2018/01/07
  * - added removeFront, removeBack
  * @version 2017/11/15
@@ -468,8 +472,8 @@ private:
      */
 
     /* Instance variables */
-    std::list<ValueType> m_elements;   // STL linked list as backing storage
-    stanfordcpplib::collections::VersionTracker mVersion;
+    std::list<ValueType> _elements;   // STL linked list as backing storage
+    stanfordcpplib::collections::VersionTracker _version;
 
     /* Private methods */
 
@@ -512,16 +516,16 @@ public:
     using const_iterator = stanfordcpplib::collections::CheckedIterator<typename std::list<ValueType>::const_iterator>;
 
     iterator begin() {
-        return { &mVersion, m_elements.begin(), m_elements };
+        return { &_version, _elements.begin(), _elements };
     }
     iterator end() {
-        return { &mVersion, m_elements.end(), m_elements };
+        return { &_version, _elements.end(), _elements };
     }
     const_iterator begin() const {
-        return { &mVersion, m_elements.begin(), m_elements };
+        return { &_version, _elements.begin(), _elements };
     }
     const_iterator end() const {
-        return { &mVersion, m_elements.end(), m_elements };
+        return { &_version, _elements.end(), _elements };
     }
 };
 
@@ -529,19 +533,19 @@ public:
 
 template <typename ValueType>
 LinkedList<ValueType>::LinkedList(const std::list<ValueType>& v)
-        : m_elements(v) {
+        : _elements(v) {
     // empty
 }
 
 template <typename ValueType>
-LinkedList<ValueType>::LinkedList(std::initializer_list<ValueType> list) : m_elements(list) {
+LinkedList<ValueType>::LinkedList(std::initializer_list<ValueType> list) : _elements(list) {
     // empty
 }
 
 template <typename ValueType>
 void LinkedList<ValueType>::add(ValueType value) {
-    m_elements.push_back(value);
-    mVersion.update();
+    _elements.push_back(value);
+    _version.update();
 }
 
 template <typename ValueType>
@@ -550,7 +554,7 @@ LinkedList<ValueType>::addAll(const LinkedList<ValueType>& list) {
     for (const ValueType& value : list) {
         add(value);
     }
-    mVersion.update();
+    _version.update();
     return *this;
 }
 
@@ -559,7 +563,7 @@ LinkedList<ValueType>& LinkedList<ValueType>::addAll(std::initializer_list<Value
     for (const ValueType& value : list) {
         add(value);
     }
-    mVersion.update();
+    _version.update();
     return *this;
 }
 
@@ -573,13 +577,13 @@ const ValueType& LinkedList<ValueType>::back() const {
     if (isEmpty()) {
         error("LinkedList::back: list is empty");
     }
-    return m_elements.back();
+    return _elements.back();
 }
 
 template <typename ValueType>
 void LinkedList<ValueType>::clear() {
-    m_elements.clear();
-    mVersion.update();
+    _elements.clear();
+    _version.update();
 }
 
 template <typename ValueType>
@@ -589,7 +593,7 @@ bool LinkedList<ValueType>::contains(const ValueType& value) const {
 
 template <typename ValueType>
 bool LinkedList<ValueType>::equals(const LinkedList<ValueType>& list2) const {
-    return m_elements == list2.m_elements;
+    return _elements == list2._elements;
 }
 
 template <typename ValueType>
@@ -602,13 +606,13 @@ const ValueType& LinkedList<ValueType>::front() const {
     if (isEmpty()) {
         error("LinkedList::front: list is empty");
     }
-    return m_elements.front();
+    return _elements.front();
 }
 
 template <typename ValueType>
 const ValueType & LinkedList<ValueType>::get(int index) const {
     checkIndex(index, 0, size()-1, "get");
-    return *std::next(m_elements.begin(), index);
+    return *std::next(_elements.begin(), index);
 }
 
 template <typename ValueType>
@@ -627,15 +631,15 @@ int LinkedList<ValueType>::indexOf(const ValueType& value) const {
 template <typename ValueType>
 void LinkedList<ValueType>::insert(int index, ValueType value) {
     checkIndex(index, 0, size(), "insert");
-    auto itr = m_elements.begin();
+    auto itr = _elements.begin();
     std::advance(itr, index);
-    m_elements.insert(itr, value);
-    mVersion.update();
+    _elements.insert(itr, value);
+    _version.update();
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::isEmpty() const {
-    return m_elements.empty();
+    return _elements.empty();
 }
 
 template <typename ValueType>
@@ -672,9 +676,9 @@ ValueType LinkedList<ValueType>::pop_back() {
     if (isEmpty()) {
         error("LinkedList::pop_back: list is empty");
     }
-    ValueType back = m_elements.back();
-    m_elements.pop_back();
-    mVersion.update();
+    ValueType back = _elements.back();
+    _elements.pop_back();
+    _version.update();
     return back;
 }
 
@@ -683,31 +687,31 @@ ValueType LinkedList<ValueType>::pop_front() {
     if (isEmpty()) {
         error("LinkedList::pop_front: list is empty");
     }
-    ValueType front = m_elements.front();
-    m_elements.pop_front();
-    mVersion.update();
+    ValueType front = _elements.front();
+    _elements.pop_front();
+    _version.update();
     return front;
 }
 
 template <typename ValueType>
 void LinkedList<ValueType>::push_back(const ValueType& value) {
-    m_elements.push_back(value);
-    mVersion.update();
+    _elements.push_back(value);
+    _version.update();
 }
 
 template <typename ValueType>
 void LinkedList<ValueType>::push_front(const ValueType& value) {
-    m_elements.push_front(value);
-    mVersion.update();
+    _elements.push_front(value);
+    _version.update();
 }
 
 template <typename ValueType>
 void LinkedList<ValueType>::remove(int index) {
     checkIndex(index, 0, size()-1, "remove");
-    auto itr = m_elements.begin();
+    auto itr = _elements.begin();
     advance(itr, index);
-    m_elements.erase(itr);
-    mVersion.update();
+    _elements.erase(itr);
+    _version.update();
 }
 
 template <typename ValueType>
@@ -722,17 +726,17 @@ ValueType LinkedList<ValueType>::removeFront() {
 
 template <typename ValueType>
 void LinkedList<ValueType>::removeValue(const ValueType& value) {
-    auto itr = std::find(m_elements.begin(), m_elements.end(), value);
-    if (itr != m_elements.end()) {
-        m_elements.erase(itr);
-        mVersion.update();
+    auto itr = std::find(_elements.begin(), _elements.end(), value);
+    if (itr != _elements.end()) {
+        _elements.erase(itr);
+        _version.update();
     }
 }
 
 template <typename ValueType>
 void LinkedList<ValueType>::reverse() {
-    m_elements.reverse();
-    mVersion.update();
+    _elements.reverse();
+    _version.update();
 }
 
 template <typename ValueType>
@@ -764,7 +768,7 @@ void LinkedList<ValueType>::shuffle() {
 
 template <typename ValueType>
 int LinkedList<ValueType>::size() const {
-    return m_elements.size();
+    return _elements.size();
 }
 
 
@@ -868,32 +872,32 @@ LinkedList<ValueType>::operator +=(const ValueType& value) {
  */
 template <typename ValueType>
 bool LinkedList<ValueType>::operator ==(const LinkedList& list2) const {
-    return m_elements == list2.m_elements;
+    return _elements == list2._elements;
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::operator !=(const LinkedList& list2) const {
-    return m_elements != list2.m_elements;
+    return _elements != list2._elements;
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::operator <(const LinkedList& list2) const {
-    return m_elements < list2.m_elements;
+    return _elements < list2._elements;
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::operator <=(const LinkedList& list2) const {
-    return m_elements <= list2.m_elements;
+    return _elements <= list2._elements;
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::operator >(const LinkedList& list2) const {
-    return m_elements > list2.m_elements;
+    return _elements > list2._elements;
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::operator >=(const LinkedList& list2) const {
-    return this->m_elements >= list2.m_elements;
+    return this->_elements >= list2._elements;
 }
 
 template <typename ValueType>

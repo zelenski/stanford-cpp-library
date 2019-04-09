@@ -55,6 +55,12 @@ void testQtConsole() {
     tim.stop();
     cout << "Took " << tim.elapsed() << "ms" << endl;
 
+    cout << "How about a nasty error?!" << endl;
+
+    // produce an error
+//    string s;
+//    s.erase(5, 0);
+
     // user input
     std::string line = getLine("Type: ");
     cout << "You typed: \"" << line << "\"" << endl;
@@ -66,7 +72,5 @@ void testQtConsole() {
     cout << "You typed: " << realnum << endl;
 
     cout << "Partial line; what about me? :-(";   // no endl
-
-    cout << "How about a nasty error?!" << endl;
-    error("oooooooooops");
+    // error("oooooooooops");
 }

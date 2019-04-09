@@ -5,6 +5,10 @@
  * in which values can be added and removed from the front or back.
  * It combines much of the functionality of a stack and a queue.
  * 
+ * @version 2019/04/09
+ * - renamed private members with underscore naming scheme for consistency
+ * @version 2019/02/04
+ * - changed internal implementation to wrap std collections
  * @version 2017/11/14
  * - added iterator version checking support
  * @version 2016/09/24
@@ -230,9 +234,9 @@ public:
     friend std::ostream& operator <<(std::ostream& os, const Deque<T>& deque);
 
 private:
-    /* Instance variables */
-    std::deque<ValueType> mElements;
-    stanfordcpplib::collections::VersionTracker mVersion;
+    // Instance variables
+    std::deque<ValueType> _elements;
+    stanfordcpplib::collections::VersionTracker _version;
 
 public:
 
@@ -246,7 +250,7 @@ public:
 };
 
 template <typename ValueType>
-Deque<ValueType>::Deque(std::initializer_list<ValueType> list) : mElements(list) {
+Deque<ValueType>::Deque(std::initializer_list<ValueType> list) : _elements(list) {
 
 }
 
@@ -270,13 +274,13 @@ const ValueType& Deque<ValueType>::back() const {
     if (isEmpty()) {
         error("Deque::back: Attempting to read back of an empty deque");
     }
-    return mElements.back();
+    return _elements.back();
 }
 
 template <typename ValueType>
 void Deque<ValueType>::clear() {
-    mElements.clear();
-    mVersion.update();
+    _elements.clear();
+    _version.update();
 }
 
 /*
@@ -295,9 +299,9 @@ ValueType Deque<ValueType>::dequeueBack() {
     if (isEmpty()) {
         error("Deque::dequeueBack: Attempting to dequeue from an empty deque");
     }
-    auto result = mElements.back();
-    mElements.pop_back();
-    mVersion.update();
+    auto result = _elements.back();
+    _elements.pop_back();
+    _version.update();
     return result;
 }
 
@@ -306,9 +310,9 @@ ValueType Deque<ValueType>::dequeueFront() {
     if (isEmpty()) {
         error("Deque::dequeueFront: Attempting to dequeue from an empty deque");
     }
-    auto result = mElements.front();
-    mElements.pop_front();
-    mVersion.update();
+    auto result = _elements.front();
+    _elements.pop_front();
+    _version.update();
     return result;
 }
 
@@ -319,19 +323,19 @@ void Deque<ValueType>::enqueue(const ValueType& value) {
 
 template <typename ValueType>
 void Deque<ValueType>::enqueueBack(const ValueType& value) {
-    mElements.push_back(value);
-    mVersion.update();
+    _elements.push_back(value);
+    _version.update();
 }
 
 template <typename ValueType>
 void Deque<ValueType>::enqueueFront(const ValueType& value) {
-    mElements.push_front(value);
-    mVersion.update();
+    _elements.push_front(value);
+    _version.update();
 }
 
 template <typename ValueType>
 bool Deque<ValueType>::equals(const Deque<ValueType>& deque2) const {
-    return mElements == deque2.mElements;
+    return _elements == deque2._elements;
 }
 
 template <typename ValueType>
@@ -339,12 +343,12 @@ const ValueType& Deque<ValueType>::front() const {
     if (isEmpty()) {
         error("Deque::front: Attempting to read front of an empty deque");
     }
-    return mElements.front();
+    return _elements.front();
 }
 
 template <typename ValueType>
 bool Deque<ValueType>::isEmpty() const {
-    return mElements.empty();
+    return _elements.empty();
 }
 
 template <typename ValueType>
@@ -391,12 +395,12 @@ ValueType Deque<ValueType>::removeFront() {
 
 template <typename ValueType>
 int Deque<ValueType>::size() const {
-    return mElements.size();
+    return _elements.size();
 }
 
 template <typename ValueType>
 std::deque<ValueType> Deque<ValueType>::toStlDeque() const {
-    return mElements;
+    return _elements;
 }
 
 template <typename ValueType>
@@ -418,22 +422,22 @@ bool Deque<ValueType>::operator !=(const Deque& deque2) const {
 
 template <typename ValueType>
 bool Deque<ValueType>::operator <(const Deque& deque2) const {
-    return stanfordcpplib::collections::compare(mElements, deque2.mElements) < 0;
+    return stanfordcpplib::collections::compare(_elements, deque2._elements) < 0;
 }
 
 template <typename ValueType>
 bool Deque<ValueType>::operator <=(const Deque& deque2) const {
-    return stanfordcpplib::collections::compare(mElements, deque2.mElements) <= 0;
+    return stanfordcpplib::collections::compare(_elements, deque2._elements) <= 0;
 }
 
 template <typename ValueType>
 bool Deque<ValueType>::operator >(const Deque& deque2) const {
-    return stanfordcpplib::collections::compare(mElements, deque2.mElements) > 0;
+    return stanfordcpplib::collections::compare(_elements, deque2._elements) > 0;
 }
 
 template <typename ValueType>
 bool Deque<ValueType>::operator >=(const Deque& deque2) const {
-    return stanfordcpplib::collections::compare(mElements, deque2.mElements) >= 0;
+    return stanfordcpplib::collections::compare(_elements, deque2._elements) >= 0;
 }
 
 template <typename ValueType>
@@ -449,20 +453,20 @@ std::istream& operator >>(std::istream& is, Deque<ValueType>& deque) {
 
 template <typename ValueType>
 typename Deque<ValueType>::iterator Deque<ValueType>::begin() {
-    return { &mVersion, mElements.begin(), mElements };
+    return { &_version, _elements.begin(), _elements };
 }
 template <typename ValueType>
 typename Deque<ValueType>::const_iterator Deque<ValueType>::begin() const {
-    return { &mVersion, mElements.begin(), mElements };
+    return { &_version, _elements.begin(), _elements };
 }
 
 template <typename ValueType>
 typename Deque<ValueType>::iterator Deque<ValueType>::end() {
-    return { &mVersion, mElements.end(), mElements };
+    return { &_version, _elements.end(), _elements };
 }
 template <typename ValueType>
 typename Deque<ValueType>::const_iterator Deque<ValueType>::end() const {
-    return { &mVersion, mElements.end(), mElements };
+    return { &_version, _elements.end(), _elements };
 }
 
 /*

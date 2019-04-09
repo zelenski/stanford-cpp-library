@@ -5,6 +5,8 @@
  * implements an efficient abstraction for storing sets of values.
  * 
  * @author Marty Stepp
+ * @version 2019/02/04
+ * - changed internal implementation to wrap std collections
  * @version 2018/03/10
  * - added methods front, back
  * @version 2016/09/24

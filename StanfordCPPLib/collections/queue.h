@@ -5,6 +5,10 @@
  * in which values are ordinarily processed in a first-in/first-out
  * (FIFO) order.
  * 
+ * @version 2019/04/09
+ * - renamed private members with underscore naming scheme for consistency
+ * @version 2019/02/04
+ * - changed internal implementation to wrap std collections
  * @version 2018/01/23
  * - fixed bad reference bug on queue.enqueue(queue.peek())
  * @version 2017/11/14
@@ -237,12 +241,12 @@ public:
 
 private:
     /* Instance variables */
-    Deque<ValueType> mElems;
+    Deque<ValueType> _elements;
 };
 
 template <typename ValueType>
-Queue<ValueType>::Queue(std::initializer_list<ValueType> list) : mElems(list) {
-
+Queue<ValueType>::Queue(std::initializer_list<ValueType> list) : _elements(list) {
+    // empty
 }
 
 template <typename ValueType>
@@ -255,12 +259,12 @@ const ValueType& Queue<ValueType>::back() const {
     if (isEmpty()) {
         error("Queue::back: Attempting to read back of an empty queue");
     }
-    return mElems.back();
+    return _elements.back();
 }
 
 template <typename ValueType>
 void Queue<ValueType>::clear() {
-    mElems.clear();
+    _elements.clear();
 }
 
 /*
@@ -274,12 +278,12 @@ ValueType Queue<ValueType>::dequeue() {
     if (isEmpty()) {
         error("Queue::dequeue: Attempting to dequeue an empty queue");
     }
-    return mElems.dequeueFront();
+    return _elements.dequeueFront();
 }
 
 template <typename ValueType>
 void Queue<ValueType>::enqueue(const ValueType& value) {
-    mElems.enqueueBack(value);
+    _elements.enqueueBack(value);
 }
 
 template <typename ValueType>
@@ -292,12 +296,12 @@ const ValueType& Queue<ValueType>::front() const {
     if (isEmpty()) {
         error("Queue::front: Attempting to read front of an empty queue");
     }
-    return mElems.front();
+    return _elements.front();
 }
 
 template <typename ValueType>
 bool Queue<ValueType>::isEmpty() const {
-    return mElems.isEmpty();
+    return _elements.isEmpty();
 }
 
 template <typename ValueType>
@@ -317,7 +321,7 @@ ValueType Queue<ValueType>::remove() {
 
 template <typename ValueType>
 int Queue<ValueType>::size() const {
-    return mElems.size();
+    return _elements.size();
 }
 
 template <typename ValueType>
@@ -329,43 +333,43 @@ std::string Queue<ValueType>::toString() const {
 
 template <typename ValueType>
 bool Queue<ValueType>::operator ==(const Queue& queue2) const {
-    return mElems == queue2.mElems;
+    return _elements == queue2._elements;
 }
 
 template <typename ValueType>
 bool Queue<ValueType>::operator !=(const Queue& queue2) const {
-    return mElems != queue2.mElems;
+    return _elements != queue2._elements;
 }
 
 template <typename ValueType>
 bool Queue<ValueType>::operator <(const Queue& queue2) const {
-    return mElems < queue2.mElems;
+    return _elements < queue2._elements;
 }
 
 template <typename ValueType>
 bool Queue<ValueType>::operator <=(const Queue& queue2) const {
-    return mElems <= queue2.mElems;
+    return _elements <= queue2._elements;
 }
 
 template <typename ValueType>
 bool Queue<ValueType>::operator >(const Queue& queue2) const {
-    return mElems > queue2.mElems;
+    return _elements > queue2._elements;
 }
 
 template <typename ValueType>
 bool Queue<ValueType>::operator >=(const Queue& queue2) const {
-    return mElems >= queue2.mElems;
+    return _elements >= queue2._elements;
 }
 
 template <typename ValueType>
 std::ostream& operator <<(std::ostream& os, const Queue<ValueType>& queue) {
-    return os << queue.mElems;
+    return os << queue._elements;
 }
 
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, Queue<ValueType>& queue) {
     ValueType element;
-    return stanfordcpplib::collections::readCollection(is, queue, queue.mElems, /* descriptor */ "Queue::operator >>");
+    return stanfordcpplib::collections::readCollection(is, queue, queue._elements, /* descriptor */ "Queue::operator >>");
 }
 
 /*
@@ -374,7 +378,7 @@ std::istream& operator >>(std::istream& is, Queue<ValueType>& queue) {
  */
 template <typename T>
 int hashCode(const Queue<T>& q) {
-    return hashCode(q.mElems);
+    return hashCode(q._elements);
 }
 
 #endif // _queue_h
